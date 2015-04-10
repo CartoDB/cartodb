@@ -88,36 +88,6 @@ module CartoDB
         self
       end
 
-      # Enqueues all syncs that got stalled (state syncing since too long).
-      # This happens when we push code while a sync is being performed.
-      def enqueue_stalled
-        stalled_threshold = Time.now + (STALLING_MAX_TIME)
-
-        begin
-          query = db.query(%Q(
-              SELECT name, id FROM #{relation}
-              WHERE EXTRACT(EPOCH FROM ran_at) < #{stalled_threshold.utc.to_f}
-              AND state = '#{CartoDB::Synchronization::Member::STATE_SYNCING}'
-            ))
-          success = true
-        rescue Exception => e
-          success = false
-          print_log("ERROR fetching stalled sync tables: #{e.message}, #{e.backtrace}", true)
-        end
-
-        if success
-          print_log "Fetched #{query.count} stalled records"
-          query.each { |record|
-            print_log "Enqueueing '#{record['name']}' (#{record['id']})"
-            Resque.enqueue(Resque::SynchronizationJobs, job_id: record['id'])
-            db.query(%Q(
-               UPDATE #{relation} SET state = '#{CartoDB::Synchronization::Member::STATE_QUEUED}'
-                WHERE id = '#{record['id']}'
-             ))
-          }
-        end
-      end
-
       # This is probably for testing purposes only, as fetch also does the processing
       def process(members=@members)
         print_log "Processing #{members.size} records"

@@ -1,6 +1,6 @@
 // cartodb.js version: 3.14.0
 // uncompressed version: cartodb.uncompressed.js
-// sha: a89883013ddbe27335df75b08815533cd42112f9
+// sha: 101959f7e5d7a89391a61995c27dc407cca47bff
 (function() {
   var root = this;
 
@@ -32865,9 +32865,9 @@ Map.prototype = {
           loadingTime.end();
           if(0 === self._queue.length) {
             // check for errors
-            if (data.error) {
+            if (data.errors) {
               cartodb.core.Profiler.metric('cartodb-js.layergroup.get.error').inc();
-              callback(null, data.error);
+              callback(null, data);
             } else {
               callback(data);
             }
@@ -39309,11 +39309,6 @@ cdb.vis.Vis = Vis;
       this.options.tiler_domain   = domain;
       this.options.tiler_protocol = protocol;
       this.options.tiler_port     = port;
-
-      if (this.userOptions.https || this.imageOptions.vizjson.indexOf("https") === 0) {
-        this.options.tiler_protocol = "https";
-        this.options.tiler_port     = 443;
-      }
 
       this._buildMapsApiTemplate(this.options);
 

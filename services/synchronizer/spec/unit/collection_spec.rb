@@ -2,7 +2,6 @@
 gem 'minitest'
 require 'minitest/autorun'
 require_relative '../../lib/synchronizer/collection'
-require_relative '../../lib/synchronizer/migrator'
 require_relative '../factories/pg_connection'
 require_relative '../../../data-repository/backend/sequel'
 
@@ -68,8 +67,6 @@ describe Collection do
 
 
   def ensure_table_created_in(connection)
-    Migrator.new(connection).drop
-    Migrator.new(connection).migrate
   end
 end
 

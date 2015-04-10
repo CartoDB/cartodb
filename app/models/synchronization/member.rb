@@ -30,6 +30,9 @@ module CartoDB
       SYNC_NOW_TIMESPAN = 900
 
       STATE_CREATED   = 'created'
+      # Already at resque, waiting for slot
+      STATE_QUEUED   = 'queued'
+      # Actually syncing
       STATE_SYNCING   = 'syncing'
       STATE_SUCCESS   = 'success'
       STATE_FAILURE   = 'failure'
@@ -118,6 +121,8 @@ module CartoDB
 
       def enqueue
         Resque.enqueue(Resque::SynchronizationJobs, job_id: id)
+        self.state = CartoDB::Synchronization::Member::STATE_QUEUED
+        self.store
       end
 
       # @return bool

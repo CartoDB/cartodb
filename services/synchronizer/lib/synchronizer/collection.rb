@@ -16,7 +16,11 @@ end
 module CartoDB
   module Synchronizer
     class Collection
+
+      STALLING_MAX_TIME = 3600*3
+
       DEFAULT_RELATION      = 'synchronizations'
+
       DATABASE_CONFIG_YAML  = File.join(
         File.dirname(__FILE__), '../../../../config/database.yml'
       )
@@ -28,7 +32,7 @@ module CartoDB
         @db       = PG::EM::Client.new(pg_options)
         @relation = relation
         @records  = [] 
-      end #initialize
+      end
 
       def print_log(message, error=false)
         puts message if error || ENV['VERBOSE']
@@ -39,7 +43,7 @@ module CartoDB
         process
 
         print_log 'Pass finished'
-      end #run
+      end
 
       # Fetches and enqueues all syncs that should run
       # @param force_all_syncs bool
@@ -47,22 +51,22 @@ module CartoDB
         begin
           if force_all_syncs
             query = db.query(%Q(
-              SELECT * FROM #{relation} WHERE
+              SELECT name, id FROM #{relation} WHERE
               state = '#{CartoDB::Synchronization::Member::STATE_SUCCESS}'
               OR state = '#{CartoDB::Synchronization::Member::STATE_SYNCING}'
             ))
           else
             query = db.query(%Q(
-              SELECT * FROM #{relation}
+              SELECT name, id FROM #{relation}
               WHERE EXTRACT(EPOCH FROM run_at) < #{Time.now.utc.to_f}
               AND 
                 (
                   state = '#{CartoDB::Synchronization::Member::STATE_SUCCESS}'
-              OR (state = '#{CartoDB::Synchronization::Member::STATE_FAILURE}' and retried_times < #{CartoDB::Synchronization::Member::MAX_RETRIES})
+                  OR (state = '#{CartoDB::Synchronization::Member::STATE_FAILURE}'
+                      AND retried_times < #{CartoDB::Synchronization::Member::MAX_RETRIES})
                 )
             ))
           end
-
           success = true
         rescue Exception => e
           success = false
@@ -70,40 +74,18 @@ module CartoDB
         end
 
         if success
-          print_log "Populating #{query.count} records after fetch"
-          hydrate(query).each { |record|
-            print_log "Enqueueing #{record.name} (#{record.id})"
-           record.enqueue
+          print_log "Fetched #{query.count} records"
+          query.each { |record|
+            print_log "Enqueueing '#{record['name']}' (#{record['id']})"
+            Resque.enqueue(Resque::SynchronizationJobs, job_id: record['id'])
+            db.query(%Q(
+               UPDATE #{relation} SET state = '#{CartoDB::Synchronization::Member::STATE_QUEUED}'
+                WHERE id = '#{record['id']}'
+             ))
           }
         end
 
         self
-      end #fetch
-
-      # Enqueues all syncs that got stalled (state syncing since too long).
-      # This happens when we push code while a sync is being performed.
-      def enqueue_stalled
-        stalled_threshold = Time.now + (3600 * 2)
-
-        begin
-          query = db.query(%Q(
-              SELECT * FROM #{relation}
-              WHERE EXTRACT(EPOCH FROM ran_at) < #{stalled_threshold.utc.to_f}
-              AND state = '#{CartoDB::Synchronization::Member::STATE_SYNCING}'
-            ))
-          success = true
-        rescue Exception => e
-          success = false
-          print_log("ERROR fetching stalled sync tables: #{e.message}, #{e.backtrace}", true)
-        end
-
-        if success
-          print_log "Populating #{query.count} records after stalled fetch"
-          hydrate(query).each { |record|
-            print_log "Enqueueing #{record.name} (#{record.id})"
-            record.enqueue
-          }
-        end
       end
 
       # This is probably for testing purposes only, as fetch also does the processing
@@ -113,7 +95,7 @@ module CartoDB
           print_log "Enqueueing #{member.name} (#{member.id})"
           member.enqueue
         }
-      end #process
+      end
 
       attr_reader :records, :members
 
@@ -121,10 +103,6 @@ module CartoDB
 
       attr_reader :db, :relation
       attr_writer :records, :members
-
-      def hydrate(records)
-        @members = records.map { |record| CartoDB::Synchronization::Member.new(record) }
-      end #hydrate
 
       def default_pg_options
         configuration = YAML.load_file(DATABASE_CONFIG_YAML)
@@ -136,8 +114,8 @@ module CartoDB
           password:   options.fetch('password'),
           database:   options.fetch('database')
         }
-      end #default_pg_options
-    end # Collection
-  end # Synchronizer
-end # CartoDB
+      end
+    end
+  end
+end
 

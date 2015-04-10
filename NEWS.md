@@ -1,3 +1,6 @@
+3.10.1 ()
+* fixed interaction when there are hidden layers #3090
+
 3.10.0 (2015-04-08)
 -------------------
 * Internal code refactor to allow to disable subdomain-based general application behaviour, to rely instead on URIs like 'domain.com/u/USER/...', or allow to have both systems working at the same time (subdomainless and with subdomain)

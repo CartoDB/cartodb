@@ -1,6 +1,6 @@
 // cartodb.js version: 3.14.0
 // uncompressed version: cartodb.uncompressed.js
-// sha: c7b47c5cae9ae4722b62cc38d0a2f60117a4d40e
+// sha: a89883013ddbe27335df75b08815533cd42112f9
 (function() {
   var root = this;
 
@@ -25652,7 +25652,7 @@ if (typeof window !== 'undefined') {
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = "3.13.2";
+    cdb.VERSION = "3.14.0";
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -33478,7 +33478,7 @@ LayerDefinition.prototype = _.extend({}, Map.prototype, {
           return n;
         }
         layer_def.options.interactivity = this._cleanInteractivity(layer.options.interactivity);
-        var infowindow = this.getInfowindowData(i);
+        var infowindow = this.getInfowindowData(this.getLayerNumberByIndex(i));
         var attrs = layer.options.attributes ? this._cleanInteractivity(this.options.attributes):(infowindow && fields(infowindow.fields));
         if (attrs) {
           layer_def.options.attributes = {
@@ -33612,7 +33612,7 @@ LayerDefinition.prototype = _.extend({}, Map.prototype, {
       //'v1',
       Map.BASE_URL.slice(1),
       this.layerToken,
-      layer,
+      this.getLayerIndexByNumber(layer),
       'attributes',
       feature_id].join('/');
 

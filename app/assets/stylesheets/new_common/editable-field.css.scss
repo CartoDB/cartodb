@@ -1,15 +1,23 @@
 // Editable field
 // --------------------------------------------------
 
+@import "../new_variables/colors";
+@import "../new_variables/sizes";
+@import "../new_variables/mixins";
+
 .EditableField {
   textarea {
     display: none;
-    width: 100%;
+    height: 100%;
+    overflow: hidden;
     resize: none;
+    width: 100%;
   }
 }
 
 .EditableField.is-editing {
+  width: 100%;
+
   a {
     display: none;
   }

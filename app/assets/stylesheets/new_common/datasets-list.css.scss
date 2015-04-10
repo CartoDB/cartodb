@@ -178,7 +178,10 @@ $bannedColor: #E1A7A5;
     text-align: right;
   }
   .DatasetsList-itemTags .DefaultEditInline-input { text-align: right }
-  .DatasetsList-itemDescription { margin-top: 4px }
+  .DatasetsList-itemDescription {
+    margin-top: 4px;
+    height: 1 * $sLineHeight-normal;
+  }
 
 // Banned dataset
 .DatasetsList-item--banned {

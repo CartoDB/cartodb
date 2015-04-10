@@ -36,8 +36,8 @@ module Carto
       end
 
       def index
-        types = params.fetch(:types, '').split(',')
-        type = params[:type].present? ? params[:type] : default_type(types)
+        type = params[:type].present? && type != '' ? params[:type] : Carto::Visualization::TYPE_CANONICAL
+        types = params.fetch(:types, type).split(',')
         page = (params[:page] || 1).to_i
         per_page = (params[:per_page] || 20).to_i
         order = (params[:order] || 'updated_at').to_sym
@@ -54,7 +54,7 @@ module Carto
             .with_prefetch_table
             .with_prefetch_permission
             .with_prefetch_external_source
-            .with_type(type)
+            .with_types(types)
 
         if current_user
           if only_liked
@@ -94,9 +94,9 @@ module Carto
         }
         if current_user
           response.merge!({
-            total_user_entries: VisualizationQueryBuilder.new.with_type(type).with_user_id(current_user.id).build.count,
-            total_likes: VisualizationQueryBuilder.new.with_type(type).with_liked_by_user_id(current_user.id).build.count,
-            total_shared: VisualizationQueryBuilder.new.with_type(type).with_shared_with_user_id(current_user.id).build.count
+            total_user_entries: VisualizationQueryBuilder.new.with_types(types).with_user_id(current_user.id).build.count,
+            total_likes: VisualizationQueryBuilder.new.with_types(types).with_liked_by_user_id(current_user.id).build.count,
+            total_shared: VisualizationQueryBuilder.new.with_types(types).with_shared_with_user_id(current_user.id).build.count
           })
         end
         render_jsonp(response)
@@ -125,10 +125,6 @@ module Carto
       end
 
       private
-
-      def default_type(types)
-        types.include?(Carto::Visualization::TYPE_DERIVED) ? Carto::Visualization::TYPE_DERIVED : Carto::Visualization::TYPE_CANONICAL
-      end
 
       def compose_shared(shared, only_shared, exclude_shared)
         valid_shared = shared if [FILTER_SHARED_ONLY, FILTER_SHARED_NO, FILTER_SHARED_YES].include?(shared)

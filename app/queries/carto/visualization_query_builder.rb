@@ -70,6 +70,11 @@ class Carto::VisualizationQueryBuilder
     self
   end
 
+  def with_types(types)
+    @types = types
+    self
+  end
+
   def with_locked(locked)
     @locked = locked
     self
@@ -117,6 +122,10 @@ class Carto::VisualizationQueryBuilder
 
     if !@type.nil?
       query = query.where(type: @type)
+    end
+
+    if !@types.nil?
+      query = query.where(type: @types)
     end
 
     if !@locked.nil?

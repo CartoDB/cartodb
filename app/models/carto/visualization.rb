@@ -4,7 +4,7 @@ require_relative '../visualization/stats'
 class Carto::Visualization < ActiveRecord::Base
   self.inheritance_column = :_type
 
-  belongs_to :user, inverse_of: :visualizations
+  belongs_to :user, inverse_of: :visualizations, select: Carto::User::DEFAULT_SELECT
   belongs_to :permission
 
   has_many :likes, foreign_key: :subject

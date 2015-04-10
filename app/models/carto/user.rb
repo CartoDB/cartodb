@@ -7,6 +7,9 @@ class Carto::User < ActiveRecord::Base
   has_many :feature_flags_user, dependent: :destroy
   has_many :feature_flags, :through => :feature_flags_user
 
+  # INFO: select filter is done for security and performance reasons. Add new columns if needed.
+  DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id"
+
   def public_url
     user_name = organization.nil? ? nil : username
     CartoDB.base_url(self.subdomain, user_name)

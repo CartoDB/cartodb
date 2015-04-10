@@ -16,6 +16,10 @@ $width: 620px;
   min-width: initial;
   width: $width;
 }
+.ErrorDetails-body--no-line {
+  padding:0;
+  border-top: none;
+}
 .ErrorDetails-list {}
 .ErrorDetails-item {
   @include display-flex();
@@ -52,15 +56,10 @@ $width: 620px;
   margin: 0 auto;
   text-align: center;
 }
+.ErrorDetails-footer--no-line { border-top: none }
 .ErrorDetails-footerButton {
   display: inline-block;
   padding-left: 40px;
   padding-right: 40px;
-  background: transparent;
-  border: 1px solid #CCC;
-  &:hover {
-    background: transparent;
-    border-color: #666;
-    color: #666;
-  }
+  line-height: 40px;
 }

@@ -13,7 +13,7 @@ class Geocoding < Sequel::Model
                        :used_credits, :remaining_quota, :country_column, :data_import_id]
 
   many_to_one :user
-  many_to_one :table
+  many_to_one :user_table, :key => :table_id
   many_to_one :automatic_geocoding
   many_to_one :data_import
 
@@ -55,10 +55,10 @@ class Geocoding < Sequel::Model
   def table_geocoder
     geocoder_class = (kind == 'high-resolution' ? CartoDB::TableGeocoder : CartoDB::InternalGeocoder::Geocoder)
     config = Cartodb.config[:geocoder].deep_symbolize_keys.merge(
-      table_schema:  table.try(:database_schema),
-      table_name:    table.try(:name),
-      qualified_table_name: table.try(:qualified_table_name),
-      sequel_qualified_table_name: table.try(:sequel_qualified_table_name),
+      table_schema:  table_service.try(:database_schema),
+      table_name:    table_service.try(:name),
+      qualified_table_name: table_service.try(:qualified_table_name),
+      sequel_qualified_table_name: table_service.try(:sequel_qualified_table_name),
       formatter:     translate_formatter,
       connection:    (user.present? ? user.in_database(as: :superuser) : nil),
       remote_id:     remote_id,
@@ -87,14 +87,14 @@ class Geocoding < Sequel::Model
   end # cancel
 
   def run!
-    processable_rows = self.class.processable_rows(table)
+    processable_rows = self.class.processable_rows(table_service)
     if processable_rows == 0
       self.update(state: 'finished', real_rows: 0, used_credits: 0, processed_rows: 0, cache_hits: 0)
       self.report
       return
     end
 
-    rows_geocoded_before = table.owner.in_database.select.from(table.sequel_qualified_table_name).where(cartodb_georef_status: true).count rescue 0
+    rows_geocoded_before = table_service.owner.in_database.select.from(table_service.sequel_qualified_table_name).where(cartodb_georef_status: true).count rescue 0
 
     self.run_geocoding!(processable_rows, rows_geocoded_before)
   end
@@ -118,7 +118,7 @@ class Geocoding < Sequel::Model
     Statsd.gauge("geocodings.cache_hits", "+#{self.cache_hits}") rescue nil
     table_geocoder.process_results if state == 'completed'
     create_automatic_geocoding if automatic_geocoding_id.blank?
-    rows_geocoded_after = table.owner.in_database.select.from(table.sequel_qualified_table_name).where('cartodb_georef_status is true and the_geom is not null').count rescue 0
+    rows_geocoded_after = table_service.owner.in_database.select.from(table_service.sequel_qualified_table_name).where('cartodb_georef_status is true and the_geom is not null').count rescue 0
     self.update(state: 'finished', real_rows: rows_geocoded_after - rows_geocoded_before, used_credits: calculate_used_credits)
     self.report
   rescue => e
@@ -134,8 +134,8 @@ class Geocoding < Sequel::Model
     geocoding_logger.info(payload.to_json)
   end
 
-  def self.processable_rows(table)
-    dataset = table.owner.in_database.select.from(table.sequel_qualified_table_name)
+  def self.processable_rows(table_service)
+    dataset = table_service.owner.in_database.select.from(table_service.sequel_qualified_table_name)
     dataset = dataset.where(cartodb_georef_status: nil) if dataset.columns.include?(:cartodb_georef_status)
     dataset.count
   end # self.processable_rows
@@ -239,6 +239,12 @@ class Geocoding < Sequel::Model
       )
     end
     payload
+  end
+
+  private
+
+  def table_service
+    @table_service ||= Table.new(user_table: user_table) if user_table.present?
   end
 
 end

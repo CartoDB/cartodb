@@ -9,6 +9,7 @@ require_relative '../log'
 require_relative '../../../services/importer/lib/importer/unp'
 require_relative '../../../services/importer/lib/importer/post_import_handler'
 require_relative '../../../lib/cartodb/errors'
+require_relative '../../../lib/cartodb/import_error_codes'
 require_relative '../../../services/platform-limits/platform_limits'
 
 include CartoDB::Datasources
@@ -29,6 +30,9 @@ module CartoDB
       SYNC_NOW_TIMESPAN = 900
 
       STATE_CREATED   = 'created'
+      # Already at resque, waiting for slot
+      STATE_QUEUED   = 'queued'
+      # Actually syncing
       STATE_SYNCING   = 'syncing'
       STATE_SUCCESS   = 'success'
       STATE_FAILURE   = 'failure'
@@ -117,6 +121,8 @@ module CartoDB
 
       def enqueue
         Resque.enqueue(Resque::SynchronizationJobs, job_id: id)
+        self.state = CartoDB::Synchronization::Member::STATE_QUEUED
+        self.store
       end
 
       # @return bool
@@ -132,7 +138,8 @@ module CartoDB
       # This should be joined with data_import to stop the madness of duplicated code
       def run
         importer = nil
-        self.state    = STATE_SYNCING
+        self.state = STATE_SYNCING
+        self.store
 
         # First import is a "normal import" so still has no id, then run gets called and will get log first time
         # but we need this to fix old logs

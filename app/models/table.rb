@@ -5,7 +5,9 @@ require 'forwardable'
 require_relative './table/column_typecaster'
 require_relative './table/privacy_manager'
 require_relative './table/relator'
+require_relative './table/user_table'
 require_relative './visualization/member'
+require_relative './visualization/collection'
 require_relative './visualization/overlays'
 require_relative './visualization/table_blender'
 require_relative './overlay/member'
@@ -15,33 +17,19 @@ require_relative '../../services/importer/lib/importer/query_batcher'
 require_relative '../../services/datasources/lib/datasources/decorators/factory'
 require_relative '../../services/table-geocoder/lib/internal-geocoder/latitude_longitude'
 
-class Table < Sequel::Model(:user_tables)
+class Table
   extend Forwardable
-
-  PRIVACY_PRIVATE = 0
-  PRIVACY_PUBLIC = 1
-  PRIVACY_LINK = 2
-
-  PRIVACY_PRIVATE_TEXT = 'private'
-  PRIVACY_PUBLIC_TEXT = 'public'
-  PRIVACY_LINK_TEXT = 'link'
-
-  PRIVACY_VALUES_TO_TEXTS = {
-      PRIVACY_PRIVATE => PRIVACY_PRIVATE_TEXT,
-      PRIVACY_PUBLIC => PRIVACY_PUBLIC_TEXT,
-      PRIVACY_LINK => PRIVACY_LINK_TEXT
-  }
 
   SYSTEM_TABLE_NAMES = %w( spatial_ref_sys geography_columns geometry_columns raster_columns raster_overviews cdb_tablemetadata geometry raster )
 
+   # TODO Part of a service along with schema
   CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at the_geom }
   THE_GEOM_WEBMERCATOR = :the_geom_webmercator
   THE_GEOM = :the_geom
 
-  RESERVED_TABLE_NAMES = %W{ layergroup all }
 
   # @see services/importer/lib/importer/column.rb -> RESERVED_WORDS
-  # @see config/initializers/carto_db.rb -> POSTGRESQL_RESERVED_WORDS & RESERVED_COLUMN_NAMES
+  # @see config/initializers/carto_db.rb -> RESERVED_COLUMN_NAMES
   RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid ogc_fid }
   PUBLIC_ATTRIBUTES = {
       :id                           => :id,
@@ -62,42 +50,67 @@ class Table < Sequel::Model(:user_tables)
 
   DEFAULT_THE_GEOM_TYPE = 'geometry'
 
+  VALID_GEOMETRY_TYPES = %W{ geometry multipolygon point multilinestring }
   DEFAULT_DERIVED_VISUALIZATION_POSTFIX = 'Map'
 
-  # Associations
-  many_to_one  :map
-  many_to_many :layers, join_table: :layers_user_tables,
-                        left_key:   :user_table_id,
-                        right_key:  :layer_id,
-                        reciprocal: :user_tables
-  one_to_one   :automatic_geocoding
-  one_to_many  :geocodings
-
-  plugin :association_dependencies, map:                  :destroy,
-                                    layers:               :nullify,
-                                    automatic_geocoding:  :destroy
-  plugin :dirty
 
   def_delegators :relator, *CartoDB::TableRelator::INTERFACE
+  def_delegators :@user_table, *::UserTable::INTERFACE
+
+
+  def initialize(args = {})
+    if args[:user_table].nil?
+      @user_table = UserTable.new(args)
+    else
+      @user_table = args[:user_table]
+    end
+    @user_table.set_service(self)
+  end
+
+  # forwardable does not work well with this one
+  def layers
+    @user_table.layers
+  end
+
+  def save
+    @user_table.save
+    self
+  end
+
+  def update(args)
+    @user_table.update(args)
+    self
+  end
+
+  def reload
+    @user_table.reload
+    self
+  end
+
+  # ----------------------------------------------------------------------------
+
+
+
 
   def public_values(options = {}, viewer_user=nil)
-    selected_attrs = if options[:except].present?
-      PUBLIC_ATTRIBUTES.select { |k, v| !options[:except].include?(k.to_sym) }
-    else
-      PUBLIC_ATTRIBUTES
-    end
+    selected_attrs = options[:except].present? ?
+      PUBLIC_ATTRIBUTES.select { |k, v| !options[:except].include?(k.to_sym) } : PUBLIC_ATTRIBUTES
 
-    attrs = Hash[selected_attrs.map{ |k, v| [k, (self.send(v) rescue self[v].to_s)] }]
+    attrs = Hash[selected_attrs.map{ |k, v|
+      [k, (self.send(v) rescue self[v].to_s)]
+    }]
+
     if !viewer_user.nil? && !owner.nil? && owner.id != viewer_user.id
       attrs[:name] = "#{owner.sql_safe_database_schema}.#{attrs[:name]}"
     end
-    attrs[:table_visualization] = CartoDB::Visualization::Presenter.new(self.table_visualization, { real_privacy: true, user: viewer_user }).to_poro
+    attrs[:table_visualization] = CartoDB::Visualization::Presenter.new(self.table_visualization,
+                                                      { real_privacy: true, user: viewer_user }.merge(options)).to_poro
     attrs
   end
 
-  def default_privacy_values
-    self.owner.try(:private_tables_enabled) ? PRIVACY_PRIVATE : PRIVACY_PUBLIC
-  end #default_privacy_values
+  def default_privacy_value
+    self.owner.try(:private_tables_enabled) ? UserTable::PRIVACY_PRIVATE : UserTable::PRIVACY_PUBLIC
+  end
 
   def geometry_types_key
     @geometry_types_key ||= "#{key}:geometry_types"
@@ -130,31 +143,6 @@ class Table < Sequel::Model(:user_tables)
     schema.select { |key, value| value == 'raster' }.length > 0
   end
 
-  def_dataset_method(:search) do |query|
-    conditions = <<-EOS
-      to_tsvector('english', coalesce(name, '') || ' ' || coalesce(description, '')) @@ plainto_tsquery('english', ?) OR name ILIKE ?
-      EOS
-    where(conditions, query, "%#{query}%")
-  end
-
-  def_dataset_method(:multiple_order) do |criteria|
-    if criteria.nil? || criteria.empty?
-      order(:id)
-    else
-      order_params = criteria.map do |key, order|
-        Sequel.send(order.to_sym, key.to_sym)
-      end
-      order(*order_params)
-    end
-  end #multiple_order
-
-
-  # Ignore mass-asigment on not allowed columns
-  self.strict_param_setting = false
-
-  # Allowed columns
-  set_allowed_columns(:privacy, :tags, :description)
-
   attr_accessor :force_schema,
                 :import_from_file,
                 :import_from_url,
@@ -177,7 +165,7 @@ class Table < Sequel::Model(:user_tables)
     table = nil
     return table unless viewer_user
 
-    table_temp = Table.where(id: table_id).first
+    table_temp = UserTable.where(id: table_id).first.service
     unless table_temp.nil?
       vis = CartoDB::Visualization::Collection.new.fetch(
           user_id: viewer_user.id,
@@ -203,7 +191,7 @@ class Table < Sequel::Model(:user_tables)
           user_id = owner.id
         end
       end
-      Table.where(user_id: user_id, name: table_name).first
+      UserTable.where(user_id: user_id, name: table_name).first
     }
   end #tables_from
 
@@ -238,7 +226,7 @@ class Table < Sequel::Model(:user_tables)
     table = vis.nil? ? nil : vis.table
 
     if rx.match(id_or_name) && table.nil?
-      table_temp = Table.where(id: id_or_name).first
+      table_temp = UserTable.where(id: id_or_name).first.try(:service)
       unless table_temp.nil?
         # Make sure we're allowed to see the table
         vis = CartoDB::Visualization::Collection.new.fetch(
@@ -267,40 +255,24 @@ class Table < Sequel::Model(:user_tables)
 
   # Core validation method that is automatically called before create and save
   def validate
-    super
-
     ## SANITY CHECKS
-
-    # userid and table name tuple must be unique
-    validates_unique [:name, :user_id], :message => 'is already taken'
-
-    # tables must have a user
-    errors.add(:user_id, "can't be blank") if user_id.blank?
-
-    errors.add(
-      :name, 'is a reserved keyword, please choose a different one'
-    ) if RESERVED_TABLE_NAMES.include?(self.name) 
-
-    # privacy setting must be a sane value
-    if privacy != PRIVACY_PRIVATE && privacy != PRIVACY_PUBLIC && privacy != PRIVACY_LINK
-      errors.add(:privacy, "has an invalid value '#{privacy}'")
-    end
+    # TODO this should be fully moved to storage
 
     # Branch if owner does not have private table privileges
     unless self.owner.try(:private_tables_enabled)
       # If it's a new table and the user is trying to make it private
-      if self.new? && privacy == PRIVACY_PRIVATE
-        errors.add(:privacy, 'unauthorized to create private tables')
+      if self.new? && @user_table.privacy == UserTable::PRIVACY_PRIVATE
+        @user_table.errors.add(:privacy, 'unauthorized to create private tables')
       end
 
       # if the table exists, is private, but the owner no longer has private privileges
-      if !self.new? && privacy == PRIVACY_PRIVATE && self.changed_columns.include?(:privacy)
-        errors.add(:privacy, 'unauthorized to modify privacy status to private')
+      if !self.new? && @user_table.privacy == UserTable::PRIVACY_PRIVATE && @user_table.changed_columns.include?(:privacy)
+        @user_table.errors.add(:privacy, 'unauthorized to modify privacy status to private')
       end
 
       # cannot change any existing table to 'with link'
-      if !self.new? && privacy == PRIVACY_LINK && self.changed_columns.include?(:privacy)
-        errors.add(:privacy, 'unauthorized to modify privacy status to pubic with link')
+      if !self.new? && @user_table.privacy == UserTable::PRIVACY_LINK && @user_table.changed_columns.include?(:privacy)
+        @user_table.errors.add(:privacy, 'unauthorized to modify privacy status to pubic with link')
       end
 
     end
@@ -309,8 +281,7 @@ class Table < Sequel::Model(:user_tables)
   # runs before each validation phase on create and update
   def before_validation
     # ensure privacy variable is set to one of the constants. this is bad.
-    self.privacy ||= (owner.try(:private_tables_enabled) ? PRIVACY_PRIVATE : PRIVACY_PUBLIC)
-    super
+    @user_table.privacy ||= (owner.try(:private_tables_enabled) ? UserTable::PRIVACY_PRIVATE : UserTable::PRIVACY_PUBLIC)
   end
 
   def append_from_importer(new_table_name, new_schema_name)
@@ -413,7 +384,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def import_to_cartodb(uniname=nil)
-    @data_import ||= DataImport.where(id: data_import_id).first || DataImport.new(user_id: owner.id)
+    @data_import ||= DataImport.where(id: @user_table.data_import_id).first || DataImport.new(user_id: owner.id)
     if migrate_existing_table.present? || uniname
       @data_import.data_type = DataImport::TYPE_EXTERNAL_TABLE
       @data_import.data_source = migrate_existing_table || uniname
@@ -510,17 +481,15 @@ class Table < Sequel::Model(:user_tables)
 
   def before_create
     raise CartoDB::QuotaExceeded if owner.over_table_quota?
-    super
-    update_updated_at
 
     # The Table model only migrates now, never imports
     if migrate_existing_table.present?
-      if self.data_import_id.nil? #needed for non ui-created tables
+      if @user_table.data_import_id.nil? #needed for non ui-created tables
         @data_import  = DataImport.new(:user_id => self.user_id)
         @data_import.updated_at = Time.now
         @data_import.save
       else
-        @data_import  = DataImport.find(:id=>self.data_import_id)
+        @data_import  = DataImport.find(:id=>@user_table.data_import_id)
       end
 
       importer_result_name = import_to_cartodb(name)
@@ -553,7 +522,6 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def after_create
-    super
     self.create_default_map_and_layers
     self.create_default_visualization
 
@@ -564,8 +532,8 @@ class Table < Sequel::Model(:user_tables)
     self.new_table = true
 
     # finally, close off the data import
-    if data_import_id
-      @data_import = DataImport.find(id: data_import_id)
+    if @user_table.data_import_id
+      @data_import = DataImport.find(id: @user_table.data_import_id)
       @data_import.table_id   = id
       @data_import.table_name = name
       @data_import.save
@@ -594,17 +562,16 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def before_save
-    self.updated_at = table_visualization.updated_at if table_visualization
+    @user_table.updated_at = table_visualization.updated_at if table_visualization
   end #before_save
 
   def after_save
-    super
     manage_tags
     update_name_changes
 
-    self.map.save
-    manager = CartoDB::TablePrivacyManager.new(self)
-    manager.set_from_table_privacy(privacy)
+    @user_table.map.save
+    manager = CartoDB::TablePrivacyManager.new(@user_table)
+    manager.set_from_table_privacy(@user_table.privacy)
     manager.propagate_to(table_visualization)
     if privacy_changed?
       manager.propagate_to_varnish
@@ -646,7 +613,7 @@ class Table < Sequel::Model(:user_tables)
 
   def create_default_map_and_layers
     m = ::Map.create(::Map::DEFAULT_OPTIONS.merge(table_id: self.id, user_id: self.user_id))
-    self.map_id = m.id
+    @user_table.map_id = m.id
     base_layer = ::Layer.new(Cartodb.config[:layer_opts]['base'])
     m.add_layer(base_layer)
 
@@ -668,9 +635,9 @@ class Table < Sequel::Model(:user_tables)
       name:         self.name,
       map_id:       self.map_id,
       type:         CartoDB::Visualization::Member::TYPE_CANONICAL,
-      description:  self.description,
-      tags:         (tags.split(',') if tags),
-      privacy:      PRIVACY_VALUES_TO_TEXTS[default_privacy_values],
+      description:  @user_table.description,
+      tags:         (@user_table.tags.split(',') if @user_table.tags),
+      privacy:      UserTable::PRIVACY_VALUES_TO_TEXTS[default_privacy_value],
       user_id:      self.owner.id,
       kind:         kind
     )
@@ -687,7 +654,7 @@ class Table < Sequel::Model(:user_tables)
     map = blender.blend
     vis = CartoDB::Visualization::Member.new(
       {
-        name:     [self.name, DEFAULT_DERIVED_VISUALIZATION_POSTFIX].join(' '),
+        name:     beautify_name([self.name, DEFAULT_DERIVED_VISUALIZATION_POSTFIX].join(' ')),
         map_id:   map.id,
         type:     CartoDB::Visualization::Member::TYPE_DERIVED,
         privacy:  blender.blended_privacy,
@@ -706,11 +673,9 @@ class Table < Sequel::Model(:user_tables)
     end
     @dependent_visualizations_cache     = dependent_visualizations.to_a
     @non_dependent_visualizations_cache = non_dependent_visualizations.to_a
-    super
   end
 
   def after_destroy
-    super
     # Delete visualization BEFORE deleting metadata, or named map won't be destroyed properly
     @table_visualization.delete(from_table_deletion=true) if @table_visualization
     Tag.filter(:user_id => user_id, :table_id => id).delete
@@ -721,7 +686,6 @@ class Table < Sequel::Model(:user_tables)
     @non_dependent_visualizations_cache.each do |visualization|
       visualization.unlink_from(self)
     end
-    delete_tile_style
     remove_table_from_user_database unless keep_user_database_table
     synchronization.delete if synchronization
   end
@@ -830,55 +794,24 @@ class Table < Sequel::Model(:user_tables)
 
   def name=(value)
     value = value.downcase if value
-    return if value == self[:name] || value.blank?
+    return if value == @user_table[:name] || value.blank?
     new_name = get_valid_name(value, current_name: self.name)
 
     # Do not keep track of name changes until table has been saved
-    @name_changed_from = self.name if !new? && self.name.present?
+    @name_changed_from = @user_table.name if !new? && @user_table.name.present?
 
     self.invalidate_varnish_cache if !owner.nil? && owner.database_name
-    self[:name] = new_name
+    @user_table[:name] = new_name
   end
-
-  def tags=(value)
-    return unless value
-    self[:tags] = value.split(',').map{ |t| t.strip }.compact.delete_if{ |t| t.blank? }.uniq.join(',')
-  end
-
-  def private?
-    self.privacy == PRIVACY_PRIVATE
-  end #private?
-
-  def public?
-    self.privacy == PRIVACY_PUBLIC
-  end #public?
-
-  def public_with_link_only?
-    self.privacy == PRIVACY_LINK
-  end #public_with_link_only?
 
   def set_default_table_privacy
-    self.privacy ||= default_privacy_values
+    @user_table.privacy ||= default_privacy_value
     save
   end
 
-  # enforce standard format for this field
-  def privacy=(value)
-    case value
-      when PRIVACY_PUBLIC_TEXT.upcase, PRIVACY_PUBLIC, PRIVACY_PUBLIC.to_s
-        self[:privacy] = PRIVACY_PUBLIC
-      when PRIVACY_LINK_TEXT.upcase, PRIVACY_LINK, PRIVACY_LINK.to_s
-        self[:privacy] = PRIVACY_LINK
-      when PRIVACY_PRIVATE_TEXT.upcase, PRIVACY_PRIVATE, PRIVACY_PRIVATE.to_s
-        self[:privacy] = PRIVACY_PRIVATE
-      else
-        raise "Invalid privacy value '#{value}'"
-    end
-  end #privacy=
-
   def privacy_changed?
-    previous_changes.keys.include?(:privacy)
-  end #privacy_changed?
+    @user_table.previous_changes.keys.include?(:privacy)
+  end
 
   def key
     key ||= "rails:#{owner.database_name}:#{owner.database_schema}.#{name}"
@@ -1082,7 +1015,8 @@ class Table < Sequel::Model(:user_tables)
     column_name = (new_name.present? ? new_name : old_name)
     convert_column_datatype(owner.in_database, name, column_name, options[:type])
     column_type = column_type_for(column_name)
-    self.invalidate_varnish_cache
+    invalidate_varnish_cache
+    update_cdb_tablemetadata
     { name: column_name, type: column_type, cartodb_type: column_type.convert_to_cartodb_type }
   end #modify_column!
 
@@ -1257,37 +1191,13 @@ class Table < Sequel::Model(:user_tables)
       else
         value !~ /^multi/ ? "multi#{value.downcase}" : value.downcase
     end
-    raise CartoDB::InvalidGeomType.new(self.the_geom_type_value) unless CartoDB::VALID_GEOMETRY_TYPES.include?(self.the_geom_type_value)
+    raise CartoDB::InvalidGeomType.new(self.the_geom_type_value) unless VALID_GEOMETRY_TYPES.include?(self.the_geom_type_value)
   end
 
   # if the table is already renamed, we just need to update the name attribute
   def synchronize_name(name)
     self[:name] = name
     save
-  end
-
-  def self.find_all_by_user_id_and_tag(user_id, tag_name)
-    fetch("select user_tables.*,
-                    array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
-                        from user_tables, tags
-                        where user_tables.user_id = ?
-                          and user_tables.id = tags.table_id
-                          and tags.name = ?
-                        order by user_tables.id DESC", user_id, tag_name)
-  end
-
-  def self.find_by_identifier(user_id, identifier)
-    col = 'name'
-
-    table = fetch(%Q{
-      SELECT *
-      FROM user_tables
-      WHERE user_tables.user_id = ?
-      AND user_tables.#{col} = ?},
-      user_id, identifier
-    ).first
-    raise RecordNotFound if table.nil?
-    table
   end
 
   def oid
@@ -1393,7 +1303,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def owner
-    @owner ||= User.where(id: self.user_id).first
+    @owner ||= User[self.user_id]
   end
 
   def table_style
@@ -1408,21 +1318,17 @@ class Table < Sequel::Model(:user_tables)
     nil
   end
 
-  def privacy_text
-    PRIVACY_VALUES_TO_TEXTS[self.privacy].upcase
-  end #privacy_text
-
   # Simplify certain privacy values for the vizjson
   def privacy_text_for_vizjson
-    privacy == PRIVACY_LINK ? PRIVACY_PUBLIC_TEXT.upcase : privacy_text
-  end #privacy_text_for_vizjson
+    privacy == UserTable::PRIVACY_LINK ? 'PUBLIC' : @user_table.privacy_text
+  end
 
   def relator
     @relator ||= CartoDB::TableRelator.new(Rails::Sequel.connection, self)
   end #relator
 
   def set_table_id
-    self.table_id = self.get_table_id
+    @user_table.table_id = self.get_table_id
   end # set_table_id
 
   def get_table_id
@@ -1454,11 +1360,11 @@ class Table < Sequel::Model(:user_tables)
       propagate_namechange_to_table_vis unless errored
 
       unless errored
-        if layers.blank?
+        if @user_table.layers.blank?
           exception_to_raise = CartoDB::TableError.new("Attempt to rename table without layers #{qualified_table_name}")
           CartoDB::notify_exception(exception_to_raise, user: owner)
         else
-          layers.each do |layer|
+          @user_table.layers.each do |layer|
             layer.rename_table(@name_changed_from, name).save
           end
         end
@@ -1473,11 +1379,11 @@ class Table < Sequel::Model(:user_tables)
 
   # @see https://github.com/jeremyevans/sequel#qualifying-identifiers-columntable-names
   def sequel_qualified_table_name
-    "#{owner.database_schema}__#{self.name}".to_sym
+    "#{owner.database_schema}__#{@user_table.name}".to_sym
   end
 
   def qualified_table_name
-    "\"#{owner.database_schema}\".\"#{self.name}\""
+    "\"#{owner.database_schema}\".\"#{@user_table.name}\""
   end
 
   def database_schema
@@ -1515,11 +1421,16 @@ class Table < Sequel::Model(:user_tables)
 
   private
 
+  def beautify_name(name)
+    return name unless name
+    name.gsub('_', ' ').split.map(&:capitalize).join(' ')
+  end
+
   def query_geometry_types
     owner.in_database[ %Q{
       SELECT DISTINCT ST_GeometryType(the_geom) FROM (
         SELECT the_geom
-        FROM "#{self.name}"
+        FROM #{qualified_table_name}
         WHERE (the_geom is not null) LIMIT 10
       ) as foo
     }].all.map {|r| r[:st_geometrytype] }
@@ -1531,12 +1442,8 @@ class Table < Sequel::Model(:user_tables)
 
   def update_cdb_tablemetadata
     owner.in_database(as: :superuser).run(%Q{
-      SELECT CDB_TableMetadataTouch('#{table_id}')
+      SELECT CDB_TableMetadataTouch('#{@user_table.table_id}')
     })
-  end
-
-  def update_updated_at
-    self.updated_at = Time.now
   end
 
   def get_valid_name(name, options={})
@@ -1570,7 +1477,7 @@ class Table < Sequel::Model(:user_tables)
 
     return name if name == options[:current_name]
 
-    name = "#{name}_t" if RESERVED_TABLE_NAMES.include?(name)
+    name = "#{name}_t" if UserTable::RESERVED_TABLE_NAMES.include?(name)
 
     database_schema = options[:database_schema].present? ? options[:database_schema] : 'public'
 
@@ -1594,11 +1501,16 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def get_new_column_type(invalid_column)
+    next_cartodb_type = {
+      "number" => "double precision",
+      "string" => "text"
+    }
+
     flatten_cartodb_schema = schema.flatten
     cartodb_column_type = flatten_cartodb_schema[flatten_cartodb_schema.index(invalid_column.to_sym) + 1]
     flatten_schema = schema(cartodb_types: false).flatten
     flatten_schema[flatten_schema.index(invalid_column.to_sym) + 1]
-    CartoDB::NEXT_TYPE[cartodb_column_type]
+    next_cartodb_type[cartodb_column_type]
   end
 
   def set_the_geom_column!(type = nil)
@@ -1642,12 +1554,12 @@ class Table < Sequel::Model(:user_tables)
       end
     end
 
-    raise "Error: unsupported geometry type #{type.to_s.downcase} in CartoDB" unless CartoDB::VALID_GEOMETRY_TYPES.include?(type.to_s.downcase)
+    raise "Error: unsupported geometry type #{type.to_s.downcase} in CartoDB" unless VALID_GEOMETRY_TYPES.include?(type.to_s.downcase)
 
     type = type.to_s.upcase
 
     self.the_geom_type = type.downcase
-    save_changes unless new?
+    @user_table.save_changes unless @user_table.new?
   end
 
   def create_table_in_database!
@@ -1704,10 +1616,10 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def manage_tags
-    if self[:tags].blank?
+    if @user_table[:tags].blank?
       Tag.filter(:user_id => user_id, :table_id => id).delete
     else
-      tag_names = tags.split(',')
+      tag_names = @user_table.tags.split(',')
       table_tags = Tag.filter(:user_id => user_id, :table_id => id).all
       unless table_tags.empty?
         # Remove tags that are not in the new names list
@@ -1727,39 +1639,6 @@ class Table < Sequel::Model(:user_tables)
         new_tag.save
       end
     end
-  end
-
-  def delete_tile_style
-    if owner.organization.nil?
-      tile_request('DELETE', "/tiles/#{self.name}/style?map_key=#{owner.api_key}")
-    else
-      tile_request('DELETE', "/tiles/#{qualified_table_name}/style?map_key=#{owner.api_key}")
-    end
-  rescue => exception
-    CartoDB::Logger.info 'tilestyle#delete error', "#{exception.inspect}"
-  end
-
-  def tile_request(request_method, request_uri, form = {})
-    uri  = "#{owner.username}.#{Cartodb.config[:tiler]['internal']['domain']}"
-    port = Cartodb.config[:tiler]['internal']['port'] || 443
-    tiler_ip = Cartodb.config[:tiler]['internal']['host'].blank? ? uri : Cartodb.config[:tiler]['internal']['host']
-    http_req = Net::HTTP.new tiler_ip, port
-    http_req.use_ssl = Cartodb.config[:tiler]['internal']['protocol'] == 'https' ? true : false
-    http_req.verify_mode = OpenSSL::SSL::VERIFY_NONE
-    request_headers = {'Host' => uri}
-    case request_method
-      when 'GET'
-        http_res = http_req.request_get(request_uri, request_headers)
-      when 'POST'
-        http_res = http_req.request_post(request_uri, URI.encode_www_form(form), request_headers)
-      when 'DELETE'
-        extra_delete_headers = {'Depth' => 'Infinity'}
-        http_res = http_req.delete(request_uri, request_headers.merge(extra_delete_headers))
-      else
-        http_res = nil
-    end
-    raise "#{http_res.inspect} #{uri}:#{port}" unless http_res.is_a?(Net::HTTPOK)
-    http_res
   end
 
   def add_table_to_stats

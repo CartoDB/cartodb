@@ -25,22 +25,11 @@
 $sBorderCompensation: 2px;
 $opacityTransition: 250ms;
 
-.MapCard {
-  position: relative;
-  width: $sCard-width - 10px - $sBorderCompensation;
-  border: 1px solid #DBDBDB;
-  background-color: $cStructure-mainBkg;
-  border-radius: $sCard-borderRadius;
-  margin: 0 auto;
-}
-.MapCard-title {
-  width: 100%; // required for child text-overflow to work as expected in FF
-}
-.MapCard-desc {
-  height: 2 * $sLineHeight-normal;
+@mixin line-clamp($lines) {
+  height: $lines * $sLineHeight-normal;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: $lines;
   overflow: hidden;
   text-overflow: ellipsis;
   &:after {
@@ -54,18 +43,45 @@ $opacityTransition: 250ms;
     @include background-horizontal(rgba(255,255,255,0), rgba(255,255,255,1));
   }
 }
+
+.MapCard {
+  position: relative;
+  width: $sCard-width - 10px - $sBorderCompensation;
+  border: 1px solid #DBDBDB;
+  background-color: $cStructure-mainBkg;
+  border-radius: $sCard-borderRadius;
+  margin: 0 auto;
+}
+.MapCard-title {
+  width: 100%; // required for child text-overflow to work as expected in FF
+}
+.MapCard-desc {
+  @include line-clamp(2);
+}
+.MapCard-desc--fake {
+  display: block;
+  width: 100%;
+  padding: 0 30px;
+  text-align: center;
+  margin-bottom: $sMargin-element;
+}
+.MapCard-tags {
+  @include line-clamp(1);
+}
 .MapCard--selectable{
   &:hover {
     background-color: $cCard-hoverFill;
     border-color: $cCard-hoverBorder;
-    .MapCard-desc:after {
+    .MapCard-desc:after,
+    .MapCard-tags:after {
       @include background-horizontal(rgba(255,255,255,0), $cCard-hoverFill);
     }
   }
   &.is-selected {
     background-color: $cCard-selectedFill;
     border-color: $cCard-selectedBorder;
-    .MapCard-desc:after {
+    .MapCard-desc:after,
+    .MapCard-tags:after {
       @include background-horizontal(rgba(255,255,255,0), $cCard-selectedFill);
     }
   }
@@ -101,12 +117,47 @@ $opacityTransition: 250ms;
   z-index:2;
 }
 .MapCard-header--fake {
+  @include display-flex();
+  @include justify-content(center);
+  @include align-items(center);
   background: $cStructure-mainBkg;
 }
 .MapCard-header--fake:after {
   left: $sMargin-element;
   right: $sMargin-element;
 }
+.MapCard-headerFakeIcon {
+  display: block;
+  width: 48px;
+  height: 48px;
+  border-radius: 50px;
+  line-height: 48px!important; // Overwritten by icon font style
+  font-size: 20px;
+  text-align:center;
+  border: 1px solid #EEE;
+  color: #EEE;
+  background: transparent;
+}
+
+.MapCard-headerFakeIcon.iconFont-People {
+  line-height: 35px!important;
+  font-size: 30px;
+}
+.MapCard-headerFakeIcon.iconFont-Snake {
+  line-height: 33px!important;
+  font-size: 30px;
+}
+.MapCard-headerFakeIcon.iconFont-Points {
+  line-height: 38px!important;
+  font-size: 24px;
+}
+.MapCard-headerFakeIcon.iconFont-Notes { font-size: 26px }
+.MapCard-headerFakeIcon.iconFont-Mountain {
+  font-size: 28px;
+  line-height: 40px!important
+}
+.MapCard-headerFakeIcon.iconFont-Rectangles { font-size: 22px }
+
 .MapCard-headerGraph {
   position:absolute;
   width: 70px;
@@ -167,7 +218,7 @@ $opacityTransition: 250ms;
   position: relative;
   @include display-flex();
   @include justify-content(space-between, justify);
-  @include align-items(center, center);
+  @include align-items(center);
   @include flex-direction(column);
   border-radius: $sCard-borderRadius;
   padding: $sMargin-element;
@@ -189,20 +240,25 @@ $opacityTransition: 250ms;
 .MapCard-contentBodyRow--flex {
   @include display-flex();
   @include justify-content(space-between, justify);
-  @include align-items(center, center);
+  @include align-items(center);
   @include flex-wrap(nowrap);
+}
+.MapCard-contentBodyRow--fake {
+  @include display-flex();
+  @include justify-content(center);
+  @include align-items(center);
 }
 .MapCard-contentFooter {
   @include display-flex();
   @include justify-content(space-between, justify);
-  @include align-items(center, center);
+  @include align-items(center);
   width: 100%;
   padding-top: $sMargin-elementInline;
   border-top: 1px solid $cStructure-softLine;
 }
 .MapCard-contentFooterDetails--left {
   @include display-flex();
-  @include align-items(center, center);
+  @include align-items(center);
   @include justify-content(space-between, justify);
 }
 .MapCard-contentFooterDetails--left > *:not(:last-child) {

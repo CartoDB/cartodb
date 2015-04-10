@@ -75,18 +75,18 @@ module CartoDB
       end
 
       def user
-        @user ||= User.where(id: @user_id).first unless @user_id.nil?
+        @user ||= User[@user_id] unless @user_id.nil?
       end
 
       def table
         return nil unless defined?(::Table)
         return nil if map_id.nil?
-        @table ||= ::Table.where(map_id: map_id).first 
+        @table ||= ::UserTable.from_map_id(map_id).try(:service)
       end
 
       def related_tables
         @related_tables ||= layers(:carto_and_torque)
-          .flat_map(&:affected_tables).uniq
+          .flat_map{|layer| layer.affected_tables.map{|t| t.service}}.uniq
       end
 
       def layers(kind)

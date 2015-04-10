@@ -13,8 +13,12 @@ module Concerns
 
     def update_in_central
       return true unless sync_data_with_cartodb_central?
-      if self.is_a?(User) && organization.present?
-        cartodb_central_client.update_organization_user(organization.name, username, allowed_attributes_to_central(:update))
+      if self.is_a?(User)
+        if organization.present?
+          cartodb_central_client.update_organization_user(organization.name, username, allowed_attributes_to_central(:update))
+        else
+          cartodb_central_client.update_user(username, allowed_attributes_to_central(:update))
+        end
       elsif self.is_a?(Organization)
         cartodb_central_client.update_organization(name, allowed_attributes_to_central(:update))
       end
@@ -23,11 +27,15 @@ module Concerns
 
     def delete_in_central
       return true unless sync_data_with_cartodb_central?
-      if self.is_a?(User) && organization.present?
-        if self.organization.owner && self.organization.owner != self
-          cartodb_central_client.delete_organization_user(organization.name, username)
+      if self.is_a?(User)
+        if organization.nil?
+          cartodb_central_client.delete_user(self.username)
         else
-          raise "Can't destroy the organization owner"
+          if self.organization.owner && self.organization.owner != self
+            cartodb_central_client.delete_organization_user(organization.name, username)
+          else
+            raise "Can't destroy the organization owner"
+          end
         end
       end
       return true

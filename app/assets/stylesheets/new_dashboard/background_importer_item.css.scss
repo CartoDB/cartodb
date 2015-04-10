@@ -13,6 +13,11 @@
   margin: 0 20px;
   border-bottom: 1px solid $cStructure-mainLine;
 }
+.ImportItem--sticky {
+  padding: 0 20px;
+  margin: 0;
+  background: $cCard-hoverFill; 
+}
 .ImportItem:last-child { border: none }
 .ImportItem-text {
   display: block;
@@ -22,6 +27,9 @@
   overflow: hidden;
   font-size: $sFontSize-normal;
   color: $cTypography-paragraphs;
+}
+.ImportItem-text.is-long {
+  width: 380px;
 }
 .ImportItem-textState {
   text-transform: capitalize;
@@ -43,8 +51,9 @@
 .ImportItem-closeButton {
   width: 24px;
   height: 24px;
-  line-height: 24px;
-  border: 1px solid #CCC;
+  margin-left: 5px;
+  line-height: 26px;
+  border: 1px solid $cNavButton-default;
   border-radius: 22px;
   text-align: center;
   background: transparent;
@@ -55,8 +64,8 @@
   color: $cTypography-help;
 }
 .ImportItem-closeButton:hover {
-  border-color: $cTypography-secondary;
-  .ImportItem-closeButtonIcon { color: $cTypography-secondary }
+  border-color: $cNavButton-active;
+  .ImportItem-closeButtonIcon { color: $cNavButton-active }
 }
 .ImportItem-showButton {
   height: 24px;
@@ -67,7 +76,7 @@
   border-radius: 40px;
   font-size: $sFontSize-smallUpperCase;
   color: $cTypography-paragraphs;
-  
+
   &:hover {
     border-color: $cTypography-paragraphs;
     color: $cTypography-paragraphs;

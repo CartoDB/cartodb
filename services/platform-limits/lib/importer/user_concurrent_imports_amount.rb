@@ -4,6 +4,8 @@ module CartoDB
   module PlatformLimits
     module Importer
 
+      UNLIMITED_STATEMENT_TIMEOUT_TTL = 30*24*60*60*1000
+
       # If unspecified at constructor, will default to this value to add a threshold to the key TTL
       DEFAULT_EXPIRE_TTL_THRESHOLD_PERCENT = 0.2
 
@@ -38,15 +40,17 @@ module CartoDB
           unless user.respond_to?(:database_timeout)
             raise ArgumentError.new('Supplied user object must have :database_timeout')
           end
-          unless user.database_timeout.is_a?(Integer) && user.database_timeout > 0
-            raise ArgumentError.new('invalid user database_timeout (must be positive integer)')
+          unless user.database_timeout.is_a?(Integer)
+            raise ArgumentError.new('invalid user database_timeout (must be integer)')
           end
+
+          timeout_to_use = user.database_timeout == 0 ? UNLIMITED_STATEMENT_TIMEOUT_TTL : user.database_timeout
 
           redis_options = options.fetch(:redis, {})
           @redis = redis_options.fetch(:db, nil)
           raise ArgumentError.new('Must supply redis connection object') if @redis.nil?
 
-          @expire_ttl = ( user.database_timeout / 1000 *
+          @expire_ttl = ( timeout_to_use / 1000 *
             (1.0 + redis_options.fetch(:expire_ttl_threshold_percent, DEFAULT_EXPIRE_TTL_THRESHOLD_PERCENT)) ).to_i
         end
 

@@ -14,8 +14,7 @@ module CartoDB
       KML_MULTI_RE    = /<Line|<Polygon/
       KML_POINT_RE    = /<Point>/
       DEFAULT_SCHEMA  = 'cdb_importer'
-      # @see app/models/table.rb -> RESERVED_COLUMN_NAMES
-      # @see config/initializers/carto_db.rb -> POSTGRESQL_RESERVED_WORDS & RESERVED_COLUMN_NAMES
+      # @see config/initializers/carto_db.rb -> POSTGRESQL_RESERVED_WORDS
       RESERVED_WORDS  = %w{ ALL ANALYSE ANALYZE AND ANY ARRAY AS ASC ASYMMETRIC
                             AUTHORIZATION BETWEEN BINARY BOTH CASE CAST CHECK
                             COLLATE COLUMN CONSTRAINT CREATE CROSS CURRENT_DATE

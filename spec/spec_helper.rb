@@ -20,10 +20,6 @@ RSpec.configure do |config|
     CartoDB::RedisTest.up
   end
 
-  config.before(:each) do
-    Table.any_instance.stubs(:tile_request).returns true
-  end
-
   config.before(:all) do
     $tables_metadata.flushdb
     $api_credentials.flushdb

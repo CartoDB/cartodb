@@ -4,14 +4,19 @@
 <%= content_for(:js) do %>
   <script type="text/javascript">
     var username = "<%= @user.username %>";
-    var config = <%=raw frontend_config.html_safe %>;
-    var user_data = <%= raw @user.data.to_json.html_safe %>;
+    var config = <%= safe_js_object frontend_config %>;
+    var authenticity_token = "<%= form_authenticity_token %>";
+    var user_data = <%= safe_js_object @user.data.to_json %>;
+    var can_change_email = <%= @user.can_change_email %>;
+    var upgrade_url = <%= cartodb_com_hosted? ? 'undefined' : "'#{current_user.upgrade_url(request.protocol)}'" %>;
+    // Necessary for Google + actions
+    var access_token = '';
+    <% if (@google_plus_config.present?) %>
+      document.domain = '<%= @google_plus_config.domain %>';
+      var iframe_src = '<%= @google_plus_config.iframe_src %>';
+    <% end %>
   </script>
   <%= javascript_include_tag 'cdb.js', 'models.js', 'account_templates.js', 'account_deps.js', 'account.js' -%>
-<% end %>
-<%= content_for(:css) do %>
-  <%= render 'shared/lato_font' %>
-  <%= stylesheet_link_tag 'cartodb.css', 'new_common.css',  :media => 'all' %>
 <% end %>
 
 <%= render :partial => 'shared/new_flash_message' %>
@@ -21,7 +26,7 @@
 
   <div class="CredentialsContent">
     <div class="u-inner">
-      <%= form_for @user, url: account_update_user_path(user_domain: params[:user_domain]), :class => "Form" do |f| %>
+      <%= form_for @user, url: CartoDB.url(self, 'account_update_user', {}, current_user), :class => "Form" do |f| %>
         <%= csrf_meta_tags %>
 
         <div class="Form-title">
@@ -45,30 +50,32 @@
             <label class="Form-label">Email</label>
           </div>
           <div class="Form-rowData">
-            <%= f.text_field :email, :class => "Form-input Form-input--long #{ 'Form-input--error' if @user.errors[:email].present? }" %>
+            <%= f.text_field :email, class: "Form-input Form-input--long #{ 'Form-input--error' if @user.errors[:email].present? } #{ 'is-disabled' unless @user.can_change_email }", readonly: !@user.can_change_email %>
           </div>
           <div class="Form-rowInfo">
-            <% if (@user.errors[:email].present?) %>
+            <% if @user.errors[:email].present? %>
               <p class="Form-rowInfoText Form-rowInfoText--error">Email not valid</p>
-            <% else %>
-              <p class="Form-rowInfoText">You enter through <%= link_to 'here', @user.public_url %></p>
+            <% elsif @user.google_sign_in %>
+              <p class="Form-rowInfoText <%= 'Form-rowInfoText--multipleLines' unless @user.should_display_old_password? %>">Your account is linked to your Google account. <% unless @user.should_display_old_password? %> You can change the email if you set a password.</p> <% end %>
             <% end %>
           </div>
         </div>
 
-        <div class="Form-row">
-          <div class="Form-rowLabel">
-            <label class="Form-label">Old password</label>
+        <% if @user.should_display_old_password? %>
+          <div class="Form-row">
+            <div class="Form-rowLabel">
+              <label class="Form-label">Old password</label>
+            </div>
+            <div class="Form-rowData">
+              <%= f.password_field :old_password, :class => "Form-input Form-input--long #{ 'Form-input--error' if @user.errors[:old_password].present? }" %>
+            </div>
+            <div class="Form-rowInfo">
+              <% if (@user.errors[:old_password].present?) %>
+                <p class="Form-rowInfoText Form-rowInfoText--error"><%= @user.errors[:old_password].first%></p>
+              <% end %>
+            </div>
           </div>
-          <div class="Form-rowData">
-            <%= f.password_field :old_password, :class => "Form-input Form-input--long #{ 'Form-input--error' if @user.errors[:old_password].present? }" %>
-          </div>
-          <div class="Form-rowInfo">
-            <% if (@user.errors[:old_password].present?) %>
-              <p class="Form-rowInfoText Form-rowInfoText--error"><%= @user.errors[:old_password].first%></p>
-            <% end %>
-          </div>
-        </div>
+        <% end %>
 
         <div class="Form-row">
           <div class="Form-rowLabel">
@@ -96,7 +103,16 @@
         </div>
 
         <div class="Form-footer">
-          <p class="Form-footerText"></p>
+          <% if !current_user.organization_owner? -%>
+            <button type="button" class="Button Button--secondary js-deleteAccount">
+              <span>Delete my account</span>
+            </button>
+          <% else %>
+            <p class="Form-footerText">
+              <i class="iconFont iconFont-Info Form-footerIcon"></i>
+              You can't delete your account because you are admin of an organization
+            </p>
+          <% end %>
           <%= button_tag(type: 'submit', class: 'Button Button--main') do %>
             <% content_tag(:span, 'Save changes') %>
           <% end %>

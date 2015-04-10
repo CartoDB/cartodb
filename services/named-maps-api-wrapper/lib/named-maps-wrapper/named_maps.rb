@@ -16,7 +16,7 @@ module CartoDB
                 domain = "#{@username}.#{tiler_config[:domain]}"
                 host_ip = Cartodb.config[:tiler]['internal']['host'].blank? ? domain : Cartodb.config[:tiler]['internal']['host']
                 @host = "#{tiler_config[:protocol]}://#{host_ip}:#{tiler_config[:port]}"
-                @url = [ @host, 'tiles', 'template' ].join('/')
+                @url = [ @host, 'api', 'v1', 'map', 'named' ].join('/')
                 @headers = { 
                   'content-type' => 'application/json',
                   'host' => "#{@username}.#{tiler_config[:domain]}"

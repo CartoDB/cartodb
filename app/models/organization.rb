@@ -51,7 +51,33 @@ class Organization < Sequel::Model
   def before_save
     super
     self.updated_at = Time.now
-    raise errors unless valid?
+    raise errors.join('; ') unless valid?
+  end
+
+  # INFO: replacement for destroy because destroying owner triggers
+  # organization destroy
+  def destroy_cascade
+    destroy_permissions
+    destroy_non_owner_users
+    self.owner.destroy
+  end
+
+  def destroy_permissions
+    self.users.each { |user|
+      CartoDB::Permission.where(owner_id: user.id).each { |permission|
+        permission.destroy
+      }
+    }
+  end
+
+  def destroy_non_owner_users
+    non_owner_users.each { |u|
+      u.destroy
+    }
+  end
+
+  def non_owner_users
+    self.users.select { |u| u.id != self.owner.id }
   end
 
   ##

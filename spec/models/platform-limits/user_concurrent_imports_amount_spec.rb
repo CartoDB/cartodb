@@ -9,7 +9,7 @@ include CartoDB
 # NOTES:
 # - Does not check responses from the windshaft API endpoint, stubs them
 # - Typhoeus allows stubbing, but no easy way of knowing how many times (if any) you called it
-describe CartoDB::NamedMapsWrapper::NamedMaps do
+describe CartoDB::PlatformLimits::Importer::UserConcurrentImportsAmount do
 
   before(:all) do
     @user = create_user( :quota_in_bytes => 524288000, :table_quota => 100 )

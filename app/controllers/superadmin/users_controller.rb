@@ -7,12 +7,12 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   layout 'application'
 
   def show
-    respond_with(@user.data(:extended => true))
+    respond_with(@user.data({:extended => true}))
   end
 
   def index
     @users = (params[:overquota].present? ? User.overquota(0.20) : User.all)
-    respond_with(:superadmin, @users.map(&:data))
+    respond_with(:superadmin, @users.map { |user| user.data })
   end
 
   def create
@@ -39,6 +39,9 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   def destroy
     @user.destroy
     respond_with(:superadmin, @user)
+  rescue => e
+    Rollbar.report_message('Error destroying user', 'error', { error: e.inspect, user: @user.inspect })
+    respond_with(:superadmin, @user, status: 500)
   end
 
   def dump

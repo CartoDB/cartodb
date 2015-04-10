@@ -4,20 +4,18 @@
 <%= content_for(:js) do -%>
   <script type="text/javascript">
     var username = "<%= current_user.username %>";
-    var user_data = <%=raw current_user.data.to_json.html_safe %>;
-    var config = <%=raw frontend_config.html_safe %>;
+    var user_data = <%= safe_js_object current_user.data.to_json %>;
+    var config = <%= safe_js_object frontend_config %>;
     var upgrade_url = <%= cartodb_com_hosted? ? 'undefined' : "'#{current_user.upgrade_url(request.protocol)}'" %>;
     var isFirstTimeViewingDashboard = <%= (!!@first_time).to_s %>;
     var isJustLoggedIn = <%= (!!@just_logged_in).to_s %>;
     var mixpanel_token = "<%= Cartodb.config[:mixpanel]['token'] if Cartodb.config[:mixpanel].present? %>";
-    var defaultFallbackMapBaselayer = <%= raw Cartodb.config[:basemaps].present? ? Cartodb.config[:basemaps]['CartoDB']['positron_rainbow'].to_json : '{}' %>;
   </script>
   <%= javascript_include_tag 'cdb.js', 'models.js', 'new_dashboard_templates.js', 'new_dashboard_deps.js', 'new_dashboard.js' -%>
 <% end %>
 
 <%= content_for(:css) do -%>
-  <%= render 'shared/lato_font' %>
-  <%= stylesheet_link_tag 'cartodb.css', 'new_common.css', 'new_dashboard.css', :media => 'all' %>
+  <%= stylesheet_link_tag 'new_dashboard.css', :media => 'all' %>
 <% end %>
 
 <div class="ContentController" id="content-controller">

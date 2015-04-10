@@ -6,8 +6,11 @@
 $selectedItemPaddingOnSides: $sMargin-element - 1px;
 $opacityTransition: 250ms;
 
+$bannedColor: #E1A7A5;
+
 .DatasetsList {
   position: relative;
+  width: 100%;
   @include display-flex();
   @include flex-direction(column);
   margin: 0 auto;
@@ -19,7 +22,7 @@ $opacityTransition: 250ms;
   @include display-flex();
   width: 100%;
   padding: $sMargin-group 0;
-  border-bottom: 1px solid $cStructure-mainLine;
+  border-bottom: 1px solid $cStructure-softLine;
 }
 .DatasetsList-item--selectable:hover,
 .DatasetsList-item--selectable.is--selected {
@@ -68,7 +71,7 @@ $opacityTransition: 250ms;
 // Position of the geometry type icon
 @mixin geometry-type-icon($x-pos: 0, $y-pos: 0) {
   @include background(image-url('layout/geometry-types-icons.png') no-repeat $x-pos $y-pos);
-  @include image-2x("layout/geometry-types-icons@x2.png", 200px, 80px, ($x-pos), ($y-pos));
+  @include image-2x("layout/geometry-types-icons@2x.png", 200px, 120px, ($x-pos), ($y-pos));
 }
 
 .DatasetsList-itemCategory {
@@ -95,7 +98,7 @@ $opacityTransition: 250ms;
   .DatasetsList-itemCategory.is--lineDataset { @include geometry-type-icon(-40px, -40px) }
   .DatasetsList-itemCategory.is--polygonDataset { @include geometry-type-icon(-80px, -40px) }
   .DatasetsList-itemCategory.is--pointDataset { @include geometry-type-icon(0, -40px) }
-  .DatasetsList-itemCategory.is--rasterDataset { @include geometry-type-icon(-120px, -40px) }  
+  .DatasetsList-itemCategory.is--rasterDataset { @include geometry-type-icon(-120px, -40px) }
 }
 
 .DatasetsList-itemStatus {
@@ -113,6 +116,9 @@ $opacityTransition: 250ms;
   text-align: center;
   z-index: 2;
 }
+.DatasetsList-itemStatus.iconFont-Book { font-size: 12px }
+.DatasetsList-itemStatus.is-public { color: $cHighlight-positive }
+.DatasetsList-itemStatus.is-banned { color: $bannedColor }
 .DatasetsList-itemStatus.is-failure { color: $cHighlight-negative }
 .DatasetsList-itemStatus.is-success { color: $cHighlight-positive }
 .DatasetsList-itemInfo {
@@ -156,33 +162,76 @@ $opacityTransition: 250ms;
   @include flex-wrap(wrap);
   margin-bottom: 2 * $sMargin-min;
 }
-.DatasetsList-itemMeta > * {
-  width: 50%;
-  text-align: left;
-  white-space: nowrap;
-}
-.DatasetsList-itemMeta > *:nth-child(1) { @include flex-order(1) }
-.DatasetsList-itemMeta > *:nth-child(2) { @include flex-order(3) }
-.DatasetsList-itemMeta > *:nth-child(3) { @include flex-order(4) }
-.DatasetsList-itemMeta > *:nth-child(4) { @include flex-order(2) }
-.DatasetsList-itemMeta > *:nth-child(5) { @include flex-order(5) }
-.DatasetsList-itemTags { 
-  margin-top: 4px;
-  text-align: right;
-}
-.DatasetsList-itemTags .DefaultEditInline-input { text-align: right }
-.DatasetsList-itemDescription { margin-top: 4px }
+  .DatasetsList-itemMeta > * {
+    width: auto;
+    margin-right: 18px;
+    text-align: center;
+  }
+  .DatasetsList-itemMeta > *:last-child { margin-right: 0 }
+  .DatasetsList-itemMeta > *:nth-child(2) { @include flex-order(2) }
+  .DatasetsList-itemMeta > *:nth-child(3) { @include flex-order(3) }
+  .DatasetsList-itemMeta > *:nth-child(4) { @include flex-order(4) }
+  .DatasetsList-itemMeta > *:nth-child(5) { @include flex-order(5) }
 
-@media (min-width: $sMedia-tablet) {
+  .DatasetsList-itemTags {
+    margin-top: 4px;
+    text-align: right;
+  }
+  .DatasetsList-itemTags .DefaultEditInline-input { text-align: right }
+  .DatasetsList-itemDescription { margin-top: 4px }
+
+// Banned dataset
+.DatasetsList-item--banned {
+  .DatasetsList-itemTitle,
+  .DatasetsList-itemDescription,
+  .SizeIndicator,
+  .SizeIndicator .iconFont { color: $bannedColor }
+
+  .DatasetsList-itemCategory { @include geometry-type-icon(-160px, -80px) }
+  .DatasetsList-itemCategory.is--lineDataset { @include geometry-type-icon(-40px, -80px) }
+  .DatasetsList-itemCategory.is--polygonDataset { @include geometry-type-icon(-80px, -80px) }
+  .DatasetsList-itemCategory.is--pointDataset { @include geometry-type-icon(0, -80px) }
+  .DatasetsList-itemCategory.is--rasterDataset { @include geometry-type-icon(-120px, -80px) }
+
+  .DatasetsList-itemStatus { color: $bannedColor }
+}
+
+@media only screen and (max-width: $sMedia-mobile) and (max-width: 959px) {
+  .DatasetsList {
+    width: 100%;
+  }
+  .DatasetsList-itemTitle {
+    margin-bottom: 3px;
+  }
   .DatasetsList-itemMeta {
     @include align-items(center);
   }
   .DatasetsList-itemMeta > * {
     width: auto;
-    margin-right: $sMargin-element;
+    margin-right: 10px;
     text-align: center;
   }
-  // .DatasetsList-itemTags .DefaultEditInline-input { text-align: left }
+  .DatasetsList-itemMeta > *:last-child { margin-right: 0 }
+  .DatasetsList-itemMeta > *:nth-child(2) { @include flex-order(2) }
+  .DatasetsList-itemMeta > *:nth-child(3) { @include flex-order(3) }
+  .DatasetsList-itemMeta > *:nth-child(4) { @include flex-order(4) }
+  .DatasetsList-itemMeta > *:nth-child(5) { @include flex-order(5) }
+}
+@media only screen and (max-width: $sMedia-tablet) {
+  .DatasetsList {
+    width: 100%;
+  }
+  .DatasetsList-itemTitle {
+    margin-bottom: 3px;
+  }
+  .DatasetsList-itemMeta {
+    @include align-items(center);
+  }
+  .DatasetsList-itemMeta > * {
+    width: auto;
+    margin-right: 10px;
+    text-align: center;
+  }
   .DatasetsList-itemMeta > *:last-child { margin-right: 0 }
   .DatasetsList-itemMeta > *:nth-child(2) { @include flex-order(2) }
   .DatasetsList-itemMeta > *:nth-child(3) { @include flex-order(3) }
@@ -207,8 +256,20 @@ $opacityTransition: 250ms;
     flex-grow: 1;
     min-width: 400px;
   }
+  .DatasetsList-itemTitle {
+    margin-bottom: 0;
+  }
   .DatasetsList-itemMeta {
     @include justify-content(flex-end, end);
     margin-bottom: 0;
   }
+  .DatasetsList-itemMeta > * {
+    width: auto;
+    margin-right: 18px;
+    text-align: center;
+  }
+  .DatasetsList-itemMeta > *:last-child { margin-right: 0 }
+  .DatasetsList-itemMeta > *:nth-child(2) { @include flex-order(2) }
+  .DatasetsList-itemMeta > *:nth-child(3) { @include flex-order(3) }
+  .DatasetsList-itemMeta > *:nth-child(4) { @include flex-order(4) }
 }

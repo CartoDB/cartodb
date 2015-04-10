@@ -17,7 +17,7 @@ module CartoDB
           return false if layer.nil?
           # Only data/cartodb layers
           return false unless layer.respond_to?(:data_layer?)
-          return false unless layer.data_layer?
+          layer.data_layer?
         end
 
         # @param layer Layer|nil

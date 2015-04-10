@@ -37,8 +37,8 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 400px;
-  margin-left: -200px;
+  width: 500px;
+  margin-left: -250px;
   margin-top: -170px;
   z-index: 1001;
 }
@@ -85,7 +85,30 @@
   bottom: 30px;
   margin-left: -245px;
   @include supElement(20px, 11px);
-
+}
+.OnBoarding-fakeSection--connect {
+  top: 186px;
+  margin-left: -402px;
+}
+.OnBoarding-fakeSection--datalibrary {
+  top: 186px;
+  margin-left: -280px;
+}
+.OnBoarding-fakeSection--datalibrary2 {
+  top: 186px;
+  margin-left: 120px;
+}
+.OnBoarding-fakeSection--scratch {
+  top: 186px;
+  left: auto;
+  right: 50%;
+  margin: 0 -320px 0 0;
+}
+.OnBoarding-fakeSection--scratch2 {
+  top: 186px;
+  left: auto;
+  right: 50%;
+  margin: 0 -340px 0 0;
 }
 .OnBoarding-welcomeContentMargin { margin-top: 30px }
 .OnBoarding-map {

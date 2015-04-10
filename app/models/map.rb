@@ -1,10 +1,11 @@
 # encoding: utf-8
 require_relative '../models/visualization/collection'
+require_relative '../models/table/user_table'
 
 class Map < Sequel::Model
   self.raise_on_save_failure = false
 
-  one_to_many   :tables
+  one_to_many   :tables, class: ::UserTable
   many_to_one   :user
 
   many_to_many :layers, order: :order, after_add: proc { |map, layer| 
@@ -127,7 +128,7 @@ class Map < Sequel::Model
 
   def get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons
     table       = tables.first
-    from_table  = table.data_last_modified if table
+    from_table  = table.service.data_last_modified if table
 
     [from_table, data_layers.map(&:updated_at)].flatten.compact.max
   end
@@ -136,7 +137,7 @@ class Map < Sequel::Model
     return unless table_id
 
     # Cannot filter by user_id as might be a shared table not owned by us
-    related_table = ::Table.filter(
+    related_table = ::UserTable.filter(
                       id: table_id
                     ).first
     if related_table.map_id != id
@@ -155,27 +156,50 @@ class Map < Sequel::Model
   end
 
   def get_map_bounds
-    result = current_map_bounds
-
+    result = current_map_bounds_using_stats
     {
-      maxx: bound_for(result[:maxx].to_f, :minlon, :maxlon),
-      maxy: bound_for(result[:maxy].to_f, :minlat, :maxlat),
-      minx: bound_for(result[:minx].to_f, :minlon, :maxlon),
-      miny: bound_for(result[:miny].to_f, :minlat, :maxlat)
+      maxx: bound_for(result[:max][0].to_f, :minlon, :maxlon),
+      maxy: bound_for(result[:max][1].to_f, :minlat, :maxlat),
+      minx: bound_for(result[:min][0].to_f, :minlon, :maxlon),
+      miny: bound_for(result[:min][1].to_f, :minlat, :maxlat)
     }
   end
 
+  # Postgis stats-based calculation of bounds. Much faster but not always present, so needs a fallback
+  def current_map_bounds_using_stats
+    ::JSON.parse(user.in_database.fetch(%Q{
+      SELECT _postgis_stats ('#{tables.first.name}', 'the_geom');
+    }).first[:_postgis_stats])['extent'].symbolize_keys
+  rescue => e
+    if e.message =~ /stats for (.*) do not exist/i
+      current_map_bounds
+    else
+      default_map_bounds
+    end
+  end
+
   def current_map_bounds
-    user.in_database.fetch(%Q{
-      SELECT 
+    result = user.in_database.fetch(%Q{
+      SELECT
         ST_XMin(ST_Extent(the_geom)) AS minx,
         ST_YMin(ST_Extent(the_geom)) AS miny,
         ST_XMax(ST_Extent(the_geom)) AS maxx,
         ST_YMax(ST_Extent(the_geom)) AS maxy
       FROM #{tables.first.name} AS subq
     }).first
+    {
+      max: [result[:maxx].to_f, result[:maxy].to_f],
+      min: [result[:minx].to_f, result[:miny].to_f]
+    }
   rescue Sequel::DatabaseError
-    {}
+    default_map_bounds
+  end
+
+  def default_map_bounds
+    {
+      max: [0, 0],
+      min: [0, 0]
+    }
   end
 
   def bound_for(value, minimum, maximum)

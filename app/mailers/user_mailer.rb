@@ -6,7 +6,7 @@ class UserMailer < ActionMailer::Base
     @user = user
     @organization = @user.organization
     @owner = @organization.owner
-    @link = "#{CartoDB.base_url(@organization.name)}#{dashboard_path(user_domain: @user.username)}" 
+    @link = "#{CartoDB.base_url(@organization.name, @user.username)}"
     mail :to => @user.email, 
          :subject => "You have been invited to CartoDB organization '#{@organization.name}'"
   end
@@ -15,7 +15,7 @@ class UserMailer < ActionMailer::Base
     @table_visualization = table
     @user = user
     organization = @table_visualization.user.organization
-    @link = "#{CartoDB.base_url(organization.name)}#{public_tables_show_bis_path(user_domain: @user.username, id: "#{@table_visualization.user.username}.#{@table_visualization.name}")}"
+    @link = "#{CartoDB.base_url(organization.name, @user.username)}#{CartoDB.path(self, 'public_tables_show_bis', {id: "#{@table_visualization.user.username}.#{@table_visualization.name}"})}"
     mail :to => @user.email, 
          :subject => "#{@table_visualization.user.username} has shared a CartoDB table with you"
   end
@@ -24,7 +24,7 @@ class UserMailer < ActionMailer::Base
     @visualization = visualization
     @user = user
     organization = @visualization.user.organization
-    @link = "#{CartoDB.base_url(organization.name)}#{public_visualizations_show_map_path(user_domain: @visualization.user.username, id: @visualization.id)}"
+    @link = "#{CartoDB.base_url(organization.name, @visualization.user.username)}#{CartoDB.path(self, 'public_visualizations_show_map', {id: @visualization.id})}"
     mail :to => @user.email,
          :subject => "#{@visualization.user.username} has shared a CartoDB visualization with you"
   end

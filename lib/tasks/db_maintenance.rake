@@ -285,6 +285,14 @@ namespace :cartodb do
       user.create_function_invalidate_varnish
     end
 
+    desc 'Move user to its own schema'
+    task :move_user_to_schema, [:username] => :environment do |t, args|
+      user = User.find(username: args[:username])
+      user.move_to_own_schema
+      user.setup_schema
+      user.save
+    end
+
     desc 'Install/upgrade Varnish invalidation trigger'
     task :load_varnish_trigger, [:num_threads, :thread_sleep, :database_host, :sleep] => :environment do |t, args|
       threads = args[:num_threads].blank? ? 1 : args[:num_threads].to_i
@@ -515,7 +523,7 @@ namespace :cartodb do
                 col[:geometrytype]
               end
               geometry_type ||= "POINT"
-              user_database.run("SELECT public.AddGeometryColumn('#{user.database_schema}','#{table.name}','#{Table::THE_GEOM_WEBMERCATOR}',#{CartoDB::GOOGLE_SRID},'#{geometry_type}',2)")
+              user_database.run("SELECT public.AddGeometryColumn('#{user.database_schema}','#{table.name}','#{Table::THE_GEOM_WEBMERCATOR}',3857,'#{geometry_type}',2)")
               user_database.run("CREATE INDEX #{table.name}_#{Table::THE_GEOM_WEBMERCATOR}_idx ON #{table.name} USING GIST(#{Table::THE_GEOM_WEBMERCATOR})")                      
               user_database.run("ANALYZE #{table.name}")
               table.save_changes
@@ -820,6 +828,7 @@ namespace :cartodb do
     desc "Create new organization with owner"
     task :create_new_organization_with_owner => :environment do
       raise "You should provide a ORGANIZATION_NAME" if ENV['ORGANIZATION_NAME'].blank?
+      raise "You should provide a ORGANIZATION_DISPLAY_NAME" if ENV['ORGANIZATION_DISPLAY_NAME'].blank?
       raise "You should provide a ORGANIZATION_SEATS" if ENV['ORGANIZATION_SEATS'].blank?
       raise "You should provide a ORGANIZATION_QUOTA (in Bytes)" if ENV['ORGANIZATION_QUOTA'].blank?
       raise "You should provide a USERNAME" if ENV['USERNAME'].blank?
@@ -829,6 +838,7 @@ namespace :cartodb do
       if organization.nil?
         organization = Organization.new
         organization.name = ENV['ORGANIZATION_NAME']
+        organization.display_name = ENV['ORGANIZATION_DISPLAY_NAME']
         organization.seats = ENV['ORGANIZATION_SEATS']
         organization.quota_in_bytes = ENV['ORGANIZATION_QUOTA']
         organization.save

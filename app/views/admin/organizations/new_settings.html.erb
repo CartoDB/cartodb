@@ -4,14 +4,10 @@
 <%= content_for(:js) do %>
   <script type="text/javascript">
     var username = "<%= current_user.username %>";
-    var config = <%=raw frontend_config.html_safe %>;
-    var user_data = <%= raw current_user.data.to_json.html_safe %>;
+    var config = <%= safe_js_object frontend_config %>;
+    var user_data = <%= safe_js_object current_user.data.to_json.html_safe %>;
   </script>
   <%= javascript_include_tag 'cdb.js', 'models.js', 'new_organization_templates.js', 'new_organization_deps.js', 'new_organization.js' -%>
-<% end %>
-<%= content_for(:css) do %>
-  <%= render 'shared/lato_font' %>
-  <%= stylesheet_link_tag 'cartodb.css', 'new_common.css',  :media => 'all' %>
 <% end %>
 
 <%= render :partial => 'shared/new_flash_message' %>
@@ -21,7 +17,7 @@
 
   <div class="OrganizationContent">
     <div class="u-inner">
-      <%= form_for @organization, url: organization_settings_update_path(user_domain: params[:user_domain]), multipart: true do |f| %>
+      <%= form_for @organization, url: CartoDB.url(self, 'organization_settings_update', {}, current_user), multipart: true do |f| %>
         <%= csrf_meta_tags %>
 
         <div class="Form-title">
@@ -64,12 +60,14 @@
           </div>
         </div>
 
-        <div class="Form-row">
+        <div class="Form-row js-avatarSelector">
           <div class="Form-rowLabel">
-            <label class="Form-label">Logo</label>
+            <label class="Form-label">Avatar</label>
           </div>
           <div class="Form-rowData Form-avatar">
-            <img src="<%= @organization.avatar_url %>" title="" alt="" class="Form-avatarPreview" />
+            <div class="Form-avatarPreview">
+              <img src="<%= @organization.avatar_url %>" title="" alt="" class="Form-avatarPreviewImage" />
+            </div>
             <%= f.file_field :avatar_url, :class => "js-fileAvatar", :value => "Change avatar" %>
           </div>
           <div class="Form-rowInfo">

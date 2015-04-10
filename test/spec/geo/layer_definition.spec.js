@@ -1085,7 +1085,7 @@ describe("NamedMap", function() {
 
     namedMap.options.ajax = function(p) { 
       params = p;
-      p.success({ error: 'not found' });
+      p.success({ errors: 'not found' });
     };
 
     var _data, _error;
@@ -1099,7 +1099,7 @@ describe("NamedMap", function() {
     setTimeout(function() {
       var res = "not found";
 
-      expect(_error).toEqual(res);
+      expect(_error.errors).toEqual(res);
       expect(true).toEqual(true);
 
       done();

@@ -323,9 +323,9 @@ Map.prototype = {
           loadingTime.end();
           if(0 === self._queue.length) {
             // check for errors
-            if (data.error) {
+            if (data.errors) {
               cartodb.core.Profiler.metric('cartodb-js.layergroup.get.error').inc();
-              callback(null, data.error);
+              callback(null, data);
             } else {
               callback(data);
             }

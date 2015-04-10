@@ -29,8 +29,8 @@ shared_examples_for "visualization controllers" do
     '/api/v1/viz'
   end
 
-  def response_body
-    get base_url, nil, @headers
+  def response_body(params=nil)
+    get base_url, params, @headers
     last_response.status.should == 200
     body = JSON.parse(last_response.body)
     body['visualizations'] = body['visualizations'].map { |v| normalize_hash(v) }
@@ -89,6 +89,18 @@ shared_examples_for "visualization controllers" do
       visualization2.add_like_from(@user1.id)
 
       response_body['total_likes'].should == 1
+    end
+
+    it 'does a partial match search' do
+      create_random_table(@user1, "foo")
+      create_random_table(@user1, "bar")
+      create_random_table(@user1, "foo_patata_bar")
+      create_random_table(@user1, "foo_patata_baz")
+
+      #body = response_body("#{BASE_URL}/?q=patata")['total_entries'].should == 2
+      body = response_body(q: 'patata')
+      body['total_entries'].should == 2
+      body['total_user_entries'].should == 4
     end
 
   end

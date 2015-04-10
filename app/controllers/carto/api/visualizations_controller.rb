@@ -41,6 +41,8 @@ module Carto
         page = (params[:page] || 1).to_i
         per_page = (params[:per_page] || 20).to_i
         order = (params[:order] || 'updated_at').to_sym
+        pattern = params[:q]
+
         only_liked = params[:only_liked] == 'true'
         only_shared = params[:only_shared] == 'true'
         exclude_shared = params[:exclude_shared] == 'true'
@@ -52,7 +54,6 @@ module Carto
             .with_prefetch_table
             .with_prefetch_permission
             .with_prefetch_external_source
-            .with_locked(locked)
             .with_type(type)
 
         if current_user
@@ -68,6 +69,12 @@ module Carto
           if only_liked
             vqb.with_liked_by_user_id(current_user.id)
           end
+
+          if locked == 'true'
+            vqb.with_locked(true)
+          elsif locked == 'false'
+            vqb.with_locked(false)
+          end
         else
           # TODO: ok, this looks like business logic, refactor
           subdomain = CartoDB.extract_subdomain(request)
@@ -75,17 +82,15 @@ module Carto
               .with_privacy(Carto::Visualization::PRIVACY_PUBLIC)
         end
 
-        if locked == 'true'
-          vqb.with_locked(true)
-        elsif locked == 'false'
-          vqb.with_locked(false)
+        if pattern.present?
+          vqb.with_partial_match(pattern)
         end
 
         # TODO: undesirable table hardcoding, needed for disambiguation. Look for
         # a better approach and/or move it to the query builder
         response = {
           visualizations: vqb.with_order("visualizations.#{order}", :desc).build_paged(page, per_page).map { |v| VisualizationPresenter.new(v, current_viewer).to_poro },
-          total_entries: vqb.build.count,
+          total_entries: vqb.build.count
         }
         if current_user
           response.merge!({

@@ -1,0 +1,19 @@
+// Editable field
+// --------------------------------------------------
+
+.EditableField {
+  textarea {
+    display: none;
+    width: 100%;
+    resize: none;
+  }
+}
+
+.EditableField.is-editing {
+  a {
+    display: none;
+  }
+  textarea {
+    display: block;
+  }
+}

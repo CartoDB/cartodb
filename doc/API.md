@@ -1068,6 +1068,23 @@ Although the Viz JSON file stores all your map settings, all these settings can 
 cartodb.createVis('map', 'http://examples.cartodb.com/api/v2/viz/ne_10m_populated_p_1/viz.json')
 ```
 
+### How to set a different host than cartodb.com
+cartodb.js by default send all requests to cartodb.com domain but it you are running your own
+instance of cartodb you can change the urls.
+
+The way to do it is using ``sql_api_template`` and ``maps_api_template`` in ``options`` paramater
+for any ``cartodb`` function call.
+
+The format of those templates is like:
+
+```javascript
+sql_api_template: 'https://{user}.test.com'
+```
+
+cartodb.js will replace ``{user}``.
+
+Notice you don't need to set the path to the endpoint, cartodb.js sets it
+
 ### Bounds wrapper
 
 We have added an easy method to get the bounding box for any dataset or filtered query using the CartoDB.js library. The **getBounds** function can be useful for guiding users to the right location on a map or for loading only the right data at the right time based on user actions.

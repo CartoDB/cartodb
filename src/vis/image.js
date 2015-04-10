@@ -230,11 +230,6 @@
       this.options.tiler_protocol = protocol;
       this.options.tiler_port     = port;
 
-      if (this.userOptions.https || this.imageOptions.vizjson.indexOf("https") === 0) {
-        this.options.tiler_protocol = "https";
-        this.options.tiler_port     = 443;
-      }
-
     },
 
     toJSON: function(){

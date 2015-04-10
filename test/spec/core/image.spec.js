@@ -371,38 +371,6 @@ describe("Image", function() {
 
   });
 
-  it("should set force the https protocol", function(done) {
-
-    var vizjson = "http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json"
-
-    var image = cartodb.Image(vizjson, { https: true }).size(400, 300);
-
-    var regexp = new RegExp("https://cartocdn-ashbu.global.ssl.fastly.net/documentation/api/v1/map/static/bbox/(.*?)400/300\.png");
-
-    image.getUrl(function(err, url) {
-      expect(url.match(regexp).length).toEqual(2);
-      expect(url).toMatch(regexp);
-      done();
-    });
-
-  });
-
-  it("should set force the https protocol (no_cdn)", function(done) {
-
-    var vizjson = "http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json"
-
-    var image = cartodb.Image(vizjson, { https: true, no_cdn: true }).size(400, 300);
-
-    var regexp = new RegExp("https://documentation.cartodb.com:443/api/v1/map/static/bbox/(.*?)400/300\.png");
-
-    image.getUrl(function(err, url) {
-      expect(url.match(regexp).length).toEqual(2);
-      expect(url).toMatch(regexp);
-      done();
-    });
-
-  });
-
   it("should set the protocol and port depending on the URL (http, no_cdn)", function(done) {
 
     var vizjson = "http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json"

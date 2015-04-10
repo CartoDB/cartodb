@@ -13,7 +13,7 @@ module CartoDB
       end
 
       attr_reader :attributes
-    end # Member
-  end # Synchronizer
-end # CartoDB
+    end
+  end
+end
 

@@ -306,6 +306,7 @@
 
   }
 
+
   /*
    * sql.filter(sql.f().distance('< 10km')
    */
@@ -325,6 +326,176 @@
     return f;
   }
   */
+  function array_agg(s) {
+    return JSON.parse(s.replace(/^{/, '[').replace(/}$/, ']'));
+  }
+
+
+  SQL.prototype.describeString = function(sql, column, options, callback) {
+      var s = [
+        'with stats as (', 
+           'select count(distinct("{{column}}")) as uniq from ({{sql}}) __wrap',
+        '),',
+        'hist as (', 
+           'select array_agg(row(d, c)) from (select distinct("{{column}}") d, count(*) as c from ({{sql}}) __wrap, stats group by 1 limit 100) _a',
+        ')',
+        'select * from stats, hist'
+      ];
+
+      var query = Mustache.render(s.join('\n'), {
+        column: column, 
+        sql: sql
+      });
+      this.execute(query, function(data) {
+        var s = array_agg(data.rows[0].array_agg);
+        callback({
+          type: 'string',
+          hist: _(s).map(function(row) {
+            var r = row.match(/\((.*),(\d+)/);
+            return [r[1], +r[2]];
+          }),
+          distinct: data.rows[0].uniq,
+        })
+      });
+  }
+
+  SQL.prototype.describeGeom = function(sql, column, options, callback) {
+      var s = [
+        'with stats as (', 
+           'select st_asgeojson(st_extent({{column}})) as bbox',
+           'from ({{sql}}) _wrap',
+        '),',
+        'geotype as (', 
+          'select st_geometrytype({{column}}) as geometry_type from ({{sql}}) _w where {{column}} is not null',
+        ')',
+        'select * from stats, geotype'
+      ];
+
+      var query = Mustache.render(s.join('\n'), {
+        column: column, 
+        sql: sql
+      });
+      function simplifyType(g) {
+        return { 
+        'st_multipolygon': 'polygon',
+        'st_polygon': 'polygon',
+        'st_multilinestring': 'line',
+        'st_linestring': 'line',
+        'st_multipoint': 'point',
+        'st_point': 'point'
+        }[g.toLowerCase()]
+      };
+
+      this.execute(query, function(data) {
+        var row = data.rows[0];
+        var bbox = JSON.parse(row.bbox).coordinates[0]
+        callback({
+          type: 'geom',
+          //lon,lat -> lat, lon
+          bbox: [[bbox[0][1],bbox[0][0]], [bbox[2][1], bbox[2][0]]],
+          geometry_type: row.geometry_type,
+          simplified_geometry_type: simplifyType(row.geometry_type)
+        });
+      });
+  }
+
+  SQL.prototype.columns = function(sql, options, callback) {
+    var args = arguments,
+        fn = args[args.length -1];
+    if(_.isFunction(fn)) {
+      callback = fn;
+    }
+    var s = "select * from (" + sql + ") __wrap limit 0";
+    this.execute(s, function(data) {
+      var t = {}
+      for (var i in data.fields) {
+        t[i] = data.fields[i].type;
+      }
+      callback(t);
+    });
+  };
+
+  SQL.prototype.describeFloat = function(sql, column, options, callback) {
+      var s = [
+        'with stats as (',
+            'select min({{column}}) as min,',
+                   'max({{column}}) as max,',
+                   'avg({{column}}) as avg,',
+                   'stddev({{column}}) as stddev',
+              'from ({{sql}}) _wrap',
+        '),',
+         'histogram as (',
+           'select array_agg(row(bucket, range, freq)) as hist from (',
+           'select width_bucket({{column}}, min, max, 100) as bucket,',
+                  'numrange(min({{column}})::numeric, max({{column}})::numeric) as range,',
+                  'count(*) as freq',
+             'from ({{sql}}) _w, stats',
+             'group by 1',
+             'order by 1',
+          ') __wrap',
+         '),',
+         'buckets as (',
+            'select CDB_QuantileBins(array_agg({{column}}::numeric), 7) as quantiles from ({{sql}}) _table_sql where {{column}} is not null',
+         ')',
+         'select * from histogram, stats, buckets'
+      ];
+
+      var query = Mustache.render(s.join('\n'), {
+        column: column, 
+        sql: sql
+      });
+      this.execute(query, function(data) {
+        var row = data.rows[0];
+        var s = array_agg(row.hist);
+        callback({
+          type: 'number',
+          hist: _(s).map(function(row) {
+            var r = row.match(/\((.*),".(\d+),(\d+).",(\d+)/);
+            var range = null;
+            if (r) {
+              //range = [+r[2], +r[3]]
+            }
+            return null;//{ index: r[1], range: range, freq: +r[4] }
+          }),
+          stddev: row.stddev,
+          avg: row.avg,
+          max: row.max,
+          min: row.min,
+          quantiles: row.quantiles
+        });
+      });
+  }
+
+  // describe a column
+  SQL.prototype.describe = function(sql, column, options) {
+      var self = this;
+      var args = arguments,
+          fn = args[args.length -1];
+      if(_.isFunction(fn)) {
+        var _callback = fn;
+      }
+      var callback = function(data) {
+        data.column = column;
+        _callback(data);
+      }
+      var s = "select * from (" + sql + ") __wrap limit 0";
+      this.execute(s, function(data) {
+        var type = data.fields[column].type;
+        if (!type) {
+          callback(new Error("column does not exist"));
+          return;
+        }
+        if (type === 'string') {
+          self.describeString(sql, column, options, callback);
+        } else if (type === 'number') {
+          self.describeFloat(sql, column, options, callback);
+        } else if (type === 'geometry') {
+          self.describeGeom(sql, column, options, callback);
+        } else {
+          callback(new Error("column type does not supported"));
+        }
+      });
+  }
 
   root.cartodb.SQL = SQL;
 

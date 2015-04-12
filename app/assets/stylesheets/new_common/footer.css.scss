@@ -29,7 +29,7 @@
 }
 
 @media only screen and (max-width: $sMedia-mobile) {
-  .Footer-logo {
+  .Footer-inner .Footer-logo {
     position: absolute;
     left: 50%;
     margin-left: -$sIcon-layout / 2;

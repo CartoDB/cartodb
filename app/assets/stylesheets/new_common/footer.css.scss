@@ -16,7 +16,7 @@
 .Footer-inner {
   margin-top: $sIcon-layout;
 }
-.Footer-logo {
+.Footer-inner .Footer-logo {
   position: absolute;
   top: $sMargin-element;
   left: 50%;
@@ -29,7 +29,7 @@
 }
 
 @media only screen and (max-width: $sMedia-mobile) {
-  .Footer-inner.Logo {
+  .Footer-inner .Footer-logo {
     position: absolute;
     left: 50%;
     margin-left: -$sIcon-layout / 2;
@@ -73,5 +73,12 @@
 @media (min-width: $sMedia-desktop) {
   .Footer-list {
     padding: 0;
+  }
+  .Footer-inner .Footer-logo {
+    position: relative;
+    display: inline-block;
+    top: auto;
+    left: auto;
+    margin-left: auto;
   }
 }

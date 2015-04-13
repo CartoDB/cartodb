@@ -5,6 +5,7 @@ require_relative '../../lib/cartodb/metrics'
 
 class Geocoding < Sequel::Model
 
+  DB_TIMEOUT      = 3600000*24*2  # Way generous, 2 days is a lot
   DEFAULT_TIMEOUT = 15.minutes
   ALLOWED_KINDS   = %w(admin0 admin1 namedplace postalcode high-resolution ipaddress)
 
@@ -54,13 +55,21 @@ class Geocoding < Sequel::Model
 
   def table_geocoder
     geocoder_class = (kind == 'high-resolution' ? CartoDB::TableGeocoder : CartoDB::InternalGeocoder::Geocoder)
+    # Reset old connections to make sure changes apply
+    if user.present?
+      user.reset_pooled_connections
+      user_connection = user.in_database(statement_timeout: DB_TIMEOUT)
+    else
+      user_connection = nil
+    end
+
     config = Cartodb.config[:geocoder].deep_symbolize_keys.merge(
       table_schema:  table_service.try(:database_schema),
       table_name:    table_service.try(:name),
       qualified_table_name: table_service.try(:qualified_table_name),
       sequel_qualified_table_name: table_service.try(:sequel_qualified_table_name),
       formatter:     translate_formatter,
-      connection:    (user.present? ? user.in_database(as: :superuser) : nil),
+      connection:    user_connection,
       remote_id:     remote_id,
       countries:     country_code,
       geometry_type: geometry_type,
@@ -97,6 +106,8 @@ class Geocoding < Sequel::Model
     rows_geocoded_before = table_service.owner.in_database.select.from(table_service.sequel_qualified_table_name).where(cartodb_georef_status: true).count rescue 0
 
     self.run_geocoding!(processable_rows, rows_geocoded_before)
+  ensure
+    user.reset_pooled_connections if user.present?
   end
 
   def run_geocoding!(processable_rows, rows_geocoded_before = 0)

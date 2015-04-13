@@ -54,7 +54,7 @@ gem 'dropbox-sdk',             '1.6.3'
 gem 'instagram',               '1.1.3'
 gem 'gibbon',                  '1.1.4'
 
-# Synchronizer
+# Geocoder (synchronizer doesn't needs it anymore)
 gem 'eventmachine',            '1.0.3'
 gem 'em-pg-client',            '0.2.1'
 

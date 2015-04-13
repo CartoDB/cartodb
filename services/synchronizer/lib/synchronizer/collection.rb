@@ -1,6 +1,4 @@
 # encoding: utf-8
-require 'eventmachine'
-require 'pg/em'
 require 'yaml'
 require 'resque'
 require_relative '../../../../app/models/log'
@@ -9,27 +7,18 @@ require_relative '../../../../lib/resque/synchronization_jobs'
 
 unless defined? Cartodb
   config = YAML.load_file(
-    File.join(File.dirname(__FILE__), '../../../../config/app_config.yml') )[ENV['RAILS_ENV'] || 'development']
+      File.join(File.dirname(__FILE__), '../../../../config/app_config.yml')
+    )[ENV['RAILS_ENV'] || 'development']
   Resque.redis = "#{config['redis']['host']}:#{config['redis']['port']}"
 end
 
 module CartoDB
   module Synchronizer
     class Collection
-
-      STALLING_MAX_TIME = 3600*3
-
       DEFAULT_RELATION      = 'synchronizations'
 
-      DATABASE_CONFIG_YAML  = File.join(
-        File.dirname(__FILE__), '../../../../config/database.yml'
-      )
-
       def initialize(pg_options={}, relation=DEFAULT_RELATION)
-        pg_options = default_pg_options.merge(pg_options) if pg_options.empty?
-        pg_options.store(:dbname, pg_options.delete(:database))
-
-        @db       = PG::EM::Client.new(pg_options)
+        @db = Rails::Sequel.connection
         @relation = relation
         @records  = [] 
       end
@@ -41,22 +30,21 @@ module CartoDB
       def run
         fetch
         process
-
         print_log 'Pass finished'
       end
 
       # Fetches and enqueues all syncs that should run
       # @param force_all_syncs bool
-      def fetch(force_all_syncs=false)
+      def fetch_and_enqueue(force_all_syncs=false)
         begin
           if force_all_syncs
-            query = db.query(%Q(
+            query = db.fetch(%Q(
               SELECT name, id FROM #{relation} WHERE
               state = '#{CartoDB::Synchronization::Member::STATE_SUCCESS}'
               OR state = '#{CartoDB::Synchronization::Member::STATE_SYNCING}'
             ))
           else
-            query = db.query(%Q(
+            query = db.fetch(%Q(
               SELECT name, id FROM #{relation}
               WHERE EXTRACT(EPOCH FROM run_at) < #{Time.now.utc.to_f}
               AND 
@@ -76,11 +64,11 @@ module CartoDB
         if success
           print_log "Fetched #{query.count} records"
           query.each { |record|
-            print_log "Enqueueing '#{record['name']}' (#{record['id']})"
-            Resque.enqueue(Resque::SynchronizationJobs, job_id: record['id'])
-            db.query(%Q(
+            print_log "Enqueueing '#{record[:name]}' (#{record[:id]})"
+            Resque.enqueue(Resque::SynchronizationJobs, job_id: record[:id])
+            db.run(%Q(
                UPDATE #{relation} SET state = '#{CartoDB::Synchronization::Member::STATE_QUEUED}'
-                WHERE id = '#{record['id']}'
+                WHERE id = '#{record[:id]}'
              ))
           }
         end
@@ -103,18 +91,6 @@ module CartoDB
 
       attr_reader :db, :relation
       attr_writer :records, :members
-
-      def default_pg_options
-        configuration = YAML.load_file(DATABASE_CONFIG_YAML)
-        options       = configuration[ENV['RAILS_ENV'] || 'development']
-        {
-          host:       options.fetch('host'),
-          port:       options.fetch('port'),
-          user:       options.fetch('username'),
-          password:   options.fetch('password'),
-          database:   options.fetch('database')
-        }
-      end
     end
   end
 end

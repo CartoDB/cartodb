@@ -26,21 +26,34 @@ module CartoDB
 
           matches = /^#(.*) \{/.match(layer.options['tile_style'])
           unless matches.nil?
-            layer.set_style_options("##{matches[1]}{\n" <<
-              " marker-fill-opacity: 0.9;\n" <<
+            layer.set_style_options(
+              "##{matches[1]}{\n" <<
+              " marker-fill-opacity: 0.5;\n" <<
               " marker-line-color: #FFF;\n" <<
               " marker-line-width: 1;\n" <<
               " marker-line-opacity: 1;\n" <<
               " marker-placement: point;\n" <<
               " marker-type: ellipse;\n" <<
+              " marker-width: 6;\n" <<
+              " [zoom>4]{\n" <<
               " marker-width: 7;\n" <<
-              " marker-fill: #FFCC00;\n" <<
+              " }\n" <<
+              " [zoom>5]{\n" <<
+              " marker-width: 8;\n" <<
+              " }\n" <<
+              " [zoom>6]{\n" <<
+              " marker-width: 9;\n" <<
+              " }\n" <<
               " marker-allow-overlap: true;\n" <<
               " marker-comp-op: multiply;\n" <<
               "}\n" <<
               "\n##{matches[1]}[opened=true]{\n" <<
-              " marker-fill: #229A00;\n" <<
-              "}")
+              " marker-fill: #A53ED5;\n" <<
+              "}\n" <<
+              "\n##{matches[1]}[opened=false]{\n" <<
+              " marker-fill: #00ceff;\n" <<
+              "}"
+            )
           end
 
           nil

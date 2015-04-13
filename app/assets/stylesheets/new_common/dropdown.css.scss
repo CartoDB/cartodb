@@ -1,7 +1,7 @@
 /*
  * Dropdown styles, with a subtle blurry border, and a triangle "tick" popping out of the dropdown box to indicate where it is anchored.
  *
- * The tick is composed by two injected elements by :before and :after the .dropdown's content.
+ * The tick is composed by two injected elements by :before and :after the .Dropdown's content.
  * :before injects a square box, rotated 45 degrees, which has a box-shadow attached to it.
  * :after injects a rectangle with same background as the dropdown content, which overlaps :before's content to.
  *
@@ -16,7 +16,7 @@
 @import "../new_variables/mixins";
 @import "../new_variables/colors";
 
-.dropdown {
+.Dropdown {
   position: absolute;
   display: none;
   background: $cStructure-mainBkg;
@@ -140,7 +140,7 @@
   }
 }
 
-.dropdown > ul {
+.Dropdown > ul {
   position: relative;
   @include inline-block();
   margin: 20px;
@@ -149,7 +149,7 @@
   overflow: visible;
 }
 
-.dropdown > ul > li {
+.Dropdown > ul > li {
   display:block;
   border-top:1px solid $cStructure-mainLine;
   margin-top: 10px;
@@ -165,7 +165,7 @@
   }
 }
 
-.dropdown > ul > li > p {
+.Dropdown > ul > li > p {
   margin-top: 10px;
 
   &:first-child {

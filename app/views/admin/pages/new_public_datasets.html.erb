@@ -8,19 +8,18 @@
 
 <div class="PublicBody-content">
   <% if @datasets.size == 0 %>
-    <%= render 'admin/shared/new_no_results', is_maps: false, alt_url: public_visualizations_home_url(user_domain: params[:user_domain]) %>
+    <%= render 'admin/shared/new_no_results', is_maps: false, alt_url: CartoDB.url(self, 'public_visualizations_home') %>
   <% else %>
     <ul class="DatasetsList">
       <% @datasets.each do |vis| %>
-        <% user_domain = vis[:owner] && vis[:owner].organization ? vis[:owner].username : nil %>
         <li class="DatasetsList-item">
           <div class="DatasetsList-itemCategory is--<%= vis[:geometry_type] %>Dataset"></div>
           <div class="DatasetsList-itemInfo">
             <div class="DatasetsList-itemPrimaryInfo">
               <h3 class="DatasetsList-itemTitle DefaultTitle">
-                <a href="<%= public_table_url(user_domain: user_domain, id: vis[:title]) %>" title="<%= vis[:title] %>" class="DefaultTitle-link u-ellipsLongText"><%= vis[:title] %></a>
+                <a href="<%= CartoDB.url(self, 'public_table', {id: vis[:title]}, vis[:owner]) %>" title="<%= vis[:title] %>" class="DefaultTitle-link u-ellipsLongText"><%= vis[:title] %></a>
               </h3>
-              <p class="DefaultDescription u-ellipsLongText"><%= raw vis[:description_html_safe] %></p>
+              <div class="DefaultDescription DatasetsList-itemDescription u-ellipsLongText"><%= raw vis[:description_html_safe] %></div>
             </div>
             <div class="DatasetsList-itemSecondaryInfo">
               <div class="DatasetsList-itemMeta">
@@ -41,7 +40,7 @@
               <div class="DatasetsList-itemMeta">
                 <div class="DefaultTags">
                   <% if vis[:tags].size > 0 %>
-                    <% formatted_tags(vis[:tags]) do |tag| %><a class="DefaultTags-item js-tag-link" href="<%= public_datasets_tag_url(user_domain: user_domain, tag: tag) %>"><%= tag %></a><% end %>
+                    <% formatted_tags(vis[:tags]) do |tag| %><a class="DefaultTags-item js-tag-link" href="<%= CartoDB.url(self, 'public_datasets_tag', {tag: tag}, vis[:owner]) %>"><%= tag %></a><% end %>
                   <% end %>
                 </div>
               </div>

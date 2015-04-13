@@ -9,6 +9,7 @@ require_relative './visualization/member'
 require_relative './table_registrar'
 require_relative './quota_checker'
 require_relative '../../lib/cartodb/errors'
+require_relative '../../lib/cartodb/import_error_codes'
 require_relative '../../lib/cartodb/metrics'
 require_relative '../../lib/cartodb_stats'
 require_relative '../../config/initializers/redis'
@@ -59,6 +60,16 @@ class DataImport < Sequel::Model
     # }
     # No automatic conversion coded
     'user_defined_limits'
+  ]
+
+  # This attributes will get removed from public_values upon calling api_call_public_values
+  NON_API_VISIBLE_ATTRIBUTES = [
+    'service_item_id',
+    'service_name',
+    'server',
+    'host',
+    'upload_host',
+    'resque_ppid',
   ]
 
   # Not all constants are used, but so that we keep track of available states
@@ -123,6 +134,13 @@ class DataImport < Sequel::Model
 
   def dataimport_logger
     @@dataimport_logger ||= Logger.new("#{Rails.root}/log/imports.log")
+  end
+
+  # Meant to be used when calling from API endpoints (hides some fields not needed at editor scope)
+  def api_public_values
+    public_values.reject { |key|
+      DataImport::NON_API_VISIBLE_ATTRIBUTES.include?(key)
+    }
   end
 
   def public_values

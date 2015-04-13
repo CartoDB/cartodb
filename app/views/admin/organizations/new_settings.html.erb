@@ -17,7 +17,7 @@
 
   <div class="OrganizationContent">
     <div class="u-inner">
-      <%= form_for @organization, url: organization_settings_update_path(user_domain: params[:user_domain]), multipart: true do |f| %>
+      <%= form_for @organization, url: CartoDB.url(self, 'organization_settings_update', {}, current_user), multipart: true do |f| %>
         <%= csrf_meta_tags %>
 
         <div class="Form-title">
@@ -60,12 +60,14 @@
           </div>
         </div>
 
-        <div class="Form-row">
+        <div class="Form-row js-avatarSelector">
           <div class="Form-rowLabel">
-            <label class="Form-label">Logo</label>
+            <label class="Form-label">Avatar</label>
           </div>
           <div class="Form-rowData Form-avatar">
-            <img src="<%= @organization.avatar_url %>" title="" alt="" class="Form-avatarPreview" />
+            <div class="Form-avatarPreview">
+              <img src="<%= @organization.avatar_url %>" title="" alt="" class="Form-avatarPreviewImage" />
+            </div>
             <%= f.file_field :avatar_url, :class => "js-fileAvatar", :value => "Change avatar" %>
           </div>
           <div class="Form-rowInfo">

@@ -1,4 +1,5 @@
 # coding: UTF-8
+require 'cartodb/per_request_sequel_cache'
 require_relative './user/user_decorator'
 require_relative './user/oauths'
 require_relative './synchronization/synchronization_oauth'
@@ -34,7 +35,7 @@ class User < Sequel::Model
   one_to_many :search_tweets, order: :created_at.desc
   many_to_one :organization
 
-  many_to_many :layers, :order => :order, :after_add => proc { |user, layer|
+  many_to_many :layers, class: ::Layer, :order => :order, :after_add => proc { |user, layer|
     layer.set_default_order(user)
   }
 
@@ -45,6 +46,7 @@ class User < Sequel::Model
   plugin :validation_helpers
   plugin :json_serializer
   plugin :dirty
+  plugin :caching, PerRequestSequelCache
 
   # Restrict to_json attributes
   @json_serializer_opts = {
@@ -140,9 +142,10 @@ class User < Sequel::Model
     monitor_user_notification
     sleep 1
     set_statement_timeouts
-    if self.has_organization_enabled?
-      ::Resque.enqueue(::Resque::UserJobs::Mail::NewOrganizationUser, self.id)
-    end
+  end
+
+  def notify_new_organization_user
+    ::Resque.enqueue(::Resque::UserJobs::Mail::NewOrganizationUser, self.id)
   end
 
   def should_load_common_data?
@@ -222,12 +225,19 @@ class User < Sequel::Model
       # Remove user data imports, maps, layers and assets
       self.delete_external_data_imports
       self.delete_external_sources
+      # There's a FK from geocodings to data_import.id so must be deleted in proper order
+      if self.organization.nil? || self.organization.owner.nil? || self.id == self.organization.owner.id
+        self.geocodings.each { |g| g.destroy }
+      else
+        assign_geocodings_to_organization_owner
+      end
       self.data_imports.each { |d| d.destroy }
       self.maps.each { |m| m.destroy }
       self.layers.each { |l| remove_layer l }
-      self.geocodings.each { |g| g.destroy }
       self.assets.each { |a| a.destroy }
       CartoDB::Synchronization::Collection.new.fetch(user_id: self.id).destroy
+
+      assign_search_tweets_to_organization_owner
     rescue StandardError => exception
       error_happened = true
       CartoDB::Logger.info "Error destroying user #{username}. #{exception.message}\n#{exception.backtrace}"
@@ -1211,7 +1221,7 @@ class User < Sequel::Model
     metadata_tables_ids = metadata_tables.select{ |table| !syncs.include?(table[:name]) }
                                          .map{ |table| table[:table_id] }
 
-    dropped_tables = metadata_tables_ids - real_tables.map{|t| t[:oid]}
+    dropped_tables = metadata_tables_ids - real_tables.map{|t| t[:oid]} - [nil]
 
     # Remove tables with oids that don't exist on the db
     self.tables.where(table_id: dropped_tables).all.each do |user_table|
@@ -1225,7 +1235,8 @@ class User < Sequel::Model
     end if dropped_tables.present?
 
     # Remove tables with null oids unless the table name exists on the db
-    self.tables.filter(table_id: nil).all.each do |t|
+    self.tables.filter(table_id: nil).all.each do |user_table|
+      t = Table.new(user_table: user_table)
       t.keep_user_database_table = true
       t.destroy unless self.real_tables.map { |t| t[:relname] }.include?(t.name)
     end if dropped_tables.present? && dropped_tables.include?(nil)
@@ -1417,7 +1428,7 @@ class User < Sequel::Model
   end
 
   def belongs_to_organization?(organization)
-    organization_user? and self.organization_id == organization.id
+    organization_user? && organization != nil && self.organization_id == organization.id
   end
 
   def feature_flags
@@ -2282,36 +2293,82 @@ TRIGGER
     self.database_schema
   end
 
-  # return public user url -> string
-  def public_url
-    user_name = organization.nil? ? nil : username
+  # --- TODO: Extract this to a service object that handles urls
 
-    CartoDB.base_url(self.subdomain, user_name)
-  end
-
+  # Special url that goes to Central if active (for old dashboard only)
   def account_url(request_protocol)
-    if Cartodb.config[:account_host]
+    if CartoDB.account_host
       request_protocol + CartoDB.account_host + CartoDB.account_path + '/' + username
     end
   end
 
+  # Special url that goes to Central if active
   def plan_url(request_protocol)
     account_url(request_protocol) + '/plan'
   end
 
+  # Special url that goes to Central if active
   def upgrade_url(request_protocol)
     account_url(request_protocol) + '/upgrade'
   end
 
-  def subdomain
-    organization.nil? ? username : organization.name
+  def organization_username
+    CartoDB.subdomainless_urls? || organization.nil? ? nil : username
   end
+
+  def organization_username
+    CartoDB.subdomainless_urls? || organization.nil? ? nil : username
+  end
+
+  def subdomain
+    if CartoDB.subdomainless_urls?
+      username
+    else
+      organization.nil? ? username : organization.name
+    end
+  end
+
+  # @return String public user url, which is also the base url for a given user
+  def public_url(subdomain_override=nil)
+    CartoDB.base_url(subdomain_override.nil? ? subdomain : subdomain_override, organization_username)
+  end
+
+  # ----------
 
   def name_or_username
     name.present? ? name : username
   end
 
+  def purge_redis_vizjson_cache
+    redis_keys = CartoDB::Visualization::Collection.new.fetch(user_id: self.id).map(&:redis_vizjson_key)
+    CartoDB::Visualization::Member.redis_cache.del redis_keys unless redis_keys.empty?
+  end
+
   private
+
+  # INFO: assigning to owner is necessary because of payment reasons
+  def assign_search_tweets_to_organization_owner
+    return if self.organization.nil? || self.organization.owner.nil? || self.id == self.organization.owner.id
+    self.search_tweets_dataset.each { |st|
+      st.user = self.organization.owner
+      st.save
+    }
+  rescue => e
+    Rollbar.report_message('Error assigning search tweets to org owner', 'error', { user: self.inspect, error: e.inspect })
+  end
+
+  # INFO: assigning to owner is necessary because of payment reasons
+  def assign_geocodings_to_organization_owner
+    return if self.organization.nil? || self.organization.owner.nil? || self.id == self.organization.owner.id
+    self.geocodings.each { |g|
+      g.user = self.organization.owner
+      g.data_import_id = nil
+      g.save
+    }
+  rescue => e
+    Rollbar.report_message('Error assigning geocodings to org owner, fallback to deletion', 'error', { user: self.inspect, error: e.inspect })
+    self.geocodings.each { |g| g.destroy }
+  end
 
   def name_exists_in_organizations?
     !Organization.where(name: self.username).first.nil?

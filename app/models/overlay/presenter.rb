@@ -5,7 +5,7 @@ module CartoDB
     class Presenter
       def initialize(overlay)
         @overlay = overlay
-      end #initialize
+      end
 
       def to_poro
         {
@@ -14,12 +14,12 @@ module CartoDB
           options:  JSON.parse(overlay.options),
           template: overlay.template
         }
-      end #to_poro
+      end
 
       private
 
       attr_reader :overlay
-    end #Presenter
-  end #Overlay
-end # CartoDB
+    end
+  end
+end
 

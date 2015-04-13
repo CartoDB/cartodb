@@ -16,8 +16,8 @@ module CartoDB
           @ctrl.old_maps_for_organization(org)
         end
 
-        def organization_path(user)
-          @ctrl.public_visualizations_home_path(user_domain: user.username)
+        def organization_path
+          CartoDB.path(@ctrl, 'public_visualizations_home')
         end
 
         def render_404

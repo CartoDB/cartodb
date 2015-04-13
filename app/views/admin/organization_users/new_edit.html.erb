@@ -26,7 +26,7 @@
           <div class="Filters-type">
             <ul class="Filters-list">
               <li>
-                <a href="<%= organization_url(user_domain: params[:user_domain]) %>" class="Filters-typeLink Filters-actionButton NavButton NavButton--back">
+                <a href="<%= CartoDB.url(self, 'organization') %>" class="Filters-typeLink Filters-actionButton NavButton NavButton--back">
                   <i class="iconFont iconFont-ArrowPrev"></i>
                 </a>
               </li>
@@ -64,6 +64,15 @@
               <label class="OrganizationUser-statLabel"><%= "Georeferenced row".pluralize(@user.get_geocoding_calls) %></label>
             </div>
           </li>
+          <% if ( @user.organization.present? && @user.organization.twitter_datasource_enabled ) || @user.twitter_datasource_enabled %>
+            <li class="OrganizationUser-stat">
+              <i class="iconFont iconFont-Twitter OrganizationUser-statIcon"></i>
+              <div class="OrganizationUser-statInfo">
+                <em class="OrganizationUser-statTitle"><%= number_with_delimiter(@user.get_twitter_imports_count) %></em>
+                <label class="OrganizationUser-statLabel"><%= "Tweet".pluralize(@user.get_twitter_imports_count) %> imported</label>
+              </div>
+            </li>
+          <% end %>
           <li class="OrganizationUser-stat">
             <i class="iconFont iconFont-ProgressBar OrganizationUser-statIcon"></i>
             <div class="OrganizationUser-statInfo">

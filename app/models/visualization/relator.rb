@@ -3,6 +3,8 @@ require_relative './stats'
 require_relative '../visualization/collection'
 require_relative '../overlay/collection'
 require_relative './support_tables'
+require_relative '../map'
+require_relative '../layer'
 
 module CartoDB
   module Visualization
@@ -75,13 +77,13 @@ module CartoDB
       end
 
       def user
-        @user ||= User.where(id: @user_id).first unless @user_id.nil?
+        @user ||= User[@user_id] unless @user_id.nil?
       end
 
       def table
         return nil unless defined?(::Table)
         return nil if map_id.nil?
-        @table ||= ::UserTable.where(map_id: map_id).first.try(:service)
+        @table ||= ::UserTable.from_map_id(map_id).try(:service)
       end
 
       def related_tables

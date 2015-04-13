@@ -31,7 +31,7 @@ class Api::Json::TablesController < Api::ApplicationController
 
     if @table.valid? && @table.save
       @table = ::UserTable.where(id: @table.id).first.try(:service)
-      render_jsonp(@table.public_values, 200, { location: "/tables/#{@table.id}" })
+      render_jsonp(@table.public_values({request:request}), 200, { location: "/tables/#{@table.id}" })
     else
       CartoDB::Logger.info 'Error on tables#create', @table.errors.full_messages
       render_jsonp( { :description => @table.errors.full_messages,
@@ -62,7 +62,7 @@ class Api::Json::TablesController < Api::ApplicationController
           :disposition => "attachment; filename=#{@table.name}.kmz"
       end
       format.json do
-        render_jsonp(@table.public_values({}, current_user).merge(schema: @table.schema(reload: true)))
+        render_jsonp(@table.public_values({request:request}, current_user).merge(schema: @table.schema(reload: true)))
       end
     end
   end
@@ -94,12 +94,12 @@ class Api::Json::TablesController < Api::ApplicationController
       latitude_column  = params[:latitude_column]  == 'nil' ? nil : params[:latitude_column].try(:to_sym)
       longitude_column = params[:longitude_column] == 'nil' ? nil : params[:longitude_column].try(:to_sym)
       @table.georeference_from!(:latitude_column => latitude_column, :longitude_column => longitude_column)
-      render_jsonp(@table.public_values.merge(warnings: warnings)) and return
+      render_jsonp(@table.public_values({request:request}).merge(warnings: warnings)) and return
     end
     if @table.update(@table.values.delete_if {|k,v| k == :tags_names}) != false
       @table = ::UserTable.where(id: @table.id).first.try(:service)
 
-      render_jsonp(@table.public_values.merge(warnings: warnings))
+      render_jsonp(@table.public_values({request:request}).merge(warnings: warnings))
     else
       render_jsonp({ :errors => @table.errors.full_messages}, 400)
     end

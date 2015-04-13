@@ -60,7 +60,7 @@ module CartoDB
           arcgis_datasource: self.arcgis_datasource_enabled?
         },
         notification: self.notification,
-        avatar_url: self.avatar_url,
+        avatar_url: self.avatar,
         new_dashboard_enabled: self.new_dashboard_enabled,
         feature_flags: self.feature_flags,
         base_url: self.public_url

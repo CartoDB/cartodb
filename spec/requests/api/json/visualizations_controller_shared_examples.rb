@@ -907,12 +907,14 @@ shared_examples_for "visualization controllers" do
     end
 
     describe 'GET /api/v1/viz' do
-
-      it 'retrieves a collection of visualizations' do
-        # TODO: I'm not sure about stubbing this tiler request, I've taken it from existing tests
+      # TODO: I'm not sure about stubbing this tiler request, I've taken it from existing tests
+      before(:each) do
         CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
         CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
-        delete_user_data @user
+        delete_user_data(@user)
+      end
+
+      it 'retrieves a collection of visualizations' do
         payload = factory(@user)
         post "/api/v1/viz?api_key=#{@api_key}", payload.to_json, @headers
         id = JSON.parse(last_response.body).fetch('id')
@@ -925,6 +927,112 @@ shared_examples_for "visualization controllers" do
         collection.first.fetch('id').should == id
       end
 
+      it 'is updated after creating a visualization' do
+        payload = factory(@user)
+        post "/api/v1/viz?api_key=#{@api_key}",
+          payload.to_json, @headers
+
+        get "/api/v1/viz?api_key=#{@api_key}",
+          {}, @headers
+
+        response    = JSON.parse(last_response.body)
+        collection  = response.fetch('visualizations')
+        collection.size.should == 1
+
+        payload = factory(@user).merge('name' => 'another one')
+        post "/api/v1/viz?api_key=#{@api_key}",
+          payload.to_json, @headers
+
+        get "/api/v1/viz?api_key=#{@api_key}",
+          {}, @headers
+        response    = JSON.parse(last_response.body)
+        collection  = response.fetch('visualizations')
+        collection.size.should == 2
+      end
+
+      it 'is updated after deleting a visualization' do
+        payload = factory(@user)
+        post "/api/v1/viz?api_key=#{@api_key}",
+          payload.to_json, @headers
+        id = JSON.parse(last_response.body).fetch('id')
+
+        get "/api/v1/viz?api_key=#{@api_key}",
+          {}, @headers
+        response    = JSON.parse(last_response.body)
+        collection  = response.fetch('visualizations')
+        collection.should_not be_empty
+
+        delete "/api/v1/viz/#{id}?api_key=#{@api_key}",
+          {}, @headers
+        get "/api/v1/viz?api_key=#{@api_key}",
+          {}, @headers
+
+        response    = JSON.parse(last_response.body)
+        collection  = response.fetch('visualizations')
+        collection.should be_empty
+      end
+
+      it 'paginates results' do
+        per_page      = 10
+        total_entries = 20
+
+        total_entries.times do
+          post "/api/v1/viz?api_key=#{@api_key}",
+            factory(@user).to_json, @headers
+        end
+
+        get "/api/v1/viz?api_key=#{@api_key}&page=1&per_page=#{per_page}", {}, @headers
+
+        last_response.status.should == 200
+
+        response    = JSON.parse(last_response.body)
+        collection  = response.fetch('visualizations')
+        collection.length.should == per_page
+        response.fetch('total_entries').should == total_entries
+      end
+
+      it 'returns filtered results' do
+        post "/api/v1/viz?api_key=#{@api_key}",
+          factory(@user).to_json, @headers
+
+        get "/api/v1/viz?api_key=#{@api_key}&type=table",
+          {}, @headers
+        last_response.status.should == 200
+        response    = JSON.parse(last_response.body)
+        collection  = response.fetch('visualizations')
+        collection.should be_empty
+
+        post "/api/v1/viz?api_key=#{@api_key}",
+          factory(@user).to_json, @headers
+        post "/api/v1/viz?api_key=#{@api_key}",
+          factory(@user).merge(type: 'table').to_json, @headers
+        get "/api/v1/viz?api_key=#{@api_key}&type=derived",
+          {}, @headers
+
+        last_response.status.should == 200
+        response    = JSON.parse(last_response.body)
+        collection  = response.fetch('visualizations')
+        collection.size.should == 2
+      end
+
+      it 'returns a visualization' do
+        payload = factory(@user)
+        post "/api/v1/viz?api_key=#{@api_key}",
+          payload.to_json, @headers
+        id = JSON.parse(last_response.body).fetch('id')
+
+        get "/api/v1/viz/#{id}?api_key=#{@api_key}",
+          {}, @headers
+
+        last_response.status.should == 200
+        response = JSON.parse(last_response.body)
+
+        response.fetch('id')              .should_not be_nil
+        response.fetch('map_id')          .should_not be_nil
+        response.fetch('tags')            .should_not be_empty
+        response.fetch('description')     .should_not be_nil
+        response.fetch('related_tables')  .should_not be_nil
+      end
     end
 
   end

@@ -218,98 +218,6 @@ describe Api::Json::VisualizationsController do
 
   describe 'GET /api/v1/viz' do
 
-    it 'is updated after creating a visualization' do
-      pending
-      payload = factory
-      post "/api/v1/viz?api_key=#{@api_key}", 
-        payload.to_json, @headers
-
-      get "/api/v1/viz?api_key=#{@api_key}",
-        {}, @headers
-
-      response    = JSON.parse(last_response.body)
-      collection  = response.fetch('visualizations')
-      collection.size.should == 1
-
-      payload = factory.merge('name' => 'another one')
-      post "/api/v1/viz?api_key=#{@api_key}",
-        payload.to_json, @headers
-
-      get "/api/v1/viz?api_key=#{@api_key}",
-        {}, @headers
-      response    = JSON.parse(last_response.body)
-      collection  = response.fetch('visualizations')
-      collection.size.should == 2
-    end
-
-    it 'is updated after deleting a visualization' do
-      pending
-      payload = factory
-      post "/api/v1/viz?api_key=#{@api_key}",
-        payload.to_json, @headers
-      id = JSON.parse(last_response.body).fetch('id')
-      
-      get "/api/v1/viz?api_key=#{@api_key}",
-        {}, @headers
-      response    = JSON.parse(last_response.body)
-      collection  = response.fetch('visualizations')
-      collection.should_not be_empty
-
-      delete "/api/v1/viz/#{id}?api_key=#{@api_key}",
-        {}, @headers
-      get "/api/v1/viz?api_key=#{@api_key}",
-        {}, @headers
-
-      response    = JSON.parse(last_response.body)
-      collection  = response.fetch('visualizations')
-      collection.should be_empty
-    end
-
-    it 'paginates results' do
-      pending
-      per_page      = 10
-      total_entries = 20
-
-      total_entries.times do 
-        post "/api/v1/viz?api_key=#{@api_key}",
-          factory.to_json, @headers
-      end
-
-      get "/api/v1/viz?api_key=#{@api_key}&page=1&per_page=#{per_page}", {}, @headers
-
-      last_response.status.should == 200
-      
-      response    = JSON.parse(last_response.body)
-      collection  = response.fetch('visualizations')
-      collection.length.should == per_page
-      response.fetch('total_entries').should == total_entries
-    end
-
-    it 'returns filtered results' do
-      pending
-      post "/api/v1/viz?api_key=#{@api_key}",
-        factory.to_json, @headers
-
-      get "/api/v1/viz?api_key=#{@api_key}&type=table",
-        {}, @headers
-      last_response.status.should == 200
-      response    = JSON.parse(last_response.body)
-      collection  = response.fetch('visualizations')
-      collection.should be_empty
-
-      post "/api/v1/viz?api_key=#{@api_key}",
-        factory.to_json, @headers
-      post "/api/v1/viz?api_key=#{@api_key}",
-        factory.merge(type: 'table').to_json, @headers
-      get "/api/v1/viz?api_key=#{@api_key}&type=derived",
-        {}, @headers
-
-      last_response.status.should == 200
-      response    = JSON.parse(last_response.body)
-      collection  = response.fetch('visualizations')
-      collection.size.should == 2
-    end
-
     it 'does not get table data if passed table_data=false' do
       pending
       table = table_factory
@@ -322,28 +230,6 @@ describe Api::Json::VisualizationsController do
       visualizations.first.keys.should_not include :table_data
     end
   end # GET /api/v1/viz
-
-  describe 'GET /api/v1/viz/:id' do
-    it 'returns a visualization' do
-      pending
-      payload = factory
-      post "/api/v1/viz?api_key=#{@api_key}",
-        payload.to_json, @headers
-      id = JSON.parse(last_response.body).fetch('id')
-      
-      get "/api/v1/viz/#{id}?api_key=#{@api_key}", 
-        {}, @headers
-
-      last_response.status.should == 200
-      response = JSON.parse(last_response.body)
-
-      response.fetch('id')              .should_not be_nil
-      response.fetch('map_id')          .should_not be_nil
-      response.fetch('tags')            .should_not be_empty
-      response.fetch('description')     .should_not be_nil
-      response.fetch('related_tables')  .should_not be_nil
-    end
-  end # GET /api/v1/viz/:id
 
   describe 'GET /api/v1/viz/:id/stats' do
     it 'returns view stats for the visualization' do

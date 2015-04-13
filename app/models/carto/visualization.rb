@@ -14,6 +14,8 @@ class Carto::Visualization < ActiveRecord::Base
   has_one :external_source
   has_many :unordered_children, class_name: Carto::Visualization, foreign_key: :parent_id
 
+  belongs_to :map
+
   TYPE_CANONICAL = 'table'
   TYPE_DERIVED = 'derived'
   TYPE_SLIDE = 'slide'
@@ -23,6 +25,10 @@ class Carto::Visualization < ActiveRecord::Base
   PRIVACY_PUBLIC = 'public'
   PRIVACY_PRIVATE = 'private'
   PRIVACY_LINK = 'link'
+
+  def related_tables
+    @related_tables ||= get_related_tables
+  end
 
   def stats
     @stats ||= CartoDB::Visualization::Stats.new(self).to_poro
@@ -65,6 +71,11 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   private
+
+  def get_related_tables
+    return [] unless map
+    map.carto_and_torque_layers.flat_map { |layer| layer.affected_tables.map { |t| t.service } }.uniq
+  end
 
   def is_viewable_with_link?
     is_public? || self.privacy == PRIVACY_LINK

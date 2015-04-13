@@ -27,6 +27,9 @@ class Table
   THE_GEOM_WEBMERCATOR = :the_geom_webmercator
   THE_GEOM = :the_geom
 
+  NO_GEOMETRY_TYPES_CACHING_TIMEOUT = 5.minutes
+  GEOMETRY_TYPES_PRESENT_CACHING_TIMEOUT = 24.hours
+
 
   # @see services/importer/lib/importer/column.rb -> RESERVED_WORDS
   # @see config/initializers/carto_db.rb -> RESERVED_COLUMN_NAMES
@@ -128,11 +131,7 @@ class Table
     else
       # cache miss, query and store
       types = query_geometry_types
-      timeout = if types.empty? then
-                  5.minutes
-                else
-                  24.hours
-                end
+      timeout = types.empty? ? NO_GEOMETRY_TYPES_CACHING_TIMEOUT : GEOMETRY_TYPES_PRESENT_CACHING_TIMEOUT
       cache.setex(geometry_types_key, timeout, types)
     end
 

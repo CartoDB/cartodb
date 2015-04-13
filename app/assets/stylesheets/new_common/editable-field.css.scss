@@ -5,16 +5,31 @@
 @import "../new_variables/sizes";
 @import "../new_variables/mixins";
 
+$fieldBgColor: #FEFCEA;
+$fieldBorderColor: #DFE8EC;
+
 .EditableField {
   a {
     font-style: italic;
   }
   textarea {
+    border: none;
     display: none;
     height: 100%;
     overflow: hidden;
+    outline: none;
     resize: none;
     width: 100%;
+
+    @include nicer-lato-typography();
+    font-size: $sFontSize-normal;
+    line-height: $sLineHeight-normal;
+    color: $cTypography-secondary;
+
+    background: -webkit-linear-gradient(bottom, $fieldBorderColor 0%, $fieldBgColor 8%) 0 0px;
+    background: -moz-linear-gradient(bottom, $fieldBorderColor 0%, $fieldBgColor 8%) 0 0px;
+    background: linear-gradient(bottom, $fieldBorderColor 0%, $fieldBgColor 8%) 0 0px;
+    background-size: 100% $sLineHeight-normal;
   }
 }
 

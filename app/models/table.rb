@@ -64,6 +64,7 @@ class Table
     else
       @user_table = args[:user_table]
     end
+    # TODO: this probably makes sense only if user_table is not passed as argument
     @user_table.set_service(self)
   end
 
@@ -1417,6 +1418,32 @@ class Table
 
   def remove_organization_access
     perform_organization_table_permission_change('CDB_Organization_Remove_Organization_Access_Permission')
+  end
+
+  def row_count_and_size
+    begin
+      # Keep in sync with lib/sql/scripts-available/CDB_Quota.sql -> CDB_UserDataSize()
+      size_calc = is_raster? ? "pg_total_relation_size('\"' || ? || '\".\"' || relname || '\"')"
+                                    : "pg_total_relation_size('\"' || ? || '\".\"' || relname || '\"') / 2"
+
+      data = owner.in_database.fetch(%Q{
+            SELECT
+              #{size_calc} AS size,
+              reltuples::integer AS row_count
+            FROM pg_class
+            WHERE relname = ?
+          },
+          owner.database_schema,
+          name
+        ).first
+    rescue => exception
+      data = nil
+      # INFO: we don't want code to fail because of SQL error
+      CartoDB.notify_exception(exception)
+    end
+    data = { size: nil, row_count: nil } if data.nil?
+
+    data
   end
 
   private

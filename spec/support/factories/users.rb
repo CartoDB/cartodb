@@ -108,6 +108,9 @@ module CartoDB
       user.assets_dataset.destroy
       user.data_imports_dataset.destroy
       user.geocodings_dataset.destroy
+      CartoDB::Visualization::Collection.new.fetch(user_id: user.id).each { |v|
+        v.delete
+      }
     end
 
     def load_user_functions(user)

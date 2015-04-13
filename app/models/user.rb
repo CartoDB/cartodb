@@ -2329,8 +2329,8 @@ TRIGGER
   end
 
   # @return String public user url, which is also the base url for a given user
-  def public_url(subdomain_override=nil)
-    CartoDB.base_url(subdomain_override.nil? ? subdomain : subdomain_override, organization_username)
+  def public_url(subdomain_override=nil, protocol_override=nil)
+    CartoDB.base_url(subdomain_override.nil? ? subdomain : subdomain_override, organization_username, protocol_override)
   end
 
   # ----------

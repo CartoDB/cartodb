@@ -87,7 +87,7 @@ describe Admin::VisualizationsController do
 
   describe 'GET /viz/:id/public' do
     it 'returns public data for a table visualization' do
-      id = table_factory(privacy: ::Table::PRIVACY_PUBLIC).table_visualization.id
+      id = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC).table_visualization.id
 
       get "/viz/#{id}/public", {}, @headers
       last_response.status.should == 200
@@ -102,7 +102,7 @@ describe Admin::VisualizationsController do
     end
 
     it "redirects to embed_map if visualization is 'derived'" do
-      id                = table_factory(privacy: ::Table::PRIVACY_PUBLIC).table_visualization.id
+      id                = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC).table_visualization.id
       payload           = { source_visualization_id: id }
 
       post "/api/v1/viz?api_key=#{@api_key}", 
@@ -122,7 +122,7 @@ describe Admin::VisualizationsController do
 
   describe 'GET /viz/:name/embed_map' do
     it 'renders the view by passing a visualization name' do
-      table = table_factory(privacy: ::Table::PRIVACY_PUBLIC)
+      table = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC)
       name = table.table_visualization.name
 
       get "/viz/#{URI::encode(name)}/embed_map", {}, @headers
@@ -133,7 +133,7 @@ describe Admin::VisualizationsController do
     end
 
     it 'renders embed_map.js' do
-      id                = table_factory(privacy: ::Table::PRIVACY_PUBLIC).table_visualization.id
+      id                = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC).table_visualization.id
       payload           = { source_visualization_id: id }
 
       post "/api/v1/viz?api_key=#{@api_key}", 
@@ -171,11 +171,11 @@ describe Admin::VisualizationsController do
     it 'renders embed map error when an exception is raised' do
       login_as(@user, scope: 'test')
 
-      get "/viz/non_existent/embed_map", {}, @headers
+      get "/viz/220d2f46-b371-11e4-93f7-080027880ca6/embed_map", {}, @headers
       last_response.status.should == 404
       last_response.body.should =~ /404/
 
-      get "/viz/non_existent/embed_map.js", {}, @headers
+      get "/viz/220d2f46-b371-11e4-93f7-080027880ca6/embed_map.js", {}, @headers
       last_response.status.should == 404
       last_response.body.should =~ /404/
     end
@@ -195,13 +195,13 @@ describe Admin::VisualizationsController do
     it 'returns 404' do
       login_as(@user, scope: 'test')
 
-      get "/viz/9999?api_key=#{@api_key}", {}, @headers
+      get "/viz/220d2f46-b371-11e4-93f7-080027880ca6?api_key=#{@api_key}", {}, @headers
       last_response.status.should == 404
 
-      get "/viz/9999/public?api_key=#{@api_key}", {}, @headers
+      get "/viz/220d2f46-b371-11e4-93f7-080027880ca6/public?api_key=#{@api_key}", {}, @headers
       last_response.status.should == 404
 
-      get "/viz/9999/embed_map?api_key=#{@api_key}", {}, @headers
+      get "/viz/220d2f46-b371-11e4-93f7-080027880ca6/embed_map?api_key=#{@api_key}", {}, @headers
       last_response.status.should == 404
     end
   end # non existent visualization
@@ -229,6 +229,8 @@ describe Admin::VisualizationsController do
           :enable_remote_db_user => nil,
           :after_create => nil,
           :create_schema => nil,
+          :move_tables_to_schema => nil,
+          :setup_schema => nil,
           :create_public_db_user => nil,
           :set_database_search_path => nil,
           :load_cartodb_functions => nil,
@@ -266,6 +268,7 @@ describe Admin::VisualizationsController do
       user_org = CartoDB::UserOrganization.new(org.id, user_a.id)
       user_org.promote_user_to_admin
       org.reload
+      user_a.reload
 
       user_b = create_user({username: 'user-b', quota_in_bytes: 123456789, table_quota: 400, organization: org})
 
@@ -280,16 +283,16 @@ describe Admin::VisualizationsController do
 
       host! "#{org.name}.localhost.lan"
 
-      source_url = public_table_url(user_domain: user_a.username, id: vis.name)
+      source_url = CartoDB.url(self, 'public_table', {id: vis.name}, user_a)
+
       get source_url, {}, get_headers(org.name)
       last_response.status.should == 302
       # First we'll get redirected to the public map url
       follow_redirect!
       # Now url will get rewritten to current user
       last_response.status.should == 302
-      url = CartoDB.base_url(org.name) + public_visualizations_show_path(user_domain: user_b.username,
-                                                                 id: "#{user_a.username}.#{vis.name}") \
-                               + "?redirected=true"
+      url = CartoDB.base_url(org.name, user_b.username) +
+        CartoDB.path(self, 'public_visualizations_show', {id: "#{user_a.username}.#{vis.name}"}) + "?redirected=true"
       last_response.location.should eq url
 
       org.destroy

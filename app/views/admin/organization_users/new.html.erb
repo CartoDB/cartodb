@@ -6,12 +6,12 @@
   <script type="text/javascript">
     var username = "<%= current_user.username %>"
       , type = "oauth"
-      , config = <%=raw frontend_config.html_safe %>
+      , config = <%= safe_js_object frontend_config %>
       , organization_quota = {
           seats: <%= current_user.organization.seats %>,
           quota_in_bytes: <%= current_user.organization.quota_in_bytes %>
         }
-      , user_data = <%=raw current_user.data.to_json.html_safe %>;
+      , user_data = <%= safe_js_object current_user.data.to_json %>;
   </script>
 <% end %>
 <%= content_for(:css) do %>

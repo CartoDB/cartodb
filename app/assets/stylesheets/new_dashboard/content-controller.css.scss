@@ -11,4 +11,8 @@
   margin: 0 auto;
   padding-top: 81px
 }
-.ContentController.on-boarding { padding-top: 0 }
+
+.ContentController.on-boarding { 
+  padding-top: 0;
+  min-height: initial;
+}

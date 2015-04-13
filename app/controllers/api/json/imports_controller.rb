@@ -30,7 +30,7 @@ class Api::Json::ImportsController < Api::ApplicationController
     data_import = DataImport[params[:id]]
     data_import.mark_as_failed_if_stuck!
 
-    data = data_import.reload.public_values.except('service_item_id', 'service_name')
+    data = data_import.reload.api_public_values
     if data_import.state == DataImport::STATE_COMPLETE
       data[:any_table_raster] = data_import.is_raster?
 
@@ -63,13 +63,7 @@ class Api::Json::ImportsController < Api::ApplicationController
                      })
     elsif params[:remote_visualization_id].present?
       external_source = external_source(params[:remote_visualization_id])
-      options.merge!({
-                        content_guessing: false,
-                        type_guessing: true,
-                        quoted_fields_guessing: true,
-                        data_source: external_source.import_url.presence,
-                        create_visualization: false
-                     })
+      options.merge!( { data_source: external_source.import_url.presence } )
     else
       results = upload_file_to_storage(params, request, Cartodb.config[:importer]['s3'])
       options.merge!({
@@ -84,7 +78,9 @@ class Api::Json::ImportsController < Api::ApplicationController
                                                      user_defined_limits: ::JSON.dump(options[:user_defined_limits])
                                                    }))
 
-    ExternalDataImport.new(data_import.id, external_source.id).save if external_source.present?
+    if external_source.present?
+      ExternalDataImport.new(data_import.id, external_source.id).save
+    end
 
     Resque.enqueue(Resque::ImporterJobs, job_id: data_import.id) if options[:state] == DataImport::STATE_PENDING
 
@@ -294,7 +290,8 @@ class Api::Json::ImportsController < Api::ApplicationController
       from_query:             params[:sql].presence,
       service_name:           params[:service_name].present? ? params[:service_name] : CartoDB::Datasources::Url::PublicUrl::DATASOURCE_NAME,
       service_item_id:        params[:service_item_id].present? ? params[:service_item_id] : params[:url].presence,
-      type_guessing:          ["true", true].include?(params[:type_guessing]),
+      # By default true
+      type_guessing:          params.fetch(:type_guessing, true),
       quoted_fields_guessing: ["true", true].include?(params[:quoted_fields_guessing]),
       content_guessing:       ["true", true].include?(params[:content_guessing]),
       state:                  DataImport::STATE_PENDING,  # Pending == enqueue the task
@@ -317,8 +314,7 @@ class Api::Json::ImportsController < Api::ApplicationController
     derived_vis_id = nil
 
     if data_import.create_visualization && !data_import.visualization_id.nil?
-      derived_vis = CartoDB::Visualization::Member.new(id: data_import.visualization_id).fetch
-      derived_vis_id = derived_vis.id unless derived_vis.nil?
+      derived_vis_id = CartoDB::Visualization::Member.new(id: data_import.visualization_id).fetch.id
     end
 
     data[:derived_visualization_id] = derived_vis_id

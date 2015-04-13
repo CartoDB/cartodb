@@ -13,7 +13,7 @@ class SearchTweet < Sequel::Model
   # @param updated_at
 
   many_to_one :user
-  many_to_one :table
+  many_to_one :table, class: :UserTable
 
   STATE_IMPORTING = 'importing'
   STATE_COMPLETE  = 'complete'

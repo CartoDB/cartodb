@@ -69,6 +69,7 @@ module CartoDB
       new_dashboard_templates.js
       new_public_dashboard_deps.js
       new_public_dashboard.js
+      editor.js
       dashboard.js
       account_templates.js
       account_deps.js
@@ -80,6 +81,9 @@ module CartoDB
       login.js
       models.js
       organization.js
+      new_organization_templates.js
+      new_organization_deps.js
+      new_organization.js
       modernizr.js statsc.js
       table.js
       public_dashboard.js
@@ -107,12 +111,14 @@ module CartoDB
       fonts_ie.css
       front.css
 
+      editor.css
       new_keys.css
       keys.css
       leaflet.css
       map.css
       map/leaflet.ie.css
       organization.css
+      new_organization.css
       pages.css
       plugins/tipsy.css
       public.css

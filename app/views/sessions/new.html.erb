@@ -41,8 +41,9 @@
 
               <div class="Sessions-sep"></div>
 
-              <%= form_tag create_session_path, class: "js-Loading-form" do %>
+              <%= form_tag CartoDB.path(self, 'create_session'), class: "js-Loading-form" do %>
                 <input type="hidden" value="" id="google_access_token" name="google_access_token" />
+                <input type="hidden" value="0" id="google_access_filled" name="google_access_filled" />
 
                 <div class="Sessions-field">
                   <%= text_field_tag :email, CartoDB.extract_subdomain(request), :title => "Email or username", placeholder: "Email or username", class: "Sessions-input" %>
@@ -91,12 +92,14 @@
       </div>
     </div>
   </div>
-
-  <footer class="Sessions-footer">
-    <div class="u-inner">
-      <div class="Sessions-notloggedin">
-        <p class="Sessions-text Sessions-text--footer u-txt-center"><%= link_to "Forgot password?", forget_password_url %> · <%= link_to 'Create an account', "https://cartodb.com/signup" %></p>
+  
+  <% unless cartodb_com_hosted? %>
+    <footer class="Sessions-footer">
+      <div class="u-inner">
+        <div class="Sessions-notloggedin">
+          <p class="Sessions-text Sessions-text--footer u-txt-center"><%= link_to "Forgot password?", forget_password_url %> · <%= link_to 'Create an account', "https://cartodb.com/signup" %></p>
+        </div>
       </div>
-    </div>
-  </footer>
+    </footer>
+  <% end %>
 </div>

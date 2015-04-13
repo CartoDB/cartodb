@@ -9,6 +9,7 @@ require_relative './visualization/member'
 require_relative './table_registrar'
 require_relative './quota_checker'
 require_relative '../../lib/cartodb/errors'
+require_relative '../../lib/cartodb/import_error_codes'
 require_relative '../../lib/cartodb/metrics'
 require_relative '../../lib/cartodb_stats'
 require_relative '../../config/initializers/redis'
@@ -61,6 +62,16 @@ class DataImport < Sequel::Model
     'user_defined_limits'
   ]
 
+  # This attributes will get removed from public_values upon calling api_call_public_values
+  NON_API_VISIBLE_ATTRIBUTES = [
+    'service_item_id',
+    'service_name',
+    'server',
+    'host',
+    'upload_host',
+    'resque_ppid',
+  ]
+
   # Not all constants are used, but so that we keep track of available states
   STATE_ENQUEUED  = 'enqueued'  # Default state for imports whose files are not yet at "import source"
   STATE_PENDING   = 'pending'   # Default state for files already at "import source" (e.g. S3 bucket)
@@ -83,13 +94,53 @@ class DataImport < Sequel::Model
     self.state    ||= STATE_PENDING
   end
 
+  # This before_create should be only necessary to track old dashboard data imports.
+  # New ones are already tracked during the data_import create inside the controller
+  # For the old dashboard 
+  def before_create
+    if self.from_common_data?
+      self.extra_options = self.extra_options.merge({:common_data => true})
+    end
+  end
+
   def before_save
     self.logger = self.log.id unless self.logger.present?
     self.updated_at = Time.now
   end
+  
+  def from_common_data?
+    if Cartodb.config[:common_data] && 
+       !Cartodb.config[:common_data]['username'].blank? && 
+       !Cartodb.config[:common_data]['host'].blank?
+      if !self.extra_options.has_key?('common_data') && 
+         self.data_source &&
+         self.data_source.include?("#{Cartodb.config[:common_data]['username']}.#{Cartodb.config[:common_data]['host']}")
+        return true
+      end
+    end
+    return false
+  end
+
+  def extra_options
+    return {} if self.import_extra_options.nil?
+    ::JSON.parse(self.import_extra_options).symbolize_keys
+  end
+
+  def extra_options=(value)
+    if !value.nil?
+      self.import_extra_options = ::JSON.dump(value)
+    end
+  end
 
   def dataimport_logger
     @@dataimport_logger ||= Logger.new("#{Rails.root}/log/imports.log")
+  end
+
+  # Meant to be used when calling from API endpoints (hides some fields not needed at editor scope)
+  def api_public_values
+    public_values.reject { |key|
+      DataImport::NON_API_VISIBLE_ATTRIBUTES.include?(key)
+    }
   end
 
   def public_values
@@ -248,7 +299,8 @@ class DataImport < Sequel::Model
   def table
     # We can assume the owner is always who imports the data
     # so no need to change to a Visualization::Collection based load
-    ::Table.where(id: table_id, user_id: user_id).first
+    # TODO better to use an association for this
+    ::Table.new(user_table: UserTable.where(id: table_id, user_id: user_id).first)
   end
 
 
@@ -643,6 +695,9 @@ class DataImport < Sequel::Model
                   'file_stats'        => ::JSON.parse(self.stats),
                   'resque_ppid'       => self.resque_ppid
                  }
+    if !self.extra_options.nil?
+      import_log['extra_options'] = self.extra_options
+    end
     import_log.merge!(decorate_log(self))
     dataimport_logger.info(import_log.to_json)
     CartoDB::Importer2::MailNotifier.new(self, results, ::Resque).notify_if_needed

@@ -9,7 +9,7 @@ module CartoDB
 
       # Total datasets
       def datasets
-        return Table.count
+        return UserTable.count
       end
 
       # Total seats among orgs

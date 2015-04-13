@@ -4,18 +4,15 @@
 <%= content_for(:js) do %>
   <script type="text/javascript">
     var username = "<%= current_user.username %>";
-    var config = <%=raw frontend_config.html_safe %>;
-    var user_data = <%= raw current_user.data.to_json.html_safe %>;
+    var config = <%= safe_js_object frontend_config %>;
+    var user_data = <%= safe_js_object current_user.data.to_json %>;
+    var upgrade_url = <%= cartodb_com_hosted? ? 'undefined' : "'#{current_user.upgrade_url(request.protocol)}'" %>;
   </script>
   <%= javascript_include_tag 'cdb.js', 'models.js', 'new_keys_templates.js', 'new_keys_deps.js', 'new_keys.js' -%>
 <% end %>
 <%= content_for(:css) do %>
-  <%= render 'shared/lato_font' %>
-  <%= stylesheet_link_tag 'cartodb.css', 'new_common.css', 'new_keys.css', :media => 'all' %>
+  <%= stylesheet_link_tag 'new_keys.css', :media => 'all' %>
 <% end %>
-
-
-<%= render 'admin/shared/new_private_header' %>
 
 <div>
 
@@ -23,7 +20,7 @@
 
   <div class="CredentialsContent">
     <div class="u-inner">
-      <%= form_tag(regenerate_oauth_url(user_domain: params[:user_domain]), :method => "DELETE", :id => 'regenerate_oauth_keys', :class => "Form") do %>
+      <%= form_tag(CartoDB.url(self, 'regenerate_oauth', {}, current_user), :method => :delete, :id => 'regenerate_oauth_keys', :class => "Form") do %>
 
         <div class="Form-title">
           <p class="Form-titleText">OAuth is an authentication protocol that allows users to approve application to act on their behalf without sharing their password.</p>
@@ -38,7 +35,7 @@
             <i data-title="Copy this" class="iconFont iconFont-Anchor Form-inputIcon Form-copyIcon js-copy-value"></i>
           </div>
           <div class="Form-rowInfo">
-            <p class="Form-rowInfoText">Learn more about <%= link_to "using oauth in CartoDB", Cartodb.config[:developers_host] + "/documentation/sql-api.html#authentication" %> in CartoDB.</p>
+            <p class="Form-rowInfoText">Learn more about <%= link_to "using oauth in CartoDB", Cartodb.config[:developers_host] + "/cartodb-platform.html" %> in CartoDB.</p>
           </div>
         </div>
 
@@ -59,7 +56,7 @@
             <label class="Form-label">Request token URL</label>
           </div>
           <div class="Form-rowData">
-            <input type="text" class="Form-input Form-input--long has-icon js-input" value="<%= request_token_url(user_domain: params[:user_domain]) %>" readonly />
+            <input type="text" class="Form-input Form-input--long has-icon js-input" value="<%= CartoDB.url(self, 'request_token', {}, current_user) %>" readonly />
             <i data-title="Copy this" class="iconFont iconFont-Anchor Form-inputIcon Form-copyIcon js-copy-value"></i>
           </div>
         </div>
@@ -69,7 +66,7 @@
             <label class="Form-label">Access token URL</label>
           </div>
           <div class="Form-rowData">
-            <input type="text" class="Form-input Form-input--long has-icon js-input" value="<%= access_token_url(user_domain: params[:user_domain]) %>" readonly />
+            <input type="text" class="Form-input Form-input--long has-icon js-input" value="<%= CartoDB.url(self, 'access_token', {}, current_user) %>" readonly />
             <i data-title="Copy this" class="iconFont iconFont-Anchor Form-inputIcon Form-copyIcon js-copy-value"></i>
           </div>
         </div>

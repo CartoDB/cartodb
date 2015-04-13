@@ -5,17 +5,17 @@
 
   <% if @total_tables == 1 %>
     <% if @total_tables == @imported_tables %>
-      <p style="text-align: center;">Your table <strong><%= @first_table['name'] %></strong> was successfully imported.</p>
+      <p style="text-align: center;">Your dataset <strong><%= @first_table['name'] %></strong> was successfully imported.</p>
     <% else %>
-      <p style="text-align: center;">We couldn't import your table <strong><%= @first_table['name'] %></strong>.</p>
+      <p style="text-align: center;">We couldn't import your dataset <strong><%= @first_table['name'] %></strong>.</p>
     <% end %>
   <% else %>
-    <p style="text-align: center;">Your tables import just finished.</p>
+    <p style="text-align: center;">Your datasets import just finished.</p>
     <p style="text-align: center;"><strong><%= @imported_tables %></strong> out of <strong><%= @total_tables %></strong> were successfully imported.</p>
   <% end %>
 
   <% unless @errors.nil? %>
-    <p style="text-align: center;">There was some error while importing your table<%= @total_tables == 1 ? '' : 's' %>:</p>
+    <p style="text-align: center;">There was some error while importing your dataset<%= @total_tables == 1 ? '' : 's' %>:</p>
 
     <table border="0" cellspacing="0" cellpadding="0" style="margin: 0 auto;">
       <tr>

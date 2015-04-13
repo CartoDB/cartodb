@@ -29,6 +29,7 @@ describe 'OSM regression tests' do
   end
 
   it 'displays a specific error message for too many nodes requested' do
+    pending 'fix test to not depend on external API call, see https://github.com/CartoDB/cartodb/issues/2677'
     filepath = 'http://api.openstreetmap.org/api/0.6/map?bbox=-73.996,40.7642,-73.8624,40.8202'
     downloader = Downloader.new(filepath)
     runner = Runner.new({
@@ -45,4 +46,3 @@ describe 'OSM regression tests' do
 
 
 end # OSM regression tests
- 

@@ -118,6 +118,14 @@ describe 'csv regression tests' do
     result.success?.should be_true, "error code: #{result.error_code}, trace: #{result.log_trace}"
   end
 
+  it 'imports files with invalid the_geom but previous valid geometry column (see #2108)' do
+    runner = runner_with_fixture('invalid_the_geom_valid_wkb_geometry.csv')
+    runner.run
+    
+    result = runner.results.first
+    result.success?.should be_true, "error code: #{result.error_code}, trace: #{result.log_trace}"
+  end
+
   it 'import big row files' do
     runner = runner_with_fixture('big_row.csv')
     runner.run
@@ -141,8 +149,25 @@ describe 'csv regression tests' do
       SELECT count(*)
       FROM #{result.schema}.#{result.table_name}
       AS count
-    }].first.fetch(:count).should eq 7
+    }].first.fetch(:count).should eq 5
   end
+
+  it 'refuses to import csv with broken encoding' do
+    pending "Need to update clinker to match production's ruby and stdlib"
+    filepath    = path_to('broken_encoding.csv')
+    downloader  = Downloader.new(filepath)
+    runner      = Runner.new({
+                               pg: @pg_options,
+                               downloader: downloader,
+                               log: CartoDB::Importer2::Doubles::Log.new,
+                               user: CartoDB::Importer2::Doubles::User.new
+                             })
+    runner.run
+
+    result = runner.results.first
+    runner.results.first.error_code.should eq CartoDB::Importer2::ERRORS_MAP[EncodingDetectionError]
+  end
+
 
   it 'displays a specific error message for a file with too many columns' do
     runner = runner_with_fixture('too_many_columns.csv')

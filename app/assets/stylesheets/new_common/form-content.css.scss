@@ -34,6 +34,10 @@
   @include justify-content(flex-start, start);
   padding: 10px 0;
 }
+.Form-row.Form-row--centered {
+  @include justify-content(center, center);
+  margin-left: -140px;
+}
 .Form-row.Form-row--spaced { padding: $sMargin-element 0 }
 .Form-rowLabel {
   width: 140px;
@@ -102,8 +106,8 @@
 // RowData sizes
 .Form-rowData--longer { width: 460px }
 .Form-rowData--long { width: 380px }
-.Form-rowData--med {}
-.Form-rowData--short {}
+.Form-rowData--med { width: 300px }
+.Form-rowData--short { }
 
 .Form-input {
   position: relative;
@@ -120,16 +124,16 @@
 .Form-input.Form-input--error:focus,
 .Form-input.Form-input--error:hover { border-color: rgba(#DD3B37,1) }
 
-.Form-input::-webkit-input-placeholder { font-style: italic; }
-.Form-input:-moz-placeholder           { font-style: italic; }
-.Form-input::-moz-placeholder          { font-style: italic; }
-.Form-input:-ms-input-placeholder      { font-style: italic; }
+.Form-input::-webkit-input-placeholder { font-style: italic; color: #AAA }
+.Form-input:-moz-placeholder           { font-style: italic; color: #AAA }
+.Form-input::-moz-placeholder          { font-style: italic; color: #AAA }
+.Form-input:-ms-input-placeholder      { font-style: italic; color: #AAA }
 
 // Sizes
 .Form-input--longer { width: 434px }
 .Form-input--long { width: 354px }
-.Form-input--med {}
-.Form-input--short {}
+.Form-input--med { width: 274px }
+.Form-input--short { width: 114px }
 // Types
 .Form-input.has-icon {
   padding: 0 42px 0 12px;
@@ -205,9 +209,36 @@
 
 }
 .Form-avatarPreview {
+  position: relative;
   width: 100px;
+  height: 100px;
+  background: $cStructure-grayBkg;
   border: 1px solid $cTypography-help;
   border-radius: 4px;
+  overflow: hidden;
+}
+.Form-avatarPreviewImage {
+  position: relative;
+  max-width: 100px;
+  border-radius: 4px;
+  background: $cStructure-grayBkg;
+}
+.Form-avatarPreviewLoader {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100px;
+  height: 100px;
+  background: rgba(black, 0.4);
+  border-radius: 4px;
+  z-index: 2;
+}
+.Spinner.Form-avatarPreviewSpinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -20px 0 0 -20px;
+  z-index: 1;
 }
 .Form-avatar .input-group {
   position: absolute;
@@ -235,7 +266,30 @@
     color: $cTypography-linkHover;
   }
 }
-
+.Form-avatar .btn[disabled] {
+  color: $cTypography-help;
+  &:hover {
+    cursor: default;
+    text-decoration: none;
+    color: $cTypography-help;
+  }
+}
+.Form-link {
+  color: $cTypography-link;
+  text-decoration: underline;
+  &:hover {
+    color: $cTypography-linkHover;
+    cursor: pointer;
+  }
+}
+.Form-link.is-disabled {
+  color: $cTypography-help;
+  text-decoration: none;
+  &:hover {
+    color: $cTypography-help;
+    cursor: default;
+  }
+}
 .Form-file {
   &:hover .Button--main { background: #007fbd }
   &:hover .Button--negative { background-color: rgba(#B93F37, 1) }
@@ -287,6 +341,9 @@
 .Form-rowInfoText {
   font-size: $sFontSize-normal;
   color: $cTypography-help;
+}
+.Form-rowInfoText--multipleLines {
+  line-height: 20px;
 }
 .Form-rowInfoText--error { color: #DD3B37 }
 .Form-footer {

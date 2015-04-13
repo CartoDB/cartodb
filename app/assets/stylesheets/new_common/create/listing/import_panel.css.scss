@@ -12,10 +12,17 @@ $w: 780px;
 }
 .ImportPanel-header {
   position: relative;
-  display: block;
+  @include display-flex();
+  @include flex-direction(column);
+  @include align-items(center);
   width: 100%;
   padding: $sMargin-section 0;
   text-align: center;
+}
+.ImportPanel-headerIcon {
+  text-align: center;
+  display: inline-block;
+  margin-bottom: 20px;
 }
 .ImportPanel-headerTitle {
   color: $cTypography-paragraphs;
@@ -42,8 +49,9 @@ $w: 780px;
   position: absolute;
   left: 0;
   top: 50%;
-  margin-top: -20px;  
+  margin-top: -20px; 
 }
+.ImportPanel-headerLink { margin-top: 30px }
 .ImportPanel-body {
   position: relative;
   display: block;

@@ -79,7 +79,7 @@
   padding-right: 2px;
   font-size: 14px;
   line-height: 80px;
-  color: $cTypography-help;
+  color: $cTypography-linkSelected;
   background: transparent;
   border: none;
   outline: none;
@@ -114,7 +114,7 @@
   @include justify-content(space-between, justify);
   @include align-items(center, center);
   height:80px;
-  width:843px;
+  width:841px;
 }
 .Filters-searchInput {
   width:790px;
@@ -132,16 +132,16 @@
   width:29px;
   height:29px;
   border-radius: 29px;
-  border:1px solid #CCC;
-  color:#CCC;
+  border:1px solid $cNavButton-default;
+  color: $cNavButton-default;
   text-align: center;
   line-height:31px;
   background: transparent;
   outline: none;
 
   &:hover {
-    border:1px solid #999;
-    color:#999;
+    border:1px solid $cNavButton-active;
+    color: $cNavButton-active;
   }
 }
 a.Filters-cleanSearch { line-height:32px }
@@ -232,7 +232,7 @@ a.Filters-cleanSearch { line-height:32px }
   font-size: 17px;
   line-height: 17px;
 }
-
+.Filters-actionButton { margin-right: 10px }
 .Filters-selectedItems {
   font-size:15px;
   font-weight:300;
@@ -243,10 +243,14 @@ a.Filters-cleanSearch { line-height:32px }
   @include justify-content(space-between, justify);
   @include align-items(center, center);
 }
-.Filters-actionsText { color: $cTypography-help }
+.Filters-actionsText {
+  padding-left: 25px;
+  font-size: 13px;
+  color: $cTypography-help;
+}
 .Filters-actionsLink {
-  font-size:13px;
-  padding-left:25px;
+  font-size: 13px;
+  padding-left: 25px;
 }
 .Filters-actionsLink.is--critical {
   color:#FF6C6C;
@@ -277,4 +281,13 @@ a.Filters-cleanSearch { line-height:32px }
 .Filters-progressBar {
   @include progress-bar(6px, 9px, true, false);
   width: 178px;
+}
+.Filters-link:hover {
+  text-decoration: none;
+  .Filters-progressSize { color: $cTypography-paragraphs }
+}
+@media only screen and (max-width: 959px) {
+  .Filters-row {
+    padding: 0 20px;
+  }
 }

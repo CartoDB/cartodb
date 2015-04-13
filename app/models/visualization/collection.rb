@@ -72,6 +72,7 @@ module CartoDB
       #   except if 'exclude_shared' filter is also present and true,
       # - 'only_shared' forces to use different flow because if there are no shared there's nothing else to do
       # - 'locked' filter has special behaviour
+      # - If 'only_liked' it will return all liked visualizations, not only user's.
       def fetch(filters={})
         filters = filters.dup   # Avoid changing state
         @user_id = filters.fetch(:user_id, nil)
@@ -142,32 +143,29 @@ module CartoDB
 
       # Warning, this is a cached count, do not use if adding/removing collection items
       # @throws KeyError
-      def total_shared_entries(raise_on_error = false)
+      def total_shared_entries(type = nil)
         total = 0
         unless @unauthenticated_flag
-          if @user_id.nil? && raise_on_error
+          if @user_id.nil?
             raise KeyError.new("Can't retrieve shared count without specifying user id")
           else
-            total = user_shared_entities_count + organization_shared_entities_count
+            total = user_shared_entities_count(type) + organization_shared_entities_count(type)
           end
         end
         total
       end
 
       # @throws KeyError
-      def total_liked_entries(raise_on_error = false)
+      def total_liked_entries(type = nil)
+        type ||= @type
         if @user_id.nil?
-          if raise_on_error
-            raise KeyError.new("Can't retrieve likes count without specifying user id")
-          else
-            return 0
-          end
+          raise KeyError.new("Can't retrieve likes count without specifying user id")
         end
 
         if @unauthenticated_flag
-          @type.nil? ? unauthenticated_likes_without_type : unauthenticated_likes_with_type
+          unauthenticated_likes(type)
         else
-          @type.nil? ? authenticated_likes_without_type : authenticated_likes_with_type
+          authenticated_likes(type)
         end
       end
 
@@ -178,46 +176,29 @@ module CartoDB
       attr_reader :collection
 
       # noinspection RubyArgCount
-      def unauthenticated_likes_without_type
-        CartoDB::Like.select(:subject)
-        .join(:visualizations,
-              :id.cast(:uuid) => :subject,
-              :user_id => @user_id,
-              :privacy => Visualization::Member::PRIVACY_PUBLIC)
-        .distinct
-        .count
+      def unauthenticated_likes(type)
+        options = { :id.cast(:uuid) => :subject,
+              :privacy => Visualization::Member::PRIVACY_PUBLIC }
+        count_likes(type, options)
       end
 
       # noinspection RubyArgCount
-      def unauthenticated_likes_with_type
-        CartoDB::Like.select(:subject)
-        .join(:visualizations,
-              :id.cast(:uuid) => :subject,
-              :user_id => @user_id,
-              :privacy => Visualization::Member::PRIVACY_PUBLIC,
-              :type => @type)
-        .distinct
-        .count
+      def authenticated_likes(type)
+        options = { :id.cast(:uuid) => :subject }
+
+        count_likes(type, options)
       end
 
-      # noinspection RubyArgCount
-      def authenticated_likes_without_type
-        CartoDB::Like.select(:subject)
-        .join(:visualizations,
-              :id.cast(:uuid) => :subject,
-              :user_id => @user_id)
-        .distinct
-        .count
-      end
+      def count_likes(type, options)
+        options.merge!({:type => type}) if type
 
-      # noinspection RubyArgCount
-      def authenticated_likes_with_type
-        CartoDB::Like.select(:subject)
-        .join(:visualizations,
-              :id.cast(:uuid) => :subject,
-              :user_id => @user_id,
-              :type => @type)
-        .distinct
+        user_id = @user_id
+
+        dataset = CartoDB::Like.select(:subject)
+        .where(:actor => @user_id)
+        .join(:visualizations, options)
+        dataset = add_liked_by_conditions_to_dataset(dataset, user_id)
+        dataset.distinct
         .count
       end
 
@@ -239,23 +220,25 @@ module CartoDB
         end
       end
 
-      def user_shared_entities_count
+      def user_shared_entities_count(type = nil)
+        type ||= @type
         user_shared_count = CartoDB::SharedEntity.select(:entity_id)
         .where(:recipient_id => @user_id,
                :entity_type => CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION,
                :recipient_type => CartoDB::SharedEntity::RECIPIENT_TYPE_USER)
-        if @type.nil?
+        if type.nil?
           user_shared_count = user_shared_count.join(:visualizations,
                                                      :visualizations__id.cast(:uuid) => :entity_id)
         else
           user_shared_count = user_shared_count.join(:visualizations,
                                                      :visualizations__id.cast(:uuid) => :entity_id,
-                                                     :type => @type)
+                                                     :type => type)
         end
         user_shared_count.count
       end
 
-      def organization_shared_entities_count
+      def organization_shared_entities_count(type)
+        type ||= @type
         user = User.where(id: @user_id).first
         if user.nil? || user.organization.nil?
           0
@@ -264,13 +247,13 @@ module CartoDB
           .where(:recipient_id => user.organization_id,
                  :entity_type => CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION,
                  :recipient_type => CartoDB::SharedEntity::RECIPIENT_TYPE_ORGANIZATION)
-          if @type.nil?
+          if type.nil?
             org_shared_count = org_shared_count.join(:visualizations,
                                                      :visualizations__id.cast(:uuid) => :entity_id)
           else
             org_shared_count = org_shared_count.join(:visualizations,
                                                      :visualizations__id.cast(:uuid) => :entity_id,
-                                                     :type => @type)
+                                                     :type => type)
           end
           org_shared_count.count
         end
@@ -311,6 +294,24 @@ module CartoDB
         end
       end
 
+      def add_liked_by_conditions_to_dataset(dataset, user_id)
+        user_shared_vis = user_shared_vis(user_id)
+        dataset = dataset.where { ( { privacy: [CartoDB::Visualization::Member::PRIVACY_PUBLIC, CartoDB::Visualization::Member::PRIVACY_LINK] } ) | ( { user_id: user_id } ) | ( { id: user_shared_vis } ) }
+        # TODO: this probably introduces duplicates. See #2899. Should be removed when like count and list matches for organizations
+        #include_shared_entities(dataset, { user_id: user_id } )
+      end
+
+      def base_collection(filters)
+        only_liked = filters.fetch(:only_liked, 'false')
+        if only_liked == true || only_liked == 'true'
+          user_id = filters[:user_id]
+          dataset = repository.collection({}, [])
+          dataset = add_liked_by_conditions_to_dataset(dataset, user_id)
+        else
+          repository.collection(filters, %w{ user_id })
+        end
+      end
+
       def compute_sharing_filter_dataset(filters)
         shared_filter = filters.delete(:shared)
         case shared_filter
@@ -329,7 +330,7 @@ module CartoDB
           dataset = repository.collection
           dataset = filter_by_only_shared(dataset, filters)
         else
-          dataset = repository.collection(filters,  %w{ user_id })
+          dataset = base_collection(filters)
           locked_filter = filters.delete(:locked)
           unless locked_filter.nil?
             if locked_filter.to_s == 'true'
@@ -347,7 +348,11 @@ module CartoDB
 
       def apply_filters(dataset, filters)
         @type = filters.fetch(:type, nil)
-        dataset = repository.apply_filters(dataset, filters, AVAILABLE_FIELD_FILTERS)
+        @type = nil if @type == ''
+        applied_filters = AVAILABLE_FIELD_FILTERS.dup
+        applied_filters = applied_filters.delete_if { |k, v| k == 'type' } if @type.nil?
+        dataset = repository.apply_filters(dataset, filters, applied_filters)
+        dataset = filter_by_types(dataset, filters.fetch('types', nil))
         dataset = filter_by_tags(dataset, tags_from(filters))
         dataset = filter_by_partial_match(dataset, filters.delete(:q))
         dataset = filter_by_kind(dataset, filters.delete(:exclude_raster))
@@ -423,6 +428,12 @@ module CartoDB
         else
           order_by_base_attribute(dataset, criteria)
         end
+      end
+
+      def filter_by_types(dataset, types = nil)
+        return dataset if types.nil? || types == ''
+        types_array = types.is_a?(String) ? types.split(',') : types
+        dataset.where(:type => types_array)
       end
 
       def filter_by_tags(dataset, tags=[])

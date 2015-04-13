@@ -6,20 +6,20 @@
   <script type="text/javascript">
     var username = "<%= current_user.username %>"
       , type = "oauth"
-      , config = <%=raw frontend_config.html_safe %>
+      , config = <%= safe_js_object frontend_config %>
       , organization_quota = {
           seats: <%= current_user.organization.seats %>,
           quota_in_bytes: <%= current_user.organization.quota_in_bytes %>
         }
-      , organization_users = <%= raw @users.map { |u| {
+      , organization_users = <%= safe_js_object @users.map { |u| {
           id: u.id,
           username: u.username,
           avatar_url: u.avatar_url,
           quota_in_bytes: u.quota_in_bytes,
           remaining_quota: u.remaining_quota,
           organization_owner: u.organization_owner?
-        }}.to_json -%>
-      , user_data = <%= raw current_user.data.to_json.html_safe %>;
+        }}.to_json %>
+      , user_data = <%= safe_js_object current_user.data.to_json %>;
   </script>
 <% end %>
 <%= content_for(:css) do %>
@@ -48,7 +48,7 @@
           <% @users.each do |user| -%>
           <li>
             <div class="info">
-              <%= link_to user.username, edit_organization_user_path(user_domain: params[:user_domain], id: user.username) %>
+              <%= link_to user.username, CartoDB.path(self, 'edit_organization_user', {id: user.username}) %>
               <% if user.organization_owner? %>
                 <span class="status owner">OWNER</span>
               <% end %>
@@ -62,10 +62,14 @@
       </div>
       <div class="foot">
         <% if current_user.organization.seats > @users.count %>
-          <%= link_to "Create new user", new_organization_user_path(user_domain: params[:user_domain]), :class => 'right button grey' %>
-          <%= link_to "Buy more seats", upgrade_url, :class => 'margin10 underline left' %>
+          <%= link_to "Create new user", CartoDB.path(self, 'new_organization_user'), :class => 'right button grey' %>
+          <% unless cartodb_com_hosted? %>
+            <%= link_to "Buy more seats", current_user.upgrade_url(request.protocol), :class => 'margin10 underline left' %>
+          <% end %>
         <% else %>
-          <%= link_to "Upgrade your quota", upgrade_url, :class => "button green right" %>
+          <% unless cartodb_com_hosted? %>
+            <%= link_to "Upgrade your quota", current_user.upgrade_url(request.protocol), :class => "button green right" %>
+          <% end %>
         <% end %>
       </div>
     </section>

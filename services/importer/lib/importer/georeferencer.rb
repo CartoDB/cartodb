@@ -43,15 +43,16 @@ module CartoDB
 
         drop_the_geom_webmercator
 
-        create_the_geom_from_geometry_column  ||
-        create_the_geom_from_latlon           ||
-        create_the_geom_from_ip_guessing      ||
-        create_the_geom_from_country_guessing ||
-        create_the_geom_in(table_name)
+        the_geom_column_name = create_the_geom_from_geometry_column  ||
+          create_the_geom_from_latlon           ||
+          create_the_geom_from_ip_guessing      ||
+          create_the_geom_from_country_guessing ||
+          create_the_geom_from_namedplaces_guessing ||
+          create_the_geom_in(table_name)
 
         enable_autovacuum
 
-        raise_if_geometry_collection
+        raise GeometryCollectionNotSupportedError if get_geometry_type(the_geom_column_name || 'the_geom') == 'GEOMETRYCOLLECTION'
         self
       end
 
@@ -80,6 +81,7 @@ module CartoDB
         populate_the_geom_from_latlon(
           qualified_table_name, latitude_column_name, longitude_column_name
         )
+        'the_geom'
       end
 
       def create_the_geom_from_geometry_column
@@ -91,11 +93,25 @@ module CartoDB
         column.mark_as_from_geojson_with_transform if @from_geojson_with_transform
         column.empty_lines_to_nulls
         column.geometrify
-        unless column_exists_in?(table_name, :the_geom)
-          column.rename_to(:the_geom)
+
+        column_name = geometry_column_name
+        if column_exists_in?(table_name, 'the_geom')
+          geometry_type = get_geometry_type('the_geom') rescue nil
+          if geometry_type.nil? || geometry_type == 'GEOMETRYCOLLECTION'
+            invalid_the_geom = get_column('the_geom')
+            if !column_exists_in?(table_name, 'invalid_the_geom')
+              invalid_the_geom.rename_to('invalid_the_geom')
+            end
+          end
         end
+
+        unless column_exists_in?(table_name, 'the_geom')
+          column_name = 'the_geom'
+          column.rename_to(column_name)
+        end
+
         handle_multipoint(qualified_table_name) if multipoint?
-        self
+        column_name
       rescue => exception
         job.log "Error creating the_geom: #{exception}. Trace: #{exception.backtrace}"
         if /statement timeout/.match(exception.message).nil?
@@ -132,8 +148,32 @@ module CartoDB
                                  'warning',
                                  {user_id: @job.logger.user_id, backtrace: ex.backtrace})
           job.log "WARNING: #{message}"
-          return false
         end
+        return false
+      end
+
+      def create_the_geom_from_namedplaces_guessing
+        return false if not @content_guesser.enabled?
+        job.log 'Trying namedplaces guessing...'
+        begin
+          @importer_stats.timing('guessing') do
+            @tracker.call('guessing')
+            @content_guesser.namedplaces.run!
+            @tracker.call('importing')
+          end
+          if @content_guesser.namedplaces.found?
+            job.log "Found namedplace column: #{@content_guesser.namedplaces.column}"
+            create_the_geom_in table_name
+            return geocode_namedplaces
+          end
+        rescue Exception => ex
+          message = "create_the_geom_from_namedplaces_guessing failed: #{ex.message}"
+          Rollbar.report_message(message,
+                                 'warning',
+                                 {user_id: @job.logger.user_id, backtrace: ex.backtrace})
+          job.log "WARNING: #{message}"
+        end
+        return false
       end
 
       def create_the_geom_from_ip_guessing
@@ -165,12 +205,21 @@ module CartoDB
         geocode(country_column_name, 'polygon', 'admin0')
       end
 
+      def geocode_namedplaces
+        job.log "Geocoding namedplaces..."
+        geocode(@content_guesser.namedplaces.column[:column_name],
+                'point',
+                'namedplace',
+                @content_guesser.namedplaces.country_column_name,
+                @content_guesser.namedplaces.country)
+      end
+
       def geocode_ips ip_column_name
         job.log "Geocoding ips..."
         geocode(ip_column_name, 'point', 'ipaddress')
       end
 
-      def geocode(formatter, geometry_type, kind)
+      def geocode(formatter, geometry_type, kind, country_column_name=nil, country=nil)
         geocoder = nil
         @importer_stats.timing("geocoding.#{kind}") do
           @tracker.call('geocoding')
@@ -184,12 +233,13 @@ module CartoDB
             geometry_type: geometry_type,
             kind: kind,
             max_rows: nil,
-            country_column: nil
+            country_column: country_column_name,
+            countries: country.present? ? "'#{country}'" : nil
           )
           geocoder = CartoDB::InternalGeocoder::Geocoder.new(config)
 
           begin
-            geocoding = Geocoding.new config.slice(:kind, :geometry_type, :formatter, :table_name)
+            geocoding = Geocoding.new config.slice(:kind, :geometry_type, :formatter, :table_name, :country_column, :country_code)
             geocoding.force_geocoder(geocoder)
             geocoding.user = user
             geocoding.data_import_id = data_import.id unless data_import.nil?
@@ -206,6 +256,7 @@ module CartoDB
           job.log "Geocoding finished"
         end
         geocoder.state == 'completed'
+        'the_geom'
       end
 
       def row_count
@@ -239,6 +290,7 @@ module CartoDB
             '#{schema}','#{table_name}','the_geom',4326,'geometry',2
           );
         })
+        'the_geom'
       end
 
       def column_exists_in?(table_name, column_name)
@@ -276,10 +328,12 @@ module CartoDB
         column.drop
       end
 
-      def raise_if_geometry_collection
-        column = Column.new(db, table_name, :the_geom, schema, job)
-        return self unless column.geometry_type == 'GEOMETRYCOLLECTION'
-        raise GeometryCollectionNotSupportedError
+      def get_column(column = :the_geom)
+        Column.new(db, table_name, column, schema, job)
+      end
+
+      def get_geometry_type(column = :the_geom)
+        get_column(column).geometry_type
       end
 
       def find_column_in(table_name, possible_names)

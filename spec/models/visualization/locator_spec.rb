@@ -95,7 +95,7 @@ describe Visualization::Locator do
 
     it 'returns nil if no visualization or table found' do
       Visualization::Collection.any_instance.stubs(:user_shared_vis).returns([])
-      @locator.get('bogus', @subdomain).should == [nil, nil]
+      @locator.get('220d2f46-b371-11e4-93f7-080027880ca6', @subdomain).should == [nil, nil]
     end
   end #get
 

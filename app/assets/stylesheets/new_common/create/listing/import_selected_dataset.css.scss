@@ -10,7 +10,7 @@ $br: 4px;
 .DatasetSelected {
   width: $w;
   margin: 0 0 0 -20px;
-  background: $cCard-hoverFill;
+  background: white;
   border: 1px solid #BBD7F2;
   border-radius: $br;
 }
@@ -47,15 +47,18 @@ $br: 4px;
 }
 .DatasetSelected-sync {
   display: block;
-  padding: 20px;
-  border-top: 1px solid #BBD7F2;
   background: white;
   border-bottom-right-radius: $br;
   border-bottom-left-radius: $br;
+  overflow: hidden;
 }
 .DatasetSelected-syncOptions {
   @include display-flex();
   @include align-items(center, center);
+  padding-top: 20px;
+  padding-bottom: 20px;
+  margin: 0 20px;
+  border-top: 1px solid $cStructure-mainLine;
 }
 .DatasetSelected-syncLabel {
   width: 100px;
@@ -71,33 +74,15 @@ $br: 4px;
 }
 .DatasetSelected-syncOptionsItem { margin-left: 24px }
 .DatasetSelected-syncOptionsItem .RadioButton-label { font-size: $sFontSize-normal }
-.DatasetSelected-upgrade {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center, center);
-  margin-top: 20px;
-  border-top: 1px solid $cStructure-mainLine;
-  padding-top: 20px;
-}
-.DatasetSelected-upgradeIcon {
-  width: 38px;
-  height: 38px;
-  border: 1px solid #CCC;
-  border-radius: 4px;
-  line-height: 37px!important;
-  text-align: center;
-  font-size: 22px;
-  color: $cTypography-help;
-}
-.DatasetSelected-upgradeText {
-  width: 550px;
-  font-size: 14px;
-  font-style: italic;
-  font-weight: $sFontWeight-lighter;
-  color: $cTypography-headers;
+.UpgradeElement.DatasetSelected-upgrade {
+  border-left: 0;
+  border-right: 0;
+  border-bottom: 0;
+  border-top: 1px solid #BBD7F2!important;
+  border-radius: 0 0 4px 4px;
+  padding: 20px;
 }
 .DatasetSelected-upgradeButton {
   padding-left: 40px;
   padding-right: 40px;
-  &:hover { color: white }
 }

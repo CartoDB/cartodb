@@ -3,6 +3,7 @@
 require 'ipaddr'
 require_relative 'table_sampler'
 require_relative 'importer_stats'
+require_relative 'namedplaces_guesser'
 
 module CartoDB
   module Importer2
@@ -39,6 +40,10 @@ module CartoDB
           return column[:column_name] if is_country_column? column
         end
         nil
+      end
+
+      def namedplaces
+        @namedplaces ||= NamedplacesGuesser.new(self)
       end
 
       def ip_column

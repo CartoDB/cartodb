@@ -116,6 +116,13 @@
   color: $cTypography-paragraphs;
   font-weight: $sFontWeight-lighter;
 }
+.ContentResult-textTitle {
+  color: $cTypography-link;
+  text-decoration: underline;
+  &:hover {
+    color: $cTypography-linkHover;
+  }
+}
 
 @include keyframes(pulsate) {
   0% {right:100%;}

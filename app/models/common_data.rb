@@ -9,7 +9,7 @@ class CommonData
 
       _datasets = DATASETS_EMPTY
 
-      if is_enabled
+      if is_enabled?
         _datasets = get_datasets(get_datasets_json)
       end
 
@@ -17,6 +17,10 @@ class CommonData
     end
 
     @datasets
+  end
+
+  def is_enabled?
+    !config('username').nil? && !config('api_key').nil?
   end
 
   private
@@ -81,10 +85,6 @@ class CommonData
 
   def export_query(table_name)
     "select * from #{table_name}"
-  end
-
-  def is_enabled
-    !config('username').nil? && !config('api_key').nil?
   end
 
   def config(key, default=nil)

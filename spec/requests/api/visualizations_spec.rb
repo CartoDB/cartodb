@@ -217,20 +217,6 @@ describe Api::Json::VisualizationsController do
   end # POST /api/v1/viz
 
   describe 'GET /api/v1/viz' do
-    it 'retrieves a collection of visualizations' do
-      pending
-      payload = factory
-      post "/api/v1/viz?api_key=#{@api_key}", 
-        payload.to_json, @headers
-      id = JSON.parse(last_response.body).fetch('id')
-      
-      get "/api/v1/viz?api_key=#{@api_key}",
-        {}, @headers
-
-      response    = JSON.parse(last_response.body)
-      collection  = response.fetch('visualizations')
-      collection.first.fetch('id').should == id
-    end
 
     it 'is updated after creating a visualization' do
       pending

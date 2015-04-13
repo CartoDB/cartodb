@@ -2,11 +2,6 @@
 
 require_relative '../../../../app/models/visualization/member'
 
-# TODO:
-# - exclude private liked if not shared
-# - count shared
-# - ...
-
 shared_examples_for "visualization controllers" do
 
   NORMALIZED_DATE_ATTRIBUTES = %w{ created_at updated_at }
@@ -907,6 +902,27 @@ shared_examples_for "visualization controllers" do
         body = JSON.parse(last_response.body)
         body['id'].should eq u1_vis_1_id
 
+      end
+
+    end
+
+    describe 'GET /api/v1/viz' do
+
+      it 'retrieves a collection of visualizations' do
+        # TODO: I'm not sure about stubbing this tiler request, I've taken it from existing tests
+        CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+        delete_user_data @user
+        payload = factory(@user)
+        post "/api/v1/viz?api_key=#{@api_key}", payload.to_json, @headers
+        id = JSON.parse(last_response.body).fetch('id')
+
+        get "/api/v1/viz?api_key=#{@api_key}",
+          {}, @headers
+
+        response    = JSON.parse(last_response.body)
+        collection  = response.fetch('visualizations')
+        collection.first.fetch('id').should == id
       end
 
     end

@@ -36,7 +36,8 @@ module Carto
       end
 
       def index
-        type = params[:type].present? && type != '' ? params[:type] : Carto::Visualization::TYPE_CANONICAL
+        # TODO: check whether this is consistent with dashboard expectations
+        type = params[:type].present? && type != '' ? params[:type] : "#{Carto::Visualization::TYPE_CANONICAL},#{Carto::Visualization::TYPE_DERIVED}"
         types = params.fetch(:types, type).split(',')
         page = (params[:page] || 1).to_i
         per_page = (params[:per_page] || 20).to_i

@@ -209,9 +209,36 @@
 
 }
 .Form-avatarPreview {
+  position: relative;
   width: 100px;
+  height: 100px;
+  background: $cStructure-grayBkg;
   border: 1px solid $cTypography-help;
   border-radius: 4px;
+  overflow: hidden;
+}
+.Form-avatarPreviewImage {
+  position: relative;
+  max-width: 100px;
+  border-radius: 4px;
+  background: $cStructure-grayBkg;
+}
+.Form-avatarPreviewLoader {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100px;
+  height: 100px;
+  background: rgba(black, 0.4);
+  border-radius: 4px;
+  z-index: 2;
+}
+.Spinner.Form-avatarPreviewSpinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -20px 0 0 -20px;
+  z-index: 1;
 }
 .Form-avatar .input-group {
   position: absolute;
@@ -237,6 +264,14 @@
     cursor: pointer;
     text-decoration: underline;
     color: $cTypography-linkHover;
+  }
+}
+.Form-avatar .btn[disabled] {
+  color: $cTypography-help;
+  &:hover {
+    cursor: default;
+    text-decoration: none;
+    color: $cTypography-help;
   }
 }
 .Form-link {

@@ -14,23 +14,23 @@ module CartoDB
           ) unless File.exists?(configuration_file)
 
           @pg_options = ::JSON.parse(File.read(configuration_file))
-        end #initialize
+        end
 
         def connection
           Sequel.postgres(pg_options)
-        end #connection
+        end
 
         def pg_options
           Hash[@pg_options.map { |k, v| [k.to_sym, v] }]
-        end #pg_options
+        end
 
         private
 
         def configuration_file
           File.join(File.dirname("#{__FILE__}"), 'database.json')
-        end #configuration_file
-      end # PGConnection
-    end # Factories
-  end # Synchronizer
-end # CartoDB
+        end
+      end
+    end
+  end
+end
 

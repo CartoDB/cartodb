@@ -60,7 +60,7 @@ $bannedColor: #E1A7A5;
   margin: 0;
   padding: $sMargin-group 0;
   border: none;
-  border-bottom: 1px solid $cStructure-mainLine;
+  border-bottom: 1px solid $cStructure-softLine;
   cursor: default;
   background: none;
   .DatasetsList-itemCategory { @include opacity(0) }

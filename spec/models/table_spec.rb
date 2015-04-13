@@ -2141,7 +2141,7 @@ describe Table do
 
       cache = mock()
       cache.expects(:get).once
-      cache.expects(:setex).never
+      cache.expects(:setex).once
 
       table.stubs(:cache).returns(cache)
 
@@ -2157,7 +2157,7 @@ describe Table do
 
       cache = mock()
       cache.expects(:get).once.returns(nil)
-      cache.expects(:setex).never
+      cache.expects(:setex).once
 
       table.stubs(:cache).returns(cache)
 

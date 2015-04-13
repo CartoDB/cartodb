@@ -180,7 +180,7 @@ $bannedColor: #E1A7A5;
   .DatasetsList-itemTags .DefaultEditInline-input { text-align: right }
   .DatasetsList-itemDescription {
     margin-top: 4px;
-    height: 1 * $sLineHeight-normal;
+    height: $sLineHeight-normal;
   }
 
 // Banned dataset

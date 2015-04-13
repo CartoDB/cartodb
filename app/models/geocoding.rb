@@ -95,6 +95,7 @@ class Geocoding < Sequel::Model
     CartoDB::notify_exception(e, user: user)
   end # cancel
 
+  # INFO: this method shall always be called from a queue processor
   def run!
     processable_rows = self.class.processable_rows(table_service)
     if processable_rows == 0
@@ -112,17 +113,14 @@ class Geocoding < Sequel::Model
 
   def run_geocoding!(processable_rows, rows_geocoded_before = 0)
     self.update state: 'started', processable_rows: processable_rows
+    started_at = Time.now
+
+    # INFO: this is where the real stuff is done
     table_geocoder.run
+
     self.update remote_id: table_geocoder.remote_id
-    started = Time.now
-    begin
-      self.update(table_geocoder.update_geocoding_status)
-      raise 'Geocoding timeout' if Time.now - started > run_timeout and ['started', 'submitted', 'accepted'].include? state
-      raise 'Geocoding failed'  if state == 'failed'
-      # INFO: this loop polls database
-      # TODO: check whether this is always neccesary. Probably not (always) async.
-      sleep(2)
-    end until ['completed', 'cancelled'].include? state
+    self.update(table_geocoder.update_geocoding_status)
+    raise 'Geocoding failed'  if state == 'failed'
     return false if state == 'cancelled'
     self.update(cache_hits: table_geocoder.cache.hits) if table_geocoder.respond_to?(:cache)
     Statsd.gauge("geocodings.requests", "+#{self.processed_rows}") rescue nil
@@ -130,16 +128,19 @@ class Geocoding < Sequel::Model
     table_geocoder.process_results if state == 'completed'
     create_automatic_geocoding if automatic_geocoding_id.blank?
     rows_geocoded_after = table_service.owner.in_database.select.from(table_service.sequel_qualified_table_name).where('cartodb_georef_status is true and the_geom is not null').count rescue 0
+
+    finished_at = Time.now
     self.update(state: 'finished', real_rows: rows_geocoded_after - rows_geocoded_before, used_credits: calculate_used_credits)
-    self.report
+    self.report(started_at, finished_at)
   rescue => e
+    finished_at = Time.now
     self.update(state: 'failed', processed_rows: 0, cache_hits: 0)
     CartoDB::notify_exception(e, user: user)
-    self.report(e)
+    self.report(started_at, finished_at, e)
   end # run!
 
-  def report(error = nil)
-    payload = metrics_payload(error)
+  def report(started_at=nil, finished_at=nil, error=nil)
+    payload = metrics_payload(started_at, finished_at, error)
     CartoDB::Metrics.new.report(:geocoding, payload)
     payload.delete_if {|k,v| %w{distinct_id email table_id}.include?(k.to_s)}
     geocoding_logger.info(payload.to_json)
@@ -209,7 +210,7 @@ class Geocoding < Sequel::Model
     processable_rows.to_i - real_rows.to_i
   end
 
-  def metrics_payload(exception = nil)
+  def metrics_payload(started_at=nil, finished_at=nil, exception=nil)
     payload = {
       created_at:       created_at,
       distinct_id:      user.username,
@@ -248,6 +249,12 @@ class Geocoding < Sequel::Model
         success: false,
         error: error
       )
+    end
+    if !started_at.nil? && !finished_at.nil?
+      payload.merge!(
+                     processing_time: finished_at - started_at,
+                     queue_time: started_at - created_at
+                     )
     end
     payload
   end

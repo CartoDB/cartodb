@@ -7,6 +7,9 @@ require_relative '../table'
 module CartoDB
   module Visualization
     class Locator
+
+      UUID_FORMAT_REGEX = /^[a-f0-9]{8}\-[a-f0-9]{4}\-[a-f0-9]{4}\-[a-f0-9]{4}\-[a-f0-9]{12}$/i
+
       def initialize(user_model=nil)
         @user_model   = user_model  || ::User
       end
@@ -38,7 +41,6 @@ module CartoDB
         [visualization, visualization.table]
       end
 
-      # TODO: Check if we still need this, as everything comes loaded from Vis collections now
       def table_from(id_or_name, user)
         table = ::Table.get_by_id(id_or_name, user)
         return false unless table && table.table_visualization
@@ -48,6 +50,8 @@ module CartoDB
       end
         
       def get_by_id(uuid, filters)
+        return nil if (uuid =~ UUID_FORMAT_REGEX) != 0
+
         params = {
           id: uuid
         }

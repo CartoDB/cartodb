@@ -126,9 +126,14 @@ class Table
       # cache hit
       types = JSON.parse(types_str)
     else
-      # cache miss, query and store if length > 0
+      # cache miss, query and store
       types = query_geometry_types
-      cache.setex(geometry_types_key, 24.hours.to_i, types) if types.length > 0
+      timeout = if types.empty? then
+                  5.minutes
+                else
+                  24.hours
+                end
+      cache.setex(geometry_types_key, timeout, types)
     end
 
     types

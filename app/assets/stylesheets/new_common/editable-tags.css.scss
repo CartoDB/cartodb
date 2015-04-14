@@ -1,0 +1,47 @@
+// Editable tags
+// --------------------------------------------------
+
+@import "../new_variables/colors";
+@import "../new_variables/sizes";
+@import "../new_variables/mixins";
+
+$fieldBgColor: #FEFCEA;
+$fieldBorderColor: #DFE8EC;
+
+.EditableTags {
+  button {
+    font-style: italic;
+    color: $cTypography-link;
+  }
+  input[type=text] {
+    background: none;
+    border: none;
+    outline: none;
+    display: none;
+    height: 100%;
+    overflow: hidden;
+    width: 100%;
+
+    @include nicer-lato-typography();
+    font-size: $sFontSize-normal;
+    line-height: $sLineHeight-normal;
+    color: $cTypography-secondary;
+
+    background: -webkit-linear-gradient(bottom, $fieldBorderColor 0%, $fieldBgColor 8%) 0 0px;
+    background: -moz-linear-gradient(bottom, $fieldBorderColor 0%, $fieldBgColor 8%) 0 0px;
+    background: linear-gradient(bottom, $fieldBorderColor 0%, $fieldBgColor 8%) 0 0px;
+    background-size: 100% $sLineHeight-normal;
+  }
+}
+
+.EditableTags.is-editing {
+  width: 100%;
+
+  button {
+    display: none;
+  }
+  input[type=text] {
+    display: block;
+    resize: none;
+  }
+}

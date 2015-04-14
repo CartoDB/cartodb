@@ -1,6 +1,5 @@
 <%= content_for(:css) do %>
-  <%= stylesheet_link_tag 'cartodb.css', 'public_map.css' %>
-  <!--[if gt IE 8]><%= stylesheet_link_tag "fonts_ie" %><![endif]-->
+  <%= stylesheet_link_tag 'cartodb', 'new_common' %>
 <% end %>
 
 <%= content_for(:body_class) do %>
@@ -9,124 +8,81 @@
 
 <%= content_for(:content) do %>
   <% if @visualization.public? || @visualization.public_with_link? || @visualization.password_protected? || @visualization.organization? %>
+    <%= render 'admin/shared/new_public_header' %>
 
-    <div class="cartodb-public-wrapper">
+    <div class="PublicMap-map js-map"></div>
+    <div class="u-inner">
       
-      <%= render 'admin/shared/public_header', :clone => true, :signin => false %>
+      <div class="PublicMap-info">
 
-      <div class="separator top"></div>
+        <%#= 1st block %>
+        <div class="PublicMap-block">
+          <div class="PublicMap-infoLeft">
+            <h1 class="PublicMap-title"><%= @visualization.name %></h1>
+            <div class="PublicMap-meta">
+              <span class="PublicMap-metaTime DefaultTimeDiff">
+                <i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i>
+                <%= time_ago_in_words(@visualization.updated_at) %>
+                by
+                <span class="UserAvatar">
+                  <img class="UserAvatar-img UserAvatar-img--smaller" src="<%= @visualization.user.avatar %>" alt="<%= @visualization.user.username %>" title="<%= @visualization.user.username %>"  />
+                </span>
+                <a href="<%= CartoDB.url(self, 'public_visualizations_show', {id: @visualization.id}, @visualization.user) %>" target="_blank"><%= @visualization.user.name || @visualization.user.username %></a>
+              </span>
+            </div>
+            <div class="PublicMap-des">
+              <%= raw @visualization.description_html_safe %>
+            </div>
+          </div>
+          <div class="PublicMap-infoRight">
+            <nav class="PublicMap-share">
+              <a href="hello" target="_blank" class="PublicMap-shareButton PublicMap-shareButton--facebook">Facebook</a>
+              <a href="hello" target="_blank" class="PublicMap-shareButton PublicMap-shareButton--twitter">Twitter</a>
+            </nav>
+          </div>
+        </div>
 
-      <div id="map"></div>
+        <%#= 2nd block %>
+        <div class="PublicMap-block">
+          <div class="PublicMap-infoLeft">
+            <% if @visualization.tags.size > 0 %>
+              <div class="PublicMap-infoStat PublicMap-infoStat--tags">
+                <i class="iconFont iconFont-Label"></i>
+                <span class="DefaultTags">
+                  <% formatted_tags(@visualization.tags) do |tag| %><a class="DefaultTags-item" href="<%= CartoDB.url(self, 'public_datasets_tag', {tag: tag}, @visualization.user) %>"><%= tag %></a><% end %>
+                </span>
+              </div>
+            <% end %>
+            <div class="PublicMap-infoStat PublicMap-infoStat--fullpage">
+              <i class="iconFont iconFont-FullPage"></i>
+              Full page map
+            </div>
+          </div>
+          <div class="PublicMap-infoRight">
+            <div class="PublicMap-infoStat PublicMap-infoStat--mapviews">
+              <i class="iconFont iconFont-Stats"></i>
+              134,135 mapviews
+            </div>
+            <div class="PublicMap-infoStat PublicMap-infoStat--likes">
+              <button class="js-likes"
+                data-vis-id="<%= @visualization.id %>"
+                data-likes-count="<%= @likes_count %>">
+              </button>
+            </div>
+          </div>
+        </div>
 
-      <div id="not_supported_dialog" style="display: none">
-        <h2>CartoDB</h2>
-        <p>This visualization only works in modern browsers. Upgrade yours and enjoy.</p>
-        <ul>
-          <li><a href="http://www.apple.com/safari/" class="safari">Safari</a></li>
-          <li><a href="https://www.google.com/chrome/" class="chrome">Chrome</a></li>
-          <li class="last"><a href="http://www.mozilla.org/en-US/firefox/all/‎" class="firefox">Firefox</a></li>
-        </ul>
       </div>
+
     </div>
 
-    <div class="separator bottom"></div>
-    <div class="cartodb-map-data">
-      <div class="cartodb-info">
-        <div class="inner">
-
-          <div class="details embed-left-col">
-            <div class="content">
-              <h1><%= @visualization.name %></h1>
-
-              <p class="description"><%= raw @visualization.description_html_safe %></p>
-              <p class="options">
-                <a href="<%= CartoDB.url(self, 'public_visualizations_embed_map', {id: @visualization.id}) %>" class="iframe">Full page map</a>
-              </p>
-            </div>
-          </div>
-
-          <div class="user embed-right-col">
-            <div class="user-info">
-              <a href="<%= CartoDB.url(self, 'public_visualizations_home') %>" title="Maps by <%= @name %>" class="content">
-                <h4>by <%= @name %></h4>
-              </a>
-
-              <h5><%= "#{@visualization_count} #{@visualization_count != 1 ? "maps" :"map"} created" %></h5>
-            </div>
-            <a href="<%= CartoDB.url(self, 'public_visualizations_home') %>" title="Maps by <%= @name %>" class="content">
-              <img src="<%= @avatar_url %>" class="avatar" />
-            </a>
-          </div>
-
-          <div class="extra_options">
-            <div class="left"></div>
-            <div class="user-options">
-
-              <a href="#like" class="like button grey js-like">
-                <span class="icon"></span>
-                <span class="counter"><%= @likes_count %></span>
-              </a>
-
-              <a href="<%= CartoDB.url(self, 'public_visualizations_show', {id: @visualization.id}, @visualization.user) %>" class="edit button grey">Edit in CartoDB</a>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      <div class="cartodb-body">
-        <div class="inner">
-
-          <div class="map-info embed-right-col">
-            <div class="content">
-
-              <h2>Datasets used in this map</h2>
-              <ul>
-                <% if @related_tables.present? %>
-                    <% @related_tables.each do |table| %>
-                      <% if table.privacy_text == "PUBLIC" %>
-                        <li>
-                          <a href="<%= CartoDB.url(self, 'public_table', {id: table.name}, @user_domain.nil? ? nil : @related_tables_owners[table.user_id]) %>" title="<%= table.name.gsub(/_/," ") %>"><%= table.name.gsub(/_/, " ") %></a><span><%= number_to_human_size(table.table_size) %></span>
-                        </li>
-                      <% end %>
-                    <% end %>
-                <% end %>
-
-                <% if @nonpublic_tables_count.present? && @nonpublic_tables_count > 0 %>
-                  <li class="private">
-                    <%= @nonpublic_tables_count %> private dataset<%= @nonpublic_tables_count != 1 ? 's' : '' %><span class="help" original-title="This map contains <%= @nonpublic_tables_count %> dataset<%= @nonpublic_tables_count != 1 ? 's' : '' %> made private by the publisher">(?)</span>
-                  </li>
-                <% end %>
-              </ul>
-
-            </div>
-          </div>
-
-          <div class="comments embed-left-col">
-            <div class="content">
-              <div id="disqus_thread"></div>
-              <script type="text/javascript">
-
-                var disqus_shortname  = '<%= @disqus_shortname %>';
-                var disqus_identifier = '<%= @visualization.id %>';
-
-                (function() {
-                  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-                  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-                  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-                })();
-
-              </script>
-              <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript" class="no_script">comments powered by Disqus.</a></noscript>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    <%= render 'admin/visualizations/public/public_map_footer' %>
-    </div>
+    <%= render 'admin/shared/new_footer' %>
   <% end %>
 <% end %>
+
+
+
+
 
 <%= content_for(:js) do %>
   <% if @visualization.map.provider == 'googlemaps' %>

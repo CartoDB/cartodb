@@ -124,3 +124,11 @@
   color: $cHighlight-main;
   border-color: $cHighlight-main;
 }
+.NotificationsList-item .iconFont-new_public_dashboard {
+  line-height: 17px;
+  &:before { content: "\E016" }
+}
+.NotificationsList-item.is--new .iconFont-new_public_dashboard {
+  color: $cHighlight-positive;
+  border-color: $cHighlight-positive;
+}

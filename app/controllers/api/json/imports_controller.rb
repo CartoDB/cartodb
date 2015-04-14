@@ -27,8 +27,9 @@ class Api::Json::ImportsController < Api::ApplicationController
   end
 
   def show
-    # If not valid uuid format out (avoid pollution from clients doing experiments)
-    if (params[:id] =~ /^[a-f0-9]{8}\-[a-f0-9]{4}\-[a-f0-9]{4}\-[a-f0-9]{4}\-[a-f0-9]{12}$/i) != 0
+    begin
+      UUIDTools::UUID.parse(params[:id])
+    rescue ArgumentError
       render_404 and return
     end
 

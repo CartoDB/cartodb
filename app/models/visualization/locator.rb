@@ -3,12 +3,11 @@ require_relative '../visualization'
 require_relative './member'
 require_relative '../user'
 require_relative '../table'
+require 'uuidtools'
 
 module CartoDB
   module Visualization
     class Locator
-
-      UUID_FORMAT_REGEX = /^[a-f0-9]{8}\-[a-f0-9]{4}\-[a-f0-9]{4}\-[a-f0-9]{4}\-[a-f0-9]{12}$/i
 
       def initialize(user_model=nil)
         @user_model   = user_model  || ::User
@@ -50,7 +49,11 @@ module CartoDB
       end
         
       def get_by_id(uuid, filters)
-        return nil if (uuid =~ UUID_FORMAT_REGEX) != 0
+        begin
+          ::UUIDTools::UUID.parse(uuid)
+        rescue ArgumentError
+          return nil
+        end
 
         params = {
           id: uuid

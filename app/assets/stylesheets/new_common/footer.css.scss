@@ -34,6 +34,12 @@
     left: 50%;
     margin-left: -$sIcon-layout / 2;
   }
+  .Footer-logo.Logo.Logo--grey {
+    top: 25px;
+  }
+  .Footer .Footer-inner {
+    margin-top: 45px;
+  }
 }
 
 @media (min-width: $sMedia-tablet) {

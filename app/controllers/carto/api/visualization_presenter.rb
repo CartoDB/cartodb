@@ -4,13 +4,14 @@ require_relative 'user_table_presenter'
 
 class Carto::Api::VisualizationPresenter
 
-  def initialize(visualization, current_viewer)
+  def initialize(visualization, current_viewer, options = {})
     @visualization = visualization
     @current_viewer = current_viewer
+    @options = options
   end
 
   def to_poro
-    {
+    poro = {
       id: @visualization.id,
       name: @visualization.name,
       map_id: @visualization.map_id,
@@ -40,9 +41,17 @@ class Carto::Api::VisualizationPresenter
       children: @visualization.children.map { |v| children_poro(v) },
       liked: @current_viewer ? @visualization.is_liked_by_user_id?(@current_viewer.id) : false
     }
+    poro.merge!( { related_tables: related_tables } ) if @options.fetch(:related, true)
+    poro
   end
 
   private
+
+  def related_tables
+    related = @visualization.table ? @visualization.related_tables.select { |table| table.id != @visualization.table.id } : @visualization.related_tables
+
+    related.map { |table| Carto::Api::UserTablePresenter.new(table, @visualization.permission).to_poro }
+  end
 
   def children_poro(visualization)
     {

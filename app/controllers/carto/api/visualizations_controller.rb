@@ -7,7 +7,7 @@ module Carto
     class VisualizationsController < ::Api::ApplicationController
 
       before_filter :table_and_schema_from_params
-      before_filter :load_visualization, only: [:likes_count, :likes_list, :is_liked]
+      before_filter :load_visualization, only: [:likes_count, :likes_list, :is_liked, :show]
       ssl_required :index
       skip_before_filter :api_authorization_required, only: [:index]
       before_filter :optional_api_authorization, only: [:index]
@@ -33,6 +33,12 @@ module Carto
       def load_visualization
         @visualization = Visualization.find(@table_id)
         return render(text: 'Visualization not viewable', status: 403) if !@visualization.is_viewable_by_user?(current_viewer)
+      end
+
+      def show
+        render_jsonp(to_json(@visualization))
+      rescue KeyError
+        head(404)
       end
 
       def index
@@ -90,7 +96,7 @@ module Carto
         # TODO: undesirable table hardcoding, needed for disambiguation. Look for
         # a better approach and/or move it to the query builder
         response = {
-          visualizations: vqb.with_order("visualizations.#{order}", :desc).build_paged(page, per_page).map { |v| VisualizationPresenter.new(v, current_viewer).to_poro },
+          visualizations: vqb.with_order("visualizations.#{order}", :desc).build_paged(page, per_page).map { |v| VisualizationPresenter.new(v, current_viewer, { related: false }).to_poro },
           total_entries: vqb.build.count
         }
         if current_user
@@ -126,6 +132,15 @@ module Carto
       end
 
       private
+
+      def to_json(visualization)
+        ::JSON.dump(to_hash(visualization))
+      end
+
+      def to_hash(visualization)
+        # TODO: previous controller uses public_fields_only option which I don't know if is still used
+        VisualizationPresenter.new(visualization, current_viewer).to_poro
+      end
 
       def compose_shared(shared, only_shared, exclude_shared)
         valid_shared = shared if [FILTER_SHARED_ONLY, FILTER_SHARED_NO, FILTER_SHARED_YES].include?(shared)

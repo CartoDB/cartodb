@@ -53,7 +53,8 @@
   -moz-flex-grow: $v;
   -ms-flex-grow: $v;
   flex-grow: $v;
-  // IE10 doesn't support this property
+  // IE10 fallback
+  -ms-flex: $v 0 auto;
 }
 @mixin flex-wrap($v) {
   -webkit-flex-wrap: $v;

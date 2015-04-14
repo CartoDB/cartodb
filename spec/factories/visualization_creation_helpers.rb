@@ -30,11 +30,6 @@ shared_context 'visualization creation helpers' do
     delete_user_data @user2
   end
 
-  before(:each) do
-    delete_user_data @user1
-    delete_user_data @user2
-  end
-
   after(:all) do
     @user1.destroy if @user1
     @user2.destroy if @user2

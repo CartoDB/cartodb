@@ -70,4 +70,16 @@ RSpec.configure do |config|
     end
   end
 
+  def host!(host)
+    @host = host
+  end
+
+  def with_host(host)
+    old_host = @host
+    @host = host
+    yield
+  ensure
+    @host = old_host
+  end
+
 end

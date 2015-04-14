@@ -28,8 +28,8 @@ describe Admin::TablesController do
     delete_user_data @user
     @headers = { 
       'CONTENT_TYPE'  => 'application/json',
-      'HTTP_HOST'     => 'test.localhost.lan'
     }
+    @host = 'test.localhost.lan'
   end
 
   after(:all) do

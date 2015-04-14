@@ -1,5 +1,7 @@
 3.10.1 ()
+---------
 * fixed interaction when there are hidden layers #3090
+* Add caching of geometry types [#3157](https://github.com/CartoDB/cartodb/pull/3157)
 
 3.10.0 (2015-04-08)
 -------------------

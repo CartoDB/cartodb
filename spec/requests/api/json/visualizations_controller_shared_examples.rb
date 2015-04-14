@@ -54,7 +54,7 @@ shared_examples_for "visualization controllers" do
     before(:each) do
       login(@user1)
       @headers = {'CONTENT_TYPE'  => 'application/json'}
-      @host = 'test1.localhost.lan'
+      host! 'test1.localhost.lan'
     end
 
     it 'returns success, empty response for empty user' do

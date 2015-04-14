@@ -29,7 +29,7 @@ describe Admin::TablesController do
     @headers = { 
       'CONTENT_TYPE'  => 'application/json',
     }
-    @host = 'test.localhost.lan'
+    host! 'test.localhost.lan'
   end
 
   after(:all) do

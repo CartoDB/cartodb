@@ -5,16 +5,21 @@
 @import "../new_variables/colors";
 @import "../new_variables/sizes";
 
-$height: 81px;
-$cHeader-light: rgba(#61AEEC, 1);
-$cHeader-dark:  rgba(#3A91D7, 1);
+$height: 60px;
 
 @media only screen and (max-width: 320px) {
   .Header .Header-inner {
-    height: 60px;
+    height: $height;
   }
   .Header {
-    height: 60px;
+    height: $height;
+  }
+  .Header-settingsItem--avatar { 
+    height: $height/2;
+  }
+  .Header .Header-settingsList .UserAvatar-img--medium { 
+    height: $height/2;
+    width: $height/2;
   }
 }
 

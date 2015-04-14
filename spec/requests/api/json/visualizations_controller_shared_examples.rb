@@ -133,8 +133,8 @@ shared_examples_for "visualization controllers" do
 
       @headers = {
         'CONTENT_TYPE'  => 'application/json',
-        'HTTP_HOST'     => 'test.localhost.lan'
       }
+      host! 'test.localhost.lan'
     end
 
     after(:all) do

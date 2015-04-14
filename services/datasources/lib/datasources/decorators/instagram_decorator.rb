@@ -26,25 +26,17 @@ module CartoDB
 
           layer.infowindow = {
             fields: [
-              {position: 0, name: "caption", title: true},
-              {position: 1, name: "comments_count", title: true},
-              {position: 2, name: "created_time", title: true},
-              {position: 3, name: "image", title: true},
-              {position: 4, name: "lat", title: true},
-              {position: 5, name: "likes_count", title: true},
-              {position: 6, name: "link", title: true},
-              {position: 7, name: "location_id", title: true},
-              {position: 8, name: "location_name", title: true},
-              {position: 9, name: "lon", title: true},
-              {position: 10, name: "tags", title: true},
-              {position: 11, name: "thumbnail", title: true},
-              {position: 12, name: "type", title: true}
+              {position: 0, name: "thumbnail", title: true},
+              {position: 1, name: "caption", title: true},
+              {position: 2, name: "comments_count", title: true},
+              {position: 3, name: "likes_count", title: true},
+              {position: 4, name: "link", title: true}
             ],
-            template_name: "",
+            template_name: "infowindow_header_with_image",
             alternative_names: {},
             maxHeight: 275,
             width: 226,
-            template: '<div class="cartodb-popup v2"><a href="#close" class="cartodb-popup-close-button close">x</a><div class="cartodb-popup-content-wrapper"><div class="cartodb-popup-content"><p><img src="{{thumbnail}}"/></p><p>{{caption}}</p><p>Likes: {{likes_count}}</p><p>Comments: {{comments_count}}</p><p><a href="{{link}}">View photo</a></p></div></div><div class="cartodb-popup-tip-container"></div></div>'
+            template: ""
           }
           nil
         end

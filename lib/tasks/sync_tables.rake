@@ -11,9 +11,8 @@ namespace :cartodb do
 
     collection = CartoDB::Synchronizer::Collection.new
 
-    collection.fetch(args[:force_all_arg].present? ? args[:force_all_arg] : false)
-
-    collection.enqueue_stalled unless (args[:force_all_arg].present? && args[:force_all_arg])
+    # This fetches and enqueues
+    collection.fetch_and_enqueue(args[:force_all_arg].present? ? args[:force_all_arg] : false)
 
     puts '> Sync tables finished' if ENV['VERBOSE']
   end

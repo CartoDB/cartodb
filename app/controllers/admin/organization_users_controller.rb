@@ -147,7 +147,11 @@ class Admin::OrganizationUsersController < ApplicationController
     else
       set_flash_flags(nil, true)
       flash[:error] = "User was not deleted. #{e.user_message}"
-      head :no_content
+      if new_dashboard
+        redirect_to CartoDB.url(self, 'organization', {}, current_user)
+      else
+        head :no_content
+      end
     end
   rescue => e
     flash[:error] = "User was not deleted. #{e.message}"

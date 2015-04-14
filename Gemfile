@@ -7,6 +7,8 @@ gem 'pg',                      '0.13.2'
 gem 'sequel',                  '3.42.0'
 gem 'sequel_pg',               '1.6.3', require: 'sequel'
 
+gem 'activerecord-postgresql-adapter'
+
 gem 'vizzuality-sequel-rails', '0.3.7', git: 'https://github.com/Vizzuality/sequel-rails.git'
 
 gem 'rails_warden',            '0.5.2' # Auth via the Warden Rack framework
@@ -52,7 +54,7 @@ gem 'dropbox-sdk',             '1.6.3'
 gem 'instagram',               '1.1.3'
 gem 'gibbon',                  '1.1.4'
 
-# Synchronizer
+# Geocoder (synchronizer doesn't needs it anymore)
 gem 'eventmachine',            '1.0.3'
 gem 'em-pg-client',            '0.2.1'
 
@@ -73,6 +75,10 @@ gem 'mixpanel',              '4.0.2'
 gem 'rollbar',               '0.12.14'
 gem 'resque',                '1.25.2'
 gem 'resque-metrics',        '0.1.1'
+
+group :test do
+  gem 'db-query-matchers'
+end
 
 group :development, :test do
   gem 'rb-readline'

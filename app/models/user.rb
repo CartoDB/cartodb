@@ -35,7 +35,7 @@ class User < Sequel::Model
   one_to_many :search_tweets, order: :created_at.desc
   many_to_one :organization
 
-  many_to_many :layers, :order => :order, :after_add => proc { |user, layer|
+  many_to_many :layers, class: ::Layer, :order => :order, :after_add => proc { |user, layer|
     layer.set_default_order(user)
   }
 
@@ -225,17 +225,17 @@ class User < Sequel::Model
       # Remove user data imports, maps, layers and assets
       self.delete_external_data_imports
       self.delete_external_sources
-      self.data_imports.each { |d| d.destroy }
-      self.maps.each { |m| m.destroy }
-      self.layers.each { |l| remove_layer l }
-      self.assets.each { |a| a.destroy }
-      CartoDB::Synchronization::Collection.new.fetch(user_id: self.id).destroy
-
+      # There's a FK from geocodings to data_import.id so must be deleted in proper order
       if self.organization.nil? || self.organization.owner.nil? || self.id == self.organization.owner.id
         self.geocodings.each { |g| g.destroy }
       else
         assign_geocodings_to_organization_owner
       end
+      self.data_imports.each { |d| d.destroy }
+      self.maps.each { |m| m.destroy }
+      self.layers.each { |l| remove_layer l }
+      self.assets.each { |a| a.destroy }
+      CartoDB::Synchronization::Collection.new.fetch(user_id: self.id).destroy
 
       assign_search_tweets_to_organization_owner
     rescue StandardError => exception
@@ -1221,7 +1221,7 @@ class User < Sequel::Model
     metadata_tables_ids = metadata_tables.select{ |table| !syncs.include?(table[:name]) }
                                          .map{ |table| table[:table_id] }
 
-    dropped_tables = metadata_tables_ids - real_tables.map{|t| t[:oid]}
+    dropped_tables = metadata_tables_ids - real_tables.map{|t| t[:oid]} - [nil]
 
     # Remove tables with oids that don't exist on the db
     self.tables.where(table_id: dropped_tables).all.each do |user_table|
@@ -1235,7 +1235,8 @@ class User < Sequel::Model
     end if dropped_tables.present?
 
     # Remove tables with null oids unless the table name exists on the db
-    self.tables.filter(table_id: nil).all.each do |t|
+    self.tables.filter(table_id: nil).all.each do |user_table|
+      t = Table.new(user_table: user_table)
       t.keep_user_database_table = true
       t.destroy unless self.real_tables.map { |t| t[:relname] }.include?(t.name)
     end if dropped_tables.present? && dropped_tables.include?(nil)
@@ -2328,8 +2329,8 @@ TRIGGER
   end
 
   # @return String public user url, which is also the base url for a given user
-  def public_url(subdomain_override=nil)
-    CartoDB.base_url(subdomain_override.nil? ? subdomain : subdomain_override, organization_username)
+  def public_url(subdomain_override=nil, protocol_override=nil)
+    CartoDB.base_url(subdomain_override.nil? ? subdomain : subdomain_override, organization_username, protocol_override)
   end
 
   # ----------

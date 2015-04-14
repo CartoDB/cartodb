@@ -5,7 +5,6 @@ require_relative '../../../services/data-repository/backend/sequel'
 require_relative '../../../services/data-repository/repository'
 require_relative '../../../app/models/synchronization/collection'
 require_relative '../../../app/models/synchronization/member'
-require_relative '../../../app/models/synchronization/migrator'
 
 include CartoDB
 
@@ -21,12 +20,7 @@ describe Synchronization::Collection do
                   )
     @relation   = "synchronizations_#{Time.now.to_i}".to_sym
     @repository = DataRepository::Backend::Sequel.new(@db, @relation)
-    Synchronization::Migrator.new(@db).migrate(@relation)
     Synchronization.repository = @repository
-  end
-
-  after(:each) do
-    Synchronization::Migrator.new(@db).drop(@relation)
   end
 
   describe '#fetch' do

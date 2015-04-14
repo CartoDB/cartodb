@@ -11,6 +11,7 @@ require_relative './like'
 require_relative '../table/privacy_manager'
 require_relative '../../../services/minimal-validation/validator'
 require_relative '../../../services/named-maps-api-wrapper/lib/named_maps_wrapper'
+require_relative '../markdown_render.rb'
 
 # Every table has always at least one visualization (the "canonical visualization"), of type 'table',
 # which shares the same privacy options as the table and gets synced.
@@ -227,10 +228,9 @@ module CartoDB
       end
 
       def delete(from_table_deletion=false)
-        # Named map must be deleted before the map, or we lose the reference to it
-
         begin
           named_map = has_named_map?
+          # Named map must be deleted before the map, or we lose the reference to it
           named_map.delete if named_map
         rescue NamedMapsWrapper::HTTPResponseError => exception
           # CDB-1964: Silence named maps API exception if deleting data to avoid interrupting whole flow
@@ -438,6 +438,8 @@ module CartoDB
       end
 
       def has_named_map?
+        return false if type == TYPE_REMOTE
+
         data = named_maps.get(CartoDB::NamedMapsWrapper::NamedMap.normalize_name(id))
         if data.nil?
           false

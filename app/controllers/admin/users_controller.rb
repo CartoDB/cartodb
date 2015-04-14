@@ -65,14 +65,7 @@ class Admin::UsersController < ApplicationController
     attributes = params[:user]
 
     if attributes[:avatar_url].present?
-      asset = Asset.new
-      asset.raise_on_save_failure = true
-      asset.user_id = @user.id
-      asset.asset_file = attributes[:avatar_url]
-      asset.kind = Asset::KIND_ORG_AVATAR
-      if asset.save
-        @user.avatar_url = asset.public_url
-      end
+      @user.avatar_url = attributes.fetch(:avatar_url, nil)
     end
 
     # This fields are optional

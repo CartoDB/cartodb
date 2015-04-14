@@ -1,0 +1,20 @@
+// Layout Header
+// --------------------------------------------------
+
+@import "../new_variables/mixins";
+@import "../new_variables/colors";
+@import "../new_variables/sizes";
+
+$height: 81px;
+$cHeader-light: rgba(#61AEEC, 1);
+$cHeader-dark:  rgba(#3A91D7, 1);
+
+@media only screen and (max-width: 320px) {
+  .Header .Header-inner {
+    height: 60px;
+  }
+  .Header {
+    height: 60px;
+  }
+}
+

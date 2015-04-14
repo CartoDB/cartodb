@@ -216,21 +216,6 @@ describe Api::Json::VisualizationsController do
     end
   end # POST /api/v1/viz
 
-  describe 'GET /api/v1/viz' do
-
-    it 'does not get table data if passed table_data=false' do
-      pending
-      table = table_factory
-
-      get "/api/v1/viz?api_key=#{@api_key}&type=table",
-        {}, @headers
-      last_response.status.should == 200
-      response        = JSON.parse(last_response.body)
-      visualizations  = response.fetch('visualizations')
-      visualizations.first.keys.should_not include :table_data
-    end
-  end # GET /api/v1/viz
-
   describe 'GET /api/v1/viz/:id/stats' do
     it 'returns view stats for the visualization' do
       pending

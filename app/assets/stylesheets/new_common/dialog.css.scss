@@ -64,6 +64,10 @@ body.is-inDialog {
 .Dialog-header--expanded { @include flex-grow(1) }
 .Dialog-body--expanded {
   @include flex-grow(100);
+  // Forcing to get 80% of height
+  // if not IE10 will not show 
+  // scrollbar in higher content
+  -ms-flex: 100 0 80%;
   background-color: $cStructure-grayBkg;
 }
 .Dialog-footer--expanded {

@@ -31,7 +31,8 @@
 }
 
 @media only screen and (max-width: $sMedia-mobile) {
-  .MapsList-item--fake {
+
+  .MapsList-item.MapsList-item--fake {
     display: none;
   }
   .MapsList {
@@ -47,7 +48,7 @@
     @include flex-direction(row);
     @include justify-content(flex-start);
   }
-  .MapsList-item--fake {
+  .MapsList-item.MapsList-item--fake {
     display: none;
   }
 }

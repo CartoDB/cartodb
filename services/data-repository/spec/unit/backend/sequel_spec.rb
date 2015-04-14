@@ -8,7 +8,7 @@ describe DataRepository::Backend::Sequel do
   before do
     db = Rails::Sequel.connection
     db.create_table :visualizations do
-      String    :id, primary_key: true
+      UUID      :id, primary_key: true
       String    :name
       String    :title
       String    :description
@@ -22,7 +22,7 @@ describe DataRepository::Backend::Sequel do
       String    :encrypted_password
       String    :password_salt
       String    :url_options
-      String    :permission_id
+      UUID      :permission_id
       Boolean   :locked
       String    :parent_id
       String    :kind

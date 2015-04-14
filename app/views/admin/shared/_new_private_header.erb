@@ -11,11 +11,11 @@
         </li>
         <li>
           <ul class="Header-navigationBreadcrumb">
+            <% if current_user.has_organization? %>
             <li class="Header-navigationBreadcrumbItem">
-              <% if current_user.has_organization? %>
                 <%= current_user.organization.name %> /
-              <% end %>
             </li>
+            <% end %>
             <li class="Header-navigationBreadcrumbItem"><%= current_user.name_or_username %> /</li>
             <li class="Header-navigationBreadcrumbItem js-breadcrumb-dropdown"></li>
           </ul>
@@ -37,7 +37,7 @@
         </li>
         <li class="Header-settingsItem Header-settingsItem--avatar">
           <button class="UserAvatar js-settings-dropdown">
-            <%= image_tag current_user.avatar_url, :class => 'UserAvatar-img UserAvatar-img--medium' %>
+            <%= image_tag current_user.avatar, :class => 'UserAvatar-img UserAvatar-img--medium' %>
           </button>
         </li>
       </ul>

@@ -32,6 +32,7 @@ $w: 780px;
   padding: 20px 0;
   border-bottom: 1px solid $cStructure-mainLine;
 }
+.ServiceList-item:last-child { border-bottom: 0 }
 .ServiceList-item:hover {
   margin: -1px -20px 0 -20px;
   padding: 20px 19px;
@@ -39,7 +40,6 @@ $w: 780px;
   border: 1px solid $cCard-hoverBorder;
   border-radius: 4px;
 }
-.ServiceList-item:last-child { border-bottom: 0 }
 .ServiceList-itemExt {
   width: 38px;
   min-width: 38px;

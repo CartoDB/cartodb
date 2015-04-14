@@ -12,7 +12,7 @@ module CartoDB
 
       def migrate(relation=:visualizations)
         @db.create_table(relation.to_sym) do
-          String    :id, primary_key: true
+          UUID      :id, primary_key: true
           String    :name
           String    :description
           UUID      :map_id, index: true
@@ -24,8 +24,8 @@ module CartoDB
           String    :encrypted_password
           String    :password_salt
           String    :url_options
-          String    :user_id
-          String    :permission_id
+          UUID      :user_id
+          UUID      :permission_id
           Boolean   :locked
           String    :license
           String    :source

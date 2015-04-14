@@ -11,6 +11,17 @@ end
 
 shared_context 'visualization creation helpers' do
 
+  module Rack
+    module Test
+      module Methods
+        def build_rack_mock_session
+          Rack::MockSession.new(app, @host)
+        end
+      end
+    end
+  end
+
+
   before(:all) do
     @user1 = create_user(
       username: 'test1',

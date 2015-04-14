@@ -20,7 +20,6 @@ $bannedColor: #E1A7A5;
 .DatasetsList-item {
   position: relative;
   @include display-flex();
-  // width: 100%;
   padding: $sMargin-group 0;
   border-bottom: 1px solid $cStructure-softLine;
 }
@@ -125,7 +124,6 @@ $bannedColor: #E1A7A5;
   position: relative;
   @include display-flex();
   @include flex-direction(column);
-  // width: 100%;
   @include opacity(1);
   @include transition(opacity, $opacityTransition);
   z-index: 1;

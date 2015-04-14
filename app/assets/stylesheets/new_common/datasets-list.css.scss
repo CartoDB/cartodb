@@ -173,11 +173,14 @@ $bannedColor: #E1A7A5;
   .DatasetsList-itemMeta > *:nth-child(4) { @include flex-order(4) }
   .DatasetsList-itemMeta > *:nth-child(5) { @include flex-order(5) }
 
-  .DatasetsList-itemTags {
+  .DatasetsList-itemTags.EditableTags {
     margin-top: 4px;
     text-align: right;
+    input[type=text] {
+      text-align: right;
+      width: 70%;
+    }
   }
-  .DatasetsList-itemTags .DefaultEditInline-input { text-align: right }
   .DatasetsList-itemDescription {
     margin-top: 4px;
     height: $sLineHeight-normal;

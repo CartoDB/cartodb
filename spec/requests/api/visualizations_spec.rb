@@ -470,20 +470,6 @@ describe Api::Json::VisualizationsController do
     end
   end # DELETE /api/v1/tables/:id
 
-  describe 'GET /api/v1/viz/:id/viz' do
-    it 'renders vizjson v1' do
-      pending
-      table_attributes  = table_factory
-      table_id          = table_attributes.fetch('id')
-      get "/api/v1/viz/#{table_id}/viz?api_key=#{@api_key}",
-        {}, @headers
-      last_response.status.should == 200
-      response = ::JSON.parse(last_response.body)
-      response.keys.length.should > 1
-      response.fetch('description').should_not be_empty
-    end
-  end # GET /api/v1/viz/:id/viz
-
   describe 'GET /api/v2/viz/:id/viz' do
     it 'renders vizjson v2' do
       pending

@@ -1,4 +1,4 @@
-// Editable field
+// Editable description
 // --------------------------------------------------
 
 @import "../new_variables/colors";
@@ -8,7 +8,7 @@
 $fieldBgColor: #FEFCEA;
 $fieldBorderColor: #DFE8EC;
 
-.EditableField {
+.EditableDescription {
   button {
     font-style: italic;
     color: $cTypography-link;
@@ -34,7 +34,7 @@ $fieldBorderColor: #DFE8EC;
   }
 }
 
-.EditableField.is-editing {
+.EditableDescription.is-editing {
   width: 100%;
 
   button {

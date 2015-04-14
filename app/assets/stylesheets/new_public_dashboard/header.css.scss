@@ -21,5 +21,9 @@ $height: 60px;
     height: $height/2;
     width: $height/2;
   }
+  .Header .Header-settingsList .Button { 
+    height: $height/2;
+    padding: 0 20px;
+  }
 }
 

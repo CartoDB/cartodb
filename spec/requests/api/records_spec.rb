@@ -23,8 +23,8 @@ describe Api::Json::RecordsController do
     @table = create_table :user_id => @user.id
     @headers = { 
       'CONTENT_TYPE'  => 'application/json',
-      'HTTP_HOST'     => 'test.localhost.lan'
     }
+    host! 'test.localhost.lan'
   end
 
   after(:all) do

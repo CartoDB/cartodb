@@ -16,8 +16,8 @@ describe "Tables API" do
     host! 'test.localhost.lan'
     @headers = { 
       'CONTENT_TYPE'  => 'application/json',
-      'HTTP_HOST'     => 'test.localhost.lan'
     }
+    host! 'test.localhost.lan'
   end
 
   after(:all) do

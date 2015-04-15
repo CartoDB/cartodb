@@ -248,12 +248,12 @@ $bannedColor: #E1A7A5;
     @include justify-content(space-between, justify);
     @include align-items(flex-start, start);
   }
-  .DatasetsList-itemPrimaryInfo { width: 440px }
+  .DatasetsList-itemPrimaryInfo { max-width: 440px }
   .DatasetsList-itemSecondaryInfo {
     @include display-flex();
     @include flex-direction(column);
     flex-grow: 1;
-    width: 440px;
+    max-width: 440px;
   }
   .DatasetsList-itemTitle {
     margin-bottom: 0;

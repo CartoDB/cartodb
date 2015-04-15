@@ -33,11 +33,17 @@ $bannedColor: #E1A7A5;
   background-color: $cCard-hoverFill;
   border: 1px $cCard-hoverBorder solid;
   cursor: pointer;
+  .DatasetsList-itemDescription .DefaultDescription:after {
+    @include background-horizontal(rgba(255,255,255,0), $cCard-hoverFill);
+  }
 }
 .DatasetsList-item--selectable.is--selected {
   background-color: $cCard-selectedFill;
   border: 1px $cCard-selectedBorder solid;
   &:hover { cursor: default }
+  .DatasetsList-itemDescription .DefaultDescription:after {
+    @include background-horizontal(rgba(255,255,255,0), $cCard-selectedFill);
+  }
 }
 .DatasetsList-fake {
   position: absolute;
@@ -183,6 +189,9 @@ $bannedColor: #E1A7A5;
   .DatasetsList-itemDescription {
     margin-top: 4px;
     height: $sLineHeight-normal;
+    .DefaultDescription {
+      @include line-clamp(1);
+    }
   }
 
 // Banned dataset

@@ -15,11 +15,6 @@
 
     cdb.CARTOCSS_DEFAULT_VERSION = '2.1.1';
 
-    cdb.CDB_HOST = {
-      'http': 'api.cartocdn.com',
-      'https': 'cartocdn.global.ssl.fastly.net'
-    };
-
     root.cdb.config = {};
     root.cdb.core = {};
     root.cdb.image = {};

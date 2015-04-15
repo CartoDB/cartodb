@@ -33,6 +33,10 @@ class ApplicationController < ActionController::Base
 
   protected
 
+  def is_https?
+    request.protocol == 'https://'
+  end
+
   # To be used only when domainless urls are present, to replicate sent subdomain
   def store_request_host
     return unless CartoDB.subdomainless_urls?

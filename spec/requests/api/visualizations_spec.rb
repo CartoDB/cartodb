@@ -453,18 +453,6 @@ describe Api::Json::VisualizationsController do
     end
   end # DELETE /api/v1/tables/:id
 
-  describe 'GET /api/v2/viz/:id/viz' do
-    it 'renders vizjson v2' do
-      pending
-      table_attributes  = table_factory
-      table_id          = table_attributes.fetch('id')
-      get "/api/v2/viz/#{table_id}/viz?api_key=#{@api_key}",
-        {}, @headers
-      last_response.status.should == 200
-      ::JSON.parse(last_response.body).keys.length.should > 1
-    end
-  end # GET /api/v2/viz/:id/viz
-
   describe 'tests visualization listing filters' do
     it 'uses locked filter' do
       CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)

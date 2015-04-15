@@ -148,6 +148,8 @@ module CartoDB
           @log.save
           self.log_id = @log.id
           store
+        else
+          @log.clear
         end
 
         if user.nil?

@@ -465,30 +465,6 @@ describe Api::Json::VisualizationsController do
     end
   end # GET /api/v2/viz/:id/viz
 
-  describe 'non existent visualization' do
-    it 'returns 404' do
-      pending
-
-      get "/api/v1/viz/9999?api_key=#{@api_key}", {}, @headers
-      last_response.status.should == 404
-
-      get "/api/v1/viz/9999/stats?api_key=#{@api_key}", {}, @headers
-      last_response.status.should == 404
-
-      put "/api/v1/viz/9999?api_key=#{@api_key}", {}, @headers
-      last_response.status.should == 404
-
-      delete "/api/v1/viz/9999?api_key=#{@api_key}", {}, @headers
-      last_response.status.should == 404
-
-      get "/api/v1/viz/9999/viz?api_key=#{@api_key}", {}, @headers
-      last_response.status.should == 404
-
-      get "/api/v2/viz/9999/viz?api_key=#{@api_key}", {}, @headers
-      last_response.status.should == 404
-    end
-  end # non existent visualization
-
   describe 'tests visualization listing filters' do
     it 'uses locked filter' do
       CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)

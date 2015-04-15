@@ -4,6 +4,8 @@ require_relative '../../../../app/models/visualization/member'
 
 shared_examples_for "visualization controllers" do
 
+  TEST_UUID = '00000000-0000-0000-0000-000000000000'
+
   NORMALIZED_DATE_ATTRIBUTES = %w{ created_at updated_at }
 
   # Custom hash comparation, since in the ActiveModel-based controllers
@@ -1062,6 +1064,25 @@ shared_examples_for "visualization controllers" do
         last_response.status.should == 200
         response = JSON.parse(last_response.body)
         response.keys.length.should == 30
+      end
+    end
+
+    describe 'non existent visualization' do
+      it 'returns 404' do
+        get "/api/v1/viz/#{TEST_UUID}?api_key=#{@api_key}", {}, @headers
+        last_response.status.should == 404
+
+        get "/api/v1/viz/#{TEST_UUID}/stats?api_key=#{@api_key}", {}, @headers
+        last_response.status.should == 404
+
+        put "/api/v1/viz/#{TEST_UUID}?api_key=#{@api_key}", {}, @headers
+        last_response.status.should == 404
+
+        delete "/api/v1/viz/#{TEST_UUID}?api_key=#{@api_key}", {}, @headers
+        last_response.status.should == 404
+
+        get "/api/v2/viz/#{TEST_UUID}/viz?api_key=#{@api_key}", {}, @headers
+        last_response.status.should == 404
       end
     end
 

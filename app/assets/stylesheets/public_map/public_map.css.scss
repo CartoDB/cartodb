@@ -145,6 +145,10 @@
   line-height: 40px;
   color: $cTypography-secondary;
 }
+.PublicMap .DatasetsList-itemPrimaryInfo,
+.PublicMap .DatasetsList-itemSecondaryInfo {
+  width: auto;
+}
 
 
 @media (max-width: 940px) {
@@ -167,5 +171,10 @@
   }
   .PublicMap-info { padding: 30px 0 }
   .PublicMap-stat { display: block }
-  
+ 
+  .PublicMap .DatasetsList-itemPrimaryInfo,
+  .PublicMap .DatasetsList-itemPrimaryInfo {
+    width: auto;
+    max-width: 440px;
+  } 
 }

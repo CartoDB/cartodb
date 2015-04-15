@@ -342,6 +342,9 @@
   font-size: $sFontSize-normal;
   color: $cTypography-help;
 }
+.Form-rowInfoText--centered { text-align: center }
+.Form-rowInfoText--smaller { font-size: $sFontSize-smallUpperCase }
+.Form-rowInfoText--block { width: 100% }
 .Form-rowInfoText--multipleLines {
   line-height: 20px;
 }

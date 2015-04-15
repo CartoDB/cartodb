@@ -27,6 +27,9 @@ class Table
   THE_GEOM_WEBMERCATOR = :the_geom_webmercator
   THE_GEOM = :the_geom
 
+  NO_GEOMETRY_TYPES_CACHING_TIMEOUT = 5.minutes
+  GEOMETRY_TYPES_PRESENT_CACHING_TIMEOUT = 24.hours
+
 
   # @see services/importer/lib/importer/column.rb -> RESERVED_WORDS
   # @see config/initializers/carto_db.rb -> RESERVED_COLUMN_NAMES
@@ -64,6 +67,7 @@ class Table
     else
       @user_table = args[:user_table]
     end
+    # TODO: this probably makes sense only if user_table is not passed as argument
     @user_table.set_service(self)
   end
 
@@ -113,30 +117,25 @@ class Table
   end
 
   def geometry_types_key
-    @geometry_types_key ||= "#{key}:geometry_types"
+    @geometry_types_key ||= "#{redis_key}:geometry_types"
   end
 
   def geometry_types
-    if schema.select { |key, value| key == :the_geom }.length > 0
-      types_str = cache.get geometry_types_key
-      if types_str.present?
-        types = JSON.parse(types_str)
-      else
-        types = query_geometry_types
-        cache.setex(geometry_types_key, 24.hours.to_i, types) if types.length > 0
-      end
+    # default return value
+    types = []
+
+    types_str = cache.get geometry_types_key
+    if types_str.present?
+      # cache hit
+      types = JSON.parse(types_str)
     else
-      types = []
+      # cache miss, query and store
+      types = query_geometry_types
+      timeout = types.empty? ? NO_GEOMETRY_TYPES_CACHING_TIMEOUT : GEOMETRY_TYPES_PRESENT_CACHING_TIMEOUT
+      cache.setex(geometry_types_key, timeout, types)
     end
+
     types
-  end
-
-  def calculate_the_geom_type
-    return self.the_geom_type if self.the_geom_type.present?
-
-    calculated = query_geometry_types.first
-    calculated = calculated.present? ? calculated.downcase.sub('st_', '') : DEFAULT_THE_GEOM_TYPE
-    self.the_geom_type = calculated
   end
 
   def is_raster?
@@ -813,8 +812,8 @@ class Table
     @user_table.previous_changes.keys.include?(:privacy)
   end
 
-  def key
-    key ||= "rails:#{owner.database_name}:#{owner.database_schema}.#{name}"
+  def redis_key
+    key ||= "rails:table:#{id}"
   end
 
   def sequel
@@ -1419,6 +1418,32 @@ class Table
     perform_organization_table_permission_change('CDB_Organization_Remove_Organization_Access_Permission')
   end
 
+  def row_count_and_size
+    begin
+      # Keep in sync with lib/sql/scripts-available/CDB_Quota.sql -> CDB_UserDataSize()
+      size_calc = is_raster? ? "pg_total_relation_size('\"' || ? || '\".\"' || relname || '\"')"
+                                    : "pg_total_relation_size('\"' || ? || '\".\"' || relname || '\"') / 2"
+
+      data = owner.in_database.fetch(%Q{
+            SELECT
+              #{size_calc} AS size,
+              reltuples::integer AS row_count
+            FROM pg_class
+            WHERE relname = ?
+          },
+          owner.database_schema,
+          name
+        ).first
+    rescue => exception
+      data = nil
+      # INFO: we don't want code to fail because of SQL error
+      CartoDB.notify_exception(exception)
+    end
+    data = { size: nil, row_count: nil } if data.nil?
+
+    data
+  end
+
   private
 
   def beautify_name(name)
@@ -1426,14 +1451,27 @@ class Table
     name.gsub('_', ' ').split.map(&:capitalize).join(' ')
   end
 
+  def calculate_the_geom_type
+    return self.the_geom_type if self.the_geom_type.present?
+
+    calculated = geometry_types.first
+    calculated = calculated.present? ? calculated.downcase.sub('st_', '') : DEFAULT_THE_GEOM_TYPE
+    self.the_geom_type = calculated
+  end
+
   def query_geometry_types
-    owner.in_database[ %Q{
-      SELECT DISTINCT ST_GeometryType(the_geom) FROM (
-        SELECT the_geom
+    # We do not query the DB, if the_geom does not exist we just recover
+    begin
+      owner.in_database[ %Q{
+        SELECT DISTINCT ST_GeometryType(the_geom) FROM (
+          SELECT the_geom
         FROM #{qualified_table_name}
-        WHERE (the_geom is not null) LIMIT 10
-      ) as foo
-    }].all.map {|r| r[:st_geometrytype] }
+          WHERE (the_geom is not null) LIMIT 10
+        ) as foo
+      }].all.map {|r| r[:st_geometrytype] }
+    rescue
+      []
+    end
   end
 
   def cache

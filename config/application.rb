@@ -69,6 +69,7 @@ module CartoDB
       new_dashboard_templates.js
       new_public_dashboard_deps.js
       new_public_dashboard.js
+      editor.js
       dashboard.js
       account_templates.js
       account_deps.js
@@ -110,6 +111,7 @@ module CartoDB
       fonts_ie.css
       front.css
 
+      editor.css
       new_keys.css
       keys.css
       leaflet.css

@@ -31,6 +31,8 @@ module CartoDB
       }
     end
 
+    private
+
     def entity_decoration(entry)
       if entry[:type] == CartoDB::Permission::TYPE_USER
         @user_presenter.decorate(entry[:id])

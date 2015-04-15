@@ -77,6 +77,9 @@ WORKING_SPECS_4 = \
   services/wms/spec/unit/wms_spec.rb \
   services/sql-api/spec/sql_api_spec.rb \
   spec/requests/admin/visualizations_spec.rb \
+	spec/requests/api/json/visualizations_controller_spec.rb \
+	spec/requests/carto/api/visualizations_controller_spec.rb \
+	spec/queries/carto/visualization_query_builder_spec.rb \
   spec/requests/admin/tables_spec.rb \
   $(NULL)
 
@@ -134,6 +137,8 @@ WORKING_SPECS_9 = \
   services/importer/spec/regression/cartodb_id_query_batcher_spec.rb \
   services/platform-limits/spec/unit/ \
   spec/models/platform-limits/ \
+  spec/lib/initializers/carto_db_spec.rb \
+  spec/unit/controllers/api/json/oembed_controller_spec.rb \
   $(NULL)
 
 CDB_PATH=lib/assets/javascripts/cdb
@@ -175,6 +180,7 @@ travis: check-frontend check
 
 # update cartodb.js submodule files
 update_cdb:
+	cd $(CDB_PATH); npm install
 	cd $(CDB_PATH); make cartodb dist/cartodb.css
 	cp $(CDB_PATH)/dist/cartodb.full.uncompressed.js vendor/assets/javascripts/cartodb.uncompressed.js
 	cp $(CDB_PATH)/dist/cartodb.mod.torque.uncompressed.js vendor/assets/javascripts

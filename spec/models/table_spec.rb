@@ -1392,7 +1392,11 @@ describe Table do
       # Schema gets cached, force reload
       table.reload
       table.schema(reload:true)
-      table.geometry_types.should == []
+
+      # This is no longer true: it should be considered a stat or guessing
+      # for the UI to plot icons on table listings and similar stuff and will
+      # not be invalidated from the editor.
+      #table.geometry_types.should == []
 
       table.destroy
     end
@@ -2113,21 +2117,21 @@ describe Table do
   describe '#key' do
     it 'computes a suitable key for a table' do
       table = create_table(name: "any_name", user_id: @user.id)
-      table.key.should == "rails:#{@user.database_name}:public.any_name"
+      table.redis_key.should == "rails:table:#{table.id}"
     end
 
     it 'computes different keys for different tables' do
       table_1 = create_table(user_id: @user.id)
       table_2 = create_table(user_id: @user.id)
 
-      table_1.key.should_not == table_2.key
+      table_1.redis_key.should_not == table_2.redis_key
     end
   end
 
   describe '#geometry_types_key' do
     it 'computes a suitable key' do
       table = create_table(name: 'any_other_name', user_id: @user.id)
-      table.geometry_types_key.should == "rails:#{@user.database_name}:public.any_other_name:geometry_types"
+      table.geometry_types_key.should == "#{table.redis_key}:geometry_types"
     end
   end
 
@@ -2136,8 +2140,8 @@ describe Table do
       table = create_table(user_id: @user.id)
 
       cache = mock()
-      cache.expects(:get).never
-      cache.expects(:setex).never
+      cache.expects(:get).once
+      cache.expects(:setex).once
 
       table.stubs(:cache).returns(cache)
 
@@ -2153,7 +2157,7 @@ describe Table do
 
       cache = mock()
       cache.expects(:get).once.returns(nil)
-      cache.expects(:setex).never
+      cache.expects(:setex).once
 
       table.stubs(:cache).returns(cache)
 

@@ -27,10 +27,16 @@ class Api::Json::ImportsController < Api::ApplicationController
   end
 
   def show
+    begin
+      UUIDTools::UUID.parse(params[:id])
+    rescue ArgumentError
+      render_404 and return
+    end
+
     data_import = DataImport[params[:id]]
     data_import.mark_as_failed_if_stuck!
 
-    data = data_import.reload.public_values.except('service_item_id', 'service_name')
+    data = data_import.reload.api_public_values
     if data_import.state == DataImport::STATE_COMPLETE
       data[:any_table_raster] = data_import.is_raster?
 

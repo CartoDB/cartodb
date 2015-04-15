@@ -64,7 +64,11 @@ body.is-inDialog {
 .Dialog-header--expanded { @include flex-grow(1) }
 .Dialog-body--expanded {
   @include flex-grow(100);
-  background-color: rgba(#F9F9F9, 1);
+  // Forcing to get 80% of height
+  // if not IE10 will not show 
+  // scrollbar in higher content
+  -ms-flex: 100 0 80%;
+  background-color: $cStructure-grayBkg;
 }
 .Dialog-footer--expanded {
   width: 100%;
@@ -108,7 +112,7 @@ body.is-inDialog {
   border-radius: $sIcon-borderRadius;
   margin: 0 auto $sMargin-element auto; /* center icon */
   font-size: 22px;
-  line-height: 41px;
+  line-height: 44px;
 }
 .Dialog-headerIcon--main {
   color: $cHighlight-main;

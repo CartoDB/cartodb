@@ -522,6 +522,46 @@ describe User do
     end
   end
 
+  describe "organization user deletion" do
+    it "should transfer geocodings and tweet imports to owner" do
+      u1 = create_user(email: 'u1@exampleb.com', username: 'ub1', password: 'admin123')
+      org = create_org('cartodbtestb', 1234567890, 5)
+
+      u1.organization = org
+      u1.save
+      u1.reload
+      org = u1.organization
+      org.owner_id = u1.id
+      org.save
+      u1.reload
+
+      u2 = create_user(email: 'u2@exampleb.com', username: 'ub2', password: 'admin123', organization: org)
+
+      FactoryGirl.create(:geocoding, user: u2, kind: 'high-resolution', created_at: Time.now, processed_rows: 1, formatter: 'b')
+
+      st = SearchTweet.new
+      st.user = u2
+      st.table_id = '96a86fb7-0270-4255-a327-15410c2d49d4'
+      st.data_import_id = '96a86fb7-0270-4255-a327-15410c2d49d4'
+      st.service_item_id = '555'
+      st.retrieved_items = 5
+      st.state = ::SearchTweet::STATE_COMPLETE
+      st.save
+
+      u1.reload
+      u2.reload
+      u2.get_geocoding_calls.should == 1
+      u2.get_twitter_imports_count.should == 5
+      u1.get_geocoding_calls.should == 0
+      u1.get_twitter_imports_count.should == 0
+
+      u2.destroy
+      u1.reload
+      u1.get_geocoding_calls.should == 1
+      u1.get_twitter_imports_count.should == 5
+    end
+  end
+
   it "should have many tables" do
     @user2.tables.should be_empty
     create_table :user_id => @user2.id, :name => 'My first table', :privacy => UserTable::PRIVACY_PUBLIC
@@ -1269,7 +1309,8 @@ describe User do
 
   end
 
-  it "should notify a new user created from a organization" do
+  # INFO: since user can be also created in Central, and it can fail, we need to request notification explicitly. See #3022 for more info 
+  it "can notify a new user creation" do
 
     ::Resque.stubs(:enqueue).returns(nil)
 
@@ -1280,6 +1321,8 @@ describe User do
     ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::NewOrganizationUser, user1.id).once
 
     user1.save
+    # INFO: if user must be synched with a remote server it should happen before notifying
+    user1.notify_new_organization_user
 
     organization.destroy
   end
@@ -1384,6 +1427,80 @@ describe User do
     it 'should have updated last password change date' do
       @user.last_password_change_date.should_not eq nil
       @user.save
+    end
+  end
+
+  describe "#purge_redis_vizjson_cache" do
+    it "shall iterate on the user's visualizations and purge their redis cache" do
+      # Create a few tables with their default vizs
+      (1..3).each do |i|
+        t = Table.new
+        t.user_id = @user.id
+        t.save
+      end
+
+      collection = CartoDB::Visualization::Collection.new.fetch({user_id: @user.id})
+      # Not grabbing https version of keys
+      redis_keys = collection.map(&:redis_vizjson_key)
+      redis_keys.should_not be_empty
+
+      redis_cache_mock = mock
+      redis_cache_mock.expects(:del).once.with(redis_keys)
+      CartoDB::Visualization::Member.expects(:redis_cache).once.returns(redis_cache_mock)
+
+      @user.purge_redis_vizjson_cache
+    end
+
+    it "shall not fail if the user does not have visualizations" do
+      user = create_user
+      collection = CartoDB::Visualization::Collection.new.fetch({user_id: user.id})
+      # 'http' keys
+      redis_keys = collection.map(&:redis_vizjson_key)
+      redis_keys.should be_empty
+      # 'https' keys
+      redis_keys = collection.map { |item| item.redis_vizjson_key(true) }
+      redis_keys.should be_empty
+
+      CartoDB::Visualization::Member.expects(:redis_cache).never
+
+      user.purge_redis_vizjson_cache
+    end
+  end
+
+  describe "#regressions" do
+    it "Tests geocodings and data import FK not breaking user destruction" do
+      user = create_user
+      user_id = user.id
+
+      data_import_id = '11111111-1111-1111-1111-111111111111'
+
+      Rails::Sequel.connection.run(%Q{
+        INSERT INTO data_imports("data_source","data_type","table_name","state","success","logger","updated_at",
+          "created_at","tables_created_count",
+          "table_names","append","id","table_id","user_id",
+          "service_name","service_item_id","stats","type_guessing","quoted_fields_guessing","content_guessing","server","host",
+          "resque_ppid","upload_host","create_visualization","user_defined_limits")
+          VALUES('test','url','test','complete','t','11111111-1111-1111-1111-111111111112',
+            '2015-03-17 00:00:00.94006+00','2015-03-17 00:00:00.810581+00','1',
+            'test','f','#{data_import_id}','11111111-1111-1111-1111-111111111113',
+            '#{user_id}','public_url', 'test',
+            '[{"type":".csv","size":5015}]','t','f','t','test','0.0.0.0','13204','test','f','{"twitter_credits_limit":0}');
+        })
+
+      Rails::Sequel.connection.run(%Q{
+        INSERT INTO geocodings("table_name","processed_rows","created_at","updated_at","formatter","state",
+          "id","user_id",
+          "cache_hits","kind","geometry_type","processable_rows","real_rows","used_credits",
+          "data_import_id"
+          ) VALUES('importer_123456','197','2015-03-17 00:00:00.279934+00','2015-03-17 00:00:00.536383+00','field_1','finished',
+            '11111111-1111-1111-1111-111111111114','#{user_id}','0','admin0','polygon','195','0','0',
+            '#{data_import_id}');
+        })
+
+      user.destroy
+
+      User.find(id:user_id).should eq nil
+
     end
   end
 

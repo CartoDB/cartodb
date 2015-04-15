@@ -30,7 +30,7 @@ module Carto
       end
 
       def load_visualization
-        @visualization = Visualization.where(id: @table_id).first
+        @visualization = Visualization.where(id: @id).first
         return render(text: 'Visualization does not exist', status: 404) if @visualization.nil?
         return render(text: 'Visualization not viewable', status: 403) if !@visualization.is_viewable_by_user?(current_viewer)
       end
@@ -44,7 +44,9 @@ module Carto
         if @table
           @visualization = @table.visualization
         else
-          @table = Visualization.find(@id)
+          @table = Visualization.where(id: @id).first
+          # TODO: refactor 404 duplication
+          return render(text: 'Visualization does not exist', status: 404) if @visualization.nil?
           @visualization = @table
         end
       end

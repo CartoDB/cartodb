@@ -44,6 +44,7 @@ namespace :cartodb do
       }
       # TODO: needed/useful?
       # user.in_database.run "select cartodb.CDB_CartodbfyTable('#{user.database_schema}', '#{VISUALIZATIONS_TABLE}')"
+      touch_metadata(user)
     end
 
     desc "Deletes the #{VISUALIZATIONS_TABLE} table"
@@ -53,7 +54,9 @@ namespace :cartodb do
 
     desc "Updates the data at #{VISUALIZATIONS_TABLE}"
     task :update => [:environment] do
-      update(target_user)
+      user = target_user
+      update(user)
+      touch_metadata(user)
     end
 
     def update(user)
@@ -213,6 +216,10 @@ namespace :cartodb do
     end
 
     alias :target_user :common_data_user
+
+    def touch_metadata(user)
+      user.in_database(as: :superuser).run(%Q{SELECT CDB_TableMetadataTouch('#{VISUALIZATIONS_TABLE}')})
+    end
 
   end
 

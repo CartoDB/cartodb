@@ -25,17 +25,16 @@
   width: 300px;
   margin: 10px;
 }
-.MapsList-item--fake {
-  display: none;
+.MapsList .MapsList-item.MapsList-item--fake {
   @include opacity(0.6);
 }
 
 @media only screen and (max-width: $sMedia-mobile) {
-  .MapsList-item--fake {
-    display: none;
-  }
   .MapsList {
     padding: 0;
+  }
+  .MapsList .MapsList-item.MapsList-item--fake {
+    display: none;
   }
   .MapsList .MapsList-item {
     margin: 10px auto;
@@ -47,13 +46,15 @@
     @include flex-direction(row);
     @include justify-content(flex-start);
   }
-  .MapsList-item--fake {
-    display: none;
+  .MapsList .MapsList-item.MapsList-item--fake {
+    display: none!Important;
   }
 }
 
 @media (min-width: $sMedia-desktop) {
-  .MapsList-item--fake { display: block }
+  .MapsList .MapsList-item.MapsList-item--fake {
+    display: block;
+  }
 }
 
 @media only screen and (max-width: 984px) {
@@ -62,7 +63,7 @@
     padding: 0;
     @include justify-content(center);
   }
-  .MapsList-item--fake {
+  .MapsList .MapsList-item.MapsList-item--fake {
     display: block;
   }
   .MapsList .MapsList-item {
@@ -76,7 +77,7 @@
     padding: 0;
     @include justify-content(center);
   }
-  .MapsList-item--fake {
+  .MapsList .MapsList-item.MapsList-item--fake {
     display: block;
   }
   .MapsList .MapsList-item {

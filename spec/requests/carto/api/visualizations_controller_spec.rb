@@ -27,8 +27,9 @@ describe Carto::Api::VisualizationsController do
         get     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/likes'                      => 'visualizations#likes_count',     as: :api_v1_visualizations_likes_count,     constraints: { id: /[^\/]+/ }
         get     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/likes/detailed'             => 'visualizations#likes_list',      as: :api_v1_visualizations_likes_list,      constraints: { id: /[^\/]+/ }
         get     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/like'                       => 'visualizations#is_liked',        as: :api_v1_visualizations_is_liked,        constraints: { id: /[^\/]+/ }
+        get     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/stats'                      => 'visualizations#stats',           as: :api_v1_visualizations_stats,           constraints: { id: /[^\/]+/ }
 
-        get     '(/user/:user_domain)(/u/:user_domain)/api/v2/viz/:id/viz'    => 'visualizations#vizjson2', as: :api_v2_visualizations_vizjson, constraints: { id: /[^\/]+/ }
+        get     '(/user/:user_domain)(/u/:user_domain)/api/v2/viz/:id/viz'                        => 'visualizations#vizjson2', as: :api_v2_visualizations_vizjson, constraints: { id: /[^\/]+/ }
       end
 
       # old controller

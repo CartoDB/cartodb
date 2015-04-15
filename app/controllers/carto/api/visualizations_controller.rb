@@ -1,5 +1,6 @@
 require_relative 'visualization_presenter'
 require_relative 'vizjson_presenter'
+require_relative '../../../models/visualization/stats'
 
 module Carto
 
@@ -13,7 +14,7 @@ module Carto
 
       before_filter :id_and_schema_from_params
       before_filter :load_table, only: [:vizjson2]
-      before_filter :load_visualization, only: [:likes_count, :likes_list, :is_liked, :show]
+      before_filter :load_visualization, only: [:likes_count, :likes_list, :is_liked, :show, :stats]
       ssl_required :index, :show
 
       FILTER_SHARED_YES = 'yes'
@@ -164,6 +165,10 @@ module Carto
       rescue => exception
         CartoDB.notify_exception(exception)
         raise exception
+      end
+
+      def stats
+        render_jsonp(CartoDB::Visualization::Stats.new(@visualization).to_poro)
       end
 
       private

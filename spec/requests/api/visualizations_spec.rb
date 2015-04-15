@@ -216,23 +216,6 @@ describe Api::Json::VisualizationsController do
     end
   end # POST /api/v1/viz
 
-  describe 'GET /api/v1/viz/:id/stats' do
-    it 'returns view stats for the visualization' do
-      pending
-      payload = factory
-
-      post "/api/v1/viz?api_key=#{@api_key}",
-        payload.to_json, @headers
-      id = JSON.parse(last_response.body).fetch('id')
-
-      get "/api/v1/viz/#{id}/stats?api_key=#{@api_key}", {}, @headers
-
-      last_response.status.should == 200
-      response = JSON.parse(last_response.body)
-      response.keys.length.should == 30
-    end
-  end # GET /api/v1/viz/:id/stats
-
   describe 'PUT /api/v1/viz/:id' do
     it 'updates an existing visualization' do
       pending

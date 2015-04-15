@@ -1,4 +1,5 @@
 require_relative 'visualization_presenter'
+require_relative '../../../models/visualization/stats'
 
 module Carto
 
@@ -7,8 +8,8 @@ module Carto
     class VisualizationsController < ::Api::ApplicationController
 
       before_filter :table_and_schema_from_params
-      before_filter :load_visualization, only: [:likes_count, :likes_list, :is_liked, :show]
-      ssl_required :index
+      before_filter :load_visualization, only: [:likes_count, :likes_list, :is_liked, :show, :stats]
+      ssl_required :index, :show
       skip_before_filter :api_authorization_required, only: [:index]
       before_filter :optional_api_authorization, only: [:index]
 
@@ -129,6 +130,10 @@ module Carto
           likes: @visualization.likes.count,
           liked: @visualization.is_liked_by_user_id?(current_viewer.id)
         })
+      end
+
+      def stats
+        render_jsonp(CartoDB::Visualization::Stats.new(@visualization).to_poro)
       end
 
       private

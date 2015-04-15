@@ -78,7 +78,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def is_publically_accesible?
-    is_public? || is_viewable_with_link?
+    is_public? || is_link_privacy?
   end
 
   def varnish_key
@@ -124,7 +124,7 @@ class Carto::Visualization < ActiveRecord::Base
     map.carto_and_torque_layers.flat_map { |layer| layer.affected_tables.map { |t| t.service } }.uniq
   end
 
-  def is_viewable_with_link?
+  def is_link_privacy?
     self.privacy == PRIVACY_LINK
   end
 

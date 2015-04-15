@@ -3,10 +3,16 @@ require 'active_record'
 class Carto::Layer < ActiveRecord::Base
   serialize :options, JSON
 
-  has_and_belongs_to_many :maps, class_name: 'Carto::Map'
+  has_and_belongs_to_many :maps, class_name: Carto::Map
+
+  has_many :children, class_name: Carto::Layer, foreign_key: :parent_id
 
   def affected_tables
     (tables_from_query_option + tables_from_table_name_option).compact.uniq
+  end
+
+  def legend
+    @legend ||= options['legend']
   end
 
   private

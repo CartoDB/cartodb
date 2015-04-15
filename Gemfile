@@ -78,25 +78,22 @@ gem 'resque-metrics',        '0.1.1'
 
 group :test do
   gem 'db-query-matchers'
+  gem 'rack-test',             '0.6.2',  require: 'rack/test'
+  gem 'factory_girl_rails',    '~> 4.0.0'
+  gem 'selenium-webdriver',    '>= 2.5.0'
+  gem 'capybara',              '1.1.2'
+  gem 'delorean'
+  gem 'webrick',               '1.3.1'
+  gem 'mocha',                 '0.10.5'
+  gem 'ci_reporter',           '1.8.4'
+  gem 'rspec-rails',           '2.10.1'
+  gem 'poltergeist',           '>= 1.0.0'
 end
 
 group :development, :test do
   gem 'rb-readline'
-  gem 'webrick',               '1.3.1'
-  gem 'poltergeist',           '>= 1.0.0'
-  gem 'selenium-webdriver',    '>= 2.5.0'
-
-  gem 'mocha',                 '0.10.5'
-  gem 'ci_reporter',           '1.8.4'
-
   gem 'debugger',              '1.6.8'
-
-  gem 'rspec-rails',           '2.10.1'
-  gem 'capybara',              '1.1.2'
-  gem 'delorean'
   gem 'rack',                  '1.4.1'
-  gem 'rack-test',             '0.6.2',  require: 'rack/test'
-  gem 'factory_girl_rails',    '~> 4.0.0'
 
   # Server
   gem 'thin',                           require: false

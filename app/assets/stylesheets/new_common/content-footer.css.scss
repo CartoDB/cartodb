@@ -6,9 +6,9 @@
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center);
-  width: $sLayout-width;
+  width: 100%;
   padding: $sMargin-group 0;
-  margin: 0 auto;  
+  margin: 0 auto;
 }
 /*REVIEW IF THIS CLASS IS NECESSARY*/
 .ContentFooter-inner {
@@ -28,7 +28,6 @@
 @media only screen and (max-width: 984px) {
   .ContentFooter {
     display:block;
-    width: 635px;
   }
   .ContentFooter-inner--paginationOnly {
     @include justify-content(flex-end, end);
@@ -37,7 +36,6 @@
 @media only screen and (max-width: 600px) and (min-width: $sMedia-mobile) {
   .ContentFooter {
     display:block;
-    width: 310px;
   }
   .ContentFooter-inner--paginationOnly {
     @include justify-content(flex-end, end);
@@ -46,16 +44,12 @@
 @media only screen and (min-width: 600px) {
   .ContentFooter {
     display:block;
-    width: 635px;
   }
   .ContentFooter-inner--paginationOnly {
     @include justify-content(flex-end, end);
   }
 }
 @media only screen and (min-width: $sMedia-tablet) {
-  .ContentFooter {
-    width: 640px;
-  }
   .ContentFooter-inner--paginationOnly {
     @include justify-content(flex-end, end);
   }

@@ -27,7 +27,7 @@
                 <span class="UserAvatar PublicMap-owner">
                   <img class="UserAvatar-img UserAvatar-img--smaller PublicMap-ownerAvatar" src="<%= @visualization.user.avatar %>" alt="<%= @visualization.user.username %>" title="<%= @visualization.user.username %>" />
                 </span>
-                <a class="PublicMap-ownerName" href="<%= CartoDB.url(self, 'public_visualizations_home') %>" target="_blank"><%= @visualization.user.name || @visualization.user.username %></a>
+                <a class="PublicMap-ownerName" href="<%= CartoDB.url(self, 'public_visualizations_home') %>" target="_blank"><%= @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username %></a>
               </span>
             </div>
             <div class="PublicMap-desc">

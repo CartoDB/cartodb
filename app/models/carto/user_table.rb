@@ -4,7 +4,7 @@ module Carto
 
   class UserTable < ActiveRecord::Base
 
-    belongs_to :visualization, primary_key: :map_id, foreign_key: :map_id, conditions: { type: Visualization::TYPE_CANONICAL }
+    belongs_to :visualization, primary_key: :map_id, foreign_key: :map_id, conditions: { type: Carto::Visualization::TYPE_CANONICAL }
 
     def geometry_types
       @geometry_types ||= table.geometry_types

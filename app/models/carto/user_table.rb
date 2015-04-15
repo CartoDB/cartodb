@@ -4,6 +4,8 @@ module Carto
 
   class UserTable < ActiveRecord::Base
 
+    belongs_to :visualization, primary_key: :map_id, foreign_key: :map_id, conditions: { type: Visualization::TYPE_CANONICAL }
+
     def geometry_types
       @geometry_types ||= table.geometry_types
     end
@@ -14,6 +16,10 @@ module Carto
 
     def row_count
       row_count_and_size[:row_count]
+    end
+
+    def service
+      @service ||= ::Table.new(user_table: self)
     end
 
     def set_service(table)

@@ -1,4 +1,5 @@
 require_relative 'visualization_presenter'
+require_relative 'vizjson_presenter'
 
 module Carto
 
@@ -6,32 +7,47 @@ module Carto
 
     class VisualizationsController < ::Api::ApplicationController
 
-      before_filter :table_and_schema_from_params
+      # TODO: compare with older, there seems to be more optional authentication endpoints
+      skip_before_filter :api_authorization_required, only: [:index, :vizjson2]
+      before_filter :optional_api_authorization, only: [:index, :vizjson2]
+
+      before_filter :id_and_schema_from_params
+      before_filter :load_table, only: [:vizjson2]
       before_filter :load_visualization, only: [:likes_count, :likes_list, :is_liked, :show]
-      ssl_required :index
-      skip_before_filter :api_authorization_required, only: [:index]
-      before_filter :optional_api_authorization, only: [:index]
+      ssl_required :index, :show
 
       FILTER_SHARED_YES = 'yes'
       FILTER_SHARED_NO = 'no'
       FILTER_SHARED_ONLY = 'only'
 
-      def optional_api_authorization
-        if params[:api_key].present?
-          authenticate(:api_key, :api_authentication, :scope => CartoDB.extract_subdomain(request))
-        end
-      end
-
-      def table_and_schema_from_params
+      def id_and_schema_from_params
         if params.fetch('id', nil) =~ /\./
-          @table_id, @schema = params.fetch('id').split('.').reverse
+          @id, @schema = params.fetch('id').split('.').reverse
         else
-          @table_id, @schema = [params.fetch('id', nil), nil]
+          @id, @schema = [params.fetch('id', nil), nil]
         end
       end
 
       def load_visualization
-        @visualization = Visualization.find(@table_id)
+        @visualization = Visualization.find(@id)
+        return render(status: 404) unless @visualization
+        return render(text: 'Visualization not viewable', status: 403) if !@visualization.is_viewable_by_user?(current_viewer)
+      end
+
+      def load_table
+        # TODO: refactor this for vizjson, that uses to look for a visualization, so it should come first
+
+        @table = UserTable.where(id: @id).first
+        # TODO: id should _really_ contain either an id of a user_table or a visualization??
+        # Some tests fail if not, and older controller works that way, but...
+        if @table
+          @visualization = @table.visualization
+        else
+          @table = Visualization.find(@id)
+          @visualization = @table
+        end
+
+        # TODO: remove duplication with load_visualization
         return render(text: 'Visualization not viewable', status: 403) if !@visualization.is_viewable_by_user?(current_viewer)
       end
 
@@ -131,7 +147,34 @@ module Carto
         })
       end
 
+      def vizjson2
+        set_vizjson_response_headers_for(@visualization)
+        render_jsonp(Carto::Api::VizJSONPresenter.new(@visualization, $tables_metadata).to_vizjson( { https_request: is_https? } ))
+      rescue KeyError => exception
+        render(text: exception.message, status: 403)
+      rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
+        CartoDB.notify_exception(exception, { user: current_user, template_data: exception.template_data })
+        render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
+      rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
+        CartoDB.notify_exception(exception)
+        render_jsonp({ errors: { named_map: exception.message } }, 400)
+      rescue CartoDB::NamedMapsWrapper::NamedMapsDataError => exception
+        CartoDB.notify_exception(exception)
+        render_jsonp({ errors: { named_maps: exception.message } }, 400)
+      rescue => exception
+        CartoDB.notify_exception(exception)
+        raise exception
+      end
+
       private
+
+      def set_vizjson_response_headers_for(visualization)
+        # We don't cache non-public vis
+        if @visualization.is_publically_accesible?
+          response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
+          response.headers['Cache-Control']   = 'no-cache,max-age=86400,must-revalidate, public'
+        end
+      end
 
       def to_json(visualization)
         ::JSON.dump(to_hash(visualization))

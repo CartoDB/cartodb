@@ -62,6 +62,8 @@ defaults: &defaults
     host: ''
     api_key: ''
     format: 'shp'
+  explore-api:
+    username: ''
   varnish_management:
     critical: false
     host: '127.0.0.1'

@@ -216,38 +216,6 @@ describe Api::Json::VisualizationsController do
     end
   end # POST /api/v1/viz
 
-  describe 'GET /api/v1/viz' do
-
-    it 'does not get table data if passed table_data=false' do
-      pending
-      table = table_factory
-
-      get "/api/v1/viz?api_key=#{@api_key}&type=table",
-        {}, @headers
-      last_response.status.should == 200
-      response        = JSON.parse(last_response.body)
-      visualizations  = response.fetch('visualizations')
-      visualizations.first.keys.should_not include :table_data
-    end
-  end # GET /api/v1/viz
-
-  describe 'GET /api/v1/viz/:id/stats' do
-    it 'returns view stats for the visualization' do
-      pending
-      payload = factory
-
-      post "/api/v1/viz?api_key=#{@api_key}",
-        payload.to_json, @headers
-      id = JSON.parse(last_response.body).fetch('id')
-
-      get "/api/v1/viz/#{id}/stats?api_key=#{@api_key}", {}, @headers
-
-      last_response.status.should == 200
-      response = JSON.parse(last_response.body)
-      response.keys.length.should == 30
-    end
-  end # GET /api/v1/viz/:id/stats
-
   describe 'PUT /api/v1/viz/:id' do
     it 'updates an existing visualization' do
       pending
@@ -484,32 +452,6 @@ describe Api::Json::VisualizationsController do
       last_response.status.should == 200
     end
   end # DELETE /api/v1/tables/:id
-
-  describe 'GET /api/v1/viz/:id/viz' do
-    it 'renders vizjson v1' do
-      pending
-      table_attributes  = table_factory
-      table_id          = table_attributes.fetch('id')
-      get "/api/v1/viz/#{table_id}/viz?api_key=#{@api_key}",
-        {}, @headers
-      last_response.status.should == 200
-      response = ::JSON.parse(last_response.body)
-      response.keys.length.should > 1
-      response.fetch('description').should_not be_empty
-    end
-  end # GET /api/v1/viz/:id/viz
-
-  describe 'GET /api/v2/viz/:id/viz' do
-    it 'renders vizjson v2' do
-      pending
-      table_attributes  = table_factory
-      table_id          = table_attributes.fetch('id')
-      get "/api/v2/viz/#{table_id}/viz?api_key=#{@api_key}",
-        {}, @headers
-      last_response.status.should == 200
-      ::JSON.parse(last_response.body).keys.length.should > 1
-    end
-  end # GET /api/v2/viz/:id/viz
 
   describe 'non existent visualization' do
     it 'returns 404' do

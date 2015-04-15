@@ -53,7 +53,8 @@
   -moz-flex-grow: $v;
   -ms-flex-grow: $v;
   flex-grow: $v;
-  // IE10 doesn't support this property
+  // IE10 fallback
+  -ms-flex: $v 0 auto;
 }
 @mixin flex-wrap($v) {
   -webkit-flex-wrap: $v;
@@ -196,4 +197,23 @@
 
 @mixin animation($str) {
   @include css3-prefix('animation', $str);
+}
+
+@mixin line-clamp($lines) {
+  height: $lines * $sLineHeight-normal;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: $lines;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  &:after {
+    content: ' ';
+    display: block;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    height: $sLineHeight-normal;
+    width: 2 * $sLineHeight-normal;
+    @include background-horizontal(rgba(255,255,255,0), rgba(255,255,255,1));
+  }
 }

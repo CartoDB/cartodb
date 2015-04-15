@@ -48,6 +48,26 @@ shared_examples_for "visualization controllers" do
     }
   end
 
+  def table_factory(options={})
+    privacy = options.fetch(:privacy, 1)
+
+    seed    = rand(9999)
+    payload = {
+      name:         "table #{seed}",
+      description:  "table #{seed} description"
+    }
+    post "/api/v1/tables?api_key=#{@api_key}",
+      payload.to_json, @headers
+
+    table_attributes  = JSON.parse(last_response.body)
+    table_id          = table_attributes.fetch('id')
+
+    put "/api/v1/tables/#{table_id}?api_key=#{@api_key}",
+      { privacy: privacy }.to_json, @headers
+
+    table_attributes
+  end
+
   describe 'index' do
     include_context 'visualization creation helpers'
 
@@ -837,7 +857,6 @@ shared_examples_for "visualization controllers" do
         # ----------------------
 
         # Owner, authenticated
-        # TODO: api_v2 endpoint replacement
         get api_v2_visualizations_vizjson_url(user_domain: user_1.username, id: u1_vis_1_id, api_key: user_1.api_key)
         last_response.status.should == 200
         body = JSON.parse(last_response.body)
@@ -909,7 +928,6 @@ shared_examples_for "visualization controllers" do
     end
 
     describe 'GET /api/v1/viz' do
-      # TODO: I'm not sure about stubbing this tiler request, I've taken it from existing tests
       before(:each) do
         CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
         CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
@@ -1016,6 +1034,14 @@ shared_examples_for "visualization controllers" do
         collection  = response.fetch('visualizations')
         collection.size.should == 2
       end
+    end
+
+    describe 'GET /api/v1/viz/:id' do
+      before(:each) do
+        CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+        delete_user_data(@user)
+      end
 
       it 'returns a visualization' do
         payload = factory(@user)
@@ -1034,6 +1060,46 @@ shared_examples_for "visualization controllers" do
         response.fetch('tags')            .should_not be_empty
         response.fetch('description')     .should_not be_nil
         response.fetch('related_tables')  .should_not be_nil
+      end
+    end
+
+    describe 'GET /api/v2/viz/:id/viz' do
+      before(:each) do
+        CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+        delete_user_data(@user)
+      end
+
+      it 'renders vizjson v2' do
+        table_attributes  = table_factory
+        table_id          = table_attributes.fetch('id')
+        get "/api/v2/viz/#{table_id}/viz?api_key=#{@api_key}",
+          {}, @headers
+        last_response.status.should == 200
+        ::JSON.parse(last_response.body).keys.length.should > 1
+      end
+    end
+
+    describe 'GET /api/v1/viz/:id/stats' do
+
+      before(:each) do
+        CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+        delete_user_data(@user)
+      end
+
+      it 'returns view stats for the visualization' do
+        payload = factory(@user)
+
+        post "/api/v1/viz?api_key=#{@api_key}",
+          payload.to_json, @headers
+        id = JSON.parse(last_response.body).fetch('id')
+
+        get "/api/v1/viz/#{id}/stats?api_key=#{@api_key}", {}, @headers
+
+        last_response.status.should == 200
+        response = JSON.parse(last_response.body)
+        response.keys.length.should == 30
       end
     end
 

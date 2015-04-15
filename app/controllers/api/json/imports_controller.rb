@@ -27,6 +27,12 @@ class Api::Json::ImportsController < Api::ApplicationController
   end
 
   def show
+    begin
+      UUIDTools::UUID.parse(params[:id])
+    rescue ArgumentError
+      render_404 and return
+    end
+
     data_import = DataImport[params[:id]]
     data_import.mark_as_failed_if_stuck!
 

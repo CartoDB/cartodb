@@ -1013,6 +1013,14 @@ shared_examples_for "visualization controllers" do
         collection  = response.fetch('visualizations')
         collection.size.should == 2
       end
+    end
+
+    describe 'GET /api/v1/viz/:id' do
+      before(:each) do
+        CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+        delete_user_data(@user)
+      end
 
       it 'returns a visualization' do
         payload = factory(@user)

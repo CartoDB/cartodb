@@ -45,9 +45,10 @@ module Carto
           @visualization = @table.visualization
         else
           @table = Visualization.where(id: @id).first
-          # TODO: refactor 404 duplication
-          return render(text: 'Visualization does not exist', status: 404) if @visualization.nil?
           @visualization = @table
+          # TODO: refactor load_table duplication
+          return render(text: 'Visualization does not exist', status: 404) if @visualization.nil?
+          return render(text: 'Visualization not viewable', status: 403) if !@visualization.is_viewable_by_user?(current_viewer)
         end
       end
 
@@ -61,6 +62,8 @@ module Carto
         # TODO: check whether this is consistent with dashboard expectations
         type = params[:type].present? && type != '' ? params[:type] : "#{Carto::Visualization::TYPE_CANONICAL},#{Carto::Visualization::TYPE_DERIVED}"
         types = params.fetch(:types, type).split(',')
+        # TODO: add this assumption to a test or remove it (this is coupled to the UI)
+        total_types = types.include?(Carto::Visualization::TYPE_DERIVED) ? Carto::Visualization::TYPE_DERIVED : Carto::Visualization::TYPE_CANONICAL
         page = (params[:page] || 1).to_i
         per_page = (params[:per_page] || 20).to_i
         order = (params[:order] || 'updated_at').to_sym
@@ -117,9 +120,9 @@ module Carto
         }
         if current_user
           response.merge!({
-            total_user_entries: VisualizationQueryBuilder.new.with_types(types).with_user_id(current_user.id).build.count,
-            total_likes: VisualizationQueryBuilder.new.with_types(types).with_liked_by_user_id(current_user.id).build.count,
-            total_shared: VisualizationQueryBuilder.new.with_types(types).with_shared_with_user_id(current_user.id).build.count
+            total_user_entries: VisualizationQueryBuilder.new.with_types(total_types).with_user_id(current_user.id).build.count,
+            total_likes: VisualizationQueryBuilder.new.with_types(total_types).with_liked_by_user_id(current_user.id).build.count,
+            total_shared: VisualizationQueryBuilder.new.with_types(total_types).with_shared_with_user_id(current_user.id).build.count
           })
         end
         render_jsonp(response)

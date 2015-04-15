@@ -13,6 +13,9 @@
   background: $cStructure-grayBkg;
   box-shadow: inset 0 1px 0 0 rgba(black, 0.1);
 }
+.Footer--light {
+  background: white;
+}
 .Footer-inner {
   margin-top: $sIcon-layout;
 }

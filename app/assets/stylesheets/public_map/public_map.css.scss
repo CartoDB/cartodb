@@ -148,9 +148,24 @@
 
 
 @media (max-width: 940px) {
+  .u-inner { padding: 0 20px }
+  .PublicMap-block.with-border { border-top: 0 }
   .PublicMap-rightBlock,
   .PublicMap-leftBlock {
-    width: 100%;
     float: none;
+    width: 100%;
   }
+  .PublicMap-secondary { padding-top: 30px }
+  .PublicMap .DatasetsList { padding-bottom: 30px }
+  .PublicMap-share { text-align: left }
+  .PublicMap-shareButton--facebook { margin-left: 0 }
+  .PublicMap--rightAligned,
+  .PublicMap-stat--onRight {
+    margin-left: 0;
+    margin-right: 0;
+    text-align: left;
+  }
+  .PublicMap-info { padding: 30px 0 }
+  .PublicMap-stat { display: block }
+  
 }

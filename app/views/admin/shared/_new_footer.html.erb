@@ -1,4 +1,6 @@
-<div class="Footer">
+<% light = false if !light.present? %>
+
+<div class="Footer <%= 'Footer--light' if light %>">
   <div class="u-inner Footer-inner">
     <ul class="Footer-list Footer-list--primary">
       <li class="Footer-listItem"><a class="Footer-listLink" href="http://cartodb.com/tour/">Feature tour</a></li>

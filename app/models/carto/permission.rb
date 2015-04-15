@@ -28,7 +28,7 @@ class Carto::Permission < ActiveRecord::Base
     }
   end
 
-  def acl_entry_is_for_user?(entry, user_id)
+  def acl_entry_is_for_user_id?(entry, user_id)
     entry[:type] == TYPE_USER && entry[:id] == user_id
   end
 

@@ -6,5 +6,5 @@ require 'active_record'
 # INFO: our current database.yml sets Sequel PostgreSQL adapter, which is called 'postgres'. Rails' is 'postgresql'
 @dbconfig[Rails.env]['adapter'] = 'postgresql'
 ActiveRecord::Base.establish_connection @dbconfig[Rails.env]
-# TODO: console debugging purposes
-ActiveRecord::Base.logger = Logger.new(STDOUT)
+# INFO: console debugging purposes
+ActiveRecord::Base.logger = Logger.new(STDOUT) if Rails.env == 'development'

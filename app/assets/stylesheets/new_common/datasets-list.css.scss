@@ -167,6 +167,8 @@ $bannedColor: #E1A7A5;
   @include flex-wrap(wrap);
   margin-bottom: 2 * $sMargin-min;
 }
+.DatasetsList-itemTags { margin-top: 4px }
+
   .DatasetsList-itemMeta > * {
     width: auto;
     margin-right: 18px;
@@ -179,7 +181,6 @@ $bannedColor: #E1A7A5;
   .DatasetsList-itemMeta > *:nth-child(5) { @include flex-order(5) }
 
   .DatasetsList-itemTags.EditableField {
-    margin-top: 4px;
     text-align: right;
     .EditableField-input {
       text-align: right;

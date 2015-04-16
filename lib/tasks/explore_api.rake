@@ -94,7 +94,7 @@ namespace :cartodb do
             else
               # TODO: update instead of delete-insert
               user.in_database.run delete_query([v.id])
-              user.in_database.run insert_query([values_sql(v)])
+              insert_visualizations(user, [v])
               full_updated_count += 1
             end
           else
@@ -133,7 +133,7 @@ namespace :cartodb do
       puts "INSERTING NEW CREATED"
       page = 1
       while (visualizations = CartoDB::Visualization::Collection.new.fetch(filter(page, most_recent_created_date))).count > 0 do
-        user.in_database.run insert_query(visualizations.map { |v| values_sql(v) })
+        insert_visualizations(user, visualizations)
         print "Batch ##{page}. \t Insertions: #{visualizations.count}\n"
         page += 1
       end
@@ -149,7 +149,7 @@ namespace :cartodb do
 
         if missing_ids.length > 0
           missing_visualizations = visualizations.select { |v| missing_ids.include?(v.id) }
-          user.in_database.run insert_query(missing_visualizations.map { |v| values_sql(v) })
+          insert_visualizations(user, missing_visualizations)
           print "Batch ##{page}. \t Insertions: #{missing_visualizations.length}\n"
         end
         page += 1
@@ -170,36 +170,37 @@ namespace :cartodb do
       filter
     end
 
-    def insert_query(values)
-      insert_query = %Q{
-          insert into #{VISUALIZATIONS_TABLE} (
-            visualization_id, visualization_name, visualization_description,
-            visualization_type, visualization_tags, visualization_created_at,
-            visualization_updated_at, visualization_map_id, visualization_title, 
-            visualization_likes, visualization_mapviews,
-            user_id, user_username, user_organization_id,
-            user_twitter_username, user_website, user_avatar_url,
-            user_available_for_hire
-            )
-          values #{values.join(',')}
-      }
+    def insert_visualizations(user, visualizations)
+      user.in_database[:visualizations].multi_insert(
+        visualizations.map { |v|
+          insert_visualization_hash(v)
+        }
+      )
     end
 
-    def values_sql(visualization)
+    def insert_visualization_hash(visualization)
       v = visualization
       u = v.user
-      tags = "'#{v.tags.map { |t| t.gsub("'", %q(\\\')) }.join("','")}'"
-      %Q{
-        (
-          '#{v.id}', '#{v.name}', '#{v.description}',
-          '#{v.type}', ARRAY[#{tags}], '#{v.created_at.iso8601(6)}',
-          '#{v.updated_at.iso8601(6)}', '#{v.map_id}', '#{v.title}',
-          '#{v.likes_count}', '#{v.mapviews}',
-          '#{u.id}', '#{u.username}', '#{u.organization_id}',
-          '#{u.twitter_username}', '#{u.website}', '#{u.avatar_url}',
-          '#{u.available_for_hire}'
-        )
-      }.gsub("''", "NULL")
+      {
+            visualization_id: v.id,
+            visualization_name: v.name,
+            visualization_description: v.description,
+            visualization_type: v.type,
+            visualization_tags: v.tags,
+            visualization_created_at: v.created_at,
+            visualization_updated_at: v.updated_at,
+            visualization_map_id: v.map_id,
+            visualization_title: v.title,
+            visualization_likes: v.likes_count,
+            visualization_mapviews: v.mapviews,
+            user_id: u.id,
+            user_username: u.username,
+            user_organization_id: u.organization_id,
+            user_twitter_username: u.twitter_username,
+            user_website: u.website,
+            user_avatar_url: u.avatar_url,
+            user_available_for_hire: u.available_for_hire
+      }
     end
 
     def update_mapviews_and_likes_query(visualization)

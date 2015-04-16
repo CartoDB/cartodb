@@ -186,7 +186,7 @@ namespace :cartodb do
             visualization_name: v.name,
             visualization_description: v.description,
             visualization_type: v.type,
-            visualization_tags: v.tags,
+            visualization_tags: Sequel.pg_array(v.tags),
             visualization_created_at: v.created_at,
             visualization_updated_at: v.updated_at,
             visualization_map_id: v.map_id,

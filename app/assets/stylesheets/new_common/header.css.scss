@@ -89,3 +89,25 @@ $cHeader-dark:  rgba(#3A91D7, 1);
 @media (min-width: $sMedia-tablet) {
   .Header-settingsItem { margin-left: $sMargin-group }
 }
+
+@media only screen and (max-width: 360px) {
+  $height: 60px;
+
+  .Header .Header-inner {
+    height: $height;
+  }
+  .Header {
+    height: $height;
+  }
+  .Header-settingsItem--avatar { 
+    height: $height/2;
+  }
+  .Header .Header-settingsList .UserAvatar-img--medium { 
+    height: $height/2;
+    width: $height/2;
+  }
+  .Header .Header-settingsList .Button { 
+    height: $height/2;
+    padding: 0 20px;
+  }
+}

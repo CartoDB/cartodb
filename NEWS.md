@@ -3,6 +3,7 @@
 * Editable descriptions and tags in the maps and datasets view [3129](https://github.com/CartoDB/cartodb/pull/3129)
 * fixed interaction when there are hidden layers #3090
 * Add caching of geometry types [#3157](https://github.com/CartoDB/cartodb/pull/3157)
+* New public map [#3120](https://github.com/CartoDB/cartodb/issues/3120)
 
 3.10.0 (2015-04-08)
 -------------------

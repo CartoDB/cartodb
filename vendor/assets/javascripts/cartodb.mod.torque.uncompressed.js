@@ -5406,7 +5406,6 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
       },
       cartodb_logo: layerModel.get('cartodb_logo'),
       attribution: layerModel.get('attribution'),
-      cdn_url: layerModel.get('no_cdn') ? null: (layerModel.get('cdn_url') || cdb.CDB_HOST),
       cartocss: layerModel.get('cartocss') || layerModel.get('tile_style'),
       named_map: layerModel.get('named_map'),
       auth_token: layerModel.get('auth_token'),

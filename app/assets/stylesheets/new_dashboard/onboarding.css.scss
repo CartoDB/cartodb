@@ -37,10 +37,17 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 500px;
-  margin-left: -250px;
+  width: 800px;
+  margin-left: -332px;
   margin-top: -170px;
   z-index: 1001;
+}
+.OnBoarding-welcomeContentInner {
+  position: absolute;
+  width: 404px;
+  top: 0;
+  right: 0;
+  z-index: 1000;
 }
 .OnBoarding-welcomeContentTitle,
 .OnBoarding-welcomeContentText {
@@ -58,6 +65,15 @@
 .OnBoarding-welcomeContentSup {
   @include supElement(13px, 9px);
   margin: 4px 0 0 2px;
+}
+.OnBoarding-importAnimation {
+  position: absolute;
+  background: image-url("layout/import_animation.gif") no-repeat center center;
+  width: 1050px;
+  height: 700px;
+  background-size: 60% 60%;
+  top: -200px;
+  left: -460px;
 }
 .OnBoarding-fakeLink {
   position: absolute;

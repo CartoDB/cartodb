@@ -4,6 +4,8 @@ require_relative '../../../../app/models/visualization/member'
 
 shared_examples_for "visualization controllers" do
 
+  TEST_UUID = '00000000-0000-0000-0000-000000000000'
+
   NORMALIZED_DATE_ATTRIBUTES = %w{ created_at updated_at }
 
   # Custom hash comparation, since in the ActiveModel-based controllers
@@ -92,7 +94,7 @@ shared_examples_for "visualization controllers" do
       ).to_json)
       expected_visualization = normalize_hash(expected_visualization)
 
-      response_body.should == { 'visualizations' => [expected_visualization], 'total_entries' => 1, 'total_user_entries' => 1, 'total_likes' => 0, 'total_shared' => 0}
+      response_body(type: CartoDB::Visualization::Member::TYPE_CANONICAL).should == { 'visualizations' => [expected_visualization], 'total_entries' => 1, 'total_user_entries' => 1, 'total_likes' => 0, 'total_shared' => 0}
     end
 
     it 'returns liked count' do
@@ -105,7 +107,7 @@ shared_examples_for "visualization controllers" do
       visualization2.store
       visualization2.add_like_from(@user1.id)
 
-      response_body['total_likes'].should == 1
+      response_body(type: CartoDB::Visualization::Member::TYPE_CANONICAL)['total_likes'].should == 1
     end
 
     it 'does a partial match search' do
@@ -115,7 +117,7 @@ shared_examples_for "visualization controllers" do
       create_random_table(@user1, "foo_patata_baz")
 
       #body = response_body("#{BASE_URL}/?q=patata")['total_entries'].should == 2
-      body = response_body(q: 'patata')
+      body = response_body(q: 'patata', type: CartoDB::Visualization::Member::TYPE_CANONICAL)
       body['total_entries'].should == 2
       body['total_user_entries'].should == 4
     end
@@ -1100,6 +1102,25 @@ shared_examples_for "visualization controllers" do
         last_response.status.should == 200
         response = JSON.parse(last_response.body)
         response.keys.length.should == 30
+      end
+    end
+
+    describe 'non existent visualization' do
+      it 'returns 404' do
+        get "/api/v1/viz/#{TEST_UUID}?api_key=#{@api_key}", {}, @headers
+        last_response.status.should == 404
+
+        get "/api/v1/viz/#{TEST_UUID}/stats?api_key=#{@api_key}", {}, @headers
+        last_response.status.should == 404
+
+        put "/api/v1/viz/#{TEST_UUID}?api_key=#{@api_key}", {}, @headers
+        last_response.status.should == 404
+
+        delete "/api/v1/viz/#{TEST_UUID}?api_key=#{@api_key}", {}, @headers
+        last_response.status.should == 404
+
+        get "/api/v2/viz/#{TEST_UUID}/viz?api_key=#{@api_key}", {}, @headers
+        last_response.status.should == 404
       end
     end
 

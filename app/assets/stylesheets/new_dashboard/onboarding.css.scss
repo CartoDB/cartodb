@@ -69,10 +69,11 @@
 .OnBoarding-importAnimation {
   position: absolute;
   background: image-url("layout/import_animation.gif") no-repeat center center;
-  width:630px; 
-  height:420px;
-  top: 0;
-  left: -250px;
+  width: 1050px;
+  height: 700px;
+  background-size: 60% 60%;
+  top: -200px;
+  left: -460px;
 }
 .OnBoarding-fakeLink {
   position: absolute;

@@ -450,6 +450,7 @@ module CartoDB
       def password=(value)
         if value && value.size > 0
           @password_salt = generate_salt if @password_salt.nil?
+          @encrypted_password = password_digest(value, @password_salt)
           self.dirty = true
         end
       end

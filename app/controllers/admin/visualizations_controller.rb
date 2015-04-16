@@ -1,6 +1,5 @@
 # encoding: utf-8
 require_relative '../../models/map/presenter'
-require_relative '../../models/visualization/locator'
 require_dependency '../../lib/resque/user_jobs'
 
 class Admin::VisualizationsController < ApplicationController
@@ -429,7 +428,7 @@ class Admin::VisualizationsController < ApplicationController
 
   def resolve_visualization_and_table(request)
     filters = { exclude_raster: true }
-    locator.get(@table_id, @schema || CartoDB.extract_subdomain(request), filters)
+    get_visualization_and_table(@table_id, @schema || CartoDB.extract_subdomain(request), filters)
   end
 
   # If user A shares to user B a table link (being both from same org), attept to rewrite the url to the correct format
@@ -541,7 +540,7 @@ class Admin::VisualizationsController < ApplicationController
     end
   end
 
-  def locator
-    CartoDB::Visualization::Locator.new
+  def get_visualization_and_table(table_id, schema, filter)
+    Carto::Visualization
   end
 end

@@ -59,11 +59,7 @@ module Carto
       end
 
       def index
-        # TODO: check whether this is consistent with dashboard expectations
-        type = params[:type].present? && type != '' ? params[:type] : "#{Carto::Visualization::TYPE_CANONICAL},#{Carto::Visualization::TYPE_DERIVED}"
-        types = params.fetch(:types, type).split(',')
-        # TODO: add this assumption to a test or remove it (this is coupled to the UI)
-        total_types = types.include?(Carto::Visualization::TYPE_DERIVED) ? Carto::Visualization::TYPE_DERIVED : Carto::Visualization::TYPE_CANONICAL
+        types, total_types = get_types_parameters
         page = (params[:page] || 1).to_i
         per_page = (params[:per_page] || 20).to_i
         order = (params[:order] || 'updated_at').to_sym
@@ -174,6 +170,15 @@ module Carto
       end
 
       private
+
+      def get_types_parameters
+        type = params[:type].present? ? params[:type] : nil
+        # TODO: add this assumption to a test or remove it (this is coupled to the UI)
+        total_types = [(type == Carto::Visualization::TYPE_REMOTE ? Carto::Visualization::TYPE_CANONICAL : type)].compact
+        types = params.fetch(:types, "#{type}").split(',')
+        types = nil if types.empty?
+        return types, total_types
+      end
 
       def set_vizjson_response_headers_for(visualization)
         # We don't cache non-public vis

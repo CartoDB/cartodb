@@ -27,7 +27,9 @@
 
                 <div class="MapCard-contentBodyRow MapCard-contentBodyRow--flex">
                   <% if vis[:description_html_safe] %>
-                    <div class="MapCard-desc DefaultDescription DefaultDescription--twoLines" title="<%= vis[:description_html_safe].strip_tags %>"><%= raw vis[:description_html_safe] %></div>
+                    <div class="MapCard-desc">
+                      <div class="DefaultDescription" title="<%= vis[:description_html_safe].strip_tags %>"><%= raw vis[:description_html_safe] %></div>
+                    </div>
                   <% else %>
                     <span class="NoResults"></span>
                   <% end %>

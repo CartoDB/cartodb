@@ -37,10 +37,14 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 800px;
-  margin-left: -332px;
+  width: 500px;
+  margin-left: -250px;
   margin-top: -170px;
   z-index: 1001;
+}
+.OnBoarding-welcomeContent--wide{
+  width: 800px;
+  margin-left: -332px;
 }
 .OnBoarding-welcomeContentInner {
   position: absolute;

@@ -352,10 +352,14 @@ module CartoDB
         applied_filters = AVAILABLE_FIELD_FILTERS.dup
         applied_filters = applied_filters.delete_if { |k, v| k == 'type' } if @type.nil?
         dataset = repository.apply_filters(dataset, filters, applied_filters)
+        # TODO: symbolize types key
         dataset = filter_by_types(dataset, filters.fetch('types', nil))
         dataset = filter_by_tags(dataset, tags_from(filters))
         dataset = filter_by_partial_match(dataset, filters.delete(:q))
         dataset = filter_by_kind(dataset, filters.delete(:exclude_raster))
+        dataset = filter_by_min_updated_at(dataset, filters.delete(:min_updated_at))
+        dataset = filter_by_min_created_at(dataset, filters.delete(:min_created_at))
+        dataset = filter_by_ids(dataset, filters.delete(:ids))
         order(dataset, filters.delete(:order))
       end
 
@@ -383,6 +387,7 @@ module CartoDB
       def lazy_order_by_mapviews(objects)
         objects.sort! { |obj_a, obj_b|
           # Stats have format [ date, value ]
+          # TODO: refactor with mapviews method at refactor
           obj_b.stats.collect{|o| o[1] }.reduce(:+) <=> obj_a.stats.collect{|o| o[1] }.reduce(:+)
         }
       end
@@ -452,6 +457,25 @@ module CartoDB
       def filter_by_kind(dataset, filter_value)
         return dataset if filter_value.nil? || !filter_value
         dataset.where('kind=?', Member::KIND_GEOM)
+      end
+
+      def filter_by_min_created_at(dataset, min_created_at, included = false)
+        filter_by_min_date('created_at', dataset, min_created_at, included)
+      end
+
+      def filter_by_min_updated_at(dataset, min_updated_at, included = false)
+        filter_by_min_date('updated_at', dataset, min_updated_at, included)
+      end
+
+      def filter_by_min_date(column, dataset, date, included = false)
+        return dataset if !date
+        comparison = included ? '>=' : '>'
+        dataset.where("#{column} #{comparison} ?", date)
+      end
+
+      def filter_by_ids(dataset, ids)
+        return dataset if !ids
+        dataset.where(:id => ids)
       end
 
       def filter_by_only_shared(dataset, filters)

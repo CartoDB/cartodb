@@ -71,7 +71,6 @@ describe Admin::VisualizationsController do
     it 'redirects to the public view if visualization private' do
       id = factory.fetch('id')
 
-      logout
       get "/viz/#{id}", {}, @headers
       follow_redirect!
       last_request.path.should =~ %r{/viz/}
@@ -280,7 +279,6 @@ describe Admin::VisualizationsController do
       perm.set_user_permission(user_b, CartoDB::Permission::ACCESS_READONLY)
       perm.save
 
-      logout
       login_as(user_b, scope: user_b.username)
 
       host! "#{org.name}.localhost.lan"

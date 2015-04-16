@@ -16,7 +16,7 @@
 .ImportItem--sticky {
   padding: 0 20px;
   margin: 0;
-  background: $cCard-hoverFill; 
+  background: $cCard-hoverFill;
 }
 .ImportItem:last-child { border: none }
 .ImportItem-text {
@@ -66,19 +66,4 @@
 .ImportItem-closeButton:hover {
   border-color: $cNavButton-active;
   .ImportItem-closeButtonIcon { color: $cNavButton-active }
-}
-.ImportItem-showButton {
-  height: 24px;
-  padding: 0 11px;
-  line-height: 24px;
-  background: transparent;
-  border: 1px solid #CCC;
-  border-radius: 40px;
-  font-size: $sFontSize-smallUpperCase;
-  color: $cTypography-paragraphs;
-
-  &:hover {
-    border-color: $cTypography-paragraphs;
-    color: $cTypography-paragraphs;
-  }
 }

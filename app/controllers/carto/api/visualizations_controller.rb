@@ -16,6 +16,7 @@ module Carto
       before_filter :load_table, only: [:vizjson2]
       before_filter :load_visualization, only: [:likes_count, :likes_list, :is_liked, :show, :stats]
       ssl_required :index, :show
+      ssl_allowed  :vizjson2, :likes_count, :likes_list, :is_liked
 
       FILTER_SHARED_YES = 'yes'
       FILTER_SHARED_NO = 'no'

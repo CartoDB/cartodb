@@ -75,6 +75,8 @@ shared_examples_for "visualization controllers" do
 
     before(:each) do
       login(@user1)
+      @headers = {'CONTENT_TYPE'  => 'application/json'}
+      host! 'test1.localhost.lan'
     end
 
     it 'returns success, empty response for empty user' do
@@ -153,8 +155,8 @@ shared_examples_for "visualization controllers" do
 
       @headers = {
         'CONTENT_TYPE'  => 'application/json',
-        'HTTP_HOST'     => 'test.localhost.lan'
       }
+      host! 'test.localhost.lan'
     end
 
     after(:all) do
@@ -592,7 +594,7 @@ shared_examples_for "visualization controllers" do
         body['total_shared'].should eq 2
 
         # Multiple likes to same vis shouldn't increment total as is per vis
-        post api_v1_visualizations_add_like_url(user_domain: user_2.username, id: u1_vis_1_id, api_key: user_1.api_key)
+        post api_v1_visualizations_add_like_url(user_domain: user_1.username, id: u1_vis_1_id, api_key: user_1.api_key)
 
         get api_v1_visualizations_index_url(user_domain: user_1.username, api_key: user_1.api_key,
                                             type: CartoDB::Visualization::Member::TYPE_DERIVED, order: 'updated_at'), @headers

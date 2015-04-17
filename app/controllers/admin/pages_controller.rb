@@ -37,6 +37,30 @@ class Admin::PagesController < ApplicationController
     end
   end
 
+  def datasets_rss_feed
+    rss_feed(:datasets)
+  end
+
+  def maps_rss_feed
+    rss_feed(:maps)
+  end
+
+  def rss_feed(source = :maps)
+    @feed_title = "Recent #{source == :maps ? 'maps' : 'datasets' } from #{current_user.username}"
+
+    respond_to do |format|
+      format.atom { render layout: false }
+
+      # TODO: Add proper layout path & name
+      # TODO: Use proper carto paths
+      if source == :maps
+        format.rss { redirect_to public_maps_rss_path(format: :atom), status: :moved_permanently }
+      else
+        format.rss { redirect_to public_datasets_rss_path(format: :atom), status: :moved_permanently }
+      end
+    end
+  end
+
   def sitemap
     username = CartoDB.extract_subdomain(request)
     viewed_user = User.where(username: username.strip.downcase).first

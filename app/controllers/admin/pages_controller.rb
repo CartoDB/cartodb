@@ -179,17 +179,62 @@ class Admin::PagesController < ApplicationController
 
   private
 
-  def rss_feed(source = :maps, num_items = 25)
-    viewed_user = User.where(username: CartoDB.extract_subdomain(request).strip.downcase).first
-    return render_404 if viewed_user.nil?
 
-    @feed_title = "Recent #{source == :maps ? 'maps' : 'datasets' } for #{viewed_user.username}"
-    @feed_description = "RSS feed of #{viewed_user.username} CartoDB #{source == :maps ? 'maps' : 'datasets' }"
+  def rss_feed(source = :maps, num_items = 25)
+    subdomain = CartoDB.extract_subdomain(request).strip.downcase
+
+    viewing_user = true
+    viewed_entity = User.where(username: subdomain).first
+    if viewed_entity.nil?
+      viewing_user = false
+      viewed_entity = get_organization_if_exists(subdomain)
+      return render_404 if viewed_entity.nil?
+    end
+
+    if viewing_user
+      data_for_user_rss(viewed_entity, source, num_items)
+    else
+      data_for_organization_rss(viewed_entity, source, num_items)
+    end
+
+    respond_to do |format|
+      format.atom { render layout: false }
+
+      # For RSS redirect to ATOM
+      if source == :maps
+        format.rss { redirect_to CartoDB.path(self, '/maps/feed', {format: :atom}), status: :moved_permanently }
+      else
+        format.rss { redirect_to CartoDB.path(self, '/datasets/feed', {format: :atom}), status: :moved_permanently }
+      end
+    end
+  end
+
+  def data_for_organization_rss(organization, source, num_items)
+    @feed_title = "Recent #{source == :maps ? 'maps' : 'datasets' } for #{organization.name}"
+    @feed_description = "RSS feed of #{organization.name} CartoDB #{source == :maps ? 'maps' : 'datasets' }"
+
+    if source == :maps
+      @feed_items = organization.public_visualizations(1, num_items)
+    else
+      @feed_items = organization.public_datasets(1, num_items)
+    end
+
+    @feed_last_updated = nil
+    # So ugly, but current backend doesn't allows anything other than cycling with .each
+    @feed_items.each { |m|
+      @feed_last_updated = m.updated_at
+      break
+    }
+  end
+
+  def data_for_user_rss(user, source, num_items)
+    @feed_title = "Recent #{source == :maps ? 'maps' : 'datasets' } for #{user.username}"
+    @feed_description = "RSS feed of #{user.username} CartoDB #{source == :maps ? 'maps' : 'datasets' }"
 
     vis_type = source == :maps ? Visualization::Member::TYPE_DERIVED : Visualization::Member::TYPE_CANONICAL
 
     @feed_items = Visualization::Collection.new.fetch({
-                                                        user_id:  viewed_user.id,
+                                                        user_id:  user.id,
                                                         type:     vis_type,
                                                         per_page: num_items,
                                                         privacy:  Visualization::Member::PRIVACY_PUBLIC,
@@ -205,17 +250,6 @@ class Admin::PagesController < ApplicationController
       @feed_last_updated = m.updated_at
       break
     }
-
-    respond_to do |format|
-      format.atom { render layout: false }
-
-      # TODO: Use proper carto paths
-      if source == :maps
-        format.rss { redirect_to public_maps_rss_path(format: :atom), status: :moved_permanently }
-      else
-        format.rss { redirect_to public_datasets_rss_path(format: :atom), status: :moved_permanently }
-      end
-    end
   end
 
   def render_new_datasets(vis_list, user=nil)

@@ -11,7 +11,7 @@ xml.rss :version => "2.0" do
         xml.description feed.description_html_safe
         xml.pubDate Time.parse(feed.created_at.to_s).rfc822()
         xml.link CartoDB.url(self, 'public_table', {id: feed.id}, feed.user)
-        xml.guid feed.id
+        xml.guid CartoDB.url(self, 'public_table', {id: feed.id}, feed.user)
       end
     end
   end

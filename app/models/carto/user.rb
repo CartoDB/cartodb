@@ -39,6 +39,10 @@ class Carto::User < ActiveRecord::Base
     /(FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD)/i.match(self.account_type) ? false : true
   end
 
+  def organization_username
+    CartoDB.subdomainless_urls? || organization.nil? ? nil : username
+  end
+
   private
 
   def default_avatar

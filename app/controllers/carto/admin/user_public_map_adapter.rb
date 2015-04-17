@@ -1,7 +1,7 @@
 class Carto::Admin::UserPublicMapAdapter
   extend Forwardable
 
-  delegate [ :name, :username, :disqus_shortname, :avatar, :remove_logo?, :has_organization?, :organization, :twitter_username, :public_url ] => :user
+  delegate [ :name, :username, :disqus_shortname, :avatar, :remove_logo?, :has_organization?, :organization, :twitter_username, :public_url, :subdomain, :organization_username ] => :user
 
   attr_reader :user
 

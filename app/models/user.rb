@@ -2316,10 +2316,6 @@ TRIGGER
     CartoDB.subdomainless_urls? || organization.nil? ? nil : username
   end
 
-  def organization_username
-    CartoDB.subdomainless_urls? || organization.nil? ? nil : username
-  end
-
   def subdomain
     if CartoDB.subdomainless_urls?
       username

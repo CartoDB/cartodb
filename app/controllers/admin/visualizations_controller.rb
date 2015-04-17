@@ -179,7 +179,6 @@ class Admin::VisualizationsController < ApplicationController
 
   def public_map
     @visualization, @table = resolve_visualization_and_table(request)
-    debugger
     return(pretty_404) unless @visualization
     return(pretty_404) if disallowed_type?(@visualization)
 

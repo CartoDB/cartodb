@@ -171,7 +171,7 @@ namespace :cartodb do
     end
 
     def filter_valid_visualizations(visualizations)
-      visualizations.select { |v| !v.user_id.nil? }
+      visualizations.select { |v| !v.user_id.nil? && !v.user.nil? }
     end
 
     def insert_visualizations(user, visualizations)

@@ -360,7 +360,8 @@ module CartoDB
         dataset = filter_by_min_updated_at(dataset, filters.delete(:min_updated_at))
         dataset = filter_by_min_created_at(dataset, filters.delete(:min_created_at))
         dataset = filter_by_ids(dataset, filters.delete(:ids))
-        order(dataset, filters.delete(:order), filters.delete(:order_asc_desc))
+        order_desc = filters.delete(:order_asc_desc)
+        order(dataset, filters.delete(:order), order_desc.nil? || order_desc == :desc)
       end
 
       # Note: Not implemented ascending order for now, all are descending sorts
@@ -415,9 +416,9 @@ module CartoDB
         dataset
       end
 
-      def order_by_base_attribute(dataset, criteria, order_asc_desc = :desc)
+      def order_by_base_attribute(dataset, criteria, order_desc = true)
         @can_paginate = true
-        dataset.order(Sequel.send(order_asc_desc || :desc, criteria))
+        dataset.order(Sequel.send(order_desc.nil? || order_desc == true ? :desc : :asc, criteria))
       end
 
       # Allows to order by any CartoDB::Visualization::Member attribute (eg: updated_at, created_at), plus:
@@ -426,13 +427,13 @@ module CartoDB
       # - row_count
       # - size
       # TODO: order_asc_desc only works for base attributes
-      def order(dataset, criteria=nil, order_asc_desc = :desc)
+      def order(dataset, criteria=nil, order_desc = true)
         return dataset if criteria.nil? || criteria.empty?
         criteria = criteria.to_sym
         if ALLOWED_ORDERING_FIELDS.include? criteria
           order_by_related_attribute(dataset, criteria)
         else
-          order_by_base_attribute(dataset, criteria, order_asc_desc)
+          order_by_base_attribute(dataset, criteria, order_desc)
         end
       end
 

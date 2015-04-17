@@ -183,7 +183,8 @@ class Admin::PagesController < ApplicationController
     viewed_user = User.where(username: CartoDB.extract_subdomain(request).strip.downcase).first
     return render_404 if viewed_user.nil?
 
-    @feed_title = "Recent #{source == :maps ? 'maps' : 'datasets' } from #{viewed_user.username}"
+    @feed_title = "Recent #{source == :maps ? 'maps' : 'datasets' } for #{viewed_user.username}"
+    @feed_description = "RSS feed of #{viewed_user.username} CartoDB maps"
 
     vis_type = source == :maps ? Visualization::Member::TYPE_DERIVED : Visualization::Member::TYPE_CANONICAL
 

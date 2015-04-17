@@ -823,7 +823,7 @@ module CartoDB
           map.remove_layer(layer)
           layer.destroy
         }
-        self.active_layer_id = layers(:cartodb).first.id
+        self.active_layer_id = layers(:cartodb).first.nil? ? nil : layers(:cartodb).first.id
         store
       end
 

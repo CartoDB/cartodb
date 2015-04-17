@@ -284,8 +284,8 @@ CartoDB::Application.routes.draw do
 
     # Tables
     post '(/user/:user_domain)(/u/:user_domain)/api/v1/tables'     => 'tables#create', as: :api_v1_tables_create
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:id'  => 'tables#show',   as: :api_v1_tables_create, constraints: { id: /[^\/]+/ }
-    put '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:id'  => 'tables#update', as: :api_v1_tables_create, constraints: { id: /[^\/]+/ }
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:id'  => 'tables#show',   as: :api_v1_tables_show, constraints: { id: /[^\/]+/ }
+    put '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:id'  => 'tables#update', as: :api_v1_tables_update, constraints: { id: /[^\/]+/ }
 
     # Table records
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:table_id/records'     => 'records#index',   as: :api_v1_tables_records_index,  constraints: { table_id: /[^\/]+/ }

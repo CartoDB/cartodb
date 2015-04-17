@@ -214,6 +214,6 @@
     right: 0;
     height: $sLineHeight-normal;
     width: 2 * $sLineHeight-normal;
-    @include background-horizontal(rgba(255,255,255,0), rgba(255,255,255,1));
+    @include background-horizontal(rgba(255,255,255,0), inherit);
   }
 }

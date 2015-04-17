@@ -56,16 +56,10 @@ $opacityTransition: 250ms;
   &:hover {
     background-color: $cCard-hoverFill;
     border-color: $cCard-hoverBorder;
-    .MapCard-desc .DefaultDescription:after {
-      @include background-horizontal(rgba(255,255,255,0), $cCard-hoverFill);
-    }
   }
   &.is-selected {
     background-color: $cCard-selectedFill;
     border-color: $cCard-selectedBorder;
-    .MapCard-desc .DefaultDescription:after {
-      @include background-horizontal(rgba(255,255,255,0), $cCard-selectedFill);
-    }
   }
 }
 .MapCard-header {

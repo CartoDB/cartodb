@@ -417,7 +417,7 @@ module CartoDB
 
       def order_by_base_attribute(dataset, criteria, order_asc_desc = :desc)
         @can_paginate = true
-        dataset.order(Sequel.send(order_asc_desc, criteria))
+        dataset.order(Sequel.send(order_asc_desc || :desc, criteria))
       end
 
       # Allows to order by any CartoDB::Visualization::Member attribute (eg: updated_at, created_at), plus:

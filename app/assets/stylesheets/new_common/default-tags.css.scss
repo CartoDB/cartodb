@@ -23,3 +23,7 @@
   color: $cTypography-linkHover;
   text-decoration: underline;
 }
+
+.DefaultTags--one-line {
+  @include line-clamp(1);
+}

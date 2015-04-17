@@ -17,7 +17,7 @@ class Admin::PagesController < ApplicationController
 
   ssl_required :common_data, :public, :datasets
 
-  before_filter :login_required, :except => [:public, :datasets, :sitemap, :index]
+  before_filter :login_required, :except => [:public, :datasets, :sitemap, :index, :datasets_rss_feed, :maps_rss_feed]
   before_filter :ensure_organization_correct
   skip_before_filter :browser_is_html5_compliant?, only: [:public, :datasets]
   skip_before_filter :ensure_user_organization_valid, only: [:public]
@@ -43,44 +43,6 @@ class Admin::PagesController < ApplicationController
 
   def maps_rss_feed
     rss_feed(:maps)
-  end
-
-  def rss_feed(source = :maps, num_items = 25)
-    viewed_user = User.where(username: CartoDB.extract_subdomain(request).strip.downcase).first
-    return render_404 if viewed_user.nil?
-
-    @feed_title = "Recent #{source == :maps ? 'maps' : 'datasets' } from #{viewed_user.username}"
-
-    vis_type = source == :maps ? Visualization::Member::TYPE_DERIVED : Visualization::Member::TYPE_CANONICAL
-
-    @feed_items = Visualization::Collection.new.fetch({
-                                          user_id:  viewed_user.id,
-                                          type:     vis_type,
-                                          per_page: num_items,
-                                          privacy:  Visualization::Member::PRIVACY_PUBLIC,
-                                          order:    'updated_at',
-                                          o:        {updated_at: :desc},
-                                          exclude_shared: true,
-                                          exclude_raster: true,
-                                        })
-
-    @feed_last_updated = nil
-    # So ugly, but current backend doesn't allows anything other than cycling with .each
-    @feed_items.each { |m|
-      @feed_last_updated = m.updated_at
-      break
-    }
-
-    respond_to do |format|
-      format.atom { render layout: false }
-
-      # TODO: Use proper carto paths
-      if source == :maps
-        format.rss { redirect_to public_maps_rss_path(format: :atom), status: :moved_permanently }
-      else
-        format.rss { redirect_to public_datasets_rss_path(format: :atom), status: :moved_permanently }
-      end
-    end
   end
 
   def sitemap
@@ -216,6 +178,44 @@ class Admin::PagesController < ApplicationController
   end
 
   private
+
+  def rss_feed(source = :maps, num_items = 25)
+    viewed_user = User.where(username: CartoDB.extract_subdomain(request).strip.downcase).first
+    return render_404 if viewed_user.nil?
+
+    @feed_title = "Recent #{source == :maps ? 'maps' : 'datasets' } from #{viewed_user.username}"
+
+    vis_type = source == :maps ? Visualization::Member::TYPE_DERIVED : Visualization::Member::TYPE_CANONICAL
+
+    @feed_items = Visualization::Collection.new.fetch({
+                                                        user_id:  viewed_user.id,
+                                                        type:     vis_type,
+                                                        per_page: num_items,
+                                                        privacy:  Visualization::Member::PRIVACY_PUBLIC,
+                                                        order:    'updated_at',
+                                                        o:        {updated_at: :desc},
+                                                        exclude_shared: true,
+                                                        exclude_raster: true,
+                                                      })
+
+    @feed_last_updated = nil
+    # So ugly, but current backend doesn't allows anything other than cycling with .each
+    @feed_items.each { |m|
+      @feed_last_updated = m.updated_at
+      break
+    }
+
+    respond_to do |format|
+      format.atom { render layout: false }
+
+      # TODO: Use proper carto paths
+      if source == :maps
+        format.rss { redirect_to public_maps_rss_path(format: :atom), status: :moved_permanently }
+      else
+        format.rss { redirect_to public_datasets_rss_path(format: :atom), status: :moved_permanently }
+      end
+    end
+  end
 
   def render_new_datasets(vis_list, user=nil)
     set_new_pagination_vars({

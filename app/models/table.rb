@@ -30,6 +30,7 @@ class Table
   NO_GEOMETRY_TYPES_CACHING_TIMEOUT = 5.minutes
   GEOMETRY_TYPES_PRESENT_CACHING_TIMEOUT = 24.hours
 
+  SURROGATE_NAMESPACE="t"
 
   # @see services/importer/lib/importer/column.rb -> RESERVED_WORDS
   # @see config/initializers/carto_db.rb -> RESERVED_COLUMN_NAMES
@@ -721,6 +722,10 @@ class Table
     else
       "^#{self.owner.database_name}:(.*#{owner.database_schema}\\.#{self.name}.*)|(table)$"
     end
+  end
+
+  def surrogate_key
+    get_surrogate_key(SURROGATE_NAMESPACE, id)
   end
 
   # adds the column if not exists or cast it to timestamp field

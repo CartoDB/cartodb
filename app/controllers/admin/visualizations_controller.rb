@@ -207,6 +207,7 @@ class Admin::VisualizationsController < ApplicationController
     end
 
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
+    response.headers['Surrogate-Key'] = "#{Visualization::Member::SURROGATE_NAMESPACE} #{@visualization.surrogate_key}"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
 
     @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)
@@ -285,6 +286,7 @@ class Admin::VisualizationsController < ApplicationController
     return(pretty_404) if disallowed_type?(@visualization)
 
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
+    response.headers['Surrogate-Key'] = "#{Visualization::Member::SURROGATE_NAMESPACE} #{@visualization.surrogate_key}"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
 
     @protected_map_tokens = current_user.get_auth_tokens
@@ -308,6 +310,7 @@ class Admin::VisualizationsController < ApplicationController
     end
 
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
+    response.headers['Surrogate-Key'] = "#{Visualization::Member::SURROGATE_NAMESPACE} #{@visualization.surrogate_key}"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
 
     @protected_map_tokens = @visualization.get_auth_tokens
@@ -368,6 +371,7 @@ class Admin::VisualizationsController < ApplicationController
     return(show_organization_embed_map) if org_user_has_map_permissions?(current_user, @visualization)
 
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
+    response.headers['Surrogate-Key'] = "#{Visualization::Member::SURROGATE_NAMESPACE} #{@visualization.surrogate_key}"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
 
     # We need to know if visualization logo is visible or not
@@ -396,6 +400,7 @@ class Admin::VisualizationsController < ApplicationController
 
   def track_embed
     response.headers['X-Cache-Channel'] = "embeds_google_analytics"
+    response.headers['Surrogate-Key'] = "#{Visualization::Member::SURROGATE_NAMESPACE} #{@visualization.surrogate_key}"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
     render 'track', layout: false
   end

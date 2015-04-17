@@ -22,6 +22,10 @@ describe Admin::PagesController do
     @user_org = true
   end
 
+  after(:each) do
+    User.all.each {|u| u.delete}
+  end
+
   describe 'GET /u/foo' do
     it 'returns 404 if user does not belongs to host organization' do
       prepare_user(@non_org_user_name)
@@ -39,7 +43,7 @@ describe Admin::PagesController do
       last_response.status.should == 200
     end
 
-    it 'returns 200 if it is an org user but gets called without organization' do
+    it 'redirects if it is an org user but gets called without organization' do
       prepare_user(@org_user_name, @user_org, @belongs_to_org)
 
       get "", {}, {
@@ -47,6 +51,8 @@ describe Admin::PagesController do
           'HTTP_HOST' => "#{@org_user_name}.localhost.lan"
       }
 
+      last_response.status.should == 302
+      follow_redirect!
       last_response.status.should == 200
     end
 
@@ -69,7 +75,7 @@ describe Admin::PagesController do
     @user = create_user(
       username: user_name,
       email:    "#{user_name}@example.com",
-      password: 'test',
+      password: 'longer_than_MIN_PASSWORD_LENGTH',
       fake_user: true
     )
 
@@ -77,8 +83,8 @@ describe Admin::PagesController do
 
     if org_user
       org = mock
-      org.stubs(:eql?).returns(belongs_to_org)
-      User.any_instance.stubs(:organization).returns(org)
+      Organization.stubs(:where).with(name: @org_name).returns([org])
+      User.any_instance.stubs(:belongs_to_organization?).with(org).returns(belongs_to_org)
     end
   end
 

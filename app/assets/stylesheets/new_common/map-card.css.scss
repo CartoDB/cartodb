@@ -52,23 +52,18 @@ $opacityTransition: 250ms;
   text-align: center;
   margin-bottom: $sMargin-element;
 }
-.MapCard-tags {
-  @include line-clamp(1);
-}
 .MapCard--selectable{
   &:hover {
     background-color: $cCard-hoverFill;
     border-color: $cCard-hoverBorder;
-    .MapCard-desc .DefaultDescription:after,
-    .MapCard-tags:after {
+    .MapCard-desc .DefaultDescription:after {
       @include background-horizontal(rgba(255,255,255,0), $cCard-hoverFill);
     }
   }
   &.is-selected {
     background-color: $cCard-selectedFill;
     border-color: $cCard-selectedBorder;
-    .MapCard-desc .DefaultDescription:after,
-    .MapCard-tags:after {
+    .MapCard-desc .DefaultDescription:after {
       @include background-horizontal(rgba(255,255,255,0), $cCard-selectedFill);
     }
   }

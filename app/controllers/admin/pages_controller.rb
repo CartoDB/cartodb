@@ -45,13 +45,35 @@ class Admin::PagesController < ApplicationController
     rss_feed(:maps)
   end
 
-  def rss_feed(source = :maps)
-    @feed_title = "Recent #{source == :maps ? 'maps' : 'datasets' } from #{current_user.username}"
+  def rss_feed(source = :maps, num_items = 25)
+    viewed_user = User.where(username: CartoDB.extract_subdomain(request).strip.downcase).first
+    return render_404 if viewed_user.nil?
+
+    @feed_title = "Recent #{source == :maps ? 'maps' : 'datasets' } from #{viewed_user.username}"
+
+    vis_type = source == :maps ? Visualization::Member::TYPE_DERIVED : Visualization::Member::TYPE_CANONICAL
+
+    @feed_items = Visualization::Collection.new.fetch({
+                                          user_id:  viewed_user.id,
+                                          type:     vis_type,
+                                          per_page: num_items,
+                                          privacy:  Visualization::Member::PRIVACY_PUBLIC,
+                                          order:    'updated_at',
+                                          o:        {updated_at: :desc},
+                                          exclude_shared: true,
+                                          exclude_raster: true,
+                                        })
+
+    @feed_last_updated = nil
+    # So ugly, but current backend doesn't allows anything other than cycling with .each
+    @feed_items.each { |m|
+      @feed_last_updated = m.updated_at
+      break
+    }
 
     respond_to do |format|
       format.atom { render layout: false }
 
-      # TODO: Add proper layout path & name
       # TODO: Use proper carto paths
       if source == :maps
         format.rss { redirect_to public_maps_rss_path(format: :atom), status: :moved_permanently }

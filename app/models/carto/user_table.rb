@@ -18,6 +18,10 @@ module Carto
       row_count_and_size[:row_count]
     end
 
+    def row_count_and_size
+      @row_count_and_size ||= table.row_count_and_size
+    end
+
     def service
       @service ||= ::Table.new(user_table: self)
     end
@@ -35,10 +39,6 @@ module Carto
 
     def table
       @table ||= ::Table.new( { user_table: self } )
-    end
-
-    def row_count_and_size
-      @row_count_and_size ||= table.row_count_and_size
     end
 
     def get_synchronization

@@ -1,6 +1,6 @@
 require 'forwardable'
 require_relative '../../../models/visualization/vizjson'
-require_relative '../../../models/markdown_render'
+require_relative '../../../helpers/html_safe'
 
 class Carto::Api::VizJSONPresenter
 
@@ -54,6 +54,7 @@ end
 
 class Carto::Api::VisualizationVizJSONAdapter
   extend Forwardable
+  include HtmlSafe
 
   delegate [:id, :map, :qualified_name, :likes, :description, :retrieve_named_map?, :password_protected?, :overlays, :prev_id, :next_id, :transition_options, :has_password?, :children, :parent_id, :parent ] => :visualization
 
@@ -64,11 +65,7 @@ class Carto::Api::VisualizationVizJSONAdapter
   end
 
   def description_html_safe
-    if description.present?
-      renderer = Redcarpet::Render::Safe
-      markdown = Redcarpet::Markdown.new(renderer, extensions = {})
-      markdown.render description 
-    end
+    html_safe(description)
   end
 
   def layers(kind)

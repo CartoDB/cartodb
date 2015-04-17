@@ -45,6 +45,22 @@ class Carto::Api::VisualizationPresenter
     poro
   end
 
+  def to_public_poro
+    {
+      id:               @visualization.id,
+      name:             @visualization.name,
+      type:             @visualization.type,
+      tags:             @visualization.tags,
+      description:      @visualization.description,
+      updated_at:       @visualization.updated_at,
+      title:            @visualization.title,
+      kind:             @visualization.kind,
+      privacy:          @visualization.privacy.upcase,
+      likes:            @visualization.likes_count
+    }
+  end
+
+
   private
 
   def related_tables

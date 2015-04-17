@@ -18,6 +18,7 @@ class Carto::Api::UserTablePresenter
 
   def to_poro
     return {} if @user_table.nil?
+    row_count_and_size = @user_table.row_count_and_size
     {
       id: @user_table.id,
       name: @user_table.name,
@@ -25,8 +26,8 @@ class Carto::Api::UserTablePresenter
       geometry_types: @user_table.geometry_types,
       privacy: privacy_text(@user_table.privacy).upcase,
       updated_at: @user_table.updated_at,
-      size: @user_table.size,
-      row_count: @user_table.row_count
+      size: row_count_and_size[:size],
+      row_count: row_count_and_size[:row_count]
     }
   end
 

@@ -33,6 +33,11 @@ class Carto::Visualization < ActiveRecord::Base
   PRIVACY_LINK = 'link'
   PRIVACY_PROTECTED = 'password'
 
+  def tags
+    tags = super
+    tags == nil ? [] : tags
+  end
+
   def related_tables
     @related_tables ||= get_related_tables
   end
@@ -101,10 +106,93 @@ class Carto::Visualization < ActiveRecord::Base
     !password_salt.nil? && !encrypted_password.nil?
   end
 
-  private
+  def type_slide?
+    type == TYPE_SLIDE
+  end
+
+  def organization?
+    privacy == PRIVACY_PRIVATE and permission.acl.size > 0
+  end
 
   def password_protected?
     privacy == PRIVACY_PROTECTED
+  end
+
+  def derived?
+    type == TYPE_DERIVED
+  end
+
+  def is_password_valid?(password)
+    has_password? && ( password_digest(password, @password_salt) == @encrypted_password )
+  end
+
+  def is_private?
+    privacy == PRIVACY_PRIVATE and not organization?
+  end
+
+  def is_public?
+    privacy == PRIVACY_PUBLIC
+  end
+
+  def is_link_privacy?
+    self.privacy == PRIVACY_LINK
+  end
+
+  # INFO: discouraged, since it forces using internal constants
+  # Use explicit methods instead.
+  # Needed for backwards compatibility
+  def has_permission?(user, permission_type)
+    return is_owner_user?(user) if permission_id.nil?
+    is_owner_user?(user) || permission.is_permitted?(user, permission_type)
+  end
+
+  def get_auth_tokens
+    named_map = get_named_map
+    raise CartoDB::InvalidMember unless named_map
+
+    tokens = named_map.template[:template][:auth][:valid_tokens]
+    raise CartoDB::InvalidMember if tokens.size == 0
+    tokens
+  end
+
+  private
+
+  # INFO: refactor from Visualization::Member.has_named_map?
+  def get_named_map
+    # TODO: WIP
+    return nil if type == TYPE_REMOTE
+    named_maps.get(CartoDB::NamedMapsWrapper::NamedMap.normalize_name(id))
+  end
+
+  def named_maps(force_init = false)
+    # TODO: read refactor skips all write complexity, check visualization/member for more details 
+    if @named_maps.nil? || force_init
+      name_param = user.username
+      api_key_param = user.api_key
+      @named_maps = CartoDB::NamedMapsWrapper::NamedMaps.new(
+        {
+          name:     name_param,
+          api_key:  api_key_param
+        },
+        {
+          domain:     Cartodb.config[:tiler]['internal']['domain'],
+          port:       Cartodb.config[:tiler]['internal']['port'] || 443,
+          protocol:   Cartodb.config[:tiler]['internal']['protocol'],
+          verifycert: (Cartodb.config[:tiler]['internal']['verifycert'] rescue true),
+          host:       (Cartodb.config[:tiler]['internal']['host'] rescue nil)
+        },
+        configuration
+      )
+    end
+    @named_maps
+  end
+
+  def password_digest(password, salt)
+    digest = AUTH_DIGEST
+    10.times do
+      digest = secure_digest(digest, salt, password, AUTH_DIGEST)
+    end
+    digest
   end
 
   def has_private_tables?
@@ -122,14 +210,6 @@ class Carto::Visualization < ActiveRecord::Base
   def get_related_tables
     return [] unless map
     map.carto_and_torque_layers.flat_map { |layer| layer.affected_tables.map { |t| t.service } }.uniq
-  end
-
-  def is_link_privacy?
-    self.privacy == PRIVACY_LINK
-  end
-
-  def is_public?
-    self.privacy == PRIVACY_PUBLIC
   end
 
   def has_read_permission?(user)

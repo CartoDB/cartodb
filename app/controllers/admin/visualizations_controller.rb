@@ -1,6 +1,8 @@
 # encoding: utf-8
 require_relative '../../models/map/presenter'
 require_dependency '../../lib/resque/user_jobs'
+require_relative '../carto/admin/user_table_public_map_adapter'
+require_relative '../carto/admin/visualization_public_map_adapter'
 
 class Admin::VisualizationsController < ApplicationController
 
@@ -177,6 +179,7 @@ class Admin::VisualizationsController < ApplicationController
 
   def public_map
     @visualization, @table = resolve_visualization_and_table(request)
+    debugger
     return(pretty_404) unless @visualization
     return(pretty_404) if disallowed_type?(@visualization)
 
@@ -541,6 +544,7 @@ class Admin::VisualizationsController < ApplicationController
   end
 
   def get_visualization_and_table(table_id, schema, filter)
-    Carto::Visualization
+    visualization = Carto::VisualizationQueryBuilder.new.with_id_or_name(table_id).build.first
+    return Carto::Admin::VisualizationPublicMapAdapter.new(visualization), Carto::Admin::UserTablePublicMapAdapter.new(visualization.table)
   end
 end

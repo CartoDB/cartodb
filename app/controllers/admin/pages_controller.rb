@@ -184,7 +184,7 @@ class Admin::PagesController < ApplicationController
     return render_404 if viewed_user.nil?
 
     @feed_title = "Recent #{source == :maps ? 'maps' : 'datasets' } for #{viewed_user.username}"
-    @feed_description = "RSS feed of #{viewed_user.username} CartoDB maps"
+    @feed_description = "RSS feed of #{viewed_user.username} CartoDB #{source == :maps ? 'maps' : 'datasets' }"
 
     vis_type = source == :maps ? Visualization::Member::TYPE_DERIVED : Visualization::Member::TYPE_CANONICAL
 

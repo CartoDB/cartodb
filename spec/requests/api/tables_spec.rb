@@ -70,9 +70,13 @@ describe "Tables API" do
   end
 
   it "creates a new table without schema when a table of the same name exists on the database" do
-    @user.in_database.run "CREATE TABLE untitled_table (wadus INTEGER)"
-    post_json api_v1_tables_create_url(params)
-
+    create_table(name: 'untitled_table', user_id: @user.id)
+    post_json api_v1_tables_create_url(params) do |response|
+      response.status.should be_success
+      response.body[:name].should match(/^untitled_table/)
+      response.body[:name].should_not == 'untitled_table'
+      response.body[:schema].should =~ default_schema
+    end
     @user.tables.count.should == 2
   end
 

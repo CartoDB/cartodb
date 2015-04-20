@@ -20,6 +20,7 @@ describe Admin::TablesController do
       password: 'test12'
     )
     @api_key = @user.api_key
+    @user.stubs(:should_load_common_data?).returns(false)
   end
 
   before(:each) do

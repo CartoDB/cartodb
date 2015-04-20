@@ -34,6 +34,8 @@ class Api::Json::ImportsController < Api::ApplicationController
     end
 
     data_import = DataImport[params[:id]]
+    render_404 and return if data_import.nil?
+
     data_import.mark_as_failed_if_stuck!
 
     data = data_import.reload.api_public_values

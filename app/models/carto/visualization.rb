@@ -8,6 +8,8 @@ class Carto::Visualization < ActiveRecord::Base
   belongs_to :user, inverse_of: :visualizations, select: Carto::User::DEFAULT_SELECT
   belongs_to :full_user, class_name: Carto::User, foreign_key: :user_id, primary_key: :id, inverse_of: :visualizations, readonly: true
 
+  belongs_to :user_table, primary_key: :map_id, foreign_key: :map_id, inverse_of: :visualization
+
   belongs_to :permission
 
   has_many :likes, foreign_key: :subject
@@ -40,6 +42,10 @@ class Carto::Visualization < ActiveRecord::Base
 
   def related_tables
     @related_tables ||= get_related_tables
+  end
+
+  def related_visualizations
+    @related_visualizations ||= get_related_visualizations
   end
 
   def stats
@@ -155,6 +161,14 @@ class Carto::Visualization < ActiveRecord::Base
     tokens
   end
 
+  def mapviews
+    @mapviews ||= CartoDB::Visualization::Stats.mapviews(stats)
+  end
+
+  def geometry_types
+    @geometry_types ||= user_table.geometry_types
+  end
+
   private
 
   # INFO: refactor from Visualization::Member.has_named_map?
@@ -210,6 +224,10 @@ class Carto::Visualization < ActiveRecord::Base
   def get_related_tables
     return [] unless map
     map.carto_and_torque_layers.flat_map { |layer| layer.affected_tables.map { |t| t.service } }.uniq
+  end
+
+  def get_related_visualizations
+    Carto::Visualization.where(map_id: related_tables.collect(&:map_id), type: TYPE_CANONICAL).all
   end
 
   def has_read_permission?(user)

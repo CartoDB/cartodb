@@ -5,7 +5,7 @@ class Carto::Admin::VisualizationPublicMapAdapter
   extend Forwardable
   include HtmlSafe
 
-  delegate [ :type_slide?, :has_permission?, :derived?, :organization, :organization?, :id, :likes, :password_protected?, :varnish_key, :related_tables, :is_password_valid?, :get_auth_tokens, :table, :name, :overlays, :created_at, :description, :tags ] => :visualization
+  delegate [ :type_slide?, :has_permission?, :derived?, :organization, :organization?, :id, :likes, :password_protected?, :varnish_key, :related_tables, :is_password_valid?, :get_auth_tokens, :table, :name, :overlays, :created_at, :description, :tags, :related_visualizations ] => :visualization
 
   attr_reader :visualization
 

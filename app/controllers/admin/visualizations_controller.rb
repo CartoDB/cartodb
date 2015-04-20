@@ -216,6 +216,7 @@ class Admin::VisualizationsController < ApplicationController
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
     @visualization_count    = @visualization.user.public_visualization_count
     @related_tables         = @visualization.related_tables
+    @related_visualizations = @visualization.related_visualizations
     @related_tables_owners = Hash.new
     @related_tables.each { |table|
       unless @related_tables_owners.include?(table.user_id)
@@ -244,7 +245,8 @@ class Admin::VisualizationsController < ApplicationController
       format.html { render layout: 'application_public_visualization_layout' }
       format.js { render 'public_map', content_type: 'application/javascript' }
     end
-  rescue
+  rescue => e
+    Rollbar.report_exception(e)
     embed_forbidden
   end
 
@@ -268,6 +270,7 @@ class Admin::VisualizationsController < ApplicationController
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
     @visualization_count    = @visualization.user.public_visualization_count
     @related_tables         = @visualization.related_tables
+    @related_visualizations = @visualization.related_visualizations
     @public_tables_count    = @visualization.user.public_table_count
     @nonpublic_tables_count = @related_tables.select{|p| !p.public? }.count
 
@@ -321,6 +324,7 @@ class Admin::VisualizationsController < ApplicationController
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
     @visualization_count    = @visualization.user.public_visualization_count
     @related_tables         = @visualization.related_tables
+    @related_visualizations = @visualization.related_visualizations
     @public_tables_count    = @visualization.user.public_table_count
     @nonpublic_tables_count = @related_tables.select{|p| !p.public?  }.count
 

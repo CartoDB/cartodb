@@ -100,7 +100,7 @@ class Carto::Visualization < ActiveRecord::Base
     if viewer_user.nil? || is_owner_user?(viewer_user)
       name
     else
-      "\"#{user.database_schema}\".#{name}"
+      "#{user.sql_safe_database_schema}.#{name}"
     end
   end
 
@@ -116,20 +116,39 @@ class Carto::Visualization < ActiveRecord::Base
     type == TYPE_SLIDE
   end
 
+  def derived?
+    type == TYPE_DERIVED
+  end
+
+  # TODO: Check if for type slide should return true also
+  def dependent?
+    derived? && single_data_layer?
+  end
+
+  # TODO: Check if for type slide should return true also
+  def non_dependent?
+    derived? && !single_data_layer?
+  end
+
+  def single_data_layer?
+    data_layers.count == 1 || related_tables.count == 1
+  end
+
+  def data_layers
+    return [] if map.nil?
+    map.data_layers
+  end
+
+  def is_password_valid?(password)
+    has_password? && ( password_digest(password, @password_salt) == @encrypted_password )
+  end
+
   def organization?
     privacy == PRIVACY_PRIVATE and permission.acl.size > 0
   end
 
   def password_protected?
     privacy == PRIVACY_PROTECTED
-  end
-
-  def derived?
-    type == TYPE_DERIVED
-  end
-
-  def is_password_valid?(password)
-    has_password? && ( password_digest(password, @password_salt) == @encrypted_password )
   end
 
   def is_private?
@@ -167,6 +186,10 @@ class Carto::Visualization < ActiveRecord::Base
 
   def geometry_types
     @geometry_types ||= user_table.geometry_types
+  end
+
+  def table_service
+    table.nil? ? nil : table.service
   end
 
   private

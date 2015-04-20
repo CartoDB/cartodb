@@ -43,6 +43,10 @@ class Carto::User < ActiveRecord::Base
     CartoDB.subdomainless_urls? || organization.nil? ? nil : username
   end
 
+  def sql_safe_database_schema
+    "\"#{self.database_schema}\""
+  end
+
   private
 
   def default_avatar

@@ -1,7 +1,7 @@
 class Carto::Admin::UserTablePublicMapAdapter
   extend Forwardable
 
-  delegate [] => :user_table
+  delegate [ :non_dependent_visualizations, :dependent_visualizations, :name, :id ] => :user_table
 
   attr_reader :user_table
 

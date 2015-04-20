@@ -6,6 +6,7 @@ class Api::Json::GeocodingsController < Api::ApplicationController
 
   before_filter :load_table, only: [:create, :estimation_for]
 
+  # In seconds
   GEOCODING_SQLAPI_CALLS_TIMEOUT = 45
 
   def index

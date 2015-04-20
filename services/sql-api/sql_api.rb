@@ -10,7 +10,7 @@ module CartoDB
 
     # seconds
     CONNECT_TIMEOUT = 5
-    TIMEOUT = 60
+    DEFAULT_TIMEOUT = 60
 
     attr_accessor :api_key, :username, :protocol, :timeout
     attr_reader   :response_code, :parsed_response
@@ -19,7 +19,7 @@ module CartoDB
       self.username = arguments.fetch(:username)
       self.api_key  = arguments.fetch(:api_key, nil)
       self.protocol = arguments.fetch(:protocol, 'http')
-      self.timeout  = arguments.fetch(:timeout, TIMEOUT)
+      self.timeout  = arguments.fetch(:timeout, DEFAULT_TIMEOUT)
     end
 
     def fetch(query, format = '')

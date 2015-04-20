@@ -180,25 +180,6 @@ describe "Tables API" do
 
   end
 
-  it "deletes a table of the user currently logged in" do
-    table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => UserTable::PRIVACY_PRIVATE, :tags => "tag 1, tag 2,tag 3, tag 3"
-
-    delete_json v1_table_url(table1.name, params) do |response|
-      response.status.should == 204
-    end
-  end
-
-  it "doesn't delete a table of another user" do
-    another_user = create_user
-    table1 = create_table :user_id => another_user.id, :name => 'My table #1', :privacy => UserTable::PRIVACY_PRIVATE, :tags => "tag 1, tag 2,tag 3, tag 3"
-
-    delete_json v1_table_url(table1.name, params) do |response|
-      response.status.should == 404
-    end
-
-    another_user.destroy
-  end
-
   it "updates a table and sets the lat and long columns" do
     table = Table.new :privacy => UserTable::PRIVACY_PRIVATE, :name => 'Madrid Bars',
                       :tags => 'movies, personal'

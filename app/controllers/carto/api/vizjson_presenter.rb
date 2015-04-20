@@ -62,6 +62,7 @@ class Carto::Api::VisualizationVizJSONAdapter
 
   def initialize(visualization)
     @visualization = visualization
+    @layer_cache = {}
   end
 
   def description_html_safe
@@ -69,12 +70,16 @@ class Carto::Api::VisualizationVizJSONAdapter
   end
 
   def layers(kind)
+    @layer_cache[kind] ||= get_layers(kind)
+  end
+
+  private
+
+  def get_layers(kind)
     choose_layers(kind).map { |layer|
       Carto::Api::LayerVizJSONAdapter.new(layer)
     }
   end
-
-  private
 
   def choose_layers(kind)
     case kind

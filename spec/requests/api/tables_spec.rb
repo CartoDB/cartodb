@@ -61,9 +61,9 @@ describe "Tables API" do
   end # GET /api/v1/tables/:id
 
   it "creates a new table without schema" do
-    post_json v1_tables_url(params) do |response|
+    post_json api_v1_tables_create_url(params) do |response|
       response.status.should be_success
-      response.body[:id].should == response.headers['Location'].match(/\/(\d+)$/)[1].to_i
+      response.body[:id].should == response.headers['Location'].match(/\/([a-f\-\d]+)$/)[1]
       response.body[:name].should match(/^untitled/)
       response.body[:schema].should =~ default_schema
     end

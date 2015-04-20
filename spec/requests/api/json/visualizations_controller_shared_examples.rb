@@ -1149,28 +1149,28 @@ shared_examples_for "visualization controllers" do
 
       table_attributes  = table_factory
       table_id          = table_attributes.fetch('id')
-      get "/api/v2/viz/#{table_id}/viz?api_key=#{@api_key}&callback=#{valid_callback}", {}, @headers
+      get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: valid_callback), {}, @headers
       last_response.status.should == 200
       (last_response.body =~ /^#{valid_callback}\(\{/i).should eq 0
 
-      get "/api/v2/viz/#{table_id}/viz?api_key=#{@api_key}&callback=#{invalid_callback1}", {}, @headers
+      get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: invalid_callback1), {}, @headers
       last_response.status.should == 400
 
-      get "/api/v2/viz/#{table_id}/viz?api_key=#{@api_key}&callback=#{invalid_callback2}", {}, @headers
+      get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: invalid_callback2), {}, @headers
       last_response.status.should == 400
 
-      get "/api/v2/viz/#{table_id}/viz?api_key=#{@api_key}&callback=#{invalid_callback3}", {}, @headers
+      get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: invalid_callback3), {}, @headers
       last_response.status.should == 400
 
       # if param specified, must not be empty
-      get "/api/v2/viz/#{table_id}/viz?api_key=#{@api_key}&callback=", {}, @headers
+      get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: ''), {}, @headers
       last_response.status.should == 400
 
-      get "/api/v2/viz/#{table_id}/viz?api_key=#{@api_key}&callback=#{valid_callback2}", {}, @headers
+      get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: valid_callback2), {}, @headers
       last_response.status.should == 200
       (last_response.body =~ /^#{valid_callback2}\(\{/i).should eq 0
 
-      get "/api/v2/viz/#{table_id}/viz?api_key=#{@api_key}", {}, @headers
+      get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key), {}, @headers
       last_response.status.should == 200
       (last_response.body =~ /^\{/i).should eq 0
     end

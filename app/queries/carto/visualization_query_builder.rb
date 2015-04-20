@@ -199,7 +199,7 @@ class Carto::VisualizationQueryBuilder
   private
 
   def is_uuid(text)
-    !(/[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}/ =~ text).nil?
+    !(UUIDTools::UUID_REGEXP =~ text).nil?
   end
 
   def with_include_of(association)

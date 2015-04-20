@@ -59,7 +59,7 @@ shared_examples_for "visualization controllers" do
       description:  "table #{seed} description"
     }
     post "/api/v1/tables?api_key=#{@api_key}",
-      payload.to_json, @headers rescue debugger
+      payload.to_json, @headers
 
     table_attributes  = JSON.parse(last_response.body)
     table_id          = table_attributes.fetch('id')

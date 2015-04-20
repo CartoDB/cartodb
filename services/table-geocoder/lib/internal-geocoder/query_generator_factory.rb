@@ -2,8 +2,8 @@
 
 require_relative 'input_type_resolver'
 
-require_relative 'cities_text_points'
-require_relative 'cities_column_points'
+require_relative 'cities_text_text_points'
+require_relative 'cities_column_text_points'
 require_relative 'admin0_text_polygons'
 require_relative 'admin1_text_polygons'
 require_relative 'admin1_column_polygons'
@@ -28,9 +28,9 @@ module CartoDB
 
           case input_type
             when [:namedplace, :text, :point]
-              CitiesTextPoints.new internal_geocoder
+              CitiesTextTextPoints.new internal_geocoder
             when [:namedplace, :column, :point]
-              CitiesColumnPoints.new internal_geocoder
+              CitiesColumnTextPoints.new internal_geocoder
             when [:admin0, :text, :polygon]
               Admin0TextPolygons.new internal_geocoder
             when [:admin1, :text, :polygon]

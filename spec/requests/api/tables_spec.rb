@@ -150,16 +150,17 @@ describe "Tables API" do
   end
 
   it "updates the metadata of an existing table" do
-    table1 = create_table :user_id => @user.id, :name => 'My table #1',  :tags => "tag 1, tag 2,tag 3, tag 3", :description => ""
+    table = create_table :user_id => @user.id, :name => 'My table #1',  :tags => "tag 1, tag 2,tag 3, tag 3", :description => ""
 
-    put_json v1_table_url(table1.name, params.merge(
-        name: "my_table_2", 
+     put_json api_v1_tables_update_url(params.merge(
+        id: table.id,
+        name: table.name,
         tags: "bars,disco", 
         privacy: UserTable::PRIVACY_PRIVATE,
         description: "Testing is awesome")) do |response|
       response.status.should be_success
-      response.body[:id].should == table1.id
-      response.body[:name].should == "my_table_2"
+      response.body[:id].should == table.id
+      response.body[:name].should == table.name
       response.body[:privacy] == "PRIVATE"
       response.body[:description].should == "Testing is awesome"
       (response.body[:schema] - default_schema).should be_empty

@@ -73,6 +73,7 @@ class Api::Json::TablesController < Api::ApplicationController
 
     # Perform name validations
     # TODO move this to the model!
+    # TODO consider removing this code. The entry point is only used to set lat/long columns
     unless params[:name].nil?
       if params[:name].downcase != @table.name
         owner = User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota).filter(:id => current_user.id).first
@@ -96,8 +97,6 @@ class Api::Json::TablesController < Api::ApplicationController
       render_jsonp(@table.public_values({request:request}).merge(warnings: warnings)) and return
     end
     if @table.update(@table.values.delete_if {|k,v| k == :tags_names}) != false
-      @table = ::UserTable.where(id: @table.id).first.try(:service)
-
       render_jsonp(@table.public_values({request:request}).merge(warnings: warnings))
     else
       render_jsonp({ :errors => @table.errors.full_messages}, 400)

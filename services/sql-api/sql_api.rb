@@ -12,8 +12,8 @@ module CartoDB
     CONNECT_TIMEOUT = 5
     TIMEOUT = 60
 
-    attr_accessor :api_key, :username
-    attr_reader   :response_code, :response_body, :parsed_response, :protocol, :timeout
+    attr_accessor :api_key, :username, :protocol, :timeout
+    attr_reader   :response_code, :parsed_response
 
     def initialize(arguments)
       self.username = arguments.fetch(:username)

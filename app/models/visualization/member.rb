@@ -49,8 +49,6 @@ module CartoDB
 
       DEFAULT_OPTIONS_VALUE = '{}'
 
-      SURROGATE_NAMESPACE = 'v'
-
       # Upon adding new attributes modify also:
       # app/models/visualization/migrator.rb
       # services/data-repository/spec/unit/backend/sequel_spec.rb -> before do

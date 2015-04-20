@@ -9,7 +9,7 @@ module CartoDB
     class PermissionError < StandardError; end
 
     # seconds
-    CONNECT_TIMEOUT = 5
+    CONNECT_TIMEOUT = 45
     DEFAULT_TIMEOUT = 60
 
     attr_accessor :api_key, :username, :protocol, :timeout

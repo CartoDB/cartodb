@@ -40,9 +40,11 @@ class Api::Json::GeocodingsController < Api::ApplicationController
       geocoding.country_code = countries.map{|c| "'#{ c }'"}.join(',')
       geocoding.country_column = params[:location] if params[:text] == false
 
-      # regions = params[:region_text] ? [params[:region]] : @table.sequel.distinct.select_map(params[:region].to_sym)
-      regions = params[:region]
-      geocoding.region_code = regions.map{|r| "'${ r }'"}.join(',')
+      if params[:region]
+        regions = params[:region_text] ? [params[:region]] : @table.sequel.distinct.select_map(params[:region].to_sym)
+        geocoding.region_code = regions.map{|r| "'${ r }'"}.join(',')
+        geocoding.region_column = params[:region] if !params[:region_text]
+      end
     end
 
     geocoding.save

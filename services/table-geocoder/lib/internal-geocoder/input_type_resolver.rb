@@ -11,7 +11,7 @@ module CartoDB
       end
 
       def type
-        [kind, country_input_type, geometry_type]
+        [kind, country_input_type, region_input_type, geometry_type]
       end
 
       def kind
@@ -22,6 +22,14 @@ module CartoDB
         if @internal_geocoder.country_column
           :column
         else
+          :text
+        end
+      end
+
+      def region_input_type
+        if @internal_geocoder.region_column
+          :column
+        elsif @internal_geocoder.regions
           :text
         end
       end

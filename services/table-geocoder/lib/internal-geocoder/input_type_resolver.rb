@@ -18,16 +18,16 @@ module CartoDB
         @internal_geocoder.kind
       end
 
-      def geometry_type
-        @internal_geocoder.geometry_type
-      end
-
       def country_input_type
         if @internal_geocoder.country_column
           :column
         else
           :text
         end
+      end
+
+      def geometry_type
+        @internal_geocoder.geometry_type
       end
 
     end # InputTypeResolver

@@ -170,11 +170,11 @@ describe "Tables API" do
   # TODO: the API is supposed to return http 200 when the user submits invalid data?
   it "updates with bad values the metadata of an existing table" do
     table1 = create_table :user_id => @user.id, :name => 'My table #1', :tags => "tag 1, tag 2,tag 3, tag 3"
-    put_json v1_table_url(table1.name, params.merge(privacy: "bad privacy value")) do |response|
+    put_json api_v1_tables_update_url(table1.name, params.merge(privacy: "bad privacy value")) do |response|
       table1.reload.privacy.should == 0
     end
 
-    put_json v1_table_url(table1.name, params.merge(name: "")) do |response|
+    put_json api_v1_tables_update_url(table1.name, params.merge(name: "")) do |response|
       response.status.should == 200
     end
 
@@ -214,7 +214,7 @@ describe "Tables API" do
     table.insert_row!({:name => "El Lacón", :address => "Manuel Fernández y González 8, Madrid, Spain", :latitude => 40.415113, :longitude => -3.699871})
     table.insert_row!({:name => "El Pico", :address => "Calle Divino Pastor 12, Madrid, Spain", :latitude => 40.428198, :longitude => -3.703991})
 
-    put_json v1_table_url(table.name, params.merge(
+    put_json api_v1_tables_update_url(table.name, params.merge(
       :latitude_column => "latitude",
       :longitude_column => "longitude"
     )) do |response|
@@ -226,14 +226,14 @@ describe "Tables API" do
   pending "updates a table and sets the the address column" do
     table = create_table :user_id => @user.id, :name => 'My table #1'
 
-    put_json v1_table_url(table.name, params.merge(
+    put_json api_v1_tables_update_url(table.name, params.merge(
       :address_column => "name"
     )) do |response|
       response.status.should be_success
       response.body[:schema].should include(["name", "string", "address"])
     end
 
-    put_json v1_table_url(table.name, params(
+    put_json api_v1_tables_update_url(table.name, params(
       :address_column => "nil"
     )) do |response|
       response.status.should be_success
@@ -247,7 +247,7 @@ describe "Tables API" do
     table.force_schema = "name varchar, address varchar, region varchar, country varchar"
     table.save
 
-    put_json v1_table_url(table.name, params.merge(address_column: "address,region, country")) do |response|
+    put_json api_v1_tables_update_url(table.name, params.merge(address_column: "address,region, country")) do |response|
       response.status.should be_success
       response.body[:schema].should include(["aggregated_address", "string", "address"])
     end

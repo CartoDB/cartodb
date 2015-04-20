@@ -128,29 +128,6 @@ class Api::Json::TablesController < Api::ApplicationController
     render_jsonp({ errors: { named_maps: exception } }, 400)
   end
 
-  def vizzjson
-    table = ::Table.table_by_id_and_user(params.fetch('id'), CartoDB.extract_subdomain(request))
-    if table.present?
-      allowed = table.public?
-
-      unless allowed && current_user.present?
-        user_tables = current_user.tables_including_shared
-        user_tables.each{ |item|
-          allowed ||= item.id == params.fetch('id')
-        }
-      end
-
-      if allowed
-        response.headers['X-Cache-Channel'] = "#{table.varnish_key}:vizjson"
-        response.headers['Cache-Control']   = 'no-cache,max-age=86400,must-revalidate, public'
-        render_jsonp({})
-      else
-        head :forbidden
-      end
-    else
-      head :forbidden
-    end
-  end
 
   protected
 

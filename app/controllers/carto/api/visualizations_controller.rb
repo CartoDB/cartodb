@@ -59,8 +59,8 @@ module Carto
         head(404)
       end
 
-      def indexs
-        types, total_types = get_types_parameterss
+      def index
+        types, total_types = get_types_parameters
         page = (params[:page] || 1).to_i
         per_page = (params[:per_page] || 20).to_i
         order = (params[:order] || 'updated_at').to_sym
@@ -137,7 +137,7 @@ module Carto
           id: @visualization.id,
           likes: @visualization.likes.map { |like| { actor_id: like.actor } }
         })
-      ends
+      end
 
       def is_liked
         render_jsonp({

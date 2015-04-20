@@ -179,7 +179,6 @@ class Admin::PagesController < ApplicationController
 
   private
 
-
   def rss_feed(source = :maps, num_items = 25)
     subdomain = CartoDB.extract_subdomain(request).strip.downcase
 
@@ -348,10 +347,18 @@ class Admin::PagesController < ApplicationController
   end
 
   def set_new_layout_vars_for_organization(org, content_type)
+
+    if content_type == 'maps'
+      rss_meta_link = CartoDB.url(view_context, 'public_maps_rss', {format: :atom})
+    else
+      rss_meta_link = CartoDB.url(view_context, 'public_datasets_rss', {format: :atom})
+    end
+
     set_new_layout_vars({
         most_viewed_vis_map: org.public_vis_by_type(Visualization::Member::TYPE_DERIVED, 1, 1, nil, 'mapviews').first,
         content_type:        content_type,
-        default_fallback_basemap: ApplicationHelper.default_fallback_basemap
+        default_fallback_basemap: ApplicationHelper.default_fallback_basemap,
+        rss_meta_link: rss_meta_link
       })
     set_shared_layout_vars(org, {
         name:       org.display_name.blank? ? org.name : org.display_name,
@@ -365,6 +372,15 @@ class Admin::PagesController < ApplicationController
     @maps_url            = CartoDB.url(view_context, 'public_visualizations_home', {}, required.fetch(:user, nil))
     @datasets_url        = CartoDB.url(view_context, 'public_datasets_home', {}, required.fetch(:user, nil))
     @default_fallback_basemap = required.fetch(:default_fallback_basemap, {})
+    @rss_meta_link = required.fetch(:rss_meta_link, nil)
+    if @rss_meta_link.nil?
+      if @content_type == 'maps'
+        @rss_meta_link = CartoDB.url(view_context, 'public_maps_rss', {format: :atom}, required.fetch(:user, nil))
+      else
+        @rss_meta_link = CartoDB.url(view_context, 'public_datasets_rss', {format: :atom}, required.fetch(:user, nil))
+      end
+    end
+
   end
 
   def set_new_pagination_vars(required)

@@ -17,6 +17,7 @@ end
 describe Api::Json::VisualizationsController do
   include Rack::Test::Methods
   include DataRepository
+  include CacheHelper
 
   before(:all) do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
@@ -453,6 +454,35 @@ describe Api::Json::VisualizationsController do
     end
   end # DELETE /api/v1/tables/:id
 
+  describe "surrogate keys" do
+    it "viz.json comes with proper surrogate-key" do
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:create).returns(nil)
+      table                 = table_factory(privacy: 1)
+      source_visualization  = table.fetch('table_visualization')
+
+
+      payload = { source_visualization_id: source_visualization.fetch('id'), privacy: 'PUBLIC' }
+
+      post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
+           payload.to_json, @headers
+
+      viz_id = JSON.parse(last_response.body).fetch('id')
+
+      put api_v1_visualizations_show_url(user_domain: @user.username, id: viz_id, api_key: @api_key),
+          { privacy: 'PUBLIC' }.to_json, @headers
+
+      get api_v2_visualizations_vizjson_url(user_domain: @user.username, id: viz_id, api_key: @api_key),
+          {}, @headers
+
+      last_response.status.should == 200
+      last_response.headers.should have_key('Surrogate-Key')
+      last_response['Surrogate-Key'].should include(CartoDB::SURROGATE_NAMESPACE_VIZJSON)
+      last_response['Surrogate-Key'].should include(get_surrogate_key(CartoDB::SURROGATE_NAMESPACE_VISUALIZATION, viz_id))
+
+    end
+  end
+
   describe 'tests visualization listing filters' do
     it 'uses locked filter' do
       CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
@@ -755,9 +785,9 @@ end
       payload.to_json, @headers
 
     table_attributes  = JSON.parse(last_response.body)
-    table_id          = table_attributes.fetch('id')
+    table_id          = table_attributes.fetch('table_visualization').fetch("id")
 
-    put "/api/v1/tables/#{table_id}?api_key=#{@api_key}",
+    put "/api/v1/viz/#{table_id}?api_key=#{@api_key}",
       { privacy: privacy }.to_json, @headers
 
     table_attributes

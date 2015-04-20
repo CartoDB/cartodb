@@ -91,6 +91,8 @@ describe Admin::VisualizationsController do
 
       get "/viz/#{id}/public", {}, @headers
       last_response.status.should == 200
+      last_response.headers["Surrogate-Key"].should_not be_empty
+      last_response.headers["Surrogate-Key"].should include(CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES)
     end
 
     it 'returns a 404 if table is private' do
@@ -130,10 +132,14 @@ describe Admin::VisualizationsController do
       last_response.headers["X-Cache-Channel"].should_not be_empty
       last_response.headers["X-Cache-Channel"].should include(table.name)
       last_response.headers["X-Cache-Channel"].should include(table.table_visualization.varnish_key)
+      last_response.headers["Surrogate-Key"].should_not be_empty
+      last_response.headers["Surrogate-Key"].should include(CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES)
+      last_response.headers["Surrogate-Key"].should include(table.table_visualization.surrogate_key)
     end
 
     it 'renders embed_map.js' do
-      id                = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC).table_visualization.id
+      table             = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC)
+      id                = table.table_visualization.id
       payload           = { source_visualization_id: id }
 
       post "/api/v1/viz?api_key=#{@api_key}", 
@@ -147,6 +153,11 @@ describe Admin::VisualizationsController do
 
       get "/viz/#{id}/embed_map.js", {}, @headers
       last_response.status.should == 200
+      last_response.headers["X-Cache-Channel"].should_not be_empty
+      last_response.headers["X-Cache-Channel"].should include(table.name)
+      last_response.headers["Surrogate-Key"].should_not be_empty
+      last_response.headers["Surrogate-Key"].should include(CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES)
+      last_response.headers["Surrogate-Key"].should include(table.table_visualization.surrogate_key)
     end
 
     it 'renders embed map error page if visualization private' do

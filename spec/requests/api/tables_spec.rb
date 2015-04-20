@@ -71,18 +71,18 @@ describe "Tables API" do
 
   it "creates a new table without schema when a table of the same name exists on the database" do
     @user.in_database.run "CREATE TABLE untitled_table (wadus INTEGER)"
-    post_json v1_tables_url(params)
+    post_json api_v1_tables_create_url(params)
 
     @user.tables.count.should == 2
   end
 
   it "creates a new table specifing a name, description and a schema" do
-    post_json v1_tables_url(params.merge(
-      name: "My new imported table", 
+    post_json api_v1_tables_create_url(params.merge(
+      name: "My new blank table", 
       schema: "code varchar, title varchar, did integer, date_prod timestamp, kind varchar", 
       description: "Testing is awesome")) do |response|
       response.status.should be_success
-      response.body[:name].should == "my_new_imported_table"
+      response.body[:name].should == "my_new_blank_table"
       response.body[:description].should == "Testing is awesome"
       response.body[:schema].should =~ [
          ["cartodb_id", "number"], ["code", "string"], ["title", "string"], ["did", "number"],
@@ -92,9 +92,9 @@ describe "Tables API" do
   end
 
   it "creates a new table specifying a geometry of type point" do
-    post_json v1_tables_url(params.merge(name: "My new imported table", the_geom_type: "Point")) do |response|
+    post_json api_v1_tables_create_url(params.merge(name: "My new blank table", the_geom_type: "Point")) do |response|
       response.status.should be_success
-      response.body[:name].should == "my_new_imported_table"
+      response.body[:name].should == "my_new_blank_table"
       (response.body[:schema] - [
          ["cartodb_id", "number"], ["name", "string"], ["description", "string"],
          ["the_geom", "geometry", "geometry", "point"], ["created_at", "date"], ["updated_at", "date"]
@@ -103,9 +103,9 @@ describe "Tables API" do
   end
 
   it "creates a new table specifying a geometry of type polygon" do
-    post_json v1_tables_url(params.merge(name: "My new imported table", the_geom_type: "Polygon")) do |response|
+    post_json api_v1_tables_create_url(params.merge(name: "My new blank table", the_geom_type: "Polygon")) do |response|
       response.status.should be_success
-      response.body[:name].should == "my_new_imported_table"
+      response.body[:name].should == "my_new_blank_table"
       (response.body[:schema] - [
          ["cartodb_id", "number"], ["name", "string"], ["description", "string"],
          ["the_geom", "geometry", "geometry", "multipolygon"], ["created_at", "date"], ["updated_at", "date"]
@@ -114,9 +114,9 @@ describe "Tables API" do
   end
 
   it "creates a new table specifying a geometry of type line" do
-    post_json v1_tables_url(params.merge(name: "My new imported table", the_geom_type: "Line")) do |response|
+    post_json api_v1_tables_create_url(params.merge(name: "My new blank table", the_geom_type: "Line")) do |response|
       response.status.should be_success
-      response.body[:name].should == "my_new_imported_table"
+      response.body[:name].should == "my_new_blank_table"
       (response.body[:schema] - [
          ["cartodb_id", "number"], ["name", "string"], ["description", "string"],
          ["the_geom", "geometry", "geometry", "multilinestring"], ["created_at", "date"], ["updated_at", "date"]
@@ -127,16 +127,16 @@ describe "Tables API" do
   it "creates a new table specifying tags" do
     pending 'Moved to visualization' 
 
-    post_json v1_tables_url(params.merge(name: "My new imported table", tags: "environment,wadus")) do |response|
+    post_json api_v1_tables_create_url(params.merge(name: "My new blank table", tags: "environment,wadus")) do |response|
       response.status.should be_success
-      response.body[:name].should == "my_new_imported_table"
+      response.body[:name].should == "my_new_blank_table"
       response.body[:tags].should include("environment")
       response.body[:tags].should include("wadus")
     end
   end
 
   pending "Fail nicely when you create a new table with bad schema" do
-    post_json v1_tables_url(params.merge(name: "My new imported table", schema: "bla bla blat")) do |response|
+    post_json api_v1_tables_create_url(params.merge(name: "My new blank table", schema: "bla bla blat")) do |response|
       response.status.should == 400
     end
   end

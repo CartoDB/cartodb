@@ -192,7 +192,8 @@ describe "Tables API" do
     table.insert_row!({:name => "El Lacón", :address => "Manuel Fernández y González 8, Madrid, Spain", :latitude => 40.415113, :longitude => -3.699871})
     table.insert_row!({:name => "El Pico", :address => "Calle Divino Pastor 12, Madrid, Spain", :latitude => 40.428198, :longitude => -3.703991})
 
-    put_json api_v1_tables_update_url(table.name, params.merge(
+    put_json api_v1_tables_update_url(params.merge(
+      :id => table.id,
       :latitude_column => "latitude",
       :longitude_column => "longitude"
     )) do |response|

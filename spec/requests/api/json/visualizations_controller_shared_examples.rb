@@ -1141,6 +1141,12 @@ shared_examples_for "visualization controllers" do
     end
 
     describe 'tests visualization listing filters' do
+      before(:each) do
+        CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+        delete_user_data(@user)
+      end
+
       it 'uses locked filter' do
         CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
 

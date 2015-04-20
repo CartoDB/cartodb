@@ -246,6 +246,7 @@ class Admin::VisualizationsController < ApplicationController
       format.js { render 'public_map', content_type: 'application/javascript' }
     end
   rescue => e
+    debugger
     Rollbar.report_exception(e)
     embed_forbidden
   end

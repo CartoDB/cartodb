@@ -1,9 +1,9 @@
-require_relative '../../../helpers/html_safe'
+require_relative '../../../helpers/carto/html_safe'
 require_relative '../api/vizjson_presenter'
 
 class Carto::Admin::VisualizationPublicMapAdapter
   extend Forwardable
-  include HtmlSafe
+  include Carto::HtmlSafe
 
   delegate [ :type_slide?, :has_permission?, :derived?, :organization, :organization?, :id, :likes, :password_protected?, :varnish_key, :related_tables, :is_password_valid?, :get_auth_tokens, :table, :name, :overlays, :created_at, :description, :tags, :related_visualizations ] => :visualization
 
@@ -40,11 +40,11 @@ class Carto::Admin::VisualizationPublicMapAdapter
   end
 
   def description_html_safe
-    html_safe(description)
+    markdown_html_safe(description)
   end
 
   def description_clean
-    html_clean(description)
+    markdown_html_clean(description)
   end
 
   # TODO: remove is_ prefixed methods from visualization

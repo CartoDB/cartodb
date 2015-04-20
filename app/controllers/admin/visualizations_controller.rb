@@ -548,6 +548,7 @@ class Admin::VisualizationsController < ApplicationController
 
   def get_visualization_and_table(table_id, schema, filter)
     visualization = Carto::VisualizationQueryBuilder.new.with_id_or_name(table_id).build.first
+    #return nil, nil if visualization.nil?
     return Carto::Admin::VisualizationPublicMapAdapter.new(visualization), Carto::Admin::UserTablePublicMapAdapter.new(visualization.table)
   end
 end

@@ -34,6 +34,7 @@ describe Admin::VisualizationsController do
 
     CartoDB::Visualization.repository  = DataRepository::Backend::Sequel.new(@db, :visualizations)
 
+    debugger
     delete_user_data @user
     @headers = { 
       'CONTENT_TYPE'  => 'application/json',

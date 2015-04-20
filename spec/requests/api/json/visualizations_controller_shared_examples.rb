@@ -59,7 +59,7 @@ shared_examples_for "visualization controllers" do
       description:  "table #{seed} description"
     }
     post "/api/v1/tables?api_key=#{@api_key}",
-      payload.to_json, @headers
+      payload.to_json, @headers rescue debugger
 
     table_attributes  = JSON.parse(last_response.body)
     table_id          = table_attributes.fetch('id')
@@ -1127,6 +1127,18 @@ shared_examples_for "visualization controllers" do
   end
 
   describe 'index endpoint' do
+
+    before(:all) do
+      @user = create_user(
+        username: 'test',
+        email:    'client@example.com',
+        password: 'clientex',
+        private_tables_enabled: true
+      )
+      @api_key = @user.api_key
+      @headers = {'CONTENT_TYPE'  => 'application/json'}
+      host! "#{@user.username}.localhost.lan"
+    end
 
     it 'Sanitizes vizjson callback' do
       valid_callback = 'my_function'

@@ -30,7 +30,6 @@ class Api::Json::TablesController < Api::ApplicationController
     @table.import_from_query = params[:from_query]  if params[:from_query]
 
     if @table.valid? && @table.save
-      @table = ::UserTable.where(id: @table.id).first.try(:service)
       render_jsonp(@table.public_values({request:request}), 200, { location: "/tables/#{@table.id}" })
     else
       CartoDB::Logger.info 'Error on tables#create', @table.errors.full_messages

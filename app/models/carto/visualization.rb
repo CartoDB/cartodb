@@ -2,6 +2,8 @@ require 'active_record'
 require_relative '../visualization/stats'
 
 class Carto::Visualization < ActiveRecord::Base
+  include CacheHelper
+
   # INFO: disable ActiveRecord inheritance column
   self.inheritance_column = :_type
 

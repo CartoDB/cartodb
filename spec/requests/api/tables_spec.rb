@@ -167,20 +167,17 @@ describe "Tables API" do
     end
   end
 
-  # TODO: the API is supposed to return http 200 when the user submits invalid data?
   it "updates with bad values the metadata of an existing table" do
     table1 = create_table :user_id => @user.id, :name => 'My table #1', :tags => "tag 1, tag 2,tag 3, tag 3"
-    put_json api_v1_tables_update_url(table1.name, params.merge(privacy: "bad privacy value")) do |response|
-      table1.reload.privacy.should == 0
+    put_json api_v1_tables_update_url(params.merge(id: table1.id, privacy: "bad privacy value")) do |response|
+      response.status.should == 400
+      table1.reload.privacy.should == ::UserTable::PRIVACY_PRIVATE
     end
 
-    put_json api_v1_tables_update_url(table1.name, params.merge(name: "")) do |response|
-      response.status.should == 200
+    put_json api_v1_tables_update_url(params.merge(id: table1.id, name: "")) do |response|
+      response.status.should == 400
     end
 
-    get_json v1_table_url(table1.name, params) do |response|
-      response.status.should == 200
-    end
   end
 
   it "deletes a table of the user currently logged in" do

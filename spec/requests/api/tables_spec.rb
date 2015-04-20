@@ -149,23 +149,6 @@ describe "Tables API" do
     end
   end
 
-  it "gets table metadata information" do
-    table1 = create_table :user_id => @user.id, :name => 'My table #1', :tags => "tag 1, tag 2,tag 3, tag 3", :description => "Testing is awesome"
-
-    get_json v1_table_url(table1.name, params) do |response|
-      response.status.should be_success
-      response.body[:id].should == table1.id
-      response.body[:name].should == "my_table_1"
-      response.body[:description].should == "Testing is awesome"
-      response.body[:privacy].should == "PRIVATE"
-      response.body[:table_size].should == table1.table_size
-      response.body[:tags].should include("tag 1")
-      response.body[:tags].should include("tag 2")
-      response.body[:tags].should include("tag 3")
-      (response.body[:schema] - default_schema).should be_empty
-    end
-  end
-
   it "updates the metadata of an existing table" do
     table1 = create_table :user_id => @user.id, :name => 'My table #1',  :tags => "tag 1, tag 2,tag 3, tag 3", :description => ""
 

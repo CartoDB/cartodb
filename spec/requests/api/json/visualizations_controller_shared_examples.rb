@@ -927,6 +927,41 @@ shared_examples_for "visualization controllers" do
 
       end
 
+      it 'Sanitizes vizjson callback' do
+        valid_callback = 'my_function'
+        valid_callback2 = 'a'
+        invalid_callback1 = 'alert(1);'
+        invalid_callback2 = '%3B'
+        invalid_callback3 = '123func'    # JS names cannot start by number
+
+        table_attributes  = table_factory
+        table_id          = table_attributes.fetch('id')
+        get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: valid_callback), {}, @headers
+        last_response.status.should == 200
+        (last_response.body =~ /^#{valid_callback}\(\{/i).should eq 0
+
+        get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: invalid_callback1), {}, @headers
+        last_response.status.should == 400
+
+        get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: invalid_callback2), {}, @headers
+        last_response.status.should == 400
+
+        get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: invalid_callback3), {}, @headers
+        last_response.status.should == 400
+
+        # if param specified, must not be empty
+        get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: ''), {}, @headers
+        last_response.status.should == 400
+
+        get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: valid_callback2), {}, @headers
+        last_response.status.should == 200
+        (last_response.body =~ /^#{valid_callback2}\(\{/i).should eq 0
+
+        get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key), {}, @headers
+        last_response.status.should == 200
+        (last_response.body =~ /^\{/i).should eq 0
+      end
+
     end
 
     describe 'GET /api/v1/viz' do
@@ -1122,57 +1157,6 @@ shared_examples_for "visualization controllers" do
         get "/api/v2/viz/#{TEST_UUID}/viz?api_key=#{@api_key}", {}, @headers
         last_response.status.should == 404
       end
-    end
-
-  end
-
-  describe 'index endpoint' do
-
-    before(:all) do
-      @user = create_user(
-        username: 'test',
-        email:    'client@example.com',
-        password: 'clientex',
-        private_tables_enabled: true
-      )
-      @api_key = @user.api_key
-      @headers = {'CONTENT_TYPE'  => 'application/json'}
-      host! "#{@user.username}.localhost.lan"
-    end
-
-    it 'Sanitizes vizjson callback' do
-      valid_callback = 'my_function'
-      valid_callback2 = 'a'
-      invalid_callback1 = 'alert(1);'
-      invalid_callback2 = '%3B'
-      invalid_callback3 = '123func'    # JS names cannot start by number
-
-      table_attributes  = table_factory
-      table_id          = table_attributes.fetch('id')
-      get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: valid_callback), {}, @headers
-      last_response.status.should == 200
-      (last_response.body =~ /^#{valid_callback}\(\{/i).should eq 0
-
-      get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: invalid_callback1), {}, @headers
-      last_response.status.should == 400
-
-      get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: invalid_callback2), {}, @headers
-      last_response.status.should == 400
-
-      get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: invalid_callback3), {}, @headers
-      last_response.status.should == 400
-
-      # if param specified, must not be empty
-      get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: ''), {}, @headers
-      last_response.status.should == 400
-
-      get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: valid_callback2), {}, @headers
-      last_response.status.should == 200
-      (last_response.body =~ /^#{valid_callback2}\(\{/i).should eq 0
-
-      get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key), {}, @headers
-      last_response.status.should == 200
-      (last_response.body =~ /^\{/i).should eq 0
     end
 
   end

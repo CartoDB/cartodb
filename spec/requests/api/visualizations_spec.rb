@@ -480,6 +480,8 @@ describe Api::Json::VisualizationsController do
       last_response['Surrogate-Key'].should include(CartoDB::SURROGATE_NAMESPACE_VIZJSON)
       last_response['Surrogate-Key'].should include(get_surrogate_key(CartoDB::SURROGATE_NAMESPACE_VISUALIZATION, viz_id))
 
+      delete api_v1_visualizations_show_url(user_domain: @user.username, id: viz_id, api_key: @api_key),
+          { }, @headers
     end
   end
 

@@ -33,10 +33,11 @@ class Carto::VisualizationQueryBuilder
   end
 
   def with_id_or_name(id_or_name)
-    uuid = UUIDTools::UUID.parse(id_or_name)
-    with_id(id_or_name)
-  rescue
-    with_name(id_or_name)
+    if is_uuid(id_or_name)
+      with_id(id_or_name)
+    else
+      with_name(id_or_name)
+    end
   end
 
   def with_id(id)
@@ -196,6 +197,10 @@ class Carto::VisualizationQueryBuilder
   end
 
   private
+
+  def is_uuid(text)
+    !(/[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}/ =~ text).nil?
+  end
 
   def with_include_of(association)
     @include_associations << association

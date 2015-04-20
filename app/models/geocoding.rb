@@ -55,7 +55,8 @@ class Geocoding < Sequel::Model
 
   def table_geocoder
     geocoder_class = (kind == 'high-resolution' ? CartoDB::TableGeocoder : CartoDB::InternalGeocoder::Geocoder)
-    # Reset old connections to make sure changes apply
+    # Reset old connections to make sure changes apply. 
+    # NOTE: This assumes it's being called from a Resque job
     if user.present?
       user.reset_pooled_connections
       user_connection = user.in_database(statement_timeout: DB_TIMEOUT)

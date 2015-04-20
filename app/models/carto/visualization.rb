@@ -2,9 +2,12 @@ require 'active_record'
 require_relative '../visualization/stats'
 
 class Carto::Visualization < ActiveRecord::Base
+  # INFO: disable ActiveRecord inheritance column
   self.inheritance_column = :_type
 
   belongs_to :user, inverse_of: :visualizations, select: Carto::User::DEFAULT_SELECT
+  belongs_to :full_user, class_name: Carto::User, foreign_key: :user_id, primary_key: :id, inverse_of: :visualizations, readonly: true
+
   belongs_to :permission
 
   has_many :likes, foreign_key: :subject
@@ -14,15 +17,25 @@ class Carto::Visualization < ActiveRecord::Base
   has_one :external_source
   has_many :unordered_children, class_name: Carto::Visualization, foreign_key: :parent_id
 
+  has_many :overlays
+
+  belongs_to :parent, class_name: Carto::Visualization, primary_key: :parent_id
+
+  belongs_to :map
+
   TYPE_CANONICAL = 'table'
   TYPE_DERIVED = 'derived'
   TYPE_SLIDE = 'slide'
   TYPE_REMOTE = 'remote'
 
-
   PRIVACY_PUBLIC = 'public'
   PRIVACY_PRIVATE = 'private'
   PRIVACY_LINK = 'link'
+  PRIVACY_PROTECTED = 'password'
+
+  def related_tables
+    @related_tables ||= get_related_tables
+  end
 
   def stats
     @stats ||= CartoDB::Visualization::Stats.new(self).to_poro
@@ -61,13 +74,58 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def is_viewable_by_user?(user)
-    is_viewable_with_link? || has_read_permission?(user)
+    is_publically_accesible? || has_read_permission?(user)
+  end
+
+  def is_publically_accesible?
+    is_public? || is_link_privacy?
+  end
+
+  def varnish_key
+    "#{user.database_name}:#{sorted_related_table_names},#{id}"
+  end
+
+  def qualified_name(viewer_user=nil)
+    if viewer_user.nil? || is_owner_user?(viewer_user)
+      name
+    else
+      "\"#{user.database_schema}\".#{name}"
+    end
+  end
+
+  def retrieve_named_map?
+    password_protected? || has_private_tables?
+  end
+
+  def has_password?
+    !password_salt.nil? && !encrypted_password.nil?
   end
 
   private
 
-  def is_viewable_with_link?
-    is_public? || self.privacy == PRIVACY_LINK
+  def password_protected?
+    privacy == PRIVACY_PROTECTED
+  end
+
+  def has_private_tables?
+    !related_tables.index { |table| table.private? }.nil?
+  end
+
+  def sorted_related_table_names
+    sorted_table_names = related_tables.map{ |table|
+      "#{user.database_schema}.#{table.name}"
+    }.sort { |i, j|
+      i <=> j
+    }.join(',')
+  end
+
+  def get_related_tables
+    return [] unless map
+    map.carto_and_torque_layers.flat_map { |layer| layer.affected_tables.map { |t| t.service } }.uniq
+  end
+
+  def is_link_privacy?
+    self.privacy == PRIVACY_LINK
   end
 
   def is_public?
@@ -75,7 +133,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def has_read_permission?(user)
-    is_owner_user?(user) || (permission && permission.user_has_read_permission?(user))
+    user && (is_owner_user?(user) || (permission && permission.user_has_read_permission?(user)))
   end
 
   def is_owner_user?(user)

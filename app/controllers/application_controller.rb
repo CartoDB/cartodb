@@ -33,6 +33,10 @@ class ApplicationController < ActionController::Base
 
   protected
 
+  def is_https?
+    request.protocol == 'https://'
+  end
+
   # To be used only when domainless urls are present, to replicate sent subdomain
   def store_request_host
     return unless CartoDB.subdomainless_urls?
@@ -202,16 +206,18 @@ class ApplicationController < ActionController::Base
   # - Else: the first session found at request.session that comes from warden
   def current_viewer
     if @current_viewer.nil?
-      authenticated_usernames = request.session.select {|k,v| k.start_with?("warden.user")}.values
-      current_user_present = authenticated_usernames.select { |username|
-        CartoDB.extract_subdomain(request) == username
-      }.first
-
-      if current_user_present.nil?
-        authenticated_username = authenticated_usernames.first
-        @current_viewer = authenticated_username.nil? ? nil : User.where(username: authenticated_username).first
-      else
+      if current_user && env["warden"].authenticated?(current_user.username)
         @current_viewer = current_user
+      else
+        authenticated_usernames = request.session.select {|k,v| k.start_with?("warden.user")}.values
+        current_user_present = authenticated_usernames.select { |username|
+          CartoDB.extract_subdomain(request) == username
+        }.first
+
+        if current_user_present.nil?
+          authenticated_username = authenticated_usernames.first
+          @current_viewer = authenticated_username.nil? ? nil : User.where(username: authenticated_username).first
+        end
       end
     end
     @current_viewer

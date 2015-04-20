@@ -90,6 +90,10 @@ module CartoDB
         " user_id:\"#{@user_id}\" type_guessing:\"#{@type_guessing}\" " \
         "quoted_fields_guessing:\"#{@quoted_fields_guessing}\">"
       end
+  
+      def synchronizations_logger
+        @@synchronizations_logger ||= ::Logger.new("#{Rails.root}/log/synchronizations.log")
+      end
 
       def interval=(seconds=3600)
         super(seconds.to_i)
@@ -148,6 +152,8 @@ module CartoDB
           @log.save
           self.log_id = @log.id
           store
+        else
+          @log.clear
         end
 
         if user.nil?
@@ -203,6 +209,9 @@ module CartoDB
         end
 
         store
+        
+        notify
+
       rescue => exception
         Rollbar.report_exception(exception)
         log.append exception.message
@@ -231,7 +240,21 @@ module CartoDB
             log.append ex.backtrace
           end
         end
+        notify
         self
+      end
+
+      def notify
+        sync_log = {
+          'name'              => self.name,
+          'sync_time'         => self.updated_at - self.created_at,
+          'sync_timestamp'    => Time.now,
+          'user'              => user.username,
+          'queue_server'      => `hostname`.strip,
+          'resque_ppid'       => Process.ppid,
+          'state'             => self.state
+        }
+        synchronizations_logger.info(sync_log.to_json)
       end
 
       def get_downloader

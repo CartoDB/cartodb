@@ -449,14 +449,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     ]
   end
 
-  # This only allows to authenticate if sending an API request to username.api_key subdomain,
-  # but doesn't breaks the request if can't authenticate
-  def optional_api_authorization
-    if params[:api_key].present?
-      authenticate(:api_key, :api_authentication, :scope => CartoDB.extract_subdomain(request))
-    end
-  end
-
   def prepare_params_for_total_count(params)
     # TODO: refactor for making default parameters and total counting obvious
     if params[:type].nil? || params[:type] == ''

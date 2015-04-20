@@ -46,8 +46,8 @@ describe Api::Json::VisualizationsController do
 
     @headers = { 
       'CONTENT_TYPE'  => 'application/json',
-      'HTTP_HOST'     => 'test.localhost.lan'
     }
+    host! 'test.localhost.lan'
   end
 
   after(:all) do
@@ -215,152 +215,6 @@ describe Api::Json::VisualizationsController do
       response.fetch('name').should =~ /#{visualization_name} 0/
     end
   end # POST /api/v1/viz
-
-  describe 'GET /api/v1/viz' do
-
-    it 'is updated after creating a visualization' do
-      pending
-      payload = factory
-      post "/api/v1/viz?api_key=#{@api_key}", 
-        payload.to_json, @headers
-
-      get "/api/v1/viz?api_key=#{@api_key}",
-        {}, @headers
-
-      response    = JSON.parse(last_response.body)
-      collection  = response.fetch('visualizations')
-      collection.size.should == 1
-
-      payload = factory.merge('name' => 'another one')
-      post "/api/v1/viz?api_key=#{@api_key}",
-        payload.to_json, @headers
-
-      get "/api/v1/viz?api_key=#{@api_key}",
-        {}, @headers
-      response    = JSON.parse(last_response.body)
-      collection  = response.fetch('visualizations')
-      collection.size.should == 2
-    end
-
-    it 'is updated after deleting a visualization' do
-      pending
-      payload = factory
-      post "/api/v1/viz?api_key=#{@api_key}",
-        payload.to_json, @headers
-      id = JSON.parse(last_response.body).fetch('id')
-      
-      get "/api/v1/viz?api_key=#{@api_key}",
-        {}, @headers
-      response    = JSON.parse(last_response.body)
-      collection  = response.fetch('visualizations')
-      collection.should_not be_empty
-
-      delete "/api/v1/viz/#{id}?api_key=#{@api_key}",
-        {}, @headers
-      get "/api/v1/viz?api_key=#{@api_key}",
-        {}, @headers
-
-      response    = JSON.parse(last_response.body)
-      collection  = response.fetch('visualizations')
-      collection.should be_empty
-    end
-
-    it 'paginates results' do
-      pending
-      per_page      = 10
-      total_entries = 20
-
-      total_entries.times do 
-        post "/api/v1/viz?api_key=#{@api_key}",
-          factory.to_json, @headers
-      end
-
-      get "/api/v1/viz?api_key=#{@api_key}&page=1&per_page=#{per_page}", {}, @headers
-
-      last_response.status.should == 200
-      
-      response    = JSON.parse(last_response.body)
-      collection  = response.fetch('visualizations')
-      collection.length.should == per_page
-      response.fetch('total_entries').should == total_entries
-    end
-
-    it 'returns filtered results' do
-      pending
-      post "/api/v1/viz?api_key=#{@api_key}",
-        factory.to_json, @headers
-
-      get "/api/v1/viz?api_key=#{@api_key}&type=table",
-        {}, @headers
-      last_response.status.should == 200
-      response    = JSON.parse(last_response.body)
-      collection  = response.fetch('visualizations')
-      collection.should be_empty
-
-      post "/api/v1/viz?api_key=#{@api_key}",
-        factory.to_json, @headers
-      post "/api/v1/viz?api_key=#{@api_key}",
-        factory.merge(type: 'table').to_json, @headers
-      get "/api/v1/viz?api_key=#{@api_key}&type=derived",
-        {}, @headers
-
-      last_response.status.should == 200
-      response    = JSON.parse(last_response.body)
-      collection  = response.fetch('visualizations')
-      collection.size.should == 2
-    end
-
-    it 'does not get table data if passed table_data=false' do
-      pending
-      table = table_factory
-
-      get "/api/v1/viz?api_key=#{@api_key}&type=table",
-        {}, @headers
-      last_response.status.should == 200
-      response        = JSON.parse(last_response.body)
-      visualizations  = response.fetch('visualizations')
-      visualizations.first.keys.should_not include :table_data
-    end
-  end # GET /api/v1/viz
-
-  describe 'GET /api/v1/viz/:id' do
-    it 'returns a visualization' do
-      pending
-      payload = factory
-      post "/api/v1/viz?api_key=#{@api_key}",
-        payload.to_json, @headers
-      id = JSON.parse(last_response.body).fetch('id')
-      
-      get "/api/v1/viz/#{id}?api_key=#{@api_key}", 
-        {}, @headers
-
-      last_response.status.should == 200
-      response = JSON.parse(last_response.body)
-
-      response.fetch('id')              .should_not be_nil
-      response.fetch('map_id')          .should_not be_nil
-      response.fetch('tags')            .should_not be_empty
-      response.fetch('description')     .should_not be_nil
-      response.fetch('related_tables')  .should_not be_nil
-    end
-  end # GET /api/v1/viz/:id
-
-  describe 'GET /api/v1/viz/:id/stats' do
-    it 'returns view stats for the visualization' do
-      pending
-      payload = factory
-
-      post "/api/v1/viz?api_key=#{@api_key}",
-        payload.to_json, @headers
-      id = JSON.parse(last_response.body).fetch('id')
-
-      get "/api/v1/viz/#{id}/stats?api_key=#{@api_key}", {}, @headers
-
-      last_response.status.should == 200
-      response = JSON.parse(last_response.body)
-      response.keys.length.should == 30
-    end
-  end # GET /api/v1/viz/:id/stats
 
   describe 'PUT /api/v1/viz/:id' do
     it 'updates an existing visualization' do
@@ -598,56 +452,6 @@ describe Api::Json::VisualizationsController do
       last_response.status.should == 200
     end
   end # DELETE /api/v1/tables/:id
-
-  describe 'GET /api/v1/viz/:id/viz' do
-    it 'renders vizjson v1' do
-      pending
-      table_attributes  = table_factory
-      table_id          = table_attributes.fetch('id')
-      get "/api/v1/viz/#{table_id}/viz?api_key=#{@api_key}",
-        {}, @headers
-      last_response.status.should == 200
-      response = ::JSON.parse(last_response.body)
-      response.keys.length.should > 1
-      response.fetch('description').should_not be_empty
-    end
-  end # GET /api/v1/viz/:id/viz
-
-  describe 'GET /api/v2/viz/:id/viz' do
-    it 'renders vizjson v2' do
-      pending
-      table_attributes  = table_factory
-      table_id          = table_attributes.fetch('id')
-      get "/api/v2/viz/#{table_id}/viz?api_key=#{@api_key}",
-        {}, @headers
-      last_response.status.should == 200
-      ::JSON.parse(last_response.body).keys.length.should > 1
-    end
-  end # GET /api/v2/viz/:id/viz
-
-  describe 'non existent visualization' do
-    it 'returns 404' do
-      pending
-
-      get "/api/v1/viz/9999?api_key=#{@api_key}", {}, @headers
-      last_response.status.should == 404
-
-      get "/api/v1/viz/9999/stats?api_key=#{@api_key}", {}, @headers
-      last_response.status.should == 404
-
-      put "/api/v1/viz/9999?api_key=#{@api_key}", {}, @headers
-      last_response.status.should == 404
-
-      delete "/api/v1/viz/9999?api_key=#{@api_key}", {}, @headers
-      last_response.status.should == 404
-
-      get "/api/v1/viz/9999/viz?api_key=#{@api_key}", {}, @headers
-      last_response.status.should == 404
-
-      get "/api/v2/viz/9999/viz?api_key=#{@api_key}", {}, @headers
-      last_response.status.should == 404
-    end
-  end # non existent visualization
 
   describe 'tests visualization listing filters' do
     it 'uses locked filter' do

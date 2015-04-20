@@ -213,7 +213,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     visualization,  = locator.get(@table_id, CartoDB.extract_subdomain(request))
     return(head 404) unless visualization
     return(head 403) unless allow_vizjson_v2_for?(visualization)
-    p "VISUALIZATIOO"
     set_vizjson_response_headers_for(visualization)
     render_jsonp(visualization.to_vizjson({https_request: request.protocol == 'https://'}))
   rescue KeyError => exception

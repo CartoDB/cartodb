@@ -220,8 +220,8 @@ module CartoDB
         self.attributes = data
         self.name_changed = false
         self.privacy_changed = false
-        self.description_changed = false
         self.permission_change_valid = true
+        self.dirty = false
         validator.reset
         self
       end
@@ -284,7 +284,7 @@ module CartoDB
       end
 
       def description=(description)
-        self.description_changed = true if description != @description && !@description.nil?
+        self.dirty = true if description != @description && !@description.nil?
         super(description)
       end
 
@@ -451,6 +451,7 @@ module CartoDB
         if value && value.size > 0
           @password_salt = generate_salt if @password_salt.nil?
           @encrypted_password = password_digest(value, @password_salt)
+          self.dirty = true
         end
       end
 
@@ -611,7 +612,7 @@ module CartoDB
       private
 
       attr_reader   :repository, :name_checker, :validator
-      attr_accessor :privacy_changed, :name_changed, :old_name, :description_changed, :permission_change_valid
+      attr_accessor :privacy_changed, :name_changed, :old_name, :permission_change_valid, :dirty
 
       def calculate_vizjson(options={})
         vizjson_options = {
@@ -680,7 +681,7 @@ module CartoDB
           raise CartoDB::InvalidMember
         end
 
-        invalidate_cache if name_changed || privacy_changed || description_changed || table_privacy_changed
+        invalidate_cache if name_changed || privacy_changed || table_privacy_changed || dirty
         set_timestamps
 
         repository.store(id, attributes.to_hash)
@@ -822,7 +823,7 @@ module CartoDB
           map.remove_layer(layer)
           layer.destroy
         }
-        self.active_layer_id = layers(:cartodb).first.id
+        self.active_layer_id = layers(:cartodb).first.nil? ? nil : layers(:cartodb).first.id
         store
       end
 

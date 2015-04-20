@@ -39,6 +39,7 @@ $opacityTransition: 250ms;
 .MapCard-desc {
   flex: 1;
   height: 2 * $sLineHeight-normal;
+  width: 100%;
 
   .DefaultDescription {
     @include line-clamp(2);
@@ -46,6 +47,7 @@ $opacityTransition: 250ms;
 }
 .MapCard-desc--fake {
   display: block;
+  width: auto;
   padding: 0 30px;
   text-align: center;
   margin-bottom: $sMargin-element;

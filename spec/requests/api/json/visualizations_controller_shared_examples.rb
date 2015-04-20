@@ -4,6 +4,8 @@ require_relative '../../../../app/models/visualization/member'
 
 shared_examples_for "visualization controllers" do
 
+  TEST_UUID = '00000000-0000-0000-0000-000000000000'
+
   NORMALIZED_DATE_ATTRIBUTES = %w{ created_at updated_at }
 
   # Custom hash comparation, since in the ActiveModel-based controllers
@@ -73,6 +75,8 @@ shared_examples_for "visualization controllers" do
 
     before(:each) do
       login(@user1)
+      @headers = {'CONTENT_TYPE'  => 'application/json'}
+      host! 'test1.localhost.lan'
     end
 
     it 'returns success, empty response for empty user' do
@@ -90,7 +94,7 @@ shared_examples_for "visualization controllers" do
       ).to_json)
       expected_visualization = normalize_hash(expected_visualization)
 
-      response_body.should == { 'visualizations' => [expected_visualization], 'total_entries' => 1, 'total_user_entries' => 1, 'total_likes' => 0, 'total_shared' => 0}
+      response_body(type: CartoDB::Visualization::Member::TYPE_CANONICAL).should == { 'visualizations' => [expected_visualization], 'total_entries' => 1, 'total_user_entries' => 1, 'total_likes' => 0, 'total_shared' => 0}
     end
 
     it 'returns liked count' do
@@ -103,7 +107,7 @@ shared_examples_for "visualization controllers" do
       visualization2.store
       visualization2.add_like_from(@user1.id)
 
-      response_body['total_likes'].should == 1
+      response_body(type: CartoDB::Visualization::Member::TYPE_CANONICAL)['total_likes'].should == 1
     end
 
     it 'does a partial match search' do
@@ -113,7 +117,7 @@ shared_examples_for "visualization controllers" do
       create_random_table(@user1, "foo_patata_baz")
 
       #body = response_body("#{BASE_URL}/?q=patata")['total_entries'].should == 2
-      body = response_body(q: 'patata')
+      body = response_body(q: 'patata', type: CartoDB::Visualization::Member::TYPE_CANONICAL)
       body['total_entries'].should == 2
       body['total_user_entries'].should == 4
     end
@@ -151,8 +155,8 @@ shared_examples_for "visualization controllers" do
 
       @headers = {
         'CONTENT_TYPE'  => 'application/json',
-        'HTTP_HOST'     => 'test.localhost.lan'
       }
+      host! 'test.localhost.lan'
     end
 
     after(:all) do
@@ -590,7 +594,7 @@ shared_examples_for "visualization controllers" do
         body['total_shared'].should eq 2
 
         # Multiple likes to same vis shouldn't increment total as is per vis
-        post api_v1_visualizations_add_like_url(user_domain: user_2.username, id: u1_vis_1_id, api_key: user_1.api_key)
+        post api_v1_visualizations_add_like_url(user_domain: user_1.username, id: u1_vis_1_id, api_key: user_1.api_key)
 
         get api_v1_visualizations_index_url(user_domain: user_1.username, api_key: user_1.api_key,
                                             type: CartoDB::Visualization::Member::TYPE_DERIVED, order: 'updated_at'), @headers
@@ -1129,6 +1133,25 @@ shared_examples_for "visualization controllers" do
         collection  = response.fetch('visualizations')
         collection.length.should eq 1
         collection.first.fetch('id').should eq vis_2_id
+      end
+    end
+
+    describe 'non existent visualization' do
+      it 'returns 404' do
+        get "/api/v1/viz/#{TEST_UUID}?api_key=#{@api_key}", {}, @headers
+        last_response.status.should == 404
+
+        get "/api/v1/viz/#{TEST_UUID}/stats?api_key=#{@api_key}", {}, @headers
+        last_response.status.should == 404
+
+        put "/api/v1/viz/#{TEST_UUID}?api_key=#{@api_key}", {}, @headers
+        last_response.status.should == 404
+
+        delete "/api/v1/viz/#{TEST_UUID}?api_key=#{@api_key}", {}, @headers
+        last_response.status.should == 404
+
+        get "/api/v2/viz/#{TEST_UUID}/viz?api_key=#{@api_key}", {}, @headers
+        last_response.status.should == 404
       end
     end
 

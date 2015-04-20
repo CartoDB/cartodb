@@ -16,6 +16,7 @@ module Carto
       before_filter :load_table, only: [:vizjson2]
       before_filter :load_visualization, only: [:likes_count, :likes_list, :is_liked, :show, :stats]
       ssl_required :index, :show
+      ssl_allowed  :vizjson2, :likes_count, :likes_list, :is_liked
 
       FILTER_SHARED_YES = 'yes'
       FILTER_SHARED_NO = 'no'
@@ -30,8 +31,8 @@ module Carto
       end
 
       def load_visualization
-        @visualization = Visualization.find(@id)
-        return render(status: 404) unless @visualization
+        @visualization = Visualization.where(id: @id).first
+        return render(text: 'Visualization does not exist', status: 404) if @visualization.nil?
         return render(text: 'Visualization not viewable', status: 403) if !@visualization.is_viewable_by_user?(current_viewer)
       end
 
@@ -44,12 +45,12 @@ module Carto
         if @table
           @visualization = @table.visualization
         else
-          @table = Visualization.find(@id)
+          @table = Visualization.where(id: @id).first
           @visualization = @table
+          # TODO: refactor load_table duplication
+          return render(text: 'Visualization does not exist', status: 404) if @visualization.nil?
+          return render(text: 'Visualization not viewable', status: 403) if !@visualization.is_viewable_by_user?(current_viewer)
         end
-
-        # TODO: remove duplication with load_visualization
-        return render(text: 'Visualization not viewable', status: 403) if !@visualization.is_viewable_by_user?(current_viewer)
       end
 
       def show
@@ -58,9 +59,8 @@ module Carto
         head(404)
       end
 
-      def index
-        type = params[:type].present? && type != '' ? params[:type] : "#{Carto::Visualization::TYPE_CANONICAL},#{Carto::Visualization::TYPE_DERIVED}"
-        types = params.fetch(:types, type).split(',')
+      def indexs
+        types, total_types = get_types_parameterss
         page = (params[:page] || 1).to_i
         per_page = (params[:per_page] || 20).to_i
         order = (params[:order] || 'updated_at').to_sym
@@ -117,9 +117,9 @@ module Carto
         }
         if current_user
           response.merge!({
-            total_user_entries: VisualizationQueryBuilder.new.with_types(types).with_user_id(current_user.id).build.count,
-            total_likes: VisualizationQueryBuilder.new.with_types(types).with_liked_by_user_id(current_user.id).build.count,
-            total_shared: VisualizationQueryBuilder.new.with_types(types).with_shared_with_user_id(current_user.id).build.count
+            total_user_entries: VisualizationQueryBuilder.new.with_types(total_types).with_user_id(current_user.id).build.count,
+            total_likes: VisualizationQueryBuilder.new.with_types(total_types).with_liked_by_user_id(current_user.id).build.count,
+            total_shared: VisualizationQueryBuilder.new.with_types(total_types).with_shared_with_user_id(current_user.id).build.count
           })
         end
         render_jsonp(response)
@@ -137,7 +137,7 @@ module Carto
           id: @visualization.id,
           likes: @visualization.likes.map { |like| { actor_id: like.actor } }
         })
-      end
+      ends
 
       def is_liked
         render_jsonp({
@@ -171,6 +171,15 @@ module Carto
       end
 
       private
+
+      def get_types_parameters
+        type = params[:type].present? ? params[:type] : nil
+        # TODO: add this assumption to a test or remove it (this is coupled to the UI)
+        total_types = [(type == Carto::Visualization::TYPE_REMOTE ? Carto::Visualization::TYPE_CANONICAL : type)].compact
+        types = params.fetch(:types, "#{type}").split(',')
+        types = nil if types.empty?
+        return types, total_types
+      end
 
       def set_vizjson_response_headers_for(visualization)
         # We don't cache non-public vis

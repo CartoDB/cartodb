@@ -46,8 +46,8 @@ describe Api::Json::VisualizationsController do
 
     @headers = { 
       'CONTENT_TYPE'  => 'application/json',
-      'HTTP_HOST'     => 'test.localhost.lan'
     }
+    host! 'test.localhost.lan'
   end
 
   after(:all) do
@@ -452,30 +452,6 @@ describe Api::Json::VisualizationsController do
       last_response.status.should == 200
     end
   end # DELETE /api/v1/tables/:id
-
-  describe 'non existent visualization' do
-    it 'returns 404' do
-      pending
-
-      get "/api/v1/viz/9999?api_key=#{@api_key}", {}, @headers
-      last_response.status.should == 404
-
-      get "/api/v1/viz/9999/stats?api_key=#{@api_key}", {}, @headers
-      last_response.status.should == 404
-
-      put "/api/v1/viz/9999?api_key=#{@api_key}", {}, @headers
-      last_response.status.should == 404
-
-      delete "/api/v1/viz/9999?api_key=#{@api_key}", {}, @headers
-      last_response.status.should == 404
-
-      get "/api/v1/viz/9999/viz?api_key=#{@api_key}", {}, @headers
-      last_response.status.should == 404
-
-      get "/api/v2/viz/9999/viz?api_key=#{@api_key}", {}, @headers
-      last_response.status.should == 404
-    end
-  end # non existent visualization
 
   describe '#slides_sorting' do
     it 'checks proper working of prev/next' do

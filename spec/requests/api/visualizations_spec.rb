@@ -14,6 +14,10 @@ def app
   CartoDB::Application.new
 end
 
+# INFO: THIS TEST SUITE SHOULD NOT GET NEW TESTS. In order to test visualization controller
+# add the specs to ./spec/requests/api/json/visualizations_controller_shared_examples.rb instead.
+# You can then run it with ./spec/requests/api/json/visualizations_controller_specs.rb and
+# ./spec/requests/carto/api/visualizations_controller_specs.rb.
 describe Api::Json::VisualizationsController do
   include Rack::Test::Methods
   include DataRepository

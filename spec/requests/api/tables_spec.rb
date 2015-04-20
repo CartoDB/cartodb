@@ -235,24 +235,19 @@ describe "Tables API" do
   it "downloads table metadata" do
     data_import = DataImport.create(
       user_id: @user.id,
-      table_name: 'elecciones2008',
       data_source: '/../spec/support/data/TM_WORLD_BORDERS_SIMPL-0.3.zip'
     ).run_import!
 
-    table1 = Table[data_import.table_id]
-    get_json v1_table_url(table1.name, params) do |response|
+    get_json api_v1_tables_show_url(params.merge(id: data_import.table_id)) do |response|
       response.status.should be_success
-      response.body.except(:updated_at, :id).should == {
-        name: "elecciones2008",
+      response.body.should include(
+        name: "tm_world_borders_simpl_0_3",
         privacy: "PRIVATE",
-        tags: "",
         schema: [["cartodb_id", "number"], ["the_geom", "geometry", "geometry", "multipolygon"], ["area", "number"], ["fips", "string"], ["iso2", "string"], ["iso3", "string"], ["lat", "number"], ["lon", "number"], ["name", "string"], ["pop2005", "number"], ["region", "number"], ["subregion", "number"], ["un", "number"], ["created_at", "date"], ["updated_at", "date"]],
         rows_counted: 246,
-        table_size: 356352,
-        map_id: table1.map.id,
         description: nil,
         geometry_types: ["ST_MultiPolygon"]
-      }
+      )
     end
   end
 

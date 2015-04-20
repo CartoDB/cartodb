@@ -94,7 +94,7 @@ namespace :cartodb do
             else
               # TODO: update instead of delete-insert
               user.in_database.run delete_query([v.id])
-              insert_visualizations(user, [v])
+              insert_visualizations(user, filter_valid_visualizations([v]))
               full_updated_count += 1
             end
           else
@@ -133,7 +133,7 @@ namespace :cartodb do
       puts "INSERTING NEW CREATED"
       page = 1
       while (visualizations = CartoDB::Visualization::Collection.new.fetch(filter(page, most_recent_created_date))).count > 0 do
-        insert_visualizations(user, visualizations)
+        insert_visualizations(user, filter_valid_visualizations(visualizations))
         print "Batch ##{page}. \t Insertions: #{visualizations.count}\n"
         page += 1
       end
@@ -149,7 +149,7 @@ namespace :cartodb do
 
         if missing_ids.length > 0
           missing_visualizations = visualizations.select { |v| missing_ids.include?(v.id) }
-          insert_visualizations(user, missing_visualizations)
+          insert_visualizations(user, filter_valid_visualizations(missing_visualizations))
           print "Batch ##{page}. \t Insertions: #{missing_visualizations.length}\n"
         end
         page += 1
@@ -162,12 +162,17 @@ namespace :cartodb do
         page: page,
         per_page: BATCH_SIZE,
         order: :created_at,
+        order_asc_desc: :asc,
         privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
       }
       filter['types'] = [CartoDB::Visualization::Member::TYPE_CANONICAL, CartoDB::Visualization::Member::TYPE_DERIVED]
       filter[:min_created_at] = min_created_at if min_created_at
       filter[:min_updated_at] = min_updated_at if min_updated_at
       filter
+    end
+
+    def filter_valid_visualizations(visualizations)
+      visualizations.select { |v| !v.user_id.nil? && !v.user.nil? }
     end
 
     def insert_visualizations(user, visualizations)
@@ -186,7 +191,7 @@ namespace :cartodb do
             visualization_name: v.name,
             visualization_description: v.description,
             visualization_type: v.type,
-            visualization_tags: Sequel.pg_array(v.tags),
+            visualization_tags: v.tags.nil? || v.tags.empty? ? nil : Sequel.pg_array(v.tags),
             visualization_created_at: v.created_at,
             visualization_updated_at: v.updated_at,
             visualization_map_id: v.map_id,

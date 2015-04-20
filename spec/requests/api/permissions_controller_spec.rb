@@ -44,8 +44,8 @@ describe Api::Json::PermissionsController do
     delete_user_data @user3
     @headers = {
       'CONTENT_TYPE'  => 'application/json',
-      'HTTP_HOST'     => 'test.localhost.lan'
     }
+    host! 'test.localhost.lan'
     Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
     Permission.any_instance.stubs(:grant_db_permission).returns(nil)
     Permission.any_instance.stubs(:notify_permissions_change).returns(nil)

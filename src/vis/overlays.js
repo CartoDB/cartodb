@@ -16,7 +16,9 @@ cdb.vis.Overlay.register('slides_controller', function(data, vis) {
 });
 
 cdb.vis.Overlay.register('mobile', function(data, vis) {
-  var temp = data.template || '\
+
+  var template = cdb.core.Template.compile(
+    data.template || '\
     <div class="backdrop"></div>\
     <div class="cartodb-header">\
       <div class="content">\
@@ -32,11 +34,10 @@ cdb.vis.Overlay.register('mobile', function(data, vis) {
     </div>\
     <div class="cartodb-attribution"></div>\
     <a href="#" class="cartodb-attribution-button"></a>\
-    ';
-  if(data.torqueLayer.options.steps > 1){
-    temp += '<div class="torque"></div>';
-  }
-  var template = cdb.core.Template.compile(temp, data.templateType || 'mustache');
+    <div class="torque"></div>\
+    ',
+    data.templateType || 'mustache'
+  );
 
   var mobile = new cdb.geo.ui.Mobile({
     template: template,

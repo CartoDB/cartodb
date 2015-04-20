@@ -90,6 +90,7 @@ describe "Tables API" do
       response.body[:description].should == "Testing is awesome"
       response.body[:schema].should =~ [
          ["cartodb_id", "number"], ["code", "string"], ["title", "string"], ["did", "number"],
+         ["the_geom", "geometry", "geometry", "geometry"],
          ["date_prod", "date"], ["kind", "string"], ["created_at", "date"], ["updated_at", "date"]
        ]
     end

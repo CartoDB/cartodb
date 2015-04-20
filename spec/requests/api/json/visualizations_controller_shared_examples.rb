@@ -75,6 +75,8 @@ shared_examples_for "visualization controllers" do
 
     before(:each) do
       login(@user1)
+      @headers = {'CONTENT_TYPE'  => 'application/json'}
+      host! 'test1.localhost.lan'
     end
 
     it 'returns success, empty response for empty user' do
@@ -153,8 +155,8 @@ shared_examples_for "visualization controllers" do
 
       @headers = {
         'CONTENT_TYPE'  => 'application/json',
-        'HTTP_HOST'     => 'test.localhost.lan'
       }
+      host! 'test.localhost.lan'
     end
 
     after(:all) do
@@ -592,7 +594,7 @@ shared_examples_for "visualization controllers" do
         body['total_shared'].should eq 2
 
         # Multiple likes to same vis shouldn't increment total as is per vis
-        post api_v1_visualizations_add_like_url(user_domain: user_2.username, id: u1_vis_1_id, api_key: user_1.api_key)
+        post api_v1_visualizations_add_like_url(user_domain: user_1.username, id: u1_vis_1_id, api_key: user_1.api_key)
 
         get api_v1_visualizations_index_url(user_domain: user_1.username, api_key: user_1.api_key,
                                             type: CartoDB::Visualization::Member::TYPE_DERIVED, order: 'updated_at'), @headers
@@ -923,6 +925,41 @@ shared_examples_for "visualization controllers" do
         body = JSON.parse(last_response.body)
         body['id'].should eq u1_vis_1_id
 
+      end
+
+      it 'Sanitizes vizjson callback' do
+        valid_callback = 'my_function'
+        valid_callback2 = 'a'
+        invalid_callback1 = 'alert(1);'
+        invalid_callback2 = '%3B'
+        invalid_callback3 = '123func'    # JS names cannot start by number
+
+        table_attributes  = table_factory
+        table_id          = table_attributes.fetch('id')
+        get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: valid_callback), {}, @headers
+        last_response.status.should == 200
+        (last_response.body =~ /^#{valid_callback}\(\{/i).should eq 0
+
+        get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: invalid_callback1), {}, @headers
+        last_response.status.should == 400
+
+        get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: invalid_callback2), {}, @headers
+        last_response.status.should == 400
+
+        get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: invalid_callback3), {}, @headers
+        last_response.status.should == 400
+
+        # if param specified, must not be empty
+        get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: ''), {}, @headers
+        last_response.status.should == 400
+
+        get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: valid_callback2), {}, @headers
+        last_response.status.should == 200
+        (last_response.body =~ /^#{valid_callback2}\(\{/i).should eq 0
+
+        get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key), {}, @headers
+        last_response.status.should == 200
+        (last_response.body =~ /^\{/i).should eq 0
       end
 
     end

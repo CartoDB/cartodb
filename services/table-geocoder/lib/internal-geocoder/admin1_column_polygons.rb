@@ -37,7 +37,7 @@ module CartoDB
         }
       end
 
-    end # CitiesTextPoints
+    end # Admin1ColumnPolygons
 
   end # InternalGeocoder
 end # CartoDB

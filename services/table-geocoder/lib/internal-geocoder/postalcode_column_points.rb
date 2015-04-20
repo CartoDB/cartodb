@@ -35,7 +35,7 @@ module CartoDB
         }
       end
 
-    end # CitiesTextPoints
+    end # PostalcodeColumnPoints
 
   end # InternalGeocoder
 end # CartoDB

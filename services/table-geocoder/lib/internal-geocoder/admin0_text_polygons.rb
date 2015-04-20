@@ -32,7 +32,7 @@ module CartoDB
         }
       end
 
-    end # CitiesTextPoints
+    end # Admin0TextPolygons
 
   end # InternalGeocoder
 end # CartoDB

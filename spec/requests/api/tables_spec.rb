@@ -96,6 +96,7 @@ describe "Tables API" do
     end
   end
 
+  #TODO: consider deleting this test. the_geometry_type shall be taken as a hint until there's one defined by content
   it "creates a new table specifying a geometry of type point" do
     post_json api_v1_tables_create_url(params.merge(name: "My new blank table", the_geom_type: "Point")) do |response|
       response.status.should be_success
@@ -107,6 +108,7 @@ describe "Tables API" do
     end
   end
 
+  #TODO: consider deleting this test. the_geometry_type shall be taken as a hint until there's one defined by content
   it "creates a new table specifying a geometry of type polygon" do
     post_json api_v1_tables_create_url(params.merge(name: "My new blank table", the_geom_type: "Polygon")) do |response|
       response.status.should be_success
@@ -118,6 +120,7 @@ describe "Tables API" do
     end
   end
 
+  #TODO: consider deleting this test. the_geometry_type shall be taken as a hint until there's one defined by content
   it "creates a new table specifying a geometry of type line" do
     post_json api_v1_tables_create_url(params.merge(name: "My new blank table", the_geom_type: "Line")) do |response|
       response.status.should be_success

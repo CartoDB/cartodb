@@ -213,6 +213,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     visualization,  = locator.get(@table_id, CartoDB.extract_subdomain(request))
     return(head 404) unless visualization
     return(head 403) unless allow_vizjson_v2_for?(visualization)
+    p "VISUALIZATIOO"
     set_vizjson_response_headers_for(visualization)
     render_jsonp(visualization.to_vizjson({https_request: request.protocol == 'https://'}))
   rescue KeyError => exception
@@ -409,6 +410,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     # We don't cache non-public vis
     if visualization.public? || visualization.public_with_link?
       response.headers['X-Cache-Channel'] = "#{visualization.varnish_key}:vizjson"
+      response.headers['Surrogate-Key'] = "#{CartoDB::SURROGATE_NAMESPACE_VIZJSON} #{visualization.surrogate_key}"
       response.headers['Cache-Control']   = 'no-cache,max-age=86400,must-revalidate, public'
     end
   end

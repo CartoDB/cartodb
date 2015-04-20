@@ -88,7 +88,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def surrogate_key
-    get_surrogate_key(SURROGATE_NAMESPACE, id)
+    get_surrogate_key(CartoDB::SURROGATE_NAMESPACE_VISUALIZATION, id)
   end
 
   def qualified_name(viewer_user=nil)

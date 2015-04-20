@@ -21,6 +21,7 @@ module CartoDB
     class Member
       extend Forwardable
       include Virtus.model
+      include CacheHelper
 
       PRIVACY_PUBLIC       = 'public'        # published and listable in public user profile
       PRIVACY_PRIVATE      = 'private'       # not published (viz.json and embed_map should return 404)
@@ -387,7 +388,7 @@ module CartoDB
       end
 
       def surrogate_key
-        get_surrogate_key(Visualization::Member::SURROGATE_NAMESPACE, self.id)
+        get_surrogate_key(CartoDB::SURROGATE_NAMESPACE_VISUALIZATION, self.id)
       end
 
       def varnish_vizzjson_key

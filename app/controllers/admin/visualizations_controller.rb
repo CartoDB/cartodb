@@ -246,7 +246,6 @@ class Admin::VisualizationsController < ApplicationController
       format.js { render 'public_map', content_type: 'application/javascript' }
     end
   rescue => e
-    debugger
     Rollbar.report_exception(e)
     embed_forbidden
   end
@@ -550,7 +549,14 @@ class Admin::VisualizationsController < ApplicationController
 
   def get_visualization_and_table(table_id, schema, filter)
     visualization = Carto::VisualizationQueryBuilder.new.with_id_or_name(table_id).build.first
-    return nil, nil if visualization.nil?
+    return get_visualization_and_table_from_table_id(table_id, schema, filter) if visualization.nil?
+    return Carto::Admin::VisualizationPublicMapAdapter.new(visualization), visualization.table_service
+  end
+
+  def get_visualization_and_table_from_table_id(table_id, schema, filter)
+    user_table = Carto::UserTable.where(id: table_id).first
+    return nil, nil if user_table.nil?
+    visualization = user_table.visualization
     return Carto::Admin::VisualizationPublicMapAdapter.new(visualization), visualization.table_service
   end
 end

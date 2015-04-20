@@ -33,8 +33,6 @@ class Carto::Visualization < ActiveRecord::Base
   PRIVACY_LINK = 'link'
   PRIVACY_PROTECTED = 'password'
 
-  SURROGATE_NAMESPACE = 'v'
-
   def related_tables
     @related_tables ||= get_related_tables
   end

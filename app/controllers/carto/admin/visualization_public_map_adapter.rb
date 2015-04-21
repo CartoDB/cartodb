@@ -5,7 +5,7 @@ class Carto::Admin::VisualizationPublicMapAdapter
   extend Forwardable
   include Carto::HtmlSafe
 
-  delegate [ :type_slide?, :has_permission?, :derived?, :organization, :organization?, :id, :likes, :password_protected?, :varnish_key, :related_tables, :is_password_valid?, :get_auth_tokens, :table, :name, :overlays, :created_at, :description, :tags, :related_visualizations, :mapviews, :geometry_types ] => :visualization
+  delegate [ :type_slide?, :has_permission?, :derived?, :organization, :organization?, :id, :likes, :password_protected?, :varnish_key, :related_tables, :is_password_valid?, :get_auth_tokens, :table, :name, :overlays, :created_at, :description, :tags, :mapviews, :geometry_types ] => :visualization
 
   attr_reader :visualization
 
@@ -58,6 +58,12 @@ class Carto::Admin::VisualizationPublicMapAdapter
 
   def public_with_link?
     @visualization.is_link_privacy?
+  end
+
+  def related_visualizations
+    @visualization.related_visualizations.map { |rv|
+      Carto::Admin::VisualizationPublicMapAdapter.new(rv)
+    }
   end
 
 end

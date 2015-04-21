@@ -1140,6 +1140,43 @@ shared_examples_for "visualization controllers" do
       end
     end
 
+    describe 'tests visualization listing filters' do
+      before(:each) do
+        CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+        delete_user_data(@user)
+      end
+
+      it 'uses locked filter' do
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+
+        post "/api/v1/viz?api_key=#{@api_key}", factory(@user, locked: true).to_json, @headers
+        vis_1_id = JSON.parse(last_response.body).fetch('id')
+        post "/api/v1/viz?api_key=#{@api_key}", factory(@user, locked: false).to_json, @headers
+        vis_2_id = JSON.parse(last_response.body).fetch('id')
+
+        get "/api/v1/viz?api_key=#{@api_key}&type=derived", {}, @headers
+        last_response.status.should == 200
+        response    = JSON.parse(last_response.body)
+        collection  = response.fetch('visualizations')
+        collection.length.should eq 2
+
+        get "/api/v1/viz?api_key=#{@api_key}&type=derived&locked=true", {}, @headers
+        last_response.status.should == 200
+        response    = JSON.parse(last_response.body)
+        collection  = response.fetch('visualizations')
+        collection.length.should eq 1
+        collection.first.fetch('id').should eq vis_1_id
+
+        get "/api/v1/viz?api_key=#{@api_key}&type=derived&locked=false", {}, @headers
+        last_response.status.should == 200
+        response    = JSON.parse(last_response.body)
+        collection  = response.fetch('visualizations')
+        collection.length.should eq 1
+        collection.first.fetch('id').should eq vis_2_id
+      end
+    end
+
     describe 'non existent visualization' do
       it 'returns 404' do
         get "/api/v1/viz/#{TEST_UUID}?api_key=#{@api_key}", {}, @headers

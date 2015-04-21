@@ -3,6 +3,7 @@
 require_relative '../../../../app/models/visualization/member'
 
 shared_examples_for "visualization controllers" do
+  include CacheHelper
 
   TEST_UUID = '00000000-0000-0000-0000-000000000000'
 
@@ -927,6 +928,41 @@ shared_examples_for "visualization controllers" do
 
       end
 
+      it 'Sanitizes vizjson callback' do
+        valid_callback = 'my_function'
+        valid_callback2 = 'a'
+        invalid_callback1 = 'alert(1);'
+        invalid_callback2 = '%3B'
+        invalid_callback3 = '123func'    # JS names cannot start by number
+
+        table_attributes  = table_factory
+        table_id          = table_attributes.fetch('id')
+        get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: valid_callback), {}, @headers
+        last_response.status.should == 200
+        (last_response.body =~ /^#{valid_callback}\(\{/i).should eq 0
+
+        get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: invalid_callback1), {}, @headers
+        last_response.status.should == 400
+
+        get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: invalid_callback2), {}, @headers
+        last_response.status.should == 400
+
+        get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: invalid_callback3), {}, @headers
+        last_response.status.should == 400
+
+        # if param specified, must not be empty
+        get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: ''), {}, @headers
+        last_response.status.should == 400
+
+        get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: valid_callback2), {}, @headers
+        last_response.status.should == 200
+        (last_response.body =~ /^#{valid_callback2}\(\{/i).should eq 0
+
+        get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key), {}, @headers
+        last_response.status.should == 200
+        (last_response.body =~ /^\{/i).should eq 0
+      end
+
     end
 
     describe 'GET /api/v1/viz' do
@@ -1080,6 +1116,35 @@ shared_examples_for "visualization controllers" do
         last_response.status.should == 200
         ::JSON.parse(last_response.body).keys.length.should > 1
       end
+
+      it "comes with proper surrogate-key" do
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:create).returns(nil)
+        table                 = table_factory(privacy: 1)
+        source_visualization  = table.fetch('table_visualization')
+
+
+        payload = { source_visualization_id: source_visualization.fetch('id'), privacy: 'PUBLIC' }
+
+        post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
+             payload.to_json, @headers
+
+        viz_id = JSON.parse(last_response.body).fetch('id')
+
+        put api_v1_visualizations_show_url(user_domain: @user.username, id: viz_id, api_key: @api_key),
+            { privacy: 'PUBLIC' }.to_json, @headers
+
+        get api_v2_visualizations_vizjson_url(user_domain: @user.username, id: viz_id, api_key: @api_key),
+            {}, @headers
+
+        last_response.status.should == 200
+        last_response.headers.should have_key('Surrogate-Key')
+        last_response['Surrogate-Key'].should include(CartoDB::SURROGATE_NAMESPACE_VIZJSON)
+        last_response['Surrogate-Key'].should include(get_surrogate_key(CartoDB::SURROGATE_NAMESPACE_VISUALIZATION, viz_id))
+
+        delete api_v1_visualizations_show_url(user_domain: @user.username, id: viz_id, api_key: @api_key),
+               { }, @headers
+      end
     end
 
     describe 'GET /api/v1/viz/:id/stats' do
@@ -1102,6 +1167,43 @@ shared_examples_for "visualization controllers" do
         last_response.status.should == 200
         response = JSON.parse(last_response.body)
         response.keys.length.should == 30
+      end
+    end
+
+    describe 'tests visualization listing filters' do
+      before(:each) do
+        CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+        delete_user_data(@user)
+      end
+
+      it 'uses locked filter' do
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+
+        post "/api/v1/viz?api_key=#{@api_key}", factory(@user, locked: true).to_json, @headers
+        vis_1_id = JSON.parse(last_response.body).fetch('id')
+        post "/api/v1/viz?api_key=#{@api_key}", factory(@user, locked: false).to_json, @headers
+        vis_2_id = JSON.parse(last_response.body).fetch('id')
+
+        get "/api/v1/viz?api_key=#{@api_key}&type=derived", {}, @headers
+        last_response.status.should == 200
+        response    = JSON.parse(last_response.body)
+        collection  = response.fetch('visualizations')
+        collection.length.should eq 2
+
+        get "/api/v1/viz?api_key=#{@api_key}&type=derived&locked=true", {}, @headers
+        last_response.status.should == 200
+        response    = JSON.parse(last_response.body)
+        collection  = response.fetch('visualizations')
+        collection.length.should eq 1
+        collection.first.fetch('id').should eq vis_1_id
+
+        get "/api/v1/viz?api_key=#{@api_key}&type=derived&locked=false", {}, @headers
+        last_response.status.should == 200
+        response    = JSON.parse(last_response.body)
+        collection  = response.fetch('visualizations')
+        collection.length.should eq 1
+        collection.first.fetch('id').should eq vis_2_id
       end
     end
 

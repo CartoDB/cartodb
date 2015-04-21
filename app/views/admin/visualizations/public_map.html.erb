@@ -25,9 +25,9 @@
                 <%= time_ago_in_words(@visualization.created_at) %>
                 by
                 <span class="UserAvatar PublicMap-owner">
-                  <img class="UserAvatar-img UserAvatar-img--smaller PublicMap-ownerAvatar" src="<%= @visualization.user.avatar %>" alt="<%= @visualization.user.username %>" title="<%= @visualization.user.username %>" />
+                  <img class="UserAvatar-img UserAvatar-img--smaller PublicMap-ownerAvatar" src="<%= @visualization.user.avatar %>" alt="<%= @name %>" title="<%= @name %>" />
                 </span>
-                <a class="PublicMap-ownerName" href="<%= CartoDB.url(self, 'public_visualizations_home') %>" target="_blank"><%= @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username %></a>
+                <a class="PublicMap-ownerName" href="<%= CartoDB.url(self, 'public_visualizations_home', {}, user) %>" target="_blank"><%= @name %></a>
               </span>
             </div>
             <div class="PublicMap-desc">
@@ -36,10 +36,10 @@
           </div>
           <div class="PublicMap-rightBlock">
             <nav class="PublicMap-share">
-              <a href="http://www.facebook.com/sharer.php?u=<%= request.original_url %>&text=<%= @visualization.name %> by <%= @visualization.user.username %> with CartoDB" target="_blank" class="PublicMap-shareButton PublicMap-shareButton--facebook">
+              <a href="http://www.facebook.com/sharer.php?u=<%= request.original_url %>&text=<%= @visualization.name %> by <%= @name %> with CartoDB" target="_blank" class="PublicMap-shareButton PublicMap-shareButton--facebook">
                 <i class="iconFont iconFont-Facebook"></i>
               </a>
-              <a href="https://twitter.com/share?url=<%= request.original_url %>&text=<%= @visualization.name %> by <% if @visualization.user.twitter_username.present? %><%= @visualization.user.twitter_username %><% else %><%= @visualization.user.username %><% end %> with @cartodb" target="_blank" class="PublicMap-shareButton PublicMap-shareButton--twitter">
+              <a href="https://twitter.com/share?url=<%= request.original_url %>&text=<%= @visualization.name %> by <% if @visualization.user.twitter_username.present? %><%= @visualization.user.twitter_username %><% else %><%= @name %><% end %> with @cartodb" target="_blank" class="PublicMap-shareButton PublicMap-shareButton--twitter">
                 <i class="iconFont iconFont-Twitter"></i>
               </a>
             </nav>
@@ -63,10 +63,10 @@
             </div>
           </div>
           <div class="PublicMap-rightBlock PublicMap--rightAligned">
-            <% if @mapviews.presence %>
+            <% if @visualization.mapviews.presence %>
               <div class="PublicMap-stat PublicMap-stat--onRight">
                 <i class="iconFont iconFont-Stats"></i>
-                <%= number_with_delimiter(@mapviews) %> <%= 'mapview'.pluralize(@mapviews) %> last month
+                <%= number_with_delimiter(@visualization.mapviews) %> <%= 'mapview'.pluralize(@visualization.mapviews) %> last month
               </div>
             <% end %>
             <div class="PublicMap-stat PublicMap-stat--onRight">
@@ -88,17 +88,25 @@
               <%= pluralize(@related_tables.size, 'dataset') %>
             </h3>
             <ul class="DatasetsList">
-              <% if @related_tables.present? %>
-                <% @related_tables.each do |table| %> 
-                  <% if table.privacy_text == "PUBLIC" %>
+              <% if @related_visualizations.present? %>
+                <% @related_visualizations.each do |vis| %>
+                  <% if vis.privacy == "public" %>
                     <li class="DatasetsList-item">
-                      <div class="DatasetsList-itemCategory is--<%= table[:geometry_type] %>Dataset"></div>
+                      <div class="DatasetsList-itemCategory is--<%= vis.related_visualizations_simple_geometry_types[0] if vis.related_visualizations_simple_geometry_types.present? %>Dataset"></div>
                       <div class="DatasetsList-itemInfo">
                         <div class="DatasetsList-itemPrimaryInfo">
                           <h3 class="DatasetsList-itemTitle DefaultTitle">
-                            <a href="<%= CartoDB.url(self, 'public_table', {id: table.name}, @user_domain.nil? ? nil : @related_tables_owners[table.user_id]) %>" title="<%= table.name %>" class="DefaultTitle-link u-ellipsLongText"><%= table.name %></a>
+                            <a href="<%= CartoDB.url(self, 'public_table', {id: vis.table.name}, @user_domain.nil? ? nil : @related_tables_owners[vis.table.user_id]) %>" title="<%= vis.table.name %>" class="DefaultTitle-link u-ellipsLongText"><%= vis.table.name %></a>
                           </h3>
-                          <div class="DefaultDescription DatasetsList-itemDescription u-ellipsLongText"><%= raw table[:description_html_safe] %></div>
+                          <% if vis.description %>
+                            <div class="DefaultDescription DatasetsList-itemDescription u-ellipsLongText"><%= raw vis.description %></div>
+                          <% end %>
+                        </div>
+                        <div class="DatasetsList-itemSecondaryInfo">
+                          <button class="js-likes"
+                            data-vis-id="<%= vis.id %>"
+                            data-likes-count="<%= vis.likes.count %>">
+                          </button>
                         </div>
                       </div>
                     </li>
@@ -133,6 +141,47 @@
           </div>
         </div>
       </div>
+
+      <% if @more_visualizations.count > 0 %>
+        <div class="u-inner">
+          <div class="PublicMap-block with-margin">
+            <h3 class="PublicMap-secondaryTitle">More from <%= @name %></h3>
+          </div>
+        </div>
+        <ul class="MapsList">
+          <% @more_visualizations.each do |vis| %>
+            <li class="MapsList-item">
+              <div class="MapCard" data-zoom="<%= '' %>" data-vizjson-url="<%= CartoDB.url(self, 'api_v2_visualizations_vizjson', {id: vis.id}, user) %>.json">
+                <a href="<%= CartoDB.url(self, 'public_visualizations_public_map', {id: vis.id}, user) %>" class="MapCard-header js-header">
+                  <div class="MapCard-loader"></div>
+                </a>
+                <div class="MapCard-content MapCard-content--compact">
+                  <div class="MapCard-contentBody">
+                    <div class="MapCard-contentBodyRow MapCard-contentBodyRow--flex">
+                      <h3 class="MapCard-title DefaultTitle">
+                        <a href="<%= CartoDB.url(self, 'public_visualizations_public_map', {id: vis.id}, user) %>" class="DefaultTitle-link u-ellipsLongText" title="<%= vis.name %>"><%= vis.name %></a>
+                      </h3>
+                    </div>
+                    <div class="MapCard-contentFooterTimeDiff DefaultTimeDiff">
+                      <i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i>
+                      <%= time_ago_in_words(vis.updated_at) %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </li>
+          <% end %>
+          <%# at most 3 cards per line, visbility is handled by CSS depending on viewport size %>
+          <% ((3 - @more_visualizations.count + 3) % 3).times.each do %>
+            <li class="MapsList-item MapsList-item--fake">
+              <div class="MapCard">
+                <div class="MapCard-header MapCard-header--fake"></div>
+                <div class="MapCard-content MapCard-content--compact"></div>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      <% end %>
     </div>
 
     <%= render 'admin/shared/new_footer', :light => true %>
@@ -143,9 +192,6 @@
 <%= content_for(:js) do %>
   <% if @visualization.map.provider == 'googlemaps' %>
     <script type="text/javascript" src="//maps.google.com/maps/api/js?sensor=false&v=3.12"></script>
-  <% else %>
-    <!-- if you are using google maps, uncomment the following line -->
-    <!-- <script type="text/javascript" src="//maps.google.com/maps/api/js?sensor=false"></script> -->
   <% end %>
 
   <script>

@@ -140,16 +140,20 @@
 .PublicMap .DatasetsList-item {
   padding: $sMargin-element 0;
 }
+.PublicMap .DatasetsList-itemPrimaryInfo {
+  width: 200px;
+}
+.PublicMap .DatasetsList-itemSecondaryInfo {
+  width: 40px;
+  padding-top: 2px;
+  text-align: right;
+}
 .PublicMap-privateDatasets {
   margin-left: $sMargin-element;
   line-height: 40px;
   color: $cTypography-secondary;
 }
-.PublicMap .DatasetsList-itemPrimaryInfo,
-.PublicMap .DatasetsList-itemSecondaryInfo {
-  width: auto;
-}
-
+.PublicMap .MapCard-content { min-height: 45px }
 
 @media (max-width: 940px) {
   .u-inner { padding: 0 20px }
@@ -176,5 +180,9 @@
   .PublicMap .DatasetsList-itemPrimaryInfo {
     width: auto;
     max-width: 440px;
-  } 
+  }
+  .PublicMap .DatasetsList-itemSecondaryInfo {
+    width: auto;
+    text-align: left;
+  }
 }

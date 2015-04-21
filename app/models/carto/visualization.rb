@@ -185,7 +185,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def geometry_types
-    @geometry_types ||= user_table.geometry_types
+    @geometry_types ||= user_table.geometry_types if user_table
   end
 
   def table_service

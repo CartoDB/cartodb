@@ -430,7 +430,7 @@ class Admin::VisualizationsController < ApplicationController
   private
 
   def more_visualizations(user, excluded_visualization)
-    vqb = Carto::VisualizationQueryBuilder.user_public_visualizations(user)
+    vqb = Carto::VisualizationQueryBuilder.user_public_visualizations(user).with_order(:updated_at, :desc)
     vqb.with_excluded_ids([excluded_visualization.id]) if excluded_visualization
     visualizations = vqb.build_paged(1, MAX_MORE_VISUALIZATIONS)
     visualizations.map { |v|

@@ -133,7 +133,7 @@ class Carto::VisualizationQueryBuilder
     end
 
     if @excluded_ids and !@excluded_ids.empty?
-      query.where('visualizations.id not in (?)', @excluded_ids)
+      query = query.where('visualizations.id not in (?)', @excluded_ids)
     end
 
     if @name

@@ -3238,7 +3238,7 @@ wax.g.interaction = function() {
             var zoom = map.getZoom();
             var mapOffset = wax.u.offset(map.getDiv());
             var get = function(mapType) {
-                if (!mapType.interactive) return;
+                if (!mapType || !mapType.interactive) return;
                 for (var key in mapType.cache) {
                     if (key.split('/')[0] != zoom) continue;
                     var tileOffset = wax.u.offset(mapType.cache[key]);

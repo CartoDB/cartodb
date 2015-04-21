@@ -148,7 +148,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def is_password_valid?(password)
-    has_password? && ( password_digest(password, @password_salt) == @encrypted_password )
+    has_password? && ( password_digest(password, password_salt) == encrypted_password )
   end
 
   def organization?
@@ -272,6 +272,13 @@ class Carto::Visualization < ActiveRecord::Base
 
   def is_owner_user?(user)
     self.user_id == user.id
+  end
+
+  private
+
+  def configuration
+    return {} unless defined?(Cartodb)
+    Cartodb.config
   end
 
 end

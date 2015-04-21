@@ -47,12 +47,18 @@ module CartoDB
         # Retrieves a resource and returns its contents
         # @param id string
         # @return mixed
+        # @throws DataDownloadTimeoutError
         # @throws DataDownloadError
         def get_resource(id)
           response = Typhoeus.get(id, http_options)
           while response.headers['location']
             response = Typhoeus.get(id, http_options)
           end
+
+          if response.return_code && response.return_code == :operation_timedout
+            raise DataDownloadTimeoutError.new(DATASOURCE_NAME)
+          end
+
           raise DataDownloadError.new("get_resource() #{id}", DATASOURCE_NAME) unless response.code.to_s =~ /\A[23]\d+/
           response.response_body
         end
@@ -77,6 +83,11 @@ module CartoDB
         def fetch_headers(url)
           if url =~ URL_REGEXP
             response = Typhoeus.head(url, http_options)
+
+            if response.return_code && response.return_code == :operation_timedout
+              raise DataDownloadTimeoutError.new(DATASOURCE_NAME)
+            end
+
             # For example S3 only allows one verb per signed url (we use GET) so won't allow HEAD, but it's ok
             @headers = (response.code.to_s =~ /\A[23]\d+/) ? response.headers : {}
           else

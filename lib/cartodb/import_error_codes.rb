@@ -86,6 +86,10 @@ module CartoDB
       title: 'Too Many Layers',
       what_about: "The file has too many layers. It can have 50 as maximum." # ./services/importer/lib/importer/kml_splitter.rb
     },
+    1020 => {
+      title: 'Download timeout',
+      what_about: "Data download timed out. Check the source is not running slow and/or try again."
+    },
     2001 => {
       title: 'Unable to load data',
       what_about: "We couldn't load data from your file into the database.  Please <a href='mailto:support@cartodb.com?subject=Import load error'>contact us</a> and we will help you to load your data."

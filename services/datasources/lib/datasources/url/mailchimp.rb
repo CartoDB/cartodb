@@ -95,6 +95,7 @@ module CartoDB
         # Validates the authorization callback
         # @param params : mixed
         # @throws AuthError
+        # @throws DataDownloadTimeoutError
         def validate_callback(params)
           code = params.fetch('code')
           if code.nil? || code == ''
@@ -110,6 +111,11 @@ module CartoDB
           }
 
           token_response = Typhoeus.post(ACCESS_TOKEN_URI, http_options(token_call_params, :post))
+
+          if token_response.return_code && token_response.return_code == :operation_timedout
+            raise DataDownloadTimeoutError.new(DATASOURCE_NAME)
+          end
+
           unless token_response.code == 200
             raise "Bad token response: #{token_response.body.inspect} (#{token_response.code})"
           end
@@ -121,6 +127,11 @@ module CartoDB
           # @see https://apidocs.mailchimp.com/oauth2/
           metadata_response = Typhoeus.get(MAILCHIMP_METADATA_URI,http_options({}, :get, {
                                              'Authorization' => "OAuth #{partial_access_token}"}))
+
+          if metadata_response.return_code && metadata_response.return_code == :operation_timedout
+            raise DataDownloadTimeoutError.new(DATASOURCE_NAME)
+          end
+
           unless metadata_response.code == 200
             raise "Bad metadata response: #{metadata_response.body.inspect} (#{metadata_response.code})"
           end
@@ -334,7 +345,6 @@ module CartoDB
                                 'Accept' => 'application/json'
                               }.merge(extra_headers),
             ssl_verifyhost:   0,
-            timeout:          60,
             connect_timeout:  @http_connect_timeout,
             timeout:          @http_timeout
           }

@@ -56,7 +56,7 @@ class Carto::Api::VisualizationVizJSONAdapter
   extend Forwardable
   include Carto::HtmlSafe
 
-  delegate [:id, :map, :qualified_name, :likes, :description, :retrieve_named_map?, :password_protected?, :overlays, :prev_id, :next_id, :transition_options, :has_password?, :children, :parent_id, :parent ] => :visualization
+  delegate [:id, :map, :qualified_name, :likes, :description, :retrieve_named_map?, :password_protected?, :overlays, :prev_id, :next_id, :transition_options, :has_password?, :children, :parent_id, :parent, :get_auth_tokens ] => :visualization
 
   attr_reader :visualization
 

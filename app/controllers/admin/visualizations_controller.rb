@@ -185,8 +185,6 @@ class Admin::VisualizationsController < ApplicationController
     return(pretty_404) unless @visualization
     return(pretty_404) if disallowed_type?(@visualization)
 
-    @more_visualizations = more_visualizations(@visualization.user, @visualization) if @visualization.user
-
     if current_user.nil? && !request.params[:redirected].present?
       redirect_url = get_corrected_url_if_proceeds(for_table=false)
       unless redirect_url.nil?
@@ -451,7 +449,11 @@ class Admin::VisualizationsController < ApplicationController
 
   def resolve_visualization_and_table(request)
     filters = { exclude_raster: true }
-    get_visualization_and_table(@table_id, @schema || CartoDB.extract_subdomain(request), filters)
+    visualization, table = get_visualization_and_table(@table_id, @schema || CartoDB.extract_subdomain(request), filters)
+
+    @more_visualizations = more_visualizations(visualization.user, visualization) if visualization && visualization.user
+
+    return visualization, table
   end
 
   # If user A shares to user B a table link (being both from same org), attept to rewrite the url to the correct format

@@ -27,6 +27,8 @@ class Carto::Visualization < ActiveRecord::Base
 
   belongs_to :map
 
+  AUTH_DIGEST = '1211b3e77138f6e1724721f1ab740c9c70e66ba6fec5e989bb6640c4541ed15d06dbd5fdcbd3052b'
+
   TYPE_CANONICAL = 'table'
   TYPE_DERIVED = 'derived'
   TYPE_SLIDE = 'slide'
@@ -236,6 +238,11 @@ class Carto::Visualization < ActiveRecord::Base
       digest = secure_digest(digest, salt, password, AUTH_DIGEST)
     end
     digest
+  end
+
+  def secure_digest(*args)
+    #noinspection RubyArgCount
+    Digest::SHA256.hexdigest(args.flatten.join)
   end
 
   def has_private_tables?

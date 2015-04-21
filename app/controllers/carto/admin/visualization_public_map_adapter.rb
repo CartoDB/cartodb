@@ -13,7 +13,7 @@ class Carto::Admin::VisualizationPublicMapAdapter
         'st_point'           => 'point'
       }
 
-  delegate [ :type_slide?, :has_permission?, :derived?, :organization, :organization?, :id, :likes, :password_protected?, :varnish_key, :related_tables, :is_password_valid?, :get_auth_tokens, :table, :name, :overlays, :created_at, :updated_at, :description, :tags, :mapviews, :geometry_types, :privacy, :surrogate_key ] => :visualization
+  delegate [ :type_slide?, :has_permission?, :derived?, :organization, :organization?, :id, :likes, :password_protected?, :varnish_key, :related_tables, :is_password_valid?, :get_auth_tokens, :table, :name, :overlays, :created_at, :updated_at, :description, :tags, :mapviews, :geometry_types, :privacy, :surrogate_key, :has_password? ] => :visualization
 
   attr_reader :visualization
 

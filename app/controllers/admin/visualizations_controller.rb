@@ -258,7 +258,6 @@ class Admin::VisualizationsController < ApplicationController
 
   def show_organization_public_map
     @visualization, @table = resolve_visualization_and_table(request)
-
     return(embed_forbidden) unless org_user_has_map_permissions?(current_user, @visualization)
     return(pretty_404) if disallowed_type?(@visualization)
 
@@ -290,7 +289,6 @@ class Admin::VisualizationsController < ApplicationController
 
   def show_organization_embed_map
     @visualization, @table = resolve_visualization_and_table(request)
-
     return(embed_forbidden) unless org_user_has_map_permissions?(current_user, @visualization)
     return(pretty_404) if disallowed_type?(@visualization)
 
@@ -308,7 +306,6 @@ class Admin::VisualizationsController < ApplicationController
   def show_protected_public_map
     submitted_password = params.fetch(:password)
     @visualization, @table = resolve_visualization_and_table(request)
-
     return(pretty_404) unless @visualization and @visualization.password_protected? and @visualization.has_password?
     return(pretty_404) if disallowed_type?(@visualization)
 
@@ -342,14 +339,14 @@ class Admin::VisualizationsController < ApplicationController
     respond_to do |format|
       format.html { render 'public_map', layout: 'application_public_visualization_layout' }
     end
-  rescue
+  rescue => e
+    Rollbar.report_exception(e)
     public_map_protected
   end
 
   def show_protected_embed_map
     submitted_password = params.fetch(:password)
     @visualization, @table = resolve_visualization_and_table(request)
-
     return(pretty_404) unless @visualization and @visualization.password_protected? and @visualization.has_password?
     return(pretty_404) if disallowed_type?(@visualization)
 
@@ -366,7 +363,8 @@ class Admin::VisualizationsController < ApplicationController
     respond_to do |format|
       format.html { render 'embed_map', layout: 'application_public_visualization_layout' }
     end
-  rescue
+  rescue => e
+    Rollbar.report_exception(e)
     embed_protected
   end
 

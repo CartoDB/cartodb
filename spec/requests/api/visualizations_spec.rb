@@ -14,6 +14,10 @@ def app
   CartoDB::Application.new
 end
 
+# INFO: THIS TEST SUITE SHOULD NOT GET NEW TESTS. In order to test visualization controller
+# add the specs to ./spec/requests/api/json/visualizations_controller_shared_examples.rb instead.
+# You can then run it with ./spec/requests/api/json/visualizations_controller_specs.rb and
+# ./spec/requests/carto/api/visualizations_controller_specs.rb.
 describe Api::Json::VisualizationsController do
   include Rack::Test::Methods
   include DataRepository
@@ -453,37 +457,6 @@ describe Api::Json::VisualizationsController do
     end
   end # DELETE /api/v1/tables/:id
 
-  describe 'tests visualization listing filters' do
-    it 'uses locked filter' do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
-
-      post "/api/v1/viz?api_key=#{@api_key}", factory(locked: true).to_json, @headers
-      vis_1_id = JSON.parse(last_response.body).fetch('id')
-      post "/api/v1/viz?api_key=#{@api_key}", factory(locked: false).to_json, @headers
-      vis_2_id = JSON.parse(last_response.body).fetch('id')
-
-      get "/api/v1/viz?api_key=#{@api_key}&type=derived", {}, @headers
-      last_response.status.should == 200
-      response    = JSON.parse(last_response.body)
-      collection  = response.fetch('visualizations')
-      collection.length.should eq 2
-
-      get "/api/v1/viz?api_key=#{@api_key}&type=derived&locked=true", {}, @headers
-      last_response.status.should == 200
-      response    = JSON.parse(last_response.body)
-      collection  = response.fetch('visualizations')
-      collection.length.should eq 1
-      collection.first.fetch('id').should eq vis_1_id
-
-      get "/api/v1/viz?api_key=#{@api_key}&type=derived&locked=false", {}, @headers
-      last_response.status.should == 200
-      response    = JSON.parse(last_response.body)
-      collection  = response.fetch('visualizations')
-      collection.length.should eq 1
-      collection.first.fetch('id').should eq vis_2_id
-    end
-  end
-
   describe '#slides_sorting' do
     it 'checks proper working of prev/next' do
       CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
@@ -687,45 +660,6 @@ describe Api::Json::VisualizationsController do
     end
   end
 
-  describe 'index endpoint' do
-
-    it 'Sanitizes vizjson callback' do
-      valid_callback = 'my_function'
-      valid_callback2 = 'a'
-      invalid_callback1 = 'alert(1);'
-      invalid_callback2 = '%3B'
-      invalid_callback3 = '123func'    # JS names cannot start by number
-
-      table_attributes  = table_factory
-      table_id          = table_attributes.fetch('id')
-      get "/api/v2/viz/#{table_id}/viz?api_key=#{@api_key}&callback=#{valid_callback}", {}, @headers
-      last_response.status.should == 200
-      (last_response.body =~ /^#{valid_callback}\(\{/i).should eq 0
-
-      get "/api/v2/viz/#{table_id}/viz?api_key=#{@api_key}&callback=#{invalid_callback1}", {}, @headers
-      last_response.status.should == 400
-
-      get "/api/v2/viz/#{table_id}/viz?api_key=#{@api_key}&callback=#{invalid_callback2}", {}, @headers
-      last_response.status.should == 400
-
-      get "/api/v2/viz/#{table_id}/viz?api_key=#{@api_key}&callback=#{invalid_callback3}", {}, @headers
-      last_response.status.should == 400
-
-      # if param specified, must not be empty
-      get "/api/v2/viz/#{table_id}/viz?api_key=#{@api_key}&callback=", {}, @headers
-      last_response.status.should == 400
-
-      get "/api/v2/viz/#{table_id}/viz?api_key=#{@api_key}&callback=#{valid_callback2}", {}, @headers
-      last_response.status.should == 200
-      (last_response.body =~ /^#{valid_callback2}\(\{/i).should eq 0
-
-      get "/api/v2/viz/#{table_id}/viz?api_key=#{@api_key}", {}, @headers
-      last_response.status.should == 200
-      (last_response.body =~ /^\{/i).should eq 0
-    end
-
-end
-
   # Visualizations are always created with default_privacy
   def factory(attributes={})
     {
@@ -755,9 +689,9 @@ end
       payload.to_json, @headers
 
     table_attributes  = JSON.parse(last_response.body)
-    table_id          = table_attributes.fetch('id')
+    table_id          = table_attributes.fetch('table_visualization').fetch("id")
 
-    put "/api/v1/tables/#{table_id}?api_key=#{@api_key}",
+    put "/api/v1/viz/#{table_id}?api_key=#{@api_key}",
       { privacy: privacy }.to_json, @headers
 
     table_attributes

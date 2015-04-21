@@ -8,14 +8,19 @@ module CartoDB
     class SQLError        < StandardError; end
     class PermissionError < StandardError; end
 
-    attr_accessor :api_key, :username
-    attr_reader   :response_code, :response_body, :parsed_response
+    # seconds
+    CONNECT_TIMEOUT = 45
+    DEFAULT_TIMEOUT = 60
+
+    attr_accessor :api_key, :username, :protocol, :timeout
+    attr_reader   :response_code, :parsed_response
 
     def initialize(arguments)
-      self.username   = arguments.fetch(:username)
-      self.api_key    = arguments.fetch(:api_key, nil)
-    end # initialize
-
+      self.username = arguments.fetch(:username)
+      self.api_key  = arguments.fetch(:api_key, nil)
+      self.protocol = arguments.fetch(:protocol, 'http')
+      self.timeout  = arguments.fetch(:timeout, DEFAULT_TIMEOUT)
+    end
 
     def fetch(query, format = '')
       params   = { q: query, api_key: api_key, format: format }
@@ -23,10 +28,12 @@ module CartoDB
         base_url,
         method: :post,
         body: URI.encode_www_form(params),
-        headers: { 'Accept-Encoding' => 'gzip,deflate' }
+        headers: { 'Accept-Encoding' => 'gzip,deflate' },
+        connecttimeout: CONNECT_TIMEOUT,
+        timeout: timeout
       ).run
       handle_response(response)
-    end # fetch
+    end
 
     def handle_response(response)
       @response_code    = response.response_code
@@ -34,13 +41,13 @@ module CartoDB
       @parsed_response  = ::JSON.parse(body) rescue nil
       raise_if_error
       parsed_response["rows"] rescue body
-    end # handle_response
+    end
 
     def inflate(text)
       Zlib::GzipReader.new(StringIO.new(text)).read
     rescue Zlib::GzipFile::Error
       return text
-    end # inflate
+    end
 
     def raise_if_error
       error_message   = parsed_response["error"].first rescue nil
@@ -49,8 +56,8 @@ module CartoDB
     end
 
     def base_url
-      "http://#{username}.cartodb.com/api/v2/sql"
-    end # base_url
+      "#{protocol}://#{username}.cartodb.com/api/v2/sql"
+    end
 
-  end # SQLApi
-end # CartoDB
+  end
+end

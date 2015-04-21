@@ -126,7 +126,6 @@ class Api::Json::TablesController < Api::ApplicationController
     render_jsonp({ errors: { named_maps: exception } }, 400)
   end
 
-
   protected
 
   def load_table

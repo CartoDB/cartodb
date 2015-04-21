@@ -302,7 +302,7 @@ class Admin::VisualizationsController < ApplicationController
   end
 
   def show_protected_public_map
-    submitted_password = params.fetch(:password)
+    submitted_password = params.fetch(:password, nil)
     @visualization, @table = resolve_visualization_and_table(request)
     return(pretty_404) unless @visualization and @visualization.password_protected? and @visualization.has_password?
     return(pretty_404) if disallowed_type?(@visualization)

@@ -7,6 +7,7 @@
 * New public map [#3120](https://github.com/CartoDB/cartodb/issues/3120)
 * Do not store session for api_key auth [#3208](https://github.com/CartoDB/cartodb/pull/3208)
 * Fix http cancelled requests [#3227](https://github.com/CartoDB/cartodb/pull/3227)
+* Fix for "Cannot read property 'layers'" [#3302](https://github.com/CartoDB/cartodb/pull/3302)
 
 3.10.0 (2015-04-08)
 -------------------

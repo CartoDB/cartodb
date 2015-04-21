@@ -166,10 +166,6 @@ module Carto
         raise exception
       end
 
-      def stats
-        render_jsonp(CartoDB::Visualization::Stats.new(@visualization).to_poro)
-      end
-
       private
 
       def get_types_parameters

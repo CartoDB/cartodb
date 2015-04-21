@@ -2,8 +2,6 @@
 @import "../new_variables/colors";
 @import "../new_variables/sizes";
 
-$cBkg: #F9F9F9;
-
 .ChangePrivacy-optionsList {
   @include display-flex();
   @include justify-content(center);
@@ -89,7 +87,7 @@ $cBkg: #F9F9F9;
   margin-right: $sMargin-elementInline;
 }
 .ChangePrivacy-shareFooter {
-  background-color: $cBkg;
+  background-color: $cStructure-lighterGrayBkg;
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center);

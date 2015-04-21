@@ -6,7 +6,7 @@
     var username = "<%= current_user.username %>";
     var user_data = <%= safe_js_object current_user.data.to_json %>;
     var config = <%= safe_js_object frontend_config %>;
-    var upgrade_url = <%= cartodb_com_hosted? ? 'undefined' : "'#{current_user.upgrade_url(request.protocol)}'" %>;
+    var upgrade_url = config.upgrade_url;
     var isFirstTimeViewingDashboard = <%= (!!@first_time).to_s %>;
     var isJustLoggedIn = <%= (!!@just_logged_in).to_s %>;
     var mixpanel_token = "<%= Cartodb.config[:mixpanel]['token'] if Cartodb.config[:mixpanel].present? %>";

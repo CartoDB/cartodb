@@ -10,7 +10,7 @@ class Carto::Map < ActiveRecord::Base
 
   has_and_belongs_to_many :carto_and_torque_layers, class_name: 'Carto::Layer', conditions: { kind: ['carto', 'torque'] }
 
-  has_and_belongs_to_many :other_layers, class_name: 'Carto::Layer', conditions: { kind: ['carto', 'tiled', 'background', 'gmapsbase', 'wms'] }
+  has_and_belongs_to_many :other_layers, class_name: 'Carto::Layer', conditions: "kind not in ('carto', 'tiled', 'background', 'gmapsbase', 'wms')"
 
   belongs_to :user
 

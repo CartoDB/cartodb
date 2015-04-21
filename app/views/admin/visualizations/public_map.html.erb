@@ -11,8 +11,19 @@
     <div class="PublicMap-map js-map" id="map">
       <div class="Spinner"></div>
     </div>
-    <div class="u-inner">
-      
+
+    <%# Legacy from current embed %>
+    <div class="NotSupportedDialog" id="not_supported_dialog" style="display: none">
+      <h2 class="NotSupportedDialog-title">CartoDB</h2>
+      <p class="NotSupportedDialog-desc">This visualization only works in modern browsers. Upgrade yours and enjoy.</p>
+      <ul class="NotSupportedDialog-list">
+        <li class="NotSupportedDialog-item"><a class="NotSupportedDialog-itemLink NotSupportedDialog-itemLink--Safari" href="http://www.apple.com/safari/" class="safari">Safari</a></li>
+        <li class="NotSupportedDialog-item"><a class="NotSupportedDialog-itemLink NotSupportedDialog-itemLink--Chrome" href="https://www.google.com/chrome/" class="chrome">Chrome</a></li>
+        <li class="NotSupportedDialog-item is-last"><a class="NotSupportedDialog-itemLink NotSupportedDialog-itemLink--Firefox" href="http://www.mozilla.org/en-US/firefox/all/‎" class="firefox">Firefox</a></li>
+      </ul>
+    </div>
+
+    <div class="u-inner">  
       <div class="PublicMap-info">
 
         <%#= 1st block %>

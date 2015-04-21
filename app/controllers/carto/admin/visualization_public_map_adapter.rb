@@ -66,5 +66,13 @@ class Carto::Admin::VisualizationPublicMapAdapter
     }
   end
 
+  def related_visualizations_geometry_types
+    related_visualizations.collect(&:geometry_types).flatten.uniq
+  end
+
+  def related_tables_geometry_types
+    related_tables.collect(&:geometry_types).flatten.uniq
+  end
+
 end
 

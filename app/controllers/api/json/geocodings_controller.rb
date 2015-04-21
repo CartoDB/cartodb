@@ -42,7 +42,7 @@ class Api::Json::GeocodingsController < Api::ApplicationController
 
       if params[:region]
         regions = params[:region_text] ? [params[:region]] : @table.sequel.distinct.select_map(params[:region].to_sym)
-        geocoding.region_code = regions.map{|r| "'${ r }'"}.join(',')
+        geocoding.region_code = regions.map{|r| "'#{ r }'"}.join(',')
         geocoding.region_column = params[:region] if !params[:region_text]
       end
     end

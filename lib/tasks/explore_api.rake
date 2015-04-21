@@ -162,6 +162,7 @@ namespace :cartodb do
         page: page,
         per_page: BATCH_SIZE,
         order: :created_at,
+        order_asc_desc: :asc,
         privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
       }
       filter['types'] = [CartoDB::Visualization::Member::TYPE_CANONICAL, CartoDB::Visualization::Member::TYPE_DERIVED]

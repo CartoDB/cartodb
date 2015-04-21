@@ -9,6 +9,7 @@ module CartoDB
   module Importer2
     class ContentGuesser
 
+      SQLAPI_CALLS_TIMEOUT = 45
       COUNTRIES_COLUMN = 'name_'
       COUNTRIES_QUERY = "SELECT #{COUNTRIES_COLUMN} FROM admin0_synonyms"
       DEFAULT_MINIMUM_ENTROPY = 0.9
@@ -206,7 +207,9 @@ module CartoDB
       end
 
       def geocoder_sql_api
-        @geocoder_sql_api ||= CartoDB::SQLApi.new(@options[:geocoder][:internal])
+        @geocoder_sql_api ||= CartoDB::SQLApi.new(
+          @options[:geocoder][:internal].merge({ timeout: SQLAPI_CALLS_TIMEOUT })
+        )
       end
 
       attr_writer :geocoder_sql_api

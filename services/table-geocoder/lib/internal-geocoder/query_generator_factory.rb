@@ -4,6 +4,8 @@ require_relative 'input_type_resolver'
 
 require_relative 'cities_text_text_points'
 require_relative 'cities_column_text_points'
+require_relative 'cities_text_column_points'
+require_relative 'cities_column_column_points'
 require_relative 'admin0_text_polygons'
 require_relative 'admin1_text_polygons'
 require_relative 'admin1_column_polygons'

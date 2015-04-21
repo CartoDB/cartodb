@@ -18,7 +18,7 @@ module CartoDB
 
       def dataservices_query(search_terms)
         cities = search_terms.map { |row| row[:city] }.join(',')
-        "WITH geo_function AS (SELECT (geocode_namedplace(Array[#{cities}], #{region}, #{country})).*) SELECT q, null, geom, success FROM geo_function"
+        "WITH geo_function AS (SELECT (geocode_namedplace(Array[#{cities}], #{region}, #{country})).*) SELECT q, c, a1, geom, success FROM geo_function"
       end
 
       def copy_results_to_table_query
@@ -27,7 +27,8 @@ module CartoDB
           SET the_geom = orig.the_geom, cartodb_georef_status = orig.cartodb_georef_status
           #{CartoDB::Importer2::QueryBatcher::QUERY_WHERE_PLACEHOLDER}
           FROM #{@internal_geocoder.temp_table_name} AS orig
-          WHERE trim("#{@internal_geocoder.column_name}"::text) = orig.geocode_string AND #{dest_table}.cartodb_georef_status IS NULL
+          WHERE trim("#{@internal_geocoder.column_name}"::text) = orig.geocode_string
+            AND #{dest_table}.cartodb_georef_status IS NULL
           #{CartoDB::Importer2::QueryBatcher::QUERY_LIMIT_SUBQUERY_PLACEHOLDER}
         }
       end

@@ -3,6 +3,7 @@
 require_relative '../../../../app/models/visualization/member'
 
 shared_examples_for "visualization controllers" do
+  include CacheHelper
 
   TEST_UUID = '00000000-0000-0000-0000-000000000000'
 
@@ -1115,28 +1116,34 @@ shared_examples_for "visualization controllers" do
         last_response.status.should == 200
         ::JSON.parse(last_response.body).keys.length.should > 1
       end
-    end
 
-    describe 'GET /api/v1/viz/:id/stats' do
-
-      before(:each) do
-        CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+      it "comes with proper surrogate-key" do
         CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
-        delete_user_data(@user)
-      end
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:create).returns(nil)
+        table                 = table_factory(privacy: 1)
+        source_visualization  = table.fetch('table_visualization')
 
-      it 'returns view stats for the visualization' do
-        payload = factory(@user)
 
-        post "/api/v1/viz?api_key=#{@api_key}",
-          payload.to_json, @headers
-        id = JSON.parse(last_response.body).fetch('id')
+        payload = { source_visualization_id: source_visualization.fetch('id'), privacy: 'PUBLIC' }
 
-        get "/api/v1/viz/#{id}/stats?api_key=#{@api_key}", {}, @headers
+        post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
+             payload.to_json, @headers
+
+        viz_id = JSON.parse(last_response.body).fetch('id')
+
+        put api_v1_visualizations_show_url(user_domain: @user.username, id: viz_id, api_key: @api_key),
+            { privacy: 'PUBLIC' }.to_json, @headers
+
+        get api_v2_visualizations_vizjson_url(user_domain: @user.username, id: viz_id, api_key: @api_key),
+            {}, @headers
 
         last_response.status.should == 200
-        response = JSON.parse(last_response.body)
-        response.keys.length.should == 30
+        last_response.headers.should have_key('Surrogate-Key')
+        last_response['Surrogate-Key'].should include(CartoDB::SURROGATE_NAMESPACE_VIZJSON)
+        last_response['Surrogate-Key'].should include(get_surrogate_key(CartoDB::SURROGATE_NAMESPACE_VISUALIZATION, viz_id))
+
+        delete api_v1_visualizations_show_url(user_domain: @user.username, id: viz_id, api_key: @api_key),
+               { }, @headers
       end
     end
 
@@ -1180,9 +1187,6 @@ shared_examples_for "visualization controllers" do
     describe 'non existent visualization' do
       it 'returns 404' do
         get "/api/v1/viz/#{TEST_UUID}?api_key=#{@api_key}", {}, @headers
-        last_response.status.should == 404
-
-        get "/api/v1/viz/#{TEST_UUID}/stats?api_key=#{@api_key}", {}, @headers
         last_response.status.should == 404
 
         put "/api/v1/viz/#{TEST_UUID}?api_key=#{@api_key}", {}, @headers

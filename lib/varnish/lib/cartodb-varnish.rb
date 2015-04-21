@@ -16,7 +16,23 @@ module CartoDB
           end
         end
       end
-    end # purge
+    end
+
+    def purge_surrogate_key(key)
+      ActiveSupport::Notifications.instrument('purge.varnish', what: key) do |payload|
+        conf = Cartodb::config[:varnish_management]
+        if conf['http_port']
+          request = Typhoeus::Request.new(
+            "http://#{conf['host']}:#{conf['http_port']}/key", method: :purge, headers: {"Invalidation-Match" => key}).run
+          return request.code
+        else
+          return send_command("#{purge_command} obj.http.Surrogate-Key ~ #{key}") do |result|
+            payload[:result] = result
+            result
+          end
+        end
+      end
+    end
 
     def send_command(command)
       retries = 0

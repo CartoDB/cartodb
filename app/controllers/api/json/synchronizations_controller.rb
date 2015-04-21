@@ -20,9 +20,10 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
   end
 
   def create
-    default_type_guessing    = true
-    default_fields_guessing  = true
-    default_content_guessing = false
+    # Keep in sync with http://docs.cartodb.com/cartodb-platform/import-api.html#params-4
+    type_guessing_param    = !["false", false].include?(params[:type_guessing])
+    quoted_fields_guessing_param  = !["false", false].include?(params[:quoted_fields_guessing])
+    content_guessing_param = ["true", true].include?(params[:content_guessing])
 
     create_derived_vis = ["true", true].include?(params[:create_vis])
 
@@ -30,9 +31,9 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
         name:                   params[:table_name],
         user_id:                current_user.id,
         state:                  Synchronization::Member::STATE_CREATED,
-        type_guessing:          params.fetch(:type_guessing, default_type_guessing),
-        quoted_fields_guessing: params.fetch(:quoted_fields_guessing, default_fields_guessing),
-        content_guessing:       params.fetch(:content_guessing, default_content_guessing)
+        type_guessing:          type_guessing_param,
+        quoted_fields_guessing: quoted_fields_guessing_param,
+        content_guessing:       content_guessing_param
     )
 
     if from_sync_file_provider?
@@ -49,6 +50,7 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
 
     member = Synchronization::Member.new(member_attributes)
 
+
     options = {
       user_id:            current_user.id,
       table_name:         params[:table_name].presence,
@@ -56,9 +58,9 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
       synchronization_id: member.id,
       service_name:       service_name,
       service_item_id:    service_item_id,
-      type_guessing:          params.fetch(:type_guessing, default_type_guessing),
-      quoted_fields_guessing: params.fetch(:quoted_fields_guessing, default_fields_guessing),
-      content_guessing:       params.fetch(:content_guessing, default_content_guessing),
+      type_guessing:          type_guessing_param,
+      quoted_fields_guessing: quoted_fields_guessing_param,
+      content_guessing:       content_guessing_param,
       create_visualization:   create_derived_vis
     }
       

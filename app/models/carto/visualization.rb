@@ -2,6 +2,8 @@ require 'active_record'
 require_relative '../visualization/stats'
 
 class Carto::Visualization < ActiveRecord::Base
+  include CacheHelper
+
   # INFO: disable ActiveRecord inheritance column
   self.inheritance_column = :_type
 
@@ -94,6 +96,10 @@ class Carto::Visualization < ActiveRecord::Base
 
   def varnish_key
     "#{user.database_name}:#{sorted_related_table_names},#{id}"
+  end
+
+  def surrogate_key
+    get_surrogate_key(CartoDB::SURROGATE_NAMESPACE_VISUALIZATION, id)
   end
 
   def qualified_name(viewer_user=nil)

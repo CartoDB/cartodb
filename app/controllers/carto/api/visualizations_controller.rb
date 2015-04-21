@@ -166,18 +166,22 @@ module Carto
         raise exception
       end
 
-      def stats
-        render_jsonp(CartoDB::Visualization::Stats.new(@visualization).to_poro)
-      end
-
       private
 
       def get_types_parameters
-        type = params[:type].present? ? params[:type] : nil
+        # INFO: this fits types and type into types, so only types is used for search.
+        # types defaults to type if empty.
+        # types defaults to derived if type is also empty.
+        # total_types are the types used for total counts.
+        types = params.fetch(:types, "").split(',')
+
+        type = params[:type].present? ? params[:type] : (types.empty? ? nil : types[0])
         # TODO: add this assumption to a test or remove it (this is coupled to the UI)
         total_types = [(type == Carto::Visualization::TYPE_REMOTE ? Carto::Visualization::TYPE_CANONICAL : type)].compact
-        types = params.fetch(:types, "#{type}").split(',')
-        types = nil if types.empty?
+
+        types = [type].compact if types.empty?
+        types = [Carto::Visualization::TYPE_DERIVED] if types.empty?
+
         return types, total_types
       end
 
@@ -185,6 +189,7 @@ module Carto
         # We don't cache non-public vis
         if @visualization.is_publically_accesible?
           response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
+          response.headers['Surrogate-Key'] = "#{CartoDB::SURROGATE_NAMESPACE_VIZJSON} #{visualization.surrogate_key}"
           response.headers['Cache-Control']   = 'no-cache,max-age=86400,must-revalidate, public'
         end
       end

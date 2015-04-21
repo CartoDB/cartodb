@@ -89,8 +89,8 @@ module HelperMethods
     [
       ["cartodb_id", "number"], ["name", "string"], ["description", "string"],
       ["the_geom", "geometry", "geometry", "geometry"],
-      ["created_at", "timestamp with time zone"],
-      ["updated_at", "timestamp with time zone"]
+      ["created_at", "date"],
+      ["updated_at", "date"]
     ]
   end
 

@@ -18,7 +18,7 @@ module CartoDB
 
       def dataservices_query(search_terms)
         ipaddress = search_terms.map { |row| row[:ipaddress] }.join(',')
-        "WITH geo_function AS (SELECT (geocode_ip(Array[#{ipaddress}])).*) SELECT q, null, geom, success FROM geo_function"
+        "WITH geo_function AS (SELECT (geocode_ip(Array[#{ipaddress}])).*) SELECT q, null AS c, null AS a1, geom, success FROM geo_function"
       end
 
       def copy_results_to_table_query

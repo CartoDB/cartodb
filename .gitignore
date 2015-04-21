@@ -15,6 +15,7 @@ public/images
 public/fonts
 public/flash
 app/assets/stylesheets/tmp/
+app/assets/fonts/icon_font/svgs
 db/schema.rb
 *.pyc
 bin/

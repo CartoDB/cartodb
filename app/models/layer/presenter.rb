@@ -157,18 +157,20 @@ module CartoDB
 
       def infowindow_data_v1
         with_template(layer.infowindow, layer.infowindow_template_path)
-      rescue
+      rescue => e
+        Rollbar.report_exception(e)
       end
 
       def infowindow_data_v2
         whitelisted_infowindow(with_template(layer.infowindow, layer.infowindow_template_path))
-      rescue
+      rescue => e
+        Rollbar.report_exception(e)
       end
 
       def tooltip_data_v2 
         whitelisted_infowindow(with_template(layer.tooltip, layer.tooltip_template_path))
       rescue => exception
-      puts exception
+        Rollbar.report_exception(exception)
       end
 
       def with_template(infowindow, path)

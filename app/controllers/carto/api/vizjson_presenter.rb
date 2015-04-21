@@ -99,7 +99,17 @@ end
 class Carto::Api::LayerVizJSONAdapter
   extend Forwardable
 
-  delegate [:options, :kind, :infowindow, :tooltip, :id, :order, :parent_id, :children, :legend] => :layer
+  TEMPLATES_MAP = {
+    'table/views/infowindow_light' =>               'infowindow_light',
+    'table/views/infowindow_dark' =>                'infowindow_dark',
+    'table/views/infowindow_light_header_blue' =>   'infowindow_light_header_blue',
+    'table/views/infowindow_light_header_yellow' => 'infowindow_light_header_yellow',
+    'table/views/infowindow_light_header_orange' => 'infowindow_light_header_orange',
+    'table/views/infowindow_light_header_green' =>  'infowindow_light_header_green',
+    'table/views/infowindow_header_with_image' =>   'infowindow_header_with_image'
+  }
+  
+  delegate [:options, :kind, :id, :order, :parent_id, :children, :legend] => :layer
 
   attr_reader :layer
 
@@ -129,6 +139,44 @@ class Carto::Api::LayerVizJSONAdapter
     # TODO: new layer presenter
     # Carto::LayerPresenter(layer, options, configuration)
     CartoDB::Layer::Presenter.new(self, options, configuration)
+  end
+
+  def infowindow
+    # TODO: maybe this parsing should be in the model?
+    @infowindow ||= get_infowindow
+  end
+
+  def tooltip
+    # TODO: maybe this parsing should be in the model?
+    @tooltip ||= get_tooltip
+  end
+
+  def infowindow_template_path 
+    if infowindow.present? && infowindow['template_name'].present?
+      template_name = TEMPLATES_MAP.fetch(infowindow['template_name'], self.infowindow['template_name'])
+      Rails.root.join("lib/assets/javascripts/cartodb/table/views/infowindow/templates/#{template_name}.jst.mustache")
+    else
+      nil
+    end
+  end
+
+  def tooltip_template_path
+    if tooltip.present? && tooltip['template_name'].present?
+      template_name = TEMPLATES_MAP.fetch(tooltip['template_name'], tooltip['template_name'])
+      Rails.root.join("lib/assets/javascripts/cartodb/table/views/tooltip/templates/#{template_name}.jst.mustache")
+    else
+      nil
+    end
+  end
+
+  private
+
+  def get_infowindow
+    @layer.infowindow.nil? ? nil : JSON.parse(@layer.infowindow)
+  end
+
+  def get_tooltip
+    @layer.tooltip.nil? ? nil : JSON.parse(@layer.tooltip)
   end
 
 end

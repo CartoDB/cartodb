@@ -108,6 +108,8 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
     var THREE_DAYS = ONE_DAY*3;
     var ONE_YEAR = ONE_DAY * 31 * 12;
 
+    var stepDurationMS = (end.getTime() - start.getTime()) / this.torqueLayer.options.steps;
+
     function pad(n) {
       return n < 10 ? '0' + n : n;
     }
@@ -118,6 +120,20 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
 
     function toTimeStr(date) {
       return pad(date.getUTCHours()) + ":" + pad(date.getUTCMinutes());
+    }
+
+    function toDateRange(date, changes) {
+      var stepStartTimeMS = date.getTime();
+      var tb = this.torqueLayer.getTimeBounds();
+      var stepDurationMS = (new Date(tb.end).getTime() - new Date(tb.start).getTime()) / this.torqueLayer.options.steps;
+      var stepEndTime = new Date(stepStartTimeMS + stepDurationMS);
+      var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      return pad(months[date.getUTCMonth()]) + " " + pad(date.getUTCDate())  + " - " 
+        + pad(months[stepEndTime.getUTCMonth()]) + " " + pad(stepEndTime.getUTCDate());
+    }
+
+    if (stepDurationMS > ONE_DAY * 2000){ // More than 48 hours
+      return toDateRange;
     }
 
     if (range < THREE_DAYS) {

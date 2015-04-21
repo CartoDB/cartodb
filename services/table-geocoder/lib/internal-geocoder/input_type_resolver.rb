@@ -27,7 +27,6 @@ module CartoDB
       end
 
       def region_input_type
-        debugger
         if @internal_geocoder.region_column
           :column
         elsif @internal_geocoder.regions.present?

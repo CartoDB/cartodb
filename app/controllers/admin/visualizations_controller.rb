@@ -8,6 +8,8 @@ class Admin::VisualizationsController < ApplicationController
 
   include CartoDB
 
+  MAX_MORE_VISUALIZATIONS = 3
+
   ssl_allowed :embed_map, :public_map, :show_protected_embed_map, :public_table,
               :show_organization_public_map, :show_organization_embed_map
   ssl_required :index, :show, :protected_embed_map, :protected_public_map, :show_protected_public_map
@@ -181,6 +183,8 @@ class Admin::VisualizationsController < ApplicationController
     @visualization, @table = resolve_visualization_and_table(request)
     return(pretty_404) unless @visualization
     return(pretty_404) if disallowed_type?(@visualization)
+
+    @more_visualizations = more_visualizations(@visualization.user, @visualization) if @visualization.user
 
     if current_user.nil? && !request.params[:redirected].present?
       redirect_url = get_corrected_url_if_proceeds(for_table=false)
@@ -421,6 +425,15 @@ class Admin::VisualizationsController < ApplicationController
   end
 
   private
+
+  def more_visualizations(user, excluded_visualization)
+    vqb = Carto::VisualizationQueryBuilder.user_public_visualizations(user)
+    vqb.with_excluded_ids([excluded_visualization.id]) if excluded_visualization
+    visualizations = vqb.build_paged(1, MAX_MORE_VISUALIZATIONS)
+    visualizations.map { |v|
+      Carto::Admin::VisualizationPublicMapAdapter.new(v)
+    }
+  end
 
   def eligible_for_redirect?(user)
     return false if CartoDB.subdomainless_urls?

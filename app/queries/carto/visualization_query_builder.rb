@@ -45,6 +45,11 @@ class Carto::VisualizationQueryBuilder
     self
   end
 
+  def with_excluded_ids(ids)
+    @excluded_ids = ids
+    self
+  end
+
   def with_name(name)
     @name = name
     self
@@ -125,6 +130,10 @@ class Carto::VisualizationQueryBuilder
 
     if @id
       query = query.where(id: @id)
+    end
+
+    if @excluded_ids and !@excluded_ids.empty?
+      query.where('visualizations.id not in (?)', @excluded_ids)
     end
 
     if @name

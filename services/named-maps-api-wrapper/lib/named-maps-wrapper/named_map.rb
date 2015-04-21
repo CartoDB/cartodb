@@ -12,6 +12,10 @@ module CartoDB
       AUTH_TYPE_SIGNED = 'token'
       EMPTY_CSS = '#dummy{}'
 
+      # in seconds
+      HTTP_CONNECT_TIMEOUT = 45
+      HTTP_REQUEST_TIMEOUT = 60
+
       # Load with existing data
       def initialize( name, template_data, parent )
         raise NamedMapDataError, 'Name empty' if name.nil? or name.length == 0
@@ -29,11 +33,13 @@ module CartoDB
         template_data = NamedMap.get_template_data( visualization, parent )
 
         response = Typhoeus.post( parent.url + '?api_key=' + parent.api_key, {
-          headers:         parent.headers,
-          body:            ::JSON.dump( template_data ),
-          ssl_verifypeer:  parent.verify_cert,
-          ssl_verifyhost:  parent.verify_host,
-          followlocation: true
+          headers:          parent.headers,
+          body:             ::JSON.dump( template_data ),
+          ssl_verifypeer:   parent.verify_cert,
+          ssl_verifyhost:   parent.verify_host,
+          followlocation:   true,
+          connect_timeout:  HTTP_CONNECT_TIMEOUT,
+          timeout:          HTTP_REQUEST_TIMEOUT
           } )
 
         unless response.code == 200
@@ -55,11 +61,13 @@ module CartoDB
         success = true
         begin
           response = Typhoeus.put( url + '?api_key=' + @parent.api_key, {
-            headers: @parent.headers,
-            body: ::JSON.dump( @template ),
-            ssl_verifypeer: @parent.verify_cert,
-            ssl_verifyhost: @parent.verify_host,
-            followlocation: true
+            headers:          @parent.headers,
+            body:             ::JSON.dump( @template ),
+            ssl_verifypeer:   @parent.verify_cert,
+            ssl_verifyhost:   @parent.verify_host,
+            followlocation:   true,
+            connect_timeout:  HTTP_CONNECT_TIMEOUT,
+            timeout:          HTTP_REQUEST_TIMEOUT
           } )
 
           if response.code == 200
@@ -79,10 +87,12 @@ module CartoDB
       def delete
         response = Typhoeus.delete( url + '?api_key=' + @parent.api_key,
           { 
-            headers: @parent.headers,
-            ssl_verifypeer: @parent.verify_cert,
-            ssl_verifyhost: @parent.verify_host,
-            followlocation: true
+            headers:          @parent.headers,
+            ssl_verifypeer:   @parent.verify_cert,
+            ssl_verifyhost:   @parent.verify_host,
+            followlocation:   true,
+            connect_timeout:  HTTP_CONNECT_TIMEOUT,
+            timeout:          HTTP_REQUEST_TIMEOUT
           } )
         raise HTTPResponseError, "DELETE:#{response.code} #{response.request.url} #{response.body}" unless response.code == 204
       end #delete

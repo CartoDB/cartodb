@@ -43,6 +43,9 @@ module CartoDB
           @app_key = config.fetch('app_key')
           @app_secret = config.fetch('app_secret')
 
+          @http_timeout = config.fetch(:http_timeout)
+          @http_connect_timeout = config.fetch(:http_connect_timeout)
+
           placeholder = CALLBACK_STATE_DATA_PLACEHOLDER.sub('user', @user.username).sub('service', DATASOURCE_NAME)
           @callback_url = "#{config.fetch('callback_url')}?state=#{placeholder}"
 
@@ -331,7 +334,9 @@ module CartoDB
                                 'Accept' => 'application/json'
                               }.merge(extra_headers),
             ssl_verifyhost:   0,
-            timeout:          60
+            timeout:          60,
+            connect_timeout:  @http_connect_timeout,
+            timeout:          @http_timeout
           }
         end
 

@@ -18,6 +18,8 @@ module CartoDB
         def initialize(config)
           super
 
+          @http_timeout = config.fetch(:http_timeout)
+          @http_connect_timeout = config.fetch(:http_connect_timeout)
           @service_name = DATASOURCE_NAME
           @headers = nil
         end
@@ -153,9 +155,11 @@ module CartoDB
         # HTTP (Typhoeus) options
         def http_options
           {
-              followlocation: true,
-              ssl_verifypeer: false,
-              ssl_verifyhost: 0
+              followlocation:   true,
+              ssl_verifypeer:   false,
+              ssl_verifyhost:   0,
+              timeout:          @http_timeout,
+              connect_timeout:  @http_connect_timeout
           }
         end
 

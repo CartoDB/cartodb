@@ -13,7 +13,7 @@ class Carto::Admin::VisualizationPublicMapAdapter
         'st_point'           => 'point'
       }
 
-  delegate [ :type_slide?, :has_permission?, :derived?, :organization, :organization?, :id, :likes, :password_protected?, :varnish_key, :related_tables, :is_password_valid?, :get_auth_tokens, :table, :name, :overlays, :created_at, :description, :tags, :mapviews, :geometry_types, :privacy, :surrogate_key ] => :visualization
+  delegate [ :type_slide?, :has_permission?, :derived?, :organization, :organization?, :id, :likes, :password_protected?, :varnish_key, :related_tables, :is_password_valid?, :get_auth_tokens, :table, :name, :overlays, :created_at, :updated_at, :description, :tags, :mapviews, :geometry_types, :privacy, :surrogate_key ] => :visualization
 
   attr_reader :visualization
 
@@ -88,6 +88,10 @@ class Carto::Admin::VisualizationPublicMapAdapter
 
   def related_tables_simple_geometry_types
     simplify_geometry_types(related_tables_geometry_types)
+  end
+
+  def map_zoom
+    map.nil? ? nil : map.zoom
   end
 
   private

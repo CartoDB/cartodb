@@ -1,7 +1,7 @@
 class Carto::Admin::MapPublicMapAdapter
   extend Forwardable
 
-  delegate [ :provider ] => :map
+  delegate [ :provider, :zoom ] => :map
 
   attr_reader :map
 

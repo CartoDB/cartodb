@@ -31,7 +31,7 @@ class Carto::Permission < ActiveRecord::Base
   private
 
   def permission_for_user(user)
-    return ACCESS_READWRITE if is_owner?(user)
+    return ACCESS_READWRITE if is_owner_user?(user)
 
     permission = nil
 

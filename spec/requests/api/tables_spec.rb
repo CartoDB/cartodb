@@ -37,14 +37,13 @@ describe "Tables API" do
         description:  'Testing is awesome'
       )
 
-      get "/api/v1/tables/#{table.id}?api_key=#{@user.api_key}",
-        {}, @headers
-
-      last_response.status.should == 200
-      response = JSON.parse(last_response.body)
-      response.fetch('visualization_ids').should_not be_empty
+      get_json api_v1_tables_show_url(params.merge(id: table.id)) do |response|
+        response.status.should == 200
+        response.body.fetch(:name).should == 'my_table_1'
+        response.body.fetch(:description).should == 'Testing is awesome'
+      end
     end
-  end # GET /api/v1/tables/:id
+  end
 
   it "creates a new table without schema" do
     post_json api_v1_tables_create_url(params) do |response|

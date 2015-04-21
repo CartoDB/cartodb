@@ -33,7 +33,7 @@
             <div class="PublicMap-meta">
               <span class="PublicMap-metaTime DefaultTimeDiff">
                 <i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i>
-                <%= time_ago_in_words(@visualization.created_at) %>
+                <%= time_ago_in_words(@visualization.updated_at) %> ago
                 by
                 <span class="UserAvatar PublicMap-owner">
                   <img class="UserAvatar-img UserAvatar-img--smaller PublicMap-ownerAvatar" src="<%= @visualization.user.avatar %>" alt="<%= @name %>" title="<%= @name %>" />
@@ -175,7 +175,7 @@
                     </div>
                     <div class="MapCard-contentFooterTimeDiff DefaultTimeDiff">
                       <i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i>
-                      <%= time_ago_in_words(vis.updated_at) %>
+                      <%= time_ago_in_words(vis.updated_at) %> ago
                     </div>
                   </div>
                 </div>

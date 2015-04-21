@@ -28,7 +28,7 @@
 
         <%#= 1st block %>
         <div class="PublicMap-block">
-          <div class="PublicMap-leftBlock">
+          <div class="PublicMap-leftBlock with-padding">
             <h1 class="PublicMap-title"><%= @visualization.name %></h1>
             <div class="PublicMap-meta">
               <span class="PublicMap-metaTime DefaultTimeDiff">
@@ -41,9 +41,11 @@
                 <a class="PublicMap-ownerName" href="<%= CartoDB.url(self, 'public_visualizations_home', {}, user) %>" target="_blank"><%= @name %></a>
               </span>
             </div>
-            <div class="PublicMap-desc">
-              <%= raw @visualization.description_html_safe %>
-            </div>
+            <% if @visualization.description.present? %>
+              <div class="PublicMap-desc">
+                <%= raw @visualization.description_html_safe %>
+              </div>
+            <% end %>
           </div>
           <div class="PublicMap-rightBlock">
             <nav class="PublicMap-share">
@@ -110,7 +112,7 @@
                             <a href="<%= CartoDB.url(self, 'public_table', {id: vis.table.name}, @user_domain.nil? ? nil : @related_tables_owners[vis.table.user_id]) %>" title="<%= vis.table.name %>" class="DefaultTitle-link u-ellipsLongText"><%= vis.table.name %></a>
                           </h3>
                           <% if vis.description %>
-                            <div class="DefaultDescription DatasetsList-itemDescription u-ellipsLongText"><%= raw vis.description %></div>
+                            <div class="DefaultDescription DatasetsList-itemDescription u-ellipsLongText"><%= raw vis.description_html_safe %></div>
                           <% end %>
                         </div>
                         <div class="DatasetsList-itemSecondaryInfo">

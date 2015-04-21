@@ -27,6 +27,8 @@
   float: left;
   width: 580px;
 }
+.PublicMap-leftBlock.with-padding,
+.PublicMap-rightBlock.with-padding { padding-bottom: 22px }
 .PublicMap-rightBlock {
   float: right;
   width: 300px;
@@ -64,7 +66,7 @@
   height: 16px;
 }
 .PublicMap-desc {
-  padding: 22px 0;
+  padding: 22px 0 0;
   @include nicer-lato-typography();
   font-size: $sFontSize-large;
   font-weight: $sFontWeight-lighter;

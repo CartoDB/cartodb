@@ -689,9 +689,9 @@ describe Api::Json::VisualizationsController do
       payload.to_json, @headers
 
     table_attributes  = JSON.parse(last_response.body)
-    table_id          = table_attributes.fetch('id')
+    table_id          = table_attributes.fetch('table_visualization').fetch("id")
 
-    put "/api/v1/tables/#{table_id}?api_key=#{@api_key}",
+    put "/api/v1/viz/#{table_id}?api_key=#{@api_key}",
       { privacy: privacy }.to_json, @headers
 
     table_attributes

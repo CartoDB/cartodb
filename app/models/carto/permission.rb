@@ -25,7 +25,7 @@ class Carto::Permission < ActiveRecord::Base
   # Use explicit methods instead.
   # Needed for backwards compatibility
   def is_permitted?(user, permission_type)
-    permission = permission_for_user(subject)
+    permission = permission_for_user(user)
   end
 
   private

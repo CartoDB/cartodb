@@ -564,13 +564,14 @@ class Admin::VisualizationsController < ApplicationController
   end
 
   def get_visualization_and_table(table_id, schema, filter)
-    visualization = Carto::VisualizationQueryBuilder.new.with_id_or_name(table_id).build.first
-    return get_visualization_and_table_from_table_id(table_id, schema, filter) if visualization.nil?
+    user = Carto::User.where(username: schema).first
+    visualization = Carto::VisualizationQueryBuilder.new.with_id_or_name(table_id).with_user_id(user.id).build.first
+    return get_visualization_and_table_from_table_id(table_id, user, filter) if visualization.nil?
     return Carto::Admin::VisualizationPublicMapAdapter.new(visualization), visualization.table_service
   end
 
-  def get_visualization_and_table_from_table_id(table_id, schema, filter)
-    user_table = Carto::UserTable.where(id: table_id).first
+  def get_visualization_and_table_from_table_id(table_id, user, filter)
+    user_table = Carto::UserTable.where({ id: table_id, user_id: user.id }).first
     return nil, nil if user_table.nil?
     visualization = user_table.visualization
     return Carto::Admin::VisualizationPublicMapAdapter.new(visualization), visualization.table_service

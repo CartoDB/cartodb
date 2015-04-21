@@ -48,6 +48,7 @@ lib/build/app_config.js
 lib/build/.grunt/**/*
 rubygems
 vendor/bundle/*
+vendor/cache/*
 .vagrant
 Vagrantfile
 node_modules

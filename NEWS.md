@@ -2,10 +2,13 @@
 ---------
 * Sort category names alphabetically in legends [3218](https://github.com/CartoDB/cartodb/pull/3218)
 * Editable descriptions and tags in the maps and datasets view [3129](https://github.com/CartoDB/cartodb/pull/3129)
-* fixed interaction when there are hidden layers #3090
 * Add caching of geometry types [#3157](https://github.com/CartoDB/cartodb/pull/3157)
 * Do not store session for api_key auth [#3208](https://github.com/CartoDB/cartodb/pull/3208)
+Bugfixes:
+* Fixed interaction when there are hidden layers [#3090](https://github.com/CartoDB/cartodb/pull/3090)
 * Fix http cancelled requests [#3227](https://github.com/CartoDB/cartodb/pull/3227)
+* Fix for "Cannot read property 'layers'" [#3302](https://github.com/CartoDB/cartodb/pull/3302)
+* Fix for type guessing in synchronization imports [#3264](http://github.com/CartoDB/cartodb/issues/3264)
 
 3.10.0 (2015-04-08)
 -------------------

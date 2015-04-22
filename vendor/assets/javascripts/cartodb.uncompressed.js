@@ -1,6 +1,6 @@
 // cartodb.js version: 3.14.0
 // uncompressed version: cartodb.uncompressed.js
-// sha: 101959f7e5d7a89391a61995c27dc407cca47bff
+// sha: 2f600b06452307385c6078a5c5cf66a23916631f
 (function() {
   var root = this;
 
@@ -11707,7 +11707,7 @@ L.Map.include({
 
 
 }(window, document));
-/* wax - 7.1.0 - v6.0.4-177-g1f244ba */
+/* wax - 7.0.1 - v6.0.4-178-gc113470 */
 
 
 !function (name, context, definition) {
@@ -14947,7 +14947,7 @@ wax.g.interaction = function() {
             var zoom = map.getZoom();
             var mapOffset = wax.u.offset(map.getDiv());
             var get = function(mapType) {
-                if (!mapType.interactive) return;
+                if (!mapType || !mapType.interactive) return;
                 for (var key in mapType.cache) {
                     if (key.split('/')[0] != zoom) continue;
                     var tileOffset = wax.u.offset(mapType.cache[key]);
@@ -25661,11 +25661,6 @@ if (typeof window !== 'undefined') {
     };
 
     cdb.CARTOCSS_DEFAULT_VERSION = '2.1.1';
-
-    cdb.CDB_HOST = {
-      'http': 'api.cartocdn.com',
-      'https': 'cartocdn.global.ssl.fastly.net'
-    };
 
     root.cdb.config = {};
     root.cdb.core = {};
@@ -39419,6 +39414,7 @@ cdb.vis.Vis = Vis;
       return {
         type: "torque",
         options: {
+          step: this.userOptions.step || 0,
           sql: query,
           cartocss: cartocss
         }

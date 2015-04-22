@@ -14,10 +14,18 @@ class Admin::VisualizationsController < ApplicationController
               :show_organization_public_map, :show_organization_embed_map
   ssl_required :index, :show, :protected_embed_map, :protected_public_map, :show_protected_public_map
   before_filter :login_required, only: [:index]
-  before_filter :table_and_schema_from_params, only: [:show, :public_table, :public_map, :show_protected_public_map, :show_protected_embed_map, :embed_map]
+  before_filter :table_and_schema_from_params, only: [:show, :public_table, :public_map, :show_protected_public_map,
+                                                      :show_protected_embed_map, :embed_map]
   before_filter :link_ghost_tables, only: [:index]
   before_filter :load_common_data, only: [:index]
-  skip_before_filter :browser_is_html5_compliant?, only: [:public_map, :embed_map, :track_embed, :show_protected_embed_map, :show_protected_public_map]
+
+  before_filter :resolve_visualization_and_table, only: [:show, :public_table, :public_map,
+                                                         :show_organization_public_map, :show_organization_embed_map,
+                                                         :show_protected_public_map, :show_protected_embed_map,
+                                                         :embed_map ]
+
+  skip_before_filter :browser_is_html5_compliant?, only: [:public_map, :embed_map, :track_embed,
+                                                          :show_protected_embed_map, :show_protected_public_map]
   skip_before_filter :verify_authenticity_token, only: [:show_protected_public_map, :show_protected_embed_map]
 
   def link_ghost_tables
@@ -64,7 +72,6 @@ class Admin::VisualizationsController < ApplicationController
       end
     end
 
-    @visualization, @table = resolve_visualization_and_table(request)
     return(pretty_404) unless @visualization
     return(pretty_404) if disallowed_type?(@visualization)
 
@@ -82,7 +89,6 @@ class Admin::VisualizationsController < ApplicationController
   end
 
   def public_table
-    @visualization, @table = resolve_visualization_and_table(request)
     return(pretty_404) if @visualization.nil? || @visualization.private?
     return(pretty_404) if disallowed_type?(@visualization)
 
@@ -181,7 +187,6 @@ class Admin::VisualizationsController < ApplicationController
   end
 
   def public_map
-    @visualization, @table = resolve_visualization_and_table(request)
     return(pretty_404) unless @visualization
     return(pretty_404) if disallowed_type?(@visualization)
 
@@ -255,7 +260,6 @@ class Admin::VisualizationsController < ApplicationController
   end
 
   def show_organization_public_map
-    @visualization, @table = resolve_visualization_and_table(request)
     return(embed_forbidden) unless org_user_has_map_permissions?(current_user, @visualization)
     return(pretty_404) if disallowed_type?(@visualization)
 
@@ -286,7 +290,6 @@ class Admin::VisualizationsController < ApplicationController
   end
 
   def show_organization_embed_map
-    @visualization, @table = resolve_visualization_and_table(request)
     return(embed_forbidden) unless org_user_has_map_permissions?(current_user, @visualization)
     return(pretty_404) if disallowed_type?(@visualization)
 
@@ -303,7 +306,6 @@ class Admin::VisualizationsController < ApplicationController
 
   def show_protected_public_map
     submitted_password = params.fetch(:password, nil)
-    @visualization, @table = resolve_visualization_and_table(request)
     return(pretty_404) unless @visualization and @visualization.password_protected? and @visualization.has_password?
     return(pretty_404) if disallowed_type?(@visualization)
 
@@ -344,7 +346,6 @@ class Admin::VisualizationsController < ApplicationController
 
   def show_protected_embed_map
     submitted_password = params.fetch(:password)
-    @visualization, @table = resolve_visualization_and_table(request)
     return(pretty_404) unless @visualization and @visualization.password_protected? and @visualization.has_password?
     return(pretty_404) if disallowed_type?(@visualization)
 
@@ -367,8 +368,6 @@ class Admin::VisualizationsController < ApplicationController
   end
 
   def embed_map
-    @visualization, @table = resolve_visualization_and_table(request)
-
     return(pretty_404) unless @visualization
     return(pretty_404) if disallowed_type?(@visualization)
 
@@ -447,13 +446,13 @@ class Admin::VisualizationsController < ApplicationController
       visualization.has_permission?(user, Visualization::Member::PERMISSION_READONLY)
   end
 
-  def resolve_visualization_and_table(request)
+  def resolve_visualization_and_table
     filters = { exclude_raster: true }
-    visualization, table = get_visualization_and_table(@table_id, @schema || CartoDB.extract_subdomain(request), filters)
-
-    @more_visualizations = more_visualizations(visualization.user, visualization) if visualization && visualization.user
-
-    return visualization, table
+    @visualization, @table =
+      get_visualization_and_table(@table_id, @schema || CartoDB.extract_subdomain(request), filters)
+    if @visualization && @visualization.user
+      @more_visualizations = more_visualizations(@visualization.user, @visualization)
+    end
   end
 
   # If user A shares to user B a table link (being both from same org), attept to rewrite the url to the correct format

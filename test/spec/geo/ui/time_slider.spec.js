@@ -69,11 +69,11 @@ describe('cdb.geo.ui.TimeSlider', function() {
         var end = 1424649534000;
         view.torqueLayer.getTimeBounds = function(){return {start: start, end: end}};
         view.torqueLayer.options = {steps: 5};
-        formatter = view.formatterForRange.bind(view)(start, end);
+        formatter = view.formatterForRange(start, end);
       });
       it("should return a formatter function that defines a two-date range", function() {
         var moment = new Date(1424269402400);
-        expect(formatter.bind(view)(moment)).toEqual("Feb 18 - Feb 20");
+        expect(formatter.call(view,moment)).toEqual("Feb 18 - Feb 20");
       });
     });
 

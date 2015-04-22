@@ -112,9 +112,7 @@ module CartoDB
 
           token_response = Typhoeus.post(ACCESS_TOKEN_URI, http_options(token_call_params, :post))
 
-          if token_response.return_code && token_response.return_code == :operation_timedout
-            raise DataDownloadTimeoutError.new(DATASOURCE_NAME)
-          end
+          raise DataDownloadTimeoutError.new(DATASOURCE_NAME) if token_response.timed_out?
 
           unless token_response.code == 200
             raise "Bad token response: #{token_response.body.inspect} (#{token_response.code})"
@@ -128,9 +126,7 @@ module CartoDB
           metadata_response = Typhoeus.get(MAILCHIMP_METADATA_URI,http_options({}, :get, {
                                              'Authorization' => "OAuth #{partial_access_token}"}))
 
-          if metadata_response.return_code && metadata_response.return_code == :operation_timedout
-            raise DataDownloadTimeoutError.new(DATASOURCE_NAME)
-          end
+          raise DataDownloadTimeoutError.new(DATASOURCE_NAME) if metadata_response.timed_out?
 
           unless metadata_response.code == 200
             raise "Bad metadata response: #{metadata_response.body.inspect} (#{metadata_response.code})"

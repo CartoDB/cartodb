@@ -185,7 +185,7 @@ module CartoDB
         request.run
 
         if download_error && !error_response.nil?
-          if error_response.return_code && error_response.return_code == :operation_timedout
+          if error_response.timed_out?
             raise DownloadTimeoutError.new("TIMEOUT ERROR: Body:#{error_response.body}")
           elsif error_response.headers['Error'] && error_response.headers['Error'] =~ /too many nodes/
             raise TooManyNodesError.new(error_response.headers['Error'])

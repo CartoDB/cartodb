@@ -55,9 +55,7 @@ module CartoDB
             response = Typhoeus.get(id, http_options)
           end
 
-          if response.return_code && response.return_code == :operation_timedout
-            raise DataDownloadTimeoutError.new(DATASOURCE_NAME)
-          end
+          raise DataDownloadTimeoutError.new(DATASOURCE_NAME) if response.timed_out?
 
           raise DataDownloadError.new("get_resource() #{id}", DATASOURCE_NAME) unless response.code.to_s =~ /\A[23]\d+/
           response.response_body
@@ -84,9 +82,7 @@ module CartoDB
           if url =~ URL_REGEXP
             response = Typhoeus.head(url, http_options)
 
-            if response.return_code && response.return_code == :operation_timedout
-              raise DataDownloadTimeoutError.new(DATASOURCE_NAME)
-            end
+            raise DataDownloadTimeoutError.new(DATASOURCE_NAME) if response.timed_out?
 
             # For example S3 only allows one verb per signed url (we use GET) so won't allow HEAD, but it's ok
             @headers = (response.code.to_s =~ /\A[23]\d+/) ? response.headers : {}

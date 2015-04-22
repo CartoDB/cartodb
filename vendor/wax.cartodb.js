@@ -1,4 +1,4 @@
-/* wax - 7.1.0 - v6.0.4-177-g1f244ba */
+/* wax - 7.0.1 - v6.0.4-178-gc113470 */
 
 
 !function (name, context, definition) {
@@ -3238,7 +3238,7 @@ wax.g.interaction = function() {
             var zoom = map.getZoom();
             var mapOffset = wax.u.offset(map.getDiv());
             var get = function(mapType) {
-                if (!mapType.interactive) return;
+                if (!mapType || !mapType.interactive) return;
                 for (var key in mapType.cache) {
                     if (key.split('/')[0] != zoom) continue;
                     var tileOffset = wax.u.offset(mapType.cache[key]);

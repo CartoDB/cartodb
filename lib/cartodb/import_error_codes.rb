@@ -38,17 +38,9 @@ module CartoDB
       title: 'Too many nodes',
       what_about: 'You requested too many nodes. Either request a smaller area, or use planet.osm.'
     },
-    1008 => {
-      title: 'Unable to download file',
-      what_about: "We couldn't download your file, check the URL and try again."
-    },
-    1009 => {
-      title: 'OpenStreetMaps API limit reached',
-      what_about: "You requested too many nodes (limit is 50000). Either request a smaller area, or use planet.osm"
-    },
     1010 => {
       title: 'Private Google Spreadsheet',
-      what_about: "This spreadsheet seems to be private. Please check in Google Spreadsheet sharing options that the file is public or accessible for those who know the link"
+      what_about: "This spreadsheet seems to be private. Please check in Google Spreadsheet sharing options that the file is public or accessible for those who know the link."
     },
     1011 => {
       title: 'Error retrieving data from datasource',

@@ -341,7 +341,7 @@ module CartoDB
                                 'Accept' => 'application/json'
                               }.merge(extra_headers),
             ssl_verifyhost:   0,
-            connect_timeout:  @http_connect_timeout,
+            connecttimeout:  @http_connect_timeout,
             timeout:          @http_timeout
           }
         end

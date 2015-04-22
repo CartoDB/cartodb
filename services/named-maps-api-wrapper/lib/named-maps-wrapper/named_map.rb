@@ -38,7 +38,7 @@ module CartoDB
           ssl_verifypeer:   parent.verify_cert,
           ssl_verifyhost:   parent.verify_host,
           followlocation:   true,
-          connect_timeout:  HTTP_CONNECT_TIMEOUT,
+          connecttimeout:  HTTP_CONNECT_TIMEOUT,
           timeout:          HTTP_REQUEST_TIMEOUT
           } )
 
@@ -66,7 +66,7 @@ module CartoDB
             ssl_verifypeer:   @parent.verify_cert,
             ssl_verifyhost:   @parent.verify_host,
             followlocation:   true,
-            connect_timeout:  HTTP_CONNECT_TIMEOUT,
+            connecttimeout:  HTTP_CONNECT_TIMEOUT,
             timeout:          HTTP_REQUEST_TIMEOUT
           } )
 
@@ -91,7 +91,7 @@ module CartoDB
             ssl_verifypeer:   @parent.verify_cert,
             ssl_verifyhost:   @parent.verify_host,
             followlocation:   true,
-            connect_timeout:  HTTP_CONNECT_TIMEOUT,
+            connecttimeout:  HTTP_CONNECT_TIMEOUT,
             timeout:          HTTP_REQUEST_TIMEOUT
           } )
         raise HTTPResponseError, "DELETE:#{response.code} #{response.request.url} #{response.body}" unless response.code == 204

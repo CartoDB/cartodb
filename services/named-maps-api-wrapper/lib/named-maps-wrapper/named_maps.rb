@@ -35,7 +35,7 @@ module CartoDB
                     ssl_verifypeer:   @verify_cert,
                     ssl_verifyhost:   @verify_host,
                     followlocation:   true,
-                    connect_timeout:  NamedMap::HTTP_CONNECT_TIMEOUT,
+                    connecttimeout:  NamedMap::HTTP_CONNECT_TIMEOUT,
                     timeout:          NamedMap::HTTP_REQUEST_TIMEOUT
                 })
                 raise HTTPResponseError, "GET:#{response.code} #{response.request.url} #{response.body}" if response.code != 200
@@ -52,7 +52,7 @@ module CartoDB
                     ssl_verifypeer:   @verify_cert,
                     ssl_verifyhost:   @verify_host,
                     followlocation:   true,
-                    connect_timeout:  NamedMap::HTTP_CONNECT_TIMEOUT,
+                    connecttimeout:  NamedMap::HTTP_CONNECT_TIMEOUT,
                     timeout:          NamedMap::HTTP_REQUEST_TIMEOUT
                 })
 

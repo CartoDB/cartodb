@@ -2,7 +2,6 @@
 * Infowindow in anonymous maps are requested by attributes endpoint in maps api so SQL API is not used anymore
 * Changed the way remote host is set for maps and sql API.
 * Fixed error management when map instanciation fails
-* Don't assume mapType is defined.
 * Deprecation warning:
     - tiler_host, tiler_prototol, tiler_port, sql_api_domain, sql_api_protocol are deprecated, use sql_api_template and maps_api_template instead. https://github.com/CartoDB/cartodb.js/blob/develop/doc/API.md#how-to-set-a-different-host-than-cartodbcom
 

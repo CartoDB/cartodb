@@ -85,9 +85,6 @@ describe Downloader do
       downloader.modified?.should eq false
     end
 
-    it "doesn't generate a source file if checksum hasn't changed" do
-    end
-
     it "raises if remote URL doesn't respond with a 2XX code" do
       stub_failed_download(
         url:       @file_url,

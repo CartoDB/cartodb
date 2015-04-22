@@ -710,7 +710,8 @@ class DataImport < Sequel::Model
                   'is_sync_import'    => !self.synchronization_id.nil?,
                   'import_time'       => self.updated_at - self.created_at,
                   'file_stats'        => ::JSON.parse(self.stats),
-                  'resque_ppid'       => self.resque_ppid
+                  'resque_ppid'       => self.resque_ppid,
+                  'user_timeout'      => ::DataImport.http_timeout_for(current_user)
                  }
     if !self.extra_options.nil?
       import_log['extra_options'] = self.extra_options

@@ -252,7 +252,8 @@ module CartoDB
           'user'              => user.username,
           'queue_server'      => `hostname`.strip,
           'resque_ppid'       => Process.ppid,
-          'state'             => self.state
+          'state'             => self.state,
+          'user_timeout'      => ::DataImport.http_timeout_for(user)
         }
         synchronizations_logger.info(sync_log.to_json)
       end

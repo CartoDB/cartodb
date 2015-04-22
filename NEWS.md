@@ -9,6 +9,7 @@ Bugfixes:
 * Fix http cancelled requests [#3227](https://github.com/CartoDB/cartodb/pull/3227)
 * Fix for "Cannot read property 'layers'" [#3302](https://github.com/CartoDB/cartodb/pull/3302)
 * Fix for type guessing in synchronization imports [#3264](http://github.com/CartoDB/cartodb/issues/3264)
+* Deleted unused endpoints for POST/DELETE api/v1/maps
 
 3.10.0 (2015-04-08)
 -------------------

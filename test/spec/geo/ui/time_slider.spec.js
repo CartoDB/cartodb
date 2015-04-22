@@ -73,7 +73,7 @@ describe('cdb.geo.ui.TimeSlider', function() {
       });
       it("should return a formatter function that defines a two-date range", function() {
         var moment = new Date(1424269402400);
-        expect(formatter.call(view,moment)).toEqual("Feb 18 - Feb 20");
+        expect(formatter(moment, view.torqueLayer)).toEqual("Feb 18 - Feb 20");
       });
     });
 

@@ -36,6 +36,7 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
     this.wasRunning = false;
 
     this._bindLayer(this.options.layer);
+
     this.on('clean', this._unbindLayer);
     cdb.geo.ui.InfoBox.prototype.initialize.call(this);
 
@@ -88,7 +89,7 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
         var f = self.options.formatter || this.formatterForRange(tb.start, tb.end);
         // avoid showing invalid dates
         if (!_.isNaN(changes.time.getYear())) {
-          self.$('.value').text(f.bind(this,changes.time,changes));
+          self.$('.value').text(f(changes.time, this.torqueLayer));
         }
       }
     } else {
@@ -123,10 +124,10 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
       return pad(date.getUTCHours()) + ":" + pad(date.getUTCMinutes());
     }
 
-    function toDateRange(date) {
+    function toDateRange(date, torqueLayer) {
       var stepStartTimeMS = date.getTime();
-      var tb = this.torqueLayer.getTimeBounds();
-      var stepDurationMS = (new Date(tb.end).getTime() - new Date(tb.start).getTime()) / this.torqueLayer.options.steps;
+      var tb = torqueLayer.getTimeBounds();
+      var stepDurationMS = (new Date(tb.end).getTime() - new Date(tb.start).getTime()) / torqueLayer.options.steps;
       var stepEndTime = new Date(stepStartTimeMS + stepDurationMS);
       var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
       return pad(months[date.getUTCMonth()]) + " " + pad(date.getUTCDate())  + " - " 

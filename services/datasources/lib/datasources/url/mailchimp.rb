@@ -43,6 +43,9 @@ module CartoDB
           @app_key = config.fetch('app_key')
           @app_secret = config.fetch('app_secret')
 
+          @http_timeout = config.fetch(:http_timeout)
+          @http_connect_timeout = config.fetch(:http_connect_timeout)
+
           placeholder = CALLBACK_STATE_DATA_PLACEHOLDER.sub('user', @user.username).sub('service', DATASOURCE_NAME)
           @callback_url = "#{config.fetch('callback_url')}?state=#{placeholder}"
 
@@ -92,6 +95,7 @@ module CartoDB
         # Validates the authorization callback
         # @param params : mixed
         # @throws AuthError
+        # @throws DataDownloadTimeoutError
         def validate_callback(params)
           code = params.fetch('code')
           if code.nil? || code == ''
@@ -107,6 +111,9 @@ module CartoDB
           }
 
           token_response = Typhoeus.post(ACCESS_TOKEN_URI, http_options(token_call_params, :post))
+
+          raise DataDownloadTimeoutError.new(DATASOURCE_NAME) if token_response.timed_out?
+
           unless token_response.code == 200
             raise "Bad token response: #{token_response.body.inspect} (#{token_response.code})"
           end
@@ -118,6 +125,9 @@ module CartoDB
           # @see https://apidocs.mailchimp.com/oauth2/
           metadata_response = Typhoeus.get(MAILCHIMP_METADATA_URI,http_options({}, :get, {
                                              'Authorization' => "OAuth #{partial_access_token}"}))
+
+          raise DataDownloadTimeoutError.new(DATASOURCE_NAME) if metadata_response.timed_out?
+
           unless metadata_response.code == 200
             raise "Bad metadata response: #{metadata_response.body.inspect} (#{metadata_response.code})"
           end
@@ -331,7 +341,8 @@ module CartoDB
                                 'Accept' => 'application/json'
                               }.merge(extra_headers),
             ssl_verifyhost:   0,
-            timeout:          60
+            connect_timeout:  @http_connect_timeout,
+            timeout:          @http_timeout
           }
         end
 

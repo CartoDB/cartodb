@@ -31,10 +31,12 @@ module CartoDB
             # Retrieve a list of all named maps
             def all
                 response = Typhoeus.get(@url + '?api_key=' + @api_key, {
-                    headers: @headers,
-                    ssl_verifypeer: @verify_cert,
-                    ssl_verifyhost: @verify_host,
-                    followlocation: true
+                    headers:          @headers,
+                    ssl_verifypeer:   @verify_cert,
+                    ssl_verifyhost:   @verify_host,
+                    followlocation:   true,
+                    connect_timeout:  NamedMap::HTTP_CONNECT_TIMEOUT,
+                    timeout:          NamedMap::HTTP_REQUEST_TIMEOUT
                 })
                 raise HTTPResponseError, "GET:#{response.code} #{response.request.url} #{response.body}" if response.code != 200
 
@@ -46,10 +48,12 @@ module CartoDB
                 raise NamedMapsDataError, { 'name' => 'mising' } if name.nil? or name.length == 0
 
                 response = Typhoeus.get( [@url, name ].join('/') + '?api_key=' + @api_key, {
-                    headers: @headers,
-                    ssl_verifypeer: @verify_cert,
-                    ssl_verifyhost: @verify_host,
-                    followlocation: true
+                    headers:          @headers,
+                    ssl_verifypeer:   @verify_cert,
+                    ssl_verifyhost:   @verify_host,
+                    followlocation:   true,
+                    connect_timeout:  NamedMap::HTTP_CONNECT_TIMEOUT,
+                    timeout:          NamedMap::HTTP_REQUEST_TIMEOUT
                 })
 
                 if response.code == 200

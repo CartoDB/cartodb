@@ -8,6 +8,10 @@ module CartoDB
       MIN_PAGE_RESULTS = 10
       MAX_PAGE_RESULTS = 500
 
+      # in seconds
+      HTTP_CONNECT_TIMEOUT = 60
+      HTTP_REQUEST_TIMEOUT = 600
+
       CONFIG_AUTH_REQUIRED = :auth_required
       CONFIG_AUTH_USERNAME = :username
       CONFIG_AUTH_PASSWORD = :password
@@ -131,8 +135,10 @@ module CartoDB
           ssl_verifypeer:   false,
           accept_encoding:  'gzip',
           headers:          { 'Accept-Charset' => 'utf-8' },
-          ssl_verifyhost:     0,
-          nosignal: true
+          ssl_verifyhost:   0,
+          nosignal:         true,
+          connect_timeout:  HTTP_CONNECT_TIMEOUT,
+          timeout:          HTTP_REQUEST_TIMEOUT
         }
         if @config[CONFIG_AUTH_REQUIRED]
           # Basic authentication

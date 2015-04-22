@@ -2,8 +2,6 @@
 @import "../new_variables/colors";
 @import "../new_variables/sizes";
 
-$cExpandedBkg: rgba(#F9F9F9, 1);
-
 /* set by base dialog */
 body.is-inDialog {
   overflow: hidden;
@@ -65,10 +63,10 @@ body.is-inDialog {
 .Dialog-body--expanded {
   @include flex-grow(100);
   // Forcing to get 80% of height
-  // if not IE10 will not show 
+  // if not IE10 will not show
   // scrollbar in higher content
   -ms-flex: 100 0 80%;
-  background-color: $cStructure-grayBkg;
+  background-color: $cStructure-lighterGrayBkg;
 }
 .Dialog-footer--expanded {
   width: 100%;
@@ -164,7 +162,7 @@ $sStickyHeight: 97px;
 .Dialog-expandedSubContent {
   @include flex-grow(100);
   border: 1px solid $cStructure-mainLine;
-  background-color: $cExpandedBkg;
+  background-color: $cStructure-lighterGrayBkg;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -173,7 +171,7 @@ $sStickyHeight: 97px;
 }
 .Dialog-stickySubHeader {
   position: fixed;
-  background-color: $cExpandedBkg;
+  background-color: $cStructure-lighterGrayBkg;
   padding: $sMargin-group 0;
   border-bottom: 1px solid $cStructure-mainLine;
   width: $sLayout-width;

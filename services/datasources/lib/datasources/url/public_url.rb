@@ -166,7 +166,7 @@ module CartoDB
               ssl_verifypeer:   false,
               ssl_verifyhost:   0,
               timeout:          @http_timeout,
-              connect_timeout:  @http_connect_timeout
+              connecttimeout:  @http_connect_timeout
           }
         end
 

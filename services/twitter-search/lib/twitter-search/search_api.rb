@@ -137,7 +137,7 @@ module CartoDB
           headers:          { 'Accept-Charset' => 'utf-8' },
           ssl_verifyhost:   0,
           nosignal:         true,
-          connect_timeout:  HTTP_CONNECT_TIMEOUT,
+          connecttimeout:  HTTP_CONNECT_TIMEOUT,
           timeout:          HTTP_REQUEST_TIMEOUT
         }
         if @config[CONFIG_AUTH_REQUIRED]

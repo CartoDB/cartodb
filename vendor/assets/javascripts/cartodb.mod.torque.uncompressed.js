@@ -5296,7 +5296,6 @@ var GMapsTorqueLayerView = function(layerModel, gmapsMap) {
       map: gmapsMap,
       cartodb_logo: layerModel.get('cartodb_logo'),
       attribution: layerModel.get('attribution'),
-      cdn_url: layerModel.get('no_cdn') ? null: (layerModel.get('cdn_url') || cdb.CDB_HOST),
       cartocss: layerModel.get('cartocss') || layerModel.get('tile_style'),
       named_map: layerModel.get('named_map'),
       auth_token: layerModel.get('auth_token'),
@@ -5406,7 +5405,6 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
       },
       cartodb_logo: layerModel.get('cartodb_logo'),
       attribution: layerModel.get('attribution'),
-      cdn_url: layerModel.get('no_cdn') ? null: (layerModel.get('cdn_url') || cdb.CDB_HOST),
       cartocss: layerModel.get('cartocss') || layerModel.get('tile_style'),
       named_map: layerModel.get('named_map'),
       auth_token: layerModel.get('auth_token'),
@@ -5545,7 +5543,13 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
   },
 
   updateSliderRange: function(changes) {
-    this.$(".slider" ).slider({ max: changes.steps - 1 });
+    if (changes.steps > 1){
+      this.show();
+      this.$(".slider" ).slider({ max: changes.steps - 1 });
+    }
+    else{
+      this.hide();
+    }
   },
 
   // each time time changes, move the slider

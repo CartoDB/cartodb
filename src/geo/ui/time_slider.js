@@ -88,7 +88,7 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
         var f = self.options.formatter || this.formatterForRange(tb.start, tb.end);
         // avoid showing invalid dates
         if (!_.isNaN(changes.time.getYear())) {
-          self.$('.value').text(f(changes.time));
+          self.$('.value').text(f.bind(this,changes.time,changes));
         }
       }
     } else {
@@ -107,8 +107,9 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
     var ONE_DAY = 3600*24;
     var THREE_DAYS = ONE_DAY*3;
     var ONE_YEAR = ONE_DAY * 31 * 12;
-
-    var stepDurationMS = (end.getTime() - start.getTime()) / this.torqueLayer.options.steps;
+    if(this.torqueLayer.options){
+      var stepDurationMS = (end.getTime() - start.getTime()) / this.torqueLayer.options.steps;
+    }
 
     function pad(n) {
       return n < 10 ? '0' + n : n;
@@ -122,7 +123,7 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
       return pad(date.getUTCHours()) + ":" + pad(date.getUTCMinutes());
     }
 
-    function toDateRange(date, changes) {
+    function toDateRange(date) {
       var stepStartTimeMS = date.getTime();
       var tb = this.torqueLayer.getTimeBounds();
       var stepDurationMS = (new Date(tb.end).getTime() - new Date(tb.start).getTime()) / this.torqueLayer.options.steps;

@@ -336,9 +336,7 @@ CartoDB::Application.routes.draw do
 
     # Maps
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:id' => 'maps#show',    as: :api_v1_maps_show
-    post   '(/user/:user_domain)(/u/:user_domain)/api/v1/maps'     => 'maps#create',  as: :api_v1_maps_create
     put    '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:id' => 'maps#update',  as: :api_v1_maps_update
-    delete '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:id' => 'maps#destroy', as: :api_v1_maps_destroy
 
     # Map layers
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:map_id/layers'     => 'layers#index',   as: :api_v1_maps_layers_index

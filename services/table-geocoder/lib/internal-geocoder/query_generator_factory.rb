@@ -29,10 +29,14 @@ module CartoDB
           input_type ||= InputTypeResolver.new(internal_geocoder).type
 
           case input_type
+            when [:namedplace, :text, nil, :point]
+              CitiesTextTextPoints.new internal_geocoder
             when [:namedplace, :text, :text, :point]
               CitiesTextTextPoints.new internal_geocoder
             when [:namedplace, :text, :column, :point]
               CitiesTextColumnPoints.new internal_geocoder
+            when [:namedplace, :column, nil, :point]
+              CitiesColumnTextPoints.new internal_geocoder
             when [:namedplace, :column, :text, :point]
               CitiesColumnTextPoints.new internal_geocoder
             when [:namedplace, :column, :column, :point]

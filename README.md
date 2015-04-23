@@ -1,4 +1,4 @@
-CartoDB.js (v3.13)
+CartoDB.js (v3.14)
 ===========
 
 [![Build Status](http://clinker.cartodb.net/desktop/plugin/public/status/CartoDB-js-develop-testing)]
@@ -13,14 +13,14 @@ This library allows to embed you visualizations created with CartoDB in your map
 
     ```html
 
-        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.13/themes/css/cartodb.css" />
-        <script src="http://libs.cartocdn.com/cartodb.js/v3/3.13/cartodb.js"></script>
+        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.14/themes/css/cartodb.css" />
+        <script src="http://libs.cartocdn.com/cartodb.js/v3/3.14/cartodb.js"></script>
 
         <!-- use these cartodb.css links if you are using https -->
-        <!--link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.13/themes/css/cartodb.css" /-->
+        <!--link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.14/themes/css/cartodb.css" /-->
 
         <!-- use this cartodb.js link if you are using https -->
-        <!-- script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.13/cartodb.js"></script -->
+        <!-- script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.14/cartodb.js"></script -->
     ```
 
 

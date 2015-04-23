@@ -1,5 +1,6 @@
 3.10.1 ()
 ---------
+* Fix tooltips in the legend editor [3341](https://github.com/CartoDB/cartodb/pull/3341)
 * Sort category names alphabetically in legends [3218](https://github.com/CartoDB/cartodb/pull/3218)
 * Editable descriptions and tags in the maps and datasets view [3129](https://github.com/CartoDB/cartodb/pull/3129)
 * Add caching of geometry types [#3157](https://github.com/CartoDB/cartodb/pull/3157)
@@ -14,6 +15,7 @@ Bugfixes:
 * Fix for type guessing in synchronization imports [#3264](http://github.com/CartoDB/cartodb/issues/3264)
 * Deleted unused endpoints for POST/DELETE api/v1/maps
 * Avoid infinite recursion when renaming table [#3330](https://github.com/CartoDB/cartodb/pull/3330)
+* Script to delete inconsistent vizs [#3342](https://github.com/CartoDB/cartodb/pull/3342)
 
 3.10.0 (2015-04-08)
 -------------------

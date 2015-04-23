@@ -351,6 +351,7 @@
       return {
         type: "torque",
         options: {
+          step: this.userOptions.step || 0,
           sql: query,
           cartocss: cartocss
         }

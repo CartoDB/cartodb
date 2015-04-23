@@ -49,10 +49,10 @@
           </div>
           <div class="PublicMap-rightBlock">
             <nav class="PublicMap-share">
-              <a href="http://www.facebook.com/sharer.php?u=<%= request.original_url %>&text=<%= @visualization.name %> by <%= @name %> with CartoDB" target="_blank" class="PublicMap-shareButton PublicMap-shareButton--facebook">
+              <a href="http://www.facebook.com/sharer.php?u=<%= url_encode(request.original_url) %>&text=<%= url_encode("#{@visualization.name} by #{@name} with CartoDB") %>" target="_blank" class="PublicMap-shareButton PublicMap-shareButton--facebook">
                 <i class="iconFont iconFont-Facebook"></i>
               </a>
-              <a href="https://twitter.com/share?url=<%= request.original_url %>&text=<%= @visualization.name %> by <% if @visualization.user.twitter_username.present? %><%= @visualization.user.twitter_username %><% else %><%= @name %><% end %> with @cartodb" target="_blank" class="PublicMap-shareButton PublicMap-shareButton--twitter">
+              <a href="https://twitter.com/share?url=<%= url_encode(request.original_url) %>&text=<%= url_encode("#{@visualization.name} by #{@visualization.user.twitter_username.present? ? @visualization.user.twitter_username : @name} with @cartodb") %>" target="_blank" class="PublicMap-shareButton PublicMap-shareButton--twitter">
                 <i class="iconFont iconFont-Twitter"></i>
               </a>
             </nav>

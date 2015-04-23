@@ -12,6 +12,7 @@ Bugfixes:
 * Fix for type guessing in synchronization imports [#3264](http://github.com/CartoDB/cartodb/issues/3264)
 * Deleted unused endpoints for POST/DELETE api/v1/maps
 * Avoid infinite recursion when renaming table [#3330](https://github.com/CartoDB/cartodb/pull/3330)
+* Script to delete inconsistent vizs [#3342](https://github.com/CartoDB/cartodb/pull/3342)
 
 3.10.0 (2015-04-08)
 -------------------

@@ -37,7 +37,7 @@
           <div class="Form-rowLabel">
             <label class="Form-label">Username</label>
           </div>
-          <div class="Form-rowData">
+          <div class="Form-rowData Form-rowData--med">
             <%= f.text_field :username, readonly: true, :class => "Form-input Form-input--long is-disabled" %>
           </div>
           <div class="Form-rowInfo">
@@ -49,7 +49,7 @@
           <div class="Form-rowLabel">
             <label class="Form-label">Email</label>
           </div>
-          <div class="Form-rowData">
+          <div class="Form-rowData Form-rowData--med">
             <%= f.text_field :email, class: "Form-input Form-input--long #{ 'Form-input--error' if @user.errors[:email].present? } #{ 'is-disabled' unless @user.can_change_email }", readonly: !@user.can_change_email %>
           </div>
           <div class="Form-rowInfo">
@@ -66,7 +66,7 @@
             <div class="Form-rowLabel">
               <label class="Form-label">Old password</label>
             </div>
-            <div class="Form-rowData">
+            <div class="Form-rowData Form-rowData--med">
               <%= f.password_field :old_password, :class => "Form-input Form-input--long #{ 'Form-input--error' if @user.errors[:old_password].present? }" %>
             </div>
             <div class="Form-rowInfo">
@@ -81,7 +81,7 @@
           <div class="Form-rowLabel">
             <label class="Form-label">New password</label>
           </div>
-          <div class="Form-rowData">
+          <div class="Form-rowData Form-rowData--med">
             <%= f.password_field :new_password, :class => "Form-input Form-input--long #{ 'Form-input--error' if @user.errors[:new_password].present? }" %>
           </div>
           <div class="Form-rowInfo">
@@ -97,8 +97,102 @@
           <div class="Form-rowLabel">
             <label class="Form-label">Confirm password</label>
           </div>
-          <div class="Form-rowData">
+          <div class="Form-rowData Form-rowData--med">
             <%= f.password_field :confirm_password, :class => "Form-input Form-input--long" %>
+          </div>
+        </div>
+
+        <div class="Form-title">
+          <h4 class="Form-titleHeader">Connect with external data sources</h4>
+          <p class="Form-titleText">Connect your services to import your data, hastags or wathever
+          you need for your maps visualizations. Also you can login with them.</p>
+        </div>
+
+        <div class="Form-row">
+          <div class="Form-rowLabel">
+            <label class="Form-label">Google Drive</label>
+          </div>
+          <div class="Form-rowData Form-rowData--med">
+            <% if @services["gdrive"] %>
+              <input class="Form-input Form-input--med is-disabled" readonly value="Connected" />
+            <% else %>
+              <button class="Form-link">
+                <i class="ServiceIcon ServiceIcon--GDrive"></i>Connect
+              </button>
+            <% end %>
+          </div>
+          <div class="Form-rowInfo">
+            <p class="Form-rowInfoText">
+              <% if @services["gdrive"] %>
+                <button class="Form-link">Disconnect</button>
+              <% end %>
+            </p>
+          </div>
+        </div>
+
+        <div class="Form-row">
+          <div class="Form-rowLabel">
+            <label class="Form-label">Dropbox</label>
+          </div>
+          <div class="Form-rowData Form-rowData--med">
+            <% if @services["dropbox"] %>
+              <input class="Form-input Form-input--med is-disabled" readonly value="Connected" />
+            <% else %>
+              <button class="Form-link">
+                <i class="ServiceIcon ServiceIcon--Dropbox"></i>Connect
+              </button>
+            <% end %>
+          </div>
+          <div class="Form-rowInfo">
+            <p class="Form-rowInfoText">
+              <% if @services["dropbox"] %>
+                <button class="Form-link">Disconnect</button>
+              <% end %>
+            </p>
+          </div>
+        </div>
+
+        <div class="Form-row">
+          <div class="Form-rowLabel">
+            <label class="Form-label">MailChimp</label>
+          </div>
+          <div class="Form-rowData Form-rowData--med">
+            <% if @services["mailchimp"] %>
+              <input class="Form-input Form-input--med is-disabled" readonly value="Connected" />
+            <% else %>
+              <button class="Form-link">
+                <i class="ServiceIcon ServiceIcon--Mailchimp"></i>Connect
+              </button>
+            <% end %>
+          </div>
+          <div class="Form-rowInfo">
+            <p class="Form-rowInfoText">
+              <% if @services["mailchimp"] %>
+                <button class="Form-link">Disconnect</button>
+              <% end %>
+            </p>
+          </div>
+        </div>
+
+        <div class="Form-row">
+          <div class="Form-rowLabel">
+            <label class="Form-label">Instagram</label>
+          </div>
+          <div class="Form-rowData Form-rowData--med">
+            <% if @services["instagram"] %>
+              <input class="Form-input Form-input--med is-disabled" readonly value="Connected" />
+            <% else %>
+              <button class="Form-link">
+                <i class="ServiceIcon ServiceIcon--Instagram"></i>Connect
+              </button>
+            <% end %>
+          </div>
+          <div class="Form-rowInfo">
+            <p class="Form-rowInfoText">
+              <% if @services["instagram"] %>
+                <button class="Form-link">Disconnect</button>
+              <% end %>
+            </p>
           </div>
         </div>
 

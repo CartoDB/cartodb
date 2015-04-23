@@ -11,9 +11,19 @@
 .Form-title {
   display: block;
   margin: $sMargin-section 0;
-  width: 460px;
+  width: 100%;
+}
+.Form-titleHeader {
+  display: block;
+  padding-bottom: 12px;
+  margin-bottom: $sMargin-section;
+  border-bottom: 1px solid $cStructure-mainLine;
+  font-size: $sFontSize-normal;
+  color: $cTypography-headers;
+  font-weight: $sFontWeight-bold;
 }
 .Form-titleText {
+  width: 460px;
   font-size: $sFontSize-large;
   font-weight: $sFontWeight-lighter;
   color: $cTypography-paragraphs;

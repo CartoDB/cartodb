@@ -1,13 +1,14 @@
 # coding: utf-8
 require_relative '../../../lib/google_plus_api'
 require_relative '../../../lib/google_plus_config'
+require_relative '../../../services/datasources/lib/datasources'
 
 class Admin::UsersController < ApplicationController
   ssl_required  :account, :profile, :account_update, :profile_update, :delete
 
   before_filter :login_required
   before_filter :setup_user
-  before_filter :initialize_google_plus_config, only: [:profile, :account]
+  #before_filter :initialize_google_plus_config, only: [:profile, :account]
 
   def initialize_google_plus_config
     signup_action = Cartodb::Central.sync_data_with_cartodb_central? ? Cartodb::Central.new.google_signup_url : '/google/signup'
@@ -25,6 +26,7 @@ class Admin::UsersController < ApplicationController
   end
 
   def account
+    @services = get_oauth_services
     unless @user.has_feature_flag?('new_dashboard')
       redirect_to @user.account_url(request.protocol) and return
     end
@@ -115,6 +117,18 @@ class Admin::UsersController < ApplicationController
   end
 
   private
+
+  def get_oauth_services
+    datasources = CartoDB::Datasources::DatasourcesFactory.get_all_oauth_datasources()
+    obj ||= Hash.new
+
+    datasources.each do |serv|
+      oauth = @user.oauths.select(serv)
+      obj[serv] = !oauth.nil? ? true : false
+    end
+
+    obj
+  end
 
   def setup_user
     @user = current_user

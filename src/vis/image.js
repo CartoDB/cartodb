@@ -97,7 +97,7 @@
 
     },
 
-    loadLayerDefinition: function(layerDefinition) {
+    loadLayerDefinition: function(layerDefinition, options) {
 
       var self = this;
 
@@ -108,12 +108,15 @@
         return;
       }
 
+      this.userOptions = options;
+
       this.options.user_name      = layerDefinition.user_name;
       this.options.tiler_protocol = layerDefinition.tiler_protocol;
       this.options.tiler_domain   = layerDefinition.tiler_domain;
       this.options.tiler_port     = layerDefinition.tiler_port;
       this.options.maps_api_template = layerDefinition.maps_api_template;
       this.endPoint = "/api/v1/map";
+
       if (!this.options.maps_api_template) {
         this._buildMapsApiTemplate(this.options);
       }
@@ -541,7 +544,7 @@
     if (typeof data === 'string') {
       image.load(data, options);
     } else {
-      image.loadLayerDefinition(data);
+      image.loadLayerDefinition(data, options);
     }
 
     return image;

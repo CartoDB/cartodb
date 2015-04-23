@@ -44,6 +44,17 @@ namespace :cartodb do
         end
       end
     end
-  
+
+    desc "Unshare all entities for a given user"
+    task :unshare_all_entities, [:user] => :environment do |t, args|
+      user = User.find(username: args[:user])
+      CartoDB::Permission.where(owner_id: user.id).each do |permission|
+        unless permission.acl.empty?
+          puts "Deleting permission: #{permission.acl}"
+          permission.acl = []
+          permission.save
+        end
+      end
+    end
   end
 end

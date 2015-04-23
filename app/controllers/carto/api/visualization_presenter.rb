@@ -64,7 +64,9 @@ class Carto::Api::VisualizationPresenter
   private
 
   def related_tables
-    related = @visualization.table ? @visualization.related_tables.select { |table| table.id != @visualization.table.id } : @visualization.related_tables
+    related = @visualization.table ? 
+      @visualization.related_tables.select { |table| table.id != @visualization.table.id } : 
+      @visualization.related_tables
 
     related.map { |table| Carto::Api::UserTablePresenter.new(table, @visualization.permission).to_poro }
   end

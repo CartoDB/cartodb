@@ -177,10 +177,13 @@ module CartoDB
       end
 
       def with_template(infowindow, path)
-        # assumes we want no template if at least one field is nil
-        return nil if infowindow.nil? || path.nil?
+        # Careful with this logic:
+        # - nil means absolutely no infowindow (e.g. a torque)
+        # - path = nil or template filled: either pre-filled or custom infowindow, nothing to do here
+        # - template and path not nil but template not filled: stay and fill
+        return nil if infowindow.nil?
         template = infowindow['template']
-        return infowindow unless template.nil? || template.empty?
+        return infowindow if (!template.nil? && !template.empty?) || path.nil?
 
         infowindow.merge!(template: File.read(path))
         infowindow

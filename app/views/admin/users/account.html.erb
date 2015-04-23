@@ -115,7 +115,7 @@
           </div>
 
           <% if Cartodb.config[:oauth]['gdrive']['client_id'].present? %>
-            <div class="Form-row">
+            <div class="Form-row js-serviceItem">
               <div class="Form-rowLabel">
                 <label class="Form-label">Google Drive</label>
               </div>
@@ -123,7 +123,7 @@
                 <% if @services["gdrive"] %>
                   <input class="Form-input Form-input--med is-disabled" readonly value="Connected" />
                 <% else %>
-                  <button class="Form-link">
+                  <button class="Form-link" data-service="gdrive" data-name="Google Drive">
                     <i class="ServiceIcon ServiceIcon--GDrive"></i>Connect
                   </button>
                 <% end %>
@@ -131,7 +131,7 @@
               <div class="Form-rowInfo">
                 <p class="Form-rowInfoText">
                   <% if @services["gdrive"] %>
-                    <button class="Form-link">Disconnect</button>
+                    <button class="Form-link js-disconnect" data-service="gdrive" data-name="Google Drive">Disconnect</button>
                   <% end %>
                 </p>
               </div>
@@ -139,7 +139,7 @@
           <% end %>
 
           <% if Cartodb.config[:oauth]['dropbox']['app_key'].present? %>
-            <div class="Form-row">
+            <div class="Form-row js-serviceItem">
               <div class="Form-rowLabel">
                 <label class="Form-label">Dropbox</label>
               </div>
@@ -147,7 +147,7 @@
                 <% if @services["dropbox"] %>
                   <input class="Form-input Form-input--med is-disabled" readonly value="Connected" />
                 <% else %>
-                  <button class="Form-link">
+                  <button class="Form-link js-connect" data-service="dropbox" data-name="Dropbox">
                     <i class="ServiceIcon ServiceIcon--Dropbox"></i>Connect
                   </button>
                 <% end %>
@@ -155,7 +155,7 @@
               <div class="Form-rowInfo">
                 <p class="Form-rowInfoText">
                   <% if @services["dropbox"] %>
-                    <button class="Form-link">Disconnect</button>
+                    <button class="Form-link js-disconnect" data-service="dropbox" data-name="Dropbox">Disconnect</button>
                   <% end %>
                 </p>
               </div>
@@ -163,7 +163,7 @@
           <% end %>
 
           <% if Cartodb.config[:oauth]['mailchimp']['app_key'].present? && current_user.has_feature_flag?('mailchimp_import') %>
-            <div class="Form-row">
+            <div class="Form-row js-serviceItem">
               <div class="Form-rowLabel">
                 <label class="Form-label">MailChimp</label>
               </div>
@@ -171,7 +171,7 @@
                 <% if @services["mailchimp"] %>
                   <input class="Form-input Form-input--med is-disabled" readonly value="Connected" />
                 <% else %>
-                  <button class="Form-link">
+                  <button class="Form-link js-connect" data-service="mailchimp" data-name="MailChimp">
                     <i class="ServiceIcon ServiceIcon--Mailchimp"></i>Connect
                   </button>
                 <% end %>
@@ -179,7 +179,7 @@
               <div class="Form-rowInfo">
                 <p class="Form-rowInfoText">
                   <% if @services["mailchimp"] %>
-                    <button class="Form-link">Disconnect</button>
+                    <button class="Form-link js-disconnect" data-service="mailchimp" data-name="MailChimp">Disconnect</button>
                   <% end %>
                 </p>
               </div>
@@ -187,7 +187,7 @@
           <% end %>
 
           <% if Cartodb.config[:oauth]['instagram']['app_key'].present? && current_user.has_feature_flag?('instagram_import') %>
-            <div class="Form-row">
+            <div class="Form-row js-serviceItem">
               <div class="Form-rowLabel">
                 <label class="Form-label">Instagram</label>
               </div>
@@ -195,7 +195,7 @@
                 <% if @services["instagram"] %>
                   <input class="Form-input Form-input--med is-disabled" readonly value="Connected" />
                 <% else %>
-                  <button class="Form-link">
+                  <button class="Form-link js-connect" data-service="instagram" data-name="Instagram">
                     <i class="ServiceIcon ServiceIcon--Instagram"></i>Connect
                   </button>
                 <% end %>
@@ -203,7 +203,7 @@
               <div class="Form-rowInfo">
                 <p class="Form-rowInfoText">
                   <% if @services["instagram"] %>
-                    <button class="Form-link">Disconnect</button>
+                    <button class="Form-link js-disconnect" data-service="instagram" data-name="Instagram">Disconnect</button>
                   <% end %>
                 </p>
               </div>

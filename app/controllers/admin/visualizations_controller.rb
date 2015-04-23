@@ -62,6 +62,7 @@ class Admin::VisualizationsController < ApplicationController
     end
 
     @visualization, @table = resolve_visualization_and_table(request)
+    @google_maps_api_key = @visualization.user.google_maps_api_key
     return(pretty_404) unless @visualization
     return(pretty_404) if disallowed_type?(@visualization)
 
@@ -212,6 +213,7 @@ class Admin::VisualizationsController < ApplicationController
 
     @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)
     @avatar_url             = @visualization.user.avatar
+    @google_maps_api_key = @visualization.user.google_maps_api_key
 
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
     @visualization_count    = @visualization.user.public_visualization_count

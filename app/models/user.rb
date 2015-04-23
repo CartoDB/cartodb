@@ -2344,6 +2344,16 @@ TRIGGER
     CartoDB::Visualization::Member.redis_cache.del redis_keys unless redis_keys.empty?
   end
 
+  # returns google maps api key. If the user is in an organization and 
+  # that organization has api key it's used
+  def google_maps_api_key
+    if has_organization?
+      self.organization.google_maps_key || self.google_maps_key
+    else
+      self.google_maps_key
+    end
+  end
+
   private
 
   # INFO: assigning to owner is necessary because of payment reasons

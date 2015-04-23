@@ -21,8 +21,10 @@
   </script>
 
   <% content_for(:js) do %>
-    <script type="text/javascript"
-        src="https://maps.google.com/maps/api/js?sensor=false&v=3.12">
+  <% if @google_maps_api_key %>
+        <script type="text/javascript"
+            src="https://maps.google.com/maps/api/js?sensor=false&v=3.12&api_key=<%= @google_maps_api_key %>">
+    <% end %>
     </script>
     <%= javascript_include_tag 'cdb.js','models.js', 'templates.js', 'templates_mustache.js', 'application.js', 'table.js' %>
     <% if current_user.has_feature_flag?('new_modals') %>

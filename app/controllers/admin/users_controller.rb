@@ -47,6 +47,12 @@ class Admin::UsersController < ApplicationController
     if @user.can_change_email && attributes[:email].present?
       @user.set_fields(attributes, [:email])
     end
+
+    if attributes[:google_maps_key].present? && !@user.organization.present?
+      @user.set_fields(attributes, [:google_maps_key])
+    end
+
+    @user.set_fields(attributes, [:email])
     
     @user.save(raise_on_failure: true)
     @user.update_in_central

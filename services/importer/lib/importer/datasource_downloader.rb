@@ -82,11 +82,13 @@ module CartoDB
         stream_to_file = @datasource.kind_of? CartoDB::Datasources::BaseFileStream
         direct_stream  = @datasource.kind_of? CartoDB::Datasources::BaseDirectStream
 
+        # a) Streaming to DB
         if direct_stream
           initial_stream_data = @datasource.initial_stream(@item_metadata[:id])
           store_retrieved_data(@item_metadata[:filename], initial_stream_data, available_quota_in_bytes)
         end
 
+        # b) Streaming, but into an intermediate file
         if stream_to_file
           self.source_file = SourceFile.new(filepath(@item_metadata[:filename]), @item_metadata[:filename])
           output_stream = File.open(self.source_file.fullpath, 'wb')
@@ -94,6 +96,7 @@ module CartoDB
           output_stream.close
         end
 
+        # c) Classic http download to file
         if !stream_to_file && !direct_stream
           begin
             resource_data = @datasource.get_resource(@item_metadata[:id])

@@ -1,13 +1,20 @@
 3.10.1 ()
 ---------
+* Fix tooltips in the legend editor [3341](https://github.com/CartoDB/cartodb/pull/3341)
 * Sort category names alphabetically in legends [3218](https://github.com/CartoDB/cartodb/pull/3218)
 * Editable descriptions and tags in the maps and datasets view [3129](https://github.com/CartoDB/cartodb/pull/3129)
-* fixed interaction when there are hidden layers #3090
 * Add caching of geometry types [#3157](https://github.com/CartoDB/cartodb/pull/3157)
 * New public map [#3120](https://github.com/CartoDB/cartodb/issues/3120)
 * Do not store session for api_key auth [#3208](https://github.com/CartoDB/cartodb/pull/3208)
+Bugfixes:
+* Fixed interaction when there are hidden layers [#3090](https://github.com/CartoDB/cartodb/pull/3090)
 * Fix http cancelled requests [#3227](https://github.com/CartoDB/cartodb/pull/3227)
+* Added HTTP timeouts for all HTTP calls on imports and syncs. Connect timeout is 60 secs, data requests calculate using (user quota / 50KB/sec) estimation.
 * Fix for "Cannot read property 'layers'" [#3302](https://github.com/CartoDB/cartodb/pull/3302)
+* Fix for type guessing in synchronization imports [#3264](http://github.com/CartoDB/cartodb/issues/3264)
+* Deleted unused endpoints for POST/DELETE api/v1/maps
+* Avoid infinite recursion when renaming table [#3330](https://github.com/CartoDB/cartodb/pull/3330)
+* Script to delete inconsistent vizs [#3342](https://github.com/CartoDB/cartodb/pull/3342)
 
 3.10.0 (2015-04-08)
 -------------------

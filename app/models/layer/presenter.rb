@@ -159,21 +159,26 @@ module CartoDB
         with_template(layer.infowindow, layer.infowindow_template_path)
       rescue => e
         Rollbar.report_exception(e)
+        throw e
       end
 
       def infowindow_data_v2
         whitelisted_infowindow(with_template(layer.infowindow, layer.infowindow_template_path))
       rescue => e
         Rollbar.report_exception(e)
+        throw e
       end
 
       def tooltip_data_v2 
         whitelisted_infowindow(with_template(layer.tooltip, layer.tooltip_template_path))
-      rescue => exception
-        Rollbar.report_exception(exception)
+      rescue => e
+        Rollbar.report_exception(e)
+        throw e
       end
 
       def with_template(infowindow, path)
+        # assumes we want no template if at least one field is nil
+        return nil if infowindow.nil? || path.nil?
         template = infowindow['template']
         return infowindow unless template.nil? || template.empty?
 
@@ -252,10 +257,9 @@ module CartoDB
       end
 
       def whitelisted_infowindow(infowindow)
-        infowindow.select { |key, value| 
-          INFOWINDOW_KEYS.include?(key) ||
-          INFOWINDOW_KEYS.include?(key.to_s)
-        }
+        infowindow.nil? ? nil : infowindow.select { |key, value| 
+                                                    INFOWINDOW_KEYS.include?(key) || INFOWINDOW_KEYS.include?(key.to_s)
+                                                  }
       end
     end
   end

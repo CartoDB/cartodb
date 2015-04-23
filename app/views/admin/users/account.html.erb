@@ -116,7 +116,7 @@
               <% if current_user.organization.present? %>
                 <input type="text" value="<%= current_user.organization.google_maps_key %>" class="Form-input Form-input--long is-disabled" placeholder="<%= 'Add key in organization settings' if current_user.organization_owner? %>" readonly />
               <% else %>
-                <%= f.text_field :google_maps_key, class: "Form-input Form-input--long #{ 'Form-input--error' if @user.errors[:gmaps].present? }", placeholder: "Copy here your API Key" %>
+                <%= f.text_field :google_maps_key, class: "Form-input Form-input--long #{ 'Form-input--error' if @user.errors[:gmaps].present? }", placeholder: "Copy here your API key" %>
               <% end %>
             </div>
             <% if current_user.organization.present? %>

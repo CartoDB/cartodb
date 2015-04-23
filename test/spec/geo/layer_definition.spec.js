@@ -183,6 +183,7 @@
     expect(layerDefinition._host()).toEqual('http://rambo.cartodb.com:8081');
     expect(layerDefinition._host('0')).toEqual('http://rambo.cartodb.com:8081');
     layerDefinition.options.tiler_protocol = "https";
+    layerDefinition._buildMapsApiTemplate(layerDefinition.options);
     expect(layerDefinition._host()).toEqual('https://rambo.cartodb.com:8081');
     expect(layerDefinition._host('a')).toEqual('https://rambo.cartodb.com:8081');
   });
@@ -192,6 +193,7 @@
     expect(layerDefinition._host()).toEqual('http://rambo.cartodb.com:8081');
     expect(layerDefinition._host('0')).toEqual('http://rambo.cartodb.com:8081');
     layerDefinition.options.tiler_protocol = "https";
+    layerDefinition._buildMapsApiTemplate(layerDefinition.options);
     expect(layerDefinition._host()).toEqual('https://rambo.cartodb.com:8081');
     expect(layerDefinition._host('a')).toEqual('https://rambo.cartodb.com:8081');
   });
@@ -211,6 +213,7 @@
 
       setTimeout(function() {
         layerDefinition.options.tiler_protocol = 'https';
+        layerDefinition._buildMapsApiTemplate(layerDefinition.options);
         layerDefinition.getTiles();
 
         setTimeout(function() {
@@ -656,6 +659,18 @@
     });
   });
 
+  it("should generate the right attributes url", function() {
+     layerDefinition.layerToken = 'testing';
+     expect(layerDefinition._attributesUrl(0, 1)).toEqual(
+      'http://rambo.cartodb.com:8081/api/v1/map/testing/0/attributes/1'
+     );
+     layerDefinition.getSubLayer(0).hide();
+     layerDefinition.layerToken = 'testing';
+     expect(layerDefinition._attributesUrl(1, 1)).toEqual(
+      'http://rambo.cartodb.com:8081/api/v1/map/testing/0/attributes/1'
+     );
+  });
+
 });
 
 describe("NamedMap", function() {
@@ -792,6 +807,7 @@ describe("NamedMap", function() {
       expect(params.jsonpCallback.indexOf('_cdbi_layer_attributes') !== -1).toEqual(true);
     });
     namedMap.options.tiler_protocol = 'https';
+    namedMap._buildMapsApiTemplate(namedMap.options)
     namedMap.setAuthToken('test');
     namedMap.layerToken = 'test';
     namedMap.fetchAttributes(1, 12345, null, function(data) {
@@ -1069,7 +1085,7 @@ describe("NamedMap", function() {
 
     namedMap.options.ajax = function(p) { 
       params = p;
-      p.success({ error: 'not found' });
+      p.success({ errors: 'not found' });
     };
 
     var _data, _error;
@@ -1083,7 +1099,7 @@ describe("NamedMap", function() {
     setTimeout(function() {
       var res = "not found";
 
-      expect(_error).toEqual(res);
+      expect(_error.errors).toEqual(res);
       expect(true).toEqual(true);
 
       done();

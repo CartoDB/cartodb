@@ -86,6 +86,22 @@ describe("Image", function() {
 
   });
 
+  it("should allow to use a step for a torque layer", function(done) {
+
+    var vizjson = "http://documentation.cartodb.com/api/v2/viz/3ec995a8-b6ae-11e4-849e-0e4fddd5de28/viz.json"
+
+    var image = cartodb.Image(vizjson, { step: 10 });
+
+    var regexp = new RegExp("http://a.ashbu.cartocdn.com/documentation/api/v1/map/static/bbox/(.*?)/-138\.6474609375,27\.761329874505233,-83\.408203125,51\.26191485308451/320/240\.pn");
+
+    image.getUrl(function(err, url) {
+      expect(image.options.userOptions.step).toEqual(10);
+      expect(image.options.layers.layers[1].options.step).toEqual(10);
+      done();
+    });
+
+  });
+
   it("shouldn't use hidden layers to generate the image", function(done) { 
 
     var vizjson = "http://documentation.cartodb.com/api/v2/viz/42e98b9a-bcce-11e4-9d68-0e9d821ea90d/viz.json";
@@ -307,6 +323,69 @@ describe("Image", function() {
 
   });
 
+  it("should generate an image using a layer definition in a certain bbox", function(done) {
+
+    var layer_definition = {
+      user_name: "documentation",
+      tiler_domain: "cartodb.com",
+      tiler_port: "80",
+      tiler_protocol: "http",
+      layers: [{
+        type: "http",
+        options: {
+          urlTemplate: "http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png",
+          subdomains: [ "a", "b", "c" ]
+        }
+      }, {
+        type: "cartodb",
+        options: {
+          sql: "SELECT * FROM nyc_wifi",
+          cartocss: "#ncy_wifi{ marker-fill-opacity: 0.8; marker-line-color: #FFFFFF; marker-line-width: 3; marker-line-opacity: .8; marker-placement: point; marker-type: ellipse; marker-width: 16; marker-fill: #6ac41c; marker-allow-overlap: true; }",
+          cartocss_version: "2.1.1"
+        }
+      }]
+    };
+
+    var regexp = new RegExp("http://a.ashbu.cartocdn.com/documentation/api/v1/map/static/bbox/8c67df0046ce227a89a65d0e3f87e80e:1398886221740.03/-87.82814025878906,41.88719899247721,-27.5936508178711,41.942765696654604/250/250\.png");
+
+    cartodb.Image(layer_definition).size(250, 250).bbox([[-87.82814025878906,41.88719899247721], [ -27.5936508178711,41.942765696654604]]).getUrl(function(error, url) {
+      expect(url.match(regexp).length).toEqual(1);
+      expect(url).toMatch(regexp);
+      done();
+    });
+
+  });
+
+  it("should use maps_api_template when provided", function() {
+
+    var layer_definition = {
+      user_name: "documentation",
+      maps_api_template: 'http://cartodb.com/user/{user}/api/v1/maps',
+      tiler_domain: "cartodb.com",
+      tiler_port: "80",
+      tiler_protocol: "http",
+      layers: [{
+        type: "http",
+        options: {
+          urlTemplate: "http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png",
+          subdomains: [ "a", "b", "c" ]
+        }
+      }, {
+        type: "cartodb",
+        options: {
+          sql: "SELECT * FROM nyc_wifi",
+          cartocss: "#ncy_wifi{ marker-fill-opacity: 0.8; marker-line-color: #FFFFFF; marker-line-width: 3; marker-line-opacity: .8; marker-placement: point; marker-type: ellipse; marker-width: 16; marker-fill: #6ac41c; marker-allow-overlap: true; }",
+          cartocss_version: "2.1.1"
+        }
+      }]
+    };
+
+    expect(cartodb.Image(layer_definition)._tilerHost()).toEqual(
+      'http://cartodb.com/user/documentation/api/v1/maps'
+    )
+
+  });
+
   it("should generate an image using a layer definition for a plain color", function(done) {
 
     var layer_definition = {
@@ -362,38 +441,6 @@ describe("Image", function() {
     var image = cartodb.Image(vizjson).size(400, 300);
 
     var regexp = new RegExp("http://a.ashbu.cartocdn.com/documentation/api/v1/map/static/bbox/(.*?)400/300\.png");
-
-    image.getUrl(function(err, url) {
-      expect(url.match(regexp).length).toEqual(2);
-      expect(url).toMatch(regexp);
-      done();
-    });
-
-  });
-
-  it("should set force the https protocol", function(done) {
-
-    var vizjson = "http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json"
-
-    var image = cartodb.Image(vizjson, { https: true }).size(400, 300);
-
-    var regexp = new RegExp("https://cartocdn-ashbu.global.ssl.fastly.net/documentation/api/v1/map/static/bbox/(.*?)400/300\.png");
-
-    image.getUrl(function(err, url) {
-      expect(url.match(regexp).length).toEqual(2);
-      expect(url).toMatch(regexp);
-      done();
-    });
-
-  });
-
-  it("should set force the https protocol (no_cdn)", function(done) {
-
-    var vizjson = "http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json"
-
-    var image = cartodb.Image(vizjson, { https: true, no_cdn: true }).size(400, 300);
-
-    var regexp = new RegExp("https://documentation.cartodb.com:443/api/v1/map/static/bbox/(.*?)400/300\.png");
 
     image.getUrl(function(err, url) {
       expect(url.match(regexp).length).toEqual(2);

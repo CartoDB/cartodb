@@ -63,6 +63,20 @@ describe('cdb.geo.ui.TimeSlider', function() {
       });
     });
 
+    describe("given a step that spans more than 48 hours", function() {
+      beforeEach(function() {
+        var start = 1423699205000;
+        var end = 1424649534000;
+        view.torqueLayer.getTimeBounds = function(){return {start: start, end: end}};
+        view.torqueLayer.options = {steps: 5};
+        formatter = view.formatterForRange(start, end);
+      });
+      it("should return a formatter function that defines a two-date range", function() {
+        var moment = new Date(1424269402400);
+        expect(formatter(moment, view.torqueLayer)).toEqual("Feb 18 - Feb 20");
+      });
+    });
+
     describe("given a range is less than a day but spanning two dates", function() {
       beforeEach(function() {
         var start = time("2014-11-19T23:33:00Z");

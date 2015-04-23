@@ -97,7 +97,7 @@
 
     },
 
-    loadLayerDefinition: function(layerDefinition) {
+    loadLayerDefinition: function(layerDefinition, options) {
 
       var self = this;
 
@@ -108,11 +108,18 @@
         return;
       }
 
+      this.userOptions = options;
+
       this.options.user_name      = layerDefinition.user_name;
       this.options.tiler_protocol = layerDefinition.tiler_protocol;
       this.options.tiler_domain   = layerDefinition.tiler_domain;
       this.options.tiler_port     = layerDefinition.tiler_port;
+      this.options.maps_api_template = layerDefinition.maps_api_template;
       this.endPoint = "/api/v1/map";
+
+      if (!this.options.maps_api_template) {
+        this._buildMapsApiTemplate(this.options);
+      }
 
       this.options.layers = layerDefinition;
 
@@ -132,9 +139,14 @@
           this.options.user_name = dataLayer.options.user_name;
         }
 
-        this.auth_tokens = data.auth_tokens;
+        // keep this for backward compatibility with tiler_* variables
+        if (!dataLayer.options.maps_api_template) {
+          this._setupTilerConfiguration(dataLayer.options.tiler_protocol, dataLayer.options.tiler_domain, dataLayer.options.tiler_port);
+        } else {
+          this.options.maps_api_template = dataLayer.options.maps_api_template;
+        }
 
-        this._setupTilerConfiguration(dataLayer.options.tiler_protocol, dataLayer.options.tiler_domain, dataLayer.options.tiler_port);
+        this.auth_tokens = data.auth_tokens;
 
         this.endPoint = "/api/v1/map";
 
@@ -230,10 +242,7 @@
       this.options.tiler_protocol = protocol;
       this.options.tiler_port     = port;
 
-      if (this.userOptions.https || this.imageOptions.vizjson.indexOf("https") === 0) {
-        this.options.tiler_protocol = "https";
-        this.options.tiler_port     = 443;
-      }
+      this._buildMapsApiTemplate(this.options);
 
     },
 
@@ -342,6 +351,7 @@
       return {
         type: "torque",
         options: {
+          step: this.userOptions.step || 0,
           sql: query,
           cartocss: cartocss
         }
@@ -535,7 +545,7 @@
     if (typeof data === 'string') {
       image.load(data, options);
     } else {
-      image.loadLayerDefinition(data);
+      image.loadLayerDefinition(data, options);
     }
 
     return image;

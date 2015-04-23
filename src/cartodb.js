@@ -5,7 +5,7 @@
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = "3.13.1";
+    cdb.VERSION = "3.14.0";
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -14,11 +14,6 @@
     };
 
     cdb.CARTOCSS_DEFAULT_VERSION = '2.1.1';
-
-    cdb.CDB_HOST = {
-      'http': 'api.cartocdn.com',
-      'https': 'cartocdn.global.ssl.fastly.net'
-    };
 
     root.cdb.config = {};
     root.cdb.core = {};

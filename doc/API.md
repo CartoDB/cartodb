@@ -74,7 +74,7 @@ cartodb.createVis('map', 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e
     // when setInteraction is disabled featureOver is triggered
     layers[1].setInteraction(true);
     layers[1].on('featureOver', function(e, latlng, pos, data, layerNumber) {
-      cartodb.log.log(e, latlng, pos, data, layerNumber);
+      console.log(e, latlng, pos, data, layerNumber);
     });
 
     // you can get the native map to work with it
@@ -993,9 +993,7 @@ Fetch the tile template for the layer definition.
     sql: "SELECT * FROM table_name";
     cartocss: '#layer { marker-fill: #F0F0F0; }'
   }],
-  tiler_protocol: 'https', // Optional
-  tiler_host: 'cartodb.com', // Optional
-  tiler_port: 80 // Optional
+  maps_api_template: 'https://{user}.cartodb.com' // Optional
 }
 ```
 
@@ -1067,6 +1065,23 @@ Although the Viz JSON file stores all your map settings, all these settings can 
 ```javascript
 cartodb.createVis('map', 'http://examples.cartodb.com/api/v2/viz/ne_10m_populated_p_1/viz.json')
 ```
+
+### How to set a different host than cartodb.com
+cartodb.js by default send all requests to cartodb.com domain but it you are running your own
+instance of cartodb you can change the urls.
+
+The way to do it is using ``sql_api_template`` and ``maps_api_template`` in ``options`` paramater
+for any ``cartodb`` function call.
+
+The format of those templates is like:
+
+```javascript
+sql_api_template: 'https://{user}.test.com'
+```
+
+cartodb.js will replace ``{user}``.
+
+Notice you don't need to set the path to the endpoint, cartodb.js sets it
 
 ### Bounds wrapper
 

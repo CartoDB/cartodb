@@ -1,6 +1,6 @@
 {
     "name": "cartodb.js",
-    "version": "3.13.1",
+    "version": "3.14.0",
     "description": "CartoDB javascript library",
     "repository": {
       "type": "git",
@@ -19,7 +19,8 @@
       "Raul Ochoa <rochoa@cartodb.com>",
       "Carlos Matallín <matallo@cartodb.com>",
       "Jaime Chapinal <jaime.chapinal@cartodb.com>",
-      "Nicklas Gummesson <nicklas@cartodb.com>"
+      "Nicklas Gummesson <nicklas@cartodb.com>",
+      "Francisco Dans <francisco@cartodb.com>"
     ],
     "licenses": [{
       "type": "BSD"

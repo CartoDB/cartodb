@@ -190,7 +190,7 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
       if(options.empty_fields || (value !== undefined && value !== null)) {
         render_fields.push({
           title: field.title ? field.name : null,
-          value: cdb.core.sanitize.html(attributes[field.name]),
+          value: attributes[field.name],
           index: j
         });
       }
@@ -298,7 +298,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       if ($jscrollpane.length > 0 && $jscrollpane.data() != null) {
         $jscrollpane.data().jsp && $jscrollpane.data().jsp.destroy();
       }
-      
+
       // Clone fields and template name
       var fields = _.map(this.model.attributes.content.fields, function(field){
         return _.clone(field);
@@ -328,7 +328,9 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
           }
         },values);
 
-      this.$el.html(this.template(obj));
+      this.$el.html(
+        cdb.core.sanitize.html(this.template(obj), this.model.get('sanitizeTemplate'))
+      );
 
       // Set width and max-height from the model only
       // If there is no width set, we don't force our infowindow
@@ -389,7 +391,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
     if(typeof(template) !== 'function') {
       this.template = new cdb.core.Template({
-        template: cdb.core.sanitize.html(template, this.model.get('sanitizeTemplate')),
+        template: template,
         type: this.model.get('template_type') || 'mustache'
       }).asFunction()
     } else {

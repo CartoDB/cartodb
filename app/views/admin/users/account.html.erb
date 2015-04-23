@@ -9,6 +9,7 @@
     var user_data = <%= safe_js_object @user.data.to_json %>;
     var can_change_email = <%= @user.can_change_email %>;
     var upgrade_url = <%= cartodb_com_hosted? ? 'undefined' : "'#{current_user.upgrade_url(request.protocol)}'" %>;
+    var services_list = <%= @services.to_json.html_safe %>;
     // Necessary for Google + actions
     var access_token = '';
     <% if (@google_plus_config.present?) %>
@@ -102,114 +103,13 @@
           </div>
         </div>
 
-        <%# if none of the services are activated, this block is useless %>
-        <% if Cartodb.config[:oauth]['gdrive']['client_id'].present? ||
-              Cartodb.config[:oauth]['dropbox']['app_key'].present? ||
-              Cartodb.config[:oauth]['mailchimp']['app_key'].present? ||
-              Cartodb.config[:oauth]['instagram']['app_key'].present?
-        %>
-          <div class="Form-title">
+        <%# if none of the services are activated, this block shouldn't appear %>
+        <% if @services.size > 0 %>
+          <div class="Form-title js-datasourcesContent">
             <h4 class="Form-titleHeader">Connect with external data sources</h4>
             <p class="Form-titleText">Connect your services to import your data, hastags or wathever
             you need for your maps visualizations. Also you can login with them.</p>
           </div>
-
-          <% if Cartodb.config[:oauth]['gdrive']['client_id'].present? %>
-            <div class="Form-row js-serviceItem">
-              <div class="Form-rowLabel">
-                <label class="Form-label">Google Drive</label>
-              </div>
-              <div class="Form-rowData Form-rowData--med">
-                <% if @services["gdrive"] %>
-                  <input class="Form-input Form-input--med is-disabled" readonly value="Connected" />
-                <% else %>
-                  <button class="Form-link" data-service="gdrive" data-name="Google Drive">
-                    <i class="ServiceIcon ServiceIcon--GDrive"></i>Connect
-                  </button>
-                <% end %>
-              </div>
-              <div class="Form-rowInfo">
-                <p class="Form-rowInfoText">
-                  <% if @services["gdrive"] %>
-                    <button class="Form-link js-disconnect" data-service="gdrive" data-name="Google Drive">Disconnect</button>
-                  <% end %>
-                </p>
-              </div>
-            </div>
-          <% end %>
-
-          <% if Cartodb.config[:oauth]['dropbox']['app_key'].present? %>
-            <div class="Form-row js-serviceItem">
-              <div class="Form-rowLabel">
-                <label class="Form-label">Dropbox</label>
-              </div>
-              <div class="Form-rowData Form-rowData--med">
-                <% if @services["dropbox"] %>
-                  <input class="Form-input Form-input--med is-disabled" readonly value="Connected" />
-                <% else %>
-                  <button class="Form-link js-connect" data-service="dropbox" data-name="Dropbox">
-                    <i class="ServiceIcon ServiceIcon--Dropbox"></i>Connect
-                  </button>
-                <% end %>
-              </div>
-              <div class="Form-rowInfo">
-                <p class="Form-rowInfoText">
-                  <% if @services["dropbox"] %>
-                    <button class="Form-link js-disconnect" data-service="dropbox" data-name="Dropbox">Disconnect</button>
-                  <% end %>
-                </p>
-              </div>
-            </div>
-          <% end %>
-
-          <% if Cartodb.config[:oauth]['mailchimp']['app_key'].present? && current_user.has_feature_flag?('mailchimp_import') %>
-            <div class="Form-row js-serviceItem">
-              <div class="Form-rowLabel">
-                <label class="Form-label">MailChimp</label>
-              </div>
-              <div class="Form-rowData Form-rowData--med">
-                <% if @services["mailchimp"] %>
-                  <input class="Form-input Form-input--med is-disabled" readonly value="Connected" />
-                <% else %>
-                  <button class="Form-link js-connect" data-service="mailchimp" data-name="MailChimp">
-                    <i class="ServiceIcon ServiceIcon--Mailchimp"></i>Connect
-                  </button>
-                <% end %>
-              </div>
-              <div class="Form-rowInfo">
-                <p class="Form-rowInfoText">
-                  <% if @services["mailchimp"] %>
-                    <button class="Form-link js-disconnect" data-service="mailchimp" data-name="MailChimp">Disconnect</button>
-                  <% end %>
-                </p>
-              </div>
-            </div>
-          <% end %>
-
-          <% if Cartodb.config[:oauth]['instagram']['app_key'].present? && current_user.has_feature_flag?('instagram_import') %>
-            <div class="Form-row js-serviceItem">
-              <div class="Form-rowLabel">
-                <label class="Form-label">Instagram</label>
-              </div>
-              <div class="Form-rowData Form-rowData--med">
-                <% if @services["instagram"] %>
-                  <input class="Form-input Form-input--med is-disabled" readonly value="Connected" />
-                <% else %>
-                  <button class="Form-link js-connect" data-service="instagram" data-name="Instagram">
-                    <i class="ServiceIcon ServiceIcon--Instagram"></i>Connect
-                  </button>
-                <% end %>
-              </div>
-              <div class="Form-rowInfo">
-                <p class="Form-rowInfoText">
-                  <% if @services["instagram"] %>
-                    <button class="Form-link js-disconnect" data-service="instagram" data-name="Instagram">Disconnect</button>
-                  <% end %>
-                </p>
-              </div>
-            </div>
-          <% end %>
-
         <% end %>
 
         <div class="Form-footer">

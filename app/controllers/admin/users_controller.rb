@@ -120,14 +120,40 @@ class Admin::UsersController < ApplicationController
 
   def get_oauth_services
     datasources = CartoDB::Datasources::DatasourcesFactory.get_all_oauth_datasources()
-    obj ||= Hash.new
+    array = []
 
     datasources.each do |serv|
-      oauth = @user.oauths.select(serv)
-      obj[serv] = !oauth.nil? ? true : false
+      obj ||= Hash.new
+      enabled = false
+      title = ''
+      
+      case serv
+        when 'gdrive'
+          enabled = true if Cartodb.config[:oauth]['gdrive']['client_id'].present?
+          title = 'Google Drive'
+        when 'dropbox'
+          enabled = true if Cartodb.config[:oauth]['dropbox']['app_key'].present?
+          title = 'Dropbox'
+        when 'mailchimp'
+          enabled = true if Cartodb.config[:oauth]['mailchimp']['app_key'].present? && current_user.has_feature_flag?('mailchimp_import')
+          title = 'MailChimp'
+        when 'instagram'
+          enabled = true if Cartodb.config[:oauth]['instagram']['app_key'].present? && current_user.has_feature_flag?('instagram_import')
+          title = 'Instagram'
+      end
+
+      if enabled
+        oauth = @user.oauths.select(serv)
+
+        obj['name'] = serv
+        obj['title'] = title
+        obj['connected'] = !oauth.nil? ? true : false
+
+        array.push(obj)
+      end
     end
 
-    obj
+    array
   end
 
   def setup_user

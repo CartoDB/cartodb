@@ -37,8 +37,8 @@ describe Api::Json::SynchronizationsController do
     delete_user_data @user
     @headers = {
       'CONTENT_TYPE'  => 'application/json',
-      'HTTP_HOST'     => 'test.localhost.lan'
     }
+    host! 'test.localhost.lan'
   end
 
   after(:all) do
@@ -106,31 +106,6 @@ describe Api::Json::SynchronizationsController do
       response = JSON.parse(last_response.body)
       response.fetch('id').should == id
       response.fetch('url').should == payload.fetch(:url)
-    end
-  end
-
-  describe 'PUT /api/v1/synchronizations' do
-    it 'updates a synchronization' do
-    end
-
-    it 'makes the table modifiable if synchronization disabled' do
-    end
-
-    it 'makes the table unmodifiable if synchronization enabled' do
-    end
-
-    it 'returns 401 unless user has an appropriate plan' do
-    end
-  end
-
-  describe 'DELETE /api/v1/synchronizations' do
-    it 'deletes a synchronization' do
-    end
-
-    it 'makes the related table modifiable' do
-    end
-
-    it 'returns 401 unless user has an appropriate plan' do
     end
   end
 

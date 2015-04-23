@@ -27,8 +27,7 @@ describe CartoDB::TableRelator do
                                name: table_name
                            })
 
-      expected_data = { size: 16384 , row_count: 0}
-
+      expected_data = { size: 16384, row_count: 0}
       table.row_count_and_size.should eq expected_data
 
       @db.drop_table?(table_name)

@@ -15,7 +15,7 @@ describe DatasourcesFactory do
 
   describe '#provider_instantiations' do
     it 'tests all available provider instantiations' do
-      user_mock = Doubles::User.new
+      user_mock = CartoDB::Datasources::Doubles::User.new
       DatasourcesFactory.set_config(get_config)
 
       dropbox_provider = DatasourcesFactory.get_datasource(Url::Dropbox::DATASOURCE_NAME, user_mock)

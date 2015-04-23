@@ -10,6 +10,7 @@ module CartoDB
       DESTINATION_SCHEMA  = 'public'
       MAX_RENAME_RETRIES  = 20
 
+      attr_reader :data_import
       attr_accessor :table
 
       # @param runner CartoDB::Importer2::Runner
@@ -31,6 +32,7 @@ module CartoDB
         @rename_attempts        = 0
         @support_tables_helper  = CartoDB::Visualization::SupportTables.new(database,
                                                                             {public_user_roles: public_user_roles})
+        @data_import            = nil
       end
 
       def run(tracker)
@@ -56,11 +58,21 @@ module CartoDB
         @support_tables_helper.reset
         runner.log.append("Before renaming from #{result.table_name} to #{result.name}")
         name = rename(result, result.table_name, result.name)
+        result.name = name
         runner.log.append("Before moving schema '#{name}' from #{ORIGIN_SCHEMA} to #{@destination_schema}")
         move_to_schema(result, name, ORIGIN_SCHEMA, @destination_schema)
         runner.log.append("Before persisting metadata '#{name}' data_import_id: #{data_import_id}")
         persist_metadata(result, name, data_import_id)
         runner.log.append("Table '#{name}' registered")
+      rescue => exception
+        if exception.message =~ /canceling statement due to statement timeout/i
+          raise CartoDB::Importer2::StatementTimeoutError.new(
+            exception.message,
+            CartoDB::Importer2::ERRORS_MAP[CartoDB::Importer2::StatementTimeoutError]
+          )
+        else
+          raise exception
+        end
       end
 
       def success?
@@ -155,6 +167,10 @@ module CartoDB
       def error_code
         return 8002 if over_table_quota?
         results.map(&:error_code).compact.first
+      end
+
+      def data_import
+        @data_import ||= DataImport[@data_import_id]
       end
 
       private

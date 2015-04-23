@@ -64,15 +64,16 @@ module CartoDB
       attr_accessor :pg_options, :options, :table_name, :layer, :ogr2ogr2_binary, :csv_guessing, :quoted_fields_guessing
 
       def is_csv?
-        filepath =~ /\.csv$/i
+        !(filepath =~ /\.csv$/i).nil?
       end
 
       def is_geojson?
-        filepath =~ /\.geojson$/i
+        !(filepath =~ /\.geojson$/i).nil?
       end
 
       def guessing_option
         if csv_guessing && is_csv?
+          # Inverse of the selection: if I want guessing I must NOT leave quoted fields as string
           "-oo AUTODETECT_TYPE=YES -oo QUOTED_FIELDS_AS_STRING=#{quoted_fields_guessing ? 'NO' : 'YES' }"
         else
           ''

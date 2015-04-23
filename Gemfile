@@ -7,16 +7,22 @@ gem 'pg',                      '0.13.2'
 gem 'sequel',                  '3.42.0'
 gem 'sequel_pg',               '1.6.3', require: 'sequel'
 
+gem 'activerecord-postgresql-adapter'
+gem 'activerecord-postgres-array'
+
 gem 'vizzuality-sequel-rails', '0.3.7', git: 'https://github.com/Vizzuality/sequel-rails.git'
 
 gem 'rails_warden',            '0.5.2' # Auth via the Warden Rack framework
 gem 'oauth',                   '0.4.5'
 gem 'oauth-plugin',            '0.4.0.pre4'
 
-gem 'redis',                   '2.2.2'
-gem 'nokogiri',                '1.6.0'
+gem 'redis',                   '3.2.1'
+gem 'hiredis',                 '0.6.0'
+gem 'nokogiri',                '~> 1.6.6.2'
 gem 'statsd-client',           '0.0.7', require: 'statsd'
 gem 'aws-sdk',                 '1.8.5'
+gem 'ruby-prof',               '0.15.1'
+gem 'request_store',           '1.1.0'
 
 # It's used in the dataimport and arcgis.
 # It's a replacement for the ruby uri that it's supposed to perform better parsing of a URI
@@ -49,7 +55,7 @@ gem 'dropbox-sdk',             '1.6.3'
 gem 'instagram',               '1.1.3'
 gem 'gibbon',                  '1.1.4'
 
-# Synchronizer
+# Geocoder (synchronizer doesn't needs it anymore)
 gem 'eventmachine',            '1.0.3'
 gem 'em-pg-client',            '0.2.1'
 
@@ -59,7 +65,7 @@ gem 'aequitas',                 '0.0.2'
 gem 'uuidtools',                '2.1.5'
 
 # Markdown
-gem 'redcarpet', '3.1.1'
+gem 'redcarpet', '3.2.2'
 
 # TODO we should be able to remove this using the new
 #      Rails routes DSL
@@ -68,26 +74,27 @@ gem 'bartt-ssl_requirement',   '~>1.4.0', require: 'ssl_requirement'
 # TODO Production gems, put them in :production group
 gem 'mixpanel',              '4.0.2'
 gem 'rollbar',               '0.12.14'
-gem 'resque',                '1.23.0'
+gem 'resque',                '1.25.2'
 gem 'resque-metrics',        '0.1.1'
+
+group :test do
+  gem 'db-query-matchers'
+  gem 'rack-test',             '0.6.2',  require: 'rack/test'
+  gem 'factory_girl_rails',    '~> 4.0.0'
+  gem 'selenium-webdriver',    '>= 2.5.0'
+  gem 'capybara',              '1.1.2'
+  gem 'delorean'
+  gem 'webrick',               '1.3.1'
+  gem 'mocha',                 '0.10.5'
+  gem 'ci_reporter',           '1.8.4'
+  gem 'rspec-rails',           '2.10.1'
+  gem 'poltergeist',           '>= 1.0.0'
+end
 
 group :development, :test do
   gem 'rb-readline'
-  gem 'webrick',               '1.3.1'
-  gem 'poltergeist',           '>= 1.0.0'
-  gem 'selenium-webdriver',    '>= 2.5.0'
-
-  gem 'mocha',                 '0.10.5'
-  gem 'ci_reporter',           '1.8.4'
-
   gem 'debugger',              '1.6.8'
-
-  gem 'rspec-rails',           '2.10.1'
-  gem 'capybara',              '1.1.2'
-  gem 'delorean'
   gem 'rack',                  '1.4.1'
-  gem 'rack-test',             '0.6.2',  require: 'rack/test'
-  gem 'factory_girl_rails',    '~> 4.0.0'
 
   # Server
   gem 'thin',                           require: false

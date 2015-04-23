@@ -2,8 +2,7 @@
 require 'forwardable'
 require 'virtus'
 require 'json'
-require 'markdown_render'
-require_relative './collection'
+require_relative '../markdown_render'
 require_relative './presenter'
 require_relative './name_checker'
 require_relative '../permission'
@@ -22,6 +21,7 @@ module CartoDB
     class Member
       extend Forwardable
       include Virtus.model
+      include CacheHelper
 
       PRIVACY_PUBLIC       = 'public'        # published and listable in public user profile
       PRIVACY_PRIVATE      = 'private'       # not published (viz.json and embed_map should return 404)
@@ -31,6 +31,7 @@ module CartoDB
       TYPE_CANONICAL  = 'table'
       TYPE_DERIVED    = 'derived'
       TYPE_SLIDE      = 'slide'
+      TYPE_REMOTE = 'remote'
 
       KIND_GEOM   = 'geom'
       KIND_RASTER = 'raster'
@@ -96,6 +97,43 @@ module CartoDB
         self.register_table_only = false
       end
 
+      def self.remote_member(name, user_id, privacy, description, tags, license, source)
+        Member.new({
+          name: name,
+          user_id: user_id,
+          privacy: privacy,
+          description: description,
+          tags: tags,
+          license: license,
+          source: source,
+          type: TYPE_REMOTE})
+      end
+
+      def update_remote_data(privacy, description, tags, license, source)
+        changed = false
+        if self.privacy != privacy
+          changed = true
+          self.privacy = privacy
+        end
+        if self.description != description
+          changed = true
+          self.description = description
+        end
+        if self.tags != tags
+          changed = true
+          self.tags = tags
+        end
+        if self.license != license
+          changed = true
+          self.license = license
+        end
+        if self.source != source
+          changed = true
+          self.source = source
+        end
+        changed
+      end
+
       def transition_options
         ::JSON.parse(self.slide_transition_options).symbolize_keys
       end
@@ -124,14 +162,14 @@ module CartoDB
         self
       end
 
-      def store_using_table(fields)
+      def store_using_table(fields, table_privacy_changed=false)
         if type == TYPE_CANONICAL
           # Each table has a canonical visualization which must have privacy synced
           self.privacy = fields[:privacy_text]
           self.map_id = fields[:map_id]
         end
         # But as this method also notifies of changes in a table, must save always
-        do_store(false)
+        do_store(false, table_privacy_changed)
         self
       end
 
@@ -183,17 +221,16 @@ module CartoDB
         self.attributes = data
         self.name_changed = false
         self.privacy_changed = false
-        self.description_changed = false
         self.permission_change_valid = true
+        self.dirty = false
         validator.reset
         self
       end
 
       def delete(from_table_deletion=false)
-        # Named map must be deleted before the map, or we lose the reference to it
-
         begin
           named_map = has_named_map?
+          # Named map must be deleted before the map, or we lose the reference to it
           named_map.delete if named_map
         rescue NamedMapsWrapper::HTTPResponseError => exception
           # CDB-1964: Silence named maps API exception if deleting data to avoid interrupting whole flow
@@ -206,11 +243,16 @@ module CartoDB
 
         support_tables.delete_all
 
-        invalidate_varnish_cache
+        invalidate_cache
         overlays.destroy
         layers(:base).map(&:destroy)
         layers(:cartodb).map(&:destroy)
-        safe_sequel_delete { map.destroy } if map
+        safe_sequel_delete {
+          # "Mark" that this vis id is the destructor to avoid cycles: Vis -> Map -> relatedvis (Vis again)
+          related_map = map
+          related_map.being_destroyed_by_vis_id = id
+          related_map.destroy
+        } if map
         safe_sequel_delete { table.destroy } if (type == TYPE_CANONICAL && table && !from_table_deletion)
         safe_sequel_delete { children.map { |child|
                                             # Refetch each item before removal so Relator reloads prev/next cursors
@@ -226,7 +268,7 @@ module CartoDB
 
       # A visualization is linked to a table when it uses that table in a layergroup (but is not the canonical table)
       def unlink_from(table)
-        invalidate_varnish_cache
+        invalidate_cache
         remove_layers_from(table)
       end
 
@@ -243,18 +285,18 @@ module CartoDB
       end
 
       def description=(description)
-        self.description_changed = true if description != @description && !@description.nil?
+        self.dirty = true if description != @description && !@description.nil?
         super(description)
       end
 
       def description_clean
         if description.present?
-          description_md.strip_tags
+          description_html_safe.strip_tags
         end
       end
-      def description_md
+      def description_html_safe
         if description.present?
-          renderer = MarkdownRenderer.new(no_images: true, no_styles: true) 
+          renderer = Redcarpet::Render::Safe
           markdown = Redcarpet::Markdown.new(renderer, extensions = {})
           markdown.render description 
         end
@@ -292,21 +334,25 @@ module CartoDB
         privacy == PRIVACY_PROTECTED
       end
 
+      # Called by controllers upon rendering
+      def to_json(options={})
+        ::JSON.dump(to_hash(options))
+      end
+
       def to_hash(options={})
         presenter = Presenter.new(self, options.merge(real_privacy: true))
         options.delete(:public_fields_only) === true ? presenter.to_public_poro : presenter.to_poro
       end
 
-      def to_vizjson
-        options = {
-          full: false,
-          user_name: user.username,
-          user_api_key: user.api_key,
-          user: user,
-          viewer_user: user,
-          dynamic_cdn_enabled: user != nil ? user.dynamic_cdn_enabled: false
-        }
-        VizJSON.new(self, options, configuration).to_poro
+      def redis_vizjson_key(https_flag=false)
+        "visualization:#{id}:vizjson:#{https_flag ? 'https' : 'http'}"
+      end
+
+      def to_vizjson(options={})
+        key = redis_vizjson_key(options.fetch(:https_request, false))
+        redis_cached(key) do
+          calculate_vizjson(options)
+        end
       end
 
       def is_owner?(user)
@@ -339,6 +385,14 @@ module CartoDB
         "#{user.database_name}:#{sorted_table_names},#{id}"
       end
 
+      def surrogate_key
+        get_surrogate_key(CartoDB::SURROGATE_NAMESPACE_VISUALIZATION, self.id)
+      end
+
+      def varnish_vizzjson_key
+        ".*#{id}:vizjson"
+      end
+
       def derived?
         type == TYPE_DERIVED
       end
@@ -361,17 +415,15 @@ module CartoDB
         derived? && !single_data_layer?
       end
 
-      def varnish_vizzjson_key
-        ".*#{id}:vizjson"
-      end
 
-      def invalidate_varnish_cache
-        CartoDB::Varnish.new.purge(varnish_vizzjson_key)
-        parent.invalidate_varnish_cache unless parent_id.nil?
+      def invalidate_cache
+        invalidate_varnish_cache
+        invalidate_redis_cache
+        parent.invalidate_cache unless parent_id.nil?
       end
 
       def invalidate_cache_and_refresh_named_map
-        invalidate_varnish_cache
+        invalidate_cache
         if type != TYPE_CANONICAL or organization?
           save_named_map
         end
@@ -380,7 +432,7 @@ module CartoDB
       def has_private_tables?
         has_private_tables = false
         related_tables.each { |table|
-          has_private_tables |= (table.privacy == ::Table::PRIVACY_PRIVATE)
+          has_private_tables |= table.private?
         }
         has_private_tables
       end
@@ -390,6 +442,8 @@ module CartoDB
       end
 
       def has_named_map?
+        return false if type == TYPE_REMOTE
+
         data = named_maps.get(CartoDB::NamedMapsWrapper::NamedMap.normalize_name(id))
         if data.nil?
           false
@@ -402,6 +456,7 @@ module CartoDB
         if value && value.size > 0
           @password_salt = generate_salt if @password_salt.nil?
           @encrypted_password = password_digest(value, @password_salt)
+          self.dirty = true
         end
       end
 
@@ -438,11 +493,7 @@ module CartoDB
       end
 
       def supports_private_maps?
-        if @user_data.nil? && !user.nil?
-          @user_data = user.data
-        end
-
-        !@user_data.nil? && @user_data.include?(:actions) && @user_data[:actions].include?(:private_maps)
+        !user.nil? && user.private_maps_enabled
       end
 
       # @param other_vis CartoDB::Visualization::Member|nil
@@ -553,10 +604,48 @@ module CartoDB
 
       attr_accessor :register_table_only
 
+      def invalidate_redis_cache
+        self.class.redis_cache.del(redis_vizjson_key)
+        self.class.redis_cache.del(redis_vizjson_key(true))
+      end
+
+      def self.redis_cache
+        @@redis_cache ||= $tables_metadata
+      end
+
+
       private
 
       attr_reader   :repository, :name_checker, :validator
-      attr_accessor :privacy_changed, :name_changed, :old_name, :description_changed, :permission_change_valid
+      attr_accessor :privacy_changed, :name_changed, :old_name, :permission_change_valid, :dirty
+
+      def calculate_vizjson(options={})
+        vizjson_options = {
+          full: false,
+          user_name: user.username,
+          user_api_key: user.api_key,
+          user: user,
+          viewer_user: user,
+          dynamic_cdn_enabled: user != nil ? user.dynamic_cdn_enabled: false
+        }.merge(options)
+        VizJSON.new(self, vizjson_options, configuration).to_poro
+      end
+
+      def redis_cached(key)
+        value = self.class.redis_cache.get(key)
+        if value.present?
+          return JSON.parse(value, symbolize_names: true)
+        else
+          result = yield
+          serialized = JSON.generate(result)
+          self.class.redis_cache.setex(key, 24.hours.to_i, serialized)
+          return result
+        end
+      end
+
+      def invalidate_varnish_cache
+        CartoDB::Varnish.new.purge(varnish_vizzjson_key)
+      end
 
       def close_list_gap(other_vis)
         reload_self = false
@@ -585,7 +674,7 @@ module CartoDB
         fetch if reload_self
       end
 
-      def do_store(propagate_changes=true)
+      def do_store(propagate_changes=true, table_privacy_changed=false)
         if password_protected?
           raise CartoDB::InvalidMember.new('No password set and required') unless has_password?
         else
@@ -597,7 +686,7 @@ module CartoDB
           raise CartoDB::InvalidMember
         end
 
-        invalidate_varnish_cache if name_changed || privacy_changed || description_changed
+        invalidate_cache if name_changed || privacy_changed || table_privacy_changed || dirty
         set_timestamps
 
         repository.store(id, attributes.to_hash)
@@ -618,14 +707,14 @@ module CartoDB
           permission.clear
         end
 
-        if type == TYPE_CANONICAL
+        if type == TYPE_CANONICAL || type == TYPE_REMOTE
           if organization?
             save_named_map
           end
           propagate_privacy_and_name_to(table) if table and propagate_changes
         else
           save_named_map
-          propagate_name_to(table) if table and propagate_changes
+          propagate_name_to(table) if !table.nil? and propagate_changes
         end
       end
 
@@ -689,7 +778,7 @@ module CartoDB
         if type == TYPE_CANONICAL
           CartoDB::TablePrivacyManager.new(table)
             .set_from(self)
-            .propagate_to_redis_and_varnish
+            .propagate_to_varnish
         end
         self
       end
@@ -739,7 +828,7 @@ module CartoDB
           map.remove_layer(layer)
           layer.destroy
         }
-        self.active_layer_id = layers(:cartodb).first.id
+        self.active_layer_id = layers(:cartodb).first.nil? ? nil : layers(:cartodb).first.id
         store
       end
 
@@ -783,4 +872,3 @@ module CartoDB
     end
   end
 end
-

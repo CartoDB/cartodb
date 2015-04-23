@@ -5,8 +5,6 @@
 @import "../new_variables/colors";
 @import "../new_variables/sizes";
 
-$buttonBorderSize: 1px;
-
 .Button {
   @include display-flex();
   @include align-items(center, center);
@@ -17,6 +15,10 @@ $buttonBorderSize: 1px;
   height: $sButton-height;
   outline: none;
 }
+.Button--inline {
+  display: inline-block;
+  margin: 0 $sMargin-elementInline;
+}
 .Button,
 .Button span {
   font-size: $sFontSize-smallUpperCase;
@@ -24,12 +26,17 @@ $buttonBorderSize: 1px;
   font-weight: $sFontWeight-bold;
   color: white;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 .Button {
-  border: $buttonBorderSize solid $cStructure-mainBkg;
+  border: $sButton-border solid $cStructure-mainBkg;
 }
 .Button:hover,
 .Button span:hover { text-decoration:none }
+.Button.is-disabled {
+  @include opacity(0.5);
+  &:hover { cursor: default }
+}
 .Button--main {
   background-color: $cHighlight-main;
   border-color: $cHighlight-main;
@@ -39,6 +46,21 @@ $buttonBorderSize: 1px;
   background-color: $cHighlight-positive;
   border-color: $cHighlight-positive;
   &:hover { background-color: rgba(#7FA538, 1) }
+  &.is-disabled:hover {
+    background-color: $cHighlight-positive;
+    border-color: $cHighlight-positive;
+  }
+}
+.Button--invert {
+  background-color: none;
+  color: $cTypography-link;
+  border-color: $cTypography-link;
+  span { color: $cTypography-link }
+  &:hover {
+    background-color: $cTypography-link;
+    color: white;
+    span { color: white }
+  }
 }
 .Button--negative {
   background-color: $cHighlight-negative;
@@ -46,16 +68,17 @@ $buttonBorderSize: 1px;
   &:hover { background-color: rgba(#B93F37, 1) }
 }
 .Button--secondary {
-  border: $sButton-border solid #CCCCCC;
-  color: #666666;
+  border: 1px solid $cNavButton-default;
   background-color: rgba(white, 1);
-  &:hover {
-    background-color: rgba(#CCCCCC, 1);
-    color:white;
+  span {
+    color: $cNavButton-default;
   }
-}
-.Button--secondary span {
-  color: #666666;
+  &:hover {
+    border-color: $cNavButton-active;
+    span {
+      color: $cNavButton-active;
+    }
+  }
 }
 .Button.is-disabled {
   @include opacity(0.4);
@@ -67,5 +90,16 @@ $buttonBorderSize: 1px;
   &:hover {
     background-color: rgba(#384047, 1);
     color:white;
+  }
+}
+// Use this instead of .Button--positive on header background
+.Button--headerPositive {
+  border: $sButton-border+1 solid white;
+  color: white;
+  &:hover {
+    background-color: white;
+    span {
+      color: $cTypography-linkHover;
+    }
   }
 }

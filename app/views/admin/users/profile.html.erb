@@ -1,0 +1,138 @@
+<% content_for(:page_title) do %>
+  Your profile |
+<% end %>
+<%= content_for(:js) do %>
+  <script type="text/javascript">
+    var username = "<%= @user.username %>";
+    var config = <%= safe_js_object frontend_config %>;
+    var user_data = <%= safe_js_object @user.data.to_json %>;
+    var upgrade_url = <%= cartodb_com_hosted? ? 'undefined' : "'#{current_user.upgrade_url(request.protocol)}'" %>;
+    var can_change_email = <%= @user.can_change_email %>;
+    var iframe_src = '';
+  </script>
+  <%= javascript_include_tag 'cdb.js', 'models.js', 'account_templates.js', 'account_deps.js', 'account.js' -%>
+<% end %>
+
+
+<%= render :partial => 'shared/new_flash_message' %>
+
+<div>
+  <%= render :partial => 'admin/shared/new_pages_subheader' %>
+
+  <div class="CredentialsContent">
+    <div class="u-inner">
+
+      <%= form_for @user, url: CartoDB.url(self, 'profile_update_user', {id: @user.username}, current_user) do |f| %>
+        <%= csrf_meta_tags %>
+
+        <div class="Form-title">
+          <p class="Form-titleText">Edit your profile settings  </p>
+        </div>
+
+        <div class="Form-row">
+          <div class="Form-rowLabel">
+            <label class="Form-label">Name</label>
+          </div>
+          <div class="Form-rowData">
+            <%= f.text_field :name, :class => "Form-input Form-input--long" %>
+          </div>
+          <div class="Form-rowInfo">
+            <p class="Form-rowInfoText">Other users would reach you by your public name</p>
+          </div>
+        </div>
+
+        <div class="Form-row">
+          <div class="Form-rowLabel">
+            <label class="Form-label">Website</label>
+          </div>
+          <div class="Form-rowData">
+            <%= f.text_field :website, :class => "Form-input Form-input--long" %>
+          </div>
+          <div class="Form-rowInfo">
+            <p class="Form-rowInfoText"></p>
+          </div>
+        </div>
+
+        <div class="Form-row">
+          <div class="Form-rowLabel">
+            <label class="Form-label">Your description</label>
+          </div>
+          <div class="Form-rowData">
+            <%= f.text_area :description, :class => "Form-textarea Form-input Form-input--long" %>
+          </div>
+          <div class="Form-rowInfo">
+            <p class="Form-rowInfoText"></p>
+          </div>
+        </div>
+
+        <div class="Form-row js-avatarSelector">
+          <div class="Form-rowLabel">
+            <label class="Form-label">Avatar</label>
+          </div>
+          <div class="Form-rowData Form-avatar">
+            <div class="Form-avatarPreview">
+              <img src="<%= @user.avatar %>" class="Form-avatarPreviewImage" />  
+            </div>
+            <%= f.file_field :avatar_url, :class => "js-fileAvatar", :value => "Change avatar" %>
+          </div>
+          <div class="Form-rowInfo">
+            <p class="Form-rowInfoText">Recommended images should be 128x128 of size</p>
+          </div>
+        </div>
+
+        <div class="Form-row">
+          <div class="Form-rowLabel">
+            <label class="Form-label">Twitter username</label>
+          </div>
+          <div class="Form-rowData">
+            <%= f.text_field :twitter_username, :class => "Form-input Form-input--long" %>
+          </div>
+          <div class="Form-rowInfo">
+            <p class="Form-rowInfoText"></p>
+          </div>
+        </div>
+
+        <div class="Form-row">
+          <div class="Form-rowLabel">
+            <label class="Form-label">Disqus shortname</label>
+          </div>
+          <div class="Form-rowData">
+            <%= f.text_field :disqus_shortname, :class => "Form-input Form-input--long" %>
+          </div>
+          <div class="Form-rowInfo">
+            <p class="Form-rowInfoText">Moderate the comments in your maps</p>
+          </div>
+        </div>
+
+        <div class="Form-row">
+          <div class="Form-rowLabel">
+            <label class="Form-label">Available for hire</label>
+          </div>
+          <div class="Form-rowData">
+            <div class="Toggler">
+              <%= f.check_box :available_for_hire, :id => "available_for_hire" %>
+              <%= label_tag(:available_for_hire, '') %>
+            </div>
+          </div>
+          <div class="Form-rowInfo">
+            <p class="Form-rowInfoText">Show a banner in your public profile linked to your email</p>
+          </div>
+        </div>
+
+        <div class="Form-footer">
+          <p class="Form-footerText"></p>
+          <%= button_tag(type: 'submit', class: 'Button Button--main') do %>
+            <% content_tag(:span, 'Save changes') %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+</div>
+
+<% if !Cartodb.config[:cartodb_com_hosted].present? %>
+  <div class="SupportBanner" id="support-banner"></div>
+<% end %>
+
+<%= render 'admin/shared/new_footer' %>

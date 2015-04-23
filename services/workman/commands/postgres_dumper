@@ -1,5 +1,0 @@
-#!/usr/bin/env ruby
-# encoding: utf-8
-require_relative 'postgres_dumper'
-Workman::Commands::PostgresDumper.new(ARGV.first).run
-

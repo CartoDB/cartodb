@@ -24,7 +24,6 @@ config/database.yml
 config/app_config.yml
 config/redis.conf
 config/grunt_production.json
-src/
 spec/support/data/failed_remote/*
 *.swp
 *.swo
@@ -48,6 +47,7 @@ lib/build/app_config.js
 lib/build/.grunt/**/*
 rubygems
 vendor/bundle/*
+vendor/cache/*
 .vagrant
 Vagrantfile
 node_modules
@@ -55,3 +55,5 @@ node_modules
 _SpecRunner.html
 vendor/assets/javascripts/cartodb.*
 vendor/assets/stylesheets/cartodb.*
+public/test_support.csv
+public/test_guess_country.csv

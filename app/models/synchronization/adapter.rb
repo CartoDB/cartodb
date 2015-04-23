@@ -25,10 +25,11 @@ module CartoDB
             data_for_exception << "1st result:#{runner.results.first.inspect}"
             raise data_for_exception
           end
-          copy_privileges("public.#{table_name}", result.qualified_table_name)
-          copy_indexes("public.#{table_name}", result.qualified_table_name)
+          copy_privileges(user.database_schema, table_name, result.schema, result.table_name)
+          index_statements = generate_index_statements(user.database_schema, table_name)
           overwrite(table_name, result)
           cartodbfy(table_name)
+          run_index_statements(index_statements)
         end
         self
       rescue => exception
@@ -62,7 +63,7 @@ module CartoDB
       end
 
       def cartodbfy(table_name)
-        table = ::Table.where(name: table_name, user_id: user.id).first
+        table = ::Table.new(:user_table => ::UserTable.where(name: table_name, user_id: user.id).first)
         table.force_schema = true
         table.send :update_updated_at
         table.import_to_cartodb(table_name)
@@ -85,17 +86,8 @@ module CartoDB
 
       def update_cdb_tablemetadata(name)
         qualified_name = "\"#{user.database_schema}\".\"#{name}\""
-
-        # TODO: use upsert (see table.update_cdb_tablemetadata)
         user.in_database(as: :superuser).run(%Q{
-          INSERT INTO cartodb.cdb_tablemetadata (tabname, updated_at)
-          VALUES ('#{qualified_name}'::regclass::oid, NOW())
-        })
-      rescue Sequel::DatabaseError
-        user.in_database(as: :superuser).run(%Q{
-           UPDATE cartodb.cdb_tablemetadata
-           SET updated_at = NOW()
-           WHERE tabname = '#{qualified_name}'::regclass
+          SELECT CDB_TableMetadataTouch('#{qualified_name}')
         })
       end
 
@@ -160,36 +152,50 @@ module CartoDB
         "#{table_name}_to_be_deleted"
       end
 
-      def copy_privileges(origin_table_name, destination_table_name)
+      def copy_privileges(origin_schema, origin_table_name, destination_schema, destination_table_name)
         user.in_database(as: :superuser).execute(%Q(
           UPDATE pg_class
           SET relacl=(
-            SELECT relacl FROM pg_class
-            WHERE relname='#{origin_table_name}'
+            SELECT r.relacl FROM pg_class r, pg_namespace n
+            WHERE r.relname='#{origin_table_name}'
+            and r.relnamespace = n.oid
+            and n.nspname = '#{origin_schema}'
           )
           WHERE relname='#{destination_table_name}'
+          and relnamespace = (select oid from pg_namespace where nspname = '#{destination_schema}')
         ))
+      rescue => exception
+        Rollbar.report_message('Error copying privileges', 'error',
+                               { error: exception.inspect,
+                                 origin_schema: origin_schema,
+                                 origin_table_name: origin_table_name,
+                                 destination_schema: destination_schema,
+                                 destination_table_name: destination_table_name } )
       end
 
-      def copy_indexes(origin_table_name, destination_table_name)
-        origin_schema, origin_table_name = origin_table_name.split('.')
+      def generate_index_statements(origin_schema, origin_table_name)
         user.in_database(as: :superuser)[%Q(
           SELECT indexdef AS indexdef
           FROM pg_indexes
           WHERE schemaname = '#{origin_schema}'
           AND tablename = '#{origin_table_name}'
-        )].each do |record|
+        )].map { |record|
+          record.fetch(:indexdef)
+        }
+      end
+
+      def run_index_statements(statements)
+        statements.each { |statement|
           begin
-              statement = record.fetch(:indexdef).gsub(
-                /ON #{origin_table_name}/,
-                "ON #{destination_table_name}"
-              )
-              puts statement.inspect
             database.run(statement)
           rescue => exception
-            puts "copy_indexes(#{origin_table_name},#{destination_table_name}) ERROR: #{exception.to_s}"
+            if exception.message !~ /relation .* already exists/
+              Rollbar.report_message('Error copying indexes', 'error',
+                                   { error: exception.inspect,
+                                     statement: statement } )
+            end
           end
-        end
+        }
       end
 
       private

@@ -37,7 +37,6 @@
       root_assets_dir: ROOT_ASSETS_DIR,
 
       browserify_modules: {
-        src: 'lib/assets/javascripts/cartodb',
         tests: {
           dest: '.grunt/browserify_modules_tests.js'
         }
@@ -114,6 +113,7 @@
       // Set assets url for static assets in our app
       var config = grunt.template.process("cdb.config.set('assets_url', '<%= env.http_path_prefix %>/assets/<%= pkg.version %>');");
       config += grunt.template.process("\nconsole.log('cartodbui v<%= pkg.version %> sha1: <%= gitrev %>');");
+      config += grunt.template.process("\nCARTODB_UI_VERSION='<%= pkg.version %>';");
       grunt.file.write("lib/build/app_config.js", config);
     });
 

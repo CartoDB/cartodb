@@ -2,10 +2,12 @@
 require 'open3'
 require_relative './source_file'
 require_relative './unp'
+require_relative './exceptions'
 
 module CartoDB
   module Importer2
     class KmlSplitter
+      MAX_LAYERS = 50
       def self.support?(source_file)
         source_file.extension == '.kml'
       end
@@ -16,7 +18,9 @@ module CartoDB
       end
 
       def run
-        return self unless multiple_layers?(source_file)
+        n_layers = layers_in(source_file).length
+        return self if n_layers <= 1
+        raise CartoDB::Importer2::TooManyLayersError.new("File has too many layers (#{n_layers}). Maximum number of layers: #{MAX_LAYERS}") if n_layers > MAX_LAYERS
         @source_files = source_files_for(source_file, layers_in(source_file))
         self
       end

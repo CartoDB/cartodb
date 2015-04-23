@@ -38,7 +38,7 @@ module CartoDB
         attrs[:options] = ::JSON.dump(attrs[:options])
         repository.store(id, attrs)
         @new = false
-        invalidate_varnish_cache
+        invalidate_cache
         self
       end
 
@@ -56,7 +56,7 @@ module CartoDB
         vis_id = self.attributes[:visualization_id]
         repository.delete(id)
         self.attributes.keys.each { |k| self.send("#{k}=", nil) }
-        invalidate_varnish_cache(vis_id)
+        invalidate_cache(vis_id)
         self
       end
 
@@ -94,10 +94,10 @@ module CartoDB
         true
       end
 
-      def invalidate_varnish_cache(vis_id=nil)
+      def invalidate_cache(vis_id=nil)
         begin
           v = visualization(vis_id)
-          v.invalidate_varnish_cache
+          v.invalidate_cache
         rescue KeyError
           # Silenced error
         end

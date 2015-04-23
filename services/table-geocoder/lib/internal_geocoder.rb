@@ -8,6 +8,8 @@ module CartoDB
     class Geocoder
       class NotImplementedError < StandardError; end
 
+      SQLAPI_CALLS_TIMEOUT = 45
+
       attr_reader   :connection, :temp_table_name, :sql_api, :geocoding_results,
                     :working_dir, :remote_id, :state, :processed_rows, :country_column,
                     :qualified_table_name, :batch_size, :countries, :kind, :geometry_type
@@ -15,10 +17,11 @@ module CartoDB
       attr_accessor :table_schema, :table_name, :column_name
 
       def initialize(arguments)
-        @sql_api              = CartoDB::SQLApi.new arguments.fetch(:internal)
+        @sql_api              = CartoDB::SQLApi.new(arguments.fetch(:internal)
+                                                             .merge({ timeout: SQLAPI_CALLS_TIMEOUT })
+                                                   )
         @connection           = arguments.fetch(:connection)
         @working_dir          = Dir.mktmpdir
-        `chmod 777 #{@working_dir}`
         @table_name           = arguments[:table_name]
         @table_schema         = arguments[:table_schema]
         @qualified_table_name = arguments[:qualified_table_name]
@@ -27,7 +30,7 @@ module CartoDB
         @geometry_type        = arguments.fetch(:geometry_type, '').to_sym
         @kind                 = arguments.fetch(:kind, '').to_sym
         @schema               = arguments[:schema] || 'cdb'
-        @batch_size           = (@geometry_type == :point ? 5000 : 10)
+        @batch_size           = (@geometry_type == :point ? 1000 : 10)
         @state                = 'submitted'
         @geocoding_results = File.join(working_dir, "#{temp_table_name}_results.csv")
         @country_column = arguments[:country_column]
@@ -47,7 +50,7 @@ module CartoDB
         raise e
       ensure
         drop_temp_table
-        FileUtils.rm_rf @working_dir
+        FileUtils.remove_entry_secure @working_dir
       end
 
       def download_results

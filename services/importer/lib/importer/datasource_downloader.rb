@@ -12,8 +12,9 @@ module CartoDB
       def initialize(datasource, item_metadata, options={}, logger = nil, repository=nil)
         @checksum = nil
 
-        @datasource     = datasource
-        @item_metadata  = item_metadata
+        @source_file = nil
+        @datasource = datasource
+        @item_metadata = item_metadata
         @options = options
         raise UploadError if datasource.nil?
 
@@ -51,48 +52,6 @@ module CartoDB
         end
       end
 
-      # In the case of DirectStream datasources, this will store a sample to trigger DB creation.
-      # In other cases full contents will be stored.
-      def set_downloaded_source_file(available_quota_in_bytes=nil)
-        @checksum = @item_metadata[:checksum]
-        return self unless modified?
-
-        stream_to_file = @datasource.kind_of? CartoDB::Datasources::BaseFileStream
-        direct_stream  = @datasource.kind_of? CartoDB::Datasources::BaseDirectStream
-
-        if direct_stream
-          initial_stream_data = @datasource.initial_stream(@item_metadata[:id])
-          store_retrieved_data(@item_metadata[:filename], initial_stream_data, available_quota_in_bytes)
-        end
-
-        if stream_to_file
-          self.source_file = SourceFile.new(filepath(@item_metadata[:filename]), @item_metadata[:filename])
-          output_stream = File.open(self.source_file.fullpath, 'wb')
-          @datasource.stream_resource(@item_metadata[:id], output_stream)
-          output_stream.close
-        end
-
-        if !stream_to_file && !direct_stream
-          begin
-            resource_data = @datasource.get_resource(@item_metadata[:id])
-          rescue => exception
-            if exception.message =~ /quota/i
-              raise StorageQuotaExceededError
-            else
-              raise
-            end
-          end
-          store_retrieved_data(@item_metadata[:filename], resource_data, available_quota_in_bytes)
-        end
-
-        self
-      end
-
-      def raise_if_over_storage_quota(size, available_quota_in_bytes=nil)
-        return self unless available_quota_in_bytes
-        raise StorageQuotaExceededError if size > available_quota_in_bytes.to_i
-      end
-
       def modified?
         previous_checksum = @options.fetch(:checksum, false)
         previous_checksum = false if previous_checksum == ''  # If comes empty from DB, make pure false
@@ -113,6 +72,51 @@ module CartoDB
       private
       
       attr_writer :source_file
+
+      # In the case of DirectStream datasources, this will store a sample to trigger DB creation.
+      # In other cases full contents will be stored.
+      def set_downloaded_source_file(available_quota_in_bytes=nil)
+        @checksum = @item_metadata[:checksum]
+        return self unless modified?
+
+        stream_to_file = @datasource.kind_of? CartoDB::Datasources::BaseFileStream
+        direct_stream  = @datasource.kind_of? CartoDB::Datasources::BaseDirectStream
+
+        # a) Streaming to DB
+        if direct_stream
+          initial_stream_data = @datasource.initial_stream(@item_metadata[:id])
+          store_retrieved_data(@item_metadata[:filename], initial_stream_data, available_quota_in_bytes)
+        end
+
+        # b) Streaming, but into an intermediate file
+        if stream_to_file
+          self.source_file = SourceFile.new(filepath(@item_metadata[:filename]), @item_metadata[:filename])
+          output_stream = File.open(self.source_file.fullpath, 'wb')
+          @datasource.stream_resource(@item_metadata[:id], output_stream)
+          output_stream.close
+        end
+
+        # c) Classic http download to file
+        if !stream_to_file && !direct_stream
+          begin
+            resource_data = @datasource.get_resource(@item_metadata[:id])
+          rescue => exception
+            if exception.message =~ /quota/i
+              raise StorageQuotaExceededError
+            else
+              raise
+            end
+          end
+          store_retrieved_data(@item_metadata[:filename], resource_data, available_quota_in_bytes)
+        end
+
+        self
+      end
+
+      def raise_if_over_storage_quota(size, available_quota_in_bytes=nil)
+        return self unless available_quota_in_bytes
+        raise StorageQuotaExceededError if size > available_quota_in_bytes.to_i
+      end
 
       def store_retrieved_data(filename, resource_data, available_quota_in_bytes)
         # Skip storing if no data came in

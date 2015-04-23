@@ -17,7 +17,12 @@ describe 'SQL regression tests' do
     pending 'SQL Loader still disabled'
     filepath    = path_to('csv_with_lat_lon.sql')
     downloader  = Downloader.new(filepath)
-    runner      = Runner.new(@pg_options, downloader, Doubles::Log.new)
+    runner      = Runner.new({
+                               pg: @pg_options,
+                               downloader: downloader,
+                               log: Doubles::Log.new,
+                               user:Doubles::User.new
+                             })
     runner.run
 
     result = runner.results.first

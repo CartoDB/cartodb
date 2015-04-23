@@ -1,34 +1,35 @@
-// Header
-// - Tipical Header view
+// Layout Header
 // --------------------------------------------------
 
 @import "../new_variables/mixins";
 @import "../new_variables/colors";
 @import "../new_variables/sizes";
 
-/* Header */
+$height: 81px;
+$cHeader-light: rgba(#61AEEC, 1);
+$cHeader-dark:  rgba(#3A91D7, 1);
+
 .Header {
-  display:block;
-  width:100%;
-  height:81px;
-  background-color:$cStructure-grayBkg;
-  border-bottom:1px solid $cStructure-mainLine;
+  display: block;
+  width: 100%;
+  height: $height;
+  @include background-gradient($cHeader-light, $cHeader-dark);
+  @include css3-prefix(box-shadow, inset rgba(black, 0.2) 0 -1px 0 0);
 }
-.Header > .u-inner {
+.Header-inner {
   position:relative;
   @include display-flex();
   @include justify-content(space-between, justify);
-  @include align-items(center, center);
+  @include align-items(center);
 }
-
 .Header-navigationList {
   @include display-flex();
   @include justify-content(space-between, justify);
-  @include align-items(center, center);
+  @include align-items(center);
 }
 .Header-navigationBreadcrumb {
   @include display-flex();
-  @include align-items(center, center);
+  @include align-items(center);
   margin-left: $sMargin-element;
 }
 .Header-navigationBreadcrumbItem {
@@ -36,55 +37,55 @@
   font-size: $sFontSize-largest;
   font-weight: $sFontWeight-lighter;
   line-height: $sLineHeight-largest;
-  color:$cTypography-secondary;
+  color: rgba(white, 0.6);
 }
+.Header-navigationBreadcrumbItem:first-child { padding-left: 0 }
 .Header-navigationBreadcrumbLink {
-  position:relative;
-  padding-right: $sMargin-elementInline;
   font-size: $sFontSize-largest;
   font-weight: $sFontWeight-lighter;
   line-height: $sLineHeight-largest;
-  color:#333;
-
-  &:after {
-    content: '';
-    position:absolute;
-    right:0;
-    top:50%;
-    width:0;
-    height:0;
-    border-left:4px solid transparent;
-    border-right:4px solid transparent;
-    border-top:4px solid #999999;
-  }
+  color: white;
 
   &:hover {
-    color:#222;
-    &:after { border-top-color:#222 }
+    color: white;
+    text-decoration: underline;
+    &:after { border-top-color: white }
+  }
+  &.is-disabled {
+    &:hover {
+      text-decoration: none;
+      cursor: default;
+    }
   }
 }
-
-.Header-settings {
-  height:81px;
-}
+.Header-settings { height: $height }
 .Header-settingsList {
-  height:100%;
+  height: 100%;
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
 }
 .Header-settingsItem {
   position: relative;
-  margin-left: 30px;
+  margin-left: $sMargin-element;
   font-size: $sFontSize-larger;
   line-height: $sLineHeight-larger;
 }
+.Header-settingsItem--avatar { height: 42px }
 .Header-settingsLink {
   font-weight: $sFontWeight-lighter;
-  color:#666;
-  
+  color: rgba(white, 0.6);
+
   &:hover {
-    color:#333;
+    color: white;
     text-decoration: underline;
   }
+}
+
+@media (min-width: $sMedia-mobile) {
+  .Header-logoText { margin-left: $sMargin-elementInline }
+}
+
+@media (min-width: $sMedia-tablet) {
+  .Header-settingsItem { margin-left: $sMargin-group }
 }

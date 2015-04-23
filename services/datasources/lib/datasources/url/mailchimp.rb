@@ -43,6 +43,9 @@ module CartoDB
           @app_key = config.fetch('app_key')
           @app_secret = config.fetch('app_secret')
 
+          @http_timeout = config.fetch(:http_timeout)
+          @http_connect_timeout = config.fetch(:http_connect_timeout)
+
           placeholder = CALLBACK_STATE_DATA_PLACEHOLDER.sub('user', @user.username).sub('service', DATASOURCE_NAME)
           @callback_url = "#{config.fetch('callback_url')}?state=#{placeholder}"
 
@@ -92,6 +95,7 @@ module CartoDB
         # Validates the authorization callback
         # @param params : mixed
         # @throws AuthError
+        # @throws DataDownloadTimeoutError
         def validate_callback(params)
           code = params.fetch('code')
           if code.nil? || code == ''
@@ -107,6 +111,9 @@ module CartoDB
           }
 
           token_response = Typhoeus.post(ACCESS_TOKEN_URI, http_options(token_call_params, :post))
+
+          raise DataDownloadTimeoutError.new(DATASOURCE_NAME) if token_response.timed_out?
+
           unless token_response.code == 200
             raise "Bad token response: #{token_response.body.inspect} (#{token_response.code})"
           end
@@ -118,6 +125,9 @@ module CartoDB
           # @see https://apidocs.mailchimp.com/oauth2/
           metadata_response = Typhoeus.get(MAILCHIMP_METADATA_URI,http_options({}, :get, {
                                              'Authorization' => "OAuth #{partial_access_token}"}))
+
+          raise DataDownloadTimeoutError.new(DATASOURCE_NAME) if metadata_response.timed_out?
+
           unless metadata_response.code == 200
             raise "Bad metadata response: #{metadata_response.body.inspect} (#{metadata_response.code})"
           end
@@ -162,7 +172,7 @@ module CartoDB
           total = nil
 
           begin
-            response = @api_client.lists.list({
+            response = @api_client.campaigns.list({
                                                 start: offset,
                                                 limit: limit
                                               })
@@ -175,7 +185,8 @@ module CartoDB
 
             response_data = response.fetch('data', [])
             response_data.each do |item|
-              all_results.push(format_item_data(item))
+              # Skip items without tracking
+              all_results.push(format_activity_item_data(item)) if item['tracking']['opens']
             end
 
             offset += limit
@@ -197,13 +208,28 @@ module CartoDB
         def get_resource(id)
           raise UninitializedError.new('No API client instantiated', DATASOURCE_NAME) unless @api_client.present?
 
+          subscribers = []
           contents = ''
-
           export_api = @api_client.get_exporter
 
-          content_iterator = export_api.list({id: id})
-          content_iterator.each { |line|
-            contents << streamed_json_to_csv(line)
+          # 1) Retrieve campaign details
+          campaign = get_resource_metadata(id)
+          campaign_details = export_api.list({id: campaign[:list_id]})
+          campaign = nil
+
+          # 2) Retrieve subscriber activity
+          # https://apidocs.mailchimp.com/export/1.0/campaignsubscriberactivity.func.php
+          subscribers_activity = export_api.campaign_subscriber_activity({id: id})
+          subscribers_activity.each { |line|
+            item_data = activity_data_item(line)
+            subscribers.push(item_data) if item_data[:opened]
+          }
+          subscribers_activity = nil
+
+          # 3) Update campaign details with subscriber activity results
+          # 4) anonymize data (inside list_json_to_csv)
+          campaign_details.each_with_index { |line, index|
+            contents << list_json_to_csv(line, subscribers, index == 0)
           }
 
           contents
@@ -223,8 +249,10 @@ module CartoDB
 
           item_data = {}
 
-          # No metadata call at API, so just retrieve same info but from specific list id
-          response = @api_client.lists.list({ filters: { list_id: id } })
+          # No metadata call at API, so just retrieve same info but from specific campaign id
+          # https://apidocs.mailchimp.com/api/2.0/campaigns/list.php
+          response = @api_client.campaigns.list({ filters: { campaign_id: id } })
+
           errors = response.fetch('errors', [])
           unless errors.empty?
             raise DataDownloadError.new("get_resources_list(): #{errors.inspect}", DATASOURCE_NAME)
@@ -233,7 +261,7 @@ module CartoDB
 
           response_data.each do |item|
             if item.fetch('id') == id
-              item_data = format_item_data(item)
+              item_data = format_activity_item_data(item)
             end
           end
 
@@ -313,33 +341,89 @@ module CartoDB
                                 'Accept' => 'application/json'
                               }.merge(extra_headers),
             ssl_verifyhost:   0,
-            timeout:          60
+            connecttimeout:  @http_connect_timeout,
+            timeout:          @http_timeout
           }
         end
 
         # Formats all data to comply with our desired format
         # @param item_data Hash : Single item returned from MailChimp API
         # @return { :id, :title, :url, :service, :size }
-        def format_item_data(item_data)
-          filename = item_data.fetch('name').gsub(' ', '_')
-          member_count = item_data.fetch('stats').fetch('member_count')
+        def format_activity_item_data(item_data)
+          filename = item_data.fetch('title').gsub(' ', '_')
           {
             id:       item_data.fetch('id'),
-            title:    "#{item_data.fetch('name')}",
+            list_id:  item_data.fetch('list_id'),
+            title:    "#{item_data.fetch('title')}",
             filename: "#{filename}.csv",
             service:  DATASOURCE_NAME,
             checksum: '',
-            member_count: member_count,
-            size:     0
+            member_count: item_data.fetch('emails_sent'),
+            size:     NO_CONTENT_SIZE_PROVIDED
           }
         end
 
         # @see https://apidocs.mailchimp.com/export/1.0/#overview_description
-        def streamed_json_to_csv(contents='[]')
-          contents = ::JSON.parse(contents)
-          contents.each_with_index { |field, index|
-            contents[index] = "\"#{field.to_s.gsub("\n", ' ').gsub('"', '""')}\""
+        def activity_json_to_csv(input_fields='[]')
+          opened_action = false
+          fields = []
+          contents = ::JSON.parse(input_fields)
+          contents.each { |subject, actions|
+            # Anonimize by removing the name and leaving only the email domain
+            fields.push("\"#{subject.to_s.gsub("\n", ' ').gsub('"', '""').gsub(/(.*)@/, "")}\"")
+            unless actions.length == 0
+              actions.each { |action|
+                if action["action"] == "open" && !opened_action
+                  fields.push("\"#{action["timestamp"]}\"")
+                  fields.push(action["ip"].nil? ? '' : "\"#{action["ip"]}\"")
+                  opened_action = true
+                end
+              }
+            end
           }
+          # Empty action scenario
+          unless opened_action
+            fields.push("\"\"")
+            fields.push("")
+          end
+          data = fields.join(',')
+          data << "\n"
+        end
+
+        def activity_data_item(input_fields='[]')
+          email = nil
+          opened_action = false
+          contents = ::JSON.parse(input_fields)
+          contents.each { |subject, actions|
+            email = subject
+            unless actions.length == 0
+              actions.each { |action|
+                opened_action = true if action["action"] == "open"
+              }
+            end
+          }
+
+          { subject: email, opened: opened_action }
+        end
+
+        # @param contents String containing a JSON Hash
+        # @param subscribers Array containing a Hash { subject, opened }
+        # @param header_row Boolean
+        def list_json_to_csv(contents='[]', subscribers=[], header_row=false)
+          opened_mail = false
+          contents = ::JSON.parse(contents)
+
+          opened_mail = (subscribers.index{ |item| item[:subject] == contents[0] } != nil) unless header_row == 0
+
+          contents.each_with_index { |field, index|
+            # Anonymize emails
+            if index == 0
+              contents[index] = "\"#{field.to_s.gsub("\n", ' ').gsub('"', '""').gsub(/^(.*)@/, "")}\""
+            else
+              contents[index] = "\"#{field.to_s.gsub("\n", ' ').gsub('"', '""')}\""
+            end
+          }
+          contents.push("\"#{header_row ? 'Opened' : opened_mail.to_s}\"")
           data = contents.join(',')
           data << "\n"
         end

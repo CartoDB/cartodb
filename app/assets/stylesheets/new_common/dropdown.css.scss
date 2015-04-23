@@ -1,7 +1,7 @@
 /*
  * Dropdown styles, with a subtle blurry border, and a triangle "tick" popping out of the dropdown box to indicate where it is anchored.
  *
- * The tick is composed by two injected elements by :before and :after the .dropdown's content.
+ * The tick is composed by two injected elements by :before and :after the .Dropdown's content.
  * :before injects a square box, rotated 45 degrees, which has a box-shadow attached to it.
  * :after injects a rectangle with same background as the dropdown content, which overlaps :before's content to.
  *
@@ -16,15 +16,14 @@
 @import "../new_variables/mixins";
 @import "../new_variables/colors";
 
-.dropdown {
+.Dropdown {
   position: absolute;
   display: none;
   background: $cStructure-mainBkg;
   border-radius: 4px;
   /* x-offset, y-offset, blur, size, color */
-  box-shadow: 0 0 5px 1px $cStructure-mainLine;
-  border: 1px $cStructure-mainLine solid;
-  z-index: 50;
+  box-shadow: 0 0 5px 1px rgba(black, 0.2), 0 0 1px 0 rgba(black, 0.3);
+  z-index: 100000000; // to be on top of avatar and attribution overlays on public dashboard
 
   &:before {
     content: ' ';
@@ -33,7 +32,7 @@
     width: 10px;
     height: 10px;
     background-color: $cStructure-mainBkg;
-    box-shadow: 0 0 5px 1px $cStructure-mainLine;
+    box-shadow: 0 0 5px 1px rgba(black, 0.2);
     @include transform(rotate(45deg));
   }
   &:after {
@@ -141,7 +140,7 @@
   }
 }
 
-.dropdown > ul {
+.Dropdown > ul {
   position: relative;
   @include inline-block();
   margin: 20px;
@@ -150,7 +149,7 @@
   overflow: visible;
 }
 
-.dropdown > ul > li {
+.Dropdown > ul > li {
   display:block;
   border-top:1px solid $cStructure-mainLine;
   margin-top: 10px;
@@ -166,7 +165,7 @@
   }
 }
 
-.dropdown > ul > li > p {
+.Dropdown > ul > li > p {
   margin-top: 10px;
 
   &:first-child {

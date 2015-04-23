@@ -44,8 +44,8 @@ describe Api::Json::PermissionsController do
     delete_user_data @user3
     @headers = {
       'CONTENT_TYPE'  => 'application/json',
-      'HTTP_HOST'     => 'test.localhost.lan'
     }
+    host! 'test.localhost.lan'
     Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
     Permission.any_instance.stubs(:grant_db_permission).returns(nil)
     Permission.any_instance.stubs(:notify_permissions_change).returns(nil)
@@ -87,7 +87,8 @@ describe Api::Json::PermissionsController do
           entity: {
             id:         @user2.id,
             username:   @user2.username,
-            avatar_url: @user2.avatar_url
+            avatar_url: @user2.avatar_url,
+            base_url:   @user2.public_url,
           },
           access: Permission::ACCESS_READONLY
         },
@@ -96,7 +97,8 @@ describe Api::Json::PermissionsController do
           entity: {
             id:         @user3.id,
             username:   @user3.username,
-            avatar_url: @user3.avatar_url
+            avatar_url: @user3.avatar_url,
+            base_url:   @user3.public_url,
           },
           access: Permission::ACCESS_READONLY
         }
@@ -148,7 +150,8 @@ describe Api::Json::PermissionsController do
               entity: {
                   id:         @user2.id,
                   username:   @user2.username,
-                  avatar_url: @user2.avatar_url
+                  avatar_url: @user2.avatar_url,
+                  base_url:   @user2.public_url,
               },
               access: Permission::ACCESS_READONLY
           }

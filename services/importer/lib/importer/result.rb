@@ -5,6 +5,7 @@ module CartoDB
     class Result
       ATTRIBUTES = %w{ name schema extension tables success error_code log_trace support_tables }
       attr_reader *ATTRIBUTES.map(&:to_sym)
+      attr_writer :name
 
       def initialize(attributes)
         @support_tables = []

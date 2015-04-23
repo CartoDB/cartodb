@@ -1,4 +1,15 @@
 module Cartodb
+  def self.get_config(*config_chain) 
+    current = Cartodb.config
+    config_chain.each { |config_param|
+      current = current[config_param]
+      if current.nil?
+        break
+      end
+    }
+    current
+  end
+
   def self.config
     return @config if @config
 
@@ -30,6 +41,21 @@ module Cartodb
         :password             => Cartodb.config[:mailer]['password'],
         :authentication       => Cartodb.config[:mailer]['authentication'],
         :enable_starttls_auto => Cartodb.config[:mailer]['enable_starttls_auto'] }
+    end
+
+    if @config[:basemaps].present? && !@config[:basemaps]['default'].present?
+      @config[:basemaps]['default'] = {}
+      new_default = false
+      @config[:basemaps].each do |bfamily,ba|
+        break if new_default
+        ba.each do |bname,battrs|
+          if battrs['default']
+            @config[:basemaps]['default'] = battrs
+            new_default = true
+            break
+          end
+        end
+      end
     end
   end
 

@@ -9,6 +9,8 @@ require_relative '../log'
 require_relative '../../../services/importer/lib/importer/unp'
 require_relative '../../../services/importer/lib/importer/post_import_handler'
 require_relative '../../../lib/cartodb/errors'
+require_relative '../../../lib/cartodb/import_error_codes'
+require_relative '../../../services/platform-limits/platform_limits'
 
 include CartoDB::Datasources
 
@@ -28,6 +30,9 @@ module CartoDB
       SYNC_NOW_TIMESPAN = 900
 
       STATE_CREATED   = 'created'
+      # Already at resque, waiting for slot
+      STATE_QUEUED   = 'queued'
+      # Actually syncing
       STATE_SYNCING   = 'syncing'
       STATE_SUCCESS   = 'success'
       STATE_FAILURE   = 'failure'
@@ -85,6 +90,10 @@ module CartoDB
         " user_id:\"#{@user_id}\" type_guessing:\"#{@type_guessing}\" " \
         "quoted_fields_guessing:\"#{@quoted_fields_guessing}\">"
       end
+  
+      def synchronizations_logger
+        @@synchronizations_logger ||= ::Logger.new("#{Rails.root}/log/synchronizations.log")
+      end
 
       def interval=(seconds=3600)
         super(seconds.to_i)
@@ -116,6 +125,8 @@ module CartoDB
 
       def enqueue
         Resque.enqueue(Resque::SynchronizationJobs, job_id: id)
+        self.state = CartoDB::Synchronization::Member::STATE_QUEUED
+        self.store
       end
 
       # @return bool
@@ -128,13 +139,22 @@ module CartoDB
         self.state == STATE_SUCCESS && (self.run_at < Time.now)
       end
 
+      # This should be joined with data_import to stop the madness of duplicated code
       def run
         importer = nil
-        self.state    = STATE_SYNCING
+        self.state = STATE_SYNCING
+        self.store
 
-        @log = CartoDB::Log.new(type: CartoDB::Log::TYPE_SYNCHRONIZATION, user_id: user.id)
-        self.log_id = @log.id
-        store
+        # First import is a "normal import" so still has no id, then run gets called and will get log first time
+        # but we need this to fix old logs
+        if log.nil?
+          @log = CartoDB::Log.new(type: CartoDB::Log::TYPE_SYNCHRONIZATION, user_id: user.id)
+          @log.save
+          self.log_id = @log.id
+          store
+        else
+          @log.clear
+        end
 
         if user.nil?
           raise "Couldn't instantiate synchronization user. Data: #{to_s}"
@@ -152,9 +172,14 @@ module CartoDB
           end
         end
 
-        runner        = CartoDB::Importer2::Runner.new(
-          pg_options, downloader, log, user.remaining_quota, CartoDB::Importer2::Unp.new, post_import_handler
-        )
+        runner = CartoDB::Importer2::Runner.new({
+                                                  pg: pg_options,
+                                                  downloader: downloader,
+                                                  log: log,
+                                                  user: user,
+                                                  unpacker: CartoDB::Importer2::Unp.new,
+                                                  post_import_handler: post_import_handler
+                                                })
         runner.loader_options = ogr2ogr_options.merge content_guessing_options
 
 
@@ -184,14 +209,20 @@ module CartoDB
         end
 
         store
+        
+        notify
+
       rescue => exception
         Rollbar.report_exception(exception)
         log.append exception.message
         log.append exception.backtrace.join('\n')
 
         if importer.nil?
-          if(exception.kind_of?(NotFoundDownloadError))
+          if exception.kind_of?(NotFoundDownloadError)
             set_general_failure_state_from(exception, 1017, 'File not found, you must import it again')
+          elsif exception.kind_of?(CartoDB::Importer2::FileTooBigError)
+            set_general_failure_state_from(exception, exception.error_code,
+                                           CartoDB::IMPORTER_ERROR_CODES[exception.error_code][:title])
           else
             set_general_failure_state_from(exception)
           end
@@ -209,7 +240,22 @@ module CartoDB
             log.append ex.backtrace
           end
         end
+        notify
         self
+      end
+
+      def notify
+        sync_log = {
+          'name'              => self.name,
+          'sync_time'         => self.updated_at - self.created_at,
+          'sync_timestamp'    => Time.now,
+          'user'              => user.username,
+          'queue_server'      => `hostname`.strip,
+          'resque_ppid'       => Process.ppid,
+          'state'             => self.state,
+          'user_timeout'      => ::DataImport.http_timeout_for(user)
+        }
+        synchronizations_logger.info(sync_log.to_json)
       end
 
       def get_downloader
@@ -230,6 +276,10 @@ module CartoDB
         log.append "Fetching datasource #{datasource_provider.to_s} metadata for item id #{service_item_id} from user #{user.id}"
         metadata = datasource_provider.get_resource_metadata(service_item_id)
 
+        if hit_platform_limit?(datasource_provider, metadata, user)
+          raise CartoDB::Importer2::FileTooBigError.new(metadata.inspect)
+        end
+
         if datasource_provider.providers_download_url?
           resource_url = (metadata[:url].present? && datasource_provider.providers_download_url?) ? metadata[:url] : url
 
@@ -237,21 +287,38 @@ module CartoDB
             raise CartoDB::DataSourceError.new("Missing resource URL to download. Data:#{to_s}" )
           end
 
-          downloader    = CartoDB::Importer2::Downloader.new(
+          downloader = CartoDB::Importer2::Downloader.new(
               resource_url,
-              etag:             etag,
-              last_modified:    modified_at,
-              checksum:         checksum,
-              verify_ssl_cert:  false
+              {
+                http_timeout:     DataImport.http_timeout_for(user),
+                etag:             etag,
+                last_modified:    modified_at,
+                checksum:         checksum,
+                verify_ssl_cert:  false
+              }
           )
           log.append "File will be downloaded from #{downloader.url}"
         else
           log.append 'Downloading file data from datasource'
-          downloader = CartoDB::Importer2::DatasourceDownloader.new(datasource_provider, metadata, \
-            {checksum: checksum}, log)
+          downloader = CartoDB::Importer2::DatasourceDownloader.new(
+            datasource_provider, metadata,
+            {
+              http_timeout:     DataImport.http_timeout_for(user),
+              checksum: checksum
+            }, log
+          )
         end
 
         downloader
+      end
+
+      def hit_platform_limit?(datasource, metadata, user)
+        if datasource.has_resource_size?(metadata)
+          CartoDB::PlatformLimits::Importer::InputFileSize.new({ user: user })
+                                                          .is_over_limit!(metadata[:size])
+        else
+          false
+        end
       end
 
       def set_success_state_from(importer)
@@ -277,6 +344,11 @@ module CartoDB
         self.state          = STATE_FAILURE
         self.error_code     = importer.error_code
         self.error_message  = importer.error_message
+        # Try to fill empty messages with the list
+        if self.error_message == '' && !self.error_code.nil?
+          default_message = CartoDB::IMPORTER_ERROR_CODES.fetch(self.error_code, {})
+          self.error_message = default_message.fetch(:title, '')
+        end
         self.retried_times  = self.retried_times + 1
         if self.retried_times < MAX_RETRIES
           self.run_at         = Time.now + interval
@@ -379,7 +451,9 @@ module CartoDB
 
         log_attributes = {
           type: CartoDB::Log::TYPE_SYNCHRONIZATION,
+          id: self.log_id
         }
+
         log_attributes.merge(user_id: user.id) if user
 
         @log = CartoDB::Log.where(log_attributes).first
@@ -396,7 +470,9 @@ module CartoDB
       # @return mixed|nil
       def get_datasource(datasource_name)
         begin
-          datasource = DatasourcesFactory.get_datasource(datasource_name, user)
+          datasource = DatasourcesFactory.get_datasource(datasource_name, user, {
+            http_timeout: ::DataImport.http_timeout_for(user)
+          })
           datasource.report_component = Rollbar
           if datasource.kind_of? BaseOAuth
             oauth = user.oauths.select(datasource_name)

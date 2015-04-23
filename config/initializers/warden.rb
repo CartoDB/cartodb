@@ -29,6 +29,21 @@ Warden::Strategies.add(:password) do
   end
 end
 
+Warden::Strategies.add(:google_access_token) do
+  def authenticate!
+    if params[:google_access_token]
+      user = GooglePlusAPI.new.get_user(params[:google_access_token])
+      if(user.present?)
+        success!(user)
+      else
+        fail!
+      end
+    else
+      fail!
+    end
+  end
+end
+
 Warden::Strategies.add(:api_authentication) do
   def authenticate!
     # WARNING: The following code is a modified copy of the oauth10_token method from
@@ -54,6 +69,11 @@ end
 Warden::Strategies.add(:api_key) do
   def valid?
     params[:api_key].present?
+  end
+
+  # We don't want to store a session and send a response cookie
+  def store?
+    false
   end
 
   def authenticate!

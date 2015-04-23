@@ -7,6 +7,8 @@ require_relative '../doubles/log'
 include CartoDB::Importer2::Doubles
 
 describe CartoDB::Importer2::CsvNormalizer do
+
+  BUG_COLUMNS_WRONG_SPLIT_FIXTURE_FILE = "#{File.dirname(__FILE__)}/bug_columns_wrong_split.csv"
   
   describe '#run' do
     it 'transforms the file using a proper comma delimiter' do
@@ -29,6 +31,25 @@ describe CartoDB::Importer2::CsvNormalizer do
 
       FileUtils.rm(fixture)
     end
+
+    it 'detects it correctly even with quoted strings containing delimiters' do
+      fixture = quoted_string_with_delimiter_factory
+      csv = CartoDB::Importer2::CsvNormalizer.new(fixture, Log.new)
+      csv.detect_delimiter.should eq ','
+    end
+
+    it 'detects it correctly with escaped quotes' do
+      fixture = string_with_escaped_quote_factory
+      csv = CartoDB::Importer2::CsvNormalizer.new(fixture, Log.new)
+      csv.detect_delimiter.should eq ','
+    end
+
+    it 'detects it correctly with triple quotes, quoted strings and all' do
+      fixture = bug_columns_wrong_split_factory
+      csv = CartoDB::Importer2::CsvNormalizer.new(fixture, Log.new)
+      csv.detect_delimiter.should eq ','
+    end
+
   end
 
   describe '#encoding' do
@@ -193,6 +214,41 @@ describe CartoDB::Importer2::CsvNormalizer do
 
     filepath
   end
+
+  def quoted_string_with_delimiter_factory
+    filepath = get_temp_csv_fullpath
+
+    ::File.open(filepath, 'w') do |file|
+      file << 'name,description ; with semicolon,wadus' << "\n"
+      file << 'foo,"this description contains; a semicolon and a, comma to affect frequency table",bar' << "\n"
+      file << 'foobar,"this description contains; a semicolon but no comma",barfoo' << "\n"
+    end
+
+    filepath
+  end
+
+  def string_with_escaped_quote_factory
+    filepath = get_temp_csv_fullpath
+
+    ::File.open(filepath, 'w') do |file|
+      file << 'name,description ; with semicolon,wadus' << "\n"
+      file << 'foo,"this description contains an escaped \" quote; a semicolon, and a comma",bar' << "\n"
+      file << 'foobar,"this description contains \"; a semicolon but no comma",barfoo' << "\n"
+    end
+
+    filepath
+  end
+
+  def bug_columns_wrong_split_factory
+    temp_destination = get_temp_csv_fullpath
+
+    ::FileUtils::copy BUG_COLUMNS_WRONG_SPLIT_FIXTURE_FILE, temp_destination
+
+    temp_destination
+  end
+
+
+
 
   def get_temp_csv_fullpath
     "/var/tmp/#{Time.now.to_f}-#{rand(999)}.csv"

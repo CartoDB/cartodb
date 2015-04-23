@@ -3,11 +3,13 @@
 require 'ipaddr'
 require_relative 'table_sampler'
 require_relative 'importer_stats'
+require_relative 'namedplaces_guesser'
 
 module CartoDB
   module Importer2
     class ContentGuesser
 
+      SQLAPI_CALLS_TIMEOUT = 45
       COUNTRIES_COLUMN = 'name_'
       COUNTRIES_QUERY = "SELECT #{COUNTRIES_COLUMN} FROM admin0_synonyms"
       DEFAULT_MINIMUM_ENTROPY = 0.9
@@ -39,6 +41,10 @@ module CartoDB
           return column[:column_name] if is_country_column? column
         end
         nil
+      end
+
+      def namedplaces
+        @namedplaces ||= NamedplacesGuesser.new(self)
       end
 
       def ip_column
@@ -201,7 +207,9 @@ module CartoDB
       end
 
       def geocoder_sql_api
-        @geocoder_sql_api ||= CartoDB::SQLApi.new(@options[:geocoder][:internal])
+        @geocoder_sql_api ||= CartoDB::SQLApi.new(
+          @options[:geocoder][:internal].merge({ timeout: SQLAPI_CALLS_TIMEOUT })
+        )
       end
 
       attr_writer :geocoder_sql_api

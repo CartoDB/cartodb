@@ -7,4 +7,7 @@ class FeatureFlag < Sequel::Model
   # @param name       String
   # @param restricted boolean
 
-end 
+  def self.allowed?(name)
+    !!where(name: name, restricted: false).first
+  end
+end

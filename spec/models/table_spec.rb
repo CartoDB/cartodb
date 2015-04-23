@@ -70,6 +70,7 @@ describe Table do
       table         = Table.new
       table.user_id = @user.id
       table.name    = 'layergroup'
+      table.name.should eq 'layergroup_t'
       table.valid?.should == true
     end
 
@@ -183,19 +184,18 @@ describe Table do
     it "should have a privacy associated and it should be private by default" do
       table = create_table :user_id => @user.id
       table.should be_private
-      $tables_metadata.hget(table.key,'privacy').to_i.should == Table::PRIVACY_PRIVATE
     end
 
     it 'changes to and from public-with-link privacy' do
       table = create_table :user_id => @user.id
 
-      table.privacy = Table::PRIVACY_LINK
+      table.privacy = UserTable::PRIVACY_LINK
       table.save
       table.reload
       table.should be_public_with_link_only
       table.table_visualization.should be_public_with_link
 
-      table.privacy = Table::PRIVACY_PUBLIC
+      table.privacy = UserTable::PRIVACY_PUBLIC
       table.save
       table.reload
       table                           .should be_public
@@ -210,23 +210,23 @@ describe Table do
       table.should be_private
       table.table_visualization.should be_private
 
-      table.privacy = Table::PRIVACY_PUBLIC
+      table.privacy = UserTable::PRIVACY_PUBLIC
       table.save
       table.reload
       table                           .should be_public
       table.table_visualization       .should be_public
 
-      rehydrated = Table.where(id: table.id).first
+      rehydrated = UserTable.where(id: table.id).first
       rehydrated                      .should be_public
       rehydrated.table_visualization  .should be_public
 
-      table.privacy = Table::PRIVACY_PRIVATE
+      table.privacy = UserTable::PRIVACY_PRIVATE
       table.save
       table.reload
       table                           .should be_private
       table.table_visualization       .should be_private
 
-      rehydrated = Table.where(id: table.id).first
+      rehydrated = UserTable.where(id: table.id).first
       rehydrated                      .should be_private
       rehydrated.table_visualization  .should be_private
     end
@@ -247,14 +247,14 @@ describe Table do
       table.reload
 
       CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
-      table.privacy = Table::PRIVACY_PUBLIC
+      table.privacy = UserTable::PRIVACY_PUBLIC
       table.save
 
       table.affected_visualizations.map { |vis|
         vis.public?.should == vis.table?
       }
 
-      table.privacy = Table::PRIVACY_PRIVATE
+      table.privacy = UserTable::PRIVACY_PRIVATE
       table.save
 
       table.affected_visualizations.map { |vis|
@@ -268,7 +268,7 @@ describe Table do
 
       table = create_table(user_id: @user.id)
 
-      table.privacy = Table::PRIVACY_PUBLIC
+      table.privacy = UserTable::PRIVACY_PUBLIC
       table.save
       derived_vis = CartoDB::Visualization::Copier.new(
           @user, table.table_visualization
@@ -279,7 +279,7 @@ describe Table do
       table.reload
 
       CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
-      table.privacy = Table::PRIVACY_LINK
+      table.privacy = UserTable::PRIVACY_LINK
       table.save
       table.reload
 
@@ -305,7 +305,7 @@ describe Table do
       table                           .should be_public
       table.table_visualization       .should be_public
 
-      rehydrated = Table.where(id: table.id).first
+      rehydrated = UserTable.where(id: table.id).first
       rehydrated                      .should be_public
       rehydrated.table_visualization  .should be_public
 
@@ -315,7 +315,7 @@ describe Table do
       table                           .should be_private
       table.table_visualization       .should be_private
 
-      rehydrated = Table.where(id: table.id).first
+      rehydrated = UserTable.where(id: table.id).first
       rehydrated                      .should be_private
       rehydrated.table_visualization  .should be_private
     end
@@ -324,14 +324,14 @@ describe Table do
       @user.private_tables_enabled = false
       @user.save
       table = create_table(:user_id => @user.id)
-      table.privacy.should == Table::PRIVACY_PUBLIC
+      table.privacy.should == UserTable::PRIVACY_PUBLIC
     end
 
     it "should be private if it's creating user has the ability to make private tables" do
       @user.private_tables_enabled = true
       @user.save
       table = create_table(:user_id => @user.id)
-      table.privacy.should == Table::PRIVACY_PRIVATE
+      table.privacy.should == UserTable::PRIVACY_PRIVATE
     end
 
     it "should be able to make private tables if the user gets the ability to do it" do
@@ -339,13 +339,13 @@ describe Table do
       @user.save
 
       table = create_table(:user_id => @user.id)
-      table.privacy.should == Table::PRIVACY_PUBLIC
+      table.privacy.should == UserTable::PRIVACY_PUBLIC
 
       @user.private_tables_enabled = true
       @user.save
 
       table = create_table(:user_id => @user.id)
-      table.privacy.should == Table::PRIVACY_PRIVATE
+      table.privacy.should == UserTable::PRIVACY_PRIVATE
     end
 
     it "should only be able to make public tables if the user is stripped of permissions" do
@@ -353,13 +353,13 @@ describe Table do
       @user.save
 
       table = create_table(:user_id => @user.id)
-      table.privacy.should == Table::PRIVACY_PRIVATE
+      table.privacy.should == UserTable::PRIVACY_PRIVATE
 
       @user.private_tables_enabled = false
       @user.save
 
       table = create_table(:user_id => @user.id)
-      table.privacy.should == Table::PRIVACY_PUBLIC
+      table.privacy.should == UserTable::PRIVACY_PUBLIC
     end
 
     it "should still be able to edit the private table if the user is stripped of permissions" do
@@ -367,7 +367,7 @@ describe Table do
       @user.save
 
       table = create_table(:user_id => @user.id)
-      table.privacy.should == Table::PRIVACY_PRIVATE
+      table.privacy.should == UserTable::PRIVACY_PRIVATE
 
       @user.private_tables_enabled = false
       @user.save
@@ -381,12 +381,12 @@ describe Table do
       @user.save
 
       table = create_table(:user_id => @user.id)
-      table.privacy.should == Table::PRIVACY_PRIVATE
+      table.privacy.should == UserTable::PRIVACY_PRIVATE
 
       @user.private_tables_enabled = false
       @user.save
 
-      table.privacy = Table::PRIVACY_PUBLIC
+      table.privacy = UserTable::PRIVACY_PUBLIC
       table.save.should be_true
     end
 
@@ -395,9 +395,9 @@ describe Table do
       @user.save
 
       table = create_table(:user_id => @user.id)
-      table.privacy.should == Table::PRIVACY_PUBLIC
+      table.privacy.should == UserTable::PRIVACY_PUBLIC
 
-      table.privacy = Table::PRIVACY_PRIVATE
+      table.privacy = UserTable::PRIVACY_PRIVATE
       expect {
         table.save
       }.to raise_error(Sequel::ValidationFailed)
@@ -408,16 +408,16 @@ describe Table do
       @user.save
 
       table = create_table(:user_id => @user.id)
-      table.privacy.should == Table::PRIVACY_PRIVATE
+      table.privacy.should == UserTable::PRIVACY_PRIVATE
 
       @user.private_tables_enabled = false
       @user.save
 
-      table.privacy = Table::PRIVACY_PUBLIC
+      table.privacy = UserTable::PRIVACY_PUBLIC
       table.save
       table.owner.reload # this is because the ORM is stupid
 
-      table.privacy = Table::PRIVACY_PRIVATE
+      table.privacy = UserTable::PRIVACY_PRIVATE
       expect {
         table.save
       }.to raise_error(Sequel::ValidationFailed)
@@ -441,16 +441,13 @@ describe Table do
       table = create_table(:user_id => @user.id)
 
       table.should be_private
-      $tables_metadata.hget(table.key,"privacy").to_i.should == Table::PRIVACY_PRIVATE
 
-      table.privacy = Table::PRIVACY_PUBLIC
+      table.privacy = UserTable::PRIVACY_PUBLIC
       table.save
 
       expect {
         @user.in_database(:as => :public_user).run("select * from #{table.name}")
       }.to_not raise_error
-
-      $tables_metadata.hget(table.key,"privacy").to_i.should == Table::PRIVACY_PUBLIC
     end
 
     it "should be associated to a database table" do
@@ -532,11 +529,6 @@ describe Table do
       table.save
     end
 
-    it "should store the identifier of its owner when created" do
-      table = create_table(:user_id => @user.id)
-      $tables_metadata.hget(table.key,"user_id").should == table.user_id.to_s
-    end
-
     it "should rename the pk sequence when renaming the table" do
       table1 = new_table :name => 'table 1', :user_id => @user.id
       table1.save.reload
@@ -591,56 +583,22 @@ describe Table do
     end
   end
 
-  context "redis syncs" do
-    it "should have a unique key to be identified in Redis" do
-      table = create_table(:user_id => @user.id)
-      table.key.should == "rails:#{table.owner.database_name}:#{table.owner.database_schema}.#{table.name}"
-    end
+  it "should remove varnish cache when updating the table privacy" do
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+    @user.private_tables_enabled = true
+    @user.save
+    table = create_table(user_id: @user.id, name: "varnish_privacy", privacy: UserTable::PRIVACY_PRIVATE)
 
-    it "should rename the entries in Redis when the table has been renamed" do
-      table = create_table(:user_id => @user.id)
-      original_name = table.name
-      original_the_geom_type = table.the_geom_type
+    id = table.table_visualization.id
+    CartoDB::Varnish.any_instance.expects(:purge)
+      .times(3)
+      .with(".*#{id}:vizjson")
+      .returns(true)
 
-      table.name = "brand_new_name"
-      table.save_changes
-      table.reload
-
-      table.key.should == "rails:#{table.owner.database_name}:#{table.owner.database_schema}.#{table.name}"
-      $tables_metadata.exists(table.key).should be_true
-      $tables_metadata.exists(original_name).should be_false
-      $tables_metadata.hget(table.key, "privacy").should be_present
-      $tables_metadata.hget(table.key, "user_id").should be_present
-      $tables_metadata.hget(table.key,"the_geom_type").should == original_the_geom_type
-    end
-
-    it "should store the_geom_type in Redis" do
-      table = create_table(:user_id => @user.id)
-
-      table.the_geom_type.should == "geometry"
-      $tables_metadata.hget(table.key,"the_geom_type").should == "geometry"
-
-      table.the_geom_type = "multipolygon"
-      $tables_metadata.hget(table.key,"the_geom_type").should == "multipolygon"
-    end
-
-    it "should remove varnish cache when updating the table privacy" do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
-      @user.private_tables_enabled = true
-      @user.save
-      table = create_table(user_id: @user.id, name: "varnish_privacy", privacy: Table::PRIVACY_PRIVATE)
-      
-      id = table.table_visualization.id
-      CartoDB::Varnish.any_instance.expects(:purge)
-        .times(2)
-        .with(".*#{id}:vizjson")
-        .returns(true)
-
-      CartoDB::TablePrivacyManager.any_instance
-        .expects(:propagate_to_redis_and_varnish)
-      table.privacy = Table::PRIVACY_PUBLIC
-      table.save
-    end
+    CartoDB::TablePrivacyManager.any_instance
+      .expects(:propagate_to_varnish)
+    table.privacy = UserTable::PRIVACY_PUBLIC
+    table.save
   end
 
   context "when removing the table" do
@@ -673,15 +631,11 @@ describe Table do
       @user.in_database["select * from #{table.name}"].all.should == []
     end
 
-    it "should remove the table metadata from Redis" do
-      $tables_metadata.exists(@doomed_table.key).should be_false
-    end
-
     it "should update denormalized counters" do
       @user.reload
       @user.tables_count.should == 0
       Tag.count.should == 0
-      Table.count == 0
+      UserTable.count == 0
     end
 
     it "should remove varnish cache" do
@@ -695,7 +649,7 @@ describe Table do
       @user.in_database.drop_table(table.name.to_sym)
 
       table.destroy
-      Table[table.id].should be_nil
+      UserTable[table.id].should be_nil
     end
 
     it 'deletes derived visualizations that depend on this table' do
@@ -782,6 +736,18 @@ describe Table do
       table = create_table(:user_id => @user.id)
       resp = table.modify_column!(:name => "name", :new_name => "1")
       resp.should == {:name => "_1", :type => "text", :cartodb_type => "string"}
+    end
+
+    it "should invalidate varnish cache after modifying a column" do
+      table = create_table(:user_id => @user.id)
+      table.expects(:invalidate_varnish_cache)
+      table.modify_column!(:name => "name", :type => "number")
+    end
+
+    it "should update public.cdb_tablemetadata after modifying a column" do
+      table = create_table(:user_id => @user.id)
+      table.expects(:update_cdb_tablemetadata).once
+      table.modify_column!(:name => "name", :type => "number")
     end
 
     it "can modify its schema" do
@@ -1200,7 +1166,7 @@ describe Table do
                                        :data_source   => '/../spec/support/data/elecciones2008.csv')
       data_import.run_import!
 
-      table = Table[data_import.table_id]
+      table = Table.new(user_table: UserTable[data_import.table_id])
       table.should_not be_nil, "Import failure: #{data_import.log}"
       update_data = {:upo___nombre_partido=>"PSOEE"}
       id = 5
@@ -1218,7 +1184,7 @@ describe Table do
                                        :data_source   => '/../spec/support/data/elecciones2008.csv')
       data_import.run_import!
 
-      table = Table[data_import.table_id]
+      table = Table.new(user_table: UserTable[data_import.table_id])
       table.should_not be_nil, "Import failure: #{data_import.log}"
 
       pk = nil
@@ -1316,7 +1282,7 @@ describe Table do
                                        :data_source   => '/../db/fake_data/twitters.csv' )
       data_import.run_import!
 
-      table = Table[data_import.table_id]
+      table = Table.new(user_table: UserTable[data_import.table_id])
       table.should_not be_nil, "Import failure: #{data_import.log}"
       table.name.should match(/^twitters/)
       table.rows_counted.should == 7
@@ -1349,7 +1315,7 @@ describe Table do
                                        :data_source   => '/../db/fake_data/csv_no_quotes.csv' )
       data_import.run_import!
 
-      table2 = Table[data_import.table_id]
+      table2 = Table.new(user_table: UserTable[data_import.table_id])
       table2.should_not be_nil, "Import failure: #{data_import.log}"
       table2.name.should == 'csv_no_quotes'
 
@@ -1377,7 +1343,7 @@ describe Table do
       fixture       = "#{Rails.root}/db/fake_data/gadm4_export.csv"
       data_import   = create_import(@user, fixture)
       table         = data_import.table
-      table.should_not be_nil, "Import failure: #{data_import.log}"
+      table.should_not be_nil, "Import failure: #{data_import.log.inspect}"
       table_schema  = @user.in_database.schema(table.name)
 
       cartodb_id_schema = table_schema.detect {|s| s[0].to_s == "cartodb_id"}
@@ -1393,7 +1359,7 @@ describe Table do
       data_import = DataImport.create( :user_id       => @user.id,
                                        :data_source   =>  '/../db/fake_data/duplicated_cartodb_id.zip')
       data_import.run_import!
-      table = Table[data_import.table_id]
+      table = Table.new(user_table: UserTable[data_import.table_id])
       table.should_not be_nil, "Import failure: #{data_import.log}"
 
       table_schema = @user.in_database.schema(table.name)
@@ -1414,8 +1380,8 @@ describe Table do
                                        :data_source   => '/../db/fake_data/gadm4_export.csv' )
       data_import.run_import!
 
-      table = Table[data_import.table_id]
-      table.should_not be_nil, "Import failure: #{data_import.log}"
+      table = Table.new(user_table: UserTable[data_import.table_id])
+      table.should_not be_nil, "Import failure: #{data_import.log.inspect}"
 
       table.geometry_types.should == ['ST_Point']
 
@@ -1426,7 +1392,11 @@ describe Table do
       # Schema gets cached, force reload
       table.reload
       table.schema(reload:true)
-      table.geometry_types.should == []
+
+      # This is no longer true: it should be considered a stat or guessing
+      # for the UI to plot icons on table listings and similar stuff and will
+      # not be invalidated from the editor.
+      #table.geometry_types.should == []
 
       table.destroy
     end
@@ -1446,8 +1416,8 @@ describe Table do
       data_import = DataImport.create( :user_id       => @user.id,
                                        :data_source   => '/../db/fake_data/gadm4_export.csv' )
       data_import.run_import!
-      table = Table[data_import.table_id]
-      table.should_not be_nil, "Import failure: #{data_import.log}"
+      table = Table.new(user_table: UserTable[data_import.table_id])
+      table.should_not be_nil, "Import failure: #{data_import.log.inspect}"
 
       schema = table.schema(:cartodb_types => true)
       schema.include?([:updated_at, "date"]).should == true
@@ -1726,7 +1696,7 @@ describe Table do
                                        :migrate_table => 'exttable')
       data_import.run_import!
 
-      table = Table[data_import.table_id]
+      table = Table.new(user_table: UserTable[data_import.table_id])
       table.should_not be_nil, "Import failure: #{data_import.log}"
       table.name.should == 'exttable'
       table.rows_counted.should == 2
@@ -1758,7 +1728,7 @@ describe Table do
       # append_to_table doesn't automatically destroy the table
       append_this.destroy
 
-      Table[append_this.id].should == nil
+      UserTable[append_this.id].should == nil
       table.name.should match(/^twitters/)
       table.rows_counted.should == 2005
     end
@@ -1796,11 +1766,11 @@ describe Table do
       table.save.reload
 
       ['borders', 'polygons', 'spain', 'countries'].each do |query|
-        tables = Table.search(query)
+        tables = UserTable.search(query)
         tables.should_not be_empty
         tables.first.id.should == table.id
       end
-      tables = Table.search("wadus")
+      tables = UserTable.search("wadus")
       tables.should be_empty
     end
 
@@ -1811,20 +1781,20 @@ describe Table do
       table.description = "A world borders shapefile suitable for thematic mapping applications. Contains polygon borders in two resolutions as well as longitude/latitude values and various country codes"
       table.save.reload
 
-      tables = Table.search("eur")
+      tables = UserTable.search("eur")
       tables.should_not be_empty
       tables.first.id.should == table.id
     end
   end
 
-  describe 'Table.multiple_order' do
+  describe 'UserTable.multiple_order' do
     it 'returns sorted records' do
       table_1 = create_table(name: "bogus_table_1", user_id: @user.id)
       table_2 = create_table(name: "bogus_table_2", user_id: @user.id)
 
-      Table.search('bogus').multiple_order(name: 'asc')
+      UserTable.search('bogus').multiple_order(name: 'asc')
         .to_a.first.name.should == 'bogus_table_1'
-      Table.search('bogus').multiple_order(name: 'desc')
+      UserTable.search('bogus').multiple_order(name: 'desc')
         .to_a.first.name.should == 'bogus_table_2'
     end
   end # Table.multiple_order
@@ -1835,9 +1805,9 @@ describe Table do
       table.name = 'awesome name'
       table.save.reload
 
-      Table.find_by_identifier(@user.id, table.name).id.should == table.id
+      UserTable.find_by_identifier(@user.id, table.name).id.should == table.id
       lambda {
-        Table.find_by_identifier(666, table.name)
+        UserTable.find_by_identifier(666, table.name)
       }.should raise_error
     end
   end
@@ -1888,35 +1858,35 @@ describe Table do
       table = Table.new
 
       # A user who can create private tables has by default private tables
-      table.default_privacy_values.should eq ::Table::PRIVACY_PRIVATE
+      table.default_privacy_value.should eq ::UserTable::PRIVACY_PRIVATE
 
       table.user_id = UUIDTools::UUID.timestamp_create.to_s
-      table.privacy = Table::PRIVACY_PUBLIC
+      table.privacy = UserTable::PRIVACY_PUBLIC
       table.name = 'test'
       table.validate
       table.errors.size.should eq 0
 
-      table.privacy = Table::PRIVACY_PRIVATE
+      table.privacy = UserTable::PRIVACY_PRIVATE
       table.validate
       table.errors.size.should eq 0
 
-      table.privacy = Table::PRIVACY_LINK
+      table.privacy = UserTable::PRIVACY_LINK
       table.validate
       table.errors.size.should eq 0
 
-      table.privacy = Table::PRIVACY_PUBLIC
+      table.privacy = UserTable::PRIVACY_PUBLIC
       user_mock.stubs(:private_tables_enabled).returns(false)
 
       # Anybody can "keep" a table being type link if it is new or hasn't changed (changed meaning had a previous privacy value)
-      table.privacy = Table::PRIVACY_LINK
+      table.privacy = UserTable::PRIVACY_LINK
       table.validate
       table.errors.size.should eq 0
 
       # Save so privacy changes instead of being "new"
-      table.privacy = Table::PRIVACY_PUBLIC
+      table.privacy = UserTable::PRIVACY_PUBLIC
       table.save
 
-      table.privacy = Table::PRIVACY_LINK
+      table.privacy = UserTable::PRIVACY_LINK
       table.validate
       table.errors.size.should eq 1
       expected_errors_hash = { privacy: ['unauthorized to modify privacy status to pubic with link'] }
@@ -1924,7 +1894,7 @@ describe Table do
 
       table = Table.new
       # A user who cannot create private tables has by default public
-      table.default_privacy_values.should eq ::Table::PRIVACY_PUBLIC
+      table.default_privacy_value.should eq ::UserTable::PRIVACY_PUBLIC
 
     end
   end #validation_for_link_privacy
@@ -2141,6 +2111,122 @@ describe Table do
       Table.get_valid_table_name(new_name, {
         name_candidates: %w(table_ table_1)
       }).should_not == 'table_1'
+    end
+  end
+
+  describe '#key' do
+    it 'computes a suitable key for a table' do
+      table = create_table(name: "any_name", user_id: @user.id)
+      table.redis_key.should == "rails:table:#{table.id}"
+    end
+
+    it 'computes different keys for different tables' do
+      table_1 = create_table(user_id: @user.id)
+      table_2 = create_table(user_id: @user.id)
+
+      table_1.redis_key.should_not == table_2.redis_key
+    end
+  end
+
+  describe '#geometry_types_key' do
+    it 'computes a suitable key' do
+      table = create_table(name: 'any_other_name', user_id: @user.id)
+      table.geometry_types_key.should == "#{table.redis_key}:geometry_types"
+    end
+  end
+
+  describe '#geometry_types' do
+    it "returns an empty array and does not cache if there's no column the_geom" do
+      table = create_table(user_id: @user.id)
+
+      cache = mock()
+      cache.expects(:get).once
+      cache.expects(:setex).once
+
+      table.stubs(:cache).returns(cache)
+
+      # A bit extreme way of getting a table without the_geom
+      table.owner.in_database.run(%Q{ALTER TABLE #{table.name} DROP COLUMN "the_geom" CASCADE})
+      table.schema(reload: true)
+
+      table.geometry_types.should == []
+    end
+
+    it "returns an empty array and does not cache if there are no geometries in the query" do
+      table = create_table(user_id: @user.id)
+
+      cache = mock()
+      cache.expects(:get).once.returns(nil)
+      cache.expects(:setex).once
+
+      table.stubs(:cache).returns(cache)
+
+      table.geometry_types.should == []
+    end
+
+    it "caches if there are geometries" do
+      table = create_table(user_id: @user.id)
+
+      cache = mock()
+      cache.expects(:get).once
+      cache.expects(:setex).once
+
+      table.stubs(:cache).returns(cache)
+      table.owner.in_database.run(%Q{
+        INSERT INTO #{table.name}(the_geom)
+        VALUES(ST_GeomFromText('POINT(-71.060316 48.432044)', 4326))
+      })
+
+      table.geometry_types.should == ['ST_Point']
+    end
+
+    it "returns the value from the cache if it is there" do
+      table = create_table(user_id: @user.id)
+      any_types = ['ST_Any_Type', 'ST_Any_Other_Type']
+      table.expects(:query_geometry_types).once.returns(any_types)
+
+      table.geometry_types.should eq(any_types), "cache miss failure"
+      table.geometry_types.should eq(any_types), "cache hit failure"
+      $tables_metadata.get(table.geometry_types_key).should eq(any_types.to_s), "it should be actually cached"
+    end
+  end
+
+  describe '#destroy' do
+    it "invalidates geometry_types cache entry" do
+      table = create_table(user_id: @user.id)
+      any_types = ['ST_Any_Type', 'ST_Any_Other_Type']
+      table.expects(:query_geometry_types).once.returns(any_types)
+      table.geometry_types.should eq(any_types)
+
+      key = table.geometry_types_key
+      table.destroy
+
+      $tables_metadata.get(key).should eq(nil), "the geometry types cache should be invalidated upon table removal"
+    end
+  end
+
+  describe '#after_save' do
+    it 'invalidates derived visualization cache if there are changes in table privacy' do
+      @user.private_tables_enabled = true
+      @user.save
+      table = create_table(user_id: @user.id)
+      table.save
+      table.should be_private
+
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:create).returns(true)
+      source  = table.table_visualization
+      derived = CartoDB::Visualization::Copier.new(@user, source).copy
+      derived.store
+      derived.type.should eq(CartoDB::Visualization::Member::TYPE_DERIVED)
+
+      # Do not create all member objects anew to be able to set expectations
+      CartoDB::Visualization::Member.stubs(:new).with(has_entry(:id => derived.id)).returns(derived)
+      CartoDB::Visualization::Member.stubs(:new).with(has_entry(:type => 'table')).returns(table.table_visualization)
+
+      derived.expects(:invalidate_cache).once()
+
+      table.privacy = UserTable::PRIVACY_PUBLIC
+      table.save
     end
   end
 

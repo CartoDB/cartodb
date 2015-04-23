@@ -4,8 +4,8 @@
 <%= content_for(:js) do %>
   <script type="text/javascript">
     var username = "<%= current_user.username %>"
-      , config = <%=raw frontend_config.html_safe %>
-      , user_data = <%= raw current_user.data.to_json.html_safe %>;
+      , config = <%= safe_js_object frontend_config %>
+      , user_data = <%= safe_js_object current_user.data.to_json %>;
   </script>
   <%= javascript_include_tag 'cdb.js', 'application.js', 'models.js', 'keys.js', 'templates.js' %>
 <% end %>
@@ -62,7 +62,7 @@
         </ul>
       </div>
       <div class="foot">
-        <%= form_tag(regenerate_api_key_url(user_domain: params[:user_domain]), :method => "POST", :id => 'regenerate_api_key') do %>
+        <%= form_tag(CartoDB.url(self, 'regenerate_api_key'), :method => "POST", :id => 'regenerate_api_key') do %>
           <%= link_to "Request a new api key", "#/request-api-key", :class => "right underline red regenerate", :data => { :type => "keys" } %>
         <% end %>
       </div>
@@ -131,7 +131,7 @@
         </ul>
       </div>
       <div class="foot">
-        <%= form_tag(oauth_credentials_url(user_domain: params[:user_domain]), :method => "DELETE", :id => 'regenerate_oauth_keys') do %>
+        <%= form_tag(CartoDB.url(self, 'regenerate_oauth'), :method => "DELETE", :id => 'regenerate_oauth_keys') do %>
           <%= link_to "Request new oauth keys", "#/request-new-keys", :class => "right underline red regenerate", :data => { :type => "oauth" } %>
         <% end %>
       </div>

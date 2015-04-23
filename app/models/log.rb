@@ -15,6 +15,11 @@ module CartoDB
     # @param updated_at DateTime
     # @param entries String
 
+    def clear
+      self.entries = ''
+      save
+    end
+
     def append(content, timestamp = Time.now.utc)
       self.entries = '' if self.entries.nil?
       self.entries << ENTRY_FORMAT % [ timestamp, content ]

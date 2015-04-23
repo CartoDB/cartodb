@@ -1,6 +1,6 @@
-<% if cookies[:flash] || flash[:success] %>
-	<li class="flash <%= 'success' if (flash[:success]) %>">
-		<p class="dark"><%= cookies[:flash] || flash[:success] %></p>
+<% if cookies[:flash] || flash[:success] || flash[:error] %>
+  <li class="flash <%= 'success' if (flash[:success]) %><%= 'error' if flash[:error] %>">
+		<p class="dark"><%= cookies[:flash] || flash[:success] || flash[:error] %></p>
 		<a class="smaller close" href="#close">x</a>
 	</li>
 <% end %>

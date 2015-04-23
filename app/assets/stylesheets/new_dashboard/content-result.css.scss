@@ -5,6 +5,7 @@
 // loading, ...) 
 // --------------------------------------------------
 
+@import "compass/css3/images";
 @import "../new_variables/colors";
 @import "../new_variables/mixins";
 @import "../new_variables/sizes";
@@ -22,16 +23,50 @@
   padding-top: 0;
   min-height: 0;
 }
+.ContentResult.no-datasets {
+  position: relative;
+  width: auto;
+  margin: 0 auto;
+  padding: 100px 0;
+  min-height: 0;
+  @include background(image-url('layout/no_datasets_bkg.png') center center no-repeat #F1F7FC);
+  box-shadow: 1px 0 0 1px $cStructure-softLine;
+  z-index: 9;
+
+  &:after,
+  &:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    z-index: 0;
+  }  
+
+  &:after {
+    left: 50%;
+    right: 0;
+    margin-left: 470px;
+    @include background-horizontal(rgba(#F1F7FC,0), rgba(#F1F7FC,1));
+  }
+
+  &:before {
+    left: 0;
+    right: 50%;
+    margin-right: 470px;
+    background-color: transparent!important;
+    @include background-horizontal(rgba(#F1F7FC,1), rgba(#F1F7FC,0));
+  }
+}
 .ContentResult-smallLoader {
   position: absolute;
-  top: 0;
+  top: -2px;
   left: 0;
   right: 0;
   width: 100%;
   height: 2px;
   background: transparent;
   overflow: hidden;
-  z-index: 100;
+  z-index: 10;
 
   &:before {
     content: '';
@@ -40,7 +75,7 @@
     width: 600px;
     right: 0;
     height: 2px;
-    background: #82ABDA;
+    background: rgba(black, 0.55);
     @include animation(pulsate 1.5s linear infinite);      
   }
 }
@@ -80,6 +115,13 @@
   font-size: $sFontSize-large;
   color: $cTypography-paragraphs;
   font-weight: $sFontWeight-lighter;
+}
+.ContentResult-textTitle {
+  color: $cTypography-link;
+  text-decoration: underline;
+  &:hover {
+    color: $cTypography-linkHover;
+  }
 }
 
 @include keyframes(pulsate) {

@@ -16,8 +16,8 @@
 }
 .Spinner,
 .Spinner:after {
-  width: 36px;
-  height: 36px;
+  width: $sSpinner-size;
+  height: $sSpinner-size;
   border-radius: 50%;
 }
 

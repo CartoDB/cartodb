@@ -12,7 +12,7 @@
 
       <div class="left">
         <ul class="actions">
-          <li><%= link_to "Back", root_path, :class => "back" %></li>
+          <li><%= link_to "Back", CartoDB.path(self, 'root'), :class => "back" %></li>
           <li><a class="privacy" href="#/visualize"><i class="privacy-status"></i></a></li>
           <li><h1><%= link_to @visualization.name, "#/change-title", :class => "title" %></h1></li>
         </ul>
@@ -23,7 +23,7 @@
       
       <div class="right">
         <ul class="options">
-          <li><%= link_to "options", "#/options", :class => "dropdown options" %></li>
+          <li><%= link_to "Edit", "#/options", :class => "dropdown options" %></li>
           <li><a class="rounded share" href="#/visualize"><span>VISUALIZE</span></a></li>
         </ul>
       </div>

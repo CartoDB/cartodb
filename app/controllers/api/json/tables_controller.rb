@@ -9,7 +9,6 @@ class Api::Json::TablesController < Api::ApplicationController
 
   before_filter :load_table, except: [:create]
   before_filter :set_start_time
-  before_filter :link_ghost_tables, only: [:show]
 
   # Very basic controller method to simply make blank tables
   # All other table creation things are controlled via the imports_controller#create
@@ -31,8 +30,7 @@ class Api::Json::TablesController < Api::ApplicationController
     @table.import_from_query = params[:from_query]  if params[:from_query]
 
     if @table.valid? && @table.save
-      @table = ::Table.where(id: @table.id).first
-      render_jsonp(@table.public_values, 200, { location: "/tables/#{@table.id}" })
+      render_jsonp(@table.public_values({request:request}), 200, { location: "/tables/#{@table.id}" })
     else
       CartoDB::Logger.info 'Error on tables#create', @table.errors.full_messages
       render_jsonp( { :description => @table.errors.full_messages,
@@ -63,7 +61,7 @@ class Api::Json::TablesController < Api::ApplicationController
           :disposition => "attachment; filename=#{@table.name}.kmz"
       end
       format.json do
-        render_jsonp(@table.public_values({}, current_user).merge(schema: @table.schema(reload: true)))
+        render_jsonp(@table.public_values({request:request}, current_user).merge(schema: @table.schema(reload: true)))
       end
     end
   end
@@ -75,6 +73,7 @@ class Api::Json::TablesController < Api::ApplicationController
 
     # Perform name validations
     # TODO move this to the model!
+    # TODO consider removing this code. The entry point is only used to set lat/long columns
     unless params[:name].nil?
       if params[:name].downcase != @table.name
         owner = User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota).filter(:id => current_user.id).first
@@ -90,17 +89,15 @@ class Api::Json::TablesController < Api::ApplicationController
 
     end
 
-    @table.set_except(params, :name)
+    @table.set_except(params, :name) #TODO: this is bad, passing all params blindly to the table object
     if params.keys.include?('latitude_column') && params.keys.include?('longitude_column')
       latitude_column  = params[:latitude_column]  == 'nil' ? nil : params[:latitude_column].try(:to_sym)
       longitude_column = params[:longitude_column] == 'nil' ? nil : params[:longitude_column].try(:to_sym)
       @table.georeference_from!(:latitude_column => latitude_column, :longitude_column => longitude_column)
-      render_jsonp(@table.public_values.merge(warnings: warnings)) and return
+      render_jsonp(@table.public_values({request:request}).merge(warnings: warnings)) and return
     end
     if @table.update(@table.values.delete_if {|k,v| k == :tags_names}) != false
-      @table = ::Table.where(id: @table.id).first
-
-      render_jsonp(@table.public_values.merge(warnings: warnings))
+      render_jsonp(@table.public_values({request:request}).merge(warnings: warnings))
     else
       render_jsonp({ :errors => @table.errors.full_messages}, 400)
     end
@@ -108,6 +105,7 @@ class Api::Json::TablesController < Api::ApplicationController
     CartoDB::Logger.info e.class.name, e.message
     render_jsonp({ :errors => [translate_error(e.message.split("\n").first)] }, 400) and return
   rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
+    CartoDB::Logger.info "Communication error with tiler API. HTTP Code: #{exception.message}", exception.template_data
     render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
     render_jsonp({ errors: { named_map: exception } }, 400)
@@ -120,35 +118,12 @@ class Api::Json::TablesController < Api::ApplicationController
     @table.destroy
     head :no_content
   rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
+    CartoDB::Logger.info "Communication error with tiler API. HTTP Code: #{exception.message}", exception.template_data
     render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
     render_jsonp({ errors: { named_map: exception } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapsDataError => exception
     render_jsonp({ errors: { named_maps: exception } }, 400)
-  end
-
-  def vizzjson
-    table = ::Table.table_by_id_and_user(params.fetch('id'), CartoDB.extract_subdomain(request))
-    if table.present?
-      allowed = table.public?
-
-      unless allowed && current_user.present?
-        user_tables = current_user.tables_including_shared
-        user_tables.each{ |item|
-          allowed ||= item.id == params.fetch('id')
-        }
-      end
-
-      if allowed
-        response.headers['X-Cache-Channel'] = "#{table.varnish_key}:vizjson"
-        response.headers['Cache-Control']   = 'no-cache,max-age=86400,must-revalidate, public'
-        render_jsonp({})
-      else
-        head :forbidden
-      end
-    else
-      head :forbidden
-    end
   end
 
   protected

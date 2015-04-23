@@ -6,6 +6,9 @@ class Api::Json::GeocodingsController < Api::ApplicationController
 
   before_filter :load_table, only: [:create, :estimation_for]
 
+  # In seconds
+  GEOCODING_SQLAPI_CALLS_TIMEOUT = 45
+
   def index
     geocodings = Geocoding.where("user_id = ? AND (state NOT IN ?)", current_user.id, ['failed', 'finished', 'cancelled'])
     render json: { geocodings: geocodings }
@@ -55,7 +58,10 @@ class Api::Json::GeocodingsController < Api::ApplicationController
 
   def country_data_for
     response = { admin1: ["polygon"], namedplace: ["point"] }
-    rows     = CartoDB::SQLApi.new(username: 'geocoding')
+    rows     = CartoDB::SQLApi.new({
+                                     username: 'geocoding',
+                                     timeout: GEOCODING_SQLAPI_CALLS_TIMEOUT
+                                   })
                  .fetch("SELECT service FROM postal_code_coverage WHERE iso3 = (SELECT iso3 FROM country_decoder WHERE name = '#{params[:country_code]}')")
                  .map { |i| i['service'] }
     response[:postalcode] = rows if rows.size > 0
@@ -64,8 +70,11 @@ class Api::Json::GeocodingsController < Api::ApplicationController
   end
 
   def get_countries
-    rows = CartoDB::SQLApi.new(Cartodb.config[:geocoder]["internal"].symbolize_keys)
-            .fetch("SELECT distinct(pol.name) iso3, pol.name FROM country_decoder pol ORDER BY pol.name ASC")
+    rows = CartoDB::SQLApi.new(
+      Cartodb.config[:geocoder]["internal"].symbolize_keys
+                                           .merge({timeout: GEOCODING_SQLAPI_CALLS_TIMEOUT})
+    )
+      .fetch("SELECT distinct(pol.name) iso3, pol.name FROM country_decoder pol ORDER BY pol.name ASC")
     render json: rows
   end
 
@@ -84,7 +93,8 @@ class Api::Json::GeocodingsController < Api::ApplicationController
         load_table
         return head(400) if @table.nil?
         input = @table.sequel.distinct.select_map(params[:column_name].to_sym)
-      rescue Sequel::DatabaseError
+      rescue Sequel::DatabaseError => e
+        Rollbar.report_exception(e)
         render(json: []) and return
       end
     end
@@ -96,12 +106,17 @@ class Api::Json::GeocodingsController < Api::ApplicationController
 
     list = input.map{ |v| "'#{ v }'" }.join(",")
 
-    services = CartoDB::SQLApi.new(username: 'geocoding')
-                .fetch("SELECT (admin0_available_services(Array[#{list}])).*")
+    services = CartoDB::SQLApi.new({
+                                     username: 'geocoding',
+                                     timeout: GEOCODING_SQLAPI_CALLS_TIMEOUT
+                                   })
+                              .fetch("SELECT (admin0_available_services(Array[#{list}])).*")
 
     geometries = []
-    geometries.append 'point' if services.map { |i| i['postal_code_points'] }.inject(:'&')
-    geometries.append 'polygon' if services.map { |i| i['postal_code_polygons'] }.inject(:'&')
+    points = services.select { |s| s['postal_code_points'] }.size
+    polygons = services.select { |s| s['postal_code_polygons'] }.size
+    geometries.append 'point' if points > 0 && points >= polygons
+    geometries.append 'polygon' if polygons > 0 && polygons >= points
 
     render(json: geometries || [])
   end

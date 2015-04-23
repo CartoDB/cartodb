@@ -11,7 +11,7 @@ module CartoDB
         owner: {
           id:         self.owner ? self.owner.id : nil,
           username:   self.owner ? self.owner.username : nil,
-          avatar_url: self.owner ? self.owner.avatar_url : nil
+          avatar_url: self.owner ? self.owner.avatar : nil
         },
         quota_in_bytes:  self.quota_in_bytes,
         api_calls:       self.get_api_calls(from: self.owner.present? ? self.owner.last_billing_cycle : nil, to: Date.today),
@@ -34,17 +34,12 @@ module CartoDB
           {
             id:          u.id,
             username:    u.username,
-            avatar_url:  u.avatar_url
+            avatar_url:  u.avatar
           }
         },
         website:           self.website,
         avatar_url:        self.avatar_url,
-        new_dashboard_enabled: self.new_dashboard_enabled,
-        available_basemaps: {
-          here: self.here_maps_enabled,
-          stamen: self.stamen_maps_enabled,
-          rainbow_maps_enabled: self.rainbow_maps_enabled
-        }
+        new_dashboard_enabled: self.new_dashboard_enabled
       }
     end
   end

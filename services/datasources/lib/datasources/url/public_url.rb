@@ -18,6 +18,8 @@ module CartoDB
         def initialize(config)
           super
 
+          @http_timeout = config.fetch(:http_timeout)
+          @http_connect_timeout = config.fetch(:http_connect_timeout)
           @service_name = DATASOURCE_NAME
           @headers = nil
         end
@@ -45,12 +47,16 @@ module CartoDB
         # Retrieves a resource and returns its contents
         # @param id string
         # @return mixed
+        # @throws DataDownloadTimeoutError
         # @throws DataDownloadError
         def get_resource(id)
           response = Typhoeus.get(id, http_options)
           while response.headers['location']
             response = Typhoeus.get(id, http_options)
           end
+
+          raise DataDownloadTimeoutError.new(DATASOURCE_NAME) if response.timed_out?
+
           raise DataDownloadError.new("get_resource() #{id}", DATASOURCE_NAME) unless response.code.to_s =~ /\A[23]\d+/
           response.response_body
         end
@@ -65,7 +71,7 @@ module CartoDB
               url:      id,
               service:  DATASOURCE_NAME,
               checksum: checksum_of(id, etag_header, last_modified_header),
-              size:     0
+              size:     content_length_header
               # No need to use :filename nor file
           }
         end
@@ -75,6 +81,9 @@ module CartoDB
         def fetch_headers(url)
           if url =~ URL_REGEXP
             response = Typhoeus.head(url, http_options)
+
+            raise DataDownloadTimeoutError.new(DATASOURCE_NAME) if response.timed_out?
+
             # For example S3 only allows one verb per signed url (we use GET) so won't allow HEAD, but it's ok
             @headers = (response.code.to_s =~ /\A[23]\d+/) ? response.headers : {}
           else
@@ -132,6 +141,17 @@ module CartoDB
 
         private
 
+        # Get the file size if present
+        # @return Integer
+        # @throws UninitializedError
+        def content_length_header
+          raise UninitializedError.new('headers not fetched', DATASOURCE_NAME) if @headers.nil?
+          content_length = @headers.fetch('Content-Length', nil)
+          content_length ||= @headers.fetch('Content-length', nil)
+          content_length ||= @headers.fetch('content-length', NO_CONTENT_SIZE_PROVIDED)
+          content_length.to_i
+        end
+
         # Calculates a checksum of given url
         # @return string
         def checksum_of(url, etag, last_modified)
@@ -142,9 +162,11 @@ module CartoDB
         # HTTP (Typhoeus) options
         def http_options
           {
-              followlocation: true,
-              ssl_verifypeer: false,
-              ssl_verifyhost: 0
+              followlocation:   true,
+              ssl_verifypeer:   false,
+              ssl_verifyhost:   0,
+              timeout:          @http_timeout,
+              connecttimeout:  @http_connect_timeout
           }
         end
 

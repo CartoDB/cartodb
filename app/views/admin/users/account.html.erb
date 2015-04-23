@@ -1,0 +1,131 @@
+<% content_for(:page_title) do %>
+  Your account |
+<% end %>
+<%= content_for(:js) do %>
+  <script type="text/javascript">
+    var username = "<%= @user.username %>";
+    var config = <%= safe_js_object frontend_config %>;
+    var authenticity_token = "<%= form_authenticity_token %>";
+    var user_data = <%= safe_js_object @user.data.to_json %>;
+    var can_change_email = <%= @user.can_change_email %>;
+    var upgrade_url = <%= cartodb_com_hosted? ? 'undefined' : "'#{current_user.upgrade_url(request.protocol)}'" %>;
+    // Necessary for Google + actions
+    var access_token = '';
+    <% if (@google_plus_config.present?) %>
+      document.domain = '<%= @google_plus_config.domain %>';
+      var iframe_src = '<%= @google_plus_config.iframe_src %>';
+    <% end %>
+  </script>
+  <%= javascript_include_tag 'cdb.js', 'models.js', 'account_templates.js', 'account_deps.js', 'account.js' -%>
+<% end %>
+
+<%= render :partial => 'shared/new_flash_message' %>
+
+<div>
+  <%= render :partial => 'admin/shared/new_pages_subheader' %>
+
+  <div class="CredentialsContent">
+    <div class="u-inner">
+      <%= form_for @user, url: CartoDB.url(self, 'account_update_user', {}, current_user), :class => "Form" do |f| %>
+        <%= csrf_meta_tags %>
+
+        <div class="Form-title">
+          <p class="Form-titleText">Change your account preferences</p>
+        </div>
+
+        <div class="Form-row">
+          <div class="Form-rowLabel">
+            <label class="Form-label">Username</label>
+          </div>
+          <div class="Form-rowData">
+            <%= f.text_field :username, readonly: true, :class => "Form-input Form-input--long is-disabled" %>
+          </div>
+          <div class="Form-rowInfo">
+            <p class="Form-rowInfoText">Subdomain cannot be changed</p>
+          </div>
+        </div>
+
+        <div class="Form-row">
+          <div class="Form-rowLabel">
+            <label class="Form-label">Email</label>
+          </div>
+          <div class="Form-rowData">
+            <%= f.text_field :email, class: "Form-input Form-input--long #{ 'Form-input--error' if @user.errors[:email].present? } #{ 'is-disabled' unless @user.can_change_email }", readonly: !@user.can_change_email %>
+          </div>
+          <div class="Form-rowInfo">
+            <% if @user.errors[:email].present? %>
+              <p class="Form-rowInfoText Form-rowInfoText--error">Email not valid</p>
+            <% elsif @user.google_sign_in %>
+              <p class="Form-rowInfoText <%= 'Form-rowInfoText--multipleLines' unless @user.should_display_old_password? %>">Your account is linked to your Google account. <% unless @user.should_display_old_password? %> You can change the email if you set a password.</p> <% end %>
+            <% end %>
+          </div>
+        </div>
+
+        <% if @user.should_display_old_password? %>
+          <div class="Form-row">
+            <div class="Form-rowLabel">
+              <label class="Form-label">Old password</label>
+            </div>
+            <div class="Form-rowData">
+              <%= f.password_field :old_password, :class => "Form-input Form-input--long #{ 'Form-input--error' if @user.errors[:old_password].present? }" %>
+            </div>
+            <div class="Form-rowInfo">
+              <% if (@user.errors[:old_password].present?) %>
+                <p class="Form-rowInfoText Form-rowInfoText--error"><%= @user.errors[:old_password].first%></p>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+
+        <div class="Form-row">
+          <div class="Form-rowLabel">
+            <label class="Form-label">New password</label>
+          </div>
+          <div class="Form-rowData">
+            <%= f.password_field :new_password, :class => "Form-input Form-input--long #{ 'Form-input--error' if @user.errors[:new_password].present? }" %>
+          </div>
+          <div class="Form-rowInfo">
+            <% if (@user.errors[:new_password].present?) %>
+              <p class="Form-rowInfoText Form-rowInfoText--error"><%= @user.errors[:new_password].first%></p>
+            <% else %>
+              <p class="Form-rowInfoText">Password should be 6 characters at least</p>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="Form-row">
+          <div class="Form-rowLabel">
+            <label class="Form-label">Confirm password</label>
+          </div>
+          <div class="Form-rowData">
+            <%= f.password_field :confirm_password, :class => "Form-input Form-input--long" %>
+          </div>
+        </div>
+
+        <div class="Form-footer">
+          <% if !current_user.organization_owner? -%>
+            <button type="button" class="Button Button--secondary js-deleteAccount">
+              <span>Delete my account</span>
+            </button>
+          <% else %>
+            <p class="Form-footerText">
+              <i class="iconFont iconFont-Info Form-footerIcon"></i>
+              You can't delete your account because you are admin of an organization
+            </p>
+          <% end %>
+          <%= button_tag(type: 'submit', class: 'Button Button--main') do %>
+            <% content_tag(:span, 'Save changes') %>
+          <% end %>
+        </div>
+
+      <% end %>
+    </div>
+  </div>
+
+</div>
+
+<% if !Cartodb.config[:cartodb_com_hosted].present? %>
+  <div class="SupportBanner" id="support-banner"></div>
+<% end %>
+
+<%= render 'admin/shared/new_footer' %>

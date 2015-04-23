@@ -51,7 +51,33 @@ class Organization < Sequel::Model
   def before_save
     super
     self.updated_at = Time.now
-    raise errors unless valid?
+    raise errors.join('; ') unless valid?
+  end
+
+  # INFO: replacement for destroy because destroying owner triggers
+  # organization destroy
+  def destroy_cascade
+    destroy_permissions
+    destroy_non_owner_users
+    self.owner.destroy
+  end
+
+  def destroy_permissions
+    self.users.each { |user|
+      CartoDB::Permission.where(owner_id: user.id).each { |permission|
+        permission.destroy
+      }
+    }
+  end
+
+  def destroy_non_owner_users
+    non_owner_users.each { |u|
+      u.destroy
+    }
+  end
+
+  def non_owner_users
+    self.users.select { |u| u.id != self.owner.id }
   end
 
   ##
@@ -163,9 +189,7 @@ class Organization < Sequel::Model
     self.auth_token
   end
 
-  private
-
-  def public_vis_by_type(type, page_num, items_per_page, tags)
+  def public_vis_by_type(type, page_num, items_per_page, tags, order = 'updated_at')
     CartoDB::Visualization::Collection.new.fetch(
         user_id:  self.users.map(&:id),
         type:     type,
@@ -173,10 +197,12 @@ class Organization < Sequel::Model
         page:     page_num,
         per_page: items_per_page,
         tags:     tags,
-        order:    'updated_at',
+        order:    order,
         o:        {updated_at: :desc}
     )
   end
+
+  private
 
   def public_vis_count_by_type(type)
     CartoDB::Visualization::Collection.new.fetch(
@@ -204,4 +230,3 @@ class Organization < Sequel::Model
   end
 
 end
-

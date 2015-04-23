@@ -9,7 +9,7 @@ class CommonData
 
       _datasets = DATASETS_EMPTY
 
-      if is_enabled
+      if is_enabled?
         _datasets = get_datasets(get_datasets_json)
       end
 
@@ -17,6 +17,10 @@ class CommonData
     end
 
     @datasets
+  end
+
+  def is_enabled?
+    !config('username').nil? && !config('api_key').nil?
   end
 
   private
@@ -83,10 +87,6 @@ class CommonData
     "select * from #{table_name}"
   end
 
-  def is_enabled
-    !config('username').nil? && !config('api_key').nil?
-  end
-
   def config(key, default=nil)
     if Cartodb.config[:common_data].present?
       Cartodb.config[:common_data][key].present? ? Cartodb.config[:common_data][key] : default
@@ -107,6 +107,7 @@ select
     meta_dataset.description,
     meta_dataset.source,
     meta_dataset.license,
+    meta_dataset.geometry_types,
     (
         SELECT reltuples
         FROM pg_class C LEFT JOIN pg_namespace N ON (N.oid = C.relnamespace)

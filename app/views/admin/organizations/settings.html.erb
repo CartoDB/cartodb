@@ -7,19 +7,19 @@
   <script type="text/javascript">
     var username = "<%= current_user.username %>"
       , type = "oauth"
-      , config = <%=raw frontend_config.html_safe %>
+      , config = <%= safe_js_object frontend_config %>
       , organization_quota = {
           seats: <%= current_user.organization.seats %>,
           quota_in_bytes: <%= current_user.organization.quota_in_bytes %>
         }
-      , organization_users = <%= raw @users.map { |u| {
+      , organization_users = <%= safe_js_object @users.map { |u| {
           id: u.id,
           username: u.username,
           quota_in_bytes: u.quota_in_bytes,
           remaining_quota: u.remaining_quota,
           organization_owner: u.organization_owner?
-        }}.to_json -%>
-      , user_data = <%= raw current_user.data.to_json.html_safe %>;
+        }}.to_json %>
+      , user_data = <%= safe_js_object current_user.data.to_json %>;
   </script>
 <% end %>
 
@@ -31,7 +31,7 @@
   <%= render partial: "settings_account" %>
 <% end %>
 
-<%= form_for @organization, url: organization_settings_update_path(user_domain: params[:user_domain]), multipart: true do |form| %>
+<%= form_for @organization, url: CartoDB.url(self, 'organization_settings_update', {}, current_user), multipart: true do |form| %>
 
     <article class="settings">
       <div class="inner">
@@ -40,6 +40,8 @@
             <h2>Your organization public dashboard</h2>
             <%= link_to 'Go to your public page', CartoDB.base_url(@organization.name), :class => "right-link" %>
           </div>
+
+          <ul><%= render :partial => 'shared/flash_message' %></ul>
 
           <div class="content">
 
@@ -107,7 +109,7 @@
               <div class="row">
                 <p class="margin20">Moderate the comments in your organization maps using your Disqus shortname. <a href="#/how-to" class="disqus_help">Here's how</a>.</p>
               </div>
-              
+
             </div>
 
           </div>

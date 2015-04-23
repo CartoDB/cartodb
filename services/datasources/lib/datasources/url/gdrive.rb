@@ -190,7 +190,7 @@ module CartoDB
           result = @client.execute(uri: item_data.fetch(:url))
 
           if result.status != 200
-            if result.data['error'].nil? || result.data['error']['message'].nil?
+            if result.data.nil? || result.data['error'].nil? || result.data['error']['message'].nil?
               error_message = 'Unknown error'
             else
               error_message = result.data['error']['message']
@@ -310,7 +310,7 @@ module CartoDB
             data[:url] = item_data.fetch('exportLinks').first.last
             data[:url] = data[:url][0..data[:url].rindex('=')] + 'csv'
             data[:filename] = clean_filename(item_data.fetch('title')) + '.csv'
-            data[:size] = 0
+            data[:size] = NO_CONTENT_SIZE_PROVIDED
           else
             data[:url] = item_data.fetch('downloadUrl')
             # For Drive files, title == filename + extension

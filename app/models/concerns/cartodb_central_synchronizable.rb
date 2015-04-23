@@ -13,8 +13,12 @@ module Concerns
 
     def update_in_central
       return true unless sync_data_with_cartodb_central?
-      if self.is_a?(User) && organization.present?
-        cartodb_central_client.update_organization_user(organization.name, username, allowed_attributes_to_central(:update))
+      if self.is_a?(User)
+        if organization.present?
+          cartodb_central_client.update_organization_user(organization.name, username, allowed_attributes_to_central(:update))
+        else
+          cartodb_central_client.update_user(username, allowed_attributes_to_central(:update))
+        end
       elsif self.is_a?(Organization)
         cartodb_central_client.update_organization(name, allowed_attributes_to_central(:update))
       end
@@ -23,11 +27,15 @@ module Concerns
 
     def delete_in_central
       return true unless sync_data_with_cartodb_central?
-      if self.is_a?(User) && organization.present?
-        if self.organization.owner && self.organization.owner != self
-          cartodb_central_client.delete_organization_user(organization.name, username)
+      if self.is_a?(User)
+        if organization.nil?
+          cartodb_central_client.delete_user(self.username)
         else
-          raise "Can't destroy the organization owner"
+          if self.organization.owner && self.organization.owner != self
+            cartodb_central_client.delete_organization_user(organization.name, username)
+          else
+            raise "Can't destroy the organization owner"
+          end
         end
       end
       return true
@@ -42,7 +50,6 @@ module Concerns
           :geocoding_block_price, :map_view_block_price,
           :twitter_datasource_enabled, :twitter_datasource_block_size,
           :twitter_datasource_block_price, :twitter_datasource_quota,
-          :here_maps_enabled, :stamen_maps_enabled, :rainbow_maps_enabled,
           :new_dashboard_enabled]
         when :update
           [:seats, :quota_in_bytes, :display_name, :description, :website,
@@ -50,22 +57,22 @@ module Concerns
           :geocoding_block_price, :map_view_block_price,
           :twitter_datasource_enabled, :twitter_datasource_block_size,
           :twitter_datasource_block_price, :twitter_datasource_quota,
-          :here_maps_enabled, :stamen_maps_enabled, :rainbow_maps_enabled,
           :new_dashboard_enabled]
         end
       elsif self.is_a?(User)
         [:account_type, :admin, :crypted_password, :database_host,
         :database_timeout, :description, :disqus_shortname, :available_for_hire, :email,
         :geocoding_block_price, :geocoding_quota, :map_view_block_price,
-        :map_view_quota, :max_layers, :name, :notification, :organization_id,
+        :map_view_quota, :max_layers, :max_import_file_size, :max_import_table_row_count, :max_concurrent_import_count,
+        :name, :notification, :organization_id,
         :period_end_date, :private_tables_enabled, :quota_in_bytes, :salt,
         :sync_tables_enabled, :table_quota, :twitter_username, :upgraded_at,
         :user_timeout, :username, :website, :soft_geocoding_limit,
         :twitter_datasource_enabled, :twitter_datasource_block_size,
         :twitter_datasource_block_price, :twitter_datasource_quota,
         :soft_twitter_datasource_limit,
+        :google_sign_in, :last_password_change_date,
         :arcgis_datasource_enabled,
-        :here_maps_enabled, :stamen_maps_enabled, :rainbow_maps_enabled,
         :new_dashboard_enabled, :private_maps_enabled]
       end
     end
@@ -88,7 +95,7 @@ module Concerns
           :sync_tables_enabled, :table_quota, :twitter_username, :upgraded_at,
           :user_timeout, :username, :website, :soft_geocoding_limit,
           :twitter_datasource_enabled, :soft_twitter_datasource_limit,
-          :arcgis_datasource_enabled
+          :arcgis_datasource_enabled, :google_sign_in, :last_password_change_date
         )
         case action
         when :create
@@ -118,7 +125,7 @@ module Concerns
     end
 
     def sync_data_with_cartodb_central?
-      Cartodb.config[:cartodb_central_api].present? && Cartodb.config[:cartodb_central_api]['username'].present? && Cartodb.config[:cartodb_central_api]['password'].present?
+      Cartodb::Central.sync_data_with_cartodb_central?
     end
 
     def cartodb_central_client

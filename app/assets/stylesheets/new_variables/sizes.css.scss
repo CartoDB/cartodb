@@ -62,3 +62,12 @@ $sCard-borderRadius: 4px;
 // Forms
 $sForms-elementHeight: 40px;
 $sForms-borderRadius: 4px;
+
+// Spinner
+$sSpinner-size: 36px;
+
+// Media query breakpoints, matching current state-of-things of website
+$sMedia-max:     1000px;
+$sMedia-desktop: 960px;  // slightly larger than $sLayout-width
+$sMedia-tablet:  760px;
+$sMedia-mobile:  400px;

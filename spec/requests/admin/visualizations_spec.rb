@@ -16,14 +16,16 @@ end #app
 describe Admin::VisualizationsController do
   include Rack::Test::Methods
   include Warden::Test::Helpers
+  include CacheHelper
 
   before(:all) do
     @user = create_user(
       username: 'test',
       email:    'test@test.com',
-      password: 'test'
+      password: 'test12'
     )
     @api_key = @user.api_key
+    @user.stubs(:should_load_common_data?).returns(false)
   end
 
   before(:each) do
@@ -37,8 +39,8 @@ describe Admin::VisualizationsController do
     delete_user_data @user
     @headers = { 
       'CONTENT_TYPE'  => 'application/json',
-      'HTTP_HOST'     => 'test.localhost.lan'
     }
+    host! 'test.localhost.lan'
   end
 
   after(:all) do
@@ -85,9 +87,20 @@ describe Admin::VisualizationsController do
     end
   end # GET /viz/:id
 
+  describe 'GET /viz/:id/public_map' do
+    it 'returns proper surrogate-keys' do
+      id = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC).table_visualization.id
+
+      get "/viz/#{id}/public_map", {}, @headers
+      last_response.status.should == 200
+      last_response.headers["Surrogate-Key"].should_not be_empty
+      last_response.headers["Surrogate-Key"].should include(CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES)
+    end
+  end
+
   describe 'GET /viz/:id/public' do
     it 'returns public data for a table visualization' do
-      id = table_factory(privacy: ::Table::PRIVACY_PUBLIC).table_visualization.id
+      id = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC).table_visualization.id
 
       get "/viz/#{id}/public", {}, @headers
       last_response.status.should == 200
@@ -102,7 +115,7 @@ describe Admin::VisualizationsController do
     end
 
     it "redirects to embed_map if visualization is 'derived'" do
-      id                = table_factory(privacy: ::Table::PRIVACY_PUBLIC).table_visualization.id
+      id                = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC).table_visualization.id
       payload           = { source_visualization_id: id }
 
       post "/api/v1/viz?api_key=#{@api_key}", 
@@ -122,7 +135,7 @@ describe Admin::VisualizationsController do
 
   describe 'GET /viz/:name/embed_map' do
     it 'renders the view by passing a visualization name' do
-      table = table_factory(privacy: ::Table::PRIVACY_PUBLIC)
+      table = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC)
       name = table.table_visualization.name
 
       get "/viz/#{URI::encode(name)}/embed_map", {}, @headers
@@ -130,10 +143,14 @@ describe Admin::VisualizationsController do
       last_response.headers["X-Cache-Channel"].should_not be_empty
       last_response.headers["X-Cache-Channel"].should include(table.name)
       last_response.headers["X-Cache-Channel"].should include(table.table_visualization.varnish_key)
+      last_response.headers["Surrogate-Key"].should_not be_empty
+      last_response.headers["Surrogate-Key"].should include(CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES)
+      last_response.headers["Surrogate-Key"].should include(table.table_visualization.surrogate_key)
     end
 
     it 'renders embed_map.js' do
-      id                = table_factory(privacy: ::Table::PRIVACY_PUBLIC).table_visualization.id
+      table             = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC)
+      id                = table.table_visualization.id
       payload           = { source_visualization_id: id }
 
       post "/api/v1/viz?api_key=#{@api_key}", 
@@ -147,6 +164,11 @@ describe Admin::VisualizationsController do
 
       get "/viz/#{id}/embed_map.js", {}, @headers
       last_response.status.should == 200
+      last_response.headers["X-Cache-Channel"].should_not be_empty
+      last_response.headers["X-Cache-Channel"].should include(table.name)
+      last_response.headers["Surrogate-Key"].should_not be_empty
+      last_response.headers["Surrogate-Key"].should include(CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES)
+      last_response.headers["Surrogate-Key"].should include(get_surrogate_key(CartoDB::SURROGATE_NAMESPACE_VISUALIZATION, id))
     end
 
     it 'renders embed map error page if visualization private' do
@@ -171,13 +193,13 @@ describe Admin::VisualizationsController do
     it 'renders embed map error when an exception is raised' do
       login_as(@user, scope: 'test')
 
-      get "/viz/non_existent/embed_map", {}, @headers
+      get "/viz/220d2f46-b371-11e4-93f7-080027880ca6/embed_map", {}, @headers
       last_response.status.should == 404
-      last_response.body.should =~ /pity/
+      last_response.body.should =~ /404/
 
-      get "/viz/non_existent/embed_map.js", {}, @headers
+      get "/viz/220d2f46-b371-11e4-93f7-080027880ca6/embed_map.js", {}, @headers
       last_response.status.should == 404
-      last_response.body.should =~ /pity/
+      last_response.body.should =~ /404/
     end
   end # GET /viz/:name/embed_map
 
@@ -195,13 +217,13 @@ describe Admin::VisualizationsController do
     it 'returns 404' do
       login_as(@user, scope: 'test')
 
-      get "/viz/9999?api_key=#{@api_key}", {}, @headers
+      get "/viz/220d2f46-b371-11e4-93f7-080027880ca6?api_key=#{@api_key}", {}, @headers
       last_response.status.should == 404
 
-      get "/viz/9999/public?api_key=#{@api_key}", {}, @headers
+      get "/viz/220d2f46-b371-11e4-93f7-080027880ca6/public?api_key=#{@api_key}", {}, @headers
       last_response.status.should == 404
 
-      get "/viz/9999/embed_map?api_key=#{@api_key}", {}, @headers
+      get "/viz/220d2f46-b371-11e4-93f7-080027880ca6/embed_map?api_key=#{@api_key}", {}, @headers
       last_response.status.should == 404
     end
   end # non existent visualization
@@ -222,13 +244,15 @@ describe Admin::VisualizationsController do
       CartoDB::UserOrganization.any_instance.stubs(:move_user_tables_to_schema).returns(nil)
       CartoDB::TablePrivacyManager.any_instance.stubs(
           :set_from_table_privacy => nil,
-          :propagate_to_redis_and_varnish => nil
+          :propagate_to_varnish => nil
       )
 
       User.any_instance.stubs(
           :enable_remote_db_user => nil,
           :after_create => nil,
           :create_schema => nil,
+          :move_tables_to_schema => nil,
+          :setup_schema => nil,
           :create_public_db_user => nil,
           :set_database_search_path => nil,
           :load_cartodb_functions => nil,
@@ -266,6 +290,7 @@ describe Admin::VisualizationsController do
       user_org = CartoDB::UserOrganization.new(org.id, user_a.id)
       user_org.promote_user_to_admin
       org.reload
+      user_a.reload
 
       user_b = create_user({username: 'user-b', quota_in_bytes: 123456789, table_quota: 400, organization: org})
 
@@ -280,16 +305,16 @@ describe Admin::VisualizationsController do
 
       host! "#{org.name}.localhost.lan"
 
-      source_url = public_table_url(user_domain: user_a.username, id: vis.name)
-      get source_url, {}, get_headers(org.name)
+      source_url = CartoDB.url(self, 'public_table', {id: vis.name}, user_a)
+
+      get source_url
       last_response.status.should == 302
       # First we'll get redirected to the public map url
       follow_redirect!
       # Now url will get rewritten to current user
       last_response.status.should == 302
-      url = CartoDB.base_url(org.name) + public_visualizations_show_path(user_domain: user_b.username,
-                                                                 id: "#{user_a.username}.#{vis.name}") \
-                               + "?redirected=true"
+      url = CartoDB.base_url(org.name, user_b.username) +
+        CartoDB.path(self, 'public_visualizations_show', {id: "#{user_a.username}.#{vis.name}"}) + "?redirected=true"
       last_response.location.should eq url
 
       org.destroy
@@ -306,21 +331,17 @@ describe Admin::VisualizationsController do
       description:  'bogus',
       type:         'derived'
     }
-    post "/api/v1/viz?api_key=#{owner.api_key}", payload.to_json, get_headers(owner.username)
+
+    with_host "#{owner.username}.localhost.lan" do
+      post "/api/v1/viz?api_key=#{owner.api_key}", payload.to_json
+    end
+
 
     JSON.parse(last_response.body)
   end
 
   def table_factory(attrs = {})
     new_table(attrs.merge(user_id: @user.id)).save.reload
-  end
-
-  def get_headers(subdomain=nil)
-    subdomain = @user.username if subdomain.nil?
-    @headers = {
-        'CONTENT_TYPE'  => 'application/json',
-        'HTTP_HOST'     => "#{subdomain}.localhost.lan"
-    }
   end
 
 end # Admin::VisualizationsController

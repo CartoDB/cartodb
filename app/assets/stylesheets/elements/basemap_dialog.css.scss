@@ -123,6 +123,12 @@
   }
 }
 
+.basemap_chooser_mapbox {
+  div.input.access_token {
+    margin: 10px 0 0 5px;
+  }
+}
+
 .basemap_chooser_wms_items {
   border-bottom: 1px solid #ccc;
   position: relative;

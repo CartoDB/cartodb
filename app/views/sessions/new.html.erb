@@ -1,41 +1,105 @@
-<%= content_for(:js) do %>
-  <%= javascript_include_tag 'cdb.js', 'application.js', 'login.js' %>
+<% content_for :js do %>
+  <%= javascript_include_tag 'sessions.js' %>
+
+  <script>
+    $(function() {
+      window.Sessions = new App.Views.Sessions();
+    });
+  </script>
 <% end %>
 
-<section class="sessions shadow">
-  <div class="content">
-    <h2 class="center">Login to your CartoDB</h2>
-    <%= form_tag create_session_path do %>
-      <div class="field margin30">
-        <% @error = @login_error %>
-        <% if @error %>
-          <div class="field_with_errors">
-        <% end %>
-        <%= text_field_tag :email, CartoDB.extract_subdomain(request), :title => "Email or username", :'data-label' => "Email or username", :class => (flash[:alert] || @error ? 'error' : nil) %>
-        <% if @error %>
+<div class="Sessions">
+  <header class="Sessions-header">
+    <div class="u-inner">
+      <nav class="Navbar">
+        <div class="Navbar-header">
+          <div class="Navbar-title">
+            <picture class="Navbar-brand">
+              <source type="image/svg+xml" srcset="<%= image_path "layout/sessions/brand.svg" %>">
+              <img src="<%= image_path "layout/sessions/brand.png" %>" alt="CartoDB">
+            </picture>
           </div>
-          <div class="field_error"><%= @error %></div>
-        <% end %>
-      </div>
-      <div class="field margin20">
-        <% if @error %>
-          <div class="field_with_errors">
-        <% end %>
-        <%= password_field_tag :password, '', :title => "Password", :'data-label' => "Password", :class => (flash[:alert] || @error ? 'error' : nil) %>
-        <% if @error %>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <div class="Sessions-content">
+    <div class="Sessions-inner">
+      <div class="Sessions-notloggedin">
+        <div class="u-inner">
+          <div class="Sessions-left">
+            <div class="Sessions-form">
+              <h1 class="Sessions-title u-vspace-xs">Login to CartoDB</h1>
+              <p class="Sessions-description">Help other people understand the world we live in, with maps.</p>
+
+              <div class="Sessions-sep"></div>
+
+              <% if @google_plus_config.present? %>
+                <%= render partial: 'google_plus/google_plus_button',  locals: { config: @google_plus_config } %>
+              <% end %>
+
+              <div class="Sessions-sep"></div>
+
+              <%= form_tag CartoDB.path(self, 'create_session'), class: "js-Loading-form" do %>
+                <input type="hidden" value="" id="google_access_token" name="google_access_token" />
+                <input type="hidden" value="0" id="google_access_filled" name="google_access_filled" />
+
+                <div class="Sessions-field">
+                  <%= text_field_tag :email, CartoDB.extract_subdomain(request), :title => "Email or username", placeholder: "Email or username", class: "Sessions-input" %>
+
+                  <% if @login_error %>
+                    <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @login_error %>">!</div>
+                  <% end %>
+                </div>
+
+                <div class="Sessions-field">
+                  <%= password_field_tag :password, "", placeholder: "Password", class: "Sessions-input" %>
+
+                  <% if @login_error %>
+                    <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @login_error %>">!</div>
+                  <% end %>
+                </div>
+
+                <div class="Sessions-field">
+                  <p>
+                    <button type="submit" class="Btn Btn--green Btn--m is-highlight u-tupper Sessions-button js-Sessions-button js-Loading u-right">
+                      <span class="js-Loading-text">Login</span>
+                      <span class="js-Loading-anim" style="display: none;">
+                        <span class="Loading-item">
+                          <span class="Loading-itemInner Loading-itemInner--01"></span>
+                        </span>
+
+                        <span class="Loading-item">
+                          <span class="Loading-itemInner Loading-itemInner--02"></span>
+                        </span>
+
+                        <span class="Loading-item">
+                          <span class="Loading-itemInner Loading-itemInner--03"></span>
+                        </span>
+                      </span>
+                    </button>
+                  </p>
+                </div>
+              <% end %>
+            </div>
           </div>
-          <div class="field_error"><%= @error %></div>
-        <% end %>
+        </div>
       </div>
-      <div class="field margin25">
-        <%= submit_tag "Sign in", :class => "green border sessions" %>
+
+      <div class="Sessions-loggedin">
+        <div class="Spinner"></div>
       </div>
-    <% end %>
+    </div>
   </div>
-  <div class="footer">
-    <p class="center light"><%= link_to "Forgot password?",forget_password_url %> · <%= link_to "Create an account", "http://cartodb.com/signup" %></p>
-  </div>
-</section>
-<footer class="short">
-  <h1><%= link_to 'CartoDB', "http://cartodb.com", :class => "cartodb" %></h1>
-</footer>
+  
+  <% unless cartodb_com_hosted? %>
+    <footer class="Sessions-footer">
+      <div class="u-inner">
+        <div class="Sessions-notloggedin">
+          <p class="Sessions-text Sessions-text--footer u-txt-center"><%= link_to "Forgot password?", forget_password_url %> · <%= link_to 'Create an account', "https://cartodb.com/signup" %></p>
+        </div>
+      </div>
+    </footer>
+  <% end %>
+</div>

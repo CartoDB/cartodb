@@ -47,7 +47,11 @@ module CartoDB
       @mailto             = arguments.fetch(:mailto)
       @force_batch        = arguments[:force_batch] || false
       @dir                = arguments[:dir] || Dir.mktmpdir
-      @batch_api_disabled = Cartodb.config[:geocoder]['batch_api_disabled'] == true
+      begin
+        @batch_api_disabled = Cartodb.config[:geocoder]['batch_api_disabled'] == true
+      rescue
+        @batch_api_disabled = false
+      end
     end # initialize
 
     def use_batch_process?
@@ -71,7 +75,7 @@ module CartoDB
       )
       handle_api_error(response)
       @request_id = extract_response_field(response.body)
-    end # upload
+    end
 
     def cancel
       return unless use_batch_process?
@@ -129,7 +133,7 @@ module CartoDB
       csv.close
       @status = 'completed'
       @request_id = UUIDTools::UUID.timestamp_create.to_s.gsub('-', '')
-    end # run_non_batched
+    end
 
     def geocode_text(text)
       options = GEOCODER_OPTIONS.merge(searchtext: text, app_id: app_id, app_code: token)
@@ -138,6 +142,7 @@ module CartoDB
       position = response["view"][0]["result"][0]["location"]["displayPosition"]
       return position["latitude"], position["longitude"]
     rescue => e
+      Rollbar.report_exception(e)
       [nil, nil]
     end
 

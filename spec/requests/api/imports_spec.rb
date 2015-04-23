@@ -33,7 +33,7 @@ describe "Imports API" do
 
     last_import = DataImport[response_json['item_queue_id']]
     last_import.state.should be == 'complete'
-    table = Table[last_import.table_id]
+    table = UserTable[last_import.table_id]
     table.name.should == "column_number_to_boolean"
     table.map.data_layers.first.options["table_name"].should == "column_number_to_boolean"
   end
@@ -120,6 +120,19 @@ describe "Imports API" do
     import['state'].should be == 'complete'
   end
 
+  it 'fails with password protected files' do
+    post api_v1_imports_create_url,
+      params.merge(:filename => upload_file('spec/support/data/alldata-pass.zip', 'application/octet-stream'))
+
+    item_queue_id = JSON.parse(response.body)['item_queue_id']
+
+    get api_v1_imports_show_url(:id => item_queue_id), params
+
+    response.code.should be == '200'
+    import = JSON.parse(response.body)
+    import['state'].should be == 'failure'
+  end
+
 
   it 'imports files with weird filenames' do
     post api_v1_imports_create_url,
@@ -159,7 +172,7 @@ describe "Imports API" do
 
     response.code.should be == '200'
 
-    @table_from_import = Table.all.last
+    @table_from_import = UserTable.all.last.service
 
     post api_v1_imports_create_url(:api_key    => @user.api_key,
                         :table_name => 'wadus_2',
@@ -173,7 +186,7 @@ describe "Imports API" do
     last_import = DataImport[response_json['item_queue_id']]
     last_import.state.should be == 'complete'
 
-    import_table = Table.all.last
+    import_table = UserTable.all.last.service
     import_table.rows_counted.should be == @table_from_import.rows_counted
     import_table.should have_required_indexes_and_triggers
   end
@@ -182,7 +195,7 @@ describe "Imports API" do
     post api_v1_imports_create_url,
       params.merge(:filename => upload_file('spec/support/data/csv_with_lat_lon.csv', 'application/octet-stream'))
 
-    @table_from_import = Table.all.last
+    @table_from_import = UserTable.all.last.service
 
     post api_v1_imports_create_url(params.merge(:table_name => 'wadus_copy__copy',
                                      :table_copy => @table_from_import.name))
@@ -193,7 +206,7 @@ describe "Imports API" do
     last_import = DataImport[response_json['item_queue_id']]
     last_import.state.should be == 'complete'
 
-    import_table = Table.all.last
+    import_table = UserTable.all.last.service
     import_table.rows_counted.should be == @table_from_import.rows_counted
     import_table.should have_required_indexes_and_triggers
   end
@@ -202,7 +215,7 @@ describe "Imports API" do
     post api_v1_imports_create_url,
       params.merge(:filename => upload_file('spec/support/data/csv_with_number_columns.csv', 'application/octet-stream'))
 
-    @table_from_import = Table.all.last
+    @table_from_import = UserTable.all.last.service
 
     post api_v1_imports_create_url(params.merge(:table_name => 'wadus_copy__copy',
                                      :table_copy => @table_from_import.name))
@@ -213,25 +226,15 @@ describe "Imports API" do
     last_import = DataImport[response_json['item_queue_id']]
     last_import.state.should be == 'complete'
 
-    import_table = Table.all.last
+    import_table = UserTable.all.last.service
     import_table.rows_counted.should be == @table_from_import.rows_counted
     import_table.should have_required_indexes_and_triggers
   end
-
-  it 'gets a list of failed imports'
-  it 'gets a list of succeeded imports'
-  it 'kills pending imports'
 
   it 'imports all the sample data' do
     @user.update table_quota: 10
     import_files = [
         "http://cartodb.s3.amazonaws.com/static/TM_WORLD_BORDERS_SIMPL-0.3.zip",
-#                    "http://cartodb.s3.amazonaws.com/static/european_countries.zip",
-#                    "http://cartodb.s3.amazonaws.com/static/50m-urban-area.zip",
-#                    "http://cartodb.s3.amazonaws.com/static/10m-populated-places-simple.zip",
- #                   "http://cartodb.s3.amazonaws.com/static/50m-rivers-lake-centerlines-with-scale-ranks.zip",
-#                    "http://cartodb.s3.amazonaws.com/static/counties_ny.zip",
-#                    "http://cartodb.s3.amazonaws.com/static/nyc_subway_entrance.zip"
     ]
 
     import_files.each do |url|
@@ -243,7 +246,7 @@ describe "Imports API" do
       last_import = DataImport[response_json['item_queue_id']]
 
       last_import.state.should be == 'complete'
-      table = Table[last_import.table_id]
+      table = UserTable[last_import.table_id].service
 
       table.should have_required_indexes_and_triggers
       table.should have_no_invalid_the_geom
@@ -288,7 +291,7 @@ describe "Imports API" do
     post api_v1_imports_create_url,
       params.merge(:filename => upload_file('spec/support/data/_penguins_below_80.zip', 'application/octet-stream'))
 
-    @table_from_import = Table.all.last
+    @table_from_import = UserTable.all.last.service
     last_import = DataImport.order(:updated_at.desc).first
     last_import.state.should be == 'complete', "Import failure: #{last_import.log}"
 
@@ -308,7 +311,7 @@ describe "Imports API" do
     post api_v1_imports_create_url,
       params.merge(:filename => upload_file('spec/support/data/csv_with_lat_lon.csv', 'application/octet-stream'))
 
-    @table_from_import = Table.all.last
+    @table_from_import = UserTable.all.last.service
 
     response.code.should be == '200'
     last_import = DataImport.order(:updated_at.desc).first
@@ -325,6 +328,50 @@ describe "Imports API" do
     last_import.state.should be == 'complete'
     last_import.tables_created_count.should eq 2
     last_import.table_names.should eq 'zipped_a zipped_b'
+  end
+
+  it 'properly reports table row count limit' do
+    old_max_import_row_count = @user.max_import_table_row_count
+    @user.update max_import_table_row_count: 2
+
+    # Internally uses reltuples from pg_class which is an estimation and non-deterministic so...
+    CartoDB::PlatformLimits::Importer::TableRowCount.any_instance.expects(:get).returns(5)
+
+    post api_v1_imports_create_url,
+         params.merge(:filename => upload_file('spec/support/data/csv_with_lat_lon.csv', 'application/octet-stream'))
+
+    response.code.should be == '200'
+    last_import = DataImport.order(:updated_at.desc).first
+    last_import.state.should be == 'failure'
+    last_import.error_code.should be == 6668
+
+    @user.update max_import_table_row_count: old_max_import_row_count
+  end
+
+  it 'returns derived visualization id if created with create_vis flag' do
+    @user.update private_tables_enabled: false
+    post api_v1_imports_create_url,
+         params.merge({
+                        filename: upload_file('spec/support/data/csv_with_lat_lon.csv', 'application/octet-stream'),
+                        create_vis: true
+                      })
+    response.code.should be == '200'
+
+    item_queue_id = ::JSON.parse(response.body)['item_queue_id']
+
+    get api_v1_imports_show_url(id: item_queue_id), params
+
+    import = DataImport[item_queue_id]
+
+    import.state.should be == 'complete'
+    import.visualization_id.nil?.should eq false
+    import.create_visualization.should eq true
+
+    vis = CartoDB::Visualization::Member.new(id: import.visualization_id).fetch
+    vis.nil?.should eq false
+    vis.name =~ /csv_with_lat_lon/  # just in case we change the prefix
+
+    @user.update private_tables_enabled: true
   end
 
 end

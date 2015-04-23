@@ -1,7 +1,8 @@
 @import "../new_variables/mixins";
 @import "../new_variables/sizes";
 
-.DeleteItems-affectedMaps {
+.DeleteItems-affectedMapsListItem {
+  margin: $sMargin-group 10px;
 }
 .DeleteItems-affectedEntities {
   @include display-flex();
@@ -10,14 +11,6 @@
 }
 .DeleteItems-affectedEntitiesAvatar {
   margin-left: $sMargin-min;
-}
-.DeleteItems-affectedMaps {
-  @include display-flex();
-  @include justify-content(center);
-  @include align-items(center);
-}
-.DeleteItems-affectedMapsCard:last-child {
-  margin-right: 0;
 }
 .DeleteItems-footer {
   @include display-flex();

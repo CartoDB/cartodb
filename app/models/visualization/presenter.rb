@@ -1,14 +1,15 @@
 # encoding: utf-8
 
 require_relative './member'
+require_relative './external_source'
 
 module CartoDB
   module Visualization
     class Presenter
       def initialize(visualization, options={})
         @visualization   = visualization
-        @options         = options
         @viewing_user    = options.fetch(:user, nil)
+        @options         = options
         @table           = options[:table] || visualization.table
         @synchronization = options[:synchronization]
         # Expose real privacy (used for normal JSON purposes)
@@ -37,13 +38,14 @@ module CartoDB
           parent_id: visualization.parent_id,
           license: visualization.license,
           kind: visualization.kind,
-          likes: visualization.likes.count,
+          likes: visualization.likes_count,
           prev_id: visualization.prev_id,
           next_id: visualization.next_id,
           transition_options: visualization.transition_options,
           active_child: visualization.active_child
         }
         poro.merge!(table: table_data_for(table, permission))
+        poro.merge!(external_source: external_source_data_for(visualization))
         poro.merge!(synchronization: synchronization)
         poro.merge!(related) if options.fetch(:related, true)
         poro.merge!(children: children)
@@ -62,7 +64,7 @@ module CartoDB
           title:            visualization.title,
           kind:             visualization.kind,
           privacy:          privacy_for_vizjson.upcase,
-          likes:            visualization.likes.count
+          likes:            visualization.likes_count
         }
       end
 
@@ -118,6 +120,20 @@ module CartoDB
         table_data.merge!(table.row_count_and_size)
 
         table_data
+      end
+
+      def external_source_data_for(visualization)
+        return {} unless visualization.type == Member::TYPE_REMOTE
+
+        external_source = Visualization::ExternalSource.where(visualization_id: visualization.id).first
+        return {} unless external_source.present?
+
+        {
+          size: external_source.size,
+          row_count: external_source.rows_counted,
+          geometry_types: external_source.geometry_types
+        }
+
       end
 
       def children

@@ -25,6 +25,7 @@ describe Visualization::Member do
     @user_mock.stubs(:username).returns(user_name)
     @user_mock.stubs(:api_key).returns(user_apikey)
     @user_mock.stubs(:avatar_url).returns('')
+    @user_mock.stubs(:public_url).returns("http://#{user_name}.cartodb.com")
     CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user_mock)
 
     support_tables_mock = Doubles::Visualization::SupportTables.new
@@ -91,6 +92,7 @@ describe Visualization::Member do
       vis_mock.stubs(:transition_options).returns({})
       vis_mock.stubs(:active_child).returns(nil)
       vis_mock.stubs(:likes).returns([])
+      vis_mock.stubs(:likes_count).returns(0)
 
       presenter = Visualization::Presenter.new(vis_mock)
       data = presenter.to_poro
@@ -184,7 +186,11 @@ describe Visualization::Member do
 
       parent.fetch
 
-      data = Visualization::Presenter.new(parent).to_poro
+      @request_mock = mock
+      @request_mock.stubs(:host).returns("#{@user_mock.username}#{CartoDB.session_domain}")
+      @request_mock.stubs(:fullpath).returns('')
+
+      data = Visualization::Presenter.new(parent,{request:@request_mock}).to_poro
 
       data[:children].length.should eq 5
 
@@ -198,4 +204,3 @@ describe Visualization::Member do
   end
 
 end
-

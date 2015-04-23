@@ -17,7 +17,7 @@ describe Admin::TablesController do
     @user = create_user(
       username: 'test',
       email:    'test@test.com',
-      password: 'test'
+      password: 'test12'
     )
     @api_key = @user.api_key
   end
@@ -28,8 +28,8 @@ describe Admin::TablesController do
     delete_user_data @user
     @headers = { 
       'CONTENT_TYPE'  => 'application/json',
-      'HTTP_HOST'     => 'test.localhost.lan'
     }
+    host! 'test.localhost.lan'
   end
 
   after(:all) do

@@ -100,7 +100,7 @@ describe Layer do
           map.expects(:invalidate_vizjson_varnish_cache).times(1)
         end
 
-        key = @layer.affected_tables.first.varnish_key
+        key = @layer.affected_tables.first.service.varnish_key
         CartoDB::Varnish.any_instance.expects(:purge).times(1).with("#{key}").returns(true)
 
         vizzjson_key = @layer.affected_tables.first.table_visualization.varnish_vizzjson_key
@@ -145,7 +145,7 @@ describe Layer do
       map = Map.create(:user_id => @user.id, :table_id => @table.id)
       layer = Layer.create(
         kind: 'carto',
-        options: { query: "select * from #{@table.name}, #{table2.name};select cartodb_id from unexisting_table;selecterror;select 1;select * from #{table2.name}" }
+        options: { query: "select * from #{@table.name}, #{table2.name};select 1;select * from #{table2.name}" }
       )
       map.add_layer(layer)
 
@@ -289,7 +289,7 @@ describe Layer do
 
       derived.layers(:cartodb).length.should == 1
       derived.layers(:cartodb).first.uses_private_tables?.should be_true
-      @table.privacy = Table::PRIVACY_PUBLIC
+      @table.privacy = UserTable::PRIVACY_PUBLIC
       @table.save
       @user.reload
 

@@ -36,16 +36,6 @@
 }
 .SettingsDropdown-progressBar.is--inAlert div.progress-bar span { background: $cHighlight-alert!important }
 .SettingsDropdown-progressBar.is--inDanger div.progress-bar span { background: $cHighlight-negative!important }
-.SettingsDropdown-progressBar:before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 1px;
-  background: #E8E8E8;
-  z-index: 0;
-}
 .SettingsDropdown-itemLink {
   font-size: $sFontSize-large;
   line-height: $sLineHeight-large;

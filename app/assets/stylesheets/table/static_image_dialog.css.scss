@@ -1,0 +1,96 @@
+/**
+ *  Static Image dialog styles
+ */
+
+@import "compass/css3/box-sizing";
+@import "compass/css3/opacity";
+@import "compass/css3/images";
+@import "compass/css3/transition";
+@import "common/form-elements";
+@import "common/mixins";
+
+.static_image_dialog {
+
+  @include default-form-info();
+  @include default-input();
+  @include default-textarea();
+
+  // Sections
+  div.content {
+    padding: 22px 40px 40px 40px;
+  }
+
+  div.foot  {
+    padding: 0 40px 35px 40px!important;
+    border:none!important;
+  }
+
+  .row label {
+    padding: 0;
+  }
+
+  .row .input_field {
+    margin: 0 20px 0 0;
+  }
+  .row .input_field:last-child {
+    margin: 0;
+  }
+
+  input[type="text"] {
+    @include box-sizing(border-box);
+    @include inline-block();
+    width: 106px;
+    padding:14px 11px;
+    margin: 0;
+  }
+
+  label {
+    display:block;
+    margin:0 0 7px 0;
+    padding: 0;
+  }
+
+  .attribution {
+    margin: 20px 0 0 0;
+  }
+  .attribution p {
+    margin: 0 0 10px 0;
+    line-height:130%;
+  }
+  .attribution p.highlighted {
+    background: #f1f1f1;
+    padding: 10px;
+    @include border-radius(2px);
+    border: 1px solid #ccc;
+  }
+  .attribution p:last-child {
+    margin: 0;
+  }
+  .attribution p a {
+    letter-spacing: normal;
+  }
+
+  &.is-loading .loader {
+    display: block;
+  }
+
+  .loader {
+    display:none;
+    float:right;
+    border:none;
+    width:38px;
+    height:16px;
+    padding:0;
+    margin:14px 10px 0 0;
+    background: image-url("layout/loader_transparent.gif") no-repeat 0 0;
+  }
+
+  .unit {
+    color: #ccc;
+  }
+
+  section.modal.confirmation {
+    display:none;
+  }
+
+}

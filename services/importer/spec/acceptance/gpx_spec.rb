@@ -14,7 +14,12 @@ describe 'GPX regression tests' do
   it 'imports GPX files' do
     filepath    = path_to('route2.gpx')
     downloader  = CartoDB::Importer2::Downloader.new(filepath)
-    runner      = CartoDB::Importer2::Runner.new(@pg_options, downloader, CartoDB::Importer2::Doubles::Log.new)
+    runner      = Runner.new({
+                               pg: @pg_options,
+                               downloader: downloader,
+                               log: CartoDB::Importer2::Doubles::Log.new,
+                               user: CartoDB::Importer2::Doubles::User.new
+                             })
     runner.run
 
     geometry_type_for(runner).should be

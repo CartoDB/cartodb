@@ -1,0 +1,2 @@
+Other testing can be located at /cartodb/spec/ subfolders (/requests/ , /models/platform-limits , ...), as they cover
+end to end scenarios or at least don't require mocking way too many things.

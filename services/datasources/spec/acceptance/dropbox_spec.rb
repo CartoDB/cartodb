@@ -14,7 +14,7 @@ describe Url::Dropbox do
 
   describe '#manual_test' do
     it 'with user interaction, tests the full oauth flow and lists files of an account' do
-      user_mock = Doubles::User.new
+      user_mock = CartoDB::Datasources::Doubles::User.new
 
       config = get_config
       dropbox_datasource = Url::Dropbox.get_new(config, user_mock)

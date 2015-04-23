@@ -19,7 +19,12 @@ describe 'Importer regression test' do
 
       filepath    = file
       downloader  = Downloader.new(File.expand_path filepath)
-      runner      = Runner.new(@pg_options, downloader, Doubles::Log.new)
+      runner      = Runner.new({
+                                 pg: @pg_options,
+                                 downloader: downloader,
+                                 log: Doubles::Log.new,
+                                 user:Doubles::User.new
+                               })
       runner.run
 
       runner.results.each do |result|

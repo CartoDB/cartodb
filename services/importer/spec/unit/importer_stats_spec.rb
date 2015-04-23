@@ -51,7 +51,7 @@ module CartoDB
           count.should eq 3
         end
 
-        it "nested timing" do
+        it "registers nested timing" do
           expected_send("#{EXPECTED_PREFIX}.#{TIMING_TEST_KEY_A}")
           expected_send("#{EXPECTED_PREFIX}.#{TIMING_TEST_KEY}")
           importer_stats = ImporterStats.instance(TEST_HOST, TEST_PORT, HOST_INFO)
@@ -59,6 +59,20 @@ module CartoDB
             importer_stats.timing(TIMING_TEST_KEY_B) do
               foo
             end
+          end
+        end
+
+        it 'sends nothing and discards key fragment if block fails' do
+          expected_send("#{EXPECTED_PREFIX}.#{TIMING_TEST_KEY_B}")
+          importer_stats = ImporterStats.instance(TEST_HOST, TEST_PORT, HOST_INFO)
+          begin
+            importer_stats.timing(TIMING_TEST_KEY_A) do
+              raise 'error'
+            end
+          rescue => e
+            # INFO: keep going
+          end
+          importer_stats.timing(TIMING_TEST_KEY_B) do
           end
         end
 
@@ -84,7 +98,7 @@ module CartoDB
       end
 
       def expected_send(buf)
-        buf_re = Regexp.new(buf)
+        buf_re = %r{^#{buf}:}
         UDPSocket.any_instance.expects(:send).with(regexp_matches(buf_re), 0, TEST_HOST, TEST_PORT).once
       end
 

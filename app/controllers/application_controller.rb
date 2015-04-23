@@ -1,4 +1,5 @@
 # coding: UTF-8
+require_relative '../../lib/cartodb/profiler.rb'
 
 class ApplicationController < ActionController::Base
   include ::SslRequirement
@@ -6,7 +7,9 @@ class ApplicationController < ActionController::Base
 
   helper :all
 
-  before_filter :ensure_user_domain_param
+  around_filter :wrap_in_profiler
+
+  before_filter :store_request_host
   before_filter :ensure_user_organization_valid
   before_filter :ensure_org_url_if_org_user
   before_filter :browser_is_html5_compliant?
@@ -28,11 +31,32 @@ class ApplicationController < ActionController::Base
     end
   end
 
-
   protected
 
+  def is_https?
+    request.protocol == 'https://'
+  end
+
+  # To be used only when domainless urls are present, to replicate sent subdomain
+  def store_request_host
+    return unless CartoDB.subdomainless_urls?
+
+    match = /([\w\-\.]+)(:[\d]+)?\/?/.match(request.host.to_s)
+    unless match.nil?
+      CartoDB.request_host = match[1]
+    end
+  end
+
+  def wrap_in_profiler
+    if params[:profile_request].present? && current_user.present? && current_user.has_feature_flag?('profiler')
+      CartoDB::Profiler.new().call(request) { yield }
+    else
+      yield
+    end
+  end
+
   def set_asset_debugging
-    CartoDB::Application.config.assets.debug = \
+    CartoDB::Application.config.assets.debug =
       (Cartodb.config[:debug_assets].nil? ? true : Cartodb.config[:debug_assets]) if Rails.env.development?
   end
 
@@ -82,7 +106,7 @@ class ApplicationController < ActionController::Base
     respond_to do |format|
       format.html do
         session[:return_to] = request.url
-        redirect_to login_path and return
+        redirect_to CartoDB.path(self, 'login') and return
       end
       format.json do
         head :unauthorized
@@ -147,12 +171,9 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  # Views using MVC routes assume this param is always present
-  def ensure_user_domain_param
-    request.params[:user_domain] = nil unless request.params[:user_domain].present?
-  end
-
   def ensure_user_organization_valid
+    return if CartoDB.subdomainless_urls?
+
     org_subdomain = CartoDB.extract_host_subdomain(request)
     unless org_subdomain.nil? || current_user.nil?
       if current_user.organization.nil? || current_user.organization.name != org_subdomain
@@ -163,8 +184,11 @@ class ApplicationController < ActionController::Base
 
   # By default, override Admin urls unless :dont_rewrite param is present
   def ensure_org_url_if_org_user
+    return if CartoDB.subdomainless_urls?
+
     rewrite_url = !request.params[:dont_rewrite].present?
-    if rewrite_url && !current_user.nil? && !current_user.organization.nil? && CartoDB.extract_real_subdomain(request) == current_user.username
+    if rewrite_url && !current_user.nil? && !current_user.organization.nil? &&
+        CartoDB.subdomain_from_request(request) == current_user.username
       redirect_to CartoDB.base_url(current_user.organization.name, current_user.username) << request.fullpath
     end
   end
@@ -182,16 +206,18 @@ class ApplicationController < ActionController::Base
   # - Else: the first session found at request.session that comes from warden
   def current_viewer
     if @current_viewer.nil?
-      authenticated_usernames = request.session.select {|k,v| k.start_with?("warden.user")}.values
-      current_user_present = authenticated_usernames.select { |username|
-        CartoDB.extract_subdomain(request) == username
-      }.first
-
-      if current_user_present.nil?
-        authenticated_username = authenticated_usernames.first
-        @current_viewer = authenticated_username.nil? ? nil : User.where(username: authenticated_username).first
-      else
+      if current_user && env["warden"].authenticated?(current_user.username)
         @current_viewer = current_user
+      else
+        authenticated_usernames = request.session.select {|k,v| k.start_with?("warden.user")}.values
+        current_user_present = authenticated_usernames.select { |username|
+          CartoDB.extract_subdomain(request) == username
+        }.first
+
+        if current_user_present.nil?
+          authenticated_username = authenticated_usernames.first
+          @current_viewer = authenticated_username.nil? ? nil : User.where(username: authenticated_username).first
+        end
       end
     end
     @current_viewer

@@ -21,7 +21,7 @@ describe Overlay::Member do
       member = Overlay::Member.new(type: 'bogus')
       vis_mock = mock
       member.stubs(:visualization).returns(vis_mock)
-      vis_mock.expects(:invalidate_varnish_cache)
+      vis_mock.expects(:invalidate_cache)
       member.store
 
       member = Overlay::Member.new(id: member.id)
@@ -45,7 +45,7 @@ describe Overlay::Member do
       text_overlay_mock.stubs(:type).returns('text')
 
       vis_mock = mock
-      vis_mock.stubs(:invalidate_varnish_cache)
+      vis_mock.stubs(:invalidate_cache)
       vis_mock.stubs(:overlays).returns([logo_overlay_mock])
       member.stubs(:visualization).returns(vis_mock)
       # ok
@@ -71,7 +71,7 @@ describe Overlay::Member do
       header_overlay_mock.stubs(:type).returns('header')
 
       vis_mock = mock
-      vis_mock.stubs(:invalidate_varnish_cache)
+      vis_mock.stubs(:invalidate_cache)
       vis_mock.stubs(:overlays).returns([])
 
       member = Overlay::Member.new(type: 'header')
@@ -90,7 +90,7 @@ describe Overlay::Member do
       header_overlay_mock.stubs(:type).returns('header')
 
       vis_mock = mock
-      vis_mock.stubs(:invalidate_varnish_cache)
+      vis_mock.stubs(:invalidate_cache)
       vis_mock.stubs(:overlays).returns([])
 
       member = Overlay::Member.new(type: 'header')
@@ -116,7 +116,7 @@ describe Overlay::Member do
 
       vis_mock = mock
       member.stubs(:visualization).returns(vis_mock)
-      vis_mock.stubs(:invalidate_varnish_cache)
+      vis_mock.stubs(:invalidate_cache)
 
       member.store
 
@@ -131,7 +131,7 @@ describe Overlay::Member do
       member = Overlay::Member.new(type: 'bogus')
       vis_mock = mock
       member.stubs(:visualization).returns(vis_mock)
-      vis_mock.expects(:invalidate_varnish_cache).twice
+      vis_mock.expects(:invalidate_cache).twice
       member.store
 
       member.fetch

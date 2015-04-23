@@ -14,15 +14,14 @@ require_relative '../../../../services/named-maps-api-wrapper/lib/named-maps-wra
 class Api::Json::VisualizationsController < Api::ApplicationController
   include CartoDB
 
-  ssl_allowed  :vizjson1, :vizjson2, :notify_watching, :list_watching, :likes_count, :likes_list, :add_like, :is_liked,
+  ssl_allowed  :vizjson2, :notify_watching, :list_watching, :likes_count, :likes_list, :add_like, :is_liked,
                :remove_like
   ssl_required :index, :show, :create, :update, :destroy, :set_next_id
-  skip_before_filter :api_authorization_required, only: [:vizjson1, :vizjson2, :likes_count, :likes_list, :add_like,
+  skip_before_filter :api_authorization_required, only: [:vizjson2, :likes_count, :likes_list, :add_like,
                                                          :is_liked, :remove_like, :index]
   before_filter :optional_api_authorization, only: [:likes_count, :likes_list, :add_like, :is_liked, :remove_like,
-                                                    :index]
-  before_filter :link_ghost_tables, only: [:index, :show]
-  before_filter :table_and_schema_from_params, only: [:show, :update, :destroy, :stats, :vizjson1, :vizjson2,
+                                                    :index, :vizjson2]
+  before_filter :table_and_schema_from_params, only: [:show, :update, :destroy, :stats, :vizjson2,
                                                       :notify_watching, :list_watching, :likes_count, :likes_list,
                                                       :add_like, :is_liked, :remove_like, :set_next_id]
 
@@ -122,6 +121,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   rescue CartoDB::InvalidMember
     render_jsonp({ errors: vis.full_errors }, 400)
   rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
+    CartoDB.notify_exception(exception, { user: current_user, template_data: exception.template_data })
     render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
     render_jsonp({ errors: { named_map: exception } }, 400)
@@ -175,6 +175,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   rescue CartoDB::InvalidMember
     render_jsonp({ errors: vis.full_errors.empty? ? ['Error saving data'] : vis.full_errors }, 400)
   rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
+    CartoDB.notify_exception(exception, { user: current_user, template_data: exception.template_data })
     render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
     render_jsonp({ errors: { named_map: exception } }, 400)
@@ -192,6 +193,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   rescue KeyError
     head(404)
   rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
+    CartoDB.notify_exception(exception, { user: current_user, template_data: exception.template_data })
     render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
     render_jsonp({ errors: { named_map: exception } }, 400)
@@ -199,40 +201,16 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     render_jsonp({ errors: { named_maps: exception } }, 400)
   end
 
-  def stats
-    vis = Visualization::Member.new(id: @table_id).fetch
-    return(head 401) unless vis.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
-    render_jsonp(vis.stats)
-  rescue KeyError
-    head(404)
-  end
-
-  def vizjson1
-    visualization,  = locator.get(@table_id, CartoDB.extract_subdomain(request))
-    return(head 404) unless visualization
-    return(head 403) unless allow_vizjson_v1_for?(visualization.table)
-    set_vizjson_response_headers_for(visualization)
-    render_jsonp(CartoDB::Map::Presenter.new(
-      visualization.map, 
-      { full: false, url: "/api/v1/tables/#{visualization.table.id}" },
-      Cartodb.config, 
-      CartoDB::Logger
-    ).to_poro)
-  rescue => exception
-    CartoDB.notify_exception(exception)
-    raise exception
-  end
-
   def vizjson2
     visualization,  = locator.get(@table_id, CartoDB.extract_subdomain(request))
     return(head 404) unless visualization
     return(head 403) unless allow_vizjson_v2_for?(visualization)
     set_vizjson_response_headers_for(visualization)
-    render_jsonp(visualization.to_vizjson)
+    render_jsonp(visualization.to_vizjson({https_request: request.protocol == 'https://'}))
   rescue KeyError => exception
     render(text: exception.message, status: 403)
   rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
-    CartoDB.notify_exception(exception)
+    CartoDB.notify_exception(exception, { user: current_user, template_data: exception.template_data })
     render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
     CartoDB.notify_exception(exception)
@@ -270,20 +248,21 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       last_children = prev_vis.parent.children.last
       last_children.set_next_list_item!(prev_vis)
 
-      render_jsonp(last_children.to_vizjson)
+      render_jsonp(last_children.to_vizjson({https_request: request.protocol == 'https://'}))
     else
       next_vis = Visualization::Member.new(id: next_id).fetch
       return(head 403) unless next_vis.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
 
       prev_vis.set_next_list_item!(next_vis)
 
-      render_jsonp(prev_vis.to_vizjson)
+      render_jsonp(prev_vis.to_vizjson({https_request: request.protocol == 'https://'}))
     end
   rescue KeyError
     head(404)
   rescue CartoDB::InvalidMember
     render_jsonp({ errors: ['Error saving next slide position'] }, 400)
   rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
+    CartoDB.notify_exception(exception, { user: current_user, template_data: exception.template_data })
     render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
     render_jsonp({ errors: { named_map: exception } }, 400)
@@ -332,7 +311,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
     vis.add_like_from(current_viewer.id)
        .fetch
-       .invalidate_varnish_cache
+       .invalidate_cache
     render_jsonp({
                    id:    vis.id,
                    likes: vis.likes.count,
@@ -378,7 +357,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
     vis.remove_like_from(current_viewer.id)
        .fetch
-       .invalidate_varnish_cache
+       .invalidate_cache
 
     render_jsonp({
                    id:    vis.id,
@@ -407,12 +386,11 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     { user_id: user.id }
   end
 
-  def allow_vizjson_v1_for?(table)
-    table && (table.public? || table.public_with_link_only? || current_user_is_owner?(table))
-  end #allow_vizjson_v1_for?
-
   def allow_vizjson_v2_for?(visualization)
-    visualization && (visualization.public? || visualization.public_with_link?)
+    return false unless visualization
+    (current_user && visualization.user_id == current_user.id) ||
+      (current_viewer && visualization.has_permission?(current_viewer, Visualization::Member::PERMISSION_READONLY)) ||
+      (visualization.public? || visualization.public_with_link?)
   end
 
   def current_user_is_owner?(table)
@@ -420,8 +398,12 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end
 
   def set_vizjson_response_headers_for(visualization)
-    response.headers['X-Cache-Channel'] = "#{visualization.varnish_key}:vizjson"
-    response.headers['Cache-Control']   = 'no-cache,max-age=86400,must-revalidate, public'
+    # We don't cache non-public vis
+    if visualization.public? || visualization.public_with_link?
+      response.headers['X-Cache-Channel'] = "#{visualization.varnish_key}:vizjson"
+      response.headers['Surrogate-Key'] = "#{CartoDB::SURROGATE_NAMESPACE_VIZJSON} #{visualization.surrogate_key}"
+      response.headers['Cache-Control']   = 'no-cache,max-age=86400,must-revalidate, public'
+    end
   end
 
   def payload
@@ -449,7 +431,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   def synchronizations_by_table_name(table_data)
     # TODO: Check for organization visualizations
     Hash[
-      ::Table.db.fetch(
+      # TODO this should never be done
+      Sequel::Model.db.fetch(
         'SELECT * FROM synchronizations WHERE user_id = ? AND name IN ?',
         current_user.id,
         table_data.map{ |table|
@@ -459,11 +442,14 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     ]
   end
 
-  # This only allows to authenticate if sending an API request to username.api_key subdomain,
-  # but doesn't breaks the request if can't authenticate
-  def optional_api_authorization
-    if params[:api_key].present?
-      authenticate(:api_key, :api_authentication, :scope => CartoDB.extract_subdomain(request))
+  def prepare_params_for_total_count(params)
+    # TODO: refactor for making default parameters and total counting obvious
+    if params[:type].nil? || params[:type] == ''
+      types = params.fetch('types', '').split(',')
+      type = types.include?(Visualization::Member::TYPE_DERIVED) ? Visualization::Member::TYPE_DERIVED : Visualization::Member::TYPE_CANONICAL 
+      params.merge( { type: type } )
+    else
+      params[:type] == Visualization::Member::TYPE_REMOTE ? params.merge( { type: Visualization::Member::TYPE_CANONICAL } ) : params
     end
   end
 
@@ -478,7 +464,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       filtered_params = params.dup.merge(scope_for(user))
       filtered_params[:unauthenticated] = true
 
-      total_user_entries = Visualization::Collection.new.count_total(filtered_params)
+      params_for_total_count = prepare_params_for_total_count(filtered_params)
+      total_user_entries = Visualization::Collection.new.count_total(params_for_total_count)
 
       collection = Visualization::Collection.new.fetch(filtered_params)
       public_visualizations  = collection.map { |vis|
@@ -493,8 +480,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         end
       }.compact
 
-      total_liked_entries = collection.total_liked_entries
-      total_shared_entries = collection.total_shared_entries
+      total_liked_entries = collection.total_liked_entries(params_for_total_count[:type])
+      total_shared_entries = collection.total_shared_entries(params_for_total_count[:type])
     end
 
     response = {
@@ -513,7 +500,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
     collection = Visualization::Collection.new.fetch(filters)
 
-    total_user_entries = Visualization::Collection.new.count_total(filters)
+    params_for_total_count = prepare_params_for_total_count(filters)
+    total_user_entries = Visualization::Collection.new.count_total(params_for_total_count)
 
     table_data = collection.map { |vis|
       if vis.table.nil?
@@ -545,10 +533,15 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       visualizations: representation,
       total_entries:  collection.total_entries,
       total_user_entries: total_user_entries,
-      total_likes:    collection.total_liked_entries,
-      total_shared:   collection.total_shared_entries
+      total_likes:    collection.total_liked_entries(params_for_total_count[:type]),
+      total_shared:   collection.total_shared_entries(params_for_total_count[:type])
     }
     render_jsonp(response)
+  end
+
+  # Need to always send request object to visualizations upon rendering their json
+  def render_jsonp(obj, status = 200, options = {})
+    super(obj, status, options.merge({request: request}))
   end
 
 end

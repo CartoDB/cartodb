@@ -29,7 +29,12 @@ module CartoDB
         return_value = nil
         @timing_stack.push(key)
         Statsd.timing(timing_chain) do
-          return_value = yield
+          begin
+            return_value = yield
+          rescue => e
+            @timing_stack.pop
+            raise e
+          end
         end
         @timing_stack.pop
         return_value

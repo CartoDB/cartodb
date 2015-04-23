@@ -9,6 +9,8 @@ end #app
 describe Admin::PagesController do
   include Rack::Test::Methods
 
+  JSON_HEADER = {'CONTENT_TYPE' => 'application/json'}
+
   before(:all) do
 
     @non_org_user_name = 'development'
@@ -22,11 +24,19 @@ describe Admin::PagesController do
     @user_org = true
   end
 
+  before(:each) do
+    host! "#{@org_name}.localhost.lan"
+  end
+
+  after(:each) do
+    User.all.each {|u| u.delete}
+  end
+
   describe 'GET /u/foo' do
     it 'returns 404 if user does not belongs to host organization' do
       prepare_user(@non_org_user_name)
 
-      get "/u/#{@non_org_user_name}", {}, org_host_headers
+      get "/u/#{@non_org_user_name}", {}, JSON_HEADER
 
       last_response.status.should == 404
     end
@@ -34,32 +44,32 @@ describe Admin::PagesController do
     it 'returns 200 if it is an org user and belongs to host organization' do
       prepare_user(@org_user_name, @user_org, @belongs_to_org)
 
-      get "/u/#{@org_user_name}", {}, org_host_headers
+      get "/u/#{@org_user_name}", {}, JSON_HEADER
 
       last_response.status.should == 200
     end
 
-    it 'returns 200 if it is an org user but gets called without organization' do
+    it 'redirects if it is an org user but gets called without organization' do
       prepare_user(@org_user_name, @user_org, @belongs_to_org)
 
-      get "", {}, {
-          'CONTENT_TYPE' => 'application/json',
-          'HTTP_HOST' => "#{@org_user_name}.localhost.lan"
-      }
+      host! "#{@org_user_name}.localhost.lan"
+      get "", {}, JSON_HEADER
 
+      last_response.status.should == 302
+      follow_redirect!
       last_response.status.should == 200
     end
 
     it 'returns 404 if it is an org user but does NOT belong to host organization' do
       prepare_user(@other_org_user_name, @user_org, !@belongs_to_org)
 
-      get "/u/#{@other_org_user_name}", {}, org_host_headers
+      get "/u/#{@other_org_user_name}", {}, JSON_HEADER
 
       last_response.status.should == 404
     end
 
     it 'returns 404 if user does NOT exist' do
-      get '/u/non-exitant-user', {}, org_host_headers
+      get '/u/non-exitant-user', {}, JSON_HEADER
 
       last_response.status.should == 404
     end
@@ -69,7 +79,7 @@ describe Admin::PagesController do
     @user = create_user(
       username: user_name,
       email:    "#{user_name}@example.com",
-      password: 'test',
+      password: 'longer_than_MIN_PASSWORD_LENGTH',
       fake_user: true
     )
 
@@ -77,27 +87,9 @@ describe Admin::PagesController do
 
     if org_user
       org = mock
-      org.stubs(:eql?).returns(belongs_to_org)
-      User.any_instance.stubs(:organization).returns(org)
+      Organization.stubs(:where).with(name: @org_name).returns([org])
+      User.any_instance.stubs(:belongs_to_organization?).with(org).returns(belongs_to_org)
     end
   end
 
-  def org_host_headers
-    {
-      'CONTENT_TYPE' => 'application/json',
-      'HTTP_HOST' => "#{@org_name}.localhost.lan"
-    }
-  end
-
-
-  # def belongs_to_organization
-  #   user_or_org_domain = CartoDB.extract_real_subdomain(request)
-  #   user_domain = CartoDB.extract_subdomain(request)
-  #   user = User.where(username: user_domain).first
-  #   unless user.nil?
-  #     if user.username != user_or_org_domain and not user.belongs_to_organization?(Organization.where(name: user_or_org_domain).first)
-  #     render_404
-  #     end
-  #   end
-  # end
 end

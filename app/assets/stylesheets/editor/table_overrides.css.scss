@@ -1,0 +1,39 @@
+@import "../new_variables/sizes";
+
+// Overrides rules defines in the table/**/*.scss files, to not have to carry them all over
+.table th {
+  text-align: left;
+  font-weight: normal;
+}
+div.table table thead tr th>div label { line-height: 0.8 }
+div.table table thead tr th>div p.auto { padding-right: 38px }
+.header_content div.left h1 a.title {
+  font-size: 20px;
+  font-weight: $sFontWeight-bold;
+  font-family: 'Lato', sans-serif;
+}
+.header_content div.left div.metadata p a {
+  font-size: 15px;
+  font-weight: $sFontWeight-lighter;
+}
+div.vis_navigation nav a.tab {
+  padding-top: 3px;
+  padding-bottom: 3px;
+  font-weight: $sFontWeight-bold
+}
+.metadata_dialog label {
+  margin: 0;
+  margin-bottom: 7px;
+}
+
+div.map .option-button,
+div.dropdown ul li a,
+.select2-results .select2-result-label,
+.metadata_dialog label,
+.metadata_dialog .hint,
+.form_spinner,
+.infowindow_panel .fields li .switches,
+.infowindow_panel .fields li.drag_field {
+  line-height: 1;
+}
+.CodeMirror { font-size: 15px }

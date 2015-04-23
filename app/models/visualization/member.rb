@@ -793,7 +793,9 @@ module CartoDB
         end
         self
       rescue => exception
-        revert_name_change(old_name) if name_changed
+        if name_changed && !(exception.to_s =~ /relation.*does not exist/)
+          revert_name_change(old_name)
+        end
         raise CartoDB::InvalidMember.new(exception.to_s)
       end
 

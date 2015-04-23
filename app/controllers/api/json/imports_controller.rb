@@ -176,7 +176,10 @@ class Api::Json::ImportsController < Api::ApplicationController
     raise CartoDB::Datasources::AuthError.new("OAuth already set for service #{params[:id]}") unless oauth.nil?
 
     datasource = CartoDB::Datasources::DatasourcesFactory.get_datasource(
-      params[:id], current_user, { redis_storage: $tables_metadata })
+      params[:id], current_user, {
+      redis_storage: $tables_metadata,
+      http_timeout: ::DataImport.http_timeout_for(current_user)
+    })
     raise CartoDB::Datasources::AuthError.new("Couldn't fetch datasource for service #{params[:id]}") if datasource.nil?
     unless datasource.kind_of? CartoDB::Datasources::BaseOAuth
       raise CartoDB::Datasources::InvalidServiceError.new("Datasource #{params[:id]} does not support OAuth")
@@ -202,7 +205,10 @@ class Api::Json::ImportsController < Api::ApplicationController
     raise CartoDB::Datasources::AuthError.new("OAuth already set for service #{params[:id]}") unless oauth.nil?
 
     datasource = CartoDB::Datasources::DatasourcesFactory.get_datasource(
-      params[:id], current_user, { redis_storage: $tables_metadata })
+      params[:id], current_user, {
+      redis_storage: $tables_metadata,
+      http_timeout: ::DataImport.http_timeout_for(current_user)
+    })
     raise CartoDB::Datasources::AuthError.new("Couldn't fetch datasource for service #{params[:id]}") if datasource.nil?
     unless datasource.kind_of? CartoDB::Datasources::BaseOAuth
       raise CartoDB::Datasources::InvalidServiceError.new("Datasource #{params[:id]} does not support OAuth")
@@ -254,7 +260,10 @@ class Api::Json::ImportsController < Api::ApplicationController
     raise CartoDB::Datasources::AuthError.new("OAuth already set for service #{params[:id]}") unless oauth.nil?
 
     datasource = CartoDB::Datasources::DatasourcesFactory.get_datasource(
-      params[:id], current_user, { redis_storage: $tables_metadata })
+      params[:id], current_user, {
+      redis_storage: $tables_metadata,
+      http_timeout: ::DataImport.http_timeout_for(current_user)
+    })
     raise CartoDB::Datasources::AuthError.new("Couldn't fetch datasource for service #{params[:id]}") if datasource.nil?
     unless datasource.kind_of? CartoDB::Datasources::BaseOAuth
       raise CartoDB::Datasources::InvalidServiceError.new("Datasource #{params[:id]} does not support OAuth")

@@ -18,6 +18,10 @@ module CartoDB
   module Importer2
     class Downloader
 
+      # in seconds
+      HTTP_CONNECT_TIMEOUT = 60
+      DEFAULT_HTTP_REQUEST_TIMEOUT = 600
+
       DEFAULT_FILENAME        = 'importer'
       CONTENT_DISPOSITION_RE  = %r{;\s*filename=(.*;|.*)}
       URL_RE                  = %r{://}
@@ -134,11 +138,13 @@ module CartoDB
       def typhoeus_options
         verify_ssl = http_options.fetch(:verify_ssl_cert, false)
         {
-          cookiefile:     cookiejar,
-          cookiejar:      cookiejar,
-          followlocation: true,
-          ssl_verifypeer: verify_ssl,
-          ssl_verifyhost: (verify_ssl ? 2 : 0)
+          cookiefile:       cookiejar,
+          cookiejar:        cookiejar,
+          followlocation:   true,
+          ssl_verifypeer:   verify_ssl,
+          ssl_verifyhost:   (verify_ssl ? 2 : 0),
+          connecttimeout:  HTTP_CONNECT_TIMEOUT,
+          timeout:          http_options.fetch(:http_timeout, DEFAULT_HTTP_REQUEST_TIMEOUT)
         }
       end
 
@@ -179,7 +185,9 @@ module CartoDB
         request.run
 
         if download_error && !error_response.nil?
-          if error_response.headers['Error'] && error_response.headers['Error'] =~ /too many nodes/
+          if error_response.timed_out?
+            raise DownloadTimeoutError.new("TIMEOUT ERROR: Body:#{error_response.body}")
+          elsif error_response.headers['Error'] && error_response.headers['Error'] =~ /too many nodes/
             raise TooManyNodesError.new(error_response.headers['Error'])
           else
             raise DownloadError.new("DOWNLOAD ERROR: Code:#{error_response.code} Body:#{error_response.body}")

@@ -44,6 +44,12 @@ module CartoDB
         end
       end
 
+      class DataDownloadTimeoutError < DatasourceBaseError
+        def initialize(service = UNKNOWN_SERVICE, username = nil)
+          super("Data download timed out. Check the source is not running slow and/or try again.", service, username)
+        end
+      end
+
       class DropboxPermissionError      < DatasourceBaseError; end
 
   end

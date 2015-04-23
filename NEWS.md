@@ -1,5 +1,6 @@
 3.10.1 ()
 ---------
+* Fix tooltips in the legend editor [3341](https://github.com/CartoDB/cartodb/pull/3341)
 * Sort category names alphabetically in legends [3218](https://github.com/CartoDB/cartodb/pull/3218)
 * Editable descriptions and tags in the maps and datasets view [3129](https://github.com/CartoDB/cartodb/pull/3129)
 * Add caching of geometry types [#3157](https://github.com/CartoDB/cartodb/pull/3157)

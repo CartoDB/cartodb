@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+require 'active_record'
 require_relative '../../lib/importer/namedplaces_guesser'
 
 RSpec.configure do |config|
@@ -9,6 +10,10 @@ end
 module CartoDB::Importer2
 
   describe NamedplacesGuesser do
+
+    before(:all) do
+      ActiveRecord::Base.establish_connection :adapter => :nulldb
+    end
 
     describe '#found?' do
       it 'raises an exception if not run yet' do
@@ -101,7 +106,6 @@ module CartoDB::Importer2
 
     describe '#namedplace_guess_country' do
       it "checks all candidates for a positive country guess through the geocoder api" do
-        pending 'make sure it can be tested without setting up connection with active record'
         content_guesser = mock
         namedplaces = NamedplacesGuesser.new(content_guesser)
 
@@ -143,7 +147,6 @@ module CartoDB::Importer2
 
     describe '#count_namedplaces_with_country_column' do
       it 'queries the geocoder to get the number of namedplaces from the sample' do
-        pending 'make sure it can be tested without setting up connection with active record'
         content_guesser = mock
         namedplaces = NamedplacesGuesser.new(content_guesser)
 

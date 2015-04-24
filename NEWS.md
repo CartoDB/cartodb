@@ -1,5 +1,6 @@
 3.10.1 ()
 ---------
+* Adds field to select or type an administrative region in the georeferenciation by city name pane [3306](https://github.com/CartoDB/cartodb/pull/3306)
 * Fix tooltips in the legend editor [3341](https://github.com/CartoDB/cartodb/pull/3341)
 * Sort category names alphabetically in legends [3218](https://github.com/CartoDB/cartodb/pull/3218)
 * Editable descriptions and tags in the maps and datasets view [3129](https://github.com/CartoDB/cartodb/pull/3129)

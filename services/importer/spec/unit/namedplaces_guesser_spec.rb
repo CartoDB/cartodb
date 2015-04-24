@@ -101,6 +101,7 @@ module CartoDB::Importer2
 
     describe '#namedplace_guess_country' do
       it "checks all candidates for a positive country guess through the geocoder api" do
+        pending 'make sure it can be tested without setting up connection with active record'
         content_guesser = mock
         namedplaces = NamedplacesGuesser.new(content_guesser)
 
@@ -142,6 +143,7 @@ module CartoDB::Importer2
 
     describe '#count_namedplaces_with_country_column' do
       it 'queries the geocoder to get the number of namedplaces from the sample' do
+        pending 'make sure it can be tested without setting up connection with active record'
         content_guesser = mock
         namedplaces = NamedplacesGuesser.new(content_guesser)
 

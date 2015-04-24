@@ -255,7 +255,7 @@ class Admin::VisualizationsController < ApplicationController
       format.js { render 'public_map', content_type: 'application/javascript' }
     end
   rescue => e
-    Rollbar.report_exception(e)
+    CartoDB.notify_exception(e, {user:current_user})
     embed_forbidden
   end
 

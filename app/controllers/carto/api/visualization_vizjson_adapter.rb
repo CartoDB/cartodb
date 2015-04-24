@@ -1,45 +1,52 @@
-class Carto::Api::VisualizationVizJSONAdapter
-  extend Forwardable
-  include Carto::HtmlSafe
+require_relative '../../../helpers/carto/html_safe'
+require_relative 'layer_vizjson_adapter'
 
-  delegate [:id, :map, :qualified_name, :likes, :description, :retrieve_named_map?, :password_protected?, :overlays, 
-            :prev_id, :next_id, :transition_options, :has_password?, :children, :parent_id, :parent, :get_auth_tokens 
-           ] => :visualization
+module Carto
+  module Api
+    class VisualizationVizJSONAdapter
+      extend Forwardable
+      include Carto::HtmlSafe
 
-  attr_reader :visualization
+      delegate [:id, :map, :qualified_name, :likes, :description, :retrieve_named_map?, :password_protected?, :overlays, 
+                :prev_id, :next_id, :transition_options, :has_password?, :children, :parent_id, :parent, :get_auth_tokens 
+               ] => :visualization
 
-  def initialize(visualization)
-    @visualization = visualization
-    @layer_cache = {}
-  end
+      attr_reader :visualization
 
-  def description_html_safe
-    markdown_html_safe(description)
-  end
+      def initialize(visualization)
+        @visualization = visualization
+        @layer_cache = {}
+      end
 
-  def layers(kind)
-    @layer_cache[kind] ||= get_layers(kind)
-  end
+      def description_html_safe
+        markdown_html_safe(description)
+      end
 
-  private
+      def layers(kind)
+        @layer_cache[kind] ||= get_layers(kind)
+      end
 
-  def get_layers(kind)
-    choose_layers(kind).map { |layer|
-      Carto::Api::LayerVizJSONAdapter.new(layer)
-    }
-  end
+      private
 
-  def choose_layers(kind)
-    case kind
-    when :base
-      map.user_layers
-    when :cartodb
-      map.data_layers
-    when :others
-      map.other_layers
-    else
-      raise "Unknown: #{kind}"
+      def get_layers(kind)
+        choose_layers(kind).map { |layer|
+          Carto::Api::LayerVizJSONAdapter.new(layer)
+        }
+      end
+
+      def choose_layers(kind)
+        case kind
+        when :base
+          map.user_layers
+        when :cartodb
+          map.data_layers
+        when :others
+          map.other_layers
+        else
+          raise "Unknown: #{kind}"
+        end
+      end
+
     end
   end
-
 end

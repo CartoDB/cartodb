@@ -4,7 +4,8 @@ module Carto
 
   class UserTable < ActiveRecord::Base
 
-    belongs_to :visualization, primary_key: :map_id, foreign_key: :map_id, conditions: { type: Carto::Visualization::TYPE_CANONICAL }, inverse_of: :user_table
+    belongs_to :visualization, primary_key: :map_id, foreign_key: :map_id, 
+                conditions: { type: Carto::Visualization::TYPE_CANONICAL }, inverse_of: :user_table
 
     belongs_to :user
 

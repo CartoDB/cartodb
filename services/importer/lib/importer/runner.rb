@@ -13,7 +13,10 @@ require_relative '../../../platform-limits/platform_limits'
 module CartoDB
   module Importer2
     class Runner
+      # Legacy guessed average "final size" of an imported file
+      # e.g. a Shapefile shrinks after import. This won't help in scenarios like CSVs (which tend to grow)
       QUOTA_MAGIC_NUMBER      = 0.3
+
       DEFAULT_AVAILABLE_QUOTA = 2 ** 30
       LOADERS                 = [Loader, TiffLoader]
       DEFAULT_LOADER          = Loader

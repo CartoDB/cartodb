@@ -911,6 +911,7 @@ namespace :cartodb do
           tables["tables"].each do |table_name, th|
             table_readonly = th["read_only"] ? "true" : "false"
             table_columns = th["columns"].map {|name,attrs| "#{name} #{attrs['column_type']}"}
+            db.run("DROP FOREIGN TABLE IF EXISTS #{table_name}")
             db.run("CREATE FOREIGN TABLE #{table_name} (#{table_columns.join(', ')}) SERVER #{server_name} OPTIONS (schema '#{args[:remote_schema]}', table '#{th["remote_table"]}', readonly '#{table_readonly}')")
             db.run("GRANT SELECT ON #{table_name} TO \"#{u.database_username}\"")
             db.run("GRANT SELECT ON #{table_name} TO \"#{CartoDB::PUBLIC_DB_USER}\"")

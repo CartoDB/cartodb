@@ -36,6 +36,12 @@ module CartoDB
       end
     end
 
+    class DownloadTimeoutError < BaseImportError
+      def initialize(message="Data download timed out. Check the source is not running slow and/or try again.")
+        super(message, 1020)
+      end
+    end
+
     class InstallError                          < StandardError; end
     class EmptyFileError                        < StandardError; end
     class ExtractionError                       < StandardError; end
@@ -67,7 +73,7 @@ module CartoDB
     class StatementTimeoutError                 < BaseImportError; end
 
     # @see also app/models/synchronization/member.rb => run() for more error codes
-    # @see config/initializers/carto_db.rb For the texts
+    # @see lib/cartodb/import_error_codes.rb For the texts
     ERRORS_MAP = {
       InstallError                          => 0001,
       UploadError                           => 1000,
@@ -82,6 +88,7 @@ module CartoDB
       InvalidNameError                      => 1014,
       PasswordNeededForExtractionError      => 1018,
       TooManyLayersError                    => 1019,
+      DownloadTimeoutError                  => 1020,
       LoadError                             => 2001,
       EncodingDetectionError                => 2002,
       MalformedCSVException                 => 2003,

@@ -108,7 +108,12 @@ class Carto::Api::LayerVizJSONAdapter
   def public_values
     {
       'options' => options,
-      'type' => kind,
+
+      # TODO: kind should be renamed to type
+      # rename once a new layer presenter is written. See CartoDB::Layer::Presenter#with_kind_as_type
+      # TODO: use symbols instead of strings
+      'kind' => kind,
+
       'infowindow' => infowindow,
       'tooltip' => tooltip,
       'id' => id,

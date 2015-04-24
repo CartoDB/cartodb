@@ -45,6 +45,7 @@ class UserTable < Sequel::Model
     errors
     set_except
     update_updated_at
+    values
   }
 
   RESERVED_TABLE_NAMES = %W{ layergroup all }

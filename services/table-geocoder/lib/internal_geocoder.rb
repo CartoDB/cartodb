@@ -8,6 +8,8 @@ module CartoDB
     class Geocoder
       class NotImplementedError < StandardError; end
 
+      SQLAPI_CALLS_TIMEOUT = 45
+
       attr_reader   :connection, :temp_table_name, :sql_api, :geocoding_results,
                     :working_dir, :remote_id, :state, :processed_rows, :country_column, :region_column,
                     :qualified_table_name, :batch_size, :countries, :regions, :kind, :geometry_type
@@ -15,7 +17,9 @@ module CartoDB
       attr_accessor :table_schema, :table_name, :column_name
 
       def initialize(arguments)
-        @sql_api              = CartoDB::SQLApi.new arguments.fetch(:internal)
+        @sql_api              = CartoDB::SQLApi.new(arguments.fetch(:internal)
+                                                             .merge({ timeout: SQLAPI_CALLS_TIMEOUT })
+                                                   )
         @connection           = arguments.fetch(:connection)
         @working_dir          = Dir.mktmpdir
         @table_name           = arguments[:table_name]

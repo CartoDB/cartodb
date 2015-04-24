@@ -34,6 +34,8 @@ class Api::Json::ImportsController < Api::ApplicationController
     end
 
     data_import = DataImport[params[:id]]
+    render_404 and return if data_import.nil?
+
     data_import.mark_as_failed_if_stuck!
 
     data = data_import.reload.api_public_values
@@ -174,7 +176,10 @@ class Api::Json::ImportsController < Api::ApplicationController
     raise CartoDB::Datasources::AuthError.new("OAuth already set for service #{params[:id]}") unless oauth.nil?
 
     datasource = CartoDB::Datasources::DatasourcesFactory.get_datasource(
-      params[:id], current_user, { redis_storage: $tables_metadata })
+      params[:id], current_user, {
+      redis_storage: $tables_metadata,
+      http_timeout: ::DataImport.http_timeout_for(current_user)
+    })
     raise CartoDB::Datasources::AuthError.new("Couldn't fetch datasource for service #{params[:id]}") if datasource.nil?
     unless datasource.kind_of? CartoDB::Datasources::BaseOAuth
       raise CartoDB::Datasources::InvalidServiceError.new("Datasource #{params[:id]} does not support OAuth")
@@ -200,7 +205,10 @@ class Api::Json::ImportsController < Api::ApplicationController
     raise CartoDB::Datasources::AuthError.new("OAuth already set for service #{params[:id]}") unless oauth.nil?
 
     datasource = CartoDB::Datasources::DatasourcesFactory.get_datasource(
-      params[:id], current_user, { redis_storage: $tables_metadata })
+      params[:id], current_user, {
+      redis_storage: $tables_metadata,
+      http_timeout: ::DataImport.http_timeout_for(current_user)
+    })
     raise CartoDB::Datasources::AuthError.new("Couldn't fetch datasource for service #{params[:id]}") if datasource.nil?
     unless datasource.kind_of? CartoDB::Datasources::BaseOAuth
       raise CartoDB::Datasources::InvalidServiceError.new("Datasource #{params[:id]} does not support OAuth")
@@ -252,7 +260,10 @@ class Api::Json::ImportsController < Api::ApplicationController
     raise CartoDB::Datasources::AuthError.new("OAuth already set for service #{params[:id]}") unless oauth.nil?
 
     datasource = CartoDB::Datasources::DatasourcesFactory.get_datasource(
-      params[:id], current_user, { redis_storage: $tables_metadata })
+      params[:id], current_user, {
+      redis_storage: $tables_metadata,
+      http_timeout: ::DataImport.http_timeout_for(current_user)
+    })
     raise CartoDB::Datasources::AuthError.new("Couldn't fetch datasource for service #{params[:id]}") if datasource.nil?
     unless datasource.kind_of? CartoDB::Datasources::BaseOAuth
       raise CartoDB::Datasources::InvalidServiceError.new("Datasource #{params[:id]} does not support OAuth")
@@ -285,6 +296,7 @@ class Api::Json::ImportsController < Api::ApplicationController
     raise "service_item_id field should be empty or a string" unless (params[:service_item_id].is_a?(String) ||
                                                                       params[:service_item_id].is_a?(NilClass))
 
+    # Keep in sync with http://docs.cartodb.com/cartodb-platform/import-api.html#params
     {
       user_id:                current_user.id,
       table_name:             params[:table_name].presence,
@@ -296,9 +308,8 @@ class Api::Json::ImportsController < Api::ApplicationController
       from_query:             params[:sql].presence,
       service_name:           params[:service_name].present? ? params[:service_name] : CartoDB::Datasources::Url::PublicUrl::DATASOURCE_NAME,
       service_item_id:        params[:service_item_id].present? ? params[:service_item_id] : params[:url].presence,
-      # By default true
-      type_guessing:          params.fetch(:type_guessing, true),
-      quoted_fields_guessing: ["true", true].include?(params[:quoted_fields_guessing]),
+      type_guessing:          !["false", false].include?(params[:type_guessing]),
+      quoted_fields_guessing: !["false", false].include?(params[:quoted_fields_guessing]),
       content_guessing:       ["true", true].include?(params[:content_guessing]),
       state:                  DataImport::STATE_PENDING,  # Pending == enqueue the task
       upload_host:            Socket.gethostname,

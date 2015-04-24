@@ -201,14 +201,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     render_jsonp({ errors: { named_maps: exception } }, 400)
   end
 
-  def stats
-    vis = Visualization::Member.new(id: @table_id).fetch
-    return(head 401) unless vis.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
-    render_jsonp(vis.stats)
-  rescue KeyError
-    head(404)
-  end
-
   def vizjson2
     visualization,  = locator.get(@table_id, CartoDB.extract_subdomain(request))
     return(head 404) unless visualization
@@ -409,6 +401,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     # We don't cache non-public vis
     if visualization.public? || visualization.public_with_link?
       response.headers['X-Cache-Channel'] = "#{visualization.varnish_key}:vizjson"
+      response.headers['Surrogate-Key'] = "#{CartoDB::SURROGATE_NAMESPACE_VIZJSON} #{visualization.surrogate_key}"
       response.headers['Cache-Control']   = 'no-cache,max-age=86400,must-revalidate, public'
     end
   end

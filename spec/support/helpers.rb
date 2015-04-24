@@ -1,4 +1,5 @@
 require_relative '../../app/models/visualization/member'
+require 'json'
 
 class Fixnum
   def success?; self == 200; end
@@ -69,7 +70,9 @@ module HelperMethods
   end
 
   def post_json(path, params = {}, headers ={}, &block)
-    post path, params, headers
+    headers = headers.merge({"CONTENT_TYPE" => 'application/json'})
+    post path, JSON.dump(params), headers
+
     response_parsed = response.body.blank? ? {} : ::JSON.parse(response.body)
     yield OpenStruct.new(:body => (response_parsed.is_a?(Hash) ? response_parsed.symbolize_keys : response_parsed), :status => response.status, :headers => response.headers) if block_given?
   end
@@ -89,8 +92,8 @@ module HelperMethods
     [
       ["cartodb_id", "number"], ["name", "string"], ["description", "string"],
       ["the_geom", "geometry", "geometry", "geometry"],
-      ["created_at", "timestamp with time zone"],
-      ["updated_at", "timestamp with time zone"]
+      ["created_at", "date"],
+      ["updated_at", "date"]
     ]
   end
 

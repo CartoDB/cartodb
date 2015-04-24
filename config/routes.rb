@@ -273,7 +273,6 @@ CartoDB::Application.routes.draw do
     get     '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/:id/likes'                      => 'visualizations#likes_count',     as: :api_v1_1_visualizations_likes_count,     constraints: { id: /[^\/]+/ }
     get     '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/:id/likes/detailed'             => 'visualizations#likes_list',      as: :api_v1_1_visualizations_likes_list,      constraints: { id: /[^\/]+/ }
     get     '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/:id/like'                       => 'visualizations#is_liked',        as: :api_v1_1_visualizations_is_liked,        constraints: { id: /[^\/]+/ }
-    get     '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/:id/stats'                      => 'visualizations#stats',           as: :api_v1_1_visualizations_stats,           constraints: { id: /[^\/]+/ }
 
     get     '(/user/:user_domain)(/u/:user_domain)/api/v2_1/viz/:id/viz'                        => 'visualizations#vizjson2', as: :api_v2_1_visualizations_vizjson, constraints: { id: /[^\/]+/ }
   end
@@ -288,8 +287,8 @@ CartoDB::Application.routes.draw do
 
     # Tables
     post '(/user/:user_domain)(/u/:user_domain)/api/v1/tables'     => 'tables#create', as: :api_v1_tables_create
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:id'  => 'tables#show',   as: :api_v1_tables_create, constraints: { id: /[^\/]+/ }
-    put '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:id'  => 'tables#update', as: :api_v1_tables_create, constraints: { id: /[^\/]+/ }
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:id'  => 'tables#show',   as: :api_v1_tables_show, constraints: { id: /[^\/]+/ }
+    put '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:id'  => 'tables#update', as: :api_v1_tables_update, constraints: { id: /[^\/]+/ }
 
     # Table records
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:table_id/records'     => 'records#index',   as: :api_v1_tables_records_index,  constraints: { table_id: /[^\/]+/ }
@@ -341,9 +340,7 @@ CartoDB::Application.routes.draw do
 
     # Maps
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:id' => 'maps#show',    as: :api_v1_maps_show
-    post   '(/user/:user_domain)(/u/:user_domain)/api/v1/maps'     => 'maps#create',  as: :api_v1_maps_create
     put    '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:id' => 'maps#update',  as: :api_v1_maps_update
-    delete '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:id' => 'maps#destroy', as: :api_v1_maps_destroy
 
     # Map layers
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:map_id/layers'     => 'layers#index',   as: :api_v1_maps_layers_index
@@ -366,7 +363,6 @@ CartoDB::Application.routes.draw do
     get     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/tags'                           => 'tags#index',                     as: :api_v1_visualizations_tags_index
     get     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz'                                => 'visualizations#index',           as: :api_v1_visualizations_index
     post    '(/user/:user_domain)(/u/:user_domain)/api/v1/viz'                                => 'visualizations#create',          as: :api_v1_visualizations_create
-    get     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/stats'                      => 'visualizations#stats',           as: :api_v1_visualizations_stats,           constraints: { id: /[^\/]+/ }
     get     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id'                            => 'visualizations#show',            as: :api_v1_visualizations_show,            constraints: { id: /[^\/]+/ }
     put     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id'                            => 'visualizations#update',          as: :api_v1_visualizations_update,          constraints: { id: /[^\/]+/ }
     delete  '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id'                            => 'visualizations#destroy',         as: :api_v1_visualizations_destroy,         constraints: { id: /[^\/]+/ }

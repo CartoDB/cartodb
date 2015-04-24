@@ -1,6 +1,6 @@
 // cartodb.js version: 3.14.0
 // uncompressed version: cartodb.uncompressed.js
-// sha: 101959f7e5d7a89391a61995c27dc407cca47bff
+// sha: 4bdbe95f952cbea318d73c2d1a99b7914b7182a3
 (function() {
   var root = this;
 
@@ -25661,11 +25661,6 @@ if (typeof window !== 'undefined') {
     };
 
     cdb.CARTOCSS_DEFAULT_VERSION = '2.1.1';
-
-    cdb.CDB_HOST = {
-      'http': 'api.cartocdn.com',
-      'https': 'cartocdn.global.ssl.fastly.net'
-    };
 
     root.cdb.config = {};
     root.cdb.core = {};

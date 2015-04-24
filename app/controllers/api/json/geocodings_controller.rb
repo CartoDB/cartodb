@@ -6,6 +6,9 @@ class Api::Json::GeocodingsController < Api::ApplicationController
 
   before_filter :load_table, only: [:create, :estimation_for]
 
+  # In seconds
+  GEOCODING_SQLAPI_CALLS_TIMEOUT = 45
+
   def index
     geocodings = Geocoding.where("user_id = ? AND (state NOT IN ?)", current_user.id, ['failed', 'finished', 'cancelled'])
     render json: { geocodings: geocodings }
@@ -27,7 +30,7 @@ class Api::Json::GeocodingsController < Api::ApplicationController
   end
 
   def create
-    geocoding          = Geocoding.new params.slice(:kind, :geometry_type, :formatter, :country_code)
+    geocoding          = Geocoding.new params.slice(:kind, :geometry_type, :formatter, :country_code, :region_code)
     geocoding.user     = current_user
     geocoding.table_id = @table.try(:id)
     geocoding.raise_on_save_failure = true
@@ -36,9 +39,24 @@ class Api::Json::GeocodingsController < Api::ApplicationController
 
     # TODO api should be more regular
     unless ['high-resolution', 'ipaddress'].include? params[:kind] then
-      countries = params[:text] ? [params[:location]] : @table.sequel.distinct.select_map(params[:location].to_sym)
-      geocoding.country_code = countries.map{ |c| "'#{ c }'"}.join(',')
-      geocoding.country_column = params[:location] if params[:text] == false
+
+      if params[:text]
+        countries = [params[:location]]
+      else
+        countries = @table.sequel.distinct.select_map(params[:location].to_sym)
+        geocoding.country_column = params[:location]
+      end
+      geocoding.country_code = countries.map{|c| "'#{ c }'"}.join(',')
+
+      if params[:region]
+        if params[:region_text]
+          regions = [params[:region]]
+        else
+          regions = @table.sequel.distinct.select_map(params[:region].to_sym)
+          geocoding.region_column = params[:region]
+        end
+        geocoding.region_code = regions.map{|r| "'#{ r }'"}.join(',')
+      end
     end
 
     geocoding.save
@@ -55,7 +73,10 @@ class Api::Json::GeocodingsController < Api::ApplicationController
 
   def country_data_for
     response = { admin1: ["polygon"], namedplace: ["point"] }
-    rows     = CartoDB::SQLApi.new(username: 'geocoding')
+    rows     = CartoDB::SQLApi.new({
+                                     username: 'geocoding',
+                                     timeout: GEOCODING_SQLAPI_CALLS_TIMEOUT
+                                   })
                  .fetch("SELECT service FROM postal_code_coverage WHERE iso3 = (SELECT iso3 FROM country_decoder WHERE name = '#{params[:country_code]}')")
                  .map { |i| i['service'] }
     response[:postalcode] = rows if rows.size > 0
@@ -64,8 +85,11 @@ class Api::Json::GeocodingsController < Api::ApplicationController
   end
 
   def get_countries
-    rows = CartoDB::SQLApi.new(Cartodb.config[:geocoder]["internal"].symbolize_keys)
-            .fetch("SELECT distinct(pol.name) iso3, pol.name FROM country_decoder pol ORDER BY pol.name ASC")
+    rows = CartoDB::SQLApi.new(
+      Cartodb.config[:geocoder]["internal"].symbolize_keys
+                                           .merge({timeout: GEOCODING_SQLAPI_CALLS_TIMEOUT})
+    )
+      .fetch("SELECT distinct(pol.name) iso3, pol.name FROM country_decoder pol ORDER BY pol.name ASC")
     render json: rows
   end
 
@@ -97,8 +121,11 @@ class Api::Json::GeocodingsController < Api::ApplicationController
 
     list = input.map{ |v| "'#{ v }'" }.join(",")
 
-    services = CartoDB::SQLApi.new(username: 'geocoding')
-                .fetch("SELECT (admin0_available_services(Array[#{list}])).*")
+    services = CartoDB::SQLApi.new({
+                                     username: 'geocoding',
+                                     timeout: GEOCODING_SQLAPI_CALLS_TIMEOUT
+                                   })
+                              .fetch("SELECT (admin0_available_services(Array[#{list}])).*")
 
     geometries = []
     points = services.select { |s| s['postal_code_points'] }.size

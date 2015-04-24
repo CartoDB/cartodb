@@ -48,7 +48,10 @@ class SynchronizationOauth < Sequel::Model
 
 
   def get_service_datasource
-    datasource = CartoDB::Datasources::DatasourcesFactory.get_datasource(service, User.where(id: user_id).first)
+    user = User.where(id: user_id).first
+    datasource = CartoDB::Datasources::DatasourcesFactory.get_datasource(service, user, {
+      http_timeout: ::DataImport.http_timeout_for(user)
+    })
     datasource.token = token unless datasource.nil?
     datasource
   end #get_service_datasource

@@ -60,4 +60,21 @@ RSpec.configure do |config|
     CartoDB::RedisTest.down
   end
 
+  module Rack
+    module Test
+      module Methods
+        def build_rack_mock_session
+          Rack::MockSession.new(app, host)
+        end
+
+        def with_host(temp_host)
+          old_host = host
+          host! temp_host
+          yield
+        ensure
+          host! old_host
+        end
+      end
+    end
+  end
 end

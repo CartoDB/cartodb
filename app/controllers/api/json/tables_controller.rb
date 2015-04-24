@@ -30,7 +30,6 @@ class Api::Json::TablesController < Api::ApplicationController
     @table.import_from_query = params[:from_query]  if params[:from_query]
 
     if @table.valid? && @table.save
-      @table = ::UserTable.where(id: @table.id).first.try(:service)
       render_jsonp(@table.public_values({request:request}), 200, { location: "/tables/#{@table.id}" })
     else
       CartoDB::Logger.info 'Error on tables#create', @table.errors.full_messages
@@ -74,6 +73,7 @@ class Api::Json::TablesController < Api::ApplicationController
 
     # Perform name validations
     # TODO move this to the model!
+    # TODO consider removing this code. The entry point is only used to set lat/long columns
     unless params[:name].nil?
       if params[:name].downcase != @table.name
         owner = User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota).filter(:id => current_user.id).first
@@ -97,8 +97,6 @@ class Api::Json::TablesController < Api::ApplicationController
       render_jsonp(@table.public_values({request:request}).merge(warnings: warnings)) and return
     end
     if @table.update(@table.values.delete_if {|k,v| k == :tags_names}) != false
-      @table = ::UserTable.where(id: @table.id).first.try(:service)
-
       render_jsonp(@table.public_values({request:request}).merge(warnings: warnings))
     else
       render_jsonp({ :errors => @table.errors.full_messages}, 400)
@@ -126,30 +124,6 @@ class Api::Json::TablesController < Api::ApplicationController
     render_jsonp({ errors: { named_map: exception } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapsDataError => exception
     render_jsonp({ errors: { named_maps: exception } }, 400)
-  end
-
-  def vizzjson
-    table = ::Table.table_by_id_and_user(params.fetch('id'), CartoDB.extract_subdomain(request))
-    if table.present?
-      allowed = table.public?
-
-      unless allowed && current_user.present?
-        user_tables = current_user.tables_including_shared
-        user_tables.each{ |item|
-          allowed ||= item.id == params.fetch('id')
-        }
-      end
-
-      if allowed
-        response.headers['X-Cache-Channel'] = "#{table.varnish_key}:vizjson"
-        response.headers['Cache-Control']   = 'no-cache,max-age=86400,must-revalidate, public'
-        render_jsonp({})
-      else
-        head :forbidden
-      end
-    else
-      head :forbidden
-    end
   end
 
   protected

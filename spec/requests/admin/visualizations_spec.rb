@@ -16,6 +16,7 @@ end #app
 describe Admin::VisualizationsController do
   include Rack::Test::Methods
   include Warden::Test::Helpers
+  include CacheHelper
 
   before(:all) do
     @user = create_user(
@@ -24,6 +25,7 @@ describe Admin::VisualizationsController do
       password: 'test12'
     )
     @api_key = @user.api_key
+    @user.stubs(:should_load_common_data?).returns(false)
   end
 
   before(:each) do
@@ -37,8 +39,8 @@ describe Admin::VisualizationsController do
     delete_user_data @user
     @headers = { 
       'CONTENT_TYPE'  => 'application/json',
-      'HTTP_HOST'     => 'test.localhost.lan'
     }
+    host! 'test.localhost.lan'
   end
 
   after(:all) do
@@ -85,6 +87,17 @@ describe Admin::VisualizationsController do
     end
   end # GET /viz/:id
 
+  describe 'GET /viz/:id/public_map' do
+    it 'returns proper surrogate-keys' do
+      id = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC).table_visualization.id
+
+      get "/viz/#{id}/public_map", {}, @headers
+      last_response.status.should == 200
+      last_response.headers["Surrogate-Key"].should_not be_empty
+      last_response.headers["Surrogate-Key"].should include(CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES)
+    end
+  end
+
   describe 'GET /viz/:id/public' do
     it 'returns public data for a table visualization' do
       id = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC).table_visualization.id
@@ -130,10 +143,14 @@ describe Admin::VisualizationsController do
       last_response.headers["X-Cache-Channel"].should_not be_empty
       last_response.headers["X-Cache-Channel"].should include(table.name)
       last_response.headers["X-Cache-Channel"].should include(table.table_visualization.varnish_key)
+      last_response.headers["Surrogate-Key"].should_not be_empty
+      last_response.headers["Surrogate-Key"].should include(CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES)
+      last_response.headers["Surrogate-Key"].should include(table.table_visualization.surrogate_key)
     end
 
     it 'renders embed_map.js' do
-      id                = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC).table_visualization.id
+      table             = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC)
+      id                = table.table_visualization.id
       payload           = { source_visualization_id: id }
 
       post "/api/v1/viz?api_key=#{@api_key}", 
@@ -147,6 +164,11 @@ describe Admin::VisualizationsController do
 
       get "/viz/#{id}/embed_map.js", {}, @headers
       last_response.status.should == 200
+      last_response.headers["X-Cache-Channel"].should_not be_empty
+      last_response.headers["X-Cache-Channel"].should include(table.name)
+      last_response.headers["Surrogate-Key"].should_not be_empty
+      last_response.headers["Surrogate-Key"].should include(CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES)
+      last_response.headers["Surrogate-Key"].should include(get_surrogate_key(CartoDB::SURROGATE_NAMESPACE_VISUALIZATION, id))
     end
 
     it 'renders embed map error page if visualization private' do
@@ -285,7 +307,7 @@ describe Admin::VisualizationsController do
 
       source_url = CartoDB.url(self, 'public_table', {id: vis.name}, user_a)
 
-      get source_url, {}, get_headers(org.name)
+      get source_url
       last_response.status.should == 302
       # First we'll get redirected to the public map url
       follow_redirect!
@@ -309,21 +331,17 @@ describe Admin::VisualizationsController do
       description:  'bogus',
       type:         'derived'
     }
-    post "/api/v1/viz?api_key=#{owner.api_key}", payload.to_json, get_headers(owner.username)
+
+    with_host "#{owner.username}.localhost.lan" do
+      post "/api/v1/viz?api_key=#{owner.api_key}", payload.to_json
+    end
+
 
     JSON.parse(last_response.body)
   end
 
   def table_factory(attrs = {})
     new_table(attrs.merge(user_id: @user.id)).save.reload
-  end
-
-  def get_headers(subdomain=nil)
-    subdomain = @user.username if subdomain.nil?
-    @headers = {
-        'CONTENT_TYPE'  => 'application/json',
-        'HTTP_HOST'     => "#{subdomain}.localhost.lan"
-    }
   end
 
 end # Admin::VisualizationsController

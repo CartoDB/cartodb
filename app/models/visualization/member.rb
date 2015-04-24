@@ -21,6 +21,7 @@ module CartoDB
     class Member
       extend Forwardable
       include Virtus.model
+      include CacheHelper
 
       PRIVACY_PUBLIC       = 'public'        # published and listable in public user profile
       PRIVACY_PRIVATE      = 'private'       # not published (viz.json and embed_map should return 404)
@@ -382,6 +383,10 @@ module CartoDB
           i <=> j
         }.join(',')
         "#{user.database_name}:#{sorted_table_names},#{id}"
+      end
+
+      def surrogate_key
+        get_surrogate_key(CartoDB::SURROGATE_NAMESPACE_VISUALIZATION, self.id)
       end
 
       def varnish_vizzjson_key
@@ -788,7 +793,9 @@ module CartoDB
         end
         self
       rescue => exception
-        revert_name_change(old_name) if name_changed
+        if name_changed && !(exception.to_s =~ /relation.*does not exist/)
+          revert_name_change(old_name)
+        end
         raise CartoDB::InvalidMember.new(exception.to_s)
       end
 

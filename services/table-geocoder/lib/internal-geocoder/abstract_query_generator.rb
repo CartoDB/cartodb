@@ -30,6 +30,12 @@ module CartoDB
         (country == %Q{'world'} || country.blank?) ? 'null' : country
       end
 
+      def region
+        region = @internal_geocoder.regions
+        return 'null' if region.blank?
+        region
+      end
+
       def dest_table
         @internal_geocoder.qualified_table_name
       end

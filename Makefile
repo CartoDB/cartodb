@@ -81,6 +81,7 @@ WORKING_SPECS_4 = \
 	spec/requests/carto/api/visualizations_controller_spec.rb \
 	spec/queries/carto/visualization_query_builder_spec.rb \
   spec/requests/admin/tables_spec.rb \
+  spec/requests/admin/pages_controller_spec.rb \
   $(NULL)
 
 WORKING_SPECS_5 = \
@@ -100,6 +101,7 @@ WORKING_SPECS_6 = \
   spec/requests/api/user_layers_spec.rb \
   spec/requests/api/map_layers_spec.rb \
   spec/requests/api/records_spec.rb \
+  spec/requests/api/tables_spec.rb \
   $(NULL)
 
 WORKING_SPECS_7 = \

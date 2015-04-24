@@ -63,7 +63,7 @@ $w: 700px;
 }
 .CreateDialog-templatesItem {
   float: left;
-  margin-bottom: $sMargin-element; 
+  margin-bottom: $sMargin-element;
   margin-right: $sMargin-element;
 }
 .CreateDialog-templatesItem:nth-child(3n) { margin-right: 0 }
@@ -103,6 +103,8 @@ $w: 700px;
   border: 1px solid #6F9FD0;
   color: #6F9FD0;
   background: transparent;
+  margin-left: auto;
+  margin-right: auto;
 }
 // Templates icons
 .CreateDialog-templateItemIcon.iconFont-People {

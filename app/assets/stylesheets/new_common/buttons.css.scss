@@ -22,7 +22,7 @@
 .Button,
 .Button span {
   font-size: $sFontSize-smallUpperCase;
-  line-height: $sLineHeight-button;
+  line-height: $sButton-height;
   font-weight: $sFontWeight-bold;
   color: white;
   text-transform: uppercase;

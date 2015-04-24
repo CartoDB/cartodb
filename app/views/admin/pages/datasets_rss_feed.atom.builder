@@ -5,7 +5,7 @@ atom_feed do |feed|
 
   @feed_items.each do |item|
     feed.entry(item, {
-                        url: CartoDB.url(self, 'public_table', {id: feed.id}, feed.user)
+                        url: CartoDB.url(self, 'public_table', {id: item.id}, item.user)
                       }) do |entry|
       entry.title(item.name)
       entry.author do |author|

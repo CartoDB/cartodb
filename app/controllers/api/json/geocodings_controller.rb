@@ -30,7 +30,7 @@ class Api::Json::GeocodingsController < Api::ApplicationController
   end
 
   def create
-    geocoding          = Geocoding.new params.slice(:kind, :geometry_type, :formatter, :country_code)
+    geocoding          = Geocoding.new params.slice(:kind, :geometry_type, :formatter, :country_code, :region_code)
     geocoding.user     = current_user
     geocoding.table_id = @table.try(:id)
     geocoding.raise_on_save_failure = true
@@ -39,9 +39,24 @@ class Api::Json::GeocodingsController < Api::ApplicationController
 
     # TODO api should be more regular
     unless ['high-resolution', 'ipaddress'].include? params[:kind] then
-      countries = params[:text] ? [params[:location]] : @table.sequel.distinct.select_map(params[:location].to_sym)
-      geocoding.country_code = countries.map{ |c| "'#{ c }'"}.join(',')
-      geocoding.country_column = params[:location] if params[:text] == false
+
+      if params[:text]
+        countries = [params[:location]]
+      else
+        countries = @table.sequel.distinct.select_map(params[:location].to_sym)
+        geocoding.country_column = params[:location]
+      end
+      geocoding.country_code = countries.map{|c| "'#{ c }'"}.join(',')
+
+      if params[:region]
+        if params[:region_text]
+          regions = [params[:region]]
+        else
+          regions = @table.sequel.distinct.select_map(params[:region].to_sym)
+          geocoding.region_column = params[:region]
+        end
+        geocoding.region_code = regions.map{|r| "'#{ r }'"}.join(',')
+      end
     end
 
     geocoding.save

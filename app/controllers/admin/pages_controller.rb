@@ -343,16 +343,19 @@ class Admin::PagesController < ApplicationController
   def set_new_layout_vars_for_organization(org, content_type)
 
     if content_type == 'maps'
-      rss_meta_link = CartoDB.url(view_context, 'public_maps_rss', {format: :atom})
+      rss_meta_link = CartoDB.url(view_context, 'public_maps_rss', {format: :rss})
+      atom_meta_link = CartoDB.url(view_context, 'public_maps_rss', {format: :atom})
     else
-      rss_meta_link = CartoDB.url(view_context, 'public_datasets_rss', {format: :atom})
+      rss_meta_link = CartoDB.url(view_context, 'public_datasets_rss', {format: :rss})
+      atom_meta_link = CartoDB.url(view_context, 'public_datasets_rss', {format: :atom})
     end
 
     set_new_layout_vars({
         most_viewed_vis_map: org.public_vis_by_type(Visualization::Member::TYPE_DERIVED, 1, 1, nil, 'mapviews').first,
         content_type:        content_type,
         default_fallback_basemap: ApplicationHelper.default_fallback_basemap,
-        rss_meta_link: rss_meta_link
+        rss_meta_link: rss_meta_link,
+        atom_meta_link: atom_meta_link
       })
     set_shared_layout_vars(org, {
         name:       org.display_name.blank? ? org.name : org.display_name,
@@ -367,11 +370,19 @@ class Admin::PagesController < ApplicationController
     @datasets_url        = CartoDB.url(view_context, 'public_datasets_home', {}, required.fetch(:user, nil))
     @default_fallback_basemap = required.fetch(:default_fallback_basemap, {})
     @rss_meta_link = required.fetch(:rss_meta_link, nil)
+    @atom_meta_link = required.fetch(:atom_meta_link, nil)
     if @rss_meta_link.nil?
       if @content_type == 'maps'
-        @rss_meta_link = CartoDB.url(view_context, 'public_maps_rss', {format: :atom}, required.fetch(:user, nil))
+        @rss_meta_link = CartoDB.url(view_context, 'public_maps_rss', {format: :rss}, required.fetch(:user, nil))
       else
-        @rss_meta_link = CartoDB.url(view_context, 'public_datasets_rss', {format: :atom}, required.fetch(:user, nil))
+        @rss_meta_link = CartoDB.url(view_context, 'public_datasets_rss', {format: :rss}, required.fetch(:user, nil))
+      end
+    end
+    if @atom_meta_link.nil?
+      if @content_type == 'maps'
+        @atom_meta_link = CartoDB.url(view_context, 'public_maps_rss', {format: :atom}, required.fetch(:user, nil))
+      else
+        @atom_meta_link = CartoDB.url(view_context, 'public_datasets_rss', {format: :atom}, required.fetch(:user, nil))
       end
     end
 

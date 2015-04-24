@@ -25,6 +25,7 @@
 
     <%= stylesheet_link_tag 'cartodb', 'new_common', 'new_public_dashboard' %>
 
+    <%= auto_discovery_link_tag(:atom, @atom_meta_link) %>
     <%= auto_discovery_link_tag(:rss, @rss_meta_link) %>
 
   </head>

@@ -134,9 +134,7 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
         + pad(months[stepEndTime.getUTCMonth()]) + " " + pad(stepEndTime.getUTCDate());
     }
 
-    if (stepDurationMS > ONE_DAY * 2000){ // More than 48 hours
-      return toDateRange;
-    }
+    
 
     if (range < THREE_DAYS) {
       if (start.getUTCDate() === end.getUTCDate()) {
@@ -150,6 +148,9 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
     }
 
     if (range < ONE_YEAR) {
+      if (stepDurationMS > ONE_DAY * 2000){ // More than 48 hours
+        return toDateRange;
+      }
       return toUSDateStr;
     }
 

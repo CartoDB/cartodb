@@ -157,7 +157,7 @@ describe("cdb.geo.ui.Mobile", function() {
       // There's one layer with legend
       expect(mobile.$el.find(".layers > li:nth-child(3) .cartodb-legend").length).toBe(1);
 
-      expect(mobile.$el.find(".layers > li:nth-child(1) h3").text()).toBe("european_countries_exp…");
+      expect(mobile.$el.find(".layers > li:nth-child(1) h3").text()).toBe("european_countries_exp&hellip;");
       expect(mobile.$el.find(".layers > li:nth-child(2) h3").text()).toBe("jamon_countries");
       expect(mobile.$el.find(".layers > li:nth-child(3) h3").text()).toBe("layer_with_legend");
     });
@@ -687,10 +687,10 @@ describe("cdb.geo.ui.Mobile", function() {
       expect(mobile.$el.find(".layer-container > h3").text()).toBe("3 layers");
       expect(mobile.$el.find(".layers > li").length).toBe(3);
 
-      // There's one hidden layer 
+      // There's one hidden layer
       expect(mobile.$el.find(".layers > li:nth-child(3)").hasClass("hidden")).toBe(true);
 
-      expect(mobile.$el.find(".layers > li:nth-child(1) h3").text()).toBe("european_countries_exp…");
+      expect(mobile.$el.find(".layers > li:nth-child(1) h3").text()).toBe("european_countries_exp&hellip;");
       expect(mobile.$el.find(".layers > li:nth-child(2) h3").text()).toBe("jamon_countries");
       expect(mobile.$el.find(".layers > li:nth-child(3) h3").text()).toBe("layer_with_legend");
     });

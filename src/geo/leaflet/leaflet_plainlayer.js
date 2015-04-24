@@ -36,7 +36,12 @@ var LeafLetPlainLayerView = L.Class.extend({
       var st = 'transparent url(' + this.model.get('image') + ') repeat center center';
       div.style.background = st
     }
+  },
+
+  // this method
+  setZIndex: function() {
   }
+
 });
 
 _.extend(LeafLetPlainLayerView.prototype, cdb.geo.LeafLetLayerView.prototype);

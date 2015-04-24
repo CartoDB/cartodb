@@ -463,6 +463,19 @@ describe("common.geo.ui.Legend", function() {
         expect(legend.$el.find(".legend-title").text().trim()).toEqual("New title");
       });
 
+      it("shouldn't evaluate name 0 to null", function() {
+        custom_data = [
+          { name: 0,  value: "#58A062" },
+          { name: 2,  value: "#54BFDE" },
+          { name: 3,  value: "#9BC562" },
+          { name: 4,  value: "#FABB5C" }
+        ];
+        properties = { title: "Category title", data: custom_data };
+        legend     = new cdb.geo.ui.Legend.Category( properties );
+        legend.render();
+        expect(legend.$el.find("li:first-child").text().trim()).toEqual("" + custom_data[0].name);
+      });
+
     });
 
     describe("Bubble Legend", function() {

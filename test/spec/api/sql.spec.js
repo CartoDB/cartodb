@@ -156,7 +156,7 @@ describe('SQL api client', function() {
       expect(data).toEqual(TEST_DATA);
       expect(data_callback).toEqual(TEST_DATA);
       done()
-    }, 1);
+    }, 500); //Fix cartodb.js issue #336
   });
   it("should call promise on error", function(done) {
     throwError = true;

@@ -166,9 +166,9 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
   },
 
   render: function(data) {
-    this.$el.html( this.template(data) );
+    var sanitizedOutput = cdb.core.sanitize.html(this.template(data));
+    this.$el.html( sanitizedOutput );
     return this;
   }
 
 });
-

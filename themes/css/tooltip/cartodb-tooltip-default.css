@@ -30,6 +30,7 @@
 
   div.cartodb-tooltip-content h4 {
     display:block;
+    margin: 0 0 1px 0;
     text-transform: uppercase;
     font:normal 10px "Helvetica Neue","Helvetica",Arial;
     color:#AAA;
@@ -38,7 +39,7 @@
 
   div.cartodb-tooltip-content p {
     display:block;
-    margin:0;
+    margin: 0 0 4px 0;
     padding:0 0 7px;
     font:normal 12px "Helvetica Neue", "Helvetica", Arial;
     color:#333333;
@@ -47,6 +48,7 @@
 
   div.cartodb-tooltip-content p:last-child {
     padding:0;
+    margin: 0;
   }
 
   div.cartodb-tooltip-content a {

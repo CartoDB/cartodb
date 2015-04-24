@@ -1,4 +1,4 @@
-CartoDB.js (v3.11)
+CartoDB.js (v3.13)
 ===========
 
 [![Build Status](http://clinker.cartodb.net/desktop/plugin/public/status/CartoDB-js-develop-testing)]
@@ -13,14 +13,14 @@ This library allows to embed you visualizations created with CartoDB in your map
 
     ```html
 
-        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.11/themes/css/cartodb.css" />
-        <script src="http://libs.cartocdn.com/cartodb.js/v3/3.11/cartodb.js"></script>
+        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.13/themes/css/cartodb.css" />
+        <script src="http://libs.cartocdn.com/cartodb.js/v3/3.13/cartodb.js"></script>
 
         <!-- use these cartodb.css links if you are using https -->
-        <!--link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.11/themes/css/cartodb.css" /-->
+        <!--link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.13/themes/css/cartodb.css" /-->
 
         <!-- use this cartodb.js link if you are using https -->
-        <!-- script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.11/cartodb.js"></script -->
+        <!-- script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.13/cartodb.js"></script -->
     ```
 
 
@@ -44,10 +44,10 @@ You can find the documentation online [here](http://docs.cartodb.com/cartodb-pla
 
 ## Examples
 
- - [Load a layer with google maps](http://cartodb.github.com/cartodb.js/examples/gmaps.html)
+ - [Load a layer with google maps](http://cartodb.github.com/cartodb.js/examples/gmaps_force_basemap.html)
  - [Load a layer with Leaflet](http://cartodb.github.com/cartodb.js/examples/leaflet.html)
  - [Show a complete visualization](http://cartodb.github.com/cartodb.js/examples/easy.html)
- - [A visulization with a layer selector](http://cartodb.github.com/cartodb.js/examples/layer_selector.html)
+ - [A visualization with a layer selector](http://cartodb.github.com/cartodb.js/examples/layer_selector.html)
  - [How to create a custom infowindow](http://cartodb.github.com/cartodb.js/examples/custom_infowindow.html)
  - [The Hobbit filming location paths](http://cartodb.github.com/cartodb.js/examples/TheHobbitLocations/) a full example with some widgets
 

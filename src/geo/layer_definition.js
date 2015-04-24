@@ -25,7 +25,13 @@ function Map(options) {
   this._waiting = false;
   this.lastTimeUpdated = null;
   this._refreshTimer = -1;
+
+  // build template url
+  if (!this.options.maps_api_template) {
+    this._buildMapsApiTemplate(this.options);
+  }
 }
+
 
 Map.BASE_URL = '/api/v1/map';
 Map.EMPTY_GIF = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
@@ -35,21 +41,10 @@ function NamedMap(named_map, options) {
   Map.call(this, options);
   this.options.pngParams.push('auth_token')
   this.options.gridParams.push('auth_token')
-  this.endPoint = Map.BASE_URL + '/named/' + named_map.name;
-  this.JSONPendPoint = Map.BASE_URL + '/named/' + named_map.name + '/jsonp';
-  this.layers = _.clone(named_map.layers) || [];
-  for(var i = 0; i < this.layers.length; ++i) {
-    var layer = this.layers[i];
-    layer.options = layer.options || { hidden: false };
-    layer.options.layer_name = layer.layer_name;
-  }
-  this.named_map = named_map;
+  this.setLayerDefinition(named_map, options)
   this.stat_tag = named_map.stat_tag;
-  var token = named_map.auth_token || options.auth_token;
-  if (token) {
-    this.setAuthToken(token);
-  }
 }
+
 
 function LayerDefinition(layerDefinition, options) {
   var self = this;
@@ -93,6 +88,13 @@ LayerDefinition.layerDefFromSubLayers = function(sublayers) {
 
 Map.prototype = {
 
+  _buildMapsApiTemplate: function(opts) {
+    opts.maps_api_template = opts.tiler_protocol +
+         "://" + ((opts.user_name) ? "{user}.":"")  +
+         opts.tiler_domain +
+         ((opts.tiler_port != "") ? (":" + opts.tiler_port) : "");
+  },
+
   /*
    * TODO: extract these two functions to some core module
    */
@@ -105,7 +107,7 @@ Map.prototype = {
   },
 
   getLayerCount: function() {
-    return this.layers.length;
+    return this.layers ? this.layers.length: 0;
   },
 
   _encodeBase64Native: function (input) {
@@ -321,9 +323,9 @@ Map.prototype = {
           loadingTime.end();
           if(0 === self._queue.length) {
             // check for errors
-            if (data.error) {
+            if (data.errors) {
               cartodb.core.Profiler.metric('cartodb-js.layergroup.get.error').inc();
-              callback(null, data.error);
+              callback(null, data);
             } else {
               callback(data);
             }
@@ -343,6 +345,28 @@ Map.prototype = {
           self._requestFinished();
         }
       });
+    });
+  },
+
+  // for named maps attributes are fetch from attributes service
+  fetchAttributes: function(layer_index, feature_id, columnNames, callback) {
+    this._attrCallbackName = this._attrCallbackName || this._callbackName();
+    var ajax = this.options.ajax;
+    var loadingTime = cartodb.core.Profiler.metric('cartodb-js.named_map.attributes.time').start();
+    ajax({
+      dataType: 'jsonp',
+      url: this._attributesUrl(layer_index, feature_id),
+      jsonpCallback: '_cdbi_layer_attributes_' + this._attrCallbackName,
+      cache: true,
+      success: function(data) {
+        loadingTime.end();
+        callback(data);
+      },
+      error: function(data) {
+        loadingTime.end();
+        cartodb.core.Profiler.metric('cartodb-js.named_map.attributes.error').inc();
+        callback(null);
+      }
     });
   },
 
@@ -460,21 +484,22 @@ Map.prototype = {
         self.urls = self._layerGroupTiles(data.layergroupid, self.options.extra_params);
         callback && callback(self.urls);
       } else {
-        if (self.visibleLayers().length === 0) {
+        if ((self.named_map !== null) && (err) ){
+          callback && callback(null, err);
+        } else if (self.visibleLayers().length === 0) {
           callback && callback({
             tiles: [Map.EMPTY_GIF],
             grids: []
           });
           return;
         } 
-        callback && callback(null, err);
       }
     });
     return this;
   },
 
   isHttps: function() {
-    return this.options.tiler_protocol === 'https';
+    return this.options.maps_api_template.indexOf('https') === 0;
   },
 
   _layerGroupTiles: function(layerGroupId, params) {
@@ -601,28 +626,39 @@ Map.prototype = {
 
   _tilerHost: function() {
     var opts = this.options;
-    return opts.tiler_protocol +
-         "://" + ((opts.user_name) ? opts.user_name+".":"")  +
-         opts.tiler_domain +
-         ((opts.tiler_port != "") ? (":" + opts.tiler_port) : "");
+    return opts.maps_api_template.replace('{user}', opts.user_name);
   },
 
   _host: function(subhost) {
+
     var opts = this.options;
-    if (opts.no_cdn) {
+    var cdn_host = opts.cdn_url;
+    var has_empty_cdn = !cdn_host || (cdn_host && (!cdn_host.http && !cdn_host.https));
+
+    if (opts.no_cdn || has_empty_cdn) {
       return this._tilerHost();
     } else {
-      var h = opts.tiler_protocol + "://";
+      var protocol = this.isHttps() ? 'https': 'http';
+      var h = protocol + "://";
       if (subhost) {
         h += subhost + ".";
       }
-      var cdn_host = opts.cdn_url || cdb.CDB_HOST;
-      if(!cdn_host.http && !cdn_host.https) {
-        throw new Error("cdn_host should contain http and/or https entries");
+
+      var cdn_url = cdn_host[protocol];
+      // build default template url if the cdn url is not templatized
+      // this is for backwards compatiblity, ideally we should use the url
+      // that tiler sends to us right away
+      if (!this._isUserTemplateUrl(cdn_url)) {
+        cdn_url = cdn_url  + "/{user}";
       }
-      h += cdn_host[opts.tiler_protocol] + "/" + opts.user_name;
+      h += cdn_url.replace('{user}', opts.user_name)
+
       return h;
     }
+  },
+
+  _isUserTemplateUrl: function(t) {
+    return t && t.indexOf('{user}') !== -1;
   },
 
   getTooltipData: function(layer) {
@@ -684,6 +720,39 @@ Map.prototype = {
 };
 
 NamedMap.prototype = _.extend({}, Map.prototype, {
+
+  getSubLayer: function(index) {
+    var layer = this.layers[index];
+    // for named maps we don't know how many layers are defined so 
+    // we create the layer on the fly
+    if (!layer) {
+      layer = this.layers[index] = {
+        options: {}
+      };
+    }
+    layer.sub = layer.sub || new SubLayer(this, index);
+    return layer.sub;
+  },
+
+  setLayerDefinition: function(named_map, options) {
+    options = options || {}
+    this.endPoint = Map.BASE_URL + '/named/' + named_map.name;
+    this.JSONPendPoint = Map.BASE_URL + '/named/' + named_map.name + '/jsonp';
+    this.layers = _.clone(named_map.layers) || [];
+    for(var i = 0; i < this.layers.length; ++i) {
+      var layer = this.layers[i];
+      layer.options = layer.options || { hidden: false };
+      layer.options.layer_name = layer.layer_name;
+    }
+    this.named_map = named_map;
+    var token = named_map.auth_token || options.auth_token;
+    if (token) {
+      this.setAuthToken(token);
+    }
+    if(!options.silent) {
+      this.invalidate();
+    }
+  },
 
   setAuthToken: function(token) {
     if(!this.isHttps()) {
@@ -750,7 +819,7 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
 
   _attributesUrl: function(layer, feature_id) {
     // /api/maps/:map_id/:layer_index/attributes/:feature_id
-    var host = this.options.dynamic_cdn ? this._host(): this._tilerHost();
+    var host = this._host();
     var url = [
       host,
       //'api',
@@ -777,27 +846,6 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
     return url;
   },
 
-  // for named maps attributes are fetch from attributes service
-  fetchAttributes: function(layer_index, feature_id, columnNames, callback) {
-    this._attrCallbackName = this._attrCallbackName || this._callbackName();
-    var ajax = this.options.ajax;
-    var loadingTime = cartodb.core.Profiler.metric('cartodb-js.named_map.attributes.time').start();
-    ajax({
-      dataType: 'jsonp',
-      url: this._attributesUrl(layer_index, feature_id),
-      jsonpCallback: '_cdbi_layer_attributes_' + this._attrCallbackName,
-      cache: true,
-      success: function(data) {
-        loadingTime.end();
-        callback(data);
-      },
-      error: function(data) {
-        loadingTime.end();
-        cartodb.core.Profiler.metric('cartodb-js.named_map.attributes.error').inc();
-        callback(null);
-      }
-    });
-  },
 
   setSQL: function(sql) {
     throw new Error("SQL is read-only in NamedMaps");
@@ -870,15 +918,41 @@ LayerDefinition.prototype = _.extend({}, Map.prototype, {
     var layers = this.visibleLayers();
     for(var i = 0; i < layers.length; ++i) {
       var layer = layers[i];
-      obj.layers.push({
+      var layer_def = {
         type: 'cartodb',
         options: {
           sql: layer.options.sql,
           cartocss: layer.options.cartocss,
           cartocss_version: layer.options.cartocss_version || '2.1.0',
-          interactivity: this._cleanInteractivity(layer.options.interactivity)
         }
-      });
+      };
+
+      if (layer.options.interactivity) {
+        function fields(f) {
+          var n = []
+          for(var i = 0; i < f.length; ++i) {
+            n.push(f[i].name);
+          }
+          return n;
+        }
+        layer_def.options.interactivity = this._cleanInteractivity(layer.options.interactivity);
+        var infowindow = this.getInfowindowData(this.getLayerNumberByIndex(i));
+        var attrs = layer.options.attributes ? this._cleanInteractivity(this.options.attributes):(infowindow && fields(infowindow.fields));
+        if (attrs) {
+          layer_def.options.attributes = {
+             id: 'cartodb_id',
+             columns: attrs
+          }
+        }
+      }
+
+      if (layer.options.raster) {
+        layer_def.options.geom_column = "the_raster_webmercator";
+        layer_def.options.geom_type = "raster";
+        // raster needs 2.3.0 to work
+        layer_def.options.cartocss_version = layer.options.cartocss_version || '2.3.0';
+      }
+      obj.layers.push(layer_def);
     }
     return obj;
   },
@@ -987,61 +1061,21 @@ LayerDefinition.prototype = _.extend({}, Map.prototype, {
     return this.getSubLayer(this.getLayerCount() - 1);
   },
 
-  _getSqlApi: function(attrs) {
-    attrs = attrs || {};
-    var port = attrs.sql_api_port
-    var domain = attrs.sql_api_domain + (port ? ':' + port: '')
-    var protocol = attrs.sql_api_protocol;
-    var version = 'v1';
-    if (domain.indexOf('cartodb.com') !== -1) {
-      //protocol = 'http';
-      domain = "cartodb.com";
-      version = 'v2';
-    }
+  _attributesUrl: function(layer, feature_id) {
+    // /api/maps/:map_id/:layer_index/attributes/:feature_id
+    var host = this._host();
+    var url = [
+      host,
+      //'api',
+      //'v1',
+      Map.BASE_URL.slice(1),
+      this.layerToken,
+      this.getLayerIndexByNumber(layer),
+      'attributes',
+      feature_id].join('/');
 
-    var sql = new cartodb.SQL({
-      user: attrs.user_name,
-      protocol: protocol,
-      host: domain,
-      version: version
-    });
-
-    return sql;
+    return url;
   },
-
-  fetchAttributes: function(layer_index, feature_id, columnNames, callback) {
-    var layer = this.getLayer(layer_index);
-    var sql = this._getSqlApi(this.options);
-    this._attrCallbackName = this._attrCallbackName || this._callbackName();
-
-    // prepare columns with double quotes
-    columnNames = _.map(columnNames, function(n) {
-      return "\"" + n + "\"";
-    }).join(',');
-
-    var loadingTime = cartodb.core.Profiler.metric('cartodb-js.layergroup.attributes.time').start();
-    // execute the sql
-    sql.execute('select {{{ fields }}} from ({{{ sql }}}) as _cartodbjs_alias where cartodb_id = {{{ cartodb_id }}}', {
-      fields: columnNames,
-      cartodb_id: feature_id,
-      sql: layer.options.sql
-    }, {
-      cache: true, // don't include timestamp
-      jsonpCallback: '_cdbi_layer_attributes_' + this._attrCallbackName,
-      jsonp: true
-    }).done(function(interact_data) {
-      loadingTime.end();
-      if (interact_data.rows.length === 0 ) {
-        callback(null);
-        return;
-      }
-      callback(interact_data.rows[0]);
-    }).error(function() {
-      loadingTime.end();
-      cartodb.core.Profiler.metric('cartodb-js.layergroup.attributes.error').inc();
-      callback(null);
-    });
-  }
 
 
 });
@@ -1052,7 +1086,7 @@ function SubLayer(_parent, position) {
   this._position = position;
   this._added = true;
   this._bindInteraction();
-  if (Backbone.Model) {
+  if (Backbone.Model && this._parent.getLayer(this._position)) {
     this.infowindow = new Backbone.Model(this._parent.getLayer(this._position).infowindow);
     this.infowindow.bind('change', function() {
       var def = this._parent.getLayer(this._position);
@@ -1069,6 +1103,7 @@ SubLayer.prototype = {
     this._parent.removeLayer(this._position);
     this._unbindInteraction();
     this._added = false;
+    this.trigger('remove', this);
   },
 
   toggle: function() {
@@ -1136,6 +1171,9 @@ SubLayer.prototype = {
       attrs[i] = new_attrs[i];
     }
     this._parent.setLayer(this._position, def);
+    if (new_attrs.hidden !== undefined) {
+      this.trigger('change:visibility', this, new_attrs.hidden);
+    }
     return this;
   },
 

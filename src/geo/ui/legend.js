@@ -42,7 +42,7 @@ cdb.geo.ui.LegendItem = cdb.core.View.extend({
   render: function() {
 
     var value;
-
+    this.model.attributes.name = ""+this.model.attributes.name;
     if (this.model.get("type") == 'image' && this.model.get("value")) {
       value = "url( " + this.model.get("value") + ")";
     } else {
@@ -281,7 +281,7 @@ cdb.geo.ui.ChoroplethLegend = cdb.geo.ui.BaseLegend.extend({
 
   className: "choropleth-legend",
 
-  template: _.template('<% if (title && show_title) { %>\n<div class="legend-title"><%= title %></div><% } %><ul><li class="min">\t\t<%= leftLabel %></li><li class="max">\t\t<%= rightLabel %></li><li class="graph count_<%= buckets_count %>">\t<div class="colors"><%= colors %>\n\t</div></li></ul>'),
+  template: _.template('<% if (title && show_title) { %>\n<div class="legend-title"><%- title %></div><% } %><ul><li class="min">\t\t<%- leftLabel %></li><li class="max">\t\t<%- rightLabel %></li><li class="graph count_<%- buckets_count %>">\t<div class="colors"><%= colors %>\n\t</div></li></ul>'),
 
   initialize: function() {
 
@@ -331,7 +331,7 @@ cdb.geo.ui.ChoroplethLegend = cdb.geo.ui.BaseLegend.extend({
 
     if (this.model.get("template")) {
 
-      var template = _.template(this.model.get("template"));
+      var template = _.template(cdb.core.sanitize.html(this.model.get("template"), this.model.get('sanitizeTemplate')));
       this.$el.html(template(this.model.toJSON()));
 
     } else {
@@ -367,7 +367,7 @@ cdb.geo.ui.DensityLegend = cdb.geo.ui.BaseLegend.extend({
 
   className: "density-legend",
 
-  template: _.template('<% if (title && show_title) { %>\n<div class="legend-title"><%= title %></div><% } %><ul><li class="min">\t<%= leftLabel %></li><li class="max">\t<%= rightLabel %></li><li class="graph count_<%= buckets_count %>">\t<div class="colors"><%= colors %>\n\t</div></li></ul>'),
+  template: _.template('<% if (title && show_title) { %>\n<div class="legend-title"><%- title %></div><% } %><ul><li class="min">\t<%- leftLabel %></li><li class="max">\t<%- rightLabel %></li><li class="graph count_<%- buckets_count %>">\t<div class="colors"><%= colors %>\n\t</div></li></ul>'),
 
   initialize: function() {
 
@@ -420,7 +420,7 @@ cdb.geo.ui.DensityLegend = cdb.geo.ui.BaseLegend.extend({
 
     if (this.model.get("template")) {
 
-      var template = _.template(this.model.get("template"));
+      var template = _.template(cdb.core.sanitize.html(this.model.get("template"), this.model.get('sanitizeTemplate')));
       this.$el.html(template(this.model.toJSON()));
 
     } else {
@@ -510,7 +510,7 @@ cdb.geo.ui.IntensityLegend = cdb.geo.ui.BaseLegend.extend({
 
   className: "intensity-legend",
 
-  template: _.template('<% if (title && show_title) { %>\n<div class="legend-title"><%= title %></div><% } %><ul><li class="min">\t<%= leftLabel %></li><li class="max">\t<%= rightLabel %></li><li class="graph"></li></ul>'),
+  template: _.template('<% if (title && show_title) { %>\n<div class="legend-title"><%- title %></div><% } %><ul><li class="min">\t<%- leftLabel %></li><li class="max">\t<%- rightLabel %></li><li class="graph"></li></ul>'),
 
   initialize: function() {
 
@@ -614,7 +614,7 @@ cdb.geo.ui.IntensityLegend = cdb.geo.ui.BaseLegend.extend({
 
     if (this.model.get("template")) {
 
-      var template = _.template(this.model.get("template"));
+      var template = _.template(cdb.core.sanitize.html(this.model.get("template"), this.model.get('sanitizeTemplate')));
       this.$el.html(template(this.model.toJSON()));
 
     } else {
@@ -651,7 +651,7 @@ cdb.geo.ui.CategoryLegend = cdb.geo.ui.BaseLegend.extend({
 
   className: "category-legend",
 
-  template: _.template('<% if (title && show_title) { %>\n<div class="legend-title"><%= title %></div><% } %><ul></ul>'),
+  template: _.template('<% if (title && show_title) { %>\n<div class="legend-title"><%- title %></div><% } %><ul></ul>'),
 
   initialize: function() {
 
@@ -676,7 +676,7 @@ cdb.geo.ui.CategoryLegend = cdb.geo.ui.BaseLegend.extend({
     view = new cdb.geo.ui.LegendItem({
       model: item,
       className: (item.get("value") && item.get("value").indexOf("http") >= 0 || item.get("type") && item.get("type") == 'image') ? "bkg" : "",
-      template: '\t\t<div class="bullet" style="background: <%= value %>"></div> <%= name || ((name === false) ? "false": "null") %>'
+      template: '\t\t<div class="bullet" style="background: <%= value %>"></div> <%- name || ((name === false) ? "false": "null") %>'
     });
 
     this.$el.find("ul").append(view.render());
@@ -687,7 +687,7 @@ cdb.geo.ui.CategoryLegend = cdb.geo.ui.BaseLegend.extend({
 
     if (this.model.get("template")) {
 
-      var template = _.template(this.model.get("template"));
+      var template = _.template(cdb.core.sanitize.html(this.model.get("template"), this.model.get('sanitizeTemplate')));
       this.$el.html(template(this.model.toJSON()));
 
     } else {
@@ -753,7 +753,7 @@ cdb.geo.ui.ColorLegend = cdb.geo.ui.BaseLegend.extend({
 
   type: "color",
 
-  template: _.template('<% if (title && show_title) { %>\n<div class="legend-title"><%= title %></div><% } %><ul></ul>'),
+  template: _.template('<% if (title && show_title) { %>\n<div class="legend-title"><%- title %></div><% } %><ul></ul>'),
 
   initialize: function() {
 
@@ -772,7 +772,7 @@ cdb.geo.ui.ColorLegend = cdb.geo.ui.BaseLegend.extend({
     view = new cdb.geo.ui.LegendItem({
       model: item,
       className: (item.get("value") && item.get("value").indexOf("http") >= 0) ? "bkg" : "",
-      template: '\t\t<div class="bullet" style="background: <%= value %>"></div> <%= name || ((name === false) ? "false": "null") %>'
+      template: '\t\t<div class="bullet" style="background: <%= value %>"></div> <%- name || ((name === false) ? "false": "null") %>'
     });
 
     this.$el.find("ul").append(view.render());
@@ -1063,7 +1063,7 @@ cdb.geo.ui.CustomLegend = cdb.geo.ui.BaseLegend.extend({
   className: "custom-legend",
   type: "custom",
 
-  template: _.template('<% if (title && show_title) { %>\n<div class="legend-title"><%= title %></div><% } %><ul></ul>'),
+  template: _.template('<% if (title && show_title) { %>\n<div class="legend-title"><%- title %></div><% } %><ul></ul>'),
 
   initialize: function() {
 
@@ -1090,7 +1090,7 @@ cdb.geo.ui.CustomLegend = cdb.geo.ui.BaseLegend.extend({
     view = new cdb.geo.ui.LegendItem({
       model: item,
       className: (item.get("value") && item.get("value").indexOf("http") >= 0) ? "bkg" : "",
-      template: '\t\t<div class="bullet" style="background:<%= value %>"></div>\n\t\t<%= name || "null" %>'
+      template: '\t\t<div class="bullet" style="background:<%= value %>"></div>\n\t\t<%- name || "null" %>'
     });
 
     this.$el.find("ul").append(view.render());
@@ -1101,7 +1101,7 @@ cdb.geo.ui.CustomLegend = cdb.geo.ui.BaseLegend.extend({
 
     if (this.model.get("template")) {
 
-      var template = _.template(this.model.get("template"));
+      var template = _.template(cdb.core.sanitize.html(this.model.get("template"), this.model.get('sanitizeTemplate')));
       this.$el.html(template(this.model.toJSON()));
 
     } else {
@@ -1162,7 +1162,7 @@ cdb.geo.ui.BubbleLegend = cdb.geo.ui.BaseLegend.extend({
 
   className: "bubble-legend",
 
-  template: _.template('<% if (title && show_title) { %>\n<div class="legend-title"><%= title %></div><% } %><ul><li>\t<%= min %></li><li class="graph">\t\t<div class="bubbles"></div></li><li>\t<%= max %></li></ul>'),
+  template: _.template('<% if (title && show_title) { %>\n<div class="legend-title"><%- title %></div><% } %><ul><li>\t<%- min %></li><li class="graph">\t\t<div class="bubbles"></div></li><li>\t<%- max %></li></ul>'),
 
   initialize: function() {
 
@@ -1196,7 +1196,7 @@ cdb.geo.ui.BubbleLegend = cdb.geo.ui.BaseLegend.extend({
 
     if (this.model.get("template")) {
 
-      var template = _.template(this.model.get("template"));
+      var template = _.template(cdb.core.sanitize.html(this.model.get("template"), this.model.get('sanitizeTemplate')));
       this.$el.html(template(this.model.toJSON()));
 
       this.$el.removeClass("bubble-legend");

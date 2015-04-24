@@ -13,13 +13,13 @@
       }
     </style>
 
-    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.11/themes/css/cartodb.css" />
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.13/themes/css/cartodb.css" />
   </head>
   <body>
     <div id="map"></div>
 
     <!-- include cartodb.js library -->
-    <script src="http://libs.cartocdn.com/cartodb.js/v3/3.11/cartodb.js"></script>
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/3.13/cartodb.js"></script>
 
     <script>
       function main() {
@@ -37,8 +37,8 @@
           // layer 0 is the base layer, layer 1 is cartodb layer
           // setInteraction is disabled by default
           layers[1].setInteraction(true);
-          layers[1].on('featureOver', function(e, pos, latlng, data) {
-            cartodb.log.log(e, pos, latlng, data);
+          layers[1].on('featureOver', function(e, latlng, pos, data) {
+            cartodb.log.log(e, latlng, pos, data);
           });
 
           // you can get the native map to work with it

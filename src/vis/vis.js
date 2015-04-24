@@ -40,6 +40,11 @@ var Overlay = {
 
 cdb.vis.Overlay = Overlay;
 
+cdb.vis.Overlays = Backbone.Collection.extend({
+  comparator: function() {
+  }
+});
+
 // layer factory
 var Layers = {
 
@@ -80,80 +85,11 @@ var Layers = {
 
 cdb.vis.Layers = Layers;
 
-var Loader = cdb.vis.Loader = {
-
-  queue: [],
-  current: undefined,
-  _script: null,
-  head: null,
-
-  loadScript: function(src) {
-      var script = document.createElement('script');
-      script.type = 'text/javascript';
-      script.src = src;
-      script.async = true;
-      if (!Loader.head) {
-        Loader.head = document.getElementsByTagName('head')[0];
-      }
-      // defer the loading because IE9 loads in the same frame the script
-      // so Loader._script is null
-      setTimeout(function() {
-        Loader.head.appendChild(script);
-      }, 0);
-      return script;
-  },
-
-  get: function(url, callback) {
-    if (!Loader._script) {
-      Loader.current = callback;
-      Loader._script = Loader.loadScript(url + (~url.indexOf('?') ? '&' : '?') + 'callback=vizjson');
-    } else {
-      Loader.queue.push([url, callback]);
-    }
-  },
-
-  getPath: function(file) {
-    var scripts = document.getElementsByTagName('script'),
-        cartodbJsRe = /\/?cartodb[\-\._]?([\w\-\._]*)\.js\??/;
-    for (i = 0, len = scripts.length; i < len; i++) {
-      src = scripts[i].src;
-      matches = src.match(cartodbJsRe);
-
-      if (matches) {
-        var bits = src.split('/');
-        delete bits[bits.length - 1];
-        return bits.join('/') + file;
-      }
-    }
-    return null;
-  },
-
-  loadModule: function(modName) {
-    var file = "cartodb.mod." + modName + (cartodb.DEBUG ? ".uncompressed.js" : ".js");
-    var src = this.getPath(file);
-    if (!src) {
-      cartodb.log.error("can't find cartodb.js file");
-    }
-    Loader.loadScript(src);
-  }
-};
-
-window.vizjson = function(data) {
-  Loader.current && Loader.current(data);
-  // remove script
-  Loader.head.removeChild(Loader._script);
-  Loader._script = null;
-  // next element
-  var a = Loader.queue.shift();
-  if (a) {
-    Loader.get(a[0], a[1]);
-  }
-};
-
 cartodb.moduleLoad = function(name, mod) {
   cartodb[name] = mod;
   cartodb.config.modules.add({
-    name: mod
+    name: name,
+    mod: mod
   });
 };
 
@@ -208,29 +144,27 @@ var Vis = cdb.core.View.extend({
         done();
       }
     }
-    
+
     cdb.config.bind('moduleLoaded', loaded);
     _.defer(loaded);
   },
 
+  _addLegends: function(legends) {
+    if (this.legends) {
+      this.legends.remove();
+    }
 
-  _addLayers: function(layers, options) {
-    for(var i = 0; i < layers.length; ++i) {
-      var layerData = layers[i];
-      this.loadLayer(layerData, options);
+    this.legends = new cdb.geo.ui.StackedLegend({
+      legends: legends
+    });
+
+    if (!this.mobile_enabled) {
+      this.mapView.addOverlay(this.legends);
     }
   },
 
-  addLegends: function(layers, mobile_enabled) {
-
-    this.legends = new cdb.geo.ui.StackedLegend({
-      legends: this.createLegendView(layers)
-    });
-
-    if (!mobile_enabled) {
-      this.mapView.addOverlay(this.legends);
-    }
-
+  addLegends: function(layers) {
+    this._addLegends(this.createLegendView(layers));
   },
 
   _setLayerOptions: function(options) {
@@ -261,9 +195,8 @@ var Vis = cdb.core.View.extend({
       if(subLayer.model && subLayer.model.get('type') === 'torque') {
         if (o.visible === false) {
           subLayer.model.set('visible', false);
-          var timeSlider = this.getOverlay('time_slider');
-          if (timeSlider) {
-            timeSlider.hide();
+          if (this.timeSlider) {
+            this.timeSlider.hide();
           }
         }
       } else {
@@ -272,26 +205,37 @@ var Vis = cdb.core.View.extend({
     }
   },
 
-  _addOverlays: function(overlays, options) {
+  _addOverlays: function(overlays, data, options) {
 
+    overlays = overlays.toJSON();
     // Sort the overlays by its internal order
-    overlays = _.sortBy(overlays, function(overlay){ return overlay.order == null ? 1000 : overlay.order; });
+    overlays = _.sortBy(overlays, function(overlay) {
+      return overlay.order === null ? Number.MAX_VALUE: overlay.order;
+    });
 
-    this._createOverlays(overlays, options);
+    // clean current overlays
+    while (this.overlays.length !== 0) {
+      this.overlays.pop().clean();
+    }
 
+    this._createOverlays(overlays, data, options);
   },
 
   addTimeSlider: function(torqueLayer) {
-
-    if (torqueLayer) {
-
-      this.addOverlay({
-        type: 'time_slider',
-        layer: torqueLayer
+    // if a timeslides already exists don't create it again
+    if (torqueLayer && (torqueLayer.options.steps > 1) && !this.timeSlider) {
+      var self = this;
+      // dont use add overlay since this overlay is managed by torque layer
+      var timeSlider = Overlay.create('time_slider', this, { layer: torqueLayer });
+      this.mapView.addOverlay(timeSlider);
+      this.timeSlider = timeSlider;
+      // remove when layer is done
+      torqueLayer.bind('remove', function _remove() {
+        self.timeSlider = null;
+        timeSlider.remove();
+        torqueLayer.unbind('remove', _remove);
       });
-
     }
-
   },
 
   _setupSublayers: function(layers, options) {
@@ -323,7 +267,7 @@ var Vis = cdb.core.View.extend({
 
       var url = data;
 
-      cdb.vis.Loader.get(url, function(data) {
+      cdb.core.Loader.get(url, function(data) {
         if (data) {
           self.load(data, options);
         } else {
@@ -335,7 +279,22 @@ var Vis = cdb.core.View.extend({
 
     }
 
-    if (!this.checkModules(data.layers)) {
+    // if the viz.json contains slides, discard the main viz.json and use the slides
+    var slides = data.slides;
+    if (slides && slides.length > 0) {
+      data = slides[0]
+      data.slides = slides.slice(1);
+    }
+
+    // load modules needed for layers
+    var layers = data.layers;
+
+    // check if there are slides and check all the layers
+    if (data.slides && data.slides.length > 0) {
+      layers = layers.concat(_.flatten(data.slides.map(function(s) { return s.layers })));
+    }
+
+    if (!this.checkModules(layers)) {
 
       if (this.moduleChecked) {
 
@@ -346,8 +305,8 @@ var Vis = cdb.core.View.extend({
 
       this.moduleChecked = true;
 
-      // load modules needed for layers
-      this.loadModules(data.layers, function() {
+
+      this.loadModules(layers, function() {
         self.load(data, options);
       });
 
@@ -376,7 +335,8 @@ var Vis = cdb.core.View.extend({
     if (this.mobile) this.cartodb_logo = false;
     else if (!has_logo_overlay && options.cartodb_logo === undefined) this.cartodb_logo = true; // We set the logo by default
 
-    var scrollwheel   = (options.scrollwheel === undefined)  ? data.scrollwheel : options.scrollwheel;
+    var scrollwheel       = (options.scrollwheel === undefined)  ? data.scrollwheel : options.scrollwheel;
+    var slides_controller = (options.slides_controller === undefined)  ? data.slides_controller : options.slides_controller;
 
     // map
     data.maxZoom || (data.maxZoom = 20);
@@ -438,11 +398,12 @@ var Vis = cdb.core.View.extend({
       }
 
       mapConfig.center = center || [0, 0];
-      mapConfig.zoom = data.zoom == undefined ? 4: data.zoom;
+      mapConfig.zoom = data.zoom === undefined ? 4: data.zoom;
     }
 
-    var map         = new cdb.geo.Map(mapConfig);
-    this.map        = map;
+    var map = new cdb.geo.Map(mapConfig);
+    this.map = map;
+    this.overlayModels = new Backbone.Collection();
 
     this.updated_at = data.updated_at || new Date().getTime();
 
@@ -488,39 +449,58 @@ var Vis = cdb.core.View.extend({
 
     this.mapView = mapView;
 
-    this._addLayers(data.layers, options);
-
-    if (options.legends || (options.legends === undefined && this.map.get("legends") !== false)) this.addLegends(data.layers, this.mobile_enabled);
-
-    if (options.time_slider)       {
-
-      var torque = _(this.getLayers()).filter(function(layer) { return layer.model.get('type') === 'torque'; })
-
-      if (torque && torque.length) {
-
-        this.torqueLayer = torque[0];
-
-        if (!this.mobile_enabled && this.torqueLayer) {
-
-          this.addTimeSlider(this.torqueLayer);
-
-        }
-      }
+    if (options.legends || (options.legends === undefined && this.map.get("legends") !== false)) {
+      map.layers.bind('reset', this.addLegends, this);
     }
 
-    if (!options.sublayer_options) this._setupSublayers(data.layers, options);
-    if (options.sublayer_options)  this._setLayerOptions(options);
+    this.overlayModels.bind('reset', function(overlays) {
+      this._addOverlays(overlays, data, options);
+      this._addMobile(data, options);
+    }, this);
 
-    if (this.mobile_enabled){
+    this.mapView.bind('newLayerView', this._addLoading, this);
 
-      if (options.legends === undefined) {
-        options.legends = this.legends ? true : false;
-      }
-
-      this.addMobile(data.overlays, data.layers, options);
+    if (options.time_slider) {
+      this.mapView.bind('newLayerView', this._addTimeSlider, this);
     }
 
-    this._addOverlays(data.overlays, options);
+    if (this.infowindow) {
+      this.mapView.bind('newLayerView', this.addInfowindow, this);
+    }
+
+    if (this.tooltip) {
+      this.mapView.bind('newLayerView', this.addTooltip, this);
+    }
+
+    this.map.layers.reset(_.map(data.layers, function(layerData) {
+      return Layers.create(layerData.type || layerData.kind, self, layerData);
+    }));
+
+    this.overlayModels.reset(data.overlays);
+
+    // if there are no sublayer_options fill it
+    if (!options.sublayer_options) {
+      this._setupSublayers(data.layers, options);
+    }
+
+    this._setLayerOptions(options);
+
+    if (data.slides) {
+
+      this.map.disableKeyboard();
+
+      function odysseyLoaded() {
+        self._createSlides([data].concat(data.slides));
+      };
+
+      if (cartodb.odyssey === undefined) {
+        cdb.config.bind('moduleLoaded:odyssey', odysseyLoaded);
+        Loader.loadModule('odyssey');
+      } else {
+        odysseyLoaded();
+      }
+
+    }
 
     _.defer(function() {
       self.trigger('done', self, self.getLayers());
@@ -530,118 +510,350 @@ var Vis = cdb.core.View.extend({
 
   },
 
-  _addFullScreen: function() {
-
-    this.addOverlay({
-      options: {
-        allowWheelOnFullscreen: true
-      },
-      type: 'fullscreen'
+  _addTimeSlider: function() {
+    var self = this;
+    var torque = _(this.getLayers()).find(function(layer) {
+      return layer.model.get('type') === 'torque';
     });
-
+    if (torque) {
+      this.torqueLayer = torque;
+      // send step events from torque layer
+      this.torqueLayer.bind('change:time', function(s) {
+        this.trigger('change:step', this.torqueLayer, this.torqueLayer.getStep());
+      }, this);
+      if (!this.mobile_enabled && this.torqueLayer) {
+        this.addTimeSlider(this.torqueLayer);
+      }
+    }
   },
 
-  _createOverlays: function(overlays, options) {
+  // sets the animation step if there is an animation
+  // returns true if succed
+  setAnimationStep: function(s, opt) {
+    if (this.torqueLayer) {
+      this.torqueLayer.setStep(s, opt);
+      return true;
+    }
+    return false;
+  },
 
-    _.each(overlays, function(data) {
+  _createSlides: function(slides) {
 
+      function BackboneActions(model) {
+        var actions = {
+          set: function() {
+            var args = arguments;
+            return O.Action({
+              enter: function() {
+                model.set.apply(model, args);
+              }
+            });
+          },
+
+          reset: function() {
+            var args = arguments;
+            return O.Action({
+              enter: function() {
+                model.reset.apply(model, args);
+              }
+            });
+          }
+        };
+        return actions;
+      }
+
+      function SetStepAction(vis, step) {
+        return O.Action(function() {
+          vis.setAnimationStep(step);
+        });
+      }
+
+      function AnimationTrigger(vis, step) {
+        var t = O.Trigger();
+        vis.on('change:step', function (layer, currentStep) {
+          if (currentStep === step) {
+            t.trigger();
+          }
+        });
+        return t;
+      }
+
+      function PrevTrigger(seq, step) {
+        var t = O.Trigger();
+        var c = PrevTrigger._callbacks;
+        if (!c) {
+          c = PrevTrigger._callbacks = []
+          O.Keys().left().then(function() {
+            for (var i = 0; i < c.length; ++i) {
+              if (c[i] === seq.current()) {
+                t.trigger();
+                return;
+              }
+            }
+          });
+        }
+        c.push(step);
+        return t;
+      }
+
+      function NextTrigger(seq, step) {
+        var t = O.Trigger();
+        var c = NextTrigger._callbacks;
+        if (!c) {
+          c = NextTrigger._callbacks = []
+          O.Keys().right().then(function() {
+            for (var i = 0; i < c.length; ++i) {
+              if (c[i] === seq.current()) {
+                t.trigger();
+                return;
+              }
+            }
+          });
+        }
+        c.push(step);
+        return t;
+      }
+
+      function WaitAction(seq, ms) {
+        return O.Step(O.Sleep(ms), O.Action(function() {
+          seq.next();
+        }));
+      }
+
+      var self = this;
+
+      var seq = this.sequence = O.Sequential();
+      this.slides = O.Story();
+
+      // transition - debug, remove
+      //O.Keys().left().then(seq.prev, seq);
+      //O.Keys().right().then(seq.next, seq);
+
+      this.map.actions = BackboneActions(this.map);
+      this.map.layers.actions = BackboneActions(this.map.layers);
+      this.overlayModels.actions = BackboneActions(this.overlayModels)
+
+      function goTo(seq, i) {
+        return function() {
+          seq.current(i);
+        }
+      }
+
+      for (var i = 0; i < slides.length; ++i) {
+        var slide = slides[i];
+        var states = [];
+
+        var mapChanges = O.Step(
+          // map movement
+          this.map.actions.set({
+            'center': typeof slide.center === 'string' ? JSON.parse(slide.center): slide.center,
+            'zoom': slide.zoom
+          }),
+          // wait a little bit
+          O.Sleep(350),
+          // layer change
+          this.map.layers.actions.reset(_.map(slide.layers, function(layerData) {
+            return Layers.create(layerData.type || layerData.kind, self, layerData);
+          }))
+        );
+
+        states.push(mapChanges);
+
+        // overlays
+        states.push(this.overlayModels.actions.reset(slide.overlays));
+
+        if (slide.transition_options) {
+          var to = slide.transition_options;
+          if (to.transition_trigger === 'time') {
+            states.push(WaitAction(seq, to.time * 1000));
+          } else { //default is click
+            NextTrigger(seq, i).then(seq.next, seq);
+            PrevTrigger(seq, i).then(seq.prev, seq);
+          }
+        }
+
+        this.slides.addState(
+          seq.step(i),
+          O.Parallel.apply(window, states)
+        );
+
+      }
+      this.slides.go(0);
+  },
+
+  _createOverlays: function(overlays, vis_data, options) {
+
+    // if there's no header overlay, we need to explicitly create the slide controller
+    if ((options["slides_controller"] || options["slides_controller"] === undefined) && !this.mobile_enabled && !_.find(overlays, function(o) { return o.type === 'header' && o.options.display; })) {
+      this._addSlideController(vis_data);
+    }
+
+    _(overlays).each(function(data) {
       var type = data.type;
 
       // We don't render certain overlays if we are in mobile
-      if (this.mobile_enabled && type === "zoom")   return;
-      if (this.mobile_enabled && type === 'header') return;
+      if (this.mobile_enabled && (type === "zoom" || type === "header" || type === "loader")) return;
 
       // IE<10 doesn't support the Fullscreen API
       if (type === 'fullscreen' && $.browser.msie && parseFloat($.browser.version) <= 10) return;
 
       // Decide to create or not the custom overlays
       if (type === 'image' || type === 'text' || type === 'annotation') {
-
         var isDevice = data.options.device == "mobile" ? true : false;
         if (this.mobile !== isDevice) return;
-
-        if (!options[type] && options[type] !== undefined) return;
-
+        if (!options[type] && options[type] !== undefined) {
+          return;
+        }
       }
 
-      // We add the overlay
-      var overlay = this.addOverlay(data);
+      // We add the header overlay
+      if (type === 'header') {
+        var overlay = this._addHeader(data, vis_data);
+      } else {
+        var overlay = this.addOverlay(data);
+      }
 
       // We show/hide the overlays
       if (overlay && (type in options) && options[type] === false) overlay.hide();
 
       var opt = data.options;
 
-      if (type == 'share' && options["shareable"]  || type == 'share' && overlay.model.get("display") && options["shareable"] == undefined) overlay.show();
-      if (type == 'layer_selector' && options[type] || type == 'layer_selector' && overlay.model.get("display") && options[type] == undefined) overlay.show();
-      if (type == 'fullscreen' && options[type] || type == 'fullscreen' && overlay.model.get("display") && options[type] == undefined) overlay.show();
+      if (!this.mobile_enabled) {
 
-      if (!this.mobile_enabled && (type == 'search' && options[type] || type == 'search' && opt.display && options[type] == undefined)) overlay.show();
+        if (type == 'share' && options["shareable"]  || type == 'share' && overlay.model.get("display") && options["shareable"] == undefined) overlay.show();
+        if (type == 'layer_selector' && options[type] || type == 'layer_selector' && overlay.model.get("display") && options[type] == undefined) overlay.show();
+        if (type == 'fullscreen' && options[type] || type == 'fullscreen' && overlay.model.get("display") && options[type] == undefined) overlay.show();
+        if (type == 'search' && options[type] || type == 'search' && opt.display && options[type] == undefined) overlay.show();
 
-      if (!this.mobile_enabled && type === 'header') {
+        if (type === 'header') {
 
-        var m = overlay.model;
+          var m = overlay.model;
 
-        if (options.title !== undefined) {
-          m.set("show_title", options.title);
+          if (options.title !== undefined) {
+            m.set("show_title", options.title);
+          }
+
+          if (options.description !== undefined) {
+            m.set("show_description", options.description);
+          }
+
+          if (m.get('show_title') || m.get('show_description')) {
+            $(".cartodb-map-wrapper").addClass("with_header");
+          }
+
+          overlay.render();
         }
-
-        if (options.description !== undefined) {
-          m.set("show_description", options.description);
-        }
-
-        if (m.get('show_title') || m.get('show_description')) {
-          $(".cartodb-map-wrapper").addClass("with_header");
-        }
-
-        overlay.render()
       }
+
 
     }, this);
 
   },
 
-  addMobile: function(overlays, data_layers, options) {
+  _addSlideController: function(data) {
 
-    var layers;
-    var layer = data_layers[1];
+    if (data.slides && data.slides.length > 0) {
 
-    if (layer.options && layer.options.layer_definition) {
-      layers = layer.options.layer_definition.layers;
-    } else if (layer.options && layer.options.named_map && layer.options.named_map.layers) {
-      layers = layer.options.named_map.layers;
+      var transitions = [data.transition_options].concat(_.pluck(data.slides, "transition_options"));
+
+      return this.addOverlay({
+        type: 'slides_controller',
+        transitions: transitions
+      });
     }
 
-    this.addOverlay({
-      type: 'mobile',
-      layers: layers,
-      overlays: overlays,
-      options: options,
-      torqueLayer: this.torqueLayer
+  },
+
+  _addHeader: function(data, vis_data) {
+
+    var transitions = [vis_data.transition_options].concat(_.pluck(vis_data.slides, "transition_options"))
+
+    return this.addOverlay({
+      type: 'header',
+      options: data.options,
+      transitions: transitions
     });
 
   },
 
-  createLegendView: function(layers) {
-    var legends = [];
-    for(var i = layers.length - 1; i>= 0; --i) {
-      var layer = layers[i];
-      if(layer.legend) {
-        layer.legend.data = layer.legend.items;
-        var legend = layer.legend;
+  _addMobile: function(data, options) {
 
-        if((legend.items && legend.items.length) || legend.template) {
-          layer.legend.index = i;
-          legends.push(new cdb.geo.ui.Legend(layer.legend));
-        }
+    var layers;
+    var layer = data.layers[1];
+
+    if (this.mobile_enabled) {
+
+      if (options && options.legends === undefined) {
+        options.legends = this.legends ? true : false;
       }
-      if(layer.options && layer.options.layer_definition) {
-        legends = legends.concat(this.createLegendView(layer.options.layer_definition.layers));
-      } else if(layer.options && layer.options.named_map && layer.options.named_map.layers) {
-        legends = legends.concat(this.createLegendView(layer.options.named_map.layers));
+
+      if (layer.options && layer.options.layer_definition) {
+        layers = layer.options.layer_definition.layers;
+      } else if (layer.options && layer.options.named_map && layer.options.named_map.layers) {
+        layers = layer.options.named_map.layers;
+      }
+
+      var transitions = [data.transition_options].concat(_.pluck(data.slides, "transition_options"));
+
+      this.mobileOverlay = this.addOverlay({
+        type: 'mobile',
+        layers: layers,
+        slides: data.slides,
+        transitions:transitions,
+        overlays: data.overlays,
+        options: options,
+        torqueLayer: this.torqueLayer
+      });
+
+    }
+
+  },
+
+  _createLegendView: function(layer, layerView) {
+    if (layer.legend) {
+      layer.legend.data = layer.legend.items;
+      var legend = layer.legend;
+
+      if ((legend.items && legend.items.length) || legend.template) {
+        var view = new cdb.geo.ui.Legend(layer.legend);
+        layerView.bind('change:visibility', function(layer, hidden) {
+          view[hidden? 'hide': 'show']();
+        });
+        return view;
       }
     }
-    return legends;
+    return null;
+  },
+
+  createLegendView: function(layers) {
+    var legends = [];
+    var self = this;
+    for (var i = layers.length - 1; i >= 0; --i) {
+      var cid = layers.at(i).cid;
+      var layer = layers.at(i).attributes
+      var layerView = this.mapView.getLayerByCid(cid);
+      legends.push(this._createLayerLegendView(layer, layerView));
+    }
+    return _.flatten(legends);
+  },
+
+  _createLayerLegendView: function(layer, layerView) {
+    var self = this;
+    var legends = [];
+    if (layer.options && layer.options.layer_definition) {
+      var sublayers = layer.options.layer_definition.layers;
+      _(sublayers).each(function(sub, i) {
+        legends.push(self._createLegendView(sub, layerView.getSubLayer(i)));
+      });
+    } else if(layer.options && layer.options.named_map && layer.options.named_map.layers) {
+      var sublayers = layer.options.named_map.layers;
+      _(sublayers).each(function(sub, i) {
+        legends.push(self._createLegendView(sub, layerView.getSubLayer(i)));
+      });
+    } else {
+      legends.push(this._createLegendView(layer, layerView))
+    }
+    return _.compact(legends).reverse();
   },
 
   addOverlay: function(overlay) {
@@ -669,12 +881,6 @@ var Vis = cdb.core.View.extend({
           }
         }
       }, this);
-
-      // Set map position correctly taking into account
-      // header height
-      if (overlay.type == "header") {
-        //this.setMapPosition();
-      }
     }
     return v;
   },
@@ -726,7 +932,7 @@ var Vis = cdb.core.View.extend({
       this.gmaps_style = opt.gmaps_style;
     }
 
-    this.mobile         = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    this.mobile = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     this.mobile_enabled = (opt.mobile_layout && this.mobile) || opt.force_mobile;
 
     if (opt.force_mobile === false || opt.force_mobile === "false") this.mobile_enabled = false;
@@ -745,6 +951,10 @@ var Vis = cdb.core.View.extend({
 
     if (!opt.loaderControl) {
       remove_overlay('loader');
+    }
+
+    if (opt.searchControl !== undefined) {
+      opt.search = opt.searchControl;
     }
 
     if (!this.mobile_enabled && opt.search) {
@@ -775,7 +985,7 @@ var Vis = cdb.core.View.extend({
         });
       }
     }
- 
+
 
     if (opt.layer_selector) {
       if (!search_overlay('layer_selector')) {
@@ -801,8 +1011,12 @@ var Vis = cdb.core.View.extend({
       remove_overlay('share');
     }
 
-    if (this.mobile) {
+    if (this.mobile || ((opt.zoomControl !== undefined) && (!opt.zoomControl)) ){
       remove_overlay('zoom');
+    }
+
+    if (this.mobile || ((opt.search !== undefined) && (!opt.search)) ){
+      remove_overlay('search');
     }
 
     // if bounds are present zoom and center will not taken into account
@@ -841,12 +1055,20 @@ var Vis = cdb.core.View.extend({
 
     if (vizjson.layers.length > 1) {
       var token = opt.auth_token;
-      for(var i = 1; i < vizjson.layers.length; ++i) {
-        var o = vizjson.layers[i].options;
-        o.no_cdn = opt.no_cdn;
-        o.force_cors = opt.force_cors;
-        if(token) {
-          o.auth_token = token;
+      function _applyLayerOptions(layers) {
+        for(var i = 1; i < layers.length; ++i) {
+          var o = layers[i].options;
+          o.no_cdn = opt.no_cdn;
+          o.force_cors = opt.force_cors;
+          if(token) {
+            o.auth_token = token;
+          }
+        }
+      }
+      _applyLayerOptions(vizjson.layers);
+      if (vizjson.slides) {
+        for(var i = 0; i < vizjson.slides.length; ++i) {
+          _applyLayerOptions(vizjson.slides[i].layers);
         }
       }
     }
@@ -902,6 +1124,9 @@ var Vis = cdb.core.View.extend({
           });
           layerView.tooltip = tooltip;
           this.mapView.addOverlay(tooltip);
+          layerView.bind('remove', function() {
+            this.tooltip.clean();
+          });
         }
         layerView.setInteraction(i, true);
       }
@@ -988,6 +1213,7 @@ var Vis = cdb.core.View.extend({
             'template': infowindowFields.template,
             'template_type': infowindowFields.template_type,
             'alternative_names': infowindowFields.alternative_names,
+            'sanitizeTemplate': infowindowFields.sanitizeTemplate,
             'offset': extra.offset,
             'width': extra.width,
             'maxHeight': extra.maxHeight
@@ -1027,48 +1253,30 @@ var Vis = cdb.core.View.extend({
     layerView.infowindow = infowindow.model;
   },
 
-  loadLayer: function(layerData, opts) {
-    var map = this.map;
-    var mapView = this.mapView;
-    //layerData.type = layerData.kind;
-    var layer_cid = map.addLayer(Layers.create(layerData.type || layerData.kind, this, layerData), opts);
-
-    var layerView = mapView.getLayerByCid(layer_cid);
-
-    if (!layerView) {
-      this.throwError("layer can't be created", map.layers.getByCid(layer_cid));
-      return;
-    }
-
-    // add the associated overlays
-    if(layerView && this.infowindow && layerView.containInfowindow && layerView.containInfowindow()) {
-      this.addInfowindow(layerView);
-    }
-
-    if(layerView && this.tooltip && layerView.containTooltip && layerView.containTooltip()) {
-      this.addTooltip(layerView);
-    }
-
+  _addLoading: function (layerView) {
     if (layerView) {
       var self = this;
 
       var loadingTiles = function() {
-        self.loadingTiles(opts);
+        self.loadingTiles();
       };
 
       var loadTiles = function() {
-        self.loadTiles(opts);
+        self.loadTiles();
       };
 
       layerView.bind('loading', loadingTiles);
       layerView.bind('load',    loadTiles);
     }
-
-    return layerView;
-
   },
 
+
   loadingTiles: function() {
+
+    if (this.mobileOverlay) {
+      this.mobileOverlay.loadingTiles();
+    }
+
     if (this.loader) {
       this.loader.show()
     }
@@ -1079,6 +1287,11 @@ var Vis = cdb.core.View.extend({
   },
 
   loadTiles: function() {
+
+    if (this.mobileOverlay) {
+      this.mobileOverlay.loadTiles();
+    }
+
     if (this.loader) {
       this.loader.hide();
     }
@@ -1215,7 +1428,7 @@ var Vis = cdb.core.View.extend({
     });
 
     map.viz.mapView.addInfowindow(infowindow);
-    // try to change interactivity, it the layer is a named map 
+    // try to change interactivity, it the layer is a named map
     // it's inmutable so it'a assumed the interactivity already has
     // the fields it needs
     try {

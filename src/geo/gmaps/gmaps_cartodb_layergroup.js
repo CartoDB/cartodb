@@ -237,7 +237,7 @@ CartoDBLayerGroupBase.prototype._findPos = function (map,o) {
   var obj = map.getDiv();
 
   var x, y;
-  if (o.e.changedTouches && o.e.changedTouches.length > 0) {
+  if (o.e.changedTouches && o.e.changedTouches.length > 0 && (o.e.changedTouches[0] !== undefined) ) {
     x = o.e.changedTouches[0].clientX + window.scrollX;
     y = o.e.changedTouches[0].clientY + window.scrollY;
   } else {
@@ -277,7 +277,10 @@ CartoDBLayerGroupBase.prototype._manageOnEvents = function(map,o) {
 
     case 'click':
     case 'touchend':
+    case 'touchmove': // for some reason android browser does not send touchend
     case 'mspointerup':
+    case 'pointerup':
+    case 'pointermove':
       if (this.options.featureClick) {
         this.options.featureClick(o.e,latlng, point, o.data, o.layer);
       }

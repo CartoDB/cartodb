@@ -1,5 +1,121 @@
-3.11.26 ()
+3.14.0 ()
+* Infowindow in anonymous maps are requested by attributes endpoint in maps api so SQL API is not used anymore
+* Changed the way remote host is set for maps and sql API.
+* Fixed error management when map instanciation fails
+* Deprecation warning:
+    - tiler_host, tiler_prototol, tiler_port, sql_api_domain, sql_api_protocol are deprecated, use sql_api_template and maps_api_template instead. https://github.com/CartoDB/cartodb.js/blob/develop/doc/API.md#how-to-set-a-different-host-than-cartodbcom
+
+3.13.3 (09//04//2015)
+* Fixes default styles for header titles in infowindows.
+
+3.13.2 (07//04//2015)
+* Fix double escaping on infowindows
+* Fix a-tag's target attribute not working
+
+3.13.1 (06//04//2015)
+* Allows to request a Static Map of a password protected visualization
+
+3.13.0 (31//03//2015)
+* Breaking Changes
+  - Sanitize output by default (#2972), see doc change and example below how to override:
+    - docs: https://github.com/CartoDB/cartodb.js/blob/v3.13.0/doc/API.md#arguments-11
+    - example: https://github.com/CartoDB/cartodb.js/blob/v3.13.0/examples/infowindow_with_graph.html
+
+3.12.14 (30//03//2015)
+- Fixes fullscreen button is throwing errors (#412)
+- Updates Torque.js to 2.11
+
+3.12.13 (18//03//2015)
+- Changes how infowindows handle null values (#406)
+- Updates the version of wax and upgrades mustache.js to v1.1.0 (403)
+- Fixes a bug with fullscreen in Safari (#361)
+
+3.12.12 (12//03//2015)
+- Fixes a bug that prevented generating previews of torque layers with named maps
+
+3.12.11 (04//03//2015)
+- LayerDefinition now trusts the tiler and uses whatever CDN configuration it gets (or nothing, if cdn_url is empty).
+- Fixes bootstrap collisions (#87, #107)
+
+3.12.10 (02//03//2015)
+- Don't send the urlTemplate to generate a Static Map if we don't have it.
+- Disables the CDN if the server doesn't send us the configuration.
+
+3.12.9 (26//02//2015)
+- Updates Static Map module to use the CDN URL from the layergroup.
+
+3.12.8 (26//02//2015)
+- Allows to override the default use of the bounding box to generate an image, using the center instead.
+- Fixes the static map module to avoid using hidden layers to generate images.
+- Extracts the CDN host configuration from the vizjson.
+- Removes cdbui bower dependency.
+
+3.12.7 (23//02//2015)
+- By default we now serve the Static API images through CartoDB's CDN.
+
+3.12.6 (23//02//2015)
+- Fixes mobile and IE interaction issues (#346, #313, #223, #139).
+
+3.12.5 (20//02/2015)
+- Fixes request to generate an image when the vizjson contains a named map and a torque layer with a named map
+
+3.12.4 (18//02/2015)
+- Fixes leaflet point generation on events when using touch devices
+
+3.12.3 (17//02/2015)
+- Fixes a case were having an empty bbox would end up generatign an erroneous bounding box URL.
+
+3.12.2 (17//02/2015)
+- Fixes error generating a map preview of a visualization with a torque layer.
+- Fixed use of https parameter in torque layer
+- Fixed change of play/pause state in timeslider
+- Fixed legend values named 0 being evaluated as NULL
+
+3.12.1 (13//02/2015)
+- Allows to force the https protocol when requesting a vizjson to generate a static image
+
+3.12.0 (09//02/2015)
+- Added Odyssey support for visualizations
+- Adds new API to generate static images (https://github.com/CartoDB/cartodb.js/wiki/CartoDB-Map-API)
+- Fixes the hiding of the tile loader in mobile
+- Adds heatmap support for torque
+
+3.11.36 (09//02//2014)
+- Fixes slider style problem in narrower devices.
+
+3.11.35 (06//02//2014)
+- re-fixes google maps mobile events
+
+3.11.34 (06//02//2014)
+- Fixes google maps mobile events
+
+3.11.33 (05//02//2014)
+- Fixes tooltip style.
+
+3.11.32 (29//01//2015)
+- Fixed touch events on mobile (Android)
+
+3.11.31 (23//01//2015)
+- #291 - Removes padding and margin reset for webkit browsers
+
+3.11.30 (13//01//2015)
+- #264 - Fix addTo (when the second param specifies index)
+
+3.11.29 (30//12//2014)
+- #257 - Fixes rendering of several bold typefaces
+
+3.11.28 (19//12//2014)
+- #256 - Fixes loader position
+- #255 - Adds new fonts for the overlays
+
+3.11.27 (19//12//2014)
+- #245 - Fixed a bug with error messages named map instantiation
+- #224 - Public method close infowindow
+
+3.11.26 (17//12//2014)
 - #235 - Allows to use the input fields in fullscreen on Chrome
+- #243 - Adds a target="_top" in the overlay links so they work inside iframes
+- udpated torque with bugfixes for firefox
 
 3.11.25 (26//11//2014)
 - #211 - Viz made with Torque between 2 different dates shows date + time
@@ -21,7 +137,7 @@
 - fixes a bug that made the hidden Torque layers visible
 
 3.11.21 (24//10//2014)
-- enabled dynamic_cdn to route layergroup calls though the CDN
+- enabled dynamic_cdn to route layergroup calls through the CDN
 
 3.11.20 (24//10//2014)
 - enabled fixed callback for layergroups and infowindows
@@ -75,7 +191,7 @@
 - Fixed problem breaking words in infowindow content.
 
 3.11.06 (12//09/2014)
-- Fixed problem in infowindow showing horizontal scrollbar when it was not needed 
+- Fixed problem in infowindow showing horizontal scrollbar when it was not needed
 - Fixed creating search overlay
 
 3.11.05 (20//08/2014)
@@ -213,9 +329,9 @@
 - fixed problems with infowindow when there are hidden layers
 
 3.7.04 (27//02//2014)
-- fixed layer update in gmaps 
-- when jsonp is used errors are not reported to the layer 
-- updated torque, fix problem with some cartocss options (step) 
+- fixed layer update in gmaps
+- when jsonp is used errors are not reported to the layer
+- updated torque, fix problem with some cartocss options (step)
 
 3.7.03 (25//02//2014)
 - Fixed https in torque tiles

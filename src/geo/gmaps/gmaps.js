@@ -99,6 +99,11 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
         self.trigger('click', e, [e.latLng.lat(), e.latLng.lng()]);
       });
 
+      google.maps.event.addListener(this.map_googlemaps, 'dragend', function(e) {
+        var c = self.map_googlemaps.getCenter();
+        self.trigger('dragend', e, [c.lat(), c.lng()]);
+      });
+
       google.maps.event.addListener(this.map_googlemaps, 'dblclick', function(e) {
         self.trigger('dblclick', e);
       });
@@ -118,6 +123,10 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
       this.projector.draw = function() {};
       this.trigger('ready');
       this._isReady = true;
+    },
+
+    _setKeyboard: function(model, z) {
+      this.map_googlemaps.setOptions({ keyboardShortcuts: z });
     },
 
     _setScrollWheel: function(model, z) {
@@ -160,12 +169,17 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
       if (!layer_view) {
         return;
       }
+      return this._addLayerToMap(layer_view, opts);
+    },
+
+    _addLayerToMap: function(layer_view, opts) {
+      var layer = layer_view.model;
 
       this.layers[layer.cid] = layer_view;
 
       if (layer_view) {
         var idx = _(this.layers).filter(function(lyr) { return !!lyr.getTile; }).length - 1;
-        var isBaseLayer = _.keys(this.layers).length === 1 || (opts && opts.index === 0);
+        var isBaseLayer = _.keys(this.layers).length === 1 || (opts && opts.index === 0) || layer.get('order') === 0;
         // set base layer
         if(isBaseLayer && !opts.no_base_layer) {
           var m = layer_view.model;
@@ -182,9 +196,9 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
             if (!layer_view.gmapsLayer) {
               cdb.log.error("gmaps layer can't be null");
             }
-            self.map_googlemaps.overlayMapTypes.setAt(idx, layer_view.gmapsLayer);
+            this.map_googlemaps.overlayMapTypes.setAt(idx, layer_view.gmapsLayer);
           } else {
-            layer_view.gmapsLayer.setMap(self.map_googlemaps);
+            layer_view.gmapsLayer.setMap(this.map_googlemaps);
           }
         }
         if(opts === undefined || !opts.silent) {

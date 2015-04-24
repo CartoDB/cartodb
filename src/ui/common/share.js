@@ -123,8 +123,8 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
 
     var $el = this.$el;
 
-    var title             = this.options.title;
-    var description       = this.options.description;
+    var title             = cdb.core.sanitize.html(this.options.title);
+    var description       = cdb.core.sanitize.html(this.options.description);
     var clean_description = this._stripHTML(this.options.description);
     var share_url         = this.options.share_url;
 

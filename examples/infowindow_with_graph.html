@@ -13,7 +13,7 @@
       }
     </style>
 
-    <link rel="stylesheet" href="http://libs.cartodb.com/cartodb.js/v3/3.11/themes/css/cartodb.css" />
+    <link rel="stylesheet" href="http://libs.cartodb.com/cartodb.js/v3/3.13/themes/css/cartodb.css" />
   </head>
   <body>
     <div id="map"></div>
@@ -22,7 +22,7 @@
     </script>
 
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-    <script src="http://libs.cartodb.com/cartodb.js/v3/3.11/cartodb.js"></script>
+    <script src="http://libs.cartodb.com/cartodb.js/v3/3.13/cartodb.js"></script>
 
     <script>
 
@@ -33,7 +33,7 @@
         '     <div class="cartodb-popup-content">',
         '       <div id="chart_div">',
         '       <script>',
-          '       draw_chart([{{content.data.pop_min}}, {{content.data.pop_max}}], "{{content.data.name}}");',
+        '         draw_chart([{{content.data.pop_min}}, {{content.data.pop_max}}], "{{content.data.name}}");',
         '       </scr' + 'ipt>',
         '       </div>',
         '     </div>',
@@ -63,7 +63,7 @@
       function main() {
 
         // create map
-        var map = L.map('map', { 
+        var map = L.map('map', {
           zoomControl: false,
           center: [0, 0],
           zoom: 3
@@ -82,6 +82,7 @@
             var sublayer = layer.getSubLayer(0);
             sublayer.infowindow.set({
               template:   INFOWINDOW_TEMPLATE,
+              sanitizeTemplate: false,
               width:      328,
               maxHeight:  400
             });

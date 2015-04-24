@@ -40,7 +40,7 @@ cdb.geo.ui.Image = cdb.geo.ui.Text.extend({
     var boxOpacity = style["box-opacity"];
     var boxWidth   = style["box-width"];
 
-    this.$text.css(style);
+    this.$el.find(".text").css(style);
     this.$el.css("z-index", style["z-index"]);
 
     var rgbaCol = 'rgba(' + parseInt(boxColor.slice(-6,-4),16)
@@ -57,14 +57,15 @@ cdb.geo.ui.Image = cdb.geo.ui.Text.extend({
   },
 
   render: function() {
+    var content;
+    if (this.model.get("extra").has_default_image) {
+      content = _.template('<img src="<%- url %>" />')({ url: this.model.get("extra").public_default_image_url });
+    } else {
+      content = cdb.core.sanitize.html(this.model.get("extra").rendered_text, this.model.get('sanitizeContent'));
+    }
 
-    var content = this.model.get("extra").rendered_text;
-
-    if (this.model.get("extra").has_default_image) content = '<img src="' + this.model.get("extra").public_default_image_url + '" />';
-
-    this.$el.html(this.template(_.extend(this.model.attributes, { content: content })));
-
-    this.$text = this.$el.find(".text");
+    var data = _.chain(this.model.attributes).clone().extend({ content: content }).value();
+    this.$el.html(this.template(data));
 
     var self = this;
 

@@ -1,4 +1,4 @@
-describe("LayerDefinition", function() {
+  describe("LayerDefinition", function() {
   var layerDefinition;
   beforeEach(function(){
     var layer_definition = {
@@ -142,12 +142,23 @@ describe("LayerDefinition", function() {
 
   it("should generate url for with cdn", function() {
     layerDefinition.options.no_cdn = false;
+    layerDefinition.options.cdn_url = { http: "api.cartocdn.com" }
     layerDefinition.options.subdomains = ['a', 'b', 'c', 'd'];
     var tiles = layerDefinition._layerGroupTiles('test_layer');
     expect(tiles.tiles[0]).toEqual('http://a.api.cartocdn.com/rambo/api/v1/map/test_layer/{z}/{x}/{y}.png');
     expect(tiles.tiles[1]).toEqual('http://b.api.cartocdn.com/rambo/api/v1/map/test_layer/{z}/{x}/{y}.png');
     expect(tiles.grids[0][0]).toEqual('http://a.api.cartocdn.com/rambo/api/v1/map/test_layer/0/{z}/{x}/{y}.grid.json');
     expect(tiles.grids[0][1]).toEqual('http://b.api.cartocdn.com/rambo/api/v1/map/test_layer/0/{z}/{x}/{y}.grid.json');
+  });
+
+  it("should generate url for without cdn", function() {
+    layerDefinition.options.no_cdn = false;
+    layerDefinition.options.subdomains = ['a', 'b', 'c', 'd'];
+    var tiles = layerDefinition._layerGroupTiles('test_layer');
+    expect(tiles.tiles[0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/{z}/{x}/{y}.png');
+    expect(tiles.tiles[1]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/{z}/{x}/{y}.png');
+    expect(tiles.grids[0][0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/0/{z}/{x}/{y}.grid.json');
+    expect(tiles.grids[0][1]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/0/{z}/{x}/{y}.grid.json');
   });
 
   it("grid url should not include interactivity", function() {
@@ -165,13 +176,26 @@ describe("LayerDefinition", function() {
     expect(layerDefinition.toJSON().layers[0].options.interactivity).toEqual(['cartodb_id', 'john']);
   });
 
-  it("should use cdn_url as default", function() {
-    delete layerDefinition.options.no_cdn;
-    expect(layerDefinition._host()).toEqual('http://api.cartocdn.com/rambo');
-    expect(layerDefinition._host('0')).toEqual('http://0.api.cartocdn.com/rambo');
+  it("should use the tiler url when there's explicitly empty cdn defined", function() {
+    layerDefinition.options.cdn_url = {
+      http: "", https: ""
+    };
+    expect(layerDefinition._host()).toEqual('http://rambo.cartodb.com:8081');
+    expect(layerDefinition._host('0')).toEqual('http://rambo.cartodb.com:8081');
     layerDefinition.options.tiler_protocol = "https";
-    expect(layerDefinition._host()).toEqual('https://cartocdn.global.ssl.fastly.net/rambo');
-    expect(layerDefinition._host('a')).toEqual('https://a.cartocdn.global.ssl.fastly.net/rambo');
+    layerDefinition._buildMapsApiTemplate(layerDefinition.options);
+    expect(layerDefinition._host()).toEqual('https://rambo.cartodb.com:8081');
+    expect(layerDefinition._host('a')).toEqual('https://rambo.cartodb.com:8081');
+  });
+
+  it("should use the tiler url when there's explicitly no cdn", function() {
+    layerDefinition.options.cdn_url = undefined;
+    expect(layerDefinition._host()).toEqual('http://rambo.cartodb.com:8081');
+    expect(layerDefinition._host('0')).toEqual('http://rambo.cartodb.com:8081');
+    layerDefinition.options.tiler_protocol = "https";
+    layerDefinition._buildMapsApiTemplate(layerDefinition.options);
+    expect(layerDefinition._host()).toEqual('https://rambo.cartodb.com:8081');
+    expect(layerDefinition._host('a')).toEqual('https://rambo.cartodb.com:8081');
   });
 
   it("should use cdn_url from tiler when present", function(done) {
@@ -189,6 +213,7 @@ describe("LayerDefinition", function() {
 
       setTimeout(function() {
         layerDefinition.options.tiler_protocol = 'https';
+        layerDefinition._buildMapsApiTemplate(layerDefinition.options);
         layerDefinition.getTiles();
 
         setTimeout(function() {
@@ -513,6 +538,17 @@ describe("LayerDefinition", function() {
 
     });
 
+    it("should trigger change:visible when show/hide", function() {
+      var sub = layerDefinition.getSubLayer(0);
+      var s = sinon.spy();
+      sub.bind('change:visibility', s);
+      sub.hide();
+      expect(s.called).toEqual(true);
+      sub.hide();
+      expect(s.callCount).toEqual(1);
+      sub.show();
+      expect(s.callCount).toEqual(2);
+    });
 
     it("should set sql by GET", function(done) {
       var q;
@@ -576,6 +612,63 @@ describe("LayerDefinition", function() {
       });
 
     });
+  });
+
+  describe("raster", function() {
+    var layerDefinitionRaster;
+    beforeEach(function() {
+      var layer_definition = {
+        version: '1.0.0',
+        stat_tag: 'vis_id',
+        layers: [{
+           type: 'cartodb', 
+           options: {
+             sql: 'select * from ne_10m_populated_places_simple',
+             cartocss: '#layer { marker-fill: red; }',
+             raster: true,
+           }
+         }
+        ]
+      };
+      layerDefinitionRaster = new LayerDefinition(layer_definition, {
+        tiler_domain:   "cartodb.com",
+        tiler_port:     "8081",
+        tiler_protocol: "http",
+        user_name: 'rambo',
+        no_cdn: true,
+        subdomains: [null]
+      });
+    });
+
+    it ("should include raster information when raster is true", function() {
+      expect(layerDefinitionRaster.toJSON()).toEqual({
+        version: '1.0.0',
+        stat_tag: 'vis_id',
+        layers: [{
+           type: 'cartodb', 
+           options: {
+             sql: 'select * from ne_10m_populated_places_simple',
+             cartocss: '#layer { marker-fill: red; }',
+             cartocss_version: '2.3.0',
+             geom_column: 'the_raster_webmercator',
+             geom_type: 'raster'
+           }
+         }
+        ]
+      });
+    });
+  });
+
+  it("should generate the right attributes url", function() {
+     layerDefinition.layerToken = 'testing';
+     expect(layerDefinition._attributesUrl(0, 1)).toEqual(
+      'http://rambo.cartodb.com:8081/api/v1/map/testing/0/attributes/1'
+     );
+     layerDefinition.getSubLayer(0).hide();
+     layerDefinition.layerToken = 'testing';
+     expect(layerDefinition._attributesUrl(1, 1)).toEqual(
+      'http://rambo.cartodb.com:8081/api/v1/map/testing/0/attributes/1'
+     );
   });
 
 });
@@ -714,6 +807,7 @@ describe("NamedMap", function() {
       expect(params.jsonpCallback.indexOf('_cdbi_layer_attributes') !== -1).toEqual(true);
     });
     namedMap.options.tiler_protocol = 'https';
+    namedMap._buildMapsApiTemplate(namedMap.options)
     namedMap.setAuthToken('test');
     namedMap.layerToken = 'test';
     namedMap.fetchAttributes(1, 12345, null, function(data) {
@@ -725,6 +819,17 @@ describe("NamedMap", function() {
     });
 
   })
+
+  it("should get sublayer", function() {
+    named_map = {
+      name: 'testing',
+      params: {
+        color: 'red'
+      }
+    };
+    namedMap = new NamedMap(named_map, {})
+    expect(namedMap.getSubLayer(0)).not.toEqual(undefined);
+  });
 
   it("should enable/disable layers", function(done) {
     var params;
@@ -960,6 +1065,47 @@ describe("NamedMap", function() {
     expect(namedMap.getLayerIndexByNumber(1)).toEqual(1);
   });
 
+
+  it("should throw an error message when there is an error with the namedmaps", function(done) {
+
+    var named_map = {
+      stat_tag: 'stat_tag_named_map',
+      name: 'testing',
+      auth_token: 'auth_token_test'
+    };
+
+    namedMap = new NamedMap(named_map, {
+      tiler_domain:   "cartodb.com",
+      tiler_port:     "8081",
+      tiler_protocol: "https",
+      user_name: 'rambo',
+      no_cdn: true,
+      subdomains: [null]
+    });
+
+    namedMap.options.ajax = function(p) { 
+      params = p;
+      p.success({ errors: 'not found' });
+    };
+
+    var _data, _error;
+    var callb = function (dt,er){
+      _data = dt;
+      _error = er;
+    };
+
+    namedMap.getTiles(callb);
+
+    setTimeout(function() {
+      var res = "not found";
+
+      expect(_error.errors).toEqual(res);
+      expect(true).toEqual(true);
+
+      done();
+    }, 100);
+
+  });
 
 
 });

@@ -359,6 +359,10 @@
   line-height: 20px;
 }
 .Form-rowInfoText--error { color: #DD3B37 }
+.Form-rowInfoText--error .Form-link {
+  color: #DD3B37;
+  text-decoration: underline;
+}
 .Form-footer {
   @include display-flex();
   @include justify-content(space-between, justify);

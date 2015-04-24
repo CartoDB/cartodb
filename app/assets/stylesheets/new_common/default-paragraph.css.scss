@@ -8,6 +8,9 @@
   font-weight: $sFontWeight-lighter;
   color: $cTypography-paragraphs;
 }
-.DefaultParagraph--short {
-  width: 500px;
+.DefaultParagraph--short { width: 500px }
+.DefaultParagraph--centered { margin: 0 auto }
+.DefaultParagraph--spaced {
+  margin-top: 10px;
+  margin-bottom: 10px;
 }

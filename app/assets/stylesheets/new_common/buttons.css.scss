@@ -22,12 +22,13 @@
 .Button,
 .Button span {
   font-size: $sFontSize-smallUpperCase;
-  line-height: $sButton-height;
+  line-height: $sLineHeight-button;
   font-weight: $sFontWeight-bold;
   color: white;
   text-transform: uppercase;
   white-space: nowrap;
 }
+.Button-inner { line-height: $sButton-height }
 .Button {
   border: $sButton-border solid $cStructure-mainBkg;
 }

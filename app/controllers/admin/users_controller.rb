@@ -8,7 +8,7 @@ class Admin::UsersController < ApplicationController
 
   before_filter :login_required
   before_filter :setup_user
-  #before_filter :initialize_google_plus_config, only: [:profile, :account]
+  before_filter :initialize_google_plus_config, only: [:profile, :account]
 
   def initialize_google_plus_config
     signup_action = Cartodb::Central.sync_data_with_cartodb_central? ? Cartodb::Central.new.google_signup_url : '/google/signup'
@@ -126,6 +126,7 @@ class Admin::UsersController < ApplicationController
       obj ||= Hash.new
       enabled = false
       title = ''
+      revoke_url = ''
       
       case serv
         when 'gdrive'
@@ -137,9 +138,14 @@ class Admin::UsersController < ApplicationController
         when 'mailchimp'
           enabled = true if Cartodb.config[:oauth]['mailchimp']['app_key'].present? && current_user.has_feature_flag?('mailchimp_import')
           title = 'MailChimp'
+          revoke_url = 'http://admin.mailchimp.com/account/oauth2/'
         when 'instagram'
           enabled = true if Cartodb.config[:oauth]['instagram']['app_key'].present? && current_user.has_feature_flag?('instagram_import')
           title = 'Instagram'
+          revoke_url = 'http://instagram.com/accounts/manage_access/'
+        else
+          enabled = true
+          title = serv
       end
 
       if enabled
@@ -147,6 +153,7 @@ class Admin::UsersController < ApplicationController
 
         obj['name'] = serv
         obj['title'] = title
+        obj['revoke_url'] = revoke_url
         obj['connected'] = !oauth.nil? ? true : false
 
         array.push(obj)

@@ -198,13 +198,7 @@ class Admin::PagesController < ApplicationController
 
     respond_to do |format|
       format.atom { render layout: false }
-
-      # For RSS redirect to ATOM
-      if source == :maps
-        format.rss { redirect_to CartoDB.path(self, '/maps/feed', {format: :atom}), status: :moved_permanently }
-      else
-        format.rss { redirect_to CartoDB.path(self, '/datasets/feed', {format: :atom}), status: :moved_permanently }
-      end
+      format.rss { render layout: false }
     end
   end
 

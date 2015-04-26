@@ -79,3 +79,26 @@
       .caution { background: #F8B85C }
     }
   }
+
+  // Animated bar
+  @mixin progress-animated-bar($h, $r, $grad, $min) {
+
+    @include progress-bar($h, $r, $grad, $min);
+
+    $animatedSize: $h*2;
+
+    div.progress-bar .bar-2 {
+      @include css3-prefix('background-size', $animatedSize $animatedSize);
+      background-color: #5DA1D6;
+      background-image: -webkit-linear-gradient( -45deg, rgba(85, 128, 197, 1) 25%, transparent 25%, transparent 50%, rgba(85, 128, 197, 1) 50%, rgba(85, 128, 197, 1) 75%, transparent 75%, transparent);
+      background-image: -moz-linear-gradient( -45deg, rgba(85, 128, 197, 1) 25%, transparent 25%, transparent 50%, rgba(85, 128, 197, 1) 50%, rgba(85, 128, 197, 1) 75%, transparent 75%, transparent);
+      background-image: -ms-linear-gradient( -45deg, rgba(85, 128, 197, 1) 25%, transparent 25%, transparent 50%, rgba(85, 128, 197, 1) 50%, rgba(85, 128, 197, 1) 75%, transparent 75%, transparent);
+      background-image: linear-gradient( -45de rgba(85, 128, 197, 1) 25%, transparent 25%, transparent 50%, rgba(85, 128, 197, 1) 50%, rgba(85, 128, 197, 1) 75%, transparent 75%, transparent);
+      @include animation(move 1s linear infinite);
+    }
+
+    @include keyframes(move){
+      0% { background-position: 0 0 }
+      100% { background-position: $animatedSize $animatedSize }
+    }
+  }

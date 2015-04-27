@@ -7,6 +7,9 @@
 * Add caching of geometry types [#3157](https://github.com/CartoDB/cartodb/pull/3157)
 * Do not store session for api_key auth [#3208](https://github.com/CartoDB/cartodb/pull/3208)
 * All connected services available in account page [#3025](https://github.com/CartoDB/cartodb/issues/3025)
+* Fixed script to purge vizjson redis [#3354](https://github.com/CartoDB/cartodb/pull/3354)
+* Fix guessing warnings when there are no rows [#3024](https://github.com/CartoDB/cartodb/pull/3363)
+* Send geocoding duration metrics [#3381](https://github.com/CartoDB/cartodb/pull/3381)
 
 Bugfixes:
 * Fixed interaction when there are hidden layers [#3090](https://github.com/CartoDB/cartodb/pull/3090)

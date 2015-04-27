@@ -16,7 +16,7 @@ class Carto::User < ActiveRecord::Base
   DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url, users.api_key, users.dynamic_cdn_enabled, users.database_schema, users.database_name, users.name, users.disqus_shortname, users.account_type, users.twitter_username"
 
   def service
-    @service ||= UserService.new(self)
+    @service ||= Carto::UserService.new(self)
   end
 
   # @return String public user url, which is also the base url for a given user

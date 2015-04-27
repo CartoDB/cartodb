@@ -9,9 +9,9 @@ class Geocoding < Sequel::Model
   DEFAULT_TIMEOUT = 15.minutes
   ALLOWED_KINDS   = %w(admin0 admin1 namedplace postalcode high-resolution ipaddress)
 
-  PUBLIC_ATTRIBUTES = [:id, :table_id, :state, :kind, :country_code, :formatter, :geometry_type,
+  PUBLIC_ATTRIBUTES = [:id, :table_id, :state, :kind, :country_code, :region_code, :formatter, :geometry_type,
                        :error, :processed_rows, :cache_hits, :processable_rows, :real_rows, :price,
-                       :used_credits, :remaining_quota, :country_column, :data_import_id]
+                       :used_credits, :remaining_quota, :country_column, :region_column, :data_import_id]
 
   many_to_one :user
   many_to_one :user_table, :key => :table_id
@@ -73,10 +73,12 @@ class Geocoding < Sequel::Model
       connection:    user_connection,
       remote_id:     remote_id,
       countries:     country_code,
+      regions:       region_code,
       geometry_type: geometry_type,
       kind:          kind,
       max_rows:      max_geocodable_rows,
-      country_column: country_column
+      country_column: country_column,
+      region_column: region_column
     )
     @table_geocoder ||= geocoder_class.new(config)
   end # table_geocoder

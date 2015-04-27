@@ -11,8 +11,8 @@ module CartoDB
       SQLAPI_CALLS_TIMEOUT = 45
 
       attr_reader   :connection, :temp_table_name, :sql_api, :geocoding_results,
-                    :working_dir, :remote_id, :state, :processed_rows, :country_column,
-                    :qualified_table_name, :batch_size, :countries, :kind, :geometry_type
+                    :working_dir, :remote_id, :state, :processed_rows, :country_column, :region_column,
+                    :qualified_table_name, :batch_size, :countries, :regions, :kind, :geometry_type
 
       attr_accessor :table_schema, :table_name, :column_name
 
@@ -27,13 +27,15 @@ module CartoDB
         @qualified_table_name = arguments[:qualified_table_name]
         @column_name          = arguments[:formatter]
         @countries            = arguments[:countries].to_s
+        @country_column       = arguments[:country_column]
+        @regions              = arguments[:regions].to_s
+        @region_column        = arguments[:region_column]
         @geometry_type        = arguments.fetch(:geometry_type, '').to_sym
         @kind                 = arguments.fetch(:kind, '').to_sym
         @schema               = arguments[:schema] || 'cdb'
         @batch_size           = (@geometry_type == :point ? 1000 : 10)
         @state                = 'submitted'
         @geocoding_results = File.join(working_dir, "#{temp_table_name}_results.csv")
-        @country_column = arguments[:country_column]
         @query_generator = CartoDB::InternalGeocoder::QueryGeneratorFactory.get self
       end # initialize
 
@@ -75,7 +77,7 @@ module CartoDB
       def create_temp_table
         connection.run(%Q{
           CREATE TABLE #{temp_table_name} (
-            geocode_string text, country text, the_geom geometry, cartodb_georef_status boolean
+            geocode_string text, country text, region text, the_geom geometry, cartodb_georef_status boolean
           );
         })
       end # create_temp_table

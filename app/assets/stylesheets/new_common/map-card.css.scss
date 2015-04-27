@@ -63,6 +63,10 @@ $opacityTransition: 250ms;
     .MapCard-tags:after {
       @include background-horizontal(rgba(255,255,255,0), $cCard-hoverFill);
     }
+    .MapviewsGraph-bar {
+      cursor: pointer;
+      fill: rgba(white, 1);
+    }
   }
   &.is-selected {
     background-color: $cCard-selectedFill;

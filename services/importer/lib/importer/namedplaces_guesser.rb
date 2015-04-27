@@ -45,11 +45,7 @@ module CartoDB
         def country_column
           return @country_column if defined?(@country_column)
           candidate = text_columns.sort{|a,b| country_proportion(a) <=> country_proportion(b)}.last
-          @country_column = if candidate
-                              (country_proportion(candidate) > @guesser.threshold) ? candidate : nil
-                            else
-                              nil
-                            end
+          @country_column = (candidate && (country_proportion(candidate) > @guesser.threshold)) ? candidate : nil
         end
 
         def country_column_name
@@ -69,11 +65,7 @@ module CartoDB
         def guess_with_country_column
           candidate_columns = text_columns.reject{|c| c == country_column}
           candidate = candidate_columns.sort{|a,b| proportion(a) <=> proportion(b)}.last
-          @column = if candidate
-                      (proportion(candidate) > @guesser.threshold) ? candidate : nil
-                    else
-                      nil
-                    end
+          @column = (candidate && (proportion(candidate) > @guesser.threshold)) ? candidate : nil
         end
 
         def namedplaces_guess_country

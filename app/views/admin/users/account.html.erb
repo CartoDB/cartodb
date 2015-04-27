@@ -39,7 +39,7 @@
             <label class="Form-label">Username</label>
           </div>
           <div class="Form-rowData Form-rowData--med">
-            <%= f.text_field :username, readonly: true, :class => "Form-input Form-input--long is-disabled" %>
+            <%= f.text_field :username, readonly: true, :class => "Form-input Form-input--med is-disabled" %>
           </div>
           <div class="Form-rowInfo">
             <p class="Form-rowInfoText">Subdomain cannot be changed</p>
@@ -51,7 +51,7 @@
             <label class="Form-label">Email</label>
           </div>
           <div class="Form-rowData Form-rowData--med">
-            <%= f.text_field :email, class: "Form-input Form-input--long #{ 'Form-input--error' if @user.errors[:email].present? } #{ 'is-disabled' unless @user.can_change_email }", readonly: !@user.can_change_email %>
+            <%= f.text_field :email, class: "Form-input Form-input--med #{ 'Form-input--error' if @user.errors[:email].present? } #{ 'is-disabled' unless @user.can_change_email }", readonly: !@user.can_change_email %>
           </div>
           <div class="Form-rowInfo">
             <% if @user.errors[:email].present? %>
@@ -68,7 +68,7 @@
               <label class="Form-label">Old password</label>
             </div>
             <div class="Form-rowData Form-rowData--med">
-              <%= f.password_field :old_password, :class => "Form-input Form-input--long #{ 'Form-input--error' if @user.errors[:old_password].present? }" %>
+              <%= f.password_field :old_password, :class => "Form-input Form-input--med #{ 'Form-input--error' if @user.errors[:old_password].present? }" %>
             </div>
             <div class="Form-rowInfo">
               <% if (@user.errors[:old_password].present?) %>
@@ -83,7 +83,7 @@
             <label class="Form-label">New password</label>
           </div>
           <div class="Form-rowData Form-rowData--med">
-            <%= f.password_field :new_password, :class => "Form-input Form-input--long #{ 'Form-input--error' if @user.errors[:new_password].present? }" %>
+            <%= f.password_field :new_password, :class => "Form-input Form-input--med #{ 'Form-input--error' if @user.errors[:new_password].present? }" %>
           </div>
           <div class="Form-rowInfo">
             <% if (@user.errors[:new_password].present?) %>
@@ -99,7 +99,7 @@
             <label class="Form-label">Confirm password</label>
           </div>
           <div class="Form-rowData Form-rowData--med">
-            <%= f.password_field :confirm_password, :class => "Form-input Form-input--long" %>
+            <%= f.password_field :confirm_password, :class => "Form-input Form-input--med" %>
           </div>
         </div>
 

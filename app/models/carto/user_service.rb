@@ -19,8 +19,19 @@ module Carto
     end
 
     # TODO: Migrate remaining
-    def in_database(options = {})
-      get_database(options)
+    def in_database(options = {}, &block)
+      if options[:statement_timeout]
+        # TODO: See if this has any effect, probably not as it is  retrieving a new connection each time
+        in_database.execute("SET statement_timeout TO #{options[:statement_timeout]}")
+      end
+
+      connection = get_database(options)
+
+      if block_given?
+        yield(connection)
+      else
+        connection
+      end
     end
 
     private

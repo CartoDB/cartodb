@@ -19,6 +19,7 @@ class Geocoding < Sequel::Model
   many_to_one :data_import
 
   attr_reader :table_geocoder
+  attr_reader :started_at, :finished_at
 
   attr_accessor :run_timeout
 
@@ -98,6 +99,7 @@ class Geocoding < Sequel::Model
     CartoDB::notify_exception(e, user: user)
   end # cancel
 
+  # INFO: this method shall always be called from a queue processor
   def run!
     processable_rows = self.class.processable_rows(table_service)
     if processable_rows == 0
@@ -115,7 +117,11 @@ class Geocoding < Sequel::Model
 
   def run_geocoding!(processable_rows, rows_geocoded_before = 0)
     self.update state: 'started', processable_rows: processable_rows
+    @started_at = Time.now
+
+    # INFO: this is where the real stuff is done
     table_geocoder.run
+
     self.update remote_id: table_geocoder.remote_id
     started = Time.now
     begin
@@ -133,9 +139,12 @@ class Geocoding < Sequel::Model
     table_geocoder.process_results if state == 'completed'
     create_automatic_geocoding if automatic_geocoding_id.blank?
     rows_geocoded_after = table_service.owner.in_database.select.from(table_service.sequel_qualified_table_name).where('cartodb_georef_status is true and the_geom is not null').count rescue 0
+
+    @finished_at = Time.now
     self.update(state: 'finished', real_rows: rows_geocoded_after - rows_geocoded_before, used_credits: calculate_used_credits)
     self.report
   rescue => e
+    @finished_at = Time.now
     self.update(state: 'failed', processed_rows: 0, cache_hits: 0)
     CartoDB::notify_exception(e, user: user)
     self.report(e)
@@ -252,6 +261,10 @@ class Geocoding < Sequel::Model
         error: error
       )
     end
+
+    payload.merge!(queue_time: started_at - created_at) if started_at && created_at
+    payload.merge!(processing_time: finished_at - started_at) if started_at && finished_at
+
     payload
   end
 

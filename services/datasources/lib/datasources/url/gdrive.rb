@@ -277,10 +277,10 @@ module CartoDB
 
         # Revokes current set token
         def revoke_token
-          # TODO: Implement correctly, Ruby Google API does not support it
-          # and https://developers.google.com/accounts/docs/OAuth2WebServer#tokenrevoke just points to a url
-          # that throws an invalid request
-          true
+          response = Typhoeus.get("https://accounts.google.com/o/oauth2/revoke?token=#{token}")
+            if response.code == 200
+              true
+            end
         rescue => ex
           raise AuthError.new("revoke_token: #{ex.message}", DATASOURCE_NAME)
         end

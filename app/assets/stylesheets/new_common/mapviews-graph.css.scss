@@ -1,0 +1,24 @@
+@import "compass/css3/images";
+@import "../new_variables/colors";
+@import "../new_variables/mixins";
+@import "../new_variables/sizes";
+
+
+
+.MapviewsGraph {
+  position:absolute;
+  height: 25px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px 20px 0 20px;
+  @include background-gradient(rgba(black,0), rgba(black,0.5));
+  z-index: 2;
+}
+.MapviewsGraph-bar {
+  fill: rgba(white, 0.5);
+}
+.MapviewsGraph-bar.on-hover {
+  cursor: pointer;
+  fill: rgba(white, 1); 
+}

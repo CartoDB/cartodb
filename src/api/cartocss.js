@@ -88,6 +88,7 @@ CartoCSS.guess({
 */
 
 CSS.guess = guess;
+CSS.guessCss = guessCss
 
 
 root.cartodb.CartoCSS = CSS;

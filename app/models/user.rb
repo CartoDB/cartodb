@@ -2354,6 +2354,17 @@ TRIGGER
     end
   end
 
+  # returnd a list of basemaps enabled for the user
+  #def basemaps
+    #basemaps = Cartodb.config[:basemaps]
+    #if basemaps
+      #basemaps.each { |group| {
+        #group.select
+        
+      #}
+    #end
+  #end
+
   private
 
   # INFO: assigning to owner is necessary because of payment reasons

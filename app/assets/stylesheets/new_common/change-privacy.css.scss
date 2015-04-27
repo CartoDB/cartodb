@@ -87,7 +87,7 @@
   margin-right: $sMargin-elementInline;
 }
 .ChangePrivacy-shareFooter {
-  background-color: $cStructure-lighterGrayBkg;
+  background-color: $cStructure-grayBkg;
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center);

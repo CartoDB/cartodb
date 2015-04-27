@@ -125,6 +125,10 @@ $w: 700px;
   line-height: 40px!important
 }
 .CreateDialog-templateItemIcon.iconFont-Rectangles { font-size: 22px }
+.CreateDialog-templateItemIcon.iconFont-Email {
+  font-size: 26px;
+  line-height: 44px!important;
+}
 .CreateDialog-templateTitle {
   margin: 10px 10px 0 10px;
   font-size: $sFontSize-large;

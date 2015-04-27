@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+require 'active_record'
 require_relative '../../lib/importer/namedplaces_guesser'
 
 RSpec.configure do |config|
@@ -9,6 +10,10 @@ end
 module CartoDB::Importer2
 
   describe NamedplacesGuesser do
+
+    before(:all) do
+      ActiveRecord::Base.establish_connection :adapter => :nulldb
+    end
 
     describe '#found?' do
       it 'raises an exception if not run yet' do

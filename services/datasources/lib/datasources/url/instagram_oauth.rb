@@ -207,8 +207,14 @@ module CartoDB
         # @return bool
         # @throws AuthError
         def token_valid?
-          # TODO: See how to check this
-          true
+          # checking if metadata is returned, if so token
+          # is valid, if not it is invalid
+          response = get_resource_metadata(DATASOURCE_NAME)
+          if response[:id]
+            true
+          end
+        rescue => ex
+          false
         end
 
         # Revokes current set token

@@ -59,6 +59,16 @@ module CartoDB
           end
         end
 
+        # Gets all available oauth datasources
+        def self.get_all_oauth_datasources
+          [
+            Url::Dropbox::DATASOURCE_NAME,
+            Url::GDrive::DATASOURCE_NAME,
+            Url::InstagramOAuth::DATASOURCE_NAME,
+            Url::MailChimp::DATASOURCE_NAME
+          ]
+        end
+
         # Gets the config of a certain datasource
         # @param datasource_name string
         # @param user User

@@ -77,7 +77,7 @@ describe('cdb.geo.ui.TimeSlider', function() {
       });
     });
 
-    fdescribe("given a step that spans more than 48 hours, but within a period of more than a year", function() {
+    describe("given a step that spans more than 48 hours, but within a period of more than a year", function() {
       beforeEach(function() {
         var start = 1423699205000;
         var end = 1460419200000;

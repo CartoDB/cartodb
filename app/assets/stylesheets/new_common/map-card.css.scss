@@ -75,6 +75,10 @@ $opacityTransition: 250ms;
     .MapCard-tags:after {
       @include background-horizontal(rgba(255,255,255,0), $cCard-selectedFill);
     }
+    .MapviewsGraph-bar {
+      cursor: pointer;
+      fill: rgba(white, 1);
+    }
   }
 }
 .MapCard-header {

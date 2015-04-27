@@ -66,7 +66,7 @@ body.is-inDialog {
   // if not IE10 will not show
   // scrollbar in higher content
   -ms-flex: 100 0 80%;
-  background-color: $cStructure-lighterGrayBkg;
+  background-color: $cStructure-grayBkg;
 }
 .Dialog-footer--expanded {
   width: 100%;
@@ -162,7 +162,7 @@ $sStickyHeight: 97px;
 .Dialog-expandedSubContent {
   @include flex-grow(100);
   border: 1px solid $cStructure-mainLine;
-  background-color: $cStructure-lighterGrayBkg;
+  background-color: $cStructure-grayBkg;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -171,7 +171,7 @@ $sStickyHeight: 97px;
 }
 .Dialog-stickySubHeader {
   position: fixed;
-  background-color: $cStructure-lighterGrayBkg;
+  background-color: $cStructure-grayBkg;
   padding: $sMargin-group 0;
   border-bottom: 1px solid $cStructure-mainLine;
   width: $sLayout-width;

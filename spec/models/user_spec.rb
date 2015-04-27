@@ -1440,8 +1440,7 @@ describe User do
       end
 
       collection = CartoDB::Visualization::Collection.new.fetch({user_id: @user.id})
-      # Not grabbing https version of keys
-      redis_keys = collection.map(&:redis_vizjson_key)
+      redis_keys = collection.map {|v| v.redis_vizjson_key } + collection.map {|v| v.redis_vizjson_key(true) }
       redis_keys.should_not be_empty
 
       redis_cache_mock = mock

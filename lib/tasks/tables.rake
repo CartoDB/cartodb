@@ -64,6 +64,8 @@ namespace :cartodb do
           acl = permission.acl
           puts "Dropping permission from: #{permission.acl}"
           acl.reject!{|acl_entry| acl_entry[:type] == 'user' && acl_entry[:id] == user.id}
+          # Hack to make ACLs be set correctly (input format for permission.acl= is different than permission.acl output)
+          acl.map!{|acl_entry| acl_entry[:entity] = {id: acl_entry[:id]}; acl_entry.delete(:id); acl_entry }
           permission.acl = acl
           permission.save
         end

@@ -46,7 +46,7 @@
 }
 .ImportItem-progress {
   width: 124px;
-  @include progress-bar(6px, 6px, false, 3px);
+  @include progress-animated-bar(6px, 6px, false, 3px);
 }
 .ImportItem-closeButton {
   width: 24px;

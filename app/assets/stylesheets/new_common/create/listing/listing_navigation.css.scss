@@ -32,12 +32,7 @@
   margin-top: 48px;
   font-size: $sFontSize-small;
 }
-.Filters--navListing .Button--create.is-disabled {
-  height: 34px;
-  margin-top: 48px;
-  font-size: $sFontSize-small;
-  &:hover {
-    background: none;
-    color: $cTypography-link;
-  }
+.Filters--navListing .Button--create.is-disabled:hover {
+  background: none;
+  color: $cTypography-link;
 }

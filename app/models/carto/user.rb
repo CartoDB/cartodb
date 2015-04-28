@@ -1,19 +1,62 @@
+# encoding: UTF-8
+
 require 'active_record'
 require_relative 'user_service'
 
 # TODO: This probably has to be moved as the service of the proper User Model
 class Carto::User < ActiveRecord::Base
   extend Forwardable
-  has_many :visualizations, inverse_of: :user
-  belongs_to :organization, inverse_of: :users
 
+  MIN_PASSWORD_LENGTH = 6
+
+  has_many :tables, class_name: 'Carto::UserTable', inverse_of: :user
+  has_many :visualizations, inverse_of: :user
+  has_many :maps, inverse_of: :user
+  has_many :layers_user
+  has_many :layers, :through => :layers_user
+  belongs_to :organization, inverse_of: :users
   has_many :feature_flags_user, dependent: :destroy
   has_many :feature_flags, :through => :feature_flags_user
+  has_many :assets, inverse_of: :user
+  has_many :data_imports, inverse_of: :user
+  has_many :geocodings, inverse_of: :user
 
-  delegate [ :database_username, :database_password, :in_database ] => :service
+  delegate [ 
+      :database_username, :database_password, :in_database, :load_cartodb_functions, :rebuild_quota_trigger 
+    ] => :service
 
   # INFO: select filter is done for security and performance reasons. Add new columns if needed.
-  DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url, users.api_key, users.dynamic_cdn_enabled, users.database_schema, users.database_name, users.name, users.disqus_shortname, users.account_type, users.twitter_username"
+  DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," + 
+                   "users.api_key, users.dynamic_cdn_enabled, users.database_schema, users.database_name, users.name," +
+                   "users.disqus_shortname, users.account_type, users.twitter_username"
+
+  attr_reader :password
+
+  # TODO: From sequel, can be removed
+  alias_method :maps_dataset, :maps
+  alias_method :layers_dataset, :layers
+  alias_method :assets_dataset, :assets
+  alias_method :data_imports_dataset, :data_imports
+  alias_method :geocodings_dataset, :geocodings
+
+
+  def password=(value)
+    return if !value.nil? && value.length < MIN_PASSWORD_LENGTH
+
+    @password = value
+    self.salt = new_record? ? service.class.make_token : User.filter(:id => self.id).select(:salt).first.salt
+    self.crypted_password = service.class.password_digest(value, salt)
+  end
+
+  def password_confirmation=(password_confirmation)
+    # TODO: Implement
+  end
+
+  def default_avatar
+    return "cartodb.s3.amazonaws.com/static/public_dashboard_default_avatar.png"
+  end
+
+  # TODO: Revisit methods below to delegate to the service, many look like not proper of the model itself
 
   def service
     @service ||= Carto::UserService.new(self)
@@ -64,8 +107,5 @@ class Carto::User < ActiveRecord::Base
 
   private
 
-  def default_avatar
-    return "cartodb.s3.amazonaws.com/static/public_dashboard_default_avatar.png"
-  end
 
 end

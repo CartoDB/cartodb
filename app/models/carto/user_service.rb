@@ -1,8 +1,11 @@
+# encoding: UTF-8
+
 require 'active_record'
 
-# TODO: Use forwardable from User model to delegate here some things like database_username
 module Carto
   class UserService
+
+    AUTH_DIGEST = '47f940ec20a0993b5e9e4310461cc8a6a7fb84e3'
 
     def initialize(user_model)
       @user = user_model
@@ -34,7 +37,23 @@ module Carto
       end
     end
 
+    def self.password_digest(password, salt)
+      digest = AUTH_DIGEST
+      10.times do
+        digest = secure_digest(digest, salt, password, AUTH_DIGEST)
+      end
+      digest
+    end
+
+    def self.make_token
+      secure_digest(Time.now, (1..10).map{ rand.to_s })
+    end
+
     private
+
+    def self.secure_digest(*args)
+      Digest::SHA1.hexdigest(args.flatten.join('--'))
+    end
 
     def database_password
       @user.crypted_password + database_username
@@ -98,7 +117,15 @@ module Carto
             password: database_password,
           })
       end
-  end
+    end
+
+    def load_cartodb_functions
+      #TODO: Implement
+    end
+
+    def rebuild_quota_trigger
+      #TODO: Implement
+    end
 
   end
 end

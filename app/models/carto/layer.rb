@@ -5,6 +5,9 @@ class Carto::Layer < ActiveRecord::Base
 
   has_and_belongs_to_many :maps, class_name: Carto::Map
 
+  has_many :layers_user
+  has_many :users, :through => :layers_user
+
   has_many :children, class_name: Carto::Layer, foreign_key: :parent_id
 
   def affected_tables

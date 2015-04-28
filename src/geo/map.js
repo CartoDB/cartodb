@@ -379,14 +379,14 @@ cdb.geo.Map = cdb.core.Model.extend({
     var maxZoom = layer.get('maxZoom');
     var minZoom = layer.get('minZoom');
 
-    if (_.isNumber(maxZoom)) {
+    if (_.isNumber(parseInt(maxZoom))) {
 
       if ( this.get("zoom") > maxZoom ) this.set({ zoom: maxZoom, maxZoom: maxZoom });
       else this.set("maxZoom", maxZoom);
 
     }
 
-    if (_.isNumber(minZoom)) {
+    if (_.isNumber(parseInt(minZoom))) {
 
       if ( this.get("zoom") < minZoom ) this.set({ minZoom: minZoom, zoom: minZoom });
       else this.set("minZoom", minZoom);

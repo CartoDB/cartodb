@@ -17,3 +17,8 @@
   ::-moz-placeholder {  color: $cTypography-help;  }
   :-ms-input-placeholder {  color: $cTypography-help;  }
 }
+.Input--slim {
+  height: $sMargin-group;
+  padding-left: 10px;
+  padding-right: 10px;
+}

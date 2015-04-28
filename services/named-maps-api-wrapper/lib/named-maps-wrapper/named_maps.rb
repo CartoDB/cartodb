@@ -15,7 +15,7 @@ module CartoDB
                 @verify_host = tiler_config[:verifycert] ? 2 : 0
                 domain = CartoDB.subdomainless_urls? ? tiler_config[:domain] : "#{@username}.#{tiler_config[:domain]}"
                 host_ip = Cartodb.config[:tiler]['internal']['host'].blank? ? domain : Cartodb.config[:tiler]['internal']['host']
-                @host = "#{tiler_config[:protocol]}://#{host_ip}:#{tiler_config[:port]}" + (CartoDB.subdomainless_urls? ? "/user/#{username}" : "")
+                @host = "#{tiler_config[:protocol]}://#{host_ip}:#{tiler_config[:port]}" + (CartoDB.subdomainless_urls? ? "/user/#{@username}" : "")
                 @url = [ @host, 'api', 'v1', 'map', 'named' ].join('/')
                 @headers = { 
                   'content-type' => 'application/json',

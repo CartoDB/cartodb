@@ -34,6 +34,7 @@ class Admin::PagesController < ApplicationController
     # username.cartodb.com should redirect to the public user dashboard in the maps view if the user is not logged in
     else
       # No current_user and no current_viewer so we resort to login page
+      # please note in general we shall use CartoDB.url but this is an exception to the rule
       redirect_to login_url
     end
   end

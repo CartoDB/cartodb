@@ -39,9 +39,6 @@ class Admin::OrganizationsController < ApplicationController
     @organization.display_name = attributes[:display_name]
     @organization.discus_shortname = attributes[:discus_shortname]
     @organization.twitter_username = attributes[:twitter_username]
-    if current_user.has_feature_flag?('google_maps') && attributes.include?(:google_maps_key)
-      @organization.google_maps_key = attributes[:google_maps_key]
-    end
 
     @organization.update_in_central
     @organization.save(raise_on_failure: true)

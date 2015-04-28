@@ -104,7 +104,7 @@
           <div class="Form-title">
             <h4 class="Form-titleHeader">Configure API keys from external providers</h4>
             <p class="Form-titleText">Configure here the API keys from other services like
-            Google Cloud Platform, so you won’t be asked later for them.</p>
+            Google Cloud Platform, so your organization users won't be asked later for them.</p>
           </div>
 
           <div class="Form-row">
@@ -112,7 +112,7 @@
               <label class="Form-label">Google Maps</label>
             </div>
             <div class="Form-rowData">
-              <%= f.text_field :google_maps_key, class: "Form-input Form-input--long #{ 'Form-input--error' if @organization.errors[:google_maps_key].present? }", placeholder: "Copy here your organization API key" %>
+              <%= f.text_field :google_maps_key, class: "Form-input Form-input--long is-disabled", :readonly => "true" %>
             </div>
             <div class="Form-rowInfo"></div>
           </div>

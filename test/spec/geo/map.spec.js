@@ -107,6 +107,20 @@ describe("geo.map", function() {
       expect(map.get('zoom')).toEqual(10);
     });
 
+    it("should adjust zoom to layer", function() {
+      expect(map.get('maxZoom')).toEqual(40);
+      expect(map.get('minZoom')).toEqual(0);
+
+      var layer = new cdb.geo.PlainLayer({ minZoom: 5, maxZoom: 20 });
+      map.layers.reset(layer);
+      expect(map.get('maxZoom')).toEqual(20);
+      expect(map.get('minZoom')).toEqual(5);
+
+      var layer = new cdb.geo.PlainLayer({ minZoom: "7", maxZoom: "31" });
+      map.layers.reset(layer);
+      expect(map.get('maxZoom')).toEqual(31);
+      expect(map.get('minZoom')).toEqual(7);
+    });
 
   });
 

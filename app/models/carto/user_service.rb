@@ -21,22 +21,6 @@ module Carto
       end
     end
 
-    # TODO: Migrate remaining
-    def in_database(options = {}, &block)
-      if options[:statement_timeout]
-        # TODO: See if this has any effect, probably not as it is  retrieving a new connection each time
-        in_database.execute("SET statement_timeout TO #{options[:statement_timeout]}")
-      end
-
-      connection = get_database(options)
-
-      if block_given?
-        yield(connection)
-      else
-        connection
-      end
-    end
-
     def self.password_digest(password, salt)
       digest = AUTH_DIGEST
       10.times do
@@ -63,21 +47,55 @@ module Carto
       (@user.database_schema != CartoDB::DEFAULT_DB_SCHEMA) ? "cartodb_publicuser_#{@user.id}" : CartoDB::PUBLIC_DB_USER
     end
 
-    def get_database(options)
-      #TODO: Sequel one also sets search_path after connecting      
-      resolver = ActiveRecord::Base::ConnectionSpecification::Resolver.new(
-          get_db_configuration_for(options[:as]), 
-          get_connection_name(options[:as])
+    def in_database(options = {}, &block)
+      if options[:statement_timeout]
+        in_database.execute(%Q{ SET statement_timeout TO #{options[:statement_timeout]} })
+      end
+
+      configuration = get_db_configuration_for(options[:as])
+
+      connection = $pool.fetch(configuration) do
+        get_database(options, configuration)
+      end
+
+      if block_given?
+        yield(connection)
+      else
+        connection
+      end
+    ensure
+      if options[:statement_timeout]
+        in_database.execute(%Q{ SET statement_timeout TO DEFAULT })
+      end    
+    end
+
+    # NOTE: Must not live inside another model as AR internally uses model name as key for its internal connection cache
+    # and establish_connection would override the model's connection
+    def get_database(options, configuration)
+      resolver = ActiveRecord::Base::ConnectionSpecification::Resolver.new( 
+          configuration, get_connection_name(options[:as])
         )
-      ActiveRecord::Base.connection_handler.establish_connection(
-          get_connection_name(options[:as]), 
-          resolver.spec
+      conn = ActiveRecord::Base.connection_handler.establish_connection(
+          get_connection_name(options[:as]), resolver.spec
         ).connection
+
+      unless options[:as] == :cluster_admin
+        conn.execute(%Q{ SET search_path TO "#{@user.database_schema}", cartodb, public })
+      end
+      conn
     end
 
     def get_connection_name(kind = :user_model)
       kind.to_s
     end
+
+    def connection(options = {})
+    configuration = get_db_configuration_for(options[:as])
+
+    $pool.fetch(configuration) do
+      get_database(options, configuration)
+    end
+  end
 
     def get_db_configuration_for(user_type = nil)
       logger = (Rails.env.development? || Rails.env.test? ? ::Rails.logger : nil)
@@ -86,6 +104,7 @@ module Carto
       base_config = ::Rails::Sequel.configuration.environment_for(Rails.env)
 
       config = {
+        orm:      'ar',
         adapter:  "postgresql",
         logger:   logger,
         host:     @user.database_host,

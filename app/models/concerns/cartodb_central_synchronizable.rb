@@ -50,6 +50,7 @@ module Concerns
           :geocoding_block_price, :map_view_block_price,
           :twitter_datasource_enabled, :twitter_datasource_block_size,
           :twitter_datasource_block_price, :twitter_datasource_quota,
+          :google_maps_key,
           :new_dashboard_enabled]
         when :update
           [:seats, :quota_in_bytes, :display_name, :description, :website,

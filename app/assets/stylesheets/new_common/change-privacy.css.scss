@@ -2,12 +2,6 @@
 @import "../new_variables/colors";
 @import "../new_variables/sizes";
 
-.ChangePrivacy-optionsList {
-  @include display-flex();
-  @include justify-content(center);
-  @include align-items(stretch);
-  @include align-content(space-between, justify);
-}
 .ChangePrivacy-upgradeBanner {
   padding: 20px 0;
   background: #F0F7FC;

@@ -14,6 +14,13 @@
 //  |  with some more  |
 //  |__________________|
 //
+
+.OptionCards {
+  @include display-flex();
+  @include justify-content(center);
+  @include align-items(stretch);
+  @include align-content(space-between, justify);
+}
 .OptionCard {
   @include display-flex();
   @include flex(1); // Grow evenly inside container
@@ -36,7 +43,8 @@
   background-color: $cCard-selectedFill;
   cursor: default;
 }
-.OptionCard:not(.is-disabled):not(.is-selected):hover {
+.OptionCard--static { cursor: default }
+.OptionCard:not(.is-disabled):not(.is-selected):not(.OptionCard--static):hover {
   border-color: $cCard-selectedBorder;
   background-color: $cCard-hoverFill;
   cursor: pointer;
@@ -58,10 +66,4 @@
   color: $cTypography-secondary;
   @include nicer-lato-typography();
   margin-bottom: $sMargin-elementInline;
-}
-.OptionCard-copyableInput {
-  width: 100%;
-  margin-left: $sMargin-element;
-  margin-right: $sMargin-element;
-  box-sizing: border-box;
 }

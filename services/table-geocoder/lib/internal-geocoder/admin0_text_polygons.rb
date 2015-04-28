@@ -18,7 +18,7 @@ module CartoDB
 
       def dataservices_query(search_terms)
         regions = search_terms.map { |row| row[:region] }.join(',')
-        "WITH geo_function AS (SELECT (geocode_admin0_polygons(Array[#{regions}])).*) SELECT q, null, geom, success FROM geo_function"
+        "WITH geo_function AS (SELECT (geocode_admin0_polygons(Array[#{regions}])).*) SELECT q, null AS c, null AS a1, geom, success FROM geo_function"
       end
 
       def copy_results_to_table_query
@@ -32,7 +32,7 @@ module CartoDB
         }
       end
 
-    end # CitiesTextPoints
+    end # Admin0TextPolygons
 
   end # InternalGeocoder
 end # CartoDB

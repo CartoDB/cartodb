@@ -1,6 +1,6 @@
 // cartodb.js version: 3.14.0
 // uncompressed version: cartodb.uncompressed.js
-// sha: 4bdbe95f952cbea318d73c2d1a99b7914b7182a3
+// sha: e47b857b8cef9666017e6467c7b8039c46f87aee
 (function() {
   var root = this;
 
@@ -11707,7 +11707,7 @@ L.Map.include({
 
 
 }(window, document));
-/* wax - 7.1.0 - v6.0.4-177-g1f244ba */
+/* wax - 7.0.1 - v6.0.4-178-gc113470 */
 
 
 !function (name, context, definition) {
@@ -14947,7 +14947,7 @@ wax.g.interaction = function() {
             var zoom = map.getZoom();
             var mapOffset = wax.u.offset(map.getDiv());
             var get = function(mapType) {
-                if (!mapType.interactive) return;
+                if (!mapType || !mapType.interactive) return;
                 for (var key in mapType.cache) {
                     if (key.split('/')[0] != zoom) continue;
                     var tileOffset = wax.u.offset(mapType.cache[key]);
@@ -39163,7 +39163,7 @@ cdb.vis.Vis = Vis;
 
     },
 
-    loadLayerDefinition: function(layerDefinition) {
+    loadLayerDefinition: function(layerDefinition, options) {
 
       var self = this;
 
@@ -39174,12 +39174,15 @@ cdb.vis.Vis = Vis;
         return;
       }
 
+      this.userOptions = options;
+
       this.options.user_name      = layerDefinition.user_name;
       this.options.tiler_protocol = layerDefinition.tiler_protocol;
       this.options.tiler_domain   = layerDefinition.tiler_domain;
       this.options.tiler_port     = layerDefinition.tiler_port;
       this.options.maps_api_template = layerDefinition.maps_api_template;
       this.endPoint = "/api/v1/map";
+
       if (!this.options.maps_api_template) {
         this._buildMapsApiTemplate(this.options);
       }
@@ -39414,6 +39417,7 @@ cdb.vis.Vis = Vis;
       return {
         type: "torque",
         options: {
+          step: this.userOptions.step || 0,
           sql: query,
           cartocss: cartocss
         }
@@ -39607,7 +39611,7 @@ cdb.vis.Vis = Vis;
     if (typeof data === 'string') {
       image.load(data, options);
     } else {
-      image.loadLayerDefinition(data);
+      image.loadLayerDefinition(data, options);
     }
 
     return image;

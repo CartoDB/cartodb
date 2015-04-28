@@ -27,3 +27,12 @@
 }
 .Filters.Filters--navListing .Filters-separator { background-color: $cStructure-mainLine }
 .Filters.Filters--navListing .Filters-searchInput { margin-top: -2px } /* hacking line-height between search and input */
+.Filters--navListing .Button--create {
+  height: 34px;
+  margin-top: 48px;
+  font-size: $sFontSize-small;
+}
+.Filters--navListing .Button--create.is-disabled:hover {
+  background: none;
+  color: $cTypography-link;
+}

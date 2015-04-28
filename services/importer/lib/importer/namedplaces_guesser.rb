@@ -45,7 +45,7 @@ module CartoDB
         def country_column
           return @country_column if defined?(@country_column)
           candidate = text_columns.sort{|a,b| country_proportion(a) <=> country_proportion(b)}.last
-          @country_column = (country_proportion(candidate) > @guesser.threshold) ? candidate : nil
+          @country_column = (candidate && (country_proportion(candidate) > @guesser.threshold)) ? candidate : nil
         end
 
         def country_column_name
@@ -65,13 +65,13 @@ module CartoDB
         def guess_with_country_column
           candidate_columns = text_columns.reject{|c| c == country_column}
           candidate = candidate_columns.sort{|a,b| proportion(a) <=> proportion(b)}.last
-          @column = (proportion(candidate) > @guesser.threshold) ? candidate : nil
+          @column = (candidate && (proportion(candidate) > @guesser.threshold)) ? candidate : nil
         end
 
         def namedplaces_guess_country
           text_columns.each do |candidate|
             column_name_sym = candidate[:column_name].to_sym
-            places = @guesser.sample.map{|row| "'" + row[column_name_sym] + "'"}.join(',')
+            places = @guesser.sample.map{|row| sql_sanitize(row[column_name_sym])}.join(',')
             query = "SELECT namedplace_guess_country(Array[#{places}]) as country"
             country = @guesser.geocoder_sql_api.fetch(query).first['country']
             if country
@@ -90,9 +90,9 @@ module CartoDB
         end
 
         def count_namedplaces_with_country_column(column_name_sym)
-          places = @guesser.sample.map{|row| "'" + row[column_name_sym] + "'"}.join(',')
+          places = @guesser.sample.map{|row| sql_sanitize(row[column_name_sym])}.join(',')
           country_column_sym = country_column[:column_name].to_sym
-          countries = @guesser.sample.map{|row| "'" + row[country_column_sym] + "'"}.join(',')
+          countries = @guesser.sample.map{|row| sql_sanitize(row[country_column_sym])}.join(',')
           query = "WITH geo_function as (SELECT (geocode_namedplace(Array[#{places}], Array[#{countries}])).*) select count(success) FROM geo_function where success = TRUE"
           ret = @guesser.geocoder_sql_api.fetch(query)
           ret.first['count']
@@ -100,6 +100,10 @@ module CartoDB
 
         def text_columns
           @text_columns ||= @guesser.columns.all.select{|c| @guesser.is_text_type?(c)}
+        end
+
+        def sql_sanitize(str)
+          ActiveRecord::Base::sanitize(str)
         end
 
       end

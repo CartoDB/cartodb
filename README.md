@@ -261,7 +261,7 @@ Finally, CartoDB depends on a geospatial database template named
 
 ```bash
 sudo su - postgres
-POSTGIS_SQL_PATH=`pg_config --sharedir`/contrib/postgis-2.1.7
+POSTGIS_SQL_PATH=`pg_config --sharedir`/contrib/postgis-2.1
 createdb -E UTF8 template_postgis
 createlang -d template_postgis plpgsql
 psql -d postgres -c "UPDATE pg_database SET datistemplate='true' WHERE datname='template_postgis'"

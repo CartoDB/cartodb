@@ -16,7 +16,7 @@ module CartoDB
     },
     1002 => {
       title: 'Unsupported/Unrecognized file type',
-      what_about: "Should we support this filetype? Let us know in our <a href='mailto:support-suggestions@cartodb.com'>support email</a>!"
+      what_about: "Should we support this filetype? Let us know in our <a href='mailto:support@cartodb.com'>support email</a>!"
     },
     1003 => {
       title: 'Decompression error',

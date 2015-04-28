@@ -452,6 +452,7 @@ via the Maps API.
 Add CartoDB Varnish PPA and install it:
 ```bash
 sudo add-apt-repository  ppa:cartodb/varnish
+sudo apt-get update
 sudo apt-get install varnish=2.1.5.1-cdb1 #or any version <3.x
 ```
 

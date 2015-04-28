@@ -57,6 +57,7 @@ module Concerns
           :geocoding_block_price, :map_view_block_price,
           :twitter_datasource_enabled, :twitter_datasource_block_size,
           :twitter_datasource_block_price, :twitter_datasource_quota,
+          :google_maps_key,
           :new_dashboard_enabled]
         end
       elsif self.is_a?(User)
@@ -72,6 +73,7 @@ module Concerns
         :twitter_datasource_block_price, :twitter_datasource_quota,
         :soft_twitter_datasource_limit,
         :google_sign_in, :last_password_change_date,
+        :google_maps_key,
         :arcgis_datasource_enabled,
         :new_dashboard_enabled, :private_maps_enabled]
       end

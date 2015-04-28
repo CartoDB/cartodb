@@ -117,7 +117,8 @@ describe Geocoding do
       geocoding.state.should eq 'failed'
     end
 
-    it 'raises a timeout error if geocoding takes more than 15 minutes to start' do
+    # TODO: decide what kind of timeout makes sense and test properly (legacy implementation did not work)
+    pending 'raises a timeout error if geocoding takes more than 15 minutes to start' do
       geocoding = FactoryGirl.create(:geocoding, user: @user, user_table: @table, formatter: 'b')
       geocoding.class.stubs(:processable_rows).returns 10
       CartoDB::TableGeocoder.any_instance.stubs(:run).returns true

@@ -35,11 +35,10 @@
                 <i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i>
                 <%= time_ago_in_words(@visualization.updated_at) %> ago
                 by
-                <a href="<%= CartoDB.url(self, 'public_visualizations_home', {}, user) %>" target="_blank" class="UserAvatar PublicMap-owner">
+                <a href="<%= CartoDB.url(self, 'public_maps_home', {}, @visualization.user) %>" target="_blank" class="UserAvatar PublicMap-owner">
                   <img class="UserAvatar-img UserAvatar-img--smaller PublicMap-ownerAvatar" src="<%= @visualization.user.avatar %>" alt="<%= @name %>" title="<%= @name %>" />
                   <span class="PublicMap-ownerName"><%= @name %></span>
                 </a>
-                <!--a class="PublicMap-ownerName" href="<%= CartoDB.url(self, 'public_visualizations_home', {}, user) %>" target="_blank"><%= @name %></a-->
               </span>
             </div>
             <% if @visualization.description.present? %>

@@ -110,7 +110,8 @@ module Carto
         host:     @user.database_host,
         username: base_config['username'],
         password: base_config['password'],
-        database: @user.database_name
+        database: @user.database_name,
+        port:     base_config['port']
       }
 
       case user_type

@@ -39,6 +39,7 @@ class Admin::VisualizationsController < ApplicationController
     @tables_count  = current_user.tables.count
     @first_time    = !current_user.dashboard_viewed?
     @just_logged_in = !!flash['logged']
+    @google_maps_api_key = current_user.google_maps_api_key
     current_user.view_dashboard
     update_user_last_activity
 
@@ -63,6 +64,7 @@ class Admin::VisualizationsController < ApplicationController
 
     @visualization, @table = resolve_visualization_and_table(request)
     @google_maps_api_key = @visualization.user.google_maps_api_key
+    @basemaps = @visualization.user.basemaps
     return(pretty_404) unless @visualization
     return(pretty_404) if disallowed_type?(@visualization)
 

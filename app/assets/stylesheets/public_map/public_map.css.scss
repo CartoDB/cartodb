@@ -73,8 +73,8 @@
   padding: 22px 0 0;
   @include nicer-lato-typography();
   font-size: $sFontSize-large;
-  font-weight: $sFontWeight-lighter;
-  color: $cTypography-paragraphs;
+  font-weight: $sFontWeight-normal;
+  color: $cTypography-secondary;
 }
 .PublicMap-share {
   text-align: right;

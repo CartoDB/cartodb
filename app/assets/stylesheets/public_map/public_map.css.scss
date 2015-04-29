@@ -57,13 +57,17 @@
   margin-top: 10px;
   vertical-align: top;
 }
-.PublicMap-owner {
-  height: 18px;
-  margin-left: 3px;
-  margin-right: 3px;
-}
+.PublicMap-metaTime { @include flex-wrap(wrap) }
+.PublicMap-owner { margin-left: 5px }
 .PublicMap-ownerAvatar {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 2px;
   height: 16px;
+}
+.PublicMap-ownerName {
+  display: inline-block;
+  vertical-align: middle;
 }
 .PublicMap-desc {
   padding: 22px 0 0;
@@ -128,7 +132,8 @@
   border-top: 1px solid #D8DADD;
 }
 .PublicMap-secondaryTitle {
-  line-height: 39px;
+  padding: 11px 0 11px;
+  line-height: normal;
   font-size: $sFontSize-large;
   color: #3F4549;
   text-align: left;
@@ -183,6 +188,12 @@
     width: auto;
     max-width: 440px;
   }
+  .PublicMap .DatasetsList-itemSecondaryInfo {
+    width: auto;
+    text-align: left;
+  }
+}
+@media only screen and (max-width: 360px) {
   .PublicMap .DatasetsList-itemSecondaryInfo {
     width: auto;
     text-align: left;

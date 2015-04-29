@@ -113,28 +113,28 @@ module Carto
         database: @user.database_name
       }
 
-      if user_type == :superuser
-        # Nothing needed
-        config
-      elsif user_type == :cluster_admin
-        config.merge({
-            database: 'postgres'
-          })
-      elsif user_type == :public_user
-        config.merge({
-            username: CartoDB::PUBLIC_DB_USER,
-            password: CartoDB::PUBLIC_DB_USER_PASSWORD
-          })
-      elsif user_type == :public_db_user
-        config.merge({
-            username: database_public_username,
-            password: CartoDB::PUBLIC_DB_USER_PASSWORD
-          })
-      else
-        config.merge({
-            username: database_username,
-            password: database_password,
-          })
+      case user_type
+        when :superuser
+          config    # Nothing needed, default
+        when :cluster_admin
+          config.merge({
+              database: 'postgres'
+            })
+        when :public_user
+          config.merge({
+              username: CartoDB::PUBLIC_DB_USER,
+              password: CartoDB::PUBLIC_DB_USER_PASSWORD
+            })
+        when :public_db_user
+          config.merge({
+              username: database_public_username,
+              password: CartoDB::PUBLIC_DB_USER_PASSWORD
+            })
+        else
+          config.merge({
+              username: database_username,
+              password: database_password,
+            })
       end
     end
 

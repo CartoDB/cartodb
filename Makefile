@@ -141,6 +141,7 @@ WORKING_SPECS_9 = \
   spec/models/platform-limits/ \
   spec/lib/initializers/carto_db_spec.rb \
   spec/unit/controllers/api/json/oembed_controller_spec.rb \
+  spec/models/carto/ \
   $(NULL)
 
 CDB_PATH=lib/assets/javascripts/cdb

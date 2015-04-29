@@ -49,66 +49,18 @@
   margin-right: 120px;
 }
 .Dialog-body.ChangePrivacy-ShareDialog-body {
-  padding-top: 20px;
+  padding-top: 0px;
 }
-.ChangePrivacy-shareSearchItem {
+.ChangePrivacy-ShareDialog-body {
   @include display-flex();
-  @include justify-content(space-between, justify);
   @include align-items(center);
-  border-bottom: 1px solid $cStructure-mainLine;
-  padding-bottom: $sMargin-element;
+  @include flex-direction(column);
+}
+.ChangePrivacy-ShareDialog-body .u-inner {
   width: 620px;
-  margin: 0 auto;
 }
-.ChangePrivacy-shareSearchList {
-  @include flex(1);
-  @include display-flex();
-  @include justify-content(flex-start, start);
-  @include align-items(center, center);
-}
-.ChangePrivacy-shareSearchListLabelItem {
-  padding-right: 20px;
-  margin-right: 20px;
-  border-right: 1px solid $cStructure-mainLine;
-}
-.ChangePrivacy-shareSearchListFormItem {
-  @include flex(1);
-}
-.ChangePrivacy-shareSearchLabel {
-  color: $cTypography-secondary;
-  font-weight: $sFontWeight-lighter;
-}
-.ChangePrivacy-shareSearchForm {
-  position: relative;
-}
-.ChangePrivacy-shareSearchInput {
-  width:100%;
-  padding-left:5px;
-  outline:none;
-  border:none;
-  background:none;
-  color: $cTypography-secondary;
-  font-size: $sFontSize-large;
-  font-weight: $sFontWeight-lighter;
-}
-.ChangePrivacy-shareCleanSearch {
-  position:absolute;
-  top:-4px;
-  right:0;
-  width:29px;
-  height:29px;
-  border-radius: 29px;
-  border:1px solid $cNavButton-default;
-  color: $cNavButton-default;
-  text-align: center;
-  line-height:31px;
-  background: transparent;
-  outline: none;
-
-  &:hover {
-    border:1px solid $cNavButton-active;
-    color: $cNavButton-active;
-  }
+.ChangePrivacy-ShareFilters{
+  border-bottom: 1px solid $cStructure-mainLine;
 }
 .ChangePrivacy-shareListItem {
   @include display-flex();
@@ -117,7 +69,6 @@
   padding-bottom: $sMargin-element;
   padding-top: $sMargin-element;
   margin: 0 auto;
-  width: 620px;
 }
 .ChangePrivacy-shareListItem:not(:nth-child(2)) {
   border-top: 1px solid $cStructure-mainLine;

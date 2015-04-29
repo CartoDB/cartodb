@@ -20,6 +20,11 @@ class Carto::Map < ActiveRecord::Base
     get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons
   end
 
+  def provider
+    # TODO: right now only provider
+    'leaflet'
+  end
+
   private
 
   def get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons

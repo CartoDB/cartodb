@@ -1,20 +1,31 @@
 # encoding: utf-8
 require_relative '../../models/map/presenter'
-require_relative '../../models/visualization/locator'
 require_dependency '../../lib/resque/user_jobs'
+require_relative '../carto/admin/user_table_public_map_adapter'
+require_relative '../carto/admin/visualization_public_map_adapter'
 
 class Admin::VisualizationsController < ApplicationController
 
   include CartoDB
 
+  MAX_MORE_VISUALIZATIONS = 3
+
   ssl_allowed :embed_map, :public_map, :show_protected_embed_map, :public_table,
               :show_organization_public_map, :show_organization_embed_map
   ssl_required :index, :show, :protected_embed_map, :protected_public_map, :show_protected_public_map
   before_filter :login_required, only: [:index]
-  before_filter :table_and_schema_from_params, only: [:show, :public_table, :public_map, :show_protected_public_map, :show_protected_embed_map, :embed_map]
+  before_filter :table_and_schema_from_params, only: [:show, :public_table, :public_map, :show_protected_public_map,
+                                                      :show_protected_embed_map, :embed_map]
   before_filter :link_ghost_tables, only: [:index]
   before_filter :load_common_data, only: [:index]
-  skip_before_filter :browser_is_html5_compliant?, only: [:public_map, :embed_map, :track_embed, :show_protected_embed_map, :show_protected_public_map]
+
+  before_filter :resolve_visualization_and_table, only: [:show, :public_table, :public_map,
+                                                         :show_organization_public_map, :show_organization_embed_map,
+                                                         :show_protected_public_map, :show_protected_embed_map,
+                                                         :embed_map ]
+
+  skip_before_filter :browser_is_html5_compliant?, only: [:public_map, :embed_map, :track_embed,
+                                                          :show_protected_embed_map, :show_protected_public_map]
   skip_before_filter :verify_authenticity_token, only: [:show_protected_public_map, :show_protected_embed_map]
 
   def link_ghost_tables
@@ -61,7 +72,6 @@ class Admin::VisualizationsController < ApplicationController
       end
     end
 
-    @visualization, @table = resolve_visualization_and_table(request)
     return(pretty_404) unless @visualization
     return(pretty_404) if disallowed_type?(@visualization)
 
@@ -79,9 +89,9 @@ class Admin::VisualizationsController < ApplicationController
   end
 
   def public_table
-    @visualization, @table = resolve_visualization_and_table(request)
     return(pretty_404) if @visualization.nil? || @visualization.private?
     return(pretty_404) if disallowed_type?(@visualization)
+
     if @visualization.derived?
       if current_user.nil? || current_user.username != request.params[:user_domain]
         destination_user = User.where(username: request.params[:user_domain]).first
@@ -177,7 +187,6 @@ class Admin::VisualizationsController < ApplicationController
   end
 
   def public_map
-    @visualization, @table = resolve_visualization_and_table(request)
     return(pretty_404) unless @visualization
     return(pretty_404) if disallowed_type?(@visualization)
 
@@ -216,6 +225,7 @@ class Admin::VisualizationsController < ApplicationController
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
     @visualization_count    = @visualization.user.public_visualization_count
     @related_tables         = @visualization.related_tables
+    @related_visualizations = @visualization.related_visualizations
     @related_tables_owners = Hash.new
     @related_tables.each { |table|
       unless @related_tables_owners.include?(table.user_id)
@@ -244,13 +254,12 @@ class Admin::VisualizationsController < ApplicationController
       format.html { render layout: 'application_public_visualization_layout' }
       format.js { render 'public_map', content_type: 'application/javascript' }
     end
-  rescue
+  rescue => e
+    CartoDB.notify_exception(e, {user:current_user})
     embed_forbidden
   end
 
   def show_organization_public_map
-    @visualization, @table = resolve_visualization_and_table(request)
-
     return(embed_forbidden) unless org_user_has_map_permissions?(current_user, @visualization)
     return(pretty_404) if disallowed_type?(@visualization)
 
@@ -268,6 +277,7 @@ class Admin::VisualizationsController < ApplicationController
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
     @visualization_count    = @visualization.user.public_visualization_count
     @related_tables         = @visualization.related_tables
+    @related_visualizations = @visualization.related_visualizations
     @public_tables_count    = @visualization.user.public_table_count
     @nonpublic_tables_count = @related_tables.select{|p| !p.public? }.count
 
@@ -280,8 +290,6 @@ class Admin::VisualizationsController < ApplicationController
   end
 
   def show_organization_embed_map
-    @visualization, @table = resolve_visualization_and_table(request)
-
     return(embed_forbidden) unless org_user_has_map_permissions?(current_user, @visualization)
     return(pretty_404) if disallowed_type?(@visualization)
 
@@ -297,9 +305,7 @@ class Admin::VisualizationsController < ApplicationController
   end
 
   def show_protected_public_map
-    submitted_password = params.fetch(:password)
-    @visualization, @table = resolve_visualization_and_table(request)
-
+    submitted_password = params.fetch(:password, nil)
     return(pretty_404) unless @visualization and @visualization.password_protected? and @visualization.has_password?
     return(pretty_404) if disallowed_type?(@visualization)
 
@@ -323,6 +329,7 @@ class Admin::VisualizationsController < ApplicationController
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
     @visualization_count    = @visualization.user.public_visualization_count
     @related_tables         = @visualization.related_tables
+    @related_visualizations = @visualization.related_visualizations
     @public_tables_count    = @visualization.user.public_table_count
     @nonpublic_tables_count = @related_tables.select{|p| !p.public?  }.count
 
@@ -332,14 +339,13 @@ class Admin::VisualizationsController < ApplicationController
     respond_to do |format|
       format.html { render 'public_map', layout: 'application_public_visualization_layout' }
     end
-  rescue
+  rescue => e
+    Rollbar.report_exception(e)
     public_map_protected
   end
 
   def show_protected_embed_map
     submitted_password = params.fetch(:password)
-    @visualization, @table = resolve_visualization_and_table(request)
-
     return(pretty_404) unless @visualization and @visualization.password_protected? and @visualization.has_password?
     return(pretty_404) if disallowed_type?(@visualization)
 
@@ -356,13 +362,12 @@ class Admin::VisualizationsController < ApplicationController
     respond_to do |format|
       format.html { render 'embed_map', layout: 'application_public_visualization_layout' }
     end
-  rescue
+  rescue => e
+    Rollbar.report_exception(e)
     embed_protected
   end
 
   def embed_map
-    @visualization, @table = resolve_visualization_and_table(request)
-
     return(pretty_404) unless @visualization
     return(pretty_404) if disallowed_type?(@visualization)
 
@@ -381,7 +386,8 @@ class Admin::VisualizationsController < ApplicationController
       format.html { render layout: 'application_public_visualization_layout' }
       format.js { render 'embed_map', content_type: 'application/javascript' }
     end
-  rescue
+  rescue => e
+    Rollbar.report_exception(e)
     embed_forbidden
   end
 
@@ -420,6 +426,15 @@ class Admin::VisualizationsController < ApplicationController
 
   private
 
+  def more_visualizations(user, excluded_visualization)
+    vqb = Carto::VisualizationQueryBuilder.user_public_visualizations(user).with_order(:updated_at, :desc)
+    vqb.with_excluded_ids([excluded_visualization.id]) if excluded_visualization
+    visualizations = vqb.build_paged(1, MAX_MORE_VISUALIZATIONS)
+    visualizations.map { |v|
+      Carto::Admin::VisualizationPublicMapAdapter.new(v)
+    }
+  end
+
   def eligible_for_redirect?(user)
     return false if CartoDB.subdomainless_urls?
     user.has_organization? && !request.params[:redirected].present? &&
@@ -431,9 +446,13 @@ class Admin::VisualizationsController < ApplicationController
       visualization.has_permission?(user, Visualization::Member::PERMISSION_READONLY)
   end
 
-  def resolve_visualization_and_table(request)
+  def resolve_visualization_and_table
     filters = { exclude_raster: true }
-    locator.get(@table_id, @schema || CartoDB.extract_subdomain(request), filters)
+    @visualization, @table =
+      get_visualization_and_table(@table_id, @schema || CartoDB.extract_subdomain(request), filters)
+    if @visualization && @visualization.user
+      @more_visualizations = more_visualizations(@visualization.user, @visualization)
+    end
   end
 
   # If user A shares to user B a table link (being both from same org), attept to rewrite the url to the correct format
@@ -545,7 +564,17 @@ class Admin::VisualizationsController < ApplicationController
     end
   end
 
-  def locator
-    CartoDB::Visualization::Locator.new
+  def get_visualization_and_table(table_id, schema, filter)
+    user = Carto::User.where(username: schema).first
+    visualization = Carto::VisualizationQueryBuilder.new.with_id_or_name(table_id).with_user_id(user.id).build.first
+    return get_visualization_and_table_from_table_id(table_id, user, filter) if visualization.nil?
+    return Carto::Admin::VisualizationPublicMapAdapter.new(visualization), visualization.table_service
+  end
+
+  def get_visualization_and_table_from_table_id(table_id, user, filter)
+    user_table = Carto::UserTable.where({ id: table_id, user_id: user.id }).first
+    return nil, nil if user_table.nil?
+    visualization = user_table.visualization
+    return Carto::Admin::VisualizationPublicMapAdapter.new(visualization), visualization.table_service
   end
 end

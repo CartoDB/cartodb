@@ -7,7 +7,7 @@
     <title><%= @visualization.name.gsub(/_/," ") %> | CartoDB</title>
     <meta name="description" content="<%= @visualization.description_clean || @visualization.name.gsub(/_/," ") %>">
     <meta name="keywords" content="Map,cartodb,<%= @visualization.name.gsub(/_/,",").gsub(/ /,",") %>">
-    <meta name="author" content="CartoDB">
+    <meta name="author" content="<%= @visualization.user.username %>">
     <meta name="DC.title" content="<%= @visualization.description_clean %> | CartoDB">
     
     <meta property="og:title" content="<%= @visualization.name.gsub(/_/," ") %> | CartoDB"/>

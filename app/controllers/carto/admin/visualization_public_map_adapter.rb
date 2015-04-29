@@ -75,8 +75,8 @@ module Carto
 
       def related_visualizations
         @visualization.related_visualizations.map { |rv|
-          Carto::Admin::VisualizationPublicMapAdapter.new(rv)
-        }
+          Carto::Admin::VisualizationPublicMapAdapter.new(rv) if rv.is_public?
+        }.compact
       end
 
       def related_visualizations_geometry_types

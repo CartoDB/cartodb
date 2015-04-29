@@ -48,7 +48,10 @@
             <% end %>
           </div>
           <div class="PublicMap-rightBlock">
-            <nav class="PublicMap-share">
+            <nav class="PublicMap-buttons">
+              <a class="PublicMap-shareButton PublicMap-editButton js-editMap" href="<%= CartoDB.url(self, 'public_visualizations_show', {id: @visualization.id }, @visualization.user) %>">
+                edit in cartodb
+              </a>
               <a href="http://www.facebook.com/sharer.php?u=<%= url_encode(request.original_url) %>&text=<%= url_encode("#{@visualization.name} by #{@name} with CartoDB") %>" target="_blank" class="PublicMap-shareButton PublicMap-shareButton--facebook">
                 <i class="iconFont iconFont-Facebook"></i>
               </a>

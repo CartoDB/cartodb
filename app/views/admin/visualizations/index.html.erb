@@ -11,7 +11,7 @@
     var dashboard_first_time = <%= @first_time %>;
     var just_logged_in = <%= @just_logged_in ? 'true' : 'false' %>;
     var mixpanel_token = "<%= Cartodb.config[:mixpanel]['token'] if Cartodb.config[:mixpanel].present? %>";
-    var default_fallback_basemap = <%= safe_js_object current_user.default_basemap %>;
+    var default_fallback_basemap = <%= safe_js_object current_user.default_basemap.to_json %>;
   </script>
 <% end %>
 

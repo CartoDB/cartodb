@@ -63,10 +63,11 @@ class Admin::VisualizationsController < ApplicationController
     end
 
     @visualization, @table = resolve_visualization_and_table(request)
-    @google_maps_api_key = @visualization.user.google_maps_api_key
-    @basemaps = @visualization.user.basemaps
     return(pretty_404) unless @visualization
     return(pretty_404) if disallowed_type?(@visualization)
+
+    @google_maps_api_key = @visualization.user.google_maps_api_key
+    @basemaps = @visualization.user.basemaps
 
     unless @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
       if request.original_fullpath =~ %r{/tables/}

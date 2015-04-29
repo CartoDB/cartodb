@@ -3,9 +3,7 @@ require_relative 'vizjson_presenter'
 require_relative '../../../models/visualization/stats'
 
 module Carto
-
   module Api
-
     class VisualizationsController < ::Api::ApplicationController
 
       # TODO: compare with older, there seems to be more optional authentication endpoints
@@ -220,7 +218,5 @@ module Carto
       end
 
     end
-
   end
-
 end

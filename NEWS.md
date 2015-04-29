@@ -7,6 +7,7 @@
 * Sort category names alphabetically in legends [3218](https://github.com/CartoDB/cartodb/pull/3218)
 * Editable descriptions and tags in the maps and datasets view [3129](https://github.com/CartoDB/cartodb/pull/3129)
 * Add caching of geometry types [#3157](https://github.com/CartoDB/cartodb/pull/3157)
+* New public map [#3120](https://github.com/CartoDB/cartodb/issues/3120)
 * Do not store session for api_key auth [#3208](https://github.com/CartoDB/cartodb/pull/3208)
 * All connected services available in account page [#3025](https://github.com/CartoDB/cartodb/issues/3025)
 * Fixed script to purge vizjson redis [#3354](https://github.com/CartoDB/cartodb/pull/3354)

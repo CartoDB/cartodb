@@ -3,7 +3,8 @@ require 'fiber'
 module CartoDB
   class ConnectionPool
     
-    MAX_POOL_SIZE = 300
+    # Until migration to AR is done
+    MAX_POOL_SIZE = 600
     
     def initialize
       @pool = {}
@@ -47,7 +48,7 @@ module CartoDB
       @pool.each do |id, conn|
         if ! db || ( id.start_with? "#{db}:" )
           Rails.logger.debug "[pool] Dropping connection #{id}"
-          conn[:connection].disconnect
+          close_connection(conn[:connection], id)
         else
           Rails.logger.debug "[pool] Not dropping connection #{id}"
           newpool[id] = conn
@@ -65,14 +66,28 @@ module CartoDB
           older = connection_id
         end
       end
-      @pool[older][:connection].disconnect
+      close_connection(@pool[older][:connection], older)
       @pool.delete(older)
     end
     
     private
     
+    def close_connection(connection, id)
+      if id.end_with?('sequel')
+        connection.disconnect
+      else
+        connection.disconnect!
+      end
+    end
+
     def connection_id(configuration)
-      "#{configuration['host']}:#{configuration['database']}:#{configuration['username']}"
+      # TODO: Due to migration from Sequel to ActiveRecord, afterwards can be used with only symbols
+      host = configuration.fetch(:host, configuration['host'])
+      database = configuration.fetch(:database, configuration['database'])
+      username = configuration.fetch(:username, configuration['username'])
+      orm = configuration.fetch(:orm, 'sequel')
+      # don't prepend new fragments at the beggining, see close_connections! logic
+      "#{host}:#{database}:#{username}:#{orm}"
     end
   end
 end

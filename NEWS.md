@@ -15,6 +15,7 @@
 * Send geocoding duration metrics [#3381](https://github.com/CartoDB/cartodb/pull/3381)
 * Several fixes for subdomainless configs [#3393](https://github.com/CartoDB/cartodb/pull/3393)
 
+
 Bugfixes:
 * Fixed interaction when there are hidden layers [#3090](https://github.com/CartoDB/cartodb/pull/3090)
 * Fix http cancelled requests [#3227](https://github.com/CartoDB/cartodb/pull/3227)
@@ -24,7 +25,6 @@ Bugfixes:
 * Deleted unused endpoints for POST/DELETE api/v1/maps
 * Avoid infinite recursion when renaming table [#3330](https://github.com/CartoDB/cartodb/pull/3330)
 * Script to delete inconsistent vizs [#3342](https://github.com/CartoDB/cartodb/pull/3342)
-
 
 3.10.0 (2015-04-08)
 -------------------

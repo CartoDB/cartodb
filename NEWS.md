@@ -1,9 +1,16 @@
 3.10.1 ()
 ---------
+* Adds field to select or type an administrative region in the georeferenciation by city name pane [3306](https://github.com/CartoDB/cartodb/pull/3306)
+* Fix tooltips in the legend editor [3341](https://github.com/CartoDB/cartodb/pull/3341)
 * Sort category names alphabetically in legends [3218](https://github.com/CartoDB/cartodb/pull/3218)
 * Editable descriptions and tags in the maps and datasets view [3129](https://github.com/CartoDB/cartodb/pull/3129)
 * Add caching of geometry types [#3157](https://github.com/CartoDB/cartodb/pull/3157)
 * Do not store session for api_key auth [#3208](https://github.com/CartoDB/cartodb/pull/3208)
+* All connected services available in account page [#3025](https://github.com/CartoDB/cartodb/issues/3025)
+* Fixed script to purge vizjson redis [#3354](https://github.com/CartoDB/cartodb/pull/3354)
+* Fix guessing warnings when there are no rows [#3024](https://github.com/CartoDB/cartodb/pull/3363)
+* Send geocoding duration metrics [#3381](https://github.com/CartoDB/cartodb/pull/3381)
+
 Bugfixes:
 * Fixed interaction when there are hidden layers [#3090](https://github.com/CartoDB/cartodb/pull/3090)
 * Fix http cancelled requests [#3227](https://github.com/CartoDB/cartodb/pull/3227)
@@ -12,6 +19,7 @@ Bugfixes:
 * Fix for type guessing in synchronization imports [#3264](http://github.com/CartoDB/cartodb/issues/3264)
 * Deleted unused endpoints for POST/DELETE api/v1/maps
 * Avoid infinite recursion when renaming table [#3330](https://github.com/CartoDB/cartodb/pull/3330)
+* Script to delete inconsistent vizs [#3342](https://github.com/CartoDB/cartodb/pull/3342)
 
 3.10.0 (2015-04-08)
 -------------------
@@ -25,7 +33,7 @@ Bugfixes:
 * Guessing of namedplaces on import [#2809](https://github.com/CartoDB/cartodb/pull/2809)
 * Fixed Google+ disconnection in new dashboard [#2378](https://github.com/CartoDB/cartodb/issues/2378)
 * Added script to purge redis vizjson cache [#2968](https://github.com/CartoDB/cartodb/pull/2968)
-* Allows to generate a static map of a password protected visualization [#3028] (https://github.com/CartoDB/cartodb/pull/3028)
+* Allows to generate a static map of a password protected visualization [#3028](https://github.com/CartoDB/cartodb/pull/3028)
 
 Bugfixes:
 * Removes duplicated maps in the delete warning dialog [3055](https://github.com/CartoDB/cartodb/pull/3055)

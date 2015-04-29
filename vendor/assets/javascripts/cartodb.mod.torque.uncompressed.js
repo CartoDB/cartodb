@@ -5296,7 +5296,6 @@ var GMapsTorqueLayerView = function(layerModel, gmapsMap) {
       map: gmapsMap,
       cartodb_logo: layerModel.get('cartodb_logo'),
       attribution: layerModel.get('attribution'),
-      cdn_url: layerModel.get('no_cdn') ? null: (layerModel.get('cdn_url') || cdb.CDB_HOST),
       cartocss: layerModel.get('cartocss') || layerModel.get('tile_style'),
       named_map: layerModel.get('named_map'),
       auth_token: layerModel.get('auth_token'),
@@ -5406,12 +5405,12 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
       },
       cartodb_logo: layerModel.get('cartodb_logo'),
       attribution: layerModel.get('attribution'),
-      cdn_url: layerModel.get('no_cdn') ? null: (layerModel.get('cdn_url') || cdb.CDB_HOST),
       cartocss: layerModel.get('cartocss') || layerModel.get('tile_style'),
       named_map: layerModel.get('named_map'),
       auth_token: layerModel.get('auth_token'),
       no_cdn: layerModel.get('no_cdn'),
       dynamic_cdn: layerModel.get('dynamic_cdn'),
+      loop: layerModel.get('loop') === false? false: true,
       instanciateCallback: function() {
         var cartocss = layerModel.get('cartocss') || layerModel.get('tile_style');
 
@@ -5512,6 +5511,7 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
     this.wasRunning = false;
 
     this._bindLayer(this.options.layer);
+
     this.on('clean', this._unbindLayer);
     cdb.geo.ui.InfoBox.prototype.initialize.call(this);
 
@@ -5545,7 +5545,13 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
   },
 
   updateSliderRange: function(changes) {
-    this.$(".slider" ).slider({ max: changes.steps - 1 });
+    if (changes.steps > 1){
+      this.show();
+      this.$(".slider" ).slider({ max: changes.steps - 1 });
+    }
+    else{
+      this.hide();
+    }
   },
 
   // each time time changes, move the slider
@@ -5558,7 +5564,7 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
         var f = self.options.formatter || this.formatterForRange(tb.start, tb.end);
         // avoid showing invalid dates
         if (!_.isNaN(changes.time.getYear())) {
-          self.$('.value').text(f(changes.time));
+          self.$('.value').text(f(changes.time, this.torqueLayer));
         }
       }
     } else {
@@ -5577,6 +5583,9 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
     var ONE_DAY = 3600*24;
     var THREE_DAYS = ONE_DAY*3;
     var ONE_YEAR = ONE_DAY * 31 * 12;
+    if(this.torqueLayer.options){
+      var stepDurationMS = (end.getTime() - start.getTime()) / this.torqueLayer.options.steps;
+    }
 
     function pad(n) {
       return n < 10 ? '0' + n : n;
@@ -5588,6 +5597,20 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
 
     function toTimeStr(date) {
       return pad(date.getUTCHours()) + ":" + pad(date.getUTCMinutes());
+    }
+
+    function toDateRange(date, torqueLayer) {
+      var stepStartTimeMS = date.getTime();
+      var tb = torqueLayer.getTimeBounds();
+      var stepDurationMS = (new Date(tb.end).getTime() - new Date(tb.start).getTime()) / torqueLayer.options.steps;
+      var stepEndTime = new Date(stepStartTimeMS + stepDurationMS);
+      var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      return pad(months[date.getUTCMonth()]) + " " + pad(date.getUTCDate())  + " - " 
+        + pad(months[stepEndTime.getUTCMonth()]) + " " + pad(stepEndTime.getUTCDate());
+    }
+
+    if (stepDurationMS > ONE_DAY * 2000){ // More than 48 hours
+      return toDateRange;
     }
 
     if (range < THREE_DAYS) {

@@ -9,6 +9,7 @@
     var user_data = <%= safe_js_object @user.data.to_json %>;
     var can_change_email = <%= @user.can_change_email %>;
     var upgrade_url = <%= cartodb_com_hosted? ? 'undefined' : "'#{current_user.upgrade_url(request.protocol)}'" %>;
+    var services_list = <%= @services.to_json.html_safe %>;
     // Necessary for Google + actions
     var access_token = '';
     <% if (@google_plus_config.present?) %>
@@ -37,8 +38,8 @@
           <div class="Form-rowLabel">
             <label class="Form-label">Username</label>
           </div>
-          <div class="Form-rowData">
-            <%= f.text_field :username, readonly: true, :class => "Form-input Form-input--long is-disabled" %>
+          <div class="Form-rowData Form-rowData--med">
+            <%= f.text_field :username, readonly: true, :class => "Form-input Form-input--med is-disabled" %>
           </div>
           <div class="Form-rowInfo">
             <p class="Form-rowInfoText">Subdomain cannot be changed</p>
@@ -49,8 +50,8 @@
           <div class="Form-rowLabel">
             <label class="Form-label">Email</label>
           </div>
-          <div class="Form-rowData">
-            <%= f.text_field :email, class: "Form-input Form-input--long #{ 'Form-input--error' if @user.errors[:email].present? } #{ 'is-disabled' unless @user.can_change_email }", readonly: !@user.can_change_email %>
+          <div class="Form-rowData Form-rowData--med">
+            <%= f.text_field :email, class: "Form-input Form-input--med #{ 'Form-input--error' if @user.errors[:email].present? } #{ 'is-disabled' unless @user.can_change_email }", readonly: !@user.can_change_email %>
           </div>
           <div class="Form-rowInfo">
             <% if @user.errors[:email].present? %>
@@ -66,8 +67,8 @@
             <div class="Form-rowLabel">
               <label class="Form-label">Old password</label>
             </div>
-            <div class="Form-rowData">
-              <%= f.password_field :old_password, :class => "Form-input Form-input--long #{ 'Form-input--error' if @user.errors[:old_password].present? }" %>
+            <div class="Form-rowData Form-rowData--med">
+              <%= f.password_field :old_password, :class => "Form-input Form-input--med #{ 'Form-input--error' if @user.errors[:old_password].present? }" %>
             </div>
             <div class="Form-rowInfo">
               <% if (@user.errors[:old_password].present?) %>
@@ -81,8 +82,8 @@
           <div class="Form-rowLabel">
             <label class="Form-label">New password</label>
           </div>
-          <div class="Form-rowData">
-            <%= f.password_field :new_password, :class => "Form-input Form-input--long #{ 'Form-input--error' if @user.errors[:new_password].present? }" %>
+          <div class="Form-rowData Form-rowData--med">
+            <%= f.password_field :new_password, :class => "Form-input Form-input--med #{ 'Form-input--error' if @user.errors[:new_password].present? }" %>
           </div>
           <div class="Form-rowInfo">
             <% if (@user.errors[:new_password].present?) %>
@@ -97,10 +98,18 @@
           <div class="Form-rowLabel">
             <label class="Form-label">Confirm password</label>
           </div>
-          <div class="Form-rowData">
-            <%= f.password_field :confirm_password, :class => "Form-input Form-input--long" %>
+          <div class="Form-rowData Form-rowData--med">
+            <%= f.password_field :confirm_password, :class => "Form-input Form-input--med" %>
           </div>
         </div>
+
+        <%# if none of the services are activated, this block shouldn't appear %>
+        <% if @services.size > 0 %>
+          <div class="Form-title js-datasourcesContent">
+            <h4 class="Form-titleHeader">Connect with external data sources</h4>
+            <p class="Form-titleText">Link your services to import data and create amazing maps.</p>
+          </div>
+        <% end %>
 
         <% if current_user.has_feature_flag?('google_maps') %>
           <div class="Form-title">
@@ -113,11 +122,7 @@
               <label class="Form-label">Google Maps</label>
             </div>
             <div class="Form-rowData">
-              <% if current_user.organization.present? %>
-                <input type="text" value="<%= current_user.organization.google_maps_key %>" class="Form-input Form-input--long is-disabled" placeholder="<%= 'Add key in organization settings' if current_user.organization_owner? %>" readonly />
-              <% else %>
-                <%= f.text_field :google_maps_key, class: "Form-input Form-input--long #{ 'Form-input--error' if @user.errors[:gmaps].present? }", placeholder: "Copy here your API key" %>
-              <% end %>
+              <input type="text" value="<%= current_user.organization.present? ? current_user.organization.google_maps_key : current_user.google_maps_key %>" class="Form-input Form-input--long is-disabled" readonly />
             </div>
             <% if current_user.organization.present? %>
               <div class="Form-rowInfo">

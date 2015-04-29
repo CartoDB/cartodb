@@ -129,6 +129,7 @@ module CartoDB
 
       def create_the_geom_from_country_guessing
         return false if not @content_guesser.enabled?
+        return false if @content_guesser.sample.count == 0
         job.log 'Trying country guessing...'
         begin
           country_column_name = nil
@@ -154,6 +155,7 @@ module CartoDB
 
       def create_the_geom_from_namedplaces_guessing
         return false if not @content_guesser.enabled?
+        return false if @content_guesser.sample.count == 0
         job.log 'Trying namedplaces guessing...'
         begin
           @importer_stats.timing('guessing') do
@@ -178,6 +180,7 @@ module CartoDB
 
       def create_the_geom_from_ip_guessing
         return false if not @content_guesser.enabled?
+        return false if @content_guesser.sample.count == 0
         job.log 'Trying ip guessing...'
         begin
           ip_column_name = nil

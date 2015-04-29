@@ -343,15 +343,40 @@
     line-height:normal;
   }
 
-  div.cartodb-popup h4 {
+  div.cartodb-popup h1,
+  div.cartodb-popup h2,
+  div.cartodb-popup h3,
+  div.cartodb-popup h4,
+  div.cartodb-popup h5,
+  div.cartodb-popup h6 {
     display:block;
     width:190px;
     margin: 0;
     padding: 0;
-    font:bold 11px "Helvetica Neue","Helvetica",Arial;
+    font-weight :bold;
+    font-family: "Helvetica Neue", "Helvetica", Arial;
     color:#CCCCCC;
     text-transform:uppercase;
     word-wrap: break-word;
+    line-height: 120%;
+  }
+  div.cartodb-popup h1 {
+    font-size:24px;
+  }
+  div.cartodb-popup h2 {
+    font-size:20px;
+  }
+  div.cartodb-popup h3 {
+    font-size:15px;
+  }
+  div.cartodb-popup h4 {
+    font-size:11px;
+  }
+  div.cartodb-popup h5 {
+    font-size:10px;
+  }
+  div.cartodb-popup h6 {
+    font-size:9px;
   }
 
   div.cartodb-popup p {
@@ -461,7 +486,12 @@
   }
 
   div.cartodb-popup.v2 div.cartodb-popup-content p,
-  div.cartodb-popup.v2 div.cartodb-popup-content h4 {
+  div.cartodb-popup.v2 div.cartodb-popup-content h1,
+  div.cartodb-popup.v2 div.cartodb-popup-content h2,
+  div.cartodb-popup.v2 div.cartodb-popup-content h3,
+  div.cartodb-popup.v2 div.cartodb-popup-content h4,
+  div.cartodb-popup.v2 div.cartodb-popup-content h5,
+  div.cartodb-popup.v2 div.cartodb-popup-content h6 {
     width:auto;
     max-width:95%;
     display:block;

@@ -47,6 +47,90 @@ describe "Geocodings API" do
       end
     end
 
+    describe 'namedplace geocodings' do
+      it "should set the country_code when the name of the country is present" do
+        Geocoding.any_instance.stubs("run!").returns(true)
+        payload = params.merge \
+          table_name: table.name,
+          column_name:  'name',
+          text: true,
+          location: 'spain',
+          kind: 'namedplace'
+        post_json api_v1_geocodings_create_url(payload) do |response|
+          response.status.should eq 200
+          response.body[:id].should_not be_nil
+          response.body[:country_code].should eq "'spain'"
+          response.body[:country_column].should be_nil
+        end
+      end
+
+      it "should set country_code and country_column when a country column has been selected" do
+        table.add_column!(name: "country", type: "text")
+        table.insert_row!(country: "spain")
+        table.insert_row!(country: "spain")
+        table.insert_row!(country: "us")
+        table.reload
+
+        Geocoding.any_instance.stubs("run!").returns(true)
+        payload = params.merge \
+          table_name: table.name,
+          column_name:  'name',
+          text: false,
+          location: 'country',
+          kind: 'namedplace'
+        post_json api_v1_geocodings_create_url, payload do |response|
+          response.status.should eq 200
+          response.body[:id].should_not be_nil
+          response.body[:country_code].should eq "'spain','us'"
+          response.body[:country_column].should eq "country"
+        end
+      end
+
+      it "should set the region_code when the name of the region is present" do
+        Geocoding.any_instance.stubs("run!").returns(true)
+        payload = params.merge \
+          table_name: table.name,
+          column_name:  'name',
+          text: true,
+          location: 'spain',
+          region_text: true,
+          region: 'madrid',
+          kind: 'namedplace'
+        post_json api_v1_geocodings_create_url(payload) do |response|
+          response.status.should eq 200
+          response.body[:id].should_not be_nil
+          response.body[:region_code].should eq "'madrid'"
+          response.body[:region_column].should be_nil
+        end
+      end
+
+      it "should set region_code and region_column when a region column has been selected" do
+        table.add_column!(name: "country", type: "text")
+        table.add_column!(name: "region", type: "text")
+        table.insert_row!(country: "spain", region: "madrid")
+        table.insert_row!(country: "spain", region: "madrid")
+        table.insert_row!(country: "us", region: "minnesota")
+        table.reload
+
+        Geocoding.any_instance.stubs("run!").returns(true)
+        payload = params.merge \
+          table_name: table.name,
+          column_name:  'name',
+          text: false,
+          location: 'country',
+          region_text: false,
+          region: 'region',
+
+          kind: 'namedplace'
+        post_json api_v1_geocodings_create_url, payload do |response|
+          response.status.should eq 200
+          response.body[:id].should_not be_nil
+          response.body[:region_code].should eq "'madrid','minnesota'"
+          response.body[:region_column].should eq "region"
+        end
+      end
+    end
+
     it 'responds with 422 on bad payload' do
       payload = params.merge(table_name: '', formatter:  '', kind: 'high-resolution')
       post_json api_v1_geocodings_create_url(payload) do |response|

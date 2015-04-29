@@ -313,7 +313,7 @@ module CartoDB
           response = @api_client.users.profile
           # 'errors' only appears in failure scenarios, while 'username' only if went ok
           response.fetch('errors', nil).nil? && !response.fetch('username', nil).nil?
-        rescue
+        rescue => ex
           false
         end
 

@@ -1,6 +1,7 @@
 # coding: utf-8
 require_relative '../../../lib/google_plus_api'
 require_relative '../../../lib/google_plus_config'
+require_relative '../../../services/datasources/lib/datasources'
 
 class Admin::UsersController < ApplicationController
   ssl_required  :account, :profile, :account_update, :profile_update, :delete
@@ -25,6 +26,7 @@ class Admin::UsersController < ApplicationController
   end
 
   def account
+    @services = get_oauth_services
     unless @user.has_feature_flag?('new_dashboard')
       redirect_to @user.account_url(request.protocol) and return
     end
@@ -46,10 +48,6 @@ class Admin::UsersController < ApplicationController
 
     if @user.can_change_email && attributes[:email].present?
       @user.set_fields(attributes, [:email])
-    end
-
-    if attributes[:google_maps_key].present? && !@user.organization.present?
-      @user.set_fields(attributes, [:google_maps_key])
     end
     
     @user.save(raise_on_failure: true)
@@ -119,6 +117,51 @@ class Admin::UsersController < ApplicationController
   end
 
   private
+
+  def get_oauth_services
+    datasources = CartoDB::Datasources::DatasourcesFactory.get_all_oauth_datasources()
+    array = []
+
+    datasources.each do |serv|
+      obj ||= Hash.new
+      enabled = false
+      title = ''
+      revoke_url = ''
+      
+      case serv
+        when 'gdrive'
+          enabled = true if Cartodb.config[:oauth]['gdrive']['client_id'].present?
+          title = 'Google Drive'
+        when 'dropbox'
+          enabled = true if Cartodb.config[:oauth]['dropbox']['app_key'].present?
+          title = 'Dropbox'
+        when 'mailchimp'
+          enabled = true if Cartodb.config[:oauth]['mailchimp']['app_key'].present? && current_user.has_feature_flag?('mailchimp_import')
+          title = 'MailChimp'
+          revoke_url = 'http://admin.mailchimp.com/account/oauth2/'
+        when 'instagram'
+          enabled = true if Cartodb.config[:oauth]['instagram']['app_key'].present? && current_user.has_feature_flag?('instagram_import')
+          title = 'Instagram'
+          revoke_url = 'http://instagram.com/accounts/manage_access/'
+        else
+          enabled = true
+          title = serv
+      end
+
+      if enabled
+        oauth = @user.oauths.select(serv)
+
+        obj['name'] = serv
+        obj['title'] = title
+        obj['revoke_url'] = revoke_url
+        obj['connected'] = !oauth.nil? ? true : false
+
+        array.push(obj)
+      end
+    end
+
+    array
+  end
 
   def setup_user
     @user = current_user

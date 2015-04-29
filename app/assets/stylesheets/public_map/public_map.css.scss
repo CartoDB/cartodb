@@ -196,7 +196,10 @@
   .PublicMap-secondary { padding-top: 30px }
   .PublicMap .DatasetsList { padding-bottom: 30px }
   .PublicMap-buttons { text-align: left }
-  .PublicMap-editButton { margin-right: 5px }
+  .PublicMap-editButton {
+    margin-left: 0;
+    margin-right: 5px;
+  }
   .PublicMap-shareButton--facebook { margin-left: 0 }
   .PublicMap--rightAligned,
   .PublicMap-stat--onRight {

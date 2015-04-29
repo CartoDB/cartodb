@@ -3,7 +3,8 @@ require 'fiber'
 module CartoDB
   class ConnectionPool
     
-    MAX_POOL_SIZE = 300
+    # Until migration to AR is done
+    MAX_POOL_SIZE = 600
     
     def initialize
       @pool = {}

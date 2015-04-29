@@ -13,13 +13,13 @@ module CartoDB
                 @vizjson_config = vizjson_config
                 @verify_cert = tiler_config[:verifycert]
                 @verify_host = tiler_config[:verifycert] ? 2 : 0
-                domain = "#{@username}.#{tiler_config[:domain]}"
+                domain = CartoDB.subdomainless_urls? ? tiler_config[:domain] : "#{@username}.#{tiler_config[:domain]}"
                 host_ip = Cartodb.config[:tiler]['internal']['host'].blank? ? domain : Cartodb.config[:tiler]['internal']['host']
-                @host = "#{tiler_config[:protocol]}://#{host_ip}:#{tiler_config[:port]}"
+                @host = "#{tiler_config[:protocol]}://#{host_ip}:#{tiler_config[:port]}" + (CartoDB.subdomainless_urls? ? "/user/#{@username}" : "")
                 @url = [ @host, 'api', 'v1', 'map', 'named' ].join('/')
                 @headers = { 
                   'content-type' => 'application/json',
-                  'host' => "#{@username}.#{tiler_config[:domain]}"
+                  'host' => domain
                 }
             end
 

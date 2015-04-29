@@ -227,5 +227,10 @@ class Map < Sequel::Model
   def admits_more_base_layers?
     user_layers.length < 1
   end
+
+  def self.provider_for_baselayer(layer)
+    layer[:kind] == 'tiled' ? 'leaflet': 'googlemaps'
+  end
+
 end
 

@@ -63,7 +63,7 @@ module CartoDB
 
   # Raw subdomain extraction from request
   def self.subdomain_from_request(request)
-    request.host.to_s.gsub(self.session_domain, '')
+    self.subdomainless_urls? ? '' : request.host.to_s.gsub(self.session_domain, '')
   end
 
   # Flexible subdomain extraction: If /u/xxx or /user/xxxx present uses it, else uses request host (xxx.cartodb.com)

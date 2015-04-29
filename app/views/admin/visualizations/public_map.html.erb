@@ -276,6 +276,10 @@
       map_options.no_cdn = true;
     <% end %>
 
+    // Description and title should be hidden
+    // because we already have that info
+    map_options.description = false;
+    map_options.title = false;
     // Logo MUST be hidden in this view
     map_options.cartodb_logo  = false;
     // Fullscreen button should be hidden

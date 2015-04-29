@@ -127,15 +127,15 @@
                     </li>
                   <% end %>
                 <% end %>
+              <% end %>
 
-                <% if @nonpublic_tables_count.present? && @nonpublic_tables_count > 0 %>
-                  <li class="DatasetsList-item">
-                    <div class="LayoutIcon">
-                      <i class="iconFont iconFont-Lock"></i>
-                    </div>
-                    <div class="DefaultTitle PublicMap-privateDatasets"><%= pluralize(@nonpublic_tables_count, 'private dataset') %></div>
-                  </li>
-                <% end %>
+              <% if @nonpublic_tables_count.present? && @nonpublic_tables_count > 0 %>
+                <li class="DatasetsList-item">
+                  <div class="LayoutIcon">
+                    <i class="iconFont iconFont-Lock"></i>
+                  </div>
+                  <div class="DefaultTitle PublicMap-privateDatasets"><%= pluralize(@nonpublic_tables_count, 'private dataset') %></div>
+                </li>
               <% end %>
             </ul>
           </div>

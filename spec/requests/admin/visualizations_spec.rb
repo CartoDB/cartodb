@@ -23,7 +23,7 @@ describe Admin::VisualizationsController do
       username: 'test',
       email:    'test@test.com',
       password: 'test12',
-      private_table_enabled: true
+      private_tables_enabled: true
     )
     @api_key = @user.api_key
     @user.stubs(:should_load_common_data?).returns(false)

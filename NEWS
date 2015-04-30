@@ -1,3 +1,7 @@
+3.14.1 (30//04//2015)
+* Fixes a bug that prevented setting the maxZoom and minZoom of a map.
+* Updates Torque to 2.11.2
+
 3.14.0 (23//04//2015)
 * Infowindow in anonymous maps are requested by attributes endpoint in maps api so SQL API is not used anymore
 * Changed the way remote host is set for maps and sql API.

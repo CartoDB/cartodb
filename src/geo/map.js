@@ -376,21 +376,17 @@ cdb.geo.Map = cdb.core.Model.extend({
 
   _adjustZoomtoLayer: function(layer) {
 
-    var maxZoom = layer.get('maxZoom');
-    var minZoom = layer.get('minZoom');
+    var maxZoom = parseInt(layer.get('maxZoom'), 10);
+    var minZoom = parseInt(layer.get('minZoom'), 10);
 
-    if (_.isNumber(maxZoom)) {
-
+    if (_.isNumber(maxZoom) && !_.isNaN(maxZoom)) {
       if ( this.get("zoom") > maxZoom ) this.set({ zoom: maxZoom, maxZoom: maxZoom });
       else this.set("maxZoom", maxZoom);
-
     }
 
-    if (_.isNumber(minZoom)) {
-
+    if (_.isNumber(minZoom) && !_.isNaN(minZoom)) {
       if ( this.get("zoom") < minZoom ) this.set({ minZoom: minZoom, zoom: minZoom });
       else this.set("minZoom", minZoom);
-
     }
 
   },

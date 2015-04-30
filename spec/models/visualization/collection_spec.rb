@@ -36,6 +36,7 @@ describe Visualization::Collection do
     @user_mock.stubs(:id).returns(user_id)
     @user_mock.stubs(:username).returns(user_name)
     @user_mock.stubs(:api_key).returns(user_apikey)
+    @user_mock.stubs(:invalidate_varnish_cache).returns(nil)
     CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user_mock)
   end
 

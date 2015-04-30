@@ -57,24 +57,30 @@
   margin-top: 10px;
   vertical-align: top;
 }
-.PublicMap-owner {
-  height: 18px;
-  margin-left: 3px;
-  margin-right: 3px;
-}
+.PublicMap-metaTime { @include flex-wrap(wrap) }
+.PublicMap-owner { margin-left: 5px }
 .PublicMap-ownerAvatar {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 2px;
   height: 16px;
+}
+.PublicMap-ownerName {
+  display: inline-block;
+  vertical-align: middle;
 }
 .PublicMap-desc {
   padding: 22px 0 0;
   @include nicer-lato-typography();
   font-size: $sFontSize-large;
-  font-weight: $sFontWeight-lighter;
-  color: $cTypography-paragraphs;
+  font-weight: $sFontWeight-normal;
+  color: $cTypography-secondary;
 }
-.PublicMap-share {
+.PublicMap-buttons {
+  margin-top: 5px;
   text-align: right;
 }
+
 @mixin shareButton($c, $f: 14px, $lh: 28px) {
   color: $c;
   border-color: $c;
@@ -98,6 +104,27 @@
 }
 .PublicMap-shareButton--facebook { @include shareButton(#2E4DA7, 12px, 30px) }
 .PublicMap-shareButton--twitter { @include shareButton(#00ACEE, 14px, 28px) }
+.PublicMap-editButton {
+  display: none;
+  vertical-align: middle;
+  width: auto;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 28px;
+  line-height: 28px;
+  border: 1px solid $cNavButton-default;
+  text-align: center;
+  color: $cNavButton-default;
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: $sFontWeight-normal;
+  &:hover {
+    text-decoration: none;
+    border-color: $cNavButton-active;
+    color: $cNavButton-active;
+  }
+}
+.PublicMap-editButton.is-visible { display: inline-block }
 .PublicMap-stat {
   display: inline-block;
   vertical-align: middle;
@@ -128,7 +155,8 @@
   border-top: 1px solid #D8DADD;
 }
 .PublicMap-secondaryTitle {
-  line-height: 39px;
+  padding: 11px 0 11px;
+  line-height: normal;
   font-size: $sFontSize-large;
   color: #3F4549;
   text-align: left;
@@ -167,7 +195,11 @@
   }
   .PublicMap-secondary { padding-top: 30px }
   .PublicMap .DatasetsList { padding-bottom: 30px }
-  .PublicMap-share { text-align: left }
+  .PublicMap-buttons { text-align: left }
+  .PublicMap-editButton {
+    margin-left: 0;
+    margin-right: 5px;
+  }
   .PublicMap-shareButton--facebook { margin-left: 0 }
   .PublicMap--rightAligned,
   .PublicMap-stat--onRight {
@@ -183,6 +215,12 @@
     width: auto;
     max-width: 440px;
   }
+  .PublicMap .DatasetsList-itemSecondaryInfo {
+    width: auto;
+    text-align: left;
+  }
+}
+@media only screen and (max-width: 360px) {
   .PublicMap .DatasetsList-itemSecondaryInfo {
     width: auto;
     text-align: left;

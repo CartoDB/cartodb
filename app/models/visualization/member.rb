@@ -415,7 +415,6 @@ module CartoDB
         derived? && !single_data_layer?
       end
 
-
       def invalidate_cache
         invalidate_varnish_cache
         invalidate_redis_cache
@@ -427,6 +426,10 @@ module CartoDB
         if type != TYPE_CANONICAL or organization?
           save_named_map
         end
+      end
+
+      def invalidate_all_visualizations_cache
+        user.invalidate_varnish_cache({regex: '.*:vizjson'})
       end
 
       def has_private_tables?
@@ -686,7 +689,12 @@ module CartoDB
           raise CartoDB::InvalidMember
         end
 
-        invalidate_cache if name_changed || privacy_changed || table_privacy_changed || dirty
+        # previously we used 'invalidate_cache' but due to public_map displaying all the user public visualizations,
+        # now we need to purgue everything to avoid cached stale data or public->priv still showing scenarios
+        if name_changed || privacy_changed || table_privacy_changed || dirty
+          invalidate_all_visualizations_cache
+        end
+
         set_timestamps
 
         repository.store(id, attributes.to_hash)

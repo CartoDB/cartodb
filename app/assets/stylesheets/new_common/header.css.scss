@@ -110,4 +110,12 @@ $cHeader-dark:  rgba(#3A91D7, 1);
     height: $height/2;
     padding: 0 20px;
   }
+  .Header .Logo--avatar {
+    width: 32px;
+    height: 32px;
+    line-height: 45px;
+  }
+  .Header .Logo--avatar i {
+    font-size: 22px;
+  }
 }

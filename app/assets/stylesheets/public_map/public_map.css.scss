@@ -76,9 +76,11 @@
   font-weight: $sFontWeight-normal;
   color: $cTypography-secondary;
 }
-.PublicMap-share {
+.PublicMap-buttons {
+  margin-top: 5px;
   text-align: right;
 }
+
 @mixin shareButton($c, $f: 14px, $lh: 28px) {
   color: $c;
   border-color: $c;
@@ -102,6 +104,27 @@
 }
 .PublicMap-shareButton--facebook { @include shareButton(#2E4DA7, 12px, 30px) }
 .PublicMap-shareButton--twitter { @include shareButton(#00ACEE, 14px, 28px) }
+.PublicMap-editButton {
+  display: none;
+  vertical-align: middle;
+  width: auto;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 28px;
+  line-height: 28px;
+  border: 1px solid $cNavButton-default;
+  text-align: center;
+  color: $cNavButton-default;
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: $sFontWeight-normal;
+  &:hover {
+    text-decoration: none;
+    border-color: $cNavButton-active;
+    color: $cNavButton-active;
+  }
+}
+.PublicMap-editButton.is-visible { display: inline-block }
 .PublicMap-stat {
   display: inline-block;
   vertical-align: middle;
@@ -172,7 +195,11 @@
   }
   .PublicMap-secondary { padding-top: 30px }
   .PublicMap .DatasetsList { padding-bottom: 30px }
-  .PublicMap-share { text-align: left }
+  .PublicMap-buttons { text-align: left }
+  .PublicMap-editButton {
+    margin-left: 0;
+    margin-right: 5px;
+  }
   .PublicMap-shareButton--facebook { margin-left: 0 }
   .PublicMap--rightAligned,
   .PublicMap-stat--onRight {

@@ -16,7 +16,6 @@
     , user_data = <%= safe_js_object current_user.data.to_json %>
     , config = <%= safe_js_object frontend_config %>
     , map_data = <%= safe_js_object @visualization.map.public_values.to_json %>
-    , mixpanel_token = "<%= Cartodb.config[:mixpanel]['token'] if Cartodb.config[:mixpanel].present? %>"
     , basemaps = <%=raw Cartodb.config[:basemaps].present? ? Cartodb.config[:basemaps].to_json.html_safe: 'null'  %>
   </script>
 

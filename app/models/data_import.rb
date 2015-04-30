@@ -720,6 +720,7 @@ class DataImport < Sequel::Model
     dataimport_logger.info(import_log.to_json)
     CartoDB::Importer2::MailNotifier.new(self, results, ::Resque).notify_if_needed
 
+    # TODO: replace with Hubspot tracking
     results.each { |result| CartoDB::Metrics.new.report(:import, payload_for(result)) }
   end
 

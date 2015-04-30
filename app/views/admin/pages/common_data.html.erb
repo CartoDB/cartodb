@@ -8,7 +8,6 @@
       var username = "<%= current_user.username %>"
       var user_data = <%= safe_js_object current_user.data.to_json %>;
       var config = <%= safe_js_object frontend_config %>;
-      var mixpanel_token = "<%= Cartodb.config[:mixpanel]['token'] if Cartodb.config[:mixpanel].present? %>";
     </script>
   <% end %>
 

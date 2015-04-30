@@ -10,7 +10,6 @@
     var upgrade_url = "<%= current_user.upgrade_url(request.protocol) %>";
     var dashboard_first_time = <%= @first_time %>;
     var just_logged_in = <%= @just_logged_in ? 'true' : 'false' %>;
-    var mixpanel_token = "<%= Cartodb.config[:mixpanel]['token'] if Cartodb.config[:mixpanel].present? %>";
   </script>
 <% end %>
 

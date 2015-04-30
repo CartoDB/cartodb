@@ -102,7 +102,6 @@ module Carto
 
       # TODO: proper AR config when migration is complete
       base_config = ::Rails::Sequel.configuration.environment_for(Rails.env)
-
       config = {
         orm:      'ar',
         adapter:  "postgresql",
@@ -111,7 +110,8 @@ module Carto
         username: base_config['username'],
         password: base_config['password'],
         database: @user.database_name,
-        port:     base_config['port']
+        port:     base_config['port'],
+        encoding: base_config.fecth('encoding', 'unicode')
       }
 
       case user_type

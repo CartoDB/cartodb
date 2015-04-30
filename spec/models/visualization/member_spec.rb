@@ -425,7 +425,7 @@ describe Visualization::Member do
       visualization.user_id = user_id
 
       # Private maps allowed
-      @user_mock.stubs(:private_maps_enabled).returns(true)
+      @user_mock.stubs(:private_maps_enabled?).returns(true)
 
       # Forces internal "dirty" flag
       visualization.privacy = Visualization::Member::PRIVACY_PUBLIC
@@ -436,7 +436,7 @@ describe Visualization::Member do
       # -------------
 
       # No private maps allowed
-      @user_mock.stubs(:private_maps_enabled).returns(false)
+      @user_mock.stubs(:private_maps_enabled?).returns(false)
 
       visualization.privacy = Visualization::Member::PRIVACY_PUBLIC
       visualization.privacy = Visualization::Member::PRIVACY_PRIVATE
@@ -472,7 +472,7 @@ describe Visualization::Member do
           type:     Visualization::Member::TYPE_CANONICAL,
           user_id:  user_id
       )
-      @user_mock.stubs(:private_maps_enabled).returns(true)
+      @user_mock.stubs(:private_maps_enabled?).returns(true)
 
       # Careful, do a user mock after touching user_data as it does some checks about user too
       user_mock = mock

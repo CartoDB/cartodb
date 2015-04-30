@@ -400,11 +400,10 @@ describe Visualization::Collection do
     it 'counts total liked' do
       restore_vis_backend_to_normal_table_so_relator_works
 
-      user1 = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
+      user1 = create_user(:quota_in_bytes => 524288000, :table_quota => 500, :private_tables_enabled => true)
       user1.stubs(:organization).returns(nil)
 
-      user2 = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
-      user2.stubs(:private_tables_enabled).returns(true)
+      user2 = create_user(:quota_in_bytes => 524288000, :table_quota => 500, :private_tables_enabled => true)
       user2.stubs(:organization).returns(nil)
 
       table11 = create_table(user1)
@@ -507,9 +506,9 @@ describe Visualization::Collection do
     it "checks filtering by 'liked' " do
       restore_vis_backend_to_normal_table_so_relator_works
 
-      user = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
-      user2 = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
-      user3 = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
+      user = create_user(:quota_in_bytes => 524288000, :table_quota => 500, :private_tables_enabled => true)
+      user2 = create_user(:quota_in_bytes => 524288000, :table_quota => 500, :private_tables_enabled => true)
+      user3 = create_user(:quota_in_bytes => 524288000, :table_quota => 500, :private_tables_enabled => true)
       CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(user)
 
       table1 = Table.new

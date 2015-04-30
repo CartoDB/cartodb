@@ -122,6 +122,13 @@ describe("geo.map", function() {
       expect(map.get('minZoom')).toEqual(7);
     });
 
+    it("shouldn't set a NaN zoom", function() {
+      var layer = new cdb.geo.PlainLayer({ minZoom: NaN, maxZoom: NaN });
+      map.layers.reset(layer);
+      expect(map.get('maxZoom')).toEqual(40);
+      expect(map.get('minZoom')).toEqual(0);
+    });
+
   });
 
   describe('MapView', function() {

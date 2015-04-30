@@ -35,10 +35,10 @@
                 <i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i>
                 <%= time_ago_in_words(@visualization.updated_at) %> ago
                 by
-                <span class="UserAvatar PublicMap-owner">
+                <a href="<%= CartoDB.url(self, 'public_maps_home', {}, @visualization.user) %>" target="_blank" class="UserAvatar PublicMap-owner">
                   <img class="UserAvatar-img UserAvatar-img--smaller PublicMap-ownerAvatar" src="<%= @visualization.user.avatar %>" alt="<%= @name %>" title="<%= @name %>" />
-                </span>
-                <a class="PublicMap-ownerName" href="<%= CartoDB.url(self, 'public_visualizations_home', {}, user) %>" target="_blank"><%= @name %></a>
+                  <span class="PublicMap-ownerName"><%= @name %></span>
+                </a>
               </span>
             </div>
             <% if @visualization.description.present? %>
@@ -48,7 +48,10 @@
             <% end %>
           </div>
           <div class="PublicMap-rightBlock">
-            <nav class="PublicMap-share">
+            <nav class="PublicMap-buttons">
+              <a class="PublicMap-shareButton PublicMap-editButton js-editMap" href="<%= CartoDB.url(self, 'public_visualizations_show', {id: @visualization.id }, @visualization.user) %>">
+                edit in cartodb
+              </a>
               <a href="http://www.facebook.com/sharer.php?u=<%= url_encode(request.original_url) %>&text=<%= url_encode("#{@visualization.name} by #{@name} with CartoDB") %>" target="_blank" class="PublicMap-shareButton PublicMap-shareButton--facebook">
                 <i class="iconFont iconFont-Facebook"></i>
               </a>
@@ -127,15 +130,15 @@
                     </li>
                   <% end %>
                 <% end %>
+              <% end %>
 
-                <% if @nonpublic_tables_count.present? && @nonpublic_tables_count > 0 %>
-                  <li class="DatasetsList-item">
-                    <div class="LayoutIcon">
-                      <i class="iconFont iconFont-Lock"></i>
-                    </div>
-                    <div class="DefaultTitle PublicMap-privateDatasets"><%= pluralize(@nonpublic_tables_count, 'private dataset') %></div>
-                  </li>
-                <% end %>
+              <% if @nonpublic_tables_count.present? && @nonpublic_tables_count > 0 %>
+                <li class="DatasetsList-item">
+                  <div class="LayoutIcon">
+                    <i class="iconFont iconFont-Lock"></i>
+                  </div>
+                  <div class="DefaultTitle PublicMap-privateDatasets"><%= pluralize(@nonpublic_tables_count, 'private dataset') %></div>
+                </li>
               <% end %>
             </ul>
           </div>

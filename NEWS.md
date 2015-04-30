@@ -1,5 +1,6 @@
 3.10.1 ()
 ---------
+* Adds user search/filter to the Share Dialog [3417](https://github.com/CartoDB/cartodb/pull/3417)
 * Change default CartoCSS properties of polygon strokes [3375](https://github.com/CartoDB/cartodb/pull/3375)
 * Fix custom image header templates [3378](https://github.com/CartoDB/cartodb/pull/3378)
 * Adds field to select or type an administrative region in the georeferenciation by city name pane [3306](https://github.com/CartoDB/cartodb/pull/3306)
@@ -14,6 +15,7 @@
 * Fix guessing warnings when there are no rows [#3024](https://github.com/CartoDB/cartodb/pull/3363)
 * Send geocoding duration metrics [#3381](https://github.com/CartoDB/cartodb/pull/3381)
 * Several fixes for subdomainless configs [#3393](https://github.com/CartoDB/cartodb/pull/3393)
+
 
 Bugfixes:
 * Fixed interaction when there are hidden layers [#3090](https://github.com/CartoDB/cartodb/pull/3090)

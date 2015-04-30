@@ -1,12 +1,17 @@
-class Carto::Api::SynchronizationPresenter
 
-  def initialize(synchronization)
-    @synchronization = synchronization
+module Carto
+  module Api
+    class SynchronizationPresenter
+
+      def initialize(synchronization)
+        @synchronization = synchronization
+      end
+
+      def to_poro
+        # TODO
+        @synchronization.nil? ? nil : {}
+      end
+
+    end
   end
-
-  def to_poro
-    # TODO
-    @synchronization.nil? ? nil : {}
-  end
-
 end

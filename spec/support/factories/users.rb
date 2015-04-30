@@ -14,8 +14,11 @@ module CartoDB
     end
     def new_user(attributes = {})
 
+      # To allow transitional classes without breaking any existing test
+      user_class = attributes.fetch(:class, ::User)
+
       if attributes[:fake_user]
-        User.any_instance.stubs(
+        user_class.any_instance.stubs(
             :enable_remote_db_user => nil,
             :after_create => nil,
             :create_schema => nil,
@@ -32,10 +35,10 @@ module CartoDB
         )
       end
 
-      User.any_instance.stubs(:enable_remote_db_user).returns(true)
+      user_class.any_instance.stubs(:enable_remote_db_user).returns(true)
 
       attributes = attributes.dup
-      user = User.new
+      user = user_class.new
       user.username              = attributes[:username] || String.random(5).downcase
       user.email                 = attributes[:email]    || String.random(5).downcase + '@' + String.random(5).downcase + '.com'
       user.password              = attributes[:password] || user.email.split('@').first

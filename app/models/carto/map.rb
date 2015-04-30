@@ -2,15 +2,19 @@ require 'active_record'
 
 class Carto::Map < ActiveRecord::Base
 
-  has_and_belongs_to_many :layers, class_name: 'Carto::Layer', order: :order
+  has_and_belongs_to_many :layers, class_name: 'Carto::Layer', order: '"order"'
 
-  has_and_belongs_to_many :data_layers, class_name: 'Carto::Layer', conditions: { kind: 'carto' }
+  has_and_belongs_to_many :data_layers, class_name: 'Carto::Layer', 
+    conditions: { kind: 'carto' }, order: '"order"'
+    
+  has_and_belongs_to_many :user_layers, class_name: 'Carto::Layer', 
+    conditions: { kind: ['tiled', 'background', 'gmapsbase', 'wms'] }, order: '"order"'
 
-  has_and_belongs_to_many :user_layers, class_name: 'Carto::Layer', conditions: { kind: ['tiled', 'background', 'gmapsbase', 'wms'] }
+  has_and_belongs_to_many :carto_and_torque_layers, class_name: 'Carto::Layer', 
+    conditions: { kind: ['carto', 'torque'] }, order: '"order"'
 
-  has_and_belongs_to_many :carto_and_torque_layers, class_name: 'Carto::Layer', conditions: { kind: ['carto', 'torque'] }
-
-  has_and_belongs_to_many :other_layers, class_name: 'Carto::Layer', conditions: "kind not in ('carto', 'tiled', 'background', 'gmapsbase', 'wms')"
+  has_and_belongs_to_many :other_layers, class_name: 'Carto::Layer', 
+    conditions: "kind not in ('carto', 'tiled', 'background', 'gmapsbase', 'wms')", order: '"order"'
 
   belongs_to :user
 
@@ -18,6 +22,11 @@ class Carto::Map < ActiveRecord::Base
 
   def viz_updated_at
     get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons
+  end
+
+  def provider
+    # TODO: right now only provider
+    'leaflet'
   end
 
   private

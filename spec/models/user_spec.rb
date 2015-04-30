@@ -491,8 +491,14 @@ describe User do
       user_without_private_maps.private_maps_enabled?.should eq false
     end
 
-    it 'should have private maps if he has private_tables_enabled even if disabled' do
-      user_without_private_maps = create_user :email => 'user_opm3@example.com',  :username => 'useropm3',  :password => 'useropm3', :private_tables_enabled => true
+    it 'should have private maps if he has private_tables_enabled, even if disabled' do
+      user_without_private_maps = create_user :email => 'user_opm3@example.com',  :username => 'useropm3',  :password => 'useropm3', :private_maps_enabled => false, :private_tables_enabled => true
+      user_without_private_maps.private_maps_enabled?.should eq true
+    end
+
+    it 'should have private maps if he is AMBASSADOR even if disabled' do
+      user_without_private_maps = create_user :email => 'user_opm2@example.com',  :username => 'useropm2',  :password => 'useropm2', :private_maps_enabled => false
+      user_without_private_maps.stubs(:account_type).returns('AMBASSADOR')
       user_without_private_maps.private_maps_enabled?.should eq true
     end
 

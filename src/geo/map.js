@@ -376,8 +376,8 @@ cdb.geo.Map = cdb.core.Model.extend({
 
   _adjustZoomtoLayer: function(layer) {
 
-    var maxZoom = layer.get('maxZoom');
-    var minZoom = layer.get('minZoom');
+    var maxZoom = parseInt(layer.get('maxZoom'), 10);
+    var minZoom = parseInt(layer.get('minZoom'), 10);
 
     if (_.isNumber(maxZoom)) {
 

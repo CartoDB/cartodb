@@ -111,7 +111,7 @@ module Carto
         password: base_config['password'],
         database: @user.database_name,
         port:     base_config['port'],
-        encoding: base_config.fecth('encoding', 'unicode')
+        encoding: base_config['encoding'].nil? ? 'unicode' : base_config['encoding']
       }
 
       case user_type

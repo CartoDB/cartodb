@@ -591,8 +591,14 @@ describe Table do
 
     id = table.table_visualization.id
     CartoDB::Varnish.any_instance.expects(:purge)
-      .times(3)
+      .times(1)
       .with(".*#{id}:vizjson")
+      .returns(true)
+
+    # Save and privacy changes now trigger full user vizjson list invalidations
+    CartoDB::Varnish.any_instance.expects(:purge)
+      .times(2)
+      .with("#{@user.database_name}.*:vizjson")
       .returns(true)
 
     CartoDB::TablePrivacyManager.any_instance

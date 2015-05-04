@@ -67,7 +67,10 @@
   vertical-align: top;
   font-weight: $sFontWeight-lighter;
 }
-.PublicMap-metaTime { @include flex-wrap(wrap); font-size: 15px; }
+.PublicMap-metaTime {
+  @include flex-wrap(wrap);
+  font-size: 15px;
+}
 .PublicMap-owner { margin-left: 5px }
 .PublicMap-ownerAvatar {
   display: inline-block;
@@ -206,12 +209,6 @@
   }
   .PublicMap-secondary { padding-top: 30px }
   .PublicMap .DatasetsList { padding-bottom: 30px }
-  .PublicMap-buttons { text-align: left }
-  .PublicMap-editButton {
-    margin-left: 0;
-    margin-right: 5px;
-  }
-  .PublicMap-shareButton--facebook { margin-left: 0 }
   .PublicMap--rightAligned,
   .PublicMap-stat--onRight {
     margin-left: 0;

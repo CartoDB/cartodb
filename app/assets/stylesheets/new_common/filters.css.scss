@@ -267,7 +267,10 @@ a.Filters-cleanSearch { line-height:32px }
   .Filters-orderItem,
   .Button--positive { display:none }
 
-  .Filters-searchEnabler { display:inline }
+  .Filters-searchEnabler {
+    display:inline;
+    min-width: 65px;
+  }
   .Filters-searchItem { display:inherit }
 }
 .Filters-progress {

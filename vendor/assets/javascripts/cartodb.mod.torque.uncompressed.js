@@ -672,6 +672,7 @@ module.exports.TorqueLayer = TorqueLayer;
   // types
   var types = {
     Uint8Array: typeof(global['Uint8Array']) !== 'undefined' ? global.Uint8Array : Array,
+    Uint8ClampedArray: typeof(global['Uint8ClampedArray']) !== 'undefined' ? global.Uint8ClampedArray: Array,
     Uint32Array: typeof(global['Uint32Array']) !== 'undefined' ? global.Uint32Array : Array,
     Int16Array: typeof(global['Int16Array']) !== 'undefined' ? global.Int16Array : Array,
     Int32Array: typeof(global['Int32Array']) !== 'undefined' ? global.Int32Array: Array
@@ -1616,6 +1617,7 @@ GMapsTorqueLayer.prototype = torque.extend({},
 
     this.provider = new this.providers[this.options.provider](this.options);
     this.renderer = new this.renderers[this.options.renderer](this.getCanvas(), this.options);
+    this.renderer.options.errorCallback = this.options.errorCallback;
 
     // this listener should be before tile loader
     this._cacheListener = google.maps.event.addListener(this.options.map, 'zoom_changed', function() {
@@ -1646,6 +1648,7 @@ GMapsTorqueLayer.prototype = torque.extend({},
   },
 
   setSQL: function(sql) {
+    if (this.provider.options.named_map) throw new Error("SQL queries on named maps are read-only");
     if (!this.provider || !this.provider.setSQL) {
       throw new Error("this provider does not support SQL");
     }
@@ -1790,6 +1793,7 @@ GMapsTorqueLayer.prototype = torque.extend({},
    * set the cartocss for the current renderer
    */
   setCartoCSS: function(cartocss) {
+    if (this.provider.options.named_map) throw new Error("CartoCSS style on named maps is read-only");
     var shader = new carto.RendererJS().render(cartocss);
     this.shader = shader;
     if (this.renderer) {
@@ -1818,6 +1822,7 @@ GMapsTorqueLayer.prototype = torque.extend({},
   },
 
   onRemove: function() {
+    this.fire('remove');
     CanvasLayer.prototype.onRemove.call(this);
     this.animator.stop();
     this._removeTileLoader();
@@ -1858,6 +1863,11 @@ GMapsTorqueLayer.prototype = torque.extend({},
       }
     }
     return sum;
+  },
+  
+  error: function (callback) {
+    this.options.errorCallback = callback;
+    return this;
   }
 
 });
@@ -2138,6 +2148,11 @@ L.CanvasLayer = L.Class.extend({
 
   addTo: function (map) {
     map.addLayer(this);
+    return this;
+  },
+
+  error: function (callback) {
+    this.provider.options.errorCallback = callback;
     return this;
   },
 
@@ -2496,6 +2511,7 @@ L.TorqueLayer = L.CanvasLayer.extend({
   },
 
   onRemove: function(map) {
+    this.fire('remove');
     this._removeTileLoader();
     map.off({
       'zoomend': this._clearCaches,
@@ -2536,6 +2552,7 @@ L.TorqueLayer = L.CanvasLayer.extend({
   },
 
   setSQL: function(sql) {
+    if (this.provider.options.named_map) throw new Error("SQL queries on named maps are read-only");
     if (!this.provider || !this.provider.setSQL) {
       throw new Error("this provider does not support SQL");
     }
@@ -2696,6 +2713,7 @@ L.TorqueLayer = L.CanvasLayer.extend({
    * set the cartocss for the current renderer
    */
   setCartoCSS: function(cartocss) {
+    if (this.provider.options.named_map) throw new Error("CartoCSS style on named maps is read-only");
     if (!this.renderer) throw new Error('renderer is not valid');
     var shader = new carto.RendererJS().render(cartocss);
     this.renderer.setShader(shader);
@@ -3870,6 +3888,7 @@ var Profiler = require('../profiler');
   var Uint8Array = torque.types.Uint8Array;
   var Int32Array = torque.types.Int32Array;
   var Uint32Array = torque.types.Uint32Array;
+  var Uint8ClampedArray = torque.types.Uint8ClampedArray;
 
   // format('hello, {0}', 'rambo') -> "hello, rambo"
   function format(str) {
@@ -3948,7 +3967,7 @@ var Profiler = require('../profiler');
         dates = (1 + maxDateSlots) * rows.length;
       }
 
-      var type = this.options.cumulative ? Uint32Array: Uint8Array;
+      var type = this.options.cumulative ? Uint32Array: Uint8ClampedArray;
 
       // reserve memory for all the dates
       var timeIndex = new Int32Array(maxDateSlots + 1); //index-size
@@ -4325,6 +4344,10 @@ var Profiler = require('../profiler');
       torque.net.jsonp(url, function (data) {
         map_instance_time.end();
         if (data) {
+          if (data.errors){
+            self.options.errorCallback && self.options.errorCallback(data.errors);
+            return;
+          }
           var torque_key = Object.keys(data.metadata.torque)[0]
           var opt = data.metadata.torque[torque_key];
           for(var k in opt) {
@@ -5299,7 +5322,8 @@ var GMapsTorqueLayerView = function(layerModel, gmapsMap) {
       cartocss: layerModel.get('cartocss') || layerModel.get('tile_style'),
       named_map: layerModel.get('named_map'),
       auth_token: layerModel.get('auth_token'),
-      no_cdn: layerModel.get('no_cdn')
+      no_cdn: layerModel.get('no_cdn'),
+      loop: layerModel.get('loop') === false? false: true,
   });
 
   //this.setCartoCSS(this.model.get('tile_style'));
@@ -5609,9 +5633,7 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
         + pad(months[stepEndTime.getUTCMonth()]) + " " + pad(stepEndTime.getUTCDate());
     }
 
-    if (stepDurationMS > ONE_DAY * 2000){ // More than 48 hours
-      return toDateRange;
-    }
+    
 
     if (range < THREE_DAYS) {
       if (start.getUTCDate() === end.getUTCDate()) {
@@ -5625,6 +5647,9 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
     }
 
     if (range < ONE_YEAR) {
+      if (stepDurationMS > ONE_DAY * 2000){ // More than 48 hours
+        return toDateRange;
+      }
       return toUSDateStr;
     }
 

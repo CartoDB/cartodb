@@ -130,6 +130,7 @@ class User < Sequel::Model
       end
       self.max_layers ||= 6
       self.private_tables_enabled ||= true
+      self.private_maps_enabled ||= true
       self.sync_tables_enabled ||= true
     end
   end #before_save
@@ -807,10 +808,15 @@ class User < Sequel::Model
     self[:soft_twitter_datasource_limit] = !val
   end
 
-  def private_maps_enabled
-    enabled = super
-    return enabled if enabled.present? && enabled == true
-    /(FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD)/i.match(self.account_type) ? false : true
+  def private_maps_enabled?
+    flag_enabled = self.private_maps_enabled
+    return true if flag_enabled.present? && flag_enabled == true
+
+    #TODO: remove this after making sure we have flags inline with account types
+    return true if not self.account_type.match(/FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD/i)
+
+    return true if self.private_tables_enabled # Note private_tables_enabled => private_maps_enabled
+    return false
   end
 
   def import_quota
@@ -2310,10 +2316,6 @@ TRIGGER
   # Special url that goes to Central if active
   def upgrade_url(request_protocol)
     account_url(request_protocol) + '/upgrade'
-  end
-
-  def organization_username
-    CartoDB.subdomainless_urls? || organization.nil? ? nil : username
   end
 
   def organization_username

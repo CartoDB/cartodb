@@ -9,7 +9,8 @@ describe Map do
     @table_quota    = 500
     @user           = create_user(
                         quota_in_bytes: @quota_in_bytes,
-                        table_quota:    @table_quota
+                        table_quota:    @table_quota,
+                        private_tables_enabled: true
                       )
   end
 

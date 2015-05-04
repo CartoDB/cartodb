@@ -77,9 +77,11 @@ WORKING_SPECS_4 = \
   services/wms/spec/unit/wms_spec.rb \
   services/sql-api/spec/sql_api_spec.rb \
   spec/requests/admin/visualizations_spec.rb \
-	spec/requests/api/json/visualizations_controller_spec.rb \
-	spec/requests/carto/api/visualizations_controller_spec.rb \
-	spec/queries/carto/visualization_query_builder_spec.rb \
+  spec/requests/api/json/visualizations_controller_spec.rb \
+  spec/requests/carto/api/visualizations_controller_spec.rb \
+  spec/requests/api/json/tables_controller_spec.rb \
+  spec/requests/carto/api/tables_controller_spec.rb \
+  spec/queries/carto/visualization_query_builder_spec.rb \
   spec/requests/admin/tables_spec.rb \
   spec/requests/admin/pages_controller_spec.rb \
   $(NULL)
@@ -141,6 +143,7 @@ WORKING_SPECS_9 = \
   spec/models/platform-limits/ \
   spec/lib/initializers/carto_db_spec.rb \
   spec/unit/controllers/api/json/oembed_controller_spec.rb \
+  spec/models/carto/ \
   $(NULL)
 
 CDB_PATH=lib/assets/javascripts/cdb

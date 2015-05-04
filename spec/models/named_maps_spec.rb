@@ -43,7 +43,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
     Visualization.repository = DataRepository::Backend::Sequel.new(Rails::Sequel.connection, :visualizations)
 
     puts "\n[rspec][#{SPEC_NAME}] Creating test user database..."
-    @user = create_user( :quota_in_bytes => 524288000, :table_quota => 100 )
+    @user = create_user( :quota_in_bytes => 524288000, :table_quota => 100, :private_tables_enabled => true )
 
     puts "[rspec][#{SPEC_NAME}] Running..."
   end
@@ -684,7 +684,9 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
         }
       }
 
+
       table, derived_vis, template_id = create_private_table_with_public_visualization(template_data)
+
 
       derived_vis.map.add_layer( Layer.create( 
         kind: 'carto', 

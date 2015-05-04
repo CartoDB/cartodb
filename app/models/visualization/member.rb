@@ -496,7 +496,7 @@ module CartoDB
       end
 
       def supports_private_maps?
-        !user.nil? && user.private_maps_enabled
+        !user.nil? && user.private_maps_enabled?
       end
 
       # @param other_vis CartoDB::Visualization::Member|nil

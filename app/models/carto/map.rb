@@ -4,6 +4,8 @@ class Carto::Map < ActiveRecord::Base
 
   has_and_belongs_to_many :layers, class_name: 'Carto::Layer', order: '"order"'
 
+  has_and_belongs_to_many :base_layers, class_name: 'Carto::Layer', order: '"order"'
+
   has_and_belongs_to_many :data_layers, class_name: 'Carto::Layer', 
     conditions: { kind: 'carto' }, order: '"order"'
     
@@ -12,6 +14,9 @@ class Carto::Map < ActiveRecord::Base
 
   has_and_belongs_to_many :carto_and_torque_layers, class_name: 'Carto::Layer', 
     conditions: { kind: ['carto', 'torque'] }, order: '"order"'
+
+  has_and_belongs_to_many :torque_layers, class_name: 'Carto::Layer',
+    conditions: { kind: 'torque' }, order: '"order"'
 
   has_and_belongs_to_many :other_layers, class_name: 'Carto::Layer', 
     conditions: "kind not in ('carto', 'tiled', 'background', 'gmapsbase', 'wms')", order: '"order"'

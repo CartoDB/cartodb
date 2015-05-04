@@ -22,7 +22,8 @@ describe Admin::VisualizationsController do
     @user = create_user(
       username: 'test',
       email:    'test@test.com',
-      password: 'test12'
+      password: 'test12',
+      private_tables_enabled: true
     )
     @api_key = @user.api_key
     @user.stubs(:should_load_common_data?).returns(false)

@@ -111,6 +111,7 @@ module CartoDB
       db.css
       cartodb.css
       fonts_ie.css
+      fonts.css
       front.css
 
       editor.css

@@ -6,7 +6,6 @@ require_relative '../../lib/cartodb/metrics'
 class Geocoding < Sequel::Model
 
   DB_TIMEOUT      = 3600000*24*2  # Way generous, 2 days is a lot
-  DEFAULT_TIMEOUT = 15.minutes
   ALLOWED_KINDS   = %w(admin0 admin1 namedplace postalcode high-resolution ipaddress)
 
   PUBLIC_ATTRIBUTES = [:id, :table_id, :state, :kind, :country_code, :region_code, :formatter, :geometry_type,
@@ -21,8 +20,6 @@ class Geocoding < Sequel::Model
   attr_reader :table_geocoder
   attr_reader :started_at, :finished_at
 
-  attr_accessor :run_timeout
-
   def public_values
     Hash[PUBLIC_ATTRIBUTES.map{ |k| [k, (self.send(k) rescue self[k].to_s)] }]
   end
@@ -34,11 +31,6 @@ class Geocoding < Sequel::Model
     # validates_presence :table_id
     validates_includes ALLOWED_KINDS, :kind
   end # validate
-
-  def after_initialize
-    super
-    @run_timeout = DEFAULT_TIMEOUT
-  end #after_initialize
 
   def before_save
     super
@@ -123,16 +115,10 @@ class Geocoding < Sequel::Model
     table_geocoder.run
 
     self.update remote_id: table_geocoder.remote_id
-    started = Time.now
-    begin
-      self.update(table_geocoder.update_geocoding_status)
-      raise 'Geocoding timeout' if Time.now - started > run_timeout and ['started', 'submitted', 'accepted'].include? state
-      raise 'Geocoding failed'  if state == 'failed'
-      # INFO: this loop polls database
-      # TODO: check whether this is always neccesary. Probably not (always) async.
-      sleep(2)
-    end until ['completed', 'cancelled'].include? state
+    self.update(table_geocoder.update_geocoding_status)
+    raise 'Geocoding failed'  if state == 'failed'
     return false if state == 'cancelled'
+
     self.update(cache_hits: table_geocoder.cache.hits) if table_geocoder.respond_to?(:cache)
     Statsd.gauge("geocodings.requests", "+#{self.processed_rows}") rescue nil
     Statsd.gauge("geocodings.cache_hits", "+#{self.cache_hits}") rescue nil

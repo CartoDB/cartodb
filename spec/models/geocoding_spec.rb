@@ -117,19 +117,6 @@ describe Geocoding do
       geocoding.state.should eq 'failed'
     end
 
-    it 'raises a timeout error if geocoding takes more than 15 minutes to start' do
-      geocoding = FactoryGirl.create(:geocoding, user: @user, user_table: @table, formatter: 'b')
-      geocoding.class.stubs(:processable_rows).returns 10
-      CartoDB::TableGeocoder.any_instance.stubs(:run).returns true
-      CartoDB::TableGeocoder.any_instance.stubs(:process_results).returns true
-      CartoDB::Geocoder.any_instance.stubs(:status).returns 'submitted'
-      CartoDB::Geocoder.any_instance.stubs(:update_status).returns true
-      geocoding.run_timeout = 0.1
-      geocoding.run!
-      geocoding.reload.state.should eq 'failed'
-      geocoding.run_timeout = Geocoding::DEFAULT_TIMEOUT
-    end
-
     it 'sends a payload with duration information' do
       geocoding = FactoryGirl.build(:geocoding, user: @user, user_table: @table, kind: 'admin0', geometry_type: 'polygon', formatter: 'b')
       geocoding.class.stubs(:processable_rows).returns 10

@@ -5,7 +5,7 @@ describe Layer do
   before(:all) do
     @quota_in_bytes = 500.megabytes
     @table_quota = 500
-    @user = create_user(:quota_in_bytes => @quota_in_bytes, :table_quota => @table_quota)
+    @user = create_user(:quota_in_bytes => @quota_in_bytes, :table_quota => @table_quota, :private_tables_enabled => true)
   end
 
   after(:all) do

@@ -271,6 +271,8 @@ CartoDB::Application.routes.draw do
     get     '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/:id/like'                       => 'visualizations#is_liked',        as: :api_v1_1_visualizations_is_liked,        constraints: { id: /[^\/]+/ }
 
     get     '(/user/:user_domain)(/u/:user_domain)/api/v2_1/viz/:id/viz'                        => 'visualizations#vizjson2', as: :api_v2_1_visualizations_vizjson, constraints: { id: /[^\/]+/ }
+
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:id'  => 'tables#show',   as: :api_v1_tables_show, constraints: { id: /[^\/]+/ }
   end
 
   scope :module => 'api/json', :format => :json do

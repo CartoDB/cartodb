@@ -1,16 +1,17 @@
 # encoding: UTF-8
 
-require_relative '../../../models/visualization/member'
+require_relative '../../../models/carto/permission'
 
 module Carto
   module Api
-    class TablesController < ::Api::ApplicationController
+    class RecordsController < ::Api::ApplicationController
 
-      ssl_required :index, :show
+      ssl_required :show
 
-      before_filter :load_table, :set_start_time
+      before_filter :set_start_time
       before_filter :read_privileges?, only: [:show]
 
+      # This endpoint is not used by the editor but by users. Do not remove
       def show
         render_jsonp(get_record(params[:id]))
       rescue => e
@@ -32,10 +33,9 @@ module Carto
       end
 
       def read_privileges?
-        # TODO: Migrate to new model
         head(401) unless current_user and table.table_visualization.has_permission?(
             current_user, 
-            CartoDB::Visualization::Member::PERMISSION_READONLY
+            Carto::Permission::ACCESS_READONLY
           )
       end
     end

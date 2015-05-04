@@ -274,8 +274,9 @@ CartoDB::Application.routes.draw do
 
     get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:id'                         => 'tables#show',       as: :api_v1_1_tables_show, constraints: { id: /[^\/]+/ }
 
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:table_id/records'           => 'records#index',     as: :api_v1_1_tables_records_index,  constraints: { table_id: /[^\/]+/ }
-    get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:table_id/records/:id'    => 'records#show',      as: :api_v1_1_tables_records_show,   constraints: { table_id: /[^\/]+/ }
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:table_id/records/:id'       => 'records#show',      as: :api_v1_1_tables_records_show,   constraints: { table_id: /[^\/]+/ }
+
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:table_id/columns'           => 'columns#index',   as: :api_v1_1_tables_columns_index,   constraints: { table_id: /[^\/]+/ }
   end
 
   scope :module => 'api/json', :format => :json do

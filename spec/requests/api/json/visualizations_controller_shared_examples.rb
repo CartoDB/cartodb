@@ -1075,6 +1075,8 @@ shared_examples_for "visualization controllers" do
     end
 
     describe 'GET /api/v1/viz/:id' do
+      include_context 'visualization creation helpers'
+
       before(:each) do
         CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
         CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
@@ -1087,8 +1089,7 @@ shared_examples_for "visualization controllers" do
           payload.to_json, @headers
         id = JSON.parse(last_response.body).fetch('id')
 
-        get "/api/v1/viz/#{id}?api_key=#{@api_key}",
-          {}, @headers
+        get "/api/v1/viz/#{id}?api_key=#{@api_key}", {}, @headers
 
         last_response.status.should == 200
         response = JSON.parse(last_response.body)
@@ -1099,6 +1100,7 @@ shared_examples_for "visualization controllers" do
         response.fetch('description')     .should_not be_nil
         response.fetch('related_tables')  .should_not be_nil
       end
+
     end
 
     describe 'GET /api/v2/viz/:id/viz' do
@@ -1115,6 +1117,23 @@ shared_examples_for "visualization controllers" do
           {}, @headers
         last_response.status.should == 200
         ::JSON.parse(last_response.body).keys.length.should > 1
+      end
+
+      it 'returns children (slides) vizjson' do
+        table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: "table#{rand(9999)}_1", user_id: @user.id)
+        parent = table.table_visualization
+        parent.privacy = Visualization::Member::PRIVACY_PUBLIC
+        parent.type = Visualization::Member::TYPE_DERIVED
+        parent.store
+
+        child1 = Visualization::Member.new(random_attributes_for_vis_member({ user_id: @user.id, name: 'CHILD 1', type: Visualization::Member::TYPE_SLIDE, parent_id:  parent.id})).store.fetch
+
+        get "/api/v2/viz/#{parent.id}/viz?api_key=#{@api_key}", {}, @headers
+
+        last_response.status.should == 200
+        response = JSON.parse(last_response.body)
+        slides = response.fetch('slides')
+        slides.count.should == 1
       end
 
       it "comes with proper surrogate-key" do

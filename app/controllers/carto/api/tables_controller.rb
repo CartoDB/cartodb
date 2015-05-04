@@ -6,6 +6,8 @@ module Carto
 
       ssl_required :show
 
+      before_filter :set_start_time
+
       def show
         return head(404) if table == nil
         return head(403) unless table.table_visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)

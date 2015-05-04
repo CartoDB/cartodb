@@ -2,6 +2,8 @@
 
 shared_examples_for "tables controllers" do
 
+  # TODO: Keep migrating spec/requests/api/tables_spec.rb
+
   describe '#show legacy tests' do
 
     before(:all) do
@@ -28,8 +30,7 @@ shared_examples_for "tables controllers" do
       end
     end
 
-
-    it "downloads table metadata" do
+    it "check imported table metadata" do
       data_import = DataImport.create(
                                       user_id: @user.id,
                                       data_source: '/../spec/support/data/TM_WORLD_BORDERS_SIMPL-0.3.zip'

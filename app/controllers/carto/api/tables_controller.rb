@@ -1,7 +1,7 @@
+# encoding: UTF-8
+
 module Carto
-
   module Api
-
     class TablesController < ::Api::ApplicationController
 
       ssl_required :show

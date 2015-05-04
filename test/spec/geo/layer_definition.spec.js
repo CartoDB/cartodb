@@ -1,36 +1,38 @@
-  describe("LayerDefinition", function() {
+describe("LayerDefinition", function() {
   var layerDefinition;
+
   beforeEach(function(){
     var layer_definition = {
       version: '1.0.0',
       stat_tag: 'vis_id',
-      layers: [{
-         type: 'cartodb', 
-         options: {
-           sql: 'select * from ne_10m_populated_places_simple',
-           cartocss: '#layer { marker-fill: red; }',
-           interactivity: ['test', 'cartodb_id']
-         }
-       }, {
-         type: 'cartodb', 
-         options: {
-           sql: "select * from european_countries_export",
-           cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
-           cartocss_version : '2.0.0',
-           interactivity: ['       test2    ', 'cartodb_id2']
-         }
-       }
+      layers: [
+        {
+          type: 'cartodb',
+          options: {
+            sql: 'select * from ne_10m_populated_places_simple',
+            cartocss: '#layer { marker-fill: red; }',
+            interactivity: ['test', 'cartodb_id']
+          }
+        },
+        {
+          type: 'cartodb',
+          options: {
+            sql: "select * from european_countries_export",
+            cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
+            cartocss_version : '2.0.0',
+            interactivity: ['       test2    ', 'cartodb_id2']
+          }
+        }
       ]
     };
     layerDefinition = new LayerDefinition(layer_definition, {
-      tiler_domain:   "cartodb.com",
-      tiler_port:     "8081",
+      tiler_domain: "cartodb.com",
+      tiler_port: "8081",
       tiler_protocol: "http",
       user_name: 'rambo',
       no_cdn: true,
       subdomains: [null]
     });
-
   });
 
   it("should return layer count", function() {
@@ -43,7 +45,6 @@
     layerDefinition.invalidate();
     expect(layerDefinition.layerToken).toEqual(null);
     expect(layerDefinition.urls).toEqual(null);
-    
   });
 
   it("should remove a layer", function() {
@@ -84,23 +85,25 @@
     expect(layerDefinition.toJSON()).toEqual({
       version: '1.0.0',
       stat_tag: 'vis_id',
-      layers: [{
-         type: 'cartodb', 
-         options: {
-           sql: 'select * from ne_10m_populated_places_simple',
-           cartocss: '#layer { marker-fill: red; }',
-           cartocss_version: '2.1.0',
-           interactivity: ['test', 'cartodb_id']
-         }
-       }, {
-         type: 'cartodb', 
-         options: {
-           sql: "select * from european_countries_export",
-           cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
-           cartocss_version: '2.0.0',
-           interactivity: ['test2', 'cartodb_id2']
-         }
-       }
+      layers: [
+        {
+          type: 'cartodb', 
+          options: {
+            sql: 'select * from ne_10m_populated_places_simple',
+            cartocss: '#layer { marker-fill: red; }',
+            cartocss_version: '2.1.0',
+            interactivity: ['test', 'cartodb_id']
+          }
+        },
+        {
+          type: 'cartodb', 
+          options: {
+            sql: "select * from european_countries_export",
+            cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
+            cartocss_version: '2.0.0',
+            interactivity: ['test2', 'cartodb_id2']
+          }
+        }
       ]
     });
     layerDefinition.getSubLayer(0).hide();
@@ -128,7 +131,6 @@
     expect(tiles.tiles[0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/{z}/{x}/{y}.png');
     expect(tiles.grids[0][0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/0/{z}/{x}/{y}.grid.json');
     expect(tiles.grids[1][0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/1/{z}/{x}/{y}.grid.json');
-
   });
 
   it("should generate url for tiles with params", function() {
@@ -140,7 +142,7 @@
     expect(tiles.grids[0][0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/0/{z}/{x}/{y}.grid.json?api_key=api_key_test&updated_at=1234');
   });
 
-  it("should generate url for with cdn", function() {
+  it("should generate url for tiles using a cdn", function() {
     layerDefinition.options.no_cdn = false;
     layerDefinition.options.cdn_url = { http: "api.cartocdn.com" }
     layerDefinition.options.subdomains = ['a', 'b', 'c', 'd'];
@@ -151,7 +153,7 @@
     expect(tiles.grids[0][1]).toEqual('http://b.api.cartocdn.com/rambo/api/v1/map/test_layer/0/{z}/{x}/{y}.grid.json');
   });
 
-  it("should generate url for without cdn", function() {
+  it("should generate url for tiles without a cdn when cdn_url is empty", function() {
     layerDefinition.options.no_cdn = false;
     layerDefinition.options.subdomains = ['a', 'b', 'c', 'd'];
     var tiles = layerDefinition._layerGroupTiles('test_layer');
@@ -269,8 +271,7 @@
     }, 1000);
   });
 
-
-  it("it should use jsonp when request is less than 2kb", function(done) {
+  it("should use jsonp when request is less than 2kb", function(done) {
     var params;
     layerDefinition.options.ajax = function(p) { 
       params = p;
@@ -300,7 +301,7 @@
     }, 100);
   });
 
-  it("it should include stat_tag", function(done) {
+  it("should include stat_tag", function(done) {
     var params, lzma;
     layerDefinition.options.cors = false;
     layerDefinition.options.ajax = function(p) { 
@@ -373,7 +374,6 @@
     layerDefinition._getLayerToken();
     expect(url.indexOf('map_key=key4')).not.toEqual(-1);
   });
-
 
   it("getTiles should include extra params", function() {
     layerDefinition.options.extra_params = {
@@ -516,16 +516,13 @@
       layerDefinition.getSubLayer(1).hide();
       layerDefinition.getSubLayer(1).show();
       expect(interaction[1]).toEqual(undefined);
-
-    })
+    });
 
     it("should be the same object for the same sublayer", function() {
       expect(layerDefinition.getSubLayer(0)).toBe(layerDefinition.getSubLayer(0));
     });
 
-
-
-    it("should raise an exception when change something after remove", function() {
+    it("should raise an exception when trying to modify a sublayer that has been removed", function() {
       var sub = layerDefinition.getSubLayer(0);
       sub.remove();
       var a = false;
@@ -535,7 +532,6 @@
         a = true;
       }
       expect(a).toEqual(true);
-
     });
 
     it("should trigger change:visible when show/hide", function() {
@@ -551,14 +547,13 @@
     });
 
     it("should set sql by GET", function(done) {
-      var q;
       var layer = layerDefinition.getSubLayer(0);
 
       spyOn(layerDefinition, '_requestGET').and.callThrough();
       spyOn(layerDefinition, '_requestPOST').and.callThrough();
 
       var query = "SELECT * FROM RAMBO_CHARLIES where area < 1000";
-      layer.setSQL(q=query);
+      layer.setSQL(query);
       layerDefinition.getLayerToken();
 
       setTimeout(function(){
@@ -569,7 +564,6 @@
     });
 
     it("should set sql by POST", function(done) {
-      var q;
       var layer = layerDefinition.getSubLayer(0);
 
       spyOn(layerDefinition, '_requestGET').and.callThrough();
@@ -580,7 +574,7 @@
         query += ", " + Math.floor(Math.random() * 100) + 1;
       }
       query += ', * from rambo_charlies where area > 10';
-      layer.setSQL(q=query);
+      layer.setSQL(query);
       layerDefinition.getLayerToken();
 
       setTimeout(function(){
@@ -589,7 +583,6 @@
         done();
       }, 100);
     });
-
   });
 
   describe('layerDefFromSubLayers', function() {
@@ -610,7 +603,6 @@
             }
           }]
       });
-
     });
   });
 

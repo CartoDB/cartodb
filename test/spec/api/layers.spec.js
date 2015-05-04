@@ -401,7 +401,7 @@ describe('api.layers', function() {
 
       });
 
-      it("should create layer form sublayer list", function(done) {
+      it("should create a layer from the list of sublayers", function(done) {
         var layer;
 
         cartodb.createLayer(map, {
@@ -432,10 +432,9 @@ describe('api.layers', function() {
           });
           done();
         }, 100);
-
       });
 
-      it("should have addTo", function(done) {
+      it("should return a promise that responds to addTo", function(done) {
         var layer;
 
         cartodb.createLayer(map, {
@@ -502,11 +501,7 @@ describe('api.layers', function() {
           }
           done();
         }, 100);
-
       });
-
-    //});
-
     });
   }
 

@@ -15,8 +15,17 @@
   background: $cStructure-grayBkg;
   width: 100%;
   height: 400px;
-  border-bottom: 1px solid #EAECF1;
 }
+.PublicMap-map.js-map::after{
+  content: '';
+  display: block;
+  position: relative;
+  height: 1px;
+  width: 100%;
+  background: rgba(0,0,0,0.25);
+  bottom: 1px;
+}
+
 .PublicMap-block {
   display: block;
   overflow: auto;
@@ -28,7 +37,7 @@
   width: 580px;
 }
 .PublicMap-leftBlock.with-padding,
-.PublicMap-rightBlock.with-padding { padding-bottom: 22px }
+.PublicMap-rightBlock.with-padding { padding-bottom: 16px }
 .PublicMap-rightBlock {
   float: right;
   width: 300px;
@@ -54,10 +63,14 @@
 }
 .PublicMap-meta {
   display: inline-block;
-  margin-top: 10px;
+  margin-top: 4px;
   vertical-align: top;
+  font-weight: $sFontWeight-lighter;
 }
-.PublicMap-metaTime { @include flex-wrap(wrap) }
+.PublicMap-metaTime {
+  @include flex-wrap(wrap);
+  font-size: 15px;
+}
 .PublicMap-owner { margin-left: 5px }
 .PublicMap-ownerAvatar {
   display: inline-block;
@@ -74,10 +87,11 @@
   @include nicer-lato-typography();
   font-size: $sFontSize-large;
   font-weight: $sFontWeight-normal;
+  line-height: $sLineHeight-large;
   color: $cTypography-secondary;
 }
 .PublicMap-buttons {
-  margin-top: 5px;
+  margin-top: 3px;
   text-align: right;
 }
 
@@ -96,7 +110,7 @@
   vertical-align: middle;
   width: 26px;
   height: 26px;
-  margin-left: 5px;
+  margin-left: 6px;
   border-radius: 28px;
   line-height: 28px;
   border: 1px solid $cStructure-softLine;
@@ -109,7 +123,7 @@
   vertical-align: middle;
   width: auto;
   height: 26px;
-  padding: 0 10px;
+  padding: 0 16px;
   border-radius: 28px;
   line-height: 28px;
   border: 1px solid $cNavButton-default;
@@ -195,12 +209,6 @@
   }
   .PublicMap-secondary { padding-top: 30px }
   .PublicMap .DatasetsList { padding-bottom: 30px }
-  .PublicMap-buttons { text-align: left }
-  .PublicMap-editButton {
-    margin-left: 0;
-    margin-right: 5px;
-  }
-  .PublicMap-shareButton--facebook { margin-left: 0 }
   .PublicMap--rightAligned,
   .PublicMap-stat--onRight {
     margin-left: 0;
@@ -209,7 +217,7 @@
   }
   .PublicMap-info { padding: 30px 0 }
   .PublicMap-stat { display: block }
- 
+
   .PublicMap .DatasetsList-itemPrimaryInfo,
   .PublicMap .DatasetsList-itemPrimaryInfo {
     width: auto;
@@ -218,6 +226,9 @@
   .PublicMap .DatasetsList-itemSecondaryInfo {
     width: auto;
     text-align: left;
+  }
+  .PublicMap-buttons{
+    display: none;
   }
 }
 @media only screen and (max-width: 360px) {

@@ -5,7 +5,7 @@
 @import "../new_variables/colors";
 @import "../new_variables/sizes";
 
-$height: 81px;
+$height: 71px;
 $cHeader-light: rgba(#61AEEC, 1);
 $cHeader-dark:  rgba(#3A91D7, 1);
 
@@ -58,7 +58,7 @@ $cHeader-dark:  rgba(#3A91D7, 1);
     }
   }
 }
-.Header-settings { height: $height }
+.Header-settings { height: 70px }
 .Header-settingsList {
   height: 100%;
   @include display-flex();
@@ -99,14 +99,14 @@ $cHeader-dark:  rgba(#3A91D7, 1);
   .Header {
     height: $height;
   }
-  .Header-settingsItem--avatar { 
+  .Header-settingsItem--avatar {
     height: $height/2;
   }
-  .Header .Header-settingsList .UserAvatar-img--medium { 
+  .Header .Header-settingsList .UserAvatar-img--medium {
     height: $height/2;
     width: $height/2;
   }
-  .Header .Header-settingsList .Button { 
+  .Header .Header-settingsList .Button {
     height: $height/2;
     padding: 0 20px;
   }

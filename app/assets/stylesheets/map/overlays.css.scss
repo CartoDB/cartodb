@@ -368,7 +368,11 @@
       border: 3px dashed rgba(#fff, .5);
     }
 
-    .loader{
+    &.is--loading .loader {
+      display: block;
+    }
+
+    .loader {
       display:none;
       background: rgba(#333, .5) image-url('layout/loader_transparent.gif') no-repeat 50% 50%;
       @include absolute-center(38px, 16px);
@@ -392,6 +396,12 @@
 
     &.error .content {
       img { display: none!important; }
+    }
+
+    &.mobile.editable {
+      width: 200px;
+      max-width: 200px;
+      min-width: 100px;
     }
 
     &.editable {

@@ -368,6 +368,10 @@
       border: 3px dashed rgba(#fff, .5);
     }
 
+    .content .text {
+      line-height:0;
+    }
+
     .content {
       position:relative;
       @include border-radius(3px);
@@ -400,12 +404,18 @@
       max-width: 400px;
       min-width: 100px;
 
+      .content {
+        line-height: normal;
+      }
+
       .content div {
         background: #333;
         @include opacity(.8);
       }
 
-      .text { font-weight:normal; }
+      .text { 
+        font-weight:normal;
+      }
     }
 
     img {
@@ -449,6 +459,10 @@
       @include user-select(inherit);
 
       padding: 5px 9px;
+
+      .content .text {
+        line-height:normal!important;
+      }
 
       .content {
         padding: 10px 10px 3px 10px;

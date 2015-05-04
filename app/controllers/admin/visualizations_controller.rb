@@ -570,12 +570,12 @@ class Admin::VisualizationsController < ApplicationController
     # INFO: organization public visualizations
     user_id = user ? user.id : nil
     visualization = Carto::VisualizationQueryBuilder.new.with_id_or_name(table_id).with_user_id(user_id).build.first
-    return get_visualization_and_table_from_table_id(table_id, user, filter) if visualization.nil?
+    return get_visualization_and_table_from_table_id(table_id) if visualization.nil?
     return Carto::Admin::VisualizationPublicMapAdapter.new(visualization), visualization.table_service
   end
 
-  def get_visualization_and_table_from_table_id(table_id, user, filter)
-    user_table = Carto::UserTable.where({ id: table_id, user_id: user.id }).first
+  def get_visualization_and_table_from_table_id(table_id)
+    user_table = Carto::UserTable.where({ id: table_id }).first
     return nil, nil if user_table.nil?
     visualization = user_table.visualization
     return Carto::Admin::VisualizationPublicMapAdapter.new(visualization), visualization.table_service

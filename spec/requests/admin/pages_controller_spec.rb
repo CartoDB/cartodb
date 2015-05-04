@@ -8,6 +8,7 @@ end #app
 
 describe Admin::PagesController do
   include Rack::Test::Methods
+  include Warden::Test::Helpers
 
   JSON_HEADER = {'CONTENT_TYPE' => 'application/json'}
 
@@ -32,7 +33,7 @@ describe Admin::PagesController do
     User.all.each {|u| u.delete}
   end
 
-  describe 'GET /u/foo' do
+  describe '#index' do
     it 'returns 404 if user does not belongs to host organization' do
       prepare_user(@non_org_user_name)
 
@@ -73,6 +74,41 @@ describe Admin::PagesController do
 
       last_response.status.should == 404
     end
+
+    it 'redirects to public maps home if current user and current viewer are different' do
+      anyuser = prepare_user('anyuser')
+      anyviewer = prepare_user('anyviewer')
+      login_as anyviewer
+      host! 'anyuser.localhost.lan'
+
+      get '', {}, JSON_HEADER
+
+      last_response.status.should == 302
+      follow_redirect!
+      last_response.status.should == 200
+      uri = URI.parse(last_request.url)
+      uri.host.should == 'anyuser.localhost.lan'
+      uri.path.should == '/maps'
+    end
+
+    it 'redirects to public maps home if not logged in' do
+      anyuser = prepare_user('anyuser')
+      host! 'anyuser.localhost.lan'
+
+      get '', {}, JSON_HEADER
+
+      last_response.status.should == 302
+      follow_redirect!
+      last_response.status.should == 200
+      uri = URI.parse(last_request.url)
+      uri.host.should == 'anyuser.localhost.lan'
+      uri.path.should == '/maps'
+    end
+
+    it 'redirects to login page in domainless config if no user is especified' do
+      pending "implement"
+    end
+
   end
 
   def prepare_user(user_name, org_user=false, belongs_to_org=false)

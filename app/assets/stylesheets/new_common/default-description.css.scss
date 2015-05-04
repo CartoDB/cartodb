@@ -13,6 +13,12 @@
   overflow-wrap: break-word;
   position: relative;
 }
+.DefaultDescription > * {
+  margin: 0;
+  padding: 0;
+  font-weight: $sFontWeight-normal;
+  font-size: $sFontSize-normal
+}
 .DefaultDescription--error {
   color: $cHighlight-negative;
 }

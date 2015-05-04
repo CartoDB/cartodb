@@ -368,10 +368,8 @@
       border: 3px dashed rgba(#fff, .5);
     }
 
-    .loader{
-      display:none;
-      background: rgba(#333, .5) image-url('layout/loader_transparent.gif') no-repeat 50% 50%;
-      @include absolute-center(38px, 16px);
+    .content .text {
+      line-height:0;
     }
 
     .content {
@@ -394,18 +392,30 @@
       img { display: none!important; }
     }
 
+    &.mobile.editable {
+      width: 200px;
+      max-width: 200px;
+      min-width: 100px;
+    }
+
     &.editable {
 
       width: 400px;
       max-width: 400px;
       min-width: 100px;
 
+      .content .text {
+        line-height:normal;
+      }
+
       .content div {
         background: #333;
         @include opacity(.8);
       }
 
-      .text { font-weight:normal; }
+      .text { 
+        font-weight:normal;
+      }
     }
 
     img {
@@ -443,24 +453,21 @@
   } // .open
 
   &.editable {
-
     .text {
-
       @include user-select(inherit);
 
       padding: 5px 9px;
 
       .content {
         padding: 10px 10px 3px 10px;
+        line-height:normal!important;
       }
 
       border: 1px dashed #ccc;
       cursor: text!important;
 
       @include simple-transition(padding, 100ms, ease-in);
-
     }
-
   }
 
   &.draggable {

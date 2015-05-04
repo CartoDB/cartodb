@@ -34,6 +34,11 @@ class Carto::Map < ActiveRecord::Base
     'leaflet'
   end
 
+  def self.provider_for_baselayer(layer)
+    layer[:kind] == 'tiled' ? 'leaflet': 'googlemaps'
+  end
+
+
   private
 
   def get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons

@@ -13,7 +13,8 @@ var HTTPS_TO_HTTP = {
   'https://maps.nlp.nokia.com/': 'http://maps.nlp.nokia.com/',
   'https://tile.stamen.com/': 'http://tile.stamen.com/',
   "https://{s}.maps.nlp.nokia.com/": "http://{s}.maps.nlp.nokia.com/",
-  "https://cartocdn_{s}.global.ssl.fastly.net/": "http://{s}.api.cartocdn.com/"
+  "https://cartocdn_{s}.global.ssl.fastly.net/": "http://{s}.api.cartocdn.com/",
+  "https://cartodb-basemaps-{s}.global.ssl.fastly.net/": "http://{s}.basemaps.cartocdn.com/"
 };
 
 function transformToHTTP(tilesTemplate) {

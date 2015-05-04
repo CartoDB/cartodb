@@ -37,11 +37,11 @@ module CartoDB
       # to pass a days parameter to this method
       def get_old_api_calls(username)
         user_redis_key = User.where(:username => username).first.key
-        calls = $users_metadata.HMGET(user_redis_key, 'api_calls').first['per_day']
-        if calls.nil?
+        calls = $users_metadata.HMGET(user_redis_key, 'api_calls').first
+        if calls.nil? || calls['per_day'].nil?
           return []
         else
-          JSON.parse(calls).to_a.reverse
+          JSON.parse(calls['per_day']).to_a.reverse
         end
       end
 

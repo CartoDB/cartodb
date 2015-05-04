@@ -56,8 +56,9 @@
   display: inline-block;
   margin-top: 10px;
   vertical-align: top;
+  font-weight: $sFontWeight-lighter;
 }
-.PublicMap-metaTime { @include flex-wrap(wrap) }
+.PublicMap-metaTime { @include flex-wrap(wrap); font-size: 15px; }
 .PublicMap-owner { margin-left: 5px }
 .PublicMap-ownerAvatar {
   display: inline-block;
@@ -74,6 +75,7 @@
   @include nicer-lato-typography();
   font-size: $sFontSize-large;
   font-weight: $sFontWeight-normal;
+  line-height: $sLineHeight-large;
   color: $cTypography-secondary;
 }
 .PublicMap-buttons {
@@ -96,7 +98,7 @@
   vertical-align: middle;
   width: 26px;
   height: 26px;
-  margin-left: 5px;
+  margin-left: 6px;
   border-radius: 28px;
   line-height: 28px;
   border: 1px solid $cStructure-softLine;
@@ -109,7 +111,7 @@
   vertical-align: middle;
   width: auto;
   height: 26px;
-  padding: 0 10px;
+  padding: 0 16px;
   border-radius: 28px;
   line-height: 28px;
   border: 1px solid $cNavButton-default;
@@ -209,7 +211,7 @@
   }
   .PublicMap-info { padding: 30px 0 }
   .PublicMap-stat { display: block }
- 
+
   .PublicMap .DatasetsList-itemPrimaryInfo,
   .PublicMap .DatasetsList-itemPrimaryInfo {
     width: auto;

@@ -230,6 +230,9 @@
     width: auto;
     text-align: left;
   }
+  .PublicMap-buttons{
+    display: none;
+  }
 }
 @media only screen and (max-width: 360px) {
   .PublicMap .DatasetsList-itemSecondaryInfo {

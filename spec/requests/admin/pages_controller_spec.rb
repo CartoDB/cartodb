@@ -98,15 +98,26 @@ describe Admin::PagesController do
       get '', {}, JSON_HEADER
 
       last_response.status.should == 302
-      follow_redirect!
-      last_response.status.should == 200
-      uri = URI.parse(last_request.url)
+      uri = URI.parse(last_response.location)
       uri.host.should == 'anyuser.localhost.lan'
       uri.path.should == '/maps'
+      follow_redirect!
+      last_response.status.should == 200
     end
 
-    it 'redirects to login page in domainless config if no user is especified' do
-      pending "implement"
+    it 'redirects to login page if no user is especified' do
+      anyuser = prepare_user('anyuser')
+      host! 'localhost.lan'
+      CartoDB.stubs(:subdomainless_urls?).returns(true)
+
+      get '', {}, JSON_HEADER
+
+      last_response.status.should == 302
+      uri = URI.parse(last_response.location)
+      uri.host.should == 'localhost.lan'
+      uri.path.should == '/login'
+      follow_redirect!
+      last_response.status.should == 200
     end
 
   end

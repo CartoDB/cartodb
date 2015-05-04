@@ -90,6 +90,7 @@
   line-height: $sLineHeight-large;
   color: $cTypography-secondary;
 }
+.PublicMap-desc > * { font-size: $sFontSize-large }
 .PublicMap-buttons {
   margin-top: 3px;
   text-align: right;

@@ -878,7 +878,7 @@ class User < Sequel::Model
   # Returns an array representing the last 30 days, populated with api_calls
   # from three different sources
   def get_api_calls(options = {})
-    return CartoDB::Stats::APICalls.new.get_api_calls_without_dates(self.username, {old_api_calls: true})
+    return CartoDB::Stats::APICalls.new.get_api_calls_without_dates(self.username, {old_api_calls: false})
   end
 
   def get_geocoding_calls(options = {})

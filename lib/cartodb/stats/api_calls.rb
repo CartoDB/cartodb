@@ -13,7 +13,7 @@ module CartoDB
         if options[:old_api_calls]
           raise "Cannot request old api calls with custom dates" if options[:to] or options[:from]
           # Add old api calls
-          old_calls = get_old_api_calls(username)
+          old_calls = get_old_api_calls(username) rescue []
           calls = calls.zip(old_calls).map { |pair|
             pair[0].to_i + pair[1].to_i
           } unless old_calls.blank?

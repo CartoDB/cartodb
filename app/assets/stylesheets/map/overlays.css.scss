@@ -459,10 +459,7 @@
       @include user-select(inherit);
 
       padding: 5px 9px;
-
-      .content .text {
-        line-height:normal!important;
-      }
+      line-height:normal;
 
       .content {
         padding: 10px 10px 3px 10px;

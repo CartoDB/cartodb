@@ -76,20 +76,22 @@ describe Admin::PagesController do
   end
 
   def prepare_user(user_name, org_user=false, belongs_to_org=false)
-    @user = create_user(
+    user = create_user(
       username: user_name,
       email:    "#{user_name}@example.com",
       password: 'longer_than_MIN_PASSWORD_LENGTH',
       fake_user: true
     )
 
-    User.any_instance.stubs(:username => user_name, :organization_user? => org_user)
+    user.stubs(:username => user_name, :organization_user? => org_user)
 
     if org_user
       org = mock
       Organization.stubs(:where).with(name: @org_name).returns([org])
       User.any_instance.stubs(:belongs_to_organization?).with(org).returns(belongs_to_org)
     end
+
+    user
   end
 
 end

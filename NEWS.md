@@ -1,5 +1,6 @@
 3.10.1 ()
 ---------
+* Fixes bug in the "No georeferenced data" dialog [#3449](https://github.com/CartoDB/cartodb/pull/3449)
 * Adds user search/filter to the Share Dialog [3417](https://github.com/CartoDB/cartodb/pull/3417)
 * Change default CartoCSS properties of polygon strokes [3375](https://github.com/CartoDB/cartodb/pull/3375)
 * Fix custom image header templates [3378](https://github.com/CartoDB/cartodb/pull/3378)

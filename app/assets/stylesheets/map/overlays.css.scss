@@ -368,16 +368,6 @@
       border: 3px dashed rgba(#fff, .5);
     }
 
-    &.is--loading .loader {
-      display: block;
-    }
-
-    .loader {
-      display:none;
-      background: rgba(#333, .5) image-url('layout/loader_transparent.gif') no-repeat 50% 50%;
-      @include absolute-center(38px, 16px);
-    }
-
     .content {
       position:relative;
       @include border-radius(3px);

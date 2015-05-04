@@ -5,33 +5,50 @@ describe CartoDB::Stats::APICalls do
   describe "Stats API Calls" do
     before(:all) do
       @api_calls = CartoDB::Stats::APICalls.new
+        
+      @default_date_to = Date.today
+      @default_date_from = @default_date_to - 29.days
+      @dates = @default_date_to.downto(@default_date_from).map {|d| d.strftime("%Y%m%d")}
+      @dates_example_values = {}
+      @dates.each do |d|
+        @dates_example_values[d] = rand(50)
+      end
+      @redis_sources_count = CartoDB::Stats::APICalls::REDIS_SOURCES.length
     end
 
     it "should sum correctly api calls from all sources and return array without date" do
-      redis_sources_count = @api_calls.REDIS_SOURCES.length
-      @api_calls.stubs(:get_old_api_calls).returns({
-        "per_day" => [0, 0, 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 17, 4, 0, 0, 0, 0],
-        "total"=>49,
-        "updated_at"=>1370362756
-      })
-      @user.stubs(:get_es_api_calls_from_redis).returns([
-        21, 0, 0, 0, 2, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 8, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-      ])
-      @user.get_api_calls.should == [21, 0, 0, 0, 6, 17, 0, 5, 0, 0, 0, 0, 0, 0, 8, 8, 0, 5, 0, 0, 0, 0, 0, 0, 0, 24, 0, 0, 0, 0]
-      @user.get_api_calls(
-        from: (Date.today - 6.days),
-        to: Date.today
-      ).should == [21, 0, 0, 0, 6, 17, 0]
-    end
-
-      
+      @api_calls.stubs(:get_old_api_calls).returns(@dates_example_values.values)
+      @api_calls.stubs(:get_api_calls_from_redis_source).returns(@dates_example_values)
+      expected_total_calls = @dates_example_values.values.map {|v| v * (@redis_sources_count + 1)}
+      @api_calls.get_api_calls_without_dates('wadus', {old_api_calls: true}).should == expected_total_calls
 
     end
-    it "should prefix all hash keys with import_ except username, distinct_id and account_Type for Mixpanel" do
-      metrics = CartoDB::Metrics.new
-      metrics.mixpanel_payload(:import, {username: "asdf", account_type: "Godzilla", error: 3, extension: 34, distinct_id: "aasdf"})
-        .should == {username: "asdf", account_type: "Godzilla", import_error: 3, import_extension: 34, distinct_id: "aasdf"}
-
+    
+    it "should sum correctly api calls from all redis sources and return hash with dates" do
+      @api_calls.stubs(:get_api_calls_from_redis_source).returns(@dates_example_values)
+      expected_total_calls = {}
+      @dates_example_values.each do |d, value| 
+        expected_total_calls[d] = value * @redis_sources_count
+      end
+      @api_calls.get_api_calls_with_dates('wadus').should == expected_total_calls
     end
+
+    it "should sum correctly api calls with custom dates from all redis sources and return hash with dates" do
+      pending "Find a way to stub only redis call"
+
+      @api_calls.stubs(:get_api_calls_from_redis_source).returns(@dates_example_values)
+      expected_total_calls = {}
+      @dates_example_values.each do |d, value| 
+        expected_total_calls[d] = value * @redis_sources_count
+      end
+      @api_calls.get_api_calls_with_dates(
+        'wadus',
+        {
+          from: (Date.today - 6.days),
+          to: Date.today
+        }  
+      ).should == expected_total_calls.to_a[0..6].to_h
+    end
+
   end
 end

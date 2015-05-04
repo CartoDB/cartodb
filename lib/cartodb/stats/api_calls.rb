@@ -11,6 +11,7 @@ module CartoDB
       def get_api_calls_without_dates(username, options = {})
         calls = get_api_calls(username, options).map {|day, value| value}
         if options[:old_api_calls]
+          raise "Cannot request old api calls with custom dates" if options[:to] or options[:from]
           # Add old api calls
           old_calls = get_old_api_calls(username)
           calls = calls.zip(old_calls).map { |pair|

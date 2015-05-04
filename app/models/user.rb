@@ -10,6 +10,7 @@ require_relative './synchronization/collection.rb'
 require_relative '../services/visualization/common_data_service'
 require_relative './external_data_import'
 require_relative './feature_flag'
+require_relative '../../lib/cartodb/stats/api_calls'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -877,27 +878,7 @@ class User < Sequel::Model
   # Returns an array representing the last 30 days, populated with api_calls
   # from three different sources
   def get_api_calls(options = {})
-    date_to = (options[:to] ? options[:to].to_date : Date.today)
-    date_from = (options[:from] ? options[:from].to_date : Date.today - 29.days)
-    calls = $users_metadata.pipelined do
-      date_to.downto(date_from) do |date|
-        $users_metadata.ZSCORE "user:#{username}:mapviews:global", date.strftime("%Y%m%d")
-      end
-    end.map &:to_i
-
-    # Add old api calls
-    old_calls = get_old_api_calls["per_day"].to_a.reverse rescue []
-    calls = calls.zip(old_calls).map { |pair|
-      pair[0].to_i + pair[1].to_i
-    } unless old_calls.blank?
-
-    # Add ES api calls
-    es_calls = get_es_api_calls_from_redis(options) rescue []
-    calls = calls.zip(es_calls).map { |pair|
-      pair[0].to_i + pair[1].to_i
-    } unless es_calls.blank?
-
-    return calls
+    return CartoDB::Stats::APICalls.new.get_api_calls_without_dates(self.username, {old_api_calls: true})
   end
 
   def get_geocoding_calls(options = {})
@@ -906,18 +887,6 @@ class User < Sequel::Model
     self.geocodings_dataset.where(kind: 'high-resolution').where('created_at >= ? and created_at <= ?', date_from, date_to + 1.days)
       .sum("processed_rows + cache_hits".lit).to_i
   end # get_geocoding_calls
-
-  # Get ES api calls from redis
-  def get_es_api_calls_from_redis(options = {})
-    date_to = (options[:to] ? options[:to].to_date : Date.today)
-    date_from = (options[:from] ? options[:from].to_date : Date.today - 29.days)
-    es_calls = $users_metadata.pipelined do
-      date_to.downto(date_from) do |date|
-        $users_metadata.ZSCORE "user:#{self.username}:mapviews_es:global", date.strftime("%Y%m%d")
-      end
-    end.map &:to_i
-    return es_calls
-  end
 
   def effective_twitter_block_price
     organization.present? ? organization.twitter_datasource_block_price : self.twitter_datasource_block_price
@@ -990,24 +959,25 @@ class User < Sequel::Model
     end
   end
 
-  # Legacy stats fetching
+  ## Legacy stats fetching
+  ## This is DEPRECATED
+  def get_old_api_calls
+    JSON.parse($users_metadata.HMGET(key, 'api_calls').first) rescue {}
+  end
 
-    def get_old_api_calls
-      JSON.parse($users_metadata.HMGET(key, 'api_calls').first) rescue {}
+  def set_old_api_calls(options = {})
+    # Ensure we update only once every 3 hours
+    if options[:force_update] || get_old_api_calls["updated_at"].to_i < 3.hours.ago.to_i
+      api_calls = JSON.parse(
+        open("#{Cartodb.config[:api_requests_service_url]}?username=#{self.username}").read
+      ) rescue {}
+
+      # Manually set updated_at
+      api_calls["updated_at"] = Time.now.to_i
+      $users_metadata.HMSET key, 'api_calls', api_calls.to_json
     end
-
-    def set_old_api_calls(options = {})
-      # Ensure we update only once every 3 hours
-      if options[:force_update] || get_old_api_calls["updated_at"].to_i < 3.hours.ago.to_i
-        api_calls = JSON.parse(
-          open("#{Cartodb.config[:api_requests_service_url]}?username=#{self.username}").read
-        ) rescue {}
-
-        # Manually set updated_at
-        api_calls["updated_at"] = Time.now.to_i
-        $users_metadata.HMSET key, 'api_calls', api_calls.to_json
-      end
-    end
+  end
+  ##
 
   def last_billing_cycle
     day = period_end_date.day rescue 29.days.ago.day

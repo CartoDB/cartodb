@@ -2,8 +2,6 @@
 
 shared_examples_for "tables controllers" do
 
-  # TODO: Keep migrating spec/requests/api/tables_spec.rb
-
   describe '#show legacy tests' do
 
     before(:all) do

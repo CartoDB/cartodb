@@ -71,13 +71,19 @@ shared_examples_for "visualization controllers" do
     table_attributes
   end
 
+  def api_visualization_creation(user, headers, additional_fields = {})
+    post api_v1_visualizations_create_url(user_domain: user.username, api_key: user.api_key), factory(user).merge(additional_fields).to_json, headers
+    id = JSON.parse(last_response.body).fetch('id')
+    CartoDB::Visualization::Member.new(id: id).fetch
+  end
+
   describe 'index' do
     include_context 'visualization creation helpers'
 
     before(:each) do
       login(@user1)
       @headers = {'CONTENT_TYPE'  => 'application/json'}
-      host! 'test1.localhost.lan'
+      host! "#{@user1.username}.localhost.lan"
     end
 
     it 'returns success, empty response for empty user' do
@@ -1075,6 +1081,7 @@ shared_examples_for "visualization controllers" do
     end
 
     describe 'GET /api/v1/viz/:id' do
+
       before(:each) do
         CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
         CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
@@ -1087,8 +1094,7 @@ shared_examples_for "visualization controllers" do
           payload.to_json, @headers
         id = JSON.parse(last_response.body).fetch('id')
 
-        get "/api/v1/viz/#{id}?api_key=#{@api_key}",
-          {}, @headers
+        get "/api/v1/viz/#{id}?api_key=#{@api_key}", {}, @headers
 
         last_response.status.should == 200
         response = JSON.parse(last_response.body)
@@ -1099,6 +1105,7 @@ shared_examples_for "visualization controllers" do
         response.fetch('description')     .should_not be_nil
         response.fetch('related_tables')  .should_not be_nil
       end
+
     end
 
     describe 'GET /api/v2/viz/:id/viz' do
@@ -1115,6 +1122,18 @@ shared_examples_for "visualization controllers" do
           {}, @headers
         last_response.status.should == 200
         ::JSON.parse(last_response.body).keys.length.should > 1
+      end
+
+      it 'returns children (slides) vizjson' do
+        parent = api_visualization_creation(@user, @headers, { privacy: Visualization::Member::PRIVACY_PUBLIC, type: Visualization::Member::TYPE_DERIVED })
+        child = api_visualization_creation(@user, @headers, { privacy: Visualization::Member::PRIVACY_PUBLIC, type: Visualization::Member::TYPE_SLIDE, parent_id: parent.id })
+
+        get "/api/v2/viz/#{parent.id}/viz?api_key=#{@api_key}", {}, @headers
+
+        last_response.status.should == 200
+        response = JSON.parse(last_response.body)
+        slides = response.fetch('slides')
+        slides.count.should == 1
       end
 
       it "comes with proper surrogate-key" do

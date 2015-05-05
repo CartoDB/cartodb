@@ -1081,7 +1081,6 @@ shared_examples_for "visualization controllers" do
     end
 
     describe 'GET /api/v1/viz/:id' do
-      include_context 'visualization creation helpers'
 
       before(:each) do
         CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)

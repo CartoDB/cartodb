@@ -1,6 +1,7 @@
 # encoding: UTF-8
 
 require_relative '../../../models/carto/permission'
+require_relative '../../../models/carto/user_table'
 
 module Carto
   module Api
@@ -19,7 +20,8 @@ module Carto
       private
 
       def table
-        @table ||= ::Table.get_by_id_or_name(params.fetch('id'), current_user)
+        @table ||= Carto::Helpers::TableLocator.get_by_id_or_name(params.fetch('id'), current_user)
+        @table
       end
 
     end

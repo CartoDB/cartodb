@@ -25,21 +25,20 @@ module CartoDB
       # Return a PORO (Hash object) for easy JSONification
       # @see https://github.com/CartoDB/cartodb.js/blob/privacy-maps/doc/vizjson_format.md
       def to_poro
-        log_visualization_without_map(visualization) unless map
         poro_data = {
           id:             visualization.id,
           version:        VIZJSON_VERSION,
           title:          visualization.qualified_name(@user),
           likes:          visualization.likes.count,
           description:    visualization.description_html_safe,
-          scrollwheel:    map ? map.scrollwheel : nil,
-          legends:        map ? map.legends : nil,
+          scrollwheel:    map.scrollwheel,
+          legends:        map.legends,
           url:            options.delete(:url),
-          map_provider:   map ? map.provider : nil,
-          bounds:         map ? bounds_from(map) : nil,
-          center:         map ? map.center : nil,
-          zoom:           map ? map.zoom : nil,
-          updated_at:     map ? map.viz_updated_at : nil,
+          map_provider:   map.provider,
+          bounds:         bounds_from(map),
+          center:         map.center,
+          zoom:           map.zoom,
+          updated_at:     map.viz_updated_at,
           layers:         layers_for(visualization),
           overlays:       overlays_for(visualization),
           prev:           visualization.prev_id,
@@ -81,10 +80,6 @@ module CartoDB
       private
 
       attr_reader :visualization, :map, :options, :configuration
-
-      def log_visualization_without_map(visualization)
-        Rollbar.report_message('Requested vizjson for suspicious visualization without map', 'debug', { visualization: visualization.inspect })
-      end
 
       def bounds_from(map)
         ::JSON.parse("[#{map.view_bounds_sw}, #{map.view_bounds_ne}]")

@@ -71,6 +71,12 @@ shared_examples_for "visualization controllers" do
     table_attributes
   end
 
+  def api_visualization_creation(user, headers, additional_fields = {})
+    post api_v1_visualizations_create_url(user_domain: user.username, api_key: user.api_key), factory(user).merge(additional_fields).to_json, headers
+    id = JSON.parse(last_response.body).fetch('id')
+    CartoDB::Visualization::Member.new(id: id).fetch
+  end
+
   describe 'index' do
     include_context 'visualization creation helpers'
 
@@ -1120,13 +1126,8 @@ shared_examples_for "visualization controllers" do
       end
 
       it 'returns children (slides) vizjson' do
-        table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: "table#{rand(9999)}_1", user_id: @user.id)
-        parent = table.table_visualization
-        parent.privacy = Visualization::Member::PRIVACY_PUBLIC
-        parent.type = Visualization::Member::TYPE_DERIVED
-        parent.store
-
-        child1 = Visualization::Member.new(random_attributes_for_vis_member({ user_id: @user.id, name: 'CHILD 1', type: Visualization::Member::TYPE_SLIDE, parent_id:  parent.id})).store.fetch
+        parent = api_visualization_creation(@user, @headers, { privacy: Visualization::Member::PRIVACY_PUBLIC, type: Visualization::Member::TYPE_DERIVED })
+        child = api_visualization_creation(@user, @headers, { privacy: Visualization::Member::PRIVACY_PUBLIC, type: Visualization::Member::TYPE_SLIDE, parent_id: parent.id })
 
         get "/api/v2/viz/#{parent.id}/viz?api_key=#{@api_key}", {}, @headers
 

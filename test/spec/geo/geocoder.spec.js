@@ -3,6 +3,17 @@
 
 describe('Geocoder', function() {
 
+  it('don\'t remove the spaces in the user-submitted addresses [NOKIA]', function(done) {
+
+    var regexp = new RegExp(/http:\/\/places.nlp.nokia.com\/places\/v1\/discover\/search\/\?q\=bn20%208qt/);
+
+    cdb.geo.geocoder.NOKIA.geocode('bn20 8qt', function(d) {
+      expect(this.url).toMatch(regexp);
+      done();
+    });
+
+  });
+
   // // commented because we don't have a valid api key
   // xit('we should get a direction that exists using YAHOO', function() {
   //   var data;

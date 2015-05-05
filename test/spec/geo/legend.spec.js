@@ -404,6 +404,21 @@ describe("common.geo.ui.Legend", function() {
         expect(legend.$el.find("li:last-child .bullet").css("background")).toEqual("rgb(255, 0, 255)");
       });
 
+      it("should allow to specify a custom template for the items", function() {
+
+        var title = "Custom title";
+
+        var legend = new cdb.geo.ui.Legend.Custom({
+          title: title,
+          data: custom_data,
+          itemTemplate: '<div class="myCustomClass" style="background:#f1f1f1;"></div><%= name %>: <%= value %>'
+        });
+
+        legend.render();
+
+        expect(legend.$el.find("li:first-child").html()).toEqual('<div class="myCustomClass" style="background:#f1f1f1;"></div>Natural Parks: #58A062');
+      });
+
     });
 
     describe("Category Legend", function() {

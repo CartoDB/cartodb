@@ -51,8 +51,6 @@ module Carto
       end
 
       def choose_layers(kind)
-        return [] if map.nil?
-
         case kind
         when :base
           map.user_layers

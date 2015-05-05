@@ -14,7 +14,12 @@ class NewDashboardForEverybody < Sequel::Migration
         end
       else
         feature_flag = FeatureFlag.new(name: flag_name, restricted: false)
-        feature_flag.id = FeatureFlag.order(:id).last.id + 1
+
+        # In order to distinguish between manually created flags and these migrations
+        # set the flag to a negative number
+        first_ff = FeatureFlag.order(:id).first
+        first_id = first_ff ? first_ff.id : 0
+        feature_flag.id = first_id - 1
         feature_flag.save
       end
     end

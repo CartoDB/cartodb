@@ -2,8 +2,6 @@
 require_relative '../../../lib/google_plus_api'
 require_relative '../../../lib/google_plus_config'
 
-layout 'application'
-
 class Admin::OrganizationUsersController < ApplicationController
   ssl_required  :profile, :account, :oauth, :api_key, :regenerate_api_key
   ssl_required  :new, :create, :edit, :update, :destroy
@@ -12,6 +10,8 @@ class Admin::OrganizationUsersController < ApplicationController
   before_filter :login_required, :check_permissions
   before_filter :get_user, only: [:edit, :update, :destroy]
   before_filter :initialize_google_plus_config, only: [:edit, :update]
+
+  layout 'application'
 
   def get_config
     @extras_enabled = extras_enabled?

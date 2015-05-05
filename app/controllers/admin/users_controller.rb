@@ -10,29 +10,24 @@ class Admin::UsersController < ApplicationController
   before_filter :setup_user
   before_filter :initialize_google_plus_config, only: [:profile, :account]
 
+  layout 'application'
+
   def initialize_google_plus_config
     signup_action = Cartodb::Central.sync_data_with_cartodb_central? ? Cartodb::Central.new.google_signup_url : '/google/signup'
     @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, signup_action)
   end
 
   def profile
-    unless @user.has_feature_flag?('new_dashboard')
-      redirect_to @user.account_url(request.protocol) and return
-    end
-
     respond_to do |format|
-      format.html { render 'profile', layout: 'new_application' }
+      format.html { render 'profile' }
     end
   end
 
   def account
     @services = get_oauth_services
-    unless @user.has_feature_flag?('new_dashboard')
-      redirect_to @user.account_url(request.protocol) and return
-    end
 
     respond_to do |format|
-      format.html { render 'account', layout: 'new_application' }
+      format.html { render 'account' }
     end
   end
 
@@ -57,10 +52,10 @@ class Admin::UsersController < ApplicationController
   rescue CartoDB::CentralCommunicationFailure => e
     Rollbar.report_exception(e, params, @user)
     flash.now[:error] = "There was a problem while updating your data. Please, try again and contact us if the problem persists"
-    render action: :account, layout: 'new_application'
+    render action: :account
   rescue Sequel::ValidationFailed => e
     flash.now[:error] = "Error updating your account details"
-    render action: :account, layout: 'new_application'
+    render action: :account
   end
 
   def profile_update
@@ -86,10 +81,10 @@ class Admin::UsersController < ApplicationController
   rescue CartoDB::CentralCommunicationFailure => e
     Rollbar.report_exception(e, params, @user)
     flash.now[:error] = "There was a problem while updating your data. Please, try again and contact us if the problem persists"
-    render action: :profile, layout: 'new_application'
+    render action: :profile
   rescue Sequel::ValidationFailed => e
     flash.now[:error] = "Error updating your profile details"
-    render action: :profile, layout: 'new_application'
+    render action: :profile
   end
 
   def delete
@@ -109,11 +104,11 @@ class Admin::UsersController < ApplicationController
   rescue CartoDB::CentralCommunicationFailure => e
     Rollbar.report_message('Central error deleting user at CartoDB', 'error', { user: @user.inspect, error: e.inspect })
     flash.now[:error] = "Error deleting user: #{e.user_message}"
-    render 'account', layout: 'new_application'
+    render 'account'
   rescue => e
     Rollbar.report_message('Error deleting user at CartoDB', 'error', { user: @user.inspect, error: e.inspect })
     flash.now[:error] = "Error deleting user: #{e.message}"
-    render action: :account, layout: 'new_application'
+    render 'account'
   end
 
   private

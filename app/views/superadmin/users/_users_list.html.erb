@@ -1,7 +1,0 @@
-<h2>Other users</h2>
-
-<ul>
-<% User.select([:username, :id]).where("id != ?", except.id).all.each do |u| %>
-  <li><%= link_to u.username, ['superadmin', u] %></li>
-<% end %>
-</ul>

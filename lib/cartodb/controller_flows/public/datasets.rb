@@ -8,12 +8,8 @@ module CartoDB
           @ctrl = ctrl
         end
 
-        def new_organization_content(org)
-          @ctrl.new_datasets_for_organization(org)
-        end
-
-        def old_organization_content(org)
-          @ctrl.old_datasets_for_organization(org)
+        def organization_content(org)
+          @ctrl.datasets_for_organization(org)
         end
 
         def organization_path
@@ -24,12 +20,8 @@ module CartoDB
           @ctrl.render_not_found
         end
 
-        def new_user_content(user)
-          @ctrl.new_datasets_for_user(user)
-        end
-
-        def old_user_content(user)
-          @ctrl.old_datasets_for_user(user)
+        def user_content(user)
+          @ctrl.datasets_for_user(user)
         end
       end
 

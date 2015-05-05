@@ -26,7 +26,7 @@
     <%= stylesheet_link_tag 'cartodb', 'new_common', 'new_public_dashboard' %>
   </head>
   <body class="PublicBody">
-    <%= render 'admin/shared/new_public_header' %>
+    <%= render 'admin/shared/public_header' %>
     <div class="FavMap is-pre-loading" id="<%= fav_map_target_id = 'fav-map-container' %>">
       <div class="Spinner FavMap-spinner"></div>
     </div>
@@ -87,7 +87,7 @@
 
     <%= yield %>
 
-    <%= render 'admin/shared/new_footer' %>
+    <%= render 'admin/shared/footer' %>
     <script type="text/javascript">
       var account_host = '<%= CartoDB.account_host %>';
       var favMapViewAttrs = {

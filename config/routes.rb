@@ -263,6 +263,7 @@ CartoDB::Application.routes.draw do
 
   end
 
+  # Remember to add routes to /lib/assets/javascript/cartodb/app.js -> applyPatchNewVisualizationUrl()
   scope :module => 'carto/api', :format => :json do
     get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz'                                => 'visualizations#index',           as: :api_v1_1_visualizations_index
     get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/:id'                            => 'visualizations#show',            as: :api_v1_1_visualizations_show,            constraints: { id: /[^\/]+/ }
@@ -277,6 +278,7 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:table_id/records/:id'       => 'records#show',      as: :api_v1_1_tables_records_show,   constraints: { table_id: /[^\/]+/ }
 
     get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:table_id/columns'           => 'columns#index',   as: :api_v1_1_tables_columns_index,   constraints: { table_id: /[^\/]+/ }
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:table_id/columns/:id'       => 'columns#show',    as: :api_v1_1_tables_columns_show,    constraints: { table_id: /[^\/]+/ }
   end
 
   scope :module => 'api/json', :format => :json do

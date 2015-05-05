@@ -313,11 +313,11 @@ class Admin::PagesController < ApplicationController
     @email              = optional.fetch(:email, nil)
     @available_for_hire = optional.fetch(:available_for_hire, false)
     @user = optional.fetch(:user, nil)
+    @tables_num         = model.public_table_count
   end
 
   def set_old_layout_vars_for_user(user, vis_type)
     @username   = user.username
-    @tables_num = user.public_table_count
     @vis_num    = user.public_visualization_count
     @tags       = user.tags(true, vis_type)
 

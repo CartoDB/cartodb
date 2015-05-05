@@ -1,10 +1,27 @@
-<%= content_for(:title) do %>
-  Maps by <%= @name %> on CartoDB
+<%= content_for(:title) do %>CartoDB · Maps by <%= @name %><% end %>
+
+<!-- TODO: move to helper -->
+<% if @visualizations.size == 0 && @tables_num == 0 %>
+  <% description = "#{@name} is creating maps and visualizations in CartoDB" %>
+<% else %>
+  <% description = "#{@name} has"%>
+
+  <% unless @visualizations.size == 0 %>
+    <% description << " created #{@visualizations.size} maps" %>
+  <% end %>
+
+  <% unless @visualizations.size == 0 || @tables_num == 0 %>
+    <% description << " and" %>
+  <% end %>
+
+  <% unless @tables_num == 0 %>
+    <% description << " published #{@tables_num} datasets" %>
+  <% end %>
+
+  <% description << " in CartoDB" %>
 <% end %>
 
-<%= content_for(:description) do %>
-  <%= @name %> is creating maps and visualizations using CartoDB
-<% end %>
+<%= content_for(:description) do %><%= description %><% end %>
 
 <div class="PublicBody-content">
   <% if @visualizations.size == 0 %>

@@ -1,6 +1,6 @@
-<% content_for(:page_title) do %>
-  <%= @visualization.name %> |
-<% end %>
+<%= content_for(:page_title) do %>CartoDB · <%= @table.name.gsub(/_/," ") %><% end %>
+
+<%= content_for(:description) do %><%= @table.description || "#{@table.name.gsub(/_/," ")} published by #{@name} in CartoDB" %><% end %>
 
 <% content_for(:css) do %>
   <%= stylesheet_link_tag 'cartodb.css', 'public_table.css', :media => 'all' %>

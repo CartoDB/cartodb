@@ -962,7 +962,7 @@ sql.getBounds('select * from table').done(function(bounds) {
 
 ## Static Maps
 
-Static views of CartoDB maps can be generated using the [Static Maps API](http://docs.cartodb.com/cartodb-platform/maps-api.html#static-maps-api) within CartoDB.js. The map's style follows from what was set in the viz.json file, but you can change the zoom, center, and size of your image with a few lines of code. You can also change your basemap Images can be placed in specified DOM elements on your page, or you can generate a URL for the image.
+Static views of CartoDB maps can be generated using the [Static Maps API](http://docs.cartodb.com/cartodb-platform/maps-api.html#static-maps-api) within CartoDB.js. The map's style follows from what was set in the viz.json file, but you can change the zoom, center, and size of your image with a few lines of code. You can also change the basemap used in the image. Images can be placed in specified DOM elements on your page, or you can generate a URL for the image.
 
 ### Quick Start
 

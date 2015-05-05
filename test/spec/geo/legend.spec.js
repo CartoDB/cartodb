@@ -226,24 +226,6 @@ describe("common.geo.ui.Legend", function() {
 
     });
 
-    xit("should have a collection of items", function() {
-      expect(stackedLegend.items instanceof cdb.geo.ui.StackedLegendItems).toEqual(true);
-    });
-
-    xit("should populate the collection", function() {
-      expect(stackedLegend.items.length).toEqual(2);
-
-      //for (var i = 0; i < legends.length; i++) {
-      //expect(stackedLegend.items.at(i).toJSON()).toEqual(legends[i]);
-      //}
-
-    });
-
-    //it("should generate one element", function() {
-    //stackedLegend.render();
-    //expec(stackedLegend.$el);
-    //});
-
   });
 
   describe("ColorLegend", function() {

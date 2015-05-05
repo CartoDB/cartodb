@@ -40,6 +40,10 @@ class Admin::PagesController < ApplicationController
     end
   end
 
+  def common_data
+    redirect_to CartoDB.url(self, 'datasets_library')
+  end
+
   def sitemap
     username = CartoDB.extract_subdomain(request)
     viewed_user = User.where(username: username.strip.downcase).first

@@ -972,7 +972,7 @@ The easiest way to generate an image is by using the following piece of code, wh
 <script>
 var vizjson_url = 'https://documentation.cartodb.com/api/v2/viz/008b3ec6-02c3-11e4-b687-0edbca4b5057/viz.json';
 
-cartodb.Image(vizjson_url)
+cartodb.Image(vizjson_url, {override_bbox: true})
   .size(600, 400)
   .center([-3.4, 44.2])
   .zoom(4)
@@ -1019,7 +1019,7 @@ An _Image_ object
 
 #### Image.center(_latLng_)
 
-Sets the center of the map.
+Sets the center of the map. Must be used with the option `override_bbox: true`.
 
 ##### Arguments
 
@@ -1031,6 +1031,8 @@ An _Image_ object
 
 #### Image.zoom(zoomLevel)
 
+Sets the zoom level of the static map. Must be used with the option `override_bbox: true`.
+
 ##### Arguments
 
 - **zoomLevel**: the zoom of the resulting static map. `zoomLevel` must be an integer in the range [0,24].
@@ -1041,7 +1043,7 @@ An _Image_ object
 
 #### Image.bbox(_boundingBox_)
 
-If you set `bbox`, `center` and `zoom` will be overridden.
+If you set `bbox`, `center` and `zoom` will be overridden. Must be used with the option `override_bbox: true`
 
 ##### Arguments
 
@@ -1053,11 +1055,11 @@ An _Image_ object
 
 #### Image.into(HTMLImageElement)
 
-Inserts the image into the HTML DOM element specified
+Inserts the image into the HTML DOM element specified.
 
 ##### Arguments
 
-- **HTMLImageElement**: the DOM element where your image is to be located
+- **HTMLImageElement**: the DOM element where your image is to be located.
 
 ##### Returns
 
@@ -1067,9 +1069,10 @@ An _Image_ object
 
 Adds an `img` tag in the same place script is executed. It's possible to specify a class name (`class`) and/or an id attribute (`id`) for the resulting image:
 
+<div class="image-write">Image.write</div>
 ```javascript
 <script>
-cartodb.Image(vizjson_url)
+cartodb.Image(vizjson_url,{override_bbox: true})
   .size(600, 400)
   .center([-3.4, 44.2])
   .zoom(10)
@@ -1093,6 +1096,7 @@ An _Image_ object
 
 Gets the URL for the image requested.
 
+<div class="image-geturl">Image.getURL</div>
 ```javascript
 <script>
 cartodb.Image(vizjson_url)

@@ -211,6 +211,19 @@ class Admin::PagesController < ApplicationController
         })
     end
 
+    description = "#{@name} has"
+
+    # TODO: move to helper
+    if @datasets.size == 0
+      description << " not published any public dataset yet"
+    else
+      description << " published #{@datasets.size} public dataset#{@datasets.size == 1 ? "" : "s"}"
+    end
+
+    description << " in CartoDB"
+
+    @page_description = description
+
     respond_to do |format|
       format.html { render 'new_public_datasets', layout: 'new_public_dashboard' }
     end
@@ -228,6 +241,29 @@ class Admin::PagesController < ApplicationController
     vis_list.each do |vis|
       @visualizations << new_vis_item(vis)
     end
+
+    description = "#{@name} has"
+
+    # TODO: move to helper
+    if @visualizations.size == 0 && @tables_num == 0
+      description << " not published any public dataset or map yet"
+    else
+      unless @visualizations.size == 0
+        description << " created #{@visualizations.size} map#{@visualizations.size == 1 ? "" : "s"}"
+      end
+
+      unless @visualizations.size == 0 || @tables_num == 0
+        description << " and"
+      end
+
+      unless @tables_num == 0
+        description << " published #{@tables_num} public dataset#{@tables_num == 1 ? "" : "s"}"
+      end
+
+      description << " in CartoDB"
+    end
+
+    @page_description = description
 
     respond_to do |format|
       format.html { render 'new_public_maps', layout: 'new_public_dashboard' }

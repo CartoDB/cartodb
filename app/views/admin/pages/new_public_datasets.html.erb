@@ -1,13 +1,6 @@
 <%= content_for(:title) do %>CartoDB · Datasets by <%= @name %><% end %>
 
-<!-- TODO: move to helper -->
-<% if @tables_num == 0 %>
-  <% description = "#{@name} is creating and sharing public datasets in CartoDB" %>
-<% else %>
-  <% description = "#{@name} has published #{@tables_num} datasets in CartoDB" %>
-<% end %>
-
-<%= content_for(:description) do %><%= description %><% end %>
+<%= content_for(:description) do %><%= @page_description %><% end %>
 
 <div class="PublicBody-content">
   <% if @datasets.size == 0 %>

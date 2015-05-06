@@ -283,7 +283,7 @@ class Admin::VisualizationsController < ApplicationController
     @hide_logo = is_logo_hidden(@visualization, params)
 
     respond_to do |format|
-      format.html { render 'public_map', layout: false }
+      format.html { render 'public_map' }
     end
   end
 
@@ -297,7 +297,7 @@ class Admin::VisualizationsController < ApplicationController
     @protected_map_tokens = current_user.get_auth_tokens
 
     respond_to do |format|
-      format.html { render 'embed_map', layout: false }
+      format.html { render 'embed_map' }
     end
   end
 

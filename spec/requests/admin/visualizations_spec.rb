@@ -379,6 +379,7 @@ describe Admin::VisualizationsController do
         get CartoDB.url(self, forbidden_endpoint, {id: vis.name}, user_a)
         follow_redirects
         last_response.status.should be(200), "#{forbidden_endpoint} is #{last_response.status}"
+        last_response.length.should >= 100
       }
       org.destroy
     end

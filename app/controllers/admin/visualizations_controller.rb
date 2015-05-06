@@ -51,6 +51,7 @@ class Admin::VisualizationsController < ApplicationController
     @tables_count  = current_user.tables.count
     @first_time    = !current_user.dashboard_viewed?
     @just_logged_in = !!flash['logged']
+    @google_maps_api_key = current_user.google_maps_api_key
     current_user.view_dashboard
     update_user_last_activity
 
@@ -72,6 +73,9 @@ class Admin::VisualizationsController < ApplicationController
         return(redirect_to CartoDB.url(self, 'public_visualizations_public_map', {id: request.params[:id]}))
       end
     end
+
+    @google_maps_api_key = @visualization.user.google_maps_api_key
+    @basemaps = @visualization.user.basemaps
 
     unless @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
       if request.original_fullpath =~ %r{/tables/}
@@ -215,6 +219,7 @@ class Admin::VisualizationsController < ApplicationController
 
     @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)
     @avatar_url             = @visualization.user.avatar
+    @google_maps_api_key = @visualization.user.google_maps_api_key
 
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
     @visualization_count    = @visualization.user.public_visualization_count

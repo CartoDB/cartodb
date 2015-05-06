@@ -16,6 +16,9 @@
 * Fix guessing warnings when there are no rows [#3024](https://github.com/CartoDB/cartodb/pull/3363)
 * Send geocoding duration metrics [#3381](https://github.com/CartoDB/cartodb/pull/3381)
 * Several fixes for subdomainless configs [#3393](https://github.com/CartoDB/cartodb/pull/3393)
+* Disable any kind of import guessing from create dialog [#3456](https://github.com/CartoDB/cartodb/issues/3456)
+* Enable new dashboard for everyone by means of migration [#3509](https://github.com/CartoDB/cartodb/pull/3509)
+* Enabled Google Maps Basemaps [#3429](https://github.com/CartoDB/cartodb/pull/3429)
 
 
 Bugfixes:

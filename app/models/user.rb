@@ -1088,7 +1088,7 @@ class User < Sequel::Model
         raise ee
       end
       retry unless attempts > 1
-      Rollbar.report_exception(e)
+      CartoDB.notify_exception(e, { user: self })
       # INFO: we need to return something to avoid 'disabled' return value
       nil
     end

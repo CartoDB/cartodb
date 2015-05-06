@@ -1066,9 +1066,7 @@ cdb.geo.ui.CustomLegend = cdb.geo.ui.BaseLegend.extend({
   template: _.template('<% if (title && show_title) { %>\n<div class="legend-title"><%- title %></div><% } %><ul></ul>'),
 
   initialize: function() {
-
     this.items = this.model.items;
-
   },
 
   setData: function(data) {
@@ -1087,10 +1085,12 @@ cdb.geo.ui.CustomLegend = cdb.geo.ui.BaseLegend.extend({
 
   _renderItem: function(item) {
 
+    var template = this.options.itemTemplate || '\t\t<div class="bullet" style="background:<%= value %>"></div>\n\t\t<%- name || "null" %>';
+
     view = new cdb.geo.ui.LegendItem({
       model: item,
       className: (item.get("value") && item.get("value").indexOf("http") >= 0) ? "bkg" : "",
-      template: '\t\t<div class="bullet" style="background:<%= value %>"></div>\n\t\t<%- name || "null" %>'
+      template: template
     });
 
     this.$el.find("ul").append(view.render());

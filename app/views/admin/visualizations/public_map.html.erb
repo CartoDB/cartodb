@@ -6,7 +6,7 @@
 
 <%= content_for(:content) do %>
   <% if @visualization.public? || @visualization.public_with_link? || @visualization.password_protected? || @visualization.organization? %>
-    <%= render 'admin/shared/new_public_header' %>
+    <%= render 'admin/shared/public_header' %>
 
     <div class="PublicMap-map js-map" id="map">
       <div class="Spinner"></div>
@@ -202,14 +202,14 @@
       <% end %>
     </div>
 
-    <%= render 'admin/shared/new_footer', :light => true %>
+    <%= render 'admin/shared/footer', :light => true %>
   <% end %>
 <% end %>
 
 
 <%= content_for(:js) do %>
   <% if @visualization.map.provider == 'googlemaps' %>
-    <script type="text/javascript" src="//maps.google.com/maps/api/js?sensor=false&v=3.12"></script>
+    <script type="text/javascript" src="//maps.google.com/maps/api/js?sensor=false&v=3.12&api_key=<%= @google_maps_api_key %>"></script>
   <% end %>
 
   <script>

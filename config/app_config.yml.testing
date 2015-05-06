@@ -110,6 +110,24 @@ defaults: &defaults
   graphite_public:
     host: "graphite.dioc.cartodb.net"
     port: 8127
+
+  basemaps:
+    GMaps:
+      roadmap:
+        name: 'GMaps Roadmap'
+        maxZoom: 40
+        minZoom: 0
+        baseType: 'roadmap'
+        className: 'googlemaps'
+    CartoDB:
+      positron_rainbow:
+        url: 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png' 
+        subdomains: 'abcd' 
+        minZoom: '0' 
+        maxZoom: '18' 
+        name: 'Positron' 
+        className: 'positron_rainbow' 
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href= "http://cartodb.com/attributions#basemaps">CartoDB</a>' 
   layer_opts:
     public_opts: ["type", "active", "query", "opacity", "auto_bound", 
                   "interactivity", "debug", "visible", "tiler_domain", 

@@ -99,6 +99,26 @@
           </div>
         </div>
 
+        <% if current_user.has_feature_flag?('google_maps') && current_user.organization_owner? %>
+        
+          <div class="Form-title">
+            <h4 class="Form-titleHeader">Configure API keys from external providers</h4>
+            <p class="Form-titleText">Configure here the API keys from other services like
+            Google Cloud Platform, so your organization users won't be asked later for them.</p>
+          </div>
+
+          <div class="Form-row">
+            <div class="Form-rowLabel">
+              <label class="Form-label">Google Maps</label>
+            </div>
+            <div class="Form-rowData">
+              <%= f.text_field :google_maps_key, class: "Form-input Form-input--long is-disabled", :readonly => "true" %>
+            </div>
+            <div class="Form-rowInfo"></div>
+          </div>
+
+        <% end %>
+
         <div class="Form-footer">
           <p class="Form-footerText"></p>
           <%= button_tag(type: 'submit', class: 'Button Button--main') do %>

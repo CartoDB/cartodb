@@ -102,7 +102,6 @@ WORKING_SPECS_6 = \
   spec/requests/api/assets_spec.rb \
   spec/requests/api/user_layers_spec.rb \
   spec/requests/api/map_layers_spec.rb \
-  spec/requests/api/records_spec.rb \
   spec/requests/api/json/records_controller_spec.rb \
   spec/requests/carto/api/records_controller_spec.rb \
   $(NULL)

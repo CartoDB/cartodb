@@ -12,15 +12,17 @@ end
 shared_context 'visualization creation helpers' do
 
   before(:all) do
+    username1 = random_username
     @user1 = create_user(
-      username: 'test1',
-      email: 'client1@example.com',
+      username: username1,
+      email: "#{username1}@example.com",
       password: 'clientex'
     )
 
+    username2 = random_username
     @user2 = create_user(
-      username: 'test2',
-      email: 'client2@example.com',
+      username: username2,
+      email: "#{username2}@example.com",
       password: 'clientex2'
     )
   end
@@ -49,6 +51,12 @@ shared_context 'visualization creation helpers' do
 
   def create_random_table(user, name = "viz#{rand(999)}")
     create_table( { user_id: user.id, name: name } )
+  end
+
+  private
+
+  def random_username
+    "user#{rand(10000)}"
   end
 
 end

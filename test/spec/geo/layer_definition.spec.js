@@ -331,7 +331,7 @@ describe("LayerDefinition", function() {
     var json = layerDefinition.toJSON();
     json = JSON.stringify({ config: JSON.stringify(json) });
     LZMA.compress(json, 3, function(encoded) {
-      lzma = layerDefinition._array2hex(encoded);
+      lzma = cdb.core.util.array2hex(encoded);
       layerDefinition.getLayerToken(function() {
       });
     });

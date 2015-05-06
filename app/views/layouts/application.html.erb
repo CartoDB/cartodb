@@ -13,7 +13,7 @@
       <%= render 'admin/shared/private_header' %>
 
       <% if current_user.notification.present? %>
-        <div class="FlashMessage <%= 'FlashMessage--success' if (flash[:success]) %><%= 'FlashMessage--error' if flash[:error] %>">
+        <div class="FlashMessage">
           <div class="u-inner">
             <p class="FlashMessage-info"><%= current_user.notification %></p>
           </div>

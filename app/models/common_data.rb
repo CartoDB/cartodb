@@ -96,7 +96,7 @@ class CommonData
       :categories => []
   }
 
-  DATASETS_QUERY = "SELECT * FROM cdb_metadata();"
+  DATASETS_QUERY = "SELECT * FROM CDB_CommonDataCatalog();"
 
 end
 

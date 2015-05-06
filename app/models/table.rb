@@ -564,10 +564,28 @@ class Table
     raise e
   end
 
+  def default_baselayer_for_user(user=nil)
+    user ||= self.owner
+    basemap = user.default_basemap
+    if basemap['className'] === 'googlemaps'
+      {
+        kind: 'gmapsbase',
+        options: basemap
+      }
+    else 
+      {
+        kind: 'tiled',
+        options: basemap.merge({ 'urlTemplate' => basemap['url'] })
+      }
+    end
+  end
+
   def create_default_map_and_layers
-    m = ::Map.create(::Map::DEFAULT_OPTIONS.merge(table_id: self.id, user_id: self.user_id))
+    baselayer = default_baselayer_for_user
+    provider = ::Map.provider_for_baselayer(baselayer)
+    m = ::Map.create(::Map::DEFAULT_OPTIONS.merge(table_id: self.id, user_id: self.user_id, provider: provider))
     @user_table.map_id = m.id
-    base_layer = ::Layer.new(Cartodb.config[:layer_opts]['base'])
+    base_layer = ::Layer.new(baselayer)
     m.add_layer(base_layer)
 
     data_layer = ::Layer.new(Cartodb.config[:layer_opts]['data'])

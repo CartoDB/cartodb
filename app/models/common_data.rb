@@ -20,7 +20,7 @@ class CommonData
   end
 
   def is_enabled?
-    !config('username').nil? && !config('api_key').nil?
+    !config('username').nil?
   end
 
   private
@@ -68,7 +68,7 @@ class CommonData
   end
 
   def datasets_url
-    sql_authenticated_api_url sql_api_url(DATASETS_QUERY, 'v1')
+    sql_api_url(DATASETS_QUERY, 'v1')
   end
 
   def export_url(table_name)
@@ -77,10 +77,6 @@ class CommonData
 
   def sql_api_url(query, version='v2')
     "#{config('protocol', 'https')}://#{config('username')}.#{config('host')}/api/#{version}/sql?q=#{URI::encode query}"
-  end
-
-  def sql_authenticated_api_url(api_url)
-    "#{api_url}&api_key=#{config('api_key')}"
   end
 
   def export_query(table_name)
@@ -100,30 +96,7 @@ class CommonData
       :categories => []
   }
 
-  DATASETS_QUERY = <<-query
-select
-    meta_dataset.name,
-    meta_dataset.tabname,
-    meta_dataset.description,
-    meta_dataset.source,
-    meta_dataset.license,
-    meta_dataset.geometry_types,
-    (
-        SELECT reltuples
-        FROM pg_class C LEFT JOIN pg_namespace N ON (N.oid = C.relnamespace)
-        WHERE
-            nspname NOT IN ('pg_catalog', 'information_schema')
-            AND relkind='r'
-            AND relname = meta_dataset.tabname
-    ) as rows,
-    pg_relation_size(meta_dataset.tabname) size,
-    meta_dataset.created_at,
-    meta_dataset.updated_at,
-    meta_category.name category,
-    meta_category.image_url category_image_url
-from meta_dataset, meta_category
-where meta_dataset.meta_category_id = meta_category.cartodb_id
-  query
+  DATASETS_QUERY = "SELECT * FROM cdb_metadata();"
 
 end
 

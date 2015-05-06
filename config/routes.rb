@@ -264,6 +264,8 @@ CartoDB::Application.routes.draw do
   end
 
   scope :module => 'carto/api', :format => :json do
+
+    # Visualizations
     get     '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz'                                => 'visualizations#index',           as: :api_v1_1_visualizations_index
     get     '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/:id'                            => 'visualizations#show',            as: :api_v1_visualizations_show,            constraints: { id: /[^\/]+/ }
     get     '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/:id/likes'                      => 'visualizations#likes_count',     as: :api_v1_1_visualizations_likes_count,     constraints: { id: /[^\/]+/ }
@@ -273,6 +275,9 @@ CartoDB::Application.routes.draw do
     get     '(/user/:user_domain)(/u/:user_domain)/api/v2_1/viz/:id/viz'                        => 'visualizations#vizjson2', as: :api_v2_1_visualizations_vizjson, constraints: { id: /[^\/]+/ }
 
     get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:id'  => 'tables#show',   as: :api_v1_tables_show, constraints: { id: /[^\/]+/ }
+
+    # Imports
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/imports'                          => 'imports#index',                       as: :api_v1_imports_index
   end
 
   scope :module => 'api/json', :format => :json do

@@ -962,7 +962,7 @@ sql.getBounds('select * from table').done(function(bounds) {
 
 ## Static Maps
 
-Static views of CartoDB maps can be generated using the [Static Maps API](http://docs.cartodb.com/cartodb-platform/maps-api.html#static-maps-api) within CartoDB.js. The map's style follows from what was set in the viz.json file, but you can change the zoom, center, and size of your image with a few lines of code. You can also change your basemap Images can be placed in specified DOM elements on your page, or you can generate a URL for the image.
+Static views of CartoDB maps can be generated using the [Static Maps API](http://docs.cartodb.com/cartodb-platform/maps-api.html#static-maps-api) within CartoDB.js. The map's style, including the zoom and bounding box, follows from what was set in the viz.json file, but you can change the zoom, center, and size of your image with a few lines of code. You can also change your basemap Images can be placed in specified DOM elements on your page, or you can generate a URL for the image.
 
 ### Quick Start
 
@@ -972,7 +972,7 @@ The easiest way to generate an image is by using the following piece of code, wh
 <script>
 var vizjson_url = 'https://documentation.cartodb.com/api/v2/viz/008b3ec6-02c3-11e4-b687-0edbca4b5057/viz.json';
 
-cartodb.Image(vizjson_url, {override_bbox: true})
+cartodb.Image(vizjson_url)
   .size(600, 400)
   .center([-3.4, 44.2])
   .zoom(4)
@@ -1019,7 +1019,7 @@ An _Image_ object
 
 #### Image.center(_latLng_)
 
-Sets the center of the map. Must be used with the option `override_bbox: true`.
+Sets the center of the map.
 
 ##### Arguments
 
@@ -1031,7 +1031,7 @@ An _Image_ object
 
 #### Image.zoom(zoomLevel)
 
-Sets the zoom level of the static map. Must be used with the option `override_bbox: true`.
+Sets the zoom level of the static map. Must be used with the option `override_bbox: true` if not using `Image.center` or `Image.bbox`.
 
 ##### Arguments
 
@@ -1043,7 +1043,7 @@ An _Image_ object
 
 #### Image.bbox(_boundingBox_)
 
-If you set `bbox`, `center` and `zoom` will be overridden. Must be used with the option `override_bbox: true`
+If you set `bbox`, `center` and `zoom` will be overridden.
 
 ##### Arguments
 
@@ -1064,6 +1064,11 @@ Inserts the image into the HTML DOM element specified.
 ##### Returns
 
 An _Image_ object
+
+<div class="image-into">Image.into</div>
+```javascript
+cartodb.Image(vizjson_url).into(document.getElementById('map_preview'))
+```
 
 #### Image.write(_attributes_)
 

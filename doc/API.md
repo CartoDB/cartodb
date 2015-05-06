@@ -996,9 +996,27 @@ cartodb.Image(vizjson_url)
 Options take the form of a JavaScript object.
 
 - **options**:
-    - **basemap**: change the basemap specified in the layer definition
-    - **no_cdn**: Disable CDN usage. Boolean. Default: `false` (use CDN)
-    - **override_bbox**: Override default of using the bounding box of the visualization. This is needed to use `Image.center` and `Image.zoom`. Boolean. Default: `false` (use bounding box)
+    - **basemap**: change the basemap specified in the layer definition. Type: Object defining base map properties (see example below).
+    - **no_cdn**: Disable CDN usage. Type: Boolean. Default: `false` (use CDN)
+    - **override_bbox**: Override default of using the bounding box of the visualization. This is needed to use `Image.center` and `Image.zoom`. Type: Boolean. Default: `false` (use bounding box)
+
+```javascript
+<script>
+var vizjson_url = 'https://documentation.cartodb.com/api/v2/viz/008b3ec6-02c3-11e4-b687-0edbca4b5057/viz.json';
+var basemap = {
+        type: "http",
+        options: {
+          urlTemplate: "http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
+          subdomains: ["a", "b", "c"]
+        }
+      };
+
+cartodb.Image(vizjson_url, {override_bbox: true, basemap: basemap})
+  .size(600, 400)
+  .center([0,0])
+  .write({ class: "thumb", id: "AwesomeMap" });
+</script>
+```
 
 ##### Returns
 An _Image_ object

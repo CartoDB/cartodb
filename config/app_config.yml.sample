@@ -62,10 +62,10 @@ defaults: &defaults
   hubspot: ''
   common_data:
     protocol: 'https'
-    username: ''
-    host: ''
-    api_key: ''
+    username: 'common-data'
+    host: 'cartodb.com'
     format: 'shp'
+    generate_every: 86400
   explore-api:
     username: ''
   varnish_management:

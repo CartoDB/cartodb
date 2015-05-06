@@ -6,7 +6,7 @@
 
 <%= content_for(:content) do %>
   <% if @visualization.public? || @visualization.public_with_link? || @visualization.password_protected? || @visualization.organization? %>
-    <%= render 'admin/shared/new_public_header' %>
+    <%= render 'admin/shared/public_header' %>
 
     <div class="PublicMap-map js-map" id="map">
       <div class="Spinner"></div>
@@ -202,7 +202,7 @@
       <% end %>
     </div>
 
-    <%= render 'admin/shared/new_footer', :light => true %>
+    <%= render 'admin/shared/footer', :light => true %>
   <% end %>
 <% end %>
 

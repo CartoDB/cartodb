@@ -24,6 +24,7 @@
 * Disable any kind of import guessing from create dialog [#3456](https://github.com/CartoDB/cartodb/issues/3456)
 * Enable new dashboard for everyone by means of migration [#3509](https://github.com/CartoDB/cartodb/pull/3509)
 * Enabled Google Maps Basemaps [#3429](https://github.com/CartoDB/cartodb/pull/3429)
+* Remove need of api_key to enjoy common-data "Data library" [#3523](https://github.com/CartoDB/cartodb/pull/3523)
 
 
 Bugfixes:

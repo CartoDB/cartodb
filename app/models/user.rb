@@ -2319,6 +2319,47 @@ TRIGGER
     CartoDB::Visualization::Member.redis_cache.del redis_keys unless redis_keys.empty?
   end
 
+  # returns google maps api key. If the user is in an organization and 
+  # that organization has api key it's used
+  def google_maps_api_key
+    if has_organization?
+      self.organization.google_maps_key || self.google_maps_key
+    else
+      self.google_maps_key
+    end
+  end
+
+  # returnd a list of basemaps enabled for the user
+  # when google map key is set it gets the basemaps inside the group "GMaps"
+  # if not it get everything else but GMaps in any case GMaps and other groups can work together
+  # this may have change in the future but in any case this method provides a way to abstract what
+  # basemaps are active for the user
+  def basemaps
+    google_maps_enabled = !google_maps_api_key.nil? && !google_maps_api_key.empty?
+    basemaps = Cartodb.config[:basemaps]
+    if basemaps
+      basemaps.select { |group| 
+        g = group == 'GMaps'
+        google_maps_enabled ? g : !g
+      }
+    end
+  end
+
+  # return the default basemap based on the default setting. If default attribute is not set, first basemaps is returned
+  # it only takes into account basemaps enabled for that user
+  def default_basemap
+    default = basemaps.find { |group, group_basemaps |
+      group_basemaps.find { |b, attr| attr['default'] }
+    }
+    if default.nil?
+      default = basemaps.first[1]
+    else
+      default = default[1]
+    end
+    # return only the attributes
+    default.first[1]
+  end
+
   private
 
   # INFO: assigning to owner is necessary because of payment reasons

@@ -223,7 +223,7 @@ class Admin::PagesController < ApplicationController
             exclude_raster: true
           }).first,
         content_type: content_type,
-        default_fallback_basemap: ApplicationHelper.default_fallback_basemap,
+        default_fallback_basemap: user.default_basemap,
         user: user
       })
     set_shared_layout_vars(user, {
@@ -240,7 +240,7 @@ class Admin::PagesController < ApplicationController
     set_layout_vars({
         most_viewed_vis_map: org.public_vis_by_type(Visualization::Member::TYPE_DERIVED, 1, 1, nil, 'mapviews').first,
         content_type:        content_type,
-        default_fallback_basemap: ApplicationHelper.default_fallback_basemap
+        default_fallback_basemap: org.owner.default_basemap
       })
     set_shared_layout_vars(org, {
         name:       org.display_name.blank? ? org.name : org.display_name,

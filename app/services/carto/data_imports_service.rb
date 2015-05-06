@@ -12,8 +12,9 @@ module Carto
       running_ids = running_imports_ids
 
       imports.map { |import|
-        if import.created_at < Time.now - 60.minutes && !running_ids.include(import.id)
-          DataImport[import.id].handle_failure
+        if import.created_at < Time.now - 60.minutes && !running_ids.include?(import.id)
+          # INFO: failure is handled with old model
+          ::DataImport[import.id].handle_failure
           nil
         else
           import

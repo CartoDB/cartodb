@@ -68,10 +68,10 @@ class Admin::OrganizationUsersController < ApplicationController
     set_flash_flags
     flash.now[:error] = e.user_message
     @user = User.new(username: @user.username, email: @user.email, quota_in_bytes: @user.quota_in_bytes, twitter_datasource_enabled: @user.twitter_datasource_enabled)
-    render action: 'new'
+    render 'new'
   rescue Sequel::ValidationFailed => e
     flash.now[:error] = e.message
-    render action: 'new'
+    render 'new'
   end
 
   def update
@@ -103,9 +103,9 @@ class Admin::OrganizationUsersController < ApplicationController
   rescue CartoDB::CentralCommunicationFailure => e
     set_flash_flags
     flash.now[:error] = "There was a problem while updating this user. Please, try again and contact us if the problem persists. #{e.user_message}"
-    render action: 'edit'
+    render 'edit'
   rescue Sequel::ValidationFailed => e
-    render action: 'edit'
+    render 'edit'
   end
 
   def destroy

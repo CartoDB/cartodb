@@ -79,8 +79,7 @@ cdb.geo.geocoder.NOKIA = {
       .replace(/á/g,'a')
       .replace(/í/g,'i')
       .replace(/ó/g,'o')
-      .replace(/ú/g,'u')
-      .replace(/ /g,'+');
+      .replace(/ú/g,'u');
 
       var protocol = '';
       if(location.protocol.indexOf('http') === -1) {
@@ -111,12 +110,13 @@ cdb.geo.geocoder.NOKIA = {
                 west: r.bbox[0] 
               }
             }
-
             coordinates.push(position);
           }
         }
 
-        callback(coordinates);
+        if (callback) {
+          callback.call(this, coordinates);
+        }
       });
   }
 }

@@ -1,4 +1,4 @@
-3.14.2 ()
+3.14.2 (06//05//2015)
 * Allow to specify a template for the items of a custom legend.
 * The NOKIA geocoder doesn't encode the whitespaces anymore.
 

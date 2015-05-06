@@ -32,6 +32,8 @@ class Admin::UsersController < ApplicationController
   end
 
   def account_update
+    @services = get_oauth_services
+    
     attributes = params[:user]
     if attributes[:new_password].present? || attributes[:confirm_password].present?
       @user.change_password(

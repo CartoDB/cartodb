@@ -42,3 +42,7 @@ module CartoDB
     end
   end
 end
+
+class OrganizationFactory
+  include CartoDB::Factories
+end

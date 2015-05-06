@@ -1,5 +1,6 @@
 3.10.1 ()
 ---------
+* Fixes bug in the "No georeferenced data" dialog [#3449](https://github.com/CartoDB/cartodb/pull/3449)
 * Adds user search/filter to the Share Dialog [3417](https://github.com/CartoDB/cartodb/pull/3417)
 * Change default CartoCSS properties of polygon strokes [3375](https://github.com/CartoDB/cartodb/pull/3375)
 * Fix custom image header templates [3378](https://github.com/CartoDB/cartodb/pull/3378)
@@ -15,7 +16,8 @@
 * Fix guessing warnings when there are no rows [#3024](https://github.com/CartoDB/cartodb/pull/3363)
 * Send geocoding duration metrics [#3381](https://github.com/CartoDB/cartodb/pull/3381)
 * Several fixes for subdomainless configs [#3393](https://github.com/CartoDB/cartodb/pull/3393)
-
+* Disable any kind of import guessing from create dialog [#3456](https://github.com/CartoDB/cartodb/issues/3456)
+* Enable new dashboard for everyone by means of migration [#3509](https://github.com/CartoDB/cartodb/pull/3509)
 
 Bugfixes:
 * Fixed interaction when there are hidden layers [#3090](https://github.com/CartoDB/cartodb/pull/3090)
@@ -26,6 +28,7 @@ Bugfixes:
 * Deleted unused endpoints for POST/DELETE api/v1/maps
 * Avoid infinite recursion when renaming table [#3330](https://github.com/CartoDB/cartodb/pull/3330)
 * Script to delete inconsistent vizs [#3342](https://github.com/CartoDB/cartodb/pull/3342)
+* Fixed problem rendering Lato font [#3461](https://github.com/CartoDB/cartodb/issues/3461)
 
 3.10.0 (2015-04-08)
 -------------------

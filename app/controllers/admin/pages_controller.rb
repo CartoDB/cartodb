@@ -31,10 +31,17 @@ class Admin::PagesController < ApplicationController
     # username.cartodb.com should redirect to the public user dashboard in the maps view if the username is not the user's username
     elsif !current_viewer.nil?    # Asummes either current_user nil or at least different from current_viewer
       redirect_to CartoDB.url(self, 'public_maps_home')
-    # username.cartodb.com should redirect to the public user dashboard in the maps view if the user is not logged in
+    elsif CartoDB.subdomainless_urls? && CartoDB.username_from_request(request).nil?
+      # This is kind of special case for on-premise: there's no user info at all in the request
+      redirect_to login_url
     else
+      # username.cartodb.com should redirect to the public user dashboard in the maps view if the user is not logged in
       redirect_to CartoDB.url(self, 'public_maps_home')
     end
+  end
+
+  def common_data
+    redirect_to CartoDB.url(self, 'datasets_library')
   end
 
   def sitemap

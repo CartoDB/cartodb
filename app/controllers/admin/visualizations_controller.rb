@@ -9,6 +9,7 @@ class Admin::VisualizationsController < ApplicationController
   include CartoDB
 
   MAX_MORE_VISUALIZATIONS = 3
+  DEFAULT_PLACEHOLDER_CHARS = 4
 
   ssl_allowed :embed_map, :public_map, :show_protected_embed_map, :public_table,
               :show_organization_public_map, :show_organization_embed_map
@@ -315,7 +316,7 @@ class Admin::VisualizationsController < ApplicationController
     return(pretty_404) if disallowed_type?(@visualization)
 
     unless @visualization.is_password_valid?(submitted_password)
-      flash[:placeholder] = '*' * submitted_password.size
+      flash[:placeholder] = '*' * (submitted_password ? submitted_password.size : DEFAULT_PLACEHOLDER_CHARS)
       flash[:error] = "Invalid password"
       return(embed_protected)
     end
@@ -350,12 +351,12 @@ class Admin::VisualizationsController < ApplicationController
   end
 
   def show_protected_embed_map
-    submitted_password = params.fetch(:password)
+    submitted_password = params.fetch(:password, nil)
     return(pretty_404) unless @visualization and @visualization.password_protected? and @visualization.has_password?
     return(pretty_404) if disallowed_type?(@visualization)
 
     unless @visualization.is_password_valid?(submitted_password)
-      flash[:placeholder] = '*' * submitted_password.size
+      flash[:placeholder] = '*' * (submitted_password ? submitted_password.size : DEFAULT_PLACEHOLDER_CHARS)
       flash[:error] = "Invalid password"
       return(embed_protected)
     end
@@ -571,7 +572,9 @@ class Admin::VisualizationsController < ApplicationController
 
   def get_visualization_and_table(table_id, schema, filter)
     user = Carto::User.where(username: schema).first
-    visualization = Carto::VisualizationQueryBuilder.new.with_id_or_name(table_id).with_user_id(user.id).build.first
+    # INFO: organization public visualizations
+    user_id = user ? user.id : nil
+    visualization = Carto::VisualizationQueryBuilder.new.with_id_or_name(table_id).with_user_id(user_id).build.first
     return get_visualization_and_table_from_table_id(table_id, user, filter) if visualization.nil?
     return Carto::Admin::VisualizationPublicMapAdapter.new(visualization), visualization.table_service
   end

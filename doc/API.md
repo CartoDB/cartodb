@@ -1011,7 +1011,7 @@ var basemap = {
         }
       };
 
-cartodb.Image(vizjson_url, {override_bbox: true, basemap: basemap})
+cartodb.Image(vizjson_url, {basemap: basemap})
   .size(600, 400)
   .center([0,0])
   .write({ class: "thumb", id: "AwesomeMap" });
@@ -1095,7 +1095,7 @@ Adds an `img` tag in the same place script is executed. It's possible to specify
 <div class="image-write">Image.write</div>
 ```javascript
 <script>
-cartodb.Image(vizjson_url,{override_bbox: true})
+cartodb.Image(vizjson_url)
   .size(600, 400)
   .center([-3.4, 44.2])
   .zoom(10)

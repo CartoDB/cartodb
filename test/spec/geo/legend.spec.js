@@ -226,24 +226,6 @@ describe("common.geo.ui.Legend", function() {
 
     });
 
-    xit("should have a collection of items", function() {
-      expect(stackedLegend.items instanceof cdb.geo.ui.StackedLegendItems).toEqual(true);
-    });
-
-    xit("should populate the collection", function() {
-      expect(stackedLegend.items.length).toEqual(2);
-
-      //for (var i = 0; i < legends.length; i++) {
-      //expect(stackedLegend.items.at(i).toJSON()).toEqual(legends[i]);
-      //}
-
-    });
-
-    //it("should generate one element", function() {
-    //stackedLegend.render();
-    //expec(stackedLegend.$el);
-    //});
-
   });
 
   describe("ColorLegend", function() {
@@ -420,6 +402,21 @@ describe("common.geo.ui.Legend", function() {
 
         expect(legend.$el.find("li:last-child").text().trim()).toEqual(new_data[1].name);
         expect(legend.$el.find("li:last-child .bullet").css("background")).toEqual("rgb(255, 0, 255)");
+      });
+
+      it("should allow to specify a custom template for the items", function() {
+
+        var title = "Custom title";
+
+        var legend = new cdb.geo.ui.Legend.Custom({
+          title: title,
+          data: custom_data,
+          itemTemplate: '<div class="myCustomClass" style="background:#f1f1f1;"></div><%= name %>: <%= value %>'
+        });
+
+        legend.render();
+
+        expect(legend.$el.find("li:first-child").html()).toEqual('<div class="myCustomClass" style="background:#f1f1f1;"></div>Natural Parks: #58A062');
       });
 
     });

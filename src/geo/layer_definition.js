@@ -42,58 +42,6 @@ MapBase.prototype = {
     opts.maps_api_template = [tilerProtocol, "://", username, tilerDomain, tilerPort].join('');
   },
 
-  getLayer: function(index) {
-    return _.clone(this.layers[index]);
-  },
-
-  getLayerCount: function() {
-    return this.layers ? this.layers.length: 0;
-  },
-
-  // given number inside layergroup 
-  // returns the real index in tiler layergroup`
-  getLayerIndexByNumber: function(number) {
-    var layers = {}
-    var c = 0;
-    for(var i = 0; i < this.layers.length; ++i) {
-      var layer = this.layers[i];
-      layers[i] = c;
-      if(layer.options && !layer.options.hidden) {
-        ++c;
-      }
-    }
-    return layers[number];
-  },
-
-  /**
-   * return the layer number by index taking into
-   * account the hidden layers.
-   */
-  getLayerNumberByIndex: function(index) {
-    var layers = [];
-    for(var i = 0; i < this.layers.length; ++i) {
-      var layer = this.layers[i];
-      if(layer.options && !layer.options.hidden) {
-        layers.push(i);
-      }
-    }
-    if (index >= layers.length) {
-      return -1;
-    }
-    return +layers[index];
-  },
-
-  visibleLayers: function() {
-    var layers = [];
-    for(var i = 0; i < this.layers.length; ++i) {
-      var layer = this.layers[i];
-      if(!layer.options.hidden) {
-        layers.push(layer);
-      }
-    }
-    return layers;
-  },
-
   getLayerToken: function(callback) {
     var self = this;
     function _done(data, err) {
@@ -108,6 +56,70 @@ MapBase.prototype = {
     this._timeout = setTimeout(function() {
       self._getLayerToken(_done);
     }, 4);
+  },
+
+  _getLayerToken: function(callback) {
+    var self = this;
+    var params = [];
+    callback = callback || function() {};
+
+    // if the previous request didn't finish, queue it
+    if(this._waiting) {
+      return this;
+    }
+
+    this._queue = [];
+
+    // when it's a named map the number of layers is not known
+    // so fetch the map
+    if (!this.named_map && this.visibleLayers().length === 0) {
+      callback(null);
+      return;
+    }
+
+    // setup params
+    var extra_params = this.options.extra_params || {};
+    var api_key = this.options.map_key || this.options.api_key || extra_params.map_key || extra_params.api_key;
+    if(api_key) {
+      params.push("map_key=" + api_key);
+    }
+    if(extra_params.auth_token) {
+      if (_.isArray(extra_params.auth_token)) {
+        for (var i = 0, len = extra_params.auth_token.length; i < len; i++) {
+          params.push("auth_token[]=" + extra_params.auth_token[i]);
+        }
+      } else {
+        params.push("auth_token=" + extra_params.auth_token);
+      }
+    }
+
+    if (this.stat_tag) {
+      params.push("stat_tag=" + this.stat_tag);
+    }
+    // mark as the request is being done
+    this._waiting = true;
+    var req = null;
+    if (this._usePOST()) {
+      req = this._requestPOST;
+    } else {
+      req = this._requestGET;
+    }
+    req.call(this, params, callback);
+    return this;
+  },
+
+  _usePOST: function() {
+    if (this.options.cors) {
+      if (this.options.force_cors) {
+        return true;
+      }
+      // check payload size
+      var payload = JSON.stringify(this.toJSON());
+      if (payload.length > this.options.MAX_GET_SIZE) {
+        return true;
+      }
+    }
+    return false;
   },
 
   _requestPOST: function(params, callback) {
@@ -262,94 +274,10 @@ MapBase.prototype = {
     return cdb.core.util.uniqueCallbackName(JSON.stringify(this.toJSON()));
   },
 
-  _getLayerToken: function(callback) {
-    var self = this;
-    var params = [];
-    callback = callback || function() {};
-
-    // if the previous request didn't finish, queue it
-    if(this._waiting) {
-      return this;
-    }
-
-    this._queue = [];
-
-    // when it's a named map the number of layers is not known
-    // so fetch the map
-    if (!this.named_map && this.visibleLayers().length === 0) {
-      callback(null);
-      return;
-    }
-
-    // setup params
-    var extra_params = this.options.extra_params || {};
-    var api_key = this.options.map_key || this.options.api_key || extra_params.map_key || extra_params.api_key;
-    if(api_key) {
-      params.push("map_key=" + api_key);
-    }
-    if(extra_params.auth_token) {
-      if (_.isArray(extra_params.auth_token)) {
-        for (var i = 0, len = extra_params.auth_token.length; i < len; i++) {
-          params.push("auth_token[]=" + extra_params.auth_token[i]);
-        }
-      } else {
-        params.push("auth_token=" + extra_params.auth_token);
-      }
-    }
-
-    if (this.stat_tag) {
-      params.push("stat_tag=" + this.stat_tag);
-    }
-    // mark as the request is being done
-    this._waiting = true;
-    var req = null;
-    if (this._usePOST()) {
-      req = this._requestPOST;
-    } else {
-      req = this._requestGET;
-    }
-    req.call(this, params, callback);
-    return this;
-  },
-
-  _usePOST: function() {
-    if (this.options.cors) {
-      if (this.options.force_cors) {
-        return true;
-      }
-      // check payload size
-      var payload = JSON.stringify(this.toJSON());
-      if (payload.length > this.options.MAX_GET_SIZE) {
-        return true;
-      }
-    }
-    return false;
-  },
-
   invalidate: function() {
     this.layerToken = null;
     this.urls = null;
     this.onLayerDefinitionUpdated();
-  },
-
-  setLayer: function(layer, def) {
-    if(layer < this.getLayerCount() && layer >= 0) {
-      if (def.options.hidden) {
-        var i = this.interactionEnabled[layer];
-        if (i) {
-          def.interaction = true
-          this.setInteraction(layer, false);
-        }
-      } else {
-        if (this.layers[layer].interaction) {
-          this.setInteraction(layer, true);
-          delete this.layers[layer].interaction;
-        }
-      }
-      this.layers[layer] = _.clone(def);
-    }
-    this.invalidate();
-    return this;
   },
 
   getTiles: function(callback) {
@@ -526,6 +454,80 @@ MapBase.prototype = {
 
   _isUserTemplateUrl: function(t) {
     return t && t.indexOf('{user}') !== -1;
+  },
+
+  // Methods to operate with layers
+
+  getLayer: function(index) {
+    return _.clone(this.layers[index]);
+  },
+
+  getLayerCount: function() {
+    return this.layers ? this.layers.length: 0;
+  },
+
+  // given number inside layergroup 
+  // returns the real index in tiler layergroup`
+  getLayerIndexByNumber: function(number) {
+    var layers = {}
+    var c = 0;
+    for(var i = 0; i < this.layers.length; ++i) {
+      var layer = this.layers[i];
+      layers[i] = c;
+      if(layer.options && !layer.options.hidden) {
+        ++c;
+      }
+    }
+    return layers[number];
+  },
+
+  /**
+   * return the layer number by index taking into
+   * account the hidden layers.
+   */
+  getLayerNumberByIndex: function(index) {
+    var layers = [];
+    for(var i = 0; i < this.layers.length; ++i) {
+      var layer = this.layers[i];
+      if(layer.options && !layer.options.hidden) {
+        layers.push(i);
+      }
+    }
+    if (index >= layers.length) {
+      return -1;
+    }
+    return +layers[index];
+  },
+
+  visibleLayers: function() {
+    var layers = [];
+    for(var i = 0; i < this.layers.length; ++i) {
+      var layer = this.layers[i];
+      if(!layer.options.hidden) {
+        layers.push(layer);
+      }
+    }
+    return layers;
+  },
+
+  setLayer: function(layer, def) {
+    if(layer < this.getLayerCount() && layer >= 0) {
+      if (def.options.hidden) {
+        var i = this.interactionEnabled[layer];
+        if (i) {
+          def.interaction = true
+          this.setInteraction(layer, false);
+        }
+      } else {
+        if (this.layers[layer].interaction) {
+          this.setInteraction(layer, true);
+          delete this.layers[layer].interaction;
+        }
+      }
+      this.layers[layer] = _.clone(def);
+    }
+    this.invalidate();
+    return this;
   },
 
   getTooltipData: function(layer) {

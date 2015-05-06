@@ -985,7 +985,7 @@ cartodb.Image(vizjson_url)
 <img id="AwesomeMap" src="https://cartocdn-ashbu.global.ssl.fastly.net/documentation/api/v1/map/static/center/04430594691ff84a3fdac56259e5180b:1419270587670/4/-3.4/44.2/600/400.png" class="thumb">
 ```
 
-#### cartodb.Image(_layerSource_, [options])
+#### cartodb.Image(_layerSource_[, options])
 
 ##### Arguments
 

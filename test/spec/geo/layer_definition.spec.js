@@ -399,7 +399,7 @@ describe("LayerDefinition", function() {
       })
 
       setTimeout(function() {
-        expect(urls.tiles[0]).toEqual(Map.EMPTY_GIF);
+        expect(urls.tiles[0]).toEqual(MapBase.EMPTY_GIF);
         done();
       }, 100)
   });

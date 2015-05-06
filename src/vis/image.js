@@ -54,7 +54,7 @@
 
   StaticImage = function() {
 
-    Map.call(this, this); 
+    MapBase.call(this, this);
 
     this.imageOptions = {};
 
@@ -75,7 +75,7 @@
 
   };
 
-  StaticImage.prototype = _.extend({}, Map.prototype, {
+  StaticImage.prototype = _.extend({}, MapBase.prototype, {
 
     load: function(vizjson, options) {
 

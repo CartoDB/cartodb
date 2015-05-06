@@ -1,4 +1,4 @@
-function Map(options) {
+function MapBase(options) {
   var self = this;
   this.options = _.defaults(options, {
     ajax: window.$ ? window.$.ajax : reqwest.compat,
@@ -29,10 +29,10 @@ function Map(options) {
   }
 }
 
-Map.BASE_URL = '/api/v1/map';
-Map.EMPTY_GIF = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+MapBase.BASE_URL = '/api/v1/map';
+MapBase.EMPTY_GIF = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
-Map.prototype = {
+MapBase.prototype = {
 
   _buildMapsApiTemplate: function(opts) {
     var tilerProtocol = opts.tiler_protocol;
@@ -374,7 +374,7 @@ Map.prototype = {
           callback && callback(null, err);
         } else if (self.visibleLayers().length === 0) {
           callback && callback({
-            tiles: [Map.EMPTY_GIF],
+            tiles: [MapBase.EMPTY_GIF],
             grids: []
           });
           return;
@@ -401,7 +401,7 @@ Map.prototype = {
 
     for(var i = 0; i < subdomains.length; ++i) {
       var s = subdomains[i]
-      var cartodb_url = this._host(s) + Map.BASE_URL + '/' + layerGroupId
+      var cartodb_url = this._host(s) + MapBase.BASE_URL + '/' + layerGroupId
       tiles.push(cartodb_url + tileTemplate + ".png" + (pngParams ? "?" + pngParams: '') );
 
       var gridParams = this._encodeParams(params, this.options.gridParams);
@@ -586,8 +586,8 @@ Map.prototype = {
 };
 
 function LayerDefinition(layerDefinition, options) {
-  Map.call(this, options);
-  this.endPoint = Map.BASE_URL;
+  MapBase.call(this, options);
+  this.endPoint = MapBase.BASE_URL;
   this.setLayerDefinition(layerDefinition, { silent: true });
 }
 
@@ -617,7 +617,7 @@ LayerDefinition.layerDefFromSubLayers = function(sublayers) {
   return layer_definition;
 };
 
-LayerDefinition.prototype = _.extend({}, Map.prototype, {
+LayerDefinition.prototype = _.extend({}, MapBase.prototype, {
 
   setLayerDefinition: function(layerDefinition, options) {
     options = options || {};
@@ -801,7 +801,7 @@ LayerDefinition.prototype = _.extend({}, Map.prototype, {
       host,
       //'api',
       //'v1',
-      Map.BASE_URL.slice(1),
+      MapBase.BASE_URL.slice(1),
       this.layerToken,
       this.getLayerIndexByNumber(layer),
       'attributes',
@@ -812,14 +812,14 @@ LayerDefinition.prototype = _.extend({}, Map.prototype, {
 });
 
 function NamedMap(named_map, options) {
-  Map.call(this, options);
+  MapBase.call(this, options);
   this.options.pngParams.push('auth_token')
   this.options.gridParams.push('auth_token')
   this.setLayerDefinition(named_map, options)
   this.stat_tag = named_map.stat_tag;
 }
 
-NamedMap.prototype = _.extend({}, Map.prototype, {
+NamedMap.prototype = _.extend({}, MapBase.prototype, {
 
   getSubLayer: function(index) {
     var layer = this.layers[index];
@@ -836,8 +836,8 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
 
   setLayerDefinition: function(named_map, options) {
     options = options || {}
-    this.endPoint = Map.BASE_URL + '/named/' + named_map.name;
-    this.JSONPendPoint = Map.BASE_URL + '/named/' + named_map.name + '/jsonp';
+    this.endPoint = MapBase.BASE_URL + '/named/' + named_map.name;
+    this.JSONPendPoint = MapBase.BASE_URL + '/named/' + named_map.name + '/jsonp';
     this.layers = _.clone(named_map.layers) || [];
     for(var i = 0; i < this.layers.length; ++i) {
       var layer = this.layers[i];
@@ -924,7 +924,7 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
       host,
       //'api',
       //'v1',
-      Map.BASE_URL.slice(1),
+      MapBase.BASE_URL.slice(1),
       this.layerToken,
       layer,
       'attributes',
@@ -972,7 +972,7 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
         throw new Error( k + " is read-only in NamedMaps");
       }
     }
-    return Map.prototype.setLayer.call(this, layer, def);
+    return MapBase.prototype.setLayer.call(this, layer, def);
   },
 
   removeLayer: function(layer) {

@@ -82,6 +82,7 @@
         'geo/ui/tooltip.js',
         'geo/ui/fullscreen.js',
 
+        'geo/sublayer.js',
         'geo/layer_definition.js',
         'geo/common.js',
 

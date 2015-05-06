@@ -96,7 +96,22 @@ class CommonData
       :categories => []
   }
 
-  DATASETS_QUERY = "SELECT * FROM CDB_CommonDataCatalog();"
+  DATASETS_QUERY = <<-query
+SELECT
+  name,
+  tabname,
+  description,
+  source,
+  license,
+  geometry_types,
+  rows,
+  size,
+  created_at,
+  updated_at,
+  category,
+  image_url
+FROM CDB_CommonDataCatalog();
+query
 
 end
 

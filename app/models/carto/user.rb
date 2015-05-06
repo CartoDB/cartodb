@@ -139,6 +139,8 @@ class Carto::User < ActiveRecord::Base
     }
     if default.nil?
       default = basemaps.first[1]
+    else
+      default = default[1]
     end
     # return only the attributes
     default.first[1]

@@ -61,7 +61,17 @@ $size: 40px;
     color: white;
   }
 }
-
+.Logo-sub {
+  position: absolute;
+  right: -8px;
+  top: -8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 24px;
+  z-index: 1;
+  @include animation(fade-and-bounce-up 0.6s 350ms ease-in-out backwards);
+}
+.Logo-sub--google { @include background(image-url('layout/google-platform-logo.png') no-repeat center center white) }
 .Logo.is-loading {
   .Logo--avatar { border-radius: $size+1 }
   
@@ -74,5 +84,27 @@ $size: 40px;
 @include keyframes(spin){
   100%{
     @include transform(rotate(360deg));
+  }
+}
+
+@include keyframes(fade-and-bounce-up) {
+  0% {
+    @include opacity(0.0);
+    @include transform(translateY(6px));
+  }
+  15% {
+    @include opacity(0.8);
+    @include transform(translateY(-3px));
+  }
+  45% {
+    @include opacity(1.0);
+    @include transform(translateY(2px));
+  }
+  70% {
+    @include transform(translateY(-1px));
+  }
+  100% {
+    @include opacity(1.0);
+    @include transform(translateY(0));
   }
 }

@@ -174,6 +174,19 @@ class Admin::PagesController < ApplicationController
         })
     end
 
+    description = "#{@name} has"
+
+    # TODO: move to helper
+    if @datasets.size == 0
+      description << " not published any public dataset yet"
+    else
+      description << " published #{@datasets.size} public dataset#{@datasets.size == 1 ? "" : "s"}"
+    end
+
+    description << " · Contribute to Open Data by creating an account in CartoDB"
+
+    @page_description = description
+
     respond_to do |format|
       format.html { render 'public_datasets', layout: 'public_dashboard' }
     end
@@ -191,6 +204,29 @@ class Admin::PagesController < ApplicationController
     vis_list.each do |vis|
       @visualizations << vis_item(vis)
     end
+
+    description = "#{@name} has"
+
+    # TODO: move to helper
+    if @visualizations.size == 0 && @tables_num == 0
+      description << " not published any public dataset or map yet"
+    else
+      unless @visualizations.size == 0
+        description << " created #{@visualizations.size} map#{@visualizations.size == 1 ? "" : "s"}"
+      end
+
+      unless @visualizations.size == 0 || @tables_num == 0
+        description << " and"
+      end
+
+      unless @tables_num == 0
+        description << " published #{@tables_num} public dataset#{@tables_num == 1 ? "" : "s"}"
+      end
+
+      description << " · Contribute to Open Data by creating an account in CartoDB"
+    end
+
+    @page_description = description
 
     respond_to do |format|
       format.html { render 'public_maps', layout: 'public_dashboard' }
@@ -276,6 +312,7 @@ class Admin::PagesController < ApplicationController
     @email              = optional.fetch(:email, nil)
     @available_for_hire = optional.fetch(:available_for_hire, false)
     @user = optional.fetch(:user, nil)
+    @tables_num         = model.public_table_count
   end
 
   def user_public_vis_list(required)

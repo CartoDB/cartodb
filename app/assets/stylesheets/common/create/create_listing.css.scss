@@ -1,0 +1,17 @@
+@import "../../variables/mixins";
+@import "../../variables/colors";
+@import "../../variables/sizes";
+
+// Create dialog listing block styles
+
+.CreateDialog-listing {
+  display: block;
+  padding: 45px 0 70px;
+}
+.DatasetsPaginator {
+  width: 940px;
+  margin: 30px auto 50px;
+}
+.DatasetsPaginator .Pagination {
+  @include justify-content(flex-end, end);
+}

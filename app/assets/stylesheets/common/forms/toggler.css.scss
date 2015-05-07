@@ -1,0 +1,58 @@
+@import "../../variables/mixins";
+@import "../../variables/colors";
+@import "../../variables/sizes";
+
+// Toggler styled checkboxes/radio buttons
+//
+// Example usage:
+//   <div class="Toggler">
+//     <input type="checkbox" id="foobar" />
+//     <label for="foobar" />
+//   </div>
+//
+// --------------------------------------------------------------------------------------------------------------------
+
+$sWidth: 36px;
+$sHeight: 20px;
+
+.Toggler {
+  display: inline-block;
+  position: relative;
+  width: $sWidth;
+  height: $sHeight;
+}
+.Toggler input {
+  visibility: hidden;
+}
+.Toggler label {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: $sWidth;
+  height: $sHeight;
+  border-radius: 30px;
+  box-shadow: inset 0px 1px 0px rgba(#000, 0.1);
+  cursor: pointer;
+  @include transition(all 150ms ease);
+  background-color: #ddd;
+}
+.Toggler label:before {
+  content: ' ';
+  display: block;
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background-color: white;
+  box-shadow: 0px 1px 0px 0px rgba(#000, 0.1);
+  border-radius: 30px;
+  @include transition(all 150ms ease);
+  top: 4px;
+  left: 4px;
+}
+.Toggler input:checked + label:before {
+  left: 20px;
+}
+.Toggler input:checked + label {
+  background-color: $cHighlight-positive;
+}

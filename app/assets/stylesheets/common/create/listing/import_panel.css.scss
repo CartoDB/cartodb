@@ -1,0 +1,80 @@
+@import "../../../variables/mixins";
+@import "../../../variables/colors";
+@import "../../../variables/sizes";
+
+// Default import panel styles
+
+$w: 780px;
+
+.ImportPanel {
+  width: $w;
+  margin: 0 auto;
+}
+.ImportPanel-header {
+  position: relative;
+  @include display-flex();
+  @include flex-direction(column);
+  @include align-items(center);
+  width: 100%;
+  padding: $sMargin-section 0;
+  text-align: center;
+}
+.ImportPanel-headerIcon {
+  text-align: center;
+  display: inline-block;
+  margin-bottom: 20px;
+}
+.ImportPanel-headerTitle {
+  color: $cTypography-paragraphs;
+  font-size: $sFontSize-larger;
+  font-weight: $sFontWeight-normal;
+  line-height: $sLineHeight-normal;
+}
+.ImportPanel-headerDescription {
+  width: 465px;
+  margin: 5px auto 0;
+  color: $cTypography-paragraphs;
+  font-size: 14px;
+  font-weight: $sFontWeight-lighter;
+  line-height: $sLineHeight-normal;
+}
+.ImportPanel-headerDescription--negative { color: $cHighlight-negative }
+.ImportPanel-headerDescription--negative 
+.ImportPanel-headerDescriptionLink {
+  color: $cHighlight-negative;
+  text-decoration: underline;
+  &:hover { color: $cHighlight-negative }
+}
+.ImportPanel-headerButton {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  margin-top: -20px; 
+}
+.ImportPanel-headerLink { margin-top: 30px }
+.ImportPanel-body {
+  position: relative;
+  display: block;
+  width: 100%;
+}
+.ImportPanel-bodyWrapper {
+  margin: 0 auto;
+}
+.ImportPanel-state {
+  display: none;
+  width: $w;
+}
+.ImportPanel-list {
+  width: 320px;
+  margin: 0 auto;
+  padding-left: 80px;
+  list-style-type: disc;
+}
+.ImportPanel-listItem {
+  margin-bottom: 10px;
+  color: $cTypography-paragraphs;
+  font-size: 14px;
+  font-weight: $sFontWeight-lighter;
+}
+.ImportPanel-actions { text-align: center }
+.ImportPanel-actionsButton { display: inline-block }

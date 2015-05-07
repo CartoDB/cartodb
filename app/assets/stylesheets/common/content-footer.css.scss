@@ -1,0 +1,72 @@
+@import "../variables/mixins";
+@import "../variables/colors";
+@import "../variables/sizes";
+
+.ContentFooter {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center);
+  width: 100%;
+  padding: $sMargin-group 0;
+  margin: 0 auto;
+}
+/*REVIEW IF THIS CLASS IS NECESSARY*/
+.ContentFooter-inner {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center);
+}
+.ContentFooter-inner--paginationOnly {
+  @include justify-content(center);
+}
+.ContentFooter-lockedIcon {
+  font-size: $sFontSize-small;
+  margin-right: $sMargin-min;
+  color: $cTypography-help;
+}
+
+@media only screen and (max-width: 984px) {
+  .ContentFooter {
+    display:block;
+  }
+  .ContentFooter-inner--paginationOnly {
+    @include justify-content(flex-end, end);
+  }
+}
+@media only screen and (max-width: 600px) and (min-width: $sMedia-mobile) {
+  .ContentFooter {
+    display:block;
+  }
+  .ContentFooter-inner--paginationOnly {
+    @include justify-content(flex-end, end);
+  }
+}
+@media only screen and (min-width: 600px) {
+  .ContentFooter {
+    display:block;
+  }
+  .ContentFooter-inner--paginationOnly {
+    @include justify-content(flex-end, end);
+  }
+}
+@media only screen and (min-width: $sMedia-tablet) {
+  .ContentFooter-inner--paginationOnly {
+    @include justify-content(flex-end, end);
+  }
+}
+@media (min-width: $sMedia-desktop) {
+  .ContentFooter {
+    @include display-flex();
+    width: $sLayout-width;
+  }
+}
+
+@media (min-width: $sMedia-tablet) {
+  .ContentFooter-inner {
+    @include flex-direction(row);
+    @include justify-content(space-between, justify);
+  }
+  .ContentFooter-inner--paginationOnly {
+    @include justify-content(flex-end, end);
+  }
+}

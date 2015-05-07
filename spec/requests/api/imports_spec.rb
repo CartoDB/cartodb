@@ -70,31 +70,6 @@ describe "Imports API" do
     @table.reload.rows_counted.should be == 4
   end
 
-  it 'creates a table from a sql query' do
-    post api_v1_imports_create_url,
-      params.merge(:filename => upload_file('spec/support/data/_penguins_below_80.zip', 'application/octet-stream'))
-
-    response.code.should be == '200'
-
-    @table_from_import = UserTable.all.last.service
-
-    post api_v1_imports_create_url(:api_key    => @user.api_key,
-                        :table_name => 'wadus_2',
-                        :sql        => "SELECT * FROM #{@table_from_import.name}")
-
-
-    response.code.should be == '200'
-
-    response_json = JSON.parse(response.body)
-
-    last_import = DataImport[response_json['item_queue_id']]
-    last_import.state.should be == 'complete'
-
-    import_table = UserTable.all.last.service
-    import_table.rows_counted.should be == @table_from_import.rows_counted
-    import_table.should have_required_indexes_and_triggers
-  end
-
   it 'duplicates a table' do
     post api_v1_imports_create_url,
       params.merge(:filename => upload_file('spec/support/data/csv_with_lat_lon.csv', 'application/octet-stream'))

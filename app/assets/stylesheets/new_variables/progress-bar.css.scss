@@ -87,7 +87,7 @@
 
     $animatedSize: $h*2;
 
-    div.progress-bar .bar-2 {
+    div.progress-bar span.bar-2 {
       @include css3-prefix('background-size', $animatedSize $animatedSize);
       background-color: #5DA1D6;
       background-image: -webkit-linear-gradient( -45deg, rgba(85, 128, 197, 1) 25%, transparent 25%, transparent 50%, rgba(85, 128, 197, 1) 50%, rgba(85, 128, 197, 1) 75%, transparent 75%, transparent);

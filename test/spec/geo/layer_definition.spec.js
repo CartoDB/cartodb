@@ -593,6 +593,7 @@ describe("LayerDefinition", function() {
   });
 
   describe('LayerDefinition.layerDefFromSubLayers', function() {
+
     it("should generate layerdef", function() {
       var layerDef = LayerDefinition.layerDefFromSubLayers([{
         sql: 'test',
@@ -606,7 +607,9 @@ describe("LayerDefinition", function() {
             type: 'cartodb',
             options: {
               sql: 'test',
-              cartocss:'test'
+              cartocss:'test',
+              cartocss_version: '2.1.0',
+              interactivity: []
             }
           }]
       });

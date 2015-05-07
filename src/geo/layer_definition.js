@@ -1,5 +1,6 @@
 function MapBase(options) {
   var self = this;
+
   this.options = _.defaults(options, {
     ajax: window.$ ? window.$.ajax : reqwest.compat,
     pngParams: ['map_key', 'api_key', 'cache_policy', 'updated_at'],
@@ -502,7 +503,7 @@ MapBase.prototype = {
     var layers = [];
     for(var i = 0; i < this.layers.length; ++i) {
       var layer = this.layers[i];
-      if(!layer.options.hidden) {
+      if(layer.options && !layer.options.hidden) {
         layers.push(layer);
       }
     }
@@ -602,20 +603,19 @@ LayerDefinition.layerDefFromSubLayers = function(sublayers) {
 
   if(!sublayers || sublayers.length === undefined) throw new Error("sublayers should be an array");
 
-  var layer_definition = {
+  sublayers = _.map(sublayers, function(sublayer) {
+    return {
+      options: sublayer
+    }
+  });
+
+  var layerDefinition = {
     version: '1.0.0',
     stat_tag: 'API',
-    layers: []
-  };
-
-  for (var i = 0; i < sublayers.length; ++i) {
-    layer_definition.layers.push({
-      type: 'cartodb',
-      options: sublayers[i]
-    });
+    layers: sublayers
   }
 
-  return layer_definition;
+  return new LayerDefinition(layerDefinition, {}).toJSON();
 };
 
 LayerDefinition.prototype = _.extend({}, MapBase.prototype, {

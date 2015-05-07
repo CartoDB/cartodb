@@ -227,30 +227,4 @@ describe "Imports API" do
     @user.update max_import_table_row_count: old_max_import_row_count
   end
 
-  it 'returns derived visualization id if created with create_vis flag' do
-    @user.update private_tables_enabled: false
-    post api_v1_imports_create_url,
-         params.merge({
-                        filename: upload_file('spec/support/data/csv_with_lat_lon.csv', 'application/octet-stream'),
-                        create_vis: true
-                      })
-    response.code.should be == '200'
-
-    item_queue_id = ::JSON.parse(response.body)['item_queue_id']
-
-    get api_v1_imports_show_url(id: item_queue_id), params
-
-    import = DataImport[item_queue_id]
-
-    import.state.should be == 'complete'
-    import.visualization_id.nil?.should eq false
-    import.create_visualization.should eq true
-
-    vis = CartoDB::Visualization::Member.new(id: import.visualization_id).fetch
-    vis.nil?.should eq false
-    vis.name =~ /csv_with_lat_lon/  # just in case we change the prefix
-
-    @user.update private_tables_enabled: true
-  end
-
 end

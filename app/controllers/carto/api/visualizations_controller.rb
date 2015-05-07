@@ -37,7 +37,7 @@ module Carto
       def load_table
         # TODO: refactor this for vizjson, that uses to look for a visualization, so it should come first
 
-        @table = UserTable.where(id: @id).first
+        @table = Carto::UserTable.where(id: @id).first
         # TODO: id should _really_ contain either an id of a user_table or a visualization??
         # Some tests fail if not, and older controller works that way, but...
         if @table

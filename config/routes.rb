@@ -263,21 +263,30 @@ CartoDB::Application.routes.draw do
 
   end
 
+  # Remember to add routes to /lib/assets/javascript/cartodb/app.js -> applyPatchNewVisualizationUrl()
   scope :module => 'carto/api', :format => :json do
-    get     '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz'                                => 'visualizations#index',           as: :api_v1_1_visualizations_index
-    get     '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/:id'                            => 'visualizations#show',            as: :api_v1_1_visualizations_show,            constraints: { id: /[^\/]+/ }
-    get     '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/:id/likes'                      => 'visualizations#likes_count',     as: :api_v1_1_visualizations_likes_count,     constraints: { id: /[^\/]+/ }
-    get     '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/:id/likes/detailed'             => 'visualizations#likes_list',      as: :api_v1_1_visualizations_likes_list,      constraints: { id: /[^\/]+/ }
-    get     '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/:id/like'                       => 'visualizations#is_liked',        as: :api_v1_1_visualizations_is_liked,        constraints: { id: /[^\/]+/ }
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz'                                => 'visualizations#index',           as: :api_v1_1_visualizations_index
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/:id'                            => 'visualizations#show',            as: :api_v1_1_visualizations_show,            constraints: { id: /[^\/]+/ }
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/:id/likes'                      => 'visualizations#likes_count',     as: :api_v1_1_visualizations_likes_count,     constraints: { id: /[^\/]+/ }
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/:id/likes/detailed'             => 'visualizations#likes_list',      as: :api_v1_1_visualizations_likes_list,      constraints: { id: /[^\/]+/ }
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/:id/like'                       => 'visualizations#is_liked',        as: :api_v1_1_visualizations_is_liked,        constraints: { id: /[^\/]+/ }
 
-    get     '(/user/:user_domain)(/u/:user_domain)/api/v2_1/viz/:id/viz'                        => 'visualizations#vizjson2', as: :api_v2_1_visualizations_vizjson, constraints: { id: /[^\/]+/ }
+    get '(/user/:user_domain)(/u/:user_domain)/api/v2_1/viz/:id/viz'                        => 'visualizations#vizjson2', as: :api_v2_1_visualizations_vizjson, constraints: { id: /[^\/]+/ }
 
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:id'  => 'tables#show',   as: :api_v1_tables_show, constraints: { id: /[^\/]+/ }
+    # Tables
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:id'                         => 'tables#show',       as: :api_v1_1_tables_show, constraints: { id: /[^\/]+/ }
+
+    # Table columns
+    # No index action
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:table_id/records/:id'       => 'records#show',      as: :api_v1_1_tables_records_show,   constraints: { table_id: /[^\/]+/ }
+
+    # Table records
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:table_id/columns'           => 'columns#index',   as: :api_v1_1_tables_columns_index,   constraints: { table_id: /[^\/]+/ }
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:table_id/columns/:id'       => 'columns#show',    as: :api_v1_1_tables_columns_show,    constraints: { table_id: /[^\/]+/ }
 
     # Custom layers grouped by user
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/users/:user_id/layers'     => 'layers#index',   as: :api_v1_1_users_layers_index
-    # No show endpoint
-
+    # No show action
 
   end
 

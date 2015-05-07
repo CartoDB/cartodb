@@ -65,7 +65,7 @@ class Api::Json::RecordsController < Api::ApplicationController
   end
 
   def load_table
-    @table = ::Table.get_by_id_or_name(params[:table_id], current_user)
+    @table = Helpers::TableLocator.get_by_id_or_name(params[:table_id], current_user)
     raise RecordNotFound if @table.nil?
   end
 

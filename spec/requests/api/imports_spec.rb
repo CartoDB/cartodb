@@ -51,22 +51,6 @@ describe "Imports API" do
     last_import.state.should be == 'complete'
   end
 
-  it 'gets the detail of an import' do
-    post api_v1_imports_create_url(:api_key => @user.api_key,
-                        :table_name => 'wadus',
-                        :filename   => File.basename('wadus.csv')),
-      upload_file('db/fake_data/column_number_to_boolean.csv', 'text/csv')
-
-    item_queue_id = JSON.parse(response.body)['item_queue_id']
-
-    get api_v1_imports_show_url(:id => item_queue_id), params
-
-    response.code.should be == '200'
-
-    import = JSON.parse(response.body)
-    import['state'].should be == 'complete'
-  end
-
   it 'tries to import a tgz' do
     pending 'There is a problem with either unp or tar using tgz files. needs investigation'
 

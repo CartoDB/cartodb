@@ -16,6 +16,7 @@ describe Carto::Api::ImportsController do
       # new controller
       scope :module => 'carto/api', :format => :json do
         get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/imports'                          => 'imports#index',                       as: :api_v1_imports_index
+        get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/imports/:id'                      => 'imports#show',                        as: :api_v1_imports_show
       end
 
       # old controller

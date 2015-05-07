@@ -220,7 +220,7 @@ class Admin::PagesController < ApplicationController
       description << " published #{@datasets.size} public dataset#{@datasets.size == 1 ? "" : "s"}"
     end
 
-    description << " in CartoDB"
+    description << " · Contribute to Open Data by creating an account in CartoDB"
 
     @page_description = description
 
@@ -260,7 +260,7 @@ class Admin::PagesController < ApplicationController
         description << " published #{@tables_num} public dataset#{@tables_num == 1 ? "" : "s"}"
       end
 
-      description << " in CartoDB"
+      description << " · Contribute to Open Data by creating an account in CartoDB"
     end
 
     @page_description = description

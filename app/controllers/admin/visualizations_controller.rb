@@ -9,6 +9,7 @@ class Admin::VisualizationsController < ApplicationController
   include CartoDB
 
   MAX_MORE_VISUALIZATIONS = 3
+  DEFAULT_PLACEHOLDER_CHARS = 4
 
   ssl_allowed :embed_map, :public_map, :show_protected_embed_map, :public_table,
               :show_organization_public_map, :show_organization_embed_map
@@ -50,15 +51,12 @@ class Admin::VisualizationsController < ApplicationController
     @tables_count  = current_user.tables.count
     @first_time    = !current_user.dashboard_viewed?
     @just_logged_in = !!flash['logged']
+    @google_maps_api_key = current_user.google_maps_api_key
     current_user.view_dashboard
     update_user_last_activity
 
-    new_dashboard = current_user.has_feature_flag?('new_dashboard')
-    view =  new_dashboard ? 'new-dashboard' : 'index'
-    layout = new_dashboard ? 'new_application' : 'application'
-
     respond_to do |format|
-      format.html { render view, layout: layout }
+      format.html { render 'index', layout: 'application' }
     end
 
   end #index
@@ -74,6 +72,9 @@ class Admin::VisualizationsController < ApplicationController
 
     return(pretty_404) unless @visualization
     return(pretty_404) if disallowed_type?(@visualization)
+
+    @google_maps_api_key = @visualization.user.google_maps_api_key
+    @basemaps = @visualization.user.basemaps
 
     unless @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
       if request.original_fullpath =~ %r{/tables/}
@@ -221,6 +222,7 @@ class Admin::VisualizationsController < ApplicationController
 
     @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)
     @avatar_url             = @visualization.user.avatar
+    @google_maps_api_key = @visualization.user.google_maps_api_key
 
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
     @visualization_count    = @visualization.user.public_visualization_count
@@ -310,7 +312,7 @@ class Admin::VisualizationsController < ApplicationController
     return(pretty_404) if disallowed_type?(@visualization)
 
     unless @visualization.is_password_valid?(submitted_password)
-      flash[:placeholder] = '*' * submitted_password.size
+      flash[:placeholder] = '*' * (submitted_password ? submitted_password.size : DEFAULT_PLACEHOLDER_CHARS)
       flash[:error] = "Invalid password"
       return(embed_protected)
     end
@@ -345,12 +347,12 @@ class Admin::VisualizationsController < ApplicationController
   end
 
   def show_protected_embed_map
-    submitted_password = params.fetch(:password)
+    submitted_password = params.fetch(:password, nil)
     return(pretty_404) unless @visualization and @visualization.password_protected? and @visualization.has_password?
     return(pretty_404) if disallowed_type?(@visualization)
 
     unless @visualization.is_password_valid?(submitted_password)
-      flash[:placeholder] = '*' * submitted_password.size
+      flash[:placeholder] = '*' * (submitted_password ? submitted_password.size : DEFAULT_PLACEHOLDER_CHARS)
       flash[:error] = "Invalid password"
       return(embed_protected)
     end

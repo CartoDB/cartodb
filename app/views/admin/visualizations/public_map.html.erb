@@ -1,3 +1,7 @@
+<%= content_for(:title) do %>CartoDB · <%= @visualization.name.gsub(/_/," ") %><% end %>
+
+<%= content_for(:description) do %><%= @visualization.description_clean || "#{@visualization.name.gsub(/_/," ")} created by #{@name} in CartoDB" %><% end %>
+
 <%= content_for(:body_class) do %> PublicMap <% end %>
 
 <%= content_for(:css) do %>
@@ -6,7 +10,7 @@
 
 <%= content_for(:content) do %>
   <% if @visualization.public? || @visualization.public_with_link? || @visualization.password_protected? || @visualization.organization? %>
-    <%= render 'admin/shared/new_public_header' %>
+    <%= render 'admin/shared/public_header' %>
 
     <div class="PublicMap-map js-map" id="map">
       <div class="Spinner"></div>
@@ -52,10 +56,12 @@
               <a class="PublicMap-shareButton PublicMap-editButton js-editMap" href="<%= CartoDB.url(self, 'public_visualizations_show', {id: @visualization.id }, @visualization.user) %>">
                 edit in cartodb
               </a>
-              <a href="http://www.facebook.com/sharer.php?u=<%= url_encode(request.original_url) %>&text=<%= url_encode("#{@visualization.name} by #{@name} with CartoDB") %>" target="_blank" class="PublicMap-shareButton PublicMap-shareButton--facebook">
+
+              <a href="http://www.facebook.com/sharer.php?u=<%= url_encode(request.original_url) %>&text=<%= url_encode("#{@visualization.name} created by #{@name} in CartoDB") %>" target="_blank" class="PublicMap-shareButton PublicMap-shareButton--facebook">
                 <i class="iconFont iconFont-Facebook"></i>
               </a>
-              <a href="https://twitter.com/share?url=<%= url_encode(request.original_url) %>&text=<%= url_encode("#{@visualization.name} by #{@visualization.user.twitter_username.present? ? @visualization.user.twitter_username : @name} with @cartodb") %>" target="_blank" class="PublicMap-shareButton PublicMap-shareButton--twitter">
+
+              <a href="https://twitter.com/share?url=<%= url_encode(request.original_url) %>&text=<%= url_encode("#{@visualization.name} created by #{@visualization.user.twitter_username.present? ? "@#{@visualization.user.twitter_username}" : @name} in @cartoDB") %>" target="_blank" class="PublicMap-shareButton PublicMap-shareButton--twitter">
                 <i class="iconFont iconFont-Twitter"></i>
               </a>
             </nav>
@@ -202,14 +208,14 @@
       <% end %>
     </div>
 
-    <%= render 'admin/shared/new_footer', :light => true %>
+    <%= render 'admin/shared/footer', :light => true %>
   <% end %>
 <% end %>
 
 
 <%= content_for(:js) do %>
   <% if @visualization.map.provider == 'googlemaps' %>
-    <script type="text/javascript" src="//maps.google.com/maps/api/js?sensor=false&v=3.12"></script>
+    <script type="text/javascript" src="//maps.google.com/maps/api/js?sensor=false&v=3.12&api_key=<%= @google_maps_api_key %>"></script>
   <% end %>
 
   <script>

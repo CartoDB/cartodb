@@ -355,6 +355,7 @@ describe User do
   end
 
   it "should read api calls from external service" do
+    pending "This is deprecated. This code has been moved"
     @user.stubs(:get_old_api_calls).returns({
       "per_day" => [0, 0, 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 17, 4, 0, 0, 0, 0],
       "total"=>49,

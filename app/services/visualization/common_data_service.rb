@@ -24,11 +24,6 @@ module CartoDB
         deleted = 0
         failed = 0
 
-        Rollbar.report_message('common data', 'debug', {
-          :action => 'load',
-          :user_id => user.id,
-          :username => user.username
-        })
         remotes_by_name = {}
         user_remotes = CartoDB::Visualization::Collection.new.fetch(type: CartoDB::Visualization::Member::TYPE_REMOTE, user_id: user.id)
         user_remotes.each { |r|

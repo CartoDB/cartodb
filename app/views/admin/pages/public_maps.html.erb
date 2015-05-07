@@ -1,14 +1,10 @@
-<%= content_for(:title) do %>
-  Maps by <%= @name %> on CartoDB
-<% end %>
+<%= content_for(:title) do %>CartoDB · Maps by <%= @name %><% end %>
 
-<%= content_for(:description) do %>
-  <%= @name %> is creating maps and visualizations using CartoDB
-<% end %>
+<%= content_for(:description) do %><%= @page_description %><% end %>
 
 <div class="PublicBody-content">
   <% if @visualizations.size == 0 %>
-    <%= render 'admin/shared/new_no_results', is_maps: true, alt_url: CartoDB.url(self, 'public_datasets_home') %>
+    <%= render 'admin/shared/no_results', is_maps: true, alt_url: CartoDB.url(self, 'public_datasets_home') %>
   <% else %>
     <ul class="MapsList">
       <% @visualizations.each do |vis| %>
@@ -53,7 +49,7 @@
                   </div>
                 </div>
                 <div class="MapCard-contentFooterDetails--right">
-                  <%= render 'admin/pages/shared/new_like_button', vis: vis %>
+                  <%= render 'admin/pages/shared/like_button', vis: vis %>
                 </div>
               </div>
             </div>

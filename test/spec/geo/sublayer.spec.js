@@ -418,6 +418,32 @@ describe('Sublayers', function() {
       sublayer = layerDefinition.getSubLayer(0);
     });
 
+    describe('toJSON', function() {
+
+      it('should serialize the sublayer', function() {
+        expect(sublayer.toJSON()).toEqual({
+          type: 'http',
+          options: {
+            urlTemplate: "http://{s}.example.com/{z}/{x}/{y}.png",
+            subdomains: ['a', 'b', 'c'],
+            tms: false
+          }
+        })
+      })
+
+      it('should not include optional params if not present', function() {
+        sublayer.set('subdomains', undefined);
+        sublayer.set('tms', undefined);
+
+        expect(sublayer.toJSON()).toEqual({
+          type: 'http',
+          options: {
+            urlTemplate: "http://{s}.example.com/{z}/{x}/{y}.png"
+          }
+        })
+      });
+    });
+
     describe('event binding', function() {
 
       it("should NOT respond to events on the layer", function() {

@@ -247,6 +247,26 @@ function HttpSubLayer(layer, position) {
 
 HttpSubLayer.prototype = _.extend({}, SubLayerBase.prototype, {
 
+  toJSON: function() {
+    var json = {
+      type: 'http',
+      options: {
+        urlTemplate: this.getURLTemplate()
+      }
+    };
+
+    var subdomains = this.get('subdomains');
+    if (subdomains) {
+      json.options.subdomains = subdomains;
+    }
+
+    var tms = this.get('tms');
+    if (tms !== undefined) {
+      json.options.tms = tms;
+    }
+    return json;
+  },
+
   setURLTemplate: function(urlTemplate) {
     return this.set({
       urlTemplate: urlTemplate

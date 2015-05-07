@@ -151,18 +151,6 @@ describe("LayerDefinition", function() {
 
   describe("sublayers", function() {
 
-    describe('.createSubLayer', function() {
-
-      it("should create a sublayer using the factory", function() {
-        var subLayer = layerDefinition.createSubLayer({
-          sql: 'select * from table',
-          cartocss: 'test',
-          interactivity: 'test'
-        });
-        expect(subLayer instanceof CartoDBSubLayer).toEqual(true);
-      });
-    });
-
     describe('.getSubLayer', function() {
 
       it("should return the sublayer at the specified position", function() {
@@ -593,6 +581,7 @@ describe("LayerDefinition", function() {
   });
 
   describe('LayerDefinition.layerDefFromSubLayers', function() {
+
     it("should generate layerdef", function() {
       var layerDef = LayerDefinition.layerDefFromSubLayers([{
         sql: 'test',
@@ -600,15 +589,35 @@ describe("LayerDefinition", function() {
       }]);
 
       expect(layerDef).toEqual({
-          version: '1.0.0',
-          stat_tag: 'API',
-          layers: [{
-            type: 'cartodb',
-            options: {
-              sql: 'test',
-              cartocss:'test'
-            }
-          }]
+        version: '1.0.0',
+        stat_tag: 'API',
+        layers: [{
+          type: 'cartodb',
+          options: {
+            sql: 'test',
+            cartocss:'test',
+            cartocss_version: '2.1.0',
+            interactivity: []
+          }
+        }]
+      });
+    });
+
+    it("should return the right type of layers", function() {
+      var layerDef = LayerDefinition.layerDefFromSubLayers([{
+        type: 'http',
+        urlTemplate: 'urlTemplate'
+      }]);
+
+      expect(layerDef).toEqual({
+        version: '1.0.0',
+        stat_tag: 'API',
+        layers: [{
+          type: 'http',
+          options: {
+            urlTemplate: 'urlTemplate'
+          }
+        }]
       });
     });
   });

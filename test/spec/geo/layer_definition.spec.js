@@ -193,13 +193,13 @@ describe("LayerDefinition", function() {
 
     describe('.createSubLayer', function() {
 
-      it("should create a sublayer", function() {
+      it("should create a sublayer using the factory", function() {
         var subLayer = layerDefinition.createSubLayer({
           sql: 'select * from table',
           cartocss: 'test',
           interactivity: 'test'
         });
-        expect(subLayer instanceof SubLayer).toEqual(true);
+        expect(subLayer instanceof CartoDBSubLayer).toEqual(true);
       });
     });
 
@@ -207,7 +207,7 @@ describe("LayerDefinition", function() {
 
       it("should return the sublayer at the specified position", function() {
         var sublayer = layerDefinition.getSubLayer(0);
-        expect(sublayer instanceof SubLayer).toEqual(true);
+        expect(sublayer instanceof CartoDBSubLayer).toEqual(true);
         expect(sublayer.getSQL()).toEqual('select * from ne_10m_populated_places_simple');
         expect(sublayer.getCartoCSS()).toEqual('#layer { marker-fill: red; }');
       });

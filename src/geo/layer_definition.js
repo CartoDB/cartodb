@@ -569,7 +569,7 @@ MapBase.prototype = {
 
   getSubLayer: function(index) {
     var layer = this.layers[index];
-    layer.sub = layer.sub || new SubLayer(this, index);
+    layer.sub = layer.sub || SubLayerFactory.createSublayer(layer.type, this, index);
     return layer.sub;
   },
 
@@ -831,7 +831,7 @@ NamedMap.prototype = _.extend({}, MapBase.prototype, {
         options: {}
       };
     }
-    layer.sub = layer.sub || new SubLayer(this, index);
+    layer.sub = layer.sub || SubLayerFactory.createSublayer(layer.type, this, index);
     return layer.sub;
   },
 

@@ -1,4 +1,4 @@
-describe("Sublayer", function() {
+describe('Sublayers', function() {
   var layerDefinition, sublayer;
 
   beforeEach(function() {
@@ -28,220 +28,415 @@ describe("Sublayer", function() {
 
     _.extend(LayerDefinition.prototype, Backbone.Events);
 
-    layerDefinition = new LayerDefinition(layer_definition, {
-      tiler_domain: "cartodb.com",
-      tiler_port: "8081",
-      tiler_protocol: "http",
-      user_name: 'rambo',
-      no_cdn: true,
-      subdomains: [null]
-    });
+    layerDefinition = new LayerDefinition(layer_definition, {});
 
     sublayer = layerDefinition.getSubLayer(0);
   });
 
-  describe('event binding', function() {
+  describe('SubLayerFactory', function() {
 
-    var events = [
-      ['featureOver'],
-      ['featureOut'],
-      ['featureClick'],
-      ['layermouseover', 'mouseover'],
-      ['layermouseout', 'mouseout']
-    ];
+    it('should return a CartoDBSublayer', function() {
+      var sublayer = SubLayerFactory.createSublayer('', layerDefinition, 0);
+      expect(sublayer instanceof CartoDBSubLayer).toBeTruthy();
 
-    events.forEach(function(event) {
-      var signal = event[0];
-      var alias = event[1] || signal;
+      var sublayer = SubLayerFactory.createSublayer('mapnik', layerDefinition, 0);
+      expect(sublayer instanceof CartoDBSubLayer).toBeTruthy();
 
-      it("should respond to " + signal + " events on the layer if the position matches", function(done) {
-        sublayer.on(alias, function(index) {
-          expect(index).toEqual(0);
-          done();
-        });
+      var sublayer = SubLayerFactory.createSublayer('cartodb', layerDefinition, 0);
+      expect(sublayer instanceof CartoDBSubLayer).toBeTruthy();
+    });
 
-        layerDefinition.trigger(signal, 0);
+    it('should return an HttpSublayer', function() {
+      var sublayer = SubLayerFactory.createSublayer('http', layerDefinition, 0);
+      expect(sublayer instanceof HttpSubLayer).toBeTruthy();
+    });
+
+    it('should throw an error if type is not supported', function() {
+      expect(function() {
+        SubLayerFactory.createSublayer('unsupported type');
+      }).toThrow('Sublayer type not supported');
+    })
+  });
+
+  describe('SublayerBase', function() {
+
+    describe('.remove', function() {
+
+      it('should throw and error if layer was already removed', function() {
+        sublayer.remove()
+
+        // Try to remove again
+        expect(function() {
+          sublayer.remove();
+        }).toThrow('sublayer was removed');
+
       });
 
-      it("should NOT respond to " + signal + " events on the layer if the position doesn't match", function() {
+      it('should remove itself from the layer', function() {
+        sublayer.remove()
+
+        expect(layerDefinition.getSubLayerCount()).toEqual(1);
+        expect(layerDefinition.getSubLayer(0)).not.toEqual(sublayer);
+      });
+
+      it('should unbind the interaction', function() {
+        spyOn(sublayer, '_unbindInteraction');
+
+        sublayer.remove();
+
+        expect(sublayer._unbindInteraction).toHaveBeenCalled();
+      });
+
+      it('should trigger a "remove" event', function(done) {
+        var callback = function(subl) {
+          expect(subl).toEqual(sublayer);
+          done();
+        };
+        
+        sublayer.on('remove', callback);
+
+        sublayer.remove();
+      });
+    });
+
+    describe('.toggle', function() {
+
+      it('should show or hide the sublayer', function() {
+        sublayer.set('hidden', false);
+
+        sublayer.toggle();
+
+        expect(sublayer.get('hidden')).toEqual(true);
+
+        sublayer.toggle();
+
+        expect(sublayer.get('hidden')).toEqual(false);
+      });
+    });
+
+    describe('.show', function() {
+
+      it('should show the layer', function() {
+        sublayer.set('hidden', true);
+
+        sublayer.show();
+
+        expect(sublayer.get('hidden')).toBeUndefined();
+      })
+    });
+
+    describe('.hide', function() {
+
+      it('should hide the layer', function() {
+        sublayer.set('hidden', false);
+
+        sublayer.hide();
+
+        expect(sublayer.get('hidden')).toEqual(true);
+      })
+    });
+
+    describe('.set', function() {
+
+      it('should throw an error if the sublayer was removed', function() {
+        sublayer.remove();
+
+        expect(function() {
+          sublayer.set({ wadus: true });
+        }).toThrow('sublayer was removed');
+      });
+
+      it('should set the attribute', function() {
+        sublayer.set({ wadus: true });
+
+        expect(sublayer.get('wadus')).toEqual(true);
+      });
+
+      it('should trigger a "change:visibility" event if the visibility has changed', function(done) {
+        var callback = function(subl, hidden) {
+          expect(subl).toEqual(sublayer);
+          expect(hidden).toEqual(true);
+          done();
+        }
+
+        sublayer.on('change:visibility', callback);
+
+        sublayer.set({ hidden: true });
+      });
+    });
+
+    describe('.unset', function() {
+
+      it('should delete an attribute', function() {
+        sublayer.set({ wadus: true });
+        expect(sublayer.get('wadus')).toEqual(true);
+
+        sublayer.unset('wadus');
+
+        expect(sublayer.get('wadus')).toBeUndefined();
+      });
+    });
+
+    describe('.get', function() {
+
+      it('should throw and error if layer was already removed', function() {
+        sublayer.remove()
+
+        // Try to remove again
+        expect(function() {
+          sublayer.get('wadus');
+        }).toThrow('sublayer was removed');
+
+      });
+    });
+  });
+
+  describe('CartoDBSubLayer', function() {
+
+    describe('toJSON', function() {
+
+      it('should serialize the sublayer', function() {
+        expect(sublayer.toJSON()).toEqual({
+          type: 'cartodb',
+          options: {
+            sql: 'select * from ne_10m_populated_places_simple',
+            cartocss: '#layer { marker-fill: red; }',
+            interactivity: ['test', 'cartodb_id']
+          }
+        });
+      });
+
+      it('should include attributes option if interactivity is present', function() {
+        sublayer.set({
+          interactivity: ['wadus'],
+          attributes: ['column1', 'column2']
+        });
+
+        expect(sublayer.toJSON().options.attributes).toEqual({
+          id: 'cartodb_id',
+          columns: ['column1', 'column2']
+        });
+      });
+
+      it('should include geometry options if raster option is true', function() {
+        sublayer.set({raster: true});
+
+        expect(sublayer.toJSON().options.geom_column).toEqual("the_raster_webmercator");
+        expect(sublayer.toJSON().options.geom_type).toEqual("raster");
+        expect(sublayer.toJSON().options.cartocss_version).toEqual('2.3.0');
+      });
+
+      it('should include geometry options with a given cartocss_version if raster option is true', function() {
+        sublayer.set({
+          raster: true,
+          cartocss_version: '2.4.0'
+        });
+
+        expect(sublayer.toJSON().options.geom_column).toEqual("the_raster_webmercator");
+        expect(sublayer.toJSON().options.geom_type).toEqual("raster");
+        expect(sublayer.toJSON().options.cartocss_version).toEqual('2.4.0');
+      });
+    });
+
+    describe('event binding', function() {
+
+      var events = [
+        ['featureOver'],
+        ['featureOut'],
+        ['featureClick'],
+        ['layermouseover', 'mouseover'],
+        ['layermouseout', 'mouseout']
+      ];
+
+      events.forEach(function(event) {
+        var signal = event[0];
+        var alias = event[1] || signal;
+
+        it("should respond to " + signal + " events on the layer if the position matches", function(done) {
+          sublayer.on(alias, function(index) {
+            expect(index).toEqual(0);
+            done();
+          });
+
+          layerDefinition.trigger(signal, 0);
+        });
+
+        it("should NOT respond to " + signal + " events on the layer if the position doesn't match", function() {
+          var callback = jasmine.createSpy('callback');
+
+          sublayer.on(alias, function(){
+            callback();
+          });
+
+          layerDefinition.trigger(signal, 1);
+
+          expect(callback).not.toHaveBeenCalled();
+        });
+      });
+    });
+
+    describe('.setSQL', function() {
+
+      it('should set the SQL attribute', function() {
+        sublayer.setSQL('wadus');
+
+        expect(sublayer.get('sql')).toEqual('wadus');
+        expect(sublayer.getSQL()).toEqual('wadus');
+      });
+    });
+
+    describe('.setCartoCSS', function() {
+
+      it('should set the cartocss attribute', function() {
+        sublayer.setCartoCSS('wadus');
+
+        expect(sublayer.get('cartocss')).toEqual('wadus');
+        expect(sublayer.getCartoCSS()).toEqual('wadus');
+      });
+    });
+
+    describe('.setInteractivity', function() {
+
+      it('should set the interactivity attribute', function() {
+        sublayer.setInteractivity('wadus');
+
+        expect(sublayer.get('interactivity')).toEqual('wadus');
+      })
+    });
+
+    describe('.getInteractivity', function() {
+
+      it('should convert string with fields to array', function() {
+        sublayer.setInteractivity('field1, field2');
+
+        expect(sublayer.getInteractivity()).toEqual(['field1', 'field2']);
+      });
+
+      it('should remove whitespaces from field names', function() {
+        sublayer.setInteractivity(['     field1     ', '             field2']);
+
+        expect(sublayer.getInteractivity()).toEqual(['field1', 'field2']);
+      });
+    });
+
+    describe('.getAttributes', function() {
+
+      it('should return the attributes from the definition if present and remove whitespaces from columns', function() {
+        sublayer.set({
+          attributes: [' field1     ', 'field2']
+        });
+
+        expect(sublayer.getAttributes()).toEqual({
+          id: 'cartodb_id',
+          columns: ['field1', 'field2']
+        })
+      });
+
+      it('should return the attributes from the infowindow fields', function() {
+        sublayer.infowindow.fields = [ { name: 'field1        '}, { name: '    field2 '}];
+
+        expect(sublayer.getAttributes()).toEqual({
+          id: 'cartodb_id',
+          columns: ['field1', 'field2']
+        })
+      });
+    });
+
+    describe('.setInteraction', function() {
+
+      it('should set the interactivity attribute', function() {
+        sublayer.setInteractivity('wadus');
+
+        expect(sublayer.get('interactivity')).toEqual('wadus');
+      })
+    });
+
+    describe('.getInfowindowData', function() {
+
+      it('should return the infowindow data', function() {
+        sublayer.infowindow.fields = [{ name: 'wadus1  ' }, { name: 'wadus2'}]
+
+        expect(sublayer.getInfowindowData()).toEqual(sublayer.infowindow);
+      })
+    })
+  });
+
+  describe('HttpSubLayer', function() {
+
+    beforeEach(function() {
+      var layer_definition = {
+        version: '1.0.0',
+        stat_tag: 'vis_id',
+        layers: [
+          {
+            type: 'http',
+            options: {
+              urlTemplate: "http://{s}.example.com/{z}/{x}/{y}.png",
+              subdomains: ['a', 'b', 'c'],
+              tms: false
+            },
+          }
+        ]
+      };
+
+      layerDefinition = new LayerDefinition(layer_definition, {});
+
+      sublayer = layerDefinition.getSubLayer(0);
+    });
+
+    describe('event binding', function() {
+
+      it("should NOT respond to events on the layer", function() {
         var callback = jasmine.createSpy('callback');
 
-        sublayer.on(alias, function(){
+        sublayer.on('featureOver', function(){
           callback();
         });
 
-        layerDefinition.trigger(signal, 1);
+        layerDefinition.trigger('featureOver', 0);
 
         expect(callback).not.toHaveBeenCalled();
       });
     });
-  });
 
-  describe('.remove', function() {
+    describe('', function() {
 
-    it('should throw and error if layer was already removed', function() {
-      sublayer.remove()
+      it('should set the layer if the infowindow changes', function() {
 
-      // Try to remove again
-      expect(function() {
-        sublayer.remove();
-      }).toThrow('sublayer was removed');
-
+      });
     });
 
-    it('should remove itself from the layer', function() {
-      sublayer.remove()
+    describe('.setURLTemplate', function(){
 
-      expect(layerDefinition.getSubLayerCount()).toEqual(1);
-      expect(layerDefinition.getSubLayer(0)).not.toEqual(sublayer);
+      it('should set the urlTemplate attribute', function() {
+        sublayer.setURLTemplate('template');
+
+        expect(sublayer.get('urlTemplate')).toEqual('template');
+        expect(sublayer.getURLTemplate()).toEqual('template');
+      });
     });
 
-    it('should unbind the interaction', function() {
-      spyOn(sublayer, '_unbindInteraction');
+    describe('.setSubdomains', function() {
 
-      sublayer.remove();
+      it('should set the subdomains attribute', function() {
+        sublayer.setSubdomains('subdomains');
 
-      expect(sublayer._unbindInteraction).toHaveBeenCalled();
+        expect(sublayer.get('subdomains')).toEqual('subdomains');
+        expect(sublayer.getSubdomains()).toEqual('subdomains');
+      });
     });
 
-    it('should trigger a "remove" event', function(done) {
-      var callback = function(subl) {
-        expect(subl).toEqual(sublayer);
-        done();
-      };
-      
-      sublayer.on('remove', callback);
+    describe('.setTms', function() {
 
-      sublayer.remove();
+      it('should set the tmps attribute', function() {
+        sublayer.setTms('tms');
+
+        expect(sublayer.get('tms')).toEqual('tms');
+        expect(sublayer.getTms()).toEqual('tms');
+      });
     });
   });
 
-  describe('.toggle', function() {
-
-    it('should show or hide the sublayer', function() {
-      sublayer.set('hidden', false);
-
-      sublayer.toggle();
-
-      expect(sublayer.get('hidden')).toEqual(true);
-
-      sublayer.toggle();
-
-      expect(sublayer.get('hidden')).toEqual(false);
-    });
-  });
-
-  describe('.show', function() {
-
-    it('should show the layer', function() {
-      sublayer.set('hidden', true);
-
-      sublayer.show();
-
-      expect(sublayer.get('hidden')).toBeUndefined();
-    })
-  });
-
-  describe('.hide', function() {
-
-    it('should hide the layer', function() {
-      sublayer.set('hidden', false);
-
-      sublayer.hide();
-
-      expect(sublayer.get('hidden')).toEqual(true);
-    })
-  });
-
-  describe('.set', function() {
-
-    it('should throw an error if the sublayer was removed', function() {
-      sublayer.remove();
-
-      expect(function() {
-        sublayer.set({ wadus: true });
-      }).toThrow('sublayer was removed');
-    });
-
-    it('should set the attribute', function() {
-      sublayer.set({ wadus: true });
-
-      expect(sublayer.get('wadus')).toEqual(true);
-    });
-
-    it('should trigger a "change:visibility" event if the visibility has changed', function(done) {
-      var callback = function(subl, hidden) {
-        expect(subl).toEqual(sublayer);
-        expect(hidden).toEqual(true);
-        done();
-      }
-
-      sublayer.on('change:visibility', callback);
-
-      sublayer.set({ hidden: true });
-    });
-  });
-
-  describe('.unset', function() {
-
-    it('should delete an attribute', function() {
-      sublayer.set({ wadus: true });
-      expect(sublayer.get('wadus')).toEqual(true);
-
-      sublayer.unset('wadus');
-
-      expect(sublayer.get('wadus')).toBeUndefined();
-    });
-  });
-
-  describe('.setSQL', function() {
-
-    it('should set the SQL attribute', function() {
-      sublayer.setSQL('wadus');
-
-      expect(sublayer.get('sql')).toEqual('wadus');
-    });
-  });
-
-
-  describe('.setCartoCSS', function() {
-
-    it('should set the cartocss attribute', function() {
-      sublayer.setCartoCSS('wadus');
-
-      expect(sublayer.get('cartocss')).toEqual('wadus');
-    });
-  });
-
-  describe('.setInteractivity', function() {
-
-    it('should set the interactivity attribute', function() {
-      sublayer.setInteractivity('wadus');
-
-      expect(sublayer.get('interactivity')).toEqual('wadus');
-    })
-  });
-
-  describe('.setInteraction', function() {
-
-    it('should set the interactivity attribute', function() {
-      sublayer.setInteractivity('wadus');
-
-      expect(sublayer.get('interactivity')).toEqual('wadus');
-    })
-  });
-
-  describe('.get', function() {
-
-    it('should throw and error if layer was already removed', function() {
-      sublayer.remove()
-
-      // Try to remove again
-      expect(function() {
-        sublayer.get('wadus');
-      }).toThrow('sublayer was removed');
-
-    });
-  });
 });
+
 

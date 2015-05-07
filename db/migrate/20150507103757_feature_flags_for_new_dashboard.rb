@@ -17,14 +17,14 @@ class FeatureFlagsForNewDashboard < Sequel::Migration
         WITH flags_to_add as (
           SELECT * FROM (SELECT unnest(array[#{sql_flag_list}]) as name) as flag EXCEPT (SELECT name from feature_flags)
         )
-      SELECT nextval('machine_added_feature_flags_id_seq'), name, FALSE FROM flags_to_add;
+      SELECT nextval('#{SequenceForAutomatedFeatureFlags::NAME}'), name, FALSE FROM flags_to_add;
     })
   end
 
   def down
     # Delete automatically-added flags
     Rails::Sequel.connection.run(%Q{
-      DELETE FROM feature_flags WHERE id <= #{START_SEQ_NUMBER} AND name IN (#{sql_flag_list});
+      DELETE FROM feature_flags WHERE id <= #{SequenceForAutomatedFeatureFlags::START_SEQ_NUMBER} AND name IN (#{sql_flag_list});
     })
   end
 

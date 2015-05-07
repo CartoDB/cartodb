@@ -43,19 +43,8 @@ module Cartodb
         :enable_starttls_auto => Cartodb.config[:mailer]['enable_starttls_auto'] }
     end
 
-    if @config[:basemaps].present? && !@config[:basemaps]['default'].present?
-      @config[:basemaps]['default'] = {}
-      new_default = false
-      @config[:basemaps].each do |bfamily,ba|
-        break if new_default
-        ba.each do |bname,battrs|
-          if battrs['default']
-            @config[:basemaps]['default'] = battrs
-            new_default = true
-            break
-          end
-        end
-      end
+    if !@config[:basemaps].present? || @config[:basemaps].count == 0
+      raise "Missing basemaps configuration, there should be at least one basemap"
     end
   end
 

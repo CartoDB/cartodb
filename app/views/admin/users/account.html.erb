@@ -20,10 +20,10 @@
   <%= javascript_include_tag 'cdb.js', 'models.js', 'account_templates.js', 'account_deps.js', 'account.js' -%>
 <% end %>
 
-<%= render :partial => 'shared/new_flash_message' %>
+<%= render :partial => 'shared/flash_message' %>
 
 <div>
-  <%= render :partial => 'admin/shared/new_pages_subheader' %>
+  <%= render :partial => 'admin/shared/pages_subheader' %>
 
   <div class="CredentialsContent">
     <div class="u-inner">
@@ -111,6 +111,27 @@
           </div>
         <% end %>
 
+        <% if current_user.has_feature_flag?('google_maps') %>
+          <div class="Form-title">
+            <h4 class="Form-titleHeader">Configure API keys from external providers</h4>
+            <p class="Form-titleText">Configure here the API keys from other services like
+            Google Cloud Platform, so you won’t be asked later for them.</p>
+          </div>
+          <div class="Form-row">
+            <div class="Form-rowLabel">
+              <label class="Form-label">Google Maps</label>
+            </div>
+            <div class="Form-rowData">
+              <input type="text" value="<%= current_user.organization.present? ? current_user.organization.google_maps_key : current_user.google_maps_key %>" class="Form-input Form-input--long is-disabled" readonly />
+            </div>
+            <% if current_user.organization.present? %>
+              <div class="Form-rowInfo">
+                <p class="Form-rowInfoText">This is the organization Google Maps key</p>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+
         <div class="Form-footer">
           <% if !current_user.organization_owner? -%>
             <button type="button" class="Button Button--secondary js-deleteAccount">
@@ -137,4 +158,4 @@
   <div class="SupportBanner" id="support-banner"></div>
 <% end %>
 
-<%= render 'admin/shared/new_footer' %>
+<%= render 'admin/shared/footer' %>

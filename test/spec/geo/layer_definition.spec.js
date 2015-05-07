@@ -112,7 +112,7 @@ describe("LayerDefinition", function() {
       });
     });
 
-    it("should not include visible layers", function() {
+    it("should not include hidden layers", function() {
       layerDefinition.getSubLayer(0).hide();
 
       expect(layerDefinition.toJSON()).toEqual({
@@ -125,46 +125,6 @@ describe("LayerDefinition", function() {
              cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
              cartocss_version: '2.0.0',
              interactivity: ['test2', 'cartodb_id2']
-           }
-         }
-        ]
-      });
-    });
-
-    it("should include raster information in sublayers when the raster option is true", function() {
-      var layer_definition = {
-        version: '1.0.0',
-        stat_tag: 'vis_id',
-        layers: [{
-           type: 'cartodb', 
-           options: {
-             sql: 'select * from ne_10m_populated_places_simple',
-             cartocss: '#layer { marker-fill: red; }',
-             raster: true,
-           }
-         }
-        ]
-      };
-      var layerDefinitionRaster = new LayerDefinition(layer_definition, {
-        tiler_domain:   "cartodb.com",
-        tiler_port:     "8081",
-        tiler_protocol: "http",
-        user_name: 'rambo',
-        no_cdn: true,
-        subdomains: [null]
-      });
-
-      expect(layerDefinitionRaster.toJSON()).toEqual({
-        version: '1.0.0',
-        stat_tag: 'vis_id',
-        layers: [{
-           type: 'cartodb', 
-           options: {
-             sql: 'select * from ne_10m_populated_places_simple',
-             cartocss: '#layer { marker-fill: red; }',
-             cartocss_version: '2.3.0',
-             geom_column: 'the_raster_webmercator',
-             geom_type: 'raster'
            }
          }
         ]

@@ -201,10 +201,39 @@ describe('Sublayers', function() {
           options: {
             sql: 'select * from ne_10m_populated_places_simple',
             cartocss: '#layer { marker-fill: red; }',
+            cartocss_version: '2.1.0',
             interactivity: ['test', 'cartodb_id']
           }
         });
       });
+
+      it('should include the cartocss_version if present', function() {
+        sublayer.set({
+          cartocss_version: 'X.X.X',
+        });
+
+        expect(sublayer.toJSON()).toEqual({
+          type: 'cartodb',
+          options: {
+            sql: 'select * from ne_10m_populated_places_simple',
+            cartocss: '#layer { marker-fill: red; }',
+            cartocss_version: 'X.X.X',
+            interactivity: ['test', 'cartodb_id']
+          }
+        });
+      }),
+
+      it('should set the default cartocss_version if not present', function() {
+        expect(sublayer.toJSON()).toEqual({
+          type: 'cartodb',
+          options: {
+            sql: 'select * from ne_10m_populated_places_simple',
+            cartocss: '#layer { marker-fill: red; }',
+            cartocss_version: '2.1.0',
+            interactivity: ['test', 'cartodb_id']
+          }
+        });
+      }),
 
       it('should include attributes option if interactivity is present', function() {
         sublayer.set({

@@ -639,57 +639,10 @@ LayerDefinition.prototype = _.extend({}, MapBase.prototype, {
     obj.layers = [];
     var layers = this.visibleLayers();
     for(var i = 0; i < layers.length; ++i) {
-      var layer = layers[i];
-      var layer_def = {
-        type: 'cartodb',
-        options: {
-          sql: layer.options.sql,
-          cartocss: layer.options.cartocss,
-          cartocss_version: layer.options.cartocss_version || '2.1.0',
-        }
-      };
-
-      if (layer.options.interactivity) {
-        function fields(f) {
-          var n = []
-          for(var i = 0; i < f.length; ++i) {
-            n.push(f[i].name);
-          }
-          return n;
-        }
-        layer_def.options.interactivity = this._cleanInteractivity(layer.options.interactivity);
-        var infowindow = this.getInfowindowData(this.getLayerNumberByIndex(i));
-        var attrs = layer.options.attributes ? this._cleanInteractivity(this.options.attributes):(infowindow && fields(infowindow.fields));
-        if (attrs) {
-          layer_def.options.attributes = {
-             id: 'cartodb_id',
-             columns: attrs
-          }
-        }
-      }
-
-      if (layer.options.raster) {
-        layer_def.options.geom_column = "the_raster_webmercator";
-        layer_def.options.geom_type = "raster";
-        // raster needs 2.3.0 to work
-        layer_def.options.cartocss_version = layer.options.cartocss_version || '2.3.0';
-      }
-      obj.layers.push(layer_def);
+      var sublayer = this.getSubLayer(this.getLayerNumberByIndex(i));
+      obj.layers.push(sublayer.toJSON());
     }
     return obj;
-  },
-
-  _cleanInteractivity: function(attributes) {
-    if(!attributes) return;
-    if(typeof(attributes) == 'string') {
-      attributes = attributes.split(',');
-    }
-
-    for(var i = 0; i < attributes.length; ++i) {
-      attributes[i] = attributes[i].replace(/ /g, '');
-    }
-
-    return attributes;
   },
 
   removeLayer: function(layer) {

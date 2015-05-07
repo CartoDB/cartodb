@@ -143,6 +143,7 @@ CartoDBSubLayer.prototype = _.extend({}, SubLayerBase.prototype, {
       options: {
         sql: this.getSQL(),
         cartocss: this.getCartoCSS(),
+        cartocss_version: this.get('cartocss_version') || '2.1.0',
         interactivity: this.getInteractivity()
       }
     };

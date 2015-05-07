@@ -51,6 +51,11 @@ describe('Sublayers', function() {
       expect(sublayer instanceof HttpSubLayer).toBeTruthy();
     });
 
+    it('should be case insensitive', function() {
+      var sublayer = SubLayerFactory.createSublayer('cARToDB', layerDefinition, 0);
+      expect(sublayer instanceof CartoDBSubLayer).toBeTruthy();
+    });
+
     it('should throw an error if type is not supported', function() {
       expect(function() {
         SubLayerFactory.createSublayer('unsupported type');

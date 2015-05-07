@@ -273,6 +273,12 @@ CartoDB::Application.routes.draw do
     get     '(/user/:user_domain)(/u/:user_domain)/api/v2_1/viz/:id/viz'                        => 'visualizations#vizjson2', as: :api_v2_1_visualizations_vizjson, constraints: { id: /[^\/]+/ }
 
     get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:id'  => 'tables#show',   as: :api_v1_tables_show, constraints: { id: /[^\/]+/ }
+
+    # Custom layers grouped by user
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/users/:user_id/layers'     => 'layers#index',   as: :api_v1_1_users_layers_index
+    # No show endpoint
+
+
   end
 
   scope :module => 'api/json', :format => :json do

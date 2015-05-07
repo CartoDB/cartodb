@@ -32,6 +32,7 @@ WORKING_SPECS_2 = \
   spec/lib/metrics_spec.rb \
   spec/lib/image_metadata_spec.rb \
   spec/lib/central_spec.rb \
+	spec/helpers/uuidhelper_spec.rb \
   $(NULL)
 
 WORKING_SPECS_3 = \

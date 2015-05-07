@@ -102,6 +102,10 @@ body.is-inDialog {
   text-align: center;
   border-top: 1px solid $cStructure-mainLine;
 }
+.Dialog-footer--simple {
+  @include display-flex();
+  @include justify-content(center);
+}
 .Dialog-headerIcon {
   position: relative;
   width: $sIcon-layout;
@@ -142,6 +146,17 @@ body.is-inDialog {
 }
 .Dialog-footerBtn {
   margin-right: $sMargin-element;
+}
+.Dialog-affectedEntities {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center);
+}
+.Dialog-affectedEntitiesAvatar {
+  margin-left: $sMargin-min;
+}
+.Dialog-affectedMapsListItem {
+  margin: $sMargin-group 10px;
 }
 
 // Styles related to expanded styles, where body--expanded is intended to be scrollable

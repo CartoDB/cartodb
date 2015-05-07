@@ -105,36 +105,26 @@ module CartoDB
       cdb/themes/css/cartodb.css
       cdb/themes/css/cartodb.ie.css
       common.css
-      new_common.css
-      new_dashboard.css
+      old_common.css
       dashboard.css
-      db.css
       cartodb.css
       fonts_ie.css
       fonts.css
       front.css
-
       editor.css
-      new_keys.css
-      keys.css
+      table.css
       leaflet.css
       map.css
       map/leaflet.ie.css
+      keys.css
       organization.css
-      new_organization.css
-      pages.css
       plugins/tipsy.css
-      public.css
       password_protected.css
       public_dashboard.css
-      new_public_dashboard.css
       public_table.css
       public_map.css
-      public_ie.css
       specs.css
-      table.css
-      tables.css
-      frontend
+      sessions.css
 
       *.jpg
       *.ico

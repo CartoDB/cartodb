@@ -9,7 +9,7 @@ gulp.task('default', function(){
     .pipe(iconfontCss({
       fontName: 'cartoIcon',
       path: './app/assets/fonts/icon_font/templates/_icons.scss',
-      targetPath: '../stylesheets/new_common/icon-font.css.scss',
+      targetPath: '../stylesheets/common/icon-font.css.scss',
       fontPath: '../../fonts/'
     }))
 

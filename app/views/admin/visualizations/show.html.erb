@@ -4,9 +4,9 @@
 
   <% content_for(:css) do %>
     <% if current_user.has_feature_flag?('new_modals') %>
-      <%= stylesheet_link_tag 'new_common.css', 'editor.css', 'cdb.css', 'map.css', :media => 'all' %>
+      <%= stylesheet_link_tag 'common.css', 'editor.css', 'cdb.css', 'map.css', :media => 'all' %>
     <% else  %>
-      <%= stylesheet_link_tag 'common.css', 'table.css', 'cdb.css', 'map.css', :media => 'all' %>
+      <%= stylesheet_link_tag 'old_common.css', 'table.css', 'cdb.css', 'map.css', :media => 'all' %>
     <% end %>
   <% end %>
 

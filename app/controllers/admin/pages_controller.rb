@@ -24,10 +24,10 @@ class Admin::PagesController < ApplicationController
   # Just an entrypoint to dispatch to different places according to
   def index
     # username.cartodb.com should redirect to the user dashboard in the maps view if the user is logged in
-    if !current_user.nil? && !current_viewer.nil? && current_user.id == current_viewer.id
+    if current_user && current_viewer && current_user.id == current_viewer.id
       redirect_to CartoDB.url(self, 'dashboard')
     # username.cartodb.com should redirect to the public user dashboard in the maps view if the username is not the user's username
-    elsif !current_viewer.nil?    # Asummes either current_user nil or at least different from current_viewer
+    elsif current_viewer    # Asummes either current_user nil or at least different from current_viewer
       redirect_to CartoDB.url(self, 'public_maps_home')
     elsif CartoDB.subdomainless_urls? && CartoDB.username_from_request(request).nil?
       # This is kind of special case for on-premise: there's no user info at all in the request

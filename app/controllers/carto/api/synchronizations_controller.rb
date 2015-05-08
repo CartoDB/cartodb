@@ -4,11 +4,10 @@ module Carto
 
       ssl_required :show
 
-      def show
-        synchronization = Carto::Synchronization::find(params[:id])
+      before_filter :load_synchronization, only: [:show, :syncing?]
 
-        return(head 401) unless synchronization.authorize?(current_user)
-        render_jsonp(synchronization)
+      def show
+        render_jsonp(@synchronization)
       rescue => exception
         CartoDB.notify_exception(exception)
         head(404)
@@ -22,6 +21,24 @@ module Carto
           total_entries: synchronizations.count
         }
         render_jsonp(response)
+      rescue => exception
+        CartoDB.notify_exception(exception)
+        head(404)
+      end
+
+      def syncing?
+        render_jsonp( { state: @synchronization.state } )
+      rescue => exception
+        CartoDB.notify_exception(exception)
+        head(404)
+      end
+
+      private
+
+      def load_synchronization
+        @synchronization = Carto::Synchronization::where(id: params[:id]).first
+        head(404) and return unless @synchronization
+        head(401) and return unless @synchronization.authorize?(current_user)
       end
 
     end

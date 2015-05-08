@@ -473,7 +473,7 @@ describe('Sublayers', function() {
         expect(sublayer.isValid()).toBeTruthy();
       });
 
-      it('shoudl return false if any of the required options are not present', function() {
+      it('should return false if any of the required options are not present', function() {
         sublayer.set({ urlTemplate: undefined });
         expect(sublayer.isValid()).toBeFalsy();
       });

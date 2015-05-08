@@ -41,12 +41,14 @@ class Admin::PagesController < ApplicationController
   def index_subdomainless
     if current_user && current_viewer && current_user.id == current_viewer.id
       redirect_to CartoDB.url(self, 'dashboard')
-    elsif current_viewer    # Asummes either current_user nil or at least different from current_viewer
+    elsif current_user.nil? && current_viewer
+      # current_viewer always returns a user with a session
+      redirect_to CartoDB.url(self, 'dashboard', {}, current_viewer)
+    elsif CartoDB.username_from_request(request)
       redirect_to CartoDB.url(self, 'public_maps_home')
-    elsif CartoDB.username_from_request(request).nil?
-      redirect_to login_url
     else
-      redirect_to CartoDB.url(self, 'public_maps_home')
+      # We cannot get any user information from domain, path or session
+      redirect_to login_url
     end
   end
 

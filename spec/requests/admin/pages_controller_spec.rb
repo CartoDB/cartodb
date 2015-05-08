@@ -133,8 +133,6 @@ describe Admin::PagesController do
       uri = URI.parse(last_response.location)
       uri.host.should == 'localhost.lan'
       uri.path.should == '/user/anyuser/dashboard'
-      follow_redirect!
-      last_response.status.should == 200
     end
 
   end

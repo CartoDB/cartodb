@@ -330,6 +330,16 @@ describe('Sublayers', function() {
       });
     });
 
+    describe('infowindow', function() {
+
+      it('should update the infowindow in the layer definition if the infowindow changes', function() {
+        sublayer.infowindow.set({fields: 'wadus'});
+
+        expect(sublayer._parent.getLayer(sublayer._position).infowindow.fields).toEqual('wadus');
+      });
+    });
+
+
     describe('.setSQL', function() {
 
       it('should set the SQL attribute', function() {
@@ -491,13 +501,6 @@ describe('Sublayers', function() {
         layerDefinition.trigger('featureOver', 0);
 
         expect(callback).not.toHaveBeenCalled();
-      });
-    });
-
-    describe('', function() {
-
-      it('should set the layer if the infowindow changes', function() {
-
       });
     });
 

@@ -34,6 +34,9 @@ class Carto::Visualization < ActiveRecord::Base
   TYPE_SLIDE = 'slide'
   TYPE_REMOTE = 'remote'
 
+  KIND_GEOM   = 'geom'
+  KIND_RASTER = 'raster'
+
   PRIVACY_PUBLIC = 'public'
   PRIVACY_PRIVATE = 'private'
   PRIVACY_LINK = 'link'

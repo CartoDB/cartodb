@@ -17,7 +17,7 @@
     var mixpanel_token = "<%= Cartodb.config[:mixpanel]['token'] if Cartodb.config[:mixpanel].present? %>";
     var default_fallback_basemap = <%= safe_js_object current_user.default_basemap.to_json %>;
   </script>
-  <%= javascript_include_tag 'cdb.js', 'models.js', 'new_dashboard_templates.js', 'new_dashboard_deps.js', 'new_dashboard.js' -%>
+  <%= javascript_include_tag 'cdb.js', 'models.js', 'dashboard_templates.js', 'dashboard_deps.js', 'dashboard.js' -%>
 <% end %>
 
 <%= content_for(:css) do -%>

@@ -58,21 +58,63 @@ describe("LayerDefinition", function() {
     it("should add a layer", function() {
       layerDefinition.addLayer({ sql : 'b', cartocss: 'b'});
       expect(layerDefinition.getLayerCount()).toEqual(3);
-      expect(layerDefinition.getLayer(2)).toEqual({
-         type: 'cartodb', 
-         options: {
-           sql: 'b',
-           cartocss: 'b'
-         }
+
+      expect(layerDefinition.getLayer(2).type).toEqual('cartodb')
+      expect(layerDefinition.getLayer(2).options).toEqual({
+        sql: 'b',
+        cartocss: 'b'
       });
+
       layerDefinition.addLayer({ sql : 'a', cartocss: 'a'}, 0);
-      expect(layerDefinition.getLayer(0)).toEqual({
-         type: 'cartodb', 
-         options: {
-           sql: "a",
-           cartocss: 'a'
-         }
+
+      expect(layerDefinition.getLayer(0).type).toEqual('cartodb');
+      expect(layerDefinition.getLayer(0).options).toEqual({
+        sql: "a",
+       cartocss: 'a'
       });
+    });
+
+    it('should add cartodb layers by default or the specified type', function() {
+      layerDefinition.addLayer({ sql : 'b', cartocss: 'b'});
+
+      expect(layerDefinition.getLayer(2).type).toEqual('cartodb')
+
+      layerDefinition.addLayer({ type: 'http', urlTemplate: 'urlTemplate' });
+
+      expect(layerDefinition.getLayer(3).type).toEqual('http');
+    });
+
+    it('should mark the definition as updated', function() {
+      spyOn(layerDefinition, '_definitionUpdated');
+
+      layerDefinition.addLayer({ sql : 'b', cartocss: 'b'});
+
+      expect(layerDefinition._definitionUpdated).toHaveBeenCalled();
+    });
+
+    it("shouldn't add the layer and throw an error if is not valid (missing required attributes)", function() {
+      var layerCount = layerDefinition.getLayerCount();
+
+      expect(function() {
+        layerDefinition.addLayer({
+          sql : 'b'
+        });
+      }).toThrow('Layer definition should contain all the required attributes');
+
+      // Layer has not been added
+      expect(layerDefinition.getLayerCount()).toEqual(layerCount);
+    });
+
+    it("shouldn't mark the definition as updated if layer is not valid", function() {
+      spyOn(layerDefinition, '_definitionUpdated');
+
+      expect(function() {
+        layerDefinition.addLayer({
+          sql : 'b'
+        });
+      }).toThrow('Layer definition should contain all the required attributes');
+
+      expect(layerDefinition._definitionUpdated).not.toHaveBeenCalled();
     });
   });
 

@@ -667,18 +667,25 @@ LayerDefinition.prototype = _.extend({}, MapBase.prototype, {
     }
   },
 
-  addLayer: function(def, layer) {
-    layer = layer === undefined ? this.getLayerCount(): layer;
-    if(layer <= this.getLayerCount() && layer >= 0) {
-      if(!def.sql || !def.cartocss) {
-        throw new Error("layer definition should contain at least a sql and a cartocss");
-        return this;
-      }
-      this.layers.splice(layer, 0, {
-        type: 'cartodb',
+  addLayer: function(def, index) {
+    index = index === undefined ? this.getLayerCount(): index;
+    if(index <= this.getLayerCount() && index >= 0) {
+
+      var type = def.type || 'cartodb';
+      delete def.type;
+
+      this.layers.splice(index, 0, {
+        type: type,
         options: def
       });
-      this._definitionUpdated();
+
+      var sublayer = this.getSubLayer(index);
+      if (sublayer.isValid()) {
+        this._definitionUpdated();
+      } else { // Remove it from the definition
+        sublayer.remove();
+        throw 'Layer definition should contain all the required attributes';
+      }
     }
     return this;
   },

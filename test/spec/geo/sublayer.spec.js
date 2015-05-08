@@ -272,6 +272,27 @@ describe('Sublayers', function() {
       });
     });
 
+    describe('isValid', function() {
+
+      it('should return true if the required options are present', function() {
+        expect(sublayer.isValid()).toBeTruthy();
+      });
+
+      it('should return false if any of the required options are not present', function() {
+        var cartocss = sublayer.get('cartocss');
+
+        sublayer.set({ cartocss: undefined });
+        expect(sublayer.isValid()).toBeFalsy();
+
+        sublayer.set({
+          sql: undefined,
+          cartocss: cartocss,
+        });
+
+        expect(sublayer.isValid()).toBeFalsy();
+      });
+    });
+
     describe('event binding', function() {
 
       var events = [
@@ -432,8 +453,10 @@ describe('Sublayers', function() {
       })
 
       it('should not include optional params if not present', function() {
-        sublayer.set('subdomains', undefined);
-        sublayer.set('tms', undefined);
+        sublayer.set({
+          subdomains: undefined,
+          tms: undefined
+        });
 
         expect(sublayer.toJSON()).toEqual({
           type: 'http',
@@ -441,6 +464,18 @@ describe('Sublayers', function() {
             urlTemplate: "http://{s}.example.com/{z}/{x}/{y}.png"
           }
         })
+      });
+    });
+
+    describe('isValid', function() {
+
+      it('should return true if the required options are present', function() {
+        expect(sublayer.isValid()).toBeTruthy();
+      });
+
+      it('shoudl return false if any of the required options are not present', function() {
+        sublayer.set({ urlTemplate: undefined });
+        expect(sublayer.isValid()).toBeFalsy();
       });
     });
 
@@ -496,7 +531,4 @@ describe('Sublayers', function() {
       });
     });
   });
-
 });
-
-

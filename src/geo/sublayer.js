@@ -23,6 +23,10 @@ SubLayerBase.prototype = {
     throw 'toJSON must be implemented';
   },
 
+  isValid: function() {
+    throw 'isValid must be implemented';
+  },
+
   remove: function() {
     this._check();
     this._parent.removeLayer(this._position);
@@ -160,6 +164,10 @@ CartoDBSubLayer.prototype = _.extend({}, SubLayerBase.prototype, {
     return json;
   },
 
+  isValid: function() {
+    return this.get('sql') && this.get('cartocss');
+  },
+
   _onRemove: function() {
     this._unbindInteraction();
   },
@@ -265,6 +273,10 @@ HttpSubLayer.prototype = _.extend({}, SubLayerBase.prototype, {
       json.options.tms = tms;
     }
     return json;
+  },
+
+  isValid: function() {
+    return this.get('urlTemplate');
   },
 
   setURLTemplate: function(urlTemplate) {

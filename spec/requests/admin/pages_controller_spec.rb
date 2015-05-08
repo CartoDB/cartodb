@@ -120,6 +120,23 @@ describe Admin::PagesController do
       last_response.status.should == 200
     end
 
+    it 'redirects and loads the dashboard if the user is logged in' do
+      anyuser = prepare_user('anyuser')
+      host! 'localhost.lan'
+      login_as anyuser
+      CartoDB.stubs(:session_domain).returns('localhost.lan')
+      CartoDB.stubs(:subdomainless_urls?).returns(true)
+
+      get '', {}, JSON_HEADER
+
+      last_response.status.should == 302
+      uri = URI.parse(last_response.location)
+      uri.host.should == 'localhost.lan'
+      uri.path.should == '/user/anyuser/dashboard'
+      follow_redirect!
+      last_response.status.should == 200
+    end
+
   end
 
   def prepare_user(user_name, org_user=false, belongs_to_org=false)

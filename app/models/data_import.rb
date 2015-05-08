@@ -41,6 +41,7 @@ class DataImport < Sequel::Model
     'error_code',
     'queue_id',
     'get_error_text',
+    'get_error_source',
     'tables_created_count',
     'synchronization_id',
     'service_name',
@@ -190,11 +191,21 @@ class DataImport < Sequel::Model
     self
   end
 
+  # Notice that this returns the entire error hash, not just the text
+  # It seems that it's only used for the rollbar reporting
   def get_error_text
-    if self.error_code.nil?
-      nil
+    if self.error_code == CartoDB::NO_ERROR_CODE
+      CartoDB::NO_ERROR_CODE
     else
       self.error_code.blank? ? CartoDB::IMPORTER_ERROR_CODES[99999] : CartoDB::IMPORTER_ERROR_CODES[self.error_code]
+    end
+  end
+
+  def get_error_source
+    if self.error_code == CartoDB::NO_ERROR_CODE
+      CartoDB::NO_ERROR_CODE
+    else
+      self.error_code.blank? ? CartoDB::IMPORTER_ERROR_CODES[99999][:source] : CartoDB::IMPORTER_ERROR_CODES[self.error_code][:source]
     end
   end
 
@@ -711,7 +722,8 @@ class DataImport < Sequel::Model
                   'import_time'       => self.updated_at - self.created_at,
                   'file_stats'        => ::JSON.parse(self.stats),
                   'resque_ppid'       => self.resque_ppid,
-                  'user_timeout'      => ::DataImport.http_timeout_for(current_user)
+                  'user_timeout'      => ::DataImport.http_timeout_for(current_user),
+                  'error_source'      => get_error_source
                  }
     if !self.extra_options.nil?
       import_log['extra_options'] = self.extra_options

@@ -12,6 +12,7 @@ describe Carto::Api::SynchronizationsController do
 
       # new controller
       scope :module => 'carto/api', :format => :json do
+        get    '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations'              => 'synchronizations#index',    as: :api_v1_synchronizations_index
         get    '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations/:id'          => 'synchronizations#show',     as: :api_v1_synchronizations_show
       end
 

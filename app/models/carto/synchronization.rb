@@ -11,4 +11,8 @@ class Carto::Synchronization < ActiveRecord::Base
     attributes.to_json(*args)
   end
 
+  def to_hash
+    attributes.to_hash
+  end
+
 end

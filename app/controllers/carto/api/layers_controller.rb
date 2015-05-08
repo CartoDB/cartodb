@@ -6,11 +6,12 @@ module Carto
       before_filter :load_parent
 
       def index
-        @layers = @parent.layers
-        layers = @layers.map { |layer|
-          CartoDB::Layer::Presenter.new(layer, {:viewer_user => current_user}).to_poro
+        layers = Carto::Layer.joins(:layers_user).where(layers_users: { user_id: current_user.id })
+                             .map { |layer|
+          Carto::Api::LayerPresenter.new(layer, { viewer_user: current_user }).to_poro
         }
-        render_jsonp layers: layers, total_entries: @layers.size
+
+        render_jsonp layers: layers, total_entries: layers.size
       end
 
       protected
@@ -28,10 +29,10 @@ module Carto
         return unless params[:map_id]
 
         # User must be owner or have permissions for the map's visualization
-        vis = CartoDB::Visualization::Collection.new.fetch(
+        vis = Carto::Visualization.where({
             user_id: current_user.id,
             map_id: params[:map_id]
-        )
+          }).first
         raise RecordNotFound if vis.nil?
 
         Carto::Map.filter(id: params[:map_id]).first

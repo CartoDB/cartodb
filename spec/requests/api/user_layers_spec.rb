@@ -31,20 +31,6 @@ feature "API 1.0 user layers management" do
     end
   end
 
-  scenario "Get all user layers" do
-    layer = Layer.create kind: 'carto'
-    layer2 = Layer.create kind: 'tiled'
-    @user.add_layer layer
-    @user.add_layer layer2
-
-    get_json api_v1_users_layers_index_url(params.merge(user_id: @user.id)) do |response|
-      response.status.should be_success
-      response.body[:total_entries].should   eq 2
-      response.body[:layers].size.should     eq 2
-      response.body[:layers][0]['id'].should eq layer.id
-    end
-  end
-
   # see https://cartodb.atlassian.net/browse/CDB-3350
   scenario "Update a layer" do
     layer = Layer.create kind: 'carto'

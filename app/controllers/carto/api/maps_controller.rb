@@ -9,7 +9,7 @@ module Carto
       before_filter :load_map
 
       def show
-        render_jsonp(@map.public_values)
+        render_jsonp(Carto::Api::MapPresenter.new(@map).to_poro)
       end
 
       protected

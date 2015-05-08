@@ -1,3 +1,4 @@
+# encoding: UTF-8
 
 module Carto
   module Api
@@ -12,7 +13,7 @@ module Carto
       end
 
       def to_poro
-         poro = public_values(@layer).merge(children_for(@layer))
+         public_values(@layer).merge(children_for(@layer))
       end
 
       private

@@ -235,13 +235,8 @@ CartoDBSubLayer.prototype = _.extend({}, SubLayerBase.prototype, {
   },
 
   getInfowindowData: function() {
-    var infowindow = this.infowindow;
-    if (!infowindow) {
-      var layer = this.options.layer_definition && this.options.layer_definition.layers[this._position];
-      infowindow = layer.infowindow;
-    }
-    if (infowindow && infowindow.fields && infowindow.fields.length > 0) {
-      return infowindow;
+    if (this.infowindow && this.infowindow.fields && this.infowindow.fields.length > 0) {
+      return this.infowindow;
     }
     return null;
   }

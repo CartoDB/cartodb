@@ -123,7 +123,6 @@ module CartoDB
       public_dashboard.css
       public_table.css
       public_map.css
-      specs.css
       sessions.css
 
       *.jpg

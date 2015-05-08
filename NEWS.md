@@ -1,5 +1,10 @@
-3.10.1 ()
+
+3.10.2 ()
 ---------
+* Ongoing backend refactor and migration from Sequel to ActiveRecord.
+
+3.10.1 (2015-05-05)
+-------------------
 * Fixes bug in the "No georeferenced data" dialog [#3449](https://github.com/CartoDB/cartodb/pull/3449)
 * Adds user search/filter to the Share Dialog [3417](https://github.com/CartoDB/cartodb/pull/3417)
 * Change default CartoCSS properties of polygon strokes [3375](https://github.com/CartoDB/cartodb/pull/3375)

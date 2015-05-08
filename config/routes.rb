@@ -279,6 +279,10 @@ CartoDB::Application.routes.draw do
 
     get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:table_id/columns'           => 'columns#index',   as: :api_v1_1_tables_columns_index,   constraints: { table_id: /[^\/]+/ }
     get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:table_id/columns/:id'       => 'columns#show',    as: :api_v1_1_tables_columns_show,    constraints: { table_id: /[^\/]+/ }
+
+    # Synchronizations
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/synchronizations'              => 'synchronizations#index',    as: :api_v1_1_synchronizations_index
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/synchronizations/:id'          => 'synchronizations#show',     as: :api_v1_1_synchronizations_show
   end
 
   scope :module => 'api/json', :format => :json do

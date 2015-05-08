@@ -111,6 +111,8 @@ WORKING_SPECS_6 = \
 WORKING_SPECS_7 = \
   spec/rspec_configuration.rb \
   spec/requests/api/synchronizations_spec.rb \
+	spec/requests/api/json/synchronizations_controller_spec.rb \
+	spec/requests/carto/api/synchronizations_controller_spec.rb \
   services/geocoder/spec/geocoder_spec.rb \
 	services/table-geocoder/spec/internal-geocoder/input_type_resolver_spec.rb \
 	services/table-geocoder/spec/internal-geocoder/query_generator_factory_spec.rb \

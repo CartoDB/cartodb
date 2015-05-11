@@ -1,0 +1,25 @@
+// Default tags for datasets and maps
+// --------------------------------------------------
+
+@import "../variables/colors";
+@import "../variables/sizes";
+@import "../variables/mixins";
+
+.DefaultTags {
+  color: $cTypography-secondary;
+  position: relative;
+  @include nicer-lato-typography();
+}
+.DefaultTags-item {
+  border: none;
+  color: $cTypography-link;
+  background: transparent;
+}
+.DefaultTags-item:focus {
+  background: transparent;
+}
+.DefaultTags-item:hover {
+  cursor: pointer;
+  color: $cTypography-linkHover;
+  text-decoration: underline;
+}

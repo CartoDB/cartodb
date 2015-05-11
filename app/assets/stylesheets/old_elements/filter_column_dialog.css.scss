@@ -1,0 +1,25 @@
+
+
+
+@import "../old_common/form-elements";
+
+
+.filter_column_dialog {
+
+  @include default-input;
+  @include default-form-info;
+  @include default-select;
+
+  input {
+    width: 253px - 11*2px;
+
+    &::-webkit-input-placeholder {
+      font-style:italic;
+    }
+
+    &:-moz-placeholder {
+      font-style:italic;
+    }
+  }
+
+}

@@ -570,7 +570,7 @@ The layer itself.
 
 #### sublayer.set(_layerDefinition_)
 
-Sets sublayer parameters. Useful when more than one parameter needs to be changed. See setSQL and setCartoCSS
+Sets sublayer parameters. Useful when more than one parameter needs to be changed.
 
 ##### Arguments
 
@@ -608,6 +608,24 @@ Gets the attribute for the sublayer, for example 'sql', 'cartocss'.
 
 The requested attribute or undefined if it's not present.
 
+#### sublayer.remove()
+
+Removes the sublayer. An exception will be thrown if a method is called and the layer has been removed.
+
+#### sublayer.show()
+
+Shows a previously hidden sublayer. The layer is refreshed after calling this function.
+
+#### sublayer.hide()
+
+Removes the sublayer from the layer temporarily. The layer is refreshed after calling this function.
+
+#### sublayer.toggle()
+
+Toggles the visibility of the sublayer and returns a boolean that indicates the new status (true if the sublayer is visible, false if it is hidden)
+
+### cartodb.CartoDBLayer.CartoDBSubLayer
+
 #### sublayer.getSQL()
 
 Shortcut for `get('sql')`
@@ -624,35 +642,19 @@ Shortcut for `set({'sql': 'SELECT * FROM table_name'})`
 
 Shortcut for `set({'cartocss': '#layer {...}' })`
 
-#### sublayer.remove()
-
-Removes the sublayer. An exception will be thrown if a method is called and the layer has been removed.
-
-#### sublayer.setInteraction(_true_)
-
-Enables (true) or disables (false) the interaction of the layer. When disabled, **featureOver**, **featureClick**, **featureOut**, **mouseover** and **mouseout** are **not** triggered.
-
 #### sublayer.setInteractivity('cartodb_id, name, ...')
 
 Shortcut for `set({'interactivity': 'cartodb_id, name, ...' })`
 
 Sets the columns which data will be available via the interaction with the sublayer.
 
+#### sublayer.setInteraction(_true_)
+
+Enables (true) or disables (false) the interaction of the layer. When disabled, **featureOver**, **featureClick**, **featureOut**, **mouseover** and **mouseout** are **not** triggered.
+
 ##### Arguments
 
 + **enable**: true if the interaction needs to be enabled.
-
-#### sublayer.show()
-
-Shows a previously hidden sublayer. The layer is refreshed after calling this function.
-
-#### sublayer.hide()
-
-Removes the sublayer from the layer temporarily. The layer is refreshed after calling this function.
-
-#### sublayer.toggle()
-
-Toggles the visibility of the sublayer and returns a boolean that indicates the new status (true if the sublayer is visible, false if it is hidden)
 
 #### sublayer.infowindow
 
@@ -697,6 +699,31 @@ to skip sanitization, or a function to provide your own sanitization (e.g. `func
 
 [Grab the complete example source code](https://github.com/CartoDB/cartodb.js/blob/develop/examples/custom_infowindow.html)
 
+### cartodb.CartoDBLayer.HttpSubLayer
+
+#### sublayer.setURLTemplate(urlTemplate)
+
+Shortcut for `set({'urlTemplate': '...' })`
+
+#### sublayer.setSubdomains(subdomains)
+
+Shortcut for `set({'subdomains': ['...''] })`
+
+#### sublayer.setTms(tms)
+
+Shortcut for `set({'tms': true|false })`
+
+#### sublayer.getURLTemplate
+
+Shortcut for `get('urlTemplate')`
+
+#### sublayer.getSubdomains
+
+Shortcut for `get('subdomains')`
+
+#### sublayer.getTms
+
+Shortcut for `get('tms')`
 
 ## Events
 

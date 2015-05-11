@@ -3,10 +3,10 @@
     <div class="Header-navigation">
       <ul class="Header-navigationList">
         <li class="js-logo">
-          <% if !Cartodb.config[:cartodb_com_hosted].present? %>
-            <a href="<%= CartoDB.url(self, 'root') %>">
-          <% else %>
+          <% if cartodb_com_hosted? %>
             <a href="http://cartodb.com">
+          <% else %>
+            <a href="<%= CartoDB.url(self, 'root') %>">
           <% end %>
             <span class="Logo Logo--avatar">
               <i class="iconFont iconFont-CartoFante"></i>

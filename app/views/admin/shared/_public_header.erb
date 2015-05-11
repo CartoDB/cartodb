@@ -16,6 +16,7 @@
     </div>
     <div class="Header-settings">
       <ul class="Header-settingsList">
+        <% unless cartodb_com_hosted? %>
         <li class="Header-settingsItem u-hideOnMobile">
           <a href="http://cartodb.com/gallery/" class="Header-settingsLink">Explore</a>
         </li>
@@ -25,13 +26,14 @@
         <li class="Header-settingsItem js-learn" style="display:none;">
           <a href="http://docs.cartodb.com/" class="Header-settingsLink">Learn</a>
         </li>
-          <li class="Header-settingsItem Header-settingsItem--avatar js-user-settings">
+        <% end %>
+        <li class="Header-settingsItem Header-settingsItem--avatar js-user-settings">
             <% unless cartodb_com_hosted? %>
                 <a href="http://cartodb.com/signup" class="Button Button--headerPositive">
                   <span>Sign up</span>
                 </a>
             <% end %>
-          </li>
+        </li>
       </ul>
     </div>
   </div>

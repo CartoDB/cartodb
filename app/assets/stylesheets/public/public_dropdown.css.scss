@@ -1,9 +1,9 @@
 
 // Public dropdown styles // --------------------------------------------------
 
-@import "../common/vars";
+@import "../old_common/vars";
 // Default dropdown styles
-@import "../elements/dropdown";
+@import "../old_elements/dropdown";
 
 div.dropdown {
   -webkit-transform: translate3d(0, 0, 10px) translateZ(10px);

@@ -5,9 +5,9 @@
    */
 
   @import "compass/css3/border-radius";
-  @import "../../common/vars";
-  @import "../../common/mixins";
-  @import "../../common/form-elements";
+  @import "../../old_common/vars";
+  @import "../../old_common/mixins";
+  @import "../../old_common/form-elements";
 
 
   $br: 3px; // Default border radius for this pane

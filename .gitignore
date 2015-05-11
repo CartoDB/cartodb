@@ -15,6 +15,7 @@ public/images
 public/fonts
 public/flash
 app/assets/stylesheets/tmp/
+app/assets/fonts/icon_font/svgs
 db/schema.rb
 *.pyc
 bin/
@@ -47,6 +48,7 @@ lib/build/app_config.js
 lib/build/.grunt/**/*
 rubygems
 vendor/bundle/*
+vendor/cache/*
 .vagrant
 Vagrantfile
 node_modules

@@ -39,6 +39,7 @@ $opacityTransition: 250ms;
 .MapCard-desc {
   flex: 1;
   height: 2 * $sLineHeight-normal;
+  width: 100%;
 
   .DefaultDescription {
     @include line-clamp(2);
@@ -46,6 +47,7 @@ $opacityTransition: 250ms;
 }
 .MapCard-desc--fake {
   display: block;
+  width: auto;
   padding: 0 30px;
   text-align: center;
   margin-bottom: $sMargin-element;
@@ -61,6 +63,10 @@ $opacityTransition: 250ms;
     .MapCard-tags:after {
       @include background-horizontal(rgba(255,255,255,0), $cCard-hoverFill);
     }
+    .MapviewsGraph-bar {
+      cursor: pointer;
+      fill: rgba(white, 1);
+    }
   }
   &.is-selected {
     background-color: $cCard-selectedFill;
@@ -68,6 +74,10 @@ $opacityTransition: 250ms;
     .MapCard-desc .DefaultDescription:after,
     .MapCard-tags:after {
       @include background-horizontal(rgba(255,255,255,0), $cCard-selectedFill);
+    }
+    .MapviewsGraph-bar {
+      cursor: pointer;
+      fill: rgba(white, 1);
     }
   }
 }
@@ -142,18 +152,6 @@ $opacityTransition: 250ms;
   line-height: 40px!important
 }
 .MapCard-headerFakeIcon.iconFont-Rectangles { font-size: 22px }
-
-.MapCard-headerGraph {
-  position:absolute;
-  width: 70px;
-  height: 18px;
-  bottom:10px;
-  right:12px;
-  padding: 5px;
-  border-radius: 2px;
-  background:rgba(black,.4);
-  z-index:2;
-}
 .MapCard-header .MapCard-loader {
   display: none;
   position: absolute;

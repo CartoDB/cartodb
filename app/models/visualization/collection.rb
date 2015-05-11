@@ -352,11 +352,16 @@ module CartoDB
         applied_filters = AVAILABLE_FIELD_FILTERS.dup
         applied_filters = applied_filters.delete_if { |k, v| k == 'type' } if @type.nil?
         dataset = repository.apply_filters(dataset, filters, applied_filters)
+        # TODO: symbolize types key
         dataset = filter_by_types(dataset, filters.fetch('types', nil))
         dataset = filter_by_tags(dataset, tags_from(filters))
         dataset = filter_by_partial_match(dataset, filters.delete(:q))
         dataset = filter_by_kind(dataset, filters.delete(:exclude_raster))
-        order(dataset, filters.delete(:order))
+        dataset = filter_by_min_updated_at(dataset, filters.delete(:min_updated_at))
+        dataset = filter_by_min_created_at(dataset, filters.delete(:min_created_at))
+        dataset = filter_by_ids(dataset, filters.delete(:ids))
+        order_desc = filters.delete(:order_asc_desc)
+        order(dataset, filters.delete(:order), order_desc.nil? || order_desc == :desc)
       end
 
       # Note: Not implemented ascending order for now, all are descending sorts
@@ -383,6 +388,7 @@ module CartoDB
       def lazy_order_by_mapviews(objects)
         objects.sort! { |obj_a, obj_b|
           # Stats have format [ date, value ]
+          # TODO: refactor with mapviews method at refactor
           obj_b.stats.collect{|o| o[1] }.reduce(:+) <=> obj_a.stats.collect{|o| o[1] }.reduce(:+)
         }
       end
@@ -410,9 +416,9 @@ module CartoDB
         dataset
       end
 
-      def order_by_base_attribute(dataset, criteria)
+      def order_by_base_attribute(dataset, criteria, order_desc = true)
         @can_paginate = true
-        dataset.order(Sequel.send(:desc, criteria))
+        dataset.order(Sequel.send(order_desc.nil? || order_desc == true ? :desc : :asc, criteria))
       end
 
       # Allows to order by any CartoDB::Visualization::Member attribute (eg: updated_at, created_at), plus:
@@ -420,13 +426,14 @@ module CartoDB
       # - mapviews
       # - row_count
       # - size
-      def order(dataset, criteria=nil)
+      # TODO: order_asc_desc only works for base attributes
+      def order(dataset, criteria=nil, order_desc = true)
         return dataset if criteria.nil? || criteria.empty?
         criteria = criteria.to_sym
         if ALLOWED_ORDERING_FIELDS.include? criteria
           order_by_related_attribute(dataset, criteria)
         else
-          order_by_base_attribute(dataset, criteria)
+          order_by_base_attribute(dataset, criteria, order_desc)
         end
       end
 
@@ -452,6 +459,25 @@ module CartoDB
       def filter_by_kind(dataset, filter_value)
         return dataset if filter_value.nil? || !filter_value
         dataset.where('kind=?', Member::KIND_GEOM)
+      end
+
+      def filter_by_min_created_at(dataset, min_created_at, included = false)
+        filter_by_min_date('created_at', dataset, min_created_at, included)
+      end
+
+      def filter_by_min_updated_at(dataset, min_updated_at, included = false)
+        filter_by_min_date('updated_at', dataset, min_updated_at, included)
+      end
+
+      def filter_by_min_date(column, dataset, date, included = false)
+        return dataset if !date
+        comparison = included ? '>=' : '>'
+        dataset.where("#{column} #{comparison} ?", date)
+      end
+
+      def filter_by_ids(dataset, ids)
+        return dataset if !ids
+        dataset.where(:id => ids)
       end
 
       def filter_by_only_shared(dataset, filters)

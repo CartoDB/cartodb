@@ -8,6 +8,7 @@ gem 'sequel',                  '3.42.0'
 gem 'sequel_pg',               '1.6.3', require: 'sequel'
 
 gem 'activerecord-postgresql-adapter'
+gem 'activerecord-postgres-array'
 
 gem 'vizzuality-sequel-rails', '0.3.7', git: 'https://github.com/Vizzuality/sequel-rails.git'
 
@@ -88,6 +89,7 @@ group :test do
   gem 'ci_reporter',           '1.8.4'
   gem 'rspec-rails',           '2.10.1'
   gem 'poltergeist',           '>= 1.0.0'
+  gem 'activerecord-nulldb-adapter', '0.3.1'
 end
 
 group :development, :test do

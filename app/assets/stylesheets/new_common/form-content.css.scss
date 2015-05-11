@@ -11,9 +11,19 @@
 .Form-title {
   display: block;
   margin: $sMargin-section 0;
-  width: 460px;
+  width: 100%;
+}
+.Form-titleHeader {
+  display: block;
+  padding-bottom: 12px;
+  margin-bottom: $sMargin-section;
+  border-bottom: 1px solid $cStructure-mainLine;
+  font-size: $sFontSize-normal;
+  color: $cTypography-headers;
+  font-weight: $sFontWeight-bold;
 }
 .Form-titleText {
+  width: 460px;
   font-size: $sFontSize-large;
   font-weight: $sFontWeight-lighter;
   color: $cTypography-paragraphs;
@@ -116,7 +126,7 @@
   outline: none;
   border: 1px solid #CCC;
   border-radius: 4px;
-  z-index: 1;
+  z-index: 2;
 
   &:focus { border-color: #999 }
 }
@@ -158,7 +168,7 @@
   height: 28px;
   padding: 0 18px;
   background: none;
-  z-index: 1;
+  z-index: 2;
 }
 .Form-inputIcon {
   position: absolute;
@@ -175,7 +185,7 @@
   right: 0;
   height: 38px;
   padding: 0 12px;
-  z-index: 0;
+  z-index: 1;
   border: 1px solid #CCC;
   line-height: 38px;
   background: #FFF4F4;
@@ -349,6 +359,10 @@
   line-height: 20px;
 }
 .Form-rowInfoText--error { color: #DD3B37 }
+.Form-rowInfoText--error .Form-link {
+  color: #DD3B37;
+  text-decoration: underline;
+}
 .Form-footer {
   @include display-flex();
   @include justify-content(space-between, justify);

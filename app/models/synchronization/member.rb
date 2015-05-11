@@ -90,6 +90,10 @@ module CartoDB
         " user_id:\"#{@user_id}\" type_guessing:\"#{@type_guessing}\" " \
         "quoted_fields_guessing:\"#{@quoted_fields_guessing}\">"
       end
+  
+      def synchronizations_logger
+        @@synchronizations_logger ||= ::Logger.new("#{Rails.root}/log/synchronizations.log")
+      end
 
       def interval=(seconds=3600)
         super(seconds.to_i)
@@ -205,6 +209,9 @@ module CartoDB
         end
 
         store
+        
+        notify
+
       rescue => exception
         Rollbar.report_exception(exception)
         log.append exception.message
@@ -233,7 +240,22 @@ module CartoDB
             log.append ex.backtrace
           end
         end
+        notify
         self
+      end
+
+      def notify
+        sync_log = {
+          'name'              => self.name,
+          'sync_time'         => self.updated_at - self.created_at,
+          'sync_timestamp'    => Time.now,
+          'user'              => user.username,
+          'queue_server'      => `hostname`.strip,
+          'resque_ppid'       => Process.ppid,
+          'state'             => self.state,
+          'user_timeout'      => ::DataImport.http_timeout_for(user)
+        }
+        synchronizations_logger.info(sync_log.to_json)
       end
 
       def get_downloader
@@ -265,18 +287,26 @@ module CartoDB
             raise CartoDB::DataSourceError.new("Missing resource URL to download. Data:#{to_s}" )
           end
 
-          downloader    = CartoDB::Importer2::Downloader.new(
+          downloader = CartoDB::Importer2::Downloader.new(
               resource_url,
-              etag:             etag,
-              last_modified:    modified_at,
-              checksum:         checksum,
-              verify_ssl_cert:  false
+              {
+                http_timeout:     DataImport.http_timeout_for(user),
+                etag:             etag,
+                last_modified:    modified_at,
+                checksum:         checksum,
+                verify_ssl_cert:  false
+              }
           )
           log.append "File will be downloaded from #{downloader.url}"
         else
           log.append 'Downloading file data from datasource'
-          downloader = CartoDB::Importer2::DatasourceDownloader.new(datasource_provider, metadata,
-            {checksum: checksum}, log)
+          downloader = CartoDB::Importer2::DatasourceDownloader.new(
+            datasource_provider, metadata,
+            {
+              http_timeout:     DataImport.http_timeout_for(user),
+              checksum: checksum
+            }, log
+          )
         end
 
         downloader
@@ -440,7 +470,9 @@ module CartoDB
       # @return mixed|nil
       def get_datasource(datasource_name)
         begin
-          datasource = DatasourcesFactory.get_datasource(datasource_name, user)
+          datasource = DatasourcesFactory.get_datasource(datasource_name, user, {
+            http_timeout: ::DataImport.http_timeout_for(user)
+          })
           datasource.report_component = Rollbar
           if datasource.kind_of? BaseOAuth
             oauth = user.oauths.select(datasource_name)

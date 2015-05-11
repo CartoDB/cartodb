@@ -3,6 +3,11 @@
 module CartoDB
   module Visualization
     class Stats
+
+      def self.mapviews(stats)
+        stats.collect { |o| o[1] }.reduce(:+)
+      end
+
       def initialize(visualization, user=nil)
         @visualization  = visualization
         @user           = user || visualization.user

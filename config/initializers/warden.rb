@@ -71,6 +71,11 @@ Warden::Strategies.add(:api_key) do
     params[:api_key].present?
   end
 
+  # We don't want to store a session and send a response cookie
+  def store?
+    false
+  end
+
   def authenticate!
     begin
       if (api_key = params[:api_key]) && api_key.present?

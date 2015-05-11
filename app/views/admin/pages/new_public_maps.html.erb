@@ -27,25 +27,29 @@
 
                 <div class="MapCard-contentBodyRow MapCard-contentBodyRow--flex">
                   <% if vis[:description_html_safe] %>
-                    <div class="MapCard-desc DefaultDescription DefaultDescription--twoLines" title="<%= vis[:description_html_safe].strip_tags %>"><%= raw vis[:description_html_safe] %></div>
+                    <div class="MapCard-desc">
+                      <div class="DefaultDescription" title="<%= vis[:description_html_safe].strip_tags %>"><%= raw vis[:description_html_safe] %></div>
+                    </div>
                   <% else %>
                     <span class="NoResults"></span>
                   <% end %>
                 </div>
 
-                <div class="DefaultTags MapCard-contentBodyRow">
-                  <% if vis[:tags].size > 0 %>
-                    <% formatted_tags(vis[:tags]) do |tag| %>
-                      <a class="DefaultTags-item js-tag-link" href="<%= CartoDB.url(self, 'public_tag', {tag: tag}, vis[:owner]) %>"><%= tag %></a>
+                <div class="MapCard-tags">
+                  <div class="DefaultTags MapCard-contentBodyRow">
+                    <% if vis[:tags].size > 0 %>
+                      <% formatted_tags(vis[:tags]) do |tag| %>
+                        <a class="DefaultTags-item js-tag-link" href="<%= CartoDB.url(self, 'public_tag', {tag: tag}, vis[:owner]) %>"><%= tag %></a>
+                      <% end %>
                     <% end %>
-                  <% end %>
+                  </div>
                 </div>
               </div>
               <div class="MapCard-contentFooter">
                 <div class="MapCard-contentFooterDetails--left">
                   <div class="MapCard-contentFooterTimeDiff DefaultTimeDiff">
                     <i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i>
-                    <%= time_ago_in_words(vis[:updated_at]) %>
+                    <%= time_ago_in_words(vis[:updated_at]) %> ago
                   </div>
                 </div>
                 <div class="MapCard-contentFooterDetails--right">

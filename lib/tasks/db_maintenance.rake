@@ -894,6 +894,24 @@ namespace :cartodb do
       end
     end
 
+    desc "Drop other users privileges on user schema"
+    task :drop_other_privileges_on_user_schema, [:username] => :environment do |t,args|
+      user = User.where(:username => args[:username].to_s).first
+      user.in_database({as: :superuser}) do |db|
+        db.transaction do
+          oids = db.fetch("with oids as (select (aclexplode(n.nspacl)).grantee as grantee_oid from pg_catalog.pg_namespace n
+                WHERE n.nspname = '#{user.database_schema}')
+                select distinct pg_roles.rolname from oids, pg_roles where grantee_oid = oid")
+          oids.each do |oid|
+            role = oid[:rolname]
+            unless [user.database_username, CartoDB::PUBLIC_DB_USER].include? role
+              db.run("REVOKE ALL ON SCHEMA #{user.database_schema} FROM \"#{role}\"")
+            end
+          end
+        end
+      end
+    end
+
     desc "Enable oracle_fdw extension in database"
     task :enable_oracle_fdw_extension, [:username, :oracle_url, :remote_user, :remote_password, :remote_schema, :table_definition_json_path] => :environment do |t, args|
       u = User.where(:username => args[:username].to_s).first
@@ -911,6 +929,7 @@ namespace :cartodb do
           tables["tables"].each do |table_name, th|
             table_readonly = th["read_only"] ? "true" : "false"
             table_columns = th["columns"].map {|name,attrs| "#{name} #{attrs['column_type']}"}
+            db.run("DROP FOREIGN TABLE IF EXISTS #{table_name}")
             db.run("CREATE FOREIGN TABLE #{table_name} (#{table_columns.join(', ')}) SERVER #{server_name} OPTIONS (schema '#{args[:remote_schema]}', table '#{th["remote_table"]}', readonly '#{table_readonly}')")
             db.run("GRANT SELECT ON #{table_name} TO \"#{u.database_username}\"")
             db.run("GRANT SELECT ON #{table_name} TO \"#{CartoDB::PUBLIC_DB_USER}\"")

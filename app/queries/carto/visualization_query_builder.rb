@@ -5,19 +5,54 @@ require_relative '../../models/carto/shared_entity'
 # TODO: consider moving some of this to model scopes if convenient
 class Carto::VisualizationQueryBuilder
 
-    PARTIAL_MATCH_QUERY = %Q{
-      to_tsvector(
-        'english', coalesce("visualizations"."name", '') || ' '
-        || coalesce("visualizations"."description", '')
-      ) @@ plainto_tsquery('english', ?)
-      OR CONCAT("visualizations"."name", ' ', "visualizations"."description") ILIKE ?
-    }
+  def self.user_public_tables(user)
+    self.user_public(user).with_type(Carto::Visualization::TYPE_CANONICAL)
+  end
+
+  def self.user_public_visualizations(user)
+    self.user_public(user).with_type(Carto::Visualization::TYPE_DERIVED)
+  end
+
+  def self.user_public(user)
+    new.with_user_id(user.id).with_privacy(Carto::Visualization::PRIVACY_PUBLIC)
+  end
+
+  PARTIAL_MATCH_QUERY = %Q{
+    to_tsvector(
+      'english', coalesce("visualizations"."name", '') || ' '
+      || coalesce("visualizations"."description", '')
+    ) @@ plainto_tsquery('english', ?)
+    OR CONCAT("visualizations"."name", ' ', "visualizations"."description") ILIKE ?
+  }
 
   def initialize
     @include_associations = []
     @eager_load_associations = []
     @eager_load_nested_associations = {}
     @order = {}
+  end
+
+  def with_id_or_name(id_or_name)
+    if is_uuid(id_or_name)
+      with_id(id_or_name)
+    else
+      with_name(id_or_name)
+    end
+  end
+
+  def with_id(id)
+    @id = id
+    self
+  end
+
+  def with_excluded_ids(ids)
+    @excluded_ids = ids
+    self
+  end
+
+  def with_name(name)
+    @name = name
+    self
   end
 
   def with_user_id(user_id)
@@ -93,38 +128,50 @@ class Carto::VisualizationQueryBuilder
   def build
     query = Carto::Visualization.scoped
 
-    if !@user_id.nil?
+    if @id
+      query = query.where(id: @id)
+    end
+
+    if @excluded_ids and !@excluded_ids.empty?
+      query = query.where('visualizations.id not in (?)', @excluded_ids)
+    end
+
+    if @name
+      query = query.where(name: @name)
+    end
+
+    if @user_id
       query = query.where(user_id: @user_id)
     end
 
-    if !@privacy.nil?
+    if @privacy
       query = query.where(privacy: @privacy)
     end
 
-    if !@liked_by_user_id.nil?
+    if @liked_by_user_id
       query = query
           .joins(:likes)
           .where(likes: { actor: @liked_by_user_id })
     end
 
-    if !@shared_with_user_id.nil?
+    if @shared_with_user_id
       user = Carto::User.where(id: @shared_with_user_id).first
       query = query
           .joins(:shared_entities)
           .where(:shared_entities => { recipient_id: recipient_ids(user) })
     end
 
-    if !@owned_by_or_shared_with_user_id.nil?
+    if @owned_by_or_shared_with_user_id
       # TODO: sql strings are suboptimal and compromise compositability, but
       # I haven't found a better way to do this OR in Rails
       query = query.where(' ("visualizations"."user_id" = (?) or "visualizations"."id" in (?))',  @owned_by_or_shared_with_user_id, ::Carto::VisualizationQueryBuilder.new.with_shared_with_user_id(@owned_by_or_shared_with_user_id).build.uniq.pluck('visualizations.id'))
     end
 
-    if !@type.nil?
+    if @type
       query = query.where(type: @type)
     end
 
-    if !@types.nil?
+    if @types
       query = query.where(type: @types)
     end
 
@@ -132,7 +179,7 @@ class Carto::VisualizationQueryBuilder
       query = query.where(locked: @locked)
     end
 
-    if !@tainted_search_pattern.nil?
+    if @tainted_search_pattern
       query = query.where(PARTIAL_MATCH_QUERY, @tainted_search_pattern, "%#{@tainted_search_pattern}%")
     end
 
@@ -159,6 +206,10 @@ class Carto::VisualizationQueryBuilder
   end
 
   private
+
+  def is_uuid(text)
+    !(UUIDTools::UUID_REGEXP =~ text).nil?
+  end
 
   def with_include_of(association)
     @include_associations << association

@@ -2316,10 +2316,6 @@ TRIGGER
     CartoDB.subdomainless_urls? || organization.nil? ? nil : username
   end
 
-  def organization_username
-    CartoDB.subdomainless_urls? || organization.nil? ? nil : username
-  end
-
   def subdomain
     if CartoDB.subdomainless_urls?
       username
@@ -2340,7 +2336,10 @@ TRIGGER
   end
 
   def purge_redis_vizjson_cache
-    redis_keys = CartoDB::Visualization::Collection.new.fetch(user_id: self.id).map(&:redis_vizjson_key)
+    vizs = CartoDB::Visualization::Collection.new.fetch(user_id: self.id)
+    redis_http_keys = vizs.map{ |v| v.redis_vizjson_key(https_flag=false) }
+    redis_https_keys = vizs.map{ |v| v.redis_vizjson_key(https_flag=true) }
+    redis_keys = redis_http_keys + redis_https_keys
     CartoDB::Visualization::Member.redis_cache.del redis_keys unless redis_keys.empty?
   end
 

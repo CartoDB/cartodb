@@ -13,6 +13,10 @@ module CartoDB
 
         NAME = 'DatasourcesFactory'
 
+        # in seconds
+        HTTP_CONNECT_TIMEOUT = 60
+        DEFAULT_HTTP_REQUEST_TIMEOUT = 600
+
         # Retrieve a datasource instance
         # @param datasource_name string
         # @param user User
@@ -24,6 +28,14 @@ module CartoDB
         # @return mixed
         # @throws MissingConfigurationError
         def self.get_datasource(datasource_name, user, additional_config = {})
+
+          if additional_config[:http_timeout].nil?
+            additional_config[:http_timeout] = DEFAULT_HTTP_REQUEST_TIMEOUT
+          end
+          if additional_config[:http_connect_timeout].nil?
+            additional_config[:http_connect_timeout] = HTTP_CONNECT_TIMEOUT
+          end
+
           case datasource_name
             when Url::Dropbox::DATASOURCE_NAME
               Url::Dropbox.get_new(DatasourcesFactory.config_for(datasource_name, user), user)
@@ -32,11 +44,11 @@ module CartoDB
             when Url::InstagramOAuth::DATASOURCE_NAME
               Url::InstagramOAuth.get_new(DatasourcesFactory.config_for(datasource_name, user), user)
             when Url::PublicUrl::DATASOURCE_NAME
-              Url::PublicUrl.get_new
+              Url::PublicUrl.get_new(additional_config)
             when Url::ArcGIS::DATASOURCE_NAME
               Url::ArcGIS.get_new(user)
             when Url::MailChimp::DATASOURCE_NAME
-              Url::MailChimp.get_new(DatasourcesFactory.config_for(datasource_name, user), user)
+              Url::MailChimp.get_new(DatasourcesFactory.config_for(datasource_name, user).merge(additional_config), user)
             when Search::Twitter::DATASOURCE_NAME
               Search::Twitter.get_new(DatasourcesFactory.config_for(datasource_name, user), user,
                                       additional_config[:redis_storage], additional_config[:user_defined_limits])
@@ -45,6 +57,16 @@ module CartoDB
             else
               raise MissingConfigurationError.new("unrecognized datasource #{datasource_name}", NAME)
           end
+        end
+
+        # Gets all available oauth datasources
+        def self.get_all_oauth_datasources
+          [
+            Url::Dropbox::DATASOURCE_NAME,
+            Url::GDrive::DATASOURCE_NAME,
+            Url::InstagramOAuth::DATASOURCE_NAME,
+            Url::MailChimp::DATASOURCE_NAME
+          ]
         end
 
         # Gets the config of a certain datasource

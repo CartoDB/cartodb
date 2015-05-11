@@ -303,9 +303,23 @@ class DataImport < Sequel::Model
     ::Table.new(user_table: UserTable.where(id: table_id, user_id: user_id).first)
   end
 
-
   def is_raster?
     ::JSON.parse(self.stats).select{ |item| item['type'] == '.tif' }.length > 0
+  end
+
+  # Calculates the maximum timeout in seconds for a given user, to be used when performing HTTP requests
+  # TODO: Candidate for being private if we join syncs and data imports someday
+  # TODO: Add timeout config (if we need to change this)
+  def self.http_timeout_for(user, assumed_kb_sec = 50*1024)
+    if user.nil? || !user.respond_to?(:quota_in_bytes)
+      raise ArgumentError.new('Need a User object to calculate its download speed')
+    end
+
+    if assumed_kb_sec < 1
+      raise ArgumentError.new('KB per second must be > 0')
+    end
+
+    (user.quota_in_bytes / assumed_kb_sec).round
   end
 
   private
@@ -651,12 +665,15 @@ class DataImport < Sequel::Model
 
     if datasource_provider.providers_download_url?
       downloader = CartoDB::Importer2::Downloader.new(
-          (metadata[:url].present? && datasource_provider.providers_download_url?) ? metadata[:url] : data_source
+          (metadata[:url].present? && datasource_provider.providers_download_url?) ? metadata[:url] : data_source,
+          { http_timeout: ::DataImport.http_timeout_for(current_user) }
       )
       log.append "File will be downloaded from #{downloader.url}"
     else
       log.append 'Downloading file data from datasource'
-      downloader = CartoDB::Importer2::DatasourceDownloader.new(datasource_provider, metadata, {}, log)
+      downloader = CartoDB::Importer2::DatasourceDownloader.new(
+        datasource_provider, metadata, { http_timeout: ::DataImport.http_timeout_for(current_user) }, log
+      )
     end
 
     downloader
@@ -693,7 +710,8 @@ class DataImport < Sequel::Model
                   'is_sync_import'    => !self.synchronization_id.nil?,
                   'import_time'       => self.updated_at - self.created_at,
                   'file_stats'        => ::JSON.parse(self.stats),
-                  'resque_ppid'       => self.resque_ppid
+                  'resque_ppid'       => self.resque_ppid,
+                  'user_timeout'      => ::DataImport.http_timeout_for(current_user)
                  }
     if !self.extra_options.nil?
       import_log['extra_options'] = self.extra_options
@@ -749,8 +767,8 @@ class DataImport < Sequel::Model
       # Tables metadata DB also store resque data
       datasource = DatasourcesFactory.get_datasource(
         datasource_name, current_user, {
+                                          http_timeout: ::DataImport.http_timeout_for(current_user),
                                           redis_storage: $tables_metadata,
-
                                           user_defined_limits: ::JSON.parse(user_defined_limits).symbolize_keys
                                        })
       datasource.report_component = Rollbar

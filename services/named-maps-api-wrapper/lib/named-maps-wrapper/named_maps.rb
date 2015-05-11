@@ -13,13 +13,13 @@ module CartoDB
                 @vizjson_config = vizjson_config
                 @verify_cert = tiler_config[:verifycert]
                 @verify_host = tiler_config[:verifycert] ? 2 : 0
-                domain = "#{@username}.#{tiler_config[:domain]}"
+                domain = CartoDB.subdomainless_urls? ? tiler_config[:domain] : "#{@username}.#{tiler_config[:domain]}"
                 host_ip = Cartodb.config[:tiler]['internal']['host'].blank? ? domain : Cartodb.config[:tiler]['internal']['host']
-                @host = "#{tiler_config[:protocol]}://#{host_ip}:#{tiler_config[:port]}"
+                @host = "#{tiler_config[:protocol]}://#{host_ip}:#{tiler_config[:port]}" + (CartoDB.subdomainless_urls? ? "/user/#{@username}" : "")
                 @url = [ @host, 'api', 'v1', 'map', 'named' ].join('/')
                 @headers = { 
                   'content-type' => 'application/json',
-                  'host' => "#{@username}.#{tiler_config[:domain]}"
+                  'host' => domain
                 }
             end
 
@@ -31,10 +31,12 @@ module CartoDB
             # Retrieve a list of all named maps
             def all
                 response = Typhoeus.get(@url + '?api_key=' + @api_key, {
-                    headers: @headers,
-                    ssl_verifypeer: @verify_cert,
-                    ssl_verifyhost: @verify_host,
-                    followlocation: true
+                    headers:          @headers,
+                    ssl_verifypeer:   @verify_cert,
+                    ssl_verifyhost:   @verify_host,
+                    followlocation:   true,
+                    connecttimeout:  NamedMap::HTTP_CONNECT_TIMEOUT,
+                    timeout:          NamedMap::HTTP_REQUEST_TIMEOUT
                 })
                 raise HTTPResponseError, "GET:#{response.code} #{response.request.url} #{response.body}" if response.code != 200
 
@@ -46,10 +48,12 @@ module CartoDB
                 raise NamedMapsDataError, { 'name' => 'mising' } if name.nil? or name.length == 0
 
                 response = Typhoeus.get( [@url, name ].join('/') + '?api_key=' + @api_key, {
-                    headers: @headers,
-                    ssl_verifypeer: @verify_cert,
-                    ssl_verifyhost: @verify_host,
-                    followlocation: true
+                    headers:          @headers,
+                    ssl_verifypeer:   @verify_cert,
+                    ssl_verifyhost:   @verify_host,
+                    followlocation:   true,
+                    connecttimeout:  NamedMap::HTTP_CONNECT_TIMEOUT,
+                    timeout:          NamedMap::HTTP_REQUEST_TIMEOUT
                 })
 
                 if response.code == 200

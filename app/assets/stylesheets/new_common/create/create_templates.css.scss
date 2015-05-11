@@ -63,7 +63,7 @@ $w: 700px;
 }
 .CreateDialog-templatesItem {
   float: left;
-  margin-bottom: $sMargin-element; 
+  margin-bottom: $sMargin-element;
   margin-right: $sMargin-element;
 }
 .CreateDialog-templatesItem:nth-child(3n) { margin-right: 0 }
@@ -103,6 +103,8 @@ $w: 700px;
   border: 1px solid #6F9FD0;
   color: #6F9FD0;
   background: transparent;
+  margin-left: auto;
+  margin-right: auto;
 }
 // Templates icons
 .CreateDialog-templateItemIcon.iconFont-People {
@@ -123,6 +125,10 @@ $w: 700px;
   line-height: 40px!important
 }
 .CreateDialog-templateItemIcon.iconFont-Rectangles { font-size: 22px }
+.CreateDialog-templateItemIcon.iconFont-Email {
+  font-size: 26px;
+  line-height: 44px!important;
+}
 .CreateDialog-templateTitle {
   margin: 10px 10px 0 10px;
   font-size: $sFontSize-large;

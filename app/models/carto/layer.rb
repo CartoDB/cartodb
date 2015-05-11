@@ -5,6 +5,9 @@ class Carto::Layer < ActiveRecord::Base
 
   has_and_belongs_to_many :maps, class_name: Carto::Map
 
+  has_many :layers_user
+  has_many :users, :through => :layers_user
+
   has_many :children, class_name: Carto::Layer, foreign_key: :parent_id
 
   def affected_tables
@@ -23,7 +26,13 @@ class Carto::Layer < ActiveRecord::Base
 
   def affected_table_names
     return [] unless query.present?
-    CartoDB::SqlParser.new(query, connection: user.in_database).affected_tables
+
+    # TODO: This is the same that CartoDB::SqlParser().affected_tables does. Maybe remove that class?
+    query_tables = user.in_database.execute("SELECT CDB_QueryTables(#{user.in_database.quote(query)})").first
+    query_tables['cdb_querytables'].split(',').map do |table_name|
+      t = table_name.gsub!(/[\{\}]/, '')
+      (t.blank? ? nil : t)
+    end.compact.uniq
   end
 
   def tables_from_table_name_option

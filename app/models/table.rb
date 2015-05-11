@@ -30,7 +30,6 @@ class Table
   NO_GEOMETRY_TYPES_CACHING_TIMEOUT = 5.minutes
   GEOMETRY_TYPES_PRESENT_CACHING_TIMEOUT = 24.hours
 
-
   # @see services/importer/lib/importer/column.rb -> RESERVED_WORDS
   # @see config/initializers/carto_db.rb -> RESERVED_COLUMN_NAMES
   RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid ogc_fid }
@@ -1338,27 +1337,24 @@ class Table
     record.nil? ? nil : record[:oid]
   end # get_table_id
 
-  # @throws CartoDB::TableError
   def update_name_changes
-    exception_to_raise = nil
-    errored = false
-
     if @name_changed_from.present? && @name_changed_from != name
       reload
 
       unless register_table_only
         begin
-          owner.in_database.rename_table(@name_changed_from, name) unless errored
+          owner.in_database.rename_table(@name_changed_from, name)
         rescue StandardError => exception
           exception_to_raise = CartoDB::BaseCartoDBError.new(
               "Table update_name_changes(): '#{@name_changed_from}' doesn't exist", exception)
           CartoDB::notify_exception(exception_to_raise, user: owner)
+          raise exception_to_raise
         end
       end
 
-      propagate_namechange_to_table_vis unless errored
+      propagate_namechange_to_table_vis
 
-      unless errored
+
         if @user_table.layers.blank?
           exception_to_raise = CartoDB::TableError.new("Attempt to rename table without layers #{qualified_table_name}")
           CartoDB::notify_exception(exception_to_raise, user: owner)
@@ -1367,11 +1363,7 @@ class Table
             layer.rename_table(@name_changed_from, name).save
           end
         end
-      end
 
-      if errored
-        raise exception_to_raise
-      end
     end
     @name_changed_from = nil
   end

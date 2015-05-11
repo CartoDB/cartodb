@@ -3,6 +3,9 @@
 require_relative '../../../../app/models/visualization/member'
 
 shared_examples_for "visualization controllers" do
+  include CacheHelper
+
+  TEST_UUID = '00000000-0000-0000-0000-000000000000'
 
   NORMALIZED_DATE_ATTRIBUTES = %w{ created_at updated_at }
 
@@ -73,6 +76,8 @@ shared_examples_for "visualization controllers" do
 
     before(:each) do
       login(@user1)
+      @headers = {'CONTENT_TYPE'  => 'application/json'}
+      host! 'test1.localhost.lan'
     end
 
     it 'returns success, empty response for empty user' do
@@ -90,7 +95,7 @@ shared_examples_for "visualization controllers" do
       ).to_json)
       expected_visualization = normalize_hash(expected_visualization)
 
-      response_body.should == { 'visualizations' => [expected_visualization], 'total_entries' => 1, 'total_user_entries' => 1, 'total_likes' => 0, 'total_shared' => 0}
+      response_body(type: CartoDB::Visualization::Member::TYPE_CANONICAL).should == { 'visualizations' => [expected_visualization], 'total_entries' => 1, 'total_user_entries' => 1, 'total_likes' => 0, 'total_shared' => 0}
     end
 
     it 'returns liked count' do
@@ -103,7 +108,7 @@ shared_examples_for "visualization controllers" do
       visualization2.store
       visualization2.add_like_from(@user1.id)
 
-      response_body['total_likes'].should == 1
+      response_body(type: CartoDB::Visualization::Member::TYPE_CANONICAL)['total_likes'].should == 1
     end
 
     it 'does a partial match search' do
@@ -113,7 +118,7 @@ shared_examples_for "visualization controllers" do
       create_random_table(@user1, "foo_patata_baz")
 
       #body = response_body("#{BASE_URL}/?q=patata")['total_entries'].should == 2
-      body = response_body(q: 'patata')
+      body = response_body(q: 'patata', type: CartoDB::Visualization::Member::TYPE_CANONICAL)
       body['total_entries'].should == 2
       body['total_user_entries'].should == 4
     end
@@ -151,8 +156,8 @@ shared_examples_for "visualization controllers" do
 
       @headers = {
         'CONTENT_TYPE'  => 'application/json',
-        'HTTP_HOST'     => 'test.localhost.lan'
       }
+      host! 'test.localhost.lan'
     end
 
     after(:all) do
@@ -590,7 +595,7 @@ shared_examples_for "visualization controllers" do
         body['total_shared'].should eq 2
 
         # Multiple likes to same vis shouldn't increment total as is per vis
-        post api_v1_visualizations_add_like_url(user_domain: user_2.username, id: u1_vis_1_id, api_key: user_1.api_key)
+        post api_v1_visualizations_add_like_url(user_domain: user_1.username, id: u1_vis_1_id, api_key: user_1.api_key)
 
         get api_v1_visualizations_index_url(user_domain: user_1.username, api_key: user_1.api_key,
                                             type: CartoDB::Visualization::Member::TYPE_DERIVED, order: 'updated_at'), @headers
@@ -923,6 +928,41 @@ shared_examples_for "visualization controllers" do
 
       end
 
+      it 'Sanitizes vizjson callback' do
+        valid_callback = 'my_function'
+        valid_callback2 = 'a'
+        invalid_callback1 = 'alert(1);'
+        invalid_callback2 = '%3B'
+        invalid_callback3 = '123func'    # JS names cannot start by number
+
+        table_attributes  = table_factory
+        table_id          = table_attributes.fetch('id')
+        get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: valid_callback), {}, @headers
+        last_response.status.should == 200
+        (last_response.body =~ /^#{valid_callback}\(\{/i).should eq 0
+
+        get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: invalid_callback1), {}, @headers
+        last_response.status.should == 400
+
+        get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: invalid_callback2), {}, @headers
+        last_response.status.should == 400
+
+        get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: invalid_callback3), {}, @headers
+        last_response.status.should == 400
+
+        # if param specified, must not be empty
+        get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: ''), {}, @headers
+        last_response.status.should == 400
+
+        get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: valid_callback2), {}, @headers
+        last_response.status.should == 200
+        (last_response.body =~ /^#{valid_callback2}\(\{/i).should eq 0
+
+        get api_v2_visualizations_vizjson_url(id: table_id, api_key: @api_key), {}, @headers
+        last_response.status.should == 200
+        (last_response.body =~ /^\{/i).should eq 0
+      end
+
     end
 
     describe 'GET /api/v1/viz' do
@@ -1076,28 +1116,87 @@ shared_examples_for "visualization controllers" do
         last_response.status.should == 200
         ::JSON.parse(last_response.body).keys.length.should > 1
       end
+
+      it "comes with proper surrogate-key" do
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:create).returns(nil)
+        table                 = table_factory(privacy: 1)
+        source_visualization  = table.fetch('table_visualization')
+
+
+        payload = { source_visualization_id: source_visualization.fetch('id'), privacy: 'PUBLIC' }
+
+        post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
+             payload.to_json, @headers
+
+        viz_id = JSON.parse(last_response.body).fetch('id')
+
+        put api_v1_visualizations_show_url(user_domain: @user.username, id: viz_id, api_key: @api_key),
+            { privacy: 'PUBLIC' }.to_json, @headers
+
+        get api_v2_visualizations_vizjson_url(user_domain: @user.username, id: viz_id, api_key: @api_key),
+            {}, @headers
+
+        last_response.status.should == 200
+        last_response.headers.should have_key('Surrogate-Key')
+        last_response['Surrogate-Key'].should include(CartoDB::SURROGATE_NAMESPACE_VIZJSON)
+        last_response['Surrogate-Key'].should include(get_surrogate_key(CartoDB::SURROGATE_NAMESPACE_VISUALIZATION, viz_id))
+
+        delete api_v1_visualizations_show_url(user_domain: @user.username, id: viz_id, api_key: @api_key),
+               { }, @headers
+      end
     end
 
-    describe 'GET /api/v1/viz/:id/stats' do
-
+    describe 'tests visualization listing filters' do
       before(:each) do
         CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
         CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
         delete_user_data(@user)
       end
 
-      it 'returns view stats for the visualization' do
-        payload = factory(@user)
+      it 'uses locked filter' do
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
 
-        post "/api/v1/viz?api_key=#{@api_key}",
-          payload.to_json, @headers
-        id = JSON.parse(last_response.body).fetch('id')
+        post "/api/v1/viz?api_key=#{@api_key}", factory(@user, locked: true).to_json, @headers
+        vis_1_id = JSON.parse(last_response.body).fetch('id')
+        post "/api/v1/viz?api_key=#{@api_key}", factory(@user, locked: false).to_json, @headers
+        vis_2_id = JSON.parse(last_response.body).fetch('id')
 
-        get "/api/v1/viz/#{id}/stats?api_key=#{@api_key}", {}, @headers
-
+        get "/api/v1/viz?api_key=#{@api_key}&type=derived", {}, @headers
         last_response.status.should == 200
-        response = JSON.parse(last_response.body)
-        response.keys.length.should == 30
+        response    = JSON.parse(last_response.body)
+        collection  = response.fetch('visualizations')
+        collection.length.should eq 2
+
+        get "/api/v1/viz?api_key=#{@api_key}&type=derived&locked=true", {}, @headers
+        last_response.status.should == 200
+        response    = JSON.parse(last_response.body)
+        collection  = response.fetch('visualizations')
+        collection.length.should eq 1
+        collection.first.fetch('id').should eq vis_1_id
+
+        get "/api/v1/viz?api_key=#{@api_key}&type=derived&locked=false", {}, @headers
+        last_response.status.should == 200
+        response    = JSON.parse(last_response.body)
+        collection  = response.fetch('visualizations')
+        collection.length.should eq 1
+        collection.first.fetch('id').should eq vis_2_id
+      end
+    end
+
+    describe 'non existent visualization' do
+      it 'returns 404' do
+        get "/api/v1/viz/#{TEST_UUID}?api_key=#{@api_key}", {}, @headers
+        last_response.status.should == 404
+
+        put "/api/v1/viz/#{TEST_UUID}?api_key=#{@api_key}", {}, @headers
+        last_response.status.should == 404
+
+        delete "/api/v1/viz/#{TEST_UUID}?api_key=#{@api_key}", {}, @headers
+        last_response.status.should == 404
+
+        get "/api/v2/viz/#{TEST_UUID}/viz?api_key=#{@api_key}", {}, @headers
+        last_response.status.should == 404
       end
     end
 

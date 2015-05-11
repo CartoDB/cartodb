@@ -28,15 +28,6 @@ shared_context 'visualization creation helpers' do
   before(:each) do
     delete_user_data @user1
     delete_user_data @user2
-    @headers = {
-      'CONTENT_TYPE'  => 'application/json',
-      'HTTP_HOST'     => 'test1.localhost.lan'
-    }
-  end
-
-  before(:each) do
-    delete_user_data @user1
-    delete_user_data @user2
   end
 
   after(:all) do

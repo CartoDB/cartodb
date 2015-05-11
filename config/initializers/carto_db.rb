@@ -12,6 +12,10 @@ module CartoDB
   TILE_DB_USER    = 'tileuser'
   SRID            = 4326
 
+  SURROGATE_NAMESPACE_VISUALIZATION = 'rv'
+  SURROGATE_NAMESPACE_PUBLIC_PAGES = 'rp'
+  SURROGATE_NAMESPACE_VIZJSON = 'rj'
+
   # @see services/importer/lib/importer/column.rb -> RESERVED_WORDS
   # @see app/models/table.rb -> RESERVED_COLUMN_NAMES
   POSTGRESQL_RESERVED_WORDS = %W{ ALL ANALYSE ANALYZE AND ANY ARRAY AS ASC ASYMMETRIC AUTHORIZATION BETWEEN BINARY BOTH CASE CAST
@@ -59,7 +63,7 @@ module CartoDB
 
   # Raw subdomain extraction from request
   def self.subdomain_from_request(request)
-    request.host.to_s.gsub(self.session_domain, '')
+    self.subdomainless_urls? ? '' : request.host.to_s.gsub(self.session_domain, '')
   end
 
   # Flexible subdomain extraction: If /u/xxx or /user/xxxx present uses it, else uses request host (xxx.cartodb.com)

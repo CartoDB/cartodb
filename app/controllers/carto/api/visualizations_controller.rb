@@ -3,9 +3,7 @@ require_relative 'vizjson_presenter'
 require_relative '../../../models/visualization/stats'
 
 module Carto
-
   module Api
-
     class VisualizationsController < ::Api::ApplicationController
 
       # TODO: compare with older, there seems to be more optional authentication endpoints
@@ -16,6 +14,7 @@ module Carto
       before_filter :load_table, only: [:vizjson2]
       before_filter :load_visualization, only: [:likes_count, :likes_list, :is_liked, :show, :stats]
       ssl_required :index, :show
+      ssl_allowed  :vizjson2, :likes_count, :likes_list, :is_liked
 
       FILTER_SHARED_YES = 'yes'
       FILTER_SHARED_NO = 'no'
@@ -30,8 +29,8 @@ module Carto
       end
 
       def load_visualization
-        @visualization = Visualization.find(@id)
-        return render(status: 404) unless @visualization
+        @visualization = Visualization.where(id: @id).first
+        return render(text: 'Visualization does not exist', status: 404) if @visualization.nil?
         return render(text: 'Visualization not viewable', status: 403) if !@visualization.is_viewable_by_user?(current_viewer)
       end
 
@@ -44,12 +43,12 @@ module Carto
         if @table
           @visualization = @table.visualization
         else
-          @table = Visualization.find(@id)
+          @table = Visualization.where(id: @id).first
           @visualization = @table
+          # TODO: refactor load_table duplication
+          return render(text: 'Visualization does not exist', status: 404) if @visualization.nil?
+          return render(text: 'Visualization not viewable', status: 403) if !@visualization.is_viewable_by_user?(current_viewer)
         end
-
-        # TODO: remove duplication with load_visualization
-        return render(text: 'Visualization not viewable', status: 403) if !@visualization.is_viewable_by_user?(current_viewer)
       end
 
       def show
@@ -59,9 +58,7 @@ module Carto
       end
 
       def index
-        # TODO: check whether this is consistent with dashboard expectations
-        type = params[:type].present? && type != '' ? params[:type] : "#{Carto::Visualization::TYPE_CANONICAL},#{Carto::Visualization::TYPE_DERIVED}"
-        types = params.fetch(:types, type).split(',')
+        types, total_types = get_types_parameters
         page = (params[:page] || 1).to_i
         per_page = (params[:per_page] || 20).to_i
         order = (params[:order] || 'updated_at').to_sym
@@ -118,9 +115,9 @@ module Carto
         }
         if current_user
           response.merge!({
-            total_user_entries: VisualizationQueryBuilder.new.with_types(types).with_user_id(current_user.id).build.count,
-            total_likes: VisualizationQueryBuilder.new.with_types(types).with_liked_by_user_id(current_user.id).build.count,
-            total_shared: VisualizationQueryBuilder.new.with_types(types).with_shared_with_user_id(current_user.id).build.count
+            total_user_entries: VisualizationQueryBuilder.new.with_types(total_types).with_user_id(current_user.id).build.count,
+            total_likes: VisualizationQueryBuilder.new.with_types(total_types).with_liked_by_user_id(current_user.id).build.count,
+            total_shared: VisualizationQueryBuilder.new.with_types(total_types).with_shared_with_user_id(current_user.id).build.count
           })
         end
         render_jsonp(response)
@@ -167,16 +164,30 @@ module Carto
         raise exception
       end
 
-      def stats
-        render_jsonp(CartoDB::Visualization::Stats.new(@visualization).to_poro)
-      end
-
       private
+
+      def get_types_parameters
+        # INFO: this fits types and type into types, so only types is used for search.
+        # types defaults to type if empty.
+        # types defaults to derived if type is also empty.
+        # total_types are the types used for total counts.
+        types = params.fetch(:types, "").split(',')
+
+        type = params[:type].present? ? params[:type] : (types.empty? ? nil : types[0])
+        # TODO: add this assumption to a test or remove it (this is coupled to the UI)
+        total_types = [(type == Carto::Visualization::TYPE_REMOTE ? Carto::Visualization::TYPE_CANONICAL : type)].compact
+
+        types = [type].compact if types.empty?
+        types = [Carto::Visualization::TYPE_DERIVED] if types.empty?
+
+        return types, total_types
+      end
 
       def set_vizjson_response_headers_for(visualization)
         # We don't cache non-public vis
         if @visualization.is_publically_accesible?
           response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
+          response.headers['Surrogate-Key'] = "#{CartoDB::SURROGATE_NAMESPACE_VIZJSON} #{visualization.surrogate_key}"
           response.headers['Cache-Control']   = 'no-cache,max-age=86400,must-revalidate, public'
         end
       end
@@ -207,7 +218,5 @@ module Carto
       end
 
     end
-
   end
-
 end

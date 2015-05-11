@@ -130,6 +130,23 @@ describe Geocoding do
       geocoding.run_timeout = Geocoding::DEFAULT_TIMEOUT
     end
 
+    it 'sends a payload with duration information' do
+      geocoding = FactoryGirl.build(:geocoding, user: @user, user_table: @table, kind: 'admin0', geometry_type: 'polygon', formatter: 'b')
+      geocoding.class.stubs(:processable_rows).returns 10
+      CartoDB::InternalGeocoder::Geocoder.any_instance.stubs(:run).returns true
+      CartoDB::InternalGeocoder::Geocoder.any_instance.stubs(:process_results).returns true
+      CartoDB::InternalGeocoder::Geocoder.any_instance.stubs(:update_geocoding_status).returns(processed_rows: 10, state: 'completed')
+
+      # metrics_payload is sent to the log in json
+      Logger.any_instance.expects(:info).once.with() {|str|
+        payload = JSON.parse(str)
+        payload.has_key?('queue_time') && payload.has_key?('processing_time') && payload['queue_time'] > 0 && payload['processing_time'] > 0
+      }
+
+      geocoding.run!
+      geocoding.reload.state.should eq 'finished'
+    end
+
     it 'succeeds if there are no rows to geocode' do
       geocoding = FactoryGirl.build(:geocoding, user: @user, formatter: 'a', user_table: @table, formatter: 'b')
       geocoding.class.stubs(:processable_rows).returns 0

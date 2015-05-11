@@ -34,11 +34,11 @@
                 </div>
                 <div class="DatasetsList-itemTimeDiff DefaultTimeDiff">
                   <i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i>
-                  <%= time_ago_in_words(vis[:updated_at]) %>
+                  <%= time_ago_in_words(vis[:updated_at]) %> ago
                 </div>
               </div>
               <div class="DatasetsList-itemMeta">
-                <div class="DefaultTags">
+                <div class="DatasetsList-itemTags DefaultTags">
                   <% if vis[:tags].size > 0 %>
                     <% formatted_tags(vis[:tags]) do |tag| %><a class="DefaultTags-item js-tag-link" href="<%= CartoDB.url(self, 'public_datasets_tag', {tag: tag}, vis[:owner]) %>"><%= tag %></a><% end %>
                   <% end %>

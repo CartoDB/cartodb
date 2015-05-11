@@ -16,7 +16,7 @@ module CartoDB
     },
     1002 => {
       title: 'Unsupported/Unrecognized file type',
-      what_about: "Should we support this filetype? Let us know in our <a href='mailto:support-suggestions@cartodb.com'>support email</a>!"
+      what_about: "Should we support this filetype? Let us know in our <a href='mailto:support@cartodb.com'>support email</a>!"
     },
     1003 => {
       title: 'Decompression error',
@@ -38,17 +38,9 @@ module CartoDB
       title: 'Too many nodes',
       what_about: 'You requested too many nodes. Either request a smaller area, or use planet.osm.'
     },
-    1008 => {
-      title: 'Unable to download file',
-      what_about: "We couldn't download your file, check the URL and try again."
-    },
-    1009 => {
-      title: 'OpenStreetMaps API limit reached',
-      what_about: "You requested too many nodes (limit is 50000). Either request a smaller area, or use planet.osm"
-    },
     1010 => {
       title: 'Private Google Spreadsheet',
-      what_about: "This spreadsheet seems to be private. Please check in Google Spreadsheet sharing options that the file is public or accessible for those who know the link"
+      what_about: "This spreadsheet seems to be private. Please check in Google Spreadsheet sharing options that the file is public or accessible for those who know the link."
     },
     1011 => {
       title: 'Error retrieving data from datasource',
@@ -85,6 +77,10 @@ module CartoDB
     1019 => {
       title: 'Too Many Layers',
       what_about: "The file has too many layers. It can have 50 as maximum." # ./services/importer/lib/importer/kml_splitter.rb
+    },
+    1020 => {
+      title: 'Download timeout',
+      what_about: "Data download timed out. Check the source is not running slow and/or try again."
     },
     2001 => {
       title: 'Unable to load data',

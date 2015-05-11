@@ -2,8 +2,28 @@
 @import "../new_variables/colors";
 @import "../new_variables/sizes";
 
+// Represents a card where the content is illustrated with an icon at top and text center underneath:
+//   __________________
+//  |                  |
+//  |       ***        |
+//  |      * X *       |
+//  |       ***        |
+//  |                  |
+//  |      Title       |
+//  |  Some text here  |
+//  |  with some more  |
+//  |__________________|
+//
+
+.OptionCards {
+  @include display-flex();
+  @include justify-content(center);
+  @include align-items(stretch);
+  @include align-content(space-between, justify);
+}
 .OptionCard {
   @include display-flex();
+  @include flex(1); // Grow evenly inside container
   @include flex-direction(column);
   @include justify-content(flex-start);
   @include align-items(center);
@@ -13,7 +33,9 @@
   border: 1px solid $cStructure-mainLine;
   border-radius: $sCard-borderRadius;
   background-color: $cStructure-mainBkg;
-  width: 220px;
+}
+.OptionCard--privacy {
+  max-width: 230px; // set a max-width to appear nicer for dataset privacy dialog
 }
 .OptionCard.is-disabled {
   background-color: $cStructure-grayBkg;
@@ -24,7 +46,8 @@
   background-color: $cCard-selectedFill;
   cursor: default;
 }
-.OptionCard:not(.is-disabled):not(.is-selected):hover {
+.OptionCard--static { cursor: default }
+.OptionCard:not(.is-disabled):not(.is-selected):not(.OptionCard--static):hover {
   border-color: $cCard-selectedBorder;
   background-color: $cCard-hoverFill;
   cursor: pointer;
@@ -32,19 +55,18 @@
 .OptionCard:not(:last-child) {
   margin-right: $sMargin-element;
 }
-.OptionCard > *:first-child {
+.OptionCard-icon {
   margin-bottom: $sMargin-elementInline;
-}
-.OptionCard > *:not(:first-child) {
-  margin-bottom: $sMargin-min;
 }
 .OptionCard-title {
   font-size: $sFontSize-large;
   line-height: $sLineHeight-large;
+  margin-bottom: $sMargin-min;
 }
 .OptionCard-desc {
   font-size: $sFontSize-normal;
   line-height: $sLineHeight-normal;
   color: $cTypography-secondary;
   @include nicer-lato-typography();
+  margin-bottom: $sMargin-elementInline;
 }

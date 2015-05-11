@@ -3,6 +3,7 @@ require 'sequel'
 require 'rack/test'
 require 'json'
 require_relative '../../spec_helper'
+require_relative '../../support/factories/organizations'
 require_relative '../../../app/models/visualization/migrator'
 require_relative '../../../app/controllers/admin/visualizations_controller'
 require_relative '../../../services/relocator/relocator'
@@ -22,7 +23,8 @@ describe Admin::VisualizationsController do
     @user = create_user(
       username: 'test',
       email:    'test@test.com',
-      password: 'test12'
+      password: 'test12',
+      private_tables_enabled: true
     )
     @api_key = @user.api_key
     @user.stubs(:should_load_common_data?).returns(false)
@@ -95,6 +97,20 @@ describe Admin::VisualizationsController do
       last_response.status.should == 200
       last_response.headers["Surrogate-Key"].should_not be_empty
       last_response.headers["Surrogate-Key"].should include(CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES)
+    end
+
+    it 'returns public map for org users' do
+      org = OrganizationFactory.new.new_organization(name: 'public-map-spec-org').save
+
+      user_a = create_user({username: 'user-public-map', quota_in_bytes: 123456789, table_quota: 400})
+      user_org = CartoDB::UserOrganization.new(org.id, user_a.id)
+      user_org.promote_user_to_admin
+
+      vis_id = new_table({user_id: user_a.id, privacy: ::UserTable::PRIVACY_PUBLIC}).save.reload.table_visualization.id
+
+      host! "#{org.name}.localhost.lan"
+      get "/viz/#{vis_id}/public_map", @headers
+      last_response.status.should == 200
     end
   end
 

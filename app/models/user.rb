@@ -10,6 +10,7 @@ require_relative './synchronization/collection.rb'
 require_relative '../services/visualization/common_data_service'
 require_relative './external_data_import'
 require_relative './feature_flag'
+require_relative '../../lib/cartodb/stats/api_calls'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -130,6 +131,7 @@ class User < Sequel::Model
       end
       self.max_layers ||= 6
       self.private_tables_enabled ||= true
+      self.private_maps_enabled ||= true
       self.sync_tables_enabled ||= true
     end
   end #before_save
@@ -807,10 +809,15 @@ class User < Sequel::Model
     self[:soft_twitter_datasource_limit] = !val
   end
 
-  def private_maps_enabled
-    enabled = super
-    return enabled if enabled.present? && enabled == true
-    /(FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD)/i.match(self.account_type) ? false : true
+  def private_maps_enabled?
+    flag_enabled = self.private_maps_enabled
+    return true if flag_enabled.present? && flag_enabled == true
+
+    #TODO: remove this after making sure we have flags inline with account types
+    return true if not self.account_type.match(/FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD/i)
+
+    return true if self.private_tables_enabled # Note private_tables_enabled => private_maps_enabled
+    return false
   end
 
   def import_quota
@@ -871,27 +878,7 @@ class User < Sequel::Model
   # Returns an array representing the last 30 days, populated with api_calls
   # from three different sources
   def get_api_calls(options = {})
-    date_to = (options[:to] ? options[:to].to_date : Date.today)
-    date_from = (options[:from] ? options[:from].to_date : Date.today - 29.days)
-    calls = $users_metadata.pipelined do
-      date_to.downto(date_from) do |date|
-        $users_metadata.ZSCORE "user:#{username}:mapviews:global", date.strftime("%Y%m%d")
-      end
-    end.map &:to_i
-
-    # Add old api calls
-    old_calls = get_old_api_calls["per_day"].to_a.reverse rescue []
-    calls = calls.zip(old_calls).map { |pair|
-      pair[0].to_i + pair[1].to_i
-    } unless old_calls.blank?
-
-    # Add ES api calls
-    es_calls = get_es_api_calls_from_redis(options) rescue []
-    calls = calls.zip(es_calls).map { |pair|
-      pair[0].to_i + pair[1].to_i
-    } unless es_calls.blank?
-
-    return calls
+    return CartoDB::Stats::APICalls.new.get_api_calls_without_dates(self.username, {old_api_calls: false})
   end
 
   def get_geocoding_calls(options = {})
@@ -900,18 +887,6 @@ class User < Sequel::Model
     self.geocodings_dataset.where(kind: 'high-resolution').where('created_at >= ? and created_at <= ?', date_from, date_to + 1.days)
       .sum("processed_rows + cache_hits".lit).to_i
   end # get_geocoding_calls
-
-  # Get ES api calls from redis
-  def get_es_api_calls_from_redis(options = {})
-    date_to = (options[:to] ? options[:to].to_date : Date.today)
-    date_from = (options[:from] ? options[:from].to_date : Date.today - 29.days)
-    es_calls = $users_metadata.pipelined do
-      date_to.downto(date_from) do |date|
-        $users_metadata.ZSCORE "user:#{self.username}:mapviews_es:global", date.strftime("%Y%m%d")
-      end
-    end.map &:to_i
-    return es_calls
-  end
 
   def effective_twitter_block_price
     organization.present? ? organization.twitter_datasource_block_price : self.twitter_datasource_block_price
@@ -984,24 +959,25 @@ class User < Sequel::Model
     end
   end
 
-  # Legacy stats fetching
+  ## Legacy stats fetching
+  ## This is DEPRECATED
+  def get_old_api_calls
+    JSON.parse($users_metadata.HMGET(key, 'api_calls').first) rescue {}
+  end
 
-    def get_old_api_calls
-      JSON.parse($users_metadata.HMGET(key, 'api_calls').first) rescue {}
+  def set_old_api_calls(options = {})
+    # Ensure we update only once every 3 hours
+    if options[:force_update] || get_old_api_calls["updated_at"].to_i < 3.hours.ago.to_i
+      api_calls = JSON.parse(
+        open("#{Cartodb.config[:api_requests_service_url]}?username=#{self.username}").read
+      ) rescue {}
+
+      # Manually set updated_at
+      api_calls["updated_at"] = Time.now.to_i
+      $users_metadata.HMSET key, 'api_calls', api_calls.to_json
     end
-
-    def set_old_api_calls(options = {})
-      # Ensure we update only once every 3 hours
-      if options[:force_update] || get_old_api_calls["updated_at"].to_i < 3.hours.ago.to_i
-        api_calls = JSON.parse(
-          open("#{Cartodb.config[:api_requests_service_url]}?username=#{self.username}").read
-        ) rescue {}
-
-        # Manually set updated_at
-        api_calls["updated_at"] = Time.now.to_i
-        $users_metadata.HMSET key, 'api_calls', api_calls.to_json
-      end
-    end
+  end
+  ##
 
   def last_billing_cycle
     day = period_end_date.day rescue 29.days.ago.day
@@ -2316,10 +2292,6 @@ TRIGGER
     CartoDB.subdomainless_urls? || organization.nil? ? nil : username
   end
 
-  def organization_username
-    CartoDB.subdomainless_urls? || organization.nil? ? nil : username
-  end
-
   def subdomain
     if CartoDB.subdomainless_urls?
       username
@@ -2345,6 +2317,47 @@ TRIGGER
     redis_https_keys = vizs.map{ |v| v.redis_vizjson_key(https_flag=true) }
     redis_keys = redis_http_keys + redis_https_keys
     CartoDB::Visualization::Member.redis_cache.del redis_keys unless redis_keys.empty?
+  end
+
+  # returns google maps api key. If the user is in an organization and 
+  # that organization has api key it's used
+  def google_maps_api_key
+    if has_organization?
+      self.organization.google_maps_key || self.google_maps_key
+    else
+      self.google_maps_key
+    end
+  end
+
+  # returnd a list of basemaps enabled for the user
+  # when google map key is set it gets the basemaps inside the group "GMaps"
+  # if not it get everything else but GMaps in any case GMaps and other groups can work together
+  # this may have change in the future but in any case this method provides a way to abstract what
+  # basemaps are active for the user
+  def basemaps
+    google_maps_enabled = !google_maps_api_key.nil? && !google_maps_api_key.empty?
+    basemaps = Cartodb.config[:basemaps]
+    if basemaps
+      basemaps.select { |group| 
+        g = group == 'GMaps'
+        google_maps_enabled ? g : !g
+      }
+    end
+  end
+
+  # return the default basemap based on the default setting. If default attribute is not set, first basemaps is returned
+  # it only takes into account basemaps enabled for that user
+  def default_basemap
+    default = basemaps.find { |group, group_basemaps |
+      group_basemaps.find { |b, attr| attr['default'] }
+    }
+    if default.nil?
+      default = basemaps.first[1]
+    else
+      default = default[1]
+    end
+    # return only the attributes
+    default.first[1]
   end
 
   private

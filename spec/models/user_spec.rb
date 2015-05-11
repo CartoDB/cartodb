@@ -355,6 +355,7 @@ describe User do
   end
 
   it "should read api calls from external service" do
+    pending "This is deprecated. This code has been moved"
     @user.stubs(:get_old_api_calls).returns({
       "per_day" => [0, 0, 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 17, 4, 0, 0, 0, 0],
       "total"=>49,
@@ -475,26 +476,31 @@ describe User do
     end
   end
 
-  describe '#private_maps_enabled' do
+  describe '#private_maps_enabled?' do
     it 'should not have private maps enabled by default' do
       user_missing_private_maps = create_user :email => 'user_mpm@example.com',  :username => 'usermpm',  :password => 'usermpm'
-      user_missing_private_maps.private_maps_enabled.should eq false
+      user_missing_private_maps.private_maps_enabled?.should eq false
     end
 
     it 'should have private maps if enabled' do
       user_with_private_maps = create_user :email => 'user_wpm@example.com',  :username => 'userwpm',  :password => 'userwpm', :private_maps_enabled => true
-      user_with_private_maps.private_maps_enabled.should eq true
+      user_with_private_maps.private_maps_enabled?.should eq true
     end
 
     it 'should not have private maps if disabled' do
       user_without_private_maps = create_user :email => 'user_opm@example.com',  :username => 'useropm',  :password => 'useropm', :private_maps_enabled => false
-      user_without_private_maps.private_maps_enabled.should eq false
+      user_without_private_maps.private_maps_enabled?.should eq false
+    end
+
+    it 'should have private maps if he has private_tables_enabled, even if disabled' do
+      user_without_private_maps = create_user :email => 'user_opm3@example.com',  :username => 'useropm3',  :password => 'useropm3', :private_maps_enabled => false, :private_tables_enabled => true
+      user_without_private_maps.private_maps_enabled?.should eq true
     end
 
     it 'should have private maps if he is AMBASSADOR even if disabled' do
       user_without_private_maps = create_user :email => 'user_opm2@example.com',  :username => 'useropm2',  :password => 'useropm2', :private_maps_enabled => false
       user_without_private_maps.stubs(:account_type).returns('AMBASSADOR')
-      user_without_private_maps.private_maps_enabled.should eq true
+      user_without_private_maps.private_maps_enabled?.should eq true
     end
 
   end

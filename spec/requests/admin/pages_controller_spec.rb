@@ -8,6 +8,7 @@ end #app
 
 describe Admin::PagesController do
   include Rack::Test::Methods
+  include Warden::Test::Helpers
 
   JSON_HEADER = {'CONTENT_TYPE' => 'application/json'}
 
@@ -32,7 +33,7 @@ describe Admin::PagesController do
     User.all.each {|u| u.delete}
   end
 
-  describe 'GET /u/foo' do
+  describe '#index' do
     it 'returns 404 if user does not belongs to host organization' do
       prepare_user(@non_org_user_name)
 
@@ -73,23 +74,86 @@ describe Admin::PagesController do
 
       last_response.status.should == 404
     end
+
+    it 'redirects to public maps home if current user and current viewer are different' do
+      anyuser = prepare_user('anyuser')
+      anyviewer = prepare_user('anyviewer')
+      login_as anyviewer
+      host! 'anyuser.localhost.lan'
+
+      get '', {}, JSON_HEADER
+
+      last_response.status.should == 302
+      follow_redirect!
+      last_response.status.should == 200
+      uri = URI.parse(last_request.url)
+      uri.host.should == 'anyuser.localhost.lan'
+      uri.path.should == '/maps'
+    end
+
+    it 'redirects to public maps home if not logged in' do
+      anyuser = prepare_user('anyuser')
+      host! 'anyuser.localhost.lan'
+
+      get '', {}, JSON_HEADER
+
+      last_response.status.should == 302
+      uri = URI.parse(last_response.location)
+      uri.host.should == 'anyuser.localhost.lan'
+      uri.path.should == '/maps'
+      follow_redirect!
+      last_response.status.should == 200
+    end
+
+    it 'redirects to login page if no user is especified' do
+      anyuser = prepare_user('anyuser')
+      host! 'localhost.lan'
+      CartoDB.stubs(:subdomainless_urls?).returns(true)
+
+      get '', {}, JSON_HEADER
+
+      last_response.status.should == 302
+      uri = URI.parse(last_response.location)
+      uri.host.should == 'localhost.lan'
+      uri.path.should == '/login'
+      follow_redirect!
+      last_response.status.should == 200
+    end
+
+    it 'redirects and loads the dashboard if the user is logged in' do
+      anyuser = prepare_user('anyuser')
+      host! 'localhost.lan'
+      login_as anyuser
+      CartoDB.stubs(:session_domain).returns('localhost.lan')
+      CartoDB.stubs(:subdomainless_urls?).returns(true)
+
+      get '', {}, JSON_HEADER
+
+      last_response.status.should == 302
+      uri = URI.parse(last_response.location)
+      uri.host.should == 'localhost.lan'
+      uri.path.should == '/user/anyuser/dashboard'
+    end
+
   end
 
   def prepare_user(user_name, org_user=false, belongs_to_org=false)
-    @user = create_user(
+    user = create_user(
       username: user_name,
       email:    "#{user_name}@example.com",
       password: 'longer_than_MIN_PASSWORD_LENGTH',
       fake_user: true
     )
 
-    User.any_instance.stubs(:username => user_name, :organization_user? => org_user)
+    user.stubs(:username => user_name, :organization_user? => org_user)
 
     if org_user
       org = mock
       Organization.stubs(:where).with(name: @org_name).returns([org])
       User.any_instance.stubs(:belongs_to_organization?).with(org).returns(belongs_to_org)
     end
+
+    user
   end
 
 end

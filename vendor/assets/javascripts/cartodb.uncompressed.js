@@ -1,6 +1,6 @@
-// cartodb.js version: 3.14.0
+// cartodb.js version: 3.14.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: af3dbb65d8c380665950fd94772bf774746ade24
+// sha: 5c466ac64a48222b2f7ddbb6ffab6784d1ec63ac
 (function() {
   var root = this;
 
@@ -25652,7 +25652,7 @@ if (typeof window !== 'undefined') {
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = "3.14.0";
+    cdb.VERSION = "3.14.1";
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -27223,21 +27223,17 @@ cdb.geo.Map = cdb.core.Model.extend({
 
   _adjustZoomtoLayer: function(layer) {
 
-    var maxZoom = layer.get('maxZoom');
-    var minZoom = layer.get('minZoom');
+    var maxZoom = parseInt(layer.get('maxZoom'), 10);
+    var minZoom = parseInt(layer.get('minZoom'), 10);
 
-    if (_.isNumber(maxZoom)) {
-
+    if (_.isNumber(maxZoom) && !_.isNaN(maxZoom)) {
       if ( this.get("zoom") > maxZoom ) this.set({ zoom: maxZoom, maxZoom: maxZoom });
       else this.set("maxZoom", maxZoom);
-
     }
 
-    if (_.isNumber(minZoom)) {
-
+    if (_.isNumber(minZoom) && !_.isNaN(minZoom)) {
       if ( this.get("zoom") < minZoom ) this.set({ minZoom: minZoom, zoom: minZoom });
       else this.set("minZoom", minZoom);
-
     }
 
   },
@@ -34279,7 +34275,7 @@ cdb.geo.LeafLetTiledLayerView = LeafLetTiledLayerView;
   _.extend(LeafLetGmapsTiledLayerView.prototype, cdb.geo.LeafLetLayerView.prototype, {
 
     _modelUpdated: function() {
-      throw new Error("A GMaps baselayer should never be updated");
+      // do nothing, this map type does not support updating
     }
 
   });
@@ -40088,7 +40084,8 @@ var HTTPS_TO_HTTP = {
   'https://maps.nlp.nokia.com/': 'http://maps.nlp.nokia.com/',
   'https://tile.stamen.com/': 'http://tile.stamen.com/',
   "https://{s}.maps.nlp.nokia.com/": "http://{s}.maps.nlp.nokia.com/",
-  "https://cartocdn_{s}.global.ssl.fastly.net/": "http://{s}.api.cartocdn.com/"
+  "https://cartocdn_{s}.global.ssl.fastly.net/": "http://{s}.api.cartocdn.com/",
+  "https://cartodb-basemaps-{s}.global.ssl.fastly.net/": "http://{s}.basemaps.cartocdn.com/"
 };
 
 function transformToHTTP(tilesTemplate) {

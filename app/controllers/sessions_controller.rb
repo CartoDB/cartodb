@@ -49,7 +49,7 @@ class SessionsController < ApplicationController
 
   def destroy
     logout(CartoDB.extract_subdomain(request))
-    redirect_to CartoDB.account_host.blank? ? 'http://www.cartodb.com' : "http://#{CartoDB.account_host}"
+    redirect_to CartoDB.url(self, 'public_visualizations_home')
   end
 
   def show
@@ -60,9 +60,8 @@ class SessionsController < ApplicationController
     username = extract_username(request, params)
     CartodbStats.increment_failed_login_counter(username)
     # Use an instance variable to show the error instead of the flash hash. Setting the flash here means setting
-    # the flash for the next request and we want to show the message only in the current one    
-    @password_error = (params[:email].blank? && params[:password].blank?) ?
-                    'Can\'t be blank' : 'Your account or your password is not ok'
+    # the flash for the next request and we want to show the message only in the current one
+    @login_error = (params[:email].blank? && params[:password].blank?) ? 'Can\'t be blank' : 'Your account or your password is not ok'
 
     respond_to do |format|
       format.html do

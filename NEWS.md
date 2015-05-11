@@ -1,5 +1,12 @@
-3.10.1 ()
+
+3.10.2 ()
 ---------
+* Ongoing backend refactor and migration from Sequel to ActiveRecord.
+
+3.10.1 (2015-05-05)
+-------------------
+* Fixes bug in the "No georeferenced data" dialog [#3449](https://github.com/CartoDB/cartodb/pull/3449)
+* Adds user search/filter to the Share Dialog [3417](https://github.com/CartoDB/cartodb/pull/3417)
 * Change default CartoCSS properties of polygon strokes [3375](https://github.com/CartoDB/cartodb/pull/3375)
 * Fix custom image header templates [3378](https://github.com/CartoDB/cartodb/pull/3378)
 * Adds field to select or type an administrative region in the georeferenciation by city name pane [3306](https://github.com/CartoDB/cartodb/pull/3306)
@@ -7,11 +14,18 @@
 * Sort category names alphabetically in legends [3218](https://github.com/CartoDB/cartodb/pull/3218)
 * Editable descriptions and tags in the maps and datasets view [3129](https://github.com/CartoDB/cartodb/pull/3129)
 * Add caching of geometry types [#3157](https://github.com/CartoDB/cartodb/pull/3157)
+* New public map [#3120](https://github.com/CartoDB/cartodb/issues/3120)
 * Do not store session for api_key auth [#3208](https://github.com/CartoDB/cartodb/pull/3208)
 * All connected services available in account page [#3025](https://github.com/CartoDB/cartodb/issues/3025)
 * Fixed script to purge vizjson redis [#3354](https://github.com/CartoDB/cartodb/pull/3354)
 * Fix guessing warnings when there are no rows [#3024](https://github.com/CartoDB/cartodb/pull/3363)
 * Send geocoding duration metrics [#3381](https://github.com/CartoDB/cartodb/pull/3381)
+* Several fixes for subdomainless configs [#3393](https://github.com/CartoDB/cartodb/pull/3393)
+* Disable any kind of import guessing from create dialog [#3456](https://github.com/CartoDB/cartodb/issues/3456)
+* Enable new dashboard for everyone by means of migration [#3509](https://github.com/CartoDB/cartodb/pull/3509)
+* Enabled Google Maps Basemaps [#3429](https://github.com/CartoDB/cartodb/pull/3429)
+* Remove need of api_key to enjoy common-data "Data library" [#3523](https://github.com/CartoDB/cartodb/pull/3523)
+
 
 Bugfixes:
 * Fixed interaction when there are hidden layers [#3090](https://github.com/CartoDB/cartodb/pull/3090)
@@ -22,6 +36,7 @@ Bugfixes:
 * Deleted unused endpoints for POST/DELETE api/v1/maps
 * Avoid infinite recursion when renaming table [#3330](https://github.com/CartoDB/cartodb/pull/3330)
 * Script to delete inconsistent vizs [#3342](https://github.com/CartoDB/cartodb/pull/3342)
+* Fixed problem rendering Lato font [#3461](https://github.com/CartoDB/cartodb/issues/3461)
 
 3.10.0 (2015-04-08)
 -------------------

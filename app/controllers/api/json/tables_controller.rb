@@ -44,26 +44,7 @@ class Api::Json::TablesController < Api::ApplicationController
   def show
     return head(404) if @table == nil
     return head(403) unless @table.table_visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
-    respond_to do |format|
-      format.csv do
-        send_data @table.to_csv,
-          :type => 'application/zip; charset=binary; header=present',
-          :disposition => "attachment; filename=#{@table.name}.zip"
-      end
-      format.shp do
-        send_data @table.to_shp,
-          :type => 'application/octet-stream; charset=binary; header=present',
-          :disposition => "attachment; filename=#{@table.name}.zip"
-      end
-      format.kml or format.kmz do
-        send_data @table.to_kml,
-          :type => 'application/vnd.google-earth.kml+xml; charset=binary; header=present',
-          :disposition => "attachment; filename=#{@table.name}.kmz"
-      end
-      format.json do
-        render_jsonp(@table.public_values({request:request}, current_user).merge(schema: @table.schema(reload: true)))
-      end
-    end
+    render_jsonp(@table.public_values({request:request}, current_user).merge(schema: @table.schema(reload: true)))
   end
 
   def update
@@ -129,7 +110,7 @@ class Api::Json::TablesController < Api::ApplicationController
   protected
 
   def load_table
-    @table = ::Table.get_by_id_or_name(params.fetch('id'), current_user)
+    @table = Helpers::TableLocator.get_by_id_or_name(params.fetch('id'), current_user)
   end
 end
 

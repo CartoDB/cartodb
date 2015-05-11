@@ -8,11 +8,12 @@ $cNotice:   rgba(#F2C000, 1);
 $cAlert:    rgba(#EA703D, 1);
 $cNegative: rgba(#CB3F29, 1);
 $cRoyal:    rgba(#7882B9, 1);
+$cLingon:    rgba(#AC638B, 1);
 
 //  Filled circles with an icon in the middle, typically used together with a iconFont.
 //
 // Example usage:
-//   <div class="IllustrationIcon IllustrationIcon--royal"> 
+//   <div class="IllustrationIcon IllustrationIcon--royal">
 //     <i class="iconFont iconFont-Unlock"></i>
 //   </div>
 //
@@ -43,4 +44,7 @@ $cRoyal:    rgba(#7882B9, 1);
 }
 .IllustrationIcon--royal {
   background-color: $cRoyal;
+}
+.IllustrationIcon--lingon {
+  background-color: $cLingon;
 }

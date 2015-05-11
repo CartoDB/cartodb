@@ -121,11 +121,12 @@ module CartoDB
       end
 
       def as_torque
-        # Make torque always have a SQL query too (as vizjson v2)
-        layer.options['query'] = wrap(sql_from(layer.options), layer.options)
-
         api_templates_type = options.fetch(:https_request, false) ? 'private' : 'public'
-        layer_options = decorate_with_data(layer.options, @decoration_data)
+        layer_options = decorate_with_data(
+            # Make torque always have a SQL query too (as vizjson v2)
+            layer.options.merge({ 'query' => wrap(sql_from(layer.options), layer.options) }), 
+            @decoration_data
+          )
 
         {
           id:         layer.id,
@@ -157,23 +158,33 @@ module CartoDB
 
       def infowindow_data_v1
         with_template(layer.infowindow, layer.infowindow_template_path)
-      rescue
+      rescue => e
+        Rollbar.report_exception(e)
+        throw e
       end
 
       def infowindow_data_v2
         whitelisted_infowindow(with_template(layer.infowindow, layer.infowindow_template_path))
-      rescue
+      rescue => e
+        Rollbar.report_exception(e)
+        throw e
       end
 
       def tooltip_data_v2 
         whitelisted_infowindow(with_template(layer.tooltip, layer.tooltip_template_path))
-      rescue => exception
-      puts exception
+      rescue => e
+        Rollbar.report_exception(e)
+        throw e
       end
 
       def with_template(infowindow, path)
+        # Careful with this logic:
+        # - nil means absolutely no infowindow (e.g. a torque)
+        # - path = nil or template filled: either pre-filled or custom infowindow, nothing to do here
+        # - template and path not nil but template not filled: stay and fill
+        return nil if infowindow.nil?
         template = infowindow['template']
-        return infowindow unless template.nil? || template.empty?
+        return infowindow if (!template.nil? && !template.empty?) || path.nil?
 
         infowindow.merge!(template: File.read(path))
         infowindow
@@ -250,10 +261,9 @@ module CartoDB
       end
 
       def whitelisted_infowindow(infowindow)
-        infowindow.select { |key, value| 
-          INFOWINDOW_KEYS.include?(key) ||
-          INFOWINDOW_KEYS.include?(key.to_s)
-        }
+        infowindow.nil? ? nil : infowindow.select { |key, value| 
+                                                    INFOWINDOW_KEYS.include?(key) || INFOWINDOW_KEYS.include?(key.to_s)
+                                                  }
       end
     end
   end

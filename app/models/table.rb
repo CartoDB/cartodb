@@ -191,53 +191,8 @@ class Table
       end
       UserTable.where(user_id: user_id, name: table_name).first
     }
-  end #tables_from
-
-
-  # Getter by table uuid or table name using canonical visualizations
-  # @param id_or_name String If is a name, can become qualified as "schema.tablename"
-  # @param viewer_user User
-  def self.get_by_id_or_name(id_or_name, viewer_user)
-    return nil unless viewer_user
-
-    rx = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/
-
-    table_name, table_schema = self.table_and_schema(id_or_name)
-
-    query_filters = {
-        user_id: viewer_user.id,
-        name: table_name,
-        type: CartoDB::Visualization::Member::TYPE_CANONICAL
-    }
-
-    unless table_schema.nil?
-      owner = User.where(username:table_schema).first
-      unless owner.nil?
-        query_filters[:user_id] = owner.id
-      end
-    end
-
-    # noinspection RubyArgCount
-    vis = CartoDB::Visualization::Collection.new.fetch(query_filters).select { |u|
-      u.user_id == query_filters[:user_id]
-    }.first
-    table = vis.nil? ? nil : vis.table
-
-    if rx.match(id_or_name) && table.nil?
-      table_temp = UserTable.where(id: id_or_name).first.try(:service)
-      unless table_temp.nil?
-        # Make sure we're allowed to see the table
-        vis = CartoDB::Visualization::Collection.new.fetch(
-            user_id: viewer_user.id,
-            map_id: table_temp.map_id,
-            type: CartoDB::Visualization::Member::TYPE_CANONICAL
-        ).first
-        table = vis.table unless vis.nil?
-      end
-    end
-
-    table
   end
+
 
   def self.table_and_schema(table_name)
     if table_name =~ /\./
@@ -609,10 +564,28 @@ class Table
     raise e
   end
 
+  def default_baselayer_for_user(user=nil)
+    user ||= self.owner
+    basemap = user.default_basemap
+    if basemap['className'] === 'googlemaps'
+      {
+        kind: 'gmapsbase',
+        options: basemap
+      }
+    else 
+      {
+        kind: 'tiled',
+        options: basemap.merge({ 'urlTemplate' => basemap['url'] })
+      }
+    end
+  end
+
   def create_default_map_and_layers
-    m = ::Map.create(::Map::DEFAULT_OPTIONS.merge(table_id: self.id, user_id: self.user_id))
+    baselayer = default_baselayer_for_user
+    provider = ::Map.provider_for_baselayer(baselayer)
+    m = ::Map.create(::Map::DEFAULT_OPTIONS.merge(table_id: self.id, user_id: self.user_id, provider: provider))
     @user_table.map_id = m.id
-    base_layer = ::Layer.new(Cartodb.config[:layer_opts]['base'])
+    base_layer = ::Layer.new(baselayer)
     m.add_layer(base_layer)
 
     data_layer = ::Layer.new(Cartodb.config[:layer_opts]['data'])

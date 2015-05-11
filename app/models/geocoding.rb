@@ -1,4 +1,5 @@
 # encoding: UTF-8'
+require 'timeout'
 require_relative '../../services/table-geocoder/lib/table_geocoder'
 require_relative '../../services/table-geocoder/lib/internal_geocoder.rb'
 require_relative '../../lib/cartodb/metrics'
@@ -6,6 +7,7 @@ require_relative '../../lib/cartodb/metrics'
 class Geocoding < Sequel::Model
 
   DB_TIMEOUT      = 3600000*24*2  # Way generous, 2 days is a lot
+  PROCESSING_TIMEOUT = 2.days.to_i
   ALLOWED_KINDS   = %w(admin0 admin1 namedplace postalcode high-resolution ipaddress)
 
   PUBLIC_ATTRIBUTES = [:id, :table_id, :state, :kind, :country_code, :region_code, :formatter, :geometry_type,
@@ -19,6 +21,8 @@ class Geocoding < Sequel::Model
 
   attr_reader :table_geocoder
   attr_reader :started_at, :finished_at
+
+  class ProcessingTimeoutException < StandardError; end
 
   def public_values
     Hash[PUBLIC_ATTRIBUTES.map{ |k| [k, (self.send(k) rescue self[k].to_s)] }]
@@ -111,8 +115,10 @@ class Geocoding < Sequel::Model
     self.update state: 'started', processable_rows: processable_rows
     @started_at = Time.now
 
-    # INFO: this is where the real stuff is done
-    table_geocoder.run
+    Timeout::timeout(PROCESSING_TIMEOUT, ProcessingTimeoutException) do
+      # INFO: this is where the real stuff is done
+      table_geocoder.run
+    end
 
     self.update remote_id: table_geocoder.remote_id
     self.update(table_geocoder.update_geocoding_status)

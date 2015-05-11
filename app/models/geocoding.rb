@@ -22,8 +22,6 @@ class Geocoding < Sequel::Model
   attr_reader :table_geocoder
   attr_reader :started_at, :finished_at
 
-  class ProcessingTimeoutException < StandardError; end
-
   def public_values
     Hash[PUBLIC_ATTRIBUTES.map{ |k| [k, (self.send(k) rescue self[k].to_s)] }]
   end
@@ -263,6 +261,8 @@ class Geocoding < Sequel::Model
 
     payload
   end
+
+  class ProcessingTimeoutException < StandardError; end
 
   private
 

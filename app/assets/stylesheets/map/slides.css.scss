@@ -4,11 +4,11 @@
 @import "compass/css3/images";
 @import "compass/css3/opacity";
 @import "compass/css3/transform";
-@import "../common/fonts";
-@import "../common/vars";
-@import "../common/mixins";
+@import "../old_common/fonts";
+@import "../old_common/vars";
+@import "../old_common/mixins";
 @import "../map/map-sprite";
-@import "../elements/elements-sprite";
+@import "../old_elements/elements-sprite";
 
 .slides_panel {
 

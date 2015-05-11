@@ -330,15 +330,37 @@ describe('Sublayers', function() {
       });
     });
 
-    describe('infowindow', function() {
+    describe('.infowindow', function() {
+
+      it('should be a Backbone model with the infowindow', function() {
+        var fields = [
+          {
+            position: 1,
+            name: "city",
+            title: true
+          }
+        ];
+        layerDefinition.layers[0].infowindow = {
+          fields: fields
+        }
+
+        // Force the initialization of the sublayer
+        layerDefinition.layers[0].sub = undefined;
+
+        var sublayer = layerDefinition.getSubLayer(0);
+
+        expect(sublayer.infowindow instanceof Backbone.Model).toBeTruthy();
+        expect(sublayer.infowindow.get('fields')).toEqual(fields);
+      });
 
       it('should update the infowindow in the layer definition if the infowindow changes', function() {
         sublayer.infowindow.set({fields: 'wadus'});
 
-        expect(sublayer._parent.getLayer(sublayer._position).infowindow.fields).toEqual('wadus');
+        expect(sublayer._parent.getLayer(sublayer._position).infowindow).toEqual({
+          fields: 'wadus'
+        });
       });
     });
-
 
     describe('.setSQL', function() {
 

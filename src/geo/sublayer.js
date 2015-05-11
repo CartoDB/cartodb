@@ -128,13 +128,13 @@ function CartoDBSubLayer(layer, position) {
   SubLayerBase.call(this, layer, position);
   this._bindInteraction();
 
+  var layer = this._parent.getLayer(this._position);
   // TODO: Test this
-  if (Backbone.Model && this._parent.getLayer(this._position)) {
-    this.infowindow = new Backbone.Model(this._parent.getLayer(this._position).infowindow);
+  if (Backbone.Model && layer) {
+    this.infowindow = new Backbone.Model(layer.infowindow);
     this.infowindow.bind('change', function() {
-      var def = this._parent.getLayer(this._position);
-      def.infowindow = this.infowindow.toJSON();
-      this._parent.setLayer(this._position, def);
+      layer.infowindow = this.infowindow.toJSON();
+      this._parent.setLayer(this._position, layer);
     }, this);
   }
 };

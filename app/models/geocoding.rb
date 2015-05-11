@@ -1,11 +1,13 @@
 # encoding: UTF-8'
+require 'timeout'
 require_relative '../../services/table-geocoder/lib/table_geocoder'
 require_relative '../../services/table-geocoder/lib/internal_geocoder.rb'
 require_relative '../../lib/cartodb/metrics'
 
 class Geocoding < Sequel::Model
 
-  DB_TIMEOUT      = 3600000*24*2  # Way generous, 2 days is a lot
+  DB_TIMEOUT_MS              = 100.minutes.to_i * 1000
+  PROCESSING_TIMEOUT_SECONDS = 200.minutes.to_i
   ALLOWED_KINDS   = %w(admin0 admin1 namedplace postalcode high-resolution ipaddress)
 
   PUBLIC_ATTRIBUTES = [:id, :table_id, :state, :kind, :country_code, :region_code, :formatter, :geometry_type,
@@ -52,7 +54,7 @@ class Geocoding < Sequel::Model
     # NOTE: This assumes it's being called from a Resque job
     if user.present?
       user.reset_pooled_connections
-      user_connection = user.in_database(statement_timeout: DB_TIMEOUT)
+      user_connection = user.in_database(statement_timeout: DB_TIMEOUT_MS)
     else
       user_connection = nil
     end
@@ -111,8 +113,10 @@ class Geocoding < Sequel::Model
     self.update state: 'started', processable_rows: processable_rows
     @started_at = Time.now
 
-    # INFO: this is where the real stuff is done
-    table_geocoder.run
+    Timeout::timeout(processing_timeout_seconds, ProcessingTimeoutException) do
+      # INFO: this is where the real stuff is done
+      table_geocoder.run
+    end
 
     self.update remote_id: table_geocoder.remote_id
     self.update(table_geocoder.update_geocoding_status)
@@ -135,6 +139,10 @@ class Geocoding < Sequel::Model
     CartoDB::notify_exception(e, user: user)
     self.report(e)
   end # run!
+
+  def processing_timeout_seconds
+    @processing_timeout_seconds ||= PROCESSING_TIMEOUT_SECONDS
+  end
 
   def report(error = nil)
     payload = metrics_payload(error)
@@ -253,6 +261,8 @@ class Geocoding < Sequel::Model
 
     payload
   end
+
+  class ProcessingTimeoutException < StandardError; end
 
   private
 

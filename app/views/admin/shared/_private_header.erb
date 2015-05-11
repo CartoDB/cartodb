@@ -24,6 +24,7 @@
     </div>
     <div class="Header-settings">
       <ul class="Header-settingsList">
+        <% unless cartodb_com_hosted? %>
         <li class="Header-settingsItem">
           <a target="_blank" href="http://cartodb.com/gallery/" class="Header-settingsLink">Explore</a>
         </li>
@@ -35,6 +36,7 @@
             <i class="UserNotifications-Icon iconFont iconFont-Alert"></i>
           </a>
         </li>
+        <% end %>
         <li class="Header-settingsItem Header-settingsItem--avatar">
           <button class="UserAvatar js-settings-dropdown">
             <%= image_tag current_user.avatar, :class => 'UserAvatar-img UserAvatar-img--medium' %>

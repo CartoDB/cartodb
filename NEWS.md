@@ -9,6 +9,8 @@
 # Before get last changes from master, let's remove the 
 # common submodule
 git submodule deinit app/assets/stylesheets/common
+# Clean tmp sass folder, avoiding possible compass problems
+rm -rf tmp/sass/*
 git pull origin master
 git submodule sync
 git submodule update --init

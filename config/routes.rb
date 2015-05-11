@@ -273,12 +273,21 @@ CartoDB::Application.routes.draw do
 
     get '(/user/:user_domain)(/u/:user_domain)/api/v2_1/viz/:id/viz'                        => 'visualizations#vizjson2', as: :api_v2_1_visualizations_vizjson, constraints: { id: /[^\/]+/ }
 
+    # Tables
     get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:id'                         => 'tables#show',       as: :api_v1_1_tables_show, constraints: { id: /[^\/]+/ }
 
+    # Table columns
+    # No index action
     get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:table_id/records/:id'       => 'records#show',      as: :api_v1_1_tables_records_show,   constraints: { table_id: /[^\/]+/ }
 
+    # Table records
     get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:table_id/columns'           => 'columns#index',   as: :api_v1_1_tables_columns_index,   constraints: { table_id: /[^\/]+/ }
     get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:table_id/columns/:id'       => 'columns#show',    as: :api_v1_1_tables_columns_show,    constraints: { table_id: /[^\/]+/ }
+
+    # Custom layers grouped by user
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/users/:user_id/layers'     => 'layers#index',   as: :api_v1_1_users_layers_index
+    # No show action
+
   end
 
   scope :module => 'api/json', :format => :json do

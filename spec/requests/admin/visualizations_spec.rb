@@ -183,6 +183,13 @@ describe Admin::VisualizationsController do
     end
   end # GET /viz/:id/public
 
+  describe 'GET /tables/:id/embed_map' do
+    it 'returns 404 for nonexisting tables when table name is used' do
+      get "/tables/tablethatdoesntexist/embed_map", {}, @headers
+      last_response.status.should == 404
+    end
+  end
+
   describe 'GET /viz/:name/embed_map' do
     it 'renders the view by passing a visualization name' do
       table = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC)

@@ -1,0 +1,49 @@
+
+  /**
+   *  Layer import pane styles
+   *
+   *  - Loading status
+   *  - Data warnings
+   */
+
+  @import "compass/css3/border-radius";
+  @import "old_common/vars";
+
+  .import-layer-pane {
+
+    span.loader {
+      display:block;
+      width:100%;
+      margin:15px 0 0 0;
+      padding:28px 0 0 0;
+      text-align:center;
+      background:image-url("layout/loader_transparent.gif") no-repeat center top;
+      color:#898989;
+    }
+
+    p.message,
+    .combo_wrapper,
+    p.warning { display:none }
+
+    .combo_wrapper {
+      padding:12px;
+      background:white;
+      @include border-radius(3px);
+      border:1px solid #DDD;
+    }
+
+    p.warning {
+      padding:0 14px;
+      margin:4px 0 0;
+      line-height:44px;
+      @include border-radius(3px);
+      background:#FFF8E3;
+      color:#666666;
+      font-size:14px;
+      font-family: $text-fonts;
+      border:1px solid rgba(black,0.1);
+
+      &.privacy, &.error {background:#FFEAEA;}
+    }
+
+  }

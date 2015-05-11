@@ -2,6 +2,7 @@
 3.10.2 ()
 ---------
 * Ongoing backend refactor and migration from Sequel to ActiveRecord.
+* Frontend assets cleaning [PR 3563](https://github.com/CartoDB/cartodb/pull/3563).
 
 3.10.1 (2015-05-05)
 -------------------

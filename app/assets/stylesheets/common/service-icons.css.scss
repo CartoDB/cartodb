@@ -1,0 +1,31 @@
+// Service icons
+// --------------------------------------------------
+
+@import "../variables/mixins";
+@import "../variables/colors";
+@import "../variables/sizes";
+
+.ServiceIcon {
+  display: inline-block;
+  vertical-align: middle;
+  height: 20px;
+  width: 20px;
+  margin-right: 12px;
+  @include background(image-url('layout/new_import_icons.png') no-repeat 0 0);
+}
+.ServiceIcon--gdrive {
+  width: 25px;
+  background-position: -40px -20px;
+}
+.ServiceIcon--dropbox {
+  width: 22px;
+  background-position: -18px -20px;
+}
+.ServiceIcon--mailchimp {
+  width: 18px;
+  background-position: -65px -20px;
+}
+.ServiceIcon--instagram {
+  width: 18px;
+  background-position: -146px -20px;
+}

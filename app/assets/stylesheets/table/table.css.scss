@@ -2,10 +2,10 @@
  * Styles for the CartoDB table
  */
 
-  @import "../common/vars";
-  @import "../common/form-elements";
+  @import "../old_common/vars";
+  @import "../old_common/form-elements";
   @import "../table/table-sprite";
-  @import "../elements/progress-bar";
+  @import "../old_elements/progress-bar";
 
   // Table/vis options menu
   .dropdown.table-options {

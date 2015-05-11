@@ -1,0 +1,110 @@
+// Logo
+// - Different ways to show CartoDB logo
+// --------------------------------------------------
+
+@import "../variables/mixins";
+
+$size: 40px;
+
+.Logo {
+  position: relative;
+  display: inline-block;
+}
+.Logo:after {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  width: $size + 4;
+  height: $size + 4;
+  border-radius: $size;
+  background-color: #fff;
+  @include opacity(0);
+  border: 2px solid rgba(#fff,.7);
+  border-bottom-color: transparent;
+  background: transparent;
+  @include transition(all, .4s, ease-in);
+}
+.Logo--text {
+  i {
+    line-height: $size;
+    font-size: 17px;
+    color: white;
+  }
+}
+.Logo--avatar {
+  display: inline-block;
+  vertical-align: top;
+  width: $size;
+  height: $size;
+  line-height: 54px;
+  background: white;
+  border-radius: 2px;
+  text-align: center;
+  @include transition(border-radius, .2s, linear);
+
+  i {
+    font-size: 25px;
+    color: #3C93D8;
+  }
+}
+.Logo--grey {
+  min-width: $size;
+  width: $size;
+  height: $size;
+  background-color:#CCCCCC;
+  border-radius: 3px;
+  line-height: 53px;
+  text-align: center;
+  i {
+    font-size: 24px;
+    color: white;
+  }
+}
+.Logo-sub {
+  position: absolute;
+  right: -8px;
+  top: -8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 24px;
+  z-index: 1;
+  @include animation(fade-and-bounce-up 0.6s 350ms ease-in-out backwards);
+}
+.Logo-sub--google { @include background(image-url('layout/google-platform-logo.png') no-repeat center center white) }
+.Logo.is-loading {
+  .Logo--avatar { border-radius: $size+1 }
+  
+  &:after {
+    @include animation(spin 0.7s linear infinite);
+    @include opacity(1);
+  }
+}
+
+@include keyframes(spin){
+  100%{
+    @include transform(rotate(360deg));
+  }
+}
+
+@include keyframes(fade-and-bounce-up) {
+  0% {
+    @include opacity(0.0);
+    @include transform(translateY(6px));
+  }
+  15% {
+    @include opacity(0.8);
+    @include transform(translateY(-3px));
+  }
+  45% {
+    @include opacity(1.0);
+    @include transform(translateY(2px));
+  }
+  70% {
+    @include transform(translateY(-1px));
+  }
+  100% {
+    @include opacity(1.0);
+    @include transform(translateY(0));
+  }
+}

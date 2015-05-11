@@ -1,0 +1,65 @@
+@import "../variables/mixins";
+@import "../variables/colors";
+@import "../variables/sizes";
+
+
+// Error details dialog styles
+$width: 620px;
+.ErrorDetails {}
+.ErrorDetails-header .Dialog-headerIcon {
+  line-height: 40px;
+  margin-bottom: 15px;
+}
+.ErrorDetails-header .Dialog-headerTitle { color: $cHighlight-negative }
+.ErrorDetails-header .Dialog-headerText { font-size: 14px }
+.ErrorDetails-body {
+  min-width: initial;
+  width: $width;
+}
+.ErrorDetails-body--no-line {
+  padding:0;
+  border-top: none;
+}
+.ErrorDetails-list {}
+.ErrorDetails-item {
+  @include display-flex();
+  @include justify-content(flex-start, start);
+  @include align-items(center, center);
+  border-bottom: 1px solid $cStructure-mainLine;
+  padding: 20px 0;
+}
+.ErrorDetails-item:first-child { padding-top: 0 }
+.ErrorDetails-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.ErrorDetails-itemStep {
+  width: 38px;
+  height: 38px;
+  margin-right: 20px;
+  border-radius: 38px;
+  border: 1px solid #CCC;
+  line-height: 38px;
+  color: $cTypography-paragraphs;
+  font-size: $sFontSize-normal;
+  text-align: center;
+}
+.ErrorDetails-itemText {
+  width: $width - 120;
+  font-weight: $sFontWeight-lighter;
+  font-size: 14px;
+  color: $cTypography-paragraphs;
+}
+.ErrorDetails-itemTextStrong { color: $cTypography-headers }
+.ErrorDetails-footer {
+  width: $width;
+  margin: 0 auto;
+  text-align: center;
+}
+.ErrorDetails-footer--no-line { border-top: none }
+.ErrorDetails-footerButton {
+  display: inline-block;
+  padding-left: 40px;
+  padding-right: 40px;
+  line-height: 40px;
+}

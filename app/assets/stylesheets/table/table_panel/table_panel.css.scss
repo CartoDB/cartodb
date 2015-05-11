@@ -4,10 +4,10 @@
  * - SQL, facets, ...
  */
 
-@import "../../common/mixins";
-@import "../../common/form-elements";
-@import "../../common/vars";
-@import "../../common/common-sprite";
+@import "../../old_common/mixins";
+@import "../../old_common/form-elements";
+@import "../../old_common/vars";
+@import "../../old_common/common-sprite";
 @import "../../table/table-sprite";
 
 $corner_radius: 6px;

@@ -563,9 +563,16 @@ class Admin::VisualizationsController < ApplicationController
   end
 
   def get_visualization_and_table_from_table_id(table_id)
+    return nil, nil if !is_uuid?(table_id)
     user_table = Carto::UserTable.where({ id: table_id }).first
     return nil, nil if user_table.nil?
     visualization = user_table.visualization
     return Carto::Admin::VisualizationPublicMapAdapter.new(visualization), visualization.table_service
   end
+
+  # TODO: remove this method and use  app/helpers/carto/uuidhelper.rb. Not used yet because this changed was pushed before
+  def is_uuid?(text)
+    !(Regexp.new(%r{\A#{UUIDTools::UUID_REGEXP}\Z}) =~ text).nil?
+  end
+
 end

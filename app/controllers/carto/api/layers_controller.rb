@@ -22,6 +22,8 @@ module Carto
       end
 
       def show
+        raise RecordNotFound unless is_uuid?(params[:id]) 
+
         layer = @parent.layers.where(id: params[:id]).first
         raise RecordNotFound if layer.nil?
         
@@ -38,11 +40,11 @@ module Carto
       end
 
       def user_from(params={})
-        current_user if params[:user_id]
+        current_user if (params[:user_id] && is_uuid?(params[:user_id]))
       end
 
       def map_from(params={})
-        return unless params[:map_id]
+        return if (!params[:map_id] || !is_uuid?(params[:map_id]))
 
         # User must be owner or have permissions for the map's visualization
         vis = Carto::Visualization.where({
@@ -52,6 +54,11 @@ module Carto
         raise RecordNotFound if vis.nil?
 
         Carto::Map.where(id: params[:map_id]).first
+      end
+
+      # TODO: remove this method and use  app/helpers/carto/uuidhelper.rb. Not used yet because this changed was pushed before
+      def is_uuid?(text)
+        !(Regexp.new(%r{\A#{UUIDTools::UUID_REGEXP}\Z}) =~ text).nil?
       end
 
     end

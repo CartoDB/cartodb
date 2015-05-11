@@ -115,7 +115,7 @@ class Geocoding < Sequel::Model
     self.update state: 'started', processable_rows: processable_rows
     @started_at = Time.now
 
-    Timeout::timeout(PROCESSING_TIMEOUT_SECONDS, ProcessingTimeoutException) do
+    Timeout::timeout(processing_timeout_seconds, ProcessingTimeoutException) do
       # INFO: this is where the real stuff is done
       table_geocoder.run
     end
@@ -141,6 +141,10 @@ class Geocoding < Sequel::Model
     CartoDB::notify_exception(e, user: user)
     self.report(e)
   end # run!
+
+  def processing_timeout_seconds
+    @processing_timeout_seconds ||= PROCESSING_TIMEOUT_SECONDS
+  end
 
   def report(error = nil)
     payload = metrics_payload(error)

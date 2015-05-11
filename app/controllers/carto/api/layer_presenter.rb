@@ -16,6 +16,10 @@ module Carto
          public_values(@layer).merge(children_for(@layer))
       end
 
+      def to_json
+         public_values(@layer).merge(children_for(@layer)).to_json
+      end
+
       private
 
       def public_values(layer)

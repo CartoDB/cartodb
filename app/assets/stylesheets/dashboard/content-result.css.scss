@@ -1,0 +1,131 @@
+// Content Result
+// 
+// Show the result of any action made in the
+// dashboard, example (search, no results, error,
+// loading, ...) 
+// --------------------------------------------------
+
+@import "compass/css3/images";
+@import "../variables/colors";
+@import "../variables/mixins";
+@import "../variables/sizes";
+
+.ContentResult {
+  width: 460px;
+  min-height: 360px;
+  margin: 0 auto;
+  padding-top: 160px;
+  text-align: center;
+}
+.ContentResult.is-empty {
+  width: auto;
+  margin: 0 auto;
+  padding-top: 0;
+  min-height: 0;
+}
+.ContentResult.no-datasets {
+  position: relative;
+  width: auto;
+  margin: 0 auto;
+  padding: 100px 0;
+  min-height: 0;
+  @include background(image-url('layout/no_datasets_bkg.png') center center no-repeat #F1F7FC);
+  box-shadow: 1px 0 0 1px $cStructure-softLine;
+  z-index: 9;
+
+  &:after,
+  &:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    z-index: 0;
+  }  
+
+  &:after {
+    left: 50%;
+    right: 0;
+    margin-left: 470px;
+    @include background-horizontal(rgba(#F1F7FC,0), rgba(#F1F7FC,1));
+  }
+
+  &:before {
+    left: 0;
+    right: 50%;
+    margin-right: 470px;
+    background-color: transparent!important;
+    @include background-horizontal(rgba(#F1F7FC,1), rgba(#F1F7FC,0));
+  }
+}
+.ContentResult-smallLoader {
+  position: absolute;
+  top: -2px;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 2px;
+  background: transparent;
+  overflow: hidden;
+  z-index: 10;
+
+  &:before {
+    content: '';
+    position: absolute;
+    display: block;
+    width: 600px;
+    right: 0;
+    height: 2px;
+    background: rgba(black, 0.55);
+    @include animation(pulsate 1.5s linear infinite);      
+  }
+}
+.ContentResult-icon {
+  @include inline-block();
+  width: 38px;
+  height: 38px;
+  border: 1px solid $cStructure-mainLine;
+  border-radius: 2px;
+  line-height:36px;
+  font-size: 22px;
+  color: $cTypography-help;
+}
+// Icon types
+.ContentResult-iconNegative {
+  border-color: $cHighlight-negative;
+  color: $cHighlight-negative;
+}
+.ContentResult-iconPositive {
+  border-color: $cHighlight-positive;
+  color: $cHighlight-positive;
+}
+.ContentResult-iconAlert {
+  border-color: $cHighlight-alert;
+  color: $cHighlight-alert;
+}
+.ContentResult-title {
+  display: block;
+  margin: 15px 0 10px 0;
+  font-size: $sFontSize-largest;
+  font-weight: $sFontWeight-normal;
+  line-height: $sLineHeight-largest;
+  color: $cTypography-paragraphs;
+}
+.ContentResult-text {
+  display: block;
+  font-size: $sFontSize-large;
+  color: $cTypography-paragraphs;
+  font-weight: $sFontWeight-lighter;
+}
+.ContentResult-textTitle {
+  color: $cTypography-link;
+  text-decoration: underline;
+  &:hover {
+    color: $cTypography-linkHover;
+  }
+}
+
+@include keyframes(pulsate) {
+  0% {right:100%;}
+  50% {right:0%}
+  100% {right:-100%}
+}

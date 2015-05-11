@@ -4,10 +4,10 @@
 @import "compass/css3/images";
 @import "compass/css3/opacity";
 @import "compass/css3/transform";
-@import "../common/vars";
-@import "../common/mixins";
+@import "../old_common/vars";
+@import "../old_common/mixins";
 @import "../map/map-sprite";
-@import "../elements/elements-sprite";
+@import "../old_elements/elements-sprite";
 
 div.dropdown.map_options_dropdown {
 

@@ -1,0 +1,266 @@
+
+  /**
+   *  Styles for color picker dropdown!
+   *
+   */
+
+
+  @import "compass/css3/inline-block";
+  @import "compass/css3/images";
+  @import "compass/css3/opacity";
+  @import "compass/css3/transform";
+  @import "../old_common/mixins";
+  @import "../old_common/vars";
+  @import "../old_elements/elements-sprite";
+
+
+
+  // Related color dropdown
+  div.dropdown.color_picker {
+    border:1px solid #999999;
+
+    // Places
+    div.top,
+    div.content,
+    div.bottom { display:block }
+
+    div.top {
+      position:relative;
+      padding:8px;
+      overflow:visible;
+      background:#EEEEEE;
+      text-align:center;
+      @include border-top-radius(3px);
+      border-bottom:1px solid #D6D6D6;
+
+      &.advanced {
+        height:100px;
+
+        .advanced { display:none }
+        .picker-wrapper,
+        .slider-wrapper {
+          display:block!important;
+        }
+      }
+    }
+
+    div.content,
+    div.bottom {
+      overflow:auto;
+      padding:8px;
+    }
+
+    div.bottom { padding-top:0 }
+
+
+    // Picker
+    .picker-wrapper,
+    .slider-wrapper {
+      position:relative;
+      display:none;
+    }
+
+    .picker-wrapper {
+      float:left;
+      width:164px;
+      height:100px;
+    }
+
+    .picker {
+      @include inline-block();
+      width:164px;
+      height:100px;
+      @include border-left-radius(2px);
+      cursor: crosshair;
+
+      &:before {
+        content:'';
+        position:absolute;
+        @include position(0,0,0,0);
+        border:1px solid rgba(white,0.4);
+      }
+    }
+
+    .picker-indicator {
+      position: absolute;
+      width:6px;
+      height:6px;
+      border:1px solid black;
+      @include border-radius(10px);
+      z-index:1;
+
+      &:before {
+        content:'';
+        position:absolute;
+        left:-2px;
+        top:-2px;
+        width:8px;
+        height:8px;
+        border:1px solid white;
+        @include border-radius(10px);
+        z-index:0;
+      }
+    }
+
+    // Picker slider
+    .slider-wrapper {
+      float:right;
+      width:13px;
+      height:100px;
+    }
+
+    .slider {
+      @include inline-block();
+      width:13px;
+      height:100px;
+      @include border-right-radius(2px);
+      cursor: crosshair;
+    }
+    .slider-indicator {
+      position: absolute;
+      left:-2px;
+      width: 15px;
+      height: 1px;
+      background:black;
+      border:1px solid white;
+    }
+
+    // Advanced link
+    a.advanced {
+      display:block;
+      font-size:13px;
+    }
+
+    // Lists
+    div.colors {
+      position:relative;
+      width:100%;
+    }
+
+    ul.default-colors {
+      display:block;
+      width:100%;
+      margin:0;
+      letter-spacing:-4px;
+      @include border-radius(2px);
+
+      li {
+        @include inline-block();
+        vertical-align:top;
+        letter-spacing:0px;
+        width:12px;
+        height:20px;
+        padding:0;
+        margin:0;
+        border:none;
+
+        a {
+          position:relative;
+          width:12px;
+          height:20px;
+          padding:0;
+          margin:0;
+
+          &:hover {
+            z-index:2;
+            &:before {
+              content:' ';
+              position:absolute;
+              top:-1px;
+              bottom:-1px;
+              left:-1px;
+              right:-1px;
+              border:1px solid white;
+              z-index:2;
+            }
+          }
+        }
+
+        &:first-child a { @include border-top-left-radius(2px) }
+        &:nth-child(16) a { @include border-bottom-left-radius(2px) }
+        &:nth-child(15) a {
+          @include border-top-right-radius(2px);
+          &:before { border-color:#ABABAB; @include border-top-right-radius(2px); }
+        }
+        &:last-child a { @include border-bottom-right-radius(2px) }
+      }
+
+      // Extra colors list
+      &.extra {
+        margin-top: 1px;
+
+        li {
+          &:first-child a { @include border-left-radius(2px) }
+          &:last-child a { @include border-right-radius(2px) }
+        }
+      }
+    }
+
+
+
+    .form_input_color {
+      letter-spacing:-4px;
+
+      span.color {
+        position:relative;
+        @include inline-block();
+        @include border-left-radius(3px);
+        width:12px;
+        height:21px;
+        letter-spacing:0px;
+
+        &:before {
+          content:' ';
+          position:absolute;
+          left:0;
+          top:0;
+          width:10px;
+          height:19px;
+          background:none;
+          @include border-left-radius(3px);
+          border:1px solid rgba(0,0,0,0.2);
+        }
+      }
+
+      input.text {
+        @include inline-block();
+        vertical-align:top;
+        width:48px;
+        height:13px;
+        padding:3px;
+        border:1px solid rgba(0,0,0,0.2);
+        border-left:0;
+        font:normal 11px $text-fonts;
+        line-height:13px;
+        @include border-right-radius(3px);
+        letter-spacing:0px;
+        color:#666666;
+        &:focus {
+          outline:none;
+          border-color:rgba(0,0,0,0.4);
+        }
+        &.error,&.error:focus {
+          border-color:rgba(#F84F40,0.8);
+        }
+      }
+
+      input.submit {
+        @include inline-block();
+        vertical-align:top;
+        width:50px;
+        height:21px;
+        padding:0!important;
+        margin:0 0 0 3px;
+        line-height:21px;
+        font-size:12px!important;
+      }
+    }
+
+    // Basemap tail
+    &.basemap:before {
+      left:-5px!important;
+      border-right:6px solid #EEEEEE!important;
+    }
+  }
+
+  

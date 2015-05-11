@@ -1,0 +1,57 @@
+@import "../variables/mixins";
+@import "../variables/colors";
+@import "../variables/sizes";
+
+
+// Upgrade element
+.UpgradeElement {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center);
+  padding: 20px;
+  background: $cCard-hoverFill;
+  border: 1px solid #E0E0E0;
+  border-radius: $sIcon-borderRadius;
+}
+.UpgradeElement--fixed {
+  width: 500px;
+  margin: 30px 0;
+}
+.UpgradeElement--noMargins {
+  padding: 0;
+  border: none;
+  border-radius: 0;
+}
+.UpgradeElement-info {
+  @include display-flex();
+  @include justify-content(flex-start, start);
+  @include align-items(center);
+}
+.UpgradeElement-infoIcon {
+  border-color: #1899DD;
+  color: #008EDA;
+  margin-right: $sMargin-element;
+  line-height: $sLineHeight-normal;
+}
+.UpgradeElement-infoText {
+  font-size: $sFontSize-large;
+  color: $cTypography-paragraphs;
+}
+.UpgradeElement-actions {
+  @include display-flex();
+  @include justify-content(flex-start, start);
+  @include align-items(center); 
+}
+.UpgradeElement-trial {
+  @include display-flex();
+  @include justify-content(flex-start, start);
+  @include align-items(center);
+}
+.UpgradeElement-trialIcon,
+.UpgradeElement-trialText {
+  color: $cTypography-paragraphs;
+  font-size: $sFontSize-normal;
+  line-height: $sLineHeight-normal;
+}
+.UpgradeElement-trialText { margin-left: 5px }
+.UpgradeElement-button { margin-left: 20px }

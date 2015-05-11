@@ -70,17 +70,14 @@ class Admin::VisualizationsController < ApplicationController
       end
     end
 
-    return(pretty_404) unless @visualization
-    return(pretty_404) if disallowed_type?(@visualization)
-
     @google_maps_api_key = @visualization.user.google_maps_api_key
     @basemaps = @visualization.user.basemaps
 
     unless @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
       if request.original_fullpath =~ %r{/tables/}
-        CartoDB.url(self, 'public_table_map', {id: request.params[:id], redirected:true})
+        return redirect_to CartoDB.url(self, 'public_table_map', {id: request.params[:id], redirected:true})
       else
-        CartoDB.url(self, 'public_visualizations_public_map', {id: request.params[:id], redirected:true})
+        return redirect_to CartoDB.url(self, 'public_visualizations_public_map', {id: request.params[:id], redirected:true})
       end
     end
 
@@ -90,8 +87,7 @@ class Admin::VisualizationsController < ApplicationController
   end
 
   def public_table
-    return(pretty_404) if @visualization.nil? || @visualization.private?
-    return(pretty_404) if disallowed_type?(@visualization)
+    return(render_pretty_404) if @visualization.private?
 
     if @visualization.derived?
       if current_user.nil? || current_user.username != request.params[:user_domain]
@@ -188,9 +184,6 @@ class Admin::VisualizationsController < ApplicationController
   end
 
   def public_map
-    return(pretty_404) unless @visualization
-    return(pretty_404) if disallowed_type?(@visualization)
-
     if current_user.nil? && !request.params[:redirected].present?
       redirect_url = get_corrected_url_if_proceeds(for_table=false)
       unless redirect_url.nil?
@@ -263,7 +256,6 @@ class Admin::VisualizationsController < ApplicationController
 
   def show_organization_public_map
     return(embed_forbidden) unless org_user_has_map_permissions?(current_user, @visualization)
-    return(pretty_404) if disallowed_type?(@visualization)
 
     @can_fork = @visualization.related_tables.map { |t|
       t.table_visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
@@ -287,13 +279,12 @@ class Admin::VisualizationsController < ApplicationController
     @hide_logo = is_logo_hidden(@visualization, params)
 
     respond_to do |format|
-      format.html { render 'public_map', layout: false }
+      format.html { render 'public_map' }
     end
   end
 
   def show_organization_embed_map
     return(embed_forbidden) unless org_user_has_map_permissions?(current_user, @visualization)
-    return(pretty_404) if disallowed_type?(@visualization)
 
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
     response.headers['Surrogate-Key'] = "#{CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES} #{@visualization.surrogate_key}"
@@ -302,14 +293,13 @@ class Admin::VisualizationsController < ApplicationController
     @protected_map_tokens = current_user.get_auth_tokens
 
     respond_to do |format|
-      format.html { render 'embed_map', layout: false }
+      format.html { render 'embed_map' }
     end
   end
 
   def show_protected_public_map
     submitted_password = params.fetch(:password, nil)
-    return(pretty_404) unless @visualization and @visualization.password_protected? and @visualization.has_password?
-    return(pretty_404) if disallowed_type?(@visualization)
+    return(render_pretty_404) unless @visualization.password_protected? and @visualization.has_password?
 
     unless @visualization.is_password_valid?(submitted_password)
       flash[:placeholder] = '*' * (submitted_password ? submitted_password.size : DEFAULT_PLACEHOLDER_CHARS)
@@ -348,8 +338,7 @@ class Admin::VisualizationsController < ApplicationController
 
   def show_protected_embed_map
     submitted_password = params.fetch(:password, nil)
-    return(pretty_404) unless @visualization and @visualization.password_protected? and @visualization.has_password?
-    return(pretty_404) if disallowed_type?(@visualization)
+    return(render_pretty_404) unless @visualization.password_protected? and @visualization.has_password?
 
     unless @visualization.is_password_valid?(submitted_password)
       flash[:placeholder] = '*' * (submitted_password ? submitted_password.size : DEFAULT_PLACEHOLDER_CHARS)
@@ -370,9 +359,6 @@ class Admin::VisualizationsController < ApplicationController
   end
 
   def embed_map
-    return(pretty_404) unless @visualization
-    return(pretty_404) if disallowed_type?(@visualization)
-
     return(embed_forbidden) if @visualization.private?
     return(embed_protected) if @visualization.password_protected?
     return(show_organization_embed_map) if org_user_has_map_permissions?(current_user, @visualization)
@@ -416,7 +402,7 @@ class Admin::VisualizationsController < ApplicationController
 
   # @param visualization CartoDB::Visualization::Member
   def disallowed_type?(visualization)
-    return false if visualization.nil?
+    return true if visualization.nil?
     visualization.type_slide?
   end
 
@@ -455,6 +441,7 @@ class Admin::VisualizationsController < ApplicationController
     if @visualization && @visualization.user
       @more_visualizations = more_visualizations(@visualization.user, @visualization)
     end
+    render_pretty_404 if disallowed_type?(@visualization)
   end
 
   # If user A shares to user B a table link (being both from same org), attept to rewrite the url to the correct format
@@ -554,7 +541,7 @@ class Admin::VisualizationsController < ApplicationController
     current_user.set_last_ip_address request.remote_ip
   end
 
-  def pretty_404
+  def render_pretty_404
     render(file: "public/404.html", layout: false, status: 404)
   end
 
@@ -571,12 +558,12 @@ class Admin::VisualizationsController < ApplicationController
     # INFO: organization public visualizations
     user_id = user ? user.id : nil
     visualization = Carto::VisualizationQueryBuilder.new.with_id_or_name(table_id).with_user_id(user_id).build.first
-    return get_visualization_and_table_from_table_id(table_id, user, filter) if visualization.nil?
+    return get_visualization_and_table_from_table_id(table_id) if visualization.nil?
     return Carto::Admin::VisualizationPublicMapAdapter.new(visualization), visualization.table_service
   end
 
-  def get_visualization_and_table_from_table_id(table_id, user, filter)
-    user_table = Carto::UserTable.where({ id: table_id, user_id: user.id }).first
+  def get_visualization_and_table_from_table_id(table_id)
+    user_table = Carto::UserTable.where({ id: table_id }).first
     return nil, nil if user_table.nil?
     visualization = user_table.visualization
     return Carto::Admin::VisualizationPublicMapAdapter.new(visualization), visualization.table_service

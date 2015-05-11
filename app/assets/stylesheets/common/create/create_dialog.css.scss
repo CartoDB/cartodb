@@ -1,0 +1,11 @@
+@import "../../variables/mixins";
+@import "../../variables/colors";
+@import "../../variables/sizes";
+
+
+.Dialog-body.CreateDialog-body {
+  position: relative;
+  width: 100%;
+  padding: 35px 0 0;
+  overflow: auto;
+}

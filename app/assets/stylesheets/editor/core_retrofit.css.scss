@@ -1,9 +1,9 @@
-// Retrofit of common/core, carried over to retrofit new_common default with the old styles while migrating
+// Retrofit of common/core, carried over to retrofit new_common (now plain common) default with the old styles while migrating
 @import "compass/css3/box-shadow";
 @import "compass/css3/border-radius";
 @import "compass/css3/opacity";
-@import "../new_common/default";
-@import "../common/vars";
+@import "../common/default";
+@import "../old_common/vars";
 
 body {
   min-width: $w;

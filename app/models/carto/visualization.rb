@@ -277,8 +277,6 @@ class Carto::Visualization < ActiveRecord::Base
     self.user_id == user.id
   end
 
-  private
-
   def configuration
     return {} unless defined?(Cartodb)
     Cartodb.config

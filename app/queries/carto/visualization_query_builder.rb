@@ -7,6 +7,8 @@ require_relative '../../helpers/carto/uuidhelper'
 class Carto::VisualizationQueryBuilder
   include Carto::UUIDHelper
 
+  SUPPORTED_OFFDATABASE_ORDERS = ['mapviews', 'likes']
+
   def self.user_public_tables(user)
     self.user_public(user).with_type(Carto::Visualization::TYPE_CANONICAL)
   end
@@ -32,6 +34,7 @@ class Carto::VisualizationQueryBuilder
     @eager_load_associations = []
     @eager_load_nested_associations = {}
     @order = {}
+    @offdatabase_order = {}
   end
 
   def with_id_or_name(id_or_name)
@@ -118,7 +121,12 @@ class Carto::VisualizationQueryBuilder
   end
 
   def with_order(order, asc_desc = :asc)
-    @order[order] = asc_desc
+    offdatabase_order = offdatabase_order(order)
+    if offdatabase_order
+      @offdatabase_order[offdatabase_order] = asc_desc
+    else
+      @order[order] = asc_desc
+    end
     self
   end
 
@@ -200,7 +208,11 @@ class Carto::VisualizationQueryBuilder
       query = query.reverse_order if v == :desc
     }
 
-    query
+    if @offdatabase_order.empty?
+      query
+    else
+      Carto::OffdatabaseQueryAdapter.new(query, @offdatabase_order)
+    end
   end
 
   def build_paged(page = 1, per_page = 20)
@@ -208,6 +220,13 @@ class Carto::VisualizationQueryBuilder
   end
 
   private
+
+  def offdatabase_order(order)
+    return nil unless order.kind_of? String
+    splitted = order.split('.')
+    order_attribute = splitted[splitted.count - 1]
+    SUPPORTED_OFFDATABASE_ORDERS.include?(order_attribute) ? order_attribute : nil
+  end
 
   def with_include_of(association)
     @include_associations << association

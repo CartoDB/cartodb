@@ -28,7 +28,7 @@ module Carto
     def process_by_id(id)
       return nil if !is_uuid?(id)
 
-      import = Carto::DataImport.find(id)
+      import = Carto::DataImport.where(id: id).first
 
       if stuck?(import)
         # INFO: failure because of stuck is handled with old model

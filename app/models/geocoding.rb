@@ -138,7 +138,6 @@ class Geocoding < Sequel::Model
 
   def report(error = nil)
     payload = metrics_payload(error)
-    # TODO: replace with Hubspot tracking
     CartoDB::Metrics.new.report(:geocoding, payload)
     payload.delete_if {|k,v| %w{distinct_id email table_id}.include?(k.to_s)}
     geocoding_logger.info(payload.to_json)

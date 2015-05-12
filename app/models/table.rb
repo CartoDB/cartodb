@@ -1445,7 +1445,7 @@ class Table
 
   def update_cdb_tablemetadata
     owner.in_database(as: :superuser).run(%Q{
-      SELECT CDB_TableMetadataTouch('#{@user_table.table_id}')
+      SELECT CDB_TableMetadataTouch('#{qualified_table_name}')
     })
   end
 

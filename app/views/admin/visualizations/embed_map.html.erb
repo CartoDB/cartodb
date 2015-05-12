@@ -1,3 +1,7 @@
+<%= content_for(:title) do %>
+  <%= @visualization.name.gsub(/_/," ") %> | CartoDB
+<% end %>
+
 <%= content_for(:css) do %>
   <%= render :partial => 'admin/visualizations/public/embed_map_inline_css' %>
 <% end %>

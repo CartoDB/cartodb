@@ -1,3 +1,30 @@
+// This is the equivalent of the old waitsFor/runs syntax
+// which was removed from Jasmine 2
+waitsForAndRuns = function(escapeFunction, runFunction, escapeTime) {
+
+  // check the escapeFunction every millisecond so as soon as it is met we can escape the function
+  var interval = setInterval(function() {
+    if (escapeFunction()) {
+      clearMe();
+      runFunction();
+    }
+  }, 1);
+
+  // in case we never reach the escapeFunction, we will time out
+  // at the escapeTime
+  var timeOut = setTimeout(function() {
+    clearMe();
+    runFunction();
+  }, escapeTime);
+
+  // clear the interval and the timeout
+  function clearMe(){
+    clearInterval(interval);
+    clearTimeout(timeOut);
+  }
+};
+
+
 describe("Image", function() {
 
   beforeEach(function() {
@@ -283,11 +310,12 @@ describe("Image", function() {
 
     var regexp = new RegExp("http://a.ashbu.cartocdn.com/documentation/api/v1/map/static/center/(.*?)/7/40/10/400/300\.png");
 
-    setTimeout(function() {
+    waitsForAndRuns(function() {
+      return !!$("#image").attr("src");
+    }, function() {
       expect($("#image").attr("src")).toMatch(regexp);
       done();
-    }, 900);
-
+    }, jasmine.DEFAULT_TIMEOUT_INTERVAL);
   });
 
   it("should generate an image using a layer definition", function(done) {

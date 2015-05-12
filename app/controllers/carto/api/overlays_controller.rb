@@ -9,7 +9,9 @@ module Carto
       before_filter :check_owner_by_id, only: [ :show ]
 
       def index
-        collection = Carto::Overlay.where(visualization_id: params.fetch('visualization_id'))
+        collection = Carto::Overlay.where(visualization_id: params.fetch('visualization_id')).map { |overlay|
+          Carto::Api::OverlayPresenter.new(overlay).to_poro
+        }
         render_jsonp(collection)
       rescue KeyError
         head :not_found

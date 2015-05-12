@@ -1,10 +1,11 @@
 require 'rollbar'
+require_relative 'hubspot'
 
 module CartoDB
   class Metrics
 
     def initialize
-      @hubspot = ::Hubspot.new
+      @hubspot = CartoDB::Hubspot.new
     end
 
     def report(event, payload)

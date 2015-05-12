@@ -286,7 +286,7 @@ describe("Image", function() {
     setTimeout(function() {
       expect($("#image").attr("src")).toMatch(regexp);
       done();
-    }, 800);
+    }, 900);
 
   });
 

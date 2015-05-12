@@ -101,6 +101,8 @@ WORKING_SPECS_6 = \
   spec/rspec_configuration.rb \
   spec/requests/api/assets_spec.rb \
   spec/requests/api/user_layers_spec.rb \
+  spec/requests/api/json/layers_controller_spec.rb \
+  spec/requests/carto/api/layers_controller_spec.rb \
   spec/requests/api/map_layers_spec.rb \
   spec/requests/api/json/records_controller_spec.rb \
   spec/requests/carto/api/records_controller_spec.rb \
@@ -131,6 +133,8 @@ WORKING_SPECS_8 = \
   spec/requests/superadmin/users_spec.rb \
   spec/requests/superadmin/organizations_spec.rb \
   spec/requests/api/visualizations_spec.rb \
+  spec/requests/api/json/maps_controller_spec.rb \
+  spec/requests/carto/api/maps_controller_spec.rb \
   $(NULL)
 
 WORKING_SPECS_9 = \

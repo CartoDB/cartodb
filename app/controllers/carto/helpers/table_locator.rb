@@ -7,7 +7,7 @@ module Carto
       # Getter by table uuid or table name using canonical visualizations
       # @param id_or_name String If is a name, can become qualified as "schema.tablename"
       # @param viewer_user User
-      def self.get_by_id_or_name(id_or_name, viewer_user)
+      def get_by_id_or_name(id_or_name, viewer_user)
         return nil unless viewer_user
 
         rx = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/

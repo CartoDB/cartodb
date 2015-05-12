@@ -27,7 +27,6 @@ shared_examples_for "layers controllers" do
 
     let(:params) { { :api_key => @user.api_key } }
 
-
     it "Get all user layers" do
       layer = Layer.create kind: 'carto'
       layer2 = Layer.create kind: 'tiled'
@@ -43,6 +42,45 @@ shared_examples_for "layers controllers" do
       end
     end
 
+    it "Gets layers by map id" do
+      layer = Layer.create({
+          kind: 'carto',
+          tooltip: {},
+          options: {},
+          infowindow: {}
+        })
+      layer2 = Layer.create({
+          kind: 'tiled',
+          tooltip: {},
+          options: {},
+          infowindow: {}
+        })
+
+      existing_layers_ids = @table.map.layers.collect(&:id)
+      existing_layers_count = @table.map.layers.count
+
+      @table.map.add_layer layer
+      @table.map.add_layer layer2
+
+      get_json api_v1_maps_layers_index_url(params.merge(map_id: @table.map.id)) do |response|
+        response.status.should be_success
+        response.body[:total_entries].should == 2 + existing_layers_count
+        response.body[:layers].size.should == 2 + existing_layers_count
+        new_layers_ids = response.body[:layers].collect { |layer| layer['id'] }
+        (new_layers_ids - existing_layers_ids).should == [layer.id, layer2.id]
+      end
+
+      get_json api_v1_maps_layers_show_url(params.merge({ 
+            map_id: @table.map.id,
+            id: layer.id
+          })) do |response|
+        response.status.should be_success
+        response.body[:id].should == layer.id
+        response.body[:kind].should == layer.kind
+      end
+
+
+    end
 
   end
 

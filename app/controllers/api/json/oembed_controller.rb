@@ -22,8 +22,7 @@ class Api::Json::OembedController < Api::ApplicationController
     uri = URI.parse(url)
 
     begin
-      # TODO: remove this method and use  app/helpers/carto/uuidhelper.rb. Not used yet because this changed was pushed before
-      uuid = /\A(\w{8}-\w{4}-\w{4}-\w{4}-\w{12})\z/.match(uri.path)[0]
+      uuid = extract_uuid_from_string(uri.path)
     rescue NoMethodError
       raise ActionController::RoutingError.new('UUID not found in URL')
     end
@@ -154,6 +153,17 @@ class Api::Json::OembedController < Api::ApplicationController
     path_fragments = url_fragments[5].split('/')
     raise UrlFRagmentsError.new("Username not found at url") if path_fragments.length < 3 || path_fragments[2].length == 0
     path_fragments[2]
+  end
+
+  def extract_uuid_from_string(str)
+    # TODO: move this method to  app/helpers/carto/uuidhelper.rb. Not used yet because this changed was pushed before
+    # UUIDTools::UUID_REGEXP cannot be reused because of /^ $/
+    matches = /([0-9a-f]{8})-([0-9a-f]{4})-([0-9a-f]{4})-([0-9a-f]{2})([0-9a-f]{2})-([0-9a-f]{12})/.match(str)
+    if matches
+      match[0]
+    else
+      nil
+    end
   end
 
 end

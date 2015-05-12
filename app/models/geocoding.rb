@@ -14,6 +14,10 @@ class Geocoding < Sequel::Model
                        :error, :processed_rows, :cache_hits, :processable_rows, :real_rows, :price,
                        :used_credits, :remaining_quota, :country_column, :region_column, :data_import_id]
 
+  # Characters in the following Unicode categories: Letter, Mark, Number and Connector_Punctuation,
+  # plus spaces and single quotes
+  SANITIZED_FORMATTER_REGEXP = /\A[[[:word:]]\s\,\']*\z/
+
   many_to_one :user
   many_to_one :user_table, :key => :table_id
   many_to_one :automatic_geocoding
@@ -64,7 +68,7 @@ class Geocoding < Sequel::Model
       table_name:    table_service.try(:name),
       qualified_table_name: table_service.try(:qualified_table_name),
       sequel_qualified_table_name: table_service.try(:sequel_qualified_table_name),
-      formatter:     translate_formatter,
+      formatter:     sanitize_formatter,
       connection:    user_connection,
       remote_id:     remote_id,
       countries:     country_code,
@@ -188,6 +192,19 @@ class Geocoding < Sequel::Model
     # geocoder = AutomaticGeocoding.create(table: table)
     # self.update(automatic_geocoding_id: geocoder.id)
   end # create_automatic_geocoder
+
+  def sanitize_formatter
+    translated_formatter = translate_formatter
+    if translated_formatter =~ SANITIZED_FORMATTER_REGEXP
+      translated_formatter
+    else
+      # TODO better remove this trace once everything is fine
+      Rollbar.report_message(%Q{Incorrect formatter string received: "#{formatter}"},
+                             'warning',
+                             {user_id: user.id})
+      ''
+    end
+  end
 
   # {field}, SPAIN => field, ', SPAIN'
   def translate_formatter

@@ -401,7 +401,6 @@ module CartoDB
       end
 
       def table
-        return nil unless defined?(::Table)
         if @table.nil?
           @table = ::Table.new(name: name, user_id: user.id)
         end

@@ -6,12 +6,15 @@ module CartoDB
   class Hubspot
 
     def initialize
-      @events_host = Cartodb.config[:hubspot]['events_host']
-      @api_key = Cartodb.config[:hubspot]['api_key']
-      @import_failed_id = Cartodb.config[:hubspot]['import_failed_id']
-      @geocoding_failed_id = Cartodb.config[:hubspot]['geocoding_failed_id']
-      @import_success_id = Cartodb.config[:hubspot]['import_success_id']
-      @geocoding_success_id = Cartodb.config[:hubspot]['geocoding_success_id']
+      config = Cartodb.config[:hubspot]
+      if config.present? && config.is_a?(Hash)
+        @events_host = Cartodb.config[:hubspot]['events_host']
+        @api_key = Cartodb.config[:hubspot]['api_key']
+        @import_failed_id = Cartodb.config[:hubspot]['import_failed_id']
+        @geocoding_failed_id = Cartodb.config[:hubspot]['geocoding_failed_id']
+        @import_success_id = Cartodb.config[:hubspot]['import_success_id']
+        @geocoding_success_id = Cartodb.config[:hubspot]['geocoding_success_id']
+      end
     end
 
     def enabled?

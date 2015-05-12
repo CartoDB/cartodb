@@ -273,12 +273,28 @@ CartoDB::Application.routes.draw do
 
     get '(/user/:user_domain)(/u/:user_domain)/api/v2_1/viz/:id/viz'                        => 'visualizations#vizjson2', as: :api_v2_1_visualizations_vizjson, constraints: { id: /[^\/]+/ }
 
+    # Tables
     get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:id'                         => 'tables#show',       as: :api_v1_1_tables_show, constraints: { id: /[^\/]+/ }
 
+    # Table columns
+    # No index action
     get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:table_id/records/:id'       => 'records#show',      as: :api_v1_1_tables_records_show,   constraints: { table_id: /[^\/]+/ }
 
+    # Table records
     get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:table_id/columns'           => 'columns#index',   as: :api_v1_1_tables_columns_index,   constraints: { table_id: /[^\/]+/ }
     get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:table_id/columns/:id'       => 'columns#show',    as: :api_v1_1_tables_columns_show,    constraints: { table_id: /[^\/]+/ }
+
+    # Custom layers grouped by user
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/users/:user_id/layers'     => 'layers#index',   as: :api_v1_1_users_layers_index
+    # No show action
+
+    # Map layers
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/maps/:map_id/layers'     => 'layers#index',   as: :api_v1_1_maps_layers_index
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/maps/:map_id/layers/:id' => 'layers#show',    as: :api_v1_1_maps_layers_show
+
+    # Maps
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/maps/:id'                           => 'maps#show',    as: :api_v1_1_maps_show
+
   end
 
   scope :module => 'api/json', :format => :json do
@@ -339,8 +355,6 @@ CartoDB::Application.routes.draw do
     post   '(/user/:user_domain)(/u/:user_domain)/api/v1/users/:user_id/assets'     => 'assets#create',  as: :api_v1_users_assets_create
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/users/:user_id/assets'     => 'assets#index',   as: :api_v1_users_assets_index
     delete '(/user/:user_domain)(/u/:user_domain)/api/v1/users/:user_id/assets/:id' => 'assets#destroy', as: :api_v1_users_assets_destroy
-
-    # /api/v1/users/5002ad84-6b3e-4372-996e-b52269ec1cac/assets/b93f1b1e-484c-491b-a22b-c61a76968b63
 
     # Maps
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:id' => 'maps#show',    as: :api_v1_maps_show

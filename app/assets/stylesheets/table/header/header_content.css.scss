@@ -11,9 +11,9 @@
   @import "compass/css3/border-radius";
   @import "compass/css3/images";
   @import "compass/css3/opacity";
-  @import "../../common/mixins";
-  @import "../../common/vars";
-  @import "../../common/common-sprite";
+  @import "../../old_common/mixins";
+  @import "../../old_common/vars";
+  @import "../../old_common/common-sprite";
   @import "../../table/table-sprite";
 
   $text-shadow-color: rgba(black,0.25);

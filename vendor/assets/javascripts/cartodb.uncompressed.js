@@ -1,6 +1,6 @@
 // cartodb.js version: 3.14.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: 5c466ac64a48222b2f7ddbb6ffab6784d1ec63ac
+// sha: f73f90c1ae5e00df6eb8555da7609a840380d1c0
 (function() {
   var root = this;
 
@@ -36566,7 +36566,7 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
     height: 200,
     clean_on_hide: false,
     enter_to_confirm: false,
-    template_name: 'common/views/dialog_base',
+    template_name: 'old_common/views/dialog_base',
     ok_button_classes: 'button green',
     cancel_button_classes: '',
     modal_type: '',
@@ -36706,7 +36706,7 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
     height: 200,
     clean_on_hide: false,
     enter_to_confirm: false,
-    template_name: 'common/views/dialog_base',
+    template_name: 'old_common/views/dialog_base',
     ok_button_classes: 'button green',
     cancel_button_classes: '',
     modal_type: '',
@@ -41010,7 +41010,7 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
     height: 200,
     clean_on_hide: false,
     enter_to_confirm: false,
-    template_name: 'common/views/dialog_base',
+    template_name: 'old_common/views/dialog_base',
     ok_button_classes: 'button green',
     cancel_button_classes: '',
     modal_type: '',

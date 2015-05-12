@@ -16,11 +16,11 @@
     var isJustLoggedIn = <%= (!!@just_logged_in).to_s %>;
     var default_fallback_basemap = <%= safe_js_object current_user.default_basemap.to_json %>;
   </script>
-  <%= javascript_include_tag 'cdb.js', 'models.js', 'new_dashboard_templates.js', 'new_dashboard_deps.js', 'new_dashboard.js' -%>
+  <%= javascript_include_tag 'cdb.js', 'models.js', 'dashboard_templates.js', 'dashboard_deps.js', 'dashboard.js' -%>
 <% end %>
 
 <%= content_for(:css) do -%>
-  <%= stylesheet_link_tag 'new_dashboard.css', :media => 'all' %>
+  <%= stylesheet_link_tag 'dashboard.css', :media => 'all' %>
 <% end %>
 
 <div class="ContentController" id="content-controller">

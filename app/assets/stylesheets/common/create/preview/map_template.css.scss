@@ -1,0 +1,69 @@
+@import "../../../variables/mixins";
+@import "../../../variables/colors";
+@import "../../../variables/sizes";
+
+// Map template video styles
+
+.MapTemplate {
+  position: absolute;
+  top: 50%;
+  @include display-flex();
+  @include css3-prefix(box-sizing, border-box);
+  width: $sLayout-width;
+  margin-top: -216px;
+  border: 1px solid rgba(black, 0.1);
+  background: white;
+  border-radius: 4px;
+}
+.MapTemplate-info {
+  width: 258px;
+  padding: 30px;
+}
+.MapTemplate-infoTitle {
+  font-size: $sFontSize-largest;
+  color: $cTypography-paragraphs;
+  line-height: $sLineHeight-larger;
+}
+.MapTemplate-infoText {
+  margin-top: 16px;
+  color: $cTypography-paragraphs;
+  font-size: $sFontSize-larger;
+  font-weight: $sFontWeight-lighter;
+  line-height: $sLineHeight-larger;
+}
+.MapTemplate-infoList {
+  display: block;
+  margin-top: 10px;
+}
+.MapTemplate-infoDataset {
+  @include display-flex();
+  @include justify-content(flex-start, start);
+  @include align-items(center, center);
+  padding: 4px 0;
+}
+.MapTemplate-infoDatasetPos {
+  $c: #C9C9C9;
+  width: 15px;
+  height: 14px;
+  line-height: 14px;
+  border: 1px solid $c;
+  border-radius: 3px;
+  font-size: 9px;
+  text-align: center;
+  color: $c;
+}
+.MapTemplate-infoDatasetLink {
+  margin-left: 7px;
+  font-size: $sFontSize-normal;
+}
+
+// <li class="MapTemplate-infoDataset">
+//   <span class="MapTemplate-infoDatasetPos"><%= i + 1 %></span>
+//   <a target="_blank" class="MapTemplate-infoDatasetLink" href="<%= map.source[i] %>">Get <%= cdb.Utils.getGetOrdinal( i + 1 ) %> dataset</a>
+// </li>
+
+.MapTemplate-video {
+  width: 620px;
+  height: 350px;
+}
+.MapTemplate-videoIframe { border: none }

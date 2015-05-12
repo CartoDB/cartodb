@@ -64,7 +64,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       viewed_user = User.find(:username => CartoDB.extract_subdomain(request))
       tables = params[:tables].map { |table_name|
         if viewed_user
-          Helpers::TableLocator.get_by_id_or_name(table_name,  viewed_user)
+          Helpers::TableLocator.new.get_by_id_or_name(table_name,  viewed_user)
         end
       }.flatten
       blender = Visualization::TableBlender.new(current_user, tables)

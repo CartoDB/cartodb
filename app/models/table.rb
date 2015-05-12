@@ -895,6 +895,10 @@ class Table
         else
           new_column_type = get_new_column_type(invalid_column)
           user_database.set_column_type(self.name, invalid_column.to_sym, new_column_type)
+          # INFO: There's a complex logic for retrying and need to know how often it is actually done
+          Rollbar.report_message('Retrying insert_row!',
+                                 'debug',
+                                 {user_id: self.user_id, qualified_table_name: self.qualified_table_name, raw_attributes: raw_attributes})
           retry
         end
       end
@@ -932,7 +936,11 @@ class Table
             invalid_column = attributes.invert[invalid_value] # which is the column of the name that raises error
             new_column_type = get_new_column_type(invalid_column)
             if new_column_type
-              user_database.set_column_type self.name, invalid_column.to_sym, new_column_type
+              user_database.set_column_type self.name, invalid_column.to_sym, new_column_typ
+              # INFO: There's a complex logic for retrying and need to know how often it is actually done
+              Rollbar.report_message('Retrying update_row!',
+                                     'debug',
+                                     {user_id: self.user_id, qualified_table_name: self.qualified_table_name, row_id: row_id, raw_attributes: raw_attributes})
               retry
             end
           else

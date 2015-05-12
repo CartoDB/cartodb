@@ -1,5 +1,4 @@
 <% if Cartodb.config[:hubspot] && Cartodb.config[:hubspot]['token'].present? %>
-var mixpanel_token = "<%= Cartodb.config[:mixpanel]['token'] if Cartodb.config[:mixpanel].present? %>";
   <script type="text/javascript">
     var hubspot_token = "<%= Cartodb.config[:hubspot]['token'] %>";
 

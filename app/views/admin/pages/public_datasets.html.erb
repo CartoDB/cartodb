@@ -1,10 +1,6 @@
-<%= content_for(:title) do %>
-  Datasets by <%= @name %> on CartoDB
-<% end %>
+<%= content_for(:title) do %>CartoDB · Datasets by <%= @name %><% end %>
 
-<%= content_for(:description) do %>
-  <%= @name %> is creating and sharing public datasets using CartoDB
-<% end %>
+<%= content_for(:description) do %><%= @page_description %><% end %>
 
 <div class="PublicBody-content">
   <% if @datasets.size == 0 %>

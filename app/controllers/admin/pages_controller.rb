@@ -23,18 +23,32 @@ class Admin::PagesController < ApplicationController
 
   # Just an entrypoint to dispatch to different places according to
   def index
-    # username.cartodb.com should redirect to the user dashboard in the maps view if the user is logged in
-    if !current_user.nil? && !current_viewer.nil? && current_user.id == current_viewer.id
+    CartoDB.subdomainless_urls? ? index_subdomainless : index_subdomainfull
+  end
+
+  def index_subdomainfull
+    if current_user && current_viewer && current_user.id == current_viewer.id
+      # username.cartodb.com should redirect to the user dashboard in the maps view if the user is logged in
       redirect_to CartoDB.url(self, 'dashboard')
-    # username.cartodb.com should redirect to the public user dashboard in the maps view if the username is not the user's username
-    elsif !current_viewer.nil?    # Asummes either current_user nil or at least different from current_viewer
-      redirect_to CartoDB.url(self, 'public_maps_home')
-    elsif CartoDB.subdomainless_urls? && CartoDB.username_from_request(request).nil?
-      # This is kind of special case for on-premise: there's no user info at all in the request
-      redirect_to login_url
     else
+      # Asummes either current_user nil or at least different from current_viewer
+      # username.cartodb.com should redirect to the public user dashboard in the maps view if the username is not the user's username
       # username.cartodb.com should redirect to the public user dashboard in the maps view if the user is not logged in
       redirect_to CartoDB.url(self, 'public_maps_home')
+    end
+  end
+
+  def index_subdomainless
+    if current_user && current_viewer && current_user.id == current_viewer.id
+      redirect_to CartoDB.url(self, 'dashboard')
+    elsif current_user.nil? && current_viewer
+      # current_viewer always returns a user with a session
+      redirect_to CartoDB.url(self, 'dashboard', {}, current_viewer)
+    elsif CartoDB.username_from_request(request)
+      redirect_to CartoDB.url(self, 'public_maps_home')
+    else
+      # We cannot get any user information from domain, path or session
+      redirect_to login_url
     end
   end
 
@@ -174,6 +188,19 @@ class Admin::PagesController < ApplicationController
         })
     end
 
+    description = "#{@name} has"
+
+    # TODO: move to helper
+    if @datasets.size == 0
+      description << " not published any public dataset yet"
+    else
+      description << " published #{@datasets.size} public dataset#{@datasets.size == 1 ? "" : "s"}"
+    end
+
+    description << " · Contribute to Open Data by creating an account in CartoDB"
+
+    @page_description = description
+
     respond_to do |format|
       format.html { render 'public_datasets', layout: 'public_dashboard' }
     end
@@ -191,6 +218,29 @@ class Admin::PagesController < ApplicationController
     vis_list.each do |vis|
       @visualizations << vis_item(vis)
     end
+
+    description = "#{@name} has"
+
+    # TODO: move to helper
+    if @visualizations.size == 0 && @tables_num == 0
+      description << " not published any public dataset or map yet"
+    else
+      unless @visualizations.size == 0
+        description << " created #{@visualizations.size} map#{@visualizations.size == 1 ? "" : "s"}"
+      end
+
+      unless @visualizations.size == 0 || @tables_num == 0
+        description << " and"
+      end
+
+      unless @tables_num == 0
+        description << " published #{@tables_num} public dataset#{@tables_num == 1 ? "" : "s"}"
+      end
+
+      description << " · Contribute to Open Data by creating an account in CartoDB"
+    end
+
+    @page_description = description
 
     respond_to do |format|
       format.html { render 'public_maps', layout: 'public_dashboard' }
@@ -276,6 +326,7 @@ class Admin::PagesController < ApplicationController
     @email              = optional.fetch(:email, nil)
     @available_for_hire = optional.fetch(:available_for_hire, false)
     @user = optional.fetch(:user, nil)
+    @tables_num         = (model.is_a? Organization) ? model.public_datasets_count : model.public_table_count
   end
 
   def user_public_vis_list(required)

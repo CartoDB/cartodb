@@ -1,0 +1,58 @@
+// Likes indicator (12♥)
+// --------------------------------------------------
+
+@import "../variables/colors";
+@import "../variables/mixins";
+@import "../variables/sizes";
+
+$cLiked: #D93F56;
+
+.LikesIndicator {
+  color:$cTypography-secondary;
+  cursor: default;
+  @include nicer-lato-typography();
+}
+.LikesIndicator-icon {
+  @include transform(1);
+  margin-right: 5px;
+  font-size: $sFontSize-small;
+  color: $cTypography-help;
+}
+.LikesIndicator.is-likeable {
+  cursor: pointer;
+}
+.LikesIndicator.is-likeable:hover {
+  color:$cTypography-paragraphs;
+  text-decoration:none;
+  .LikesIndicator-icon {
+    color:$cLiked;
+  }
+}
+.LikesIndicator.is-liked {
+  color: $cLiked;
+  .LikesIndicator-icon { color: $cLiked }
+  &:hover { color: $cLiked }
+}
+.LikesIndicator.is-animated {
+  .LikesIndicator-icon {
+    @include animation(pulse 400ms both ease-in);
+  }
+}
+
+@include keyframes(pulse) {
+  0% {
+    @include transform(scale(1));
+  }
+  25% {
+    @include transform(scale(1.3));
+  }
+  50% {
+    @include transform(scale(.8));
+  }
+  75% {
+    @include transform(scale(1.3));
+  }
+  100% {
+    @include transform(scale(1));
+  }
+}

@@ -81,7 +81,6 @@ module CartoDB
       end
 
       def table
-        return nil unless defined?(::Table)
         return nil if map_id.nil?
         @table ||= ::UserTable.from_map_id(map_id).try(:service)
       end

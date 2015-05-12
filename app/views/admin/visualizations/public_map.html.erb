@@ -1,7 +1,11 @@
+<%= content_for(:title) do %>CartoDB · <%= @visualization.name.gsub(/_/," ") %><% end %>
+
+<%= content_for(:description) do %><%= @visualization.description_clean || "#{@visualization.name.gsub(/_/," ")} created by #{@name} in CartoDB" %><% end %>
+
 <%= content_for(:body_class) do %> PublicMap <% end %>
 
 <%= content_for(:css) do %>
-  <%= stylesheet_link_tag 'cartodb', 'new_common', 'public_map' %>
+  <%= stylesheet_link_tag 'cartodb', 'common', 'public_map' %>
 <% end %>
 
 <%= content_for(:content) do %>
@@ -52,10 +56,12 @@
               <a class="PublicMap-shareButton PublicMap-editButton js-editMap" href="<%= CartoDB.url(self, 'public_visualizations_show', {id: @visualization.id }, @visualization.user) %>">
                 edit in cartodb
               </a>
-              <a href="http://www.facebook.com/sharer.php?u=<%= url_encode(request.original_url) %>&text=<%= url_encode("#{@visualization.name} by #{@name} with CartoDB") %>" target="_blank" class="PublicMap-shareButton PublicMap-shareButton--facebook">
+
+              <a href="http://www.facebook.com/sharer.php?u=<%= url_encode(request.original_url) %>&text=<%= url_encode("#{@visualization.name} created by #{@name} in CartoDB") %>" target="_blank" class="PublicMap-shareButton PublicMap-shareButton--facebook">
                 <i class="iconFont iconFont-Facebook"></i>
               </a>
-              <a href="https://twitter.com/share?url=<%= url_encode(request.original_url) %>&text=<%= url_encode("#{@visualization.name} by #{@visualization.user.twitter_username.present? ? @visualization.user.twitter_username : @name} with @cartodb") %>" target="_blank" class="PublicMap-shareButton PublicMap-shareButton--twitter">
+
+              <a href="https://twitter.com/share?url=<%= url_encode(request.original_url) %>&text=<%= url_encode("#{@visualization.name} created by #{@visualization.user.twitter_username.present? ? "@#{@visualization.user.twitter_username}" : @name} in @cartoDB") %>" target="_blank" class="PublicMap-shareButton PublicMap-shareButton--twitter">
                 <i class="iconFont iconFont-Twitter"></i>
               </a>
             </nav>

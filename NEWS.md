@@ -1,5 +1,23 @@
-3.10.1 ()
+
+3.10.2 ()
 ---------
+* Ongoing backend refactor and migration from Sequel to ActiveRecord.
+* Frontend assets cleaning [PR 3563](https://github.com/CartoDB/cartodb/pull/3563).
+
+#### Steps to avoid problems with submodules changes
+```shell
+# Before get last changes from master, let's remove the 
+# common submodule
+git submodule deinit app/assets/stylesheets/common
+# Clean tmp sass folder, avoiding possible compass problems
+rm -rf tmp/sass/*
+git pull origin master
+git submodule sync
+git submodule update --init
+```
+
+3.10.1 (2015-05-05)
+-------------------
 * Fixes bug in the "No georeferenced data" dialog [#3449](https://github.com/CartoDB/cartodb/pull/3449)
 * Adds user search/filter to the Share Dialog [3417](https://github.com/CartoDB/cartodb/pull/3417)
 * Change default CartoCSS properties of polygon strokes [3375](https://github.com/CartoDB/cartodb/pull/3375)

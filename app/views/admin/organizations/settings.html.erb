@@ -7,7 +7,7 @@
     var config = <%= safe_js_object frontend_config %>;
     var user_data = <%= safe_js_object current_user.data.to_json.html_safe %>;
   </script>
-  <%= javascript_include_tag 'cdb.js', 'models.js', 'new_organization_templates.js', 'new_organization_deps.js', 'new_organization.js' -%>
+  <%= javascript_include_tag 'cdb.js', 'models.js', 'organization_templates.js', 'organization_deps.js', 'organization.js' -%>
 <% end %>
 
 <%= render :partial => 'shared/flash_message' %>
@@ -114,7 +114,12 @@
             <div class="Form-rowData">
               <%= f.text_field :google_maps_key, class: "Form-input Form-input--long is-disabled", :readonly => "true" %>
             </div>
-            <div class="Form-rowInfo"></div>
+            <div class="Form-rowInfo">
+              <p class="Form-rowInfoText Form-rowInfoText--multipleLines">
+                This is the <%= @organization.name %> Google Maps API key,
+                contact with <a href="mailto:support@cartodb.com">support@cartodb.com</a> to change it.
+              </p>
+            </div>
           </div>
 
         <% end %>

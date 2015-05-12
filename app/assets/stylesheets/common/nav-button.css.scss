@@ -1,0 +1,25 @@
+@import "../variables/mixins";
+@import "../variables/colors";
+@import "../variables/sizes";
+
+.NavButton {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  line-height: 42px;
+  text-align: center;
+  background: transparent;
+  border-radius: 30px;
+  border: 1px solid $cNavButton-default;
+  color: $cNavButton-default;
+  font-weight: $sFontWeight-lighter;
+  font-size: 18px;
+  outline: none;
+
+  &:hover {
+    border-color: $cNavButton-active;
+    color: $cNavButton-active;
+  }
+}
+
+.NavButton--back { line-height: 40px }

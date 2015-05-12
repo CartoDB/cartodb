@@ -52,16 +52,6 @@ feature  "API 1.0 maps management" do
     another_user.destroy
   end
 
-  scenario "Get map information" do
-    table = create_table(:user_id => @user.id)
-    map = create_map(:user_id => @user.id, :table_id => table.id)
-
-    get_json v1_map_url(:host => CartoDB.hostname.sub('http://', ''), :api_key => api_key, :id => map.id) do |response|
-      response.status.should be_success
-      response.body[:id].should == map.id
-    end
-  end
-
   scenario "Update a map" do
     table = create_table(:user_id => @user.id)
     map = create_map(:user_id => @user.id, :table_id => table.id)

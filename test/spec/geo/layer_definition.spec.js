@@ -596,14 +596,23 @@ describe("LayerDefinition", function() {
     it("should request all layers if there's an active filter on the layer", function() {
       layerDefinition.options.no_cdn = false;
       layerDefinition.options.subdomains = ['a', 'b', 'c', 'd'];
-      layerDefinition.options.render = 'all';
+      layerDefinition.options.sublayerTypes = 'all';
 
       var tiles = layerDefinition._layerGroupTiles('test_layer');
-
       expect(tiles.tiles[0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/all/{z}/{x}/{y}.png');
       expect(tiles.tiles[1]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/all/{z}/{x}/{y}.png');
       expect(tiles.grids[0][0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/0/all/{z}/{x}/{y}.grid.json');
       expect(tiles.grids[0][1]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/0/all/{z}/{x}/{y}.grid.json');
+
+      layerDefinition.options.no_cdn = false;
+      layerDefinition.options.subdomains = ['a', 'b', 'c', 'd'];
+      layerDefinition.options.sublayerTypes = 'cartodb';
+
+      var tiles = layerDefinition._layerGroupTiles('test_layer');
+      expect(tiles.tiles[0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/{z}/{x}/{y}.png');
+      expect(tiles.tiles[1]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/{z}/{x}/{y}.png');
+      expect(tiles.grids[0][0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/0/{z}/{x}/{y}.grid.json');
+      expect(tiles.grids[0][1]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/0/{z}/{x}/{y}.grid.json');
     });
   });
 

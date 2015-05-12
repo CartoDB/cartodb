@@ -703,11 +703,11 @@ to skip sanitization, or a function to provide your own sanitization (e.g. `func
 
 #### sublayer.setURLTemplate(urlTemplate)
 
-Shortcut for `set({'urlTemplate': '...' })`
+Shortcut for `set({'urlTemplate': 'http://{s}.example.com/{z}/{x}/{y}.png' })`
 
 #### sublayer.setSubdomains(subdomains)
 
-Shortcut for `set({'subdomains': ['...''] })`
+Shortcut for `set({'subdomains': ['a', 'b', '...'] })`
 
 #### sublayer.setTms(tms)
 

@@ -32,6 +32,7 @@ WORKING_SPECS_2 = \
   spec/lib/metrics_spec.rb \
   spec/lib/image_metadata_spec.rb \
   spec/lib/central_spec.rb \
+	spec/helpers/uuidhelper_spec.rb \
   $(NULL)
 
 WORKING_SPECS_3 = \
@@ -89,6 +90,8 @@ WORKING_SPECS_4 = \
 WORKING_SPECS_5 = \
   spec/rspec_configuration.rb \
   spec/requests/api/imports_spec.rb \
+  spec/requests/api/json/imports_controller_spec.rb \
+	spec/requests/carto/api/imports_controller_spec.rb \
   spec/connectors/importer_spec.rb \
   spec/requests/api/geocodings_spec.rb \
   services/importer/spec/unit/url_translator/osm_spec.rb \

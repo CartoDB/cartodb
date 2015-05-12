@@ -47,7 +47,7 @@ class Api::Json::RecordsController < Api::ApplicationController
   def destroy
     return(head 401) unless @table.table_visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READWRITE)
 
-    id = (params[:id] =~ /^\d+$/ ? params[:id] : params[:id].to_s.split(','))
+    id = (params[:id] =~ /\A\d+\z/ ? params[:id] : params[:id].to_s.split(','))
     schema_name = current_user.database_schema
     if current_user.id != @table.owner.id
       schema_name = @table.owner.database_schema

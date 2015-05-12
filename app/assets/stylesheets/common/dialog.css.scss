@@ -128,6 +128,10 @@ body.is-inDialog {
   color: $cHighlight-positive;
   border-color: $cHighlight-positive;
 }
+.Dialog-headerIcon--alert {
+  color: $cHighlight-alert;
+  border-color: $cHighlight-alert;
+}
 .Dialog-headerIconBadge {
   /* "backwards" to use the first keyframe's styles before animation starts */
   @include animation(fade-and-bounce-up 0.6s 350ms ease-in-out backwards);

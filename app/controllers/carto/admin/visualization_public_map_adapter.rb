@@ -17,17 +17,10 @@ module Carto
 
       delegate [ :type_slide?, :has_permission?, :derived?, :organization, :organization?, :id, :likes, 
                 :password_protected?, :varnish_key, :related_tables, :is_password_valid?, :get_auth_tokens, :table, :name,
-                :overlays, :created_at, :updated_at, :description, :mapviews, :geometry_types, :privacy,
+                :overlays, :created_at, :updated_at, :description, :mapviews, :geometry_types, :privacy, :tags,
                 :surrogate_key, :has_password? ] => :visualization
 
       attr_reader :visualization
-
-      def tags
-        # TODO: patch for #3611, should be fixed by activerecord-postgres-array but it's not working
-        tags = @visualization.tags
-        return tags.gsub('{', '').gsub('}', '').split(',') if (tags && tags.kind_of?(String))
-        tags
-      end
 
       def initialize(visualization)
         @visualization = visualization

@@ -157,7 +157,7 @@ class Api::Json::OembedController < Api::ApplicationController
     # UUIDTools::UUID_REGEXP cannot be reused because of /^ $/
     matches = /([0-9a-f]{8})-([0-9a-f]{4})-([0-9a-f]{4})-([0-9a-f]{2})([0-9a-f]{2})-([0-9a-f]{12})/.match(str)
     if matches
-      match[0]
+      matches[0]
     else
       nil
     end

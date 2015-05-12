@@ -2,7 +2,7 @@ module Carto
   module Api
     class SynchronizationsController < ::Api::ApplicationController
 
-      ssl_required :show
+      ssl_required :show, :index, :syncing?
 
       before_filter :load_synchronization, only: [:show, :syncing?]
 

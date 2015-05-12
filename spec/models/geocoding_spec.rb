@@ -154,6 +154,19 @@ describe Geocoding do
       expect { geocoding.run! }.to change { AutomaticGeocoding.count }.by(1)
       geocoding.automatic_geocoding_id.should_not be_nil
     end
+
+    it 'raises an exception if the geocoding times out' do
+      geocoding = FactoryGirl.create(:geocoding, user: @user, user_table: @table, formatter: 'b')
+      geocoding.class.stubs(:processable_rows).returns 10
+      geocoding.stubs(:processing_timeout_seconds).returns 0.01 # set timeout to 10 ms
+
+      table_geocoder_mock = mock
+      table_geocoder_mock.stubs(:run).with() { sleep(5) } # force it to sleep beyond timeout
+      geocoding.stubs(:table_geocoder).returns(table_geocoder_mock)
+
+      geocoding.run!
+      geocoding.reload.state.should eq 'failed'
+    end
   end
 
   describe '#max_geocodable_rows' do

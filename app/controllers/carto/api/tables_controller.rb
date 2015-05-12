@@ -20,7 +20,7 @@ module Carto
       private
 
       def table
-        @table ||= Carto::Helpers::TableLocator.get_by_id_or_name(params.fetch('id'), current_user)
+        @table ||= Carto::Helpers::TableLocator.new.get_by_id_or_name(params.fetch('id'), current_user)
         @table
       end
 

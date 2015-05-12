@@ -265,6 +265,8 @@ CartoDB::Application.routes.draw do
 
   # Remember to add routes to /lib/assets/javascript/cartodb/app.js -> applyPatchNewVisualizationUrl()
   scope :module => 'carto/api', :format => :json do
+
+    # Visualizations
     get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz'                                => 'visualizations#index',           as: :api_v1_1_visualizations_index
     get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/:id'                            => 'visualizations#show',            as: :api_v1_1_visualizations_show,            constraints: { id: /[^\/]+/ }
     get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/:id/likes'                      => 'visualizations#likes_count',     as: :api_v1_1_visualizations_likes_count,     constraints: { id: /[^\/]+/ }
@@ -277,16 +279,18 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:id'                         => 'tables#show',       as: :api_v1_1_tables_show, constraints: { id: /[^\/]+/ }
 
     # Table columns
-    # No index action
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:table_id/records/:id'       => 'records#show',      as: :api_v1_1_tables_records_show,   constraints: { table_id: /[^\/]+/ }
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:table_id/columns'           => 'columns#index',     as: :api_v1_1_tables_columns_index,   constraints: { table_id: /[^\/]+/ }
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:table_id/columns/:id'       => 'columns#show',      as: :api_v1_1_tables_columns_show,    constraints: { table_id: /[^\/]+/ }
 
     # Table records
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:table_id/columns'           => 'columns#index',   as: :api_v1_1_tables_columns_index,   constraints: { table_id: /[^\/]+/ }
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:table_id/columns/:id'       => 'columns#show',    as: :api_v1_1_tables_columns_show,    constraints: { table_id: /[^\/]+/ }
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:table_id/records/:id'       => 'records#show',      as: :api_v1_1_tables_records_show,   constraints: { table_id: /[^\/]+/ }
+
+    # Imports
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/imports'                          => 'imports#index',                       as: :api_v1_1_imports_index
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/imports/:id'                      => 'imports#show',                        as: :api_v1_1_imports_show
 
     # Custom layers grouped by user
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/users/:user_id/layers'     => 'layers#index',   as: :api_v1_1_users_layers_index
-    # No show action
 
     # Map layers
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/maps/:map_id/layers'     => 'layers#index',   as: :api_v1_1_maps_layers_index

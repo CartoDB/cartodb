@@ -297,6 +297,57 @@ cartodb.createLayer(map, 'http://myserver.com/layerdata.json')
 cartodb.createLayer(map, { layermetadata })
 ```
 
+- **options**:
+  - **https**: force https
+  - **refreshTime**: if is set, the layer is refreshed each refreshTime milliseconds.
+  - **infowindow**: set to false if you want to disable the infowindow (enabled by default).
+  - **tooltip**: set to false if you want to disable the tooltip (enabled by default).
+  - **legends**: if it's true legends are shown in the map.
+  - **time_slider**: show time slider with torque layers (enabled by default)
+  - **layerIndex**: when the visualization contains more than one layer this index allows you to select
+    what layer is created. Take into account that `layerIndex == 0` is the base layer and that
+    all the tiled layers (non animated ones) are merged into a single one. The default value for
+    this option is 1 (usually tiled layers).
+  - **render**: Set this option if your layer contains different types of sublayers and you only 
+    need some or all types of sublayers to be rendered. Supported values are: 'all' and 'cartodb'(default).
+
+- **callback(_layer_)**: if a function is specified, it will be invoked after the layer has been created. The layer will be passed as an argument.
+
+##### Returns
+
+A promise object. You can listen for the following events:
+
++ **done**: triggered when the layer is created, the layer is passed as first argument. Each layer type has different options, see layers section.
++ **error**: triggered when the layer couldn't be created. The error string is the first argument.
+
+You can call to `addTo(map[, position])` in the promise so when the layer is ready it will be added to the map.
+
+##### Example
+
+<div class="code-title">cartodb.createLayer</div>
+```javascript
+var map;
+var mapOptions = {
+  zoom: 5,
+  center: [43, 0]
+};
+map = new L.Map('map', mapOptions);
+
+cartodb.createLayer(map, 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json')
+  .addTo(map)
+  .on('done', function(layer) {
+    layer
+      .on('featureOver', function(e, latlng, pos, data) {
+        console.log(e, latlng, pos, data);
+      })
+      .on('error', function(err) {
+        console.log('error: ' + err);
+      });
+  }).on('error', function(err) {
+    console.log("some error occurred: " + err);
+  });
+```
+
 Layer metadata must take one of the following forms.
 
 #### Standard Layer Source Object (`type: 'cartodb'`)
@@ -367,57 +418,6 @@ Used for making public maps with private data. See [Named Maps](http://docs.cart
     }
   }
 }
-```
-
-See [cartodb.CartoDBLayer](#cartodbcartodblayer) to see an example.
-
-- **options**:  
-  - **https**: force https
-  - **refreshTime**: if is set, the layer is refreshed each refreshTime milliseconds.
-  - **infowindow**: set to false if you want to disable the infowindow (enabled by default).
-  - **tooltip**: set to false if you want to disable the tooltip (enabled by default).
-  - **legends**: if it's true legends are shown in the map.
-  - **time_slider**: show time slider with torque layers (enabled by default)
-  - **layerIndex**: when the visualization contains more than one layer this index allows you to select
-    what layer is created. Take into account that `layerIndex == 0` is the base layer and that
-    all the tiled layers (non animated ones) are merged into a single one. The default value for
-    this option is 1 (usually tiled layers).
-
-- **callback(_layer_)**: if a function is specified, it will be invoked after the layer has been created. The layer will be passed as an argument.
-
-##### Returns
-
-A promise object. You can listen for the following events:
-
-+ **done**: triggered when the layer is created, the layer is passed as first argument. Each layer type has different options, see layers section.
-+ **error**: triggered when the layer couldn't be created. The error string is the first argument.
-
-You can call to `addTo(map[, position])` in the promise so when the layer is ready it will be added to the map.
-
-##### Example
-
-<div class="code-title">cartodb.createLayer</div>
-```javascript
-var map;
-var mapOptions = {
-  zoom: 5,
-  center: [43, 0]
-};
-map = new L.Map('map', mapOptions);
-
-cartodb.createLayer(map, 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json')
-  .addTo(map)
-  .on('done', function(layer) {
-    layer
-      .on('featureOver', function(e, latlng, pos, data) {
-        console.log(e, latlng, pos, data);
-      })
-      .on('error', function(err) {
-        console.log('error: ' + err);
-      });
-  }).on('error', function(err) {
-    console.log("some error occurred: " + err);
-  });
 ```
 
 ### cartodb.CartoDBLayer

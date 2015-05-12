@@ -323,7 +323,12 @@ MapBase.prototype = {
       subdomains = [null]; // no subdomain
     }
 
-    var tileTemplate = '/all/{z}/{x}/{y}';
+    if (this.options.render === 'all') {
+      var tileTemplate = '/all/{z}/{x}/{y}';
+    } else {
+      var tileTemplate = '/{z}/{x}/{y}';
+    }
+
     var grids = []
     var tiles = [];
     var pngParams = this._encodeParams(params, this.options.pngParams);

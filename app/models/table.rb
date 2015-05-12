@@ -1474,7 +1474,7 @@ class Table
   # See http://www.postgresql.org/docs/9.1/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
   def self.get_valid_table_name(name, options = {})
     # Initial name cleaning
-    name = name.to_s.strip #.downcase
+    name = name.to_s.squish #.downcase
     name = 'untitled_table' if name.blank?
 
     # Valid names start with a letter or an underscore

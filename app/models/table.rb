@@ -1588,7 +1588,7 @@ class Table
       else
         sanitized_force_schema = force_schema.split(',').map do |column|
           # Convert existing primary key into a unique key
-          if column =~ /^\s*\"([^\"]+)\"(.*)$/
+          if column =~ /\A\s*\"([^\"]+)\"(.*)\z/
             "#{$1.sanitize} #{$2.gsub(/primary\s+key/i,'UNIQUE')}"
           else
             column.gsub(/primary\s+key/i,'UNIQUE')

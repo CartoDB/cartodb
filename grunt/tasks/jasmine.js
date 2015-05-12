@@ -48,6 +48,7 @@ module.exports = {
           "src/geo/ui/tooltip.js",
           "src/geo/ui/time_slider.js",
           "src/geo/ui/fullscreen.js",
+          "src/geo/sublayer.js",
           "src/geo/layer_definition.js",
           "src/geo/common.js",
           "src/geo/leaflet/leaflet.geometry.js",

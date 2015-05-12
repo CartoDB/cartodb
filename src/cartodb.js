@@ -58,6 +58,7 @@
         'core/model.js',
         'core/view.js',
         'core/loader.js',
+        'core/util.js',
 
         'geo/geocoder.js',
         'geo/geometry.js',
@@ -81,6 +82,7 @@
         'geo/ui/tooltip.js',
         'geo/ui/fullscreen.js',
 
+        'geo/sublayer.js',
         'geo/layer_definition.js',
         'geo/common.js',
 

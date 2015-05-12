@@ -57,11 +57,6 @@ defaults: &defaults
     app_keys:
       editor: ''
       embeds: ''
-  hubspot:
-    host: ''
-    events_host: ''
-    api_key: ''
-    token: ''
   varnish_management:
     critical: false
     host: '127.0.0.1'
@@ -262,11 +257,6 @@ development:
     retries: 5
     timeout: 5
   enforce_non_empty_layer_css: false
-  hubspot:
-    host: 'https://api.hubapi.com'
-    events_host: 'http://track.hubspot.com'
-    api_key: 'demo'
-    token: '62515'
 
 test:
   <<: *defaults
@@ -278,11 +268,6 @@ test:
   api_requests_es_service:
     url: "http://api-calls-service.localhost.lan/search"
     body: ""
-  hubspot:
-    host: 'https://api.hubapi.com'
-    events_host: 'http://track.hubspot.com'
-    api_key: 'demo'
-    token: '62515'
 
 staging:
   <<: *defaults

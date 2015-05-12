@@ -16,13 +16,14 @@ class Api::Json::OembedController < Api::ApplicationController
     format = request.query_parameters[:format]
     force_https = true if params[:allow_http].nil?
 
-    raise ActionController::RoutingError.new('Incorrect width') if (width =~ /^[0-9]+(%|px)?$/).nil?
-    raise ActionController::RoutingError.new('Incorrect height') if (height =~ /^[0-9]+(%|px)?$/).nil?
+    raise ActionController::RoutingError.new('Incorrect width') if (width =~ /\A[0-9]+(%|px)?\z/).nil?
+    raise ActionController::RoutingError.new('Incorrect height') if (height =~ /\A[0-9]+(%|px)?\z/).nil?
 
     uri = URI.parse(url)
 
     begin
-      uuid = /(\w{8}-\w{4}-\w{4}-\w{4}-\w{12})/.match(uri.path)[0]
+      # TODO: remove this method and use  app/helpers/carto/uuidhelper.rb. Not used yet because this changed was pushed before
+      uuid = /\A(\w{8}-\w{4}-\w{4}-\w{4}-\w{12})\z/.match(uri.path)[0]
     rescue NoMethodError
       raise ActionController::RoutingError.new('UUID not found in URL')
     end

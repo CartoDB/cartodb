@@ -46,7 +46,7 @@ module CartoDB
       #remove the log from the payload
       payload = metric_payload.select {|k,v| k != :log }
 
-      response = get_events("/v1/event/?_a=#{@token}&_n=#{event_id}&email=#{payload.email}")
+      response = get_events("/v1/event/?_a=#{@token}&_n=#{event_id}&email=#{payload[:email]}")
 
       unless (!response.nil? && response.code == 200)
         Rollbar.report_message('Hubspot error tracking event', 'error', { payload: payload,  event: event_id })

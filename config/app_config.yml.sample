@@ -381,6 +381,11 @@ test:
   api_requests_es_service:
     url: "http://api-calls-service.localhost.lan/search"
     body: ""
+  hubspot:
+    host: 'https://api.hubapi.com'
+    events_host: 'http://track.hubspot.com'
+    api_key: 'demo'
+    token: '62515'
 
 staging:
   <<: *defaults

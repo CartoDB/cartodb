@@ -21,11 +21,8 @@ class Api::Json::OembedController < Api::ApplicationController
 
     uri = URI.parse(url)
 
-    begin
-      uuid = extract_uuid_from_string(uri.path)
-    rescue NoMethodError
-      raise ActionController::RoutingError.new('UUID not found in URL')
-    end
+    uuid = extract_uuid_from_string(uri.path)
+    raise ActionController::RoutingError.new('UUID not found in URL') if uuid.nil?
 
     begin
       viz = CartoDB::Visualization::Member.new(id: uuid).fetch
@@ -34,7 +31,7 @@ class Api::Json::OembedController < Api::ApplicationController
     else
       name = viz.name
     end
-    
+
     fields = url_fields_from_fragments(url, force_https)
 
     # build the url using full schema because any visuaization should work with any user

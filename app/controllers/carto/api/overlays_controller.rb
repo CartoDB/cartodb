@@ -8,8 +8,8 @@ module Carto
       include Carto::UUIDHelper
 
       ssl_required :index, :show
-      before_filter :check_owner_by_vis, only: [ :index ]
-      before_filter :check_owner_by_id, only: [ :show ]
+      before_filter :check_current_user_has_permissions_on_vis, only: [ :index ]
+      before_filter :check_current_user_owns_vis, only: [ :show ]
 
       def index
         collection = Carto::Overlay.where(visualization_id: params.fetch('visualization_id')).map { |overlay|
@@ -29,7 +29,7 @@ module Carto
 
       protected
 
-      def check_owner_by_id
+      def check_current_user_owns_vis
         head 401 and return if current_user.nil?
         head 401 and return unless is_uuid?(params.fetch('id'))
 
@@ -40,7 +40,7 @@ module Carto
         head 403 and return if vis.user_id != current_user.id
       end
 
-      def check_owner_by_vis
+      def check_current_user_has_permissions_on_vis
         head 401 and return if current_user.nil?
         head 401 and return unless is_uuid?(params.fetch('visualization_id'))
 

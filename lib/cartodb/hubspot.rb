@@ -20,7 +20,6 @@ module CartoDB
         @token = config.fetch('token')
       else
         @enabled = false
-        @event_ids = {}
       end
     end
 
@@ -29,26 +28,28 @@ module CartoDB
     end
 
     def track_import_failed(payload)
-      track_event(event_ids['import_failed_id'], payload)
+      track_event('import_failed', payload)
     end
 
     def track_geocoding_failed(payload)
-      track_event(event_ids['geocoding_failed_id'], payload)
+      track_event('geocoding_failed', payload)
     end
 
     def track_import_success(payload)
-      track_event(event_ids['import_success_id'], payload)
+      track_event('import_success', payload)
     end
 
     def track_geocoding_success(payload)
-      track_event(event_ids['geocoding_success_id'], payload)
+      track_event('geocoding_success', payload)
     end
 
 
     private
 
-    def track_event(event_id, metric_payload)
+    def track_event(event_name, metric_payload)
       return self unless enabled?
+
+      event_id = event_ids[event_name]
 
       #remove the log from the payload
       payload = metric_payload.select {|k,v| k != :log }

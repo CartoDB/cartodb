@@ -64,10 +64,10 @@ defaults: &defaults
   #   api_key: 'demo'
   #   token: 'yourtoken'
   #   event_ids:
-  #     import_failed_id:     '000000123456'
-  #     geocoding_failed_id:  '000000123457'
-  #     import_success_id:    '000000123458'
-  #     geocoding_success_id: '000000123459'
+  #     import_failed:     '000000123456'
+  #     geocoding_failed:  '000000123457'
+  #     import_success:    '000000123458'
+  #     geocoding_success: '000000123459'
   common_data:
     protocol: 'https'
     username: 'common-data'

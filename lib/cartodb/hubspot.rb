@@ -8,13 +8,16 @@ module CartoDB
 
     include Singleton
 
+    attr_reader :event_ids, :token
+
     def initialize
       config = Cartodb.config[:hubspot]
       if config.present? && config.is_a?(Hash)
         @enabled = true
-        @events_host = config['events_host']
-        @api_key = config['api_key']
-        @event_ids = config['event_ids']
+        @events_host = config.fetch('events_host')
+        @api_key = config.fetch('api_key')
+        @event_ids = config.fetch('event_ids')
+        @token = config.fetch('token')
       else
         @enabled = false
       end
@@ -22,10 +25,6 @@ module CartoDB
 
     def enabled?
       @enabled == true
-    end
-
-    def event_ids
-      @event_ids
     end
 
     def track_import_failed(payload)

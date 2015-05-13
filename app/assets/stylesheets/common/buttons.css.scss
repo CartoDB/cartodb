@@ -68,6 +68,11 @@
   border-color: $cHighlight-negative;
   &:hover { background-color: rgba(#B93F37, 1) }
 }
+.Button--alert {
+  background-color: $cHighlight-alert2;
+  border-color: $cHighlight-alert2;
+  &:hover { background-color: rgba($cHighlight-alert2, 1) }
+}
 .Button--secondary {
   border: 1px solid $cNavButton-default;
   background-color: rgba(white, 1);

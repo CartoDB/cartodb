@@ -1226,10 +1226,10 @@ Or, by running the following in your code:
 alert(cartodb.VERSION)
 ```
 
-Once you know which version of CartoDB.js you're using, you can point your site to that release. If the current version of CartoDB.js is 3.14.1, the URL would be:
+Once you know which version of CartoDB.js you're using, you can point your site to that release. If the current version of CartoDB.js is 3.14.2-dev, the URL would be:
 
 ```html
-<script src="http://libs.cartocdn.com/cartodb.js/v3/3.14.1/cartodb.js"></script>
+<script src="http://libs.cartocdn.com/cartodb.js/v3/3.14.2-dev/cartodb.js"></script>
 ```
 
 You can do the same for the CSS documents we provide:

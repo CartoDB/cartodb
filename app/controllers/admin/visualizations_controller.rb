@@ -177,6 +177,9 @@ class Admin::VisualizationsController < ApplicationController
         |vis| vis.privacy != Visualization::Member::PRIVACY_PUBLIC
     }.count
 
+    # Public export API SQL url
+    @sql_url = sql_api_url("SELECT * FROM #{ @table.owner.sql_safe_database_schema }.#{ @table.name }", @user)
+
     respond_to do |format|
       format.html { render 'public_table', layout: 'application_table_public' }
     end
@@ -573,6 +576,10 @@ class Admin::VisualizationsController < ApplicationController
   # TODO: remove this method and use  app/helpers/carto/uuidhelper.rb. Not used yet because this changed was pushed before
   def is_uuid?(text)
     !(Regexp.new(%r{\A#{UUIDTools::UUID_REGEXP}\Z}) =~ text).nil?
+  end
+
+  def sql_api_url(query, user)
+    "#{ ApplicationHelper.sql_api_template("public").gsub! '{user}', user.username }#{ Cartodb.config[:sql_api]['public']['endpoint'] }?q=#{URI::encode query}&format=csv"
   end
 
 end

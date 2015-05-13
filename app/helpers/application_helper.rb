@@ -70,7 +70,7 @@ module ApplicationHelper
       maps_api_template:          maps_api_template,
       sql_api_template:           sql_api_template,
       user_name:                  CartoDB.extract_subdomain(request),
-      cartodb_com_hosted:         Cartodb.config[:cartodb_com_hosted],
+      cartodb_com_hosted:         Cartodb.config[:cartodb_com_hosted].present?,
       account_host:               CartoDB.account_host,
       dropbox_api_key:            Cartodb.config[:dropbox_api_key],
       gdrive_api_key:             Cartodb.config[:gdrive]['api_key'],
@@ -227,6 +227,10 @@ module ApplicationHelper
   #if cartodb_com_hosted is false, means that it is SaaS. If it's true (or doesn't exist), it's a custom installation
   def cartodb_com_hosted?
     Cartodb.config[:cartodb_com_hosted].nil? || Cartodb.config[:cartodb_com_hosted]
+  end
+
+  def cartodb_onpremise_version
+    Cartodb.config[:onpremise_version]
   end
 
   # Wraps a JSON object to be loaded as a JS object in a safe way.

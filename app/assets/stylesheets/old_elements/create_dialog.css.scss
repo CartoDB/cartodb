@@ -1,0 +1,102 @@
+
+  /*
+   * Create modal dialog styles!
+   */
+
+
+  @import "../old_common/mixins";
+  @import "../old_common/form-elements";
+  @import "../old_elements/elements-sprite";
+
+
+  // Big mamufas css
+  div.drag_mamufas {
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    display:none;
+    background:rgba(black,0.5);
+    z-index:10;
+
+    span {
+      position:absolute;
+      top:50%;
+      left:50%;
+      width:160px;
+      height:160px;
+      margin:-160px 0 0 -80px;
+      @include elements-sprite(droparea);
+    }
+
+    p {
+      position:absolute;
+      top:50%;
+      left:50%;
+      width:240px;
+      margin:20px 0 0 -120px;
+      color:rgba(white,0.4);
+      text-align:center;
+    }
+
+    div.mask {
+      position:absolute;
+      top:0;
+      left:0;
+      right:0;
+      bottom:0;
+      width:100%;
+      height:100%;
+      background:none;
+      display:block;
+      z-index:1;
+    }
+  }
+
+  section.creation {
+    position:relative;
+
+    div.content {
+      overflow:hidden;
+      min-height:50px;
+      padding-bottom:20px;
+
+      div.dialog-panes {
+        position:relative;
+        display:block;
+      }
+
+      .dialog-tabs li { border-bottom:none }
+      li.dialog-tab { margin-bottom:25px }
+
+      .dialog-pane {display:none; margin-left:20px;}
+      .dialog-tab.active .dialog-pane { display:block }
+
+      .dialog-upload-pane {
+        // margin-bottom:50px;
+      }
+    }
+
+    div.foot {
+
+      p.left {
+        width:285px;
+      }
+
+      p.info {
+        position:relative;
+        top: 10px;
+        width: 307px;
+        font-size: 11px;
+        color: #999999;
+
+        a { text-decoration: underline; }
+      }
+
+      a.green.button.ok {
+        font-size:17px;
+        font-weight:normal;
+      }
+    }
+  }

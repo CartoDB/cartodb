@@ -4,9 +4,10 @@ require_relative '../../../../services/datasources/lib/datasources'
 require_relative '../../../models/visualization/external_source'
 require_relative '../../../../services/platform-limits/platform_limits'
 require_relative '../../../../services/importer/lib/importer/exceptions'
+require_relative '../../../helpers/carto/uuidhelper'
 
 class Api::Json::ImportsController < Api::ApplicationController
-
+  include Carto::UUIDHelper
   include FileUploadHelper
 
   ssl_required :index, :show, :create
@@ -331,7 +332,7 @@ class Api::Json::ImportsController < Api::ApplicationController
     derived_vis_id = nil
 
     if data_import.create_visualization && !data_import.visualization_id.nil?
-      derived_vis_id = CartoDB::Visualization::Member.new(id: data_import.visualization_id).fetch.id
+      derived_vis_id = data_import.visualization_id
     end
 
     data[:derived_visualization_id] = derived_vis_id

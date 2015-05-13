@@ -124,11 +124,21 @@
             <div class="Form-rowData">
               <input type="text" value="<%= current_user.organization.present? ? current_user.organization.google_maps_key : current_user.google_maps_key %>" class="Form-input Form-input--long is-disabled" readonly />
             </div>
-            <% if current_user.organization.present? %>
-              <div class="Form-rowInfo">
-                <p class="Form-rowInfoText">This is the organization Google Maps key</p>
-              </div>
-            <% end %>
+            <div class="Form-rowInfo">
+              <% if !current_user.organization.present? %>
+                <p class="Form-rowInfoText Form-rowInfoText--multipleLines">
+                  This is your Google Maps API key,
+                  contact with <a href="mailto:support@cartodb.com">support@cartodb.com</a> to change it.
+                </p>
+              <% elsif current_user.organization.present? && current_user.organization_owner? %>
+                <p class="Form-rowInfoText Form-rowInfoText--multipleLines">
+                  This is the <%= current_user.organization.name %> Google Maps API key,
+                  contact with <a href="mailto:support@cartodb.com">support@cartodb.com</a> to change it.
+                </p>
+              <% else %>
+                <p class="Form-rowInfoText">This is the organization Google Maps API key</p>
+              <% end %>             
+            </div>
           </div>
         <% end %>
 

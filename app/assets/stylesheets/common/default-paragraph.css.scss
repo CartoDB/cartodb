@@ -1,0 +1,16 @@
+@import "../variables/colors";
+@import "../variables/sizes";
+@import "../variables/mixins";
+
+.DefaultParagraph {
+  font-size: $sFontSize-large;
+  line-height: $sLineHeight-large;
+  font-weight: $sFontWeight-lighter;
+  color: $cTypography-paragraphs;
+}
+.DefaultParagraph--short { width: 500px }
+.DefaultParagraph--centered { margin: 0 auto }
+.DefaultParagraph--spaced {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}

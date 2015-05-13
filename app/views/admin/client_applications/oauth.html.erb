@@ -8,11 +8,13 @@
     var user_data = <%= safe_js_object current_user.data.to_json %>;
     var upgrade_url = <%= cartodb_com_hosted? ? 'undefined' : "'#{current_user.upgrade_url(request.protocol)}'" %>;
   </script>
-  <%= javascript_include_tag 'cdb.js', 'models.js', 'new_keys_templates.js', 'new_keys_deps.js', 'new_keys.js' -%>
+  <%= javascript_include_tag 'cdb.js', 'models.js', 'keys_templates.js', 'keys_deps.js', 'keys.js' -%>
 <% end %>
 <%= content_for(:css) do %>
-  <%= stylesheet_link_tag 'new_keys.css', :media => 'all' %>
+  <%= stylesheet_link_tag 'keys.css', :media => 'all' %>
 <% end %>
+
+<%= render :partial => 'shared/flash_message' %>
 
 <div>
 
@@ -35,7 +37,7 @@
             <i data-title="Copy this" class="iconFont iconFont-Anchor Form-inputIcon Form-copyIcon js-copy-value"></i>
           </div>
           <div class="Form-rowInfo">
-            <p class="Form-rowInfoText">Learn more about <%= link_to "using oauth in CartoDB", Cartodb.config[:developers_host] + "/cartodb-platform.html" %> in CartoDB.</p>
+            <p class="Form-rowInfoText">Learn more about <%= link_to "using oauth in CartoDB", Cartodb.config[:developers_host] + "/cartodb-platform.html" %>.</p>
           </div>
         </div>
 

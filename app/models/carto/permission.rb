@@ -25,15 +25,13 @@ class Carto::Permission < ActiveRecord::Base
   # Use explicit methods instead.
   # Needed for backwards compatibility
   def is_permitted?(user, permission_type)
-    permission = permission_for_user(user)
+    SORTED_ACCESSES.index(permission_for_user(user)) <= SORTED_ACCESSES.index(permission_type)
   end
 
   private
 
   def permission_for_user(user)
     return ACCESS_READWRITE if is_owner_user?(user)
-
-    permission = nil
 
     accesses = acl_entries_for_user(user).map { |entry|
       entry[:access]
@@ -47,7 +45,7 @@ class Carto::Permission < ActiveRecord::Base
     index = SORTED_ACCESSES.index { |access|
       accesses.include?(access)
     }
-    accesses[index]
+    SORTED_ACCESSES[index]
   end
 
   def is_owner_user?(user)

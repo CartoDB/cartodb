@@ -1,10 +1,6 @@
-<%= content_for(:title) do %>
-  Datasets by <%= @name %> on CartoDB
-<% end %>
+<%= content_for(:title) do %>CartoDB · Datasets by <%= @name %><% end %>
 
-<%= content_for(:description) do %>
-  <%= @name %> is creating and sharing public datasets using CartoDB
-<% end %>
+<%= content_for(:description) do %><%= @page_description %><% end %>
 
 <div class="PublicBody-content">
   <% if @datasets.size == 0 %>
@@ -40,6 +36,7 @@
               <div class="DatasetsList-itemMeta">
                 <div class="DatasetsList-itemTags DefaultTags">
                   <% if vis[:tags].size > 0 %>
+                    <%# Keep on one line to avoid unwanted spaces %>
                     <% formatted_tags(vis[:tags]) do |tag| %><a class="DefaultTags-item js-tag-link" href="<%= CartoDB.url(self, 'public_datasets_tag', {tag: tag}, vis[:owner]) %>"><%= tag %></a><% end %>
                   <% end %>
                 </div>

@@ -34,6 +34,9 @@ class Carto::Visualization < ActiveRecord::Base
   TYPE_SLIDE = 'slide'
   TYPE_REMOTE = 'remote'
 
+  KIND_GEOM   = 'geom'
+  KIND_RASTER = 'raster'
+
   PRIVACY_PUBLIC = 'public'
   PRIVACY_PRIVATE = 'private'
   PRIVACY_LINK = 'link'
@@ -273,8 +276,6 @@ class Carto::Visualization < ActiveRecord::Base
   def is_owner_user?(user)
     self.user_id == user.id
   end
-
-  private
 
   def configuration
     return {} unless defined?(Cartodb)

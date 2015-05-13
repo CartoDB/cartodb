@@ -1,10 +1,6 @@
-<%= content_for(:title) do %>
-  Maps by <%= @name %> on CartoDB
-<% end %>
+<%= content_for(:title) do %>CartoDB · Maps by <%= @name %><% end %>
 
-<%= content_for(:description) do %>
-  <%= @name %> is creating maps and visualizations using CartoDB
-<% end %>
+<%= content_for(:description) do %><%= @page_description %><% end %>
 
 <div class="PublicBody-content">
   <% if @visualizations.size == 0 %>
@@ -38,9 +34,8 @@
                 <div class="MapCard-tags">
                   <div class="DefaultTags MapCard-contentBodyRow">
                     <% if vis[:tags].size > 0 %>
-                      <% formatted_tags(vis[:tags]) do |tag| %>
-                        <a class="DefaultTags-item js-tag-link" href="<%= CartoDB.url(self, 'public_tag', {tag: tag}, vis[:owner]) %>"><%= tag %></a>
-                      <% end %>
+                      <%# Keep on one line to avoid unwanted spaces %>
+                      <% formatted_tags(vis[:tags]) do |tag| %><a class="DefaultTags-item js-tag-link" href="<%= CartoDB.url(self, 'public_tag', {tag: tag}, vis[:owner]) %>"><%= tag %></a><% end %>
                     <% end %>
                   </div>
                 </div>

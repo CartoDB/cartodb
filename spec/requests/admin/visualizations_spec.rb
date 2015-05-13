@@ -89,7 +89,41 @@ describe Admin::VisualizationsController do
     end
   end # GET /viz/:id
 
+  describe 'GET /tables/:id/public/table' do
+    it 'returns 404 for private tables' do
+      id = table_factory(privacy: ::UserTable::PRIVACY_PRIVATE).id
+
+      get "/tables/#{id}/public/table", {}, @headers
+      last_response.status.should == 404
+    end
+  end
+
+  describe 'GET /viz/:id/protected_public_map' do
+    it 'returns 404 for private maps' do
+      id = table_factory(privacy: ::UserTable::PRIVACY_PRIVATE).table_visualization.id
+
+      get "/viz/#{id}/protected_public_map", {}, @headers
+      last_response.status.should == 404
+    end
+  end
+
+  describe 'GET /viz/:id/protected_embed_map' do
+    it 'returns 404 for private maps' do
+      id = table_factory(privacy: ::UserTable::PRIVACY_PRIVATE).table_visualization.id
+
+      get "/viz/#{id}/protected_embed_map", {}, @headers
+      last_response.status.should == 404
+    end
+  end
+
   describe 'GET /viz/:id/public_map' do
+    it 'returns 403 for private maps' do
+      id = table_factory(privacy: ::UserTable::PRIVACY_PRIVATE).table_visualization.id
+
+      get "/viz/#{id}/public_map", {}, @headers
+      last_response.status.should == 403
+    end
+
     it 'returns proper surrogate-keys' do
       id = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC).table_visualization.id
 
@@ -148,6 +182,13 @@ describe Admin::VisualizationsController do
       last_request.url.should =~ %r{.*#{id}/public_map.*}
     end
   end # GET /viz/:id/public
+
+  describe 'GET /tables/:id/embed_map' do
+    it 'returns 404 for nonexisting tables when table name is used' do
+      get "/tables/tablethatdoesntexist/embed_map", {}, @headers
+      last_response.status.should == 404
+    end
+  end
 
   describe 'GET /viz/:name/embed_map' do
     it 'renders the view by passing a visualization name' do
@@ -302,6 +343,7 @@ describe Admin::VisualizationsController do
       org.seats = 10
       org.save
 
+      User.any_instance.stubs(:remaining_quota).returns(1000)
       user_a = create_user({username: 'user-a', quota_in_bytes: 123456789, table_quota: 400})
       user_org = CartoDB::UserOrganization.new(org.id, user_a.id)
       user_org.promote_user_to_admin
@@ -311,19 +353,26 @@ describe Admin::VisualizationsController do
       user_b = create_user({username: 'user-b', quota_in_bytes: 123456789, table_quota: 400, organization: org})
 
       vis_id = factory(user_a).fetch('id')
-
       vis = CartoDB::Visualization::Member.new(id:vis_id).fetch
+      vis.privacy = CartoDB::Visualization::Member::PRIVACY_PRIVATE
+      vis.store
+
+      login_host(user_b, org)
+
+      get CartoDB.url(self, 'public_table', {id: vis.name}, user_a)
+      last_response.status.should be(404)
+
+      ['public_visualizations_public_map', 'public_tables_embed_map'].each { |forbidden_endpoint|
+        get CartoDB.url(self, forbidden_endpoint, {id: vis.name}, user_a)
+        follow_redirects
+        last_response.status.should be(403), "#{forbidden_endpoint} is #{last_response.status}"
+      }
+
       perm = vis.permission
       perm.set_user_permission(user_b, CartoDB::Permission::ACCESS_READONLY)
       perm.save
 
-      login_as(user_b, scope: user_b.username)
-
-      host! "#{org.name}.localhost.lan"
-
-      source_url = CartoDB.url(self, 'public_table', {id: vis.name}, user_a)
-
-      get source_url
+      get CartoDB.url(self, 'public_table', {id: vis.name}, user_a)
       last_response.status.should == 302
       # First we'll get redirected to the public map url
       follow_redirect!
@@ -333,7 +382,24 @@ describe Admin::VisualizationsController do
         CartoDB.path(self, 'public_visualizations_show', {id: "#{user_a.username}.#{vis.name}"}) + "?redirected=true"
       last_response.location.should eq url
 
+      ['public_visualizations_public_map', 'public_tables_embed_map'].each { |forbidden_endpoint|
+        get CartoDB.url(self, forbidden_endpoint, {id: vis.name}, user_a)
+        follow_redirects
+        last_response.status.should be(200), "#{forbidden_endpoint} is #{last_response.status}"
+        last_response.length.should >= 100
+      }
       org.destroy
+    end
+  end
+
+  def login_host(user, org)
+    login_as(user, scope: user.username)
+    host! "#{org.name}.localhost.lan"
+  end
+
+  def follow_redirects(limit = 10)
+    while last_response.status == 302 && (limit -= 1) > 0 do
+        follow_redirect!
     end
   end
 

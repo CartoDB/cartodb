@@ -4,26 +4,26 @@
     <link id="favicon" rel="shortcut icon" href="/favicons/favicon.ico" />
     <title><%= yield :title %></title>
     <meta name="description" content="<%= yield :description %>">
-    <meta name="keywords" content="<%= @name %>, datasets, maps, visualizations, CartoDB">
+    <meta name="keywords" content="<%= @name %>, datasets, maps, data visualization, spatial data, geospatial, cartodb">
     <meta name="author" content="<%= @name %>">
     <meta charset='utf-8' />
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 
-    <meta property="og:title" content="Maps by <%= @name %> on CartoDB" />
-    <meta property="og:description" content="<%= @name %> is creating maps and visualizations using CartoDB" />
-    <meta property="og:type" content="Visualizations list"/>
+    <meta property="og:title" content="<%= yield :title %>" />
+    <meta property="og:description" content="<%= yield :description %>" />
+    <meta property="og:type" content="visualization" />
     <meta property="og:url" content="<%= request.original_url %>" />
-    <meta property="og:image" content="<%= @avatar_url %>">
+    <meta property="og:image" content="<%= @avatar_url %>" />
 
     <meta name="twitter:card" content="summary">
     <meta name="twitter:site" content="@cartodb">
     <meta name="twitter:creator" content="@cartodb">
-    <meta name="twitter:title" content="Maps by <%= @name %> on CartoDB">
-    <meta name="twitter:description" content="<%= @name %> is creating maps and visualizations using CartoDB.">
+    <meta name="twitter:title" content="<%= yield :title %>">
+    <meta name="twitter:description" content="<%= yield :description %>">
     <meta name="twitter:image" content="<%= @avatar_url %>">
     <meta name="twitter:url" content="<%= request.original_url %>" />
 
-    <%= stylesheet_link_tag 'cartodb', 'new_common', 'new_public_dashboard' %>
+    <%= stylesheet_link_tag 'cartodb', 'common', 'public_dashboard' %>
   </head>
   <body class="PublicBody">
     <%= render 'admin/shared/public_header' %>
@@ -89,6 +89,7 @@
 
     <%= render 'admin/shared/footer' %>
     <script type="text/javascript">
+      var config = <%= safe_js_object frontend_config_public({https_apis: request.protocol == 'https://' }) %>;
       var account_host = '<%= CartoDB.account_host %>';
       var favMapViewAttrs = {
         el: '#<%= fav_map_target_id %>',
@@ -107,7 +108,7 @@
     <% if @most_viewed_vis_map && @most_viewed_vis_map.map.provider == 'googlemaps' %>
     <script type="text/javascript" src="//maps.google.com/maps/api/js?sensor=false&v=3.12&api_key=<%= @user.google_maps_key %>"></script>
     <% end %>
-    <%= javascript_include_tag 'cdb.js', 'templates', 'new_public_dashboard_deps', 'new_public_dashboard' %>
+    <%= javascript_include_tag 'cdb.js', 'templates', 'public_dashboard_deps', 'public_dashboard' %>
     <%= yield :js %>
   </body>
 </html>

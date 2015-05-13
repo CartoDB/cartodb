@@ -191,53 +191,8 @@ class Table
       end
       UserTable.where(user_id: user_id, name: table_name).first
     }
-  end #tables_from
-
-
-  # Getter by table uuid or table name using canonical visualizations
-  # @param id_or_name String If is a name, can become qualified as "schema.tablename"
-  # @param viewer_user User
-  def self.get_by_id_or_name(id_or_name, viewer_user)
-    return nil unless viewer_user
-
-    rx = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/
-
-    table_name, table_schema = self.table_and_schema(id_or_name)
-
-    query_filters = {
-        user_id: viewer_user.id,
-        name: table_name,
-        type: CartoDB::Visualization::Member::TYPE_CANONICAL
-    }
-
-    unless table_schema.nil?
-      owner = User.where(username:table_schema).first
-      unless owner.nil?
-        query_filters[:user_id] = owner.id
-      end
-    end
-
-    # noinspection RubyArgCount
-    vis = CartoDB::Visualization::Collection.new.fetch(query_filters).select { |u|
-      u.user_id == query_filters[:user_id]
-    }.first
-    table = vis.nil? ? nil : vis.table
-
-    if rx.match(id_or_name) && table.nil?
-      table_temp = UserTable.where(id: id_or_name).first.try(:service)
-      unless table_temp.nil?
-        # Make sure we're allowed to see the table
-        vis = CartoDB::Visualization::Collection.new.fetch(
-            user_id: viewer_user.id,
-            map_id: table_temp.map_id,
-            type: CartoDB::Visualization::Member::TYPE_CANONICAL
-        ).first
-        table = vis.table unless vis.nil?
-      end
-    end
-
-    table
   end
+
 
   def self.table_and_schema(table_name)
     if table_name =~ /\./
@@ -940,6 +895,10 @@ class Table
         else
           new_column_type = get_new_column_type(invalid_column)
           user_database.set_column_type(self.name, invalid_column.to_sym, new_column_type)
+          # INFO: There's a complex logic for retrying and need to know how often it is actually done
+          Rollbar.report_message('Retrying insert_row!',
+                                 'debug',
+                                 {user_id: self.user_id, qualified_table_name: self.qualified_table_name, raw_attributes: raw_attributes})
           retry
         end
       end
@@ -978,6 +937,10 @@ class Table
             new_column_type = get_new_column_type(invalid_column)
             if new_column_type
               user_database.set_column_type self.name, invalid_column.to_sym, new_column_type
+              # INFO: There's a complex logic for retrying and need to know how often it is actually done
+              Rollbar.report_message('Retrying update_row!',
+                                     'debug',
+                                     {user_id: self.user_id, qualified_table_name: self.qualified_table_name, row_id: row_id, raw_attributes: raw_attributes})
               retry
             end
           else
@@ -1490,7 +1453,7 @@ class Table
 
   def update_cdb_tablemetadata
     owner.in_database(as: :superuser).run(%Q{
-      SELECT CDB_TableMetadataTouch('#{@user_table.table_id}')
+      SELECT CDB_TableMetadataTouch('#{qualified_table_name}')
     })
   end
 
@@ -1511,7 +1474,7 @@ class Table
   # See http://www.postgresql.org/docs/9.1/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
   def self.get_valid_table_name(name, options = {})
     # Initial name cleaning
-    name = name.to_s.strip #.downcase
+    name = name.to_s.squish #.downcase
     name = 'untitled_table' if name.blank?
 
     # Valid names start with a letter or an underscore
@@ -1625,7 +1588,7 @@ class Table
       else
         sanitized_force_schema = force_schema.split(',').map do |column|
           # Convert existing primary key into a unique key
-          if column =~ /^\s*\"([^\"]+)\"(.*)$/
+          if column =~ /\A\s*\"([^\"]+)\"(.*)\z/
             "#{$1.sanitize} #{$2.gsub(/primary\s+key/i,'UNIQUE')}"
           else
             column.gsub(/primary\s+key/i,'UNIQUE')

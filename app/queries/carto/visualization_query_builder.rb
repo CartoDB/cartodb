@@ -7,7 +7,20 @@ require_relative '../../helpers/carto/uuidhelper'
 class Carto::VisualizationQueryBuilder
   include Carto::UUIDHelper
 
-  SUPPORTED_OFFDATABASE_ORDERS = ['mapviews', 'likes']
+  SUPPORTED_OFFDATABASE_ORDERS = { 
+    'mapviews' => {
+        submodel: nil,
+        attribute: 'mapviews'
+      },
+    'likes' => {
+        submodel: nil,
+        attribute: 'likes'
+      },
+    'size' => {
+        submodel: 'table',
+        attribute: 'size'
+      }
+  }
 
   def self.user_public_tables(user)
     self.user_public(user).with_type(Carto::Visualization::TYPE_CANONICAL)
@@ -34,7 +47,7 @@ class Carto::VisualizationQueryBuilder
     @eager_load_associations = []
     @eager_load_nested_associations = {}
     @order = {}
-    @offdatabase_order = {}
+    @off_database_order = {}
   end
 
   def with_id_or_name(id_or_name)
@@ -121,9 +134,9 @@ class Carto::VisualizationQueryBuilder
   end
 
   def with_order(order, asc_desc = :asc)
-    offdatabase_order = offdatabase_order(order)
-    if offdatabase_order
-      @offdatabase_order[offdatabase_order] = asc_desc
+    offdb_order = offdatabase_order(order)
+    if offdb_order
+      @off_database_order[offdb_order] = asc_desc
     else
       @order[order] = asc_desc
     end
@@ -166,15 +179,18 @@ class Carto::VisualizationQueryBuilder
 
     if @shared_with_user_id
       user = Carto::User.where(id: @shared_with_user_id).first
-      query = query
-          .joins(:shared_entities)
-          .where(:shared_entities => { recipient_id: recipient_ids(user) })
+      query = query.joins(:shared_entities)
+                   .where(:shared_entities => { recipient_id: recipient_ids(user) })
     end
 
     if @owned_by_or_shared_with_user_id
       # TODO: sql strings are suboptimal and compromise compositability, but
       # I haven't found a better way to do this OR in Rails
-      query = query.where(' ("visualizations"."user_id" = (?) or "visualizations"."id" in (?))',  @owned_by_or_shared_with_user_id, ::Carto::VisualizationQueryBuilder.new.with_shared_with_user_id(@owned_by_or_shared_with_user_id).build.uniq.pluck('visualizations.id'))
+      query = query.where(' ("visualizations"."user_id" = (?) or "visualizations"."id" in (?))',
+          @owned_by_or_shared_with_user_id, 
+          ::Carto::VisualizationQueryBuilder.new.with_shared_with_user_id(@owned_by_or_shared_with_user_id)
+                                            .build.uniq.pluck('visualizations.id')
+        )
     end
 
     if @type
@@ -208,10 +224,10 @@ class Carto::VisualizationQueryBuilder
       query = query.reverse_order if v == :desc
     }
 
-    if @offdatabase_order.empty?
+    if @off_database_order.empty?
       query
     else
-      Carto::OffdatabaseQueryAdapter.new(query, @offdatabase_order)
+      Carto::OffdatabaseQueryAdapter.new(query, @off_database_order)
     end
   end
 
@@ -223,9 +239,13 @@ class Carto::VisualizationQueryBuilder
 
   def offdatabase_order(order)
     return nil unless order.kind_of? String
-    splitted = order.split('.')
-    order_attribute = splitted[splitted.count - 1]
-    SUPPORTED_OFFDATABASE_ORDERS.include?(order_attribute) ? order_attribute : nil
+    fragments = order.split('.')
+    order_attribute = fragments[fragments.count - 1]
+    if SUPPORTED_OFFDATABASE_ORDERS.include?(order_attribute)
+      SUPPORTED_OFFDATABASE_ORDERS[order_attribute]
+    else
+      nil
+    end
   end
 
   def with_include_of(association)

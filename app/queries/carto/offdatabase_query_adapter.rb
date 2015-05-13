@@ -39,10 +39,13 @@ class Carto::OffdatabaseQueryAdapter
 
   def get_results
     all = @query.all
-    @order_by_asc_or_desc_by_attribute.each { |attribute, asc_or_desc|
+    # @see /app/queries/carto/offdatabase_query_adapter.rb
+    @order_by_asc_or_desc_by_attribute.each { |data, asc_or_desc|
+      submodel = data[:submodel]
+      attribute = data[:attribute]
       all = all.sort { |x, y|
-        x_attribute = x.send(attribute)
-        y_attribute = y.send(attribute)
+        x_attribute = submodel.nil? ? x.send(attribute) : x.send(submodel).send(attribute)
+        y_attribute = submodel.nil? ? y.send(attribute) : y.send(submodel).send(attribute)
         asc_or_desc == :asc ? x_attribute <=> y_attribute : y_attribute <=> x_attribute
       }
     }

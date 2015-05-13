@@ -69,9 +69,9 @@
   &:hover { background-color: rgba(#B93F37, 1) }
 }
 .Button--alert {
-  background-color: $cHighlight-alert;
-  border-color: $cHighlight-alert;
-  &:hover { background-color: rgba($cHighlight-alert, 1) }
+  background-color: $cHighlight-alert2;
+  border-color: $cHighlight-alert2;
+  &:hover { background-color: rgba($cHighlight-alert2, 1) }
 }
 .Button--secondary {
   border: 1px solid $cNavButton-default;

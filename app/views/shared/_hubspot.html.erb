@@ -1,29 +1,7 @@
-<% if Cartodb.config[:hubspot] && Cartodb.config[:hubspot]['token'].present? %>
+<% if CartoDB::Hubspot::instance.enabled? %>
   <script type="text/javascript">
-    var hubspot_token = "<%= Cartodb.config[:hubspot]['token'] %>";
-    var hubspot_ids = {
-      published_visualization: "<%= Cartodb.config[:hubspot]['published_visualization_id'] %>",
-      visited_dashboard: "<%= Cartodb.config[:hubspot]['visited_dashboard_id'] %>",
-      connect_dataset: "<%= Cartodb.config[:hubspot]['connect_dataset_id'] %>",
-      create_map: "<%= Cartodb.config[:hubspot]['create_map_id'] %>",
-      export_table: "<%= Cartodb.config[:hubspot]['export_table_id'] %>",
-      select_wms: "<%= Cartodb.config[:hubspot]['select_wms_id'] %>",
-      color_basemap: "<%= Cartodb.config[:hubspot]['color_basemap_id'] %>",
-      pattern_basemap: "<%= Cartodb.config[:hubspot]['pattern_basemap_id'] %>",
-      geocoding_admin: "<%= Cartodb.config[:hubspot]['geocoding_admin_id'] %>",
-      geocoding_zip: "<%= Cartodb.config[:hubspot]['geocoding_zip_id'] %>",
-      geocoding_world: "<%= Cartodb.config[:hubspot]['geocoding_world_id'] %>",
-      geocoding_namedplace: "<%= Cartodb.config[:hubspot]['geocoding_namedplace_id'] %>",
-      geocoding_latlng: "<%= Cartodb.config[:hubspot]['geocoding_latlng_id'] %>",
-      geocoding_ip: "<%= Cartodb.config[:hubspot]['geocoding_ip_id'] %>",
-      geocoding_address: "<%= Cartodb.config[:hubspot]['geocoding_address_id'] %>",
-      visual_merge: "<%= Cartodb.config[:hubspot]['visual_merge_id'] %>",
-      common_data: "<%= Cartodb.config[:hubspot]['common_data_id'] %>",
-      cartocss_manually: "<%= Cartodb.config[:hubspot]['cartocss_manually_id'] %>",
-      wizard: "<%= Cartodb.config[:hubspot]['wizard_id'] %>",
-      filter: "<%= Cartodb.config[:hubspot]['filter_id'] %>",
-      query: "<%= Cartodb.config[:hubspot]['query_id'] %>",
-    };
+    var hubspot_token = "<%= CartoDB::Hubspot::instance.token %>";
+    var hubspot_ids = <%= CartoDB::Hubspot::instance.event_ids.to_json.html_safe %>;
 
     (function(d,s,i,r) {
       if (d.getElementById(i)){return;}

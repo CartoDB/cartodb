@@ -1,9 +1,11 @@
 require 'active_record'
 
 require_relative '../../models/carto/shared_entity'
+require_relative '../../helpers/carto/uuidhelper'
 
 # TODO: consider moving some of this to model scopes if convenient
 class Carto::VisualizationQueryBuilder
+  include Carto::UUIDHelper
 
   def self.user_public_tables(user)
     self.user_public(user).with_type(Carto::Visualization::TYPE_CANONICAL)
@@ -33,7 +35,7 @@ class Carto::VisualizationQueryBuilder
   end
 
   def with_id_or_name(id_or_name)
-    if is_uuid(id_or_name)
+    if is_uuid?(id_or_name)
       with_id(id_or_name)
     else
       with_name(id_or_name)
@@ -206,10 +208,6 @@ class Carto::VisualizationQueryBuilder
   end
 
   private
-
-  def is_uuid(text)
-    !(UUIDTools::UUID_REGEXP =~ text).nil?
-  end
 
   def with_include_of(association)
     @include_associations << association

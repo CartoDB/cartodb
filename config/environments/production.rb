@@ -61,9 +61,6 @@ CartoDB::Application.configure do
 
   config.assets.initialize_on_precompile = true
 
-  frontend_version = YAML::load(File.read(Rails.root.join('config', 'frontend.yml')))
-  config.action_controller.relative_url_root = "/assets/" + frontend_version
-
   config.action_controller.asset_host = Proc.new do
     Cartodb.asset_path
   end

@@ -938,5 +938,50 @@ namespace :cartodb do
       end
     end
 
+
+    desc "Get from redis the list of visualization ids viewed"
+    task :get_viewed_visualization_ids, [:redis_ip, :output_file] => :environment do |t, args|
+      if args[:redis_ip]
+        redis_client_config = $users_metadata.client.options
+        redis_client_config[:host] = args[:redis_ip]
+        redis_client = Redis.new(redis_client_config)
+      else
+        redis_client = $users_metadata
+      end
+
+      visualization_ids = []
+      redis_client.keys("user:cdb:mapviews:stat_tag:*").each do |key|
+        visualization_ids << key.split(":")[4]
+      end
+
+      if args[:output_file]
+        File.write(args[:output_file], visualization_ids.join("\n"))
+      else
+        puts visualization_ids.join("\n")
+      end
+    end
+
+
+    desc "Populate visualization total map views from partial days"
+    task :populate_visualization_total_map_views, [:visualizations_list] => :environment do |t, args|
+      if args[:visualizations_list].blank?
+        raise "Missing visualization_list param which must be a plain text list of visualizations ids"
+      end
+      File.open(args[:visualizations_list], 'r') do |f|
+        f.each_line do |line|
+          visualization_id = line.strip
+          puts "Processing visualization #{visualization_id}"
+          visualization_counter = 0
+          $users_metadata.zrange("user:cdb:mapviews:stat_tag:#{visualization_id}", 0, -1).each do |mapviews_day|
+            if mapviews_day =~ /[0-9]{4}(0|1)[0-9][0-3][0-9]/
+              count = $users_metadata.zscore("user:cdb:mapviews:stat_tag:#{visualization_id}", mapviews_day)
+              visualization_counter = visualization_counter + count unless count.nil?
+            end
+          end
+          $users_metadata.zadd("user:cdb:mapviews:stat_tag:#{visualization_id}", visualization_counter, 'total')
+        end
+      end
+    end
+
   end
 end

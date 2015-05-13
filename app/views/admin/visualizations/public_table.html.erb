@@ -107,7 +107,8 @@
           </div>
           <div class="user-options">
             <% if !Cartodb.config[:cartodb_com_hosted].present? %>
-              <a href="http://oneclick.cartodb.com/?file=<%= CGI.escape("#{sql_api_template("public").gsub! '{user}', @user.username}#{Cartodb.config[:sql_api]['public']['endpoint']}?q=SELECT * FROM #{ @table.owner.sql_safe_database_schema }.#{ @table.name }&format=csv") %>&provider=CartoDB&logo=http://<%= request.domain %><%= image_path "layout/cartofante_blue.png" %>" class="oneclick button grey">
+              <% @url = CGI.escape("#{sql_api_template("public").gsub! '{user}', @user.username}#{Cartodb.config[:sql_api]['public']['endpoint']}?q=#{CGI.escape("SELECT * FROM #{ @table.owner.sql_safe_database_schema }.#{ @table.name }")}&format=csv") %>
+              <a href="http://oneclick.cartodb.com/?file=<%= @url %>&provider=CartoDB&logo=<%= image_path "layout/cartofante_blue.png" %>" class="oneclick button grey">
                 Open in CartoDB
               </a>
             <% end %>

@@ -178,7 +178,7 @@ class Admin::VisualizationsController < ApplicationController
     }.count
 
     # Public export API SQL url
-    @sql_url = sql_api_url("SELECT * FROM #{ @table.owner.sql_safe_database_schema }.#{ @table.name }", @user)
+    @export_sql_api_url = "#{ sql_api_url("SELECT * FROM #{ @table.owner.sql_safe_database_schema }.#{ @table.name }", @user) }&format=csv"
 
     respond_to do |format|
       format.html { render 'public_table', layout: 'application_table_public' }
@@ -579,7 +579,7 @@ class Admin::VisualizationsController < ApplicationController
   end
 
   def sql_api_url(query, user)
-    "#{ ApplicationHelper.sql_api_template("public").gsub! '{user}', user.username }#{ Cartodb.config[:sql_api]['public']['endpoint'] }?q=#{URI::encode query}&format=csv"
+    "#{ ApplicationHelper.sql_api_template("public").gsub! '{user}', user.username }#{ Cartodb.config[:sql_api]['public']['endpoint'] }?q=#{ URI::encode query }"
   end
 
 end

@@ -20,6 +20,7 @@ module CartoDB
         @token = config.fetch('token')
       else
         @enabled = false
+        @event_ids = {}
       end
     end
 

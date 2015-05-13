@@ -308,8 +308,6 @@ cartodb.createLayer(map, { layermetadata })
     what layer is created. Take into account that `layerIndex == 0` is the base layer and that
     all the tiled layers (non animated ones) are merged into a single one. The default value for
     this option is 1 (usually tiled layers).
-  - **render**: Set this option if your layer contains different types of sublayers and you only 
-    need some or all types of sublayers to be rendered. Supported values are: 'all' and 'cartodb'(default).
 
 - **callback(_layer_)**: if a function is specified, it will be invoked after the layer has been created. The layer will be passed as an argument.
 
@@ -348,7 +346,7 @@ cartodb.createLayer(map, 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e
   });
 ```
 
-Layer metadata must take one of the following forms.
+Layer metadata must take one of the following forms:
 
 #### Standard Layer Source Object (`type: 'cartodb'`)
 
@@ -373,7 +371,7 @@ Used for most maps with tables that are set to public or public with link.
 }
 ```
 
-#### Torque Layer Source Object
+#### Torque Layer Source Object (`type: 'torque'`)
 
 Used for [Torque maps](https://github.com/CartoDB/torque). Note that it does not allow sublayers.
 
@@ -390,9 +388,10 @@ Used for [Torque maps](https://github.com/CartoDB/torque). Note that it does not
 }
 ```
 
-#### Named Maps Layer Source Object
+#### Named Maps Layer Source Object (`type: 'namedmap'`)
 
 Used for making public maps with private data. See [Named Maps](http://docs.cartodb.com/cartodb-platform/maps-api.html#named-maps-1) for more information.
+
 
 ```javascript
 {

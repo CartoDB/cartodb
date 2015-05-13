@@ -5,7 +5,7 @@ module CartoDB
   class Metrics
 
     def initialize
-      @hubspot = CartoDB::Hubspot.new
+      @hubspot = CartoDB::Hubspot.instance
     end
 
     def report(event, payload)

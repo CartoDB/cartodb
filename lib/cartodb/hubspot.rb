@@ -1,40 +1,47 @@
 require 'typhoeus'
 require 'rollbar'
+require 'singleton'
 
 # Development info: http://developers.hubspot.com/docs/overview
 module CartoDB
   class Hubspot
 
+    include Singleton
+
     def initialize
       config = Cartodb.config[:hubspot]
       if config.present? && config.is_a?(Hash)
-        @events_host = Cartodb.config[:hubspot]['events_host']
-        @api_key = Cartodb.config[:hubspot]['api_key']
-        @import_failed_id = Cartodb.config[:hubspot]['import_failed_id']
-        @geocoding_failed_id = Cartodb.config[:hubspot]['geocoding_failed_id']
-        @import_success_id = Cartodb.config[:hubspot]['import_success_id']
-        @geocoding_success_id = Cartodb.config[:hubspot]['geocoding_success_id']
+        @enabled = true
+        @events_host = config['events_host']
+        @api_key = config['api_key']
+        @event_ids = config['event_ids']
+      else
+        @enabled = false
       end
     end
 
     def enabled?
-      @api_key.present? && @events_host.present?
+      @enabled == true
+    end
+
+    def event_ids
+      @event_ids
     end
 
     def track_import_failed(payload)
-      track_event(@import_failed_id, payload)
+      track_event(event_ids['import_failed_id'], payload)
     end
 
     def track_geocoding_failed(payload)
-      track_event(@geocoding_failed_id, payload)
+      track_event(event_ids['geocoding_failed_id'], payload)
     end
 
     def track_import_success(payload)
-      track_event(@import_success_id, payload)
+      track_event(event_ids['import_success_id'], payload)
     end
 
     def track_geocoding_success(payload)
-      track_event(@geocoding_success_id, payload)
+      track_event(event_ids['geocoding_success_id'], payload)
     end
 
 

@@ -36,6 +36,7 @@
               <div class="DatasetsList-itemMeta">
                 <div class="DatasetsList-itemTags DefaultTags">
                   <% if vis[:tags].size > 0 %>
+                    <%# Keep on one line to avoid unwanted spaces %>
                     <% formatted_tags(vis[:tags]) do |tag| %><a class="DefaultTags-item js-tag-link" href="<%= CartoDB.url(self, 'public_datasets_tag', {tag: tag}, vis[:owner]) %>"><%= tag %></a><% end %>
                   <% end %>
                 </div>

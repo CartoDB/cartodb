@@ -27,7 +27,7 @@
       </ul>
     </div>
 
-    <div class="u-inner">  
+    <div class="u-inner">
       <div class="PublicMap-info">
 
         <%#= 1st block %>
@@ -75,9 +75,8 @@
               <div class="PublicMap-stat">
                 <i class="iconFont iconFont-Label"></i>
                 <span class="DefaultTags">
-                  <% formatted_tags(@visualization.tags) do |tag| %>
-                      <a class="DefaultTags-item" href="<%= CartoDB.url(self, 'public_tag', {tag: tag}, @visualization.user) %>"><%= tag %></a>
-                  <% end %>
+                  <%# Keep on one line to avoid unwanted spaces %>
+                  <% formatted_tags(@visualization.tags) do |tag| %><a class="DefaultTags-item" href="<%= CartoDB.url(self, 'public_tag', {tag: tag}, @visualization.user) %>"><%= tag %></a><% end %>
                 </span>
               </div>
             <% end %>
@@ -325,7 +324,7 @@
 
   <%= insert_trackjs() %>
 
-  <%= render partial: 'shared/analytics', locals: { 
+  <%= render partial: 'shared/analytics', locals: {
     ua:     Cartodb.config[:google_analytics]['primary'],
     domain: Cartodb.config[:google_analytics]['domain'],
     custom_vars: [{title: "Public Pages", value: "Other", num: 3}],

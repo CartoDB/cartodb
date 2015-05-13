@@ -16,16 +16,13 @@ class Api::Json::OembedController < Api::ApplicationController
     format = request.query_parameters[:format]
     force_https = true if params[:allow_http].nil?
 
-    raise ActionController::RoutingError.new('Incorrect width') if (width =~ /^[0-9]+(%|px)?$/).nil?
-    raise ActionController::RoutingError.new('Incorrect height') if (height =~ /^[0-9]+(%|px)?$/).nil?
+    raise ActionController::RoutingError.new('Incorrect width') if (width =~ /\A[0-9]+(%|px)?\z/).nil?
+    raise ActionController::RoutingError.new('Incorrect height') if (height =~ /\A[0-9]+(%|px)?\z/).nil?
 
     uri = URI.parse(url)
 
-    begin
-      uuid = /(\w{8}-\w{4}-\w{4}-\w{4}-\w{12})/.match(uri.path)[0]
-    rescue NoMethodError
-      raise ActionController::RoutingError.new('UUID not found in URL')
-    end
+    uuid = extract_uuid_from_string(uri.path)
+    raise ActionController::RoutingError.new('UUID not found in URL') if uuid.nil?
 
     begin
       viz = CartoDB::Visualization::Member.new(id: uuid).fetch
@@ -34,7 +31,7 @@ class Api::Json::OembedController < Api::ApplicationController
     else
       name = viz.name
     end
-    
+
     fields = url_fields_from_fragments(url, force_https)
 
     # build the url using full schema because any visuaization should work with any user
@@ -153,6 +150,17 @@ class Api::Json::OembedController < Api::ApplicationController
     path_fragments = url_fragments[5].split('/')
     raise UrlFRagmentsError.new("Username not found at url") if path_fragments.length < 3 || path_fragments[2].length == 0
     path_fragments[2]
+  end
+
+  def extract_uuid_from_string(str)
+    # TODO: move this method to  app/helpers/carto/uuidhelper.rb. Not used yet because this changed was pushed before
+    # UUIDTools::UUID_REGEXP cannot be reused because of /^ $/
+    matches = /([0-9a-f]{8})-([0-9a-f]{4})-([0-9a-f]{4})-([0-9a-f]{2})([0-9a-f]{2})-([0-9a-f]{12})/.match(str)
+    if matches
+      matches[0]
+    else
+      nil
+    end
   end
 
 end

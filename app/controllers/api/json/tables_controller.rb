@@ -58,9 +58,10 @@ class Api::Json::TablesController < Api::ApplicationController
     unless params[:name].nil?
       if params[:name].downcase != @table.name
         owner = User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota).filter(:id => current_user.id).first
-        if params[:name] =~ /^[0-9_]/
+        # TODO reverse this logic: make explicit if this needs to start with a letter
+        if params[:name] =~ /\A[0-9_]/
           raise "Table names can't start with numbers or dashes."
-        elsif owner.tables.filter(:name.like(/^#{params[:name]}/)).select_map(:name).include?(params[:name].downcase)
+        elsif owner.tables.filter(:name.like(/\A#{params[:name]}/)).select_map(:name).include?(params[:name].downcase)
           raise "Table '#{params[:name].downcase}' already exists."
         else
           @table.set_all(:name => params[:name].downcase)

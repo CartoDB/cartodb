@@ -1,15 +1,17 @@
 # encoding: UTF-8
 
+require_relative '../../../helpers/carto/uuidhelper'
+
 module Carto
   module Api
     class OverlaysController < ::Api::ApplicationController
+      include Carto::UUIDHelper
 
       ssl_required :index, :show
       before_filter :check_owner_by_vis, only: [ :index ]
       before_filter :check_owner_by_id, only: [ :show ]
 
       def index
-        
         collection = Carto::Overlay.where(visualization_id: params.fetch('visualization_id')).map { |overlay|
           Carto::Api::OverlayPresenter.new(overlay).to_poro
         }
@@ -29,6 +31,7 @@ module Carto
 
       def check_owner_by_id
         head 401 and return if current_user.nil?
+        head 401 and return unless is_uuid?(params.fetch('id'))
 
         member = CartoDB::Overlay::Member.new(id: params.fetch('id')).fetch
         head 401 and return if member.nil?
@@ -39,6 +42,7 @@ module Carto
 
       def check_owner_by_vis
         head 401 and return if current_user.nil?
+        head 401 and return unless is_uuid?(params.fetch('visualization_id'))
 
         vis = Carto::Visualization.where(id: params.fetch('visualization_id')).first
         head 401 and return if vis.nil?

@@ -134,6 +134,9 @@ module CartoDB
 
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
+
+    frontend_assets_version = JSON::parse(File.read(Rails.root.join('package.json')))['version']
+    config.action_controller.relative_url_root = "/assets/#{frontend_assets_version}"
   end
 end
 

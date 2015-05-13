@@ -101,7 +101,6 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
     head(404)
   rescue => exception
     CartoDB.notify_exception(exception)
-    puts exception.message + "\n" + exception.backtrace
     head(404)
   end #sync
 
@@ -114,8 +113,8 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
     return head(401) unless member.authorize?(current_user)
 
     render_jsonp( { state: member.state } )
-  rescue KeyError => exception
-    puts exception.message + "\n" + exception.backtrace
+  rescue => exception
+    CartoDB.notify_exception(exception)
     head(404)
   end #syncing?
 

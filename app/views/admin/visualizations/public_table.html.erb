@@ -108,7 +108,7 @@
           <div class="user-options">
             <% if !Cartodb.config[:cartodb_com_hosted].present? %>
               <a href="http://oneclick.cartodb.com/?file=<%= CGI.escape(@export_sql_api_url) %>&provider=<%= @name %>&logo=<%= @avatar_url %>" class="oneclick button grey">
-                CLONE AND EDIT
+                CREATE MAP
               </a>
             <% end %>
 

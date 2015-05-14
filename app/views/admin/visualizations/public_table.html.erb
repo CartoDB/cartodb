@@ -107,7 +107,7 @@
           </div>
           <div class="user-options">
             <% if !Cartodb.config[:cartodb_com_hosted].present? %>
-              <a href="http://oneclick.cartodb.com/?file=<%= CGI.escape(@export_sql_api_url) %>&provider=<%= @name %>&logo=<%= @avatar_url %>" class="oneclick button grey">
+              <a href="http://oneclick.cartodb.com/?file=<%= CGI.escape(@export_sql_api_url) %>&provider=<%= URI.encode(@table.owner.username) %>&logo=<%= URI.encode(@avatar_url) %>" class="oneclick button grey">
                 CREATE MAP
               </a>
             <% end %>
@@ -116,8 +116,6 @@
               <span class="icon"></span>
               <span class="counter"><%= @likes_count %></span>
             </a>
-
-            <!--a href="#/clone-in-cartodb" class="clone button green"><i class="clone-icon"></i>Clone in CartoDB</a-->
             <a href="<%= CartoDB.url(self, 'public_tables_show', {id: @table.name}, @table.owner.organization ? @table.owner : nil) %>" class="edit button grey">Edit in CartoDB</a>
           </div>
         </div>

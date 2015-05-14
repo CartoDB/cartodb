@@ -2,6 +2,7 @@
 @import "compass/css3/opacity";
 @import "compass/css3/images";
 @import "../old_common/mixins";
+@import "../variables/progress-bar";
 
 .ImagePicker .AssetPane {
   position: relative;
@@ -35,6 +36,8 @@
   @include inline-block();
   width:60px;
   height:60px;
+  max-width: 60px;
+  max-height: 60px;
   @include border-radius(3px);
   text-align: center;
   line-height: 60px;
@@ -90,4 +93,14 @@
 .ImagePicker .CreateDialog-footerShadow {
   height: 48px;
   top:-48px;
+}
+.ImagePicker .Form-row {
+  margin: auto;
+  width: 780px;
+}
+.Filters-progressBar {
+  @include progress-animated-bar(6px, 9px, true, false);
+  position:absolute;
+  display:none;
+  width: 100%;
 }

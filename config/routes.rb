@@ -275,6 +275,9 @@ CartoDB::Application.routes.draw do
 
     get '(/user/:user_domain)(/u/:user_domain)/api/v2_1/viz/:id/viz'                        => 'visualizations#vizjson2', as: :api_v2_1_visualizations_vizjson, constraints: { id: /[^\/]+/ }
 
+    # Tags
+    get     '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/tags'                           => 'tags#index',                     as: :api_v1_1_visualizations_tags_index
+
     # Tables
     get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:id'                         => 'tables#show',       as: :api_v1_1_tables_show, constraints: { id: /[^\/]+/ }
 

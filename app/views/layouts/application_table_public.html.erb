@@ -13,14 +13,14 @@
     <meta property="og:description" content="<%= yield :description %>" />
     <meta property="og:type" content="visualization" />
     <meta property="og:url" content="<%= request.original_url %>" />
-    <meta property="og:image" content="<%= @table.owner.avatar_url %>" />
+    <meta property="og:image" content="<%= image_path "layout/cartofante_blue.png" %>" />
 
     <meta name="twitter:card" content="summary">
     <meta name="twitter:site" content="@cartodb">
     <meta name="twitter:creator" content="@cartodb">
     <meta name="twitter:title" content="<%= yield :page_title %>">
     <meta name="twitter:description" content="<%= yield :description %>">
-    <meta name="twitter:image" content="<%= @table.owner.avatar_url %>">
+    <meta name="twitter:image" content="<%= image_path "layout/cartofante_blue.png" %>">
     <meta name="twitter:url" content="<%= request.original_url %>" />
 
     <%= yield :css %>

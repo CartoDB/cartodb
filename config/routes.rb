@@ -290,14 +290,19 @@ CartoDB::Application.routes.draw do
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/imports/:id'                      => 'imports#show',                        as: :api_v1_1_imports_show
 
     # Custom layers grouped by user
-    get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/users/:user_id/layers'     => 'layers#index',   as: :api_v1_1_users_layers_index
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/users/:user_id/layers'              => 'layers#index',   as: :api_v1_1_users_layers_index
+    # No show action
 
     # Map layers
-    get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/maps/:map_id/layers'     => 'layers#index',   as: :api_v1_1_maps_layers_index
-    get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/maps/:map_id/layers/:id' => 'layers#show',    as: :api_v1_1_maps_layers_show
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/maps/:map_id/layers'                => 'layers#index',   as: :api_v1_1_maps_layers_index
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/maps/:map_id/layers/:id'            => 'layers#show',    as: :api_v1_1_maps_layers_show
 
     # Maps
     get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/maps/:id'                           => 'maps#show',    as: :api_v1_1_maps_show
+
+    # Overlays
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/:visualization_id/overlays'     => 'overlays#index',    as: :api_v1_1_visualizations_overlays_index,  constraints: { visualization_id: /[^\/]+/ }
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/:visualization_id/overlays/:id' => 'overlays#show',     as: :api_v1_1_visualizations_overlays_show,   constraints: { visualization_id: /[^\/]+/ }
 
     # Synchronizations
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/synchronizations'              => 'synchronizations#index',    as: :api_v1_1_synchronizations_index

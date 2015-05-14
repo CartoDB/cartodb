@@ -140,6 +140,8 @@ WORKING_SPECS_8 = \
   spec/requests/api/visualizations_spec.rb \
   spec/requests/api/json/maps_controller_spec.rb \
   spec/requests/carto/api/maps_controller_spec.rb \
+  spec/requests/api/json/overlays_controller_spec.rb \
+  spec/requests/carto/api/overlays_controller_spec.rb \
   $(NULL)
 
 WORKING_SPECS_9 = \

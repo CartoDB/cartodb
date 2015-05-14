@@ -59,13 +59,13 @@ shared_examples_for "visualization controllers" do
       name:         "table #{seed}",
       description:  "table #{seed} description"
     }
-    post "/api/v1/tables?api_key=#{@api_key}",
+    post api_v1_tables_create_url(api_key: @api_key),
       payload.to_json, @headers
 
     table_attributes  = JSON.parse(last_response.body)
     table_id          = table_attributes.fetch('id')
 
-    put "/api/v1/tables/#{table_id}?api_key=#{@api_key}",
+    put api_v1_tables_update_url(id: table_id, api_key: @api_key),
       { privacy: privacy }.to_json, @headers
 
     table_attributes
@@ -980,10 +980,10 @@ shared_examples_for "visualization controllers" do
 
       it 'retrieves a collection of visualizations' do
         payload = factory(@user)
-        post "/api/v1/viz?api_key=#{@api_key}", payload.to_json, @headers
+        post api_v1_visualizations_create_url(api_key: @api_key), payload.to_json, @headers
         id = JSON.parse(last_response.body).fetch('id')
 
-        get "/api/v1/viz?api_key=#{@api_key}",
+        get api_v1_visualizations_index_url(api_key: @api_key),
           {}, @headers
 
         response    = JSON.parse(last_response.body)
@@ -993,10 +993,10 @@ shared_examples_for "visualization controllers" do
 
       it 'is updated after creating a visualization' do
         payload = factory(@user)
-        post "/api/v1/viz?api_key=#{@api_key}",
+        post api_v1_visualizations_create_url(api_key: @api_key),
           payload.to_json, @headers
 
-        get "/api/v1/viz?api_key=#{@api_key}",
+        get api_v1_visualizations_index_url(api_key: @api_key),
           {}, @headers
 
         response    = JSON.parse(last_response.body)
@@ -1004,10 +1004,10 @@ shared_examples_for "visualization controllers" do
         collection.size.should == 1
 
         payload = factory(@user).merge('name' => 'another one')
-        post "/api/v1/viz?api_key=#{@api_key}",
+        post api_v1_visualizations_create_url(api_key: @api_key),
           payload.to_json, @headers
 
-        get "/api/v1/viz?api_key=#{@api_key}",
+        get api_v1_visualizations_index_url(api_key: @api_key),
           {}, @headers
         response    = JSON.parse(last_response.body)
         collection  = response.fetch('visualizations')
@@ -1016,19 +1016,19 @@ shared_examples_for "visualization controllers" do
 
       it 'is updated after deleting a visualization' do
         payload = factory(@user)
-        post "/api/v1/viz?api_key=#{@api_key}",
+        post api_v1_visualizations_create_url(api_key: @api_key),
           payload.to_json, @headers
         id = JSON.parse(last_response.body).fetch('id')
 
-        get "/api/v1/viz?api_key=#{@api_key}",
+        get api_v1_visualizations_index_url(api_key: @api_key),
           {}, @headers
         response    = JSON.parse(last_response.body)
         collection  = response.fetch('visualizations')
         collection.should_not be_empty
 
-        delete "/api/v1/viz/#{id}?api_key=#{@api_key}",
+        delete api_v1_visualizations_destroy_url(id: id, api_key: @api_key),
           {}, @headers
-        get "/api/v1/viz?api_key=#{@api_key}",
+        get api_v1_visualizations_index_url(api_key: @api_key),
           {}, @headers
 
         response    = JSON.parse(last_response.body)
@@ -1041,11 +1041,11 @@ shared_examples_for "visualization controllers" do
         total_entries = 20
 
         total_entries.times do
-          post "/api/v1/viz?api_key=#{@api_key}",
+          post api_v1_visualizations_index_url(api_key: @api_key),
             factory(@user).to_json, @headers
         end
 
-        get "/api/v1/viz?api_key=#{@api_key}&page=1&per_page=#{per_page}", {}, @headers
+        get api_v1_visualizations_index_url(api_key: @api_key, page: 1, per_page: per_page), {}, @headers
 
         last_response.status.should == 200
 
@@ -1056,21 +1056,21 @@ shared_examples_for "visualization controllers" do
       end
 
       it 'returns filtered results' do
-        post "/api/v1/viz?api_key=#{@api_key}",
+        post api_v1_visualizations_create_url(api_key: @api_key),
           factory(@user).to_json, @headers
 
-        get "/api/v1/viz?api_key=#{@api_key}&type=table",
+        get api_v1_visualizations_index_url(api_key: @api_key, type: 'table'),
           {}, @headers
         last_response.status.should == 200
         response    = JSON.parse(last_response.body)
         collection  = response.fetch('visualizations')
         collection.should be_empty
 
-        post "/api/v1/viz?api_key=#{@api_key}",
+        post api_v1_visualizations_create_url(api_key: @api_key),
           factory(@user).to_json, @headers
-        post "/api/v1/viz?api_key=#{@api_key}",
+        post api_v1_visualizations_create_url(api_key: @api_key),
           factory(@user).merge(type: 'table').to_json, @headers
-        get "/api/v1/viz?api_key=#{@api_key}&type=derived",
+        get api_v1_visualizations_index_url(api_key: @api_key, type: 'derived'),
           {}, @headers
 
         last_response.status.should == 200
@@ -1095,7 +1095,7 @@ shared_examples_for "visualization controllers" do
           privacy: 'public'
         }
 
-        post "/api/v1/viz?api_key=#{@api_key}",
+        post api_v1_visualizations_create_url(api_key: @api_key),
               payload.to_json, @headers
         last_response.status.should == 200
 
@@ -1106,13 +1106,13 @@ shared_examples_for "visualization controllers" do
         #  {}, @headers
         #last_response.status.should == 403
 
-        get "/api/v2/viz/#{visualization.fetch('id')}/viz?api_key=#{@api_key}",
+        get api_v2_visualizations_vizjson_url(id: visualization.fetch('id'), api_key: @api_key),
           {}, @headers
         last_response.status.should == 200
 
         # include overlays
 
-        get "/api/v1/viz/#{visualization.fetch('id')}/overlays?api_key=#{@api_key}",
+        get api_v1_visualizations_overlays_index_url(visualization_id: visualization.fetch('id'), api_key: @api_key),
           {}, @headers
         last_response.status.should == 200
         overlays = JSON.parse(last_response.body)
@@ -1131,11 +1131,11 @@ shared_examples_for "visualization controllers" do
 
       it 'returns a visualization' do
         payload = factory(@user)
-        post "/api/v1/viz?api_key=#{@api_key}",
+        post api_v1_visualizations_create_url(api_key: @api_key),
           payload.to_json, @headers
         id = JSON.parse(last_response.body).fetch('id')
 
-        get "/api/v1/viz/#{id}?api_key=#{@api_key}", {}, @headers
+        get api_v1_visualizations_show_url(id: id, api_key: @api_key), {}, @headers
 
         last_response.status.should == 200
         response = JSON.parse(last_response.body)
@@ -1217,25 +1217,25 @@ shared_examples_for "visualization controllers" do
       it 'uses locked filter' do
         CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
 
-        post "/api/v1/viz?api_key=#{@api_key}", factory(@user, locked: true).to_json, @headers
+        post api_v1_visualizations_create_url(api_key: @api_key), factory(@user, locked: true).to_json, @headers
         vis_1_id = JSON.parse(last_response.body).fetch('id')
-        post "/api/v1/viz?api_key=#{@api_key}", factory(@user, locked: false).to_json, @headers
+        post api_v1_visualizations_create_url(api_key: @api_key), factory(@user, locked: false).to_json, @headers
         vis_2_id = JSON.parse(last_response.body).fetch('id')
 
-        get "/api/v1/viz?api_key=#{@api_key}&type=derived", {}, @headers
+        get api_v1_visualizations_index_url(api_key: @api_key, type: 'derived'), {}, @headers
         last_response.status.should == 200
         response    = JSON.parse(last_response.body)
         collection  = response.fetch('visualizations')
         collection.length.should eq 2
 
-        get "/api/v1/viz?api_key=#{@api_key}&type=derived&locked=true", {}, @headers
+        get api_v1_visualizations_index_url(api_key: @api_key, type: 'derived', locked: true), {}, @headers
         last_response.status.should == 200
         response    = JSON.parse(last_response.body)
         collection  = response.fetch('visualizations')
         collection.length.should eq 1
         collection.first.fetch('id').should eq vis_1_id
 
-        get "/api/v1/viz?api_key=#{@api_key}&type=derived&locked=false", {}, @headers
+        get api_v1_visualizations_index_url(api_key: @api_key, type: 'derived', locked: false), {}, @headers
         last_response.status.should == 200
         response    = JSON.parse(last_response.body)
         collection  = response.fetch('visualizations')
@@ -1246,13 +1246,13 @@ shared_examples_for "visualization controllers" do
 
     describe 'non existent visualization' do
       it 'returns 404' do
-        get "/api/v1/viz/#{TEST_UUID}?api_key=#{@api_key}", {}, @headers
+        get api_v1_visualizations_show_url(id: TEST_UUID, api_key: @api_key), {}, @headers
         last_response.status.should == 404
 
-        put "/api/v1/viz/#{TEST_UUID}?api_key=#{@api_key}", {}, @headers
+        put api_v1_visualizations_update_url(id: TEST_UUID, api_key: @api_key), {}, @headers
         last_response.status.should == 404
 
-        delete "/api/v1/viz/#{TEST_UUID}?api_key=#{@api_key}", {}, @headers
+        delete api_v1_visualizations_destroy_url(id: TEST_UUID, api_key: @api_key), {}, @headers
         last_response.status.should == 404
 
         get "/api/v2/viz/#{TEST_UUID}/viz?api_key=#{@api_key}", {}, @headers

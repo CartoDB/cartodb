@@ -138,7 +138,7 @@
               <% @total_visualizations.each do |vis| %>
                 <% if vis.privacy == "public" %>
                   <li>
-                    <a href="<%= CartoDB.url(self, 'public_visualizations_public_map', {id: vis.id}) %>" title="<%= vis.name.gsub(/_/," ") %>"><%= vis.name.gsub(/_/, " ") %></a>
+                    <a href="<%= CartoDB.url(self, 'public_visualizations_public_map', {id: vis.id}, @table.owner) %>" title="<%= vis.name.gsub(/_/," ") %>"><%= vis.name.gsub(/_/, " ") %></a>
                   </li>
                 <% end %>
               <% end %>

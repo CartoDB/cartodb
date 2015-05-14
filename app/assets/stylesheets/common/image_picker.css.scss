@@ -1,12 +1,12 @@
 @import "../variables/mixins";
 @import "../variables/progress-bar";
 
-.ImagePicker .AssetPane {
+.AssetPane {
   position: relative;
   width: 945px;
   margin: 67px auto 60px auto;
 }
-.ImagePicker .AssetsList {
+.AssetsList {
   position:relative;
   display:block;
   height:auto;
@@ -15,7 +15,7 @@
   margin: 35px 0 70px 0;
   overflow: auto;
 }
-.ImagePicker .AssetItem {
+.AssetItem {
   position:relative;
   @include inline-block();
   width:58px;
@@ -28,7 +28,7 @@
 
   &:nth-child(12n) { margin-right:0 } 
 }
-.ImagePicker .AssetItem .image {
+.AssetItem .image {
   position:absolute;
   @include inline-block();
   width:60px;
@@ -41,20 +41,20 @@
   background-repeat: no-repeat;
   background-position: center;
 }
-.ImagePicker .AssetItem:hover .delete {
+.AssetItem:hover .delete {
   display:block;
   @include opacity(1);
 }
-.ImagePicker .AssetItem is-.selected {
+.AssetItem.selected {
   border:1px solid #BBD7F2;
 }
-.ImagePicker .AssetItem.selected .image {
+.AssetItem.selected .image {
   background-color: #fff;
 }
-.ImagePicker .AssetItem.destroying .loader {
+.AssetItem.destroying .loader {
   display:block!important;
 }
-.ImagePicker .AssetItem .delete {
+.AssetItem .delete {
   position:absolute;
   width: 14px;
   height: 10px;
@@ -70,7 +70,7 @@
   z-index:2;
   @include opacity(0);
 }
-.ImagePicker .AssetItem .delete:before {
+.AssetItem .delete:before {
   position:absolute;
   content:' ';
   top:4px;
@@ -81,26 +81,20 @@
   border-right:3px solid transparent;
   border-top:3px solid white;
 }
-.ImagePicker .AssetItem.destroying:hover a.delete { 
+.AssetItem.destroying:hover a.delete { 
   display:none;
 }
-.ImagePicker .AssetItem.simpleicon a {
+.AssetItem.simpleicon a {
   background-size: auto 24px!important;
 }
-.ImagePicker .AssetItem.pin-maps a {
+.AssetItem.pin-maps a {
   background-size: auto 24px!important;
 }
-.ImagePicker .CreateDialog-footerShadow {
-  height: 48px;
-  top:-48px;
-}
-.ImagePicker .Form-row {
+.Form-row.Form-row--streched {
   margin: auto;
   width: 780px;
 }
-.Filters-progressBar {
-  @include progress-animated-bar(6px, 9px, true, false);
-  position:absolute;
-  display:none;
-  width: 100%;
+.CreateDialog-footerShadow.CreateDialog-footerShadow--tall {
+  height: 48px;
+  top:-48px;
 }

@@ -36,7 +36,7 @@ shared_examples_for "visualization controllers" do
   end
 
   def factory(user, attributes={})
-    visualization_template(user)
+    visualization_template(user, attributes)
   end
 
   def table_factory(options={})

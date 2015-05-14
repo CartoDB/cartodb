@@ -276,6 +276,7 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/api/v2_1/viz/:id/viz'                        => 'visualizations#vizjson2', as: :api_v2_1_visualizations_vizjson, constraints: { id: /[^\/]+/ }
 
     # Tags
+    # TODO: deprecated?
     get     '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/tags'                           => 'tags#index',                     as: :api_v1_1_visualizations_tags_index
 
     # Tables
@@ -308,8 +309,10 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/:visualization_id/overlays/:id' => 'overlays#show',     as: :api_v1_1_visualizations_overlays_show,   constraints: { visualization_id: /[^\/]+/ }
 
     # Synchronizations
+    # TODO: deprecated?
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/synchronizations'              => 'synchronizations#index',    as: :api_v1_1_synchronizations_index
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/synchronizations/:id'          => 'synchronizations#show',     as: :api_v1_1_synchronizations_show
+    # TODO: deprecated?
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/synchronizations/:id/sync_now' => 'synchronizations#syncing?', as: :api_v1_1_synchronizations_syncing
   end
 
@@ -394,6 +397,7 @@ CartoDB::Application.routes.draw do
     put  '(/user/:user_domain)(/u/:user_domain)/api/v1/geocodings/:id'                            => 'geocodings#update',               as: :api_v1_geocodings_update
 
     # Visualizations
+    # TODO: deprecated?
     get     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/tags'                           => 'tags#index',                     as: :api_v1_visualizations_tags_index
     get     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz'                                => 'visualizations#index',           as: :api_v1_visualizations_index
     post    '(/user/:user_domain)(/u/:user_domain)/api/v1/viz'                                => 'visualizations#create',          as: :api_v1_visualizations_create
@@ -421,11 +425,13 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/common_data' => 'common_data#index', as: :api_v1_common_data_index
 
     # Synchronizations
+    # TODO: deprecated?
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations'              => 'synchronizations#index',    as: :api_v1_synchronizations_index
     post   '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations'              => 'synchronizations#create',   as: :api_v1_synchronizations_create
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations/:id'          => 'synchronizations#show',     as: :api_v1_synchronizations_show
     put    '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations/:id'          => 'synchronizations#update',   as: :api_v1_synchronizations_update
     delete '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations/:id'          => 'synchronizations#destroy',  as: :api_v1_synchronizations_destroy
+    # TODO: deprecated?
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations/:id/sync_now' => 'synchronizations#syncing?', as: :api_v1_synchronizations_syncing
     put    '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations/:id/sync_now' => 'synchronizations#sync_now', as: :api_v1_synchronizations_sync_now
 

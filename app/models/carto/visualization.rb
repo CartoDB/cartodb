@@ -42,6 +42,10 @@ class Carto::Visualization < ActiveRecord::Base
   PRIVACY_LINK = 'link'
   PRIVACY_PROTECTED = 'password'
 
+  def size
+    table.size
+  end
+
   def tags
     tags = super
     tags == nil ? [] : tags

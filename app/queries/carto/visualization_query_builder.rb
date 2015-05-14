@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 require 'active_record'
 
 require_relative '../../models/carto/shared_entity'
@@ -7,20 +9,7 @@ require_relative '../../helpers/carto/uuidhelper'
 class Carto::VisualizationQueryBuilder
   include Carto::UUIDHelper
 
-  SUPPORTED_OFFDATABASE_ORDERS = { 
-    'mapviews' => {
-        submodel: nil,
-        attribute: 'mapviews'
-      },
-    'likes' => {
-        submodel: nil,
-        attribute: 'likes'
-      },
-    'size' => {
-        submodel: 'table',
-        attribute: 'size'
-      }
-  }
+  SUPPORTED_OFFDATABASE_ORDERS = [ 'mapviews', 'likes', 'size' ]
 
   def self.user_public_tables(user)
     self.user_public(user).with_type(Carto::Visualization::TYPE_CANONICAL)
@@ -241,11 +230,7 @@ class Carto::VisualizationQueryBuilder
     return nil unless order.kind_of? String
     fragments = order.split('.')
     order_attribute = fragments[fragments.count - 1]
-    if SUPPORTED_OFFDATABASE_ORDERS.include?(order_attribute)
-      SUPPORTED_OFFDATABASE_ORDERS[order_attribute]
-    else
-      nil
-    end
+    SUPPORTED_OFFDATABASE_ORDERS.include?(order_attribute) ? order_attribute : nil
   end
 
   def with_include_of(association)

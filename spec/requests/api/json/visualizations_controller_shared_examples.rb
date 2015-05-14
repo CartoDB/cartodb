@@ -1078,6 +1078,47 @@ shared_examples_for "visualization controllers" do
         collection  = response.fetch('visualizations')
         collection.size.should == 2
       end
+
+      it 'creates a visualization from a list of tables' do
+        CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+        table1 = table_factory
+        table2 = table_factory
+        table3 = table_factory
+
+        payload = {
+          name: 'new visualization',
+          tables: [
+            table1.fetch('name'),
+            table2.fetch('name'),
+            table3.fetch('name')
+          ],
+          privacy: 'public'
+        }
+
+        post "/api/v1/viz?api_key=#{@api_key}",
+              payload.to_json, @headers
+        last_response.status.should == 200
+
+        visualization = JSON.parse(last_response.body)
+
+        # TODO: this endpoint doesn't exist now. Current replacement?
+        #get "/api/v1/viz/#{visualization.fetch('id')}/viz?api_key=#{@api_key}",
+        #  {}, @headers
+        #last_response.status.should == 403
+
+        get "/api/v2/viz/#{visualization.fetch('id')}/viz?api_key=#{@api_key}",
+          {}, @headers
+        last_response.status.should == 200
+
+        # include overlays
+
+        get "/api/v1/viz/#{visualization.fetch('id')}/overlays?api_key=#{@api_key}",
+          {}, @headers
+        last_response.status.should == 200
+        overlays = JSON.parse(last_response.body)
+        overlays.length.should == 5
+      end
+
     end
 
     describe 'GET /api/v1/viz/:id' do

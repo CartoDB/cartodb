@@ -88,20 +88,22 @@ module  FileUploadHelper
     def save_body_to_file(params, request, random_token, filename)
       case
         when params[:filename].present? && request.body.present?
-          filedata =
-            params[:filename].read.force_encoding(FILE_ENCODING) rescue request.body.read.force_encoding(FILE_ENCODING)
+          filedata = params[:filename]
         when params[:file].present?
-          filedata = params[:file].read.force_encoding(FILE_ENCODING)
+          filedata = params[:file]
         else
           return
       end
 
       FileUtils.mkdir_p(Rails.root.join(UPLOADS_PATH).join(random_token))
 
-      file = File.new(Rails.root.join(UPLOADS_PATH).join(random_token).join(File.basename(filename)), 'w')
-      file.write filedata
+      src = File.open(filedata.tempfile.path, "r:UTF-8")
+      file = File.new(Rails.root.join(UPLOADS_PATH).join(random_token).join(File.basename(filename)), 'w:UTF-8')
+      IO.copy_stream(src, file)
       file.close
+      src.close
       # Force GC pass to avoid stale memory (dev installations Ruby issue)
+      src = nil
       filedata = nil
       file
     end

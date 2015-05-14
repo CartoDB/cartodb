@@ -3,28 +3,12 @@
 @import "compass/css3/images";
 @import "../old_common/mixins";
 
-
-.AssetPane {
+.ImagePicker .AssetPane {
   position: relative;
   width: 945px;
-  margin: 60px auto 60px auto;
+  margin: 67px auto 60px auto;
 }
-.AssetPane div.upload-progress {
-  position:absolute;
-  display:none;
-  top:-10px;
-  left:0;
-  right:0;
-  height:44px;
-  padding:1px;
-  border:1px solid #CCCCCC;
-  z-index:10;
-  @include background(#DEDEDE);
-  @include border-radius(4px);
-  @include opacity(0);
-}
-
-.AssetsList {
+.ImagePicker .AssetsList {
   position:relative;
   display:block;
   height:auto;
@@ -33,22 +17,20 @@
   margin: 35px 0 70px 0;
   overflow: auto;
 }
-
-.AssetItem {
+.ImagePicker .AssetItem {
   position:relative;
   @include inline-block();
   width:58px;
   height:58px;
   margin:0 20px 20px 0;
-  border:1px solid #C0C0C0!important;
+  border:1px solid #DDD;
   @include border-radius(3px);
   overflow: hidden;
   background: image-url("layout/loader_transparent.gif") no-repeat center;
 
   &:nth-child(12n) { margin-right:0 } 
 }
-
-.AssetItem .image {
+.ImagePicker .AssetItem .image {
   position:absolute;
   @include inline-block();
   width:60px;
@@ -59,7 +41,20 @@
   background-repeat: no-repeat;
   background-position: center;
 }
-.AssetItem .delete {
+.ImagePicker .AssetItem:hover .delete {
+  display:block;
+  @include opacity(1);
+}
+.ImagePicker .AssetItem.selected {
+  border:1px solid #BBD7F2;
+}
+.ImagePicker .AssetItem.selected .image {
+  background-color: #fff;
+}
+.ImagePicker .AssetItem.destroying .loader {
+  display:block!important;
+}
+.ImagePicker .AssetItem .delete {
   @include size(14px, 10px);
   @include position(false, 0, 0, false);
   @include simple-transition(opacity, 100ms);
@@ -71,79 +66,28 @@
   background:rgba(black,0.5);
   z-index:2;
   @include opacity(0);
-
-  &:before {
-    position:absolute;
-    content:' ';
-    top:4px;
-    left:4px;
-    width:0;
-    height:0;
-    border-left:3px solid transparent;
-    border-right:3px solid transparent;
-    border-top:3px solid white;
-  }
 }
-.AssetItem:hover .delete {
-  display:block;
-  @include opacity(1);
-}
-.AssetItem.selected {
-  width:56px;
-  height:56px;
-  border:2px solid #0F0F0F!important;
-
-  a.image {
-    top: -1px;
-    left: -1px;
-  }
-
-  a.delete {
-    right: -1px;
-    bottom: -1px;
-  }
-}
-.AssetItem.destroying {
-  div.loader {display:block!important;}
-
-  &:hover {
-    a.delete {display:none}
-  }
-}
-.AssetItem.simpleicon a {
-  background-size: auto 24px!important;
-}
-.AssetItem.pin-maps a {
-  background-size: auto 24px!important;
-}
-
-.ImportOptions {
-  top: 30px;
-  width: 945px;
-}
-
-.scroll {
+.ImagePicker .AssetItem .delete:before {
   position:absolute;
-  left:0;
-  display:none;
-  right:5px;
-  width:100%;
-  height:10px;
-  padding:0;
-  margin:0;
-  @include border-radius(0);
-  z-index:10;
-  pointer-events:none;
-
-  &.top {
-    top:33px;
-    @include background(linear-gradient(white, rgba(white,0)));
-  }
-  &.bottom {
-    bottom:0px;
-    @include background(linear-gradient(rgba(white,0),white));
-  }
+  content:' ';
+  top:4px;
+  left:4px;
+  width:0;
+  height:0;
+  border-left:3px solid transparent;
+  border-right:3px solid transparent;
+  border-top:3px solid white;
 }
-form.upload .upload input[type="text"] {
-  width: 880px;
+.ImagePicker .AssetItem.destroying:hover a.delete { 
+  display:none;
+}
+.ImagePicker .AssetItem.simpleicon a {
+  background-size: auto 24px!important;
+}
+.ImagePicker .AssetItem.pin-maps a {
+  background-size: auto 24px!important;
+}
+.ImagePicker .CreateDialog-footerShadow {
+  height: 48px;
+  top:-48px;
 }

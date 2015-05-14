@@ -658,7 +658,7 @@ Toggles the visibility of the sublayer and returns a boolean that indicates the 
 
 **sublayer.infowindow** is a Backbone model where we modify the parameters of the infowindow.
 
-##### Arguments
+##### Attributes
 
 - **template**: Custom HTML template for the infowindow. You can write simple HTML or use [Mustache templates](http://mustache.github.com/).
 - **sanitizeTemplate**: By default all templates are sanitized from unsafe tags/attrs (e.g. `<script>`), set this to `false`
@@ -697,6 +697,16 @@ to skip sanitization, or a function to provide your own sanitization (e.g. `func
 
 [Grab the complete example source code](https://github.com/CartoDB/cartodb.js/blob/develop/examples/custom_infowindow.html)
 
+#### sublayer.legend
+
+**sublayer.legend** is a Backbone model with the information about the legend.
+
+##### Attributes
+
+- **template**: Custom HTML template for the legend. You can write simple HTML.
+- **title**: Title of the legend.
+- **show_title**: Set this to `false` if you don't want the title to be displayed.
+- **items**: An array with the items that are displayed in the legend.
 
 ## Events
 

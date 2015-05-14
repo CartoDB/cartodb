@@ -49,14 +49,10 @@ module Carto
       all = @query.all
       @order_by_asc_or_desc_by_attribute.each { |attribute, asc_or_desc|
         # Cache attribute type
-        unless all.count == 0
-          @is_array = all.first.send(attribute).is_a?(Array)
-        end
+        is_array = all.count == 0 ? false : all.first.send(attribute).is_a?(Array)
         all = all.sort { |x, y|
-          x_attribute = x.send(attribute)
-          x_attribute = x_attribute.count if @is_array
-          y_attribute = y.send(attribute)
-          y_attribute = y_attribute.count if @is_array
+          x_attribute = is_array ? x.send(attribute).count : x.send(attribute)
+          y_attribute = is_array ? y.send(attribute).count : y.send(attribute)
           asc_or_desc == :asc ? x_attribute <=> y_attribute : y_attribute <=> x_attribute
         }
       }

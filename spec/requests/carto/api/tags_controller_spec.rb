@@ -15,6 +15,11 @@ describe Carto::Api::TagsController do
       scope :module => 'carto/api', :format => :json do
         get     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/tags'                           => 'tags#index',                     as: :api_v1_visualizations_tags_index
       end
+
+      # old controller
+      scope :module => 'api/json', :format => :json do
+        post    '(/user/:user_domain)(/u/:user_domain)/api/v1/viz'                                => 'visualizations#create',          as: :api_v1_visualizations_create
+      end
     end
   end
 

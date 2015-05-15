@@ -1242,6 +1242,20 @@ shared_examples_for "visualization controllers" do
         collection.length.should eq 1
         collection.first.fetch('id').should eq vis_2_id
       end
+
+      it 'searches by tag' do
+        post api_v1_visualizations_create_url(api_key: @api_key), factory(@user, locked: true, tags: ['test1']).to_json, @headers
+        vis_1_id = JSON.parse(last_response.body).fetch('id')
+        post api_v1_visualizations_create_url(api_key: @api_key), factory(@user, locked: false, tags: ['test2']).to_json, @headers
+
+        get api_v1_visualizations_index_url(api_key: @api_key, tags: 'test1'), {}, @headers
+        last_response.status.should == 200
+        response    = JSON.parse(last_response.body)
+        collection  = response.fetch('visualizations')
+        collection.length.should eq 1
+        collection.first['id'].should == vis_1_id
+      end
+
     end
 
     describe 'non existent visualization' do

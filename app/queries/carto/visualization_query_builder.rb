@@ -137,6 +137,11 @@ class Carto::VisualizationQueryBuilder
     self
   end
 
+  def with_tags(tags)
+    @tags = tags
+    self
+  end
+
   def build
     query = Carto::Visualization.scoped
 
@@ -196,6 +201,10 @@ class Carto::VisualizationQueryBuilder
 
     if @tainted_search_pattern
       query = query.where(PARTIAL_MATCH_QUERY, @tainted_search_pattern, "%#{@tainted_search_pattern}%")
+    end
+
+    if @tags
+      query = query.where("ARRAY[?]::text[] && visualizations.tags", @tags)
     end
 
     @include_associations.each { |association|

@@ -48,7 +48,20 @@ module Carto
       affected_visualizations.select(&:non_dependent?)
     end
 
+    def name_for_user(other_user)
+      is_owner?(other_user) ? name : fully_qualified_name
+    end
+
     private
+
+    def fully_qualified_name
+      "#{user.database_schema}.#{name}"
+    end
+
+    def is_owner?(user)
+      return false unless user
+      user_id == user.id
+    end
 
     def affected_visualizations
       affected_visualizations ||= affected_visualization_ids

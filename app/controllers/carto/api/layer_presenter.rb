@@ -4,12 +4,12 @@ module Carto
   module Api
     class LayerPresenter
 
-      PUBLIC_VALUES = [:options, :kind, :infowindow, :tooltip, :id, :order, :parent_id]
+      PUBLIC_VALUES = [:kind, :infowindow, :tooltip, :id, :order, :parent_id]
 
-      def initialize(layer, current_viewer, options = {})
+      def initialize(layer, current_viewer, owner_user = nil)
         @layer = layer
         @current_viewer = current_viewer
-        @options = options
+        @owner_user = owner_user
       end
 
       def to_poro
@@ -23,7 +23,7 @@ module Carto
       private
 
       def public_values(layer)
-        Hash[ PUBLIC_VALUES.map { |attribute| [attribute, layer.send(attribute)] } ]
+        Hash[ PUBLIC_VALUES.map { |attribute| [attribute, layer.send(attribute)] } ].merge(options: layer_options)
       end
 
       def children_for(layer, as_hash=true)
@@ -37,6 +37,14 @@ module Carto
 
       def torque?(layer)
         layer.kind == 'torque'
+      end
+
+      def layer_options
+        layer_options = @layer.options
+        if @owner_user && @owner_user.id != @current_viewer.id
+          layer_options['table_name'] = @layer.qualified_table_name(@owner_user)
+        end
+        layer_options
       end
 
     end

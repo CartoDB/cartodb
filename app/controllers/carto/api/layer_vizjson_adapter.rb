@@ -42,7 +42,6 @@ module Carto
 
       def get_presenter(options, configuration)
         # TODO: new layer presenter
-        # Carto::LayerPresenter(layer, options, configuration)
         CartoDB::Layer::Presenter.new(self, options, configuration)
       end
 

@@ -707,6 +707,7 @@ to skip sanitization, or a function to provide your own sanitization (e.g. `func
 - **title**: Title of the legend.
 - **show_title**: Set this to `false` if you don't want the title to be displayed.
 - **items**: An array with the items that are displayed in the legend.
+- **visible**: Set this to `false` if you want to hide the legend.
 
 ## Events
 

@@ -3,6 +3,8 @@ require 'active_record'
 module Carto
   class Layer < ActiveRecord::Base
     serialize :options, JSON
+    serialize :infowindow, JSON
+    serialize :tooltip, JSON
 
     has_and_belongs_to_many :maps, class_name: Carto::Map
 

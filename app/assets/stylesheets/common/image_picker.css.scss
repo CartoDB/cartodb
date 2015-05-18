@@ -45,14 +45,14 @@
   display:block;
   @include opacity(1);
 }
-.AssetItem.selected {
+.AssetItem.is-selected {
   border:1px solid #BBD7F2;
 }
-.AssetItem.selected .image {
+.AssetItem.is-selected .image {
   background-color: #fff;
 }
-.AssetItem.destroying .loader {
-  display:block!important;
+.AssetItem.is-destroying {
+  display:none;
 }
 .AssetItem .delete {
   position:absolute;

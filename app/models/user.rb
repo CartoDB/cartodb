@@ -2324,7 +2324,7 @@ TRIGGER
   # that organization has api key it's used
   def google_maps_api_key
     if has_organization?
-      self.organization.google_maps_key || self.google_maps_key
+      self.organization.google_maps_key.blank? ? self.google_maps_key : self.organization.google_maps_key
     else
       self.google_maps_key
     end

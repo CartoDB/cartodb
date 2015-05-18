@@ -53,7 +53,9 @@ module Carto
     end
 
     def name_for_user(other_user)
-      is_owner?(other_user) ? name : fully_qualified_name
+      # TODO: this patch makes url be wrong
+      #is_owner?(other_user) ? name : fully_qualified_name
+      name
     end
 
     def private?

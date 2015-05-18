@@ -19,6 +19,10 @@ module Carto
       @legend ||= options['legend']
     end
 
+    def qualified_table_name(viewer_user)
+      "#{viewer_user.sql_safe_database_schema}.#{options['table_name']}"
+    end
+
     private
 
     def tables_from_query_option

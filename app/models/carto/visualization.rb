@@ -103,6 +103,10 @@ class Carto::Visualization < ActiveRecord::Base
     is_public? || is_link_privacy?
   end
 
+  def is_writable_by_user(user)
+    user_id == user.id || has_write_permission?(user)
+  end
+
   def varnish_key
     "#{user.database_name}:#{sorted_related_table_names},#{id}"
   end
@@ -275,6 +279,10 @@ class Carto::Visualization < ActiveRecord::Base
 
   def has_read_permission?(user)
     user && (is_owner_user?(user) || (permission && permission.user_has_read_permission?(user)))
+  end
+
+  def has_write_permission?(user)
+    user && (is_owner_user?(user) || (permission && permission.user_has_write_permission?(user)))
   end
 
   def is_owner_user?(user)

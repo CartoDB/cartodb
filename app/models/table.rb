@@ -193,6 +193,21 @@ class Table
     }
   end
 
+  # TODO: REFACTOR THIS patch introduced to continue with #3664
+  def self.get_all_user_tables_by_names(names, viewer_user)
+    names.map { |t|
+      user_id = viewer_user.id
+      table_name, table_schema = Table.table_and_schema(t)
+      unless table_schema.nil?
+        owner = User.where(username:table_schema).first
+        unless owner.nil?
+          user_id = owner.id
+        end
+      end
+      Carto::UserTable.where(user_id: user_id, name: table_name).first
+    }
+  end
+
 
   def self.table_and_schema(table_name)
     if table_name =~ /\./

@@ -4,6 +4,10 @@ module Carto
 
   class UserTable < ActiveRecord::Base
 
+    PRIVACY_PRIVATE = 0
+    PRIVACY_PUBLIC = 1
+    PRIVACY_LINK = 2
+
     belongs_to :visualization, primary_key: :map_id, foreign_key: :map_id, 
                 conditions: { type: Carto::Visualization::TYPE_CANONICAL }, inverse_of: :user_table
 
@@ -50,6 +54,18 @@ module Carto
 
     def name_for_user(other_user)
       is_owner?(other_user) ? name : fully_qualified_name
+    end
+
+    def private?
+      self.privacy == PRIVACY_PRIVATE
+    end
+
+    def public?
+      self.privacy == PRIVACY_PUBLIC
+    end
+
+    def public_with_link_only?
+      self.privacy == PRIVACY_LINK
     end
 
     private

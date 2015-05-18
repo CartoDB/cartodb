@@ -136,6 +136,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   
   def update
     vis,  = locator.get(@table_id, CartoDB.extract_subdomain(request))
+    return(head 404) unless vis
     return head(403) unless vis.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
 
     vis_data = payload
@@ -178,7 +179,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     render_jsonp({ errors: { named_map: exception } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapsDataError => exception
     render_jsonp({ errors: { named_maps: exception } }, 400)
-  rescue
+  rescue => e
     render_jsonp({ errors: ['Unknown error'] }, 400)
   end
 

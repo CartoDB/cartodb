@@ -69,6 +69,8 @@ module Carto
         exclude_shared = params[:exclude_shared] == 'true'
         locked = params[:locked]
         shared = compose_shared(params[:shared], only_shared, exclude_shared)
+        tags = params.fetch(:tags, '').split(',')
+        tags = nil if tags.empty?
 
         vqb = VisualizationQueryBuilder.new
             .with_prefetch_user
@@ -76,6 +78,7 @@ module Carto
             .with_prefetch_permission
             .with_prefetch_external_source
             .with_types(types)
+            .with_tags(tags)
 
         if current_user
           if only_liked

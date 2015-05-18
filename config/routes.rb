@@ -419,6 +419,7 @@ CartoDB::Application.routes.draw do
     delete  '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/like'                       => 'visualizations#remove_like',     as: :api_v1_visualizations_remove_like,     constraints: { id: /[^\/]+/ }
 
 # Tags
+    # TODO: deprecated?
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/tags' => 'tags#index', as: :api_v1_tags_index
 
     # Common data

@@ -112,7 +112,7 @@ class Geocoding < Sequel::Model
   end
 
   def run_geocoding!(processable_rows, rows_geocoded_before = 0)
-    self.update state: 'started', processable_rows: processable_rows
+    self.update state: 'started', processable_rows: processable_rows, batched: table_geocoder.use_batch_process?
     @started_at = Time.now
 
     # INFO: this is where the real stuff is done
@@ -246,7 +246,8 @@ class Geocoding < Sequel::Model
       cost:             cost,
       used_credits:     used_credits,
       remaining_quota:  remaining_quota,
-      data_import_id:   data_import_id
+      data_import_id:   data_import_id,
+      batched: self.batched
     }
     if state == 'finished' && exception.nil?
       payload.merge!(

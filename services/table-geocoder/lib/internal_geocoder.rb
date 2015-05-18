@@ -132,6 +132,12 @@ module CartoDB
         raise "Error converting cartodb_georef_status to boolean, please, convert it manually or remove it."
       end
 
+      def use_batch_process?
+        # We always "batch" queries to the internal geocoder
+        true
+      end
+
+
     end # Geocoder
 
   end # InternalGeocoder

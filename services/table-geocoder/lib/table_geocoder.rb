@@ -177,5 +177,9 @@ module CartoDB
       Dir[File.join(working_dir, '*_out.txt')][0]
     end
 
+    def use_batch_process?
+      return geocoder.use_batch_process?
+    end
+
   end # Geocoder
 end # CartoDB

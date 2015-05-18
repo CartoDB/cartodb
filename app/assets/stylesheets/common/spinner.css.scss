@@ -12,13 +12,19 @@
   border-right: 2px solid $cStructure-mainLine;
   border-bottom: 2px solid $cStructure-mainLine;
   border-left: 2px solid $cHighlight-main;
-  @include animation(load8 1.1s infinite linear); 
+  @include animation(load8 1.1s infinite linear);
 }
 .Spinner,
 .Spinner:after {
-  width: $sSpinner-size;
-  height: $sSpinner-size;
+  width: $sSpinner-default;
+  height: $sSpinner-default;
   border-radius: 50%;
+}
+.Spinner--formIcon,
+.Spinner--formIcon:after {
+  position: absolute;
+  width: $sSpinner-mini;
+  height: $sSpinner-mini;
 }
 
 @include keyframes(load8) {

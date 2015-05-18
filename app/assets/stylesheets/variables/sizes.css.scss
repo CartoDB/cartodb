@@ -64,7 +64,8 @@ $sForms-elementHeight: 40px;
 $sForms-borderRadius: 4px;
 
 // Spinner
-$sSpinner-size: 36px;
+$sSpinner-default: 36px;
+$sSpinner-mini: 12px;
 
 // Media query breakpoints, matching current state-of-things of website
 $sMedia-max:     1000px;

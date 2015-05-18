@@ -31,9 +31,9 @@ $height: 280px;
 }
 .FavMap-spinner {
   position: absolute;
-  top: ($height / 4) - $sSpinner-size;
+  top: ($height / 4) - $sSpinner-default;
   left: 50%;
-  margin-left: -#{$sSpinner-size / 2};
+  margin-left: -#{$sSpinner-default / 2};
   display: none;
 }
 .FavMap.is-pre-loading .FavMap-spinner,
@@ -43,21 +43,21 @@ $height: 280px;
 @media (min-width: $sMedia-tablet) {
   .FavMap { height: $height; }
   .FavMap-spinner {
-    top: ($height / 2) - $sSpinner-size;
+    top: ($height / 2) - $sSpinner-default;
   }
 }
 @media only screen and (max-width: 320px) {
   $height: 280px;
   .FavMap { height: $height; }
   .FavMap-spinner {
-    top: ($height / 2) - $sSpinner-size;
+    top: ($height / 2) - $sSpinner-default;
   }
 }
 @media only screen and (min-width: 321px) and (max-width: 760px)  {
   $height: 320px;
   .FavMap { height: $height; }
   .FavMap-spinner {
-    top: ($height / 2) - $sSpinner-size;
+    top: ($height / 2) - $sSpinner-default;
   }
 }
 @media only screen 
@@ -67,6 +67,6 @@ and (-webkit-min-device-pixel-ratio: 2) {
   $height: 300px;
   .FavMap { height: $height; }
   .FavMap-spinner {
-    top: ($height / 2) - $sSpinner-size;
+    top: ($height / 2) - $sSpinner-default;
   }
 }

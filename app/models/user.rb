@@ -2336,7 +2336,7 @@ TRIGGER
   # this may have change in the future but in any case this method provides a way to abstract what
   # basemaps are active for the user
   def basemaps
-    google_maps_enabled = !google_maps_api_key.nil? && !google_maps_api_key.empty?
+    google_maps_enabled = !google_maps_api_key.blank?
     basemaps = Cartodb.config[:basemaps]
     if basemaps
       basemaps.select { |group| 

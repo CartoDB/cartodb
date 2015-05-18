@@ -13,9 +13,9 @@ module Carto
 
       before_filter :id_and_schema_from_params
       before_filter :load_table, only: [:vizjson2]
-      before_filter :load_visualization, only: [:likes_count, :likes_list, :is_liked, :show, :stats]
+      before_filter :load_visualization, only: [:likes_count, :likes_list, :is_liked, :show, :stats, :list_watching]
       ssl_required :index, :show
-      ssl_allowed  :vizjson2, :likes_count, :likes_list, :is_liked
+      ssl_allowed  :vizjson2, :likes_count, :likes_list, :is_liked, :list_watching
 
       def id_and_schema_from_params
         if params.fetch('id', nil) =~ /\./
@@ -26,7 +26,7 @@ module Carto
       end
 
       def load_visualization
-        @visualization = Visualization.where(id: @id).first
+        @visualization = Carto::VisualizationQueryBuilder.new.with_id_or_name(@id).build.first
         return render(text: 'Visualization does not exist', status: 404) if @visualization.nil?
         return render(text: 'Visualization not viewable', status: 403) if !@visualization.is_viewable_by_user?(current_viewer)
       end
@@ -116,6 +116,12 @@ module Carto
       rescue => exception
         CartoDB.notify_exception(exception)
         raise exception
+      end
+
+      def list_watching
+        return(head 403) unless @visualization.is_viewable_by_user?(current_user)
+        watcher = CartoDB::Visualization::Watcher.new(current_user, @visualization)
+        render_jsonp(watcher.list)
       end
 
       private

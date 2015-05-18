@@ -127,6 +127,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
   def show
     vis,  = locator.get(@table_id, CartoDB.extract_subdomain(request))
+    return(head 404) unless vis
     return(head 403) unless vis.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
     render_jsonp(vis)
   rescue KeyError
@@ -183,6 +184,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
   def destroy
     vis,  = locator.get(@table_id, CartoDB.extract_subdomain(request))
+    return(head 404) unless vis
     return(head 403) unless vis.is_owner?(current_user)
     vis.delete
     return head 204

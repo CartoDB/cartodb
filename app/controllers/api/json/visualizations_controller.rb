@@ -41,12 +41,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     vis = nil
 
     if params[:source_visualization_id]
-      source = Visualization::Collection.new.fetch(
-        id: params.fetch(:source_visualization_id),
-        user_id: current_user.id,
-        exclude_raster: true
-      ).first
-      return(head 403) if source.nil?
+      source,  = locator.get(params.fetch(:source_visualization_id), CartoDB.extract_subdomain(request))
+      return(head 403) if source.nil? || source.kind == Visualization::Member::KIND_RASTER
 
       copy_overlays = params.fetch(:copy_overlays, true)
       copy_layers = params.fetch(:copy_layers, true)
@@ -186,7 +182,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end
 
   def destroy
-    vis = Visualization::Member.new(id: @table_id).fetch
+    vis,  = locator.get(@table_id, CartoDB.extract_subdomain(request))
     return(head 403) unless vis.is_owner?(current_user)
     vis.delete
     return head 204

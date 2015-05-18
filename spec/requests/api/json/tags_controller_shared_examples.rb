@@ -27,6 +27,12 @@ shared_examples_for 'tags controllers' do
       last_response.status.should == 200
       body = JSON.parse(last_response.body)
       body.should == [{ 'name' => 'tag1', 'count' => 1 }]
+
+      login_as(@user2, scope: @user2.subdomain)
+      get api_v1_visualizations_tags_index_url(api_key: @api_key)
+      last_response.status.should == 200
+      body = JSON.parse(last_response.body)
+      body.should == [{ 'name' => 'tag1', 'count' => 1 }]
     end
 
     it 'returns an array with correct tag count with several visualizations' do

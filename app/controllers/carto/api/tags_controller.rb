@@ -8,7 +8,7 @@ class Carto::Api::TagsController < Api::ApplicationController
   def index
     render_jsonp(tag_counts.map { |tag, count|
       { name: tag, count: count }
-    })
+    }.sort { |tc1, tc2| tc1[:name] <=> tc2[:name] })
   end
 
   private

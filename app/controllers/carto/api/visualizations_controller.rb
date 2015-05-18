@@ -29,7 +29,7 @@ module Carto
       end
 
       def load_visualization
-        @visualization = Visualization.where(id: @id).first
+        @visualization = Carto::VisualizationQueryBuilder.new.with_id_or_name(@id).build.first
         return render(text: 'Visualization does not exist', status: 404) if @visualization.nil?
         return render(text: 'Visualization not viewable', status: 403) if !@visualization.is_viewable_by_user?(current_viewer)
       end

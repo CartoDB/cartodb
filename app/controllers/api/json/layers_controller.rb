@@ -90,11 +90,11 @@ class Api::Json::LayersController < Api::ApplicationController
     return unless params[:map_id]
 
     # User must be owner or have permissions for the map's visualization
-    vis = CartoDB::Visualization::Collection.new.fetch(
+    vis_collection = CartoDB::Visualization::Collection.new.fetch(
         user_id: current_user.id,
         map_id: params[:map_id]
     )
-    raise RecordNotFound if vis.nil?
+    raise RecordNotFound if vis_collection.count == 0
 
     ::Map.filter(id: params[:map_id]).first
   end #map_from

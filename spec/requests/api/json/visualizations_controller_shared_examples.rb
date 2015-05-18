@@ -516,6 +516,7 @@ shared_examples_for "visualization controllers" do
         u2_t_1_perm_id = table.table_visualization.permission.id
 
         table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: "table_#{rand(9999)}_2_2", user_id: user_2.id)
+        u2_t_2 = table
         u2_t_2_id = table.table_visualization.id
         u2_t_2_perm_id = table.table_visualization.permission.id
 
@@ -643,6 +644,7 @@ shared_examples_for "visualization controllers" do
         body['total_entries'].should eq 3
         body['total_likes'].should eq 0
         body['total_shared'].should eq 2
+        body['visualizations'][0]['table']['name'].should == "public.#{u2_t_2.name}"
 
         post api_v1_visualizations_add_like_url(user_domain: user_1.username, id: u1_t_1_id, api_key: user_1.api_key)
 

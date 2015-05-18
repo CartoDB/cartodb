@@ -21,10 +21,14 @@ module Carto
       @legend ||= options['legend']
     end
 
+    def qualified_table_name(viewer_user)
+      "#{viewer_user.sql_safe_database_schema}.#{options['table_name']}"
+    end
+
     private
 
     def tables_from_query_option
-      ::Table.get_all_by_names(affected_table_names, user)
+      ::Table.get_all_user_tables_by_names(affected_table_names, user)
     end
 
     def affected_table_names
@@ -40,7 +44,7 @@ module Carto
 
     def tables_from_table_name_option
       return[] if options.empty?
-      ::Table.get_all_by_names([options.symbolize_keys[:table_name]], user)
+      ::Table.get_all_user_tables_by_names([options.symbolize_keys[:table_name]], user)
     end
 
     def query

@@ -1,3 +1,6 @@
+3.14.X ()
+* Hide <img> tag of infowindow covers when the url is invalid
+
 3.14.2 (06//05//2015)
 * Allow to specify a template for the items of a custom legend.
 * The NOKIA geocoder doesn't encode the whitespaces anymore.

@@ -134,7 +134,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end
   
   def update
-    vis = Visualization::Member.new(id: @table_id).fetch
+    vis,  = locator.get(@table_id, CartoDB.extract_subdomain(request))
     return head(403) unless vis.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
 
     vis_data = payload

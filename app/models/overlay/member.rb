@@ -8,10 +8,10 @@ module CartoDB
       include Virtus.model
 
       attribute :id,                String
-      attribute :order,             Integer
+      attribute :order,             Integer, default: 0
       attribute :type,              String
       attribute :template,          String
-      attribute :options,           Hash
+      attribute :options,           Hash, default: {}
       attribute :visualization_id,  String
 
       # There can be at most one of this types per visualization
@@ -20,7 +20,8 @@ module CartoDB
       ]
 
       def initialize(attributes={}, repository=Overlay.repository)
-        self.attributes = attributes
+        # Love virtus, here is ignoring default values so...
+        self.attributes = { order: 0, options: {} }.merge(attributes)
         @repository = repository
         unless self.id
           self.id = @repository.next_id
@@ -33,7 +34,6 @@ module CartoDB
         if @new
           raise DuplicateOverlayError if !can_store
         end
-
         attrs = attributes.to_hash
         attrs[:options] = ::JSON.dump(attrs[:options])
         repository.store(id, attrs)

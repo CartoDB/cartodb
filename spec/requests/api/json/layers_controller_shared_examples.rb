@@ -139,12 +139,13 @@ shared_examples_for "layers controllers" do
       @user.add_layer layer
       @user.add_layer layer2
 
-      get_json api_v1_users_layers_index_url(params.merge(user_id: @user.id)) do |response|
-        response.status.should be_success
-        response.body[:total_entries].should   eq 2
-        response.body[:layers].size.should     eq 2
-        response.body[:layers][0]['id'].should eq layer.id
-        response.body[:layers][1]['id'].should eq layer2.id
+      get api_v1_users_layers_index_url(params.merge(user_id: @user.id)) do |response|
+        last_response.status.should be_success
+        response_body = JSON.parse(last_response.body)
+        response_body['total_entries'].should   eq 2
+        response_body['layers'].size.should     eq 2
+        response_body['layers'][0]['id'].should eq layer.id
+        response_body['layers'][1]['id'].should eq layer2.id
       end
     end
 
@@ -168,21 +169,23 @@ shared_examples_for "layers controllers" do
       @table.map.add_layer layer
       @table.map.add_layer layer2
 
-      get_json api_v1_maps_layers_index_url(params.merge(map_id: @table.map.id)) do |response|
-        response.status.should be_success
-        response.body[:total_entries].should == 2 + existing_layers_count
-        response.body[:layers].size.should == 2 + existing_layers_count
-        new_layers_ids = response.body[:layers].collect { |layer| layer['id'] }
+      get api_v1_maps_layers_index_url(params.merge(map_id: @table.map.id)) do |response|
+        last_response.status.should be_success
+        response_body = JSON.parse(last_response.body)
+        response_body['total_entries'].should == 2 + existing_layers_count
+        response_body['layers'].size.should == 2 + existing_layers_count
+        new_layers_ids = response_body['layers'].collect { |layer| layer['id'] }
         (new_layers_ids - existing_layers_ids).should == [layer.id, layer2.id]
       end
 
-      get_json api_v1_maps_layers_show_url(params.merge({ 
+      get api_v1_maps_layers_show_url(params.merge({
             map_id: @table.map.id,
             id: layer.id
           })) do |response|
-        response.status.should be_success
-        response.body[:id].should == layer.id
-        response.body[:kind].should == layer.kind
+        last_response.status.should be_success
+        response_body = JSON.parse(last_response.body)
+        response_body['id'].should == layer.id
+        response_body['kind'].should == layer.kind
       end
 
 

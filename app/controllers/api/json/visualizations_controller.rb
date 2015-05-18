@@ -16,7 +16,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
   ssl_allowed  :vizjson2, :notify_watching, :list_watching, :likes_count, :likes_list, :add_like, :is_liked,
                :remove_like
-  ssl_required :index, :show, :create, :update, :destroy, :set_next_id
+  ssl_required :index, :show, :create, :update, :destroy, :set_next_id unless Rails.env.development? || Rails.env.test?
   skip_before_filter :api_authorization_required, only: [:vizjson2, :likes_count, :likes_list, :add_like,
                                                          :is_liked, :remove_like, :index]
   before_filter :optional_api_authorization, only: [:likes_count, :likes_list, :add_like, :is_liked, :remove_like,

@@ -21,6 +21,7 @@ shared_examples_for "visualization controllers" do
 
   def login(user)
     login_as(user, scope: user.subdomain)
+    host! "#{user.subdomain}.localhost.lan"
   end
 
   def base_url
@@ -77,13 +78,21 @@ shared_examples_for "visualization controllers" do
     CartoDB::Visualization::Member.new(id: id).fetch
   end
 
+  def test_organization
+    organization = Organization.new
+    organization.name = org_name = "org#{rand(9999)}"
+    organization.quota_in_bytes = 1234567890
+    organization.seats = 5
+    organization
+  end
+
   describe 'index' do
     include_context 'visualization creation helpers'
 
     before(:each) do
       login(@user1)
       @headers = {'CONTENT_TYPE'  => 'application/json'}
-      host! "#{@user1.username}.localhost.lan"
+      host! "#{@user1.subdomain}.localhost.lan"
     end
 
     it 'returns success, empty response for empty user' do
@@ -188,12 +197,7 @@ shared_examples_for "visualization controllers" do
         private_tables_enabled: false
       )
 
-      organization = Organization.new
-      organization.name = "org#{rand(9999)}"
-      organization.quota_in_bytes = 1234567890
-      organization.seats = 5
-      organization.save
-      organization.valid?.should eq true
+      organization = test_organization.save
 
       user_org = CartoDB::UserOrganization.new(organization.id, user_1.id)
       user_org.promote_user_to_admin
@@ -488,12 +492,7 @@ shared_examples_for "visualization controllers" do
             private_tables_enabled: false
         )
 
-        organization = Organization.new
-        organization.name = "org#{rand(9999)}"
-        organization.quota_in_bytes = 1234567890
-        organization.seats = 5
-        organization.save
-        organization.valid?.should eq true
+        organization = test_organization.save
 
         user_org = CartoDB::UserOrganization.new(organization.id, user_1.id)
         user_org.promote_user_to_admin
@@ -731,7 +730,7 @@ shared_examples_for "visualization controllers" do
         CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
         CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
 
-        org_name = "org#{rand(9999)}"
+        organization = test_organization.save
 
         user_2 = create_user(
           username: "test#{rand(9999)}",
@@ -739,25 +738,18 @@ shared_examples_for "visualization controllers" do
           password: 'clientex'
         )
 
-        organization = Organization.new
-        organization.name = org_name
-        organization.quota_in_bytes = 1234567890
-        organization.seats = 5
-        organization.save
-        organization.valid?.should eq true
-
         user_org = CartoDB::UserOrganization.new(organization.id, user_2.id)
         user_org.promote_user_to_admin
         organization.reload
         user_2.reload
 
-        post "http://#{org_name}.cartodb.test#{api_v1_visualizations_create_path(user_domain: user_2.username,
+        post "http://#{organization.name}.cartodb.test#{api_v1_visualizations_create_path(user_domain: user_2.username,
                                                                                  api_key: user_2.api_key)}",
              factory(user_2).to_json, @headers
         last_response.status.should == 200
         pub_vis_id = JSON.parse(last_response.body).fetch('id')
 
-        put "http://#{org_name}.cartodb.test#{api_v1_visualizations_update_path(user_domain: user_2.username,
+        put "http://#{organization.name}.cartodb.test#{api_v1_visualizations_update_path(user_domain: user_2.username,
                                                                                api_key: user_2.api_key,
                                                                                id: pub_vis_id)}",
             {
@@ -765,13 +757,13 @@ shared_examples_for "visualization controllers" do
             }.to_json, @headers
         last_response.status.should == 200
 
-        post "http://#{org_name}.cartodb.test#{api_v1_visualizations_create_path(user_domain: user_2.username,
+        post "http://#{organization.name}.cartodb.test#{api_v1_visualizations_create_path(user_domain: user_2.username,
                                                                                 api_key: user_2.api_key)}",
              factory(user_2).to_json, @headers
         last_response.status.should == 200
         priv_vis_id = JSON.parse(last_response.body).fetch('id')
 
-        put "http://#{org_name}.cartodb.test#{api_v1_visualizations_update_path(user_domain: user_2.username,
+        put "http://#{organization.name}.cartodb.test#{api_v1_visualizations_update_path(user_domain: user_2.username,
                                                                                api_key: user_2.api_key,
                                                                                id: priv_vis_id)}",
             {
@@ -779,7 +771,7 @@ shared_examples_for "visualization controllers" do
             }.to_json, @headers
         last_response.status.should == 200
 
-        get "http://#{org_name}.cartodb.test#{api_v1_visualizations_index_path(user_domain: user_2.username,
+        get "http://#{organization.name}.cartodb.test#{api_v1_visualizations_index_path(user_domain: user_2.username,
                                                                                type: 'derived')}", @headers
         body = JSON.parse(last_response.body)
 
@@ -789,7 +781,7 @@ shared_examples_for "visualization controllers" do
         vis['privacy'].should eq CartoDB::Visualization::Member::PRIVACY_PUBLIC.upcase
 
 
-        get "http://#{org_name}.cartodb.test#{api_v1_visualizations_index_path(user_domain: user_2.username,
+        get "http://#{organization.name}.cartodb.test#{api_v1_visualizations_index_path(user_domain: user_2.username,
                                                                                api_key: user_2.api_key,
                                                                                type: 'derived',
                                                                                order: 'updated_at')}", {}, @headers
@@ -824,12 +816,7 @@ shared_examples_for "visualization controllers" do
           private_tables_enabled: true
         )
 
-        organization = Organization.new
-        organization.name = "org#{rand(9999)}"
-        organization.quota_in_bytes = 1234567890
-        organization.seats = 5
-        organization.save
-        organization.valid?.should eq true
+        organization = test_organization.save
 
         user_org = CartoDB::UserOrganization.new(organization.id, user_1.id)
         user_org.promote_user_to_admin
@@ -1271,6 +1258,38 @@ shared_examples_for "visualization controllers" do
 
         get "/api/v2/viz/#{TEST_UUID}/viz?api_key=#{@api_key}", {}, @headers
         last_response.status.should == 404
+      end
+    end
+
+    describe '/api/v1/viz/:id/watching' do
+
+      before(:all) do
+        @user_1 = create_test_user
+        @user_2 = create_test_user
+
+        organization = test_organization.save
+
+        user_org = CartoDB::UserOrganization.new(organization.id, @user_1.id)
+        user_org.promote_user_to_admin
+        @user_1.reload
+
+        @user_2.organization_id = organization.id
+        @user_2.save.reload
+      end
+
+      it 'returns an empty array if no other user is watching' do
+        CartoDB::Visualization::Watcher.any_instance.stubs(:list).returns([])
+
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+
+        login(@user_1)
+        post api_v1_visualizations_create_url(api_key: @user_1.api_key), factory(@user_1, locked: true).to_json, @headers
+        id = JSON.parse(last_response.body).fetch('id')
+
+        login(@user_1)
+        get api_v1_visualizations_notify_watching_url(id: id, api_key: @user_1.api_key)
+        body = JSON.parse(last_response.body)
+        body.should == []
       end
     end
 

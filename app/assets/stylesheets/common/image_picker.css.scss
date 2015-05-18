@@ -51,9 +51,6 @@
 .AssetItem.is-selected .image {
   background-color: #fff;
 }
-.AssetItem.is-destroying {
-  display:none;
-}
 .AssetItem .delete {
   position:absolute;
   width: 14px;
@@ -97,4 +94,7 @@
 .CreateDialog-footerShadow.CreateDialog-footerShadow--tall {
   height: 48px;
   top:-48px;
+}
+.ImportPanel-state.is-active {
+  display: block;
 }

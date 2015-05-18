@@ -48,10 +48,9 @@ module Carto
 
         # User must be owner or have permissions for the map's visualization
         vis = Carto::Visualization.where({
-            user_id: current_user.id,
             map_id: params[:map_id]
           }).first
-        raise RecordNotFound if vis.nil?
+        raise RecordNotFound if vis.nil? || !vis.is_viewable_by_user?(current_user)
 
         Carto::Map.where(id: params[:map_id]).first
       end

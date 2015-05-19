@@ -41,12 +41,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     vis = nil
 
     if params[:source_visualization_id]
-      source = Visualization::Collection.new.fetch(
-        id: params.fetch(:source_visualization_id),
-        user_id: current_user.id,
-        exclude_raster: true
-      ).first
-      return(head 403) if source.nil?
+      source,  = locator.get(params.fetch(:source_visualization_id), CartoDB.extract_subdomain(request))
+      return(head 403) if source.nil? || source.kind == Visualization::Member::KIND_RASTER
 
       copy_overlays = params.fetch(:copy_overlays, true)
       copy_layers = params.fetch(:copy_layers, true)
@@ -130,7 +126,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end
 
   def show
-    vis = Visualization::Member.new(id: @table_id).fetch
+    vis,  = locator.get(@table_id, CartoDB.extract_subdomain(request))
+    return(head 404) unless vis
     return(head 403) unless vis.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
     render_jsonp(vis)
   rescue KeyError
@@ -138,7 +135,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end
   
   def update
-    vis = Visualization::Member.new(id: @table_id).fetch
+    vis,  = locator.get(@table_id, CartoDB.extract_subdomain(request))
+    return(head 404) unless vis
     return head(403) unless vis.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
 
     vis_data = payload
@@ -181,12 +179,13 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     render_jsonp({ errors: { named_map: exception } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapsDataError => exception
     render_jsonp({ errors: { named_maps: exception } }, 400)
-  rescue
+  rescue => e
     render_jsonp({ errors: ['Unknown error'] }, 400)
   end
 
   def destroy
-    vis = Visualization::Member.new(id: @table_id).fetch
+    vis,  = locator.get(@table_id, CartoDB.extract_subdomain(request))
+    return(head 404) unless vis
     return(head 403) unless vis.is_owner?(current_user)
     vis.delete
     return head 204

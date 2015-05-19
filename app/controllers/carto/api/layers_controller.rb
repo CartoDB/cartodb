@@ -1,6 +1,10 @@
+
+require_relative '../../../helpers/carto/uuidhelper.rb'
+
 module Carto
   module Api
     class LayersController < ::Api::ApplicationController
+      include Carto::UUIDHelper
 
       ssl_required :show, :layers_by_map, :custom_layers_by_user
 
@@ -11,7 +15,7 @@ module Carto
         raise RecordNotFound if @parent.nil?
 
         layers = @parent.layers(@parent).map { |layer|
-            Carto::Api::LayerPresenter.new(layer, current_user, @parent.user).to_poro
+            Carto::Api::LayerPresenter.new(layer, current_user, { viewer_user: current_user }, @parent.user).to_poro
           }
 
         render_jsonp layers: layers, total_entries: layers.size
@@ -22,9 +26,8 @@ module Carto
 
         layers = Carto::Layer.joins(:layers_user).where(layers_users: { user_id: current_user.id })
         layers = layers.map { |layer|
-            Carto::Api::LayerPresenter.new(layer, current_user, @owner_user).to_poro
+            Carto::Api::LayerPresenter.new(layer, current_user, { viewer_user: current_user }, @owner_user).to_poro
           }
-
         render_jsonp layers: layers, total_entries: layers.size
       end
 
@@ -35,8 +38,7 @@ module Carto
         parent = @parent ? @parent : @owner_user
         layer = parent.layers.where(id: params[:id]).first
         raise RecordNotFound if layer.nil?
-        
-        render_jsonp Carto::Api::LayerPresenter.new(layer, current_user).to_json
+        render_jsonp Carto::Api::LayerPresenter.new(layer, current_user, { viewer_user: current_user }).to_json
       end
 
       protected
@@ -55,11 +57,6 @@ module Carto
         raise RecordNotFound if vis.nil? || !vis.is_viewable_by_user?(current_user)
 
         @parent = Carto::Map.where(id: params[:map_id]).first
-      end
-
-      # TODO: remove this method and use  app/helpers/carto/uuidhelper.rb. Not used yet because this changed was pushed before
-      def is_uuid?(text)
-        !(Regexp.new(%r{\A#{UUIDTools::UUID_REGEXP}\Z}) =~ text).nil?
       end
 
     end

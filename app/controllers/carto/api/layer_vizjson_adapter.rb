@@ -47,13 +47,11 @@ module Carto
       end
 
       def infowindow
-        # TODO: maybe this parsing should be in the model?
-        @infowindow ||= get_infowindow
+        @layer.infowindow
       end
 
       def tooltip
-        # TODO: maybe this parsing should be in the model?
-        @tooltip ||= get_tooltip
+        @layer.tooltip
       end
 
       def infowindow_template_path 
@@ -72,16 +70,6 @@ module Carto
         else
           nil
         end
-      end
-
-      private
-
-      def get_infowindow
-        @layer.infowindow.nil? ? nil : JSON.parse(@layer.infowindow)
-      end
-
-      def get_tooltip
-        @layer.tooltip.nil? ? nil : JSON.parse(@layer.tooltip)
       end
 
     end

@@ -11,6 +11,9 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
   },
 
   initialize: function() {
+    if(!this.options.mapView) {
+      throw new Error("mapView should be present");
+    }
     this.options.template = this.options.template || this.defaultTemplate;
     cdb.geo.ui.InfoBox.prototype.initialize.call(this);
     this._filter = null;
@@ -130,39 +133,53 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
   },
 
   setPosition: function(point) {
-    var props = {
-      left: 0,
-      top:  0
-    };
-
     var pos = this.options.position;
-    var $el = this.$el;
-    var h = $el.innerHeight();
-    var w = $el.innerWidth();
+    var height = this.$el.innerHeight();
+    var width = this.$el.innerWidth();
+    var mapViewSize = this.options.mapView.getSize();
+    var top = 0;
+    var left = 0;
 
     // Vertically
     if (pos.indexOf('top') !== -1) {
-      props.top = -h;
+      top = point.y - height;
     } else if (pos.indexOf('middle') !== -1) {
-      props.top = -(h/2);
+      top = point.y - (height/2);
+    } else { // bottom
+      top = point.y;
+    }
+
+    // Fix vertical overflow
+    if (top < 0) {
+      top = point.y;
+    } else if (top + height > mapViewSize.y) {
+      top = point.y - height;
     }
 
     // Horizontally
     if(pos.indexOf('left') !== -1) {
-      props.left = -w;
+      left = point.x - width;
     } else if(pos.indexOf('center') !== -1) {
-      props.left = -(w/2);
+      left = point.x - (width/2);
+    } else { // right
+      left = point.x;
     }
 
-    // Offsets
-    props.top += this.options.vertical_offset;
-    props.left += this.options.horizontal_offset;
+    // Fix horizontal overflow
+    if (left < 0) {
+      left = point.x;
+    } else if (left + width > mapViewSize.x) {
+      left = point.x - width;
+    }
 
-    $el.css({
-      top:  (point.y + props.top),
-      left: (point.x + props.left)
+    // Add offsets
+    top += this.options.vertical_offset;
+    left += this.options.horizontal_offset;
+
+    this.$el.css({
+      top:  top,
+      left: left
     });
-
   },
 
   render: function(data) {

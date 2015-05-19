@@ -28,6 +28,7 @@ shared_context 'visualization creation helpers' do
   end
 
   before(:each) do
+    CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
     delete_user_data @user1
     delete_user_data @user2
   end

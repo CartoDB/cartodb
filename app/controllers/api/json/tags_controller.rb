@@ -12,7 +12,7 @@ class Api::Json::TagsController < Api::ApplicationController
 
     tag_counts = CartoDB::Visualization::Tags.new(current_user, options)
       .count(params)
-    render_jsonp(tag_counts)
+    render_jsonp(tag_counts.sort { |tc1, tc2| tc1[:name] <=> tc2[:name] })
   end
 end
 

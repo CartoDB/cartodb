@@ -43,6 +43,10 @@
   color: $cTypography-secondary;
   @include nicer-lato-typography();
 }
+
+.RadioButton.is-checked .RadioButton-label {
+  color: $cTypography-linkSelected;
+}
 .RadioButton.is-warning .RadioButton-label {
   color: $cHighlight-alert;
 }

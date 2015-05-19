@@ -22,7 +22,7 @@ module Carto
 
       attr_reader :visualization
 
-      def initialize(visualization, current_viewer = nil)
+      def initialize(visualization, current_viewer)
         @visualization = visualization
         @current_viewer = current_viewer
       end

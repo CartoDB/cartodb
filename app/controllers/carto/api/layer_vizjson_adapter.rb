@@ -41,8 +41,9 @@ module Carto
       end
 
       def get_presenter(options, configuration)
-        # TODO: new layer presenter
-        CartoDB::Layer::Presenter.new(self, options, configuration)
+        Carto::Api::LayerPresenter.new(
+            self, options.fetch(:viewer_user, nil), options, options.fetch(:user, nil), configuration
+          )
       end
 
       def infowindow

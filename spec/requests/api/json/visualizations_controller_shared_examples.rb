@@ -37,19 +37,7 @@ shared_examples_for "visualization controllers" do
   end
 
   def factory(user, attributes={})
-    {
-      name:                     attributes.fetch(:name, "visualization #{rand(9999)}"),
-      tags:                     attributes.fetch(:tags, ['foo', 'bar']),
-      map_id:                   attributes.fetch(:map_id, ::Map.create(user_id: user.id).id),
-      description:              attributes.fetch(:description, 'bogus'),
-      type:                     attributes.fetch(:type, 'derived'),
-      privacy:                  attributes.fetch(:privacy, 'public'),
-      source_visualization_id:  attributes.fetch(:source_visualization_id, nil),
-      parent_id:                attributes.fetch(:parent_id, nil),
-      locked:                   attributes.fetch(:locked, false),
-      prev_id:                  attributes.fetch(:prev_id, nil),
-      next_id:                  attributes.fetch(:next_id, nil)
-    }
+    visualization_template(user, attributes)
   end
 
   def table_factory(options={})
@@ -411,9 +399,7 @@ shared_examples_for "visualization controllers" do
             password: 'clientex',
         )
 
-        post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
-          factory(@user).to_json, @headers
-        vis_1_id = JSON.parse(last_response.body).fetch('id')
+        vis_1_id = create_visualization(@user).id
 
         get api_v1_visualizations_likes_count_url(user_domain: @user.username, id: vis_1_id, api_key: @api_key)
         JSON.parse(last_response.body).fetch('likes').to_i.should eq 0
@@ -516,6 +502,7 @@ shared_examples_for "visualization controllers" do
         u2_t_1_perm_id = table.table_visualization.permission.id
 
         table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: "table_#{rand(9999)}_2_2", user_id: user_2.id)
+        u2_t_2 = table
         u2_t_2_id = table.table_visualization.id
         u2_t_2_perm_id = table.table_visualization.permission.id
 
@@ -643,6 +630,7 @@ shared_examples_for "visualization controllers" do
         body['total_entries'].should eq 3
         body['total_likes'].should eq 0
         body['total_shared'].should eq 2
+        body['visualizations'][0]['table']['name'].should == "public.#{u2_t_2.name}"
 
         post api_v1_visualizations_add_like_url(user_domain: user_1.username, id: u1_t_1_id, api_key: user_1.api_key)
 

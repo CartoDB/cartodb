@@ -41,16 +41,14 @@ shared_examples_for "overlays controllers" do
       header_overlay = Overlay::Member.new({
           type: 'header', 
           visualization_id: params[:visualization_id],
-          order: 1,
-          options: {}
+          order: 1
         })
       header_overlay.store
 
       text_overlay = Overlay::Member.new({
           type: 'text',
           visualization_id: params[:visualization_id],
-          order: 2,
-          options: {}
+          order: 2
         })
       text_overlay.store
 
@@ -69,9 +67,7 @@ shared_examples_for "overlays controllers" do
     it "Gets the details of an overlay" do
       header_overlay = Overlay::Member.new({
           type: 'header', 
-          visualization_id: params[:visualization_id],
-          order: 1,
-          options: {}
+          visualization_id: params[:visualization_id]
         })
       header_overlay.store
 

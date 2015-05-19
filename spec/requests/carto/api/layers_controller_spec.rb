@@ -6,6 +6,8 @@ require_relative '../../../../spec/requests/api/json/layers_controller_shared_ex
 
 
 describe Carto::Api::LayersController do
+  include Rack::Test::Methods
+  include Warden::Test::Helpers
 
   it_behaves_like 'layers controllers' do
   end
@@ -24,6 +26,7 @@ describe Carto::Api::LayersController do
 
       # old controller
       scope :module => 'api/json', :format => :json do
+        put '(/user/:user_domain)(/u/:user_domain)/api/v1/perm/:id' => 'permissions#update', as: :api_v1_permissions_update
       end
 
     end

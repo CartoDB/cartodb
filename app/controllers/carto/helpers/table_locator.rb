@@ -28,8 +28,8 @@ module Carto
         end
 
         # noinspection RubyArgCount
-        vis = CartoDB::Visualization::Collection.new.fetch(query_filters).select { |u|
-          u.user_id == query_filters[:user_id]
+        vis = CartoDB::Visualization::Collection.new.fetch(query_filters).select { |v|
+          v.user_id == query_filters[:user_id] || v.has_permission?(viewer_user, CartoDB::Permission::ACCESS_READONLY)
         }.first
         table = vis.nil? ? nil : vis.table
 

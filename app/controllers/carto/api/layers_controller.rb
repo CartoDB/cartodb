@@ -7,9 +7,8 @@ module Carto
 
       def index
         layers = (params[:map_id] ? layers_by_map : custom_layers_by_user).map { |layer|
-            Carto::Api::LayerPresenter.new(layer, current_user, @owner_user).to_poro
+            Carto::Api::LayerPresenter.new(layer, current_user, { viewer_user: current_user }, @owner_user).to_poro
           }
-
         render_jsonp layers: layers, total_entries: layers.size
       end
 
@@ -18,8 +17,7 @@ module Carto
 
         layer = @parent.layers.where(id: params[:id]).first
         raise RecordNotFound if layer.nil?
-        
-        render_jsonp Carto::Api::LayerPresenter.new(layer, current_user).to_json
+        render_jsonp Carto::Api::LayerPresenter.new(layer, current_user, { viewer_user: current_user }).to_json
       end
 
 

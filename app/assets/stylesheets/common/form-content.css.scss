@@ -54,6 +54,11 @@
   margin-right: $sMargin-element;
   text-align: right;
 }
+.Form-rowLabel.Form-rowLabel--leftAligned {
+  width: 140px;
+  margin-right: $sMargin-element;
+  text-align: left;
+}
 .Form-label {
   line-height: 40px;
   font-size: $sFontSize-normal;

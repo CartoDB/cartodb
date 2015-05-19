@@ -134,7 +134,7 @@ module CartoDB
 
       def use_batch_process?
         # Only used for hi-res geocoding
-        nil
+        false
       end
 
 

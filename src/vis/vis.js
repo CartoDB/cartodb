@@ -833,7 +833,9 @@ var Vis = cdb.core.View.extend({
       var cid = layers.at(i).cid;
       var layer = layers.at(i).attributes
       var layerView = this.mapView.getLayerByCid(cid);
-      legends.push(this._createLayerLegendView(layer, layerView));
+      if (layerView) {
+        legends.push(this._createLayerLegendView(layer, layerView));
+      }
     }
     return _.flatten(legends);
   },

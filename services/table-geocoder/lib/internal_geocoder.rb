@@ -133,8 +133,8 @@ module CartoDB
       end
 
       def use_batch_process?
-        # We always "batch" queries to the internal geocoder
-        true
+        # Only used for hi-res geocoding
+        nil
       end
 
 

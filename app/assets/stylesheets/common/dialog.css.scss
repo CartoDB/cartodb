@@ -73,10 +73,6 @@ body.is-inDialog {
   position: fixed;
   bottom: 0;
 }
-.Dialog-body.Dialog-body--small,
-.Dialog-footer.Dialog-footer--small {
-  width: 670px;
-}
 .Dialog-content.is-newContent {
   @include animation(fade-and-scale-in 100ms ease-out);
 }
@@ -154,6 +150,14 @@ body.is-inDialog {
   line-height: $sLineHeight-large;
   font-weight: $sFontWeight-lighter;
   color: $cTypography-paragraphs;
+}
+.Dialog-headerText.Dialog-headerText--centered {
+  margin: auto;
+}
+.Dialog-headerText.Dialog-headerText--ellipsis {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 .Dialog-footerBtn {
   margin-right: $sMargin-element;

@@ -15,7 +15,7 @@ module Carto
         raise RecordNotFound if @parent.nil?
 
         layers = @parent.layers(@parent).map { |layer|
-            Carto::Api::LayerPresenter.new(layer, current_user, { viewer_user: current_user }, @parent.user).to_poro
+            Carto::Api::LayerPresenter.new(layer, { viewer_user: current_user, user: @parent.user }).to_poro
           }
 
         render_jsonp layers: layers, total_entries: layers.size
@@ -26,7 +26,7 @@ module Carto
 
         layers = Carto::Layer.joins(:layers_user).where(layers_users: { user_id: current_user.id })
         layers = layers.map { |layer|
-            Carto::Api::LayerPresenter.new(layer, current_user, { viewer_user: current_user }, @owner_user).to_poro
+            Carto::Api::LayerPresenter.new(layer, { viewer_user: current_user, user: @owner_user }).to_poro
           }
         render_jsonp layers: layers, total_entries: layers.size
       end
@@ -35,10 +35,17 @@ module Carto
         raise RecordNotFound unless is_uuid?(params[:id])
         raise RecordNotFound if (@owner_user.nil? && @parent.nil?)
 
-        parent = @parent ? @parent : @owner_user
+        if @parent
+          parent = @parent
+          owner = @parent.user
+        else
+          parent = @owner_user
+          owner = @owner_user
+        end
+
         layer = parent.layers.where(id: params[:id]).first
         raise RecordNotFound if layer.nil?
-        render_jsonp Carto::Api::LayerPresenter.new(layer, current_user, { viewer_user: current_user }).to_json
+        render_jsonp Carto::Api::LayerPresenter.new(layer, { viewer_user: current_user, user: owner}).to_json
       end
 
       protected

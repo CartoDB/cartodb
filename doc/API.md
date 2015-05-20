@@ -1372,7 +1372,7 @@ You can use all the functionality of CartoDB.js with HTTPs support. Be sure to u
     center: [0,0],
     zoom: 2
   })
-  cartodb.createLayer(map, 'http://examples.cartodb.com/api/v1/viz/15589/viz.json', { https: true })
+  cartodb.createLayer(map, 'https://examples.cartodb.com/api/v1/viz/15589/viz.json', { https: true })
     .addTo(map)
     .on('error', function(err) {
       alert("some error occurred: " + err);

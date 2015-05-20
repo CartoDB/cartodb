@@ -18,27 +18,6 @@
   margin-right: 98px;
 }
 .CreateDialog-headerStep:last-child { margin-right: 0 }
-// Step selected or selectable
-.CreateDialog-headerStep.is-selected,
-.CreateDialog-headerStep.is-selectable:hover {
-  .Dialog-headerIcon { border-color: $cHighlight-main }
-  .iconFont { color: $cHighlight-main }
-  .Dialog-headerText,
-  .Dialog-headerTitle {
-    color: $cTypography-paragraphs;
-  }
-  .Dialog-headerIconBadge {
-    border-color: $cHighlight-main;
-    color: $cHighlight-positive;
-  }
-}
-.CreateDialog-headerStep.CreateDialog-headerStep--single {
-  .Dialog-headerText,
-  .Dialog-headerTitle {
-    color: $cTypography-paragraphs;
-  }
-}
-.CreateDialog-headerStep.is-selectable:hover { cursor: pointer }
 .CreateDialog-header .Dialog-headerIcon {
   margin-bottom: 12px;
   border-color: #CCC;
@@ -95,3 +74,25 @@
     color: #999;
   }
 }
+
+// Step selected or selectable
+.CreateDialog-headerStep.is-selected,
+.CreateDialog-headerStep.is-selectable:hover {
+  .Dialog-headerIcon { border-color: $cHighlight-main }
+  .iconFont { color: $cHighlight-main }
+  .Dialog-headerText,
+  .Dialog-headerTitle {
+    color: $cTypography-paragraphs;
+  }
+  .Dialog-headerIconBadge {
+    border-color: $cHighlight-main;
+    color: $cHighlight-positive;
+  }
+}
+.CreateDialog-headerStep.CreateDialog-headerStep--single {
+  .Dialog-headerText,
+  .Dialog-headerTitle {
+    color: $cTypography-paragraphs;
+  }
+}
+.CreateDialog-headerStep.is-selectable:hover { cursor: pointer }

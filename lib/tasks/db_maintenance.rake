@@ -973,15 +973,16 @@ namespace :cartodb do
           key_parts = line.strip.split(':')
           username = key_parts[0]
           visualization_id = key_parts[1]
+          stat_tag_key = "user:#{username}:mapviews:stat_tag:#{visualization_id}"
           puts "Processing visualization #{visualization_id} of user #{username}"
           visualization_counter = 0
-          $users_metadata.zrange("user:#{username}:mapviews:stat_tag:#{visualization_id}", 0, -1).each do |mapviews_day|
+          $users_metadata.zrange(stat_tag_key, 0, -1).each do |mapviews_day|
             if mapviews_day =~ /[0-9]{4}(0|1)[0-9][0-3][0-9]/
-              count = $users_metadata.zscore("user:cdb:mapviews:stat_tag:#{visualization_id}", mapviews_day)
+              count = $users_metadata.zscore(stat_tag_key, mapviews_day)
               visualization_counter = visualization_counter + count unless count.nil?
             end
           end
-          $users_metadata.zadd("user:cdb:mapviews:stat_tag:#{visualization_id}", visualization_counter, 'total')
+          $users_metadata.zadd(stat_tag_key, visualization_counter, 'total')
         end
       end
     end

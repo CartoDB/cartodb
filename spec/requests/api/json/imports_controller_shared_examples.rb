@@ -165,4 +165,43 @@ shared_examples_for "imports controllers" do
     @user.update private_tables_enabled: true
   end
 
+  describe 'service_token_valid?' do
+
+    it 'returns oauth_valid false for unknown service tokens' do
+      get api_v1_imports_service_token_valid_url(id: 'kk'), params
+      response.code.should == '200'
+      response_json = JSON.parse(response.body)
+      response_json[:oauth_valid] == false
+      response_json[:success] == true
+    end
+
+    it 'returns 400 for known service token without known service datasource' do
+      synchronization_oauth = Carto::SynchronizationOauth.new(user_id: @user.id, service: 'kk-s', token: 'kk-t')
+      synchronization_oauth.save
+      get api_v1_imports_service_token_valid_url(id: synchronization_oauth.service), params
+      response.code.should == '400'
+    end
+
+    it 'returns 400 for known service token for a service datasource which is not BaseOAuth' do
+      synchronization_oauth = Carto::SynchronizationOauth.new(user_id: @user.id, service: 'arcgis', token: 'kk-t')
+      synchronization_oauth.save
+      get api_v1_imports_service_token_valid_url(id: synchronization_oauth.service), params
+      response.code.should == '400'
+    end
+
+    it 'returns oauth_valid false for not valid tokens and deletes it' do
+      CartoDB::Datasources::Url::MailChimp.any_instance.stubs(:token_valid?).returns(false)
+      synchronization_oauth = Carto::SynchronizationOauth.new(user_id: @user.id, service: 'mailchimp', token: 'kk-t')
+      synchronization_oauth.save
+      get api_v1_imports_service_token_valid_url(id: synchronization_oauth.service), params
+      response.code.should == '200'
+      response_json = JSON.parse(response.body)
+      response_json[:oauth_valid] == false
+      response_json[:success] == true
+
+      SynchronizationOauth.where(id: synchronization_oauth.id).first.should eq nil
+    end
+
+  end
+
 end

@@ -293,6 +293,9 @@ CartoDB::Application.routes.draw do
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/imports'                          => 'imports#index',                       as: :api_v1_1_imports_index
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/imports/:id'                      => 'imports#show',                        as: :api_v1_1_imports_show
 
+    # Import services
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/imports/service/:id/token_valid'         => 'imports#service_token_valid?',        as: :api_v1_1_imports_service_token_valid
+
     # Custom layers grouped by user
     get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/users/:user_id/layers'              => 'layers#index',   as: :api_v1_1_users_layers_index
     # No show action

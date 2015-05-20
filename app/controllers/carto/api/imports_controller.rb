@@ -3,6 +3,7 @@ module Carto
     class ImportsController < ::Api::ApplicationController
 
       ssl_required :index, :show
+      ssl_allowed :service_token_valid?
 
       def index
         imports = DataImportsService.new.process_recent_user_imports(current_user)
@@ -24,7 +25,25 @@ module Carto
         render json: data
       end
 
+      def service_token_valid?
+        oauth = logged_user.get_synchronization_oauth(params[:id])
+
+        return render_jsonp({ oauth_valid: false, success: true }) if oauth.nil?
+
+        valid = logged_user.validate_oauth(oauth)
+
+        render_jsonp({ oauth_valid: valid, success: true })
+      rescue => e
+        CartoDB.notify_exception(e)
+        render_jsonp({ errors: e.message }, 400)
+      end
+
       private
+
+      # TODO: this should be moved upwards in the controller hierarchy, and make it a replacement for current_user
+      def logged_user
+        @logged_user ||= Carto::User.where(id: current_user.id).first
+      end
 
       def decorate_twitter_import_data!(data, data_import)
         return if data_import.service_name != CartoDB::Datasources::Search::Twitter::DATASOURCE_NAME

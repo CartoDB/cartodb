@@ -314,6 +314,7 @@ module CartoDB
           # 'errors' only appears in failure scenarios, while 'username' only if went ok
           response.fetch('errors', nil).nil? && !response.fetch('username', nil).nil?
         rescue => ex
+          CartoDB.notify_exception(ex)
           false
         end
 

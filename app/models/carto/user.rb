@@ -2,6 +2,7 @@
 
 require 'active_record'
 require_relative 'user_service'
+require_relative 'synchronization_oauth'
 
 # TODO: This probably has to be moved as the service of the proper User Model
 class Carto::User < ActiveRecord::Base
@@ -20,6 +21,7 @@ class Carto::User < ActiveRecord::Base
   has_many :assets, inverse_of: :user
   has_many :data_imports, inverse_of: :user
   has_many :geocodings, inverse_of: :user
+  has_many :synchronization_oauths, class_name: Carto::SynchronizationOauth, inverse_of: :user, dependent: :destroy
 
   delegate [ 
       :database_username, :database_password, :in_database, :load_cartodb_functions, :rebuild_quota_trigger 
@@ -144,6 +146,28 @@ class Carto::User < ActiveRecord::Base
     end
     # return only the attributes
     default.first[1]
+  end
+
+  def get_synchronization_oauth(service)
+    synchronization_oauths.where(service: service).first
+  end
+
+  def validate_oauth(oauth)
+    Rollbar.report_message('validate_oauth', 'debug')
+    datasource = oauth.get_service_datasource
+    begin
+      valid = datasource.token_valid?
+    rescue => e
+      CartoDB.notify_exception(e, { user: self, oauth: oauth })
+      valid = false
+    end
+
+    unless valid
+      Rollbar.report_message('validate_oauth: delete', 'debug', { oauth: oauth })
+      synchronization_oauths.delete(oauth)
+    end
+
+    valid
   end
 
   private

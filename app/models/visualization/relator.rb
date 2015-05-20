@@ -16,7 +16,7 @@ module CartoDB
                         others:           :other_layers
                       }
 
-      INTERFACE     = %w{ overlays map user table related_tables layers stats mapviews total_map_views single_data_layer? synchronization
+      INTERFACE     = %w{ overlays map user table related_tables layers stats mapviews total_mapviews single_data_layer? synchronization
                           permission parent children support_tables prev_list_item next_list_item likes likes_count reload_likes }
 
       def initialize(attributes={})

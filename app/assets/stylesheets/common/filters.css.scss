@@ -61,6 +61,7 @@
   @include align-items(center, center);
   height:80px;
 }
+.Filters-row.Filters-row--centered { @include justify-content(center) }
 .Filters-list {
   @include display-flex();
   @include justify-content(space-between, justify);

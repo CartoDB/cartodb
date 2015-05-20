@@ -23,6 +23,10 @@ describe Carto::Api::TagsController do
     end
   end
 
+  after(:all) do
+    Rails.application.reload_routes!
+  end
+
   include Rack::Test::Methods
   include Warden::Test::Helpers
   include CacheHelper

@@ -6,6 +6,5 @@ require_relative 'tables_controller_shared_examples'
 
 describe Api::Json::TablesController do
   it_behaves_like 'tables controllers' do
-    
   end
 end

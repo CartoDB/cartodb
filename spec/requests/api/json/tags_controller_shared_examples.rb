@@ -5,6 +5,7 @@ shared_examples_for 'tags controllers' do
 
   describe 'index' do
     include_context 'visualization creation helpers'
+    include_context 'users helper'
 
     before(:each) do
       @headers = {'CONTENT_TYPE'  => 'application/json'}

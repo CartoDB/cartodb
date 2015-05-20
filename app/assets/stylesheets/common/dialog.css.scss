@@ -73,6 +73,10 @@ body.is-inDialog {
   position: fixed;
   bottom: 0;
 }
+.Dialog-body.Dialog-body--small,
+.Dialog-footer.Dialog-footer--small {
+  width: 670px;
+}
 .Dialog-content.is-newContent {
   @include animation(fade-and-scale-in 100ms ease-out);
 }

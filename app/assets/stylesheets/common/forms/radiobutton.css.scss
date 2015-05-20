@@ -43,6 +43,19 @@
   color: $cTypography-secondary;
   @include nicer-lato-typography();
 }
+
+.RadioButton.is-checked .RadioButton-label {
+  color: $cTypography-linkSelected;
+}
+.RadioButton.is-warning .RadioButton-label {
+  color: $cHighlight-alert;
+}
+.RadioButton.is-warning .RadioButton-input {
+  border-color: $cHighlight-alert;
+  &:before {
+    background: $cHighlight-alert;
+  }
+}
 .RadioButton.is-disabled .RadioButton-input {
   @include opacity(0.4);
   &:hover {

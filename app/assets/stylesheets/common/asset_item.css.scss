@@ -29,6 +29,13 @@
   display:block;
   @include opacity(1);
 }
+.AssetItem.AssetItem-User.is-selected .image {
+  background-color: #fff;
+  top: 1px;
+  left: 1px;
+  width: 56px;
+  height: 56px;
+}
 .AssetItem.is-selected {
   border:1px solid #BBD7F2;
 }

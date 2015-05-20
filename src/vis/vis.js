@@ -1498,7 +1498,7 @@ var Vis = cdb.core.View.extend({
 
 cdb.vis.INFOWINDOW_TEMPLATE = {
   light: [
-    '<div class="cartodb-popup">',
+    '<div class="cartodb-popup v2">',
     '<a href="#close" class="cartodb-popup-close-button close">x</a>',
     '<div class="cartodb-popup-content-wrapper">',
       '<div class="cartodb-popup-content">',

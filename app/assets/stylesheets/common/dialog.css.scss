@@ -151,6 +151,14 @@ body.is-inDialog {
   font-weight: $sFontWeight-lighter;
   color: $cTypography-paragraphs;
 }
+.Dialog-headerText.Dialog-headerText--centered {
+  margin: auto;
+}
+.Dialog-headerText.Dialog-headerText--ellipsis {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
 .Dialog-footerBtn {
   margin-right: $sMargin-element;
 }

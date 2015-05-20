@@ -1,5 +1,5 @@
 
-3.10.2 ()
+3.10.2 (2015-05-20)
 ---------
 * Ongoing backend refactor and migration from Sequel to ActiveRecord.
 * Frontend assets cleaning [PR 3563](https://github.com/CartoDB/cartodb/pull/3563).

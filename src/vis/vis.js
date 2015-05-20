@@ -1115,6 +1115,7 @@ var Vis = cdb.core.View.extend({
       if (t) {
         if (!layerView.tooltip) {
           var tooltip = new cdb.geo.ui.Tooltip({
+            mapView: this.mapView,
             layer: layerView,
             template: t.template,
             position: 'bottom|right',

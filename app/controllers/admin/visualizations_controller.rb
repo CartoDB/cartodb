@@ -16,7 +16,7 @@ class Admin::VisualizationsController < ApplicationController
   ssl_required :index, :show, :protected_embed_map, :protected_public_map, :show_protected_public_map
   before_filter :login_required, only: [:index]
   before_filter :table_and_schema_from_params, only: [:show, :public_table, :public_map, :show_protected_public_map,
-                                                      :show_protected_embed_map, :embed_map]
+                                                      :show_protected_embed_map]
   before_filter :link_ghost_tables, only: [:index]
   before_filter :load_common_data, only: [:index]
 
@@ -362,23 +362,32 @@ class Admin::VisualizationsController < ApplicationController
   end
 
   def embed_map
-    return(embed_forbidden) if @visualization.private?
-    return(embed_protected) if @visualization.password_protected?
-    return(show_organization_embed_map) if org_user_has_map_permissions?(current_user, @visualization)
+    cached = embed_redis_cache.get()
 
-    response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
-    response.headers['Surrogate-Key'] = "#{CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES} #{@visualization.surrogate_key}"
-    response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
+    if cached
+      #TODO implement
+    else
+      table_and_schema_from_params
+      return(embed_forbidden) if @visualization.private?
+      return(embed_protected) if @visualization.password_protected?
+      return(show_organization_embed_map) if org_user_has_map_permissions?(current_user, @visualization)
 
-    # We need to know if visualization logo is visible or not
-    @hide_logo = is_logo_hidden(@visualization, params)
+      response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
+      response.headers['Surrogate-Key'] = "#{CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES} #{@visualization.surrogate_key}"
+      response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
 
-    respond_to do |format|
-      format.html { render layout: 'application_public_visualization_layout' }
+      # We need to know if visualization logo is visible or not
+      @hide_logo = is_logo_hidden(@visualization, params)
+
+      debugger
+
+      respond_to do |format|
+        format.html { render layout: 'application_public_visualization_layout' }
+      end
+    rescue => e
+      Rollbar.report_exception(e)
+      embed_forbidden
     end
-  rescue => e
-    Rollbar.report_exception(e)
-    embed_forbidden
   end
 
   # Renders input password view

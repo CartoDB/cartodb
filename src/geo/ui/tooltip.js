@@ -51,9 +51,7 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
       this.options.layer.unbind(null, null, this);
       this.options.layer
         .on('mouseover', function(e, latlng, pos, data) {
-          // this flag is used to be compatible with previous templates
-          // where the data is not enclosed a content variable
-          if (this.options.fields) {
+          if (this.options.fields && this.options.fields.length > 0) {
 
             var non_valid_keys = ['fields', 'content'];
 
@@ -64,6 +62,7 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
             var c = cdb.geo.ui.InfowindowModel.contentForFields(data, this.options.fields, {
               empty_fields: this.options.empty_fields
             });
+
             // Remove fields and content from data
             // and make them visible for custom templates
             data.content = _.omit(data, non_valid_keys);
@@ -79,9 +78,12 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
                 f.title = names[f.title] || f.title;
               }
             }
+            this.show(pos, data);
+            this.showing = true;
+          } else if (this.showing) {
+            this.hide();
+            this.showing = false;
           }
-          this.show(pos, data);
-          this.showing = true;
         }, this)
         .on('mouseout', function() {
           if (this.showing) {

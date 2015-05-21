@@ -11,6 +11,7 @@ require_relative './like'
 require_relative '../table/privacy_manager'
 require_relative '../../../services/minimal-validation/validator'
 require_relative '../../../services/named-maps-api-wrapper/lib/named_maps_wrapper'
+require_relative '../../helpers/embed_redis_cache'
 
 # Every table has always at least one visualization (the "canonical visualization"), of type 'table',
 # which shares the same privacy options as the table and gets synced.
@@ -610,6 +611,7 @@ module CartoDB
       def invalidate_redis_cache
         self.class.redis_cache.del(redis_vizjson_key)
         self.class.redis_cache.del(redis_vizjson_key(true))
+        embed_redis_cache.invalidate(self.id)
       end
 
       def self.redis_cache
@@ -617,10 +619,15 @@ module CartoDB
       end
 
 
+
       private
 
       attr_reader   :repository, :name_checker, :validator
       attr_accessor :privacy_changed, :name_changed, :old_name, :permission_change_valid, :dirty
+
+      def embed_redis_cache
+        @embed_redis_cache ||= EmbedRedisCache.new($tables_metadata)
+      end
 
       def calculate_vizjson(options={})
         vizjson_options = {

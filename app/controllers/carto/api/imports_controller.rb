@@ -26,7 +26,7 @@ module Carto
       end
 
       def service_token_valid?
-        valid = logged_user.validate_synchronization_oauth(params[:id])
+        valid = DataImportsService.new.validate_synchronization_oauth(logged_user, params[:id])
         render_jsonp({ oauth_valid: valid, success: true })
       rescue => e
         CartoDB.notify_exception(e)
@@ -35,7 +35,7 @@ module Carto
 
       def list_files_for_service
         filter = params[:filter].present? ? params[:filter] : []
-        results = logged_user.get_service_files(params[:id], filter)
+        results = DataImportsService.new.get_service_files(logged_user, params[:id], filter)
         render_jsonp({ files: results, success: true })
       rescue => ex
         CartoDB::notify_exception(ex, { user: logged_user, params: params })

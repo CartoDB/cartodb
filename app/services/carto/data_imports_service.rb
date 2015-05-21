@@ -39,6 +39,36 @@ module Carto
       nil
     end
 
+    def validate_synchronization_oauth(user, service)
+      # TODO: remove this debug trace
+      Rollbar.report_message('validate_oauth', 'debug')
+
+      oauth = user.synchronization_oauths.where(service: service).first
+      return false unless oauth
+
+      datasource = oauth.get_service_datasource
+
+      begin
+        valid = datasource.token_valid?
+      rescue => e
+        CartoDB.notify_exception(e, { message: 'Error while validating oauth token, will be deleted', user: self, oauth: oauth })
+        valid = false
+      end
+
+      unless valid
+        Rollbar.report_message('validate_oauth: delete', 'debug', { oauth: oauth })
+        user.synchronization_oauths.delete(oauth)
+      end
+
+      valid
+    end
+
+    def get_service_files(user, service, filter)
+      oauth = user.synchronization_oauths.where(service: service).first
+      datasource = oauth.get_service_datasource
+      datasource.get_resources_list(filter)
+    end
+
     private
 
     def stuck?(import)

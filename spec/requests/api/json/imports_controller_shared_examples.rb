@@ -182,6 +182,7 @@ shared_examples_for "imports controllers" do
       synchronization_oauth.save
       get api_v1_imports_service_token_valid_url(id: synchronization_oauth.service), params
       response.code.should == '400'
+      synchronization_oauth.destroy
     end
 
     it 'returns 400 for known service token for a service datasource which is not BaseOAuth' do
@@ -189,6 +190,7 @@ shared_examples_for "imports controllers" do
       synchronization_oauth.save
       get api_v1_imports_service_token_valid_url(id: synchronization_oauth.service), params
       response.code.should == '400'
+      synchronization_oauth.destroy
     end
 
     it 'returns oauth_valid false for not valid tokens and deletes them' do
@@ -202,6 +204,7 @@ shared_examples_for "imports controllers" do
       response_json['success'].should == true
 
       SynchronizationOauth.where(id: synchronization_oauth.id).first.should eq nil
+      synchronization_oauth.destroy
     end
 
     it 'returns 401 for expired tokens on assignment and deletes them' do
@@ -213,6 +216,7 @@ shared_examples_for "imports controllers" do
       response.code.should == '401'
 
       SynchronizationOauth.where(id: synchronization_oauth.id).first.should eq nil
+      synchronization_oauth.destroy
     end
 
     it 'returns 401 for expired tokens on validation and deletes them' do
@@ -224,6 +228,7 @@ shared_examples_for "imports controllers" do
       response.code.should == '401'
 
       SynchronizationOauth.where(id: synchronization_oauth.id).first.should eq nil
+      synchronization_oauth.destroy
     end
 
   end
@@ -257,6 +262,7 @@ shared_examples_for "imports controllers" do
       response_json = JSON.parse(response.body)
       response_json['success'].should == true
       response_json['files'].map(&:symbolize_keys).should == fake_files
+      synchronization_oauth.destroy
     end
 
     it 'returns 401 for expired tokens on resource listing and deletes them' do
@@ -268,8 +274,42 @@ shared_examples_for "imports controllers" do
       response.code.should == '401'
 
       SynchronizationOauth.where(id: synchronization_oauth.id).first.should eq nil
+      synchronization_oauth.destroy
     end
 
+  end
+
+  describe 'auth_url' do
+
+    it 'returns 400 auth url for existing tokens services' do
+      service = 'mailchimp'
+      synchronization_oauth = Carto::SynchronizationOauth.new(user_id: @user.id, service: service, token: 'kk-t')
+      synchronization_oauth.save
+      get api_v1_imports_service_auth_url_url(id: service), params
+      response.code.should == '400'
+      synchronization_oauth.destroy
+    end
+
+    it 'returns auth url for known, valid tokens' do
+      service = 'mailchimp'
+      fake_url = 'http://www.fakeurl.com'
+      CartoDB::Datasources::Url::MailChimp.any_instance.stubs(:get_auth_url).returns(fake_url)
+      get api_v1_imports_service_auth_url_url(id: service), params
+      response.code.should == '200'
+      response_json = JSON.parse(response.body)
+      response_json['success'].should == true
+      response_json['url'].should == fake_url
+    end
+
+    it 'returns 401 for expired tokens on url and deletes them' do
+      CartoDB::Datasources::Url::MailChimp.any_instance.stubs(:get_auth_url).raises(CartoDB::Datasources::TokenExpiredOrInvalidError.new('kk', 'mailchimp'))
+
+      get api_v1_imports_service_auth_url_url(id: 'mailchimp'), params
+      response.code.should == '401'
+
+      # INFO: this can never happen with the current implementation of get_service_auth_url, since it first checks there's no previous SynchronizationOauth
+      SynchronizationOauth.where(service: 'mailchimp').first.should eq nil
+    end
   end
 
 end

@@ -5,8 +5,9 @@ module Carto
   class DataImportsService
     include Carto::UUIDHelper
 
-    def initialize(users_metadata = $users_metadata)
+    def initialize(users_metadata = $users_metadata, tables_metadata = $tables_metadata)
       @users_metadata = users_metadata
+      @tables_metadata = tables_metadata
     end
     
     def process_recent_user_imports(user)
@@ -72,6 +73,17 @@ module Carto
       handle_datasource_exception(user, e, oauth)
     end
 
+    def get_service_auth_url(user, service)
+      oauth = user.synchronization_oauths.where(service: service).first
+      raise CartoDB::Datasources::AuthError.new("OAuth already set for service #{service}") if oauth
+
+      datasource = CartoDB::Datasources::DatasourcesFactory.get_datasource(service, user, {
+        redis_storage: @tables_metadata,
+        http_timeout: ::DataImport.http_timeout_for(user)
+      })
+      datasource.get_auth_url
+    end
+
     private
 
     def delete_oauth(user, oauth)
@@ -81,7 +93,7 @@ module Carto
 
     def handle_datasource_exception(user, e, oauth = nil)
       CartoDB.notify_exception(e, { message: 'Error while processing datasource', user: user, oauth: oauth })
-      if e.kind_of? CartoDB::Datasources::TokenExpiredOrInvalidError
+      if e.kind_of?(CartoDB::Datasources::TokenExpiredOrInvalidError) && oauth
         delete_oauth(user, oauth)
       end
 

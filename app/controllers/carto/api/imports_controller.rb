@@ -48,6 +48,17 @@ module Carto
         render_jsonp({ errors: { imports: e.message } }, 400)
       end
 
+      def get_service_auth_url
+        auth_url = DataImportsService.new.get_service_auth_url(logged_user, params[:id])
+        render_jsonp({ url: auth_url, success: true})
+      rescue CartoDB::Datasources::TokenExpiredOrInvalidError => e
+        CartoDB.notify_exception(e, { user: logged_user, params: params })
+        render_jsonp({ errors: e.message }, 401)
+      rescue => e
+        CartoDB.notify_exception(e, { user: logged_user, params: params })
+        render_jsonp({ errors: { imports: e.message } }, 400)
+      end
+
       private
 
       # TODO: this should be moved upwards in the controller hierarchy, and make it a replacement for current_user

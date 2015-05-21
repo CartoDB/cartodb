@@ -56,10 +56,18 @@ module CartoDB
           move_to_schema(result)
           rename(result.table_name, table_name)
         end
+        fix_oid(table_name)
       rescue => exception
         puts "Sync overwrite ERROR: #{exception.message}: #{exception.backtrace.join}"
         Rollbar.report_exception(exception)
         drop(result.table_name) if exists?(result.table_name)
+      end
+
+      def fix_oid(table_name)
+        actual_oid_from_user_database = database.fetch(%Q{SELECT '#{table_name}'::regclass::oid}).first[:oid]
+        table = ::Table.new(:user_table => ::UserTable.where(name: table_name, user_id: user.id).first)
+        table.table_id = actual_oid_from_user_database.to_i
+        table.save
       end
 
       def cartodbfy(table_name)

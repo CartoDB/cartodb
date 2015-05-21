@@ -38,6 +38,9 @@ body.is-inDialog {
   /* "forwards" to keep the last keyframe's styles after animation ended */
   @include animation(fade-and-scale-out 80ms ease-in forwards);
 }
+.Dialog.is-sticky .Dialog-closeBtn {
+  display: none;
+}
 .Dialog-closeBtn {
   position: fixed;
   top: $sMargin-section;

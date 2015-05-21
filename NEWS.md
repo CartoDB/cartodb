@@ -1,4 +1,9 @@
 
+3.10.3 (2015-mm-dd)
+---
+Bugfixes:
+* Fixed deletion of layers upon disconnecting synced datasources [#3718](https://github.com/CartoDB/cartodb/pull/3718)
+
 3.10.2 (2015-05-20)
 ---------
 * Ongoing backend refactor and migration from Sequel to ActiveRecord.
@@ -18,6 +23,7 @@ git submodule update --init
 
 Bugfixes:
 * Create import view throws uncaught error on canceling selected a file (2nd time) [#3379](https://github.com/CartoDB/cartodb/issues/3379).
+* Removed old tags endpoint (https://github.com/CartoDB/cartodb/issues/3691).
 
 3.10.1 (2015-05-05)
 -------------------

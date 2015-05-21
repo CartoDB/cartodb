@@ -145,4 +145,25 @@ shared_examples_for "tables controllers" do
 
   end
 
+  describe '#show' do
+    #include Rack::Test::Methods
+    #include CacheHelper
+
+    include_context 'visualization creation helpers'
+    include_context 'organization with users helper'
+
+    it 'loads my table if other user has shared a table with the same name with me' do
+      table_name = "table#{rand(99999)}"
+      his_table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: table_name, user_id: @org_user_2.id)
+      share_table(his_table, @org_user_2, @org_user_1)
+      my_table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: table_name, user_id: @org_user_1.id)
+      login(@org_user_1)
+      get_json api_v1_tables_show_url(id: my_table.id) do |response|
+        response.status.should == 200
+        response.body.fetch(:name).should == my_table.name
+        response.body[:table_visualization]['permission']['owner']['username'].should == @org_user_1.username
+      end
+    end
+  end
+
 end

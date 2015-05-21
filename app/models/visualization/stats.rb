@@ -23,6 +23,10 @@ module CartoDB
         return new_calls
       end
 
+      def total_mapviews
+        CartoDB::Stats::APICalls.new.get_total_api_calls(user.username, visualization.id)
+      end
+
       private
 
       attr_reader :visualization, :user

@@ -4,7 +4,7 @@ module Carto
   module Api
     class LayerPresenter
 
-      PUBLIC_VALUES = [:kind, :infowindow, :tooltip, :id, :order, :parent_id]
+      PUBLIC_VALUES = %W{ options kind infowindow tooltip id order parent_id }
 
       EMPTY_CSS = '#dummy{}'
 
@@ -42,31 +42,17 @@ module Carto
       end
 
       def to_poro
-        poro = public_values(@layer).merge(children_for(@layer))
-        if @viewer_user and poro[:options] and poro[:options]['table_name']
-          # if the table_name already have a schema don't add another one
-          # this case happens when you share a layer already shared with you
-          if poro[:options]['user_name'] != @viewer_user.username and not poro[:options]['table_name'].include?('.')
-            user_name = poro[:options]['user_name']
-            if user_name.include?('-')
-              table_name = "\"#{poro[:options]['user_name']}\".#{poro[:options]['table_name']}"
-            else
-              table_name = "#{poro[:options]['user_name']}.#{poro[:options]['table_name']}"
-            end
-            poro[:options]['table_name'] = table_name
-          end
-        end
-        poro
+        public_values(@layer).merge('options' => layer_options).merge(children_for(@layer))
       end
 
       def to_json
-         public_values(layer).merge(children_for(layer)).to_json
+        public_values(layer).merge(children_for(layer)).to_json
       end
 
       # TODO: Pending refactor, right now just copied
       def to_vizjson_v2
         if base?(@layer)
-          with_kind_as_type(public_values(@layer).merge(children_for(@layer)))
+          with_kind_as_type(public_values(@layer).merge('options' => layer_options).merge(children_for(@layer)))
         elsif torque?(@layer)
           as_torque
         else
@@ -87,7 +73,7 @@ module Carto
 
       # TODO: Pending refactor, right now just copied
       def to_vizjson_v1
-        return public_values(@layer).merge(children_for(@layer)) if base?(@layer)
+        return public_values(@layer).merge('options' => layer_options).merge(children_for(@layer)) if base?(@layer)
         {
           id:         @layer.id,
           parent_id:  @layer.parent_id,
@@ -104,12 +90,12 @@ module Carto
       attr_reader :layer, :options, :configuration
 
       def public_values(layer)
-        Hash[ PUBLIC_VALUES.map { |attribute| [attribute, layer.send(attribute)] } ].merge(options: layer_options)
+        Hash[ PUBLIC_VALUES.map { |attribute| [attribute, layer.send(attribute)] } ]
       end
 
       def children_for(layer, as_hash=true)
         items = layer.children.nil? ? [] : layer.children.map { |child_layer| { id: child_layer.id } }
-        as_hash ? { children: items } : items
+        as_hash ? { 'children' => items } : items
       end
 
       # Decorates the layer presentation with data if needed. nils on the decoration act as removing the field
@@ -147,11 +133,58 @@ module Carto
       end
 
       def layer_options
-        layer_options = @layer.options
+        layer_options = @layer.options.nil? ? Hash.new : @layer.options
+
+        # if the table_name already have a schema don't add another one.
+        # This case happens when you share a layer already shared with you
+        return layer_options if layer_options['table_name'] && layer_options['table_name'].include?('.')
+
         if @owner_user && @viewer_user && @owner_user.id != @viewer_user.id
           layer_options['table_name'] = @layer.qualified_table_name(@owner_user)
+        # TODO: Legacy support: Remove 'user_name' and use always :viewer_user and :user
+        elsif @viewer_user && layer_options['user_name'] && @viewer_user.username != layer_options['user_name'] && 
+              layer_options['table_name']
+            user_name = layer_options['user_name']
+            if user_name.include?('-')
+              table_name = "\"#{layer_options['user_name']}\".#{layer_options['table_name']}"
+            else
+              table_name = "#{layer_options['user_name']}.#{layer_options['table_name']}"
+            end
+            layer_options['table_name'] = table_name
         end
+
         layer_options
+      end
+
+      def options_data_v1
+        return @layer.options if @options[:full]
+        @layer.options.select { |key, value| public_options.include?(key.to_s) }
+      end
+
+      def options_data_v2
+        if @options[:full]
+          full_data = decorate_with_data(@layer.options, @decoration_data)
+          full_data.options
+        else
+          sql = sql_from(@layer.options)
+          data = {
+            sql:                wrap(sql, @layer.options),
+            layer_name:         name_for(@layer),
+            cartocss:           css_from(@layer.options),
+            cartocss_version:   @layer.options.fetch('style_version'),
+            interactivity:      @layer.options.fetch('interactivity')
+          }
+          data = decorate_with_data(data, @decoration_data)
+
+          # TODO: Check this works ok
+          if @viewer_user
+            unless data['user_name'] == @viewer_user.username
+              data['table_name'] = "\"#{data['user_name']}\".#{data['table_name']}"
+            end
+            data['dynamic_cdn'] = @viewer_user.dynamic_cdn_enabled
+          end
+          data
+        end
       end
 
       def with_kind_as_type(attributes)
@@ -215,43 +248,12 @@ module Carto
         throw e
       end
 
-      def options_data_v2
-        if @options[:full]
-          full_data = decorate_with_data(@layer.options, @decoration_data)
-          full_data.options
-        else
-          sql = sql_from(@layer.options)
-          data = {
-            sql:                wrap(sql, @layer.options),
-            layer_name:         name_for(@layer),
-            cartocss:           css_from(@layer.options),
-            cartocss_version:   @layer.options.fetch('style_version'),
-            interactivity:      @layer.options.fetch('interactivity')
-          }
-          data = decorate_with_data(data, @decoration_data)
-
-          # TODO: Check this works ok
-          if @viewer_user
-            unless data['user_name'] == @viewer_user.username
-              data['table_name'] = "\"#{data['user_name']}\".#{data['table_name']}"
-            end
-            data['dynamic_cdn'] = @viewer_user.dynamic_cdn_enabled
-          end
-          data
-        end
-      end
-
       def name_for(layer)
         layer_alias = layer.options.fetch('table_name_alias', nil)
         table_name  = layer.options.fetch('table_name') 
 
         return table_name unless layer_alias && !layer_alias.empty?
         layer_alias
-      end
-
-       def options_data_v1
-        return @layer.options if @options[:full]
-        @layer.options.select { |key, value| public_options.include?(key.to_s) }
       end
 
       def sql_from(options)

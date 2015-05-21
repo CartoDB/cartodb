@@ -3,7 +3,7 @@ module Carto
     class ImportsController < ::Api::ApplicationController
 
       ssl_required :index, :show
-      ssl_allowed :service_token_valid?
+      ssl_allowed :service_token_valid?, :list_files_for_service
 
       def index
         imports = DataImportsService.new.process_recent_user_imports(current_user)

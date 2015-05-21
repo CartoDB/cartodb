@@ -28,9 +28,6 @@ module Carto
         fields template_name template alternative_names width maxHeight
       )
 
-      #TODO: options part needs to be refactored
-      #TODO: Many private methods need also refactoring
-
       def initialize(layer, options={}, configuration={}, decoration_data={})
         @layer            = layer
         @options          = options
@@ -71,9 +68,8 @@ module Carto
         end
       end
 
-      # TODO: Pending refactor, right now just copied
       def to_vizjson_v1
-        return base_poro(@layer) if base?(@layer)
+        return base_poro(@layer).symbolize_keys if base?(@layer)
         {
           id:         @layer.id,
           parent_id:  @layer.parent_id,

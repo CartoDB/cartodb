@@ -62,7 +62,7 @@ module CartoDB
       end
 
       def to_vizjson_v1
-        return layer.public_values.merge(children_for(layer)) if base?(layer)
+        return layer.public_values.merge(children_for(layer)).symbolize_keys if base?(layer)
         {
           id:         layer.id,
           parent_id:  layer.parent_id,

@@ -164,7 +164,7 @@ shared_examples_for "layer presenters" do |tested_klass|
         'children' => []
       }
 
-      presenter_options =  { 
+      presenter_options =  {
           viewer_user: @user_2
         }
 
@@ -174,7 +174,7 @@ shared_examples_for "layer presenters" do |tested_klass|
 
       # Finally, don't change if already has a fully qualified table_name
 
-      layer_2.options = { 
+      layer_2.options = {
             'fake' => 'value',
             'table_name' => "fake.#{table_name}",
             # Old presenter way of sending a viewer
@@ -188,6 +188,80 @@ shared_examples_for "layer presenters" do |tested_klass|
       poro.should == expected_poro
     end
 
-  end
+    it 'Tests to_vizjson_v1()' do
+      layer_parent = Layer.create({
+          kind: 'tiled'
+        })
 
+      layer = Layer.create({
+          kind: 'carto',
+          order: 5,
+          options: { 
+            'fake' => 'value',
+            'table_name' => 'my_test_table',
+            'opt1' => 'val1',
+            },
+          infowindow: { 
+              'template' => nil,
+              'fake2' => 'val2'
+            },
+          tooltip: { 'fake3' => 'val3' },
+          parent_id: layer_parent.id
+        })
+
+      expected_vizjson = {
+        id: layer.id,
+        parent_id: layer.parent_id,
+        children: [],
+        kind: 'CartoDB',
+        order: layer.order,
+        infowindow: {
+          'template' => nil,
+          'fake2' => 'val2'
+        },
+        options: {
+          'opt1' => 'val1'
+        }
+      }
+
+      presenter_options =  {
+      }
+
+      presenter_configuration = {
+        layer_opts: {
+          'public_opts' => {
+            'whatever' => true,
+            'opt1' => true
+          }
+        }
+      }
+
+      vizjson = instance_of_tested_class(layer, presenter_options, presenter_configuration).to_vizjson_v1
+      vizjson.should == expected_vizjson
+
+      # Now full options
+
+      presenter_options = {
+        # Full options
+        full: true
+      }
+
+      expected_vizjson[:options] = {
+        'fake' => 'value',
+        'table_name' => 'my_test_table',
+        'opt1' => 'val1',
+      }
+
+      vizjson = instance_of_tested_class(layer, presenter_options, presenter_configuration).to_vizjson_v1
+      vizjson.should == expected_vizjson
+
+      # Now a base, which should be a poro
+
+      vizjson = instance_of_tested_class(layer_parent).to_vizjson_v1
+      vizjson[:id].should == layer_parent.id
+      vizjson[:kind].should == layer_parent.kind
+
+    end
+
+  end
 end

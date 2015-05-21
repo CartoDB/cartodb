@@ -67,6 +67,7 @@ module Carto
 
     def get_service_files(user, service, filter)
       oauth = user.synchronization_oauths.where(service: service).first
+      raise CartoDB::Datasources::AuthError.new("No oauth set for service #{service}") if oauth.nil?
       datasource = oauth.get_service_datasource
       datasource.get_resources_list(filter)
     rescue => e

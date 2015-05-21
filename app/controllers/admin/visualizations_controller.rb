@@ -3,6 +3,7 @@ require_relative '../../models/map/presenter'
 require_dependency '../../lib/resque/user_jobs'
 require_relative '../carto/admin/user_table_public_map_adapter'
 require_relative '../carto/admin/visualization_public_map_adapter'
+require_relative '../../helpers/embed_redis_cache'
 
 class Admin::VisualizationsController < ApplicationController
 
@@ -16,14 +17,13 @@ class Admin::VisualizationsController < ApplicationController
   ssl_required :index, :show, :protected_embed_map, :protected_public_map, :show_protected_public_map
   before_filter :login_required, only: [:index]
   before_filter :table_and_schema_from_params, only: [:show, :public_table, :public_map, :show_protected_public_map,
-                                                      :show_protected_embed_map]
+                                                      :show_protected_embed_map, :embed_map]
   before_filter :link_ghost_tables, only: [:index]
   before_filter :load_common_data, only: [:index]
 
   before_filter :resolve_visualization_and_table, only: [:show, :public_table, :public_map,
                                                          :show_organization_public_map, :show_organization_embed_map,
-                                                         :show_protected_public_map, :show_protected_embed_map,
-                                                         :embed_map ]
+                                                         :show_protected_public_map, :show_protected_embed_map]
 
   skip_before_filter :browser_is_html5_compliant?, only: [:public_map, :embed_map, :track_embed,
                                                           :show_protected_embed_map, :show_protected_public_map]
@@ -362,31 +362,21 @@ class Admin::VisualizationsController < ApplicationController
   end
 
   def embed_map
-    cached = embed_redis_cache.get()
+    # TODO review the naming confusion about viz and tables, I suspect templates also need review
+    cached = embed_redis_cache.get(@table_id)
 
     if cached
-      #TODO implement
-    else
-      table_and_schema_from_params
-      return(embed_forbidden) if @visualization.private?
-      return(embed_protected) if @visualization.password_protected?
-      return(show_organization_embed_map) if org_user_has_map_permissions?(current_user, @visualization)
-
-      response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
-      response.headers['Surrogate-Key'] = "#{CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES} #{@visualization.surrogate_key}"
-      response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
-
-      # We need to know if visualization logo is visible or not
-      @hide_logo = is_logo_hidden(@visualization, params)
-
-      debugger
-
+      response.headers = cached[:headers]
       respond_to do |format|
-        format.html { render layout: 'application_public_visualization_layout' }
+        format.html { render inline: cached[:body] }
       end
-    rescue => e
-      Rollbar.report_exception(e)
-      embed_forbidden
+    else
+      resp = embed_map_actual
+      if (@visualization.public? || @visualization.public_with_link?)
+        #cache response
+        embed_redis_cache.set(@visualization.id, response.headers, response.body)
+      end
+      resp
     end
   end
 
@@ -588,6 +578,31 @@ class Admin::VisualizationsController < ApplicationController
 
   def sql_api_url(query, user)
     "#{ ApplicationHelper.sql_api_template("public").gsub! '{user}', user.username }#{ Cartodb.config[:sql_api]['public']['endpoint'] }?q=#{ URI::encode query }"
+  end
+
+  def embed_map_actual
+    resolve_visualization_and_table
+    return(embed_forbidden) if @visualization.private?
+    return(embed_protected) if @visualization.password_protected?
+    return(show_organization_embed_map) if org_user_has_map_permissions?(current_user, @visualization)
+
+    response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
+    response.headers['Surrogate-Key'] = "#{CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES} #{@visualization.surrogate_key}"
+    response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
+
+    # We need to know if visualization logo is visible or not
+    @hide_logo = is_logo_hidden(@visualization, params)
+
+    respond_to do |format|
+      format.html { render layout: 'application_public_visualization_layout' }
+    end
+  rescue => e
+    Rollbar.report_exception(e)
+    embed_forbidden
+  end
+
+  def embed_redis_cache
+    @embed_redis_cache ||= EmbedRedisCache.new($tables_metadata)
   end
 
 end

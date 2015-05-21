@@ -14,15 +14,18 @@ class EmbedRedisCache
     key = key(visualization_id)
     value = redis.get(key)
     if value.present?
-      return value
+      return JSON.parse(value, symbolize_names: true)
     else
       return nil
     end
   end
 
   # Only public and public with link
-  def set(visualization_id, embed_string)
-    redis.setex(key(visualization_id), 24.hours.to_i, embed_string)
+  def set(visualization_id, response_headers, response_body)
+    serialized = JSON.generate({headers: response_headers,
+                                body: response_body
+                               })
+    redis.setex(key(visualization_id), 24.hours.to_i, serialized)
   end
 
   def invalidate(visualization_id)
@@ -40,6 +43,4 @@ class EmbedRedisCache
     @redis
   end
 
-end
-  end
 end

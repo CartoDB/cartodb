@@ -23,6 +23,7 @@ git submodule update --init
 
 Bugfixes:
 * Create import view throws uncaught error on canceling selected a file (2nd time) [#3379](https://github.com/CartoDB/cartodb/issues/3379).
+* Removed old tags endpoint (https://github.com/CartoDB/cartodb/issues/3691).
 
 3.10.1 (2015-05-05)
 -------------------

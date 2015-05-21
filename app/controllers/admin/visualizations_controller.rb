@@ -375,7 +375,6 @@ class Admin::VisualizationsController < ApplicationController
 
     respond_to do |format|
       format.html { render layout: 'application_public_visualization_layout' }
-      format.js { render 'embed_map', content_type: 'application/javascript' }
     end
   rescue => e
     Rollbar.report_exception(e)

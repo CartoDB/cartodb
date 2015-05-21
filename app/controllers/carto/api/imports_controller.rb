@@ -28,8 +28,11 @@ module Carto
       def service_token_valid?
         valid = DataImportsService.new.validate_synchronization_oauth(logged_user, params[:id])
         render_jsonp({ oauth_valid: valid, success: true })
+      rescue CartoDB::Datasources::TokenExpiredOrInvalidError => e
+        CartoDB.notify_exception(e, { user: logged_user, params: params })
+        render_jsonp({ errors: e.message }, 401)
       rescue => e
-        CartoDB.notify_exception(e)
+        CartoDB.notify_exception(e, { user: logged_user, params: params })
         render_jsonp({ errors: e.message }, 400)
       end
 
@@ -37,9 +40,12 @@ module Carto
         filter = params[:filter].present? ? params[:filter] : []
         results = DataImportsService.new.get_service_files(logged_user, params[:id], filter)
         render_jsonp({ files: results, success: true })
-      rescue => ex
-        CartoDB::notify_exception(ex, { user: logged_user, params: params })
-        render_jsonp({ errors: { imports: ex.message } }, 400)
+      rescue CartoDB::Datasources::TokenExpiredOrInvalidError => e
+        CartoDB.notify_exception(e, { user: logged_user, params: params })
+        render_jsonp({ errors: e.message }, 401)
+      rescue => e
+        CartoDB.notify_exception(e, { user: logged_user, params: params })
+        render_jsonp({ errors: { imports: e.message } }, 400)
       end
 
       private

@@ -51,25 +51,42 @@ module Carto
       begin
         valid = datasource.token_valid?
       rescue => e
-        CartoDB.notify_exception(e, { message: 'Error while validating oauth token, will be deleted', user: self, oauth: oauth })
+        handle_datasource_exception(user, e, oauth)
         valid = false
       end
 
       unless valid
-        Rollbar.report_message('validate_oauth: delete', 'debug', { oauth: oauth })
-        user.synchronization_oauths.delete(oauth)
+        delete_oauth(user, oauth)
       end
 
       valid
+    rescue => e
+      handle_datasource_exception(user, e, oauth)
     end
 
     def get_service_files(user, service, filter)
       oauth = user.synchronization_oauths.where(service: service).first
       datasource = oauth.get_service_datasource
       datasource.get_resources_list(filter)
+    rescue => e
+      handle_datasource_exception(user, e, oauth)
     end
 
     private
+
+    def delete_oauth(user, oauth)
+      Rollbar.report_message('validate_oauth: delete', 'debug', { oauth: oauth })
+      user.synchronization_oauths.delete(oauth)
+    end
+
+    def handle_datasource_exception(user, e, oauth = nil)
+      CartoDB.notify_exception(e, { message: 'Error while processing datasource', user: user, oauth: oauth })
+      if e.kind_of? CartoDB::Datasources::TokenExpiredOrInvalidError
+        delete_oauth(user, oauth)
+      end
+
+      raise e
+    end
 
     def stuck?(import)
       # TODO: this kind of method is in the service because it requires communication with external systems (resque). Anyway, should some logic (state check, for example) be inside the model?

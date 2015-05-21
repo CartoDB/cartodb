@@ -3,7 +3,7 @@ module Carto
     class ImportsController < ::Api::ApplicationController
 
       ssl_required :index, :show
-      ssl_allowed :service_token_valid?, :list_files_for_service, :get_service_auth_url
+      ssl_allowed :service_token_valid?, :list_files_for_service, :get_service_auth_url, :validate_service_oauth_code
 
       def index
         imports = DataImportsService.new.process_recent_user_imports(current_user)
@@ -51,6 +51,17 @@ module Carto
       def get_service_auth_url
         auth_url = DataImportsService.new.get_service_auth_url(logged_user, params[:id])
         render_jsonp({ url: auth_url, success: true})
+      rescue CartoDB::Datasources::TokenExpiredOrInvalidError => e
+        CartoDB.notify_exception(e, { user: logged_user, params: params })
+        render_jsonp({ errors: e.message }, 401)
+      rescue => e
+        CartoDB.notify_exception(e, { user: logged_user, params: params })
+        render_jsonp({ errors: { imports: e.message } }, 400)
+      end
+
+      def validate_service_oauth_code
+        success = DataImportsService.new.validate_service_oauth_code(logged_user, params[:id], params[:code])
+        render_jsonp({ success: success })
       rescue CartoDB::Datasources::TokenExpiredOrInvalidError => e
         CartoDB.notify_exception(e, { user: logged_user, params: params })
         render_jsonp({ errors: e.message }, 401)

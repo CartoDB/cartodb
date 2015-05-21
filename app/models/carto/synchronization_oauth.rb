@@ -7,6 +7,7 @@ module Carto
 
     belongs_to :user
 
+    # TODO: partial duplication with DataImportsService (this one hasn't redis_storage)
     def get_service_datasource
       datasource = CartoDB::Datasources::DatasourcesFactory.get_datasource(service, user, {
         http_timeout: ::DataImport.http_timeout_for(user)

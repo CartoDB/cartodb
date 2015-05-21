@@ -148,6 +148,17 @@ class Carto::User < ActiveRecord::Base
     default.first[1]
   end
 
+  def oauth_for_service(service)
+    synchronization_oauths.where(service: service).first
+  end
+
+  def add_oauth(service, token)
+    synchronization_oauths.create(
+        service:  service,
+        token:    token
+    )
+  end
+
   private
 
 end

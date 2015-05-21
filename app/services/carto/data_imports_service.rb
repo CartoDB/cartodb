@@ -44,7 +44,7 @@ module Carto
       # TODO: remove this debug trace
       Rollbar.report_message('validate_oauth', 'debug')
 
-      oauth = user.synchronization_oauths.where(service: service).first
+      oauth = user.oauth_for_service(service)
       return false unless oauth
 
       datasource = oauth.get_service_datasource
@@ -52,7 +52,7 @@ module Carto
       begin
         valid = datasource.token_valid?
       rescue => e
-        handle_datasource_exception(user, e, oauth)
+        delete_oauth_if_expired_and_raise(user, e, oauth)
         valid = false
       end
 
@@ -62,37 +62,59 @@ module Carto
 
       valid
     rescue => e
-      handle_datasource_exception(user, e, oauth)
+      delete_oauth_if_expired_and_raise(user, e, oauth)
     end
 
     def get_service_files(user, service, filter)
-      oauth = user.synchronization_oauths.where(service: service).first
+      oauth = user.oauth_for_service(service)
       raise CartoDB::Datasources::AuthError.new("No oauth set for service #{service}") if oauth.nil?
       datasource = oauth.get_service_datasource
       datasource.get_resources_list(filter)
     rescue => e
-      handle_datasource_exception(user, e, oauth)
+      delete_oauth_if_expired_and_raise(user, e, oauth)
     end
 
     def get_service_auth_url(user, service)
-      oauth = user.synchronization_oauths.where(service: service).first
+      oauth = user.oauth_for_service(service)
       raise CartoDB::Datasources::AuthError.new("OAuth already set for service #{service}") if oauth
 
+      get_datasource(user, service).get_auth_url
+    end
+
+    def validate_service_oauth_code(user, service, code)
+      oauth = user.oauth_for_service(service)
+      raise CartoDB::Datasources::AuthError.new("OAuth already set for service #{service}") if oauth
+
+      datasource = get_datasource(user, service)
+      begin
+        auth_token = datasource.validate_auth_code(code)
+        user.add_oauth(service, auth_token)
+        return true
+      rescue CartoDB::Datasources::AuthError => e
+        CartoDB.notify_exception(e, { message: "Error while validating code #{code}, it won't be stored", user: user, service: service })
+        return false
+      end
+    rescue => e
+      delete_oauth_if_expired_and_raise(user, e, oauth)
+    end
+
+    private
+
+    def get_datasource(user, service)
       datasource = CartoDB::Datasources::DatasourcesFactory.get_datasource(service, user, {
         redis_storage: @tables_metadata,
         http_timeout: ::DataImport.http_timeout_for(user)
       })
-      datasource.get_auth_url
+      raise CartoDB::Datasources::AuthError.new("Couldn't fetch datasource for service #{service}") if datasource.nil?
+      datasource
     end
-
-    private
 
     def delete_oauth(user, oauth)
       Rollbar.report_message('validate_oauth: delete', 'debug', { oauth: oauth })
       user.synchronization_oauths.delete(oauth)
     end
 
-    def handle_datasource_exception(user, e, oauth = nil)
+    def delete_oauth_if_expired_and_raise(user, e, oauth = nil)
       CartoDB.notify_exception(e, { message: 'Error while processing datasource', user: user, oauth: oauth })
       if e.kind_of?(CartoDB::Datasources::TokenExpiredOrInvalidError) && oauth
         delete_oauth(user, oauth)

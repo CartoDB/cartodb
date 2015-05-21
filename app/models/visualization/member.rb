@@ -316,7 +316,7 @@ module CartoDB
       end #privacy=
 
       def tags=(tags)
-        tags.reject!(&:blank?)
+        tags.reject!(&:blank?) if tags
         super(tags)
       end
 

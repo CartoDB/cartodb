@@ -1,4 +1,3 @@
-
 describe('cdb.geo.Tooltip', function() {
 
   var tooltip, layer, container, mapView;
@@ -45,7 +44,25 @@ describe('cdb.geo.Tooltip', function() {
       huracan: 'hurecan'
     });
     expect(tooltip.$el.html()).not.toEqual('test2,test1,huracan,');
+  });
 
+  it ("should show the tooltip on mouseover if model has fields", function() {
+    tooltip.setFields([{ name: 'test2' }]);
+    tooltip.enable();
+    layer.trigger('mouseover', new $.Event('e'), [0, 0], [0, 0], {
+      test2: 'test2'
+    });
+
+    expect(tooltip.showing).toBeTruthy();
+  });
+
+  it ("should not show the tooltip on mouseover if model has no fields", function() {
+    tooltip.setFields([]);
+    tooltip.enable();
+
+    layer.trigger('mouseover', new $.Event('e'), [0,0], [0, 0], { });
+
+    expect(tooltip.showing).toBeFalsy();
   });
 
   it ("should use alternate_names ", function() {

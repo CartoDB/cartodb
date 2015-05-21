@@ -2321,7 +2321,7 @@ TRIGGER
     redis_http_keys  = vizs.map{ |v| redis_vizjson_cache.key(v.id, https_flag=false) }
     redis_https_keys = vizs.map{ |v| redis_vizjson_cache.key(v.id, https_flag=true) }
     redis_keys = redis_http_keys + redis_https_keys
-    $tables_metadata.del redis_keys unless redis_keys.empty?
+    redis_cache.del redis_keys unless redis_keys.empty?
   end
 
   # returns google maps api key. If the user is in an organization and 
@@ -2366,6 +2366,10 @@ TRIGGER
   end
 
   private
+
+  def redis_cache
+    $tables_metadata
+  end
 
   # INFO: assigning to owner is necessary because of payment reasons
   def assign_search_tweets_to_organization_owner

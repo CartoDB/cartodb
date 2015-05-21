@@ -33,6 +33,15 @@ module Carto
         render_jsonp({ errors: e.message }, 400)
       end
 
+      def list_files_for_service
+        filter = params[:filter].present? ? params[:filter] : []
+        results = logged_user.get_service_files(params[:id], filter)
+        render_jsonp({ files: results, success: true })
+      rescue => ex
+        CartoDB::notify_exception(ex, { user: logged_user, params: params })
+        render_jsonp({ errors: { imports: ex.message } }, 400)
+      end
+
       private
 
       # TODO: this should be moved upwards in the controller hierarchy, and make it a replacement for current_user

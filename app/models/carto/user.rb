@@ -172,6 +172,12 @@ class Carto::User < ActiveRecord::Base
     valid
   end
 
+  def get_service_files(service, filter)
+    oauth = synchronization_oauths.where(service: service).first
+    datasource = oauth.get_service_datasource
+    datasource.get_resources_list(filter)
+  end
+
   private
 
 end

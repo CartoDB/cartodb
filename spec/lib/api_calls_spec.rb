@@ -32,6 +32,13 @@ describe CartoDB::Stats::APICalls do
       end
       @api_calls.get_api_calls_with_dates('wadus').should == expected_total_calls
     end
+    
+    it "should sum correctly api calls from all redis sources and return absolute value" do
+      api_calls_value = 3
+      @api_calls.stubs(:get_total_api_calls_from_redis_source).returns(api_calls_value)
+      expected_total_calls = @redis_sources_count * api_calls_value
+      @api_calls.get_total_api_calls('wadus', '123456').should == expected_total_calls
+    end
 
     it "should sum correctly api calls with custom dates from all redis sources and return hash with dates" do
       pending "Find a way to stub only redis call"

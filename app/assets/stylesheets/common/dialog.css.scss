@@ -38,6 +38,9 @@ body.is-inDialog {
   /* "forwards" to keep the last keyframe's styles after animation ended */
   @include animation(fade-and-scale-out 80ms ease-in forwards);
 }
+.Dialog.is-sticky .Dialog-closeBtn {
+  display: none;
+}
 .Dialog-closeBtn {
   position: fixed;
   top: $sMargin-section;
@@ -150,6 +153,14 @@ body.is-inDialog {
   line-height: $sLineHeight-large;
   font-weight: $sFontWeight-lighter;
   color: $cTypography-paragraphs;
+}
+.Dialog-headerText.Dialog-headerText--centered {
+  margin: auto;
+}
+.Dialog-headerText.Dialog-headerText--ellipsis {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 .Dialog-footerBtn {
   margin-right: $sMargin-element;

@@ -44,7 +44,9 @@ class Carto::Visualization < ActiveRecord::Base
   belongs_to :map
 
   def size
-    table.size
+    # Only canonical visualizations (Datasets) have a related table and then count against disk quota,
+    # but we want to not break and even allow ordering by size multiple types
+    table ? table.size : 0
   end
 
   def tags
@@ -202,6 +204,10 @@ class Carto::Visualization < ActiveRecord::Base
 
   def mapviews
     @mapviews ||= CartoDB::Visualization::Stats.mapviews(stats)
+  end
+  
+  def total_mapviews(user=nil)
+    @total_mapviews ||= CartoDB::Visualization::Stats.new(self, user).total_mapviews
   end
 
   def geometry_types

@@ -1,5 +1,10 @@
 
-3.10.2 ()
+3.10.3 (2015-mm-dd)
+---
+Bugfixes:
+* Fixed deletion of layers upon disconnecting synced datasources [#3718](https://github.com/CartoDB/cartodb/pull/3718)
+
+3.10.2 (2015-05-20)
 ---------
 * Ongoing backend refactor and migration from Sequel to ActiveRecord.
 * Frontend assets cleaning [PR 3563](https://github.com/CartoDB/cartodb/pull/3563).

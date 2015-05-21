@@ -6,6 +6,7 @@ describe Carto::VisualizationQueryBuilder do
   include Rack::Test::Methods
   include Warden::Test::Helpers
   include_context 'visualization creation helpers'
+  include_context 'users helper'
 
   before(:each) do
     @vqb = Carto::VisualizationQueryBuilder.new

@@ -205,29 +205,6 @@ describe Admin::VisualizationsController do
       last_response.headers["Surrogate-Key"].should include(table.table_visualization.surrogate_key)
     end
 
-    it 'renders embed_map.js' do
-      table             = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC)
-      id                = table.table_visualization.id
-      payload           = { source_visualization_id: id }
-
-      post "/api/v1/viz?api_key=#{@api_key}", 
-        payload.to_json, @headers
-      last_response.status.should == 200
-
-      derived_visualization = JSON.parse(last_response.body)
-      id = derived_visualization.fetch('id')
-
-      login_as(@user, scope: 'test')
-
-      get "/viz/#{id}/embed_map.js", {}, @headers
-      last_response.status.should == 200
-      last_response.headers["X-Cache-Channel"].should_not be_empty
-      last_response.headers["X-Cache-Channel"].should include(table.name)
-      last_response.headers["Surrogate-Key"].should_not be_empty
-      last_response.headers["Surrogate-Key"].should include(CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES)
-      last_response.headers["Surrogate-Key"].should include(get_surrogate_key(CartoDB::SURROGATE_NAMESPACE_VISUALIZATION, id))
-    end
-
     it 'renders embed map error page if visualization private' do
       table = table_factory
       put "/api/v1/tables/#{table.id}?api_key=#{@api_key}",

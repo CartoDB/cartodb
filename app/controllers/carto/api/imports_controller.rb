@@ -26,12 +26,7 @@ module Carto
       end
 
       def service_token_valid?
-        oauth = logged_user.get_synchronization_oauth(params[:id])
-
-        return render_jsonp({ oauth_valid: false, success: true }) if oauth.nil?
-
-        valid = logged_user.validate_oauth(oauth)
-
+        valid = logged_user.validate_synchronization_oauth(params[:id])
         render_jsonp({ oauth_valid: valid, success: true })
       rescue => e
         CartoDB.notify_exception(e)

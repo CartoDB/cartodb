@@ -148,17 +148,19 @@ class Carto::User < ActiveRecord::Base
     default.first[1]
   end
 
-  def get_synchronization_oauth(service)
-    synchronization_oauths.where(service: service).first
-  end
-
-  def validate_oauth(oauth)
+  def validate_synchronization_oauth(service)
+    # TODO: remove this debug trace
     Rollbar.report_message('validate_oauth', 'debug')
+
+    oauth = synchronization_oauths.where(service: service).first
+    return false unless oauth
+
     datasource = oauth.get_service_datasource
+
     begin
       valid = datasource.token_valid?
     rescue => e
-      CartoDB.notify_exception(e, { user: self, oauth: oauth })
+      CartoDB.notify_exception(e, { message: 'Error while validating oauth token, will be deleted', user: self, oauth: oauth })
       valid = false
     end
 
@@ -171,6 +173,5 @@ class Carto::User < ActiveRecord::Base
   end
 
   private
-
 
 end

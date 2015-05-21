@@ -17,7 +17,8 @@ module CartoDB
   def self.notify_exception(e, extra={})
     user = extra.delete(:user)
     request = extra.delete(:request)
-    ::Logger.new(STDOUT).error (e.message + "\n " + e.backtrace.join("\n ")) if Rails.env.development? || Rails.env.test?
+    backtrace = e.backtrace ? e.backtrace : ['']
+    ::Logger.new(STDOUT).error (e.message + "\n " + backtrace.join("\n ")) if Rails.env.development? || Rails.env.test?
     Rollbar.report_exception(e, request, user)
   rescue
     # If Rollbar fails, bubble up the exception

@@ -25,6 +25,8 @@ class Admin::VisualizationsController < ApplicationController
                                                          :show_organization_public_map, :show_organization_embed_map,
                                                          :show_protected_public_map, :show_protected_embed_map]
 
+  before_filter :resolve_visualization_and_table_if_not_cached, only: [:embed_map]
+
   skip_before_filter :browser_is_html5_compliant?, only: [:public_map, :embed_map, :track_embed,
                                                           :show_protected_embed_map, :show_protected_public_map]
   skip_before_filter :verify_authenticity_token, only: [:show_protected_public_map, :show_protected_embed_map]
@@ -362,17 +364,14 @@ class Admin::VisualizationsController < ApplicationController
   end
 
   def embed_map
-    # TODO review the naming confusion about viz and tables, I suspect templates also need review
-    cached = embed_redis_cache.get(@table_id)
-
-    if cached
-      response.headers = cached[:headers]
+    if @cached
+      response.headers = @cached[:headers]
       respond_to do |format|
-        format.html { render inline: cached[:body] }
+        format.html { render inline: @cached[:body] }
       end
     else
       resp = embed_map_actual
-      if (@visualization.public? || @visualization.public_with_link?)
+      if response.ok? && (@visualization.public? || @visualization.public_with_link?)
         #cache response
         embed_redis_cache.set(@visualization.id, response.headers, response.body)
       end
@@ -443,6 +442,14 @@ class Admin::VisualizationsController < ApplicationController
       @more_visualizations = more_visualizations(@visualization.user, @visualization)
     end
     render_pretty_404 if disallowed_type?(@visualization)
+  end
+
+  def resolve_visualization_and_table_if_not_cached
+    # TODO review the naming confusion about viz and tables, I suspect templates also need review
+    @cached = embed_redis_cache.get(@table_id)
+    if !@cached
+      resolve_visualization_and_table
+    end
   end
 
   # If user A shares to user B a table link (being both from same org), attept to rewrite the url to the correct format
@@ -581,7 +588,6 @@ class Admin::VisualizationsController < ApplicationController
   end
 
   def embed_map_actual
-    resolve_visualization_and_table
     return(embed_forbidden) if @visualization.private?
     return(embed_protected) if @visualization.password_protected?
     return(show_organization_embed_map) if org_user_has_map_permissions?(current_user, @visualization)

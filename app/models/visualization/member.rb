@@ -11,6 +11,7 @@ require_relative './like'
 require_relative '../table/privacy_manager'
 require_relative '../../../services/minimal-validation/validator'
 require_relative '../../../services/named-maps-api-wrapper/lib/named_maps_wrapper'
+require_relative './redis_vizjson_cache'
 
 # Every table has always at least one visualization (the "canonical visualization"), of type 'table',
 # which shares the same privacy options as the table and gets synced.
@@ -95,6 +96,7 @@ module CartoDB
         self.permission_change_valid = true   # Changes upon set of different permission_id
         # this flag is passed to the table in case of canonical visualizations. It's used to say to the table to not touch the database and only change the metadata information, useful for ghost tables
         self.register_table_only = false
+        @redis_vizjson_cache = RedisVizjsonCache.new($tables_metadata)
       end
 
       def self.remote_member(name, user_id, privacy, description, tags, license, source)
@@ -344,13 +346,9 @@ module CartoDB
         options.delete(:public_fields_only) === true ? presenter.to_public_poro : presenter.to_poro
       end
 
-      def redis_vizjson_key(https_flag=false)
-        "visualization:#{id}:vizjson:#{https_flag ? 'https' : 'http'}"
-      end
 
       def to_vizjson(options={})
-        key = redis_vizjson_key(options.fetch(:https_request, false))
-        redis_cached(key) do
+        @redis_vizjson_cache.cached(id, options.fetch(:https_request, false)) do
           calculate_vizjson(options)
         end
       end
@@ -608,13 +606,9 @@ module CartoDB
       attr_accessor :register_table_only
 
       def invalidate_redis_cache
-        self.class.redis_cache.del(redis_vizjson_key)
-        self.class.redis_cache.del(redis_vizjson_key(true))
+        @redis_vizjson_cache.invalidate(id)
       end
 
-      def self.redis_cache
-        @@redis_cache ||= $tables_metadata
-      end
 
 
       private
@@ -632,18 +626,6 @@ module CartoDB
           dynamic_cdn_enabled: user != nil ? user.dynamic_cdn_enabled: false
         }.merge(options)
         VizJSON.new(self, vizjson_options, configuration).to_poro
-      end
-
-      def redis_cached(key)
-        value = self.class.redis_cache.get(key)
-        if value.present?
-          return JSON.parse(value, symbolize_names: true)
-        else
-          result = yield
-          serialized = JSON.generate(result)
-          self.class.redis_cache.setex(key, 24.hours.to_i, serialized)
-          return result
-        end
       end
 
       def invalidate_varnish_cache

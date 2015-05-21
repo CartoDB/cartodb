@@ -171,8 +171,8 @@ shared_examples_for "imports controllers" do
       get api_v1_imports_service_token_valid_url(id: 'kk'), params
       response.code.should == '200'
       response_json = JSON.parse(response.body)
-      response_json[:oauth_valid] == false
-      response_json[:success] == true
+      response_json['oauth_valid'].should == false
+      response_json['success'].should == true
     end
 
     it 'returns 400 for known service token without known service datasource' do
@@ -196,10 +196,43 @@ shared_examples_for "imports controllers" do
       get api_v1_imports_service_token_valid_url(id: synchronization_oauth.service), params
       response.code.should == '200'
       response_json = JSON.parse(response.body)
-      response_json[:oauth_valid] == false
-      response_json[:success] == true
+      response_json['oauth_valid'].should == false
+      response_json['success'].should == true
 
       SynchronizationOauth.where(id: synchronization_oauth.id).first.should eq nil
+    end
+
+  end
+
+  describe 'list_files_for_service' do
+
+    def fake_item_data(datasource_name = 'fake_datasource')
+      id = rand(1000)
+      {
+        id:       id,
+        title:    "title_#{id}",
+        filename: "filename_#{id}",
+        service:  datasource_name,
+        checksum: id,
+        size:     rand(50)
+      }
+    end
+
+    def fake_resource_list(datasource_name = 'fake_datasource')
+      [ fake_item_data(datasource_name), fake_item_data(datasource_name) ]
+    end
+
+    it 'returns datasource resources list for known, valid tokens' do
+      service = 'mailchimp'
+      fake_files = fake_resource_list(service)
+      CartoDB::Datasources::Url::MailChimp.any_instance.stubs(:get_resources_list).returns(fake_files)
+      synchronization_oauth = Carto::SynchronizationOauth.new(user_id: @user.id, service: service, token: 'kk-t')
+      synchronization_oauth.save
+      get api_v1_imports_service_list_files_url(id: service), params
+      response.code.should == '200'
+      response_json = JSON.parse(response.body)
+      response_json['success'].should == true
+      response_json['files'].map(&:symbolize_keys).should == fake_files
     end
 
   end

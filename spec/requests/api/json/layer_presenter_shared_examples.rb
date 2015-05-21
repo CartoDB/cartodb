@@ -255,11 +255,24 @@ shared_examples_for "layer presenters" do |tested_klass|
       vizjson = instance_of_tested_class(layer, presenter_options, presenter_configuration).to_vizjson_v1
       vizjson.should == expected_vizjson
 
-      # Now a base, which should be a poro
+      # Now a base layer, which should be a poro with symbolized keys
 
       vizjson = instance_of_tested_class(layer_parent).to_vizjson_v1
       vizjson[:id].should == layer_parent.id
       vizjson[:kind].should == layer_parent.kind
+    end
+
+    it 'Tests to_vizjson_v2()' do
+      layer_parent = Layer.create({
+          kind: 'tiled'
+        })
+
+      # Base, which should be a poro but with symbols
+
+      vizjson = instance_of_tested_class(layer_parent).to_vizjson_v2
+      vizjson[:id].should == layer_parent.id
+      vizjson[:kind].should == nil
+      vizjson[:type].should == layer_parent.kind
 
     end
 

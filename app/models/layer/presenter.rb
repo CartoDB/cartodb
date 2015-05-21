@@ -36,7 +36,7 @@ module CartoDB
 
       def to_vizjson_v2
         if base?(layer)
-          with_kind_as_type(layer.public_values.merge(children_for(layer)))
+          with_kind_as_type(layer.public_values.merge(children_for(layer))).symbolize_keys
         elsif torque?(layer)
           as_torque
         else

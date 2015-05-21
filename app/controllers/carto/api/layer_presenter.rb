@@ -49,7 +49,7 @@ module Carto
       # TODO: Pending refactor, right now just copied
       def to_vizjson_v2
         if base?(@layer)
-          with_kind_as_type(base_poro(@layer))
+          with_kind_as_type(base_poro(@layer)).symbolize_keys
         elsif torque?(@layer)
           as_torque
         else

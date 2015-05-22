@@ -121,7 +121,10 @@ module Carto
 
     def delete_oauth(user, oauth)
       Rollbar.report_message('validate_oauth: delete', 'debug', { oauth: oauth })
-      user.synchronization_oauths.delete(oauth)
+      # INFO: this is the straightforward way, but sometimes it fails with "ActiveRecord::StatementInvalid: PG::Error: ERROR:  prepared statement "a1" does not exist" errors
+      # user.synchronization_oauths.delete(oauth)
+      oauth.destroy
+      user.reload
     end
 
     def delete_oauth_if_expired_and_raise(user, e, oauth = nil)

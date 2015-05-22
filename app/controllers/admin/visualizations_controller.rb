@@ -3,6 +3,7 @@ require_relative '../../models/map/presenter'
 require_dependency '../../lib/resque/user_jobs'
 require_relative '../carto/admin/user_table_public_map_adapter'
 require_relative '../carto/admin/visualization_public_map_adapter'
+require_relative '../../helpers/embed_redis_cache'
 
 class Admin::VisualizationsController < ApplicationController
 
@@ -22,8 +23,9 @@ class Admin::VisualizationsController < ApplicationController
 
   before_filter :resolve_visualization_and_table, only: [:show, :public_table, :public_map,
                                                          :show_organization_public_map, :show_organization_embed_map,
-                                                         :show_protected_public_map, :show_protected_embed_map,
-                                                         :embed_map ]
+                                                         :show_protected_public_map, :show_protected_embed_map]
+
+  before_filter :resolve_visualization_and_table_if_not_cached, only: [:embed_map]
 
   skip_before_filter :browser_is_html5_compliant?, only: [:public_map, :embed_map, :track_embed,
                                                           :show_protected_embed_map, :show_protected_public_map]
@@ -362,24 +364,24 @@ class Admin::VisualizationsController < ApplicationController
   end
 
   def embed_map
-    return(embed_forbidden) if @visualization.private?
-    return(embed_protected) if @visualization.password_protected?
-    return(show_organization_embed_map) if org_user_has_map_permissions?(current_user, @visualization)
-
-    response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
-    response.headers['Surrogate-Key'] = "#{CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES} #{@visualization.surrogate_key}"
-    response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
-
-    # We need to know if visualization logo is visible or not
-    @hide_logo = is_logo_hidden(@visualization, params)
-
-    respond_to do |format|
-      format.html { render layout: 'application_public_visualization_layout' }
-      format.js { render 'embed_map', content_type: 'application/javascript' }
+    if request.format == 'text/javascript'
+      error_message = "/* Javascript embeds  are deprecated, please use the html iframe instead */"
+      return render inline: error_message, status: 400
     end
-  rescue => e
-    Rollbar.report_exception(e)
-    embed_forbidden
+
+    if @cached_embed
+      response.headers.merge! @cached_embed[:headers].stringify_keys
+      respond_to do |format|
+        format.html { render inline: @cached_embed[:body] }
+      end
+    else
+      resp = embed_map_actual
+      if response.ok? && (@visualization.public? || @visualization.public_with_link?)
+        #cache response
+        embed_redis_cache.set(@visualization.id, response.headers, response.body)
+      end
+      resp
+    end
   end
 
   # Renders input password view
@@ -445,6 +447,14 @@ class Admin::VisualizationsController < ApplicationController
       @more_visualizations = more_visualizations(@visualization.user, @visualization)
     end
     render_pretty_404 if disallowed_type?(@visualization)
+  end
+
+  def resolve_visualization_and_table_if_not_cached
+    # TODO review the naming confusion about viz and tables, I suspect templates also need review
+    @cached_embed = embed_redis_cache.get(@table_id)
+    if !@cached_embed
+      resolve_visualization_and_table
+    end
   end
 
   # If user A shares to user B a table link (being both from same org), attept to rewrite the url to the correct format
@@ -580,6 +590,30 @@ class Admin::VisualizationsController < ApplicationController
 
   def sql_api_url(query, user)
     "#{ ApplicationHelper.sql_api_template("public").gsub! '{user}', user.username }#{ Cartodb.config[:sql_api]['public']['endpoint'] }?q=#{ URI::encode query }"
+  end
+
+  def embed_map_actual
+    return(embed_forbidden) if @visualization.private?
+    return(embed_protected) if @visualization.password_protected?
+    return(show_organization_embed_map) if org_user_has_map_permissions?(current_user, @visualization)
+
+    response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
+    response.headers['Surrogate-Key'] = "#{CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES} #{@visualization.surrogate_key}"
+    response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
+
+    # We need to know if visualization logo is visible or not
+    @hide_logo = is_logo_hidden(@visualization, params)
+
+    respond_to do |format|
+      format.html { render layout: 'application_public_visualization_layout' }
+    end
+  rescue => e
+    Rollbar.report_exception(e)
+    embed_forbidden
+  end
+
+  def embed_redis_cache
+    @embed_redis_cache ||= EmbedRedisCache.new($tables_metadata)
   end
 
 end

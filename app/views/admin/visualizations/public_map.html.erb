@@ -214,7 +214,9 @@
 
 <%= content_for(:js) do %>
   <% if @visualization.map.provider == 'googlemaps' %>
-    <script type="text/javascript" src="//maps.googleapis.com/maps/api/js?sensor=false&v=3.12<%= "&client=#{@google_maps_api_key}" if !@google_maps_api_key.blank? %>"></script>
+    <script type="text/javascript"
+        src="//maps.googleapis.com/maps/api/js?sensor=false&v=3.12&<%= @google_maps_api_key %>">
+    </script>
   <% end %>
 
   <script>

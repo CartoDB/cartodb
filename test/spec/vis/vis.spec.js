@@ -37,7 +37,6 @@ describe("Vis", function() {
 
     this.vis = new cdb.vis.Vis({el: this.container});
     this.vis.load(this.mapConfig);
-
   })
 
   it("should insert  default max and minZoom values when not provided", function() {
@@ -406,8 +405,6 @@ describe("Vis", function() {
   });
 
   it ("should load modules", function(done) {
-    // var self = this;
-    console.log(this.vis);
     this.mapConfig.layers = [
       {kind: 'torque', options: { tile_style: 'test', user_name: 'test', table_name: 'test'}}
     ];
@@ -446,4 +443,94 @@ describe("Vis", function() {
     expect(this.vis.map.layers.at(0).get('type')).toEqual('GMapsBase');
   });
 
+  describe("Legends", function() {
+
+    it('should only display legends for visible layers', function() {
+      this.mapConfig.layers = [
+        {
+          kind: 'tiled',
+          legend: {
+            type: "custom",
+            show_title: false,
+            title: "",
+            template: "",
+            items: [
+              {
+                name: "visible legend item",
+                visible: true,
+                value: "#cccccc",
+                sync: true
+              }
+            ]
+          },
+          options: {
+            urlTemplate: 'https://dnv9my2eseobd.cloudfront.net/v3/{z}/{x}/{y}.png'
+          }
+        },
+        {
+          visible: false,
+          kind: 'tiled',
+          legend: {
+            type: "custom",
+            show_title: false,
+            title: "",
+            template: "",
+            items: [
+              {
+                name: "invisible legend item",
+                visible: true,
+                value: "#cccccc",
+                sync: true
+              }
+            ]
+          },
+          options: {
+            urlTemplate: 'https://dnv9my2eseobd.cloudfront.net/v3/{z}/{x}/{y}.png'
+          }
+        }
+      ]
+      this.vis.load(this.mapConfig);
+
+      expect(this.vis.legends.$('.cartodb-legend').length).toEqual(1);
+      expect(this.vis.legends.$el.html()).toContain('visible legend item');
+      expect(this.vis.legends.$el.html()).not.toContain('invisible legend item');
+    })
+  })
+
+  describe("Torque time slider", function() {
+
+    beforeEach(function() {
+      // Load torque module
+      cartodb.torque = torque;
+    })
+
+    it ("should display the time slider if a torque layer is present", function(done) {
+      this.mapConfig.layers = [
+        {
+          kind: 'torque',
+          options: { user_name: 'test', table_name: 'test', tile_style: 'Map { -torque-frame-count: 10;} #test { marker-width: 10; }'}
+        }
+      ];
+
+      this.vis.load(this.mapConfig).done(function(vis, layers){
+        expect(vis.timeSlider).toBeDefined();
+        done();
+      });
+    });
+
+    it ("should NOT display the time slider if a torque layer is not visible", function(done) {
+      this.mapConfig.layers = [
+        {
+          kind: 'torque',
+          visible: false,
+          options: { user_name: 'test', table_name: 'test', tile_style: 'Map { -torque-frame-count: 10;} #test { marker-width: 10; }'}
+        }
+      ];
+
+      this.vis.load(this.mapConfig).done(function(vis, layers){
+        expect(vis.timeSlider).toBeUndefined();
+        done();
+      });
+    });
+  })
 });

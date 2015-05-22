@@ -365,7 +365,7 @@ class Admin::VisualizationsController < ApplicationController
 
   def embed_map
     if @cached
-      response.headers = @cached[:headers]
+      response.headers.merge! @cached[:headers].stringify_keys
       respond_to do |format|
         format.html { render inline: @cached[:body] }
       end

@@ -127,12 +127,12 @@
             <div class="Form-rowInfo">
               <% if !current_user.organization.present? %>
                 <p class="Form-rowInfoText Form-rowInfoText--multipleLines">
-                  This is your Google Maps API key,
+                  This is your Google Maps query string,
                   contact with <a href="mailto:support@cartodb.com">support@cartodb.com</a> to change it.
                 </p>
               <% elsif current_user.organization.present? && current_user.organization_owner? %>
                 <p class="Form-rowInfoText Form-rowInfoText--multipleLines">
-                  This is the <%= current_user.organization.name %> Google Maps API key,
+                  This is the <%= current_user.organization.name %> Google Maps query string,
                   contact with <a href="mailto:support@cartodb.com">support@cartodb.com</a> to change it.
                 </p>
               <% else %>

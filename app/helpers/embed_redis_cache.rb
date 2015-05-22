@@ -18,6 +18,9 @@ class EmbedRedisCache
     else
       return nil
     end
+  rescue Redis::BaseError => exception
+    Rollbar.report_exception(exception)
+    nil
   end
 
   # Only public and public with link
@@ -26,10 +29,16 @@ class EmbedRedisCache
                                 body: response_body
                                })
     redis.setex(key(visualization_id), 24.hours.to_i, serialized)
+  rescue Redis::BaseError => exception
+    Rollbar.report_exception(exception)
+    nil
   end
 
   def invalidate(visualization_id)
     redis.del key(visualization_id)
+  rescue Redis::BaseError => exception
+    Rollbar.report_exception(exception)
+    nil
   end
 
   def key(visualization_id)

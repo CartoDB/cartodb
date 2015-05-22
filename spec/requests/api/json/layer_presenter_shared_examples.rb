@@ -280,6 +280,7 @@ shared_examples_for "layer presenters" do |tested_klass|
         visualization_id: stat_tag
       }
 
+
       # torque layer with very basic options
       layer = Layer.create({
           kind: 'torque',
@@ -351,10 +352,177 @@ shared_examples_for "layer presenters" do |tested_klass|
             },
         })
 
+      presenter_options =  {
+          visualization_id: stat_tag
+        }
+
+      expected_vizjson[:id] = layer.id
+      expected_vizjson[:options]['query'] = layer.options['query']
+      expected_vizjson[:options].delete('user_name')
+
+      vizjson = instance_of_tested_class(layer, presenter_options).to_vizjson_v2
+      vizjson.should == expected_vizjson
+
       # torque layer, with wrapping
-      # TODO: options 'query_wrapper' => "select * from (<%= sql %>)"
+      layer = Layer.create({
+          kind: 'torque',
+          options: { 
+            'query' => 'SELECT * FROM my_test_table LIMIT 5',
+            'table_name' => 'my_test_table',
+            'query_wrapper' =>  "select * from (<%= sql %>)",
+            # This options shouldn't appear as is not listed at presnter TORQUE_ATTRS
+            'wadus' => 'whatever'
+            }
+        })
+
+      presenter_options =  {
+          visualization_id: stat_tag
+        }
+
+      expected_vizjson[:id] = layer.id
+      expected_vizjson[:options]['query'] = "select * from (#{layer.options['query']})"
+
+      vizjson = instance_of_tested_class(layer, presenter_options).to_vizjson_v2
+      vizjson.should == expected_vizjson
 
 
+      # CartoDB layers , minimal options
+      layer = Layer.create({
+          kind: 'carto',
+          options: { 
+              'table_name' => 'my_test_table',
+              'style_version' => '2.1.1',
+              'interactivity' => 'something'
+            },
+        })
+
+      presenter_options =  {
+          visualization_id: stat_tag
+        }
+
+      expected_vizjson = {
+        id: layer.id,
+        parent_id: nil,
+        children: [],
+        type: 'CartoDB',
+        order: layer.order,
+        infowindow: nil,
+        tooltip: nil,
+        legend: nil,
+        visible: nil,
+        options: {
+            sql: "select * from #{layer.options['table_name']}",
+            layer_name: layer.options['table_name'],
+            cartocss: @klass::EMPTY_CSS,
+            cartocss_version: layer.options['style_version'],
+            interactivity: layer.options['interactivity']
+          }
+      }
+
+      vizjson = instance_of_tested_class(layer, presenter_options).to_vizjson_v2
+      vizjson.should == expected_vizjson
+
+      # CartoDB layers , non default fields filled
+      layer = Layer.create({
+          kind: 'carto',
+          options: { 
+              'table_name' => 'my_test_table',
+              'style_version' => '2.1.1',
+              'interactivity' => 'something',
+              'tile_style' => '/* aaa */ #bbb{ marker-width: 12; } ',
+              'legend' => {
+                  'type' => "custom",
+                  'show_title' => true,
+                  'title' => "xxx",
+                  'template' => "",
+                  'items' => [
+                    {
+                      'name' => "yyy",
+                      'visible' => true,
+                      'value' => "#ccc",
+                      'sync' => true
+                    }
+                  ]
+                },
+              'visible' => true,
+              # Shouldn't appear
+              'wadus' => 'whatever'
+            },
+          infowindow: {
+              'fields' => nil,
+              'template_name' => "infowindow_light",
+              'template' => "<div></div>",
+              'alternative_names' => { },
+              'width' => 200,
+              'maxHeight' => 100
+            },
+          tooltip: {
+              'fields' => nil,
+              'template_name' => "tooltip_light",
+              'template' => "<div><div>",
+              'alternative_names' => { },
+              'maxHeight' => 180
+            }
+        })
+
+      expected_vizjson = {
+        id: layer.id,
+        parent_id: nil,
+        children: [],
+        type: 'CartoDB',
+        order: layer.order,
+        infowindow: layer.infowindow,
+        tooltip: layer.tooltip,
+        legend: layer.legend,
+        visible: true,
+        options: {
+            # yes... this ones come as symbols and not strings as the others (sigh)
+            sql: "select * from #{layer.options['table_name']}",
+            layer_name: layer.options['table_name'],
+            cartocss: layer.options['tile_style'],
+            cartocss_version: layer.options['style_version'],
+            interactivity: layer.options['interactivity']
+          }
+      }
+
+      vizjson = instance_of_tested_class(layer, presenter_options).to_vizjson_v2
+      vizjson.should == expected_vizjson
+
+      # CartoDB layer with `Full` options flag
+      layer = Layer.create({
+          kind: 'carto',
+          options: { 
+              'table_name' => 'my_test_table',
+              'interactivity' => 'something',
+              'wadus' => 'whatever'
+            }
+        })
+
+      presenter_options =  {
+          visualization_id: stat_tag,
+          full: true
+        }
+
+      expected_vizjson = {
+        id: layer.id,
+        parent_id: nil,
+        children: [],
+        type: 'CartoDB',
+        order: layer.order,
+        infowindow: nil,
+        tooltip: nil,
+        legend: nil,
+        visible: nil,
+        options: {
+            'table_name' => layer.options['table_name'],
+            'interactivity' => layer.options['interactivity'],
+            'wadus' => 'whatever'
+          }
+      }
+
+      vizjson = instance_of_tested_class(layer, presenter_options).to_vizjson_v2
+      puts vizjson.inspect
+      vizjson.should == expected_vizjson
 
     end
 

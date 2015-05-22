@@ -46,7 +46,6 @@ module Carto
         public_values(@layer).merge(children_for(@layer)).to_json
       end
 
-      # TODO: Pending refactor, right now just copied
       def to_vizjson_v2
         if base?(@layer)
           with_kind_as_type(base_poro(@layer)).symbolize_keys
@@ -130,15 +129,13 @@ module Carto
       end
 
       # Decorates the layer presentation with data if needed. nils on the decoration act as removing the field
-      def decorate_with_data(source_hash, decoration_data=nil)
-        if not decoration_data.nil?
-          decoration_data.each { |key, value| 
-            source_hash[key] = value
-            source_hash.delete_if { |k, v| 
-              v.nil? 
-            }
+      def decorate_with_data(source_hash, decoration_data)
+        decoration_data.each { |key, value| 
+          source_hash[key] = value
+          source_hash.delete_if { |k, v| 
+            v.nil? 
           }
-        end
+        }
         source_hash
       end
 
@@ -181,16 +178,15 @@ module Carto
 
       def options_data_v2
         if @options[:full]
-          full_data = decorate_with_data(@layer.options, @decoration_data)
-          full_data.options
+          decorate_with_data(@layer.options, @decoration_data)
         else
           sql = sql_from(@layer.options)
           data = {
             sql:                wrap(sql, @layer.options),
             layer_name:         name_for(@layer),
             cartocss:           css_from(@layer.options),
-            cartocss_version:   @layer.options['style_version'],
-            interactivity:      @layer.options['interactivity']
+            cartocss_version:   @layer.options.fetch('style_version'),  # Mandatory
+            interactivity:      @layer.options.fetch('interactivity')   # Mandatory
           }
           data = decorate_with_data(data, @decoration_data)
 
@@ -285,7 +281,7 @@ module Carto
       end
 
       def wrap(query, options)
-        wrapper = @options.fetch('query_wrapper', nil)
+        wrapper = options.fetch('query_wrapper', nil)
         return query if wrapper.nil? || wrapper.empty?
         EJS.evaluate(wrapper, sql: query)
       end

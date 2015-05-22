@@ -110,15 +110,13 @@ module CartoDB
       end
 
       # Decorates the layer presentation with data if needed. nils on the decoration act as removing the field
-      def decorate_with_data(source_hash, decoration_data=nil)
-        if not decoration_data.nil?
-          decoration_data.each { |key, value| 
-            source_hash[key] = value
-            source_hash.delete_if { |k, v| 
-              v.nil? 
-            }
+      def decorate_with_data(source_hash, decoration_data)
+        decoration_data.each { |key, value| 
+          source_hash[key] = value
+          source_hash.delete_if { |k, v| 
+            v.nil? 
           }
-        end
+        }
         source_hash
       end
 
@@ -206,8 +204,7 @@ module CartoDB
 
       def options_data_v2
         if options[:full]
-          full_data = decorate_with_data(layer.options, @decoration_data)
-          full_data.options
+          decorate_with_data(layer.options, @decoration_data)
         else
           sql = sql_from(layer.options)
           data = {

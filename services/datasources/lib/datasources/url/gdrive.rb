@@ -126,9 +126,9 @@ module CartoDB
           @refresh_token = token
           @client.authorization.update_token!( { refresh_token: @refresh_token } )
           @client.authorization.fetch_access_token!
-        rescue Google::APIClient::InvalidIDTokenError => ex
+        rescue Signet::AuthorizationError, Google::APIClient::InvalidIDTokenError => ex
           raise TokenExpiredOrInvalidError.new("Invalid token: #{ex.message}", DATASOURCE_NAME)
-        rescue Google::APIClient::InvalidIDTokenError, Signet::AuthorizationError, Google::APIClient::ClientError, \
+        rescue Google::APIClient::ClientError, \
                Google::APIClient::ServerError, Google::APIClient::BatchError, Google::APIClient::TransmissionError => ex
           raise AuthError.new("setting token: #{ex.message}", DATASOURCE_NAME)
         end

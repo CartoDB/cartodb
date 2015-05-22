@@ -46,24 +46,36 @@ describe('cdb.geo.Tooltip', function() {
     expect(tooltip.$el.html()).not.toEqual('test2,test1,huracan,');
   });
 
-  it ("should show the tooltip on mouseover if model has fields", function() {
-    tooltip.setFields([{ name: 'test2' }]);
-    tooltip.enable();
-    layer.trigger('mouseover', new $.Event('e'), [0, 0], [0, 0], {
-      test2: 'test2'
-    });
-
-    expect(tooltip.showing).toBeTruthy();
-  });
-
-  it ("should not show the tooltip on mouseover if model has no fields", function() {
+  it("should not show the tooltip if there are no fields", function() {
     tooltip.setFields([]);
     tooltip.enable();
 
-    layer.trigger('mouseover', new $.Event('e'), [0,0], [0, 0], { });
+    layer.trigger('mouseover', new $.Event('e'), [0, 0], [0, 0], {});
 
+    // Tooltip is hidden
     expect(tooltip.showing).toBeFalsy();
   });
+
+  it("should hide the tooltip if it was visible and there are no fields now", function() {
+    tooltip.setFields([{
+      name:'test2'
+    }]);
+    tooltip.enable();
+
+    // mouseover a layer whose tooltip has fields
+    layer.trigger('mouseover', new $.Event('e'), [0, 0], [0, 0], { name: 'wadus' });
+
+    // Tooltip is visible
+    expect(tooltip.showing).toBeTruthy();
+
+    tooltip.setFields([]);
+
+    // mouseover a layer whose tooltip doesn NOT has fields
+    layer.trigger('mouseover', new $.Event('e'), [0, 0], [0, 0], {});
+
+    // Tooltip is hidden
+    expect(tooltip.showing).toBeFalsy();
+  })
 
   it ("should use alternate_names ", function() {
     tooltip.setTemplate('{{#fields}}{{{ title }}},{{/fields}}');

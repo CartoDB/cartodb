@@ -27,6 +27,12 @@ module CartoDB
         get_api_calls(username, options)
       end
 
+      # Wrapper to get a total of api calls of a user or visualization
+      # It doesn't include old api calls
+      def get_total_api_calls(username, visualization_id = nil)
+        get_total_api_calls_from_redis(username, visualization_id)  
+      end
+
       def get_api_calls(username, options = {})
         get_api_calls_from_redis(username, options)
       end
@@ -44,7 +50,24 @@ module CartoDB
           JSON.parse(calls['per_day']).to_a.reverse
         end
       end
+      
+      # Iterate through all api calls redis sources and returns total
+      # api calls of a user or a visualization
+      def get_total_api_calls_from_redis(username, visualization_id = nil)
+        calls = 0
+        
+        REDIS_SOURCES.each do |source|
+          source_calls = get_total_api_calls_from_redis_source(username, source, visualization_id)
+          if !source_calls.nil? and source_calls != 0
+            calls = calls + source_calls
+          end
+        end
 
+        return calls
+      end
+
+      # Iterate through all api calls redis sources and returns total
+      # api calls per day
       def get_api_calls_from_redis(username, options = {})
         calls = {}
        
@@ -65,14 +88,20 @@ module CartoDB
 
         return calls
       end
-        
-      def get_api_calls_from_redis_source(username, api_call_type, options = {})
+       
+      # Get redis key based on username and visualization id
+      def redis_api_call_key(username, api_call_type, visualization_id = nil)
         redis_base_key = "user:#{username}:#{api_call_type}"
-        if options[:stat_tag]
-          redis_key = "#{redis_base_key}:stat_tag:#{options[:stat_tag]}"
+        if visualization_id.nil?
+          return "#{redis_base_key}:global"
         else
-          redis_key = "#{redis_base_key}:global"
+          return "#{redis_base_key}:stat_tag:#{visualization_id}"
         end
+      end
+     
+      # Returns api calls from a redis key in a hash with dates
+      def get_api_calls_from_redis_source(username, api_call_type, options = {})
+        redis_key = redis_api_call_key(username, api_call_type, options[:stat_tag])
         date_to = (options[:to] ? options[:to].to_date : Date.today)
         date_from = (options[:from] ? options[:from].to_date : Date.today - 29.days)
         calls = {}
@@ -82,6 +111,13 @@ module CartoDB
         end
 
         return calls
+      end
+
+      # Returns total api calls from a redis key
+      def get_total_api_calls_from_redis_source(username, api_call_type, visualization_id = nil)
+        raise "Total api calls per user is not supported yet" if visualization_id.nil?
+        redis_key = redis_api_call_key(username, api_call_type, visualization_id)
+        return $users_metadata.ZSCORE(redis_key, 'total').to_i
       end
 
     end

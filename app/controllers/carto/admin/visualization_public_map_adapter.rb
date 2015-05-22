@@ -16,14 +16,15 @@ module Carto
           }
 
       delegate [ :type_slide?, :has_permission?, :derived?, :organization, :organization?, :id, :likes, 
-                :password_protected?, :varnish_key, :related_tables, :is_password_valid?, :get_auth_tokens, :table, :name, 
-                :overlays, :created_at, :updated_at, :description, :tags, :mapviews, :geometry_types, :privacy, 
+                :password_protected?, :varnish_key, :related_tables, :is_password_valid?, :get_auth_tokens, :table, :name,
+                :overlays, :created_at, :updated_at, :description, :mapviews, :geometry_types, :privacy, :tags,
                 :surrogate_key, :has_password? ] => :visualization
 
       attr_reader :visualization
 
-      def initialize(visualization)
+      def initialize(visualization, current_viewer)
         @visualization = visualization
+        @current_viewer = current_viewer
       end
 
       def to_vizjson(options = {})
@@ -36,7 +37,7 @@ module Carto
 
       def to_hash(options={})
         # TODO: using an Api presenter here smells, refactor
-        presenter = Carto::Api::VisualizationPresenter.new(@visualization, nil, options)
+        presenter = Carto::Api::VisualizationPresenter.new(@visualization, @current_viewer, options)
         options.delete(:public_fields_only) === true ? presenter.to_public_poro : presenter.to_poro
       end
 
@@ -75,7 +76,7 @@ module Carto
 
       def related_visualizations
         @visualization.related_visualizations.map { |rv|
-          Carto::Admin::VisualizationPublicMapAdapter.new(rv) if rv.is_public?
+          Carto::Admin::VisualizationPublicMapAdapter.new(rv, @current_viewer) if rv.is_public?
         }.compact
       end
 

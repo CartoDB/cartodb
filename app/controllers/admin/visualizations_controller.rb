@@ -177,6 +177,9 @@ class Admin::VisualizationsController < ApplicationController
         |vis| vis.privacy != Visualization::Member::PRIVACY_PUBLIC
     }.count
 
+    # Public export API SQL url
+    @export_sql_api_url = "#{ sql_api_url("SELECT * FROM #{ @table.owner.sql_safe_database_schema }.#{ @table.name }", @user) }&format=shp"
+
     respond_to do |format|
       format.html { render 'public_table', layout: 'application_table_public' }
     end
@@ -419,7 +422,7 @@ class Admin::VisualizationsController < ApplicationController
     vqb.with_excluded_ids([excluded_visualization.id]) if excluded_visualization
     visualizations = vqb.build_paged(1, MAX_MORE_VISUALIZATIONS)
     visualizations.map { |v|
-      Carto::Admin::VisualizationPublicMapAdapter.new(v)
+      Carto::Admin::VisualizationPublicMapAdapter.new(v, current_user)
     }
   end
 
@@ -559,7 +562,7 @@ class Admin::VisualizationsController < ApplicationController
     user_id = user ? user.id : nil
     visualization = Carto::VisualizationQueryBuilder.new.with_id_or_name(table_id).with_user_id(user_id).build.first
     return get_visualization_and_table_from_table_id(table_id) if visualization.nil?
-    return Carto::Admin::VisualizationPublicMapAdapter.new(visualization), visualization.table_service
+    return Carto::Admin::VisualizationPublicMapAdapter.new(visualization, current_user), visualization.table_service
   end
 
   def get_visualization_and_table_from_table_id(table_id)
@@ -567,12 +570,16 @@ class Admin::VisualizationsController < ApplicationController
     user_table = Carto::UserTable.where({ id: table_id }).first
     return nil, nil if user_table.nil?
     visualization = user_table.visualization
-    return Carto::Admin::VisualizationPublicMapAdapter.new(visualization), visualization.table_service
+    return Carto::Admin::VisualizationPublicMapAdapter.new(visualization, current_user), visualization.table_service
   end
 
   # TODO: remove this method and use  app/helpers/carto/uuidhelper.rb. Not used yet because this changed was pushed before
   def is_uuid?(text)
     !(Regexp.new(%r{\A#{UUIDTools::UUID_REGEXP}\Z}) =~ text).nil?
+  end
+
+  def sql_api_url(query, user)
+    "#{ ApplicationHelper.sql_api_template("public").gsub! '{user}', user.username }#{ Cartodb.config[:sql_api]['public']['endpoint'] }?q=#{ URI::encode query }"
   end
 
 end

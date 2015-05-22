@@ -938,5 +938,69 @@ namespace :cartodb do
       end
     end
 
+
+    desc "Get from redis the list of visualization ids viewed"
+    task :get_viewed_visualization_ids, [:redis_ip, :output_file] => :environment do |t, args|
+      if args[:redis_ip]
+        redis_client_config = $users_metadata.client.options
+        redis_client_config[:host] = args[:redis_ip]
+        redis_client = Redis.new(redis_client_config)
+      else
+        redis_client = $users_metadata
+      end
+      
+      stat_tag_keys = [
+        "user:*:mapviews:stat_tag:*",
+        "user:*:mapviews_es:stat_tag:*"
+      ]
+
+      visualization_ids = []
+
+      stat_tag_keys.each do |stat_tag_key|
+        redis_client.keys(stat_tag_key).each do |key|
+          key_parts = key.split(':')
+          visualization_ids << "#{key_parts[1]}:#{key_parts[4]}"
+        end
+      end
+
+      visualization_ids.uniq!
+
+      if args[:output_file]
+        File.write(args[:output_file], visualization_ids.join("\n"))
+      else
+        puts visualization_ids.join("\n")
+      end
+    end
+
+
+    desc "Populate visualization total map views from partial days"
+    task :populate_visualization_total_map_views, [:visualizations_list] => :environment do |t, args|
+      if args[:visualizations_list].blank?
+        raise "Missing visualization_list param which must be a plain text list of <user>:<visualization_id>"
+      end
+      File.open(args[:visualizations_list], 'r') do |f|
+        f.each_line do |line|
+          key_parts = line.strip.split(':')
+          username = key_parts[0]
+          visualization_id = key_parts[1]
+          stat_tag_keys = [
+            "user:#{username}:mapviews:stat_tag:#{visualization_id}",
+            "user:#{username}:mapviews_es:stat_tag:#{visualization_id}"
+          ]
+          puts "Processing visualization #{visualization_id} of user #{username}"
+          stat_tag_keys.each do |stat_tag_key|
+            visualization_counter = 0
+            $users_metadata.zrange(stat_tag_key, 0, -1).each do |mapviews_day|
+              if mapviews_day =~ /[0-9]{4}(0|1)[0-9][0-3][0-9]/
+                count = $users_metadata.zscore(stat_tag_key, mapviews_day)
+                visualization_counter = visualization_counter + count unless count.nil?
+              end
+            end
+            $users_metadata.zadd(stat_tag_key, visualization_counter, 'total') unless visualization_counter == 0
+          end
+        end
+      end
+    end
+
   end
 end

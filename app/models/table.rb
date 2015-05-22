@@ -193,6 +193,21 @@ class Table
     }
   end
 
+  # TODO: REFACTOR THIS patch introduced to continue with #3664
+  def self.get_all_user_tables_by_names(names, viewer_user)
+    names.map { |t|
+      user_id = viewer_user.id
+      table_name, table_schema = Table.table_and_schema(t)
+      unless table_schema.nil?
+        owner = User.where(username:table_schema).first
+        unless owner.nil?
+          user_id = owner.id
+        end
+      end
+      Carto::UserTable.where(user_id: user_id, name: table_name).first
+    }
+  end
+
 
   def self.table_and_schema(table_name)
     if table_name =~ /\./
@@ -895,6 +910,10 @@ class Table
         else
           new_column_type = get_new_column_type(invalid_column)
           user_database.set_column_type(self.name, invalid_column.to_sym, new_column_type)
+          # INFO: There's a complex logic for retrying and need to know how often it is actually done
+          Rollbar.report_message('Retrying insert_row!',
+                                 'debug',
+                                 {user_id: self.user_id, qualified_table_name: self.qualified_table_name, raw_attributes: raw_attributes})
           retry
         end
       end
@@ -933,6 +952,10 @@ class Table
             new_column_type = get_new_column_type(invalid_column)
             if new_column_type
               user_database.set_column_type self.name, invalid_column.to_sym, new_column_type
+              # INFO: There's a complex logic for retrying and need to know how often it is actually done
+              Rollbar.report_message('Retrying update_row!',
+                                     'debug',
+                                     {user_id: self.user_id, qualified_table_name: self.qualified_table_name, row_id: row_id, raw_attributes: raw_attributes})
               retry
             end
           else
@@ -1466,7 +1489,7 @@ class Table
   # See http://www.postgresql.org/docs/9.1/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
   def self.get_valid_table_name(name, options = {})
     # Initial name cleaning
-    name = name.to_s.strip #.downcase
+    name = name.to_s.squish #.downcase
     name = 'untitled_table' if name.blank?
 
     # Valid names start with a letter or an underscore
@@ -1580,7 +1603,7 @@ class Table
       else
         sanitized_force_schema = force_schema.split(',').map do |column|
           # Convert existing primary key into a unique key
-          if column =~ /^\s*\"([^\"]+)\"(.*)$/
+          if column =~ /\A\s*\"([^\"]+)\"(.*)\z/
             "#{$1.sanitize} #{$2.gsub(/primary\s+key/i,'UNIQUE')}"
           else
             column.gsub(/primary\s+key/i,'UNIQUE')

@@ -8,4 +8,7 @@ describe Api::Json::LayersController do
   it_behaves_like 'layers controllers' do
   end
   
+  include Rack::Test::Methods
+  include Warden::Test::Helpers
+  include CacheHelper
 end

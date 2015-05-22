@@ -157,7 +157,7 @@
       grunt.task.run('jasmine:cartodbui:build');
 
       grunt.event.once('connect.jasmine.listening', function(host, port) {
-        var specRunnerUrl = 'http://' + host + ':' + port + '/_SpecRunner.html';
+        var specRunnerUrl = 'http://localhost:' + port + '/_SpecRunner.html';
         grunt.log.writeln('Jasmine specs available at: ' + specRunnerUrl);
         require('open')(specRunnerUrl);
       });

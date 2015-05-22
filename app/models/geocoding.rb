@@ -1,5 +1,4 @@
 # encoding: UTF-8'
-require 'timeout'
 require_relative '../../services/table-geocoder/lib/table_geocoder'
 require_relative '../../services/table-geocoder/lib/internal_geocoder.rb'
 require_relative '../../lib/cartodb/metrics'
@@ -7,12 +6,15 @@ require_relative '../../lib/cartodb/metrics'
 class Geocoding < Sequel::Model
 
   DB_TIMEOUT_MS              = 100.minutes.to_i * 1000
-  PROCESSING_TIMEOUT_SECONDS = 200.minutes.to_i
   ALLOWED_KINDS   = %w(admin0 admin1 namedplace postalcode high-resolution ipaddress)
 
   PUBLIC_ATTRIBUTES = [:id, :table_id, :state, :kind, :country_code, :region_code, :formatter, :geometry_type,
                        :error, :processed_rows, :cache_hits, :processable_rows, :real_rows, :price,
                        :used_credits, :remaining_quota, :country_column, :region_column, :data_import_id]
+
+  # Characters in the following Unicode categories: Letter, Mark, Number and Connector_Punctuation,
+  # plus spaces and single quotes
+  SANITIZED_FORMATTER_REGEXP = /\A[[[:word:]]\s\,\']*\z/
 
   many_to_one :user
   many_to_one :user_table, :key => :table_id
@@ -64,7 +66,7 @@ class Geocoding < Sequel::Model
       table_name:    table_service.try(:name),
       qualified_table_name: table_service.try(:qualified_table_name),
       sequel_qualified_table_name: table_service.try(:sequel_qualified_table_name),
-      formatter:     translate_formatter,
+      formatter:     sanitize_formatter,
       connection:    user_connection,
       remote_id:     remote_id,
       countries:     country_code,
@@ -110,13 +112,11 @@ class Geocoding < Sequel::Model
   end
 
   def run_geocoding!(processable_rows, rows_geocoded_before = 0)
-    self.update state: 'started', processable_rows: processable_rows
+    self.update state: 'started', processable_rows: processable_rows, batched: table_geocoder.use_batch_process?
     @started_at = Time.now
 
-    Timeout::timeout(processing_timeout_seconds, ProcessingTimeoutException) do
-      # INFO: this is where the real stuff is done
-      table_geocoder.run
-    end
+    # INFO: this is where the real stuff is done
+    table_geocoder.run
 
     self.update remote_id: table_geocoder.remote_id
     self.update(table_geocoder.update_geocoding_status)
@@ -139,10 +139,6 @@ class Geocoding < Sequel::Model
     CartoDB::notify_exception(e, user: user)
     self.report(e)
   end # run!
-
-  def processing_timeout_seconds
-    @processing_timeout_seconds ||= PROCESSING_TIMEOUT_SECONDS
-  end
 
   def report(error = nil)
     payload = metrics_payload(error)
@@ -188,6 +184,19 @@ class Geocoding < Sequel::Model
     # geocoder = AutomaticGeocoding.create(table: table)
     # self.update(automatic_geocoding_id: geocoder.id)
   end # create_automatic_geocoder
+
+  def sanitize_formatter
+    translated_formatter = translate_formatter
+    if translated_formatter =~ SANITIZED_FORMATTER_REGEXP
+      translated_formatter
+    else
+      # TODO better remove this trace once everything is fine
+      Rollbar.report_message(%Q{Incorrect formatter string received: "#{formatter}"},
+                             'warning',
+                             {user_id: user.id})
+      ''
+    end
+  end
 
   # {field}, SPAIN => field, ', SPAIN'
   def translate_formatter
@@ -237,7 +246,8 @@ class Geocoding < Sequel::Model
       cost:             cost,
       used_credits:     used_credits,
       remaining_quota:  remaining_quota,
-      data_import_id:   data_import_id
+      data_import_id:   data_import_id,
+      batched: self.batched
     }
     if state == 'finished' && exception.nil?
       payload.merge!(
@@ -262,7 +272,6 @@ class Geocoding < Sequel::Model
     payload
   end
 
-  class ProcessingTimeoutException < StandardError; end
 
   private
 

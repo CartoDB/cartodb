@@ -294,6 +294,7 @@ module CartoDB
           description_html_safe.strip_tags
         end
       end
+
       def description_html_safe
         if description.present?
           renderer = Redcarpet::Render::Safe
@@ -313,6 +314,11 @@ module CartoDB
         self.privacy_changed = true if ( privacy != @privacy && !@privacy.nil? )
         super(privacy)
       end #privacy=
+
+      def tags=(tags)
+        tags.reject!(&:blank?) if tags
+        super(tags)
+      end
 
       def public?
         privacy == PRIVACY_PUBLIC

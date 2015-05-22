@@ -54,6 +54,11 @@ class Carto::Visualization < ActiveRecord::Base
     tags == nil ? [] : tags
   end
 
+  def tags=(tags)
+    tags.reject!(&:blank?) if tags
+    super(tags)
+  end
+
   def related_tables
     @related_tables ||= get_related_tables
   end

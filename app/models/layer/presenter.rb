@@ -263,7 +263,9 @@ module CartoDB
       def default_query_for(layer_options)
         if options[:viewer_user]
           unless layer_options['user_name'] == options[:viewer_user].username
-            return "select * from \"#{layer_options['user_name']}\".#{layer_options['table_name']}"
+            name = layer_options['user_name'].include?('-') ? 
+              "\"#{layer_options['user_name']}\"" : layer_options['user_name']
+            return "select * from #{name}.#{layer_options['table_name']}"
           end
         end
         "select * from #{layer_options.fetch('table_name')}"

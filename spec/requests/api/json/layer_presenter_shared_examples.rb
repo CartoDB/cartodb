@@ -263,6 +263,8 @@ shared_examples_for "layer presenters" do |tested_klass|
     end
 
     it 'Tests to_vizjson_v2()' do
+      stat_tag = '00000000-0000-0000-0000-000000000000'
+
       layer_parent = Layer.create({
           kind: 'tiled'
         })
@@ -273,6 +275,86 @@ shared_examples_for "layer presenters" do |tested_klass|
       vizjson[:id].should == layer_parent.id
       vizjson[:kind].should == nil
       vizjson[:type].should == layer_parent.kind
+
+      presenter_options =  {
+        visualization_id: stat_tag
+      }
+
+      # torque layer with very basic options
+      layer = Layer.create({
+          kind: 'torque',
+          options: { 
+              'table_name' => 'my_test_table',
+            },
+        })
+
+      expected_vizjson = {
+        id: layer.id,
+        parent_id: nil,
+        children: [],
+        type: layer.kind,
+        order: layer.order,
+        legend: nil,
+        options: {
+            stat_tag: stat_tag,
+            maps_api_template: "http://{user}.localhost.lan:8181",
+            sql_api_template: "http://{user}.localhost.lan:8080",
+            tiler_protocol: nil,
+            tiler_domain: nil,
+            tiler_port: nil,
+            sql_api_protocol: nil,
+            sql_api_domain: nil,
+            sql_api_endpoint: nil,
+            sql_api_port: nil,
+            cdn_url: nil,
+            layer_name: layer.options['table_name'],
+            dynamic_cdn: false, 
+            'table_name' => layer.options['table_name'], 
+            'query' => "select * from #{layer.options['table_name']}"
+          }
+      }
+
+      vizjson = instance_of_tested_class(layer, presenter_options).to_vizjson_v2
+      vizjson.should == expected_vizjson
+
+      # torque layer, different viewer
+      layer = Layer.create({
+          kind: 'torque',
+          options: { 
+            'table_name' => 'my_test_table',
+            # This is only for compatibility with old Layer::Presenter, new one checkes in the presenter options
+            'user_name' => @user_1.database_schema
+            },
+        })
+
+      expected_vizjson[:id] = layer.id
+      # No special quoting
+      expected_vizjson[:options]['query'] = "select * from public.#{layer.options['table_name']}"
+      expected_vizjson[:options]['user_name'] = @user_1.database_schema
+
+      presenter_options =  {
+          visualization_id: stat_tag,
+          viewer_user: @user_2,
+          # New presenter way of sending a viewer that's different from the owner
+          user: @user_1
+        }
+
+      vizjson = instance_of_tested_class(layer, presenter_options).to_vizjson_v2
+      vizjson.should == expected_vizjson
+
+      # torque layer, custom query
+      layer = Layer.create({
+          kind: 'torque',
+          options: { 
+            'query' => 'SELECT * FROM my_test_table LIMIT 5',
+            'table_name' => 'my_test_table',
+            },
+        })
+
+      # torque layer, with wrapping
+      # TODO: options 'query_wrapper' => "select * from (<%= sql %>)"
+
+
 
     end
 

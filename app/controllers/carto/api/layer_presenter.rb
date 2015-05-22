@@ -62,7 +62,7 @@ module Carto
             tooltip:    tooltip_data_v2,
             legend:     @layer.legend,
             order:      @layer.order,
-            visible:    public_values(@layer)[:options]['visible'],
+            visible:    public_values(@layer).symbolize_keys[:options]['visible'],
             options:    options_data_v2
           }
         end

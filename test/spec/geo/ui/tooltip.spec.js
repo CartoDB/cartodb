@@ -1,4 +1,3 @@
-
 describe('cdb.geo.Tooltip', function() {
 
   var tooltip, layer, container, mapView;

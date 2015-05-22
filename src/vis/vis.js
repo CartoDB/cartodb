@@ -513,7 +513,7 @@ var Vis = cdb.core.View.extend({
   _addTimeSlider: function() {
     var self = this;
     var torque = _(this.getLayers()).find(function(layer) {
-      return layer.model.get('type') === 'torque';
+      return layer.model.get('type') === 'torque' && layer.model.get('visible');
     });
     if (torque) {
       this.torqueLayer = torque;
@@ -832,8 +832,10 @@ var Vis = cdb.core.View.extend({
     for (var i = layers.length - 1; i >= 0; --i) {
       var cid = layers.at(i).cid;
       var layer = layers.at(i).attributes
-      var layerView = this.mapView.getLayerByCid(cid);
-      legends.push(this._createLayerLegendView(layer, layerView));
+      if (layer.visible) {
+        var layerView = this.mapView.getLayerByCid(cid);
+        legends.push(this._createLayerLegendView(layer, layerView));
+      }
     }
     return _.flatten(legends);
   },

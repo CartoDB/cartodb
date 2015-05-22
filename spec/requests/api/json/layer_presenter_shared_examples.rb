@@ -1,11 +1,12 @@
 # encoding: utf-8
 
-shared_examples_for "layer presenters" do |tested_klass|
+shared_examples_for "layer presenters" do |tested_klass, model_klass|
 
   describe '#show legacy tests' do
 
     before(:all) do
-      set_tested_class(tested_klass)
+      set_tested_classes(tested_klass, model_klass)
+      puts "Testing class #{tested_klass.to_s} with model #{model_klass.to_s}"
 
       @user_1 = create_user(
         username: 'test',
@@ -30,13 +31,18 @@ shared_examples_for "layer presenters" do |tested_klass|
       @user_2.destroy
     end
 
-    def set_tested_class(klass)
-      @klass = klass
-      puts "Testing class  #{klass.to_s}"
+    def set_tested_classes(tested_class, model_class)
+      @tested_class = tested_class
+      @model_class = model_class
     end
 
     def instance_of_tested_class(*args)
-      @klass.new(*args)
+      @tested_class.new(*args)
+    end
+
+    # Always uses old models to created data, then battery set one for instantiation
+    def instance_of_tested_model(creation_model)
+      @model_class.where(id: creation_model.id).first
     end
 
     it "Tests to_json()" do
@@ -55,8 +61,8 @@ shared_examples_for "layer presenters" do |tested_klass|
           parent_id: layer_1.id
         })
 
+      layer_2 = instance_of_tested_model(layer_2)
       presenter = instance_of_tested_class(layer_2)
-
       json_data = JSON.parse(presenter.to_json)
 
       json_data['id'].should == layer_2.id
@@ -73,8 +79,8 @@ shared_examples_for "layer presenters" do |tested_klass|
           user: @user_1
         }
 
+      #no changes to layer_2
       presenter = instance_of_tested_class(layer_2, presenter_options)
-
       json_data = JSON.parse(presenter.to_json)
       # to_json shouldn't change table_name even if viewer/user sent at presenter options
       json_data['options'].should == layer_2.options
@@ -86,6 +92,7 @@ shared_examples_for "layer presenters" do |tested_klass|
       layer_1 = Layer.create({
           kind: 'tiled'
         })
+      layer_1 = instance_of_tested_model(layer_1)
       layer_2 = Layer.create({
           kind: 'carto',
           order: 13,
@@ -97,6 +104,7 @@ shared_examples_for "layer presenters" do |tested_klass|
           tooltip: { 'fake3' => 'val3' },
           parent_id: layer_1.id
         })
+      layer_2 = instance_of_tested_model(layer_2)
 
       expected_poro = {
         'id' => layer_2.id,
@@ -116,14 +124,10 @@ shared_examples_for "layer presenters" do |tested_klass|
         'children' => []
       }
 
-      presenter = instance_of_tested_class(layer_2)
-
       poro = instance_of_tested_class(layer_2).to_poro
-
       poro.should == expected_poro
 
       # Now add presenter options to change table_name (new way)
-
       expected_poro['options']['table_name'] = "#{@user_1.database_schema}.#{table_name}"
 
       presenter_options =  { 
@@ -137,6 +141,8 @@ shared_examples_for "layer presenters" do |tested_klass|
 
       # old way
 
+      # change state always with old model to be sure
+      layer_2 = ::Layer.where(id:layer_2.id).first
       layer_2.options = { 
             'fake' => 'value',
             'table_name' => table_name,
@@ -144,6 +150,7 @@ shared_examples_for "layer presenters" do |tested_klass|
             'user_name' => @user_1.username
             }
       layer_2.save
+      layer_2 = instance_of_tested_model(layer_2)
 
       expected_poro = {
         'id' => layer_2.id,
@@ -174,6 +181,7 @@ shared_examples_for "layer presenters" do |tested_klass|
 
       # Finally, don't change if already has a fully qualified table_name
 
+      layer_2 = ::Layer.where(id:layer_2.id).first
       layer_2.options = {
             'fake' => 'value',
             'table_name' => "fake.#{table_name}",
@@ -181,6 +189,7 @@ shared_examples_for "layer presenters" do |tested_klass|
             'user_name' => @user_1.username
             }
       layer_2.save
+      layer_2 = instance_of_tested_model(layer_2)
 
       expected_poro['options']['table_name'] =  "fake.#{table_name}"
 
@@ -192,6 +201,7 @@ shared_examples_for "layer presenters" do |tested_klass|
       layer_parent = Layer.create({
           kind: 'tiled'
         })
+      layer_parent = instance_of_tested_model(layer_parent)
 
       layer = Layer.create({
           kind: 'carto',
@@ -208,6 +218,7 @@ shared_examples_for "layer presenters" do |tested_klass|
           tooltip: { 'fake3' => 'val3' },
           parent_id: layer_parent.id
         })
+      layer = instance_of_tested_model(layer)
 
       expected_vizjson = {
         id: layer.id,
@@ -224,8 +235,7 @@ shared_examples_for "layer presenters" do |tested_klass|
         }
       }
 
-      presenter_options =  {
-      }
+      presenter_options =  { }
 
       presenter_configuration = {
         layer_opts: {
@@ -276,6 +286,7 @@ shared_examples_for "layer presenters" do |tested_klass|
       layer_parent = Layer.create({
           kind: 'tiled'
         })
+      layer_parent = instance_of_tested_model(layer_parent)
 
       # Base, which should be a poro but with symbols
 
@@ -296,6 +307,7 @@ shared_examples_for "layer presenters" do |tested_klass|
               'table_name' => 'my_test_table',
             },
         })
+      layer = instance_of_tested_model(layer)
 
       expected_vizjson = {
         id: layer.id,
@@ -335,6 +347,7 @@ shared_examples_for "layer presenters" do |tested_klass|
             'user_name' => @user_1.database_schema
             },
         })
+      layer = instance_of_tested_model(layer)
 
       expected_vizjson[:id] = layer.id
       # No special quoting
@@ -359,6 +372,7 @@ shared_examples_for "layer presenters" do |tested_klass|
             'table_name' => 'my_test_table',
             },
         })
+      layer = instance_of_tested_model(layer)
 
       presenter_options =  {
           visualization_id: stat_tag
@@ -382,6 +396,7 @@ shared_examples_for "layer presenters" do |tested_klass|
             'wadus' => 'whatever'
             }
         })
+      layer = instance_of_tested_model(layer)
 
       presenter_options =  {
           visualization_id: stat_tag
@@ -394,7 +409,7 @@ shared_examples_for "layer presenters" do |tested_klass|
       vizjson.should == expected_vizjson
 
 
-      # CartoDB layers , minimal options
+      # CartoDB layer, minimal options
       layer = Layer.create({
           kind: 'carto',
           options: { 
@@ -403,6 +418,7 @@ shared_examples_for "layer presenters" do |tested_klass|
               'interactivity' => 'something'
             },
         })
+      layer = instance_of_tested_model(layer)
 
       presenter_options =  {
           visualization_id: stat_tag
@@ -421,7 +437,7 @@ shared_examples_for "layer presenters" do |tested_klass|
         options: {
             sql: "select * from #{layer.options['table_name']}",
             layer_name: layer.options['table_name'],
-            cartocss: @klass::EMPTY_CSS,
+            cartocss: @tested_class::EMPTY_CSS,
             cartocss_version: layer.options['style_version'],
             interactivity: layer.options['interactivity']
           }
@@ -430,7 +446,7 @@ shared_examples_for "layer presenters" do |tested_klass|
       vizjson = instance_of_tested_class(layer, presenter_options).to_vizjson_v2
       vizjson.should == expected_vizjson
 
-      # CartoDB layers , non default fields filled
+      # CartoDB layer, non default fields filled
       layer = Layer.create({
           kind: 'carto',
           options: { 
@@ -472,6 +488,7 @@ shared_examples_for "layer presenters" do |tested_klass|
               'maxHeight' => 180
             }
         })
+      layer = instance_of_tested_model(layer)
 
       expected_vizjson = {
         id: layer.id,
@@ -505,6 +522,7 @@ shared_examples_for "layer presenters" do |tested_klass|
               'wadus' => 'whatever'
             }
         })
+      layer = instance_of_tested_model(layer)
 
       presenter_options =  {
           visualization_id: stat_tag,
@@ -531,7 +549,6 @@ shared_examples_for "layer presenters" do |tested_klass|
       vizjson = instance_of_tested_class(layer, presenter_options).to_vizjson_v2
       puts vizjson.inspect
       vizjson.should == expected_vizjson
-
     end
 
   end

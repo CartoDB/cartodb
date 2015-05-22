@@ -229,6 +229,28 @@ describe Admin::VisualizationsController do
     end
   end # GET /viz/:name/embed_map
 
+  describe 'GET /viz/:id/embed_map' do
+    it 'caches and serves public embed map successful responses' do
+      id = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC).table_visualization.id
+      embed_redis_cache = EmbedRedisCache.new
+
+      embed_redis_cache.get(id).should == nil
+      get "/viz/#{id}/embed_map", {}, @headers
+      last_response.status.should == 200
+
+      # It should be cached after the first request
+      embed_redis_cache.get(id).should_not be_nil
+      first_response = last_response
+
+      get "/viz/#{id}/embed_map", {}, @headers
+      last_response.status.should == 200
+      # Headers of both responses should be the same excluding some
+      remove_changing = lambda {|h| h.reject {|k, v| ['X-Request-Id', 'X-Runtime'].include?(k)} }
+      remove_changing.call(first_response.headers).should == remove_changing.call(last_response.headers)
+      first_response.body.should == last_response.body
+    end
+  end
+
   describe 'GET /viz/:name/track_embed' do
     it 'renders the view by passing a visualization name' do
       name = URI::encode(factory.fetch('name'))

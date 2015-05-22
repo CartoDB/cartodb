@@ -263,6 +263,14 @@ shared_examples_for "layer presenters" do |tested_klass|
     end
 
     it 'Tests to_vizjson_v2()' do
+      maps_api_template = "http://{user}.localhost.lan:8181"
+      sql_api_template = "http://{user}.localhost.lan:8080"
+
+      # Modules do not use '.any_instance' for stubbing
+      ApplicationHelper.stubs(:maps_api_template).returns(maps_api_template)
+      ApplicationHelper.stubs(:sql_api_template).returns(sql_api_template)
+
+
       stat_tag = '00000000-0000-0000-0000-000000000000'
 
       layer_parent = Layer.create({
@@ -298,8 +306,8 @@ shared_examples_for "layer presenters" do |tested_klass|
         legend: nil,
         options: {
             stat_tag: stat_tag,
-            maps_api_template: "http://{user}.localhost.lan:8181",
-            sql_api_template: "http://{user}.localhost.lan:8080",
+            maps_api_template: maps_api_template,
+            sql_api_template: sql_api_template,
             tiler_protocol: nil,
             tiler_domain: nil,
             tiler_port: nil,

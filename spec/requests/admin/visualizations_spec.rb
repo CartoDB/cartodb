@@ -218,20 +218,12 @@ describe Admin::VisualizationsController do
       get "/viz/#{name}/embed_map", {}, @headers
       last_response.status.should == 403
       last_response.body.should =~ /cartodb-embed-error/
-
-      get "/viz/#{name}/embed_map.js", {}, @headers
-      last_response.status.should == 403
-      last_response.body.should =~ /get_url_params/
     end
 
     it 'renders embed map error when an exception is raised' do
       login_as(@user, scope: 'test')
 
       get "/viz/220d2f46-b371-11e4-93f7-080027880ca6/embed_map", {}, @headers
-      last_response.status.should == 404
-      last_response.body.should =~ /404/
-
-      get "/viz/220d2f46-b371-11e4-93f7-080027880ca6/embed_map.js", {}, @headers
       last_response.status.should == 404
       last_response.body.should =~ /404/
     end

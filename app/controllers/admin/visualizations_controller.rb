@@ -364,6 +364,11 @@ class Admin::VisualizationsController < ApplicationController
   end
 
   def embed_map
+    if request.format == 'text/javascript'
+      error_message = "/* Javascript embeds  are deprecated, please use the html iframe instead */"
+      return render inline: error_message, status: 400
+    end
+
     if @cached_embed
       response.headers.merge! @cached_embed[:headers].stringify_keys
       respond_to do |format|

@@ -224,6 +224,9 @@ module CartoDB
         rescue Google::APIClient::BatchError, Google::APIClient::TransmissionError, Google::APIClient::ClientError, \
                Google::APIClient::ServerError
           raise DataDownloadError.new("get_resource_metadata() #{id}", DATASOURCE_NAME)
+        rescue => e
+          CartoDB.notify_exception(e, { id: id, user: @user })
+          raise e
         end
 
         # Retrieves current filters

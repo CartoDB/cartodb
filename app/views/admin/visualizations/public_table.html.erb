@@ -107,7 +107,7 @@
           </div>
           <div class="user-options">
             <% if !Cartodb.config[:cartodb_com_hosted].present? %>
-              <a href="http://oneclick.cartodb.com/?file=<%= CGI.escape( CGI.escape(@export_sql_api_url) ) %>&provider=<%= URI.encode(@table.owner.username) %>&logo=<%= URI.encode(@avatar_url) %>" class="oneclick button grey">
+              <a href="http://oneclick.cartodb.com/?file=<%= CGI.escape( @export_sql_api_url ) %>&provider=<%= URI.encode(@table.owner.username) %>&logo=<%= URI.encode(@avatar_url) %>" class="oneclick button grey">
                 CREATE MAP
               </a>
             <% end %>

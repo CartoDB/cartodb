@@ -54,6 +54,11 @@ class Carto::Visualization < ActiveRecord::Base
     tags == nil ? [] : tags
   end
 
+  def tags=(tags)
+    tags.reject!(&:blank?) if tags
+    super(tags)
+  end
+
   def related_tables
     @related_tables ||= get_related_tables
   end
@@ -204,6 +209,10 @@ class Carto::Visualization < ActiveRecord::Base
 
   def mapviews
     @mapviews ||= CartoDB::Visualization::Stats.mapviews(stats)
+  end
+  
+  def total_mapviews(user=nil)
+    @total_mapviews ||= CartoDB::Visualization::Stats.new(self, user).total_mapviews
   end
 
   def geometry_types

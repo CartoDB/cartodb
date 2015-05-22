@@ -76,6 +76,7 @@ shared_examples_for "visualization controllers" do
 
   describe 'index' do
     include_context 'visualization creation helpers'
+    include_context 'users helper'
 
     before(:each) do
       login(@user1)

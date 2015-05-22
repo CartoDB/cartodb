@@ -4,6 +4,7 @@ shared_examples_for "layers controllers" do
 
   describe 'index' do
     include_context 'visualization creation helpers'
+    include_context 'users helper'
 
     it 'fetches layers from shared visualizations' do
       # TODO: refactor this with helpers (pending to merge)

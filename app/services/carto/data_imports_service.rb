@@ -34,6 +34,7 @@ module Carto
       if stuck?(import)
         # INFO: failure because of stuck is handled with old model
         ::DataImport[id].mark_as_failed_if_stuck!
+        import.reload
       end
       import
     rescue RecordNotFound => e
@@ -127,7 +128,7 @@ module Carto
       # TODO: this kind of method is in the service because it requires communication with external systems (resque). Anyway, should some logic (state check, for example) be inside the model?
       ![Carto::DataImport::STATE_ENQUEUED, Carto::DataImport::STATE_PENDING, Carto::DataImport::STATE_COMPLETE, Carto::DataImport::STATE_FAILURE].include?(import.state) &&
       import.created_at < 5.minutes.ago &&
-      !running_import_ids.include?(self.id)
+      !running_import_ids.include?(import.id)
     end
 
     def running_import_ids

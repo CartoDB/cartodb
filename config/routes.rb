@@ -294,6 +294,8 @@ CartoDB::Application.routes.draw do
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/imports/service/:id/list_files'          => 'imports#list_files_for_service',      as: :api_v1_1_imports_service_list_files
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/imports/service/:id/auth_url'            => 'imports#get_service_auth_url',        as: :api_v1_1_imports_service_auth_url
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/imports/service/:id/validate_code/:code' => 'imports#validate_service_oauth_code', as: :api_v1_1_imports_service_validate_code
+    # Must be GET verb despite altering state
+    get     '(/user/:user_domain)(/u/:user_domain)/api/v1_1/imports/service/:id/oauth_callback/'    => 'imports#service_oauth_callback',      as: :api_v1_1_imports_service_oauth_callback
 
     # Custom layers grouped by user
     get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/users/:user_id/layers'              => 'layers#index',   as: :api_v1_1_users_layers_index

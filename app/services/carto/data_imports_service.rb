@@ -99,6 +99,15 @@ module Carto
       delete_oauth_if_expired_and_raise(user, e, oauth)
     end
 
+    def validate_callback(user, service, params)
+      oauth = user.oauth_for_service(service)
+      raise CartoDB::Datasources::AuthError.new("OAuth already set for service #{service}") if oauth
+      datasource = get_datasource(user, service)
+      user.add_oauth(service, datasource.validate_callback(params))
+    rescue => e
+      delete_oauth_if_expired_and_raise(user, e, oauth)
+    end
+
     private
 
     def get_datasource(user, service)

@@ -364,10 +364,10 @@ class Admin::VisualizationsController < ApplicationController
   end
 
   def embed_map
-    if @cached
-      response.headers.merge! @cached[:headers].stringify_keys
+    if @cached_embed
+      response.headers.merge! @cached_embed[:headers].stringify_keys
       respond_to do |format|
-        format.html { render inline: @cached[:body] }
+        format.html { render inline: @cached_embed[:body] }
       end
     else
       resp = embed_map_actual
@@ -446,8 +446,8 @@ class Admin::VisualizationsController < ApplicationController
 
   def resolve_visualization_and_table_if_not_cached
     # TODO review the naming confusion about viz and tables, I suspect templates also need review
-    @cached = embed_redis_cache.get(@table_id)
-    if !@cached
+    @cached_embed = embed_redis_cache.get(@table_id)
+    if !@cached_embed
       resolve_visualization_and_table
     end
   end

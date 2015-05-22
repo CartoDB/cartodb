@@ -51,10 +51,7 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
       this.options.layer.unbind(null, null, this);
       this.options.layer
         .on('mouseover', function(e, latlng, pos, data) {
-<<<<<<< HEAD
 
-=======
->>>>>>> origin/develop
           if (this.options.fields && this.options.fields.length > 0) {
 
             var non_valid_keys = ['fields', 'content'];

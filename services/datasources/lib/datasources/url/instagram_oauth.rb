@@ -36,13 +36,12 @@ module CartoDB
 
           raise ServiceDisabledError.new(DATASOURCE_NAME, @user.username) unless @user.feature_flags.include?('instagram_import')
 
-          placeholder = CALLBACK_STATE_DATA_PLACEHOLDER.sub('user', @user.username).sub('service', DATASOURCE_NAME)
-          @callback_url = "#{config.fetch('callback_url')}?state=#{placeholder}"
-
+          service_name = DATASOURCE_NAME
           if(@user.has_feature_flag?('active_record_imports_service_endpoint'))
-             @callback_url.gsub!('/v1/', '/v1_1/')
+            service_name = "v1_1_#{service_name}"
           end
-
+          placeholder = CALLBACK_STATE_DATA_PLACEHOLDER.sub('user', @user.username).sub('service', service_name)
+          @callback_url = "#{config.fetch('callback_url')}?state=#{placeholder}"
 
           self.filter   = []
           @access_token = nil

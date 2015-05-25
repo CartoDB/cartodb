@@ -49,11 +49,6 @@ module CartoDB
 
           @user = user
           @callback_url = config.fetch('callback_url')
-
-          if(@user.has_feature_flag?('active_record_imports_service_endpoint'))
-             @callback_url.gsub!('/v1/', '/v1_1/')
-          end
-
           @client = Google::APIClient.new ({
               application_name: config.fetch('application_name')
           })
@@ -85,8 +80,12 @@ module CartoDB
         # @return string | nil
         def get_auth_url(use_callback_flow=true)
           if use_callback_flow
+            service_name = DATASOURCE_NAME
+            if(@user.has_feature_flag?('active_record_imports_service_endpoint'))
+              service_name = "v1_1_#{service_name}"
+            end
             @client.authorization.state = CALLBACK_STATE_DATA_PLACEHOLDER.sub('user', @user.username)
-                                                                         .sub('service', DATASOURCE_NAME)
+                                                                         .sub('service', service_name)
           else
             @client.authorization.redirect_uri = REDIRECT_URI
           end

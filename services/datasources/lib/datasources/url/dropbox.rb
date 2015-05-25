@@ -46,10 +46,6 @@ module CartoDB
           @app_secret         = config.fetch('app_secret')
           @callback_url       = config.fetch('callback_url')
 
-          if(@user.has_feature_flag?('active_record_imports_service_endpoint'))
-             @callback_url.gsub!('/v1/', '/v1_1/')
-          end
-
           self.filter   = []
           @access_token = nil
           @auth_flow    = nil
@@ -79,7 +75,11 @@ module CartoDB
           else
             @auth_flow = DropboxOAuth2FlowNoRedirect.new(@app_key, @app_secret)
           end
-          @auth_flow.start(CALLBACK_STATE_DATA_PLACEHOLDER.sub('user', @user.username).sub('service', DATASOURCE_NAME))
+          service_name = DATASOURCE_NAME
+          if(@user.has_feature_flag?('active_record_imports_service_endpoint'))
+            service_name = "v1_1_#{service_name}"
+          end
+          @auth_flow.start(CALLBACK_STATE_DATA_PLACEHOLDER.sub('user', @user.username).sub('service', service_name))
         rescue DropboxError, ArgumentError => ex
           raise AuthError.new("get_auth_url(#{use_callback_flow}): #{ex.message}", DATASOURCE_NAME)
         end

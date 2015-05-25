@@ -20,6 +20,19 @@ module Carto
         end
       end
 
+      def country_data_for
+        response = { admin1: ["polygon"], namedplace: ["point"] }
+        rows     = CartoDB::SQLApi.new({
+                                         username: 'geocoding',
+                                         timeout: GEOCODING_SQLAPI_CALLS_TIMEOUT
+                                       })
+                     .fetch("SELECT service FROM postal_code_coverage WHERE iso3 = (SELECT iso3 FROM country_decoder WHERE name = '#{params[:country_code]}')")
+                     .map { |i| i['service'] }
+        response[:postalcode] = rows if rows.size > 0
+
+        render json: response
+      end
+
       private
 
       def available_geometries_for_postalcode

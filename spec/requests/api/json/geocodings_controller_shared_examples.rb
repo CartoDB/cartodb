@@ -79,4 +79,26 @@ shared_examples_for "geocoding controllers" do
 
   end
 
+  describe 'country_data_for' do
+    include_context 'users helper'
+
+    before(:each) do
+      login(@user1)
+    end
+
+    it 'returns services and geometry types' do
+      country_code = 'es'
+      rows = [ { 'service' => 1 }, { 'service' => 1 }]
+      # INFO: this expectation is bound to implementation because it's used in a refactor
+      CartoDB::SQLApi.any_instance.expects(:fetch).with("SELECT service FROM postal_code_coverage WHERE iso3 = (SELECT iso3 FROM country_decoder WHERE name = '#{country_code}')").returns(rows)
+
+      get api_v1_geocodings_country_data_url(country_code: country_code)
+      last_response.status.should eq 200
+      body = JSON.parse(last_response.body)
+      body['admin1'].should eq ['polygon']
+      body['namedplace'].should eq ['point']
+      body['postalcode'].should eq rows.map { |r| r['service'] }
+    end
+  end
+
 end

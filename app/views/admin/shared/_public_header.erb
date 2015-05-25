@@ -4,9 +4,9 @@
       <ul class="Header-navigationList">
         <li class="js-logo">
           <% if cartodb_com_hosted? %>
-            <a href="http://cartodb.com">
-          <% else %>
             <a href="<%= CartoDB.url(self, 'root') %>">
+          <% else %>
+            <a href="http://cartodb.com">
           <% end %>
             <span class="Logo Logo--avatar">
               <i class="iconFont iconFont-CartoFante"></i>

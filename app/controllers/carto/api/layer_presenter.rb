@@ -102,7 +102,7 @@ module Carto
 
         # if the table_name already have a schema don't add another one.
         # This case happens when you share a layer already shared with you
-        return layer_opts['table_name'] if layer_opts['table_name'] && layer_opts['table_name'].include?('.')
+        return layer_opts['table_name'] if layer_opts['table_name'].include?('.')
 
         if @owner_user && @viewer_user
           @layer.qualified_table_name(@owner_user)
@@ -165,8 +165,7 @@ module Carto
 
       def layer_options
         layer_opts = @layer.options.nil? ? Hash.new : @layer.options
-
-        unless viewer_is_owner?
+        if layer_opts['table_name'] && !viewer_is_owner?
           layer_opts['table_name'] = qualify_table_name
         end
 
@@ -193,7 +192,7 @@ module Carto
           data = decorate_with_data(data, @decoration_data)
 
           if @viewer_user
-            unless viewer_is_owner?
+            if @layer.options['table_name'] && !viewer_is_owner?
               data['table_name'] = qualify_table_name
             end
             data['dynamic_cdn'] = @viewer_user.dynamic_cdn_enabled

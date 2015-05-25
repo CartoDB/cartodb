@@ -124,7 +124,7 @@ module Carto
       # INFO: this is the straightforward way, but sometimes it fails with "ActiveRecord::StatementInvalid: PG::Error: ERROR:  prepared statement "a1" does not exist" errors
       # user.synchronization_oauths.delete(oauth)
       oauth.destroy
-      user.reload
+      user.synchronization_oauths.delete(oauth)
     end
 
     def delete_oauth_if_expired_and_raise(user, e, oauth = nil)

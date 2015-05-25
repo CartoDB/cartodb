@@ -6,6 +6,8 @@ module Carto
 
       PUBLIC_VALUES = %W{ options kind infowindow tooltip id order parent_id }
 
+      # CSS is not stored by default, only when sent by frontend, 
+      # so this is returned whenever a layer that needs CSS but has none is requestesd
       EMPTY_CSS = '#dummy{}'
 
       TORQUE_ATTRS = %w(
@@ -82,15 +84,15 @@ module Carto
 
       private
 
-      def viewer_is_not_owner?
-        return (@owner_user.id != @viewer_user.id) if (@owner_user && @viewer_user)
+      def viewer_is_owner?
+        return (@owner_user.id == @viewer_user.id) if (@owner_user && @viewer_user)
 
         # This can be removed if 'user_name' support is dropped
         layer_opts = @layer.options.nil? ? Hash.new : @layer.options
         if @viewer_user && layer_opts['user_name'] && layer_opts['table_name']
-          @viewer_user.username != layer_opts['user_name']
+          @viewer_user.username == layer_opts['user_name']
         else
-          false
+          true
         end
       end
 
@@ -164,7 +166,7 @@ module Carto
       def layer_options
         layer_opts = @layer.options.nil? ? Hash.new : @layer.options
 
-        if viewer_is_not_owner?
+        unless viewer_is_owner?
           layer_opts['table_name'] = qualify_table_name
         end
 
@@ -191,7 +193,7 @@ module Carto
           data = decorate_with_data(data, @decoration_data)
 
           if @viewer_user
-            if viewer_is_not_owner?
+            unless viewer_is_owner?
               data['table_name'] = qualify_table_name
             end
             data['dynamic_cdn'] = @viewer_user.dynamic_cdn_enabled
@@ -287,10 +289,10 @@ module Carto
       end
 
       def default_query_for(layer_options)
-        if @viewer_user && viewer_is_not_owner?
-            "select * from #{qualify_table_name}"
-        else
+        if viewer_is_owner?
           "select * from #{layer_options['table_name']}"
+        else
+          "select * from #{qualify_table_name}"
         end
       end
 

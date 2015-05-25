@@ -314,15 +314,15 @@ CartoDB::Application.routes.draw do
     # Watching
     # TODO: deprecate?
     get     '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/:id/watching'                   => 'visualizations#list_watching',   as: :api_v1_1_visualizations_notify_watching, constraints: { id: /[^\/]+/ }
+
+    # Users
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1/get_authenticated_users' => 'users#get_authenticated_users', as: :api_v1_users_get_authenticated_user
   end
 
   scope :module => 'api/json', :format => :json do
 
     # V1
     # --
-
-    # Users
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1/get_authenticated_users' => 'users#get_authenticated_users', as: :api_v1_users_get_authenticated_user
 
     # Tables
     post '(/user/:user_domain)(/u/:user_domain)/api/v1/tables'     => 'tables#create', as: :api_v1_tables_create

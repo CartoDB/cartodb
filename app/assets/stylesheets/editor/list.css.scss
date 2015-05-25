@@ -1,0 +1,19 @@
+@import "../variables/mixins";
+@import "../variables/colors";
+@import "../variables/sizes";
+
+.List {
+  @include display-flex();
+  @include flex-direction(column);
+}
+.List-row {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center);
+  padding-top: $sMargin-group;
+  padding-bottom: $sMargin-group;
+  border-bottom: 1px solid $cStructure-mainLine;
+}
+.List-row:last-child {
+  border-bottom: none;
+}

@@ -4,6 +4,7 @@
 * Handle tooltip overflow (#482).
 * Only show tooltips when they have fields (#486).
 * Updated Torque to 2.11.3
+* Fix scrolling of infowindows with images (#490).
 
 3.14.2 (06//05//2015)
 * Allow to specify a template for the items of a custom legend.

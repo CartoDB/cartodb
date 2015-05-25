@@ -46,6 +46,10 @@ module CartoDB
           @app_secret         = config.fetch('app_secret')
           @callback_url       = config.fetch('callback_url')
 
+          if(@user.has_feature_flag?('active_record_imports_service_endpoint')
+             @callback_url.gsub!('/v1/', '/v1_1/')
+          end
+
           self.filter   = []
           @access_token = nil
           @auth_flow    = nil

@@ -49,6 +49,11 @@ module CartoDB
           placeholder = CALLBACK_STATE_DATA_PLACEHOLDER.sub('user', @user.username).sub('service', DATASOURCE_NAME)
           @callback_url = "#{config.fetch('callback_url')}?state=#{placeholder}"
 
+          if(@user.has_feature_flag?('active_record_imports_service_endpoint')
+             @callback_url.gsub!('/v1/', '/v1_1/')
+          end
+
+
           Gibbon::API.timeout = API_TIMEOUT_SECS
           Gibbon::API.throws_exceptions = true
           Gibbon::Export.timeout = API_TIMEOUT_SECS

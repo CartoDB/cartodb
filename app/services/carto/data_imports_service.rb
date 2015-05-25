@@ -42,9 +42,6 @@ module Carto
     end
 
     def validate_synchronization_oauth(user, service)
-      # TODO: remove this debug trace
-      Rollbar.report_message('validate_oauth', 'debug')
-
       oauth = user.oauth_for_service(service)
       return false unless oauth
 
@@ -120,7 +117,6 @@ module Carto
     end
 
     def delete_oauth(user, oauth)
-      Rollbar.report_message('validate_oauth: delete', 'debug', { oauth: oauth })
       # INFO: this is the straightforward way, but sometimes it fails with "ActiveRecord::StatementInvalid: PG::Error: ERROR:  prepared statement "a1" does not exist" errors
       # user.synchronization_oauths.delete(oauth)
       oauth.destroy

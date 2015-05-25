@@ -7,17 +7,9 @@ module Carto
 
       ssl_required :available_geometries, :country_data_for, :estimation_for, :get_countries
 
-      def available_geometries
-        case params[:kind]
-        when 'admin1'
-          return render(json: ['polygon'])
-        when 'namedplace'
-          return render(json: ['point'])
-        when 'postalcode'
-          return available_geometries_for_postalcode
-        else
-          return head(400)
-        end
+      def index
+        geocodings = Carto::Geocoding.where("user_id = ? AND (state NOT IN (?))", current_user.id, ['failed', 'finished', 'cancelled']).all
+        render json: { geocodings: geocodings }, root: false
       end
 
       def country_data_for
@@ -31,6 +23,28 @@ module Carto
         response[:postalcode] = rows if rows.size > 0
 
         render json: response
+      end
+
+      def get_countries
+        rows = CartoDB::SQLApi.new(
+          Cartodb.config[:geocoder]["internal"].symbolize_keys
+                                               .merge({timeout: GEOCODING_SQLAPI_CALLS_TIMEOUT})
+        )
+          .fetch("SELECT distinct(pol.name) iso3, pol.name FROM country_decoder pol ORDER BY pol.name ASC")
+        render json: rows
+      end
+
+      def available_geometries
+        case params[:kind]
+        when 'admin1'
+          return render(json: ['polygon'])
+        when 'namedplace'
+          return render(json: ['point'])
+        when 'postalcode'
+          return available_geometries_for_postalcode
+        else
+          return head(400)
+        end
       end
 
       def estimation_for
@@ -47,15 +61,6 @@ module Carto
       rescue => e
         CartoDB.notify_exception(e, params: params)
         render_jsonp( { description: e.message }, 500)
-      end
-
-      def get_countries
-        rows = CartoDB::SQLApi.new(
-          Cartodb.config[:geocoder]["internal"].symbolize_keys
-                                               .merge({timeout: GEOCODING_SQLAPI_CALLS_TIMEOUT})
-        )
-          .fetch("SELECT distinct(pol.name) iso3, pol.name FROM country_decoder pol ORDER BY pol.name ASC")
-        render json: rows
       end
 
       private

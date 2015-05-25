@@ -19,6 +19,7 @@ describe Carto::Api::GeocodingsController do
         get  '(/user/:user_domain)(/u/:user_domain)/api/v1/geocodings/country_data_for/:country_code' => 'geocodings#country_data_for',     as: :api_v1_geocodings_country_data
         get  '(/user/:user_domain)(/u/:user_domain)/api/v1/geocodings/estimation_for/:table_name'     => 'geocodings#estimation_for',       as: :api_v1_geocodings_estimation, constraints: { table_name: /[^\/]+/ }
         get  '(/user/:user_domain)(/u/:user_domain)/api/v1/geocodings/get_countries'                  => 'geocodings#get_countries',        as: :api_v1_geocodings_get_countries
+        get  '(/user/:user_domain)(/u/:user_domain)/api/v1/geocodings'                                => 'geocodings#index',                as: :api_v1_geocodings_index
       end
 
     end

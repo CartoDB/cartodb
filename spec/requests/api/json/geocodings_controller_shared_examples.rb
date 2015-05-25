@@ -139,4 +139,28 @@ shared_examples_for "geocoding controllers" do
 
   end
 
+  describe 'index' do
+    include_context 'users helper'
+
+    before(:each) do
+      login(@user1)
+    end
+
+    def remove_dates(geocoding_hash)
+      geocoding_hash.except('created_at', 'updated_at')
+    end
+
+    it 'returns started geocodings but not finished' do
+      geocoding1 = FactoryGirl.create(:geocoding, user: @user1, kind: 'high-resolution', created_at: Time.now, processed_rows: 1, state: 'started')
+      FactoryGirl.create(:geocoding, user: @user1, kind: 'high-resolution', created_at: Time.now, processed_rows: 1, state: 'finished')
+
+      get api_v1_geocodings_index_url
+      last_response.status.should eq 200
+
+      expected = {"geocodings"=>[{"table_name"=>nil, "processed_rows"=>1, "remote_id"=>nil, "formatter"=>nil, "state"=>"started", "cache_hits"=>0, "id"=>geocoding1.id, "user_id"=>@user1.id,"table_id"=>nil, "automatic_geocoding_id"=>nil, "kind"=>"high-resolution", "country_code"=>nil, "geometry_type"=>nil, "processable_rows"=>nil, "real_rows"=>nil, "used_credits"=>nil, "country_column"=>nil, "data_import_id"=>nil, "region_code"=>nil, "region_column"=>nil, "batched"=>nil}]}
+      received_without_dates = { 'geocodings' => JSON.parse(last_response.body)['geocodings'].map { |g| remove_dates(g) } }
+      received_without_dates.should == expected
+    end
+
+  end
 end

@@ -76,7 +76,7 @@ module Carto
       oauth = user.oauth_for_service(service)
       raise CartoDB::Datasources::AuthError.new("OAuth already set for service #{service}") if oauth
 
-      get_datasource(user, service).get_auth_url
+      get_datasource(user, service).get_auth_url.gsub('/v1/', '/v1_1/')
     end
 
     def validate_service_oauth_code(user, service, code)

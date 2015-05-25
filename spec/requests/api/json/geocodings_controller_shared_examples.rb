@@ -101,4 +101,24 @@ shared_examples_for "geocoding controllers" do
     end
   end
 
+  describe 'estimation_for' do
+    include_context 'users helper'
+    include_context 'visualization creation helpers'
+
+    before(:each) do
+      login(@user1)
+    end
+
+    it 'returns estimation and price' do
+      table = create_random_table(@user1)
+      table.insert_row!({name: 'estimation'})
+
+      get api_v1_geocodings_estimation_url(table_name: table.name)
+      last_response.status.should eq 200
+      body = JSON.parse(last_response.body)
+      body.should == { 'rows' => 1, 'estimation' => 0 }
+    end
+
+  end
+
 end

@@ -5,7 +5,7 @@ module Carto
     class GeocodingsController < ::Api::ApplicationController
       GEOCODING_SQLAPI_CALLS_TIMEOUT = 45
 
-      ssl_required :available_geometries
+      ssl_required :available_geometries, :country_data_for, :estimation_for
 
       def available_geometries
         case params[:kind]
@@ -33,7 +33,28 @@ module Carto
         render json: response
       end
 
+      def estimation_for
+        table = get_table(params[:table_name])
+        total_rows       = Carto::Geocoding.processable_rows(table)
+        remaining_quota  = logged_user.remaining_geocoding_quota
+        remaining_quota  = (remaining_quota > 0 ? remaining_quota : 0)
+        used_credits     = total_rows - remaining_quota
+        used_credits     = (used_credits > 0 ? used_credits : 0)
+        render json: {
+          rows:       total_rows,
+          estimation: (logged_user.geocoding_block_price.to_i * used_credits) / Carto::User::GEOCODING_BLOCK_SIZE.to_f
+        }
+      rescue => e
+        CartoDB.notify_exception(e, params: params)
+        render_jsonp( { description: e.message }, 500)
+      end
+
       private
+
+      # TODO: this should be moved upwards in the controller hierarchy, and make it a replacement for current_user
+     def logged_user
+       @logged_user ||= Carto::User.where(id: current_user.id).first
+      end
 
       def available_geometries_for_postalcode
         return head(400) unless params[:free_text] || (params[:column_name] && params[:table_name])

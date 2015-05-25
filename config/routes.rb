@@ -317,6 +317,7 @@ CartoDB::Application.routes.draw do
     # Geocodings
     get  '(/user/:user_domain)(/u/:user_domain)/api/v1_1/geocodings/available_geometries'           => 'geocodings#available_geometries', as: :api_v1_1_geocodings_available_geometries
     get  '(/user/:user_domain)(/u/:user_domain)/api/v1_1/geocodings/country_data_for/:country_code' => 'geocodings#country_data_for',     as: :api_v1_1_geocodings_country_data
+    get  '(/user/:user_domain)(/u/:user_domain)/api/v1_1/geocodings/estimation_for/:table_name'     => 'geocodings#estimation_for',       as: :api_v1_1_geocodings_estimation, constraints: { table_name: /[^\/]+/ }
   end
 
   scope :module => 'api/json', :format => :json do

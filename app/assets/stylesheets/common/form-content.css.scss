@@ -80,7 +80,7 @@ $sLabel-width: 140px;
   z-index: 0;
   background: transparent;
   &:before {
-    content: '';labelWidth
+    content: '';
     position: absolute;
     top: $sMargin-element;
     left: 0;

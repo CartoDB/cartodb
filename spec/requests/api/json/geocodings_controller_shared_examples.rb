@@ -139,15 +139,15 @@ shared_examples_for "geocoding controllers" do
 
   end
 
+  def remove_dates(geocoding_hash)
+    geocoding_hash.except('created_at', 'updated_at')
+  end
+
   describe 'index' do
     include_context 'users helper'
 
     before(:each) do
       login(@user1)
-    end
-
-    def remove_dates(geocoding_hash)
-      geocoding_hash.except('created_at', 'updated_at')
     end
 
     it 'returns started geocodings but not finished' do
@@ -159,6 +159,26 @@ shared_examples_for "geocoding controllers" do
 
       expected = {"geocodings"=>[{"table_name"=>nil, "processed_rows"=>1, "remote_id"=>nil, "formatter"=>nil, "state"=>"started", "cache_hits"=>0, "id"=>geocoding1.id, "user_id"=>@user1.id,"table_id"=>nil, "automatic_geocoding_id"=>nil, "kind"=>"high-resolution", "country_code"=>nil, "geometry_type"=>nil, "processable_rows"=>nil, "real_rows"=>nil, "used_credits"=>nil, "country_column"=>nil, "data_import_id"=>nil, "region_code"=>nil, "region_column"=>nil, "batched"=>nil}]}
       received_without_dates = { 'geocodings' => JSON.parse(last_response.body)['geocodings'].map { |g| remove_dates(g) } }
+      received_without_dates.should == expected
+    end
+
+  end
+
+  describe 'show' do
+    include_context 'users helper'
+
+    before(:each) do
+      login(@user1)
+    end
+
+    it 'returns requested geocoding' do
+      geocoding = FactoryGirl.create(:geocoding, user: @user1, kind: 'high-resolution', created_at: Time.now, processed_rows: 1, state: 'started')
+
+      get api_v1_geocodings_show_url(id: geocoding.id)
+      last_response.status.should eq 200
+
+      expected = {"id"=>geocoding.id, "table_id"=>nil, "state"=>"started", "kind"=>"high-resolution", "country_code"=>nil, "region_code"=>nil, "formatter"=>nil, "geometry_type"=>nil, "error"=>{"title"=>"Geocoding error", "description"=>""}, "processed_rows"=>1, "cache_hits"=>0, "processable_rows"=>nil, "real_rows"=>nil, "price"=>0, "used_credits"=>nil, "remaining_quota"=>999, "country_column"=>nil, "region_column"=>nil, "data_import_id"=>nil}
+      received_without_dates = remove_dates(JSON.parse(last_response.body))
       received_without_dates.should == expected
     end
 

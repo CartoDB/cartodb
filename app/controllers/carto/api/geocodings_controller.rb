@@ -12,6 +12,12 @@ module Carto
         render json: { geocodings: geocodings }, root: false
       end
 
+      def show
+        geocoding = Carto::Geocoding.where(user_id: current_user.id, id: params[:id]).first
+        raise RecordNotFound unless geocoding
+        render json: geocoding.public_values
+      end
+
       def country_data_for
         response = { admin1: ["polygon"], namedplace: ["point"] }
         rows     = CartoDB::SQLApi.new({

@@ -36,7 +36,7 @@ module CartoDB
 
       def to_vizjson_v2
         if base?(layer)
-          with_kind_as_type(layer.public_values.merge(children_for(layer)))
+          with_kind_as_type(layer.public_values.merge(children_for(layer))).symbolize_keys
         elsif torque?(layer)
           as_torque
         else
@@ -55,8 +55,14 @@ module CartoDB
         end
       end
 
+      # Old layers_controller directly does layer.to_json, but to be uniform with new controller, 
+      # always call through the presenter at least in tests 
+      def to_json(*args)
+        layer.to_json(*args)
+      end
+
       def to_vizjson_v1
-        return layer.public_values.merge(children_for(layer)) if base?(layer)
+        return layer.public_values.merge(children_for(layer)).symbolize_keys if base?(layer)
         {
           id:         layer.id,
           parent_id:  layer.parent_id,
@@ -70,17 +76,25 @@ module CartoDB
 
       def to_poro
         poro = layer.public_values.merge(children_for(layer))
-        if options[:viewer_user] and poro['options'] and poro['options']['table_name']
+
+        return poro unless poro['options']
+
+        # INFO changed to support new  presenter's way of sending owner
+        if @options[:user] && !poro['options']['user_name']
+          user_name = @options[:user].username
+          schema_name = @options[:user].sql_safe_database_schema
+        elsif poro['options']['user_name']
+          user_name = poro['options']['user_name']
+          schema_name = poro['options']['user_name']
+        end
+
+        if options[:viewer_user] && user_name && poro['options']['table_name']
           # if the table_name already have a schema don't add another one
           # this case happens when you share a layer already shared with you
-          if poro['options']['user_name'] != options[:viewer_user].username and not poro['options']['table_name'].include?('.')
-            user_name = poro['options']['user_name']
-            if user_name.include?('-')
-              table_name = "\"#{poro['options']['user_name']}\".#{poro['options']['table_name']}"
-            else
-              table_name = "#{poro['options']['user_name']}.#{poro['options']['table_name']}"
-            end
-            poro['options']['table_name'] = table_name
+          if user_name != options[:viewer_user].username && !poro['options']['table_name'].include?('.')
+            poro['options']['table_name'] = schema_name.include?('-') ? 
+              "\"#{schema_name}\".#{poro['options']['table_name']}" : 
+              "#{schema_name}.#{poro['options']['table_name']}"
           end
         end
         poro
@@ -92,19 +106,17 @@ module CartoDB
 
       def children_for(layer, as_hash=true)
         items = layer.children.nil? ? [] : layer.children.map { |child_layer| { id: child_layer.id } }
-        as_hash ? { children: items } : items
+        as_hash ? { 'children' => items } : items
       end
 
       # Decorates the layer presentation with data if needed. nils on the decoration act as removing the field
-      def decorate_with_data(source_hash, decoration_data=nil)
-        if not decoration_data.nil?
-          decoration_data.each { |key, value| 
-            source_hash[key] = value
-            source_hash.delete_if { |k, v| 
-              v.nil? 
-            }
+      def decorate_with_data(source_hash, decoration_data)
+        decoration_data.each { |key, value| 
+          source_hash[key] = value
+          source_hash.delete_if { |k, v| 
+            v.nil? 
           }
-        end
+        }
         source_hash
       end
 
@@ -192,8 +204,7 @@ module CartoDB
 
       def options_data_v2
         if options[:full]
-          full_data = decorate_with_data(layer.options, @decoration_data)
-          full_data.options
+          decorate_with_data(layer.options, @decoration_data)
         else
           sql = sql_from(layer.options)
           data = {
@@ -249,7 +260,9 @@ module CartoDB
       def default_query_for(layer_options)
         if options[:viewer_user]
           unless layer_options['user_name'] == options[:viewer_user].username
-            return "select * from \"#{layer_options['user_name']}\".#{layer_options['table_name']}"
+            name = layer_options['user_name'].include?('-') ? 
+              "\"#{layer_options['user_name']}\"" : layer_options['user_name']
+            return "select * from #{name}.#{layer_options['table_name']}"
           end
         end
         "select * from #{layer_options.fetch('table_name')}"

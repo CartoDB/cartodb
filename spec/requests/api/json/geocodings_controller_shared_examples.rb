@@ -121,4 +121,22 @@ shared_examples_for "geocoding controllers" do
 
   end
 
+  describe 'get_countries' do
+    include_context 'users helper'
+
+    before(:each) do
+      login(@user1)
+    end
+
+    it 'returns countries from geocoder' do
+      rows = ['Spain', 'USA']
+      CartoDB::SQLApi.any_instance.stubs(:fetch).returns(rows)
+
+      get api_v1_geocodings_get_countries_url
+      last_response.status.should eq 200
+      JSON.parse(last_response.body).should eq rows
+    end
+
+  end
+
 end

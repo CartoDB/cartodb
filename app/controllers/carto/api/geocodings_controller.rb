@@ -5,7 +5,7 @@ module Carto
     class GeocodingsController < ::Api::ApplicationController
       GEOCODING_SQLAPI_CALLS_TIMEOUT = 45
 
-      ssl_required :available_geometries, :country_data_for, :estimation_for
+      ssl_required :available_geometries, :country_data_for, :estimation_for, :get_countries
 
       def available_geometries
         case params[:kind]
@@ -47,6 +47,15 @@ module Carto
       rescue => e
         CartoDB.notify_exception(e, params: params)
         render_jsonp( { description: e.message }, 500)
+      end
+
+      def get_countries
+        rows = CartoDB::SQLApi.new(
+          Cartodb.config[:geocoder]["internal"].symbolize_keys
+                                               .merge({timeout: GEOCODING_SQLAPI_CALLS_TIMEOUT})
+        )
+          .fetch("SELECT distinct(pol.name) iso3, pol.name FROM country_decoder pol ORDER BY pol.name ASC")
+        render json: rows
       end
 
       private

@@ -86,6 +86,9 @@
     }
   }
 }
+.Button--secondaryTransparentBkg {
+  background-color: transparent;
+}
 .Button.is-disabled {
   @include opacity(0.4);
 }

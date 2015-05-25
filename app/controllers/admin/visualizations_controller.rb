@@ -262,10 +262,6 @@ class Admin::VisualizationsController < ApplicationController
   def show_organization_public_map
     return(embed_forbidden) unless org_user_has_map_permissions?(current_user, @visualization)
 
-    @can_fork = @visualization.related_tables.map { |t|
-      t.table_visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
-    }.all?
-
     response.headers['Cache-Control'] = "no-cache,private"
 
     @protected_map_tokens = current_user.get_auth_tokens

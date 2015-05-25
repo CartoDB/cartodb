@@ -89,7 +89,7 @@
             <% if @visualization.mapviews.presence %>
               <div class="PublicMap-stat PublicMap-stat--onRight">
                 <i class="iconFont iconFont-Stats"></i>
-                <%= number_with_delimiter(@visualization.mapviews) %> <%= 'mapview'.pluralize(@visualization.mapviews) %> last month
+                <%= number_with_delimiter(@mapviews) %> <%= 'mapview'.pluralize(@mapviews) %>
               </div>
             <% end %>
             <div class="PublicMap-stat PublicMap-stat--onRight">

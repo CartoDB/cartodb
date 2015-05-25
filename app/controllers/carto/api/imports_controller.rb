@@ -60,7 +60,7 @@ module Carto
       end
 
       def validate_service_oauth_code
-        Rollbar.report_message('validate_service_oauth_code', 'debug')
+        Rollbar.report_message('validate_service_oauth_code v1_1', 'debug')
         success = DataImportsService.new.validate_service_oauth_code(logged_user, params[:id], params[:code])
         render_jsonp({ success: success })
       rescue CartoDB::Datasources::TokenExpiredOrInvalidError => e
@@ -72,7 +72,7 @@ module Carto
       end
 
       def service_oauth_callback
-        Rollbar.report_message('service_oauth_callback', 'debug')
+        Rollbar.report_message('service_oauth_callback v1_1', 'debug')
         DataImportsService.new.validate_callback(logged_user, params[:id], params)
         request.format = 'html'
         respond_to do |format|

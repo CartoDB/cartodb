@@ -200,7 +200,7 @@ class Api::Json::ImportsController < Api::ApplicationController
 
   # Only of use if service is set to work in authorization code mode. Ignore for callback-based oauths
   def validate_service_oauth_code
-        Rollbar.report_message('validate_service_oauth_code', 'debug')
+        Rollbar.report_message('validate_service_oauth_code v1', 'debug')
     success = false
 
     oauth = current_user.oauths.select(params[:id])
@@ -258,7 +258,7 @@ class Api::Json::ImportsController < Api::ApplicationController
   end
 
   def service_oauth_callback
-        Rollbar.report_message('service_oauth_callback', 'debug')
+        Rollbar.report_message('service_oauth_callback v1', 'debug')
     oauth = current_user.oauths.select(params[:id])
     raise CartoDB::Datasources::AuthError.new("OAuth already set for service #{params[:id]}") unless oauth.nil?
 

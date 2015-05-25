@@ -35,7 +35,7 @@ class EmbedRedisCache
   end
 
   def invalidate(visualization_id)
-    redis.del [key(visualization_id, https_request=true) key(visualization_id, https_request=false)]
+    redis.del [key(visualization_id, https_request=true), key(visualization_id, https_request=false)]
   rescue Redis::BaseError => exception
     Rollbar.report_exception(exception)
     nil

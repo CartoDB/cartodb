@@ -50,7 +50,7 @@ module CartoDB
           @user = user
           @callback_url = config.fetch('callback_url')
 
-          if(@user.has_feature_flag?('active_record_imports_service_endpoint')
+          if(@user.has_feature_flag?('active_record_imports_service_endpoint'))
              @callback_url.gsub!('/v1/', '/v1_1/')
           end
 

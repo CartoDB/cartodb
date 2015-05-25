@@ -41,8 +41,7 @@ module Carto
       end
 
       def get_presenter(options, configuration)
-        # TODO: new layer presenter (will need propagation of current_viewer and owner)
-        CartoDB::Layer::Presenter.new(self, options, configuration)
+        Carto::Api::LayerPresenter.new(self, options, configuration)
       end
 
       def infowindow

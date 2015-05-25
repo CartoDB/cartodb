@@ -290,11 +290,11 @@ CartoDB::Application.routes.draw do
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/imports/:id'                      => 'imports#show',                        as: :api_v1_1_imports_show
 
     # Custom layers grouped by user
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/users/:user_id/layers'              => 'layers#index',   as: :api_v1_1_users_layers_index
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/users/:user_id/layers'              => 'layers#custom_layers_by_user',   as: :api_v1_1_users_layers_index
     # No show action
 
     # Map layers
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/maps/:map_id/layers'                => 'layers#index',   as: :api_v1_1_maps_layers_index
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/maps/:map_id/layers'                => 'layers#layers_by_map',   as: :api_v1_1_maps_layers_index
     get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/maps/:map_id/layers/:id'            => 'layers#show',    as: :api_v1_1_maps_layers_show
 
     # Maps

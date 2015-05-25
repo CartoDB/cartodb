@@ -347,8 +347,8 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
         var actual_height = self.$(".cartodb-popup-content").outerHeight();
         if (self.model.get('maxHeight') <= actual_height)
           self.$(".cartodb-popup-content").jScrollPane({
-            maintainPosition:       false,
-            verticalDragMinHeight:  20
+            verticalDragMinHeight: 20,
+            autoReinitialise: true
           });
       }, 1);
 

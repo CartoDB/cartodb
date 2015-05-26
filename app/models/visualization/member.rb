@@ -435,7 +435,7 @@ module CartoDB
         end
       end
 
-      def invalidate_all_visualizations_cache
+      def invalidate_all_varnish_vizsjon_keys
         user.invalidate_varnish_cache({regex: '.*:vizjson'})
       end
 
@@ -705,7 +705,8 @@ module CartoDB
         # previously we used 'invalidate_cache' but due to public_map displaying all the user public visualizations,
         # now we need to purgue everything to avoid cached stale data or public->priv still showing scenarios
         if name_changed || privacy_changed || table_privacy_changed || dirty
-          invalidate_all_visualizations_cache
+          invalidate_cache
+          invalidate_all_varnish_vizsjon_keys
         end
 
         set_timestamps

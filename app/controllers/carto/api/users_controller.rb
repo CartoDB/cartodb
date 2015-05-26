@@ -6,8 +6,7 @@ module Carto
       ssl_required :get_authenticated_users, :show
 
       def show
-        user = current_user
-        render json: user.data
+        render json: Carto::Api::UserPresenter.new(uri_user).data
       end
 
       def get_authenticated_users
@@ -17,7 +16,7 @@ module Carto
           render json: { error: "Referer #{referer} does not match" }, status: 400 and return
         end
 
-        if current_viewer.nil?
+        if session_user.nil?
           render json: {
                          urls: [],
                          username: nil,
@@ -28,7 +27,7 @@ module Carto
         subdomain = referer_match[1].gsub(CartoDB.session_domain, '').downcase
         # referer_match[6] is the username
         referer_organization_username = referer_match[6]
-        render_auth_users_data(current_viewer, referer, subdomain, referer_organization_username)
+        render_auth_users_data(session_user, referer, subdomain, referer_organization_username)
       end
 
       private
@@ -62,14 +61,26 @@ module Carto
         end
 
         render json: {
-          urls: ["#{CartoDB.base_url(current_viewer.username, organization_name)}#{CartoDB.path(self, 'dashboard_bis')}"],
-          username: current_viewer.username,
-          name: current_viewer.name_or_username,
-          avatar_url: current_viewer.avatar_url,
-          email: current_viewer.email,
-          organization: current_viewer.organization.nil? ? nil : current_viewer.organization.to_poro,
-          base_url: current_viewer.public_url,
+          urls: ["#{CartoDB.base_url(user.username, organization_name)}#{CartoDB.path(self, 'dashboard_bis')}"],
+          username: user.username,
+          name: user.name_or_username,
+          avatar_url: user.avatar_url,
+          email: user.email,
+          organization: Carto::Api::OrganizationPresenter.new(user.organization).to_poro,
+          base_url: user.public_url,
         }
+      end
+
+      # TODO: this should be moved upwards in the controller hierarchy, and make it a replacement for current_user
+      # URI present-user if has valid session, or nil
+      def uri_user
+        @uri_user ||= (current_user.nil? ? nil : Carto::User.where(id: current_user.id).first)
+      end
+
+      # TODO: this should be moved upwards in the controller hierarchy, and make it a replacement for current_viewer
+      # 1st user that has valid session, if coincides with URI then same as uri_user
+      def session_user
+        @session_user ||= (current_viewer.nil? ? nil : Carto::User.where(id: current_viewer.id).first)
       end
 
     end

@@ -64,7 +64,9 @@ module Carto
           billing_period: @user.last_billing_cycle,
           max_layers: @user.max_layers,
           api_key: @user.api_key,
-          layers: @user.layers.map(&:public_values),
+          layers: @user.layers.map { |layer|
+              Carto::Api::LayerPresenter.new(layer).to_poro
+            },
           trial_ends_at: @user.trial_ends_at,
           upgraded_at: @user.upgraded_at,
           show_trial_reminder: @user.trial_ends_at.present?,

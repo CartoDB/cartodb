@@ -234,4 +234,19 @@ class Carto::User < ActiveRecord::Base
     self.account_type.downcase == 'free' ? 1 : 3
   end
 
+  def arcgis_datasource_enabled?
+    self.arcgis_datasource_enabled == true
+  end
+
+  def private_maps_enabled?
+    flag_enabled = self.private_maps_enabled
+    return true if flag_enabled.present? && flag_enabled == true
+
+    #TODO: remove this after making sure we have flags inline with account types
+    return true if not self.account_type.match(/FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD/i)
+
+    return true if self.private_tables_enabled # Note private_tables_enabled => private_maps_enabled
+    return false
+  end
+
 end

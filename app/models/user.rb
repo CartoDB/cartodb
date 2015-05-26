@@ -2317,11 +2317,7 @@ TRIGGER
   # @see RedisVizjsonCache
   def purge_redis_vizjson_cache
     vizs = CartoDB::Visualization::Collection.new.fetch(user_id: self.id)
-    redis_vizjson_cache = CartoDB::Visualization::RedisVizjsonCache.new()
-    redis_http_keys  = vizs.map{ |v| redis_vizjson_cache.key(v.id, https_flag=false) }
-    redis_https_keys = vizs.map{ |v| redis_vizjson_cache.key(v.id, https_flag=true) }
-    redis_keys = redis_http_keys + redis_https_keys
-    redis_cache.del redis_keys unless redis_keys.empty?
+    CartoDB::Visualization::RedisVizjsonCache.new().purge(vizs)
   end
 
   # returns google maps api key. If the user is in an organization and 

@@ -33,6 +33,12 @@ module CartoDB
         "visualization:#{visualization_id}:vizjson:#{VERSION}:#{https_flag ? 'https' : 'http'}"
       end
 
+      def purge(vizs)
+        return unless vizs.count > 0
+        keys = vizs.map {|v| [key(v.id, false), key(v.id, true)]}.flatten
+        redis.del keys
+      end
+
 
       private
 

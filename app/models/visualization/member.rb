@@ -11,6 +11,7 @@ require_relative './like'
 require_relative '../table/privacy_manager'
 require_relative '../../../services/minimal-validation/validator'
 require_relative '../../../services/named-maps-api-wrapper/lib/named_maps_wrapper'
+require_relative '../../helpers/embed_redis_cache'
 require_relative './redis_vizjson_cache'
 
 # Every table has always at least one visualization (the "canonical visualization"), of type 'table',
@@ -296,6 +297,7 @@ module CartoDB
           description_html_safe.strip_tags
         end
       end
+
       def description_html_safe
         if description.present?
           renderer = Redcarpet::Render::Safe
@@ -315,6 +317,11 @@ module CartoDB
         self.privacy_changed = true if ( privacy != @privacy && !@privacy.nil? )
         super(privacy)
       end #privacy=
+
+      def tags=(tags)
+        tags.reject!(&:blank?) if tags
+        super(tags)
+      end
 
       def public?
         privacy == PRIVACY_PUBLIC
@@ -426,7 +433,7 @@ module CartoDB
         end
       end
 
-      def invalidate_all_visualizations_cache
+      def invalidate_all_varnish_vizsjon_keys
         user.invalidate_varnish_cache({regex: '.*:vizjson'})
       end
 
@@ -607,7 +614,9 @@ module CartoDB
 
       def invalidate_redis_cache
         @redis_vizjson_cache.invalidate(id)
+        embed_redis_cache.invalidate(self.id)
       end
+
 
 
 
@@ -615,6 +624,10 @@ module CartoDB
 
       attr_reader   :repository, :name_checker, :validator
       attr_accessor :privacy_changed, :name_changed, :old_name, :permission_change_valid, :dirty
+
+      def embed_redis_cache
+        @embed_redis_cache ||= EmbedRedisCache.new($tables_metadata)
+      end
 
       def calculate_vizjson(options={})
         vizjson_options = {
@@ -674,7 +687,8 @@ module CartoDB
         # previously we used 'invalidate_cache' but due to public_map displaying all the user public visualizations,
         # now we need to purgue everything to avoid cached stale data or public->priv still showing scenarios
         if name_changed || privacy_changed || table_privacy_changed || dirty
-          invalidate_all_visualizations_cache
+          invalidate_cache
+          invalidate_all_varnish_vizsjon_keys
         end
 
         set_timestamps

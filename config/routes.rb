@@ -275,10 +275,6 @@ CartoDB::Application.routes.draw do
 
     get '(/user/:user_domain)(/u/:user_domain)/api/v2_1/viz/:id/viz'                        => 'visualizations#vizjson2', as: :api_v2_1_visualizations_vizjson, constraints: { id: /[^\/]+/ }
 
-    # Tags
-    # TODO: deprecated?
-    get     '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/tags'                           => 'tags#index',                     as: :api_v1_1_visualizations_tags_index
-
     # Tables
     get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:id'                         => 'tables#show',       as: :api_v1_1_tables_show, constraints: { id: /[^\/]+/ }
 
@@ -294,11 +290,11 @@ CartoDB::Application.routes.draw do
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/imports/:id'                      => 'imports#show',                        as: :api_v1_1_imports_show
 
     # Custom layers grouped by user
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/users/:user_id/layers'              => 'layers#index',   as: :api_v1_1_users_layers_index
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/users/:user_id/layers'              => 'layers#custom_layers_by_user',   as: :api_v1_1_users_layers_index
     # No show action
 
     # Map layers
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/maps/:map_id/layers'                => 'layers#index',   as: :api_v1_1_maps_layers_index
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/maps/:map_id/layers'                => 'layers#layers_by_map',   as: :api_v1_1_maps_layers_index
     get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/maps/:map_id/layers/:id'            => 'layers#show',    as: :api_v1_1_maps_layers_show
 
     # Maps
@@ -318,15 +314,15 @@ CartoDB::Application.routes.draw do
     # Watching
     # TODO: deprecate?
     get     '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/:id/watching'                   => 'visualizations#list_watching',   as: :api_v1_1_visualizations_notify_watching, constraints: { id: /[^\/]+/ }
+
+    # Users
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1/get_authenticated_users' => 'users#get_authenticated_users', as: :api_v1_users_get_authenticated_user
   end
 
   scope :module => 'api/json', :format => :json do
 
     # V1
     # --
-
-    # Users
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1/get_authenticated_users' => 'users#get_authenticated_users', as: :api_v1_users_get_authenticated_user
 
     # Tables
     post '(/user/:user_domain)(/u/:user_domain)/api/v1/tables'     => 'tables#create', as: :api_v1_tables_create
@@ -401,8 +397,6 @@ CartoDB::Application.routes.draw do
     put  '(/user/:user_domain)(/u/:user_domain)/api/v1/geocodings/:id'                            => 'geocodings#update',               as: :api_v1_geocodings_update
 
     # Visualizations
-    # TODO: deprecated?
-    get     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/tags'                           => 'tags#index',                     as: :api_v1_visualizations_tags_index
     get     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz'                                => 'visualizations#index',           as: :api_v1_visualizations_index
     post    '(/user/:user_domain)(/u/:user_domain)/api/v1/viz'                                => 'visualizations#create',          as: :api_v1_visualizations_create
     get     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id'                            => 'visualizations#show',            as: :api_v1_visualizations_show,            constraints: { id: /[^\/]+/ }
@@ -424,9 +418,6 @@ CartoDB::Application.routes.draw do
     delete  '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/like'                       => 'visualizations#remove_like',     as: :api_v1_visualizations_remove_like,     constraints: { id: /[^\/]+/ }
 
 # Tags
-    # TODO: deprecated?
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1/tags' => 'tags#index', as: :api_v1_tags_index
-
     # Common data
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/common_data' => 'common_data#index', as: :api_v1_common_data_index
 

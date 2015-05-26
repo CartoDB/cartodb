@@ -112,6 +112,16 @@ describe Visualization::Member do
       member.tags.should include('tag 2')
     end
 
+    it 'prevents empty tags from being created' do
+      attributes = random_attributes_for_vis_member(user_id: @user_mock.id, tags: ['tag 1', '', '   '])
+      member = Visualization::Member.new(attributes)
+      member.store
+
+      member = Visualization::Member.new(id: member.id)
+      member.fetch
+      member.tags.should eq ['tag 1']
+    end
+
     it 'invalidates vizjson cache in varnish if name changed' do
       member      = Visualization::Member.new(random_attributes_for_vis_member(user_id: @user_mock.id))
       member.store

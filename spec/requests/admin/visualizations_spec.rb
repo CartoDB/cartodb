@@ -205,29 +205,6 @@ describe Admin::VisualizationsController do
       last_response.headers["Surrogate-Key"].should include(table.table_visualization.surrogate_key)
     end
 
-    it 'renders embed_map.js' do
-      table             = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC)
-      id                = table.table_visualization.id
-      payload           = { source_visualization_id: id }
-
-      post "/api/v1/viz?api_key=#{@api_key}", 
-        payload.to_json, @headers
-      last_response.status.should == 200
-
-      derived_visualization = JSON.parse(last_response.body)
-      id = derived_visualization.fetch('id')
-
-      login_as(@user, scope: 'test')
-
-      get "/viz/#{id}/embed_map.js", {}, @headers
-      last_response.status.should == 200
-      last_response.headers["X-Cache-Channel"].should_not be_empty
-      last_response.headers["X-Cache-Channel"].should include(table.name)
-      last_response.headers["Surrogate-Key"].should_not be_empty
-      last_response.headers["Surrogate-Key"].should include(CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES)
-      last_response.headers["Surrogate-Key"].should include(get_surrogate_key(CartoDB::SURROGATE_NAMESPACE_VISUALIZATION, id))
-    end
-
     it 'renders embed map error page if visualization private' do
       table = table_factory
       put "/api/v1/tables/#{table.id}?api_key=#{@api_key}",
@@ -241,10 +218,6 @@ describe Admin::VisualizationsController do
       get "/viz/#{name}/embed_map", {}, @headers
       last_response.status.should == 403
       last_response.body.should =~ /cartodb-embed-error/
-
-      get "/viz/#{name}/embed_map.js", {}, @headers
-      last_response.status.should == 403
-      last_response.body.should =~ /get_url_params/
     end
 
     it 'renders embed map error when an exception is raised' do
@@ -253,12 +226,34 @@ describe Admin::VisualizationsController do
       get "/viz/220d2f46-b371-11e4-93f7-080027880ca6/embed_map", {}, @headers
       last_response.status.should == 404
       last_response.body.should =~ /404/
-
-      get "/viz/220d2f46-b371-11e4-93f7-080027880ca6/embed_map.js", {}, @headers
-      last_response.status.should == 404
-      last_response.body.should =~ /404/
     end
   end # GET /viz/:name/embed_map
+
+  describe 'GET /viz/:id/embed_map' do
+    it 'caches and serves public embed map successful responses' do
+      id = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC).table_visualization.id
+      embed_redis_cache = EmbedRedisCache.new
+
+      embed_redis_cache.get(id, https=false).should == nil
+      get "/viz/#{id}/embed_map", {}, @headers
+      last_response.status.should == 200
+
+      # The https key/value pair should be differenent
+      embed_redis_cache.get(id, https=true).should == nil
+      last_response.status.should == 200
+
+      # It should be cached after the first request
+      embed_redis_cache.get(id, https=false).should_not be_nil
+      first_response = last_response
+
+      get "/viz/#{id}/embed_map", {}, @headers
+      last_response.status.should == 200
+      # Headers of both responses should be the same excluding some
+      remove_changing = lambda {|h| h.reject {|k, v| ['X-Request-Id', 'X-Runtime'].include?(k)} }
+      remove_changing.call(first_response.headers).should == remove_changing.call(last_response.headers)
+      first_response.body.should == last_response.body
+    end
+  end
 
   describe 'GET /viz/:name/track_embed' do
     it 'renders the view by passing a visualization name' do

@@ -26,7 +26,7 @@ module CartoDB
       end
 
       def invalidate(visualization_id)
-        redis.del keys [key(visualization_id, false), key(visualization_id, true)]
+        redis.del [key(visualization_id, false), key(visualization_id, true)]
       end
 
       def key(visualization_id, https_flag=false)

@@ -5,7 +5,7 @@ module Carto
     class GeocodingsController < ::Api::ApplicationController
       GEOCODING_SQLAPI_CALLS_TIMEOUT = 45
 
-      ssl_required :available_geometries, :country_data_for, :estimation_for, :get_countries
+      ssl_required :index, :show, :country_data_for, :get_countries, :available_geometries, :estimation_for
 
       def index
         geocodings = Carto::Geocoding.where("user_id = ? AND (state NOT IN (?))", current_user.id, ['failed', 'finished', 'cancelled']).all

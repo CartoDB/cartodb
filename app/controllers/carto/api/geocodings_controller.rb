@@ -73,7 +73,7 @@ module Carto
 
       # TODO: this should be moved upwards in the controller hierarchy, and make it a replacement for current_user
      def logged_user
-       @logged_user ||= Carto::User.where(id: current_user.id).first
+       @logged_user ||= Carto::User.where(id: current_viewer.id).first
       end
 
       def available_geometries_for_postalcode

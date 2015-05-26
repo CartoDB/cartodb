@@ -8,6 +8,7 @@ module Carto
 
       def initialize(visualization, redis_cache)
         @visualization = visualization
+        @redis_cache = redis_cache
         @redis_vizjson_cache = CartoDB::Visualization::RedisVizjsonCache.new(redis_cache)
       end
 

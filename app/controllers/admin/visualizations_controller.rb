@@ -222,7 +222,7 @@ class Admin::VisualizationsController < ApplicationController
     @avatar_url             = @visualization.user.avatar
     @google_maps_api_key = @visualization.user.google_maps_api_key
 
-    @mapviews = Carto::Visualization.where(id: @visualization.id).first.total_mapviews
+    @mapviews = CartoDB::Visualization::Member.new(id: @visualization.id).fetch.total_mapviews
 
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
     @visualization_count    = @visualization.user.public_visualization_count

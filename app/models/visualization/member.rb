@@ -97,7 +97,7 @@ module CartoDB
         self.permission_change_valid = true   # Changes upon set of different permission_id
         # this flag is passed to the table in case of canonical visualizations. It's used to say to the table to not touch the database and only change the metadata information, useful for ghost tables
         self.register_table_only = false
-        @redis_vizjson_cache = RedisVizjsonCache.new($tables_metadata)
+        @redis_vizjson_cache = RedisVizjsonCache.new()
       end
 
       def self.remote_member(name, user_id, privacy, description, tags, license, source)

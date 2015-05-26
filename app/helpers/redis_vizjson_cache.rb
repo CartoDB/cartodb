@@ -7,7 +7,7 @@ module CartoDB
       VERSION = '1'
 
 
-      def initialize(redis_cache)
+      def initialize(redis_cache=$tables_metadata)
         @redis = redis_cache
       end
 

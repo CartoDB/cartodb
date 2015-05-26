@@ -10,9 +10,9 @@ module CartoDB
     class Georeferencer
       DEFAULT_BATCH_SIZE = 50000
       LATITUDE_POSSIBLE_NAMES   = %w{ latitude lat latitudedecimal
-        latitud lati decimallatitude decimallat }
+        latitud lati decimallatitude decimallat point_latitude }
       LONGITUDE_POSSIBLE_NAMES  = %w{ longitude lon lng
-        longitudedecimal longitud long decimallongitude decimallong }
+        longitudedecimal longitud long decimallongitude decimallong point_longitude }
       GEOMETRY_POSSIBLE_NAMES   = %w{ geometry the_geom wkb_geometry geom geojson wkt }
       DEFAULT_SCHEMA            = 'cdb_importer'
       THE_GEOM_WEBMERCATOR      = 'the_geom_webmercator'

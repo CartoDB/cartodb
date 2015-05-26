@@ -33,6 +33,8 @@ module Carto
 
       def estimation_for
         table = get_table(params[:table_name])
+        render_jsonp( { description: "table #{params[:table_name]} doesn't exist" }, 500) and return unless table
+
         total_rows       = Carto::Geocoding.processable_rows(table)
         remaining_quota  = logged_user.remaining_geocoding_quota
         remaining_quota  = (remaining_quota > 0 ? remaining_quota : 0)

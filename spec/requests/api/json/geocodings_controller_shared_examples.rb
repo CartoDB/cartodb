@@ -59,21 +59,24 @@ shared_examples_for "geocoding controllers" do
     end
 
     describe 'GET /api/v1/geocodings/estimation_for' do
-      let(:table) { create_table(user_id: @user.id) }
       let(:params) { { :api_key => @user.api_key } }
 
       it 'returns the estimated geocoding cost for the specified table' do
+        table = create_table(user_id: @user.id)
         Geocoding.stubs(:processable_rows).returns(2)
+        Carto::Geocoding.stubs(:processable_rows).returns(2)
         get_json api_v1_geocodings_estimation_url(params.merge(table_name: table.name)) do |response|
           response.status.should be_success
           response.body.should == {:rows=>2, :estimation=>0}
         end
         Geocoding.stubs(:processable_rows).returns(1400)
+        Carto::Geocoding.stubs(:processable_rows).returns(1400)
         get_json api_v1_geocodings_estimation_url(params.merge(table_name: table.name)) do |response|
           response.status.should be_success
           response.body.should == {:rows=>1400, :estimation=>600}
         end
         Geocoding.stubs(:processable_rows).returns(1001)
+        Carto::Geocoding.stubs(:processable_rows).returns(1001)
         get_json api_v1_geocodings_estimation_url(params.merge(table_name: table.name)) do |response|
           response.status.should be_success
           response.body.should == {:rows=>1001, :estimation=>1.5}

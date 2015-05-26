@@ -67,20 +67,25 @@
     @include background-gradient(rgba(#F9F9F9,0),rgba(#F9F9F9,1));
   }
 }
-.FeatureData .Dialog-stickyFooter { z-index: 10 }
-.FeatureData-form,
-.FeatureData-footer {
+.FeatureData .Dialog-stickyFooter {
+  left: 0;
+  z-index: 10;
+}
+.FeatureData-formContent,
+.FeatureData-formFooter {
   width: 620px;
   margin: 0 auto;
 }
-.FeatureData-form {
+.FeatureData-formContent {
   position: relative;
-  padding: 28px 0 110px;
+  padding: 28px 0 120px;
 }
-.FeatureData-footer {
+.FeatureData-formFooter {
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
   background: #F9F9F9;
 }
-.FeatureData-footer .Button { margin: 0 }
+.FeatureData-formFooter .Button { margin: 0 }
+
+.FeatureData-loader { display: none }

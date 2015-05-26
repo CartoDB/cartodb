@@ -87,7 +87,7 @@ module HelperMethods
   end
 
   def get_last_response
-    (defined? last_response) ? last_response : nil
+    (defined? last_response) ? last_response : OpenStruct.new(:body => '')
   end
 
   def parse_json(response, &block)

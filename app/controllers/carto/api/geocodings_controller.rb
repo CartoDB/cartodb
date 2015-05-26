@@ -5,7 +5,7 @@ module Carto
     class GeocodingsController < ::Api::ApplicationController
       GEOCODING_SQLAPI_CALLS_TIMEOUT = 45
 
-      ssl_required :index, :show, :country_data_for, :get_countries, :available_geometries, :estimation_for
+      ssl_required :index, :show, :available_geometries, :estimation_for
 
       def index
         geocodings = Carto::Geocoding.where("user_id = ? AND (state NOT IN (?))", current_user.id, ['failed', 'finished', 'cancelled']).all
@@ -16,28 +16,6 @@ module Carto
         geocoding = Carto::Geocoding.where(user_id: current_user.id, id: params[:id]).first
         raise RecordNotFound unless geocoding
         render json: geocoding.public_values
-      end
-
-      def country_data_for
-        response = { admin1: ["polygon"], namedplace: ["point"] }
-        rows     = CartoDB::SQLApi.new({
-                                         username: 'geocoding',
-                                         timeout: GEOCODING_SQLAPI_CALLS_TIMEOUT
-                                       })
-                     .fetch("SELECT service FROM postal_code_coverage WHERE iso3 = (SELECT iso3 FROM country_decoder WHERE name = '#{params[:country_code]}')")
-                     .map { |i| i['service'] }
-        response[:postalcode] = rows if rows.size > 0
-
-        render json: response
-      end
-
-      def get_countries
-        rows = CartoDB::SQLApi.new(
-          Cartodb.config[:geocoder]["internal"].symbolize_keys
-                                               .merge({timeout: GEOCODING_SQLAPI_CALLS_TIMEOUT})
-        )
-          .fetch("SELECT distinct(pol.name) iso3, pol.name FROM country_decoder pol ORDER BY pol.name ASC")
-        render json: rows
       end
 
       def available_geometries

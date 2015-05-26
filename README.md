@@ -305,25 +305,9 @@ Check https://github.com/cartodb/cartodb-postgresql/ for further reference
 
 ## Install Ruby ##
 
-We implemented CartoDB in the [Ruby](http://ruby-lang.org) programming language, you'll need to install Ruby 1.9.3. You can use rvm, rbenv or a system install, up to you. For rvm and rbenv:
+We implemented CartoDB in the [Ruby](http://ruby-lang.org) programming language, you'll need to install Ruby 1.9.3. You can use rbenv or a system install, up to you.
 
-### rvm
-```bash
-sudo apt-get install curl
-sudo curl -L https://get.rvm.io | bash
-sudo su
-source /home/username/.rvm/scripts/rvm
-source /etc/profile.d/rvm.sh
-exit
-```
-Open the ~/.bash_profile file and add the `source ~/.profile` line at the end of the file
-
-Install Ruby and its related resources
-```bash
-rvm install 1.9.3
-sudo apt-get install ruby-bundler
-sudo apt-get install rubygems
-```
+For rbenv:
 
 ### rbenv
 Follow the official guide on https://github.com/sstephenson/rbenv#installation
@@ -494,12 +478,8 @@ cd cartodb
 #       configuration expects redis to be listening there
 redis-server
 
-# If you are using rvm, create a new gemset
-rvm use 1.9.3@cartodb --create && bundle install
 # If it's a system wide installation
 sudo bundle install
-# Make the created gemset your default one
-rvm use 1.9.3@cartodb --default
 
 # If you are using rbenv simply run:
 rbenv local 1.9.3-p551

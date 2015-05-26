@@ -59,32 +59,37 @@ module HelperMethods
 
   def get_json(path, params = {}, headers ={}, &block)
     get path, params, headers
-    response ||= last_response
-    response_parsed = response.body.blank? ? {} : ::JSON.parse(response.body)
-    yield OpenStruct.new(:body => (response_parsed.is_a?(Hash) ? response_parsed.symbolize_keys : response_parsed), :status => response.status, :headers => response.headers) if block_given?
+    the_response = get_response
+    response_parsed = the_response.body.blank? ? {} : ::JSON.parse(the_response.body)
+    yield OpenStruct.new(:body => (response_parsed.is_a?(Hash) ? response_parsed.symbolize_keys : response_parsed), :status => the_response.status, :headers => the_response.headers) if block_given?
   end
 
   def put_json(path, params = {}, headers ={}, &block)
     put path, params, headers
-    response ||= last_response
-    response_parsed = response.body.blank? ? {} : ::JSON.parse(response.body)
-    yield OpenStruct.new(:body => (response_parsed.is_a?(Hash) ? response_parsed.symbolize_keys : response_parsed), :status => response.status, :headers => response.headers) if block_given?
+    the_response = get_response
+    response_parsed = the_response.body.blank? ? {} : ::JSON.parse(the_response.body)
+    yield OpenStruct.new(:body => (response_parsed.is_a?(Hash) ? response_parsed.symbolize_keys : response_parsed), :status => the_response.status, :headers => the_response.headers) if block_given?
   end
 
   def post_json(path, params = {}, headers ={}, &block)
     headers = headers.merge({"CONTENT_TYPE" => 'application/json'})
     post path, JSON.dump(params), headers
-    response ||= last_response
-
-    response_parsed = response.body.blank? ? {} : ::JSON.parse(response.body)
-    yield OpenStruct.new(:body => (response_parsed.is_a?(Hash) ? response_parsed.symbolize_keys : response_parsed), :status => response.status, :headers => response.headers) if block_given?
+    the_response = get_response
+    response_parsed = the_response.body.blank? ? {} : ::JSON.parse(the_response.body)
+    yield OpenStruct.new(:body => (response_parsed.is_a?(Hash) ? response_parsed.symbolize_keys : response_parsed), :status => the_response.status, :headers => the_response.headers) if block_given?
   end
 
   def delete_json(path, params = {}, headers ={}, &block)
     delete path, params, headers
-    response ||= last_response
-    response_parsed = response.body.blank? ? {} : ::JSON.parse(response.body)
-    yield OpenStruct.new(:body => (response_parsed.is_a?(Hash) ? response_parsed.symbolize_keys : response_parsed), :status => response.status, :headers => response.headers) if block_given?
+    the_response = get_response
+    response_parsed = the_response.body.blank? ? {} : ::JSON.parse(the_response.body)
+    yield OpenStruct.new(:body => (response_parsed.is_a?(Hash) ? response_parsed.symbolize_keys : response_parsed), :status => the_response.status, :headers => the_response.headers) if block_given?
+  end
+
+  def get_response
+    the_response = response
+    the_response.nil? && (defined? last_response) ? last_response : nil
+    the_response
   end
 
   def parse_json(response, &block)

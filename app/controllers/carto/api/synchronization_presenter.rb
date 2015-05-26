@@ -27,7 +27,12 @@ module Carto
           state:            @synchronization.state,
           updated_at:       @synchronization.updated_at,
           url:              @synchronization.url,
-          user_id:          @synchronization.user_id
+          user_id:          @synchronization.user_id,
+          content_guessing: @synchronization.content_guessing,
+          etag:             @synchronization.etag,
+          log_id:           @synchronization.log_id,
+          quoted_fields_guessing: @synchronization.quoted_fields_guessing,
+          type_guessing:    @synchronization.type_guessing
         }
       end
 

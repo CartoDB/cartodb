@@ -2363,10 +2363,6 @@ TRIGGER
 
   private
 
-  def redis_cache
-    $tables_metadata
-  end
-
   # INFO: assigning to owner is necessary because of payment reasons
   def assign_search_tweets_to_organization_owner
     return if self.organization.nil? || self.organization.owner.nil? || self.id == self.organization.owner.id

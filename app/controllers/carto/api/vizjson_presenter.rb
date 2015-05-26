@@ -1,5 +1,5 @@
 require_relative '../../../models/visualization/vizjson'
-require_relative '../../../models/visualization/redis_vizjson_cache'
+require_relative '../../../helpers/redis_vizjson_cache'
 require_relative 'visualization_vizjson_adapter'
 
 module Carto

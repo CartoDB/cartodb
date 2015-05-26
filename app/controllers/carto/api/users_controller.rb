@@ -1,8 +1,14 @@
 module Carto
   module Api
     class UsersController < ::Api::ApplicationController
+
       skip_before_filter :api_authorization_required, only: [:get_authenticated_users]
-      ssl_required :get_authenticated_users
+      ssl_required :get_authenticated_users, :show
+
+      def show
+        user = current_user
+        render json: user.data
+      end
 
       def get_authenticated_users
         referer = request.env["HTTP_REFERER"]

@@ -52,8 +52,8 @@ shared_examples_for "geocoding controllers" do
       it 'does not return a geocoding owned by another user' do
         geocoding = FactoryGirl.create(:geocoding, table_id: UUIDTools::UUID.timestamp_create.to_s, formatter: 'b', user_id: UUIDTools::UUID.timestamp_create.to_s)
 
-        get_json api_v1_geocodings_show_url(params.merge(id: geocoding.id)) do |response|
-          response.status.should eq 404
+        get api_v1_geocodings_show_url(params.merge(id: geocoding.id)) do |response|
+          last_response.status.should eq 404
         end
       end
     end

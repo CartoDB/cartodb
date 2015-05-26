@@ -29,12 +29,8 @@ module CartoDB
           updated_at:     map.viz_updated_at,
 
           layers: [
-            CartoDB::Layer::Presenter.new(
-              map.base_layers.first, options, configuration
-            ).to_vizjson_v1,
-            CartoDB::Layer::Presenter.new(
-              map.data_layers.first, options, configuration
-            ).to_vizjson_v1
+            CartoDB::Layer::Presenter.new(map.base_layers.first, options, configuration).to_vizjson_v1,
+            CartoDB::Layer::Presenter.new(map.data_layers.first, options, configuration).to_vizjson_v1
           ]
         }
       end

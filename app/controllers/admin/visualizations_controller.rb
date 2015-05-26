@@ -262,10 +262,6 @@ class Admin::VisualizationsController < ApplicationController
   def show_organization_public_map
     return(embed_forbidden) unless org_user_has_map_permissions?(current_user, @visualization)
 
-    @can_fork = @visualization.related_tables.map { |t|
-      t.table_visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
-    }.all?
-
     response.headers['Cache-Control'] = "no-cache,private"
 
     @protected_map_tokens = current_user.get_auth_tokens
@@ -378,7 +374,8 @@ class Admin::VisualizationsController < ApplicationController
       resp = embed_map_actual
       if response.ok? && (@visualization.public? || @visualization.public_with_link?)
         #cache response
-        embed_redis_cache.set(@visualization.id, response.headers, response.body)
+        is_https = (request.protocol == 'https://')
+        embed_redis_cache.set(@visualization.id, is_https, response.headers, response.body)
       end
       resp
     end
@@ -450,8 +447,9 @@ class Admin::VisualizationsController < ApplicationController
   end
 
   def resolve_visualization_and_table_if_not_cached
+    is_https = (request.protocol == 'https://')
     # TODO review the naming confusion about viz and tables, I suspect templates also need review
-    @cached_embed = embed_redis_cache.get(@table_id)
+    @cached_embed = embed_redis_cache.get(@table_id, is_https)
     if !@cached_embed
       resolve_visualization_and_table
     end

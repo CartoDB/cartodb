@@ -86,7 +86,7 @@
             </div>
           </div>
           <div class="PublicMap-rightBlock PublicMap--rightAligned">
-            <% if @visualization.mapviews.presence %>
+            <% if !@mapviews.blank? %>
               <div class="PublicMap-stat PublicMap-stat--onRight">
                 <i class="iconFont iconFont-Stats"></i>
                 <%= number_with_delimiter(@mapviews) %> <%= 'mapview'.pluralize(@mapviews) %>

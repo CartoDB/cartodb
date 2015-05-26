@@ -17,13 +17,13 @@ module Carto
         }
       end
 
-      def data
+      def data(options = {})
         return {} if @user.nil?
         
-        calls = @user.get_api_calls(from: @user.last_billing_cycle, to: Date.today)
+        calls = @user.service.get_api_calls(from: @user.last_billing_cycle, to: Date.today)
         calls.fill(0, calls.size..29)
 
-        db_size_in_bytes = @user.db_size_in_bytes
+        db_size_in_bytes = @user.service.db_size_in_bytes
 
         data = {
           id: @user.id,
@@ -32,13 +32,13 @@ module Carto
           username: @user.username,
           account_type: @user.account_type,
           table_quota: @user.table_quota,
-          table_count: @user.table_count,
-          public_visualization_count: @user.public_visualization_count,
-          visualization_count: @user.visualization_count,
-          failed_import_count: @user.failed_import_count,
-          success_import_count: @user.success_import_count,
-          import_count: @user.import_count,
-          last_visualization_created_at: @user.last_visualization_created_at,
+          table_count: @user.service.table_count,
+          public_visualization_count: @user.service.public_visualization_count,
+          visualization_count: @user.service.visualization_count,
+          failed_import_count: failed_import_count,
+          success_import_count: success_import_count,
+          import_count: import_count,
+          last_visualization_created_at: last_visualization_created_at,
           quota_in_bytes: @user.quota_in_bytes,
           db_size_in_bytes: db_size_in_bytes,
           db_size_in_megabytes: db_size_in_bytes.present? ? (db_size_in_bytes / (1024.0 * 1024.0)).round(2) : nil,
@@ -58,7 +58,7 @@ module Carto
             quota:       @user.organization_user? ? @user.organization.twitter_datasource_quota           :  @user.twitter_datasource_quota,
             block_price: @user.organization_user? ? @user.organization.twitter_datasource_block_price     : @user.twitter_datasource_block_price,
             block_size:  @user.organization_user? ? @user.organization.twitter_datasource_block_size      : @user.twitter_datasource_block_size,
-            monthly_use: @user.organization_user? ? @user.organization.get_twitter_imports_count          : @user.get_twitter_imports_count,
+            monthly_use: @user.organization_user? ? @user.organization.twitter_imports_count          : @user.service.twitter_imports_count,
             hard_limit:  @user.hard_twitter_datasource_limit
           },
           billing_period: @user.last_billing_cycle,
@@ -85,9 +85,12 @@ module Carto
           base_url: @user.public_url
         }
 
-        data[:organization] = @user.organization.to_poro(self) if @user.organization.present?
+        if @user.organization.present?
+          data[:organization] = Carto::Api::OrganizationPresenter.new(@user.organization).to_poro(@user) 
+        end
 
         if options[:extended]
+          # TODO: This fields are pending migration
           data.merge({
             :real_table_count => @user.real_tables.size,
             :last_active_time => @user.get_last_active_time
@@ -95,6 +98,29 @@ module Carto
         else
           data
         end
+      end
+
+      private
+
+      def failed_import_count
+        Carto::DataImport.where(user_id: @user.id, state: 'failure').count
+      end
+
+      def success_import_count
+        Carto::DataImport.where(user_id: @user.id, state: 'complete').count
+      end
+
+      def import_count
+        DataImport.where(user_id: @user.id).count
+      end
+
+      def last_visualization_created_at
+        row_data = Carto::VisualizationQueryBuilder.new
+                                                   .with_user_id(@user.id)
+                                                   .with_order(:created_at, :desc)
+                                                   .build_paged(1, 1)
+                                                   .pluck(:created_at)
+        row_data.nil? ? nil : row_data[0]
       end
 
     end

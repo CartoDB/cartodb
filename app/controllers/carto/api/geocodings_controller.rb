@@ -93,7 +93,7 @@ module Carto
         geometries.append 'point' if points > 0 && points >= polygons
         geometries.append 'polygon' if polygons > 0 && polygons >= points
 
-        render(json: geometries || [])
+        render(json: geometries)
       rescue => e
         CartoDB.notify_exception(e, params: params)
       end

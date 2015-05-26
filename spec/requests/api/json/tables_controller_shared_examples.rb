@@ -14,10 +14,12 @@ shared_examples_for "tables controllers" do
       delete_user_data @user
     end
 
+    after(:all) do
+      delete_user_data @user
+      @user.destroy
+    end
 
     let(:params) { { :api_key => @user.api_key } }
-
-
 
     it 'returns table attributes' do
       table = create_table(

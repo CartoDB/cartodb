@@ -75,10 +75,7 @@ module CartoDB
           else
             @auth_flow = DropboxOAuth2FlowNoRedirect.new(@app_key, @app_secret)
           end
-          service_name = DATASOURCE_NAME
-          if(@user.has_feature_flag?('active_record_imports_service_endpoint'))
-            service_name = "v1_1_#{service_name}"
-          end
+          service_name = service_name_for_user(DATASOURCE_NAME, @user)
           @auth_flow.start(CALLBACK_STATE_DATA_PLACEHOLDER.sub('user', @user.username).sub('service', service_name))
         rescue DropboxError, ArgumentError => ex
           raise AuthError.new("get_auth_url(#{use_callback_flow}): #{ex.message}", DATASOURCE_NAME)

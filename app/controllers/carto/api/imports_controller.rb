@@ -26,73 +26,73 @@ module Carto
       end
 
       def service_token_valid?
-        valid = DataImportsService.new.validate_synchronization_oauth(logged_user, params[:id])
+        valid = DataImportsService.new.validate_synchronization_oauth(uri_user, params[:id])
         render_jsonp({ oauth_valid: valid, success: true })
       rescue CartoDB::Datasources::TokenExpiredOrInvalidError => e
-        CartoDB.notify_exception(e, { user: logged_user, params: params })
+        CartoDB.notify_exception(e, { user: uri_user, params: params })
         render_jsonp({ errors: e.message }, 401)
       rescue => e
-        CartoDB.notify_exception(e, { user: logged_user, params: params })
+        CartoDB.notify_exception(e, { user: uri_user, params: params })
         render_jsonp({ errors: e.message }, 400)
       end
 
       def list_files_for_service
         filter = params[:filter].present? ? params[:filter] : []
-        results = DataImportsService.new.get_service_files(logged_user, params[:id], filter)
+        results = DataImportsService.new.get_service_files(uri_user, params[:id], filter)
         render_jsonp({ files: results, success: true })
       rescue CartoDB::Datasources::TokenExpiredOrInvalidError => e
-        CartoDB.notify_exception(e, { user: logged_user, params: params })
+        CartoDB.notify_exception(e, { user: uri_user, params: params })
         render_jsonp({ errors: e.message }, 401)
       rescue => e
-        CartoDB.notify_exception(e, { user: logged_user, params: params })
+        CartoDB.notify_exception(e, { user: uri_user, params: params })
         render_jsonp({ errors: { imports: e.message } }, 400)
       end
 
       def get_service_auth_url
-        auth_url = DataImportsService.new.get_service_auth_url(logged_user, params[:id])
+        auth_url = DataImportsService.new.get_service_auth_url(uri_user, params[:id])
         render_jsonp({ url: auth_url, success: true})
       rescue CartoDB::Datasources::TokenExpiredOrInvalidError => e
-        CartoDB.notify_exception(e, { user: logged_user, params: params })
+        CartoDB.notify_exception(e, { user: uri_user, params: params })
         render_jsonp({ errors: e.message }, 401)
       rescue => e
-        CartoDB.notify_exception(e, { user: logged_user, params: params })
+        CartoDB.notify_exception(e, { user: uri_user, params: params })
         render_jsonp({ errors: { imports: e.message } }, 400)
       end
 
       def validate_service_oauth_code
         # TODO: remove debug trace
         Rollbar.report_message('validate_service_oauth_code v1_1', 'debug')
-        success = DataImportsService.new.validate_service_oauth_code(logged_user, params[:id], params[:code])
+        success = DataImportsService.new.validate_service_oauth_code(uri_user, params[:id], params[:code])
         render_jsonp({ success: success })
       rescue CartoDB::Datasources::TokenExpiredOrInvalidError => e
-        CartoDB.notify_exception(e, { user: logged_user, params: params })
+        CartoDB.notify_exception(e, { user: uri_user, params: params })
         render_jsonp({ errors: e.message }, 401)
       rescue => e
-        CartoDB.notify_exception(e, { user: logged_user, params: params })
+        CartoDB.notify_exception(e, { user: uri_user, params: params })
         render_jsonp({ errors: { imports: e.message } }, 400)
       end
 
       def service_oauth_callback
         # TODO: remove debug trace
         Rollbar.report_message('service_oauth_callback v1_1', 'debug')
-        DataImportsService.new.validate_callback(logged_user, params[:id], params)
+        DataImportsService.new.validate_callback(uri_user, params[:id], params)
         request.format = 'html'
         respond_to do |format|
           format.all  { render text: '<script>window.close();</script>', content_type: 'text/html' }
         end
       rescue CartoDB::Datasources::TokenExpiredOrInvalidError => e
-        CartoDB.notify_exception(e, { user: logged_user, params: params })
+        CartoDB.notify_exception(e, { user: uri_user, params: params })
         render_jsonp({ errors: e.message }, 401)
       rescue => e
-        CartoDB.notify_exception(e, { user: logged_user, params: params })
+        CartoDB.notify_exception(e, { user: uri_user, params: params })
         render_jsonp({ errors: { imports: e.message } }, 400)
       end
 
       private
 
       # TODO: this should be moved upwards in the controller hierarchy, and make it a replacement for current_user
-      def logged_user
-        @logged_user ||= Carto::User.where(id: current_user.id).first
+      def uri_user
+        @uri_user ||= Carto::User.where(id: current_user.id).first
       end
 
       def decorate_twitter_import_data!(data, data_import)

@@ -25,7 +25,7 @@ module Carto
         uuid = extract_uuid_from_string(uri.path)
         raise ActionController::RoutingError.new('UUID not found in URL') if uuid.nil?
 
-        vis = Visualization.where(id: @id).first
+        vis = Carto::Visualization.where(id: @id).first
         if !vis.nil?
           name = vis.name
         end

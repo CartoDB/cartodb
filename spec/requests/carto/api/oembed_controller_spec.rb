@@ -25,7 +25,7 @@ describe Api::Json::OembedController do
   describe '#private_url_methods_tests' do
 
     it 'Tests from_domainless_url()' do
-      controller = Api::Json::OembedController.new
+      controller = Carto::Api::OembedController.new
 
       protocol = 'http'
       domain = 'test.local'
@@ -65,7 +65,7 @@ describe Api::Json::OembedController do
     end
 
     it 'Tests from_url()' do
-      controller = Api::Json::OembedController.new
+      controller = Carto::Api::OembedController.new
 
       protocol = 'http'
       domain = '.test.local'
@@ -109,7 +109,7 @@ describe Api::Json::OembedController do
     end
 
     it 'Tests url_fields_from_fragments()' do
-      controller = Api::Json::OembedController.new
+      controller = Carto::Api::OembedController.new
 
       protocol = 'http'
       username = 'testuser'

@@ -8,6 +8,7 @@ class Carto::User < ActiveRecord::Base
   extend Forwardable
 
   MIN_PASSWORD_LENGTH = 6
+  GEOCODING_BLOCK_SIZE = 1000
 
   has_many :tables, class_name: 'Carto::UserTable', inverse_of: :user
   has_many :visualizations, inverse_of: :user
@@ -146,7 +147,28 @@ class Carto::User < ActiveRecord::Base
     default.first[1]
   end
 
+  def remaining_geocoding_quota(options = {})
+    geocoding_quota - get_geocoding_calls(options)
+  end
+
   private
 
+  def get_geocoding_calls(options = {})
+    date_to = (options[:to] ? options[:to].to_date : Date.today)
+    date_from = (options[:from] ? options[:from].to_date : last_billing_cycle)
+    self.geocodings.where(kind: 'high-resolution').where('created_at >= ? and created_at <= ?', date_from, date_to + 1.days)
+      .sum("processed_rows + cache_hits".lit).to_i
+  end
+
+  def last_billing_cycle
+    day = period_end_date.day rescue 29.days.ago.day
+    date = (day > Date.today.day ? (Date.today - 1.month) : Date.today)
+    begin
+      Date.parse("#{date.year}-#{date.month}-#{day}")
+    rescue ArgumentError
+      day = day - 1
+      retry
+    end
+  end
 
 end

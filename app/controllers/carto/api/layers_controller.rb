@@ -1,5 +1,5 @@
 
-require_relative '../../../helpers/carto/uuidhelper.rb'
+require_dependency 'lib/carto/uuidhelper'
 
 module Carto
   module Api

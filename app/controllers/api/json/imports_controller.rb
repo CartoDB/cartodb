@@ -4,7 +4,7 @@ require_relative '../../../../services/datasources/lib/datasources'
 require_relative '../../../models/visualization/external_source'
 require_relative '../../../../services/platform-limits/platform_limits'
 require_relative '../../../../services/importer/lib/importer/exceptions'
-require_relative '../../../helpers/carto/uuidhelper'
+require_dependency 'lib/carto/uuidhelper'
 
 class Api::Json::ImportsController < Api::ApplicationController
   include Carto::UUIDHelper

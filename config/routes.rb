@@ -299,11 +299,11 @@ CartoDB::Application.routes.draw do
     get     '(/user/:user_domain)(/u/:user_domain)/api/v1_1/imports/service/:id/oauth_callback/'    => 'imports#service_oauth_callback',      as: :api_v1_1_imports_service_oauth_callback
 
     # Custom layers grouped by user
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/users/:user_id/layers'              => 'layers#index',   as: :api_v1_1_users_layers_index
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/users/:user_id/layers'              => 'layers#custom_layers_by_user',   as: :api_v1_1_users_layers_index
     # No show action
 
     # Map layers
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/maps/:map_id/layers'                => 'layers#index',   as: :api_v1_1_maps_layers_index
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/maps/:map_id/layers'                => 'layers#layers_by_map',   as: :api_v1_1_maps_layers_index
     get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/maps/:map_id/layers/:id'            => 'layers#show',    as: :api_v1_1_maps_layers_show
 
     # Maps
@@ -321,17 +321,22 @@ CartoDB::Application.routes.draw do
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/synchronizations/:id/sync_now' => 'synchronizations#syncing?', as: :api_v1_1_synchronizations_syncing
 
     # Watching
-    # TODO: deprecate?
     get     '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/:id/watching'                   => 'visualizations#list_watching',   as: :api_v1_1_visualizations_notify_watching, constraints: { id: /[^\/]+/ }
+
+    # Geocodings
+    get  '(/user/:user_domain)(/u/:user_domain)/api/v1_1/geocodings/available_geometries'           => 'geocodings#available_geometries', as: :api_v1_1_geocodings_available_geometries
+    get  '(/user/:user_domain)(/u/:user_domain)/api/v1_1/geocodings/estimation_for/:table_name'     => 'geocodings#estimation_for',       as: :api_v1_1_geocodings_estimation, constraints: { table_name: /[^\/]+/ }
+    get  '(/user/:user_domain)(/u/:user_domain)/api/v1_1/geocodings'                                => 'geocodings#index',                as: :api_v1_1_geocodings_index
+    get  '(/user/:user_domain)(/u/:user_domain)/api/v1_1/geocodings/:id'                            => 'geocodings#show',                 as: :api_v1_1_geocodings_show
+
+    # Users
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1/get_authenticated_users' => 'users#get_authenticated_users', as: :api_v1_users_get_authenticated_user
   end
 
   scope :module => 'api/json', :format => :json do
 
     # V1
     # --
-
-    # Users
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1/get_authenticated_users' => 'users#get_authenticated_users', as: :api_v1_users_get_authenticated_user
 
     # Tables
     post '(/user/:user_domain)(/u/:user_domain)/api/v1/tables'     => 'tables#create', as: :api_v1_tables_create
@@ -397,9 +402,7 @@ CartoDB::Application.routes.draw do
 
     # Geocodings
     get  '(/user/:user_domain)(/u/:user_domain)/api/v1/geocodings/available_geometries'           => 'geocodings#available_geometries', as: :api_v1_geocodings_available_geometries
-    get  '(/user/:user_domain)(/u/:user_domain)/api/v1/geocodings/country_data_for/:country_code' => 'geocodings#country_data_for',     as: :api_v1_geocodings_country_data
     get  '(/user/:user_domain)(/u/:user_domain)/api/v1/geocodings/estimation_for/:table_name'     => 'geocodings#estimation_for',       as: :api_v1_geocodings_estimation, constraints: { table_name: /[^\/]+/ }
-    get  '(/user/:user_domain)(/u/:user_domain)/api/v1/geocodings/get_countries'                  => 'geocodings#get_countries',        as: :api_v1_geocodings_get_countries
     get  '(/user/:user_domain)(/u/:user_domain)/api/v1/geocodings'                                => 'geocodings#index',                as: :api_v1_geocodings_index
     get  '(/user/:user_domain)(/u/:user_domain)/api/v1/geocodings/:id'                            => 'geocodings#show',                 as: :api_v1_geocodings_show
     post '(/user/:user_domain)(/u/:user_domain)/api/v1/geocodings'                                => 'geocodings#create',               as: :api_v1_geocodings_create

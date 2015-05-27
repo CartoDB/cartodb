@@ -2,33 +2,39 @@
 @import "../variables/colors";
 @import "../variables/sizes";
 
-
 /**
  *  Date picker component
- *  
+ *  Defaults for dates range picker, i.e. two calendars and all that
  *  - Unfortunately re-using datepicker plugin styles :(
  */
-
 $border-radius: 4px;
+$sDates-defaultWidth: 434px;
 
 .DatePicker {
-  position:relative;
+  position: relative;
   width: 100%;
-  z-index:3;
+  z-index: 3;
 }
 .DatePicker-dates {
   position: relative;
   box-sizing: content-box;
   display: block;
-  width: 434px;
+  width: $sDates-defaultWidth;
   height: 38px;
-  padding: 0 12px;
+  padding: 0 $sMargin-elementInline;
   outline: none;
   border: 1px solid #CCC;
   border-radius: $border-radius;
   background: white;
   text-align: left;
   color: $cTypography-help;
+}
+.DatePicker-dates.has-icon {
+  padding-right: $sMargin-section + $sMargin-elementInline;
+  width: $sDates-defaultWidth - $sMargin-section;
+}
+.DatePicker-dates.DatePicker-dates--singleDate {
+  width: auto;
 }
 .DatePicker-dates strong {
   font-weight: $sFontWeight-normal;
@@ -106,7 +112,7 @@ $border-radius: 4px;
 
 // Calendar :S
 
-  // Default datepicker styles
+// Default datepicker styles
 .DatePicker-calendar {
   width: 100%;
   height: 200px;
@@ -157,9 +163,6 @@ $border-radius: 4px;
   height: 36px;
   text-align: center;
 }
-td.datepickerNotInMonth a {
-  // color: #666;
-}
 tbody.datepickerDays td.datepickerSelected{
   background: $cHighlight-main;
 }
@@ -169,13 +172,6 @@ tbody.datepickerDays td.datepickerNotInMonth.datepickerSelected {
 tbody.datepickerYears td.datepickerSelected,
 tbody.datepickerMonths td.datepickerSelected{
   background: #17384d;
-}
-// .DatePicker-calendar a:hover,
-// .DatePicker-calendar a:hover {
-//   color: #88c5eb;
-// }
-.DatePicker-calendar td.datepickerNotInMonth a:hover {
-  // color: #999;
 }
 .DatePicker-calendar tbody th {
   text-align: left;
@@ -276,7 +272,7 @@ td.datepickerSelected a {
 tbody.datepickerDays td.datepickerSelectedFirst.datepickerSelected,
 tbody.datepickerDays td.datepickerSelectedLast.datepickerSelected {
   background:$cHighlight-main;
-  
+
   a {
     background:white;
     color:$cHighlight-main;
@@ -318,12 +314,6 @@ thead > tr.datepickerDoW > th:first-child,
 
 // Remove data picker 'inside' arrows
 .datepickerContainer > table > tbody > tr td {
-  // &:first-child thead th.datepickerGoNext a {
-  //   display:none
-  // }
-  // &:last-child thead th.datepickerGoPrev a {
-  //   display:none
-  // }
   thead th.datepickerGoNext a,
   thead th.datepickerGoPrev a {
     display:none
@@ -335,22 +325,15 @@ thead > tr.datepickerDoW > th:first-child,
   cursor:default;
 }
 
-// .datepickerSpace {
-//   position:relative;
-  
-//   div {
-//     display: inline-block;
-//     height:100%;  
-//     width: 74px;
 
-//     &:before {
-//       content:'';
-//       position:absolute;
-//       top:0;
-//       left:38px;
-//       width:1px;
-//       height:100%;
-//       background:#CCCCCC;
-//     }
-//   }
-// }
+// Modify the default styles for a simple (date) calendar
+.DatePicker-calendar.DatePicker-calendar--simple {
+  width: 200px;
+  padding-top: $sMargin-elementInline;
+
+  // Enable defaults to enable back/forward for single calendar
+  .datepickerGoNext a,
+  .datepickerGoPrev a {
+    display: block;
+  }
+}

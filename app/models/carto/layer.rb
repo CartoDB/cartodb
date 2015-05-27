@@ -13,6 +13,16 @@ module Carto
 
     has_many :children, class_name: Carto::Layer, foreign_key: :parent_id
 
+    TEMPLATES_MAP = {
+      'table/views/infowindow_light' =>               'infowindow_light',
+      'table/views/infowindow_dark' =>                'infowindow_dark',
+      'table/views/infowindow_light_header_blue' =>   'infowindow_light_header_blue',
+      'table/views/infowindow_light_header_yellow' => 'infowindow_light_header_yellow',
+      'table/views/infowindow_light_header_orange' => 'infowindow_light_header_orange',
+      'table/views/infowindow_light_header_green' =>  'infowindow_light_header_green',
+      'table/views/infowindow_header_with_image' =>   'infowindow_header_with_image'
+    }
+
     def affected_tables
       (tables_from_query_option + tables_from_table_name_option).compact.uniq
     end
@@ -23,6 +33,24 @@ module Carto
 
     def qualified_table_name(viewer_user)
       "#{viewer_user.sql_safe_database_schema}.#{options['table_name']}"
+    end
+
+    def infowindow_template_path 
+      if self.infowindow.present? && self.infowindow['template_name'].present?
+        template_name = TEMPLATES_MAP.fetch(self.infowindow['template_name'], self.infowindow['template_name'])
+        Rails.root.join("lib/assets/javascripts/cartodb/table/views/infowindow/templates/#{template_name}.jst.mustache")
+      else
+        nil
+      end
+    end
+
+    def tooltip_template_path 
+      if self.tooltip.present? && self.tooltip['template_name'].present?
+        template_name = TEMPLATES_MAP.fetch(self.tooltip['template_name'], self.tooltip['template_name'])
+        Rails.root.join("lib/assets/javascripts/cartodb/table/views/tooltip/templates/#{template_name}.jst.mustache")
+      else
+        nil
+      end
     end
 
     private
@@ -54,5 +82,6 @@ module Carto
     def user
       @user ||= maps.first.user
     end
+
   end
 end

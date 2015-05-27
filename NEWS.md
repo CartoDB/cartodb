@@ -2,8 +2,13 @@
 3.10.3 (2015-mm-dd)
 ---
 * Cache public and with link embeds in redis [#3733](https://github.com/CartoDB/cartodb/pull/3733)
+* Unify caching of vizjsons and version keys [#3726](https://github.com/CartoDB/cartodb/pull/3726)
+
 Bugfixes:
 * Fixed deletion of layers upon disconnecting synced datasources [#3718](https://github.com/CartoDB/cartodb/pull/3718)
+* Fixed some cache invalidation problems upon changes in privacy (embeds & vizjson) [#3755](https://github.com/CartoDB/cartodb/pull/3755)
+* Fixed corner case with ghost table renames [#3762](https://github.com/CartoDB/cartodb/pull/3762)
+* Added options to create dataset from query while on the map view [#3771](https://github.com/CartoDB/cartodb/pull/3771)
 
 3.10.2 (2015-05-20)
 ---------

@@ -314,6 +314,9 @@ CartoDB::Application.routes.draw do
     # Watching
     # TODO: deprecate?
     get     '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/:id/watching'                   => 'visualizations#list_watching',   as: :api_v1_1_visualizations_notify_watching, constraints: { id: /[^\/]+/ }
+
+    # Oembed
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1/oembed' => 'oembed#show', as: :api_v1_oembed
   end
 
   scope :module => 'api/json', :format => :json do
@@ -439,8 +442,6 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/org/'      => 'organizations#show',  as: :api_v1_organization_show
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/org/users' => 'organizations#users', as: :api_v1_organization_users
 
-    # Oembed
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1/oembed' => 'oembed#show', as: :api_v1_oembed
 
     # V2
     # --

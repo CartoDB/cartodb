@@ -34,6 +34,7 @@ module CartoDB
 
       # Retrieve a list of all named maps
       def all
+        request_time = Time.now
         response = Typhoeus.get(@url + '?api_key=' + @api_key, {
           headers:          @headers,
           ssl_verifypeer:   @verify_cert,
@@ -43,7 +44,12 @@ module CartoDB
           timeout:          NamedMap::HTTP_REQUEST_TIMEOUT
         })
         raise HTTPResponseError, "GET:#{response.code} #{response.request.url} #{response.body}" if response.code != 200
-        namedmaps_logger.info({named_map_call: 'list', username: self.username, tiler_response_time: (response.total_time * 1000).round})
+        namedmaps_logger.info({
+          named_map_call: 'list',
+          username: self.username, 
+          tiler_response_time: (response.total_time * 1000).round,
+          requested_at: request_time
+        }.to_json)
 
         ::JSON.parse(response.response_body)
       end
@@ -52,6 +58,7 @@ module CartoDB
       def get(name)
         raise NamedMapsDataError, { 'name' => 'mising' } if name.nil? or name.length == 0
 
+        request_time = Time.now
         response = Typhoeus.get( [@url, name ].join('/') + '?api_key=' + @api_key, {
           headers:          @headers,
           ssl_verifypeer:   @verify_cert,
@@ -74,7 +81,13 @@ module CartoDB
         else
           raise HTTPResponseError, "GET:#{response.code} #{response.request.url} #{response.body}"
         end
-        namedmaps_logger.info({named_map_call: 'show', name: name, username: self.username, tiler_response_time: (response.total_time * 1000).round})
+        namedmaps_logger.info({
+          named_map_call: 'show', 
+          name: name, 
+          username: self.username, 
+          tiler_response_time: (response.total_time * 1000).round,
+          requested_at: request_time
+        }.to_json)
         return named_map
       end
 

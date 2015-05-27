@@ -222,6 +222,8 @@ class Admin::VisualizationsController < ApplicationController
     @avatar_url             = @visualization.user.avatar
     @google_maps_api_key = @visualization.user.google_maps_api_key
 
+    @mapviews = @visualization.total_mapviews
+
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
     @visualization_count    = @visualization.user.public_visualization_count
     @related_tables         = @visualization.related_tables
@@ -261,10 +263,6 @@ class Admin::VisualizationsController < ApplicationController
 
   def show_organization_public_map
     return(embed_forbidden) unless org_user_has_map_permissions?(current_user, @visualization)
-
-    @can_fork = @visualization.related_tables.map { |t|
-      t.table_visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
-    }.all?
 
     response.headers['Cache-Control'] = "no-cache,private"
 

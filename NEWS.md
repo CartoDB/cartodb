@@ -2,6 +2,7 @@
 3.10.3 (2015-mm-dd)
 ---
 * Cache public and with link embeds in redis [#3733](https://github.com/CartoDB/cartodb/pull/3733)
+* Unify caching of vizjsons and version keys [#3726](https://github.com/CartoDB/cartodb/pull/3726)
 
 Bugfixes:
 * Fixed deletion of layers upon disconnecting synced datasources [#3718](https://github.com/CartoDB/cartodb/pull/3718)

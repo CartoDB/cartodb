@@ -170,7 +170,7 @@ class Carto::User < ActiveRecord::Base
       token: token
     })
     synchronization_oauth.save
-    self.reload
+    synchronization_oauths.append(synchronization_oauth)
     synchronization_oauth
   end
 

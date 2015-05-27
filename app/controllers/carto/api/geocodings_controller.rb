@@ -89,7 +89,7 @@ module Carto
       end
 
       def get_table(table_name)
-        Helpers::TableLocator.new.get_by_id_or_name(table_name, current_user)
+        Carto::Helpers::TableLocator.new.get_by_id_or_name(table_name, uri_user)
       end
 
     end

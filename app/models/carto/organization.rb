@@ -14,7 +14,7 @@ module Carto
 
     def twitter_imports_count(options = {})
     users.map{ |u| 
-        u.service.twitter_imports_count(options) 
+        u.twitter_imports_count(options) 
       }.sum
   end
 

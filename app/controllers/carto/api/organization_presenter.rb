@@ -9,7 +9,6 @@ module Carto
 
       def to_poro(filtered_user = nil)
         return {} if @organization.nil?
-
         filtered_user ||= @organization.owner
         {
           :created_at       => @organization.created_at,

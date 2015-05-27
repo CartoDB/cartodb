@@ -4,7 +4,6 @@ require_relative '../spec_helper'
 
 describe Carto::Api::UserPresenter do
 
-
   it "Compares old and new ways of 'presenting' user data" do
 
     # Non-org user
@@ -46,23 +45,50 @@ describe Carto::Api::UserPresenter do
           '#{data_import_id}');
       })
 
-    
+    create_table( { user_id: user.id, name: 'table1' } )
+    create_table( { user_id: user.id, name: 'table2', privacy: Carto::UserTable::PRIVACY_PUBLIC } )
 
-    # TODO: Create or fake some tables and visualizations
-    # TODO: Add some feature flags to test
+    feature_flag1 = FactoryGirl.create(:feature_flag, id: 1, name: 'ff1')
+    feature_flag2 = FactoryGirl.create(:feature_flag, id: 2, name: 'ff2')
+    user.set_relationships_from_central({ feature_flags: [ feature_flag1.id.to_s, feature_flag2.id.to_s ]})
+    user.save
 
     compare_data(user.data, Carto::Api::UserPresenter.new(Carto::User.where(id: user.id).first).data, false)
 
-    # Now we add it to an org
-    organization = create_org('testorg', 10.megabytes, 5)
-    user.organization = organization
-    user.save
-    organization.owner_id = user.id
-    organization.save
-    organization.reload
-    user.reload
+    # Now org user, organization and another member
 
-    compare_data(user.data, Carto::Api::UserPresenter.new(Carto::User.where(id: user.id).first).data, true)
+    owner = create_user({ 
+        email: 'owner@carto.com', 
+        username: 'owner', 
+        password: 'owner123',
+        name: "owner name",
+        sync_tables_enabled: true,
+        private_tables_enabled: true,
+        twitter_datasource_enabled: true,
+        twitter_datasource_block_size: 1000,
+        twitter_datasource_block_price: 10,
+        twitter_datasource_quota: 70000,
+        soft_twitter_datasource_limit: true
+      })
+
+    organization = ::Organization.new(quota_in_bytes: 200.megabytes, name: 'testorg', seats: 5).save
+    user_org = CartoDB::UserOrganization.new(organization.id, owner.id)
+    user_org.promote_user_to_admin
+    organization.reload
+    owner.reload
+
+    user2 = create_user({ 
+        email: 'example2@carto.com', 
+        username: 'example2', 
+        password: 'example123'
+      })
+
+    user2.organization = organization
+    user2.save
+    user2.reload
+    organization.reload
+
+    compare_data(owner.data, Carto::Api::UserPresenter.new(Carto::User.where(id: owner.id).first).data, true)
   end
 
   protected
@@ -131,6 +157,8 @@ describe Carto::Api::UserPresenter do
       new_data[:organization][:seats].should == old_data[:organization][:seats]
       new_data[:organization][:twitter_username].should == old_data[:organization][:twitter_username]
       new_data[:organization][:updated_at].should == old_data[:organization][:updated_at]
+      #owner is excluded from the users list
+      new_data[:organization][:users].count.should eq 1
       new_data[:organization][:users].should == old_data[:organization][:users]
       new_data[:organization][:website].should == old_data[:organization][:website]
       new_data[:organization][:avatar_url].should == old_data[:organization][:avatar_url]

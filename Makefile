@@ -15,6 +15,7 @@ WORKING_SPECS_1 = \
   spec/models/table_spec.rb \
 	spec/models/table/relator_spec.rb \
   spec/models/user_spec.rb \
+  spec/models/user_presenter_spec.rb \
   spec/models/layer_spec.rb \
   spec/models/layer/presenter_spec.rb \
   spec/requests/api/json/layer_presenter_spec.rb \

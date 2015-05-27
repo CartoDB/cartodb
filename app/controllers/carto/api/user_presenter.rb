@@ -20,10 +20,10 @@ module Carto
       def data(options = {})
         return {} if @user.nil?
         
-        calls = @user.service.get_api_calls(from: @user.last_billing_cycle, to: Date.today)
+        calls = @user.get_api_calls(from: @user.last_billing_cycle, to: Date.today)
         calls.fill(0, calls.size..29)
 
-        db_size_in_bytes = @user.service.db_size_in_bytes
+        db_size_in_bytes = @user.db_size_in_bytes
 
         data = {
           id: @user.id,
@@ -32,9 +32,9 @@ module Carto
           username: @user.username,
           account_type: @user.account_type,
           table_quota: @user.table_quota,
-          table_count: @user.service.table_count,
-          public_visualization_count: @user.service.public_visualization_count,
-          visualization_count: @user.service.visualization_count,
+          table_count: @user.table_count,
+          public_visualization_count: @user.public_visualization_count,
+          visualization_count: @user.visualization_count,
           failed_import_count: failed_import_count,
           success_import_count: success_import_count,
           import_count: import_count,
@@ -58,7 +58,7 @@ module Carto
             quota:       @user.organization_user? ? @user.organization.twitter_datasource_quota           :  @user.twitter_datasource_quota,
             block_price: @user.organization_user? ? @user.organization.twitter_datasource_block_price     : @user.twitter_datasource_block_price,
             block_size:  @user.organization_user? ? @user.organization.twitter_datasource_block_size      : @user.twitter_datasource_block_size,
-            monthly_use: @user.organization_user? ? @user.organization.twitter_imports_count          : @user.service.twitter_imports_count,
+            monthly_use: @user.organization_user? ? @user.organization.twitter_imports_count          : @user.twitter_imports_count,
             hard_limit:  @user.hard_twitter_datasource_limit
           },
           billing_period: @user.last_billing_cycle,

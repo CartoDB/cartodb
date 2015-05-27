@@ -370,7 +370,7 @@ class Admin::VisualizationsController < ApplicationController
     if @cached_embed
       response.headers.merge! @cached_embed[:headers].stringify_keys
       respond_to do |format|
-        format.html { render body: @cached_embed[:body] }
+        format.html { render inline: "<%= @cached_embed[:body].html_safe %>" }
       end
     else
       resp = embed_map_actual

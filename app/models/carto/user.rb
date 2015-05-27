@@ -158,10 +158,20 @@ class Carto::User < ActiveRecord::Base
   end
 
   def add_oauth(service, token)
-    synchronization_oauths.create(
-        service:  service,
-        token:    token
-    )
+    # INFO: this should be the right way, but there's a problem with pgbouncer:
+    # ActiveRecord::StatementInvalid: PG::Error: ERROR:  prepared statement "a1" does not exist
+    #synchronization_oauths.create(
+    #    service:  service,
+    #    token:    token
+    #)
+    synchronization_oauth = Carto::SynchronizationOauth.new({
+      user_id: self.id,
+      service: service,
+      token: token
+    })
+    synchronization_oauth.save
+    self.reload
+    synchronization_oauth
   end
 
   private

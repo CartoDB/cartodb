@@ -857,7 +857,7 @@ NamedMap.prototype = _.extend({}, MapBase.prototype, {
 
   setAuthToken: function(token) {
     if(!this.isHttps()) {
-      throw new Error("https must be used when auth_token is set");
+      throw new Error("https must be used when map has token authentication");
     }
     this.options.extra_params = this.options.extra_params || {};
     this.options.extra_params.auth_token = token;

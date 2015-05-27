@@ -831,10 +831,13 @@ var Vis = cdb.core.View.extend({
     var self = this;
     for (var i = layers.length - 1; i >= 0; --i) {
       var cid = layers.at(i).cid;
-      var layer = layers.at(i).attributes
+      var layer = layers.at(i).attributes;
       if (layer.visible) {
         var layerView = this.mapView.getLayerByCid(cid);
-        legends.push(this._createLayerLegendView(layer, layerView));
+        if (layerView) {
+          var layerView = this.mapView.getLayerByCid(cid);
+          legends.push(this._createLayerLegendView(layer, layerView));
+        }
       }
     }
     return _.flatten(legends);

@@ -151,7 +151,7 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
         try {
           layer_view = new layerClass(layer, this.map_googlemaps);
         } catch(e) {
-          cdb.log.error("MAP: error creating layer" + layer.get('type') + " " + e);
+          cdb.log.error("MAP: error creating '" +  layer.get('type') + "' layer -> " + e.message);
         }
       } else {
         cdb.log.error("MAP: " + layer.get('type') + " can't be created");

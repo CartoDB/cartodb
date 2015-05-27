@@ -23,6 +23,10 @@ module CartoDB
         }
       end
 
+      def namedmaps_logger
+        @@namedmaps_logger ||= ::Logger.new("#{Rails.root}/log/named_maps.log")
+      end 
+
       # Create a new named map and return its instance (or nil if couldn't create)
       def create(visualization)
         NamedMap.create_new(visualization, self)
@@ -39,6 +43,7 @@ module CartoDB
           timeout:          NamedMap::HTTP_REQUEST_TIMEOUT
         })
         raise HTTPResponseError, "GET:#{response.code} #{response.request.url} #{response.body}" if response.code != 200
+        namedmaps_logger.info({named_map_call: 'list', username: self.username, tiler_response_time: (response.total_time * 1000).round})
 
         ::JSON.parse(response.response_body)
       end
@@ -56,18 +61,21 @@ module CartoDB
           timeout:          NamedMap::HTTP_REQUEST_TIMEOUT
         })
 
+
         if response.code == 200
           template_data = ::JSON.parse(response.response_body)
           if template_data.class == Hash
             template_data = template_data.deep_symbolize_keys   # Rails 2.x+
           end
-          NamedMap.new(name, template_data, self)
+          named_map = NamedMap.new(name, template_data, self)
         elsif response.code == 404
           # Request ok, template with provided name not found
-          nil
+          named_map = nil
         else
           raise HTTPResponseError, "GET:#{response.code} #{response.request.url} #{response.body}"
         end
+        namedmaps_logger.info({named_map_call: 'show', name: name, username: self.username, tiler_response_time: (response.total_time * 1000).round})
+        return named_map
       end
 
       attr_reader :url, :api_key, :username, :headers, :host, :vizjson_config, :verify_cert, :verify_host

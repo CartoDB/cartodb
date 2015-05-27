@@ -5,6 +5,7 @@ require 'spec_helper'
 shared_examples_for "geocoding controllers" do
 
   describe 'legacy behaviour tests' do
+    let(:params) { { :api_key => @user.api_key } }
 
     before(:all) do
       @user = create_user(username: 'test')
@@ -22,7 +23,6 @@ shared_examples_for "geocoding controllers" do
     end
 
     describe 'GET /api/v1/geocodings' do
-      let(:params) { { :api_key => @user.api_key } }
 
       it 'returns every geocoding belonging to current_user' do
         FactoryGirl.create(:geocoding, table_name: 'a', formatter: 'b', user: @user, state: 'wadus')
@@ -35,7 +35,6 @@ shared_examples_for "geocoding controllers" do
     end
 
     describe 'GET /api/v1/geocodings/:id' do
-      let(:params) { { :api_key => @user.api_key } }
 
       it 'returns a geocoding' do
         geocoding = FactoryGirl.create(:geocoding, table_id: UUIDTools::UUID.timestamp_create.to_s, formatter: 'b', user: @user, used_credits: 100, processed_rows: 100, kind: 'high-resolution')
@@ -59,7 +58,6 @@ shared_examples_for "geocoding controllers" do
     end
 
     describe 'GET /api/v1/geocodings/estimation_for' do
-      let(:params) { { :api_key => @user.api_key } }
 
       it 'returns the estimated geocoding cost for the specified table' do
         table = create_table(user_id: @user.id)

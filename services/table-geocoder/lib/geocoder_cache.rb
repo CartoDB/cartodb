@@ -82,7 +82,8 @@ module CartoDB
           WHERE orig.cartodb_georef_status IS NOT NULL
           LIMIT #{@batch_size} OFFSET #{count * @batch_size}
         }).all
-        sql.gsub! '%%VALUES%%', rows.map { |r| "(#{r[:searchtext]}, #{(r[:the_geom] == nil ? 'NULL' : "'#{r[:the_geom]}'")})" }.join(',')
+        rows.reject! { |r| r[:the_geom] == nil }
+        sql.gsub! '%%VALUES%%', rows.map { |r| "(#{r[:searchtext]}, '#{r[:the_geom]}')" }.join(',')
         run_query(sql) if rows && rows.size > 0
       end while rows.size >= @batch_size
     rescue => e

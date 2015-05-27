@@ -36,13 +36,13 @@ module Carto
         render_jsonp( { description: "table #{params[:table_name]} doesn't exist" }, 500) and return unless table
 
         total_rows       = Carto::Geocoding.processable_rows(table)
-        remaining_quota  = logged_user.remaining_geocoding_quota
+        remaining_quota  = uri_user.remaining_geocoding_quota
         remaining_quota  = (remaining_quota > 0 ? remaining_quota : 0)
         used_credits     = total_rows - remaining_quota
         used_credits     = (used_credits > 0 ? used_credits : 0)
         render json: {
           rows:       total_rows,
-          estimation: (logged_user.geocoding_block_price.to_i * used_credits) / Carto::User::GEOCODING_BLOCK_SIZE.to_f
+          estimation: (uri_user.geocoding_block_price.to_i * used_credits) / Carto::User::GEOCODING_BLOCK_SIZE.to_f
         }
       rescue => e
         CartoDB.notify_exception(e, params: params)
@@ -52,8 +52,8 @@ module Carto
       private
 
       # TODO: this should be moved upwards in the controller hierarchy, and make it a replacement for current_user
-     def logged_user
-       @logged_user ||= Carto::User.where(id: current_viewer.id).first
+     def uri_user
+       @uri_user ||= Carto::User.where(id: current_user.id).first
       end
 
       def available_geometries_for_postalcode

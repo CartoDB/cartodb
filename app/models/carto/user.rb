@@ -34,7 +34,7 @@ class Carto::User < ActiveRecord::Base
 
   attr_reader :password
 
-  # TODO: From sequel, can be removed
+  # TODO: From sequel, can be removed once finished
   alias_method :maps_dataset, :maps
   alias_method :layers_dataset, :layers
   alias_method :assets_dataset, :assets

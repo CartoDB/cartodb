@@ -60,10 +60,12 @@ module Carto
       begin
         # Hack to support users without the new MU functiones loaded
         # TODO: Check this works as expected
-        user_data_size_function = @user.cartodb_extension_version_pre_mu? ? 
+        user_data_size_function = cartodb_extension_version_pre_mu? ? 
           "CDB_UserDataSize()" : 
           "CDB_UserDataSize('#{@user.database_schema}')"
-        in_database(:as => :superuser).execute("SELECT cartodb.#{user_data_size_function}").first[:cdb_userdatasize]
+        in_database(:as => :superuser).execute("SELECT cartodb.#{user_data_size_function}")
+                                      .first['cdb_userdatasize'].to_i
+
       rescue => e
         attempts += 1
         begin
@@ -101,7 +103,27 @@ module Carto
       secure_digest(Time.now, (1..10).map{ rand.to_s })
     end
 
+    def cartodb_extension_version_pre_mu?
+      current_version = cartodb_extension_semver(cartodb_extension_version)
+      if current_version.size == 3
+        major, minor, _ = current_version
+        major == 0 and minor < 3
+      else
+        raise 'Current cartodb extension version does not match standard x.y.z format'
+      end
+    end
+
     private
+
+    # Returns a tree elements array with [major, minor, patch] as in http://semver.org/
+    def cartodb_extension_semver(extension_version)
+      extension_version.split('.').take(3).map(&:to_i)
+    end
+
+    def cartodb_extension_version
+      @cartodb_extension_version ||= in_database(:as => :superuser).execute('select cartodb.cdb_version() as v')
+                                                                   .first['v']
+    end
 
     def self.secure_digest(*args)
       Digest::SHA1.hexdigest(args.flatten.join('--'))

@@ -322,6 +322,9 @@ CartoDB::Application.routes.draw do
 
     # Users
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/get_authenticated_users' => 'users#get_authenticated_users', as: :api_v1_users_get_authenticated_user
+
+    # User assets
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/users/:user_id/assets'     => 'assets#index',   as: :api_v1_1_users_assets_index
   end
 
   scope :module => 'api/json', :format => :json do

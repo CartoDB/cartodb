@@ -21,27 +21,35 @@
 }
 .FeatureData .Dialog-headerTitle { font-size: 16px }
 .FeatureData .Dialog-headerText { font-size: 14px }
-.FeatureData-map {
+.FeatureData-mapWrapper {
   position: relative;
   width: 100%;
   height: 113px;
   margin-top: 30px;
   z-index: 1;
-  
-  &:after,
-  &:before {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    width: 100%;
-    height: 1px;
-    background: rgba(black, 0.1);
-    z-index: 2;
-  }
-  &:before { top: 0 }
-  &:after { bottom: 0 }
 }
+.FeatureData-mapContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.FeatureData-mapMamufas {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: transparent;
+  border: 1px solid rgba(black, 0.1);
+  border-left: 0;
+  border-right: 0;
+  @include css3-prefix(box-sizing, content-box);
+  z-index: 2;
+}
+.FeatureData-mapContainer .leaflet-control-attribution,
+.FeatureData-mapContainer .cartodb-gmaps-attribution { display: none }
 .FeatureData .Dialog-expandedSubContent {
   position: relative;
 

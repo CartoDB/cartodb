@@ -102,18 +102,10 @@
   }
 }
 .Button--link {
-  padding: 0;
-  margin: 0;
-  height: auto;
   color: $cTypography-link;
-  text-decoration: underline;
-  text-transform: none;
-  border: none;
-  border-radius: 0;
-  font-weight: normal;
-  
   &:hover {
-    color: $cTypography-linkHover;
+    color: $cTypography-linkSelected;
+    text-decoration: underline;
   }
 }
 // Use this instead of .Button--positive on header background

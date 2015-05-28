@@ -3,7 +3,6 @@
 require 'active_record'
 
 require_relative '../../models/carto/shared_entity'
-byebug
 require_dependency 'carto/uuidhelper'
 
 # TODO: consider moving some of this to model scopes if convenient

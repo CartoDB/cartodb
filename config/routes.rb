@@ -330,6 +330,7 @@ CartoDB::Application.routes.draw do
     get  '(/user/:user_domain)(/u/:user_domain)/api/v1_1/geocodings/:id'                            => 'geocodings#show',                 as: :api_v1_1_geocodings_show
 
     # Users
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1/users/:id'               => 'users#show',                    as: :api_v1_users_show
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/get_authenticated_users' => 'users#get_authenticated_users', as: :api_v1_users_get_authenticated_user
   end
 
@@ -373,9 +374,6 @@ CartoDB::Application.routes.draw do
     delete '(/user/:user_domain)(/u/:user_domain)/api/v1/imports/service/:id/invalidate_token'    => 'imports#invalidate_service_token',    as: :api_v1_imports_service_invalidate_token
     # Must be GET verb despite altering state
     get     '(/user/:user_domain)(/u/:user_domain)/api/v1/imports/service/:id/oauth_callback/'    => 'imports#service_oauth_callback',      as: :api_v1_imports_service_oauth_callback
-
-    # Users
-    get    '(/user/:user_domain)(/u/:user_domain)/api/v1/users/:id'                 => 'users#show',     as: :api_v1_users_show
 
     # User layers
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/users/:user_id/layers'     => 'layers#index',   as: :api_v1_users_layers_index

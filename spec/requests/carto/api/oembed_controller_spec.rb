@@ -16,7 +16,7 @@ module CartoDB
   end
 end
 
-describe Api::Json::OembedController do
+describe Carto::Api::OembedController do
 
   after(:each) do
     CartoDB.clear_internal_cache

@@ -26,15 +26,15 @@ module Carto
       end
 
       def load_visualization
-        @visualization = nil
-        visualizations = Carto::VisualizationQueryBuilder.new.with_id_or_name(@id).build
         # Implicit order due to legacy code: 1st return canonical/table/Dataset if present, else derived/visualization/Map
-        if visualizations.count > 1
-          visualizations.each { |vis|
-            @visualization = vis if (vis.type == Carto::Visualization::TYPE_CANONICAL && @visualization.nil?)
-          }
-        end
-        @visualization = visualizations.first if @visualization.nil?
+        @visualization = Carto::VisualizationQueryBuilder.new
+                                                         .with_id_or_name(@id)
+                                                         .build
+                                                         .all
+                                                         .sort { |vis_a, vis_b|
+                                                              vis_a.type == Carto::Visualization::TYPE_CANONICAL ? -1 : 1
+                                                            }
+                                                         .first
 
         return render(text: 'Visualization does not exist', status: 404) if @visualization.nil?
         return render(text: 'Visualization not viewable', status: 403) if !@visualization.is_viewable_by_user?(current_viewer)

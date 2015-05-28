@@ -1,5 +1,5 @@
 
-require_dependency 'lib/carto/uuidhelper'
+require_dependency 'carto/uuidhelper'
 
 module Carto
   module Api

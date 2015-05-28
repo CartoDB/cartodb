@@ -3,7 +3,8 @@
 require 'active_record'
 
 require_relative '../../models/carto/shared_entity'
-require_dependency 'lib/carto/uuidhelper'
+byebug
+require_dependency 'carto/uuidhelper'
 
 # TODO: consider moving some of this to model scopes if convenient
 class Carto::VisualizationQueryBuilder

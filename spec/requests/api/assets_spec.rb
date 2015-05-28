@@ -47,21 +47,12 @@ describe "Assets API" do
 
   it "returns some error message when the asset creation fails" do
     pending "Fix this test, sometimes fails"
-    Asset.any_instance.stubs(:s3_bucket).raises("OMG AWS exception")
+    Asset.any_instance.stubs(:s3_bucket).raises("AWS exception")
     post_json(api_v1_users_assets_create_url(user_id: @user), params.merge(
       :filename => Rack::Test::UploadedFile.new(Rails.root.join('spec/support/data/cartofante_blue.png'), 'image/png').path)
     ) do |response|
       response.status.should == 400
-      response.body[:error].should == ["OMG AWS exception"]
-    end
-  end
-
-  it "gets all assets" do
-    3.times { FactoryGirl.create(:asset, user_id: @user.id) }
-
-    get_json(api_v1_users_assets_index_url(user_id: @user), params) do |response|
-      response.status.should be_success
-      response.body[:assets].size.should == 3
+      response.body[:error].should == ["AWS exception"]
     end
   end
 

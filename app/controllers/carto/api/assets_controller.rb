@@ -8,7 +8,12 @@ module Carto
 
       def index
         assets = uri_user.assets
-        render_jsonp({ total_entries: assets.size, assets: assets.map(&:public_values) })
+        render_jsonp({ 
+            total_entries: assets.size, 
+            assets: assets.map { |asset| 
+                Carto::Api::AssetsPresenter.new(asset).public_values
+              }
+          })
       end
 
       private

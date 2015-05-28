@@ -79,7 +79,7 @@ module CartoDB
             if !source_calls.blank?
               source_calls.each do |day, value|
                 if !value.nil?
-                  calls[day] = calls[day] + value.to_i
+                  calls[day] = (calls[day].nil? ? 0 : calls[day]) + value.to_i
                 end
               end
             end

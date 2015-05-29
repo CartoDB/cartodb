@@ -276,7 +276,6 @@ test:
   api_requests_es_service:
     url: "http://api-calls-service.localhost.lan/search"
     body: ""
-  geocoder: null
 
 staging:
   <<: *defaults

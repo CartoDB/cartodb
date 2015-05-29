@@ -181,7 +181,8 @@ describe CartoDB::TableGeocoder do
 
   it "Geocodes a table using the batch geocoder API" do
     config = YAML.load_file("#{File.dirname(__FILE__)}/../../../config/app_config.yml")["test"]["geocoder"]
-    pending "No Geocoder config found for test environment" unless config
+    pending "This is a System E2E test that can be useful for development but not suitable for CI"
+    pending "No Geocoder config found for test environment" unless config['app_id'] != ''
     config = config.inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
     config[:cache] = config[:cache].inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
     t = CartoDB::TableGeocoder.new(config.merge(

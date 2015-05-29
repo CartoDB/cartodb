@@ -57,6 +57,8 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
             .and_return(
               Typhoeus::Response.new(code: 404, body: '')
             )
+    
+    Typhoeus::Response.any_instance.stubs(:total_time).returns(1)
 
     # For relator->permission
     user_id = UUIDTools::UUID.timestamp_create.to_s

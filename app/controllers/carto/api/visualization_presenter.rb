@@ -25,7 +25,7 @@ module Carto
           stats: @visualization.stats,
           created_at: @visualization.created_at,
           updated_at: @visualization.updated_at,
-          permission: Carto::Api::PermissionPresenter.new(@visualization.permission).to_poro,
+          permission: @visualization.permission.nil? ? nil : Carto::Api::PermissionPresenter.new(@visualization.permission).to_poro,
           locked: @visualization.locked,
           source: @visualization.source,
           title: @visualization.title,

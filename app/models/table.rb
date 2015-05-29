@@ -806,6 +806,7 @@ class Table
     key ||= "rails:table:#{id}"
   end
 
+  # TODO: change name and refactor for ActiveRecord
   def sequel
     owner.in_database.from(sequel_qualified_table_name)
   end

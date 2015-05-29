@@ -114,7 +114,7 @@ describe Carto::Api::UserPresenter do
     new_data[:failed_import_count].should == old_data[:failed_import_count]
     new_data[:success_import_count].should == old_data[:success_import_count]
     new_data[:import_count].should == old_data[:import_count]
-    new_data[:last_visualization_created_at].should == old_data[:last_visualization_created_at]
+    new_data[:last_visualization_created_at].to_s.should == old_data[:last_visualization_created_at].to_s
     new_data[:quota_in_bytes].should == old_data[:quota_in_bytes]
     new_data[:db_size_in_bytes].should == old_data[:db_size_in_bytes]
     new_data[:db_size_in_megabytes].should == old_data[:db_size_in_megabytes]

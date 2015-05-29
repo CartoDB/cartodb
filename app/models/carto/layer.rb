@@ -59,7 +59,7 @@ module Carto
       ::Table.get_all_user_tables_by_names(affected_table_names, user)
     rescue => exception
       # INFO: this covers changes that CartoDB can't track. For example, if layer SQL contains wrong SQL (uses a table that doesn't exist, or uses an invalid operator).
-      CartoDB.notify_debug('Could not retrieve tables fro query', { user: user, layer: self })
+      CartoDB.notify_debug('Could not retrieve tables from query', { user: user, layer: self })
       []
     end
 

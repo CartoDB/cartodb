@@ -17,7 +17,7 @@ describe Carto::Api::MapsController do
 
       # new controller
       scope :module => 'carto/api', :format => :json do
-        get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/maps/:id'  => 'maps#show',    as: :api_v1_maps_show
+        get '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:id'  => 'maps#show',    as: :api_v1_maps_show
       end
 
       # old controller

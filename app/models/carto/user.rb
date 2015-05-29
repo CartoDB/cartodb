@@ -2,6 +2,7 @@
 
 require 'active_record'
 require_relative 'user_service'
+require_relative 'synchronization_oauth'
 
 # TODO: This probably has to be moved as the service of the proper User Model
 class Carto::User < ActiveRecord::Base
@@ -21,6 +22,7 @@ class Carto::User < ActiveRecord::Base
   has_many :assets, inverse_of: :user
   has_many :data_imports, inverse_of: :user
   has_many :geocodings, inverse_of: :user
+  has_many :synchronization_oauths, class_name: Carto::SynchronizationOauth, inverse_of: :user, dependent: :destroy
   has_many :search_tweets, inverse_of: :user
 
   delegate [ 
@@ -164,6 +166,27 @@ class Carto::User < ActiveRecord::Base
 
   def remaining_geocoding_quota(options = {})
     geocoding_quota - get_geocoding_calls(options)
+  end
+
+  def oauth_for_service(service)
+    synchronization_oauths.where(service: service).first
+  end
+
+  def add_oauth(service, token)
+    # INFO: this should be the right way, but there's a problem with pgbouncer:
+    # ActiveRecord::StatementInvalid: PG::Error: ERROR:  prepared statement "a1" does not exist
+    #synchronization_oauths.create(
+    #    service:  service,
+    #    token:    token
+    #)
+    synchronization_oauth = Carto::SynchronizationOauth.new({
+      user_id: self.id,
+      service: service,
+      token: token
+    })
+    synchronization_oauth.save
+    synchronization_oauths.append(synchronization_oauth)
+    synchronization_oauth
   end
 
   def last_billing_cycle

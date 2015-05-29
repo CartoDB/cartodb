@@ -2,7 +2,7 @@
 require_relative './job'
 require_relative './string_sanitizer'
 require_relative './exceptions'
-require_relative './query_batcher'
+require_relative './cartodb_id_query_batcher'
 
 module CartoDB
   module Importer2
@@ -69,17 +69,20 @@ module CartoDB
       end
 
       def convert_from_wkt
-        QueryBatcher::execute(
-          db,
-          %Q{
-            UPDATE #{qualified_table_name}
-            SET #{column_name} = ST_GeomFromText(#{column_name}, #{DEFAULT_SRID})
-          },
-          qualified_table_name,
-          job,
-          'Converting geometry from WKT to WKB',
-          @capture_exceptions
-        )
+        #TODO: @capture_exceptions
+        job.log 'Converting geometry from WKT to WKB'
+        CartodbIdQueryBatcher.new(
+            db, 
+            job, 
+            create_seq_field = true
+          ).execute_update(
+              %Q{
+                UPDATE #{qualified_table_name}
+                SET #{column_name} = ST_GeomFromText(#{column_name}, #{DEFAULT_SRID})
+              },
+              schema, table_name
+          )
+
         self
       end
 
@@ -92,76 +95,87 @@ module CartoDB
         })
 
         # 2) Normal geojson behavior
-        QueryBatcher::execute(
-          db,
-          %Q{
-            UPDATE #{qualified_table_name}
-            SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromGeoJSON(#{column_name}), #{DEFAULT_SRID})
-          },
-          qualified_table_name,
-          job,
-          'Converting geometry from GeoJSON with transform to WKB',
-          @capture_exceptions
-        )
+        #TODO: @capture_exceptions
+        job.log 'Converting geometry from GeoJSON with transform to WKB'
+        CartodbIdQueryBatcher.new(
+            db, 
+            job, 
+            create_seq_field = true
+          ).execute_update(
+              %Q{
+                UPDATE #{qualified_table_name}
+                SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromGeoJSON(#{column_name}), #{DEFAULT_SRID})
+              },
+              schema, table_name
+          )
 
         self
       end
 
       def convert_from_geojson
-        QueryBatcher::execute(
-          db,
-          %Q{
-            UPDATE #{qualified_table_name}
-            SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromGeoJSON(#{column_name}), #{DEFAULT_SRID})
-          },
-          qualified_table_name,
-          job,
-          'Converting geometry from GeoJSON to WKB',
-          @capture_exceptions
-        )
+        #TODO: @capture_exceptions
+        job.log 'Converting geometry from GeoJSON to WKB'
+        CartodbIdQueryBatcher.new(
+            db, 
+            job, 
+            create_seq_field = true
+          ).execute_update(
+              %Q{
+                UPDATE #{qualified_table_name}
+                SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromGeoJSON(#{column_name}), #{DEFAULT_SRID})
+              },
+              schema, table_name
+          )
+
         self
       end
 
       def convert_from_kml_point
-        QueryBatcher::execute(
-          db,
-          %Q{
-            UPDATE #{qualified_table_name}
-            SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromKML(#{column_name}),#{DEFAULT_SRID})
-          },
-          qualified_table_name,
-          job,
-          'Converting geometry from KML point to WKB',
-          @capture_exceptions
-        )
+        #TODO: @capture_exceptions
+        job.log 'Converting geometry from KML point to WKB'
+        CartodbIdQueryBatcher.new(
+            db, 
+            job, 
+            create_seq_field = true
+          ).execute_update(
+              %Q{
+                UPDATE #{qualified_table_name}
+                SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromKML(#{column_name}),#{DEFAULT_SRID})
+              },
+              schema, table_name
+          )
       end
 
       def convert_from_kml_multi
-        QueryBatcher::execute(
-          db,
-          %Q{
-            UPDATE #{qualified_table_name}
-            SET #{column_name} = public.ST_SetSRID(public.ST_Multi(public.ST_GeomFromKML(#{column_name})),#{DEFAULT_SRID})
-          },
-          qualified_table_name,
-          job,
-          'Converting geometry from KML multi to WKB',
-          @capture_exceptions
-        )
+        #TODO: @capture_exceptions
+        job.log 'Converting geometry from KML multi to WKB'
+        CartodbIdQueryBatcher.new(
+            db, 
+            job, 
+            create_seq_field = true
+          ).execute_update(
+              %Q{
+                UPDATE #{qualified_table_name}
+                SET #{column_name} = public.ST_SetSRID(public.ST_Multi(public.ST_GeomFromKML(#{column_name})),#{DEFAULT_SRID})
+              },
+              schema, table_name
+          )
       end
 
       def convert_to_2d
-        QueryBatcher::execute(
-          db,
-          %Q{
-            UPDATE #{qualified_table_name}
-            SET #{column_name} = public.ST_Force_2D(#{column_name})
-          },
-          qualified_table_name,
-          job,
-          'Converting to 2D point',
-          @capture_exceptions
-        )
+        #TODO: @capture_exceptions
+        job.log 'Converting to 2D point'
+        CartodbIdQueryBatcher.new(
+            db, 
+            job, 
+            create_seq_field = true
+          ).execute_update(
+              %Q{
+                UPDATE #{qualified_table_name}
+                SET #{column_name} = public.ST_Force_2D(#{column_name})
+              },
+              schema, table_name
+          )
       end
 
       def wkb?
@@ -254,20 +268,20 @@ module CartoDB
           end
         end
         if column_type != nil && column_type == :string
-          QueryBatcher::execute(
-            db,
-            %Q{
-              UPDATE #{qualified_table_name}
-              SET #{column_name}=NULL
-              #{QueryBatcher::QUERY_WHERE_PLACEHOLDER}
-              WHERE #{column_name}=''
-              #{QueryBatcher::QUERY_LIMIT_SUBQUERY_PLACEHOLDER}
-            },
-            qualified_table_name,
-            job,
-            'string column found, replacing',
-            @capture_exceptions
-          )
+          #TODO: @capture_exceptions
+          job.log 'string column found, replacing'
+          CartodbIdQueryBatcher.new(
+              db, 
+              job, 
+              create_seq_field = true
+            ).execute_update(
+                %Q{
+                  UPDATE #{qualified_table_name}
+                  SET #{column_name}=NULL
+                  WHERE #{column_name}=''
+                },
+                schema, table_name
+            )
         else
           job.log 'no string column found, nothing replaced'
         end

@@ -1,7 +1,7 @@
 # encoding: utf-8
 require_relative './column'
 require_relative './job'
-require_relative './query_batcher'
+require_relative './cartodb_id_query_batcher'
 require_relative './content_guesser'
 require_relative '../../../table-geocoder/lib/internal-geocoder/latitude_longitude'
 
@@ -353,17 +353,19 @@ module CartoDB
       end
 
       def handle_multipoint(qualified_table_name)
-        QueryBatcher::execute(
-          db,
-          %Q{
-            UPDATE #{qualified_table_name}
-            SET the_geom = ST_GeometryN(the_geom, 1)
-          },
-          qualified_table_name,
-          job,
-          'Converting detected multipoint to point',
-          capture_exceptions=true
-        )
+        # TODO: capture_exceptions=true
+        job.log 'Converting detected multipoint to point'
+        CartodbIdQueryBatcher.new(
+            db, 
+            job, 
+            create_seq_field = true
+          ).execute_update(
+              %Q{
+                UPDATE #{qualified_table_name}
+                SET the_geom = ST_GeometryN(the_geom, 1)
+              },
+              schema, table_name
+          )
       end
 
       def multipoint?

@@ -35,8 +35,8 @@ module CartoDB
 
       describe '#execute_update' do
         before(:each) do
-          @qb = CartodbIdQueryBatcher.new(@db, nil, @batch_size)
-          @qb_big_batch = CartodbIdQueryBatcher.new(@db, nil, @n_values + 1)
+          @qb = CartodbIdQueryBatcher.new(@db, nil, false, @batch_size)
+          @qb_big_batch = CartodbIdQueryBatcher.new(@db, nil, false, @n_values + 1)
         end
 
         it 'processes every row' do

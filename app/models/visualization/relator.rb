@@ -35,14 +35,14 @@ module CartoDB
       # @return []
       def children
         ordered = []
-        children = Visualization::Collection.new.fetch(parent_id: @id)
-        if children.count > 0
-          ordered << children.select { |vis| vis[:prev_id].nil? }.first
-          children.delete_if { |vis| vis[:prev_id].nil? }
-          while children.count > 0 && !ordered.last[:next_id].nil?
+        children_vis = Visualization::Collection.new.fetch(parent_id: @id)
+        if children_vis.count > 0
+          ordered << children_vis.select { |vis| vis[:prev_id].nil? }.first
+          while !ordered.last[:next_id].nil?
             target = ordered.last[:next_id]
-            ordered << children.select { |vis| vis[:id] == target }.first
-            children.delete_if { |vis| vis[:id] == target }
+            unless target.nil?
+              ordered << children_vis.select { |vis| vis[:id] == target }.first
+            end
           end
         end
         ordered

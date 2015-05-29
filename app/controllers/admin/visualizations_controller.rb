@@ -370,7 +370,9 @@ class Admin::VisualizationsController < ApplicationController
     if @cached_embed
       response.headers.merge! @cached_embed[:headers].stringify_keys
       respond_to do |format|
-        format.html { render inline: @cached_embed[:body] }
+        # Use html_safe to mark the string as trusted since it comes from a successful response.
+        # We cannot use `render body: @cached_embed[:body]` in Rails 3
+        format.html { render inline: "<%= @cached_embed[:body].html_safe %>" }
       end
     else
       resp = embed_map_actual
@@ -570,7 +572,18 @@ class Admin::VisualizationsController < ApplicationController
     user = Carto::User.where(username: schema).first
     # INFO: organization public visualizations
     user_id = user ? user.id : nil
-    visualization = Carto::VisualizationQueryBuilder.new.with_id_or_name(table_id).with_user_id(user_id).build.first
+
+    # Implicit order due to legacy code: 1st return canonical/table/Dataset if present, else derived/visualization/Map
+    visualization = Carto::VisualizationQueryBuilder.new
+                                                    .with_id_or_name(table_id)
+                                                    .with_user_id(user_id)
+                                                    .build
+                                                    .all
+                                                    .sort { |vis_a, vis_b|
+                                                        vis_a.type == Carto::Visualization::TYPE_CANONICAL ? -1 : 1
+                                                      }
+                                                    .first
+
     return get_visualization_and_table_from_table_id(table_id) if visualization.nil?
     return Carto::Admin::VisualizationPublicMapAdapter.new(visualization, current_user), visualization.table_service
   end

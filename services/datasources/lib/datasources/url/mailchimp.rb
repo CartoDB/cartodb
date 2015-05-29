@@ -46,7 +46,8 @@ module CartoDB
           @http_timeout = config.fetch(:http_timeout)
           @http_connect_timeout = config.fetch(:http_connect_timeout)
 
-          placeholder = CALLBACK_STATE_DATA_PLACEHOLDER.sub('user', @user.username).sub('service', DATASOURCE_NAME)
+          service_name = service_name_for_user(DATASOURCE_NAME, @user)
+          placeholder = CALLBACK_STATE_DATA_PLACEHOLDER.sub('user', @user.username).sub('service', service_name)
           @callback_url = "#{config.fetch('callback_url')}?state=#{placeholder}"
 
           Gibbon::API.timeout = API_TIMEOUT_SECS
@@ -314,6 +315,7 @@ module CartoDB
           # 'errors' only appears in failure scenarios, while 'username' only if went ok
           response.fetch('errors', nil).nil? && !response.fetch('username', nil).nil?
         rescue => ex
+          CartoDB.notify_exception(ex)
           false
         end
 

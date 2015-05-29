@@ -99,6 +99,24 @@ describe CartoDB::Geocoder do
     end
   end
 
+  describe '#used_batch_request?' do
+    it 'returns true if sent a request to hi-res batch api' do
+      stub_api_request 200, 'response_example.xml'
+      filepath = path_to 'without_country.csv'
+      geocoder = CartoDB::Geocoder.new(default_params.merge(input_file: filepath))
+      rec_id = geocoder.upload
+      geocoder.used_batch_request?.should eq true
+    end
+
+    it 'returns false if sent the request was non-batched' do
+      stub_api_request 200, 'response_example_non_batch.json'
+      filepath = path_to 'without_country.csv'
+      g = CartoDB::Geocoder.new(default_params.merge(force_batch: false, input_file: filepath))
+      g.upload
+      g.used_batch_request?.should eq false
+    end
+  end
+
   def path_to(filepath)
     File.expand_path(
       File.join(File.dirname(__FILE__), "../spec/fixtures/#{filepath}")

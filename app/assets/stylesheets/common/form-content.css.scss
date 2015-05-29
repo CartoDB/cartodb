@@ -165,6 +165,11 @@ $sLabel-width: 140px;
   &.Form-input--long { width: 324px }
   &.Form-input--med {}
   &.Form-input--short {}
+
+  &.Form-input--longerMorePadding {
+    width: 356px;
+    padding-right: 100px;
+  }
 }
 .Form-input.has-submit {
   padding: 0 95px 0 12px;

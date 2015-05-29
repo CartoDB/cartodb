@@ -112,7 +112,7 @@ class Geocoding < Sequel::Model
   end
 
   def run_geocoding!(processable_rows, rows_geocoded_before = 0)
-    self.update state: 'started', processable_rows: processable_rows, batched: table_geocoder.use_batch_process?
+    self.update state: 'started', processable_rows: processable_rows
     @started_at = Time.now
 
     # INFO: this is where the real stuff is done
@@ -131,10 +131,12 @@ class Geocoding < Sequel::Model
     rows_geocoded_after = table_service.owner.in_database.select.from(table_service.sequel_qualified_table_name).where('cartodb_georef_status is true and the_geom is not null').count rescue 0
 
     @finished_at = Time.now
+    @batched = table.used_batch_request?
     self.update(state: 'finished', real_rows: rows_geocoded_after - rows_geocoded_before, used_credits: calculate_used_credits)
     self.report
   rescue => e
     @finished_at = Time.now
+    @batched = table.used_batch_request?
     self.update(state: 'failed', processed_rows: 0, cache_hits: 0)
     CartoDB::notify_exception(e, user: user)
     self.report(e)

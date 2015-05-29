@@ -31,6 +31,7 @@ WORKING_SPECS_2 = \
   spec/models/geocoding_spec.rb \
   spec/models/common_data_spec.rb \
   spec/lib/sql_parser_spec.rb \
+  spec/lib/url_signer_spec.rb \
   spec/lib/string_spec.rb \
   spec/lib/metrics_spec.rb \
   spec/lib/image_metadata_spec.rb \

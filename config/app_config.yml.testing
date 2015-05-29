@@ -127,7 +127,7 @@ defaults: &defaults
         maxZoom: '18' 
         name: 'Positron' 
         className: 'positron_rainbow' 
-        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href= "http://cartodb.com/attributions#basemaps">CartoDB</a>' 
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href= "http://cartodb.com/attributions">CartoDB</a>' 
   layer_opts:
     public_opts: ["type", "active", "query", "opacity", "auto_bound", 
                   "interactivity", "debug", "visible", "tiler_domain", 

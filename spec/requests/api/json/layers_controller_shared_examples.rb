@@ -4,6 +4,7 @@ shared_examples_for "layers controllers" do
 
   describe 'index' do
     include_context 'visualization creation helpers'
+    include_context 'users helper'
 
     it 'fetches layers from shared visualizations' do
       # TODO: refactor this with helpers (pending to merge)
@@ -163,6 +164,8 @@ shared_examples_for "layers controllers" do
           infowindow: {}
         })
 
+      expected_layers_ids = [layer.id, layer2.id]
+
       existing_layers_ids = @table.map.layers.collect(&:id)
       existing_layers_count = @table.map.layers.count
 
@@ -175,7 +178,7 @@ shared_examples_for "layers controllers" do
         response_body['total_entries'].should == 2 + existing_layers_count
         response_body['layers'].size.should == 2 + existing_layers_count
         new_layers_ids = response_body['layers'].collect { |layer| layer['id'] }
-        (new_layers_ids - existing_layers_ids).should == [layer.id, layer2.id]
+        (new_layers_ids - existing_layers_ids - expected_layers_ids).should == []
       end
 
       get api_v1_maps_layers_show_url(params.merge({

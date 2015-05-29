@@ -44,12 +44,19 @@ class Carto::Visualization < ActiveRecord::Base
   belongs_to :map
 
   def size
-    table.size
+    # Only canonical visualizations (Datasets) have a related table and then count against disk quota,
+    # but we want to not break and even allow ordering by size multiple types
+    table ? table.size : 0
   end
 
   def tags
     tags = super
     tags == nil ? [] : tags
+  end
+
+  def tags=(tags)
+    tags.reject!(&:blank?) if tags
+    super(tags)
   end
 
   def related_tables
@@ -74,14 +81,14 @@ class Carto::Visualization < ActiveRecord::Base
 
   def children
     ordered = []
-    children = self.unordered_children
-    if children.count > 0
-      ordered << children.select { |vis| vis.prev_id.nil? }.first
-      children.delete_if { |vis| vis.prev_id.nil? }
-      while children.count > 0 && !ordered.last.next_id.nil?
+    children_vis = self.unordered_children
+    if children_vis.count > 0
+      ordered << children_vis.select { |vis| vis.prev_id.nil? }.first
+      while !ordered.last.next_id.nil?
         target = ordered.last.next_id
-        ordered << children.select { |vis| vis.id == target }.first
-        children.delete_if { |vis| vis.id == target }
+        unless target.nil?
+          ordered << children_vis.select { |vis| vis.id == target }.first
+        end
       end
     end
     ordered
@@ -202,6 +209,10 @@ class Carto::Visualization < ActiveRecord::Base
 
   def mapviews
     @mapviews ||= CartoDB::Visualization::Stats.mapviews(stats)
+  end
+  
+  def total_mapviews(user=nil)
+    @total_mapviews ||= CartoDB::Visualization::Stats.new(self, user).total_mapviews
   end
 
   def geometry_types

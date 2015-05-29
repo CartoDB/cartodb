@@ -69,4 +69,4 @@ describe CartoDB::Layer::Presenter do
     end
 
   end
-end # Layer::Presenter
+end

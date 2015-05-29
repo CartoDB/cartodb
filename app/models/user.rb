@@ -4,6 +4,7 @@ require_relative './user/user_decorator'
 require_relative './user/oauths'
 require_relative './synchronization/synchronization_oauth'
 require_relative './visualization/member'
+require_relative '../helpers/redis_vizjson_cache'
 require_relative './visualization/collection'
 require_relative './user/user_organization'
 require_relative './synchronization/collection.rb'
@@ -1151,7 +1152,7 @@ class User < Sequel::Model
     metadata_table_names = self.tables.select(:name).map(&:name)
     renamed_tables       = real_tables.reject{|t| metadata_table_names.include?(t[:relname])}.select{|t| metadata_tables_ids.include?(t[:oid])}
     renamed_tables.each do |t|
-      table = Table.new(:user_table => ::UserTable.find(:table_id => t[:oid]))
+      table = Table.new(:user_table => ::UserTable.find(:table_id => t[:oid], :user_id => self.id))
       begin
         Rollbar.report_message('ghost tables', 'debug', {
           :action => 'rename',
@@ -2312,12 +2313,11 @@ TRIGGER
     name.present? ? name : username
   end
 
+  # Probably not needed with versioning of keys
+  # @see RedisVizjsonCache
   def purge_redis_vizjson_cache
     vizs = CartoDB::Visualization::Collection.new.fetch(user_id: self.id)
-    redis_http_keys = vizs.map{ |v| v.redis_vizjson_key(https_flag=false) }
-    redis_https_keys = vizs.map{ |v| v.redis_vizjson_key(https_flag=true) }
-    redis_keys = redis_http_keys + redis_https_keys
-    CartoDB::Visualization::Member.redis_cache.del redis_keys unless redis_keys.empty?
+    CartoDB::Visualization::RedisVizjsonCache.new().purge(vizs)
   end
 
   # returns google maps api key. If the user is in an organization and 

@@ -5,9 +5,8 @@
 // Styles for the new default forms
 // --------------------------------------------------
 
-.Form {
+$sLabel-width: 140px;
 
-}
 .Form-title {
   display: block;
   margin: $sMargin-section 0;
@@ -45,14 +44,22 @@
   padding: 10px 0;
 }
 .Form-row.Form-row--centered {
-  @include justify-content(center, center);
-  margin-left: -140px;
+  @include justify-content(center);
+}
+.Form-row.has-label {
+  // compensate for label width, to make the rowData appear as centered
+  margin-left: -$sLabel-width;
 }
 .Form-row.Form-row--spaced { padding: $sMargin-element 0 }
 .Form-rowLabel {
   width: 140px;
   margin-right: $sMargin-element;
   text-align: right;
+}
+.Form-rowLabel.Form-rowLabel--leftAligned {
+  width: $sLabel-width;
+  margin-right: $sMargin-element;
+  text-align: left;
 }
 .Form-label {
   line-height: 40px;
@@ -109,15 +116,21 @@
   position: relative;
   @include display-flex();
   @include justify-content(space-between, justify);
-  @include align-items(center, center);
+  @include align-items(center);
   width: 380px;
+  min-height: 40px; // if there's no input on row (e.g. only radio buttons), to avoid "jumpy" behaviour on re-renders
   margin-right: $sMargin-element;
 }
+.Form-rowData.Form-rowData--alignLeft { @include justify-content(flex-start, start) }
+
+.Form-rowData--noMargin { margin: 0 }
+
 // RowData sizes
+.Form-rowData--full { width: 100% }
 .Form-rowData--longer { width: 460px }
 .Form-rowData--long { width: 380px }
 .Form-rowData--med { width: 300px }
-.Form-rowData--short { }
+.Form-rowData--short { width: 170px }
 
 .Form-input {
   position: relative;
@@ -152,6 +165,11 @@
   &.Form-input--long { width: 324px }
   &.Form-input--med {}
   &.Form-input--short {}
+
+  &.Form-input--longerMorePadding {
+    width: 356px;
+    padding-right: 100px;
+  }
 }
 .Form-input.has-submit {
   padding: 0 95px 0 12px;

@@ -830,9 +830,6 @@ module CartoDB
       end
 
       def remove_layers_from(table)
-        Rollbar.report_message('remove_layers_from',
-                               'warning',
-                               {owner_id: table.owner.id, map_id: table.map_id, backtrace: caller})
         related_layers_from(table).each { |layer|
           map.remove_layer(layer)
           layer.destroy

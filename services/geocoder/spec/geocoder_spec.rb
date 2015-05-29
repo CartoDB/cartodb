@@ -37,15 +37,15 @@ describe CartoDB::Geocoder do
   end
 
   describe '#result' do
-    pending "saves result file on working directory" do
+    it "saves result file on working directory" do
       filepath = path_to 'without_country.csv'
-      geocoder = CartoDB::Geocoder.new(default_params.merge(input_file: filepath))
+      stub_api_request 200, 'response_example_non_batch.json'
+      geocoder = CartoDB::Geocoder.new(default_params.merge(input_file: filepath, force_batch: false))
       geocoder.upload
-      until geocoder.status == 'completed' do
-        geocoder.update_status
-        sleep(1)
-      end
-      geocoder.result.should eq 'qqq'
+      geocoder.status.should eq 'completed'
+      result_file = geocoder.result
+      File.file?(result_file).should be true
+      File.dirname(result_file).should eq geocoder.dir
     end
   end
 

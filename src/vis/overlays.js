@@ -430,6 +430,7 @@ cdb.vis.Overlay.register('tooltip', function(data, vis) {
   }
   data.layer = data.layer || vis.getLayers()[1];
   data.layer.setInteraction(true);
+  data.mapView = vis.mapView;
   return new cdb.geo.ui.Tooltip(data);
 });
 

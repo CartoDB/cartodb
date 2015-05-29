@@ -48,7 +48,7 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
     height: 200,
     clean_on_hide: false,
     enter_to_confirm: false,
-    template_name: 'common/views/dialog_base',
+    template_name: 'old_common/views/dialog_base',
     ok_button_classes: 'button green',
     cancel_button_classes: '',
     modal_type: '',

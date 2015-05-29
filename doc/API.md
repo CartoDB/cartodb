@@ -658,7 +658,7 @@ Toggles the visibility of the sublayer and returns a boolean that indicates the 
 
 **sublayer.infowindow** is a Backbone model where we modify the parameters of the infowindow.
 
-##### Arguments
+##### Attributes
 
 - **template**: Custom HTML template for the infowindow. You can write simple HTML or use [Mustache templates](http://mustache.github.com/).
 - **sanitizeTemplate**: By default all templates are sanitized from unsafe tags/attrs (e.g. `<script>`), set this to `false`
@@ -697,6 +697,17 @@ to skip sanitization, or a function to provide your own sanitization (e.g. `func
 
 [Grab the complete example source code](https://github.com/CartoDB/cartodb.js/blob/develop/examples/custom_infowindow.html)
 
+#### sublayer.legend
+
+**sublayer.legend** is a Backbone model with the information about the legend.
+
+##### Attributes
+
+- **template**: Custom HTML template for the legend. You can write simple HTML.
+- **title**: Title of the legend.
+- **show_title**: Set this to `false` if you don't want the title to be displayed.
+- **items**: An array with the items that are displayed in the legend.
+- **visible**: Set this to `false` if you want to hide the legend.
 
 ## Events
 
@@ -1361,7 +1372,7 @@ You can use all the functionality of CartoDB.js with HTTPs support. Be sure to u
     center: [0,0],
     zoom: 2
   })
-  cartodb.createLayer(map, 'http://examples.cartodb.com/api/v1/viz/15589/viz.json', { https: true })
+  cartodb.createLayer(map, 'https://examples.cartodb.com/api/v1/viz/15589/viz.json', { https: true })
     .addTo(map)
     .on('error', function(err) {
       alert("some error occurred: " + err);
@@ -1391,10 +1402,10 @@ Or, by running the following in your code:
 alert(cartodb.VERSION)
 ```
 
-Once you know which version of CartoDB.js you're using, you can point your site to that release. If the current version of CartoDB.js is 3.14.2, the URL would be:
+Once you know which version of CartoDB.js you're using, you can point your site to that release. If the current version of CartoDB.js is 3.14.3, the URL would be:
 
 ```html
-<script src="http://libs.cartocdn.com/cartodb.js/v3/3.14.2/cartodb.js"></script>
+<script src="http://libs.cartocdn.com/cartodb.js/v3/3.14.3/cartodb.js"></script>
 ```
 
 You can do the same for the CSS documents we provide:

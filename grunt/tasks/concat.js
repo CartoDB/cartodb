@@ -68,8 +68,10 @@ module.exports = {
             'src/cartodb.js',
             'src/api/core_lib.js',
             'src/core/profiler.js',
+            'src/core/util.js',
             'src/api/sql.js',
             'src/geo/layer_definition.js',
+            'src/geo/sublayer.js',
             'src/core/loader.js',
             'src/vis/image.js',
             'src/api/tiles.js'
@@ -142,6 +144,7 @@ module.exports = {
         files: {
           // Torque library
           '<%= config.dist %>/cartodb.mod.torque.uncompressed.js': [
+            './grunt/templates/torque_header.js',
             'vendor/mod/carto.js',
             'vendor/mod/torque.uncompressed.js',
             'src/geo/gmaps/torque.js',

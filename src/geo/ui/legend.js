@@ -223,6 +223,12 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
       } else {
         this.$el.html(this.view.render().$el.html());
       }
+
+      if (this.model.get("visible") === false) {
+        this.hide();
+      } else {
+        this.show();
+      }
     }
 
     return this;
@@ -1021,7 +1027,8 @@ cdb.geo.ui.LegendModel = cdb.core.Model.extend({
     type: null,
     show_title: false,
     title: "",
-    template: ""
+    template: "",
+    visible: true
   },
 
   initialize: function() {

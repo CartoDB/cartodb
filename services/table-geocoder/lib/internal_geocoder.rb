@@ -132,7 +132,7 @@ module CartoDB
         raise "Error converting cartodb_georef_status to boolean, please, convert it manually or remove it."
       end
 
-      def use_batch_process?
+      def used_batch_request?
         # Only used for hi-res geocoding
         false
       end

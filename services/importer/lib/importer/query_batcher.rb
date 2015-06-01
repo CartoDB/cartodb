@@ -26,7 +26,7 @@ module CartoDB
 
         if @create_seq_field
           column_name = "cartodb_processed_#{qualified_table_name.hash.abs}"
-          prepare_id_column(column_name, qualified_table_name)
+          prepare_id_column(column_name, qualified_table_name, table_schema)
         else
           column_name = DEFAULT_SEQUENCE_FIELD
         end
@@ -42,7 +42,7 @@ module CartoDB
         end while min <= max
 
         if @create_seq_field
-          remove_id_column(column_name, qualified_table_name)
+          remove_id_column(column_name, qualified_table_name, table_schema)
         end
         
         @logger.log("Finished batched query by '#{column_name}' in #{qualified_table_name}: query")
@@ -70,31 +70,31 @@ module CartoDB
         [ min_max[:min], min_max[:max] + 1 ]
       end
 
-      def prepare_id_column(column_name, qualified_table_name)
+      def prepare_id_column(column_name, qualified_table_name, table_schema)
         @db.run(%Q{
             ALTER TABLE #{qualified_table_name} ADD #{column_name} INTEGER;
           })
         @db.run(%Q{
-            CREATE SEQUENCE seq_#{column_name};
+            CREATE SEQUENCE \"#{table_schema}\".seq_#{column_name};
           })
         @db.run(%Q{
-            ALTER TABLE #{qualified_table_name} ALTER COLUMN #{column_name} SET DEFAULT nextval('seq_#{column_name}');
+            ALTER TABLE #{qualified_table_name} ALTER COLUMN #{column_name} SET DEFAULT nextval('\"#{table_schema}\".seq_#{column_name}');
           })
         @db.run(%Q{
-            UPDATE #{qualified_table_name} SET #{column_name}=nextval('seq_#{column_name}');
+            UPDATE #{qualified_table_name} SET #{column_name}=nextval('\"#{table_schema}\".seq_#{column_name}');
           })
         @db.run(%Q{
             CREATE INDEX idx_#{column_name} ON #{qualified_table_name} (#{column_name});
           })
       end
 
-      def remove_id_column(column_name, qualified_table_name)
+      def remove_id_column(column_name, qualified_table_name, table_schema)
         @db.run(%Q{
             ALTER TABLE #{qualified_table_name} DROP #{column_name};
           })
 
         @db.run(%Q{
-            DROP SEQUENCE seq_#{column_name};
+            DROP SEQUENCE \"#{table_schema}\".seq_#{column_name};
           })
       end
 

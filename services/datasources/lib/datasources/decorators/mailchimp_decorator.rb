@@ -78,7 +78,7 @@ module CartoDB
             }
           end
 
-          layer.set_wizard_properties(wizard_properties)
+          layer.set_option('wizard_properties', wizard_properties)
         end
 
         def enable_category_legend(layer)
@@ -97,7 +97,7 @@ module CartoDB
             }
           end
 
-          layer.set_legend(legend)
+          layer.set_option(:legend, legend)
         end
 
         def set_carto_css(layer)
@@ -116,7 +116,7 @@ module CartoDB
             carto_css << "        marker-width: 8;"
             carto_css << "    }"
             carto_css << "    [zoom>6] {"
-            carto_css << "       marker-width: 9;"
+            carto_css << "        marker-width: 9;"
             carto_css << "    }"
             carto_css << "}"
 
@@ -126,7 +126,8 @@ module CartoDB
               carto_css << "}"
             end
 
-            layer.set_style_options(carto_css.join("\n"), custom: false)
+            layer.set_option('tile_style', carto_css.join("\n"))
+            layer.set_option('tile_style_custom', false)
           end
         end
       end

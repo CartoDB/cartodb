@@ -11,8 +11,9 @@ module CartoDB
     attr_reader :event_ids, :token
 
     def initialize
-      config = Cartodb.config[:hubspot]
-      if config.present? && config.is_a?(Hash)
+      metrics = Cartodb.config[:metrics]
+      if metrics.present? && metrics['hubspot'].present? && metrics['hubspot'].is_a?(Hash)
+        config = metrics['hubspot']
         @enabled = true
         @events_host = config.fetch('events_host')
         @api_key = config.fetch('api_key')

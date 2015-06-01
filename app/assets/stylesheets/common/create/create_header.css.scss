@@ -74,6 +74,7 @@
     color: #999;
   }
 }
+
 // Step selected or selectable
 .CreateDialog-headerStep.is-selected,
 .CreateDialog-headerStep.is-selectable:hover {
@@ -86,6 +87,12 @@
   .Dialog-headerIconBadge {
     border-color: $cHighlight-main;
     color: $cHighlight-positive;
+  }
+}
+.CreateDialog-headerStep.CreateDialog-headerStep--single {
+  .Dialog-headerText,
+  .Dialog-headerTitle {
+    color: $cTypography-paragraphs;
   }
 }
 .CreateDialog-headerStep.is-selectable:hover { cursor: pointer }

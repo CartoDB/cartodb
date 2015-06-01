@@ -732,6 +732,8 @@ class DataImport < Sequel::Model
     dataimport_logger.info(import_log.to_json)
     CartoDB::Importer2::MailNotifier.new(self, results, ::Resque).notify_if_needed
     results.each { |result| CartoDB::Metrics.new.report(:import, payload_for(result)) }
+    # TODO: remove mixpanel
+    results.each { |result| CartoDB::Mixpanel.new.report(:import, payload_for(result)) }
   end
 
   def decorate_log(data_import)

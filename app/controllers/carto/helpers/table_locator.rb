@@ -20,7 +20,10 @@ module Carto
             type: CartoDB::Visualization::Member::TYPE_CANONICAL
         }
 
-        unless table_schema.nil?
+        if table_schema.nil?
+          # INFO: if we don't have schema we don't want shared
+          query_filters[:shared] = CartoDB::Visualization::Collection::FILTER_SHARED_NO
+        else
           owner = User.where(username:table_schema).first
           unless owner.nil?
             query_filters[:user_id] = owner.id
@@ -28,10 +31,11 @@ module Carto
         end
 
         # noinspection RubyArgCount
-        vis = CartoDB::Visualization::Collection.new.fetch(query_filters).select { |u|
-          u.user_id == query_filters[:user_id]
+        vis = CartoDB::Visualization::Collection.new.fetch(query_filters).select { |v|
+          v.user_id == query_filters[:user_id] || v.has_permission?(viewer_user, CartoDB::Permission::ACCESS_READONLY)
         }.first
         table = vis.nil? ? nil : vis.table
+        table.set_table_visualization(vis) if table
 
         if rx.match(id_or_name) && table.nil?
           table_temp = Carto::UserTable.where(id: id_or_name).first.try(:service)

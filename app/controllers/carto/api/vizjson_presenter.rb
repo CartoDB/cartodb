@@ -1,4 +1,5 @@
 require_relative '../../../models/visualization/vizjson'
+require_relative '../../../helpers/redis_vizjson_cache'
 require_relative 'visualization_vizjson_adapter'
 
 module Carto
@@ -8,32 +9,17 @@ module Carto
       def initialize(visualization, redis_cache)
         @visualization = visualization
         @redis_cache = redis_cache
+        @redis_vizjson_cache = CartoDB::Visualization::RedisVizjsonCache.new(redis_cache)
       end
 
       def to_vizjson(options={})
-        key = redis_vizjson_key(options.fetch(:https_request, false))
-        redis_cached(key) do
+        @redis_vizjson_cache.cached(@visualization.id, options.fetch(:https_request, false)) do
           calculate_vizjson(options)
         end
       end
 
       private
 
-      def redis_vizjson_key(https_flag = false)
-        "visualization:#{@visualization.id}:vizjson:#{https_flag ? 'https' : 'http'}"
-      end
-
-      def redis_cached(key)
-        value = @redis_cache.get(key)
-        if value.present?
-          return JSON.parse(value, symbolize_names: true)
-        else
-          result = yield
-          serialized = JSON.generate(result)
-          @redis_cache.setex(key, 24.hours.to_i, serialized)
-          return result
-        end
-      end
 
       def calculate_vizjson(options={})
         vizjson_options = {

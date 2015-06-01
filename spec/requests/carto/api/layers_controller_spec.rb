@@ -6,6 +6,8 @@ require_relative '../../../../spec/requests/api/json/layers_controller_shared_ex
 
 
 describe Carto::Api::LayersController do
+  include Rack::Test::Methods
+  include Warden::Test::Helpers
 
   it_behaves_like 'layers controllers' do
   end
@@ -17,13 +19,14 @@ describe Carto::Api::LayersController do
 
       # new controller
       scope :module => 'carto/api', :format => :json do
-        get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/users/:user_id/layers'     => 'layers#index',   as: :api_v1_users_layers_index
-        get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/maps/:map_id/layers'     => 'layers#index',   as: :api_v1_maps_layers_index
-        get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/maps/:map_id/layers/:id' => 'layers#show',    as: :api_v1_maps_layers_show
+        get    '(/user/:user_domain)(/u/:user_domain)/api/v1/users/:user_id/layers'     => 'layers#custom_layers_by_user',   as: :api_v1_users_layers_index
+        get    '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:map_id/layers'     => 'layers#layers_by_map',   as: :api_v1_maps_layers_index
+        get    '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:map_id/layers/:id' => 'layers#show',    as: :api_v1_maps_layers_show
       end
 
       # old controller
       scope :module => 'api/json', :format => :json do
+        put '(/user/:user_domain)(/u/:user_domain)/api/v1/perm/:id' => 'permissions#update', as: :api_v1_permissions_update
       end
 
     end

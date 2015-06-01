@@ -44,7 +44,7 @@ module CartoDB
         # as "now or from the future" upon date filter build
         TIMEZONE_THRESHOLD = 60
 
-        # Gnip's 30 limit minus
+        # Gnip's 30 limit minus 'has:geo' one
         MAX_SEARCH_TERMS = 30 - 1
         MAX_QUERY_SIZE   = 1024
 

@@ -1,6 +1,6 @@
 # encoding: UTF-8
 
-require_relative '../../../helpers/carto/uuidhelper'
+require_dependency 'carto/uuidhelper'
 
 module Carto
   module Api
@@ -33,10 +33,10 @@ module Carto
         head 401 and return if current_user.nil?
         head 401 and return unless is_uuid?(params.fetch('id'))
 
-        member = CartoDB::Overlay::Member.new(id: params.fetch('id')).fetch
-        head 401 and return if member.nil?
+        overlay = Carto::Overlay.where(id: params.fetch('id')).first
+        head 401 and return if overlay.nil?
 
-        vis = Carto::Visualization.where(id: member.visualization_id).first
+        vis = Carto::Visualization.where(id: overlay.visualization_id).first
         head 403 and return if vis.user_id != current_user.id
       end
 
@@ -47,10 +47,7 @@ module Carto
         vis = Carto::Visualization.where(id: params.fetch('visualization_id')).first
         head 401 and return if vis.nil?
 
-        head 403 and return if vis.user_id != current_user.id && !vis.has_permission?(
-            current_user, 
-            Carto::Permission::PERMISSION_READWRITE
-          )
+        head 403 and return if !vis.is_writable_by_user(current_user)
       end
 
     end

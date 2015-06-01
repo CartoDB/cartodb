@@ -1,11 +1,15 @@
+# encoding: UTF-8
+
 require 'active_record'
 
 require_relative '../../models/carto/shared_entity'
-require_relative '../../helpers/carto/uuidhelper'
+require_dependency 'carto/uuidhelper'
 
 # TODO: consider moving some of this to model scopes if convenient
 class Carto::VisualizationQueryBuilder
   include Carto::UUIDHelper
+
+  SUPPORTED_OFFDATABASE_ORDERS = [ 'mapviews', 'likes', 'size' ]
 
   def self.user_public_tables(user)
     self.user_public(user).with_type(Carto::Visualization::TYPE_CANONICAL)
@@ -16,7 +20,7 @@ class Carto::VisualizationQueryBuilder
   end
 
   def self.user_public(user)
-    new.with_user_id(user.id).with_privacy(Carto::Visualization::PRIVACY_PUBLIC)
+    new.with_user_id(user ? user.id : nil).with_privacy(Carto::Visualization::PRIVACY_PUBLIC)
   end
 
   PARTIAL_MATCH_QUERY = %Q{
@@ -32,6 +36,7 @@ class Carto::VisualizationQueryBuilder
     @eager_load_associations = []
     @eager_load_nested_associations = {}
     @order = {}
+    @off_database_order = {}
   end
 
   def with_id_or_name(id_or_name)
@@ -118,12 +123,22 @@ class Carto::VisualizationQueryBuilder
   end
 
   def with_order(order, asc_desc = :asc)
-    @order[order] = asc_desc
+    offdb_order = offdatabase_order(order)
+    if offdb_order
+      @off_database_order[offdb_order] = asc_desc
+    else
+      @order[order] = asc_desc
+    end
     self
   end
 
   def with_partial_match(tainted_search_pattern)
     @tainted_search_pattern = tainted_search_pattern
+    self
+  end
+
+  def with_tags(tags)
+    @tags = tags
     self
   end
 
@@ -158,15 +173,18 @@ class Carto::VisualizationQueryBuilder
 
     if @shared_with_user_id
       user = Carto::User.where(id: @shared_with_user_id).first
-      query = query
-          .joins(:shared_entities)
-          .where(:shared_entities => { recipient_id: recipient_ids(user) })
+      query = query.joins(:shared_entities)
+                   .where(:shared_entities => { recipient_id: recipient_ids(user) })
     end
 
     if @owned_by_or_shared_with_user_id
       # TODO: sql strings are suboptimal and compromise compositability, but
       # I haven't found a better way to do this OR in Rails
-      query = query.where(' ("visualizations"."user_id" = (?) or "visualizations"."id" in (?))',  @owned_by_or_shared_with_user_id, ::Carto::VisualizationQueryBuilder.new.with_shared_with_user_id(@owned_by_or_shared_with_user_id).build.uniq.pluck('visualizations.id'))
+      query = query.where(' ("visualizations"."user_id" = (?) or "visualizations"."id" in (?))',
+          @owned_by_or_shared_with_user_id, 
+          ::Carto::VisualizationQueryBuilder.new.with_shared_with_user_id(@owned_by_or_shared_with_user_id)
+                                            .build.uniq.pluck('visualizations.id')
+        )
     end
 
     if @type
@@ -185,6 +203,10 @@ class Carto::VisualizationQueryBuilder
       query = query.where(PARTIAL_MATCH_QUERY, @tainted_search_pattern, "%#{@tainted_search_pattern}%")
     end
 
+    if @tags
+      query = query.where("ARRAY[?]::text[] && visualizations.tags", @tags)
+    end
+
     @include_associations.each { |association|
       query = query.includes(association)
     }
@@ -200,7 +222,11 @@ class Carto::VisualizationQueryBuilder
       query = query.reverse_order if v == :desc
     }
 
-    query
+    if @off_database_order.empty?
+      query
+    else
+      Carto::OffdatabaseQueryAdapter.new(query, @off_database_order)
+    end
   end
 
   def build_paged(page = 1, per_page = 20)
@@ -208,6 +234,13 @@ class Carto::VisualizationQueryBuilder
   end
 
   private
+
+  def offdatabase_order(order)
+    return nil unless order.kind_of? String
+    fragments = order.split('.')
+    order_attribute = fragments[fragments.count - 1]
+    SUPPORTED_OFFDATABASE_ORDERS.include?(order_attribute) ? order_attribute : nil
+  end
 
   def with_include_of(association)
     @include_associations << association

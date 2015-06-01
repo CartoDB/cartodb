@@ -25,7 +25,7 @@ module Carto
           stats: @visualization.stats,
           created_at: @visualization.created_at,
           updated_at: @visualization.updated_at,
-          permission: Carto::Api::PermissionPresenter.new(@visualization.permission).to_poro,
+          permission: @visualization.permission.nil? ? nil : Carto::Api::PermissionPresenter.new(@visualization.permission).to_poro,
           locked: @visualization.locked,
           source: @visualization.source,
           title: @visualization.title,
@@ -37,7 +37,7 @@ module Carto
           next_id: @visualization.next_id,
           transition_options: @visualization.transition_options,
           active_child: @visualization.active_child,
-          table: Carto::Api::UserTablePresenter.new(@visualization.table, @visualization.permission).to_poro,
+          table: Carto::Api::UserTablePresenter.new(@visualization.table, @visualization.permission, @current_viewer).to_poro,
           external_source: Carto::Api::ExternalSourcePresenter.new(@visualization.external_source).to_poro,
           synchronization: Carto::Api::SynchronizationPresenter.new(@visualization.synchronization).to_poro,
           children: @visualization.children.map { |v| children_poro(v) },
@@ -70,7 +70,7 @@ module Carto
           @visualization.related_tables.select { |table| table.id != @visualization.table.id } : 
           @visualization.related_tables
 
-        related.map { |table| Carto::Api::UserTablePresenter.new(table, @visualization.permission).to_poro }
+        related.map { |table| Carto::Api::UserTablePresenter.new(table, @visualization.permission, @current_viewer).to_poro }
       end
 
       def children_poro(visualization)

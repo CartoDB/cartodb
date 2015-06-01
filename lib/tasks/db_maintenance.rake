@@ -854,6 +854,76 @@ namespace :cartodb do
       uo.promote_user_to_admin
     end
 
+    def create_user(username, organization, quota_in_bytes)
+      u = User.new
+      u.email = "#{username}@test-org.com"
+      u.password = username
+      u.password_confirmation = username
+      u.username = username
+      u.quota_in_bytes = quota_in_bytes
+      #u.database_host = ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
+
+      if organization.owner_id.nil?
+        u.save(raise_on_failure: true)
+        CartoDB::UserOrganization.new(organization.id, u.id).promote_user_to_admin
+        organization.reload
+      else
+        u.organization = organization
+        u.save(raise_on_failure: true)
+      end
+
+      u
+    end
+
+    def create_users(first_index, last_index, organization, bytes_per_user)
+      org_name = organization.name
+
+      (first_index..last_index).each { |i|
+        username = "#{org_name}-#{i}"
+        print "Creating user #{username}... "
+        user = create_user(username, organization, bytes_per_user)
+        puts "Done."
+      }
+    end
+
+    desc "Create an organization with an arbitrary number of users for test purposes. Owner user: <org-name>-admin. Users: <org-name>-<i>. You might need to set conn_validator_timeout to -1 in config/database.yml (development)"
+    task :create_test_organization, [:org_name, :n_users] => [:environment] do |t, args|
+      org_name = args[:org_name]
+      n_users = args[:n_users].to_i
+      bytes_per_user = 50 * 1024 * 1024
+
+      def create_organization(org_name, n_users, bytes_per_user)
+        organization = Organization.new
+        organization.name = org_name
+        organization.display_name = org_name
+        organization.seats = n_users * 2
+        organization.quota_in_bytes = bytes_per_user * organization.seats
+        organization.save
+      end
+
+      print "Creating organization #{org_name}... "
+      organization = create_organization(org_name, n_users, bytes_per_user)
+      puts "Done."
+
+      owner_name = "#{org_name}-admin"
+      print "Creating owner #{owner_name}... "
+      owner = create_user(owner_name, organization, bytes_per_user)
+      puts "Done."
+
+      create_users(1, n_users, organization, bytes_per_user)
+    end
+
+    desc "Add users to an organization. Used to resume a broken :create_test_organization task"
+    task :add_test_users_to_organization, [:org_name, :first_index, :last_index] => [:environment] do |t, args|
+      org_name = args[:org_name]
+      first_index = args[:first_index]
+      last_index = args[:last_index]
+      bytes_per_user = 50 * 1024 * 1024
+
+      organization = Organization.where(name: org_name).first
+      create_users(first_index, last_index, organization, bytes_per_user)
+    end
+
     desc "Reload users avatars"
     task :reload_users_avatars => :environment do
       if ENV['ONLY_GRAVATAR'].blank?
@@ -948,11 +1018,22 @@ namespace :cartodb do
       else
         redis_client = $users_metadata
       end
+      
+      stat_tag_keys = [
+        "user:*:mapviews:stat_tag:*",
+        "user:*:mapviews_es:stat_tag:*"
+      ]
 
       visualization_ids = []
-      redis_client.keys("user:cdb:mapviews:stat_tag:*").each do |key|
-        visualization_ids << key.split(":")[4]
+
+      stat_tag_keys.each do |stat_tag_key|
+        redis_client.keys(stat_tag_key).each do |key|
+          key_parts = key.split(':')
+          visualization_ids << "#{key_parts[1]}:#{key_parts[4]}"
+        end
       end
+
+      visualization_ids.uniq!
 
       if args[:output_file]
         File.write(args[:output_file], visualization_ids.join("\n"))
@@ -965,20 +1046,28 @@ namespace :cartodb do
     desc "Populate visualization total map views from partial days"
     task :populate_visualization_total_map_views, [:visualizations_list] => :environment do |t, args|
       if args[:visualizations_list].blank?
-        raise "Missing visualization_list param which must be a plain text list of visualizations ids"
+        raise "Missing visualization_list param which must be a plain text list of <user>:<visualization_id>"
       end
       File.open(args[:visualizations_list], 'r') do |f|
         f.each_line do |line|
-          visualization_id = line.strip
-          puts "Processing visualization #{visualization_id}"
-          visualization_counter = 0
-          $users_metadata.zrange("user:cdb:mapviews:stat_tag:#{visualization_id}", 0, -1).each do |mapviews_day|
-            if mapviews_day =~ /[0-9]{4}(0|1)[0-9][0-3][0-9]/
-              count = $users_metadata.zscore("user:cdb:mapviews:stat_tag:#{visualization_id}", mapviews_day)
-              visualization_counter = visualization_counter + count unless count.nil?
+          key_parts = line.strip.split(':')
+          username = key_parts[0]
+          visualization_id = key_parts[1]
+          stat_tag_keys = [
+            "user:#{username}:mapviews:stat_tag:#{visualization_id}",
+            "user:#{username}:mapviews_es:stat_tag:#{visualization_id}"
+          ]
+          puts "Processing visualization #{visualization_id} of user #{username}"
+          stat_tag_keys.each do |stat_tag_key|
+            visualization_counter = 0
+            $users_metadata.zrange(stat_tag_key, 0, -1).each do |mapviews_day|
+              if mapviews_day =~ /[0-9]{4}(0|1)[0-9][0-3][0-9]/
+                count = $users_metadata.zscore(stat_tag_key, mapviews_day)
+                visualization_counter = visualization_counter + count unless count.nil?
+              end
             end
+            $users_metadata.zadd(stat_tag_key, visualization_counter, 'total') unless visualization_counter == 0
           end
-          $users_metadata.zadd("user:cdb:mapviews:stat_tag:#{visualization_id}", visualization_counter, 'total')
         end
       end
     end

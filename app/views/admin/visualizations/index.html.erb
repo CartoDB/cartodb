@@ -2,9 +2,9 @@
   <%= current_user.username -%> |
 <% end -%>
 <%= content_for(:js) do -%>
-  <% if @google_maps_api_key %>
+  <% if !@google_maps_api_key.blank? %>
         <script type="text/javascript"
-            src="https://maps.google.com/maps/api/js?sensor=false&v=3.12&api_key=<%= @google_maps_api_key %>">
+            src="//maps.googleapis.com/maps/api/js?sensor=false&v=3.12&<%= @google_maps_api_key %>">
         </script>
   <% end %>
   <script type="text/javascript">
@@ -14,6 +14,8 @@
     var upgrade_url = config.upgrade_url;
     var isFirstTimeViewingDashboard = <%= (!!@first_time).to_s %>;
     var isJustLoggedIn = <%= (!!@just_logged_in).to_s %>;
+    // TODO: remove mixpanel
+    var mixpanel_token = "<%= Cartodb.config[:mixpanel]['token'] if Cartodb.config[:mixpanel].present? %>";
     var default_fallback_basemap = <%= safe_js_object current_user.default_basemap.to_json %>;
   </script>
   <%= javascript_include_tag 'cdb.js', 'models.js', 'dashboard_templates.js', 'dashboard_deps.js', 'dashboard.js' -%>

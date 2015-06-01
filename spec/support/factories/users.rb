@@ -74,6 +74,15 @@ module CartoDB
       user
     end
 
+    def create_test_user(attributes = {})
+      create_user({
+          username: "test#{rand(9999)}-1",
+          email: "client#{rand(9999)}@cartodb.com",
+          password: 'clientex',
+          private_tables_enabled: false
+      }.merge(attributes))
+    end
+
     def create_admin(attributes = {})
       attributes[:username] = 'Admin'
       attributes[:email]    = 'admin@example.com'

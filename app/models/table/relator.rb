@@ -14,6 +14,7 @@ module CartoDB
       synchronization
       serialize_synchronization
       row_count_and_size
+      set_table_visualization
     }
 
     def initialize(db, table)
@@ -26,6 +27,11 @@ module CartoDB
         map_id: @table.map_id,
         type:   Visualization::Member::TYPE_CANONICAL
       ).first
+    end
+
+    # INFO: avoids doble viz fetching when table is itself generated from viz
+    def set_table_visualization(table_visualization)
+      @table_visualization = table_visualization
     end
 
     def serialize_dependent_visualizations

@@ -30,6 +30,9 @@ class Table
   NO_GEOMETRY_TYPES_CACHING_TIMEOUT = 5.minutes
   GEOMETRY_TYPES_PRESENT_CACHING_TIMEOUT = 24.hours
 
+  # See http://www.postgresql.org/docs/9.3/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
+  TABLENAME_MAX_LENGTH = 63
+
   # @see services/importer/lib/importer/column.rb -> RESERVED_WORDS
   # @see config/initializers/carto_db.rb -> RESERVED_COLUMN_NAMES
   RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid ogc_fid }
@@ -190,6 +193,21 @@ class Table
         end
       end
       UserTable.where(user_id: user_id, name: table_name).first
+    }
+  end
+
+  # TODO: REFACTOR THIS patch introduced to continue with #3664
+  def self.get_all_user_tables_by_names(names, viewer_user)
+    names.map { |t|
+      user_id = viewer_user.id
+      table_name, table_schema = Table.table_and_schema(t)
+      unless table_schema.nil?
+        owner = User.where(username:table_schema).first
+        unless owner.nil?
+          user_id = owner.id
+        end
+      end
+      Carto::UserTable.where(user_id: user_id, name: table_name).first
     }
   end
 
@@ -788,6 +806,7 @@ class Table
     key ||= "rails:table:#{id}"
   end
 
+  # TODO: change name and refactor for ActiveRecord
   def sequel
     owner.in_database.from(sequel_qualified_table_name)
   end
@@ -1471,7 +1490,7 @@ class Table
   end
 
   # Gets a valid postgresql table name for a given database
-  # See http://www.postgresql.org/docs/9.1/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
+  # See http://www.postgresql.org/docs/9.3/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
   def self.get_valid_table_name(name, options = {})
     # Initial name cleaning
     name = name.to_s.squish #.downcase
@@ -1484,7 +1503,7 @@ class Table
     name = name.gsub(/[^a-z0-9]/,'_').gsub(/_{2,}/, '_')
 
     # Postgresql table name limit
-    name = name[0..45]
+    name = name[0...TABLENAME_MAX_LENGTH]
 
     return name if name == options[:current_name]
 
@@ -1502,7 +1521,7 @@ class Table
     while existing_names.include?(name)
       count = count + 1
       suffix = "_#{count}"
-      name = name[0..62-suffix.length]
+      name = name[0...TABLENAME_MAX_LENGTH-suffix.length]
       name = name[rx] ? name.gsub(rx, suffix) : "#{name}#{suffix}"
       # Re-check for duplicated underscores
       name = name.gsub(/_{2,}/, '_')

@@ -157,7 +157,7 @@ WORKING_SPECS_9 = \
   services/datasources/spec/integration/ \
   services/datasources/spec/unit/arcgis_spec.rb \
   services/importer/spec/regression/query_batcher_spec.rb \
-  services/importer/spec/regression/cartodb_id_query_batcher_spec.rb \
+  services/importer/spec/regression/query_batcher_spec.rb \
   services/platform-limits/spec/unit/ \
   spec/models/platform-limits/ \
   spec/lib/initializers/carto_db_spec.rb \

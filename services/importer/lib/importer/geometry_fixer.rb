@@ -1,7 +1,7 @@
 # encoding: utf-8
 require_relative './column'
 require_relative './job'
-require_relative './cartodb_id_query_batcher'
+require_relative './query_batcher'
 require_relative '../../../table-geocoder/lib/internal-geocoder/latitude_longitude'
 
 module CartoDB
@@ -55,7 +55,7 @@ module CartoDB
 
       def make_geometries_valid
         job.log 'Fixing geometries'
-        CartodbIdQueryBatcher.new(
+        QueryBatcher.new(
             db, 
             job, 
             create_seq_field = true

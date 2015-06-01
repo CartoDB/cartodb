@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require_relative '../../../importer/lib/importer/cartodb_id_query_batcher'
+require_relative '../../../importer/lib/importer/query_batcher'
 
 module CartoDB
   module InternalGeocoder
@@ -29,7 +29,7 @@ module CartoDB
             '^(([-+]?(([0-9]|[1-8][0-9])(\.[0-9]+)?))|[-+]?90)$'
         }
 
-        CartoDB::Importer2::CartodbIdQueryBatcher.new(
+        CartoDB::Importer2::QueryBatcher.new(
             @db, 
             @logger, 
             !table_has_cartodb_id(table_schema, table_name)

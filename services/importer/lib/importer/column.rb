@@ -2,7 +2,7 @@
 require_relative './job'
 require_relative './string_sanitizer'
 require_relative './exceptions'
-require_relative './cartodb_id_query_batcher'
+require_relative './query_batcher'
 
 module CartoDB
   module Importer2
@@ -71,7 +71,7 @@ module CartoDB
       def convert_from_wkt
         #TODO: @capture_exceptions
         job.log 'Converting geometry from WKT to WKB'
-        CartodbIdQueryBatcher.new(
+        QueryBatcher.new(
             db, 
             job, 
             create_seq_field = true
@@ -97,7 +97,7 @@ module CartoDB
         # 2) Normal geojson behavior
         #TODO: @capture_exceptions
         job.log 'Converting geometry from GeoJSON with transform to WKB'
-        CartodbIdQueryBatcher.new(
+        QueryBatcher.new(
             db, 
             job, 
             create_seq_field = true
@@ -115,7 +115,7 @@ module CartoDB
       def convert_from_geojson
         #TODO: @capture_exceptions
         job.log 'Converting geometry from GeoJSON to WKB'
-        CartodbIdQueryBatcher.new(
+        QueryBatcher.new(
             db, 
             job, 
             create_seq_field = true
@@ -133,7 +133,7 @@ module CartoDB
       def convert_from_kml_point
         #TODO: @capture_exceptions
         job.log 'Converting geometry from KML point to WKB'
-        CartodbIdQueryBatcher.new(
+        QueryBatcher.new(
             db, 
             job, 
             create_seq_field = true
@@ -149,7 +149,7 @@ module CartoDB
       def convert_from_kml_multi
         #TODO: @capture_exceptions
         job.log 'Converting geometry from KML multi to WKB'
-        CartodbIdQueryBatcher.new(
+        QueryBatcher.new(
             db, 
             job, 
             create_seq_field = true
@@ -165,7 +165,7 @@ module CartoDB
       def convert_to_2d
         #TODO: @capture_exceptions
         job.log 'Converting to 2D point'
-        CartodbIdQueryBatcher.new(
+        QueryBatcher.new(
             db, 
             job, 
             create_seq_field = true
@@ -270,7 +270,7 @@ module CartoDB
         if column_type != nil && column_type == :string
           #TODO: @capture_exceptions
           job.log 'string column found, replacing'
-          CartodbIdQueryBatcher.new(
+          QueryBatcher.new(
               db, 
               job, 
               create_seq_field = true

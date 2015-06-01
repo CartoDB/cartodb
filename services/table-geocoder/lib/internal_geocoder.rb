@@ -95,7 +95,7 @@ module CartoDB
 
       def copy_results_to_table
         # 'InternalGeocoder::copy_results_to_table'
-        CartodbIdQueryBatcher.new(
+        QueryBatcher.new(
             connection,
             nil,
             create_seq_field = true,

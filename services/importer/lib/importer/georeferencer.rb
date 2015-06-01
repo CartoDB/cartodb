@@ -1,7 +1,7 @@
 # encoding: utf-8
 require_relative './column'
 require_relative './job'
-require_relative './cartodb_id_query_batcher'
+require_relative './query_batcher'
 require_relative './content_guesser'
 require_relative '../../../table-geocoder/lib/internal-geocoder/latitude_longitude'
 
@@ -355,7 +355,7 @@ module CartoDB
       def handle_multipoint(qualified_table_name)
         # TODO: capture_exceptions=true
         job.log 'Converting detected multipoint to point'
-        CartodbIdQueryBatcher.new(
+        QueryBatcher.new(
             db, 
             job, 
             create_seq_field = true

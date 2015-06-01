@@ -4,7 +4,7 @@ require 'rollbar'
 module CartoDB
   module Importer2
 
-    class CartodbIdQueryBatcher
+    class QueryBatcher
 
       DEFAULT_BATCH_SIZE = 20000
       DEFAULT_SEQUENCE_FIELD = 'cartodb_id'

@@ -1,5 +1,6 @@
 # encoding: utf-8
 require_relative '../../sql-api/sql_api'
+require_relative '../../importer/lib/importer/query_batcher'
 require_relative 'internal-geocoder/query_generator_factory'
 
 module CartoDB
@@ -95,7 +96,7 @@ module CartoDB
 
       def copy_results_to_table
         # 'InternalGeocoder::copy_results_to_table'
-        QueryBatcher.new(
+        CartoDB::Importer2::QueryBatcher.new(
             connection,
             nil,
             create_seq_field = true,

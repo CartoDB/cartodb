@@ -2,6 +2,7 @@
 require_relative '../../services/table-geocoder/lib/table_geocoder'
 require_relative '../../services/table-geocoder/lib/internal_geocoder.rb'
 require_relative '../../lib/cartodb/metrics'
+require_relative '../../lib/cartodb/mixpanel'
 
 class Geocoding < Sequel::Model
 

@@ -37,7 +37,9 @@
   margin-top: 10px;
   overflow: hidden;
   text-align: right;
-
+  text-overflow: ellipsis;
+  max-width: 140px;
+  overflow: hidden;
   font-size: $sFontSize-normal;
   line-height: $sLineHeight-normal;
   color: $cTypography-secondary;

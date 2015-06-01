@@ -70,12 +70,12 @@ module CartoDB
           }
           wizard_properties[:properties].merge!(CSS_PROPERTIES)
           wizard_properties[:properties][:categories] = CATEGORIES.map do |category|
-              {
-                "title" => category[:title],
-                "title_type" => "boolean",
-                "color" => category[:color],
-                "value_type" => "color"
-              }
+            {
+              "title" => category[:title],
+              "title_type" => "boolean",
+              "color" => category[:color],
+              "value_type" => "color"
+            }
           end
 
           layer.set_wizard_properties(wizard_properties)

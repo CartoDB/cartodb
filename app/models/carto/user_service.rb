@@ -11,6 +11,76 @@ module Carto
       @user = user_model
     end
 
+    # TODO: Review usage to move to UserPresenter if not used anywhere else
+
+    # Only returns owned tables (not shared ones)
+    def table_count
+      Carto::VisualizationQueryBuilder.new
+                                      .with_user_id(@user.id)
+                                      .with_type(Carto::Visualization::TYPE_CANONICAL)
+                                      .build
+                                      .count
+    end
+
+    def visualization_count
+      Carto::VisualizationQueryBuilder.new
+                                      .with_owned_by_or_shared_with_user_id(@user.id)
+                                      .build
+                                      .count
+    end
+
+    def public_visualization_count
+      Carto::VisualizationQueryBuilder.user_public_visualizations(@user)
+                                      .build
+                                      .count
+    end
+
+    def twitter_imports_count(options={})
+      date_to = (options[:to] ? options[:to].to_date : Date.today)
+      date_from = (options[:from] ? options[:from].to_date : @user.last_billing_cycle)
+      @user.search_tweets
+           .where(state: ::SearchTweet::STATE_COMPLETE)
+           .where('created_at >= ? AND created_at <= ?', date_from, date_to + 1.days)
+           .sum("retrieved_items".lit).to_i
+    end
+
+    # Returns an array representing the last 30 days, populated with api_calls
+    # from three different sources
+    def get_api_calls(options = {})
+      return CartoDB::Stats::APICalls.new.get_api_calls_without_dates(@user.username, {old_api_calls: false})
+    end
+
+    # This method is innaccurate and understates point based tables (the /2 is to account for the_geom_webmercator)
+    # TODO: Without a full table scan, ignoring the_geom_webmercator, we cannot accuratly asses table size
+    # Needs to go on a background job.
+    def db_size_in_bytes
+      return 0 if @user.new_record?
+
+      attempts = 0
+      begin
+        # Hack to support users without the new MU functiones loaded
+        # TODO: Check this works as expected
+        user_data_size_function = cartodb_extension_version_pre_mu? ? 
+          "CDB_UserDataSize()" : 
+          "CDB_UserDataSize('#{@user.database_schema}')"
+        in_database(:as => :superuser).execute("SELECT cartodb.#{user_data_size_function}")
+                                      .first['cdb_userdatasize'].to_i
+
+      rescue => e
+        attempts += 1
+        begin
+          in_database(:as => :superuser).execute("ANALYZE")
+        rescue => ee
+          Rollbar.report_exception(ee)
+          raise ee
+        end
+        retry unless attempts > 1
+        CartoDB.notify_exception(e, { user: @user })
+        # INFO: we need to return something to avoid 'disabled' return value
+        0
+      end
+    end
+
     def database_username
       if Rails.env.production?
         "cartodb_user_#{@user.id}"
@@ -33,7 +103,27 @@ module Carto
       secure_digest(Time.now, (1..10).map{ rand.to_s })
     end
 
+    def cartodb_extension_version_pre_mu?
+      current_version = cartodb_extension_semver(cartodb_extension_version)
+      if current_version.size == 3
+        major, minor, _ = current_version
+        major == 0 and minor < 3
+      else
+        raise 'Current cartodb extension version does not match standard x.y.z format'
+      end
+    end
+
     private
+
+    # Returns a tree elements array with [major, minor, patch] as in http://semver.org/
+    def cartodb_extension_semver(extension_version)
+      extension_version.split('.').take(3).map(&:to_i)
+    end
+
+    def cartodb_extension_version
+      @cartodb_extension_version ||= in_database(:as => :superuser).execute('select cartodb.cdb_version() as v')
+                                                                   .first['v']
+    end
 
     def self.secure_digest(*args)
       Digest::SHA1.hexdigest(args.flatten.join('--'))

@@ -37,6 +37,10 @@
 .OptionCard--privacy {
   max-width: 230px; // set a max-width to appear nicer for dataset privacy dialog
 }
+.OptionCard--onlyIcons {
+  min-height: 114px;
+  @include justify-content(center);
+}
 .OptionCard.is-disabled {
   background-color: $cStructure-grayBkg;
   @include opacity(0.4);

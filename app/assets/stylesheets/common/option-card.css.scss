@@ -38,6 +38,8 @@
   max-width: 230px; // set a max-width to appear nicer for dataset privacy dialog
 }
 .OptionCard--onlyIcons {
+  // Arbitrary size really, but gives a "square" like look where used (only export modal for now).
+  // If need to use the same style but with other amount of items we need to rethink this…
   min-height: 114px;
   @include justify-content(center);
 }

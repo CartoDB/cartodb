@@ -104,25 +104,25 @@ module CartoDB
           matches = layer.options['tile_style'].match(/^#(.*) \{/)
           unless matches.nil?
             css_selector = "##{matches[1]}"
-            css_properties = CSS_PROPERTIES.map{|property, value| "  #{property}: #{value};"}.join("\n")
+            css_properties = CSS_PROPERTIES.map{|property, value| "    #{property}: #{value};"}.join("\n")
 
             carto_css = []
             carto_css << "#{css_selector} {"
             carto_css << css_properties
-            carto_css << "  [zoom>4] {"
-            carto_css << "    marker-width: 7;"
-            carto_css << "  }"
-            carto_css << "  [zoom>5] {"
-            carto_css << "    marker-width: 8;"
-            carto_css << "  }"
-            carto_css << "  [zoom>6] {"
-            carto_css << "    marker-width: 9;"
-            carto_css << "  }"
+            carto_css << "    [zoom>4] {"
+            carto_css << "        marker-width: 7;"
+            carto_css << "    }"
+            carto_css << "    [zoom>5] {"
+            carto_css << "        marker-width: 8;"
+            carto_css << "    }"
+            carto_css << "    [zoom>6] {"
+            carto_css << "       marker-width: 9;"
+            carto_css << "    }"
             carto_css << "}"
 
             CATEGORIES.each do |category|
               carto_css << "#{css_selector}[#{CATEGORY_COLUMN}=#{category[:title]}] {"
-              carto_css << "  marker-fill: #{category[:color]};"
+              carto_css << "    marker-fill: #{category[:color]};"
               carto_css << "}"
             end
 

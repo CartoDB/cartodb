@@ -164,13 +164,23 @@ class Layer < Sequel::Model
     CartoDB::Layer::Presenter.new(self, options, configuration)
   end
 
-  def set_style_options(cartocss_style)
+  def set_style_options(cartocss_style, opts = {})
     return unless data_layer?
 
     self.options['tile_style'] = cartocss_style
-    # Needed for custom tile style:
-    self.options['tile_style_custom'] = true
-    self.options['wizard_properties'] = { type: "polygon", properties: {} }
+    self.options['tile_style_custom'] = opts.fetch(:custom, true)
+  end
+
+  def set_wizard_properties(wizard_properties)
+    return unless data_layer?
+
+    self.options['wizard_properties'] = wizard_properties
+  end
+
+  def set_legend(legend)
+    return unless data_layer?
+
+    self.options['legend'] = legend
   end
 
   def qualified_table_name(viewer_user)

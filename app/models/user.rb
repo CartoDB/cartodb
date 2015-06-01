@@ -1398,7 +1398,7 @@ class User < Sequel::Model
   end
 
   def organization_owner?
-    self.organization.present? && self.organization.owner == self
+    self.organization.present? && self.organization.owner_id == self.id
   end
 
   def organization_user?
@@ -1539,6 +1539,12 @@ class User < Sequel::Model
     self.set_user_privileges # Set privileges
     self.set_user_as_organization_member
     self.rebuild_quota_trigger
+
+    # WIP
+    if organization_owner?
+      org_member_role = in_database.fetch("SELECT cartodb.CDB_Organization_Member_Group_Role_Member_Name() as org_member_role;")[:org_member_role][:org_member_role]
+      set_user_privileges_in_public_schema(org_member_role)
+    end
   end
 
 
@@ -1606,10 +1612,10 @@ class User < Sequel::Model
     )
   end
 
-  def set_user_privileges_in_public_schema # MU
+  def set_user_privileges_in_public_schema(db_user = nil)
     # Privileges in public schema
     self.run_queries_in_transaction(
-      self.grant_read_on_schema_queries('public'),
+      self.grant_read_on_schema_queries('public', db_user),
       true
     )
   end
@@ -1671,7 +1677,10 @@ class User < Sequel::Model
 
   def set_user_privileges # MU
     self.set_user_privileges_in_cartodb_schema
-    self.set_user_privileges_in_public_schema
+    # INFO: organization permission on public schema is handled through role assignment
+    unless organization_user?
+      self.set_user_privileges_in_public_schema
+    end
     self.set_user_privileges_in_own_schema
     self.set_user_privileges_in_importer_schema
     self.set_user_privileges_in_geocoding_schema
@@ -1696,7 +1705,6 @@ class User < Sequel::Model
         self.setup_new_user
       end
     end
-    #set_user_as_organization_owner_if_needed
   end
 
   def set_database_search_path
@@ -2031,13 +2039,6 @@ TRIGGER
     end
   end
 
-  def set_user_as_organization_owner_if_needed
-    if self.organization && self.organization.reload && self.organization.owner.nil? && self.organization.users.count == 1
-      self.organization.owner = self
-      self.organization.save
-    end
-  end
-
   def grant_connect_on_database_queries(db_user = nil)
     granted_user = db_user.nil? ? self.database_username : db_user
     [
@@ -2091,6 +2092,8 @@ TRIGGER
     in_database(:as => :superuser) do |user_database|
       user_database.transaction do
         ([self.database_username, self.database_public_username] + additional_accounts).each do |u|
+          # TODO: WIP: remove this
+          user_database.run("set statement_timeout to 2000")
           user_database.run("REVOKE ALL ON SCHEMA \"#{schema}\" FROM \"#{u}\"")
           user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA \"#{schema}\" FROM \"#{u}\"")
           user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" FROM \"#{u}\"")

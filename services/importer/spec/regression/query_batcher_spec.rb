@@ -14,48 +14,23 @@ module CartoDB
         conn = Factories::PGConnection.new
         @db = conn.connection
         @pg_options = conn.pg_options
-        @table_name = 'query_batcher_table_test'
+        @table_name = 'cdbid_query_batcher_table_test'
         @n_values = 3
         @batch_size = 1
       end
 
-      def fetch_values(query)
-        @db.fetch(query).all.map { |r| r[:id] }
+      def fetch(query, column = :value)
+        @db.fetch(query).all.map { |r| r[column] }
       end
 
       before(:each) do
-        @db.run(%Q[create table #{@table_name} (id integer)])
-        @db.run(%Q[insert into #{@table_name} select generate_series(1, #{@n_values})])
+        @db.run(%Q[create table #{@table_name} (cartodb_id integer, value integer)])
+        @db.run(%Q[insert into #{@table_name}(cartodb_id) select generate_series(1, #{@n_values})])
+        @db.run(%Q[update #{@table_name} set value = cartodb_id])
       end
 
       after(:each) do
         @db.drop_table @table_name
-      end
-
-      describe 'QueryBatcher#execute' do
-
-        it 'processes every row' do
-          QueryBatcher.execute(@db, %Q[update #{@table_name} set id = id * 10], @table_name, nil, '', false, @batch_size)
-          fetch_values(%Q[select id from #{@table_name} order by id]).should eq [10, 20, 30]
-        end
-
-        it 'processes every row for batch size bigger than table' do
-          QueryBatcher.execute(@db, %Q[update #{@table_name} set id = id * 10], @table_name, nil, '', false, @n_values + 1)
-          fetch_values(%Q[select id from #{@table_name} order by id]).should eq [10, 20, 30]
-        end
-
-        it 'processes every matching row for queries matching all rows' do
-          QueryBatcher.execute(@db, %Q[update #{@table_name} set id = id * 10 #{QueryBatcher::QUERY_WHERE_PLACEHOLDER} where id % 1 = 0 #{QueryBatcher::QUERY_LIMIT_SUBQUERY_PLACEHOLDER}], @table_name, nil, '', false, @batch_size)
-          fetch_values(%Q[select id from #{@table_name} order by id]).should eq [10, 20, 30]
-        end
-
-        it 'processes every matching row for queries not matching all rows' do
-          pending('See #1994. For where-limited queries use instance execute method instead of class method') do
-            QueryBatcher.execute(@db, %Q[update #{@table_name} set id = id * 10 #{QueryBatcher::QUERY_WHERE_PLACEHOLDER} where id % 2 = 0 #{QueryBatcher::QUERY_LIMIT_SUBQUERY_PLACEHOLDER}], @table_name, nil, '', false, @batch_size)
-            fetch_values(%Q[select id from #{@table_name} order by id]).should eq [1, 3, 20]
-          end
-        end
-
       end
 
       describe '#execute_update' do
@@ -65,23 +40,33 @@ module CartoDB
         end
 
         it 'processes every row' do
-          @qb.execute_update(%Q[update #{@table_name} set id = id * 10], @table_name, nil)
-          fetch_values(%Q[select id from #{@table_name} order by id]).should eq [10, 20, 30]
+          @qb.execute_update(%Q[update #{@table_name} set value = value * 10], 'public', @table_name)
+          fetch(%Q[select * from #{@table_name} order by cartodb_id]).should eq [10, 20, 30]
         end
 
         it 'processes every row for batch size bigger than table' do
-          @qb_big_batch.execute_update(%Q[update #{@table_name} set id = id * 10], @table_name, nil)
-          fetch_values(%Q[select id from #{@table_name} order by id]).should eq [10, 20, 30]
+          @qb_big_batch.execute_update(%Q[update #{@table_name} set value = value * 10], 'public', @table_name)
+          fetch(%Q[select * from #{@table_name} order by cartodb_id]).should eq [10, 20, 30]
         end
 
         it 'processes every matching row for queries matching all rows' do
-          @qb.execute_update(%Q[update #{@table_name} set id = id * 10], @table_name, %Q[id % 1 = 0])
-          fetch_values(%Q[select id from #{@table_name} order by id]).should eq [10, 20, 30]
+          @qb.execute_update(%Q[update #{@table_name} set value = value * 10 where cartodb_id % 1 = 0], 'public', @table_name)
+          fetch(%Q[select * from #{@table_name} order by cartodb_id]).should eq [10, 20, 30]
         end
 
         it 'processes every matching row for queries not matching all rows' do
-          @qb.execute_update(%Q[update #{@table_name} set id = id * 10], @table_name, %Q[id % 2 = 0])
-          fetch_values(%Q[select id from #{@table_name} order by id]).should eq [1, 3, 20]
+          @qb.execute_update(%Q[update #{@table_name} set value = value * 10 where cartodb_id % 2 = 0], 'public', @table_name)
+          fetch(%Q[select * from #{@table_name} order by cartodb_id]).should eq [1,20, 3]
+        end
+
+        it 'does not fail with empty tables' do
+          begin
+            @db.run(%Q[create table empty_test_table (cartodb_id integer, value integer)])
+            @qb.execute_update(%Q[update empty_test_table set value = value * 10 where cartodb_id % 2 = 0], 'public', 'empty_test_table')
+            fetch(%Q[select * from empty_test_table order by cartodb_id]).should eq []
+          ensure
+            @db.drop_table 'empty_test_table'
+          end
         end
 
       end
@@ -90,3 +75,4 @@ module CartoDB
 
   end
 end
+

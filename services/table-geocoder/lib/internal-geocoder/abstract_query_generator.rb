@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 require_relative 'input_type_resolver'
-require_relative '../../../importer/lib/importer/uery_batcher'
+require_relative '../../../importer/lib/importer/query_batcher'
 
 module CartoDB
   module InternalGeocoder

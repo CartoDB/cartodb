@@ -444,6 +444,7 @@ describe("LayerDefinition", function() {
         'should_not': 'included'
       }
       layerDefinition.layerToken = 'test';
+      layerDefinition.layerGroupMetadata = { layers: [] }
       layerDefinition.getTiles(function(tiles) {
         expect(tiles.tiles[0].indexOf('map_key=testapikey')).not.toEqual(-1)
         expect(tiles.tiles[0].indexOf('should_not')).toEqual(-1)
@@ -471,7 +472,7 @@ describe("LayerDefinition", function() {
       layerDefinition.options.refreshTime = 10;
       layerDefinition.options.ajax = function(p) { 
         params = p;
-        p.success({ layergroupid: 'test' });
+        p.success({ layergroupid: 'test', metadata: { layers: [] } });
       };
 
       layerDefinition.getTiles(function(tiles) {});
@@ -520,7 +521,7 @@ describe("LayerDefinition", function() {
       delete layerDefinition.options.no_cdn;
       layerDefinition.options.ajax = function(p) { 
         params = p;
-        p.success({ layergroupid: 'test', cdn_url: { http: 'cdn.test.com', https:'cdn.testhttps.com' }});
+        p.success({ layergroupid: 'test', metadata: { layers: [] }, cdn_url: { http: 'cdn.test.com', https:'cdn.testhttps.com' }});
       };
 
       layerDefinition.getTiles();
@@ -546,51 +547,85 @@ describe("LayerDefinition", function() {
 
   describe('._layerGroupTiles', function() {
 
+    var layerGroupMetadata;
+
+    beforeEach(function() {
+      layerGroupMetadata = {
+        "layers": [
+          {
+            "type": "mapnik",
+            "meta": {}
+          },
+          {
+            "type": "torque",
+            "meta": {
+              "start": 1000,
+              "end": 246000,
+              "data_steps": 246,
+              "column_type": "number"
+            }
+          },
+          {
+            "type": "mapnik",
+            "meta": {}
+          }
+        ],
+        "torque": {
+          "1": {
+            "start": 1000,
+            "end": 246000,
+            "data_steps": 246,
+            "column_type": "number"
+          }
+        }
+      }
+    });
+
     it("should generate url for tiles", function() {
-      var tiles = layerDefinition._layerGroupTiles('test_layer');
+      var tiles = layerDefinition._layerGroupTiles('test_layer', layerGroupMetadata);
       expect(tiles.tiles.length).toEqual(1);
       expect(tiles.grids.length).toEqual(2);
       expect(tiles.grids[0].length).toEqual(1);
-      expect(tiles.tiles[0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/all/{z}/{x}/{y}.png');
-      expect(tiles.grids[0][0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/0/all/{z}/{x}/{y}.grid.json');
-      expect(tiles.grids[1][0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/1/all/{z}/{x}/{y}.grid.json');
+      expect(tiles.tiles[0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/0,2/{z}/{x}/{y}.png');
+      expect(tiles.grids[0][0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/0/{z}/{x}/{y}.grid.json');
+      expect(tiles.grids[1][0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/1/{z}/{x}/{y}.grid.json');
     });
 
     it("should generate url for tiles with params", function() {
-      var tiles = layerDefinition._layerGroupTiles('test_layer', {
+      var tiles = layerDefinition._layerGroupTiles('test_layer', layerGroupMetadata, {
         api_key: 'api_key_test',
         updated_at: '1234'
       });
-      expect(tiles.tiles[0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/all/{z}/{x}/{y}.png?api_key=api_key_test&updated_at=1234');
-      expect(tiles.grids[0][0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/0/all/{z}/{x}/{y}.grid.json?api_key=api_key_test&updated_at=1234');
+      expect(tiles.tiles[0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/0,2/{z}/{x}/{y}.png?api_key=api_key_test&updated_at=1234');
+      expect(tiles.grids[0][0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/0/{z}/{x}/{y}.grid.json?api_key=api_key_test&updated_at=1234');
     });
 
     it("should generate url for tiles using a cdn", function() {
       layerDefinition.options.no_cdn = false;
       layerDefinition.options.cdn_url = { http: "api.cartocdn.com" }
       layerDefinition.options.subdomains = ['a', 'b', 'c', 'd'];
-      var tiles = layerDefinition._layerGroupTiles('test_layer');
-      expect(tiles.tiles[0]).toEqual('http://a.api.cartocdn.com/rambo/api/v1/map/test_layer/all/{z}/{x}/{y}.png');
-      expect(tiles.tiles[1]).toEqual('http://b.api.cartocdn.com/rambo/api/v1/map/test_layer/all/{z}/{x}/{y}.png');
-      expect(tiles.grids[0][0]).toEqual('http://a.api.cartocdn.com/rambo/api/v1/map/test_layer/0/all/{z}/{x}/{y}.grid.json');
-      expect(tiles.grids[0][1]).toEqual('http://b.api.cartocdn.com/rambo/api/v1/map/test_layer/0/all/{z}/{x}/{y}.grid.json');
+      var tiles = layerDefinition._layerGroupTiles('test_layer', layerGroupMetadata);
+      expect(tiles.tiles[0]).toEqual('http://a.api.cartocdn.com/rambo/api/v1/map/test_layer/0,2/{z}/{x}/{y}.png');
+      expect(tiles.tiles[1]).toEqual('http://b.api.cartocdn.com/rambo/api/v1/map/test_layer/0,2/{z}/{x}/{y}.png');
+      expect(tiles.grids[0][0]).toEqual('http://a.api.cartocdn.com/rambo/api/v1/map/test_layer/0/{z}/{x}/{y}.grid.json');
+      expect(tiles.grids[0][1]).toEqual('http://b.api.cartocdn.com/rambo/api/v1/map/test_layer/0/{z}/{x}/{y}.grid.json');
     });
 
     it("should generate url for tiles without a cdn when cdn_url is empty", function() {
       layerDefinition.options.no_cdn = false;
       layerDefinition.options.subdomains = ['a', 'b', 'c', 'd'];
-      var tiles = layerDefinition._layerGroupTiles('test_layer');
-      expect(tiles.tiles[0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/all/{z}/{x}/{y}.png');
-      expect(tiles.tiles[1]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/all/{z}/{x}/{y}.png');
-      expect(tiles.grids[0][0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/0/all/{z}/{x}/{y}.grid.json');
-      expect(tiles.grids[0][1]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/0/all/{z}/{x}/{y}.grid.json');
+      var tiles = layerDefinition._layerGroupTiles('test_layer', layerGroupMetadata);
+      expect(tiles.tiles[0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/0,2/{z}/{x}/{y}.png');
+      expect(tiles.tiles[1]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/0,2/{z}/{x}/{y}.png');
+      expect(tiles.grids[0][0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/0/{z}/{x}/{y}.grid.json');
+      expect(tiles.grids[0][1]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/0/{z}/{x}/{y}.grid.json');
     });
 
     it("grid url should not include interactivity", function() {
       layerDefinition.setInteractivity(0, ['cartodb_id', 'rambo']);
-      var tiles = layerDefinition._layerGroupTiles('test_layer');
-      expect(tiles.grids[0][0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/0/all/{z}/{x}/{y}.grid.json');
-      expect(tiles.grids[1][0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/1/all/{z}/{x}/{y}.grid.json');
+      var tiles = layerDefinition._layerGroupTiles('test_layer', layerGroupMetadata);
+      expect(tiles.grids[0][0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/0/{z}/{x}/{y}.grid.json');
+      expect(tiles.grids[1][0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/1/{z}/{x}/{y}.grid.json');
     });
   });
 
@@ -638,8 +673,7 @@ describe("LayerDefinition", function() {
           options: {
             sql: 'test',
             cartocss:'test',
-            cartocss_version: '2.1.0',
-            interactivity: []
+            cartocss_version: '2.1.0'
           }
         }]
       });
@@ -703,7 +737,7 @@ describe("NamedMap", function() {
     });
     namedMap.options.ajax = function(p) { 
       params = p;
-      p.success({ layergroupid: 'test' });
+      p.success({ layergroupid: 'test', metadata: { layers: [] } });
     };
 
     namedMap._getLayerToken();
@@ -926,7 +960,7 @@ describe("NamedMap", function() {
     });
     namedMap.options.ajax = function(p) { 
       params = p;
-      p.success({ layergroupid: 'test' });
+      p.success({ layergroupid: 'test', metadata: { layers: [] } });
     };
 
     namedMap._getLayerToken();

@@ -167,17 +167,6 @@ describe Geocoding do
       geocoding.run!
       geocoding.reload.state.should eq 'failed'
     end
-
-    it 'sends a track event through hubspot client' do
-      hubspot_instance = CartoDB::Hubspot.instance
-      hubspot_instance.expects(:track_geocoding_success).once.with() { |payload|
-        payload[:email] == @user.email && payload[:processed_rows] == 0
-      }
-
-      geocoding = FactoryGirl.build(:geocoding, user: @user, formatter: 'a', user_table: @table, formatter: 'b')
-      geocoding.class.stubs(:processable_rows).returns 0
-      geocoding.run!
-    end
   end
 
   describe '#max_geocodable_rows' do

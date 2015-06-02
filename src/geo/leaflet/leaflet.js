@@ -352,7 +352,7 @@
         try {
           layer_view = new layerClass(layer, map);
         } catch(e) {
-          cdb.log.error("MAP: error creating layer" + layer.get('type') + " " + e);
+          cdb.log.error("MAP: error creating '" +  layer.get('type') + "' layer -> " + e.message);
         }
       } else {
         cdb.log.error("MAP: " + layer.get('type') + " can't be created");

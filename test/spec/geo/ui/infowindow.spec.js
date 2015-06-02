@@ -560,6 +560,12 @@ describe("cdb.geo.ui.infowindow", function() {
       expect(view.$el.find("img").length).toEqual(0);
     });
 
+    it("if the them has a cover and the image is invalid it should hide it", function() {
+      model.set("content", { fields: fieldsWithoutURL });
+      model.set('template', '<div class="cartodb-popup header" data-cover="true"><div class="cover"><img src="{{ wadus }}"/></div></div>');
+      expect(view.$el.find("img").css('display')).toEqual('none');
+    });
+
     it("if the theme doesn't have cover don't append the image", function() {
       model.set("content", { fields: fields });
       model.set('template', '<div class="cover"></div>');

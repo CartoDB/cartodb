@@ -1,3 +1,17 @@
+3.14.3 (29//05//2015)
+* Hide <img> tag of infowindow covers when the url is invalid.
+* Expose legend model in sublayers/layers so that users can customize legends (#480).
+* Handle tooltip overflow (#482).
+* Only show tooltips when they have fields (#486).
+* Updated Torque to 2.11.3
+* Fix scrolling of infowindows with images (#490).
+* Fix dropdown bind events not being unbound on clean (#493)
+
+3.14.2 (06//05//2015)
+* Allow to specify a template for the items of a custom legend.
+* The NOKIA geocoder doesn't encode the whitespaces anymore.
+* Adds documentation for the Static Map API
+
 3.14.1 (30//04//2015)
 * Fixes a bug that prevented setting the maxZoom and minZoom of a map.
 * Updates Torque to 2.11.2

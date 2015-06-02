@@ -18,7 +18,7 @@
   @include display-flex();
   width: 100%;
 }
-.EditField-input { flex-grow: 2 }
+.EditField-input { @include flex-grow(2) }
 .EditField-input.is-number { color: #4DC964 }
 .EditField-textarea {
   resize: vertical;
@@ -94,4 +94,10 @@
 .EditField-info:hover {
   background: #787878;
   cursor: pointer;
+}
+.EditField--withBorder {
+  @include justify-content(space-between, justify);
+  @include align-content(center);
+  border: 1px solid #CCC;
+  background: white;
 }

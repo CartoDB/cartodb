@@ -209,7 +209,7 @@ module CartoDB
         def get_resource(id)
           raise UninitializedError.new('No API client instantiated', DATASOURCE_NAME) unless @api_client.present?
 
-          subscribers = []
+          subscribers = {}
           contents = StringIO.new
           export_api = @api_client.get_exporter
 
@@ -371,7 +371,7 @@ module CartoDB
             unless actions.length == 0
               actions.each { |action|
                 if action["action"] == "open"
-                  subscribers.push({ subject: subject, opened: true })
+                  subscribers[subject] = true
                 end
                 opened_action = true 
               }
@@ -382,22 +382,18 @@ module CartoDB
         # @param contents String containing a JSON Hash
         # @param subscribers Array containing a Hash { subject, opened }
         # @param header_row Boolean
-        def list_json_to_csv(contents='[]', subscribers=[], header_row=false)
-          opened_mail = false
-          contents = ::JSON.parse(contents)
+        def list_json_to_csv(contents='[]', subscribers={}, header_row=false)
+          # Anonymize emails
+          contents = ::JSON.parse(contents.gsub("\n", ' ').gsub(/^(.*)@/, ""))
 
-          opened_mail = (subscribers.index{ |item| item[:subject] == contents[0] } != nil) unless header_row == 0
+          opened_mail = !subscribers[contents[0]].nil?
 
+          cleaned_contents = []
           contents.each_with_index { |field, index|
-            # Anonymize emails
-            if index == 0
-              contents[index] = "\"#{field.to_s.gsub("\n", ' ').gsub('"', '""').gsub(/^(.*)@/, "")}\""
-            else
-              contents[index] = "\"#{field.to_s.gsub("\n", ' ').gsub('"', '""')}\""
-            end
+            cleaned_contents[index] = "\"#{field.to_s.gsub('"', '""')}\""
           }
-          contents.push("\"#{header_row ? 'Opened' : opened_mail.to_s}\"")
-          data = contents.join(',')
+          cleaned_contents.push("\"#{header_row ? 'Opened' : opened_mail.to_s}\"")
+          data = cleaned_contents.join(',')
           data << "\n"
         end
 

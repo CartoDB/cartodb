@@ -2102,10 +2102,7 @@ TRIGGER
     in_database(:as => :superuser) do |user_database|
       user_database.transaction do
         ([self.database_username, self.database_public_username] + additional_accounts).each do |u|
-          user_database.run("REVOKE ALL ON SCHEMA \"#{schema}\" FROM \"#{u}\"")
-          user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA \"#{schema}\" FROM \"#{u}\"")
-          user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" FROM \"#{u}\"")
-          user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA \"#{schema}\" FROM \"#{u}\"")
+          revoke_privileges(user_database, schema, u)
         end
       end
     end
@@ -2116,10 +2113,7 @@ TRIGGER
       user_database.transaction do
         schemas = [self.database_schema].uniq
         schemas.each do |schema|
-          user_database.run("REVOKE ALL ON SCHEMA \"#{schema}\" FROM PUBLIC")
-          user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA \"#{schema}\" FROM PUBLIC")
-          user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" FROM PUBLIC")
-          user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA \"#{schema}\" FROM PUBLIC")
+          revoke_privileges(user_database, schema, 'PUBLIC')
         end
         yield(user_database) if block_given?
       end
@@ -2134,15 +2128,19 @@ TRIGGER
         ['PUBLIC', CartoDB::PUBLIC_DB_USER].each do |u|
           user_database.run("REVOKE ALL ON DATABASE \"#{database_name}\" FROM #{u}")
           schemas.each do |schema|
-            user_database.run("REVOKE ALL ON SCHEMA \"#{schema}\" FROM #{u}")
-            user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA \"#{schema}\" FROM #{u}")
-            user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" FROM #{u}")
-            user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA \"#{schema}\" FROM #{u}")
+            revoke_privileges(user_database, schema, u)
           end
         end
         yield(user_database) if block_given?
       end
     end
+  end
+
+  def revoke_privileges(db, schema, u)
+    db.run("REVOKE ALL ON SCHEMA \"#{schema}\" FROM \"#{u}\"")
+    db.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA \"#{schema}\" FROM \"#{u}\"")
+    db.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" FROM \"#{u}\"")
+    db.run("REVOKE ALL ON ALL TABLES IN SCHEMA \"#{schema}\" FROM \"#{u}\"")
   end
 
   # Drops grants and functions in a given schema, avoiding by all means a CASCADE

@@ -2,6 +2,7 @@
 require_relative '../../services/table-geocoder/lib/table_geocoder'
 require_relative '../../services/table-geocoder/lib/internal_geocoder.rb'
 require_relative '../../lib/cartodb/metrics'
+require_relative '../../lib/cartodb/mixpanel'
 
 class Geocoding < Sequel::Model
 
@@ -145,6 +146,8 @@ class Geocoding < Sequel::Model
   def report(error = nil)
     payload = metrics_payload(error)
     CartoDB::Metrics.new.report(:geocoding, payload)
+    # TODO: remove mixpanel
+    CartoDB::Mixpanel.new.report(:geocoding, payload)
     payload.delete_if {|k,v| %w{distinct_id email table_id}.include?(k.to_s)}
     geocoding_logger.info(payload.to_json)
   end

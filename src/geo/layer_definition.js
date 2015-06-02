@@ -14,6 +14,7 @@ function MapBase(options) {
   });
 
   this.layerToken = null;
+  this.layerGroupMetadata = null;
   this.urls = null;
   this.silent = false;
   this.interactionEnabled = []; //TODO: refactor, include inside layer
@@ -43,6 +44,7 @@ MapBase.prototype = {
     opts.maps_api_template = [tilerProtocol, "://", username, tilerDomain, tilerPort].join('');
   },
 
+  // TODO: This method is actually creating a map in the server -> Rename to createMap?
   getLayerToken: function(callback) {
     var self = this;
     function _done(data, err) {
@@ -276,7 +278,10 @@ MapBase.prototype = {
   },
 
   invalidate: function() {
+
+    // TODO: We should invalidate the layerGroup metadata here too.
     this.layerToken = null;
+    this.layerGroupMetadata = null;
     this.urls = null;
     this.onLayerDefinitionUpdated();
   },
@@ -284,19 +289,53 @@ MapBase.prototype = {
   getTiles: function(callback) {
     var self = this;
     if(self.layerToken) {
-      callback && callback(self._layerGroupTiles(self.layerToken, self.options.extra_params));
+      // TODO: Pass the layerGroup metadata to this guy
+      callback && callback(self._layerGroupTiles(self.layerToken, self.layerGroupMetadata, self.options.extra_params));
       return this;
     }
     this.getLayerToken(function(data, err) {
       if(data) {
         self.layerToken = data.layergroupid;
+        self.layerGroupMetadata = data.metadata;
+        // TODO: data contains the metadata for the layerGroup:
+        //
+        // {
+        //   ...
+        //   "metadata": {
+        //     "layers": [
+        //       {
+        //         "type": "mapnik",
+        //         "meta": {}
+        //       },
+        //       {
+        //         "type": "torque",
+        //         "meta": {
+        //           "start": 1000,
+        //           "end": 246000,
+        //           "data_steps": 246,
+        //           "column_type": "number"
+        //         }
+        //       }
+        //     ],
+        //     "torque": {
+        //       "1": {
+        //         "start": 1000,
+        //         "end": 246000,
+        //         "data_steps": 246,
+        //         "column_type": "number"
+        //       }
+        //     }
+        //   }
+        // }
+
         // if cdn_url is present, use it
         if (data.cdn_url) {
           var c = self.options.cdn_url = self.options.cdn_url || {};
           c.http = data.cdn_url.http || c.http;
           c.https = data.cdn_url.https || c.https;
         }
-        self.urls = self._layerGroupTiles(data.layergroupid, self.options.extra_params);
+        // TODO: Pass the layerGroup metadata to this guy
+        self.urls = self._layerGroupTiles(data.layergroupid, data.metadata, self.options.extra_params);
         callback && callback(self.urls);
       } else {
         if ((self.named_map !== null) && (err) ){
@@ -317,13 +356,25 @@ MapBase.prototype = {
     return this.options.maps_api_template.indexOf('https') === 0;
   },
 
-  _layerGroupTiles: function(layerGroupId, params) {
+  // TODO: We need to access the layerGroupMetadata here
+  _layerGroupTiles: function(layerGroupId, layerGroupMetadata, params) {
     var subdomains = this.options.subdomains || ['0', '1', '2', '3'];
     if(this.isHttps()) {
       subdomains = [null]; // no subdomain
     }
 
-    var tileTemplate = '/all/{z}/{x}/{y}';
+    // Generate something like 0,3,4, skipping torque layers
+    var layerIndexes = [];
+    var layers = layerGroupMetadata.layers;
+    for (var i = 0; i < layers.length; i++) {
+      var layer = layers[i];
+      if (layer.type !== 'torque') {
+        layerIndexes.push(i);
+      }
+    }
+
+    var tileTemplate = '/' +  layerIndexes.join(',') +'/{z}/{x}/{y}';
+    var gridTemplate = '/{z}/{x}/{y}'
 
     var grids = []
     var tiles = [];
@@ -337,7 +388,7 @@ MapBase.prototype = {
       var gridParams = this._encodeParams(params, this.options.gridParams);
       for(var layer = 0; layer < this.layers.length; ++layer) {
         grids[layer] = grids[layer] || [];
-        grids[layer].push(cartodb_url + "/" + layer +  tileTemplate + ".grid.json" + (gridParams ? "?" + gridParams: ''));
+        grids[layer].push(cartodb_url + "/" + layer +  gridTemplate + ".grid.json" + (gridParams ? "?" + gridParams: ''));
       }
     }
 
@@ -588,6 +639,7 @@ MapBase.prototype = {
   }
 };
 
+// TODO: This is actually an AnonymousMap -> Rename?
 function LayerDefinition(layerDefinition, options) {
   MapBase.call(this, options);
   this.endPoint = MapBase.BASE_URL;
@@ -613,6 +665,7 @@ LayerDefinition.layerDefFromSubLayers = function(sublayers) {
     }
   });
 
+  // TODO: Current version of MapConfig is 1.3.1
   var layerDefinition = {
     version: '1.0.0',
     stat_tag: 'API',

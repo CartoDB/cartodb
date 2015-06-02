@@ -1502,8 +1502,6 @@ class User < Sequel::Model
     self.create_client_application
     Thread.new do
       self.create_db_user
-      # TODO: remove, connect permission is now granted to org read user
-      # self.grant_user_in_database
     end.join
     self.create_own_schema
     self.setup_schema
@@ -1693,8 +1691,6 @@ class User < Sequel::Model
     self.set_geo_columns_privileges
     self.set_raster_privileges
   end
-
-
 
   ## User's databases setup methods
   def setup_user
@@ -2102,7 +2098,7 @@ TRIGGER
     in_database(:as => :superuser) do |user_database|
       user_database.transaction do
         ([self.database_username, self.database_public_username] + additional_accounts).each do |u|
-          revoke_privileges(user_database, schema, u)
+          revoke_privileges(user_database, schema, "\"#{u}\"")
         end
       end
     end
@@ -2137,10 +2133,10 @@ TRIGGER
   end
 
   def revoke_privileges(db, schema, u)
-    db.run("REVOKE ALL ON SCHEMA \"#{schema}\" FROM \"#{u}\"")
-    db.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA \"#{schema}\" FROM \"#{u}\"")
-    db.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" FROM \"#{u}\"")
-    db.run("REVOKE ALL ON ALL TABLES IN SCHEMA \"#{schema}\" FROM \"#{u}\"")
+    db.run("REVOKE ALL ON SCHEMA \"#{schema}\" FROM #{u}")
+    db.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA \"#{schema}\" FROM #{u}")
+    db.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" FROM #{u}")
+    db.run("REVOKE ALL ON ALL TABLES IN SCHEMA \"#{schema}\" FROM #{u}")
   end
 
   # Drops grants and functions in a given schema, avoiding by all means a CASCADE

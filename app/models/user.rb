@@ -1477,6 +1477,7 @@ class User < Sequel::Model
     self.this.update database_name: self.database_name
   end
 
+  # INFO: main setup for non-org users
   def setup_new_user
     self.create_client_application
     Thread.new do
@@ -1496,11 +1497,13 @@ class User < Sequel::Model
     self.create_function_invalidate_varnish
   end
 
+  # INFO: main setup for org users
   def setup_organization_user
     self.create_client_application
     Thread.new do
       self.create_db_user
-      self.grant_user_in_database
+      # TODO: remove, connect permission is now granted to org read user
+      # self.grant_user_in_database
     end.join
     self.create_own_schema
     self.setup_schema
@@ -1531,12 +1534,11 @@ class User < Sequel::Model
     end
   end
 
+  # INFO: This method is used both when creating a new user and by the relocator when user is relocated to an org database.
   def setup_schema
-    #This method is used both when creating a new user
-    #and by the relocator when user is relocated to an org database.
-    self.reset_user_schema_permissions # Reset privileges
-    self.reset_schema_owner # Set user as his schema owner
-    self.set_user_privileges # Set privileges
+    self.reset_user_schema_permissions
+    self.reset_schema_owner
+    self.set_user_privileges
     self.set_user_as_organization_member
     self.rebuild_quota_trigger
 
@@ -1544,6 +1546,9 @@ class User < Sequel::Model
     if organization_owner?
       org_member_role = in_database.fetch("SELECT cartodb.CDB_Organization_Member_Group_Role_Member_Name() as org_member_role;")[:org_member_role][:org_member_role]
       set_user_privileges_in_public_schema(org_member_role)
+      self.run_queries_in_transaction(
+        grant_connect_on_database_queries(org_member_role), true
+      )
     end
   end
 
@@ -2024,7 +2029,12 @@ TRIGGER
     in_database(conn_params) do |user_database|
       user_database.transaction do
         queries.each do |q|
-          user_database.run(q)
+          begin
+            user_database.run(q)
+          rescue => e
+            CartoDB.notify_debug('Error running user query in transaction', { query: q, user: self, error: e.inspect })
+            raise e
+          end
         end
         yield(user_database) if block_given?
       end
@@ -2092,8 +2102,6 @@ TRIGGER
     in_database(:as => :superuser) do |user_database|
       user_database.transaction do
         ([self.database_username, self.database_public_username] + additional_accounts).each do |u|
-          # TODO: WIP: remove this
-          user_database.run("set statement_timeout to 2000")
           user_database.run("REVOKE ALL ON SCHEMA \"#{schema}\" FROM \"#{u}\"")
           user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA \"#{schema}\" FROM \"#{u}\"")
           user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" FROM \"#{u}\"")

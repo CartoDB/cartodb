@@ -16,7 +16,6 @@ module CartoDB
         config = metrics['hubspot']
         @enabled = true
         @events_host = config.fetch('events_host')
-        @api_key = config.fetch('api_key')
         @event_ids = config.fetch('event_ids')
         @token = config.fetch('token')
       else

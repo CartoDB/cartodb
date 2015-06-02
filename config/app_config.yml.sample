@@ -63,7 +63,6 @@ defaults: &defaults
   metrics:
     hubspot:
       events_host: 'http://track.hubspot.com'
-      api_key: 'demo'
       token: 'yourtoken'
       event_ids:
         import_failed: ''

@@ -13,8 +13,7 @@ function MapBase(options) {
     }
   });
 
-  this.layerToken = null;
-  this.layerGroupMetadata = null;
+  this.mapProperties = null;
   this.urls = null;
   this.silent = false;
   this.interactionEnabled = []; //TODO: refactor, include inside layer
@@ -278,55 +277,20 @@ MapBase.prototype = {
   },
 
   invalidate: function() {
-
-    // TODO: We should invalidate the layerGroup metadata here too.
-    this.layerToken = null;
-    this.layerGroupMetadata = null;
+    this.mapProperties = null;
     this.urls = null;
     this.onLayerDefinitionUpdated();
   },
 
   getTiles: function(callback) {
     var self = this;
-    if(self.layerToken) {
-      // TODO: Pass the layerGroup metadata to this guy
-      callback && callback(self._layerGroupTiles(self.layerToken, self.layerGroupMetadata, self.options.extra_params));
+    if(self.mapProperties) {
+      callback && callback(self._layerGroupTiles());
       return this;
     }
     this.getLayerToken(function(data, err) {
       if(data) {
-        self.layerToken = data.layergroupid;
-        self.layerGroupMetadata = data.metadata;
-        // TODO: data contains the metadata for the layerGroup:
-        //
-        // {
-        //   ...
-        //   "metadata": {
-        //     "layers": [
-        //       {
-        //         "type": "mapnik",
-        //         "meta": {}
-        //       },
-        //       {
-        //         "type": "torque",
-        //         "meta": {
-        //           "start": 1000,
-        //           "end": 246000,
-        //           "data_steps": 246,
-        //           "column_type": "number"
-        //         }
-        //       }
-        //     ],
-        //     "torque": {
-        //       "1": {
-        //         "start": 1000,
-        //         "end": 246000,
-        //         "data_steps": 246,
-        //         "column_type": "number"
-        //       }
-        //     }
-        //   }
-        // }
+        self.mapProperties = data;
 
         // if cdn_url is present, use it
         if (data.cdn_url) {
@@ -334,8 +298,7 @@ MapBase.prototype = {
           c.http = data.cdn_url.http || c.http;
           c.https = data.cdn_url.https || c.https;
         }
-        // TODO: Pass the layerGroup metadata to this guy
-        self.urls = self._layerGroupTiles(data.layergroupid, data.metadata, self.options.extra_params);
+        self.urls = self._layerGroupTiles();
         callback && callback(self.urls);
       } else {
         if ((self.named_map !== null) && (err) ){
@@ -356,36 +319,34 @@ MapBase.prototype = {
     return this.options.maps_api_template.indexOf('https') === 0;
   },
 
-  // TODO: We need to access the layerGroupMetadata here
-  _layerGroupTiles: function(layerGroupId, layerGroupMetadata, params) {
+  _layerGroupTiles: function() {
+    var grids = [];
+    var tiles = [];
+    var pngParams = this._encodeParams(this.options.extra_params, this.options.pngParams);
+    var gridParams = this._encodeParams(this.options.extra_params, this.options.gridParams);
     var subdomains = this.options.subdomains || ['0', '1', '2', '3'];
     if(this.isHttps()) {
       subdomains = [null]; // no subdomain
     }
+    var layerGroupId = this.mapProperties.layergroupid;
+    var layers = this.mapProperties.metadata.layers;
 
-    // Generate something like 0,3,4, skipping torque layers
+    // Iterate through the layers returned by the tiler as metadata and
+    // extract the indexes of all the layers that should be rendered
     var layerIndexes = [];
-    var layers = layerGroupMetadata.layers;
     for (var i = 0; i < layers.length; i++) {
-      var layer = layers[i];
-      if (layer.type !== 'torque') {
+      if (layers[i].type !== 'torque') {
         layerIndexes.push(i);
       }
     }
-
     var tileTemplate = '/' +  layerIndexes.join(',') +'/{z}/{x}/{y}';
-    var gridTemplate = '/{z}/{x}/{y}'
-
-    var grids = []
-    var tiles = [];
-    var pngParams = this._encodeParams(params, this.options.pngParams);
+    var gridTemplate = '/{z}/{x}/{y}';
 
     for(var i = 0; i < subdomains.length; ++i) {
       var s = subdomains[i]
       var cartodb_url = this._host(s) + MapBase.BASE_URL + '/' + layerGroupId
       tiles.push(cartodb_url + tileTemplate + ".png" + (pngParams ? "?" + pngParams: '') );
 
-      var gridParams = this._encodeParams(params, this.options.gridParams);
       for(var layer = 0; layer < this.layers.length; ++layer) {
         grids[layer] = grids[layer] || [];
         grids[layer].push(cartodb_url + "/" + layer +  gridTemplate + ".grid.json" + (gridParams ? "?" + gridParams: ''));
@@ -820,7 +781,7 @@ LayerDefinition.prototype = _.extend({}, MapBase.prototype, {
       //'api',
       //'v1',
       MapBase.BASE_URL.slice(1),
-      this.layerToken,
+      this.mapProperties.layergroupid,
       this.getLayerIndexByNumber(layer),
       'attributes',
       feature_id].join('/');
@@ -943,7 +904,7 @@ NamedMap.prototype = _.extend({}, MapBase.prototype, {
       //'api',
       //'v1',
       MapBase.BASE_URL.slice(1),
-      this.layerToken,
+      this.mapProperties.layergroupid,
       layer,
       'attributes',
       feature_id].join('/');

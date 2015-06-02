@@ -55,7 +55,7 @@ shared_context 'organization with users helper' do
   end
 
   before(:all) do
-    username1 = random_username
+    username1 = "a#{random_username}"
     @org_user_1 = create_user(
       username: username1,
       email: "#{username1}@example.com",
@@ -63,7 +63,7 @@ shared_context 'organization with users helper' do
       private_tables_enabled: true
     )
 
-    username2 = random_username
+    username2 = "b#{random_username}"
     @org_user_2 = create_user(
       username: username2,
       email: "#{username2}@example.com",
@@ -71,16 +71,17 @@ shared_context 'organization with users helper' do
       private_tables_enabled: true
     )
 
-    organization = test_organization.save
+    @organization = test_organization.save
+    @organization_2 = test_organization.save
 
-    user_org = CartoDB::UserOrganization.new(organization.id, @org_user_1.id)
+    user_org = CartoDB::UserOrganization.new(@organization.id, @org_user_1.id)
     user_org.promote_user_to_admin
-    organization.reload
+    @organization.reload
     @org_user_1.reload
 
-    @org_user_2.organization_id = organization.id
+    @org_user_2.organization_id = @organization.id
     @org_user_2.save.reload
-    organization.reload
+    @organization.reload
   end
 
   before(:each) do
@@ -92,8 +93,7 @@ shared_context 'organization with users helper' do
   after(:all) do
     delete_user_data @org_user_1 if @org_user_1
     delete_user_data @org_user_2 if @org_user_2
-    @org_user_2.destroy if @org_user_2
-    @org_user_1.destroy if @org_user_1
+    @organization.delete_cascade
   end
 
   def share_table(table, owner, user)

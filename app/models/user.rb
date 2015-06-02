@@ -1547,6 +1547,11 @@ class User < Sequel::Model
       self.run_queries_in_transaction(
         grant_connect_on_database_queries(org_member_role), true
       )
+      self.set_geo_columns_privileges(org_member_role)
+      self.set_raster_privileges(org_member_role)
+      self.set_user_privileges_in_cartodb_schema(org_member_role)
+      self.set_user_privileges_in_importer_schema(org_member_role)
+      self.set_user_privileges_in_geocoding_schema(org_member_role)
     end
   end
 
@@ -1604,19 +1609,17 @@ class User < Sequel::Model
     )
   end
 
-  def set_user_privileges_in_cartodb_schema # MU
-    # Privileges in cartodb schema
+  def set_user_privileges_in_cartodb_schema(db_user = nil)
     self.run_queries_in_transaction(
       (
-        self.grant_read_on_schema_queries('cartodb') +
-        self.grant_write_on_cdb_tablemetadata_queries
+        self.grant_read_on_schema_queries('cartodb', db_user) +
+        self.grant_write_on_cdb_tablemetadata_queries(db_user)
       ),
       true
     )
   end
 
   def set_user_privileges_in_public_schema(db_user = nil)
-    # Privileges in public schema
     self.run_queries_in_transaction(
       self.grant_read_on_schema_queries('public', db_user),
       true
@@ -1624,24 +1627,22 @@ class User < Sequel::Model
   end
 
   def set_user_privileges_in_own_schema # MU
-    # Privileges in its own schema
     self.run_queries_in_transaction(
       self.grant_all_on_user_schema_queries,
       true
     )
   end
 
-  def set_user_privileges_in_importer_schema # MU
-    # Privileges in cdb_importer_schema
+  def set_user_privileges_in_importer_schema(db_user = nil) # MU
     self.run_queries_in_transaction(
-      self.grant_all_on_schema_queries('cdb_importer'),
+      self.grant_all_on_schema_queries('cdb_importer', db_user),
       true
     )
   end
 
-  def set_user_privileges_in_geocoding_schema
+  def set_user_privileges_in_geocoding_schema(db_user = nil)
     self.run_queries_in_transaction(
-        self.grant_all_on_schema_queries('cdb'),
+        self.grant_all_on_schema_queries('cdb', db_user),
         true
     )
   end
@@ -1654,42 +1655,47 @@ class User < Sequel::Model
     )
   end
 
-  def set_raster_privileges
+  def set_raster_privileges(role_name = nil)
     # Postgis lives at public schema, so raster catalogs too
     catalogs_schema = "public"
     queries = [
       "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_overviews\" TO \"#{CartoDB::PUBLIC_DB_USER}\"",
       "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_columns\" TO \"#{CartoDB::PUBLIC_DB_USER}\""
     ]
+    target_user = role_name.nil? ? database_public_username : role_name
     unless self.organization.nil?
-      queries << "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_overviews\" TO \"#{database_public_username}\""
-      queries << "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_columns\" TO \"#{database_public_username}\""
+      queries << "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_overviews\" TO \"#{target_user}\""
+      queries << "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_columns\" TO \"#{target_user}\""
     end
     self.run_queries_in_transaction(queries,true)
   end
 
-  def set_geo_columns_privileges
+  def set_geo_columns_privileges(role_name = nil)
     # Postgis lives at public schema, as do geometry_columns and geography_columns
     catalogs_schema = 'public'
+    target_user = role_name.nil? ? database_public_username : role_name
     queries = [
-        %Q{ GRANT SELECT ON "#{catalogs_schema}"."geometry_columns" TO "#{database_public_username}" },
-        %Q{ GRANT SELECT ON "#{catalogs_schema}"."geography_columns" TO "#{database_public_username}" }
+        %Q{ GRANT SELECT ON "#{catalogs_schema}"."geometry_columns" TO "#{target_user}" },
+        %Q{ GRANT SELECT ON "#{catalogs_schema}"."geography_columns" TO "#{target_user}" }
     ]
     self.run_queries_in_transaction(queries, true)
   end
 
   def set_user_privileges # MU
-    self.set_user_privileges_in_cartodb_schema
     # INFO: organization permission on public schema is handled through role assignment
     unless organization_user?
+      self.set_user_privileges_in_cartodb_schema
       self.set_user_privileges_in_public_schema
     end
     self.set_user_privileges_in_own_schema
-    self.set_user_privileges_in_importer_schema
-    self.set_user_privileges_in_geocoding_schema
     self.set_privileges_to_publicuser_in_own_schema
-    self.set_geo_columns_privileges
-    self.set_raster_privileges
+    # TODO: WIP
+    unless organization_user?
+      self.set_user_privileges_in_importer_schema
+      self.set_user_privileges_in_geocoding_schema
+      self.set_geo_columns_privileges
+      self.set_raster_privileges
+    end
   end
 
   ## User's databases setup methods
@@ -2029,6 +2035,8 @@ TRIGGER
             user_database.run(q)
           rescue => e
             CartoDB.notify_debug('Error running user query in transaction', { query: q, user: self, error: e.inspect })
+            # TODO: WIP
+            # byebug
             raise e
           end
         end
@@ -2067,9 +2075,10 @@ TRIGGER
     ]
   end
 
-  def grant_write_on_cdb_tablemetadata_queries
+  def grant_write_on_cdb_tablemetadata_queries(db_user = nil)
+    granted_user = db_user.nil? ? self.database_username : db_user
     [
-      "GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE cartodb.cdb_tablemetadata TO \"#{database_username}\""
+      "GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE cartodb.cdb_tablemetadata TO \"#{granted_user}\""
     ]
   end
 
@@ -2088,9 +2097,10 @@ TRIGGER
     ]
   end
 
-  def grant_all_on_schema_queries(schema)
+  def grant_all_on_schema_queries(schema, db_user = nil)
+    granted_user = db_user.nil? ? self.database_username : db_user
     [
-      "GRANT ALL ON SCHEMA \"#{schema}\" TO \"#{database_username}\""
+      "GRANT ALL ON SCHEMA \"#{schema}\" TO \"#{granted_user}\""
     ]
   end
 

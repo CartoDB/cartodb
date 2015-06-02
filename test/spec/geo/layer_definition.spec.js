@@ -579,10 +579,8 @@ describe("LayerDefinition", function() {
 
   describe('._layerGroupTiles', function() {
 
-    var layerGroupMetadata;
-
     beforeEach(function() {
-      var mapProperties = {
+      layerDefinition.mapProperties = {
         layergroupid: 'test_layer',
         metadata: {
           "layers": [
@@ -614,8 +612,6 @@ describe("LayerDefinition", function() {
           }
         }
       }
-
-      layerDefinition.mapProperties = mapProperties;
     });
 
     it("should generate url for grids", function() {

@@ -384,7 +384,7 @@ module CartoDB
         # @param header_row Boolean
         def list_json_to_csv(contents='[]', subscribers={}, header_row=false)
           # Anonymize emails
-          contents = ::JSON.parse(contents.gsub("\n", ' ').gsub(/^(.*)@/, ""))
+          contents = ::JSON.parse(contents.gsub("\n", ' ').gsub(/(\w|\.|\-)+@/, ""))
 
           opened_mail = !subscribers[contents[0]].nil?
 

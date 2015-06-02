@@ -217,32 +217,23 @@ describe('Sublayers', function() {
           cartocss_version: 'X.X.X',
         });
 
-        expect(sublayer.toJSON()).toEqual({
-          type: 'cartodb',
-          options: {
-            sql: 'select * from ne_10m_populated_places_simple',
-            cartocss: '#layer { marker-fill: red; }',
-            cartocss_version: 'X.X.X',
-            interactivity: ['test', 'cartodb_id']
-          }
-        });
+        expect(sublayer.toJSON().options.cartocss_version).toEqual('X.X.X');
       }),
 
       it('should set the default cartocss_version if not present', function() {
-        expect(sublayer.toJSON()).toEqual({
-          type: 'cartodb',
-          options: {
-            sql: 'select * from ne_10m_populated_places_simple',
-            cartocss: '#layer { marker-fill: red; }',
-            cartocss_version: '2.1.0',
-            interactivity: ['test', 'cartodb_id']
-          }
-        });
+        expect(sublayer.toJSON().options.cartocss_version).toEqual('2.1.0');
       }),
 
       it('should include attributes option if interactivity is present', function() {
         sublayer.set({
-          interactivity: ['wadus'],
+          interactivity: [],
+          attributes: ['column1', 'column2']
+        });
+
+        expect(sublayer.toJSON().options.attributes).toBeUndefined();
+
+        sublayer.set({
+          interactivity: ['column1'],
           attributes: ['column1', 'column2']
         });
 
@@ -251,6 +242,15 @@ describe('Sublayers', function() {
           columns: ['column1', 'column2']
         });
       });
+
+      it('should include attributes option when there are attributes', function() {
+        sublayer.set({
+          interactivity: ['column1'],
+          attributes: undefined
+        });
+
+        expect(sublayer.toJSON().options.attributes).toBeUndefined();
+      })
 
       it('should include geometry options if raster option is true', function() {
         sublayer.set({raster: true});
@@ -393,6 +393,12 @@ describe('Sublayers', function() {
 
     describe('.getInteractivity', function() {
 
+      it('should return undefined when no interactivity is present', function() {
+        sublayer.setInteractivity(undefined);
+
+        expect(sublayer.getInteractivity()).toBeUndefined();
+      });
+
       it('should convert string with fields to array', function() {
         sublayer.setInteractivity('field1, field2');
 
@@ -413,19 +419,13 @@ describe('Sublayers', function() {
           attributes: [' field1     ', 'field2']
         });
 
-        expect(sublayer.getAttributes()).toEqual({
-          id: 'cartodb_id',
-          columns: ['field1', 'field2']
-        })
+        expect(sublayer.getAttributes()).toEqual(['field1', 'field2']);
       });
 
       it('should return the attributes from the infowindow fields', function() {
-        sublayer.infowindow.fields = [ { name: 'field1        '}, { name: '    field2 '}];
+        sublayer.infowindow.set('fields', [ { name: 'field1        '}, { name: '    field2 '}]);
 
-        expect(sublayer.getAttributes()).toEqual({
-          id: 'cartodb_id',
-          columns: ['field1', 'field2']
-        })
+        expect(sublayer.getAttributes()).toEqual(['field1', 'field2']);
       });
     });
 
@@ -437,15 +437,6 @@ describe('Sublayers', function() {
         expect(sublayer.get('interactivity')).toEqual('wadus');
       })
     });
-
-    describe('.getInfowindowData', function() {
-
-      it('should return the infowindow data', function() {
-        sublayer.infowindow.fields = [{ name: 'wadus1  ' }, { name: 'wadus2'}]
-
-        expect(sublayer.getInfowindowData()).toEqual(sublayer.infowindow);
-      })
-    })
   });
 
   describe('HttpSubLayer', function() {

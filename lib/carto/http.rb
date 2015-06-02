@@ -18,6 +18,14 @@ module Carto
         @typhoeus_request.run
       end
 
+      def url
+        @typhoeus_request.url
+      end
+
+      def options
+        @typhoeus_request.options
+      end
+
     end
 
     def self.get(url, options = {})

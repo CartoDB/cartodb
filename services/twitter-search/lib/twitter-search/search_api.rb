@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require_relative '../../../../lib/carto/http'
+require_relative '../../../../lib/carto/http_client'
 
 # @see http://support.gnip.com/apis/search_api/
 module CartoDB
@@ -105,7 +105,7 @@ module CartoDB
           end
         end
 
-        response = Carto::Http.get(@config[CONFIG_SEARCH_URL], http_options(params))
+        response = http_client.get(@config[CONFIG_SEARCH_URL], http_options(params))
 
         raise TwitterHTTPException.new(response.code, response.effective_url, response.body) unless response.code == 200
 
@@ -147,6 +147,10 @@ module CartoDB
           options[:userpwd] = "#{@config[CONFIG_AUTH_USERNAME]}:#{@config[CONFIG_AUTH_PASSWORD]}"
         end
         options
+      end
+
+      def http_client
+        @http_client ||= Carto::HttpClient.new('search_api')
       end
 
     end

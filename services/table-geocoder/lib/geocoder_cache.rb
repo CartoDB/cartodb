@@ -1,5 +1,5 @@
 # encoding: utf-8
-require_relative '../../../lib/carto/http'
+require_relative '../../../lib/carto/http_client'
 
 module CartoDB
   class GeocoderCache
@@ -126,7 +126,7 @@ module CartoDB
 
     def run_query(query, format = '')
       params = { q: query, api_key: sql_api[:api_key], format: format }
-      response = Carto::Http.post(
+      response = http_client.post(
         sql_api[:base_url],
         body: URI.encode_www_form(params)
       )
@@ -138,6 +138,13 @@ module CartoDB
       ::Rollbar.report_exception(exception)
     rescue => e
       raise exception
+    end
+
+
+    private
+
+    def http_client
+      @http_client ||= Carto::HttpClient.new('geocoder_cache')
     end
 
   end # GeocoderCache

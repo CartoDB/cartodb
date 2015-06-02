@@ -1,6 +1,6 @@
 require 'rollbar'
 require 'singleton'
-require_relative '../carto/http'
+require_relative '../carto/http_client'
 
 
 # Development info: http://developers.hubspot.com/docs/overview
@@ -73,7 +73,7 @@ module CartoDB
     end
 
     def send_request(url, method, content = nil, valid_response_codes = [ 200 ])
-      response = Carto::Http::Request.new(
+      response = http_client.request(
                                        url,
                                        method: method,
                                        headers: { "Content-Type" => "application/json" },
@@ -90,6 +90,10 @@ module CartoDB
     rescue => e
       Rollbar.report_exception(e, nil, { url: url, content: content, reponse: response.inspect })
       nil
+    end
+
+    def http_client
+      @http_client ||= Carto::HttpClient.new('hubspot')
     end
 
   end

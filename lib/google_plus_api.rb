@@ -1,6 +1,6 @@
 require_relative './google_plus_api_user_data'
 require_relative './google_plus_config'
-require_relative 'carto/http'
+require_relative 'carto/http_client'
 
 class GooglePlusAPI
 
@@ -25,12 +25,19 @@ class GooglePlusAPI
   end
 
   def request_user_data(access_token)
-    Carto::Http::Request.new(
+    http_client.request(
       "https://www.googleapis.com/plus/v1/people/me?access_token=#{access_token}",
       method: 'GET',
       ssl_verifypeer: true,
       timeout: 600
     ).run
+  end
+
+
+  private
+
+  def http_client
+    @http_client ||= Carto::HttpClient.new(self.class.name)
   end
 
 end

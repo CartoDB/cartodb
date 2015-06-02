@@ -3,7 +3,7 @@
 require 'json'
 require 'addressable/uri'
 require_relative '../base_direct_stream'
-require_relative '../../../../../lib/carto/http'
+require_relative '../../../../../lib/carto/http_client'
 
 module CartoDB
   module Datasources
@@ -231,6 +231,10 @@ module CartoDB
 
         private
 
+        def http_client
+          @http_client ||= Carto::HttpClient.new('arcgis')
+        end
+
         # @param id String
         # @param subresource_id String
         # @return Hash
@@ -240,7 +244,7 @@ module CartoDB
         def get_subresource_metadata(id, subresource_id)
           @url = sanitize_id(id, subresource_id)
 
-          response = Carto::Http.get(METADATA_URL % [@url], http_options)
+          response = http_client.get(METADATA_URL % [@url], http_options)
           raise DataDownloadError.new("#{METADATA_URL % [@url]} (#{response.code}) : #{response.body}") \
             if response.code != 200
 
@@ -325,7 +329,7 @@ module CartoDB
         # @throws ResponseError
         def get_layers_list(url)
           request_url = LAYERS_URL % [url]
-          response = Carto::Http.get(request_url, http_options)
+          response = http_client.get(request_url, http_options)
           raise DataDownloadError.new("#{request_url} (#{response.code}) : #{response.body}") \
             if response.code != 200
 
@@ -357,7 +361,7 @@ module CartoDB
         # @throws ResponseError
         def get_ids_list(url)
           request_url = FEATURE_IDS_URL % [url]
-          response = Carto::Http.get(request_url, http_options)
+          response = http_client.get(request_url, http_options)
           raise DataDownloadError.new("#{request_url} (#{response.code}) : #{response.body}") \
             if response.code != 200
 
@@ -403,7 +407,7 @@ module CartoDB
           params_data.merge! ids_field
 
           puts "#{prepared_url} (POST) Params:#{params_data}" if DEBUG
-          response = Carto::Http.post(prepared_url, http_options(params_data, :post))
+          response = http_client.post(prepared_url, http_options(params_data, :post))
 
           # Timeout connecting to ArcGIS
           if response.code == 0

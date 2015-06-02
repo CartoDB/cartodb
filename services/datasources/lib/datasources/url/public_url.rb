@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require_relative '../../../../../lib/carto/http'
+require_relative '../../../../../lib/carto/http_client'
 
 module CartoDB
   module Datasources
@@ -50,9 +50,9 @@ module CartoDB
         # @throws DataDownloadTimeoutError
         # @throws DataDownloadError
         def get_resource(id)
-          response = Carto::Http.get(id, http_options)
+          response = http_client.get(id, http_options)
           while response.headers['location']
-            response = Carto::Http.get(id, http_options)
+            response = http_client.get(id, http_options)
           end
 
           raise DataDownloadTimeoutError.new(DATASOURCE_NAME) if response.timed_out?
@@ -80,7 +80,7 @@ module CartoDB
         # @throws DataDownloadError
         def fetch_headers(url)
           if url =~ URL_REGEXP
-            response = Carto::Http.head(url, http_options)
+            response = http_client.head(url, http_options)
 
             raise DataDownloadTimeoutError.new(DATASOURCE_NAME) if response.timed_out?
 
@@ -140,6 +140,10 @@ module CartoDB
         end
 
         private
+
+        def http_client
+          @http_client ||= Carto::HttpClient.new('public_url')
+        end
 
         # Get the file size if present
         # @return Integer

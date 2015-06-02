@@ -12,7 +12,7 @@ require_relative './url_translator/google_maps'
 require_relative './url_translator/google_docs'
 require_relative './url_translator/kimono_labs'
 require_relative './unp'
-require_relative '../../../../lib/carto/http'
+require_relative '../../../../lib/carto/http_client'
 
 module CartoDB
   module Importer2
@@ -132,7 +132,7 @@ module CartoDB
       end
 
       def headers
-        @headers ||= Carto::Http.head(@translated_url, typhoeus_options).headers
+        @headers ||= http_client.head(@translated_url, typhoeus_options).headers
       end
 
       def typhoeus_options
@@ -160,7 +160,7 @@ module CartoDB
         temp_name = filepath(DEFAULT_FILENAME << '_' << random_name)
 
         downloaded_file = File.open(temp_name, 'wb')
-        request = Carto::Http::Request.new(@translated_url, typhoeus_options)
+        request = http_client::Request.new(@translated_url, typhoeus_options)
         request.on_headers do |response|
           unless response.success?
             download_error = true
@@ -344,6 +344,10 @@ module CartoDB
 
       def md5_command_for(name)
         %Q(md5sum #{name} | cut -d' ' -f1)
+      end
+
+      def http_client
+        @http_client ||= Carto::HttpClient.new('downloader')
       end
     end
   end

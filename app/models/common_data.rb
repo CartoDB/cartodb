@@ -1,9 +1,10 @@
-require_relative '../../lib/carto/http'
+require_relative '../../lib/carto/http_client'
 
 class CommonData
 
   def initialize
     @datasets = nil
+    @http_client = Carto::HttpClient.new('common_data')
   end
 
   def datasets
@@ -59,7 +60,7 @@ class CommonData
   def get_datasets_json
     body = nil
     begin
-      response = Carto::Http.get(datasets_url, followlocation:true)
+      response = @http_client.get(datasets_url, followlocation:true)
       if response.code == 200
         body = response.response_body
       end

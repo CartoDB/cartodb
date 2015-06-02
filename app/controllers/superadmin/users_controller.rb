@@ -1,4 +1,4 @@
-require_relative '../../../lib/carto/http'
+require_relative '../../../lib/carto/http_client'
 
 class Superadmin::UsersController < Superadmin::SuperadminController
   respond_to :json
@@ -51,7 +51,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       raise "There is not a dump method configured"
     end
     json_data = {database: @user.database_name, username: @user.username}
-    response = Carto::Http::Request.new(
+    response = http_client.request(
       "#{@user.database_host}:#{Cartodb.config[:users_dumps]["service"]["port"]}/scripts/db_dump",
       method: :post,
       headers: { "Content-Type" => "application/json" },
@@ -104,5 +104,9 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     @user = User[params[:id]]
     raise RecordNotFound unless @user
   end # get_user
+
+  def http_client
+    @http_client ||= Carto::HttpClient.new(self.class.name)
+  end
 
 end # Superadmin::UsersController

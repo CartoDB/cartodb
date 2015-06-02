@@ -1,4 +1,4 @@
-require_relative '../carto/http'
+require_relative '../carto/http_client'
 
 # encoding: utf-8
 module Cartodb
@@ -26,7 +26,7 @@ module Cartodb
     end
 
     def build_request(path, body, method, timeout = 200)
-      Carto::Http::Request.new(
+      http_client.request(
         "#{ @host }/#{ path }",
         method: method,
         body: body.to_json,
@@ -106,6 +106,13 @@ module Cartodb
     def delete_organization(organization_name)
       return send_request("api/organizations/#{ organization_name }", nil, :delete, [204])
     end # delete_organization
+
+
+    private
+
+    def http_client
+      @http_client ||= Carto::HttpClient.new('central')
+    end
 
   end
 

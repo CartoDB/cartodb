@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 require 'google/api_client'
-require_relative '../../../../../lib/carto/http'
+require_relative '../../../../../lib/carto/http_client'
 
 module CartoDB
   module Datasources
@@ -284,7 +284,7 @@ module CartoDB
 
         # Revokes current set token
         def revoke_token
-          response = Carto::Http.get("https://accounts.google.com/o/oauth2/revoke?token=#{token}")
+          response = http_client.get("https://accounts.google.com/o/oauth2/revoke?token=#{token}")
             if response.code == 200
               true
             end
@@ -299,6 +299,10 @@ module CartoDB
         end
 
         private
+
+        def http_client
+          @http_client ||= Carto::HttpClient.new('gdrive')
+        end
 
         # Formats all data to comply with our desired format
         # @param item_data Hash : Single item returned from GDrive API

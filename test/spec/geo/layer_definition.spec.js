@@ -701,7 +701,7 @@ describe("LayerDefinition", function() {
       }]);
 
       expect(layerDef).toEqual({
-        version: '1.0.0',
+        version: '1.3.0',
         stat_tag: 'API',
         layers: [{
           type: 'cartodb',
@@ -721,7 +721,7 @@ describe("LayerDefinition", function() {
       }]);
 
       expect(layerDef).toEqual({
-        version: '1.0.0',
+        version: '1.3.0',
         stat_tag: 'API',
         layers: [{
           type: 'http',

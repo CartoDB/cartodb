@@ -415,7 +415,7 @@ describe('api.layers', function() {
         setTimeout(function() {
           expect(layer).not.toEqual(undefined);
           expect(layer.toJSON()).toEqual({
-            version: '1.0.0',
+            version: '1.3.0',
             stat_tag: 'API',
             layers: [{
               type: 'cartodb',

@@ -626,9 +626,8 @@ LayerDefinition.layerDefFromSubLayers = function(sublayers) {
     }
   });
 
-  // TODO: Current version of MapConfig is 1.3.1
   var layerDefinition = {
-    version: '1.0.0',
+    version: '1.3.0',
     stat_tag: 'API',
     layers: sublayers
   }

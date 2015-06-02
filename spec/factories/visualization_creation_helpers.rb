@@ -91,8 +91,6 @@ shared_context 'organization with users helper' do
   end
 
   after(:all) do
-    delete_user_data @org_user_1 if @org_user_1
-    delete_user_data @org_user_2 if @org_user_2
     @organization.delete_cascade
   end
 

@@ -1,6 +1,6 @@
-require 'typhoeus'
 require_relative './google_plus_api_user_data'
 require_relative './google_plus_config'
+require_relative 'carto/http'
 
 class GooglePlusAPI
 
@@ -25,7 +25,7 @@ class GooglePlusAPI
   end
 
   def request_user_data(access_token)
-    Typhoeus::Request.new(
+    Carto::Http::Request.new(
       "https://www.googleapis.com/plus/v1/people/me?access_token=#{access_token}",
       method: 'GET',
       ssl_verifypeer: true,

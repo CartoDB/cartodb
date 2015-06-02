@@ -1,10 +1,10 @@
 # encoding: utf-8
-require 'typhoeus'
 require 'nokogiri'
 require 'csv'
 require 'json'
 require 'open3'
 require 'uuidtools'
+require_relative '../../../lib/carto/http'
 
 module CartoDB
   class Geocoder
@@ -70,7 +70,7 @@ module CartoDB
       return run_non_batched unless use_batch_process?
       assert_batch_api_enabled
       @used_batch_request = true
-      response = Typhoeus.post(
+      response = Carto::Http.post(
         api_url(UPLOAD_OPTIONS),
         body: File.open(input_file,"r").read,
         headers: { "Content-Type" => "text/plain" }
@@ -86,7 +86,7 @@ module CartoDB
     def cancel
       return unless use_batch_process?
       assert_batch_api_enabled
-      response = Typhoeus.put api_url(action: 'cancel')
+      response = Carto::Http.put api_url(action: 'cancel')
       handle_api_error(response)
       @status         = extract_response_field(response.body, '//Response/Status')
       @processed_rows = extract_response_field(response.body, '//Response/ProcessedCount')
@@ -96,7 +96,7 @@ module CartoDB
     def delete
       return unless use_batch_process?
       assert_batch_api_enabled
-      response = Typhoeus.delete api_url({})
+      response = Carto::Http.delete api_url({})
       handle_api_error(response)
       @status         = extract_response_field(response.body, '//Response/Status')
       @processed_rows = extract_response_field(response.body, '//Response/ProcessedCount')
@@ -106,7 +106,7 @@ module CartoDB
     def update_status
       return unless use_batch_process?
       assert_batch_api_enabled
-      response = Typhoeus.get api_url(action: 'status')
+      response = Carto::Http.get api_url(action: 'status')
       handle_api_error(response)
       @status         = extract_response_field(response.body, '//Response/Status')
       @processed_rows = extract_response_field(response.body, '//Response/ProcessedCount')
@@ -144,7 +144,7 @@ module CartoDB
     def geocode_text(text)
       options = GEOCODER_OPTIONS.merge(searchtext: text, app_id: app_id, app_code: token)
       url = "#{non_batch_base_url}?#{URI.encode_www_form(options)}"
-      response =  ::JSON.parse(Typhoeus.get(url).body.to_s)["response"]
+      response =  ::JSON.parse(Carto::Http.get(url).body.to_s)["response"]
       position = response["view"][0]["result"][0]["location"]["displayPosition"]
       return position["latitude"], position["longitude"]
     rescue => e

@@ -1,4 +1,5 @@
 require "net/telnet"
+require_relative '../../carto/http'
 
 module CartoDB
   class Varnish
@@ -6,7 +7,7 @@ module CartoDB
       ActiveSupport::Notifications.instrument('purge.varnish', what: what) do |payload|
         conf = Cartodb::config[:varnish_management]
         if conf['http_port']
-          request = Typhoeus::Request.new(
+          request = Carto::Http::Request.new(
             "http://#{conf['host']}:#{conf['http_port']}/batch", method: :purge, headers: {"Invalidation-Match" => what}).run
           return request.code
         else
@@ -22,7 +23,7 @@ module CartoDB
       ActiveSupport::Notifications.instrument('purge.varnish', what: key) do |payload|
         conf = Cartodb::config[:varnish_management]
         if conf['http_port']
-          request = Typhoeus::Request.new(
+          request = Carto::Http::Request.new(
             "http://#{conf['host']}:#{conf['http_port']}/key", method: :purge, headers: {"Invalidation-Match" => key}).run
           return request.code
         else

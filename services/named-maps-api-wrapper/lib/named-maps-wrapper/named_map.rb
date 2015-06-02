@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require_relative '../../../../app/models/visualization/vizjson'
+require_relative '../../../../lib/carto/http'
 
 module CartoDB
   module NamedMapsWrapper
@@ -32,7 +33,7 @@ module CartoDB
       def self.create_new( visualization, parent )
         template_data = NamedMap.get_template_data( visualization, parent )
 
-        response = Typhoeus.post( parent.url + '?api_key=' + parent.api_key, {
+        response = Carto::Http.post( parent.url + '?api_key=' + parent.api_key, {
           headers:          parent.headers,
           body:             ::JSON.dump( template_data ),
           ssl_verifypeer:   parent.verify_cert,
@@ -60,7 +61,7 @@ module CartoDB
         retries = 0
         success = true
         begin
-          response = Typhoeus.put( url + '?api_key=' + @parent.api_key, {
+          response = Carto::Http.put( url + '?api_key=' + @parent.api_key, {
             headers:          @parent.headers,
             body:             ::JSON.dump( @template ),
             ssl_verifypeer:   @parent.verify_cert,
@@ -85,7 +86,7 @@ module CartoDB
 
       # Delete existing named map
       def delete
-        response = Typhoeus.delete( url + '?api_key=' + @parent.api_key,
+        response = Carto::Http.delete( url + '?api_key=' + @parent.api_key,
           { 
             headers:          @parent.headers,
             ssl_verifypeer:   @parent.verify_cert,

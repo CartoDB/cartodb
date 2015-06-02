@@ -1,7 +1,7 @@
 # encoding: utf-8
-require 'typhoeus'
 require 'open-uri'
 require 'json'
+require_relative '../../lib/carto/http'
 
 module CartoDB
   class SQLApi
@@ -24,7 +24,7 @@ module CartoDB
 
     def fetch(query, format = '')
       params   = { q: query, api_key: api_key, format: format }
-      response = Typhoeus::Request.new(
+      response = Carto::Http::Request.new(
         base_url,
         method: :post,
         body: URI.encode_www_form(params),

@@ -1,7 +1,7 @@
 # encoding: utf-8
 require 'uri'
 require 'nokogiri'
-require 'typhoeus'
+require_relative '../../lib/carto/http'
 
 module CartoDB
   module WMS
@@ -26,7 +26,7 @@ module CartoDB
       end 
 
       def request_capabilities
-        response = Typhoeus.get(url, followlocation: true)
+        response = Carto::Http.get(url, followlocation: true)
         raise URI::InvalidURIError unless [200, 201].include?(response.code)
         @response = response.response_body
         nil

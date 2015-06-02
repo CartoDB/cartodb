@@ -12,6 +12,7 @@ require_relative '../services/visualization/common_data_service'
 require_relative './external_data_import'
 require_relative './feature_flag'
 require_relative '../../lib/cartodb/stats/api_calls'
+require_relative '../../lib/carto/http'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -683,7 +684,7 @@ class User < Sequel::Model
   end
 
   def reload_avatar
-    request = Typhoeus::Request.new(
+    request = Carto::Http::Request.new(
       self.gravatar(protocol = 'http://', 128, default_image = '404'),
       method: :get
     )
@@ -935,7 +936,7 @@ class User < Sequel::Model
     request_body.gsub!("$CDB_SUBDOMAIN$", self.username)
     request_body.gsub!("\"$FROM$\"", from_date)
     request_body.gsub!("\"$TO$\"", to_date)
-    request = Typhoeus::Request.new(
+    request = Carto::Http::Request.new(
       request_url,
       method: :post,
       headers: { "Content-Type" => "application/json" },
@@ -2247,7 +2248,7 @@ TRIGGER
   end
 
   def enable_remote_db_user
-    request = Typhoeus::Request.new(
+    request = Carto::Http::Request.new(
       "#{self.database_host}:#{Cartodb.config[:signups]["service"]["port"]}/scripts/activate_db_user",
       method: :post,
       headers: { "Content-Type" => "application/json" }

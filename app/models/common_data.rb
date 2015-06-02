@@ -1,3 +1,5 @@
+require_relative '../../lib/carto/http'
+
 class CommonData
 
   def initialize
@@ -57,7 +59,7 @@ class CommonData
   def get_datasets_json
     body = nil
     begin
-      response = Typhoeus.get(datasets_url, followlocation:true)
+      response = Carto::Http.get(datasets_url, followlocation:true)
       if response.code == 200
         body = response.response_body
       end

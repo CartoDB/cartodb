@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require 'typhoeus'
+require_relative '../../../../../lib/carto/http'
 
 module CartoDB
   module Datasources
@@ -50,9 +50,9 @@ module CartoDB
         # @throws DataDownloadTimeoutError
         # @throws DataDownloadError
         def get_resource(id)
-          response = Typhoeus.get(id, http_options)
+          response = Carto::Http.get(id, http_options)
           while response.headers['location']
-            response = Typhoeus.get(id, http_options)
+            response = Carto::Http.get(id, http_options)
           end
 
           raise DataDownloadTimeoutError.new(DATASOURCE_NAME) if response.timed_out?
@@ -80,7 +80,7 @@ module CartoDB
         # @throws DataDownloadError
         def fetch_headers(url)
           if url =~ URL_REGEXP
-            response = Typhoeus.head(url, http_options)
+            response = Carto::Http.head(url, http_options)
 
             raise DataDownloadTimeoutError.new(DATASOURCE_NAME) if response.timed_out?
 

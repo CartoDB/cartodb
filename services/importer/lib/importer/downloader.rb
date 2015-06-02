@@ -1,6 +1,5 @@
 # encoding: utf-8
 require 'fileutils'
-require 'typhoeus'
 require 'open3'
 require_relative './exceptions'
 require_relative './source_file'
@@ -13,6 +12,7 @@ require_relative './url_translator/google_maps'
 require_relative './url_translator/google_docs'
 require_relative './url_translator/kimono_labs'
 require_relative './unp'
+require_relative '../../../../lib/carto/http'
 
 module CartoDB
   module Importer2
@@ -132,7 +132,7 @@ module CartoDB
       end
 
       def headers
-        @headers ||= Typhoeus.head(@translated_url, typhoeus_options).headers
+        @headers ||= Carto::Http.head(@translated_url, typhoeus_options).headers
       end
 
       def typhoeus_options
@@ -160,7 +160,7 @@ module CartoDB
         temp_name = filepath(DEFAULT_FILENAME << '_' << random_name)
 
         downloaded_file = File.open(temp_name, 'wb')
-        request = Typhoeus::Request.new(@translated_url, typhoeus_options)
+        request = Carto::Http::Request.new(@translated_url, typhoeus_options)
         request.on_headers do |response|
           unless response.success?
             download_error = true

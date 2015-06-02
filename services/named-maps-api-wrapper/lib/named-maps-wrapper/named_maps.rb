@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require_relative '../../../../lib/carto/http'
+
 module CartoDB
   module NamedMapsWrapper
     class NamedMaps
@@ -35,7 +37,7 @@ module CartoDB
       # Retrieve a list of all named maps
       def all
         request_time = Time.now
-        response = Typhoeus.get(@url + '?api_key=' + @api_key, {
+        response = Carto::Http.get(@url + '?api_key=' + @api_key, {
           headers:          @headers,
           ssl_verifypeer:   @verify_cert,
           ssl_verifyhost:   @verify_host,
@@ -59,7 +61,7 @@ module CartoDB
         raise NamedMapsDataError, { 'name' => 'mising' } if name.nil? or name.length == 0
 
         request_time = Time.now
-        response = Typhoeus.get( [@url, name ].join('/') + '?api_key=' + @api_key, {
+        response = Carto::Http.get( [@url, name ].join('/') + '?api_key=' + @api_key, {
           headers:          @headers,
           ssl_verifypeer:   @verify_cert,
           ssl_verifyhost:   @verify_host,

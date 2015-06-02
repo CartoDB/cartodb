@@ -335,6 +335,9 @@ CartoDB::Application.routes.draw do
 
     # User assets
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/users/:user_id/assets'     => 'assets#index',   as: :api_v1_1_users_assets_index
+
+    # Organization
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/organization/:id/users' => 'organizations#users', as: :api_v1_1_organization_users, constraints: { id: /[^\/]+/ }
   end
 
   scope :module => 'api/json', :format => :json do

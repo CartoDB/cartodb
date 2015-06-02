@@ -32,7 +32,6 @@ WORKING_SPECS_2 = \
   spec/models/common_data_spec.rb \
   spec/lib/sql_parser_spec.rb \
   spec/lib/string_spec.rb \
-  spec/lib/metrics_spec.rb \
   spec/lib/image_metadata_spec.rb \
   spec/lib/central_spec.rb \
 	spec/helpers/uuidhelper_spec.rb \

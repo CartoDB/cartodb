@@ -30,5 +30,14 @@ describe('vis.layers', function() {
       expect(layer.get('sql_api_port')).toEqual(443);
     });
 
+    it("basemaps with a true explicit https property should be forced to https", function() {
+      vis.https = true;
+      var layer = cdb.vis.Layers.create('tiled', vis, {
+        type: 'Tiled',
+        urlTemplate: "http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png"
+      });
+      expect(layer.get('urlTemplate').indexOf('https')).not.toBe(-1);
+    })
+
   });
 });

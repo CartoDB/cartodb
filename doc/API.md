@@ -198,7 +198,7 @@ cartodb.createVis('map', url)
   - **time_slider**: show time slider with torque layers (enabled by default)
   - **layer_selector**: show layer selector (default: false)
   - **legends**: if it's true legends are shown in the map.
-  - **https**: if true forces tiles to be fetched using https. If false it uses the predefined method
+  - **https**: if true, it makes sure that basemaps are converted to https when possible. If explicitly false, converts https maps to https when possible. If undefined, the basemap template is left as declared at `urlTemplate` in the viz.json.
   - **scrollwheel**: enable/disable the ability of zooming using scrollwheel (default enabled)
   - **fullscreen**: if true adds a button to toggle the map fullscreen
   - **mobile_layout**: if true enables a custom layout for mobile devices (default: false)

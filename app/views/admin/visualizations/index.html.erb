@@ -14,6 +14,7 @@
     var upgrade_url = config.upgrade_url;
     var isFirstTimeViewingDashboard = <%= (!!@first_time).to_s %>;
     var isJustLoggedIn = <%= (!!@just_logged_in).to_s %>;
+    // TODO: remove mixpanel
     var mixpanel_token = "<%= Cartodb.config[:mixpanel]['token'] if Cartodb.config[:mixpanel].present? %>";
     var default_fallback_basemap = <%= safe_js_object current_user.default_basemap.to_json %>;
   </script>

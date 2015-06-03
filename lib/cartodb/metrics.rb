@@ -1,9 +1,13 @@
-require 'mixpanel'
-require 'json'
 require 'rollbar'
+require_relative 'hubspot'
 
 module CartoDB
   class Metrics
+
+    def initialize
+      @hubspot = CartoDB::Hubspot.instance
+    end
+
     def report(event, payload)
       return self unless event.present?
       if payload.fetch(:success, false)
@@ -11,54 +15,31 @@ module CartoDB
       else
         report_failure(event, payload)
       end
-    rescue => exception
-      self
-    end #report
-
-    def mixpanel_payload(event, metric_payload)
-      return nil unless event.present?
-      #remove the log from the payload
-      payload = metric_payload.select {|k,v| k != :log }
-      Hash[payload.map{ |key,value|
-        [(["username","account_type", "distinct_id"].include?(key.to_s) ?
-            key.to_s : "#{ event }_" + key.to_s),
-          value]
-        }].symbolize_keys
     end
 
-    def report_failure(event, metric_payload)
+    def report_failure(event, payload)
       case event
       when :import
-        mixpanel_event("Import failed", mixpanel_payload(event, metric_payload))
-        Rollbar.report_message("Failed import", "error", error_info: metric_payload)
+        # Import failed
+        @hubspot.track_import_failed(payload)
+        Rollbar.report_message("Failed import", "error", error_info: payload)
       when :geocoding
-        mixpanel_event("Geocoding failed", mixpanel_payload(event, metric_payload))
-        Rollbar.report_message("Failed geocoding", "error", error_info: metric_payload)
+        # Geocoding failed
+        @hubspot.track_geocoding_failed(payload)
+        Rollbar.report_message("Failed geocoding", "error", error_info: payload)
       end
     end #report_failure
 
-    def report_success(event, metric_payload)
+    def report_success(event, payload)
       case event
       when :import
-        mixpanel_event("Import successful", mixpanel_payload(event, metric_payload))
+        # Import successful
+        @hubspot.track_import_success(payload)
       when :geocoding
-        mixpanel_event("Geocoding successful", mixpanel_payload(event, metric_payload))
+        # Geocoding successful
+        @hubspot.track_geocoding_success(payload)
       end
-    end #report_success
-
-    def mixpanel_event(*args)
-      return self unless Cartodb.config[:mixpanel].present?
-      token = Cartodb.config[:mixpanel]['token']
-      Mixpanel::Tracker.new(token).send(:track, *args)
-    rescue => exception
-      Rollbar.report_message(
-        "Failed to send metric to Mixpanel",
-        "error",
-        error_info: args.join('-')
-      )
-      self
-    end #mixpanel_event
+    end
 
   end
 end
-

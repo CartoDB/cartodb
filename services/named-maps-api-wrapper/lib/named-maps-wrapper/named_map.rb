@@ -61,7 +61,7 @@ module CartoDB
         retries = 0
         success = true
         begin
-          response = http_client.put( url + '?api_key=' + @parent.api_key, {
+          response = self.class.http_client.put( url + '?api_key=' + @parent.api_key, {
             headers:          @parent.headers,
             body:             ::JSON.dump( @template ),
             ssl_verifypeer:   @parent.verify_cert,
@@ -86,7 +86,7 @@ module CartoDB
 
       # Delete existing named map
       def delete
-        response = http_client.delete( url + '?api_key=' + @parent.api_key,
+        response = self.class.http_client.delete( url + '?api_key=' + @parent.api_key,
           { 
             headers:          @parent.headers,
             ssl_verifypeer:   @parent.verify_cert,
@@ -209,8 +209,8 @@ module CartoDB
 
       private
 
-      def http_client
-        @http_client ||= Carto::HttpClient.new('named_map')
+      def self.http_client
+        @@http_client ||= Carto::HttpClient.new('named_map')
       end
 
     end

@@ -97,18 +97,37 @@ module  FileUploadHelper
 
       FileUtils.mkdir_p(Rails.root.join(UPLOADS_PATH).join(random_token))
 
+      if filedata.respond_to?(:tempfile)
+        save_using_streaming(filedata, random_token, filename)
+      else
+        begin
+          data = filedata.read.force_encoding(FILE_ENCODING)
+        rescue
+          data = request.body.read.force_encoding(FILE_ENCODING)
+        end
+        save(data, random_token, filename)
+      end
+    end
+
+    # For rake access
+    module_function :upload_file_to_s3
+
+    private
+
+    def save(filedata, random_token, filename)
+      file = File.new(Rails.root.join(UPLOADS_PATH).join(random_token).join(File.basename(filename)), "w:#{FILE_ENCODING}")
+      file.write filedata
+      file.close
+      file
+    end
+
+    def save_using_streaming(filedata, random_token, filename)
       src = File.open(filedata.tempfile.path, "r:UTF-8")
       file = File.new(Rails.root.join(UPLOADS_PATH).join(random_token).join(File.basename(filename)), 'w:UTF-8')
       IO.copy_stream(src, file)
       file.close
       src.close
-      # Force GC pass to avoid stale memory (dev installations Ruby issue)
-      src = nil
-      filedata = nil
       file
     end
-
-    # For rake access
-    module_function :upload_file_to_s3
 
 end

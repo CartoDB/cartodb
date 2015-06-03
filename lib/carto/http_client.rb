@@ -8,18 +8,18 @@ module Carto
   class HttpClient
 
 
-    def self.get(tag)
+    def self.get(tag, extra_options = {})
       @@clients ||= {}
-      @@clients[tag] ||= build_client(tag)
+      @@clients[tag] ||= build_client(tag, extra_options)
     end
 
-    def self.build_client(tag)
-      logger = build_logger(tag)
+    def self.build_client(tag, extra_options)
+      logger = build_logger(tag, extra_options)
       new(logger)
     end
 
-    def self.build_logger(tag)
-      if ResponseLogger.enabled?
+    def self.build_logger(tag, extra_options)
+      if extra_options[:log_requests] && ResponseLogger.enabled?
         ResponseLogger.new(tag, Socket.gethostname)
       else
         NullLogger.new()

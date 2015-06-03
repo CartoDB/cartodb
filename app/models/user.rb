@@ -983,7 +983,7 @@ class User < Sequel::Model
 
   def last_billing_cycle
     day = period_end_date.day rescue 29.days.ago.day
-    date = (day > Date.today.day ? Date.today<<1 : Date.today)
+    date = (day > Date.today.day ? Date.today << 1 : Date.today)
     begin
       Date.parse("#{date.year}-#{date.month}-#{day}")
     rescue ArgumentError
@@ -2365,7 +2365,7 @@ TRIGGER
   private
 
   def http_client
-    @http_client ||= Carto::HttpClient.get('old_user')
+    @http_client ||= Carto::HttpClient.get('old_user', log_requests: true)
   end
 
   # INFO: assigning to owner is necessary because of payment reasons

@@ -32,13 +32,6 @@
           zoom: 3
         })
 
-        // add a base layer
-        L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png',
-          {
-          attribution: 'Stamen'
-        })
-        //.addTo(map);
-
         // add cartodb layer with multiple sublayers of different types
         cartodb.createLayer(map, {
           user_name: 'examples',

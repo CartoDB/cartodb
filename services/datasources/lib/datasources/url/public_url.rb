@@ -142,7 +142,7 @@ module CartoDB
         private
 
         def http_client
-          @http_client ||= Carto::HttpClient.new('public_url')
+          @http_client ||= Carto::HttpClient.get('public_url')
         end
 
         # Get the file size if present

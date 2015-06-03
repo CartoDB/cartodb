@@ -333,7 +333,7 @@ module CartoDB
         private
 
         def http_client
-          @http_client ||= Carto::HttpClient.new('mailchimp')
+          @http_client ||= Carto::HttpClient.get('mailchimp')
         end
 
         def http_options(params={}, method=:get, extra_headers={})

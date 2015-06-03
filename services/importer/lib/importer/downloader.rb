@@ -160,7 +160,7 @@ module CartoDB
         temp_name = filepath(DEFAULT_FILENAME << '_' << random_name)
 
         downloaded_file = File.open(temp_name, 'wb')
-        request = http_client::Request.new(@translated_url, typhoeus_options)
+        request = http_client.request(@translated_url, typhoeus_options)
         request.on_headers do |response|
           unless response.success?
             download_error = true
@@ -347,7 +347,7 @@ module CartoDB
       end
 
       def http_client
-        @http_client ||= Carto::HttpClient.new('downloader')
+        @http_client ||= Carto::HttpClient.get('downloader')
       end
     end
   end

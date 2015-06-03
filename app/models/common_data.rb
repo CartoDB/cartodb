@@ -4,7 +4,7 @@ class CommonData
 
   def initialize
     @datasets = nil
-    @http_client = Carto::HttpClient.new('common_data')
+    @http_client = Carto::HttpClient.get('common_data')
   end
 
   def datasets

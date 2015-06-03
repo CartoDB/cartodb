@@ -111,7 +111,7 @@ module Cartodb
     private
 
     def http_client
-      @http_client ||= Carto::HttpClient.new('central')
+      @http_client ||= Carto::HttpClient.get('central')
     end
 
   end

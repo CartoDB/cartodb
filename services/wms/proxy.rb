@@ -97,7 +97,7 @@ module CartoDB
       private
 
       def http_client
-        @http_client ||= Carto::HttpClient.new('wmsproxy')
+        @http_client ||= Carto::HttpClient.get('wmsproxy')
       end
       
       attr_reader :url

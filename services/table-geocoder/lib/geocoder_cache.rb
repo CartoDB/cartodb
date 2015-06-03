@@ -144,7 +144,7 @@ module CartoDB
     private
 
     def http_client
-      @http_client ||= Carto::HttpClient.new('geocoder_cache')
+      @http_client ||= Carto::HttpClient.get('geocoder_cache')
     end
 
   end # GeocoderCache

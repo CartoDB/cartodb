@@ -175,7 +175,7 @@ module CartoDB
     private
 
     def http_client
-      @http_client ||= Carto::HttpClient.new('geocoder')
+      @http_client ||= Carto::HttpClient.get('geocoder')
     end
 
   end # Geocoder

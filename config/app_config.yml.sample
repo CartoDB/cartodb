@@ -1,4 +1,5 @@
 defaults: &defaults
+  http_client_logs: true
   ogr2ogr:
     binary:           'which ogr2ogr'
     csv_guessing:     false

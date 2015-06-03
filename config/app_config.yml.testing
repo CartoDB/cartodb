@@ -2,6 +2,7 @@ defaults: &defaults
   users_dumps:
     service:
       port: 0000
+  http_client_logs: true
   ogr2ogr:
     binary:           'which ogr2ogr'
     csv_guessing:     false

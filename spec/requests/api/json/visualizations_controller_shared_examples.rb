@@ -7,15 +7,31 @@ shared_examples_for "visualization controllers" do
 
   TEST_UUID = '00000000-0000-0000-0000-000000000000'
 
-  NORMALIZED_DATE_ATTRIBUTES = %w{ created_at updated_at }
+  DATE_ATTRIBUTES = %w{ created_at updated_at }
+  NORMALIZED_ASSOCIATION_ATTRIBUTES = {
+    attributes: DATE_ATTRIBUTES,
+    associations: {
+      'permission' => {
+        attributes: DATE_ATTRIBUTES,
+        associations: {}
+      },
+      'table' => {
+        attributes: DATE_ATTRIBUTES,
+        associations: {}
+      }
+    }
+  }
 
   # Custom hash comparation, since in the ActiveModel-based controllers
   # we allow some differences:
   # - x to many associations can return [] instead of nil
-  def normalize_hash(h)
+  def normalize_hash(h, normalized_attributes = NORMALIZED_ASSOCIATION_ATTRIBUTES)
     h.each { |k, v|
       h[k] = nil if v == []
-      h[k] = '' if NORMALIZED_DATE_ATTRIBUTES.include?(k)
+      h[k] = '' if normalized_attributes[:attributes].include?(k)
+      if normalized_attributes[:associations].keys.include?(k)
+        normalize_hash(h[k], normalized_attributes[:associations][k])
+      end
     }
   end
 

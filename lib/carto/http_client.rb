@@ -7,13 +7,7 @@ module Carto
   # Wrapper on top of Typhoeus
   class HttpClient
 
-
     def self.get(tag, extra_options = {})
-      @@clients ||= {}
-      @@clients[tag] ||= build_client(tag, extra_options)
-    end
-
-    def self.build_client(tag, extra_options)
       logger = build_logger(tag, extra_options)
       new(logger)
     end

@@ -114,7 +114,7 @@ module Carto
         payload = {
           tag: @tag,
           hostname: @hostname,
-          method: response.request.options[:method].to_s,
+          method: (response.request.options[:method] || :get).to_s, # the default typhoeus method is :get
           request_url: response.request.url,
           total_time: response.total_time,
           response_code: response.code,

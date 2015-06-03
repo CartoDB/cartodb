@@ -379,17 +379,20 @@ module CartoDB
           }
         end
 
-        # @param contents String containing a JSON Hash
-        # @param subscribers Array containing a Hash { subject, opened }
+        # @param contents String containing a JSON array of fields (data of campaign user/target)
+        # @param subscribers Hash { subject => opened_email }
         # @param header_row Boolean
+        # @return String Containing a CSV ready to dump to a file
         def list_json_to_csv(contents='[]', subscribers={}, header_row=false)
-          # Anonymize emails
+          # shorcut: Remove newlines and Anonymize email addresses before parsing to speed up
           contents = ::JSON.parse(contents.gsub("\n", ' ').gsub(/(\w|\.|\-)+@/, ""))
 
           opened_mail = !subscribers[contents[0]].nil?
 
           cleaned_contents = []
+          #Once parsed, each row contains data like account code, company name, email, first name...
           contents.each_with_index { |field, index|
+            # Remove double quotes to avoid CSV errors
             cleaned_contents[index] = "\"#{field.to_s.gsub('"', '""')}\""
           }
           cleaned_contents.push("\"#{header_row ? 'Opened' : opened_mail.to_s}\"")

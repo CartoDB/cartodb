@@ -29,6 +29,7 @@
     <% end %>
 
     <%= insert_trackjs() -%>
+    <!-- TODO: remove mixpanel -->
     <%= render 'shared/mixpanel' -%>
     <%= yield :js -%>
     <%= insert_google_analytics('primary') -%>

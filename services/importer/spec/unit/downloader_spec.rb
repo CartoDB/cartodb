@@ -72,6 +72,14 @@ describe Downloader do
       downloader.source_file.name.should eq 'INDEX'
     end
 
+    it 'supports accented URLs' do
+      # TODO: change this request to master
+      accented_url = 'https://raw.githubusercontent.com/CartoDB/cartodb/3315-Uploading_of_files_with_accents_on_the_filename_dont_work/services/importer/spec/fixtures/política_agraria_común.csv'
+      downloader = Downloader.new(accented_url)
+      downloader.run
+      downloader.source_file.name.should eq 'política_agraria_común'
+    end
+
     it "doesn't download the file if ETag hasn't changed" do
       etag = 'bogus'
       stub_download(

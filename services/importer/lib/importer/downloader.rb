@@ -2,6 +2,7 @@
 require 'fileutils'
 require 'typhoeus'
 require 'open3'
+require 'uri'
 require_relative './exceptions'
 require_relative './source_file'
 require_relative '../../../data-repository/filesystem/local'
@@ -54,6 +55,8 @@ module CartoDB
           @translated_url = translator.translate(url)
           @custom_filename = translator.respond_to?(:rename_destination) ? translator.rename_destination(url) : nil
         end
+        # INFO: runner_spec.rb uses File instead of String, so we chose to support both
+        @translated_url = URI.escape(@translated_url) if !@translated_url.nil? && @translated_url.kind_of?(String)
       end
 
       def provides_stream?

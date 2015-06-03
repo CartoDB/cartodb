@@ -261,7 +261,9 @@ class User < Sequel::Model
       else
         if !error_happened
           Thread.new do
-            drop_database_and_user
+            conn = self.in_database(as: :cluster_admin)
+            drop_database(conn)
+            drop_user(conn)
           end.join
           monitor_user_notification
         end
@@ -297,54 +299,42 @@ class User < Sequel::Model
 
     Thread.new do
       in_database(as: :superuser) do |database|
-        # Drop this user privileges in every schema of the DB
-        schemas = ['cdb', 'cdb_importer', 'cartodb', 'public', self.database_schema] +
-          User.select(:database_schema).where(:organization_id => org_id).all.collect(&:database_schema)
-        schemas.uniq.each do |s|
-          if is_owner
+        if is_owner
+          schemas = ['cdb', 'cdb_importer', 'cartodb', 'public', self.database_schema] +
+              User.select(:database_schema).where(:organization_id => org_id).all.collect(&:database_schema)
+          schemas.uniq.each do |s|
             drop_user_privileges_in_schema(s, [CartoDB::PUBLIC_DB_USER])
-          else
-            drop_user_privileges_in_schema(s)
           end
         end
 
-        # Only remove publicuser from current user schema (and if owner, already done above)
-        unless is_owner
-          drop_user_privileges_in_schema(self.database_schema, [CartoDB::PUBLIC_DB_USER])
-        end
-
-        # Drop user quota function
-        database.run(%Q{ DROP FUNCTION IF EXISTS "#{self.database_schema}"._CDB_UserQuotaInBytes()})
         # If user is in an organization should never have public schema, so to be safe check
-        drop_all_functions_from_schema(self.database_schema)
         unless self.database_schema == 'public'
           # Must drop all functions before or it will fail
-          database.run(%Q{ DROP SCHEMA IF EXISTS "#{self.database_schema}" })
+          database.run(%Q{ DROP SCHEMA IF EXISTS "#{self.database_schema}" CASCADE })
         end
       end
 
       conn = self.in_database(as: :cluster_admin)
       User.terminate_database_connections(database_name, database_host)
-      conn.run("REVOKE ALL ON DATABASE \"#{database_name}\" FROM \"#{database_username}\"")
-      conn.run("REVOKE ALL ON DATABASE \"#{database_name}\" FROM \"#{database_public_username}\"")
-      conn.run("DROP USER \"#{database_public_username}\"")
+      conn.run("DROP USER IF EXISTS \"#{database_public_username}\"")
       if is_owner
-        drop_database_and_user if is_owner
-      else
-        conn.run("DROP USER \"#{database_username}\"")
+        drop_database(conn)
       end
+      drop_user(conn)
 
     end.join
 
     monitor_user_notification
   end
 
-  def drop_database_and_user
-    conn = self.in_database(as: :cluster_admin)
+  def drop_database(conn = self.in_database(as: :cluster_admin))
     conn.run("UPDATE pg_database SET datallowconn = 'false' WHERE datname = '#{database_name}'")
     User.terminate_database_connections(database_name, database_host)
     conn.run("DROP DATABASE \"#{database_name}\"")
-    conn.run("DROP USER \"#{database_username}\"")
+  end
+
+  def drop_user(conn = self.in_database(as: :cluster_admin))
+    conn.run("DROP USER IF EXISTS \"#{database_username}\"")
   end
 
   def self.terminate_database_connections(database_name, database_host)

@@ -1,6 +1,7 @@
 # encoding: utf-8
 
-require 'rspec'
+require_relative '../../../config/environment'
+require 'rspec/rails'
 require 'mocha'
 require 'typhoeus'
 require_relative '../../../lib/carto/http_client'

@@ -72,14 +72,6 @@ defaults: &defaults
       api_credentials:     3
       users_metadata:      5
       redis_migrator_logs: 6
-#  mixpanel:
-#    api_key: xxx
-#    api_secret: xxx
-#    token: xxx
-#  github:
-#    repo: xxx
-#    org: xxx
-#    auth: xxx:xxx
   superadmin:
     username: "superadmin"
     password: "monkey"

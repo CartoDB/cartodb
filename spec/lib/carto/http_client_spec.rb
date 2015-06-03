@@ -1,8 +1,8 @@
 # encoding: utf-8
 
 # Uncomment to use rails goodies, including Logger
-#require_relative '../../../config/environment'
-#require 'rspec/rails'
+require_relative '../../../config/environment'
+require 'rspec/rails'
 
 require 'rspec'
 require 'mocha'

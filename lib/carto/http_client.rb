@@ -19,7 +19,7 @@ module Carto
     end
 
     def self.build_logger(tag)
-      if defined?(Rails) && Rails.respond_to?(:root) && Rails.root.present?
+      if ResponseLogger.enabled?
         ResponseLogger.new(tag, Socket.gethostname)
       else
         NullLogger.new()
@@ -100,6 +100,11 @@ module Carto
 
 
     class ResponseLogger
+
+      def self.enabled?
+        defined?(Rails) && Rails.respond_to?(:root) && Rails.root.present? && Cartodb.config[:http_client_logs]
+      end
+
       def initialize(tag, hostname)
         @tag = tag
         @hostname = hostname

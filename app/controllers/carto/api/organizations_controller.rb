@@ -18,7 +18,7 @@ module Carto
         users_query = users_query.where('(username like ? or email like ?)', "%#{query}%", "#{query}") if query
 
         total_user_entries = users_query.count
-        users_query = users_query.offset(page - 1).limit(per_page).order(order)
+        users_query = users_query.offset(( page - 1 ) * per_page ).limit(per_page).order(order)
         users = users_query.all
 
         render_jsonp({ users: users.map { |u|

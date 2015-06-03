@@ -7,6 +7,7 @@
   max-height: 100px;
   min-height: 100px!important;
 }
+.CreateDialog-header--withoutMaxHeight { max-height: inherit }
 .CreateDialog-headerSteps {
   display: block;
   text-align: center;

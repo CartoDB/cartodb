@@ -24,6 +24,7 @@
   margin: 0 auto;
   padding: 15px 40px;
   background: $cStructure-grayBkg;
+  min-height: 70px; // To have same height, if the footer do not contain any buttons
 }
 .CreateDialog-footerShadow {
   position: absolute;
@@ -76,6 +77,6 @@
 }
 .CreateDialog-footerActions {
   @include display-flex();
-  @include align-items(center, center);   
+  @include align-items(center, center);
 }
 .CreateDialog-footerActionsButton.is-separated { margin-right: 10px }

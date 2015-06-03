@@ -14,12 +14,16 @@ module Carto
       def users
         page, per_page, order = page_per_page_order_params(50, :username)
         query = params[:q]
-        users_query = @organization.users.offset(page - 1).limit(per_page).order(order)
+        users_query = @organization.users
         users_query = users_query.where('(username like ? or email like ?)', "%#{query}%", "#{query}") if query
 
-        render_jsonp({ users: users_query.map { |u|
+        total_user_entries = users_query.count
+        users_query = users_query.offset(page - 1).limit(per_page).order(order)
+        users = users_query.all
+
+        render_jsonp({ users: users.map { |u|
           Carto::Api::UserPresenter.new(u).to_poro
-        } })
+        }, total_user_entries: total_user_entries, total_entries: users.count })
       end
 
       def load_organization

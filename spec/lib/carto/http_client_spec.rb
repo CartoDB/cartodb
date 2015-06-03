@@ -1,7 +1,10 @@
 # encoding: utf-8
 
-require_relative '../../../config/environment'
-require 'rspec/rails'
+# Uncomment to use rails goodies, including Logger
+#require_relative '../../../config/environment'
+#require 'rspec/rails'
+
+require 'rspec'
 require 'mocha'
 require 'typhoeus'
 require_relative '../../../lib/carto/http_client'
@@ -13,7 +16,7 @@ end
 describe Carto::HttpClient do
 
   before(:each) do
-    @client = Carto::HttpClient.new('test')
+    @client = Carto::HttpClient.get('test')
   end
 
 
@@ -27,8 +30,7 @@ describe Carto::HttpClient do
         headers: { Accept: "text/html" }
       }
       Typhoeus::Request.expects(:new).once.with(expected_url, expected_options)
-      client = Carto::HttpClient.new('test')
-      client.request(
+      @client.request(
                      "www.example.com",
                      method: :post,
                      body: "this is a request body",
@@ -42,8 +44,7 @@ describe Carto::HttpClient do
     it 'performs a request through its typhoeus request object' do
       expected_response = Typhoeus::Response.new(code: 200, body: "{'name' : 'paul'}")
       Typhoeus.stub('www.example.com').and_return(expected_response)
-      client = Carto::HttpClient.new('test')
-      request = client.request(
+      request = @client.request(
                                "www.example.com",
                                method: :post,
                                body: "this is a request body",

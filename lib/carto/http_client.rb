@@ -7,9 +7,23 @@ module Carto
   # Wrapper on top of Typhoeus
   class HttpClient
 
-    def initialize(tag)
-      hostname = Socket.gethostname
-      @logger = ResponseLogger.new(tag, hostname)
+
+    def self.get(tag)
+      @@clients ||= {}
+      @@clients[tag] ||= build_client(tag)
+    end
+
+    def self.build_client(tag)
+      logger = build_logger(tag)
+      new(logger)
+    end
+
+    def self.build_logger(tag)
+      if defined?(Rails) && Rails.respond_to?(:root) && Rails.root.present?
+        ResponseLogger.new(tag, Socket.gethostname)
+      else
+        NullLogger.new()
+      end
     end
 
     # Returns a wrapper to a typhoeus request object
@@ -45,6 +59,10 @@ module Carto
 
     private
 
+    def initialize(logger)
+      @logger = logger
+    end
+
 
     class Request
 
@@ -65,6 +83,18 @@ module Carto
 
       def options
         @typhoeus_request.options
+      end
+
+      def on_headers(&block)
+        @typhoeus_request.on_headers(&block)
+      end
+
+      def on_body(&block)
+        @typhoeus_request.on_body(&block)
+      end
+
+      def on_complete(&block)
+        @typhoeus_request.on_complete(&block)
       end
     end
 
@@ -91,8 +121,12 @@ module Carto
       def logger
         @@logger ||= Logger.new("#{Rails.root}/log/http_client.log")
       end
-
     end
+
+    class NullLogger
+      def log(response); end
+    end
+
 
   end
 end

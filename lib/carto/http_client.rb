@@ -28,28 +28,23 @@ module Carto
     end
 
     def get(url, options = {})
-      request = Request.new(@logger, url, options.merge(method: :get))
-      request.run
+      perform_request(__method__, url, options)
     end
 
     def post(url, options = {})
-      request = Request.new(@logger, url, options.merge(method: :post))
-      request.run
+      perform_request(__method__, url, options)
     end
 
     def head(url, options = {})
-      request = Request.new(@logger, url, options.merge(method: :head))
-      request.run
+      perform_request(__method__, url, options)
     end
 
     def put(url, options = {})
-      request = Request.new(@logger, url, options.merge(method: :put))
-      request.run
+      perform_request(__method__, url, options)
     end
 
     def delete(url, options = {})
-      request = Request.new(@logger, url, options.merge(method: :delete))
-      request.run
+      perform_request(__method__, url, options)
     end
 
 
@@ -57,6 +52,11 @@ module Carto
 
     def initialize(logger)
       @logger = logger
+    end
+
+    def perform_request(method, url, options)
+      request = Request.new(@logger, url, options.merge(method: method))
+      request.run
     end
 
 

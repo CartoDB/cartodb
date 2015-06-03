@@ -39,7 +39,7 @@
           sublayers: [
             {
               type: "http",
-              urlTemplate: "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
+              urlTemplate: "http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png",
               subdomains: [ "a", "b", "c" ]
             },
             {
@@ -59,10 +59,13 @@
 
           setTimeout(function() {
             layer.getSubLayer(0).setURLTemplate(
-               'http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png'
+               'http://{s}.tile.stamen.com/toner-lines/{z}/{x}/{y}.png'
             )
+          }, 2500)
+
+          setTimeout(function() {
             layer.getSubLayer(2).hide();
-          }, 3000)
+          }, 5000)
         });
       }
 

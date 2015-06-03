@@ -88,7 +88,7 @@ module Carto
         }
 
         if @user.organization.present?
-          data[:organization] = Carto::Api::OrganizationPresenter.new(@user.organization).to_poro(@user) 
+          data[:organization] = Carto::Api::OrganizationPresenter.new(@user.organization).to_poro
         end
 
         if options[:extended]

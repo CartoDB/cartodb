@@ -22,14 +22,20 @@ namespace :cartodb do
       puts "Dry run of create_named_maps rake" if dry_run
 
       collection = CartoDB::Visualization::Collection.new.fetch({
-        'types' => [CartoDB::Visualization::Member::TYPE_CANONICAL, CartoDB::Visualization::Member::TYPE_DERIVED]
+        'types' => [CartoDB::Visualization::Member::TYPE_CANONICAL, CartoDB::Visualization::Member::TYPE_DERIVED],
+        per_page: ALL_RECORDS
         })
 
       puts "Fetched ##{collection.count} items"
 
       collection.each do |viz|
-        viz.store unless dry_run
-        puts "#{CartoDB::NamedMapsWrapper::NamedMap::normalize_name(viz.id)}"
+        begin
+          viz.store unless dry_run
+          puts "OK:  #{CartoDB::NamedMapsWrapper::NamedMap::normalize_name(viz.id)}"
+        rescue ex
+          puts "ERR: #{viz.id}"
+          puts ex.inspect
+        end
       end
 
       puts "\nFinished"

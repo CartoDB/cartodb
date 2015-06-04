@@ -3,6 +3,8 @@ require_relative '../spec_helper'
 
 describe User do
   before(:all) do
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+    
     @user_password = 'admin123'
     puts "\n[rspec][user_spec] Creating test user databases..."
     @user     = create_user :email => 'admin@example.com', :username => 'admin', :password => @user_password

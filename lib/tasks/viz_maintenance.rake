@@ -26,19 +26,21 @@ namespace :cartodb do
         per_page: CartoDB::Visualization::Collection::ALL_RECORDS
         })
 
-      puts "Fetched ##{collection.count} items"
+      count = collection.count
+
+      puts "Fetched ##{count} items"
 
       collection.each do |viz|
         begin
           viz.store unless dry_run
-          puts "OK:  #{CartoDB::NamedMapsWrapper::NamedMap::normalize_name(viz.id)}"
-        rescue ex
+          puts "OK:  #{CartoDB::NamedMapsWrapper::NamedMap::normalize_name(viz.id)} :: User: #{viz.user_id}"
+        rescue => ex
           puts "ERR: #{viz.id}"
           puts ex.inspect
         end
       end
 
-      puts "\nFinished"
+      puts "\nFinished ##{count} items"
     end
 
     private

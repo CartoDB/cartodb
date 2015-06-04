@@ -31,7 +31,7 @@
     <!-- include cartodb.js library -->
     <script src="dist/cartodb.uncompressed.js"></script>
     <script>
-      var account = 'rambo-test';
+      var account = 'eschbacher';
 
       var ramps = {
         green:  ['#EDF8FB', '#D7FAF4', '#CCECE6', '#66C2A4', '#41AE76', '#238B45', '#005824'],
@@ -66,7 +66,7 @@
         category: function(cats, prop, geometryType) {
           var attr = geoAttr(geometryType);
           var ramp = ramps.cat;
-          var css = "#c{ " + attr + ": #0C2C84; polygon-opacity: 0.6; line-color: #0C2C84; line-width: 0.5; line-opacity: 1; } "
+          var css = "#c{ " + attr + ": #0C2C84; polygon-opacity: 0.6; line-color: #0C2C84; line-width: 0.0; line-opacity: 1; } "
           for(var i = cats.length - 1; i >= 0; --i) {
             if(cats[i] !== undefined && cats[i] != null) {
               css += "\n#c[ " + prop + " = '" + cats[i] + "'] {\n";
@@ -84,7 +84,8 @@
         var map = L.map(div, { 
           zoomControl: false,
           center: [43, 0],
-          zoom: 3
+          zoom: 3,
+            scrollWheelZoom: false
         })
 
         map.fitBounds(bbox);
@@ -105,9 +106,11 @@
 
       function guessMap(sql, geometryType, column, stats, bbox) {
         var css = null
-        if (stats.type == 'number') {
+          var make_the_cut = ['areasource', 'bsmtcode', 'builtcode', 'irrlotcode', 'ownertype', 'plutomapid', 'proxcode', 'schooldist', 'splitzone'];
+        if (false && stats.type == 'number') {
           css =  CSS.choropleth(stats.quantiles, column, geometryType, ramps.blue);
         } else if(stats.type == 'string') {
+
           css = CSS.category(stats.hist.slice(0, ramps.cat.length).map(function(r) { return r[0]; }), column, geometryType)
         }
         if (css) {
@@ -115,7 +118,13 @@
           div.attr('class', 'map');
           $('body').append(div);
           makeMap(div[0], sql, css, bbox);
-          div.append($('<div>').text(column).attr('class', 'lengend'));
+          if (make_the_cut.indexOf(column) != -1) {
+              div.append($('<div>').text(column + " PASSES :) -- (#uniques: " + stats.distinct + ")").attr('class', 'lengend'));
+              // console.log(stats);
+          } else {
+              div.append($('<div>').text(column + " DOESN'T PASS -- (#uniques: " + stats.distinct + ")").attr('class', 'lengend'));
+          }
+          
         }
       }
 
@@ -128,7 +137,7 @@
       }
 
       function main() {
-        var sql = 'select * from tl_2014_us_cd114';//spanish_adm2_provinces'//world_borders'
+        var sql = 'select * from mnmappluto';//spanish_adm2_provinces'//world_borders' // pluto14v2
         s.describe(sql, 'the_geom', function(data) {
           var geometryType = data.simplified_geometry_type;
           s.columns(sql, function(columns) {

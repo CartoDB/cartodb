@@ -242,7 +242,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
                 Typhoeus::Response.new( code: 200, body: JSON::dump( named_map_template_data ) )
               )
 
-      named_map = derived_vis.has_named_map?()
+      named_map = derived_vis.get_named_map
 
       named_map.should_not eq false
       named_map.template.should eq named_map_template_data

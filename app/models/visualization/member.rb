@@ -233,7 +233,7 @@ module CartoDB
       def delete(from_table_deletion=false)
         begin
           # Named map must be deleted before the map, or we lose the reference to it
-          named_map.delete
+          get_named_map.delete
         rescue NamedMapsWrapper::HTTPResponseError => exception
           # CDB-1964: Silence named maps API exception if deleting data to avoid interrupting whole flow
           unless from_table_deletion
@@ -444,7 +444,7 @@ module CartoDB
         password_protected? || has_private_tables?
       end
 
-      def has_named_map?
+      def get_named_map
         return false if type == TYPE_REMOTE
 
         data = named_maps.get(CartoDB::NamedMapsWrapper::NamedMap.normalize_name(id))
@@ -487,7 +487,7 @@ module CartoDB
       end
 
       def get_auth_tokens
-        named_map = has_named_map?
+        named_map = get_named_map
         raise CartoDB::InvalidMember unless named_map
 
         tokens = named_map.template[:template][:auth][:valid_tokens]
@@ -743,7 +743,7 @@ module CartoDB
       end
 
       def save_named_map
-        named_map = has_named_map?
+        named_map = get_named_map
         if named_map
           update_named_map(named_map)
         else

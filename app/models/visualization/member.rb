@@ -233,7 +233,7 @@ module CartoDB
       def delete(from_table_deletion=false)
         begin
           # Named map must be deleted before the map, or we lose the reference to it
-          named_map.delete if has_named_map?
+          named_map.delete
         rescue NamedMapsWrapper::HTTPResponseError => exception
           # CDB-1964: Silence named maps API exception if deleting data to avoid interrupting whole flow
           unless from_table_deletion
@@ -352,7 +352,6 @@ module CartoDB
         options.delete(:public_fields_only) === true ? presenter.to_public_poro : presenter.to_poro
       end
 
-
       def to_vizjson(options={})
         @redis_vizjson_cache.cached(id, options.fetch(:https_request, false)) do
           calculate_vizjson(options)
@@ -376,7 +375,7 @@ module CartoDB
       end
 
       def all_users_with_read_permission
-        users_with_permissions([CartoDB::Visualization::Member::PERMISSION_READONLY, \
+        users_with_permissions([CartoDB::Visualization::Member::PERMISSION_READONLY,
                                 CartoDB::Visualization::Member::PERMISSION_READWRITE]) + [user]
       end
 
@@ -422,7 +421,7 @@ module CartoDB
       def invalidate_cache
         invalidate_varnish_cache
         invalidate_redis_cache
-        if (type == TYPE_CANONICAL || type == TYPE_DERIVED || organization?
+        if type == TYPE_CANONICAL || type == TYPE_DERIVED || organization?
           save_named_map
         end
         parent.invalidate_cache unless parent_id.nil?
@@ -770,8 +769,8 @@ module CartoDB
       def propagate_privacy_to(table)
         if type == TYPE_CANONICAL
           CartoDB::TablePrivacyManager.new(table)
-            .set_from(self)
-            .propagate_to_varnish
+                                      .set_from(self)
+                                      .propagate_to_varnish
         end
         self
       end

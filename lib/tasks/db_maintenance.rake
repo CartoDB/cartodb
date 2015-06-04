@@ -854,6 +854,76 @@ namespace :cartodb do
       uo.promote_user_to_admin
     end
 
+    def create_user(username, organization, quota_in_bytes)
+      u = User.new
+      u.email = "#{username}@test-org.com"
+      u.password = username
+      u.password_confirmation = username
+      u.username = username
+      u.quota_in_bytes = quota_in_bytes
+      #u.database_host = ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
+
+      if organization.owner_id.nil?
+        u.save(raise_on_failure: true)
+        CartoDB::UserOrganization.new(organization.id, u.id).promote_user_to_admin
+        organization.reload
+      else
+        u.organization = organization
+        u.save(raise_on_failure: true)
+      end
+
+      u
+    end
+
+    def create_users(first_index, last_index, organization, bytes_per_user)
+      org_name = organization.name
+
+      (first_index..last_index).each { |i|
+        username = "#{org_name}-#{i}"
+        print "Creating user #{username}... "
+        user = create_user(username, organization, bytes_per_user)
+        puts "Done."
+      }
+    end
+
+    desc "Create an organization with an arbitrary number of users for test purposes. Owner user: <org-name>-admin. Users: <org-name>-<i>. You might need to set conn_validator_timeout to -1 in config/database.yml (development)"
+    task :create_test_organization, [:org_name, :n_users] => [:environment] do |t, args|
+      org_name = args[:org_name]
+      n_users = args[:n_users].to_i
+      bytes_per_user = 50 * 1024 * 1024
+
+      def create_organization(org_name, n_users, bytes_per_user)
+        organization = Organization.new
+        organization.name = org_name
+        organization.display_name = org_name
+        organization.seats = n_users * 2
+        organization.quota_in_bytes = bytes_per_user * organization.seats
+        organization.save
+      end
+
+      print "Creating organization #{org_name}... "
+      organization = create_organization(org_name, n_users, bytes_per_user)
+      puts "Done."
+
+      owner_name = "#{org_name}-admin"
+      print "Creating owner #{owner_name}... "
+      owner = create_user(owner_name, organization, bytes_per_user)
+      puts "Done."
+
+      create_users(1, n_users, organization, bytes_per_user)
+    end
+
+    desc "Add users to an organization. Used to resume a broken :create_test_organization task"
+    task :add_test_users_to_organization, [:org_name, :first_index, :last_index] => [:environment] do |t, args|
+      org_name = args[:org_name]
+      first_index = args[:first_index]
+      last_index = args[:last_index]
+      bytes_per_user = 50 * 1024 * 1024
+
+      organization = Organization.where(name: org_name).first
+      create_users(first_index, last_index, organization, bytes_per_user)
+    end
+
     desc "Reload users avatars"
     task :reload_users_avatars => :environment do
       if ENV['ONLY_GRAVATAR'].blank?

@@ -1,4 +1,4 @@
-require_relative '../../app/helpers/carto/uuidhelper'
+require_relative '../../lib/carto/uuidhelper'
 
 class Carto::UUIDHelperInstance
   include Carto::UUIDHelper

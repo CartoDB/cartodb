@@ -234,12 +234,16 @@ describe Admin::VisualizationsController do
       id = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC).table_visualization.id
       embed_redis_cache = EmbedRedisCache.new
 
-      embed_redis_cache.get(id).should == nil
+      embed_redis_cache.get(id, https=false).should == nil
       get "/viz/#{id}/embed_map", {}, @headers
       last_response.status.should == 200
 
+      # The https key/value pair should be differenent
+      embed_redis_cache.get(id, https=true).should == nil
+      last_response.status.should == 200
+
       # It should be cached after the first request
-      embed_redis_cache.get(id).should_not be_nil
+      embed_redis_cache.get(id, https=false).should_not be_nil
       first_response = last_response
 
       get "/viz/#{id}/embed_map", {}, @headers

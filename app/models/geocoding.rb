@@ -2,6 +2,7 @@
 require_relative '../../services/table-geocoder/lib/table_geocoder'
 require_relative '../../services/table-geocoder/lib/internal_geocoder.rb'
 require_relative '../../lib/cartodb/metrics'
+require_relative '../../lib/cartodb/mixpanel'
 
 class Geocoding < Sequel::Model
 
@@ -112,7 +113,7 @@ class Geocoding < Sequel::Model
   end
 
   def run_geocoding!(processable_rows, rows_geocoded_before = 0)
-    self.update state: 'started', processable_rows: processable_rows, batched: table_geocoder.use_batch_process?
+    self.update state: 'started', processable_rows: processable_rows
     @started_at = Time.now
 
     # INFO: this is where the real stuff is done
@@ -131,10 +132,12 @@ class Geocoding < Sequel::Model
     rows_geocoded_after = table_service.owner.in_database.select.from(table_service.sequel_qualified_table_name).where('cartodb_georef_status is true and the_geom is not null').count rescue 0
 
     @finished_at = Time.now
+    self.batched = table_geocoder.used_batch_request?
     self.update(state: 'finished', real_rows: rows_geocoded_after - rows_geocoded_before, used_credits: calculate_used_credits)
     self.report
   rescue => e
     @finished_at = Time.now
+    self.batched = table_geocoder.used_batch_request?
     self.update(state: 'failed', processed_rows: 0, cache_hits: 0)
     CartoDB::notify_exception(e, user: user)
     self.report(e)
@@ -143,6 +146,8 @@ class Geocoding < Sequel::Model
   def report(error = nil)
     payload = metrics_payload(error)
     CartoDB::Metrics.new.report(:geocoding, payload)
+    # TODO: remove mixpanel
+    CartoDB::Mixpanel.new.report(:geocoding, payload)
     payload.delete_if {|k,v| %w{distinct_id email table_id}.include?(k.to_s)}
     geocoding_logger.info(payload.to_json)
   end

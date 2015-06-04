@@ -12,9 +12,27 @@ module CartoDB
             "Please configure your database settings " + 
             "in spec/factories/database.json"
           ) unless File.exists?(configuration_file)
-
           @pg_options = ::JSON.parse(File.read(configuration_file))
+          create_db
         end #initialize
+
+        def create_db
+          conn = Sequel.postgres(pg_options.reject{|k,v| k == :database})
+          begin
+            conn.run("CREATE DATABASE \"#{ pg_options[:database] }\"
+            WITH TEMPLATE = template_postgis
+            OWNER = #{ pg_options[:user] }
+            ENCODING = 'UTF8'
+            CONNECTION LIMIT=-1")
+          rescue Sequel::DatabaseError => e
+            raise unless e.message =~ /database .* already exists/
+          end
+          begin
+            conn.run("CREATE EXTENSION postgis")
+          rescue Sequel::DatabaseError => e
+            raise unless e.message =~ /extension \"postgis\" already exists/
+          end
+        end
 
         def connection
           Sequel.postgres(pg_options)

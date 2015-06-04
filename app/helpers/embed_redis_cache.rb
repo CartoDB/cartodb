@@ -10,8 +10,8 @@ class EmbedRedisCache
     @redis = redis_cache
   end
 
-  def get(visualization_id)
-    key = key(visualization_id)
+  def get(visualization_id, https_request)
+    key = key(visualization_id, https_request)
     value = redis.get(key)
     if value.present?
       return JSON.parse(value, symbolize_names: true)
@@ -24,25 +24,26 @@ class EmbedRedisCache
   end
 
   # Only public and public with link
-  def set(visualization_id, response_headers, response_body)
+  def set(visualization_id, https_request, response_headers, response_body)
     serialized = JSON.generate({headers: response_headers,
                                 body: response_body
                                })
-    redis.setex(key(visualization_id), 24.hours.to_i, serialized)
+    redis.setex(key(visualization_id, https_request), 24.hours.to_i, serialized)
   rescue Redis::BaseError => exception
     Rollbar.report_exception(exception)
     nil
   end
 
   def invalidate(visualization_id)
-    redis.del key(visualization_id)
+    redis.del [key(visualization_id, https_request=true), key(visualization_id, https_request=false)]
   rescue Redis::BaseError => exception
     Rollbar.report_exception(exception)
     nil
   end
 
-  def key(visualization_id)
-    "visualization:#{visualization_id}:embed:#{VERSION}"
+  def key(visualization_id, https_request=false)
+    protocol = https_request ? 'https' : 'http' 
+    "visualization:#{visualization_id}:embed:#{protocol}:#{VERSION}"
   end
 
 

@@ -164,6 +164,7 @@ a.Filters-cleanSearch { line-height:32px }
   color:#DDD;
 }
 .Filters-typeLink {
+  display: inline-block;
   line-height: 80px;
   font-size: 14px;
   color: $cTypography-link;
@@ -244,6 +245,7 @@ a.Filters-cleanSearch { line-height:32px }
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
+  height: 80px;
 }
 .Filters-actionsText {
   padding-left: 25px;
@@ -251,6 +253,8 @@ a.Filters-cleanSearch { line-height:32px }
   color: $cTypography-help;
 }
 .Filters-actionsLink {
+  display: inline-block;
+  line-height: 80px;
   font-size: 13px;
   padding-left: 25px;
 }

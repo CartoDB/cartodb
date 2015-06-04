@@ -43,6 +43,7 @@ class SynchronizationOauth < Sequel::Model
   end #before_save
 
   def ==(oauth_object)
+    return false unless oauth_object
     self.id == oauth_object.id
   end #==
 

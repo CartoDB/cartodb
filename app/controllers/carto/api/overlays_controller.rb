@@ -1,6 +1,6 @@
 # encoding: UTF-8
 
-require_relative '../../../helpers/carto/uuidhelper'
+require_dependency 'carto/uuidhelper'
 
 module Carto
   module Api

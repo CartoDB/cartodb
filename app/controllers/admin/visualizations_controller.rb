@@ -222,6 +222,8 @@ class Admin::VisualizationsController < ApplicationController
     @avatar_url             = @visualization.user.avatar
     @google_maps_api_key = @visualization.user.google_maps_api_key
 
+    @mapviews = @visualization.total_mapviews
+
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
     @visualization_count    = @visualization.user.public_visualization_count
     @related_tables         = @visualization.related_tables
@@ -261,10 +263,6 @@ class Admin::VisualizationsController < ApplicationController
 
   def show_organization_public_map
     return(embed_forbidden) unless org_user_has_map_permissions?(current_user, @visualization)
-
-    @can_fork = @visualization.related_tables.map { |t|
-      t.table_visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
-    }.all?
 
     response.headers['Cache-Control'] = "no-cache,private"
 
@@ -372,13 +370,16 @@ class Admin::VisualizationsController < ApplicationController
     if @cached_embed
       response.headers.merge! @cached_embed[:headers].stringify_keys
       respond_to do |format|
-        format.html { render inline: @cached_embed[:body] }
+        # Use html_safe to mark the string as trusted since it comes from a successful response.
+        # We cannot use `render body: @cached_embed[:body]` in Rails 3
+        format.html { render inline: "<%= @cached_embed[:body].html_safe %>" }
       end
     else
       resp = embed_map_actual
       if response.ok? && (@visualization.public? || @visualization.public_with_link?)
         #cache response
-        embed_redis_cache.set(@visualization.id, response.headers, response.body)
+        is_https = (request.protocol == 'https://')
+        embed_redis_cache.set(@visualization.id, is_https, response.headers, response.body)
       end
       resp
     end
@@ -450,8 +451,9 @@ class Admin::VisualizationsController < ApplicationController
   end
 
   def resolve_visualization_and_table_if_not_cached
+    is_https = (request.protocol == 'https://')
     # TODO review the naming confusion about viz and tables, I suspect templates also need review
-    @cached_embed = embed_redis_cache.get(@table_id)
+    @cached_embed = embed_redis_cache.get(@table_id, is_https)
     if !@cached_embed
       resolve_visualization_and_table
     end
@@ -570,7 +572,18 @@ class Admin::VisualizationsController < ApplicationController
     user = Carto::User.where(username: schema).first
     # INFO: organization public visualizations
     user_id = user ? user.id : nil
-    visualization = Carto::VisualizationQueryBuilder.new.with_id_or_name(table_id).with_user_id(user_id).build.first
+
+    # Implicit order due to legacy code: 1st return canonical/table/Dataset if present, else derived/visualization/Map
+    visualization = Carto::VisualizationQueryBuilder.new
+                                                    .with_id_or_name(table_id)
+                                                    .with_user_id(user_id)
+                                                    .build
+                                                    .all
+                                                    .sort { |vis_a, vis_b|
+                                                        vis_a.type == Carto::Visualization::TYPE_CANONICAL ? -1 : 1
+                                                      }
+                                                    .first
+
     return get_visualization_and_table_from_table_id(table_id) if visualization.nil?
     return Carto::Admin::VisualizationPublicMapAdapter.new(visualization, current_user), visualization.table_service
   end

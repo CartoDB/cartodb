@@ -15,6 +15,15 @@ def bypass_named_maps
   CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:create).returns(true)
 end
 
+def random_username
+  "user#{rand(10000)}"
+end
+
+def login(user)
+  login_as(user, scope: user.subdomain)
+  host! "#{user.subdomain}.localhost.lan"
+end
+
 shared_context 'database configuration' do
 
   before(:each) do
@@ -81,6 +90,8 @@ shared_context 'organization with users helper' do
   end
 
   after(:all) do
+    delete_user_data @org_user_1 if @org_user_1
+    delete_user_data @org_user_2 if @org_user_2
     @org_user_2.destroy if @org_user_2
     @org_user_1.destroy if @org_user_1
   end
@@ -129,6 +140,8 @@ shared_context 'users helper' do
   end
 
   after(:all) do
+    delete_user_data @user1 if @user1
+    delete_user_data @user2 if @user2
     @user1.destroy if @user1
     @user2.destroy if @user2
   end
@@ -139,19 +152,10 @@ shared_context 'visualization creation helpers' do
   include Warden::Test::Helpers
   bypass_named_maps
 
-  def login(user)
-    login_as(user, scope: user.subdomain)
-    host! "#{user.subdomain}.localhost.lan"
-  end
-
   def create_random_table(user, name = "viz#{rand(999)}")
     create_table( { user_id: user.id, name: name } )
   end
 
   private
-
-  def random_username
-    "user#{rand(10000)}"
-  end
 
 end

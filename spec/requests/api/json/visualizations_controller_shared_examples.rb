@@ -79,6 +79,8 @@ shared_examples_for "visualization controllers" do
     include_context 'users helper'
 
     before(:each) do
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+
       login(@user1)
       @headers = {'CONTENT_TYPE'  => 'application/json'}
       host! "#{@user1.subdomain}.localhost.lan"
@@ -144,6 +146,8 @@ shared_examples_for "visualization controllers" do
     end
 
     before(:each) do
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+      
       CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
       @db = Rails::Sequel.connection
       Sequel.extension(:pagination)
@@ -170,7 +174,6 @@ shared_examples_for "visualization controllers" do
 
     it 'tests exclude_shared and only_shared filters' do
       CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
 
       user_1 = create_user(
         username: "test#{rand(9999)}-1",

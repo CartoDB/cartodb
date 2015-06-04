@@ -232,9 +232,8 @@ module CartoDB
 
       def delete(from_table_deletion=false)
         begin
-          named_map = has_named_map?
           # Named map must be deleted before the map, or we lose the reference to it
-          named_map.delete if named_map
+          named_map.delete if has_named_map?
         rescue NamedMapsWrapper::HTTPResponseError => exception
           # CDB-1964: Silence named maps API exception if deleting data to avoid interrupting whole flow
           unless from_table_deletion
@@ -423,14 +422,10 @@ module CartoDB
       def invalidate_cache
         invalidate_varnish_cache
         invalidate_redis_cache
-        parent.invalidate_cache unless parent_id.nil?
-      end
-
-      def invalidate_cache_and_refresh_named_map
-        invalidate_cache
-        if type != TYPE_CANONICAL or organization?
+        if (type == TYPE_CANONICAL || type == TYPE_DERIVED || organization?
           save_named_map
         end
+        parent.invalidate_cache unless parent_id.nil?
       end
 
       def invalidate_all_varnish_vizsjon_keys
@@ -445,6 +440,7 @@ module CartoDB
         has_private_tables
       end
 
+      # Despite storing always a named map, no need to retrievfe it for "public" visualizations
       def retrieve_named_map?
         password_protected? || has_private_tables?
       end

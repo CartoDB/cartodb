@@ -54,22 +54,23 @@ shared_context 'organization with users helper' do
     organization
   end
 
-  before(:all) do
-    username1 = "a#{random_username}"
-    @org_user_1 = create_user(
-      username: username1,
-      email: "#{username1}@example.com",
-      password: 'clientex',
+  def create_test_user(username, organization = nil)
+    user = create_user(
+      username: username,
+      email: "#{username}@example.com",
+      password: username,
       private_tables_enabled: true
     )
+    unless organization.nil?
+      user.organization_id = organization.id
+      user.save.reload
+      user.reload
+    end
+    user
+  end
 
-    username2 = "b#{random_username}"
-    @org_user_2 = create_user(
-      username: username2,
-      email: "#{username2}@example.com",
-      password: 'clientex2',
-      private_tables_enabled: true
-    )
+  before(:all) do
+    @org_user_1 = create_test_user("a#{random_username}")
 
     @organization = test_organization.save
     @organization_2 = test_organization.save
@@ -79,9 +80,7 @@ shared_context 'organization with users helper' do
     @organization.reload
     @org_user_1.reload
 
-    @org_user_2.organization_id = @organization.id
-    @org_user_2.save.reload
-    @organization.reload
+    @org_user_2 = create_test_user("b#{random_username}", @organization)
   end
 
   before(:each) do

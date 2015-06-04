@@ -72,12 +72,18 @@ describe Downloader do
       downloader.source_file.name.should eq 'INDEX'
     end
 
-    xit 'supports accented URLs' do
-      # TODO: change this request to master
-      accented_url = 'https://raw.githubusercontent.com/CartoDB/cartodb/3315-Uploading_of_files_with_accents_on_the_filename_dont_work/services/importer/spec/fixtures/política_agraria_común.csv'
+    it 'supports accented URLs' do
+      accented_url = 'https://raw.githubusercontent.com/CartoDB/cartodb/master/services/importer/spec/fixtures/política_agraria_común.csv'
       downloader = Downloader.new(accented_url)
       downloader.run
       downloader.source_file.name.should eq 'política_agraria_común'
+    end
+
+    it 'does not break urls with % on it' do
+      # INFO: notice this URL is fake
+      url_with_percentage = 'https://s3.amazonaws.com/com.cartodb.imports.staging/03b0c2199fc814ceeb75/a_file.zip?AWSAccessKeyId=AKIAIUI5FFFJIRAMEEMA&Expires=1433349484&Signature=t6m%2Bji%2BlKsnrOVqPsptXajPiozw%3D'
+      downloader = Downloader.new(url_with_percentage)
+      downloader.instance_variable_get("@translated_url").should == url_with_percentage
     end
 
     it "doesn't download the file if ETag hasn't changed" do

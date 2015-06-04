@@ -712,7 +712,7 @@ module CartoDB
         if type == TYPE_REMOTE
           propagate_privacy_and_name_to(table) if table and propagate_changes
         elsif type == TYPE_CANONICAL
-          save_named_map if organization?
+          save_named_map
           propagate_privacy_and_name_to(table) if table and propagate_changes
         else
           save_named_map

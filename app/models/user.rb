@@ -316,7 +316,7 @@ class User < Sequel::Model
 
       conn = self.in_database(as: :cluster_admin)
       User.terminate_database_connections(database_name, database_host)
-      conn.run("DROP USER IF EXISTS \"#{database_public_username}\"")
+      conn.run("DROP USER IF EXISTS \"#{database_public_username}\"") if database_public_username != CartoDB::PUBLIC_DB_USER
       if is_owner
         conn.run("DROP DATABASE \"#{database_name}\"")
       end
@@ -2178,6 +2178,10 @@ TRIGGER
 
   def revoke_all_on_database_from(conn, database, role)
     conn.run("REVOKE ALL ON DATABASE \"#{database}\" FROM \"#{role}\"")
+  rescue => e
+    unless e.message =~ /role "#{role}" does not exist/
+      raise e
+    end
   end
 
   def revoke_privileges(db, schema, u)

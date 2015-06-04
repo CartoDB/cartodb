@@ -12,6 +12,7 @@ module Carto
         {
             id:         @user.id,
             username:   @user.username,
+            email:      @user.email,
             avatar_url: @user.avatar_url,
             base_url:   @user.public_url
         }

@@ -5,6 +5,7 @@ require_relative '../spec_helper'
 describe Carto::Api::UserPresenter do
 
   it "Compares old and new ways of 'presenting' user data" do
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
 
     # Non-org user
     user = create_user({ 

@@ -1,125 +1,143 @@
 <% content_for(:page_title) do %>
-  Your organization | Public Dashboard Settings
+  <%= current_user.organization.name %> settings |
 <% end %>
-
 <%= content_for(:js) do %>
-  <%= javascript_include_tag 'cdb.js', 'application.js', 'models.js', 'organization.js', 'templates.js' %>
   <script type="text/javascript">
-    var username = "<%= current_user.username %>"
-      , type = "oauth"
-      , config = <%= safe_js_object frontend_config %>
-      , organization_quota = {
-          seats: <%= current_user.organization.seats %>,
-          quota_in_bytes: <%= current_user.organization.quota_in_bytes %>
-        }
-      , organization_users = <%= safe_js_object @users.map { |u| {
-          id: u.id,
-          username: u.username,
-          quota_in_bytes: u.quota_in_bytes,
-          remaining_quota: u.remaining_quota,
-          organization_owner: u.organization_owner?
-        }}.to_json %>
-      , user_data = <%= safe_js_object current_user.data.to_json %>;
+    var username = "<%= current_user.username %>";
+    var config = <%= safe_js_object frontend_config %>;
+    var user_data = <%= safe_js_object current_user.data.to_json.html_safe %>;
   </script>
+  <%= javascript_include_tag 'cdb.js', 'models.js', 'organization_templates.js', 'organization_deps.js', 'organization.js' -%>
 <% end %>
 
-<%= content_for(:css) do %>
-  <%= stylesheet_link_tag 'common.css', 'organization.css', :media => 'all' %>
-<% end %>
+<%= render :partial => 'shared/flash_message' %>
 
-<%= content_for(:account_settings) do %>
-  <%= render partial: "settings_account" %>
-<% end %>
+<div>
+  <%= render :partial => 'admin/shared/org_subheader' %>
 
-<%= form_for @organization, url: CartoDB.url(self, 'organization_settings_update', {}, current_user), multipart: true do |form| %>
+  <div class="OrganizationContent">
+    <div class="u-inner">
+      <%= form_for @organization, url: CartoDB.url(self, 'organization_settings_update', {}, current_user), multipart: true do |f| %>
+        <%= csrf_meta_tags %>
 
-    <article class="settings">
-      <div class="inner">
-        <section class="block">
-          <div class="head">
-            <h2>Your organization public dashboard</h2>
-            <%= link_to 'Go to your public page', CartoDB.base_url(@organization.name), :class => "right-link" %>
+        <div class="Form-title">
+          <p class="Form-titleText">Edit your company settings</p>
+        </div>
+
+        <div class="Form-row">
+          <div class="Form-rowLabel">
+            <label class="Form-label">Public name</label>
           </div>
+          <div class="Form-rowData">
+            <%= f.text_field :name, :class => "Form-input Form-input--long" %>
+          </div>
+          <div class="Form-rowInfo">
+            <p class="Form-rowInfoText">Check your <a href="<%= CartoDB.base_url(@organization.name) %>">public page</a></p>
+          </div>
+        </div>
 
-          <ul><%= render :partial => 'shared/flash_message' %></ul>
+        <div class="Form-row">
+          <div class="Form-rowLabel">
+            <label class="Form-label">Website</label>
+          </div>
+          <div class="Form-rowData">
+            <%= f.text_field :website, :class => "Form-input Form-input--long" %>
+          </div>
+          <div class="Form-rowInfo">
+            <p class="Form-rowInfoText"></p>
+          </div>
+        </div>
 
-          <div class="content">
+        <div class="Form-row">
+          <div class="Form-rowLabel">
+            <label class="Form-label">Description</label>
+          </div>
+          <div class="Form-rowData">
+            <%= f.text_area :description, :class => "Form-textarea Form-input Form-input--long" %>
+          </div>
+          <div class="Form-rowInfo">
+            <p class="Form-rowInfoText"></p>
+          </div>
+        </div>
 
-            <div class="left-column">
-
-              <div class="row">
-                <div class="field field-1">
-                  <%= form.label :display_name %>
-                  <%= form.text_field :display_name, :class => @organization.errors[:display_name].present? ? 'error' : nil %>
-                  <%= form_error_for :display_name, @organization.errors %>
-                </div>
-              </div>
-
-              <div class="row">
-                <div class="field field-2">
-                  <%= form.label :website %>
-                  <%= form.text_field :website, :class => @organization.errors[:website].present? ? 'error' : nil %>
-                  <%= form_error_for :website, @organization.errors %>
-                </div>
-                <div class="field field-2 logo">
-                  <%= form.label :avatar_url, 'COMPANY LOGO' %>
-                  <%= form.file_field :avatar_url, :class => @organization.errors[:avatar_url].present? ? 'error' : nil %>
-                  <%= form_error_for :avatar_url, @organization.errors %>
-                  <div class="avatar">
-                    <img class="avatar" src="<%= @organization.avatar_url.present? ? @organization.avatar_url : 'http://cartodb.s3.amazonaws.com/static/public_dashboard_default_organization_avatar.png' %>" />
-                  </div>
-                </div>
-              </div>
-
-              <div class="row">
-                <div class="field field-1">
-                  <%= form.label :description %>
-                  <%= form.text_area :description, :class => @organization.errors[:description].present? ? 'error' : nil %>
-                  <%= form_error_for :description, @organization.errors %>
-                </div>
-              </div>
-
-              <div class="row">
-                <div class="field field-2">
-                  <%= form.label :twitter_username %>
-                  <%= form.text_field :twitter_username, :class => @organization.errors[:twitter_username].present? ? 'error' : nil %>
-                  <%= form_error_for :twitter_username, @organization.errors %>
-                </div>
-              </div>
-
-              <div class="row">
-                <div class="field field-2">
-                  <%= form.label :discus_shortname %>
-                  <%= form.text_field :discus_shortname, :class => @organization.errors[:discus_shortname].present? ? 'error' : nil %>
-                  <%= form_error_for :discus_shortname, @organization.errors %>
-                </div>
-              </div>
+        <div class="Form-row js-avatarSelector">
+          <div class="Form-rowLabel">
+            <label class="Form-label">Avatar</label>
+          </div>
+          <div class="Form-rowData Form-avatar">
+            <div class="Form-avatarPreview">
+              <img src="<%= @organization.avatar_url %>" title="" alt="" class="Form-avatarPreviewImage" />
             </div>
+            <%= f.file_field :avatar_url, :class => "js-fileAvatar", :value => "Change avatar" %>
+          </div>
+          <div class="Form-rowInfo">
+            <p class="Form-rowInfoText">Recommended images should be 128x128 of size</p>
+          </div>
+        </div>
 
-            <div class="right-column">
-              <div class="row">
-                <p>These data will be present in the organization public profile.</p>
-              </div>
-              <div class="row">
-                <p>Recommended images should be 128x128 of size.</p>
-              </div>
-              <div class="row"></div>
-              <div class="row"></div>
-              <div class="row"></div>
-              <div class="row">
-                <p class="margin20">Moderate the comments in your organization maps using your Disqus shortname. <a href="#/how-to" class="disqus_help">Here's how</a>.</p>
-              </div>
+        <div class="Form-row">
+          <div class="Form-rowLabel">
+            <label class="Form-label">Twitter username</label>
+          </div>
+          <div class="Form-rowData">
+            <%= f.text_field :twitter_username, :class => "Form-input Form-input--long" %>
+          </div>
+          <div class="Form-rowInfo">
+            <p class="Form-rowInfoText"></p>
+          </div>
+        </div>
 
+        <div class="Form-row">
+          <div class="Form-rowLabel">
+            <label class="Form-label">Disqus shortname</label>
+          </div>
+          <div class="Form-rowData">
+            <%= f.text_field :discus_shortname, :class => "Form-input Form-input--long" %>
+          </div>
+          <div class="Form-rowInfo">
+            <p class="Form-rowInfoText">Moderate the comments in your maps</p>
+          </div>
+        </div>
+
+        <% if current_user.has_feature_flag?('google_maps') && current_user.organization_owner? %>
+        
+          <div class="Form-title">
+            <h4 class="Form-titleHeader">Configure API keys from external providers</h4>
+            <p class="Form-titleText">Configure here the API keys from other services like
+            Google Cloud Platform, so your organization users won't be asked later for them.</p>
+          </div>
+
+          <div class="Form-row">
+            <div class="Form-rowLabel">
+              <label class="Form-label">Google Maps</label>
             </div>
-
+            <div class="Form-rowData">
+              <%= f.text_field :google_maps_key, class: "Form-input Form-input--long is-disabled", :readonly => "true" %>
+            </div>
+            <div class="Form-rowInfo">
+              <p class="Form-rowInfoText Form-rowInfoText--multipleLines">
+                This is the <%= @organization.name %> Google Maps query string
+                contact with <a href="mailto:support@cartodb.com">support@cartodb.com</a> to change it.
+              </p>
+            </div>
           </div>
 
-          <div class="foot">
-            <%= form.submit 'Save changes', :class => "right grey button new" %>
-          </div>
+        <% end %>
 
-        </section>
-      </div>
-    </article>
+        <div class="Form-footer">
+          <p class="Form-footerText"></p>
+          <%= button_tag(type: 'submit', class: 'Button Button--main') do %>
+            <% content_tag(:span, 'Save changes') %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
 
+</div>
+
+<% if !Cartodb.config[:cartodb_com_hosted].present? %>
+  <div class="SupportBanner" id="support-banner"></div>
 <% end %>
+
+<%= render 'admin/shared/footer' %>

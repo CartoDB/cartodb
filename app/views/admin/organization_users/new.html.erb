@@ -1,31 +1,50 @@
 <% content_for(:page_title) do %>
-  Add a new user |
+  New <%= current_user.organization.name %> user |
 <% end %>
 <%= content_for(:js) do %>
-  <%= javascript_include_tag 'cdb.js', 'application.js', 'models.js', 'organization.js', 'templates.js' %>
   <script type="text/javascript">
-    var username = "<%= current_user.username %>"
-      , type = "oauth"
-      , config = <%= safe_js_object frontend_config %>
-      , organization_quota = {
-          seats: <%= current_user.organization.seats %>,
-          quota_in_bytes: <%= current_user.organization.quota_in_bytes %>
-        }
-      , user_data = <%= safe_js_object current_user.data.to_json %>;
+    var username = "<%= current_user.username %>";
+    var config = <%= safe_js_object frontend_config %>;
+    var user_data = <%= safe_js_object current_user.data.to_json.html_safe %>;
   </script>
+  <%= javascript_include_tag 'cdb.js', 'models.js', 'organization_templates.js', 'organization_deps.js', 'organization.js' -%>
 <% end %>
 <%= content_for(:css) do %>
-  <%= stylesheet_link_tag 'common.css', 'organization.css', :media => 'all' %>
+  <%= stylesheet_link_tag 'organization.css',  :media => 'all' %>
 <% end %>
 
-<%= content_for(:account_settings) do %>
-  <%= render partial: "admin/organizations/settings_account" %>
-<% end %>
+<%= render :partial => 'shared/flash_message' %>
 
-<ul><%= render :partial => 'shared/flash_message' %></ul>
-
-<article>
-  <div class="inner">
-    <%= render partial: 'form' %>
+<div>
+  <div class="Filters is-relative">
+    <div class="u-inner">
+      <div class="Filters-inner">
+        <span class="Filters-separator"></span>
+        <div class="Filters-row">
+          <div class="Filters-type">
+            <ul class="Filters-list">
+              <li>
+                <a href="<%= CartoDB.url(self, 'organization') %>" class="Filters-typeLink Filters-actionButton NavButton NavButton--back">
+                  <i class="iconFont iconFont-ArrowPrev"></i>
+                </a>
+              </li>
+              <li class="Filters-typeItem"><a class="Filters-typeLink is-selected">New user</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-</article>
+
+  <div class="OrganizationContent">
+    <div class="u-inner">
+      <%= render partial: 'form' %>
+    </div>
+  </div>
+</div>
+
+<% if !Cartodb.config[:cartodb_com_hosted].present? %>
+  <div class="SupportBanner" id="support-banner"></div>
+<% end %>
+
+<%= render 'admin/shared/footer' %>

@@ -1,4 +1,4 @@
-@import "../new_variables/sizes";
+@import "../variables/sizes";
 
 // Overrides rules defines in the table/**/*.scss files, to not have to carry them all over
 .table th {
@@ -38,3 +38,5 @@ div.dropdown ul li a,
   line-height: 1;
 }
 .CodeMirror { font-size: 15px }
+
+div.legends_panel div.forms.panel_content .right .checkbox { margin-top:11px; line-height:1 }

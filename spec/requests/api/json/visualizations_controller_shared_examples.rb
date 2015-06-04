@@ -21,6 +21,7 @@ shared_examples_for "visualization controllers" do
 
   def login(user)
     login_as(user, scope: user.subdomain)
+    host! "#{user.subdomain}.localhost.lan"
   end
 
   def base_url
@@ -36,19 +37,7 @@ shared_examples_for "visualization controllers" do
   end
 
   def factory(user, attributes={})
-    {
-      name:                     attributes.fetch(:name, "visualization #{rand(9999)}"),
-      tags:                     attributes.fetch(:tags, ['foo', 'bar']),
-      map_id:                   attributes.fetch(:map_id, ::Map.create(user_id: user.id).id),
-      description:              attributes.fetch(:description, 'bogus'),
-      type:                     attributes.fetch(:type, 'derived'),
-      privacy:                  attributes.fetch(:privacy, 'public'),
-      source_visualization_id:  attributes.fetch(:source_visualization_id, nil),
-      parent_id:                attributes.fetch(:parent_id, nil),
-      locked:                   attributes.fetch(:locked, false),
-      prev_id:                  attributes.fetch(:prev_id, nil),
-      next_id:                  attributes.fetch(:next_id, nil)
-    }
+    visualization_template(user, attributes)
   end
 
   def table_factory(options={})
@@ -59,13 +48,13 @@ shared_examples_for "visualization controllers" do
       name:         "table #{seed}",
       description:  "table #{seed} description"
     }
-    post "/api/v1/tables?api_key=#{@api_key}",
+    post api_v1_tables_create_url(api_key: @api_key),
       payload.to_json, @headers
 
     table_attributes  = JSON.parse(last_response.body)
     table_id          = table_attributes.fetch('id')
 
-    put "/api/v1/tables/#{table_id}?api_key=#{@api_key}",
+    put api_v1_tables_update_url(id: table_id, api_key: @api_key),
       { privacy: privacy }.to_json, @headers
 
     table_attributes
@@ -77,13 +66,22 @@ shared_examples_for "visualization controllers" do
     CartoDB::Visualization::Member.new(id: id).fetch
   end
 
+  def test_organization
+    organization = Organization.new
+    organization.name = org_name = "org#{rand(9999)}"
+    organization.quota_in_bytes = 1234567890
+    organization.seats = 5
+    organization
+  end
+
   describe 'index' do
     include_context 'visualization creation helpers'
+    include_context 'users helper'
 
     before(:each) do
       login(@user1)
       @headers = {'CONTENT_TYPE'  => 'application/json'}
-      host! "#{@user1.username}.localhost.lan"
+      host! "#{@user1.subdomain}.localhost.lan"
     end
 
     it 'returns success, empty response for empty user' do
@@ -188,12 +186,7 @@ shared_examples_for "visualization controllers" do
         private_tables_enabled: false
       )
 
-      organization = Organization.new
-      organization.name = "org#{rand(9999)}"
-      organization.quota_in_bytes = 1234567890
-      organization.seats = 5
-      organization.save
-      organization.valid?.should eq true
+      organization = test_organization.save
 
       user_org = CartoDB::UserOrganization.new(organization.id, user_1.id)
       user_org.promote_user_to_admin
@@ -407,9 +400,7 @@ shared_examples_for "visualization controllers" do
             password: 'clientex',
         )
 
-        post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
-          factory(@user).to_json, @headers
-        vis_1_id = JSON.parse(last_response.body).fetch('id')
+        vis_1_id = create_visualization(@user).id
 
         get api_v1_visualizations_likes_count_url(user_domain: @user.username, id: vis_1_id, api_key: @api_key)
         JSON.parse(last_response.body).fetch('likes').to_i.should eq 0
@@ -488,12 +479,7 @@ shared_examples_for "visualization controllers" do
             private_tables_enabled: false
         )
 
-        organization = Organization.new
-        organization.name = "org#{rand(9999)}"
-        organization.quota_in_bytes = 1234567890
-        organization.seats = 5
-        organization.save
-        organization.valid?.should eq true
+        organization = test_organization.save
 
         user_org = CartoDB::UserOrganization.new(organization.id, user_1.id)
         user_org.promote_user_to_admin
@@ -517,6 +503,7 @@ shared_examples_for "visualization controllers" do
         u2_t_1_perm_id = table.table_visualization.permission.id
 
         table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: "table_#{rand(9999)}_2_2", user_id: user_2.id)
+        u2_t_2 = table
         u2_t_2_id = table.table_visualization.id
         u2_t_2_perm_id = table.table_visualization.permission.id
 
@@ -644,6 +631,7 @@ shared_examples_for "visualization controllers" do
         body['total_entries'].should eq 3
         body['total_likes'].should eq 0
         body['total_shared'].should eq 2
+        body['visualizations'][0]['table']['name'].should == "public.#{u2_t_2.name}"
 
         post api_v1_visualizations_add_like_url(user_domain: user_1.username, id: u1_t_1_id, api_key: user_1.api_key)
 
@@ -731,7 +719,7 @@ shared_examples_for "visualization controllers" do
         CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
         CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
 
-        org_name = "org#{rand(9999)}"
+        organization = test_organization.save
 
         user_2 = create_user(
           username: "test#{rand(9999)}",
@@ -739,25 +727,18 @@ shared_examples_for "visualization controllers" do
           password: 'clientex'
         )
 
-        organization = Organization.new
-        organization.name = org_name
-        organization.quota_in_bytes = 1234567890
-        organization.seats = 5
-        organization.save
-        organization.valid?.should eq true
-
         user_org = CartoDB::UserOrganization.new(organization.id, user_2.id)
         user_org.promote_user_to_admin
         organization.reload
         user_2.reload
 
-        post "http://#{org_name}.cartodb.test#{api_v1_visualizations_create_path(user_domain: user_2.username,
+        post "http://#{organization.name}.cartodb.test#{api_v1_visualizations_create_path(user_domain: user_2.username,
                                                                                  api_key: user_2.api_key)}",
              factory(user_2).to_json, @headers
         last_response.status.should == 200
         pub_vis_id = JSON.parse(last_response.body).fetch('id')
 
-        put "http://#{org_name}.cartodb.test#{api_v1_visualizations_update_path(user_domain: user_2.username,
+        put "http://#{organization.name}.cartodb.test#{api_v1_visualizations_update_path(user_domain: user_2.username,
                                                                                api_key: user_2.api_key,
                                                                                id: pub_vis_id)}",
             {
@@ -765,13 +746,13 @@ shared_examples_for "visualization controllers" do
             }.to_json, @headers
         last_response.status.should == 200
 
-        post "http://#{org_name}.cartodb.test#{api_v1_visualizations_create_path(user_domain: user_2.username,
+        post "http://#{organization.name}.cartodb.test#{api_v1_visualizations_create_path(user_domain: user_2.username,
                                                                                 api_key: user_2.api_key)}",
              factory(user_2).to_json, @headers
         last_response.status.should == 200
         priv_vis_id = JSON.parse(last_response.body).fetch('id')
 
-        put "http://#{org_name}.cartodb.test#{api_v1_visualizations_update_path(user_domain: user_2.username,
+        put "http://#{organization.name}.cartodb.test#{api_v1_visualizations_update_path(user_domain: user_2.username,
                                                                                api_key: user_2.api_key,
                                                                                id: priv_vis_id)}",
             {
@@ -779,7 +760,7 @@ shared_examples_for "visualization controllers" do
             }.to_json, @headers
         last_response.status.should == 200
 
-        get "http://#{org_name}.cartodb.test#{api_v1_visualizations_index_path(user_domain: user_2.username,
+        get "http://#{organization.name}.cartodb.test#{api_v1_visualizations_index_path(user_domain: user_2.username,
                                                                                type: 'derived')}", @headers
         body = JSON.parse(last_response.body)
 
@@ -789,7 +770,7 @@ shared_examples_for "visualization controllers" do
         vis['privacy'].should eq CartoDB::Visualization::Member::PRIVACY_PUBLIC.upcase
 
 
-        get "http://#{org_name}.cartodb.test#{api_v1_visualizations_index_path(user_domain: user_2.username,
+        get "http://#{organization.name}.cartodb.test#{api_v1_visualizations_index_path(user_domain: user_2.username,
                                                                                api_key: user_2.api_key,
                                                                                type: 'derived',
                                                                                order: 'updated_at')}", {}, @headers
@@ -824,12 +805,7 @@ shared_examples_for "visualization controllers" do
           private_tables_enabled: true
         )
 
-        organization = Organization.new
-        organization.name = "org#{rand(9999)}"
-        organization.quota_in_bytes = 1234567890
-        organization.seats = 5
-        organization.save
-        organization.valid?.should eq true
+        organization = test_organization.save
 
         user_org = CartoDB::UserOrganization.new(organization.id, user_1.id)
         user_org.promote_user_to_admin
@@ -980,10 +956,10 @@ shared_examples_for "visualization controllers" do
 
       it 'retrieves a collection of visualizations' do
         payload = factory(@user)
-        post "/api/v1/viz?api_key=#{@api_key}", payload.to_json, @headers
+        post api_v1_visualizations_create_url(api_key: @api_key), payload.to_json, @headers
         id = JSON.parse(last_response.body).fetch('id')
 
-        get "/api/v1/viz?api_key=#{@api_key}",
+        get api_v1_visualizations_index_url(api_key: @api_key),
           {}, @headers
 
         response    = JSON.parse(last_response.body)
@@ -993,10 +969,10 @@ shared_examples_for "visualization controllers" do
 
       it 'is updated after creating a visualization' do
         payload = factory(@user)
-        post "/api/v1/viz?api_key=#{@api_key}",
+        post api_v1_visualizations_create_url(api_key: @api_key),
           payload.to_json, @headers
 
-        get "/api/v1/viz?api_key=#{@api_key}",
+        get api_v1_visualizations_index_url(api_key: @api_key),
           {}, @headers
 
         response    = JSON.parse(last_response.body)
@@ -1004,10 +980,10 @@ shared_examples_for "visualization controllers" do
         collection.size.should == 1
 
         payload = factory(@user).merge('name' => 'another one')
-        post "/api/v1/viz?api_key=#{@api_key}",
+        post api_v1_visualizations_create_url(api_key: @api_key),
           payload.to_json, @headers
 
-        get "/api/v1/viz?api_key=#{@api_key}",
+        get api_v1_visualizations_index_url(api_key: @api_key),
           {}, @headers
         response    = JSON.parse(last_response.body)
         collection  = response.fetch('visualizations')
@@ -1016,19 +992,19 @@ shared_examples_for "visualization controllers" do
 
       it 'is updated after deleting a visualization' do
         payload = factory(@user)
-        post "/api/v1/viz?api_key=#{@api_key}",
+        post api_v1_visualizations_create_url(api_key: @api_key),
           payload.to_json, @headers
         id = JSON.parse(last_response.body).fetch('id')
 
-        get "/api/v1/viz?api_key=#{@api_key}",
+        get api_v1_visualizations_index_url(api_key: @api_key),
           {}, @headers
         response    = JSON.parse(last_response.body)
         collection  = response.fetch('visualizations')
         collection.should_not be_empty
 
-        delete "/api/v1/viz/#{id}?api_key=#{@api_key}",
+        delete api_v1_visualizations_destroy_url(id: id, api_key: @api_key),
           {}, @headers
-        get "/api/v1/viz?api_key=#{@api_key}",
+        get api_v1_visualizations_index_url(api_key: @api_key),
           {}, @headers
 
         response    = JSON.parse(last_response.body)
@@ -1041,11 +1017,11 @@ shared_examples_for "visualization controllers" do
         total_entries = 20
 
         total_entries.times do
-          post "/api/v1/viz?api_key=#{@api_key}",
+          post api_v1_visualizations_index_url(api_key: @api_key),
             factory(@user).to_json, @headers
         end
 
-        get "/api/v1/viz?api_key=#{@api_key}&page=1&per_page=#{per_page}", {}, @headers
+        get api_v1_visualizations_index_url(api_key: @api_key, page: 1, per_page: per_page), {}, @headers
 
         last_response.status.should == 200
 
@@ -1056,21 +1032,21 @@ shared_examples_for "visualization controllers" do
       end
 
       it 'returns filtered results' do
-        post "/api/v1/viz?api_key=#{@api_key}",
+        post api_v1_visualizations_create_url(api_key: @api_key),
           factory(@user).to_json, @headers
 
-        get "/api/v1/viz?api_key=#{@api_key}&type=table",
+        get api_v1_visualizations_index_url(api_key: @api_key, type: 'table'),
           {}, @headers
         last_response.status.should == 200
         response    = JSON.parse(last_response.body)
         collection  = response.fetch('visualizations')
         collection.should be_empty
 
-        post "/api/v1/viz?api_key=#{@api_key}",
+        post api_v1_visualizations_create_url(api_key: @api_key),
           factory(@user).to_json, @headers
-        post "/api/v1/viz?api_key=#{@api_key}",
+        post api_v1_visualizations_create_url(api_key: @api_key),
           factory(@user).merge(type: 'table').to_json, @headers
-        get "/api/v1/viz?api_key=#{@api_key}&type=derived",
+        get api_v1_visualizations_index_url(api_key: @api_key, type: 'derived'),
           {}, @headers
 
         last_response.status.should == 200
@@ -1078,6 +1054,47 @@ shared_examples_for "visualization controllers" do
         collection  = response.fetch('visualizations')
         collection.size.should == 2
       end
+
+      it 'creates a visualization from a list of tables' do
+        CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+        table1 = table_factory
+        table2 = table_factory
+        table3 = table_factory
+
+        payload = {
+          name: 'new visualization',
+          tables: [
+            table1.fetch('name'),
+            table2.fetch('name'),
+            table3.fetch('name')
+          ],
+          privacy: 'public'
+        }
+
+        post api_v1_visualizations_create_url(api_key: @api_key),
+              payload.to_json, @headers
+        last_response.status.should == 200
+
+        visualization = JSON.parse(last_response.body)
+
+        # TODO: this endpoint doesn't exist now. Current replacement?
+        #get "/api/v1/viz/#{visualization.fetch('id')}/viz?api_key=#{@api_key}",
+        #  {}, @headers
+        #last_response.status.should == 403
+
+        get api_v2_visualizations_vizjson_url(id: visualization.fetch('id'), api_key: @api_key),
+          {}, @headers
+        last_response.status.should == 200
+
+        # include overlays
+
+        get api_v1_visualizations_overlays_index_url(visualization_id: visualization.fetch('id'), api_key: @api_key),
+          {}, @headers
+        last_response.status.should == 200
+        overlays = JSON.parse(last_response.body)
+        overlays.length.should == 5
+      end
+
     end
 
     describe 'GET /api/v1/viz/:id' do
@@ -1090,11 +1107,11 @@ shared_examples_for "visualization controllers" do
 
       it 'returns a visualization' do
         payload = factory(@user)
-        post "/api/v1/viz?api_key=#{@api_key}",
+        post api_v1_visualizations_create_url(api_key: @api_key),
           payload.to_json, @headers
         id = JSON.parse(last_response.body).fetch('id')
 
-        get "/api/v1/viz/#{id}?api_key=#{@api_key}", {}, @headers
+        get api_v1_visualizations_show_url(id: id, api_key: @api_key), {}, @headers
 
         last_response.status.should == 200
         response = JSON.parse(last_response.body)
@@ -1176,46 +1193,92 @@ shared_examples_for "visualization controllers" do
       it 'uses locked filter' do
         CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
 
-        post "/api/v1/viz?api_key=#{@api_key}", factory(@user, locked: true).to_json, @headers
+        post api_v1_visualizations_create_url(api_key: @api_key), factory(@user, locked: true).to_json, @headers
         vis_1_id = JSON.parse(last_response.body).fetch('id')
-        post "/api/v1/viz?api_key=#{@api_key}", factory(@user, locked: false).to_json, @headers
+        post api_v1_visualizations_create_url(api_key: @api_key), factory(@user, locked: false).to_json, @headers
         vis_2_id = JSON.parse(last_response.body).fetch('id')
 
-        get "/api/v1/viz?api_key=#{@api_key}&type=derived", {}, @headers
+        get api_v1_visualizations_index_url(api_key: @api_key, type: 'derived'), {}, @headers
         last_response.status.should == 200
         response    = JSON.parse(last_response.body)
         collection  = response.fetch('visualizations')
         collection.length.should eq 2
 
-        get "/api/v1/viz?api_key=#{@api_key}&type=derived&locked=true", {}, @headers
+        get api_v1_visualizations_index_url(api_key: @api_key, type: 'derived', locked: true), {}, @headers
         last_response.status.should == 200
         response    = JSON.parse(last_response.body)
         collection  = response.fetch('visualizations')
         collection.length.should eq 1
         collection.first.fetch('id').should eq vis_1_id
 
-        get "/api/v1/viz?api_key=#{@api_key}&type=derived&locked=false", {}, @headers
+        get api_v1_visualizations_index_url(api_key: @api_key, type: 'derived', locked: false), {}, @headers
         last_response.status.should == 200
         response    = JSON.parse(last_response.body)
         collection  = response.fetch('visualizations')
         collection.length.should eq 1
         collection.first.fetch('id').should eq vis_2_id
       end
+
+      it 'searches by tag' do
+        post api_v1_visualizations_create_url(api_key: @api_key), factory(@user, locked: true, tags: ['test1']).to_json, @headers
+        vis_1_id = JSON.parse(last_response.body).fetch('id')
+        post api_v1_visualizations_create_url(api_key: @api_key), factory(@user, locked: false, tags: ['test2']).to_json, @headers
+
+        get api_v1_visualizations_index_url(api_key: @api_key, tags: 'test1'), {}, @headers
+        last_response.status.should == 200
+        response    = JSON.parse(last_response.body)
+        collection  = response.fetch('visualizations')
+        collection.length.should eq 1
+        collection.first['id'].should == vis_1_id
+      end
+
     end
 
     describe 'non existent visualization' do
       it 'returns 404' do
-        get "/api/v1/viz/#{TEST_UUID}?api_key=#{@api_key}", {}, @headers
+        get api_v1_visualizations_show_url(id: TEST_UUID, api_key: @api_key), {}, @headers
         last_response.status.should == 404
 
-        put "/api/v1/viz/#{TEST_UUID}?api_key=#{@api_key}", {}, @headers
+        put api_v1_visualizations_update_url(id: TEST_UUID, api_key: @api_key), {}, @headers
         last_response.status.should == 404
 
-        delete "/api/v1/viz/#{TEST_UUID}?api_key=#{@api_key}", {}, @headers
+        delete api_v1_visualizations_destroy_url(id: TEST_UUID, api_key: @api_key), {}, @headers
         last_response.status.should == 404
 
         get "/api/v2/viz/#{TEST_UUID}/viz?api_key=#{@api_key}", {}, @headers
         last_response.status.should == 404
+      end
+    end
+
+    describe '/api/v1/viz/:id/watching' do
+
+      before(:all) do
+        @user_1 = create_test_user
+        @user_2 = create_test_user
+
+        organization = test_organization.save
+
+        user_org = CartoDB::UserOrganization.new(organization.id, @user_1.id)
+        user_org.promote_user_to_admin
+        @user_1.reload
+
+        @user_2.organization_id = organization.id
+        @user_2.save.reload
+      end
+
+      it 'returns an empty array if no other user is watching' do
+        CartoDB::Visualization::Watcher.any_instance.stubs(:list).returns([])
+
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+
+        login(@user_1)
+        post api_v1_visualizations_create_url(api_key: @user_1.api_key), factory(@user_1, locked: true).to_json, @headers
+        id = JSON.parse(last_response.body).fetch('id')
+
+        login(@user_1)
+        get api_v1_visualizations_notify_watching_url(id: id, api_key: @user_1.api_key)
+        body = JSON.parse(last_response.body)
+        body.should == []
       end
     end
 

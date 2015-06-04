@@ -17,11 +17,7 @@ module CartoDB
           if viewed_user.nil?
             org = Organization.where(name: username).first
             unless org.nil?
-              if FeatureFlag.allowed?('new_public_dashboard_global')
-                return @renderer.new_organization_content(org)
-              else
-                return @renderer.old_organization_content(org)
-              end
+              return @renderer.organization_content(org)
             end
           end
 
@@ -34,8 +30,7 @@ module CartoDB
                                 @renderer.organization_path and return
           end
 
-          viewed_user.has_feature_flag?('new_public_dashboard') ? @renderer.new_user_content(viewed_user) :
-                                                                  @renderer.old_user_content(viewed_user)
+          @renderer.user_content(viewed_user)
         end
 
         private

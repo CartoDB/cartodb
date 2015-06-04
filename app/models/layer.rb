@@ -66,9 +66,10 @@ class Layer < Sequel::Model
 
   def to_json(*args)
     public_values.merge(
-      infowindow: JSON.parse(self.values[:infowindow].nil? ? '{}' : self.values[:infowindow]),
+      infowindow: self.values[:infowindow].nil? ? {} : JSON.parse(self.values[:infowindow]),
       tooltip: JSON.parse(self.values[:tooltip]),
-      options: JSON.parse(self.values[:options])
+      options: self.values[:options].nil? ? {} : JSON.parse(self.values[:options]),
+      children: children.nil? ? [] : children,
     ).to_json(*args)
   end
 
@@ -163,13 +164,14 @@ class Layer < Sequel::Model
     CartoDB::Layer::Presenter.new(self, options, configuration)
   end
 
-  def set_style_options(cartocss_style)
+  def set_option(key, value)
     return unless data_layer?
 
-    self.options['tile_style'] = cartocss_style
-    # Needed for custom tile style:
-    self.options['tile_style_custom'] = true
-    self.options['wizard_properties'] = { type: "polygon", properties: {} }
+    self.options[key] = value
+  end
+
+  def qualified_table_name(viewer_user)
+    "#{viewer_user.sql_safe_database_schema}.#{options['table_name']}"
   end
 
   private

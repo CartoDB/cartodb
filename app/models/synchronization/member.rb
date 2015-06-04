@@ -401,12 +401,11 @@ module CartoDB
       end
 
       def table
-        return nil unless defined?(::Table)
         if @table.nil?
-          @table = ::Table.get_by_id_or_name(name, user)
+          @table = ::Table.new(name: name, user_id: user.id)
         end
         @table
-      end # table
+      end
 
       def authorize?(user)
         user.id == user_id && !!user.sync_tables_enabled

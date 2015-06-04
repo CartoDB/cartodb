@@ -4,6 +4,7 @@ require_relative './user/user_decorator'
 require_relative './user/oauths'
 require_relative './synchronization/synchronization_oauth'
 require_relative './visualization/member'
+require_relative '../helpers/redis_vizjson_cache'
 require_relative './visualization/collection'
 require_relative './user/user_organization'
 require_relative './synchronization/collection.rb'
@@ -74,9 +75,9 @@ class User < Sequel::Model
     super
     validates_presence :username
     validates_unique   :username
-    validates_format /^[a-z0-9\-]+$/, :username, :message => "must only contain lowercase letters, numbers and the dash (-) symbol"
-    validates_format /^[a-z0-9]{1}/, :username, :message => "must start with alfanumeric chars"
-    validates_format /[a-z0-9]{1}$/, :username, :message => "must end with alfanumeric chars"
+    validates_format /\A[a-z0-9\-]+\z/, :username, :message => "must only contain lowercase letters, numbers and the dash (-) symbol"
+    validates_format /\A[a-z0-9]{1}/, :username, :message => "must start with alfanumeric chars"
+    validates_format /[a-z0-9]{1}\z/, :username, :message => "must end with alfanumeric chars"
     errors.add(:name, 'is taken') if name_exists_in_organizations?
 
     validates_presence :email
@@ -1048,8 +1049,7 @@ class User < Sequel::Model
     begin
       # Hack to support users without the new MU functiones loaded
       user_data_size_function = self.cartodb_extension_version_pre_mu? ? "CDB_UserDataSize()" : "CDB_UserDataSize('#{self.database_schema}')"
-      result = in_database(:as => :superuser).fetch("SELECT cartodb.#{user_data_size_function}").first[:cdb_userdatasize]
-      result
+      in_database(:as => :superuser).fetch("SELECT cartodb.#{user_data_size_function}").first[:cdb_userdatasize]
     rescue => e
       attempts += 1
       begin
@@ -1059,7 +1059,9 @@ class User < Sequel::Model
         raise ee
       end
       retry unless attempts > 1
-      Rollbar.report_exception(e)
+      CartoDB.notify_exception(e, { user: self })
+      # INFO: we need to return something to avoid 'disabled' return value
+      nil
     end
   end
 
@@ -1150,7 +1152,7 @@ class User < Sequel::Model
     metadata_table_names = self.tables.select(:name).map(&:name)
     renamed_tables       = real_tables.reject{|t| metadata_table_names.include?(t[:relname])}.select{|t| metadata_tables_ids.include?(t[:oid])}
     renamed_tables.each do |t|
-      table = Table.new(:user_table => ::UserTable.find(:table_id => t[:oid]))
+      table = Table.new(:user_table => ::UserTable.find(:table_id => t[:oid], :user_id => self.id))
       begin
         Rollbar.report_message('ghost tables', 'debug', {
           :action => 'rename',
@@ -2311,19 +2313,18 @@ TRIGGER
     name.present? ? name : username
   end
 
+  # Probably not needed with versioning of keys
+  # @see RedisVizjsonCache
   def purge_redis_vizjson_cache
     vizs = CartoDB::Visualization::Collection.new.fetch(user_id: self.id)
-    redis_http_keys = vizs.map{ |v| v.redis_vizjson_key(https_flag=false) }
-    redis_https_keys = vizs.map{ |v| v.redis_vizjson_key(https_flag=true) }
-    redis_keys = redis_http_keys + redis_https_keys
-    CartoDB::Visualization::Member.redis_cache.del redis_keys unless redis_keys.empty?
+    CartoDB::Visualization::RedisVizjsonCache.new().purge(vizs)
   end
 
   # returns google maps api key. If the user is in an organization and 
   # that organization has api key it's used
   def google_maps_api_key
     if has_organization?
-      self.organization.google_maps_key || self.google_maps_key
+      self.organization.google_maps_key.blank? ? self.google_maps_key : self.organization.google_maps_key
     else
       self.google_maps_key
     end
@@ -2335,7 +2336,7 @@ TRIGGER
   # this may have change in the future but in any case this method provides a way to abstract what
   # basemaps are active for the user
   def basemaps
-    google_maps_enabled = !google_maps_api_key.nil? && !google_maps_api_key.empty?
+    google_maps_enabled = !google_maps_api_key.blank?
     basemaps = Cartodb.config[:basemaps]
     if basemaps
       basemaps.select { |group| 

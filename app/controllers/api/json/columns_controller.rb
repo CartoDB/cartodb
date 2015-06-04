@@ -61,7 +61,7 @@ class Api::Json::ColumnsController < Api::ApplicationController
   protected
 
   def load_table
-    @table = ::Table.get_by_id_or_name(params[:table_id],current_user)
+    @table = Helpers::TableLocator.new.get_by_id_or_name(params[:table_id],current_user)
     raise RecordNotFound if @table.nil?
   end
 

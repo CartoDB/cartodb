@@ -1,5 +1,40 @@
-3.10.1 ()
+
+3.10.3 (2015-mm-dd)
+---
+* Mailchimp decorator enables category wizard and legends [#3874](https://github.com/CartoDB/cartodb/pull/3874)
+* Cache public and with link embeds in redis [#3733](https://github.com/CartoDB/cartodb/pull/3733)
+* Unify caching of vizjsons and version keys [#3726](https://github.com/CartoDB/cartodb/pull/3726)
+
+Bugfixes:
+* Fixed deletion of layers upon disconnecting synced datasources [#3718](https://github.com/CartoDB/cartodb/pull/3718)
+* Fixed some cache invalidation problems upon changes in privacy (embeds & vizjson) [#3755](https://github.com/CartoDB/cartodb/pull/3755)
+* Fixed corner case with ghost table renames [#3762](https://github.com/CartoDB/cartodb/pull/3762)
+* Added options to create dataset from query while on the map view [#3771](https://github.com/CartoDB/cartodb/pull/3771)
+* Do not cache geocodes if the_geom is NULL [#3793](https://github.com/CartoDB/cartodb/pull/3793)
+
+3.10.2 (2015-05-20)
 ---------
+* Ongoing backend refactor and migration from Sequel to ActiveRecord.
+* Frontend assets cleaning [PR 3563](https://github.com/CartoDB/cartodb/pull/3563).
+
+#### Steps to avoid problems with submodules changes
+```shell
+# Before get last changes from master, let's remove the 
+# common submodule
+git submodule deinit app/assets/stylesheets/common
+# Clean tmp sass folder, avoiding possible compass problems
+rm -rf tmp/sass/*
+git pull origin master
+git submodule sync
+git submodule update --init
+```
+
+Bugfixes:
+* Create import view throws uncaught error on canceling selected a file (2nd time) [#3379](https://github.com/CartoDB/cartodb/issues/3379).
+* Removed old tags endpoint (https://github.com/CartoDB/cartodb/issues/3691).
+
+3.10.1 (2015-05-05)
+-------------------
 * Fixes bug in the "No georeferenced data" dialog [#3449](https://github.com/CartoDB/cartodb/pull/3449)
 * Adds user search/filter to the Share Dialog [3417](https://github.com/CartoDB/cartodb/pull/3417)
 * Change default CartoCSS properties of polygon strokes [3375](https://github.com/CartoDB/cartodb/pull/3375)
@@ -19,6 +54,7 @@
 * Disable any kind of import guessing from create dialog [#3456](https://github.com/CartoDB/cartodb/issues/3456)
 * Enable new dashboard for everyone by means of migration [#3509](https://github.com/CartoDB/cartodb/pull/3509)
 * Enabled Google Maps Basemaps [#3429](https://github.com/CartoDB/cartodb/pull/3429)
+* Remove need of api_key to enjoy common-data "Data library" [#3523](https://github.com/CartoDB/cartodb/pull/3523)
 
 
 Bugfixes:

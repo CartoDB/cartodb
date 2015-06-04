@@ -47,6 +47,7 @@ module CartoDB
       @mailto             = arguments.fetch(:mailto)
       @force_batch        = arguments[:force_batch] || false
       @dir                = arguments[:dir] || Dir.mktmpdir
+      @used_batch_request = false
       begin
         @batch_api_disabled = Cartodb.config[:geocoder]['batch_api_disabled'] == true
       rescue
@@ -68,6 +69,7 @@ module CartoDB
     def upload
       return run_non_batched unless use_batch_process?
       assert_batch_api_enabled
+      @used_batch_request = true
       response = Typhoeus.post(
         api_url(UPLOAD_OPTIONS),
         body: File.open(input_file,"r").read,
@@ -75,6 +77,10 @@ module CartoDB
       )
       handle_api_error(response)
       @request_id = extract_response_field(response.body)
+    end
+
+    def used_batch_request?
+      @used_batch_request
     end
 
     def cancel

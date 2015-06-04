@@ -5,23 +5,17 @@ class Admin::ClientApplicationsController < ApplicationController
 
   before_filter :login_required
 
-  def oauth
-    new_dashboard = current_user.has_feature_flag?('new_dashboard')
-    view =  new_dashboard ? 'new_oauth' : 'api_key'
-    layout = new_dashboard ? 'new_application' : 'application'
+  layout 'application'
 
+  def oauth
     respond_to do |format|
-      format.html { render view, layout: layout }
+      format.html { render 'oauth' }
     end
   end
 
   def api_key
-    new_dashboard = current_user.has_feature_flag?('new_dashboard')
-    view =  new_dashboard ? 'new_api_key' : 'api_key'
-    layout = new_dashboard ? 'new_application' : 'application'
-
     respond_to do |format|
-      format.html { render view, layout: layout }
+      format.html { render 'api_key' }
     end
   end
 
@@ -51,14 +45,8 @@ class Admin::ClientApplicationsController < ApplicationController
     return if request.get?
     current_user.reset_client_application!
     
-    new_dashboard = current_user.has_feature_flag?('new_dashboard')
-    if new_dashboard
-      redirect_to CartoDB.url(self, 'oauth_credentials', {type: 'oauth'}, current_user),
-                  :flash => {:success => "Your OAuth credentials have been updated successfully"}
-    else
-      redirect_to CartoDB.url(self, 'api_key_credentials', {type: 'oauth'}, current_user),
-                  :flash => {:success => "Your OAuth credentials have been updated successfully"}
-    end 
+    redirect_to CartoDB.url(self, 'oauth_credentials', {type: 'oauth'}, current_user),
+                :flash => {:success => "Your OAuth credentials have been updated successfully"}
     
   end
 

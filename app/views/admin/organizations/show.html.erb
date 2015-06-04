@@ -1,77 +1,105 @@
 <% content_for(:page_title) do %>
-  Your organization |
+  <%= current_user.organization.name %> |
 <% end %>
 <%= content_for(:js) do %>
-  <%= javascript_include_tag 'cdb.js', 'application.js', 'models.js', 'organization.js', 'templates.js' %>
   <script type="text/javascript">
-    var username = "<%= current_user.username %>"
-      , type = "oauth"
-      , config = <%= safe_js_object frontend_config %>
-      , organization_quota = {
-          seats: <%= current_user.organization.seats %>,
-          quota_in_bytes: <%= current_user.organization.quota_in_bytes %>
-        }
-      , organization_users = <%= safe_js_object @users.map { |u| {
-          id: u.id,
-          username: u.username,
-          avatar_url: u.avatar_url,
-          quota_in_bytes: u.quota_in_bytes,
-          remaining_quota: u.remaining_quota,
-          organization_owner: u.organization_owner?
-        }}.to_json %>
-      , user_data = <%= safe_js_object current_user.data.to_json %>;
+    var username = "<%= current_user.username %>";
+    var type = "oauth";
+    var config = <%= safe_js_object frontend_config %>;
+    var organization_quota = {
+      seats: <%= current_user.organization.seats %>,
+      quota_in_bytes: <%= current_user.organization.quota_in_bytes %>
+    };
+    var user_data = <%= safe_js_object current_user.data.to_json.html_safe %>;
   </script>
+  <%= javascript_include_tag 'cdb.js', 'models.js', 'organization_templates.js', 'organization_deps.js', 'organization.js' -%>
 <% end %>
 <%= content_for(:css) do %>
-  <%= stylesheet_link_tag 'common.css', 'organization.css', :media => 'all' %>
+  <%= stylesheet_link_tag  'organization.css',  :media => 'all' %>
 <% end %>
 
-<%= content_for(:account_settings) do %>
-  <%= render partial: "settings_account" %>
-<% end %>
+<%= render :partial => 'shared/flash_message' %>
 
-<article>
-  <div class="inner">
-    <section class="block">
-      <div class="head">
-        <h2><%= current_user.organization.name.humanize %>'s users</h2>
-      </div>
-      <ul><%= render :partial => 'shared/flash_message' %></ul>
-      <div class="list-head">
-        <ul>
-          <li><label>username</label></li>
-          <li><label>quota</label></li>
-        </ul>
-      </div>
-      <div class="content users_list">
-        <ul>
-          <% @users.each do |user| -%>
-          <li>
-            <div class="info">
-              <%= link_to user.username, CartoDB.path(self, 'edit_organization_user', {id: user.username}) %>
-              <% if user.organization_owner? %>
-                <span class="status owner">OWNER</span>
-              <% end %>
-            </div>
-            <div class="storage">
-              <div class="progress-bar"></div>
-            </div>
-          </li>
-          <% end -%>
-        </ul>
-      </div>
-      <div class="foot">
-        <% if current_user.organization.seats > @users.count %>
-          <%= link_to "Create new user", CartoDB.path(self, 'new_organization_user'), :class => 'right button grey' %>
-          <% unless cartodb_com_hosted? %>
-            <%= link_to "Buy more seats", current_user.upgrade_url(request.protocol), :class => 'margin10 underline left' %>
+<div>
+  <%= render :partial => 'admin/shared/org_subheader' %>
+
+  <div class="OrganizationContent">
+    <div class="u-inner">
+      <div class="Form">
+
+        <% totalPer = 0 %>
+
+        <ul class="OrganizationList <% 'OrganizationList--centered' if @users.count === 4 %>">
+          <% @users.each do |u| %>
+            <li class="OrganizationList-user">
+              <a class="OrganizationList-userLink" href="<%= CartoDB.url(self, 'edit_organization_user', {id: u.username}, current_user) %>" data-title="<%= number_to_human_size(u.db_size_in_bytes) %> of <%= number_to_human_size(u.quota_in_bytes) %> used">
+                <div class="OrganizationList-userAvatar UserAvatar">
+                  <img src="<%= u.avatar %>" alt="<%= u.username %>" src="<%= u.username %>" class="UserAvatar-img UserAvatar-img--medium" />
+                </div>
+                <div class="OrganizationList-userInfo">
+                  <div class="OrganizationList-userInfoName">
+                    <h3 class="OrganizationList-userInfoTitle u-ellipsLongText"><%= u.username %></h3>
+                    <% if u.organization_owner? %>
+                      <span class="OrganizationList-userInfoLabel">OWNER</span>
+                    <% end %>
+                  </div>
+                  <div class="OrganizationList-userStats">
+                    <% userPer = ((u.quota_in_bytes * 100) / current_user.organization.quota_in_bytes ) %>
+                    <% usedPer = ((u.db_size_in_bytes * 100) / current_user.organization.quota_in_bytes ) %>
+                    <div class="progress-bar">
+                      <span class="bar-2" style="left:<%= totalPer %>%; width:<%= userPer %>%"></span>
+                      <span class="bar-3" style="left:<%= totalPer %>%; width:<%= usedPer %>%"></span>
+                    </div>
+                    <% totalPer = totalPer + userPer %>
+                  </div>
+                </div>
+              </a>
+            </li>
           <% end %>
-        <% else %>
-          <% unless cartodb_com_hosted? %>
-            <%= link_to "Upgrade your quota", current_user.upgrade_url(request.protocol), :class => "button green right" %>
+          <% if current_user.organization.seats > @users.count %>
+            <li class="OrganizationList-user OrganizationList-user--empty">
+              <a class="OrganizationList-userLink" href="<%= CartoDB.url(self, 'new_organization_user', {}, current_user) %>">
+                <div class="OrganizationList-userAvatar OrganizationList-userAvatar--default">
+                  <i class="iconFont iconFont-DefaultUser"></i>
+                </div>
+                <div class="OrganizationList-userInfo">
+                  <div class="OrganizationList-userInfoName">
+                    <h3 class="OrganizationList-userInfoTitle OrganizationList-userInfoTitle--default">Empty seat</h3>
+                  </div>
+                  <div class="OrganizationList-userInfoDes">Create new user</div>
+                </div>
+              </a>
+            </li>
           <% end %>
-        <% end %>
+        </ul>
+
+        <div class="Form-footer">
+          <% if current_user.organization.seats > @users.count %>
+            <% if (current_user.organization.seats - @users.count) < 5 %>
+              <p class="Form-footerText">
+                <i class="iconFont iconFont-Info Form-footerIcon"></i>
+                You are near your seats limit. Consider to <a href="<%= current_user.upgrade_url(request.protocol) %>">upgrade your account</a>.
+              </p>
+            <% else %>
+              <em></em>
+            <% end %>
+            <a href="<%= CartoDB.url(self, 'new_organization_user', {}, current_user) %>" class="Button Button--main"><span>Create new user</span></a>
+          <% elsif !Cartodb.config[:cartodb_com_hosted].present? %>
+            <p class="Form-footerText">
+              <i class="iconFont iconFont-Info Form-footerIcon"></i>
+              <a href="mailto:sales@cartodb.com">Contact us</a> if you have any question.
+            </p>
+            <a href="<%= current_user.upgrade_url(request.protocol) %>" class="Button Button--positive"><span>Upgrade account</span></a>
+          <% end %>
+        </div>
       </div>
-    </section>
+    </div>
   </div>
-</article>
+
+</div>
+
+<% if !Cartodb.config[:cartodb_com_hosted].present? %>
+  <div class="SupportBanner" id="support-banner"></div>
+<% end %>
+
+<%= render 'admin/shared/footer' %>

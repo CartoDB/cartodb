@@ -14,9 +14,10 @@ module Carto
       }
 
       # INFO: this permission comes from user table associated visualization, which makes not much sense (at least, it should not be passed as a parameter but fetched through the association), but it's preserved (for the moment) for compatibility reasons.
-      def initialize(user_table, permission)
+      def initialize(user_table, permission, current_viewer)
         @user_table = user_table
         @permission = permission
+        @current_viewer = current_viewer
       end
 
       def to_poro
@@ -24,7 +25,7 @@ module Carto
         row_count_and_size = @user_table.row_count_and_size
         {
           id: @user_table.id,
-          name: @user_table.name,
+          name: @user_table.name_for_user(@current_viewer),
           permission: Carto::Api::PermissionPresenter.new(@permission).to_poro,
           geometry_types: @user_table.geometry_types,
           privacy: privacy_text(@user_table.privacy).upcase,

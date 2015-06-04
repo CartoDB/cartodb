@@ -1,0 +1,74 @@
+// Layout
+$sLayout-width: 940px;
+
+// Margins
+$sMargin-section:       40px; // To separate main section
+$sMargin-group:         28px; // To separate groups inside a section
+$sMargin-element:       20px; // To separate elements inside a group
+$sMargin-elementInline: 12px; // To separate inline elements
+$sMargin-min:           4px;  // Minimum margin, special cases only
+$sMargin-formRow:       20px; // Each row in a form should have a margin-bottom of this value.
+
+// Font sizes
+$sFontSize-smaller:        10px;
+$sFontSize-small:          11px;
+$sFontSize-smallUpperCase: 12px;
+$sFontSize-normal:         13px;
+$sFontSize-large:          15px;
+$sFontSize-larger:         16px;
+$sFontSize-largest:        18px;
+
+// Font weights
+$sFontWeight-small:   300;
+$sFontWeight-lighter: 300;
+$sFontWeight-normal:  500;
+$sFontWeight-bold:    700;
+
+// Line heights
+$sLineHeight-smaller: 15px;
+$sLineHeight-small:   16px;
+$sLineHeight-normal:  20px;
+$sLineHeight-large:   22px;
+$sLineHeight-larger:  24px;
+$sLineHeight-largest: 27px;
+$sLineHeight-button:  15px;
+
+// Buttons
+$sButton-height:       40px;
+$sButton-border:       1px;
+$sButton-borderRadius: 28px;
+
+// Avatars
+$sAvatar-borderRadiusSmall: 2px;
+$sAvatar-borderRadius:      4px;
+$sAvatar-public:            96px;
+$sAvatar-default:           40px;
+$sAvatar-small:             20px;
+$sAvatar-meta:              16px;
+
+// Icons
+$sIcon-borderRadius:          3px;
+$sIcon-layout:                40px;
+$sIcon-layoutFontSize:        22px;
+$sIcon-action:                20px;
+$sIcon-actionPadding:         10px;
+$sIcon-inlineWithText:        12px;
+$sIcon-inlineWithTextPadding: 10px;
+
+// Cards, e.g. maps, change-privacy-options
+$sCard-width: 300px;
+$sCard-borderRadius: 4px;
+
+// Forms
+$sForms-elementHeight: 40px;
+$sForms-borderRadius: 4px;
+
+// Spinner
+$sSpinner-default: 36px;
+$sSpinner-mini: 12px;
+
+// Media query breakpoints, matching current state-of-things of website
+$sMedia-max:     1000px;
+$sMedia-desktop: 960px;  // slightly larger than $sLayout-width
+$sMedia-tablet:  760px;
+$sMedia-mobile:  400px;

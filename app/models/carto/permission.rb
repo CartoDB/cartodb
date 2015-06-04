@@ -1,4 +1,5 @@
 require 'active_record'
+require_relative './user'
 
 class Carto::Permission < ActiveRecord::Base
   DEFAULT_ACL_VALUE = []
@@ -21,19 +22,21 @@ class Carto::Permission < ActiveRecord::Base
     is_owner_user?(user) || !acl_entries_for_user(user).empty?
   end
 
-  # INFO: discouraged, since it forces using internal constants
+  def user_has_write_permission?(user)
+    is_owner_user?(user) || is_permitted?(user, ACCESS_READWRITE)
+  end
+
+  # INFO: discouraged outside this class, since it forces using internal constants
   # Use explicit methods instead.
   # Needed for backwards compatibility
   def is_permitted?(user, permission_type)
-    permission = permission_for_user(user)
+    SORTED_ACCESSES.index(permission_for_user(user)) <= SORTED_ACCESSES.index(permission_type)
   end
 
   private
 
   def permission_for_user(user)
     return ACCESS_READWRITE if is_owner_user?(user)
-
-    permission = nil
 
     accesses = acl_entries_for_user(user).map { |entry|
       entry[:access]
@@ -47,7 +50,7 @@ class Carto::Permission < ActiveRecord::Base
     index = SORTED_ACCESSES.index { |access|
       accesses.include?(access)
     }
-    accesses[index]
+    SORTED_ACCESSES[index]
   end
 
   def is_owner_user?(user)

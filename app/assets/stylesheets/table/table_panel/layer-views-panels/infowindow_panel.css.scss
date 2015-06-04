@@ -11,11 +11,11 @@
   @import "compass/css3/box-sizing";
   @import "compass/css3/images";
   @import "compass/css3/inline-block";
-  @import "../../../common/common-sprite";
+  @import "../../../old_common/common-sprite";
   @import "../../../table/table-sprite";
-  @import "../../../common/vars";
-  @import "../../../common/mixins";
-  @import "../../../common/form-elements";
+  @import "../../../old_common/vars";
+  @import "../../../old_common/mixins";
+  @import "../../../old_common/form-elements";
 
 
   .infowindow_panel {

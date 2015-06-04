@@ -4,6 +4,10 @@ require_relative '../../../spec_helper'
 require_relative '../../api/json/visualizations_controller_shared_examples'
 require_relative '../../../../app/controllers/carto/api/visualizations_controller'
 
+def factory(user, attributes={})
+  visualization_template(user, attributes)
+end
+
 describe Carto::Api::VisualizationsController do
   it_behaves_like 'visualization controllers' do
   end
@@ -29,6 +33,12 @@ describe Carto::Api::VisualizationsController do
         get     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/like'                       => 'visualizations#is_liked',        as: :api_v1_visualizations_is_liked,        constraints: { id: /[^\/]+/ }
 
         get     '(/user/:user_domain)(/u/:user_domain)/api/v2/viz/:id/viz'                        => 'visualizations#vizjson2', as: :api_v2_visualizations_vizjson, constraints: { id: /[^\/]+/ }
+
+        # overlays (also needed in some tests)
+        get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:visualization_id/overlays'     => 'overlays#index',    as: :api_v1_visualizations_overlays_index,  constraints: { visualization_id: /[^\/]+/ }
+
+        # watching
+        get     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/watching'                   => 'visualizations#list_watching',   as: :api_v1_visualizations_notify_watching, constraints: { id: /[^\/]+/ }
       end
 
       # old controller
@@ -41,8 +51,42 @@ describe Carto::Api::VisualizationsController do
         delete  '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id'                            => 'visualizations#destroy',         as: :api_v1_visualizations_destroy,         constraints: { id: /[^\/]+/ }
 
         post '(/user/:user_domain)(/u/:user_domain)/api/v1/tables'     => 'tables#create', as: :api_v1_tables_create
-        put '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:id'  => 'tables#update', as: :api_v1_tables_create, constraints: { id: /[^\/]+/ }
+        put '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:id'  => 'tables#update', as: :api_v1_tables_update, constraints: { id: /[^\/]+/ }
       end
+    end
+
+  end
+
+  describe 'index' do
+    include_context 'visualization creation helpers'
+    include_context 'users helper'
+
+    before(:each) do
+      login(@user1)
+      @headers = {'CONTENT_TYPE'  => 'application/json'}
+    end
+
+    it 'orders remotes by size with external sources size' do
+      post api_v1_visualizations_create_url(api_key: @user1.api_key), factory(@user1, locked: true, type: 'remote').to_json, @headers
+      vis_1_id = JSON.parse(last_response.body).fetch('id')
+      external_source_2 = Carto::ExternalSource.new({visualization_id: vis_1_id, import_url: 'http://www.fake.com', rows_counted: 1, size: 100 }).save
+
+      post api_v1_visualizations_create_url(api_key: @user1.api_key), factory(@user1, locked: true, type: 'remote').to_json, @headers
+      vis_2_id = JSON.parse(last_response.body).fetch('id')
+      external_source_2 = Carto::ExternalSource.new({visualization_id: vis_2_id, import_url: 'http://www.fake.com', rows_counted: 1, size: 200 }).save
+
+      post api_v1_visualizations_create_url(api_key: @user1.api_key), factory(@user1, locked: true, type: 'remote').to_json, @headers
+      vis_3_id = JSON.parse(last_response.body).fetch('id')
+      external_source_3 = Carto::ExternalSource.new({visualization_id: vis_3_id, import_url: 'http://www.fake.com', rows_counted: 1, size: 10 }).save
+
+      get api_v1_visualizations_index_url(api_key: @user1.api_key, types: 'remote', order: 'size'), {}, @headers
+      last_response.status.should == 200
+      response    = JSON.parse(last_response.body)
+      collection  = response.fetch('visualizations')
+      collection.length.should eq 3
+      collection[0]['id'].should == vis_2_id
+      collection[1]['id'].should == vis_1_id
+      collection[2]['id'].should == vis_3_id
     end
 
   end

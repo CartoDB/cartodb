@@ -23,7 +23,7 @@ namespace :cartodb do
 
       collection = CartoDB::Visualization::Collection.new.fetch({
         'types' => [CartoDB::Visualization::Member::TYPE_CANONICAL, CartoDB::Visualization::Member::TYPE_DERIVED],
-        per_page: ALL_RECORDS
+        per_page: CartoDB::Visualization::Collection::ALL_RECORDS
         })
 
       puts "Fetched ##{collection.count} items"

@@ -170,7 +170,7 @@ shared_examples_for "visualization controllers" do
 
     it 'tests exclude_shared and only_shared filters' do
       CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
 
       user_1 = create_user(
         username: "test#{rand(9999)}-1",
@@ -392,7 +392,7 @@ shared_examples_for "visualization controllers" do
 
       it 'tests like endpoints' do
         CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
 
         user_2 = create_user(
             username: "test#{rand(9999)}-2",
@@ -463,7 +463,7 @@ shared_examples_for "visualization controllers" do
 
       it 'tests totals calculations' do
         CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
 
         user_1 = create_user(
             username: "test#{rand(9999)}-1",
@@ -659,7 +659,7 @@ shared_examples_for "visualization controllers" do
 
       it 'tests normal users authenticated and unauthenticated calls' do
         CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
 
         user_2 = create_user(
           username: 'testindexauth',
@@ -717,7 +717,7 @@ shared_examples_for "visualization controllers" do
 
       it 'tests organization users authenticated and unauthenticated calls' do
         CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
 
         organization = test_organization.save
 
@@ -789,7 +789,7 @@ shared_examples_for "visualization controllers" do
 
       it 'tests privacy of vizjsons' do
         CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
 
         user_1 = create_user(
           username: "test#{rand(9999)}-1",
@@ -950,7 +950,7 @@ shared_examples_for "visualization controllers" do
     describe 'GET /api/v1/viz' do
       before(:each) do
         CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
         delete_user_data(@user)
       end
 
@@ -1101,7 +1101,7 @@ shared_examples_for "visualization controllers" do
 
       before(:each) do
         CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
         delete_user_data(@user)
       end
 
@@ -1128,7 +1128,7 @@ shared_examples_for "visualization controllers" do
     describe 'GET /api/v2/viz/:id/viz' do
       before(:each) do
         CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
         delete_user_data(@user)
       end
 
@@ -1154,8 +1154,7 @@ shared_examples_for "visualization controllers" do
       end
 
       it "comes with proper surrogate-key" do
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:create).returns(nil)
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
         table                 = table_factory(privacy: 1)
         source_visualization  = table.fetch('table_visualization')
 
@@ -1186,12 +1185,12 @@ shared_examples_for "visualization controllers" do
     describe 'tests visualization listing filters' do
       before(:each) do
         CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
         delete_user_data(@user)
       end
 
       it 'uses locked filter' do
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
 
         post api_v1_visualizations_create_url(api_key: @api_key), factory(@user, locked: true).to_json, @headers
         vis_1_id = JSON.parse(last_response.body).fetch('id')
@@ -1269,7 +1268,7 @@ shared_examples_for "visualization controllers" do
       it 'returns an empty array if no other user is watching' do
         CartoDB::Visualization::Watcher.any_instance.stubs(:list).returns([])
 
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
 
         login(@user_1)
         post api_v1_visualizations_create_url(api_key: @user_1.api_key), factory(@user_1, locked: true).to_json, @headers

@@ -280,7 +280,7 @@ describe Layer do
 
   describe '#uses_private_tables?' do
     it 'returns true if any of the affected tables is private' do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:create).returns(true)
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
 
       map     = Map.create(:user_id => @user.id, :table_id => @table.id)
       source  = @table.table_visualization

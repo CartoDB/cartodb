@@ -951,7 +951,7 @@ describe User do
     @user.trial_ends_at.should_not be_nil
     @user.stubs(:upgraded_at).returns(nil)
     @user.trial_ends_at.should be_nil
-    @user.stubs(:upgraded_at).returns(Time.now - 15.days)
+    @user.stubs(:upgraded_at).returns(Time.now - (User::TRIAL_DURATION_DAYS - 1).days)
     @user.trial_ends_at.should_not be_nil
   end
 

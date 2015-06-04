@@ -316,7 +316,7 @@ class User < Sequel::Model
 
       conn = self.in_database(as: :cluster_admin)
       User.terminate_database_connections(database_name, database_host)
-      conn.run("DROP USER IF EXISTS \"#{database_public_username}\"") if database_public_username != CartoDB::PUBLIC_DB_USER
+      conn.run("DROP USER IF EXISTS \"#{database_public_username}\"")
       if is_owner
         conn.run("DROP DATABASE \"#{database_name}\"")
       end
@@ -2138,14 +2138,18 @@ TRIGGER
       user_database.transaction do
         ([self.database_username, self.database_public_username] + additional_accounts)
           .select { |s|
-            # INFO: needed because in some cases it might not exist and failure ends transaction
-            !user_database.fetch("SELECT 1 FROM pg_roles WHERE rolname='#{s}'").first.nil?
+            role_exists?(user_database, s)
           }
           .each { |u|
             revoke_privileges(user_database, schema, "\"#{u}\"")
           }
       end
     end
+  end
+
+  # Needed because in some cases it might not exist and failure ends transaction
+  def role_exists?(db, role)
+    !db.fetch("SELECT 1 FROM pg_roles WHERE rolname='#{role}'").first.nil?
   end
 
   def reset_user_schema_permissions
@@ -2177,11 +2181,7 @@ TRIGGER
   end
 
   def revoke_all_on_database_from(conn, database, role)
-    conn.run("REVOKE ALL ON DATABASE \"#{database}\" FROM \"#{role}\"")
-  rescue => e
-    unless e.message =~ /role "#{role}" does not exist/
-      raise e
-    end
+    conn.run("REVOKE ALL ON DATABASE \"#{database}\" FROM \"#{role}\"") if role_exists?(conn, role)
   end
 
   def revoke_privileges(db, schema, u)
@@ -2189,10 +2189,6 @@ TRIGGER
     db.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA \"#{schema}\" FROM #{u}")
     db.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" FROM #{u}")
     db.run("REVOKE ALL ON ALL TABLES IN SCHEMA \"#{schema}\" FROM #{u}")
-  rescue => e
-    #if !(e.message =~ /role #{u} does not exist/) && !(e.message =~/schema "#{schema}" does not exist/)
-      raise e
-    #end
   end
 
   # Drops grants and functions in a given schema, avoiding by all means a CASCADE

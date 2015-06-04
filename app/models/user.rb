@@ -335,7 +335,45 @@ class User < Sequel::Model
   end
 
   def drop_user(conn = self.in_database(as: :cluster_admin))
-    conn.run("DROP USER IF EXISTS \"#{database_username}\"")
+    database_with_conflicts = nil
+    retried = false
+    begin
+      conn.run("DROP USER IF EXISTS \"#{database_username}\"")
+    rescue => e
+      if !retried && e.message =~ /cannot be dropped because some objects depend on it/
+        retried = true
+        e.message =~ /object[s]? in database (.*)$/
+        if database_with_conflicts == $1
+          raise e
+        else
+          database_with_conflicts = $1
+          revoke_all_on_database_from(conn, database_with_conflicts, database_username)
+          revoke_all_memberships_on_database_to_role(conn, database_with_conflicts, database_username)
+          drop_owned_by_user(conn, database_username)
+          #.select { |s|
+          #  !conn.fetch("SELECT 1 as schema_exist FROM information_schema.schemata WHERE schema_name = '#{s}'").first.nil?
+          #}
+          ['cdb', 'cdb_importer', 'cartodb', 'public', self.database_schema]
+          .each { |s|
+            drop_user_privileges_in_schema(s)
+          }
+          retry
+        end
+      else
+        raise e
+      end
+    end
+  end
+
+  def revoke_all_memberships_on_database_to_role(conn, database, role)
+    q = "select rolname from pg_user join pg_auth_members on (pg_user.usesysid=pg_auth_members.member) join pg_roles on (pg_roles.oid=pg_auth_members.roleid) where pg_user.usename='#{role}'"
+    conn.fetch(q).each { |rolname|
+      conn.run("REVOKE \"#{rolname[:rolname]}\" FROM \"#{role}\"")
+    }
+  end
+
+  def drop_owned_by_user(conn, role)
+    conn.run("DROP OWNED BY \"#{role}\" CASCADE")
   end
 
   def self.terminate_database_connections(database_name, database_host)
@@ -1531,7 +1569,7 @@ class User < Sequel::Model
     self.set_user_as_organization_member
     self.rebuild_quota_trigger
 
-    # WIP
+    # INFO: organization privileges are set for org_member_role, which is assigned to each org user
     if organization_owner?
       org_member_role = in_database.fetch("SELECT cartodb.CDB_Organization_Member_Group_Role_Member_Name() as org_member_role;")[:org_member_role][:org_member_role]
       set_user_privileges_in_public_schema(org_member_role)
@@ -1678,9 +1716,10 @@ class User < Sequel::Model
       self.set_user_privileges_in_cartodb_schema
       self.set_user_privileges_in_public_schema
     end
+
     self.set_user_privileges_in_own_schema
     self.set_privileges_to_publicuser_in_own_schema
-    # TODO: WIP
+
     unless organization_user?
       self.set_user_privileges_in_importer_schema
       self.set_user_privileges_in_geocoding_schema
@@ -2026,8 +2065,6 @@ TRIGGER
             user_database.run(q)
           rescue => e
             CartoDB.notify_debug('Error running user query in transaction', { query: q, user: self, error: e.inspect })
-            # TODO: WIP
-            # byebug
             raise e
           end
         end
@@ -2097,10 +2134,16 @@ TRIGGER
 
   def drop_user_privileges_in_schema(schema, additional_accounts=[])
     in_database(:as => :superuser) do |user_database|
+      return if user_database.fetch("SELECT 1 as schema_exist FROM information_schema.schemata WHERE schema_name = '#{schema}'").first.nil?
       user_database.transaction do
-        ([self.database_username, self.database_public_username] + additional_accounts).each do |u|
-          revoke_privileges(user_database, schema, "\"#{u}\"")
-        end
+        ([self.database_username, self.database_public_username] + additional_accounts)
+          .select { |s|
+            # INFO: needed because in some cases it might not exist and failure ends transaction
+            !user_database.fetch("SELECT 1 FROM pg_roles WHERE rolname='#{s}'").first.nil?
+          }
+          .each { |u|
+            revoke_privileges(user_database, schema, "\"#{u}\"")
+          }
       end
     end
   end
@@ -2123,7 +2166,7 @@ TRIGGER
         schemas = %w(public cdb_importer cdb cartodb)
 
         ['PUBLIC', CartoDB::PUBLIC_DB_USER].each do |u|
-          user_database.run("REVOKE ALL ON DATABASE \"#{database_name}\" FROM #{u}")
+          revoke_all_on_database_from(user_database, database_name, u)
           schemas.each do |schema|
             revoke_privileges(user_database, schema, u)
           end
@@ -2133,11 +2176,19 @@ TRIGGER
     end
   end
 
+  def revoke_all_on_database_from(conn, database, role)
+    conn.run("REVOKE ALL ON DATABASE \"#{database}\" FROM \"#{role}\"")
+  end
+
   def revoke_privileges(db, schema, u)
     db.run("REVOKE ALL ON SCHEMA \"#{schema}\" FROM #{u}")
     db.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA \"#{schema}\" FROM #{u}")
     db.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" FROM #{u}")
     db.run("REVOKE ALL ON ALL TABLES IN SCHEMA \"#{schema}\" FROM #{u}")
+  rescue => e
+    #if !(e.message =~ /role #{u} does not exist/) && !(e.message =~/schema "#{schema}" does not exist/)
+      raise e
+    #end
   end
 
   # Drops grants and functions in a given schema, avoiding by all means a CASCADE

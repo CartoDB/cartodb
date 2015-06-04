@@ -202,7 +202,7 @@ class User < Sequel::Model
     has_organization = false
     unless self.organization.nil?
       self.organization.reload  # Avoid ORM caching
-      if self.organization.owner.id == self.id
+      if self.organization.owner_id == self.id
         @org_id_for_org_wipe = self.organization.id  # after_destroy will wipe the organization too
         if self.organization.users.count > 1
           msg = 'Attempted to delete owner from organization with other users'
@@ -318,7 +318,7 @@ class User < Sequel::Model
       User.terminate_database_connections(database_name, database_host)
       conn.run("DROP USER IF EXISTS \"#{database_public_username}\"")
       if is_owner
-        drop_database(conn)
+        conn.run("DROP DATABASE \"#{database_name}\"")
       end
       drop_user(conn)
 

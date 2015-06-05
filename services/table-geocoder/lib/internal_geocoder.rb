@@ -112,7 +112,7 @@ module CartoDB
       end # drop_temp_table
 
       def temp_table_name
-        @temp_table_name ||= "#{@table_schema}.internal_geocoding_#{Time.now.to_i}"
+        @temp_table_name ||= %Q{"#{@table_schema}".internal_geocoding_#{Time.now.to_i}}
       end # temp_table_name
 
       def add_georef_status_column

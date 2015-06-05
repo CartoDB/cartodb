@@ -95,7 +95,7 @@ module CartoDB
             timeout:          HTTP_REQUEST_TIMEOUT
           } )
         raise HTTPResponseError, "DELETE:#{response.code} #{response.request.url} #{response.body}" unless response.code == 204
-      end #delete
+      end
 
       # Url to access a named map's tiles
       def url
@@ -104,7 +104,7 @@ module CartoDB
 
       # Normalize a name to make it "named map valid"
       def self.normalize_name( raw_name )
-        ( NAME_PREFIX + raw_name ).gsub( /[^a-zA-Z0-9\-\_.]/ , '' ).gsub( '-', '_' )
+        (NAME_PREFIX + raw_name).gsub(/[^a-zA-Z0-9\-\_.]/, '').gsub('-', '_')
       end
 
       def self.get_template_data( visualization, parent )

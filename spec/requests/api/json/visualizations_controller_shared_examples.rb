@@ -30,7 +30,48 @@ shared_examples_for "visualization controllers" do
       h[k] = nil if v == []
       h[k] = '' if normalized_attributes[:attributes].include?(k)
       if normalized_attributes[:associations].keys.include?(k)
-        normalize_hash(h[k], normalized_attributes[:associations][k])
+        normalize_hash(v, normalized_attributes[:associations][k])
+      end
+    }
+  end
+
+  NEW_ATTRIBUTES = {
+    attributes: [],
+    associations: {
+      'table' => {
+        attributes: [],
+        associations: {
+          'permission' => {
+            attributes: [],
+            associations: {
+              'owner' => {
+                attributes: [ 'email' ],
+                associations: {}
+              }
+            }
+          }
+        }
+      },
+      'permission' => {
+        attributes: [],
+        associations: {
+          'owner' => {
+            attributes: [ 'email' ],
+            associations: {}
+          }
+        }
+      }
+    }
+  }
+
+  # INFO: this test uses comparison against old data structures to check validity.
+  # You can use this method to remove that new data so next comparisons will work.
+  def remove_data_only_in_new_controllers(visualization_hash, new_attributes = NEW_ATTRIBUTES)
+    visualization_hash.each { |k, v|
+      if new_attributes[:attributes].include?(k)
+        removed = visualization_hash.delete(k)
+      elsif new_attributes[:associations].include?(k)
+        remove_data_only_in_new_controllers(v, new_attributes[:associations][k])
       end
     }
   end
@@ -48,7 +89,7 @@ shared_examples_for "visualization controllers" do
     get base_url, params, @headers
     last_response.status.should == 200
     body = JSON.parse(last_response.body)
-    body['visualizations'] = body['visualizations'].map { |v| normalize_hash(v) }
+    body['visualizations'] = body['visualizations'].map { |v| normalize_hash(v) }.map { |v| remove_data_only_in_new_controllers(v) }
     body
   end
 

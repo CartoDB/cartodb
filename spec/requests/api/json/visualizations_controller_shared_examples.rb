@@ -45,7 +45,7 @@ shared_examples_for "visualization controllers" do
             attributes: [],
             associations: {
               'owner' => {
-                attributes: [ 'email' ],
+                attributes: [ 'email', 'quota_in_bytes', 'db_size_in_bytes' ],
                 associations: {}
               }
             }
@@ -56,7 +56,7 @@ shared_examples_for "visualization controllers" do
         attributes: [],
         associations: {
           'owner' => {
-            attributes: [ 'email' ],
+            attributes: [ 'email', 'quota_in_bytes', 'db_size_in_bytes' ],
             associations: {}
           }
         }

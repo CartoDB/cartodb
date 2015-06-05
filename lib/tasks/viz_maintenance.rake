@@ -19,6 +19,8 @@ namespace :cartodb do
     task :create_named_maps, [:dry_run] => :environment do |t, args|
       dry_run = args[:dry_run] == 'true'
 
+      processed = 0
+
       puts "Dry run of create_named_maps rake" if dry_run
 
       collection = CartoDB::Visualization::Collection.new.fetch({
@@ -32,11 +34,20 @@ namespace :cartodb do
 
       collection.each do |viz|
         begin
-          viz.store unless dry_run
-          puts "OK:  #{CartoDB::NamedMapsWrapper::NamedMap::normalize_name(viz.id)} :: User: #{viz.user_id}"
+          if viz.has_named_map?
+            printf '.'
+          else
+            printf 'S'
+            viz.store unless dry_run
+          end
+          #puts "OK:  #{CartoDB::NamedMapsWrapper::NamedMap::normalize_name(viz.id)} :: User: #{viz.user_id}"
         rescue => ex
           puts "ERR: #{viz.id}"
           puts ex.inspect
+        end
+        processed += 1
+        if processed % 250 == 0
+          puts "#{processed}/#{count}"
         end
       end
 

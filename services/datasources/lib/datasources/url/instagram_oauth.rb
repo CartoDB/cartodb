@@ -34,7 +34,7 @@ module CartoDB
           @app_key      = config.fetch('app_key')
           @app_secret   = config.fetch('app_secret')
 
-          raise ServiceDisabledError.new(DATASOURCE_NAME, @user.username) unless @user.feature_flags.include?('instagram_import')
+          raise ServiceDisabledError.new(DATASOURCE_NAME, @user.username) unless @user.has_feature_flag?('instagram_import')
 
           service_name = service_name_for_user(DATASOURCE_NAME, @user)
           placeholder = CALLBACK_STATE_DATA_PLACEHOLDER.sub('user', @user.username).sub('service', service_name)

@@ -1,0 +1,13 @@
+@import "../variables/mixins";
+@import "../variables/colors";
+@import "../variables/sizes";
+
+.MergeDatasets {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(stretch, stretch);
+}
+
+.MergeDatasets-tableSelector {
+  width: 380px;
+}

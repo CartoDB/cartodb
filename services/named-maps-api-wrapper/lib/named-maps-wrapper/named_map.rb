@@ -148,19 +148,29 @@ module CartoDB
         vizjson = CartoDB::Visualization::VizJSON.new(visualization, presenter_options, parent.vizjson_config)
         layers_data = []
 
-        layer_group = vizjson.layer_group_for(visualization)
+        layer_group = vizjson.named_map_layer_group_for(visualization)
         unless layer_group.nil?
           layer_group[:options][:layer_definition][:layers].each { |layer|
-            layer_options = self.options_for_cartodb_layer(layer, layer_num, template_data)
+            layer_type = layer[:type].downcase
+            if layer_type == 'cartodb'
+              name = 'cartodb'
+              data = self.options_for_cartodb_layer(layer, layer_num, template_data)
+            else
+              name = 'http'
+              data = self.options_for_basemap_layer(layer, layer_num, template_data)
+            end
+
+            layer_num = data[:layer_num]
+            template_data = data[:template_data]
 
             layers_data.push( {
-              type:     layer[:type].downcase,
-              options:  layer_options
+              type:     name,
+              options:  data[:layer_options]
             } )
           }
         end
         
-        other_layers = vizjson.other_layers_for( visualization )
+        other_layers = vizjson.other_layers_for(visualization)
         unless other_layers.nil?
           other_layers.compact.each { |layer|
             layers_data.push( {
@@ -210,7 +220,29 @@ module CartoDB
           }
         end
 
-        layer_options
+        { 
+          layer_options: layer_options,
+          layer_num: layer_num,
+          template_data: template_data
+        }
+      end
+
+      def self.options_for_basemap_layer(layer, layer_num, template_data)
+        layer_options = {
+          urlTemplate: layer[:options]['urlTemplate']
+        }
+
+        if layer[:options].include?('subdomains')
+          layer_options[:subdomains] = layer[:options]['subdomains']
+        end
+
+        layer_num += 1
+
+        { 
+          layer_options: layer_options,
+          layer_num: layer_num,
+          template_data: template_data
+        }
       end
 
     end

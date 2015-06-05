@@ -21,6 +21,9 @@ class Carto::Map < ActiveRecord::Base
   has_and_belongs_to_many :other_layers, class_name: 'Carto::Layer', 
     conditions: "kind not in ('carto', 'tiled', 'background', 'gmapsbase', 'wms')", order: '"order"'
 
+  has_and_belongs_to_many :named_maps_layers, class_name: 'Carto::Layer', 
+    conditions: { kind: ['carto', 'tiled', 'background', 'gmapsbase', 'wms'] }, order: '"order"'
+
   belongs_to :user
 
   has_many :tables, class_name: Carto::UserTable

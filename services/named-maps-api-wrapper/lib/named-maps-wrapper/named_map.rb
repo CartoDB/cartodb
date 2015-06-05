@@ -148,29 +148,10 @@ module CartoDB
         vizjson = CartoDB::Visualization::VizJSON.new(visualization, presenter_options, parent.vizjson_config)
         layers_data = []
 
-        layer_group = vizjson.layer_group_for( visualization )
+        layer_group = vizjson.layer_group_for(visualization)
         unless layer_group.nil?
           layer_group[:options][:layer_definition][:layers].each { |layer|
-            layer_options = layer[:options].except [:sql, :interactivity]
-
-            layer_placeholder = "layer#{layer_num}"
-            layer_num += 1
-            layer_options[:sql] = "SELECT * FROM (#{layer[:options][:sql]}) AS wrapped_query WHERE <%= #{layer_placeholder} %>=1"
-
-            template_data[:placeholders][layer_placeholder.to_sym] = {
-              type:     'number',
-              default:  layer[:visible] ? 1: 0
-            }
-
-            if layer.include?(:infowindow) && !layer[:infowindow].nil? && !layer[:infowindow].fetch('fields').nil? && layer[:infowindow].fetch('fields').size > 0
-              layer_options[:interactivity] = layer[:options][:interactivity]
-              layer_options[:attributes] = {
-                id:       'cartodb_id', 
-                columns:  layer[:infowindow]['fields'].map { |field|
-                          field.fetch('name')
-                }
-              }
-            end
+            layer_options = self.options_for_cartodb_layer(layer, layer_num, template_data)
 
             layers_data.push( {
               type:     layer[:type].downcase,
@@ -204,6 +185,33 @@ module CartoDB
       end
 
       attr_reader :template
+
+      private
+
+      def self.options_for_cartodb_layer(layer, layer_num, template_data)
+        layer_options = layer[:options].except [:sql, :interactivity]
+
+        layer_placeholder = "layer#{layer_num}"
+        layer_num += 1
+        layer_options[:sql] = "SELECT * FROM (#{layer[:options][:sql]}) AS wrapped_query WHERE <%= #{layer_placeholder} %>=1"
+
+        template_data[:placeholders][layer_placeholder.to_sym] = {
+          type:     'number',
+          default:  layer[:visible] ? 1: 0
+        }
+
+        if layer.include?(:infowindow) && !layer[:infowindow].nil? && !layer[:infowindow].fetch('fields').nil? && layer[:infowindow].fetch('fields').size > 0
+          layer_options[:interactivity] = layer[:options][:interactivity]
+          layer_options[:attributes] = {
+            id:       'cartodb_id', 
+            columns:  layer[:infowindow]['fields'].map { |field|
+                      field.fetch('name')
+            }
+          }
+        end
+
+        layer_options
+      end
 
     end
   end

@@ -328,6 +328,7 @@ MapBase.prototype = {
     if(this.isHttps()) {
       subdomains = [null]; // no subdomain
     }
+    var filter = this.options.filter;
     var layerGroupId = this.mapProperties.layergroupid;
     var layers = this.mapProperties.metadata.layers;
 
@@ -335,22 +336,32 @@ MapBase.prototype = {
     // extract the indexes of all the layers that should be rendered
     var layerIndexes = [];
     for (var i = 0; i < layers.length; i++) {
-      if (layers[i].type !== 'torque') {
+      var layer = layers[i];
+      var isValidType = layer.type !== 'torque';
+      if (filter) {
+        isValidType = isValidType && filter.indexOf(layer.type) != -1
+      }
+      if (isValidType) {
         layerIndexes.push(i);
       }
     }
-    var tileTemplate = '/' +  layerIndexes.join(',') +'/{z}/{x}/{y}';
-    var gridTemplate = '/{z}/{x}/{y}';
 
-    for(var i = 0; i < subdomains.length; ++i) {
-      var s = subdomains[i]
-      var cartodb_url = this._host(s) + MapBase.BASE_URL + '/' + layerGroupId
-      tiles.push(cartodb_url + tileTemplate + ".png" + (pngParams ? "?" + pngParams: '') );
+    if (layerIndexes.length) {
+      var tileTemplate = '/' +  layerIndexes.join(',') +'/{z}/{x}/{y}';
+      var gridTemplate = '/{z}/{x}/{y}';
 
-      for(var layer = 0; layer < this.layers.length; ++layer) {
-        grids[layer] = grids[layer] || [];
-        grids[layer].push(cartodb_url + "/" + layer +  gridTemplate + ".grid.json" + (gridParams ? "?" + gridParams: ''));
+      for(var i = 0; i < subdomains.length; ++i) {
+        var s = subdomains[i]
+        var cartodb_url = this._host(s) + MapBase.BASE_URL + '/' + layerGroupId
+        tiles.push(cartodb_url + tileTemplate + ".png" + (pngParams ? "?" + pngParams: '') );
+
+        for(var layer = 0; layer < this.layers.length; ++layer) {
+          grids[layer] = grids[layer] || [];
+          grids[layer].push(cartodb_url + "/" + layer +  gridTemplate + ".grid.json" + (gridParams ? "?" + gridParams: ''));
+        }
       }
+    } else {
+      tiles = [MapBase.EMPTY_GIF];
     }
 
     return {

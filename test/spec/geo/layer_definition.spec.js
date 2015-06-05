@@ -628,6 +628,32 @@ describe("LayerDefinition", function() {
       expect(tiles.tiles).toEqual([ 'http://rambo.cartodb.com:8081/api/v1/map/test_layer/0,2/{z}/{x}/{y}.png' ]);
     })
 
+    it('should filter layers if a filter has been specified', function() {
+      layerDefinition.options.filter = undefined;
+
+      var tiles = layerDefinition._layerGroupTiles();
+      expect(tiles.tiles).toEqual([ 'http://rambo.cartodb.com:8081/api/v1/map/test_layer/0,2/{z}/{x}/{y}.png' ]);
+
+      layerDefinition.options.filter = "http";
+      tiles = layerDefinition._layerGroupTiles();
+      expect(tiles.tiles).toEqual([ 'http://rambo.cartodb.com:8081/api/v1/map/test_layer/2/{z}/{x}/{y}.png' ]);
+
+      layerDefinition.options.filter = "mapnik";
+      tiles = layerDefinition._layerGroupTiles();
+      expect(tiles.tiles).toEqual([ 'http://rambo.cartodb.com:8081/api/v1/map/test_layer/0/{z}/{x}/{y}.png' ]);
+
+      layerDefinition.options.filter = ["http", "mapnik"];
+      tiles = layerDefinition._layerGroupTiles();
+      expect(tiles.tiles).toEqual([ 'http://rambo.cartodb.com:8081/api/v1/map/test_layer/0,2/{z}/{x}/{y}.png' ]);
+
+      // Filter doesn't mach any valid type -> Render empty gifs
+      layerDefinition.options.filter = "wadus";
+
+      var tiles = layerDefinition._layerGroupTiles();
+      expect(tiles.tiles).toEqual([ MapBase.EMPTY_GIF ]);
+      expect(tiles.grids).toEqual([]);
+    })
+
     it("should generate url for tiles with params", function() {
       layerDefinition.options.extra_params = {
         api_key: 'api_key_test',

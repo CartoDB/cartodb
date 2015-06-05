@@ -39,33 +39,34 @@
           sublayers: [
             {
               type: "http",
-              urlTemplate: "http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png",
+              urlTemplate: "http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png",
               subdomains: [ "a", "b", "c" ]
             },
             {
                sql: 'select * from country_boundaries',
                cartocss: '#layer { polygon-fill: #F00; polygon-opacity: 0.3; line-color: #F00; }'
             },
-          ]
-        })
+          ],
+        }, { filter: ['http', 'mapnik'] })
         .addTo(map)
         .done(function(layer) {
-
-          layer.addLayer({
-            type: 'http',
-            urlTemplate: 'http://{s}.tile.stamen.com/toner-labels/{z}/{x}/{y}.png',
-            subdomains: [ "a", "b", "c" ]
-          }, 2);
-
           setTimeout(function() {
             layer.getSubLayer(0).setURLTemplate(
-               'http://{s}.tile.stamen.com/toner-lines/{z}/{x}/{y}.png'
+               'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png'
             )
-          }, 2500)
+          }, 4000);
+
+          setTimeout(function() {
+            layer.addLayer({
+              type: 'http',
+              urlTemplate: 'http://{s}.tile.stamen.com/toner-labels/{z}/{x}/{y}.png',
+              subdomains: [ "a", "b", "c" ]
+            }, 2);
+          }, 8000);
 
           setTimeout(function() {
             layer.getSubLayer(2).hide();
-          }, 5000)
+          }, 12000);
         });
       }
 

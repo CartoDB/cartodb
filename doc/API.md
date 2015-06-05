@@ -308,6 +308,7 @@ cartodb.createLayer(map, { layermetadata })
     what layer is created. Take into account that `layerIndex == 0` is the base layer and that
     all the tiled layers (non animated ones) are merged into a single one. The default value for
     this option is 1 (usually tiled layers).
+  - **filter**: a string or array of strings to specify the type(s) of sublayers that will be rendered (eg: `['http', 'mapnik']`)
 
 - **callback(_layer_)**: if a function is specified, it will be invoked after the layer has been created. The layer will be passed as an argument.
 
@@ -322,7 +323,8 @@ You can call to `addTo(map[, position])` in the promise so when the layer is rea
 
 ##### Example
 
-<div class="code-title">cartodb.createLayer</div>
+<div class="code-title">cartodb.createLayer using a url</div>
+
 ```javascript
 var map;
 var mapOptions = {
@@ -417,6 +419,34 @@ Used for making public maps with private data. See [Named Maps](http://docs.cart
     }
   }
 }
+```
+
+##### Example
+
+<div class="code-title">cartodb.createLayer combining multiple types of layers and setting a filter</div>
+
+```javascript
+var map;
+var mapOptions = {
+  zoom: 5,
+  center: [43, 0]
+};
+map = new L.Map('map', mapOptions);
+
+cartodb.createLayer(map, {
+  {
+    type: "http",
+    urlTemplate: "http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+    subdomains: [ "a", "b", "c" ]
+  },
+  {
+    sql: 'select * from country_boundaries',
+    cartocss: '#layer { polygon-fill: #F00; polygon-opacity: 0.3; line-color: #F00; }'
+  }
+}, {
+  filter: ['http', 'mapnik']
+})
+.addTo(map)
 ```
 
 ### cartodb.CartoDBLayer

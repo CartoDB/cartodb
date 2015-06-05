@@ -445,9 +445,10 @@ describe("LayerDefinition", function() {
       }
       layerDefinition.mapProperties = {
         layergroupid: 'test',
-        metadata: { layers: [] }
+        metadata: { layers: [ {type: 'mapnik'} ] }
       }
       layerDefinition.getTiles(function(tiles) {
+        debugger;
         expect(tiles.tiles[0].indexOf('map_key=testapikey')).not.toEqual(-1)
         expect(tiles.tiles[0].indexOf('should_not')).toEqual(-1)
       });
@@ -1033,7 +1034,7 @@ describe("NamedMap", function() {
     });
     namedMap.options.ajax = function(p) { 
       params = p;
-      p.success({ layergroupid: 'test', metadata: { layers: [] } });
+      p.success({ layergroupid: 'test', metadata: { layers: [ { type: 'mapnik' }] } });
     };
 
     namedMap._getLayerToken();

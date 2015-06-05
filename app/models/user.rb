@@ -330,7 +330,6 @@ class User < Sequel::Model
   def drop_database(conn = self.in_database(as: :cluster_admin))
     conn.run("UPDATE pg_database SET datallowconn = 'false' WHERE datname = '#{database_name}'")
     User.terminate_database_connections(database_name, database_host)
-    conn.run("REVOKE ALL ON DATABASE \"#{database_name}\"")
     conn.run("DROP DATABASE \"#{database_name}\"")
   end
 

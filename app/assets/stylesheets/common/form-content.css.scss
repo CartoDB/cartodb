@@ -7,6 +7,8 @@
 
 $sLabel-width: 140px;
 
+.Form {}
+.Form--minHeight { min-height: 400px }
 .Form-title {
   display: block;
   margin: $sMargin-section 0;

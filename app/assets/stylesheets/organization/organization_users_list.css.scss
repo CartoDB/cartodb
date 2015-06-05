@@ -85,3 +85,8 @@
   border-color: $cTypography-linkHover;
   cursor: pointer;
 }
+.OrganizationList-paginator {
+  @include display-flex();
+  @include justify-content(flex-end, end);
+  padding: 30px 0;
+}

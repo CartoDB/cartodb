@@ -47,7 +47,6 @@ class Admin::OrganizationsController < ApplicationController
 
   def load_organization_and_members
     @organization = current_user.organization
-    @users = current_user.organization.users
     raise RecordNotFound unless @organization.present? && current_user.organization_owner?
   end
 

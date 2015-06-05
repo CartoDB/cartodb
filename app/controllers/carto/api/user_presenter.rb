@@ -10,11 +10,13 @@ module Carto
       def to_poro
         return {} if @user.nil?
         {
-            id:         @user.id,
-            username:   @user.username,
-            email:      @user.email,
-            avatar_url: @user.avatar_url,
-            base_url:   @user.public_url
+            id:               @user.id,
+            username:         @user.username,
+            email:            @user.email,
+            avatar_url:       @user.avatar_url,
+            base_url:         @user.public_url,
+            quota_in_bytes:   @user.quota_in_bytes,
+            db_size_in_bytes: @user.db_size_in_bytes
         }
       end
 

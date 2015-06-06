@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require_relative '../../../../lib/carto/http_client'
+require_relative '../../../../lib/carto/http/client'
 
 # @see http://support.gnip.com/apis/search_api/
 module CartoDB

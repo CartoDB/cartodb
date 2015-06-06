@@ -1,7 +1,7 @@
 # encoding: utf-8
 require 'uri'
 require 'nokogiri'
-require_relative '../../lib/carto/http_client'
+require_relative '../../lib/carto/http/client'
 
 module CartoDB
   module WMS

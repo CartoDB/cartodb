@@ -12,7 +12,7 @@ require_relative '../services/visualization/common_data_service'
 require_relative './external_data_import'
 require_relative './feature_flag'
 require_relative '../../lib/cartodb/stats/api_calls'
-require_relative '../../lib/carto/http_client'
+require_relative '../../lib/carto/http/client'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel

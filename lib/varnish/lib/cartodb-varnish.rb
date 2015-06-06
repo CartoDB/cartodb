@@ -1,5 +1,5 @@
 require "net/telnet"
-require_relative '../../carto/http_client'
+require_relative '../../carto/http/client'
 
 module CartoDB
   class Varnish

@@ -13,7 +13,7 @@ require_relative './url_translator/google_maps'
 require_relative './url_translator/google_docs'
 require_relative './url_translator/kimono_labs'
 require_relative './unp'
-require_relative '../../../../lib/carto/http_client'
+require_relative '../../../../lib/carto/http/client'
 
 module CartoDB
   module Importer2

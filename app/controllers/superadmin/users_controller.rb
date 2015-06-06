@@ -1,4 +1,4 @@
-require_relative '../../../lib/carto/http_client'
+require_relative '../../../lib/carto/http/client'
 
 class Superadmin::UsersController < Superadmin::SuperadminController
   respond_to :json

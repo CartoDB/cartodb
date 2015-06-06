@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require_relative '../../../../../lib/carto/http_client'
+require_relative '../../../../../lib/carto/http/client'
 
 module CartoDB
   module Datasources

@@ -1,6 +1,6 @@
 require 'rollbar'
 require 'singleton'
-require_relative '../carto/http_client'
+require_relative '../carto/http/client'
 
 
 # Development info: http://developers.hubspot.com/docs/overview

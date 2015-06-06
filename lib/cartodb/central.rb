@@ -1,4 +1,4 @@
-require_relative '../carto/http_client'
+require_relative '../carto/http/client'
 
 # encoding: utf-8
 module Cartodb

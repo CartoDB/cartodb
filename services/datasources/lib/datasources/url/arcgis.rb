@@ -3,7 +3,7 @@
 require 'json'
 require 'addressable/uri'
 require_relative '../base_direct_stream'
-require_relative '../../../../../lib/carto/http_client'
+require_relative '../../../../../lib/carto/http/client'
 
 module CartoDB
   module Datasources

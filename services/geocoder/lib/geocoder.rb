@@ -4,7 +4,7 @@ require 'csv'
 require 'json'
 require 'open3'
 require 'uuidtools'
-require_relative '../../../lib/carto/http_client'
+require_relative '../../../lib/carto/http/client'
 
 module CartoDB
   class Geocoder

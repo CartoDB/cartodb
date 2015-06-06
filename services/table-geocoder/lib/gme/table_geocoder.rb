@@ -1,6 +1,8 @@
 # encoding: utf-8
 
 require_relative '../abstract_table_geocoder'
+require_relative 'client'
+require_relative 'geocoder_client'
 
 module Carto
   module Gme
@@ -14,8 +16,13 @@ module Carto
       end
 
       def initialize(arguments)
+        raise 'Not configured' unless self.class.enabled?
         super(arguments)
         @formatter = arguments[:formatter]
+        client_id = Cartodb.config[:gce_geocoder]['client_id']
+        private_key = Cartodb.config[:gce_geocoder]['private_key']
+        gme_client = Client.new(client_id, private_key)
+        @geocoder_client = GeocoderClient.new(gme_client)
       end
 
       def cancel
@@ -55,20 +62,29 @@ module Carto
 
       # Returns a "generator"
       # TODO: actually take blocks of a given size
+      # TODO: take into account state/province/country from formatter
       def data_input_blocks
         Enumerator.new do |enum|
-          data_input = connection.select("cartodb_id, #{formatter} searchText".lit)
+          data_input = connection.select("cartodb_id, #{formatter} searchtext".lit)
             .from(@sequel_qualified_table_name)
             .where("cartodb_georef_status IS NULL".lit).all
           enum.yield data_input
         end
       end
 
-      def geocode(data_input)
-        # TODO: implement
+      def geocode(data_block)
+        data_block.each do |row|
+          response = JSON::parse(@geocoder_client.geocode(row[:searchtext]))
+          # TODO: deal with response['status'] != "OK"
+          result = response['results'].first
+          # TODO: deal with result.nil? == true
+          location = result['geometry']['location']
+          row.merge!(location.deep_symbolize_keys)
+          sleep 0.01 # TODO: remove when throttling is implemented
+        end
       end
 
-      def update_table(data_output)
+      def update_table(data_block)
         # TODO: implement
       end
 

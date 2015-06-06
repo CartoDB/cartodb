@@ -19,6 +19,7 @@ module Carto
       end
 
       def get(endpoint, params)
+        # TODO: error mgmt, retries, throttling
         url = generate_auth_url(BASE_URL+endpoint, params)
         resp = Typhoeus.get(url)
         resp.body

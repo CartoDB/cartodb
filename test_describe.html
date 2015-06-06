@@ -29,7 +29,7 @@
     <div id="map"></div>
 
     <!-- include cartodb.js library -->
-    <script src="dist/cartodb.uncompressed.js"></script>
+    <script src="dist/cartodb.full.uncompressed.js"></script>
     <script>
       var account = 'eschbacher';
 
@@ -119,10 +119,11 @@
           $('body').append(div);
           makeMap(div[0], sql, css, bbox);
           if (make_the_cut.indexOf(column) != -1) {
-              div.append($('<div>').text(column + " PASSES :) -- (#uniques: " + stats.distinct + ")").attr('class', 'lengend'));
+              div.append($('<div>').text(column + " PASSES :) -- (#uniques: " + stats.distinct + ", null%: " + stats.count_nulls + ")").attr('class', 'lengend'));
+              console.log('stats',stats);
               // console.log(stats);
           } else {
-              div.append($('<div>').text(column + " DOESN'T PASS -- (#uniques: " + stats.distinct + ")").attr('class', 'lengend'));
+              div.append($('<div>').text(column + " DOESN'T PASS -- (#uniques: " + stats.distinct + ", null%: " + stats.count_nulls + ")").attr('class', 'lengend'));
           }
           
         }

@@ -1,6 +1,5 @@
 # encoding: UTF-8'
-require_relative '../../services/table-geocoder/lib/table_geocoder'
-require_relative '../../services/table-geocoder/lib/internal_geocoder.rb'
+require_relative '../../services/table-geocoder/lib/geocoder_factory'
 require_relative '../../lib/cartodb/metrics'
 
 class Geocoding < Sequel::Model
@@ -51,7 +50,6 @@ class Geocoding < Sequel::Model
   end
 
   def table_geocoder
-    geocoder_class = (kind == 'high-resolution' ? CartoDB::TableGeocoder : CartoDB::InternalGeocoder::Geocoder)
     # Reset old connections to make sure changes apply. 
     # NOTE: This assumes it's being called from a Resque job
     if user.present?
@@ -77,7 +75,7 @@ class Geocoding < Sequel::Model
       country_column: country_column,
       region_column: region_column
     )
-    @table_geocoder ||= geocoder_class.new(config)
+    @table_geocoder ||= GeocoderFactory.get(config)
   end # table_geocoder
 
   # INFO: table_geocoder method is very coupled to table model, and we want to use this model during imports, without table yet.

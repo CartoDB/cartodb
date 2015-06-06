@@ -68,6 +68,8 @@ class User < Sequel::Model
 
   GEOCODING_BLOCK_SIZE = 1000
 
+  TRIAL_DURATION_DAYS = 15
+
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
 
@@ -760,8 +762,8 @@ class User < Sequel::Model
   end
 
   def trial_ends_at
-    if account_type.to_s.downcase == 'magellan' && upgraded_at && upgraded_at + 15.days > Date.today
-      upgraded_at + 15.days
+    if account_type.to_s.downcase == 'magellan' && upgraded_at && upgraded_at + TRIAL_DURATION_DAYS.days > Date.today
+      upgraded_at + TRIAL_DURATION_DAYS.days
     else
       nil
     end

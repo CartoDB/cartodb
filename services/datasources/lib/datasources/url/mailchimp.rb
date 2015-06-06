@@ -209,8 +209,8 @@ module CartoDB
         def get_resource(id)
           raise UninitializedError.new('No API client instantiated', DATASOURCE_NAME) unless @api_client.present?
 
-          subscribers = []
-          contents = ''
+          subscribers = {}
+          contents = StringIO.new
           export_api = @api_client.get_exporter
 
           # 1) Retrieve campaign details
@@ -221,19 +221,19 @@ module CartoDB
           # 2) Retrieve subscriber activity
           # https://apidocs.mailchimp.com/export/1.0/campaignsubscriberactivity.func.php
           subscribers_activity = export_api.campaign_subscriber_activity({id: id})
+
           subscribers_activity.each { |line|
-            item_data = activity_data_item(line)
-            subscribers.push(item_data) if item_data[:opened]
+            store_subscriber_if_opened(line, subscribers)
           }
           subscribers_activity = nil
 
           # 3) Update campaign details with subscriber activity results
           # 4) anonymize data (inside list_json_to_csv)
           campaign_details.each_with_index { |line, index|
-            contents << list_json_to_csv(line, subscribers, index == 0)
+            contents.write list_json_to_csv(line, subscribers, index == 0)
           }
 
-          contents
+          contents.string
         rescue Gibbon::MailChimpError => exception
           raise DataDownloadError.new("get_resource(): #{exception.message} (API code: #{exception.code}",
                                       DATASOURCE_NAME)
@@ -369,68 +369,38 @@ module CartoDB
           }
         end
 
-        # @see https://apidocs.mailchimp.com/export/1.0/#overview_description
-        def activity_json_to_csv(input_fields='[]')
-          opened_action = false
-          fields = []
+        def store_subscriber_if_opened(input_fields='[]', subscribers)
           contents = ::JSON.parse(input_fields)
           contents.each { |subject, actions|
-            # Anonimize by removing the name and leaving only the email domain
-            fields.push("\"#{subject.to_s.gsub("\n", ' ').gsub('"', '""').gsub(/(.*)@/, "")}\"")
             unless actions.length == 0
               actions.each { |action|
-                if action["action"] == "open" && !opened_action
-                  fields.push("\"#{action["timestamp"]}\"")
-                  fields.push(action["ip"].nil? ? '' : "\"#{action["ip"]}\"")
-                  opened_action = true
+                if action["action"] == "open"
+                  subscribers[subject] = true
                 end
+                opened_action = true 
               }
             end
           }
-          # Empty action scenario
-          unless opened_action
-            fields.push("\"\"")
-            fields.push("")
-          end
-          data = fields.join(',')
-          data << "\n"
         end
 
-        def activity_data_item(input_fields='[]')
-          email = nil
-          opened_action = false
-          contents = ::JSON.parse(input_fields)
-          contents.each { |subject, actions|
-            email = subject
-            unless actions.length == 0
-              actions.each { |action|
-                opened_action = true if action["action"] == "open"
-              }
-            end
-          }
-
-          { subject: email, opened: opened_action }
-        end
-
-        # @param contents String containing a JSON Hash
-        # @param subscribers Array containing a Hash { subject, opened }
+        # @param contents String containing a JSON array of fields (data of campaign user/target)
+        # @param subscribers Hash { subject => opened_email }
         # @param header_row Boolean
-        def list_json_to_csv(contents='[]', subscribers=[], header_row=false)
-          opened_mail = false
-          contents = ::JSON.parse(contents)
+        # @return String Containing a CSV ready to dump to a file
+        def list_json_to_csv(contents='[]', subscribers={}, header_row=false)
+          # shorcut: Remove newlines and Anonymize email addresses before parsing to speed up
+          contents = ::JSON.parse(contents.gsub("\n", ' ').gsub(/(\w|\.|\-)+@/, ""))
 
-          opened_mail = (subscribers.index{ |item| item[:subject] == contents[0] } != nil) unless header_row == 0
+          opened_mail = !subscribers[contents[0]].nil?
 
+          cleaned_contents = []
+          #Once parsed, each row contains data like account code, company name, email, first name...
           contents.each_with_index { |field, index|
-            # Anonymize emails
-            if index == 0
-              contents[index] = "\"#{field.to_s.gsub("\n", ' ').gsub('"', '""').gsub(/^(.*)@/, "")}\""
-            else
-              contents[index] = "\"#{field.to_s.gsub("\n", ' ').gsub('"', '""')}\""
-            end
+            # Remove double quotes to avoid CSV errors
+            cleaned_contents[index] = "\"#{field.to_s.gsub('"', '""')}\""
           }
-          contents.push("\"#{header_row ? 'Opened' : opened_mail.to_s}\"")
-          data = contents.join(',')
+          cleaned_contents.push("\"#{header_row ? 'Opened' : opened_mail.to_s}\"")
+          data = cleaned_contents.join(',')
           data << "\n"
         end
 

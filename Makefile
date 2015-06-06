@@ -161,7 +161,7 @@ WORKING_SPECS_9 = \
   services/platform-limits/spec/unit/ \
   spec/models/platform-limits/ \
   spec/lib/initializers/carto_db_spec.rb \
-  spec/unit/controllers/api/json/oembed_controller_spec.rb \
+  spec/requests/carto/api/oembed_controller_spec.rb \
   spec/models/carto/ \
   $(NULL)
 

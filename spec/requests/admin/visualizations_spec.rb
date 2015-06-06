@@ -32,6 +32,7 @@ describe Admin::VisualizationsController do
 
   before(:each) do
     CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
     
     @db = Rails::Sequel.connection
     Sequel.extension(:pagination)

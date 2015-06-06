@@ -1,6 +1,5 @@
 # encoding: utf-8
 
-require 'socket'
 require_relative 'request'
 require_relative 'response_logger'
 require_relative 'null_logger'
@@ -19,7 +18,7 @@ module Carto
 
       def self.build_logger(tag, extra_options)
         if extra_options[:log_requests] && ResponseLogger.enabled?
-          ResponseLogger.new(tag, Socket.gethostname)
+          ResponseLogger.new(tag)
         else
           NullLogger.new()
         end

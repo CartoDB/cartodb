@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require 'socket'
+
 module Carto
   module Http
 
@@ -9,9 +11,9 @@ module Carto
         defined?(Rails) && Rails.respond_to?(:root) && Rails.root.present? && Cartodb.config[:http_client_logs]
       end
 
-      def initialize(tag, hostname)
+      def initialize(tag)
         @tag = tag
-        @hostname = hostname
+        @hostname = Socket.gethostname
       end
 
       def log(response)

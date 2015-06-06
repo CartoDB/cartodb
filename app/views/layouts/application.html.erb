@@ -12,6 +12,11 @@
     <% if ( ( controller_name != "visualizations" && controller_name != "tables" )  || action_name != "show" ) %>
       <%= render 'admin/shared/private_header' %>
 
+      <div class="FlashMessage">
+        <div class="u-inner">
+          <p class="FlashMessage-info">Tonight you are invited to a special CartoDB secret party! Join us in the backyard of <a href='http://www.crownvicbar.com/'>Crown Victoria</a> at 11PM to celebrate OSM!</p>
+        </div>
+      </div>
       <% if current_user.notification.present? %>
         <div class="FlashMessage">
           <div class="u-inner">

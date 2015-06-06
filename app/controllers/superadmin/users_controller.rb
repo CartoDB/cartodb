@@ -106,7 +106,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   end # get_user
 
   def http_client
-    @http_client ||= Carto::HttpClient.get(self.class.name, log_requests: true)
+    @http_client ||= Carto::Http::Client.get(self.class.name, log_requests: true)
   end
 
 end # Superadmin::UsersController

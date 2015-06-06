@@ -232,7 +232,7 @@ module CartoDB
         private
 
         def http_client
-          @http_client ||= Carto::HttpClient.get('arcgis')
+          @http_client ||= Carto::Http::Client.get('arcgis')
         end
 
         # @param id String

@@ -71,7 +71,7 @@ module CartoDB
     end #purge_command
 
     def http_client
-      @http_client ||= Carto::HttpClient.get('varnish')
+      @http_client ||= Carto::Http::Client.get('varnish')
     end
   end # Varnish
 end # CartoDB

@@ -2367,7 +2367,7 @@ TRIGGER
   private
 
   def http_client
-    @http_client ||= Carto::HttpClient.get('old_user', log_requests: true)
+    @http_client ||= Carto::Http::Client.get('old_user', log_requests: true)
   end
 
   # INFO: assigning to owner is necessary because of payment reasons

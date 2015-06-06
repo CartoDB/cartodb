@@ -37,7 +37,7 @@ class GooglePlusAPI
   private
 
   def http_client
-    @http_client ||= Carto::HttpClient.get(self.class.name)
+    @http_client ||= Carto::Http::Client.get(self.class.name)
   end
 
 end

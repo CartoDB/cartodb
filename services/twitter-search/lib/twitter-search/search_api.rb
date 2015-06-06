@@ -150,7 +150,7 @@ module CartoDB
       end
 
       def http_client
-        @http_client ||= Carto::HttpClient.get('search_api')
+        @http_client ||= Carto::Http::Client.get('search_api')
       end
 
     end

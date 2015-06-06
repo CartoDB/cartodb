@@ -351,7 +351,7 @@ module CartoDB
       end
 
       def http_client
-        @http_client ||= Carto::HttpClient.get('downloader', log_requests: true)
+        @http_client ||= Carto::Http::Client.get('downloader', log_requests: true)
       end
     end
   end

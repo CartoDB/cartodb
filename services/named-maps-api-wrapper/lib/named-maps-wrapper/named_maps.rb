@@ -99,7 +99,7 @@ module CartoDB
       private
 
       def http_client
-        @http_client ||= Carto::HttpClient.get('named_maps')
+        @http_client ||= Carto::Http::Client.get('named_maps')
       end
 
     end

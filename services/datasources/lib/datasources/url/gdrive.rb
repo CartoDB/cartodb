@@ -301,7 +301,7 @@ module CartoDB
         private
 
         def http_client
-          @http_client ||= Carto::HttpClient.get('gdrive')
+          @http_client ||= Carto::Http::Client.get('gdrive')
         end
 
         # Formats all data to comply with our desired format

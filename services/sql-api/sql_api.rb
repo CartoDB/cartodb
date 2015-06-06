@@ -63,7 +63,7 @@ module CartoDB
     private
 
     def http_client
-      @http_client ||= Carto::HttpClient.get('sql_api')
+      @http_client ||= Carto::Http::Client.get('sql_api')
     end
 
   end

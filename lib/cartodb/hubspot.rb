@@ -93,7 +93,7 @@ module CartoDB
     end
 
     def http_client
-      @http_client ||= Carto::HttpClient.get('hubspot')
+      @http_client ||= Carto::Http::Client.get('hubspot')
     end
 
   end

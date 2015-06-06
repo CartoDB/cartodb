@@ -284,6 +284,7 @@ module CartoDB
 
         # Revokes current set token
         def revoke_token
+          http_client = Carto::Http::Client.get('gdrive')
           response = http_client.get("https://accounts.google.com/o/oauth2/revoke?token=#{token}")
             if response.code == 200
               true
@@ -299,10 +300,6 @@ module CartoDB
         end
 
         private
-
-        def http_client
-          @http_client ||= Carto::Http::Client.get('gdrive')
-        end
 
         # Formats all data to comply with our desired format
         # @param item_data Hash : Single item returned from GDrive API

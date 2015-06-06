@@ -26,6 +26,7 @@ module CartoDB
       end 
 
       def request_capabilities
+        http_client = Carto::Http::Client.get('wmsproxy')
         response = http_client.get(url, followlocation: true)
         raise URI::InvalidURIError unless [200, 201].include?(response.code)
         @response = response.response_body
@@ -95,11 +96,6 @@ module CartoDB
       attr_reader :response
 
       private
-
-      def http_client
-        @http_client ||= Carto::Http::Client.get('wmsproxy')
-      end
-      
       attr_reader :url
     end # Proxy
   end # WMS

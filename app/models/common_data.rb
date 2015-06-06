@@ -60,7 +60,8 @@ class CommonData
   def get_datasets_json
     body = nil
     begin
-      response = @http_client.get(datasets_url, followlocation:true)
+      http_client = Carto::Http::Client.get('common_data', log_requests: true)
+      response = http_client.get(datasets_url, followlocation:true)
       if response.code == 200
         body = response.response_body
       end

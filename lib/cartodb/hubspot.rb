@@ -73,6 +73,7 @@ module CartoDB
     end
 
     def send_request(url, method, content = nil, valid_response_codes = [ 200 ])
+      http_client = Carto::Http::Client.get('hubspot')
       response = http_client.request(
                                        url,
                                        method: method,
@@ -90,10 +91,6 @@ module CartoDB
     rescue => e
       Rollbar.report_exception(e, nil, { url: url, content: content, reponse: response.inspect })
       nil
-    end
-
-    def http_client
-      @http_client ||= Carto::Http::Client.get('hubspot')
     end
 
   end

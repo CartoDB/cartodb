@@ -24,6 +24,7 @@ module CartoDB
 
     def fetch(query, format = '')
       params   = { q: query, api_key: api_key, format: format }
+      http_client = Carto::Http::Client.get('sql_api')
       response = http_client.request(
         base_url,
         method: :post,
@@ -57,13 +58,6 @@ module CartoDB
 
     def base_url
       "#{protocol}://#{username}.cartodb.com/api/v2/sql"
-    end
-
-
-    private
-
-    def http_client
-      @http_client ||= Carto::Http::Client.get('sql_api')
     end
 
   end

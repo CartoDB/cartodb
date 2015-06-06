@@ -105,6 +105,7 @@ module CartoDB
           end
         end
 
+        http_client = Carto::Http::Client.get('search_api')
         response = http_client.get(@config[CONFIG_SEARCH_URL], http_options(params))
 
         raise TwitterHTTPException.new(response.code, response.effective_url, response.body) unless response.code == 200
@@ -147,10 +148,6 @@ module CartoDB
           options[:userpwd] = "#{@config[CONFIG_AUTH_USERNAME]}:#{@config[CONFIG_AUTH_PASSWORD]}"
         end
         options
-      end
-
-      def http_client
-        @http_client ||= Carto::Http::Client.get('search_api')
       end
 
     end

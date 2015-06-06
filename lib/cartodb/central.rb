@@ -26,6 +26,7 @@ module Cartodb
     end
 
     def build_request(path, body, method, timeout = 200)
+      http_client = Carto::Http::Client.get('central', log_requests: true)
       http_client.request(
         "#{ @host }/#{ path }",
         method: method,
@@ -106,13 +107,6 @@ module Cartodb
     def delete_organization(organization_name)
       return send_request("api/organizations/#{ organization_name }", nil, :delete, [204])
     end # delete_organization
-
-
-    private
-
-    def http_client
-      @http_client ||= Carto::Http::Client.get('central', log_requests: true)
-    end
 
   end
 

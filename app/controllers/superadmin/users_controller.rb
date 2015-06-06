@@ -51,6 +51,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       raise "There is not a dump method configured"
     end
     json_data = {database: @user.database_name, username: @user.username}
+    http_client = Carto::Http::Client.get(self.class.name, log_requests: true)
     response = http_client.request(
       "#{@user.database_host}:#{Cartodb.config[:users_dumps]["service"]["port"]}/scripts/db_dump",
       method: :post,
@@ -104,9 +105,5 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     @user = User[params[:id]]
     raise RecordNotFound unless @user
   end # get_user
-
-  def http_client
-    @http_client ||= Carto::Http::Client.get(self.class.name, log_requests: true)
-  end
 
 end # Superadmin::UsersController

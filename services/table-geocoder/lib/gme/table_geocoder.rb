@@ -91,7 +91,37 @@ module Carto
       end
 
       def update_table(data_block)
-        # TODO: implement
+        # At this point, data_block is an Array that looks like this:
+        #   [{:cartodb_id=>1, :searchtext=>"Some real street name", :lat=>19.29544, :lng=>-99.1472101, :cartodb_georef_status=>true},
+        #    {:cartodb_id=>2, :searchtext=>"foo", :cartodb_georef_status=>false}]
+        geocoded = data_block.select {|row| row[:cartodb_georef_status] == true}
+        if geocoded.count > 0
+          geocoded_to_sql = geocoded.map {|row| "(#{row[:cartodb_id]}, #{row[:lat]}, #{row[:lng]})"}.join(',')
+          query_geocoded = %Q{
+            UPDATE #{@qualified_table_name} as target SET
+              the_geom = ST_SetSRID(ST_MakePoint(geocoded.lat,geocoded.lng),4326),
+              cartodb_georef_status = TRUE
+            FROM (VALUES
+              #{geocoded_to_sql}
+            ) as geocoded(cartodb_id,lat,lng)
+            WHERE target.cartodb_id = geocoded.cartodb_id;
+          }
+          connection.run(query_geocoded)
+        end
+
+        non_geocoded = data_block.select {|row| row[:cartodb_georef_status] == false}
+        if non_geocoded.count > 0
+          non_geocoded_to_sql = non_geocoded.map {|row| "(#{row[:cartodb_id]})"}.join(',')
+          query_non_geocoded = %Q{
+            UPDATE #{@qualified_table_name} as target SET
+              cartodb_georef_status = FALSE
+            FROM (VALUES
+              #{non_geocoded_to_sql}
+            ) as nongeocoded(cartodb_id)
+            WHERE target.cartodb_id = nongeocoded.cartodb_id;
+          }
+          connection.run(query_non_geocoded)
+        end
       end
 
     end

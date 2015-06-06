@@ -54,20 +54,19 @@ module CartoDB
       end
 
       def make_geometries_valid
-        QueryBatcher::execute(
-          db,
-          %Q{
-            UPDATE #{qualified_table_name}
-            SET
-              the_geom = public.ST_MakeValid("#{@geometry_column}")
-            #{QueryBatcher::QUERY_WHERE_PLACEHOLDER}
-            WHERE ST_IsValid("#{@geometry_column}") = FALSE
-            #{QueryBatcher::QUERY_LIMIT_SUBQUERY_PLACEHOLDER}
-          },
-          qualified_table_name,
-          job,
-          'Populating the_geom from latitude / longitude'
-        )
+        job.log 'Fixing geometries'
+        QueryBatcher.new(
+            db, 
+            job, 
+            create_seq_field = true
+          ).execute_update(
+              %Q{
+                UPDATE #{qualified_table_name}
+                SET the_geom = public.ST_MakeValid("#{@geometry_column}")
+                WHERE ST_IsValid("#{@geometry_column}") = FALSE
+              },
+              schema, table_name
+          )
       end
 
     end

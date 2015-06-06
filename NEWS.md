@@ -1,8 +1,10 @@
 
 3.10.3 (2015-mm-dd)
 ---
+* Mailchimp decorator enables category wizard and legends [#3874](https://github.com/CartoDB/cartodb/pull/3874)
 * Cache public and with link embeds in redis [#3733](https://github.com/CartoDB/cartodb/pull/3733)
 * Unify caching of vizjsons and version keys [#3726](https://github.com/CartoDB/cartodb/pull/3726)
+* Named maps created for all visualizations, regardless of layers privacy [#3879](https://github.com/CartoDB/cartodb/issues/3879)
 
 Bugfixes:
 * Fixed deletion of layers upon disconnecting synced datasources [#3718](https://github.com/CartoDB/cartodb/pull/3718)

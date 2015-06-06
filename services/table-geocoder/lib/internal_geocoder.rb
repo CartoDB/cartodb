@@ -1,5 +1,6 @@
 # encoding: utf-8
 require_relative '../../sql-api/sql_api'
+require_relative '../../importer/lib/importer/query_batcher'
 require_relative 'internal-geocoder/query_generator_factory'
 require_relative 'abstract_table_geocoder'
 
@@ -88,15 +89,16 @@ module CartoDB
       end # load_results_to_temp_table
 
       def copy_results_to_table
-        CartoDB::Importer2::QueryBatcher::execute(
-          connection,
-          @query_generator.copy_results_to_table_query,
-          qualified_table_name,
-          nil, # use default logger
-          'InternalGeocoder::copy_results_to_table',
-          false, # do not capture exceptions,
-          batch_size
-        )
+        # 'InternalGeocoder::copy_results_to_table'
+        CartoDB::Importer2::QueryBatcher.new(
+            connection,
+            nil,
+            create_seq_field = true,
+            batch_size
+          ).execute_update(
+            @query_generator.copy_results_to_table_query,
+            @table_schema, @table_name
+          )
       end
 
       def drop_temp_table
@@ -104,7 +106,7 @@ module CartoDB
       end # drop_temp_table
 
       def temp_table_name
-        @temp_table_name ||= "internal_geocoding_#{Time.now.to_i}"
+        @temp_table_name ||= %Q{"#{@table_schema}".internal_geocoding_#{Time.now.to_i}}
       end # temp_table_name
 
     end # Geocoder

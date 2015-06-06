@@ -3,6 +3,7 @@
 require 'socket'
 require_relative 'request'
 require_relative 'response_logger'
+require_relative 'null_logger'
 
 module Carto
   module Http
@@ -59,10 +60,6 @@ module Carto
       def perform_request(method, url, options)
         request = Request.new(@logger, url, options.merge(method: method))
         request.run
-      end
-
-      class NullLogger
-        def log(response); end
       end
 
     end

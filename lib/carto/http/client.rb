@@ -2,6 +2,7 @@
 
 require 'socket'
 require_relative 'request'
+require_relative 'response_logger'
 
 module Carto
   module Http
@@ -58,36 +59,6 @@ module Carto
       def perform_request(method, url, options)
         request = Request.new(@logger, url, options.merge(method: method))
         request.run
-      end
-
-
-      class ResponseLogger
-
-        def self.enabled?
-          defined?(Rails) && Rails.respond_to?(:root) && Rails.root.present? && Cartodb.config[:http_client_logs]
-        end
-
-        def initialize(tag, hostname)
-          @tag = tag
-          @hostname = hostname
-        end
-
-        def log(response)
-          payload = {
-            tag: @tag,
-            hostname: @hostname,
-            method: (response.request.options[:method] || :get).to_s, # the default typhoeus method is :get
-            request_url: response.request.url,
-            total_time: response.total_time,
-            response_code: response.code,
-            response_body_size: response.body.nil? ? 0 : response.body.size
-          }
-          logger.info(payload.to_json)
-        end
-
-        def logger
-          @@logger ||= Logger.new("#{Rails.root}/log/http_client.log")
-        end
       end
 
       class NullLogger

@@ -9,8 +9,8 @@ module Carto
       attr_reader :connection, :formatter, :processed_rows, :state
 
       def self.enabled?
-        #TODO check the config instead
-        true
+        config = Cartodb.config[:gce_geocoder]
+        config.present? && config['client_id'].present? && config['private_key'].present?
       end
 
       def initialize(arguments)

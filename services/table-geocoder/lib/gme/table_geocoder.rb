@@ -9,7 +9,7 @@ module Carto
       end
 
       def initialize(config)
-        @config = config
+        # TODO
       end
 
       def cancel

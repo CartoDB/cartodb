@@ -3,7 +3,7 @@ require_relative '../../sql-api/sql_api'
 require_relative 'internal-geocoder/query_generator_factory'
 
 module CartoDB
-  module InternalGeocoder
+  module InternalGeocoder < AbstractTableGeocoder
 
     class Geocoder
       class NotImplementedError < StandardError; end
@@ -17,14 +17,10 @@ module CartoDB
       attr_accessor :table_schema, :table_name, :column_name
 
       def initialize(arguments)
+        super(arguments)
         @sql_api              = CartoDB::SQLApi.new(arguments.fetch(:internal)
                                                              .merge({ timeout: SQLAPI_CALLS_TIMEOUT })
                                                    )
-        @connection           = arguments.fetch(:connection)
-        @working_dir          = Dir.mktmpdir
-        @table_name           = arguments[:table_name]
-        @table_schema         = arguments[:table_schema]
-        @qualified_table_name = arguments[:qualified_table_name]
         @column_name          = arguments[:formatter]
         @countries            = arguments[:countries].to_s
         @country_column       = arguments[:country_column]
@@ -32,7 +28,6 @@ module CartoDB
         @region_column        = arguments[:region_column]
         @geometry_type        = arguments.fetch(:geometry_type, '').to_sym
         @kind                 = arguments.fetch(:kind, '').to_sym
-        @schema               = arguments[:schema] || 'cdb'
         @batch_size           = (@geometry_type == :point ? 1000 : 10)
         @state                = 'submitted'
         @geocoding_results = File.join(working_dir, "#{temp_table_name}_results.csv")
@@ -112,31 +107,6 @@ module CartoDB
       def temp_table_name
         @temp_table_name ||= "internal_geocoding_#{Time.now.to_i}"
       end # temp_table_name
-
-      def add_georef_status_column
-        connection.run(%Q{
-          ALTER TABLE #{@qualified_table_name}
-          ADD COLUMN cartodb_georef_status BOOLEAN DEFAULT NULL
-        })
-      rescue Sequel::DatabaseError => e
-        raise unless e.message =~ /column .* of relation .* already exists/
-        cast_georef_status_column
-      end
-
-      def cast_georef_status_column
-        connection.run(%Q{
-          ALTER TABLE #{@qualified_table_name} ALTER COLUMN cartodb_georef_status
-          TYPE boolean USING cast(cartodb_georef_status as boolean)
-        })
-      rescue => e
-        raise "Error converting cartodb_georef_status to boolean, please, convert it manually or remove it."
-      end
-
-      def used_batch_request?
-        # Only used for hi-res geocoding
-        false
-      end
-
 
     end # Geocoder
 

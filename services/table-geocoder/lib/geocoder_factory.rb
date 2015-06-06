@@ -4,8 +4,8 @@ require_relative '../../services/table-geocoder/lib/table_geocoder'
 require_relative '../../services/table-geocoder/lib/internal_geocoder'
 require_relative '../../services/table-geocoder/lib/gme/table_geocoder'
 
-module CartoDB
-  class GeocoderFactory
+module Carto
+  class TableGeocoderFactory
     def self.get(config)
       kind = config[:kind]
       

@@ -75,7 +75,7 @@ class Geocoding < Sequel::Model
       country_column: country_column,
       region_column: region_column
     )
-    @table_geocoder ||= GeocoderFactory.get(config)
+    @table_geocoder ||= Carto::TableGeocoderFactory.get(config)
   end # table_geocoder
 
   # INFO: table_geocoder method is very coupled to table model, and we want to use this model during imports, without table yet.

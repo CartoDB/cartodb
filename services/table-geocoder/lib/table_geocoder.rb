@@ -1,6 +1,7 @@
 # encoding: utf-8
 require_relative '../../geocoder/lib/geocoder'
 require_relative 'geocoder_cache'
+require_relative 'abstract_table_geocoder'
 
 module CartoDB
   class TableGeocoder < AbstractTableGeocoder

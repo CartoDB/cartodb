@@ -11,6 +11,7 @@ module CartoDB
       @qualified_table_name = arguments[:qualified_table_name]
       @sequel_qualified_table_name = arguments[:sequel_qualified_table_name]
       @schema = arguments[:schema] || 'cdb'
+      @state = 'submitted'
     end
 
     def add_georef_status_column
@@ -32,7 +33,7 @@ module CartoDB
     end
 
     def remote_id
-      raise "TODO: this shouldn't be part of a common interface"
+      raise 'Not implemented'
     end
 
     def update_geocoding_status

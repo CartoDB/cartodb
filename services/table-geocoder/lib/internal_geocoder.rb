@@ -1,12 +1,12 @@
 # encoding: utf-8
 require_relative '../../sql-api/sql_api'
 require_relative 'internal-geocoder/query_generator_factory'
+require_relative 'abstract_table_geocoder'
 
 module CartoDB
-  module InternalGeocoder < AbstractTableGeocoder
+  module InternalGeocoder
 
-    class Geocoder
-      class NotImplementedError < StandardError; end
+    class Geocoder  < AbstractTableGeocoder
 
       SQLAPI_CALLS_TIMEOUT = 45
 
@@ -29,7 +29,6 @@ module CartoDB
         @geometry_type        = arguments.fetch(:geometry_type, '').to_sym
         @kind                 = arguments.fetch(:kind, '').to_sym
         @batch_size           = (@geometry_type == :point ? 1000 : 10)
-        @state                = 'submitted'
         @geocoding_results = File.join(working_dir, "#{temp_table_name}_results.csv")
         @query_generator = CartoDB::InternalGeocoder::QueryGeneratorFactory.get self
       end # initialize

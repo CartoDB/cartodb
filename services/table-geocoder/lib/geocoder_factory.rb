@@ -1,8 +1,8 @@
 # encoding: utf-8
 
-require_relative '../../services/table-geocoder/lib/table_geocoder'
-require_relative '../../services/table-geocoder/lib/internal_geocoder'
-require_relative '../../services/table-geocoder/lib/gme/table_geocoder'
+require_relative 'table_geocoder'
+require_relative 'internal_geocoder'
+require_relative 'gme/table_geocoder'
 
 module Carto
   class TableGeocoderFactory

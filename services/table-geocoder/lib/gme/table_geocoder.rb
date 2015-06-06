@@ -75,11 +75,17 @@ module Carto
       def geocode(data_block)
         data_block.each do |row|
           response = JSON::parse(@geocoder_client.geocode(row[:searchtext]))
-          # TODO: deal with response['status'] != "OK"
-          result = response['results'].first
-          # TODO: deal with result.nil? == true
-          location = result['geometry']['location']
-          row.merge!(location.deep_symbolize_keys)
+          if response['status'] != 'OK'
+            row.merge!(cartodb_georef_status: false)
+          else
+            result = response['results'].select { |res| res['types'].include?('street_address') }.first
+            if result.nil?
+              row.merge!(cartodb_georef_status: false)
+            else
+              location = result['geometry']['location']
+              row.merge!(location.deep_symbolize_keys.merge(cartodb_georef_status: true))
+            end
+          end
           sleep 0.01 # TODO: remove when throttling is implemented
         end
       end

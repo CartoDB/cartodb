@@ -231,9 +231,11 @@ module CartoDB
       end
 
       def delete(from_table_deletion=false)
-        begin
           # Named map must be deleted before the map, or we lose the reference to it
-          get_named_map.delete
+        begin
+          named_map = get_named_map
+          # non-existing named map is not a critical failure, keep deleting even if not found
+          named_map.delete if named_map
         rescue NamedMapsWrapper::HTTPResponseError => exception
           # CDB-1964: Silence named maps API exception if deleting data to avoid interrupting whole flow
           unless from_table_deletion
@@ -245,7 +247,7 @@ module CartoDB
 
         support_tables.delete_all
 
-        invalidate_cache
+        invalidate_cache(update_named_maps = false)
         overlays.destroy
         layers(:base).map(&:destroy)
         layers(:cartodb).map(&:destroy)
@@ -418,10 +420,10 @@ module CartoDB
         derived? && !single_data_layer?
       end
 
-      def invalidate_cache
+      def invalidate_cache(update_named_maps=true)
         invalidate_varnish_cache
         invalidate_redis_cache
-        if type == TYPE_CANONICAL || type == TYPE_DERIVED || organization?
+        if update_named_maps && (type == TYPE_CANONICAL || type == TYPE_DERIVED || organization?)
           save_named_map
         end
         parent.invalidate_cache unless parent_id.nil?

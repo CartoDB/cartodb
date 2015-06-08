@@ -11,7 +11,7 @@ describe Carto::Api::OrganizationsController do
   describe 'users unauthenticated behaviour' do
 
     it 'returns 401 for not logged users' do
-      get api_v1_1_organization_users_url(id: @organization.id), @headers
+      get api_v1_organization_users_url(id: @organization.id), @headers
       last_response.status.should == 401
     end
   end
@@ -32,12 +32,12 @@ describe Carto::Api::OrganizationsController do
     end
 
     it 'returns 401 for users requesting an organization that they are not owners of' do
-      get api_v1_1_organization_users_url(id: @organization_2.id, api_key: @org_user_1.api_key), @headers
+      get api_v1_organization_users_url(id: @organization_2.id, api_key: @org_user_1.api_key), @headers
       last_response.status.should == 401
     end
 
     it 'returns organization users sorted by username' do
-      get api_v1_1_organization_users_url(id: @organization.id, api_key: @org_user_1.api_key), @headers
+      get api_v1_organization_users_url(id: @organization.id, api_key: @org_user_1.api_key), @headers
       last_response.status.should == 200
       json_body = JSON.parse(last_response.body)
       ids = json_body['users'].map { |u| u['id'] } 
@@ -47,7 +47,7 @@ describe Carto::Api::OrganizationsController do
     end
 
     it 'returns organization users paged with totals' do
-      get api_v1_1_organization_users_url(id: @organization.id, api_key: @org_user_1.api_key, page: 1, per_page: 2), @headers
+      get api_v1_organization_users_url(id: @organization.id, api_key: @org_user_1.api_key, page: 1, per_page: 2), @headers
       last_response.status.should == 200
       json_body = JSON.parse(last_response.body)
       ids = json_body['users'].map { |u| u['id'] } 
@@ -57,7 +57,7 @@ describe Carto::Api::OrganizationsController do
       json_body['total_entries'].should == 2
       json_body['total_user_entries'].should == 3
 
-      get api_v1_1_organization_users_url(id: @organization.id, api_key: @org_user_1.api_key, page: 2, per_page: 2), @headers
+      get api_v1_organization_users_url(id: @organization.id, api_key: @org_user_1.api_key, page: 2, per_page: 2), @headers
       last_response.status.should == 200
       json_body = JSON.parse(last_response.body)
       ids = json_body['users'].map { |u| u['id'] } 
@@ -70,7 +70,7 @@ describe Carto::Api::OrganizationsController do
     it 'returns users matching username query' do
       username = @org_user_2.username
       [username, username[1, 10], username[-4, 10]].each { |q|
-        get api_v1_1_organization_users_url(id: @organization.id, api_key: @org_user_1.api_key, q: q), @headers
+        get api_v1_organization_users_url(id: @organization.id, api_key: @org_user_1.api_key, q: q), @headers
         last_response.status.should == 200
         json_body = JSON.parse(last_response.body)
         ids = json_body['users'].map { |u| u['id'] }
@@ -82,7 +82,7 @@ describe Carto::Api::OrganizationsController do
     it 'returns users matching email query' do
       email = @org_user_2.email
       [email].each { |q|
-        get api_v1_1_organization_users_url(id: @organization.id, api_key: @org_user_1.api_key, q: q), @headers
+        get api_v1_organization_users_url(id: @organization.id, api_key: @org_user_1.api_key, q: q), @headers
         last_response.status.should == 200
         json_body = JSON.parse(last_response.body)
         ids = json_body['users'].map { |u| u['id'] }

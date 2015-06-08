@@ -22,6 +22,7 @@ module CartoDB
       # in seconds
       HTTP_CONNECT_TIMEOUT = 60
       DEFAULT_HTTP_REQUEST_TIMEOUT = 600
+      URL_ESCAPED_CHARACTERS = 'áéíóúÁÉÍÓÚñÑçÇàèìòùÀÈÌÒÙ'
 
       DEFAULT_FILENAME        = 'importer'
       CONTENT_DISPOSITION_RE  = %r{;\s*filename=(.*;|.*)}
@@ -56,8 +57,8 @@ module CartoDB
           @custom_filename = translator.respond_to?(:rename_destination) ? translator.rename_destination(url) : nil
         end
         # INFO: runner_spec.rb uses File instead of String, so we chose to support both
-        # TODO: this fixed #3315 but made other urls don't work
-        #@translated_url = URI.escape(@translated_url) if !@translated_url.nil? && @translated_url.kind_of?(String)
+        # We only want to escape specific characters
+        @translated_url = URI.escape(@translated_url, URL_ESCAPED_CHARACTERS) if !@translated_url.nil? && @translated_url.kind_of?(String)
       end
 
       def provides_stream?

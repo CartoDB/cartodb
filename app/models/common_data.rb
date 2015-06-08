@@ -1,7 +1,10 @@
+require_relative '../../lib/carto/http/client'
+
 class CommonData
 
   def initialize
     @datasets = nil
+    @http_client = Carto::Http::Client.get('common_data', log_requests: true)
   end
 
   def datasets
@@ -57,7 +60,8 @@ class CommonData
   def get_datasets_json
     body = nil
     begin
-      response = Typhoeus.get(datasets_url, followlocation:true)
+      http_client = Carto::Http::Client.get('common_data', log_requests: true)
+      response = http_client.get(datasets_url, followlocation:true)
       if response.code == 200
         body = response.response_body
       end

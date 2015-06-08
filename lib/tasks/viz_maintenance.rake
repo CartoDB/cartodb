@@ -15,6 +15,47 @@ namespace :cartodb do
       end
     end
 
+    desc "Create named maps for all eligible existing visualizations"
+    task :create_named_maps, [:dry_run] => :environment do |t, args|
+      dry_run = args[:dry_run] == 'true'
+
+      processed = 0
+
+      puts "Dry run of create_named_maps rake" if dry_run
+
+      collection = CartoDB::Visualization::Collection.new.fetch({
+        'types' => [CartoDB::Visualization::Member::TYPE_CANONICAL, CartoDB::Visualization::Member::TYPE_DERIVED],
+        per_page: CartoDB::Visualization::Collection::ALL_RECORDS
+        })
+
+      count = collection.count
+
+      puts "Fetched ##{count} items"
+
+      collection.each do |viz|
+        begin
+          if viz.has_named_map?
+            printf '.'
+          else
+            printf 'S'
+            viz.store unless dry_run
+          end
+          #puts "OK:  #{CartoDB::NamedMapsWrapper::NamedMap::normalize_name(viz.id)} :: User: #{viz.user_id}"
+        rescue => ex
+          puts "ERR: #{viz.id}"
+          puts ex.inspect
+        end
+        processed += 1
+        if processed % 250 == 0
+          puts "#{processed}/#{count}"
+        end
+      end
+
+      puts "\nFinished ##{count} items"
+    end
+
+    private
+
     def is_inconsistent?(viz)
       (viz.table? && viz.related_tables.empty?) || (viz.derived? && viz.map.nil?)
     end

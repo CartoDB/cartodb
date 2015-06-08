@@ -1,7 +1,7 @@
 # encoding: utf-8
 require 'fileutils'
-require 'typhoeus'
 require 'open3'
+require 'uri'
 require_relative './exceptions'
 require_relative './source_file'
 require_relative '../../../data-repository/filesystem/local'
@@ -13,6 +13,7 @@ require_relative './url_translator/google_maps'
 require_relative './url_translator/google_docs'
 require_relative './url_translator/kimono_labs'
 require_relative './unp'
+require_relative '../../../../lib/carto/http/client'
 
 module CartoDB
   module Importer2
@@ -21,6 +22,7 @@ module CartoDB
       # in seconds
       HTTP_CONNECT_TIMEOUT = 60
       DEFAULT_HTTP_REQUEST_TIMEOUT = 600
+      URL_ESCAPED_CHARACTERS = 'áéíóúÁÉÍÓÚñÑçÇàèìòùÀÈÌÒÙ'
 
       DEFAULT_FILENAME        = 'importer'
       CONTENT_DISPOSITION_RE  = %r{;\s*filename=(.*;|.*)}
@@ -54,6 +56,9 @@ module CartoDB
           @translated_url = translator.translate(url)
           @custom_filename = translator.respond_to?(:rename_destination) ? translator.rename_destination(url) : nil
         end
+        # INFO: runner_spec.rb uses File instead of String, so we chose to support both
+        # We only want to escape specific characters
+        @translated_url = URI.escape(@translated_url, URL_ESCAPED_CHARACTERS) if !@translated_url.nil? && @translated_url.kind_of?(String)
       end
 
       def provides_stream?
@@ -132,7 +137,7 @@ module CartoDB
       end
 
       def headers
-        @headers ||= Typhoeus.head(@translated_url, typhoeus_options).headers
+        @headers ||= http_client.head(@translated_url, typhoeus_options).headers
       end
 
       def typhoeus_options
@@ -160,7 +165,7 @@ module CartoDB
         temp_name = filepath(DEFAULT_FILENAME << '_' << random_name)
 
         downloaded_file = File.open(temp_name, 'wb')
-        request = Typhoeus::Request.new(@translated_url, typhoeus_options)
+        request = http_client.request(@translated_url, typhoeus_options)
         request.on_headers do |response|
           unless response.success?
             download_error = true
@@ -344,6 +349,10 @@ module CartoDB
 
       def md5_command_for(name)
         %Q(md5sum #{name} | cut -d' ' -f1)
+      end
+
+      def http_client
+        @http_client ||= Carto::Http::Client.get('downloader', log_requests: true)
       end
     end
   end

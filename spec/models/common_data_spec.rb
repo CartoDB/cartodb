@@ -17,20 +17,23 @@ describe CommonData do
     Typhoeus::Expectation.clear
   end
 
-  it 'should return empty datasets response for SQL API error response' do
+  it 'should return empty datasets response and notify error for SQL API error response' do
     stub_api_response(503)
+    CartoDB.expects(:notify_error).with('common-data empty', { rows: [] })
 
     @common_data.datasets.should eq CommonData::DATASETS_EMPTY
   end
 
-  it 'should return empty datasets for invalid json' do
+  it 'should return empty datasets and notify error for invalid json' do
     stub_api_response(200, INVALID_JSON_RESPONSE)
+    CartoDB.expects(:notify_error).with('common-data empty', { rows: [] })
 
     @common_data.datasets.should eq CommonData::DATASETS_EMPTY
   end
 
   it 'should return correct categories and datasets for default stub response' do
     stub_valid_api_response
+    CartoDB.expects(:notify_error).times(0)
 
     @common_data.datasets[:datasets].size.should eq 7
     @common_data.datasets[:categories].size.should eq 3

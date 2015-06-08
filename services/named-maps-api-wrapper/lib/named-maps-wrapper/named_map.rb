@@ -203,11 +203,12 @@ module CartoDB
       private
 
       def self.view_data_from(visualization)
+        # (lat,lon) points on all map data
         center = visualization.map.center.gsub(/\[|\]|\s*/, '').split(',')
 
-        # (lat,lon) points
-        bbox_sw = visualization.map.bounding_box_sw.gsub(/\[|\]|\s*/, '').split(',').map(&:to_f)
-        bbox_ne = visualization.map.bounding_box_ne.gsub(/\[|\]|\s*/, '').split(',').map(&:to_f)
+        # INFO: We grab view bounds because represent what the user usually wants to "see"
+        bbox_sw = visualization.map.view_bounds_sw.gsub(/\[|\]|\s*/, '').split(',').map(&:to_f)
+        bbox_ne = visualization.map.view_bounds_ne.gsub(/\[|\]|\s*/, '').split(',').map(&:to_f)
 
         {
           zoom:   visualization.map.zoom,

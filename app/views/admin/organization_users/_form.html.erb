@@ -127,7 +127,7 @@
     </div>
   </div>
 
-  <% if @user.organization.twitter_datasource_enabled %>
+  <% if current_user && current_user.organization && current_user.organization.twitter_datasource_enabled %>
     <div class="Form-row">
       <div class="Form-rowLabel">
         <label class="Form-label">Extra tweets</label>

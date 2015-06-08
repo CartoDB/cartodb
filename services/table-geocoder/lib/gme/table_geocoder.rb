@@ -93,7 +93,6 @@ module Carto
               row.merge!(location.deep_symbolize_keys.merge(cartodb_georef_status: true))
             end
           end
-          sleep 0.01 # TODO: remove when throttling is implemented
         end
       end
 

@@ -78,6 +78,7 @@ module Carto
           if response['status'] != 'OK'
             row.merge!(cartodb_georef_status: false)
           else
+            # TODO: check for other types (e.g: route)
             result = response['results'].select { |res| res['types'].include?('street_address') }.first
             if result.nil?
               row.merge!(cartodb_georef_status: false)

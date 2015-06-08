@@ -34,7 +34,8 @@ module Carto
       if stuck?(import)
         # INFO: failure because of stuck is handled with old model
         ::DataImport[id].mark_as_failed_if_stuck!
-        import.reload
+        # INFO: avoiding `reload` usage because of #7718
+        import = Carto::DataImport.where(id: id).first
       end
       import
     rescue RecordNotFound => e

@@ -421,8 +421,8 @@ module CartoDB
       end
 
       def invalidate_cache(update_named_maps=true)
-        invalidate_varnish_cache
         invalidate_redis_cache
+        invalidate_varnish_cache
         if update_named_maps && (type == TYPE_CANONICAL || type == TYPE_DERIVED || organization?)
           save_named_map
         end

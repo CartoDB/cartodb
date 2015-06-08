@@ -1,6 +1,7 @@
-require 'typhoeus'
 require 'rollbar'
 require 'singleton'
+require_relative '../carto/http/client'
+
 
 # Development info: http://developers.hubspot.com/docs/overview
 module CartoDB
@@ -72,7 +73,8 @@ module CartoDB
     end
 
     def send_request(url, method, content = nil, valid_response_codes = [ 200 ])
-      response = Typhoeus::Request.new(
+      http_client = Carto::Http::Client.get('hubspot')
+      response = http_client.request(
                                        url,
                                        method: method,
                                        headers: { "Content-Type" => "application/json" },

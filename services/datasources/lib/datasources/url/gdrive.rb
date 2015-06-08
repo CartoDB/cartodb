@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require 'google/api_client'
+require_relative '../../../../../lib/carto/http/client'
 
 module CartoDB
   module Datasources
@@ -283,7 +284,8 @@ module CartoDB
 
         # Revokes current set token
         def revoke_token
-          response = Typhoeus.get("https://accounts.google.com/o/oauth2/revoke?token=#{token}")
+          http_client = Carto::Http::Client.get('gdrive')
+          response = http_client.get("https://accounts.google.com/o/oauth2/revoke?token=#{token}")
             if response.code == 200
               true
             end

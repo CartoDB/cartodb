@@ -206,27 +206,33 @@ module CartoDB
         # (lat,lon) points on all map data
         center = visualization.map.center.gsub(/\[|\]|\s*/, '').split(',')
 
+        data = {
+          zoom:   visualization.map.zoom,
+          center: {
+                    lng: center[1].to_f,
+                    lat: center[0].to_f
+                  }
+        }
+
         # INFO: We grab view bounds because represent what the user usually wants to "see"
         bbox_sw = visualization.map.view_bounds_sw.gsub(/\[|\]|\s*/, '').split(',').map(&:to_f)
         bbox_ne = visualization.map.view_bounds_ne.gsub(/\[|\]|\s*/, '').split(',').map(&:to_f)
 
-        {
-          zoom:   visualization.map.zoom,
-          center: {
-                      lng: center[1].to_f,
-                      lat: center[0].to_f
-                    },
-          bounds: {
-                      # LowerCorner longitude, in decimal degrees 
-                      west:  bbox_sw[1],
-                      # LowerCorner latitude, in decimal degrees
-                      south: bbox_sw[0],
-                      # UpperCorner longitude, in decimal degrees
-                      east:  bbox_ne[1],
-                      # UpperCorner latitude, in decimal degrees
-                      north: bbox_ne[0]
-                    }
-        }
+        # INFO: Don't return 'bounds' if all points are 0 to avoid static map trying to go too small zoom level
+        if bbox_sw[0] != 0 || bbox_sw[1] != 0 || bbox_ne[0] != 0 || bbox_ne[1] != 0
+          data[:bounds] = {
+                            # LowerCorner longitude, in decimal degrees 
+                            west:  bbox_sw[1],
+                            # LowerCorner latitude, in decimal degrees
+                            south: bbox_sw[0],
+                            # UpperCorner longitude, in decimal degrees
+                            east:  bbox_ne[1],
+                            # UpperCorner latitude, in decimal degrees
+                            north: bbox_ne[0]
+                          }
+        end
+
+        data
       end
 
       # @return Hash {

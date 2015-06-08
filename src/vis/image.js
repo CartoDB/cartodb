@@ -61,6 +61,7 @@
     this.error = null;
 
     this.supported_formats = ["png", "jpg"];
+    this.userOptions = {}
 
     this.defaults = {
       basemap_url_template: "http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
@@ -115,6 +116,7 @@
       this.options.tiler_domain   = layerDefinition.tiler_domain;
       this.options.tiler_port     = layerDefinition.tiler_port;
       this.options.maps_api_template = layerDefinition.maps_api_template;
+      this.options.api_key = layerDefinition.api_key;
       this.endPoint = "/api/v1/map";
 
       if (!this.options.maps_api_template) {

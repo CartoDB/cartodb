@@ -381,7 +381,7 @@
            'from ({{sql}}) _wrap',
         '),',
         'geotype as (', 
-          'select st_geometrytype({{column}}) as geometry_type from ({{sql}}) _w where {{column}} is not null',
+          'select st_geometrytype({{column}}) as geometry_type from ({{sql}}) _w where {{column}} is not null limit 1',
         ')',
         'select * from stats, geotype'
       ];

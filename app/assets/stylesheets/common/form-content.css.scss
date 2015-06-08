@@ -151,8 +151,6 @@ $sLabel-width: 140px;
 .Form-input:-moz-placeholder           { font-style: italic; color: #AAA }
 .Form-input::-moz-placeholder          { font-style: italic; color: #AAA }
 .Form-input:-ms-input-placeholder      { font-style: italic; color: #AAA }
-// Modifiers
-.Form-input--noBorder { border: none }
 // Sizes
 .Form-input--longer { width: 434px }
 .Form-input--long { width: 354px }
@@ -213,10 +211,13 @@ $sLabel-width: 140px;
   border-radius: 4px;
   @include transition(top, 200ms, ease-in-out);
 }
-.Form-inputError.is-visible {
-  top: 36px;
-}
+.Form-inputError.is-visible { top: 36px }
 .Form-input.is-disabled { background: $cStructure-grayBkg }
+// Modifiers
+.Form-input--noBorder { border: none }
+.Form-input--noBkg,
+.Form-input--noBkg.is-disabled { background: transparent }
+
 .Form-textarea {
   padding: 12px;
   min-height: 110px;

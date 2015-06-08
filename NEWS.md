@@ -12,6 +12,7 @@ Bugfixes:
 * Fixed corner case with ghost table renames [#3762](https://github.com/CartoDB/cartodb/pull/3762)
 * Added options to create dataset from query while on the map view [#3771](https://github.com/CartoDB/cartodb/pull/3771)
 * Do not cache geocodes if the_geom is NULL [#3793](https://github.com/CartoDB/cartodb/pull/3793)
+* Reverse order of varnish/redis invalidation [#3555](https://github.com/CartoDB/cartodb/pull/3945)
 
 3.10.2 (2015-05-20)
 ---------

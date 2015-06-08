@@ -713,25 +713,12 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
 
       vizjson = get_vizjson(derived_vis)
 
-      vizjson.include?(:id).should eq true
-      vizjson.include?(:version).should eq true
-      vizjson.include?(:title).should eq true
-      vizjson.include?(:description).should eq true
-      vizjson.include?(:layers).should eq true
-
       vizjson[:layers].size.should eq 2
       vizjson[:layers][0][:type].should eq 'tiled'
       vizjson[:layers][1][:type].should eq 'namedmap'
 
       vizjson[:layers][1].include?(:order).should eq true
       vizjson[:layers][1][:options][:type].should eq 'namedmap'
-      vizjson[:layers][1][:options].include?(:user_name).should eq true
-      vizjson[:layers][1][:options][:tiler_protocol].should eq 'http'
-      vizjson[:layers][1][:options][:tiler_domain].should eq 'localhost.lan'
-      vizjson[:layers][1][:options][:tiler_port].should eq public_tiler_port
-      vizjson[:layers][1][:options].include?(:cdn_url).should eq true
-      vizjson[:layers][1][:options].include?(:named_map).should eq true
-      vizjson[:layers][1][:options][:named_map][:name].should eq template_id
       vizjson[:layers][1][:options][:named_map][:params].size.should eq 1
       vizjson[:layers][1][:options][:named_map][:params].include?(:layer0).should eq true
       vizjson[:layers][1][:options][:named_map][:params].include?(:layer1).should eq false
@@ -764,8 +751,91 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
     end
   end
 
-  private
+  describe 'view data' do
+    it 'checks that the named map builds correctly the :view section' do
+      template_data = {
+        template: {
+          version: '0.0.1',
+          name: '@@PLACEHOLDER@@',
+          auth: {
+            method: 'open'
+          },
+          placeholders: {
+            layer1: {
+              type: "number",
+              default: 1
+            }
+          },
+          layergroup: {
+            layers: [
+              {
+                type: "http",
+                options: {
+                  urlTemplate: "http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png",
+                  subdomains: "abcd"
+                }
+              },
+              {
+                type: "cartodb",
+                options: {
+                  sql: "WITH wrapped_query AS (select * from test2) SELECT * from wrapped_query where <%= layer1 %>=1",
+                  layer_name: "test2",
+                  cartocss: "/** */",
+                  cartocss_version: "2.1.1",
+                  interactivity: "cartodb_id"
+                }
+              }
+            ]
+          },
+          view: {
+            zoom: 3,
+            center: {
+              lng: 0.0,
+              lat: 30.0
+            }
+          }
+        }
+      }
 
+      table, derived_vis, template_id = create_private_table_with_public_visualization(template_data)
+
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+
+      vizjson = get_vizjson(derived_vis)
+
+      vizjson[:layers].size.should eq 2
+      vizjson[:layers][0][:type].should eq 'tiled'
+      vizjson[:layers][1][:type].should eq 'namedmap'
+
+      # HACK: Retrieve the named map and use it to regenerate template contents and check them
+      named_maps_instance = derived_vis.send(:named_maps)
+      template = CartoDB::NamedMapsWrapper::NamedMap.get_template_data(derived_vis, named_maps_instance)
+
+      template.keys.should == [:version, :name, :auth, :placeholders, :layergroup, :view]
+      template[:view].should == template_data[:template][:view]
+
+      # now change the viewed bounds to make them appear (if they are zero they don't)
+      ::Map.any_instance.stubs(:get_map_bounds).returns({
+          maxy: 15,
+          maxx: 14,
+          miny: 13,
+          minx: 12
+        })
+      derived_vis.map.recalculate_bounds!
+
+      template_data[:template][:view][:bounds] = {
+                            west:  12,
+                            south: 13,
+                            east:  14,
+                            north: 15
+                          }
+
+      template = CartoDB::NamedMapsWrapper::NamedMap.get_template_data(derived_vis, named_maps_instance)
+      template[:view].should == template_data[:template][:view]
+    end
+  end
+
+  private
 
   def tiler_port
     Cartodb.config[:tiler]['internal']['port']

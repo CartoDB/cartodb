@@ -138,6 +138,12 @@ cdb.ui.common.Dropdown = cdb.core.View.extend({
     this.isOpen = true;
   },
 
+  clean: function() {
+    $(this.options.target).unbind({"click": this._handleClick});
+    $(document).unbind('keydown', this._keydown);
+    cdb.core.View.prototype.clean.apply(this, arguments);
+  },
+
   _fireClick: function(ev) {
     this.trigger("optionClicked", ev, this.el);
   }

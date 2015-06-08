@@ -1048,7 +1048,7 @@ describe("NamedMap", function() {
       });
       expect(0).toBe(1);
     } catch(e) {
-      expect(e.message).toEqual("https must be used when auth_token is set");
+      expect(e.message).toEqual("https must be used when map has token authentication");
     }
   });
 

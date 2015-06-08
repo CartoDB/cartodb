@@ -26,9 +26,24 @@ function transformToHTTP(tilesTemplate) {
   return tilesTemplate;
 }
 
+function transformToHTTPS(tilesTemplate) {
+  for(var url in HTTPS_TO_HTTP) {
+    var httpsUrl = HTTPS_TO_HTTP[url];
+    if(tilesTemplate.indexOf(httpsUrl) !== -1) {
+      return tilesTemplate.replace(httpsUrl, url);
+    }
+  }
+  return tilesTemplate;
+}
+
 Layers.register('tilejson', function(vis, data) {
   var url = data.tiles[0];
-  url = vis.https ? url: transformToHTTP(url);
+  if(vis.https === true) {
+    url = transformToHTTPS(url);
+  }
+  else if(vis.https === false) { // Checking for an explicit false value. If it's undefined the url is left as is.
+    url = transformToHTTP(url);
+  }
   return new cdb.geo.TileLayer({
     urlTemplate: url
   });
@@ -36,7 +51,13 @@ Layers.register('tilejson', function(vis, data) {
 
 Layers.register('tiled', function(vis, data) {
   var url = data.urlTemplate;
-  url = vis.https ? url: transformToHTTP(url);
+  if(vis.https === true) {
+    url = transformToHTTPS(url);
+  }
+  else if(vis.https === false) { // Checking for an explicit false value. If it's undefined the url is left as is.
+    url = transformToHTTP(url);
+  }
+  
   data.urlTemplate = url;
   return new cdb.geo.TileLayer(data);
 });

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Header with createLayer | CartoDB.js</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+    <style>
+      html, body, #map {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+
+      body > div.cartodb-header{
+        display: none;
+        position: absolute;
+        top:0px;
+        width: 100%;
+        background-color: rgba(0,0,0,.5);
+        font-family: 'Helvetica Neue',Helvetica,sans-serif;
+        line-height: normal;
+        z-index: 99999;
+      }
+    </style>
+
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.14/themes/css/cartodb.css" />
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <!-- include cartodb.js library -->
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/3.14/cartodb.js"></script>
+
+    <script>
+      function main() {
+        var map = new L.Map('map', {
+          zoomControl: false,
+          center: [43, 0],
+          zoom: 3
+          });
+
+        L.tileLayer('http://tile.stamen.com/toner/{z}/{x}/{y}.png', {
+          attribution: 'Stamen',
+         }).addTo(map);
+
+        cartodb.createLayer(map, 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json').addTo(map)
+        .done(function(layer) {
+
+          var sublayer = layer.getSubLayer(0);
+
+          var i = new cdb.geo.ui.Header({
+           model: new cdb.core.Model({
+           extra: {
+              title: "Title",
+              description: "Description",
+              show_title: true,
+              show_description: true
+              }
+           }),
+          template: cdb.core.Template.compile(
+             ' \
+              <div class="content">\
+              <div class="title">{{{ title }}}</div>\
+              <div class="description">{{{ description }}}</div>\
+              </div>',
+              'mustache'
+              )
+            });
+
+      $('body').append(i.render().el);
+  })
+        .error(function(err) {
+          console.log(err);
+        });
+      }
+      window.onload = main;
+    </script>
+  </body>
+</html>

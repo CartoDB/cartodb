@@ -80,8 +80,8 @@ module Carto
 
       def geocode(data_block)
         data_block.each do |row|
-          response = JSON::parse(@geocoder_client.geocode(row[:searchtext]))
-          if response['status'] != 'OK'
+          response = @geocoder_client.geocode(row[:searchtext])
+          if response['status'] != 'OK' #note this accounts for 'ZERO_RESULTS' as well
             row.merge!(cartodb_georef_status: false)
           else
             # TODO: check for other types (e.g: route)

@@ -39,7 +39,8 @@
         pink: ['#F1EEF6', '#D4B9DA', '#C994C7', '#DF65B0', '#E7298A', '#CE1256', '#91003F'],
         black:  ['#F7F7F7', '#D9D9D9', '#BDBDBD', '#969696', '#737373', '#525252', '#252525'],
         red:  ['#FFFFB2', '#FED976', '#FEB24C', '#FD8D3C', '#FC4E2A', '#E31A1C', '#B10026'],
-        cat: ['#A6CEE3', '#1F78B4', '#B2DF8A', '#33A02C', '#FB9A99', '#E31A1C', '#FDBF6F', '#FF7F00', '#CAB2D6', '#6A3D9A', '#DDDDDD']
+        cat: ['#A6CEE3', '#1F78B4', '#B2DF8A', '#33A02C', '#FB9A99', '#E31A1C', '#FDBF6F', '#FF7F00', '#CAB2D6', '#6A3D9A', '#DDDDDD'],
+        divergent: ['rgb(215,48,39)','rgb(252,141,89)','rgb(254,224,144)','rgb(255,255,191)','rgb(224,243,248)','rgb(145,191,219)','rgb(69,117,180)']
       };
 
       function geoAttr(geometryType) {
@@ -53,7 +54,7 @@
       var CSS = {
         choropleth: function(quartiles, prop, geometryType, ramp) {
           var attr = geoAttr(geometryType);
-          var css = "#c{ " + attr + ": #0C2C84; polygon-opacity: 0.6; line-color: #0C2C84; line-width: 0.5; line-opacity: 1; } "
+          var css = "#c{ " + attr + ": #0C2C84; polygon-opacity: 0.6; line-color: #0C2C84; line-width: 0.0; line-opacity: 1; } "
           for(var i = quartiles.length - 1; i >= 0; --i) {
             if(quartiles[i] !== undefined && quartiles[i] != null) {
               css += "\n#c[ " + prop + " <= " + quartiles[i] + "] {\n";
@@ -106,11 +107,24 @@
 
       function guessMap(sql, geometryType, column, stats, bbox) {
         var css = null
-          var make_the_cut = ['areasource', 'bsmtcode', 'builtcode', 'irrlotcode', 'ownertype', 'plutomapid', 'proxcode', 'schooldist', 'splitzone'];
-        if (false && stats.type == 'number') {
-          css =  CSS.choropleth(stats.quantiles, column, geometryType, ramps.blue);
+        var mssg = "";
+        var make_the_cut = ['areasource', 'bsmtcode', 'builtcode', 'irrlotcode', 'ownertype', 'plutomapid', 'proxcode', 'schooldist', 'splitzone'];
+        if (stats.type == 'number') {
+          if (['A','U'].indexOf(stats.dist_type) != -1) {
+            // apply divergent scheme
+            css = CSS.choropleth(stats.quantiles, column, geometryType, ramps.divergent);
+          } else if (stats.dist_type === 'F') {
+            css = CSS.choropleth(stats.equalint, column, geometryType, ramps.blue);
+          } else {
+              css =  CSS.choropleth(stats.quantiles, column, geometryType, ramps.blue);
+          }
+          mssg = column + ": stddev: " + stats.stddev + ", avg: " + stats.avg + ", dist type: " + stats.dist_type;
         } else if(stats.type == 'string') {
-
+            if (make_the_cut.indexOf(column) != -1) {
+                mssg = column + " PASSES :) -- (#uniques: " + stats.distinct + ", null%: " + stats.count_nulls + ")";
+            } else {
+                mssg = column + " DOESN'T PASS -- (#uniques: " + stats.distinct + ", null%: " + stats.count_nulls + ")";
+            }
           css = CSS.category(stats.hist.slice(0, ramps.cat.length).map(function(r) { return r[0]; }), column, geometryType)
         }
         if (css) {
@@ -118,21 +132,19 @@
           div.attr('class', 'map');
           $('body').append(div);
           makeMap(div[0], sql, css, bbox);
-          if (make_the_cut.indexOf(column) != -1) {
-              div.append($('<div>').text(column + " PASSES :) -- (#uniques: " + stats.distinct + ", null%: " + stats.count_nulls + ")").attr('class', 'lengend'));
-              console.log('stats',stats);
-              // console.log(stats);
-          } else {
-              div.append($('<div>').text(column + " DOESN'T PASS -- (#uniques: " + stats.distinct + ", null%: " + stats.count_nulls + ")").attr('class', 'lengend'));
-          }
-          
+          div.append($('<div>').text(mssg).attr('class', 'lengend'));          
         }
       }
 
       function columnMap(sql, c, geometryType, bbox) {
-        console.log(c);
         s.describe(sql, c, function(data) {
-          console.log(data.column, data.avg);
+          if (data.type === 'number') {
+            console.log(data.column, 'avg:',data.avg);
+          } else if (data.type === 'string') {
+            console.log(data.column, 'uniques:',data.distinct);
+          } else {
+            console.log(data.column, 'type: ' + data.type);
+          }
           guessMap(sql, geometryType, data.column, data, bbox);
         });
       }

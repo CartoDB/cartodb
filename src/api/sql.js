@@ -334,26 +334,15 @@
   SQL.prototype.describeString = function(sql, column, options, callback) {
       var s = [
         'with stats as (', 
-           'select count(distinct("{{column}}")) as uniq, ',
-           'round(100.0 * sum(case when "{{column}}" is null then 1 else 0 end)::numeric / count("{{column}}")::numeric,1) as count_nulls ',
+           'select count(distinct({{column}})) as uniq, ',
+           'round(100.0 * sum(case when {{column}} is null then 1 else 0 end)::numeric / count(*)::numeric,1) as count_nulls ',
            'from ({{sql}}) __wrap',
         '),',
         'hist as (', 
-           'select array_agg(row(d, c)) from (select distinct("{{column}}") d, count(*) as c from ({{sql}}) __wrap, stats group by 1 limit 100) _a',
+           'select array_agg(row(d, c)) from (select distinct({{column}}) d, count(*) as c from ({{sql}}) __wrap, stats group by 1 limit 100) _a',
         ')',
         'select * from stats, hist'
       ];
-      // var s = [
-      //   'with stats as (', 
-      //      'select count(distinct("{{column}}")) as uniq, ',
-      //      '\'andy\' as andy',
-      //      ' from ({{sql}}) __wrap',
-      //   '),',
-      //   'hist as (', 
-      //      'select array_agg(row(d, c)) from (select distinct("{{column}}") d, count(*) as c from ({{sql}}) __wrap, stats group by 1 limit 100) _a',
-      //   ')',
-      //   'select * from stats, hist'
-      // ];
 
       var query = Mustache.render(s.join('\n'), {
         column: column, 
@@ -432,11 +421,13 @@
   SQL.prototype.describeFloat = function(sql, column, options, callback) {
       var s = [
         'with stats as (',
-            'select min({{column}}) as min,',
-                   'max({{column}}) as max,',
-                   'avg({{column}}) as avg,',
-                   'stddev({{column}}) as stddev',
-              'from ({{sql}}) _wrap',
+            'select min("{{column}}") as min,',
+                   'max("{{column}}") as max,',
+                   'avg("{{column}}") as avg,',
+                   'stddev("{{column}}") as stddev,',
+                   'PAE_ClassTest(array_agg("{{column}}"::numeric)) as dist_type ',
+              'from ({{sql}}) _wrap ',
+              'where {{column}} is not null ',
         '),',
          'histogram as (',
            'select array_agg(row(bucket, range, freq)) as hist from (',
@@ -449,7 +440,9 @@
           ') __wrap',
          '),',
          'buckets as (',
-            'select CDB_QuantileBins(array_agg({{column}}::numeric), 7) as quantiles from ({{sql}}) _table_sql where {{column}} is not null',
+            'select CDB_QuantileBins(array_agg({{column}}::numeric), 7) as quantiles, ',
+            '       PAE_EqualIntervalBins(array_agg({{column}}::numeric), 7) as equalint ',
+            'from ({{sql}}) _table_sql where {{column}} is not null',
          ')',
          'select * from histogram, stats, buckets'
       ];
@@ -475,7 +468,9 @@
           avg: row.avg,
           max: row.max,
           min: row.min,
-          quantiles: row.quantiles
+          quantiles: row.quantiles,
+          equalint: row.equalint,
+          dist_type: row.dist_type
         });
       });
   }

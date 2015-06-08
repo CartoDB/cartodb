@@ -14,8 +14,8 @@ module Carto
 
       BASE_URL = 'https://maps.googleapis.com'
 
-      DEFAULT_CONNECT_TIMEOUT = 45
-      DEFAULT_READ_TIMEOUT = 60
+      DEFAULT_CONNECT_TIMEOUT = 15
+      DEFAULT_READ_TIMEOUT = 30
       DEFAULT_RETRY_TIMEOUT = 60
 
       HTTP_CLIENT_TAG = 'gme_client'

@@ -97,6 +97,53 @@ describe('api.layers.cartodb', function() {
       }, 100);
     });
 
+    it("should expose the legend", function(done) {
+
+      var legend = {
+        type: "custom",
+        show_title: true,
+        title: "wadus",
+        template: "",
+        items: [
+          {
+            name: "item1",
+            visible: true,
+            value: "#FFCC00",
+            sync: true
+          },
+          {
+            name: "item2",
+            visible: true,
+            value: "#3B007F",
+            sync: true
+          }
+        ]
+      };
+
+      cartodb.createLayer(map, {
+        kind: 'cartodb',
+        options: {
+          table_name: 'test',
+          user_name: 'test',
+          tile_style: 'tesst'
+        },
+        infowindow: {
+          template: '<div></div>',
+          fields: [{name: 'test', title: true, order: 0}]
+        },
+        legend: legend
+      }, function(l) {
+        addFn(map, l);
+        layer = l;
+      });
+
+      setTimeout(function() {
+        expect(layer.legend instanceof cdb.geo.ui.LegendModel).toBeTruthy();
+        expect(layer.legend.get('items')).toEqual(legend.items);
+        done();
+      }, 100);
+    });
+
     it("should add interactivity if there is infowindow", function(done) {
       cartodb.createLayer(map, { 
           kind: 'cartodb', 

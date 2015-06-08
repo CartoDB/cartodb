@@ -28,19 +28,25 @@
       protocol: loc,
       jsonp: typeof(jQuery) !== 'undefined' ? !jQuery.support.cors: false
     })
+
+    if (!this.options.sql_api_template) {
+      var opts = this.options;
+      var template = null;
+      if(opts && opts.completeDomain) {
+        template = opts.completeDomain;
+      } else {
+        var host = opts.host || 'cartodb.com';
+        var protocol = opts.protocol || 'https';
+        template = protocol + '://{user}.' + host;
+      }
+      this.options.sql_api_template = template;
+    }
   }
 
   SQL.prototype._host = function() {
     var opts = this.options;
-    if(opts && opts.completeDomain) {
-      return opts.completeDomain + '/api/' +  opts.version + '/sql'
-    } else {
-      var host = opts.host || 'cartodb.com';
-      var protocol = opts.protocol || 'https';
-
-      return protocol + '://' + opts.user + '.' + host + '/api/' +  opts.version + '/sql';
-    }
-  }
+    return opts.sql_api_template.replace('{user}', opts.user) + '/api/' +  opts.version + '/sql';
+  },
 
   /**
    * var sql = new SQL('cartodb_username');
@@ -155,9 +161,15 @@
         xhr = resp;
         resp = JSON.parse(resp.response);
       }
-      promise.trigger('done', resp, status, xhr);
-      if(success) success(resp, status, xhr);
-      if(callback) callback(resp);
+      //Timeout explanation. CartoDB.js ticket #336
+      //From St.Ov.: "what setTimeout does is add a new event to the browser event queue 
+      //and the rendering engine is already in that queue (not entirely true, but close enough) 
+      //so it gets executed before the setTimeout event."
+      setTimeout(function() {
+        promise.trigger('done', resp, status, xhr);
+        if(success) success(resp, status, xhr);
+        if(callback) callback(resp);
+      }, 0);
     }
 
     // call ajax

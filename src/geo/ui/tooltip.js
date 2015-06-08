@@ -11,6 +11,9 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
   },
 
   initialize: function() {
+    if(!this.options.mapView) {
+      throw new Error("mapView should be present");
+    }
     this.options.template = this.options.template || this.defaultTemplate;
     cdb.geo.ui.InfoBox.prototype.initialize.call(this);
     this._filter = null;
@@ -48,9 +51,8 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
       this.options.layer.unbind(null, null, this);
       this.options.layer
         .on('mouseover', function(e, latlng, pos, data) {
-          // this flag is used to be compatible with previous templates
-          // where the data is not enclosed a content variable
-          if (this.options.fields) {
+
+          if (this.options.fields && this.options.fields.length > 0) {
 
             var non_valid_keys = ['fields', 'content'];
 
@@ -61,6 +63,7 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
             var c = cdb.geo.ui.InfowindowModel.contentForFields(data, this.options.fields, {
               empty_fields: this.options.empty_fields
             });
+
             // Remove fields and content from data
             // and make them visible for custom templates
             data.content = _.omit(data, non_valid_keys);
@@ -76,9 +79,12 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
                 f.title = names[f.title] || f.title;
               }
             }
+            this.show(pos, data);
+            this.showing = true;
+          } else if (this.showing) {
+            this.hide();
+            this.showing = false;
           }
-          this.show(pos, data);
-          this.showing = true;
         }, this)
         .on('mouseout', function() {
           if (this.showing) {
@@ -130,45 +136,59 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
   },
 
   setPosition: function(point) {
-    var props = {
-      left: 0,
-      top:  0
-    };
-
     var pos = this.options.position;
-    var $el = this.$el;
-    var h = $el.innerHeight();
-    var w = $el.innerWidth();
+    var height = this.$el.innerHeight();
+    var width = this.$el.innerWidth();
+    var mapViewSize = this.options.mapView.getSize();
+    var top = 0;
+    var left = 0;
 
     // Vertically
     if (pos.indexOf('top') !== -1) {
-      props.top = -h;
+      top = point.y - height;
     } else if (pos.indexOf('middle') !== -1) {
-      props.top = -(h/2);
+      top = point.y - (height/2);
+    } else { // bottom
+      top = point.y;
+    }
+
+    // Fix vertical overflow
+    if (top < 0) {
+      top = point.y;
+    } else if (top + height > mapViewSize.y) {
+      top = point.y - height;
     }
 
     // Horizontally
     if(pos.indexOf('left') !== -1) {
-      props.left = -w;
+      left = point.x - width;
     } else if(pos.indexOf('center') !== -1) {
-      props.left = -(w/2);
+      left = point.x - (width/2);
+    } else { // right
+      left = point.x;
     }
 
-    // Offsets
-    props.top += this.options.vertical_offset;
-    props.left += this.options.horizontal_offset;
+    // Fix horizontal overflow
+    if (left < 0) {
+      left = point.x;
+    } else if (left + width > mapViewSize.x) {
+      left = point.x - width;
+    }
 
-    $el.css({
-      top:  (point.y + props.top),
-      left: (point.x + props.left)
+    // Add offsets
+    top += this.options.vertical_offset;
+    left += this.options.horizontal_offset;
+
+    this.$el.css({
+      top:  top,
+      left: left
     });
-
   },
 
   render: function(data) {
-    this.$el.html( this.template(data) );
+    var sanitizedOutput = cdb.core.sanitize.html(this.template(data));
+    this.$el.html( sanitizedOutput );
     return this;
   }
 
 });
-

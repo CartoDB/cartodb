@@ -218,7 +218,106 @@ describe("cdb.geo.ui.infowindow", function() {
       expect(view.render).not.toHaveBeenCalled();
       expect(view.$el.html()).toEqual('');
     });
+  });
 
+  describe("contentForFields", function() {
+
+    it('should return the title and value of each field', function() {
+      var attributes = { field1: 'value1' };
+      var fields = [{ name: 'field1', title: true }];
+      var content = cdb.geo.ui.InfowindowModel.contentForFields(attributes, fields, {})
+
+      expect(content.fields.length).toEqual(1);
+      expect(content.fields[0].title).toEqual('field1');
+      expect(content.fields[0].value).toEqual('value1');
+    });
+
+    it('should not return the title if not specified', function() {
+      var attributes = { field1: 'value1' };
+      var fields = [{ name: 'field1' }]; // Field doesn't have a title attribute
+      var content = cdb.geo.ui.InfowindowModel.contentForFields(attributes, fields, {})
+
+      expect(content.fields.length).toEqual(1);
+      expect(content.fields[0].title).toEqual(null);
+    });
+
+    it('should return the index of each field', function() {
+      var attributes = { field1: 'value1', field2: 'value2' };
+      var fields = [{ name: 'field1' }, { name: 'field2' }];
+      var content = cdb.geo.ui.InfowindowModel.contentForFields(attributes, fields, {})
+
+      expect(content.fields.length).toEqual(2);
+      expect(content.fields[0].index).toEqual(0);
+      expect(content.fields[1].index).toEqual(1);
+    });
+
+    it('should return empty fields', function() {
+      var attributes = { field1: 'value1' };
+      var fields = [{ name: 'field1' }, { name: 'field2' }];
+      var options = { empty_fields: true };
+      var content = cdb.geo.ui.InfowindowModel.contentForFields(attributes, fields, options)
+
+      expect(content.fields.length).toEqual(2);
+      expect(content.fields[0]).toEqual({
+        title: null,
+        value: 'value1',
+        index: 0
+      });
+      expect(content.fields[1]).toEqual({
+        title: null,
+        value: undefined,
+        index: 1
+      });
+    });
+
+    it('should not return empty fields', function() {
+      var attributes = { field1: 'value1' };
+      var fields = [{ name: 'field1' }, { name: 'field2' }];
+      var options = { empty_fields: false };
+      var content = cdb.geo.ui.InfowindowModel.contentForFields(attributes, fields, options)
+
+      expect(content.fields.length).toEqual(1);
+      expect(content.fields[0]).toEqual({
+        title: null,
+        value: 'value1',
+        index: 0
+      });
+    });
+
+    it('should not return fields with a null value', function() {
+      var attributes = { field1: 'wadus', field2: null };
+      var fields = [{ name: 'field1' }, { name: 'field2' }];
+      var content = cdb.geo.ui.InfowindowModel.contentForFields(attributes, fields, {})
+
+      expect(content.fields.length).toEqual(1);
+      expect(content.fields[0]).toEqual({
+        title: null,
+        value: 'wadus',
+        index: 0
+      });
+    });
+
+    it('should return the attributes as data', function() {
+      var attributes = { field1: 'value1' };
+      var fields = [{ name: 'field1' }];
+      var content = cdb.geo.ui.InfowindowModel.contentForFields(attributes, fields, {})
+
+      expect(content.data).toEqual(attributes);
+    });
+
+    it('should return an empty field when no data is available', function() {
+      var attributes = {};
+      var fields = [{ name: 'field1' }, { name: 'field2' }];
+      var content = cdb.geo.ui.InfowindowModel.contentForFields(attributes, fields, {})
+
+      expect(content.fields.length).toEqual(1);
+      expect(content.fields[0]).toEqual({
+        title: null,
+        value: 'No data available',
+        index: 0,
+        type: 'empty'
+      });
+    });
   });
 
 
@@ -332,11 +431,8 @@ describe("cdb.geo.ui.infowindow", function() {
     });
 
     it("should compile the template when changes", function() {
-      view.compile = function() {};
-      spyOn(view, 'compile');
-      view.model.bind('change:template', view.compile);
       view.model.set('template', '<div>{{test1}}</div>');
-      expect(view.compile).toHaveBeenCalled();
+      expect(view.template({ test1: 'new' })).toEqual('<div>new</div>');
     });
 
     it("should render properly when there is only a field without title", function() {
@@ -364,8 +460,36 @@ describe("cdb.geo.ui.infowindow", function() {
       view.render();
       expect(view._sanitizeField).not.toHaveBeenCalled();
     });
-  });
 
+    it('should sanitize the template output by default', function() {
+      view.model.set('template', 'no <iframe src="" onload="document.body.appendChild(document.createElement(\'script\')).src=\'http://localhost/xss.js\'"/> no');
+      view.render();
+      expect(view.$el.html()).toEqual('no <iframe> no</iframe>');
+    });
+
+    it('should allow to override sanitization', function() {
+      view.model.set({
+        template: 'no <iframe src="" onload="document.body.appendChild(document.createElement(\'script\')).src=\'http://localhost/xss.js\'"/> no',
+        sanitizeTemplate: false
+      });
+      view.render();
+      expect(view.$el.html()).toEqual('no <iframe src="" onload="document.body.appendChild(document.createElement(\'script\')).src=\'http://localhost/xss.js\'"></iframe> no');
+
+      view.model.set('sanitizeTemplate', null);
+      view.render();
+      expect(view.$el.html()).toEqual('no <iframe src="" onload="document.body.appendChild(document.createElement(\'script\')).src=\'http://localhost/xss.js\'"></iframe> no');
+
+      customSanitizeSpy = jasmine.createSpy('sanitizeTemplateSpy').and.returnValue('<p>custom sanitizied result</p>');
+      view.model.set('sanitizeTemplate', customSanitizeSpy);
+      expect(customSanitizeSpy).toHaveBeenCalledWith('no <iframe src="" onload="document.body.appendChild(document.createElement(\'script\')).src=\'http://localhost/xss.js\'"/> no');
+      view.render();
+      expect(view.$el.html()).toEqual('<p>custom sanitizied result</p>');
+
+      view.model.set('sanitizeTemplate', undefined);
+      view.render();
+      expect(view.$el.html()).toEqual('no <iframe> no</iframe>');
+    });
+  });
 
   describe("image template", function() {
     var model, view, container, fields, fieldsWithoutURL, url;
@@ -434,6 +558,12 @@ describe("cdb.geo.ui.infowindow", function() {
       model.set("content", { fields: fieldsWithoutURL });
       model.set('template', '<div class="cartodb-popup header" data-cover="true"><div class="cover"></div></div>');
       expect(view.$el.find("img").length).toEqual(0);
+    });
+
+    it("if the them has a cover and the image is invalid it should hide it", function() {
+      model.set("content", { fields: fieldsWithoutURL });
+      model.set('template', '<div class="cartodb-popup header" data-cover="true"><div class="cover"><img src="{{ wadus }}"/></div></div>');
+      expect(view.$el.find("img").css('display')).toEqual('none');
     });
 
     it("if the theme doesn't have cover don't append the image", function() {

@@ -171,6 +171,13 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
   updateContent: function(attributes) {
     var fields = this.get('fields');
     this.set('content', cdb.geo.ui.InfowindowModel.contentForFields(attributes, fields));
+  },
+
+  closeInfowindow: function(){
+  if (this.get('visibility')) {
+      this.set("visibility", false);
+      this.trigger('close');
+    }
   }
 
 }, {
@@ -178,13 +185,13 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
     options = options || {};
     var render_fields = [];
     for(var j = 0; j < fields.length; ++j) {
-      var f = fields[j];
-      var value = String(attributes[f.name]);
-      if(options.empty_fields || (attributes[f.name] !== undefined && value != "")) {
+      var field = fields[j];
+      var value = attributes[field.name];
+      if(options.empty_fields || (value !== undefined && value !== null)) {
         render_fields.push({
-          title: f.title ? f.name : null,
-          value: attributes[f.name],
-          index: j ? j : null
+          title: field.title ? field.name : null,
+          value: attributes[field.name],
+          index: j
         });
       }
     }
@@ -194,7 +201,7 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
       render_fields.push({
         title: null,
         value: 'No data available',
-        index: j ? j : null,
+        index: 0,
         type: 'empty'
       });
     }
@@ -257,6 +264,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     this.model.bind('change:latlng',              this._update, this);
     this.model.bind('change:visibility',          this.toggle, this);
     this.model.bind('change:template',            this._compileTemplate, this);
+    this.model.bind('change:sanitizeTemplate',    this._compileTemplate, this);
     this.model.bind('change:alternative_names',   this.render, this);
     this.model.bind('change:width',               this.render, this);
     this.model.bind('change:maxHeight',           this.render, this);
@@ -290,7 +298,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       if ($jscrollpane.length > 0 && $jscrollpane.data() != null) {
         $jscrollpane.data().jsp && $jscrollpane.data().jsp.destroy();
       }
-      
+
       // Clone fields and template name
       var fields = _.map(this.model.attributes.content.fields, function(field){
         return _.clone(field);
@@ -320,7 +328,9 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
           }
         },values);
 
-      this.$el.html(this.template(obj));
+      this.$el.html(
+        cdb.core.sanitize.html(this.template(obj), this.model.get('sanitizeTemplate'))
+      );
 
       // Set width and max-height from the model only
       // If there is no width set, we don't force our infowindow
@@ -337,8 +347,8 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
         var actual_height = self.$(".cartodb-popup-content").outerHeight();
         if (self.model.get('maxHeight') <= actual_height)
           self.$(".cartodb-popup-content").jScrollPane({
-            maintainPosition:       false,
-            verticalDragMinHeight:  20
+            verticalDragMinHeight: 20,
+            autoReinitialise: true
           });
       }, 1);
 
@@ -549,26 +559,25 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
     if (!this._containsCover()) return;
 
-    var
-    self = this,
-    $cover = this.$(".cover"),
-    $shadow = this.$(".shadow"),
-    url = this._getCoverURL();
+    var self = this;
+    var $cover = this.$(".cover");
+    var $img = $cover.find("img");
+    var $shadow = this.$(".shadow");
+    var url = this._getCoverURL();
 
     if (!this._isValidURL(url)) {
+      $img.hide();
       $shadow.hide();
       cdb.log.info("Header image url not valid");
       return;
     }
 
     // configure spinner
-    var
-    target  = document.getElementById('spinner'),
-    opts    = { lines: 9, length: 4, width: 2, radius: 4, corners: 1, rotate: 0, color: '#ccc', speed: 1, trail: 60, shadow: true, hwaccel: false, zIndex: 2e9 },
-    spinner = new Spinner(opts).spin(target);
+    var target  = document.getElementById('spinner');
+    var opts    = { lines: 9, length: 4, width: 2, radius: 4, corners: 1, rotate: 0, color: '#ccc', speed: 1, trail: 60, shadow: true, hwaccel: false, zIndex: 2e9 };
+    var spinner = new Spinner(opts).spin(target);
 
     // create the image
-    var $img = $cover.find("img");
 
     $img.hide(function() {
       this.remove();

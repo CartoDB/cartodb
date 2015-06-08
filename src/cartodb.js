@@ -5,7 +5,7 @@
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = "3.11.25";
+    cdb.VERSION = "3.14.3";
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -15,13 +15,9 @@
 
     cdb.CARTOCSS_DEFAULT_VERSION = '2.1.1';
 
-    cdb.CDB_HOST = {
-      'http': 'api.cartocdn.com',
-      'https': 'cartocdn.global.ssl.fastly.net'
-    };
-
     root.cdb.config = {};
     root.cdb.core = {};
+    root.cdb.image = {};
     root.cdb.geo = {};
     root.cdb.geo.ui = {};
     root.cdb.geo.geocoder = {};
@@ -40,6 +36,7 @@
         "../vendor/underscore-min.js",
         "../vendor/json2.js",
         "../vendor/backbone.js",
+        "../vendor/mustache.js",
 
         "../vendor/leaflet.js",
         "../vendor/wax.cartodb.js",
@@ -50,7 +47,9 @@
         "../vendor/mwheelIntent.js",
         "../vendor/spin.js",
         "../vendor/lzma.js",
+        "../vendor/html-css-sanitizer-bundle.js",
 
+        'core/sanitize.js',
         'core/decorator.js',
         'core/config.js',
         'core/log.js',
@@ -58,6 +57,8 @@
         'core/template.js',
         'core/model.js',
         'core/view.js',
+        'core/loader.js',
+        'core/util.js',
 
         'geo/geocoder.js',
         'geo/geometry.js',
@@ -74,12 +75,14 @@
         'geo/ui/header.js',
         'geo/ui/search.js',
         'geo/ui/layer_selector.js',
+        'geo/ui/slides_controller.js',
         'geo/ui/mobile.js',
         'geo/ui/tiles_loader.js',
         'geo/ui/infobox.js',
         'geo/ui/tooltip.js',
         'geo/ui/fullscreen.js',
 
+        'geo/sublayer.js',
         'geo/layer_definition.js',
         'geo/common.js',
 
@@ -107,6 +110,7 @@
         'ui/common/dropdown.js',
 
         'vis/vis.js',
+        'vis/image.js',
         'vis/overlays.js',
         'vis/layers.js',
 

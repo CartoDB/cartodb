@@ -53,7 +53,7 @@
   _.extend(LeafLetGmapsTiledLayerView.prototype, cdb.geo.LeafLetLayerView.prototype, {
 
     _modelUpdated: function() {
-      throw new Error("A GMaps baselayer should never be updated");
+      // do nothing, this map type does not support updating
     }
 
   });

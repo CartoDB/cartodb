@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Image example | CartoDB.js</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+    <style>
+      html, body {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+
+      #content {
+        padding: 20px;
+        text-align: center;
+      }
+
+      .map {
+        float:left;
+        margin: 10px;
+        width: 500px;
+        height: 500px;
+        border: 1px solid #ccc;
+        background-color: #f8f8f8;
+      }
+      .map img { display: none; }
+    </style>
+
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/3.12/cartodb.js"></script>
+    <script>
+
+      cartodb.Image("http://documentation.cartodb.com/api/v2/viz/3ec995a8-b6ae-11e4-849e-0e4fddd5de28/viz.json").size(500, 500).getUrl(function(error, url) {
+
+        var img = new Image();
+
+        img.onerror = function() {
+          console.log(error);
+        };
+
+        img.onload  = function() {
+          var $map = $('<div class="map"></div>');
+          var $img = $('<img src="' + url + '" />');
+          $map.append($img);
+          $("#content").append($map);
+          $img.fadeIn(250);
+        };
+
+        img.src = url;
+
+      });
+    </script>
+  </head>
+  <body>
+    <div id="content"></div>
+  </body>
+</html>

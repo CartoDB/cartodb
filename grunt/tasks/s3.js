@@ -111,7 +111,7 @@ module.exports = {
         ]
       },
 
-      'png-dist': {
+      'png-bugfixing': {
         options: {
           overwrite: true,
           cache: false,
@@ -130,7 +130,22 @@ module.exports = {
               'themes/**/*.png'
             ],
             dest: "cartodb.js/v<%= config.version.major %>/<%= config.version.bugfixing %>"
-          },{
+          }
+        ]
+      },
+
+      'png-minor': {
+        options: {
+          overwrite: true,
+          cache: false,
+          gzip: false,
+          headers: {
+            ContentType: 'image/png'
+          },
+          dryRun: isVersionPrerelease(config.version.bugfixing)
+        },
+        files: [
+          {
             // Minor version
             action: 'upload',
             expand: true,
@@ -143,7 +158,7 @@ module.exports = {
         ]
       },
 
-      'gif-dist': {
+      'gif-bugfixing': {
         options: {
           overwrite: true,
           cache: false,
@@ -162,7 +177,22 @@ module.exports = {
               'themes/**/*.gif'
             ],
             dest: "cartodb.js/v<%= config.version.major %>/<%= config.version.bugfixing %>"
-          },{
+          }
+        ]
+      },
+
+      'gif-minor': {
+        options: {
+          overwrite: true,
+          cache: false,
+          gzip: false,
+          headers: {
+            ContentType: 'image/gif'
+          },
+          dryRun: isVersionPrerelease(config.version.bugfixing)
+        },
+        files: [
+          {
             // Minor version
             action: 'upload',
             expand: true,

@@ -8,7 +8,7 @@
 
     <!-- CartoDB library -->
     <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
-    <script type="text/javascript" src="http://libs.cartocdn.com.s3.amazonaws.com/cartodb.js/v3/3.11/cartodb.js"></script>
+    <script type="text/javascript" src="http://libs.cartocdn.com.s3.amazonaws.com/cartodb.js/v3/3.12/cartodb.js"></script>
 
     <!-- JQuery library -->
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
@@ -30,7 +30,7 @@
     <script>
       function _generate_map(container){
 
-        var mapa = L.map(container, {
+        var map = L.map(container, {
             center: [43,-90],
             zoom: 4,
             scrollWheelZoom: false,
@@ -40,11 +40,11 @@
 
         L.tileLayer('http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png', {
               attribution: 'Stamen'
-            }).addTo(mapa);
+            }).addTo(map);
 
         if (container === "before") {
-            cartodb.createLayer(mapa, 'http://documentation.cartodb.com/api/v2/viz/0b6b2f94-6a52-11e4-8910-0e853d047bba/viz.json')
-            .addTo(mapa)
+            cartodb.createLayer(map, 'http://documentation.cartodb.com/api/v2/viz/0b6b2f94-6a52-11e4-8910-0e853d047bba/viz.json')
+            .addTo(map)
             .done(function(layer) {
             })
             .error(function(err) {
@@ -52,8 +52,8 @@
             });
 
         } else {
-            cartodb.createLayer(mapa, 'http://documentation.cartodb.com/api/v2/viz/bdeb4618-6a52-11e4-8522-0e9d821ea90d/viz.json')
-            .addTo(mapa)
+            cartodb.createLayer(map, 'http://documentation.cartodb.com/api/v2/viz/bdeb4618-6a52-11e4-8522-0e9d821ea90d/viz.json')
+            .addTo(map)
             .done(function(layer) {
 
             })
@@ -62,7 +62,7 @@
             });
         }
 
-        return mapa;
+        return map;
       }
       
 

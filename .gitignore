@@ -14,3 +14,5 @@ Gemfile.lock
 .grunt
 test/SpecRunner.html
 .rvmrc
+.idea/
+themes/css/cartodb.css

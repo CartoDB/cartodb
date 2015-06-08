@@ -75,7 +75,7 @@
         },
 
         debug: function() {
-            _console.log.apply(_console, arguments);
+          if (cdb.DEBUG) _console.log.apply(_console, arguments);
         }
     });
 

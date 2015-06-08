@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Named Maps Tutorial | CartoDB</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+    
+    <style>
+      html, body, #map {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <!-- include cartodb.js library -->
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
+
+    
+    <!-- Drop your code between the script tags below! -->
+    <script>
+	function main() {
+	  // create leaflet map
+	  var map = L.map('map', { 
+	    zoomControl: false,
+	    scrollWheelZoom: false,
+	    center: [0, 0],
+	    zoomControl: true,
+	    zoom: 3
+	   });
+
+	  // add a base layer
+	  L.tileLayer('http://tile.stamen.com/toner/{z}/{x}/{y}.png', {
+	    attribution: 'Stamen'
+	  }).addTo(map);
+
+	  // add cartodb layer with one sublayer
+	  cartodb.createLayer(map, {
+	    user_name: 'documentation',
+	    type: 'namedmap',
+	    named_map: {
+	      name: "namedmap_tutorial",
+	      layers: [{
+	        layer_name: "t",
+	        interactivity: "cartodb_id, name, pop_max"
+	       }]
+	     }
+	    })
+	    .addTo(map)
+	    .done(function(layer) {
+	      layer.getSubLayer(0).setInteraction(true);
+
+	      // on mouseover
+	      layer.getSubLayer(0).on('featureOver', function(e, pos, pixel, data) {
+	        // print data to console log
+	        console.log("Event #" + data.cartodb_id + ", name " + data.name + ", max population: " + data.pop_max);
+	      });
+ 
+	      // show infowindows on click
+	      cdb.vis.Vis.addInfowindow(map, layer.getSubLayer(0), ['cartodb_id','name', 'pop_max']);
+	    });
+	}
+
+	window.onload = main;
+    </script>
+
+  </body>
+</html>

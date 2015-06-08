@@ -91,6 +91,8 @@ cdb.geo.ui.Share = cdb.core.View.extend({
 
     $(".cartodb-map-wrapper").append(this.dialog.render().$el);
 
+    this.addView(this.dialog);
+
   },
 
   render: function() {

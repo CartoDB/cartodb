@@ -220,6 +220,31 @@ $opacityTransition: 250ms;
   margin-bottom: $sMargin-min;
 }
 .MapCard-itemTitlePermission { background-color: $cStructure-mainBkg }
+.MapCard-editButton {
+  $size: 50px;
+  position:absolute;
+  top: -$size/2; 
+  right: 18px;
+  text-align: center;
+  width: $size;
+  height: $size;
+  background: $cCard-editButton;
+  border-radius: 50px;
+  color:#fff;
+  text-decoration:none;
+  line-height:$size;
+  font-size: 17px;
+  @include css3-prefix(box-sizing, border-box);
+  @include opacity(0);
+  @include transition(opacity, $opacityTransition);
+  &:hover {
+    text-decoration: none;
+    color:#fff;
+  }
+}
+.MapCard:hover .MapCard-editButton {
+  @include opacity(1);
+}
 .MapCard-contentBodyRow--flex {
   @include display-flex();
   @include justify-content(space-between, justify);

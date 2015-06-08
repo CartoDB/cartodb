@@ -8,6 +8,8 @@ module Carto
   module Gme
     class TableGeocoder < CartoDB::AbstractTableGeocoder
 
+      MAX_BLOCK_SIZE = 2000
+
       attr_reader :connection, :formatter, :processed_rows, :state
 
       def self.enabled?
@@ -61,14 +63,18 @@ module Carto
       private
 
       # Returns a "generator"
-      # TODO: actually take blocks of a given size
       # TODO: take into account state/province/country from formatter
       def data_input_blocks
         Enumerator.new do |enum|
-          data_input = connection.select("cartodb_id, #{formatter} searchtext".lit)
-            .from(@sequel_qualified_table_name)
-            .where("cartodb_georef_status IS NULL".lit).all
-          enum.yield data_input
+          loop do
+            data_input = connection.select("cartodb_id, #{formatter} searchtext".lit)
+              .from(@sequel_qualified_table_name)
+              .where("cartodb_georef_status IS NULL".lit)
+              .limit(MAX_BLOCK_SIZE)
+              .all
+            enum.yield data_input
+            break if data_input.length < MAX_BLOCK_SIZE # last iteration, no need for another query
+          end
         end
       end
 

@@ -22,6 +22,9 @@ describe Organization do
 
   describe '#destroy_cascade' do
     it 'Destroys users and owner as well' do
+      User.any_instance.stubs(:create_in_central).returns(true)
+      User.any_instance.stubs(:update_in_central).returns(true)
+
       organization = Organization.new(quota_in_bytes: 1234567890, name: 'wadus', seats: 5).save
 
       owner = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
@@ -109,7 +112,11 @@ describe Organization do
   end
 
   describe '#org_members_and_owner_removal' do
+
     it 'Tests removing a normal member from the organization' do
+      User.any_instance.stubs(:create_in_central).returns(true)
+      User.any_instance.stubs(:update_in_central).returns(true)
+
       org_name = "wadus#{rand(10000)}"
       organization = Organization.new(quota_in_bytes: 1234567890, name: org_name, seats: 5).save
 

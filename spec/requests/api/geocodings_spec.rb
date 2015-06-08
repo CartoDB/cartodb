@@ -9,7 +9,7 @@ describe "Geocodings API" do
   end
 
   before(:each) do
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
     delete_user_data @user
     host! 'test.localhost.lan'
   end

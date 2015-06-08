@@ -164,13 +164,10 @@ class Layer < Sequel::Model
     CartoDB::Layer::Presenter.new(self, options, configuration)
   end
 
-  def set_style_options(cartocss_style)
+  def set_option(key, value)
     return unless data_layer?
 
-    self.options['tile_style'] = cartocss_style
-    # Needed for custom tile style:
-    self.options['tile_style_custom'] = true
-    self.options['wizard_properties'] = { type: "polygon", properties: {} }
+    self.options[key] = value
   end
 
   def qualified_table_name(viewer_user)

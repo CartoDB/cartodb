@@ -1,6 +1,5 @@
 # encoding: utf-8
 
-require_relative '../../../importer/lib/importer/cartodb_id_query_batcher'
 require_relative '../../../importer/lib/importer/query_batcher'
 
 module CartoDB
@@ -30,26 +29,14 @@ module CartoDB
             '^(([-+]?(([0-9]|[1-8][0-9])(\.[0-9]+)?))|[-+]?90)$'
         }
 
-        # TODO: next time this decision is needed should be refactored out to a factory
-        if(table_has_cartodb_id(table_schema, table_name))
-          CartoDB::Importer2::CartodbIdQueryBatcher.new(@db, @logger).execute_update(
+        CartoDB::Importer2::QueryBatcher.new(
+            @db, 
+            @logger, 
+            !table_has_cartodb_id(table_schema, table_name)
+          ).execute_update(
               %Q{#{query_fragment_update} where #{query_fragment_where}},
               table_schema, table_name
           )
-        else
-        CartoDB::Importer2::QueryBatcher::execute(
-          @db,
-          %Q{
-            #{query_fragment_update} 
-            #{CartoDB::Importer2::QueryBatcher::QUERY_WHERE_PLACEHOLDER}
-            where #{query_fragment_where} 
-            #{CartoDB::Importer2::QueryBatcher::QUERY_LIMIT_SUBQUERY_PLACEHOLDER}
-          },
-          qualified_table_name,
-          @logger,
-          'Populating the_geom from latitude / longitude'
-        )
-        end
       end
 
       def table_has_cartodb_id(table_schema, table_name)

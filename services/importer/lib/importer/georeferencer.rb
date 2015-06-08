@@ -10,9 +10,9 @@ module CartoDB
     class Georeferencer
       DEFAULT_BATCH_SIZE = 50000
       LATITUDE_POSSIBLE_NAMES   = %w{ latitude lat latitudedecimal
-        latitud lati decimallatitude decimallat }
+        latitud lati decimallatitude decimallat point_latitude }
       LONGITUDE_POSSIBLE_NAMES  = %w{ longitude lon lng
-        longitudedecimal longitud long decimallongitude decimallong }
+        longitudedecimal longitud long decimallongitude decimallong point_longitude }
       GEOMETRY_POSSIBLE_NAMES   = %w{ geometry the_geom wkb_geometry geom geojson wkt }
       DEFAULT_SCHEMA            = 'cdb_importer'
       THE_GEOM_WEBMERCATOR      = 'the_geom_webmercator'
@@ -353,17 +353,19 @@ module CartoDB
       end
 
       def handle_multipoint(qualified_table_name)
-        QueryBatcher::execute(
-          db,
-          %Q{
-            UPDATE #{qualified_table_name}
-            SET the_geom = ST_GeometryN(the_geom, 1)
-          },
-          qualified_table_name,
-          job,
-          'Converting detected multipoint to point',
-          capture_exceptions=true
-        )
+        # TODO: capture_exceptions=true
+        job.log 'Converting detected multipoint to point'
+        QueryBatcher.new(
+            db, 
+            job, 
+            create_seq_field = true
+          ).execute_update(
+              %Q{
+                UPDATE #{qualified_table_name}
+                SET the_geom = ST_GeometryN(the_geom, 1)
+              },
+              schema, table_name
+          )
       end
 
       def multipoint?

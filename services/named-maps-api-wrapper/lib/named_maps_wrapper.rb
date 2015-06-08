@@ -1,5 +1,4 @@
 # encoding: utf-8
-require 'typhoeus'
 require 'json'
 require_relative './named-maps-wrapper/exceptions'
 require_relative './named-maps-wrapper/named_map'

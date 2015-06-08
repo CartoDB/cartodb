@@ -25,8 +25,7 @@ describe Visualization::Collection do
     Visualization::Migrator.new(@db).migrate(@relation)
     Visualization.repository = @repository
 
-    # Using Mocha stubs until we update RSpec (@see http://gofreerange.com/mocha/docs/Mocha/ClassMethods.html)
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
 
     # For relator->permission
     user_id = UUIDTools::UUID.timestamp_create.to_s

@@ -130,7 +130,8 @@ module CartoDB
           placeholders: { },
           layergroup:   {
                           layers: []
-                        }
+                        },
+          view:         self.view_data_from(visualization)
         }
 
         if auth_type == AUTH_TYPE_SIGNED
@@ -188,6 +189,8 @@ module CartoDB
         template_data[:layergroup][:layers] = layers_data.compact.flatten
         template_data[:layergroup][:stat_tag] = visualization.id
 
+        template_data[:view] = view_data_from(visualization)
+
         template_data
       end
 
@@ -199,6 +202,37 @@ module CartoDB
 
       private
 
+      def self.view_data_from(visualization)
+        center = visualization.map.center.gsub(/\[|\]|\s*/, '').split(',')
+
+        # (lat,lon) points
+        bbox_sw = visualization.map.bounding_box_sw.gsub(/\[|\]|\s*/, '').split(',').map(&:to_f)
+        bbox_ne = visualization.map.bounding_box_ne.gsub(/\[|\]|\s*/, '').split(',').map(&:to_f)
+
+        {
+          zoom:   visualization.map.zoom,
+          center: {
+                      lng: center[1].to_f,
+                      lat: center[0].to_f
+                    },
+          bounds: {
+                      # LowerCorner longitude, in decimal degrees 
+                      west:  bbox_sw[1],
+                      # LowerCorner latitude, in decimal degrees
+                      south: bbox_sw[0],
+                      # UpperCorner longitude, in decimal degrees
+                      east:  bbox_ne[1],
+                      # UpperCorner latitude, in decimal degrees
+                      north: bbox_ne[0]
+                    }
+        }
+      end
+
+      # @return Hash {
+      #               layer_options: Hash,
+      #               layer_num: Integer,
+      #               template_data: Hash
+      #              }
       def self.options_for_cartodb_layer(layer, layer_num, template_data)
         layer_options = layer[:options].except [:sql, :interactivity]
 
@@ -228,6 +262,11 @@ module CartoDB
         }
       end
 
+      # @return Hash {
+      #               layer_options: Hash,
+      #               layer_num: Integer,
+      #               template_data: Hash
+      #              }
       def self.options_for_basemap_layer(layer, layer_num, template_data)
         layer_options = {
           urlTemplate: layer[:options]['urlTemplate']

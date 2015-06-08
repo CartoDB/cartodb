@@ -127,20 +127,22 @@
     </div>
   </div>
 
-  <div class="Form-row">
-    <div class="Form-rowLabel">
-      <label class="Form-label">Extra tweets</label>
-    </div>
-    <div class="Form-rowData Form-rowData--med">
-      <div class="Toggler">
-        <%= f.check_box :soft_twitter_datasource_limit, :id => "soft_twitter_datasource_limit" %>
-        <%= label_tag(:soft_twitter_datasource_limit, '') %>
+  <% if @user.organization.twitter_datasource_enabled %>
+    <div class="Form-row">
+      <div class="Form-rowLabel">
+        <label class="Form-label">Extra tweets</label>
+      </div>
+      <div class="Form-rowData Form-rowData--med">
+        <div class="Toggler">
+          <%= f.check_box :soft_twitter_datasource_limit, :id => "soft_twitter_datasource_limit" %>
+          <%= label_tag(:soft_twitter_datasource_limit, '') %>
+        </div>
+      </div>
+      <div class="Form-rowInfo">
+        <p class="Form-rowInfoText">User has permission to exceed organization's Twitter credits</p>
       </div>
     </div>
-    <div class="Form-rowInfo">
-      <p class="Form-rowInfoText">User has permission to exceed organization's Twitter credits</p>
-    </div>
-  </div>
+  <% end %>
 
   <div class="Form-footer">
     <% if !@user.new? && current_user.organization_owner? -%>

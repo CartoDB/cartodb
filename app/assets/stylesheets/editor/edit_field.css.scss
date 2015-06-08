@@ -74,7 +74,9 @@
   .EditField-textarea {
     border-color: $cHighlight-negative;
     color: $cHighlight-negative;
-  }  
+  }
+
+  &.EditField--withBorder { border-color: $cHighlight-negative }
 }
 .EditField-loader { margin: 12px 0 0 8px }
 .EditField-select .select2-container { margin-top: 10px }
@@ -95,9 +97,11 @@
   background: #787878;
   cursor: pointer;
 }
+// Modifiers
 .EditField--withBorder {
   @include justify-content(space-between, justify);
   @include align-content(center);
   border: 1px solid #CCC;
   background: white;
+  border-radius: 4px;
 }

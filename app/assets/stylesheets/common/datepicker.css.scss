@@ -12,7 +12,6 @@ $sDates-defaultWidth: 434px;
 
 .DatePicker {
   position: relative;
-  width: 100%;
   z-index: 3;
 }
 .DatePicker-dates {
@@ -23,19 +22,19 @@ $sDates-defaultWidth: 434px;
   height: 38px;
   padding: 0 $sMargin-elementInline;
   outline: none;
-  // border: 1px solid #CCC;
-  // border-radius: $border-radius;
-  // background: white;
   text-align: left;
   color: $cTypography-help;
+}
+.DatePicker--withBorder .DatePicker-dates {
+  border-radius: 4px;
+  background: white;
+  border: 1px solid #CCC;
 }
 .DatePicker-dates.has-icon {
   padding-right: $sMargin-section + $sMargin-elementInline;
   width: $sDates-defaultWidth - $sMargin-section;
 }
-.DatePicker-dates.DatePicker-dates--singleDate {
-  width: auto;
-}
+.DatePicker-dates.DatePicker-dates--singleDate { width: auto }
 .DatePicker-dates strong {
   font-weight: $sFontWeight-normal;
   color: $cTypography-paragraphs
@@ -51,6 +50,14 @@ $sDates-defaultWidth: 434px;
 .DatePicker-dates:focus {
   border-color: #999;
   .DatePicker-datesIcon { color: $cTypography-secondary }
+}
+.DatePicker-dates.is-disabled {
+  @include opacity(0.5);
+  &:hover {
+    border-color: #CCC;
+    color: $cTypography-help;
+    .DatePicker-datesIcon { color: $cTypography-help }
+  }
 }
 .DatePicker-dropdown {
   position: absolute;

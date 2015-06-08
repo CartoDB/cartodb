@@ -151,7 +151,8 @@ $sLabel-width: 140px;
 .Form-input:-moz-placeholder           { font-style: italic; color: #AAA }
 .Form-input::-moz-placeholder          { font-style: italic; color: #AAA }
 .Form-input:-ms-input-placeholder      { font-style: italic; color: #AAA }
-
+// Modifiers
+.Form-input--noBorder { border: none }
 // Sizes
 .Form-input--longer { width: 434px }
 .Form-input--long { width: 354px }
@@ -164,7 +165,7 @@ $sLabel-width: 140px;
   &.Form-input--longer { width: 414px }
   &.Form-input--long { width: 324px }
   &.Form-input--med {}
-  &.Form-input--short {}
+  &.Form-input--short { width: 81px }
 
   &.Form-input--longerMorePadding {
     width: 356px;

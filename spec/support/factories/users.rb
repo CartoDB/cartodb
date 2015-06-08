@@ -48,7 +48,7 @@ module CartoDB
       user.private_maps_enabled  = attributes[:private_maps_enabled] == true ? true : false
       user.enabled               = attributes[:enabled] == false ? false : true
       user.table_quota           = attributes[:table_quota]     if attributes[:table_quota]
-      user.quota_in_bytes        = attributes[:quota_in_bytes] || 104857600
+      user.quota_in_bytes        = attributes[:quota_in_bytes]  if attributes[:quota_in_bytes]
       user.account_type          = attributes[:account_type]    if attributes[:account_type]
       user.map_view_quota        = attributes[:map_view_quota]  if attributes.has_key?(:map_view_quota)
       user.map_view_block_price  = attributes[:map_view_block_price]  if attributes.has_key?(:map_view_block_price)

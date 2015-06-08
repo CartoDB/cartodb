@@ -204,7 +204,12 @@ module CartoDB
 
       def self.view_data_from(visualization)
         # (lat,lon) points on all map data
-        center = visualization.map.center.gsub(/\[|\]|\s*/, '').split(',')
+
+        if visualization.map.center.nil? || visualization.map.center == ''
+          center = ::Map::DEFAULT_OPTIONS[:center]
+        else
+          center = visualization.map.center.gsub(/\[|\]|\s*/, '').split(',')
+        end
 
         data = {
           zoom:   visualization.map.zoom,
@@ -215,8 +220,16 @@ module CartoDB
         }
 
         # INFO: We grab view bounds because represent what the user usually wants to "see"
-        bbox_sw = visualization.map.view_bounds_sw.gsub(/\[|\]|\s*/, '').split(',').map(&:to_f)
-        bbox_ne = visualization.map.view_bounds_ne.gsub(/\[|\]|\s*/, '').split(',').map(&:to_f)
+        if visualization.map.view_bounds_sw.nil? || visualization.map.view_bounds_sw == ''
+          bbox_sw = [0.0, 0.0]
+        else
+          bbox_sw = visualization.map.view_bounds_sw.gsub(/\[|\]|\s*/, '').split(',').map(&:to_f)
+        end
+        if visualization.map.view_bounds_ne.nil? || visualization.map.view_bounds_ne == ''
+          bbox_ne = [0.0, 0.0]
+        else
+          bbox_ne = visualization.map.view_bounds_ne.gsub(/\[|\]|\s*/, '').split(',').map(&:to_f)
+        end
 
         # INFO: Don't return 'bounds' if all points are 0 to avoid static map trying to go too small zoom level
         if bbox_sw[0] != 0 || bbox_sw[1] != 0 || bbox_ne[0] != 0 || bbox_ne[1] != 0

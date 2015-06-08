@@ -34,7 +34,7 @@ $sDates-defaultWidth: 434px;
   padding-right: $sMargin-section + $sMargin-elementInline;
   width: $sDates-defaultWidth - $sMargin-section;
 }
-.DatePicker-dates.DatePicker-dates--singleDate { width: auto }
+.DatePicker-dates.DatePicker-dates--singleDate { width: 86px }
 .DatePicker-dates strong {
   font-weight: $sFontWeight-normal;
   color: $cTypography-paragraphs

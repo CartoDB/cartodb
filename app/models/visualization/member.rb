@@ -421,8 +421,8 @@ module CartoDB
       end
 
       def invalidate_cache
-        invalidate_varnish_cache
         invalidate_redis_cache
+        invalidate_varnish_cache
         parent.invalidate_cache unless parent_id.nil?
       end
 

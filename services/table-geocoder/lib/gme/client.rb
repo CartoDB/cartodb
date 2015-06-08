@@ -3,6 +3,7 @@
 require 'addressable/uri'
 require 'set'
 require 'json'
+require_relative 'exceptions'
 require_relative '../../../../lib/url_signer'
 require_relative '../../../../lib/carto/http/client'
 
@@ -23,18 +24,6 @@ module Carto
 
       RETRIABLE_STATUSES = Set.new [500, 503, 504]
 
-      # TODO move to a file
-      class Timeout < StandardError; end
-      class HttpError < StandardError; end
-      class RetriableRequest < StandardError; end
-      class ApiError
-        attr_reader :api_status, :error_message
-        def initialize(api_status, error_message=nil)
-          super(%Q{api_status = #{api_status}, error_message = "#{error_message}"})
-          @api_status = api_status
-          @error_message = error_message
-        end
-      end
 
       # Performs requests to Google Maps API web services
       # Based on https://github.com/googlemaps/google-maps-services-python/blob/master/googlemaps/client.py

@@ -45,14 +45,12 @@ shared_examples_for "tables controllers" do
 
       get_json api_v1_tables_show_url(params.merge(id: data_import.table_id)) do |response|
         response.status.should be_success
-        response.body.should include(
-                                     name: "tm_world_borders_simpl_0_3",
-                                     privacy: "PRIVATE",
-                                     schema: [["cartodb_id", "number"], ["the_geom", "geometry", "geometry", "multipolygon"], ["area", "number"], ["fips", "string"], ["iso2", "string"], ["iso3", "string"], ["lat", "number"], ["lon", "number"], ["name", "string"], ["pop2005", "number"], ["region", "number"], ["subregion", "number"], ["un", "number"], ["created_at", "date"], ["updated_at", "date"]],
-                                     rows_counted: 246,
-                                     description: nil,
-                                     geometry_types: ["ST_MultiPolygon"]
-                                     )
+        response.body[:name].should == "tm_world_borders_simpl_0_3"
+        response.body[:privacy].should == "PRIVATE"
+        response.body[:schema].should == [["cartodb_id", "number"], ["the_geom", "geometry", "geometry", "multipolygon"], ["area", "number"], ["fips", "string"], ["iso2", "string"], ["iso3", "string"], ["lat", "number"], ["lon", "number"], ["name", "string"], ["pop2005", "number"], ["region", "number"], ["subregion", "number"], ["un", "number"], ["created_at", "date"], ["updated_at", "date"]]
+        response.body[:rows_counted].should == 246
+        response.body[:description].should == nil
+        response.body[:geometry_types].should == ["ST_MultiPolygon"]
       end
     end
 

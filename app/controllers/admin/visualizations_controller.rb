@@ -53,7 +53,7 @@ class Admin::VisualizationsController < ApplicationController
     @tables_count  = current_user.tables.count
     @first_time    = !current_user.dashboard_viewed?
     @just_logged_in = !!flash['logged']
-    @google_maps_api_key = current_user.google_maps_api_key
+    @google_maps_client_id = current_user.google_maps_client_id
     current_user.view_dashboard
     update_user_last_activity
 
@@ -72,7 +72,7 @@ class Admin::VisualizationsController < ApplicationController
       end
     end
 
-    @google_maps_api_key = @visualization.user.google_maps_api_key
+    @google_maps_client_id = @visualization.user.google_maps_client_id
     @basemaps = @visualization.user.basemaps
 
     unless @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
@@ -220,7 +220,7 @@ class Admin::VisualizationsController < ApplicationController
 
     @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)
     @avatar_url             = @visualization.user.avatar
-    @google_maps_api_key = @visualization.user.google_maps_api_key
+    @google_maps_client_id = @visualization.user.google_maps_client_id
 
     @mapviews = @visualization.total_mapviews
 

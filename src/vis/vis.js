@@ -1117,7 +1117,7 @@ var Vis = cdb.core.View.extend({
     }
     for(var i = 0; i < layerView.getLayerCount(); ++i) {
       var t = layerView.getTooltipData(i);
-      if (t) {
+      if (t && t.fields && t.fields.length) {
         if (!layerView.tooltip) {
           var tooltip = new cdb.geo.ui.Tooltip({
             mapView: this.mapView,

@@ -31,9 +31,11 @@ class CommonData
   def get_datasets(json)
     begin
       rows = JSON.parse(json).fetch('rows', [])
-    rescue
+    rescue => e
+      CartoDB.notify_exception(e)
       rows = []
     end
+    CartoDB.notify_error('common-data empty', { rows: rows }) if rows.nil? || rows.empty?
 
     _categories = {}
     _datasets = []

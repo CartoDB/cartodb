@@ -2,7 +2,7 @@
 
 require_relative '../spec_helper'
 
-# Tests should define `get_user_by_user_id` method
+# Tests should define `get_twitter_imports_count_by_user_id` method
 shared_examples_for "user models" do
 
   describe '#get_twitter_imports_count' do

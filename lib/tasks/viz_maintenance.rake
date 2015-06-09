@@ -18,40 +18,42 @@ namespace :cartodb do
     desc "Create named maps for all eligible existing visualizations"
     task :create_named_maps, [:dry_run] => :environment do |t, args|
       dry_run = args[:dry_run] == 'true'
-
-      processed = 0
-
       puts "Dry run of create_named_maps rake" if dry_run
 
-      collection = CartoDB::Visualization::Collection.new.fetch({
-        'types' => [CartoDB::Visualization::Member::TYPE_CANONICAL, CartoDB::Visualization::Member::TYPE_DERIVED],
-        per_page: CartoDB::Visualization::Collection::ALL_RECORDS
-        })
+      puts "> #{Time.now}"
 
-      count = collection.count
+      vqb = Carto::VisualizationQueryBuilder.new
+                                            .with_types([
+                                                Carto::Visualization::TYPE_CANONICAL, 
+                                                Carto::Visualization::TYPE_DERIVED
+                                              ])
+                                            .build
+
+      count = vqb.count
+      current = 0
 
       puts "Fetched ##{count} items"
+      puts "> #{Time.now}"
 
-      collection.each do |viz|
+      vqb.pluck(:id).each do |viz_id|
         begin
-          if viz.has_named_map?
-            printf '.'
-          else
-            printf 'S'
-            viz.store unless dry_run
+          current += 1
+
+          # Sad, but using the Collection causes OOM, so instantiate one by one even if takes a while
+          vis = CartoDB::Visualization::Member.new(id: viz_id).fetch
+          vis.send(:save_named_map) unless dry_run
+          if current % 50 == 0
+            print '.'
           end
-          #puts "OK:  #{CartoDB::NamedMapsWrapper::NamedMap::normalize_name(viz.id)} :: User: #{viz.user_id}"
+          if current % 500 == 0
+            puts "\n> #{Time.now}"
+          end
         rescue => ex
-          puts "ERR: #{viz.id}"
-          puts ex.inspect
-        end
-        processed += 1
-        if processed % 250 == 0
-          puts "#{processed}/#{count}"
+          printf "E"
         end
       end
 
-      puts "\nFinished ##{count} items"
+      puts "\n> #{Time.now}\nFinished ##{count} items"
     end
 
     private

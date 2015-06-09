@@ -114,7 +114,7 @@ module CartoDB
     },
     2002 => {
       title: 'Encoding detection error',
-      what_about: "We couldn't detect the encoding of your file. Please <a href='mailto:support@cartodb?subject=Encoding error in import'>contact us</a> and we will help you to load your data.",
+      what_about: "We couldn't detect the encoding of your file. Please, try saving your file with encoding UTF-8 or <a href='mailto:support@cartodb?subject=Encoding error in import'>contact us</a> and we will help you to load your data.",
       source: ERROR_SOURCE_USER
     },
     2003 => {
@@ -184,7 +184,7 @@ module CartoDB
     },
     6666 => {
       title: 'Dataset too big',
-      what_about: "The dataset you tried to import is too big and cannot be processed. If the dataset allows it, you can try splitting it into smaller files and then using the 'Merge Tables' functionality, or contact our support team at <a href='mailto:support@cartodb.com?subject=Dataset%20too%20big%20import%20error'>support@cartodb.com</a>.",
+      what_about: "The dataset you tried to import is too big and cannot be processed. If the dataset allows it, you can try splitting it into smaller files and then append them once imported, or contact our support team at <a href='mailto:support@cartodb.com?subject=Dataset%20too%20big%20import%20error'>support@cartodb.com</a>.",
       source: ERROR_SOURCE_USER
     },
     6667 => {

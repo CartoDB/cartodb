@@ -350,7 +350,12 @@ class User < Sequel::Model
           database_with_conflicts = $1
           revoke_all_on_database_from(conn, database_with_conflicts, username)
           revoke_all_memberships_on_database_to_role(conn, database_with_conflicts, username)
-          drop_owned_by_user(conn, username)
+          drop_owned_by_user(conn, username, true)
+          conflict_database_conn = self.in_database({
+            :as => :cluster_admin,
+            'database' => database_with_conflicts
+          })
+          drop_owned_by_user(conflict_database_conn, username, true)
           #.select { |s|
           #  !conn.fetch("SELECT 1 as schema_exist FROM information_schema.schemata WHERE schema_name = '#{s}'").first.nil?
           #}
@@ -373,8 +378,8 @@ class User < Sequel::Model
     }
   end
 
-  def drop_owned_by_user(conn, role)
-    conn.run("DROP OWNED BY \"#{role}\" CASCADE")
+  def drop_owned_by_user(conn, role, cascade = false)
+    conn.run("DROP OWNED BY \"#{role}\" #{cascade ? 'CASCADE' : ''}")
   end
 
   def self.terminate_database_connections(database_name, database_host)
@@ -563,6 +568,7 @@ class User < Sequel::Model
     end
 
     configuration = get_db_configuration_for(options[:as])
+    configuration['database'] = options['database'] unless options['database'].nil?
 
     connection = $pool.fetch(configuration) do
       db = get_database(options, configuration)

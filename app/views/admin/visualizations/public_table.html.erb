@@ -10,7 +10,7 @@
 <% content_for(:js) do %>
     <% if @table.map.provider == 'googlemaps' %>
         <script type="text/javascript"
-            src="//maps.googleapis.com/maps/api/js?sensor=false&v=3.12&client=<%= @user.google_maps_client_id %>">
+            src="//maps.googleapis.com/maps/api/js?sensor=false&v=3.12&<%= @user.google_maps_client_id %>">
         </script>
     <% end %>
 

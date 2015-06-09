@@ -106,7 +106,7 @@
       };
     </script>
     <% if @most_viewed_vis_map && @most_viewed_vis_map.map.provider == 'googlemaps' %>
-    <script type="text/javascript" src="//maps.googleapis.com/maps/api/js?sensor=false&v=3.12&client=<%= @user.google_maps_client_id %>"></script>
+    <script type="text/javascript" src="//maps.googleapis.com/maps/api/js?sensor=false&v=3.12&<%= @user.google_maps_client_id %>"></script>
     <% end %>
     <%= javascript_include_tag 'cdb.js', 'templates', 'public_dashboard_deps', 'public_dashboard' %>
     <%= yield :js %>

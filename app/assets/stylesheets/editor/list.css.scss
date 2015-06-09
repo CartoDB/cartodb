@@ -14,6 +14,12 @@
   padding-bottom: $sMargin-group;
   border-bottom: 1px solid $cStructure-mainLine;
 }
+.List-rowItem {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center);
+}
+.List-rowItem > *:first-child { margin-right: $sMargin-element }
 .List-row:last-child {
   border-bottom: none;
 }

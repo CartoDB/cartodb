@@ -13,10 +13,10 @@ module Carto
     end
 
     def twitter_imports_count(options = {})
-    users.map{ |u| 
-        u.twitter_imports_count(options) 
-      }.sum
-  end
+      date_to = (options[:to] ? options[:to].to_date : Date.today)
+      date_from = (options[:from] ? options[:from].to_date : owner.last_billing_cycle)
+      Carto::SearchTweet.twitter_imports_count(users.joins(:search_tweets), date_from, date_to)
+    end
 
   end
 

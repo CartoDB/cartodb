@@ -22,11 +22,14 @@ shared_examples_for "organization models" do
     end
 
     it "counts all users twitter imports" do
+      # TODO: extract expectations
       User.any_instance.expects(:get_twitter_imports_count).never
+      Carto::User.any_instance.expects(:twitter_imports_count).never
+
       create_search_tweet(@org_user_1, 5).save
       create_search_tweet(@org_user_1, 6).save
 
-      #@organization.get_twitter_imports_count.should == 11
+      # TODO: avoid this hidden parameter
       @organization_id = @organization.id
       get_twitter_imports_count_by_organization_id.should == 11
     end

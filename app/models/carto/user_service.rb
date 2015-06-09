@@ -38,10 +38,7 @@ module Carto
     def twitter_imports_count(options={})
       date_to = (options[:to] ? options[:to].to_date : Date.today)
       date_from = (options[:from] ? options[:from].to_date : @user.last_billing_cycle)
-      @user.search_tweets
-           .where(state: ::SearchTweet::STATE_COMPLETE)
-           .where('created_at >= ? AND created_at <= ?', date_from, date_to + 1.days)
-           .sum("retrieved_items".lit).to_i
+      Carto::SearchTweet.twitter_imports_count(@user.search_tweets, date_from, date_to)
     end
 
     # Returns an array representing the last 30 days, populated with api_calls

@@ -168,6 +168,7 @@ WORKING_SPECS_9 = \
 WORKING_SPECS_10 = \
 	spec/models/carto/user_service_spec.rb \
 	spec/models/carto/user_spec.rb \
+	spec/models/carto/organization_spec.rb \
   $(NULL)
 
 CDB_PATH=lib/assets/javascripts/cdb

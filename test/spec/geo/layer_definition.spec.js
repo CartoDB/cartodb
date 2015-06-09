@@ -83,6 +83,32 @@ describe("LayerDefinition", function() {
     });
   });
 
+  describe("getTooltipData", function() {
+
+    it ('should return tooltip data if tooltip is present and has fields', function() {
+      var tooltip = layerDefinition.getTooltipData(0);
+      expect(tooltip).toEqual({ fields: ['wadus'] });
+    });
+
+    it ('should return NULL if tooltip is not present or does NOT have fields', function() {
+      layerDefinition.layers = [{
+        tooltip: {}
+      }];
+
+      var tooltip = layerDefinition.getTooltipData(0);
+      expect(tooltip).toBeNull()
+
+      layerDefinition.layers = [{
+        tooltip: {
+          fields: []
+        }
+      }];
+
+      var tooltip = layerDefinition.getTooltipData(0);
+      expect(tooltip).toBeNull()
+    });
+  })
+
   describe('.toJSON', function() {
 
     it("should return json spec of visible layers", function() {

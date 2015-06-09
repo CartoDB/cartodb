@@ -530,7 +530,11 @@ MapBase.prototype = {
   },
 
   getTooltipData: function(layer) {
-    return this.layers[layer].tooltip;
+    var tooltip = this.layers[layer].tooltip;
+    if (tooltip && tooltip.fields && tooltip.fields.length) {
+      return tooltip
+    }
+    return null;
   },
 
   getInfowindowData: function(layer) {

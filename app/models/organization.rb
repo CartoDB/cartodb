@@ -109,7 +109,10 @@ class Organization < Sequel::Model
   end
 
   def get_twitter_imports_count(options = {})
-    users.map{ |u| u.get_twitter_imports_count(options) }.sum
+    date_to = (options[:to] ? options[:to].to_date : Date.today)
+    date_from = (options[:from] ? options[:from].to_date : owner.last_billing_cycle)
+
+    SearchTweet.get_twitter_imports_count(users_dataset.join(:search_tweets, :user_id => :id), date_from, date_to)
   end
 
   def db_size_in_bytes

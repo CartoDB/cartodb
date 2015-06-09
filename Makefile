@@ -128,9 +128,9 @@ WORKING_SPECS_7 = \
   spec/models/synchronization/member_spec.rb \
 	spec/requests/api/json/geocodings_controller_spec.rb \
 	spec/requests/carto/api/geocodings_controller_spec.rb \
+  spec/models/organization_spec.rb \
   # spec/models/synchronization/collection_spec.rb not working right now \
   spec/models/synchronization/synchronization_oauth_spec.rb \
-  spec/models/organization_spec.rb \
   spec/models/permission_spec.rb \
   specs/models/overlay/member.rb \
   specs/models/overlay/collection.rb \

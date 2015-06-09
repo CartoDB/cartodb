@@ -21,15 +21,13 @@ shared_examples_for "organization models" do
       st
     end
 
-    it "counts all users twitter imports" do
-      # TODO: extract expectations
-      User.any_instance.expects(:get_twitter_imports_count).never
-      Carto::User.any_instance.expects(:twitter_imports_count).never
-
+    it "counts all users twitter imports in a single query" do
       create_search_tweet(@org_user_1, 5).save
       create_search_tweet(@org_user_1, 6).save
 
-      get_twitter_imports_count_by_organization_id(@organization.id).should == 11
+      expect {
+        get_twitter_imports_count_by_organization_id(@organization.id).should == 11
+      }.to make_database_queries(count: 1)
     end
 
   end

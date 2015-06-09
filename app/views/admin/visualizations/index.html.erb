@@ -4,7 +4,7 @@
 <%= content_for(:js) do -%>
   <% if !@google_maps_client_id.blank? %>
         <script type="text/javascript"
-            src="//maps.googleapis.com/maps/api/js?sensor=false&v=3.12&<%= @google_maps_client_id %>">
+            src="//maps.googleapis.com/maps/api/js?sensor=false&v=3.12&client=<%= @google_maps_client_id %>">
         </script>
   <% end %>
   <script type="text/javascript">

@@ -86,6 +86,12 @@ describe("LayerDefinition", function() {
   describe("getTooltipData", function() {
 
     it ('should return tooltip data if tooltip is present and has fields', function() {
+      layerDefinition.layers = [{
+        tooltip: {
+          fields: ['wadus']
+        }
+      }];
+
       var tooltip = layerDefinition.getTooltipData(0);
       expect(tooltip).toEqual({ fields: ['wadus'] });
     });

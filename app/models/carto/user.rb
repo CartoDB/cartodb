@@ -150,6 +150,10 @@ class Carto::User < ActiveRecord::Base
     google_maps_private_key.present? && google_maps_api_key.present?
   end
 
+  def google_maps_client_id
+    Rack::Utils.parse_nested_query(google_maps_query_string).fetch('client') if google_maps_query_string
+  end
+
   # returnd a list of basemaps enabled for the user
   # when google map key is set it gets the basemaps inside the group "GMaps"
   # if not it get everything else but GMaps in any case GMaps and other groups can work together

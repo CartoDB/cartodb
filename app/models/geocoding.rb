@@ -5,7 +5,6 @@ require_relative '../../lib/cartodb/mixpanel'
 
 class Geocoding < Sequel::Model
 
-  DB_TIMEOUT_MS              = 100.minutes.to_i * 1000
   ALLOWED_KINDS   = %w(admin0 admin1 namedplace postalcode high-resolution ipaddress)
 
   PUBLIC_ATTRIBUTES = [:id, :table_id, :state, :kind, :country_code, :region_code, :formatter, :geometry_type,
@@ -51,34 +50,19 @@ class Geocoding < Sequel::Model
   end
 
   def table_geocoder
-    # TODO: move config and connection reset to factory
-    # Reset old connections to make sure changes apply. 
-    # NOTE: This assumes it's being called from a Resque job
-    if user.present?
-      user.reset_pooled_connections
-      user_connection = user.in_database(statement_timeout: DB_TIMEOUT_MS)
-    else
-      user_connection = nil
-    end
-
-    config = Cartodb.config[:geocoder].deep_symbolize_keys.merge(
-      table_schema:  table_service.try(:database_schema),
-      table_name:    table_service.try(:name),
-      qualified_table_name: table_service.try(:qualified_table_name),
-      sequel_qualified_table_name: table_service.try(:sequel_qualified_table_name),
-      formatter:     sanitize_formatter,
-      connection:    user_connection,
-      remote_id:     remote_id,
-      countries:     country_code,
-      regions:       region_code,
-      geometry_type: geometry_type,
-      kind:          kind,
-      max_rows:      max_geocodable_rows,
-      country_column: country_column,
-      region_column: region_column
-    )
-    @table_geocoder ||= Carto::TableGeocoderFactory.get(config)
-  end # table_geocoder
+    @table_geocoder ||= Carto::TableGeocoderFactory.get(user,
+                                                        Cartodb.config[:geocoder],
+                                                        table_service,
+                                                        formatter: sanitize_formatter,
+                                                        remote_id: remote_id,
+                                                        countries: country_code,
+                                                        regions: region_code,
+                                                        geometry_type: geometry_type,
+                                                        kind: kind,
+                                                        max_rows: max_geocodable_rows,
+                                                        country_column: country_column,
+                                                        region_column: region_column)
+  end
 
   # INFO: table_geocoder method is very coupled to table model, and we want to use this model during imports, without table yet.
   # this method allows to inject the dependency to the geocoder

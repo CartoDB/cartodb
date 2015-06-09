@@ -12,17 +12,11 @@ module Carto
 
       attr_reader :connection, :formatter, :processed_rows, :state
 
-      def self.enabled?
-        config = Cartodb.config[:gce_geocoder]
-        config.present? && config['client_id'].present? && config['private_key'].present?
-      end
-
       def initialize(arguments)
-        raise 'Not configured' unless self.class.enabled?
         super(arguments)
-        @formatter = arguments[:formatter]
-        client_id = Cartodb.config[:gce_geocoder]['client_id']
-        private_key = Cartodb.config[:gce_geocoder]['private_key']
+        @formatter = arguments.fetch(:formatter)
+        client_id = arguments.fetch(:client_id)
+        private_key = arguments.fetch(:private_key)
         gme_client = Client.new(client_id, private_key)
         @geocoder_client = GeocoderClient.new(gme_client)
       end

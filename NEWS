@@ -1,3 +1,6 @@
+3.X.X ()
+* Do not enable layer interaction if tooltip is empty (#513)
+
 3.14.3 (29//05//2015)
 * Hide <img> tag of infowindow covers when the url is invalid.
 * Expose legend model in sublayers/layers so that users can customize legends (#480).

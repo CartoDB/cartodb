@@ -11,6 +11,7 @@ shared_examples_for "tables controllers" do
     end
 
     before(:each) do
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
       delete_user_data @user
     end
 

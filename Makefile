@@ -32,9 +32,9 @@ WORKING_SPECS_2 = \
   spec/models/common_data_spec.rb \
   spec/lib/sql_parser_spec.rb \
   spec/lib/string_spec.rb \
-  spec/lib/metrics_spec.rb \
   spec/lib/image_metadata_spec.rb \
   spec/lib/central_spec.rb \
+  spec/lib/carto/http/client_spec.rb \
 	spec/helpers/uuidhelper_spec.rb \
   $(NULL)
 
@@ -157,11 +157,11 @@ WORKING_SPECS_9 = \
   services/datasources/spec/integration/ \
   services/datasources/spec/unit/arcgis_spec.rb \
   services/importer/spec/regression/query_batcher_spec.rb \
-  services/importer/spec/regression/cartodb_id_query_batcher_spec.rb \
+  services/importer/spec/regression/query_batcher_spec.rb \
   services/platform-limits/spec/unit/ \
   spec/models/platform-limits/ \
   spec/lib/initializers/carto_db_spec.rb \
-  spec/unit/controllers/api/json/oembed_controller_spec.rb \
+  spec/requests/carto/api/oembed_controller_spec.rb \
   spec/models/carto/ \
   $(NULL)
 

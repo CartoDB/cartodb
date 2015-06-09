@@ -46,7 +46,13 @@ class Carto::Visualization < ActiveRecord::Base
   def size
     # Only canonical visualizations (Datasets) have a related table and then count against disk quota,
     # but we want to not break and even allow ordering by size multiple types
-    table ? table.size : 0
+    if table
+      table.size
+    elsif type == TYPE_REMOTE && !external_source.nil?
+      external_source.size
+    else
+      0
+    end
   end
 
   def tags

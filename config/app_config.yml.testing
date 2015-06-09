@@ -2,6 +2,7 @@ defaults: &defaults
   users_dumps:
     service:
       port: 0000
+  http_client_logs: true
   ogr2ogr:
     binary:           'which ogr2ogr'
     csv_guessing:     false
@@ -72,14 +73,6 @@ defaults: &defaults
       api_credentials:     3
       users_metadata:      5
       redis_migrator_logs: 6
-#  mixpanel:
-#    api_key: xxx
-#    api_secret: xxx
-#    token: xxx
-#  github:
-#    repo: xxx
-#    org: xxx
-#    auth: xxx:xxx
   superadmin:
     username: "superadmin"
     password: "monkey"
@@ -127,7 +120,7 @@ defaults: &defaults
         maxZoom: '18' 
         name: 'Positron' 
         className: 'positron_rainbow' 
-        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href= "http://cartodb.com/attributions#basemaps">CartoDB</a>' 
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href= "http://cartodb.com/attributions">CartoDB</a>' 
   layer_opts:
     public_opts: ["type", "active", "query", "opacity", "auto_bound", 
                   "interactivity", "debug", "visible", "tiler_domain", 

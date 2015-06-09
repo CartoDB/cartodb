@@ -61,7 +61,6 @@ module CartoDB
         },
         notification: self.notification,
         avatar_url: self.avatar,
-        new_dashboard_enabled: self.new_dashboard_enabled,
         feature_flags: self.feature_flags,
         base_url: self.public_url
       }

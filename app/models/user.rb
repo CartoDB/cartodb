@@ -12,6 +12,7 @@ require_relative '../services/visualization/common_data_service'
 require_relative './external_data_import'
 require_relative './feature_flag'
 require_relative '../../lib/cartodb/stats/api_calls'
+require_relative '../../lib/carto/http/client'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -66,6 +67,8 @@ class User < Sequel::Model
   MIN_PASSWORD_LENGTH = 6
 
   GEOCODING_BLOCK_SIZE = 1000
+
+  TRIAL_DURATION_DAYS = 15
 
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
@@ -128,7 +131,6 @@ class User < Sequel::Model
     if self.organization_user?
       if new? || column_changed?(:organization_id)
         self.twitter_datasource_enabled = self.organization.twitter_datasource_enabled
-        self.new_dashboard_enabled      = self.organization.new_dashboard_enabled
       end
       self.max_layers ||= 6
       self.private_tables_enabled ||= true
@@ -711,7 +713,7 @@ class User < Sequel::Model
   end
 
   def reload_avatar
-    request = Typhoeus::Request.new(
+    request = http_client.request(
       self.gravatar(protocol = 'http://', 128, default_image = '404'),
       method: :get
     )
@@ -787,8 +789,8 @@ class User < Sequel::Model
   end
 
   def trial_ends_at
-    if account_type.to_s.downcase == 'magellan' && upgraded_at && upgraded_at + 15.days > Date.today
-      upgraded_at + 15.days
+    if account_type.to_s.downcase == 'magellan' && upgraded_at && upgraded_at + TRIAL_DURATION_DAYS.days > Date.today
+      upgraded_at + TRIAL_DURATION_DAYS.days
     else
       nil
     end
@@ -963,7 +965,7 @@ class User < Sequel::Model
     request_body.gsub!("$CDB_SUBDOMAIN$", self.username)
     request_body.gsub!("\"$FROM$\"", from_date)
     request_body.gsub!("\"$TO$\"", to_date)
-    request = Typhoeus::Request.new(
+    request = http_client.request(
       request_url,
       method: :post,
       headers: { "Content-Type" => "application/json" },
@@ -1010,7 +1012,7 @@ class User < Sequel::Model
 
   def last_billing_cycle
     day = period_end_date.day rescue 29.days.ago.day
-    date = (day > Date.today.day ? Date.today<<1 : Date.today)
+    date = (day > Date.today.day ? Date.today << 1 : Date.today)
     begin
       Date.parse("#{date.year}-#{date.month}-#{day}")
     rescue ArgumentError
@@ -2303,7 +2305,7 @@ TRIGGER
   end
 
   def enable_remote_db_user
-    request = Typhoeus::Request.new(
+    request = http_client.request(
       "#{self.database_host}:#{Cartodb.config[:signups]["service"]["port"]}/scripts/activate_db_user",
       method: :post,
       headers: { "Content-Type" => "application/json" }
@@ -2418,6 +2420,10 @@ TRIGGER
   end
 
   private
+
+  def http_client
+    @http_client ||= Carto::Http::Client.get('old_user', log_requests: true)
+  end
 
   # INFO: assigning to owner is necessary because of payment reasons
   def assign_search_tweets_to_organization_owner

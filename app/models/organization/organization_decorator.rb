@@ -38,8 +38,7 @@ module CartoDB
           }
         },
         website:           self.website,
-        avatar_url:        self.avatar_url,
-        new_dashboard_enabled: self.new_dashboard_enabled
+        avatar_url:        self.avatar_url
       }
     end
   end

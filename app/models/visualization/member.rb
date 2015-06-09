@@ -316,7 +316,7 @@ module CartoDB
         privacy = privacy.downcase if privacy
         self.privacy_changed = true if ( privacy != @privacy && !@privacy.nil? )
         super(privacy)
-      end #privacy=
+      end
 
       def tags=(tags)
         tags.reject!(&:blank?) if tags
@@ -421,8 +421,8 @@ module CartoDB
       end
 
       def invalidate_cache
-        invalidate_varnish_cache
         invalidate_redis_cache
+        invalidate_varnish_cache
         parent.invalidate_cache unless parent_id.nil?
       end
 
@@ -618,8 +618,6 @@ module CartoDB
       end
 
 
-
-
       private
 
       attr_reader   :repository, :name_checker, :validator
@@ -711,10 +709,10 @@ module CartoDB
           permission.clear
         end
 
-        if type == TYPE_CANONICAL || type == TYPE_REMOTE
-          if organization?
-            save_named_map
-          end
+        if type == TYPE_REMOTE
+          propagate_privacy_and_name_to(table) if table and propagate_changes
+        elsif type == TYPE_CANONICAL
+          save_named_map
           propagate_privacy_and_name_to(table) if table and propagate_changes
         else
           save_named_map
@@ -751,15 +749,10 @@ module CartoDB
 
       def save_named_map
         named_map = has_named_map?
-        if retrieve_named_map?
-            if named_map
-              update_named_map(named_map)
-             else
-              create_named_map
-            end
+        if named_map
+          update_named_map(named_map)
         else
-          # Privacy changed, remove the map
-          named_map.delete if named_map
+          create_named_map
         end
       end
 
@@ -840,9 +833,7 @@ module CartoDB
 
       def related_layers_from(table)
         layers(:cartodb).select do |layer|
-          (layer.affected_tables.map(&:name) +
-            [layer.options.fetch('table_name', nil)]
-          ).include?(table.name)
+          (layer.affected_tables.map(&:name) + [layer.options.fetch('table_name', nil)]).include?(table.name)
         end
       end
 

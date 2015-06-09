@@ -9,7 +9,8 @@ feature "API 1.0 user layers management" do
   end
 
   before(:each) do
-    CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+    
     delete_user_data @user
     host! 'test.localhost.lan'
     @table = create_table(:user_id => @user.id)

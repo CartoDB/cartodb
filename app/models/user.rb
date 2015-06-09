@@ -2339,9 +2339,9 @@ TRIGGER
   # that organization has a private key, the org's private key is returned.
   def google_maps_private_key
     if has_organization?
-      organization.google_maps_private_key || google_maps_private_key
+      organization.google_maps_private_key || super
     else
-      google_maps_private_key
+      super
     end
   end
 

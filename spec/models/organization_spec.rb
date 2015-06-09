@@ -2,8 +2,17 @@ require_relative '../spec_helper'
 
 require_relative '../../app/models/visualization/collection'
 require_relative '../../services/relocator/worker'
+require_relative 'organization_shared_examples'
 
 include CartoDB
+
+describe 'refactored behaviour' do
+  it_behaves_like 'organization models' do
+    let(:get_twitter_imports_count_by_organization_id) {
+      Organization.where(id: @organization_id).first.get_twitter_imports_count
+    }
+  end
+end
 
 describe Organization do
 
@@ -387,32 +396,6 @@ describe Organization do
       Organization.overquota(0.20).size.should == Organization.count
       Organization.overquota(0.10).should be_empty
     end
-  end
-
-  describe "#get_twitter_imports_count" do
-    include_context 'organization with users helper'
-
-    def create_search_tweet(user, retrieved_items)
-      st = SearchTweet.new
-
-      st.user = user
-      st.table_id = '96a86fb7-0270-4255-a327-15410c2d49d4'
-      st.data_import_id = '96a86fb7-0270-4255-a327-15410c2d49d4'
-      st.service_item_id = '555'
-      st.retrieved_items = retrieved_items
-      st.state = ::SearchTweet::STATE_COMPLETE
-
-      st
-    end
-
-    it "counts all users twitter imports" do
-      User.any_instance.expects(:get_twitter_imports_count).never
-      create_search_tweet(@org_user_1, 5).save
-      create_search_tweet(@org_user_1, 6).save
-
-      @organization.get_twitter_imports_count.should == 11
-    end
-
   end
 
   def random_attributes(attributes={})

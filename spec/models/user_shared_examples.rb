@@ -9,7 +9,6 @@ shared_examples_for "user models" do
 
     it "should count tweet imports" do
       u1 = create_user(email: 'u1@exampleb.com', username: 'ub1', password: 'admin123')
-      @user_id = u1.id
 
       st = SearchTweet.new
       st.user = u1
@@ -20,7 +19,7 @@ shared_examples_for "user models" do
       st.state = ::SearchTweet::STATE_COMPLETE
       st.save
 
-      get_twitter_imports_count_by_user_id.should == 5
+      get_twitter_imports_count_by_user_id(u1.id).should == 5
 
       u1.destroy
     end

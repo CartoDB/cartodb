@@ -29,9 +29,9 @@ describe User do
   end
 
   it_behaves_like 'user models' do
-    let(:get_twitter_imports_count_by_user_id) {
-      User.where(id: @user_id).first.get_twitter_imports_count
-    }
+    def get_twitter_imports_count_by_user_id(user_id)
+      User.where(id: user_id).first.get_twitter_imports_count
+    end
   end
 
   it "should set a default database_host" do

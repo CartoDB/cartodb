@@ -29,9 +29,7 @@ shared_examples_for "organization models" do
       create_search_tweet(@org_user_1, 5).save
       create_search_tweet(@org_user_1, 6).save
 
-      # TODO: avoid this hidden parameter
-      @organization_id = @organization.id
-      get_twitter_imports_count_by_organization_id.should == 11
+      get_twitter_imports_count_by_organization_id(@organization.id).should == 11
     end
 
   end

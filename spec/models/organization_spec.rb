@@ -8,9 +8,11 @@ include CartoDB
 
 describe 'refactored behaviour' do
   it_behaves_like 'organization models' do
-    let(:get_twitter_imports_count_by_organization_id) {
-      Organization.where(id: @organization_id).first.get_twitter_imports_count
-    }
+
+    def get_twitter_imports_count_by_organization_id(organization_id)
+      Organization.where(id: organization_id).first.get_twitter_imports_count
+    end
+
   end
 end
 

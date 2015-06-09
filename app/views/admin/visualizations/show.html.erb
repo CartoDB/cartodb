@@ -22,9 +22,9 @@
   </script>
 
   <% content_for(:js) do %>
-  <% if !@google_maps_client_id.blank? %>
+  <% if !@google_maps_query_string.blank? %>
         <script type="text/javascript"
-            src="//maps.googleapis.com/maps/api/js?sensor=false&v=3.12&<%= @google_maps_client_id %>">
+            src="//maps.googleapis.com/maps/api/js?sensor=false&v=3.12&<%= @google_maps_query_string %>">
         </script>
     <% end %>
     <%= javascript_include_tag 'cdb.js','models.js', 'templates.js', 'templates_mustache.js', 'table.js' %>

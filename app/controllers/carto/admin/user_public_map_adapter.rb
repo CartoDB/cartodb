@@ -6,7 +6,7 @@ module Carto
 
       delegate [ :id, :name, :username, :disqus_shortname, :avatar, :avatar_url, :remove_logo?, :has_organization?, 
                 :organization, :organization_id, :twitter_username, :public_url, :subdomain, :organization_username, 
-                :sql_safe_database_schema, :account_type, :google_maps_client_id, :basemaps, :default_basemap ] => :user
+                :sql_safe_database_schema, :account_type, :google_maps_query_string, :basemaps, :default_basemap ] => :user
 
       attr_reader :user
 

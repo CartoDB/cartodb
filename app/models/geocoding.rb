@@ -51,6 +51,7 @@ class Geocoding < Sequel::Model
   end
 
   def table_geocoder
+    # TODO: move config and connection reset to factory
     # Reset old connections to make sure changes apply. 
     # NOTE: This assumes it's being called from a Resque job
     if user.present?

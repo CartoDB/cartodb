@@ -134,7 +134,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   # TODO: this is the correct name for what's stored in the model, refactor changing that name
-  alias_method :google_maps_client_id, :google_maps_api_key
+  alias_method :google_maps_query_string, :google_maps_api_key
 
   # Returns the google maps private key. If the user is in an organization and
   # that organization has a private key, the org's private key is returned.

@@ -305,7 +305,7 @@ class User < Sequel::Model
           schemas = ['cdb', 'cdb_importer', 'cartodb', 'public', self.database_schema] +
               User.select(:database_schema).where(:organization_id => org_id).all.collect(&:database_schema)
           schemas.uniq.each do |s|
-            drop_user_privileges_in_schema(s, [CartoDB::PUBLIC_DB_USER])
+            drop_users_privileges_in_schema(s, [self.database_username, self.database_public_username, CartoDB::PUBLIC_DB_USER])
           end
         end
 
@@ -318,7 +318,7 @@ class User < Sequel::Model
 
       conn = self.in_database(as: :cluster_admin)
       User.terminate_database_connections(database_name, database_host)
-      conn.run("DROP USER IF EXISTS \"#{database_public_username}\"")
+      drop_user(conn, database_public_username)
       if is_owner
         conn.run("DROP DATABASE \"#{database_name}\"")
       end
@@ -335,11 +335,11 @@ class User < Sequel::Model
     conn.run("DROP DATABASE \"#{database_name}\"")
   end
 
-  def drop_user(conn = self.in_database(as: :cluster_admin))
+  def drop_user(conn = self.in_database(as: :cluster_admin), username = database_username)
     database_with_conflicts = nil
     retried = false
     begin
-      conn.run("DROP USER IF EXISTS \"#{database_username}\"")
+      conn.run("DROP USER IF EXISTS \"#{username}\"")
     rescue => e
       if !retried && e.message =~ /cannot be dropped because some objects depend on it/
         retried = true
@@ -348,15 +348,15 @@ class User < Sequel::Model
           raise e
         else
           database_with_conflicts = $1
-          revoke_all_on_database_from(conn, database_with_conflicts, database_username)
-          revoke_all_memberships_on_database_to_role(conn, database_with_conflicts, database_username)
-          drop_owned_by_user(conn, database_username)
+          revoke_all_on_database_from(conn, database_with_conflicts, username)
+          revoke_all_memberships_on_database_to_role(conn, database_with_conflicts, username)
+          drop_owned_by_user(conn, username)
           #.select { |s|
           #  !conn.fetch("SELECT 1 as schema_exist FROM information_schema.schemata WHERE schema_name = '#{s}'").first.nil?
           #}
           ['cdb', 'cdb_importer', 'cartodb', 'public', self.database_schema]
           .each { |s|
-            drop_user_privileges_in_schema(s)
+            drop_users_privileges_in_schema(s, [username])
           }
           retry
         end
@@ -2133,11 +2133,11 @@ TRIGGER
     ]
   end
 
-  def drop_user_privileges_in_schema(schema, additional_accounts=[])
+  def drop_users_privileges_in_schema(schema, accounts)
     in_database(:as => :superuser) do |user_database|
       return if user_database.fetch("SELECT 1 as schema_exist FROM information_schema.schemata WHERE schema_name = '#{schema}'").first.nil?
       user_database.transaction do
-        ([self.database_username, self.database_public_username] + additional_accounts)
+        accounts
           .select { |s|
             role_exists?(user_database, s)
           }

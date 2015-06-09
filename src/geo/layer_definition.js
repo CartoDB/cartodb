@@ -532,7 +532,7 @@ MapBase.prototype = {
   getTooltipData: function(layer) {
     var tooltip = this.layers[layer].tooltip;
     if (tooltip && tooltip.fields && tooltip.fields.length) {
-      return tooltip
+      return tooltip;
     }
     return null;
   },

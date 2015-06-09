@@ -84,13 +84,13 @@
   background: none;
   margin-top: 10px;
 }
-.EditField-select .select2-container .select2-choice { background: transparent }
+.EditField-select .select2-container .select2-choice { background: $cStructure-grayBkg }
 
 @mixin edit-type-field($t,$c,$mod:true) {
   // Is it a modifier or a normal class?
   $class_: '';
   @if ($mod) {
-    $class_: '.EditField-select--#{$t} .select2-container .select2-choice'
+    $class_: '.EditField-select .select2-container .select2-choice'
   } @else {
     $class_: '.EditField-select.#{$t} .select2-container .select2-choice'
   }
@@ -99,16 +99,36 @@
   #{$class_}:hover {
     border-color: $c!important;
     color: $c;
-    div b:after { border-top-color: $c }
-    div b:before { border-bottom-color: $c }
+
+    div b:after,
+    div b:before {
+      top: inherit;
+      border-bottom: none;
+      border-top-style: solid;
+      border-top-width: 4px;
+      border-left-width: 4px;
+      border-right-width: 4px;
+    }
+
+    div b:after {
+      bottom: 8px;
+      border-top-color: $cStructure-grayBkg;
+      z-index: 2;
+    }
+    div b:before {
+      bottom: 7px;
+      border-top-color: $c;
+      z-index: 2;
+    }
   }
 }
 
-@include edit-type-field(date, #F5A623, true);
-@include edit-type-field(number, #4DC964, true);
-@include edit-type-field(string, #AAA, true);
-@include edit-type-field(boolean, #AAA, true);
+// @include edit-type-field(date, #F5A623, true);
+// @include edit-type-field(number, #4DC964, true);
+// @include edit-type-field(string, #AAA, true);
+// @include edit-type-field(boolean, #AAA, true);
 
+@include edit-type-field('', #999, true);
 @include edit-type-field(has-failed, $cHighlight-negative, false);
 
 .EditField-info {
@@ -134,4 +154,15 @@
   border: 1px solid #CCC;
   background: white;
   border-radius: 4px;
+}
+.EditField--withSeparator {
+  &:before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 6px;
+    height: 24px;
+    width: 1px;
+    background: #E5E5E5;
+  }
 }

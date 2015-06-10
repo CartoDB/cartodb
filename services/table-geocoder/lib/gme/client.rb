@@ -26,6 +26,7 @@ module Carto
       RETRIABLE_STATUSES = Set.new [500, 503, 504]
 
       MAX_QUERIES_PER_SECOND = 10 # default for maps for work
+      A_BIT_MORE_THAN_A_SECOND = 1.01
 
 
       # Performs requests to Google Maps API web services
@@ -57,7 +58,7 @@ module Carto
         if @last_requests_time.size == MAX_QUERIES_PER_SECOND
           first_request_time = @last_requests_time.first
           elapsed_seconds = Time.now - first_request_time
-          sleep(1.0 - elapsed_seconds) if elapsed_seconds < 1.0
+          sleep(A_BIT_MORE_THAN_A_SECOND - elapsed_seconds) if elapsed_seconds < A_BIT_MORE_THAN_A_SECOND
         end
 
         @last_requests_time << Time.now

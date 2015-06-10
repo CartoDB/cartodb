@@ -8,7 +8,7 @@ module Carto
   module Gme
     class TableGeocoder < CartoDB::AbstractTableGeocoder
 
-      MAX_BLOCK_SIZE = 2000
+      MAX_BLOCK_SIZE = 1000
 
       # See https://developers.google.com/maps/documentation/geocoding/#Types
       ACCEPTED_ADDRESS_TYPES = ['street_address', 'route', 'intersection', 'neighborhood']

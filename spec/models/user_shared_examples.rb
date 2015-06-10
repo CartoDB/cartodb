@@ -6,12 +6,11 @@ require_relative '../spec_helper'
 shared_examples_for "user models" do
 
   describe '#get_twitter_imports_count' do
+    include_context 'users helper'
 
     it "should count tweet imports" do
-      u1 = create_user(email: 'u1@exampleb.com', username: 'ub1', password: 'admin123')
-
       st = SearchTweet.new
-      st.user = u1
+      st.user = @user1
       st.table_id = '96a86fb7-0270-4255-a327-15410c2d49d4'
       st.data_import_id = '96a86fb7-0270-4255-a327-15410c2d49d4'
       st.service_item_id = '555'
@@ -19,9 +18,7 @@ shared_examples_for "user models" do
       st.state = ::SearchTweet::STATE_COMPLETE
       st.save
 
-      get_twitter_imports_count_by_user_id(u1.id).should == 5
-
-      u1.destroy
+      get_twitter_imports_count_by_user_id(@user1.id).should == 5
     end
 
   end

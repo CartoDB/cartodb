@@ -6,8 +6,16 @@ describe Carto::Organization do
 
   it_behaves_like 'organization models' do
 
+    before(:each) do
+      # INFO: forcing ActiveRecord initialization so expectations on number of queries don't count AR queries
+      @the_organization = Carto::Organization.where(id: @organization.id).first
+      @the_organization.owner
+      Carto::SearchTweet.count
+    end
+
     def get_twitter_imports_count_by_organization_id(organization_id)
-      Carto::Organization.where(id: organization_id).first.twitter_imports_count
+      raise "id doesn't match" unless organization_id == @the_organization.id
+      @the_organization.twitter_imports_count
     end
 
   end

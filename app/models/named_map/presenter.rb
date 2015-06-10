@@ -86,36 +86,38 @@ module CartoDB
 
       # Extract relevant information from layers
       def configure_layers_data
+        # Http/base layers don't appear at viz.json
         layers = @visualization.layers(:cartodb)
         layers_data = Array.new
-
         layers.each { |layer|
           layer_vizjson = layer.get_presenter(@options, @configuration).to_vizjson_v2
-          data = {
+          layers_data.push(data_for_carto_layer(layer_vizjson))
+        }
+        layers_data
+      end
+
+      def data_for_carto_layer(layer_vizjson)
+        data = {
             layer_name: layer_vizjson[:options][:layer_name],
             interactivity: layer_vizjson[:options][:interactivity],
             visible: layer_vizjson[:visible]
           }
 
-          if layer_vizjson.include?(:infowindow) && !layer_vizjson[:infowindow].nil? &&
-               !layer_vizjson[:infowindow].fetch('fields').nil? && layer_vizjson[:infowindow].fetch('fields').size > 0
-            data[:infowindow] = layer_vizjson[:infowindow]
-          end
+        if layer_vizjson.include?(:infowindow) && !layer_vizjson[:infowindow].nil? &&
+             !layer_vizjson[:infowindow].fetch('fields').nil? && layer_vizjson[:infowindow].fetch('fields').size > 0
+          data[:infowindow] = layer_vizjson[:infowindow]
+        end
 
-          if layer_vizjson.include?(:tooltip) && !layer_vizjson[:tooltip].nil? &&
-               !layer_vizjson[:tooltip].fetch('fields').nil? && layer_vizjson[:tooltip].fetch('fields').size > 0
-            data[:tooltip] = layer_vizjson[:tooltip]
-          end
+        if layer_vizjson.include?(:tooltip) && !layer_vizjson[:tooltip].nil? &&
+             !layer_vizjson[:tooltip].fetch('fields').nil? && layer_vizjson[:tooltip].fetch('fields').size > 0
+          data[:tooltip] = layer_vizjson[:tooltip]
+        end
 
-          if layer_vizjson.include?(:legend) && !layer_vizjson[:legend].nil? &&
-               layer_vizjson[:legend].fetch('type') != 'none'
-            data[:legend] = layer_vizjson[:legend]
-          end
-
-          layers_data.push(data)
-        }
-
-        layers_data
+        if layer_vizjson.include?(:legend) && !layer_vizjson[:legend].nil? &&
+             layer_vizjson[:legend].fetch('type') != 'none'
+          data[:legend] = layer_vizjson[:legend]
+        end
+        data
       end
 
       # Loads the data of a given named map

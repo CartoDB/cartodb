@@ -1,5 +1,6 @@
-3.X.X ()
+3.14.4 (10//06//2015)
 * Do not enable layer interaction if tooltip is empty (#513)
+* Replaces minified carto.js with uncompressed version (#516)
 
 3.14.3 (29//05//2015)
 * Hide <img> tag of infowindow covers when the url is invalid.

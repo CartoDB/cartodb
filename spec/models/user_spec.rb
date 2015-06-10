@@ -2,6 +2,16 @@
 require_relative '../spec_helper'
 require_relative 'user_shared_examples'
 
+describe 'refactored behaviour' do
+
+  it_behaves_like 'user models' do
+    def get_twitter_imports_count_by_user_id(user_id)
+      User.where(id: user_id).first.get_twitter_imports_count
+    end
+  end
+
+end
+
 describe User do
   before(:all) do
     CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
@@ -26,12 +36,6 @@ describe User do
   after(:all) do
     @user.destroy
     @user2.destroy
-  end
-
-  it_behaves_like 'user models' do
-    def get_twitter_imports_count_by_user_id(user_id)
-      User.where(id: user_id).first.get_twitter_imports_count
-    end
   end
 
   it "should set a default database_host" do

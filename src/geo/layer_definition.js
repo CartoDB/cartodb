@@ -13,7 +13,7 @@ function MapBase(options) {
     }
   });
 
-  this.layerToken = null;
+  this.mapProperties = null;
   this.urls = null;
   this.silent = false;
   this.interactionEnabled = []; //TODO: refactor, include inside layer
@@ -43,6 +43,7 @@ MapBase.prototype = {
     opts.maps_api_template = [tilerProtocol, "://", username, tilerDomain, tilerPort].join('');
   },
 
+  // TODO: This method is actually creating a map in the server -> Rename to createMap?
   getLayerToken: function(callback) {
     var self = this;
     function _done(data, err) {
@@ -276,27 +277,28 @@ MapBase.prototype = {
   },
 
   invalidate: function() {
-    this.layerToken = null;
+    this.mapProperties = null;
     this.urls = null;
     this.onLayerDefinitionUpdated();
   },
 
   getTiles: function(callback) {
     var self = this;
-    if(self.layerToken) {
-      callback && callback(self._layerGroupTiles(self.layerToken, self.options.extra_params));
+    if(self.mapProperties) {
+      callback && callback(self._layerGroupTiles());
       return this;
     }
     this.getLayerToken(function(data, err) {
       if(data) {
-        self.layerToken = data.layergroupid;
+        self.mapProperties = data;
+
         // if cdn_url is present, use it
         if (data.cdn_url) {
           var c = self.options.cdn_url = self.options.cdn_url || {};
           c.http = data.cdn_url.http || c.http;
           c.https = data.cdn_url.https || c.https;
         }
-        self.urls = self._layerGroupTiles(data.layergroupid, self.options.extra_params);
+        self.urls = self._layerGroupTiles();
         callback && callback(self.urls);
       } else {
         if ((self.named_map !== null) && (err) ){
@@ -317,28 +319,49 @@ MapBase.prototype = {
     return this.options.maps_api_template.indexOf('https') === 0;
   },
 
-  _layerGroupTiles: function(layerGroupId, params) {
+  _layerGroupTiles: function() {
+    var grids = [];
+    var tiles = [];
+    var pngParams = this._encodeParams(this.options.extra_params, this.options.pngParams);
+    var gridParams = this._encodeParams(this.options.extra_params, this.options.gridParams);
     var subdomains = this.options.subdomains || ['0', '1', '2', '3'];
     if(this.isHttps()) {
       subdomains = [null]; // no subdomain
     }
+    var filter = this.options.filter;
+    var layerGroupId = this.mapProperties.layergroupid;
+    var layers = this.mapProperties.metadata.layers;
 
-    var tileTemplate = '/all/{z}/{x}/{y}';
-
-    var grids = []
-    var tiles = [];
-    var pngParams = this._encodeParams(params, this.options.pngParams);
-
-    for(var i = 0; i < subdomains.length; ++i) {
-      var s = subdomains[i]
-      var cartodb_url = this._host(s) + MapBase.BASE_URL + '/' + layerGroupId
-      tiles.push(cartodb_url + tileTemplate + ".png" + (pngParams ? "?" + pngParams: '') );
-
-      var gridParams = this._encodeParams(params, this.options.gridParams);
-      for(var layer = 0; layer < this.layers.length; ++layer) {
-        grids[layer] = grids[layer] || [];
-        grids[layer].push(cartodb_url + "/" + layer +  tileTemplate + ".grid.json" + (gridParams ? "?" + gridParams: ''));
+    // Iterate through the layers returned by the tiler as metadata and
+    // extract the indexes of all the layers that should be rendered
+    var layerIndexes = [];
+    for (var i = 0; i < layers.length; i++) {
+      var layer = layers[i];
+      var isValidType = layer.type !== 'torque';
+      if (filter) {
+        isValidType = isValidType && filter.indexOf(layer.type) != -1
       }
+      if (isValidType) {
+        layerIndexes.push(i);
+      }
+    }
+
+    if (layerIndexes.length) {
+      var tileTemplate = '/' +  layerIndexes.join(',') +'/{z}/{x}/{y}';
+      var gridTemplate = '/{z}/{x}/{y}';
+
+      for(var i = 0; i < subdomains.length; ++i) {
+        var s = subdomains[i]
+        var cartodb_url = this._host(s) + MapBase.BASE_URL + '/' + layerGroupId
+        tiles.push(cartodb_url + tileTemplate + ".png" + (pngParams ? "?" + pngParams: '') );
+
+        for(var layer = 0; layer < this.layers.length; ++layer) {
+          grids[layer] = grids[layer] || [];
+          grids[layer].push(cartodb_url + "/" + layer +  gridTemplate + ".grid.json" + (gridParams ? "?" + gridParams: ''));
+        }
+      }
+    } else {
+      tiles = [MapBase.EMPTY_GIF];
     }
 
     return {
@@ -588,6 +611,7 @@ MapBase.prototype = {
   }
 };
 
+// TODO: This is actually an AnonymousMap -> Rename?
 function LayerDefinition(layerDefinition, options) {
   MapBase.call(this, options);
   this.endPoint = MapBase.BASE_URL;
@@ -614,7 +638,7 @@ LayerDefinition.layerDefFromSubLayers = function(sublayers) {
   });
 
   var layerDefinition = {
-    version: '1.0.0',
+    version: '1.3.0',
     stat_tag: 'API',
     layers: sublayers
   }
@@ -767,7 +791,7 @@ LayerDefinition.prototype = _.extend({}, MapBase.prototype, {
       //'api',
       //'v1',
       MapBase.BASE_URL.slice(1),
-      this.layerToken,
+      this.mapProperties.layergroupid,
       this.getLayerIndexByNumber(layer),
       'attributes',
       feature_id].join('/');
@@ -890,7 +914,7 @@ NamedMap.prototype = _.extend({}, MapBase.prototype, {
       //'api',
       //'v1',
       MapBase.BASE_URL.slice(1),
-      this.layerToken,
+      this.mapProperties.layergroupid,
       layer,
       'attributes',
       feature_id].join('/');

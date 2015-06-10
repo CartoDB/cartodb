@@ -147,14 +147,22 @@ CartoDBSubLayer.prototype = _.extend({}, SubLayerBase.prototype, {
       options: {
         sql: this.getSQL(),
         cartocss: this.getCartoCSS(),
-        cartocss_version: this.get('cartocss_version') || '2.1.0',
-        interactivity: this.getInteractivity()
+        cartocss_version: this.get('cartocss_version') || '2.1.0'
       }
     };
 
-    if (this.get('attributes')) {
-      json.options.attributes = this.getAttributes();
+    var interactivity = this.getInteractivity();
+    if (interactivity && interactivity.length > 0) {
+      json.options.interactivity = interactivity;
+      var attributes = this.getAttributes();
+      if (attributes.length > 0) {
+        json.options.attributes = {
+          id: 'cartodb_id',
+          columns: attributes
+        }
+      }
     }
+
     if (this.get('raster')) {
       json.options.geom_column = "the_raster_webmercator";
       json.options.geom_type = "raster";
@@ -204,10 +212,12 @@ CartoDBSubLayer.prototype = _.extend({}, SubLayerBase.prototype, {
 
   getInteractivity: function() {
     var interactivity = this.get('interactivity');
-    if (typeof(interactivity) === 'string') {
-      interactivity = interactivity.split(',');
+    if (interactivity) {
+      if (typeof(interactivity) === 'string') {
+        interactivity = interactivity.split(',');
+      }
+      return this._trimArrayItems(interactivity);
     }
-    return this._trimArrayItems(interactivity);
   },
 
   getAttributes: function() {
@@ -215,30 +225,17 @@ CartoDBSubLayer.prototype = _.extend({}, SubLayerBase.prototype, {
     if (this.get('attributes')) {
       columns = this.get('attributes');
     } else {
-      var infowindow = this.getInfowindowData();
-      if (infowindow) {
-        columns = _.map(infowindow.fields, function(field){
-          return field.name;
-        });
-      }
+      columns = _.map(this.infowindow.get('fields'), function(field){
+        return field.name;
+      });
     }
-    return {
-      id: 'cartodb_id',
-      columns: this._trimArrayItems(columns)
-    }
+    return this._trimArrayItems(columns);
   },
 
   _trimArrayItems: function(array) {
     return _.map(array, function(item) {
       return item.trim();
     })
-  },
-
-  getInfowindowData: function() {
-    if (this.infowindow && this.infowindow.fields && this.infowindow.fields.length > 0) {
-      return this.infowindow;
-    }
-    return null;
   }
 });
 

@@ -373,8 +373,6 @@ describe('api.layers', function() {
       });
 
       it("should use access_token", function(done) {
-        var layer;
-
         cartodb.createLayer(map, {
           type: 'namedmap',
           user_name: 'dev',
@@ -386,19 +384,18 @@ describe('api.layers', function() {
               }
             }
           }
-        }, { https: true,  auth_token: 'at_rambo' }).done(function(lyr) {
-          layer = lyr;
-        });
-
-        setTimeout(function() {
-          expect(layer).not.toEqual(undefined);
-          layer.layerToken = 'test';
+        }, { https: true,  auth_token: 'at_rambo' }).done(function(layer) {
+          spyOn(layer, 'getLayerToken').and.returnValue({
+            layergroupid: 'test',
+            metadata: {
+              layers: []
+            }
+          })
           layer.getTiles(function(tiles) {
             expect(tiles.tiles[0].indexOf("auth_token=at_rambo")).not.toEqual(-1);
           });
           done();
-        }, 100);
-
+        });
       });
 
       it("should create a layer from the list of sublayers", function(done) {
@@ -418,7 +415,7 @@ describe('api.layers', function() {
         setTimeout(function() {
           expect(layer).not.toEqual(undefined);
           expect(layer.toJSON()).toEqual({
-            version: '1.0.0',
+            version: '1.3.0',
             stat_tag: 'API',
             layers: [{
               type: 'cartodb',

@@ -10,6 +10,9 @@ module Carto
 
       MAX_BLOCK_SIZE = 2000
 
+      # See https://developers.google.com/maps/documentation/geocoding/#Types
+      ACCEPTED_ADDRESS_TYPES = ['street_address', 'route', 'intersection', 'neighborhood']
+
       attr_reader :connection, :formatter, :processed_rows, :state
 
       def initialize(arguments)
@@ -75,11 +78,10 @@ module Carto
       def geocode(data_block)
         data_block.each do |row|
           response = @geocoder_client.geocode(row[:searchtext])
-          if response['status'] != 'OK' #note this accounts for 'ZERO_RESULTS' as well
+          if response['status'] != 'OK'
             row.merge!(cartodb_georef_status: false)
           else
-            # TODO: check for other types (e.g: route)
-            result = response['results'].select { |res| res['types'].include?('street_address') }.first
+            result = response['results'].select { |r| r['types'] & ACCEPTED_ADDRESS_TYPES }.first
             if result.nil?
               row.merge!(cartodb_georef_status: false)
             else

@@ -105,16 +105,12 @@ class Organization < Sequel::Model
   end
 
   def get_geocoding_calls(options = {})
-    date_to = (options[:to] ? options[:to].to_date : Date.today)
-    date_from = (options[:from] ? options[:from].to_date : owner.last_billing_cycle)
-
-    users_dataset.join(:geocodings, :user_id => :id).where(kind: 'high-resolution').where('geocodings.created_at >= ? and geocodings.created_at <= ?', date_from, date_to + 1.days)
-      .sum("processed_rows + cache_hits".lit).to_i
+    date_from, date_to = quota_dates(options)
+    Geocoding.get_geocoding_calls(users_dataset.join(:geocodings, :user_id => :id), date_from, date_to)
   end
 
   def get_twitter_imports_count(options = {})
-    date_to = (options[:to] ? options[:to].to_date : Date.today)
-    date_from = (options[:from] ? options[:from].to_date : owner.last_billing_cycle)
+    date_from, date_to = quota_dates(options)
 
     SearchTweet.get_twitter_imports_count(users_dataset.join(:search_tweets, :user_id => :id), date_from, date_to)
   end
@@ -210,6 +206,12 @@ class Organization < Sequel::Model
   end
 
   private
+
+  def quota_dates(options)
+    date_to = (options[:to] ? options[:to].to_date : Date.today)
+    date_from = (options[:from] ? options[:from].to_date : owner.last_billing_cycle)
+    return date_from, date_to
+  end
 
   def public_vis_count_by_type(type)
     CartoDB::Visualization::Collection.new.fetch(

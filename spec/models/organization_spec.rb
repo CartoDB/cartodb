@@ -43,6 +43,8 @@ describe Organization do
 
   describe '#destroy_cascade' do
     it 'Destroys users and owner as well' do
+      User.any_instance.stubs(:create_in_central).returns(true)
+      User.any_instance.stubs(:update_in_central).returns(true)
       organization = Organization.new(quota_in_bytes: 1234567890, name: 'wadus', seats: 5).save
 
       owner = create_user(:quota_in_bytes => 524288000, :table_quota => 500)

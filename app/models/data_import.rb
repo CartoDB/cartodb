@@ -173,7 +173,6 @@ class DataImport < Sequel::Model
       self.error_code = 1002
       self.state      = STATE_FAILURE
       save
-      return self
     end
 
     success ? handle_success : handle_failure

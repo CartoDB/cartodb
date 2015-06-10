@@ -5,6 +5,8 @@
 * Cache public and with link embeds in redis [#3733](https://github.com/CartoDB/cartodb/pull/3733)
 * Unify caching of vizjsons and version keys [#3726](https://github.com/CartoDB/cartodb/pull/3726)
 * Named maps created for all visualizations, regardless of layers privacy [#3879](https://github.com/CartoDB/cartodb/issues/3879)
+* Added an [http client for ruby](https://github.com/CartoDB/cartodb/wiki/The-CartoDB-ruby-http-client) with some cool features
+* SQLViews are editable when filtering [#3812](https://github.com/CartoDB/cartodb/pull/3812)
 
 Bugfixes:
 * Fixed deletion of layers upon disconnecting synced datasources [#3718](https://github.com/CartoDB/cartodb/pull/3718)
@@ -12,6 +14,7 @@ Bugfixes:
 * Fixed corner case with ghost table renames [#3762](https://github.com/CartoDB/cartodb/pull/3762)
 * Added options to create dataset from query while on the map view [#3771](https://github.com/CartoDB/cartodb/pull/3771)
 * Do not cache geocodes if the_geom is NULL [#3793](https://github.com/CartoDB/cartodb/pull/3793)
+* Reverse order of varnish/redis invalidation [#3555](https://github.com/CartoDB/cartodb/pull/3945)
 
 3.10.2 (2015-05-20)
 ---------

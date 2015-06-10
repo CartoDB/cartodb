@@ -1,4 +1,4 @@
-require 'typhoeus'
+require_relative '../carto/http/client'
 
 # encoding: utf-8
 module Cartodb
@@ -26,7 +26,8 @@ module Cartodb
     end
 
     def build_request(path, body, method, timeout = 200)
-      Typhoeus::Request.new(
+      http_client = Carto::Http::Client.get('central', log_requests: true)
+      http_client.request(
         "#{ @host }/#{ path }",
         method: method,
         body: body.to_json,

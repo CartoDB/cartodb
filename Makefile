@@ -34,6 +34,7 @@ WORKING_SPECS_2 = \
   spec/lib/string_spec.rb \
   spec/lib/image_metadata_spec.rb \
   spec/lib/central_spec.rb \
+  spec/lib/carto/http/client_spec.rb \
 	spec/helpers/uuidhelper_spec.rb \
   $(NULL)
 

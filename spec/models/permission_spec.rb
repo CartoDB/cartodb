@@ -18,7 +18,7 @@ describe CartoDB::Permission do
   end
 
   after(:all) do
-    CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
     @user.destroy
   end
 
@@ -40,7 +40,7 @@ describe CartoDB::Permission do
 
       vis_entity_mock.stubs(:permission).returns(vis_perm_mock)
       vis_entity_mock.stubs(:table?).returns(true)
-      vis_entity_mock.stubs(:invalidate_cache_and_refresh_named_map).returns(nil)
+      vis_entity_mock.stubs(:invalidate_cache).returns(nil)
       vis_entity_mock.stubs(:table).returns(vis_table_mock)
       vis_entity_mock.stubs(:related_tables).returns([])
       vis_entity_mock.stubs(:privacy=)
@@ -658,7 +658,7 @@ describe CartoDB::Permission do
     vis_entity_mock.stubs(:table).returns(nil)
     vis_entity_mock.stubs(:related_tables).returns([])
     vis_entity_mock.stubs(:table?).returns(true)
-    vis_entity_mock.stubs(:invalidate_cache_and_refresh_named_map).returns(nil)
+    vis_entity_mock.stubs(:invalidate_cache).returns(nil)
     vis_entity_mock.stubs(:type).returns(CartoDB::Visualization::Member::TYPE_DERIVED)
     vis_entity_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
     vis_entity_mock.stubs(:name).returns("foobar_visualization")

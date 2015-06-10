@@ -137,6 +137,7 @@ class Carto::Visualization < ActiveRecord::Base
     end
   end
 
+  # Despite storing always a named map, no need to retrieve it for "public" visualizations
   def retrieve_named_map?
     password_protected? || has_private_tables?
   end
@@ -231,11 +232,10 @@ class Carto::Visualization < ActiveRecord::Base
 
   private
 
-  # INFO: refactor from Visualization::Member.has_named_map?
   def get_named_map
-    # TODO: WIP
     return nil if type == TYPE_REMOTE
-    named_maps.get(CartoDB::NamedMapsWrapper::NamedMap.normalize_name(id))
+    data = named_maps.get(CartoDB::NamedMapsWrapper::NamedMap.normalize_name(id))
+    data.nil? ? false : data
   end
 
   def named_maps(force_init = false)

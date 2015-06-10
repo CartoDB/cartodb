@@ -471,7 +471,7 @@ describe Visualization::Collection do
             username: user1.username
           },
           access: CartoDB::Permission::ACCESS_READONLY } ]
-      v21.stubs(:invalidate_cache_and_refresh_named_map).returns(nil)
+      v21.stubs(:invalidate_cache).returns(nil)
       permission.stubs(:entity).returns(v21)
       permission.stubs(:notify_permissions_change).returns(nil)
       permission.save
@@ -492,7 +492,7 @@ describe Visualization::Collection do
             username: user1.username
           },
           access: CartoDB::Permission::ACCESS_READONLY } ]
-      v22.stubs(:invalidate_cache_and_refresh_named_map).returns(nil)
+      v22.stubs(:invalidate_cache).returns(nil)
       permission22.stubs(:entity).returns(v22)
       permission22.stubs(:notify_permissions_change).returns(nil)
       permission22.save

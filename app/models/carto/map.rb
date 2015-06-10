@@ -21,9 +21,6 @@ class Carto::Map < ActiveRecord::Base
   has_and_belongs_to_many :other_layers, class_name: 'Carto::Layer', 
     conditions: "kind not in ('carto', 'tiled', 'background', 'gmapsbase', 'wms')", order: '"order"'
 
-  has_and_belongs_to_many :named_maps_layers, class_name: 'Carto::Layer', 
-    conditions: { kind: ['carto', 'tiled', 'background', 'gmapsbase', 'wms'] }, order: '"order"'
-
   belongs_to :user
 
   has_many :tables, class_name: Carto::UserTable
@@ -36,34 +33,6 @@ class Carto::Map < ActiveRecord::Base
     layer[:kind] == 'tiled' ? 'leaflet': 'googlemaps'
   end
 
-  # (lat,lon) points on all map data
-  def center_data
-    (center.nil? || center == '') ? DEFAULT_OPTIONS[:center] : center.gsub(/\[|\]|\s*/, '').split(',')
-  end
-
-  def view_bounds_data
-      if view_bounds_sw.nil? || view_bounds_sw == ''
-        bbox_sw = [0.0, 0.0]
-      else
-        bbox_sw = view_bounds_sw.gsub(/\[|\]|\s*/, '').split(',').map(&:to_f)
-      end
-      if view_bounds_ne.nil? || view_bounds_ne == ''
-        bbox_ne = [0.0, 0.0]
-      else
-        bbox_ne = view_bounds_ne.gsub(/\[|\]|\s*/, '').split(',').map(&:to_f)
-      end
-
-      {
-        # LowerCorner longitude, in decimal degrees 
-        west:  bbox_sw[1],
-        # LowerCorner latitude, in decimal degrees
-        south: bbox_sw[0],
-        # UpperCorner longitude, in decimal degrees
-        east:  bbox_ne[1],
-        # UpperCorner latitude, in decimal degrees
-        north: bbox_ne[0]
-      }
-  end
 
   private
 

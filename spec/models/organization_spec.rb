@@ -397,7 +397,6 @@ describe Organization do
     end
   end
 
-
   def random_attributes(attributes={})
     random = rand(999)
     {

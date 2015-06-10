@@ -23,6 +23,10 @@ def login(user)
   host! "#{user.subdomain}.localhost.lan"
 end
 
+def create_random_table(user, name = "viz#{rand(999)}")
+  create_table( { user_id: user.id, name: name } )
+end
+
 shared_context 'database configuration' do
 
   before(:each) do
@@ -54,45 +58,56 @@ shared_context 'organization with users helper' do
   end
 
   before(:all) do
+    username_owner = random_username
+    @org_user_owner = create_user(
+      username: username_owner,
+      email: "#{username_owner}@example.com",
+      password: 'clientex',
+      private_tables_enabled: true
+    )
+
+    @organization = test_organization.save
+
+    user_org = CartoDB::UserOrganization.new(@organization.id, @org_user_owner.id)
+    user_org.promote_user_to_admin
+    @organization.reload
+    @org_user_owner.reload
+
     username1 = random_username
     @org_user_1 = create_user(
       username: username1,
       email: "#{username1}@example.com",
       password: 'clientex',
-      private_tables_enabled: true
+      private_tables_enabled: true,
+      organization: @organization
     )
+    @org_user_1.save.reload
+    @organization.reload
 
     username2 = random_username
     @org_user_2 = create_user(
       username: username2,
       email: "#{username2}@example.com",
       password: 'clientex2',
-      private_tables_enabled: true
+      private_tables_enabled: true,
+      organization: @organization
     )
-
-    @organization = test_organization.save
-
-    user_org = CartoDB::UserOrganization.new(@organization.id, @org_user_1.id)
-    user_org.promote_user_to_admin
-    @organization.reload
-    @org_user_1.reload
-
-    @org_user_2.organization_id = @organization.id
     @org_user_2.save.reload
     @organization.reload
   end
 
   before(:each) do
     bypass_named_maps
+    delete_user_data @org_user_owner
     delete_user_data @org_user_1
     delete_user_data @org_user_2
   end
 
   after(:all) do
+    delete_user_data @org_user_owner if @org_user_owner
     delete_user_data @org_user_1 if @org_user_1
     delete_user_data @org_user_2 if @org_user_2
-    @org_user_2.destroy if @org_user_2
-    @org_user_1.destroy if @org_user_1
+    @organization.destroy_cascade
   end
 
   def share_table(table, owner, user)
@@ -150,10 +165,6 @@ end
 shared_context 'visualization creation helpers' do
   include Warden::Test::Helpers
   bypass_named_maps
-
-  def create_random_table(user, name = "viz#{rand(999)}")
-    create_table( { user_id: user.id, name: name } )
-  end
 
   private
 

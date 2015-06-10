@@ -13,11 +13,11 @@ module Carto
       # See https://developers.google.com/maps/documentation/geocoding/#Types
       ACCEPTED_ADDRESS_TYPES = ['street_address', 'route', 'intersection', 'neighborhood']
 
-      attr_reader :connection, :formatter, :processed_rows, :state
+      attr_reader :connection, :original_formatter, :processed_rows, :state
 
       def initialize(arguments)
         super(arguments)
-        @formatter = arguments.fetch(:formatter)
+        @original_formatter = arguments.fetch(:original_formatter)
         client_id = arguments.fetch(:client_id)
         private_key = arguments.fetch(:private_key)
         gme_client = Client.new(client_id, private_key)
@@ -60,11 +60,10 @@ module Carto
       private
 
       # Returns a "generator"
-      # TODO: take into account state/province/country from formatter
       def data_input_blocks
         Enumerator.new do |enum|
           loop do
-            data_input = connection.select("cartodb_id, #{formatter} searchtext".lit)
+            data_input = connection.select(select_clause.lit)
               .from(@sequel_qualified_table_name)
               .where("cartodb_georef_status IS NULL".lit)
               .limit(MAX_BLOCK_SIZE)
@@ -73,6 +72,23 @@ module Carto
             break if data_input.length < MAX_BLOCK_SIZE # last iteration, no need for another query
           end
         end
+      end
+
+      def select_clause
+        # The original_formatter has the following format:
+        #   `{street_column_name}[[, additional_free_text][, {province_column_name}][, country_free_text]]`
+        atoms = original_formatter.split(',').map {|s| s.strip }
+        # TODO use a named capture group in regexp?
+        # TODO quote column names
+        # TODO quote strings
+        searchtext_expression = atoms.map { |atom|
+          if atom =~ /{(.*)}/
+            $1
+          else
+            %Q{'#{atom}'}
+          end
+        }.join(%Q{ || ',' || })
+        "cartodb_id, #{searchtext_expression} searchtext"
       end
 
       def geocode(data_block)

@@ -53,6 +53,7 @@ class Geocoding < Sequel::Model
     @table_geocoder ||= Carto::TableGeocoderFactory.get(user,
                                                         Cartodb.config[:geocoder],
                                                         table_service,
+                                                        original_formatter: formatter,
                                                         formatter: sanitize_formatter,
                                                         remote_id: remote_id,
                                                         countries: country_code,

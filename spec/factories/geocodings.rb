@@ -1,7 +1,12 @@
 FactoryGirl.define do
 
   factory :geocoding do
-    kind 'high-resolution'
+
+    formatter 'admin'
+
+    factory :high_resolution_geocoding do
+      kind 'high-resolution'
+    end
   end
 
 end

@@ -105,7 +105,11 @@ class Organization < Sequel::Model
   end
 
   def get_geocoding_calls(options = {})
-    users.map{ |u| u.get_geocoding_calls(options) }.sum
+    date_to = (options[:to] ? options[:to].to_date : Date.today)
+    date_from = (options[:from] ? options[:from].to_date : owner.last_billing_cycle)
+
+    users_dataset.join(:geocodings, :user_id => :id).where(kind: 'high-resolution').where('geocodings.created_at >= ? and geocodings.created_at <= ?', date_from, date_to + 1.days)
+      .sum("processed_rows + cache_hits".lit).to_i
   end
 
   def get_twitter_imports_count(options = {})

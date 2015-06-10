@@ -374,7 +374,7 @@ class User < Sequel::Model
   def revoke_all_memberships_on_database_to_role(conn, database, role)
     q = "select rolname from pg_user join pg_auth_members on (pg_user.usesysid=pg_auth_members.member) join pg_roles on (pg_roles.oid=pg_auth_members.roleid) where pg_user.usename='#{role}'"
     conn.fetch(q).each { |rolname|
-      conn.run("REVOKE \"#{rolname[:rolname]}\" FROM \"#{role}\"")
+      conn.run("REVOKE \"#{rolname[:rolname]}\" FROM \"#{role}\" CASCADE")
     }
   end
 
@@ -1631,7 +1631,7 @@ class User < Sequel::Model
     )
     self.run_queries_in_transaction(
       [
-        "REVOKE SELECT ON cartodb.cdb_tablemetadata FROM #{CartoDB::PUBLIC_DB_USER}"
+        "REVOKE SELECT ON cartodb.cdb_tablemetadata FROM #{CartoDB::PUBLIC_DB_USER} CASCADE"
       ],
       true
     )
@@ -2188,14 +2188,14 @@ TRIGGER
   end
 
   def revoke_all_on_database_from(conn, database, role)
-    conn.run("REVOKE ALL ON DATABASE \"#{database}\" FROM \"#{role}\"") if role_exists?(conn, role)
+    conn.run("REVOKE ALL ON DATABASE \"#{database}\" FROM \"#{role}\" CASCADE") if role_exists?(conn, role)
   end
 
   def revoke_privileges(db, schema, u)
-    db.run("REVOKE ALL ON SCHEMA \"#{schema}\" FROM #{u}")
-    db.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA \"#{schema}\" FROM #{u}")
-    db.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" FROM #{u}")
-    db.run("REVOKE ALL ON ALL TABLES IN SCHEMA \"#{schema}\" FROM #{u}")
+    db.run("REVOKE ALL ON SCHEMA \"#{schema}\" FROM #{u} CASCADE")
+    db.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA \"#{schema}\" FROM #{u} CASCADE")
+    db.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" FROM #{u} CASCADE")
+    db.run("REVOKE ALL ON ALL TABLES IN SCHEMA \"#{schema}\" FROM #{u} CASCADE")
   end
 
   # Drops grants and functions in a given schema, avoiding by all means a CASCADE

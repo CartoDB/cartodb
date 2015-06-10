@@ -94,7 +94,7 @@ class Map < Sequel::Model
 
   def invalidate_vizjson_varnish_cache
     visualizations.each do |visualization|
-      visualization.invalidate_cache_and_refresh_named_map unless visualization.id == being_destroyed_by_vis_id
+      visualization.invalidate_cache unless visualization.id == being_destroyed_by_vis_id
     end
   end
 

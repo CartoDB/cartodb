@@ -24,6 +24,7 @@
 
 $sBorderCompensation: 2px;
 $opacityTransition: 250ms;
+$sEditButtonSize: 50px;
 
 .MapCard {
   position: relative;
@@ -220,6 +221,35 @@ $opacityTransition: 250ms;
   margin-bottom: $sMargin-min;
 }
 .MapCard-itemTitlePermission { background-color: $cStructure-mainBkg }
+
+.MapCard-editButton {
+  position: absolute;
+  top: -$sEditButtonSize/2; 
+  top:0;
+  right: 18px;
+  width: $sEditButtonSize;
+  height: $sEditButtonSize;
+  background: #0090d7;
+  border-radius: $sEditButtonSize;
+  color: #fff;
+  text-decoration:none;
+  text-align: center;
+  line-height:$sEditButtonSize;
+  font-size: 20px;
+  @include opacity(0);
+  @include css3-prefix(box-sizing, border-box);
+  @include transition(opacity, $opacityTransition);
+  @include transition(top, 200ms, ease-in);
+  &:hover {
+    background: #0082C2;
+    text-decoration: none;
+    color:#fff;
+  }
+}
+.MapCard:hover .MapCard-editButton {
+  @include opacity(1);
+  top: -$sEditButtonSize/2; 
+}
 .MapCard-contentBodyRow--flex {
   @include display-flex();
   @include justify-content(space-between, justify);

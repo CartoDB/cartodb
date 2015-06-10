@@ -63,10 +63,6 @@ module CartoDB
         LayerGroup::Presenter.new(visualization.layers(:cartodb), options, configuration).to_poro
       end
 
-      def named_map_layer_group_for(visualization)
-        LayerGroup::Presenter.new(visualization.layers(:named_map), options, configuration).to_poro
-      end
-
       def other_layers_for(visualization, named_maps_presenter = nil)
         layer_index = visualization.layers(:cartodb).size
 

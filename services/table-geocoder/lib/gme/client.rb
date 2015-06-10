@@ -70,7 +70,8 @@ module Carto
 
         begin
           get_body(resp)
-        rescue RetriableRequest
+        rescue OverQueryLimit
+          Rollbar.report_message('Carto::Gme::Client rescuing from OverQueryLimit exception', 'debug', params)
           return self.get(endpoint, params, first_request_time, retry_counter+1)
         end
       end
@@ -99,7 +100,7 @@ module Carto
         end
 
         if api_status == 'OVER_QUERY_LIMIT'
-          raise RetriableRequest.new
+          raise OverQueryLimit.new
         end
 
         if body.has_key?('error_message')

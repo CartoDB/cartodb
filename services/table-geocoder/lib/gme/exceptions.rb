@@ -9,7 +9,7 @@ module Carto
 
     class HttpError < ClientException; end
 
-    class RetriableRequest < ClientException; end
+    class OverQueryLimit < ClientException; end
 
     class ApiError < ClientException
       attr_reader :api_status, :error_message

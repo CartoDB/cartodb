@@ -107,6 +107,18 @@ module CartoDB
       what_about: "Data download timed out. Check the source is not running slow and/or try again.",
       source: ERROR_SOURCE_USER
     },
+    1100 => {
+      title: 'Download file not found',
+      what_about: "Provided URL doesn't return a file (error 404). Please check that URL is still valid and that you can download the file and try again."
+    },
+    1101 => {
+      title: 'Forbidden file URL',
+      what_about: "Provided URL returns authentication error. Maybe it's private, or requires user and password. Please provide a valid, public URL and try again."
+    },
+    1102 => {
+      title: 'Unknown server URL',
+      what_about: "Provided URL can't be resolved to a known server. Maybe that URL is wrong or behind a private network. Please provide a valid, public URL and try again."
+    },
     2001 => {
       title: 'Unable to load data',
       what_about: "We couldn't load data from your file into the database.  Please <a href='mailto:support@cartodb.com?subject=Import load error'>contact us</a> and we will help you to load your data.",

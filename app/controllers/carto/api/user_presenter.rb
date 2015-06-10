@@ -82,7 +82,6 @@ module Carto
           },
           notification: @user.notification,
           avatar_url: @user.avatar,
-          new_dashboard_enabled: @user.new_dashboard_enabled,
           feature_flags: @user.feature_flag_names,
           base_url: @user.public_url
         }

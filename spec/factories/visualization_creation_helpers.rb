@@ -69,16 +69,16 @@ shared_context 'organization with users helper' do
       private_tables_enabled: true
     )
 
-    organization = test_organization.save
+    @organization = test_organization.save
 
-    user_org = CartoDB::UserOrganization.new(organization.id, @org_user_1.id)
+    user_org = CartoDB::UserOrganization.new(@organization.id, @org_user_1.id)
     user_org.promote_user_to_admin
-    organization.reload
+    @organization.reload
     @org_user_1.reload
 
-    @org_user_2.organization_id = organization.id
+    @org_user_2.organization_id = @organization.id
     @org_user_2.save.reload
-    organization.reload
+    @organization.reload
   end
 
   before(:each) do

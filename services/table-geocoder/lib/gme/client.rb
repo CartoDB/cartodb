@@ -6,6 +6,7 @@ require 'json'
 require_relative 'exceptions'
 require_relative '../../../../lib/url_signer'
 require_relative '../../../../lib/carto/http/client'
+require_relative '../../../../lib/carto/ring_buffer'
 
 module Carto
   module Gme
@@ -24,6 +25,8 @@ module Carto
 
       RETRIABLE_STATUSES = Set.new [500, 503, 504]
 
+      MAX_QUERIES_PER_SECOND = 10 # default for maps for work
+
 
       # Performs requests to Google Maps API web services
       # Based on https://github.com/googlemaps/google-maps-services-python/blob/master/googlemaps/client.py
@@ -34,6 +37,7 @@ module Carto
         @read_timeout = options[:read_timeout] || DEFAULT_READ_TIMEOUT
         @retry_timeout = options[:retry_timeout] || DEFAULT_RETRY_TIMEOUT
         @http_client = Carto::Http::Client.get(HTTP_CLIENT_TAG)
+        @last_requests_time = Carto::RingBuffer.new(MAX_QUERIES_PER_SECOND)
       end
 
       def get(endpoint, params, first_request_time=nil, retry_counter=0)
@@ -50,6 +54,13 @@ module Carto
 
         url = generate_auth_url(BASE_URL+endpoint, params)
 
+        if @last_requests_time.size == MAX_QUERIES_PER_SECOND
+          first_request_time = @last_requests_time.first
+          elapsed_seconds = Time.now - first_request_time
+          sleep(1.0 - elapsed_seconds) if elapsed_seconds < 1.0
+        end
+
+        @last_requests_time << Time.now
         resp = @http_client.get(url, timeout: @read_timeout, connecttimeout: @connect_timeout)
         raise Timeout.new('http request timed out') if resp.timed_out?
 

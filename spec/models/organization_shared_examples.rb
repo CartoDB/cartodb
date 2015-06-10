@@ -10,9 +10,9 @@ shared_examples_for "organization models" do
   describe "#get_geocoding_calls" do
 
     it "counts all geocodings in a single query" do
-      FactoryGirl.create(:high_resolution_geocoding, user: @org_user_1, processed_rows: 2, cache_hits: 3)
-      FactoryGirl.create(:high_resolution_geocoding, user: @org_user_2, processed_rows: 4, cache_hits: 5)
-      FactoryGirl.create(:high_resolution_geocoding, user: @user1, processed_rows: 2, cache_hits: 3)
+      FactoryGirl.create(:high_resolution_geocoding, user: @org_user_1, formatter: 'admin0', processed_rows: 2, cache_hits: 3)
+      FactoryGirl.create(:high_resolution_geocoding, user: @org_user_2, formatter: 'admin0', processed_rows: 4, cache_hits: 5)
+      FactoryGirl.create(:high_resolution_geocoding, user: @user1, formatter: 'admin0', processed_rows: 2, cache_hits: 3)
 
       expect {
         User.any_instance.expects(:get_geocoding_calls).never

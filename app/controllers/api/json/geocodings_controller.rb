@@ -2,7 +2,7 @@
 require Rails.root.join('services', 'sql-api', 'sql_api')
 
 class Api::Json::GeocodingsController < Api::ApplicationController
-  ssl_required :index, :show, :create, :update, :country_data_for, :get_countries, :estimation_for, :available_geometries unless Rails.env.development?
+  ssl_required :index, :show, :create, :update, :estimation_for, :available_geometries unless Rails.env.development?
 
   before_filter :load_table, only: [:create, :estimation_for]
 
@@ -71,28 +71,6 @@ class Api::Json::GeocodingsController < Api::ApplicationController
     render_jsonp( { description: e.message }, 500)
   end
 
-  def country_data_for
-    response = { admin1: ["polygon"], namedplace: ["point"] }
-    rows     = CartoDB::SQLApi.new({
-                                     username: 'geocoding',
-                                     timeout: GEOCODING_SQLAPI_CALLS_TIMEOUT
-                                   })
-                 .fetch("SELECT service FROM postal_code_coverage WHERE iso3 = (SELECT iso3 FROM country_decoder WHERE name = '#{params[:country_code]}')")
-                 .map { |i| i['service'] }
-    response[:postalcode] = rows if rows.size > 0
-
-    render json: response
-  end
-
-  def get_countries
-    rows = CartoDB::SQLApi.new(
-      Cartodb.config[:geocoder]["internal"].symbolize_keys
-                                           .merge({timeout: GEOCODING_SQLAPI_CALLS_TIMEOUT})
-    )
-      .fetch("SELECT distinct(pol.name) iso3, pol.name FROM country_decoder pol ORDER BY pol.name ASC")
-    render json: rows
-  end
-
   def available_geometries
     return head(400) unless %w(admin1 namedplace postalcode).include? params[:kind]
 
@@ -154,6 +132,6 @@ class Api::Json::GeocodingsController < Api::ApplicationController
   protected
 
   def load_table
-    @table = ::Table.get_by_id_or_name(params.fetch('table_name'), current_user)
+    @table = Helpers::TableLocator.new.get_by_id_or_name(params.fetch('table_name'), current_user)
   end
 end

@@ -1,3 +1,7 @@
+<%= content_for(:title) do %>CartoDB · <%= @visualization.name.gsub(/_/," ") %><% end %>
+
+<%= content_for(:description) do %><%= @visualization.description_clean || "#{@visualization.name.gsub(/_/," ")} created by #{@visualization.user.username} in CartoDB" %><% end %>
+
 <%= content_for(:css) do %>
   <%= render :partial => 'admin/visualizations/public/embed_map_inline_css' %>
 <% end %>
@@ -23,7 +27,7 @@
     <div class="cartodb-text">
       Map created by
       <% username = @visualization.user.name.blank? ? @visualization.user.username : @visualization.user.name %>
-      <a class="user" href="<%= @visualization.user.public_url %>?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=<%= @visualization.user.username %>" target="_blank">
+      <a class="user" href="<%= CartoDB.url(self, 'public_maps_home', {}, @visualization.user) %>?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=<%= @visualization.user.username %>" target="_blank">
         <% if !@visualization.user.avatar_url.blank? %>
           <img src="<%= @visualization.user.avatar_url %>" width="16" height="16" alt="<%= username %>" title="<%= username %>" />
         <% end %>

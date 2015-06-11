@@ -4,27 +4,35 @@
     <meta charset='utf-8' />
     <title><%= yield :page_title -%>CartoDB</title>
     <%= favicon_link_tag "/favicons/favicon.ico" -%>
+    <%= stylesheet_link_tag 'cartodb.css', 'common.css', :media => 'all' %>
     <%= yield :css -%>
-    <!--[if gt IE 8]><%= stylesheet_link_tag 'fonts_ie.css' -%><![endif]-->
-    <%= insert_trackjs() -%>
-    <%= insert_google_analytics('primary') -%>
-    <%= render 'shared/mixpanel' -%>
-    <%= yield :js -%>
     <%= csrf_meta_tag -%>
-    <noscript><meta http-equiv="refresh" content="0;url=/no_javascript.html"></noscript>
   </head>
   <body>
     <% if ( ( controller_name != "visualizations" && controller_name != "tables" )  || action_name != "show" ) %>
-      <%= render 'admin/shared/header' %>
+      <%= render 'admin/shared/private_header' %>
+
+      <% if current_user.notification.present? %>
+        <div class="FlashMessage">
+          <div class="u-inner">
+            <p class="FlashMessage-info"><%= current_user.notification %></p>
+          </div>
+        </div>
+      <% end %>
     <% else %>
       <%= render 'admin/shared/vis_header' %>
     <% end %>
+
     <%= yield %>
-    <% if ( ( controller_name != "visualizations" && controller_name != "tables" ) || action_name != "show" ) %>
-      <%= render 'admin/shared/footer' %>
-    <% end %>
     <% if ( ( controller_name == "visualizations" || controller_name == "tables" ) && action_name == "show" ) %>
       <%= render 'shared/olark' -%>
     <% end %>
+
+    <%= insert_trackjs() -%>
+    <!-- TODO: remove mixpanel -->
+    <%= render 'shared/mixpanel' -%>
+    <%= yield :js -%>
+    <%= insert_google_analytics('primary') -%>
+    <%= render 'shared/hubspot' -%>
   </body>
 </html>

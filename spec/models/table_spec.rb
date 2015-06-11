@@ -42,13 +42,13 @@ describe Table do
   before(:each) do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
 
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
 
     CartoDB::Overlay::Member.any_instance.stubs(:can_store).returns(true)
   end
 
   after(:all) do
-    CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
     @user.destroy
   end
 
@@ -242,11 +242,10 @@ describe Table do
         @user, table.table_visualization
       ).copy
 
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:create).returns(true)
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
       derived_vis.store
       table.reload
 
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
       table.privacy = UserTable::PRIVACY_PUBLIC
       table.save
 
@@ -274,11 +273,10 @@ describe Table do
           @user, table.table_visualization
       ).copy
 
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:create).returns(true)
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
       derived_vis.store
       table.reload
 
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
       table.privacy = UserTable::PRIVACY_LINK
       table.save
       table.reload
@@ -584,7 +582,8 @@ describe Table do
   end
 
   it "should remove varnish cache when updating the table privacy" do
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+    
     @user.private_tables_enabled = true
     @user.save
     table = create_table(user_id: @user.id, name: "varnish_privacy", privacy: UserTable::PRIVACY_PRIVATE)
@@ -595,6 +594,12 @@ describe Table do
       .with(".*#{id}:vizjson")
       .returns(true)
 
+    # Save and privacy changes now trigger full user vizjson list invalidations
+    CartoDB::Varnish.any_instance.expects(:purge)
+      .times(2)
+      .with("#{@user.database_name}.*:vizjson")
+      .returns(true)
+
     CartoDB::TablePrivacyManager.any_instance
       .expects(:propagate_to_varnish)
     table.privacy = UserTable::PRIVACY_PUBLIC
@@ -603,7 +608,8 @@ describe Table do
 
   context "when removing the table" do
     before(:all) do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+      
       CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
       @doomed_table = create_table(user_id: @user.id)
       @automatic_geocoding = FactoryGirl.create(:automatic_geocoding, table: @doomed_table)
@@ -611,7 +617,7 @@ describe Table do
     end
 
     before(:each) do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
     end
 
     it "should remove the automatic_geocoding" do
@@ -653,7 +659,7 @@ describe Table do
     end
 
     it 'deletes derived visualizations that depend on this table' do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:create).returns(true)
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
       table   = create_table(name: 'bogus_name', user_id: @user.id)
       source  = table.table_visualization
       derived = CartoDB::Visualization::Copier.new(@user, source).copy
@@ -2213,7 +2219,7 @@ describe Table do
       table.save
       table.should be_private
 
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:create).returns(true)
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
       source  = table.table_visualization
       derived = CartoDB::Visualization::Copier.new(@user, source).copy
       derived.store
@@ -2223,6 +2229,7 @@ describe Table do
       CartoDB::Visualization::Member.stubs(:new).with(has_entry(:id => derived.id)).returns(derived)
       CartoDB::Visualization::Member.stubs(:new).with(has_entry(:type => 'table')).returns(table.table_visualization)
 
+      derived.expects(:invalidate_all_varnish_vizsjon_keys).once()
       derived.expects(:invalidate_cache).once()
 
       table.privacy = UserTable::PRIVACY_PUBLIC

@@ -1,36 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
     <%= favicon_link_tag "/favicons/favicon.ico" %>
-    <title><%= @visualization.name.gsub(/_/," ") %> | CartoDB</title>
-    <meta name="description" content="<%= @visualization.description_clean || @visualization.name.gsub(/_/," ") %>">
-    <meta name="keywords" content="Map,cartodb,<%= @visualization.name.gsub(/_/,",").gsub(/ /,",") %>">
-    <meta name="author" content="CartoDB">
-    <meta name="DC.title" content="<%= @visualization.description_clean %> | CartoDB">
-    
-    <meta property="og:title" content="<%= @visualization.name.gsub(/_/," ") %> | CartoDB"/>
-    <meta property="og:description" content="<%= @visualization.description_clean || @visualization.name.gsub(/_/," ") %>"/>
-    <meta property="og:type" content="Visualization"/>
+    <title><%= yield :title %></title>
+    <meta name="description" content="<%= yield :description %>">
+    <meta name="keywords" content="<%= @visualization.name.gsub(/ /,", ").gsub(/_/,", ") %>, datasets, maps, data visualization, spatial data, geospatial, cartodb">
+    <meta name="author" content="<%= @visualization.user.username %>">
+    <meta charset='utf-8' />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+
+    <meta property="og:title" content="<%= yield :title %>" />
+    <meta property="og:description" content="<%= yield :description %>" />
+    <meta property="og:type" content="visualization" />
     <meta property="og:url" content="<%= request.original_url %>" />
-    <meta property="og:image" content="<%= image_path "layout/cartofante_blue.png" %>"/>
+    <meta property="og:image" content="<%= image_path "layout/cartofante_blue.png" %>" />
 
     <meta name="twitter:card" content="summary">
     <meta name="twitter:site" content="@cartodb">
     <meta name="twitter:creator" content="@cartodb">
-    <meta name="twitter:title" content="<%= @visualization.name.gsub(/_/," ") %> | CartoDB">
-    <meta name="twitter:description" content="<%= @visualization.description_clean || @visualization.name.gsub(/_/," ") %>">
+    <meta name="twitter:title" content="<%= yield :title %>">
+    <meta name="twitter:description" content="<%= yield :description %>">
     <meta name="twitter:image" content="<%= image_path "layout/cartofante_blue.png" %>">
     <meta name="twitter:url" content="<%= request.original_url %>" />
-    
+
     <%= yield :css %>
 
     <!--[if lt IE 9]>
       <%= javascript_include_tag 'modernizr' %>
     <![endif]-->
   </head>
-
   <body class="<%= yield :body_class %>">
     <%= yield :content %>
     <%= yield :js %>

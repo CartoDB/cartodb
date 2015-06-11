@@ -1,6 +1,6 @@
-<% content_for(:page_title) do %>
-  <%= @visualization.name %> |
-<% end %>
+<%= content_for(:page_title) do %>CartoDB · <%= @table.name.gsub(/_/," ") %><% end %>
+
+<%= content_for(:description) do %><%= @table.description || "#{@table.name.gsub(/_/," ")} published by #{@name} in CartoDB" %><% end %>
 
 <% content_for(:css) do %>
   <%= stylesheet_link_tag 'cartodb.css', 'public_table.css', :media => 'all' %>
@@ -8,9 +8,11 @@
 <% end %>
 
 <% content_for(:js) do %>
-  <script type="text/javascript"
-    src="https://maps.google.com/maps/api/js?sensor=false&amp;v=3.12">
-  </script>
+    <% if @table.map.provider == 'googlemaps' %>
+        <script type="text/javascript"
+            src="//maps.googleapis.com/maps/api/js?sensor=false&v=3.12&<%= @user.google_maps_api_key %>">
+        </script>
+    <% end %>
 
   <%= javascript_include_tag 'cdb.js', 'templates.js', 'public_table.js' %>
 
@@ -104,13 +106,16 @@
             <div class="download_options"></div>
           </div>
           <div class="user-options">
+            <% if !Cartodb.config[:cartodb_com_hosted].present? %>
+              <a href="http://oneclick.cartodb.com/?file=<%= CGI.escape( @export_sql_api_url ) %>&provider=<%= URI.encode(@table.owner.username) %>&logo=<%= URI.encode(@avatar_url) %>" class="oneclick button grey">
+                CREATE MAP
+              </a>
+            <% end %>
 
             <a href="#like" class="like button grey js-like">
               <span class="icon"></span>
               <span class="counter"><%= @likes_count %></span>
             </a>
-
-            <!--a href="#/clone-in-cartodb" class="clone button green"><i class="clone-icon"></i>Clone in CartoDB</a-->
             <a href="<%= CartoDB.url(self, 'public_tables_show', {id: @table.name}, @table.owner.organization ? @table.owner : nil) %>" class="edit button grey">Edit in CartoDB</a>
           </div>
         </div>
@@ -133,7 +138,7 @@
               <% @total_visualizations.each do |vis| %>
                 <% if vis.privacy == "public" %>
                   <li>
-                    <a href="<%= CartoDB.url(self, 'public_visualizations_public_map', {id: vis.id}) %>" title="<%= vis.name.gsub(/_/," ") %>"><%= vis.name.gsub(/_/, " ") %></a>
+                    <a href="<%= CartoDB.url(self, 'public_visualizations_public_map', {id: vis.id}, @table.owner) %>" title="<%= vis.name.gsub(/_/," ") %>"><%= vis.name.gsub(/_/, " ") %></a>
                   </li>
                 <% end %>
               <% end %>
@@ -171,5 +176,5 @@
       </div>
     </div>
 
-    <%= render 'admin/visualizations/public/public_map_footer' %>
+    <%= render 'admin/visualizations/public/old_public_map_footer' %>
   </div>

@@ -1,103 +1,52 @@
-<%= content_for(:title) do %>
-  Datasets by <%= @name %> on CartoDB
-<% end %>
+<%= content_for(:title) do %>CartoDB · Datasets by <%= @name %><% end %>
 
-<%= content_for(:description) do %>
-  <%= @name %> is creating and sharing public datasets using CartoDB
-<% end %>
+<%= content_for(:description) do %><%= @page_description %><% end %>
 
-<%= content_for(:js) do %>
-  <script>
-    var user_name = '<%= @username %>';
-    var cartodb_com_hosted = <%= cartodb_com_hosted? %>;
-  </script>
-
-  <%= javascript_include_tag 'cdb.js', 'templates.js', 'public_dashboard' %>
-<% end %>
-
-<div class="content<%= " empty" if @datasets.size == 0 %>">
-
-  <div class="inner">
-
-    <div class="info">
-      <%= render(:partial => 'admin/pages/shared/user_info') %>
-      <%= render(:partial => 'admin/pages/shared/tags', :locals => {:collection => @tags }) %>
-    </div>
-
-    <div class="datasets">
-      <% if @datasets.size == 0 %>
-        <div class="empty_placeholder">
-          <%= @name %> doesn't have any public datasets
-        </div>
-      <% end %>
-
-      <% if @datasets.size > 0 %>
-        <ul>
-          <% @datasets.each_with_index do |dataset, i| %>
-
-            <li>
-              <div class="title">
-                <span class="date"><%= dataset[:updated_at].strftime("%m/%d/%Y") %></span>
-                <a href="<%= CartoDB.url(self, 'public_tables_show', {id: dataset[:title]}, dataset[:owner]) %>" class="edit button grey small">edit</a>
-                <h2><a href="<%= CartoDB.url(self, 'public_table', {id: dataset[:title]}, dataset[:owner]) %>" title="<%= dataset[:title].capitalize %>"><%= dataset[:title].capitalize.truncate(40) %></a></h2>
-                <p><%= raw (dataset[:description_html_safe] ? dataset[:description_html_safe].truncate(80) : "") %></p>
+<div class="PublicBody-content">
+  <% if @datasets.size == 0 %>
+    <%= render 'admin/shared/no_results', is_maps: false, alt_url: CartoDB.url(self, 'public_visualizations_home') %>
+  <% else %>
+    <ul class="DatasetsList">
+      <% @datasets.each do |vis| %>
+        <li class="DatasetsList-item">
+          <div class="DatasetsList-itemCategory is--<%= vis[:geometry_type] %>Dataset"></div>
+          <div class="DatasetsList-itemInfo">
+            <div class="DatasetsList-itemPrimaryInfo">
+              <h3 class="DatasetsList-itemTitle DefaultTitle">
+                <a href="<%= CartoDB.url(self, 'public_table', {id: vis[:title]}, vis[:owner]) %>" title="<%= vis[:title] %>" class="DefaultTitle-link u-ellipsLongText"><%= vis[:title] %></a>
+              </h3>
+              <div class="DefaultDescription DatasetsList-itemDescription u-ellipsLongText"><%= raw vis[:description_html_safe] %></div>
+            </div>
+            <div class="DatasetsList-itemSecondaryInfo">
+              <div class="DatasetsList-itemMeta">
+                <%= render 'admin/pages/shared/like_button', vis: vis %>
+                <div class="RowsIndicator">
+                  <i class="iconFont iconFont-Rows RowsIndicator-icon"></i>
+                  <%= pluralize(vis[:rows_count], 'row') %>
+                </div>
+                <div class="SizeIndicator">
+                  <i class="iconFont iconFont-Floppy SizeIndicator-icon"></i>
+                  <%= number_to_human_size(vis[:size_in_bytes]) %>
+                </div>
+                <div class="DatasetsList-itemTimeDiff DefaultTimeDiff">
+                  <i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i>
+                  <%= time_ago_in_words(vis[:updated_at]) %> ago
+                </div>
               </div>
-
-              <% if dataset[:tags].size > 0 %>
-                <% if dataset[:tags].size > 0 %>
-                  <ul class="tags">
-                    <% dataset[:tags].each do |tag| %>
-                      <li><h3><%= link_to tag, CartoDB.url(self, 'public_datasets_tag', {tag: tag}, dataset[:owner]), :rel => "tag" %></h3></li>
-                    <% end %>
-                  </ul>
-                <% end %>
-              <% end %>
-            </li>
-          <% end %>
-        </ul>
+              <div class="DatasetsList-itemMeta">
+                <div class="DatasetsList-itemTags DefaultTags">
+                  <% if vis[:tags].size > 0 %>
+                    <%# Keep on one line to avoid unwanted spaces %>
+                    <% formatted_tags(vis[:tags]) do |tag| %><a class="DefaultTags-item js-tag-link" href="<%= CartoDB.url(self, 'public_datasets_tag', {tag: tag}, vis[:owner]) %>"><%= tag %></a><% end %>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
       <% end %>
-
-      <% if @datasets.size > 0 %>
-        <div class="pagination">
-          <% if @pages > 1 %>
-
-            <% if @pages > 1 && params[:page].to_i > 1 %>
-              <% p = params[:page] || 1 %>
-              <% if params[:tag] %>
-                <a class="prev" href="<%= CartoDB.url(self, 'public_datasets_tag_page', {tag: params[:tag], page: (p.to_i-1)}) %>">Prev</a>
-              <% else %>
-                <a class="prev" href="<%= CartoDB.url(self, 'public_datasets_page', {page:(p.to_i-1)}) %>">Prev</a>
-              <% end %>
-            <% end %>
-
-            <ul>
-              <% @pages.times do |i| %>
-                <% if params[:tag] %>
-                  <li <%= "class='selected'" if ((!params[:page] && i == 0) || (params[:page].to_i - 1) == i) %>>
-                    <a href="<%= CartoDB.url(self, 'public_datasets_tag_page', {tag: params[:tag], page: (i+1)}) %>"></a>
-                  </li>
-                <% else %>
-                  <li <%= "class='selected'" if ((!params[:page] && i == 0) || (params[:page].to_i - 1) == i) %>>
-                    <a href="<%= CartoDB.url(self, 'public_datasets_page', {page:(i+1)}) %>"></a>
-                  </li>
-                <% end %>
-              <% end %>
-            </ul>
-
-            <% if @pages > 1 && (params[:page].to_i < @pages) %>
-              <% p = params[:page] || 1 %>
-              <% if params[:tag] %>
-                <a class="next" href="<%= CartoDB.url(self, 'public_datasets_tag_page', {tag: params[:tag], page: (p.to_i+1)}) %>">Next</a>
-              <% else %>
-                <a class="next" href="<%= CartoDB.url(self, 'public_datasets_page', {page:(p.to_i+1)}) %>">Next</a>
-              <% end %>
-            <% end %>
-
-          <% end %>
-        </div>
-      <% end %>
-    </div>
-
-  </div>
-
+    </ul>
+  <% end %>
 </div>
+
+<%= render 'admin/pages/shared/pagination' %>

@@ -854,6 +854,76 @@ namespace :cartodb do
       uo.promote_user_to_admin
     end
 
+    def create_user(username, organization, quota_in_bytes)
+      u = User.new
+      u.email = "#{username}@test-org.com"
+      u.password = username
+      u.password_confirmation = username
+      u.username = username
+      u.quota_in_bytes = quota_in_bytes
+      #u.database_host = ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
+
+      if organization.owner_id.nil?
+        u.save(raise_on_failure: true)
+        CartoDB::UserOrganization.new(organization.id, u.id).promote_user_to_admin
+        organization.reload
+      else
+        u.organization = organization
+        u.save(raise_on_failure: true)
+      end
+
+      u
+    end
+
+    def create_users(first_index, last_index, organization, bytes_per_user)
+      org_name = organization.name
+
+      (first_index..last_index).each { |i|
+        username = "#{org_name}-#{i}"
+        print "Creating user #{username}... "
+        user = create_user(username, organization, bytes_per_user)
+        puts "Done."
+      }
+    end
+
+    desc "Create an organization with an arbitrary number of users for test purposes. Owner user: <org-name>-admin. Users: <org-name>-<i>. You might need to set conn_validator_timeout to -1 in config/database.yml (development)"
+    task :create_test_organization, [:org_name, :n_users] => [:environment] do |t, args|
+      org_name = args[:org_name]
+      n_users = args[:n_users].to_i
+      bytes_per_user = 50 * 1024 * 1024
+
+      def create_organization(org_name, n_users, bytes_per_user)
+        organization = Organization.new
+        organization.name = org_name
+        organization.display_name = org_name
+        organization.seats = n_users * 2
+        organization.quota_in_bytes = bytes_per_user * organization.seats
+        organization.save
+      end
+
+      print "Creating organization #{org_name}... "
+      organization = create_organization(org_name, n_users, bytes_per_user)
+      puts "Done."
+
+      owner_name = "#{org_name}-admin"
+      print "Creating owner #{owner_name}... "
+      owner = create_user(owner_name, organization, bytes_per_user)
+      puts "Done."
+
+      create_users(1, n_users, organization, bytes_per_user)
+    end
+
+    desc "Add users to an organization. Used to resume a broken :create_test_organization task"
+    task :add_test_users_to_organization, [:org_name, :first_index, :last_index] => [:environment] do |t, args|
+      org_name = args[:org_name]
+      first_index = args[:first_index]
+      last_index = args[:last_index]
+      bytes_per_user = 50 * 1024 * 1024
+
+      organization = Organization.where(name: org_name).first
+      create_users(first_index, last_index, organization, bytes_per_user)
+    end
+
     desc "Reload users avatars"
     task :reload_users_avatars => :environment do
       if ENV['ONLY_GRAVATAR'].blank?
@@ -894,6 +964,24 @@ namespace :cartodb do
       end
     end
 
+    desc "Drop other users privileges on user schema"
+    task :drop_other_privileges_on_user_schema, [:username] => :environment do |t,args|
+      user = User.where(:username => args[:username].to_s).first
+      user.in_database({as: :superuser}) do |db|
+        db.transaction do
+          oids = db.fetch("with oids as (select (aclexplode(n.nspacl)).grantee as grantee_oid from pg_catalog.pg_namespace n
+                WHERE n.nspname = '#{user.database_schema}')
+                select distinct pg_roles.rolname from oids, pg_roles where grantee_oid = oid")
+          oids.each do |oid|
+            role = oid[:rolname]
+            unless [user.database_username, CartoDB::PUBLIC_DB_USER].include? role
+              db.run("REVOKE ALL ON SCHEMA #{user.database_schema} FROM \"#{role}\"")
+            end
+          end
+        end
+      end
+    end
+
     desc "Enable oracle_fdw extension in database"
     task :enable_oracle_fdw_extension, [:username, :oracle_url, :remote_user, :remote_password, :remote_schema, :table_definition_json_path] => :environment do |t, args|
       u = User.where(:username => args[:username].to_s).first
@@ -907,7 +995,7 @@ namespace :cartodb do
           db.run("CREATE SERVER #{server_name} FOREIGN DATA WRAPPER oracle_fdw OPTIONS (dbserver '#{args[:oracle_url].to_s}')")
           db.run("GRANT USAGE ON FOREIGN SERVER #{server_name} TO \"#{u.database_username}\"")
           db.run("CREATE USER MAPPING FOR \"#{u.database_username}\" SERVER #{server_name} OPTIONS (user '#{args[:remote_user].to_s}', password '#{args[:remote_password].to_s}');")
-          db.run("CREATE USER MAPPING FOR \"publicuser\" SERVER #{server_name} OPTIONS (user '#{args[:remote_user].to_s}', password '#{args[:remote_password].to_s}');")
+          db.run("CREATE USER MAPPING FOR \"#{u.database_public_username}\" SERVER #{server_name} OPTIONS (user '#{args[:remote_user].to_s}', password '#{args[:remote_password].to_s}');")
           tables["tables"].each do |table_name, th|
             table_readonly = th["read_only"] ? "true" : "false"
             table_columns = th["columns"].map {|name,attrs| "#{name} #{attrs['column_type']}"}
@@ -915,6 +1003,70 @@ namespace :cartodb do
             db.run("CREATE FOREIGN TABLE #{table_name} (#{table_columns.join(', ')}) SERVER #{server_name} OPTIONS (schema '#{args[:remote_schema]}', table '#{th["remote_table"]}', readonly '#{table_readonly}')")
             db.run("GRANT SELECT ON #{table_name} TO \"#{u.database_username}\"")
             db.run("GRANT SELECT ON #{table_name} TO \"#{CartoDB::PUBLIC_DB_USER}\"")
+          end
+        end
+      end
+    end
+
+
+    desc "Get from redis the list of visualization ids viewed"
+    task :get_viewed_visualization_ids, [:redis_ip, :output_file] => :environment do |t, args|
+      if args[:redis_ip]
+        redis_client_config = $users_metadata.client.options
+        redis_client_config[:host] = args[:redis_ip]
+        redis_client = Redis.new(redis_client_config)
+      else
+        redis_client = $users_metadata
+      end
+      
+      stat_tag_keys = [
+        "user:*:mapviews:stat_tag:*",
+        "user:*:mapviews_es:stat_tag:*"
+      ]
+
+      visualization_ids = []
+
+      stat_tag_keys.each do |stat_tag_key|
+        redis_client.keys(stat_tag_key).each do |key|
+          key_parts = key.split(':')
+          visualization_ids << "#{key_parts[1]}:#{key_parts[4]}"
+        end
+      end
+
+      visualization_ids.uniq!
+
+      if args[:output_file]
+        File.write(args[:output_file], visualization_ids.join("\n"))
+      else
+        puts visualization_ids.join("\n")
+      end
+    end
+
+
+    desc "Populate visualization total map views from partial days"
+    task :populate_visualization_total_map_views, [:visualizations_list] => :environment do |t, args|
+      if args[:visualizations_list].blank?
+        raise "Missing visualization_list param which must be a plain text list of <user>:<visualization_id>"
+      end
+      File.open(args[:visualizations_list], 'r') do |f|
+        f.each_line do |line|
+          key_parts = line.strip.split(':')
+          username = key_parts[0]
+          visualization_id = key_parts[1]
+          stat_tag_keys = [
+            "user:#{username}:mapviews:stat_tag:#{visualization_id}",
+            "user:#{username}:mapviews_es:stat_tag:#{visualization_id}"
+          ]
+          puts "Processing visualization #{visualization_id} of user #{username}"
+          stat_tag_keys.each do |stat_tag_key|
+            visualization_counter = 0
+            $users_metadata.zrange(stat_tag_key, 0, -1).each do |mapviews_day|
+              if mapviews_day =~ /[0-9]{4}(0|1)[0-9][0-3][0-9]/
+                count = $users_metadata.zscore(stat_tag_key, mapviews_day)
+                visualization_counter = visualization_counter + count unless count.nil?
+              end
+            end
+            $users_metadata.zadd(stat_tag_key, visualization_counter, 'total') unless visualization_counter == 0
           end
         end
       end

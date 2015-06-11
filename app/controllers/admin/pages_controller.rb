@@ -8,14 +8,13 @@ class Admin::PagesController < ApplicationController
 
   include CartoDB
 
-  DATASETS_PER_PAGE = 10
-  VISUALIZATIONS_PER_PAGE = 5
-  NEW_DATASETS_PER_PAGE = 20
+  DATASETS_PER_PAGE = 20
   MAPS_PER_PAGE = 9
   USER_TAGS_LIMIT = 100
   PAGE_NUMBER_PLACEHOLDER = 'PAGENUMBERPLACEHOLDER'
 
   ssl_required :common_data, :public, :datasets
+  ssl_allowed :datasets_rss_feed, :maps_rss_feed
 
   before_filter :login_required, :except => [:public, :datasets, :sitemap, :index, :datasets_rss_feed, :maps_rss_feed]
   before_filter :ensure_organization_correct
@@ -25,15 +24,32 @@ class Admin::PagesController < ApplicationController
 
   # Just an entrypoint to dispatch to different places according to
   def index
-    # username.cartodb.com should redirect to the user dashboard in the maps view if the user is logged in
-    if !current_user.nil? && !current_viewer.nil? && current_user.id == current_viewer.id
+    CartoDB.subdomainless_urls? ? index_subdomainless : index_subdomainfull
+  end
+
+  def index_subdomainfull
+    if current_user && current_viewer && current_user.id == current_viewer.id
+      # username.cartodb.com should redirect to the user dashboard in the maps view if the user is logged in
       redirect_to CartoDB.url(self, 'dashboard')
-    # username.cartodb.com should redirect to the public user dashboard in the maps view if the username is not the user's username
-    elsif !current_viewer.nil?    # Asummes either current_user nil or at least different from current_viewer
-      redirect_to CartoDB.url(self, 'public_maps_home')
-    # username.cartodb.com should redirect to the public user dashboard in the maps view if the user is not logged in
     else
+      # Asummes either current_user nil or at least different from current_viewer
+      # username.cartodb.com should redirect to the public user dashboard in the maps view if the username is not the user's username
+      # username.cartodb.com should redirect to the public user dashboard in the maps view if the user is not logged in
       redirect_to CartoDB.url(self, 'public_maps_home')
+    end
+  end
+
+  def index_subdomainless
+    if current_user && current_viewer && current_user.id == current_viewer.id
+      redirect_to CartoDB.url(self, 'dashboard')
+    elsif current_user.nil? && current_viewer
+      # current_viewer always returns a user with a session
+      redirect_to CartoDB.url(self, 'dashboard', {}, current_viewer)
+    elsif CartoDB.username_from_request(request)
+      redirect_to CartoDB.url(self, 'public_maps_home')
+    else
+      # We cannot get any user information from domain, path or session
+      redirect_to login_url
     end
   end
 
@@ -43,6 +59,10 @@ class Admin::PagesController < ApplicationController
 
   def maps_rss_feed
     rss_feed(:maps)
+  end
+
+  def common_data
+    redirect_to CartoDB.url(self, 'datasets_library')
   end
 
   def sitemap
@@ -101,25 +121,25 @@ class Admin::PagesController < ApplicationController
     content.render()
   end
 
-  def new_datasets_for_user(user)
-    set_new_layout_vars_for_user(user, 'datasets')
-    render_new_datasets(
+  def datasets_for_user(user)
+    set_layout_vars_for_user(user, 'datasets')
+    render_datasets(
       user_public_vis_list({
         user:  user,
         vis_type: Visualization::Member::TYPE_CANONICAL,
-        per_page: NEW_DATASETS_PER_PAGE,
+        per_page: DATASETS_PER_PAGE,
       }), user
     )
   end
 
-  def new_datasets_for_organization(org)
-    set_new_layout_vars_for_organization(org, 'datasets')
-    render_new_datasets(org.public_datasets(current_page, NEW_DATASETS_PER_PAGE, tag_or_nil))
+  def datasets_for_organization(org)
+    set_layout_vars_for_organization(org, 'datasets')
+    render_datasets(org.public_datasets(current_page, DATASETS_PER_PAGE, tag_or_nil))
   end
 
-  def new_maps_for_user(user)
-    set_new_layout_vars_for_user(user, 'maps')
-    render_new_maps(
+  def maps_for_user(user)
+    set_layout_vars_for_user(user, 'maps')
+    render_maps(
       user_public_vis_list({
         user:     user,
         vis_type: Visualization::Member::TYPE_DERIVED,
@@ -128,44 +148,9 @@ class Admin::PagesController < ApplicationController
     )
   end
 
-  def new_maps_for_organization(org)
-    set_new_layout_vars_for_organization(org, 'maps')
-    render_new_maps(org.public_visualizations(current_page, MAPS_PER_PAGE, tag_or_nil))
-  end
-
-  def old_datasets_for_user(user)
-    vis_type = Visualization::Member::TYPE_CANONICAL
-    set_old_layout_vars_for_user(user, vis_type)
-    render_old_datasets(
-      user_public_vis_list({
-        user:     user,
-        vis_type: vis_type,
-        per_page: DATASETS_PER_PAGE,
-      })
-    )
-  end
-
-  def old_datasets_for_organization(org)
-    set_old_layout_vars_for_organization(org, Visualization::Member::TYPE_CANONICAL)
-    render_old_datasets(org.public_datasets(current_page, DATASETS_PER_PAGE, tag_or_nil))
-  end
-
-  def old_maps_for_user(user)
-    vis_type = Visualization::Member::TYPE_DERIVED
-    set_old_layout_vars_for_user(user, vis_type)
-    render_old_maps(
-      user_public_vis_list({
-        user:     user,
-        vis_type: vis_type,
-        per_page: VISUALIZATIONS_PER_PAGE,
-      })
-    )
-  end
-
-  def old_maps_for_organization(org)
-    set_old_layout_vars_for_organization(org, Visualization::Member::TYPE_DERIVED)
-
-    render_old_maps(org.public_visualizations(current_page, VISUALIZATIONS_PER_PAGE, tag_or_nil))
+  def maps_for_organization(org)
+    set_layout_vars_for_organization(org, 'maps')
+    render_maps(org.public_visualizations(current_page, MAPS_PER_PAGE, tag_or_nil))
   end
 
   def render_not_found
@@ -245,10 +230,10 @@ class Admin::PagesController < ApplicationController
     }
   end
 
-  def render_new_datasets(vis_list, user=nil)
-    set_new_pagination_vars({
+  def render_datasets(vis_list, user=nil)
+    set_pagination_vars({
         total_count: vis_list.total_entries,
-        per_page:    NEW_DATASETS_PER_PAGE,
+        per_page:    DATASETS_PER_PAGE,
         first_page_url: CartoDB.url(self, 'public_datasets_home', {}, user),
         numbered_page_url: CartoDB.url(self, 'public_datasets_home', {page: PAGE_NUMBER_PLACEHOLDER}, user)
       })
@@ -271,20 +256,33 @@ class Admin::PagesController < ApplicationController
         geometry_type = table_geometry_types.first.present? ? geometry_mapping.fetch(table_geometry_types.first.downcase, '') : ''
       end
 
-      @datasets << new_vis_item(vis).merge({
+      @datasets << vis_item(vis).merge({
           rows_count:    vis.table.rows_counted,
           size_in_bytes: vis.table.table_size,
           geometry_type: geometry_type,
         })
     end
 
+    description = "#{@name} has"
+
+    # TODO: move to helper
+    if @datasets.size == 0
+      description << " not published any public dataset yet"
+    else
+      description << " published #{@datasets.size} public dataset#{@datasets.size == 1 ? "" : "s"}"
+    end
+
+    description << " · Contribute to Open Data by creating an account in CartoDB"
+
+    @page_description = description
+
     respond_to do |format|
-      format.html { render 'new_public_datasets', layout: 'new_public_dashboard' }
+      format.html { render 'public_datasets', layout: 'public_dashboard' }
     end
   end
 
-  def render_new_maps(vis_list, user=nil)
-    set_new_pagination_vars({
+  def render_maps(vis_list, user=nil)
+    set_pagination_vars({
         total_count: vis_list.total_entries,
         per_page:    MAPS_PER_PAGE,
         first_page_url: CartoDB.url(self, 'public_maps_home', {}, user),
@@ -293,15 +291,38 @@ class Admin::PagesController < ApplicationController
 
     @visualizations = []
     vis_list.each do |vis|
-      @visualizations << new_vis_item(vis)
+      @visualizations << vis_item(vis)
     end
 
+    description = "#{@name} has"
+
+    # TODO: move to helper
+    if @visualizations.size == 0 && @tables_num == 0
+      description << " not published any public dataset or map yet"
+    else
+      unless @visualizations.size == 0
+        description << " created #{@visualizations.size} map#{@visualizations.size == 1 ? "" : "s"}"
+      end
+
+      unless @visualizations.size == 0 || @tables_num == 0
+        description << " and"
+      end
+
+      unless @tables_num == 0
+        description << " published #{@tables_num} public dataset#{@tables_num == 1 ? "" : "s"}"
+      end
+
+      description << " · Contribute to Open Data by creating an account in CartoDB"
+    end
+
+    @page_description = description
+
     respond_to do |format|
-      format.html { render 'new_public_maps', layout: 'new_public_dashboard' }
+      format.html { render 'public_maps', layout: 'public_dashboard' }
     end
   end
 
-  def new_vis_item(vis)
+  def vis_item(vis)
     return {
       id:          vis.id,
       title:       vis.name,
@@ -314,8 +335,8 @@ class Admin::PagesController < ApplicationController
     }
   end
 
-  def set_new_layout_vars_for_user(user, content_type)
-    set_new_layout_vars({
+  def set_layout_vars_for_user(user, content_type)
+    set_layout_vars({
         most_viewed_vis_map: Visualization::Collection.new.fetch({
             user_id:        user.id,
             type:           Visualization::Member::TYPE_DERIVED,
@@ -327,7 +348,7 @@ class Admin::PagesController < ApplicationController
             exclude_raster: true
           }).first,
         content_type: content_type,
-        default_fallback_basemap: ApplicationHelper.default_fallback_basemap,
+        default_fallback_basemap: user.default_basemap,
         user: user
       })
     set_shared_layout_vars(user, {
@@ -340,7 +361,7 @@ class Admin::PagesController < ApplicationController
       })
   end
 
-  def set_new_layout_vars_for_organization(org, content_type)
+  def set_layout_vars_for_organization(org, content_type)
 
     if content_type == 'maps'
       rss_meta_link = CartoDB.url(view_context, 'public_maps_rss', {format: :rss})
@@ -350,10 +371,10 @@ class Admin::PagesController < ApplicationController
       atom_meta_link = CartoDB.url(view_context, 'public_datasets_rss', {format: :atom})
     end
 
-    set_new_layout_vars({
+    set_layout_vars({
         most_viewed_vis_map: org.public_vis_by_type(Visualization::Member::TYPE_DERIVED, 1, 1, nil, 'mapviews').first,
         content_type:        content_type,
-        default_fallback_basemap: ApplicationHelper.default_fallback_basemap,
+        default_fallback_basemap: org.owner.default_basemap,
         rss_meta_link: rss_meta_link,
         atom_meta_link: atom_meta_link
       })
@@ -363,7 +384,7 @@ class Admin::PagesController < ApplicationController
       })
   end
 
-  def set_new_layout_vars(required)
+  def set_layout_vars(required)
     @most_viewed_vis_map = required.fetch(:most_viewed_vis_map)
     @content_type        = required.fetch(:content_type)
     @maps_url            = CartoDB.url(view_context, 'public_visualizations_home', {}, required.fetch(:user, nil))
@@ -388,7 +409,7 @@ class Admin::PagesController < ApplicationController
 
   end
 
-  def set_new_pagination_vars(required)
+  def set_pagination_vars(required)
     @total_count  = required.fetch(:total_count)
     @per_page     = required.fetch(:per_page)
     @current_page = current_page
@@ -408,78 +429,7 @@ class Admin::PagesController < ApplicationController
     @email              = optional.fetch(:email, nil)
     @available_for_hire = optional.fetch(:available_for_hire, false)
     @user = optional.fetch(:user, nil)
-  end
-
-  def set_old_layout_vars_for_user(user, vis_type)
-    @username   = user.username
-    @tables_num = user.public_table_count
-    @vis_num    = user.public_visualization_count
-    @tags       = user.tags(true, vis_type)
-
-    set_shared_layout_vars(user, {
-      name:       user.name_or_username,
-      avatar_url: user.avatar,
-    }, {
-      # Optional
-      available_for_hire: user.available_for_hire,
-      email:              user.email,
-    })
-  end
-
-  def set_old_layout_vars_for_organization(org, vis_type)
-    @organization = org
-    @tables_num   = org.public_datasets_count
-    @vis_num      = org.public_visualizations_count
-    @tags         = org.tags(vis_type)
-
-    set_shared_layout_vars(org, {
-      name:       org.display_name.blank? ? org.name : org.display_name,
-      avatar_url: org.avatar_url,
-    })
-  end
-
-  def render_old_datasets(vis_list)
-    set_old_pagination_vars(vis_list, DATASETS_PER_PAGE)
-
-    @datasets = []
-    vis_list.each do |dataset|
-      @datasets.push({
-        title:       dataset.name,
-        description_html_safe: dataset.description_html_safe,
-        updated_at:  dataset.updated_at,
-        owner:       dataset.user,
-        tags:        dataset.tags
-      })
-    end
-
-    respond_to do |format|
-      format.html { render 'public_datasets', layout: 'application_public_dashboard' }
-    end
-  end
-
-  def render_old_maps(vis_list)
-    set_old_pagination_vars(vis_list, VISUALIZATIONS_PER_PAGE)
-
-    @visualizations = []
-    vis_list.each do |vis|
-      @visualizations.push({
-        title:       vis.name,
-        description_html_safe: vis.description_html_safe,
-        id:          vis.id,
-        tags:        vis.tags,
-        layers:      vis.layers(:carto_and_torque),
-        url_options: (vis.url_options.present? ? vis.url_options : Visualization::Member::DEFAULT_URL_OPTIONS),
-        owner:       vis.user
-      })
-    end
-
-    respond_to do |format|
-      format.html { render 'public_dashboard', layout: 'application_public_dashboard' }
-    end
-  end
-
-  def set_old_pagination_vars(vis_list, per_page)
-    @pages = (vis_list.total_entries.to_f / per_page).ceil
+    @tables_num         = (model.is_a? Organization) ? model.public_datasets_count : model.public_table_count
   end
 
   def user_public_vis_list(required)

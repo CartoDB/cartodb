@@ -30,6 +30,9 @@ class Table
   NO_GEOMETRY_TYPES_CACHING_TIMEOUT = 5.minutes
   GEOMETRY_TYPES_PRESENT_CACHING_TIMEOUT = 24.hours
 
+  # See http://www.postgresql.org/docs/9.3/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
+  TABLENAME_MAX_LENGTH = 63
+
   # @see services/importer/lib/importer/column.rb -> RESERVED_WORDS
   # @see config/initializers/carto_db.rb -> RESERVED_COLUMN_NAMES
   RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid ogc_fid }
@@ -191,53 +194,23 @@ class Table
       end
       UserTable.where(user_id: user_id, name: table_name).first
     }
-  end #tables_from
-
-
-  # Getter by table uuid or table name using canonical visualizations
-  # @param id_or_name String If is a name, can become qualified as "schema.tablename"
-  # @param viewer_user User
-  def self.get_by_id_or_name(id_or_name, viewer_user)
-    return nil unless viewer_user
-
-    rx = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/
-
-    table_name, table_schema = self.table_and_schema(id_or_name)
-
-    query_filters = {
-        user_id: viewer_user.id,
-        name: table_name,
-        type: CartoDB::Visualization::Member::TYPE_CANONICAL
-    }
-
-    unless table_schema.nil?
-      owner = User.where(username:table_schema).first
-      unless owner.nil?
-        query_filters[:user_id] = owner.id
-      end
-    end
-
-    # noinspection RubyArgCount
-    vis = CartoDB::Visualization::Collection.new.fetch(query_filters).select { |u|
-      u.user_id == query_filters[:user_id]
-    }.first
-    table = vis.nil? ? nil : vis.table
-
-    if rx.match(id_or_name) && table.nil?
-      table_temp = UserTable.where(id: id_or_name).first.try(:service)
-      unless table_temp.nil?
-        # Make sure we're allowed to see the table
-        vis = CartoDB::Visualization::Collection.new.fetch(
-            user_id: viewer_user.id,
-            map_id: table_temp.map_id,
-            type: CartoDB::Visualization::Member::TYPE_CANONICAL
-        ).first
-        table = vis.table unless vis.nil?
-      end
-    end
-
-    table
   end
+
+  # TODO: REFACTOR THIS patch introduced to continue with #3664
+  def self.get_all_user_tables_by_names(names, viewer_user)
+    names.map { |t|
+      user_id = viewer_user.id
+      table_name, table_schema = Table.table_and_schema(t)
+      unless table_schema.nil?
+        owner = User.where(username:table_schema).first
+        unless owner.nil?
+          user_id = owner.id
+        end
+      end
+      Carto::UserTable.where(user_id: user_id, name: table_name).first
+    }
+  end
+
 
   def self.table_and_schema(table_name)
     if table_name =~ /\./
@@ -609,10 +582,28 @@ class Table
     raise e
   end
 
+  def default_baselayer_for_user(user=nil)
+    user ||= self.owner
+    basemap = user.default_basemap
+    if basemap['className'] === 'googlemaps'
+      {
+        kind: 'gmapsbase',
+        options: basemap
+      }
+    else 
+      {
+        kind: 'tiled',
+        options: basemap.merge({ 'urlTemplate' => basemap['url'] })
+      }
+    end
+  end
+
   def create_default_map_and_layers
-    m = ::Map.create(::Map::DEFAULT_OPTIONS.merge(table_id: self.id, user_id: self.user_id))
+    baselayer = default_baselayer_for_user
+    provider = ::Map.provider_for_baselayer(baselayer)
+    m = ::Map.create(::Map::DEFAULT_OPTIONS.merge(table_id: self.id, user_id: self.user_id, provider: provider))
     @user_table.map_id = m.id
-    base_layer = ::Layer.new(Cartodb.config[:layer_opts]['base'])
+    base_layer = ::Layer.new(baselayer)
     m.add_layer(base_layer)
 
     data_layer = ::Layer.new(Cartodb.config[:layer_opts]['data'])
@@ -815,6 +806,7 @@ class Table
     key ||= "rails:table:#{id}"
   end
 
+  # TODO: change name and refactor for ActiveRecord
   def sequel
     owner.in_database.from(sequel_qualified_table_name)
   end
@@ -922,6 +914,10 @@ class Table
         else
           new_column_type = get_new_column_type(invalid_column)
           user_database.set_column_type(self.name, invalid_column.to_sym, new_column_type)
+          # INFO: There's a complex logic for retrying and need to know how often it is actually done
+          Rollbar.report_message('Retrying insert_row!',
+                                 'debug',
+                                 {user_id: self.user_id, qualified_table_name: self.qualified_table_name, raw_attributes: raw_attributes})
           retry
         end
       end
@@ -960,6 +956,10 @@ class Table
             new_column_type = get_new_column_type(invalid_column)
             if new_column_type
               user_database.set_column_type self.name, invalid_column.to_sym, new_column_type
+              # INFO: There's a complex logic for retrying and need to know how often it is actually done
+              Rollbar.report_message('Retrying update_row!',
+                                     'debug',
+                                     {user_id: self.user_id, qualified_table_name: self.qualified_table_name, row_id: row_id, raw_attributes: raw_attributes})
               retry
             end
           else
@@ -1472,7 +1472,7 @@ class Table
 
   def update_cdb_tablemetadata
     owner.in_database(as: :superuser).run(%Q{
-      SELECT CDB_TableMetadataTouch('#{@user_table.table_id}')
+      SELECT CDB_TableMetadataTouch('#{qualified_table_name}')
     })
   end
 
@@ -1490,10 +1490,10 @@ class Table
   end
 
   # Gets a valid postgresql table name for a given database
-  # See http://www.postgresql.org/docs/9.1/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
+  # See http://www.postgresql.org/docs/9.3/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
   def self.get_valid_table_name(name, options = {})
     # Initial name cleaning
-    name = name.to_s.strip #.downcase
+    name = name.to_s.squish #.downcase
     name = 'untitled_table' if name.blank?
 
     # Valid names start with a letter or an underscore
@@ -1503,7 +1503,7 @@ class Table
     name = name.gsub(/[^a-z0-9]/,'_').gsub(/_{2,}/, '_')
 
     # Postgresql table name limit
-    name = name[0..45]
+    name = name[0...TABLENAME_MAX_LENGTH]
 
     return name if name == options[:current_name]
 
@@ -1521,7 +1521,7 @@ class Table
     while existing_names.include?(name)
       count = count + 1
       suffix = "_#{count}"
-      name = name[0..62-suffix.length]
+      name = name[0...TABLENAME_MAX_LENGTH-suffix.length]
       name = name[rx] ? name.gsub(rx, suffix) : "#{name}#{suffix}"
       # Re-check for duplicated underscores
       name = name.gsub(/_{2,}/, '_')
@@ -1607,7 +1607,7 @@ class Table
       else
         sanitized_force_schema = force_schema.split(',').map do |column|
           # Convert existing primary key into a unique key
-          if column =~ /^\s*\"([^\"]+)\"(.*)$/
+          if column =~ /\A\s*\"([^\"]+)\"(.*)\z/
             "#{$1.sanitize} #{$2.gsub(/primary\s+key/i,'UNIQUE')}"
           else
             column.gsub(/primary\s+key/i,'UNIQUE')

@@ -21,8 +21,7 @@ describe Visualization::Locator do
   end
 
   before do
-    # Using Mocha stubs until we update RSpec (@see http://gofreerange.com/mocha/docs/Mocha/ClassMethods.html)
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
 
     @db = Rails::Sequel.connection
     Sequel.extension(:pagination)
@@ -41,6 +40,7 @@ describe Visualization::Locator do
     @user_mock.stubs(:id).returns(user_id)
     @user_mock.stubs(:username).returns(user_name)
     @user_mock.stubs(:api_key).returns(user_apikey)
+    @user_mock.stubs(:invalidate_varnish_cache).returns(nil)
     CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user_mock)
 
     @visualization  = Visualization::Member.new(
@@ -79,6 +79,7 @@ describe Visualization::Locator do
 
     it 'fetches a Table if passed a table id' do
       user = create_user(quota_in_bytes: 1234567890, table_quota: 10)
+      user.stubs(:invalidate_varnish_cache).returns(nil)
       table = Table.new
       table.user_id = user.id
       table.save

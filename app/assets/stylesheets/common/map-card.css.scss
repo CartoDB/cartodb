@@ -1,0 +1,326 @@
+@import "compass/css3/images";
+@import "../variables/colors";
+@import "../variables/mixins";
+@import "../variables/sizes";
+
+// Map card item
+//
+// Example usage:
+// <div class="MapCard">
+//   <div class="MapCard-header"></div>
+//   <div class="MapCard-content">
+//     <div class="MapCard-contentBody">
+//       <div class="MapCard-contentBodyRow">
+//         <h3 class="DefaultTitle">Foobar</h3>
+//         ...
+//
+//       <div class="MapCard-contentBodyRow">
+//         ...
+//
+//     </div>
+//     <div class="MapCard-contentFooter">
+//      ...
+//
+
+$sBorderCompensation: 2px;
+$opacityTransition: 250ms;
+$sEditButtonSize: 50px;
+
+.MapCard {
+  position: relative;
+  width: $sCard-width - 10px - $sBorderCompensation;
+  border: 1px solid #DBDBDB;
+  background-color: $cStructure-mainBkg;
+  border-radius: $sCard-borderRadius;
+  margin: 0 auto;
+}
+.MapCard-title {
+  width: 100%; // required for child text-overflow to work as expected in FF
+}
+.MapCard-desc {
+  flex: 1;
+  height: 2 * $sLineHeight-normal;
+  width: 100%;
+
+  .DefaultDescription {
+    @include line-clamp(2);
+  }
+}
+.MapCard-desc--fake {
+  display: block;
+  width: auto;
+  padding: 0 30px;
+  text-align: center;
+  margin-bottom: $sMargin-element;
+}
+.MapCard-tags {
+  @include line-clamp(1);
+}
+.MapCard--selectable{
+  &:hover {
+    background-color: $cCard-hoverFill;
+    border-color: $cCard-hoverBorder;
+    .MapCard-desc .DefaultDescription:after,
+    .MapCard-tags:after {
+      @include background-horizontal(rgba(255,255,255,0), $cCard-hoverFill);
+    }
+    .MapviewsGraph-bar {
+      cursor: pointer;
+      fill: rgba(white, 1);
+    }
+  }
+  &.is-selected {
+    background-color: $cCard-selectedFill;
+    border-color: $cCard-selectedBorder;
+    .MapCard-desc .DefaultDescription:after,
+    .MapCard-tags:after {
+      @include background-horizontal(rgba(255,255,255,0), $cCard-selectedFill);
+    }
+    .MapviewsGraph-bar {
+      cursor: pointer;
+      fill: rgba(white, 1);
+    }
+  }
+}
+.MapCard-header {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 170px;
+  @include background(image-url("layout/default-map-bkg.png") no-repeat center 0);
+  border-radius: 2px 2px 0 0;
+  @include opacity(1);
+  @include transition(opacity, $opacityTransition);
+  overflow:hidden;
+  z-index: 1;
+}
+.MapCard-header.is-loading .MapCard-loader {
+  display: block;
+}
+.MapCard-header--compact {
+  height: 130px;
+}
+.MapCard-header:after {
+  content: ' ';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: block;
+  height: 2px;
+  background: black;
+  @include opacity(.1);
+  z-index:2;
+}
+.MapCard-header--fake {
+  @include display-flex();
+  @include justify-content(center);
+  @include align-items(center);
+  background: $cStructure-mainBkg;
+}
+.MapCard-header--fake:after {
+  left: $sMargin-element;
+  right: $sMargin-element;
+}
+.MapCard-headerFakeIcon {
+  display: block;
+  width: 48px;
+  height: 48px;
+  border-radius: 50px;
+  line-height: 48px!important; // Overwritten by icon font style
+  font-size: 20px;
+  text-align:center;
+  border: 1px solid #EEE;
+  color: #EEE;
+  background: transparent;
+}
+
+.MapCard-headerFakeIcon.iconFont-People {
+  line-height: 35px!important;
+  font-size: 30px;
+}
+.MapCard-headerFakeIcon.iconFont-Snake {
+  line-height: 33px!important;
+  font-size: 30px;
+}
+.MapCard-headerFakeIcon.iconFont-Points {
+  line-height: 38px!important;
+  font-size: 24px;
+}
+.MapCard-headerFakeIcon.iconFont-Notes { font-size: 26px }
+.MapCard-headerFakeIcon.iconFont-Mountain {
+  font-size: 28px;
+  line-height: 40px!important
+}
+.MapCard-headerFakeIcon.iconFont-Rectangles { font-size: 22px }
+.MapCard-header .MapCard-loader {
+  display: none;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 2px;
+  background: transparent;
+  overflow: hidden;
+}
+.MapCard-header .MapCard-loader:before {
+  content: '';
+  position: absolute;
+  display: block;
+  width: 600px;
+  right: 0;
+  height: 2px;
+  background: rgba(black, 0.25);
+  @include animation(pulsate 1.5s linear infinite);
+}
+.MapCard-preview {
+  display: none;
+  position:absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: $sCard-borderRadius $sCard-borderRadius 0 0;
+}
+.MapCard.has-error .MapCard-error {
+  display: block;
+}
+.MapCard-error {
+  display: none;
+  position:absolute;
+  top: 50%;
+  left: 50%;
+  margin-left: -30px;
+  margin-top: -30px;
+  width: 60px;
+  height: 59px;
+  border-radius: $sCard-borderRadius $sCard-borderRadius 0 0;
+  @include background(image-url("layout/map-card-error.png") no-repeat center 0);
+}
+.MapCard-content { // To position contentDetail at top of content, and contentFooter at bottom
+  position: relative;
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center);
+  @include flex-direction(column);
+  border-radius: $sCard-borderRadius;
+  padding: $sMargin-element;
+  height: 140px;
+  @include opacity(1);
+  @include transition(opacity, $opacityTransition);
+  z-index: 1;
+}
+.MapCard-content--compact {
+  height: auto;
+}
+.MapCard-contentBody {
+  width: 100%;
+}
+.MapCard-contentBodyRow {
+  margin-bottom: $sMargin-min;
+}
+.MapCard-itemTitlePermission { background-color: $cStructure-mainBkg }
+
+.MapCard-editButton {
+  position: absolute;
+  top: -$sEditButtonSize/2; 
+  top:0;
+  right: 18px;
+  width: $sEditButtonSize;
+  height: $sEditButtonSize;
+  background: #0090d7;
+  border-radius: $sEditButtonSize;
+  color: #fff;
+  text-decoration:none;
+  text-align: center;
+  line-height:$sEditButtonSize;
+  font-size: 20px;
+  @include opacity(0);
+  @include css3-prefix(box-sizing, border-box);
+  @include transition(opacity, $opacityTransition);
+  @include transition(top, 200ms, ease-in);
+  &:hover {
+    background: #0082C2;
+    text-decoration: none;
+    color:#fff;
+  }
+}
+.MapCard:hover .MapCard-editButton {
+  @include opacity(1);
+  top: -$sEditButtonSize/2; 
+}
+.MapCard-contentBodyRow--flex {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center);
+  @include flex-wrap(nowrap);
+}
+.MapCard-contentBodyRow--fake {
+  @include display-flex();
+  @include justify-content(center);
+  @include align-items(center);
+}
+.MapCard-contentFooter {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center);
+  width: 100%;
+  padding-top: $sMargin-elementInline;
+  border-top: 1px solid $cStructure-softLine;
+}
+.MapCard-contentFooterDetails--left {
+  @include display-flex();
+  @include align-items(center);
+  @include justify-content(space-between, justify);
+}
+.MapCard-contentFooterDetails--left > *:not(:last-child) {
+  margin-right: 14px;
+}
+.MapCard-contentBodyTimeDiff .UserAvatar,
+.MapCard-contentFooterTimeDiff .UserAvatar {
+  height: $sAvatar-meta + 2;
+  margin-left: 5px;
+}
+.MapCard-fake {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 300px;
+  height: 352px;
+  @include background(image-url('layout/map-placeholder.png') no-repeat center center);
+  @include opacity(0);
+  @include transition(opacity, $opacityTransition);
+  z-index: 0;
+}
+.MapsList.is-loading .MapCard,
+.MapsList.is-loading .MapCard--selectable,
+.MapsList.is-loading .MapCard--selectable.is-selected {
+  border: 1px solid transparent;
+  background-color: transparent;
+  pointer-events: none;
+  .MapCard-header { @include opacity(0) }
+  .MapCard-content { @include opacity(0) }
+  .MapCard-fake { @include opacity(1) }
+}
+.MapsList.is-loading .MapCard:hover,
+.MapsList.is-loading .MapCard--selectable:hover,
+.MapsList.is-loading .MapCard--selectable.is-selected {
+  border: 1px solid transparent;
+  background-color: transparent;
+  cursor: default;
+  .MapCard-header { cursor: default }
+}
+
+// Animation function
+@include keyframes(pulsate) {
+  0% {right:100%;}
+  50% {right:0%}
+  100% {right:-100%}
+}
+
+@media (min-width: $sMedia-tablet) {
+  .MapCard {
+    width: $sCard-width - $sBorderCompensation;
+  }
+}

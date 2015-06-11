@@ -44,26 +44,7 @@ class Api::Json::TablesController < Api::ApplicationController
   def show
     return head(404) if @table == nil
     return head(403) unless @table.table_visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
-    respond_to do |format|
-      format.csv do
-        send_data @table.to_csv,
-          :type => 'application/zip; charset=binary; header=present',
-          :disposition => "attachment; filename=#{@table.name}.zip"
-      end
-      format.shp do
-        send_data @table.to_shp,
-          :type => 'application/octet-stream; charset=binary; header=present',
-          :disposition => "attachment; filename=#{@table.name}.zip"
-      end
-      format.kml or format.kmz do
-        send_data @table.to_kml,
-          :type => 'application/vnd.google-earth.kml+xml; charset=binary; header=present',
-          :disposition => "attachment; filename=#{@table.name}.kmz"
-      end
-      format.json do
-        render_jsonp(@table.public_values({request:request}, current_user).merge(schema: @table.schema(reload: true)))
-      end
-    end
+    render_jsonp(@table.public_values({request:request}, current_user).merge(schema: @table.schema(reload: true)))
   end
 
   def update
@@ -77,9 +58,10 @@ class Api::Json::TablesController < Api::ApplicationController
     unless params[:name].nil?
       if params[:name].downcase != @table.name
         owner = User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota).filter(:id => current_user.id).first
-        if params[:name] =~ /^[0-9_]/
+        # TODO reverse this logic: make explicit if this needs to start with a letter
+        if params[:name] =~ /\A[0-9_]/
           raise "Table names can't start with numbers or dashes."
-        elsif owner.tables.filter(:name.like(/^#{params[:name]}/)).select_map(:name).include?(params[:name].downcase)
+        elsif owner.tables.filter(:name.like(/\A#{params[:name]}/)).select_map(:name).include?(params[:name].downcase)
           raise "Table '#{params[:name].downcase}' already exists."
         else
           @table.set_all(:name => params[:name].downcase)
@@ -129,7 +111,7 @@ class Api::Json::TablesController < Api::ApplicationController
   protected
 
   def load_table
-    @table = ::Table.get_by_id_or_name(params.fetch('id'), current_user)
+    @table = Helpers::TableLocator.new.get_by_id_or_name(params.fetch('id'), current_user)
   end
 end
 

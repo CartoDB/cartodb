@@ -3,6 +3,8 @@ require_relative '../spec_helper'
 
 describe User do
   before(:all) do
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+    
     @user_password = 'admin123'
     puts "\n[rspec][user_spec] Creating test user databases..."
     @user     = create_user :email => 'admin@example.com', :username => 'admin', :password => @user_password
@@ -15,7 +17,7 @@ describe User do
   end
 
   before(:each) do
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
     User.any_instance.stubs(:enable_remote_db_user).returns(true)
   end
@@ -355,6 +357,7 @@ describe User do
   end
 
   it "should read api calls from external service" do
+    pending "This is deprecated. This code has been moved"
     @user.stubs(:get_old_api_calls).returns({
       "per_day" => [0, 0, 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 17, 4, 0, 0, 0, 0],
       "total"=>49,
@@ -475,26 +478,31 @@ describe User do
     end
   end
 
-  describe '#private_maps_enabled' do
+  describe '#private_maps_enabled?' do
     it 'should not have private maps enabled by default' do
       user_missing_private_maps = create_user :email => 'user_mpm@example.com',  :username => 'usermpm',  :password => 'usermpm'
-      user_missing_private_maps.private_maps_enabled.should eq false
+      user_missing_private_maps.private_maps_enabled?.should eq false
     end
 
     it 'should have private maps if enabled' do
       user_with_private_maps = create_user :email => 'user_wpm@example.com',  :username => 'userwpm',  :password => 'userwpm', :private_maps_enabled => true
-      user_with_private_maps.private_maps_enabled.should eq true
+      user_with_private_maps.private_maps_enabled?.should eq true
     end
 
     it 'should not have private maps if disabled' do
       user_without_private_maps = create_user :email => 'user_opm@example.com',  :username => 'useropm',  :password => 'useropm', :private_maps_enabled => false
-      user_without_private_maps.private_maps_enabled.should eq false
+      user_without_private_maps.private_maps_enabled?.should eq false
+    end
+
+    it 'should have private maps if he has private_tables_enabled, even if disabled' do
+      user_without_private_maps = create_user :email => 'user_opm3@example.com',  :username => 'useropm3',  :password => 'useropm3', :private_maps_enabled => false, :private_tables_enabled => true
+      user_without_private_maps.private_maps_enabled?.should eq true
     end
 
     it 'should have private maps if he is AMBASSADOR even if disabled' do
       user_without_private_maps = create_user :email => 'user_opm2@example.com',  :username => 'useropm2',  :password => 'useropm2', :private_maps_enabled => false
       user_without_private_maps.stubs(:account_type).returns('AMBASSADOR')
-      user_without_private_maps.private_maps_enabled.should eq true
+      user_without_private_maps.private_maps_enabled?.should eq true
     end
 
   end
@@ -943,7 +951,7 @@ describe User do
     @user.trial_ends_at.should_not be_nil
     @user.stubs(:upgraded_at).returns(nil)
     @user.trial_ends_at.should be_nil
-    @user.stubs(:upgraded_at).returns(Time.now - 15.days)
+    @user.stubs(:upgraded_at).returns(Time.now - (User::TRIAL_DURATION_DAYS - 1).days)
     @user.trial_ends_at.should_not be_nil
   end
 
@@ -1137,7 +1145,7 @@ describe User do
     it 'Checks that shared tables include not only owned ones' do
       require_relative '../../app/models/visualization/collection'
       CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
       # No need to really touch the DB for the permissions
       Table::any_instance.stubs(:add_read_permission).returns(nil)
 
@@ -1440,13 +1448,15 @@ describe User do
       end
 
       collection = CartoDB::Visualization::Collection.new.fetch({user_id: @user.id})
-      # Not grabbing https version of keys
-      redis_keys = collection.map(&:redis_vizjson_key)
+      redis_mock = mock
+      redis_vizjson_cache = CartoDB::Visualization::RedisVizjsonCache.new()
+      CartoDB::Visualization::RedisVizjsonCache.any_instance.stubs(:redis).returns(redis_mock)
+
+
+      redis_keys = collection.map {|v| [redis_vizjson_cache.key(v.id, false), redis_vizjson_cache.key(v.id, true)] }.flatten
       redis_keys.should_not be_empty
 
-      redis_cache_mock = mock
-      redis_cache_mock.expects(:del).once.with(redis_keys)
-      CartoDB::Visualization::Member.expects(:redis_cache).once.returns(redis_cache_mock)
+      redis_mock.expects(:del).once.with(redis_keys)
 
       @user.purge_redis_vizjson_cache
     end

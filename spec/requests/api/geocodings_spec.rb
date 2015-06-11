@@ -9,7 +9,7 @@ describe "Geocodings API" do
   end
 
   before(:each) do
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
     delete_user_data @user
     host! 'test.localhost.lan'
   end
@@ -149,39 +149,6 @@ describe "Geocodings API" do
     end
   end
 
-  describe 'GET /api/v1/geocodings' do
-    it 'returns every geocoding belonging to current_user' do
-      FactoryGirl.create(:geocoding, table_name: 'a', formatter: 'b', user: @user, state: 'wadus')
-      FactoryGirl.create(:geocoding, table_name: 'a', formatter: 'b', user_id: UUIDTools::UUID.timestamp_create.to_s)
-      get_json api_v1_geocodings_index_url(params) do |response|
-        response.status.should be_success
-        response.body[:geocodings].size.should == 1
-      end
-    end
-  end
-
-  describe 'GET /api/v1/geocodings/:id' do
-    it 'returns a geocoding' do
-      geocoding = FactoryGirl.create(:geocoding, table_id: UUIDTools::UUID.timestamp_create.to_s, formatter: 'b', user: @user, used_credits: 100, processed_rows: 100, kind: 'high-resolution')
-
-      get_json api_v1_geocodings_show_url(params.merge(id: geocoding.id)) do |response|
-        response.status.should be_success
-        response.body[:id].should eq geocoding.id
-        response.body[:used_credits].should eq 100
-        response.body[:price].should eq 150
-        response.body[:remaining_quota].should eq 900
-      end
-    end
-
-    it 'does not return a geocoding owned by another user' do
-      geocoding = FactoryGirl.create(:geocoding, table_id: UUIDTools::UUID.timestamp_create.to_s, formatter: 'b', user_id: UUIDTools::UUID.timestamp_create.to_s)
-
-      get_json api_v1_geocodings_show_url(params.merge(id: geocoding.id)) do |response|
-        response.status.should eq 404
-      end
-    end
-  end
-
   describe 'PUT /api/v1/geocodings/:id' do
     it 'cancels a geocoding job' do
       geocoding = FactoryGirl.create(:geocoding, table_id: UUIDTools::UUID.timestamp_create.to_s, formatter: 'b', user: @user)
@@ -203,63 +170,6 @@ describe "Geocodings API" do
         response.body.should eq errors: "wadus"
       end
     end
-  end
-
-  describe 'GET /api/v1/geocodings/country_data_for/:country_code' do
-    it 'returns the available services for that country code' do
-      api_response = [{"service"=>"point"}, {"service"=>"polygon"}]
-      ::CartoDB::SQLApi.any_instance.stubs(:fetch).returns(api_response)
-      expected_response = { admin1: ["polygon"], namedplace: ["point"], postalcode: ["point", "polygon"] }
-
-      get_json api_v1_geocodings_country_data_url(params.merge(country_code: 'ESP')) do |response|
-        response.status.should be_success
-        response.body.should eq expected_response
-      end
-    end
-  end
-
-
-  describe 'GET /api/v1/geocodings/get_countries' do
-    it 'returns the list of countries with geocoding data' do
-      api_response = [{"iso3"=>"ESP"}]
-      ::CartoDB::SQLApi.any_instance.stubs(:fetch).returns(api_response)
-
-      get_json api_v1_geocodings_get_countries_url(params) do |response|
-        response.status.should be_success
-        response.body.should eq api_response
-      end
-    end
-  end
-
-
-  describe 'GET /api/v1/geocodings/estimation_for' do
-    let(:table) { create_table(user_id: @user.id) }
-
-    it 'returns the estimated geocoding cost for the specified table' do
-      Geocoding.stubs(:processable_rows).returns(2)
-      get_json api_v1_geocodings_estimation_url(params.merge(table_name: table.name)) do |response|
-        response.status.should be_success
-        response.body.should == {:rows=>2, :estimation=>0}
-      end
-      Geocoding.stubs(:processable_rows).returns(1400)
-      get_json api_v1_geocodings_estimation_url(params.merge(table_name: table.name)) do |response|
-        response.status.should be_success
-        response.body.should == {:rows=>1400, :estimation=>600}
-      end
-      Geocoding.stubs(:processable_rows).returns(1001)
-      get_json api_v1_geocodings_estimation_url(params.merge(table_name: table.name)) do |response|
-        response.status.should be_success
-        response.body.should == {:rows=>1001, :estimation=>1.5}
-      end
-    end
-
-    it 'returns 500 if the table does not exist' do
-      get_json api_v1_geocodings_estimation_url(params.merge(table_name: 'me_not_exist')) do |response|
-        response.status.should eq 500
-        response.body[:description].should_not be_blank
-      end
-    end
-
   end
 
 end

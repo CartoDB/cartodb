@@ -65,6 +65,8 @@
 
       s3: require('./lib/build/tasks/s3.js').task(),
 
+      exorcise: require('./lib/build/tasks/exorcise.js').task(),
+
       uglify: require('./lib/build/tasks/uglify.js').task(),
 
       browserify: require('./lib/build/tasks/browserify.js').task(),
@@ -113,7 +115,6 @@
       // Set assets url for static assets in our app
       var config = grunt.template.process("cdb.config.set('assets_url', '<%= env.http_path_prefix %>/assets/<%= pkg.version %>');");
       config += grunt.template.process("\nconsole.log('cartodbui v<%= pkg.version %> sha1: <%= gitrev %>');");
-      config += grunt.template.process("\nCARTODB_UI_VERSION='<%= pkg.version %>';");
       grunt.file.write("lib/build/app_config.js", config);
     });
 
@@ -156,7 +157,7 @@
       grunt.task.run('jasmine:cartodbui:build');
 
       grunt.event.once('connect.jasmine.listening', function(host, port) {
-        var specRunnerUrl = 'http://' + host + ':' + port + '/_SpecRunner.html';
+        var specRunnerUrl = 'http://localhost:' + port + '/_SpecRunner.html';
         grunt.log.writeln('Jasmine specs available at: ' + specRunnerUrl);
         require('open')(specRunnerUrl);
       });
@@ -171,8 +172,10 @@
     'For manual testing use `grunt jasmine` directly', ['pre_default', 'jasmine']);
     grunt.registerTask('css',         ['copy:vendor', 'copy:app', 'compass', 'concat:css']);
     grunt.registerTask('default',     ['pre_default', 'css', 'manifest']);
-    grunt.registerTask('minimize',    ['default', 'copy:js', 'uglify']);
+    grunt.registerTask('minimize',    ['default', 'copy:js', 'exorcise', 'uglify']);
     grunt.registerTask('release',     ['check_release', 'minimize', 's3', 'invalidate']);
     grunt.registerTask('dev',         'Typical task for frontend development (watch JS/CSS changes)',
       ['setConfig:env.browserify_watch:true', 'browserify', 'watch']);
+    grunt.registerTask('sourcemaps', 'generate sourcemaps, to be used w/ trackjs.com for bughunting',
+      ['setConfig:assets_dir:./tmp/sourcemaps', 'config', 'js', 'copy:js', 'exorcise', 'uglify']);
   };

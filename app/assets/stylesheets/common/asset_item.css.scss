@@ -1,0 +1,80 @@
+@import "../variables/mixins";
+.AssetItem {
+  position:relative;
+  @include inline-block();
+  width:58px;
+  height:58px;
+  margin:0 20px 20px 0;
+  border:1px solid #DDD;
+  border-radius:3px;
+  overflow: hidden;
+  background: image-url("layout/loader_transparent.gif") no-repeat center;
+
+  &:nth-child(12n) { margin-right:0 } 
+}
+.AssetItem .image {
+  position:absolute;
+  @include inline-block();
+  width:60px;
+  height:60px;
+  max-width: 60px;
+  max-height: 60px;
+  border-radius:3px;
+  text-align: center;
+  line-height: 60px;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.AssetItem:hover .delete {
+  display:block;
+  @include opacity(1);
+}
+.AssetItem.AssetItem-User.is-selected .image {
+  background-color: #fff;
+  top: 1px;
+  left: 1px;
+  width: 56px;
+  height: 56px;
+}
+.AssetItem.is-selected {
+  border:1px solid #BBD7F2;
+}
+.AssetItem.is-selected .image {
+  background-color: #fff;
+}
+.AssetItem .delete {
+  position:absolute;
+  width: 14px;
+  height: 10px;
+  right: 0;
+  bottom: 0;
+  @include transition(opacity, 100ms);
+  padding: 0;
+  background:#333;
+  text-indent:0;
+  border-top-left-radius:2px;
+  border-bottom-right-radius:2px;
+  background:rgba(black, 0.5);
+  z-index:2;
+  @include opacity(0);
+}
+.AssetItem .delete:before {
+  position:absolute;
+  content:' ';
+  top:4px;
+  left:4px;
+  width:0;
+  height:0;
+  border-left:3px solid transparent;
+  border-right:3px solid transparent;
+  border-top:3px solid white;
+}
+.AssetItem.destroying:hover a.delete { 
+  display:none;
+}
+.AssetItem.simpleicon a {
+  background-size: auto 24px!important;
+}
+.AssetItem.pin-maps a {
+  background-size: auto 24px!important;
+}

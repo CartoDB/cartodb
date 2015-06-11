@@ -1,28 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <%= favicon_link_tag "/favicons/favicon.ico" %>
+    <title><%= yield :page_title %></title>
+    <meta name="description" content="<%= yield :description %>">
+    <meta name="keywords" content="<%= @table.name.gsub(/ /,", ").gsub(/_/,", ") %>, datasets, maps, data visualization, spatial data, geospatial, cartodb">
+    <meta name="author" content="<%= @table.owner.username %>">
     <meta charset='utf-8' />
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
-    <title><%= yield :page_title %>CartoDB</title>
-    <%= favicon_link_tag "/favicons/favicon.ico" %>
 
-    <meta name="description" content="<%= @table.description || @table.name.gsub(/_/," ") %>">
-    <meta name="keywords" content="Map,cartodb,<%= @table.name.gsub(/_/,",").gsub(/ /,",") %>">
-    <meta name="author" content="CartoDB">
-    <meta name="DC.title" content="<%= yield :page_title %> | CartoDB">
-    
-    <meta property="og:title" content="<%= yield :page_title %> | CartoDB"/>
-    <meta property="og:description" content="<%= @table.description || @table.name.gsub(/_/," ") %>"/>
-    <meta property="og:type" content="Visualization"/>
+    <meta property="og:title" content="<%= yield :title %>" />
+    <meta property="og:description" content="<%= yield :description %>" />
+    <meta property="og:type" content="visualization" />
     <meta property="og:url" content="<%= request.original_url %>" />
-    <meta property="og:image" content="<%= image_path "layout/cartofante_blue.png" %>"/>
+    <meta property="og:image" content="<%= image_path "layout/cartofante_blue.png" %>" />
 
     <meta name="twitter:card" content="summary">
     <meta name="twitter:site" content="@cartodb">
     <meta name="twitter:creator" content="@cartodb">
-    <meta name="twitter:title" content="<%= yield :page_title %> | CartoDB">
-    <meta name="twitter:description" content="<%= @table.description || @table.name.gsub(/_/," ") %>">
+    <meta name="twitter:title" content="<%= yield :page_title %>">
+    <meta name="twitter:description" content="<%= yield :description %>">
     <meta name="twitter:image" content="<%= image_path "layout/cartofante_blue.png" %>">
     <meta name="twitter:url" content="<%= request.original_url %>" />
 
@@ -35,7 +32,7 @@
     <![endif]-->
   </head>
   <body class="public">
-    <%= render 'admin/shared/public_header', :clone => true, :signin => false %>
+    <%= render 'admin/shared/old_public_header', :clone => true, :signin => false %>
     <%= yield %>
     <%= yield :js %>
     <%= insert_trackjs() %>

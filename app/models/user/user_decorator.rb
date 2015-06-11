@@ -52,7 +52,7 @@ module CartoDB
         show_upgraded_message: (self.account_type.downcase != 'free' && self.upgraded_at && self.upgraded_at + 15.days > Date.today ? true : false),
         actions: {
           private_tables: self.private_tables_enabled,
-          private_maps: self.private_maps_enabled,
+          private_maps: self.private_maps_enabled?,
           dedicated_support: self.dedicated_support?,
           import_quota: self.import_quota,
           remove_logo: self.remove_logo?,
@@ -61,7 +61,6 @@ module CartoDB
         },
         notification: self.notification,
         avatar_url: self.avatar,
-        new_dashboard_enabled: self.new_dashboard_enabled,
         feature_flags: self.feature_flags,
         base_url: self.public_url
       }

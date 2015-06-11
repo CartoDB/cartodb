@@ -1,6 +1,13 @@
 require 'active_record'
 
-class Carto::Overlay < ActiveRecord::Base
-  # INFO: disable ActiveRecord inheritance column
-  self.inheritance_column = :_type
+module Carto
+  class Overlay < ActiveRecord::Base
+    # INFO: disable ActiveRecord inheritance column
+    self.inheritance_column = :_type
+
+    after_initialize do |overlay|
+      self.options = ::JSON.parse(self.options)
+    end
+
+  end
 end

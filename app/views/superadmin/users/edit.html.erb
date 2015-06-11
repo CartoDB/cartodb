@@ -1,8 +1,0 @@
-<%= render 'header', page_title: "#{@user.username} account data" %>
-
-<h2><%= @user.username %> account data</h2>
-
-<%= render 'form' %>
-<%= button_to "delete this user", ['superadmin', @user], method: :delete, class: :destroy %>
-
-<%= render 'users_list', except: @user %>

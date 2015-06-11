@@ -1,0 +1,203 @@
+
+  /**
+   *  Asset manager loader
+   */
+
+  @import "compass/css3/inline-block";
+  @import "compass/css3/opacity";
+  @import "compass/css3/images";
+  @import "../old_common/mixins";
+
+
+  .asset_manager {
+
+    div.content > div {display:block; margin:0;}
+
+    // Hide uploader and ok button from the beginning
+    div.uploader, a.ok { display:none }
+
+    // Assets styles
+    div.assets {
+      position:relative;
+      margin-bottom:10px;
+
+      label {
+        font-weight:bold;
+        font-size:11px;
+        color: #CCCCCC;
+        letter-spacing: 0;
+      }
+
+      ul.assets-list {
+        position:relative;
+        display:block;
+        height:auto;
+        max-height:210px;
+        padding-left:5px;
+        margin:20px 0 0 0;
+        overflow: auto;
+      }
+
+
+      .scroll {
+        position:absolute;
+        left:0;
+        display:none;
+        right:5px;
+        width:100%;
+        height:10px;
+        padding:0;
+        margin:0;
+        @include border-radius(0);
+        z-index:10;
+        pointer-events:none;
+
+        &.top {
+          top:33px;
+          @include background(linear-gradient(white, rgba(white,0)));
+        }
+        &.bottom {
+          bottom:0px;
+          @include background(linear-gradient(rgba(white,0),white));
+        }
+      }
+
+      .assets-item {
+        position:relative;
+        @include inline-block();
+        width:42px;
+        height:41px;
+        margin:0 3px 3px 0;
+        border:1px solid #C0C0C0!important;
+        @include border-radius(3px);
+        overflow: hidden;
+        background: image-url("layout/loader_transparent_small.gif") no-repeat center;
+
+        &:nth-child(14n) { margin-right:0 } 
+
+        a.image {
+          @include inline-block();
+          width:42px;
+          height:42px;
+          @include border-radius(3px);
+          text-align: center;
+          line-height: 42px;
+          background-repeat: no-repeat;
+          background-position: center;
+        }
+
+        a.delete {
+          @include size(14px, 10px);
+          @include position(false, 0, 0, false);
+          @include simple-transition(opacity, 100ms);
+          padding: 0;
+          background:#333;
+          text-indent:0;
+          @include border-top-left-radius(2px);
+          @include border-bottom-right-radius(2px);
+          background:rgba(black,0.5);
+          z-index:2;
+          @include opacity(0);
+
+          &:before {
+            position:absolute;
+            content:' ';
+            top:4px;
+            left:4px;
+            width:0;
+            height:0;
+            border-left:3px solid transparent;
+            border-right:3px solid transparent;
+            border-top:3px solid white;
+          }
+        }
+
+        &:hover {
+          a.delete {
+            display:block;
+            @include opacity(1);
+          }
+        }
+
+        // item states
+        &.is-selected {
+          width:40px;
+          height:39px;
+          border:2px solid #0F0F0F!important;
+
+          a.image {
+            top: -1px;
+            left: -1px;
+          }
+
+          a.delete {
+            right: -1px;
+            bottom: -1px;
+          }
+        }
+
+        &.is-destroying {
+          div.loader {display:block!important;}
+
+          &:hover {
+            a.delete {display:none}
+          }
+        }
+
+
+        // different asset types
+
+        // -> simple icons
+        &.simpleicon a {
+          background-size: auto 24px!important;
+        }
+
+        // -> pin maps
+        &.pin-maps a {
+          background-size: auto 24px!important;
+        }
+      }
+    }
+
+    // Tabs style
+    .upload-tab {
+      margin:0; // Reset
+      margin-left:-1px;
+
+      &.right {
+        float:right;
+        margin-right:-1px;
+      }
+    }
+
+    div.loader {
+      padding:28px 0 20px;
+      @include background(image-url('layout/loader.gif') no-repeat center top);
+      p {text-align:center;}
+    }
+
+    .disclaimer {
+      display:block;
+      margin:20px 0 5px 5px;
+      color:#666666;
+      @include border-radius(3px);
+      font-size:13px;
+
+      sup {
+        position: relative;
+        vertical-align: baseline;
+        top: -6px;
+        font-size:9px;
+      }
+
+      a {
+        color:#666;
+        text-decoration:underline;
+        &:hover { color:#333 }
+      }
+    }
+
+    div.assets-list {
+      display:none;
+    }
+  }

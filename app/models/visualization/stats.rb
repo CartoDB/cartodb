@@ -1,31 +1,41 @@
 # encoding: utf-8
+require 'date'
 
 module CartoDB
   module Visualization
     class Stats
+
+      def self.mapviews(stats)
+        stats.collect { |o| o[1] }.reduce(:+)
+      end
+
       def initialize(visualization, user=nil)
         @visualization  = visualization
         @user           = user || visualization.user
       end
       
       def to_poro
-        data_points = (0..29).map do |t|
-          date = Date.today - (29 - t).days
-          [ date.iso8601,
-            $users_metadata.ZSCORE(visualization_stats_key, date.strftime("%Y%m%d")).to_i ]
+        new_calls = {}
+        CartoDB::Stats::APICalls.new.get_api_calls_with_dates(username, {stat_tag: visualization.id}).to_a.reverse.each do |call|
+          call_date = Date.parse(call[0]).strftime("%Y-%m-%d")
+          new_calls[call_date] = call[1]
         end
-        Hash[data_points]
+        return new_calls
       end
 
-      # Specifications here:
-      # https://github.com/Vizzuality/Windshaft-cartodb/wiki/Redis-stats-format
-      def visualization_stats_key
-        "user:#{user.username}:mapviews:stat_tag:#{visualization.id}"
+      def total_mapviews
+        CartoDB::Stats::APICalls.new.get_total_api_calls(username, visualization.id)
       end
 
       private
 
       attr_reader :visualization, :user
+
+      def username
+        # TODO: remove this after adding visualizations --> users FK at #3508. Now it can crash.
+        user.nil? ? '' : user.username
+      end
+
     end # Stats
   end # Visualization
 end # CartoDB

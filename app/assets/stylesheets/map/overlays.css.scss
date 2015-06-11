@@ -4,11 +4,11 @@
 @import "compass/css3/images";
 @import "compass/css3/opacity";
 @import "compass/css3/transform";
-@import "../common/fonts";
-@import "../common/vars";
-@import "../common/mixins";
+@import "../old_common/fonts";
+@import "../old_common/vars";
+@import "../old_common/mixins";
 @import "../map/map-sprite";
-@import "../elements/elements-sprite";
+@import "../old_elements/elements-sprite";
 
 /* Mobile */
 .cartodb-mobile .aside {
@@ -368,10 +368,8 @@
       border: 3px dashed rgba(#fff, .5);
     }
 
-    .loader{
-      display:none;
-      background: rgba(#333, .5) image-url('layout/loader_transparent.gif') no-repeat 50% 50%;
-      @include absolute-center(38px, 16px);
+    .content .text {
+      line-height:0;
     }
 
     .content {
@@ -394,18 +392,30 @@
       img { display: none!important; }
     }
 
+    &.mobile.editable {
+      width: 200px;
+      max-width: 200px;
+      min-width: 100px;
+    }
+
     &.editable {
 
       width: 400px;
       max-width: 400px;
       min-width: 100px;
 
+      .content .text {
+        line-height:normal;
+      }
+
       .content div {
         background: #333;
         @include opacity(.8);
       }
 
-      .text { font-weight:normal; }
+      .text { 
+        font-weight:normal;
+      }
     }
 
     img {
@@ -443,24 +453,21 @@
   } // .open
 
   &.editable {
-
     .text {
-
       @include user-select(inherit);
 
       padding: 5px 9px;
 
       .content {
         padding: 10px 10px 3px 10px;
+        line-height:normal!important;
       }
 
       border: 1px dashed #ccc;
       cursor: text!important;
 
       @include simple-transition(padding, 100ms, ease-in);
-
     }
-
   }
 
   &.draggable {
@@ -620,11 +627,11 @@ div.cartodb-zoom .info {
   display:block;
   margin:17px 0 0 0;
   width: 28px;
-  height:28px;
+  padding: 8px 0 7px 0;
   font:normal 13px "Helvetica",Arial;
+  line-height: normal;
   color:#858585;
   text-align: center;
-  line-height: 28px;
   -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
   -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
   box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;

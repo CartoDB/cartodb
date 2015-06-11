@@ -3,6 +3,7 @@ require 'sequel'
 require 'rack/test'
 require 'json'
 require_relative '../../spec_helper'
+require_relative '../../support/factories/organizations'
 require_relative '../../../app/models/visualization/migrator'
 require_relative '../../../app/controllers/admin/visualizations_controller'
 require_relative '../../../services/relocator/relocator'
@@ -22,14 +23,15 @@ describe Admin::VisualizationsController do
     @user = create_user(
       username: 'test',
       email:    'test@test.com',
-      password: 'test12'
+      password: 'test12',
+      private_tables_enabled: true
     )
     @api_key = @user.api_key
     @user.stubs(:should_load_common_data?).returns(false)
   end
 
   before(:each) do
-    CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
     
     @db = Rails::Sequel.connection
     Sequel.extension(:pagination)
@@ -101,7 +103,41 @@ describe Admin::VisualizationsController do
     end
   end # GET /viz/:id
 
+  describe 'GET /tables/:id/public/table' do
+    it 'returns 404 for private tables' do
+      id = table_factory(privacy: ::UserTable::PRIVACY_PRIVATE).id
+
+      get "/tables/#{id}/public/table", {}, @headers
+      last_response.status.should == 404
+    end
+  end
+
+  describe 'GET /viz/:id/protected_public_map' do
+    it 'returns 404 for private maps' do
+      id = table_factory(privacy: ::UserTable::PRIVACY_PRIVATE).table_visualization.id
+
+      get "/viz/#{id}/protected_public_map", {}, @headers
+      last_response.status.should == 404
+    end
+  end
+
+  describe 'GET /viz/:id/protected_embed_map' do
+    it 'returns 404 for private maps' do
+      id = table_factory(privacy: ::UserTable::PRIVACY_PRIVATE).table_visualization.id
+
+      get "/viz/#{id}/protected_embed_map", {}, @headers
+      last_response.status.should == 404
+    end
+  end
+
   describe 'GET /viz/:id/public_map' do
+    it 'returns 403 for private maps' do
+      id = table_factory(privacy: ::UserTable::PRIVACY_PRIVATE).table_visualization.id
+
+      get "/viz/#{id}/public_map", {}, @headers
+      last_response.status.should == 403
+    end
+
     it 'returns proper surrogate-keys' do
       id = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC).table_visualization.id
 
@@ -109,6 +145,20 @@ describe Admin::VisualizationsController do
       last_response.status.should == 200
       last_response.headers["Surrogate-Key"].should_not be_empty
       last_response.headers["Surrogate-Key"].should include(CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES)
+    end
+
+    it 'returns public map for org users' do
+      org = OrganizationFactory.new.new_organization(name: 'public-map-spec-org').save
+
+      user_a = create_user({username: 'user-public-map', quota_in_bytes: 123456789, table_quota: 400})
+      user_org = CartoDB::UserOrganization.new(org.id, user_a.id)
+      user_org.promote_user_to_admin
+
+      vis_id = new_table({user_id: user_a.id, privacy: ::UserTable::PRIVACY_PUBLIC}).save.reload.table_visualization.id
+
+      host! "#{org.name}.localhost.lan"
+      get "/viz/#{vis_id}/public_map", @headers
+      last_response.status.should == 200
     end
   end
 
@@ -147,6 +197,13 @@ describe Admin::VisualizationsController do
     end
   end # GET /viz/:id/public
 
+  describe 'GET /tables/:id/embed_map' do
+    it 'returns 404 for nonexisting tables when table name is used' do
+      get "/tables/tablethatdoesntexist/embed_map", {}, @headers
+      last_response.status.should == 404
+    end
+  end
+
   describe 'GET /viz/:name/embed_map' do
     it 'renders the view by passing a visualization name' do
       table = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC)
@@ -162,29 +219,6 @@ describe Admin::VisualizationsController do
       last_response.headers["Surrogate-Key"].should include(table.table_visualization.surrogate_key)
     end
 
-    it 'renders embed_map.js' do
-      table             = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC)
-      id                = table.table_visualization.id
-      payload           = { source_visualization_id: id }
-
-      post "/api/v1/viz?api_key=#{@api_key}", 
-        payload.to_json, @headers
-      last_response.status.should == 200
-
-      derived_visualization = JSON.parse(last_response.body)
-      id = derived_visualization.fetch('id')
-
-      login_as(@user, scope: 'test')
-
-      get "/viz/#{id}/embed_map.js", {}, @headers
-      last_response.status.should == 200
-      last_response.headers["X-Cache-Channel"].should_not be_empty
-      last_response.headers["X-Cache-Channel"].should include(table.name)
-      last_response.headers["Surrogate-Key"].should_not be_empty
-      last_response.headers["Surrogate-Key"].should include(CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES)
-      last_response.headers["Surrogate-Key"].should include(get_surrogate_key(CartoDB::SURROGATE_NAMESPACE_VISUALIZATION, id))
-    end
-
     it 'renders embed map error page if visualization private' do
       table = table_factory
       put "/api/v1/tables/#{table.id}?api_key=#{@api_key}",
@@ -198,10 +232,6 @@ describe Admin::VisualizationsController do
       get "/viz/#{name}/embed_map", {}, @headers
       last_response.status.should == 403
       last_response.body.should =~ /cartodb-embed-error/
-
-      get "/viz/#{name}/embed_map.js", {}, @headers
-      last_response.status.should == 403
-      last_response.body.should =~ /get_url_params/
     end
 
     it 'renders embed map error when an exception is raised' do
@@ -210,12 +240,34 @@ describe Admin::VisualizationsController do
       get "/viz/220d2f46-b371-11e4-93f7-080027880ca6/embed_map", {}, @headers
       last_response.status.should == 404
       last_response.body.should =~ /404/
-
-      get "/viz/220d2f46-b371-11e4-93f7-080027880ca6/embed_map.js", {}, @headers
-      last_response.status.should == 404
-      last_response.body.should =~ /404/
     end
   end # GET /viz/:name/embed_map
+
+  describe 'GET /viz/:id/embed_map' do
+    it 'caches and serves public embed map successful responses' do
+      id = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC).table_visualization.id
+      embed_redis_cache = EmbedRedisCache.new
+
+      embed_redis_cache.get(id, https=false).should == nil
+      get "/viz/#{id}/embed_map", {}, @headers
+      last_response.status.should == 200
+
+      # The https key/value pair should be differenent
+      embed_redis_cache.get(id, https=true).should == nil
+      last_response.status.should == 200
+
+      # It should be cached after the first request
+      embed_redis_cache.get(id, https=false).should_not be_nil
+      first_response = last_response
+
+      get "/viz/#{id}/embed_map", {}, @headers
+      last_response.status.should == 200
+      # Headers of both responses should be the same excluding some
+      remove_changing = lambda {|h| h.reject {|k, v| ['X-Request-Id', 'X-Runtime'].include?(k)} }
+      remove_changing.call(first_response.headers).should == remove_changing.call(last_response.headers)
+      first_response.body.should == last_response.body
+    end
+  end
 
   describe 'GET /viz/:name/track_embed' do
     it 'renders the view by passing a visualization name' do
@@ -300,6 +352,7 @@ describe Admin::VisualizationsController do
       org.seats = 10
       org.save
 
+      User.any_instance.stubs(:remaining_quota).returns(1000)
       user_a = create_user({username: 'user-a', quota_in_bytes: 123456789, table_quota: 400})
       user_org = CartoDB::UserOrganization.new(org.id, user_a.id)
       user_org.promote_user_to_admin
@@ -309,19 +362,26 @@ describe Admin::VisualizationsController do
       user_b = create_user({username: 'user-b', quota_in_bytes: 123456789, table_quota: 400, organization: org})
 
       vis_id = factory(user_a).fetch('id')
-
       vis = CartoDB::Visualization::Member.new(id:vis_id).fetch
+      vis.privacy = CartoDB::Visualization::Member::PRIVACY_PRIVATE
+      vis.store
+
+      login_host(user_b, org)
+
+      get CartoDB.url(self, 'public_table', {id: vis.name}, user_a)
+      last_response.status.should be(404)
+
+      ['public_visualizations_public_map', 'public_tables_embed_map'].each { |forbidden_endpoint|
+        get CartoDB.url(self, forbidden_endpoint, {id: vis.name}, user_a)
+        follow_redirects
+        last_response.status.should be(403), "#{forbidden_endpoint} is #{last_response.status}"
+      }
+
       perm = vis.permission
       perm.set_user_permission(user_b, CartoDB::Permission::ACCESS_READONLY)
       perm.save
 
-      login_as(user_b, scope: user_b.username)
-
-      host! "#{org.name}.localhost.lan"
-
-      source_url = CartoDB.url(self, 'public_table', {id: vis.name}, user_a)
-
-      get source_url
+      get CartoDB.url(self, 'public_table', {id: vis.name}, user_a)
       last_response.status.should == 302
       # First we'll get redirected to the public map url
       follow_redirect!
@@ -331,7 +391,24 @@ describe Admin::VisualizationsController do
         CartoDB.path(self, 'public_visualizations_show', {id: "#{user_a.username}.#{vis.name}"}) + "?redirected=true"
       last_response.location.should eq url
 
+      ['public_visualizations_public_map', 'public_tables_embed_map'].each { |forbidden_endpoint|
+        get CartoDB.url(self, forbidden_endpoint, {id: vis.name}, user_a)
+        follow_redirects
+        last_response.status.should be(200), "#{forbidden_endpoint} is #{last_response.status}"
+        last_response.length.should >= 100
+      }
       org.destroy
+    end
+  end
+
+  def login_host(user, org)
+    login_as(user, scope: user.username)
+    host! "#{org.name}.localhost.lan"
+  end
+
+  def follow_redirects(limit = 10)
+    while last_response.status == 302 && (limit -= 1) > 0 do
+        follow_redirect!
     end
   end
 

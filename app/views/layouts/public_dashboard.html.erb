@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link id="favicon" rel="shortcut icon" href="/favicons/favicon.ico" />
+    <title><%= yield :title %></title>
+    <meta name="description" content="<%= yield :description %>">
+    <meta name="keywords" content="<%= @name %>, datasets, maps, data visualization, spatial data, geospatial, cartodb">
+    <meta name="author" content="<%= @name %>">
+    <meta charset='utf-8' />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+
+    <meta property="og:title" content="<%= yield :title %>" />
+    <meta property="og:description" content="<%= yield :description %>" />
+    <meta property="og:type" content="visualization" />
+    <meta property="og:url" content="<%= request.original_url %>" />
+    <meta property="og:image" content="<%= @avatar_url %>" />
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@cartodb">
+    <meta name="twitter:creator" content="@cartodb">
+    <meta name="twitter:title" content="<%= yield :title %>">
+    <meta name="twitter:description" content="<%= yield :description %>">
+    <meta name="twitter:image" content="<%= @avatar_url %>">
+    <meta name="twitter:url" content="<%= request.original_url %>" />
+
+    <%= stylesheet_link_tag 'cartodb', 'common', 'public_dashboard' %>
+
+    <%= auto_discovery_link_tag(:atom, @atom_meta_link) %>
+    <%= auto_discovery_link_tag(:rss, @rss_meta_link) %>
+  </head>
+  <body class="PublicBody">
+    <%= render 'admin/shared/public_header' %>
+    <div class="FavMap is-pre-loading" id="<%= fav_map_target_id = 'fav-map-container' %>">
+      <div class="Spinner FavMap-spinner"></div>
+    </div>
+    <div class="UserInfo js-user-info">
+      <div class="UserAvatar UserInfo-avatar">
+        <% if @avatar_url %>
+          <img src="<%= @avatar_url %>" class="UserAvatar-img UserAvatar-img--large" />
+        <% else %>
+          <div class="UserAvatar-img UserAvatar-img--large UserAvatar-img--no-src"></div>
+        <% end %>
+      </div>
+      <h2 class="UserInfo-name">
+        <%= @name %>
+        <span class="UserInfo-nameBreadcrumb"> /
+          <% if @content_type == 'maps' %>
+            <%= link_to 'Maps', @maps_url, class: "DropdownLink js-breadcrumb-dropdown-target" %>
+          <% else %>
+            <%= link_to 'Datasets', @datasets_url, class: "DropdownLink js-breadcrumb-dropdown-target" %>
+          <% end %>
+          <% content_for(:js) do %>
+            <div class="js-breadcrumb-dropdown-content Dropdown BreadcrumbsDropdown BreadcrumbsDropdown--compact" style="display: none;">
+              <ul class="BreadcrumbsDropdown-list">
+                <li class="BreadcrumbsDropdown-listItem">
+                  <nav class="BreadcrumbsDropdown-options">
+                    <%= link_to 'Maps', @maps_url, class: "BreadcrumbsDropdown-optionsItem #{@content_type == 'maps' ? 'is-selected' : ''}" %>
+                    <%= link_to 'Datasets', @datasets_url, class: "BreadcrumbsDropdown-optionsItem has-margin #{@content_type == 'maps' ? '' : 'is-selected'}" %>
+                  </nav>
+                </li>
+              </ul>
+            </div>
+          <% end %>
+        </span>
+      </h2>
+      <% if @description.present? %>
+        <p class="UserInfo-desc"><%= @description %></p>
+      <% end %>
+      <ul class="UserInfo-links">
+        <% if @website.present? %>
+          <li class="UserInfo-linksItem">
+            <i class="iconFont iconFont-Dribbble"></i>
+            <%= link_to @website_clean, @website %>
+          </li>
+        <% end %>
+        <% if @twitter_username.present? %>
+          <li class="UserInfo-linksItem">
+            <i class="iconFont iconFont-Twitter"></i>
+            <%= link_to @twitter_username, "https://twitter.com/#{@twitter_username}" %>
+          </li>
+        <% end %>
+        <% if @available_for_hire %>
+          <li class="UserInfo-linksItem UserInfo-linksItem--positive">
+            <i class="iconFont iconFont-Check"></i>
+            <%= mail_to @email, "Available for hire" %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+
+    <%= yield %>
+
+    <%= render 'admin/shared/footer' %>
+    <script type="text/javascript">
+      var config = <%= safe_js_object frontend_config_public({https_apis: request.protocol == 'https://' }) %>;
+      var account_host = '<%= CartoDB.account_host %>';
+      var favMapViewAttrs = {
+        el: '#<%= fav_map_target_id %>',
+        <% if @most_viewed_vis_map %>
+          createVis: {
+            url: '<%= vis_json_url(@most_viewed_vis_map.id, self, @user) %>',
+            opts: {
+              no_cdn: <%= Rails.env.production? ? 'false' : 'true' %>
+            }
+          }
+        <% else %>
+          fallbackBaselayer: <%= raw @default_fallback_basemap.to_json %>
+        <% end %>
+      };
+    </script>
+    <% if @most_viewed_vis_map && @most_viewed_vis_map.map.provider == 'googlemaps' %>
+    <script type="text/javascript" src="//maps.googleapis.com/maps/api/js?sensor=false&v=3.12&<%= @user.google_maps_api_key %>"></script>
+    <% end %>
+    <%= javascript_include_tag 'cdb.js', 'templates', 'public_dashboard_deps', 'public_dashboard' %>
+    <%= yield :js %>
+  </body>
+</html>

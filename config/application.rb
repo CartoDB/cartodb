@@ -60,78 +60,67 @@ module CartoDB
 
     # Default setting is [/\w+\.(?!js|css).+/, /application.(css|js)$/]
     config.assets.precompile = %w(
+      config.js
       app.js
-      application.js
       cdb.js
-      common_data.js
-      new_dashboard_deps.js
-      new_dashboard.js
-      new_dashboard_templates.js
-      new_public_dashboard_deps.js
-      new_public_dashboard.js
-      editor.js
+      embed.js
+      dashboard_deps.js
       dashboard.js
+      dashboard_templates.js
+      public_dashboard_deps.js
+      public_dashboard.js
+      public_map.js
+      public_map_deps.js
+      editor.js
       account_templates.js
       account_deps.js
       account.js
-      new_keys_templates.js
-      new_keys_deps.js
-      new_keys.js
+      keys_templates.js
+      keys_deps.js
       keys.js
-      login.js
       models.js
+      organization_templates.js
+      organization_deps.js
       organization.js
-      new_organization_templates.js
-      new_organization_deps.js
-      new_organization.js
-      modernizr.js statsc.js
       table.js
       public_dashboard.js
       public_table.js
-      map_public.js
       public_like.js
+      common.js
+      old_common.js
       templates.js
       templates_mustache.js
-      tipsy.js
-      common.js
-      jquery.tipsy.js
       specs.js
       sessions.js
+
+      tipsy.js
       modernizr.js
+      statsc.js
 
       cdb.css
       cdb/themes/css/cartodb.css
       cdb/themes/css/cartodb.ie.css
       common.css
-      new_common.css
-      new_dashboard.css
+      old_common.css
       dashboard.css
-      db.css
       cartodb.css
       fonts_ie.css
+      fonts.css
       front.css
-
       editor.css
-      new_keys.css
-      keys.css
+      table.css
       leaflet.css
       map.css
       map/leaflet.ie.css
+      keys.css
       organization.css
-      new_organization.css
-      pages.css
-      plugins/tipsy.css
-      public.css
       password_protected.css
       public_dashboard.css
-      new_public_dashboard.css
       public_table.css
       public_map.css
-      public_ie.css
-      specs.css
-      table.css
-      tables.css
-      frontend
+      sessions.css
+
+      plugins/tipsy.css
 
       *.jpg
       *.ico
@@ -147,6 +136,9 @@ module CartoDB
 
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
+
+    frontend_assets_version = JSON::parse(File.read(Rails.root.join('package.json')))['version']
+    config.action_controller.relative_url_root = "/assets/#{frontend_assets_version}"
   end
 end
 

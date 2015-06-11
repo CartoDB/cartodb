@@ -5,17 +5,17 @@ describe Layer do
   before(:all) do
     @quota_in_bytes = 500.megabytes
     @table_quota = 500
-    @user = create_user(:quota_in_bytes => @quota_in_bytes, :table_quota => @table_quota)
+    @user = create_user(:quota_in_bytes => @quota_in_bytes, :table_quota => @table_quota, :private_tables_enabled => true)
   end
 
   after(:all) do
     # Using Mocha stubs until we update RSpec (@see http://gofreerange.com/mocha/docs/Mocha/ClassMethods.html)
-    CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
     @user.destroy
   end
 
   before(:each) do
-    CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
 
     CartoDB::Overlay::Member.any_instance.stubs(:can_store).returns(true)
 
@@ -280,7 +280,7 @@ describe Layer do
 
   describe '#uses_private_tables?' do
     it 'returns true if any of the affected tables is private' do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:create).returns(true)
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
 
       map     = Map.create(:user_id => @user.id, :table_id => @table.id)
       source  = @table.table_visualization

@@ -1,0 +1,349 @@
+
+  /**
+   *  Privacy dialog styles
+   *
+   *  - It includes
+   *
+   *    · Dialog itself
+   *    · Privacy password view
+   *    · Organization users list
+   *    · Organization users item
+   *    · Privacy selector
+   *
+   */
+
+  @import "compass/css3/inline-block";
+  @import "compass/css3/box-shadow";
+  @import "compass/css3/border-radius";
+  @import "compass/css3/images";
+  @import "compass/css3/opacity";
+  @import "compass/css3/transform";
+  @import "compass/css3/transition";
+  @import "../old_common/vars";
+  @import "../old_common/mixins";
+  @import "../table/table-sprite";
+
+  
+  // Modal dialogs
+  .vis_privacy_dialog {
+    
+    section.block {
+      div.foot {
+        position:relative;
+        padding:0 40px 35px;
+        border:none;
+      }
+    }
+
+    section.warning {
+      display:none;
+    }
+
+  }
+
+
+  /**
+   *  Privacy password view styles
+   *
+   */
+
+  $br: 2px;
+
+  .privacy-password {
+    position:absolute;
+    left:40px;
+    top:7px;
+
+    form {
+      padding:4px;
+      border: 1px solid #CCCCCC;
+      @include border-radius($br);
+      line-height:20px;
+
+      &.focus { border-color:#AAA }
+    }
+
+    input.password {
+      border:none;
+      outline:none;
+      padding:0;
+    }
+
+    input.submit {
+      padding:0 8px;
+      margin:0px;
+      background:#FFD2A6;
+      border:none;
+      @include border-radius($br);
+      text-align:center;
+      font:normal 11px $text-fonts;
+      color:#AD9571;
+      outline:none;
+      line-height:20px;
+
+      &:hover { background:#FFCA94; cursor:pointer }
+      &:active { background:#FFC182 }
+
+      &.disabled {
+        @include opacity(0.5);
+        &:hover { background:#FFD2A6; cursor:default }
+        &:active { background:#FFD2A6 }
+      }
+    }
+  }
+
+
+  /**
+   *  Organization users list + user item
+   *
+   */
+
+  .org_users_list {
+    position:relative;
+    display:block;
+    width:100%;
+    height:auto;
+    margin:20px 0 0;
+
+    // List wrapper
+    .org_users_wrapper {
+      &.scrollpane {
+        height:215px;
+        overflow:hidden;
+      }
+    }
+
+    ul {
+      display:block;
+
+      li {
+        padding:14px 0;
+        @include display-flex();
+        @include justify-content(space-between, justify);
+        @include align-items(center, center);
+      }
+
+      div.info ,
+      div.switches {
+        @include display-flex();
+        @include align-items(center, center);
+      }
+
+      div.info {
+        text-align: left;
+        width:250px;
+
+        &.disabled { @include opacity(.5) }
+      }
+
+      div.switches {
+        text-align: right;
+        width:125px;
+        @include justify-content(flex-end, end);
+      }
+
+      img {
+        width:18px;
+        height:18px;
+        @include border-radius(20px);
+        background:#EDEDED;
+      }
+
+      p {
+        max-width:255px;
+        margin-left:6px;
+        font-size:15px
+      }
+
+      span.separator {
+        position:relative;
+        width:3px;
+        height:3px;
+        margin:0 10px;
+        background:#EEE;
+        @include border-radius(4px);
+      }
+
+      // Scrollpane!
+      &.scrollpane {
+        width: 100%!important;
+        height: 215px;
+        overflow-y: hidden;
+        overflow-x: visible;
+        outline:none;
+
+        // space for scroll
+        li { padding-right:10px }
+
+        .jspContainer { overflow: hidden; position: relative; }
+        .jspPane { position: absolute }
+        .jspVerticalBar   { @include simple-transition(opacity, 150ms); @include opacity(0); position: absolute; top: 0; right: 0; width: 5px; height: 100%; background: none; z-index: 20; }
+        .jspVerticalBar * { margin: 0; padding: 0; }
+        .jspCap { display: none; }
+        .jspTrack { background: none; position: relative; }
+        .jspDrag { background: rgba(#BBB, .5); @include border-radius(5px); position: relative; top: 0; left: 0; cursor: pointer; }
+        .jspDrag.jspHover { background: rgba(#BBB,1) }
+        .jspArrow { background: none; text-indent: -20000px; display: block; cursor: pointer; }
+        .jspVerticalBar .jspArrow { height: 10px; }
+        .jspVerticalBar .jspArrow:focus { outline: none; }
+        .jspCorner { background: #eeeef4; float: left; height: 100%; }
+
+        &:hover .jspVerticalBar { @include opacity(1); }
+      }
+    }
+
+    // Scroll gradients
+    span.scroll {
+      position:absolute;
+      left:0;
+      right:5px;
+      width:100%;
+      height:30px;
+      background:transparent;
+      padding:0;
+      margin:0;
+      @include border-radius(0);
+      pointer-events:none;
+      z-index:10;
+
+      &.top { display:none; top:0; @include background(linear-gradient(rgba(white,1), rgba(white,0)));}
+      &.bottom {bottom:0px; @include background(linear-gradient(rgba(white,0), rgba(white,1)));}
+    }
+  }
+
+
+
+
+  /**
+   *  Visualization (derived or table) privacy-selector styles
+   *
+   *  - It could be public, link, password, organization or private
+   */
+
+
+  .vis_privacy_selector {
+    position:relative;
+    display:block;
+
+    // List
+    .privacy-list {
+      position:absolute;
+      display:block;
+      top:0;
+      left:0;
+      right:0;
+      border:1px solid #B0B0B0;
+      @include box-shadow(0 0 3px 3px rgba(black,0.15));
+      @include border-radius(3px);
+      overflow:hidden;
+      z-index:20;
+    }
+
+    // List item
+    .privacy-item {
+      position:relative;
+      display:block;
+      width:auto;
+      background:white;
+
+      .privacy-link {
+        display:block;
+        padding:9px;
+        text-decoration:none;
+        
+        &:hover { background:#EDEDED }
+
+        &.disabled:hover { background:none }
+
+        &.selected {
+          background:#EDEDED;
+          cursor:default;
+        }
+      }
+
+      // Upgrade button
+      a.button {
+        position:absolute;
+        right:10px;
+        top:15px;
+        padding:4px 8px;
+        font-size:12px;
+        font-weight:normal;
+      }
+
+      h5 { font-size: 15px; color:#333333 }
+      p { font-size:13px; color:#666666 }
+
+      span.status,
+      span.info {
+        @include inline-block();
+      }
+
+      span.status.privacy-status {
+        @include inline-block();
+        width:33px;
+        height:33px;
+        margin-right:6px;
+        overflow:hidden;
+
+        &:after, &:before { display:none }
+
+        &.public { background: sprite($table-sprites, lock_open, $offset-x: 11px, $offset-y: 10px) no-repeat rgba(#97C341, .5) }
+        &.link { background: sprite($table-sprites, lock_open, $offset-x: 11px, $offset-y: 10px) no-repeat rgba(#FFA64D, .5) }
+        &.password { background: sprite($table-sprites, lock_key, $offset-x: 11px, $offset-y: 10px) no-repeat rgba(#FFA64D, .5) }
+        &.organization { background: sprite($table-sprites, lock_user, $offset-x: 11px, $offset-y: 10px) no-repeat rgba(#FFA64D, .5) }
+        &.private { background: sprite( $table-sprites, lock_closed, $offset-x: 11px, $offset-y: 10px) no-repeat rgba(#FF7373, .5) }
+      }
+    }
+
+    // Current one
+    .current-privacy-item {
+      display:block;
+      width:auto;
+      
+      .privacy-link {
+        position:relative;
+        text-decoration:none;
+        border:1px solid #B0B0B0;
+        @include border-radius(3px);
+        @include background(linear-gradient(top,#FFF,#EBEBEB));
+        @include transform-style("linear");
+        @include transition-property("box-shadow,border,background");
+        @include transition-duration(250ms);
+        
+        &:before,
+        &:after {
+          content:'';
+          position:absolute;
+          top:0;
+        }
+
+        &:before {
+          top:10px;
+          right:42px;
+          height:32px;
+          width:1px;
+          background:#C2C2C2;
+        }
+        &:after {
+          top:24px;
+          right:18px;
+          height:0;
+          width:0;
+          border-left:4px solid transparent;
+          border-right:4px solid transparent;
+          border-top:6px solid #666666;
+        }
+
+        &:hover {
+          @include background(linear-gradient(top,#FFF,#DEDEDE));
+        }
+
+        &:active {
+          @include box-shadow(rgba(255,255,255,0) 0 0 1px 0,rgba(130,126,111,0.6) 0 1px 3px 0 inset,#fff 0 1px 0 0);
+        }
+      }
+      
+    }
+
+  }

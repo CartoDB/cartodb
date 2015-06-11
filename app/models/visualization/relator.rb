@@ -16,7 +16,7 @@ module CartoDB
                         others:           :other_layers
                       }
 
-      INTERFACE     = %w{ overlays map user table related_tables layers stats mapviews single_data_layer? synchronization
+      INTERFACE     = %w{ overlays map user table related_tables layers stats mapviews total_mapviews single_data_layer? synchronization
                           permission parent children support_tables prev_list_item next_list_item likes likes_count reload_likes }
 
       def initialize(attributes={})
@@ -35,14 +35,14 @@ module CartoDB
       # @return []
       def children
         ordered = []
-        children = Visualization::Collection.new.fetch(parent_id: @id)
-        if children.count > 0
-          ordered << children.select { |vis| vis[:prev_id].nil? }.first
-          children.delete_if { |vis| vis[:prev_id].nil? }
-          while children.count > 0 && !ordered.last[:next_id].nil?
+        children_vis = Visualization::Collection.new.fetch(parent_id: @id)
+        if children_vis.count > 0
+          ordered << children_vis.select { |vis| vis[:prev_id].nil? }.first
+          while !ordered.last[:next_id].nil?
             target = ordered.last[:next_id]
-            ordered << children.select { |vis| vis[:id] == target }.first
-            children.delete_if { |vis| vis[:id] == target }
+            unless target.nil?
+              ordered << children_vis.select { |vis| vis[:id] == target }.first
+            end
           end
         end
         ordered
@@ -81,7 +81,6 @@ module CartoDB
       end
 
       def table
-        return nil unless defined?(::Table)
         return nil if map_id.nil?
         @table ||= ::UserTable.from_map_id(map_id).try(:service)
       end
@@ -107,6 +106,10 @@ module CartoDB
 
       def mapviews(user=nil)
         @mapviews ||= stats(user).collect { |o| o[1] }.reduce(:+)
+      end
+      
+      def total_mapviews(user=nil)
+        @total_mapviews ||= Visualization::Stats.new(self, user).total_mapviews
       end
 
       def single_data_layer?

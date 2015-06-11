@@ -267,23 +267,87 @@ CartoDB::Application.routes.draw do
 
   end
 
+  # Remember to add routes to /lib/assets/javascript/cartodb/app.js -> applyPatchNewVisualizationUrl()
   scope :module => 'carto/api', :format => :json do
-    get     '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz'                                => 'visualizations#index',           as: :api_v1_1_visualizations_index
-    get     '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/:id'                            => 'visualizations#show',            as: :api_v1_visualizations_show,            constraints: { id: /[^\/]+/ }
-    get     '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/:id/likes'                      => 'visualizations#likes_count',     as: :api_v1_1_visualizations_likes_count,     constraints: { id: /[^\/]+/ }
-    get     '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/:id/likes/detailed'             => 'visualizations#likes_list',      as: :api_v1_1_visualizations_likes_list,      constraints: { id: /[^\/]+/ }
-    get     '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/:id/like'                       => 'visualizations#is_liked',        as: :api_v1_1_visualizations_is_liked,        constraints: { id: /[^\/]+/ }
 
-    get     '(/user/:user_domain)(/u/:user_domain)/api/v2_1/viz/:id/viz'                        => 'visualizations#vizjson2', as: :api_v2_1_visualizations_vizjson, constraints: { id: /[^\/]+/ }
+    # Visualizations
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz'                                => 'visualizations#index',           as: :api_v1_1_visualizations_index
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/:id'                            => 'visualizations#show',            as: :api_v1_1_visualizations_show,            constraints: { id: /[^\/]+/ }
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/:id/likes'                      => 'visualizations#likes_count',     as: :api_v1_1_visualizations_likes_count,     constraints: { id: /[^\/]+/ }
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/:id/likes/detailed'             => 'visualizations#likes_list',      as: :api_v1_1_visualizations_likes_list,      constraints: { id: /[^\/]+/ }
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/:id/like'                       => 'visualizations#is_liked',        as: :api_v1_1_visualizations_is_liked,        constraints: { id: /[^\/]+/ }
+
+    get '(/user/:user_domain)(/u/:user_domain)/api/v2_1/viz/:id/viz'                        => 'visualizations#vizjson2', as: :api_v2_1_visualizations_vizjson, constraints: { id: /[^\/]+/ }
+
+    # Tables
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:id'                         => 'tables#show',       as: :api_v1_1_tables_show, constraints: { id: /[^\/]+/ }
+
+    # Table columns
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:table_id/columns'           => 'columns#index',     as: :api_v1_1_tables_columns_index,   constraints: { table_id: /[^\/]+/ }
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:table_id/columns/:id'       => 'columns#show',      as: :api_v1_1_tables_columns_show,    constraints: { table_id: /[^\/]+/ }
+
+    # Table records
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:table_id/records/:id'       => 'records#show',      as: :api_v1_1_tables_records_show,   constraints: { table_id: /[^\/]+/ }
+
+    # Imports
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/imports'                          => 'imports#index',                       as: :api_v1_1_imports_index
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/imports/:id'                      => 'imports#show',                        as: :api_v1_1_imports_show
+
+    # Import services
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/imports/service/:id/token_valid'         => 'imports#service_token_valid?',        as: :api_v1_1_imports_service_token_valid
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/imports/service/:id/list_files'          => 'imports#list_files_for_service',      as: :api_v1_1_imports_service_list_files
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/imports/service/:id/auth_url'            => 'imports#get_service_auth_url',        as: :api_v1_1_imports_service_auth_url
+    # TODO: deprecate?
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/imports/service/:id/validate_code/:code' => 'imports#validate_service_oauth_code', as: :api_v1_1_imports_service_validate_code
+    # Must be GET verb despite altering state
+    get     '(/user/:user_domain)(/u/:user_domain)/api/v1_1/imports/service/:id/oauth_callback/'    => 'imports#service_oauth_callback',      as: :api_v1_1_imports_service_oauth_callback
+
+    # Custom layers grouped by user
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/users/:user_id/layers'              => 'layers#custom_layers_by_user',   as: :api_v1_1_users_layers_index
+    # No show action
+
+    # Map layers
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/maps/:map_id/layers'                => 'layers#layers_by_map',   as: :api_v1_1_maps_layers_index
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/maps/:map_id/layers/:id'            => 'layers#show',    as: :api_v1_1_maps_layers_show
+
+    # Maps
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/maps/:id'                           => 'maps#show',    as: :api_v1_1_maps_show
+
+    # Overlays
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/:visualization_id/overlays'     => 'overlays#index',    as: :api_v1_1_visualizations_overlays_index,  constraints: { visualization_id: /[^\/]+/ }
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/:visualization_id/overlays/:id' => 'overlays#show',     as: :api_v1_1_visualizations_overlays_show,   constraints: { visualization_id: /[^\/]+/ }
+
+    # Synchronizations
+    # TODO: deprecated?
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/synchronizations'              => 'synchronizations#index',    as: :api_v1_1_synchronizations_index
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/synchronizations/:id'          => 'synchronizations#show',     as: :api_v1_1_synchronizations_show
+    # INFO: sync_now is public API
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/synchronizations/:id/sync_now' => 'synchronizations#syncing?', as: :api_v1_1_synchronizations_syncing
+
+    # Watching
+    get     '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/:id/watching'                   => 'visualizations#list_watching',   as: :api_v1_1_visualizations_notify_watching, constraints: { id: /[^\/]+/ }
+
+    # Oembed
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1/oembed' => 'oembed#show', as: :api_v1_oembed
+
+    # Geocodings
+    get  '(/user/:user_domain)(/u/:user_domain)/api/v1_1/geocodings/available_geometries'           => 'geocodings#available_geometries', as: :api_v1_1_geocodings_available_geometries
+    get  '(/user/:user_domain)(/u/:user_domain)/api/v1_1/geocodings/estimation_for/:table_name'     => 'geocodings#estimation_for',       as: :api_v1_1_geocodings_estimation, constraints: { table_name: /[^\/]+/ }
+    get  '(/user/:user_domain)(/u/:user_domain)/api/v1_1/geocodings'                                => 'geocodings#index',                as: :api_v1_1_geocodings_index
+    get  '(/user/:user_domain)(/u/:user_domain)/api/v1_1/geocodings/:id'                            => 'geocodings#show',                 as: :api_v1_1_geocodings_show
+
+    # Users
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1/users/:id'               => 'users#show',                    as: :api_v1_users_show
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1/get_authenticated_users' => 'users#get_authenticated_users', as: :api_v1_users_get_authenticated_user
+
+    # User assets
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/users/:user_id/assets'     => 'assets#index',   as: :api_v1_1_users_assets_index
   end
 
   scope :module => 'api/json', :format => :json do
 
     # V1
     # --
-
-    # Users
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1/get_authenticated_users' => 'users#get_authenticated_users', as: :api_v1_users_get_authenticated_user
 
     # Tables
     post '(/user/:user_domain)(/u/:user_domain)/api/v1/tables'     => 'tables#create', as: :api_v1_tables_create
@@ -321,9 +385,6 @@ CartoDB::Application.routes.draw do
     # Must be GET verb despite altering state
     get     '(/user/:user_domain)(/u/:user_domain)/api/v1/imports/service/:id/oauth_callback/'    => 'imports#service_oauth_callback',      as: :api_v1_imports_service_oauth_callback
 
-    # Users
-    get    '(/user/:user_domain)(/u/:user_domain)/api/v1/users/:id'                 => 'users#show',     as: :api_v1_users_show
-
     # User layers
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/users/:user_id/layers'     => 'layers#index',   as: :api_v1_users_layers_index
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/users/:user_id/layers/:id' => 'layers#show',    as: :api_v1_users_layers_show
@@ -335,8 +396,6 @@ CartoDB::Application.routes.draw do
     post   '(/user/:user_domain)(/u/:user_domain)/api/v1/users/:user_id/assets'     => 'assets#create',  as: :api_v1_users_assets_create
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/users/:user_id/assets'     => 'assets#index',   as: :api_v1_users_assets_index
     delete '(/user/:user_domain)(/u/:user_domain)/api/v1/users/:user_id/assets/:id' => 'assets#destroy', as: :api_v1_users_assets_destroy
-
-    # /api/v1/users/5002ad84-6b3e-4372-996e-b52269ec1cac/assets/b93f1b1e-484c-491b-a22b-c61a76968b63
 
     # Maps
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:id' => 'maps#show',    as: :api_v1_maps_show
@@ -351,16 +410,13 @@ CartoDB::Application.routes.draw do
 
     # Geocodings
     get  '(/user/:user_domain)(/u/:user_domain)/api/v1/geocodings/available_geometries'           => 'geocodings#available_geometries', as: :api_v1_geocodings_available_geometries
-    get  '(/user/:user_domain)(/u/:user_domain)/api/v1/geocodings/country_data_for/:country_code' => 'geocodings#country_data_for',     as: :api_v1_geocodings_country_data
     get  '(/user/:user_domain)(/u/:user_domain)/api/v1/geocodings/estimation_for/:table_name'     => 'geocodings#estimation_for',       as: :api_v1_geocodings_estimation, constraints: { table_name: /[^\/]+/ }
-    get  '(/user/:user_domain)(/u/:user_domain)/api/v1/geocodings/get_countries'                  => 'geocodings#get_countries',        as: :api_v1_geocodings_get_countries
     get  '(/user/:user_domain)(/u/:user_domain)/api/v1/geocodings'                                => 'geocodings#index',                as: :api_v1_geocodings_index
     get  '(/user/:user_domain)(/u/:user_domain)/api/v1/geocodings/:id'                            => 'geocodings#show',                 as: :api_v1_geocodings_show
     post '(/user/:user_domain)(/u/:user_domain)/api/v1/geocodings'                                => 'geocodings#create',               as: :api_v1_geocodings_create
     put  '(/user/:user_domain)(/u/:user_domain)/api/v1/geocodings/:id'                            => 'geocodings#update',               as: :api_v1_geocodings_update
 
     # Visualizations
-    get     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/tags'                           => 'tags#index',                     as: :api_v1_visualizations_tags_index
     get     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz'                                => 'visualizations#index',           as: :api_v1_visualizations_index
     post    '(/user/:user_domain)(/u/:user_domain)/api/v1/viz'                                => 'visualizations#create',          as: :api_v1_visualizations_create
     get     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id'                            => 'visualizations#show',            as: :api_v1_visualizations_show,            constraints: { id: /[^\/]+/ }
@@ -371,6 +427,7 @@ CartoDB::Application.routes.draw do
     get     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:visualization_id/overlays/:id' => 'overlays#show',                  as: :api_v1_visualizations_overlays_show,   constraints: { visualization_id: /[^\/]+/ }
     put     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:visualization_id/overlays/:id' => 'overlays#update',                as: :api_v1_visualizations_overlays_update, constraints: { visualization_id: /[^\/]+/ }
     delete  '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:visualization_id/overlays/:id' => 'overlays#destroy',               as: :api_v1_visualizations_overlays_destroy, constraints: { visualization_id: /[^\/]+/ }
+    # TODO: deprecate?
     get     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/watching'                   => 'visualizations#list_watching',   as: :api_v1_visualizations_notify_watching, constraints: { id: /[^\/]+/ }
     put     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/watching'                   => 'visualizations#notify_watching', as: :api_v1_visualizations_list_watching,   constraints: { id: /[^\/]+/ }
     put     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/next_id'                    => 'visualizations#set_next_id',     as: :api_v1_visualizations_set_next_id,     constraints: { id: /[^\/]+/ }
@@ -380,31 +437,27 @@ CartoDB::Application.routes.draw do
     get     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/like'                       => 'visualizations#is_liked',        as: :api_v1_visualizations_is_liked,        constraints: { id: /[^\/]+/ }
     delete  '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/like'                       => 'visualizations#remove_like',     as: :api_v1_visualizations_remove_like,     constraints: { id: /[^\/]+/ }
 
-    # Tags
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1/tags' => 'tags#index', as: :api_v1_tags_index
-
     # Common data
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/common_data' => 'common_data#index', as: :api_v1_common_data_index
 
     # Synchronizations
+    # TODO: deprecated?
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations'              => 'synchronizations#index',    as: :api_v1_synchronizations_index
     post   '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations'              => 'synchronizations#create',   as: :api_v1_synchronizations_create
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations/:id'          => 'synchronizations#show',     as: :api_v1_synchronizations_show
     put    '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations/:id'          => 'synchronizations#update',   as: :api_v1_synchronizations_update
     delete '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations/:id'          => 'synchronizations#destroy',  as: :api_v1_synchronizations_destroy
+    # INFO: sync_now is public API
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations/:id/sync_now' => 'synchronizations#syncing?', as: :api_v1_synchronizations_syncing
     put    '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations/:id/sync_now' => 'synchronizations#sync_now', as: :api_v1_synchronizations_sync_now
 
     # Permissions
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1/perm/:id' => 'permissions#show',   as: :api_v1_permissions_show
     put '(/user/:user_domain)(/u/:user_domain)/api/v1/perm/:id' => 'permissions#update', as: :api_v1_permissions_update
 
     # Organizations
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/org/'      => 'organizations#show',  as: :api_v1_organization_show
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/org/users' => 'organizations#users', as: :api_v1_organization_users
 
-    # Oembed
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1/oembed' => 'oembed#show', as: :api_v1_oembed
 
     # V2
     # --

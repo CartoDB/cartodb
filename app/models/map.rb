@@ -94,7 +94,7 @@ class Map < Sequel::Model
 
   def invalidate_vizjson_varnish_cache
     visualizations.each do |visualization|
-      visualization.invalidate_cache_and_refresh_named_map unless visualization.id == being_destroyed_by_vis_id
+      visualization.invalidate_cache unless visualization.id == being_destroyed_by_vis_id
     end
   end
 
@@ -123,6 +123,11 @@ class Map < Sequel::Model
       end
     end
   end
+
+  def self.provider_for_baselayer(layer)
+    layer[:kind] == 'tiled' ? 'leaflet': 'googlemaps'
+  end
+
 
   private
 
@@ -227,5 +232,6 @@ class Map < Sequel::Model
   def admits_more_base_layers?
     user_layers.length < 1
   end
+
 end
 

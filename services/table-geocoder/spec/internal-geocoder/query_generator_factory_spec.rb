@@ -78,10 +78,8 @@ describe CartoDB::InternalGeocoder::QueryGeneratorFactory do
       query.squish.should == %Q{
         UPDATE "public"."untitled_table"
         SET the_geom = orig.the_geom, cartodb_georef_status = orig.cartodb_georef_status
-        #{CartoDB::Importer2::QueryBatcher::QUERY_WHERE_PLACEHOLDER}
         FROM any_temp_table AS orig
         WHERE trim("any_column_name"::text) = orig.geocode_string AND "public"."untitled_table".cartodb_georef_status IS NULL
-        #{CartoDB::Importer2::QueryBatcher::QUERY_LIMIT_SUBQUERY_PLACEHOLDER}
       }.squish
     end
   end
@@ -118,12 +116,10 @@ describe CartoDB::InternalGeocoder::QueryGeneratorFactory do
       query_generator.copy_results_to_table_query.squish.should == %Q{
         UPDATE any_table_name
           SET the_geom = orig.the_geom, cartodb_georef_status = orig.cartodb_georef_status
-          #{CartoDB::Importer2::QueryBatcher::QUERY_WHERE_PLACEHOLDER}
           FROM any_temp_tablename AS orig
           WHERE trim(any_table_name.region_column_name::text) = orig.geocode_string
             AND trim(any_table_name.country_column_name::text) = orig.country
             AND any_table_name.cartodb_georef_status IS NULL
-            #{CartoDB::Importer2::QueryBatcher::QUERY_LIMIT_SUBQUERY_PLACEHOLDER}
         }.squish
     end
   end

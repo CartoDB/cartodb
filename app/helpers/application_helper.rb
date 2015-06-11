@@ -61,11 +61,6 @@ module ApplicationHelper
       end
   end
 
-  def default_fallback_basemap
-    Cartodb.config[:basemaps].present? and Cartodb.config[:basemaps]['default'].present? ? Cartodb.config[:basemaps]['default'] : {}
-  end
-
-  module_function :default_fallback_basemap
   module_function :maps_api_template
   module_function :sql_api_template
 
@@ -75,7 +70,7 @@ module ApplicationHelper
       maps_api_template:          maps_api_template,
       sql_api_template:           sql_api_template,
       user_name:                  CartoDB.extract_subdomain(request),
-      cartodb_com_hosted:         Cartodb.config[:cartodb_com_hosted],
+      cartodb_com_hosted:         Cartodb.config[:cartodb_com_hosted].present?,
       account_host:               CartoDB.account_host,
       dropbox_api_key:            Cartodb.config[:dropbox_api_key],
       gdrive_api_key:             Cartodb.config[:gdrive]['api_key'],
@@ -88,8 +83,7 @@ module ApplicationHelper
       tumblr_api_key:             Cartodb.config[:tumblr]['api_key'],
       max_asset_file_size:        Cartodb.config[:assets]["max_file_size"],
       watcher_ttl:                Cartodb.config[:watcher].try("fetch", 'ttl', 60),
-      default_fallback_basemap:   default_fallback_basemap,
-      upgrade_url:                cartodb_com_hosted? ? "''" : "#{current_user.upgrade_url(request.protocol)}" 
+      upgrade_url:                cartodb_com_hosted? ? "''" : "#{current_user.upgrade_url(request.protocol)}"
     }
 
     if Cartodb.config[:datasource_search].present? && Cartodb.config[:datasource_search]['twitter_search'].present? \
@@ -233,6 +227,10 @@ module ApplicationHelper
   #if cartodb_com_hosted is false, means that it is SaaS. If it's true (or doesn't exist), it's a custom installation
   def cartodb_com_hosted?
     Cartodb.config[:cartodb_com_hosted].nil? || Cartodb.config[:cartodb_com_hosted]
+  end
+
+  def cartodb_onpremise_version
+    Cartodb.config[:onpremise_version]
   end
 
   # Wraps a JSON object to be loaded as a JS object in a safe way.

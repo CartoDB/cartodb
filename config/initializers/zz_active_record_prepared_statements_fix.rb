@@ -1,3 +1,6 @@
+require 'active_record'
+require 'active_record/connection_adapters/postgresql_adapter'
+
 # See https://github.com/rails/rails/pull/5872
 # This can probably be removed in more up-to-date versions of rails
 module ActiveRecord

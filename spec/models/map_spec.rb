@@ -9,19 +9,18 @@ describe Map do
     @table_quota    = 500
     @user           = create_user(
                         quota_in_bytes: @quota_in_bytes,
-                        table_quota:    @table_quota
+                        table_quota:    @table_quota,
+                        private_tables_enabled: true
                       )
   end
 
   after(:all) do
-    CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
     @user.destroy
   end
 
   before(:each) do
-    # For Named Maps API wrapper
-    # Using Mocha stubs until we update RSpec (@see http://gofreerange.com/mocha/docs/Mocha/ClassMethods.html)
-    CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
 
     @table = Table.new
     @table.user_id = @user.id

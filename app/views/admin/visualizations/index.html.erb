@@ -2,38 +2,38 @@
   <%= current_user.username -%> |
 <% end -%>
 <%= content_for(:js) do -%>
-  <%= javascript_include_tag 'cdb.js', 'models.js', 'templates.js', 'application.js', 'dashboard.js' -%>
+  <% if !@google_maps_api_key.blank? %>
+        <script type="text/javascript"
+            src="//maps.googleapis.com/maps/api/js?sensor=false&v=3.12&<%= @google_maps_api_key %>">
+        </script>
+  <% end %>
   <script type="text/javascript">
     var username = "<%= current_user.username %>";
     var user_data = <%= safe_js_object current_user.data.to_json %>;
     var config = <%= safe_js_object frontend_config %>;
-    var upgrade_url = "<%= current_user.upgrade_url(request.protocol) %>";
-    var dashboard_first_time = <%= @first_time %>;
-    var just_logged_in = <%= @just_logged_in ? 'true' : 'false' %>;
+    var upgrade_url = config.upgrade_url;
+    var isFirstTimeViewingDashboard = <%= (!!@first_time).to_s %>;
+    var isJustLoggedIn = <%= (!!@just_logged_in).to_s %>;
+    // TODO: remove mixpanel
     var mixpanel_token = "<%= Cartodb.config[:mixpanel]['token'] if Cartodb.config[:mixpanel].present? %>";
+    var default_fallback_basemap = <%= safe_js_object current_user.default_basemap.to_json %>;
   </script>
+  <%= javascript_include_tag 'cdb.js', 'models.js', 'dashboard_templates.js', 'dashboard_deps.js', 'dashboard.js' -%>
 <% end %>
 
 <%= content_for(:css) do -%>
-  <%= stylesheet_link_tag 'common.css', 'dashboard.css', :media => 'all' %>
+  <%= stylesheet_link_tag 'dashboard.css', :media => 'all' %>
 <% end %>
 
-
-<%= render 'admin/shared/subheader' %>
-
-<div class="bar_loader"></div>
-
-<div class="main_loader">
-  <i></i>
+<div class="ContentController" id="content-controller">
+  <div class="Filters"></div>
+  <div class="NoDatasets"></div>
+  <div class="ContentList" id="content-list"></div>
+  <div class="ContentFooter" id="content-footer"></div>
 </div>
 
-<%= render 'admin/visualizations/index/tables' %>
+<% if !Cartodb.config[:cartodb_com_hosted].present? %>
+  <div class="SupportBanner" id="support-banner"></div>
+<% end %>
 
-<div class="drag_mamufas">
-  <span class="file"></span>
-  <p class="bigger strong">Drop your file onto the browser window to create a new table</p>
-  <div class="mask"></div>
-</div>
-
-<div class="bars"></div>
-<article class="support"></article>
+<%= render 'admin/shared/footer' %>

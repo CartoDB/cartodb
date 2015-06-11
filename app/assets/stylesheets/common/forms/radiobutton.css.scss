@@ -1,0 +1,78 @@
+@import "../../variables/mixins";
+@import "../../variables/colors";
+@import "../../variables/sizes";
+
+// New radiobutton input styled
+//
+//  <div class="RadioButton">
+//    <button class="RadioButton-input"></button>
+//    <label class="RadioButton-label">Checkbox label</label>
+//  </div>
+//
+// --------------------------------------------------------------------------------------------------------------------
+
+.RadioButton {
+  @include display-flex();
+  @include align-items(center, center);
+}
+.RadioButton-input {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  outline: none;
+  border: 2px solid $cStructure-mainLine;
+  border-radius: 16px;
+  background: white;
+
+  &:hover { border-color: #AAA }
+}
+.RadioButton-input.is-checked {
+  &:before {
+    content: '';
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    height: 10px;
+    width: 10px;
+    background: #4A90E2;
+    border-radius: 12px;
+  }
+}
+.RadioButton-label {
+  margin-left: 8px;
+  color: $cTypography-secondary;
+  @include nicer-lato-typography();
+}
+
+.RadioButton.is-checked .RadioButton-label {
+  color: $cTypography-linkSelected;
+}
+.RadioButton.is-alert .RadioButton-label {
+  color: $cHighlight-alert3;
+}
+.RadioButton.is-alert .RadioButton-input {
+  border-color: $cHighlight-alert3;
+  &:before {
+    background: $cHighlight-alert3;
+  }
+}
+.RadioButton.is-warning .RadioButton-label {
+  color: $cHighlight-alert;
+}
+.RadioButton.is-warning .RadioButton-input {
+  border-color: $cHighlight-alert;
+  &:before {
+    background: $cHighlight-alert;
+  }
+}
+.RadioButton.is-disabled .RadioButton-input {
+  @include opacity(0.4);
+  &:hover {
+    cursor:default;
+    border-color: $cStructure-mainLine;
+  }
+  &:focus { border-color: $cStructure-mainLine }
+}
+.RadioButton.is-disabled .RadioButton-label {
+  @include opacity(0.4);
+}

@@ -1,7 +1,10 @@
+require_relative '../../lib/carto/http/client'
+
 class CommonData
 
   def initialize
     @datasets = nil
+    @http_client = Carto::Http::Client.get('common_data', log_requests: true)
   end
 
   def datasets
@@ -20,7 +23,7 @@ class CommonData
   end
 
   def is_enabled?
-    !config('username').nil? && !config('api_key').nil?
+    !config('username').nil?
   end
 
   private
@@ -28,9 +31,11 @@ class CommonData
   def get_datasets(json)
     begin
       rows = JSON.parse(json).fetch('rows', [])
-    rescue
+    rescue => e
+      CartoDB.notify_exception(e)
       rows = []
     end
+    CartoDB.notify_error('common-data empty', { rows: rows }) if rows.nil? || rows.empty?
 
     _categories = {}
     _datasets = []
@@ -57,7 +62,8 @@ class CommonData
   def get_datasets_json
     body = nil
     begin
-      response = Typhoeus.get(datasets_url, followlocation:true)
+      http_client = Carto::Http::Client.get('common_data', log_requests: true)
+      response = http_client.get(datasets_url, followlocation:true)
       if response.code == 200
         body = response.response_body
       end
@@ -68,7 +74,7 @@ class CommonData
   end
 
   def datasets_url
-    sql_authenticated_api_url sql_api_url(DATASETS_QUERY, 'v1')
+    sql_api_url(DATASETS_QUERY, 'v1')
   end
 
   def export_url(table_name)
@@ -77,10 +83,6 @@ class CommonData
 
   def sql_api_url(query, version='v2')
     "#{config('protocol', 'https')}://#{config('username')}.#{config('host')}/api/#{version}/sql?q=#{URI::encode query}"
-  end
-
-  def sql_authenticated_api_url(api_url)
-    "#{api_url}&api_key=#{config('api_key')}"
   end
 
   def export_query(table_name)
@@ -101,29 +103,21 @@ class CommonData
   }
 
   DATASETS_QUERY = <<-query
-select
-    meta_dataset.name,
-    meta_dataset.tabname,
-    meta_dataset.description,
-    meta_dataset.source,
-    meta_dataset.license,
-    meta_dataset.geometry_types,
-    (
-        SELECT reltuples
-        FROM pg_class C LEFT JOIN pg_namespace N ON (N.oid = C.relnamespace)
-        WHERE
-            nspname NOT IN ('pg_catalog', 'information_schema')
-            AND relkind='r'
-            AND relname = meta_dataset.tabname
-    ) as rows,
-    pg_relation_size(meta_dataset.tabname) size,
-    meta_dataset.created_at,
-    meta_dataset.updated_at,
-    meta_category.name category,
-    meta_category.image_url category_image_url
-from meta_dataset, meta_category
-where meta_dataset.meta_category_id = meta_category.cartodb_id
-  query
+SELECT
+  name,
+  tabname,
+  description,
+  source,
+  license,
+  geometry_types,
+  rows,
+  size,
+  created_at,
+  updated_at,
+  category,
+  image_url
+FROM CDB_CommonDataCatalog();
+query
 
 end
 

@@ -2,6 +2,7 @@ defaults: &defaults
   users_dumps:
     service:
       port: 0000
+  http_client_logs: true
   ogr2ogr:
     binary:           'which ogr2ogr'
     csv_guessing:     false
@@ -72,14 +73,6 @@ defaults: &defaults
       api_credentials:     3
       users_metadata:      5
       redis_migrator_logs: 6
-#  mixpanel:
-#    api_key: xxx
-#    api_secret: xxx
-#    token: xxx
-#  github:
-#    repo: xxx
-#    org: xxx
-#    auth: xxx:xxx
   superadmin:
     username: "superadmin"
     password: "monkey"
@@ -110,6 +103,24 @@ defaults: &defaults
   graphite_public:
     host: "graphite.dioc.cartodb.net"
     port: 8127
+
+  basemaps:
+    GMaps:
+      roadmap:
+        name: 'GMaps Roadmap'
+        maxZoom: 40
+        minZoom: 0
+        baseType: 'roadmap'
+        className: 'googlemaps'
+    CartoDB:
+      positron_rainbow:
+        url: 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png' 
+        subdomains: 'abcd' 
+        minZoom: '0' 
+        maxZoom: '18' 
+        name: 'Positron' 
+        className: 'positron_rainbow' 
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href= "http://cartodb.com/attributions">CartoDB</a>' 
   layer_opts:
     public_opts: ["type", "active", "query", "opacity", "auto_bound", 
                   "interactivity", "debug", "visible", "tiler_domain", 

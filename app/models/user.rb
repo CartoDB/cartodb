@@ -4,12 +4,15 @@ require_relative './user/user_decorator'
 require_relative './user/oauths'
 require_relative './synchronization/synchronization_oauth'
 require_relative './visualization/member'
+require_relative '../helpers/redis_vizjson_cache'
 require_relative './visualization/collection'
 require_relative './user/user_organization'
 require_relative './synchronization/collection.rb'
 require_relative '../services/visualization/common_data_service'
 require_relative './external_data_import'
 require_relative './feature_flag'
+require_relative '../../lib/cartodb/stats/api_calls'
+require_relative '../../lib/carto/http/client'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -65,6 +68,8 @@ class User < Sequel::Model
 
   GEOCODING_BLOCK_SIZE = 1000
 
+  TRIAL_DURATION_DAYS = 15
+
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
 
@@ -73,9 +78,9 @@ class User < Sequel::Model
     super
     validates_presence :username
     validates_unique   :username
-    validates_format /^[a-z0-9\-]+$/, :username, :message => "must only contain lowercase letters, numbers and the dash (-) symbol"
-    validates_format /^[a-z0-9]{1}/, :username, :message => "must start with alfanumeric chars"
-    validates_format /[a-z0-9]{1}$/, :username, :message => "must end with alfanumeric chars"
+    validates_format /\A[a-z0-9\-]+\z/, :username, :message => "must only contain lowercase letters, numbers and the dash (-) symbol"
+    validates_format /\A[a-z0-9]{1}/, :username, :message => "must start with alfanumeric chars"
+    validates_format /[a-z0-9]{1}\z/, :username, :message => "must end with alfanumeric chars"
     errors.add(:name, 'is taken') if name_exists_in_organizations?
 
     validates_presence :email
@@ -126,10 +131,10 @@ class User < Sequel::Model
     if self.organization_user?
       if new? || column_changed?(:organization_id)
         self.twitter_datasource_enabled = self.organization.twitter_datasource_enabled
-        self.new_dashboard_enabled      = self.organization.new_dashboard_enabled
       end
       self.max_layers ||= 6
       self.private_tables_enabled ||= true
+      self.private_maps_enabled ||= true
       self.sync_tables_enabled ||= true
     end
   end #before_save
@@ -680,7 +685,7 @@ class User < Sequel::Model
   end
 
   def reload_avatar
-    request = Typhoeus::Request.new(
+    request = http_client.request(
       self.gravatar(protocol = 'http://', 128, default_image = '404'),
       method: :get
     )
@@ -756,8 +761,8 @@ class User < Sequel::Model
   end
 
   def trial_ends_at
-    if account_type.to_s.downcase == 'magellan' && upgraded_at && upgraded_at + 15.days > Date.today
-      upgraded_at + 15.days
+    if account_type.to_s.downcase == 'magellan' && upgraded_at && upgraded_at + TRIAL_DURATION_DAYS.days > Date.today
+      upgraded_at + TRIAL_DURATION_DAYS.days
     else
       nil
     end
@@ -807,10 +812,15 @@ class User < Sequel::Model
     self[:soft_twitter_datasource_limit] = !val
   end
 
-  def private_maps_enabled
-    enabled = super
-    return enabled if enabled.present? && enabled == true
-    /(FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD)/i.match(self.account_type) ? false : true
+  def private_maps_enabled?
+    flag_enabled = self.private_maps_enabled
+    return true if flag_enabled.present? && flag_enabled == true
+
+    #TODO: remove this after making sure we have flags inline with account types
+    return true if not self.account_type.match(/FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD/i)
+
+    return true if self.private_tables_enabled # Note private_tables_enabled => private_maps_enabled
+    return false
   end
 
   def import_quota
@@ -871,27 +881,7 @@ class User < Sequel::Model
   # Returns an array representing the last 30 days, populated with api_calls
   # from three different sources
   def get_api_calls(options = {})
-    date_to = (options[:to] ? options[:to].to_date : Date.today)
-    date_from = (options[:from] ? options[:from].to_date : Date.today - 29.days)
-    calls = $users_metadata.pipelined do
-      date_to.downto(date_from) do |date|
-        $users_metadata.ZSCORE "user:#{username}:mapviews:global", date.strftime("%Y%m%d")
-      end
-    end.map &:to_i
-
-    # Add old api calls
-    old_calls = get_old_api_calls["per_day"].to_a.reverse rescue []
-    calls = calls.zip(old_calls).map { |pair|
-      pair[0].to_i + pair[1].to_i
-    } unless old_calls.blank?
-
-    # Add ES api calls
-    es_calls = get_es_api_calls_from_redis(options) rescue []
-    calls = calls.zip(es_calls).map { |pair|
-      pair[0].to_i + pair[1].to_i
-    } unless es_calls.blank?
-
-    return calls
+    return CartoDB::Stats::APICalls.new.get_api_calls_without_dates(self.username, {old_api_calls: false})
   end
 
   def get_geocoding_calls(options = {})
@@ -900,18 +890,6 @@ class User < Sequel::Model
     self.geocodings_dataset.where(kind: 'high-resolution').where('created_at >= ? and created_at <= ?', date_from, date_to + 1.days)
       .sum("processed_rows + cache_hits".lit).to_i
   end # get_geocoding_calls
-
-  # Get ES api calls from redis
-  def get_es_api_calls_from_redis(options = {})
-    date_to = (options[:to] ? options[:to].to_date : Date.today)
-    date_from = (options[:from] ? options[:from].to_date : Date.today - 29.days)
-    es_calls = $users_metadata.pipelined do
-      date_to.downto(date_from) do |date|
-        $users_metadata.ZSCORE "user:#{self.username}:mapviews_es:global", date.strftime("%Y%m%d")
-      end
-    end.map &:to_i
-    return es_calls
-  end
 
   def effective_twitter_block_price
     organization.present? ? organization.twitter_datasource_block_price : self.twitter_datasource_block_price
@@ -959,7 +937,7 @@ class User < Sequel::Model
     request_body.gsub!("$CDB_SUBDOMAIN$", self.username)
     request_body.gsub!("\"$FROM$\"", from_date)
     request_body.gsub!("\"$TO$\"", to_date)
-    request = Typhoeus::Request.new(
+    request = http_client.request(
       request_url,
       method: :post,
       headers: { "Content-Type" => "application/json" },
@@ -984,28 +962,29 @@ class User < Sequel::Model
     end
   end
 
-  # Legacy stats fetching
+  ## Legacy stats fetching
+  ## This is DEPRECATED
+  def get_old_api_calls
+    JSON.parse($users_metadata.HMGET(key, 'api_calls').first) rescue {}
+  end
 
-    def get_old_api_calls
-      JSON.parse($users_metadata.HMGET(key, 'api_calls').first) rescue {}
+  def set_old_api_calls(options = {})
+    # Ensure we update only once every 3 hours
+    if options[:force_update] || get_old_api_calls["updated_at"].to_i < 3.hours.ago.to_i
+      api_calls = JSON.parse(
+        open("#{Cartodb.config[:api_requests_service_url]}?username=#{self.username}").read
+      ) rescue {}
+
+      # Manually set updated_at
+      api_calls["updated_at"] = Time.now.to_i
+      $users_metadata.HMSET key, 'api_calls', api_calls.to_json
     end
-
-    def set_old_api_calls(options = {})
-      # Ensure we update only once every 3 hours
-      if options[:force_update] || get_old_api_calls["updated_at"].to_i < 3.hours.ago.to_i
-        api_calls = JSON.parse(
-          open("#{Cartodb.config[:api_requests_service_url]}?username=#{self.username}").read
-        ) rescue {}
-
-        # Manually set updated_at
-        api_calls["updated_at"] = Time.now.to_i
-        $users_metadata.HMSET key, 'api_calls', api_calls.to_json
-      end
-    end
+  end
+  ##
 
   def last_billing_cycle
     day = period_end_date.day rescue 29.days.ago.day
-    date = (day > Date.today.day ? Date.today<<1 : Date.today)
+    date = (day > Date.today.day ? Date.today << 1 : Date.today)
     begin
       Date.parse("#{date.year}-#{date.month}-#{day}")
     rescue ArgumentError
@@ -1072,8 +1051,7 @@ class User < Sequel::Model
     begin
       # Hack to support users without the new MU functiones loaded
       user_data_size_function = self.cartodb_extension_version_pre_mu? ? "CDB_UserDataSize()" : "CDB_UserDataSize('#{self.database_schema}')"
-      result = in_database(:as => :superuser).fetch("SELECT cartodb.#{user_data_size_function}").first[:cdb_userdatasize]
-      result
+      in_database(:as => :superuser).fetch("SELECT cartodb.#{user_data_size_function}").first[:cdb_userdatasize]
     rescue => e
       attempts += 1
       begin
@@ -1083,7 +1061,9 @@ class User < Sequel::Model
         raise ee
       end
       retry unless attempts > 1
-      Rollbar.report_exception(e)
+      CartoDB.notify_exception(e, { user: self })
+      # INFO: we need to return something to avoid 'disabled' return value
+      nil
     end
   end
 
@@ -1174,7 +1154,7 @@ class User < Sequel::Model
     metadata_table_names = self.tables.select(:name).map(&:name)
     renamed_tables       = real_tables.reject{|t| metadata_table_names.include?(t[:relname])}.select{|t| metadata_tables_ids.include?(t[:oid])}
     renamed_tables.each do |t|
-      table = Table.new(:user_table => ::UserTable.find(:table_id => t[:oid]))
+      table = Table.new(:user_table => ::UserTable.find(:table_id => t[:oid], :user_id => self.id))
       begin
         Rollbar.report_message('ghost tables', 'debug', {
           :action => 'rename',
@@ -2269,7 +2249,7 @@ TRIGGER
   end
 
   def enable_remote_db_user
-    request = Typhoeus::Request.new(
+    request = http_client.request(
       "#{self.database_host}:#{Cartodb.config[:signups]["service"]["port"]}/scripts/activate_db_user",
       method: :post,
       headers: { "Content-Type" => "application/json" }
@@ -2316,10 +2296,6 @@ TRIGGER
     CartoDB.subdomainless_urls? || organization.nil? ? nil : username
   end
 
-  def organization_username
-    CartoDB.subdomainless_urls? || organization.nil? ? nil : username
-  end
-
   def subdomain
     if CartoDB.subdomainless_urls?
       username
@@ -2339,12 +2315,59 @@ TRIGGER
     name.present? ? name : username
   end
 
+  # Probably not needed with versioning of keys
+  # @see RedisVizjsonCache
   def purge_redis_vizjson_cache
-    redis_keys = CartoDB::Visualization::Collection.new.fetch(user_id: self.id).map(&:redis_vizjson_key)
-    CartoDB::Visualization::Member.redis_cache.del redis_keys unless redis_keys.empty?
+    vizs = CartoDB::Visualization::Collection.new.fetch(user_id: self.id)
+    CartoDB::Visualization::RedisVizjsonCache.new().purge(vizs)
+  end
+
+  # returns google maps api key. If the user is in an organization and 
+  # that organization has api key it's used
+  def google_maps_api_key
+    if has_organization?
+      self.organization.google_maps_key.blank? ? self.google_maps_key : self.organization.google_maps_key
+    else
+      self.google_maps_key
+    end
+  end
+
+  # returnd a list of basemaps enabled for the user
+  # when google map key is set it gets the basemaps inside the group "GMaps"
+  # if not it get everything else but GMaps in any case GMaps and other groups can work together
+  # this may have change in the future but in any case this method provides a way to abstract what
+  # basemaps are active for the user
+  def basemaps
+    google_maps_enabled = !google_maps_api_key.blank?
+    basemaps = Cartodb.config[:basemaps]
+    if basemaps
+      basemaps.select { |group| 
+        g = group == 'GMaps'
+        google_maps_enabled ? g : !g
+      }
+    end
+  end
+
+  # return the default basemap based on the default setting. If default attribute is not set, first basemaps is returned
+  # it only takes into account basemaps enabled for that user
+  def default_basemap
+    default = basemaps.find { |group, group_basemaps |
+      group_basemaps.find { |b, attr| attr['default'] }
+    }
+    if default.nil?
+      default = basemaps.first[1]
+    else
+      default = default[1]
+    end
+    # return only the attributes
+    default.first[1]
   end
 
   private
+
+  def http_client
+    @http_client ||= Carto::Http::Client.get('old_user', log_requests: true)
+  end
 
   # INFO: assigning to owner is necessary because of payment reasons
   def assign_search_tweets_to_organization_owner

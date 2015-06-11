@@ -1,73 +1,240 @@
-/**
- * embed map
- */
- 
-@import "compass/reset";
-@import "compass/css3/opacity";
-@import "compass/css3/box-shadow";
-@import "compass/css3/opacity";
-@import "compass/css3/border-radius";
-@import "compass/css3/inline-block";
-@import "compass/css3/images";
-@import "compass/css3/transform";
-@import "../common/vars";
-@import "../common/fonts";
-@import "../plugins/tipsy";
-@import "../common/mixins";
+@import "../variables/mixins";
+@import "../variables/colors";
+@import "../variables/sizes";
 
-html, body {height: 100%; padding: 0; margin: 0;}
+// Public map styles
+//
+// --------------------------------------------------------------------------------------------------------------------
 
-body.public-map { min-width:inherit }
+.PublicMap {
 
-#map { 
-  @include opacity(0);
-  height: 100%;
+}
+.PublicMap--rightAligned { text-align: right }
+.PublicMap-map {
+  position: relative;
+  background: $cStructure-grayBkg;
+  width: 100%;
+  height: 400px;
+}
+.PublicMap-map.js-map::after{
+  content: '';
+  display: block;
+  position: relative;
+  height: 1px;
+  width: 100%;
+  background: rgba(0,0,0,0.25);
+  bottom: 1px;
+}
+
+.PublicMap-block {
+  display: block;
+  overflow: auto;
+}
+.PublicMap-block.with-margin { margin-top: 50px }
+.PublicMap-block.with-border { border-top: 1px solid $cStructure-mainLine }
+.PublicMap-leftBlock {
+  float: left;
+  width: 580px;
+}
+.PublicMap-leftBlock.with-padding,
+.PublicMap-rightBlock.with-padding { padding-bottom: 16px }
+.PublicMap-rightBlock {
+  float: right;
+  width: 300px;
+}
+.PublicMap-map .Spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -20px 0 0 -20px;
+}
+.PublicMap-info {
+  overflow: auto;
+  padding: 40px 0 50px;
+}
+.PublicMap-title {
   padding: 0;
   margin: 0;
-  height:627px\9; *height:627px; /* IE7 and below */
+  color: $cTypography-headers;
+  font-size: 26px;
+  font-weight: 400;
+  line-height: 32px;
+  @include nicer-lato-typography();
+}
+.PublicMap-meta {
+  display: inline-block;
+  margin-top: 4px;
+  vertical-align: top;
+  font-weight: $sFontWeight-lighter;
+}
+.PublicMap-metaTime {
+  @include flex-wrap(wrap);
+  font-size: 15px;
+}
+.PublicMap-owner { margin-left: 5px }
+.PublicMap-ownerAvatar {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 2px;
+  height: 16px;
+}
+.PublicMap-ownerName {
+  display: inline-block;
+  vertical-align: middle;
+}
+.PublicMap-desc {
+  padding: 22px 0 0;
+  @include nicer-lato-typography();
+  font-size: $sFontSize-large;
+  font-weight: $sFontWeight-normal;
+  line-height: $sLineHeight-large;
+  color: $cTypography-secondary;
+}
+.DefaultDescription.PublicMap-desc > * { font-size: $sFontSize-large }
+.PublicMap-buttons {
+  margin-top: 3px;
+  text-align: right;
 }
 
-.cartodb-overlay .content a { text-decoration:underline; }
-
-.cartodb-text {position:absolute; display:none; bottom:0; left:0; right:0; margin:0; padding:0 10px; background:white; font:normal 11px $text-fonts2; color:#999999; border-top:1px solid #CCC; border-top:1px solid rgba(0,0,0,0); box-shadow:rgba(0,0,0,0.6) 0 0 1px 0; -webkit-box-shadow:rgba(0,0,0,0.6) 0 0 1px 0; -moz-box-shadow:rgba(0,0,0,0.6) 0 0 1px 0; -o-box-shadow:rgba(0,0,0,0.6) 0 0 1px 0; line-height:29px; z-index:2; }
-.cartodb-text a {color:#397DB8; text-decoration:underline;}
-
-.cartodb-header  { line-height: 0; }
-.cartodb-header .content { display:none; line-height: normal; }
-.cartodb-mobile.with-header .cartodb-header .content,
-.cartodb-mobile.with-search .cartodb-header .content,
-.cartodb-mobile.with-layers .cartodb-header .content { 
-  display:block!Important;
+@mixin shareButton($c, $f: 14px, $lh: 28px) {
+  color: $c;
+  border-color: $c;
+  font-size: $f;
+  line-height: $lh;
+  &:hover {
+    color: $c;
+    border-color: $c;
+  }
+}
+.PublicMap-shareButton {
+  display: inline-block;
+  vertical-align: middle;
+  width: 26px;
+  height: 26px;
+  margin-left: 6px;
+  border-radius: 28px;
+  line-height: 28px;
+  border: 1px solid $cStructure-softLine;
+  text-align: center;
+}
+.PublicMap-shareButton--facebook { @include shareButton(#2E4DA7, 12px, 30px) }
+.PublicMap-shareButton--twitter { @include shareButton(#00ACEE, 14px, 28px) }
+.PublicMap-editButton {
+  display: none;
+  vertical-align: middle;
+  width: auto;
+  height: 26px;
+  padding: 0 16px;
+  border-radius: 28px;
+  line-height: 28px;
+  border: 1px solid $cNavButton-default;
+  text-align: center;
+  color: $cNavButton-default;
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: $sFontWeight-normal;
+  &:hover {
+    text-decoration: none;
+    border-color: $cNavButton-active;
+    color: $cNavButton-active;
+  }
+}
+.PublicMap-editButton.is-visible { display: inline-block }
+.PublicMap-stat {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 15px 20px 0 0;
+  font-size: $sFontSize-normal;
+  color: $cTypography-secondary;
+  @include nicer-lato-typography();
+}
+.PublicMap-stat--onRight {
+  text-align: right;
+  margin-left: 20px;
+  margin-right: 0;
+}
+.PublicMap-stat--leftMargin { margin-left: 10px }
+.PublicMap-stat--rightMargin { margin-right: 10px }
+.PublicMap-stat .iconFont {
+  margin-right: 3px;
+  font-size: 12px;
+  color: #D8D8D8;
+}
+.PublicMap-stat .iconFont-Stats {
+  font-size: 16px;
 }
 
-.cartodb-header .cartodb-slides-controller {
-  background: none;
+.PublicMap-secondary {
+  padding: 40px 0 80px;
+  background: $cStructure-grayBkg;
+  border-top: 1px solid #D8DADD;
 }
+.PublicMap-secondaryTitle {
+  padding: 11px 0 11px;
+  line-height: normal;
+  font-size: $sFontSize-large;
+  color: #3F4549;
+  text-align: left;
+  border-bottom: 2px solid #E2E5E6;
+}
+.PublicMap .DatasetsList {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+.PublicMap .DatasetsList-item {
+  padding: $sMargin-element 0;
+}
+.PublicMap .DatasetsList-itemPrimaryInfo {
+  width: 200px;
+}
+.PublicMap .DatasetsList-itemSecondaryInfo {
+  width: 40px;
+  padding-top: 2px;
+  text-align: right;
+}
+.PublicMap-privateDatasets {
+  margin-left: $sMargin-element;
+  line-height: 40px;
+  color: $cTypography-secondary;
+}
+.PublicMap .MapCard-content { min-height: 45px }
 
-.cartodb-mobile .cartodb-header .content .fullscreen,
-.cartodb-mobile.with-header.with-fullscreen .cartodb-header .content .fullscreen {
-  @include border-radius(0 0 5px 0);
-  border: none;
-}
-.cartodb-mobile .cartodb-header .content .toggle,
-.cartodb-mobile.with-header.with-layers .cartodb-header .content .toggle {
-  @include border-radius(0 0 0 5px);
-  border: none;
-}
+@media (max-width: 940px) {
+  .u-inner { padding: 0 20px }
+  .PublicMap-block.with-border { border-top: 0 }
+  .PublicMap-rightBlock,
+  .PublicMap-leftBlock {
+    float: none;
+    width: 100%;
+  }
+  .PublicMap-secondary { padding-top: 30px }
+  .PublicMap .DatasetsList { padding-bottom: 30px }
+  .PublicMap--rightAligned,
+  .PublicMap-stat--onRight {
+    margin-left: 0;
+    margin-right: 0;
+    text-align: left;
+  }
+  .PublicMap-info { padding: 30px 0 }
+  .PublicMap-stat { display: block }
 
-.cartodb-map-wrapper .cartodb-mobile.with-zoom.with-header .cartodb-zoom {
-  top: 0;
+  .PublicMap .DatasetsList-itemPrimaryInfo,
+  .PublicMap .DatasetsList-itemPrimaryInfo {
+    width: auto;
+    max-width: 440px;
+  }
+  .PublicMap .DatasetsList-itemSecondaryInfo {
+    width: auto;
+    text-align: left;
+  }
+  .PublicMap-buttons{
+    display: none;
+  }
 }
-.cartodb-map-wrapper .cartodb-mobile.with-zoom.with-header.with-fullscreen .cartodb-zoom {
-  top: 60px;
+@media only screen and (max-width: 360px) {
+  .PublicMap .DatasetsList-itemSecondaryInfo {
+    width: auto;
+    text-align: left;
+  }
 }
-.cartodb-mobile.with-header .hgroup {
-  display:none;
-}
-.cartodb-mobile.with-header.with-layers .cartodb-header .content .toggle {
- background-color: rgba(0,0,0,0.5); 
-}
-.cartodb-mobile.with-header.with-fullscreen .cartodb-header .content .fullscreen {
- background-color: rgba(0,0,0,0.5); 
-}
-

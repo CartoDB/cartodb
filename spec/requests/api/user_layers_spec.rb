@@ -9,7 +9,8 @@ feature "API 1.0 user layers management" do
   end
 
   before(:each) do
-    CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+
     delete_user_data @user
     host! 'test.localhost.lan'
     @table = create_table(:user_id => @user.id)
@@ -28,20 +29,6 @@ feature "API 1.0 user layers management" do
       response.status.should    be_success
       @user.layers.size.should  eq 1
       response.body[:id].should eq @user.layers.first.id
-    end
-  end
-
-  scenario "Get all user layers" do
-    layer = Layer.create kind: 'carto'
-    layer2 = Layer.create kind: 'tiled'
-    @user.add_layer layer
-    @user.add_layer layer2
-
-    get_json api_v1_users_layers_index_url(params.merge(user_id: @user.id)) do |response|
-      response.status.should be_success
-      response.body[:total_entries].should   eq 2
-      response.body[:layers].size.should     eq 2
-      response.body[:layers][0]['id'].should eq layer.id
     end
   end
 

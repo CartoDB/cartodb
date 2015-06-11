@@ -261,7 +261,7 @@ Finally, CartoDB depends on a geospatial database template named
 
 ```bash
 sudo su - postgres
-POSTGIS_SQL_PATH=`pg_config --sharedir`/contrib/postgis-2.1.7
+POSTGIS_SQL_PATH=`pg_config --sharedir`/contrib/postgis-2.1
 createdb -E UTF8 template_postgis
 createlang -d template_postgis plpgsql
 psql -d postgres -c "UPDATE pg_database SET datistemplate='true' WHERE datname='template_postgis'"
@@ -305,25 +305,9 @@ Check https://github.com/cartodb/cartodb-postgresql/ for further reference
 
 ## Install Ruby ##
 
-We implemented CartoDB in the [Ruby](http://ruby-lang.org) programming language, you'll need to install Ruby 1.9.3. You can use rvm, rbenv or a system install, up to you. For rvm and rbenv:
+We implemented CartoDB in the [Ruby](http://ruby-lang.org) programming language, you'll need to install Ruby 1.9.3. You can use rbenv or a system install, up to you.
 
-### rvm
-```bash
-sudo apt-get install curl
-sudo curl -L https://get.rvm.io | bash
-sudo su
-source /home/username/.rvm/scripts/rvm
-source /etc/profile.d/rvm.sh
-exit
-```
-Open the ~/.bash_profile file and add the `source ~/.profile` line at the end of the file
-
-Install Ruby and its related resources
-```bash
-rvm install 1.9.3
-sudo apt-get install ruby-bundler
-sudo apt-get install rubygems
-```
+For rbenv:
 
 ### rbenv
 Follow the official guide on https://github.com/sstephenson/rbenv#installation
@@ -452,15 +436,16 @@ via the Maps API.
 Add CartoDB Varnish PPA and install it:
 ```bash
 sudo add-apt-repository  ppa:cartodb/varnish
+sudo apt-get update
 sudo apt-get install varnish=2.1.5.1-cdb1 #or any version <3.x
 ```
 
 Varnish should allow telnet access in order to work with CartoDB, so you need to edit the `/etc/default/varnish` file and in the `DAEMON_OPTS` variable remove the `-S /etc/varnish/secret \` line.
 
 ### Raster import support
-Raster importer needs `raster2pgsql` to be in your path. You can check whether it's available by running `which raster2pgsql`. If it's not, you should link it: `$ sudo ln -s /usr/local/src/postgis-2.1.2/raster/loader/raster2pgsql /usr/bin/`.
+Raster importer needs `raster2pgsql` to be in your path. You can check whether it's available by running `which raster2pgsql`. If it's not, you should link it: `$ sudo ln -s /usr/local/src/postgis-2.1.7/raster/loader/raster2pgsql /usr/bin/`.
 
-Access to temporary dir is also needed. Depending on your installation you might also need to run `sudo chown 501:staff /usr/local/src/postgis-2.1.2/raster/loader/.libs` (maybe replacing `501:staff` with your installation /usr/local/src/postgis-2.1.2/raster/loader/ group and owner).
+Access to temporary dir is also needed. Depending on your installation you might also need to run `sudo chown 501:staff /usr/local/src/postgis-2.1.7/raster/loader/.libs` (maybe replacing `501:staff` with your installation /usr/local/src/postgis-2.1.7/raster/loader/ group and owner).
 
 ## Install problems and common solutions #
 
@@ -493,12 +478,8 @@ cd cartodb
 #       configuration expects redis to be listening there
 redis-server
 
-# If you are using rvm, create a new gemset
-rvm use 1.9.3@cartodb --create && bundle install
 # If it's a system wide installation
 sudo bundle install
-# Make the created gemset your default one
-rvm use 1.9.3@cartodb --default
 
 # If you are using rbenv simply run:
 rbenv local 1.9.3-p551
@@ -615,3 +596,9 @@ See [TESTING.md](TESTING.md)
   - Nicolás M. Jaremek ([NickJaremek](https://twitter.com/NickJaremek))
   - Jaime Chapinal ([Xatpy](https://twitter.com/chapi13))
   - Nicklas Gummesson ([ViddoBamBam](https://twitter.com/ViddoBamBam))
+  - Dimitri Roche ([dimroc](https://github.com/dimroc))
+  - Carla iriberri ([iriberri](https://github.com/iriberri))
+  - Rafa de la Torre ([rafatower](https://github.com/rafatower))
+  - Nacho Sánchez ([juanignaciosl](https://github.com/juanignaciosl))
+  - Francisco Dans ([fdansv](https://github.com/fdansv))
+  - Pablo Alonso ([alonsogarciapablo](https://github.com/alonsogarciapablo))

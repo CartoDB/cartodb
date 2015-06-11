@@ -32,7 +32,10 @@ class Api::Json::LayersController < Api::ApplicationController
         return(render_jsonp({:description => 'You cannot add a layer in this visualization'}, 403))
       end
       if ::Layer::DATA_LAYER_KINDS.include?(@layer.kind)
-        table_visualization = ::Table.get_by_id_or_name(@layer.options['table_name'], current_user).table_visualization
+        table_visualization = Helpers::TableLocator.new.get_by_id_or_name(
+            @layer.options['table_name'], 
+            current_user
+          ).table_visualization
         unless table_visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
           return(render_jsonp({:description => 'You do not have permission in the layer you are trying to add'}, 400))
         end
@@ -87,11 +90,11 @@ class Api::Json::LayersController < Api::ApplicationController
     return unless params[:map_id]
 
     # User must be owner or have permissions for the map's visualization
-    vis = CartoDB::Visualization::Collection.new.fetch(
+    vis_collection = CartoDB::Visualization::Collection.new.fetch(
         user_id: current_user.id,
         map_id: params[:map_id]
     )
-    raise RecordNotFound if vis.nil?
+    raise RecordNotFound if vis_collection.count == 0
 
     ::Map.filter(id: params[:map_id]).first
   end #map_from

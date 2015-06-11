@@ -1,0 +1,51 @@
+@import "../../variables/mixins";
+@import "../../variables/colors";
+@import "../../variables/sizes";
+
+$cNeutral:  $cHighlight-main;
+$cPositive: $cHighlight-positive;
+$cNotice:     rgba(#F2C000, 1);
+$cSunrise:    rgba(#F5A623, 1);
+$cAlert:      rgba(#EA703D, 1);
+$cNegative:   rgba(#CB3F29, 1);
+$cCyan:       rgba(#55C9AF, 1);
+$cRoyal:      rgba(#7882B9, 1);
+$cRoyalDark:  rgba(#9013FE, 1);
+$cMagenta:    rgba(#BD10E0, 1);
+$cLingon:     rgba(#AC638B, 1);
+
+//  Filled circles with an icon in the middle, typically used together with a iconFont.
+//
+// Example usage:
+//   <div class="IllustrationIcon IllustrationIcon--royal">
+//     <i class="iconFont iconFont-Unlock"></i>
+//   </div>
+//
+.IllustrationIcon {
+  @include display-flex();
+  @include justify-content(center);
+  @include align-items(center);
+  width: 50px;
+  height: 50px;
+  color: white;
+  border-radius: 30px; // Enough to make it round
+  font-size: 20px;
+}
+.IllustrationIcon--neutral { background-color: $cNeutral }
+.IllustrationIcon--positive { background-color: $cPositive }
+.IllustrationIcon--notice { background-color: $cNotice }
+.IllustrationIcon--sunrise { background-color: $cSunrise }
+.IllustrationIcon--alert { background-color: $cAlert }
+.IllustrationIcon--negative { background-color: $cNegative }
+.IllustrationIcon--cyan { background-color: $cCyan }
+.IllustrationIcon--royal { background-color: $cRoyal }
+.IllustrationIcon--royalDark { background-color: $cRoyalDark }
+.IllustrationIcon--magenta { background-color: $cMagenta }
+.IllustrationIcon--lingon { background-color: $cLingon }
+
+.IllustrationIcon-text {
+  font-size: $sFontSize-smallUpperCase;
+  font-weight: $sFontWeight-lighter;
+  line-height: $sLineHeight-smaller;
+  text-transform: uppercase;
+}

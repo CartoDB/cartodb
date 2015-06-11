@@ -11,6 +11,8 @@ class Admin::OrganizationUsersController < ApplicationController
   before_filter :get_user, only: [:edit, :update, :destroy]
   before_filter :initialize_google_plus_config, only: [:edit, :update]
 
+  layout 'application'
+
   def get_config
     @extras_enabled = extras_enabled?
     @extra_geocodings_enabled = extra_geocodings_enabled?
@@ -26,24 +28,16 @@ class Admin::OrganizationUsersController < ApplicationController
     @user = User.new
     @user.quota_in_bytes = (current_user.organization.unassigned_quota < 100.megabytes ? current_user.organization.unassigned_quota : 100.megabytes)
 
-    new_dashboard = current_user.has_feature_flag?('new_dashboard')
-    view =  new_dashboard ? 'create' : 'new'
-    layout = new_dashboard ? 'new_application' : 'application'
-
     respond_to do |format|
-      format.html { render view, layout: layout }
+      format.html { render 'new' }
     end
   end
 
   def edit
     set_flash_flags
 
-    new_dashboard = current_user.has_feature_flag?('new_dashboard')
-    view =  new_dashboard ? 'new_edit' : 'edit'
-    layout = new_dashboard ? 'new_application' : 'application'
-
     respond_to do |format|
-      format.html { render view, layout: layout }
+      format.html { render 'edit' }
     end
   end
 
@@ -55,10 +49,6 @@ class Admin::OrganizationUsersController < ApplicationController
   end
 
   def create
-    new_dashboard = current_user.has_feature_flag?('new_dashboard')
-    view =  new_dashboard ? 'create' : 'new'
-    layout = new_dashboard ? 'new_application' : 'application'
-
     @user = User.new
     @user.set_fields(params[:user], [:username, :email, :password, :quota_in_bytes, :password_confirmation, :twitter_datasource_enabled])
     @user.organization = current_user.organization
@@ -78,17 +68,13 @@ class Admin::OrganizationUsersController < ApplicationController
     set_flash_flags
     flash.now[:error] = e.user_message
     @user = User.new(username: @user.username, email: @user.email, quota_in_bytes: @user.quota_in_bytes, twitter_datasource_enabled: @user.twitter_datasource_enabled)
-    render action: view, layout: layout
+    render 'new'
   rescue Sequel::ValidationFailed => e
     flash.now[:error] = e.message
-    render action: view, layout: layout
+    render 'new'
   end
 
   def update
-    new_dashboard = current_user.has_feature_flag?('new_dashboard')
-    view =  new_dashboard ? 'new_edit' : 'edit'
-    layout = new_dashboard ? 'new_application' : 'application'
-
     session[:show_dashboard_details_flash] = params[:show_dashboard_details_flash].present?
     session[:show_account_settings_flash] = params[:show_account_settings_flash].present?
 
@@ -117,49 +103,32 @@ class Admin::OrganizationUsersController < ApplicationController
   rescue CartoDB::CentralCommunicationFailure => e
     set_flash_flags
     flash.now[:error] = "There was a problem while updating this user. Please, try again and contact us if the problem persists. #{e.user_message}"
-    render action: view, layout: layout
+    render 'edit'
   rescue Sequel::ValidationFailed => e
-    render action: view, layout: layout
+    render 'edit'
   end
 
   def destroy
     raise "Can't delete user. #{'Has shared entities' if @user.has_shared_entities?}" unless @user.can_delete
 
-    new_dashboard = current_user.has_feature_flag?('new_dashboard')
     @user.delete_in_central
     @user.destroy
     flash[:success] = "User was successfully deleted."
-    if new_dashboard
-      redirect_to CartoDB.url(self, 'organization', {}, current_user)
-    else
-      head :no_content
-    end
+    redirect_to CartoDB.url(self, 'organization', {}, current_user)
   rescue CartoDB::CentralCommunicationFailure => e
     Rollbar.report_exception(e)
     if e.user_message =~ /No user found with username/
       @user.destroy
       flash[:success] = "User was deleted from the organization server. #{e.user_message}"
-      if new_dashboard
-        redirect_to CartoDB.url(self, 'organization', {}, current_user)
-      else
-        head :no_content
-      end
+      redirect_to CartoDB.url(self, 'organization', {}, current_user)
     else
       set_flash_flags(nil, true)
       flash[:error] = "User was not deleted. #{e.user_message}"
-      if new_dashboard
-        redirect_to CartoDB.url(self, 'organization', {}, current_user)
-      else
-        head :no_content
-      end
+      redirect_to CartoDB.url(self, 'organization', {}, current_user)
     end
   rescue => e
     flash[:error] = "User was not deleted. #{e.message}"
-    if new_dashboard
-      redirect_to organization_path(user_domain: params[:user_domain])
-    else
-      head :no_content
-    end
+    redirect_to organization_path(user_domain: params[:user_domain])
   end
 
   def extras_enabled?

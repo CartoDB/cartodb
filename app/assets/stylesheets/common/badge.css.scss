@@ -1,0 +1,25 @@
+@import "../variables/mixins";
+@import "../variables/colors";
+@import "../variables/sizes";
+
+.Badge {
+  position: absolute;
+  display: block;
+  top: -9px;
+  right: -9px;
+  width: 17px;
+  height: 17px;
+  line-height: 17px; /* same as width/height */
+  border-radius: 23px;
+  color: #fff;
+  font-size: $sFontSize-smallUpperCase;
+  font-weight: $sFontWeight-normal;
+  text-align: center;
+  background-color: $cIcons-default;
+}
+.Badge--negative {
+  background-color: $cHighlight-negative;
+}
+.Badge--positive {
+  background-color: $cHighlight-positive;
+}

@@ -1,14 +1,33 @@
-<% unless (current_user.feature_flags.include? 'new_dashboard') && params[:controller] == 'admin/visualizations' %>
-<footer>
-  <div class="inner">
-    <nav class="left">
-      <%= link_to "Feature tour", "http://cartodb.com/tour" %>
-      <%= link_to "Getting started", "#{Cartodb.config[:developers_host]}/tutorials.html" %>
-      <%= link_to "Documentation", Cartodb.config[:developers_host] %>
-      <%= link_to "Support", "http://cartodb.com/docs/#support" %>
-      <%= link_to "Contact", "mailto:contact@cartodb.com" %>
-    </nav>
-    <p class="right">CartoDB is a product of <%= link_to "Vizzuality", "http://vizzuality.com", :target => "blank" %></p>
+<% light = false if !light.present? %>
+
+<div class="Footer <%= 'Footer--light' if light %>">
+  <div class="u-inner Footer-inner">
+    <ul class="Footer-list Footer-list--primary">
+      <% unless cartodb_com_hosted? %>
+      <li class="Footer-listItem"><a class="Footer-listLink" href="http://cartodb.com/gallery/">Explore</a></li>
+      <li class="Footer-listItem"><a class="Footer-listLink" href="http://docs.cartodb.com/tutorials.html">Getting started</a></li>
+      <% end %>
+      <% unless cartodb_onpremise_version.blank? %>
+      <li class="Footer-listItem DefaultParagraph">Version: <%= cartodb_onpremise_version %></li>
+      <% end %>
+    </ul>
+    <% if cartodb_com_hosted? %>
+        <a class="Footer-logo Logo Logo--grey" href="<%= root_url %>">
+          <i class="iconFont iconFont-CartoFante"></i>
+        </a>
+    <% else %>
+        <a class="Footer-logo Logo Logo--grey" href="http://cartodb.com">
+          <i class="iconFont iconFont-CartoFante"></i>
+        </a>
+    <% end %>
+    <ul class="Footer-list Footer-list--secondary">
+      <li class="Footer-listItem"><a class="Footer-listLink" href="http://docs.cartodb.com">Documentation</a></li>
+      <% unless cartodb_com_hosted? %>
+        <li class="Footer-listItem"><a class="Footer-listLink" href="mailto:support@cartodb.com">Support</a></li>
+      <% else %>
+        <li class="Footer-listItem"><a class="Footer-listLink" href="mailto:onpremise-support@cartodb.com">Support</a></li>
+      <% end %>
+      <li class="Footer-listItem"><a class="Footer-listLink" href="mailto:contact@cartodb.com">Contact</a></li>
+    </ul>
   </div>
-</footer>
-<% end %>
+</div>

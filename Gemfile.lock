@@ -30,6 +30,8 @@ GEM
       activesupport (= 3.2.2)
       arel (~> 3.0.2)
       tzinfo (~> 0.3.29)
+    activerecord-nulldb-adapter (0.3.1)
+      activerecord (>= 2.0.0)
     activerecord-postgres-array (0.0.10)
       activerecord
     activerecord-postgresql-adapter (0.0.1)
@@ -323,6 +325,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  activerecord-nulldb-adapter (= 0.3.1)
   activerecord-postgres-array
   activerecord-postgresql-adapter
   addressable (= 2.3.2)

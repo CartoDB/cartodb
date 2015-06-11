@@ -15,8 +15,11 @@ WORKING_SPECS_1 = \
   spec/models/table_spec.rb \
 	spec/models/table/relator_spec.rb \
   spec/models/user_spec.rb \
+  spec/models/user_presenter_spec.rb \
   spec/models/layer_spec.rb \
   spec/models/layer/presenter_spec.rb \
+  spec/requests/api/json/layer_presenter_spec.rb \
+  spec/requests/carto/api/layer_presenter_spec.rb \
   spec/models/map_spec.rb \
   spec/models/map/copier_spec.rb \
   $(NULL)
@@ -29,9 +32,10 @@ WORKING_SPECS_2 = \
   spec/models/common_data_spec.rb \
   spec/lib/sql_parser_spec.rb \
   spec/lib/string_spec.rb \
-  spec/lib/metrics_spec.rb \
   spec/lib/image_metadata_spec.rb \
   spec/lib/central_spec.rb \
+  spec/lib/carto/http/client_spec.rb \
+	spec/helpers/uuidhelper_spec.rb \
   $(NULL)
 
 WORKING_SPECS_3 = \
@@ -77,9 +81,11 @@ WORKING_SPECS_4 = \
   services/wms/spec/unit/wms_spec.rb \
   services/sql-api/spec/sql_api_spec.rb \
   spec/requests/admin/visualizations_spec.rb \
-	spec/requests/api/json/visualizations_controller_spec.rb \
-	spec/requests/carto/api/visualizations_controller_spec.rb \
-	spec/queries/carto/visualization_query_builder_spec.rb \
+  spec/requests/api/json/visualizations_controller_spec.rb \
+  spec/requests/carto/api/visualizations_controller_spec.rb \
+  spec/requests/api/json/tables_controller_spec.rb \
+  spec/requests/carto/api/tables_controller_spec.rb \
+  spec/queries/carto/visualization_query_builder_spec.rb \
   spec/requests/admin/tables_spec.rb \
   spec/requests/admin/pages_controller_spec.rb \
   $(NULL)
@@ -87,6 +93,8 @@ WORKING_SPECS_4 = \
 WORKING_SPECS_5 = \
   spec/rspec_configuration.rb \
   spec/requests/api/imports_spec.rb \
+  spec/requests/api/json/imports_controller_spec.rb \
+	spec/requests/carto/api/imports_controller_spec.rb \
   spec/connectors/importer_spec.rb \
   spec/requests/api/geocodings_spec.rb \
   services/importer/spec/unit/url_translator/osm_spec.rb \
@@ -99,18 +107,27 @@ WORKING_SPECS_6 = \
   spec/rspec_configuration.rb \
   spec/requests/api/assets_spec.rb \
   spec/requests/api/user_layers_spec.rb \
+  spec/requests/api/json/layers_controller_spec.rb \
+  spec/requests/carto/api/layers_controller_spec.rb \
   spec/requests/api/map_layers_spec.rb \
-  spec/requests/api/records_spec.rb \
-  spec/requests/api/tables_spec.rb \
+  spec/requests/api/json/records_controller_spec.rb \
+  spec/requests/carto/api/records_controller_spec.rb \
+  spec/requests/api/json/columns_controller_spec.rb \
+  spec/requests/carto/api/columns_controller_spec.rb \
   $(NULL)
 
 WORKING_SPECS_7 = \
   spec/rspec_configuration.rb \
   spec/requests/api/synchronizations_spec.rb \
-  services/geocoder/spec/geocoder_spec.rb \
+	spec/requests/api/json/synchronizations_controller_spec.rb \
+	spec/requests/carto/api/synchronizations_controller_spec.rb \
+	services/geocoder/spec/geocoder_spec.rb \
+	services/table-geocoder/spec/table_geocoder_spec.rb \
 	services/table-geocoder/spec/internal-geocoder/input_type_resolver_spec.rb \
 	services/table-geocoder/spec/internal-geocoder/query_generator_factory_spec.rb \
   spec/models/synchronization/member_spec.rb \
+	spec/requests/api/json/geocodings_controller_spec.rb \
+	spec/requests/carto/api/geocodings_controller_spec.rb \
   # spec/models/synchronization/collection_spec.rb not working right now \
   spec/models/synchronization/synchronization_oauth_spec.rb \
   spec/models/organization_spec.rb \
@@ -127,6 +144,10 @@ WORKING_SPECS_8 = \
   spec/requests/superadmin/users_spec.rb \
   spec/requests/superadmin/organizations_spec.rb \
   spec/requests/api/visualizations_spec.rb \
+  spec/requests/api/json/maps_controller_spec.rb \
+  spec/requests/carto/api/maps_controller_spec.rb \
+  spec/requests/api/json/overlays_controller_spec.rb \
+  spec/requests/carto/api/overlays_controller_spec.rb \
   $(NULL)
 
 WORKING_SPECS_9 = \
@@ -136,11 +157,12 @@ WORKING_SPECS_9 = \
   services/datasources/spec/integration/ \
   services/datasources/spec/unit/arcgis_spec.rb \
   services/importer/spec/regression/query_batcher_spec.rb \
-  services/importer/spec/regression/cartodb_id_query_batcher_spec.rb \
+  services/importer/spec/regression/query_batcher_spec.rb \
   services/platform-limits/spec/unit/ \
   spec/models/platform-limits/ \
   spec/lib/initializers/carto_db_spec.rb \
-  spec/unit/controllers/api/json/oembed_controller_spec.rb \
+  spec/requests/carto/api/oembed_controller_spec.rb \
+  spec/models/carto/ \
   $(NULL)
 
 CDB_PATH=lib/assets/javascripts/cdb

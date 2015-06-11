@@ -5,15 +5,17 @@ require 'ruby-debug'
 describe Geocoding do
   before(:all) do
     @user  = create_user(geocoding_quota: 200, geocoding_block_price: 1500)
+    
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
     @table = FactoryGirl.create(:user_table, user_id: @user.id)
   end
 
   before(:each) do
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
   end
 
   after(:all) do
-    CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
     @user.destroy
   end
 
@@ -117,17 +119,21 @@ describe Geocoding do
       geocoding.state.should eq 'failed'
     end
 
-    it 'raises a timeout error if geocoding takes more than 15 minutes to start' do
-      geocoding = FactoryGirl.create(:geocoding, user: @user, user_table: @table, formatter: 'b')
+    it 'sends a payload with duration information' do
+      geocoding = FactoryGirl.build(:geocoding, user: @user, user_table: @table, kind: 'admin0', geometry_type: 'polygon', formatter: 'b')
       geocoding.class.stubs(:processable_rows).returns 10
-      CartoDB::TableGeocoder.any_instance.stubs(:run).returns true
-      CartoDB::TableGeocoder.any_instance.stubs(:process_results).returns true
-      CartoDB::Geocoder.any_instance.stubs(:status).returns 'submitted'
-      CartoDB::Geocoder.any_instance.stubs(:update_status).returns true
-      geocoding.run_timeout = 0.1
+      CartoDB::InternalGeocoder::Geocoder.any_instance.stubs(:run).returns true
+      CartoDB::InternalGeocoder::Geocoder.any_instance.stubs(:process_results).returns true
+      CartoDB::InternalGeocoder::Geocoder.any_instance.stubs(:update_geocoding_status).returns(processed_rows: 10, state: 'completed')
+
+      # metrics_payload is sent to the log in json
+      Logger.any_instance.expects(:info).once.with() {|str|
+        payload = JSON.parse(str)
+        payload.has_key?('queue_time') && payload.has_key?('processing_time') && payload['queue_time'] > 0 && payload['processing_time'] > 0
+      }
+
       geocoding.run!
-      geocoding.reload.state.should eq 'failed'
-      geocoding.run_timeout = Geocoding::DEFAULT_TIMEOUT
+      geocoding.reload.state.should eq 'finished'
     end
 
     it 'succeeds if there are no rows to geocode' do
@@ -149,6 +155,30 @@ describe Geocoding do
       CartoDB.expects(:notify_exception).once.returns(true)
       expect { geocoding.run! }.to change { AutomaticGeocoding.count }.by(1)
       geocoding.automatic_geocoding_id.should_not be_nil
+    end
+
+    pending 'raises an exception if the geocoding times out' do
+      geocoding = FactoryGirl.create(:geocoding, user: @user, user_table: @table, formatter: 'b')
+      geocoding.class.stubs(:processable_rows).returns 10
+      geocoding.stubs(:processing_timeout_seconds).returns 0.01 # set timeout to 10 ms
+
+      table_geocoder_mock = mock
+      table_geocoder_mock.stubs(:run).with() { sleep(5) } # force it to sleep beyond timeout
+      geocoding.stubs(:table_geocoder).returns(table_geocoder_mock)
+
+      geocoding.run!
+      geocoding.reload.state.should eq 'failed'
+    end
+
+    it 'sends a track event through hubspot client' do
+      hubspot_instance = CartoDB::Hubspot.instance
+      hubspot_instance.expects(:track_geocoding_success).once.with() { |payload|
+        payload[:email] == @user.email && payload[:processed_rows] == 0
+      }
+
+      geocoding = FactoryGirl.build(:geocoding, user: @user, formatter: 'a', user_table: @table, formatter: 'b')
+      geocoding.class.stubs(:processable_rows).returns 0
+      geocoding.run!
     end
   end
 

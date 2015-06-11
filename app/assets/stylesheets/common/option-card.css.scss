@@ -1,0 +1,78 @@
+@import "../variables/mixins";
+@import "../variables/colors";
+@import "../variables/sizes";
+
+// Represents a card where the content is illustrated with an icon at top and text center underneath:
+//   __________________
+//  |                  |
+//  |       ***        |
+//  |      * X *       |
+//  |       ***        |
+//  |                  |
+//  |      Title       |
+//  |  Some text here  |
+//  |  with some more  |
+//  |__________________|
+//
+
+.OptionCards {
+  @include display-flex();
+  @include justify-content(center);
+  @include align-items(stretch);
+  @include align-content(space-between, justify);
+}
+.OptionCard {
+  @include display-flex();
+  @include flex(1); // Grow evenly inside container
+  @include flex-direction(column);
+  @include justify-content(flex-start);
+  @include align-items(center);
+  @include align-content(space-between, justify);
+  text-align: center;
+  padding: $sMargin-element;
+  border: 1px solid $cStructure-mainLine;
+  border-radius: $sCard-borderRadius;
+  background-color: $cStructure-mainBkg;
+}
+.OptionCard--privacy {
+  max-width: 230px; // set a max-width to appear nicer for dataset privacy dialog
+}
+.OptionCard--onlyIcons {
+  // Arbitrary size really, but gives a "square" like look where used (only export modal for now).
+  // If need to use the same style but with other amount of items we need to rethink this…
+  min-height: 114px;
+  @include justify-content(center);
+}
+.OptionCard.is-disabled {
+  background-color: $cStructure-grayBkg;
+  @include opacity(0.4);
+}
+.OptionCard.is-selected {
+  border-color: $cCard-selectedBorder;
+  background-color: $cCard-selectedFill;
+  cursor: default;
+}
+.OptionCard--static { cursor: default }
+.OptionCard:not(.is-disabled):not(.is-selected):not(.OptionCard--static):hover {
+  border-color: $cCard-selectedBorder;
+  background-color: $cCard-hoverFill;
+  cursor: pointer;
+}
+.OptionCard:not(:last-child) {
+  margin-right: $sMargin-element;
+}
+.OptionCard-icon {
+  margin-bottom: $sMargin-elementInline;
+}
+.OptionCard-title {
+  font-size: $sFontSize-large;
+  line-height: $sLineHeight-large;
+  margin-bottom: $sMargin-min;
+}
+.OptionCard-desc {
+  font-size: $sFontSize-normal;
+  line-height: $sLineHeight-normal;
+  color: $cTypography-secondary;
+  @include nicer-lato-typography();
+  margin-bottom: $sMargin-elementInline;
+}

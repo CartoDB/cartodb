@@ -4,9 +4,9 @@
 
   <% content_for(:css) do %>
     <% if current_user.has_feature_flag?('new_modals') %>
-      <%= stylesheet_link_tag 'new_common.css', 'editor.css', 'cdb.css', 'map.css', :media => 'all' %>
+      <%= stylesheet_link_tag 'common.css', 'editor.css', 'cdb.css', 'map.css', :media => 'all' %>
     <% else  %>
-      <%= stylesheet_link_tag 'common.css', 'table.css', 'cdb.css', 'map.css', :media => 'all' %>
+      <%= stylesheet_link_tag 'old_common.css', 'table.css', 'cdb.css', 'map.css', :media => 'all' %>
     <% end %>
   <% end %>
 
@@ -16,15 +16,18 @@
     , user_data = <%= safe_js_object current_user.data.to_json %>
     , config = <%= safe_js_object frontend_config %>
     , map_data = <%= safe_js_object @visualization.map.public_values.to_json %>
+    // TODO: remove mixpanel
     , mixpanel_token = "<%= Cartodb.config[:mixpanel]['token'] if Cartodb.config[:mixpanel].present? %>"
-    , basemaps = <%=raw Cartodb.config[:basemaps].present? ? Cartodb.config[:basemaps].to_json.html_safe: 'null'  %>
+    , basemaps = <%=raw Cartodb.config[:basemaps].present? ? Cartodb.config[:basemaps].to_json.html_safe: 'null' %>
   </script>
 
   <% content_for(:js) do %>
-    <script type="text/javascript"
-        src="https://maps.google.com/maps/api/js?sensor=false&v=3.12">
-    </script>
-    <%= javascript_include_tag 'cdb.js','models.js', 'templates.js', 'templates_mustache.js', 'application.js', 'table.js' %>
+  <% if !@google_maps_api_key.blank? %>
+        <script type="text/javascript"
+            src="//maps.googleapis.com/maps/api/js?sensor=false&v=3.12&<%= @google_maps_api_key %>">
+        </script>
+    <% end %>
+    <%= javascript_include_tag 'cdb.js','models.js', 'templates.js', 'templates_mustache.js', 'table.js' %>
     <% if current_user.has_feature_flag?('new_modals') %>
       <%= javascript_include_tag 'editor.js' %>
     <% end %>

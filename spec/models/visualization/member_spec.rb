@@ -19,7 +19,7 @@ describe Visualization::Member do
   end
 
   before(:each) do
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
 
     # For relator->permission
     user_id = UUIDTools::UUID.timestamp_create.to_s
@@ -112,6 +112,16 @@ describe Visualization::Member do
       member.tags.should include('tag 2')
     end
 
+    it 'prevents empty tags from being created' do
+      attributes = random_attributes_for_vis_member(user_id: @user_mock.id, tags: ['tag 1', '', '   '])
+      member = Visualization::Member.new(attributes)
+      member.store
+
+      member = Visualization::Member.new(id: member.id)
+      member.fetch
+      member.tags.should eq ['tag 1']
+    end
+
     it 'invalidates vizjson cache in varnish if name changed' do
       member      = Visualization::Member.new(random_attributes_for_vis_member(user_id: @user_mock.id))
       member.store
@@ -119,7 +129,7 @@ describe Visualization::Member do
       CartoDB::Visualization::NameChecker.any_instance.stubs(:available?).returns(true)
 
       member = Visualization::Member.new(id: member.id).fetch
-      member.expects(:invalidate_cache)
+      @user_mock.expects(:invalidate_varnish_cache)
       member.name = 'changed'
       member.store
     end
@@ -132,7 +142,7 @@ describe Visualization::Member do
       member.store
 
       member = Visualization::Member.new(id: member.id).fetch
-      member.expects(:invalidate_cache)
+      @user_mock.expects(:invalidate_varnish_cache)
       member.privacy = Visualization::Member::PRIVACY_PRIVATE
       member.store
     end
@@ -142,7 +152,7 @@ describe Visualization::Member do
       member.store
 
       member = Visualization::Member.new(id: member.id).fetch
-      member.expects(:invalidate_cache)
+      @user_mock.expects(:invalidate_varnish_cache)
       member.description = 'changed description'
       member.store
     end
@@ -424,8 +434,11 @@ describe Visualization::Member do
       visualization.name = 'test'
       visualization.user_id = user_id
 
+      @user_mock.stubs(:invalidate_varnish_cache)
+
+
       # Private maps allowed
-      @user_mock.stubs(:private_maps_enabled).returns(true)
+      @user_mock.stubs(:private_maps_enabled?).returns(true)
 
       # Forces internal "dirty" flag
       visualization.privacy = Visualization::Member::PRIVACY_PUBLIC
@@ -436,7 +449,7 @@ describe Visualization::Member do
       # -------------
 
       # No private maps allowed
-      @user_mock.stubs(:private_maps_enabled).returns(false)
+      @user_mock.stubs(:private_maps_enabled?).returns(false)
 
       visualization.privacy = Visualization::Member::PRIVACY_PUBLIC
       visualization.privacy = Visualization::Member::PRIVACY_PRIVATE
@@ -472,7 +485,7 @@ describe Visualization::Member do
           type:     Visualization::Member::TYPE_CANONICAL,
           user_id:  user_id
       )
-      @user_mock.stubs(:private_maps_enabled).returns(true)
+      @user_mock.stubs(:private_maps_enabled?).returns(true)
 
       # Careful, do a user mock after touching user_data as it does some checks about user too
       user_mock = mock
@@ -1040,19 +1053,14 @@ describe Visualization::Member do
       redis_cache = mock
       redis_cache.expects(:get).returns(nil).once # cache miss
       redis_cache.expects(:setex).once
-      Visualization::Member.stubs(:redis_cache).returns(redis_cache)
+      Visualization::RedisVizjsonCache.any_instance.stubs(:redis).returns(redis_cache)
 
       any_hash = {
         any_key: 'any_value'
       }
-      block_called = false
-      any_block = lambda {
-        block_called = true
-        any_hash
-      }
+      member.expects(:calculate_vizjson).once.returns(any_hash)
 
-      member.send(:redis_cached, 'any_key', &any_block).should eq any_hash
-      block_called.should be_true
+      member.to_vizjson.should eq any_hash
     end
 
     it "Caches an arbitrary hash serialized if there's a miss " do
@@ -1063,14 +1071,14 @@ describe Visualization::Member do
       }
 
       key = 'any_key'
+      Visualization::RedisVizjsonCache.any_instance.stubs(:key).returns(key)
       redis_cache = mock
       redis_cache.expects(:get).returns(nil).once # cache miss
       redis_cache.expects(:setex).once.with(key, 24.hours.to_i, any_hash.to_json)
-      Visualization::Member.stubs(:redis_cache).returns(redis_cache)
+      Visualization::RedisVizjsonCache.any_instance.stubs(:redis).returns(redis_cache)
+      member.expects(:calculate_vizjson).once.returns(any_hash)
 
-      member.send(:redis_cached, key) do
-        any_hash
-      end
+      member.to_vizjson.should eq any_hash
     end
 
     it "Deserializes an arbitrary hash previously stored if there's a cache hit" do
@@ -1085,11 +1093,10 @@ describe Visualization::Member do
       redis_cache = mock
       redis_cache.expects(:get).returns(any_hash_serialized).once # cache hit
       redis_cache.expects(:setex).never
-      Visualization::Member.stubs(:redis_cache).returns(redis_cache)
+      Visualization::RedisVizjsonCache.any_instance.stubs(:redis).returns(redis_cache)
+      member.expects(:calculate_vizjson).never
 
-      member.send(:redis_cached, key) do
-        nil #not really interested in this block when there's a hit
-      end
+      member.to_vizjson.should eq any_hash
     end
 
     it "Does not execute the block if there's a cache hit" do
@@ -1101,11 +1108,10 @@ describe Visualization::Member do
       redis_cache = mock
       redis_cache.expects(:get).once.returns(any_hash_serialized) # cache hit
       redis_cache.expects(:setex).never
-      Visualization::Member.stubs(:redis_cache).returns(redis_cache)
+      Visualization::RedisVizjsonCache.any_instance.stubs(:redis).returns(redis_cache)
+      member.expects(:calculate_vizjson).never
 
-      member.send(:redis_cached, key) do
-        fail "this block shall not be executed"
-      end
+      member.to_vizjson
     end
   end
 
@@ -1127,10 +1133,12 @@ describe Visualization::Member do
       member.expects(:calculate_vizjson).returns(mocked_vizjson).once
 
       vizjson = member.to_vizjson
-      Visualization::Member.send(:redis_cache).get(member.redis_vizjson_key).should eq vizjson.to_json
+      redis_vizjson_cache = Visualization::RedisVizjsonCache.new($tables_metadata)
+      redis_key = redis_vizjson_cache.key(member.id)
+      redis_vizjson_cache.send(:redis).get(redis_key).should eq vizjson.to_json
 
       member.invalidate_cache
-      Visualization::Member.send(:redis_cache).get(member.redis_vizjson_key).should be_nil
+      redis_vizjson_cache.send(:redis).get(redis_key).should be_nil
     end
   end
 end

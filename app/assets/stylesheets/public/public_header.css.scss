@@ -7,9 +7,9 @@
 @import "compass/css3/box-shadow";
 @import "compass/css3/transform";
 @import "compass/css3/transition";
-@import "../common/vars";
+@import "../old_common/vars";
 @import "../plugins/tipsy";
-@import "../common/mixins";
+@import "../old_common/mixins";
 
 .cartodb-public-header {
   position: relative;

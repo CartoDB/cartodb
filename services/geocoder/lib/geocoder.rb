@@ -1,10 +1,10 @@
 # encoding: utf-8
-require 'typhoeus'
 require 'nokogiri'
 require 'csv'
 require 'json'
 require 'open3'
 require 'uuidtools'
+require_relative '../../../lib/carto/http/client'
 
 module CartoDB
   class Geocoder
@@ -47,6 +47,7 @@ module CartoDB
       @mailto             = arguments.fetch(:mailto)
       @force_batch        = arguments[:force_batch] || false
       @dir                = arguments[:dir] || Dir.mktmpdir
+      @used_batch_request = false
       begin
         @batch_api_disabled = Cartodb.config[:geocoder]['batch_api_disabled'] == true
       rescue
@@ -68,7 +69,8 @@ module CartoDB
     def upload
       return run_non_batched unless use_batch_process?
       assert_batch_api_enabled
-      response = Typhoeus.post(
+      @used_batch_request = true
+      response = http_client.post(
         api_url(UPLOAD_OPTIONS),
         body: File.open(input_file,"r").read,
         headers: { "Content-Type" => "text/plain" }
@@ -77,10 +79,14 @@ module CartoDB
       @request_id = extract_response_field(response.body)
     end
 
+    def used_batch_request?
+      @used_batch_request
+    end
+
     def cancel
       return unless use_batch_process?
       assert_batch_api_enabled
-      response = Typhoeus.put api_url(action: 'cancel')
+      response = http_client.put api_url(action: 'cancel')
       handle_api_error(response)
       @status         = extract_response_field(response.body, '//Response/Status')
       @processed_rows = extract_response_field(response.body, '//Response/ProcessedCount')
@@ -90,7 +96,7 @@ module CartoDB
     def delete
       return unless use_batch_process?
       assert_batch_api_enabled
-      response = Typhoeus.delete api_url({})
+      response = http_client.delete api_url({})
       handle_api_error(response)
       @status         = extract_response_field(response.body, '//Response/Status')
       @processed_rows = extract_response_field(response.body, '//Response/ProcessedCount')
@@ -100,7 +106,7 @@ module CartoDB
     def update_status
       return unless use_batch_process?
       assert_batch_api_enabled
-      response = Typhoeus.get api_url(action: 'status')
+      response = http_client.get api_url(action: 'status')
       handle_api_error(response)
       @status         = extract_response_field(response.body, '//Response/Status')
       @processed_rows = extract_response_field(response.body, '//Response/ProcessedCount')
@@ -138,7 +144,7 @@ module CartoDB
     def geocode_text(text)
       options = GEOCODER_OPTIONS.merge(searchtext: text, app_id: app_id, app_code: token)
       url = "#{non_batch_base_url}?#{URI.encode_www_form(options)}"
-      response =  ::JSON.parse(Typhoeus.get(url).body.to_s)["response"]
+      response =  ::JSON.parse(http_client.get(url).body.to_s)["response"]
       position = response["view"][0]["result"][0]["location"]["displayPosition"]
       return position["latitude"], position["longitude"]
     rescue => e
@@ -164,6 +170,13 @@ module CartoDB
     def handle_api_error(response)
       raise "Geocoding API communication failure: #{extract_response_field(response.body, '//Details')}" if response.code != 200
     end # handle_api_errpr
+
+
+    private
+
+    def http_client
+      @http_client ||= Carto::Http::Client.get('geocoder', log_requests: true)
+    end
 
   end # Geocoder
 end # CartoDB

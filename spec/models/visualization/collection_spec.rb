@@ -25,8 +25,7 @@ describe Visualization::Collection do
     Visualization::Migrator.new(@db).migrate(@relation)
     Visualization.repository = @repository
 
-    # Using Mocha stubs until we update RSpec (@see http://gofreerange.com/mocha/docs/Mocha/ClassMethods.html)
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
 
     # For relator->permission
     user_id = UUIDTools::UUID.timestamp_create.to_s
@@ -36,6 +35,7 @@ describe Visualization::Collection do
     @user_mock.stubs(:id).returns(user_id)
     @user_mock.stubs(:username).returns(user_name)
     @user_mock.stubs(:api_key).returns(user_apikey)
+    @user_mock.stubs(:invalidate_varnish_cache).returns(nil)
     CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user_mock)
   end
 
@@ -400,11 +400,10 @@ describe Visualization::Collection do
     it 'counts total liked' do
       restore_vis_backend_to_normal_table_so_relator_works
 
-      user1 = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
+      user1 = create_user(:quota_in_bytes => 524288000, :table_quota => 500, :private_tables_enabled => true)
       user1.stubs(:organization).returns(nil)
 
-      user2 = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
-      user2.stubs(:private_tables_enabled).returns(true)
+      user2 = create_user(:quota_in_bytes => 524288000, :table_quota => 500, :private_tables_enabled => true)
       user2.stubs(:organization).returns(nil)
 
       table11 = create_table(user1)
@@ -472,7 +471,7 @@ describe Visualization::Collection do
             username: user1.username
           },
           access: CartoDB::Permission::ACCESS_READONLY } ]
-      v21.stubs(:invalidate_cache_and_refresh_named_map).returns(nil)
+      v21.stubs(:invalidate_cache).returns(nil)
       permission.stubs(:entity).returns(v21)
       permission.stubs(:notify_permissions_change).returns(nil)
       permission.save
@@ -493,7 +492,7 @@ describe Visualization::Collection do
             username: user1.username
           },
           access: CartoDB::Permission::ACCESS_READONLY } ]
-      v22.stubs(:invalidate_cache_and_refresh_named_map).returns(nil)
+      v22.stubs(:invalidate_cache).returns(nil)
       permission22.stubs(:entity).returns(v22)
       permission22.stubs(:notify_permissions_change).returns(nil)
       permission22.save
@@ -507,9 +506,9 @@ describe Visualization::Collection do
     it "checks filtering by 'liked' " do
       restore_vis_backend_to_normal_table_so_relator_works
 
-      user = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
-      user2 = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
-      user3 = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
+      user = create_user(:quota_in_bytes => 524288000, :table_quota => 500, :private_tables_enabled => true)
+      user2 = create_user(:quota_in_bytes => 524288000, :table_quota => 500, :private_tables_enabled => true)
+      user3 = create_user(:quota_in_bytes => 524288000, :table_quota => 500, :private_tables_enabled => true)
       CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(user)
 
       table1 = Table.new

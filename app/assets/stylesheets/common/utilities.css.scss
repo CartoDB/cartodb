@@ -1,0 +1,36 @@
+@import "../variables/mixins";
+@import "../variables/colors";
+@import "../variables/sizes";
+
+// Center the content within the defined layout width
+.u-inner {
+  margin: 0 auto;
+  padding: 0 $sMargin-elementInline;
+}
+.u-ellipsLongText {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block; // required for text-overflow to work with some elements that are inline by default (e.g. <a> tags)
+}
+.u-showOnMobile {
+  display: none !important;
+}
+.u-disabled {
+  @include opacity(0.4);
+}
+
+@media (min-width: $sMedia-desktop) {
+  .u-inner {
+    width: $sLayout-width;
+    padding: 0;
+  }
+}
+@media (max-width: $sMedia-tablet) {
+  .u-hideOnMobile {
+    display: none !important;
+  }
+  .u-showOnMobile {
+    display: inline-block !important;
+  }
+}

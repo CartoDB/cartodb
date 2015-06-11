@@ -1,0 +1,193 @@
+
+  /**
+   *  Styles for import service pane.
+   *
+   *  - Services that requires oauth calls,...
+   *  - Loading states.
+   *  - Display lists.
+   *  - Error in the process.
+   *  - Final input file.
+   */
+
+  @import "old_common/mixins";
+  @import "old_common/form-elements";
+
+
+  .import-service-pane {
+    position:relative;
+    margin-bottom:30px!important;
+    display:block;
+
+    a.service-button, a.change {
+      @include inline-block();
+      margin:0;
+      padding:4px 7px;
+      font-size:12px;
+      font-weight:bold;
+      letter-spacing:0;
+    }
+
+    a.change { display:none }
+
+    p {
+      &.msg { display:none }
+      &.filename { width:335px!important }
+    }
+
+    span.loader {
+      position:absolute;
+      display:none;
+      top:15px;
+      right:10px;
+      width:38px!important;
+      height:16px;
+      margin:0!important;
+      padding:0!important;
+      background:image-url("layout/loader.gif") no-repeat center center;
+    }
+
+    div.list {
+      display:none;
+    }
+
+    // List header
+    .list_header {
+      display:block;
+      height:26px;
+      padding:0 14px;
+      line-height:26px;
+      background:#394046;
+      @include border-top-radius(3px);
+
+      h5 {
+        display:inline-block;
+        color:#FFFFFF;
+        font-size:12px;
+        line-height:14px;
+      }
+    }
+
+    // Files list
+    ul {
+      display:none;
+      max-height:200px;
+      overflow:auto;
+      overflow-x:hidden;
+      border:1px solid #DDDDDD;
+      background:white;
+      @include border-bottom-radius(3px);
+
+      li {
+        position:relative;
+        @include display-flex();
+        @include justify-content(space-between, justify);
+        @include align-items(center, center);
+        padding:14px;
+        border-top:1px solid #EEEEEE;
+        border-bottom:0!important;
+        
+        &:first-child { border:none }
+
+        &.empty {
+          padding:30px 90px;
+          text-align:center;
+          color:#999;
+          line-height:18px;
+        }
+      }
+
+      h6 {
+        @include text-overflow();
+        color:#3A7EBA;
+        font-size:13px;
+      }
+
+      p {
+        margin-top:3px;
+        font-style:italic;
+        font-size:11px;
+        color:#999;
+        @include text-overflow();
+
+        &.smaller {
+          margin-top:2px;
+        }
+      }
+
+      i.path {
+        @include inline-block();
+        vertical-align:top;
+        max-width:290px;
+        @include text-overflow();
+      }
+
+      a {
+        @include inline-block();
+      }
+    }
+      
+    div.upload {
+      position:relative;
+      height:22px;
+      padding:11px 10px;
+      border:1px solid #CCCCCC;
+      background:white;
+      @include border-radius(4px);
+      z-index:2;
+
+      p.filename {
+        float:left;
+        @include inline-block();
+        display:none;
+        width:285px;
+        margin:2px 0 0 4px;
+        font-size:15px;
+        font-style:italic;
+        color:#666;
+        @include text-overflow();
+      }
+    }
+
+    div.infobox {
+      @include default-form-info();
+      z-index:2;
+      
+      div.info {
+        position:relative;
+        z-index:1;
+
+        &.error {
+          margin-top:-55px;
+        }
+
+        &.active {
+          margin-top: -7px;
+        }
+
+      }
+    }
+
+    span.scroll {
+      position:absolute;
+      left:1px;
+      right:5px;
+      height:30px;
+      background:transparent;
+      padding:0;
+      margin:0;
+      @include border-radius(0);
+      pointer-events:none;
+      z-index:10;
+
+      &.top {
+        top:27px;
+        @include background(linear-gradient(rgba(white,1), rgba(white,0)));
+      }
+      &.bottom {
+        bottom:1px;
+        @include background(linear-gradient(rgba(white,0), rgba(white,1)));
+        @include border-bottom-radius(3px);
+      }
+    }
+  }
+

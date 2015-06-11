@@ -6,6 +6,7 @@ class OauthController < ApplicationController
   include OAuth::Controllers::ProviderController
   
   ssl_required :authorize, :request_token, :access_token, :token, :test_request
+  ssl_allowed :access_token_with_xauth
 
   # Don't force org urls
   skip_before_filter :ensure_org_url_if_org_user

@@ -37,7 +37,8 @@
   font-size: 20px;
   color: white;
 }
-.OrganizationList-user:nth-child(3n) { margin-right: 0 }
+.OrganizationList-user:nth-child(3n),
+.OrganizationList > div:nth-child(3n) .OrganizationList-user { margin-right: 0 }
 .OrganizationList-userLink {
   @include display-flex();
   @include justify-content(space-between, justify);
@@ -66,6 +67,7 @@
   color: $cTypography-help;
 }
 .OrganizationList-userInfoLabel {
+  min-width: 40px;
   padding: 0 12px;
   margin-left: 12px;
   line-height: 20px;

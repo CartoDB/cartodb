@@ -209,8 +209,12 @@ class Organization < Sequel::Model
 
   def quota_dates(options)
     date_to = (options[:to] ? options[:to].to_date : Date.today)
-    date_from = (options[:from] ? options[:from].to_date : owner.last_billing_cycle)
+    date_from = (options[:from] ? options[:from].to_date : last_billing_cycle)
     return date_from, date_to
+  end
+
+  def last_billing_cycle
+    owner ? owner.last_billing_cycle : Date.today
   end
 
   def public_vis_count_by_type(type)

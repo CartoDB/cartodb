@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require_relative '../../../../app/models/visualization/vizjson'
+require_relative '../../../../lib/carto/http/client'
 
 module CartoDB
   module NamedMapsWrapper
@@ -32,7 +33,7 @@ module CartoDB
       def self.create_new( visualization, parent )
         template_data = NamedMap.get_template_data( visualization, parent )
 
-        response = Typhoeus.post( parent.url + '?api_key=' + parent.api_key, {
+        response = http_client.post( parent.url + '?api_key=' + parent.api_key, {
           headers:          parent.headers,
           body:             ::JSON.dump( template_data ),
           ssl_verifypeer:   parent.verify_cert,
@@ -60,7 +61,7 @@ module CartoDB
         retries = 0
         success = true
         begin
-          response = Typhoeus.put( url + '?api_key=' + @parent.api_key, {
+          response = self.class.http_client.put( url + '?api_key=' + @parent.api_key, {
             headers:          @parent.headers,
             body:             ::JSON.dump( @template ),
             ssl_verifypeer:   @parent.verify_cert,
@@ -85,7 +86,7 @@ module CartoDB
 
       # Delete existing named map
       def delete
-        response = Typhoeus.delete( url + '?api_key=' + @parent.api_key,
+        response = self.class.http_client.delete( url + '?api_key=' + @parent.api_key,
           { 
             headers:          @parent.headers,
             ssl_verifypeer:   @parent.verify_cert,
@@ -95,7 +96,7 @@ module CartoDB
             timeout:          HTTP_REQUEST_TIMEOUT
           } )
         raise HTTPResponseError, "DELETE:#{response.code} #{response.request.url} #{response.body}" unless response.code == 204
-      end #delete
+      end
 
       # Url to access a named map's tiles
       def url
@@ -104,7 +105,7 @@ module CartoDB
 
       # Normalize a name to make it "named map valid"
       def self.normalize_name( raw_name )
-        ( NAME_PREFIX + raw_name ).gsub( /[^a-zA-Z0-9\-\_.]/ , '' ).gsub( '-', '_' )
+        (NAME_PREFIX + raw_name).gsub(/[^a-zA-Z0-9\-\_.]/, '').gsub('-', '_')
       end
 
       def self.get_template_data( visualization, parent )
@@ -204,6 +205,13 @@ module CartoDB
       end
 
       attr_reader :template
+
+
+      private
+
+      def self.http_client
+        @@http_client ||= Carto::Http::Client.get('named_map')
+      end
 
     end
   end

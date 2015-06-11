@@ -67,6 +67,11 @@ class Carto::VisualizationQueryBuilder
     self
   end
 
+  def with_user_id_not(user_id)
+    @user_id_not = user_id
+    self
+  end
+
   def with_privacy(privacy)
     @privacy = privacy
     self
@@ -159,6 +164,10 @@ class Carto::VisualizationQueryBuilder
 
     if @user_id
       query = query.where(user_id: @user_id)
+    end
+
+    if @user_id_not
+      query = query.where('visualizations.user_id != ?', @user_id_not)
     end
 
     if @privacy

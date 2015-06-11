@@ -124,8 +124,9 @@ $sLabel-width: 140px;
   min-height: 40px; // if there's no input on row (e.g. only radio buttons), to avoid "jumpy" behaviour on re-renders
   margin-right: $sMargin-element;
 }
-.Form-rowData.Form-rowData--alignLeft { @include justify-content(flex-start, start) }
 
+.Form-rowData.Form-rowData--alignLeft { @include justify-content(flex-start, start) }
+.Form-rowData--withLabel { margin-bottom: 30px }
 .Form-rowData--noMargin { margin: 0 }
 
 // RowData sizes
@@ -219,11 +220,13 @@ $sLabel-width: 140px;
   top: 36px;
 }
 .Form-input.is-disabled { background: $cStructure-grayBkg }
+.Form-input.is-invalid { border-color: $cHighlight-negative }
 .Form-textarea {
-  padding: 12px;
+  padding: 9px 12px;
   min-height: 110px;
   max-height: 110px;
 }
+.Form-textarea.is-disabled { color: $cTypography-help }
 .Form-copyIcon {
   top: 10px;
   right: 12px;
@@ -409,4 +412,56 @@ $sLabel-width: 140px;
   font-size: $sFontSize-normal;
   color: white;
   text-align: center;
+}
+.Form-tags {
+  position: relative;
+  width: 100%;
+  min-height: 38px;
+  padding: 0;
+  outline: none;
+  border: 1px solid #CCC;
+  border-radius: 4px;
+  background: white;
+  z-index: 2;
+}
+.Form-tagsList.tagit { padding: 0 5px 5px 5px }
+.Form-tagsList.tagit .tagit-choice {
+  padding: 0 30px 0 11px;
+  margin: 5px 5px 0 0;
+  line-height: 28px;
+  background: #EFF8FF;
+  color: #746E76;
+  border-radius: 2px;
+}
+.Form-tagsList.tagit .tagit-choice .tagit-close {
+  line-height: normal;
+  right: 10px;
+}
+.Form-tagsList.tagit .tagit-choice .tagit-close .text-icon {
+  display: inline-block;
+  color: #C5CCD1;
+  &:hover { color: #AAA }
+}
+.Form-tagsList.tagit li.tagit-new { padding: 7px 4px 2px 7px }
+.Form-tagsList.tagit .ui-autocomplete-input::-webkit-input-placeholder {
+  font-weight: $sFontWeight-normal;
+  font-style: italic;
+  color: #AAA
+}
+.Form-tagsList.tagit .ui-autocomplete-input::-moz-placeholder {
+  font-weight: $sFontWeight-normal;
+  font-style: italic;
+  color: #AAA
+}
+.Form-tagsList.tagit .ui-autocomplete-input:-ms-placeholder {
+  font-weight: $sFontWeight-normal;
+  font-style: italic;
+  color: #AAA
+}
+.Form-tags.is-focus { border-color: #999 }
+.Form-tags.is-disabled {
+  background: $cStructure-grayBkg;
+
+  .tagit-choice { padding: 0 11px }
+  .tagit-choice .tagit-close { display: none }
 }

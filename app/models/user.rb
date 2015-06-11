@@ -131,7 +131,6 @@ class User < Sequel::Model
     if self.organization_user?
       if new? || column_changed?(:organization_id)
         self.twitter_datasource_enabled = self.organization.twitter_datasource_enabled
-        self.new_dashboard_enabled      = self.organization.new_dashboard_enabled
       end
       self.max_layers ||= 6
       self.private_tables_enabled ||= true

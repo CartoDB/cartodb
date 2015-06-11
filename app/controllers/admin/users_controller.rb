@@ -12,11 +12,6 @@ class Admin::UsersController < ApplicationController
 
   layout 'application'
 
-  def initialize_google_plus_config
-    signup_action = Cartodb::Central.sync_data_with_cartodb_central? ? Cartodb::Central.new.google_signup_url : '/google/signup'
-    @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, signup_action)
-  end
-
   def profile
     respond_to do |format|
       format.html { render 'profile' }
@@ -114,6 +109,11 @@ class Admin::UsersController < ApplicationController
   end
 
   private
+
+  def initialize_google_plus_config
+    signup_action = Cartodb::Central.sync_data_with_cartodb_central? ? Cartodb::Central.new.google_signup_url : '/google/signup'
+    @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, signup_action)
+  end
 
   def get_oauth_services
     datasources = CartoDB::Datasources::DatasourcesFactory.get_all_oauth_datasources()

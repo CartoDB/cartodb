@@ -13,14 +13,6 @@ describe Carto::Api::VisualizationsController do
   end
 
   before(:all) do
-    # INFO: this is not needed now for this test
-    # Set the feature flag (is this needed?). All new users will have it
-    @ff = Carto::FeatureFlag.new
-    @ff.id = 666666
-    @ff.name = 'active_record_vis_endpoint'
-    @ff.restricted = false
-    @ff.save
-
     # Spec the routes so that it uses the new controller. Needed for alternative routes testing
     Rails.application.routes.draw do
 
@@ -91,8 +83,28 @@ describe Carto::Api::VisualizationsController do
 
   end
 
+  describe 'index shared_only' do
+    include_context 'organization with users helper'
+    include_context 'visualization creation helpers'
+
+    it 'should not display nor count the shared visualizations you own' do
+      table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: "table#{rand(9999)}_1", user_id: @org_user_1.id)
+      u1_t_1_id = table.table_visualization.id
+      u1_t_1_perm_id = table.table_visualization.permission.id
+
+      share_table_with_organization(table, @org_user_1, @organization)
+
+      get api_v1_visualizations_index_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key,
+          type: CartoDB::Visualization::Member::TYPE_CANONICAL, order: 'updated_at',
+          shared: CartoDB::Visualization::Collection::FILTER_SHARED_ONLY), @headers
+      body = JSON.parse(last_response.body)
+      body['total_entries'].should eq 0
+      body['visualizations'].count.should eq 0
+    end
+
+  end
+
   after(:all) do
-    @ff.destroy if @ff
     Rails.application.reload_routes!
   end
 

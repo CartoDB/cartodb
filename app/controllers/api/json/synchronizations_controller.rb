@@ -7,7 +7,7 @@ require_relative '../../../../services/datasources/lib/datasources'
 class Api::Json::SynchronizationsController < Api::ApplicationController
   include CartoDB
 
-  ssl_required :index, :show, :create, :update, :destroy, :sync_now, :syncing?
+  ssl_required :index, :show, :create, :update, :destroy, :sync, :sync_now, :syncing?
 
   def index
     collection = Synchronization::Collection.new.fetch(user_id: current_user.id)
@@ -49,7 +49,6 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
     end
 
     member = Synchronization::Member.new(member_attributes)
-
 
     options = {
       user_id:            current_user.id,
@@ -102,11 +101,11 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
   rescue => exception
     CartoDB.notify_exception(exception)
     head(404)
-  end #sync
+  end
 
   def sync_now
-    return sync(true)
-  end #sync_now
+    sync(true)
+  end
 
   def syncing?
     member = Synchronization::Member.new(id: params[:id]).fetch
@@ -116,7 +115,7 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
   rescue => exception
     CartoDB.notify_exception(exception)
     head(404)
-  end #syncing?
+  end
 
   def show
     member = Synchronization::Member.new(id: params[:id]).fetch

@@ -148,14 +148,6 @@ class Organization < Sequel::Model
       :seats                    => self.seats,
       :twitter_username         => self.twitter_username,
       :updated_at               => self.updated_at,
-      :users => self.users.reject { |item| filtered_user && item.id == filtered_user.id }
-        .map { |u|
-        {
-          :id         => u.id,
-          :username   => u.username,
-          :avatar_url => u.avatar_url
-        }
-      },
       :website          => self.website,
       :avatar_url       => self.avatar_url
     }

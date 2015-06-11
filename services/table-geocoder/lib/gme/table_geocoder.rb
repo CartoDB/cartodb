@@ -30,17 +30,18 @@ module Carto
 
       def run
         @state = 'processing'
+        @processed_rows = 0
         add_georef_status_column
 
         # Here's the actual stuff
         data_input_blocks.each do |data_block|
           geocode(data_block)
           update_table(data_block)
+          @processed_rows += data_block.size
         end
 
         @state = 'completed'
       rescue => e
-        # TODO better error management
         @state = 'failed'
         raise e
       ensure
@@ -52,7 +53,6 @@ module Carto
       def process_results; end
 
       def update_geocoding_status
-        #TODO: implement
         { processed_rows: processed_rows, state: state }
       end
 

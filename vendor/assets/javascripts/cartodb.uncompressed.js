@@ -1,6 +1,6 @@
-// cartodb.js version: 3.14.4
+// cartodb.js version: 3.14.3
 // uncompressed version: cartodb.uncompressed.js
-// sha: f0bf8b70836a81a5e9a0e14a2c9cf5c0d4236f9c
+// sha: fabc57cfac68c2f4264b8263a8620c436f96c45a
 (function() {
   var root = this;
 
@@ -25652,7 +25652,7 @@ if (typeof window !== 'undefined') {
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = "3.14.4";
+    cdb.VERSION = "3.14.3";
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -33319,11 +33319,7 @@ MapBase.prototype = {
   },
 
   getTooltipData: function(layer) {
-    var tooltip = this.layers[layer].tooltip;
-    if (tooltip && tooltip.fields && tooltip.fields.length) {
-      return tooltip;
-    }
-    return null;
+    return this.layers[layer].tooltip;
   },
 
   getInfowindowData: function(layer) {
@@ -40112,24 +40108,9 @@ function transformToHTTP(tilesTemplate) {
   return tilesTemplate;
 }
 
-function transformToHTTPS(tilesTemplate) {
-  for(var url in HTTPS_TO_HTTP) {
-    var httpsUrl = HTTPS_TO_HTTP[url];
-    if(tilesTemplate.indexOf(httpsUrl) !== -1) {
-      return tilesTemplate.replace(httpsUrl, url);
-    }
-  }
-  return tilesTemplate;
-}
-
 Layers.register('tilejson', function(vis, data) {
   var url = data.tiles[0];
-  if(vis.https === true) {
-    url = transformToHTTPS(url);
-  }
-  else if(vis.https === false) { // Checking for an explicit false value. If it's undefined the url is left as is.
-    url = transformToHTTP(url);
-  }
+  url = vis.https ? url: transformToHTTP(url);
   return new cdb.geo.TileLayer({
     urlTemplate: url
   });
@@ -40137,13 +40118,7 @@ Layers.register('tilejson', function(vis, data) {
 
 Layers.register('tiled', function(vis, data) {
   var url = data.urlTemplate;
-  if(vis.https === true) {
-    url = transformToHTTPS(url);
-  }
-  else if(vis.https === false) { // Checking for an explicit false value. If it's undefined the url is left as is.
-    url = transformToHTTP(url);
-  }
-  
+  url = vis.https ? url: transformToHTTP(url);
   data.urlTemplate = url;
   return new cdb.geo.TileLayer(data);
 });

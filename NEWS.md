@@ -5,7 +5,8 @@
 * Cache public and with link embeds in redis [#3733](https://github.com/CartoDB/cartodb/pull/3733)
 * Unify caching of vizjsons and version keys [#3726](https://github.com/CartoDB/cartodb/pull/3726)
 * Named maps created for all visualizations, regardless of layers privacy [#3879](https://github.com/CartoDB/cartodb/issues/3879)
-* Added an [http client for ruby](https://github.com/CartoDB/cartodb/wiki/The-CartoDB-ruby-http-client) with some cool features 
+* Added an [http client for ruby](https://github.com/CartoDB/cartodb/wiki/The-CartoDB-ruby-http-client) with some cool features
+* SQLViews are editable when filtering [#3812](https://github.com/CartoDB/cartodb/pull/3812)
 
 Bugfixes:
 * Fixed deletion of layers upon disconnecting synced datasources [#3718](https://github.com/CartoDB/cartodb/pull/3718)

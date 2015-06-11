@@ -47,6 +47,15 @@
 .RadioButton.is-checked .RadioButton-label {
   color: $cTypography-linkSelected;
 }
+.RadioButton.is-alert .RadioButton-label {
+  color: $cHighlight-alert3;
+}
+.RadioButton.is-alert .RadioButton-input {
+  border-color: $cHighlight-alert3;
+  &:before {
+    background: $cHighlight-alert3;
+  }
+}
 .RadioButton.is-warning .RadioButton-label {
   color: $cHighlight-alert;
 }

@@ -396,7 +396,7 @@ module CartoDB
       end
 
       if e.table? and (org or users.any?)
-        e.invalidate_cache_and_refresh_named_map
+        e.invalidate_cache
       end
     end
 

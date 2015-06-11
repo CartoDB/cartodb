@@ -19,7 +19,7 @@ module.exports = {
           "vendor/jscrollpane.js",
           "vendor/spin.js",
           "vendor/lzma.js",
-          "vendor/mod/carto.uncompressed.js",
+          "vendor/mod/carto.js",
           "vendor/mod/torque.uncompressed.js",
           "vendor/mod/jquery-ui/jquery.ui.core.js",
           "vendor/mod/jquery-ui/jquery.ui.widget.js",

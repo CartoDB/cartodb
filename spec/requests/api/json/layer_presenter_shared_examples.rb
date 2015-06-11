@@ -21,7 +21,7 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
     end
 
     before(:each) do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
       delete_user_data @user_1
       delete_user_data @user_2
     end

@@ -420,8 +420,7 @@ describe Api::Json::VisualizationsController do
 
   describe '#slides_sorting' do
     it 'checks proper working of prev/next' do
-      CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
 
       map_id = ::Map.create(user_id: @user.id).id
 
@@ -581,8 +580,7 @@ describe Api::Json::VisualizationsController do
 
   describe '#source_visualization_id_and_hierarchy' do
     it 'checks proper working of parent_id' do
-      CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
 
       map_id = ::Map.create(user_id: @user.id).id
 

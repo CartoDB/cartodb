@@ -1,8 +1,6 @@
 class Api::Json::UploadsController < Api::ApplicationController
 
-  if Rails.env.production? || Rails.env.staging?
-    ssl_required :create
-  end
+  ssl_required :create if Rails.env.production? || Rails.env.staging?
 
   skip_before_filter :verify_authenticity_token
   before_filter :api_or_user_authorization_required

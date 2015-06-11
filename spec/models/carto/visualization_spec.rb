@@ -13,7 +13,7 @@ describe Carto::Visualization do
   end
 
   before(:each) do
-    CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
     delete_user_data(@user)
   end
 

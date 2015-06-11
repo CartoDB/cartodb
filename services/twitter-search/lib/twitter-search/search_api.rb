@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require_relative '../../../../lib/carto/http/client'
+
 # @see http://support.gnip.com/apis/search_api/
 module CartoDB
   module TwitterSearch
@@ -103,7 +105,8 @@ module CartoDB
           end
         end
 
-        response = Typhoeus.get(@config[CONFIG_SEARCH_URL], http_options(params))
+        http_client = Carto::Http::Client.get('search_api')
+        response = http_client.get(@config[CONFIG_SEARCH_URL], http_options(params))
 
         raise TwitterHTTPException.new(response.code, response.effective_url, response.body) unless response.code == 200
 

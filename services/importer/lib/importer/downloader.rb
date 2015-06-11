@@ -56,9 +56,7 @@ module CartoDB
           @translated_url = translator.translate(url)
           @custom_filename = translator.respond_to?(:rename_destination) ? translator.rename_destination(url) : nil
         end
-        # INFO: runner_spec.rb uses File instead of String, so we chose to support both
-        # We only want to escape specific characters
-        @translated_url = URI.escape(@translated_url, URL_ESCAPED_CHARACTERS) if !@translated_url.nil? && @translated_url.kind_of?(String)
+        @translated_url = clean_url(@translated_url)
       end
 
       def provides_stream?
@@ -108,6 +106,15 @@ module CartoDB
       attr_accessor :url
 
       private
+
+      def clean_url(url)
+        return url if url.nil? || !url.kind_of?(String)
+
+        url = url.strip
+        url = URI.escape(url, URL_ESCAPED_CHARACTERS)
+
+        url
+      end
       
       attr_reader :http_options, :repository, :seed
       attr_writer :source_file
@@ -194,6 +201,12 @@ module CartoDB
             raise DownloadTimeoutError.new("TIMEOUT ERROR: Body:#{error_response.body}")
           elsif error_response.headers['Error'] && error_response.headers['Error'] =~ /too many nodes/
             raise TooManyNodesError.new(error_response.headers['Error'])
+          elsif error_response.return_code == :couldnt_resolve_host
+            raise CouldntResolveDownloadError.new("Couldn't resolve #{@translated_url}")
+          elsif error_response.code == 401
+            raise UnauthorizedDownloadError.new(error_response.body)
+          elsif error_response.code == 404
+            raise NotFoundDownloadError.new(error_response.body)
           else
             raise DownloadError.new("DOWNLOAD ERROR: Code:#{error_response.code} Body:#{error_response.body}")
           end

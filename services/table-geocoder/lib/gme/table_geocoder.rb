@@ -63,7 +63,6 @@ module Carto
       def data_input_blocks
         Enumerator.new do |enum|
           loop do
-            debugger
             data_input = connection.select(:cartodb_id, searchtext_expression)
               .from(@sequel_qualified_table_name)
               .where(cartodb_georef_status: nil)

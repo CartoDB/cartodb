@@ -43,6 +43,22 @@ $width: 620px;
   font-size: $sFontSize-small;
   color: $cTypography-help;
 }
+.EditVisMetadata-markdownIcon {
+  margin-right: 10px;
+  padding: 0 2px 2px 5px;
+  background: #DCDCDC;
+  border-radius: 2px;
+  color: #F9F9F9;
+}
+.EditVisMetadata-markdownIconText {
+  font-weight: $sFontWeight-small;
+  font-size: 8px
+}
+.EditVisMetadata-markdownIconChar {
+  font-size: $sFontSize-small;
+  font-style: normal;
+  line-height: normal;
+}
 .EditVisMetadata-privacyIndicator:hover {
   text-decoration: underline;
   color: #777;

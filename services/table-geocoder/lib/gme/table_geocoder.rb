@@ -78,12 +78,11 @@ module Carto
         # The original_formatter has the following format:
         #   `{street_column_name}[[, additional_free_text][, {province_column_name}][, country_free_text]]`
         atoms = original_formatter.split(',').map {|s| s.strip }
-        # TODO use a named capture group in regexp?
         # TODO quote column names
         # TODO quote strings
         searchtext_expression = atoms.map { |atom|
-          if atom =~ /{(.*)}/
-            $1
+          if match = /\A{(?<column_name>.*)}\z/.match(atom)
+            match[:table_name]
           else
             %Q{'#{atom}'}
           end

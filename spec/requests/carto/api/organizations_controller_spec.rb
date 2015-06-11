@@ -31,9 +31,10 @@ describe Carto::Api::OrganizationsController do
       login(@org_user_1)
     end
 
-    it 'returns 401 for users requesting an organization that they are not owners of' do
+    # INFO: listing users though API is now needed for permission granting, for example
+    it 'returns 200 for users requesting an organization that they are not owners of' do
       get api_v1_organization_users_url(id: @organization_2.id, api_key: @org_user_1.api_key), @headers
-      last_response.status.should == 401
+      last_response.status.should == 200
     end
 
     it 'returns organization users sorted by username' do

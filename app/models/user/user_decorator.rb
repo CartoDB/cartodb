@@ -65,7 +65,7 @@ module CartoDB
         base_url: self.public_url
       }
 
-      data[:organization] = self.organization.to_poro(self) if self.organization.present?
+      data[:organization] = self.organization.to_poro(self, options) if self.organization.present?
 
       if options[:extended]
         data.merge({

@@ -28,7 +28,7 @@ module Carto
 
       def load_organization
         @organization = Carto::Organization.where(id: params[:id]).first
-        render_jsonp({}, 401) and return if @organization.nil? || !@organization.is_owner_user?(current_user)
+        render_jsonp({}, 401) and return if @organization.nil?
       end
 
     end

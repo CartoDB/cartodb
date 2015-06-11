@@ -1,6 +1,6 @@
 # coding: utf-8
 class Admin::OrganizationsController < ApplicationController
-  ssl_required :settings, :settings_update
+  ssl_required :show, :settings, :settings_update
   before_filter :login_required, :load_organization_and_members
 
   layout 'application'

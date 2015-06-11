@@ -1,0 +1,85 @@
+// Edit visualization (dataset or map) metadata
+// dialog content styles
+// ---------------------------------------------
+
+@import "../variables/mixins";
+@import "../variables/colors";
+@import "../variables/sizes";
+
+$width: 620px;
+
+.EditVisMetadata {}
+.EditVisMetadata .Dialog-header { height: 117px }
+// Gradients
+.EditVisMetadata .Dialog-expandedSubContent {
+  position: relative;
+
+  &:before,
+  &:after {
+    content: '';
+    position: fixed;
+    left: 50%;
+    width: $width;
+    height: 18px;
+    margin-left: -310px;
+    z-index: 5;
+  }
+
+  &:before {
+    top: 175px;
+    background-color: transparent!important;
+    @include background-gradient(rgba(#F9F9F9,1),rgba(#F9F9F9,0));
+  }
+
+  &:after {
+    bottom: 97px;
+    @include background-gradient(rgba(#F9F9F9,0),rgba(#F9F9F9,1));
+  }
+}
+.EditVisMetadata-markdown {
+  position: absolute;
+  right: 0;
+  bottom: -25px;
+  font-size: $sFontSize-small;
+  color: $cTypography-help;
+}
+.EditVisMetadata-markdownIcon {
+  margin-right: 10px;
+  padding: 0 2px 2px 5px;
+  background: #DCDCDC;
+  border-radius: 2px;
+  color: #F9F9F9;
+}
+.EditVisMetadata-markdownIconText {
+  font-weight: $sFontWeight-small;
+  font-size: 8px
+}
+.EditVisMetadata-markdownIconChar {
+  font-size: $sFontSize-small;
+  font-style: normal;
+  line-height: normal;
+}
+.EditVisMetadata-privacyIndicator:hover {
+  text-decoration: underline;
+  color: #777;
+}
+.EditVisMetadata-formContent,
+.EditVisMetadata-formFooter {
+  width: $width;
+  margin: 0 auto;
+}
+.EditVisMetadata-formContent {
+  position: relative;
+  padding: 28px 0 120px;
+}
+.EditVisMetadata-formFooter {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+  background: #F9F9F9;
+}
+.EditVisMetadata .Dialog-stickyFooter {
+  left: 0;
+  z-index: 10;
+}
+.EditVisMetadata-formFooter .Button { margin: 0 }

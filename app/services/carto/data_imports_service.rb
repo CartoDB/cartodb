@@ -101,7 +101,10 @@ module Carto
       oauth = user.oauth_for_service(service)
       raise CartoDB::Datasources::AuthError.new("OAuth already set for service #{service}") if oauth
       datasource = get_datasource(user, service)
-      user.add_oauth(service, datasource.validate_callback(params))
+
+      # TODO: workaround for https://github.com/CartoDB/cartodb/issues/4003
+      #user.add_oauth(service, datasource.validate_callback(params))
+      CartoDB::OAuths.new(::User.where(id: user.id).first).add(service, datasource.validate_callback(params))
     rescue => e
       delete_oauth_if_expired_and_raise(user, e, oauth)
     end

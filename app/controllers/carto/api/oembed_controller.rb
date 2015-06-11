@@ -7,6 +7,8 @@ module Carto
     class OembedController < ::Api::ApplicationController
       include VisualizationSearcher
 
+      ssl_allowed :show
+
       skip_before_filter :api_authorization_required
 
       # Returns oembed data as required

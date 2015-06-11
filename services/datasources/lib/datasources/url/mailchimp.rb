@@ -1,10 +1,10 @@
 # encoding: utf-8
 
-require 'typhoeus'
 require 'json'
 require 'gibbon'
 require 'addressable/uri'
 require_relative '../base_oauth'
+require_relative '../../../../../lib/carto/http/client'
 
 module CartoDB
   module Datasources
@@ -111,7 +111,7 @@ module CartoDB
             redirect_uri: @callback_url
           }
 
-          token_response = Typhoeus.post(ACCESS_TOKEN_URI, http_options(token_call_params, :post))
+          token_response = http_client.post(ACCESS_TOKEN_URI, http_options(token_call_params, :post))
 
           raise DataDownloadTimeoutError.new(DATASOURCE_NAME) if token_response.timed_out?
 
@@ -124,7 +124,7 @@ module CartoDB
 
           # Afterwards, must do another call to metadata endpoint to retrieve API details
           # @see https://apidocs.mailchimp.com/oauth2/
-          metadata_response = Typhoeus.get(MAILCHIMP_METADATA_URI,http_options({}, :get, {
+          metadata_response = http_client.get(MAILCHIMP_METADATA_URI,http_options({}, :get, {
                                              'Authorization' => "OAuth #{partial_access_token}"}))
 
           raise DataDownloadTimeoutError.new(DATASOURCE_NAME) if metadata_response.timed_out?
@@ -331,6 +331,10 @@ module CartoDB
         end
 
         private
+
+        def http_client
+          @http_client ||= Carto::Http::Client.get('mailchimp')
+        end
 
         def http_options(params={}, method=:get, extra_headers={})
           {

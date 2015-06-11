@@ -68,7 +68,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
   end
 
   after(:all) do
-    CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
     @user.destroy
   end
 
@@ -124,6 +124,13 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
         }
       }
 
+      # Post: to create (as now all tables/viz create named maps)
+      Typhoeus.stub( named_maps_url(@user.api_key),
+        { method: :post } )
+              .and_return(
+                Typhoeus::Response.new( code: 200, body: JSON::dump( { template_id: 'tpl_fakeid' } ) )
+              )
+
       table = create_table( user_id: @user.id )
       table.privacy = UserTable::PRIVACY_PUBLIC
       table.save()
@@ -134,12 +141,6 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       derived_vis.privacy = CartoDB::Visualization::Member::PRIVACY_PROTECTED
       derived_vis.password = password
 
-      # get: not present
-      Typhoeus.stub( tiler_regex,
-      { method: :get}  )
-            .and_return(
-              Typhoeus::Response.new(code: 404, body: "")
-            )
       # Post: to create
       Typhoeus.stub( named_maps_url(@user.api_key),
         { method: :post } )
@@ -168,7 +169,15 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
 
 
   describe 'public_table' do
-    it 'public map with public visualization does not create a named map' do
+    it 'public map with public visualization creates a named map' do
+      #Post to create
+      new_template_body = { template_id: 'tpl_fakeid' }
+
+      Typhoeus.stub( named_maps_url(@user.api_key) )
+              .and_return(
+                Typhoeus::Response.new( code: 200, body: JSON::dump( new_template_body ) )
+              )
+
       table = create_table( user_id: @user.id )
       table.privacy = UserTable::PRIVACY_PUBLIC
       table.save()
@@ -178,7 +187,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       derived_vis = CartoDB::Visualization::Copier.new(@user, table.table_visualization).copy()
 
       # Only this method should be called
-      CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:delete => true)
 
       derived_vis.store()
       collection  = Visualization::Collection.new.fetch()
@@ -190,11 +199,18 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       table.affected_visualizations[1].id.should eq derived_vis.id
       table.affected_visualizations[0].id.should_not eq table.affected_visualizations[1].id
     end
-  end #public_table_public_vis
-
+  end
 
   describe 'private_table' do
     it 'private map with public visualization should create a named map' do
+      #Post to create
+      new_template_body = { template_id: 'tpl_fakeid' }
+
+      Typhoeus.stub( named_maps_url(@user.api_key) )
+              .and_return(
+                Typhoeus::Response.new( code: 200, body: JSON::dump( new_template_body ) )
+              )
+
       table = create_table( user_id: @user.id )
 
       derived_vis = CartoDB::Visualization::Copier.new(@user, table.table_visualization).copy()
@@ -204,14 +220,6 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       Typhoeus.stub( tiler_regex )
               .and_return(
                 Typhoeus::Response.new(code: 404, body: "")
-              )
-
-      #Post to create
-      new_template_body = { template_id: 'tpl_fakeid' }
-
-      Typhoeus.stub( named_maps_url(@user.api_key) )
-              .and_return(
-                Typhoeus::Response.new( code: 200, body: JSON::dump( new_template_body ) )
               )
 
       derived_vis.store()
@@ -234,7 +242,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
                 Typhoeus::Response.new( code: 200, body: JSON::dump( named_map_template_data ) )
               )
 
-      named_map = derived_vis.has_named_map?()
+      named_map = derived_vis.get_named_map
 
       named_map.should_not eq false
       named_map.template.should eq named_map_template_data
@@ -341,53 +349,6 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
               )
 
       derived_vis.delete()  # This will trigger a delete
-    end
-  end #named_map_updated_on_visualization_updated
-
-
-  describe 'named_map_deleted_on_table_made_public' do
-    it 'checks that when you make a table public and the visualization had a named map, it gets deleted' do
-      template_data = {
-        template: {
-          version: '0.0.1',
-          name: '@@PLACEHOLDER@@',
-          auth: {
-            method: 'open'
-          },
-          placeholders: {
-            layer0: {
-              type: "number",
-              default: 1
-            }
-          },
-          layergroup: {
-            layers: [
-              {
-                type: "cartodb",
-                options: {
-                  sql: "WITH wrapped_query AS (select * from test1) SELECT * from wrapped_query where <%= layer0 %>=1",
-                  layer_name: "test1",
-                  cartocss: "/** */",
-                  cartocss_version: "2.1.1",
-                  interactivity: "cartodb_id"
-                }
-              }
-            ]
-          }
-        }
-      }
-
-      table, derived_vis, template_id = create_private_table_with_public_visualization(template_data)
-
-      Typhoeus.stub( named_map_url(template_id,@user.api_key), 
-        { method: :delete } )
-              .and_return(
-                Typhoeus::Response.new( code: 204, body: "" )
-              )
-
-      table.privacy = UserTable::PRIVACY_PUBLIC
-      table.save()
-      table.reload()  # Will trigger a DELETE
     end
   end #named_map_updated_on_visualization_updated
 
@@ -689,6 +650,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
 
       table, derived_vis, template_id = create_private_table_with_public_visualization(template_data)
 
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
 
       derived_vis.map.add_layer( Layer.create( 
         kind: 'carto', 
@@ -756,6 +718,14 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
   # NOTE: Leaves stubbed calls to GET the template so they return the correct template data
   def create_private_table_with_public_visualization(template_data, 
       visualization_privacy = CartoDB::Visualization::Member::PRIVACY_PUBLIC)
+
+    #Tables/canonical vis also nave named maps
+    new_template_body = { template_id: 'tpl_fakeid' }
+    Typhoeus.stub( named_maps_url(@user.api_key) )
+            .and_return(
+              Typhoeus::Response.new( code: 200, body: JSON::dump( new_template_body ) )
+            )
+
     table = create_table( user_id: @user.id )
     derived_vis = CartoDB::Visualization::Copier.new(@user, table.table_visualization).copy
     derived_vis.privacy = visualization_privacy
@@ -801,6 +771,6 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
             )
 
     return table, derived_vis, template_id
-  end #create_map_with_public_visualization
+  end
 
 end

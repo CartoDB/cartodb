@@ -11,8 +11,7 @@ end
 
 def bypass_named_maps
   CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
-  CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
-  CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:create).returns(true)
+  CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
 end
 
 def random_username
@@ -70,17 +69,19 @@ shared_context 'organization with users helper' do
   end
 
   before(:all) do
-    @org_user_1 = create_test_user("a#{random_username}")
-
     @organization = test_organization.save
     @organization_2 = test_organization.save
 
+    @org_user_1 = create_test_user("a#{random_username}")
     user_org = CartoDB::UserOrganization.new(@organization.id, @org_user_1.id)
     user_org.promote_user_to_admin
     @organization.reload
     @org_user_1.reload
 
     @org_user_2 = create_test_user("b#{random_username}", @organization)
+    @org_user_2.organization_id = @organization.id
+    @org_user_2.save.reload
+    @organization.reload
   end
 
   before(:each) do

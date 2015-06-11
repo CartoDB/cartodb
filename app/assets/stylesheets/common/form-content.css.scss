@@ -70,6 +70,9 @@ $sLabel-width: 140px;
   @include nicer-lato-typography();
   color: $cTypography-paragraphs;
 }
+.Form-label.Form-label--large {
+  font-size: $sFontSize-large;
+}
 .Form-rowPreview {
   width: 735px;
 }
@@ -342,6 +345,7 @@ $sLabel-width: 140px;
   color: $cTypography-secondary;
   font-size: $sFontSize-normal;
 }
+
 .Form-fileLabel--error {
   display: none;
   color: $cHighlight-negative;

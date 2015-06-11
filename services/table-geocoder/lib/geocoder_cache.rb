@@ -1,5 +1,5 @@
 # encoding: utf-8
-require 'typhoeus'
+require_relative '../../../lib/carto/http/client'
 
 module CartoDB
   class GeocoderCache
@@ -126,7 +126,8 @@ module CartoDB
 
     def run_query(query, format = '')
       params = { q: query, api_key: sql_api[:api_key], format: format }
-      response = Typhoeus.post(
+      http_client = Carto::Http::Client.get('geocoder_cache')
+      response = http_client.post(
         sql_api[:base_url],
         body: URI.encode_www_form(params)
       )

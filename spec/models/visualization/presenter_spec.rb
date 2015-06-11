@@ -15,7 +15,7 @@ describe Visualization::Member do
   end
 
   before(:each) do
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
 
     user_id = UUIDTools::UUID.timestamp_create.to_s
     user_name = 'whatever'

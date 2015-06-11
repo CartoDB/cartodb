@@ -12,7 +12,7 @@ describe Organization do
   end
 
   after(:all) do
-    Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
     begin
       @user.destroy
     rescue
@@ -229,7 +229,8 @@ describe Organization do
 
   describe '#org_shared_vis' do
     it "checks fetching all shared visualizations of an organization's members " do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+      
       # Don't check/handle DB permissions
       Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
       Permission.any_instance.stubs(:grant_db_permission).returns(nil)

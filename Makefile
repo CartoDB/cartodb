@@ -34,6 +34,7 @@ WORKING_SPECS_2 = \
   spec/lib/string_spec.rb \
   spec/lib/image_metadata_spec.rb \
   spec/lib/central_spec.rb \
+  spec/lib/carto/http/client_spec.rb \
 	spec/helpers/uuidhelper_spec.rb \
   $(NULL)
 
@@ -161,7 +162,7 @@ WORKING_SPECS_9 = \
   services/platform-limits/spec/unit/ \
   spec/models/platform-limits/ \
   spec/lib/initializers/carto_db_spec.rb \
-  spec/unit/controllers/api/json/oembed_controller_spec.rb \
+  spec/requests/carto/api/oembed_controller_spec.rb \
   spec/models/carto/ \
   $(NULL)
 

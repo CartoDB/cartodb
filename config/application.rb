@@ -60,8 +60,10 @@ module CartoDB
 
     # Default setting is [/\w+\.(?!js|css).+/, /application.(css|js)$/]
     config.assets.precompile = %w(
+      config.js
       app.js
       cdb.js
+      embed.js
       dashboard_deps.js
       dashboard.js
       dashboard_templates.js

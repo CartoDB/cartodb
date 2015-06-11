@@ -3,9 +3,7 @@
 class Api::Json::OrganizationsController < Api::ApplicationController
   include CartoDB
 
-  if Rails.env.production? || Rails.env.staging?
-    ssl_required :show, :users
-  end
+  ssl_required :show, :users if Rails.env.production? || Rails.env.staging?
 
   # Fetch info from the current user orgranization
   def show

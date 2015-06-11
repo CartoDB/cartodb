@@ -68,7 +68,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
   end
 
   after(:all) do
-    CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
     @user.destroy
   end
 
@@ -187,7 +187,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       derived_vis = CartoDB::Visualization::Copier.new(@user, table.table_visualization).copy()
 
       # Only this method should be called
-      CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:delete => true)
 
       derived_vis.store()
       collection  = Visualization::Collection.new.fetch()
@@ -242,7 +242,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
                 Typhoeus::Response.new( code: 200, body: JSON::dump( named_map_template_data ) )
               )
 
-      named_map = derived_vis.has_named_map?()
+      named_map = derived_vis.get_named_map
 
       named_map.should_not eq false
       named_map.template.should eq named_map_template_data
@@ -650,6 +650,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
 
       table, derived_vis, template_id = create_private_table_with_public_visualization(template_data)
 
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
 
       derived_vis.map.add_layer( Layer.create( 
         kind: 'carto', 

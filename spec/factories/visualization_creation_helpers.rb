@@ -10,8 +10,7 @@ def app
 end
 
 def bypass_named_maps
-  CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
-  CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+  CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
 end
 
 def random_username
@@ -108,7 +107,23 @@ shared_context 'organization with users helper' do
                  },
                  access: CartoDB::Permission::ACCESS_READONLY
                }]}.to_json, headers
-     response.status.should == 200
+    response.status.should == 200
+  end
+
+  def share_table_with_organization(table, owner, organization)
+    bypass_named_maps
+    headers = {'CONTENT_TYPE'  => 'application/json'}
+    perm_id = table.table_visualization.permission.id
+
+    put api_v1_permissions_update_url(user_domain: owner.username, api_key: owner.api_key, id: perm_id),
+        {acl: [{
+                 type: CartoDB::Permission::TYPE_ORGANIZATION,
+                 entity: {
+                   id:   organization.id,
+                 },
+                 access: CartoDB::Permission::ACCESS_READONLY
+               }]}.to_json, headers
+    last_response.status.should == 200
   end
 
 end

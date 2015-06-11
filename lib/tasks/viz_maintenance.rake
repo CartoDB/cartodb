@@ -46,7 +46,7 @@ namespace :cartodb do
             print '.'
           end
           if current % 500 == 0
-            puts "\n> #{Time.now}"
+            puts "\n> #{Time.now} #{current}/#{count}"
           end
         rescue => ex
           printf "E"

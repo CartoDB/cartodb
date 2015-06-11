@@ -63,7 +63,7 @@ module Carto
         if format == 'xml'
           render xml: response_data.to_xml(root: 'oembed')
         else
-          render json: response_data.to_json
+          render json: response_data.to_json, :callback => params['callback']
         end
       end
 

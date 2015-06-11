@@ -63,9 +63,10 @@ module Carto
       def data_input_blocks
         Enumerator.new do |enum|
           loop do
-            data_input = connection.select(select_clause.lit)
+            debugger
+            data_input = connection.select(:cartodb_id, searchtext_expression)
               .from(@sequel_qualified_table_name)
-              .where("cartodb_georef_status IS NULL".lit)
+              .where(cartodb_georef_status: nil)
               .limit(MAX_BLOCK_SIZE)
               .all
             enum.yield data_input
@@ -74,20 +75,19 @@ module Carto
         end
       end
 
-      def select_clause
+      def searchtext_expression
         # The original_formatter has the following format:
         #   `{street_column_name}[[, additional_free_text][, {province_column_name}][, country_free_text]]`
+        # See https://github.com/jeremyevans/sequel/blob/master/doc/security.rdoc
+        # See http://sequel.jeremyevans.net/rdoc/classes/Sequel/SQL/Builders.html
         atoms = original_formatter.split(',').map {|s| s.strip }
-        # TODO quote column names
-        # TODO quote strings
-        searchtext_expression = atoms.map { |atom|
-          if match = /\A{(?<column_name>.*)}\z/.match(atom)
-            match[:table_name]
-          else
-            %Q{'#{atom}'}
-          end
-        }.join(%Q{ || ',' || })
-        "cartodb_id, #{searchtext_expression} searchtext"
+        Sequel.join(atoms.map { |atom|
+                      if match = /\A{(?<column_name>.*)}\z/.match(atom)
+                        Sequel.identifier(match[:column_name])
+                      else
+                        atom
+                      end
+                    }, ',').as(:searchtext)
       end
 
       def geocode(data_block)

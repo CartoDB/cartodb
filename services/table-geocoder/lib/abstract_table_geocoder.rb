@@ -41,7 +41,7 @@ module CartoDB
     end
 
     def process_results
-      raise 'TODO: implement'
+      raise 'Not implemented'
     end
 
     def used_batch_request?

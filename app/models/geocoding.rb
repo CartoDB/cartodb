@@ -1,5 +1,5 @@
 # encoding: UTF-8'
-require_relative '../../services/table-geocoder/lib/geocoder_factory'
+require_relative '../../services/table-geocoder/lib/table_geocoder_factory'
 require_relative '../../lib/cartodb/metrics'
 require_relative '../../lib/cartodb/mixpanel'
 

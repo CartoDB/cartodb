@@ -57,20 +57,6 @@ describe Admin::TablesController do
     end
   end # GET /tables/:id
 
-  describe "GET feeds" do
-    it "returns an RSS feed" do
-      get "/datasets/feed", {}, :format => "rss"
-      last_response.status.should == 200
-      last_response.content_type.should eq("application/atom+xml; charset=utf-8")
-    end
-
-    it "returns an atom feed" do
-      get "/datasets/feed", {}, :format => "atom"
-      last_response.status.should == 200
-      last_response.content_type.should eq("application/atom+xml; charset=utf-8")
-    end
-  end
-
   def factory
     new_table(user_id: @user.id).save.reload
   end #table_attributes

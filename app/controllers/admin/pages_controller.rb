@@ -15,9 +15,9 @@ class Admin::PagesController < ApplicationController
 
   ssl_required :common_data, :public, :datasets
   ssl_allowed :index, :sitemap, :datasets_for_user, :datasets_for_organization, :maps_for_user, :maps_for_organization,
-              :render_not_found, :datasets_rss_feed, :maps_rss_feed
+              :render_not_found
 
-  before_filter :login_required, :except => [:public, :datasets, :sitemap, :index, :datasets_rss_feed, :maps_rss_feed]
+  before_filter :login_required, :except => [:public, :datasets, :sitemap, :index]
   before_filter :ensure_organization_correct
   skip_before_filter :browser_is_html5_compliant?, only: [:public, :datasets]
   skip_before_filter :ensure_user_organization_valid, only: [:public]
@@ -26,14 +26,6 @@ class Admin::PagesController < ApplicationController
   # Just an entrypoint to dispatch to different places according to
   def index
     CartoDB.subdomainless_urls? ? index_subdomainless : index_subdomainfull
-  end
-
-  def datasets_rss_feed
-    rss_feed(:datasets)
-  end
-
-  def maps_rss_feed
-    rss_feed(:maps)
   end
 
   def common_data
@@ -163,72 +155,6 @@ class Admin::PagesController < ApplicationController
       # We cannot get any user information from domain, path or session
       redirect_to login_url
     end
-  end
-
-  def rss_feed(source = :maps, num_items = 25)
-    subdomain = CartoDB.extract_subdomain(request).strip.downcase
-
-    viewing_user = true
-    viewed_entity = User.where(username: subdomain).first
-    if viewed_entity.nil?
-      viewing_user = false
-      viewed_entity = get_organization_if_exists(subdomain)
-      return render_404 if viewed_entity.nil?
-    end
-
-    if viewing_user
-      data_for_user_rss(viewed_entity, source, num_items)
-    else
-      data_for_organization_rss(viewed_entity, source, num_items)
-    end
-
-    respond_to do |format|
-      format.atom { render layout: false }
-      format.rss { render layout: false }
-    end
-  end
-
-  def data_for_organization_rss(organization, source, num_items)
-    @feed_title = "Recent #{source == :maps ? 'maps' : 'datasets' } for #{organization.name}"
-    @feed_description = "RSS feed of #{organization.name} CartoDB #{source == :maps ? 'maps' : 'datasets' }"
-
-    if source == :maps
-      @feed_items = organization.public_visualizations(1, num_items)
-    else
-      @feed_items = organization.public_datasets(1, num_items)
-    end
-
-    @feed_last_updated = nil
-    # So ugly, but current backend doesn't allows anything other than cycling with .each
-    @feed_items.each { |m|
-      @feed_last_updated = m.updated_at
-      break
-    }
-  end
-
-  def data_for_user_rss(user, source, num_items)
-    @feed_title = "Recent #{source == :maps ? 'maps' : 'datasets' } for #{user.username}"
-    @feed_description = "RSS feed of #{user.username} CartoDB #{source == :maps ? 'maps' : 'datasets' }"
-
-    vis_type = source == :maps ? Visualization::Member::TYPE_DERIVED : Visualization::Member::TYPE_CANONICAL
-
-    @feed_items = Visualization::Collection.new.fetch({
-                                                        user_id:  user.id,
-                                                        type:     vis_type,
-                                                        per_page: num_items,
-                                                        privacy:  Visualization::Member::PRIVACY_PUBLIC,
-                                                        order:    'updated_at',
-                                                        o:        {updated_at: :desc},
-                                                        exclude_shared: true,
-                                                        exclude_raster: true,
-                                                      })
-
-    @feed_last_updated = nil
-    # So ugly, but current backend doesn't allows anything other than cycling with .each
-    @feed_items.each { |m|
-      @feed_last_updated = m.updated_at
-      break
-    }
   end
 
   def render_datasets(vis_list, user=nil)
@@ -363,21 +289,10 @@ class Admin::PagesController < ApplicationController
   end
 
   def set_layout_vars_for_organization(org, content_type)
-
-    if content_type == 'maps'
-      rss_meta_link = CartoDB.url(view_context, 'public_maps_rss', {format: :rss})
-      atom_meta_link = CartoDB.url(view_context, 'public_maps_rss', {format: :atom})
-    else
-      rss_meta_link = CartoDB.url(view_context, 'public_datasets_rss', {format: :rss})
-      atom_meta_link = CartoDB.url(view_context, 'public_datasets_rss', {format: :atom})
-    end
-
     set_layout_vars({
         most_viewed_vis_map: org.public_vis_by_type(Visualization::Member::TYPE_DERIVED, 1, 1, nil, 'mapviews').first,
         content_type:        content_type,
-        default_fallback_basemap: org.owner.default_basemap,
-        rss_meta_link: rss_meta_link,
-        atom_meta_link: atom_meta_link
+        default_fallback_basemap: org.owner.default_basemap
       })
     set_shared_layout_vars(org, {
         name:       org.display_name.blank? ? org.name : org.display_name,
@@ -391,23 +306,6 @@ class Admin::PagesController < ApplicationController
     @maps_url            = CartoDB.url(view_context, 'public_visualizations_home', {}, required.fetch(:user, nil))
     @datasets_url        = CartoDB.url(view_context, 'public_datasets_home', {}, required.fetch(:user, nil))
     @default_fallback_basemap = required.fetch(:default_fallback_basemap, {})
-    @rss_meta_link = required.fetch(:rss_meta_link, nil)
-    @atom_meta_link = required.fetch(:atom_meta_link, nil)
-    if @rss_meta_link.nil?
-      if @content_type == 'maps'
-        @rss_meta_link = CartoDB.url(view_context, 'public_maps_rss', {format: :rss}, required.fetch(:user, nil))
-      else
-        @rss_meta_link = CartoDB.url(view_context, 'public_datasets_rss', {format: :rss}, required.fetch(:user, nil))
-      end
-    end
-    if @atom_meta_link.nil?
-      if @content_type == 'maps'
-        @atom_meta_link = CartoDB.url(view_context, 'public_maps_rss', {format: :atom}, required.fetch(:user, nil))
-      else
-        @atom_meta_link = CartoDB.url(view_context, 'public_datasets_rss', {format: :atom}, required.fetch(:user, nil))
-      end
-    end
-
   end
 
   def set_pagination_vars(required)

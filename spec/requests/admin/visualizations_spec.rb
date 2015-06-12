@@ -49,20 +49,6 @@ describe Admin::VisualizationsController do
     @user.destroy
   end
 
-  describe "GET map feeds" do
-    it "returns an RSS feed" do
-      get "/maps/feed.rss"
-      last_response.status.should == 200
-      last_response.content_type.should eq("application/rss+xml; charset=utf-8")
-    end
-
-    it "returns an atom feed" do
-      get "/maps/feed"
-      last_response.status.should == 200
-      last_response.content_type.should eq("application/atom+xml; charset=utf-8")
-    end
-  end
-
   describe 'GET /viz' do
     it 'returns a list of visualizations' do
       login_as(@user, scope: 'test')

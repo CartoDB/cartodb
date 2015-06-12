@@ -88,10 +88,7 @@ shared_context 'organization with users helper' do
   end
 
   after(:all) do
-    delete_user_data @org_user_1 if @org_user_1
-    delete_user_data @org_user_2 if @org_user_2
-    @org_user_2.destroy if @org_user_2
-    @org_user_1.destroy if @org_user_1
+    @organization.destroy_cascade
   end
 
   def share_table(table, owner, user)

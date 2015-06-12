@@ -5,7 +5,7 @@
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = "3.14.2";
+    cdb.VERSION = "3.14.5";
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -58,6 +58,7 @@
         'core/model.js',
         'core/view.js',
         'core/loader.js',
+        'core/util.js',
 
         'geo/geocoder.js',
         'geo/geometry.js',
@@ -81,6 +82,7 @@
         'geo/ui/tooltip.js',
         'geo/ui/fullscreen.js',
 
+        'geo/sublayer.js',
         'geo/layer_definition.js',
         'geo/common.js',
 

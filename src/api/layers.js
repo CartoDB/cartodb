@@ -63,21 +63,21 @@
    */
 
   cartodb.createLayer = function(map, layer, options, callback) {
-
-    var promise = new _Promise();
-    var layerView, MapType;
-    options = options || {};
     if(map === undefined) {
       throw new TypeError("map should be provided");
     }
     if(layer === undefined) {
       throw new TypeError("layer should be provided");
     }
-    var args = arguments,
-    fn = args[args.length -1];
+
+    var layerView, MapType;
+    var options = options || {};
+    var args = arguments;
+    var fn = args[args.length -1];
     if(_.isFunction(fn)) {
       callback = fn;
     }
+    var promise = new _Promise();
 
     promise.addTo = function(map, position) {
       promise.on('done', function() {
@@ -94,6 +94,7 @@
         promise.trigger('error');
         return;
       }
+
       // extract layer data from visualization data
       if(visData.layers) {
         if(visData.layers.length < 2) {
@@ -113,7 +114,6 @@
         promise.trigger('error');
         return;
       }
-
 
       // update options
       if(options && !_.isFunction(options)) {
@@ -221,7 +221,6 @@
     });
 
     return promise;
-
   };
 
 

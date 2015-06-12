@@ -684,7 +684,7 @@ module.exports.TorqueLayer = TorqueLayer;
   }
 
   var flags = {
-    sprites_to_images: userAgent().indexOf('Safari') === -1
+    sprites_to_images: userAgent().indexOf('Safari') === -1 && userAgent().indexOf('Firefox') === -1
   };
 
 module.exports = {
@@ -987,6 +987,24 @@ CanvasLayer.prototype.setPaneName = function(paneName) {
   this.paneName_ = paneName;
 
   this.setPane_();
+};
+
+/**
+ * Set the opacity for the canvas.
+ * 
+ * @param {number} opacity The opacity of the canvas
+ */
+CanvasLayer.prototype.setOpacity = function (opacity) {
+  this.canvas.style.opacity = opacity;
+};
+
+/**
+ * Get the canvases opacity.
+ * 
+ * @return {number} The opacity of the canvas
+ */
+CanvasLayer.prototype.getOpacity = function () {
+  return this.canvas.style.opacity;
 };
 
 /**
@@ -1328,16 +1346,17 @@ GMapsTileLoader.prototype = {
   },
 
   _removeTileLoader: function() {
-    for(var i in this._listeners) {
-      google.maps.event.removeListener(this._listeners[i]);
-    }
+    this._listeners.forEach(function (listener) {
+      google.maps.event.removeListener(listener);
+    });
+    
     this._removeTiles();
   },
 
   _removeTiles: function () {
-      for (var key in this._tiles) {
-        this._removeTile(key);
-      }
+    for (var key in this._tiles) {
+      this._removeTile(key);
+    }
   },
 
   _reloadTiles: function() {
@@ -2059,7 +2078,7 @@ L.CanvasLayer = L.Class.extend({
     }, this);
 
     map.on({ 'viewreset': this._reset }, this);
-    map.on('move', this.render, this);
+    map.on('move', this.redraw, this);
     map.on('resize', this._reset, this);
 
     if (this.options.zoomAnimation) {
@@ -2206,6 +2225,10 @@ L.CanvasLayer = L.Class.extend({
 
   // use direct: true if you are inside an animation frame call
   redraw: function(direct) {
+    var domPosition = L.DomUtil.getPosition(this._map.getPanes().mapPane);
+    if (domPosition) {
+      L.DomUtil.setPosition(this._canvas, { x: -domPosition.x, y: -domPosition.y });
+    }
     if (direct) {
       this.render();
     } else {
@@ -4373,6 +4396,7 @@ var Profiler = require('../profiler');
   // min value to render a line. 
   // it does not make sense to render a line of a width is not even visible
   var LINEWIDTH_MIN_VALUE = 0.05; 
+  var MAX_SPRITE_RADIUS = 255;
 
   function renderPoint(ctx, st) {
     ctx.fillStyle = st['marker-fill'];
@@ -4449,14 +4473,15 @@ var Profiler = require('../profiler');
       if (st['marker-fill-opacity'] !== undefined || st['marker-opacity'] !== undefined) {
         ctx.globalAlpha = st['marker-fill-opacity'] || st['marker-opacity'];
       }
-      ctx.drawImage(img, 0, 0, img.width, img.height);
+      ctx.drawImage(img, 0, 0, Math.min(img.width, MAX_SPRITE_RADIUS), Math.min(img.height, MAX_SPRITE_RADIUS));
     }
   }
 
 module.exports = {
     renderPoint: renderPoint,
     renderSprite: renderSprite,
-    renderRectangle: renderRectangle
+    renderRectangle: renderRectangle,
+    MAX_SPRITE_RADIUS: MAX_SPRITE_RADIUS
 };
 
 },{}],23:[function(require,module,exports){
@@ -4606,8 +4631,8 @@ var Filters = require('./torque_filters');
       if (qualifiedUrl && this._iconsToLoad <= 0 && this._icons[qualifiedUrl]) {
         var img = this._icons[qualifiedUrl];
 
-        var dWidth = st['marker-width'] * 2 || img.width;
-        var dHeight = (st['marker-height'] || dWidth) * (img.width / img.height);
+        var dWidth =  Math.min(st['marker-width'] * 2 || img.width, cartocss.MAX_SPRITE_RADIUS * 2);
+        var dHeight = Math.min((st['marker-height'] || dWidth) * (img.width / img.height), cartocss.MAX_SPRITE_RADIUS * 2);
 
         canvas.width = ctx.width = dWidth;
         canvas.height = ctx.height = dHeight;

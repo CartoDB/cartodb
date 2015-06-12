@@ -141,6 +141,22 @@ describe("common.geo.ui.Legend", function() {
 
     });
 
+    it("should show/hide the legend when the visible attribute changes", function() {
+      legend.model.set({ type: "custom" });
+
+      legend.render();
+
+      expect(legend.$el.css('display')).toEqual('block');
+
+      legend.model.set({ visible: false });
+
+      expect(legend.$el.css('display')).toEqual('none');
+
+      legend.model.set({ visible: true });
+
+      expect(legend.$el.css('display')).toEqual('block');
+    });
+
     it("should render the title if title and show_title are set", function() {
       var title = "Hi, I'm a title";
       legend.model.set({ type: "custom", title: title, show_title: true });

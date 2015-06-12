@@ -9,7 +9,7 @@ $w: 780px;
 .ImportOptions {
   position: relative;
   width: $w;
-  margin: 0 auto 20px; 
+  margin: 0 auto 20px;
 }
 .ImportOptions-navigation {}
 .ImportOptions-navigationButton {
@@ -50,6 +50,7 @@ $w: 780px;
   border-radius: 4px;
   color: $cTypography-secondary;
   font-size: 14px;
+  cursor: pointer;
 
   &:hover {
     background: white;

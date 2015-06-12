@@ -108,6 +108,8 @@
       function guessMap(sql, geometryType, column, stats, bbox) {
         var css = null
         var mssg = "";
+        // these columns made the cut in an analysis in python
+        // code here: http://nbviewer.ipython.org/gist/ohasselblad/b2475c95a23c5e070264
         var make_the_cut = ['areasource', 'bsmtcode', 'builtcode', 'irrlotcode', 'ownertype', 'plutomapid', 'proxcode', 'schooldist', 'splitzone'];
         if (stats.type == 'number') {
           if (['A','U'].indexOf(stats.dist_type) != -1) {
@@ -116,14 +118,19 @@
           } else if (stats.dist_type === 'F') {
             css = CSS.choropleth(stats.equalint, column, geometryType, ramps.blue);
           } else {
-              css =  CSS.choropleth(stats.quantiles, column, geometryType, ramps.blue);
+              if (stats.dist_type === 'J') {
+                css =  CSS.choropleth(stats.quantiles, column, geometryType, ramps.blue);
+              } else {
+                var inverse_ramp = (_.clone(ramps.blue)).reverse();
+                css =  CSS.choropleth(stats.quantiles, column, geometryType, inverse_ramp);
+              }
           }
-          mssg = column + ": stddev: " + stats.stddev + ", avg: " + stats.avg + ", dist type: " + stats.dist_type;
+          mssg = '<span style="font-weight: bold; text-decoration: underline;">' + column + "</span><br /> std: " + stats.stddev + "<br /> avg: " + stats.avg + " <br /> dist type: " + stats.dist_type;
         } else if(stats.type == 'string') {
             if (make_the_cut.indexOf(column) != -1) {
-                mssg = column + " PASSES :) -- (#uniques: " + stats.distinct + ", null%: " + stats.count_nulls + ")";
+                mssg = '<span style="font-weight: bold; text-decoration: underline;">' + column + "</span><br /> PASSES :) -- (#uniques: " + stats.distinct + " null%: " + stats.count_nulls + ")";
             } else {
-                mssg = column + " DOESN'T PASS -- (#uniques: " + stats.distinct + ", null%: " + stats.count_nulls + ")";
+                mssg = '<span style="font-weight: bold; text-decoration: underline;">' + column + "</span><br /> DOESN'T PASS -- (#uniques: " + stats.distinct + " null%: " + stats.count_nulls + ")";
             }
           css = CSS.category(stats.hist.slice(0, ramps.cat.length).map(function(r) { return r[0]; }), column, geometryType)
         }
@@ -132,7 +139,7 @@
           div.attr('class', 'map');
           $('body').append(div);
           makeMap(div[0], sql, css, bbox);
-          div.append($('<div>').text(mssg).attr('class', 'lengend'));          
+          div.append($('<div>').html(mssg).attr('class', 'lengend'));
         }
       }
 

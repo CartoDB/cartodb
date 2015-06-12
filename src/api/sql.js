@@ -437,7 +437,7 @@
                    'max("{{column}}") as max,',
                    'avg("{{column}}") as avg,',
                    'stddev("{{column}}") as stddev,',
-                   'PAE_ClassTest(array_agg("{{column}}"::numeric)) as dist_type ',
+                   'CDB_DistType(array_agg("{{column}}"::numeric)) as dist_type ',
               'from ({{sql}}) _wrap ',
               'where {{column}} is not null ',
         '),',
@@ -453,7 +453,7 @@
          '),',
          'buckets as (',
             'select CDB_QuantileBins(array_agg({{column}}::numeric), 7) as quantiles, ',
-            '       PAE_EqualIntervalBins(array_agg({{column}}::numeric), 7) as equalint ',
+            'select CDB_EqualIntervalBins(array_agg({{column}}::numeric), 7) as equalint '
             'from ({{sql}}) _table_sql where {{column}} is not null',
          ')',
          'select * from histogram, stats, buckets'

@@ -91,7 +91,7 @@ shared_context 'organization with users helper' do
   end
 
   after(:all) do
-    @organization.delete_cascade
+    @organization.destroy_cascade
   end
 
   def share_table(table, owner, user)

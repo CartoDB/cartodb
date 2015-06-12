@@ -105,11 +105,14 @@ class Organization < Sequel::Model
   end
 
   def get_geocoding_calls(options = {})
-    users.map{ |u| u.get_geocoding_calls(options) }.sum
+    date_from, date_to = quota_dates(options)
+    Geocoding.get_geocoding_calls(users_dataset.join(:geocodings, :user_id => :id), date_from, date_to)
   end
 
   def get_twitter_imports_count(options = {})
-    users.map{ |u| u.get_twitter_imports_count(options) }.sum
+    date_from, date_to = quota_dates(options)
+
+    SearchTweet.get_twitter_imports_count(users_dataset.join(:search_tweets, :user_id => :id), date_from, date_to)
   end
 
   def db_size_in_bytes
@@ -208,6 +211,16 @@ class Organization < Sequel::Model
   end
 
   private
+
+  def quota_dates(options)
+    date_to = (options[:to] ? options[:to].to_date : Date.today)
+    date_from = (options[:from] ? options[:from].to_date : last_billing_cycle)
+    return date_from, date_to
+  end
+
+  def last_billing_cycle
+    owner ? owner.last_billing_cycle : Date.today
+  end
 
   def public_vis_count_by_type(type)
     CartoDB::Visualization::Collection.new.fetch(

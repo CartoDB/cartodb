@@ -9,7 +9,12 @@
 $width: 620px;
 
 .EditVisMetadata {}
-.EditVisMetadata .Dialog-header { height: 117px }
+.EditVisMetadata .Dialog-header {
+  $height: 117px;
+  height: $height;
+  max-height: $height;
+  min-height: $height;
+}
 // Gradients
 .EditVisMetadata .Dialog-expandedSubContent {
   position: relative;
@@ -26,7 +31,7 @@ $width: 620px;
   }
 
   &:before {
-    top: 175px;
+    top: 174px;
     background-color: transparent!important;
     @include background-gradient(rgba(#F9F9F9,1),rgba(#F9F9F9,0));
   }

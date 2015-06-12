@@ -14,6 +14,7 @@
   padding-bottom: $sMargin-group;
   border-bottom: 1px solid $cStructure-mainLine;
 }
+.List-row.List-row.is-disabled { opacity: 0.4 }
 .List-rowItem {
   @include display-flex();
   @include justify-content(space-between, justify);

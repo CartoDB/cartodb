@@ -22,7 +22,7 @@ module CartoDB
 
         MAX_CATEGORIES = 4
 
-        DEBUG_FLAG = false
+        DEBUG_FLAG = true
 
         # Used for each query page size, not as total
         FILTER_MAXRESULTS     = :maxResults
@@ -46,6 +46,7 @@ module CartoDB
 
         # Gnip's 30 limit minus 'has:geo' one
         MAX_SEARCH_TERMS = 30 - 1
+
         MAX_QUERY_SIZE   = 1024
 
         MAX_TABLE_NAME_SIZE = 30
@@ -322,7 +323,7 @@ module CartoDB
               # Dumps inside upon each block response
               # Create new API instance for each thread to avoid sharing same value-ref
               search_by_category(
-                TwitterSearch::SearchAPI.new(api_config, redis_storage), base_filters, category, @csv_dumper)
+                TwitterSearch::SearchAPI.new(api_config, redis_storage, @csv_dumper), base_filters, category)
             }
           }
           threads.each {|key, thread|
@@ -350,7 +351,7 @@ module CartoDB
           streamed_size
         end
 
-        def search_by_category(api, base_filters, category, csv_dumper=nil)
+        def search_by_category(api, base_filters, category)
           api.params = base_filters
 
           exception = nil
@@ -385,7 +386,7 @@ module CartoDB
                 }
               end
 
-              dumped_items_count = csv_dumper.dump(category[CATEGORY_NAME_KEY], results_page[:results])
+              dumped_items_count = @csv_dumper.dump(category[CATEGORY_NAME_KEY], results_page[:results])
               next_results_cursor = results_page[:next].nil? ? nil : results_page[:next]
 
               @user_semaphore.synchronize {

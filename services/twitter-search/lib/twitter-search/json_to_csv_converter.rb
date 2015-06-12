@@ -182,12 +182,16 @@ module CartoDB
         results.join("\n")
       end
 
+      # INFO: This gets called before field-by-field parsing to speed up things
+      def clean_string(contents)
+        contents.gsub("\\n", ' ').gsub("\x0D", ' ').gsub("\x0A", ' ').gsub("\0", '')
+      end
+
       private
 
       def field_to_csv(field)
-        # RFC4180 + my own
-        '"' + field.to_s.gsub('"', '""').gsub("\\n", ' ').gsub("\x0D", ' ').gsub("\x0A", ' ').gsub("\0", '').gsub("\\", ' ') \
-          + '"'
+        # RFC4180
+        '"' + field.to_s.gsub('"', '""').gsub("\\", ' ') + '"'
       end
 
       def calculate_the_geom(row)

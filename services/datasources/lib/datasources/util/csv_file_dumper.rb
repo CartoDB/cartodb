@@ -100,7 +100,6 @@ module CartoDB
         streamed_size
       end
 
-
       # @param names_list Array
       # @return String
       def merge_dumps(names_list = [])
@@ -120,7 +119,7 @@ module CartoDB
         }
 
         # Remove final trailing newline before returning
-        return_data.gsub(/\n$/, '')
+        return_data.sub(/\n$/, '')
       end
 
       # Return a new temporary file contained inside a tmp subfolder
@@ -150,6 +149,10 @@ module CartoDB
 
       def headers_path
         @headers_file.path unless @headers_file.nil?
+      end
+
+      def clean_string(contents)
+        @json2csv_conversor.clean_string(contents)
       end
 
       private

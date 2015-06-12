@@ -24,6 +24,9 @@
     <meta name="twitter:url" content="<%= request.original_url %>" />
 
     <%= stylesheet_link_tag 'cartodb', 'common', 'public_dashboard' %>
+
+    <%= auto_discovery_link_tag(:atom, @atom_meta_link) %>
+    <%= auto_discovery_link_tag(:rss, @rss_meta_link) %>
   </head>
   <body class="PublicBody">
     <%= render 'admin/shared/public_header' %>

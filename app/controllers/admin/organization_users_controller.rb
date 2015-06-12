@@ -3,8 +3,10 @@ require_relative '../../../lib/google_plus_api'
 require_relative '../../../lib/google_plus_config'
 
 class Admin::OrganizationUsersController < ApplicationController
-  ssl_required  :profile, :account, :oauth, :api_key, :regenerate_api_key
+  # Organization actions
   ssl_required  :new, :create, :edit, :update, :destroy
+  # Data of single users
+  ssl_required  :profile, :account, :oauth, :api_key, :regenerate_api_key
 
   before_filter :get_config
   before_filter :login_required, :check_permissions
@@ -12,17 +14,6 @@ class Admin::OrganizationUsersController < ApplicationController
   before_filter :initialize_google_plus_config, only: [:edit, :update]
 
   layout 'application'
-
-  def get_config
-    @extras_enabled = extras_enabled?
-    @extra_geocodings_enabled = extra_geocodings_enabled?
-    @extra_tweets_enabled = extra_tweets_enabled?
-  end
-
-  def initialize_google_plus_config
-    signup_action = Cartodb::Central.sync_data_with_cartodb_central? ? Cartodb::Central.new.google_signup_url : '/google/signup'
-    @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, signup_action)
-  end
 
   def new
     @user = User.new
@@ -39,13 +30,6 @@ class Admin::OrganizationUsersController < ApplicationController
     respond_to do |format|
       format.html { render 'edit' }
     end
-  end
-
-  def set_flash_flags(show_dashboard_details_flash = nil, show_account_settings_flash = nil)
-    @show_dashboard_details_flash = session[:show_dashboard_details_flash] || show_dashboard_details_flash
-    @show_account_settings_flash = session[:show_account_settings_flash] || show_account_settings_flash
-    session[:show_dashboard_details_flash] = nil
-    session[:show_account_settings_flash] = nil
   end
 
   def create
@@ -131,6 +115,8 @@ class Admin::OrganizationUsersController < ApplicationController
     redirect_to organization_path(user_domain: params[:user_domain])
   end
 
+  private
+
   def extras_enabled?
     extra_geocodings_enabled? || extra_tweets_enabled?
   end
@@ -143,7 +129,23 @@ class Admin::OrganizationUsersController < ApplicationController
     !Cartodb.get_config(:datasource_search, 'twitter_search', 'standard', 'username').blank?
   end
 
-  private
+  def set_flash_flags(show_dashboard_details_flash = nil, show_account_settings_flash = nil)
+    @show_dashboard_details_flash = session[:show_dashboard_details_flash] || show_dashboard_details_flash
+    @show_account_settings_flash = session[:show_account_settings_flash] || show_account_settings_flash
+    session[:show_dashboard_details_flash] = nil
+    session[:show_account_settings_flash] = nil
+  end
+
+  def get_config
+    @extras_enabled = extras_enabled?
+    @extra_geocodings_enabled = extra_geocodings_enabled?
+    @extra_tweets_enabled = extra_tweets_enabled?
+  end
+
+  def initialize_google_plus_config
+    signup_action = Cartodb::Central.sync_data_with_cartodb_central? ? Cartodb::Central.new.google_signup_url : '/google/signup'
+    @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, signup_action)
+  end
 
   def check_permissions
     raise RecordNotFound unless current_user.organization.present?

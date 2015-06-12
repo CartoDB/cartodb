@@ -1,5 +1,16 @@
 # coding: UTF-8
 require_relative '../spec_helper'
+require_relative 'user_shared_examples'
+
+describe 'refactored behaviour' do
+
+  it_behaves_like 'user models' do
+    def get_twitter_imports_count_by_user_id(user_id)
+      User.where(id: user_id).first.get_twitter_imports_count
+    end
+  end
+
+end
 
 describe User do
   before(:all) do

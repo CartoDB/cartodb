@@ -172,6 +172,7 @@ class Carto::User < ActiveRecord::Base
     synchronization_oauths.where(service: service).first
   end
 
+  # INFO: don't use, use CartoDB::OAuths#add instead
   def add_oauth(service, token)
     # INFO: this should be the right way, but there's a problem with pgbouncer:
     # ActiveRecord::StatementInvalid: PG::Error: ERROR:  prepared statement "a1" does not exist
@@ -179,6 +180,7 @@ class Carto::User < ActiveRecord::Base
     #    service:  service,
     #    token:    token
     #)
+    # INFO: even this fails eventually, th the same error. See https://github.com/CartoDB/cartodb/issues/4003
     synchronization_oauth = Carto::SynchronizationOauth.new({
       user_id: self.id,
       service: service,

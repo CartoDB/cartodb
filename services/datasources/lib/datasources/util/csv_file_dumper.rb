@@ -21,6 +21,7 @@ module CartoDB
         @debug_mode = debug_mode
         @json2csv_conversor = json_to_csv_conversor
         @temporary_directory = nil
+        @temporary_folder = Time.now.strftime("%Y%m%d_%H%M%S_") + rand(1000).to_s
 
         @additional_fields = {}
 
@@ -127,11 +128,14 @@ module CartoDB
       def temporary_file(base_name = '', extension = CONVERTED_FILE_EXTENSION)
         FileUtils.mkdir_p(FILE_DUMPER_TMP_SUBFOLDER) unless File.directory?(FILE_DUMPER_TMP_SUBFOLDER)
 
+        temps_full_path = FILE_DUMPER_TMP_SUBFOLDER + @temporary_folder + '/'
+        FileUtils.mkdir_p(temps_full_path)
+
         # For the default scenario force encoding, for original files don't touch anything
         if extension == CONVERTED_FILE_EXTENSION
-          Tempfile.new([base_name.gsub(' ','_'), extension], FILE_DUMPER_TMP_SUBFOLDER, :encoding => OUTPUT_ENCODING)
+          Tempfile.new([base_name.gsub(' ','_'), extension], temps_full_path, :encoding => OUTPUT_ENCODING)
         else
-          Tempfile.new([base_name.gsub(' ','_'), extension], FILE_DUMPER_TMP_SUBFOLDER)
+          Tempfile.new([base_name.gsub(' ','_'), extension], temps_full_path)
         end
       end
 

@@ -20,7 +20,7 @@
             <div class="DatasetsList-itemSecondaryInfo">
               <div class="DatasetsList-itemMeta">
                 <%= render 'admin/pages/shared/like_button', vis: vis %>
-                <% if vis[:rows_count] %>
+                <% if !vis[:rows_count].blank? %>
                   <div class="RowsIndicator">
                     <i class="iconFont iconFont-Rows RowsIndicator-icon"></i>
                     <% if vis[:rows_count] < 10000 %>

@@ -1,3 +1,33 @@
+describe('MapProperties', function() {
+
+  describe('.getMapId', function() {
+    it('returns the id of the map', function() {
+      var mapProperties = new MapProperties( { layergroupid: 'wadus' });
+      expect(mapProperties.getMapId()).toEqual('wadus');
+    })
+  });
+
+  describe('.getLayerIndexByType', function() {
+
+    it('returns the index of a layer of a given type', function() {
+      var layers = [
+        { type: 'mapnik' },
+        { type: 'http' },
+        { type: 'mapnik' }
+      ]
+      var mapProperties = new MapProperties({
+        metadata: {
+          layers: layers
+        }
+      });
+      expect(mapProperties.getLayerIndexByType(0, 'mapnik')).toEqual(0);
+      expect(mapProperties.getLayerIndexByType(1, 'mapnik')).toEqual(2);
+      expect(mapProperties.getLayerIndexByType(0, 'http')).toEqual(1);
+      expect(mapProperties.getLayerIndexByType(10, 'http')).toEqual(-1);
+    })
+  })
+})
+
 describe("LayerDefinition", function() {
 
   var layerDefinition;
@@ -480,6 +510,128 @@ describe("LayerDefinition", function() {
 
   describe('.getTiles', function() {
 
+    it("should fetch the map properties and invoke the callback with URLs for tiles and grids", function() {
+      var mapProperties = {
+        "layergroupid": "layergroupid",
+        "metadata": {
+          "layers": [
+            { "type": "mapnik", "meta": {} },
+            { "type": "mapnik", "meta": {} }
+          ]
+        }
+      }
+
+      var expectedURLs = {
+        "tiles": [
+          "http://rambo.cartodb.com:8081/api/v1/map/layergroupid/{z}/{x}/{y}.png"
+        ],
+        "grids": [
+          [ "http://rambo.cartodb.com:8081/api/v1/map/layergroupid/0/{z}/{x}/{y}.grid.json" ],
+          [ "http://rambo.cartodb.com:8081/api/v1/map/layergroupid/1/{z}/{x}/{y}.grid.json" ]
+        ]
+      }
+
+      var callback = jasmine.createSpy("callback");
+      layerDefinition.getLayerToken = function (callback) {
+        callback(mapProperties);
+      }
+      spyOn(layerDefinition, "getLayerToken").and.callThrough();
+
+      layerDefinition.getTiles(callback);
+
+      expect(layerDefinition.getLayerToken).toHaveBeenCalled();
+      expect(callback).toHaveBeenCalledWith(expectedURLs);
+    });
+
+    it("should only fetch the map properties if they were already fetched and the definition is valid", function() {
+      var mapProperties = {
+        "layergroupid": "layergroupid",
+        "metadata": {
+          "layers": [
+            { "type": "mapnik", "meta": {} },
+            { "type": "mapnik", "meta": {} }
+          ]
+        }
+      }
+      var expectedURLs = {
+        "tiles": [
+          "http://rambo.cartodb.com:8081/api/v1/map/layergroupid/{z}/{x}/{y}.png"
+        ],
+        "grids": [
+          [ "http://rambo.cartodb.com:8081/api/v1/map/layergroupid/0/{z}/{x}/{y}.grid.json" ],
+          [ "http://rambo.cartodb.com:8081/api/v1/map/layergroupid/1/{z}/{x}/{y}.grid.json" ]
+        ]
+      }
+
+      var callback = jasmine.createSpy("callback");
+      layerDefinition.getLayerToken = function (callback) {
+        callback(mapProperties);
+      }
+      spyOn(layerDefinition, "getLayerToken").and.callThrough();
+
+      layerDefinition.getTiles(callback);
+
+      expect(layerDefinition.getLayerToken).toHaveBeenCalled();
+      expect(callback).toHaveBeenCalledWith(expectedURLs);
+
+      // Reset spies
+      callback.calls.reset();
+      layerDefinition.getLayerToken.calls.reset();
+
+      // Invoke the method again -> It should have cached the map properties
+      layerDefinition.getTiles(callback);
+
+      expect(layerDefinition.getLayerToken).not.toHaveBeenCalled();
+      expect(callback).toHaveBeenCalledWith(expectedURLs);
+
+      // Reset spies
+      callback.calls.reset();
+      layerDefinition.getLayerToken.calls.reset();
+
+      // Invalidate the definition and try again -> It should query again
+      layerDefinition.invalidate();
+      layerDefinition.getTiles(callback);
+
+      expect(layerDefinition.getLayerToken).toHaveBeenCalled();
+      expect(callback).toHaveBeenCalledWith(expectedURLs);
+    });
+
+    it("should invoke the callback with URLs for tiles and grids (for mapnik layers ONLY)", function() {
+      var mapProperties = {
+        "layergroupid": "layergroupid",
+        "metadata": {
+          "layers": [
+            { "type": "http", "meta": {} },
+            { "type": "mapnik", "meta": {} },
+            { "type": "mapnik", "meta": {} }
+          ]
+        }
+      }
+
+      // LayerDefinition contains two mapnik layers (0 and 1), but the tiler contains:
+      // 0 - http
+      // 1 - mapnik
+      // 2 - mapnik
+      // We need to fetch the grid for layers 1 and 2. Those are the indexes that the tiler understands.
+      var expectedGridURLs = [
+        [ "http://rambo.cartodb.com:8081/api/v1/map/layergroupid/1/{z}/{x}/{y}.grid.json" ],
+        [ "http://rambo.cartodb.com:8081/api/v1/map/layergroupid/2/{z}/{x}/{y}.grid.json" ]
+      ]
+
+      var callback = jasmine.createSpy("callback");
+      layerDefinition.getLayerToken = function (callback) {
+        callback(mapProperties);
+      }
+      spyOn(layerDefinition, "getLayerToken").and.callThrough();
+
+      layerDefinition.getTiles(callback);
+
+      expect(layerDefinition.getLayerToken).toHaveBeenCalled();
+      var actualGridURLs = callback.calls.mostRecent().args[0].grids;
+      expect(callback).toHaveBeenCalled();
+      expect(actualGridURLs).toEqual(expectedGridURLs);
+    });
+
     it("should include extra params", function() {
       layerDefinition.options.extra_params = {
         'map_key': 'testapikey',
@@ -510,10 +662,21 @@ describe("LayerDefinition", function() {
     });
 
     it("should set refresh timer after being updated", function(done) {
+
+      var mapProperties = {
+        "layergroupid": "layergroupid",
+        "metadata": {
+          "layers": [
+            { "type": "mapnik", "meta": {} },
+            { "type": "mapnik", "meta": {} }
+          ]
+        }
+      }
+
       layerDefinition.options.refreshTime = 10;
-      layerDefinition.options.ajax = function(p) { 
+      layerDefinition.options.ajax = function(p) {
         params = p;
-        p.success({ layergroupid: 'test' });
+        p.success(mapProperties);
       };
 
       layerDefinition.getTiles(function(tiles) {});
@@ -526,6 +689,90 @@ describe("LayerDefinition", function() {
       }, 200);
     });
   });
+
+  describe('.fetchAttributes', function() {
+    var callback;
+
+    beforeEach(function() {
+      callback = jasmine.createSpy("callback");
+    })
+
+    it('should fetch the attributes and invoke the callback', function() {
+      var mapProperties = {
+        "layergroupid": "layergroupid",
+        "metadata": {
+          "layers": [
+            { "type": "mapnik", "meta": {} },
+            { "type": "mapnik", "meta": {} }
+          ]
+        }
+      }
+
+      layerDefinition.getLayerToken = function (callback) {
+        callback(mapProperties);
+      }
+
+      // Fetch the map properties first
+      layerDefinition.getTiles();
+
+      var ajax = layerDefinition.options.ajax = jasmine.createSpy('ajax');
+      var callback = jasmine.createSpy('callback');
+
+      layerDefinition.fetchAttributes(0, 'feature_id', 2, callback);
+
+      // Ajax request to the right endpoint with right attributes
+      expect(ajax).toHaveBeenCalled();
+      var ajaxOptions = ajax.calls.mostRecent().args[0];
+      expect(ajaxOptions.dataType).toEqual('jsonp');
+      expect(ajaxOptions.jsonpCallback).toEqual('_cdbi_layer_attributes_' + layerDefinition._attrCallbackName);
+      expect(ajaxOptions.url).toEqual('http://rambo.cartodb.com:8081/api/v1/map/layergroupid/0/attributes/feature_id');
+      expect(ajaxOptions.cache).toEqual(true);
+
+      // Ajax succeeds
+      ajaxOptions.success('wadus');
+
+      expect(callback).toHaveBeenCalledWith('wadus');
+    })
+
+    it('should convert layergroup indexes to the corresponding indexes in the tiler', function() {
+      var mapProperties = {
+        "layergroupid": "layergroupid",
+        "metadata": {
+          "layers": [
+            { "type": "http", "meta": {} },
+            { "type": "mapnik", "meta": {} },
+            { "type": "http", "meta": {} },
+            { "type": "mapnik", "meta": {} }
+          ]
+        }
+      }
+
+      layerDefinition.getLayerToken = function (callback) {
+        callback(mapProperties);
+      }
+
+      // Fetch the map properties first
+      layerDefinition.getTiles();
+
+      var ajax = layerDefinition.options.ajax = jasmine.createSpy('ajax');
+
+      // Fetch attributes for layer 0 (which is layer 1 in the tiler)
+      layerDefinition.fetchAttributes(0, 'feature_id', 2, callback);
+
+      var expectedUrl = 'http://rambo.cartodb.com:8081/api/v1/map/layergroupid/1/attributes/feature_id';
+      var actualUrl = ajax.calls.mostRecent().args[0].url;
+
+      expect(actualUrl).toEqual(expectedUrl);
+
+      // Fetch attributes for layer 1 (which is layer 3 in the tiler)
+      layerDefinition.fetchAttributes(1, 'feature_id', 2, callback);
+
+      var expectedUrl = 'http://rambo.cartodb.com:8081/api/v1/map/layergroupid/3/attributes/feature_id';
+      var actualUrl = ajax.calls.mostRecent().args[0].url;
+
+      expect(actualUrl).toEqual(expectedUrl);
+    })
+  })
 
   describe('._buildMapsApiTemplate, ._host', function() {
 
@@ -588,8 +835,22 @@ describe("LayerDefinition", function() {
 
   describe('._layerGroupTiles', function() {
 
+    var mapProperties;
+
+    beforeEach(function() {
+      mapProperties = new MapProperties({
+        "layergroupid": "test_layer",
+        "metadata": {
+          "layers": [
+            { "type": "mapnik", "meta": {} },
+            { "type": "mapnik", "meta": {} }
+          ]
+        }
+      })
+    })
+
     it("should generate url for tiles", function() {
-      var tiles = layerDefinition._layerGroupTiles('test_layer');
+      var tiles = layerDefinition._layerGroupTiles(mapProperties);
       expect(tiles.tiles.length).toEqual(1);
       expect(tiles.grids.length).toEqual(2);
       expect(tiles.grids[0].length).toEqual(1);
@@ -599,7 +860,7 @@ describe("LayerDefinition", function() {
     });
 
     it("should generate url for tiles with params", function() {
-      var tiles = layerDefinition._layerGroupTiles('test_layer', {
+      var tiles = layerDefinition._layerGroupTiles(mapProperties, {
         api_key: 'api_key_test',
         updated_at: '1234'
       });
@@ -611,7 +872,7 @@ describe("LayerDefinition", function() {
       layerDefinition.options.no_cdn = false;
       layerDefinition.options.cdn_url = { http: "api.cartocdn.com" }
       layerDefinition.options.subdomains = ['a', 'b', 'c', 'd'];
-      var tiles = layerDefinition._layerGroupTiles('test_layer');
+      var tiles = layerDefinition._layerGroupTiles(mapProperties);
       expect(tiles.tiles[0]).toEqual('http://a.api.cartocdn.com/rambo/api/v1/map/test_layer/{z}/{x}/{y}.png');
       expect(tiles.tiles[1]).toEqual('http://b.api.cartocdn.com/rambo/api/v1/map/test_layer/{z}/{x}/{y}.png');
       expect(tiles.grids[0][0]).toEqual('http://a.api.cartocdn.com/rambo/api/v1/map/test_layer/0/{z}/{x}/{y}.grid.json');
@@ -621,7 +882,7 @@ describe("LayerDefinition", function() {
     it("should generate url for tiles without a cdn when cdn_url is empty", function() {
       layerDefinition.options.no_cdn = false;
       layerDefinition.options.subdomains = ['a', 'b', 'c', 'd'];
-      var tiles = layerDefinition._layerGroupTiles('test_layer');
+      var tiles = layerDefinition._layerGroupTiles(mapProperties);
       expect(tiles.tiles[0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/{z}/{x}/{y}.png');
       expect(tiles.tiles[1]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/{z}/{x}/{y}.png');
       expect(tiles.grids[0][0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/0/{z}/{x}/{y}.grid.json');
@@ -630,7 +891,7 @@ describe("LayerDefinition", function() {
 
     it("grid url should not include interactivity", function() {
       layerDefinition.setInteractivity(0, ['cartodb_id', 'rambo']);
-      var tiles = layerDefinition._layerGroupTiles('test_layer');
+      var tiles = layerDefinition._layerGroupTiles(mapProperties);
       expect(tiles.grids[0][0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/0/{z}/{x}/{y}.grid.json');
       expect(tiles.grids[1][0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/1/{z}/{x}/{y}.grid.json');
     });
@@ -638,29 +899,14 @@ describe("LayerDefinition", function() {
 
   describe('.invalidate', function() {
 
-    it('should clear the token and urls', function() {
-      layerDefinition.layerToken = 'test';
+    it('should clear the mapProperties and urls', function() {
+      layerDefinition.mapProperties = 'test';
       layerDefinition.urls = ['test'];
 
       layerDefinition.invalidate();
 
-      expect(layerDefinition.layerToken).toEqual(null);
+      expect(layerDefinition.mapProperties).toEqual(null);
       expect(layerDefinition.urls).toEqual(null);
-    });
-  });
-
-  describe('._attributesUrl', function() {
-
-    it("should generate the right attributes url", function() {
-       layerDefinition.layerToken = 'testing';
-       expect(layerDefinition._attributesUrl(0, 1)).toEqual(
-        'http://rambo.cartodb.com:8081/api/v1/map/testing/0/attributes/1'
-       );
-       layerDefinition.getSubLayer(0).hide();
-       layerDefinition.layerToken = 'testing';
-       expect(layerDefinition._attributesUrl(1, 1)).toEqual(
-        'http://rambo.cartodb.com:8081/api/v1/map/testing/0/attributes/1'
-       );
     });
   });
 
@@ -805,32 +1051,154 @@ describe("NamedMap", function() {
     expect(namedMap.containInfowindow()).toEqual(true);
   });
 
-  it("should fetch attributes", function() {
-    namedMap.layerToken = 'test';
-    namedMap._layerGroupTiles
-    namedMap.options.ajax = function(p) { 
-      params = p;
-      p.success({ test: 1 });
-    };
-    namedMap.fetchAttributes(1, 12345, null, function(data) {
-      expect(data).toEqual({test: 1});
-      expect(params.url).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test/1/attributes/12345')
-      expect(params.dataType).toEqual('jsonp')
-      expect(params.cache).toEqual(true);
-      expect(params.jsonpCallback.indexOf('_cdbi_layer_attributes') !== -1).toEqual(true);
-    });
-    namedMap.options.tiler_protocol = 'https';
-    namedMap._buildMapsApiTemplate(namedMap.options)
-    namedMap.setAuthToken('test');
-    namedMap.layerToken = 'test';
-    namedMap.fetchAttributes(1, 12345, null, function(data) {
-      expect(data).toEqual({test: 1});
-      expect(params.url).toEqual('https://rambo.cartodb.com:8081/api/v1/map/test/1/attributes/12345?auth_token=test')
-      expect(params.dataType).toEqual('jsonp');
-      expect(params.cache).toEqual(true);
-      expect(params.jsonpCallback.indexOf('_cdbi_layer_attributes') !== -1).toEqual(true);
-    });
+  describe('.fetchAttributes', function() {
+    var callback;
 
+    beforeEach(function() {
+      callback = jasmine.createSpy("callback");
+    })
+
+    it('should fetch the attributes and invoke the callback', function() {
+      var mapProperties = {
+        "layergroupid": "layergroupid",
+        "metadata": {
+          "layers": [
+            { "type": "mapnik", "meta": {} },
+            { "type": "mapnik", "meta": {} }
+          ]
+        }
+      }
+
+      namedMap.getLayerToken = function (callback) {
+        callback(mapProperties);
+      }
+
+      // Fetch the map properties first
+      namedMap.getTiles();
+
+      var ajax = namedMap.options.ajax = jasmine.createSpy('ajax');
+      var callback = jasmine.createSpy('callback');
+
+      namedMap.fetchAttributes(0, 'feature_id', 2, callback);
+
+      // Ajax request to the right endpoint with right attributes
+      expect(ajax).toHaveBeenCalled();
+      var ajaxOptions = ajax.calls.mostRecent().args[0];
+      expect(ajaxOptions.dataType).toEqual('jsonp');
+      expect(ajaxOptions.jsonpCallback).toEqual('_cdbi_layer_attributes_' + namedMap._attrCallbackName);
+      expect(ajaxOptions.url).toEqual('http://rambo.cartodb.com:8081/api/v1/map/layergroupid/0/attributes/feature_id');
+      expect(ajaxOptions.cache).toEqual(true);
+
+      // Ajax succeeds
+      ajaxOptions.success('wadus');
+
+      expect(callback).toHaveBeenCalledWith('wadus');
+    })
+
+    it('should fetch attributes using an auth_token', function() {
+      var mapProperties = {
+        "layergroupid": "layergroupid",
+        "metadata": {
+          "layers": [
+            { "type": "mapnik", "meta": {} },
+            { "type": "mapnik", "meta": {} }
+          ]
+        }
+      }
+
+      namedMap.getLayerToken = function (callback) {
+        callback(mapProperties);
+      }
+
+      namedMap.options.extra_params = {
+        auth_token: 'token'
+      }
+
+      // Fetch the map properties first
+      namedMap.getTiles();
+
+      var ajax = namedMap.options.ajax = jasmine.createSpy('ajax');
+      namedMap.fetchAttributes(0, 'feature_id', 2, callback);
+
+      // Ajax request to the right endpoint with right attributes
+      expect(ajax).toHaveBeenCalled();
+      var ajaxOptions = ajax.calls.mostRecent().args[0];
+
+      var expectedUrl = 'http://rambo.cartodb.com:8081/api/v1/map/layergroupid/0/attributes/feature_id?auth_token=token';
+      expect(ajaxOptions.url).toEqual(expectedUrl);
+    })
+
+    it('should fetch attributes using multiple auth_tokens', function() {
+      var mapProperties = {
+        "layergroupid": "layergroupid",
+        "metadata": {
+          "layers": [
+            { "type": "mapnik", "meta": {} },
+            { "type": "mapnik", "meta": {} }
+          ]
+        }
+      }
+
+      namedMap.getLayerToken = function (callback) {
+        callback(mapProperties);
+      }
+
+      namedMap.options.extra_params = {
+        auth_token: [ 'token1', 'token2' ]
+      }
+
+      // Fetch the map properties first
+      namedMap.getTiles();
+
+      var ajax = namedMap.options.ajax = jasmine.createSpy('ajax');
+      namedMap.fetchAttributes(0, 'feature_id', 2, callback);
+
+      // Ajax request to the right endpoint with right attributes
+      expect(ajax).toHaveBeenCalled();
+      var ajaxOptions = ajax.calls.mostRecent().args[0];
+
+      var expectedUrl = 'http://rambo.cartodb.com:8081/api/v1/map/layergroupid/0/attributes/feature_id?auth_token[]=token1&auth_token[]=token2';
+      expect(ajaxOptions.url).toEqual(expectedUrl);
+    })
+
+    it('should convert layergroup indexes to the corresponding indexes in the tiler', function() {
+      var mapProperties = {
+        "layergroupid": "layergroupid",
+        "metadata": {
+          "layers": [
+            { "type": "http", "meta": {} },
+            { "type": "mapnik", "meta": {} },
+            { "type": "http", "meta": {} },
+            { "type": "mapnik", "meta": {} }
+          ]
+        }
+      }
+
+      namedMap.getLayerToken = function (callback) {
+        callback(mapProperties);
+      }
+
+      // Fetch the map properties first
+      namedMap.getTiles();
+
+      var ajax = namedMap.options.ajax = jasmine.createSpy('ajax');
+
+      // Fetch attributes for layer 0 (which is layer 1 in the tiler)
+      namedMap.fetchAttributes(0, 'feature_id', 2, callback);
+
+      var expectedUrl = 'http://rambo.cartodb.com:8081/api/v1/map/layergroupid/1/attributes/feature_id';
+      var actualUrl = ajax.calls.mostRecent().args[0].url;
+
+      expect(actualUrl).toEqual(expectedUrl);
+
+      // Fetch attributes for layer 1 (which is layer 3 in the tiler)
+      namedMap.fetchAttributes(1, 'feature_id', 2, callback);
+
+      var expectedUrl = 'http://rambo.cartodb.com:8081/api/v1/map/layergroupid/3/attributes/feature_id';
+      var actualUrl = ajax.calls.mostRecent().args[0].url;
+
+      expect(actualUrl).toEqual(expectedUrl);
+    })
   })
 
   it("should get sublayer", function() {
@@ -945,9 +1313,20 @@ describe("NamedMap", function() {
       no_cdn: true,
       subdomains: [null]
     });
+
+    var mapProperties = {
+      "layergroupid": "layergroupid",
+      "metadata": {
+        "layers": [
+          { "type": "mapnik", "meta": {} },
+          { "type": "mapnik", "meta": {} }
+        ]
+      }
+    }
+
     namedMap.options.ajax = function(p) { 
       params = p;
-      p.success({ layergroupid: 'test' });
+      p.success(mapProperties);
     };
 
     namedMap._getLayerToken();

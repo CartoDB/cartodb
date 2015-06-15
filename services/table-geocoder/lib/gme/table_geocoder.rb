@@ -8,18 +8,19 @@ module Carto
   module Gme
     class TableGeocoder < CartoDB::AbstractTableGeocoder
 
-      MAX_BLOCK_SIZE = 1000
+      DEFAULT_MAX_BLOCK_SIZE = 1000
 
       # See https://developers.google.com/maps/documentation/geocoding/#Types
       ACCEPTED_ADDRESS_TYPES = ['street_address', 'route', 'intersection', 'neighborhood']
 
-      attr_reader :connection, :original_formatter, :processed_rows, :state
+      attr_reader :connection, :original_formatter, :processed_rows, :state, :max_block_size
 
       def initialize(arguments)
         super(arguments)
         @original_formatter = arguments.fetch(:original_formatter)
         client_id = arguments.fetch(:client_id)
         private_key = arguments.fetch(:private_key)
+        @max_block_size = arguments[:max_block_size] || DEFAULT_MAX_BLOCK_SIZE
         gme_client = Client.new(client_id, private_key)
         @geocoder_client = GeocoderClient.new(gme_client)
       end
@@ -45,6 +46,7 @@ module Carto
         @state = 'failed'
         raise e
       ensure
+        # TODO: move working_dir out of the AbstractTableGeocoder
         # Sometimes the ensure block is called twice
         FileUtils.remove_entry_secure @working_dir if Dir.exists?(@working_dir)
       end
@@ -67,11 +69,11 @@ module Carto
             data_input = connection.select(:cartodb_id, searchtext_expression)
               .from(@sequel_qualified_table_name)
               .where(cartodb_georef_status: nil)
-              .limit(MAX_BLOCK_SIZE)
+              .limit(max_block_size)
               .all
             enum.yield data_input
-             # last iteration when data_input.length < MAX_BLOCK_SIZE, no need for another query
-          end while data_input.length == MAX_BLOCK_SIZE
+            # last iteration when data_input.length < max_block_size, no need for another query
+          end while data_input.length == max_block_size
         end
       end
 

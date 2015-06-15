@@ -13,7 +13,12 @@ MapProperties.prototype.getMapId = function() {
  * Returns the index of a layer of a given type, as the tiler kwows it.
  */
 MapProperties.prototype.getLayerIndexByType = function(index, layerType) {
-  var layers = this.mapProperties.metadata.layers;
+  var layers = this.mapProperties.metadata && this.mapProperties.metadata.layers;
+
+  if (!layers) {
+    return index;
+  }
+
   var tilerLayerIndex = {}
   var j = 0;
   for (var i = 0; i < layers.length; i++) {

@@ -1,3 +1,6 @@
+3.14.6 (16//06//2015)
+* Use the right indexes when fetching grids and attributes (#518)
+
 3.14.4 (10//06//2015)
 * Do not enable layer interaction if tooltip is empty (#513)
 * Replaces minified carto.js with uncompressed version (#516)

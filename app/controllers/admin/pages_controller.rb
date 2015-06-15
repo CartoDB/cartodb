@@ -34,7 +34,7 @@ class Admin::PagesController < ApplicationController
 
   def sitemap
     username = CartoDB.extract_subdomain(request)
-    viewed_user = User.where(user1name: username.strip.downcase).first
+    viewed_user = User.where(username: username.strip.downcase).first
 
     if viewed_user.nil?
       org = get_organization_if_exists(username)

@@ -34,7 +34,7 @@ class Admin::PagesController < ApplicationController
 
   def sitemap
     username = CartoDB.extract_subdomain(request)
-    viewed_user = User.where(username: username.strip.downcase).first
+    viewed_user = User.where(user1name: username.strip.downcase).first
 
     if viewed_user.nil?
       org = get_organization_if_exists(username)
@@ -258,7 +258,7 @@ class Admin::PagesController < ApplicationController
       updated_at:  vis.updated_at,
       owner:       vis.user,
       likes_count: vis.likes.count,
-      map_zoom:    1 #vis.map.zoom
+      map_zoom:    vis.map.zoom
     }
   end
 

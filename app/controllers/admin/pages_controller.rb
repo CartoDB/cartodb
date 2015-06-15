@@ -258,7 +258,7 @@ class Admin::PagesController < ApplicationController
       updated_at:  vis.updated_at,
       owner:       vis.user,
       likes_count: vis.likes.count,
-      map_zoom:    vis.map.zoom
+      map_zoom:    1 #vis.map.zoom
     }
   end
 

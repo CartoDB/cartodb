@@ -63,15 +63,15 @@ module Carto
       # Returns a "generator"
       def data_input_blocks
         Enumerator.new do |enum|
-          loop do
+          begin
             data_input = connection.select(:cartodb_id, searchtext_expression)
               .from(@sequel_qualified_table_name)
               .where(cartodb_georef_status: nil)
               .limit(MAX_BLOCK_SIZE)
               .all
             enum.yield data_input
-            break if data_input.length < MAX_BLOCK_SIZE # last iteration, no need for another query
-          end
+             # last iteration when data_input.length < MAX_BLOCK_SIZE, no need for another query
+          end while data_input.length == MAX_BLOCK_SIZE
         end
       end
 

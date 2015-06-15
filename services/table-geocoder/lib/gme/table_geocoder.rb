@@ -45,7 +45,8 @@ module Carto
         @state = 'failed'
         raise e
       ensure
-        FileUtils.remove_entry_secure @working_dir
+        # Sometimes the ensure block is called twice
+        FileUtils.remove_entry_secure @working_dir if Dir.exists?(@working_dir)
       end
 
       # Empty methods, needed because they're triggered from geocoding.rb

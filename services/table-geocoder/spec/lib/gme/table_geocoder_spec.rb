@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require_relative '../../../lib/gme/table_geocoder'
+require_relative '../../factories/pg_connection'
 
 RSpec.configure do |config|
   config.mock_with :mocha
@@ -105,4 +106,62 @@ describe Carto::Gme::TableGeocoder do
     end
 
   end
+
+
+  describe '#data_input_blocks' do
+
+    before do
+      conn          = CartoDB::Importer2::Factories::PGConnection.new
+      @db           = conn.connection
+      @pg_options   = conn.pg_options
+      @table_name   = "ne_10m_populated_places_simple"
+      load_csv path_to("populated_places_short.csv")
+
+      params = {
+        connection: @db,
+        table_name: @table_name,
+        qualified_table_name: @table_name,
+        sequel_qualified_table_name: @table_name,
+        original_formatter: "{name}, {iso3}",
+        client_id: 'my_client_id',
+        private_key: 'my_private_key',
+        max_block_size: 4
+      }
+
+      @table_geocoder = Carto::Gme::TableGeocoder.new(params)
+    end
+
+    after do
+      @db.drop_table @table_name
+    end
+
+    it 'performs (floor(rows / max_block_size) + 1) queries' do
+      rows = @db[@table_name.to_sym].count
+      @table_geocoder.add_georef_status_column
+
+      count = 0
+      @table_geocoder.send(:data_input_blocks).each { |data_block|
+        # mark them as a miss
+        data_block.each { |row| row.merge!(cartodb_georef_status: false) }
+        @table_geocoder.send(:update_table, data_block)
+        count += 1
+      }
+      count.should == (rows / @table_geocoder.max_block_size).floor + 1
+    end
+
+  end
+
+
+  def path_to(filepath = '')
+    File.expand_path(
+      File.join(File.dirname(__FILE__), "../../fixtures/#{filepath}")
+    )
+  end
+
+  def load_csv(path)
+    @db.run("CREATE TABLE #{@table_name} (the_geom geometry, cartodb_id integer, name text, iso3 text)")
+    @db.run("COPY #{@table_name.lit}(cartodb_id, name, iso3) FROM '#{path}' DELIMITER ',' CSV")
+  end
+
+
 end

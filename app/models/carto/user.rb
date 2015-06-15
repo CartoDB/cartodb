@@ -147,11 +147,11 @@ class Carto::User < ActiveRecord::Base
   end
 
   def google_maps_geocoder_enabled?
-    google_maps_private_key.present? && google_maps_api_key.present?
+    google_maps_private_key.present? && google_maps_client_id.present?
   end
 
   def google_maps_client_id
-    Rack::Utils.parse_nested_query(google_maps_query_string).fetch('client') if google_maps_query_string
+    Rack::Utils.parse_nested_query(google_maps_query_string)['client'] if google_maps_query_string
   end
 
   # returnd a list of basemaps enabled for the user

@@ -1,29 +1,28 @@
-<% content_for :js do %>
-  <%= javascript_include_tag 'sessions.js' %>
-
-  <script>
-    $(function() {
-      window.Sessions = new App.Views.Sessions();
-    });
-  </script>
+<% if @organization %>
+  <% content_for :title do %><%= @organization.name %><% end %>
 <% end %>
 
-<%
-  if @organization
-  %>ORGANIZATION LOGIN!! Color: <%= @organization.color %><%
-  end
-%>
+<% content_for :js do %>
+  <%= javascript_include_tag 'cdb.js', 'sessions.js' %>
+<% end %>
 
-<div class="Sessions">
+<div class="Sessions" style="<%= background %>">
   <header class="Sessions-header">
     <div class="u-inner">
       <nav class="Navbar">
         <div class="Navbar-header">
           <div class="Navbar-title">
             <picture class="Navbar-brand">
-              <source type="image/svg+xml" srcset="<%= image_path "layout/sessions/brand.svg" %>">
-              <img src="<%= image_path "layout/sessions/brand.png" %>" alt="CartoDB" height="48" width="48">
+              <% if login_org_avatar %>
+                <img src="<%= @organization.avatar_url %>" alt="<%= @organization.name %>" height="48" />
+              <% else %>
+                <source type="image/svg+xml" srcset="<%= image_path "layout/sessions/brand.svg" %>">
+                <img src="<%= image_path "layout/sessions/brand.png" %>" alt="CartoDB" height="48" width="48" />
+              <% end %>
             </picture>
+            <% if login_org_avatar %>
+              <sup><img src="<%= image_path "layout/sessions/brand.png" %>" alt="CartoDB" height="26" width="26"></sup>
+            <% end %>  
           </div>
         </div>
       </nav>

@@ -1,6 +1,7 @@
 describe('MapProperties', function() {
 
   describe('.getMapId', function() {
+
     it('returns the id of the map', function() {
       var mapProperties = new MapProperties( { layergroupid: 'wadus' });
       expect(mapProperties.getMapId()).toEqual('wadus');
@@ -24,6 +25,13 @@ describe('MapProperties', function() {
       expect(mapProperties.getLayerIndexByType(1, 'mapnik')).toEqual(2);
       expect(mapProperties.getLayerIndexByType(0, 'http')).toEqual(1);
       expect(mapProperties.getLayerIndexByType(10, 'http')).toEqual(-1);
+    })
+
+    it('returns the given index if metadata is empty', function() {
+      var mapProperties = new MapProperties({});
+
+      expect(mapProperties.getLayerIndexByType(0, 'mapnik')).toEqual(0);
+      expect(mapProperties.getLayerIndexByType(1, 'mapnik')).toEqual(1);
     })
   })
 })

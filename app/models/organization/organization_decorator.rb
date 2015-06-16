@@ -30,13 +30,6 @@ module CartoDB
         seats:             self.seats,
         twitter_username:  self.twitter_username,
         updated_at:        self.updated_at,
-        users:             self.users.map { |u|
-          {
-            id:          u.id,
-            username:    u.username,
-            avatar_url:  u.avatar
-          }
-        },
         website:           self.website,
         avatar_url:        self.avatar_url
       }

@@ -48,24 +48,31 @@ describe Carto::Api::OrganizationsController do
     end
 
     it 'returns organization users paged with totals' do
-      get api_v1_organization_users_url(id: @organization.id, api_key: @org_user_1.api_key, page: 1, per_page: 2), @headers
-      last_response.status.should == 200
-      json_body = JSON.parse(last_response.body)
-      ids = json_body['users'].map { |u| u['id'] } 
-      ids.count.should == 2
-      ids[0].should == @org_user_1.id
-      ids[1].should == @org_user_2.id
-      json_body['total_entries'].should == 2
-      json_body['total_user_entries'].should == 3
+      page = 0
+      per_page = 2
+      displayed_ids = []
+      total_count = @organization.users.count
 
-      get api_v1_organization_users_url(id: @organization.id, api_key: @org_user_1.api_key, page: 2, per_page: 2), @headers
-      last_response.status.should == 200
-      json_body = JSON.parse(last_response.body)
-      ids = json_body['users'].map { |u| u['id'] } 
-      ids.count.should == 1
-      ids[0].should == @org_user_3.id
-      json_body['total_entries'].should == 1
-      json_body['total_user_entries'].should == 3
+      while page * per_page < total_count do
+        page += 1
+        get api_v1_organization_users_url(id: @organization.id, api_key: @org_user_1.api_key, page: page, per_page: per_page), @headers
+
+        last_response.status.should == 200
+        json_body = JSON.parse(last_response.body)
+        ids = json_body['users'].map { |u| u['id'] }
+
+        # Display different ids:
+        (ids & displayed_ids).empty?.should == true
+
+        expected_count = [per_page, total_count - displayed_ids.count].min
+        ids.count.should == expected_count
+        json_body['total_entries'].should == expected_count
+        json_body['total_user_entries'].should == total_count
+
+        displayed_ids << ids
+      end
+
+      page.should > 0
     end
 
     it 'returns users matching username query' do

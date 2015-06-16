@@ -1,0 +1,168 @@
+// Edit field styles
+//
+// - String
+// - Number
+// - Boolean
+// - Date
+// - Geometry
+//
+// --------------------------------------------------
+
+
+@import "../variables/mixins";
+@import "../variables/colors";
+@import "../variables/sizes";
+
+.EditField {
+  position: relative;
+  @include display-flex();
+  width: 100%;
+}
+.EditField-input { @include flex-grow(2) }
+.EditField-input.is-number { color: #4DC964 }
+.EditField-textarea {
+  resize: vertical;
+  height: 20px;
+  min-height: 20px;
+  max-height: 150px;
+  padding: 10px 12px;
+  flex-grow: 2;
+}
+.EditField-label {
+  background: none;
+  border: none;
+  outline: none;
+  height: 100%;
+  width: 100%;
+  margin-top: 10px;
+  overflow: hidden;
+  text-align: right;
+  text-overflow: ellipsis;
+  max-width: 140px;
+  overflow: hidden;
+  font-size: $sFontSize-normal;
+  line-height: $sLineHeight-normal;
+  color: $cTypography-secondary;
+}
+.EditField-label:hover {
+  color: $cTypography-paragraphs;
+  cursor: pointer;
+}
+.EditField-label:focus {
+  $fieldBgColor: transparent;
+  $fieldBorderColor: #CCC;
+  color: $cTypography-paragraphs;
+  background: -webkit-linear-gradient(bottom, $fieldBorderColor 0%, $fieldBgColor 8%) 0 0px;
+  background: -moz-linear-gradient(bottom, $fieldBorderColor 0%, $fieldBgColor 8%) 0 0px;
+  background: -ms-linear-gradient(bottom, $fieldBorderColor 0%, $fieldBgColor 8%) 0 0px;
+  background: -o-linear-gradient(bottom, $fieldBorderColor 0%, $fieldBgColor 8%) 0 0px;
+  background: linear-gradient(bottom, $fieldBorderColor 0%, $fieldBgColor 8%) 0 0px;
+  background-size: 100% $sLineHeight-normal;
+}
+.EditField-label:focus:hover {
+  color: $cTypography-paragraphs;
+  cursor: text;
+}
+.EditField-label.is-disabled {
+  color: $cTypography-paragraphs;
+  background: none;
+}
+.EditField-label.has-failed { color: $cHighlight-negative }
+.EditField-radiobutton { margin-right: 28px }
+.EditField.is-invalid {
+  .EditField-input,
+  .EditField-textarea {
+    border-color: $cHighlight-negative;
+    color: $cHighlight-negative;
+  }
+
+  &.EditField--withBorder { border-color: $cHighlight-negative }
+}
+.EditField-loader { margin: 12px 0 0 8px }
+// Select
+.EditField-select .select2-container {
+  background: none;
+  margin-top: 10px;
+}
+.EditField-select .select2-container .select2-choice { background: $cStructure-grayBkg }
+
+@mixin edit-type-field($t,$c,$mod:true) {
+  // Is it a modifier or a normal class?
+  $class_: '';
+  @if ($mod) {
+    $class_: '.EditField-select .select2-container .select2-choice'
+  } @else {
+    $class_: '.EditField-select.#{$t} .select2-container .select2-choice'
+  }
+
+  #{$class_},
+  #{$class_}:hover {
+    border-color: $c!important;
+    color: $c;
+
+    div b:after,
+    div b:before {
+      top: inherit;
+      border-bottom: none;
+      border-top-style: solid;
+      border-top-width: 4px;
+      border-left-width: 4px;
+      border-right-width: 4px;
+    }
+
+    div b:after {
+      bottom: 8px;
+      border-top-color: $cStructure-grayBkg;
+      z-index: 2;
+    }
+    div b:before {
+      bottom: 7px;
+      border-top-color: $c;
+      z-index: 2;
+    }
+  }
+}
+
+// @include edit-type-field(date, #F5A623, true);
+// @include edit-type-field(number, #4DC964, true);
+// @include edit-type-field(string, #AAA, true);
+// @include edit-type-field(boolean, #AAA, true);
+
+@include edit-type-field('', #999, true);
+@include edit-type-field(has-failed, $cHighlight-negative, false);
+
+.EditField-info {
+  display: none;
+  height: 18px;
+  width: 18px;
+  margin: 12px 0 0 10px;
+  text-align: center;
+  line-height: 18px;
+  border-radius: 18px;
+  background: $cStructure-mainLine;
+  color: white;
+  font-size: $sFontSize-small;
+}
+.EditField-info:hover {
+  background: #787878;
+  cursor: pointer;
+}
+// Modifiers
+.EditField--withBorder {
+  @include justify-content(space-between, justify);
+  @include align-content(center);
+  border: 1px solid #CCC;
+  background: white;
+  border-radius: 4px;
+}
+.EditField--withSeparator {
+  &:before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 6px;
+    height: 24px;
+    width: 1px;
+    background: #E5E5E5;
+  }
+}

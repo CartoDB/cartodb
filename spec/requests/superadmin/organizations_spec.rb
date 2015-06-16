@@ -1,6 +1,5 @@
 # encoding: utf-8
 require_relative '../../acceptance_helper'
-require 'ruby-debug'
 
 feature "Superadmin's organization API" do
   before(:all) do

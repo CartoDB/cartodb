@@ -1,6 +1,5 @@
 #encoding: UTF-8
 require 'spec_helper'
-require 'ruby-debug'
 
 describe Geocoding do
   before(:all) do

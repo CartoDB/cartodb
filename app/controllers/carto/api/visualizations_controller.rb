@@ -1,11 +1,13 @@
 require_relative 'visualization_presenter'
 require_relative 'vizjson_presenter'
 require_relative '../../../models/visualization/stats'
+require_relative 'paged_searcher'
 
 module Carto
   module Api
     class VisualizationsController < ::Api::ApplicationController
       include VisualizationSearcher
+      include PagedSearcher
 
       ssl_required :index, :show
       ssl_allowed  :vizjson2, :likes_count, :likes_list, :is_liked, :list_watching
@@ -25,9 +27,7 @@ module Carto
       end
 
       def index
-        page = (params[:page] || 1).to_i
-        per_page = (params[:per_page] || 20).to_i
-        order = (params[:order] || 'updated_at').to_sym
+        page, per_page, order = page_per_page_order_params
         types, total_types = get_types_parameters
         vqb = query_builder_with_filter_from_hash(params)
 

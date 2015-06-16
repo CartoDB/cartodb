@@ -8,6 +8,7 @@ class Geocoding < Sequel::Model
 
   DB_TIMEOUT_MS              = 100.minutes.to_i * 1000
   ALLOWED_KINDS   = %w(admin0 admin1 namedplace postalcode high-resolution ipaddress)
+  DEFAULT_TIMEOUT = 5.hours
 
   PUBLIC_ATTRIBUTES = [:id, :table_id, :state, :kind, :country_code, :region_code, :formatter, :geometry_type,
                        :error, :processed_rows, :cache_hits, :processable_rows, :real_rows, :price,
@@ -25,6 +26,12 @@ class Geocoding < Sequel::Model
   attr_reader :table_geocoder
   attr_reader :started_at, :finished_at
 
+  attr_accessor :run_timeout
+
+  def self.get_geocoding_calls(dataset, date_from, date_to)
+    dataset.where(kind: 'high-resolution').where('geocodings.created_at >= ? and geocodings.created_at <= ?', date_from, date_to + 1.days).sum("processed_rows + cache_hits".lit).to_i
+  end
+
   def public_values
     Hash[PUBLIC_ATTRIBUTES.map{ |k| [k, (self.send(k) rescue self[k].to_s)] }]
   end
@@ -36,6 +43,11 @@ class Geocoding < Sequel::Model
     # validates_presence :table_id
     validates_includes ALLOWED_KINDS, :kind
   end # validate
+
+  def after_initialize
+    super
+    @run_timeout = DEFAULT_TIMEOUT
+  end #after_initialize
 
   def before_save
     super
@@ -120,7 +132,15 @@ class Geocoding < Sequel::Model
     table_geocoder.run
 
     self.update remote_id: table_geocoder.remote_id
-    self.update(table_geocoder.update_geocoding_status)
+
+    # INFO: this loop polls for the state of the table_geocoder batch process and cannot be simply removed
+    begin
+      self.update(table_geocoder.update_geocoding_status)
+      raise 'Geocoding timeout' if Time.now - @started_at > run_timeout and ['started', 'submitted', 'accepted'].include? state
+      raise 'Geocoding failed'  if state == 'failed'
+      sleep(2)
+    end until ['completed', 'cancelled'].include? state
+
     raise 'Geocoding failed'  if state == 'failed'
     return false if state == 'cancelled'
 

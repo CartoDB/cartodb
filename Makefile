@@ -88,6 +88,7 @@ WORKING_SPECS_4 = \
   spec/queries/carto/visualization_query_builder_spec.rb \
   spec/requests/admin/tables_spec.rb \
   spec/requests/admin/pages_controller_spec.rb \
+	spec/requests/carto/api/organizations_controller_spec.rb \
   $(NULL)
 
 WORKING_SPECS_5 = \
@@ -128,13 +129,13 @@ WORKING_SPECS_7 = \
   spec/models/synchronization/member_spec.rb \
 	spec/requests/api/json/geocodings_controller_spec.rb \
 	spec/requests/carto/api/geocodings_controller_spec.rb \
-  # spec/models/synchronization/collection_spec.rb not working right now \
-  spec/models/synchronization/synchronization_oauth_spec.rb \
   spec/models/organization_spec.rb \
+  spec/models/synchronization/synchronization_oauth_spec.rb \
   spec/models/permission_spec.rb \
-  specs/models/overlay/member.rb \
-  specs/models/overlay/collection.rb \
+	spec/models/overlay/member_spec.rb \
+	spec/models/overlay/collection_spec.rb \
   $(NULL)
+  # spec/models/synchronization/collection_spec.rb not working right now \
 
 WORKING_SPECS_8 = \
   spec/models/asset_spec.rb \
@@ -165,6 +166,12 @@ WORKING_SPECS_9 = \
   spec/models/carto/ \
   $(NULL)
 
+WORKING_SPECS_10 = \
+	spec/models/carto/user_service_spec.rb \
+	spec/models/carto/user_spec.rb \
+	spec/models/carto/organization_spec.rb \
+  $(NULL)
+
 CDB_PATH=lib/assets/javascripts/cdb
 
 prepare-test-db:
@@ -192,8 +199,10 @@ check-8:
 	bundle exec rspec $(WORKING_SPECS_8)
 check-9:
 	bundle exec rspec $(WORKING_SPECS_9)
+check-10:
+	bundle exec rspec $(WORKING_SPECS_10)
 
-check-prepared: check-1 check-2 check-3 check-4 check-5 check-6 check-7 check-8 check-9
+check-prepared: check-1 check-2 check-3 check-4 check-5 check-6 check-7 check-8 check-9 check-10
 
 check: prepare-test-db check-prepared
 check-frontend:

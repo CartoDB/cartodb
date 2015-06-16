@@ -7,7 +7,7 @@ module Carto
         @organization = organization
       end
 
-      def to_poro(filtered_user = nil)
+      def to_poro
         return {} if @organization.nil?
         filtered_user ||= @organization.owner
         {
@@ -32,14 +32,6 @@ module Carto
           :seats                    => @organization.seats,
           :twitter_username         => @organization.twitter_username,
           :updated_at               => @organization.updated_at,
-          :users => @organization.users.reject { |item| filtered_user && item.id == filtered_user.id }
-            .map { |u|
-            {
-              :id         => u.id,
-              :username   => u.username,
-              :avatar_url => u.avatar_url
-            }
-          },
           :website          => @organization.website,
           :avatar_url       => @organization.avatar_url
         }

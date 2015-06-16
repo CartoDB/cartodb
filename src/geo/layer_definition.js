@@ -937,12 +937,12 @@ NamedMap.prototype = _.extend({}, MapBase.prototype, {
   },
 
   toJSON: function() {
-    var p = this.named_map.params || {};
+    var payload = this.named_map.params || {};
     for(var i = 0; i < this.layers.length; ++i) {
       var layer = this.layers[i];
-      p['layer' + i] = layer.options.hidden ? 0: 1;
+      payload['layer' + i] = layer.options.hidden ? 0: 1;
     }
-    return p;
+    return payload;
   },
 
   containInfowindow: function() {

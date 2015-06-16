@@ -198,7 +198,7 @@ describe("LayerDefinition", function() {
     });
   });
 
-  describe("getTooltipData", function() {
+  describe(".getTooltipData", function() {
 
     it ('should return tooltip data if tooltip is present and has fields', function() {
       layerDefinition.layers = [{
@@ -357,7 +357,7 @@ describe("LayerDefinition", function() {
 
   describe('.getLayerToken', function() {
 
-    var ajax, ajaxParams, callback, fakeMapProperties, fakeMapConfig;
+    var ajax, ajaxParams, callback, fakeMapProperties, fakeMapConfig, originalSetTimeout;
 
     beforeEach(function() {
       ajaxParams = undefined;
@@ -371,20 +371,35 @@ describe("LayerDefinition", function() {
       layerDefinition.toJSON = function() {
         return fakeMapConfig;
       };
+
+      // Mock setTimeout that runs functions inmediatly
+      originalSetTimeout = jasmine.getGlobal().setTimeout;
+      jasmine.getGlobal().setTimeout = function (func, millis) {
+        func();
+      };
+    })
+
+    afterEach(function() {
+      jasmine.getGlobal().setTimeout = originalSetTimeout;
     })
 
     it("should enqueue requests and return values for the latest query", function(done) {
+      // Use the native setTimeout for this test
+      jasmine.getGlobal().setTimeout = originalSetTimeout;
+
       tokens = [];
       var i = 0;
       layerDefinition.options.ajax = function(p) {
+
+        // Override ajax again
+        layerDefinition.options.ajax = function(p) { 
+          p.success({ layergroupid: 'layergroup_' + ++i });
+        }
 
         // Before the ajax request is done, another request is sent
         layerDefinition.getLayerToken(function(a) {
           tokens.push(a);
         });
-        layerDefinition.options.ajax = function(p) { 
-          p.success({ layergroupid: 'layergroup_' + ++i });
-        }
 
         p.success({ layergroupid: 'layergroup_' + ++i });
       };
@@ -402,25 +417,22 @@ describe("LayerDefinition", function() {
         expect(tokens[1]).toEqual({ layergroupid: 'layergroup_2' });
         expect(tokens[2]).toEqual({ layergroupid: 'layergroup_2' });
         done();
-      }, 1000);
+      }, 4);
     });
 
-    it('should not create a map if there are no visible layers', function(done) {
+    it('should not create a map if there are no visible layers', function() {
       for (var i=0; i<layerDefinition.getLayerCount(); i++) {
         layerDefinition.getSubLayer(i).hide();
       }
 
       layerDefinition.getLayerToken(callback);
 
-      setTimeout(function() {
-        expect(callback).toHaveBeenCalledWith(null, undefined);
-        expect(callback.calls.count()).toEqual(1);
-        expect(ajaxParams).toBeUndefined();
-        done();
-      }, 5)
+      expect(callback).toHaveBeenCalledWith(null, undefined);
+      expect(callback.calls.count()).toEqual(1);
+      expect(ajaxParams).toBeUndefined();
     })
 
-    it("should create a map if there are no visible layers but it's a named map", function(done) {
+    it("should create a map if there are no visible layers but it's a named map", function() {
       layerDefinition.named_map = {};
 
       for (var i=0; i<layerDefinition.getLayerCount(); i++) {
@@ -429,146 +441,139 @@ describe("LayerDefinition", function() {
 
       layerDefinition.getLayerToken(callback);
 
-      setTimeout(function() {
-        expect(callback).toHaveBeenCalledWith(fakeMapProperties, undefined);
-        expect(callback.calls.count()).toEqual(1);
-        expect(ajaxParams.dataType).toEqual('jsonp');
-        done();
-      }, 5)
+      expect(callback).toHaveBeenCalledWith(fakeMapProperties, undefined);
+      expect(callback.calls.count()).toEqual(1);
+      expect(ajaxParams.dataType).toEqual('jsonp');
     })
 
     describe('params', function() {
 
-      it('should use a map/api key', function(done) {
+      it('should use a map/api key', function() {
         fakeMapConfig = 'mapConfig';
 
         layerDefinition.options.extra_params = { api_key: 'key' };
         layerDefinition.getLayerToken(callback);
 
-        setTimeout(function() {
-          expect(ajaxParams.url.indexOf('map_key=key')).not.toEqual(-1);
-          done();
-        }, 4)
+        expect(ajaxParams.url.indexOf('map_key=key')).not.toEqual(-1);
       })
 
-      it('should use a map/api key', function(done) {
+      it('should use a map/api key', function() {
         fakeMapConfig = 'mapConfig';
 
         layerDefinition.options.extra_params = { map_key: 'key' };
         layerDefinition.getLayerToken(callback);
 
-        setTimeout(function() {
-          expect(ajaxParams.url.indexOf('map_key=key')).not.toEqual(-1);
-          done();
-        }, 4)
+        expect(ajaxParams.url.indexOf('map_key=key')).not.toEqual(-1);
       })
 
-      it('should use a map/api key', function(done) {
+      it('should use a map/api key', function() {
         fakeMapConfig = 'mapConfig';
 
         layerDefinition.options.api_key = 'key';
         layerDefinition.getLayerToken(callback);
 
-        setTimeout(function() {
-          expect(ajaxParams.url.indexOf('map_key=key')).not.toEqual(-1);
-          done();
-        }, 4)
+        expect(ajaxParams.url.indexOf('map_key=key')).not.toEqual(-1);
       })
 
-      it('should use a map/api key', function(done) {
+      it('should use a map/api key', function() {
         fakeMapConfig = 'mapConfig';
 
         layerDefinition.options.map_key = 'key';
         layerDefinition.getLayerToken(callback);
 
-        setTimeout(function() {
-          expect(ajaxParams.url.indexOf('map_key=key')).not.toEqual(-1);
-          done();
-        }, 4)
+        expect(ajaxParams.url.indexOf('map_key=key')).not.toEqual(-1);
       })
 
-      it('should use an auth_token', function(done) {
+      it('should use an auth_token', function() {
         fakeMapConfig = 'mapConfig';
 
         layerDefinition.options.extra_params = { auth_token: 'token' };
         layerDefinition.getLayerToken(callback);
 
-        setTimeout(function() {
-          expect(ajaxParams.url.indexOf('auth_token=token')).not.toEqual(-1);
-          done();
-        }, 4)
+        expect(ajaxParams.url.indexOf('auth_token=token')).not.toEqual(-1);
       })
 
-      it('should multiple auth_token(s)', function(done) {
+      it('should multiple auth_token(s)', function() {
         fakeMapConfig = 'mapConfig';
 
         layerDefinition.options.extra_params = { auth_token: ['token1', 'token2'] };
         layerDefinition.getLayerToken(callback);
 
-        setTimeout(function() {
-          expect(ajaxParams.url.indexOf('auth_token[]=token1&auth_token[]=token2')).not.toEqual(-1);
-          done();
-        }, 4)
+        expect(ajaxParams.url.indexOf('auth_token[]=token1&auth_token[]=token2')).not.toEqual(-1);
       })
 
-      it('should use a stat_tag', function(done) {
+      it('should use a stat_tag', function() {
         layerDefinition.stat_tag = 'stat_tag';
         layerDefinition.getLayerToken(callback);
 
-        setTimeout(function() {
-          expect(ajaxParams.url.indexOf('stat_tag=stat_tag')).not.toEqual(-1);
-          done();
-        }, 4)
+        expect(ajaxParams.url.indexOf('stat_tag=stat_tag')).not.toEqual(-1);
       })
     })
 
-    it("should set a refresh timer after creating the map", function(done) {
-      layerDefinition.options.refreshTime = 1;
-      
-      layerDefinition.getLayerToken(callback);
+    it("should set a refresh timer after creating the map", function() {
+      layerDefinition.options.refreshTime = 100;
 
       spyOn(layerDefinition,'invalidate');
 
-      setTimeout(function() {
-        expect(layerDefinition.invalidate).toHaveBeenCalled();
-        done();
-      }, 50);
+      layerDefinition.getLayerToken(callback);
+
+      expect(layerDefinition.invalidate).toHaveBeenCalled();
     });
 
     describe('GET request', function() {
 
-      it('should create a map using a GET request', function(done) {
+      it('should create a map using a GET request', function() {
         fakeMapProperties = {};
         fakeMapConfig = 'mapConfig';
 
         layerDefinition.getLayerToken(callback);
 
-        setTimeout(function() {
-          expect(callback).toHaveBeenCalledWith(fakeMapProperties, undefined);
-          expect(callback.calls.count()).toEqual(1);
-          expect(ajaxParams.dataType).toEqual('jsonp');
-          expect(ajaxParams.type).toBeUndefined(); // GET request
-          expect(ajaxParams.url).toEqual('http://rambo.cartodb.com:8081/api/v1/map?stat_tag=vis_id&config=%22mapConfig%22');
-          expect(ajaxParams.jsonpCallback().indexOf('_cdbc_')).toEqual(0);
-          expect(ajaxParams.cache).toEqual(true);
-          done();
-        }, 5)
+        expect(callback).toHaveBeenCalledWith(fakeMapProperties, undefined);
+        expect(callback.calls.count()).toEqual(1);
+        expect(ajaxParams.dataType).toEqual('jsonp');
+        expect(ajaxParams.type).toBeUndefined(); // GET request
+        expect(ajaxParams.url).toEqual('http://rambo.cartodb.com:8081/api/v1/map?stat_tag=vis_id&config=%22mapConfig%22');
+        expect(ajaxParams.jsonpCallback().indexOf('_cdbc_')).toEqual(0);
+        expect(ajaxParams.cache).toEqual(true);
       })
 
-      it('should use a cdn', function(done) {
+      it('should use the right endpoint', function() {
+        layerDefinition.JSONPendPoint = '/api/v2/';
+
+        layerDefinition.getLayerToken(callback);
+
+        expect(ajaxParams.url).toEqual('http://rambo.cartodb.com:8081/api/v2/?stat_tag=vis_id&config=%22fakeMapConfig%22');
+
+        delete layerDefinition.JSONPendPoint;
+        layerDefinition.endPoint = '/api/v3/'
+
+        layerDefinition.getLayerToken(callback);
+
+        expect(ajaxParams.url).toEqual('http://rambo.cartodb.com:8081/api/v3/?stat_tag=vis_id&config=%22fakeMapConfig%22');
+      })
+
+      it('should the instanciateCallback as the jsonpCallback', function() {
+        var callback = function() {
+          console.log('hello world!')
+        }
+        layerDefinition.options.instanciateCallback = callback;
+
+        layerDefinition.getLayerToken(callback);
+
+        expect(ajaxParams.jsonpCallback).toEqual(callback);
+      })
+
+      it('should use a cdn', function() {
         layerDefinition._host = function() { return 'http://cdn.test.com'; }
         layerDefinition._tilerHost = function() { return 'http://rambo.cartodb.com:8081'; }
 
         layerDefinition.options.dynamic_cdn = true;
         layerDefinition.getLayerToken(callback);
 
-        setTimeout(function() {
-          expect(ajaxParams.url.indexOf('http://cdn.test.com/api/v1/map?')).toEqual(0);
-          done();
-        }, 4)
+        expect(ajaxParams.url.indexOf('http://cdn.test.com/api/v1/map?')).toEqual(0);
       });
 
-      it('should compress the map definition using LZMA', function(done) {
+      it('should compress the map definition using LZMA', function() {
         layerDefinition.options.force_compress = true;
 
         var json = layerDefinition.toJSON();
@@ -578,24 +583,18 @@ describe("LayerDefinition", function() {
           layerDefinition.getLayerToken(callback);
         });
 
-        setTimeout(function() {
-          expect(ajaxParams.url.indexOf('lzma=' + encodeURIComponent(lzma))).not.toEqual(-1);
-          done();
-        }, 300)
+        expect(ajaxParams.url.indexOf('lzma=' + encodeURIComponent(lzma))).not.toEqual(-1);
       });
 
-      it('should handle errors returned by the tiler', function(done) {
+      it('should handle errors returned by the tiler', function() {
         fakeMapProperties = { errors: ['Error!']};
 
         layerDefinition.getLayerToken(callback);
 
-        setTimeout(function() {
-          expect(callback).toHaveBeenCalledWith(null, { errors: [ 'Error!' ] });
-          done();
-        }, 4)
+        expect(callback).toHaveBeenCalledWith(null, { errors: [ 'Error!' ] });
       })
 
-      it('should handle ajax errors', function(done) {
+      it('should handle ajax errors', function() {
         layerDefinition.options.ajax = ajax = function(params) {
           ajaxParams = params;
           params.error('error!');
@@ -603,10 +602,7 @@ describe("LayerDefinition", function() {
 
         layerDefinition.getLayerToken(callback);
 
-        setTimeout(function() {
-          expect(callback).toHaveBeenCalledWith(null, { errors: [ 'unknow error' ] });
-          done();
-        }, 4)
+        expect(callback).toHaveBeenCalledWith(null, { errors: [ 'unknow error' ] });
       })
     })
 
@@ -619,56 +615,57 @@ describe("LayerDefinition", function() {
         }
       })
 
-      it('should use a POST request when request body is greater than maximum GET size', function(done) {
+      it('should use a POST request when request body is greater than maximum GET size', function() {
         layerDefinition.getLayerToken(callback);
 
-        setTimeout(function() {
-          expect(callback).toHaveBeenCalledWith(fakeMapProperties, undefined);
-          expect(callback.calls.count()).toEqual(1);
-          expect(ajaxParams.crossOrigin).toEqual(true);
-          expect(ajaxParams.type).toEqual('POST'); // POST request
-          expect(ajaxParams.method).toEqual('POST'); // POST request
-          expect(ajaxParams.dataType).toEqual('json');
-          expect(ajaxParams.contentType).toEqual('application/json');
-          expect(ajaxParams.url).toEqual('http://rambo.cartodb.com:8081/api/v1/map?stat_tag=vis_id');
-          expect(ajaxParams.data).toEqual('"' + fakeMapConfig + '"');
-          done();
-        }, 5)
+        expect(callback).toHaveBeenCalledWith(fakeMapProperties, undefined);
+        expect(callback.calls.count()).toEqual(1);
+        expect(ajaxParams.crossOrigin).toEqual(true);
+        expect(ajaxParams.type).toEqual('POST'); // POST request
+        expect(ajaxParams.method).toEqual('POST'); // POST request
+        expect(ajaxParams.dataType).toEqual('json');
+        expect(ajaxParams.contentType).toEqual('application/json');
+        expect(ajaxParams.url).toEqual('http://rambo.cartodb.com:8081/api/v1/map?stat_tag=vis_id');
+        expect(ajaxParams.data).toEqual('"' + fakeMapConfig + '"');
       })
 
-      it('should use a POST request when forcing CORS', function(done) {
+      it('should use a POST request when forcing CORS', function() {
         fakeMapConfig = 'aaaa';
         layerDefinition.options.cors = 'something';
         layerDefinition.options.force_cors = true;
 
         layerDefinition.getLayerToken(callback);
 
-        setTimeout(function() {
-          expect(callback).toHaveBeenCalledWith(fakeMapProperties, undefined);
-          expect(callback.calls.count()).toEqual(1);
-          expect(ajaxParams.crossOrigin).toEqual(true);
-          expect(ajaxParams.type).toEqual('POST'); // POST request
-          expect(ajaxParams.method).toEqual('POST'); // POST request
-          expect(ajaxParams.dataType).toEqual('json');
-          expect(ajaxParams.contentType).toEqual('application/json');
-          expect(ajaxParams.url).toEqual('http://rambo.cartodb.com:8081/api/v1/map?stat_tag=vis_id');
-          expect(ajaxParams.data).toEqual('"' + fakeMapConfig + '"');
-          done();
-        }, 5)
+        expect(callback).toHaveBeenCalledWith(fakeMapProperties, undefined);
+        expect(callback.calls.count()).toEqual(1);
+        expect(ajaxParams.crossOrigin).toEqual(true);
+        expect(ajaxParams.type).toEqual('POST'); // POST request
+        expect(ajaxParams.method).toEqual('POST'); // POST request
+        expect(ajaxParams.dataType).toEqual('json');
+        expect(ajaxParams.contentType).toEqual('application/json');
+        expect(ajaxParams.url).toEqual('http://rambo.cartodb.com:8081/api/v1/map?stat_tag=vis_id');
+        expect(ajaxParams.data).toEqual('"' + fakeMapConfig + '"');
       })
 
-      it('should handle errors returned by the tiler', function(done) {
+      it('should use the right endpoint', function() {
+        layerDefinition.options.cors = 'something';
+        layerDefinition.options.force_cors = true;
+        layerDefinition.endPoint = '/api/v20/';
+
+        layerDefinition.getLayerToken(callback);
+
+        expect(ajaxParams.url).toEqual('http://rambo.cartodb.com:8081/api/v20/?stat_tag=vis_id');
+      })
+
+      it('should handle errors returned by the tiler', function() {
         fakeMapProperties = { errors: ['Error!']};
 
         layerDefinition.getLayerToken(callback);
 
-        setTimeout(function() {
-          expect(callback).toHaveBeenCalledWith(null, { errors: [ 'Error!' ] });
-          done();
-        }, 4)
+        expect(callback).toHaveBeenCalledWith(null, { errors: [ 'Error!' ] });
       })
 
-      it('should handle ajax errors', function(done) {
+      it('should handle ajax errors', function() {
         layerDefinition.options.ajax = ajax = function(params) {
           ajaxParams = params;
           params.error('error!');
@@ -676,10 +673,7 @@ describe("LayerDefinition", function() {
 
         layerDefinition.getLayerToken(callback);
 
-        setTimeout(function() {
-          expect(callback).toHaveBeenCalledWith(null, { errors: [ 'unknow error' ] });
-          done();
-        }, 4)
+        expect(callback).toHaveBeenCalledWith(null, { errors: [ 'unknow error' ] });
       })
     })
   });
@@ -985,7 +979,7 @@ describe("LayerDefinition", function() {
       expect(layerDefinition.mapProperties.getMapId()).toEqual('test');
     });
 
-    it("should use an empty gif if there are no visible layers", function(done) {
+    it("should use an empty gif if there are no visible layers", function() {
       var urls;
       layerDefinition.getSubLayer(0).hide();
       layerDefinition.getSubLayer(1).hide();
@@ -997,11 +991,8 @@ describe("LayerDefinition", function() {
         urls = t;
       })
 
-      setTimeout(function() {
-        expect(urls.tiles[0]).toEqual(MapBase.EMPTY_GIF);
-        expect(urls.grids[0]).toBeUndefined();
-        done();
-      }, 100)
+      expect(urls.tiles[0]).toEqual(MapBase.EMPTY_GIF);
+      expect(urls.grids[0]).toBeUndefined();
     });
   });
 
@@ -1151,6 +1142,14 @@ describe("LayerDefinition", function() {
       expect(layerDefinition.mapProperties).toEqual(null);
       expect(layerDefinition.urls).toEqual(null);
     });
+
+    it('should invoke onLayerDefinitionUpdated', function() {
+      spyOn(layerDefinition, 'onLayerDefinitionUpdated');
+
+      layerDefinition.invalidate();
+
+      expect(layerDefinition.onLayerDefinitionUpdated).toHaveBeenCalled();
+    })
   });
 
   describe('LayerDefinition.layerDefFromSubLayers', function() {
@@ -1220,99 +1219,70 @@ describe("NamedMap", function() {
     });
   });
 
-  it("should include instanciation callback", function(done) {
-    namedMap = new NamedMap(named_map, {
-      tiler_domain:   "cartodb.com",
-      tiler_port:     "8081",
-      tiler_protocol: "https",
-      user_name: 'rambo',
-      no_cdn: true,
-      subdomains: [null],
-      instanciateCallback: 'testing'
+  describe('.toJSON', function() {
 
-    });
-    namedMap.options.ajax = function(p) { 
-      params = p;
-      p.success({ layergroupid: 'test', metadata: { layers: [] } });
-    };
+    it('should return an empty object if no layers are present', function() {
+      var config = {
+        name: 'testing'
+      };
+      var namedMap = new NamedMap(config, {});
 
-    namedMap._getLayerToken();
-    namedMap.getTiles(function(t) {
-      tiles = t;
-    });
+      expect(namedMap.toJSON()).toEqual({});
 
-    setTimeout(function() {
-      expect(params.jsonpCallback).toEqual('testing');
-      expect(params.cache).toEqual(true);
-      done();
-    }, 100);
+      config = {
+        name: 'testing',
+        layers: []
+      };
+      namedMap = new NamedMap(config, {});
+
+      expect(namedMap.toJSON()).toEqual({});
+    })
+
+    it('should include the given params', function() {
+      var config = {
+        name: 'testing',
+        params: {
+          key: 'value'
+        }
+      };
+      var namedMap = new NamedMap(config, {});
+
+      expect(namedMap.toJSON()).toEqual({ key: 'value' });
+    })
+
+    it('should include layers and with the right visibility', function() {
+      var config = {
+        name: 'testing',
+        layers: [
+          {
+            "type": "cartodb",
+            "options": {
+            }
+          },
+          {
+            "type": "http",
+            "options": {
+              "hidden": false
+            }
+          },
+          {
+            "type": "cartodb",
+            "options": {
+              "hidden": true
+            }
+          },
+        ]
+      };
+      var namedMap = new NamedMap(config, {});
+
+      // Layers 0 and 1 are visible, but layer 2 is hidden
+      expect(namedMap.toJSON()).toEqual({
+        layer0: 1,
+        layer1: 1,
+        layer2: 0
+      });
+    })
   })
-
-  it("should instance named_map with no layers", function(done) {
-    var named_map = {
-      name: 'testing'
-    };
-    var nm = new NamedMap(named_map, {
-      tiler_domain:   "cartodb.com",
-      tiler_port:     "8081",
-      tiler_protocol: "http",
-      user_name: 'rambo',
-      no_cdn: true,
-      subdomains: [null]
-    });
-    var params;
-    nm.options.ajax = function(p) { 
-      params = p;
-      p.success({ layergroupid: 'test' });
-    };
-
-    nm._getLayerToken();
-
-    setTimeout(function() {
-      expect(params.dataType).toEqual('jsonp');
-      done();
-    }, 100);
-  });
-
-  it("should instance named_map", function(done) {
-    var params;
-    namedMap.options.ajax = function(p) { 
-      params = p;
-      p.success({ layergroupid: 'test' });
-    };
-
-    namedMap._getLayerToken();
-
-    setTimeout(function() {
-      expect(params.dataType).toEqual('jsonp');
-      expect(params.url).toEqual('http://rambo.cartodb.com:8081/api/v1/map/named/testing/jsonp?config=' + encodeURIComponent(JSON.stringify({ color: 'red', layer0: 1})));
-      done();
-    }, 100);
-  });
-
-  it("should instance named_map using POST", function(done) {
-    var params;
-    namedMap.options.cors = true;
-    namedMap.options.force_cors =true;
-    namedMap.options.ajax = function(p) { 
-      params = p;
-      p.success({ layergroupid: 'test' });
-    };
-
-    namedMap._getLayerToken();
-
-    setTimeout(function() {
-      expect(params.type).toEqual('POST');
-      expect(params.dataType).toEqual('json');
-      expect(params.url).toEqual('http://rambo.cartodb.com:8081/api/v1/map/named/testing')
-      expect(params.data).toEqual(JSON.stringify({color: 'red', layer0: 1}));
-      done();
-    }, 100);
-  });
-
-  it("shoud have infowindow", function() {
-    expect(namedMap.containInfowindow()).toEqual(true);
-  });
 
   describe('.fetchAttributes', function() {
     var callback;
@@ -1464,6 +1434,74 @@ describe("NamedMap", function() {
     })
   })
 
+  describe('.setParams', function() {
+    var namedMap;
+
+    beforeEach(function() {
+      var named_map = {
+        params: {
+          key1: 'value1'
+        }
+      };
+      namedMap = new NamedMap(named_map, {
+        tiler_domain:   "cartodb.com",
+        tiler_port:     "8081",
+        tiler_protocol: "https",
+        user_name: 'rambo',
+        no_cdn: true,
+        subdomains: [null]
+      });
+    })
+
+    it('should initialize params object if no params are present in the definition', function() {
+      delete namedMap.named_map.params;
+
+      namedMap.setParams('key2', 'value2');
+      expect(namedMap.named_map.params).toEqual({
+        key2: 'value2'
+      })
+    })
+
+    it('should handle strings as arguments', function() {
+      namedMap.setParams('key2', 'value2');
+      expect(namedMap.named_map.params).toEqual({
+        key1: 'value1',
+        key2: 'value2'
+      })
+    })
+
+    it('should handle objects as arguments', function() {
+      namedMap.setParams({ key2: 'value2' });
+      expect(namedMap.named_map.params).toEqual({
+        key1: 'value1',
+        key2: 'value2'
+      })
+    })
+
+    it('should unset arguments', function() {
+      namedMap.setParams({ key2: 'value2' });
+      expect(namedMap.named_map.params).toEqual({
+        key1: 'value1',
+        key2: 'value2'
+      })
+
+      namedMap.setParams({ key1: null, key2: undefined });
+      expect(namedMap.named_map.params).toEqual({})
+    })
+
+    it('should invalidate the map', function() {
+      spyOn(namedMap, 'invalidate');
+
+      namedMap.setParams();
+
+      expect(namedMap.invalidate).toHaveBeenCalled();
+    })
+  });
+
+  it("shoud have infowindow", function() {
+    expect(namedMap.containInfowindow()).toEqual(true);
+  });
+
   it("should get sublayer", function() {
     named_map = {
       name: 'testing',
@@ -1473,53 +1511,6 @@ describe("NamedMap", function() {
     };
     namedMap = new NamedMap(named_map, {})
     expect(namedMap.getSubLayer(0)).not.toEqual(undefined);
-  });
-
-  it("should enable/disable layers", function(done) {
-    var params;
-    namedMap.layers.push({
-      options:  {},
-        infowindow: {
-          fields: [ { title:'test', value:true, position:0, index:0 } ]
-        }
-    });
-    namedMap.options.ajax = function(p) { 
-      params = p;
-      p.success({ layergroupid: 'test' });
-    };
-
-    namedMap.getSubLayer(0).hide();
-    namedMap._getLayerToken();
-
-    setTimeout(function() {
-      var config ="config=" + encodeURIComponent(JSON.stringify({color: 'red', layer0: 0, layer1: 1}));
-      expect(params.url.indexOf(config)).not.toEqual(-1);
-
-      var token = 'test';
-
-      setTimeout(function() {
-        namedMap.getSubLayer(1).hide();
-        namedMap._getLayerToken(function(d) {
-          token = d;
-        });
-
-        expect(token).not.toEqual(null);
-
-        setTimeout(function() {
-          namedMap.getSubLayer(0).show();
-          namedMap._getLayerToken();
-
-          setTimeout(function() {
-            var config ="config=" + encodeURIComponent(JSON.stringify({color: 'red', layer0: 1, layer1: 0}));
-            expect(params.url.indexOf(config)).not.toEqual(-1);
-            done();
-          }, 200);
-
-        }, 100);
-
-      }, 100);
-
-    }, 100);
   });
 
   it("should raise errors when try to set sql or cartocss", function() {
@@ -1629,72 +1620,6 @@ describe("NamedMap", function() {
     }, 100);
   });
 
-  it("set param without default param", function(done) {
-    var named_map = {
-      stat_tag: 'stat_tag_named_map',
-      name: 'testing',
-      auth_token: 'auth_token_test',
-      layers: [{}]
-    };
-    namedMap = new NamedMap(named_map, {
-      tiler_domain:   "cartodb.com",
-      tiler_port:     "8081",
-      tiler_protocol: "https",
-      user_name: 'rambo',
-      no_cdn: true,
-      subdomains: [null]
-    });
-    namedMap.options.ajax = function(p) { 
-      params = p;
-      p.success({ layergroupid: 'test' });
-    };
-    namedMap.setParams('color', 'red');
-    namedMap._getLayerToken();
-
-    setTimeout(function() {
-      var config = "config=" + encodeURIComponent(JSON.stringify({color: 'red', layer0: 1}));
-      expect(params.url.indexOf(config)).not.toEqual(-1);
-      console.log(params.url);
-      expect(params.url.indexOf("stat_tag=stat_tag_named_map")).not.toEqual(-1);
-      done();
-    }, 100);
-  });
-
-  it("should add params", function(done) {
-    var params;
-    namedMap.options.ajax = function(p) { 
-      params = p;
-      p.success({ layergroupid: 'test' });
-    };
-    namedMap.named_map.params = { color: 'red' }
-    spyOn(namedMap,'onLayerDefinitionUpdated');
-    namedMap.setParams('test', 10);
-
-    expect(namedMap.onLayerDefinitionUpdated).toHaveBeenCalled();
-
-    namedMap._getLayerToken();
-
-    setTimeout(function() {
-      var config ="config=" + encodeURIComponent(JSON.stringify({color: 'red', test: 10, layer0: 1}));
-      console.log(params.url);
-      expect(params.url.indexOf(config)).not.toEqual(-1);
-
-      setTimeout(function() {
-        namedMap.setParams('color', null);
-        namedMap._getLayerToken();
-
-        setTimeout(function() {
-          var config ="config=" + encodeURIComponent(JSON.stringify({ test: 10, layer0: 1}));
-          console.log(params.url);
-          expect(params.url.indexOf(config)).not.toEqual(-1);
-          done();
-        }, 100);
-
-      }, 100);
-
-    }, 100);
-  });
-
   it("should use https when auth_token is provided", function() {
     var named_map = {
       name: 'testing',
@@ -1719,46 +1644,4 @@ describe("NamedMap", function() {
     expect(namedMap.getLayerIndexByNumber(0)).toEqual(0);
     expect(namedMap.getLayerIndexByNumber(1)).toEqual(1);
   });
-
-  it("should throw an error message when there is an error with the namedmaps", function(done) {
-
-    var named_map = {
-      stat_tag: 'stat_tag_named_map',
-      name: 'testing',
-      auth_token: 'auth_token_test'
-    };
-
-    namedMap = new NamedMap(named_map, {
-      tiler_domain:   "cartodb.com",
-      tiler_port:     "8081",
-      tiler_protocol: "https",
-      user_name: 'rambo',
-      no_cdn: true,
-      subdomains: [null]
-    });
-
-    namedMap.options.ajax = function(p) { 
-      params = p;
-      p.success({ errors: 'not found' });
-    };
-
-    var _data, _error;
-    var callb = function (dt,er){
-      _data = dt;
-      _error = er;
-    };
-
-    namedMap.getTiles(callb);
-
-    setTimeout(function() {
-      var res = "not found";
-
-      expect(_error.errors).toEqual(res);
-      expect(true).toEqual(true);
-
-      done();
-    }, 100);
-
-  });
-
 });

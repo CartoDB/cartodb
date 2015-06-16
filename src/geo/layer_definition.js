@@ -212,7 +212,7 @@ MapBase.prototype = {
         // discard previous calls when there is another call waiting
         if(0 === self._queue.length) {
           if (data.errors) {
-            cartodb.core.Profiler.metric('cartodb-js.layergroup.get.error').inc();
+            cartodb.core.Profiler.metric('cartodb-js.layergroup.post.error').inc();
             callback(null, data);
           } else {
             callback(data);

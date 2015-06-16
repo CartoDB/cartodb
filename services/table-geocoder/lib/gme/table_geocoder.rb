@@ -115,14 +115,14 @@ module Carto
         #    {:cartodb_id=>2, :searchtext=>"foo", :cartodb_georef_status=>false}]
         geocoded = data_block.select {|row| row[:cartodb_georef_status] == true}
         if geocoded.count > 0
-          geocoded_to_sql = geocoded.map {|row| "(#{row[:cartodb_id]}, #{row[:lng]}, #{row[:lat]})"}.join(',')
+          geocoded_to_sql = geocoded.map {|row| "(#{row[:cartodb_id]}, #{row[:lat]}, #{row[:lng]})"}.join(',')
           query_geocoded = %Q{
             UPDATE #{@qualified_table_name} as target SET
-              the_geom = ST_SetSRID(ST_MakePoint(geocoded.lng,geocoded.lat),4326),
+              the_geom = CDB_LatLng(geocoded.lat,geocoded.lng),
               cartodb_georef_status = TRUE
             FROM (VALUES
               #{geocoded_to_sql}
-            ) as geocoded(cartodb_id,lng,lat)
+            ) as geocoded(cartodb_id,lat,lng)
             WHERE target.cartodb_id = geocoded.cartodb_id;
           }
           connection.run(query_geocoded)

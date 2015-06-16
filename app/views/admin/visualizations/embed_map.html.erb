@@ -36,7 +36,7 @@
 
       <a href="#like" class="like js-like">
         <span class="icon"></span>
-        <span class="counter"><%= @visualization.to_vizjson[:likes] %></span>
+        <span class="counter"><% if (@visualization.to_vizjson[:likes] > 2) %><%= @visualization.to_vizjson[:likes] %><% end %></span>
       </a>
 
     </div>

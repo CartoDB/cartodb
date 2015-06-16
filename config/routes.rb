@@ -338,6 +338,9 @@ CartoDB::Application.routes.draw do
 
     # User assets
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/users/:user_id/assets'     => 'assets#index',   as: :api_v1_1_users_assets_index
+
+    # Organization (new endpoint that deprecates old, unused one, so v1)
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:id/users' => 'organizations#users', as: :api_v1_organization_users, constraints: { id: /[^\/]+/ }
   end
 
   scope :module => 'api/json', :format => :json do
@@ -453,7 +456,6 @@ CartoDB::Application.routes.draw do
 
     # Organizations
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/org/'      => 'organizations#show',  as: :api_v1_organization_show
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1/org/users' => 'organizations#users', as: :api_v1_organization_users
 
 
     # V2

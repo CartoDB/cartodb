@@ -12,7 +12,7 @@ class Carto::Permission < ActiveRecord::Base
   TYPE_USER         = 'user'
   TYPE_ORGANIZATION = 'org'
 
-  belongs_to :owner, class_name: User, select: Carto::User::DEFAULT_SELECT
+  belongs_to :owner, class_name: User, select: Carto::User::SELECT_WITH_DATABASE
 
   def acl
     @acl ||= self.access_control_list.nil? ? DEFAULT_ACL_VALUE : JSON.parse(self.access_control_list, symbolize_names: true)

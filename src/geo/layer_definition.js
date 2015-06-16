@@ -125,7 +125,6 @@ MapBase.prototype = {
 
   _getLayerToken: function(callback) {
     var self = this;
-    var params = [];
     callback = callback || function() {};
 
     // if the previous request didn't finish, queue it
@@ -142,12 +141,28 @@ MapBase.prototype = {
       return;
     }
 
-    // setup params
-    var extra_params = this.options.extra_params || {};
-    var api_key = this.options.map_key || this.options.api_key || extra_params.map_key || extra_params.api_key;
+    // mark as the request is being done
+    this._waiting = true;
+    var req = null;
+    if (this._usePOST()) {
+      req = this._requestPOST;
+    } else {
+      req = this._requestGET;
+    }
+    var params = this._getParamsFromOptions(this.options);
+    req.call(this, params, callback);
+    return this;
+  },
+
+  _getParamsFromOptions: function(options) {
+    var params = [];
+    var extra_params = options.extra_params || {};
+    var api_key = options.map_key || options.api_key || extra_params.map_key || optionsextra_params.api_key;
+
     if(api_key) {
       params.push("map_key=" + api_key);
     }
+
     if(extra_params.auth_token) {
       if (_.isArray(extra_params.auth_token)) {
         for (var i = 0, len = extra_params.auth_token.length; i < len; i++) {
@@ -161,16 +176,7 @@ MapBase.prototype = {
     if (this.stat_tag) {
       params.push("stat_tag=" + this.stat_tag);
     }
-    // mark as the request is being done
-    this._waiting = true;
-    var req = null;
-    if (this._usePOST()) {
-      req = this._requestPOST;
-    } else {
-      req = this._requestGET;
-    }
-    req.call(this, params, callback);
-    return this;
+    return params;
   },
 
   _usePOST: function() {

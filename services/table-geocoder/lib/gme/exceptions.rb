@@ -3,6 +3,7 @@
 module Carto
   module Gme
 
+    # TODO take care of these exceptions to provide better feedback to the user
     class ClientException < StandardError; end
 
     class Timeout < ClientException; end

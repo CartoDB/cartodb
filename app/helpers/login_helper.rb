@@ -2,11 +2,11 @@
 
 module LoginHelper
 
+  DEFAULT_BACKGROUND_COLOR = "#354046"
+
   def background
-    default_color = "#354046"
-    color = @organization && @organization.color ?
-      "#{darken_color(@organization.color,0.6)},#{@organization.color}" :
-      "#{darken_color(default_color,0.6)}, #{default_color}"
+    base_color = @organization && @organization.color ? @organization.color : DEFAULT_BACKGROUND_COLOR
+    color = "#{darken_color(base_color,0.6)}, #{base_color}"
     "background: url(#{image_path('backgrounds/sessions.png')}), linear-gradient(to bottom right, #{color});"
   end
 

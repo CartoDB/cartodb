@@ -7,15 +7,72 @@ shared_examples_for "visualization controllers" do
 
   TEST_UUID = '00000000-0000-0000-0000-000000000000'
 
-  NORMALIZED_DATE_ATTRIBUTES = %w{ created_at updated_at }
+  DATE_ATTRIBUTES = %w{ created_at updated_at }
+  NORMALIZED_ASSOCIATION_ATTRIBUTES = {
+    attributes: DATE_ATTRIBUTES,
+    associations: {
+      'permission' => {
+        attributes: DATE_ATTRIBUTES,
+        associations: {}
+      },
+      'table' => {
+        attributes: DATE_ATTRIBUTES,
+        associations: {}
+      }
+    }
+  }
 
   # Custom hash comparation, since in the ActiveModel-based controllers
   # we allow some differences:
   # - x to many associations can return [] instead of nil
-  def normalize_hash(h)
+  def normalize_hash(h, normalized_attributes = NORMALIZED_ASSOCIATION_ATTRIBUTES)
     h.each { |k, v|
       h[k] = nil if v == []
-      h[k] = '' if NORMALIZED_DATE_ATTRIBUTES.include?(k)
+      h[k] = '' if normalized_attributes[:attributes].include?(k)
+      if normalized_attributes[:associations].keys.include?(k)
+        normalize_hash(v, normalized_attributes[:associations][k])
+      end
+    }
+  end
+
+  NEW_ATTRIBUTES = {
+    attributes: [],
+    associations: {
+      'table' => {
+        attributes: [],
+        associations: {
+          'permission' => {
+            attributes: [],
+            associations: {
+              'owner' => {
+                attributes: [ 'email', 'quota_in_bytes', 'db_size_in_bytes' ],
+                associations: {}
+              }
+            }
+          }
+        }
+      },
+      'permission' => {
+        attributes: [],
+        associations: {
+          'owner' => {
+            attributes: [ 'email', 'quota_in_bytes', 'db_size_in_bytes' ],
+            associations: {}
+          }
+        }
+      }
+    }
+  }
+
+  # INFO: this test uses comparison against old data structures to check validity.
+  # You can use this method to remove that new data so next comparisons will work.
+  def remove_data_only_in_new_controllers(visualization_hash, new_attributes = NEW_ATTRIBUTES)
+    visualization_hash.each { |k, v|
+      if new_attributes[:attributes].include?(k)
+        removed = visualization_hash.delete(k)
+      elsif new_attributes[:associations].include?(k)
+        remove_data_only_in_new_controllers(v, new_attributes[:associations][k])
+      end
     }
   end
 
@@ -32,7 +89,7 @@ shared_examples_for "visualization controllers" do
     get base_url, params, @headers
     last_response.status.should == 200
     body = JSON.parse(last_response.body)
-    body['visualizations'] = body['visualizations'].map { |v| normalize_hash(v) }
+    body['visualizations'] = body['visualizations'].map { |v| normalize_hash(v) }.map { |v| remove_data_only_in_new_controllers(v) }
     body
   end
 

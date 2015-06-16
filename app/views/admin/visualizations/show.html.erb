@@ -1,3 +1,6 @@
+<%
+  user_data_options = current_user.has_feature_flag?('new_modals') ? {} : { show_organization_users: true }
+%>
   <% content_for(:page_title) do %>
     <%= @visualization.name %> |
   <% end %>
@@ -13,7 +16,7 @@
   <script type="text/javascript" id="dropboxjs" src="//www.dropbox.com/static/api/1/dropins.js" data-app-key="<%= Cartodb.config[:dropbox_api_key] %>"></script>
   <script>
     var vis_data = <%= safe_js_object @visualization.to_hash.to_json %>
-    , user_data = <%= safe_js_object current_user.data.to_json %>
+    , user_data = <%= safe_js_object current_user.data(user_data_options).to_json %>
     , config = <%= safe_js_object frontend_config %>
     , map_data = <%= safe_js_object @visualization.map.public_values.to_json %>
     // TODO: remove mixpanel

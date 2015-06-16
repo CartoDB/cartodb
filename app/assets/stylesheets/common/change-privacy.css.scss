@@ -39,8 +39,11 @@
   margin-right: $sMargin-element;
 }
 .ChangePrivacy-passwordInput {
-  width: 200px;
-  margin-right: 120px;
+  position: absolute;
+  left: 9px;
+  bottom: 9px;
+  width: 172px;
+  outline:none;
 }
 .Dialog-body.ChangePrivacy-ShareDialog-body {
   padding-top: 0px;

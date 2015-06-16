@@ -514,7 +514,7 @@ describe("LayerDefinition", function() {
           expect(ajaxParams.dataType).toEqual('jsonp');
           expect(ajaxParams.type).toBeUndefined(); // GET request
           expect(ajaxParams.url).toEqual('http://rambo.cartodb.com:8081/api/v1/map?stat_tag=vis_id&config=%22mapConfig%22');
-          expect(ajaxParams.jsonpCallback().indexof('_cdbc_')).not.toEqual(-1);
+          expect(ajaxParams.jsonpCallback().indexOf('_cdbc_')).toEqual(0);
           expect(ajaxParams.cache).toEqual(true);
           done();
         }, 5)
@@ -546,7 +546,7 @@ describe("LayerDefinition", function() {
         setTimeout(function() {
           expect(ajaxParams.url.indexOf('lzma=' + encodeURIComponent(lzma))).not.toEqual(-1);
           done();
-        }, 200)
+        }, 300)
       });
 
       it('should handle errors returned by the tiler', function(done) {

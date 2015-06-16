@@ -11,6 +11,9 @@ MapProperties.prototype.getMapId = function() {
 
 /**
  * Returns the index of a layer of a given type, as the tiler kwows it.
+ *
+ * @param {integer} index - number of layer of the specified type
+ * @param {string} layerType - type of the layers
  */
 MapProperties.prototype.getLayerIndexByType = function(index, layerType) {
   var layers = this.mapProperties.metadata && this.mapProperties.metadata.layers;
@@ -31,6 +34,31 @@ MapProperties.prototype.getLayerIndexByType = function(index, layerType) {
     return -1;
   }
   return tilerLayerIndex[index];
+}
+
+/**
+ * Returns the index of a layer of a given type, as the tiler kwows it.
+ *
+ * @param {string|array} types - Type or types of layers
+ */
+MapProperties.prototype.getLayerIndexesByType = function(types) {
+  var layers = this.mapProperties.metadata && this.mapProperties.metadata.layers;
+
+  if (!layers) {
+    return;
+  }
+  var layerIndexes = [];
+  for (var i = 0; i < layers.length; i++) {
+    var layer = layers[i];
+    var isValidType = layer.type !== 'torque';
+    if (types && types.length > 0) {
+      isValidType = isValidType && types.indexOf(layer.type) != -1
+    }
+    if (isValidType) {
+      layerIndexes.push(i);
+    }
+  }
+  return layerIndexes;
 }
 
 function MapBase(options) {
@@ -371,22 +399,7 @@ MapBase.prototype = {
     }
     var filter = this.options.filter;
   
-    // TODO: Move this to MapProperties
-    // Iterate through the layers returned by the tiler as metadata and
-    // extract the indexes of all the layers that should be rendered
-    var layers = mapProperties.mapProperties.metadata.layers;
-    var layerIndexes = [];
-    for (var i = 0; i < layers.length; i++) {
-      var layer = layers[i];
-      var isValidType = layer.type !== 'torque';
-      if (filter) {
-        isValidType = isValidType && filter.indexOf(layer.type) != -1
-      }
-      if (isValidType) {
-        layerIndexes.push(i);
-      }
-    }
-
+    var layerIndexes = mapProperties.getLayerIndexesByType(filter);
     if (layerIndexes.length) {
       var tileTemplate = '/' +  layerIndexes.join(',') +'/{z}/{x}/{y}';
       var gridTemplate = '/{z}/{x}/{y}';

@@ -15,13 +15,25 @@
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center);
+  border: 1px solid transparent;
+  box-sizing: content-box; // to make sure size is consistent w/ borders
+
+  // Makes sure prev border is overlapped but the is-selected one
+  position: relative;
+  margin-top: -2px;
+}
+.List-row.is-selected {
+  background-color: $cCard-selectedFill;
+  border: 1px solid $cCard-selectedBorder;
+  border-radius: $sCard-borderRadius;
 }
 .List-row.List-row.is-disabled { opacity: 0.4 }
-.List-row:last-child > .List-rowItem { border-bottom: none }
+.List-row:last-child > .List-rowItem { border-bottom: 1px solid transparent }
 .List-rowItem {
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center);
+  box-sizing: content-box; // to make sure size is consistent w/ borders
   margin-left: $sMargin-element;
   margin-right: $sMargin-element;
   padding-top: $sMargin-group;
@@ -29,6 +41,7 @@
   width: 100%;
   border-bottom: 1px solid $cStructure-mainLine;
 }
+.List-row.is-selected > .List-rowItem { border-bottom: 1px solid transparent }
 .List-rowItem.List-rowItem--tight {
   padding-top: 16px;
   padding-bottom: 16px;

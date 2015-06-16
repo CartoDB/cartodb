@@ -7,7 +7,10 @@
   @include justify-content(space-between, justify);
   @include align-items(stretch, stretch);
 }
-.MergeDatasets-list { width: 420px }
+.MergeDatasets-list {
+  width: 420px;
+  margin-bottom: 120px; // compensate for static dialog footer
+}
 .MergeDatasets-instructions {
   width: 630px;
   margin: 0 auto $sMargin-section auto;

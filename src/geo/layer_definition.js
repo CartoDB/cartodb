@@ -157,7 +157,7 @@ MapBase.prototype = {
   _getParamsFromOptions: function(options) {
     var params = [];
     var extra_params = options.extra_params || {};
-    var api_key = options.map_key || options.api_key || extra_params.map_key || optionsextra_params.api_key;
+    var api_key = options.map_key || options.api_key || extra_params.map_key || extra_params.api_key;
 
     if(api_key) {
       params.push("map_key=" + api_key);

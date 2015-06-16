@@ -322,60 +322,36 @@ describe("LayerDefinition", function() {
 
   describe('.getLayerToken', function() {
 
-    it("should return null token when there are no visible layers", function(done) {
-      layerDefinition.getSubLayer(0).hide();
-      layerDefinition.getSubLayer(1).hide();
-      var tk = 'test'
-      layerDefinition.getLayerToken(function(a) {
-        tk =  a;
-      })
+    var ajax, ajaxParams, callback, fakeMapProperties, fakeMapConfig;
 
-      setTimeout(function() {
-        expect(tk).toEqual(null);
-        done();
-      }, 100);
-    });
-
-    it("should use jsonp when request is less than 2kb", function(done) {
-      var params;
-      layerDefinition.options.ajax = function(p) { 
-        params = p;
-        p.success({ layergroupid: 'test' });
+    beforeEach(function() {
+      ajaxParams = undefined;
+      fakeMapProperties = {};
+      fakeMapConfig = 'fakeMapConfig';
+      layerDefinition.options.ajax = ajax = function(params) {
+        ajaxParams = params;
+        params.success(fakeMapProperties || {});
+      }
+      callback = jasmine.createSpy('callback');
+      layerDefinition.toJSON = function() {
+        return fakeMapConfig;
       };
+    })
 
-      layerDefinition.getLayerToken();
-      setTimeout(function() {
-        expect(params.dataType).toEqual('jsonp');
-        done();
-      }, 100)
-    });
-
-    it("should use not use compression for small layergroups", function(done) {
-      layerDefinition.options.cors = false;
-      layerDefinition.options.api_key = 'test';
-      layerDefinition.options.ajax = function(p) { 
-        params = p;
-        p.success({ layergroupid: 'test' });
-      };
-
-      layerDefinition.getLayerToken();
-
-      setTimeout(function() {
-        expect(params.url.indexOf('config') !== -1).toEqual(true);
-        done();
-      }, 100);
-    });
-
-    it("should return values for the latest query", function(done) {
+    it("should enqueue requests and return values for the latest query", function(done) {
       tokens = [];
-      layerDefinition.options.ajax = function(p) { 
+      var i = 0;
+      layerDefinition.options.ajax = function(p) {
+
+        // Before the ajax request is done, another request is sent
         layerDefinition.getLayerToken(function(a) {
           tokens.push(a);
         });
         layerDefinition.options.ajax = function(p) { 
-          p.success({ layergroupid: 'test2' });
+          p.success({ layergroupid: 'layergroup_' + ++i });
         }
-        p.success({ layergroupid: 'test' });
+
+        p.success({ layergroupid: 'layergroup_' + ++i });
       };
 
       layerDefinition.getLayerToken(function(a) {
@@ -387,123 +363,290 @@ describe("LayerDefinition", function() {
 
       setTimeout(function() {
         expect(tokens.length).toEqual(3);
-        expect(tokens[0]).toEqual(tokens[1]);
-        expect(tokens[0]).toEqual(tokens[2]);
-        expect(tokens[0].layergroupid).toEqual('test2');
+        expect(tokens[0]).toEqual({ layergroupid: 'layergroup_2' });
+        expect(tokens[1]).toEqual({ layergroupid: 'layergroup_2' });
+        expect(tokens[2]).toEqual({ layergroupid: 'layergroup_2' });
         done();
       }, 1000);
     });
 
-    it("should include stat_tag", function(done) {
-      var params, lzma;
-      layerDefinition.options.cors = false;
-      layerDefinition.options.ajax = function(p) { 
-        params = p;
-        p.success({ layergroupid: 'test' });
-      };
-      layerDefinition.getLayerToken(function() {
-      });
+    it('should not create a map if there are no visible layers', function(done) {
+      for (var i=0; i<layerDefinition.getLayerCount(); i++) {
+        layerDefinition.getSubLayer(i).hide();
+      }
+
+      layerDefinition.getLayerToken(callback);
 
       setTimeout(function() {
-        expect(params.url.indexOf("stat_tag=vis_id")).not.toEqual(-1)
+        expect(callback).toHaveBeenCalledWith(null, undefined);
+        expect(callback.calls.count()).toEqual(1);
+        expect(ajaxParams).toBeUndefined();
         done();
-      }, 300);
+      }, 5)
+    })
+
+    it("should create a map if there are no visible layers but it's a named map", function(done) {
+      layerDefinition.named_map = {};
+
+      for (var i=0; i<layerDefinition.getLayerCount(); i++) {
+        layerDefinition.getSubLayer(i).hide();
+      }
+
+      layerDefinition.getLayerToken(callback);
+
+      setTimeout(function() {
+        expect(callback).toHaveBeenCalledWith(fakeMapProperties, undefined);
+        expect(callback.calls.count()).toEqual(1);
+        expect(ajaxParams.dataType).toEqual('jsonp');
+        done();
+      }, 5)
+    })
+
+    describe('params', function() {
+
+      it('should use a map/api key', function(done) {
+        fakeMapConfig = 'mapConfig';
+
+        layerDefinition.options.extra_params = { api_key: 'key' };
+        layerDefinition.getLayerToken(callback);
+
+        setTimeout(function() {
+          expect(ajaxParams.url.indexOf('map_key=key')).not.toEqual(-1);
+          done();
+        }, 4)
+      })
+
+      it('should use a map/api key', function(done) {
+        fakeMapConfig = 'mapConfig';
+
+        layerDefinition.options.extra_params = { map_key: 'key' };
+        layerDefinition.getLayerToken(callback);
+
+        setTimeout(function() {
+          expect(ajaxParams.url.indexOf('map_key=key')).not.toEqual(-1);
+          done();
+        }, 4)
+      })
+
+      it('should use a map/api key', function(done) {
+        fakeMapConfig = 'mapConfig';
+
+        layerDefinition.options.api_key = 'key';
+        layerDefinition.getLayerToken(callback);
+
+        setTimeout(function() {
+          expect(ajaxParams.url.indexOf('map_key=key')).not.toEqual(-1);
+          done();
+        }, 4)
+      })
+
+      it('should use a map/api key', function(done) {
+        fakeMapConfig = 'mapConfig';
+
+        layerDefinition.options.map_key = 'key';
+        layerDefinition.getLayerToken(callback);
+
+        setTimeout(function() {
+          expect(ajaxParams.url.indexOf('map_key=key')).not.toEqual(-1);
+          done();
+        }, 4)
+      })
+
+      it('should use an auth_token', function(done) {
+        fakeMapConfig = 'mapConfig';
+
+        layerDefinition.options.extra_params = { auth_token: 'token' };
+        layerDefinition.getLayerToken(callback);
+
+        setTimeout(function() {
+          expect(ajaxParams.url.indexOf('auth_token=token')).not.toEqual(-1);
+          done();
+        }, 4)
+      })
+
+      it('should multiple auth_token(s)', function(done) {
+        fakeMapConfig = 'mapConfig';
+
+        layerDefinition.options.extra_params = { auth_token: ['token1', 'token2'] };
+        layerDefinition.getLayerToken(callback);
+
+        setTimeout(function() {
+          expect(ajaxParams.url.indexOf('auth_token[]=token1&auth_token[]=token2')).not.toEqual(-1);
+          done();
+        }, 4)
+      })
+
+      it('should use a stat_tag', function(done) {
+        layerDefinition.stat_tag = 'stat_tag';
+        layerDefinition.getLayerToken(callback);
+
+        setTimeout(function() {
+          expect(ajaxParams.url.indexOf('stat_tag=stat_tag')).not.toEqual(-1);
+          done();
+        }, 4)
+      })
+    })
+
+    it("should set a refresh timer after creating the map", function(done) {
+      layerDefinition.options.refreshTime = 1;
+      
+      layerDefinition.getLayerToken(callback);
+
+      spyOn(layerDefinition,'invalidate');
+
+      setTimeout(function() {
+        expect(layerDefinition.invalidate).toHaveBeenCalled();
+        done();
+      }, 50);
     });
 
-    it("should use jsonp when cors is not available", function(done) {
-      var params, lzma;
-      layerDefinition.options.cors = false;
-      layerDefinition.options.api_key = 'test';
-      layerDefinition.options.force_compress = true;
-      layerDefinition.options.ajax = function(p) { 
-        params = p;
-        p.success({ layergroupid: 'test' });
-      };
+    describe('GET request', function() {
 
-      var json = layerDefinition.toJSON();
-      json = JSON.stringify({ config: JSON.stringify(json) });
-      LZMA.compress(json, 3, function(encoded) {
-        lzma = cdb.core.util.array2hex(encoded);
-        layerDefinition.getLayerToken(function() {
+      it('should create a map using a GET request', function(done) {
+        fakeMapProperties = {};
+        fakeMapConfig = 'mapConfig';
+
+        layerDefinition.getLayerToken(callback);
+
+        setTimeout(function() {
+          expect(callback).toHaveBeenCalledWith(fakeMapProperties, undefined);
+          expect(callback.calls.count()).toEqual(1);
+          expect(ajaxParams.dataType).toEqual('jsonp');
+          expect(ajaxParams.type).toBeUndefined(); // GET request
+          expect(ajaxParams.url).toEqual('http://rambo.cartodb.com:8081/api/v1/map?stat_tag=vis_id&config=%22mapConfig%22');
+          expect(ajaxParams.jsonpCallback().indexof('_cdbc_')).not.toEqual(-1);
+          expect(ajaxParams.cache).toEqual(true);
+          done();
+        }, 5)
+      })
+
+      it('should use a cdn', function(done) {
+        layerDefinition._host = function() { return 'http://cdn.test.com'; }
+        layerDefinition._tilerHost = function() { return 'http://rambo.cartodb.com:8081'; }
+
+        layerDefinition.options.dynamic_cdn = true;
+        layerDefinition.getLayerToken(callback);
+
+        setTimeout(function() {
+          expect(ajaxParams.url.indexOf('http://cdn.test.com/api/v1/map?')).toEqual(0);
+          done();
+        }, 4)
+      });
+
+      it('should compress the map definition using LZMA', function(done) {
+        layerDefinition.options.force_compress = true;
+
+        var json = layerDefinition.toJSON();
+        json = JSON.stringify({ config: JSON.stringify(json) });
+        LZMA.compress(json, 3, function(encoded) {
+          lzma = cdb.core.util.array2hex(encoded);
+          layerDefinition.getLayerToken(callback);
         });
+
+        setTimeout(function() {
+          expect(ajaxParams.url.indexOf('lzma=' + encodeURIComponent(lzma))).not.toEqual(-1);
+          done();
+        }, 200)
       });
 
-      setTimeout(function() {
-        expect(params.url).toEqual(layerDefinition._tilerHost() + '/api/v1/map?map_key=test&stat_tag=vis_id&lzma=' + encodeURIComponent(lzma));
-        done();
-      }, 600);
-    });
+      it('should handle errors returned by the tiler', function(done) {
+        fakeMapProperties = { errors: ['Error!']};
 
-    it("should add api_key", function() {
-      var url = null;
-      layerDefinition.options.cors = true;
-      layerDefinition.options.compressor = function(data, level, call) {
-        call("config=" + data);
-      }
-      layerDefinition.options.ajax = function(p) { 
-        url = p.url;
-        p.success({ layergroupid: 'test' });
-      };
+        layerDefinition.getLayerToken(callback);
 
-      layerDefinition.options.api_key = 'key';
-      layerDefinition._getLayerToken();
-      expect(url.indexOf('map_key=key')).not.toEqual(-1);
+        setTimeout(function() {
+          expect(callback).toHaveBeenCalledWith(null, { errors: [ 'Error!' ] });
+          done();
+        }, 4)
+      })
 
-      layerDefinition.options.map_key = 'key2';
-      delete layerDefinition.options.api_key
-      layerDefinition._getLayerToken();
-      expect(url.indexOf('map_key=key2')).not.toEqual(-1);
+      it('should handle ajax errors', function(done) {
+        layerDefinition.options.ajax = ajax = function(params) {
+          ajaxParams = params;
+          params.error('error!');
+        }
 
-      delete layerDefinition.options.map_key
-      layerDefinition.options.extra_params = {}
-      layerDefinition.options.extra_params.map_key = 'key4';
-      layerDefinition._getLayerToken();
-      expect(url.indexOf('map_key=key4')).not.toEqual(-1);
+        layerDefinition.getLayerToken(callback);
 
-      layerDefinition.options.extra_params = {}
-      layerDefinition.options.extra_params.api_key = 'key4';
-      layerDefinition._getLayerToken();
-      expect(url.indexOf('map_key=key4')).not.toEqual(-1);
-    });
+        setTimeout(function() {
+          expect(callback).toHaveBeenCalledWith(null, { errors: [ 'unknow error' ] });
+          done();
+        }, 4)
+      })
+    })
 
-    it("should use a GET request to get the token", function(done) {
-      var layer = layerDefinition.getSubLayer(0);
+    describe('POST request', function() {
 
-      spyOn(layerDefinition, '_requestGET').and.callThrough();
-      spyOn(layerDefinition, '_requestPOST').and.callThrough();
+      beforeEach(function() {
+        fakeMapConfig = 'a';
+        for (var i = 0; i < 3000; i++) {
+          fakeMapConfig += 'a';
+        }
+      })
 
-      var query = "SELECT * FROM RAMBO_CHARLIES where area < 1000";
-      layer.setSQL(query);
-      layerDefinition.getLayerToken();
+      it('should use a POST request when request body is greater than maximum GET size', function(done) {
+        layerDefinition.getLayerToken(callback);
 
-      setTimeout(function(){
-        expect(layerDefinition._requestGET).toHaveBeenCalled();
-        expect(layerDefinition._requestPOST).not.toHaveBeenCalled();
-        done();
-      }, 100);
-    });
+        setTimeout(function() {
+          expect(callback).toHaveBeenCalledWith(fakeMapProperties, undefined);
+          expect(callback.calls.count()).toEqual(1);
+          expect(ajaxParams.crossOrigin).toEqual(true);
+          expect(ajaxParams.type).toEqual('POST'); // POST request
+          expect(ajaxParams.method).toEqual('POST'); // POST request
+          expect(ajaxParams.dataType).toEqual('json');
+          expect(ajaxParams.contentType).toEqual('application/json');
+          expect(ajaxParams.url).toEqual('http://rambo.cartodb.com:8081/api/v1/map?stat_tag=vis_id');
+          expect(ajaxParams.data).toEqual('"' + fakeMapConfig + '"');
+          done();
+        }, 5)
+      })
 
-    it("should use a POST request to get the token", function(done) {
-      var layer = layerDefinition.getSubLayer(0);
+      it('should use a POST request when forcing CORS', function(done) {
+        fakeMapConfig = 'aaaa';
+        layerDefinition.options.cors = 'something';
+        layerDefinition.options.force_cors = true;
 
-      spyOn(layerDefinition, '_requestGET').and.callThrough();
-      spyOn(layerDefinition, '_requestPOST').and.callThrough();
+        layerDefinition.getLayerToken(callback);
 
-      var query = "select 1 ";
-      for (var i = 0; i < 1600; i++){
-        query += ", " + Math.floor(Math.random() * 100) + 1;
-      }
-      query += ', * from rambo_charlies where area > 10';
-      layer.setSQL(query);
-      layerDefinition.getLayerToken();
+        setTimeout(function() {
+          expect(callback).toHaveBeenCalledWith(fakeMapProperties, undefined);
+          expect(callback.calls.count()).toEqual(1);
+          expect(ajaxParams.crossOrigin).toEqual(true);
+          expect(ajaxParams.type).toEqual('POST'); // POST request
+          expect(ajaxParams.method).toEqual('POST'); // POST request
+          expect(ajaxParams.dataType).toEqual('json');
+          expect(ajaxParams.contentType).toEqual('application/json');
+          expect(ajaxParams.url).toEqual('http://rambo.cartodb.com:8081/api/v1/map?stat_tag=vis_id');
+          expect(ajaxParams.data).toEqual('"' + fakeMapConfig + '"');
+          done();
+        }, 5)
+      })
 
-      setTimeout(function(){
-        expect(layerDefinition._requestGET).not.toHaveBeenCalled();
-        expect(layerDefinition._requestPOST).toHaveBeenCalled();
-        done();
-      }, 100);
-    });
+      it('should handle errors returned by the tiler', function(done) {
+        fakeMapProperties = { errors: ['Error!']};
 
+        layerDefinition.getLayerToken(callback);
+
+        setTimeout(function() {
+          expect(callback).toHaveBeenCalledWith(null, { errors: [ 'Error!' ] });
+          done();
+        }, 4)
+      })
+
+      it('should handle ajax errors', function(done) {
+        layerDefinition.options.ajax = ajax = function(params) {
+          ajaxParams = params;
+          params.error('error!');
+        }
+
+        layerDefinition.getLayerToken(callback);
+
+        setTimeout(function() {
+          expect(callback).toHaveBeenCalledWith(null, { errors: [ 'unknow error' ] });
+          done();
+        }, 4)
+      })
+    })
   });
 
   describe('.getTiles', function() {
@@ -702,34 +845,6 @@ describe("LayerDefinition", function() {
         expect(urls.tiles[0]).toEqual(MapBase.EMPTY_GIF);
         done();
       }, 100)
-    });
-
-    it("should set refresh timer after being updated", function(done) {
-
-      var mapProperties = {
-        "layergroupid": "layergroupid",
-        "metadata": {
-          "layers": [
-            { "type": "mapnik", "meta": {} },
-            { "type": "mapnik", "meta": {} }
-          ]
-        }
-      }
-
-      layerDefinition.options.refreshTime = 10;
-      layerDefinition.options.ajax = function(p) {
-        params = p;
-        p.success(mapProperties);
-      };
-
-      layerDefinition.getTiles(function(tiles) {});
-
-      spyOn(layerDefinition,'invalidate');
-
-      setTimeout(function() {
-        expect(layerDefinition.invalidate).toHaveBeenCalled();
-        done();
-      }, 200);
     });
   });
 

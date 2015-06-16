@@ -177,8 +177,14 @@ MapBase.prototype = {
         loadingTime.end();
         // discard previous calls when there is another call waiting
         if(0 === self._queue.length) {
-          callback(data);
+          if (data.errors) {
+            cartodb.core.Profiler.metric('cartodb-js.layergroup.get.error').inc();
+            callback(null, data);
+          } else {
+            callback(data);
+          }
         }
+
         self._requestFinished();
       },
       error: function(xhr) {
@@ -327,9 +333,11 @@ MapBase.prototype = {
         self.mapProperties = new MapProperties(data);
         // if cdn_url is present, use it
         if (data.cdn_url) {
-          var c = self.options.cdn_url = self.options.cdn_url || {};
-          c.http = data.cdn_url.http || c.http;
-          c.https = data.cdn_url.https || c.https;
+          self.options.cdn_url = self.options.cdn_url || {}
+          self.options.cdn_url = {
+            http: self.options.cdn_url.http || data.cdn_url.http,
+            https: self.options.cdn_url.https || data.cdn_url.https
+          }
         }
         self.urls = self._layerGroupTiles(self.mapProperties, self.options.extra_params);
         callback && callback(self.urls);

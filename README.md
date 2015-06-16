@@ -4,7 +4,7 @@ CartoDB.js (v3.14)
 [![Build Status](http://clinker.cartodb.net/desktop/plugin/public/status/CartoDB-js-develop-testing)]
 (http://clinker.cartodb.net/jenkins/job/CartoDB-js-develop-testing)
 
-This library allows to embed you visualizations created with CartoDB in your map or website in a simple way.
+This library allows to embed visualizations created with CartoDB in your map or website in a simple way.
 
 
 ## Quick start

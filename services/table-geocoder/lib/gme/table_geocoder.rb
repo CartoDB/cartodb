@@ -45,10 +45,6 @@ module Carto
       rescue => e
         @state = 'failed'
         raise e
-      ensure
-        # TODO: move working_dir out of the AbstractTableGeocoder
-        # Sometimes the ensure block is called twice
-        FileUtils.remove_entry_secure @working_dir if Dir.exists?(@working_dir)
       end
 
       # Empty methods, needed because they're triggered from geocoding.rb

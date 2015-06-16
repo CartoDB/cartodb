@@ -30,6 +30,7 @@ module CartoDB
         @geometry_type        = arguments.fetch(:geometry_type, '').to_sym
         @kind                 = arguments.fetch(:kind, '').to_sym
         @batch_size           = (@geometry_type == :point ? 1000 : 10)
+        @working_dir          = arguments[:working_dir] || Dir.mktmpdir
         @geocoding_results = File.join(working_dir, "#{temp_table_name}_results.csv")
         @query_generator = CartoDB::InternalGeocoder::QueryGeneratorFactory.get self
       end # initialize
@@ -46,8 +47,9 @@ module CartoDB
         @state = 'failed'
         raise e
       ensure
+        # INFO: Sometimes the ensure block is called twice
         drop_temp_table
-        FileUtils.remove_entry_secure @working_dir
+        FileUtils.remove_entry_secure @working_dir if Dir.exists?(@working_dir)
       end
 
       def download_results

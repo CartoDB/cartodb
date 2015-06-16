@@ -13,6 +13,7 @@ module CartoDB
 
     def initialize(arguments)
       super(arguments)
+      @working_dir = arguments[:working_dir] || Dir.mktmpdir
       `chmod 777 #{@working_dir}`
       @formatter   = arguments[:formatter]
       @remote_id   = arguments[:remote_id]

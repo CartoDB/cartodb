@@ -650,9 +650,19 @@ describe("LayerDefinition", function() {
   });
 
   describe('.getTiles', function() {
+    var mapProperties, callback;
+
+    beforeEach(function() {
+      callback = jasmine.createSpy("callback");
+      mapProperties = {};
+      layerDefinition.getLayerToken = function (callback) {
+        callback(mapProperties);
+      }
+      spyOn(layerDefinition, "getLayerToken").and.callThrough();
+    })
 
     it("should fetch the map properties and invoke the callback with URLs for tiles and grids", function() {
-      var mapProperties = {
+      mapProperties = {
         "layergroupid": "layergroupid",
         "metadata": {
           "layers": [
@@ -671,12 +681,6 @@ describe("LayerDefinition", function() {
           [ "http://rambo.cartodb.com:8081/api/v1/map/layergroupid/1/{z}/{x}/{y}.grid.json" ]
         ]
       }
-
-      var callback = jasmine.createSpy("callback");
-      layerDefinition.getLayerToken = function (callback) {
-        callback(mapProperties);
-      }
-      spyOn(layerDefinition, "getLayerToken").and.callThrough();
 
       layerDefinition.getTiles(callback);
 
@@ -685,7 +689,7 @@ describe("LayerDefinition", function() {
     });
 
     it("should only fetch the map properties if they were already fetched and the definition is valid", function() {
-      var mapProperties = {
+      mapProperties = {
         "layergroupid": "layergroupid",
         "metadata": {
           "layers": [
@@ -703,12 +707,6 @@ describe("LayerDefinition", function() {
           [ "http://rambo.cartodb.com:8081/api/v1/map/layergroupid/1/{z}/{x}/{y}.grid.json" ]
         ]
       }
-
-      var callback = jasmine.createSpy("callback");
-      layerDefinition.getLayerToken = function (callback) {
-        callback(mapProperties);
-      }
-      spyOn(layerDefinition, "getLayerToken").and.callThrough();
 
       layerDefinition.getTiles(callback);
 
@@ -738,7 +736,7 @@ describe("LayerDefinition", function() {
     });
 
     it("should invoke the callback with URLs for tiles and grids (for mapnik layers ONLY)", function() {
-      var mapProperties = {
+      mapProperties = {
         "layergroupid": "layergroupid",
         "metadata": {
           "layers": [
@@ -759,12 +757,6 @@ describe("LayerDefinition", function() {
         [ "http://rambo.cartodb.com:8081/api/v1/map/layergroupid/2/{z}/{x}/{y}.grid.json" ]
       ]
 
-      var callback = jasmine.createSpy("callback");
-      layerDefinition.getLayerToken = function (callback) {
-        callback(mapProperties);
-      }
-      spyOn(layerDefinition, "getLayerToken").and.callThrough();
-
       layerDefinition.getTiles(callback);
 
       expect(layerDefinition.getLayerToken).toHaveBeenCalled();
@@ -774,8 +766,7 @@ describe("LayerDefinition", function() {
     });
 
     it("should include extra params", function() {
-
-      var mapProperties = {
+      mapProperties = {
         "layergroupid": "layergroupid",
         "metadata": {
           "layers": [
@@ -790,10 +781,6 @@ describe("LayerDefinition", function() {
         'should_not': 'included'
       }
 
-      spyOn(layerDefinition, 'getLayerToken').and.callFake(function(callback) {
-        callback(mapProperties);
-      })
-
       layerDefinition.getTiles(function(tiles) {
         expect(tiles.tiles[0].indexOf('map_key=testapikey')).not.toEqual(-1)
         expect(tiles.tiles[0].indexOf('should_not')).toEqual(-1)
@@ -801,7 +788,7 @@ describe("LayerDefinition", function() {
     });
 
     it("should cache the mapProperties", function() {
-      var mapProperties = {
+      mapProperties = {
         layergroupid: 'test',
         metadata: { layers: [] },
         cdn_url: {
@@ -809,9 +796,6 @@ describe("LayerDefinition", function() {
           https:'cdn.testhttps.com'
         }
       }
-      spyOn(layerDefinition, 'getLayerToken').and.callFake(function(callback) {
-        callback(mapProperties);
-      })
 
       // Request tiles for the first time
       layerDefinition.getTiles();
@@ -831,6 +815,7 @@ describe("LayerDefinition", function() {
     });
 
     it("should use empty gif there there is no layers", function(done) {
+      var urls;
       layerDefinition.getSubLayer(0).hide();
       layerDefinition.getSubLayer(1).hide();
       layerDefinition.getLayerToken = function (callback) {
@@ -843,20 +828,26 @@ describe("LayerDefinition", function() {
 
       setTimeout(function() {
         expect(urls.tiles[0]).toEqual(MapBase.EMPTY_GIF);
+        expect(urls.grids[0]).toBeUndefined();
         done();
       }, 100)
     });
   });
 
   describe('.fetchAttributes', function() {
-    var callback;
+    var mapProperties, callback, ajax;
 
     beforeEach(function() {
       callback = jasmine.createSpy("callback");
+      ajax = layerDefinition.options.ajax = jasmine.createSpy('ajax');
+      mapProperties = {};
+      layerDefinition.getLayerToken = function (callback) {
+        callback(mapProperties);
+      }
     })
 
     it('should fetch the attributes and invoke the callback', function() {
-      var mapProperties = {
+      mapProperties = {
         "layergroupid": "layergroupid",
         "metadata": {
           "layers": [
@@ -866,15 +857,8 @@ describe("LayerDefinition", function() {
         }
       }
 
-      layerDefinition.getLayerToken = function (callback) {
-        callback(mapProperties);
-      }
-
       // Fetch the map properties first
       layerDefinition.getTiles();
-
-      var ajax = layerDefinition.options.ajax = jasmine.createSpy('ajax');
-      var callback = jasmine.createSpy('callback');
 
       layerDefinition.fetchAttributes(0, 'feature_id', 2, callback);
 
@@ -893,7 +877,7 @@ describe("LayerDefinition", function() {
     })
 
     it('should convert layergroup indexes to the corresponding indexes in the tiler', function() {
-      var mapProperties = {
+      mapProperties = {
         "layergroupid": "layergroupid",
         "metadata": {
           "layers": [
@@ -905,14 +889,8 @@ describe("LayerDefinition", function() {
         }
       }
 
-      layerDefinition.getLayerToken = function (callback) {
-        callback(mapProperties);
-      }
-
       // Fetch the map properties first
       layerDefinition.getTiles();
-
-      var ajax = layerDefinition.options.ajax = jasmine.createSpy('ajax');
 
       // Fetch attributes for layer 0 (which is layer 1 in the tiler)
       layerDefinition.fetchAttributes(0, 'feature_id', 2, callback);

@@ -20,10 +20,17 @@
             <div class="DatasetsList-itemSecondaryInfo">
               <div class="DatasetsList-itemMeta">
                 <%= render 'admin/pages/shared/like_button', vis: vis %>
-                <div class="RowsIndicator">
-                  <i class="iconFont iconFont-Rows RowsIndicator-icon"></i>
-                  <%= pluralize(vis[:rows_count], 'row') %>
-                </div>
+                <% if !vis[:rows_count].blank? %>
+                  <div class="RowsIndicator">
+                    <i class="iconFont iconFont-Rows RowsIndicator-icon"></i>
+                    <% if vis[:rows_count] < 10000 %>
+                      <%= number_with_delimiter(vis[:rows_count]) %>
+                    <% else %>
+                      <%= number_to_human(vis[:rows_count], units: { unit:"", thousand: "K", million: "M" }, precision: 2, format: '%n%u') %>
+                    <% end %>
+                    <%= 'row'.pluralize(vis[:rows_count]) %>
+                  </div>
+                <% end %>
                 <div class="SizeIndicator">
                   <i class="iconFont iconFont-Floppy SizeIndicator-icon"></i>
                   <%= number_to_human_size(vis[:size_in_bytes]) %>

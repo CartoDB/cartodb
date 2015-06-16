@@ -131,9 +131,11 @@ class Organization < Sequel::Model
     quota_in_bytes - assigned_quota
   end
 
-  def to_poro(filtered_user = nil)
+  # options:
+  # :show_organization_users: load all organization users under :users key
+  def to_poro(filtered_user = nil, options = {})
     filtered_user ||= self.owner
-    {
+    poro = {
       :created_at       => self.created_at,
       :description      => self.description,
       :discus_shortname => self.discus_shortname,
@@ -155,17 +157,20 @@ class Organization < Sequel::Model
       :seats                    => self.seats,
       :twitter_username         => self.twitter_username,
       :updated_at               => self.updated_at,
-      :users => self.users.reject { |item| filtered_user && item.id == filtered_user.id }
+      :website          => self.website,
+      :avatar_url       => self.avatar_url
+    }
+    if options[:show_organization_users] == true
+      poro[:users] = self.users.reject { |item| filtered_user && item.id == filtered_user.id }
         .map { |u|
         {
           :id         => u.id,
           :username   => u.username,
           :avatar_url => u.avatar_url
         }
-      },
-      :website          => self.website,
-      :avatar_url       => self.avatar_url
-    }
+      }
+    end
+    poro
   end
 
   def public_visualizations(page_num = 1, items_per_page = 5, tag = nil)

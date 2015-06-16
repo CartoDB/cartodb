@@ -10,6 +10,7 @@ def app
 end
 
 def bypass_named_maps
+  CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
   CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
 end
 
@@ -56,42 +57,32 @@ shared_context 'organization with users helper' do
     organization
   end
 
-  before(:all) do
-    username_owner = random_username
-    @org_user_owner = create_user(
-      username: username_owner,
-      email: "#{username_owner}@example.com",
-      password: 'clientex',
-      private_tables_enabled: true
+  def create_test_user(username, organization = nil)
+    user = create_user(
+      username: username,
+      email: "#{username}@example.com",
+      password: username,
+      private_tables_enabled: true,
+      organization: organization
     )
+    user.save.reload
+    organization.reload if organization
+    user
+  end
 
+  before(:all) do
     @organization = test_organization.save
+    @organization_2 = test_organization.save
 
+    @org_user_owner = create_test_user("o#{random_username}")
     user_org = CartoDB::UserOrganization.new(@organization.id, @org_user_owner.id)
     user_org.promote_user_to_admin
     @organization.reload
     @org_user_owner.reload
 
-    username1 = random_username
-    @org_user_1 = create_user(
-      username: username1,
-      email: "#{username1}@example.com",
-      password: 'clientex',
-      private_tables_enabled: true,
-      organization: @organization
-    )
-    @org_user_1.save.reload
-    @organization.reload
+    @org_user_1 = create_test_user("a#{random_username}", @organization)
+    @org_user_2 = create_test_user("b#{random_username}", @organization)
 
-    username2 = random_username
-    @org_user_2 = create_user(
-      username: username2,
-      email: "#{username2}@example.com",
-      password: 'clientex2',
-      private_tables_enabled: true,
-      organization: @organization
-    )
-    @org_user_2.save.reload
     @organization.reload
   end
 

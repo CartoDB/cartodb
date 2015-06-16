@@ -36,6 +36,8 @@ class Carto::User < ActiveRecord::Base
                    "users.api_key, users.dynamic_cdn_enabled, users.database_schema, users.database_name, users.name," +
                    "users.disqus_shortname, users.account_type, users.twitter_username, users.google_maps_key"
 
+  SELECT_WITH_DATABASE = DEFAULT_SELECT + ", users.quota_in_bytes, users.database_host"
+
   attr_reader :password
 
   # TODO: From sequel, can be removed once finished

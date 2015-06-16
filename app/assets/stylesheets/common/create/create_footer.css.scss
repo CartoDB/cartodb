@@ -24,7 +24,7 @@
   margin: 0 auto;
   padding: 15px 40px;
   background: $cStructure-grayBkg;
-  min-height: 70px; // To have same height, if the footer do not contain any buttons
+  min-height: 70px; // To have same consistent height regardless if the footer has buttons or not
 }
 .CreateDialog-footerShadow {
   position: absolute;

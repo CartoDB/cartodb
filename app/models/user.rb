@@ -311,8 +311,10 @@ class User < Sequel::Model
 
         # If user is in an organization should never have public schema, so to be safe check
         unless self.database_schema == 'public'
-          # Must drop all functions before or it will fail
-          database.run(%Q{ DROP SCHEMA IF EXISTS "#{self.database_schema}" CASCADE })
+          drop_users_privileges_in_schema(self.database_schema, [self.database_username, self.database_public_username, CartoDB::PUBLIC_DB_USER])
+          database.run(%Q{ DROP FUNCTION IF EXISTS "#{self.database_schema}"._CDB_UserQuotaInBytes()})
+          drop_all_functions_from_schema(self.database_schema)
+          database.run(%Q{ DROP SCHEMA IF EXISTS "#{self.database_schema}" })
         end
       end
 
@@ -350,12 +352,12 @@ class User < Sequel::Model
           database_with_conflicts = $1
           revoke_all_on_database_from(conn, database_with_conflicts, username)
           revoke_all_memberships_on_database_to_role(conn, database_with_conflicts, username)
-          drop_owned_by_user(conn, username, true)
+          drop_owned_by_user(conn, username)
           conflict_database_conn = self.in_database({
             :as => :cluster_admin,
             'database' => database_with_conflicts
           })
-          drop_owned_by_user(conflict_database_conn, username, true)
+          drop_owned_by_user(conflict_database_conn, username)
           #.select { |s|
           #  !conn.fetch("SELECT 1 as schema_exist FROM information_schema.schemata WHERE schema_name = '#{s}'").first.nil?
           #}
@@ -378,8 +380,8 @@ class User < Sequel::Model
     }
   end
 
-  def drop_owned_by_user(conn, role, cascade = false)
-    conn.run("DROP OWNED BY \"#{role}\" #{cascade ? 'CASCADE' : ''}")
+  def drop_owned_by_user(conn, role)
+    conn.run("DROP OWNED BY \"#{role}\"")
   end
 
   def self.terminate_database_connections(database_name, database_host)

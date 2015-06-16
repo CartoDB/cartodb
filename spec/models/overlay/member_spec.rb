@@ -127,7 +127,7 @@ describe Overlay::Member do
   end #fetch
 
   describe '#delete' do
-    it 'deletes this member data from the data repository' do
+    xit 'deletes this member data from the data repository' do
       member = Overlay::Member.new(type: 'bogus')
       vis_mock = mock
       member.stubs(:visualization).returns(vis_mock)

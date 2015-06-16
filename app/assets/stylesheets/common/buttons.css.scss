@@ -101,6 +101,13 @@
     color:white;
   }
 }
+.Button--link {
+  color: $cTypography-link;
+  &:hover {
+    color: $cTypography-linkSelected;
+    text-decoration: underline;
+  }
+}
 // Use this instead of .Button--positive on header background
 .Button--headerPositive {
   border: $sButton-border+1 solid white;

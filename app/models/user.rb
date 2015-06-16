@@ -870,12 +870,8 @@ class User < Sequel::Model
 
   # Should return the number of tweets imported by this user for the specified period of time, as an integer
   def get_twitter_imports_count(options = {})
-    date_to = (options[:to] ? options[:to].to_date : Date.today)
-    date_from = (options[:from] ? options[:from].to_date : self.last_billing_cycle)
-    self.search_tweets_dataset
-        .where(state: ::SearchTweet::STATE_COMPLETE)
-        .where('created_at >= ? AND created_at <= ?', date_from, date_to + 1.days)
-        .sum("retrieved_items".lit).to_i
+    date_from, date_to = quota_dates(options)
+    SearchTweet.get_twitter_imports_count(self.search_tweets_dataset, date_from, date_to)
   end
 
   # Returns an array representing the last 30 days, populated with api_calls
@@ -885,10 +881,8 @@ class User < Sequel::Model
   end
 
   def get_geocoding_calls(options = {})
-    date_to = (options[:to] ? options[:to].to_date : Date.today)
-    date_from = (options[:from] ? options[:from].to_date : self.last_billing_cycle)
-    self.geocodings_dataset.where(kind: 'high-resolution').where('created_at >= ? and created_at <= ?', date_from, date_to + 1.days)
-      .sum("processed_rows + cache_hits".lit).to_i
+    date_from, date_to = quota_dates(options)
+    Geocoding.get_geocoding_calls(self.geocodings_dataset, date_from, date_to)
   end # get_geocoding_calls
 
   def effective_twitter_block_price
@@ -2385,6 +2379,12 @@ TRIGGER
   end
 
   private
+
+  def quota_dates(options)
+    date_to = (options[:to] ? options[:to].to_date : Date.today)
+    date_from = (options[:from] ? options[:from].to_date : self.last_billing_cycle)
+    return date_from, date_to
+  end
 
   def http_client
     @http_client ||= Carto::Http::Client.get('old_user', log_requests: true)

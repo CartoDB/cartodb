@@ -34,6 +34,41 @@ describe('MapProperties', function() {
       expect(mapProperties.getLayerIndexByType(1, 'mapnik')).toEqual(1);
     })
   })
+
+  describe('.getLayerIndexesByType', function() {
+    var mapProperties;
+
+    beforeEach(function() {
+      var layers = [
+        { type: 'mapnik' },
+        { type: 'http' },
+        { type: 'torque' },
+        { type: 'mapnik' }
+      ]
+      mapProperties = new MapProperties({
+        metadata: {
+          layers: layers
+        }
+      });
+    })
+
+    it('should return the indexes of all non-torque layers if no types are specified', function() {
+      expect(mapProperties.getLayerIndexesByType()).toEqual([0, 1, 3]);
+      expect(mapProperties.getLayerIndexesByType('')).toEqual([0, 1, 3]);
+      expect(mapProperties.getLayerIndexesByType([])).toEqual([0, 1, 3]);
+    })
+
+    it('should return the indexes of the layers of the given types', function() {
+      expect(mapProperties.getLayerIndexesByType('mapnik')).toEqual([0, 3]);
+      expect(mapProperties.getLayerIndexesByType('http')).toEqual([1]);
+      expect(mapProperties.getLayerIndexesByType(['http', 'mapnik'])).toEqual([0, 1, 3]);
+    })
+
+    it('returns wadus if metadata is empty', function() {
+      mapProperties = new MapProperties({ });
+      expect(mapProperties.getLayerIndexesByType()).toBeUndefined();
+    })
+  })
 })
 
 describe("LayerDefinition", function() {
@@ -655,8 +690,8 @@ describe("LayerDefinition", function() {
     beforeEach(function() {
       callback = jasmine.createSpy("callback");
       mapProperties = {};
-      layerDefinition.getLayerToken = function (callback) {
-        callback(mapProperties);
+      layerDefinition.getLayerToken = function (_callback) {
+        _callback(mapProperties);
       }
       spyOn(layerDefinition, "getLayerToken").and.callThrough();
     })
@@ -688,6 +723,87 @@ describe("LayerDefinition", function() {
       expect(callback).toHaveBeenCalledWith(expectedURLs);
     });
 
+    it("should generate url for tiles using a cdn", function() {
+      mapProperties = {
+        "layergroupid": "layergroupid",
+        "metadata": {
+          "layers": [
+            { "type": "mapnik", "meta": {} },
+            { "type": "mapnik", "meta": {} }
+          ]
+        }
+      }
+
+      layerDefinition.options.no_cdn = false;
+      layerDefinition.options.cdn_url = { http: "api.cartocdn.com" }
+      layerDefinition.options.subdomains = ['a', 'b', 'c', 'd'];
+
+      layerDefinition.getTiles(callback);
+
+      var expectedURLs = {
+        tiles: [
+          'http://a.api.cartocdn.com/rambo/api/v1/map/layergroupid/0,1/{z}/{x}/{y}.png',
+          'http://b.api.cartocdn.com/rambo/api/v1/map/layergroupid/0,1/{z}/{x}/{y}.png',
+          'http://c.api.cartocdn.com/rambo/api/v1/map/layergroupid/0,1/{z}/{x}/{y}.png',
+          'http://d.api.cartocdn.com/rambo/api/v1/map/layergroupid/0,1/{z}/{x}/{y}.png'
+        ],
+        grids: [
+          [
+            'http://a.api.cartocdn.com/rambo/api/v1/map/layergroupid/0/{z}/{x}/{y}.grid.json',
+            'http://b.api.cartocdn.com/rambo/api/v1/map/layergroupid/0/{z}/{x}/{y}.grid.json',
+            'http://c.api.cartocdn.com/rambo/api/v1/map/layergroupid/0/{z}/{x}/{y}.grid.json',
+            'http://d.api.cartocdn.com/rambo/api/v1/map/layergroupid/0/{z}/{x}/{y}.grid.json'
+          ], [ 
+            'http://a.api.cartocdn.com/rambo/api/v1/map/layergroupid/1/{z}/{x}/{y}.grid.json',
+            'http://b.api.cartocdn.com/rambo/api/v1/map/layergroupid/1/{z}/{x}/{y}.grid.json',
+            'http://c.api.cartocdn.com/rambo/api/v1/map/layergroupid/1/{z}/{x}/{y}.grid.json',
+            'http://d.api.cartocdn.com/rambo/api/v1/map/layergroupid/1/{z}/{x}/{y}.grid.json'
+          ]
+        ]
+      }
+      expect(callback).toHaveBeenCalledWith(expectedURLs);
+    });
+
+    it("should generate url for tiles without a cdn when cdn_url is empty", function() {
+      mapProperties = {
+        "layergroupid": "layergroupid",
+        "metadata": {
+          "layers": [
+            { "type": "mapnik", "meta": {} },
+            { "type": "mapnik", "meta": {} }
+          ]
+        }
+      }
+
+      layerDefinition.options.no_cdn = false;
+      layerDefinition.options.subdomains = ['a', 'b', 'c', 'd'];
+
+      layerDefinition.getTiles(callback);
+
+      var expectedURLs = {
+        tiles: [
+          'http://rambo.cartodb.com:8081/api/v1/map/layergroupid/0,1/{z}/{x}/{y}.png',
+          'http://rambo.cartodb.com:8081/api/v1/map/layergroupid/0,1/{z}/{x}/{y}.png',
+          'http://rambo.cartodb.com:8081/api/v1/map/layergroupid/0,1/{z}/{x}/{y}.png',
+          'http://rambo.cartodb.com:8081/api/v1/map/layergroupid/0,1/{z}/{x}/{y}.png'
+        ],
+        grids: [
+          [
+            'http://rambo.cartodb.com:8081/api/v1/map/layergroupid/0/{z}/{x}/{y}.grid.json',
+            'http://rambo.cartodb.com:8081/api/v1/map/layergroupid/0/{z}/{x}/{y}.grid.json',
+            'http://rambo.cartodb.com:8081/api/v1/map/layergroupid/0/{z}/{x}/{y}.grid.json',
+            'http://rambo.cartodb.com:8081/api/v1/map/layergroupid/0/{z}/{x}/{y}.grid.json'
+          ], [
+            'http://rambo.cartodb.com:8081/api/v1/map/layergroupid/1/{z}/{x}/{y}.grid.json',
+            'http://rambo.cartodb.com:8081/api/v1/map/layergroupid/1/{z}/{x}/{y}.grid.json',
+            'http://rambo.cartodb.com:8081/api/v1/map/layergroupid/1/{z}/{x}/{y}.grid.json',
+            'http://rambo.cartodb.com:8081/api/v1/map/layergroupid/1/{z}/{x}/{y}.grid.json'
+          ]
+        ]
+      };
+      expect(callback).toHaveBeenCalledWith(expectedURLs);
+    });
+
     it("should only fetch the map properties if they were already fetched and the definition is valid", function() {
       mapProperties = {
         "layergroupid": "layergroupid",
@@ -698,6 +814,9 @@ describe("LayerDefinition", function() {
           ]
         }
       }
+
+      layerDefinition.getTiles(callback);
+
       var expectedURLs = {
         "tiles": [
           "http://rambo.cartodb.com:8081/api/v1/map/layergroupid/0,1/{z}/{x}/{y}.png"
@@ -707,8 +826,6 @@ describe("LayerDefinition", function() {
           [ "http://rambo.cartodb.com:8081/api/v1/map/layergroupid/1/{z}/{x}/{y}.grid.json" ]
         ]
       }
-
-      layerDefinition.getTiles(callback);
 
       expect(layerDefinition.getLayerToken).toHaveBeenCalled();
       expect(callback).toHaveBeenCalledWith(expectedURLs);
@@ -747,23 +864,77 @@ describe("LayerDefinition", function() {
         }
       }
 
+      layerDefinition.getTiles(callback);
+
       // LayerDefinition contains two mapnik layers (0 and 1), but the tiler contains:
       // 0 - http
       // 1 - mapnik
       // 2 - mapnik
       // We need to fetch the grid for layers 1 and 2. Those are the indexes that the tiler understands.
-      var expectedGridURLs = [
-        [ "http://rambo.cartodb.com:8081/api/v1/map/layergroupid/1/{z}/{x}/{y}.grid.json" ],
-        [ "http://rambo.cartodb.com:8081/api/v1/map/layergroupid/2/{z}/{x}/{y}.grid.json" ]
-      ]
+      var expectedURLs = {
+        "tiles": [
+          "http://rambo.cartodb.com:8081/api/v1/map/layergroupid/0,1,2/{z}/{x}/{y}.png"
+        ],
+        "grids": [
+          [ "http://rambo.cartodb.com:8081/api/v1/map/layergroupid/1/{z}/{x}/{y}.grid.json" ],
+          [ "http://rambo.cartodb.com:8081/api/v1/map/layergroupid/2/{z}/{x}/{y}.grid.json" ]
+        ]
+      }
+      expect(callback).toHaveBeenCalledWith(expectedURLs);
+    });
+
+    it("should only include the specified layer types in the tiles", function() {
+      layerDefinition.options.filter = "http";
+
+      mapProperties = {
+        "layergroupid": "layergroupid",
+        "metadata": {
+          "layers": [
+            { "type": "mapnik", "meta": {} },
+            { "type": "http", "meta": {} },
+            { "type": "mapnik", "meta": {} },
+            { "type": "http", "meta": {} }
+          ]
+        }
+      }
 
       layerDefinition.getTiles(callback);
 
-      expect(layerDefinition.getLayerToken).toHaveBeenCalled();
-      var actualGridURLs = callback.calls.mostRecent().args[0].grids;
-      expect(callback).toHaveBeenCalled();
-      expect(actualGridURLs).toEqual(expectedGridURLs);
-    });
+      // Tile URL is telling the tiler to only render layers 1 and 3 (both http)
+      var expectedURLs = {
+        "tiles": [
+          "http://rambo.cartodb.com:8081/api/v1/map/layergroupid/1,3/{z}/{x}/{y}.png"
+        ],
+        "grids": [
+          [ "http://rambo.cartodb.com:8081/api/v1/map/layergroupid/0/{z}/{x}/{y}.grid.json" ],
+          [ "http://rambo.cartodb.com:8081/api/v1/map/layergroupid/2/{z}/{x}/{y}.grid.json" ]
+        ]
+      }
+      expect(callback).toHaveBeenCalledWith(expectedURLs);
+    })
+
+    it("should use an empty gif if filter returns no layers", function() {
+      layerDefinition.options.filter = "http";
+
+      mapProperties = {
+        "layergroupid": "layergroupid",
+        "metadata": {
+          "layers": [
+            { "type": "mapnik", "meta": {} },
+            { "type": "mapnik", "meta": {} },
+          ]
+        }
+      }
+
+      layerDefinition.getTiles(callback);
+
+      // No layers match the filter -> Render empty gifs
+      var expectedURLs = {
+        tiles: [ MapBase.EMPTY_GIF ],
+        grids: [ ]
+      }
+      expect(callback).toHaveBeenCalledWith(expectedURLs);
+    })
 
     it("should include extra params", function() {
       mapProperties = {
@@ -814,7 +985,7 @@ describe("LayerDefinition", function() {
       expect(layerDefinition.mapProperties.getMapId()).toEqual('test');
     });
 
-    it("should use empty gif there there is no layers", function(done) {
+    it("should use an empty gif if there are no visible layers", function(done) {
       var urls;
       layerDefinition.getSubLayer(0).hide();
       layerDefinition.getSubLayer(1).hide();
@@ -966,117 +1137,6 @@ describe("LayerDefinition", function() {
         }, 200);
 
       }, 100);
-    });
-  });
-
-  describe('._layerGroupTiles', function() {
-
-    var mapProperties;
-
-    beforeEach(function() {
-      mapProperties = new MapProperties({
-        "layergroupid": "test_layer",
-        "metadata": {
-          "layers": [
-            {
-              "type": "mapnik",
-              "meta": {}
-            },
-            {
-              "type": "torque",
-              "meta": {
-                "start": 1000,
-                "end": 246000,
-                "data_steps": 246,
-                "column_type": "number"
-              }
-            },
-            {
-              "type": "http",
-              "meta": {}
-            }
-          ],
-          "torque": {
-            "1": {
-              "start": 1000,
-              "end": 246000,
-              "data_steps": 246,
-              "column_type": "number"
-            }
-          }
-        }
-      })
-    })
-
-    it("should generate url for tiles", function() {
-      var tiles = layerDefinition._layerGroupTiles(mapProperties);
-      expect(tiles.tiles.length).toEqual(1);
-      expect(tiles.grids.length).toEqual(2);
-      expect(tiles.grids[0].length).toEqual(1);
-      expect(tiles.grids[0][0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/0/{z}/{x}/{y}.grid.json');
-    });
-
-    it('should generate url for tiles and only include non-torque layers', function() {
-      var tiles = layerDefinition._layerGroupTiles(mapProperties);
-      // Layers in the metadata are: 0 (mapnik), 1 (torque), 2 (http) -> Only 0 and 2 are part of the URL
-      expect(tiles.tiles).toEqual([ 'http://rambo.cartodb.com:8081/api/v1/map/test_layer/0,2/{z}/{x}/{y}.png' ]);
-    })
-
-    it('should filter layers if a filter has been specified', function() {
-      layerDefinition.options.filter = undefined;
-
-      var tiles = layerDefinition._layerGroupTiles(mapProperties);
-      expect(tiles.tiles).toEqual([ 'http://rambo.cartodb.com:8081/api/v1/map/test_layer/0,2/{z}/{x}/{y}.png' ]);
-
-      layerDefinition.options.filter = "http";
-      tiles = layerDefinition._layerGroupTiles(mapProperties);
-      expect(tiles.tiles).toEqual([ 'http://rambo.cartodb.com:8081/api/v1/map/test_layer/2/{z}/{x}/{y}.png' ]);
-
-      layerDefinition.options.filter = "mapnik";
-      tiles = layerDefinition._layerGroupTiles(mapProperties);
-      expect(tiles.tiles).toEqual([ 'http://rambo.cartodb.com:8081/api/v1/map/test_layer/0/{z}/{x}/{y}.png' ]);
-
-      layerDefinition.options.filter = ["http", "mapnik"];
-      tiles = layerDefinition._layerGroupTiles(mapProperties);
-      expect(tiles.tiles).toEqual([ 'http://rambo.cartodb.com:8081/api/v1/map/test_layer/0,2/{z}/{x}/{y}.png' ]);
-
-      // Filter doesn't mach any valid type -> Render empty gifs
-      layerDefinition.options.filter = "wadus";
-
-      var tiles = layerDefinition._layerGroupTiles(mapProperties);
-      expect(tiles.tiles).toEqual([ MapBase.EMPTY_GIF ]);
-      expect(tiles.grids).toEqual([]);
-    })
-
-    it("should generate url for tiles with params", function() {
-      var tiles = layerDefinition._layerGroupTiles(mapProperties, {
-        api_key: 'api_key_test',
-        updated_at: '1234'
-      });
-      expect(tiles.tiles[0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/0,2/{z}/{x}/{y}.png?api_key=api_key_test&updated_at=1234');
-      expect(tiles.grids[0][0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/0/{z}/{x}/{y}.grid.json?api_key=api_key_test&updated_at=1234');
-    });
-
-    it("should generate url for tiles using a cdn", function() {
-      layerDefinition.options.no_cdn = false;
-      layerDefinition.options.cdn_url = { http: "api.cartocdn.com" }
-      layerDefinition.options.subdomains = ['a', 'b', 'c', 'd'];
-
-      var tiles = layerDefinition._layerGroupTiles(mapProperties);
-      expect(tiles.tiles[0]).toEqual('http://a.api.cartocdn.com/rambo/api/v1/map/test_layer/0,2/{z}/{x}/{y}.png');
-      expect(tiles.tiles[1]).toEqual('http://b.api.cartocdn.com/rambo/api/v1/map/test_layer/0,2/{z}/{x}/{y}.png');
-      expect(tiles.grids[0][0]).toEqual('http://a.api.cartocdn.com/rambo/api/v1/map/test_layer/0/{z}/{x}/{y}.grid.json');
-      expect(tiles.grids[0][1]).toEqual('http://b.api.cartocdn.com/rambo/api/v1/map/test_layer/0/{z}/{x}/{y}.grid.json');
-    });
-
-    it("should generate url for tiles without a cdn when cdn_url is empty", function() {
-      layerDefinition.options.no_cdn = false;
-      layerDefinition.options.subdomains = ['a', 'b', 'c', 'd'];
-      var tiles = layerDefinition._layerGroupTiles(mapProperties);
-      expect(tiles.tiles[0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/0,2/{z}/{x}/{y}.png');
-      expect(tiles.tiles[1]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/0,2/{z}/{x}/{y}.png');
-      expect(tiles.grids[0][0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/0/{z}/{x}/{y}.grid.json');
-      expect(tiles.grids[0][1]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/0/{z}/{x}/{y}.grid.json');
     });
   });
 

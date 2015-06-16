@@ -397,9 +397,8 @@ MapBase.prototype = {
     if(this.isHttps()) {
       subdomains = [null]; // no subdomain
     }
-    var filter = this.options.filter;
-  
-    var layerIndexes = mapProperties.getLayerIndexesByType(filter);
+
+    var layerIndexes = mapProperties.getLayerIndexesByType(this.options.filter);
     if (layerIndexes.length) {
       var tileTemplate = '/' +  layerIndexes.join(',') +'/{z}/{x}/{y}';
       var gridTemplate = '/{z}/{x}/{y}';

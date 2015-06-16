@@ -22,6 +22,30 @@ describe Carto::Api::OembedController do
     CartoDB.clear_internal_cache
   end
 
+  describe '#json_response_behaviour'do
+    before(:each) do
+      controller = Carto::Api::OembedController.new
+      protocol = 'http'
+      domain = '.test.local'
+      username = 'testuser'
+      orgname = 'testorg'
+      uuid   = "00000000-0000-0000-0000-000000000000"
+      @callback = 'callback'
+      @uri = "/user/#{username}/api/v1/oembed?url=http://#{orgname}#{domain}/u/#{username}/#{uuid}"
+
+    end
+    it 'Returns JSONP if a callback is specified' do
+      uri_with_callback = @uri + "&callback=#{@callback}"
+      get uri_with_callback
+      response.body.should match(/#{@callback}\(.*\)/)
+    end
+
+    it 'Returns regular JSON  if a callback is not' do
+      get @uri
+      response.body.should_not match(/#{@callback}\(.*\)/)
+    end
+
+  end
   describe '#private_url_methods_tests' do
 
     it 'Tests from_domainless_url()' do
@@ -63,6 +87,7 @@ describe Carto::Api::OembedController do
         controller.send(:from_domainless_url, url_fragments, protocol)
       }.to raise_error Carto::Api::UrlFRagmentsError, "Username not found at url"
     end
+
 
     it 'Tests from_url()' do
       controller = Carto::Api::OembedController.new

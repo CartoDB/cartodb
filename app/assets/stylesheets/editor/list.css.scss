@@ -6,21 +6,36 @@
   @include display-flex();
   @include flex-direction(column);
 }
+.List.List--selections {
+  background-color: $cStructure-mainBkg;
+  border: 1px solid $cStructure-mainLine;
+  border-radius: $sCard-borderRadius;
+}
 .List-row {
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center);
-  padding-top: $sMargin-group;
-  padding-bottom: $sMargin-group;
-  border-bottom: 1px solid $cStructure-mainLine;
 }
 .List-row.List-row.is-disabled { opacity: 0.4 }
+.List-row:last-child > .List-rowItem { border-bottom: none }
 .List-rowItem {
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center);
+  margin-left: $sMargin-element;
+  margin-right: $sMargin-element;
+  padding-top: $sMargin-group;
+  padding-bottom: $sMargin-group;
+  width: 100%;
+  border-bottom: 1px solid $cStructure-mainLine;
 }
-.List-rowItem > *:first-child { margin-right: $sMargin-element }
-.List-row:last-child {
-  border-bottom: none;
+.List-rowItem.List-rowItem--tight {
+  padding-top: 16px;
+  padding-bottom: 16px;
 }
+.List-rowItemContentLeft {
+  @include display-flex();
+  @include justify-content(flex-start, start);
+  @include align-items(center);
+}
+.List-rowItemContentLeft > *:first-child { margin-right: $sMargin-element }

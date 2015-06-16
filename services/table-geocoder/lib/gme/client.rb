@@ -42,6 +42,9 @@ module Carto
           raise Timeout.new('retry timeout expired')
         end
 
+        # 0.5 * (1.5 ^ i) is an increased sleep time of 1.5x per iteration,
+        # starting at 0.5s when retry_counter=0. The first retry will occur
+        # at 1, so subtract that first.
         if retry_counter > 0
           delay_seconds = 0.5 * 1.5 ** (retry_counter - 1)
           sleep delay_seconds

@@ -13,7 +13,7 @@
 - Create a new branch to prepare the release:
 
 ```
-git flow release start 3.14.6
+git flow release start 3.15.0
 ```
 
 - Build CartoDB.js files, choosing the new version:
@@ -25,7 +25,7 @@ grunt build
 - Update the NEWS file and commit the changes. Take into account that new CartoDB.js version will be replaced in ```API.md```, ```RELEASING.md```, ```README.md```, ```package.json```, ```cartodb.js``` and ```examples``` files.
 
 ```
-git commit -am "Files changed for version 3.14.6"
+git commit -am "Files changed for version 3.15.0"
 ```
 
 - Release it.
@@ -36,8 +36,8 @@ grunt publish
 
 - Check if those files have been updated in the CDN:
 ```
-http://libs.cartocdn.com.s3.amazonaws.com/cartodb.js/v3/3.14.6/cartodb.js
-http://libs.cartocdn.com/cartodb.js/v3/3.14.6/cartodb.js
+http://libs.cartocdn.com.s3.amazonaws.com/cartodb.js/v3/3.15.0/cartodb.js
+http://libs.cartocdn.com/cartodb.js/v3/3.15.0/cartodb.js
 http://libs.cartocdn.com.s3.amazonaws.com/cartodb.js/v3/3.13/cartodb.js
 http://libs.cartocdn.com/cartodb.js/v3/3.13/cartodb.js
 ```
@@ -46,7 +46,7 @@ http://libs.cartocdn.com/cartodb.js/v3/3.13/cartodb.js
 - And to finish: close the release and push it.
 
 ```
-git flow release finish 3.14.6
+git flow release finish 3.15.0
 git push --all
 git push --tags
 ```
@@ -69,7 +69,7 @@ grunt build
 grunt publish
 ```
 
-For example, if we are in 3.14.6 and we want to go back to 3.13.4
+For example, if we are in 3.15.0 and we want to go back to 3.13.4
 
 ```
 git checkout 3.13.4

@@ -1,3 +1,12 @@
+3.15 (18//06//2015)
+* cartodb.js knows how to work with multiple types of sublayers (#508):
+  * cartodb.createLayer accepts a `filter` option to specify wich types of layers must
+    be rendered in the tiles. WARNING: all non-torque layers will be rendered by default.
+  * cartodb.js uses metadata from Windshaft to determine what layers are present in the
+    map and specify the layer indexes in the tile URLs. More about this
+    [here](https://github.com/CartoDB/Windshaft-cartodb/blob/488c2462229474db21ba40b61a93edf83e6493b5/docs/Map-API.md#blending-and-layer-selection)
+  * New subclasses of SubLayer for different types of sublayers.
+
 3.14.6 (16//06//2015)
 * Use the right indexes when fetching grids and attributes (#518)
 

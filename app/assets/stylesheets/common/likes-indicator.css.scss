@@ -12,9 +12,11 @@ $cLiked: #D93F56;
   cursor: default;
   @include nicer-lato-typography();
 }
+.LikesIndicator-count {
+  margin: 0 0 0 5px;
+}
 .LikesIndicator-icon {
   @include transform(1);
-  margin-right: 5px;
   font-size: $sFontSize-small;
   color: $cTypography-help;
 }

@@ -195,7 +195,9 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
       start: this._start,
       slide: this._slide
     });
-    this.updateSliderRange({"steps": torqueLayer.provider.getSteps()});
+    if(torqueLayer.provider){
+      this.updateSliderRange({"steps": torqueLayer.provider.getSteps()});
+    }
   },
 
   toggleTime: function(e) {

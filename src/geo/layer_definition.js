@@ -80,9 +80,9 @@ function MapBase(options) {
   this.urls = null;
   this.silent = false;
   this.interactionEnabled = []; //TODO: refactor, include inside layer
-  this._layerTokenQueue = [];
   this._timeout = -1;
-  this._queue = [];
+  this._createMapCallsStack = [];
+  this._createMapCallbacks = [];
   this._waiting = false;
   this.lastTimeUpdated = null;
   this._refreshTimer = -1;
@@ -106,24 +106,23 @@ MapBase.prototype = {
     opts.maps_api_template = [tilerProtocol, "://", username, tilerDomain, tilerPort].join('');
   },
 
-  // TODO: This method is actually creating a map in the server -> Rename to createMap?
-  getLayerToken: function(callback) {
+  createMap: function(callback) {
     var self = this;
-    function _done(data, err) {
+    function invokeStackedCallbacks(data, err) {
       var fn;
-      while(fn = self._layerTokenQueue.pop()) {
+      while(fn = self._createMapCallbacks.pop()) {
         fn(data, err);
       }
     }
     clearTimeout(this._timeout);
-    this._queue.push(_done);
-    this._layerTokenQueue.push(callback);
+    this._createMapCallsStack.push(invokeStackedCallbacks);
+    this._createMapCallbacks.push(callback);
     this._timeout = setTimeout(function() {
-      self._getLayerToken(_done);
+      self._createMap(invokeStackedCallbacks);
     }, 4);
   },
 
-  _getLayerToken: function(callback) {
+  _createMap: function(callback) {
     var self = this;
     callback = callback || function() {};
 
@@ -132,7 +131,7 @@ MapBase.prototype = {
       return this;
     }
 
-    this._queue = [];
+    this._createMapCallsStack = [];
 
     // when it's a named map the number of layers is not known
     // so fetch the map
@@ -210,7 +209,7 @@ MapBase.prototype = {
       success: function(data) {
         loadingTime.end();
         // discard previous calls when there is another call waiting
-        if(0 === self._queue.length) {
+        if(0 === self._createMapCallsStack.length) {
           if (data.errors) {
             cartodb.core.Profiler.metric('cartodb-js.layergroup.post.error').inc();
             callback(null, data);
@@ -231,7 +230,7 @@ MapBase.prototype = {
         try {
           err = JSON.parse(xhr.responseText);
         } catch(e) {}
-        if(0 === self._queue.length) {
+        if(0 === self._createMapCallsStack.length) {
           callback(null, err);
         }
         self._requestFinished();
@@ -256,7 +255,7 @@ MapBase.prototype = {
         cache: !!self.options.instanciateCallback,
         success: function(data) {
           loadingTime.end();
-          if(0 === self._queue.length) {
+          if(0 === self._createMapCallsStack.length) {
             // check for errors
             if (data.errors) {
               cartodb.core.Profiler.metric('cartodb-js.layergroup.get.error').inc();
@@ -274,7 +273,7 @@ MapBase.prototype = {
           try {
             err = JSON.parse(xhr.responseText);
           } catch(e) {}
-          if(0 === self._queue.length) {
+          if(0 === self._createMapCallsStack.length) {
             callback(null, err);
           }
           self._requestFinished();
@@ -319,9 +318,9 @@ MapBase.prototype = {
     }, this.options.refreshTime || (60*120*1000)); // default layergroup ttl
 
     // check request queue
-    if(this._queue.length) {
-      var last = this._queue[this._queue.length - 1];
-      this._getLayerToken(last);
+    if(this._createMapCallsStack.length) {
+      var request = this._createMapCallsStack.pop();
+      this._createMap(request);
     }
   },
 
@@ -362,7 +361,7 @@ MapBase.prototype = {
       callback && callback(self._layerGroupTiles(self.mapProperties, self.options.extra_params));
       return this;
     }
-    this.getLayerToken(function(data, err) {
+    this.createMap(function(data, err) {
       if(data) {
         self.mapProperties = new MapProperties(data);
         // if cdn_url is present, use it

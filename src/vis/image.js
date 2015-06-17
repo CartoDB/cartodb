@@ -254,7 +254,7 @@
 
       var self = this;
 
-      this.getLayerToken(function(data, error) {
+      this.createMap(function(data, error) {
 
         if (error) {
           self.error = error;

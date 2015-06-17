@@ -5,7 +5,6 @@ module CartoDB
 
     def initialize(arguments)
       @connection  = arguments.fetch(:connection)
-      @working_dir = arguments[:working_dir] || Dir.mktmpdir
       @table_name  = arguments[:table_name]
       @table_schema  = arguments[:table_schema]
       @qualified_table_name = arguments[:qualified_table_name]

@@ -349,6 +349,32 @@ MapBase.prototype = {
     return cdb.core.util.uniqueCallbackName(JSON.stringify(this.toJSON()));
   },
 
+  _attributesUrl: function(layer, feature_id) {
+    var host = this._host();
+    var url = [
+      host,
+      MapBase.BASE_URL.slice(1),
+      this.mapProperties.getMapId(),
+      this.mapProperties.getLayerIndexByType(layer, "mapnik"),
+      'attributes',
+      feature_id].join('/');
+
+    var extra_params = this.options.extra_params || {};
+    var token = extra_params.auth_token;
+    if (token) {
+      if (_.isArray(token)) {
+        var tokenParams = [];
+        for (var i = 0, len = token.length; i < len; i++) {
+          tokenParams.push("auth_token[]=" + token[i]);
+        }
+        url += "?" + tokenParams.join('&')
+      } else {
+        url += "?auth_token=" + token
+      }
+    }
+    return url;
+  },
+
   invalidate: function() {
     this.mapProperties = null;
     this.urls = null;
@@ -844,19 +870,6 @@ LayerDefinition.prototype = _.extend({}, MapBase.prototype, {
   createSubLayer: function(attrs, options) {
     this.addLayer(attrs);
     return this.getSubLayer(this.getLayerCount() - 1);
-  },
-
-  _attributesUrl: function(layer, feature_id) {
-    var host = this._host();
-    var url = [
-      host,
-      MapBase.BASE_URL.slice(1),
-      this.mapProperties.getMapId(),
-      this.mapProperties.getLayerIndexByType(layer, "mapnik"),
-      'attributes',
-      feature_id].join('/');
-
-    return url;
   }
 });
 
@@ -965,33 +978,6 @@ NamedMap.prototype = _.extend({}, MapBase.prototype, {
     }
     return false;
   },
-
-  _attributesUrl: function(layer, feature_id) {
-    var host = this._host();
-    var url = [
-      host,
-      MapBase.BASE_URL.slice(1),
-      this.mapProperties.getMapId(),
-      this.mapProperties.getLayerIndexByType(layer, "mapnik"),
-      'attributes',
-      feature_id].join('/');
-
-    var extra_params = this.options.extra_params || {};
-    var token = extra_params.auth_token;
-    if (token) {
-      if (_.isArray(token)) {
-        var tokenParams = [];
-        for (var i = 0, len = token.length; i < len; i++) {
-          tokenParams.push("auth_token[]=" + token[i]);
-        }
-        url += "?" + tokenParams.join('&')
-      } else {
-        url += "?auth_token=" + token
-      }
-    }
-    return url;
-  },
-
 
   setSQL: function(sql) {
     throw new Error("SQL is read-only in NamedMaps");

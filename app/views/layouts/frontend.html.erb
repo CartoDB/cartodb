@@ -6,7 +6,7 @@
   <title><%= "#{yield(:title)} — " if content_for?(:title) %>CartoDB</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="<%= content_for?(:title) ? yield(:title) : "Create dynamic maps, analyze and build location-aware and geospatial applications with your data using the power of PostGIS in the cloud." %>">
-  <link rel="shortcut icon" href="/favicons/favicon.ico">
+  <%= favicon_link_tag "/favicons/favicon.ico" %>
   <%= stylesheet_link_tag "sessions" %>
   <%= yield :css %>
   <%= csrf_meta_tag %>

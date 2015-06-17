@@ -124,11 +124,11 @@
 }
 
 // @include edit-type-field(date, #F5A623, true);
-// @include edit-type-field(number, #4DC964, true);
 // @include edit-type-field(string, #AAA, true);
 // @include edit-type-field(boolean, #AAA, true);
 
 @include edit-type-field('', #999, true);
+@include edit-type-field(EditField-select--number, #4DC964, false);
 @include edit-type-field(has-failed, $cHighlight-negative, false);
 
 .EditField-info {

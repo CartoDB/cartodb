@@ -4,6 +4,7 @@ require 'addressable/uri'
 require 'set'
 require 'json'
 require_relative 'exceptions'
+require_relative '../exceptions'
 require_relative '../../../../lib/url_signer'
 require_relative '../../../../lib/carto/http/client'
 
@@ -39,7 +40,7 @@ module Carto
         first_request_time ||= Time.now
         elapsed = Time.now - first_request_time
         if elapsed > @retry_timeout
-          raise Timeout.new('retry timeout expired')
+          raise Carto::GeocoderErrors::GmeGeocoderTimeoutError.new('retry timeout expired')
         end
 
         # 0.5 * (1.5 ^ i) is an increased sleep time of 1.5x per iteration,

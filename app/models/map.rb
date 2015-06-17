@@ -66,7 +66,7 @@ class Map < Sequel::Model
 
   def before_destroy
     super
-    invalidate_vizjson_varnish_cache
+    invalidate_vizjson_varnish_cache(update_named_maps = false)
   end
 
   def public_values
@@ -92,9 +92,9 @@ class Map < Sequel::Model
     get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons
   end
 
-  def invalidate_vizjson_varnish_cache
+  def invalidate_vizjson_varnish_cache(update_named_maps = true)
     visualizations.each do |visualization|
-      visualization.invalidate_cache unless visualization.id == being_destroyed_by_vis_id
+      visualization.invalidate_cache(update_named_maps) unless visualization.id == being_destroyed_by_vis_id
     end
   end
 

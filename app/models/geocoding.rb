@@ -1,5 +1,6 @@
 # encoding: UTF-8'
 require_relative '../../services/table-geocoder/lib/table_geocoder_factory'
+require_relative '../../services/table-geocoder/lib/exceptions'
 require_relative '../../lib/cartodb/metrics'
 require_relative '../../lib/cartodb/mixpanel'
 
@@ -10,7 +11,8 @@ class Geocoding < Sequel::Model
 
   PUBLIC_ATTRIBUTES = [:id, :table_id, :state, :kind, :country_code, :region_code, :formatter, :geometry_type,
                        :error, :processed_rows, :cache_hits, :processable_rows, :real_rows, :price,
-                       :used_credits, :remaining_quota, :country_column, :region_column, :data_import_id]
+                       :used_credits, :remaining_quota, :country_column, :region_column, :data_import_id,
+                       :error_code]
 
   # Characters in the following Unicode categories: Letter, Mark, Number and Connector_Punctuation,
   # plus spaces and single quotes
@@ -58,23 +60,39 @@ class Geocoding < Sequel::Model
   end
 
   def error
-    { title: 'Geocoding error', description: '' }
+    additional_info = Carto::GeocoderErrors.additional_info(error_code)
+    if additional_info
+      { title: additional_info.title, description: additional_info.what_about }
+    else
+      { title: 'Geocoding error', description: '' }
+    end
   end
 
+  # The table geocoder is meant to be instantiated just once.
+  # Memoize the table geocoder or nil if it couldn't be instantiated
   def table_geocoder
-    @table_geocoder ||= Carto::TableGeocoderFactory.get(user,
-                                                        Cartodb.config[:geocoder],
-                                                        table_service,
-                                                        original_formatter: formatter,
-                                                        formatter: sanitize_formatter,
-                                                        remote_id: remote_id,
-                                                        countries: country_code,
-                                                        regions: region_code,
-                                                        geometry_type: geometry_type,
-                                                        kind: kind,
-                                                        max_rows: max_geocodable_rows,
-                                                        country_column: country_column,
-                                                        region_column: region_column)
+    if !defined?(@table_geocoder)
+      begin
+        @table_geocoder = Carto::TableGeocoderFactory.get(user,
+                                                          Cartodb.config[:geocoder],
+                                                          table_service,
+                                                          original_formatter: formatter,
+                                                          formatter: sanitize_formatter,
+                                                          remote_id: remote_id,
+                                                          countries: country_code,
+                                                          regions: region_code,
+                                                          geometry_type: geometry_type,
+                                                          kind: kind,
+                                                          max_rows: max_geocodable_rows,
+                                                          country_column: country_column,
+                                                          region_column: region_column)
+      rescue => e
+        @table_geocoder = nil
+        raise e
+      end
+    else
+      @table_geocoder
+    end
   end
 
   # INFO: table_geocoder method is very coupled to table model, and we want to use this model during imports, without table yet.
@@ -141,7 +159,10 @@ class Geocoding < Sequel::Model
     self.report
   rescue => e
     @finished_at = Time.now
-    self.batched = table_geocoder.used_batch_request?
+    self.batched = table_geocoder.nil? ? false : table_geocoder.used_batch_request?
+    if e.is_a? Carto::GeocoderErrors::GeocoderBaseError
+      self.error_code = e.class.additional_info.error_code
+    end
     self.update(state: 'failed', processed_rows: 0, cache_hits: 0)
     CartoDB::notify_exception(e, user: user)
     self.report(e)

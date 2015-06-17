@@ -3,6 +3,7 @@
 require_relative 'table_geocoder'
 require_relative 'internal_geocoder'
 require_relative 'gme/table_geocoder'
+require_relative 'exceptions'
 
 module Carto
   class TableGeocoderFactory
@@ -33,9 +34,13 @@ module Carto
       kind = instance_config.fetch(:kind)
 
       if kind == 'high-resolution'
-        if user.google_maps_geocoder_enabled?
-          geocoder_class = Carto::Gme::TableGeocoder
-          instance_config.merge!(client_id: user.google_maps_client_id, private_key: user.google_maps_private_key)
+        if user.has_feature_flag?('google_maps')
+          if user.google_maps_geocoder_enabled?
+            geocoder_class = Carto::Gme::TableGeocoder
+            instance_config.merge!(client_id: user.google_maps_client_id, private_key: user.google_maps_private_key)
+          else
+            raise GeocoderErrors::MisconfiguredGmeGeocoderError.new
+          end
         else
           geocoder_class = CartoDB::TableGeocoder
         end

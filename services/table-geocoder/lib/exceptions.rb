@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-module CartoDB
+module Carto
   module GeocoderErrors
 
     class AdditionalInfo
@@ -42,7 +42,8 @@ module CartoDB
 
 
     class MisconfiguredGmeGeocoderError < GeocoderBaseError
-      register_additional_info(1000,
+      register_additional_info(
+        1000,
         'Google for Work account misconfigured',
         "Your Google for Work account seems to be incorrectly configured. Please <a href='mailto:sales@cartob.com?subject=Google for Work account misconfigured'>contact us</a> and we'll try to fix it quickly",
         AdditionalInfo::SOURCE_USER

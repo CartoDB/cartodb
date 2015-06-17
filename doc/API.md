@@ -198,7 +198,7 @@ cartodb.createVis('map', url)
   - **time_slider**: show time slider with torque layers (enabled by default)
   - **layer_selector**: show layer selector (default: false)
   - **legends**: if it's true legends are shown in the map.
-  - **https**: if true, it makes sure that basemaps are converted to https when possible. If explicitly false, converts https maps to https when possible. If undefined, the basemap template is left as declared at `urlTemplate` in the viz.json.
+  - **https**: if true, it makes sure that basemaps are converted to https when possible. If explicitly false, converts https maps to http when possible. If undefined, the basemap template is left as declared at `urlTemplate` in the viz.json.
   - **scrollwheel**: enable/disable the ability of zooming using scrollwheel (default enabled)
   - **fullscreen**: if true adds a button to toggle the map fullscreen
   - **mobile_layout**: if true enables a custom layout for mobile devices (default: false)
@@ -1459,10 +1459,10 @@ Or, by running the following in your code:
 alert(cartodb.VERSION)
 ```
 
-Once you know which version of CartoDB.js you're using, you can point your site to that release. If the current version of CartoDB.js is 3.14.3, the URL would be:
+Once you know which version of CartoDB.js you're using, you can point your site to that release. If the current version of CartoDB.js is 3.14.6, the URL would be:
 
 ```html
-<script src="http://libs.cartocdn.com/cartodb.js/v3/3.14.3/cartodb.js"></script>
+<script src="http://libs.cartocdn.com/cartodb.js/v3/3.14.6/cartodb.js"></script>
 ```
 
 You can do the same for the CSS documents we provide:

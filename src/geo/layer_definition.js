@@ -1,3 +1,66 @@
+/**
+ * Wrapper for map properties returned by the tiler
+ */
+function MapProperties(mapProperties) {
+  this.mapProperties = mapProperties;
+}
+
+MapProperties.prototype.getMapId = function() {
+  return this.mapProperties.layergroupid;
+}
+
+/**
+ * Returns the index of a layer of a given type, as the tiler kwows it.
+ *
+ * @param {integer} index - number of layer of the specified type
+ * @param {string} layerType - type of the layers
+ */
+MapProperties.prototype.getLayerIndexByType = function(index, layerType) {
+  var layers = this.mapProperties.metadata && this.mapProperties.metadata.layers;
+
+  if (!layers) {
+    return index;
+  }
+
+  var tilerLayerIndex = {}
+  var j = 0;
+  for (var i = 0; i < layers.length; i++) {
+    if (layers[i].type == layerType) {
+      tilerLayerIndex[j] = i;
+      j++;
+    }
+  }
+  if (tilerLayerIndex[index] == undefined) {
+    return -1;
+  }
+  return tilerLayerIndex[index];
+}
+
+/**
+ * Returns the index of a layer of a given type, as the tiler kwows it.
+ *
+ * @param {string|array} types - Type or types of layers
+ */
+MapProperties.prototype.getLayerIndexesByType = function(types) {
+  var layers = this.mapProperties.metadata && this.mapProperties.metadata.layers;
+
+  if (!layers) {
+    return;
+  }
+  var layerIndexes = [];
+  for (var i = 0; i < layers.length; i++) {
+    var layer = layers[i];
+    var isValidType = layer.type !== 'torque';
+    if (types && types.length > 0) {
+      isValidType = isValidType && types.indexOf(layer.type) != -1
+    }
+    if (isValidType) {
+      layerIndexes.push(i);
+    }
+  }
+  return layerIndexes;
+}
+
 function MapBase(options) {
   var self = this;
 
@@ -17,9 +80,9 @@ function MapBase(options) {
   this.urls = null;
   this.silent = false;
   this.interactionEnabled = []; //TODO: refactor, include inside layer
-  this._layerTokenQueue = [];
   this._timeout = -1;
-  this._queue = [];
+  this._createMapCallsStack = [];
+  this._createMapCallbacks = [];
   this._waiting = false;
   this.lastTimeUpdated = null;
   this._refreshTimer = -1;
@@ -43,26 +106,24 @@ MapBase.prototype = {
     opts.maps_api_template = [tilerProtocol, "://", username, tilerDomain, tilerPort].join('');
   },
 
-  // TODO: This method is actually creating a map in the server -> Rename to createMap?
-  getLayerToken: function(callback) {
+  createMap: function(callback) {
     var self = this;
-    function _done(data, err) {
+    function invokeStackedCallbacks(data, err) {
       var fn;
-      while(fn = self._layerTokenQueue.pop()) {
+      while(fn = self._createMapCallbacks.pop()) {
         fn(data, err);
       }
     }
     clearTimeout(this._timeout);
-    this._queue.push(_done);
-    this._layerTokenQueue.push(callback);
+    this._createMapCallsStack.push(invokeStackedCallbacks);
+    this._createMapCallbacks.push(callback);
     this._timeout = setTimeout(function() {
-      self._getLayerToken(_done);
+      self._createMap(invokeStackedCallbacks);
     }, 4);
   },
 
-  _getLayerToken: function(callback) {
+  _createMap: function(callback) {
     var self = this;
-    var params = [];
     callback = callback || function() {};
 
     // if the previous request didn't finish, queue it
@@ -70,7 +131,7 @@ MapBase.prototype = {
       return this;
     }
 
-    this._queue = [];
+    this._createMapCallsStack = [];
 
     // when it's a named map the number of layers is not known
     // so fetch the map
@@ -79,12 +140,28 @@ MapBase.prototype = {
       return;
     }
 
-    // setup params
-    var extra_params = this.options.extra_params || {};
-    var api_key = this.options.map_key || this.options.api_key || extra_params.map_key || extra_params.api_key;
+    // mark as the request is being done
+    this._waiting = true;
+    var req = null;
+    if (this._usePOST()) {
+      req = this._requestPOST;
+    } else {
+      req = this._requestGET;
+    }
+    var params = this._getParamsFromOptions(this.options);
+    req.call(this, params, callback);
+    return this;
+  },
+
+  _getParamsFromOptions: function(options) {
+    var params = [];
+    var extra_params = options.extra_params || {};
+    var api_key = options.map_key || options.api_key || extra_params.map_key || extra_params.api_key;
+
     if(api_key) {
       params.push("map_key=" + api_key);
     }
+
     if(extra_params.auth_token) {
       if (_.isArray(extra_params.auth_token)) {
         for (var i = 0, len = extra_params.auth_token.length; i < len; i++) {
@@ -98,16 +175,7 @@ MapBase.prototype = {
     if (this.stat_tag) {
       params.push("stat_tag=" + this.stat_tag);
     }
-    // mark as the request is being done
-    this._waiting = true;
-    var req = null;
-    if (this._usePOST()) {
-      req = this._requestPOST;
-    } else {
-      req = this._requestGET;
-    }
-    req.call(this, params, callback);
-    return this;
+    return params;
   },
 
   _usePOST: function() {
@@ -141,9 +209,15 @@ MapBase.prototype = {
       success: function(data) {
         loadingTime.end();
         // discard previous calls when there is another call waiting
-        if(0 === self._queue.length) {
-          callback(data);
+        if(0 === self._createMapCallsStack.length) {
+          if (data.errors) {
+            cartodb.core.Profiler.metric('cartodb-js.layergroup.post.error').inc();
+            callback(null, data);
+          } else {
+            callback(data);
+          }
         }
+
         self._requestFinished();
       },
       error: function(xhr) {
@@ -156,7 +230,7 @@ MapBase.prototype = {
         try {
           err = JSON.parse(xhr.responseText);
         } catch(e) {}
-        if(0 === self._queue.length) {
+        if(0 === self._createMapCallsStack.length) {
           callback(null, err);
         }
         self._requestFinished();
@@ -181,7 +255,7 @@ MapBase.prototype = {
         cache: !!self.options.instanciateCallback,
         success: function(data) {
           loadingTime.end();
-          if(0 === self._queue.length) {
+          if(0 === self._createMapCallsStack.length) {
             // check for errors
             if (data.errors) {
               cartodb.core.Profiler.metric('cartodb-js.layergroup.get.error').inc();
@@ -199,7 +273,7 @@ MapBase.prototype = {
           try {
             err = JSON.parse(xhr.responseText);
           } catch(e) {}
-          if(0 === self._queue.length) {
+          if(0 === self._createMapCallsStack.length) {
             callback(null, err);
           }
           self._requestFinished();
@@ -244,13 +318,12 @@ MapBase.prototype = {
     }, this.options.refreshTime || (60*120*1000)); // default layergroup ttl
 
     // check request queue
-    if(this._queue.length) {
-      var last = this._queue[this._queue.length - 1];
-      this._getLayerToken(last);
+    if(this._createMapCallsStack.length) {
+      var request = this._createMapCallsStack.pop();
+      this._createMap(request);
     }
   },
 
-  // for named maps, attributes are fetched from the attributes service
   fetchAttributes: function(layer_index, feature_id, columnNames, callback) {
     this._attrCallbackName = this._attrCallbackName || this._callbackName();
     var ajax = this.options.ajax;
@@ -276,6 +349,32 @@ MapBase.prototype = {
     return cdb.core.util.uniqueCallbackName(JSON.stringify(this.toJSON()));
   },
 
+  _attributesUrl: function(layer, feature_id) {
+    var host = this._host();
+    var url = [
+      host,
+      MapBase.BASE_URL.slice(1),
+      this.mapProperties.getMapId(),
+      this.mapProperties.getLayerIndexByType(layer, "mapnik"),
+      'attributes',
+      feature_id].join('/');
+
+    var extra_params = this.options.extra_params || {};
+    var token = extra_params.auth_token;
+    if (token) {
+      if (_.isArray(token)) {
+        var tokenParams = [];
+        for (var i = 0, len = token.length; i < len; i++) {
+          tokenParams.push("auth_token[]=" + token[i]);
+        }
+        url += "?" + tokenParams.join('&')
+      } else {
+        url += "?auth_token=" + token
+      }
+    }
+    return url;
+  },
+
   invalidate: function() {
     this.mapProperties = null;
     this.urls = null;
@@ -285,20 +384,21 @@ MapBase.prototype = {
   getTiles: function(callback) {
     var self = this;
     if(self.mapProperties) {
-      callback && callback(self._layerGroupTiles());
+      callback && callback(self._layerGroupTiles(self.mapProperties, self.options.extra_params));
       return this;
     }
-    this.getLayerToken(function(data, err) {
+    this.createMap(function(data, err) {
       if(data) {
-        self.mapProperties = data;
-
+        self.mapProperties = new MapProperties(data);
         // if cdn_url is present, use it
         if (data.cdn_url) {
-          var c = self.options.cdn_url = self.options.cdn_url || {};
-          c.http = data.cdn_url.http || c.http;
-          c.https = data.cdn_url.https || c.https;
+          self.options.cdn_url = self.options.cdn_url || {}
+          self.options.cdn_url = {
+            http: self.options.cdn_url.http || data.cdn_url.http,
+            https: self.options.cdn_url.https || data.cdn_url.https
+          }
         }
-        self.urls = self._layerGroupTiles();
+        self.urls = self._layerGroupTiles(self.mapProperties, self.options.extra_params);
         callback && callback(self.urls);
       } else {
         if ((self.named_map !== null) && (err) ){
@@ -319,45 +419,30 @@ MapBase.prototype = {
     return this.options.maps_api_template.indexOf('https') === 0;
   },
 
-  _layerGroupTiles: function() {
+  _layerGroupTiles: function(mapProperties, params) {
     var grids = [];
     var tiles = [];
-    var pngParams = this._encodeParams(this.options.extra_params, this.options.pngParams);
-    var gridParams = this._encodeParams(this.options.extra_params, this.options.gridParams);
+    var pngParams = this._encodeParams(params, this.options.pngParams);
+    var gridParams = this._encodeParams(params, this.options.gridParams);
     var subdomains = this.options.subdomains || ['0', '1', '2', '3'];
     if(this.isHttps()) {
       subdomains = [null]; // no subdomain
     }
-    var filter = this.options.filter;
-    var layerGroupId = this.mapProperties.layergroupid;
-    var layers = this.mapProperties.metadata.layers;
 
-    // Iterate through the layers returned by the tiler as metadata and
-    // extract the indexes of all the layers that should be rendered
-    var layerIndexes = [];
-    for (var i = 0; i < layers.length; i++) {
-      var layer = layers[i];
-      var isValidType = layer.type !== 'torque';
-      if (filter) {
-        isValidType = isValidType && filter.indexOf(layer.type) != -1
-      }
-      if (isValidType) {
-        layerIndexes.push(i);
-      }
-    }
-
+    var layerIndexes = mapProperties.getLayerIndexesByType(this.options.filter);
     if (layerIndexes.length) {
       var tileTemplate = '/' +  layerIndexes.join(',') +'/{z}/{x}/{y}';
       var gridTemplate = '/{z}/{x}/{y}';
 
       for(var i = 0; i < subdomains.length; ++i) {
-        var s = subdomains[i]
-        var cartodb_url = this._host(s) + MapBase.BASE_URL + '/' + layerGroupId
+        var s = subdomains[i];
+        var cartodb_url = this._host(s) + MapBase.BASE_URL + '/' + mapProperties.getMapId();
         tiles.push(cartodb_url + tileTemplate + ".png" + (pngParams ? "?" + pngParams: '') );
 
         for(var layer = 0; layer < this.layers.length; ++layer) {
+          var index = mapProperties.getLayerIndexByType(layer, "mapnik");
           grids[layer] = grids[layer] || [];
-          grids[layer].push(cartodb_url + "/" + layer +  gridTemplate + ".grid.json" + (gridParams ? "?" + gridParams: ''));
+          grids[layer].push(cartodb_url + "/" + index +  gridTemplate + ".grid.json" + (gridParams ? "?" + gridParams: ''));
         }
       }
     } else {
@@ -555,7 +640,11 @@ MapBase.prototype = {
   },
 
   getTooltipData: function(layer) {
-    return this.layers[layer].tooltip;
+    var tooltip = this.layers[layer].tooltip;
+    if (tooltip && tooltip.fields && tooltip.fields.length) {
+      return tooltip;
+    }
+    return null;
   },
 
   getInfowindowData: function(layer) {
@@ -781,22 +870,6 @@ LayerDefinition.prototype = _.extend({}, MapBase.prototype, {
   createSubLayer: function(attrs, options) {
     this.addLayer(attrs);
     return this.getSubLayer(this.getLayerCount() - 1);
-  },
-
-  _attributesUrl: function(layer, feature_id) {
-    // /api/maps/:map_id/:layer_index/attributes/:feature_id
-    var host = this._host();
-    var url = [
-      host,
-      //'api',
-      //'v1',
-      MapBase.BASE_URL.slice(1),
-      this.mapProperties.layergroupid,
-      this.getLayerIndexByNumber(layer),
-      'attributes',
-      feature_id].join('/');
-
-    return url;
   }
 });
 
@@ -876,12 +949,12 @@ NamedMap.prototype = _.extend({}, MapBase.prototype, {
   },
 
   toJSON: function() {
-    var p = this.named_map.params || {};
+    var payload = this.named_map.params || {};
     for(var i = 0; i < this.layers.length; ++i) {
       var layer = this.layers[i];
-      p['layer' + i] = layer.options.hidden ? 0: 1;
+      payload['layer' + i] = layer.options.hidden ? 0: 1;
     }
-    return p;
+    return payload;
   },
 
   containInfowindow: function() {
@@ -905,36 +978,6 @@ NamedMap.prototype = _.extend({}, MapBase.prototype, {
     }
     return false;
   },
-
-  _attributesUrl: function(layer, feature_id) {
-    // /api/maps/:map_id/:layer_index/attributes/:feature_id
-    var host = this._host();
-    var url = [
-      host,
-      //'api',
-      //'v1',
-      MapBase.BASE_URL.slice(1),
-      this.mapProperties.layergroupid,
-      layer,
-      'attributes',
-      feature_id].join('/');
-
-    var extra_params = this.options.extra_params || {};
-    var token = extra_params.auth_token;
-    if (token) {
-      if (_.isArray(token)) {
-        var tokenParams = [];
-        for (var i = 0, len = token.length; i < len; i++) {
-          tokenParams.push("auth_token[]=" + token[i]);
-        }
-        url += "?" + tokenParams.join('&')
-      } else {
-        url += "?auth_token=" + token
-      }
-    }
-    return url;
-  },
-
 
   setSQL: function(sql) {
     throw new Error("SQL is read-only in NamedMaps");

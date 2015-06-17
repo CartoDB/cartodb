@@ -385,7 +385,7 @@ describe('api.layers', function() {
             }
           }
         }, { https: true,  auth_token: 'at_rambo' }).done(function(layer) {
-          spyOn(layer, 'getLayerToken').and.returnValue({
+          spyOn(layer, 'createMap').and.returnValue({
             layergroupid: 'test',
             metadata: {
               layers: []

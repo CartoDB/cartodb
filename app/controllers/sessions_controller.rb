@@ -8,6 +8,7 @@ class SessionsController < ApplicationController
 
   before_filter :initialize_google_plus_config
   before_filter :api_authorization_required, :only => :show
+  before_filter :load_organization
   # Don't force org urls
   skip_before_filter :ensure_org_url_if_org_user
 
@@ -83,6 +84,13 @@ class SessionsController < ApplicationController
   def username_from_email(email)
     user = User.where(email: email).first
     user.present? ? user.username : email
+  end
+
+  private
+
+  def load_organization
+    subdomain = CartoDB.extract_subdomain(request)
+    @organization = Carto::Organization.where(name: subdomain).first if subdomain
   end
 
 end

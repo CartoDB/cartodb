@@ -125,7 +125,7 @@ class Carto::User < ActiveRecord::Base
     "\"#{self.database_schema}\""
   end
 
- # returns google maps api key. If the user is in an organization and 
+  # returns google maps api key. If the user is in an organization and 
   # that organization has api key it's used
   def google_maps_api_key
     if has_organization?
@@ -133,6 +133,27 @@ class Carto::User < ActiveRecord::Base
     else
       self.google_maps_key
     end
+  end
+
+  # TODO: this is the correct name for what's stored in the model, refactor changing that name
+  alias_method :google_maps_query_string, :google_maps_api_key
+
+  # Returns the google maps private key. If the user is in an organization and
+  # that organization has a private key, the org's private key is returned.
+  def google_maps_private_key
+    if has_organization?
+      organization.google_maps_private_key || read_attribute(:google_maps_private_key)
+    else
+      read_attribute(:google_maps_private_key)
+    end
+  end
+
+  def google_maps_geocoder_enabled?
+    google_maps_private_key.present? && google_maps_client_id.present?
+  end
+
+  def google_maps_client_id
+    Rack::Utils.parse_nested_query(google_maps_query_string)['client'] if google_maps_query_string
   end
 
   # returnd a list of basemaps enabled for the user

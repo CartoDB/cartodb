@@ -22,7 +22,7 @@ module CartoDB
 
         MAX_CATEGORIES = 4
 
-        DEBUG_FLAG = false
+        DEBUG_FLAG = true
 
         # Used for each query page size, not as total
         FILTER_MAXRESULTS     = :maxResults
@@ -46,6 +46,7 @@ module CartoDB
 
         # Gnip's 30 limit minus 'has:geo' one
         MAX_SEARCH_TERMS = 30 - 1
+
         MAX_QUERY_SIZE   = 1024
 
         MAX_TABLE_NAME_SIZE = 30
@@ -183,7 +184,7 @@ module CartoDB
 
         # Hide sensitive fields
         def to_s
-          "<CartoDB::Datasources::Search::Twitter @user=#{@user} @filters=#{@filters} @search_api_config=#{@search_api_config}>"
+          "<CartoDB::Datasources::Search::Twitter @user=#{@user.username} @filters=#{@filters} @search_api_config=#{@search_api_config}>"
         end
 
         # If this datasource accepts a data import instance
@@ -304,6 +305,7 @@ module CartoDB
           threads = {}
           base_filters = filters.select { |k, v| k != FILTER_CATEGORIES }
 
+          category_totals = {}
           dumper_additional_fields = {}
           filters[FILTER_CATEGORIES].each { |category|
             dumper_additional_fields[category[CATEGORY_NAME_KEY]] = {
@@ -314,20 +316,25 @@ module CartoDB
           }
           @csv_dumper.additional_fields = dumper_additional_fields
 
+          log("Searching #{filters[FILTER_CATEGORIES].length} categories")
+
           filters[FILTER_CATEGORIES].each { |category|
             # If all threads are created at the same time, redis semaphore inside search_api
             # might not yet have new value, so introduce a small delay on each thread creation
             sleep(0.1)
             threads[category[CATEGORY_NAME_KEY]] = Thread.new {
-              # Dumps inside upon each block response
-              # Create new API instance for each thread to avoid sharing same value-ref
-              search_by_category(
-                TwitterSearch::SearchAPI.new(api_config, redis_storage), base_filters, category, @csv_dumper)
+              api = TwitterSearch::SearchAPI.new(api_config, redis_storage, @csv_dumper)
+              # Dumps happen inside upon each block response
+              total_results = search_by_category(api, base_filters, category)
+              category_totals[category[CATEGORY_NAME_KEY]] = total_results
             }
           }
           threads.each {|key, thread|
             thread.join
           }
+
+          # INFO: For now we don't treat as error a no results scenario, else use: 
+          # raise NoResultsError.new if category_totals.values.inject(:+) == 0
 
           filters[FILTER_CATEGORIES].each { |category|
             @csv_dumper.end_dump(category[CATEGORY_NAME_KEY])
@@ -350,7 +357,7 @@ module CartoDB
           streamed_size
         end
 
-        def search_by_category(api, base_filters, category, csv_dumper=nil)
+        def search_by_category(api, base_filters, category)
           api.params = base_filters
 
           exception = nil
@@ -385,7 +392,7 @@ module CartoDB
                 }
               end
 
-              dumped_items_count = csv_dumper.dump(category[CATEGORY_NAME_KEY], results_page[:results])
+              dumped_items_count = @csv_dumper.dump(category[CATEGORY_NAME_KEY], results_page[:results])
               next_results_cursor = results_page[:next].nil? ? nil : results_page[:next]
 
               @user_semaphore.synchronize {
@@ -397,12 +404,9 @@ module CartoDB
           end while (!next_results_cursor.nil? && !out_of_quota && !exception)
 
           log("'#{category[CATEGORY_NAME_KEY]}' got #{total_results} results")
+          log("Got exception at '#{category[CATEGORY_NAME_KEY]}': #{exception.inspect}") if exception
 
-          # ogr2org fails when there's no result. Since importing is done through a file
-          # that hides metadata we must raise an error to handle it gracefully
-          raise NoResultsError.new if exception.nil? && total_results == 0
-
-          # If fails on the first request, do not fail silently
+          # If fails on the first request, bubble up the error, else will return as many tweets as possible
           if !exception.nil? && total_results == 0
             log("ERROR: 0 results & exception: #{exception} (HTTP #{exception.http_code}) #{exception.additional_data}")
             # @see http://support.gnip.com/apis/search_api/api_reference.html

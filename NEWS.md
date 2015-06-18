@@ -7,6 +7,7 @@
 * Named maps created for all visualizations, regardless of layers privacy [#3879](https://github.com/CartoDB/cartodb/issues/3879)
 * Added an [http client for ruby](https://github.com/CartoDB/cartodb/wiki/The-CartoDB-ruby-http-client) with some cool features
 * SQLViews are editable when filtering [#3812](https://github.com/CartoDB/cartodb/pull/3812)
+* Updated cartodb.js to 3.14.6
 
 Bugfixes:
 * Fixed deletion of layers upon disconnecting synced datasources [#3718](https://github.com/CartoDB/cartodb/pull/3718)

@@ -27,6 +27,7 @@ namespace :cartodb do
                                                 Carto::Visualization::TYPE_CANONICAL, 
                                                 Carto::Visualization::TYPE_DERIVED
                                               ])
+                                            .with_order(:created_at, :asc)
                                             .build
 
       count = vqb.count

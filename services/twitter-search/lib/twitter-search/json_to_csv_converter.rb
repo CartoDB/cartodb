@@ -182,12 +182,16 @@ module CartoDB
         results.join("\n")
       end
 
+      # INFO: This gets called before field-by-field parsing to speed up things
+      def clean_string(contents)
+        contents.gsub("\\n", ' ').gsub("\\r", ' ')
+      end
+
       private
 
       def field_to_csv(field)
-        # RFC4180 + my own
-        '"' + field.to_s.gsub('"', '""').gsub("\\n", ' ').gsub("\x0D", ' ').gsub("\x0A", ' ').gsub("\0", '').gsub("\\", ' ') \
-          + '"'
+        # RFC4180
+        '"' + field.to_s.gsub('"', '""').gsub("\\", ' ').gsub("\x0D", ' ').gsub("\x0A", ' ').gsub("\0", '') + '"'
       end
 
       def calculate_the_geom(row)
@@ -201,11 +205,6 @@ module CartoDB
           row[:geo][:coordinates][0] = row[:geo][:coordinates][1]
           row[:geo][:coordinates][1] = lat
           output = ::JSON.dump(row[:geo])
-        # Bounding box (no longer used)
-        #elsif !row[:location].nil? && !row[:location].empty? && !row[:location][:geo].nil?  &&
-        #      !row[:location][:geo].empty?
-        #  output = ::JSON.dump(row[:location][:geo])
-
         # Geo-enrichment
         elsif !row[:gnip].nil? && !row[:gnip].empty? && !row[:gnip][:profileLocations].nil? &&
               !row[:gnip][:profileLocations].empty?

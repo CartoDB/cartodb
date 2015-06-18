@@ -205,7 +205,7 @@ describe Search::Twitter do
       csv_dumper.begin_dump(input_terms[:categories][1][:category])
       csv_dumper.additional_fields = { category[:name] => category }
 
-      output = twitter_datasource.send :search_by_category, twitter_api, filters, category, csv_dumper
+      output = twitter_datasource.send :search_by_category, twitter_api, filters, category
 
       # 2 pages of 10 results per category search
       output.should eq 20
@@ -268,7 +268,7 @@ describe Search::Twitter do
       csv_dumper.begin_dump(input_terms[:categories][1][:category])
       csv_dumper.additional_fields = { category[:name] => category }
 
-      output = twitter_datasource.send :search_by_category, twitter_api, filters, category, csv_dumper
+      output = twitter_datasource.send :search_by_category, twitter_api, filters, category
 
       output.should eq remaining_tweets_quota
 

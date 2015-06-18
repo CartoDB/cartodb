@@ -144,6 +144,7 @@ WORKING_SPECS_8 = \
   spec/rspec_configuration.rb \
   spec/requests/api/permissions_controller_spec.rb \
   spec/models/shared_entity_spec.rb \
+	spec/requests/users_controller_spec.rb \
   spec/requests/superadmin/users_spec.rb \
   spec/requests/superadmin/organizations_spec.rb \
   spec/requests/api/visualizations_spec.rb \

@@ -1,0 +1,22 @@
+<% content_for :title do %>Sign up<% end %>
+
+<%= form_for @user, url: CartoDB.url(self, 'signup_organization_user'),  html: { class: "js-Loading-form" } do |f| %>
+  <%= render :partial => 'shared/flash_message' %>
+
+  <div class="Sessions-field">
+    <%= f.text_field :username, class: "Sessions-input", placeholder: 'Username' %>
+    <%= form_error_for :username, @user.errors %>
+  </div>
+
+  <div class="Sessions-field">
+    <%= f.email_field :email, class: "Sessions-input", placeholder: 'Email' %>
+    <%= form_error_for :email, @user.errors %>
+  </div>
+
+  <div class="Sessions-field">
+    <%= f.password_field :password, class: "Sessions-input", placeholder: 'Password' %>
+    <%= form_error_for :password, @user.errors %>
+  </div>
+
+  <button type="submit" class="Btn Btn--green Btn--m is-highlight u-tupper Sessions-button js-Sessions-button js-Loading u-right">Signup</button>
+<% end %>

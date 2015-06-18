@@ -11,6 +11,9 @@ CartoDB::Application.routes.draw do
   get   '/(user/:user_domain)(u/:user_domain)'                 => 'admin/pages#public', as: :root
   root :to => 'admin/pages#index'
 
+  get   '(/user/:user_domain)(/u/:user_domain)/signup'           => 'users#signup',     as: :signup
+  post   '(/user/:user_domain)(/u/:user_domain)/signup'           => 'users#create',  as: :signup_organization_user
+
   get   '(/user/:user_domain)(/u/:user_domain)/login'           => 'sessions#new',     as: :login
   get   '(/user/:user_domain)(/u/:user_domain)/logout'          => 'sessions#destroy', as: :logout
   match '(/user/:user_domain)(/u/:user_domain)/sessions/create' => 'sessions#create',  as: :create_session

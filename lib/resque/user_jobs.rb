@@ -5,6 +5,51 @@ require 'resque-metrics'
 module Resque
   module UserJobs
 
+    module Signup
+
+      module NewUser
+        @queue = :users
+
+        def self.perform(username, email, password, organization_id)
+          user = ::User.new
+          user.username = username
+          user.email = email
+          user.password = password
+          user.password_confirmation = password
+          user.organization = ::Organization.where(id: organization_id).first
+          begin
+            user.save(raise_on_failure: true)
+            user.create_in_central
+          rescue => e
+            CartoDB.notify_exception(e, { action: 'box user signup', user: user } )
+            safe_user_cleanup(user)
+            raise e
+          end
+          user.notify_new_organization_user
+        end
+
+        private
+
+        def self.safe_user_cleanup(user)
+          return unless user
+
+          begin
+            user.destroy
+          rescue => e
+            CartoDB.notify_exception(e, { action: 'safe user destruction', user: user } )
+            begin
+              user.delete
+            rescue => ee
+              CartoDB.notify_exception(e, { action: 'safe user deletion', user: user } )
+            end
+
+          end
+        end
+
+      end
+
+    end
+
     module SyncTables
 
       module LinkGhostTables 

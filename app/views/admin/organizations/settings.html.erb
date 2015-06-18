@@ -9,6 +9,9 @@
   </script>
   <%= javascript_include_tag 'cdb.js', 'models.js', 'organization_templates.js', 'organization_deps.js', 'organization.js' -%>
 <% end %>
+<%= content_for(:css) do %>
+  <%= stylesheet_link_tag 'organization.css', :media => 'all' %>
+<% end %>
 
 <%= render :partial => 'shared/flash_message' %>
 
@@ -77,6 +80,23 @@
 
         <div class="Form-row">
           <div class="Form-rowLabel">
+            <label class="Form-label">Color</label>
+          </div>
+          <div class="Form-rowData">
+            <button type="button" class="js-colorPicker ColorPicker" style="background:<%= @organization.color.blank? ? "#354046" : @organization.color %>">
+              <span class="ColorPicker-handle">
+                <b class="ColorPicker-handleTriangle"></b>
+              </span>
+            </button>
+            <%= f.hidden_field :color, :class => "js-colorInput" %>
+          </div>
+          <div class="Form-rowInfo">
+            <p class="Form-rowInfoText">Your login page will be branded with this color</p>
+          </div>
+        </div>
+
+        <div class="Form-row">
+          <div class="Form-rowLabel">
             <label class="Form-label">Twitter username</label>
           </div>
           <div class="Form-rowData">
@@ -116,8 +136,8 @@
             </div>
             <div class="Form-rowInfo">
               <p class="Form-rowInfoText Form-rowInfoText--multipleLines">
-                This is the <%= @organization.name %> Google Maps query string
-                contact with <a href="mailto:support@cartodb.com">support@cartodb.com</a> to change it.
+                This is the <%= @organization.name %> Google Maps query string. 
+                Contact with <a href="mailto:support@cartodb.com">support@cartodb.com</a> to change it.
               </p>
             </div>
           </div>

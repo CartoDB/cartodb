@@ -7,6 +7,8 @@
 
 $sLabel-width: 140px;
 
+.Form {}
+.Form--minHeight { min-height: 400px }
 .Form-title {
   display: block;
   margin: $sMargin-section 0;
@@ -143,6 +145,7 @@ $sLabel-width: 140px;
   outline: none;
   border: 1px solid #CCC;
   border-radius: 4px;
+  color: #666;
   z-index: 2;
 
   &:focus { border-color: #999 }
@@ -155,7 +158,6 @@ $sLabel-width: 140px;
 .Form-input:-moz-placeholder           { font-style: italic; color: #AAA }
 .Form-input::-moz-placeholder          { font-style: italic; color: #AAA }
 .Form-input:-ms-input-placeholder      { font-style: italic; color: #AAA }
-
 // Sizes
 .Form-input--longer { width: 434px }
 .Form-input--long { width: 354px }
@@ -168,7 +170,7 @@ $sLabel-width: 140px;
   &.Form-input--longer { width: 414px }
   &.Form-input--long { width: 324px }
   &.Form-input--med {}
-  &.Form-input--short {}
+  &.Form-input--short { width: 92px }
 
   &.Form-input--longerMorePadding {
     width: 356px;
@@ -200,6 +202,7 @@ $sLabel-width: 140px;
   font-size: $sFontSize-larger;
   color: $cTypography-help;
 }
+.Form-inputIcon--clock { top: 11px }
 .Form-inputError {
   position: absolute;
   top: 0;
@@ -216,11 +219,14 @@ $sLabel-width: 140px;
   border-radius: 4px;
   @include transition(top, 200ms, ease-in-out);
 }
-.Form-inputError.is-visible {
-  top: 36px;
-}
+.Form-inputError.is-visible { top: 36px }
 .Form-input.is-disabled { background: $cStructure-grayBkg }
 .Form-input.is-invalid { border-color: $cHighlight-negative }
+// Modifiers
+.Form-input--noBorder { border: none }
+.Form-input--noBkg,
+.Form-input--noBkg.is-disabled { background: transparent }
+
 .Form-textarea {
   padding: 9px 12px;
   min-height: 110px;

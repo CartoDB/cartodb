@@ -204,6 +204,7 @@
       span.color {
         position:relative;
         @include inline-block();
+        vertical-align: top;
         @include border-left-radius(3px);
         width:12px;
         height:21px;

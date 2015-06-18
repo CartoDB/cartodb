@@ -27,6 +27,7 @@ class Admin::OrganizationsController < ApplicationController
     @organization.website = attributes[:website]
     @organization.description = attributes[:description]
     @organization.display_name = attributes[:display_name]
+    @organization.color = attributes[:color]
     @organization.discus_shortname = attributes[:discus_shortname]
     @organization.twitter_username = attributes[:twitter_username]
 
@@ -47,7 +48,6 @@ class Admin::OrganizationsController < ApplicationController
 
   def load_organization_and_members
     @organization = current_user.organization
-    @users = current_user.organization.users
     raise RecordNotFound unless @organization.present? && current_user.organization_owner?
   end
 

@@ -1,0 +1,157 @@
+@import "../variables/mixins";
+@import "../variables/colors";
+@import "../variables/sizes";
+
+// A set of .TabLink where only the edge tabs have a border-radius
+.TabsPanel {
+  & > .TabLink {
+    border-radius: 0;
+    &:first-child {
+      border-top-left-radius: $sCard-borderRadius;
+      border-bottom-left-radius: $sCard-borderRadius;
+    }
+    &:last-child {
+      border-top-right-radius: $sCard-borderRadius;
+      border-bottom-right-radius: $sCard-borderRadius;
+    }
+  }
+}
+
+.TabLink {
+  display: block;
+  width: 118px;
+  height: 38px;
+  padding: 0 10px;
+  border: 1px solid $cStructure-mainLine;
+  line-height: 38px;
+  border-radius: $sCard-borderRadius;
+  color: $cTypography-secondary;
+  font-size: 14px;
+  cursor: pointer;
+
+  &:hover {
+    background: white;
+    border-color: rgba(#BBD7F2, 1);
+    color: $cTypography-paragraphs;
+    text-decoration: none;
+  }
+}
+.TabLink.selected,
+.TabLink.selected:hover {
+  background: white;
+  border-color: rgba(#BBD7F2, 1);
+  color: $cTypography-paragraphs;
+  cursor: default;
+}
+.TabLink.disabled {
+  @include opacity(0.5);
+
+  &:hover {
+    cursor: default;
+    background: transparent;
+    text-decoration: none;
+    color: $cTypography-secondary;
+    border-color: $cStructure-mainLine;
+  }
+}
+.TabLink.TabLink--textCenterUpcase {
+  text-transform: uppercase;
+  text-align: center;
+  color: $cTypography-paragraphs;
+  &.selected,
+  &.selected:hover {
+    background: $cCard-selectedFill;
+    border-color: $cCard-selectedBorder;
+    color: $cTypography-paragraphs;
+  }
+}
+
+
+// Tab icons
+.TabIcon {
+  display: inline-block;
+  vertical-align: middle;
+  height: 20px;
+  margin: 0 6px 3px 0;
+  @include background(image-url("layout/new_import_icons.png") no-repeat 0 0);
+}
+.TabIcon.is-scratch {
+  width: 18px;
+  background-position: 0 0;
+}
+.TabLink.selected .TabIcon.is-scratch,
+.TabLink:hover .TabIcon.is-scratch { background-position: 0 -20px }
+.TabLink.disabled .TabIcon.is-scratch,
+.TabLink.disabled:hover .TabIcon.is-scratch { background-position: 0 0 }
+
+.TabIcon.is-dropbox {
+  width: 22px;
+  background-position: -18px 0;
+}
+.TabLink.selected .TabIcon.is-dropbox,
+.TabLink:hover .TabIcon.is-dropbox { background-position: -18px -20px }
+.TabLink.disabled .TabIcon.is-dropbox,
+.TabLink.disabled:hover .TabIcon.is-dropbox { background-position: -18px 0 }
+
+.TabIcon.is-gdrive {
+  width: 25px;
+  background-position: -40px 0;
+}
+.TabLink.selected .TabIcon.is-gdrive,
+.TabLink:hover .TabIcon.is-gdrive { background-position: -40px -20px }
+.TabLink.disabled .TabIcon.is-gdrive,
+.TabLink.disabled:hover .TabIcon.is-gdrive { background-position: -40px 0 }
+
+.TabIcon.is-mailchimp {
+  width: 18px;
+  background-position: -65px 0;
+}
+.TabLink.selected .TabIcon.is-mailchimp,
+.TabLink:hover .TabIcon.is-mailchimp { background-position: -65px -20px }
+.TabLink.disabled .TabIcon.is-mailchimp,
+.TabLink.disabled:hover .TabIcon.is-mailchimp { background-position: -65px 0 }
+
+.TabIcon.is-arcgis {
+  width: 19px;
+  background-position: -83px 0;
+}
+.TabLink.selected .TabIcon.is-arcgis,
+.TabLink:hover .TabIcon.is-arcgis { background-position: -83px -20px }
+.TabLink.disabled .TabIcon.is-arcgis,
+.TabLink.disabled:hover .TabIcon.is-arcgis { background-position: -83px 0 }
+
+.TabIcon.is-twitter {
+  width: 25px;
+  background-position: -102px 0;
+}
+.TabLink.selected .TabIcon.is-twitter,
+.TabLink:hover .TabIcon.is-twitter { background-position: -102px -20px }
+.TabLink.disabled .TabIcon.is-twitter,
+.TabLink.disabled:hover .TabIcon.is-twitter { background-position: -102px 0 }
+
+.TabIcon.is-file {
+  width: 18px;
+  background-position: -127px 0;
+}
+.TabLink.selected .TabIcon.is-file,
+.TabLink:hover .TabIcon.is-file { background-position: -127px -20px }
+.TabLink.disabled .TabIcon.is-file,
+.TabLink.disabled:hover .TabIcon.is-file { background-position: -127px 0 }
+
+.TabIcon.is-instagram {
+  width: 20px;
+  background-position: -145px 0;
+}
+.TabLink.selected .TabIcon.is-instagram,
+.TabLink:hover .TabIcon.is-instagram { background-position: -145px -20px }
+.TabLink.disabled .TabIcon.is-instagram,
+.TabLink.disabled:hover .TabIcon.is-instagram { background-position: -145px 0 }
+
+.TabIcon.is-salesforce {
+  width: 29px;
+  background-position: -165px 0;
+}
+.TabLink.selected .TabIcon.is-salesforce,
+.TabLink:hover .TabIcon.is-salesforce { background-position: -165px -20px }
+.TabLink.disabled .TabIcon.is-salesforce,
+.TabLink.disabled:hover .TabIcon.is-salesforce { background-position: -165px 0 }

@@ -16,6 +16,12 @@
     text-decoration: underline;
   }
 }
+.DefaultParagraph--tertiary {
+  font-size: $sFontSize-normal;
+  line-height: $sLineHeight-normal;
+  font-weight: $sFontWeight-lighter;
+  color: $cTypography-secondary;
+}
 .DefaultParagraph--short { width: 500px }
 .DefaultParagraph--centered { margin: 0 auto }
 .DefaultParagraph--spaced {

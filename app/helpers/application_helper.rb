@@ -108,6 +108,10 @@ module ApplicationHelper
       config[:error_track_percent_users] = Cartodb.config[:error_track]["percent_users"]
     end
 
+    if Cartodb.config[:static_image_upload_endpoint].present?
+      config[:static_image_upload_endpoint] = Cartodb.config[:static_image_upload_endpoint]
+    end
+
     config.to_json
   end
 

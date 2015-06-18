@@ -37,8 +37,8 @@ $resizeHandlerSize: 8px;
 .ui-resizable-disabled .ui-resizable-handle, 
 .ui-resizable-autohide .ui-resizable-handle { display: none; }
 
-.ui-resizable-n { cursor: n-resize; top: -5px; left: 50%; margin-left: -4px; }
-.ui-resizable-s { cursor: s-resize; bottom: -5px; left: 50%; margin-left: -4px; }
+.ui-resizable-n { cursor: ns-resize; top: -5px; left: 50%; margin-left: -4px; }
+.ui-resizable-s { cursor: ns-resize; bottom: -5px; left: 50%; margin-left: -4px; }
 .ui-resizable-e { cursor: e-resize; right: -5px; top: 50%; margin-top: -4px; }
 .ui-resizable-w { cursor: w-resize; left: -5px; top: 50%; margin-top: -4px; }
 
@@ -78,6 +78,7 @@ $resizeHandlerSize: 8px;
   @include inline-block();
   background: #fff;
   font-size: 12px;
+  font-weight:normal;
   padding: 3px 5px;
   @include border-radius(3px);
   height: auto;
@@ -91,6 +92,10 @@ $resizeHandlerSize: 8px;
     color: #666;
     text-transform: none;
   }
+}
+
+.StaticImageResponse--input {
+  width: 100%;
 }
 
 .ExportImageResult--url {

@@ -9,88 +9,95 @@
 @import "old_common/form-elements";
 @import "old_common/mixins";
 
-.static_image_dialog {
 
-  @include default-form-info();
-  @include default-input();
-  @include default-textarea();
+.CanvasExport {
+  position:absolute;
+  border: 1px dashed #fff;
+  &.draggable {
+    z-index: 1000000000;
+  }
+}
 
-  // Sections
-  div.content {
-    padding: 22px 40px 40px 40px;
-  }
+$resizeHandlerSize: 8px;
+.ui-resizable { position: relative;}
+.ui-resizable-handle { position: absolute; width: $resizeHandlerSize; height: $resizeHandlerSize; z-index: 99999; display: block;
 
-  div.foot  {
-    padding: 0 40px 35px 40px!important;
-    border:none!important;
-  }
+  @include box-shadow(1px 1px 2px rgba(#000, .5));
 
-  .row label {
-    padding: 0;
-  }
+  background: rgb(254,254,254); /* Old browsers */
+  background: -moz-linear-gradient(top, rgba(254,254,254,1) 0%, rgba(229,229,229,1) 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(254,254,254,1)), color-stop(100%,rgba(229,229,229,1))); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, rgba(254,254,254,1) 0%,rgba(229,229,229,1) 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, rgba(254,254,254,1) 0%,rgba(229,229,229,1) 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(top, rgba(254,254,254,1) 0%,rgba(229,229,229,1) 100%); /* IE10+ */
+  background: linear-gradient(to bottom, rgba(254,254,254,1) 0%,rgba(229,229,229,1) 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fefefe', endColorstr='#e5e5e5',GradientType=0 ); /* IE6-9 */
 
-  .row .input_field {
-    margin: 0 20px 0 0;
-  }
-  .row .input_field:last-child {
-    margin: 0;
-  }
+}
+.ui-resizable-disabled .ui-resizable-handle, 
+.ui-resizable-autohide .ui-resizable-handle { display: none; }
 
-  input[type="text"] {
-    @include box-sizing(border-box);
-    @include inline-block();
-    width: 106px;
-    padding:14px 11px;
-    margin: 0;
-  }
+.ui-resizable-n { cursor: n-resize; top: -5px; left: 50%; margin-left: -4px; }
+.ui-resizable-s { cursor: s-resize; bottom: -5px; left: 50%; margin-left: -4px; }
+.ui-resizable-e { cursor: e-resize; right: -5px; top: 50%; margin-top: -4px; }
+.ui-resizable-w { cursor: w-resize; left: -5px; top: 50%; margin-top: -4px; }
 
-  label {
-    display:block;
-    margin:0 0 7px 0;
-    padding: 0;
-  }
+.ui-resizable-se { cursor: se-resize; right: -4px; bottom: -4px; }
+.ui-resizable-sw { cursor: sw-resize; left: -4px;  bottom: -4px; }
+.ui-resizable-nw { cursor: nw-resize; left: -4px;  top: -4px;  }
+.ui-resizable-ne { cursor: ne-resize; right: -4px; top: -4px; }
 
-  .attribution {
-    margin: 20px 0 0 0;
-  }
-  .attribution p {
-    margin: 0 0 10px 0;
-    line-height:130%;
-  }
-  .attribution p.highlighted {
-    background: #f1f1f1;
-    padding: 10px;
-    @include border-radius(2px);
-    border: 1px solid #ccc;
-  }
-  .attribution p:last-child {
-    margin: 0;
-  }
-  .attribution p a {
-    letter-spacing: normal;
-  }
+.StaticImageDialog {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
 
-  &.is-loading .loader {
-    display: block;
-  }
+.StaticImageDialog-Footer {
+  position: absolute;
+  text-align: center;
+  width: 100%;
+  bottom: 25px;
+}
 
-  .loader {
-    display:none;
-    float:right;
-    border:none;
-    width:38px;
-    height:16px;
-    padding:0;
-    margin:14px 10px 0 0;
-    background: image-url("layout/loader_transparent.gif") no-repeat 0 0;
-  }
+.StaticImageDialog--dimensions  {
+  @include inline-block();
+  padding: 3px 5px;
+  background: rgba(#000, .7);
+  @include border-radius(3px);
+  font-size: 12px;
+  color: #9B9B9B;
+}
 
-  .unit {
-    color: #ccc;
+.StaticImageDialog--dimensions strong {
+  color: #fff;
+  font-weight: normal;
+}
+
+.Button--micro {
+  @include inline-block();
+  background: #fff;
+  font-size: 12px;
+  padding: 3px 5px;
+  @include border-radius(3px);
+  height: auto;
+  border:none;
+
+  &:hover {
+    background:#f1f1f1;
   }
 
-  section.modal.confirmation {
-    display:none;
+  span {
+    color: #666;
+    text-transform: none;
   }
+}
 
+.ExportImageResult--url {
+  @include inline-block();
+  width: 400px;
+  vertical-align: top;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }

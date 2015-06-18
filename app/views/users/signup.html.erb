@@ -1,7 +1,18 @@
 <% content_for :title do %>Sign up<% end %>
 
+<% content_for :js do %>
+  <%= javascript_include_tag 'cdb.js' %>
+<% end %>
+
+<% if @google_plus_config.present? %>
+  <%= render partial: '/google_plus/google_plus_button',  locals: { config: @google_plus_config } %>
+<% end %>
+
+
 <%= form_for @user, url: CartoDB.url(self, 'signup_organization_user'),  html: { class: "js-Loading-form" } do |f| %>
   <%= render :partial => 'shared/flash_message' %>
+  <input type="hidden" value="" id="google_access_token" name="google_access_token" />
+  <input type="hidden" value="0" id="google_access_filled" name="google_access_filled" />
 
   <div class="Sessions-field">
     <%= f.text_field :username, class: "Sessions-input", placeholder: 'Username' %>

@@ -15,18 +15,14 @@ class GooglePlusController < ApplicationController
     throw 'illegal Google token' unless user_data.present?
 
     email = user_data.email
-    username = email.split('@')[0]
+    username = user_data.auto_username
 
     existing_user = User.where("email = '#{email}' OR username = '#{username}'").first
 
     throw 'existing user' unless existing_user == nil
 
     user = User.new
-    user.username = username
-    user.email = email
-    dummy_password = (0...15).map { ('a'..'z').to_a[rand(26)] }.join
-    user.password = dummy_password
-    user.password_confirmation = dummy_password
+    user_data.set_values(user)
     user.save(raise_on_failure: true)
     user.create_in_central
 

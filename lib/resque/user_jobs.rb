@@ -10,13 +10,14 @@ module Resque
       module NewUser
         @queue = :users
 
-        def self.perform(username, email, password, organization_id)
+        def self.perform(username, email, password, organization_id, google_sign_in)
           user = ::User.new
           user.username = username
           user.email = email
           user.password = password
           user.password_confirmation = password
           user.organization = ::Organization.where(id: organization_id).first
+          user.google_sign_in = google_sign_in
           begin
             user.save(raise_on_failure: true)
             user.create_in_central

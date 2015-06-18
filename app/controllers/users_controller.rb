@@ -1,9 +1,13 @@
+require_dependency 'google_plus_api'
+require_dependency 'google_plus_config'
+
 class UsersController < ApplicationController
   layout 'frontend'
 
   ssl_required :signup
 
   before_filter :load_organization
+  before_filter :initialize_google_plus_config
 
   def signup
     @user = ::User.new
@@ -11,13 +15,23 @@ class UsersController < ApplicationController
 
   def create
     @user = ::User.new
-    @user.username = params[:user][:username]
-    @user.email = params[:user][:email]
-    @user.password = params[:user][:password]
-    @user.password_confirmation = params[:user][:password]
-    @user.organization = @organization
+
+    if params[:google_access_token].present? && @google_plus_config.present?
+      user_data = GooglePlusAPI.new.get_user_data(params[:google_access_token])
+    end
+
+    if user_data
+      user_data.set_values(@user)
+    else
+      @user.username = params[:user][:username]
+      @user.email = params[:user][:email]
+      @user.password = params[:user][:password]
+      @user.password_confirmation = params[:user][:password]
+      @user.organization = @organization
+    end
+
     if @user.valid?
-      ::Resque.enqueue(::Resque::UserJobs::Signup::NewUser, @user.username, @user.email, @user.password, @user.organization_id)
+      ::Resque.enqueue(::Resque::UserJobs::Signup::NewUser, @user.username, @user.email, @user.password, @user.organization_id, @user.google_sign_in)
       flash.now[:success] = 'User creation in progress'
       render action: 'signup_confirmation'
     else
@@ -31,6 +45,10 @@ class UsersController < ApplicationController
   end
 
   private
+
+  def initialize_google_plus_config
+    @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, '/signup')
+  end
 
   def load_organization
     subdomain = CartoDB.extract_subdomain(request)

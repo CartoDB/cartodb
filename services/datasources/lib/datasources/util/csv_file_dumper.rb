@@ -39,6 +39,8 @@ module CartoDB
         @additional_fields = data
       end
 
+      # This class uses a temporal CSV file per name
+      # optionally dumping also the source JSON in another file if in debug mode
       # @param name String
       def begin_dump(name)
         # Create temp file & open

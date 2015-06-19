@@ -1,7 +1,7 @@
 require_dependency 'google_plus_api'
 require_dependency 'google_plus_config'
 
-class UsersController < ApplicationController
+class SignupController < ApplicationController
   layout 'frontend'
 
   ssl_required :signup
@@ -14,7 +14,7 @@ class UsersController < ApplicationController
   end
 
   def create
-    @user = ::User.new
+    @user = ::User.new_with_organization(@organization)
 
     if params[:google_access_token].present? && @google_plus_config.present?
       user_data = GooglePlusAPI.new.get_user_data(params[:google_access_token])
@@ -28,7 +28,6 @@ class UsersController < ApplicationController
       @user.password = params[:user][:password]
       @user.password_confirmation = params[:user][:password]
     end
-    @user.organization = @organization
 
     if @user.valid?
       @user_creation = Carto::UserCreation.new_user_signup(@user)

@@ -73,6 +73,13 @@ class User < Sequel::Model
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
 
+  def self.new_with_organization(organization)
+    user = ::User.new
+    user.organization = organization
+    user.quota_in_bytes = organization.default_quota_in_bytes
+    user
+  end
+
   ## Validations
   def validate
     super

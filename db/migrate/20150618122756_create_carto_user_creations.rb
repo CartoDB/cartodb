@@ -11,6 +11,7 @@ Sequel.migration do
       String    :salt,              null: false
       Uuid      :organization_id
       Boolean   :google_sign_in,    default: false
+      Bigint    :quota_in_bytes
       String    :state
       Uuid      :log_id
       Uuid      :user_id

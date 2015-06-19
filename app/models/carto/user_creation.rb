@@ -13,6 +13,7 @@ class Carto::UserCreation < ActiveRecord::Base
     user_creation.crypted_password = user.crypted_password
     user_creation.salt = user.salt
     user_creation.organization_id = user.organization.id
+    user_creation.quota_in_bytes = user.quota_in_bytes
     user_creation.google_sign_in = user.google_sign_in
     user_creation.log = Carto::Log.new_user_creation
     user_creation
@@ -79,6 +80,7 @@ class Carto::UserCreation < ActiveRecord::Base
     @user.crypted_password = self.crypted_password
     @user.salt = self.salt
     @user.organization = ::Organization.where(id: self.organization_id).first
+    @user.quota_in_bytes = self.quota_in_bytes unless self.quota_in_bytes.nil?
     @user.google_sign_in = self.google_sign_in
   rescue => e
     handle_failure(e)

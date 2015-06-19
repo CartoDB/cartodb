@@ -126,16 +126,3 @@ $resizeHandlerSize: 8px;
     text-transform: none;
   }
 }
-
-.StaticImageResponse--input {
-  width: 100%;
-}
-
-.ExportImageResult--url {
-  @include inline-block();
-  width: 400px;
-  vertical-align: top;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-}

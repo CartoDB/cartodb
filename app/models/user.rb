@@ -93,16 +93,21 @@ class User < Sequel::Model
       errors.add(:password, "is not confirmed") unless password == password_confirmation
     end
     validate_password_change
-    if organization.present?
-      if new?
-        errors.add(:organization, "not enough seats") if organization.users.count >= organization.seats
-        errors.add(:quota_in_bytes, "not enough disk quota") if quota_in_bytes.to_i + organization.assigned_quota > organization.quota_in_bytes
-      else
-        # Organization#assigned_quota includes the OLD quota for this user,
-        # so we have to ammend that in the calculation:
-        errors.add(:quota_in_bytes, "not enough disk quota") if quota_in_bytes.to_i + organization.assigned_quota - initial_value(:quota_in_bytes) > organization.quota_in_bytes
-      end
+
+    organization_validation if organization.present?
+  end
+
+  def organization_validation
+    if new?
+      errors.add(:organization, "not enough seats") if organization.users.count >= organization.seats
+      errors.add(:quota_in_bytes, "not enough disk quota") if quota_in_bytes.to_i + organization.assigned_quota > organization.quota_in_bytes
+    else
+      # Organization#assigned_quota includes the OLD quota for this user,
+      # so we have to ammend that in the calculation:
+      errors.add(:quota_in_bytes, "not enough disk quota") if quota_in_bytes.to_i + organization.assigned_quota - initial_value(:quota_in_bytes) > organization.quota_in_bytes
     end
+
+    organization.validate_user(self, errors)
   end
 
   def public_user_roles

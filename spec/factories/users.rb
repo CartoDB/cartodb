@@ -34,6 +34,13 @@ FactoryGirl.define do
     factory :user_with_private_tables, traits: [:enabled, :private_tables]
     factory :admin, traits: [:admin]
 
+    factory :valid_user do
+      password 'kkkkkkkkk'
+      password_confirmation 'kkkkkkkkk'
+      salt 'kkkkkkkkk'
+      crypted_password 'kkkkkkkkk'
+    end
+
   end
 
 end

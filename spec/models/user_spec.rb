@@ -176,6 +176,41 @@ describe User do
       organization.destroy
     end
 
+    describe 'organization email whitelisting' do
+
+      before(:each) do
+        @organization = create_org('testorg', 10.megabytes, 1)
+      end
+
+      after(:each) do
+        @organization.destroy
+      end
+
+      it 'valid_user is valid' do
+        user = FactoryGirl.build(:valid_user)
+        user.valid?.should == true
+      end
+
+      it 'user email is valid if organization has not whitelisted domains' do
+        user = FactoryGirl.build(:valid_user, organization: @organization)
+        user.valid?.should == true
+      end
+
+      it 'user email is not valid if organization has whitelisted domains and email is not under that domain' do
+        @organization.whitelisted_email_domains = [ 'organization.org' ]
+        user = FactoryGirl.build(:valid_user, organization: @organization)
+        user.valid?.should == false
+        user.errors[:email].should_not be_nil
+      end
+
+      it 'user email is valid if organization has whitelisted domains and email is under that domain' do
+        user = FactoryGirl.build(:valid_user, organization: @organization)
+        @organization.whitelisted_email_domains = [ user.email.split('@')[1] ]
+        user.valid?.should == true
+        user.errors[:email].should == []
+      end
+    end
+
     describe 'when updating user quota' do
       it 'should be valid if his organization has enough disk space' do
         organization = create_organization_with_users(quota_in_bytes: 70.megabytes)

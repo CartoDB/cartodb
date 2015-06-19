@@ -4,6 +4,7 @@ module CartoDB
 
   ERROR_SOURCE_CARTODB = 'cartodb'
   ERROR_SOURCE_USER = 'user'
+  ERROR_SOURCE_EXTERNAL = 'external'
 
 # @see services/importer/lib/importer/exceptions.rb For mapping between exceptions and errors
   IMPORTER_ERROR_CODES = {
@@ -52,6 +53,11 @@ module CartoDB
       what_about: 'You requested too many nodes. Either request a smaller area, or use planet.osm.',
       source: ERROR_SOURCE_USER
     },
+    1009 => {
+      title: 'Twitter GNIP Server Error',
+      what_about: "There was an error connecting to Twitter's GNIP service to retrieve your tweets. The server might be temporally unavaliable, please try again later.",
+      source: ERROR_SOURCE_EXTERNAL
+    },
     1010 => {
       title: 'Private Google Spreadsheet',
       what_about: "This spreadsheet seems to be private. Please check in Google Spreadsheet sharing options that the file is public or accessible for those who know the link.",
@@ -64,8 +70,8 @@ module CartoDB
     },
     1012 => {
       title: 'Error connecting to datasource',
-      what_about: "There was an error trying to connect to the datasource. This might be caused due to a configuration problem, server being unavaliable, revoked access token or similar cause.",
-      source: ERROR_SOURCE_USER
+      what_about: "There was an error trying to connect to the datasource. If this problem stays, please contact <a href='mailto:support@cartodb.com?subject=Error connecting to datasource'>support@cartodb.com</a>.",
+      source: ERROR_SOURCE_EXTERNAL
     },
     1013 => {
       title: 'Invalid ArcGIS version',

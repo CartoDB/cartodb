@@ -11,6 +11,14 @@ class UserMailer < ActionMailer::Base
          :subject => "You have been invited to CartoDB organization '#{@organization.name}'"
   end
 
+  def mail_validation(user)
+    @user = user
+    @organization = user.organization
+    @owner = @organization.owner
+    @link = "#{CartoDB.base_url(@organization.name, @user.username)}#{CartoDB.path(self, 'enable_account_token_show', {id: @user.enable_account_token})}"
+    mail :to => @user.email, :subject => "CartoDB account validation"
+  end
+
   def share_table(table, user)
     @table_visualization = table
     @user = user

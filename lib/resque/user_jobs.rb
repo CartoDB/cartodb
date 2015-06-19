@@ -59,6 +59,16 @@ module Resque
         end
       end
 
+      module MailValidation
+        extend ::Resque::Metrics
+        @queue = :users
+
+        def self.perform(user_id)
+          u = User.where(id: user_id).first
+          UserMailer.mail_validation(u).deliver
+        end
+      end
+
       module ShareVisualization
         extend ::Resque::Metrics
         @queue = :users

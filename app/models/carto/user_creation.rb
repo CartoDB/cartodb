@@ -30,17 +30,24 @@ class Carto::UserCreation < ActiveRecord::Base
       self.fail_user_creation
     end
 
-    after_transition :enqueuing => :creating_user, :do => :initialize_user
-    after_transition :creating_user => :saving_user, :do => :save_user
-    after_transition :saving_user => :creating_user_in_central, :do => :create_in_central
-    after_transition :creating_user_in_central => :success, :do => :close_creation
+    after_transition any => :creating_user, :do => :initialize_user
+    after_transition any => :saving_user, :do => :save_user
+    after_transition any => :creating_user_in_central, :do => :create_in_central
+    after_transition any => :sending_validation_email, :do => :send_validation_email
+
+    before_transition any => :success, :do => :close_creation
     after_transition any => :failure, :do => :clean_user
 
     event :next_creation_step do
       transition :enqueuing => :creating_user,
           :creating_user => :saving_user,
-          :saving_user => :creating_user_in_central,
-          :creating_user_in_central => :success
+          :saving_user => :creating_user_in_central
+
+      transition :creating_user_in_central => :success, :unless => :requires_validation_email?
+
+      transition :creating_user_in_central => :sending_validation_email, :if => :requires_validation_email?
+
+      transition :sending_validation_email => :success
     end
 
     event :fail_user_creation do
@@ -62,6 +69,10 @@ class Carto::UserCreation < ActiveRecord::Base
   end
 
   private
+
+  def requires_validation_email?
+    self.google_sign_in != true
+  end
 
   def log_transition_begin
     log_transition('Beginning')
@@ -101,6 +112,10 @@ class Carto::UserCreation < ActiveRecord::Base
     @user.create_in_central
   rescue => e
     handle_failure(e)
+  end
+
+  def send_validation_email
+    ::Resque.enqueue(::Resque::UserJobs::Mail::MailValidation, @user.id)
   end
 
   def close_creation

@@ -10,9 +10,9 @@
 }
 .MergeDatasets-list {
   width: 420px;
-  margin-bottom: 128px; // compensate for static dialog footer
+  margin-bottom: 190px; // compensate for fixed dialog footer + fixed stuff above footer
 }
-.MergeDatasets-fixAboveFooter {
+.MergeDatasets-fixedAboveFooter {
   position: fixed;
   bottom: 90px; //to appear above fixed footer
   background: $cStructure-grayBkg;

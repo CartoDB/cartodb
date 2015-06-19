@@ -10,6 +10,17 @@
 @import "old_common/mixins";
 
 
+.HelperSouth,
+.HelperEast,
+.HelperWest,
+.HelperNorth {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background:rgba(#000, 0.6);
+  z-index: 104;
+}
+
 .CanvasExport {
   position:absolute;
   border: 1px dashed #fff;
@@ -41,7 +52,7 @@ $resizeHandlerSize: 8px;
   background: linear-gradient(to bottom, rgba(254,254,254,1) 0%,rgba(229,229,229,1) 100%); /* W3C */
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fefefe', endColorstr='#e5e5e5',GradientType=0 ); /* IE6-9 */
 
-  z-index: 99999;
+  z-index: 104;
 }
 .ui-resizable-disabled .ui-resizable-handle, 
 .ui-resizable-autohide .ui-resizable-handle { 
@@ -69,6 +80,7 @@ $resizeHandlerSize: 8px;
   text-align: center;
   width: 100%;
   bottom: 25px;
+  z-index: 105;
 }
 
 .StaticImageDialog--dimensions  {

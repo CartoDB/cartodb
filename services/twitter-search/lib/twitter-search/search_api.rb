@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require_relative '../../../../lib/carto/http/client'
+
 # @see http://support.gnip.com/apis/search_api/
 module CartoDB
   module TwitterSearch
@@ -38,7 +40,7 @@ module CartoDB
 
       # @param config Hash
       # @param redis_storage Redis|nil (optional)
-      def initialize(config, redis_storage = nil)
+      def initialize(config, redis_storage = nil, pre_json_parse_cleaner = nil)
         raise TwitterConfigException.new(CONFIG_AUTH_REQUIRED) if config[CONFIG_AUTH_REQUIRED].nil?
         if config[CONFIG_AUTH_REQUIRED]
           raise TwitterConfigException.new(CONFIG_AUTH_USERNAME) if config[CONFIG_AUTH_USERNAME].nil? or config[CONFIG_AUTH_USERNAME].empty?
@@ -55,6 +57,8 @@ module CartoDB
         @config[CONFIG_REDIS_RL_WAIT_SECS] = REDIS_RL_WAIT_SECS if config[CONFIG_REDIS_RL_WAIT_SECS].nil?
 
         @redis = redis_storage
+
+        @pre_json_parse_cleaner = pre_json_parse_cleaner if (!pre_json_parse_cleaner.nil? && pre_json_parse_cleaner.respond_to?(:clean_string))
 
         @config[CONFIG_REDIS_RL_ACTIVE] = false if @redis.nil?
 
@@ -103,11 +107,17 @@ module CartoDB
           end
         end
 
-        response = Typhoeus.get(@config[CONFIG_SEARCH_URL], http_options(params))
+        http_client = Carto::Http::Client.get('search_api')
+        response = http_client.get(@config[CONFIG_SEARCH_URL], http_options(params))
 
         raise TwitterHTTPException.new(response.code, response.effective_url, response.body) unless response.code == 200
 
-        ::JSON.parse(response.body, symbolize_names: true) unless response.body.nil?
+        unless response.body.nil?
+          ::JSON.parse(
+            @pre_json_parse_cleaner.nil? ? response.body : @pre_json_parse_cleaner.clean_string(response.body), 
+            symbolize_names: true
+            )
+        end
       end
 
       private

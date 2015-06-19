@@ -21,8 +21,7 @@ describe Visualization::Locator do
   end
 
   before do
-    # Using Mocha stubs until we update RSpec (@see http://gofreerange.com/mocha/docs/Mocha/ClassMethods.html)
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
 
     @db = Rails::Sequel.connection
     Sequel.extension(:pagination)

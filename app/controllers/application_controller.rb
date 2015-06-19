@@ -189,7 +189,11 @@ class ApplicationController < ActionController::Base
     rewrite_url = !request.params[:dont_rewrite].present?
     if rewrite_url && !current_user.nil? && !current_user.organization.nil? &&
         CartoDB.subdomain_from_request(request) == current_user.username
-      redirect_to CartoDB.base_url(current_user.organization.name, current_user.username) << request.fullpath
+      if request.fullpath == '/'
+        redirect_to CartoDB.url(self, 'dashboard')
+      else
+        redirect_to CartoDB.base_url(current_user.organization.name, current_user.username) << request.fullpath
+      end
     end
   end
 

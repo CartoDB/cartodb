@@ -36,6 +36,8 @@ class Carto::User < ActiveRecord::Base
                    "users.api_key, users.dynamic_cdn_enabled, users.database_schema, users.database_name, users.name," +
                    "users.disqus_shortname, users.account_type, users.twitter_username, users.google_maps_key"
 
+  SELECT_WITH_DATABASE = DEFAULT_SELECT + ", users.quota_in_bytes, users.database_host"
+
   attr_reader :password
 
   # TODO: From sequel, can be removed once finished
@@ -123,7 +125,7 @@ class Carto::User < ActiveRecord::Base
     "\"#{self.database_schema}\""
   end
 
- # returns google maps api key. If the user is in an organization and 
+  # returns google maps api key. If the user is in an organization and 
   # that organization has api key it's used
   def google_maps_api_key
     if has_organization?
@@ -131,6 +133,27 @@ class Carto::User < ActiveRecord::Base
     else
       self.google_maps_key
     end
+  end
+
+  # TODO: this is the correct name for what's stored in the model, refactor changing that name
+  alias_method :google_maps_query_string, :google_maps_api_key
+
+  # Returns the google maps private key. If the user is in an organization and
+  # that organization has a private key, the org's private key is returned.
+  def google_maps_private_key
+    if has_organization?
+      organization.google_maps_private_key || read_attribute(:google_maps_private_key)
+    else
+      read_attribute(:google_maps_private_key)
+    end
+  end
+
+  def google_maps_geocoder_enabled?
+    google_maps_private_key.present? && google_maps_client_id.present?
+  end
+
+  def google_maps_client_id
+    Rack::Utils.parse_nested_query(google_maps_query_string)['client'] if google_maps_query_string
   end
 
   # returnd a list of basemaps enabled for the user
@@ -172,6 +195,7 @@ class Carto::User < ActiveRecord::Base
     synchronization_oauths.where(service: service).first
   end
 
+  # INFO: don't use, use CartoDB::OAuths#add instead
   def add_oauth(service, token)
     # INFO: this should be the right way, but there's a problem with pgbouncer:
     # ActiveRecord::StatementInvalid: PG::Error: ERROR:  prepared statement "a1" does not exist
@@ -179,6 +203,7 @@ class Carto::User < ActiveRecord::Base
     #    service:  service,
     #    token:    token
     #)
+    # INFO: even this fails eventually, th the same error. See https://github.com/CartoDB/cartodb/issues/4003
     synchronization_oauth = Carto::SynchronizationOauth.new({
       user_id: self.id,
       service: service,

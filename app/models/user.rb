@@ -12,6 +12,7 @@ require_relative '../services/visualization/common_data_service'
 require_relative './external_data_import'
 require_relative './feature_flag'
 require_relative '../../lib/cartodb/stats/api_calls'
+require_relative '../../lib/carto/http/client'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -66,6 +67,8 @@ class User < Sequel::Model
   MIN_PASSWORD_LENGTH = 6
 
   GEOCODING_BLOCK_SIZE = 1000
+
+  TRIAL_DURATION_DAYS = 15
 
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
@@ -128,7 +131,6 @@ class User < Sequel::Model
     if self.organization_user?
       if new? || column_changed?(:organization_id)
         self.twitter_datasource_enabled = self.organization.twitter_datasource_enabled
-        self.new_dashboard_enabled      = self.organization.new_dashboard_enabled
       end
       self.max_layers ||= 6
       self.private_tables_enabled ||= true
@@ -683,7 +685,7 @@ class User < Sequel::Model
   end
 
   def reload_avatar
-    request = Typhoeus::Request.new(
+    request = http_client.request(
       self.gravatar(protocol = 'http://', 128, default_image = '404'),
       method: :get
     )
@@ -759,8 +761,8 @@ class User < Sequel::Model
   end
 
   def trial_ends_at
-    if account_type.to_s.downcase == 'magellan' && upgraded_at && upgraded_at + 15.days > Date.today
-      upgraded_at + 15.days
+    if account_type.to_s.downcase == 'magellan' && upgraded_at && upgraded_at + TRIAL_DURATION_DAYS.days > Date.today
+      upgraded_at + TRIAL_DURATION_DAYS.days
     else
       nil
     end
@@ -868,12 +870,8 @@ class User < Sequel::Model
 
   # Should return the number of tweets imported by this user for the specified period of time, as an integer
   def get_twitter_imports_count(options = {})
-    date_to = (options[:to] ? options[:to].to_date : Date.today)
-    date_from = (options[:from] ? options[:from].to_date : self.last_billing_cycle)
-    self.search_tweets_dataset
-        .where(state: ::SearchTweet::STATE_COMPLETE)
-        .where('created_at >= ? AND created_at <= ?', date_from, date_to + 1.days)
-        .sum("retrieved_items".lit).to_i
+    date_from, date_to = quota_dates(options)
+    SearchTweet.get_twitter_imports_count(self.search_tweets_dataset, date_from, date_to)
   end
 
   # Returns an array representing the last 30 days, populated with api_calls
@@ -883,10 +881,8 @@ class User < Sequel::Model
   end
 
   def get_geocoding_calls(options = {})
-    date_to = (options[:to] ? options[:to].to_date : Date.today)
-    date_from = (options[:from] ? options[:from].to_date : self.last_billing_cycle)
-    self.geocodings_dataset.where(kind: 'high-resolution').where('created_at >= ? and created_at <= ?', date_from, date_to + 1.days)
-      .sum("processed_rows + cache_hits".lit).to_i
+    date_from, date_to = quota_dates(options)
+    Geocoding.get_geocoding_calls(self.geocodings_dataset, date_from, date_to)
   end # get_geocoding_calls
 
   def effective_twitter_block_price
@@ -935,7 +931,7 @@ class User < Sequel::Model
     request_body.gsub!("$CDB_SUBDOMAIN$", self.username)
     request_body.gsub!("\"$FROM$\"", from_date)
     request_body.gsub!("\"$TO$\"", to_date)
-    request = Typhoeus::Request.new(
+    request = http_client.request(
       request_url,
       method: :post,
       headers: { "Content-Type" => "application/json" },
@@ -982,7 +978,7 @@ class User < Sequel::Model
 
   def last_billing_cycle
     day = period_end_date.day rescue 29.days.ago.day
-    date = (day > Date.today.day ? Date.today<<1 : Date.today)
+    date = (day > Date.today.day ? Date.today << 1 : Date.today)
     begin
       Date.parse("#{date.year}-#{date.month}-#{day}")
     rescue ArgumentError
@@ -2188,7 +2184,7 @@ TRIGGER
   end
 
   def enable_remote_db_user
-    request = Typhoeus::Request.new(
+    request = http_client.request(
       "#{self.database_host}:#{Cartodb.config[:signups]["service"]["port"]}/scripts/activate_db_user",
       method: :post,
       headers: { "Content-Type" => "application/json" }
@@ -2271,6 +2267,27 @@ TRIGGER
     end
   end
 
+  # TODO: this is the correct name for what's stored in the model, refactor changing that name
+  alias_method :google_maps_query_string, :google_maps_api_key
+
+  # Returns the google maps private key. If the user is in an organization and
+  # that organization has a private key, the org's private key is returned.
+  def google_maps_private_key
+    if has_organization?
+      organization.google_maps_private_key || super
+    else
+      super
+    end
+  end
+
+  def google_maps_geocoder_enabled?
+    google_maps_private_key.present? && google_maps_client_id.present?
+  end
+
+  def google_maps_client_id
+    Rack::Utils.parse_nested_query(google_maps_query_string)['client'] if google_maps_query_string
+  end
+
   # returnd a list of basemaps enabled for the user
   # when google map key is set it gets the basemaps inside the group "GMaps"
   # if not it get everything else but GMaps in any case GMaps and other groups can work together
@@ -2303,6 +2320,16 @@ TRIGGER
   end
 
   private
+
+  def quota_dates(options)
+    date_to = (options[:to] ? options[:to].to_date : Date.today)
+    date_from = (options[:from] ? options[:from].to_date : self.last_billing_cycle)
+    return date_from, date_to
+  end
+
+  def http_client
+    @http_client ||= Carto::Http::Client.get('old_user', log_requests: true)
+  end
 
   # INFO: assigning to owner is necessary because of payment reasons
   def assign_search_tweets_to_organization_owner

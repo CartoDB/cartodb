@@ -5,6 +5,7 @@ require_relative '../spec_helper'
 describe Carto::Api::UserPresenter do
 
   it "Compares old and new ways of 'presenting' user data" do
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
 
     # Non-org user
     user = create_user({ 
@@ -94,7 +95,8 @@ describe Carto::Api::UserPresenter do
   protected
 
   def compare_data(old_data, new_data, org_user = false)
-
+    # INFO: new organization presenter now doesn't contain users
+    old_data[:organization].delete(:users) if old_data[:organization]
     
     # TODO: This fails at CI server, until there's time to research...
     #new_data.should eq old_data
@@ -164,8 +166,6 @@ describe Carto::Api::UserPresenter do
       new_data[:organization][:twitter_username].should == old_data[:organization][:twitter_username]
       new_data[:organization][:updated_at].should == old_data[:organization][:updated_at]
       #owner is excluded from the users list
-      new_data[:organization][:users].count.should eq 1
-      new_data[:organization][:users].should == old_data[:organization][:users]
       new_data[:organization][:website].should == old_data[:organization][:website]
       new_data[:organization][:avatar_url].should == old_data[:organization][:avatar_url]
     end

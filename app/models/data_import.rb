@@ -173,7 +173,6 @@ class DataImport < Sequel::Model
       self.error_code = 1002
       self.state      = STATE_FAILURE
       save
-      return self
     end
 
     success ? handle_success : handle_failure
@@ -724,7 +723,8 @@ class DataImport < Sequel::Model
                   'file_stats'        => ::JSON.parse(self.stats),
                   'resque_ppid'       => self.resque_ppid,
                   'user_timeout'      => ::DataImport.http_timeout_for(current_user),
-                  'error_source'      => get_error_source
+                  'error_source'      => get_error_source,
+                  'id'                => self.id
                  }
     if !self.extra_options.nil?
       import_log['extra_options'] = self.extra_options

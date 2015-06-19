@@ -27,11 +27,13 @@ class UsersController < ApplicationController
       @user.email = params[:user][:email]
       @user.password = params[:user][:password]
       @user.password_confirmation = params[:user][:password]
-      @user.organization = @organization
     end
+    @user.organization = @organization
 
     if @user.valid?
-      ::Resque.enqueue(::Resque::UserJobs::Signup::NewUser, @user.username, @user.email, @user.password, @user.organization_id, @user.google_sign_in)
+      user_creation = Carto::UserCreation.new_user_signup(@user)
+      user_creation.save
+      ::Resque.enqueue(::Resque::UserJobs::Signup::NewUser, user_creation.id)
       flash.now[:success] = 'User creation in progress'
       render action: 'signup_confirmation'
     else

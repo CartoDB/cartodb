@@ -343,10 +343,16 @@ class User < Sequel::Model
 
   def drop_database_and_user
     conn = self.in_database(as: :cluster_admin)
-    conn.run("UPDATE pg_database SET datallowconn = 'false' WHERE datname = '#{database_name}'")
-    User.terminate_database_connections(database_name, database_host)
-    conn.run("DROP DATABASE \"#{database_name}\"")
-    conn.run("DROP USER \"#{database_username}\"")
+
+    if !database_name.nil? && !database_name.empty?
+      conn.run("UPDATE pg_database SET datallowconn = 'false' WHERE datname = '#{database_name}'")
+      User.terminate_database_connections(database_name, database_host)
+      conn.run("DROP DATABASE IF EXISTS \"#{database_name}\"")
+    end
+
+    if !database_username.nil? && !database_username.empty?
+      conn.run("DROP USER IF EXISTS \"#{database_username}\"")
+    end
   end
 
   def self.terminate_database_connections(database_name, database_host)

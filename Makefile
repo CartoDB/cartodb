@@ -144,7 +144,8 @@ WORKING_SPECS_8 = \
   spec/rspec_configuration.rb \
   spec/requests/api/permissions_controller_spec.rb \
   spec/models/shared_entity_spec.rb \
-	spec/requests/users_controller_spec.rb \
+	spec/requests/signup_controller_spec.rb \
+	spec/requests/account_tokens_controller_spec.rb \
   spec/requests/superadmin/users_spec.rb \
   spec/requests/superadmin/organizations_spec.rb \
   spec/requests/api/visualizations_spec.rb \
@@ -172,6 +173,7 @@ WORKING_SPECS_9 = \
 WORKING_SPECS_10 = \
 	spec/models/carto/user_service_spec.rb \
 	spec/models/carto/user_spec.rb \
+	spec/models/carto/user_creation_spec.rb \
 	spec/models/carto/organization_spec.rb \
   $(NULL)
 

@@ -4,7 +4,7 @@ GIT
   specs:
     vizzuality-sequel-rails (0.3.7)
       railties (~> 3.2.0)
-      sequel (~> 3.28)
+      sequel (~> 4.23)
 
 GEM
   remote: http://rubygems.org/
@@ -264,7 +264,7 @@ GEM
       multi_json (~> 1.0)
       rubyzip (~> 1.0)
       websocket (~> 1.0)
-    sequel (3.42.0)
+    sequel (4.23.0)
     sequel_pg (1.6.3)
       pg (>= 0.8.0)
       sequel (>= 3.39.0)
@@ -376,7 +376,7 @@ DEPENDENCIES
   rspec-rails (= 2.10.1)
   ruby-prof (= 0.15.1)
   selenium-webdriver (>= 2.5.0)
-  sequel (= 3.42.0)
+  sequel (= 4.23.0)
   sequel_pg (= 1.6.3)
   state_machine (= 1.1.2)
   statsd-client (= 0.0.7)

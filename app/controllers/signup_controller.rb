@@ -4,7 +4,7 @@ require_dependency 'google_plus_config'
 class SignupController < ApplicationController
   layout 'frontend'
 
-  ssl_required :signup
+  ssl_required :signup, :create
 
   before_filter :load_organization
   before_filter :initialize_google_plus_config

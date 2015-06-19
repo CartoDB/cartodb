@@ -11,8 +11,8 @@ CartoDB::Application.routes.draw do
   get   '/(user/:user_domain)(u/:user_domain)'                 => 'admin/pages#public', as: :root
   root :to => 'admin/pages#index'
 
-  get   '(/user/:user_domain)(/u/:user_domain)/organization_signup'           => 'signup#signup',     as: :signup
-  post   '(/user/:user_domain)(/u/:user_domain)/organization_signup'           => 'signup#create',  as: :signup_organization_user
+  get   '(/user/:user_domain)(/u/:user_domain)/signup'           => 'signup#signup',     as: :signup
+  post   '(/user/:user_domain)(/u/:user_domain)/signup'           => 'signup#create',  as: :signup_organization_user
 
   get   '(/user/:user_domain)(/u/:user_domain)/enable_account_token/:id' => 'account_tokens#enable',     as: :enable_account_token_show
 

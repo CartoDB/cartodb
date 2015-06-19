@@ -41,6 +41,10 @@
   width: 100%;
   border-bottom: 1px solid $cStructure-mainLine;
 }
+.List-rowItem--withoutSideMargins {
+  margin-left: 0;
+  margin-right: 0;
+}
 .List-row.is-selected > .List-rowItem { border-bottom: 1px solid transparent }
 .List-rowItem.List-rowItem--tight {
   padding-top: 16px;

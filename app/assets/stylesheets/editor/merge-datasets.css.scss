@@ -10,8 +10,29 @@
 }
 .MergeDatasets-list {
   width: 420px;
-  margin-bottom: 120px; // compensate for static dialog footer
+  margin-bottom: 128px; // compensate for static dialog footer
 }
+.MergeDatasets-fixAboveFooter {
+  position: fixed;
+  bottom: 90px; //to appear above fixed footer
+  background: $cStructure-grayBkg;
+  margin-bottom: 0;
+
+  // same as .CreateDialog-footerShadow but using :before to not have to add more markup
+  &:before {
+    content: '';
+    position: absolute;
+    top: -18px;
+    left: 50%;
+    display: block;
+    width: 1020px;
+    height: 18px;
+    margin-left: -510px;
+    @include background-gradient(rgba(#F9F9F9,0),rgba(#F9F9F9,1));
+    z-index: 2;
+  }
+}
+
 .MergeDatasets-instructions {
   width: 630px;
   margin: 0 auto $sMargin-section auto;

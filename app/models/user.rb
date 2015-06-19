@@ -1034,7 +1034,7 @@ class User < Sequel::Model
 
 
   def enabled?
-    self.enabled
+    self.enabled && self.enable_account_token.nil?
   end
 
   def disabled?

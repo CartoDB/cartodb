@@ -86,7 +86,7 @@
           zoomControl: false,
           center: [43, 0],
           zoom: 3,
-            scrollWheelZoom: false
+          scrollWheelZoom: false
         })
 
         map.fitBounds(bbox);
@@ -100,7 +100,8 @@
         cartodb.createLayer(map, {
           user_name: account,
           type: 'cartodb',
-          sublayers: [{ sql: sql, cartocss: cartocss }]
+          sublayers: [{ sql: sql, cartocss: cartocss }],
+          interactivity: 'cartodb_id'
         })
         .addTo(map)
       }

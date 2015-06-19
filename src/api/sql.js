@@ -453,7 +453,8 @@
          '),',
          'buckets as (',
             'select CDB_QuantileBins(array_agg({{column}}::numeric), 7) as quantiles, ',
-            'select CDB_EqualIntervalBins(array_agg({{column}}::numeric), 7) as equalint '
+            'select CDB_EqualIntervalBins(array_agg({{column}}::numeric), 7) as equalint, '
+            'select CDB_JenksBins(array_agg({{column}}::numeric), 7) as jenks'
             'from ({{sql}}) _table_sql where {{column}} is not null',
          ')',
          'select * from histogram, stats, buckets'
@@ -482,6 +483,7 @@
           min: row.min,
           quantiles: row.quantiles,
           equalint: row.equalint,
+          jenks: row.jenks,
           dist_type: row.dist_type
         });
       });

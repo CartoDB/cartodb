@@ -33,7 +33,6 @@ class Carto::UserCreation < ActiveRecord::Base
     after_transition any => :creating_user, :do => :initialize_user
     after_transition any => :saving_user, :do => :save_user
     after_transition any => :creating_user_in_central, :do => :create_in_central
-    after_transition any => :sending_validation_email, :do => :send_validation_email
 
     before_transition any => :success, :do => :close_creation
     after_transition any => :failure, :do => :clean_user
@@ -41,13 +40,8 @@ class Carto::UserCreation < ActiveRecord::Base
     event :next_creation_step do
       transition :enqueuing => :creating_user,
           :creating_user => :saving_user,
-          :saving_user => :creating_user_in_central
-
-      transition :creating_user_in_central => :success, :unless => :requires_validation_email?
-
-      transition :creating_user_in_central => :sending_validation_email, :if => :requires_validation_email?
-
-      transition :sending_validation_email => :success
+          :saving_user => :creating_user_in_central,
+          :creating_user_in_central => :success
     end
 
     event :fail_user_creation do
@@ -112,10 +106,6 @@ class Carto::UserCreation < ActiveRecord::Base
     @user.create_in_central
   rescue => e
     handle_failure(e)
-  end
-
-  def send_validation_email
-    ::Resque.enqueue(::Resque::UserJobs::Mail::MailValidation, @user.id)
   end
 
   def close_creation

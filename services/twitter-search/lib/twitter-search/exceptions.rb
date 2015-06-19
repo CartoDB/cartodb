@@ -28,6 +28,9 @@ module CartoDB
       end
     end
 
+    class TwitterServerErrorException < TwitterHTTPException
+    end
+
   end
 end
 

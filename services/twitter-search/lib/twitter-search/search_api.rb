@@ -110,7 +110,11 @@ module CartoDB
         http_client = Carto::Http::Client.get('search_api')
         response = http_client.get(@config[CONFIG_SEARCH_URL], http_options(params))
 
-        raise TwitterHTTPException.new(response.code, response.effective_url, response.body) unless response.code == 200
+        if response.code >= 500 && response.code < 600
+          raise TwitterServerErrorException.new(response.code, response.effective_url, response.body) 
+        elsif response.code != 200
+          raise TwitterHTTPException.new(response.code, response.effective_url, response.body)
+        end
 
         unless response.body.nil?
           ::JSON.parse(

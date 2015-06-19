@@ -54,8 +54,8 @@ module CartoDB
       source: ERROR_SOURCE_USER
     },
     1009 => {
-      title: 'Twitter GNIP Server Error',
-      what_about: "There was an error connecting to Twitter's GNIP service to retrieve your tweets. The server might be temporally unavaliable, please try again later.",
+      title: 'Twitter Server Error',
+      what_about: "There was an error connecting to Twitter service to retrieve your tweets. The server might be temporally unavaliable, please try again later.",
       source: ERROR_SOURCE_EXTERNAL
     },
     1010 => {

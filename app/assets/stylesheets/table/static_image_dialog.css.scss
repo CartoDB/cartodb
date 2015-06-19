@@ -15,12 +15,20 @@
   border: 1px dashed #fff;
   &.draggable {
     z-index: 1000000000;
+    cursor:move;
   }
 }
 
 $resizeHandlerSize: 8px;
-.ui-resizable { position: relative;}
-.ui-resizable-handle { position: absolute; width: $resizeHandlerSize; height: $resizeHandlerSize; z-index: 99999; display: block;
+
+.ui-resizable { 
+  position: relative;
+}
+.ui-resizable-handle { 
+  position: absolute;
+  width: $resizeHandlerSize;
+  height: $resizeHandlerSize;
+  display: block;
 
   @include box-shadow(1px 1px 2px rgba(#000, .5));
 
@@ -33,19 +41,22 @@ $resizeHandlerSize: 8px;
   background: linear-gradient(to bottom, rgba(254,254,254,1) 0%,rgba(229,229,229,1) 100%); /* W3C */
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fefefe', endColorstr='#e5e5e5',GradientType=0 ); /* IE6-9 */
 
+  z-index: 99999;
 }
 .ui-resizable-disabled .ui-resizable-handle, 
-.ui-resizable-autohide .ui-resizable-handle { display: none; }
+.ui-resizable-autohide .ui-resizable-handle { 
+  display: none;
+}
 
 .ui-resizable-n { cursor: ns-resize; top: -5px; left: 50%; margin-left: -4px; }
 .ui-resizable-s { cursor: ns-resize; bottom: -5px; left: 50%; margin-left: -4px; }
-.ui-resizable-e { cursor: e-resize; right: -5px; top: 50%; margin-top: -4px; }
-.ui-resizable-w { cursor: w-resize; left: -5px; top: 50%; margin-top: -4px; }
+.ui-resizable-e { cursor: ew-resize; right: -5px; top: 50%; margin-top: -4px; }
+.ui-resizable-w { cursor: ew-resize; left: -5px; top: 50%; margin-top: -4px; }
 
-.ui-resizable-se { cursor: se-resize; right: -4px; bottom: -4px; }
-.ui-resizable-sw { cursor: sw-resize; left: -4px;  bottom: -4px; }
-.ui-resizable-nw { cursor: nw-resize; left: -4px;  top: -4px;  }
-.ui-resizable-ne { cursor: ne-resize; right: -4px; top: -4px; }
+.ui-resizable-se { cursor: nwse-resize; right: -4px; bottom: -4px; }
+.ui-resizable-sw { cursor: nesw-resize; left: -4px;  bottom: -4px; }
+.ui-resizable-nw { cursor: nwse-resize; left: -4px;  top: -4px;  }
+.ui-resizable-ne { cursor: nesw-resize; right: -4px; top: -4px; }
 
 .StaticImageDialog {
   position: absolute;
@@ -79,13 +90,13 @@ $resizeHandlerSize: 8px;
   background: #fff;
   font-size: 12px;
   font-weight:normal;
-  padding: 3px 5px;
+  padding: 4px 5px;
   @include border-radius(3px);
   height: auto;
   border:none;
 
   &:hover {
-    background:#f1f1f1;
+    background:#ddd;
   }
 
   span {

@@ -55,7 +55,7 @@ class UsersController < ApplicationController
   def load_organization
     subdomain = CartoDB.extract_subdomain(request)
     @organization = ::Organization.where(name: subdomain).first if subdomain
-    render_404 and return false unless @organization
+    render_404 and return false unless @organization && @organization.signup_page_enabled
   end
 
 end

@@ -12,7 +12,7 @@
       <% if @enable_account_link.nil? %>
         <a href="<%= @link %>" style="color: #fff; text-decoration: none;">Go to your dashboard</a>
       <% else %>
-        <a href="<%= @link %>" style="color:#ffffff;text-decoration:none" target="_blank">Activate your account</a>
+        <a href="<%= @enable_account_link %>" style="color:#ffffff;text-decoration:none" target="_blank">Activate your account</a>
       <% end %>
     </td>
     <td style="background: url(http://cartodb.s3.amazonaws.com/mails/editor/button-bg.png) no-repeat right; padding: 10px 0; font-size: 16px; width: 21px;">&nbsp;</td>

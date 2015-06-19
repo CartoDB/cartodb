@@ -433,10 +433,10 @@ module CartoDB
               raise InvalidInputDataError.new(exception.to_s, DATASOURCE_NAME)
             end
             if exception.http_code == 429
-              raise CartoDB::Datasources::ResponseError.new(exception.to_s, DATASOURCE_NAME)
+              raise ResponseError.new(exception.to_s, DATASOURCE_NAME)
             end
-            if [502, 503].include?(exception.http_code)
-              raise ExternalServiceError.new(exception.to_s, DATASOURCE_NAME)
+            if exception.http_code >= 500 && exception.http_code < 600
+              raise GNIPServiceError.new(exception.to_s, DATASOURCE_NAME)
             end
             raise DatasourceBaseError.new(exception.to_s, DATASOURCE_NAME)
           end

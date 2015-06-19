@@ -7,6 +7,8 @@ class Carto::UserCreation < ActiveRecord::Base
   belongs_to :log, class_name: Carto::Log
 
   def self.new_user_signup(user)
+    raise 'User needs an organization' unless user.organization
+
     user_creation = Carto::UserCreation.new
     user_creation.username = user.username
     user_creation.email = user.email
@@ -82,6 +84,7 @@ class Carto::UserCreation < ActiveRecord::Base
     @user.organization = ::Organization.where(id: self.organization_id).first
     @user.quota_in_bytes = self.quota_in_bytes unless self.quota_in_bytes.nil?
     @user.google_sign_in = self.google_sign_in
+    @user.enable_account_token = User.make_token unless @user.google_sign_in
   rescue => e
     handle_failure(e)
   end

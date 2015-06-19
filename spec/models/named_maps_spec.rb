@@ -678,7 +678,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
             method: 'open'
           },
           placeholders: {
-            layer1: {
+            layer0: {
               type: "number",
               default: 1
             }
@@ -695,7 +695,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
               {
                 type: "cartodb",
                 options: {
-                  sql: "WITH wrapped_query AS (select * from test2) SELECT * from wrapped_query where <%= layer1 %>=1",
+                  sql: "WITH wrapped_query AS (select * from test2) SELECT * from wrapped_query where <%= layer0 %>=1",
                   layer_name: "test2",
                   cartocss: "/** */",
                   cartocss_version: "2.1.1",
@@ -733,7 +733,9 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       named_maps_instance = derived_vis.send(:named_maps)
       template = CartoDB::NamedMapsWrapper::NamedMap.get_template_data(derived_vis, named_maps_instance)
 
-      template[:placeholders][:layer1].nil?.should eq false
+      # Because basemap layers don't count for placeholders
+      template[:placeholders][:layer0].nil?.should eq false
+      template[:placeholders][:layer1].nil?.should eq true
       template[:layergroup][:layers].size.should eq 2
       template[:layergroup][:layers][0][:type].should eq 'http'
       template[:layergroup][:layers][1][:type].should eq 'cartodb'
@@ -761,7 +763,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
             method: 'open'
           },
           placeholders: {
-            layer1: {
+            layer0: {
               type: "number",
               default: 1
             }
@@ -778,7 +780,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
               {
                 type: "cartodb",
                 options: {
-                  sql: "WITH wrapped_query AS (select * from test2) SELECT * from wrapped_query where <%= layer1 %>=1",
+                  sql: "WITH wrapped_query AS (select * from test2) SELECT * from wrapped_query where <%= layer0 %>=1",
                   layer_name: "test2",
                   cartocss: "/** */",
                   cartocss_version: "2.1.1",

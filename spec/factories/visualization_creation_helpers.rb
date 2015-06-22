@@ -70,6 +70,7 @@ shared_context 'organization with users helper' do
 
   before(:all) do
     @organization = test_organization.save
+    host! "#{@organization.name}.localhost.lan"
     @organization_2 = test_organization.save
 
     @org_user_1 = create_test_user("a#{random_username}")

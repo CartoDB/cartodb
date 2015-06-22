@@ -27,6 +27,7 @@ namespace :cartodb do
                                                 Carto::Visualization::TYPE_CANONICAL, 
                                                 Carto::Visualization::TYPE_DERIVED
                                               ])
+                                            .with_order(:created_at, :asc)
                                             .build
 
       count = vqb.count
@@ -35,7 +36,8 @@ namespace :cartodb do
       puts "Fetched ##{count} items"
       puts "> #{Time.now}"
 
-      vqb.pluck(:id).each do |viz_id|
+      vis_ids = vqb.pluck(:id)
+      vis_ids.each do |viz_id|
         begin
           current += 1
 
@@ -48,6 +50,7 @@ namespace :cartodb do
           if current % 500 == 0
             puts "\n> #{Time.now} #{current}/#{count}"
           end
+          vis = nil
         rescue => ex
           printf "E"
         end

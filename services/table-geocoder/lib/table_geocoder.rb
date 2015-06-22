@@ -1,9 +1,10 @@
 # encoding: utf-8
 require_relative '../../geocoder/lib/geocoder'
 require_relative 'geocoder_cache'
+require_relative 'abstract_table_geocoder'
 
 module CartoDB
-  class TableGeocoder
+  class TableGeocoder < AbstractTableGeocoder
 
     attr_reader   :connection, :working_dir, :geocoder, :result, 
                   :temp_table_name, :max_rows, :cache
@@ -11,15 +12,11 @@ module CartoDB
     attr_accessor :table_name, :formatter, :remote_id
 
     def initialize(arguments)
-      @connection  = arguments.fetch(:connection)
+      super(arguments)
       @working_dir = arguments[:working_dir] || Dir.mktmpdir
       `chmod 777 #{@working_dir}`
-      @table_name  = arguments[:table_name]
-      @qualified_table_name = arguments[:qualified_table_name]
-      @sequel_qualified_table_name = arguments[:sequel_qualified_table_name]
       @formatter   = arguments[:formatter]
       @remote_id   = arguments[:remote_id]
-      @schema      = arguments[:schema] || 'cdb'
       @max_rows    = arguments[:max_rows] || 1000000
       @geocoder    = CartoDB::Geocoder.new(
         app_id:             arguments[:app_id],
@@ -141,25 +138,6 @@ module CartoDB
         FROM #{temp_table_name} AS orig
         WHERE #{clean_formatter} = orig.recId
       })
-    end
-
-    def add_georef_status_column
-      connection.run(%Q{
-        ALTER TABLE #{@qualified_table_name}
-        ADD COLUMN cartodb_georef_status BOOLEAN DEFAULT NULL
-      })
-    rescue Sequel::DatabaseError => e
-      raise unless e.message =~ /column .* of relation .* already exists/
-      cast_georef_status_column
-    end
-
-    def cast_georef_status_column
-      connection.run(%Q{
-        ALTER TABLE #{@qualified_table_name} ALTER COLUMN cartodb_georef_status
-        TYPE boolean USING cast(cartodb_georef_status as boolean)
-      })
-    rescue => e
-      raise "Error converting cartodb_georef_status to boolean, please, convert it manually or remove it."
     end
 
     def temp_table_name

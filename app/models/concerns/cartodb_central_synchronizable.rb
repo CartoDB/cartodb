@@ -50,14 +50,14 @@ module Concerns
           :geocoding_block_price, :map_view_block_price,
           :twitter_datasource_enabled, :twitter_datasource_block_size,
           :twitter_datasource_block_price, :twitter_datasource_quota,
-          :google_maps_key]
+          :google_maps_key, :google_maps_private_key]
         when :update
           [:seats, :quota_in_bytes, :display_name, :description, :website,
           :discus_shortname, :twitter_username, :geocoding_quota, :map_view_quota,
           :geocoding_block_price, :map_view_block_price,
           :twitter_datasource_enabled, :twitter_datasource_block_size,
           :twitter_datasource_block_price, :twitter_datasource_quota,
-          :google_maps_key]
+          :google_maps_key, :google_maps_private_key]
         end
       elsif self.is_a?(User)
         [:account_type, :admin, :crypted_password, :database_host,
@@ -72,7 +72,7 @@ module Concerns
         :twitter_datasource_block_price, :twitter_datasource_quota,
         :soft_twitter_datasource_limit,
         :google_sign_in, :last_password_change_date,
-        :google_maps_key,
+        :google_maps_key, :google_maps_private_key,
         :arcgis_datasource_enabled,
         :private_maps_enabled]
       end

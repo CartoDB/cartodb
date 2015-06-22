@@ -95,8 +95,11 @@ module CartoDB
         @downloader.multi_resource_import_supported? ? multi_resource_import : single_resource_import
         self
       rescue => exception
-        log.append exception.to_s
+        log.append "Errored importing data:"
+        log.append "#{exception.class.to_s}: #{exception.to_s}"
+        log.append '----------------------------------------------------'
         log.append exception.backtrace
+        log.append '----------------------------------------------------'
         @results.push(Result.new(error_code: error_for(exception.class), log_trace: report))
       end
 

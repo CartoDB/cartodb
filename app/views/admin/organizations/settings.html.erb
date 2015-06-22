@@ -140,6 +140,15 @@
                 Contact with <a href="mailto:support@cartodb.com">support@cartodb.com</a> to change it.
               </p>
             </div>
+            <div class="Form-rowData">
+              <%= f.text_field :google_maps_key, class: "Form-input Form-input--long is-disabled", :readonly => "true" %>
+            </div>
+            <div class="Form-rowInfo">
+              <p class="Form-rowInfoText Form-rowInfoText--multipleLines">
+                This is the <%= @organization.name %> Google Maps private key
+                contact with <a href="mailto:support@cartodb.com">support@cartodb.com</a> to change it.
+              </p>
+            </div>
           </div>
 
         <% end %>

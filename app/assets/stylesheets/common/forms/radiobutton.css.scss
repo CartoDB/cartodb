@@ -38,6 +38,13 @@
     border-radius: 12px;
   }
 }
+.RadioButton-input.is-disabled {
+  cursor: default;
+  &:before {
+    cursor: default;
+    background: #ddd;
+  }
+}
 .RadioButton-label {
   margin-left: 8px;
   color: $cTypography-secondary;

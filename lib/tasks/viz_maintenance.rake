@@ -16,9 +16,9 @@ namespace :cartodb do
     end
 
     desc "Create named maps for all eligible existing visualizations"
-    task :create_named_maps, [:dry_run] => :environment do |t, args|
-      dry_run = args[:dry_run] == 'true'
-      puts "Dry run of create_named_maps rake" if dry_run
+    task :create_named_maps, [:order] => :environment do |t, args|
+      sort_order = args[:order] == ':desc' ? :desc : :asc
+      puts "Retrieving by :created_at #{sort_order}"
 
       puts "> #{Time.now}"
 
@@ -27,7 +27,7 @@ namespace :cartodb do
                                                 Carto::Visualization::TYPE_CANONICAL, 
                                                 Carto::Visualization::TYPE_DERIVED
                                               ])
-                                            .with_order(:created_at, :asc)
+                                            .with_order(:created_at, sort_order)
                                             .build
 
       count = vqb.count

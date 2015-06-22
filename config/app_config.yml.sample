@@ -17,6 +17,7 @@ defaults: &defaults
   watcher:
     ttl:              60
   tiler:
+    # String or array of strings with the types of layers that the tiler will render in layer groups
     filter: 'mapnik'
     internal:
       protocol:      'http'

@@ -31,9 +31,9 @@ describe('cdb.geo.ui.TimeSlider', function() {
         formatter = view.formatterForRange(start, end)
       });
 
-      it("should return a formatter function that renders the UTC time of given moment", function() {
+      it("should return a formatter function that renders the local time of given moment", function() {
         var moment = new Date("2014-11-19T15:04:00Z");
-        expect(formatter(moment)).toEqual("15:04");
+        expect(formatter(moment)).toEqual("16:04");
       });
     });
 

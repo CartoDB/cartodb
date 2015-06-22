@@ -70,6 +70,7 @@ $sLabel-width: 140px;
   @include nicer-lato-typography();
   color: $cTypography-paragraphs;
 }
+.Form-label--multipleLines { line-height: 20px }
 .Form-label.Form-label--large {
   font-size: $sFontSize-large;
 }

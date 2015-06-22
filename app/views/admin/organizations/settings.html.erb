@@ -129,7 +129,7 @@
 
           <div class="Form-row">
             <div class="Form-rowLabel">
-              <label class="Form-label">Google Maps</label>
+              <label class="Form-label Form-label--multipleLines">Google Maps<br/>query string</label>
             </div>
             <div class="Form-rowData">
               <%= f.text_field :google_maps_key, class: "Form-input Form-input--long is-disabled", :readonly => "true" %>
@@ -139,6 +139,12 @@
                 This is the <%= @organization.name %> Google Maps query string. 
                 Contact with <a href="mailto:support@cartodb.com">support@cartodb.com</a> to change it.
               </p>
+            </div>
+          </div>
+
+          <div class="Form-row">
+            <div class="Form-rowLabel">
+              <label class="Form-label Form-label--multipleLines">Google Maps<br/>private key</label>
             </div>
             <div class="Form-rowData">
               <%= f.text_field :google_maps_key, class: "Form-input Form-input--long is-disabled", :readonly => "true" %>

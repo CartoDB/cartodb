@@ -63,7 +63,7 @@ module CartoDB
                                   @configuration[:tiler]['public']['port'],
               cdn_url:          @configuration.fetch(:cdn_url, nil),
               dynamic_cdn:        @options.fetch(:dynamic_cdn_enabled),
-              filter:           'mapnik',
+              filter:           @configuration[:tiler]['filter'],
               named_map:        {
                 name:     @named_map_name,
                 stat_tag: @visualization.id,

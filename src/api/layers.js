@@ -42,7 +42,7 @@
     } else if(layer.table !== undefined && layer.user !== undefined) {
       // layer object points to cartodbjson
       url = cartodbUrl(layer);
-    } else {
+    } else if(layer.indexOf) {
       // fetch from url
       url = layer;
     }

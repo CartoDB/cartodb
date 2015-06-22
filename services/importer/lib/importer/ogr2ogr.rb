@@ -22,6 +22,7 @@ module CartoDB
         self.layer      = layer
         self.options    = options
         self.append_mode = false
+        @overwrite = false
         self.ogr2ogr2_binary = options.fetch(:ogr2ogr_binary, DEFAULT_BINARY)
         self.csv_guessing = options.fetch(:ogr2ogr_csv_guessing, false)
         self.quoted_fields_guessing = options.fetch(:quoted_fields_guessing, true)
@@ -29,14 +30,18 @@ module CartoDB
 
       def command_for_import
         "#{OSM_INDEXING_OPTION} #{PG_COPY_OPTION} #{client_encoding_option} #{shape_encoding_option} " +
-        "#{executable_path} #{OUTPUT_FORMAT_OPTION} #{guessing_option} #{postgres_options} #{projection_option} " +
+        "#{executable_path} #{overwrite_option} #{OUTPUT_FORMAT_OPTION} #{guessing_option} #{postgres_options} #{projection_option} " +
         "#{layer_creation_options} #{filepath} #{layer} #{layer_name_option} #{NEW_LAYER_TYPE_OPTION}"
       end
 
       def command_for_append
         "#{OSM_INDEXING_OPTION} #{PG_COPY_OPTION} #{client_encoding_option} #{shape_encoding_option} " +
-        "#{executable_path} #{APPEND_MODE_OPTION} #{OUTPUT_FORMAT_OPTION} #{postgres_options} " +
+        "#{executable_path} #{APPEND_MODE_OPTION} #{overwrite_option} #{OUTPUT_FORMAT_OPTION} #{postgres_options} " +
         "#{projection_option} #{filepath} #{layer} #{layer_name_option} #{NEW_LAYER_TYPE_OPTION}"
+      end
+
+      def overwrite_option
+        @overwrite ? '-overwrite' : ''
       end
 
       def executable_path
@@ -47,8 +52,9 @@ module CartoDB
         append_mode ? command_for_append : command_for_import
       end
 
-      def run(use_append_mode=false)
+      def run(use_append_mode = false, overwrite = false)
         @append_mode = use_append_mode
+        @overwrite = overwrite
         stdout, stderr, status  = Open3.capture3(command)
         self.command_output     = (stdout + stderr).encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '?????')
         self.exit_code          = status.to_i

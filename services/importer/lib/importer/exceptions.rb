@@ -72,6 +72,7 @@ module CartoDB
     class GDriveNotPublicError                  < StandardError; end
     class EncodingDetectionError                < StandardError; end
     class XLSXFormatError                       < StandardError; end
+    class MultipleXLSSheetsError                < XLSXFormatError; end
     class MalformedCSVException                 < GenericImportError; end
     class TooManyColumnsError                   < GenericImportError; end
     class DuplicatedColumnError                 < GenericImportError; end

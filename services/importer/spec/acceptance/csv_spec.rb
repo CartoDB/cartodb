@@ -15,6 +15,25 @@ describe 'csv regression tests' do
   include AcceptanceHelpers
   include_context "cdb_importer schema"
 
+  def row_count(runner, result)
+    runner.db[%Q{
+      SELECT count(*)
+      FROM #{result.schema}.#{result.table_name}
+      AS count
+    }].first.fetch(:count)
+  end
+
+  def runner_for(path)
+    filepath    = path_to(path)
+    downloader  = Downloader.new(filepath)
+    runner      = Runner.new({
+                               pg: @pg_options,
+                               downloader: downloader,
+                               log: CartoDB::Importer2::Doubles::Log.new,
+                               user: CartoDB::Importer2::Doubles::User.new
+                             })
+  end
+
   it 'georeferences files with lat / lon columns' do
     filepath    = path_to('../../../../spec/support/data/csv_with_lat_lon.csv')
     downloader  = Downloader.new(filepath)
@@ -44,6 +63,27 @@ describe 'csv regression tests' do
 
     result = runner.results.first
     result.success?.should be_true, "error code: #{result.error_code}, trace: #{result.log_trace}"
+  end
+
+  it 'detects provincias XLSX header' do
+    runner = runner_for('provincias_fails_headers.xlsx')
+    runner.run
+    result = runner.results.first
+    row_count(runner, result).should == 51
+  end
+
+  it 'detects provincias XLS (converted) header' do
+    runner = runner_for('provincias_fails_headers_converted.xls')
+    runner.run
+    result = runner.results.first
+    row_count(runner, result).should == 51
+  end
+
+  it 'detects receipts XLS header' do
+    runner = runner_for('receipts.xls')
+    runner.run
+    result = runner.results.first
+    row_count(runner, result).should == 230
   end
 
   it 'imports files exported from the SQL API' do
@@ -145,11 +185,7 @@ describe 'csv regression tests' do
     runner.run
 
     result = runner.results.first
-    runner.db[%Q{
-      SELECT count(*)
-      FROM #{result.schema}.#{result.table_name}
-      AS count
-    }].first.fetch(:count).should eq 5
+    row_count(runner, result).should eq 5
   end
 
   it 'refuses to import csv with broken encoding' do

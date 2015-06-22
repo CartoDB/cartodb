@@ -19,6 +19,7 @@ module CartoDB
       SCHEMA            = 'cdb_importer'
       TABLE_PREFIX      = 'importer'
       NORMALIZERS       = [FormatLinter, CsvNormalizer, Xls2Csv, Xlsx2Csv, Json2Csv]
+      DIRECT_EXCEL_SUPPORT_EXTENSIONS = ['.xls']
 
       # Files matching any of this regexps will be forcibly normalized
       # @see services/datasources/lib/datasources/search/twitter.rb -> table_name
@@ -51,15 +52,31 @@ module CartoDB
 
           @post_import_handler = post_import_handler_instance
 
-          @importer_stats.timing('normalize') do
-            normalize
-          end
+          retry_with_normalize = false
 
-          job.log "Detected encoding #{encoding}"
-          job.log "Using database connection with #{job.concealed_pg_options}"
+          begin
 
-          @importer_stats.timing('ogr2ogr') do
-            run_ogr2ogr
+            if retry_with_normalize || !direct_load_support
+              @importer_stats.timing('normalize') do
+                normalize
+              end
+            end
+
+            job.log "Detected encoding #{encoding}"
+            job.log "Using database connection with #{job.concealed_pg_options}"
+
+            @importer_stats.timing('ogr2ogr') do
+              run_ogr2ogr(false, retry_with_normalize)
+            end
+          rescue MultipleXLSSheetsError => e
+            if !retry_with_normalize
+              job.log "Retrying Excel file with normalization"
+              @ogr2ogr = nil
+              retry_with_normalize = true
+              retry
+            else
+              raise e
+            end
           end
 
           @importer_stats.timing('post_ogr2ogr_tasks') do
@@ -68,6 +85,15 @@ module CartoDB
 
           self
         end
+      end
+
+      def direct_load_support
+        direct_excel_load_support
+      end
+
+      def direct_excel_load_support
+        extension = source_file.extension
+        extension && DIRECT_EXCEL_SUPPORT_EXTENSIONS.include?(extension.downcase)
       end
 
       def streamed_run_init
@@ -225,8 +251,8 @@ module CartoDB
       # @throws FileTooBigError
       # @throws LoadError
       # @throws UnsupportedFormatError
-      def run_ogr2ogr(append_mode=false)
-        ogr2ogr.run(append_mode)
+      def run_ogr2ogr(append_mode = false, overwrite = false)
+        ogr2ogr.run(append_mode, overwrite)
 
         # too verbose in append mode
         unless append_mode
@@ -254,6 +280,9 @@ module CartoDB
           end
           if ogr2ogr.exit_code == 256 && ogr2ogr.command_output =~ /Unable to open(.*)with the following drivers/
             raise UnsupportedFormatError.new(job.logger)
+          end
+          if ogr2ogr.exit_code == 256 && ogr2ogr.command_output =~ /already exists, and -append not specified/ && direct_excel_load_support
+            raise MultipleXLSSheetsError.new(job.logger)
           end
           raise LoadError.new(job.logger)
         end

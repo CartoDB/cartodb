@@ -89,8 +89,18 @@ div.dropdown.basemap {
       border:none;;
       font-size: 13px;
     }
-
   }
+
+  // Google thumbs
+  .thumbs.gmaps {
+    -webkit-flex-wrap: wrap;
+    -moz-flex-wrap: wrap;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    width: 238px;
+  }
+  .thumbs.gmaps > li { margin: 3px 10px 3px 0 }
+
 
   .custom ul li {
 
@@ -216,18 +226,33 @@ div.dropdown.basemap {
 
       }
 
-      &.dark_roadmap .thumb {
-        background-size:auto;
-        @include map-sprite(gmaps_dark_roadmap);
-      }
-
       a .thumb { background-size:auto; }
 
-      &.gray_roadmap .thumb { @include map-sprite(gmaps_gray_roadmap); }
-      &.roadmap .thumb      { @include map-sprite(gmaps_roadmap); }
-      &.terrain .thumb      { @include map-sprite(gmaps_terrain); }
-      &.satellite .thumb    { @include map-sprite(gmaps_satellite); }
-      &.hybrid .thumb       { @include map-sprite(gmaps_hybrid); }
+      // Google thumbs
+
+      @mixin google-thumbnail($name) {
+        &.#{$name} .thumb {
+          @include background(image-url('layout/gmaps-basemaps/#{$name}.png') no-repeat center center);
+        }        
+      }
+
+      @include google-thumbnail(roadmap);
+      @include google-thumbnail(hybrid);
+      @include google-thumbnail(satellite);
+      @include google-thumbnail(terrain);
+      @include google-thumbnail(gray_roadmap);
+      @include google-thumbnail(cool_grey);
+      @include google-thumbnail(clean_grey);
+      @include google-thumbnail(shades_grey);
+      @include google-thumbnail(neutral_blue);
+      @include google-thumbnail(cleaner_midnight);
+      @include google-thumbnail(icy_blue);
+      @include google-thumbnail(red_hues);
+      @include google-thumbnail(light_green);
+      @include google-thumbnail(mostly_grayscale);
+
+
+
       &.add .thumb          { @include map-sprite(plus); } 
       &.pattern .thumb      { @include elements-sprite(image_fill, $offset-x:5px, $offset-y:7px); }
 

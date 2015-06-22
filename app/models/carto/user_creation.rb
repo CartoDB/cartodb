@@ -2,8 +2,6 @@
 
 class Carto::UserCreation < ActiveRecord::Base
 
-  # INFO: we're not adding FKs because this is for monitoring and log purposes,
-  # so we don't add relations either.
   belongs_to :log, class_name: Carto::Log
 
   def self.new_user_signup(user)
@@ -39,9 +37,11 @@ class Carto::UserCreation < ActiveRecord::Base
 
     event :next_creation_step do
       transition :enqueuing => :creating_user,
-          :creating_user => :saving_user,
-          :saving_user => :creating_user_in_central,
-          :creating_user_in_central => :success
+          :creating_user => :saving_user
+
+      transition :saving_user => :creating_user_in_central, :creating_user_in_central => :success, :if => :sync_data_with_cartodb_central?
+
+      transition :saving_user => :success, :unless => :sync_data_with_cartodb_central?
     end
 
     event :fail_user_creation do
@@ -63,6 +63,15 @@ class Carto::UserCreation < ActiveRecord::Base
   end
 
   private
+
+  def user
+    @user ||= ::User.where(id: user_id).first
+  end
+
+  # INFO: state_machine needs guard methods to be instance methods
+  def sync_data_with_cartodb_central?
+    Cartodb::Central.sync_data_with_cartodb_central?
+  end
 
   def requires_validation_email?
     self.google_sign_in != true
@@ -95,6 +104,7 @@ class Carto::UserCreation < ActiveRecord::Base
   end
 
   def save_user
+    # INFO: until here we haven't user_id, so in-memory @user is needed. After this, self.user is used, which can be either @user or loaded from database. This enables resuming.
     @user.save(raise_on_failure: true)
     self.user_id = @user.id
     self.save
@@ -103,7 +113,7 @@ class Carto::UserCreation < ActiveRecord::Base
   end
 
   def create_in_central
-    @user.create_in_central
+    user.create_in_central
   rescue => e
     handle_failure(e)
   end
@@ -116,7 +126,7 @@ class Carto::UserCreation < ActiveRecord::Base
   end
 
   def notify_new_organization_user
-    @user.notify_new_organization_user
+    user.notify_new_organization_user
   end
 
   def handle_failure(e, mark_as_failure = false)
@@ -131,16 +141,16 @@ class Carto::UserCreation < ActiveRecord::Base
   end
 
   def clean_user
-    return unless @user && @user.id != nil
+    return unless user && user.id != nil
 
     begin
-      @user.destroy
+      user.destroy
     rescue => e
-      CartoDB.notify_exception(e, { action: 'safe user destruction', user: @user } )
+      CartoDB.notify_exception(e, { action: 'safe user destruction', user: user } )
       begin
-        @user.delete
+        user.delete
       rescue => ee
-        CartoDB.notify_exception(e, { action: 'safe user deletion', user: @user } )
+        CartoDB.notify_exception(e, { action: 'safe user deletion', user: user } )
       end
 
     end

@@ -54,13 +54,19 @@ module CartoDB
       start_geocoding_job(csv_file)
     end
 
+    # Generate a csv input file from the geocodable rows
     def generate_csv
       csv_file = File.join(working_dir, "wadus.csv")
+      # INFO: we exclude inputs too short and "just digits" inputs, which will remain as georef_status = false
       query = %Q{
-        SELECT DISTINCT(#{clean_formatter}) recId, #{clean_formatter} searchText
-        FROM #{@qualified_table_name}
-        WHERE cartodb_georef_status IS FALSE
-        LIMIT #{@max_rows - cache.hits}
+        WITH geocodable AS (
+          SELECT DISTINCT(#{clean_formatter}) recId, #{clean_formatter} searchText
+          FROM #{@qualified_table_name}
+          WHERE cartodb_georef_status = FALSE
+          LIMIT #{@max_rows - cache.hits}
+        )
+        SELECT * FROM geocodable
+        WHERE length(searchText) > 3 AND searchText !~ '^[\\d]*$'
       }
       result = connection.copy_table(connection[query], format: :csv, options: 'HEADER')
       File.write(csv_file, result.force_encoding("UTF-8"))

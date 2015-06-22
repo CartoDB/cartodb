@@ -17,9 +17,15 @@ end
 Warden::Strategies.add(:password) do
   def authenticate!
     if params[:email] && params[:password]
-      if (user = User.authenticate(params[:email], params[:password])) && user.enabled?
-        success!(user, :message => "Success")
-        request.flash['logged'] = true
+      if (user = User.authenticate(params[:email], params[:password]))
+        if user.enabled?
+          success!(user, :message => "Success")
+          request.flash['logged'] = true
+        elsif !user.enable_account_token.nil?
+          throw(:warden, :action => 'account_token_authentication_error', :user_id => user.id)
+        else
+          fail!
+        end
       else
         fail!
       end

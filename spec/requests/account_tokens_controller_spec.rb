@@ -33,6 +33,34 @@ describe AccountTokensController do
 
     end
 
+    describe 'resend validation mail' do
+
+      it 'returns 404 for nonexisting users' do
+        get resend_validation_mail_url(user_id: UUIDTools::UUID.timestamp_create.to_s)
+        response.status.should == 404
+      end
+
+      describe 'valid user behaviour' do
+
+        before(:each) do
+          User.any_instance.stubs(:enable_remote_db_user).returns(true)
+          @user = FactoryGirl.create(:valid_user)
+        end
+
+        after(:each) do
+          @user.destroy
+        end
+
+        it 'triggers a NewOrganizationUser job with user_id' do
+          ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::NewOrganizationUser, @user.id).returns(true)
+          get resend_validation_mail_url(user_id: @user.id)
+          response.status.should == 200
+        end
+
+      end
+
+    end
+
   end
 
 end

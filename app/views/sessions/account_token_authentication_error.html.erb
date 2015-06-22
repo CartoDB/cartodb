@@ -1,0 +1,3 @@
+<%= render :partial => 'shared/flash_message' %>
+
+Didn't you receive the email? <a href="<%= CartoDB.url(self, 'resend_validation_mail', :user_id => @user.id) %>">Click here to send it again</a>.

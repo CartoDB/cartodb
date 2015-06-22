@@ -70,6 +70,12 @@ class SessionsController < ApplicationController
     end
   end
 
+  def account_token_authentication_error
+    @user = User.where(id: warden.env['warden.options'][:user_id]).first
+    flash.now[:error] = "You need to validate your account by clicking the button we sent you to the email address #{@user.email}."
+    render 'account_token_authentication_error'
+  end
+
   protected
 
   def initialize_google_plus_config

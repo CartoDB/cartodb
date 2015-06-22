@@ -1,6 +1,6 @@
 # coding: utf-8
-require_relative '../../../lib/google_plus_api'
-require_relative '../../../lib/google_plus_config'
+require_dependency 'google_plus_api'
+require_dependency 'google_plus_config'
 require_relative '../../../services/datasources/lib/datasources'
 
 class Admin::UsersController < ApplicationController

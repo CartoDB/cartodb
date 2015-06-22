@@ -41,18 +41,16 @@ module CartoDB
     def run
       add_georef_status_column
       cache.run
-      csv_file = generate_csv
 
       # INFO: Mark the rows to be sent with cartodb_georef_status = FALSE
       # This is necessary for cache.store to work correctly.
-      # INFO: the rows marked in this query are not necessarily a subset of the
-      # query in generate_csv
       connection.run(%Q{
         UPDATE #{@qualified_table_name} SET cartodb_georef_status = FALSE
         WHERE (cartodb_georef_status IS NULL)
         AND (cartodb_id IN (SELECT cartodb_id FROM #{@qualified_table_name} WHERE (cartodb_georef_status IS NULL) LIMIT #{@max_rows - cache.hits}))
       })
 
+      csv_file = generate_csv
       start_geocoding_job(csv_file)
     end
 
@@ -61,7 +59,7 @@ module CartoDB
       query = %Q{
         SELECT DISTINCT(#{clean_formatter}) recId, #{clean_formatter} searchText
         FROM #{@qualified_table_name}
-        WHERE cartodb_georef_status IS NULL
+        WHERE cartodb_georef_status IS FALSE
         LIMIT #{@max_rows - cache.hits}
       }
       result = connection.copy_table(connection[query], format: :csv, options: 'HEADER')

@@ -93,6 +93,8 @@ module CartoDB
       specs.js
       sessions.js
       signup.js
+      confirmation_templates.js
+      confirmation.js
 
       tipsy.js
       modernizr.js

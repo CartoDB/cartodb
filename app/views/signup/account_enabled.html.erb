@@ -1,3 +1,21 @@
-<%= render :partial => 'shared/flash_message' %>
-User id: <%= @user.id %>
+<% content_for :title do %><%= @user.username %> account enabled<% end %>
 
+<div class="Sessions" style="<%= background %>">
+  <div class="Sessions-content">
+    <div class="Sessions-inner">
+      <div class="u-inner">
+        <div class="Sessions-center Sessions--centered">
+          <div class="Logo js-logo">
+            <span class="Logo--avatar">
+              <i class="iconFont iconFont-CartoFante" style="color: <%= @organization.color ? darken_color(@organization.color,0.7) : "#292E33" %>"></i>
+            </span>
+          </div>
+          <div class="js-info">
+            <h1 class="Sessions-title u-tspace-m">Your account is activated</h1>
+            <p class="Sessions-description">Go to <% link_to "your dashboard", CartoDB.url(self, 'dashboard', {}, @user) %> and start enjoying your CartoDB account.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

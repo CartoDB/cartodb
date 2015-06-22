@@ -1,3 +1,21 @@
-<%= render :partial => 'shared/flash_message' %>
+<% content_for :title do %><%= @user.username %> authentication error<% end %>
 
-Didn't you receive the email? <a href="<%= CartoDB.url(self, 'resend_validation_mail', :user_id => @user.id) %>">Click here to send it again</a>.
+<div class="Sessions" style="<%= background %>">
+  <div class="Sessions-content">
+    <div class="Sessions-inner">
+      <div class="u-inner">
+        <div class="Sessions-center Sessions--centered">
+          <div class="Logo js-logo">
+            <span class="Logo--avatar">
+              <i class="iconFont iconFont-CartoFante" style="color: <%= @organization.color ? darken_color(@organization.color,0.7) : "#292E33" %>"></i>
+            </span>
+          </div>
+          <div class="js-info">
+            <h1 class="Sessions-title u-tspace-m">Didn't you receive the email?</h1>
+            <p class="Sessions-description">if not click <a href="<%= CartoDB.url(self, 'resend_validation_mail', :user_id => @user.id) %>">here</a> and a new email will be sent directly to your inbox.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

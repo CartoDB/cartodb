@@ -33,7 +33,7 @@ $shadow-color: rgba(black, 0.1);
 }
 
 .Sessions-title {
-  font-weight: 300;
+  font-weight: 400;
   font-size: 32px;
   line-height: 48px;
   text-shadow: 0px 1px $shadow-color, 1px 0px $shadow-color, 0 0 $shadow-color, 1px -1px $shadow-color, -1px 1px $shadow-color;
@@ -47,7 +47,7 @@ $shadow-color: rgba(black, 0.1);
 }
 
 .Sessions-description {
-  font-weight: 200;
+  font-weight: 300;
   font-size: 20px;
   line-height: 30px;
   color: $text-color;
@@ -131,7 +131,7 @@ $shadow-color: rgba(black, 0.1);
 }
 
 .Sessions-text {
-  font-weight: 200;
+  font-weight: 300;
   font-size: 14px;
   color: $text-color;
 
@@ -156,7 +156,7 @@ $shadow-color: rgba(black, 0.1);
   top: 10px;
   width: 22px;
   height: 22px;
-  font-weight: 400;
+  font-weight: 300;
   text-align: center;
   color: #3B4449;
   background: #dd4b39;

@@ -12,6 +12,7 @@ describe AccountTokensController do
     describe 'account validation' do
 
       before(:each) do
+        User.any_instance.stubs(:enable_remote_db_user).returns(true)
         @user = FactoryGirl.create(:valid_user)
       end
 

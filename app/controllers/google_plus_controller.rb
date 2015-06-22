@@ -1,5 +1,5 @@
 # encoding: UTF-8
-require_relative '../../lib/google_plus_api'
+require_dependency 'google_plus_api'
 
 class GooglePlusController < ApplicationController
 

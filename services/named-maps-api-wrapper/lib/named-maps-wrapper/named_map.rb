@@ -154,11 +154,15 @@ module CartoDB
         unless layer_group.nil?
           layer_group[:options][:layer_definition][:layers].each { |layer|
             layer_type = layer[:type].downcase
+
+            # INFO: Bypass image-bg layers for now
+            if layer_type == 'background' && (layer[:options]['image'].length > 0)
+              next
+            end
+
             if layer_type == 'cartodb'
-              name = 'cartodb'
               data = self.options_for_cartodb_layer(layer, layer_num, template_data)
             else
-              name = 'http'
               data = self.options_for_basemap_layer(layer, layer_num, template_data)
             end
 
@@ -166,7 +170,7 @@ module CartoDB
             template_data = data[:template_data]
 
             layers_data.push( {
-              type:     name,
+              type:     data[:layer_name],
               options:  data[:layer_options]
             } )
           }
@@ -252,6 +256,7 @@ module CartoDB
         end
 
         { 
+          layer_name: 'cartodb',
           layer_options: layer_options,
           layer_num: layer_num,
           template_data: template_data
@@ -264,18 +269,39 @@ module CartoDB
       #               template_data: Hash
       #              }
       def self.options_for_basemap_layer(layer, layer_num, template_data)
+        if layer[:options]['type'] == 'Plain'
+          self.plain_color_basemap_layer(layer, layer_num, template_data)
+        else
+          self.http_basemap_layer(layer, layer_num, template_data)
+        end
+      end
+
+      def self.http_basemap_layer(layer, layer_num, template_data)
         layer_options = {
           urlTemplate: layer[:options]['urlTemplate']
         }
-
         if layer[:options].include?('subdomains')
           layer_options[:subdomains] = layer[:options]['subdomains']
         end
 
-        layer_num += 1
+        { 
+          layer_name: 'http',
+          layer_options: layer_options,
+          # Basemap layers don't increment layer index/number
+          layer_num: layer_num,
+          template_data: template_data
+        }
+      end
+
+      def self.plain_color_basemap_layer(layer, layer_num, template_data)
+        layer_options = { 
+          color: layer[:options]['color'] 
+        }
 
         { 
+          layer_name: 'plain',
           layer_options: layer_options,
+          # Basemap layers don't increment layer index/number
           layer_num: layer_num,
           template_data: template_data
         }

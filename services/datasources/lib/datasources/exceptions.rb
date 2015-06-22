@@ -37,6 +37,8 @@ module CartoDB
       class InvalidInputDataError       < DatasourceBaseError; end
       class ResponseError               < DatasourceBaseError; end
       class ExternalServiceError        < DatasourceBaseError; end
+      # We want to give a very specific message in this scenario so...
+      class GNIPServiceError            < ExternalServiceError; end
 
       class ServiceDisabledError < DatasourceBaseError
         def initialize(service = UNKNOWN_SERVICE, username = nil)

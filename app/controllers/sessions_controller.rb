@@ -95,7 +95,7 @@ class SessionsController < ApplicationController
   private
 
   def load_organization
-    subdomain = CartoDB.extract_subdomain(request)
+    subdomain = CartoDB.subdomain_from_request(request)
     @organization = Carto::Organization.where(name: subdomain).first if subdomain
   end
 

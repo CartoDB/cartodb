@@ -220,6 +220,14 @@ module ApplicationHelper
     end
   end
 
+  def terms_path
+    'http://cartodb.com/terms'
+  end
+
+  def privacy_path
+    'https://cartodb.com/privacy'
+  end
+
   def vis_json_url(vis_id, context, user=nil)
     "#{ CartoDB.url(context, 'api_v2_visualizations_vizjson', { id: vis_id }, user).sub(/(http:|https:)/i, '') }.json"
   end

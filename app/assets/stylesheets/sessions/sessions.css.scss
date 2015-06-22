@@ -1,7 +1,12 @@
 // Sessions
 // --------------------------------------------------
 
+@import "_variables";
+@import "_mixins";
+@import "_helpers";
+
 $text-color: rgba(white, 0.5);
+$text-link-color: rgba(white, 0.8);
 $shadow-color: rgba(black, 0.1);
 
 .Sessions {
@@ -133,6 +138,7 @@ $shadow-color: rgba(black, 0.1);
   a {
     text-decoration: underline;
     color: $text-color;
+    &:hover { color: $text-link-color }
   }
 }
 
@@ -212,9 +218,9 @@ $shadow-color: rgba(black, 0.1);
 }
 
 @media (max-width: $sLayout-width-l) {
-  .Sessions-inner {
-    @include justify-content(center, center);
-  }
+  .Sessions-inner { @include justify-content(center, center) }
+  .Sessions-right { display: none }
+  .Navbar { text-align: center }
 }
 
 

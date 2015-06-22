@@ -92,6 +92,7 @@ module CartoDB
       templates_mustache.js
       specs.js
       sessions.js
+      signup.js
 
       tipsy.js
       modernizr.js

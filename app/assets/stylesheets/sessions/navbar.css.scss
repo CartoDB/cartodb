@@ -1,11 +1,17 @@
 // Navbar
 // --------------------------------------------------
 
+@import "_variables";
+@import "_mixins";
+@import "_helpers";
+
 .Navbar {
   @extend %clearfix;
   padding: 20px 0;
   text-align: center;
 }
+
+.Navbar--left { text-align: left }
 
 .Navbar-brand {
   display: inline-block;

@@ -1,33 +1,210 @@
-<% content_for :title do %>Sign up<% end %>
+<% content_for :title do %><%= @organization.name %> sign up<% end %>
 
 <% content_for :js do %>
-  <%= javascript_include_tag 'cdb.js' %>
+  <%= javascript_include_tag 'cdb.js', 'signup.js' %>
 <% end %>
 
-<% if @google_plus_config.present? %>
-  <%= render partial: '/google_plus/google_plus_button',  locals: { config: @google_plus_config } %>
-<% end %>
+<div class="Sessions" style="<%= background %>">
+  <%= render partial: 'admin/shared/sessions_header', locals: { align: "Navbar--left" } %>
 
+  <div class="Sessions-content">
+    <div class="u-inner">
+      <div class="Sessions-notloggedin <%= "is-active" unless @google_plus_config.present? %>">
 
-<%= form_for @user, url: CartoDB.url(self, 'signup_organization_user'),  html: { class: "js-Loading-form" } do |f| %>
-  <%= render :partial => 'shared/flash_message' %>
-  <input type="hidden" value="" id="google_access_token" name="google_access_token" />
-  <input type="hidden" value="0" id="google_access_filled" name="google_access_filled" />
+        <div class="Sessions-inner">
+          <div class="Sessions-left">
+            <div class="Sessions-leftInner">
+              <h1 class="Sessions-title u-vspace-xs">Sign up for CartoDB</h1>
+              <p class="Sessions-description">Help other people understand the world we live in, with maps.</p>
 
-  <div class="Sessions-field">
-    <%= f.text_field :username, class: "Sessions-input", placeholder: 'Username' %>
-    <%= form_error_for :username, @user.errors %>
+              <div class="Sessions-sep"></div>
+
+              <% unless @user.google_sign_in %>
+                <% if @google_plus_config.present? %>
+                  <%= render partial: 'google_plus/google_plus_button',  locals: { config: @google_plus_config } %>
+                <% end %>
+
+                <div class="Sessions-sep"></div>
+              <% end %>
+
+              <%= form_for @user, url: CartoDB.url(self, 'signup_organization_user'),  html: { class: "js-Loading-form" } do |f| %>
+                <input type="hidden" value="" id="google_access_token" name="google_access_token" />
+                <input type="hidden" value="0" id="google_access_filled" name="google_access_filled" />
+
+                <div class="Sessions-fieldsGorup">
+                  <div class="Sessions-field">
+                    <%= f.text_field :username, class: "Sessions-input", placeholder: 'username' %>
+                    <% if !@user.errors[:username].blank? %>
+                      <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @user.errors[:username] %>">!</div>
+                    <% end %>
+                  </div>
+
+                  <div class="Sessions-field">
+                    <%= f.email_field :email, class: "Sessions-input", placeholder: 'email' %>
+                    <% if !@user.errors[:email].blank? %>
+                      <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @user.errors[:email] %>">!</div>
+                    <% end %>
+                  </div>
+
+                  <% if @user.google_sign_in %>
+                    <%= f.hidden_field :google_sign_in %>
+                  <% else %>
+                    <div class="Sessions-field">
+                      <%= f.password_field :password, class: "Sessions-input", placeholder: 'password' %>
+                      <% if !@user.errors[:password].blank? %>
+                        <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @user.errors[:password] %>">!</div>
+                      <% end %>
+                    </div>
+                  <% end %>
+
+                  <div class="Sessions-field">
+                    <p class="Sessions-text Sessions-text--forgotButton u-left"><%= link_to "Already have account?", login_url %></p>
+                    <p>
+                      <button type="submit" class="Btn Btn--green Btn--m is-highlight u-tupper Sessions-button js-Sessions-button js-Loading u-right">
+                        <span class="js-Loading-text">Sign up</span>
+                        <span class="js-Loading-anim" style="display: none;">
+                          <span class="Loading-item">
+                            <span class="Loading-itemInner Loading-itemInner--01"></span>
+                          </span>
+
+                          <span class="Loading-item">
+                            <span class="Loading-itemInner Loading-itemInner--02"></span>
+                          </span>
+
+                          <span class="Loading-item">
+                            <span class="Loading-itemInner Loading-itemInner--03"></span>
+                          </span>
+                        </span>
+                      </button>
+                    </p>
+                  </div>
+                </div>
+
+                <div style="display:none">
+                  <%= f.check_box :terms, { checked: true } %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+
+        
+          <div class="Sessions-right">
+            <div class="Browser">
+              <ul class="Browser-actions u-ilist">
+                <li class="Browser-actionsItem"></li>
+                <li class="Browser-actionsItem"></li>
+                <li class="Browser-actionsItem"></li>
+              </ul>
+
+              <div class="Browser-bar">
+                <div class="Browser-address"></div>
+              </div>
+
+              <div class="Browser-media js-Browser-media">
+                <div class="Progress js-Progress"></div>
+
+                <ul class="Carrousel">
+                  <li class="Carrousel-slide js-Carrousel-slide Carrousel-slide--01 is-active">
+                    <div class="Carrousel-card Carrousel-card--01"></div>
+                    <div class="Carrousel-card Carrousel-card--02"></div>
+                    <div class="Carrousel-card Carrousel-card--03"></div>
+                    <div class="Carrousel-card Carrousel-card--04"></div>
+                    <div class="Carrousel-card Carrousel-card--05"></div>
+                    <div class="Carrousel-card Carrousel-card--06"></div>
+                    <div class="Carrousel-card Carrousel-card--07"></div>
+                    <div class="Carrousel-card Carrousel-card--08"></div>
+                  </li>
+
+                  <li class="Carrousel-slide js-Carrousel-slide Carrousel-slide--02">
+                    <div class="Carrousel-slide--02-inner"></div>
+                  </li>
+
+                  <li class="Carrousel-slide js-Carrousel-slide Carrousel-slide--03">
+                    <div class="Carrousel-points">
+                      <div class="Carrousel-point Carrousel-point--01"></div>
+                      <div class="Carrousel-point Carrousel-point--02"></div>
+                      <div class="Carrousel-point Carrousel-point--03"></div>
+                      <div class="Carrousel-point Carrousel-point--04"></div>
+                      <div class="Carrousel-point Carrousel-point--05"></div>
+                      <div class="Carrousel-point Carrousel-point--06"></div>
+                      <div class="Carrousel-point Carrousel-point--06"></div>
+                      <div class="Carrousel-point Carrousel-point--07"></div>
+                      <div class="Carrousel-point Carrousel-point--08"></div>
+                      <div class="Carrousel-point Carrousel-point--09"></div>
+                      <div class="Carrousel-point Carrousel-point--10"></div>
+                    </div>
+
+                    <div class="Carrousel-slide--03-inner"></div>
+                  </li>
+
+                  <li class="Carrousel-slide js-Carrousel-slide Carrousel-slide--04">
+                    <div class="Carrousel-slide--04-inner"></div>
+                  </li>
+                </ul>
+
+                <div class="Carrousel-nav u-txt-center">
+                  <ul class="u-ilist">
+                    <li class="Carrousel-navItem js-Carrousel-navItem is-active">
+                      <a href="#" class="Carrousel-navLink js-Carrousel-navLink">1</a>
+                    </li>
+
+                    <li class="Carrousel-navItem js-Carrousel-navItem">
+                      <a href="#" class="Carrousel-navLink js-Carrousel-navLink">2</a>
+                    </li>
+
+                    <li class="Carrousel-navItem js-Carrousel-navItem">
+                      <a href="#" class="Carrousel-navLink js-Carrousel-navLink">3</a>
+                    </li>
+
+                    <li class="Carrousel-navItem js-Carrousel-navItem">
+                      <a href="#" class="Carrousel-navLink js-Carrousel-navLink">4</a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <ul class="Carrousel-text">
+              <li class="Carrousel-textItem js-Carrousel-textItem is-active">
+                <picture class="Carrousel-textIcon">
+                  <source type="image/svg+xml" srcset="<%= image_path "layout/signup/dashboard.svg" %>">
+                  <img src="<%= image_path "layout/signup/dashboard.png" %>" alt="dashboard">
+                </picture>Go to your dashboard
+              </li>
+
+              <li class="Carrousel-textItem js-Carrousel-textItem">
+                <picture class="Carrousel-textIcon">
+                  <source type="image/svg+xml" srcset="<%= image_path "layout/signup/import.svg" %>">
+                  <img src="<%= image_path "layout/signup/import.png" %>" alt="import">
+                </picture>Connect your dataset
+              </li>
+
+              <li class="Carrousel-textItem js-Carrousel-textItem">
+                <picture class="Carrousel-textIcon">
+                  <source type="image/svg+xml" srcset="<%= image_path "layout/signup/create.svg" %>">
+                  <img src="<%= image_path "layout/signup/create.png" %>" alt="create">
+                </picture>Create your map
+              </li>
+
+              <li class="Carrousel-textItem js-Carrousel-textItem">
+                <picture class="Carrousel-textIcon">
+                  <source type="image/svg+xml" srcset="<%= image_path "layout/signup/share.svg" %>">
+                  <img src="<%= image_path "layout/signup/share.png" %>" alt="share">
+                </picture>Share your map
+              </li>
+            </ul>
+          </div>
+          
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div class="Sessions-field">
-    <%= f.email_field :email, class: "Sessions-input", placeholder: 'Email' %>
-    <%= form_error_for :email, @user.errors %>
-  </div>
-
-  <div class="Sessions-field">
-    <%= f.password_field :password, class: "Sessions-input", placeholder: 'Password' %>
-    <%= form_error_for :password, @user.errors %>
-  </div>
-
-  <button type="submit" class="Btn Btn--green Btn--m is-highlight u-tupper Sessions-button js-Sessions-button js-Loading u-right">Signup</button>
-<% end %>
+  <footer class="Sessions-footer">
+    <div class="u-inner">
+      <div class="Sessions-notloggedin <%= "is-active" unless @google_plus_config.present? %>">
+        <p class="Sessions-text Sessions-text--footer u-txt-center">by clicking in "sign up" you accept the <%= link_to 'terms and conditions', terms_path %> of the service and the <%= link_to 'privacy policy', privacy_path %></p>
+      </div>
+    </div>
+  </footer>
+</div>

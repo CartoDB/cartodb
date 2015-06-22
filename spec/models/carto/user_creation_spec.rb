@@ -5,6 +5,7 @@ describe Carto::UserCreation do
 
   describe 'validation token' do
     include_context 'organization with users helper'
+    User.any_instance.stubs(:create_in_central).returns(true)
 
     it 'assigns an enable_account_token if user has not signed up with Google' do
       user_data = FactoryGirl.build(:valid_user)
@@ -19,6 +20,7 @@ describe Carto::UserCreation do
     end
 
     it 'does not assign an enable_account_token if user has signed up with Google' do
+      User.any_instance.stubs(:create_in_central).returns(true)
       user_data = FactoryGirl.build(:valid_user)
       user_data.organization = @organization
       user_data.google_sign_in = true

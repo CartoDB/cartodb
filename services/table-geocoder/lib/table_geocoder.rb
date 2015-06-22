@@ -42,16 +42,28 @@ module CartoDB
       add_georef_status_column
       cache.run
       csv_file = generate_csv
-      connection.run(
-        dataset.where('cartodb_id'.lit => dataset.select('cartodb_id'.lit))
-          .update_sql('cartodb_georef_status = false')
-      )
+
+      # INFO: Mark the rows to be sent with cartodb_georef_status = FALSE
+      # This is necessary for cache.store to work correctly.
+      # INFO: the rows marked in this query are not necessarily a subset of the
+      # query in generate_csv
+      connection.run(%Q{
+        UPDATE #{@qualified_table_name} SET cartodb_georef_status = FALSE
+        WHERE (cartodb_georef_status IS NULL)
+        AND (cartodb_id IN (SELECT cartodb_id FROM #{@qualified_table_name} WHERE (cartodb_georef_status IS NULL) LIMIT #{@max_rows - cache.hits}))
+      })
+
       start_geocoding_job(csv_file)
     end
 
     def generate_csv
       csv_file = File.join(working_dir, "wadus.csv")
-      query = dataset.limit(@max_rows - cache.hits).select_sql
+      query = %Q{
+        SELECT DISTINCT(#{clean_formatter}) recId, #{clean_formatter} searchText
+        FROM #{@qualified_table_name}
+        WHERE cartodb_georef_status IS NULL
+        LIMIT #{@max_rows - cache.hits}
+      }
       result = connection.copy_table(connection[query], format: :csv, options: 'HEADER')
       File.write(csv_file, result.force_encoding("UTF-8"))
       return csv_file
@@ -60,13 +72,6 @@ module CartoDB
     def update_geocoding_status
       geocoder.update_status
       { processed_rows: geocoder.processed_rows, state: geocoder.status }
-    end
-
-    def dataset
-      connection.select("DISTINCT(#{clean_formatter}) recId, #{clean_formatter} searchText".lit)
-        .from(@sequel_qualified_table_name)
-        .limit(max_rows)
-        .where("cartodb_georef_status IS NULL".lit)
     end
 
     def clean_formatter

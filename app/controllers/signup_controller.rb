@@ -45,6 +45,13 @@ class SignupController < ApplicationController
     render action: 'signup'
   end
 
+  # TODO: development purposes, delete
+  def signup_confirmation_development
+    @user_creation = Carto::UserCreation.where(id: params[:id]).first
+    render action: 'signup_confirmation'
+  end
+
+
   private
 
   def initialize_google_plus_config
@@ -52,7 +59,7 @@ class SignupController < ApplicationController
   end
 
   def load_organization
-    subdomain = CartoDB.extract_subdomain(request)
+    subdomain = CartoDB.subdomain_from_request(request)
     @organization = ::Organization.where(name: subdomain).first if subdomain
     render_404 and return false unless @organization && @organization.signup_page_enabled
   end

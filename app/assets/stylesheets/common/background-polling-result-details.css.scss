@@ -1,0 +1,58 @@
+@import "../variables/mixins";
+@import "../variables/colors";
+@import "../variables/sizes";
+
+
+// Error details dialog styles
+$w: 560px;
+$c: #649DD0;
+
+.BackgroundPollingDetails {}
+.BackgroundPollingDetails-header .Dialog-headerIcon {
+  border-color: $c;
+  color: $c;
+}
+.BackgroundPollingDetails-body {
+  @include display-flex();
+  @include justify-content(flex-start);
+  @include align-items(center);
+  min-width: initial;
+  width: $w;
+}
+.Dialog-body.BackgroundPollingDetails-body {
+  min-width: initial;
+  width: $w;
+  border-bottom: 1px solid #ddd;
+}
+.BackgroundPollingDetails-icon {
+  font-size: 28px;
+  margin-right: $sMargin-element;
+}
+.BackgroundPollingDetails-icon .iconFont-Dollar { margin-bottom: 8px; /* :( */ }
+.BackgroundPollingDetails-icon.is-nonFree {
+  color: #D4BD7F;
+  border-color: #D4BD7F;
+  box-shadow: rgba(#D4BD7F, 0.1) 0 0 2px 2px;
+}
+.BackgroundPollingDetails-icon.is-free {
+  color: $cHighlight-positive;
+  border-color: $cHighlight-positive;
+  box-shadow: rgba($cHighlight-positive, 0.2) 0 0 2px 2px;
+}
+.BackgroundPollingDetails-infoTitle {
+  font-size: $sFontSize-larger;
+  font-weight: normal;
+  color: $cTypography-paragraphs;
+}
+.BackgroundPollingDetails-infoText {
+  margin-top: 3px;
+  font-size: $sFontSize-normal;
+}
+.Dialog-footer.BackgroundPollingDetails-footer {
+  width: $w;
+  margin: 0 auto;
+  text-align: center;
+  border-top: 0;
+}
+.Dialog-footer .Button.BackgroundPollingDetails-footerButton { display: inline-block }
+.Dialog-footer .Button.BackgroundPollingDetails-footerButton span { line-height: 42px }

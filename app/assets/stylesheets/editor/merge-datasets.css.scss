@@ -23,12 +23,10 @@
     content: '';
     position: absolute;
     top: -18px;
-    left: 50%;
     display: block;
-    width: 1020px;
+    width: 100%;
     height: 18px;
-    margin-left: -510px;
-    @include background-gradient(rgba(#F9F9F9,0),rgba(#F9F9F9,1));
+    @include background-gradient(rgba(#F9F9F9, 0), rgba(#F9F9F9, 1));
     z-index: 2;
   }
 }

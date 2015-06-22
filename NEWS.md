@@ -8,6 +8,7 @@
 * Added an [http client for ruby](https://github.com/CartoDB/cartodb/wiki/The-CartoDB-ruby-http-client) with some cool features
 * SQLViews are editable when filtering [#3812](https://github.com/CartoDB/cartodb/pull/3812)
 * Updated cartodb.js to 3.14.6
+* Defaults Time Column to first date column or cartodb_id in Torque wizards [#4136](https://github.com/CartoDB/cartodb/pull/4136)
 
 Bugfixes:
 * Fixed deletion of layers upon disconnecting synced datasources [#3718](https://github.com/CartoDB/cartodb/pull/3718)

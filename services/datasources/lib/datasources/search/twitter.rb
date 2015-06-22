@@ -184,7 +184,9 @@ module CartoDB
 
         # Hide sensitive fields
         def to_s
-          "<CartoDB::Datasources::Search::Twitter @user=#{@user.username} @filters=#{@filters} @search_api_config=#{@search_api_config}>"
+          config_public_values = 
+
+          "<CartoDB::Datasources::Search::Twitter @user=#{@user.username} @filters=#{@filters} @search_api_config=#{search_api_config_public_values}>"
         end
 
         # If this datasource accepts a data import instance
@@ -242,6 +244,17 @@ module CartoDB
         # Used at specs
         attr_accessor :search_api_config, :csv_dumper
         attr_reader   :data_import_item
+
+        def search_api_config_public_values
+          {
+            TwitterSearch::SearchAPI::CONFIG_AUTH_REQUIRED            => 
+              @search_api_config[TwitterSearch::SearchAPI::CONFIG_AUTH_REQUIRED],
+            TwitterSearch::SearchAPI::CONFIG_AUTH_USERNAME            => 
+              @search_api_config[TwitterSearch::SearchAPI::CONFIG_AUTH_USERNAME],
+            TwitterSearch::SearchAPI::CONFIG_SEARCH_URL               => 
+              @search_api_config[TwitterSearch::SearchAPI::CONFIG_SEARCH_URL]
+          }
+        end
 
         # Returns if the user set a maximum credits to use
         # @return Integer
@@ -420,10 +433,10 @@ module CartoDB
               raise InvalidInputDataError.new(exception.to_s, DATASOURCE_NAME)
             end
             if exception.http_code == 429
-              raise CartoDB::Datasources::ResponseError.new(exception.to_s, DATASOURCE_NAME)
+              raise ResponseError.new(exception.to_s, DATASOURCE_NAME)
             end
-            if [502, 503].include?(exception.http_code)
-              raise ExternalServiceError.new(exception.to_s, DATASOURCE_NAME)
+            if exception.http_code >= 500 && exception.http_code < 600
+              raise GNIPServiceError.new(exception.to_s, DATASOURCE_NAME)
             end
             raise DatasourceBaseError.new(exception.to_s, DATASOURCE_NAME)
           end

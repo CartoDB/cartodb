@@ -22,6 +22,7 @@ Warden::Strategies.add(:password) do
           success!(user, :message => "Success")
           request.flash['logged'] = true
         elsif !user.enable_account_token.nil?
+          CartoDB.notify_debug("account_token_authentication_error throw #{user}")
           throw(:warden, :action => :account_token_authentication_error, :user_id => user.id)
         else
           fail!

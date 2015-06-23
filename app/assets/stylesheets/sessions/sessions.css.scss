@@ -55,6 +55,12 @@ $shadow-color: rgba(black, 0.1);
   color: $text-color;
 }
 
+.Sessions-description a {
+  color: $text-color;
+  text-decoration: underline;
+  &:hover { color: $text-link-color }
+}
+
 .Sessions-left { width: 300px }
 .Sessions-center { max-width: 440px }
 .Sessions-right { width: 560px }

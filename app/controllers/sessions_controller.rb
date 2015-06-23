@@ -71,11 +71,9 @@ class SessionsController < ApplicationController
   end
 
   def account_token_authentication_error
-    CartoDB.notify_debug('account_token_authentication_error begin')
     warden.custom_failure!
     @user = User.where(id: warden.env['warden.options'][:user_id]).first
     flash.now[:error] = "You need to validate your account by clicking the button we sent you to the email address #{@user.email}."
-    CartoDB.notify_debug('account_token_authentication_error begin')
     render 'account_token_authentication_error'
   end
 

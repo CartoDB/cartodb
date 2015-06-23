@@ -148,7 +148,7 @@ describe('Sublayers', function() {
 
         sublayer.show();
 
-        expect(sublayer.isVisible().toEqual(true);
+        expect(sublayer.isVisible().toEqual(true));
       })
     })
 

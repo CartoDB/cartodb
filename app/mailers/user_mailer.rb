@@ -8,9 +8,9 @@ class UserMailer < ActionMailer::Base
     @owner = @organization.owner
 
     if @user.enable_account_token.nil?
-      @link = "#{CartoDB.base_url(@organization.name, @user.username)}#{CartoDB.path(self, 'enable_account_token_show', {id: @user.enable_account_token})}"
+      @link  = "#{CartoDB.base_url(@organization.name, @user.username)}"
     else
-      @enable_account_link = "#{CartoDB.base_url(@organization.name, @user.username)}"
+      @enable_account_link = "#{CartoDB.base_url(@organization.name, @user.username)}#{CartoDB.path(self, 'enable_account_token_show', {id: @user.enable_account_token})}"
     end
 
     mail :to => @user.email, 

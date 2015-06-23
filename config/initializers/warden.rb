@@ -1,10 +1,6 @@
 Rails.configuration.middleware.use RailsWarden::Manager do |manager|
   manager.default_strategies :password, :api_authentication
-  # INFO: usage of lambda notation is needed for throw to work (see account_token_authentication_error later in this file).
-  manager.failure_app = lambda { |env|
-    failure_action = env["warden.options"][:action].to_sym
-    SessionsController.action(failure_action).call(env)
-  }
+  manager.failure_app = SessionsController
 end
 
 # Setup Session Serialization

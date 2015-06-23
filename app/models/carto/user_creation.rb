@@ -120,13 +120,9 @@ class Carto::UserCreation < ActiveRecord::Base
 
   def close_creation
     clean_password
-    notify_new_organization_user
+    user.notify_new_organization_user
   rescue => e
     handle_failure(e, mark_as_failure = false)
-  end
-
-  def notify_new_organization_user
-    user.notify_new_organization_user
   end
 
   def handle_failure(e, mark_as_failure)

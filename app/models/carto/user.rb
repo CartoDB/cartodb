@@ -122,7 +122,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def sql_safe_database_schema
-    "\"#{self.database_schema}\""
+    self.database_schema.include?('-') ? "\"#{self.database_schema}\"" : self.database_schema
   end
 
   # returns google maps api key. If the user is in an organization and 

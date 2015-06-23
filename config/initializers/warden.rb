@@ -1,6 +1,10 @@
 Rails.configuration.middleware.use RailsWarden::Manager do |manager|
   manager.default_strategies :password, :api_authentication
-  manager.failure_app = SessionsController
+  # INFO: usage of lambda notation is needed for throw to work (see account_token_authentication_error later in this file).
+  manager.failure_app = lambda { |env|
+    failure_action = env["warden.options"][:action].to_sym
+    SessionsController.action(failure_action).call(env)
+  }
 end
 
 # Setup Session Serialization
@@ -22,8 +26,7 @@ Warden::Strategies.add(:password) do
           success!(user, :message => "Success")
           request.flash['logged'] = true
         elsif !user.enable_account_token.nil?
-          CartoDB.notify_debug("account_token_authentication_error throw #{user}")
-          throw(:warden, :action => :account_token_authentication_error, :user_id => user.id)
+          throw(:warden, :action => 'account_token_authentication_error', :user_id => user.id)
         else
           fail!
         end

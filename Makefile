@@ -31,6 +31,7 @@ WORKING_SPECS_2 = \
   spec/models/geocoding_spec.rb \
   spec/models/common_data_spec.rb \
   spec/lib/sql_parser_spec.rb \
+  spec/lib/url_signer_spec.rb \
   spec/lib/string_spec.rb \
   spec/lib/image_metadata_spec.rb \
   spec/lib/central_spec.rb \
@@ -126,7 +127,8 @@ WORKING_SPECS_7 = \
 	services/table-geocoder/spec/table_geocoder_spec.rb \
 	services/table-geocoder/spec/internal-geocoder/input_type_resolver_spec.rb \
 	services/table-geocoder/spec/internal-geocoder/query_generator_factory_spec.rb \
-  spec/models/synchronization/member_spec.rb \
+	services/table-geocoder/spec/lib/gme/table_geocoder_spec.rb \
+	spec/models/synchronization/member_spec.rb \
 	spec/requests/api/json/geocodings_controller_spec.rb \
 	spec/requests/carto/api/geocodings_controller_spec.rb \
   spec/models/organization_spec.rb \

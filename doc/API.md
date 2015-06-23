@@ -653,6 +653,10 @@ Removes the sublayer from the layer temporarily. The layer is refreshed after ca
 
 Toggles the visibility of the sublayer and returns a boolean that indicates the new status (true if the sublayer is visible, false if it is hidden)
 
+#### sublayer.isVisible()
+
+Gets the visibility of the sublayer.
+
 ### cartodb.CartoDBLayer.CartoDBSubLayer
 
 #### sublayer.getSQL()

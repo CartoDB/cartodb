@@ -141,6 +141,25 @@ describe('Sublayers', function() {
       })
     });
 
+    describe('.isVisible', function() {
+
+      it('should return true if sublayer is visible', function() {
+        sublayer.set({'hidden': undefined});
+
+        expect(sublayer.isVisible()).toBeTruthy();
+
+        sublayer.set({'hidden': false});
+
+        expect(sublayer.isVisible()).toBeTruthy();
+      });
+
+      it('should return false if sublayer is hidden', function() {
+        sublayer.set({'hidden': true});
+
+        expect(sublayer.isVisible()).toBeFalsy();
+      });
+    })
+
     describe('.set', function() {
 
       it('should throw an error if the sublayer was removed', function() {

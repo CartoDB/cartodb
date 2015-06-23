@@ -80,23 +80,6 @@
 
         <div class="Form-row">
           <div class="Form-rowLabel">
-            <label class="Form-label">Color</label>
-          </div>
-          <div class="Form-rowData">
-            <button type="button" class="js-colorPicker ColorPicker" style="background:<%= @organization.color.blank? ? "#354046" : @organization.color %>">
-              <span class="ColorPicker-handle">
-                <b class="ColorPicker-handleTriangle"></b>
-              </span>
-            </button>
-            <%= f.hidden_field :color, :class => "js-colorInput" %>
-          </div>
-          <div class="Form-rowInfo">
-            <p class="Form-rowInfoText">Your login page will be branded with this color</p>
-          </div>
-        </div>
-
-        <div class="Form-row">
-          <div class="Form-rowLabel">
             <label class="Form-label">Twitter username</label>
           </div>
           <div class="Form-rowData">
@@ -116,6 +99,55 @@
           </div>
           <div class="Form-rowInfo">
             <p class="Form-rowInfoText">Moderate the comments in your maps</p>
+          </div>
+        </div>
+
+        <div class="Form-title">
+          <h4 class="Form-titleHeader">Organization log in/sign up</h4>
+          <p class="Form-titleText">Customize your organization log in and sign up. Sign up will only be enabled when whitelist is not empty.</p>
+        </div>
+
+        <div class="Form-row">
+          <div class="Form-rowLabel">
+            <label class="Form-label">Color</label>
+          </div>
+          <div class="Form-rowData">
+            <button type="button" class="js-colorPicker ColorPicker" style="background:<%= @organization.color.blank? ? "#354046" : @organization.color %>">
+              <span class="ColorPicker-handle">
+                <b class="ColorPicker-handleTriangle"></b>
+              </span>
+            </button>
+            <%= f.hidden_field :color, :class => "js-colorInput" %>
+          </div>
+          <div class="Form-rowInfo">
+            <p class="Form-rowInfoText">Your log in and sign up pages will be branded with this color</p>
+          </div>
+        </div>
+
+        <div class="Form-row">
+          <div class="Form-rowLabel">
+            <label class="Form-label Form-label--multipleLines">Whitelisted email domains</label>
+          </div>
+          <div class="Form-rowData">
+            <div class="Form-tags js-domains">
+              <ul class="Form-tagsList js-domainsList"></ul>
+            </div>
+            <%= f.hidden_field :whitelisted_email_domains, :value => "#{ @organization[:whitelisted_email_domains].join(',') if !@organization[:whitelisted_email_domains].blank? }", :class => "js-whitelist" %>
+          </div>
+          <div class="Form-rowInfo">
+            <p class="Form-rowInfoText">Only valid domains will be added (ex. cartodb.com)</p>
+          </div>
+        </div>
+
+        <div class="Form-row">
+          <div class="Form-rowLabel">
+            <label class="Form-label">Default new user quota</label>
+          </div>
+          <div class="Form-rowData">
+            <%= f.text_field :default_quota_in_bytes, :value => "#{ ( @organization[:default_quota_in_bytes].to_i / 1000000 ) if !@organization[:default_quota_in_bytes].blank? }", :class => "Form-input Form-input--long js-userQuota" %>
+          </div>
+          <div class="Form-rowInfo">
+            <p class="Form-rowInfoText">Set (in MB) the quota of new users in your organization</p>
           </div>
         </div>
 

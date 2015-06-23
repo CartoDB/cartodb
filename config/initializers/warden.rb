@@ -35,6 +35,23 @@ Warden::Strategies.add(:password) do
   end
 end
 
+Warden::Strategies.add(:enable_account_token) do
+  def authenticate!
+    if params[:id]
+      user = User.where(enable_account_token: params[:id]).first
+      if user
+        user.enable_account_token = nil
+        user.save
+        success!(user)
+      else
+        fail!
+      end
+    else
+      fail!
+    end
+  end
+end
+
 Warden::Strategies.add(:google_access_token) do
   def authenticate!
     if params[:google_access_token]

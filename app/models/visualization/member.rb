@@ -611,6 +611,18 @@ module CartoDB
         embed_redis_cache.invalidate(self.id)
       end
 
+      # INFO: Handles doing nothing if instance is not eligible to have a named map
+      def save_named_map
+        return if type == TYPE_REMOTE
+
+        named_map = get_named_map
+        if named_map
+          update_named_map(named_map)
+        else
+          create_named_map
+        end
+      end
+
       private
 
       attr_reader   :repository, :name_checker, :validator
@@ -736,18 +748,6 @@ module CartoDB
           )
         end
         @named_maps
-      end
-
-      # INFO: Handles doing nothing if instance is not eligible to have a named map
-      def save_named_map
-        return if type == TYPE_REMOTE
-
-        named_map = get_named_map
-        if named_map
-          update_named_map(named_map)
-        else
-          create_named_map
-        end
       end
 
       def create_named_map

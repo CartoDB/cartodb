@@ -8,14 +8,12 @@ require_relative 'exceptions'
 module Carto
   class TableGeocoderFactory
 
-    DB_TIMEOUT_MS = 100.minutes.to_i * 1000
-
     def self.get(user, cartodb_geocoder_config, table_service, params = {})
       # Reset old connections to make sure changes apply.
       # NOTE: This assumes it's being called from a Resque job
       if user.present?
         user.reset_pooled_connections
-        user_connection = user.in_database(statement_timeout: DB_TIMEOUT_MS)
+        user_connection = user.in_database
       else
         user_connection = nil
       end

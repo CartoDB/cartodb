@@ -3,6 +3,8 @@
 module CartoDB
   class AbstractTableGeocoder
 
+    DB_STATEMENT_TIMEOUT_MS = 100.minutes.to_i * 1000
+
     def initialize(arguments)
       @connection  = arguments.fetch(:connection)
       @table_name  = arguments[:table_name]
@@ -11,6 +13,15 @@ module CartoDB
       @sequel_qualified_table_name = arguments[:sequel_qualified_table_name]
       @schema = arguments[:schema] || 'cdb'
       @state = 'submitted'
+      @connection.run("SET statement_timeout TO #{DB_STATEMENT_TIMEOUT_MS}")
+    end
+
+    # INFO: it's the table_geocoder owner's responsibility to call this method when done
+    def reset_connection
+      if @connection
+        @connection.run('SET statement_timeout TO DEFAULT')
+        @connection = nil
+      end
     end
 
     def add_georef_status_column

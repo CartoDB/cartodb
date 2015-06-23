@@ -100,6 +100,13 @@ defaults: &defaults
     purge_command: 'purge'
     retries: 5
     timeout: 5
+  invalidation_service:
+    enabled: false
+    host: '127.0.0.1'
+    port: 3142
+    critical: false
+    retries: 5
+    timeout: 5
   redis:
     host: '127.0.0.1'
     port: 6379

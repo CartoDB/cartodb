@@ -103,7 +103,8 @@ module CartoDB
             dynamic_cdn_enabled: @user != nil ? @user.dynamic_cdn_enabled: false,
             https_request: options.fetch(:https_request, false),
             viewer_user: @user,
-            owner: visualization.user
+            owner: visualization.user,
+            tiler_filter: options.fetch(:tiler_filter)
           }
           named_maps_presenter = CartoDB::NamedMapsWrapper::Presenter.new(
             visualization, layer_group_for_named_map(visualization), presenter_options, configuration

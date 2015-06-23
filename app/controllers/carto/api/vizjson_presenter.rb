@@ -6,10 +6,13 @@ module Carto
   module Api
     class VizJSONPresenter
 
+      DEFAULT_TILER_FILTER = 'mapnik'
+
       def initialize(visualization, redis_cache)
         @visualization = visualization
         @redis_cache = redis_cache
         @redis_vizjson_cache = CartoDB::Visualization::RedisVizjsonCache.new(redis_cache)
+        @configuration = Cartodb.config
       end
 
       def to_vizjson(options={})
@@ -28,9 +31,10 @@ module Carto
           user_api_key: user.api_key,
           user: user,
           viewer_user: user,
-          dynamic_cdn_enabled: user.dynamic_cdn_enabled
+          dynamic_cdn_enabled: user.dynamic_cdn_enabled,
+          tiler_filter: @configuration[:tiler].fetch('filter', DEFAULT_TILER_FILTER),
         }.merge(options)
-        CartoDB::Visualization::VizJSON.new(Carto::Api::VisualizationVizJSONAdapter.new(@visualization, @redis_cache), vizjson_options, Cartodb.config).to_poro
+        CartoDB::Visualization::VizJSON.new(Carto::Api::VisualizationVizJSONAdapter.new(@visualization, @redis_cache), vizjson_options, @configuration).to_poro
       end
 
       def user

@@ -6,7 +6,6 @@ module CartoDB
 
       NAMED_MAP_TYPE = 'namedmap'
       LAYER_TYPES_TO_DECORATE = [ 'torque' ]
-      DEFAULT_TILER_FILTER = 'mapnik'
 
       # @throws NamedMapsPresenterError
       def initialize(visualization, layergroup, options, configuration)
@@ -62,8 +61,8 @@ module CartoDB
                                   @configuration[:tiler]['private']['port'] :
                                   @configuration[:tiler]['public']['port'],
               cdn_url:          @configuration.fetch(:cdn_url, nil),
-              dynamic_cdn:        @options.fetch(:dynamic_cdn_enabled),
-              filter:           @configuration[:tiler].fetch('filter', DEFAULT_TILER_FILTER),
+              dynamic_cdn:      @options.fetch(:dynamic_cdn_enabled),
+              filter:           @options.fetch(:tiler_filter),
               named_map:        {
                 name:     @named_map_name,
                 stat_tag: @visualization.id,

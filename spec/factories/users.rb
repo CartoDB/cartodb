@@ -35,6 +35,8 @@ FactoryGirl.define do
     factory :admin, traits: [:admin]
 
     factory :valid_user do
+      username { "user#{rand(10000)}" }
+      email { "email" + rand(10000).to_s + "@nonono.com" }
       password 'kkkkkkkkk'
       password_confirmation 'kkkkkkkkk'
       salt 'kkkkkkkkk'

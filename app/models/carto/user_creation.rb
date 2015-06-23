@@ -33,7 +33,7 @@ class Carto::UserCreation < ActiveRecord::Base
     after_transition any => :creating_user_in_central, :do => :create_in_central
 
     before_transition any => :success, :do => :close_creation
-    after_transition any => :failure, :do => :clean_user
+    before_transition any => :failure, :do => :clean_user
 
     event :next_creation_step do
       transition :enqueuing => :creating_user,
@@ -100,7 +100,7 @@ class Carto::UserCreation < ActiveRecord::Base
     @user.google_sign_in = self.google_sign_in
     @user.enable_account_token = User.make_token unless @user.google_sign_in
   rescue => e
-    handle_failure(e)
+    handle_failure(e, mark_as_failure = true)
   end
 
   def save_user
@@ -109,13 +109,13 @@ class Carto::UserCreation < ActiveRecord::Base
     self.user_id = @user.id
     self.save
   rescue => e
-    handle_failure(e)
+    handle_failure(e, mark_as_failure = true)
   end
 
   def create_in_central
     user.create_in_central
   rescue => e
-    handle_failure(e)
+    handle_failure(e, mark_as_failure = true)
   end
 
   def close_creation
@@ -129,15 +129,18 @@ class Carto::UserCreation < ActiveRecord::Base
     user.notify_new_organization_user
   end
 
-  def handle_failure(e, mark_as_failure = false)
+  def handle_failure(e, mark_as_failure)
     CartoDB.notify_exception(e, { user_creation: self, mark_as_failure: mark_as_failure })
     self.log.append("Error on state #{self.state}, mark_as_failure: #{mark_as_failure}. Error: #{e.message}")
     self.log.append(e.backtrace.join("\n"))
-    if mark_as_failure
-      clean_password
-      self.state = 'failure'
-      self.save
-    end
+
+    process_failure if mark_as_failure
+  end
+
+  def process_failure
+    self.state = 'failure'
+    self.save
+    self.fail_user_creation
   end
 
   def clean_user

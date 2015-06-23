@@ -41,17 +41,19 @@ module CartoDB
     def run
       add_georef_status_column
       cache.run
+      mark_rows_to_geocode
+      csv_file = generate_csv
+      start_geocoding_job(csv_file)
+    end
 
-      # INFO: Mark the rows to be sent with cartodb_georef_status = FALSE
-      # This is necessary for cache.store to work correctly.
+    # Mark the rows to be sent with cartodb_georef_status = FALSE
+    # This is necessary for cache.store to work correctly.
+    def mark_rows_to_geocode
       connection.run(%Q{
         UPDATE #{@qualified_table_name} SET cartodb_georef_status = FALSE
         WHERE (cartodb_georef_status IS NULL)
         AND (cartodb_id IN (SELECT cartodb_id FROM #{@qualified_table_name} WHERE (cartodb_georef_status IS NULL) LIMIT #{@max_rows - cache.hits}))
       })
-
-      csv_file = generate_csv
-      start_geocoding_job(csv_file)
     end
 
     # Generate a csv input file from the geocodable rows

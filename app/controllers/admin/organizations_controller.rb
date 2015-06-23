@@ -28,6 +28,10 @@ class Admin::OrganizationsController < ApplicationController
     @organization.description = attributes[:description]
     @organization.display_name = attributes[:display_name]
     @organization.color = attributes[:color]
+    @organization.whitelisted_email_domains = attributes[:whitelisted_email_domains].split(",")
+    if attributes.include?(:default_quota_in_bytes)
+      @organization.default_quota_in_bytes = attributes[:default_quota_in_bytes].to_i * 1000000
+    end
     @organization.discus_shortname = attributes[:discus_shortname]
     @organization.twitter_username = attributes[:twitter_username]
 

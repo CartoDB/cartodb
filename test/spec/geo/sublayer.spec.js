@@ -141,6 +141,17 @@ describe('Sublayers', function() {
       })
     });
 
+    describe('.isVisible', function() {
+
+      it('should return layer visibility', function() {
+        sublayer.set('hidden', true);
+
+        sublayer.show();
+
+        expect(sublayer.isVisible().toEqual(true);
+      })
+    })
+
     describe('.set', function() {
 
       it('should throw an error if the sublayer was removed', function() {

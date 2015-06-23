@@ -84,6 +84,10 @@ SubLayerBase.prototype = {
     return attrs.options[attr];
   },
 
+  isVisible: function(){
+    return ! this.get('hidden');
+  },
+
   _check: function() {
     if(!this._added) throw "sublayer was removed";
   },

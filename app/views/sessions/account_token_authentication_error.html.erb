@@ -11,8 +11,8 @@
             </span>
           </div>
           <div class="js-info">
-            <h1 class="Sessions-title u-tspace-m">Didn't you receive the email?</h1>
-            <p class="Sessions-description">if not click <a href="<%= CartoDB.url(self, 'resend_validation_mail', :user_id => @user.id) %>">here</a> and a new email will be sent directly to your inbox.</p>
+            <h1 class="Sessions-title u-tspace-m">You must validate your email account</h1>
+            <p class="Sessions-description">If you didn't receive your validation email, click <a href="<%= CartoDB.url(self, 'resend_validation_mail', :user_id => @user.id) %>">here</a> and a new email will be sent directly to your inbox.</p>
           </div>
         </div>
       </div>

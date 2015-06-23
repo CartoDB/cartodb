@@ -5,6 +5,7 @@ module CartoDB
   module LayerGroup
     class Presenter
       LAYER_GROUP_VERSION = '1.0.1'
+      DEFAULT_TILER_FILTER = 'mapnik'
 
       def initialize(layers, options, configuration)
         @layers         = layers
@@ -33,7 +34,7 @@ module CartoDB
             sql_api_port:       (configuration[:sql_api]["public"]["port"] rescue nil),
             cdn_url:            configuration.fetch(:cdn_url, nil),
             dynamic_cdn:        @options.fetch(:dynamic_cdn_enabled, false),
-            filter:             @configuration[:tiler]['filter'],
+            filter:             @configuration[:tiler].fetch('filter', DEFAULT_TILER_FILTER),
             layer_definition:   {
               stat_tag:           options.fetch(:visualization_id),
               version:            LAYER_GROUP_VERSION,

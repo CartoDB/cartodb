@@ -655,7 +655,7 @@ Toggles the visibility of the sublayer and returns a boolean that indicates the 
 
 #### sublayer.isVisible()
 
-Gets the visibility of the sublayer.
+It returns `true`  if the sublayer is visible.
 
 ### cartodb.CartoDBLayer.CartoDBSubLayer
 

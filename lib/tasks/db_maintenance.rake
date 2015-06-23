@@ -558,15 +558,17 @@ namespace :cartodb do
       end
     end
 
-    desc "Recreates all table triggers"
-    task :recreate_table_triggers => :environment do
-      User.where('organization_id IS NOT NULL').each do |user|
+    desc "Recreates all table triggers for non-orgs users. Optionally you can pass a username param to do this only for one user. Example: cartodb:db:recreate_table_triggers['my_username']"
+    task :recreate_table_triggers, [:username] => :environment do |t, args|
+      username = args[:username]
 
+      users = username.nil? ? User.where('organization_id IS NOT NULL') : User.where(username: username)
+      users.each do |user|
         if  user.cartodb_extension_version_pre_mu? || user.database_schema=='public'
           puts "SKIP: #{user.username} / #{user.id}"
         else
           schema_name = user.database_schema
-          Table.filter(:user_id => user.id).each do |table|
+          UserTable.filter(:user_id => user.id).each do |table|
             table_name = "#{user.database_schema}.#{table.name}"
             begin
               user.in_database do |user_db|

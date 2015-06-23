@@ -105,11 +105,14 @@ class Organization < Sequel::Model
   end
 
   def get_geocoding_calls(options = {})
-    users.map{ |u| u.get_geocoding_calls(options) }.sum
+    date_from, date_to = quota_dates(options)
+    Geocoding.get_geocoding_calls(users_dataset.join(:geocodings, :user_id => :id), date_from, date_to)
   end
 
   def get_twitter_imports_count(options = {})
-    users.map{ |u| u.get_twitter_imports_count(options) }.sum
+    date_from, date_to = quota_dates(options)
+
+    SearchTweet.get_twitter_imports_count(users_dataset.join(:search_tweets, :user_id => :id), date_from, date_to)
   end
 
   def db_size_in_bytes
@@ -124,9 +127,11 @@ class Organization < Sequel::Model
     quota_in_bytes - assigned_quota
   end
 
-  def to_poro(filtered_user = nil)
+  # options:
+  # :show_organization_users: load all organization users under :users key
+  def to_poro(filtered_user = nil, options = {})
     filtered_user ||= self.owner
-    {
+    poro = {
       :created_at       => self.created_at,
       :description      => self.description,
       :discus_shortname => self.discus_shortname,
@@ -148,17 +153,20 @@ class Organization < Sequel::Model
       :seats                    => self.seats,
       :twitter_username         => self.twitter_username,
       :updated_at               => self.updated_at,
-      :users => self.users.reject { |item| filtered_user && item.id == filtered_user.id }
+      :website          => self.website,
+      :avatar_url       => self.avatar_url
+    }
+    if options[:show_organization_users] == true
+      poro[:users] = self.users.reject { |item| filtered_user && item.id == filtered_user.id }
         .map { |u|
         {
           :id         => u.id,
           :username   => u.username,
           :avatar_url => u.avatar_url
         }
-      },
-      :website          => self.website,
-      :avatar_url       => self.avatar_url
-    }
+      }
+    end
+    poro
   end
 
   def public_visualizations(page_num = 1, items_per_page = 5, tag = nil)
@@ -203,6 +211,16 @@ class Organization < Sequel::Model
   end
 
   private
+
+  def quota_dates(options)
+    date_to = (options[:to] ? options[:to].to_date : Date.today)
+    date_from = (options[:from] ? options[:from].to_date : last_billing_cycle)
+    return date_from, date_to
+  end
+
+  def last_billing_cycle
+    owner ? owner.last_billing_cycle : Date.today
+  end
 
   def public_vis_count_by_type(type)
     CartoDB::Visualization::Collection.new.fetch(

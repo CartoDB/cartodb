@@ -1,9 +1,10 @@
 # encoding: utf-8
 require_relative '../../geocoder/lib/geocoder'
 require_relative 'geocoder_cache'
+require_relative 'abstract_table_geocoder'
 
 module CartoDB
-  class TableGeocoder
+  class TableGeocoder < AbstractTableGeocoder
 
     attr_reader   :connection, :working_dir, :geocoder, :result, 
                   :temp_table_name, :max_rows, :cache
@@ -11,15 +12,11 @@ module CartoDB
     attr_accessor :table_name, :formatter, :remote_id
 
     def initialize(arguments)
-      @connection  = arguments.fetch(:connection)
+      super(arguments)
       @working_dir = arguments[:working_dir] || Dir.mktmpdir
       `chmod 777 #{@working_dir}`
-      @table_name  = arguments[:table_name]
-      @qualified_table_name = arguments[:qualified_table_name]
-      @sequel_qualified_table_name = arguments[:sequel_qualified_table_name]
       @formatter   = arguments[:formatter]
       @remote_id   = arguments[:remote_id]
-      @schema      = arguments[:schema] || 'cdb'
       @max_rows    = arguments[:max_rows] || 1000000
       @geocoder    = CartoDB::Geocoder.new(
         app_id:             arguments[:app_id],
@@ -44,17 +41,35 @@ module CartoDB
     def run
       add_georef_status_column
       cache.run
+      mark_rows_to_geocode
       csv_file = generate_csv
-      connection.run(
-        dataset.where('cartodb_id'.lit => dataset.select('cartodb_id'.lit))
-          .update_sql('cartodb_georef_status = false')
-      )
       start_geocoding_job(csv_file)
     end
 
+    # Mark the rows to be sent with cartodb_georef_status = FALSE
+    # This is necessary for cache.store to work correctly.
+    def mark_rows_to_geocode
+      connection.run(%Q{
+        UPDATE #{@qualified_table_name} SET cartodb_georef_status = FALSE
+        WHERE (cartodb_georef_status IS NULL)
+        AND (cartodb_id IN (SELECT cartodb_id FROM #{@qualified_table_name} WHERE (cartodb_georef_status IS NULL) LIMIT #{@max_rows - cache.hits}))
+      })
+    end
+
+    # Generate a csv input file from the geocodable rows
     def generate_csv
       csv_file = File.join(working_dir, "wadus.csv")
-      query = dataset.limit(@max_rows - cache.hits).select_sql
+      # INFO: we exclude inputs too short and "just digits" inputs, which will remain as georef_status = false
+      query = %Q{
+        WITH geocodable AS (
+          SELECT DISTINCT(#{clean_formatter}) recId, #{clean_formatter} searchText
+          FROM #{@qualified_table_name}
+          WHERE cartodb_georef_status = FALSE
+          LIMIT #{@max_rows - cache.hits}
+        )
+        SELECT * FROM geocodable
+        WHERE length(searchText) > 3 AND searchText !~ '^[\\d]*$'
+      }
       result = connection.copy_table(connection[query], format: :csv, options: 'HEADER')
       File.write(csv_file, result.force_encoding("UTF-8"))
       return csv_file
@@ -63,13 +78,6 @@ module CartoDB
     def update_geocoding_status
       geocoder.update_status
       { processed_rows: geocoder.processed_rows, state: geocoder.status }
-    end
-
-    def dataset
-      connection.select("DISTINCT(#{clean_formatter}) recId, #{clean_formatter} searchText".lit)
-        .from(@sequel_qualified_table_name)
-        .limit(max_rows)
-        .where("cartodb_georef_status IS NULL".lit)
     end
 
     def clean_formatter
@@ -141,25 +149,6 @@ module CartoDB
         FROM #{temp_table_name} AS orig
         WHERE #{clean_formatter} = orig.recId
       })
-    end
-
-    def add_georef_status_column
-      connection.run(%Q{
-        ALTER TABLE #{@qualified_table_name}
-        ADD COLUMN cartodb_georef_status BOOLEAN DEFAULT NULL
-      })
-    rescue Sequel::DatabaseError => e
-      raise unless e.message =~ /column .* of relation .* already exists/
-      cast_georef_status_column
-    end
-
-    def cast_georef_status_column
-      connection.run(%Q{
-        ALTER TABLE #{@qualified_table_name} ALTER COLUMN cartodb_georef_status
-        TYPE boolean USING cast(cartodb_georef_status as boolean)
-      })
-    rescue => e
-      raise "Error converting cartodb_georef_status to boolean, please, convert it manually or remove it."
     end
 
     def temp_table_name

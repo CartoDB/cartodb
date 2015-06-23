@@ -7,15 +7,72 @@ shared_examples_for "visualization controllers" do
 
   TEST_UUID = '00000000-0000-0000-0000-000000000000'
 
-  NORMALIZED_DATE_ATTRIBUTES = %w{ created_at updated_at }
+  DATE_ATTRIBUTES = %w{ created_at updated_at }
+  NORMALIZED_ASSOCIATION_ATTRIBUTES = {
+    attributes: DATE_ATTRIBUTES,
+    associations: {
+      'permission' => {
+        attributes: DATE_ATTRIBUTES,
+        associations: {}
+      },
+      'table' => {
+        attributes: DATE_ATTRIBUTES,
+        associations: {}
+      }
+    }
+  }
 
   # Custom hash comparation, since in the ActiveModel-based controllers
   # we allow some differences:
   # - x to many associations can return [] instead of nil
-  def normalize_hash(h)
+  def normalize_hash(h, normalized_attributes = NORMALIZED_ASSOCIATION_ATTRIBUTES)
     h.each { |k, v|
       h[k] = nil if v == []
-      h[k] = '' if NORMALIZED_DATE_ATTRIBUTES.include?(k)
+      h[k] = '' if normalized_attributes[:attributes].include?(k)
+      if normalized_attributes[:associations].keys.include?(k)
+        normalize_hash(v, normalized_attributes[:associations][k])
+      end
+    }
+  end
+
+  NEW_ATTRIBUTES = {
+    attributes: [],
+    associations: {
+      'table' => {
+        attributes: [],
+        associations: {
+          'permission' => {
+            attributes: [],
+            associations: {
+              'owner' => {
+                attributes: [ 'email', 'quota_in_bytes', 'db_size_in_bytes' ],
+                associations: {}
+              }
+            }
+          }
+        }
+      },
+      'permission' => {
+        attributes: [],
+        associations: {
+          'owner' => {
+            attributes: [ 'email', 'quota_in_bytes', 'db_size_in_bytes' ],
+            associations: {}
+          }
+        }
+      }
+    }
+  }
+
+  # INFO: this test uses comparison against old data structures to check validity.
+  # You can use this method to remove that new data so next comparisons will work.
+  def remove_data_only_in_new_controllers(visualization_hash, new_attributes = NEW_ATTRIBUTES)
+    visualization_hash.each { |k, v|
+      if new_attributes[:attributes].include?(k)
+        removed = visualization_hash.delete(k)
+      elsif new_attributes[:associations].include?(k)
+        remove_data_only_in_new_controllers(v, new_attributes[:associations][k])
+      end
     }
   end
 
@@ -32,7 +89,7 @@ shared_examples_for "visualization controllers" do
     get base_url, params, @headers
     last_response.status.should == 200
     body = JSON.parse(last_response.body)
-    body['visualizations'] = body['visualizations'].map { |v| normalize_hash(v) }
+    body['visualizations'] = body['visualizations'].map { |v| normalize_hash(v) }.map { |v| remove_data_only_in_new_controllers(v) }
     body
   end
 
@@ -79,6 +136,8 @@ shared_examples_for "visualization controllers" do
     include_context 'users helper'
 
     before(:each) do
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+
       login(@user1)
       @headers = {'CONTENT_TYPE'  => 'application/json'}
       host! "#{@user1.subdomain}.localhost.lan"
@@ -144,6 +203,8 @@ shared_examples_for "visualization controllers" do
     end
 
     before(:each) do
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+      
       CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
       @db = Rails::Sequel.connection
       Sequel.extension(:pagination)
@@ -169,8 +230,7 @@ shared_examples_for "visualization controllers" do
     end
 
     it 'tests exclude_shared and only_shared filters' do
-      CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
 
       user_1 = create_user(
         username: "test#{rand(9999)}-1",
@@ -388,143 +448,114 @@ shared_examples_for "visualization controllers" do
     end
 
     describe 'tests visualization likes endpoints' do
+      include_context 'users helper'
       # TODO: currently new endpoint doesn't match this endpoint
 
       it 'tests like endpoints' do
-        CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
 
-        user_2 = create_user(
-            username: "test#{rand(9999)}-2",
-            email: "client#{rand(9999)}@cartodb.com",
-            password: 'clientex',
-        )
+        vis_1_id = create_visualization(@user1).id
 
-        vis_1_id = create_visualization(@user).id
-
-        get api_v1_visualizations_likes_count_url(user_domain: @user.username, id: vis_1_id, api_key: @api_key)
+        get api_v1_visualizations_likes_count_url(user_domain: @user1.username, id: vis_1_id, api_key: @user1.api_key)
         JSON.parse(last_response.body).fetch('likes').to_i.should eq 0
 
-        get api_v1_visualizations_likes_list_url(user_domain: @user.username, id: vis_1_id, api_key: @api_key)
+        get api_v1_visualizations_likes_list_url(user_domain: @user1.username, id: vis_1_id, api_key: @user1.api_key)
         JSON.parse(last_response.body).fetch('likes').should eq []
 
-        get api_v1_visualizations_is_liked_url(user_domain: @user.username, id: vis_1_id, api_key: @api_key)
+        get api_v1_visualizations_is_liked_url(user_domain: @user1.username, id: vis_1_id, api_key: @user1.api_key)
 
-        post api_v1_visualizations_add_like_url(user_domain: @user.username, id: vis_1_id, api_key: @api_key)
+        post api_v1_visualizations_add_like_url(user_domain: @user1.username, id: vis_1_id, api_key: @user1.api_key)
         last_response.status.should == 200
         JSON.parse(last_response.body).fetch('likes').to_i.should eq 1
 
-        get api_v1_visualizations_is_liked_url(user_domain: @user.username, id: vis_1_id, api_key: @api_key)
+        get api_v1_visualizations_is_liked_url(user_domain: @user1.username, id: vis_1_id, api_key: @user1.api_key)
         JSON.parse(last_response.body).fetch('liked').should eq true
 
-        get api_v1_visualizations_likes_count_url(user_domain: @user.username, id: vis_1_id, api_key: @api_key)
+        get api_v1_visualizations_likes_count_url(user_domain: @user1.username, id: vis_1_id, api_key: @user1.api_key)
         JSON.parse(last_response.body).fetch('likes').to_i.should eq 1
 
-        get api_v1_visualizations_likes_list_url(user_domain: @user.username, id: vis_1_id, api_key: @api_key)
-        JSON.parse(last_response.body).fetch('likes').should eq [{'actor_id' => @user.id}]
+        get api_v1_visualizations_likes_list_url(user_domain: @user1.username, id: vis_1_id, api_key: @user1.api_key)
+        JSON.parse(last_response.body).fetch('likes').should eq [{'actor_id' => @user1.id}]
 
-        post api_v1_visualizations_add_like_url(user_domain: user_2.username, id: vis_1_id, api_key: user_2.api_key)
+        post api_v1_visualizations_add_like_url(user_domain: @user2.username, id: vis_1_id, api_key: @user2.api_key)
         last_response.status.should == 200
         JSON.parse(last_response.body).fetch('likes').to_i.should eq 2
 
-        get api_v1_visualizations_likes_list_url(user_domain: @user.username, id: vis_1_id, api_key: @api_key)
+        get api_v1_visualizations_likes_list_url(user_domain: @user1.username, id: vis_1_id, api_key: @user1.api_key)
         # Careful with order of array items
         (JSON.parse(last_response.body).fetch('likes') - [
-                                                           {'actor_id' => @user.id},
-                                                           {'actor_id' => user_2.id}
+                                                           {'actor_id' => @user1.id},
+                                                           {'actor_id' => @user2.id}
                                                          ]).should eq []
 
-        delete api_v1_visualizations_remove_like_url(user_domain: user_2.username, id: vis_1_id, api_key: user_2.api_key)
+        delete api_v1_visualizations_remove_like_url(user_domain: @user2.username, id: vis_1_id, api_key: @user2.api_key)
         last_response.status.should == 200
         JSON.parse(last_response.body).fetch('likes').to_i.should eq 1
 
         # No effect expected
-        delete api_v1_visualizations_remove_like_url(user_domain: user_2.username, id: vis_1_id, api_key: user_2.api_key)
+        delete api_v1_visualizations_remove_like_url(user_domain: @user2.username, id: vis_1_id, api_key: @user2.api_key)
         last_response.status.should == 200
         JSON.parse(last_response.body).fetch('likes').to_i.should eq 1
 
-        post api_v1_visualizations_add_like_url(user_domain: @user.username, id: vis_1_id, api_key: @api_key)
+        post api_v1_visualizations_add_like_url(user_domain: @user1.username, id: vis_1_id, api_key: @user1.api_key)
         last_response.status.should == 400
         last_response.body.should eq "You've already liked this visualization"
 
-        delete api_v1_visualizations_remove_like_url(user_domain: @user.username, id: vis_1_id, api_key: @api_key)
+        delete api_v1_visualizations_remove_like_url(user_domain: @user1.username, id: vis_1_id, api_key: @user1.api_key)
         last_response.status.should == 200
         JSON.parse(last_response.body).fetch('likes').to_i.should eq 0
 
-        post api_v1_visualizations_add_like_url(user_domain: @user.username, id: vis_1_id, api_key: @api_key)
+        post api_v1_visualizations_add_like_url(user_domain: @user1.username, id: vis_1_id, api_key: @user1.api_key)
         last_response.status.should == 200
         JSON.parse(last_response.body).fetch('likes').to_i.should eq 1
 
-        get api_v1_visualizations_likes_list_url(user_domain: @user.username, id: vis_1_id, api_key: @api_key)
-        JSON.parse(last_response.body).fetch('likes').should eq [{'actor_id' => @user.id}]
-
-        user_2.destroy
+        get api_v1_visualizations_likes_list_url(user_domain: @user1.username, id: vis_1_id, api_key: @user1.api_key)
+        JSON.parse(last_response.body).fetch('likes').should eq [{'actor_id' => @user1.id}]
       end
 
+    end
+
+    describe 'tests visualization likes endpoints in organizations' do
+      include_context 'organization with users helper'
+
       it 'tests totals calculations' do
-        CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
-
-        user_1 = create_user(
-            username: "test#{rand(9999)}-1",
-            email: "client#{rand(9999)}@cartodb.com",
-            password: 'clientex',
-            private_tables_enabled: false
-        )
-
-        user_2 = create_user(
-            username: "test#{rand(9999)}-2",
-            email: "client#{rand(9999)}@cartodb.com",
-            password: 'clientex',
-            private_tables_enabled: false
-        )
-
-        organization = test_organization.save
-
-        user_org = CartoDB::UserOrganization.new(organization.id, user_1.id)
-        user_org.promote_user_to_admin
-        organization.reload
-        user_1.reload
-
-        user_2.organization_id = organization.id
-        user_2.save.reload
-        organization.reload
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
 
         # user 1 will have 1 table and 1 vis
         # user 2 will have 2 of each
         # user 2 will share 1 table and 1 vis with the org
         # user 2 will share the other table and other vis with user 1
 
-        table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: "table_#{rand(9999)}_1_1", user_id: user_1.id)
+        table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: "table_#{rand(9999)}_1_1", user_id: @org_user_1.id)
         u1_t_1_id = table.table_visualization.id
 
-        table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: "table_#{rand(9999)}_2_2", user_id: user_2.id)
+        table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: "table_#{rand(9999)}_2_2", user_id: @org_user_2.id)
         u2_t_1_id = table.table_visualization.id
         u2_t_1_perm_id = table.table_visualization.permission.id
 
-        table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: "table_#{rand(9999)}_2_2", user_id: user_2.id)
+        table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: "table_#{rand(9999)}_2_2", user_id: @org_user_2.id)
         u2_t_2 = table
         u2_t_2_id = table.table_visualization.id
         u2_t_2_perm_id = table.table_visualization.permission.id
 
-        post api_v1_visualizations_create_url(user_domain: user_1.username, api_key: user_1.api_key),
-             factory(user_1).to_json, @headers
+        post api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
+             factory(@org_user_1).to_json, @headers
         last_response.status.should == 200
         u1_vis_1_id = JSON.parse(last_response.body).fetch('id')
 
-        post api_v1_visualizations_create_url(user_domain: user_2.username, api_key: user_2.api_key),
-             factory(user_2).to_json, @headers
+        post api_v1_visualizations_create_url(user_domain: @org_user_2.username, api_key: @org_user_2.api_key),
+             factory(@org_user_2).to_json, @headers
         last_response.status.should == 200
         u2_vis_1_id = JSON.parse(last_response.body).fetch('id')
         u2_vis_1_perm_id = JSON.parse(last_response.body).fetch('permission').fetch('id')
 
-        post api_v1_visualizations_create_url(user_domain: user_2.username, api_key: user_2.api_key),
-             factory(user_2).to_json, @headers
+        post api_v1_visualizations_create_url(user_domain: @org_user_2.username, api_key: @org_user_2.api_key),
+             factory(@org_user_2).to_json, @headers
         last_response.status.should == 200
         u2_vis_2_id = JSON.parse(last_response.body).fetch('id')
         u2_vis_2_perm_id = JSON.parse(last_response.body).fetch('permission').fetch('id')
 
-        get api_v1_visualizations_index_url(user_domain: user_1.username, api_key: user_1.api_key,
+        get api_v1_visualizations_index_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key,
                                             type: CartoDB::Visualization::Member::TYPE_CANONICAL), @headers
         body = JSON.parse(last_response.body)
         body['total_entries'].should eq 1
@@ -533,7 +564,7 @@ shared_examples_for "visualization controllers" do
         vis = body['visualizations'].first
         vis['id'].should eq u1_t_1_id
 
-        get api_v1_visualizations_index_url(user_domain: user_1.username, api_key: user_1.api_key,
+        get api_v1_visualizations_index_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key,
                                             type: CartoDB::Visualization::Member::TYPE_DERIVED), @headers
         body = JSON.parse(last_response.body)
         body['total_entries'].should eq 1
@@ -543,17 +574,17 @@ shared_examples_for "visualization controllers" do
         vis['id'].should eq u1_vis_1_id
 
         # Share u2 vis1 with organization
-        put api_v1_permissions_update_url(user_domain: user_2.username, api_key: user_2.api_key, id: u2_vis_1_perm_id),
+        put api_v1_permissions_update_url(user_domain: @org_user_2.username, api_key: @org_user_2.api_key, id: u2_vis_1_perm_id),
             {acl: [{
                        type: CartoDB::Permission::TYPE_ORGANIZATION,
                        entity: {
-                           id:   organization.id,
+                           id:   @organization.id,
                        },
                        access: CartoDB::Permission::ACCESS_READONLY
                    }]}.to_json, @headers
         last_response.status.should == 200
 
-        get api_v1_visualizations_index_url(user_domain: user_1.username, api_key: user_1.api_key,
+        get api_v1_visualizations_index_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key,
                                             type: CartoDB::Visualization::Member::TYPE_DERIVED, order: 'updated_at'), @headers
         body = JSON.parse(last_response.body)
         body['total_entries'].should eq 2
@@ -561,26 +592,26 @@ shared_examples_for "visualization controllers" do
         body['total_shared'].should eq 1
 
         # Share u2 vis2 with u1
-        put api_v1_permissions_update_url(user_domain: user_2.username, api_key: user_2.api_key, id: u2_vis_2_perm_id),
+        put api_v1_permissions_update_url(user_domain: @org_user_2.username, api_key: @org_user_2.api_key, id: u2_vis_2_perm_id),
             {acl: [{
                        type: CartoDB::Permission::TYPE_USER,
                        entity: {
-                           id:   user_1.id,
+                           id:   @org_user_1.id,
                        },
                        access: CartoDB::Permission::ACCESS_READONLY
                    }]}.to_json, @headers
         last_response.status.should == 200
 
-        get api_v1_visualizations_index_url(user_domain: user_1.username, api_key: user_1.api_key,
+        get api_v1_visualizations_index_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key,
                                             type: CartoDB::Visualization::Member::TYPE_DERIVED, order: 'updated_at'), @headers
         body = JSON.parse(last_response.body)
         body['total_entries'].should eq 3
         body['total_likes'].should eq 0
         body['total_shared'].should eq 2
 
-        post api_v1_visualizations_add_like_url(user_domain: user_1.username, id: u1_vis_1_id, api_key: user_1.api_key)
+        post api_v1_visualizations_add_like_url(user_domain: @org_user_1.username, id: u1_vis_1_id, api_key: @org_user_1.api_key)
 
-        get api_v1_visualizations_index_url(user_domain: user_1.username, api_key: user_1.api_key,
+        get api_v1_visualizations_index_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key,
                                             type: CartoDB::Visualization::Member::TYPE_DERIVED, order: 'updated_at'), @headers
         body = JSON.parse(last_response.body)
         body['total_entries'].should eq 3
@@ -588,9 +619,9 @@ shared_examples_for "visualization controllers" do
         body['total_shared'].should eq 2
 
         # Multiple likes to same vis shouldn't increment total as is per vis
-        post api_v1_visualizations_add_like_url(user_domain: user_1.username, id: u1_vis_1_id, api_key: user_1.api_key)
+        post api_v1_visualizations_add_like_url(user_domain: @org_user_1.username, id: u1_vis_1_id, api_key: @org_user_1.api_key)
 
-        get api_v1_visualizations_index_url(user_domain: user_1.username, api_key: user_1.api_key,
+        get api_v1_visualizations_index_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key,
                                             type: CartoDB::Visualization::Member::TYPE_DERIVED, order: 'updated_at'), @headers
         body = JSON.parse(last_response.body)
         body['total_entries'].should eq 3
@@ -599,16 +630,16 @@ shared_examples_for "visualization controllers" do
 
 
         # Share u2 table1 with org
-        put api_v1_permissions_update_url(user_domain:user_2.username, api_key: user_2.api_key, id: u2_t_1_perm_id),
+        put api_v1_permissions_update_url(user_domain:@org_user_2.username, api_key: @org_user_2.api_key, id: u2_t_1_perm_id),
             {acl: [{
                        type: CartoDB::Permission::TYPE_ORGANIZATION,
                        entity: {
-                           id:   organization.id,
+                           id:   @organization.id,
                        },
                        access: CartoDB::Permission::ACCESS_READONLY
                    }]}.to_json, @headers
 
-        get api_v1_visualizations_index_url(user_domain: user_1.username, api_key: user_1.api_key,
+        get api_v1_visualizations_index_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key,
                                             type: CartoDB::Visualization::Member::TYPE_CANONICAL, order: 'updated_at'), @headers
         body = JSON.parse(last_response.body)
         body['total_entries'].should eq 2
@@ -616,16 +647,16 @@ shared_examples_for "visualization controllers" do
         body['total_shared'].should eq 1
 
         # Share u2 table2 with org
-        put api_v1_permissions_update_url(user_domain:user_2.username, api_key: user_2.api_key, id: u2_t_2_perm_id),
+        put api_v1_permissions_update_url(user_domain:@org_user_2.username, api_key: @org_user_2.api_key, id: u2_t_2_perm_id),
             {acl: [{
                        type: CartoDB::Permission::TYPE_USER,
                        entity: {
-                           id:   user_1.id,
+                           id:   @org_user_1.id,
                        },
                        access: CartoDB::Permission::ACCESS_READONLY
                    }]}.to_json, @headers
 
-        get api_v1_visualizations_index_url(user_domain: user_1.username, api_key: user_1.api_key,
+        get api_v1_visualizations_index_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key,
                                             type: CartoDB::Visualization::Member::TYPE_CANONICAL, order: 'updated_at'), @headers
         body = JSON.parse(last_response.body)
         body['total_entries'].should eq 3
@@ -633,9 +664,9 @@ shared_examples_for "visualization controllers" do
         body['total_shared'].should eq 2
         body['visualizations'][0]['table']['name'].should == "public.#{u2_t_2.name}"
 
-        post api_v1_visualizations_add_like_url(user_domain: user_1.username, id: u1_t_1_id, api_key: user_1.api_key)
+        post api_v1_visualizations_add_like_url(user_domain: @org_user_1.username, id: u1_t_1_id, api_key: @org_user_1.api_key)
 
-        get api_v1_visualizations_index_url(user_domain: user_1.username, api_key: user_1.api_key,
+        get api_v1_visualizations_index_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key,
                                             type: CartoDB::Visualization::Member::TYPE_CANONICAL, order: 'updated_at'), @headers
         body = JSON.parse(last_response.body)
         body['total_entries'].should eq 3
@@ -643,9 +674,9 @@ shared_examples_for "visualization controllers" do
         body['total_shared'].should eq 2
 
         # Multiple likes to same table shouldn't increment total as is per vis
-        post api_v1_visualizations_add_like_url(user_domain: user_1.username, id: u1_t_1_id, api_key: user_2.api_key)
+        post api_v1_visualizations_add_like_url(user_domain: @org_user_1.username, id: u1_t_1_id, api_key: @org_user_2.api_key)
 
-        get api_v1_visualizations_index_url(user_domain: user_1.username, api_key: user_1.api_key,
+        get api_v1_visualizations_index_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key,
                                             type: CartoDB::Visualization::Member::TYPE_CANONICAL, order: 'updated_at'), @headers
         body = JSON.parse(last_response.body)
         body['total_entries'].should eq 3
@@ -658,8 +689,7 @@ shared_examples_for "visualization controllers" do
     describe 'index endpoint' do
 
       it 'tests normal users authenticated and unauthenticated calls' do
-        CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
 
         user_2 = create_user(
           username: 'testindexauth',
@@ -716,8 +746,7 @@ shared_examples_for "visualization controllers" do
       end
 
       it 'tests organization users authenticated and unauthenticated calls' do
-        CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
 
         organization = test_organization.save
 
@@ -788,8 +817,7 @@ shared_examples_for "visualization controllers" do
       end
 
       it 'tests privacy of vizjsons' do
-        CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
 
         user_1 = create_user(
           username: "test#{rand(9999)}-1",
@@ -949,8 +977,7 @@ shared_examples_for "visualization controllers" do
 
     describe 'GET /api/v1/viz' do
       before(:each) do
-        CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
         delete_user_data(@user)
       end
 
@@ -1056,7 +1083,7 @@ shared_examples_for "visualization controllers" do
       end
 
       it 'creates a visualization from a list of tables' do
-        CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
         table1 = table_factory
         table2 = table_factory
         table3 = table_factory
@@ -1100,8 +1127,7 @@ shared_examples_for "visualization controllers" do
     describe 'GET /api/v1/viz/:id' do
 
       before(:each) do
-        CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
         delete_user_data(@user)
       end
 
@@ -1127,8 +1153,7 @@ shared_examples_for "visualization controllers" do
 
     describe 'GET /api/v2/viz/:id/viz' do
       before(:each) do
-        CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
         delete_user_data(@user)
       end
 
@@ -1154,8 +1179,7 @@ shared_examples_for "visualization controllers" do
       end
 
       it "comes with proper surrogate-key" do
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:create).returns(nil)
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
         table                 = table_factory(privacy: 1)
         source_visualization  = table.fetch('table_visualization')
 
@@ -1185,13 +1209,12 @@ shared_examples_for "visualization controllers" do
 
     describe 'tests visualization listing filters' do
       before(:each) do
-        CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
         delete_user_data(@user)
       end
 
       it 'uses locked filter' do
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
 
         post api_v1_visualizations_create_url(api_key: @api_key), factory(@user, locked: true).to_json, @headers
         vis_1_id = JSON.parse(last_response.body).fetch('id')
@@ -1269,7 +1292,7 @@ shared_examples_for "visualization controllers" do
       it 'returns an empty array if no other user is watching' do
         CartoDB::Visualization::Watcher.any_instance.stubs(:list).returns([])
 
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
 
         login(@user_1)
         post api_v1_visualizations_create_url(api_key: @user_1.api_key), factory(@user_1, locked: true).to_json, @headers

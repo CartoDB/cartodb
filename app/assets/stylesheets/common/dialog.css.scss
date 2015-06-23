@@ -92,6 +92,14 @@ body.is-inDialog {
 .Dialog-body--withoutBorder {
   border-top: none;
 }
+.Dialog-Stretcher {
+  width: $sLayout-width;
+  @include display-flex();
+  @include justify-content(center);
+}
+.Dialog-Stretcher--small {
+  width: 700px;
+}
 .Filters.Dialog-bodyFilters {
   position: relative;
   background: none;

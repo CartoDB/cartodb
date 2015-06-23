@@ -8,13 +8,10 @@ class SessionsController < ApplicationController
 
   before_filter :initialize_google_plus_config
   before_filter :api_authorization_required, :only => :show
+  before_filter :load_organization
   # Don't force org urls
   skip_before_filter :ensure_org_url_if_org_user
 
-  def initialize_google_plus_config
-    signup_action = Cartodb::Central.sync_data_with_cartodb_central? ? Cartodb::Central.new.google_signup_url : '/google/signup'
-    @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, signup_action)
-  end
 
   def new
     if logged_in?(CartoDB.extract_subdomain(request))
@@ -73,7 +70,12 @@ class SessionsController < ApplicationController
     end
   end
 
-  private
+  protected
+
+  def initialize_google_plus_config
+    signup_action = Cartodb::Central.sync_data_with_cartodb_central? ? Cartodb::Central.new.google_signup_url : '/google/signup'
+    @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, signup_action)
+  end
 
   def extract_username(request, params)
     (params[:email].present? ? username_from_email(params[:email]) : CartoDB.extract_subdomain(request)).strip.downcase
@@ -82,6 +84,13 @@ class SessionsController < ApplicationController
   def username_from_email(email)
     user = User.where(email: email).first
     user.present? ? user.username : email
+  end
+
+  private
+
+  def load_organization
+    subdomain = CartoDB.extract_subdomain(request)
+    @organization = Carto::Organization.where(name: subdomain).first if subdomain
   end
 
 end

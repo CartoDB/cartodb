@@ -1,0 +1,12 @@
+@import "../map/map-sprite";
+
+.IllustrationIcon--geometryLine {
+  @include map-sprite(geometry_line);
+}
+.IllustrationIcon--geometryPoint {
+  @include map-sprite(geometry_point);
+}
+.IllustrationIcon--geometryPolygon {
+  @include map-sprite(geometry_polygon);
+}
+

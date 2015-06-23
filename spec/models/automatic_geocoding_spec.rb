@@ -4,6 +4,8 @@ require 'spec_helper'
 describe AutomaticGeocoding do
   before(:all) do
     @user  = create_user(geocoding_quota: 200)
+
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
     @table = FactoryGirl.create(:table, user_id: @user.id)
   end
 

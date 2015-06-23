@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require_relative '../../../../app/models/visualization/vizjson'
+require_relative '../../../../lib/carto/http/client'
 
 module CartoDB
   module NamedMapsWrapper
@@ -32,7 +33,7 @@ module CartoDB
       def self.create_new( visualization, parent )
         template_data = NamedMap.get_template_data( visualization, parent )
 
-        response = Typhoeus.post( parent.url + '?api_key=' + parent.api_key, {
+        response = http_client.post( parent.url + '?api_key=' + parent.api_key, {
           headers:          parent.headers,
           body:             ::JSON.dump( template_data ),
           ssl_verifypeer:   parent.verify_cert,
@@ -60,7 +61,7 @@ module CartoDB
         retries = 0
         success = true
         begin
-          response = Typhoeus.put( url + '?api_key=' + @parent.api_key, {
+          response = self.class.http_client.put( url + '?api_key=' + @parent.api_key, {
             headers:          @parent.headers,
             body:             ::JSON.dump( @template ),
             ssl_verifypeer:   @parent.verify_cert,
@@ -85,7 +86,7 @@ module CartoDB
 
       # Delete existing named map
       def delete
-        response = Typhoeus.delete( url + '?api_key=' + @parent.api_key,
+        response = self.class.http_client.delete( url + '?api_key=' + @parent.api_key,
           { 
             headers:          @parent.headers,
             ssl_verifypeer:   @parent.verify_cert,
@@ -95,7 +96,7 @@ module CartoDB
             timeout:          HTTP_REQUEST_TIMEOUT
           } )
         raise HTTPResponseError, "DELETE:#{response.code} #{response.request.url} #{response.body}" unless response.code == 204
-      end #delete
+      end
 
       # Url to access a named map's tiles
       def url
@@ -104,7 +105,7 @@ module CartoDB
 
       # Normalize a name to make it "named map valid"
       def self.normalize_name( raw_name )
-        ( NAME_PREFIX + raw_name ).gsub( /[^a-zA-Z0-9\-\_.]/ , '' ).gsub( '-', '_' )
+        (NAME_PREFIX + raw_name).gsub(/[^a-zA-Z0-9\-\_.]/, '').gsub('-', '_')
       end
 
       def self.get_template_data( visualization, parent )
@@ -129,7 +130,8 @@ module CartoDB
           placeholders: { },
           layergroup:   {
                           layers: []
-                        }
+                        },
+          view:         self.view_data_from(visualization)
         }
 
         if auth_type == AUTH_TYPE_SIGNED
@@ -148,38 +150,33 @@ module CartoDB
         vizjson = CartoDB::Visualization::VizJSON.new(visualization, presenter_options, parent.vizjson_config)
         layers_data = []
 
-        layer_group = vizjson.layer_group_for( visualization )
+        layer_group = vizjson.named_map_layer_group_for(visualization)
         unless layer_group.nil?
           layer_group[:options][:layer_definition][:layers].each { |layer|
-            layer_options = layer[:options].except [:sql, :interactivity]
+            layer_type = layer[:type].downcase
 
-            layer_placeholder = "layer#{layer_num}"
-            layer_num += 1
-            layer_options[:sql] = "SELECT * FROM (#{layer[:options][:sql]}) AS wrapped_query WHERE <%= #{layer_placeholder} %>=1"
-
-            template_data[:placeholders][layer_placeholder.to_sym] = {
-              type:     'number',
-              default:  layer[:visible] ? 1: 0
-            }
-
-            if layer.include?(:infowindow) && !layer[:infowindow].nil? && !layer[:infowindow].fetch('fields').nil? && layer[:infowindow].fetch('fields').size > 0
-              layer_options[:interactivity] = layer[:options][:interactivity]
-              layer_options[:attributes] = {
-                id:       'cartodb_id', 
-                columns:  layer[:infowindow]['fields'].map { |field|
-                          field.fetch('name')
-                }
-              }
+            # INFO: Bypass image-bg layers for now
+            if layer_type == 'background' && (layer[:options]['image'].length > 0)
+              next
             end
 
+            if layer_type == 'cartodb'
+              data = self.options_for_cartodb_layer(layer, layer_num, template_data)
+            else
+              data = self.options_for_basemap_layer(layer, layer_num, template_data)
+            end
+
+            layer_num = data[:layer_num]
+            template_data = data[:template_data]
+
             layers_data.push( {
-              type:     layer[:type].downcase,
-              options:  layer_options
+              type:     data[:layer_name],
+              options:  data[:layer_options]
             } )
           }
         end
         
-        other_layers = vizjson.other_layers_for( visualization )
+        other_layers = vizjson.other_layers_for(visualization)
         unless other_layers.nil?
           other_layers.compact.each { |layer|
             layers_data.push( {
@@ -196,6 +193,8 @@ module CartoDB
         template_data[:layergroup][:layers] = layers_data.compact.flatten
         template_data[:layergroup][:stat_tag] = visualization.id
 
+        template_data[:view] = view_data_from(visualization)
+
         template_data
       end
 
@@ -204,6 +203,113 @@ module CartoDB
       end
 
       attr_reader :template
+
+      private
+
+      def self.view_data_from(visualization)
+        center = visualization.map.center_data
+
+        data = {
+          zoom:   visualization.map.zoom,
+          center: {
+                    
+                    lng: center[1].to_f,
+                    lat: center[0].to_f
+                  }
+        }
+
+        # INFO: We grab view bounds because represent what the user usually wants to "see"
+        bounds_data = visualization.map.view_bounds_data
+        # INFO: Don't return 'bounds' if all points are 0 to avoid static map trying to go too small zoom level
+        if bounds_data[:west] != 0 || bounds_data[:south] != 0 || bounds_data[:east] != 0 || bounds_data[:north] != 0
+          data[:bounds] = bounds_data
+        end
+
+        data
+      end
+
+      # @return Hash {
+      #               layer_options: Hash,
+      #               layer_num: Integer,
+      #               template_data: Hash
+      #              }
+      def self.options_for_cartodb_layer(layer, layer_num, template_data)
+        layer_options = layer[:options].except [:sql, :interactivity]
+
+        layer_placeholder = "layer#{layer_num}"
+        layer_num += 1
+        layer_options[:sql] = "SELECT * FROM (#{layer[:options][:sql]}) AS wrapped_query WHERE <%= #{layer_placeholder} %>=1"
+
+        template_data[:placeholders][layer_placeholder.to_sym] = {
+          type:     'number',
+          default:  layer[:visible] ? 1: 0
+        }
+
+        if layer.include?(:infowindow) && !layer[:infowindow].nil? && !layer[:infowindow].fetch('fields').nil? && layer[:infowindow].fetch('fields').size > 0
+          layer_options[:interactivity] = layer[:options][:interactivity]
+          layer_options[:attributes] = {
+            id:       'cartodb_id', 
+            columns:  layer[:infowindow]['fields'].map { |field|
+                      field.fetch('name')
+            }
+          }
+        end
+
+        { 
+          layer_name: 'cartodb',
+          layer_options: layer_options,
+          layer_num: layer_num,
+          template_data: template_data
+        }
+      end
+
+      # @return Hash {
+      #               layer_options: Hash,
+      #               layer_num: Integer,
+      #               template_data: Hash
+      #              }
+      def self.options_for_basemap_layer(layer, layer_num, template_data)
+        if layer[:options]['type'] == 'Plain'
+          self.plain_color_basemap_layer(layer, layer_num, template_data)
+        else
+          self.http_basemap_layer(layer, layer_num, template_data)
+        end
+      end
+
+      def self.http_basemap_layer(layer, layer_num, template_data)
+        layer_options = {
+          urlTemplate: layer[:options]['urlTemplate']
+        }
+        if layer[:options].include?('subdomains')
+          layer_options[:subdomains] = layer[:options]['subdomains']
+        end
+
+        { 
+          layer_name: 'http',
+          layer_options: layer_options,
+          # Basemap layers don't increment layer index/number
+          layer_num: layer_num,
+          template_data: template_data
+        }
+      end
+
+      def self.plain_color_basemap_layer(layer, layer_num, template_data)
+        layer_options = { 
+          color: layer[:options]['color'] 
+        }
+
+        { 
+          layer_name: 'plain',
+          layer_options: layer_options,
+          # Basemap layers don't increment layer index/number
+          layer_num: layer_num,
+          template_data: template_data
+        }
+      end
+
+      def self.http_client
+        @@http_client ||= Carto::Http::Client.get('named_map')
+      end
 
     end
   end

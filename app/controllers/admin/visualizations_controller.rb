@@ -13,7 +13,8 @@ class Admin::VisualizationsController < ApplicationController
   DEFAULT_PLACEHOLDER_CHARS = 4
 
   ssl_allowed :embed_map, :public_map, :show_protected_embed_map, :public_table,
-              :show_organization_public_map, :show_organization_embed_map
+              :show_organization_public_map, :show_organization_embed_map,
+              :embed_protected, :public_map_protected, :embed_forbidden, :track_embed
   ssl_required :index, :show, :protected_embed_map, :protected_public_map, :show_protected_public_map
   before_filter :login_required, only: [:index]
   before_filter :table_and_schema_from_params, only: [:show, :public_table, :public_map, :show_protected_public_map,
@@ -31,29 +32,11 @@ class Admin::VisualizationsController < ApplicationController
                                                           :show_protected_embed_map, :show_protected_public_map]
   skip_before_filter :verify_authenticity_token, only: [:show_protected_public_map, :show_protected_embed_map]
 
-  def link_ghost_tables
-    return true unless current_user.present?
-
-    if current_user.search_for_modified_table_names
-      # this should be removed from there once we have the table triggers enabled in cartodb-postgres extension
-      # test if there is a job already for this
-      if !current_user.link_ghost_tables_working
-        ::Resque.enqueue(::Resque::UserJobs::SyncTables::LinkGhostTables, current_user.id)
-      end
-    end
-  end
-
-  def load_common_data
-    return true unless current_user.present?
-
-    ::Resque.enqueue(::Resque::UserJobs::CommonData::LoadCommonData, current_user.id) if current_user.should_load_common_data?
-  end
-
   def index
     @tables_count  = current_user.tables.count
     @first_time    = !current_user.dashboard_viewed?
     @just_logged_in = !!flash['logged']
-    @google_maps_api_key = current_user.google_maps_api_key
+    @google_maps_query_string = current_user.google_maps_query_string
     current_user.view_dashboard
     update_user_last_activity
 
@@ -61,7 +44,7 @@ class Admin::VisualizationsController < ApplicationController
       format.html { render 'index', layout: 'application' }
     end
 
-  end #index
+  end
 
   def show
     unless current_user.present?
@@ -72,7 +55,7 @@ class Admin::VisualizationsController < ApplicationController
       end
     end
 
-    @google_maps_api_key = @visualization.user.google_maps_api_key
+    @google_maps_query_string = @visualization.user.google_maps_query_string
     @basemaps = @visualization.user.basemaps
 
     unless @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
@@ -220,7 +203,7 @@ class Admin::VisualizationsController < ApplicationController
 
     @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)
     @avatar_url             = @visualization.user.avatar
-    @google_maps_api_key = @visualization.user.google_maps_api_key
+    @google_maps_query_string = @visualization.user.google_maps_query_string
 
     @mapviews = @visualization.total_mapviews
 
@@ -419,6 +402,24 @@ class Admin::VisualizationsController < ApplicationController
   end
 
   private
+
+  def link_ghost_tables
+    return true unless current_user.present?
+
+    if current_user.search_for_modified_table_names
+      # this should be removed from there once we have the table triggers enabled in cartodb-postgres extension
+      # test if there is a job already for this
+      if !current_user.link_ghost_tables_working
+        ::Resque.enqueue(::Resque::UserJobs::SyncTables::LinkGhostTables, current_user.id)
+      end
+    end
+  end
+
+  def load_common_data
+    return true unless current_user.present?
+
+    ::Resque.enqueue(::Resque::UserJobs::CommonData::LoadCommonData, current_user.id) if current_user.should_load_common_data?
+  end
 
   def more_visualizations(user, excluded_visualization)
     vqb = Carto::VisualizationQueryBuilder.user_public_visualizations(user).with_order(:updated_at, :desc)

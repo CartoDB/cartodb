@@ -4,6 +4,7 @@ module CartoDB
 
   ERROR_SOURCE_CARTODB = 'cartodb'
   ERROR_SOURCE_USER = 'user'
+  ERROR_SOURCE_EXTERNAL = 'external'
 
 # @see services/importer/lib/importer/exceptions.rb For mapping between exceptions and errors
   IMPORTER_ERROR_CODES = {
@@ -52,6 +53,11 @@ module CartoDB
       what_about: 'You requested too many nodes. Either request a smaller area, or use planet.osm.',
       source: ERROR_SOURCE_USER
     },
+    1009 => {
+      title: 'Twitter Server Error',
+      what_about: "There was an error connecting to Twitter service to retrieve your tweets. The server might be temporally unavaliable, please try again later.",
+      source: ERROR_SOURCE_EXTERNAL
+    },
     1010 => {
       title: 'Private Google Spreadsheet',
       what_about: "This spreadsheet seems to be private. Please check in Google Spreadsheet sharing options that the file is public or accessible for those who know the link.",
@@ -64,8 +70,8 @@ module CartoDB
     },
     1012 => {
       title: 'Error connecting to datasource',
-      what_about: "There was an error trying to connect to the datasource. This might be caused due to a configuration problem, server being unavaliable, revoked access token or similar cause.",
-      source: ERROR_SOURCE_USER
+      what_about: "There was an error trying to connect to the datasource. If this problem stays, please contact <a href='mailto:support@cartodb.com?subject=Error connecting to datasource'>support@cartodb.com</a>.",
+      source: ERROR_SOURCE_EXTERNAL
     },
     1013 => {
       title: 'Invalid ArcGIS version',
@@ -107,6 +113,18 @@ module CartoDB
       what_about: "Data download timed out. Check the source is not running slow and/or try again.",
       source: ERROR_SOURCE_USER
     },
+    1100 => {
+      title: 'Download file not found',
+      what_about: "Provided URL doesn't return a file (error 404). Please check that URL is still valid and that you can download the file and try again."
+    },
+    1101 => {
+      title: 'Forbidden file URL',
+      what_about: "Provided URL returns authentication error. Maybe it's private, or requires user and password. Please provide a valid, public URL and try again."
+    },
+    1102 => {
+      title: 'Unknown server URL',
+      what_about: "Provided URL can't be resolved to a known server. Maybe that URL is wrong or behind a private network. Please provide a valid, public URL and try again."
+    },
     2001 => {
       title: 'Unable to load data',
       what_about: "We couldn't load data from your file into the database.  Please <a href='mailto:support@cartodb.com?subject=Import load error'>contact us</a> and we will help you to load your data.",
@@ -114,7 +132,7 @@ module CartoDB
     },
     2002 => {
       title: 'Encoding detection error',
-      what_about: "We couldn't detect the encoding of your file. Please <a href='mailto:support@cartodb?subject=Encoding error in import'>contact us</a> and we will help you to load your data.",
+      what_about: "We couldn't detect the encoding of your file. Please, try saving your file with encoding UTF-8 or <a href='mailto:support@cartodb?subject=Encoding error in import'>contact us</a> and we will help you to load your data.",
       source: ERROR_SOURCE_USER
     },
     2003 => {
@@ -184,7 +202,7 @@ module CartoDB
     },
     6666 => {
       title: 'Dataset too big',
-      what_about: "The dataset you tried to import is too big and cannot be processed. If the dataset allows it, you can try splitting it into smaller files and then using the 'Merge Tables' functionality, or contact our support team at <a href='mailto:support@cartodb.com?subject=Dataset%20too%20big%20import%20error'>support@cartodb.com</a>.",
+      what_about: "The dataset you tried to import is too big and cannot be processed. If the dataset allows it, you can try splitting it into smaller files and then append them once imported, or contact our support team at <a href='mailto:support@cartodb.com?subject=Dataset%20too%20big%20import%20error'>support@cartodb.com</a>.",
       source: ERROR_SOURCE_USER
     },
     6667 => {

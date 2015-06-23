@@ -15,6 +15,52 @@ namespace :cartodb do
       end
     end
 
+    desc "Create named maps for all eligible existing visualizations"
+    task :create_named_maps, [:order] => :environment do |t, args|
+      sort_order = args[:order] == ':desc' ? :desc : :asc
+      puts "Retrieving by :created_at #{sort_order}"
+
+      puts "> #{Time.now}"
+
+      vqb = Carto::VisualizationQueryBuilder.new
+                                            .with_types([
+                                                Carto::Visualization::TYPE_CANONICAL, 
+                                                Carto::Visualization::TYPE_DERIVED
+                                              ])
+                                            .with_order(:created_at, sort_order)
+                                            .build
+
+      count = vqb.count
+      current = 0
+
+      puts "Fetched ##{count} items"
+      puts "> #{Time.now}"
+
+      vis_ids = vqb.pluck(:id)
+      vis_ids.each do |viz_id|
+        begin
+          current += 1
+
+          # Sad, but using the Collection causes OOM, so instantiate one by one even if takes a while
+          vis = CartoDB::Visualization::Member.new(id: viz_id).fetch
+          vis.send(:save_named_map) unless dry_run
+          if current % 50 == 0
+            print '.'
+          end
+          if current % 500 == 0
+            puts "\n> #{Time.now} #{current}/#{count}"
+          end
+          vis = nil
+        rescue => ex
+          printf "E"
+        end
+      end
+
+      puts "\n> #{Time.now}\nFinished ##{count} items"
+    end
+
+    private
+
     def is_inconsistent?(viz)
       (viz.table? && viz.related_tables.empty?) || (viz.derived? && viz.map.nil?)
     end

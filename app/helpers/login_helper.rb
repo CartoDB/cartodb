@@ -2,6 +2,27 @@
 
 module LoginHelper
 
+  DEFAULT_BACKGROUND_COLOR = "#354046"
+
+  def background
+    base_color = @organization && @organization.color ? @organization.color : DEFAULT_BACKGROUND_COLOR
+    color = "#{darken_color(base_color,0.6)}, #{base_color}"
+    "background: url(#{image_path('backgrounds/sessions.png')}), linear-gradient(to bottom right, #{color});"
+  end
+
+  def darken_color(hex_color, amount=0.4)
+    hex_color = hex_color.gsub('#','')
+    rgb = hex_color.scan(/../).map {|color| color.hex}
+    rgb[0] = (rgb[0].to_i * amount).round
+    rgb[1] = (rgb[1].to_i * amount).round
+    rgb[2] = (rgb[2].to_i * amount).round
+    "#%02x%02x%02x" % rgb
+  end
+
+  def login_org_avatar
+    @organization && @organization.name != "team" && !@organization.avatar_url.blank?
+  end
+
   def forget_password_url
     if CartoDB.account_host
       "#{request.protocol}#{CartoDB.account_host}/password_resets/new"

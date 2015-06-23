@@ -4,18 +4,15 @@
 .Navbar {
   @extend %clearfix;
   padding: 20px 0;
-}
-
-.Navbar-header {
-  float: left;
+  text-align: center;
 }
 
 .Navbar-brand {
   display: inline-block;
-  width: 90px;
-  height: 16px;
-  margin-top: 4px;
+  width: 48px;
+  height: 48px;
   vertical-align: middle;
+  margin-right: 5px;
 }
 
 .Navbar-menu {

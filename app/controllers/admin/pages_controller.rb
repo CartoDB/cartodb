@@ -14,6 +14,8 @@ class Admin::PagesController < ApplicationController
   PAGE_NUMBER_PLACEHOLDER = 'PAGENUMBERPLACEHOLDER'
 
   ssl_required :common_data, :public, :datasets
+  ssl_allowed :index, :sitemap, :datasets_for_user, :datasets_for_organization, :maps_for_user, :maps_for_organization,
+              :render_not_found
 
   before_filter :login_required, :except => [:public, :datasets, :sitemap, :index]
   before_filter :ensure_organization_correct
@@ -24,32 +26,6 @@ class Admin::PagesController < ApplicationController
   # Just an entrypoint to dispatch to different places according to
   def index
     CartoDB.subdomainless_urls? ? index_subdomainless : index_subdomainfull
-  end
-
-  def index_subdomainfull
-    if current_user && current_viewer && current_user.id == current_viewer.id
-      # username.cartodb.com should redirect to the user dashboard in the maps view if the user is logged in
-      redirect_to CartoDB.url(self, 'dashboard')
-    else
-      # Asummes either current_user nil or at least different from current_viewer
-      # username.cartodb.com should redirect to the public user dashboard in the maps view if the username is not the user's username
-      # username.cartodb.com should redirect to the public user dashboard in the maps view if the user is not logged in
-      redirect_to CartoDB.url(self, 'public_maps_home')
-    end
-  end
-
-  def index_subdomainless
-    if current_user && current_viewer && current_user.id == current_viewer.id
-      redirect_to CartoDB.url(self, 'dashboard')
-    elsif current_user.nil? && current_viewer
-      # current_viewer always returns a user with a session
-      redirect_to CartoDB.url(self, 'dashboard', {}, current_viewer)
-    elsif CartoDB.username_from_request(request)
-      redirect_to CartoDB.url(self, 'public_maps_home')
-    else
-      # We cannot get any user information from domain, path or session
-      redirect_to login_url
-    end
   end
 
   def common_data
@@ -98,7 +74,7 @@ class Admin::PagesController < ApplicationController
       end
     }.compact
     render :formats => [:xml]
-  end #sitemap
+  end
 
   def datasets
     datasets = CartoDB::ControllerFlows::Public::Datasets.new(self)
@@ -148,12 +124,38 @@ class Admin::PagesController < ApplicationController
     render_404
   end
 
+  protected
+
   def eligible_for_redirect?(user)
     return false if CartoDB.subdomainless_urls?
     user.has_organization? && CartoDB.subdomain_from_request(request) != user.organization.name
   end
 
-  private
+  def index_subdomainfull
+    if current_user && current_viewer && current_user.id == current_viewer.id
+      # username.cartodb.com should redirect to the user dashboard in the maps view if the user is logged in
+      redirect_to CartoDB.url(self, 'dashboard')
+    else
+      # Asummes either current_user nil or at least different from current_viewer
+      # username.cartodb.com should redirect to the public user dashboard in the maps view if the username is not the user's username
+      # username.cartodb.com should redirect to the public user dashboard in the maps view if the user is not logged in
+      redirect_to CartoDB.url(self, 'public_maps_home')
+    end
+  end
+
+  def index_subdomainless
+    if current_user && current_viewer && current_user.id == current_viewer.id
+      redirect_to CartoDB.url(self, 'dashboard')
+    elsif current_user.nil? && current_viewer
+      # current_viewer always returns a user with a session
+      redirect_to CartoDB.url(self, 'dashboard', {}, current_viewer)
+    elsif CartoDB.username_from_request(request)
+      redirect_to CartoDB.url(self, 'public_maps_home')
+    else
+      # We cannot get any user information from domain, path or session
+      redirect_to login_url
+    end
+  end
 
   def render_datasets(vis_list, user=nil)
     set_pagination_vars({

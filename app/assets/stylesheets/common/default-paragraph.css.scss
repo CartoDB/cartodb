@@ -8,7 +8,18 @@
   font-weight: $sFontWeight-lighter;
   color: $cTypography-paragraphs;
 }
-.DefaultParagraph--secondary {
+.DefaultParagraph--secondary { color: $cTypography-secondary }
+.DefaultParagraph--error {
+  color: $cHighlight-negative;
+  .Button--link {
+    color: $cHighlight-negative;
+    text-decoration: underline;
+  }
+}
+.DefaultParagraph--tertiary {
+  font-size: $sFontSize-normal;
+  line-height: $sLineHeight-normal;
+  font-weight: $sFontWeight-lighter;
   color: $cTypography-secondary;
 }
 .DefaultParagraph--short { width: 500px }

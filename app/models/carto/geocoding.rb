@@ -1,11 +1,12 @@
 # encoding: UTF-8
 
 require 'active_record'
+require_relative '../../../services/table-geocoder/lib/exceptions'
 
 module Carto
   class Geocoding < ActiveRecord::Base
 
-    PUBLIC_ATTRIBUTES = [:id, :table_id, :state, :kind, :country_code, :region_code, :formatter, :geometry_type, :error, :processed_rows, :cache_hits, :processable_rows, :real_rows, :price, :used_credits, :remaining_quota, :country_column, :region_column, :data_import_id]
+    PUBLIC_ATTRIBUTES = [:id, :table_id, :state, :kind, :country_code, :region_code, :formatter, :geometry_type, :error, :processed_rows, :cache_hits, :processable_rows, :real_rows, :price, :used_credits, :remaining_quota, :country_column, :region_column, :data_import_id, :error_code]
 
     def self.processable_rows(table_service)
       dataset = table_service.owner.in_database.select.from(table_service.sequel_qualified_table_name)
@@ -20,7 +21,12 @@ module Carto
     end
 
     def error
-      { title: 'Geocoding error', description: '' }
+      additional_info = Carto::GeocoderErrors.additional_info(error_code)
+      if additional_info
+        { title: additional_info.title, description: additional_info.what_about }
+      else
+        { title: 'Geocoding error', description: '' }
+      end
     end
     
     def price

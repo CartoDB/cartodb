@@ -703,7 +703,7 @@ class Table
     visualizations.each do |visualization|
       visualization.invalidate_cache
     end
-  end #invalidate_cache_for
+  end
 
   def varnish_key
     if owner.cartodb_extension_version_pre_mu?

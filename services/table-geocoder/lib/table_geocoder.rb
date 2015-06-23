@@ -41,17 +41,35 @@ module CartoDB
     def run
       add_georef_status_column
       cache.run
+      mark_rows_to_geocode
       csv_file = generate_csv
-      connection.run(
-        dataset.where('cartodb_id'.lit => dataset.select('cartodb_id'.lit))
-          .update_sql('cartodb_georef_status = false')
-      )
       start_geocoding_job(csv_file)
     end
 
+    # Mark the rows to be sent with cartodb_georef_status = FALSE
+    # This is necessary for cache.store to work correctly.
+    def mark_rows_to_geocode
+      connection.run(%Q{
+        UPDATE #{@qualified_table_name} SET cartodb_georef_status = FALSE
+        WHERE (cartodb_georef_status IS NULL)
+        AND (cartodb_id IN (SELECT cartodb_id FROM #{@qualified_table_name} WHERE (cartodb_georef_status IS NULL) LIMIT #{@max_rows - cache.hits}))
+      })
+    end
+
+    # Generate a csv input file from the geocodable rows
     def generate_csv
       csv_file = File.join(working_dir, "wadus.csv")
-      query = dataset.limit(@max_rows - cache.hits).select_sql
+      # INFO: we exclude inputs too short and "just digits" inputs, which will remain as georef_status = false
+      query = %Q{
+        WITH geocodable AS (
+          SELECT DISTINCT(#{clean_formatter}) recId, #{clean_formatter} searchText
+          FROM #{@qualified_table_name}
+          WHERE cartodb_georef_status = FALSE
+          LIMIT #{@max_rows - cache.hits}
+        )
+        SELECT * FROM geocodable
+        WHERE length(searchText) > 3 AND searchText !~ '^[\\d]*$'
+      }
       result = connection.copy_table(connection[query], format: :csv, options: 'HEADER')
       File.write(csv_file, result.force_encoding("UTF-8"))
       return csv_file
@@ -60,13 +78,6 @@ module CartoDB
     def update_geocoding_status
       geocoder.update_status
       { processed_rows: geocoder.processed_rows, state: geocoder.status }
-    end
-
-    def dataset
-      connection.select("DISTINCT(#{clean_formatter}) recId, #{clean_formatter} searchText".lit)
-        .from(@sequel_qualified_table_name)
-        .limit(max_rows)
-        .where("cartodb_georef_status IS NULL".lit)
     end
 
     def clean_formatter

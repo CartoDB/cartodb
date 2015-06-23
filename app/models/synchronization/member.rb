@@ -131,7 +131,11 @@ module CartoDB
 
       # @return bool
       def can_manually_sync?
-        (self.state == STATE_SUCCESS || self.state == STATE_FAILURE) && (self.ran_at + SYNC_NOW_TIMESPAN < Time.now)
+        # Last sync ok, last sync failed, or too much time in queued state
+        (  self.state == STATE_SUCCESS || 
+           self.state == STATE_FAILURE || 
+          (self.state == STATE_QUEUED && self.updated_at + SYNC_NOW_TIMESPAN < Time.now)
+         ) && (self.ran_at + SYNC_NOW_TIMESPAN < Time.now)
       end
 
       # @return bool

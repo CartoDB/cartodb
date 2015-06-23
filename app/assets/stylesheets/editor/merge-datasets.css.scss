@@ -36,6 +36,18 @@
   margin: 0 auto $sMargin-section auto;
   text-align: center;
 }
+.MergeDatasets-desc {
+  @include display-flex();
+  @include flex-direction(column);
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+  text-align: center;
+  &.MergeDatasets-desc--legend {
+    & > *:first-child { margin-top: $sMargin-group }
+    & > *:nth-child(even) { margin-bottom: $sMargin-group }
+    & > *:nth-child(odd) { margin-bottom: $sMargin-elementInline }
+  }
+}
 .MergeDatasets-countDescIcon {
   width: 72px;
   height: 68px;

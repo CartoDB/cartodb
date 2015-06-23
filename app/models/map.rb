@@ -64,6 +64,7 @@ class Map < Sequel::Model
   def after_save
     super
     update_map_on_associated_entities
+    update_related_named_maps
     invalidate_vizjson_varnish_cache
   end
 
@@ -101,6 +102,12 @@ class Map < Sequel::Model
     end
   end
 
+  def update_related_named_maps
+    visualizations.each do |visualization|
+      visualization.save_named_map unless visualization.id == being_destroyed_by_vis_id
+    end
+  end
+
   def admits_layer?(layer)
     return admits_more_torque_layers? if layer.torque_layer?
     return admits_more_data_layers? if layer.data_layer?
@@ -113,7 +120,7 @@ class Map < Sequel::Model
   end
 
   def visualizations
-    CartoDB::Visualization::Collection.new.fetch(map_id: [self.id]).to_a
+    @visualizations_collection ||= CartoDB::Visualization::Collection.new.fetch(map_id: [self.id]).to_a
   end
 
   def process_privacy_in(layer)

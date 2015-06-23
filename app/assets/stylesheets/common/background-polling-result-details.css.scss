@@ -5,13 +5,8 @@
 
 // Error details dialog styles
 $w: 560px;
-$c: #649DD0;
 
 .BackgroundPollingDetails {}
-.BackgroundPollingDetails-header .Dialog-headerIcon {
-  border-color: $c;
-  color: $c;
-}
 .BackgroundPollingDetails-body {
   @include display-flex();
   @include justify-content(flex-start);

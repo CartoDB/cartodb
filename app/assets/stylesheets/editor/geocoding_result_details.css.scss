@@ -1,0 +1,27 @@
+@import "../variables/mixins";
+@import "../variables/colors";
+@import "../variables/sizes";
+
+// Geocoding result details styles
+$s: 70px;
+
+.GeocodingResultDetails {}
+.GeocodingResultDetails-headerIcon {
+  width: auto;
+  height: auto;
+  margin-bottom: 0;
+  border: 0;
+}
+.GeocodingResultDetails-globeIcon {
+  font-size: $s;
+  color: $cStructure-mainLine;
+}
+.GeocodingResultDetails-headerIcon--failed .GeocodingResultDetails-globeIcon { color: $cHighlight-negative }
+.GeocodingResultDetails-points {
+  display: inline-block;
+  width: $s;
+  height: $s;
+  border: 1px solid $cStructure-mainLine;
+  border-radius: $s; 
+  @include background(image-url('layout/geocoding_result_icon.png') no-repeat center center);
+}

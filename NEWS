@@ -1,3 +1,6 @@
+3.X.X ()
+* New sublayer.isVisible() function
+
 3.15 (18//06//2015)
 * cartodb.js knows how to work with multiple types of sublayers (#508):
   * cartodb.createLayer accepts a `filter` option to specify wich types of layers must

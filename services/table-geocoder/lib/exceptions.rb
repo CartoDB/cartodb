@@ -64,6 +64,17 @@ module Carto
         )
     end
 
+    class AddGeorefStatusColumnDbTimeoutError < GeocoderBaseError
+      register_additional_info(
+        1020,
+        'Database statement time out',
+        %q{Your geocoding request timed out trying to execute some DB statement.
+           Please <a href='mailto:support@cartob.com?subject=Geocoding DB statement timed out'>contact us</a>
+           and we'll try to fix it quickly.}.squish,
+        AdditionalInfo::SOURCE_CARTODB
+        )
+    end
+
 
   end
 end

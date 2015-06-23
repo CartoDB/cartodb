@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require_relative 'exceptions'
+
 module CartoDB
   class AbstractTableGeocoder
 
@@ -30,6 +32,9 @@ module CartoDB
           ADD COLUMN cartodb_georef_status BOOLEAN DEFAULT NULL
         })
     rescue Sequel::DatabaseError => e
+      if e.message =~ /canceling statement due to statement timeout/
+        raise Carto::GeocoderErrors::AddGeorefStatusColumnDbTimeoutError.new
+      end
       raise unless e.message =~ /column .* of relation .* already exists/
       cast_georef_status_column
     end

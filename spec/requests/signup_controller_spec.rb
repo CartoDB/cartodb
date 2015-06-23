@@ -44,6 +44,7 @@ describe SignupController do
       username = 'testusername'
       email = 'testemail@nonono.com'
       password = 'testpassword' 
+      host! "#{@organization.name}.localhost.lan"
       post signup_organization_user_url(user_domain: @organization.name, user: { username: username, email: email, password: password })
       response.status.should == 200
       last_user_creation = Carto::UserCreation.order('created_at desc').limit(1).first

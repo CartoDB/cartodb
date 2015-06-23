@@ -31,7 +31,7 @@
                 <input type="hidden" value="0" id="google_access_filled" name="google_access_filled" />
 
                 <div class="Sessions-field">
-                  <%= text_field_tag :email, CartoDB.extract_subdomain(request), :title => "Email or username", placeholder: "Email or username", class: "Sessions-input" %>
+                  <%= text_field_tag :email, CartoDB.extract_subdomain(request), :title => "Email or username", placeholder: "email or username", class: "Sessions-input" %>
 
                   <% if @login_error %>
                     <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @login_error %>">!</div>
@@ -39,7 +39,7 @@
                 </div>
 
                 <div class="Sessions-field">
-                  <%= password_field_tag :password, "", placeholder: "Password", class: "Sessions-input" %>
+                  <%= password_field_tag :password, "", placeholder: "password", class: "Sessions-input" %>
 
                   <% if @login_error %>
                     <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @login_error %>">!</div>

@@ -11,7 +11,6 @@ FactoryGirl.define do
     display_name 'Vizzuality Inc'
     discus_shortname 'cartodb'
     twitter_username 'cartodb'
-    signup_page_enabled false
 
     factory :organization_with_users do
       after(:create) do |org|

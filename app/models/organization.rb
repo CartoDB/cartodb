@@ -217,6 +217,10 @@ class Organization < Sequel::Model
     )
   end
 
+  def signup_page_enabled
+    !whitelisted_email_domains.nil? && !whitelisted_email_domains.empty?
+  end
+
   private
 
   def quota_dates(options)

@@ -17,10 +17,9 @@ end
 
 describe Carto::Http::Client do
 
-  HTTP_CLIENT_TAG = 'test'
-
   before(:each) do
-    @client = Carto::Http::Client.get(HTTP_CLIENT_TAG, log_requests: true)
+    http_client_tag = 'test'
+    @client = Carto::Http::Client.get(http_client_tag, log_requests: true)
   end
 
 

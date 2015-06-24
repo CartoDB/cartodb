@@ -116,8 +116,6 @@ $resizeHandlerSize: 8px;
 .Button--micro {
   @include inline-block();
   background: #fff;
-  font-size: 12px;
-  font-weight:normal;
   padding: 4px 5px;
   @include border-radius(3px);
   height: auto;
@@ -129,6 +127,8 @@ $resizeHandlerSize: 8px;
 
   span {
     color: #666;
+    font-weight:normal;
+    font-size: 12px;
     text-transform: none;
   }
 }

@@ -46,6 +46,11 @@ describe CartoDB::TableGeocoder do
     it "assigns a remote_id" do
       @tg.remote_id.should == '111'
     end
+
+    it "holds a db connection with the specified statement timeout" do
+      timeout = @tg.connection.fetch("SHOW statement_timeout").all[0][:statement_timeout]
+      timeout.should == '5h'
+    end
   end
 
   describe '#generate_csv' do

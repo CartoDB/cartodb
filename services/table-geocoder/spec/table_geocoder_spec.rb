@@ -2,6 +2,7 @@
 require_relative '../lib/table_geocoder.rb'
 require_relative '../../geocoder/lib/geocoder.rb'
 require_relative 'factories/pg_connection'
+require 'set'
 
 RSpec.configure do |config|
   config.mock_with :mocha
@@ -37,7 +38,9 @@ describe CartoDB::TableGeocoder do
     end
 
     it "generates a csv file for uploading" do
-      File.open("#{@tg.working_dir}/wadus.csv").read.should == File.read(path_to('nokia_input.csv'))
+      expected = Set.new(File.readlines(path_to('nokia_input.csv')))
+      actual = Set.new(File.readlines("#{@tg.working_dir}/wadus.csv"))
+      actual.should == expected
     end
 
     it "assigns a remote_id" do
@@ -58,14 +61,20 @@ describe CartoDB::TableGeocoder do
     end
 
     it "generates a csv file with the correct format" do
+      @tg.mark_rows_to_geocode
       @tg.generate_csv
-      File.read("#{@tg.working_dir}/wadus.csv").should == File.read(path_to('nokia_input.csv'))
+      File.readlines("#{@tg.working_dir}/wadus.csv").to_set.should == File.readlines(path_to('nokia_input.csv')).to_set
     end
 
     it "honors max_rows" do
-      @tg.stubs(:max_rows).returns 10
+      max_rows = 10
+      @tg.stubs(:max_rows).returns max_rows
+      @tg.mark_rows_to_geocode
       @tg.generate_csv
-      `wc -l #{@tg.working_dir}/wadus.csv `.split.first.to_i.should eq 11
+
+      # Note there might be duplicate input strings but we send unique inputs to the geocoder api.
+      # Also note the csv file has a header.
+      File.readlines("#{@tg.working_dir}/wadus.csv").count.should <= (max_rows+1)
     end
   end
 

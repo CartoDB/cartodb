@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-gem 'rails',                   '3.2.2'
+gem 'rails',                   '3.2.20'
 
 gem 'rake',                    '0.9.2.2'
 gem 'pg',                      '0.13.2'
@@ -95,7 +95,7 @@ end
 group :development, :test do
   gem 'rb-readline'
   gem 'debugger',              '1.6.8'
-  gem 'rack',                  '1.4.1'
+  gem 'rack'
 
   # Server
   gem 'thin',                           require: false

@@ -16,3 +16,11 @@
   z-index: 2;
   &:hover { cursor: pointer }
 }
+
+
+// WMS panel view
+.WMSSSelectLayer-Filter {
+  width: 900px;
+  margin:auto;
+  z-index: 0;
+}

@@ -22,9 +22,7 @@ Warden::Strategies.add(:password) do
           success!(user, :message => "Success")
           request.flash['logged'] = true
         elsif !user.enable_account_token.nil?
-          # INFO: staging won't run account_token_authentication_error method but redirect to that url, so we're workarounding it with an endpoint
-          #throw(:warden, :action => 'account_token_authentication_error', :user_id => user.id)
-          throw(:warden, :action => "account_token_authentication_error/#{user.enable_account_token}")
+          throw(:warden, :action => 'account_token_authentication_error', :user_id => user.id)
         else
           fail!
         end

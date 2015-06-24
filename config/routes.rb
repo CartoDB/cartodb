@@ -19,7 +19,6 @@ CartoDB::Application.routes.draw do
 
   get   '(/user/:user_domain)(/u/:user_domain)/enable_account_token/:id' => 'account_tokens#enable',     as: :enable_account_token_show
   get   '(/user/:user_domain)(/u/:user_domain)/resend_validation_mail/:user_id' => 'account_tokens#resend',     as: :resend_validation_mail
-  get   '(/user/:user_domain)(/u/:user_domain)/account_token_authentication_error/:id' => 'sessions#account_token_error',     as: :resend_validation_mail_error
 
   get   '(/user/:user_domain)(/u/:user_domain)/login'           => 'sessions#new',     as: :login
   get   '(/user/:user_domain)(/u/:user_domain)/logout'          => 'sessions#destroy', as: :logout

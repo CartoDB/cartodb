@@ -20,9 +20,6 @@ class SessionsController < ApplicationController
   end
 
   def create
-    # INFO: workaround for staging not catching warden throw, see account_token_authentication_error
-    @user_email_for_error = params['email']
-
     user = if params[:google_access_token].present? && @google_plus_config.present?
       user = GooglePlusAPI.new.get_user(params[:google_access_token])
       if user
@@ -73,28 +70,11 @@ class SessionsController < ApplicationController
     end
   end
 
-  # INFO: this method should be invoked by warden when user hasn't validated his email account, although there're issues in staging and this method is not called. We're trying to woraround it.
   def account_token_authentication_error
+    CartoDB.notify_debug('account_token_authentication_error', { params: params, warden: warden.env })
     warden.custom_failure!
-    user_id = warden.env['warden.options'][:user_id]
-    if user_id
-      @user = User.where(id: user_id).first
-    elsif @user_email_for_error
-      @user = User.where('username = ? or email = ?', @user_email_for_error).first
-    end
-
-    render 'account_token_authentication_error'
-  end
-
-  # INFO: endpoint that workarounds staging not running account_token_authentication_error from throw (see warden initializer)
-  def account_token_error
-    byebug
-    token = params[:id]
-    render_404 and return unless token
-    @user = User.where(enable_account_token: token).first
-    render_404 and return unless @user
-
-    render 'account_token_authentication_error'
+    @user = User.where(id: warden.env['warden.options'][:user_id]).first
+    render 'sessions/account_token_authentication_error'
   end
 
   protected

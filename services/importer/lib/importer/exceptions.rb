@@ -62,7 +62,12 @@ module CartoDB
     class UnknownSridError                      < StandardError; end
     class UnsupportedFormatError                < StandardError; end
     class UploadError                           < StandardError; end
+
     class DownloadError                         < StandardError; end
+    class NotFoundDownloadError                 < DownloadError; end
+    class UnauthorizedDownloadError             < DownloadError; end
+    class CouldntResolveDownloadError           < DownloadError; end
+
     class TooManyNodesError                     < StandardError; end
     class GDriveNotPublicError                  < StandardError; end
     class EncodingDetectionError                < StandardError; end
@@ -77,7 +82,12 @@ module CartoDB
     ERRORS_MAP = {
       InstallError                          => 0001,
       UploadError                           => 1000,
+
       DownloadError                         => 1001,
+      NotFoundDownloadError                 => 1100,
+      UnauthorizedDownloadError             => 1101,
+      CouldntResolveDownloadError           => 1102,
+
       UnsupportedFormatError                => 1002,
       ExtractionError                       => 1003,
       XLSXFormatError                       => 1004,
@@ -121,6 +131,7 @@ module CartoDB
       CartoDB::Datasources::InvalidInputDataError                 => 1012,
       CartoDB::Datasources::ResponseError                         => 1011,
       CartoDB::Datasources::ExternalServiceError                  => 1012,
+      CartoDB::Datasources::GNIPServiceError                      => 1009,
       CartoDB::Datasources::DropboxPermissionError                => 1016
     }
   end # Importer2

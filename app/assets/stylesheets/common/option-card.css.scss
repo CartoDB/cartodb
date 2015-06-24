@@ -34,9 +34,18 @@
   border-radius: $sCard-borderRadius;
   background-color: $cStructure-mainBkg;
 }
-.OptionCard--privacy {
+.OptionCard--blocky {
+  position:relative;
   max-width: 230px; // set a max-width to appear nicer for dataset privacy dialog
+  padding: 33px 33px 27px 33px;
 }
+.OptionCard--blocky .OptionCard-title {
+  margin-bottom: 0;
+}
+.OptionCard--blocky .OptionCard-desc {
+  margin-bottom: 0;
+}
+
 .OptionCard--onlyIcons {
   // Arbitrary size really, but gives a "square" like look where used (only export modal for now).
   // If need to use the same style but with other amount of items we need to rethink this…

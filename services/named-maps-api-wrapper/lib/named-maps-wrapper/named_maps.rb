@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require_relative '../../../../lib/carto/http/client'
+
 module CartoDB
   module NamedMapsWrapper
     class NamedMaps
@@ -35,7 +37,7 @@ module CartoDB
       # Retrieve a list of all named maps
       def all
         request_time = Time.now
-        response = Typhoeus.get(@url + '?api_key=' + @api_key, {
+        response = http_client.get(@url + '?api_key=' + @api_key, {
           headers:          @headers,
           ssl_verifypeer:   @verify_cert,
           ssl_verifyhost:   @verify_host,
@@ -59,7 +61,7 @@ module CartoDB
         raise NamedMapsDataError, { 'name' => 'mising' } if name.nil? or name.length == 0
 
         request_time = Time.now
-        response = Typhoeus.get( [@url, name ].join('/') + '?api_key=' + @api_key, {
+        response = http_client.get( [@url, name ].join('/') + '?api_key=' + @api_key, {
           headers:          @headers,
           ssl_verifypeer:   @verify_cert,
           ssl_verifyhost:   @verify_host,
@@ -68,11 +70,10 @@ module CartoDB
           timeout:          NamedMap::HTTP_REQUEST_TIMEOUT
         })
 
-
         if response.code == 200
           template_data = ::JSON.parse(response.response_body)
           if template_data.class == Hash
-            template_data = template_data.deep_symbolize_keys   # Rails 2.x+
+            template_data = template_data.deep_symbolize_keys
           end
           named_map = NamedMap.new(name, template_data, self)
         elsif response.code == 404
@@ -92,6 +93,13 @@ module CartoDB
       end
 
       attr_reader :url, :api_key, :username, :headers, :host, :vizjson_config, :verify_cert, :verify_host
+
+
+      private
+
+      def http_client
+        @http_client ||= Carto::Http::Client.get('named_maps')
+      end
 
     end
   end

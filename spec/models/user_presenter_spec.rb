@@ -95,7 +95,8 @@ describe Carto::Api::UserPresenter do
   protected
 
   def compare_data(old_data, new_data, org_user = false)
-
+    # INFO: new organization presenter now doesn't contain users
+    old_data[:organization].delete(:users) if old_data[:organization]
     
     # TODO: This fails at CI server, until there's time to research...
     #new_data.should eq old_data
@@ -145,7 +146,11 @@ describe Carto::Api::UserPresenter do
       new_data[:organization].keys.should == old_data[:organization].keys
       
       # This is an implicit test of OrganizationPresenter...
-      new_data[:organization][:created_at].should == old_data[:organization][:created_at]
+      # INFO: we have a weird error sometimes running builds that fails comparing dates despite having equal value...
+      # > Diff:2015-06-23 17:27:02 +0200.==(2015-06-23 17:27:02 +0200) returned false even though the diff between 
+      #   2015-06-23 17:27:02 +0200 and 2015-06-23 17:27:02 +0200 is empty. Check the implementation of 
+      #   2015-06-23 17:27:02 +0200.==.
+      new_data[:organization][:created_at].to_s.should == old_data[:organization][:created_at].to_s
       new_data[:organization][:description].should == old_data[:organization][:description]
       new_data[:organization][:discus_shortname].should == old_data[:organization][:discus_shortname]
       new_data[:organization][:display_name].should == old_data[:organization][:display_name]
@@ -163,10 +168,9 @@ describe Carto::Api::UserPresenter do
       new_data[:organization][:geocoding_block_price].should == old_data[:organization][:geocoding_block_price]
       new_data[:organization][:seats].should == old_data[:organization][:seats]
       new_data[:organization][:twitter_username].should == old_data[:organization][:twitter_username]
-      new_data[:organization][:updated_at].should == old_data[:organization][:updated_at]
+      # Same as [:organization][:created_at] issue above
+      new_data[:organization][:updated_at].to_s.should == old_data[:organization][:updated_at].to_s
       #owner is excluded from the users list
-      new_data[:organization][:users].count.should eq 1
-      new_data[:organization][:users].should == old_data[:organization][:users]
       new_data[:organization][:website].should == old_data[:organization][:website]
       new_data[:organization][:avatar_url].should == old_data[:organization][:avatar_url]
     end

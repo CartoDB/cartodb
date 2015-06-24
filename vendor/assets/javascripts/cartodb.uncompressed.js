@@ -1,6 +1,6 @@
-// cartodb.js version: 3.14.3
+// cartodb.js version: 3.14.6
 // uncompressed version: cartodb.uncompressed.js
-// sha: fabc57cfac68c2f4264b8263a8620c436f96c45a
+// sha: 701551429aad9ec00c5704fdffc55262e3f8b6af
 (function() {
   var root = this;
 
@@ -25652,7 +25652,7 @@ if (typeof window !== 'undefined') {
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = "3.14.3";
+    cdb.VERSION = "3.14.6";
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -32787,6 +32787,41 @@ SubLayer.prototype = {
 
 // give events capabilitues
 _.extend(SubLayer.prototype, Backbone.Events);
+/**
+ * Wrapper for map properties returned by the tiler
+ */
+function MapProperties(mapProperties) {
+  this.mapProperties = mapProperties;
+}
+
+MapProperties.prototype.getMapId = function() {
+  return this.mapProperties.layergroupid;
+}
+
+/**
+ * Returns the index of a layer of a given type, as the tiler kwows it.
+ */
+MapProperties.prototype.getLayerIndexByType = function(index, layerType) {
+  var layers = this.mapProperties.metadata && this.mapProperties.metadata.layers;
+
+  if (!layers) {
+    return index;
+  }
+
+  var tilerLayerIndex = {}
+  var j = 0;
+  for (var i = 0; i < layers.length; i++) {
+    if (layers[i].type == layerType) {
+      tilerLayerIndex[j] = i;
+      j++;
+    }
+  }
+  if (tilerLayerIndex[index] == undefined) {
+    return -1;
+  }
+  return tilerLayerIndex[index];
+}
+
 function MapBase(options) {
   var self = this;
   this.options = _.defaults(options, {
@@ -32801,7 +32836,7 @@ function MapBase(options) {
     }
   });
 
-  this.layerToken = null;
+  this.mapProperties = null;
   this.urls = null;
   this.silent = false;
   this.interactionEnabled = []; //TODO: refactor, include inside layer
@@ -33037,7 +33072,6 @@ MapBase.prototype = {
     }
   },
 
-  // for named maps, attributes are fetched from the attributes service
   fetchAttributes: function(layer_index, feature_id, columnNames, callback) {
     this._attrCallbackName = this._attrCallbackName || this._callbackName();
     var ajax = this.options.ajax;
@@ -33064,27 +33098,27 @@ MapBase.prototype = {
   },
 
   invalidate: function() {
-    this.layerToken = null;
+    this.mapProperties = null;
     this.urls = null;
     this.onLayerDefinitionUpdated();
   },
 
   getTiles: function(callback) {
     var self = this;
-    if(self.layerToken) {
-      callback && callback(self._layerGroupTiles(self.layerToken, self.options.extra_params));
+    if(self.mapProperties) {
+      callback && callback(self._layerGroupTiles(self.mapProperties, self.options.extra_params));
       return this;
     }
     this.getLayerToken(function(data, err) {
       if(data) {
-        self.layerToken = data.layergroupid;
+        self.mapProperties = new MapProperties(data);
         // if cdn_url is present, use it
         if (data.cdn_url) {
           var c = self.options.cdn_url = self.options.cdn_url || {};
           c.http = data.cdn_url.http || c.http;
           c.https = data.cdn_url.https || c.https;
         }
-        self.urls = self._layerGroupTiles(data.layergroupid, self.options.extra_params);
+        self.urls = self._layerGroupTiles(self.mapProperties, self.options.extra_params);
         callback && callback(self.urls);
       } else {
         if ((self.named_map !== null) && (err) ){
@@ -33105,7 +33139,8 @@ MapBase.prototype = {
     return this.options.maps_api_template.indexOf('https') === 0;
   },
 
-  _layerGroupTiles: function(layerGroupId, params) {
+  _layerGroupTiles: function(mapProperties, params) {
+    var layerGroupId = mapProperties.getMapId();
     var subdomains = this.options.subdomains || ['0', '1', '2', '3'];
     if(this.isHttps()) {
       subdomains = [null]; // no subdomain
@@ -33123,8 +33158,9 @@ MapBase.prototype = {
 
       var gridParams = this._encodeParams(params, this.options.gridParams);
       for(var layer = 0; layer < this.layers.length; ++layer) {
+        var index = mapProperties.getLayerIndexByType(layer, "mapnik");
         grids[layer] = grids[layer] || [];
-        grids[layer].push(cartodb_url + "/" + layer +  tileTemplate + ".grid.json" + (gridParams ? "?" + gridParams: ''));
+        grids[layer].push(cartodb_url + "/" + index +  tileTemplate + ".grid.json" + (gridParams ? "?" + gridParams: ''));
       }
     }
 
@@ -33319,7 +33355,11 @@ MapBase.prototype = {
   },
 
   getTooltipData: function(layer) {
-    return this.layers[layer].tooltip;
+    var tooltip = this.layers[layer].tooltip;
+    if (tooltip && tooltip.fields && tooltip.fields.length) {
+      return tooltip;
+    }
+    return null;
   },
 
   getInfowindowData: function(layer) {
@@ -33585,15 +33625,12 @@ LayerDefinition.prototype = _.extend({}, MapBase.prototype, {
   },
 
   _attributesUrl: function(layer, feature_id) {
-    // /api/maps/:map_id/:layer_index/attributes/:feature_id
     var host = this._host();
     var url = [
       host,
-      //'api',
-      //'v1',
       MapBase.BASE_URL.slice(1),
-      this.layerToken,
-      this.getLayerIndexByNumber(layer),
+      this.mapProperties.getMapId(),
+      this.mapProperties.getLayerIndexByType(layer, "mapnik"),
       'attributes',
       feature_id].join('/');
 
@@ -33708,15 +33745,12 @@ NamedMap.prototype = _.extend({}, MapBase.prototype, {
   },
 
   _attributesUrl: function(layer, feature_id) {
-    // /api/maps/:map_id/:layer_index/attributes/:feature_id
     var host = this._host();
     var url = [
       host,
-      //'api',
-      //'v1',
       MapBase.BASE_URL.slice(1),
-      this.layerToken,
-      layer,
+      this.mapProperties.getMapId(),
+      this.mapProperties.getLayerIndexByType(layer, "mapnik"),
       'attributes',
       feature_id].join('/');
 
@@ -40108,9 +40142,24 @@ function transformToHTTP(tilesTemplate) {
   return tilesTemplate;
 }
 
+function transformToHTTPS(tilesTemplate) {
+  for(var url in HTTPS_TO_HTTP) {
+    var httpsUrl = HTTPS_TO_HTTP[url];
+    if(tilesTemplate.indexOf(httpsUrl) !== -1) {
+      return tilesTemplate.replace(httpsUrl, url);
+    }
+  }
+  return tilesTemplate;
+}
+
 Layers.register('tilejson', function(vis, data) {
   var url = data.tiles[0];
-  url = vis.https ? url: transformToHTTP(url);
+  if(vis.https === true) {
+    url = transformToHTTPS(url);
+  }
+  else if(vis.https === false) { // Checking for an explicit false value. If it's undefined the url is left as is.
+    url = transformToHTTP(url);
+  }
   return new cdb.geo.TileLayer({
     urlTemplate: url
   });
@@ -40118,7 +40167,13 @@ Layers.register('tilejson', function(vis, data) {
 
 Layers.register('tiled', function(vis, data) {
   var url = data.urlTemplate;
-  url = vis.https ? url: transformToHTTP(url);
+  if(vis.https === true) {
+    url = transformToHTTPS(url);
+  }
+  else if(vis.https === false) { // Checking for an explicit false value. If it's undefined the url is left as is.
+    url = transformToHTTP(url);
+  }
+  
   data.urlTemplate = url;
   return new cdb.geo.TileLayer(data);
 });

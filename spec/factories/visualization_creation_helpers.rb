@@ -11,7 +11,7 @@ end
 
 def bypass_named_maps
   CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
-  CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+  CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
 end
 
 def random_username
@@ -53,33 +53,35 @@ shared_context 'organization with users helper' do
     organization
   end
 
+  def create_test_user(username, organization = nil)
+    user = create_user(
+      username: username,
+      email: "#{username}@example.com",
+      password: username,
+      private_tables_enabled: true
+    )
+    unless organization.nil?
+      user.organization_id = organization.id
+      user.save.reload
+      user.reload
+    end
+    user
+  end
+
   before(:all) do
-    username1 = random_username
-    @org_user_1 = create_user(
-      username: username1,
-      email: "#{username1}@example.com",
-      password: 'clientex',
-      private_tables_enabled: true
-    )
+    @organization = test_organization.save
+    @organization_2 = test_organization.save
 
-    username2 = random_username
-    @org_user_2 = create_user(
-      username: username2,
-      email: "#{username2}@example.com",
-      password: 'clientex2',
-      private_tables_enabled: true
-    )
-
-    organization = test_organization.save
-
-    user_org = CartoDB::UserOrganization.new(organization.id, @org_user_1.id)
+    @org_user_1 = create_test_user("a#{random_username}")
+    user_org = CartoDB::UserOrganization.new(@organization.id, @org_user_1.id)
     user_org.promote_user_to_admin
-    organization.reload
+    @organization.reload
     @org_user_1.reload
 
-    @org_user_2.organization_id = organization.id
+    @org_user_2 = create_test_user("b#{random_username}", @organization)
+    @org_user_2.organization_id = @organization.id
     @org_user_2.save.reload
-    organization.reload
+    @organization.reload
   end
 
   before(:each) do
@@ -89,10 +91,7 @@ shared_context 'organization with users helper' do
   end
 
   after(:all) do
-    delete_user_data @org_user_1 if @org_user_1
-    delete_user_data @org_user_2 if @org_user_2
-    @org_user_2.destroy if @org_user_2
-    @org_user_1.destroy if @org_user_1
+    @organization.destroy_cascade
   end
 
   def share_table(table, owner, user)
@@ -108,7 +107,23 @@ shared_context 'organization with users helper' do
                  },
                  access: CartoDB::Permission::ACCESS_READONLY
                }]}.to_json, headers
-     response.status.should == 200
+    response.status.should == 200
+  end
+
+  def share_table_with_organization(table, owner, organization)
+    bypass_named_maps
+    headers = {'CONTENT_TYPE'  => 'application/json'}
+    perm_id = table.table_visualization.permission.id
+
+    put api_v1_permissions_update_url(user_domain: owner.username, api_key: owner.api_key, id: perm_id),
+        {acl: [{
+                 type: CartoDB::Permission::TYPE_ORGANIZATION,
+                 entity: {
+                   id:   organization.id,
+                 },
+                 access: CartoDB::Permission::ACCESS_READONLY
+               }]}.to_json, headers
+    last_response.status.should == 200
   end
 
 end

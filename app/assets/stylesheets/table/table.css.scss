@@ -7,6 +7,20 @@
   @import "../table/table-sprite";
   @import "../old_elements/progress-bar";
 
+  @-webkit-keyframes highlight-fade {   
+    0%   { background: none; }
+    20%   { background: #ECFCE5; }
+    80%   { background: #ECFCE5; }
+    100% { background: none; }
+  }
+
+  @keyframes highlight-fade {
+    0%   { background: none; }
+    20%   { background: #ECFCE5; }
+    80%   { background: #ECFCE5; }
+    100% { background: none; }
+  }
+
   // Table/vis options menu
   .dropdown.table-options {
     @include progress-bar(4px, 4px, true, 3px);
@@ -369,6 +383,13 @@ div.table {
             div.cell:not(.disabled) {
               cursor: pointer;
             }
+          }
+
+          &.is-highlighted {
+            -webkit-animation: highlight-fade 3s ease-in-out 1;
+            animation: highlight-fade 3s ease-in-out 1;
+            -webkit-animation-delay: 150ms;
+            animation-delay: 150ms;
           }
 
           div.cell {

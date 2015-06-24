@@ -2,8 +2,29 @@ require_relative '../spec_helper'
 
 require_relative '../../app/models/visualization/collection'
 require_relative '../../services/relocator/worker'
+require_relative 'organization_shared_examples'
 
 include CartoDB
+
+describe 'refactored behaviour' do
+  it_behaves_like 'organization models' do
+
+    before(:each) do
+      @the_organization = ::Organization.where(id: @organization.id).first
+    end
+
+    def get_twitter_imports_count_by_organization_id(organization_id)
+      raise "id doesn't match" unless organization_id == @the_organization.id
+      @the_organization.get_twitter_imports_count
+    end
+
+    def get_geocoding_calls_by_organization_id(organization_id)
+      raise "id doesn't match" unless organization_id == @the_organization.id
+      @the_organization.get_geocoding_calls
+    end
+
+  end
+end
 
 describe Organization do
 
@@ -12,7 +33,7 @@ describe Organization do
   end
 
   after(:all) do
-    Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
     begin
       @user.destroy
     rescue
@@ -22,6 +43,8 @@ describe Organization do
 
   describe '#destroy_cascade' do
     it 'Destroys users and owner as well' do
+      User.any_instance.stubs(:create_in_central).returns(true)
+      User.any_instance.stubs(:update_in_central).returns(true)
       organization = Organization.new(quota_in_bytes: 1234567890, name: 'wadus', seats: 5).save
 
       owner = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
@@ -109,6 +132,8 @@ describe Organization do
 
   describe '#org_members_and_owner_removal' do
     it 'Tests removing a normal member from the organization' do
+      User.any_instance.stubs(:create_in_central).returns(true)
+      User.any_instance.stubs(:update_in_central).returns(true)
       organization = Organization.new(quota_in_bytes: 1234567890, name: 'wadus', seats: 5).save
 
       owner = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
@@ -337,10 +362,6 @@ describe Organization do
       User.any_instance.stubs(:get_api_calls).returns (0..30).to_a
       @organization.get_api_calls.should == (0..30).to_a.sum * @organization.users.size
     end
-    it "should return the sum of the geocodings for all organization users" do
-      User.any_instance.stubs(:get_geocoding_calls).returns(30)
-      @organization.get_geocoding_calls.should == 30 * @organization.users.size
-    end
   end
 
   describe '.overquota', focus: true do
@@ -388,7 +409,6 @@ describe Organization do
       Organization.overquota(0.10).should be_empty
     end
   end
-
 
   def random_attributes(attributes={})
     random = rand(999)

@@ -39,6 +39,16 @@ $cHeader-dark:  rgba(#3A91D7, 1);
   line-height: $sLineHeight-largest;
   color: rgba(white, 0.6);
 }
+.Header-navigationLink {
+  font-size: $sFontSize-largest;
+  font-weight: $sFontWeight-lighter;
+  line-height: $sLineHeight-largest;
+  color: rgba(white, 0.6);
+  &:hover {
+    text-decoration: underline;
+    color: white;
+  }
+}
 .Header-navigationBreadcrumbItem:first-child { padding-left: 0 }
 .Header-navigationBreadcrumbLink {
   font-size: $sFontSize-largest;

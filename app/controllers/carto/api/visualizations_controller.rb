@@ -1,61 +1,26 @@
 require_relative 'visualization_presenter'
 require_relative 'vizjson_presenter'
 require_relative '../../../models/visualization/stats'
+require_relative 'paged_searcher'
+require_dependency 'carto/uuidhelper'
 
 module Carto
   module Api
     class VisualizationsController < ::Api::ApplicationController
       include VisualizationSearcher
+      include PagedSearcher
+      include Carto::UUIDHelper
+
+      ssl_required :index, :show
+      ssl_allowed  :vizjson2, :likes_count, :likes_list, :is_liked, :list_watching
 
       # TODO: compare with older, there seems to be more optional authentication endpoints
       skip_before_filter :api_authorization_required, only: [:index, :vizjson2, :is_liked]
       before_filter :optional_api_authorization, only: [:index, :vizjson2, :is_liked]
 
       before_filter :id_and_schema_from_params
-      before_filter :load_table, only: [:vizjson2]
+      before_filter :load_by_name_or_id, only: [:vizjson2]
       before_filter :load_visualization, only: [:likes_count, :likes_list, :is_liked, :show, :stats, :list_watching]
-      ssl_required :index, :show
-      ssl_allowed  :vizjson2, :likes_count, :likes_list, :is_liked, :list_watching
-
-      def id_and_schema_from_params
-        if params.fetch('id', nil) =~ /\./
-          @id, @schema = params.fetch('id').split('.').reverse
-        else
-          @id, @schema = [params.fetch('id', nil), nil]
-        end
-      end
-
-      def load_visualization
-        # Implicit order due to legacy code: 1st return canonical/table/Dataset if present, else derived/visualization/Map
-        @visualization = Carto::VisualizationQueryBuilder.new
-                                                         .with_id_or_name(@id)
-                                                         .build
-                                                         .all
-                                                         .sort { |vis_a, vis_b|
-                                                              vis_a.type == Carto::Visualization::TYPE_CANONICAL ? -1 : 1
-                                                            }
-                                                         .first
-
-        return render(text: 'Visualization does not exist', status: 404) if @visualization.nil?
-        return render(text: 'Visualization not viewable', status: 403) if !@visualization.is_viewable_by_user?(current_viewer)
-      end
-
-      def load_table
-        # TODO: refactor this for vizjson, that uses to look for a visualization, so it should come first
-
-        @table = Carto::UserTable.where(id: @id).first
-        # TODO: id should _really_ contain either an id of a user_table or a visualization??
-        # Some tests fail if not, and older controller works that way, but...
-        if @table
-          @visualization = @table.visualization
-        else
-          @table = Visualization.where(id: @id).first
-          @visualization = @table
-          # TODO: refactor load_table duplication
-          return render(text: 'Visualization does not exist', status: 404) if @visualization.nil?
-          return render(text: 'Visualization not viewable', status: 403) if !@visualization.is_viewable_by_user?(current_viewer)
-        end
-      end
 
       def show
         render_jsonp(to_json(@visualization))
@@ -64,9 +29,7 @@ module Carto
       end
 
       def index
-        page = (params[:page] || 1).to_i
-        per_page = (params[:per_page] || 20).to_i
-        order = (params[:order] || 'updated_at').to_sym
+        page, per_page, order = page_per_page_order_params
         types, total_types = get_types_parameters
         vqb = query_builder_with_filter_from_hash(params)
 
@@ -80,7 +43,7 @@ module Carto
           response.merge!({
             total_user_entries: VisualizationQueryBuilder.new.with_types(total_types).with_user_id(current_user.id).build.count,
             total_likes: VisualizationQueryBuilder.new.with_types(total_types).with_liked_by_user_id(current_user.id).build.count,
-            total_shared: VisualizationQueryBuilder.new.with_types(total_types).with_shared_with_user_id(current_user.id).build.count
+            total_shared: VisualizationQueryBuilder.new.with_types(total_types).with_shared_with_user_id(current_user.id).with_user_id_not(current_user.id).build.count
           })
         end
         render_jsonp(response)
@@ -104,7 +67,7 @@ module Carto
         render_jsonp({
           id: @visualization.id,
           likes: @visualization.likes.count,
-          liked: @visualization.is_liked_by_user_id?(current_viewer.id)
+          liked: current_viewer ? @visualization.is_liked_by_user_id?(current_viewer.id) : false
         })
       end
 
@@ -134,6 +97,41 @@ module Carto
       end
 
       private
+
+      def load_by_name_or_id
+        @table =  is_uuid?(@id) ? Carto::UserTable.where(id: @id).first  : nil
+
+        # INFO: id should _really_ contain either an id of a user_table or a visualization, but for legacy reasons...
+        if @table
+          @visualization = @table.visualization
+        else
+          load_visualization
+          @table = @visualization
+        end
+      end
+
+      def load_visualization
+        # Implicit order due to legacy code: 1st return canonical/table/Dataset if present, else derived/visualization/Map
+        @visualization = Carto::VisualizationQueryBuilder.new
+                                                         .with_id_or_name(@id)
+                                                         .build
+                                                         .all
+                                                         .sort { |vis_a, vis_b|
+                                                              vis_a.type == Carto::Visualization::TYPE_CANONICAL ? -1 : 1
+                                                            }
+                                                         .first
+
+        return render(text: 'Visualization does not exist', status: 404) if @visualization.nil?
+        return render(text: 'Visualization not viewable', status: 403) if !@visualization.is_viewable_by_user?(current_viewer)
+      end
+
+      def id_and_schema_from_params
+        if params.fetch('id', nil) =~ /\./
+          @id, @schema = params.fetch('id').split('.').reverse
+        else
+          @id, @schema = [params.fetch('id', nil), nil]
+        end
+      end
 
       def set_vizjson_response_headers_for(visualization)
         # We don't cache non-public vis

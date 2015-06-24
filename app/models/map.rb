@@ -29,6 +29,9 @@ class Map < Sequel::Model
   many_to_many  :other_layers, clone: :layers, right_key: :layer_id,
                 conditions: "kind not in ('carto', 'tiled', 'background', 'gmapsbase', 'wms')"
 
+  many_to_many  :named_maps_layers, clone: :layers, right_key: :layer_id,
+                conditions: "kind in ('tiled', 'background', 'gmapsbase', 'wms', 'carto')"
+
   plugin :association_dependencies, :layers => :nullify
 
   PUBLIC_ATTRIBUTES = %W{ id user_id provider bounding_box_sw
@@ -61,6 +64,7 @@ class Map < Sequel::Model
   def after_save
     super
     update_map_on_associated_entities
+    update_related_named_maps
     invalidate_vizjson_varnish_cache
   end
 
@@ -94,7 +98,13 @@ class Map < Sequel::Model
 
   def invalidate_vizjson_varnish_cache
     visualizations.each do |visualization|
-      visualization.invalidate_cache_and_refresh_named_map unless visualization.id == being_destroyed_by_vis_id
+      visualization.invalidate_cache unless visualization.id == being_destroyed_by_vis_id
+    end
+  end
+
+  def update_related_named_maps
+    visualizations.each do |visualization|
+      visualization.save_named_map unless visualization.id == being_destroyed_by_vis_id
     end
   end
 
@@ -110,7 +120,7 @@ class Map < Sequel::Model
   end
 
   def visualizations
-    CartoDB::Visualization::Collection.new.fetch(map_id: [self.id]).to_a
+    @visualizations_collection ||= CartoDB::Visualization::Collection.new.fetch(map_id: [self.id]).to_a
   end
 
   def process_privacy_in(layer)
@@ -128,6 +138,34 @@ class Map < Sequel::Model
     layer[:kind] == 'tiled' ? 'leaflet': 'googlemaps'
   end
 
+  # (lat,lon) points on all map data
+  def center_data
+    (center.nil? || center == '') ? DEFAULT_OPTIONS[:center] : center.gsub(/\[|\]|\s*/, '').split(',')
+  end
+
+  def view_bounds_data
+      if view_bounds_sw.nil? || view_bounds_sw == ''
+        bbox_sw = [0.0, 0.0]
+      else
+        bbox_sw = view_bounds_sw.gsub(/\[|\]|\s*/, '').split(',').map(&:to_f)
+      end
+      if view_bounds_ne.nil? || view_bounds_ne == ''
+        bbox_ne = [0.0, 0.0]
+      else
+        bbox_ne = view_bounds_ne.gsub(/\[|\]|\s*/, '').split(',').map(&:to_f)
+      end
+
+      {
+        # LowerCorner longitude, in decimal degrees 
+        west:  bbox_sw[1],
+        # LowerCorner latitude, in decimal degrees
+        south: bbox_sw[0],
+        # UpperCorner longitude, in decimal degrees
+        east:  bbox_ne[1],
+        # UpperCorner latitude, in decimal degrees
+        north: bbox_ne[0]
+      }
+  end
 
   private
 

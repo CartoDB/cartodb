@@ -41,6 +41,7 @@ module Carto
             vqb.with_user_id(current_user.id) if !only_liked
           when FILTER_SHARED_ONLY
             vqb.with_shared_with_user_id(current_user.id)
+                .with_user_id_not(current_user.id)
           end
 
           if locked == 'true'

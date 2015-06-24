@@ -231,9 +231,10 @@ module CartoDB
       end
 
       def delete(from_table_deletion=false)
-        begin
-          named_map = has_named_map?
           # Named map must be deleted before the map, or we lose the reference to it
+        begin
+          named_map = get_named_map
+          # non-existing named map is not a critical failure, keep deleting even if not found
           named_map.delete if named_map
         rescue NamedMapsWrapper::HTTPResponseError => exception
           # CDB-1964: Silence named maps API exception if deleting data to avoid interrupting whole flow
@@ -353,7 +354,6 @@ module CartoDB
         options.delete(:public_fields_only) === true ? presenter.to_public_poro : presenter.to_poro
       end
 
-
       def to_vizjson(options={})
         @redis_vizjson_cache.cached(id, options.fetch(:https_request, false)) do
           calculate_vizjson(options)
@@ -377,7 +377,7 @@ module CartoDB
       end
 
       def all_users_with_read_permission
-        users_with_permissions([CartoDB::Visualization::Member::PERMISSION_READONLY, \
+        users_with_permissions([CartoDB::Visualization::Member::PERMISSION_READONLY,
                                 CartoDB::Visualization::Member::PERMISSION_READWRITE]) + [user]
       end
 
@@ -421,16 +421,9 @@ module CartoDB
       end
 
       def invalidate_cache
-        invalidate_varnish_cache
         invalidate_redis_cache
+        invalidate_varnish_cache
         parent.invalidate_cache unless parent_id.nil?
-      end
-
-      def invalidate_cache_and_refresh_named_map
-        invalidate_cache
-        if type != TYPE_CANONICAL or organization?
-          save_named_map
-        end
       end
 
       def invalidate_all_varnish_vizsjon_keys
@@ -445,11 +438,12 @@ module CartoDB
         has_private_tables
       end
 
+      # Despite storing always a named map, no need to retrievfe it for "public" visualizations
       def retrieve_named_map?
         password_protected? || has_private_tables?
       end
 
-      def has_named_map?
+      def get_named_map
         return false if type == TYPE_REMOTE
 
         data = named_maps.get(CartoDB::NamedMapsWrapper::NamedMap.normalize_name(id))
@@ -492,7 +486,7 @@ module CartoDB
       end
 
       def get_auth_tokens
-        named_map = has_named_map?
+        named_map = get_named_map
         raise CartoDB::InvalidMember unless named_map
 
         tokens = named_map.template[:template][:auth][:valid_tokens]
@@ -617,6 +611,17 @@ module CartoDB
         embed_redis_cache.invalidate(self.id)
       end
 
+      # INFO: Handles doing nothing if instance is not eligible to have a named map
+      def save_named_map
+        return if type == TYPE_REMOTE
+
+        named_map = get_named_map
+        if named_map
+          update_named_map(named_map)
+        else
+          create_named_map
+        end
+      end
 
       private
 
@@ -709,13 +714,11 @@ module CartoDB
           permission.clear
         end
 
-        if type == TYPE_REMOTE
-          propagate_privacy_and_name_to(table) if table and propagate_changes
-        elsif type == TYPE_CANONICAL
-          save_named_map
+        save_named_map
+
+        if type == TYPE_REMOTE || type == TYPE_CANONICAL
           propagate_privacy_and_name_to(table) if table and propagate_changes
         else
-          save_named_map
           propagate_name_to(table) if !table.nil? and propagate_changes
         end
       end
@@ -747,15 +750,6 @@ module CartoDB
         @named_maps
       end
 
-      def save_named_map
-        named_map = has_named_map?
-        if named_map
-          update_named_map(named_map)
-        else
-          create_named_map
-        end
-      end
-
       def create_named_map
         new_named_map = named_maps.create(self)
         !new_named_map.nil?
@@ -774,8 +768,8 @@ module CartoDB
       def propagate_privacy_to(table)
         if type == TYPE_CANONICAL
           CartoDB::TablePrivacyManager.new(table)
-            .set_from(self)
-            .propagate_to_varnish
+                                      .set_from(self)
+                                      .propagate_to_varnish
         end
         self
       end

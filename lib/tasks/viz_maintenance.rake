@@ -16,31 +16,47 @@ namespace :cartodb do
     end
 
     desc "Create named maps for all eligible existing visualizations"
-    task :create_named_maps, [:dry_run] => :environment do |t, args|
-      dry_run = args[:dry_run] == 'true'
+    task :create_named_maps, [:order] => :environment do |t, args|
+      sort_order = args[:order] == ':desc' ? :desc : :asc
+      puts "Retrieving by :created_at #{sort_order}"
 
-      puts "Dry run of create_named_maps rake" if dry_run
+      puts "> #{Time.now}"
 
-      collection = CartoDB::Visualization::Collection.new.fetch({
-        'types' => [CartoDB::Visualization::Member::TYPE_CANONICAL, CartoDB::Visualization::Member::TYPE_DERIVED],
-        per_page: CartoDB::Visualization::Collection::ALL_RECORDS
-        })
+      vqb = Carto::VisualizationQueryBuilder.new
+                                            .with_types([
+                                                Carto::Visualization::TYPE_CANONICAL, 
+                                                Carto::Visualization::TYPE_DERIVED
+                                              ])
+                                            .with_order(:created_at, sort_order)
+                                            .build
 
-      count = collection.count
+      count = vqb.count
+      current = 0
 
       puts "Fetched ##{count} items"
+      puts "> #{Time.now}"
 
-      collection.each do |viz|
+      vis_ids = vqb.pluck(:id)
+      vis_ids.each do |viz_id|
         begin
-          viz.store unless dry_run
-          puts "OK:  #{CartoDB::NamedMapsWrapper::NamedMap::normalize_name(viz.id)} :: User: #{viz.user_id}"
+          current += 1
+
+          # Sad, but using the Collection causes OOM, so instantiate one by one even if takes a while
+          vis = CartoDB::Visualization::Member.new(id: viz_id).fetch
+          vis.send(:save_named_map) unless dry_run
+          if current % 50 == 0
+            print '.'
+          end
+          if current % 500 == 0
+            puts "\n> #{Time.now} #{current}/#{count}"
+          end
+          vis = nil
         rescue => ex
-          puts "ERR: #{viz.id}"
-          puts ex.inspect
+          printf "E"
         end
       end
 
-      puts "\nFinished ##{count} items"
+      puts "\n> #{Time.now}\nFinished ##{count} items"
     end
 
     private

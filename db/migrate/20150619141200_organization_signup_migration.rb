@@ -12,7 +12,7 @@ Sequel.migration do
 
     Rails::Sequel.connection.run(%q{
       ALTER TABLE "organizations"
-      ADD COLUMN whitelisted_email_domains text[]
+      ADD COLUMN whitelisted_email_domains text[] NOT NULL DEFAULT ARRAY[]::text[]
     })
 
     alter_table :users do

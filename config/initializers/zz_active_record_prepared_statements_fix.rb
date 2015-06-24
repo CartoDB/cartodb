@@ -59,19 +59,6 @@ module ActiveRecord
         Integer(r.rows.first.first)
       end
 
-      def exec_query(sql, name = 'SQL', binds = [])
-        log(sql, name, binds) do
-          # INFO: monkeypatch disabling prepared statements
-          #result = binds.empty? ? exec_no_cache(sql, binds) :
-          #                        exec_cache(sql, binds)
-          result = exec_no_cache(sql, binds)
-
-          ret = ActiveRecord::Result.new(result.fields, result_as_array(result))
-          result.clear
-          return ret
-        end
-      end
-
     end
   end
 end

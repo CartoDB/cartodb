@@ -19,6 +19,7 @@ $w: 560px;
   width: $w;
   border-bottom: 1px solid #ddd;
 }
+.Dialog-body.BackgroundPollingDetails-body--noBorderTop { border-top: 0 }
 .BackgroundPollingDetails-icon {
   font-size: 28px;
   margin-right: $sMargin-element;

@@ -1,11 +1,12 @@
 # encoding: utf-8
 
 require_relative 'exceptions'
+require 'active_support/core_ext/numeric'
 
 module CartoDB
   class AbstractTableGeocoder
 
-    DB_STATEMENT_TIMEOUT_MS = 100.minutes.to_i * 1000
+    DB_STATEMENT_TIMEOUT_MS = 5.hours.to_i * 1000
 
     def initialize(arguments)
       @connection  = arguments.fetch(:connection)

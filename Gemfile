@@ -87,12 +87,12 @@ group :test do
   gem 'webrick',               '1.3.1'
   gem 'mocha'
   gem 'ci_reporter',           '1.8.4'
-  gem 'rspec-rails',           '2.12.0'
   gem 'poltergeist',           '>= 1.0.0'
   gem 'activerecord-nulldb-adapter', '0.3.1'
 end
 
 group :development, :test do
+  gem 'rspec-rails',           '2.12.0'
   gem 'rb-readline'
   gem 'debugger',              '1.6.8'
   gem 'rack'

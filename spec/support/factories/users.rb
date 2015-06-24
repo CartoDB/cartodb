@@ -35,7 +35,8 @@ module CartoDB
         )
       end
 
-      user_class.any_instance.stubs(:enable_remote_db_user).returns(true)
+      # INFO: commented because rspec doesn't allow to stub in a before:each
+      # user_class.any_instance.stubs(:enable_remote_db_user).returns(true)
 
       attributes = attributes.dup
       user = user_class.new

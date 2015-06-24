@@ -4,7 +4,9 @@
 require_relative '../../../../config/environment'
 require 'rspec/rails'
 
-require 'rspec'
+require 'rspec/core'
+require 'rspec/expectations'
+require 'rspec/mocks'
 require 'mocha'
 require 'typhoeus'
 require_relative '../../../../lib/carto/http/client'

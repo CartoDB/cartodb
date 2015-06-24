@@ -4,6 +4,10 @@ require_relative '../spec_helper'
 
 describe Carto::Api::UserPresenter do
 
+  before(:each) do
+    User.any_instance.stubs(:enable_remote_db_user).returns(true)
+  end
+
   it "Compares old and new ways of 'presenting' user data" do
     CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
 

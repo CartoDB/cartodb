@@ -133,6 +133,10 @@ end
 shared_context 'users helper' do
   include_context 'database configuration'
 
+  before(:each) do
+    User.any_instance.stubs(:enable_remote_db_user).returns(true)
+  end
+
   before(:all) do
     username1 = random_username
     @user1 = create_user(

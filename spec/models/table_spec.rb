@@ -31,6 +31,10 @@ def create_import(user, file_name, name=nil)
 end
 
 describe Table do
+  before(:each) do
+    User.any_instance.stubs(:enable_remote_db_user).returns(true)
+  end
+
   before(:all) do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
     puts "\n[rspec][table_spec] Creating test user database..."

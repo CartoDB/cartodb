@@ -1,6 +1,6 @@
 // cartodb.js version: 3.14.3
 // uncompressed version: cartodb.uncompressed.js
-// sha: 298d7cfe69dfd78e50e439d7467ba0d415598031
+// sha: 1faaba3bffe0ebe423eec137c1ff89b992cbdab5
 (function() {
   var root = this;
 
@@ -40801,7 +40801,8 @@ Layers.register('torque', function(vis, data) {
       var s = [
         'with stats as (', 
            'select count(distinct({{column}})) as uniq, ',
-           'round(100.0 * sum(case when {{column}} is null then 1 else 0 end)::numeric / count(*)::numeric,1) as count_nulls ',
+           'round(100.0 * sum(case when {{column}} is null then 1 else 0 end)::numeric / count(*)::numeric,1) as count_nulls, ',
+           'PAE_DistinctMeasure(array_agg({{column}}::text),0.9) as weight ',
            'from ({{sql}}) __wrap',
         '),',
         'hist as (', 
@@ -40823,7 +40824,9 @@ Layers.register('torque', function(vis, data) {
             return [r[1], +r[2]];
           }),
           distinct: data.rows[0].uniq,
-          count_nulls: data.rows[0].count_nulls
+          count_nulls: data.rows[0].count_nulls,
+          weight: data.rows[0].weight,
+          passes: (data.rows[0].uniq > 1 && data.rows[0].weight && data.rows[0].count_nulls < 10.0)
         })
       });
   }
@@ -40907,7 +40910,9 @@ Layers.register('torque', function(vis, data) {
          '),',
          'buckets as (',
             'select CDB_QuantileBins(array_agg({{column}}::numeric), 7) as quantiles, ',
-            'select CDB_EqualIntervalBins(array_agg({{column}}::numeric), 7) as equalint ',
+            '       CDB_EqualIntervalBins(array_agg({{column}}::numeric), 7) as equalint, ',
+            '       CDB_JenksBins(array_agg({{column}}::numeric), 7) as jenks, ',
+            '       CDB_HeadsTailsBins(array_agg({{column}}::numeric), 7) as headtails ',
             'from ({{sql}}) _table_sql where {{column}} is not null',
          ')',
          'select * from histogram, stats, buckets'
@@ -40936,6 +40941,8 @@ Layers.register('torque', function(vis, data) {
           min: row.min,
           quantiles: row.quantiles,
           equalint: row.equalint,
+          jenks: row.jenks,
+          headtails: row.headtails,
           dist_type: row.dist_type
         });
       });

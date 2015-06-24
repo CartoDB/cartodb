@@ -1070,6 +1070,72 @@ describe("LayerDefinition", function() {
 
       expect(actualUrl).toEqual(expectedUrl);
     })
+
+    it('should handle hidden layers properly', function() {
+      var layer_definition = {
+        version: '1.0.0',
+        stat_tag: 'vis_id',
+        layers: [
+          {
+            type: 'http',
+            urlTemplate: 'urlTemplate',
+            options: {}
+          },
+          {
+            type: 'http',
+            urlTemplate: 'urlTemplate',
+            options: {}
+          },
+          {
+            type: 'cartodb',
+            options: {
+              sql: 'select * from ne_10m_populated_places_simple',
+              cartocss: '#layer { marker-fill: red; }',
+              interactivity: ['test', 'cartodb_id']
+            }
+          },
+          {
+            type: 'cartodb',
+            options: {
+              sql: "select * from european_countries_export",
+              cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
+              cartocss_version : '2.0.0',
+              interactivity: ['       test2    ', 'cartodb_id2']
+            }
+          }
+        ]
+      };
+
+      layerDefinition.setLayerDefinition(layer_definition);
+
+      // Hide the first `http` sublayer
+      layerDefinition.getSubLayer(0).hide();
+
+      // Hide the first `mapnik` sublayer
+      layerDefinition.getSubLayer(1).hide();
+
+      // Tiler returns the two layers that are visible
+      mapProperties = {
+        "layergroupid": "layergroupid",
+        "metadata": {
+          "layers": [
+            { "type": "http", "meta": {} },
+            { "type": "mapnik", "meta": {} },
+          ]
+        }
+      }
+
+      // Fetch the map properties
+      layerDefinition.getTiles();
+
+      // Fetch attributes for 2nd mapnik layer (which is layer 1 in the tiler)
+      layerDefinition.fetchAttributes(2, 'feature_id', 2, callback);
+
+      var expectedUrl = 'http://rambo.cartodb.com:8081/api/v1/map/layergroupid/1/attributes/feature_id';
+      var actualUrl = ajax.calls.mostRecent().args[0].url;
+
+      expect(actualUrl).toEqual(expectedUrl);
+    })
   })
 
   describe('._buildMapsApiTemplate, ._host', function() {

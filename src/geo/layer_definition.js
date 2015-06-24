@@ -355,7 +355,7 @@ MapBase.prototype = {
       host,
       MapBase.BASE_URL.slice(1),
       this.mapProperties.getMapId(),
-      this.mapProperties.getLayerIndexByType(layer, "mapnik"),
+      this.mapProperties.getLayerIndexByType(this.getLayerIndexByNumber(layer), "mapnik"),
       'attributes',
       feature_id].join('/');
 

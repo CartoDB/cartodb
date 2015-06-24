@@ -48,10 +48,8 @@ shared_examples_for "organization models" do
       get_organization.signup_page_enabled.should == true
     end
 
-    it 'is false if domain whitelist is nil or empty' do
+    it 'is false if domain whitelist is empty' do
       get_organization = FactoryGirl.build(:organization)
-      get_organization.whitelisted_email_domains = nil
-      get_organization.signup_page_enabled.should == false
       get_organization.whitelisted_email_domains = []
       get_organization.signup_page_enabled.should == false
     end

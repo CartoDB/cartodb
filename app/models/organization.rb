@@ -40,6 +40,10 @@ class Organization < Sequel::Model
     validates_presence [:name, :quota_in_bytes, :seats]
     validates_unique   :name
     validates_format   /\A[a-z0-9\-]+\z/, :name, message: 'must only contain lowercase letters, numbers & hyphens'
+    validates_integer  :default_quota_in_bytes, :allow_nil => true
+    if default_quota_in_bytes
+      errors.add(:default_quota_in_bytes, 'Default quota must be positive') if default_quota_in_bytes <= 0
+    end
     errors.add(:name, 'cannot exist as user') if name_exists_in_users?
   end
 

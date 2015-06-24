@@ -3,14 +3,14 @@ class ImportMailer < ActionMailer::Base
   layout 'mail'
 
   def data_import_finished(user, imported_tables, total_tables, first_imported_table, first_table, errors)
+    @subject = set_subject
     @imported_tables = imported_tables
     @total_tables = total_tables
     @first_table = first_imported_table.nil? ? first_table : first_imported_table
-    @link = first_imported_table.nil? ? "#{user.public_url}#{CartoDB.path(self, 'tables_index')}" :
-                            "#{user.public_url}#{CartoDB.path(self, 'public_tables_show', {id: @first_table['name']})}"
+    @link = first_imported_table.nil? ? "#{user.public_url}#{CartoDB.path(self, 'tables_index')}" : "#{user.public_url}#{CartoDB.path(self, 'public_tables_show', { id: @first_table['name'] })}"
     @errors = errors
     mail :to => user.email,
-         :subject => set_subject
+         :subject => @subject
   end
 
   private

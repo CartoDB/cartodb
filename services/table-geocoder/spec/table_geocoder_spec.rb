@@ -80,7 +80,7 @@ describe CartoDB::TableGeocoder do
 
   describe '#download_results' do
     it 'gets the geocoder results' do
-      tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: 'b')
+      tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db)
       tg.geocoder.expects(:result).times(1).returns('a')
       tg.download_results
       tg.result.should == 'a'
@@ -90,14 +90,14 @@ describe CartoDB::TableGeocoder do
   describe '#deflate_results' do
     it 'does not raise an error if no results file' do
       dir = Dir.mktmpdir
-      tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: 'b', working_dir: dir)
+      tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, working_dir: dir)
       expect { tg.deflate_results }.to_not raise_error
     end
 
     it 'extracts nokia result files' do
       dir = Dir.mktmpdir
       `cp #{path_to('kXYkQhuDfxnUSmWFP3dmq6TzTZAzwy4x.zip')} #{dir}`
-      tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: 'b', working_dir: dir)
+      tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, working_dir: dir)
       tg.deflate_results
       filename = 'result_20130919-04-55_6.2.46.1_out.txt'
       destfile = File.open(File.join(dir, filename))

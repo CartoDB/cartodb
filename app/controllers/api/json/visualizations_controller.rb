@@ -14,20 +14,13 @@ require_relative '../../../../services/named-maps-api-wrapper/lib/named-maps-wra
 class Api::Json::VisualizationsController < Api::ApplicationController
   include CartoDB
 
-  ssl_allowed  :vizjson2, :notify_watching, :list_watching, :likes_count, :likes_list, :add_like, :is_liked,
-               :remove_like
-  ssl_required :index, :show, :create, :update, :destroy, :set_next_id unless Rails.env.development? || Rails.env.test?
-  skip_before_filter :api_authorization_required, only: [:vizjson2, :likes_count, :likes_list, :add_like,
-                                                         :is_liked, :remove_like, :index]
-  before_filter :optional_api_authorization, only: [:likes_count, :likes_list, :add_like, :is_liked, :remove_like,
-                                                    :index, :vizjson2]
-  before_filter :table_and_schema_from_params, only: [:show, :update, :destroy, :stats, :vizjson2,
-                                                      :notify_watching, :list_watching, :likes_count, :likes_list,
-                                                      :add_like, :is_liked, :remove_like, :set_next_id]
-
-  def index
-    current_user ? index_logged_in : index_not_logged_in
-  end
+  ssl_allowed  :notify_watching, :list_watching, :add_like, :remove_like
+  ssl_required :create, :update, :destroy, :set_next_id unless Rails.env.development? || Rails.env.test?
+  skip_before_filter :api_authorization_required, only: [:add_like, :remove_like]
+  before_filter :optional_api_authorization, only: [:add_like, :remove_like]
+  before_filter :table_and_schema_from_params, only: [:update, :destroy, :stats,
+                                                      :notify_watching, :list_watching,
+                                                      :add_like, :remove_like, :set_next_id]
 
   def create
     vis_data = payload
@@ -125,15 +118,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     render_jsonp({ errors: { named_maps: exception } }, 400)
   end
 
-  def show
-    vis,  = locator.get(@table_id, CartoDB.extract_subdomain(request))
-    return(head 404) unless vis
-    return(head 403) unless vis.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
-    render_jsonp(vis)
-  rescue KeyError
-    head(404)
-  end
-  
   def update
     vis,  = locator.get(@table_id, CartoDB.extract_subdomain(request))
     return(head 404) unless vis
@@ -200,28 +184,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     render_jsonp({ errors: { named_maps: exception } }, 400)
   end
 
-  def vizjson2
-    visualization,  = locator.get(@table_id, CartoDB.extract_subdomain(request))
-    return(head 404) unless visualization
-    return(head 403) unless allow_vizjson_v2_for?(visualization)
-    set_vizjson_response_headers_for(visualization)
-    render_jsonp(visualization.to_vizjson({https_request: request.protocol == 'https://'}))
-  rescue KeyError => exception
-    render(text: exception.message, status: 403)
-  rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
-    CartoDB.notify_exception(exception, { user: current_user, template_data: exception.template_data })
-    render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
-  rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
-    CartoDB.notify_exception(exception)
-    render_jsonp({ errors: { named_map: exception.message } }, 400)
-  rescue CartoDB::NamedMapsWrapper::NamedMapsDataError => exception
-    CartoDB.notify_exception(exception)
-    render_jsonp({ errors: { named_maps: exception.message } }, 400)
-  rescue => exception
-    CartoDB.notify_exception(exception)
-    raise exception
-  end
-
   def notify_watching
     vis = Visualization::Member.new(id: @table_id).fetch
     return(head 403) unless vis.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
@@ -270,36 +232,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   rescue
     render_jsonp({ errors: ['Unknown error'] }, 400)
   end
- 
-  # Does not mandate a current_viewer except if vis is not public
-  def likes_count
-    vis = Visualization::Member.new(id: @table_id).fetch
-    if vis.privacy != Visualization::Member::PRIVACY_PUBLIC && vis.privacy != Visualization::Member::PRIVACY_LINK
-      raise KeyError if current_viewer.nil? || !vis.has_permission?(current_viewer, Visualization::Member::PERMISSION_READONLY)
-    end
-
-    render_jsonp({
-                   id: vis.id,
-                   likes: vis.likes.count
-                 })
-  rescue KeyError => exception
-    render(text: exception.message, status: 403)
-  end
-
-  # Does not mandate a current_viewer except if vis is not public
-  def likes_list
-    vis = Visualization::Member.new(id: @table_id).fetch
-    if vis.privacy != Visualization::Member::PRIVACY_PUBLIC && vis.privacy != Visualization::Member::PRIVACY_LINK
-      raise KeyError if current_viewer.nil? || !vis.has_permission?(current_viewer, Visualization::Member::PERMISSION_READONLY)
-    end
-
-    render_jsonp({
-                   id: vis.id,
-                   likes: vis.likes.map { |like| {actor_id: like.actor } }
-                 })
-  rescue KeyError => exception
-    render(text: exception.message, status: 403)
-  end
 
   def add_like
     return(head 403) unless current_viewer
@@ -320,31 +252,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     render(text: exception.message, status: 403)
   rescue AlreadyLikedError
     render(text: "You've already liked this visualization", status: 400)
-  end
-
-  def is_liked
-    if current_viewer
-      vis = Visualization::Member.new(id: @table_id).fetch
-      raise KeyError if vis.privacy != Visualization::Member::PRIVACY_PUBLIC &&
-                        vis.privacy != Visualization::Member::PRIVACY_LINK &&
-                        !vis.has_permission?(current_viewer, Visualization::Member::PERMISSION_READONLY)
-      render_jsonp({
-                     id:    vis.id,
-                     likes: vis.likes.count,
-                     liked: vis.liked_by?(current_viewer.id)
-                   })
-    else
-      vis = Visualization::Member.new(id: @table_id).fetch
-      raise KeyError if vis.privacy != Visualization::Member::PRIVACY_PUBLIC &&
-                        vis.privacy != Visualization::Member::PRIVACY_LINK
-      render_jsonp({
-                     id:    vis.id,
-                     likes: vis.likes.count,
-                     liked: false
-                   })
-    end
-  rescue KeyError => exception
-    render(text: exception.message, status: 403)
   end
 
   def remove_like
@@ -450,92 +357,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     else
       params[:type] == Visualization::Member::TYPE_REMOTE ? params.merge( { type: Visualization::Member::TYPE_CANONICAL } ) : params
     end
-  end
-
-  def index_not_logged_in
-    public_visualizations = []
-    total_liked_entries = 0
-    total_shared_entries = 0
-    total_user_entries = 0
-    user = User.where(username: CartoDB.extract_subdomain(request)).first
-
-    unless user.nil?
-      filtered_params = params.dup.merge(scope_for(user))
-      filtered_params[:unauthenticated] = true
-
-      params_for_total_count = prepare_params_for_total_count(filtered_params)
-      total_user_entries = Visualization::Collection.new.count_total(params_for_total_count)
-
-      collection = Visualization::Collection.new.fetch(filtered_params)
-      public_visualizations  = collection.map { |vis|
-        begin
-          vis.to_hash(
-            public_fields_only: true,
-            related: false,
-            table: vis.table
-          )
-        rescue => exception
-          puts exception.to_s + exception.backtrace.join("\n")
-        end
-      }.compact
-
-      total_liked_entries = collection.total_liked_entries(params_for_total_count[:type])
-      total_shared_entries = collection.total_shared_entries(params_for_total_count[:type])
-    end
-
-    response = {
-      visualizations: public_visualizations,
-      total_entries: public_visualizations.length,
-      total_user_entries: total_user_entries,
-      total_likes: total_liked_entries,
-      total_shared: total_shared_entries
-    }
-    render_jsonp(response)
-  end
-
-  def index_logged_in
-    users_cache = {}
-    filters = params.dup.merge(scope_for(current_user))
-
-    collection = Visualization::Collection.new.fetch(filters)
-
-    params_for_total_count = prepare_params_for_total_count(filters)
-    total_user_entries = Visualization::Collection.new.count_total(params_for_total_count)
-
-    table_data = collection.map { |vis|
-      if vis.table.nil?
-        nil
-      else
-        users_cache[vis.user_id] ||= vis.user
-        {
-          name:   vis.table.name,
-          schema: users_cache[vis.user_id].database_schema
-        }
-      end
-    }.compact
-    synchronizations = synchronizations_by_table_name(table_data)
-    representation  = collection.map { |vis|
-      begin
-        vis.to_hash(
-          related:    false,
-          table_data: !(params[:table_data] =~ /false/),
-          user:       current_user,
-          table:      vis.table,
-          synchronization: synchronizations[vis.name]
-        )
-      rescue => exception
-        puts exception.to_s + exception.backtrace.join("\n")
-      end
-    }.compact
-
-    response = {
-      visualizations: representation,
-      total_entries:  collection.total_entries,
-      total_user_entries: total_user_entries,
-      total_likes:    collection.total_liked_entries(params_for_total_count[:type]),
-      total_shared:   collection.total_shared_entries(params_for_total_count[:type])
-    }
-    render_jsonp(response)
   end
 
   # Need to always send request object to visualizations upon rendering their json

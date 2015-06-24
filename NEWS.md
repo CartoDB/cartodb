@@ -19,6 +19,9 @@ Bugfixes:
 * Do not cache geocodes if the_geom is NULL [#3793](https://github.com/CartoDB/cartodb/pull/3793)
 * Reverse order of varnish/redis invalidation [#3555](https://github.com/CartoDB/cartodb/pull/3945)
 
+New features:
+* Organization signup: [#3902](https://github.com/CartoDB/cartodb/issues/3902)
+
 3.10.2 (2015-05-20)
 ---------
 * Ongoing backend refactor and migration from Sequel to ActiveRecord.

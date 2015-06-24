@@ -2,18 +2,18 @@
 
 <% content_for :body do %>
   <tr>
-    <td align="center" style="padding: 40px 15px 0 15px; font-size: 25px; font-family: Helvetica, Arial, sans-serif; color: #333333;"><%= @subject %></td>
+    <td align="center" style="padding: 40px 25px 0 25px; font-size: 25px; font-family: Helvetica, Arial, sans-serif; color: #333333;"><%= @subject %></td>
   </tr>
 
   <tr>
-    <td align="center" style="padding: 20px 15px 0 15px; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;">You have been invited to CartoDB as part of the <strong><%= @organization.name %> organization</strong>. From now on you will be able to enter to your CartoDB dashboard by login in with your username (<%= @user.username %>) and the password provided by your administrator.</td>
+    <td align="center" style="padding: 20px 25px 0 25px; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;">You have been invited to CartoDB as part of the <strong><%= @organization.name %> organization</strong>. From now on you will be able to enter to your CartoDB dashboard by login in with your username (<%= @user.username %>) and the password provided by your administrator.</td>
   </tr>
 
   <tr>
     <td>
       <table width="100%" border="0" cellspacing="0" cellpadding="0" class="mobile-button-container">
         <tr>
-          <td align="center" style="padding: 25px 15px 0 15px;">
+          <td align="center" style="padding: 25px 25px 0 25px;">
             <table border="0" cellspacing="0" cellpadding="0" class="responsive-table">
               <tr>
                 <td align="center"><a href="<%= @link %>" target="_blank" style="font-size: 16px; font-family: Helvetica, Arial, sans-serif; font-weight: normal; color: #ffffff; text-decoration: none; background-color: #3AA9E3; border-top: 15px solid #3AA9E3; border-bottom: 15px solid #3AA9E3; border-left: 25px solid #3AA9E3; border-right: 25px solid #3AA9E3; border-radius: 3px; -webkit-border-radius: 3px; -moz-border-radius: 3px; display: inline-block;" class="mobile-button">Go to your dashboard</a></td>
@@ -26,6 +26,6 @@
   </tr>
 
   <tr>
-    <td align="center" style="padding: 20px 15px 40px 15px; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;">If you have not received your password yet, contact with your administrator at <%= @owner.username %>.</td>
+    <td align="center" style="padding: 20px 25px 40px 25px; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;">If you have not received your password yet, contact with your administrator at <%= @owner.username %>.</td>
   </tr>
 <% end %>

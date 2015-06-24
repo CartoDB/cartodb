@@ -47,7 +47,7 @@ class Organization < Sequel::Model
     errors.add(:name, 'cannot exist as user') if name_exists_in_users?
   end
 
-  def validate_user(user, errors)
+  def validate_new_user(user, errors)
     if !whitelisted_email_domains.nil? and !whitelisted_email_domains.empty?
       email_domain = user.email.split('@')[1]
       errors.add(:email, "Email domain '#{email_domain}' not valid for #{name} organization") unless whitelisted_email_domains.include?(email_domain)

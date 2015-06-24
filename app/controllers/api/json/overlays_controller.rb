@@ -8,24 +8,9 @@ require_relative '../../../models/visualization/locator'
 class Api::Json::OverlaysController < Api::ApplicationController
   include CartoDB
 
-  ssl_required :index, :show, :create, :update, :destroy
-  before_filter :check_owner_by_vis, only: [ :index, :create ]
-  before_filter :check_owner_by_id, only: [ :show, :update, :destroy ]
-
-  def index
-    # TODO: PATCH
-    vis_id = params.fetch('visualization_id')
-    vis_id, schema = table_and_schema_from(vis_id)
-
-    vis,  = locator.get(vis_id, CartoDB.extract_subdomain(request))
-    visualization_id = vis.id
-    collection = Overlay::Collection.new(
-      visualization_id: visualization_id,
-    ).fetch
-    render_jsonp(collection)
-  rescue KeyError
-    head :not_found
-  end
+  ssl_required :create, :update, :destroy
+  before_filter :check_owner_by_vis, only: [ :create ]
+  before_filter :check_owner_by_id, only: [ :update, :destroy ]
 
   def create
     member_attributes = payload.merge(
@@ -37,13 +22,6 @@ class Api::Json::OverlaysController < Api::ApplicationController
 
     member= Overlay::Member.new(member_attributes).store
     render_jsonp(member.attributes)
-  end
-
-  def show
-    member = Overlay::Member.new(id: params.fetch('id')).fetch
-    render_jsonp(member.attributes)
-  rescue KeyError
-    head :not_found
   end
 
   def update

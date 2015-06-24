@@ -1,8 +1,11 @@
-<% content_for(:header_color) {"FF7373"} %>
-<% content_for(:header_img) {"top-red.png"} %>
-  
+<% content_for(:subject) { @subject } %>
+
 <% content_for :body do %>
+  <tr>
+    <td align="center" style="padding: 40px 15px 0 15px; font-size: 25px; font-family: Helvetica, Arial, sans-serif; color: #333333;"><%= @subject %></td>
+  </tr>
 
-<p style="text-align: center;">Your colleague <%= @visualization_owner_name %> has stopped sharing the visualization <strong><%= @visualization_name %></strong> with you so it may dissapear from your dashboard.</p>
-
+  <tr>
+    <td align="center" style="padding: 20px 15px 40px 15px; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;">Your colleague <%= @visualization_owner_name %> has stopped sharing the visualization <strong><%= @visualization_name %></strong> with you so it may dissapear from your dashboard.</td>
+  </tr>
 <% end %>

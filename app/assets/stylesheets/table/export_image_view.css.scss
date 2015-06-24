@@ -9,7 +9,6 @@
 @import "old_common/form-elements";
 @import "old_common/mixins";
 
-
 .HelperSouth,
 .HelperEast,
 .HelperWest,
@@ -74,15 +73,24 @@ $resizeHandlerSize: 8px;
   height: 100%;
 }
 
-.ExportImageView--help {
-  position:absolute;
-  font-size: 13px;
-  top: 30px;
+.ExportImageView-Header {
+  position: absolute;
+  text-align: center;
   width: 100%;
   height: 40px;
+  top: 30px;
+  z-index: 105;
+}
+.ExportImageView--help {
+  position:relative;
+  font-size: 13px;
   text-align:center;
   color: rgba(#fff, .4);
-  z-index: 104;
+}
+
+.ExportImageView--help .Button {
+  position:absolute;
+  right: 0;
 }
 
 .ExportImageView-Footer {
@@ -105,6 +113,14 @@ $resizeHandlerSize: 8px;
 .ExportImageView--dimensions strong {
   color: #fff;
   font-weight: normal;
+}
+
+.Button--micro.Button--negative {
+  border: 1px solid #fff;
+  &:before {
+    content: "x";
+    position: relative;
+  }
 }
 
 .Button--micro {

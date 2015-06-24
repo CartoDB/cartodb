@@ -30,7 +30,8 @@ class Admin::OrganizationsController < ApplicationController
     @organization.color = attributes[:color]
     @organization.whitelisted_email_domains = attributes[:whitelisted_email_domains].split(",")
     if attributes.include?(:default_quota_in_bytes)
-      @organization.default_quota_in_bytes = attributes[:default_quota_in_bytes].to_i * 1024 * 1024
+      default_quota_in_bytes = attributes[:default_quota_in_bytes]
+      @organization.default_quota_in_bytes = default_quota_in_bytes.blank? ? nil : default_quota_in_bytes.to_i * 1024 * 1024
     end
     @organization.discus_shortname = attributes[:discus_shortname]
     @organization.twitter_username = attributes[:twitter_username]

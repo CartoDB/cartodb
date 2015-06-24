@@ -71,7 +71,6 @@ class SessionsController < ApplicationController
   end
 
   def account_token_authentication_error
-    CartoDB.notify_debug('account_token_authentication_error', { params: params, warden: warden.env })
     warden.custom_failure!
     user_id = warden.env['warden.options'][:user_id] if warden.env['warden.options']
     @user = User.where(id: user_id).first if user_id

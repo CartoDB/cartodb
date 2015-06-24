@@ -82,6 +82,18 @@ class SessionsController < ApplicationController
     elsif @user_email_for_error
       @user = User.where('username = ? or email = ?', @user_email_for_error).first
     end
+
+    render 'account_token_authentication_error'
+  end
+
+  # INFO: endpoint that workarounds staging not running account_token_authentication_error from throw (see warden initializer)
+  def account_token_error
+    byebug
+    token = params[:id]
+    render_404 and return unless token
+    @user = User.where(enable_account_token: token).first
+    render_404 and return unless @user
+
     render 'account_token_authentication_error'
   end
 

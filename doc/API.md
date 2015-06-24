@@ -757,7 +757,7 @@ Shortcut for `get('subdomains')`
 #### sublayer.getTms
 
 Shortcut for `get('tms')`
-=======
+
 #### sublayer.legend
 
 **sublayer.legend** is a Backbone model with the information about the legend.

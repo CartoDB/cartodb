@@ -144,7 +144,7 @@
             <label class="Form-label">Default new user quota</label>
           </div>
           <div class="Form-rowData">
-            <%= f.text_field :default_quota_in_bytes, :value => "#{ ( @organization[:default_quota_in_bytes].to_i / 1000000 ) if !@organization[:default_quota_in_bytes].blank? }", :class => "Form-input Form-input--long #{ 'Form-input--error' if @organization.errors[:default_quota_in_bytes].present? } js-userQuota" %>
+            <%= f.text_field :default_quota_in_bytes, :value => "#{ ( @organization[:default_quota_in_bytes].to_i / (1024 * 1024) ) if !@organization[:default_quota_in_bytes].blank? }", :class => "Form-input Form-input--long #{ 'Form-input--error' if @organization.errors[:default_quota_in_bytes].present? } js-userQuota" %>
           </div>
           <div class="Form-rowInfo">
             <% if (@organization.errors[:default_quota_in_bytes].present?) %>

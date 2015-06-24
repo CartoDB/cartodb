@@ -74,7 +74,6 @@ class SessionsController < ApplicationController
     warden.custom_failure!
     user_id = warden.env['warden.options'][:user_id] if warden.env['warden.options']
     @user = User.where(id: user_id).first if user_id
-    render 'account_token_authentication_error'
   end
 
   protected

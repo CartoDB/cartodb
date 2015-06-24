@@ -56,8 +56,12 @@ Warden::Strategies.add(:google_access_token) do
   def authenticate!
     if params[:google_access_token]
       user = GooglePlusAPI.new.get_user(params[:google_access_token])
-      if(user.present?)
-        success!(user)
+      if user
+        if user.enable_account_token.nil?
+          success!(user)
+        else
+          throw(:warden, :action => 'account_token_authentication_error', :user_id => user.id)
+        end
       else
         fail!
       end
@@ -82,7 +86,12 @@ Warden::Strategies.add(:api_authentication) do
         end
 
       if @oauth_token && @oauth_token.is_a?(::AccessToken)
-        success!(User.find_with_custom_fields(@oauth_token.user_id)) and return
+        user = User.find_with_custom_fields(@oauth_token.user_id)
+        if user.enable_account_token.nil?
+          success!(user) and return
+        else
+          throw(:warden, :action => 'account_token_authentication_error', :user_id => user.id)
+        end
       end
     end
     throw(:warden)

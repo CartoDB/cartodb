@@ -45,13 +45,6 @@ class SignupController < ApplicationController
     render action: 'signup'
   end
 
-  # TODO: development purposes, delete
-  def signup_confirmation_development
-    @user_creation = Carto::UserCreation.where(id: params[:id]).first
-    render action: 'signup_confirmation'
-  end
-
-
   private
 
   def initialize_google_plus_config

@@ -14,9 +14,6 @@ CartoDB::Application.routes.draw do
   get   '(/user/:user_domain)(/u/:user_domain)/signup'           => 'signup#signup',     as: :signup
   post   '(/user/:user_domain)(/u/:user_domain)/signup'           => 'signup#create',  as: :signup_organization_user
 
-  # TODO: development purposes, delete
-  get   '(/user/:user_domain)(/u/:user_domain)/signup_confirmation_development/:id' => 'signup#signup_confirmation_development',     as: :signup_confirmation_development
-
   get   '(/user/:user_domain)(/u/:user_domain)/enable_account_token/:id' => 'account_tokens#enable',     as: :enable_account_token_show
   get   '(/user/:user_domain)(/u/:user_domain)/resend_validation_mail/:user_id' => 'account_tokens#resend',     as: :resend_validation_mail
   get   '(/user/:user_domain)(/u/:user_domain)/account_token_authentication_error' => 'sessions#account_token_authentication_error',     as: :account_token_authentication_error

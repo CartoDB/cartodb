@@ -65,7 +65,7 @@ module Carto
         render_jsonp({
           id: @visualization.id,
           likes: @visualization.likes.count,
-          liked: @visualization.is_liked_by_user_id?(current_viewer.id)
+          liked: current_viewer ? @visualization.is_liked_by_user_id?(current_viewer.id) : false
         })
       end
 

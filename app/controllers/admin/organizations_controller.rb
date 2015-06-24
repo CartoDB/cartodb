@@ -44,7 +44,7 @@ class Admin::OrganizationsController < ApplicationController
     flash.now[:error] = "There was a problem while updating your organization. Please, try again and contact us if the problem persists. #{e.user_message}"
     render action: 'settings'
   rescue Sequel::ValidationFailed => e
-    flash.now[:error] = e.message
+    flash.now[:error] = "There's been a validation error, check your values"
     render action: 'settings'
   end
 

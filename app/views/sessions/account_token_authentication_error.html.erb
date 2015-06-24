@@ -7,7 +7,7 @@
         <div class="Sessions-center Sessions--centered">
           <div class="Logo js-logo">
             <span class="Logo--avatar">
-              <i class="iconFont iconFont-CartoFante" style="color: <%= @organization.color ? darken_color(@organization.color,0.7) : "#292E33" %>"></i>
+              <i class="iconFont iconFont-CartoFante" style="color: <%= @organization && @organization.color ? darken_color(@organization.color,0.7) : "#292E33" %>"></i>
             </span>
           </div>
           <div class="js-info">

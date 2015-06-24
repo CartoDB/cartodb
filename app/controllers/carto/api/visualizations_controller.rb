@@ -12,10 +12,10 @@ module Carto
       include Carto::UUIDHelper
 
       ssl_required :index, :show
-      ssl_allowed  :vizjson2, :likes_count, :likes_list, :is_liked, :list_watching
+      ssl_allowed  :vizjson2, :likes_count, :likes_list, :is_liked, :list_watching, :static_map
 
       # TODO: compare with older, there seems to be more optional authentication endpoints
-      skip_before_filter :api_authorization_required, only: [:index, :vizjson2, :is_liked]
+      skip_before_filter :api_authorization_required, only: [:index, :vizjson2, :is_liked, :static_map]
       before_filter :optional_api_authorization, only: [:index, :vizjson2, :is_liked]
 
       before_filter :id_and_schema_from_params
@@ -96,7 +96,36 @@ module Carto
         render_jsonp(watcher.list)
       end
 
+      def static_map
+        # Abusing here of .to_i fallback to 0 if not a proper integer
+        map_width = params.fetch('width',nil).to_i
+        map_height = params.fetch('height', nil).to_i
+
+        # @see https://github.com/CartoDB/Windshaft-cartodb/blob/b59e0a00a04f822154c6d69acccabaf5c2fdf628/docs/Map-API.md#limits
+        return(head 400) if map_width < 2 || map_height < 2 || map_width > 8192 || map_height > 8192
+
+        base_url = static_maps_base_url
+
+        final_url = base_url
+
+        redirect_to final_url
+      end
+
       private
+
+      def static_maps_base_url
+        return(head 400) if current_user.nil?
+
+        if !Cartodb.config[:maps_api_cdn_template].nil? && !Cartodb.config[:maps_api_cdn_template].empty?
+          base_url = Cartodb.config[:maps_api_cdn_template]
+        else
+          base_url = ApplicationHelper.maps_api_template('public')
+        end
+
+        base_url.sub('{protocol}', CartoDB.protocol)
+                .sub('{user}', current_user.username)
+      end
+
 
       def load_by_name_or_id
         @table =  is_uuid?(@id) ? Carto::UserTable.where(id: @id).first  : nil

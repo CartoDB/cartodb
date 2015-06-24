@@ -10,6 +10,8 @@
 * Updated cartodb.js to 3.14.6
 * Defaults Time Column to first date column or cartodb_id in Torque wizards [#4136](https://github.com/CartoDB/cartodb/pull/4136)
 * Added more customized Google basemaps.
+* New optional config option `maps_api_cdn_template` for static maps [#4153](https://github.com/CartoDB/cartodb/issues/4153)
+* New `api/v2/viz/{id}/static/{width}/{height}.png` endpoint for retrieving static maps
 
 Bugfixes:
 * Fixed deletion of layers upon disconnecting synced datasources [#3718](https://github.com/CartoDB/cartodb/pull/3718)

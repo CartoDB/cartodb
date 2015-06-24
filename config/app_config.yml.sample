@@ -10,6 +10,7 @@ defaults: &defaults
   subdomainless_urls: false
   http_port:           3000 # nil|integer. HTTP port to use when building urls. Leave empty to use default (80)
   https_port:          # nil|integer. HTTPS port to use when building urls. Leave empty to use default (443)
+  maps_api_cdn_template: # nil|string. E.g. '{protocol}://{zone}.cartocdn/{user}/api/v1/map/static/named/{tpl_id}/{width}/{height}.png'
   secret_token:       '71c2b25921b84a1cb21c71503ab8fb23'
   account_host:       'localhost.lan:3000'
   account_path:       '/account'

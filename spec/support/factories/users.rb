@@ -70,6 +70,8 @@ module CartoDB
     def create_user(attributes = {})
       user = new_user(attributes)
       user.valid?.should eq true
+      # INFO: avoiding enable_remote_db_user
+      Cartodb.config[:signups] = nil
       user.save
       load_user_functions(user)
       user

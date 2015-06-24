@@ -11,6 +11,7 @@ class SessionsController < ApplicationController
   before_filter :load_organization
   # Don't force org urls
   skip_before_filter :ensure_org_url_if_org_user
+  skip_before_filter :ensure_account_has_been_activated, :only => :account_token_authentication_error
 
 
   def new

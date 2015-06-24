@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.0
 // uncompressed version: cartodb.uncompressed.js
-// sha: 5909ea7ee26c477f3af9673bcfb3e23052536715
+// sha: 172320bd56167754a7e36c24a2367d3cd34ec673
 (function() {
   var root = this;
 
@@ -33309,7 +33309,7 @@ MapBase.prototype = {
       host,
       MapBase.BASE_URL.slice(1),
       this.mapProperties.getMapId(),
-      this.mapProperties.getLayerIndexByType(layer, "mapnik"),
+      this.mapProperties.getLayerIndexByType(this.getLayerIndexByNumber(layer), "mapnik"),
       'attributes',
       feature_id].join('/');
 

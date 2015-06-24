@@ -70,11 +70,10 @@ module CartoDB
           timeout:          NamedMap::HTTP_REQUEST_TIMEOUT
         })
 
-
         if response.code == 200
           template_data = ::JSON.parse(response.response_body)
           if template_data.class == Hash
-            template_data = template_data.deep_symbolize_keys   # Rails 2.x+
+            template_data = template_data.deep_symbolize_keys
           end
           named_map = NamedMap.new(name, template_data, self)
         elsif response.code == 404

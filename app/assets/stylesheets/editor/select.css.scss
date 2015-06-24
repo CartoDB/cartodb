@@ -1,0 +1,51 @@
+@import "../variables/mixins";
+@import "../variables/colors";
+@import "../variables/sizes";
+
+// Select combo represents the "enhanced" <select> dropdown combo selector
+// Expected to be typically used together with a cdb.admin.Combo view, e.g.
+//   new cdb.forms.Combo({
+//     className: 'Select',
+//      …
+//
+// --------------------------------------------------
+.Select { width: 100% }
+.Select .select2-container { background: none }
+.Select .select2-container:hover .select2-choice { border-color: $cStructure-mainLine !important }
+.Select .select2-container .select2-choice { background: $cStructure-mainBkg }
+.Select .select2-container .select2-choice span {
+  font-size: $sFontSize-large;
+  line-height: $sLineHeight-normal;
+  font-weight: $sFontWeight-normal;
+  color: $cTypography-paragraphs;
+}
+.Select .select2-container {
+  .select2-choice,
+  .select2-choice:hover {
+    border-color: $cStructure-mainLine;
+    color: $cTypography-paragraphs;
+    padding: 7px;
+
+    div b:after,
+    div b:before {
+      top: inherit;
+      border-bottom: none;
+      border-top-style: solid;
+      border-top-width: 4px;
+      border-left-width: 4px;
+      border-right-width: 4px;
+    }
+
+    div b:after {
+      bottom: 15px;
+      border-top-color: $cStructure-mainBkg;
+      z-index: 2;
+    }
+    div b:before {
+      bottom: 13px;
+      border-top-color: $cTypography-paragraphs;
+      z-index: 2;
+    }
+  }
+}
+.Select .select2-container.select2-container-disabled { opacity: 0.4 }

@@ -465,7 +465,7 @@
                    'max("{{column}}") as max,',
                    'avg("{{column}}") as avg,',
                    'stddev("{{column}}") as stddev,',
-                   'stddev("{{column}}") / abs(avg("{{column}}")) as stddevmean, ',
+                   'CASE WHEN abs(avg("{{column}}")) > 1e-7 THEN stddev("{{column}}") / abs(avg("{{column}}")) ELSE 1e12 END as stddevmean, ',
                    ' \'F\' as dist_type ',
                    // CDB_DistType needs to be in production before using
                    // 'CDB_DistType(array_agg("{{column}}"::numeric)) as dist_type ',
@@ -475,7 +475,7 @@
         'params as (select min(a) as min, (max(a) - min(a)) / 7 as diff from ( select {{column}} as a from ({{sql}}) _table_sql where {{column}} is not null ) as foo ),',
          'histogram as (',
            'select array_agg(row(bucket, range, freq)) as hist from (',
-           'select width_bucket({{column}}, min, max, 100) as bucket,',
+           'select width_bucket({{column}}, min-0.01*abs(min), max+0.01*abs(max), 100) as bucket,',
                   'numrange(min({{column}})::numeric, max({{column}})::numeric) as range,',
                   'count(*) as freq',
              'from ({{sql}}) _w, stats',

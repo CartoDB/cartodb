@@ -181,19 +181,17 @@
         var m = [];
         var normalization = 'ST_Area(the_geom::geography)';
         var exclude = ['cartodb_id','lat','lon','latitude','longitude'];
-        var sql = 'select * from ' + tableName; //spanish_adm2_provinces'//world_borders' // pluto14v2
+        var sql = 'select * from ' + tableName;
         s.describe(sql, 'the_geom', function(data) {
           var geometryType = data.simplified_geometry_type;
           s.columns(sql, function(columns) {
             _(columns).each(function(v, k) {
-              // if (exclude.indexOf(k) == -1) {
-                columnMap(sql, k.concat(""), geometryType, data.bbox, s, function(d) {
-                  m.push(d);
-                  if (m.length == Object.keys(columns).length) {
-                    callback(m);
-                  }
-                });
-              // }
+              columnMap(sql, k.concat(""), geometryType, data.bbox, s, function(d) {
+                m.push(d);
+                if (m.length == Object.keys(columns).length) {
+                  callback(m);
+                }
+              });
             });
           });
         });

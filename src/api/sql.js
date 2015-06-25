@@ -346,31 +346,31 @@
   SQL.prototype.describeString = function(sql, column, options, callback) {
 
       var s = [
-      'WITH c As (',
-        '  select count(*) as total',
+      'WITH t As (',
+        '  select count(*) as total,',
+        '         count(DISTINCT {{column}}) as ndist',
         '  from ({{sql}}) _wrap',
         ' ),',
         ' a As (',
-        '  SELECT', 
+        '  SELECT',
         '  count(*) cnt,',
-        '  {{column}}', 
-        ' from ({{sql}}) _wrap ', 
-        ' GROUP BY {{column}}', 
+        '  {{column}} ',
+        ' from ({{sql}}) _wrap ',
+        ' GROUP BY {{column}}',
         ' ORDER BY cnt DESC',
-        ' ),', 
-        ' b As (', 
-        ' SELECT', 
-        ' sum(cnt) OVER (ORDER BY cnt DESC) / c.total As cumsum', 
-        ' FROM a, c', 
-        ' LIMIT 10', 
-        ' ),', 
-        // ' m As (SELECT max(cumsum) cat_weight FROM b),',
+        ' ),',
+        ' b As (',
+        '  SELECT',
+        '   CASE WHEN t.ndist = t.total THEN 10.0 / ndist::numeric ELSE sum(cnt) OVER (ORDER BY cnt DESC) / t.total END As cumsum',
+        '  FROM a, t',
+        '  LIMIT 10',
+        ' ),',
         'stats as (', 
            'select count(distinct({{column}})) as uniq, ',
            '       count(*) as cnt, ',
            '       sum(case when {{column}} is null then 1 else 0 end)::numeric / count(*)::numeric as count_nulls, ',
            // '       CDB_DistinctMeasure(array_agg({{column}}::text)) as cat_weight ',
-           '       (SELECT max(cumsum) cat_weight FROM b) cat_weight ',
+           '       (SELECT max(cumsum) weight FROM b) As weight ',
            'from ({{sql}}) __wrap',
         '),',
         'hist as (', 
@@ -392,11 +392,12 @@
             return [r[1], +r[2]];
           }),
           distinct: data.rows[0].uniq,
+          count: data.rows[0].count,
           count_nulls: data.rows[0].count_nulls,
-          cat_weight: data.rows[0].cat_weight,
-          passes: (data.rows[0].uniq > 1 && data.rows[0].cat_weight > 0.66 && data.rows[0].count_nulls < 0.1),
-          weight: 1/3 * ( (data.rows[0].uniq > 1 && data.rows[0].uniq < 10) ? (1) : (data.rows[0].uniq >= 10 && data.rows[0].uniq < 20 ? (0.8) : (data.rows[0].uniq > 20 && data.rows[0].uniq < 100 ? 0.5 : 0.1)) 
-                         + data.rows[0].cat_weight 
+          cat_weight: data.rows[0].weight,
+          passes: (data.rows[0].uniq > 1 && data.rows[0].weight > 0.66 && data.rows[0].count_nulls < 0.1),
+          weight: 1/3 * ( (data.rows[0].uniq > 1 && data.rows[0].uniq <= 10) ? (1) : (data.rows[0].uniq > 10 && data.rows[0].uniq < 20 ? (0.8) : (data.rows[0].uniq > 20 && data.rows[0].uniq < 100 ? 0.5 : 0.1)) 
+                         + data.rows[0].weight 
                          + data.rows[0].count_nulls )
         });
       });
@@ -449,10 +450,13 @@
       callback = fn;
     }
     var s = "select * from (" + sql + ") __wrap limit 0";
+    var exclude = ['cartodb_id','latitude','longitude','created_at','updated_at','lat','lon','the_geom_webmercator'];
     this.execute(s, function(data) {
       var t = {}
       for (var i in data.fields) {
-        t[i] = data.fields[i].type;
+        if (exclude.indexOf(i) === -1) {
+          t[i] = data.fields[i].type;
+        }
       }
       callback(t);
     });
@@ -579,13 +583,14 @@
           callback(new Error("column does not exist"));
           return;
         }
-        if (type === 'string') {
+        else if (type === 'string') {
           self.describeString(sql, column, options, callback);
         } else if (type === 'number') {
           self.describeFloat(sql, column, options, callback);
         } else if (type === 'geometry') {
           self.describeGeom(sql, column, options, callback);
         } else {
+          console.log("column type not supported");
           callback(new Error("column type does not supported"));
         }
       });

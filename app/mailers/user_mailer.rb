@@ -13,6 +13,9 @@ class UserMailer < ActionMailer::Base
       @enable_account_link = "#{CartoDB.base_url(@organization.name, @user.username)}#{CartoDB.path(self, 'enable_account_token_show', {id: @user.enable_account_token})}"
     end
 
+    # INFO: if user has been created by the admin he needs to tell him the password. If he has signed in through the page
+    @user_needs_password = !@user.google_sign_in && @user.enable_account_token.nil?
+
     mail :to => @user.email, 
          :subject => "You have been invited to CartoDB organization '#{@organization.name}'"
   end

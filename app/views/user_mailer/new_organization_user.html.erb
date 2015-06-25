@@ -3,7 +3,7 @@
 
 <% content_for :body do %>
 
-  <p style="text-align: center;">You have been invited to CartoDB as part of the <strong><%= @organization.name %> organization</strong>. From now on you will be able to enter to your CartoDB dashboard by login in with your username (<%= @user.username %>) and the password provided by your administrator<%= ' as soon as you activate your account' unless @enable_account_link.nil? %>.</p>
+  <p style="text-align: center;">You have been invited to CartoDB as part of the <strong><%= @organization.name %> organization</strong>. From now on you will be able to enter to your CartoDB dashboard by login in with your username (<%= @user.username %>) and the password <%= @user_needs_password ? 'provided by your administrator' : 'you typed' %><%= ' as soon as you activate your account' unless @enable_account_link.nil? %>.</p>
 
 <table border="0" cellspacing="0" cellpadding="0" style="margin: 0 auto;">
   <tr>
@@ -22,6 +22,8 @@
   </tr>
 </table>
 
-<p style="text-align: center; font-size: 12px; color: #A8A8A8;">If you have not received your password yet, contact with your administrator at <%= @owner.username %></p>
+<% if @user_needs_password %>
+  <p style="text-align: center; font-size: 12px; color: #A8A8A8;">If you have not received your password yet, contact with your administrator at <%= @owner.username %></p>
+<% end %>
 
 <% end %>

@@ -38,8 +38,10 @@ $w: 780px;
   font-weight: $sFontWeight-lighter;
   line-height: $sLineHeight-normal;
 }
+.ImportPanel-headerDescription--normalWeight { font-weight: $sFontWeight-normal; }
+.ImportPanel-headerDescription--withoutWidth { width: auto }
 .ImportPanel-headerDescription--negative { color: $cHighlight-negative }
-.ImportPanel-headerDescription--negative 
+.ImportPanel-headerDescription--negative
 .ImportPanel-headerDescriptionLink {
   color: $cHighlight-negative;
   text-decoration: underline;
@@ -49,7 +51,7 @@ $w: 780px;
   position: absolute;
   left: 0;
   top: 50%;
-  margin-top: -20px; 
+  margin-top: -20px;
 }
 .ImportPanel-headerLink { margin-top: 30px }
 .ImportPanel-body {

@@ -141,7 +141,7 @@ module CartoDB
         # for the moment we just wrap the exception to get a specific error in rollbar
         exception =  Carto::GeocoderErrors::GeocoderCacheDbTimeoutError.new(exception)
       end
-      ::Rollbar.report_exception(exception)
+      CartoDB.notify_exception(exception)
     rescue => e
       raise exception
     end

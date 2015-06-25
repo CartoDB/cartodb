@@ -107,29 +107,41 @@ module Carto
           return(head 400)
         end
 
-        base_url = static_maps_base_url
-        final_url = base_url + static_maps_image_url_fragment(visualization.id, map_width, map_height)
+        final_url = static_maps_base_url(CartoDB.extract_subdomain(request)) + 
+                    static_maps_image_url_fragment(visualization.id, map_width, map_height)
 
         redirect_to final_url
       end
 
       private
 
-      def static_maps_base_url
-        return(head 400) if current_user.nil?
+      # INFO: Assumes no trailing '/' comes inside, so returned string doesn't has it either
+      def static_maps_base_url(username)
+        config = get_static_maps_api_cdn_config
 
-        if !Cartodb.config[:maps_api_cdn_template].nil? && !Cartodb.config[:maps_api_cdn_template].empty?
-          base_url = Cartodb.config[:maps_api_cdn_template]
+        if !config.nil? && !config.empty?
+          # Sample formats:
+          # {protocol}://{user}.cartodb.com
+          # {protocol}://zone.cartocdn.com/{user}
+          base_url = config
         else
+          # Typical format (but all parameters except {user} come already replaced): 
+          # {protocol}://{user}.{maps_domain}:{port}/
           base_url = ApplicationHelper.maps_api_template('public')
         end
 
         base_url.sub('{protocol}', CartoDB.protocol)
-                .sub('{user}', current_user.username)
+                .sub('{user}', username)
+      end
+
+      # INFO: To ease testing while we keep the config in a global array...
+      def get_static_maps_api_cdn_config
+        Cartodb.config[:maps_api_cdn_template]
       end
 
       def static_maps_image_url_fragment(visualization_id, width, height)
         template_id = CartoDB::NamedMapsWrapper::NamedMap.template_name(visualization_id)
+
         "/api/v1/map/static/named/#{template_id}/#{width}/#{height}.png"
       end
 

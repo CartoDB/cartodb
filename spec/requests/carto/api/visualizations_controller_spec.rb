@@ -58,6 +58,71 @@ describe Carto::Api::VisualizationsController do
   }
 
 
+  describe 'static_map' do
+    include_context 'visualization creation helpers'
+    include_context 'users helper'
+
+    before(:each) do
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+
+      @headers = {'CONTENT_TYPE'  => 'application/json'}
+      host! "#{@user1.subdomain}.localhost.lan"
+
+      CartoDB.unstub(:get_session_domain)
+    end
+
+    it 'tests with non-existing cdn config, which uses maps_api_template url' do
+      width = 123
+      height = 456
+
+      table1 = create_random_table(@user1)
+
+      Carto::Api::VisualizationsController.any_instance
+                                          .stubs(:get_static_maps_api_cdn_config)
+                                          .returns(nil)
+      ApplicationHelper.stubs(:maps_api_template)
+                       .returns("http://#{@user1.username}.localhost.lan:8181")
+
+      get api_v2_visualizations_static_map_url({
+          user_domain: @user1.username, 
+          api_key: @user1.api_key,
+          id: table1.table_visualization.id,
+          width: width,
+          height: height
+        }),
+        @headers
+      last_response.status.should == 302
+
+      tpl_id = CartoDB::NamedMapsWrapper::NamedMap.template_name(table1.table_visualization.id)
+      last_response.location.should == "http://#{@user1.username}.localhost.lan:8181/api/v1/map/static/named/#{tpl_id}/#{width}/#{height}.png"
+    end
+
+    it 'tests with existing cdn config' do
+      width = 123
+      height = 456
+
+      table1 = create_random_table(@user1)
+
+      Carto::Api::VisualizationsController.any_instance
+                                          .stubs(:get_static_maps_api_cdn_config)
+                                          .returns("{protocol}://cdn.local.lan/{user}")
+
+      get api_v2_visualizations_static_map_url({
+          user_domain: @user1.username, 
+          api_key: @user1.api_key,
+          id: table1.table_visualization.id,
+          width: width,
+          height: height
+        }),
+        @headers
+      last_response.status.should == 302
+
+      tpl_id = CartoDB::NamedMapsWrapper::NamedMap.template_name(table1.table_visualization.id)
+      last_response.location.should == "http://cdn.local.lan/#{@user1.username}/api/v1/map/static/named/#{tpl_id}/#{width}/#{height}.png"
+    end
+
+  end
+
   describe 'index' do
     include_context 'visualization creation helpers'
     include_context 'users helper'

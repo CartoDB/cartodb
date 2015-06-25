@@ -384,22 +384,23 @@
         sql: sql
       });
       this.execute(query, function(data) {
-        var s = array_agg(data.rows[0].array_agg);
+        var row = data.rows[0];
+        var s = array_agg(row.array_agg);
         callback({
           type: 'string',
           hist: _(s).map(function(row) {
             var r = row.match(/\((.*),(\d+)/);
             return [r[1], +r[2]];
           }),
-          distinct: data.rows[0].uniq,
-          count: data.rows[0].cnt,
-          null_perc: data.rows[0].null_ratio * 100,
-          cat_weight: data.rows[0].weight,
-          passes: (data.rows[0].uniq > 1 && data.rows[0].weight > 0.66 && data.rows[0].count_nulls < 0.1),
-          weight: 1/3 * ( (data.rows[0].uniq > 1 && data.rows[0].uniq <= 10) ? (1) : (data.rows[0].uniq > 10 && data.rows[0].uniq < 20 ? (0.8) : (data.rows[0].uniq > 20 && data.rows[0].uniq < 100 ? 0.5 : (data.rows[0].uniq >= 100) ? 0.01 : -2 )) 
-                         + (data.rows[0].count > 20 && data.rows[0].uniq / data.rows[0].count > 0.8 ? (-0.5) : (0))
-                         + data.rows[0].weight 
-                         + 2 * (0.5 - data.rows[0].null_ratio) )
+          distinct: row.uniq,
+          count: row.cnt,
+          null_perc: row.null_ratio * 100,
+          cat_weight: row.weight,
+          passes: (row.uniq > 1 && row.weight > 0.66 && row.count_nulls < 0.1),
+          weight: 1/3 * ( (row.uniq > 1 && row.uniq <= 10) ? (1) : (row.uniq > 10 && row.uniq < 20 ? (0.8) : (row.uniq > 20 && row.uniq < 100 ? 0.5 : (row.uniq >= 100) ? 0.01 : -2 )) 
+                         + (row.count > 20 && row.uniq / row.count > 0.8 ? (-0.5) : (0))
+                         + row.weight 
+                         + 2 * (0.5 - row.null_ratio) )
         });
       });
   }
@@ -469,13 +470,16 @@
             'select min("{{column}}") as min,',
                    'max("{{column}}") as max,',
                    'avg("{{column}}") as avg,',
+                   'count(DISTINCT *) as cnt,',
+                   'count(distinct({{column}})) as uniq,',
+                   'count(*) as cnt,',
+                   'sum(case when {{column}} is null then 1 else 0 end)::numeric / count(*)::numeric as null_ratio,',
                    'stddev("{{column}}") as stddev,',
-                   'CASE WHEN abs(avg("{{column}}")) > 1e-7 THEN stddev("{{column}}") / abs(avg("{{column}}")) ELSE 1e12 END as stddevmean, ',
+                   'CASE WHEN abs(avg("{{column}}")) > 1e-7 THEN log(stddev("{{column}}") / abs(avg("{{column}}"))) ELSE 12 END as stddevmean,',
                    ' \'F\' as dist_type ',
                    // CDB_DistType needs to be in production before using
                    // 'CDB_DistType(array_agg("{{column}}"::numeric)) as dist_type ',
               'from ({{sql}}) _wrap ',
-              'where {{column}} is not null ',
         '),',
         'params as (select min(a) as min, (max(a) - min(a)) / 7 as diff from ( select {{column}} as a from ({{sql}}) _table_sql where {{column}} is not null ) as foo ),',
          'histogram as (',
@@ -555,7 +559,7 @@
           avg: row.avg,
           max: row.max,
           min: row.min,
-          weight: 1-row.stddevmean,
+          weight: 0.5 * ( Math.log(row.stddevmean) / 12 + 2 * (0.5 - row.null_ratio) ),
           quantiles: row.quantiles,
           equalint: row.equalint,
           jenks: row.jenks,

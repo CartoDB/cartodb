@@ -32,10 +32,13 @@ module Carto
       attr_reader :original_exception
 
       def initialize(original_exception=nil)
+        message = self.class.to_s
         if original_exception
+          message << " " << original_exception.message
           @original_exception = original_exception
-          set_backtrace(@original_exception.backtrace)
         end
+        super(message) # this is the only way of setting the message
+        set_backtrace(original_exception.backtrace) if original_exception # this line must appear after calling super
       end
 
       def original_message

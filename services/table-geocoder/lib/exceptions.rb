@@ -96,7 +96,7 @@ module Carto
         )
     end
 
-    class GetCacheResultsTimeoutError < GeocoderBaseError
+    class GeocoderCacheDbTimeoutError < GeocoderBaseError
       register_additional_info(
         1030,
         GEOCODER_TIMED_OUT_TITLE,

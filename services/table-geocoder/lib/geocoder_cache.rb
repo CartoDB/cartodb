@@ -52,12 +52,6 @@ module CartoDB
         response = run_query(sql, 'csv').gsub(/\A.*/, '').gsub(/^$\n/, '')
         File.open(cache_results, 'a') { |f| f.write(response.force_encoding("UTF-8")) } unless response == "\n"
       end while rows.size >= @batch_size && (count * @batch_size) + rows.size < @max_rows
-    rescue Sequel::DatabaseError => e
-      if e.message =~ /canceling statement due to statement timeout/
-        raise Carto::GeocoderErrors::GetCacheResultsTimeoutError.new
-      else
-        raise
-      end
     end
 
     def store
@@ -140,8 +134,13 @@ module CartoDB
       response.body
     end # run_query
 
+    # It handles in such a way that the caching is silently stopped
     def handle_cache_exception(exception)
       drop_temp_table
+      if exception.class == Sequel::DatabaseError && exception.message =~ /canceling statement due to statement timeout/
+        # for the moment we just wrap the exception to get a specific error in rollbar
+        exception =  Carto::GeocoderErrors::GeocoderCacheDbTimeoutError.new(exception)
+      end
       ::Rollbar.report_exception(exception)
     rescue => e
       raise exception

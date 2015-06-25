@@ -1,4 +1,5 @@
 # encoding: utf-8
+require_relative 'exceptions'
 require_relative '../../../lib/carto/http/client'
 
 module CartoDB
@@ -51,6 +52,12 @@ module CartoDB
         response = run_query(sql, 'csv').gsub(/\A.*/, '').gsub(/^$\n/, '')
         File.open(cache_results, 'a') { |f| f.write(response.force_encoding("UTF-8")) } unless response == "\n"
       end while rows.size >= @batch_size && (count * @batch_size) + rows.size < @max_rows
+    rescue Sequel::DatabaseError => e
+      if e.message =~ /canceling statement due to statement timeout/
+        raise Carto::GeocoderErrors::GetCacheResultsTimeoutError.new
+      else
+        raise
+      end
     end
 
     def store

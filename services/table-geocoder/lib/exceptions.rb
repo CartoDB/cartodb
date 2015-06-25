@@ -5,6 +5,13 @@ require 'active_support/core_ext/string'
 module Carto
   module GeocoderErrors
 
+    GEOCODER_TIMED_OUT_TITLE = 'The geocoder timed out'
+    GEOCODER_TIMED_OUT_WHAT_ABOUT = %q{
+      Your geocoding request timed out.
+      Please <a href='mailto:support@cartob.com?subject=Geocoding DB statement timed out'>contact us</a>
+      and we'll try to fix it quickly.
+    }.squish
+
     class AdditionalInfo
       SOURCE_CARTODB = 'cartodb'
       SOURCE_USER = 'user'
@@ -69,14 +76,20 @@ module Carto
     class AddGeorefStatusColumnDbTimeoutError < GeocoderBaseError
       register_additional_info(
         1020,
-        'Database statement time out',
-        %q{Your geocoding request timed out trying to execute some DB statement.
-           Please <a href='mailto:support@cartob.com?subject=Geocoding DB statement timed out'>contact us</a>
-           and we'll try to fix it quickly.}.squish,
+        GEOCODER_TIMED_OUT_TITLE,
+        GEOCODER_TIMED_OUT_WHAT_ABOUT,
         AdditionalInfo::SOURCE_CARTODB
         )
     end
 
+    class GetCacheResultsTimeoutError < GeocoderBaseError
+      register_additional_info(
+        1030,
+        GEOCODER_TIMED_OUT_TITLE,
+        GEOCODER_TIMED_OUT_WHAT_ABOUT,
+        AdditionalInfo::SOURCE_CARTODB
+        )
+    end
 
   end
 end

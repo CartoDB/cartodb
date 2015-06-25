@@ -50,7 +50,7 @@ describe Carto::VisualizationQueryBuilder do
 
     expect {
       @vqb.build.first.user.username.should_not eq nil
-    }.to make_database_queries(count: 2)
+    }.to make_database_queries(count: 3)
 
     expect {
       @vqb.with_prefetch_user(true).build.first.user.username.should_not eq nil
@@ -62,7 +62,7 @@ describe Carto::VisualizationQueryBuilder do
 
     expect {
       @vqb.build.where(id: table1.table_visualization.id).first.table.name
-    }.to make_database_queries(count: 2)
+    }.to make_database_queries(count: 3)
 
     expect {
       @vqb.with_prefetch_table.build.where(id: table1.table_visualization.id).first.table.name

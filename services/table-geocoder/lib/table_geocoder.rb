@@ -54,6 +54,10 @@ module CartoDB
         WHERE (cartodb_georef_status IS NULL)
         AND (cartodb_id IN (SELECT cartodb_id FROM #{@qualified_table_name} WHERE (cartodb_georef_status IS NULL) LIMIT #{@max_rows - cache.hits}))
       })
+    rescue Sequel::DatabaseError => e
+      if e.message =~ /canceling statement due to statement timeout/
+        raise Carto::GeocoderErrors::MarkRowsTimeoutError.new(e)
+      else
     end
 
     # Generate a csv input file from the geocodable rows
@@ -73,6 +77,10 @@ module CartoDB
       result = connection.copy_table(connection[query], format: :csv, options: 'HEADER')
       File.write(csv_file, result.force_encoding("UTF-8"))
       return csv_file
+    rescue Sequel::DatabaseError => e
+      if e.message =~ /canceling statement due to statement timeout/
+        raise Carto::GeocoderErrors::GenerateCsvTimeoutError.new(e)
+      else
     end
 
     def update_geocoding_status

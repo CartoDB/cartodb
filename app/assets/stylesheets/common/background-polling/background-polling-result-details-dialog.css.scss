@@ -14,12 +14,15 @@ $w: 560px;
   min-width: initial;
   width: $w;
 }
-.Dialog-body.BackgroundPollingDetails-body {
+.BackgroundPollingDetails-body {
   min-width: initial;
   width: $w;
+  padding: $sMargin-group 0;
+  margin: 0 auto;
+  border-top: 1px solid $cStructure-mainLine;
   border-bottom: 1px solid #ddd;
 }
-.Dialog-body.BackgroundPollingDetails-body--noBorderTop { border-top: 0 }
+.BackgroundPollingDetails-body--noBorderTop { border-top: 0 }
 .BackgroundPollingDetails-icon {
   font-size: 28px;
   margin-right: $sMargin-element;
@@ -44,11 +47,12 @@ $w: 560px;
   margin-top: 3px;
   font-size: $sFontSize-normal;
 }
-.Dialog-footer.BackgroundPollingDetails-footer {
+.BackgroundPollingDetails-footer {
   width: $w;
   margin: 0 auto;
+  padding: $sMargin-group 0;
   text-align: center;
   border-top: 0;
 }
-.Dialog-footer .Button.BackgroundPollingDetails-footerButton { display: inline-block }
-.Dialog-footer .Button.BackgroundPollingDetails-footerButton span { line-height: 42px }
+.Button.BackgroundPollingDetails-footerButton { display: inline-block }
+.Button.BackgroundPollingDetails-footerButton span { line-height: 42px }

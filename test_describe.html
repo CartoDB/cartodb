@@ -33,7 +33,6 @@
     <!-- include cartodb.js library -->
     <script src="dist/cartodb.full.uncompressed.js"></script>
     <script>
-      var account = 'mstandage';
       
       var ramps = {
         green:  ['#EDF8FB', '#D7FAF4', '#CCECE6', '#66C2A4', '#41AE76', '#238B45', '#005824'],
@@ -78,10 +77,7 @@
           }
           return css;
         }
-
       }
-
-      var s = cartodb.SQL({ user: account });
 
       function makeUserMap(div, vizJson, bbox) {
         // create leaflet map
@@ -96,14 +92,13 @@
 
         // add a base layer
         L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',{
-          attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
         }).addTo(map);
 
         // add cartodb layer with one sublayer
         cartodb.createLayer(map, vizJson).addTo(map);
       }
 
-      function makeMap(div, sql, cartocss, bbox) {
+      function makeMap(div, sql, cartocss, bbox, account) {
         // create leaflet map
         var map = L.map(div, { 
           zoomControl: false,
@@ -115,9 +110,7 @@
         map.fitBounds(bbox);
 
         // add a base layer
-        L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',{
-          attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
-        }).addTo(map);
+        L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png').addTo(map);
 
         // add cartodb layer with one sublayer
         cartodb.createLayer(map, {
@@ -169,40 +162,38 @@
         return {sql: sql, css: css, bbox: bbox, weight: weight, type: type, mssg: mssg};
       }
 
-      function columnMap(sql, c, geometryType, bbox, callback) {
+      function columnMap(sql, c, geometryType, bbox, s, callback) {
         s.describe(sql, c, function(data) {
-          if (data.type === 'number') {
-            console.log(data.column, 'avg:',data.avg);
-          } else if (data.type === 'string') {
-            console.log(data.column, 'uniques:',data.distinct);
-          } else {
-            console.log(data.column, 'type: ' + data.type);
-          }
+          // if (data.type === 'number') {
+          //   console.log(data.column, 'avg:',data.avg);
+          // } else if (data.type === 'string') {
+          //   console.log(data.column, 'uniques:',data.distinct);
+          // } else {
+          //   console.log(data.column, 'type: ' + data.type);
+          // }
           var temp = guessMap(sql, geometryType, data.column, data, bbox);
           callback(temp);
         });
       }
 
       function pecan(tableName, acctName, callback) {
-        s = cartodb.SQL({user: acctName});
+        var s = cartodb.SQL({user: acctName});
         var m = [];
-        var temp = null;
         var normalization = 'ST_Area(the_geom::geography)';
-        var exclude = ['cartodb_id','lat','lon'];
+        var exclude = ['cartodb_id','lat','lon','latitude','longitude'];
         var sql = 'select * from ' + tableName; //spanish_adm2_provinces'//world_borders' // pluto14v2
         s.describe(sql, 'the_geom', function(data) {
           var geometryType = data.simplified_geometry_type;
           s.columns(sql, function(columns) {
             _(columns).each(function(v, k) {
-              columnMap(sql, k.concat(""), geometryType, data.bbox, function(d) {
-                // console.log(v,k,d);
-                m.push(d);
-                // console.log(m,m.length);
-                if (m.length == Object.keys(columns).length) {
-                  // console.log('hi');
-                  callback(m);
-                }
-              });
+              // if (exclude.indexOf(k) == -1) {
+                columnMap(sql, k.concat(""), geometryType, data.bbox, s, function(d) {
+                  m.push(d);
+                  if (m.length == Object.keys(columns).length) {
+                    callback(m);
+                  }
+                });
+              // }
             });
           });
         });
@@ -213,7 +204,8 @@
         var userData = [{
           "user":"fmoron",
           "viz_json":"http://fmoron.cartodb.com/api/v2/viz/82110650-e428-11e4-8703-0e018d66dc29/viz.json",
-          "viz_id":"82110650-e428-11e4-8703-0e018d66dc29","table":"votos"
+          "viz_id":"82110650-e428-11e4-8703-0e018d66dc29",
+          "table":"votos"
         },{
           "user":"mapbaker",
           "viz_json":"http://mapbaker.cartodb.com/api/v2/viz/22461402-53de-11e4-94a3-0e018d66dc29/viz.json",
@@ -259,6 +251,56 @@
           "viz_json":"http://mstandage.cartodb.com/api/v2/viz/906cec04-d0ab-11e4-a74f-0e853d047bba/viz.json",
           "viz_id":"906cec04-d0ab-11e4-a74f-0e853d047bba",
           "table":"phone_upload_1"
+        },{
+          "user": "mjohns32",
+          "viz_json": "http://mjohns32.cartodb.com/api/v2/viz/d11c36f2-bae3-11e4-a95a-0e4fddd5de28/viz.json",
+          "viz_id": "d11c36f2-bae3-11e4-a95a-0e4fddd5de28",
+          "table": "complete_timeline_data"
+        }, {
+          "user": "anandkatakam",
+          "viz_json": "http://anandkatakam.cartodb.com/api/v2/viz/e6135b32-9039-11e4-9be9-0e853d047bba/viz.json",
+          "viz_id": "e6135b32-9039-11e4-9be9-0e853d047bba",
+          "table": "lost_years_filtered_sheet1_282_29"
+        }, {
+          "user": "mab120",
+          "viz_json": "http://mab120.cartodb.com/api/v2/viz/c0c5f996-dc62-11e4-a95c-0e5e07bb5d8a/viz.json",
+          "viz_id": "c0c5f996-dc62-11e4-a95c-0e5e07bb5d8a",
+          "table": "gis_dcoi"
+        }, {
+          "user": "elayt",
+          "viz_json": "http://elayt.cartodb.com/api/v2/viz/0a1d34a6-df6f-11e4-8950-0e49835281d6/viz.json",
+          "viz_id": "0a1d34a6-df6f-11e4-8950-0e49835281d6",
+          "table": "registered_students_2015_ft"
+        }, {
+          "user": "omars2015",
+          "viz_json": "http://omars2015.cartodb.com/api/v2/viz/203b964a-def9-11e4-bed0-0e018d66dc29/viz.json",
+          "viz_id": "203b964a-def9-11e4-bed0-0e018d66dc29",
+          "table": "list_of_old_west_gunfights"
+        }, {
+          "user": "roncadriano",
+          "viz_json": "http://roncadriano.cartodb.com/api/v2/viz/c49333a6-e5d4-11e4-8e5f-0e8dde98a187/viz.json",
+          "viz_id": "c49333a6-e5d4-11e4-8e5f-0e8dde98a187",
+          "table": "mestre_asterisk_geolocation_sessions_20150416"
+        }, {
+          "user": "osm2",
+          "viz_json": "http://osm2.cartodb.com/api/v2/viz/bcfda996-de27-11e4-9303-0e4fddd5de28/viz.json",
+          "viz_id": "bcfda996-de27-11e4-9303-0e4fddd5de28",
+          "table": "ny_final_18"
+        }, {
+          "user": "lorenaposada423",
+          "viz_json": "http://lorenaposada423.cartodb.com/api/v2/viz/3eac758c-e457-11e4-9634-0e6e1df11cbf/viz.json",
+          "viz_id": "3eac758c-e457-11e4-9634-0e6e1df11cbf",
+          "table": "rmcab"
+        }, {
+          "user": "msthing",
+          "viz_json": "http://msthing.cartodb.com/api/v2/viz/aab869f6-e282-11e4-9cfb-0e9d821ea90d/viz.json",
+          "viz_id": "aab869f6-e282-11e4-9cfb-0e9d821ea90d",
+          "table": "fp4"
+        }, {
+          "user": "kristerc",
+          "viz_json": "http://kristerc.cartodb.com/api/v2/viz/4ec7f89a-e468-11e4-99db-0e0c41326911/viz.json",
+          "viz_id": "4ec7f89a-e468-11e4-99db-0e0c41326911",
+          "table": "streetfood_i_malmo"
         }];
 
         userData.forEach(function(e,i,a) {
@@ -275,53 +317,45 @@
           });
           $(par).append(userDiv);
           var pecan1 = $('<div>', {
-            id: [a[i].user,a[i].table,'top_pecan'].join('-'),
+            id: [a[i].user,a[i].table,'pecan1'].join('-'),
             class: 'map'
           });
           $(par).append(pecan1);
           var pecan2 = $('<div>', {
-            id: [a[i].user,a[i].table,'2nd_pecan'].join('-'),
+            id: [a[i].user,a[i].table,'pecan2'].join('-'),
             class: 'map'
           });
           $(par).append(pecan2);
           // make all three children
         });
-        // var idx = 9;
 
-        for (var idx = 0; idx < 2; ++idx) {
-          pecan(userData[idx].table,userData[idx].user, function(maps) {
-            console.log('userData idx: ',userData[idx]);
-            // get map metadata, sort by weight score
+        _(userData).each(function(el,idx,list) {
+          pecan(el.table,el.user, function(maps) {
+
+            // sort by weight score
             maps.sort(function(a, b) {
               return b.weight - a.weight;
             });
-            
-            var test = [0,1];
+
+            console.log(el.table,el.user,maps.length);
+            var pecans = [0,1];
             
             // visualize top two maps
-            test.forEach(function(e,i,arr) {
-              // console.log("incallback: ",typeof(maps),Object.keys(maps),maps[e],maps[e]);
+            pecans.forEach(function(e,i,a) {
               
-              // place legend on user map 
-              var div = $('#' + [userData[idx].user,userData[idx].table,'user_map'].join('-'));
+              // place legend on pecan maps
+              var div = $('#' + [el.user,el.table,'pecan'+(i+1)].join('-'));
               div.append($('<div>').html(maps[e].mssg).attr('class', 'legend'));
-              
-              // add div to page
-              $('body').append(div);
-              
+
               // create map
-              makeMap(div[0], maps[e].sql, maps[e].css, maps[e].bbox);
+              makeMap(div[0], maps[e].sql, maps[e].css, maps[e].bbox,el.user);
             });
-            var userDiv = $('<div>');
-            var id = userData[idx].user + '-' + userData[idx].table;
-            // console.log(id);
-            userDiv.attr('class','map').attr('id',id);
-            $('body').append(userDiv);
-            console.log('idx: ' + idx);
-            makeUserMap(userDiv[0],userData[idx].viz_json,maps[0].bbox);
-            userDiv.append($('<div>').html('user: ' + userData[idx].user + '<br />' + userData[idx].table).attr('class', 'legend'));
+            var userDiv = $('#' + [el.user,el.table,'user_map'].join('-'));
+            var id = el.user + '-' + el.table;
+            makeUserMap(userDiv[0],el.viz_json,maps[0].bbox);
+            userDiv.append($('<div>').html('user: ' + el.user + '<br />table: ' + el.table).attr('class', 'legend'));
           });
-        }
+        });
       }
 
       // you could use $(window).load(main);

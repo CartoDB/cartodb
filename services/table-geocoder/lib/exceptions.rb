@@ -29,7 +29,21 @@ module Carto
     class GeocoderBaseError < StandardError
       @@error_code_info_map = {}
 
+      attr_reader :original_exception
+
+      def initialize(original_exception=nil)
+        if original_exception
+          @original_exception = original_exception
+          set_backtrace(@original_exception.backtrace)
+        end
+      end
+
+      def original_message
+        @original_exception.message if @original_exception
+      end
+
       def self.register_additional_info(error_code, title, what_about, source)
+        raise 'Duplicate error code' if @@error_code_info_map.has_key?(error_code)
         @additional_info = AdditionalInfo.new(error_code, title, what_about, source)
         @@error_code_info_map[@additional_info.error_code] = @additional_info
       end

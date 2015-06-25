@@ -2,12 +2,14 @@ require_relative 'visualization_presenter'
 require_relative 'vizjson_presenter'
 require_relative '../../../models/visualization/stats'
 require_relative 'paged_searcher'
+require_dependency 'carto/uuidhelper'
 
 module Carto
   module Api
     class VisualizationsController < ::Api::ApplicationController
       include VisualizationSearcher
       include PagedSearcher
+      include Carto::UUIDHelper
 
       ssl_required :index, :show
       ssl_allowed  :vizjson2, :likes_count, :likes_list, :is_liked, :list_watching
@@ -17,7 +19,7 @@ module Carto
       before_filter :optional_api_authorization, only: [:index, :vizjson2, :is_liked]
 
       before_filter :id_and_schema_from_params
-      before_filter :load_table, only: [:vizjson2]
+      before_filter :load_by_name_or_id, only: [:vizjson2]
       before_filter :load_visualization, only: [:likes_count, :likes_list, :is_liked, :show, :stats, :list_watching]
 
       def show
@@ -96,20 +98,15 @@ module Carto
 
       private
 
-      def load_table
-        # TODO: refactor this for vizjson, that uses to look for a visualization, so it should come first
+      def load_by_name_or_id
+        @table =  is_uuid?(@id) ? Carto::UserTable.where(id: @id).first  : nil
 
-        @table = Carto::UserTable.where(id: @id).first
-        # TODO: id should _really_ contain either an id of a user_table or a visualization??
-        # Some tests fail if not, and older controller works that way, but...
+        # INFO: id should _really_ contain either an id of a user_table or a visualization, but for legacy reasons...
         if @table
           @visualization = @table.visualization
         else
-          @table = Visualization.where(id: @id).first
-          @visualization = @table
-          # TODO: refactor load_table duplication
-          return render(text: 'Visualization does not exist', status: 404) if @visualization.nil?
-          return render(text: 'Visualization not viewable', status: 403) if !@visualization.is_viewable_by_user?(current_viewer)
+          load_visualization
+          @table = @visualization
         end
       end
 

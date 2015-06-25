@@ -368,7 +368,7 @@
         'stats as (', 
            'select count(distinct({{column}})) as uniq, ',
            '       count(*) as cnt, ',
-           '       sum(case when {{column}} is null then 1 else 0 end)::numeric / count(*)::numeric as count_nulls, ',
+           '       sum(case when {{column}} is null then 1 else 0 end)::numeric / count(*)::numeric as null_ratio, ',
            // '       CDB_DistinctMeasure(array_agg({{column}}::text)) as cat_weight ',
            '       (SELECT max(cumsum) weight FROM b) As weight ',
            'from ({{sql}}) __wrap',
@@ -392,13 +392,14 @@
             return [r[1], +r[2]];
           }),
           distinct: data.rows[0].uniq,
-          count: data.rows[0].count,
-          count_nulls: data.rows[0].count_nulls,
+          count: data.rows[0].cnt,
+          null_perc: data.rows[0].null_ratio * 100,
           cat_weight: data.rows[0].weight,
           passes: (data.rows[0].uniq > 1 && data.rows[0].weight > 0.66 && data.rows[0].count_nulls < 0.1),
-          weight: 1/3 * ( (data.rows[0].uniq > 1 && data.rows[0].uniq <= 10) ? (1) : (data.rows[0].uniq > 10 && data.rows[0].uniq < 20 ? (0.8) : (data.rows[0].uniq > 20 && data.rows[0].uniq < 100 ? 0.5 : 0.1)) 
+          weight: 1/3 * ( (data.rows[0].uniq > 1 && data.rows[0].uniq <= 10) ? (1) : (data.rows[0].uniq > 10 && data.rows[0].uniq < 20 ? (0.8) : (data.rows[0].uniq > 20 && data.rows[0].uniq < 100 ? 0.5 : (data.rows[0].uniq >= 100) ? 0.01 : -2 )) 
+                         + (data.rows[0].count > 20 && data.rows[0].uniq / data.rows[0].count > 0.8 ? (-0.5) : (0))
                          + data.rows[0].weight 
-                         + data.rows[0].count_nulls )
+                         + 2 * (0.5 - data.rows[0].null_ratio) )
         });
       });
   }

@@ -16,11 +16,12 @@ module Carto
 
       # TODO: compare with older, there seems to be more optional authentication endpoints
       skip_before_filter :api_authorization_required, only: [:index, :vizjson2, :is_liked, :static_map]
-      before_filter :optional_api_authorization, only: [:index, :vizjson2, :is_liked]
+      before_filter :optional_api_authorization, only: [:index, :vizjson2, :is_liked, :static_map]
 
       before_filter :id_and_schema_from_params
       before_filter :load_by_name_or_id, only: [:vizjson2]
-      before_filter :load_visualization, only: [:likes_count, :likes_list, :is_liked, :show, :stats, :list_watching]
+      before_filter :load_visualization, only: [:likes_count, :likes_list, :is_liked, :show, :stats, :list_watching,
+                                                :static_map]
 
       def show
         render_jsonp(to_json(@visualization))

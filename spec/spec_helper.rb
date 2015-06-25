@@ -1,4 +1,5 @@
-require 'mocha'
+require_relative './rspec_configuration'
+
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 ENV['RAILS_ENV'] ||= 'test'
 require File.expand_path('../../config/environment', __FILE__)
@@ -12,7 +13,6 @@ Dir[Rails.root.join('spec/support/**/*.rb')].each {|f| require f}
 Resque.inline = true
 
 RSpec.configure do |config|
-  config.mock_with :mocha
 
   config.include CartoDB::Factories
   config.include HelperMethods

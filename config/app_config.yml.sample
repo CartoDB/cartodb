@@ -17,6 +17,7 @@ defaults: &defaults
   watcher:
     ttl:              60
   tiler:
+    filter: 'mapnik'
     internal:
       protocol:      'http'
       domain:        'localhost.lan'

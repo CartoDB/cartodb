@@ -344,11 +344,33 @@
 
 
   SQL.prototype.describeString = function(sql, column, options, callback) {
+
       var s = [
-        'with stats as (', 
+      'WITH c As (',
+        '  select count(*) as total',
+        '  from ({{sql}}) _wrap',
+        ' ),',
+        ' a As (',
+        '  SELECT', 
+        '  count(*) cnt,',
+        '  {{column}}', 
+        ' from ({{sql}}) _wrap ', 
+        ' GROUP BY {{column}}', 
+        ' ORDER BY cnt DESC',
+        ' ),', 
+        ' b As (', 
+        ' SELECT', 
+        ' sum(cnt) OVER (ORDER BY cnt DESC) / c.total As cumsum', 
+        ' FROM a, c', 
+        ' LIMIT 10', 
+        ' ),', 
+        // ' m As (SELECT max(cumsum) cat_weight FROM b),',
+        'stats as (', 
            'select count(distinct({{column}})) as uniq, ',
-           'round(100.0 * sum(case when {{column}} is null then 1 else 0 end)::numeric / count(*)::numeric,1) as count_nulls, ',
-           'PAE_DistinctMeasure(array_agg({{column}}::text),0.9) as weight ',
+           '       count(*) as cnt, ',
+           '       sum(case when {{column}} is null then 1 else 0 end)::numeric / count(*)::numeric as count_nulls, ',
+           // '       CDB_DistinctMeasure(array_agg({{column}}::text)) as cat_weight ',
+           '       (SELECT max(cumsum) cat_weight FROM b) cat_weight ',
            'from ({{sql}}) __wrap',
         '),',
         'hist as (', 
@@ -371,9 +393,12 @@
           }),
           distinct: data.rows[0].uniq,
           count_nulls: data.rows[0].count_nulls,
-          weight: data.rows[0].weight,
-          passes: (data.rows[0].uniq > 1 && data.rows[0].weight && data.rows[0].count_nulls < 10.0)
-        })
+          cat_weight: data.rows[0].cat_weight,
+          passes: (data.rows[0].uniq > 1 && data.rows[0].cat_weight > 0.66 && data.rows[0].count_nulls < 0.1),
+          weight: 1/3 * ( (data.rows[0].uniq > 1 && data.rows[0].uniq < 10) ? (1) : (data.rows[0].uniq >= 10 && data.rows[0].uniq < 20 ? (0.8) : (data.rows[0].uniq > 20 && data.rows[0].uniq < 100 ? 0.5 : 0.1)) 
+                         + data.rows[0].cat_weight 
+                         + data.rows[0].count_nulls )
+        });
       });
   }
 
@@ -440,10 +465,14 @@
                    'max("{{column}}") as max,',
                    'avg("{{column}}") as avg,',
                    'stddev("{{column}}") as stddev,',
-                   'CDB_DistType(array_agg("{{column}}"::numeric)) as dist_type ',
+                   'stddev("{{column}}") / abs(avg("{{column}}")) as stddevmean, ',
+                   ' \'F\' as dist_type ',
+                   // CDB_DistType needs to be in production before using
+                   // 'CDB_DistType(array_agg("{{column}}"::numeric)) as dist_type ',
               'from ({{sql}}) _wrap ',
               'where {{column}} is not null ',
         '),',
+        'params as (select min(a) as min, (max(a) - min(a)) / 7 as diff from ( select {{column}} as a from ({{sql}}) _table_sql where {{column}} is not null ) as foo ),',
          'histogram as (',
            'select array_agg(row(bucket, range, freq)) as hist from (',
            'select width_bucket({{column}}, min, max, 100) as bucket,',
@@ -456,13 +485,49 @@
          '),',
          'buckets as (',
             'select CDB_QuantileBins(array_agg({{column}}::numeric), 7) as quantiles, ',
-            '       CDB_EqualIntervalBins(array_agg({{column}}::numeric), 7) as equalint, ',
+            '       (select array_agg(x::numeric) FROM (SELECT (min + n * diff)::numeric as x FROM generate_series(1,7) n, params) p) as equalint,',
+            // '       CDB_EqualIntervalBins(array_agg({{column}}::numeric), 7) as equalint, ',
             '       CDB_JenksBins(array_agg({{column}}::numeric), 7) as jenks, ',
             '       CDB_HeadsTailsBins(array_agg({{column}}::numeric), 7) as headtails ',
             'from ({{sql}}) _table_sql where {{column}} is not null',
          ')',
          'select * from histogram, stats, buckets'
       ];
+
+      // if(normalization == '_area'){
+      //   var wrap_sql = "SELECT {{column}}/ST_Area(the_geom::geography) as _target_column FROM ({{sql}}) a where the_geom is not null AND {{column}} is not null ";
+      // } else if (normalization == null) {
+      //   var wrap_sql = "SELECT {{column}} as _target_column FROM ({{sql}}) a where {{column}} is not null ";
+      // } else {
+      //   var wrap_sql = "SELECT {{column}}/{{normalization}} as _target_column FROM ({{sql}}) a where {{normalization}} is not null AND {{column}} is not null ";
+
+      // }
+
+      // wrap_sql = Mustache.render(wrap_sql.join('\n'), {
+      //   normalization: normalization, 
+      //   column: column, 
+      //   sql: sql
+      // });
+
+      // var newS = [
+      //   'with stats as (',
+      //       'select min(_target_column) as min,',
+      //              'max(_target_column) as max,',
+      //              'avg(_target_column) as avg,',
+      //              'stddev(_target_column) as stddev,',
+      //              'stddev(_target_column) / avg(_target_column) as stdevmean, ',
+      //              'CDB_DistType(array_agg(_target_column::numeric)) as dist_type ',
+      //         'from ({{sql}}) _wrap ',
+      //   '),',
+      //    'buckets as (',
+      //       'select CDB_QuantileBins(array_agg(_target_column::numeric), 7) as quantiles, ',
+      //       '       CDB_EqualIntervalBins(array_agg(_target_column::numeric), 7) as equalint, ',
+      //       '       CDB_JenksBins(array_agg(_target_column::numeric), 7) as jenks, ',
+      //       '       CDB_HeadsTailsBins(array_agg(_target_column::numeric), 7) as headtails ',
+      //       'from ({{sql}}) _table_sql',
+      //    ')',
+      //    'select * from histogram, stats, buckets'
+      // ];
 
       var query = Mustache.render(s.join('\n'), {
         column: column, 
@@ -485,6 +550,7 @@
           avg: row.avg,
           max: row.max,
           min: row.min,
+          weight: 1-row.stddevmean,
           quantiles: row.quantiles,
           equalint: row.equalint,
           jenks: row.jenks,

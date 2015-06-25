@@ -58,6 +58,8 @@ module CartoDB
       if e.message =~ /canceling statement due to statement timeout/
         raise Carto::GeocoderErrors::MarkRowsTimeoutError.new(e)
       else
+        raise
+      end
     end
 
     # Generate a csv input file from the geocodable rows
@@ -81,6 +83,8 @@ module CartoDB
       if e.message =~ /canceling statement due to statement timeout/
         raise Carto::GeocoderErrors::GenerateCsvTimeoutError.new(e)
       else
+        raise
+      end
     end
 
     def update_geocoding_status

@@ -36,6 +36,9 @@ WORKING_SPECS_2 = \
   spec/lib/image_metadata_spec.rb \
   spec/lib/central_spec.rb \
   spec/lib/carto/http/client_spec.rb \
+  $(NULL)
+
+WORKING_SPECS_2b = \
 	spec/helpers/uuidhelper_spec.rb \
   $(NULL)
 
@@ -190,6 +193,8 @@ check-1:
 	bundle exec rspec $(WORKING_SPECS_1)
 check-2:
 	bundle exec rspec $(WORKING_SPECS_2)
+check-2b:
+	bundle exec rspec $(WORKING_SPECS_2b)
 check-3:
 	bundle exec rspec $(WORKING_SPECS_3)
 check-4:
@@ -207,7 +212,7 @@ check-9:
 check-10:
 	bundle exec rspec $(WORKING_SPECS_10)
 
-check-prepared: check-1 check-2 check-3 check-4 check-5 check-6 check-7 check-8 check-9 check-10
+check-prepared: check-1 check-2 check-2b check-3 check-4 check-5 check-6 check-7 check-8 check-9 check-10
 
 check: prepare-test-db check-prepared
 check-frontend:

@@ -6,7 +6,11 @@ describe 'refactored behaviour' do
 
   it_behaves_like 'user models' do
     def get_twitter_imports_count_by_user_id(user_id)
-      User.where(id: user_id).first.get_twitter_imports_count
+      get_user_by_id(user_id).get_twitter_imports_count
+    end
+
+    def get_user_by_id(user_id)
+      User.where(id: user_id).first
     end
   end
 

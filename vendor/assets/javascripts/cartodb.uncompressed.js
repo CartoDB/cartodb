@@ -1,6 +1,6 @@
-// cartodb.js version: 3.14.6
+// cartodb.js version: 3.15.0
 // uncompressed version: cartodb.uncompressed.js
-// sha: 701551429aad9ec00c5704fdffc55262e3f8b6af
+// sha: 5d6b8d8d319c66d1a224969d7be742166991f209
 (function() {
   var root = this;
 
@@ -25652,7 +25652,7 @@ if (typeof window !== 'undefined') {
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = "3.14.6";
+    cdb.VERSION = "3.15.0";
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -32648,30 +32648,44 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
   }
 
 });
-function SubLayer(_parent, position) {
+function SubLayerFactory() {};
+
+SubLayerFactory.createSublayer = function(type, layer, position) {
+  type = type && type.toLowerCase();
+  if (!type || type === 'mapnik' || type === 'cartodb') {
+    return new CartoDBSubLayer(layer, position);
+  } else if (type === 'http') {
+    return new HttpSubLayer(layer, position);
+  } else {
+    throw 'Sublayer type not supported';
+  }
+};
+
+function SubLayerBase(_parent, position) {
   this._parent = _parent;
   this._position = position;
   this._added = true;
-  this._bindInteraction();
-  if (Backbone.Model && this._parent.getLayer(this._position)) {
-    this.infowindow = new Backbone.Model(this._parent.getLayer(this._position).infowindow);
-    this.infowindow.bind('change', function() {
-      var def = this._parent.getLayer(this._position);
-      def.infowindow = this.infowindow.toJSON();
-      this._parent.setLayer(this._position, def);
-    }, this);
-  }
 }
 
-SubLayer.prototype = {
+SubLayerBase.prototype = {
+
+  toJSON: function() {
+    throw 'toJSON must be implemented';
+  },
+
+  isValid: function() {
+    throw 'isValid must be implemented';
+  },
 
   remove: function() {
     this._check();
     this._parent.removeLayer(this._position);
-    this._unbindInteraction();
     this._added = false;
     this.trigger('remove', this);
+    this._onRemove();
   },
+
+  _onRemove: function() {},
 
   toggle: function() {
     this.get('hidden') ? this.show() : this.hide();
@@ -32714,40 +32728,14 @@ SubLayer.prototype = {
     this._parent.setLayer(this._position, def);
   },
 
-  setSQL: function(sql) {
-    return this.set({
-      sql: sql
-    });
-  },
-
-  setCartoCSS: function(cartocss) {
-    return this.set({
-      cartocss: cartocss
-    });
-  },
-
-  setInteractivity: function(fields) {
-    return this.set({
-      interactivity: fields
-    });
-  },
-
-  setInteraction: function(active) {
-    this._parent.setInteraction(this._position, active);
-  },
-
   get: function(attr) {
     this._check();
     var attrs = this._parent.getLayer(this._position);
     return attrs.options[attr];
   },
 
-  getSQL: function() {
-    return this.get('sql');
-  },
-
-  getCartoCSS: function() {
-    return this.get('cartocss');
+  isVisible: function(){
+    return ! this.get('hidden');
   },
 
   _check: function() {
@@ -32786,7 +32774,188 @@ SubLayer.prototype = {
 };
 
 // give events capabilitues
-_.extend(SubLayer.prototype, Backbone.Events);
+_.extend(SubLayerBase.prototype, Backbone.Events);
+
+
+// CartoDB / Mapnik sublayers
+function CartoDBSubLayer(layer, position) {
+  SubLayerBase.call(this, layer, position);
+  this._bindInteraction();
+
+  var layer = this._parent.getLayer(this._position);
+  // TODO: Test this
+  if (Backbone.Model && layer) {
+    this.infowindow = new Backbone.Model(layer.infowindow);
+    this.infowindow.bind('change', function() {
+      layer.infowindow = this.infowindow.toJSON();
+      this._parent.setLayer(this._position, layer);
+    }, this);
+  }
+};
+
+CartoDBSubLayer.prototype = _.extend({}, SubLayerBase.prototype, {
+
+  toJSON: function() {
+    var json = {
+      type: 'cartodb',
+      options: {
+        sql: this.getSQL(),
+        cartocss: this.getCartoCSS(),
+        cartocss_version: this.get('cartocss_version') || '2.1.0'
+      }
+    };
+
+    var interactivity = this.getInteractivity();
+    if (interactivity && interactivity.length > 0) {
+      json.options.interactivity = interactivity;
+      var attributes = this.getAttributes();
+      if (attributes.length > 0) {
+        json.options.attributes = {
+          id: 'cartodb_id',
+          columns: attributes
+        }
+      }
+    }
+
+    if (this.get('raster')) {
+      json.options.geom_column = "the_raster_webmercator";
+      json.options.geom_type = "raster";
+      // raster needs 2.3.0 to work
+      json.options.cartocss_version = this.get('cartocss_version') || '2.3.0';
+    }
+    return json;
+  },
+
+  isValid: function() {
+    return this.get('sql') && this.get('cartocss');
+  },
+
+  _onRemove: function() {
+    this._unbindInteraction();
+  },
+
+  setSQL: function(sql) {
+    return this.set({
+      sql: sql
+    });
+  },
+
+  setCartoCSS: function(cartocss) {
+    return this.set({
+      cartocss: cartocss
+    });
+  },
+
+  setInteractivity: function(fields) {
+    return this.set({
+      interactivity: fields
+    });
+  },
+
+  setInteraction: function(active) {
+    this._parent.setInteraction(this._position, active);
+  },
+
+  getSQL: function() {
+    return this.get('sql');
+  },
+
+  getCartoCSS: function() {
+    return this.get('cartocss');
+  },
+
+  getInteractivity: function() {
+    var interactivity = this.get('interactivity');
+    if (interactivity) {
+      if (typeof(interactivity) === 'string') {
+        interactivity = interactivity.split(',');
+      }
+      return this._trimArrayItems(interactivity);
+    }
+  },
+
+  getAttributes: function() {
+    var columns = [];
+    if (this.get('attributes')) {
+      columns = this.get('attributes');
+    } else {
+      columns = _.map(this.infowindow.get('fields'), function(field){
+        return field.name;
+      });
+    }
+    return this._trimArrayItems(columns);
+  },
+
+  _trimArrayItems: function(array) {
+    return _.map(array, function(item) {
+      return item.trim();
+    })
+  }
+});
+
+// Http sublayer
+
+function HttpSubLayer(layer, position) {
+  SubLayerBase.call(this, layer, position);
+};
+
+HttpSubLayer.prototype = _.extend({}, SubLayerBase.prototype, {
+
+  toJSON: function() {
+    var json = {
+      type: 'http',
+      options: {
+        urlTemplate: this.getURLTemplate()
+      }
+    };
+
+    var subdomains = this.get('subdomains');
+    if (subdomains) {
+      json.options.subdomains = subdomains;
+    }
+
+    var tms = this.get('tms');
+    if (tms !== undefined) {
+      json.options.tms = tms;
+    }
+    return json;
+  },
+
+  isValid: function() {
+    return this.get('urlTemplate');
+  },
+
+  setURLTemplate: function(urlTemplate) {
+    return this.set({
+      urlTemplate: urlTemplate
+    });
+  },
+
+  setSubdomains: function(subdomains) {
+    return this.set({
+      subdomains: subdomains
+    });
+  },
+
+  setTms: function(tms) {
+    return this.set({
+      tms: tms
+    });
+  },
+
+  getURLTemplate: function(urlTemplate) {
+    return this.get('urlTemplate');
+  },
+
+  getSubdomains: function(subdomains) {
+    return this.get('subdomains');
+  },
+
+  getTms: function(tms) {
+    return this.get('tms');
+  }
+});
+
 /**
  * Wrapper for map properties returned by the tiler
  */
@@ -32800,6 +32969,9 @@ MapProperties.prototype.getMapId = function() {
 
 /**
  * Returns the index of a layer of a given type, as the tiler kwows it.
+ *
+ * @param {integer} index - number of layer of the specified type
+ * @param {string} layerType - type of the layers
  */
 MapProperties.prototype.getLayerIndexByType = function(index, layerType) {
   var layers = this.mapProperties.metadata && this.mapProperties.metadata.layers;
@@ -32822,8 +32994,34 @@ MapProperties.prototype.getLayerIndexByType = function(index, layerType) {
   return tilerLayerIndex[index];
 }
 
+/**
+ * Returns the index of a layer of a given type, as the tiler kwows it.
+ *
+ * @param {string|array} types - Type or types of layers
+ */
+MapProperties.prototype.getLayerIndexesByType = function(types) {
+  var layers = this.mapProperties.metadata && this.mapProperties.metadata.layers;
+
+  if (!layers) {
+    return;
+  }
+  var layerIndexes = [];
+  for (var i = 0; i < layers.length; i++) {
+    var layer = layers[i];
+    var isValidType = layer.type !== 'torque';
+    if (types && types.length > 0) {
+      isValidType = isValidType && types.indexOf(layer.type) != -1
+    }
+    if (isValidType) {
+      layerIndexes.push(i);
+    }
+  }
+  return layerIndexes;
+}
+
 function MapBase(options) {
   var self = this;
+
   this.options = _.defaults(options, {
     ajax: window.$ ? window.$.ajax : reqwest.compat,
     pngParams: ['map_key', 'api_key', 'cache_policy', 'updated_at'],
@@ -32840,9 +33038,9 @@ function MapBase(options) {
   this.urls = null;
   this.silent = false;
   this.interactionEnabled = []; //TODO: refactor, include inside layer
-  this._layerTokenQueue = [];
   this._timeout = -1;
-  this._queue = [];
+  this._createMapCallsStack = [];
+  this._createMapCallbacks = [];
   this._waiting = false;
   this.lastTimeUpdated = null;
   this._refreshTimer = -1;
@@ -32866,25 +33064,24 @@ MapBase.prototype = {
     opts.maps_api_template = [tilerProtocol, "://", username, tilerDomain, tilerPort].join('');
   },
 
-  getLayerToken: function(callback) {
+  createMap: function(callback) {
     var self = this;
-    function _done(data, err) {
+    function invokeStackedCallbacks(data, err) {
       var fn;
-      while(fn = self._layerTokenQueue.pop()) {
+      while(fn = self._createMapCallbacks.pop()) {
         fn(data, err);
       }
     }
     clearTimeout(this._timeout);
-    this._queue.push(_done);
-    this._layerTokenQueue.push(callback);
+    this._createMapCallsStack.push(invokeStackedCallbacks);
+    this._createMapCallbacks.push(callback);
     this._timeout = setTimeout(function() {
-      self._getLayerToken(_done);
+      self._createMap(invokeStackedCallbacks);
     }, 4);
   },
 
-  _getLayerToken: function(callback) {
+  _createMap: function(callback) {
     var self = this;
-    var params = [];
     callback = callback || function() {};
 
     // if the previous request didn't finish, queue it
@@ -32892,7 +33089,7 @@ MapBase.prototype = {
       return this;
     }
 
-    this._queue = [];
+    this._createMapCallsStack = [];
 
     // when it's a named map the number of layers is not known
     // so fetch the map
@@ -32901,12 +33098,28 @@ MapBase.prototype = {
       return;
     }
 
-    // setup params
-    var extra_params = this.options.extra_params || {};
-    var api_key = this.options.map_key || this.options.api_key || extra_params.map_key || extra_params.api_key;
+    // mark as the request is being done
+    this._waiting = true;
+    var req = null;
+    if (this._usePOST()) {
+      req = this._requestPOST;
+    } else {
+      req = this._requestGET;
+    }
+    var params = this._getParamsFromOptions(this.options);
+    req.call(this, params, callback);
+    return this;
+  },
+
+  _getParamsFromOptions: function(options) {
+    var params = [];
+    var extra_params = options.extra_params || {};
+    var api_key = options.map_key || options.api_key || extra_params.map_key || extra_params.api_key;
+
     if(api_key) {
       params.push("map_key=" + api_key);
     }
+
     if(extra_params.auth_token) {
       if (_.isArray(extra_params.auth_token)) {
         for (var i = 0, len = extra_params.auth_token.length; i < len; i++) {
@@ -32920,16 +33133,7 @@ MapBase.prototype = {
     if (this.stat_tag) {
       params.push("stat_tag=" + this.stat_tag);
     }
-    // mark as the request is being done
-    this._waiting = true;
-    var req = null;
-    if (this._usePOST()) {
-      req = this._requestPOST;
-    } else {
-      req = this._requestGET;
-    }
-    req.call(this, params, callback);
-    return this;
+    return params;
   },
 
   _usePOST: function() {
@@ -32963,9 +33167,15 @@ MapBase.prototype = {
       success: function(data) {
         loadingTime.end();
         // discard previous calls when there is another call waiting
-        if(0 === self._queue.length) {
-          callback(data);
+        if(0 === self._createMapCallsStack.length) {
+          if (data.errors) {
+            cartodb.core.Profiler.metric('cartodb-js.layergroup.post.error').inc();
+            callback(null, data);
+          } else {
+            callback(data);
+          }
         }
+
         self._requestFinished();
       },
       error: function(xhr) {
@@ -32978,7 +33188,7 @@ MapBase.prototype = {
         try {
           err = JSON.parse(xhr.responseText);
         } catch(e) {}
-        if(0 === self._queue.length) {
+        if(0 === self._createMapCallsStack.length) {
           callback(null, err);
         }
         self._requestFinished();
@@ -33003,7 +33213,7 @@ MapBase.prototype = {
         cache: !!self.options.instanciateCallback,
         success: function(data) {
           loadingTime.end();
-          if(0 === self._queue.length) {
+          if(0 === self._createMapCallsStack.length) {
             // check for errors
             if (data.errors) {
               cartodb.core.Profiler.metric('cartodb-js.layergroup.get.error').inc();
@@ -33021,7 +33231,7 @@ MapBase.prototype = {
           try {
             err = JSON.parse(xhr.responseText);
           } catch(e) {}
-          if(0 === self._queue.length) {
+          if(0 === self._createMapCallsStack.length) {
             callback(null, err);
           }
           self._requestFinished();
@@ -33066,9 +33276,9 @@ MapBase.prototype = {
     }, this.options.refreshTime || (60*120*1000)); // default layergroup ttl
 
     // check request queue
-    if(this._queue.length) {
-      var last = this._queue[this._queue.length - 1];
-      this._getLayerToken(last);
+    if(this._createMapCallsStack.length) {
+      var request = this._createMapCallsStack.pop();
+      this._createMap(request);
     }
   },
 
@@ -33097,6 +33307,32 @@ MapBase.prototype = {
     return cdb.core.util.uniqueCallbackName(JSON.stringify(this.toJSON()));
   },
 
+  _attributesUrl: function(layer, feature_id) {
+    var host = this._host();
+    var url = [
+      host,
+      MapBase.BASE_URL.slice(1),
+      this.mapProperties.getMapId(),
+      this.mapProperties.getLayerIndexByType(this.getLayerIndexByNumber(layer), "mapnik"),
+      'attributes',
+      feature_id].join('/');
+
+    var extra_params = this.options.extra_params || {};
+    var token = extra_params.auth_token;
+    if (token) {
+      if (_.isArray(token)) {
+        var tokenParams = [];
+        for (var i = 0, len = token.length; i < len; i++) {
+          tokenParams.push("auth_token[]=" + token[i]);
+        }
+        url += "?" + tokenParams.join('&')
+      } else {
+        url += "?auth_token=" + token
+      }
+    }
+    return url;
+  },
+
   invalidate: function() {
     this.mapProperties = null;
     this.urls = null;
@@ -33109,14 +33345,16 @@ MapBase.prototype = {
       callback && callback(self._layerGroupTiles(self.mapProperties, self.options.extra_params));
       return this;
     }
-    this.getLayerToken(function(data, err) {
+    this.createMap(function(data, err) {
       if(data) {
         self.mapProperties = new MapProperties(data);
         // if cdn_url is present, use it
         if (data.cdn_url) {
-          var c = self.options.cdn_url = self.options.cdn_url || {};
-          c.http = data.cdn_url.http || c.http;
-          c.https = data.cdn_url.https || c.https;
+          self.options.cdn_url = self.options.cdn_url || {}
+          self.options.cdn_url = {
+            http: self.options.cdn_url.http || data.cdn_url.http,
+            https: self.options.cdn_url.https || data.cdn_url.https
+          }
         }
         self.urls = self._layerGroupTiles(self.mapProperties, self.options.extra_params);
         callback && callback(self.urls);
@@ -33140,28 +33378,33 @@ MapBase.prototype = {
   },
 
   _layerGroupTiles: function(mapProperties, params) {
-    var layerGroupId = mapProperties.getMapId();
+    var grids = [];
+    var tiles = [];
+    var pngParams = this._encodeParams(params, this.options.pngParams);
+    var gridParams = this._encodeParams(params, this.options.gridParams);
     var subdomains = this.options.subdomains || ['0', '1', '2', '3'];
     if(this.isHttps()) {
       subdomains = [null]; // no subdomain
     }
 
-    var tileTemplate = '/{z}/{x}/{y}';
-    var grids = []
-    var tiles = [];
-    var pngParams = this._encodeParams(params, this.options.pngParams);
+    var layerIndexes = mapProperties.getLayerIndexesByType(this.options.filter);
+    if (layerIndexes.length) {
+      var tileTemplate = '/' +  layerIndexes.join(',') +'/{z}/{x}/{y}';
+      var gridTemplate = '/{z}/{x}/{y}';
 
-    for(var i = 0; i < subdomains.length; ++i) {
-      var s = subdomains[i]
-      var cartodb_url = this._host(s) + MapBase.BASE_URL + '/' + layerGroupId
-      tiles.push(cartodb_url + tileTemplate + ".png" + (pngParams ? "?" + pngParams: '') );
+      for(var i = 0; i < subdomains.length; ++i) {
+        var s = subdomains[i];
+        var cartodb_url = this._host(s) + MapBase.BASE_URL + '/' + mapProperties.getMapId();
+        tiles.push(cartodb_url + tileTemplate + ".png" + (pngParams ? "?" + pngParams: '') );
 
-      var gridParams = this._encodeParams(params, this.options.gridParams);
-      for(var layer = 0; layer < this.layers.length; ++layer) {
-        var index = mapProperties.getLayerIndexByType(layer, "mapnik");
-        grids[layer] = grids[layer] || [];
-        grids[layer].push(cartodb_url + "/" + index +  tileTemplate + ".grid.json" + (gridParams ? "?" + gridParams: ''));
+        for(var layer = 0; layer < this.layers.length; ++layer) {
+          var index = mapProperties.getLayerIndexByType(layer, "mapnik");
+          grids[layer] = grids[layer] || [];
+          grids[layer].push(cartodb_url + "/" + index +  gridTemplate + ".grid.json" + (gridParams ? "?" + gridParams: ''));
+        }
       }
+    } else {
+      tiles = [MapBase.EMPTY_GIF];
     }
 
     return {
@@ -33327,7 +33570,7 @@ MapBase.prototype = {
     var layers = [];
     for(var i = 0; i < this.layers.length; ++i) {
       var layer = this.layers[i];
-      if(!layer.options.hidden) {
+      if(layer.options && !layer.options.hidden) {
         layers.push(layer);
       }
     }
@@ -33398,7 +33641,7 @@ MapBase.prototype = {
 
   getSubLayer: function(index) {
     var layer = this.layers[index];
-    layer.sub = layer.sub || new SubLayer(this, index);
+    layer.sub = layer.sub || SubLayerFactory.createSublayer(layer.type, this, index);
     return layer.sub;
   },
 
@@ -33415,6 +33658,7 @@ MapBase.prototype = {
   }
 };
 
+// TODO: This is actually an AnonymousMap -> Rename?
 function LayerDefinition(layerDefinition, options) {
   MapBase.call(this, options);
   this.endPoint = MapBase.BASE_URL;
@@ -33431,20 +33675,22 @@ LayerDefinition.layerDefFromSubLayers = function(sublayers) {
 
   if(!sublayers || sublayers.length === undefined) throw new Error("sublayers should be an array");
 
-  var layer_definition = {
-    version: '1.0.0',
-    stat_tag: 'API',
-    layers: []
-  };
+  sublayers = _.map(sublayers, function(sublayer) {
+    var type = sublayer.type;
+    delete sublayer.type;
+    return {
+      type: type,
+      options: sublayer
+    }
+  });
 
-  for (var i = 0; i < sublayers.length; ++i) {
-    layer_definition.layers.push({
-      type: 'cartodb',
-      options: sublayers[i]
-    });
+  var layerDefinition = {
+    version: '1.3.0',
+    stat_tag: 'API',
+    layers: sublayers
   }
 
-  return layer_definition;
+  return new LayerDefinition(layerDefinition, {}).toJSON();
 };
 
 LayerDefinition.prototype = _.extend({}, MapBase.prototype, {
@@ -33468,57 +33714,10 @@ LayerDefinition.prototype = _.extend({}, MapBase.prototype, {
     obj.layers = [];
     var layers = this.visibleLayers();
     for(var i = 0; i < layers.length; ++i) {
-      var layer = layers[i];
-      var layer_def = {
-        type: 'cartodb',
-        options: {
-          sql: layer.options.sql,
-          cartocss: layer.options.cartocss,
-          cartocss_version: layer.options.cartocss_version || '2.1.0',
-        }
-      };
-
-      if (layer.options.interactivity) {
-        function fields(f) {
-          var n = []
-          for(var i = 0; i < f.length; ++i) {
-            n.push(f[i].name);
-          }
-          return n;
-        }
-        layer_def.options.interactivity = this._cleanInteractivity(layer.options.interactivity);
-        var infowindow = this.getInfowindowData(this.getLayerNumberByIndex(i));
-        var attrs = layer.options.attributes ? this._cleanInteractivity(this.options.attributes):(infowindow && fields(infowindow.fields));
-        if (attrs) {
-          layer_def.options.attributes = {
-             id: 'cartodb_id',
-             columns: attrs
-          }
-        }
-      }
-
-      if (layer.options.raster) {
-        layer_def.options.geom_column = "the_raster_webmercator";
-        layer_def.options.geom_type = "raster";
-        // raster needs 2.3.0 to work
-        layer_def.options.cartocss_version = layer.options.cartocss_version || '2.3.0';
-      }
-      obj.layers.push(layer_def);
+      var sublayer = this.getSubLayer(this.getLayerNumberByIndex(i));
+      obj.layers.push(sublayer.toJSON());
     }
     return obj;
-  },
-
-  _cleanInteractivity: function(attributes) {
-    if(!attributes) return;
-    if(typeof(attributes) == 'string') {
-      attributes = attributes.split(',');
-    }
-
-    for(var i = 0; i < attributes.length; ++i) {
-      attributes[i] = attributes[i].replace(/ /g, '');
-    }
-
-    return attributes;
   },
 
   removeLayer: function(layer) {
@@ -33540,18 +33739,25 @@ LayerDefinition.prototype = _.extend({}, MapBase.prototype, {
     }
   },
 
-  addLayer: function(def, layer) {
-    layer = layer === undefined ? this.getLayerCount(): layer;
-    if(layer <= this.getLayerCount() && layer >= 0) {
-      if(!def.sql || !def.cartocss) {
-        throw new Error("layer definition should contain at least a sql and a cartocss");
-        return this;
-      }
-      this.layers.splice(layer, 0, {
-        type: 'cartodb',
+  addLayer: function(def, index) {
+    index = index === undefined ? this.getLayerCount(): index;
+    if(index <= this.getLayerCount() && index >= 0) {
+
+      var type = def.type || 'cartodb';
+      delete def.type;
+
+      this.layers.splice(index, 0, {
+        type: type,
         options: def
       });
-      this._definitionUpdated();
+
+      var sublayer = this.getSubLayer(index);
+      if (sublayer.isValid()) {
+        this._definitionUpdated();
+      } else { // Remove it from the definition
+        sublayer.remove();
+        throw 'Layer definition should contain all the required attributes';
+      }
     }
     return this;
   },
@@ -33622,19 +33828,6 @@ LayerDefinition.prototype = _.extend({}, MapBase.prototype, {
   createSubLayer: function(attrs, options) {
     this.addLayer(attrs);
     return this.getSubLayer(this.getLayerCount() - 1);
-  },
-
-  _attributesUrl: function(layer, feature_id) {
-    var host = this._host();
-    var url = [
-      host,
-      MapBase.BASE_URL.slice(1),
-      this.mapProperties.getMapId(),
-      this.mapProperties.getLayerIndexByType(layer, "mapnik"),
-      'attributes',
-      feature_id].join('/');
-
-    return url;
   }
 });
 
@@ -33657,7 +33850,7 @@ NamedMap.prototype = _.extend({}, MapBase.prototype, {
         options: {}
       };
     }
-    layer.sub = layer.sub || new SubLayer(this, index);
+    layer.sub = layer.sub || SubLayerFactory.createSublayer(layer.type, this, index);
     return layer.sub;
   },
 
@@ -33714,12 +33907,12 @@ NamedMap.prototype = _.extend({}, MapBase.prototype, {
   },
 
   toJSON: function() {
-    var p = this.named_map.params || {};
+    var payload = this.named_map.params || {};
     for(var i = 0; i < this.layers.length; ++i) {
       var layer = this.layers[i];
-      p['layer' + i] = layer.options.hidden ? 0: 1;
+      payload['layer' + i] = layer.options.hidden ? 0: 1;
     }
-    return p;
+    return payload;
   },
 
   containInfowindow: function() {
@@ -33743,33 +33936,6 @@ NamedMap.prototype = _.extend({}, MapBase.prototype, {
     }
     return false;
   },
-
-  _attributesUrl: function(layer, feature_id) {
-    var host = this._host();
-    var url = [
-      host,
-      MapBase.BASE_URL.slice(1),
-      this.mapProperties.getMapId(),
-      this.mapProperties.getLayerIndexByType(layer, "mapnik"),
-      'attributes',
-      feature_id].join('/');
-
-    var extra_params = this.options.extra_params || {};
-    var token = extra_params.auth_token;
-    if (token) {
-      if (_.isArray(token)) {
-        var tokenParams = [];
-        for (var i = 0, len = token.length; i < len; i++) {
-          tokenParams.push("auth_token[]=" + token[i]);
-        }
-        url += "?" + tokenParams.join('&')
-      } else {
-        url += "?auth_token=" + token
-      }
-    }
-    return url;
-  },
-
 
   setSQL: function(sql) {
     throw new Error("SQL is read-only in NamedMaps");
@@ -39360,7 +39526,7 @@ cdb.vis.Vis = Vis;
 
       var self = this;
 
-      this.getLayerToken(function(data, error) {
+      this.createMap(function(data, error) {
 
         if (error) {
           self.error = error;
@@ -40299,7 +40465,7 @@ Layers.register('torque', function(vis, data) {
     } else if(layer.table !== undefined && layer.user !== undefined) {
       // layer object points to cartodbjson
       url = cartodbUrl(layer);
-    } else if(layer.indexOf && layer.indexOf('http') === 0) {
+    } else if(layer.indexOf) {
       // fetch from url
       url = layer;
     }

@@ -151,6 +151,14 @@ class User < Sequel::Model
     end
   end #before_save
 
+  def twitter_datasource_enabled
+    if has_organization?
+      organization.twitter_datasource_enabled || super
+    else
+      super
+    end
+  end
+
   def after_create
     super
     setup_user

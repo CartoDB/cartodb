@@ -1,7 +1,7 @@
 REV=$(shell git rev-parse HEAD)
 
 all:
-	RAILS_ENV=test bundle install
+	MOCHA_OPTIONS=skip_integration RAILS_ENV=test bundle install
 	# I cannot remmeber why gdal is being skipped from this list...
 	cat python_requirements.txt | grep -v gdal | sudo pip install -r /dev/stdin
 	npm install
@@ -190,27 +190,27 @@ endif
 	MOCHA_OPTIONS=skip_integration RAILS_ENV=test bundle exec rake cartodb:test:prepare
 
 check-1:
-	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_1)
+	MOCHA_OPTIONS=skip_integration RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_1)
 check-2:
-	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_2)
+	MOCHA_OPTIONS=skip_integration RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_2)
 check-2b:
-	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_2b)
+	MOCHA_OPTIONS=skip_integration RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_2b)
 check-3:
-	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_3)
+	MOCHA_OPTIONS=skip_integration RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_3)
 check-4:
-	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_4)
+	MOCHA_OPTIONS=skip_integration RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_4)
 check-5:
-	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_5)
+	MOCHA_OPTIONS=skip_integration RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_5)
 check-6:
-	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_6)
+	MOCHA_OPTIONS=skip_integration RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_6)
 check-7:
-	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_7)
+	MOCHA_OPTIONS=skip_integration RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_7)
 check-8:
-	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_8)
+	MOCHA_OPTIONS=skip_integration RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_8)
 check-9:
-	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_9)
+	MOCHA_OPTIONS=skip_integration RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_9)
 check-10:
-	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_10)
+	MOCHA_OPTIONS=skip_integration RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_10)
 
 check-prepared: check-1 check-2 check-2b check-3 check-4 check-5 check-6 check-7 check-8 check-9 check-10
 

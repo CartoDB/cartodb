@@ -1,7 +1,10 @@
 # encoding: utf-8
 
-require 'mocha'
+require 'rspec/core'
+require 'rspec/expectations'
+require 'rspec/mocks'
 require_relative '../../lib/importer/importer_stats'
+require_relative '../../../../spec/rspec_configuration.rb'
 
 include Mocha::ParameterMatchers
 
@@ -20,9 +23,9 @@ module CartoDB
 
       EXPECTED_PREFIX = "importer.#{HOST_INFO}"
 
-      RSpec.configure do |config|
-        config.mock_with :mocha
-      end
+      #RSpec.configure do |config|
+      #  config.mock_with :mocha
+      #end
 
       describe '#timing' do
         it "sends key with importer prefix" do

@@ -1,4 +1,5 @@
 # encoding: utf-8
+require_relative '../../../../spec/rspec_configuration'
 require_relative '../../lib/importer/runner'
 require_relative '../../lib/importer/job'
 require_relative '../../lib/importer/downloader'

@@ -135,6 +135,14 @@ class Carto::User < ActiveRecord::Base
     end
   end
 
+  def twitter_datasource_enabled
+    if has_organization?
+      organization.twitter_datasource_enabled || read_attribute(:twitter_datasource_enabled)
+    else
+      read_attribute(:twitter_datasource_enabled)
+    end
+  end
+
   # TODO: this is the correct name for what's stored in the model, refactor changing that name
   alias_method :google_maps_query_string, :google_maps_api_key
 

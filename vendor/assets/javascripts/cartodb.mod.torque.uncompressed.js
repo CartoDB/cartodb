@@ -5641,11 +5641,11 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
     }
 
     function toUSDateStr(date) {
-      return pad(date.getUTCMonth() + 1) + "/" + pad(date.getUTCDate()) + "/" + pad(date.getUTCFullYear());
+      return pad(date.getMonth() + 1) + "/" + pad(date.getDate()) + "/" + pad(date.getFullYear());
     }
 
     function toTimeStr(date) {
-      return pad(date.getUTCHours()) + ":" + pad(date.getUTCMinutes());
+      return pad(date.getHours()) + ":" + pad(date.getMinutes());
     }
 
     function toDateRange(date, torqueLayer) {
@@ -5654,14 +5654,14 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
       var stepDurationMS = (new Date(tb.end).getTime() - new Date(tb.start).getTime()) / torqueLayer.options.steps;
       var stepEndTime = new Date(stepStartTimeMS + stepDurationMS);
       var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      return pad(months[date.getUTCMonth()]) + " " + pad(date.getUTCDate())  + " - " 
-        + pad(months[stepEndTime.getUTCMonth()]) + " " + pad(stepEndTime.getUTCDate());
+      return pad(months[date.getMonth()]) + " " + pad(date.getDate())  + " - " 
+        + pad(months[stepEndTime.getMonth()]) + " " + pad(stepEndTime.getDate());
     }
 
     
 
     if (range < THREE_DAYS) {
-      if (start.getUTCDate() === end.getUTCDate()) {
+      if (start.getDate() === end.getDate()) {
         return toTimeStr;
       } else {
         // range is less than a day, but the range spans more than one day so render the date in addition to the time
@@ -5680,7 +5680,7 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
 
     // >= ONE_YEAR
     return function(date) {
-      return pad(date.getUTCMonth() + 1) + "/" + pad(date.getUTCFullYear());
+      return pad(date.getMonth() + 1) + "/" + pad(date.getFullYear());
     };
   },
 
@@ -5719,6 +5719,9 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
       start: this._start,
       slide: this._slide
     });
+    if(torqueLayer.provider){
+      this.updateSliderRange({"steps": torqueLayer.provider.getSteps()});
+    }
   },
 
   toggleTime: function(e) {

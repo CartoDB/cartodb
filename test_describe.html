@@ -15,11 +15,13 @@
         width: 400px;
         height: 400px;
         float: left;
+        background: #eee;
       }
-      .map .lengend {
+      .map .legend {
         position: absolute;
         top: 10px;
         left: 10px;
+        z-index: 1000;
       }
     </style>
 
@@ -31,8 +33,8 @@
     <!-- include cartodb.js library -->
     <script src="dist/cartodb.full.uncompressed.js"></script>
     <script>
-      var account = 'eschbacher';
-
+      var account = 'mstandage';
+      
       var ramps = {
         green:  ['#EDF8FB', '#D7FAF4', '#CCECE6', '#66C2A4', '#41AE76', '#238B45', '#005824'],
         blue:  ['#FFFFCC', '#C7E9B4', '#7FCDBB', '#41B6C4', '#1D91C0', '#225EA8', '#0C2C84'],
@@ -80,6 +82,27 @@
       }
 
       var s = cartodb.SQL({ user: account });
+
+      function makeUserMap(div, vizJson, bbox) {
+        // create leaflet map
+        var map = L.map(div, { 
+          zoomControl: false,
+          center: [43, 0],
+          zoom: 3,
+          scrollWheelZoom: false
+        })
+
+        map.fitBounds(bbox);
+
+        // add a base layer
+        L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',{
+          attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
+        }).addTo(map);
+
+        // add cartodb layer with one sublayer
+        cartodb.createLayer(map, vizJson).addTo(map);
+      }
+
       function makeMap(div, sql, cartocss, bbox) {
         // create leaflet map
         var map = L.map(div, { 
@@ -102,13 +125,14 @@
           type: 'cartodb',
           sublayers: [{ sql: sql, cartocss: cartocss }],
           interactivity: 'cartodb_id'
-        })
-        .addTo(map)
+        }).addTo(map)
       }
 
       function guessMap(sql, geometryType, column, stats, bbox) {
         var css = null
         var mssg = "";
+        var weight = stats.weight;
+        var type = stats.type;
         // these columns made the cut in an analysis in python
         // code here: http://nbviewer.ipython.org/gist/ohasselblad/b2475c95a23c5e070264
         // var make_the_cut = ['areasource', 'bsmtcode', 'builtcode', 'irrlotcode', 'ownertype', 'plutomapid', 'proxcode', 'schooldist', 'splitzone'];
@@ -126,26 +150,26 @@
                 css =  CSS.choropleth(stats.headtails, column, geometryType, inverse_ramp);
               }
           }
-          mssg = '<span style="font-weight: bold; text-decoration: underline;">' + column + "</span><br /> std: " + stats.stddev + "<br /> avg: " + stats.avg + " <br /> dist type: " + stats.dist_type;
+          mssg = '<span style="font-weight: bold; text-decoration: underline;">' + column + "</span><br /> std: " + stats.stddev + "<br /> avg: " + stats.avg + " <br /> dist type: " + stats.dist_type + " <br /> weight: " + weight;
         } else if(stats.type == 'string') {
-          console.log("column " + column + " passes?",stats.passes);
+
+          // console.log("column " + column + " passes?",stats.passes,'cat_weight:',stats.cat_weight);
             if (stats.passes) {
-                mssg = '<span style="font-weight: bold; text-decoration: underline;">' + column + "</span><br /> PASSES<br />#uniques: " + stats.distinct + "<br />null%: " + stats.count_nulls + "<br />90% in first 10 categories? " + stats.weight + "";
+                mssg = '<span style="font-weight: bold; text-decoration: underline;">' + column + "</span><br /> PASSES<br />#uniques: " + stats.distinct + "<br />null%: " + stats.count_nulls + "<br />90% in first 10 categories? " + stats.cat_weight + "<br />weight: " + weight;
             } else {
-                mssg = '<span style="font-weight: bold; text-decoration: underline;">' + column + "</span><br /> DOESN'T PASS<br />#uniques: " + stats.distinct + "<br />null%: " + stats.count_nulls + "<br />90% in first 10 categories? " + stats.weight + "";
+                mssg = '<span style="font-weight: bold; text-decoration: underline;">' + column + "</span><br /> DOESN'T PASS<br />#uniques: " + stats.distinct + "<br />null%: " + stats.count_nulls + "<br />90% in first 10 categories? " + stats.cat_weight + "<br />weight: " +  weight;
             }
-          css = CSS.category(stats.hist.slice(0, ramps.cat.length).map(function(r) { return r[0]; }), column, geometryType)
+          css = CSS.category(stats.hist.slice(0, ramps.cat.length).map(function(r) { return r[0]; }), column, geometryType);
         }
         if (css) {
-          var div = $('<div>')
-          div.attr('class', 'map');
-          $('body').append(div);
-          makeMap(div[0], sql, css, bbox);
-          div.append($('<div>').html(mssg).attr('class', 'lengend'));
+          // accumulate weights here, store cartocss, sql, bbox
+          // afterwards, look at top 2-5 and then make them into maps
+          // console.log('in guessmap',{sql: sql, css: css, bbox: bbox, weight: weight, type: type});
         }
+        return {sql: sql, css: css, bbox: bbox, weight: weight, type: type, mssg: mssg};
       }
 
-      function columnMap(sql, c, geometryType, bbox) {
+      function columnMap(sql, c, geometryType, bbox, callback) {
         s.describe(sql, c, function(data) {
           if (data.type === 'number') {
             console.log(data.column, 'avg:',data.avg);
@@ -154,20 +178,150 @@
           } else {
             console.log(data.column, 'type: ' + data.type);
           }
-          guessMap(sql, geometryType, data.column, data, bbox);
+          var temp = guessMap(sql, geometryType, data.column, data, bbox);
+          callback(temp);
         });
       }
 
-      function main() {
-        var sql = 'select * from mnmappluto';//spanish_adm2_provinces'//world_borders' // pluto14v2
+      function pecan(tableName, acctName, callback) {
+        s = cartodb.SQL({user: acctName});
+        var m = [];
+        var temp = null;
+        var normalization = 'ST_Area(the_geom::geography)';
+        var exclude = ['cartodb_id','lat','lon'];
+        var sql = 'select * from ' + tableName; //spanish_adm2_provinces'//world_borders' // pluto14v2
         s.describe(sql, 'the_geom', function(data) {
           var geometryType = data.simplified_geometry_type;
           s.columns(sql, function(columns) {
             _(columns).each(function(v, k) {
-              columnMap(sql, k.concat(""), geometryType, data.bbox);
-            })
+              columnMap(sql, k.concat(""), geometryType, data.bbox, function(d) {
+                // console.log(v,k,d);
+                m.push(d);
+                // console.log(m,m.length);
+                if (m.length == Object.keys(columns).length) {
+                  // console.log('hi');
+                  callback(m);
+                }
+              });
+            });
           });
-        })
+        });
+        
+      }
+
+      function main() {
+        var userData = [{
+          "user":"fmoron",
+          "viz_json":"http://fmoron.cartodb.com/api/v2/viz/82110650-e428-11e4-8703-0e018d66dc29/viz.json",
+          "viz_id":"82110650-e428-11e4-8703-0e018d66dc29","table":"votos"
+        },{
+          "user":"mapbaker",
+          "viz_json":"http://mapbaker.cartodb.com/api/v2/viz/22461402-53de-11e4-94a3-0e018d66dc29/viz.json",
+          "viz_id":"22461402-53de-11e4-94a3-0e018d66dc29",
+          "table":"hemp_applicantsnew"
+        },{
+          "user":"ffprep",
+          "viz_json":"http://ffprep.cartodb.com/api/v2/viz/111f7a36-deb9-11e4-8a19-0e018d66dc29/viz.json",
+          "viz_id":"111f7a36-deb9-11e4-8a19-0e018d66dc29",
+          "table":"mapdatafile_1"
+        },{
+          "user":"sc11c2l",
+          "viz_json":"http://sc11c2l.cartodb.com/api/v2/viz/e30e741a-d3d4-11e4-b4fb-0e8dde98a187/viz.json",
+          "viz_id":"e30e741a-d3d4-11e4-b4fb-0e8dde98a187",
+          "table":"radio"
+        },{
+          "user":"amaredi",
+          "viz_json":"http://amaredi.cartodb.com/api/v2/viz/15f5b98a-796f-11e4-900a-0e4fddd5de28/viz.json",
+          "viz_id":"15f5b98a-796f-11e4-900a-0e4fddd5de28",
+          "table":"indie_20labels"
+        },{
+          "user":"andrew",
+          "viz_json":"http://andrew.cartodb.com/api/v2/viz/d4c88194-7bc7-11e4-ab0a-0e853d047bba/viz.json",
+          "viz_id":"d4c88194-7bc7-11e4-ab0a-0e853d047bba",
+          "table":"choroplether"
+        },{
+          "user":"pic",
+          "viz_json":"http://pic.cartodb.com/api/v2/viz/9f7c823e-7914-11e4-aa29-0e018d66dc29/viz.json",
+          "viz_id":"9f7c823e-7914-11e4-aa29-0e018d66dc29",
+          "table":"roy_colmer"
+        },{
+          "user":"xatpy",
+          "viz_json":"http://xatpy.cartodb.com/api/v2/viz/29edc996-726c-11e4-887c-0e018d66dc29/viz.json",
+          "viz_id":"29edc996-726c-11e4-887c-0e018d66dc29",
+          "table":"strava_torque_cat"
+        },{
+          "user":"apwaldo",
+          "viz_json":"http://apwaldo.cartodb.com/api/v2/viz/ae60c618-ea97-11e3-84ac-0e10bcd91c2b/viz.json",
+          "viz_id":"ae60c618-ea97-11e3-84ac-0e10bcd91c2b",
+          "table":"syria_map"
+        },{
+          "user":"mstandage",
+          "viz_json":"http://mstandage.cartodb.com/api/v2/viz/906cec04-d0ab-11e4-a74f-0e853d047bba/viz.json",
+          "viz_id":"906cec04-d0ab-11e4-a74f-0e853d047bba",
+          "table":"phone_upload_1"
+        }];
+
+        userData.forEach(function(e,i,a) {
+          // make parent div
+          var par = $('<div>', {
+            id: [a[i].user,a[i].table,'parent'].join('-'),
+            style: 'border: 2px dashed #227DBD; width: 1200px; height: 400px; margin-bottom: 5px;'
+          });
+          $('body').append(par);
+          
+          var userDiv = $('<div>', {
+            id: [a[i].user,a[i].table,'user_map'].join('-'),
+            class: 'map'
+          });
+          $(par).append(userDiv);
+          var pecan1 = $('<div>', {
+            id: [a[i].user,a[i].table,'top_pecan'].join('-'),
+            class: 'map'
+          });
+          $(par).append(pecan1);
+          var pecan2 = $('<div>', {
+            id: [a[i].user,a[i].table,'2nd_pecan'].join('-'),
+            class: 'map'
+          });
+          $(par).append(pecan2);
+          // make all three children
+        });
+        // var idx = 9;
+
+        for (var idx = 0; idx < 2; ++idx) {
+          pecan(userData[idx].table,userData[idx].user, function(maps) {
+            console.log('userData idx: ',userData[idx]);
+            // get map metadata, sort by weight score
+            maps.sort(function(a, b) {
+              return b.weight - a.weight;
+            });
+            
+            var test = [0,1];
+            
+            // visualize top two maps
+            test.forEach(function(e,i,arr) {
+              // console.log("incallback: ",typeof(maps),Object.keys(maps),maps[e],maps[e]);
+              
+              // place legend on user map 
+              var div = $('#' + [userData[idx].user,userData[idx].table,'user_map'].join('-'));
+              div.append($('<div>').html(maps[e].mssg).attr('class', 'legend'));
+              
+              // add div to page
+              $('body').append(div);
+              
+              // create map
+              makeMap(div[0], maps[e].sql, maps[e].css, maps[e].bbox);
+            });
+            var userDiv = $('<div>');
+            var id = userData[idx].user + '-' + userData[idx].table;
+            // console.log(id);
+            userDiv.attr('class','map').attr('id',id);
+            $('body').append(userDiv);
+            console.log('idx: ' + idx);
+            makeUserMap(userDiv[0],userData[idx].viz_json,maps[0].bbox);
+            userDiv.append($('<div>').html('user: ' + userData[idx].user + '<br />' + userData[idx].table).attr('class', 'legend'));
+          });
+        }
       }
 
       // you could use $(window).load(main);

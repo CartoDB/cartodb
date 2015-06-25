@@ -187,7 +187,7 @@ ifdef JENKINS_URL
 	cp .rspec_ci .rspec
 endif
 	# TODO skip this if db already exists ?
-	RAILS_ENV=test bundle exec rake cartodb:test:prepare
+	MOCHA_OPTIONS=skip_integration RAILS_ENV=test bundle exec rake cartodb:test:prepare
 
 check-1:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_1)

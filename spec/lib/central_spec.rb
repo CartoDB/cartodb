@@ -2,7 +2,7 @@ require 'spec_helper'
 require_relative '../../lib/cartodb/central'
 
 def config
-  Cartodb.config[:cartodb_central_api].deep_symbolize_keys
+  Cartodb.config[:cartodb_central_api].deep_symbolize_keys unless Cartodb.config[:cartodb_central_api].nil?
 end
 
 def config_present?

@@ -86,7 +86,8 @@ describe("LayerDefinition", function() {
             sql: 'select * from ne_10m_populated_places_simple',
             cartocss: '#layer { marker-fill: red; }',
             interactivity: ['test', 'cartodb_id']
-          }
+          },
+          visible: true
         },
         {
           type: 'cartodb',
@@ -95,7 +96,8 @@ describe("LayerDefinition", function() {
             cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
             cartocss_version : '2.0.0',
             interactivity: ['       test2    ', 'cartodb_id2']
-          }
+          },
+          visible: true
         }
       ]
     };
@@ -115,13 +117,14 @@ describe("LayerDefinition", function() {
       layerDefinition.removeLayer(0);
       expect(layerDefinition.getLayerCount()).toEqual(1);
       expect(layerDefinition.getLayer(0)).toEqual({
-         type: 'cartodb', 
-         options: {
-           sql: "select * from european_countries_export",
-           cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
-           cartocss_version: '2.0.0',
-           interactivity: ['       test2    ', 'cartodb_id2']
-         }
+        type: 'cartodb', 
+        options: {
+          sql: "select * from european_countries_export",
+          cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
+          cartocss_version: '2.0.0',
+          interactivity: ['       test2    ', 'cartodb_id2']
+        },
+        visible: true
       });
     });
   });
@@ -260,21 +263,17 @@ describe("LayerDefinition", function() {
     });
 
     it("should not include hidden layers", function() {
+      // Hide layer 0 using sublayer.hide
       layerDefinition.getSubLayer(0).hide();
 
+      // Hide layer 1 updating visible
+      layerDefinition.layers[1].visible = false;
+
+      // No layers are present
       expect(layerDefinition.toJSON()).toEqual({
         version: '1.0.0',
         stat_tag: 'vis_id',
-        layers: [{
-           type: 'cartodb', 
-           options: {
-             sql: "select * from european_countries_export",
-             cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
-             cartocss_version: '2.0.0',
-             interactivity: ['test2', 'cartodb_id2']
-           }
-         }
-        ]
+        layers: []
       });
     });
   });
@@ -292,6 +291,7 @@ describe("LayerDefinition", function() {
       expect(layerDefinition.getLayerNumberByIndex(0)).toEqual(1);
       expect(layerDefinition.getLayerNumberByIndex(1)).toEqual(-1);
 
+      expect(layerDefinition.getLayerIndexByNumber(0)).toEqual(0);
       expect(layerDefinition.getLayerIndexByNumber(1)).toEqual(0);
     });
   });
@@ -1337,6 +1337,11 @@ describe("NamedMap", function() {
               "hidden": true
             }
           },
+          {
+            "type": "cartodb",
+            "options": { },
+            "visible": false
+          }
         ]
       };
       var namedMap = new NamedMap(config, {});
@@ -1345,7 +1350,8 @@ describe("NamedMap", function() {
       expect(namedMap.toJSON()).toEqual({
         layer0: 1,
         layer1: 1,
-        layer2: 0
+        layer2: 0,
+        layer3: 0
       });
     })
   })

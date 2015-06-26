@@ -136,6 +136,7 @@ class Admin::VisualizationsController < ApplicationController
 
     @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)
     @avatar_url             = @visualization.user.avatar
+    @twitter_username       = @visualization.user.twitter_username.present? ? @visualization.user.twitter_username : nil
 
     @user_domain = user_domain_variable(request)
 

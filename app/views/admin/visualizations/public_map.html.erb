@@ -2,6 +2,8 @@
 
 <%= content_for(:description) do %><%= @visualization.description_clean || "#{@visualization.name.gsub(/_/," ")} created by #{@name} in CartoDB" %><% end %>
 
+<%= content_for(:twitter_card) do %><%= CartoDB.url(self, 'api_v2_visualizations_static_map', {id: @visualization.id, width: 560, height: 300}, @visualization.user) %><% end %>
+
 <%= content_for(:body_class) do %> PublicMap <% end %>
 
 <%= content_for(:css) do %>

@@ -15,12 +15,12 @@
     <meta property="og:url" content="<%= request.original_url %>" />
     <meta property="og:image" content="<%= image_path "layout/cartofante_blue.png" %>" />
 
-    <meta name="twitter:card" content="summary">
+    <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:site" content="@cartodb">
-    <meta name="twitter:creator" content="@cartodb">
+    <meta name="twitter:creator" content="<%= @twitter_username.nil? ? "@cartodb" : @twitter_username %>">
     <meta name="twitter:title" content="<%= yield :title %>">
     <meta name="twitter:description" content="<%= yield :description %>">
-    <meta name="twitter:image" content="<%= image_path "layout/cartofante_blue.png" %>">
+    <meta name="twitter:image" content="<%= yield :twitter_card %>">
     <meta name="twitter:url" content="<%= request.original_url %>" />
 
     <%= yield :css %>

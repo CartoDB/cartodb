@@ -24,6 +24,14 @@
         left: 10px;
         z-index: 1000;
       }
+      #stats {
+        background: #bbb;
+        height: 400px;
+        width: 80px;
+        float: left;
+        position: relative;
+        overflow-y: scroll;
+      }
     </style>
 
     <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.14/themes/css/cartodb.css" />
@@ -44,6 +52,14 @@
         cat: ['#A6CEE3', '#1F78B4', '#B2DF8A', '#33A02C', '#FB9A99', '#E31A1C', '#FDBF6F', '#FF7F00', '#CAB2D6', '#6A3D9A', '#DDDDDD'],
         divergent: ['rgb(215,48,39)','rgb(252,141,89)','rgb(254,224,144)','rgb(255,255,191)','rgb(224,243,248)','rgb(145,191,219)','rgb(69,117,180)']
       };
+
+      function fillStats(arr,loc) {
+        var ul = $('ul');
+        _(arr).each(function(e,i,l) {
+          ul.append("<li>" + e + "</li>");
+        });
+        $(loc).append(ul);
+      }
 
       function geoAttr(geometryType) {
         return {
@@ -151,7 +167,6 @@
       function guessMap(sql, geometryType, column, stats, bbox) {
         var css = null
         var mssg = "";
-        var weight = stats.weight;
         var type = stats.type;
 
         if (stats.type == 'number') {
@@ -168,19 +183,31 @@
                 css =  CSS.choropleth(stats.headtails, column, geometryType, inverse_ramp);
               }
           }
-          mssg = '<span style="font-weight: bold; text-decoration: underline;">' + column + "</span><br /> std: " + stats.stddev + "<br /> avg: " + stats.avg + " <br /> dist type: " + stats.dist_type + " <br /> weight: " + weight;
+          
+          mssg = '<span style="font-weight: bold; text-decoration: underline;">' + column + '</span>'
+              + '<br /> std: ' + stats.stddev 
+              + '<br /> avg: ' + stats.avg 
+              + '<br /> num unique: ' + stats.distinct
+              + '<br /> lstddev: ' + stats.lstddev
+              + '<br /> count: ' + stats.count
+              + '<br /> num nulls: ' + stats.null_ratio
+              + '<br /> dist type: ' + stats.dist_type 
+              + '<br /> weight: ' + stats.weight;
+        
         } else if(stats.type == 'string') {
-                mssg = '<span style="font-weight: bold; text-decoration: underline;">' + column + '</span>'
-                      + '<br />#uniques: ' + stats.distinct
-                      + '<br />null%: ' + stats.null_ratio
-                      + '<br />count: ' + stats.count
-                      + '<br />% in first 10 columns: ' + stats.skew
-                      + '<br />overall weight: ' +  weight;
+        
+          mssg = '<span style="font-weight: bold; text-decoration: underline;">' + column + '</span>'
+                + '<br />#uniques: ' + stats.distinct
+                + '<br />null%: ' + stats.null_ratio
+                + '<br />count: ' + stats.count
+                + '<br />% in first 10 columns: ' + stats.skew
+                + '<br />overall weight: ' +  stats.weight;
           css = CSS.category(stats.hist.slice(0, ramps.cat.length).map(function(r) { return r[0]; }), column, geometryType);
         }
 
         if (css) {
-          return {sql: sql, css: css, bbox: bbox, weight: weight, type: type, mssg: mssg};
+          console.log(mssg);
+          return {sql: sql, css: css, bbox: bbox, weight: stats.weight, type: type, mssg: mssg};
         } else {
           return {sql: sql, css: null, bbox: bbox, weight: -100, type: type, mssg: mssg};
         }
@@ -270,11 +297,6 @@
           "viz_id": "e6135b32-9039-11e4-9be9-0e853d047bba",
           "table": "lost_years_filtered_sheet1_282_29"
         }, {
-          "user": "elayt",
-          "viz_json": "http://elayt.cartodb.com/api/v2/viz/0a1d34a6-df6f-11e4-8950-0e49835281d6/viz.json",
-          "viz_id": "0a1d34a6-df6f-11e4-8950-0e49835281d6",
-          "table": "registered_students_2015_ft"
-        }, {
           "user": "omars2015",
           "viz_json": "http://omars2015.cartodb.com/api/v2/viz/203b964a-def9-11e4-bed0-0e018d66dc29/viz.json",
           "viz_id": "203b964a-def9-11e4-bed0-0e018d66dc29",
@@ -334,6 +356,46 @@
           "viz_json": "http://krsmith09.cartodb.com/api/v2/viz/c1fcae96-d7ed-11e4-ae47-0e9d821ea90d/viz.json",
           "viz_id": "c1fcae96-d7ed-11e4-ae47-0e9d821ea90d",
           "table": "friendshiploan_aug1_2014_mar30_2015"
+        },{
+          "user": "jaguillette",
+          "viz_json": "http://jaguillette.cartodb.com/api/v2/viz/1c6e86b0-ab16-11e4-81da-0e4fddd5de28/viz.json",
+          "viz_id": "1c6e86b0-ab16-11e4-81da-0e4fddd5de28",
+          "table": "fair_date_map_new"
+        }, {
+          "user": "aaking",
+          "viz_json": "http://aaking.cartodb.com/api/v2/viz/cbb5aafc-d250-11e4-91db-0e8dde98a187/viz.json",
+          "viz_id": "cbb5aafc-d250-11e4-91db-0e8dde98a187",
+          "table": "observations_5"
+        }, {
+          "user": "nblanchart",
+          "viz_json": "http://nblanchart.cartodb.com/api/v2/viz/431b4c06-c34b-11e4-b596-0e0c41326911/viz.json",
+          "viz_id": "431b4c06-c34b-11e4-b596-0e0c41326911",
+          "table": "data_proportion"
+        }, {
+          "user": "liljohnson",
+          "viz_json": "http://liljohnson.cartodb.com/api/v2/viz/92c4c854-d4b2-11e4-809e-0e43f3deba5a/viz.json",
+          "viz_id": "92c4c854-d4b2-11e4-809e-0e43f3deba5a",
+          "table": "spencer_the_cat"
+        }, {
+          "user": "dataplazza",
+          "viz_json": "http://dataplazza.cartodb.com/api/v2/viz/11d45b00-a7db-11e4-9da6-0e018d66dc29/viz.json",
+          "viz_id": "11d45b00-a7db-11e4-9da6-0e018d66dc29",
+          "table": "logements_sociaux_finances_paris_283_29"
+        }, {
+          "user": "moltude",
+          "viz_json": "http://moltude.cartodb.com/api/v2/viz/452d5c48-d578-11e4-9b66-0e8dde98a187/viz.json",
+          "viz_id": "452d5c48-d578-11e4-9b66-0e8dde98a187",
+          "table": "ycbageolocation"
+        }, {
+          "user": "pf182",
+          "viz_json": "http://pf182.cartodb.com/api/v2/viz/fce4933a-e1b5-11e4-9567-0e4fddd5de28/viz.json",
+          "viz_id": "fce4933a-e1b5-11e4-9567-0e4fddd5de28",
+          "table": "cabanes_overnights"
+        }, {
+          "user": "jszobody",
+          "viz_json": "http://jszobody.cartodb.com/api/v2/viz/a11c9806-dd71-11e4-a554-0e0c41326911/viz.json",
+          "viz_id": "a11c9806-dd71-11e4-a554-0e0c41326911",
+          "table": "customers_sheet1"
         }];
 
         userData.forEach(function(e,i,a) {
@@ -344,6 +406,7 @@
           });
           $('body').append(par);
           
+          // make all three children
           var userDiv = $('<div>', {
             id: [a[i].user,a[i].table,'user_map'].join('-'),
             class: 'map'
@@ -359,7 +422,13 @@
             class: 'map'
           });
           $(par).append(pecan2);
-          // make all three children
+          
+          // var statsDiv = $('<div>', {
+          //   id: [a[i].user,a[i].table,'stats'].join('-'),
+          //   class: 'stats'
+          // });
+          // $(par).append(statsDiv);
+
         });
 
         _(userData).each(function(el,idx,list) {
@@ -371,6 +440,7 @@
             maps.sort(function(a, b) {
               return b.weight - a.weight;
             });
+            // fillStats(maps,[el.user,el.table,'stats'].join('-'));
 
             // console.log(el.table,el.user,maps.length);
             var pecans = [0,1]; // eventually do both maps
@@ -382,7 +452,7 @@
             div.append($('<div>').html(maps[0].mssg).attr('class', 'legend')).data('weight',maps[1].weight);
             makeMap(div[0], maps[0].sql, maps[0].css, maps[0].bbox,el.user);
 
-            if (maps.length > 1) {
+            if (maps.length > 1 && maps[1].css) {
               var div = $('#' + [el.user,el.table,'pecan'+(2)].join('-'));
               console.log('table, number of maps',el.table,maps.length);
               // make map/legend

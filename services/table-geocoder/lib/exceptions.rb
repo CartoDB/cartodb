@@ -108,18 +108,9 @@ module Carto
         )
     end
 
-    class MarkRowsTimeoutError < GeocoderBaseError
+    class TableGeocoderDbTimeoutError < GeocoderBaseError
       register_additional_info(
         1040,
-        GEOCODER_TIMED_OUT_TITLE,
-        GEOCODER_TIMED_OUT_WHAT_ABOUT,
-        AdditionalInfo::SOURCE_CARTODB
-        )
-    end
-
-    class GenerateCsvTimeoutError < GeocoderBaseError
-      register_additional_info(
-        1050,
         GEOCODER_TIMED_OUT_TITLE,
         GEOCODER_TIMED_OUT_WHAT_ABOUT,
         AdditionalInfo::SOURCE_CARTODB

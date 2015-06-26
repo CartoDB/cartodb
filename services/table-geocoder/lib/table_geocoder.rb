@@ -17,7 +17,7 @@ module CartoDB
       `chmod 777 #{@working_dir}`
       @formatter   = arguments[:formatter]
       @remote_id   = arguments[:remote_id]
-      @max_rows    = arguments[:max_rows] || 1000000
+      @max_rows    = arguments.fetch(:max_rows)
       @geocoder    = CartoDB::Geocoder.new(
         app_id:             arguments[:app_id],
         token:              arguments[:token],

@@ -98,18 +98,17 @@ module Carto
       end
 
       def static_map
-        visualization = VisualizationQueryBuilder.new.with_id(params.fetch('id', nil)).build.first
         # Abusing here of .to_i fallback to 0 if not a proper integer
         map_width = params.fetch('width',nil).to_i
         map_height = params.fetch('height', nil).to_i
 
         # @see https://github.com/CartoDB/Windshaft-cartodb/blob/b59e0a00a04f822154c6d69acccabaf5c2fdf628/docs/Map-API.md#limits
-        if map_width < 2 || map_height < 2 || map_width > 8192 || map_height > 8192 || visualization.nil?
+        if map_width < 2 || map_height < 2 || map_width > 8192 || map_height > 8192
           return(head 400)
         end
 
         final_url = static_maps_base_url(CartoDB.extract_subdomain(request)) + 
-                    static_maps_image_url_fragment(visualization.id, map_width, map_height)
+                    static_maps_image_url_fragment(@visualization.id, map_width, map_height)
 
         redirect_to final_url
       end

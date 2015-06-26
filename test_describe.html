@@ -85,7 +85,7 @@
 
       function makeUserMap(div, vizJson, bbox) {
 
-//create leaflet map
+        // create leaflet map
         var map = L.map(div, { 
           zoomControl: false,
           center: [43, 0],
@@ -96,8 +96,7 @@
         map.fitBounds(bbox);
 
         // add a base layer
-        L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',{
-        }).addTo(map);
+        L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png').addTo(map);
 
         // add cartodb layer with one sublayer
         cartodb.createLayer(map, vizJson).addTo(map);
@@ -154,9 +153,7 @@
         var mssg = "";
         var weight = stats.weight;
         var type = stats.type;
-        // these columns made the cut in an analysis in python
-        // code here: http://nbviewer.ipython.org/gist/ohasselblad/b2475c95a23c5e070264
-        // var make_the_cut = ['areasource', 'bsmtcode', 'builtcode', 'irrlotcode', 'ownertype', 'plutomapid', 'proxcode', 'schooldist', 'splitzone'];
+
         if (stats.type == 'number') {
           if (['A','U'].indexOf(stats.dist_type) != -1) {
             // apply divergent scheme
@@ -173,13 +170,15 @@
           }
           mssg = '<span style="font-weight: bold; text-decoration: underline;">' + column + "</span><br /> std: " + stats.stddev + "<br /> avg: " + stats.avg + " <br /> dist type: " + stats.dist_type + " <br /> weight: " + weight;
         } else if(stats.type == 'string') {
-            if (stats.passes) {
-                mssg = '<span style="font-weight: bold; text-decoration: underline;">' + column + "</span><br /> PASSES<br />#uniques: " + stats.distinct + "<br />null%: " + stats.null_perc + "<br />count: " + stats.count + "<br />90% in first 10 categories? " + stats.cat_weight + "<br />weight: " + weight;
-            } else {
-                mssg = '<span style="font-weight: bold; text-decoration: underline;">' + column + "</span><br /> DOESN'T PASS<br />#uniques: " + stats.distinct + "<br />null%: " + stats.null_perc + "<br />count: " + stats.count + "<br />90% in first 10 categories? " + stats.cat_weight + "<br />weight: " +  weight;
-            }
+                mssg = '<span style="font-weight: bold; text-decoration: underline;">' + column + '</span>'
+                      + '<br />#uniques: ' + stats.distinct
+                      + '<br />null%: ' + stats.null_ratio
+                      + '<br />count: ' + stats.count
+                      + '<br />% in first 10 columns: ' + stats.skew
+                      + '<br />overall weight: ' +  weight;
           css = CSS.category(stats.hist.slice(0, ramps.cat.length).map(function(r) { return r[0]; }), column, geometryType);
         }
+
         if (css) {
           return {sql: sql, css: css, bbox: bbox, weight: weight, type: type, mssg: mssg};
         } else {

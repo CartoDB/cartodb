@@ -57,7 +57,7 @@
           }, 4000);
 
           setTimeout(function() {
-            layer.addLayer({
+            layer.createSubLayer({
               type: 'http',
               urlTemplate: 'http://{s}.tile.stamen.com/toner-labels/{z}/{x}/{y}.png',
               subdomains: [ "a", "b", "c" ]

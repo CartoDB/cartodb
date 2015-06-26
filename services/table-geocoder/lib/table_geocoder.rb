@@ -103,7 +103,7 @@ module CartoDB
       cache.store
     rescue Sequel::DatabaseError => e
       if e.message =~ /canceling statement due to statement timeout/
-        # INFO: In general, timeouts here are not recoverable
+        # INFO: Timeouts here are not recoverable for batched geocodes, but they are for non-batched
         # INFO: cache.store relies on having results in the target table
         raise Carto::GeocoderErrors::TableGeocoderDbTimeoutError.new(e)
       else

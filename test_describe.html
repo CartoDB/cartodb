@@ -16,6 +16,7 @@
         height: 400px;
         float: left;
         background: #eee;
+        position: relative;
       }
       .map .legend {
         position: absolute;
@@ -72,7 +73,6 @@
           for(var i = cats.length - 1; i >= 0; --i) {
             if(cats[i] !== undefined && cats[i] != null) {
               if (cats[i].substring(0,1) === '"') {
-                console.log('CATS',cats[i],cats[i].substring(0,1));
                 cats[i] = cats[i].substring(1,cats[i].length-1);
               }
               css += "\n#c[ " + prop + " = '" + cats[i] + "'] {\n";
@@ -84,7 +84,8 @@
       }
 
       function makeUserMap(div, vizJson, bbox) {
-        //create leaflet map
+
+//create leaflet map
         var map = L.map(div, { 
           zoomControl: false,
           center: [43, 0],
@@ -100,6 +101,29 @@
 
         // add cartodb layer with one sublayer
         cartodb.createLayer(map, vizJson).addTo(map);
+      }
+
+      function makeMap(div, sql, cartocss, bbox, account) {
+        // create leaflet map
+        var map = L.map(div, { 
+          zoomControl: false,
+          center: [43, 0],
+          zoom: 3,
+          scrollWheelZoom: false
+        })
+
+        map.fitBounds(bbox);
+
+        // add a base layer
+        L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png').addTo(map);
+
+        // add cartodb layer with one sublayer
+        cartodb.createLayer(map, {
+          user_name: account,
+          type: 'cartodb',
+          sublayers: [{ sql: sql, cartocss: cartocss }],
+          interactivity: 'cartodb_id'
+        }).addTo(map);
       }
 
       function makeMap(div, sql, cartocss, bbox, account) {
@@ -149,8 +173,6 @@
           }
           mssg = '<span style="font-weight: bold; text-decoration: underline;">' + column + "</span><br /> std: " + stats.stddev + "<br /> avg: " + stats.avg + " <br /> dist type: " + stats.dist_type + " <br /> weight: " + weight;
         } else if(stats.type == 'string') {
-
-          console.log("column " + column + " passes?",stats.passes,'cat_weight:',stats.cat_weight);
             if (stats.passes) {
                 mssg = '<span style="font-weight: bold; text-decoration: underline;">' + column + "</span><br /> PASSES<br />#uniques: " + stats.distinct + "<br />null%: " + stats.null_perc + "<br />count: " + stats.count + "<br />90% in first 10 categories? " + stats.cat_weight + "<br />weight: " + weight;
             } else {
@@ -159,15 +181,15 @@
           css = CSS.category(stats.hist.slice(0, ramps.cat.length).map(function(r) { return r[0]; }), column, geometryType);
         }
         if (css) {
-          // accumulate weights here, store cartocss, sql, bbox
-          // afterwards, look at top 2-5 and then make them into maps
-          // console.log('in guessmap',{sql: sql, css: css, bbox: bbox, weight: weight, type: type});
+          return {sql: sql, css: css, bbox: bbox, weight: weight, type: type, mssg: mssg};
+        } else {
+          return {sql: sql, css: null, bbox: bbox, weight: -100, type: type, mssg: mssg};
         }
-        return {sql: sql, css: css, bbox: bbox, weight: weight, type: type, mssg: mssg};
       }
 
       function columnMap(sql, c, geometryType, bbox, s, callback) {
         s.describe(sql, c, function(data) {
+          console.log('data: ', c, data);
           // if (data.type === 'number') {
           //   console.log(data.column, 'avg:',data.avg);
           // } else if (data.type === 'string') {
@@ -176,7 +198,6 @@
           //   console.log(data.column, 'type: ' + data.type);
           // }
           var temp = guessMap(sql, geometryType, data.column, data, bbox);
-          console.log('COLUMN MAP',sql,c,temp);
           if (temp) {
             callback(temp);
           }
@@ -192,18 +213,22 @@
         
         // get geometry type
         s.describe(sql, 'the_geom', function(data) {
+
           var geometryType = data.simplified_geometry_type;
-          console.log('geometryType',geometryType);
           
           // get all column names as an object, excluding key ones (cartodb_id, etc.)
           s.columns(sql, function(columns) {
-            console.log("all the columns:", columns);
+            console.log(typeof columns,'column type',columns);
             
             // iterate through all the columns
             _(columns).each(function(v, k) {
-              columnMap(sql, k.concat(""), geometryType, data.bbox, s, function(d) {
+
+              // create a map of this column
+              columnMap(sql, k, geometryType, data.bbox, s, function(d) {
+                
+                // store the data needed to make the map
                 m.push(d);
-                console.log('bing bing',v,k);
+                
                 if (m.length == Object.keys(columns).length) {
                   callback(m);
                 }
@@ -214,47 +239,6 @@
       }
 
       function main() {
-        var rejects = [{
-          "user":"mapbaker",
-          "viz_json":"http://mapbaker.cartodb.com/api/v2/viz/22461402-53de-11e4-94a3-0e018d66dc29/viz.json",
-          "viz_id":"22461402-53de-11e4-94a3-0e018d66dc29",
-          "table":"hemp_applicantsnew"
-        },{
-          "user":"fmoron",
-          "viz_json":"http://fmoron.cartodb.com/api/v2/viz/82110650-e428-11e4-8703-0e018d66dc29/viz.json",
-          "viz_id":"82110650-e428-11e4-8703-0e018d66dc29",
-          "table":"votos"
-        },{
-          "user": "osm2",
-          "viz_json": "http://osm2.cartodb.com/api/v2/viz/bcfda996-de27-11e4-9303-0e4fddd5de28/viz.json",
-          "viz_id": "bcfda996-de27-11e4-9303-0e4fddd5de28",
-          "table": "ny_final_18"
-        },{
-          "user": "mab120",
-          "viz_json": "http://mab120.cartodb.com/api/v2/viz/c0c5f996-dc62-11e4-a95c-0e5e07bb5d8a/viz.json",
-          "viz_id": "c0c5f996-dc62-11e4-a95c-0e5e07bb5d8a",
-          "table": "gis_dcoi"
-        },{
-          "user": "mjohns32",
-          "viz_json": "http://mjohns32.cartodb.com/api/v2/viz/d11c36f2-bae3-11e4-a95a-0e4fddd5de28/viz.json",
-          "viz_id": "d11c36f2-bae3-11e4-a95a-0e4fddd5de28",
-          "table": "complete_timeline_data"
-        },{
-          "user":"sc11c2l",
-          "viz_json":"http://sc11c2l.cartodb.com/api/v2/viz/e30e741a-d3d4-11e4-b4fb-0e8dde98a187/viz.json",
-          "viz_id":"e30e741a-d3d4-11e4-b4fb-0e8dde98a187",
-          "table":"radio"
-        },{
-          "user":"apwaldo",
-          "viz_json":"http://apwaldo.cartodb.com/api/v2/viz/ae60c618-ea97-11e3-84ac-0e10bcd91c2b/viz.json",
-          "viz_id":"ae60c618-ea97-11e3-84ac-0e10bcd91c2b",
-          "table":"syria_map"
-        },{
-          "user":"amaredi",
-          "viz_json":"http://amaredi.cartodb.com/api/v2/viz/15f5b98a-796f-11e4-900a-0e4fddd5de28/viz.json",
-          "viz_id":"15f5b98a-796f-11e4-900a-0e4fddd5de28",
-          "table":"indie_20labels"
-        }]
 
         var userData = [{
           "user":"ffprep",
@@ -327,21 +311,6 @@
           "viz_id": "0a2fdf1e-d7d8-11e4-869e-0e43f3deba5a",
           "table": "table_282_29projeto_volt_bicicietas_roubadas_2"
         }, {
-          "user": "lornsbjerkan",
-          "viz_json": "http://lornsbjerkan.cartodb.com/api/v2/viz/ee5a0f82-aacb-11e4-982c-0e0c41326911/viz.json",
-          "viz_id": "ee5a0f82-aacb-11e4-982c-0e0c41326911",
-          "table": "twitter_krekar"
-        }, {
-          "user": "briancarr100",
-          "viz_json": "http://briancarr100.cartodb.com/api/v2/viz/a1f5f84a-d302-11e4-868c-0e853d047bba/viz.json",
-          "viz_id": "a1f5f84a-d302-11e4-868c-0e853d047bba",
-          "table": "twitter_silverado_chevysilverado_chevr"
-        }, {
-          "user": "acadhe",
-          "viz_json": "http://acadhe.cartodb.com/api/v2/viz/992bedfc-7a31-11e4-bfdf-0e853d047bba/viz.json",
-          "viz_id": "992bedfc-7a31-11e4-bfdf-0e853d047bba",
-          "table": "santocho_discapacidad"
-        }, {
           "user": "vagrantor",
           "viz_json": "http://vagrantor.cartodb.com/api/v2/viz/46e5839e-1f11-11e4-b5a7-0edbca4b5057/viz.json",
           "viz_id": "46e5839e-1f11-11e4-b5a7-0edbca4b5057",
@@ -395,30 +364,33 @@
         });
 
         _(userData).each(function(el,idx,list) {
+          console.log('ineach',el,idx,list);
           pecan(el.table,el.user, function(maps) {
+            console.log('maps',maps);
 
             // sort by weight score
             maps.sort(function(a, b) {
               return b.weight - a.weight;
             });
 
-            console.log(el.table,el.user,maps.length);
-            var pecans = [0,1];
-            
-            // visualize top two maps
-            pecans.forEach(function(e,i,a) {
-              var div = $('#' + [el.user,el.table,'pecan'+(i+1)].join('-'));
-              console.log(maps.length);
-              if (maps[e]) {
-              // place legend on pecan maps
-                div.append($('<div>').html(maps[e].mssg).attr('class', 'legend'));
+            // console.log(el.table,el.user,maps.length);
+            var pecans = [0,1]; // eventually do both maps
 
-                // create map
-                makeMap(div[0], maps[e].sql, maps[e].css, maps[e].bbox,el.user);
-              } else {
-                div.append($('<div>').html('no more columns').attr('class','legend'));
-              }
-            });
+            // visualize top two maps
+            var div = $('#' + [el.user,el.table,'pecan'+(1)].join('-'));
+            console.log(maps.length);
+            // make map/legend
+            div.append($('<div>').html(maps[0].mssg).attr('class', 'legend')).data('weight',maps[1].weight);
+            makeMap(div[0], maps[0].sql, maps[0].css, maps[0].bbox,el.user);
+
+            if (maps.length > 1) {
+              var div = $('#' + [el.user,el.table,'pecan'+(2)].join('-'));
+              console.log('table, number of maps',el.table,maps.length);
+              // make map/legend
+              div.append($('<div>').html(maps[1].mssg).attr('class', 'legend')).data('weight',maps[1].weight);
+              makeMap(div[0], maps[1].sql, maps[1].css, maps[1].bbox,el.user);
+            }
+
             var userDiv = $('#' + [el.user,el.table,'user_map'].join('-'));
             makeUserMap(userDiv[0],el.viz_json,maps[0].bbox);
             userDiv.append($('<div>').html('user: ' + el.user + '<br />table: ' + el.table).attr('class', 'legend'));

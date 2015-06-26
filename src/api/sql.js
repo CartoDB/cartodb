@@ -339,7 +339,7 @@
   }
   */
   function array_agg(s) {
-    return JSON.parse(s.replace(/^{/, '[').replace(/}$/, ']'));
+    return JSON.parse(s.replace(/^{/, '[').replace(/}$/,']'));
   }
 
 
@@ -374,7 +374,7 @@
            'from ({{sql}}) __wrap',
         '),',
         'hist as (', 
-           'select array_agg(row(d, c)) from (select distinct({{column}}) d, count(*) as c from ({{sql}}) __wrap, stats group by 1 limit 100) _a',
+           'select array_agg(row(d, c)) array_agg from (select distinct({{column}}) d, count(*) as c from ({{sql}}) __wrap, stats group by 1 limit 100) _a',
         ')',
         'select * from stats, hist'
       ];
@@ -467,15 +467,15 @@
   SQL.prototype.describeFloat = function(sql, column, options, callback) {
       var s = [
         'with stats as (',
-            'select min("{{column}}") as min,',
-                   'max("{{column}}") as max,',
-                   'avg("{{column}}") as avg,',
-                   'count(DISTINCT *) as cnt,',
+            'select min({{column}}) as min,',
+                   'max({{column}}) as max,',
+                   'avg({{column}}) as avg,',
+                   'count(DISTINCT {{column}}) as cnt,',
                    'count(distinct({{column}})) as uniq,',
                    'count(*) as cnt,',
                    'sum(case when {{column}} is null then 1 else 0 end)::numeric / count(*)::numeric as null_ratio,',
-                   'stddev("{{column}}") as stddev,',
-                   'CASE WHEN abs(avg("{{column}}")) > 1e-7 THEN log(stddev("{{column}}") / abs(avg("{{column}}"))) ELSE 12 END as stddevmean,',
+                   'stddev({{column}}) as stddev,',
+                   'CASE WHEN abs(avg({{column}})) > 1e-7 THEN stddev({{column}}) / abs(avg({{column}})) ELSE 1e12 END as stddevmean,',
                    ' \'F\' as dist_type ',
                    // CDB_DistType needs to be in production before using
                    // 'CDB_DistType(array_agg("{{column}}"::numeric)) as dist_type ',
@@ -559,7 +559,7 @@
           avg: row.avg,
           max: row.max,
           min: row.min,
-          weight: 0.5 * ( Math.log(row.stddevmean) / 12 + 2 * (0.5 - row.null_ratio) ),
+          weight: row.stddevmean,
           quantiles: row.quantiles,
           equalint: row.equalint,
           jenks: row.jenks,
@@ -595,7 +595,6 @@
         } else if (type === 'geometry') {
           self.describeGeom(sql, column, options, callback);
         } else {
-          console.log("column type not supported");
           callback(new Error("column type does not supported"));
         }
       });

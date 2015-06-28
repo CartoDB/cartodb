@@ -3,20 +3,37 @@
 @import "../variables/sizes";
 
 .MapsGallery {
-}
-.PecanMap-MapsList.MapsList {
-  width: 4000px;
-  padding: 30px 0;
-}
-.PecanMap-inner {
+  overflow: auto;
+  clear:both;
+  width: 960px;
   margin: auto;
-  width: 970px;
-  clear: both;
-  overflow: hidden;
-}
-.MapsGallery {
-}
-.MapsGallery-inner {
-
+  padding: 40px 0;
+  border-top: 1px solid #ddd;
 }
 
+.PecanMap-MapsList.MapsList {
+  width: 5000px;
+  height: 235px;
+  display: block;
+  padding: 0;
+  @include transition(margin,150ms);
+}
+
+.GalleryList-item.MapsList-item {
+  @include inline-block();
+  margin: 0 30px 0 0;
+
+  &:last-child {
+    margin: 0;
+  }
+}
+
+.MapsGallery .ImportOptions-navigation {
+  position:absolute;
+  width: 960px;
+  z-index: 100000;
+}
+
+.MapsGallery .ImportOptions-navigation .ImportOptions-navigationButton {
+  top: 90px;
+}

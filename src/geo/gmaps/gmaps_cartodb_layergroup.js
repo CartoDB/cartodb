@@ -176,7 +176,6 @@ CartoDBLayerGroupBase.prototype.getTile = function(coord, zoom, ownerDocument) {
     finished();
   }
 
-
   return im;
 };
 
@@ -207,7 +206,6 @@ CartoDBLayerGroupBase.prototype.update = function (done) {
     }
   });
 };
-
 
 CartoDBLayerGroupBase.prototype.refreshView = function() {
   var self = this;
@@ -378,8 +376,6 @@ function LayerGroupView(base) {
     base.call(this, opts);
     cdb.geo.GMapsLayerView.call(this, layerModel, this, gmapsMap);
   };
-
-
 
   _.extend(
     GMapsCartoDBLayerGroupView.prototype,

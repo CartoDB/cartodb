@@ -42,8 +42,4 @@ describe('common', function() {
     t = common._getLayerDefinition();
     expect(t.sql).toEqual('select * from (select * from test)');
   });
-
-
-
-
 });

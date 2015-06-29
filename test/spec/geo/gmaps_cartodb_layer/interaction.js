@@ -27,10 +27,8 @@ describe('Interaction funcionality', function() {
       interaction: true
     });
 
-
     map.overlayMapTypes.setAt(0, cdb_layer);
   });
-
 
   it('If there is no interaction defined, shouldn\'t work and failed', function() {
     // Fake a mouseover
@@ -45,5 +43,4 @@ describe('Interaction funcionality', function() {
     $(div).trigger('click');
     expect(cdb_layer._manageOffEvents).toThrow();
   });
-
 });

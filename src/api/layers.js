@@ -1,10 +1,7 @@
 /**
  * public api for cartodb
  */
-
 (function() {
-
-
   function _Promise() {
 
   }
@@ -61,7 +58,6 @@
    * @param options layer options
    *
    */
-
   cartodb.createLayer = function(map, layer, options, callback) {
     if(map === undefined) {
       throw new TypeError("map should be provided");
@@ -217,11 +213,8 @@
       } else {
         createLayer();
       }
-
     });
 
     return promise;
   };
-
-
 })();

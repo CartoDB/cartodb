@@ -3,21 +3,19 @@ describe("geo.map", function() {
 
   describe('cdb.geo.MapLayer', function() {
     var layer;
+
     beforeEach(function() {
       layer  = new cdb.geo.MapLayer();
       layer.url = function() {return true};
       layer.sync = function() {return true};
     });
-
   });
 
   describe('GMapsBaseLayer', function() {
-
     it("should be type GMapsBase", function() {
       var layer = new cdb.geo.GMapsBaseLayer();
       expect(layer.get('type')).toEqual("GMapsBase");
     });
-
   });
 
   describe('TileLayer', function() {
@@ -43,6 +41,7 @@ describe("geo.map", function() {
 
   describe("Layers", function() {
     var layers;
+
     beforeEach(function() {
       layers = new cdb.geo.Layers();
     });
@@ -74,10 +73,11 @@ describe("geo.map", function() {
       expect(layer2.get('order')).toEqual(2);
       expect(layer3.get('order')).toEqual(1);
     });
-
   });
+
   describe("Map", function() {
     var map;
+
     beforeEach(function() {
       map = new cdb.geo.Map();
     });
@@ -128,10 +128,10 @@ describe("geo.map", function() {
       expect(map.get('maxZoom')).toEqual(40);
       expect(map.get('minZoom')).toEqual(0);
     });
-
   });
 
   describe('MapView', function() {
+
     beforeEach(function() {
       this.container = $('<div>').css('height', '200px');
 
@@ -148,7 +148,6 @@ describe("geo.map", function() {
 
       expect(this.mapView._subviews[infow.cid]).toBeTruthy()
       expect(this.mapView._subviews[infow.cid] instanceof cdb.geo.ui.Infowindow).toBeTruthy()
-
     });
 
     it('should be able to retrieve the infowindows', function() {
@@ -158,10 +157,8 @@ describe("geo.map", function() {
 
       var infowindows = this.mapView.getInfoWindows()
 
-
       expect(infowindows.length).toEqual(1);
       expect(infowindows[0]).toEqual(infow);
     });
   });
-
 });

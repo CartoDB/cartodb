@@ -11,13 +11,13 @@ cdb.geo.MapLayer = cdb.core.Model.extend({
     visible: true,
     type: 'Tiled'
   },
+
   /***
   * Compare the layer with the received one
   * @method isEqual
   * @param layer {Layer}
   */
   isEqual: function(layer) {
-
     var me          = this.toJSON()
       , other       = layer.toJSON()
       // Select params generated when layer is added to the map
@@ -64,13 +64,10 @@ cdb.geo.MapLayer = cdb.core.Model.extend({
         } else { // not gmaps
           return true;
         }
-
       }
     }
     return false; // different type
   }
-
-
 });
 
 // Good old fashioned tile layer
@@ -86,7 +83,6 @@ cdb.geo.GMapsBaseLayer = cdb.geo.MapLayer.extend({
     base_type: 'gray_roadmap',
     style: null
   }
-
 });
 
 /**
@@ -130,7 +126,6 @@ cdb.geo.TorqueLayer = cdb.geo.MapLayer.extend({
       return other.get(p) === self.get(p);
     });
   }
-
 });
 
 // CartoDB layer
@@ -350,7 +345,6 @@ cdb.geo.Map = cdb.core.Model.extend({
 
     // Set options
     _.defaults(this.options, options);
-
   },
 
   /**
@@ -489,7 +483,6 @@ cdb.geo.Map = cdb.core.Model.extend({
 
     // change both at the same time
     this.trigger('change:view_bounds_ne', this);
-
   },
 
   // set center and zoom according to fit bounds
@@ -540,11 +533,9 @@ cdb.geo.Map = cdb.core.Model.extend({
     }
 
     return zoom - 1;
-
   }
 
 }, {
-
   latlngToMercator: function(latlng, zoom) {
     var ll = new L.LatLng(latlng[0], latlng[1]);
     var pp = L.CRS.EPSG3857.latLngToPoint(ll, zoom);
@@ -555,7 +546,6 @@ cdb.geo.Map = cdb.core.Model.extend({
     var ll = L.CRS.EPSG3857.pointToLatLng(point, zoom);
     return [ll.lat, ll.lng]
   }
-
 });
 
 
@@ -767,7 +757,6 @@ cdb.geo.MapView = cdb.core.View.extend({
 
 
 }, {
-
   _getClass: function(provider) {
     var mapViewClass = cdb.geo.LeafletMapView;
     if(provider === 'googlemaps') {
@@ -787,6 +776,4 @@ cdb.geo.MapView = cdb.core.View.extend({
       map: mapModel
     });
   }
-
-}
-);
+});

@@ -27,9 +27,11 @@ describe('api.layers.cartodb', function() {
   function loadLayerSpecs(mapFn, addFn) {
     var layer;
     var map;
+
     beforeEach(function() {
-        map = mapFn();
+      map = mapFn();
     });
+
     it("has all the needed methods", function(done) {
       var methods = [
         'show',
@@ -53,7 +55,6 @@ describe('api.layers.cartodb', function() {
         })
         done();
       }, 100);
-
     });
 
     function get_url_options(u) {

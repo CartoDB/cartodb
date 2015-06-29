@@ -5,9 +5,7 @@
  */
 
 function CartoDBLayerCommon() {
-
   this.visible = true;
-
 }
 
 CartoDBLayerCommon.prototype = {
@@ -32,9 +30,7 @@ CartoDBLayerCommon.prototype = {
   },
 
   toggle: function() {
-
     this.isVisible() ? this.hide() : this.show();
-
     return this.isVisible();
   },
 
@@ -125,7 +121,6 @@ CartoDBLayerCommon.prototype = {
     opts.visible ? this.show() : this.hide();
     this.setSilent(false);
     this._definitionUpdated();
-
   },
 
   _getLayerDefinition: function() {
@@ -151,7 +146,6 @@ CartoDBLayerCommon.prototype = {
     cartocss = cartocss.replace(/\{\{table_name\}\}/g, opts.table_name);
     cartocss = cartocss.replace(new RegExp( opts.table_name, "g"), "layer0");
 
-
     return {
       sql: sql,
       cartocss: cartocss,
@@ -159,7 +153,6 @@ CartoDBLayerCommon.prototype = {
       params: params,
       interactivity: opts.interactivity
     }
-
   },
 
   error: function(e) {
@@ -226,9 +219,6 @@ CartoDBLayerCommon.prototype = {
 
   }
 };
-
-
-
 
 cdb.geo.common = {};
 

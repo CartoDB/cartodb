@@ -23,10 +23,6 @@ module CartoDB
 
       EXPECTED_PREFIX = "importer.#{HOST_INFO}"
 
-      #RSpec.configure do |config|
-      #  config.mock_with :mocha
-      #end
-
       describe '#timing' do
         it "sends key with importer prefix" do
           expected_send("#{EXPECTED_PREFIX}.#{TIMING_TEST_KEY}")

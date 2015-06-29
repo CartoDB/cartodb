@@ -19,6 +19,10 @@
             <span class="Logo--avatar">
               <i class="iconFont iconFont-CartoFante" style="color: <%= @organization.color ? darken_color(@organization.color,0.7) : "#292E33" %>"></i>
             </span>
+            <span class="Logo-sub Sessions-logoNotification js-notification" style="color: <%= @organization.color ? darken_color(@organization.color,0.7) : "#292E33" %>">
+              <i class="iconFont iconFont-Check js-successNotification"></i>
+              <span class="js-errorNotification">!</span>
+            </span>
           </div>
           <div class="js-info">
             <h1 class="Sessions-title u-tspace-m">Your account is being created</h1>

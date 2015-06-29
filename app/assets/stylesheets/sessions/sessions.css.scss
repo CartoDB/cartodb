@@ -34,6 +34,15 @@ $shadow-color: rgba(black, 0.1);
   @include justify-content(space-between, space-between);
 }
 
+.Sessions-logoNotification {
+  display: none;
+  text-align: center;
+  background-color: white;
+  font-weight: 500;
+  right: -10px;
+  top: -10px;
+}
+
 .Sessions-title {
   font-weight: 400;
   font-size: 32px;

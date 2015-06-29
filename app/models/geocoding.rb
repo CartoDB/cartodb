@@ -9,9 +9,9 @@ class Geocoding < Sequel::Model
   ALLOWED_KINDS   = %w(admin0 admin1 namedplace postalcode high-resolution ipaddress)
   DEFAULT_TIMEOUT = 5.hours
 
-  PUBLIC_ATTRIBUTES = [:id, :table_id, :state, :kind, :country_code, :region_code, :formatter, :geometry_type,
-                       :error, :processed_rows, :cache_hits, :processable_rows, :real_rows, :price,
-                       :used_credits, :remaining_quota, :country_column, :region_column, :data_import_id,
+  PUBLIC_ATTRIBUTES = [:id, :table_id, :table_name, :state, :kind, :country_code, :region_code, :formatter,
+                       :geometry_type, :error, :processed_rows, :cache_hits, :processable_rows, :real_rows,
+                       :price, :used_credits, :remaining_quota, :country_column, :region_column, :data_import_id,
                        :error_code]
 
   # Characters in the following Unicode categories: Letter, Mark, Number and Connector_Punctuation,

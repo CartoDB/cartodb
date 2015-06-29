@@ -1,6 +1,6 @@
 // cartodb.js version: 3.14.3
 // uncompressed version: cartodb.uncompressed.js
-// sha: 1faaba3bffe0ebe423eec137c1ff89b992cbdab5
+// sha: a22190887a6fe2dc2579b942a23f427ba94c51d6
 (function() {
   var root = this;
 
@@ -40793,20 +40793,50 @@ Layers.register('torque', function(vis, data) {
   }
   */
   function array_agg(s) {
-    return JSON.parse(s.replace(/^{/, '[').replace(/}$/, ']'));
+    return JSON.parse(s.replace(/^{/, '[').replace(/}$/,']'));
   }
 
 
   SQL.prototype.describeString = function(sql, column, options, callback) {
+
       var s = [
-        'with stats as (', 
+        'WITH t as (',
+        '        SELECT count(*) as total,',
+        '               count(DISTINCT {{column}}) as ndist',
+        '        FROM ({{sql}}) _wrap',
+        '      ), a as (',
+        '        SELECT ',
+        '          count(*) cnt, ',
+        '          {{column}}',
+        '        FROM ',
+        '          ({{sql}}) _wrap ',
+        '        GROUP BY ',
+        '          {{column}} ',
+        '        ORDER BY ',
+        '          cnt DESC',
+        '        ), b As (',
+        '         SELECT',
+        '          row_number() OVER (ORDER BY cnt DESC) rn,',
+        '          cnt',
+        '         FROM a',
+        '        ), c As (',
+        '        SELECT ',
+        '          sum(cnt) OVER (ORDER BY rn ASC) / t.total cumperc,',
+        '          rn,',
+        '          cnt ',
+        '         FROM b, t',
+        '         LIMIT 10',
+        '         ),',
+        'stats as (', 
            'select count(distinct({{column}})) as uniq, ',
-           'round(100.0 * sum(case when {{column}} is null then 1 else 0 end)::numeric / count(*)::numeric,1) as count_nulls, ',
-           'PAE_DistinctMeasure(array_agg({{column}}::text),0.9) as weight ',
+           '       count(*) as cnt, ',
+           '       sum(case when {{column}} is null then 1 else 0 end)::numeric / count(*)::numeric as null_ratio, ',
+           // '       CDB_DistinctMeasure(array_agg({{column}}::text)) as cat_weight ',
+           '       (SELECT max(cumperc) weight FROM c) As skew ',
            'from ({{sql}}) __wrap',
         '),',
         'hist as (', 
-           'select array_agg(row(d, c)) from (select distinct({{column}}) d, count(*) as c from ({{sql}}) __wrap, stats group by 1 limit 100) _a',
+           'select array_agg(row(d, c)) array_agg from (select distinct({{column}}) d, count(*) as c from ({{sql}}) __wrap, stats group by 1 limit 100) _a',
         ')',
         'select * from stats, hist'
       ];
@@ -40816,18 +40846,20 @@ Layers.register('torque', function(vis, data) {
         sql: sql
       });
       this.execute(query, function(data) {
-        var s = array_agg(data.rows[0].array_agg);
+        var row = data.rows[0];
+        var s = array_agg(row.array_agg);
         callback({
           type: 'string',
           hist: _(s).map(function(row) {
             var r = row.match(/\((.*),(\d+)/);
             return [r[1], +r[2]];
           }),
-          distinct: data.rows[0].uniq,
-          count_nulls: data.rows[0].count_nulls,
-          weight: data.rows[0].weight,
-          passes: (data.rows[0].uniq > 1 && data.rows[0].weight && data.rows[0].count_nulls < 10.0)
-        })
+          distinct: row.uniq,
+          count: row.cnt,
+          null_ratio: row.null_ratio,
+          skew: row.skew,
+          weight: row.skew * (1 - row.null_ratio) * (1 - row.uniq / row.cnt) * ( row.uniq > 1 ? 1 : 0)
+        });
       });
   }
 
@@ -40878,10 +40910,13 @@ Layers.register('torque', function(vis, data) {
       callback = fn;
     }
     var s = "select * from (" + sql + ") __wrap limit 0";
+    var exclude = ['cartodb_id','latitude','longitude','created_at','updated_at','lat','lon','the_geom_webmercator'];
     this.execute(s, function(data) {
       var t = {}
       for (var i in data.fields) {
-        t[i] = data.fields[i].type;
+        if (exclude.indexOf(i) === -1) {
+          t[i] = data.fields[i].type;
+        }
       }
       callback(t);
     });
@@ -40890,17 +40925,25 @@ Layers.register('torque', function(vis, data) {
   SQL.prototype.describeFloat = function(sql, column, options, callback) {
       var s = [
         'with stats as (',
-            'select min("{{column}}") as min,',
-                   'max("{{column}}") as max,',
-                   'avg("{{column}}") as avg,',
-                   'stddev("{{column}}") as stddev,',
-                   'CDB_DistType(array_agg("{{column}}"::numeric)) as dist_type ',
+            'select min({{column}}) as min,',
+                   'max({{column}}) as max,',
+                   'avg({{column}}) as avg,',
+                   'count(DISTINCT {{column}}) as cnt,',
+                   'count(distinct({{column}})) as uniq,',
+                   'count(*) as cnt,',
+                   'sum(case when {{column}} is null then 1 else 0 end)::numeric / count(*)::numeric as null_ratio,',
+                   'stddev_pop({{column}}) / count({{column}}) as stddev,',
+                   'log(stddev_pop({{column}}) / count({{column}})) as lstddev,',
+                   'CASE WHEN abs(avg({{column}})) > 1e-7 THEN stddev({{column}}) / abs(avg({{column}})) ELSE 1e12 END as stddevmean,',
+                   ' \'F\' as dist_type ',
+                   // CDB_DistType needs to be in production before using
+                   // 'CDB_DistType(array_agg("{{column}}"::numeric)) as dist_type ',
               'from ({{sql}}) _wrap ',
-              'where {{column}} is not null ',
         '),',
+        'params as (select min(a) as min, (max(a) - min(a)) / 7 as diff from ( select {{column}} as a from ({{sql}}) _table_sql where {{column}} is not null ) as foo ),',
          'histogram as (',
            'select array_agg(row(bucket, range, freq)) as hist from (',
-           'select width_bucket({{column}}, min, max, 100) as bucket,',
+           'select width_bucket({{column}}, min-0.01*abs(min), max+0.01*abs(max), 100) as bucket,',
                   'numrange(min({{column}})::numeric, max({{column}})::numeric) as range,',
                   'count(*) as freq',
              'from ({{sql}}) _w, stats',
@@ -40910,13 +40953,49 @@ Layers.register('torque', function(vis, data) {
          '),',
          'buckets as (',
             'select CDB_QuantileBins(array_agg({{column}}::numeric), 7) as quantiles, ',
-            '       CDB_EqualIntervalBins(array_agg({{column}}::numeric), 7) as equalint, ',
+            '       (select array_agg(x::numeric) FROM (SELECT (min + n * diff)::numeric as x FROM generate_series(1,7) n, params) p) as equalint,',
+            // '       CDB_EqualIntervalBins(array_agg({{column}}::numeric), 7) as equalint, ',
             '       CDB_JenksBins(array_agg({{column}}::numeric), 7) as jenks, ',
             '       CDB_HeadsTailsBins(array_agg({{column}}::numeric), 7) as headtails ',
             'from ({{sql}}) _table_sql where {{column}} is not null',
          ')',
          'select * from histogram, stats, buckets'
       ];
+
+      // if(normalization == '_area'){
+      //   var wrap_sql = "SELECT {{column}}/ST_Area(the_geom::geography) as _target_column FROM ({{sql}}) a where the_geom is not null AND {{column}} is not null ";
+      // } else if (normalization == null) {
+      //   var wrap_sql = "SELECT {{column}} as _target_column FROM ({{sql}}) a where {{column}} is not null ";
+      // } else {
+      //   var wrap_sql = "SELECT {{column}}/{{normalization}} as _target_column FROM ({{sql}}) a where {{normalization}} is not null AND {{column}} is not null ";
+
+      // }
+
+      // wrap_sql = Mustache.render(wrap_sql.join('\n'), {
+      //   normalization: normalization, 
+      //   column: column, 
+      //   sql: sql
+      // });
+
+      // var newS = [
+      //   'with stats as (',
+      //       'select min(_target_column) as min,',
+      //              'max(_target_column) as max,',
+      //              'avg(_target_column) as avg,',
+      //              'stddev(_target_column) as stddev,',
+      //              'stddev(_target_column) / avg(_target_column) as stdevmean, ',
+      //              'CDB_DistType(array_agg(_target_column::numeric)) as dist_type ',
+      //         'from ({{sql}}) _wrap ',
+      //   '),',
+      //    'buckets as (',
+      //       'select CDB_QuantileBins(array_agg(_target_column::numeric), 7) as quantiles, ',
+      //       '       CDB_EqualIntervalBins(array_agg(_target_column::numeric), 7) as equalint, ',
+      //       '       CDB_JenksBins(array_agg(_target_column::numeric), 7) as jenks, ',
+      //       '       CDB_HeadsTailsBins(array_agg(_target_column::numeric), 7) as headtails ',
+      //       'from ({{sql}}) _table_sql',
+      //    ')',
+      //    'select * from histogram, stats, buckets'
+      // ];
 
       var query = Mustache.render(s.join('\n'), {
         column: column, 
@@ -40936,9 +41015,15 @@ Layers.register('torque', function(vis, data) {
             return null;//{ index: r[1], range: range, freq: +r[4] }
           }),
           stddev: row.stddev,
+          null_ratio: row.null_ratio,
+          count: row.cnt,
+          distinct: row.uniq,
+          lstddev: row.lstddev,
           avg: row.avg,
           max: row.max,
           min: row.min,
+          stddevmean: row.stddevmean,
+          weight: (row.uniq > 1 ? 1 : 0) * (1 - row.null_ratio) * (row.lstddev < -1 ? 1 : (row.lstddev < 1 ? 0.5 : (row.lstddev < 3 ? 0.25 : 0.1))),
           quantiles: row.quantiles,
           equalint: row.equalint,
           jenks: row.jenks,
@@ -40967,7 +41052,7 @@ Layers.register('torque', function(vis, data) {
           callback(new Error("column does not exist"));
           return;
         }
-        if (type === 'string') {
+        else if (type === 'string') {
           self.describeString(sql, column, options, callback);
         } else if (type === 'number') {
           self.describeFloat(sql, column, options, callback);

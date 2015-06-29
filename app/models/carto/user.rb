@@ -135,6 +135,14 @@ class Carto::User < ActiveRecord::Base
     end
   end
 
+  def twitter_datasource_enabled
+    if has_organization?
+      organization.twitter_datasource_enabled || read_attribute(:twitter_datasource_enabled)
+    else
+      read_attribute(:twitter_datasource_enabled)
+    end
+  end
+
   # TODO: this is the correct name for what's stored in the model, refactor changing that name
   alias_method :google_maps_query_string, :google_maps_api_key
 
@@ -290,7 +298,11 @@ class Carto::User < ActiveRecord::Base
   end
 
   def import_quota
-    self.account_type.downcase == 'free' ? 1 : 3
+    if self.max_concurrent_import_count.nil?
+      self.account_type.downcase == 'free' ? 1 : 3
+    else
+      self.max_concurrent_import_count
+    end
   end
 
   def arcgis_datasource_enabled?

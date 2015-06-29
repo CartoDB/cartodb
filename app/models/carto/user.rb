@@ -122,7 +122,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def sql_safe_database_schema
-    "\"#{self.database_schema}\""
+    self.database_schema.include?('-') ? "\"#{self.database_schema}\"" : self.database_schema
   end
 
   # returns google maps api key. If the user is in an organization and 
@@ -132,6 +132,14 @@ class Carto::User < ActiveRecord::Base
       self.organization.google_maps_key || self.google_maps_key
     else
       self.google_maps_key
+    end
+  end
+
+  def twitter_datasource_enabled
+    if has_organization?
+      organization.twitter_datasource_enabled || read_attribute(:twitter_datasource_enabled)
+    else
+      read_attribute(:twitter_datasource_enabled)
     end
   end
 
@@ -290,7 +298,11 @@ class Carto::User < ActiveRecord::Base
   end
 
   def import_quota
-    self.account_type.downcase == 'free' ? 1 : 3
+    if self.max_concurrent_import_count.nil?
+      self.account_type.downcase == 'free' ? 1 : 3
+    else
+      self.max_concurrent_import_count
+    end
   end
 
   def arcgis_datasource_enabled?

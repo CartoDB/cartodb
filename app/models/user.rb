@@ -139,6 +139,14 @@ class User < Sequel::Model
     end
   end #before_save
 
+  def twitter_datasource_enabled
+    if has_organization?
+      organization.twitter_datasource_enabled || super
+    else
+      super
+    end
+  end
+
   def after_create
     super
     setup_user
@@ -824,7 +832,11 @@ class User < Sequel::Model
   end
 
   def import_quota
-    self.account_type.downcase == 'free' ? 1 : 3
+    if self.max_concurrent_import_count.nil?
+      self.account_type.downcase == 'free' ? 1 : 3
+    else
+      self.max_concurrent_import_count
+    end
   end
 
   def view_dashboard

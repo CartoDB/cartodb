@@ -3,20 +3,22 @@
 @import "../variables/sizes";
 
 .MapsGallery {
-  overflow: auto;
-  clear:both;
   width: 960px;
   margin: auto;
   padding: 40px 0;
+  overflow: hidden;
+  clear: both;
   border-top: 1px solid #ddd;
 }
 
 .PecanMap-MapsList.MapsList {
-  width: 5000px;
-  height: 235px;
   display: block;
+  width: 5000px;
+  height: 236px;
+  overflow: hidden;
+  clear: both;
   padding: 0;
-  @include transition(margin,150ms);
+  @include transition(margin, 150ms);
 }
 
 .GalleryList-item.MapsList-item {

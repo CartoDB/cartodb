@@ -1764,7 +1764,9 @@ class User < Sequel::Model
   #
 
   def create_function_invalidate_varnish
-    if Cartodb.config[:varnish_management].fetch('http_port', false)
+    if Cartodb.config[:invalidation_service] && Cartodb.config[:invalidation_service].fetch('enabled', false)
+      create_function_invalidate_varnish_invalidation_service
+    elsif Cartodb.config[:varnish_management].fetch('http_port', false)
       create_function_invalidate_varnish_http
     else
       create_function_invalidate_varnish_telnet
@@ -1882,6 +1884,58 @@ TRIGGER
     LANGUAGE 'plpythonu' VOLATILE;
     REVOKE ALL ON FUNCTION public.cdb_invalidate_varnish(TEXT) FROM PUBLIC;
     COMMIT;
+TRIGGER
+    )
+  end
+
+  # Invalidate through external service
+  def create_function_invalidate_varnish_invalidation_service
+
+    add_python
+
+    invalidation_host = Cartodb.config[:invalidation_service].try(:[], 'host') || '127.0.0.1'
+    invalidation_port = Cartodb.config[:invalidation_service].try(:[],'port') || 3142
+    invalidation_timeout = Cartodb.config[:invalidation_service].try(:[],'timeout') || 5
+    invalidation_critical = Cartodb.config[:invalidation_service].try(:[], 'critical') ? 1 : 0
+    invalidation_retry = Cartodb.config[:invalidation_service].try(:[],'retry') || 5
+
+    in_database(:as => :superuser).run(<<-TRIGGER
+  BEGIN;
+  CREATE OR REPLACE FUNCTION public.cdb_invalidate_varnish(table_name text) RETURNS void AS
+  $$
+      critical = #{invalidation_critical}
+      timeout = #{invalidation_timeout}
+      retry = #{invalidation_retry}
+
+      client = GD.get('invalidation', None)
+
+      while True:
+
+        if not client:
+            try:
+              import redis
+              client = GD['invalidation'] = redis.Redis(host='#{invalidation_host}', port=#{invalidation_port}, socket_timeout=timeout)
+            except Exception as err:
+              # NOTE: we won't retry on connection error
+              if critical:
+                plpy.error('Invalidation Service connection error: ' +  str(err))
+              break
+
+        try:
+          client.execute_command('TCH', '#{self.database_name}', table_name)
+          break
+        except Exception as err:
+          plpy.warning('Invalidation Service warning: ' + str(err))
+          client = GD['invalidation'] = None # force reconnect
+          if not retry:
+            if critical:
+              plpy.error('Invalidation Service error: ' +  str(err))
+            break
+          retry -= 1 # try reconnecting
+  $$
+  LANGUAGE 'plpythonu' VOLATILE;
+  REVOKE ALL ON FUNCTION public.cdb_invalidate_varnish(TEXT) FROM PUBLIC;
+  COMMIT;
 TRIGGER
     )
   end

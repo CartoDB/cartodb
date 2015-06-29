@@ -8,7 +8,7 @@ module Carto
     GEOCODER_TIMED_OUT_TITLE = 'The geocoder timed out'
     GEOCODER_TIMED_OUT_WHAT_ABOUT = %q{
       Your geocoding request timed out.
-      Please <a href='mailto:support@cartob.com?subject=Geocoding DB statement timed out'>contact us</a>
+      Please <a href='mailto:support@cartob.com?subject=The geocoder timed out'>contact us</a>
       and we'll try to fix it quickly.
     }.squish
 

@@ -2311,7 +2311,6 @@ TRIGGER
 
   # Special url that goes to Central if active
   def upgrade_url(request_protocol)
-    debugger
     cartodb_com_hosted? ? '' : (account_url(request_protocol) + '/upgrade')
   end
 

@@ -1,6 +1,8 @@
 # coding: utf-8
+require_dependency 'cartodb_config_utils'
 
 module ApplicationHelper
+  include CartoDB::ConfigUtils
 
   def current_user
     super(CartoDB.extract_subdomain(request))
@@ -233,10 +235,6 @@ module ApplicationHelper
   end
 
   #if cartodb_com_hosted is false, means that it is SaaS. If it's true (or doesn't exist), it's a custom installation
-  def cartodb_com_hosted?
-    Cartodb.config[:cartodb_com_hosted].nil? || Cartodb.config[:cartodb_com_hosted]
-  end
-
   def cartodb_onpremise_version
     Cartodb.config[:onpremise_version]
   end

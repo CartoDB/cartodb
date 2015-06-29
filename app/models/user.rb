@@ -13,11 +13,13 @@ require_relative './external_data_import'
 require_relative './feature_flag'
 require_relative '../../lib/cartodb/stats/api_calls'
 require_relative '../../lib/carto/http/client'
+require_dependency 'cartodb_config_utils'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
   include CartoDB::UserDecorator
   include Concerns::CartodbCentralSynchronizable
+  include CartoDB::ConfigUtils
 
   self.strict_param_setting = false
 
@@ -2309,7 +2311,8 @@ TRIGGER
 
   # Special url that goes to Central if active
   def upgrade_url(request_protocol)
-    account_url(request_protocol) + '/upgrade'
+    debugger
+    cartodb_com_hosted? ? '' : (account_url(request_protocol) + '/upgrade')
   end
 
   def organization_username

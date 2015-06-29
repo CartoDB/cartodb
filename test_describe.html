@@ -5,6 +5,9 @@
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
     <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.14/themes/css/cartodb.css" />
+
     <style>
       html, body {
         height: 100%;
@@ -27,11 +30,9 @@
       }
       .userdata {
         border: 2px dashed #227DBD; width: 600px; height: 200px; margin-bottom: 5px;
-
       }
     </style>
 
-    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.14/themes/css/cartodb.css" />
   </head>
   <body>
     <div id="map"></div>
@@ -133,32 +134,8 @@
         cartodb.createLayer(map, {
           user_name: account,
           type: 'cartodb',
-          sublayers: [{ sql: sql, cartocss: cartocss }],
-          interactivity: ''
+          sublayers: [{ sql: sql, cartocss: cartocss}]
         }).addTo(map);
-      }
-
-      function makeMap(div, sql, cartocss, bbox, account) {
-        // create leaflet map
-        var map = L.map(div, { 
-          zoomControl: false,
-          center: [43, 0],
-          zoom: 3,
-          scrollWheelZoom: false
-        })
-
-        map.fitBounds(bbox);
-
-        // add a base layer
-        L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png').addTo(map);
-
-        // add cartodb layer with one sublayer
-        cartodb.createLayer(map, {
-          user_name: account,
-          type: 'cartodb',
-          sublayers: [{ sql: sql, cartocss: cartocss }],
-          interactivity: 'cartodb_id'
-        }).addTo(map)
       }
 
       function guessMap(sql, geometryType, column, stats, bbox) {
@@ -246,7 +223,7 @@
             // iterate through all the columns
             _(columns).each(function(v, k) {
               // strip blacklist
-              if (exclude.indexOf(k) === -1) {
+              if (exclude.indexOf(k) <= -1) {
                 // create a map of this column
                 columnMap(sql, k, geometryType, data.bbox, s, function(d) {
                   
@@ -264,140 +241,12 @@
       }
 
       function main() {
+        setTimeout(function(){
+          $('.cartodb-legend').hide();
+          $('.cartodb-timeslider').hide();
+        }, 10000)
 
-        var userData = [{
-          "user":"ffprep",
-          "viz_json":"http://ffprep.cartodb.com/api/v2/viz/111f7a36-deb9-11e4-8a19-0e018d66dc29/viz.json",
-          "viz_id":"111f7a36-deb9-11e4-8a19-0e018d66dc29",
-          "table":"mapdatafile_1"
-        },{
-          "user":"andrew",
-          "viz_json":"http://andrew.cartodb.com/api/v2/viz/d4c88194-7bc7-11e4-ab0a-0e853d047bba/viz.json",
-          "viz_id":"d4c88194-7bc7-11e4-ab0a-0e853d047bba",
-          "table":"choroplether"
-        },{
-          "user":"pic",
-          "viz_json":"http://pic.cartodb.com/api/v2/viz/9f7c823e-7914-11e4-aa29-0e018d66dc29/viz.json",
-          "viz_id":"9f7c823e-7914-11e4-aa29-0e018d66dc29",
-          "table":"roy_colmer"
-        },{
-          "user":"xatpy",
-          "viz_json":"http://xatpy.cartodb.com/api/v2/viz/29edc996-726c-11e4-887c-0e018d66dc29/viz.json",
-          "viz_id":"29edc996-726c-11e4-887c-0e018d66dc29",
-          "table":"strava_torque_cat"
-        },{
-          "user":"mstandage",
-          "viz_json":"http://mstandage.cartodb.com/api/v2/viz/906cec04-d0ab-11e4-a74f-0e853d047bba/viz.json",
-          "viz_id":"906cec04-d0ab-11e4-a74f-0e853d047bba",
-          "table":"phone_upload_1"
-        }, {
-          "user": "anandkatakam",
-          "viz_json": "http://anandkatakam.cartodb.com/api/v2/viz/e6135b32-9039-11e4-9be9-0e853d047bba/viz.json",
-          "viz_id": "e6135b32-9039-11e4-9be9-0e853d047bba",
-          "table": "lost_years_filtered_sheet1_282_29"
-        }, {
-          "user": "omars2015",
-          "viz_json": "http://omars2015.cartodb.com/api/v2/viz/203b964a-def9-11e4-bed0-0e018d66dc29/viz.json",
-          "viz_id": "203b964a-def9-11e4-bed0-0e018d66dc29",
-          "table": "list_of_old_west_gunfights"
-        }, {
-          "user": "roncadriano",
-          "viz_json": "http://roncadriano.cartodb.com/api/v2/viz/c49333a6-e5d4-11e4-8e5f-0e8dde98a187/viz.json",
-          "viz_id": "c49333a6-e5d4-11e4-8e5f-0e8dde98a187",
-          "table": "mestre_asterisk_geolocation_sessions_20150416"
-        }, {
-          "user": "lorenaposada423",
-          "viz_json": "http://lorenaposada423.cartodb.com/api/v2/viz/3eac758c-e457-11e4-9634-0e6e1df11cbf/viz.json",
-          "viz_id": "3eac758c-e457-11e4-9634-0e6e1df11cbf",
-          "table": "rmcab"
-        }, {
-          "user": "msthing",
-          "viz_json": "http://msthing.cartodb.com/api/v2/viz/aab869f6-e282-11e4-9cfb-0e9d821ea90d/viz.json",
-          "viz_id": "aab869f6-e282-11e4-9cfb-0e9d821ea90d",
-          "table": "fp4"
-        }, {
-          "user": "kristerc",
-          "viz_json": "http://kristerc.cartodb.com/api/v2/viz/4ec7f89a-e468-11e4-99db-0e0c41326911/viz.json",
-          "viz_id": "4ec7f89a-e468-11e4-99db-0e0c41326911",
-          "table": "streetfood_i_malmo"
-        },{
-          "user": "cassi",
-          "viz_json": "http://cassi.cartodb.com/api/v2/viz/20a78606-d7fc-11e4-8d55-0e0c41326911/viz.json",
-          "viz_id": "20a78606-d7fc-11e4-8d55-0e0c41326911",
-          "table": "table_"
-        }, {
-          "user": "projetostock",
-          "viz_json": "http://projetostock.cartodb.com/api/v2/viz/0a2fdf1e-d7d8-11e4-869e-0e43f3deba5a/viz.json",
-          "viz_id": "0a2fdf1e-d7d8-11e4-869e-0e43f3deba5a",
-          "table": "table_282_29projeto_volt_bicicietas_roubadas_2"
-        }, {
-          "user": "vagrantor",
-          "viz_json": "http://vagrantor.cartodb.com/api/v2/viz/46e5839e-1f11-11e4-b5a7-0edbca4b5057/viz.json",
-          "viz_id": "46e5839e-1f11-11e4-b5a7-0edbca4b5057",
-          "table": "check_in_of_caupder"
-        }, {
-          "user": "banseb-edu",
-          "viz_json": "http://banseb-edu.cartodb.com/api/v2/viz/87503e0e-c977-11e4-933f-0e4fddd5de28/viz.json",
-          "viz_id": "87503e0e-c977-11e4-933f-0e4fddd5de28",
-          "table": "uavo_pg_xls"
-        }, {
-          "user": "ashiskriz",
-          "viz_json": "http://ashiskriz.cartodb.com/api/v2/viz/0bd00032-da27-11e4-b775-0e0c41326911/viz.json",
-          "viz_id": "0bd00032-da27-11e4-b775-0e0c41326911",
-          "table": "tornados_1"
-        }, {
-          "user": "willianlopes404",
-          "viz_json": "http://willianlopes404.cartodb.com/api/v2/viz/43e90e14-c28f-11e4-b32e-0e49835281d6/viz.json",
-          "viz_id": "43e90e14-c28f-11e4-b32e-0e49835281d6",
-          "table": "locations"
-        }, {
-          "user": "krsmith09",
-          "viz_json": "http://krsmith09.cartodb.com/api/v2/viz/c1fcae96-d7ed-11e4-ae47-0e9d821ea90d/viz.json",
-          "viz_id": "c1fcae96-d7ed-11e4-ae47-0e9d821ea90d",
-          "table": "friendshiploan_aug1_2014_mar30_2015"
-        },{
-          "user": "jaguillette",
-          "viz_json": "http://jaguillette.cartodb.com/api/v2/viz/1c6e86b0-ab16-11e4-81da-0e4fddd5de28/viz.json",
-          "viz_id": "1c6e86b0-ab16-11e4-81da-0e4fddd5de28",
-          "table": "fair_date_map_new"
-        }, {
-          "user": "aaking",
-          "viz_json": "http://aaking.cartodb.com/api/v2/viz/cbb5aafc-d250-11e4-91db-0e8dde98a187/viz.json",
-          "viz_id": "cbb5aafc-d250-11e4-91db-0e8dde98a187",
-          "table": "observations_5"
-        }, {
-          "user": "nblanchart",
-          "viz_json": "http://nblanchart.cartodb.com/api/v2/viz/431b4c06-c34b-11e4-b596-0e0c41326911/viz.json",
-          "viz_id": "431b4c06-c34b-11e4-b596-0e0c41326911",
-          "table": "data_proportion"
-        }, {
-          "user": "liljohnson",
-          "viz_json": "http://liljohnson.cartodb.com/api/v2/viz/92c4c854-d4b2-11e4-809e-0e43f3deba5a/viz.json",
-          "viz_id": "92c4c854-d4b2-11e4-809e-0e43f3deba5a",
-          "table": "spencer_the_cat"
-        }, {
-          "user": "dataplazza",
-          "viz_json": "http://dataplazza.cartodb.com/api/v2/viz/11d45b00-a7db-11e4-9da6-0e018d66dc29/viz.json",
-          "viz_id": "11d45b00-a7db-11e4-9da6-0e018d66dc29",
-          "table": "logements_sociaux_finances_paris_283_29"
-        }, {
-          "user": "moltude",
-          "viz_json": "http://moltude.cartodb.com/api/v2/viz/452d5c48-d578-11e4-9b66-0e8dde98a187/viz.json",
-          "viz_id": "452d5c48-d578-11e4-9b66-0e8dde98a187",
-          "table": "ycbageolocation"
-        }, {
-          "user": "pf182",
-          "viz_json": "http://pf182.cartodb.com/api/v2/viz/fce4933a-e1b5-11e4-9567-0e4fddd5de28/viz.json",
-          "viz_id": "fce4933a-e1b5-11e4-9567-0e4fddd5de28",
-          "table": "cabanes_overnights"
-        }, {
-          "user": "jszobody",
-          "viz_json": "http://jszobody.cartodb.com/api/v2/viz/a11c9806-dd71-11e4-a554-0e0c41326911/viz.json",
-          "viz_id": "a11c9806-dd71-11e4-a554-0e0c41326911",
-          "table": "customers_sheet1"
-        }];
-
-        var pecans = [0,1]; // eventually do both maps
+        var pecans = [0,1,2]; // eventually do both maps
         userData.forEach(function(e,i,a) {
           // make parent div
           var par = $('<div>', {
@@ -413,20 +262,12 @@
           });
           $(par).append(userDiv);
           pecans.forEach(function(p){
-            console.log(p)
             var pec = $('<div>', {
               id: [a[i].user,a[i].table,'pecan'+(p+1).toString()].join('-'),
               class: 'map'
             });
             $(par).append(pec);
-          })
-          
-          // var statsDiv = $('<div>', {
-          //   id: [a[i].user,a[i].table,'stats'].join('-'),
-          //   class: 'stats'
-          // });
-          // $(par).append(statsDiv);
-
+          });
         });
 
         _(userData).each(function(el,idx,list) {
@@ -463,6 +304,137 @@
         });
       }
 
+      var userData = [{
+        "user":"ffprep",
+        "viz_json":"http://ffprep.cartodb.com/api/v2/viz/111f7a36-deb9-11e4-8a19-0e018d66dc29/viz.json",
+        "viz_id":"111f7a36-deb9-11e4-8a19-0e018d66dc29",
+        "table":"mapdatafile_1"
+      },{
+        "user":"andrew",
+        "viz_json":"http://andrew.cartodb.com/api/v2/viz/d4c88194-7bc7-11e4-ab0a-0e853d047bba/viz.json",
+        "viz_id":"d4c88194-7bc7-11e4-ab0a-0e853d047bba",
+        "table":"choroplether"
+      },{
+        "user":"pic",
+        "viz_json":"http://pic.cartodb.com/api/v2/viz/9f7c823e-7914-11e4-aa29-0e018d66dc29/viz.json",
+        "viz_id":"9f7c823e-7914-11e4-aa29-0e018d66dc29",
+        "table":"roy_colmer"
+      },{
+        "user":"xatpy",
+        "viz_json":"http://xatpy.cartodb.com/api/v2/viz/29edc996-726c-11e4-887c-0e018d66dc29/viz.json",
+        "viz_id":"29edc996-726c-11e4-887c-0e018d66dc29",
+        "table":"strava_torque_cat"
+      },{
+        "user":"mstandage",
+        "viz_json":"http://mstandage.cartodb.com/api/v2/viz/906cec04-d0ab-11e4-a74f-0e853d047bba/viz.json",
+        "viz_id":"906cec04-d0ab-11e4-a74f-0e853d047bba",
+        "table":"phone_upload_1"
+      }, {
+        "user": "anandkatakam",
+        "viz_json": "http://anandkatakam.cartodb.com/api/v2/viz/e6135b32-9039-11e4-9be9-0e853d047bba/viz.json",
+        "viz_id": "e6135b32-9039-11e4-9be9-0e853d047bba",
+        "table": "lost_years_filtered_sheet1_282_29"
+      }, {
+        "user": "omars2015",
+        "viz_json": "http://omars2015.cartodb.com/api/v2/viz/203b964a-def9-11e4-bed0-0e018d66dc29/viz.json",
+        "viz_id": "203b964a-def9-11e4-bed0-0e018d66dc29",
+        "table": "list_of_old_west_gunfights"
+      }, {
+        "user": "roncadriano",
+        "viz_json": "http://roncadriano.cartodb.com/api/v2/viz/c49333a6-e5d4-11e4-8e5f-0e8dde98a187/viz.json",
+        "viz_id": "c49333a6-e5d4-11e4-8e5f-0e8dde98a187",
+        "table": "mestre_asterisk_geolocation_sessions_20150416"
+      }, {
+        "user": "lorenaposada423",
+        "viz_json": "http://lorenaposada423.cartodb.com/api/v2/viz/3eac758c-e457-11e4-9634-0e6e1df11cbf/viz.json",
+        "viz_id": "3eac758c-e457-11e4-9634-0e6e1df11cbf",
+        "table": "rmcab"
+      }, {
+        "user": "msthing",
+        "viz_json": "http://msthing.cartodb.com/api/v2/viz/aab869f6-e282-11e4-9cfb-0e9d821ea90d/viz.json",
+        "viz_id": "aab869f6-e282-11e4-9cfb-0e9d821ea90d",
+        "table": "fp4"
+      }, {
+        "user": "kristerc",
+        "viz_json": "http://kristerc.cartodb.com/api/v2/viz/4ec7f89a-e468-11e4-99db-0e0c41326911/viz.json",
+        "viz_id": "4ec7f89a-e468-11e4-99db-0e0c41326911",
+        "table": "streetfood_i_malmo"
+      },{
+        "user": "cassi",
+        "viz_json": "http://cassi.cartodb.com/api/v2/viz/20a78606-d7fc-11e4-8d55-0e0c41326911/viz.json",
+        "viz_id": "20a78606-d7fc-11e4-8d55-0e0c41326911",
+        "table": "table_"
+      }, {
+        "user": "projetostock",
+        "viz_json": "http://projetostock.cartodb.com/api/v2/viz/0a2fdf1e-d7d8-11e4-869e-0e43f3deba5a/viz.json",
+        "viz_id": "0a2fdf1e-d7d8-11e4-869e-0e43f3deba5a",
+        "table": "table_282_29projeto_volt_bicicietas_roubadas_2"
+      }, {
+        "user": "vagrantor",
+        "viz_json": "http://vagrantor.cartodb.com/api/v2/viz/46e5839e-1f11-11e4-b5a7-0edbca4b5057/viz.json",
+        "viz_id": "46e5839e-1f11-11e4-b5a7-0edbca4b5057",
+        "table": "check_in_of_caupder"
+      }, {
+        "user": "banseb-edu",
+        "viz_json": "http://banseb-edu.cartodb.com/api/v2/viz/87503e0e-c977-11e4-933f-0e4fddd5de28/viz.json",
+        "viz_id": "87503e0e-c977-11e4-933f-0e4fddd5de28",
+        "table": "uavo_pg_xls"
+      }, {
+        "user": "ashiskriz",
+        "viz_json": "http://ashiskriz.cartodb.com/api/v2/viz/0bd00032-da27-11e4-b775-0e0c41326911/viz.json",
+        "viz_id": "0bd00032-da27-11e4-b775-0e0c41326911",
+        "table": "tornados_1"
+      }, {
+        "user": "willianlopes404",
+        "viz_json": "http://willianlopes404.cartodb.com/api/v2/viz/43e90e14-c28f-11e4-b32e-0e49835281d6/viz.json",
+        "viz_id": "43e90e14-c28f-11e4-b32e-0e49835281d6",
+        "table": "locations"
+      }, {
+        "user": "krsmith09",
+        "viz_json": "http://krsmith09.cartodb.com/api/v2/viz/c1fcae96-d7ed-11e4-ae47-0e9d821ea90d/viz.json",
+        "viz_id": "c1fcae96-d7ed-11e4-ae47-0e9d821ea90d",
+        "table": "friendshiploan_aug1_2014_mar30_2015"
+      },{
+        "user": "jaguillette",
+        "viz_json": "http://jaguillette.cartodb.com/api/v2/viz/1c6e86b0-ab16-11e4-81da-0e4fddd5de28/viz.json",
+        "viz_id": "1c6e86b0-ab16-11e4-81da-0e4fddd5de28",
+        "table": "fair_date_map_new"
+      }, {
+        "user": "aaking",
+        "viz_json": "http://aaking.cartodb.com/api/v2/viz/cbb5aafc-d250-11e4-91db-0e8dde98a187/viz.json",
+        "viz_id": "cbb5aafc-d250-11e4-91db-0e8dde98a187",
+        "table": "observations_5"
+      }, {
+        "user": "nblanchart",
+        "viz_json": "http://nblanchart.cartodb.com/api/v2/viz/431b4c06-c34b-11e4-b596-0e0c41326911/viz.json",
+        "viz_id": "431b4c06-c34b-11e4-b596-0e0c41326911",
+        "table": "data_proportion"
+      }, {
+        "user": "liljohnson",
+        "viz_json": "http://liljohnson.cartodb.com/api/v2/viz/92c4c854-d4b2-11e4-809e-0e43f3deba5a/viz.json",
+        "viz_id": "92c4c854-d4b2-11e4-809e-0e43f3deba5a",
+        "table": "spencer_the_cat"
+      }, {
+        "user": "dataplazza",
+        "viz_json": "http://dataplazza.cartodb.com/api/v2/viz/11d45b00-a7db-11e4-9da6-0e018d66dc29/viz.json",
+        "viz_id": "11d45b00-a7db-11e4-9da6-0e018d66dc29",
+        "table": "logements_sociaux_finances_paris_283_29"
+      }, {
+        "user": "moltude",
+        "viz_json": "http://moltude.cartodb.com/api/v2/viz/452d5c48-d578-11e4-9b66-0e8dde98a187/viz.json",
+        "viz_id": "452d5c48-d578-11e4-9b66-0e8dde98a187",
+        "table": "ycbageolocation"
+      }, {
+        "user": "pf182",
+        "viz_json": "http://pf182.cartodb.com/api/v2/viz/fce4933a-e1b5-11e4-9567-0e4fddd5de28/viz.json",
+        "viz_id": "fce4933a-e1b5-11e4-9567-0e4fddd5de28",
+        "table": "cabanes_overnights"
+      }, {
+        "user": "jszobody",
+        "viz_json": "http://jszobody.cartodb.com/api/v2/viz/a11c9806-dd71-11e4-a554-0e0c41326911/viz.json",
+        "viz_id": "a11c9806-dd71-11e4-a554-0e0c41326911",
+        "table": "customers_sheet1"
+      }];
       // you could use $(window).load(main);
       window.onload = main; 
 

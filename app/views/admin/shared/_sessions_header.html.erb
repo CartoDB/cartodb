@@ -15,6 +15,9 @@
             <sup><img src="<%= image_path "layout/sessions/brand.png" %>" alt="CartoDB" height="26" width="26"></sup>
           <% end %>
         </div>
+        <% if !Cartodb.config[:cartodb_com_hosted].present? && @organization.present? %>
+          <div class="Navbar-text">Not part of <%= @organization.name %>? Go to <a class="Navbar-textLink" href="http://cartodb.com">cartodb.com</a></div>
+        <% end %>
       </div>
     </nav>
   </div>

@@ -5,6 +5,8 @@
 @import "_mixins";
 @import "_helpers";
 
+$text-color: rgba(white, 0.5);
+
 .Navbar {
   @extend %clearfix;
   padding: 20px 0;
@@ -21,9 +23,7 @@
   margin-right: 5px;
 }
 
-.Navbar-menu {
-  float: right;
-}
+.Navbar-menu { float: right }
 
 .Navbar-menuItem {
   position: relative;
@@ -49,6 +49,18 @@
       background: $cPrincipal;
     }
   }
+}
+
+.Navbar-text {
+  margin-top: 18px;
+  font-size: 16px;
+  color: $text-color;
+}
+
+.Navbar-textLink {
+  color: $text-color;
+  text-decoration: underline;
+  &:hover { color: white }
 }
 
 .Navbar-link {

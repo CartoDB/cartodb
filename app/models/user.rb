@@ -1553,7 +1553,11 @@ class User < Sequel::Model
   def move_tables_to_schema(old_schema, new_schema)
     self.real_tables(old_schema).each do |t|
       self.in_database(as: :superuser) do |database|
-        database.run(%Q{ ALTER TABLE #{old_schema}.#{t[:relname]} SET SCHEMA "#{new_schema}" })
+        old_name = "#{old_schema}.#{t[:relname]}"
+        new_name = "#{new_schema}.#{t[:relname]}"
+        database.run(%Q{ SELECT cartodb._CDB_drop_triggers('#{old_name}'::REGCLASS) })
+        database.run(%Q{ ALTER TABLE #{old_name} SET SCHEMA "#{new_schema}" })
+        database.run(%Q{ SELECT cartodb._CDB_create_triggers('#{new_schema}'::TEXT, '#{new_name}'::REGCLASS) })
       end
     end
   end

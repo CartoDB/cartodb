@@ -244,33 +244,33 @@
         setTimeout(function(){
           $('.cartodb-legend').hide();
           $('.cartodb-timeslider').hide();
-        }, 10000)
+        }, 20000)
 
-        var pecans = [0,1,2]; // eventually do both maps
-        userData.forEach(function(e,i,a) {
+        var pecans = [0,1]; // eventually do both maps
+        
+        _(userData).each(function(el,idx,list) {
+
           // make parent div
           var par = $('<div>', {
-            id: [a[i].user,a[i].table,'parent'].join('-'),
+            id: [list[idx].user,list[idx].table,'parent'].join('-'),
             class: 'userdata'
           });
           $('body').append(par);
           
           // make all three children
           var userDiv = $('<div>', {
-            id: [a[i].user,a[i].table,'user_map'].join('-'),
+            id: [list[idx].user,list[idx].table,'user_map'].join('-'),
             class: 'map'
           });
           $(par).append(userDiv);
           pecans.forEach(function(p){
             var pec = $('<div>', {
-              id: [a[i].user,a[i].table,'pecan'+(p+1).toString()].join('-'),
+              id: [list[idx].user,list[idx].table,'pecan'+(p+1).toString()].join('-'),
               class: 'map'
             });
             $(par).append(pec);
           });
-        });
 
-        _(userData).each(function(el,idx,list) {
           // console.log('ineach',el,idx,list);
           pecan(el.table,el.user, function(maps) {
             // console.log('maps',maps);

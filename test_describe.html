@@ -397,6 +397,7 @@
           "table": "customers_sheet1"
         }];
 
+        var pecans = [0,1]; // eventually do both maps
         userData.forEach(function(e,i,a) {
           // make parent div
           var par = $('<div>', {
@@ -411,16 +412,14 @@
             class: 'map'
           });
           $(par).append(userDiv);
-          var pecan1 = $('<div>', {
-            id: [a[i].user,a[i].table,'pecan1'].join('-'),
-            class: 'map'
-          });
-          $(par).append(pecan1);
-          var pecan2 = $('<div>', {
-            id: [a[i].user,a[i].table,'pecan2'].join('-'),
-            class: 'map'
-          });
-          $(par).append(pecan2);
+          pecans.forEach(function(p){
+            console.log(p)
+            var pec = $('<div>', {
+              id: [a[i].user,a[i].table,'pecan'+(p+1).toString()].join('-'),
+              class: 'map'
+            });
+            $(par).append(pec);
+          })
           
           // var statsDiv = $('<div>', {
           //   id: [a[i].user,a[i].table,'stats'].join('-'),
@@ -442,7 +441,6 @@
             // fillStats(maps,[el.user,el.table,'stats'].join('-'));
 
             // console.log(el.table,el.user,maps.length);
-            var pecans = [0,1]; // eventually do both maps
 
             // visualize top two maps
             var div = $('#' + [el.user,el.table,'pecan'+(1)].join('-'));

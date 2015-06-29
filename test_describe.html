@@ -12,8 +12,8 @@
         margin: 0;
       }
       .map {
-        width: 400px;
-        height: 400px;
+        width: 200px;
+        height: 200px;
         float: left;
         background: #eee;
         position: relative;
@@ -23,14 +23,11 @@
         top: 10px;
         left: 10px;
         z-index: 1000;
+        font-size: 9px;
       }
-      #stats {
-        background: #bbb;
-        height: 400px;
-        width: 80px;
-        float: left;
-        position: relative;
-        overflow-y: scroll;
+      .userdata {
+        border: 2px dashed #227DBD; width: 600px; height: 200px; margin-bottom: 5px;
+
       }
     </style>
 
@@ -72,7 +69,7 @@
       var CSS = {
         choropleth: function(quartiles, prop, geometryType, ramp) {
           var attr = geoAttr(geometryType);
-          var css = "#c{ " + attr + ": #0C2C84; polygon-opacity: 0.6; line-color: #0C2C84; line-width: 0.0; line-opacity: 1; } "
+          var css = "#c{ " + attr + ": #0C2C84; polygon-opacity: 0.6; line-color: #0C2C84; line-width: 0.0; line-opacity: 0; [mapnik-geometry-type=1]{marker-allow-overlap: true; marker-line-width: 0.1; marker-line-color: white;}} "
           for(var i = quartiles.length - 1; i >= 0; --i) {
             if(quartiles[i] !== undefined && quartiles[i] != null) {
               css += "\n#c[ " + prop + " <= " + quartiles[i] + "] {\n";
@@ -85,7 +82,7 @@
         category: function(cats, prop, geometryType) {
           var attr = geoAttr(geometryType);
           var ramp = ramps.cat;
-          var css = "#c{ " + attr + ": #0C2C84; polygon-opacity: 0.6; line-color: #0C2C84; line-width: 0.0; line-opacity: 1; } "
+          var css = "#c{ " + attr + ": #0C2C84; polygon-opacity: 0.6; line-color: #0C2C84; line-width: 0.0; line-opacity: 1; [mapnik-geometry-type=1]{marker-allow-overlap: true; marker-line-width: 0.1; marker-line-color: white;}} "
           for(var i = cats.length - 1; i >= 0; --i) {
             if(cats[i] !== undefined && cats[i] != null) {
               if (cats[i].substring(0,1) === '"') {
@@ -137,7 +134,7 @@
           user_name: account,
           type: 'cartodb',
           sublayers: [{ sql: sql, cartocss: cartocss }],
-          interactivity: 'cartodb_id'
+          interactivity: ''
         }).addTo(map);
       }
 
@@ -206,7 +203,7 @@
         }
 
         if (css) {
-          console.log(mssg);
+          // console.log(mssg);
           return {sql: sql, css: css, bbox: bbox, weight: stats.weight, type: type, mssg: mssg};
         } else {
           return {sql: sql, css: null, bbox: bbox, weight: -100, type: type, mssg: mssg};
@@ -215,7 +212,7 @@
 
       function columnMap(sql, c, geometryType, bbox, s, callback) {
         s.describe(sql, c, function(data) {
-          console.log('data: ', c, data);
+          // console.log('data: ', c, data);
           // if (data.type === 'number') {
           //   console.log(data.column, 'avg:',data.avg);
           // } else if (data.type === 'string') {
@@ -234,7 +231,7 @@
         var s = cartodb.SQL({user: acctName});
         var m = [];
         var normalization = 'ST_Area(the_geom::geography)';
-        var exclude = ['cartodb_id','lat','lon','latitude','longitude','shape_length','shape_area','object_id', 'id'];
+        var exclude = ['cartodb_id','lat','lon','lng','long','latitude','longitude','shape_length','shape_area','objectid', 'id', 'country', 'state'];
         var sql = 'select * from ' + tableName;
         
         // get geometry type
@@ -244,21 +241,23 @@
           
           // get all column names as an object, excluding key ones (cartodb_id, etc.)
           s.columns(sql, function(columns) {
-            console.log(typeof columns,'column type',columns);
+            // console.log(typeof columns,'column type',columns);
             
             // iterate through all the columns
             _(columns).each(function(v, k) {
-
-              // create a map of this column
-              columnMap(sql, k, geometryType, data.bbox, s, function(d) {
-                
-                // store the data needed to make the map
-                m.push(d);
-                
-                if (m.length == Object.keys(columns).length) {
-                  callback(m);
-                }
-              });
+              // strip blacklist
+              if (exclude.indexOf(k) === -1) {
+                // create a map of this column
+                columnMap(sql, k, geometryType, data.bbox, s, function(d) {
+                  
+                  // store the data needed to make the map
+                  m.push(d);
+                  
+                  if (m.length == Object.keys(columns).length) {
+                    callback(m);
+                  }
+                });
+              }
             });
           });
         });
@@ -402,7 +401,7 @@
           // make parent div
           var par = $('<div>', {
             id: [a[i].user,a[i].table,'parent'].join('-'),
-            style: 'border: 2px dashed #227DBD; width: 1200px; height: 400px; margin-bottom: 5px;'
+            class: 'userdata'
           });
           $('body').append(par);
           
@@ -432,9 +431,9 @@
         });
 
         _(userData).each(function(el,idx,list) {
-          console.log('ineach',el,idx,list);
+          // console.log('ineach',el,idx,list);
           pecan(el.table,el.user, function(maps) {
-            console.log('maps',maps);
+            // console.log('maps',maps);
 
             // sort by weight score
             maps.sort(function(a, b) {
@@ -447,14 +446,13 @@
 
             // visualize top two maps
             var div = $('#' + [el.user,el.table,'pecan'+(1)].join('-'));
-            console.log(maps.length);
+            // console.log(maps.length);
             // make map/legend
             div.append($('<div>').html(maps[0].mssg).attr('class', 'legend')).data('weight',maps[1].weight);
             makeMap(div[0], maps[0].sql, maps[0].css, maps[0].bbox,el.user);
 
             if (maps.length > 1 && maps[1].css) {
               var div = $('#' + [el.user,el.table,'pecan'+(2)].join('-'));
-              console.log('table, number of maps',el.table,maps.length);
               // make map/legend
               div.append($('<div>').html(maps[1].mssg).attr('class', 'legend')).data('weight',maps[1].weight);
               makeMap(div[0], maps[1].sql, maps[1].css, maps[1].bbox,el.user);
@@ -462,7 +460,7 @@
 
             var userDiv = $('#' + [el.user,el.table,'user_map'].join('-'));
             makeUserMap(userDiv[0],el.viz_json,maps[0].bbox);
-            userDiv.append($('<div>').html('user: ' + el.user + '<br />table: ' + el.table).attr('class', 'legend'));
+            // userDiv.append($('<div>').html('user: ' + el.user + '<br />table: ' + el.table).attr('class', 'legend'));
           });
         });
       }

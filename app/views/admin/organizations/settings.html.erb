@@ -104,12 +104,16 @@
 
         <div class="Form-title">
           <h4 class="Form-titleHeader">Organization log in/sign up</h4>
-          <p class="Form-titleText">Customize your organization log in and sign up. Sign up will only be enabled when whitelist is not empty.</p>
+          <p class="Form-titleText">
+            Customize your organization log in and sign up.<br/>
+            <% if @organization[:whitelisted_email_domains].length === 0 %><span class="Form-titleText--negative"><% end %>
+            Sign up will only be enabled when whitelist is not empty<% if @organization[:whitelisted_email_domains].length === 0 %></span><% end %>.
+          </p>
         </div>
 
         <div class="Form-row">
           <div class="Form-rowLabel">
-            <label class="Form-label">Color</label>
+            <label class="Form-label">Brand color</label>
           </div>
           <div class="Form-rowData">
             <button type="button" class="js-colorPicker ColorPicker" style="background:<%= @organization.color.blank? ? "#354046" : @organization.color %>">
@@ -118,9 +122,6 @@
               </span>
             </button>
             <%= f.hidden_field :color, :class => "js-colorInput" %>
-          </div>
-          <div class="Form-rowInfo">
-            <p class="Form-rowInfoText">Your log in and sign up pages will be branded with this color</p>
           </div>
         </div>
 

@@ -234,7 +234,7 @@
         var s = cartodb.SQL({user: acctName});
         var m = [];
         var normalization = 'ST_Area(the_geom::geography)';
-        var exclude = ['cartodb_id','lat','lon','latitude','longitude'];
+        var exclude = ['cartodb_id','lat','lon','latitude','longitude','shape_length','shape_area','object_id', 'id'];
         var sql = 'select * from ' + tableName;
         
         // get geometry type

@@ -612,11 +612,19 @@ MapBase.prototype = {
     var layers = [];
     for(var i = 0; i < this.layers.length; ++i) {
       var layer = this.layers[i];
-      if(layer.options && !layer.options.hidden) {
+      if (this._isLayerVisible(layer)) {
         layers.push(layer);
       }
     }
     return layers;
+  },
+
+  _isLayerVisible: function(layer) {
+    if (layer.options && 'hidden' in layer.options) {
+      return !layer.options.hidden;
+    }
+
+    return layer.visible !== false;
   },
 
   setLayer: function(layer, def) {
@@ -952,7 +960,7 @@ NamedMap.prototype = _.extend({}, MapBase.prototype, {
     var payload = this.named_map.params || {};
     for(var i = 0; i < this.layers.length; ++i) {
       var layer = this.layers[i];
-      payload['layer' + i] = layer.options.hidden ? 0: 1;
+      payload['layer' + i] = this._isLayerVisible(layer) ? 1 : 0;
     }
     return payload;
   },

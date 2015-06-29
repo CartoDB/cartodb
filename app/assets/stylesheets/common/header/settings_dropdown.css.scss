@@ -22,6 +22,7 @@
   @include align-items(center, center);
 }
 .SettingsDropdown-accountType {
+  margin-left: 10px;
   color: $cTypography-secondary;
   text-transform: capitalize;
 }
@@ -34,7 +35,7 @@
   background: #F5F5F5;
   @include progress-bar(6px, 9px, true, false);
 }
-.SettingsDropdown-progressBar.is--inAlert div.progress-bar span { background: $cHighlight-alert!important }
+.SettingsDropdown-progressBar.is--inAlert div.progress-bar span { background: $cHighlight-caution!important }
 .SettingsDropdown-progressBar.is--inDanger div.progress-bar span { background: $cHighlight-negative!important }
 .SettingsDropdown-itemLink {
   font-size: $sFontSize-large;

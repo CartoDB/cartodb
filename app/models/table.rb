@@ -56,7 +56,6 @@ class Table
   DEFAULT_THE_GEOM_TYPE = 'geometry'
 
   VALID_GEOMETRY_TYPES = %W{ geometry multipolygon point multilinestring }
-  DEFAULT_DERIVED_VISUALIZATION_POSTFIX = ''
 
 
   def_delegators :relator, *CartoDB::TableRelator::INTERFACE
@@ -643,7 +642,7 @@ class Table
     map = blender.blend
     vis = CartoDB::Visualization::Member.new(
       {
-        name:     beautify_name([self.name, DEFAULT_DERIVED_VISUALIZATION_POSTFIX].join(' ')),
+        name:     beautify_name(self.name),
         map_id:   map.id,
         type:     CartoDB::Visualization::Member::TYPE_DERIVED,
         privacy:  blender.blended_privacy,

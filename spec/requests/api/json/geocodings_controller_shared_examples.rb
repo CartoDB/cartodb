@@ -226,7 +226,7 @@ shared_examples_for "geocoding controllers" do
       get api_v1_geocodings_show_url(id: geocoding.id)
       last_response.status.should eq 200
 
-      expected = {"id"=>geocoding.id, "table_id"=>nil, "state"=>"started", "kind"=>"high-resolution", "country_code"=>nil, "region_code"=>nil, "formatter"=>nil, "geometry_type"=>nil, "error"=>{"title"=>"Geocoding error", "description"=>""}, "processed_rows"=>1, "cache_hits"=>0, "processable_rows"=>nil, "real_rows"=>nil, "price"=>0, "used_credits"=>nil, "remaining_quota"=>999, "country_column"=>nil, "region_column"=>nil, "data_import_id"=>nil, "error_code"=>nil}
+      expected = {"id"=>geocoding.id, "table_id"=>nil, "table_name"=>nil, "state"=>"started", "kind"=>"high-resolution", "country_code"=>nil, "region_code"=>nil, "formatter"=>nil, "geometry_type"=>nil, "error"=>{"title"=>"Geocoding error", "description"=>""}, "processed_rows"=>1, "cache_hits"=>0, "processable_rows"=>nil, "real_rows"=>nil, "price"=>0, "used_credits"=>nil, "remaining_quota"=>999, "country_column"=>nil, "region_column"=>nil, "data_import_id"=>nil, "error_code"=>nil}
       received_without_dates = remove_dates(JSON.parse(last_response.body))
       received_without_dates.should == expected
     end

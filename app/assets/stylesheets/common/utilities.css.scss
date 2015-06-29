@@ -18,7 +18,7 @@
 }
 .u-disabled {
   @include opacity(0.4);
-  @include grayscale()
+  @include grayscale();
 }
 
 @media (min-width: $sMedia-desktop) {

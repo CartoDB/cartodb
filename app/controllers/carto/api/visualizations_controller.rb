@@ -107,7 +107,11 @@ module Carto
           return(head 400)
         end
 
-        final_url = static_maps_base_url(CartoDB.extract_subdomain(request)) + 
+        response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
+        response.headers['Surrogate-Key'] = "#{CartoDB::SURROGATE_NAMESPACE_VIZJSON} #{@visualization.surrogate_key}"
+        response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
+
+        final_url = static_maps_base_url(request) + 
                     static_maps_image_url_fragment(@visualization.id, map_width, map_height)
 
         redirect_to final_url
@@ -116,8 +120,11 @@ module Carto
       private
 
       # INFO: Assumes no trailing '/' comes inside, so returned string doesn't has it either
-      def static_maps_base_url(username)
+      def static_maps_base_url(request)
         config = get_static_maps_api_cdn_config
+
+        username = CartoDB.extract_subdomain(request)
+        request_protocol = request.protocol.sub('://','')
 
         if !config.nil? && !config.empty?
           # Sample formats:
@@ -130,7 +137,7 @@ module Carto
           base_url = ApplicationHelper.maps_api_template('public')
         end
 
-        base_url.sub('{protocol}', CartoDB.protocol)
+        base_url.sub('{protocol}', CartoDB.protocol(request_protocol))
                 .sub('{user}', username)
       end
 

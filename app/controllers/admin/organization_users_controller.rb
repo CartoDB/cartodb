@@ -83,7 +83,7 @@ class Admin::OrganizationUsersController < ApplicationController
     @user.save(raise_on_failure: true)
 
     redirect_to CartoDB.url(self, 'edit_organization_user', { id: @user.username }, current_user),
-                flash: { success: "Updated successfully" }
+                flash: { success: "Your changes have been saved correctly." }
   rescue CartoDB::CentralCommunicationFailure => e
     set_flash_flags
     flash.now[:error] = "There was a problem while updating this user. Please, try again and contact us if the problem persists. #{e.user_message}"

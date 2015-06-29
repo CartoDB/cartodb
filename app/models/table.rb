@@ -56,7 +56,7 @@ class Table
   DEFAULT_THE_GEOM_TYPE = 'geometry'
 
   VALID_GEOMETRY_TYPES = %W{ geometry multipolygon point multilinestring }
-  DEFAULT_DERIVED_VISUALIZATION_POSTFIX = 'Map'
+  DEFAULT_DERIVED_VISUALIZATION_POSTFIX = ''
 
 
   def_delegators :relator, *CartoDB::TableRelator::INTERFACE

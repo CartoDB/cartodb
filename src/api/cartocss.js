@@ -25,7 +25,7 @@ function geoAttr(geometryType) {
 var CSS = {
   choropleth: function(quartiles, prop, geometryType, ramp) {
     var attr = geoAttr(geometryType);
-    var css = "#c{ " + attr + ": #0C2C84; line-color: #0C2C84; line-width: 0.1; line-opacity: 1; } "
+    var css = "#c{ " + attr + ": #0C2C84; polygon-opacity: 0.6; line-color: #0C2C84; line-width: 0.0; line-opacity: 1; } "
     for(var i = quartiles.length - 1; i >= 0; --i) {
       if(quartiles[i] !== undefined && quartiles[i] != null) {
         css += "\n#c[ " + prop + " <= " + quartiles[i] + "] {\n";
@@ -38,7 +38,7 @@ var CSS = {
   category: function(cats, prop, geometryType) {
     var attr = geoAttr(geometryType);
     var ramp = ramps.cat;
-    var css = "#c{ " + attr + ": #0C2C84; line-color: #0C2C84; line-width: 0.1; line-opacity: 1; } "
+    var css = "#c{ " + attr + ": #0C2C84; polygon-opacity: 0.6; line-color: #0C2C84; line-width: 0.0; line-opacity: 1; } "
     for(var i = cats.length - 1; i >= 0; --i) {
       if(cats[i] !== undefined && cats[i] != null) {
         css += "\n#c[ " + prop + " = '" + cats[i] + "'] {\n";
@@ -47,7 +47,6 @@ var CSS = {
     }
     return css;
   }
-
 }
 
 //function columnMap(sql, c, geometryType, bbox) {

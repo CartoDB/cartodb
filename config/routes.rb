@@ -355,7 +355,8 @@ CartoDB::Application.routes.draw do
 
     # Visualizations
 
-    get '(/user/:user_domain)(/u/:user_domain)/api/v2/viz/:id/viz' => 'visualizations#vizjson2', as: :api_v2_visualizations_vizjson, constraints: { id: /[^\/]+/ }
+    get '(/user/:user_domain)(/u/:user_domain)/api/v2/viz/:id/viz'                       => 'visualizations#vizjson2',   as: :api_v2_visualizations_vizjson,    constraints: { id: /[^\/]+/ }
+    get '(/user/:user_domain)(/u/:user_domain)/api/v2/viz/:id/static/:width/:height.png' => 'visualizations#static_map', as: :api_v2_visualizations_static_map, constraints: { id: /[^\/]+/ }
 
   end
 

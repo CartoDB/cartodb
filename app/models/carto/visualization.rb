@@ -234,7 +234,7 @@ class Carto::Visualization < ActiveRecord::Base
 
   def get_named_map
     return nil if type == TYPE_REMOTE
-    data = named_maps.get(CartoDB::NamedMapsWrapper::NamedMap.normalize_name(id))
+    data = named_maps.get(CartoDB::NamedMapsWrapper::NamedMap.template_name(id))
     data.nil? ? false : data
   end
 

@@ -135,6 +135,7 @@ WORKING_SPECS_7 = \
 	spec/requests/api/json/geocodings_controller_spec.rb \
 	spec/requests/carto/api/geocodings_controller_spec.rb \
   spec/models/organization_spec.rb \
+	spec/models/user_organization_spec.rb \
   spec/models/synchronization/synchronization_oauth_spec.rb \
   spec/models/permission_spec.rb \
 	spec/models/overlay/member_spec.rb \

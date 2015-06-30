@@ -3,6 +3,8 @@
 module CartoDB
   class Log < Sequel::Model
 
+    MAX_ENTRY_LENGTH = 256
+
     ENTRY_FORMAT = "%s: %s\n"
 
     TYPE_DATA_IMPORT     = 'import'
@@ -17,13 +19,20 @@ module CartoDB
 
     def clear
       self.entries = ''
-      save
+      @dirty = true
     end
 
-    def append(content, timestamp = Time.now.utc)
-      self.entries = '' if self.entries.nil?
-      self.entries << ENTRY_FORMAT % [ timestamp, content ]
-      save
+    def to_s
+      # Just as a safeguard, no real store will be done if there's no data to flush
+      store
+      self.entries
+    end
+
+    def store
+      if @dirty
+        save
+        @dirty = false
+      end
     rescue => e
       Rollbar.report_message("Error appending log, likely an encoding issue", 'error', error_info: "id: #{id}. #{self.inspect} --------- #{e.backtrace.join}")
       begin
@@ -38,6 +47,13 @@ module CartoDB
           Rollbar.report_message("Error saving stripped fallback log info.", 'error', error_info: "id: #{id} #{e3.backtrace.join}")
         end
       end
+    end
+
+    # INFO: Does not store log, only appens in-memory
+    def append(content, timestamp = Time.now.utc)
+      @dirty = true
+      self.entries = '' if self.entries.nil?
+      self.entries << ENTRY_FORMAT % [ timestamp, content.slice(0..MAX_ENTRY_LENGTH) ]
     end
 
     def fix_entries_encoding

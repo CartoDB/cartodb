@@ -1,4 +1,4 @@
-# What is CartoDB? #
+# What is CartoDB? # 
 
 [![Build Status](http://clinker.cartodb.net/desktop/plugin/public/status/CartoDB-master-testing)]
 (http://clinker.cartodb.net/jenkins/job/CartoDB-master-testing)

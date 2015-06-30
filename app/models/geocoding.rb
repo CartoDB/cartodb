@@ -232,11 +232,10 @@ class Geocoding < Sequel::Model
   end # translate_formatter
 
   def max_geocodable_rows
-    return nil if user.blank? || user.soft_geocoding_limit?
+    # This is an arbitrary number, previously set to 1M
+    return 50000 if user.soft_geocoding_limit?
     user.remaining_geocoding_quota
-  rescue
-    nil
-  end # max_geocodable_rows
+  end
 
   def successful_rows
     real_rows.to_i

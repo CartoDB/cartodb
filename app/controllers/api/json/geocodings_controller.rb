@@ -33,6 +33,7 @@ class Api::Json::GeocodingsController < Api::ApplicationController
     geocoding          = Geocoding.new params.slice(:kind, :geometry_type, :formatter, :country_code, :region_code)
     geocoding.user     = current_user
     geocoding.table_id = @table.try(:id)
+    geocoding.table_name = params[:table_name] ? params[:table_name] : @table.try(:name)
     geocoding.raise_on_save_failure = true
 
     geocoding.formatter = "{#{ params[:column_name] }}" if params[:column_name].present?

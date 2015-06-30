@@ -156,6 +156,7 @@ body.is-inDialog {
   line-height: $sLineHeight-largest;
   color: $cTypography-paragraphs;
 }
+.Dialog-headerTitle--error { color: $cHighlight-negative }
 .Dialog-headerText {
   font-size: $sFontSize-large;
   line-height: $sLineHeight-large;

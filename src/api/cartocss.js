@@ -78,6 +78,56 @@ function guess(o, callback) {
     });
   })
 }
+
+function guessMap(sql, geometryType, column, stats, bbox) {
+  var wizard = "choropleth";
+  var css = null
+  var mssg = "";
+  var type = stats.type;
+
+  if (stats.type == 'number') {
+    if (['A','U'].indexOf(stats.dist_type) != -1) {
+      // apply divergent scheme
+      css = CSS.choropleth(stats.jenks, column, geometryType, ramps.divergent);
+    } else if (stats.dist_type === 'F') {
+      css = CSS.choropleth(stats.equalint, column, geometryType, ramps.blue);
+    } else {
+        if (stats.dist_type === 'J') {
+          css = CSS.choropleth(stats.headtails, column, geometryType, ramps.blue);
+        } else {
+          var inverse_ramp = (_.clone(ramps.blue)).reverse();
+          css = CSS.choropleth(stats.headtails, column, geometryType, inverse_ramp);
+        }
+    }
+    
+    mssg = '<span style="font-weight: bold; text-decoration: underline;">' + column + '</span>'
+        + '<br /> std: ' + stats.stddev 
+        + '<br /> avg: ' + stats.avg 
+        + '<br /> num unique: ' + stats.distinct
+        + '<br /> lstddev: ' + stats.lstddev
+        + '<br /> count: ' + stats.count
+        + '<br /> num nulls: ' + stats.null_ratio
+        + '<br /> dist type: ' + stats.dist_type 
+        + '<br /> weight: ' + stats.weight;
+  
+  } else if (stats.type == 'string') {
+  
+    mssg = '<span style="font-weight: bold; text-decoration: underline;">' + column + '</span>'
+          + '<br />#uniques: ' + stats.distinct
+          + '<br />null%: ' + stats.null_ratio
+          + '<br />count: ' + stats.count
+          + '<br />% in first 10 columns: ' + stats.skew
+          + '<br />overall weight: ' +  stats.weight;
+          wizard = "category";
+          css = CSS.category(stats.hist.slice(0, ramps.cat.length).map(function(r) { return r[0]; }), column, geometryType);
+  }
+
+  if (css) {
+    return {sql: sql, css: css, bbox: bbox, weight: stats.weight, type: type, mssg: mssg, wizard: wizard };
+  } else {
+    return {sql: sql, css: null, bbox: bbox, weight: -100, type: type, mssg: mssg, wizard: wizard};
+  }
+}
 /*
 CartoCSS.guess({
   user: '  '
@@ -87,7 +137,8 @@ CartoCSS.guess({
 */
 
 CSS.guess = guess;
-CSS.guessCss = guessCss
+CSS.guessCss = guessCss;
+CSS.guessMap = guessMap;
 
 
 root.cartodb.CartoCSS = CSS;

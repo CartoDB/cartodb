@@ -23,26 +23,41 @@ function geoAttr(geometryType) {
 }
 
 var CSS = {
-  choropleth: function(quartiles, prop, geometryType, ramp) {
+  choropleth: function(quartiles, tableName, prop, geometryType, ramp) {
     var attr = geoAttr(geometryType);
-    var css = "#c{ " + attr + ": #0C2C84; polygon-opacity: 0.6; line-color: #0C2C84; line-width: 0.0; line-opacity: 1; } "
-    for(var i = quartiles.length - 1; i >= 0; --i) {
-      if(quartiles[i] !== undefined && quartiles[i] != null) {
-        css += "\n#c[ " + prop + " <= " + quartiles[i] + "] {\n";
-        css += attr  + ":" + ramp[i] + ";\n}"
+    var tableID = "#" + tableName;
+    var css = "/** choropleth visualization */\n\n" + tableID + "{\n  " + attr + ": #0C2C84;\n  polygon-opacity: 0.6;\n  line-color: #0C2C84;\n  line-width: 0.0;\n  line-opacity: 1;\n} "
+    for (var i = quartiles.length - 1; i >= 0; --i) {
+      if (quartiles[i] !== undefined && quartiles[i] != null) {
+        css += "\n" + tableID + "[" + prop + " <= " + quartiles[i] + "] {\n";
+        css += "  " + attr  + ":" + ramp[i] + ";\n}"
       }
     }
     return css;
   },
 
-  category: function(cats, prop, geometryType) {
+  categoryMetadata: function(cats, prop, geometryType) {
+    var metadata = [];
+
+    for (var i = cats.length - 1; i >= 0; --i) {
+      if (cats[i] !== undefined && cats[i] != null) {
+        metadata.push({ title: cats[i], title_type: "string", value_type: 'color', color: ramps.category[i] });
+      }
+    }
+
+    return metadata;
+  },
+
+  category: function(cats, tableName, prop, geometryType) {
     var attr = geoAttr(geometryType);
-    var ramp = ramps.cat;
-    var css = "#c{ " + attr + ": #0C2C84; polygon-opacity: 0.6; line-color: #0C2C84; line-width: 0.0; line-opacity: 1; } "
-    for(var i = cats.length - 1; i >= 0; --i) {
-      if(cats[i] !== undefined && cats[i] != null) {
-        css += "\n#c[ " + prop + " = '" + cats[i] + "'] {\n";
-        css += attr  + ":" + ramp[i] + ";\n}"
+    var tableID = "#" + tableName;
+    var ramp = ramps.category;
+    var css = "/** category visualization */\n\n" + tableID + "{\n  " + attr + ": " + ramps.category[0] +";\n  line-color: #0C2C84;\n  line-opacity: 1; marker-fill-opacity: 0.9; marker-line-color: #FFF; marker-line-width: 1.5; marker-line-opacity: 1; marker-placement: point; marker-type: ellipse; marker-width: 10; marker-allow-overlap: true; \n}";
+
+    for (var i = cats.length - 1; i >= 0; --i) {
+      if (cats[i] !== undefined && cats[i] != null) {
+        css += "\n" + tableID + "[" + prop + " = '" + cats[i] + "'] {\n";
+        css += "  " + attr  + ":" + ramp[i] + ";\n}"
       }
     }
     return css;
@@ -79,53 +94,54 @@ function guess(o, callback) {
   })
 }
 
-function guessMap(sql, geometryType, column, stats, bbox) {
-  var wizard = "choropleth";
-  var css = null
-  var mssg = "";
-  var type = stats.type;
+function guessMap(sql, tableName, column, stats) {
+  var geometryType = column.get("geometry_type");
+    var bbox =  column.get("bbox");
+    var columnName = column.get("name");
+    var wizard = "choropleth";
+    var css = null
+    var type = stats.type;
+    var metadata = []
 
   if (stats.type == 'number') {
     if (['A','U'].indexOf(stats.dist_type) != -1) {
       // apply divergent scheme
-      css = CSS.choropleth(stats.jenks, column, geometryType, ramps.divergent);
+      css = CSS.choropleth(stats.jenks, tableName, column, geometryType, ramps.divergent);
     } else if (stats.dist_type === 'F') {
-      css = CSS.choropleth(stats.equalint, column, geometryType, ramps.blue);
+      css = CSS.choropleth(stats.equalint, tableName, column, geometryType, ramps.blue);
     } else {
-        if (stats.dist_type === 'J') {
-          css = CSS.choropleth(stats.headtails, column, geometryType, ramps.blue);
-        } else {
-          var inverse_ramp = (_.clone(ramps.blue)).reverse();
-          css = CSS.choropleth(stats.headtails, column, geometryType, inverse_ramp);
-        }
+      if (stats.dist_type === 'J') {
+        css = CSS.choropleth(stats.headtails, tableName, column, geometryType, ramps.blue);
+      } else {
+        var inverse_ramp = (_.clone(ramps.blue)).reverse();
+        css = CSS.choropleth(stats.headtails, tableName, column, geometryType, inverse_ramp);
+      }
     }
-    
-    mssg = '<span style="font-weight: bold; text-decoration: underline;">' + column + '</span>'
-        + '<br /> std: ' + stats.stddev 
-        + '<br /> avg: ' + stats.avg 
-        + '<br /> num unique: ' + stats.distinct
-        + '<br /> lstddev: ' + stats.lstddev
-        + '<br /> count: ' + stats.count
-        + '<br /> num nulls: ' + stats.null_ratio
-        + '<br /> dist type: ' + stats.dist_type 
-        + '<br /> weight: ' + stats.weight;
   
   } else if (stats.type == 'string') {
-  
-    mssg = '<span style="font-weight: bold; text-decoration: underline;">' + column + '</span>'
-          + '<br />#uniques: ' + stats.distinct
-          + '<br />null%: ' + stats.null_ratio
-          + '<br />count: ' + stats.count
-          + '<br />% in first 10 columns: ' + stats.skew
-          + '<br />overall weight: ' +  stats.weight;
-          wizard = "category";
-          css = CSS.category(stats.hist.slice(0, ramps.cat.length).map(function(r) { return r[0]; }), column, geometryType);
-  }
+
+      wizard   = "category";
+      css      = CSS.category(stats.hist.slice(0, ramps.category.length).map(function(r) { return r[0]; }),tableName, columnName, geometryType);
+      metadata = CSS.categoryMetadata(stats.hist.slice(0, ramps.category.length).map(function(r) { return r[0]; }),tableName, columnName, geometryType);
+
+      var wizard_properties = {
+        "marker-fill-opacity": 0.9,
+        "marker-line-color": "#FFFFFF",
+        "marker-fill": ramps.category[0],
+        "marker-line-width": 1.5,
+        "marker-line-opacity": 1,
+        "marker-placement": "point",
+        "marker-type": "ellipse",
+        "marker-width": 10,
+        "marker-allow-overlap": true
+      };
+
+    }
 
   if (css) {
-    return {sql: sql, css: css, bbox: bbox, weight: stats.weight, type: type, mssg: mssg, wizard: wizard };
+    return { sql: sql, css: css, metadata: metadata, wizard_properties: wizard_properties, column: columnName, bbox: bbox, stats: stats, type: type, wizard: wizard  };
   } else {
-    return {sql: sql, css: null, bbox: bbox, weight: -100, type: type, mssg: mssg, wizard: wizard};
+    return { sql: sql, css: null, metadata: metadata, column: columnName, bbox: bbox, weight: -100, type: type, wizard: wizard };
   }
 }
 /*

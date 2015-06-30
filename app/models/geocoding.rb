@@ -123,8 +123,7 @@ class Geocoding < Sequel::Model
 
     self.run_geocoding!(processable_rows, rows_geocoded_before)
   ensure
-    table_geocoder.reset_connection
-    user.reset_pooled_connections if user.present?
+    user.reset_pooled_connections
   end
 
   def run_geocoding!(processable_rows, rows_geocoded_before = 0)

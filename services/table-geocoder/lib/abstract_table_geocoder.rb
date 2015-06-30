@@ -19,14 +19,6 @@ module CartoDB
       @connection.run("SET statement_timeout TO #{DB_STATEMENT_TIMEOUT_MS}")
     end
 
-    # INFO: it's the table_geocoder owner's responsibility to call this method when done
-    def reset_connection
-      if @connection
-        @connection.run('SET statement_timeout TO DEFAULT')
-        @connection = nil
-      end
-    end
-
     def add_georef_status_column
       connection.run(%Q{
           ALTER TABLE #{@qualified_table_name}

@@ -11,12 +11,9 @@ module Carto
     def self.get(user, cartodb_geocoder_config, table_service, params = {})
       # Reset old connections to make sure changes apply.
       # NOTE: This assumes it's being called from a Resque job
-      if user.present?
-        user.reset_pooled_connections
-        user_connection = user.in_database
-      else
-        user_connection = nil
-      end
+      user.reset_pooled_connections
+
+      user_connection = user.in_database
 
       instance_config = cartodb_geocoder_config
         .deep_symbolize_keys

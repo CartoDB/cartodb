@@ -2,13 +2,13 @@
 @import "../../variables/colors";
 @import "../../variables/sizes";
 
-// The little icon, typically used to hilight some text paragraph that goes with it
+// The little icon, typically used to highlight some text paragraph that goes with it
 //
 // Example usage:
-//   <i class="HilightIcon HilightIcon--warning"></i>
+//   <i class="HighlightIcon HighlightIcon--warning"></i>
 //   <p>Do not look at the pink elephant!</p>
 // --------------------------------------------------
-.HilightIcon {
+.HighlightIcon {
   display: inline-block;
   vertical-align: top;
   width: 20px;
@@ -19,7 +19,7 @@
   color: white;
   border-radius: 20px;
 }
-.HilightIcon.HilightIcon--warning {
+.HighlightIcon.HighlightIcon--warning {
   background: #F6D35C;
   border: 1px solid #F2C000;
 }

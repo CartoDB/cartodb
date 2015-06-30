@@ -4,8 +4,13 @@ module CartoDB
   class Log < Sequel::Model
 
     MAX_ENTRY_LENGTH = 256
+    MAX_LOG_ENTRIES = 1000
 
-    ENTRY_FORMAT = "%s: %s\n"
+    ENTRY_PREFIX = '|'
+    ENTRY_POSTFIX = "|\n"
+
+    ENTRY_FORMAT = "#{ENTRY_PREFIX}%s: %s#{ENTRY_POSTFIX}"
+    ENTRY_REHYDRATED_FORMAT = "%s#{ENTRY_POSTFIX}"
 
     TYPE_DATA_IMPORT     = 'import'
     TYPE_SYNCHRONIZATION = 'sync'
@@ -17,8 +22,14 @@ module CartoDB
     # @param updated_at DateTime
     # @param entries String
 
+    def after_initialize
+      super
+      clear_entries # Reset internal lists
+      rehydrate_entries_from_string(self.entries)  # And now load if proceeds
+    end
+
     def clear
-      self.entries = ''
+      self.entries = clear_entries
       @dirty = true
     end
 
@@ -30,6 +41,7 @@ module CartoDB
 
     def store
       if @dirty
+        self.entries = collect_entries
         save
         @dirty = false
       end
@@ -52,18 +64,63 @@ module CartoDB
     # INFO: Does not store log, only appens in-memory
     def append(content, timestamp = Time.now.utc)
       @dirty = true
-      self.entries = '' if self.entries.nil?
-      self.entries << ENTRY_FORMAT % [ timestamp, content.slice(0..MAX_ENTRY_LENGTH) ]
+      add_to_entries(ENTRY_FORMAT % [ timestamp, content.slice(0..MAX_ENTRY_LENGTH) ])
     end
 
+    private
+
+    def add_to_entries(content)
+      if @fixed_entries_half.length < half_max_size
+        @fixed_entries_half << content
+      else
+        @circular_entries_half[@circular_index] = content
+        @circular_index = (@circular_index + 1) % half_max_size
+      end
+    end
+
+    def clear_entries
+      @fixed_entries_half = []
+      @circular_entries_half = Array.new(half_max_size)
+      @circular_index = 0
+      ''
+    end
+
+    def rehydrate_entries_from_string(source)
+      # A bit hacky but a simple \n would return "false positives"
+      existing_entries = source.nil? ? [] : source.split("#{ENTRY_POSTFIX}")
+
+      @fixed_entries_half = existing_entries.slice!(0, half_max_size)
+                                            .map { |entry| ENTRY_REHYDRATED_FORMAT % [entry] }
+
+      if (existing_entries.length > 0)
+        @circular_entries_half = existing_entries.slice(0, half_max_size)
+                                                 .map { |entry| ENTRY_REHYDRATED_FORMAT % [entry] }
+        # Fill circular part
+        if @circular_entries_half.length < half_max_size
+          @circular_index = @circular_entries_half.length - 1
+          @circular_entries_half = @circular_entries_half + Array.new(half_max_size - @circular_entries_half.length)
+        end
+      end
+    end
+
+    def collect_entries
+      # INFO: Abusing that join always produces a String to not need to handle nils
+      (@fixed_entries_half + @circular_entries_half.compact).join('')
+    end
+
+    # INFO: To ease testing
+    def half_max_size
+      @half_max_entries_size ||= MAX_LOG_ENTRIES / 2
+    end
+
+    # TODO: Adapt this to new format
     def fix_entries_encoding
       self.entries = self.entries.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '?????')
     end
 
     def validate
       super
-      errors.add(:type, 'unsupported type') unless \
-        self.type == TYPE_DATA_IMPORT || self.type == TYPE_SYNCHRONIZATION
+      errors.add(:type, 'unsupported type') unless (self.type == TYPE_DATA_IMPORT || self.type == TYPE_SYNCHRONIZATION)
     end
 
     def before_save

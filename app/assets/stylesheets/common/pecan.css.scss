@@ -14,7 +14,7 @@
 .PecanMap-MapsList.MapsList {
   display: block;
   width: 5000px;
-  height: 236px;
+  height: 245px;
   overflow: hidden;
   clear: both;
   padding: 0;
@@ -50,3 +50,10 @@
   }
 }
 
+.NullCount {
+  float: right;
+  font-size: 11px;
+  font-style: italic;
+  color: #999999;
+  line-height:120%;
+}

@@ -1,6 +1,6 @@
 // cartodb.js version: 3.14.3
 // uncompressed version: cartodb.uncompressed.js
-// sha: a22190887a6fe2dc2579b942a23f427ba94c51d6
+// sha: 2436a772962ec3013353e00a6d10e230b14c74fa
 (function() {
   var root = this;
 
@@ -41080,7 +41080,7 @@ var ramps = {
   pink: ['#F1EEF6', '#D4B9DA', '#C994C7', '#DF65B0', '#E7298A', '#CE1256', '#91003F'],
   black:  ['#F7F7F7', '#D9D9D9', '#BDBDBD', '#969696', '#737373', '#525252', '#252525'],
   red:  ['#FFFFB2', '#FED976', '#FEB24C', '#FD8D3C', '#FC4E2A', '#E31A1C', '#B10026'],
-  cat: ['#A6CEE3', '#1F78B4', '#B2DF8A', '#33A02C', '#FB9A99', '#E31A1C', '#FDBF6F', '#FF7F00', '#CAB2D6', '#6A3D9A', '#DDDDDD']
+  category: ['#A6CEE3', '#1F78B4', '#B2DF8A', '#33A02C', '#FB9A99', '#E31A1C', '#FDBF6F', '#FF7F00', '#CAB2D6', '#6A3D9A', '#DDDDDD']
 };
 
 function geoAttr(geometryType) {
@@ -41092,31 +41092,45 @@ function geoAttr(geometryType) {
 }
 
 var CSS = {
-  choropleth: function(quartiles, prop, geometryType, ramp) {
+  choropleth: function(quartiles, tableName, prop, geometryType, ramp) {
     var attr = geoAttr(geometryType);
-    var css = "#c{ " + attr + ": #0C2C84; line-color: #0C2C84; line-width: 0.1; line-opacity: 1; } "
-    for(var i = quartiles.length - 1; i >= 0; --i) {
-      if(quartiles[i] !== undefined && quartiles[i] != null) {
-        css += "\n#c[ " + prop + " <= " + quartiles[i] + "] {\n";
-        css += attr  + ":" + ramp[i] + ";\n}"
+    var tableID = "#" + tableName;
+    var css = "/** choropleth visualization */\n\n" + tableID + "{\n  " + attr + ": #0C2C84;\n  polygon-opacity: 0.6;\n  line-color: #0C2C84;\n  line-width: 0.0;\n  line-opacity: 1;\n} "
+    for (var i = quartiles.length - 1; i >= 0; --i) {
+      if (quartiles[i] !== undefined && quartiles[i] != null) {
+        css += "\n" + tableID + "[" + prop + " <= " + quartiles[i] + "] {\n";
+        css += "  " + attr  + ":" + ramp[i] + ";\n}"
       }
     }
     return css;
   },
 
-  category: function(cats, prop, geometryType) {
+  categoryMetadata: function(cats, prop, geometryType) {
+    var metadata = [];
+
+    for (var i = cats.length - 1; i >= 0; --i) {
+      if (cats[i] !== undefined && cats[i] != null) {
+        metadata.push({ title: cats[i], title_type: "string", value_type: 'color', color: ramps.category[i] });
+      }
+    }
+
+    return metadata;
+  },
+
+  category: function(cats, tableName, prop, geometryType) {
     var attr = geoAttr(geometryType);
-    var ramp = ramps.cat;
-    var css = "#c{ " + attr + ": #0C2C84; line-color: #0C2C84; line-width: 0.1; line-opacity: 1; } "
-    for(var i = cats.length - 1; i >= 0; --i) {
-      if(cats[i] !== undefined && cats[i] != null) {
-        css += "\n#c[ " + prop + " = '" + cats[i] + "'] {\n";
-        css += attr  + ":" + ramp[i] + ";\n}"
+    var tableID = "#" + tableName;
+    var ramp = ramps.category;
+    var css = "/** category visualization */\n\n" + tableID + "{\n  " + attr + ": " + ramps.category[0] +";\n  line-color: #0C2C84;\n  line-opacity: 1; marker-fill-opacity: 0.9; marker-line-color: #FFF; marker-line-width: 1.5; marker-line-opacity: 1; marker-placement: point; marker-type: ellipse; marker-width: 10; marker-allow-overlap: true; \n}";
+
+    for (var i = cats.length - 1; i >= 0; --i) {
+      if (cats[i] !== undefined && cats[i] != null) {
+        css += "\n" + tableID + "[" + prop + " = '" + cats[i] + "'] {\n";
+        css += "  " + attr  + ":" + ramp[i] + ";\n}"
       }
     }
     return css;
   }
-
 }
 
 //function columnMap(sql, c, geometryType, bbox) {
@@ -41148,6 +41162,57 @@ function guess(o, callback) {
     });
   })
 }
+
+function guessMap(sql, tableName, column, stats) {
+  var geometryType = column.get("geometry_type");
+    var bbox =  column.get("bbox");
+    var columnName = column.get("name");
+    var wizard = "choropleth";
+    var css = null
+    var type = stats.type;
+    var metadata = []
+
+  if (stats.type == 'number') {
+    if (['A','U'].indexOf(stats.dist_type) != -1) {
+      // apply divergent scheme
+      css = CSS.choropleth(stats.jenks, tableName, column, geometryType, ramps.divergent);
+    } else if (stats.dist_type === 'F') {
+      css = CSS.choropleth(stats.equalint, tableName, column, geometryType, ramps.blue);
+    } else {
+      if (stats.dist_type === 'J') {
+        css = CSS.choropleth(stats.headtails, tableName, column, geometryType, ramps.blue);
+      } else {
+        var inverse_ramp = (_.clone(ramps.blue)).reverse();
+        css = CSS.choropleth(stats.headtails, tableName, column, geometryType, inverse_ramp);
+      }
+    }
+  
+  } else if (stats.type == 'string') {
+
+      wizard   = "category";
+      css      = CSS.category(stats.hist.slice(0, ramps.category.length).map(function(r) { return r[0]; }),tableName, columnName, geometryType);
+      metadata = CSS.categoryMetadata(stats.hist.slice(0, ramps.category.length).map(function(r) { return r[0]; }),tableName, columnName, geometryType);
+
+      var wizard_properties = {
+        "marker-fill-opacity": 0.9,
+        "marker-line-color": "#FFFFFF",
+        "marker-fill": ramps.category[0],
+        "marker-line-width": 1.5,
+        "marker-line-opacity": 1,
+        "marker-placement": "point",
+        "marker-type": "ellipse",
+        "marker-width": 10,
+        "marker-allow-overlap": true
+      };
+
+    }
+
+  if (css) {
+    return { sql: sql, css: css, metadata: metadata, wizard_properties: wizard_properties, column: columnName, bbox: bbox, stats: stats, type: type, wizard: wizard  };
+  } else {
+    return { sql: sql, css: null, metadata: metadata, column: columnName, bbox: bbox, weight: -100, type: type, wizard: wizard };
+  }
+}
 /*
 CartoCSS.guess({
   user: '  '
@@ -41157,7 +41222,8 @@ CartoCSS.guess({
 */
 
 CSS.guess = guess;
-CSS.guessCss = guessCss
+CSS.guessCss = guessCss;
+CSS.guessMap = guessMap;
 
 
 root.cartodb.CartoCSS = CSS;

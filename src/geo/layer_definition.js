@@ -394,8 +394,8 @@ MapBase.prototype = {
         if (data.cdn_url) {
           self.options.cdn_url = self.options.cdn_url || {}
           self.options.cdn_url = {
-            http: self.options.cdn_url.http || data.cdn_url.http,
-            https: self.options.cdn_url.https || data.cdn_url.https
+            http: data.cdn_url.http || self.options.cdn_url.http,
+            https: data.cdn_url.https || self.options.cdn_url.https
           }
         }
         self.urls = self._layerGroupTiles(self.mapProperties, self.options.extra_params);

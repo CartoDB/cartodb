@@ -199,8 +199,6 @@ var Vis = cdb.core.View.extend({
             this.timeSlider.hide();
           }
         }
-      } else {
-        if (o.visible === false) subLayer.hide();
       }
     }
   },

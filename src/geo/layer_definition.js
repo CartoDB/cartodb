@@ -394,8 +394,8 @@ MapBase.prototype = {
         if (data.cdn_url) {
           self.options.cdn_url = self.options.cdn_url || {}
           self.options.cdn_url = {
-            http: self.options.cdn_url.http || data.cdn_url.http,
-            https: self.options.cdn_url.https || data.cdn_url.https
+            http: data.cdn_url.http || self.options.cdn_url.http,
+            https: data.cdn_url.https || self.options.cdn_url.https
           }
         }
         self.urls = self._layerGroupTiles(self.mapProperties, self.options.extra_params);
@@ -612,11 +612,19 @@ MapBase.prototype = {
     var layers = [];
     for(var i = 0; i < this.layers.length; ++i) {
       var layer = this.layers[i];
-      if(layer.options && !layer.options.hidden) {
+      if (this._isLayerVisible(layer)) {
         layers.push(layer);
       }
     }
     return layers;
+  },
+
+  _isLayerVisible: function(layer) {
+    if (layer.options && 'hidden' in layer.options) {
+      return !layer.options.hidden;
+    }
+
+    return layer.visible !== false;
   },
 
   setLayer: function(layer, def) {
@@ -952,7 +960,7 @@ NamedMap.prototype = _.extend({}, MapBase.prototype, {
     var payload = this.named_map.params || {};
     for(var i = 0; i < this.layers.length; ++i) {
       var layer = this.layers[i];
-      payload['layer' + i] = layer.options.hidden ? 0: 1;
+      payload['layer' + i] = this._isLayerVisible(layer) ? 1 : 0;
     }
     return payload;
   },

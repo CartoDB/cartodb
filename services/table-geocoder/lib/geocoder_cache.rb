@@ -142,8 +142,6 @@ module CartoDB
         exception =  Carto::GeocoderErrors::GeocoderCacheDbTimeoutError.new(exception)
       end
       CartoDB.notify_exception(exception)
-    rescue => e
-      raise exception
     end
 
   end # GeocoderCache

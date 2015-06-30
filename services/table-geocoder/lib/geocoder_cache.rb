@@ -1,4 +1,5 @@
 # encoding: utf-8
+require_relative 'exceptions'
 require_relative '../../../lib/carto/http/client'
 
 module CartoDB
@@ -133,11 +134,14 @@ module CartoDB
       response.body
     end # run_query
 
+    # It handles in such a way that the caching is silently stopped
     def handle_cache_exception(exception)
       drop_temp_table
-      ::Rollbar.report_exception(exception)
-    rescue => e
-      raise exception
+      if exception.class == Sequel::DatabaseError && exception.message =~ /canceling statement due to statement timeout/
+        # for the moment we just wrap the exception to get a specific error in rollbar
+        exception =  Carto::GeocoderErrors::GeocoderCacheDbTimeoutError.new(exception)
+      end
+      CartoDB.notify_exception(exception)
     end
 
   end # GeocoderCache

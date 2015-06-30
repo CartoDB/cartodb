@@ -1,7 +1,16 @@
 # encoding: utf-8
 
+require 'active_support/core_ext/string'
+
 module Carto
   module GeocoderErrors
+
+    GEOCODER_TIMED_OUT_TITLE = 'The geocoder timed out'
+    GEOCODER_TIMED_OUT_WHAT_ABOUT = %q{
+      Your geocoding request timed out.
+      Please <a href='mailto:support@cartob.com?subject=The geocoder timed out'>contact us</a>
+      and we'll try to fix it quickly.
+    }.squish
 
     class AdditionalInfo
       SOURCE_CARTODB = 'cartodb'
@@ -20,7 +29,24 @@ module Carto
     class GeocoderBaseError < StandardError
       @@error_code_info_map = {}
 
+      attr_reader :original_exception
+
+      def initialize(original_exception=nil)
+        message = self.class.to_s
+        if original_exception
+          message << " " << original_exception.message
+          @original_exception = original_exception
+        end
+        super(message) # this is the only way of setting the message
+        set_backtrace(original_exception.backtrace) if original_exception # this line must appear after calling super
+      end
+
+      def original_message
+        @original_exception.message if @original_exception
+      end
+
       def self.register_additional_info(error_code, title, what_about, source)
+        raise 'Duplicate error code' if @@error_code_info_map.has_key?(error_code)
         @additional_info = AdditionalInfo.new(error_code, title, what_about, source)
         @@error_code_info_map[@additional_info.error_code] = @additional_info
       end
@@ -64,6 +90,32 @@ module Carto
         )
     end
 
+    class AddGeorefStatusColumnDbTimeoutError < GeocoderBaseError
+      register_additional_info(
+        1020,
+        GEOCODER_TIMED_OUT_TITLE,
+        GEOCODER_TIMED_OUT_WHAT_ABOUT,
+        AdditionalInfo::SOURCE_CARTODB
+        )
+    end
+
+    class GeocoderCacheDbTimeoutError < GeocoderBaseError
+      register_additional_info(
+        1030,
+        GEOCODER_TIMED_OUT_TITLE,
+        GEOCODER_TIMED_OUT_WHAT_ABOUT,
+        AdditionalInfo::SOURCE_CARTODB
+        )
+    end
+
+    class TableGeocoderDbTimeoutError < GeocoderBaseError
+      register_additional_info(
+        1040,
+        GEOCODER_TIMED_OUT_TITLE,
+        GEOCODER_TIMED_OUT_WHAT_ABOUT,
+        AdditionalInfo::SOURCE_CARTODB
+        )
+    end
 
   end
 end

@@ -123,7 +123,7 @@ class Geocoding < Sequel::Model
 
     self.run_geocoding!(processable_rows, rows_geocoded_before)
   ensure
-    user.reset_pooled_connections if user.present?
+    user.reset_pooled_connections
   end
 
   def run_geocoding!(processable_rows, rows_geocoded_before = 0)
@@ -150,7 +150,6 @@ class Geocoding < Sequel::Model
     Statsd.gauge("geocodings.requests", "+#{self.processed_rows}") rescue nil
     Statsd.gauge("geocodings.cache_hits", "+#{self.cache_hits}") rescue nil
     table_geocoder.process_results if state == 'completed'
-    create_automatic_geocoding if automatic_geocoding_id.blank?
     rows_geocoded_after = table_service.owner.in_database.select.from(table_service.sequel_qualified_table_name).where('cartodb_georef_status is true and the_geom is not null').count rescue 0
 
     @finished_at = Time.now
@@ -207,13 +206,6 @@ class Geocoding < Sequel::Model
   def remaining_quota
     user.remaining_geocoding_quota
   end # remaining_quota
-
-  def create_automatic_geocoding
-    # Disabled until we stop sending previously failed rows
-    # best way to do this: use append mode on synchronizations
-    # geocoder = AutomaticGeocoding.create(table: table)
-    # self.update(automatic_geocoding_id: geocoder.id)
-  end # create_automatic_geocoder
 
   def sanitize_formatter
     translated_formatter = translate_formatter

@@ -12,6 +12,7 @@
 
   @import "compass/css3/images";
   @import "./mixins";
+  @import "./colors";
 
 
   @mixin progress-bar($h, $r, $grad, $min) {
@@ -77,8 +78,8 @@
       }
 
       // Danger and caution background
-      .danger { background: #c74b43 }
-      .caution { background: #F8B85C }
+      .danger { background: $cHighlight-negative }
+      .caution { background: $cHighlight-caution }
     }
   }
 

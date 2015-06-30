@@ -39,6 +39,11 @@
   max-width: 280px;
   color: $cHighlight-positive;
 }
+.ImportItem-text.is-alerted {
+  width: 280px;
+  max-width: 280px;
+  color: $cHighlight-alert;
+}
 .ImportItem-text.is-failed {
   width: 280px;
   max-width: 280px;

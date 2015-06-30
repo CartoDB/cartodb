@@ -6,7 +6,7 @@
 
 $radius: 4px;
 
-.BackgroundImporter {   
+.BackgroundPolling {   
   position: fixed;
   bottom: -255px;
   left: 20px;
@@ -19,11 +19,11 @@ $radius: 4px;
   @include transition(all, 300ms);
   z-index: 10;
 }
-.BackgroundImporter.is-visible {
+.BackgroundPolling.is-visible {
   bottom: 20px;
   @include opacity(1);
 }
-.BackgroundImporter-header {
+.BackgroundPolling-header {
   @include display-flex();
   @include justify-content(flex-start, start);
   @include align-items(center, center);
@@ -34,13 +34,13 @@ $radius: 4px;
   border-top-right-radius: $radius;
   border-bottom: 1px solid $cStructure-mainLine;
 }
-.BackgroundImporter-headerTitle {
+.BackgroundPolling-headerTitle {
   width: 220px;
   margin-left: 20px;
   font-size: $sFontSize-large;
   color: $cTypography-paragraphs;
 }
-.BackgroundImporter-headerBadge {
+.BackgroundPolling-headerBadge {
   position: relative;
   width: 38px;
   height: 38px;
@@ -49,19 +49,19 @@ $radius: 4px;
   border-radius: 3px;
   text-align: center;
 }
-.BackgroundImporter-headerBadgeIcon {
+.BackgroundPolling-headerBadgeIcon {
   font-size: 23px;
   color: $cTypography-help;
 }
-.BackgroundImporter-headerBadge.has-failures {
+.BackgroundPolling-headerBadge.has-failures {
   border-color: $cHighlight-negative;
-  .BackgroundImporter-headerBadgeIcon { color: $cHighlight-negative }
+  .BackgroundPolling-headerBadgeIcon { color: $cHighlight-negative }
 }
-.BackgroundImporter-headerBadgeCount {
+.BackgroundPolling-headerBadgeCount {
   /* "backwards" to use the first keyframe's styles before animation starts */
   @include animation(fade-and-bounce-up 0.6s 350ms ease-in-out backwards);
 }
-.BackgroundImporter-headerButton {
+.BackgroundPolling-headerButton {
   background-color: transparent;
   border: 1px solid #CCC;
   color: $cTypography-paragraphs;
@@ -70,7 +70,7 @@ $radius: 4px;
     color: $cTypography-headers;
   }
 }
-.BackgroundImporter-list {
+.BackgroundPolling-list {
   max-height: 230px;
   overflow: auto;
 }

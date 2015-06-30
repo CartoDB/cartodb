@@ -46,6 +46,27 @@ describe 'csv regression tests' do
     result.success?.should be_true, "error code: #{result.error_code}, trace: #{result.log_trace}"
   end
 
+  it 'imports files with duplicated column names' do
+    runner = runner_with_fixture('../fixtures/duplicated_column_name.csv')
+    runner.run
+
+    result = runner.results.first
+    result.success?.should be_true, "error code: #{result.error_code}, trace: #{result.log_trace}"
+    table = result.tables.first
+    columns = runner.db[%Q{ SELECT * FROM information_schema.columns WHERE table_schema = 'cdb_importer' AND table_name   = '#{table}' }].map { |c| c[:column_name] }
+    columns.should include('column')
+    columns.should include('column2')
+  end
+
+  it 'raises DuplicatedColumnError with long duplicated column names' do
+    runner = runner_with_fixture('../fixtures/duplicated_long_column_name.csv')
+    runner.run
+
+    result = runner.results.first
+    result.success?.should be_false
+    result.error_code.should == 2005
+  end
+
   it 'imports files exported from the SQL API' do
     filepath    = path_to('ne_10m_populated_places_simple.csv')
     downloader  = Downloader.new(filepath)

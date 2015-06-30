@@ -37,6 +37,57 @@ module CartoDB
                                   UrlTranslator::KimonoLabs
                                 ]
 
+      CONTENT_TYPES_MAPPING = [
+        {
+          content_types: ['text/plain'],
+          extension: 'txt'
+        },
+        {
+          content_types: ['text/csv'],
+          extension: 'csv'
+        },
+        {
+          content_types: ['application/vnd.ms-excel'],
+          extension: 'xls'
+        },
+        {
+          content_types: ['application/vnd.ms-excel.sheet.binary.macroEnabled.12'],
+          extension: 'xlsb'
+        },
+        {
+          content_types: ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+          extension: 'xlsx'
+        },
+        {
+          content_types: ['application/vnd.geo+json'],
+          extension: 'geojson'
+        },
+        {
+          content_types: ['application/vnd.google-earth.kml+xml'],
+          extension: 'kml'
+        },
+        {
+          content_types: ['application/vnd.google-earth.kmz'],
+          extension: 'kmz'
+        },
+        {
+          content_types: ['application/gpx+xml'],
+          extension: 'gpx'
+        },
+        {
+          content_types: ['application/zip'],
+          extension: 'zip'
+        },
+        {
+          content_types: ['application/x-gzip'],
+          extension: 'tgz'
+        },
+        {
+          content_types: ['application/json', 'text/javascript', 'application/javascript'],
+          extension: 'json'
+        }
+      ]
+
       def initialize(url, http_options={}, seed=nil, repository=nil)
         @url          = url
         raise UploadError if url.nil?
@@ -228,46 +279,30 @@ module CartoDB
         name_with_extension(name, headers)
       end
 
-      def name_with_extension(name, headers)
-        return name if content_type.nil? || content_type.empty?
-        extension = File.extname(name)
-        return name unless extension.nil? || extension.empty?
-        extension_from_content_type = content_type_extension(content_type)
-        return name if extension_from_content_type.nil?
-        "#{name}.#{extension_from_content_type}"
+      def extension_by_content_type(content_type)
+        downcased_content_type = content_type.downcase
+        CONTENT_TYPES_MAPPING.each do |item|
+          if item[:content_types].include?(downcased_content_type)
+            return item[:extension]
+          end
+        end
+        nil
       end
 
-      def content_type_extension(content_type)
-        case content_type
-        when %r{^text/plain}
-          'txt'
-        when %r{^text/csv}
-          'csv'
-        when %r{^application/vnd.ms-excel}
-          'xls'
-        when %r{^application/vnd.ms-excel.sheet.binary.macroEnabled.12}
-          'xlsb'
-        when %r{^application/vnd.openxmlformats-officedocument.spreadsheetml.sheet}
-          'xlsx'
-        when %r{^application/vnd.geo+json}
-          'geojson'
-        when %r{^application/vnd.google-earth.kml+xml}
-          'kml'
-        when %r{^application/vnd.google-earth.kmz}
-          'kmz'
-        when %r{^application/gpx+xml}
-          'gpx'
-        when %r{^application/zip}
-          'zip'
-        when %r{^application/json}
-          'json'
-        when %r{^text/javascript}
-          'json'
-        when %r{^application/javascript}
-          'json'
-        else
-          nil
+      def name_with_extension(name, headers)
+        return name if content_type.nil? || content_type.empty?
+
+        extension = File.extname(name)
+        extension_from_content_type = extension_by_content_type(content_type)
+
+        if !extension.nil? && !extension.empty? && 
+           (extension_from_content_type.nil? || (extension == extension_from_content_type))
+           return name
         end
+
+        return name if extension_from_content_type.nil?
+
+        "#{name}.#{extension_from_content_type}"
       end
 
       def content_length_from(headers)

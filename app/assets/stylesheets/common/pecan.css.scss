@@ -18,7 +18,27 @@
   overflow: hidden;
   clear: both;
   padding: 0;
+  margin: 0;
   @include transition(margin, 150ms);
+}
+
+.PecanMap-navigation {
+  position:absolute;
+  width: 960px;
+  z-index: 100000;
+}
+.PecanMap-navigationButton {
+  position: absolute;
+  top: 90px;
+  padding: 0;
+  line-height: 40px!important;
+  @include transition(opacity, 150ms);
+}
+.PecanMap-navigationButton--prev { left: -80px }
+.PecanMap-navigationButton--next { right: -80px }
+.PencaMap-navigationButton.is-disabled:hover {
+   border-color: #ccc;
+   color: #ccc;
 }
 
 .GalleryList-item.MapsList-item {
@@ -30,12 +50,3 @@
   }
 }
 
-.MapsGallery .ImportOptions-navigation {
-  position:absolute;
-  width: 960px;
-  z-index: 100000;
-}
-
-.MapsGallery .ImportOptions-navigation .ImportOptions-navigationButton {
-  top: 90px;
-}

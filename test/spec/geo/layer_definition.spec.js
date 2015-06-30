@@ -758,6 +758,50 @@ describe("LayerDefinition", function() {
       expect(callback).toHaveBeenCalledWith(expectedURLs);
     });
 
+    it("should use the cdn returned by the tiler", function() {
+      mapProperties = {
+        "layergroupid": "layergroupid",
+        "metadata": {
+          "layers": [
+            { "type": "mapnik", "meta": {} },
+            { "type": "mapnik", "meta": {} }
+          ]
+        },
+        "cdn_url": {
+          "http": "wadus.cartocdn.com"
+        }
+      }
+
+      layerDefinition.options.no_cdn = false;
+      layerDefinition.options.cdn_url = { http: "api.cartocdn.com" }
+      layerDefinition.options.subdomains = ['a', 'b', 'c', 'd'];
+
+      layerDefinition.getTiles(callback);
+
+      var expectedURLs = {
+        tiles: [
+          'http://a.wadus.cartocdn.com/rambo/api/v1/map/layergroupid/0,1/{z}/{x}/{y}.png',
+          'http://b.wadus.cartocdn.com/rambo/api/v1/map/layergroupid/0,1/{z}/{x}/{y}.png',
+          'http://c.wadus.cartocdn.com/rambo/api/v1/map/layergroupid/0,1/{z}/{x}/{y}.png',
+          'http://d.wadus.cartocdn.com/rambo/api/v1/map/layergroupid/0,1/{z}/{x}/{y}.png'
+        ],
+        grids: [
+          [
+            'http://a.wadus.cartocdn.com/rambo/api/v1/map/layergroupid/0/{z}/{x}/{y}.grid.json',
+            'http://b.wadus.cartocdn.com/rambo/api/v1/map/layergroupid/0/{z}/{x}/{y}.grid.json',
+            'http://c.wadus.cartocdn.com/rambo/api/v1/map/layergroupid/0/{z}/{x}/{y}.grid.json',
+            'http://d.wadus.cartocdn.com/rambo/api/v1/map/layergroupid/0/{z}/{x}/{y}.grid.json'
+          ], [
+            'http://a.wadus.cartocdn.com/rambo/api/v1/map/layergroupid/1/{z}/{x}/{y}.grid.json',
+            'http://b.wadus.cartocdn.com/rambo/api/v1/map/layergroupid/1/{z}/{x}/{y}.grid.json',
+            'http://c.wadus.cartocdn.com/rambo/api/v1/map/layergroupid/1/{z}/{x}/{y}.grid.json',
+            'http://d.wadus.cartocdn.com/rambo/api/v1/map/layergroupid/1/{z}/{x}/{y}.grid.json'
+          ]
+        ]
+      }
+      expect(callback).toHaveBeenCalledWith(expectedURLs);
+    });
+
     it("should generate url for tiles without a cdn when cdn_url is empty", function() {
       mapProperties = {
         "layergroupid": "layergroupid",

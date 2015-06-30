@@ -104,14 +104,7 @@
     <tr>
       <td bgcolor="#f9f9f9" align="center" style="padding: 0px 15px 0px 15px;">
         <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; width: 100% !important;">
-          <tr>
-            <td>
-              <!-- CONTENT -->
-              <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; border: 1px solid #dddddd; border-bottom: 1px solid #cccccc; border-collapse: separate !important; border-radius: 4px; width: 100% !important;">
-                <%= yield :body %>
-              </table>
-            </td>
-          </tr>
+          <%= yield :body %>
         </table>
       </td>
     </tr>
@@ -124,7 +117,7 @@
         <table border="0" cellpadding="0" cellspacing="0" width="100%" align="center" style="max-width: 600px; width: 100% !important;">
           <tr>
             <td style="padding: 20px 0px 20px 0px;">
-            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+              <table border="0" cellpadding="0" cellspacing="0" width="100%">
                 <tr>
                   <td align="center" valign="middle" style="font-size: 12px; line-height: 18px; font-family: Helvetica, Arial, sans-serif; color:#999;">
                     &copy; <%= Time.now.year %> CartoDB

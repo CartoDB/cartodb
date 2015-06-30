@@ -7,6 +7,9 @@
   margin: 0 auto;
   padding: 0 $sMargin-elementInline;
 }
+.u-capitalize {
+  text-transform: capitalize;
+ }
 .u-ellipsLongText {
   white-space: nowrap;
   overflow: hidden;

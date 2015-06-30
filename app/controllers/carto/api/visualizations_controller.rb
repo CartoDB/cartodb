@@ -109,7 +109,7 @@ module Carto
 
         response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
         response.headers['Surrogate-Key'] = "#{CartoDB::SURROGATE_NAMESPACE_VIZJSON} #{@visualization.surrogate_key}"
-        response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
+        response.headers['Cache-Control']   = "max-age=86400,must-revalidate, public"
 
         final_url = static_maps_base_url(request) + 
                     static_maps_image_url_fragment(@visualization.id, map_width, map_height)

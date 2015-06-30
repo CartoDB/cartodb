@@ -12,15 +12,16 @@ module Carto
       include Carto::UUIDHelper
 
       ssl_required :index, :show
-      ssl_allowed  :vizjson2, :likes_count, :likes_list, :is_liked, :list_watching
+      ssl_allowed  :vizjson2, :likes_count, :likes_list, :is_liked, :list_watching, :static_map
 
       # TODO: compare with older, there seems to be more optional authentication endpoints
-      skip_before_filter :api_authorization_required, only: [:index, :vizjson2, :is_liked]
-      before_filter :optional_api_authorization, only: [:index, :vizjson2, :is_liked]
+      skip_before_filter :api_authorization_required, only: [:index, :vizjson2, :is_liked, :static_map]
+      before_filter :optional_api_authorization, only: [:index, :vizjson2, :is_liked, :static_map]
 
       before_filter :id_and_schema_from_params
       before_filter :load_by_name_or_id, only: [:vizjson2]
-      before_filter :load_visualization, only: [:likes_count, :likes_list, :is_liked, :show, :stats, :list_watching]
+      before_filter :load_visualization, only: [:likes_count, :likes_list, :is_liked, :show, :stats, :list_watching,
+                                                :static_map]
 
       def show
         render_jsonp(to_json(@visualization))
@@ -96,7 +97,60 @@ module Carto
         render_jsonp(watcher.list)
       end
 
+      def static_map
+        # Abusing here of .to_i fallback to 0 if not a proper integer
+        map_width = params.fetch('width',nil).to_i
+        map_height = params.fetch('height', nil).to_i
+
+        # @see https://github.com/CartoDB/Windshaft-cartodb/blob/b59e0a00a04f822154c6d69acccabaf5c2fdf628/docs/Map-API.md#limits
+        if map_width < 2 || map_height < 2 || map_width > 8192 || map_height > 8192
+          return(head 400)
+        end
+
+        response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
+        response.headers['Surrogate-Key'] = "#{CartoDB::SURROGATE_NAMESPACE_VIZJSON} #{@visualization.surrogate_key}"
+        response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
+
+        final_url = static_maps_base_url(request) + 
+                    static_maps_image_url_fragment(@visualization.id, map_width, map_height)
+
+        redirect_to final_url
+      end
+
       private
+
+      # INFO: Assumes no trailing '/' comes inside, so returned string doesn't has it either
+      def static_maps_base_url(request)
+        config = get_static_maps_api_cdn_config
+
+        username = CartoDB.extract_subdomain(request)
+        request_protocol = request.protocol.sub('://','')
+
+        if !config.nil? && !config.empty?
+          # Sample formats:
+          # {protocol}://{user}.cartodb.com
+          # {protocol}://zone.cartocdn.com/{user}
+          base_url = config
+        else
+          # Typical format (but all parameters except {user} come already replaced): 
+          # {protocol}://{user}.{maps_domain}:{port}/
+          base_url = ApplicationHelper.maps_api_template('public')
+        end
+
+        base_url.sub('{protocol}', CartoDB.protocol(request_protocol))
+                .sub('{user}', username)
+      end
+
+      # INFO: To ease testing while we keep the config in a global array...
+      def get_static_maps_api_cdn_config
+        Cartodb.config[:maps_api_cdn_template]
+      end
+
+      def static_maps_image_url_fragment(visualization_id, width, height)
+        template_id = CartoDB::NamedMapsWrapper::NamedMap.template_name(visualization_id)
+
+        "/api/v1/map/static/named/#{template_id}/#{width}/#{height}.png"
+      end
 
       def load_by_name_or_id
         @table =  is_uuid?(@id) ? Carto::UserTable.where(id: @id).first  : nil

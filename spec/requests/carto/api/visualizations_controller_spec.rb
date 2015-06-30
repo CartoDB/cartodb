@@ -58,6 +58,150 @@ describe Carto::Api::VisualizationsController do
   }
 
 
+  describe 'static_map' do
+    include_context 'visualization creation helpers'
+    include_context 'users helper'
+
+    before(:each) do
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+
+      @headers = {'CONTENT_TYPE'  => 'application/json'}
+      host! "#{@user1.subdomain}.localhost.lan"
+
+      @user1.private_tables_enabled = false
+      @user1.save
+    end
+
+    it 'tests with non-existing cdn config, which uses maps_api_template url' do
+      width = 123
+      height = 456
+
+      table1 = create_random_table(@user1)
+
+      Carto::Api::VisualizationsController.any_instance
+                                          .stubs(:get_static_maps_api_cdn_config)
+                                          .returns(nil)
+      ApplicationHelper.stubs(:maps_api_template)
+                       .returns("http://#{@user1.username}.localhost.lan:8181")
+
+      get api_v2_visualizations_static_map_url({
+          user_domain: @user1.username, 
+          id: table1.table_visualization.id,
+          width: width,
+          height: height
+        }),
+        @headers
+      last_response.status.should == 302
+
+      tpl_id = CartoDB::NamedMapsWrapper::NamedMap.template_name(table1.table_visualization.id)
+      last_response.location.should == "http://#{@user1.username}.localhost.lan:8181/api/v1/map/static/named/#{tpl_id}/#{width}/#{height}.png"
+    end
+
+    it 'tests with existing cdn config' do
+      width = 123
+      height = 456
+
+      table1 = create_random_table(@user1)
+
+      Carto::Api::VisualizationsController.any_instance
+                                          .stubs(:get_static_maps_api_cdn_config)
+                                          .returns("{protocol}://cdn.local.lan/{user}")
+
+      get api_v2_visualizations_static_map_url({
+          user_domain: @user1.username, 
+          #api_key: @user1.api_key,
+          id: table1.table_visualization.id,
+          width: width,
+          height: height
+        }),
+        @headers
+      last_response.status.should == 302
+
+      tpl_id = CartoDB::NamedMapsWrapper::NamedMap.template_name(table1.table_visualization.id)
+      last_response.location.should == "http://cdn.local.lan/#{@user1.username}/api/v1/map/static/named/#{tpl_id}/#{width}/#{height}.png"
+    end
+
+    it 'tests privacy of static_maps calls' do
+      # As privacy is equal to other visualizations controller methods, no need to test every option, just generally
+
+      width = 123
+      height = 456
+
+      public_table = create_random_table(@user1)
+
+      # By default no private tables so all are created public
+      @user1.private_tables_enabled = true
+      @user1.save
+
+      private_table = create_random_table(@user1)
+
+      Carto::Api::VisualizationsController.any_instance
+                                          .stubs(:get_static_maps_api_cdn_config)
+                                          .returns(nil)
+      ApplicationHelper.stubs(:maps_api_template)
+                       .returns("http://#{@user1.username}.localhost.lan:8181")
+
+      get api_v2_visualizations_static_map_url({
+          user_domain: @user1.username, 
+          id: public_table.table_visualization.id,
+          width: width,
+          height: height
+        }),
+        @headers
+      last_response.status.should == 302
+      tpl_id = CartoDB::NamedMapsWrapper::NamedMap.template_name(public_table.table_visualization.id)
+      last_response.location.should == "http://#{@user1.username}.localhost.lan:8181/api/v1/map/static/named/#{tpl_id}/#{width}/#{height}.png"
+
+      get api_v2_visualizations_static_map_url({
+          user_domain: @user1.username, 
+          id: private_table.table_visualization.id,
+          width: width,
+          height: height
+        }),
+        @headers
+      last_response.status.should == 403
+
+      get api_v2_visualizations_static_map_url({
+          user_domain: @user1.username, 
+          api_key: @user1.api_key,
+          id: private_table.table_visualization.id,
+          width: width,
+          height: height
+        }),
+        @headers
+      last_response.status.should == 302
+      tpl_id = CartoDB::NamedMapsWrapper::NamedMap.template_name(private_table.table_visualization.id)
+      last_response.location.should == "http://#{@user1.username}.localhost.lan:8181/api/v1/map/static/named/#{tpl_id}/#{width}/#{height}.png"
+    end
+
+    it 'tests varnish keys' do
+      width = 123
+      height = 456
+
+      table1 = create_random_table(@user1)
+
+      Carto::Api::VisualizationsController.any_instance
+                                          .stubs(:get_static_maps_api_cdn_config)
+                                          .returns("{protocol}://cdn.local.lan/{user}")
+
+      get api_v2_visualizations_static_map_url({
+          user_domain: @user1.username, 
+          #api_key: @user1.api_key,
+          id: table1.table_visualization.id,
+          width: width,
+          height: height
+        }),
+        @headers
+      last_response.status.should == 302
+      last_response.headers["X-Cache-Channel"].should include(table1.name)
+      last_response.headers["X-Cache-Channel"].should include(table1.table_visualization.varnish_key)
+      last_response.headers["Surrogate-Key"].should_not be_empty
+      last_response.headers["Surrogate-Key"].should include(CartoDB::SURROGATE_NAMESPACE_VIZJSON)
+      last_response.headers["Surrogate-Key"].should include(table1.table_visualization.surrogate_key)
+    end
+
+  end
+
   describe 'index' do
     include_context 'visualization creation helpers'
     include_context 'users helper'

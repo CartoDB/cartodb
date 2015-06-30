@@ -43,7 +43,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
     @user.destroy
   end
 
-  describe '#normalize_name' do
+  describe '#template_name' do
     it 'tests normalization of names' do
       name_1 = '08fee512-97cf-11e3-a775-30f9edfe5da6'
       expected_name_1 = CartoDB::NamedMapsWrapper::NamedMap::NAME_PREFIX + '08fee512_97cf_11e3_a775_30f9edfe5da6'
@@ -51,13 +51,13 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       name_2 = '!&32 += 01Z'
       expected_name_2 = CartoDB::NamedMapsWrapper::NamedMap::NAME_PREFIX + '3201Z'
 
-      normalized_name_1 = CartoDB::NamedMapsWrapper::NamedMap.normalize_name(name_1)
+      normalized_name_1 = CartoDB::NamedMapsWrapper::NamedMap.template_name(name_1)
       normalized_name_1.should eq expected_name_1
 
-      normalized_name_2 = CartoDB::NamedMapsWrapper::NamedMap.normalize_name(name_2)
+      normalized_name_2 = CartoDB::NamedMapsWrapper::NamedMap.template_name(name_2)
       normalized_name_2.should eq expected_name_2
     end
-  end #normalize_name
+  end
 
   describe 'password_protected_visualization' do
     it 'tests visualization auth capabilities for password restricted type' do
@@ -119,7 +119,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
                 Typhoeus::Response.new( code: 200, body: JSON::dump( { template_id: 'tpl_fakeid' } ) )
               )
 
-      template_id = CartoDB::NamedMapsWrapper::NamedMap.normalize_name(derived_vis.id)
+      template_id = CartoDB::NamedMapsWrapper::NamedMap.template_name(derived_vis.id)
 
       Typhoeus::Expectation.clear()
       # Retrieval
@@ -197,7 +197,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       collection.add(derived_vis)
       collection.store()
 
-      template_id = CartoDB::NamedMapsWrapper::NamedMap.normalize_name(derived_vis.id)
+      template_id = CartoDB::NamedMapsWrapper::NamedMap.template_name(derived_vis.id)
 
       named_map_template_data = {
         template_id: template_id
@@ -888,7 +888,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
     table = create_table( user_id: @user.id )
     derived_vis = CartoDB::Visualization::Copier.new(@user, table.table_visualization).copy
     derived_vis.privacy = visualization_privacy
-    template_id = CartoDB::NamedMapsWrapper::NamedMap.normalize_name(derived_vis.id)
+    template_id = CartoDB::NamedMapsWrapper::NamedMap.template_name(derived_vis.id)
 
     Typhoeus.stub( tiler_regex )
             .and_return(

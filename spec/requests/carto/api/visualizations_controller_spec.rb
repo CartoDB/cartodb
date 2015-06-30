@@ -78,9 +78,9 @@ describe Carto::Api::VisualizationsController do
 
       table1 = create_random_table(@user1)
 
-      Carto::Api::VisualizationsController.any_instance
-                                          .stubs(:get_static_maps_api_cdn_config)
-                                          .returns(nil)
+      Carto::StaticMapsURLHelper.any_instance
+                                .stubs(:get_static_maps_api_cdn_config)
+                                .returns(nil)
       ApplicationHelper.stubs(:maps_api_template)
                        .returns("http://#{@user1.username}.localhost.lan:8181")
 
@@ -103,9 +103,9 @@ describe Carto::Api::VisualizationsController do
 
       table1 = create_random_table(@user1)
 
-      Carto::Api::VisualizationsController.any_instance
-                                          .stubs(:get_static_maps_api_cdn_config)
-                                          .returns("{protocol}://cdn.local.lan/{user}")
+      Carto::StaticMapsURLHelper.any_instance
+                                .stubs(:get_static_maps_api_cdn_config)
+                                .returns("{protocol}://cdn.local.lan/{user}")
 
       get api_v2_visualizations_static_map_url({
           user_domain: @user1.username, 
@@ -135,9 +135,9 @@ describe Carto::Api::VisualizationsController do
 
       private_table = create_random_table(@user1)
 
-      Carto::Api::VisualizationsController.any_instance
-                                          .stubs(:get_static_maps_api_cdn_config)
-                                          .returns(nil)
+      Carto::StaticMapsURLHelper.any_instance
+                                     .stubs(:get_static_maps_api_cdn_config)
+                                     .returns(nil)
       ApplicationHelper.stubs(:maps_api_template)
                        .returns("http://#{@user1.username}.localhost.lan:8181")
 
@@ -180,9 +180,9 @@ describe Carto::Api::VisualizationsController do
 
       table1 = create_random_table(@user1)
 
-      Carto::Api::VisualizationsController.any_instance
-                                          .stubs(:get_static_maps_api_cdn_config)
-                                          .returns("{protocol}://cdn.local.lan/{user}")
+      Carto::StaticMapsURLHelper.any_instance
+                                     .stubs(:get_static_maps_api_cdn_config)
+                                     .returns("{protocol}://cdn.local.lan/{user}")
 
       get api_v2_visualizations_static_map_url({
           user_domain: @user1.username, 

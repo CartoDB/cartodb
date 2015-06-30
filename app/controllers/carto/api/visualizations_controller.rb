@@ -3,6 +3,7 @@ require_relative 'vizjson_presenter'
 require_relative '../../../models/visualization/stats'
 require_relative 'paged_searcher'
 require_dependency 'carto/uuidhelper'
+require_dependency 'static_maps_url_helper'
 
 module Carto
   module Api
@@ -111,46 +112,10 @@ module Carto
         response.headers['Surrogate-Key'] = "#{CartoDB::SURROGATE_NAMESPACE_VIZJSON} #{@visualization.surrogate_key}"
         response.headers['Cache-Control']   = "max-age=86400,must-revalidate, public"
 
-        final_url = static_maps_base_url(request) + 
-                    static_maps_image_url_fragment(@visualization.id, map_width, map_height)
-
-        redirect_to final_url
+        redirect_to Carto::StaticMapsURLHelper.new.url_for_static_map(request, @visualization, map_width, map_height)
       end
 
       private
-
-      # INFO: Assumes no trailing '/' comes inside, so returned string doesn't has it either
-      def static_maps_base_url(request)
-        config = get_static_maps_api_cdn_config
-
-        username = CartoDB.extract_subdomain(request)
-        request_protocol = request.protocol.sub('://','')
-
-        if !config.nil? && !config.empty?
-          # Sample formats:
-          # {protocol}://{user}.cartodb.com
-          # {protocol}://zone.cartocdn.com/{user}
-          base_url = config
-        else
-          # Typical format (but all parameters except {user} come already replaced): 
-          # {protocol}://{user}.{maps_domain}:{port}/
-          base_url = ApplicationHelper.maps_api_template('public')
-        end
-
-        base_url.sub('{protocol}', CartoDB.protocol(request_protocol))
-                .sub('{user}', username)
-      end
-
-      # INFO: To ease testing while we keep the config in a global array...
-      def get_static_maps_api_cdn_config
-        Cartodb.config[:maps_api_cdn_template]
-      end
-
-      def static_maps_image_url_fragment(visualization_id, width, height)
-        template_id = CartoDB::NamedMapsWrapper::NamedMap.template_name(visualization_id)
-
-        "/api/v1/map/static/named/#{template_id}/#{width}/#{height}.png"
-      end
 
       def load_by_name_or_id
         @table =  is_uuid?(@id) ? Carto::UserTable.where(id: @id).first  : nil

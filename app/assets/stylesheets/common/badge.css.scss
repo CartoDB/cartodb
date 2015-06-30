@@ -17,9 +17,6 @@
   text-align: center;
   background-color: $cIcons-default;
 }
-.Badge--negative {
-  background-color: $cHighlight-negative;
-}
-.Badge--positive {
-  background-color: $cHighlight-positive;
-}
+.Badge--negative { background-color: $cHighlight-negative }
+.Badge--positive { background-color: $cHighlight-positive }
+.Badge--alert { background-color: $cHighlight-alert }

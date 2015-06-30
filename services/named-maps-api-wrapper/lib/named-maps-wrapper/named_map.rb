@@ -104,7 +104,7 @@ module CartoDB
       end
 
       # Normalize a name to make it "named map valid"
-      def self.normalize_name( raw_name )
+      def self.template_name(raw_name)
         (NAME_PREFIX + raw_name).gsub(/[^a-zA-Z0-9\-\_.]/, '').gsub('-', '_')
       end
 
@@ -123,7 +123,7 @@ module CartoDB
         # 1) general data
         template_data = {
           version:      NAMED_MAPS_VERSION,
-          name:         self.normalize_name(visualization.id),
+          name:         self.template_name(visualization.id),
           auth:         {
                           method:   auth_type
                         },

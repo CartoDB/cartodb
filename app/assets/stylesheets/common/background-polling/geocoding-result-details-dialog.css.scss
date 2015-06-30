@@ -1,0 +1,55 @@
+@import "../variables/mixins";
+@import "../variables/colors";
+@import "../variables/sizes";
+
+// Geocoding result details styles
+$s: 70px;
+
+.GeocodingResultDetails {}
+.Dialog-headerIcon.GeocodingResultDetails-headerIcon {
+  position: relative;
+  width: $s;
+  height: $s;
+  margin-bottom: 10px;
+  border: 0;
+}
+.GeocodingResultDetails-headerIcon .Badge {
+  top: auto;
+  bottom: 1px;
+  right: 3px;
+}
+.GeocodingResultDetails-globeIcon {
+  font-size: $s;
+  color: $cStructure-mainLine;
+}
+.GeocodingResultDetails-headerIcon--failed .GeocodingResultDetails-globeIcon { color: $cHighlight-negative }
+.GeocodingResultDetails-points {
+  position: relative;
+  display: inline-block;
+  width: $s;
+  height: $s;
+  border: 1px solid $cStructure-mainLine;
+  border-radius: $s; 
+  @include background(image-url('layout/geocoding_result_icon.png') no-repeat center center);
+  overflow: hidden;
+}
+.GeocodingResultDetails-point {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border-radius: 11px;
+  background: $cStructure-mainLine;
+  border: 1px solid #979797;
+}
+.GeocodingResultDetails-point--one {
+  top: 13px;
+  left: 28px;
+}
+.GeocodingResultDetails-point--two {
+  top: 38px;
+  left: 22px;
+}
+.GeocodingResultDetails-point--three {
+  top: 44px;
+  right: 1px;
+}

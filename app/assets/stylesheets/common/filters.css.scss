@@ -310,6 +310,9 @@ a.Filters-cleanSearch { line-height:32px }
   margin-left: -500px;
   background: $cStructure-grayBkg;
 }
+.Filters.Filters--navListing.Filters--navListing--withFlashMessage {
+  top: 157px + 81px;
+}
 .Filters.Filters--navListing:after {
   content: '';
   position: absolute;

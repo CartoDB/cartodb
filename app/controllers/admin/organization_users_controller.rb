@@ -1,6 +1,6 @@
 # coding: utf-8
-require_relative '../../../lib/google_plus_api'
-require_relative '../../../lib/google_plus_config'
+require_dependency 'google_plus_api'
+require_dependency 'google_plus_config'
 
 class Admin::OrganizationUsersController < ApplicationController
   # Organization actions
@@ -37,7 +37,7 @@ class Admin::OrganizationUsersController < ApplicationController
     @user.set_fields(params[:user], [:username, :email, :password, :quota_in_bytes, :password_confirmation, :twitter_datasource_enabled])
     @user.organization = current_user.organization
     @user.username = "#{@user.username}"
-    copy_account_features(current_user, @user)
+    current_user.copy_account_features(@user)
     @user.save(raise_on_failure: true)
     @user.create_in_central
     @user.notify_new_organization_user
@@ -83,7 +83,7 @@ class Admin::OrganizationUsersController < ApplicationController
     @user.save(raise_on_failure: true)
 
     redirect_to CartoDB.url(self, 'edit_organization_user', { id: @user.username }, current_user),
-                flash: { success: "Updated successfully" }
+                flash: { success: "Your changes have been saved correctly." }
   rescue CartoDB::CentralCommunicationFailure => e
     set_flash_flags
     flash.now[:error] = "There was a problem while updating this user. Please, try again and contact us if the problem persists. #{e.user_message}"
@@ -158,14 +158,4 @@ class Admin::OrganizationUsersController < ApplicationController
     raise RecordNotFound unless current_user.organization_owner? || current_user == @user
   end
 
-  def copy_account_features(from, to)
-    to.set_fields(from, [
-      :private_tables_enabled, :sync_tables_enabled, :max_layers, :user_timeout,
-      :database_timeout, :geocoding_quota, :map_view_quota, :table_quota, :database_host,
-      :period_end_date, :map_view_block_price, :geocoding_block_price, :account_type,
-      :twitter_datasource_enabled, :soft_twitter_datasource_limit, :twitter_datasource_quota,
-      :twitter_datasource_block_price, :twitter_datasource_block_size
-    ])
-    to.invite_token = User.make_token
-  end
 end

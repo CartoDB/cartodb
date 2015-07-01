@@ -2,6 +2,7 @@
 require_relative '../lib/table_geocoder.rb'
 require_relative '../../geocoder/lib/geocoder.rb'
 require_relative 'factories/pg_connection'
+require_relative '../../../spec/rspec_configuration.rb'
 
 RSpec.configure do |config|
   config.mock_with :mocha

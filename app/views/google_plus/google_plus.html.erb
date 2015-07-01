@@ -1,0 +1,44 @@
+<html>
+  <head>
+    <script src="https://apis.google.com/js/client:platform.js" async defer></script>
+    <script>
+      document.domain = '<%= @config.domain %>'
+
+      function signinCallback(authResult) {
+        if(inIframe() && parentInSameDomain()) {
+          parent.signinCallback(authResult);
+        }
+      }
+
+      function inIframe () {
+          try {
+              return window.self !== window.top;
+          } catch (e) {
+              return true;
+          }
+      }
+
+      function parentInSameDomain() {
+        return parent.document.domain.match(document.domain + "$").length > 0;
+      }
+    </script>
+    <style>
+      body {
+        background: white;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <span id="signinButton">
+      <span
+        class="g-signin"
+        data-callback="signinCallback"
+        data-clientid="<%= @config.client_id %>"
+        data-cookiepolicy="<%= @config.cookie_policy %>"
+        data-scope="email">
+      </span>
+    </span>
+  </body>
+</html>

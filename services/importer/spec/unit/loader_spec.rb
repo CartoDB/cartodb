@@ -5,10 +5,7 @@ require_relative '../doubles/job'
 require_relative '../doubles/ogr2ogr'
 require_relative '../doubles/georeferencer'
 require_relative '../../spec/doubles/importer_stats'
-
-RSpec.configure do |config|
-  config.mock_with :mocha
-end
+require_relative '../../../../spec/rspec_configuration.rb'
 
 describe CartoDB::Importer2::Loader do
   before do

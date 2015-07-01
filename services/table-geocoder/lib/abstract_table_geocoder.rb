@@ -1,7 +1,12 @@
 # encoding: utf-8
 
+require_relative 'exceptions'
+require 'active_support/core_ext/numeric'
+
 module CartoDB
   class AbstractTableGeocoder
+
+    DB_STATEMENT_TIMEOUT_MS = 5.hours.to_i * 1000
 
     def initialize(arguments)
       @connection  = arguments.fetch(:connection)
@@ -11,6 +16,7 @@ module CartoDB
       @sequel_qualified_table_name = arguments[:sequel_qualified_table_name]
       @schema = arguments[:schema] || 'cdb'
       @state = 'submitted'
+      @connection.run("SET statement_timeout TO #{DB_STATEMENT_TIMEOUT_MS}")
     end
 
     def add_georef_status_column
@@ -19,6 +25,9 @@ module CartoDB
           ADD COLUMN cartodb_georef_status BOOLEAN DEFAULT NULL
         })
     rescue Sequel::DatabaseError => e
+      if e.message =~ /canceling statement due to statement timeout/
+        raise Carto::GeocoderErrors::AddGeorefStatusColumnDbTimeoutError.new
+      end
       raise unless e.message =~ /column .* of relation .* already exists/
       cast_georef_status_column
     end

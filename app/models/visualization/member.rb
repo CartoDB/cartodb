@@ -446,7 +446,7 @@ module CartoDB
       def get_named_map
         return false if type == TYPE_REMOTE
 
-        data = named_maps.get(CartoDB::NamedMapsWrapper::NamedMap.normalize_name(id))
+        data = named_maps.get(CartoDB::NamedMapsWrapper::NamedMap.template_name(id))
         if data.nil?
           false
         else

@@ -7,10 +7,12 @@
 * Named maps created for all visualizations, regardless of layers privacy [#3879](https://github.com/CartoDB/cartodb/issues/3879)
 * Added an [http client for ruby](https://github.com/CartoDB/cartodb/wiki/The-CartoDB-ruby-http-client) with some cool features
 * SQLViews are editable when filtering [#3812](https://github.com/CartoDB/cartodb/pull/3812)
-* Updated cartodb.js to 3.14.6
 * Defaults Time Column to first date column or cartodb_id in Torque wizards [#4136](https://github.com/CartoDB/cartodb/pull/4136)
 * Added more customized Google basemaps.
+* New optional config option `maps_api_cdn_template` for static maps [#4153](https://github.com/CartoDB/cartodb/issues/4153)
+* New `api/v2/viz/{id}/static/{width}/{height}.png` endpoint for retrieving static maps
 * Added `filter` option to layer_definition and named_map in vizjson [#4197](https://github.com/CartoDB/cartodb/pull/4197)
+* Updated cartodb.js to 3.15.1.
 
 Bugfixes:
 * Fixed deletion of layers upon disconnecting synced datasources [#3718](https://github.com/CartoDB/cartodb/pull/3718)
@@ -19,6 +21,9 @@ Bugfixes:
 * Added options to create dataset from query while on the map view [#3771](https://github.com/CartoDB/cartodb/pull/3771)
 * Do not cache geocodes if the_geom is NULL [#3793](https://github.com/CartoDB/cartodb/pull/3793)
 * Reverse order of varnish/redis invalidation [#3555](https://github.com/CartoDB/cartodb/pull/3945)
+
+New features:
+* Organization signup: [#3902](https://github.com/CartoDB/cartodb/issues/3902)
 
 3.10.2 (2015-05-20)
 ---------

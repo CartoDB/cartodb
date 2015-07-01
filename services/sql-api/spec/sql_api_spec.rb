@@ -1,9 +1,6 @@
 # encoding: utf-8
 require_relative '../sql_api.rb'
-
-RSpec.configure do |config|
-  config.mock_with :mocha
-end
+require_relative '../../../spec/rspec_configuration.rb'
 
 describe CartoDB::SQLApi do
 

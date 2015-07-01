@@ -2,10 +2,7 @@
 
 require 'active_record'
 require_relative '../../lib/importer/namedplaces_guesser'
-
-RSpec.configure do |config|
-  config.mock_with :mocha
-end
+require_relative '../../../../spec/rspec_configuration.rb'
 
 module CartoDB::Importer2
 

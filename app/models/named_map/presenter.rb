@@ -14,7 +14,7 @@ module CartoDB
         @options          = options
         @configuration    = configuration
         @layergroup_data  = layergroup
-        @named_map_name   = NamedMap.normalize_name(@visualization.id)
+        @named_map_name   = NamedMap.template_name(@visualization.id)
       end
 
       # Prepares additional data to decorate layers in the LAYER_TYPES_TO_DECORATE list
@@ -136,12 +136,12 @@ module CartoDB
               verifycert: (@configuration[:tiler]['internal']['verifycert'] rescue true)
             }
           )
-        @named_map = named_maps.get(NamedMap.normalize_name(@visualization.id))
+        @named_map = named_maps.get(NamedMap.template_name(@visualization.id))
         unless @named_map.nil?
           if @visualization.parent_id.nil?
             @named_map_template = @named_map.template.fetch(:template)
           else
-            parent_named_map = named_maps.get(NamedMap.normalize_name(@visualization.parent_id))
+            parent_named_map = named_maps.get(NamedMap.template_name(@visualization.parent_id))
             @named_map_template = parent_named_map.template.fetch(:template).merge(@named_map.template.fetch(:template))
           end
         end

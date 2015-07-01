@@ -15,6 +15,7 @@ describe Layer do
   end
 
   before(:each) do
+    User.any_instance.stubs(:enable_remote_db_user).returns(true)
     CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
 
     CartoDB::Overlay::Member.any_instance.stubs(:can_store).returns(true)

@@ -103,7 +103,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
 
   def get_user
     @user = User[params[:id]]
-    raise RecordNotFound unless @user
-  end # get_user
+    render json: { error: 'User not found' }, status: 404 unless @user
+  end
 
 end # Superadmin::UsersController

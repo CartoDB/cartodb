@@ -1,6 +1,6 @@
 # encoding: utf-8
 require_relative '../../models/map/presenter'
-require_dependency '../../lib/resque/user_jobs'
+require_dependency 'resque/user_jobs'
 require_relative '../carto/admin/user_table_public_map_adapter'
 require_relative '../carto/admin/visualization_public_map_adapter'
 require_relative '../../helpers/embed_redis_cache'
@@ -136,6 +136,7 @@ class Admin::VisualizationsController < ApplicationController
 
     @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)
     @avatar_url             = @visualization.user.avatar
+    @twitter_username       = @visualization.user.twitter_username.present? ? @visualization.user.twitter_username : nil
 
     @user_domain = user_domain_variable(request)
 
@@ -203,6 +204,7 @@ class Admin::VisualizationsController < ApplicationController
 
     @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)
     @avatar_url             = @visualization.user.avatar
+    @twitter_username       = @visualization.user.twitter_username.present? ? @visualization.user.twitter_username : nil
     @google_maps_query_string = @visualization.user.google_maps_query_string
 
     @mapviews = @visualization.total_mapviews

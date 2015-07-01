@@ -24,6 +24,10 @@ module Carto
       self.owner_id == user.id
     end
 
+    def signup_page_enabled
+      !whitelisted_email_domains.nil? && !whitelisted_email_domains.empty?
+    end
+
   end
 
 end

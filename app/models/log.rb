@@ -1,15 +1,19 @@
 # encoding: utf-8
 
 module CartoDB
+  # Motivation: Logs usually are quite small, but in some scenarios, or due to encoding errors, parsing errors, etc.
+  # they can grow and even end with 1 line per source row. Thus the need of having a log that hits as less as possible
+  # the DB, and that stores critical parts of the log events; this is, the beggining (data recognized, etc.) and the end
+  # (how it ended, and last 'errored rows' if present). The middle area is not important and for small logs will still
+  # be included
   class Log < Sequel::Model
 
     MAX_ENTRY_LENGTH = 256
     MAX_LOG_ENTRIES = 1000
 
-    ENTRY_PREFIX = '|'
-    ENTRY_POSTFIX = "|\n"
+    ENTRY_POSTFIX = "\n"
 
-    ENTRY_FORMAT = "#{ENTRY_PREFIX}%s: %s#{ENTRY_POSTFIX}"
+    ENTRY_FORMAT = "%s: %s#{ENTRY_POSTFIX}"
     ENTRY_REHYDRATED_FORMAT = "%s#{ENTRY_POSTFIX}"
 
     TYPE_DATA_IMPORT     = 'import'
@@ -24,12 +28,18 @@ module CartoDB
 
     def after_initialize
       super
+
+      if (MAX_LOG_ENTRIES < 2 || MAX_LOG_ENTRIES % 2 != 0)
+        raise StandardError.new('MAX_LOG_ENTRIES must be greater than 2 and an even number')
+      end
+
+      @dirty = true if new?
+
       clear_entries # Reset internal lists
       rehydrate_entries_from_string(self.entries)  # And now load if proceeds
     end
 
     def clear
-      self.entries = clear_entries
       @dirty = true
     end
 
@@ -46,17 +56,28 @@ module CartoDB
         @dirty = false
       end
     rescue => e
-      Rollbar.report_message("Error appending log, likely an encoding issue", 'error', error_info: "id: #{id}. #{self.inspect} --------- #{e.backtrace.join}")
+      CartoDB.notify_error("Error appending log, likely an encoding issue", 
+        {
+          error_info: "id: #{id}. #{self.inspect} --------- #{e.backtrace.join}"
+        })
       begin
         fix_entries_encoding
         self.save
       rescue => e2
-        Rollbar.report_message("Error saving fallback log info.", 'error', error_info: "id: #{id} #{e2.backtrace.join}")
+        CartoDB.notify_exception(e2, 
+          {
+            message: "Error saving fallback log info.", 
+            error_info: "id: #{id}"
+          })
         begin
           self.entries = "Previous log entries stripped because of an error, check Rollbar. Id: #{id}"
           self.save
         rescue => e3
-          Rollbar.report_message("Error saving stripped fallback log info.", 'error', error_info: "id: #{id} #{e3.backtrace.join}")
+          CartoDB.notify_exception(e3, 
+            {
+              message: "Error saving stripped fallback log info.", 
+              error_info: "id: #{id}"
+            })
         end
       end
     end
@@ -86,14 +107,18 @@ module CartoDB
     end
 
     def rehydrate_entries_from_string(source)
-      # A bit hacky but a simple \n would return "false positives"
       existing_entries = source.nil? ? [] : source.split("#{ENTRY_POSTFIX}")
+
+      # If rehydrated data, assume nothing changed yet
+      @dirty = false if existing_entries.length > 0
 
       @fixed_entries_half = existing_entries.slice!(0, half_max_size)
                                             .map { |entry| ENTRY_REHYDRATED_FORMAT % [entry] }
+      @fixed_entries_half = [] if @fixed_entries_half.nil?  # Log was empty
 
       if (existing_entries.length > 0)
-        @circular_entries_half = existing_entries.slice(0, half_max_size)
+        index = existing_entries.length > half_max_size ? -half_max_size : -existing_entries.length
+        @circular_entries_half = existing_entries.slice(index, half_max_size)
                                                  .map { |entry| ENTRY_REHYDRATED_FORMAT % [entry] }
         # Fill circular part
         if @circular_entries_half.length < half_max_size

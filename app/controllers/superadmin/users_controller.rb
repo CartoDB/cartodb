@@ -95,7 +95,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     data_import = DataImport[params[:data_import_id]]
     respond_with({
                    data: data_import,
-                   log: data_import.nil? ? nil : data_import.log.entries
+                   log: data_import.nil? ? nil : data_import.log.to_s
                  })
   end
 

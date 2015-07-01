@@ -25,7 +25,7 @@ describe CartoDB::Log do
       log = Log.where(id:log_id).first
       log.id.should eq log_id
       log.type.should eq type
-      log.entries.should eq expectation
+      log.to_s.should eq expectation
     end
   end
 
@@ -76,10 +76,10 @@ describe CartoDB::Log do
       max_entries_per_half = 2
 
       timestamp = Time.now.utc
-      text1 = "aaa\nbbbb"
-      text2 = "ccc\nddd"
+      text1 = "aaa"
+      text2 = "bbb"
       text3 = "3.4"
-      text4 = "5\n6\n7\n8"
+      text4 = "5 6 7 8"
 
       Log.any_instance.stubs(:half_max_size).returns(max_entries_per_half)
 
@@ -116,6 +116,7 @@ describe CartoDB::Log do
                                            (Log::ENTRY_FORMAT % [ timestamp, text2 ]) + 
                                            (Log::ENTRY_FORMAT % [ timestamp, text3 ])
 
+
       log = Log.new({ type: Log::TYPE_DATA_IMPORT })
       log.append(text1, timestamp)
       log.store
@@ -123,6 +124,33 @@ describe CartoDB::Log do
 
       log.send(:collect_entries).should eq (Log::ENTRY_FORMAT % [ timestamp, text1 ])
 
+      # This test checks that old logs with more lines than accepted get truncated correctly
+      log = Log.new({ type: Log::TYPE_DATA_IMPORT })
+      Log.any_instance.stubs(:half_max_size).returns(max_entries_per_half*2)
+      log.append(text1, timestamp)
+      log.append(text2, timestamp)
+      log.append('filll', timestamp)
+      log.append('filll more', timestamp)
+      # This goes to the circular area
+      log.append('filll even more', timestamp)
+      log.append(text3, timestamp)
+      log.append(text4, timestamp)
+      log.store
+
+      Log.any_instance.stubs(:half_max_size).returns(max_entries_per_half)
+      log = Log.where(id: log.id).first
+
+      log.send(:collect_entries).should eq (Log::ENTRY_FORMAT % [ timestamp, text1 ]) + 
+                                           (Log::ENTRY_FORMAT % [ timestamp, text2 ]) + 
+                                           (Log::ENTRY_FORMAT % [ timestamp, text3 ]) + 
+                                           (Log::ENTRY_FORMAT % [ timestamp, text4 ])
+    end
+
+    it 'checks zero case of a new log' do
+      log = Log.new({ type: Log::TYPE_DATA_IMPORT })
+      log.to_s.should eq ''
+      log = Log.where(id: log.id).first
+      log.to_s.should eq ''
     end
   end
 

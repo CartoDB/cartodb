@@ -11,6 +11,13 @@ CartoDB::Application.routes.draw do
   get   '/(user/:user_domain)(u/:user_domain)'                 => 'admin/pages#public', as: :root
   root :to => 'admin/pages#index'
 
+  get   '(/user/:user_domain)(/u/:user_domain)/signup'           => 'signup#signup',     as: :signup
+  post   '(/user/:user_domain)(/u/:user_domain)/signup'           => 'signup#create',  as: :signup_organization_user
+
+  get   '(/user/:user_domain)(/u/:user_domain)/enable_account_token/:id' => 'account_tokens#enable',     as: :enable_account_token_show
+  get   '(/user/:user_domain)(/u/:user_domain)/resend_validation_mail/:user_id' => 'account_tokens#resend',     as: :resend_validation_mail
+  get   '(/user/:user_domain)(/u/:user_domain)/account_token_authentication_error' => 'sessions#account_token_authentication_error',     as: :account_token_authentication_error
+
   get   '(/user/:user_domain)(/u/:user_domain)/login'           => 'sessions#new',     as: :login
   get   '(/user/:user_domain)(/u/:user_domain)/logout'          => 'sessions#destroy', as: :logout
   match '(/user/:user_domain)(/u/:user_domain)/sessions/create' => 'sessions#create',  as: :create_session
@@ -23,8 +30,8 @@ CartoDB::Application.routes.draw do
   match '(/user/:user_domain)(/u/:user_domain)/oauth/access_token'   => 'oauth#access_token',  as: :access_token
   get   '(/user/:user_domain)(/u/:user_domain)/oauth/identity'       => 'sessions#show',       as: :oauth_show_sessions
 
-  get '/google_plus' => 'google_plus#google_plus'
-  post '/google/signup' => 'google_plus#google_signup'
+  get '/google_plus' => 'google_plus#google_plus', as: :google_plus
+  post '/google/signup' => 'google_plus#google_signup', as: :google_plus_signup
 
   # Internally, some of this methods will forcibly rewrite to the org-url if user belongs to an organization
   scope :module => :admin do
@@ -341,6 +348,8 @@ CartoDB::Application.routes.draw do
     # Organization (new endpoint that deprecates old, unused one, so v1)
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:id/users' => 'organizations#users', as: :api_v1_organization_users, constraints: { id: /[^\/]+/ }
 
+    # User creations
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1/user_creations/:id' => 'user_creations#show', as: :api_v1_user_creations_show, constraints: { id: /[^\/]+/ }
 
     # V2 api/json calls
 

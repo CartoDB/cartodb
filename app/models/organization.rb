@@ -40,7 +40,18 @@ class Organization < Sequel::Model
     validates_presence [:name, :quota_in_bytes, :seats]
     validates_unique   :name
     validates_format   /\A[a-z0-9\-]+\z/, :name, message: 'must only contain lowercase letters, numbers & hyphens'
+    validates_integer  :default_quota_in_bytes, :allow_nil => true
+    if default_quota_in_bytes
+      errors.add(:default_quota_in_bytes, 'Default quota must be positive') if default_quota_in_bytes <= 0
+    end
     errors.add(:name, 'cannot exist as user') if name_exists_in_users?
+  end
+
+  def validate_new_user(user, errors)
+    if !whitelisted_email_domains.nil? and !whitelisted_email_domains.empty?
+      email_domain = user.email.split('@')[1]
+      errors.add(:email, "Email domain '#{email_domain}' not valid for #{name} organization") unless whitelisted_email_domains.include?(email_domain)
+    end
   end
 
   # Just to make code more uniform with user.database_schema
@@ -208,6 +219,10 @@ class Organization < Sequel::Model
         order:    order,
         o:        {updated_at: :desc}
     )
+  end
+
+  def signup_page_enabled
+    !whitelisted_email_domains.nil? && !whitelisted_email_domains.empty?
   end
 
   private

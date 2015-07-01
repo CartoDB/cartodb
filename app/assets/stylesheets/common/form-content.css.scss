@@ -28,7 +28,9 @@ $sLabel-width: 140px;
   font-weight: $sFontWeight-lighter;
   color: $cTypography-paragraphs;
   line-height: $sLineHeight-large;
+  font-style: normal;
 }
+.Form-titleText--negative { color: $cHighlight-negative }
 .Form-list {
   padding: 0 0 20px 160px;
   color: $cTypography-paragraphs;
@@ -87,6 +89,7 @@ $sLabel-width: 140px;
   @include nicer-lato-typography();
   color: $cTypography-paragraphs;
 }
+.Form-label--multipleLines { line-height: 20px }
 .Form-label.Form-label--large { font-size: $sFontSize-large }
 .Form-label.Form-label--step { @include flex-grow(1) }
 .Form-rowPreview { width: 735px }
@@ -416,7 +419,7 @@ $sLabel-width: 140px;
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
-  margin: $sMargin-formRow 0;
+  margin: $sMargin-section 0;
   padding: $sMargin-formRow 0;
   border-top: 1px solid $cStructure-mainLine;
 }

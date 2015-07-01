@@ -1,6 +1,6 @@
 # encoding: UTF-8
-require_dependency '../../lib/google_plus_api'
-require_dependency '../../lib/google_plus_config'
+require_dependency 'google_plus_api'
+require_dependency 'google_plus_config'
 
 class SessionsController < ApplicationController
   layout 'frontend'
@@ -11,6 +11,7 @@ class SessionsController < ApplicationController
   before_filter :load_organization
   # Don't force org urls
   skip_before_filter :ensure_org_url_if_org_user
+  skip_before_filter :ensure_account_has_been_activated, :only => :account_token_authentication_error
 
 
   def new
@@ -70,6 +71,12 @@ class SessionsController < ApplicationController
     end
   end
 
+  def account_token_authentication_error
+    warden.custom_failure!
+    user_id = warden.env['warden.options'][:user_id] if warden.env['warden.options']
+    @user = User.where(id: user_id).first if user_id
+  end
+
   protected
 
   def initialize_google_plus_config
@@ -89,7 +96,7 @@ class SessionsController < ApplicationController
   private
 
   def load_organization
-    subdomain = CartoDB.extract_subdomain(request)
+    subdomain = CartoDB.subdomain_from_request(request)
     @organization = Carto::Organization.where(name: subdomain).first if subdomain
   end
 

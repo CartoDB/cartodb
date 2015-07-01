@@ -7,27 +7,7 @@
 <% end %>
 
 <div class="Sessions" style="<%= background %>">
-  <header class="Sessions-header">
-    <div class="u-inner">
-      <nav class="Navbar">
-        <div class="Navbar-header">
-          <div class="Navbar-title">
-            <picture class="Navbar-brand">
-              <% if login_org_avatar %>
-                <img src="<%= @organization.avatar_url %>" alt="<%= @organization.name %>" height="48" />
-              <% else %>
-                <source type="image/svg+xml" srcset="<%= image_path "layout/sessions/brand.svg" %>">
-                <img src="<%= image_path "layout/sessions/brand.png" %>" alt="CartoDB" height="48" width="48" />
-              <% end %>
-            </picture>
-            <% if login_org_avatar %>
-              <sup><img src="<%= image_path "layout/sessions/brand.png" %>" alt="CartoDB" height="26" width="26"></sup>
-            <% end %>  
-          </div>
-        </div>
-      </nav>
-    </div>
-  </header>
+  <%= render partial: 'admin/shared/sessions_header', locals: { align: "" } %>
 
   <div class="Sessions-content">
     <div class="Sessions-inner">
@@ -51,7 +31,7 @@
                 <input type="hidden" value="0" id="google_access_filled" name="google_access_filled" />
 
                 <div class="Sessions-field">
-                  <%= text_field_tag :email, CartoDB.extract_subdomain(request), :title => "Email or username", placeholder: "Email or username", class: "Sessions-input" %>
+                  <%= text_field_tag :email, CartoDB.extract_subdomain(request), :title => "Email or username", placeholder: "email or username", class: "Sessions-input" %>
 
                   <% if @login_error %>
                     <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @login_error %>">!</div>
@@ -59,7 +39,7 @@
                 </div>
 
                 <div class="Sessions-field">
-                  <%= password_field_tag :password, "", placeholder: "Password", class: "Sessions-input" %>
+                  <%= password_field_tag :password, "", placeholder: "password", class: "Sessions-input" %>
 
                   <% if @login_error %>
                     <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @login_error %>">!</div>

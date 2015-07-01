@@ -1,9 +1,6 @@
 # encoding: utf-8
 require_relative '../../lib/url_signer'
-
-RSpec.configure do |config|
-  config.mock_with :mocha
-end
+require_relative '../rspec_configuration.rb'
 
 describe Carto::UrlSigner do
   describe '#sign_url' do

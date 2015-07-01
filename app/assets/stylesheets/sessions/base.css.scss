@@ -1,6 +1,11 @@
 // Base
 // --------------------------------------------------
 
+@import "_variables";
+@import "_mixins";
+@import "_helpers";
+@import "compass/reset";
+
 * {
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
@@ -11,6 +16,8 @@ html,
 body {
   height: 100%;
   min-width: 360px;
+  margin: 0;
+  padding: 0;
 }
 
 body {

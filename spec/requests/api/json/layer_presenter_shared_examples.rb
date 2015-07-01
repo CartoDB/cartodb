@@ -4,6 +4,10 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
 
   describe '#show legacy tests' do
 
+    before(:each) do
+      User.any_instance.stubs(:enable_remote_db_user).returns(true)
+    end
+
     before(:all) do
       set_tested_classes(tested_klass, model_klass)
       puts "Testing class #{tested_klass.to_s} with model #{model_klass.to_s}"

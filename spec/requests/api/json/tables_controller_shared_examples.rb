@@ -161,10 +161,11 @@ shared_examples_for "tables controllers" do
       share_table(his_table, @org_user_2, @org_user_1)
       my_table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: table_name, user_id: @org_user_1.id)
       login(@org_user_1)
-      get_json api_v1_tables_show_url(id: my_table.id) do |response|
-        response.status.should == 200
-        response.body.fetch(:name).should == my_table.name
-        response.body[:table_visualization]['permission']['owner']['username'].should == @org_user_1.username
+      get api_v1_tables_show_url(id: my_table.id) do |response|
+        last_response.status.should == 200
+        json_body = JSON.parse(last_response.body)
+        json_body.fetch(:name).should == my_table.name
+        json_body[:table_visualization]['permission']['owner']['username'].should == @org_user_1.username
       end
     end
   end

@@ -1,10 +1,7 @@
 # encoding: utf-8
 require 'fileutils'
 require_relative '../../lib/importer/unp'
-
-RSpec.configure do |config|
-  config.mock_with :mocha
-end
+require_relative '../../../../spec/rspec_configuration.rb'
 
 include CartoDB::Importer2
 

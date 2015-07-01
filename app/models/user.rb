@@ -13,11 +13,13 @@ require_relative './external_data_import'
 require_relative './feature_flag'
 require_relative '../../lib/cartodb/stats/api_calls'
 require_relative '../../lib/carto/http/client'
+require_dependency 'cartodb_config_utils'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
   include CartoDB::UserDecorator
   include Concerns::CartodbCentralSynchronizable
+  include CartoDB::ConfigUtils
 
   self.strict_param_setting = false
 
@@ -73,6 +75,13 @@ class User < Sequel::Model
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
 
+  def self.new_with_organization(organization)
+    user = ::User.new
+    user.organization = organization
+    user.quota_in_bytes = organization.default_quota_in_bytes
+    user
+  end
+
   ## Validations
   def validate
     super
@@ -93,15 +102,20 @@ class User < Sequel::Model
       errors.add(:password, "is not confirmed") unless password == password_confirmation
     end
     validate_password_change
-    if organization.present?
-      if new?
-        errors.add(:organization, "not enough seats") if organization.users.count >= organization.seats
-        errors.add(:quota_in_bytes, "not enough disk quota") if quota_in_bytes.to_i + organization.assigned_quota > organization.quota_in_bytes
-      else
-        # Organization#assigned_quota includes the OLD quota for this user,
-        # so we have to ammend that in the calculation:
-        errors.add(:quota_in_bytes, "not enough disk quota") if quota_in_bytes.to_i + organization.assigned_quota - initial_value(:quota_in_bytes) > organization.quota_in_bytes
-      end
+
+    organization_validation if organization.present?
+  end
+
+  def organization_validation
+    if new?
+      errors.add(:organization, "not enough seats") if organization.users.count >= organization.seats
+      errors.add(:quota_in_bytes, "not enough disk quota") if quota_in_bytes.to_i + organization.assigned_quota > organization.quota_in_bytes
+
+      organization.validate_new_user(self, errors)
+    else
+      # Organization#assigned_quota includes the OLD quota for this user,
+      # so we have to ammend that in the calculation:
+      errors.add(:quota_in_bytes, "not enough disk quota") if quota_in_bytes.to_i + organization.assigned_quota - initial_value(:quota_in_bytes) > organization.quota_in_bytes
     end
   end
 
@@ -351,10 +365,16 @@ class User < Sequel::Model
 
   def drop_database_and_user
     conn = self.in_database(as: :cluster_admin)
-    conn.run("UPDATE pg_database SET datallowconn = 'false' WHERE datname = '#{database_name}'")
-    User.terminate_database_connections(database_name, database_host)
-    conn.run("DROP DATABASE \"#{database_name}\"")
-    conn.run("DROP USER \"#{database_username}\"")
+
+    if !database_name.nil? && !database_name.empty?
+      conn.run("UPDATE pg_database SET datallowconn = 'false' WHERE datname = '#{database_name}'")
+      User.terminate_database_connections(database_name, database_host)
+      conn.run("DROP DATABASE IF EXISTS \"#{database_name}\"")
+    end
+
+    if !database_username.nil? && !database_username.empty?
+      conn.run("DROP USER IF EXISTS \"#{database_username}\"")
+    end
   end
 
   def self.terminate_database_connections(database_name, database_host)
@@ -1028,7 +1048,7 @@ class User < Sequel::Model
 
 
   def enabled?
-    self.enabled
+    self.enabled && self.enable_account_token.nil?
   end
 
   def disabled?
@@ -2353,7 +2373,7 @@ TRIGGER
 
   # Special url that goes to Central if active
   def upgrade_url(request_protocol)
-    account_url(request_protocol) + '/upgrade'
+    cartodb_com_hosted? ? '' : (account_url(request_protocol) + '/upgrade')
   end
 
   def organization_username

@@ -12,6 +12,7 @@ class ApplicationController < ActionController::Base
   before_filter :store_request_host
   before_filter :ensure_user_organization_valid
   before_filter :ensure_org_url_if_org_user
+  before_filter :ensure_account_has_been_activated
   before_filter :browser_is_html5_compliant?
   before_filter :allow_cross_domain_access
   before_filter :set_asset_debugging
@@ -195,6 +196,12 @@ class ApplicationController < ActionController::Base
         redirect_to CartoDB.base_url(current_user.organization.name, current_user.username) << request.fullpath
       end
     end
+  end
+
+  def ensure_account_has_been_activated
+    return unless current_user
+
+    redirect_to CartoDB.url(self, 'account_token_authentication_error') unless current_user.enable_account_token.nil?
   end
 
   def add_revision_header

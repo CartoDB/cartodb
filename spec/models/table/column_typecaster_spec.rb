@@ -1,5 +1,7 @@
 # encoding: utf-8
-require 'rspec'
+require 'rspec/core'
+require 'rspec/expectations'
+require 'rspec/mocks'
 require_relative '../../spec_helper'
 
 describe CartoDB::ColumnTypecaster do

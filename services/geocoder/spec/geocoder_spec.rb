@@ -1,4 +1,5 @@
 # encoding: utf-8
+require_relative '../../../spec/rspec_configuration.rb'
 require_relative '../lib/geocoder.rb'
 
 describe CartoDB::Geocoder do

@@ -145,17 +145,6 @@ describe Geocoding do
       geocoding.used_credits.should eq 0
     end
 
-    pending 'creates an automatic geocoder' do
-      geocoding = Geocoding.create(user: @user, user_table: @table, formatter: 'b')
-      CartoDB::TableGeocoder.any_instance.stubs(:run).returns true
-      CartoDB::TableGeocoder.any_instance.stubs(:process_results).returns true
-      CartoDB::Geocoder.any_instance.stubs(:status).returns 'completed'
-      CartoDB::Geocoder.any_instance.stubs(:update_status).returns true
-      CartoDB.expects(:notify_exception).once.returns(true)
-      expect { geocoding.run! }.to change { AutomaticGeocoding.count }.by(1)
-      geocoding.automatic_geocoding_id.should_not be_nil
-    end
-
     pending 'raises an exception if the geocoding times out' do
       geocoding = FactoryGirl.create(:geocoding, user: @user, user_table: @table, formatter: 'b')
       geocoding.class.stubs(:processable_rows).returns 10

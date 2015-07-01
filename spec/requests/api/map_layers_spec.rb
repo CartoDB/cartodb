@@ -101,7 +101,7 @@ feature "API 1.0 map layers management" do
       { id: layer_2.id, options: { opt1: 'value' }, infowindow: ['column1', 'column2'], order: 3, kind: 'carto' }
     ]}
 
-    put_json api_v1_maps_layers_update_url(params.merge(id: [layer_1.id, layer_2.id].join(','), map_id: @map.id)), data do |response|
+    put_json api_v1_maps_layers_update_url(params.merge(map_id: @map.id)), data do |response|
       response.status.should be_success
       response_layers = response.body[:layers]
       response_layers.count.should == 2

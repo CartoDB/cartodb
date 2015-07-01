@@ -57,7 +57,7 @@ class Api::Json::LayersController < Api::ApplicationController
   end
 
   def update
-    ids = params[:id].split(',')
+    ids = ids_from_url_or_parameters
     layers = []
 
     ids.each { |id|
@@ -111,9 +111,13 @@ class Api::Json::LayersController < Api::ApplicationController
     ::Map.filter(id: params[:map_id]).first
   end #map_from
 
+  def ids_from_url_or_parameters
+    params[:id].present? ? [ params[:id] ] : params[:layers].map { |l| l['id'] }
+  end
+
   def validate_read_write_permission
-    ids = params[:id]
-    ids.split(',').each { |id|
+    ids = ids_from_url_or_parameters
+    ids.each { |id|
       layer = ::Layer[id]
       layer.maps.each { |map|
         map.visualizations.each { |vis|

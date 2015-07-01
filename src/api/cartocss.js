@@ -135,15 +135,15 @@ function guessMap(sql, tableName, column, stats) {
   if (stats.type == 'number') {
     if (['A','U'].indexOf(stats.dist_type) != -1) {
       // apply divergent scheme
-      css = CSS.choropleth(stats.jenks, tableName, column, geometryType, ramps.divergent);
+      css = CSS.choropleth(stats.jenks, tableName, columnName, geometryType, ramps.divergent);
     } else if (stats.dist_type === 'F') {
-      css = CSS.choropleth(stats.equalint, tableName, column, geometryType, ramps.blue);
+      css = CSS.choropleth(stats.equalint, tableName, columnName, geometryType, ramps.blue);
     } else {
       if (stats.dist_type === 'J') {
-        css = CSS.choropleth(stats.headtails, tableName, column, geometryType, ramps.blue);
+        css = CSS.choropleth(stats.headtails, tableName, columnName, geometryType, ramps.blue);
       } else {
         var inverse_ramp = (_.clone(ramps.blue)).reverse();
-        css = CSS.choropleth(stats.headtails, tableName, column, geometryType, inverse_ramp);
+        css = CSS.choropleth(stats.headtails, tableName, columnName, geometryType, inverse_ramp);
       }
     }
   

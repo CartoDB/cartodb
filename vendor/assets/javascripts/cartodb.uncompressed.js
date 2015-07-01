@@ -1,6 +1,6 @@
 // cartodb.js version: 3.14.3
 // uncompressed version: cartodb.uncompressed.js
-// sha: 2436a772962ec3013353e00a6d10e230b14c74fa
+// sha: 20f6baa3cb9d8be15b78c65fa0e0b398566cc426
 (function() {
   var root = this;
 
@@ -41091,11 +41091,43 @@ function geoAttr(geometryType) {
   }[geometryType]
 }
 
+function getDefaultCSSForGeometryType(geometryType) {
+  if (geometryType === "polygon") {
+    return [
+      "polygon-opacity: 0.7;",
+      "line-color: #FFF;",
+      "line-width: 0.5;",
+      "line-opacity: 1;"
+    ];
+  }
+  if (geometryType === "line") {
+    return  [
+      "line-width: 2;",
+      "line-opacity: 0.7;"
+    ];
+  }
+  return [
+    "line-color: #0C2C84;",
+    "line-opacity: 1;",
+    "marker-fill-opacity: 0.9;",
+    "marker-line-color: #FFF;",
+    "marker-line-width: 1.5;",
+    "marker-line-opacity: 1;",
+    "marker-placement: point;",
+    "marker-type: ellipse;",
+    "marker-width: 10;",
+    "marker-allow-overlap: true;"
+  ];
+}
+
 var CSS = {
   choropleth: function(quartiles, tableName, prop, geometryType, ramp) {
     var attr = geoAttr(geometryType);
     var tableID = "#" + tableName;
-    var css = "/** choropleth visualization */\n\n" + tableID + "{\n  " + attr + ": #0C2C84;\n  polygon-opacity: 0.6;\n  line-color: #0C2C84;\n  line-width: 0.0;\n  line-opacity: 1;\n} "
+
+    var defaultCSS = getDefaultCSSForGeometryType(geometryType);
+    var css = "/** choropleth visualization */\n\n" + tableID + " {\n  " + attr + ": " + ramps.category[0] + ";\n" + defaultCSS.join("\n") + "\n}\n";
+
     for (var i = quartiles.length - 1; i >= 0; --i) {
       if (quartiles[i] !== undefined && quartiles[i] != null) {
         css += "\n" + tableID + "[" + prop + " <= " + quartiles[i] + "] {\n";
@@ -41121,7 +41153,10 @@ var CSS = {
     var attr = geoAttr(geometryType);
     var tableID = "#" + tableName;
     var ramp = ramps.category;
-    var css = "/** category visualization */\n\n" + tableID + "{\n  " + attr + ": " + ramps.category[0] +";\n  line-color: #0C2C84;\n  line-opacity: 1; marker-fill-opacity: 0.9; marker-line-color: #FFF; marker-line-width: 1.5; marker-line-opacity: 1; marker-placement: point; marker-type: ellipse; marker-width: 10; marker-allow-overlap: true; \n}";
+
+    var defaultCSS = getDefaultCSSForGeometryType(geometryType);
+
+    var css = "/** category visualization */\n\n" + tableID + " {\n  " + attr + ": " + ramps.category[0] + ";\n" + defaultCSS.join("\n") + "\n}\n";
 
     for (var i = cats.length - 1; i >= 0; --i) {
       if (cats[i] !== undefined && cats[i] != null) {
@@ -41132,12 +41167,6 @@ var CSS = {
     return css;
   }
 }
-
-//function columnMap(sql, c, geometryType, bbox) {
-  //s.describe(sql, c, function(data) {
-    //guessMap(sql, geometryType, data.column, data, bbox);
-  //});
-//}
 
 function guessCss(sql, geometryType, column, stats) {
   var css = null
@@ -41193,22 +41222,10 @@ function guessMap(sql, tableName, column, stats) {
       css      = CSS.category(stats.hist.slice(0, ramps.category.length).map(function(r) { return r[0]; }),tableName, columnName, geometryType);
       metadata = CSS.categoryMetadata(stats.hist.slice(0, ramps.category.length).map(function(r) { return r[0]; }),tableName, columnName, geometryType);
 
-      var wizard_properties = {
-        "marker-fill-opacity": 0.9,
-        "marker-line-color": "#FFFFFF",
-        "marker-fill": ramps.category[0],
-        "marker-line-width": 1.5,
-        "marker-line-opacity": 1,
-        "marker-placement": "point",
-        "marker-type": "ellipse",
-        "marker-width": 10,
-        "marker-allow-overlap": true
-      };
-
     }
 
   if (css) {
-    return { sql: sql, css: css, metadata: metadata, wizard_properties: wizard_properties, column: columnName, bbox: bbox, stats: stats, type: type, wizard: wizard  };
+    return { sql: sql, css: css, metadata: metadata, column: columnName, bbox: bbox, stats: stats, type: type, wizard: wizard  };
   } else {
     return { sql: sql, css: null, metadata: metadata, column: columnName, bbox: bbox, weight: -100, type: type, wizard: wizard };
   }

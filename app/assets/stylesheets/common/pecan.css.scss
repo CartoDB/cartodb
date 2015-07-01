@@ -21,11 +21,21 @@
   margin: 0;
   @include transition(margin, 150ms);
 }
+.PecanMap-MapsList .DefaultTitle,
+.PecanMap-MapsList .DefaultTitle a {
+  font-weight: 100;
+}
+.PecanMap-MapsList .DefaultTitle strong {
+  font-weight: normal;
+}
 
 .PecanMap-navigation {
   position:absolute;
   width: 960px;
   z-index: 100000;
+}
+.PecanMap-navigation.is-hidden {
+  display:none;
 }
 .PecanMap-navigationButton {
   position: absolute;
@@ -56,11 +66,4 @@
   font-style: italic;
   color: #999999;
   line-height:120%;
-}
-.PecanMap-MapsList .DefaultTitle,
-.PecanMap-MapsList .DefaultTitle a {
-  font-weight: 100;
-}
-.PecanMap-MapsList .DefaultTitle strong {
-  font-weight: normal;
 }

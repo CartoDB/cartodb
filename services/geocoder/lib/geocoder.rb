@@ -148,11 +148,17 @@ module CartoDB
     def geocode_text(text)
       options = GEOCODER_OPTIONS.merge(searchtext: text, app_id: app_id, app_code: token)
       url = "#{non_batch_base_url}?#{URI.encode_www_form(options)}"
-      response =  ::JSON.parse(http_client.get(url).body.to_s)["response"]
-      position = response["view"][0]["result"][0]["location"]["displayPosition"]
-      return position["latitude"], position["longitude"]
+      http_response = http_client.get(url)
+      if http_response.success?
+        response =  ::JSON.parse(http_response.body)["response"]
+        position = response["view"][0]["result"][0]["location"]["displayPosition"]
+        return position["latitude"], position["longitude"]
+      else
+        CartoDB.notify_debug('Non-batched geocoder failed request', http_response)
+        return [nil, nil]
+      end
     rescue => e
-      Rollbar.report_exception(e)
+      CartoDB.notify_exception(e)
       [nil, nil]
     end
 

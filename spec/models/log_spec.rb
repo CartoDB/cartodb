@@ -13,7 +13,6 @@ describe CartoDB::Log do
       text1 = 'test'
       text2 = 'anothertest'
       timestamp = Time.now.utc
-      expectation = (Log::ENTRY_FORMAT % [ timestamp, text1 ]) + (Log::ENTRY_FORMAT % [ timestamp, text2 ])
 
       log = Log.new({ type: type })
       log.append(text1, timestamp)
@@ -25,7 +24,9 @@ describe CartoDB::Log do
       log = Log.where(id:log_id).first
       log.id.should eq log_id
       log.type.should eq type
-      log.to_s.should eq expectation
+      log.to_s.should eq (Log::ENTRY_FORMAT % [ timestamp, text1 ]) + 
+                         (Log::ENTRY_FORMAT % [ timestamp, text2 ]) + 
+                         Log::END_OF_LOG_MARK
     end
   end
 
@@ -56,20 +57,26 @@ describe CartoDB::Log do
 
       log.to_s.should eq (Log::ENTRY_FORMAT % [ timestamp, text1 ]) + 
                             (Log::ENTRY_FORMAT % [ timestamp, text2 ]) + 
+                            Log::HALF_OF_LOG_MARK +
                             (Log::ENTRY_FORMAT % [ timestamp, text3 ]) + 
-                            (Log::ENTRY_FORMAT % [ timestamp, text4 ])
+                            (Log::ENTRY_FORMAT % [ timestamp, text4 ]) + 
+                            Log::END_OF_LOG_MARK
 
       log.append(text5, timestamp)
       log.to_s.should eq (Log::ENTRY_FORMAT % [ timestamp, text1 ]) + 
                             (Log::ENTRY_FORMAT % [ timestamp, text2 ]) + 
+                            Log::HALF_OF_LOG_MARK +
                             (Log::ENTRY_FORMAT % [ timestamp, text5 ]) + 
-                            (Log::ENTRY_FORMAT % [ timestamp, text4 ])
+                            (Log::ENTRY_FORMAT % [ timestamp, text4 ]) + 
+                            Log::END_OF_LOG_MARK
 
       log.append(text6, timestamp)
       log.to_s.should eq (Log::ENTRY_FORMAT % [ timestamp, text1 ]) + 
                             (Log::ENTRY_FORMAT % [ timestamp, text2 ]) + 
+                            Log::HALF_OF_LOG_MARK +
                             (Log::ENTRY_FORMAT % [ timestamp, text5 ]) + 
-                            (Log::ENTRY_FORMAT % [ timestamp, text6 ])
+                            (Log::ENTRY_FORMAT % [ timestamp, text6 ]) + 
+                            Log::END_OF_LOG_MARK
     end
 
     it 'checks that loading a log with existing entries works' do
@@ -94,6 +101,7 @@ describe CartoDB::Log do
       #reload
       log = Log.where(id: log.id).first
 
+      # collect doesn't beautifies
       log.send(:collect_entries).should eq (Log::ENTRY_FORMAT % [ timestamp, text1 ]) + 
                                            (Log::ENTRY_FORMAT % [ timestamp, text2 ]) + 
                                            (Log::ENTRY_FORMAT % [ timestamp, text3 ]) + 
@@ -101,8 +109,10 @@ describe CartoDB::Log do
 
       log.to_s.should eq (Log::ENTRY_FORMAT % [ timestamp, text1 ]) + 
                          (Log::ENTRY_FORMAT % [ timestamp, text2 ]) + 
+                         Log::HALF_OF_LOG_MARK +
                          (Log::ENTRY_FORMAT % [ timestamp, text3 ]) + 
-                         (Log::ENTRY_FORMAT % [ timestamp, text4 ])
+                         (Log::ENTRY_FORMAT % [ timestamp, text4 ]) + 
+                         Log::END_OF_LOG_MARK
 
       # More tests
       log = Log.new({ type: Log::TYPE_DATA_IMPORT })
@@ -115,6 +125,11 @@ describe CartoDB::Log do
       log.send(:collect_entries).should eq (Log::ENTRY_FORMAT % [ timestamp, text1 ]) + 
                                            (Log::ENTRY_FORMAT % [ timestamp, text2 ]) + 
                                            (Log::ENTRY_FORMAT % [ timestamp, text3 ])
+      log.to_s.should eq (Log::ENTRY_FORMAT % [ timestamp, text1 ]) + 
+                         (Log::ENTRY_FORMAT % [ timestamp, text2 ]) + 
+                         Log::HALF_OF_LOG_MARK +
+                         (Log::ENTRY_FORMAT % [ timestamp, text3 ]) + 
+                         Log::END_OF_LOG_MARK
 
 
       log = Log.new({ type: Log::TYPE_DATA_IMPORT })
@@ -123,6 +138,9 @@ describe CartoDB::Log do
       log = Log.where(id: log.id).first
 
       log.send(:collect_entries).should eq (Log::ENTRY_FORMAT % [ timestamp, text1 ])
+
+      log.to_s.should eq (Log::ENTRY_FORMAT % [ timestamp, text1 ]) + 
+                         Log::END_OF_LOG_MARK
 
       # This test checks that old logs with more lines than accepted get truncated correctly
       log = Log.new({ type: Log::TYPE_DATA_IMPORT })
@@ -144,13 +162,36 @@ describe CartoDB::Log do
                                            (Log::ENTRY_FORMAT % [ timestamp, text2 ]) + 
                                            (Log::ENTRY_FORMAT % [ timestamp, text3 ]) + 
                                            (Log::ENTRY_FORMAT % [ timestamp, text4 ])
+      log.to_s.should eq (Log::ENTRY_FORMAT % [ timestamp, text1 ]) + 
+                                           (Log::ENTRY_FORMAT % [ timestamp, text2 ]) + 
+                                           Log::HALF_OF_LOG_MARK +
+                                           (Log::ENTRY_FORMAT % [ timestamp, text3 ]) + 
+                                           (Log::ENTRY_FORMAT % [ timestamp, text4 ]) + 
+                                           Log::END_OF_LOG_MARK
+
+      #Nothing should change with this
+      log.send(:fix_entries_encoding)
+      log.send(:collect_entries).should eq (Log::ENTRY_FORMAT % [ timestamp, text1 ]) + 
+                                           (Log::ENTRY_FORMAT % [ timestamp, text2 ]) + 
+                                           (Log::ENTRY_FORMAT % [ timestamp, text3 ]) + 
+                                           (Log::ENTRY_FORMAT % [ timestamp, text4 ])
+      log.to_s.should eq (Log::ENTRY_FORMAT % [ timestamp, text1 ]) + 
+                                           (Log::ENTRY_FORMAT % [ timestamp, text2 ]) + 
+                                           Log::HALF_OF_LOG_MARK +
+                                           (Log::ENTRY_FORMAT % [ timestamp, text3 ]) + 
+                                           (Log::ENTRY_FORMAT % [ timestamp, text4 ]) + 
+                                           Log::END_OF_LOG_MARK
     end
 
     it 'checks zero case of a new log' do
       log = Log.new({ type: Log::TYPE_DATA_IMPORT })
-      log.to_s.should eq ''
+      log.to_s.should eq Log::END_OF_LOG_MARK
       log = Log.where(id: log.id).first
-      log.to_s.should eq ''
+      log.to_s.should eq Log::END_OF_LOG_MARK
+
+      # Forcing call without entries
+      log.send(:fix_entries_encoding)
+      log.to_s.should eq Log::END_OF_LOG_MARK
     end
   end
 

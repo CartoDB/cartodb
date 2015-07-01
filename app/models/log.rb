@@ -16,6 +16,9 @@ module CartoDB
     ENTRY_FORMAT = "%s: %s#{ENTRY_POSTFIX}"
     ENTRY_REHYDRATED_FORMAT = "%s#{ENTRY_POSTFIX}"
 
+    HALF_OF_LOG_MARK = '----------\n'
+    END_OF_LOG_MARK = '===LOG END==='
+
     TYPE_DATA_IMPORT     = 'import'
     TYPE_SYNCHRONIZATION = 'sync'
 
@@ -45,8 +48,16 @@ module CartoDB
 
     def to_s
       # Just as a safeguard, no real store will be done if there's no data to flush
+      # TODO: Check all usages of Log to see if could be removed
       store
-      self.entries
+
+      # Extra decoration only for string presentation
+      list = @fixed_entries_half
+      circular_half = @circular_entries_half.compact
+      if circular_half.length > 0
+        list = list + [HALF_OF_LOG_MARK]
+      end
+      list = (list + circular_half + [END_OF_LOG_MARK]).join('')
     end
 
     def store
@@ -70,7 +81,8 @@ module CartoDB
             error_info: "id: #{id}"
           })
         begin
-          self.entries = "Previous log entries stripped because of an error, check Rollbar. Id: #{id}"
+          self.entries = "Previous log entries stripped because of an error, check Rollbar. Id: #{id}\n" + 
+                         END_OF_LOG_MARK
           self.save
         rescue => e3
           CartoDB.notify_exception(e3, 
@@ -130,7 +142,7 @@ module CartoDB
 
     def collect_entries
       # INFO: Abusing that join always produces a String to not need to handle nils
-      (@fixed_entries_half + @circular_entries_half.compact).join('')
+      (@fixed_entries_half + @circular_entries_half).join('')
     end
 
     # INFO: To ease testing
@@ -138,9 +150,16 @@ module CartoDB
       @half_max_entries_size ||= MAX_LOG_ENTRIES / 2
     end
 
-    # TODO: Adapt this to new format
     def fix_entries_encoding
-      self.entries = self.entries.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '?????')
+      @fixed_entries_half = @fixed_entries_half.map { |entry|
+        entry.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '?????') unless entry.nil?
+      }
+      @circular_entries_half = @circular_entries_half.map { |entry|
+        entry.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '?????') unless entry.nil?
+      }
+      @dirty = true
+
+      self.entries = collect_entries
     end
 
     def validate

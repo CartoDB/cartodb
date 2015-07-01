@@ -21,6 +21,7 @@ module CartoDB
 
     TYPE_DATA_IMPORT     = 'import'
     TYPE_SYNCHRONIZATION = 'sync'
+    TYPE_USER_CREATION   = 'user_creation'
 
     # @param id Numeric
     # @param type String

@@ -6,17 +6,22 @@ require_relative '../../../../../spec/rspec_configuration.rb'
 
 describe Carto::Gme::TableGeocoder do
 
-  mandatory_args = {
-      connection: nil,
+  before(:all) do
+    connection_stub = mock
+    connection_stub.stubs(:run)
+
+    @mandatory_args = {
+      connection: connection_stub,
       original_formatter: '{mock}',
       client_id: 'my_client_id',
       private_key: 'my_private_key'
-  }
+    }
+  end
 
   describe '#initialize' do
 
     it 'returns an object that responds to AbstractTableGeocoder interface' do
-      table_geocoder = Carto::Gme::TableGeocoder.new(mandatory_args)
+      table_geocoder = Carto::Gme::TableGeocoder.new(@mandatory_args)
       interface_methods = [:add_georef_status_column,
                            :cancel,
                            :run,
@@ -34,8 +39,8 @@ describe Carto::Gme::TableGeocoder do
         Carto::Gme::TableGeocoder.new
       }.to raise_error(ArgumentError)
 
-      mandatory_args.each do |arg|
-        args_missing_one = mandatory_args.dup
+      @mandatory_args.each do |arg|
+        args_missing_one = @mandatory_args.dup
         args_missing_one.delete(arg[0])
         lambda {
           Carto::Gme::TableGeocoder.new(args_missing_one)
@@ -48,7 +53,7 @@ describe Carto::Gme::TableGeocoder do
       Carto::Gme::Client.expects(:new).with('my_client_id', 'my_private_key').once.returns(gme_client_mock)
       Carto::Gme::GeocoderClient.expects(:new).with(gme_client_mock).once
 
-      table_geocoder = Carto::Gme::TableGeocoder.new(mandatory_args)
+      table_geocoder = Carto::Gme::TableGeocoder.new(@mandatory_args)
     end
   end
 
@@ -60,7 +65,7 @@ describe Carto::Gme::TableGeocoder do
       Carto::Gme::Client.expects(:new).with('my_client_id', 'my_private_key').once.returns(gme_client_mock)
       Carto::Gme::GeocoderClient.expects(:new).with(gme_client_mock).once
 
-      @table_geocoder = Carto::Gme::TableGeocoder.new(mandatory_args)
+      @table_geocoder = Carto::Gme::TableGeocoder.new(@mandatory_args)
     end
 
     it "set's the state to 'processing' when it starts" do

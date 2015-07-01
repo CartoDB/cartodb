@@ -17,7 +17,7 @@ module CartoDB
       `chmod 777 #{@working_dir}`
       @formatter   = arguments[:formatter]
       @remote_id   = arguments[:remote_id]
-      @max_rows    = arguments[:max_rows] || 1000000
+      @max_rows    = arguments.fetch(:max_rows)
       @geocoder    = CartoDB::Geocoder.new(
         app_id:             arguments[:app_id],
         token:              arguments[:token],
@@ -53,7 +53,7 @@ module CartoDB
         UPDATE #{@qualified_table_name} SET cartodb_georef_status = FALSE
         WHERE (cartodb_georef_status IS NULL)
         AND (cartodb_id IN (SELECT cartodb_id FROM #{@qualified_table_name} WHERE (cartodb_georef_status IS NULL) LIMIT #{@max_rows - cache.hits}))
-      })
+     })
     end
 
     # Generate a csv input file from the geocodable rows
@@ -101,6 +101,14 @@ module CartoDB
       import_results_to_temp_table
       load_results_into_original_table
       cache.store
+    rescue Sequel::DatabaseError => e
+      if e.message =~ /canceling statement due to statement timeout/
+        # INFO: Timeouts here are not recoverable for batched geocodes, but they are for non-batched
+        # INFO: cache.store relies on having results in the target table
+        raise Carto::GeocoderErrors::TableGeocoderDbTimeoutError.new(e)
+      else
+        raise
+      end
     ensure
       drop_temp_table
     end

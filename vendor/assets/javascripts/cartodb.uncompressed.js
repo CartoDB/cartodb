@@ -1,6 +1,6 @@
 // cartodb.js version: 3.14.3
 // uncompressed version: cartodb.uncompressed.js
-// sha: 20f6baa3cb9d8be15b78c65fa0e0b398566cc426
+// sha: ba74d70bc52ffc823a0a518680caa69084a73d8d
 (function() {
   var root = this;
 
@@ -41171,7 +41171,7 @@ var CSS = {
 function guessCss(sql, geometryType, column, stats) {
   var css = null
   if (stats.type == 'number') {
-    css =  CSS.choropleth(stats.quantiles, column, geometryType, ramps.blue);
+    css =  CSS.choropleth(stats.quantiles, column, geometryType, ramps.red);
   } else if(stats.type == 'string') {
     css = CSS.category(stats.hist.slice(0, ramps.cat.length).map(function(r) { return r[0]; }), column, geometryType)
   }
@@ -41204,15 +41204,15 @@ function guessMap(sql, tableName, column, stats) {
   if (stats.type == 'number') {
     if (['A','U'].indexOf(stats.dist_type) != -1) {
       // apply divergent scheme
-      css = CSS.choropleth(stats.jenks, tableName, column, geometryType, ramps.divergent);
+      css = CSS.choropleth(stats.jenks, tableName, columnName, geometryType, ramps.divergent);
     } else if (stats.dist_type === 'F') {
-      css = CSS.choropleth(stats.equalint, tableName, column, geometryType, ramps.blue);
+      css = CSS.choropleth(stats.equalint, tableName, columnName, geometryType, ramps.red);
     } else {
       if (stats.dist_type === 'J') {
-        css = CSS.choropleth(stats.headtails, tableName, column, geometryType, ramps.blue);
+        css = CSS.choropleth(stats.headtails, tableName, columnName, geometryType, ramps.red);
       } else {
-        var inverse_ramp = (_.clone(ramps.blue)).reverse();
-        css = CSS.choropleth(stats.headtails, tableName, column, geometryType, inverse_ramp);
+        var inverse_ramp = (_.clone(ramps.red)).reverse();
+        css = CSS.choropleth(stats.headtails, tableName, columnName, geometryType, inverse_ramp);
       }
     }
   

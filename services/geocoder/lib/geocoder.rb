@@ -29,6 +29,8 @@ module CartoDB
       maxresults: 1
     }
 
+    # INFO: the request_id is the most important thing to care for batch requests
+    # INFO: it is called remote_id in upper layers
     attr_reader   :base_url, :request_id, :app_id, :token, :mailto,
                   :status, :processed_rows, :total_rows, :dir,
                   :non_batch_base_url
@@ -138,6 +140,8 @@ module CartoDB
       end
       csv.close
       @status = 'completed'
+      # TODO: is this really needed? seems to be used for temp directory creation
+      # TODO: split non-batched and batched geocodes
       @request_id = UUIDTools::UUID.timestamp_create.to_s.gsub('-', '')
     end
 

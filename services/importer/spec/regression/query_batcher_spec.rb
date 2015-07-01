@@ -1,6 +1,8 @@
 # encoding: utf-8
 
-require 'rspec'
+require 'rspec/core'
+require 'rspec/expectations'
+require 'rspec/mocks'
 require 'mocha'
 require_relative '../../lib/importer/query_batcher'
 require_relative '../factories/pg_connection'

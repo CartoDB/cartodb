@@ -43,7 +43,9 @@ shared_context 'organization with users helper' do
   include CacheHelper
   include_context 'database configuration'
 
-  bypass_named_maps
+  before(:each) do
+    bypass_named_maps
+  end
 
   def test_organization
     organization = Organization.new
@@ -131,6 +133,10 @@ end
 shared_context 'users helper' do
   include_context 'database configuration'
 
+  before(:each) do
+    User.any_instance.stubs(:enable_remote_db_user).returns(true)
+  end
+
   before(:all) do
     username1 = random_username
     @user1 = create_user(
@@ -164,7 +170,10 @@ end
 
 shared_context 'visualization creation helpers' do
   include Warden::Test::Helpers
-  bypass_named_maps
+
+  before(:each) do
+    bypass_named_maps
+  end
 
   def create_random_table(user, name = "viz#{rand(999)}")
     create_table( { user_id: user.id, name: name } )

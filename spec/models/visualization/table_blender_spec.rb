@@ -1,12 +1,8 @@
 # encoding: utf-8
 require_relative '../../../app/models/visualization/table_blender'
-require 'mocha'
+require_relative '../../rspec_configuration.rb'
 
 include CartoDB::Visualization
-
-RSpec.configure do |config|
-  config.mock_with :mocha
-end
 
 # TODO this file cannot be executed in isolation
 describe TableBlender do

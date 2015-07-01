@@ -1,6 +1,6 @@
-// cartodb.js version: 3.15.0
+// cartodb.js version: 3.15.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: 5d6b8d8d319c66d1a224969d7be742166991f209
+// sha: 0045618b8ed6f93aaee6351c6cb89787d8620e99
 (function() {
   var root = this;
 
@@ -25652,7 +25652,7 @@ if (typeof window !== 'undefined') {
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = "3.15.0";
+    cdb.VERSION = "3.15.1";
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -26949,13 +26949,13 @@ cdb.geo.MapLayer = cdb.core.Model.extend({
     visible: true,
     type: 'Tiled'
   },
+
   /***
   * Compare the layer with the received one
   * @method isEqual
   * @param layer {Layer}
   */
   isEqual: function(layer) {
-
     var me          = this.toJSON()
       , other       = layer.toJSON()
       // Select params generated when layer is added to the map
@@ -27002,13 +27002,10 @@ cdb.geo.MapLayer = cdb.core.Model.extend({
         } else { // not gmaps
           return true;
         }
-
       }
     }
     return false; // different type
   }
-
-
 });
 
 // Good old fashioned tile layer
@@ -27024,7 +27021,6 @@ cdb.geo.GMapsBaseLayer = cdb.geo.MapLayer.extend({
     base_type: 'gray_roadmap',
     style: null
   }
-
 });
 
 /**
@@ -27068,7 +27064,6 @@ cdb.geo.TorqueLayer = cdb.geo.MapLayer.extend({
       return other.get(p) === self.get(p);
     });
   }
-
 });
 
 // CartoDB layer
@@ -27288,7 +27283,6 @@ cdb.geo.Map = cdb.core.Model.extend({
 
     // Set options
     _.defaults(this.options, options);
-
   },
 
   /**
@@ -27427,7 +27421,6 @@ cdb.geo.Map = cdb.core.Model.extend({
 
     // change both at the same time
     this.trigger('change:view_bounds_ne', this);
-
   },
 
   // set center and zoom according to fit bounds
@@ -27478,11 +27471,9 @@ cdb.geo.Map = cdb.core.Model.extend({
     }
 
     return zoom - 1;
-
   }
 
 }, {
-
   latlngToMercator: function(latlng, zoom) {
     var ll = new L.LatLng(latlng[0], latlng[1]);
     var pp = L.CRS.EPSG3857.latLngToPoint(ll, zoom);
@@ -27493,7 +27484,6 @@ cdb.geo.Map = cdb.core.Model.extend({
     var ll = L.CRS.EPSG3857.pointToLatLng(point, zoom);
     return [ll.lat, ll.lng]
   }
-
 });
 
 
@@ -27705,7 +27695,6 @@ cdb.geo.MapView = cdb.core.View.extend({
 
 
 }, {
-
   _getClass: function(provider) {
     var mapViewClass = cdb.geo.LeafletMapView;
     if(provider === 'googlemaps') {
@@ -27725,9 +27714,7 @@ cdb.geo.MapView = cdb.core.View.extend({
       map: mapModel
     });
   }
-
-}
-);
+});
 cdb.geo.ui.Text = cdb.core.View.extend({
 
   className: "cartodb-overlay overlay-text",
@@ -33352,8 +33339,8 @@ MapBase.prototype = {
         if (data.cdn_url) {
           self.options.cdn_url = self.options.cdn_url || {}
           self.options.cdn_url = {
-            http: self.options.cdn_url.http || data.cdn_url.http,
-            https: self.options.cdn_url.https || data.cdn_url.https
+            http: data.cdn_url.http || self.options.cdn_url.http,
+            https: data.cdn_url.https || self.options.cdn_url.https
           }
         }
         self.urls = self._layerGroupTiles(self.mapProperties, self.options.extra_params);
@@ -33570,11 +33557,19 @@ MapBase.prototype = {
     var layers = [];
     for(var i = 0; i < this.layers.length; ++i) {
       var layer = this.layers[i];
-      if(layer.options && !layer.options.hidden) {
+      if (this._isLayerVisible(layer)) {
         layers.push(layer);
       }
     }
     return layers;
+  },
+
+  _isLayerVisible: function(layer) {
+    if (layer.options && 'hidden' in layer.options) {
+      return !layer.options.hidden;
+    }
+
+    return layer.visible !== false;
   },
 
   setLayer: function(layer, def) {
@@ -33910,7 +33905,7 @@ NamedMap.prototype = _.extend({}, MapBase.prototype, {
     var payload = this.named_map.params || {};
     for(var i = 0; i < this.layers.length; ++i) {
       var layer = this.layers[i];
-      payload['layer' + i] = layer.options.hidden ? 0: 1;
+      payload['layer' + i] = this._isLayerVisible(layer) ? 1 : 0;
     }
     return payload;
   },
@@ -33991,9 +33986,7 @@ NamedMap.prototype = _.extend({}, MapBase.prototype, {
  */
 
 function CartoDBLayerCommon() {
-
   this.visible = true;
-
 }
 
 CartoDBLayerCommon.prototype = {
@@ -34018,9 +34011,7 @@ CartoDBLayerCommon.prototype = {
   },
 
   toggle: function() {
-
     this.isVisible() ? this.hide() : this.show();
-
     return this.isVisible();
   },
 
@@ -34111,7 +34102,6 @@ CartoDBLayerCommon.prototype = {
     opts.visible ? this.show() : this.hide();
     this.setSilent(false);
     this._definitionUpdated();
-
   },
 
   _getLayerDefinition: function() {
@@ -34137,7 +34127,6 @@ CartoDBLayerCommon.prototype = {
     cartocss = cartocss.replace(/\{\{table_name\}\}/g, opts.table_name);
     cartocss = cartocss.replace(new RegExp( opts.table_name, "g"), "layer0");
 
-
     return {
       sql: sql,
       cartocss: cartocss,
@@ -34145,7 +34134,6 @@ CartoDBLayerCommon.prototype = {
       params: params,
       interactivity: opts.interactivity
     }
-
   },
 
   error: function(e) {
@@ -34212,9 +34200,6 @@ CartoDBLayerCommon.prototype = {
 
   }
 };
-
-
-
 
 cdb.geo.common = {};
 
@@ -35919,7 +35904,6 @@ CartoDBLayerGroupBase.prototype.getTile = function(coord, zoom, ownerDocument) {
     finished();
   }
 
-
   return im;
 };
 
@@ -35950,7 +35934,6 @@ CartoDBLayerGroupBase.prototype.update = function (done) {
     }
   });
 };
-
 
 CartoDBLayerGroupBase.prototype.refreshView = function() {
   var self = this;
@@ -36121,8 +36104,6 @@ function LayerGroupView(base) {
     base.call(this, opts);
     cdb.geo.GMapsLayerView.call(this, layerModel, this, gmapsMap);
   };
-
-
 
   _.extend(
     GMapsCartoDBLayerGroupView.prototype,
@@ -37942,8 +37923,6 @@ var Vis = cdb.core.View.extend({
             this.timeSlider.hide();
           }
         }
-      } else {
-        if (o.visible === false) subLayer.hide();
       }
     }
   },
@@ -40424,10 +40403,7 @@ Layers.register('torque', function(vis, data) {
 /**
  * public api for cartodb
  */
-
 (function() {
-
-
   function _Promise() {
 
   }
@@ -40484,7 +40460,6 @@ Layers.register('torque', function(vis, data) {
    * @param options layer options
    *
    */
-
   cartodb.createLayer = function(map, layer, options, callback) {
     if(map === undefined) {
       throw new TypeError("map should be provided");
@@ -40640,13 +40615,10 @@ Layers.register('torque', function(vis, data) {
       } else {
         createLayer();
       }
-
     });
 
     return promise;
   };
-
-
 })();
 
 ;(function() {

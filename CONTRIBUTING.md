@@ -100,9 +100,9 @@ grunt
 and then
 
 ```bash
-grunt dev
+grunt config && grunt css && grunt dev
 ```
-This will watch CSS and JS files and rebuild bundles automatically upon changes.
+This will generate all necessary frontend assets and enable CSS and JS watchers for rebuilding bundles automatically upon changes.
 
 **Note!** Make sure `config/app_config.yml` don't contain the `app_assets` configuration, i.e.:
 

@@ -96,13 +96,12 @@ After that, for typical frontend work, it's recommended to run once:
 ```bash
 grunt
 ```
-
-and then
+This will generate all necessary frontend assets, and then:
 
 ```bash
-grunt config && grunt css && grunt dev
+grunt dev
 ```
-This will generate all necessary frontend assets and enable CSS and JS watchers for rebuilding bundles automatically upon changes.
+That enables CSS and JS watchers for rebuilding bundles automatically upon changes.
 
 **Note!** Make sure `config/app_config.yml` don't contain the `app_assets` configuration, i.e.:
 

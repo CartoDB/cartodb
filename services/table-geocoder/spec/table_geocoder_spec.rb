@@ -3,10 +3,7 @@ require_relative '../lib/table_geocoder.rb'
 require_relative '../../geocoder/lib/geocoder.rb'
 require_relative 'factories/pg_connection'
 require 'set'
-
-RSpec.configure do |config|
-  config.mock_with :mocha
-end
+require_relative '../../../spec/rspec_configuration.rb'
 
 describe CartoDB::TableGeocoder do
   let(:default_params) { {app_id: '', token: '', mailto: ''} }

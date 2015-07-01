@@ -8,7 +8,7 @@
     var authenticity_token = "<%= form_authenticity_token %>";
     var user_data = <%= safe_js_object @user.data.to_json %>;
     var can_change_email = <%= @user.can_change_email %>;
-    var upgrade_url = <%= cartodb_com_hosted? ? 'undefined' : "'#{current_user.upgrade_url(request.protocol)}'" %>;
+    var upgrade_url = "<%= current_user.upgrade_url(request.protocol) %>";
     var services_list = <%= @services.to_json.html_safe %>;
     // Necessary for Google + actions
     var access_token = '';

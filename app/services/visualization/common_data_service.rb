@@ -10,7 +10,7 @@ module CartoDB
 
     class CommonDataService
 
-      def initialize(datasets = CommonDataSingleton.instance.datasets[:datasets])
+      def initialize(datasets = nil)
         @datasets = datasets
       end
 
@@ -29,7 +29,7 @@ module CartoDB
         user_remotes.each { |r|
           remotes_by_name[r.name] = r
         }
-        @datasets.each do |d|
+        get_datasets.each do |d|
           begin
             visualization = remotes_by_name.delete(d['name'])
             if visualization
@@ -76,6 +76,10 @@ module CartoDB
       end
 
       private
+
+      def get_datasets
+        @datasets ||= CommonDataSingleton.instance.datasets[:datasets]
+      end
 
       def delete_remote_visualization(visualization)
         begin

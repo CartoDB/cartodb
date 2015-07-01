@@ -1,10 +1,7 @@
 # encoding: utf-8
 require_relative 'factories/pg_connection'
 require_relative '../lib/internal_geocoder.rb'
-
-RSpec.configure do |config|
-  config.mock_with :mocha
-end
+require_relative '../../../spec/rspec_configuration.rb'
 
 describe CartoDB::InternalGeocoder::Geocoder do
   before do

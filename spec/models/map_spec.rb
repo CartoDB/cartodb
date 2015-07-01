@@ -20,6 +20,7 @@ describe Map do
   end
 
   before(:each) do
+    User.any_instance.stubs(:enable_remote_db_user).returns(true)
     CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
 
     @table = Table.new

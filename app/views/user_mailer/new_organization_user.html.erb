@@ -3,13 +3,17 @@
 
 <% content_for :body do %>
 
-<p style="text-align: center;">You have been invited to CartoDB as part of the <strong><%= @organization.name %> organization</strong>. From now on you will be able to enter to your CartoDB dashboard by login in with your username (<%= @user.username %>) and the password provided by your administrator.</p>
+  <p style="text-align: center;">You have been invited to CartoDB as part of the <strong><%= @organization.name %> organization</strong>. From now on you will be able to enter to your CartoDB dashboard by login in with your username (<%= @user.username %>) and the password <%= @user_needs_password ? 'provided by your administrator' : 'you typed' %><%= ' as soon as you activate your account' unless @enable_account_link.nil? %>.</p>
 
 <table border="0" cellspacing="0" cellpadding="0" style="margin: 0 auto;">
   <tr>
     <td style="background: url(http://cartodb.s3.amazonaws.com/mails/editor/button-bg.png) no-repeat left; padding: 10px 0; font-size: 16px; width: 21px;">&nbsp;</td>
     <td style="background: #407CC0; color:#fff; padding: 10px;">
-      <a href="<%= @link %>" style="color: #fff; text-decoration: none;">Go to your dashboard</a>
+      <% if @enable_account_link.nil? %>
+        <a href="<%= @link %>" style="color: #fff; text-decoration: none;">Go to your dashboard</a>
+      <% else %>
+        <a href="<%= @enable_account_link %>" style="color:#ffffff;text-decoration:none" target="_blank">Activate your account</a>
+      <% end %>
     </td>
     <td style="background: url(http://cartodb.s3.amazonaws.com/mails/editor/button-bg.png) no-repeat right; padding: 10px 0; font-size: 16px; width: 21px;">&nbsp;</td>
   </tr>
@@ -18,6 +22,8 @@
   </tr>
 </table>
 
-<p style="text-align: center; font-size: 12px; color: #A8A8A8;">If you have not received your password yet, contact with your administrator at <%= @owner.username %></p>
+<% if @user_needs_password %>
+  <p style="text-align: center; font-size: 12px; color: #A8A8A8;">If you have not received your password yet, contact with your administrator at <%= @owner.username %></p>
+<% end %>
 
 <% end %>

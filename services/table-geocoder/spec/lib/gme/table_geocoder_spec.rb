@@ -2,11 +2,7 @@
 
 require_relative '../../../lib/gme/table_geocoder'
 require_relative '../../factories/pg_connection'
-
-RSpec.configure do |config|
-  config.mock_with :mocha
-end
-
+require_relative '../../../../../spec/rspec_configuration.rb'
 
 describe Carto::Gme::TableGeocoder do
 

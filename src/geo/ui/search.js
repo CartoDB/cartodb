@@ -11,9 +11,7 @@ cdb.geo.ui.Search = cdb.core.View.extend({
     "mousedown":                  '_stopPropagation'
   },
 
-  initialize: function() {
-     this.geocoder = this.options.geocoder || cdb.geo.geocoder.NOKIA;
-  },
+  initialize: function() {},
 
   render: function() {
     this.$el.html(this.options.template(this.options));
@@ -46,10 +44,11 @@ cdb.geo.ui.Search = cdb.core.View.extend({
 
     // Show geocoder loader
     this._showLoader();
-    this.geocoder.geocode(address, function(coords) {
+     
+    cdb.geo.geocoder.NOKIA.geocode(address, function(coords) {
       if (coords.length>0) {
         var validBBox = true;
-
+        
         // check bounding box is valid
         if(!coords[0].boundingbox || coords[0].boundingbox.south == coords[0].boundingbox.north ||
           coords[0].boundingbox.east == coords[0].boundingbox.west) {

@@ -13,6 +13,7 @@ class AccountTokensController < ApplicationController
     authenticate!(:enable_account_token, scope: params[:user_domain].present? ?  params[:user_domain] : user.username)
 
     @user = user.reload
+    @organization = user.organization
     @destination_url = CartoDB.url(self, 'dashboard', {}, @user)
 
     flash.now[:success] = 'Account enabled, yikes!'
@@ -25,6 +26,7 @@ class AccountTokensController < ApplicationController
     @user = User.where(id: user_id).first
     render_404 and return unless @user
 
+    @organization = user.organization
     @user.notify_new_organization_user
 
     render 'signup/resend'

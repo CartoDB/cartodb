@@ -34,18 +34,14 @@ module CartoDB
     def run
       add_georef_status_column
 
-      # TODO: make cache optional to ease E2E
-      #cache.run
-
+      cache.run unless cache_disabled?
       mark_rows_to_geocode
       csv_file = generate_csv()
       @geocoder = CartoDB::HiresGeocoderFactory.get(csv_file, working_dir)
       geocoder.run
       #start_geocoding_job(csv_file)
       process_results
-
-      # TODO make this configurable to ease E2E testing
-      #cache.store
+      cache.store unless cache_disabled?
     end
 
     # TODO: make the geocoders update status directly in the model
@@ -83,6 +79,10 @@ module CartoDB
 
 
     private
+
+    def cache_disabled?
+      Cartodb.config[:geocoder]['disable_cache'] || false
+    end
 
     # Mark the rows to be sent with cartodb_georef_status = FALSE
     # This is necessary for cache.store to work correctly.

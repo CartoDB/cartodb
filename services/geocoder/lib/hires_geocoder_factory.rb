@@ -24,7 +24,11 @@ module CartoDB
     private
 
     def self.use_batch_process?
-      input_rows > BATCH_FILES_OVER
+      force_batch? || input_rows > BATCH_FILES_OVER
+    end
+
+    def self.force_batch?
+      Cartodb.config[:geocoder]['force_batch'] || false
     end
 
     def self.input_rows

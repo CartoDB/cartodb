@@ -151,14 +151,13 @@ function guessMap(sql, tableName, column, stats) {
 
       wizard   = "category";
       css      = CSS.category(stats.hist.slice(0, ramps.category.length).map(function(r) { return r[0]; }),tableName, columnName, geometryType);
-      metadata = CSS.categoryMetadata(stats.hist.slice(0, ramps.category.length).map(function(r) { return r[0]; }),tableName, columnName, geometryType);
 
     }
 
   if (css) {
-    return { sql: sql, css: css, metadata: metadata, column: columnName, bbox: bbox, stats: stats, type: type, wizard: wizard  };
+    return { sql: sql, css: css, geometryType: geometryType, column: columnName, bbox: bbox, stats: stats, type: type, wizard: wizard  };
   } else {
-    return { sql: sql, css: null, metadata: metadata, column: columnName, bbox: bbox, weight: -100, type: type, wizard: wizard };
+    return { sql: sql, css: null, geometryType: geometryType, column: columnName, bbox: bbox, weight: -100, type: type, wizard: wizard };
   }
 }
 /*

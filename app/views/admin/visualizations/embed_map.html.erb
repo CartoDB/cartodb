@@ -1,4 +1,4 @@
-<%= content_for(:title) do %><%= @visualization.name.gsub(/_/," ") %><% end %>
+<%= content_for(:title) do %><%= @visualization.name %><% end %>
 
 <%= content_for(:description) do %><%= @visualization.description_clean ? "#{@visualization.description_clean}. Map created by #{@name} in CartoDB" : "Map created by #{@name} in CartoDB" %><% end %>
 

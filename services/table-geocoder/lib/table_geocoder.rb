@@ -18,15 +18,6 @@ module CartoDB
       @formatter   = arguments[:formatter]
       @remote_id   = arguments[:remote_id]
       @max_rows    = arguments.fetch(:max_rows)
-      @geocoder    = CartoDB::Geocoder.new(
-        app_id:             arguments[:app_id],
-        token:              arguments[:token],
-        mailto:             arguments[:mailto],
-        dir:                @working_dir,
-        request_id:         arguments[:remote_id],
-        base_url:           arguments[:base_url],
-        non_batch_base_url: arguments[:non_batch_base_url]
-      )
       @cache       = CartoDB::GeocoderCache.new(
         connection:  connection,
         formatter:   clean_formatter,
@@ -43,8 +34,13 @@ module CartoDB
       # TODO: make cache optional to ease E2E
       #cache.run
       mark_rows_to_geocode
-      csv_file = generate_csv
-      start_geocoding_job(csv_file)
+      csv_file = generate_csv()
+      @geocoder = HiresGeocoderFactory.get(
+        csv_file: csv_file,
+        dir: working_dir
+      )
+      geocoder.run
+      #start_geocoding_job(csv_file)
     end
 
     def update_geocoding_status
@@ -57,7 +53,7 @@ module CartoDB
     end
 
     def process_results
-      download_results
+      download_results # TODO move to HiresBatchGeocoder
       deflate_results
       create_temp_table
       import_results_to_temp_table
@@ -117,13 +113,14 @@ module CartoDB
       "trim(both from regexp_replace(regexp_replace(concat(#{formatter}), E'[\\n\\r]+', ' ', 'g'), E'\"', '', 'g'))"
     end
 
-    def start_geocoding_job(csv_file)
-      # TODO this is the right place to instantiate the geocoder
-      # TODO instead of calling updload, better to call run and do polling there
-      geocoder.input_file = csv_file
-      geocoder.upload
-      self.remote_id = geocoder.request_id
-    end
+    # TODO delete
+    # def start_geocoding_job(csv_file)
+    #   # TODO this is the right place to instantiate the geocoder
+    #   # TODO instead of calling updload, better to call run and do polling there
+    #   geocoder.input_file = csv_file
+    #   geocoder.upload
+    #   self.remote_id = geocoder.request_id
+    # end
 
     def download_results
       @result = geocoder.result

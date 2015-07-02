@@ -19,19 +19,6 @@ module CartoDB
       @connection.run("SET statement_timeout TO #{DB_STATEMENT_TIMEOUT_MS}")
     end
 
-    def add_georef_status_column
-      connection.run(%Q{
-          ALTER TABLE #{@qualified_table_name}
-          ADD COLUMN cartodb_georef_status BOOLEAN DEFAULT NULL
-        })
-    rescue Sequel::DatabaseError => e
-      if e.message =~ /canceling statement due to statement timeout/
-        raise Carto::GeocoderErrors::AddGeorefStatusColumnDbTimeoutError.new
-      end
-      raise unless e.message =~ /column .* of relation .* already exists/
-      cast_georef_status_column
-    end
-
     def cancel
       raise 'Not implemented'
     end
@@ -54,6 +41,22 @@ module CartoDB
 
     def used_batch_request?
       false
+    end
+
+
+    protected
+
+    def add_georef_status_column
+      connection.run(%Q{
+          ALTER TABLE #{@qualified_table_name}
+          ADD COLUMN cartodb_georef_status BOOLEAN DEFAULT NULL
+        })
+    rescue Sequel::DatabaseError => e
+      if e.message =~ /canceling statement due to statement timeout/
+        raise Carto::GeocoderErrors::AddGeorefStatusColumnDbTimeoutError.new
+      end
+      raise unless e.message =~ /column .* of relation .* already exists/
+      cast_georef_status_column
     end
 
 

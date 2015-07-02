@@ -39,6 +39,7 @@ module CartoDB
 
     class ServiceDisabled < StandardError; end
 
+
     def initialize(arguments)
       @input_file         = arguments[:input_file]
       @base_url           = arguments[:base_url]
@@ -57,17 +58,6 @@ module CartoDB
       end
     end # initialize
 
-    def use_batch_process?
-      @force_batch || input_rows > BATCH_FILES_OVER
-    end
-
-    def input_rows
-      stdout, stderr, status  = Open3.capture3('wc', '-l', input_file)
-      stdout.to_i
-    rescue => e
-      0
-    end
-
     def upload
       return run_non_batched unless use_batch_process?
       assert_batch_api_enabled
@@ -79,6 +69,8 @@ module CartoDB
       )
       handle_api_error(response)
       @request_id = extract_response_field(response.body)
+      # TODO: this is a critical error, deal with it appropriately
+      raise 'Could not get the request ID' unless @request_id
     end
 
     def used_batch_request?
@@ -122,9 +114,28 @@ module CartoDB
     def result
       return @result unless @result.nil?
       results_filename = File.join(dir, "#{request_id}.zip")
+      # TODO: check for status
       stdout, stderr, status  = Open3.capture3('wget', '-nv', '-E', '-O', results_filename, api_url({}, 'result'))
       @result = Dir[File.join(dir, '*')][0]
     end # results
+
+
+    private
+
+    def http_client
+      @http_client ||= Carto::Http::Client.get('geocoder', log_requests: true)
+    end
+
+    def use_batch_process?
+      @force_batch || input_rows > BATCH_FILES_OVER
+    end
+
+    def input_rows
+      stdout, stderr, status  = Open3.capture3('wc', '-l', input_file)
+      stdout.to_i
+    rescue => e
+      0
+    end
 
     def run_non_batched
       @result = File.join(dir, 'generated_csv_out.txt')
@@ -180,13 +191,6 @@ module CartoDB
     def handle_api_error(response)
       raise "Geocoding API communication failure: #{extract_response_field(response.body, '//Details')}" if response.code != 200
     end # handle_api_errpr
-
-
-    private
-
-    def http_client
-      @http_client ||= Carto::Http::Client.get('geocoder', log_requests: true)
-    end
 
   end # Geocoder
 end # CartoDB

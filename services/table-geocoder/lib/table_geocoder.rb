@@ -40,11 +40,49 @@ module CartoDB
 
     def run
       add_georef_status_column
-      cache.run
+      # TODO: make cache optional to ease E2E
+      #cache.run
       mark_rows_to_geocode
       csv_file = generate_csv
       start_geocoding_job(csv_file)
     end
+
+    def update_geocoding_status
+      geocoder.update_status
+      { processed_rows: geocoder.processed_rows, state: geocoder.status }
+    end
+
+    def cancel
+      geocoder.cancel
+    end
+
+    def process_results
+      download_results
+      deflate_results
+      create_temp_table
+      import_results_to_temp_table
+      load_results_into_original_table
+      # TODO make this configurable to ease E2E testing
+      #cache.store
+    rescue Sequel::DatabaseError => e
+      if e.message =~ /canceling statement due to statement timeout/
+        # INFO: Timeouts here are not recoverable for batched geocodes, but they are for non-batched
+        # INFO: cache.store relies on having results in the target table
+        raise Carto::GeocoderErrors::TableGeocoderDbTimeoutError.new(e)
+      else
+        raise
+      end
+    ensure
+      drop_temp_table
+    end
+
+
+    def used_batch_request?
+      return geocoder.used_batch_request?
+    end
+
+
+    private
 
     # Mark the rows to be sent with cartodb_georef_status = FALSE
     # This is necessary for cache.store to work correctly.
@@ -75,42 +113,14 @@ module CartoDB
       return csv_file
     end
 
-    def update_geocoding_status
-      geocoder.update_status
-      { processed_rows: geocoder.processed_rows, state: geocoder.status }
-    end
-
     def clean_formatter
       "trim(both from regexp_replace(regexp_replace(concat(#{formatter}), E'[\\n\\r]+', ' ', 'g'), E'\"', '', 'g'))"
-    end
-
-    def cancel
-      geocoder.cancel
     end
 
     def start_geocoding_job(csv_file)
       geocoder.input_file = csv_file
       geocoder.upload
       self.remote_id = geocoder.request_id
-    end
-
-    def process_results
-      download_results
-      deflate_results
-      create_temp_table
-      import_results_to_temp_table
-      load_results_into_original_table
-      cache.store
-    rescue Sequel::DatabaseError => e
-      if e.message =~ /canceling statement due to statement timeout/
-        # INFO: Timeouts here are not recoverable for batched geocodes, but they are for non-batched
-        # INFO: cache.store relies on having results in the target table
-        raise Carto::GeocoderErrors::TableGeocoderDbTimeoutError.new(e)
-      else
-        raise
-      end
-    ensure
-      drop_temp_table
     end
 
     def download_results
@@ -172,10 +182,6 @@ module CartoDB
 
     def deflated_results_path
       Dir[File.join(working_dir, '*_out.txt')][0]
-    end
-
-    def used_batch_request?
-      return geocoder.used_batch_request?
     end
 
   end # Geocoder

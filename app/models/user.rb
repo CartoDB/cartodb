@@ -286,7 +286,7 @@ class User < Sequel::Model
         if !error_happened
           Thread.new do
             conn = self.in_database(as: :cluster_admin)
-            drop_database(conn)
+            drop_database_and_user(conn)
             drop_user(conn)
           end.join
           monitor_user_notification
@@ -353,8 +353,7 @@ class User < Sequel::Model
     monitor_user_notification
   end
 
-  def drop_database_and_user
-    conn = self.in_database(as: :cluster_admin)
+  def drop_database_and_user(conn = self.in_database(as: :cluster_admin))
 
     if !database_name.nil? && !database_name.empty?
       conn.run("UPDATE pg_database SET datallowconn = 'false' WHERE datname = '#{database_name}'")

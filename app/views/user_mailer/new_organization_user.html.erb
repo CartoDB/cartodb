@@ -5,12 +5,23 @@
     <td>
       <!-- HEADER -->
       <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; border: 1px solid #dddddd; border-bottom: 0; border-collapse: separate !important; border-top-left-radius: 4px; border-top-right-radius: 4px; width: 100% !important;">
-        <tr>
-          <td align="left" style="padding: 40px 50px 40px 50px; font-weight: bold; font-size: 25px; font-family: Helvetica, Arial, sans-serif; color: #333333;">You have been invited to CartoDB</td>
-        </tr>
+        <% if @user_needs_password %>
+          <tr>
+            <td align="left" style="padding: 40px 50px 0 50px; font-weight: bold; font-size: 25px; font-family: Helvetica, Arial, sans-serif; color: #333333;">You have been invited to CartoDB</td>
+          </tr>
+
+          <tr>
+            <td align="left" style="padding: 20px 50px 40px 50px; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;">If you have not received your password yet, contact with your administrator at <strong><%= @owner.username %></strong>.</td>
+          </tr>
+        <% else %>
+          <tr>
+            <td align="left" style="padding: 40px 50px 40px 50px; font-weight: bold; font-size: 25px; font-family: Helvetica, Arial, sans-serif; color: #333333;">You have been invited to CartoDB</td>
+          </tr>
+        <% end %>
       </table>
     </td>
   </tr>
+
   <tr>
     <td>
       <!-- CONTENT -->
@@ -28,7 +39,7 @@
         </tr>
 
         <tr>
-          <td style="padding: 40px 50px <%= @user_needs_password ? "0" : "40px" %> 50px;" align="center" class="padding">
+          <td style="padding: 40px 50px 40px 50px;" align="center" class="padding">
             <table border="0" cellspacing="0" cellpadding="0" class="mobile-button-container">
               <tr>
                 <td align="center">
@@ -53,12 +64,6 @@
             </table>
           </td>
         </tr>
-
-        <% if @user_needs_password %>
-          <tr>
-            <td align="left" style="padding: 40px 50px 40px 50px; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;">If you have not received your password yet, contact with your administrator at <strong><%= @owner.username %></strong>.</td>
-          </tr>
-        <% end %>
       </table>
     </td>
   </tr>

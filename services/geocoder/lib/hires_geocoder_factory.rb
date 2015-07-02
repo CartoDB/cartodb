@@ -11,7 +11,7 @@ module CartoDB
 
     def self.get(input_csv_file, working_dir)
       geocoder_class = nil
-      if use_batch_process?
+      if use_batch_process? input_csv_file
         geocoder_class = HiresBatchGeocoder
       else
         geocoder_class = HiresGeocoder
@@ -23,16 +23,16 @@ module CartoDB
 
     private
 
-    def self.use_batch_process?
-      force_batch? || input_rows > BATCH_FILES_OVER
+    def self.use_batch_process? input_csv_file
+      force_batch? || input_rows(input_csv_file) > BATCH_FILES_OVER
     end
 
     def self.force_batch?
       Cartodb.config[:geocoder]['force_batch'] || false
     end
 
-    def self.input_rows
-      stdout, stderr, status  = Open3.capture3('wc', '-l', input_file)
+    def self.input_rows(input_csv_file)
+      stdout, stderr, status  = Open3.capture3('wc', '-l', input_csv_file)
       stdout.to_i
     rescue => e
       CartoDB.notify_exception(e)

@@ -10,10 +10,14 @@
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 
     <meta property="og:title" content="<%= yield :title %>" />
+    <meta property="og:site_name" content="CartoDB" />
     <meta property="og:description" content="<%= yield :description %>" />
-    <meta property="og:type" content="visualization" />
+    <meta property="og:type" content="article" />
     <meta property="og:url" content="<%= request.original_url %>" />
-    <meta property="og:image" content="<%= yield :twitter_card %>">
+    <meta property="og:image" content="<%= yield :facebook_card %>">
+    <meta property="fb:app_id" content="[FB_APP_ID]" />
+    <meta property="fb:admins" content="[FB_ADMIN_INFO]" />
+    <meta property="article:publisher" content="https://www.facebook.com/cartodb" />
 
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:site" content="@cartodb">

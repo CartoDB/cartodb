@@ -31,8 +31,10 @@ module CartoDB
 
     def run
       add_georef_status_column
+
       # TODO: make cache optional to ease E2E
       #cache.run
+
       mark_rows_to_geocode
       csv_file = generate_csv()
       @geocoder = HiresGeocoderFactory.get(
@@ -41,8 +43,13 @@ module CartoDB
       )
       geocoder.run
       #start_geocoding_job(csv_file)
+      process_results
+
+      # TODO make this configurable to ease E2E testing
+      #cache.store
     end
 
+    # TODO: make the geocoders update status directly in the model
     def update_geocoding_status
       geocoder.update_status
       { processed_rows: geocoder.processed_rows, state: geocoder.status }
@@ -54,12 +61,10 @@ module CartoDB
 
     def process_results
       download_results # TODO move to HiresBatchGeocoder
-      deflate_results
+      deflate_results # TODO move to HiresBatchGeocoder
       create_temp_table
       import_results_to_temp_table
       load_results_into_original_table
-      # TODO make this configurable to ease E2E testing
-      #cache.store
     rescue Sequel::DatabaseError => e
       if e.message =~ /canceling statement due to statement timeout/
         # INFO: Timeouts here are not recoverable for batched geocodes, but they are for non-batched
@@ -115,8 +120,6 @@ module CartoDB
 
     # TODO delete
     # def start_geocoding_job(csv_file)
-    #   # TODO this is the right place to instantiate the geocoder
-    #   # TODO instead of calling updload, better to call run and do polling there
     #   geocoder.input_file = csv_file
     #   geocoder.upload
     #   self.remote_id = geocoder.request_id
@@ -169,6 +172,7 @@ module CartoDB
     end
 
     def temp_table_name
+      # TODO the temp_table_name shouldn't be based on the remote_id
       return nil unless remote_id
       @temp_table_name = "#{@schema}.geo_#{remote_id}"
       count = 0

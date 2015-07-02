@@ -153,11 +153,12 @@ module CartoDB
         # but we need this to fix old logs
         if log.nil?
           @log = CartoDB::Log.new(type: CartoDB::Log::TYPE_SYNCHRONIZATION, user_id: user.id)
-          @log.save
+          @log.store
           self.log_id = @log.id
           store
         else
           @log.clear
+          @log.store
         end
 
         if user.nil?

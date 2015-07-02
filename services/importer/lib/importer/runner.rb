@@ -320,6 +320,7 @@ module CartoDB
       end
 
       def result_for(job, source_file, table_names, support_table_names=[], exception_klass=nil)
+        job.logger.store
         Result.new(
           name:           source_file.name,
           schema:         source_file.target_schema,

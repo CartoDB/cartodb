@@ -12,6 +12,7 @@
 * New optional config option `maps_api_cdn_template` for static maps [#4153](https://github.com/CartoDB/cartodb/issues/4153)
 * New `api/v2/viz/{id}/static/{width}/{height}.png` endpoint for retrieving static maps
 * Added `filter` option to layer_definition and named_map in vizjson [#4197](https://github.com/CartoDB/cartodb/pull/4197)
+* Log model improvements: Stores only upon finish (to hit way less the DB) and size constraints
 * Updated cartodb.js to 3.15.1.
 
 Bugfixes:

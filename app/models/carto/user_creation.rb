@@ -16,6 +16,7 @@ class Carto::UserCreation < ActiveRecord::Base
     user_creation.quota_in_bytes = user.quota_in_bytes
     user_creation.google_sign_in = user.google_sign_in
     user_creation.log = Carto::Log.new_user_creation
+
     user_creation
   end
 
@@ -99,6 +100,7 @@ class Carto::UserCreation < ActiveRecord::Base
     @user.quota_in_bytes = self.quota_in_bytes unless self.quota_in_bytes.nil?
     @user.google_sign_in = self.google_sign_in
     @user.enable_account_token = User.make_token unless @user.google_sign_in
+    @user.organization.owner.copy_account_features(@user)
   rescue => e
     handle_failure(e, mark_as_failure = true)
   end

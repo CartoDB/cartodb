@@ -176,6 +176,7 @@ class DataImport < Sequel::Model
     end
 
     success ? handle_success : handle_failure
+    log.store
     Rails.logger.debug log.to_s
     self
   rescue CartoDB::QuotaExceeded => quota_exception
@@ -262,6 +263,7 @@ class DataImport < Sequel::Model
     self.table_names = table_names.join(' ')
     self.tables_created_count = table_names.size
     log.append "Import finished\n"
+    log.store
     save
     begin
       CartoDB::PlatformLimits::Importer::UserConcurrentImportsAmount.new({
@@ -286,6 +288,7 @@ class DataImport < Sequel::Model
       self.error_code = supplied_exception.error_code
     end
     log.append "ERROR!\n"
+    log.store
     self.save
     begin
       CartoDB::PlatformLimits::Importer::UserConcurrentImportsAmount.new({
@@ -304,6 +307,7 @@ class DataImport < Sequel::Model
   rescue => exception
     log.append "Exception: #{exception.to_s}"
     log.append exception.backtrace
+    log.store
     self
   end
 
@@ -379,7 +383,7 @@ class DataImport < Sequel::Model
           type:     CartoDB::Log::TYPE_DATA_IMPORT,
           user_id:  current_user.id
       )
-      self.log.save
+      self.log.store
     end
   end
 
@@ -749,6 +753,7 @@ class DataImport < Sequel::Model
   end
 
   def payload_for(result=nil)
+    log.store
     payload = {
       file_url:       public_url,
       distinct_id:    current_user.username,

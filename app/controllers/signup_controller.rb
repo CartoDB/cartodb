@@ -55,6 +55,7 @@ class SignupController < ApplicationController
     subdomain = CartoDB.subdomain_from_request(request)
     @organization = ::Organization.where(name: subdomain).first if subdomain
     render_404 and return false unless @organization && @organization.signup_page_enabled
+    render 'organization_signup_issue' unless @organization.remaining_seats > 0
   end
 
 end

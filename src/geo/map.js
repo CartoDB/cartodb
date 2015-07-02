@@ -231,24 +231,30 @@ cdb.geo.Layers = Backbone.Collection.extend({
    */
   _assignIndexes: function(model, col, options) {
     var layerTypeWeight = {
-      'torque': 100
+      'torque': 100,
+      'Tiled': 1000
     };
-    function layerWeight(layer) {
-      var t = layer.get('type');
-      return layerTypeWeight[t] || 0;
+    function layerWeight(layerType) {
+      return layerTypeWeight[layerType] || 0;
     }
-    var from = 0;//this.size() - 1;
-    if(options && options.at !== undefined) {
-      from = options.at;
-    }
+    var from = options && options.at || 0;
     if(from === 0) {
       this.models[0].set({ order: 0 });
       ++from;
     }
+    var lastOrderOfType = {};
     for(var i = from; i < this.size(); ++i) {
-      var prev = this.models[i - 1]
-      var prev_order = prev.get('order') - layerWeight(prev);
-      this.models[i].set({ order: layerWeight(this.models[i]) + prev_order + 1 });
+      var layer = this.models[i];
+      var layerType = layer.get('type');
+      if (lastOrderOfType[layerType]) {
+        var newOrder = lastOrderOfType[layerType] + 1;
+      } else {
+        var newOrder = layerWeight(layerType) + 1;
+      }
+      layer.set({
+        order: newOrder
+      });
+      lastOrderOfType[layerType] = newOrder;
     }
   }
 });

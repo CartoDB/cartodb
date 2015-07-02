@@ -47,7 +47,7 @@ describe("geo.map", function() {
     });
 
     it("should compare equal layers correctly", function() {
-      var layer1 = new cdb.geo.PlainLayer({color: '#zipote'});
+      var layer1 = new cdb.geo.PlainLayer({});
       var layer2 = new cdb.geo.PlainLayer({});
       var layer3 = new cdb.geo.PlainLayer({});
       var layer4 = new cdb.geo.PlainLayer({});
@@ -62,16 +62,66 @@ describe("geo.map", function() {
     })
 
     it("should assign indices", function() {
-      var layer1 = new cdb.geo.PlainLayer({order: 10, color: '#zipote'});
+      var baseLayer = new cdb.geo.TileLayer({order: 10});
+      var layer1 = new cdb.geo.PlainLayer({});
       var layer2 = new cdb.geo.PlainLayer({});
       var layer3 = new cdb.geo.PlainLayer({});
+
+      // Sets the order to 0
+      layers.add(baseLayer);
+
+      expect(baseLayer.get('order')).toEqual(0);
+
+      // Sets the order to 1
       layers.add(layer1);
-      expect(layer1.get('order')).toEqual(0);
       layers.add(layer2);
-      expect(layer2.get('order')).toEqual(1);
-      layers.add(layer3, { at: 1});
+
+      expect(baseLayer.get('order')).toEqual(0);
+      expect(layer1.get('order')).toEqual(1);
       expect(layer2.get('order')).toEqual(2);
+
+      // Sets the order to 1 and re-orders the rest of the layers
+      layers.add(layer3, { at: 1});
+
+      expect(baseLayer.get('order')).toEqual(0);
+      expect(layer1.get('order')).toEqual(2);
+      expect(layer2.get('order')).toEqual(3);
       expect(layer3.get('order')).toEqual(1);
+
+      var torqueLayer = new cdb.geo.TorqueLayer({});
+
+      // Torque layer should be at the top
+      layers.add(torqueLayer);
+
+      expect(baseLayer.get('order')).toEqual(0);
+      expect(layer1.get('order')).toEqual(2);
+      expect(layer2.get('order')).toEqual(3);
+      expect(layer3.get('order')).toEqual(1);
+      expect(torqueLayer.get('order')).toEqual(101);
+
+      var tiledLayer = new cdb.geo.TileLayer({});
+
+      // Tiled layer should be at the top
+      layers.add(tiledLayer);
+
+      expect(baseLayer.get('order')).toEqual(0);
+      expect(layer1.get('order')).toEqual(2);
+      expect(layer2.get('order')).toEqual(3);
+      expect(layer3.get('order')).toEqual(1);
+      expect(torqueLayer.get('order')).toEqual(101);
+      expect(tiledLayer.get('order')).toEqual(1001);
+
+      var layer4 = new cdb.geo.PlainLayer({});
+      layers.add(layer4);
+
+      expect(baseLayer.get('order')).toEqual(0);
+      expect(layer1.get('order')).toEqual(2);
+      expect(layer2.get('order')).toEqual(3);
+      expect(layer3.get('order')).toEqual(1);
+      expect(layer4.get('order')).toEqual(4);
+
+      expect(torqueLayer.get('order')).toEqual(101);
+      expect(tiledLayer.get('order')).toEqual(1001);
     });
   });
 

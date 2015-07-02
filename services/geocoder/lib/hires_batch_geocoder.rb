@@ -46,6 +46,19 @@ module CartoDB
       end
     end
 
+    def run
+      upload
+
+      # INFO: this loop polls for the state of the table_geocoder batch process
+      update_status
+      until ['completed', 'cancelled'].include? status do
+        # TODO add timeout and cancelling here
+        sleep 5
+        update_status
+      end
+
+    end
+
     def upload
       assert_batch_api_enabled
       @used_batch_request = true

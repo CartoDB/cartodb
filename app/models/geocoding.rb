@@ -135,14 +135,6 @@ class Geocoding < Sequel::Model
 
     self.update remote_id: table_geocoder.remote_id
 
-    # INFO: this loop polls for the state of the table_geocoder batch process and cannot be simply removed
-    begin
-      self.update(table_geocoder.update_geocoding_status)
-      raise 'Geocoding timeout' if Time.now - @started_at > run_timeout and ['started', 'submitted', 'accepted'].include? state
-      raise 'Geocoding failed'  if state == 'failed'
-      sleep(2)
-    end until ['completed', 'cancelled'].include? state
-
     raise 'Geocoding failed'  if state == 'failed'
     return false if state == 'cancelled'
 

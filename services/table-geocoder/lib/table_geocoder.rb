@@ -39,7 +39,6 @@ module CartoDB
       csv_file = generate_csv()
       @geocoder = CartoDB::HiresGeocoderFactory.get(csv_file, working_dir)
       geocoder.run
-      #start_geocoding_job(csv_file)
       process_results
       cache.store unless cache_disabled?
     end
@@ -116,13 +115,6 @@ module CartoDB
     def clean_formatter
       "trim(both from regexp_replace(regexp_replace(concat(#{formatter}), E'[\\n\\r]+', ' ', 'g'), E'\"', '', 'g'))"
     end
-
-    # TODO delete
-    # def start_geocoding_job(csv_file)
-    #   geocoder.input_file = csv_file
-    #   geocoder.upload
-    #   self.remote_id = geocoder.request_id
-    # end
 
     def download_results
       @result = geocoder.result

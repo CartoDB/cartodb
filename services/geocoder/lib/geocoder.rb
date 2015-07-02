@@ -87,16 +87,6 @@ module CartoDB
       @total_rows     = extract_response_field(response.body, '//Response/TotalCount')
     end # cancel
 
-    def delete
-      return unless use_batch_process?
-      assert_batch_api_enabled
-      response = http_client.delete api_url({})
-      handle_api_error(response)
-      @status         = extract_response_field(response.body, '//Response/Status')
-      @processed_rows = extract_response_field(response.body, '//Response/ProcessedCount')
-      @total_rows     = extract_response_field(response.body, '//Response/TotalCount')
-    end # cancel
-
     def update_status
       return unless use_batch_process?
       assert_batch_api_enabled

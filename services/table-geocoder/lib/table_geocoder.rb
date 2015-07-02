@@ -1,4 +1,5 @@
 # encoding: utf-8
+require 'uuidtools'
 require_relative '../../geocoder/lib/hires_geocoder_factory'
 require_relative 'geocoder_cache'
 require_relative 'abstract_table_geocoder'
@@ -8,7 +9,7 @@ module CartoDB
   class TableGeocoder < AbstractTableGeocoder
 
     attr_reader   :connection, :working_dir, :geocoder, :result, 
-                  :temp_table_name, :max_rows, :cache
+                  :max_rows, :cache
 
     attr_accessor :table_name, :formatter, :remote_id
 
@@ -170,15 +171,7 @@ module CartoDB
     end
 
     def temp_table_name
-      # TODO the temp_table_name shouldn't be based on the remote_id
-      return nil unless remote_id
-      @temp_table_name = "#{@schema}.geo_#{remote_id}"
-      count = 0
-      while connection.table_exists?(@temp_table_name) do
-        count = count + 1
-        @temp_table_name = @temp_table_name.sub(/(\_\d+)*$/, "_#{count}")
-      end
-      return @temp_table_name
+      @temp_table_name ||= "#{@schema}.geo_#{UUIDTools::UUID.timestamp_create.to_s.gsub('-', '')}"
     end
 
     def deflated_results_path

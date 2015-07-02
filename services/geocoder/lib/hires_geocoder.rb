@@ -19,23 +19,22 @@ module CartoDB
       maxresults: 1
     }
 
-    attr_reader   :base_url, :request_id, :app_id, :token, :mailto,
+    attr_reader   :app_id, :token, :mailto,
                   :status, :processed_rows, :total_rows, :dir,
                   :non_batch_base_url
 
     attr_accessor :input_file
 
 
-    def initialize(arguments)
-      @input_file         = arguments[:input_file]
-      @base_url           = arguments[:base_url]
+    def initialize(input_csv_file, workding_dir)
+      @input_file         = input_csv_file
+      @dir                = working_dir
+
+      # TODO all of these should be taken from config
       @non_batch_base_url = arguments[:non_batch_base_url]
-      @request_id         = arguments[:request_id]
       @app_id             = arguments.fetch(:app_id)
       @token              = arguments.fetch(:token)
       @mailto             = arguments.fetch(:mailto)
-      @force_batch        = arguments[:force_batch] || false
-      @dir                = arguments[:dir] || Dir.mktmpdir
     end
 
     def run
@@ -52,9 +51,6 @@ module CartoDB
       end
       csv.close
       @status = 'completed'
-      # TODO: is this really needed? seems to be used for temp directory creation
-      # TODO: split non-batched and batched geocodes
-      @request_id = UUIDTools::UUID.timestamp_create.to_s.gsub('-', '')
     end
 
     def used_batch_request?
@@ -107,7 +103,6 @@ module CartoDB
     def api_url(arguments, extra_components = nil)
       arguments.merge!(app_id: app_id, token: token, mailto: mailto)
       components = [base_url]
-      components << request_id unless request_id.nil?
       components << extra_components unless extra_components.nil?
       components << '?' + URI.encode_www_form(arguments)
       components.join('/')

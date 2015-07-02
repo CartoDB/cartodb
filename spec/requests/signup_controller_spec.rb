@@ -31,7 +31,7 @@ describe SignupController do
       Organization.stubs(:where).returns([fake_organization])
       get signup_url
       response.status.should == 200
-      response.body.should match(/Please, contact with the administrator of #{fake_organization.name}/)
+      response.body.should match(/Please, contact the administrator of #{fake_organization.name}/)
       response.body.should match(Regexp.new fake_organization.owner.email)
     end
 

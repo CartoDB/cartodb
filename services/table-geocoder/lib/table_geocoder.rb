@@ -118,6 +118,8 @@ module CartoDB
     end
 
     def start_geocoding_job(csv_file)
+      # TODO this is the right place to instantiate the geocoder
+      # TODO instead of calling updload, better to call run and do polling there
       geocoder.input_file = csv_file
       geocoder.upload
       self.remote_id = geocoder.request_id

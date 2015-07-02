@@ -83,7 +83,7 @@ module CartoDB
         { processed_rows: processed_rows, state: state }
       end # update_geocoding_status
 
-      def process_results; end
+      def process_results; end # TODO: can be removed from here and abstract class
       def cancel; end
 
       def load_results_to_temp_table

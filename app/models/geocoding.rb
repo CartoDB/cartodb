@@ -134,7 +134,6 @@ class Geocoding < Sequel::Model
     self.update(cache_hits: table_geocoder.cache.hits) if table_geocoder.respond_to?(:cache)
     Statsd.gauge("geocodings.requests", "+#{self.processed_rows}") rescue nil
     Statsd.gauge("geocodings.cache_hits", "+#{self.cache_hits}") rescue nil
-    table_geocoder.process_results if state == 'completed'
     rows_geocoded_after = table_service.owner.in_database.select.from(table_service.sequel_qualified_table_name).where('cartodb_georef_status is true and the_geom is not null').count rescue 0
 
     @finished_at = Time.now

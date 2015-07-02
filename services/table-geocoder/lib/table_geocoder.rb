@@ -39,7 +39,7 @@ module CartoDB
       csv_file = generate_csv()
       @geocoder = CartoDB::HiresGeocoderFactory.get(csv_file, working_dir)
       geocoder.run
-      process_results
+      process_results if geocoder.status == 'completed'
       cache.store unless cache_disabled?
     end
 

@@ -49,7 +49,7 @@ module Carto
 
       # Empty methods, needed because they're triggered from geocoding.rb
       def remote_id; end
-      def process_results; end
+      def process_results; end # TODO: can be removed from here and abstract class
 
       def update_geocoding_status
         { processed_rows: processed_rows, state: state }

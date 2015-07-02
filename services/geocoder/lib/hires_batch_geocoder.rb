@@ -23,31 +23,28 @@ module CartoDB
     # INFO: the request_id is the most important thing to care for batch requests
     # INFO: it is called remote_id in upper layers
     attr_reader   :base_url, :request_id, :app_id, :token, :mailto,
-                  :status, :processed_rows, :total_rows, :dir,
-                  :non_batch_base_url
-
-    attr_accessor :input_file
+                  :status, :processed_rows, :total_rows, :dir, :input_file
 
     class ServiceDisabled < StandardError; end
 
 
-    def initialize(arguments)
-      @input_file         = arguments[:input_file]
-      @base_url           = arguments[:base_url]
-      @non_batch_base_url = arguments[:non_batch_base_url]
-      @request_id         = arguments[:request_id]
-      @app_id             = arguments.fetch(:app_id)
-      @token              = arguments.fetch(:token)
-      @mailto             = arguments.fetch(:mailto)
-      @force_batch        = arguments[:force_batch] || false
-      @dir                = arguments[:dir] || Dir.mktmpdir
+    def initialize(input_csv_file, working_dir)
+      @input_file         = input_csv_file
+      @dir                = working_dir
+
+      @base_url           = config.fetch('base_url')
+      @app_id             = config.fetch('app_id')
+      @token              = config.fetch('token')
+      @mailto             = config.fetch('mailto')
+
       @used_batch_request = false
+
       begin
         @batch_api_disabled = Cartodb.config[:geocoder]['batch_api_disabled'] == true
       rescue
         @batch_api_disabled = false
       end
-    end # initialize
+    end
 
     def upload
       assert_batch_api_enabled
@@ -74,7 +71,7 @@ module CartoDB
       @status         = extract_response_field(response.body, '//Response/Status')
       @processed_rows = extract_response_field(response.body, '//Response/ProcessedCount')
       @total_rows     = extract_response_field(response.body, '//Response/TotalCount')
-    end # cancel
+    end
 
     def update_status
       assert_batch_api_enabled
@@ -83,7 +80,7 @@ module CartoDB
       @status         = extract_response_field(response.body, '//Response/Status')
       @processed_rows = extract_response_field(response.body, '//Response/ProcessedCount')
       @total_rows     = extract_response_field(response.body, '//Response/TotalCount')
-    end # update_status
+    end
 
     def assert_batch_api_enabled
       raise ServiceDisabled if @batch_api_disabled
@@ -95,10 +92,15 @@ module CartoDB
       # TODO: check for status
       stdout, stderr, status  = Open3.capture3('wget', '-nv', '-E', '-O', results_filename, api_url({}, 'result'))
       @result = Dir[File.join(dir, '*')][0]
-    end # results
+    end
 
 
     private
+
+    def config
+      # TODO deal with script/geocoder_test
+      Cartodb.config[:geocoder]
+    end
 
     def http_client
       @http_client ||= Carto::Http::Client.get('hires_batch_geocoder', log_requests: true)
@@ -111,13 +113,13 @@ module CartoDB
       components << extra_components unless extra_components.nil?
       components << '?' + URI.encode_www_form(arguments)
       components.join('/')
-    end # api_url
+    end
 
     def extract_response_field(response, query = '//Response/MetaInfo/RequestId')
       Nokogiri::XML(response).xpath("#{query}").first.content
     rescue NoMethodError => e
       nil
-    end # extract_response_field
+    end
 
     def handle_api_error(response)
       raise "Geocoding API communication failure: #{extract_response_field(response.body, '//Details')}" if response.code != 200

@@ -19,6 +19,11 @@ module.exports = function(grunt) {
   }
 
   var version = pkg.version.split('.');
+  var VERSION_OBJ =  {
+      major:      version[0],
+      minor:      version[0] + '.' + version[1],
+      bugfixing:  pkg.version
+   }
 
   var config = {
     dist: 'dist',
@@ -28,11 +33,21 @@ module.exports = function(grunt) {
       minor:      version[0] + '.' + version[1],
       bugfixing:  pkg.version
     },
-    pkg:  pkg
+    pkg:  pkg,
+    secrets: grunt.file.readJSON('secrets.json')
   };
 
   grunt.initConfig({
     config: config,
+    dist: 'dist',
+    app:  'www',
+    version: {
+      major:      version[0],
+      minor:      version[0] + '.' + version[1],
+      bugfixing:  pkg.version
+    },
+    pkg:  pkg,
+    secrets: grunt.file.readJSON('secrets.json'),
     gitinfo: {},
     s3: require('./grunt/tasks/s3').task(grunt, config),
     prompt: require('./grunt/tasks/prompt').task(grunt, config),
@@ -93,7 +108,8 @@ module.exports = function(grunt) {
   grunt.registerTask('test', [ 'jasmine' ]);
 
   grunt.registerTask('release', [
-    'build'
+    'build',
+    'prompt:bump',
   ]);
 
   grunt.registerTask('publish', function (target) {
@@ -126,7 +142,12 @@ module.exports = function(grunt) {
     minor.pop()
     minor = minor.join('.');
 
-    grunt.config.set('bump', { increment: 'build', version: version, minor: minor });
+    grunt.config.set('bump', {
+      increment: 'build',
+      version: version,
+      minor: minor,
+      bugfixing: pkg.version 
+    });
   });
 
   grunt.registerTask('invalidate', function(){
@@ -152,11 +173,11 @@ module.exports = function(grunt) {
   grunt.registerTask('pages', [ 'buildcontrol:pages' ]);
 
   grunt.registerTask('build', [
-      'prompt:bump',
       'js',
       'useminPrepare',
       'cssmin',
-      'copy:distStatic',
+      // don't copy images since image min will copy them
+      //'copy:distStatic',
       'imagemin',
       'svgmin',
       'filerev',
@@ -180,10 +201,11 @@ module.exports = function(grunt) {
   ])
 
   grunt.registerTask('dist', [
+    'set_current_version',
     'build'
   ]);
 
   grunt.registerTask('default', [
-    'build'
+    'dist'
   ]);
 }

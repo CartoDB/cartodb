@@ -19,7 +19,7 @@ git flow release start 3.15.1
 - Build CartoDB.js files, choosing the new version:
 
 ```
-grunt build
+grunt release
 ```
 
 - Update the NEWS file and commit the changes. Take into account that new CartoDB.js version will be replaced in ```API.md```, ```RELEASING.md```, ```README.md```, ```package.json```, ```cartodb.js``` and ```examples``` files.
@@ -65,7 +65,7 @@ In case you screw up all things, don't worry, rollback cartodb.js to a previous 
 
 ```
 git checkout PREVIOUS_VERSION_TAG
-grunt build
+grunt
 grunt publish
 ```
 
@@ -73,6 +73,6 @@ For example, if we are in 3.15.1 and we want to go back to 3.13.4
 
 ```
 git checkout 3.13.4
-grunt build
+grunt
 grunt publish
 ```

@@ -5,7 +5,7 @@ module CartoDB
     module Doubles
       class Log
         def initialize
-          @log = ''
+          clear
         end
 
         def append(message)
@@ -14,6 +14,14 @@ module CartoDB
 
         def to_s
           @log
+        end
+
+        def clear
+          @log = ''
+        end
+
+        def store
+          nil
         end
       end
     end

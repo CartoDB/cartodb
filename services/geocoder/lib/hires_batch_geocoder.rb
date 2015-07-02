@@ -55,7 +55,7 @@ module CartoDB
         headers: { "Content-Type" => "text/plain" }
       )
       handle_api_error(response)
-      @request_id = extract_response_field(response.body)
+      @request_id = extract_response_field(response.body, '//Response/TotalCount')
       # TODO: this is a critical error, deal with it appropriately
       raise 'Could not get the request ID' unless @request_id
     end
@@ -115,9 +115,10 @@ module CartoDB
       components.join('/')
     end
 
-    def extract_response_field(response, query = '//Response/MetaInfo/RequestId')
+    def extract_response_field(response, query)
       Nokogiri::XML(response).xpath("#{query}").first.content
     rescue NoMethodError => e
+      CartoDB.notify_exception(e)
       nil
     end
 

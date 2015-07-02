@@ -56,7 +56,7 @@ module CartoDB
         vis_id = self.attributes[:visualization_id]
         repository.delete(id)
         self.attributes.keys.each { |k| self.send("#{k}=", nil) }
-        invalidate_cache(vis_id, update_named_maps = false)
+        invalidate_cache(vis_id)
         self
       end
 
@@ -94,10 +94,10 @@ module CartoDB
         true
       end
 
-      def invalidate_cache(vis_id = nil, update_named_maps = true)
+      def invalidate_cache(vis_id = nil)
         begin
           v = visualization(vis_id)
-          v.invalidate_cache(update_named_maps)
+          v.invalidate_cache
         rescue KeyError
           # Silenced error
         end

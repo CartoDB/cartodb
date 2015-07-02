@@ -7,7 +7,7 @@ require_relative '../../lib/cartodb/mixpanel'
 class Geocoding < Sequel::Model
 
   ALLOWED_KINDS   = %w(admin0 admin1 namedplace postalcode high-resolution ipaddress)
-  DEFAULT_TIMEOUT = 5.hours
+
 
   PUBLIC_ATTRIBUTES = [:id, :table_id, :table_name, :state, :kind, :country_code, :region_code, :formatter,
                        :geometry_type, :error, :processed_rows, :cache_hits, :processable_rows, :real_rows,
@@ -26,8 +26,6 @@ class Geocoding < Sequel::Model
   attr_reader :table_geocoder
   attr_reader :started_at, :finished_at
 
-  attr_accessor :run_timeout
-
   def self.get_geocoding_calls(dataset, date_from, date_to)
     dataset.where(kind: 'high-resolution').where('geocodings.created_at >= ? and geocodings.created_at <= ?', date_from, date_to + 1.days).sum("processed_rows + cache_hits".lit).to_i
   end
@@ -43,11 +41,6 @@ class Geocoding < Sequel::Model
     # validates_presence :table_id
     validates_includes ALLOWED_KINDS, :kind
   end # validate
-
-  def after_initialize
-    super
-    @run_timeout = DEFAULT_TIMEOUT
-  end #after_initialize
 
   def before_save
     super

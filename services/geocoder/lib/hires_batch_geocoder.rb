@@ -10,6 +10,11 @@ require_relative 'hires_geocoder_interface'
 module CartoDB
   class HiresBatchGeocoder < HiresGeocoderInterface
 
+    # TODO replace with better exception
+    class HiresBatchGeocoderTimeout < StandardError; end
+
+    DEFAULT_TIMEOUT = 5.hours
+
     # Options for the csv upload endpoint of the Batch Geocoder API
     UPLOAD_OPTIONS = {
       action: 'run',
@@ -47,15 +52,27 @@ module CartoDB
     end
 
     def run
+      started_at = Time.now
       upload
 
       # INFO: this loop polls for the state of the table_geocoder batch process
       update_status
       until ['completed', 'cancelled'].include? status do
-        # TODO add timeout and cancelling here
+        if (Time.now - started_at) > DEFAULT_TIMEOUT
+          begin
+            cancel
+          ensure
+            @status = 'timeout'
+          end
+        end
+
+        break if ['failed', 'timeout'].include? status
+
         sleep 5
         update_status
       end
+
+      # TODO: do here all the process_results stuff
 
     end
 

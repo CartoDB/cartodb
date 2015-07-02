@@ -25,6 +25,16 @@ describe SignupController do
       response.status.should == 404
     end
 
+    it 'returns user error with admin mail if organization has not enough seats' do
+      fake_owner = FactoryGirl.build(:valid_user)
+      fake_organization = FactoryGirl.build(:organization, whitelisted_email_domains: ['cartodb.com'], seats: 0, owner: fake_owner)
+      Organization.stubs(:where).returns([fake_organization])
+      get signup_url
+      response.status.should == 200
+      response.body.should match(/Please, contact the administrator of #{fake_organization.name}/)
+      response.body.should match(Regexp.new fake_organization.owner.email)
+    end
+
   end
 
   describe 'user creation' do

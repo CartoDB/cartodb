@@ -300,3 +300,39 @@ a.Filters-cleanSearch { line-height:32px }
     padding: 0 20px;
   }
 }
+
+.Filters.Filters--navListing {
+  // Avoiding hide scroll bars
+  position: fixed;
+  top: 157px;
+  left: 50%;
+  width: 1000px;
+  margin-left: -500px;
+  background: $cStructure-grayBkg;
+}
+.Filters.Filters--navListing.Filters--navListing--withFlashMessage {
+  top: 157px + 81px;
+}
+.Filters.Filters--navListing:after {
+  content: '';
+  position: absolute;
+  bottom: -18px;
+  left: 50%;
+  width: 1020px;
+  height: 18px;
+  margin-left: -510px;
+  background-color: transparent!important;
+  @include background-gradient(rgba(#F9F9F9,1), rgba(#F9F9F9,0));
+  z-index: 2;
+}
+.Filters.Filters--navListing .Filters-separator { background-color: $cStructure-mainLine }
+.Filters.Filters--navListing .Filters-searchInput { margin-top: -2px } /* hacking line-height between search and input */
+.Filters--navListing .Button--create {
+  height: 34px;
+  margin-top: 48px;
+  font-size: $sFontSize-small;
+}
+.Filters--navListing .Button--create.is-disabled:hover {
+  background: none;
+  color: $cTypography-link;
+}

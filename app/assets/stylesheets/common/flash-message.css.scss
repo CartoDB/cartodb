@@ -15,6 +15,12 @@
   @include align-items(center);
   height: 80px;
 }
+.FlashMessage.FlashMessage--inDialogWithFiltersNavListing {
+  position: fixed;
+  top: 157px;
+  border-bottom: 1px solid $cStructure-mainLine;
+  & > .u-inner { @include justify-content(center, center) }
+}
 .FlashMessage--success { background: #E8F0D6 }
 .FlashMessage--error { background: #FFDBDB }
 .FlashMessage--main { background: #F0F7FC }

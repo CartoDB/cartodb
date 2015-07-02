@@ -37,10 +37,7 @@ module CartoDB
 
       mark_rows_to_geocode
       csv_file = generate_csv()
-      @geocoder = HiresGeocoderFactory.get(
-        csv_file: csv_file,
-        dir: working_dir
-      )
+      @geocoder = CartoDB::HiresGeocoderFactory.get(csv_file, working_dir)
       geocoder.run
       #start_geocoding_job(csv_file)
       process_results

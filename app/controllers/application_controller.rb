@@ -16,6 +16,7 @@ class ApplicationController < ActionController::Base
   before_filter :browser_is_html5_compliant?
   before_filter :allow_cross_domain_access
   before_filter :set_asset_debugging
+  before_filter :validate_session
   after_filter  :remove_flash_cookie
   after_filter  :add_revision_header
 
@@ -33,6 +34,22 @@ class ApplicationController < ActionController::Base
   end
 
   protected
+
+  # INFO: Use only with current_user for now
+  def update_session_security_token
+    warden.session(current_user.username)[:sec_token] = Digest::SHA1.hexdigest(current_user.crypted_password)
+  end
+
+  def session_security_token_valid?
+    warden.session(current_user.username).key?(:sec_token) && 
+    warden.session(current_user.username)[:sec_token] == Digest::SHA1.hexdigest(current_user.crypted_password)
+  end
+
+  def validate_session
+    return if current_user.nil?
+
+    reset_session unless session_security_token_valid?
+  end
 
   def is_https?
     request.protocol == 'https://'

@@ -28,6 +28,7 @@ class Admin::UsersController < ApplicationController
 
   def account_update
     @services = get_oauth_services
+    changed_password = false
     
     attributes = params[:user]
     if attributes[:new_password].present? || attributes[:confirm_password].present?
@@ -36,6 +37,7 @@ class Admin::UsersController < ApplicationController
         attributes[:new_password].presence,
         attributes[:confirm_password].presence
       )
+      changed_password = true
     end
 
     if @user.can_change_email && attributes[:email].present?
@@ -44,6 +46,10 @@ class Admin::UsersController < ApplicationController
     
     @user.save(raise_on_failure: true)
     @user.update_in_central
+
+    if changed_password
+      update_session_security_token
+    end
 
     redirect_to CartoDB.url(self, 'account_user', {}, current_user), flash: { success: "Your changes have been saved correctly." }
   rescue CartoDB::CentralCommunicationFailure => e

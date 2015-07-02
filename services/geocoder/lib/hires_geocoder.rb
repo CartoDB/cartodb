@@ -1,9 +1,7 @@
 # encoding: utf-8
-require 'nokogiri'
 require 'csv'
 require 'json'
 require 'open3'
-require 'uuidtools'
 require_relative '../../../lib/carto/http/client'
 require_relative 'hires_geocoder_interface'
 
@@ -26,15 +24,14 @@ module CartoDB
     attr_accessor :input_file
 
 
-    def initialize(input_csv_file, workding_dir)
+    def initialize(input_csv_file, working_dir)
       @input_file         = input_csv_file
       @dir                = working_dir
 
-      # TODO all of these should be taken from config
-      @non_batch_base_url = arguments[:non_batch_base_url]
-      @app_id             = arguments.fetch(:app_id)
-      @token              = arguments.fetch(:token)
-      @mailto             = arguments.fetch(:mailto)
+      @non_batch_base_url = config.fetch('non_batch_base_url')
+      @app_id             = config.fetch('app_id')
+      @token              = config.fetch('token')
+      @mailto             = config.fetch('mailto')
     end
 
     def run
@@ -71,6 +68,10 @@ module CartoDB
 
 
     private
+
+    def config
+      Cartodb.config[:geocoder]
+    end
 
     def http_client
       @http_client ||= Carto::Http::Client.get('hires_geocoder', log_requests: true)

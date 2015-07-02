@@ -108,8 +108,9 @@ module.exports = function(grunt) {
   grunt.registerTask('test', [ 'jasmine' ]);
 
   grunt.registerTask('release', [
-    'build',
     'prompt:bump',
+    'build',
+    'publish'
   ]);
 
   grunt.registerTask('publish', function (target) {

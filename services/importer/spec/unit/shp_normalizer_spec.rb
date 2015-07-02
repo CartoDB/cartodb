@@ -1,9 +1,9 @@
 # encoding: utf-8
 
-require 'mocha'
 require 'fileutils'
 require_relative '../../lib/importer/shp_normalizer'
 require_relative '../doubles/job'
+require_relative '../../../../spec/rspec_configuration.rb'
 
 include CartoDB::Importer2::Doubles
 

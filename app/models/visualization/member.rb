@@ -247,7 +247,7 @@ module CartoDB
 
         support_tables.delete_all
 
-        invalidate_cache(update_named_maps = false)
+        invalidate_cache
         overlays.destroy
         layers(:base).map(&:destroy)
         layers(:cartodb).map(&:destroy)
@@ -420,12 +420,9 @@ module CartoDB
         derived? && !single_data_layer?
       end
 
-      def invalidate_cache(update_named_maps=true)
+      def invalidate_cache
         invalidate_redis_cache
         invalidate_varnish_cache
-        if update_named_maps && (type == TYPE_CANONICAL || type == TYPE_DERIVED || organization?)
-          save_named_map
-        end
         parent.invalidate_cache unless parent_id.nil?
       end
 
@@ -449,7 +446,7 @@ module CartoDB
       def get_named_map
         return false if type == TYPE_REMOTE
 
-        data = named_maps.get(CartoDB::NamedMapsWrapper::NamedMap.normalize_name(id))
+        data = named_maps.get(CartoDB::NamedMapsWrapper::NamedMap.template_name(id))
         if data.nil?
           false
         else
@@ -614,6 +611,17 @@ module CartoDB
         embed_redis_cache.invalidate(self.id)
       end
 
+      # INFO: Handles doing nothing if instance is not eligible to have a named map
+      def save_named_map
+        return if type == TYPE_REMOTE
+
+        named_map = get_named_map
+        if named_map
+          update_named_map(named_map)
+        else
+          create_named_map
+        end
+      end
 
       private
 
@@ -706,13 +714,11 @@ module CartoDB
           permission.clear
         end
 
-        if type == TYPE_REMOTE
-          propagate_privacy_and_name_to(table) if table and propagate_changes
-        elsif type == TYPE_CANONICAL
-          save_named_map
+        save_named_map
+
+        if type == TYPE_REMOTE || type == TYPE_CANONICAL
           propagate_privacy_and_name_to(table) if table and propagate_changes
         else
-          save_named_map
           propagate_name_to(table) if !table.nil? and propagate_changes
         end
       end
@@ -742,15 +748,6 @@ module CartoDB
           )
         end
         @named_maps
-      end
-
-      def save_named_map
-        named_map = get_named_map
-        if named_map
-          update_named_map(named_map)
-        else
-          create_named_map
-        end
       end
 
       def create_named_map

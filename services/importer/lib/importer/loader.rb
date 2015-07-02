@@ -235,7 +235,8 @@ module CartoDB
           job.log "ogr2ogr exit code: #{ogr2ogr.exit_code}"
         end
 
-        raise DuplicatedColumnError.new(job.logger) if ogr2ogr.command_output[0..200] =~ /specified more than once/
+        raise DuplicatedColumnError.new(job.logger) if ogr2ogr.command_output =~ /column (.*) of relation (.*) already exists/
+        raise DuplicatedColumnError.new(job.logger) if ogr2ogr.command_output =~ /specified more than once/
         raise InvalidGeoJSONError.new(job.logger) if ogr2ogr.command_output =~ /nrecognized GeoJSON/
         raise TooManyColumnsError.new(job.logger) if ogr2ogr.command_output =~ /tables can have at most 1600 columns/
         if ogr2ogr.command_output =~ /canceling statement due to statement timeout/i

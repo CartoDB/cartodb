@@ -5,8 +5,8 @@ module CartoDB
     class Presenter
 
       NAMED_MAP_TYPE = 'namedmap'
-
       LAYER_TYPES_TO_DECORATE = [ 'torque' ]
+      DEFAULT_TILER_FILTER = 'mapnik'
 
       # @throws NamedMapsPresenterError
       def initialize(visualization, layergroup, options, configuration)
@@ -14,7 +14,7 @@ module CartoDB
         @options          = options
         @configuration    = configuration
         @layergroup_data  = layergroup
-        @named_map_name   = NamedMap.normalize_name(@visualization.id)
+        @named_map_name   = NamedMap.template_name(@visualization.id)
       end
 
       # Prepares additional data to decorate layers in the LAYER_TYPES_TO_DECORATE list
@@ -63,6 +63,7 @@ module CartoDB
                                   @configuration[:tiler]['public']['port'],
               cdn_url:          @configuration.fetch(:cdn_url, nil),
               dynamic_cdn:        @options.fetch(:dynamic_cdn_enabled),
+              filter:           @configuration[:tiler].fetch('filter', DEFAULT_TILER_FILTER),
               named_map:        {
                 name:     @named_map_name,
                 stat_tag: @visualization.id,
@@ -86,36 +87,38 @@ module CartoDB
 
       # Extract relevant information from layers
       def configure_layers_data
+        # Http/base layers don't appear at viz.json
         layers = @visualization.layers(:cartodb)
         layers_data = Array.new
-
         layers.each { |layer|
           layer_vizjson = layer.get_presenter(@options, @configuration).to_vizjson_v2
-          data = {
+          layers_data.push(data_for_carto_layer(layer_vizjson))
+        }
+        layers_data
+      end
+
+      def data_for_carto_layer(layer_vizjson)
+        data = {
             layer_name: layer_vizjson[:options][:layer_name],
             interactivity: layer_vizjson[:options][:interactivity],
             visible: layer_vizjson[:visible]
           }
 
-          if layer_vizjson.include?(:infowindow) && !layer_vizjson[:infowindow].nil? &&
-               !layer_vizjson[:infowindow].fetch('fields').nil? && layer_vizjson[:infowindow].fetch('fields').size > 0
-            data[:infowindow] = layer_vizjson[:infowindow]
-          end
+        if layer_vizjson.include?(:infowindow) && !layer_vizjson[:infowindow].nil? &&
+             !layer_vizjson[:infowindow].fetch('fields').nil? && layer_vizjson[:infowindow].fetch('fields').size > 0
+          data[:infowindow] = layer_vizjson[:infowindow]
+        end
 
-          if layer_vizjson.include?(:tooltip) && !layer_vizjson[:tooltip].nil? &&
-               !layer_vizjson[:tooltip].fetch('fields').nil? && layer_vizjson[:tooltip].fetch('fields').size > 0
-            data[:tooltip] = layer_vizjson[:tooltip]
-          end
+        if layer_vizjson.include?(:tooltip) && !layer_vizjson[:tooltip].nil? &&
+             !layer_vizjson[:tooltip].fetch('fields').nil? && layer_vizjson[:tooltip].fetch('fields').size > 0
+          data[:tooltip] = layer_vizjson[:tooltip]
+        end
 
-          if layer_vizjson.include?(:legend) && !layer_vizjson[:legend].nil? &&
-               layer_vizjson[:legend].fetch('type') != 'none'
-            data[:legend] = layer_vizjson[:legend]
-          end
-
-          layers_data.push(data)
-        }
-
-        layers_data
+        if layer_vizjson.include?(:legend) && !layer_vizjson[:legend].nil? &&
+             layer_vizjson[:legend].fetch('type') != 'none'
+          data[:legend] = layer_vizjson[:legend]
+        end
+        data
       end
 
       # Loads the data of a given named map
@@ -133,12 +136,12 @@ module CartoDB
               verifycert: (@configuration[:tiler]['internal']['verifycert'] rescue true)
             }
           )
-        @named_map = named_maps.get(NamedMap.normalize_name(@visualization.id))
+        @named_map = named_maps.get(NamedMap.template_name(@visualization.id))
         unless @named_map.nil?
           if @visualization.parent_id.nil?
             @named_map_template = @named_map.template.fetch(:template)
           else
-            parent_named_map = named_maps.get(NamedMap.normalize_name(@visualization.parent_id))
+            parent_named_map = named_maps.get(NamedMap.template_name(@visualization.parent_id))
             @named_map_template = parent_named_map.template.fetch(:template).merge(@named_map.template.fetch(:template))
           end
         end

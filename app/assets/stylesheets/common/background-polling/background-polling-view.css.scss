@@ -1,0 +1,129 @@
+@import "../variables/mixins";
+@import "../variables/colors";
+@import "../variables/sizes";
+
+// Background importer styles
+
+$radius: 4px;
+
+.BackgroundPolling {   
+  position: fixed;
+  bottom: -255px;
+  left: 20px;
+  width: 420px;
+  box-shadow: 0 0 3px 3px rgba(black, 0.1);
+  background: white;
+  @include opacity(0);
+  border-radius: $radius;
+  border: 1px solid #CCC;
+  @include transition(all, 300ms);
+  z-index: 10;
+}
+.BackgroundPolling.is-visible {
+  bottom: 20px;
+  @include opacity(1);
+}
+.BackgroundPolling-header {
+  @include display-flex();
+  @include justify-content(flex-start, start);
+  @include align-items(center, center);
+  height: 65px;
+  padding: 0 20px;
+  background: $cStructure-grayBkg;
+  border-top-left-radius: $radius;
+  border-top-right-radius: $radius;
+  border-bottom: 1px solid $cStructure-mainLine;
+}
+.BackgroundPolling-headerTitle {
+  width: 220px;
+  margin-left: 20px;
+  font-size: $sFontSize-large;
+  color: $cTypography-paragraphs;
+}
+.BackgroundPolling-headerBadge {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  line-height: 42px;
+  border: 1px solid #CCC;
+  border-radius: 3px;
+  text-align: center;
+}
+.BackgroundPolling-headerBadgeIcon {
+  font-size: 23px;
+  color: $cTypography-help;
+}
+.BackgroundPolling-headerBadge.has-failures {
+  border-color: $cHighlight-negative;
+  .BackgroundPolling-headerBadgeIcon { color: $cHighlight-negative }
+}
+.BackgroundPolling-headerBadgeCount {
+  /* "backwards" to use the first keyframe's styles before animation starts */
+  @include animation(fade-and-bounce-up 0.6s 350ms ease-in-out backwards);
+}
+.BackgroundPolling-headerButton {
+  background-color: transparent;
+  border: 1px solid #CCC;
+  color: $cTypography-paragraphs;
+  &:hover {
+    border-color: $cTypography-headers;
+    color: $cTypography-headers;
+  }
+}
+.BackgroundPolling-list {
+  max-height: 230px;
+  overflow: auto;
+}
+
+
+@include keyframes(fade-and-scale-in) {
+  0% {
+    @include opacity(0.0);
+    @include transform(scale(2.0));
+  }
+  10% {
+    @include opacity(0.9);
+    @include transform(scale(1.1));
+  }
+  100% {
+    @include opacity(1.0);
+    @include transform(scale(1.0));
+  }
+}
+
+@include keyframes(fade-and-bounce-up) {
+  0% {
+    @include opacity(0.0);
+    @include transform(translateY(6px));
+  }
+  15% {
+    @include opacity(0.8);
+    @include transform(translateY(-3px));
+  }
+  45% {
+    @include opacity(1.0);
+    @include transform(translateY(2px));
+  }
+  70% {
+    @include transform(translateY(-1px));
+  }
+  100% {
+    @include opacity(1.0);
+    @include transform(translateY(0));
+  }
+}
+
+@include keyframes(fade-and-scale-out) {
+  0% {
+    @include opacity(1.0);
+    @include transform(scale(1.0));
+  }
+  80% {
+    @include opacity(0.05);
+    @include transform(scale(1.40));
+  }
+  100% {
+    @include opacity(0.0);
+    @include transform(scale(2.0));
+  }
+}

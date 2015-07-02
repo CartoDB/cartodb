@@ -11,41 +11,12 @@ include CartoDB
 # - Typhoeus allows stubbing, but no easy way of knowing how many times (if any) you called it
 describe CartoDB::NamedMapsWrapper::NamedMaps do
 
-  SPEC_NAME = 'named_maps_spec'
-
-  def tiler_port
-    Cartodb.config[:tiler]['internal']['port']
-  end
-
-  def public_tiler_port
-    Cartodb.config[:tiler]['public']['port']
-  end
-
-  def tiler_regex
-    if (tiler_port == '8888')
-      %r{http:\/\/127\.0\.0\.1:8888\/api\/v1\/map\/named\/[a-zA-Z0-9_]+\?api_key=.*}
-    else
-      %r{http:\/\/127\.0\.0\.1:8181\/api\/v1\/map\/named\/[a-zA-Z0-9_]+\?api_key=.*}
-    end
-  end
-
-  def named_maps_url(user_api_key)
-    "http://127.0.0.1:#{tiler_port}/api/v1/map/named?api_key=#{user_api_key}"
-  end
-
-  def named_map_url(template_id, user_api_key)
-    "http://127.0.0.1:#{tiler_port}/api/v1/map/named/#{template_id}?api_key=#{user_api_key}"
-  end
-
   before(:all) do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
     # Hook new backend to Sequel current connection
     Visualization.repository = DataRepository::Backend::Sequel.new(Rails::Sequel.connection, :visualizations)
 
-    puts "\n[rspec][#{SPEC_NAME}] Creating test user database..."
     @user = create_user( :quota_in_bytes => 524288000, :table_quota => 100, :private_tables_enabled => true )
-
-    puts "[rspec][#{SPEC_NAME}] Running..."
   end
 
   before(:each) do
@@ -72,7 +43,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
     @user.destroy
   end
 
-  describe '#normalize_name' do
+  describe '#template_name' do
     it 'tests normalization of names' do
       name_1 = '08fee512-97cf-11e3-a775-30f9edfe5da6'
       expected_name_1 = CartoDB::NamedMapsWrapper::NamedMap::NAME_PREFIX + '08fee512_97cf_11e3_a775_30f9edfe5da6'
@@ -80,13 +51,13 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       name_2 = '!&32 += 01Z'
       expected_name_2 = CartoDB::NamedMapsWrapper::NamedMap::NAME_PREFIX + '3201Z'
 
-      normalized_name_1 = CartoDB::NamedMapsWrapper::NamedMap.normalize_name(name_1)
+      normalized_name_1 = CartoDB::NamedMapsWrapper::NamedMap.template_name(name_1)
       normalized_name_1.should eq expected_name_1
 
-      normalized_name_2 = CartoDB::NamedMapsWrapper::NamedMap.normalize_name(name_2)
+      normalized_name_2 = CartoDB::NamedMapsWrapper::NamedMap.template_name(name_2)
       normalized_name_2.should eq expected_name_2
     end
-  end #normalize_name
+  end
 
   describe 'password_protected_visualization' do
     it 'tests visualization auth capabilities for password restricted type' do
@@ -148,7 +119,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
                 Typhoeus::Response.new( code: 200, body: JSON::dump( { template_id: 'tpl_fakeid' } ) )
               )
 
-      template_id = CartoDB::NamedMapsWrapper::NamedMap.normalize_name(derived_vis.id)
+      template_id = CartoDB::NamedMapsWrapper::NamedMap.template_name(derived_vis.id)
 
       Typhoeus::Expectation.clear()
       # Retrieval
@@ -166,7 +137,6 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       derived_vis.get_auth_tokens().should eq [auth_token]
     end
   end
-
 
   describe 'public_table' do
     it 'public map with public visualization creates a named map' do
@@ -227,7 +197,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       collection.add(derived_vis)
       collection.store()
 
-      template_id = CartoDB::NamedMapsWrapper::NamedMap.normalize_name(derived_vis.id)
+      template_id = CartoDB::NamedMapsWrapper::NamedMap.template_name(derived_vis.id)
 
       named_map_template_data = {
         template_id: template_id
@@ -247,7 +217,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       named_map.should_not eq false
       named_map.template.should eq named_map_template_data
     end
-  end #private_table
+  end
 
 
   describe 'named_map_updated_on_visualization_updated' do
@@ -288,9 +258,8 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       derived_vis.name = "renamed_visualization"
       # This should trigger the PUT call
       derived_vis.store
-
     end
-  end #named_map_updated_on_visualization_updated
+  end
 
 
   describe 'named_map_deleted_on_visualization_updated' do
@@ -350,8 +319,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
 
       derived_vis.delete()  # This will trigger a delete
     end
-  end #named_map_updated_on_visualization_updated
-
+  end
 
   describe 'only_torque_layer' do
     it 'checks returned viz.json given a named map with only a torque layer' do
@@ -426,7 +394,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       # Never expose torque SQL query in the vizjson
       vizjson[:layers][1][:options].include?(:sql).should_not eq true
     end
-  end #only_torque_layer
+  end
 
 
   describe 'only_normal_layer' do
@@ -492,7 +460,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       vizjson[:layers][1][:options][:named_map][:layers][0].include?(:layer_name).should eq true
       vizjson[:layers][1][:options][:named_map][:layers][0][:interactivity].should eq 'cartodb_id'
     end
-  end #only_normal_layer
+  end
 
 
   describe 'torque_and_normal_layers' do
@@ -598,8 +566,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       vizjson[:layers][2][:options].include?(:sql).should_not eq true
 
     end
-  end #torque_and_normal_layers
-
+  end
 
   describe 'two_normal_layers' do
     it 'checks returned viz.json given a named map with 2 normal ones' do
@@ -699,10 +666,202 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       vizjson[:layers][1][:options][:named_map][:layers][1].include?(:layer_name).should eq true
       vizjson[:layers][1][:options][:named_map][:layers][1][:interactivity].should eq 'cartodb_id'
     end
-  end #two_normal_layers
+  end
+
+  describe 'http_layer' do
+    it 'checks that a tiled layer appears as http layer on a named map but not on the viz.json' do
+      template_data = {
+        template: {
+          version: '0.0.1',
+          name: '@@PLACEHOLDER@@',
+          auth: {
+            method: 'open'
+          },
+          placeholders: {
+            layer0: {
+              type: "number",
+              default: 1
+            }
+          },
+          layergroup: {
+            layers: [
+              {
+                type: "http",
+                options: {
+                  urlTemplate: "http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png",
+                  subdomains: "abcd"
+                }
+              },
+              {
+                type: "cartodb",
+                options: {
+                  sql: "WITH wrapped_query AS (select * from test2) SELECT * from wrapped_query where <%= layer0 %>=1",
+                  layer_name: "test2",
+                  cartocss: "/** */",
+                  cartocss_version: "2.1.1",
+                  interactivity: "cartodb_id"
+                }
+              }
+            ]
+          }
+        }
+      }
+
+      table, derived_vis, template_id = create_private_table_with_public_visualization(template_data)
+
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+
+      vizjson = get_vizjson(derived_vis)
+
+      vizjson[:layers].size.should eq 2
+      vizjson[:layers][0][:type].should eq 'tiled'
+      vizjson[:layers][1][:type].should eq 'namedmap'
+
+      vizjson[:layers][1].include?(:order).should eq true
+      vizjson[:layers][1][:options][:type].should eq 'namedmap'
+      vizjson[:layers][1][:options][:named_map][:params].size.should eq 1
+      vizjson[:layers][1][:options][:named_map][:params].include?(:layer0).should eq true
+      vizjson[:layers][1][:options][:named_map][:params].include?(:layer1).should eq false
+      vizjson[:layers][1][:options][:named_map][:params][:layer0].should eq 1
+
+      vizjson[:layers][1][:options][:named_map][:layers].size.should eq 1
+      vizjson[:layers][1][:options][:named_map][:layers][0].deep_symbolize_keys()
+      vizjson[:layers][1][:options][:named_map][:layers][0].include?(:layer_name).should eq true
+      vizjson[:layers][1][:options][:named_map][:layers][0][:interactivity].should eq 'cartodb_id'
+
+      # HACK: Retrieve the named map and use it to regenerate template contents and check them
+      named_maps_instance = derived_vis.send(:named_maps)
+      template = CartoDB::NamedMapsWrapper::NamedMap.get_template_data(derived_vis, named_maps_instance)
+
+      # Because basemap layers don't count for placeholders
+      template[:placeholders][:layer0].nil?.should eq false
+      template[:placeholders][:layer1].nil?.should eq true
+      template[:layergroup][:layers].size.should eq 2
+      template[:layergroup][:layers][0][:type].should eq 'http'
+      template[:layergroup][:layers][1][:type].should eq 'cartodb'
+
+      # INFO: Slice is because we do at once all vis, derived vis and named map creation, so we check that looks valid enough
+      template[:layergroup][:layers][0][:options][:urlTemplate].slice(0, 33).should == 
+        template_data[:template][:layergroup][:layers][0][:options][:urlTemplate].slice(0, 33)
+      template[:layergroup][:layers][0][:options][:subdomains].should == template_data[:template][:layergroup][:layers][0][:options][:subdomains]
+
+      template[:layergroup][:layers][0].keys.should == [:type, :options]
+      template[:layergroup][:layers][0][:options].keys.should == [:urlTemplate, :subdomains]
+
+      template[:layergroup][:layers][1][:options].include?(:urlTemplate).should eq false
+      template[:layergroup][:layers][1][:options].include?(:subdomains).should eq false
+    end
+  end
+
+  describe 'view data' do
+    it 'checks that the named map builds correctly the :view section' do
+      template_data = {
+        template: {
+          version: '0.0.1',
+          name: '@@PLACEHOLDER@@',
+          auth: {
+            method: 'open'
+          },
+          placeholders: {
+            layer0: {
+              type: "number",
+              default: 1
+            }
+          },
+          layergroup: {
+            layers: [
+              {
+                type: "http",
+                options: {
+                  urlTemplate: "http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png",
+                  subdomains: "abcd"
+                }
+              },
+              {
+                type: "cartodb",
+                options: {
+                  sql: "WITH wrapped_query AS (select * from test2) SELECT * from wrapped_query where <%= layer0 %>=1",
+                  layer_name: "test2",
+                  cartocss: "/** */",
+                  cartocss_version: "2.1.1",
+                  interactivity: "cartodb_id"
+                }
+              }
+            ]
+          },
+          view: {
+            zoom: 3,
+            center: {
+              lng: 0.0,
+              lat: 30.0
+            }
+          }
+        }
+      }
+
+      table, derived_vis, template_id = create_private_table_with_public_visualization(template_data)
+
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+
+      vizjson = get_vizjson(derived_vis)
+
+      vizjson[:layers].size.should eq 2
+      vizjson[:layers][0][:type].should eq 'tiled'
+      vizjson[:layers][1][:type].should eq 'namedmap'
+
+      # HACK: Retrieve the named map and use it to regenerate template contents and check them
+      named_maps_instance = derived_vis.send(:named_maps)
+      template = CartoDB::NamedMapsWrapper::NamedMap.get_template_data(derived_vis, named_maps_instance)
+
+      template.keys.should == [:version, :name, :auth, :placeholders, :layergroup, :view]
+      template[:view].should == template_data[:template][:view]
+
+      # now change the viewed bounds to make them appear (if they are zero they don't)
+      ::Map.any_instance.stubs(:get_map_bounds).returns({
+          maxy: 15,
+          maxx: 14,
+          miny: 13,
+          minx: 12
+        })
+      derived_vis.map.recalculate_bounds!
+
+      template_data[:template][:view][:bounds] = {
+                            west:  12,
+                            south: 13,
+                            east:  14,
+                            north: 15
+                          }
+
+      template = CartoDB::NamedMapsWrapper::NamedMap.get_template_data(derived_vis, named_maps_instance)
+      template[:view].should == template_data[:template][:view]
+    end
+  end
 
   private
 
+  def tiler_port
+    Cartodb.config[:tiler]['internal']['port']
+  end
+
+  def public_tiler_port
+    Cartodb.config[:tiler]['public']['port']
+  end
+
+  def tiler_regex
+    if (tiler_port == '8888')
+      %r{http:\/\/127\.0\.0\.1:8888\/api\/v1\/map\/named\/[a-zA-Z0-9_]+\?api_key=.*}
+    else
+      %r{http:\/\/127\.0\.0\.1:8181\/api\/v1\/map\/named\/[a-zA-Z0-9_]+\?api_key=.*}
+    end
+  end
+
+  def named_maps_url(user_api_key)
+    "http://127.0.0.1:#{tiler_port}/api/v1/map/named?api_key=#{user_api_key}"
+  end
+
+  def named_map_url(template_id, user_api_key)
+    "http://127.0.0.1:#{tiler_port}/api/v1/map/named/#{template_id}?api_key=#{user_api_key}"
+  end
 
   # To ease testing, convert everything to symbols
   def get_vizjson(visualization)
@@ -729,7 +888,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
     table = create_table( user_id: @user.id )
     derived_vis = CartoDB::Visualization::Copier.new(@user, table.table_visualization).copy
     derived_vis.privacy = visualization_privacy
-    template_id = CartoDB::NamedMapsWrapper::NamedMap.normalize_name(derived_vis.id)
+    template_id = CartoDB::NamedMapsWrapper::NamedMap.template_name(derived_vis.id)
 
     Typhoeus.stub( tiler_regex )
             .and_return(

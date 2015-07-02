@@ -2,6 +2,8 @@
 
 <%= content_for(:description) do %><%= @visualization.description_clean || "#{@visualization.name.gsub(/_/," ")} created by #{@name} in CartoDB" %><% end %>
 
+<%= content_for(:twitter_card) do %><%= Carto::StaticMapsURLHelper.new.url_for_static_map(request, @visualization, 560, 300) %><% end %>
+
 <%= content_for(:body_class) do %> PublicMap <% end %>
 
 <%= content_for(:css) do %>
@@ -215,7 +217,7 @@
 <%= content_for(:js) do %>
   <% if @visualization.map.provider == 'googlemaps' %>
     <script type="text/javascript"
-        src="//maps.googleapis.com/maps/api/js?sensor=false&v=3.12&<%= @google_maps_api_key %>">
+        src="//maps.googleapis.com/maps/api/js?sensor=false&v=3.12&<%= @google_maps_query_string %>">
     </script>
   <% end %>
 

@@ -1,6 +1,6 @@
 # encoding: utf-8
 require_relative '../../models/map/presenter'
-require_dependency '../../lib/resque/user_jobs'
+require_dependency 'resque/user_jobs'
 require_relative '../carto/admin/user_table_public_map_adapter'
 require_relative '../carto/admin/visualization_public_map_adapter'
 require_relative '../../helpers/embed_redis_cache'
@@ -36,7 +36,7 @@ class Admin::VisualizationsController < ApplicationController
     @tables_count  = current_user.tables.count
     @first_time    = !current_user.dashboard_viewed?
     @just_logged_in = !!flash['logged']
-    @google_maps_api_key = current_user.google_maps_api_key
+    @google_maps_query_string = current_user.google_maps_query_string
     current_user.view_dashboard
     update_user_last_activity
 
@@ -55,7 +55,7 @@ class Admin::VisualizationsController < ApplicationController
       end
     end
 
-    @google_maps_api_key = @visualization.user.google_maps_api_key
+    @google_maps_query_string = @visualization.user.google_maps_query_string
     @basemaps = @visualization.user.basemaps
 
     unless @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
@@ -136,6 +136,7 @@ class Admin::VisualizationsController < ApplicationController
 
     @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)
     @avatar_url             = @visualization.user.avatar
+    @twitter_username       = @visualization.user.twitter_username.present? ? @visualization.user.twitter_username : nil
 
     @user_domain = user_domain_variable(request)
 
@@ -203,7 +204,8 @@ class Admin::VisualizationsController < ApplicationController
 
     @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)
     @avatar_url             = @visualization.user.avatar
-    @google_maps_api_key = @visualization.user.google_maps_api_key
+    @twitter_username       = @visualization.user.twitter_username.present? ? @visualization.user.twitter_username : nil
+    @google_maps_query_string = @visualization.user.google_maps_query_string
 
     @mapviews = @visualization.total_mapviews
 

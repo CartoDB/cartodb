@@ -2,7 +2,9 @@
 
 require_relative '../spec_helper'
 
-# Tests should define `get_twitter_imports_count_by_organization_id` method
+# Tests should define the following methods:
+# - get_organization: returns a correspoding Organization instance
+# - get_twitter_imports_count_by_organization_id: returns organization import count. Needed because implementations don't share a common interface
 shared_examples_for "organization models" do
   include_context 'users helper'
   include_context 'organization with users helper'
@@ -35,6 +37,21 @@ shared_examples_for "organization models" do
       expect {
         get_twitter_imports_count_by_organization_id(@organization.id).should == 11
       }.to make_database_queries(count: 0..1)
+    end
+
+  end
+
+  describe "#signup_page_enabled" do
+
+    it 'is true if domain whitelist is not empty' do
+      get_organization.whitelisted_email_domains = ['cartodb.com']
+      get_organization.signup_page_enabled.should == true
+    end
+
+    it 'is false if domain whitelist is empty' do
+      get_organization = FactoryGirl.build(:organization)
+      get_organization.whitelisted_email_domains = []
+      get_organization.signup_page_enabled.should == false
     end
 
   end

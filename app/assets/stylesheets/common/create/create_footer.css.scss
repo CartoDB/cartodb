@@ -24,6 +24,7 @@
   margin: 0 auto;
   padding: 15px 40px;
   background: $cStructure-grayBkg;
+  min-height: 70px; // To have same consistent height regardless if the footer has buttons or not
 }
 .CreateDialog-footerShadow {
   position: absolute;
@@ -54,20 +55,7 @@
   font-weight: $sFontWeight-lighter;
   color: $cTypography-secondary;
 }
-.CreateDialog-footerInfoIcon {
-  display: inline-block;
-  vertical-align: top;
-  width: 20px;
-  height: 20px;
-  margin-right: 10px;
-  text-align: center;
-  line-height: $sLineHeight-normal!important;
-  font-size: $sFontSize-normal;
-  color: white;
-  background: #F6D35C;
-  border: 1px solid #F2C000;
-  border-radius: 20px;
-}
+.CreateDialog-footerInfoIcon { margin-right: 10px }
 .CreateDialog-footerInfoEnquiry {
   font-size: $sFontSize-normal;
   color: $cTypography-headers;
@@ -76,6 +64,6 @@
 }
 .CreateDialog-footerActions {
   @include display-flex();
-  @include align-items(center, center);   
+  @include align-items(center, center);
 }
 .CreateDialog-footerActionsButton.is-separated { margin-right: 10px }

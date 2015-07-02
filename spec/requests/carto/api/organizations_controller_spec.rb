@@ -82,8 +82,8 @@ describe Carto::Api::OrganizationsController do
         last_response.status.should == 200
         json_body = JSON.parse(last_response.body)
         ids = json_body['users'].map { |u| u['id'] }
-        ids.count.should == 1
-        ids[0].should == @org_user_2.id
+        ids.count.should >= 1
+        ids.should include(@org_user_2.id)
       }
     end
 

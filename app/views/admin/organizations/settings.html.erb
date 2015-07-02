@@ -80,23 +80,6 @@
 
         <div class="Form-row">
           <div class="Form-rowLabel">
-            <label class="Form-label">Color</label>
-          </div>
-          <div class="Form-rowData">
-            <button type="button" class="js-colorPicker ColorPicker" style="background:<%= @organization.color.blank? ? "#354046" : @organization.color %>">
-              <span class="ColorPicker-handle">
-                <b class="ColorPicker-handleTriangle"></b>
-              </span>
-            </button>
-            <%= f.hidden_field :color, :class => "js-colorInput" %>
-          </div>
-          <div class="Form-rowInfo">
-            <p class="Form-rowInfoText">Your login page will be branded with this color</p>
-          </div>
-        </div>
-
-        <div class="Form-row">
-          <div class="Form-rowLabel">
             <label class="Form-label">Twitter username</label>
           </div>
           <div class="Form-rowData">
@@ -119,6 +102,60 @@
           </div>
         </div>
 
+        <div class="Form-title">
+          <h4 class="Form-titleHeader">Organization log in/sign up</h4>
+          <p class="Form-titleText">
+            Customize your organization log in and sign up.<br/>
+            <% if @organization[:whitelisted_email_domains].length === 0 %><span class="Form-titleText--negative"><% end %>
+            Sign up will only be enabled when whitelist is not empty<% if @organization[:whitelisted_email_domains].length === 0 %></span><% end %>.
+          </p>
+        </div>
+
+        <div class="Form-row">
+          <div class="Form-rowLabel">
+            <label class="Form-label">Brand color</label>
+          </div>
+          <div class="Form-rowData">
+            <button type="button" class="js-colorPicker ColorPicker" style="background:<%= @organization.color.blank? ? "#354046" : @organization.color %>">
+              <span class="ColorPicker-handle">
+                <b class="ColorPicker-handleTriangle"></b>
+              </span>
+            </button>
+            <%= f.hidden_field :color, :class => "js-colorInput" %>
+          </div>
+        </div>
+
+        <div class="Form-row">
+          <div class="Form-rowLabel">
+            <label class="Form-label Form-label--multipleLines">Whitelisted email domains</label>
+          </div>
+          <div class="Form-rowData">
+            <div class="Form-tags js-domains">
+              <ul class="Form-tagsList js-domainsList"></ul>
+            </div>
+            <%= f.hidden_field :whitelisted_email_domains, :value => "#{ @organization[:whitelisted_email_domains].join(',') if !@organization[:whitelisted_email_domains].blank? }", :class => "js-whitelist" %>
+          </div>
+          <div class="Form-rowInfo">
+            <p class="Form-rowInfoText">Only valid domains will be added (ex. cartodb.com)</p>
+          </div>
+        </div>
+
+        <div class="Form-row">
+          <div class="Form-rowLabel">
+            <label class="Form-label">Default new user quota</label>
+          </div>
+          <div class="Form-rowData">
+            <%= f.text_field :default_quota_in_bytes, :value => "#{ ( @organization[:default_quota_in_bytes].to_i / (1024 * 1024) ) if !@organization[:default_quota_in_bytes].blank? }", :class => "Form-input Form-input--long #{ 'Form-input--error' if @organization.errors[:default_quota_in_bytes].present? } js-userQuota" %>
+          </div>
+          <div class="Form-rowInfo">
+            <% if (@organization.errors[:default_quota_in_bytes].present?) %>
+              <p class="Form-rowInfoText Form-rowInfoText--error"><%= @organization.errors[:default_quota_in_bytes].first %></p>
+            <% else %>
+              <p class="Form-rowInfoText">Set (in MB) the quota of new users in your organization</p>
+            <% end %>
+          </div>
+        </div>
+
         <% if current_user.has_feature_flag?('google_maps') && current_user.organization_owner? %>
         
           <div class="Form-title">
@@ -129,7 +166,7 @@
 
           <div class="Form-row">
             <div class="Form-rowLabel">
-              <label class="Form-label">Google Maps</label>
+              <label class="Form-label Form-label--multipleLines">Google Maps<br/>query string</label>
             </div>
             <div class="Form-rowData">
               <%= f.text_field :google_maps_key, class: "Form-input Form-input--long is-disabled", :readonly => "true" %>
@@ -138,6 +175,21 @@
               <p class="Form-rowInfoText Form-rowInfoText--multipleLines">
                 This is the <%= @organization.name %> Google Maps query string. 
                 Contact with <a href="mailto:support@cartodb.com">support@cartodb.com</a> to change it.
+              </p>
+            </div>
+          </div>
+
+          <div class="Form-row">
+            <div class="Form-rowLabel">
+              <label class="Form-label Form-label--multipleLines">Google Maps<br/>private key</label>
+            </div>
+            <div class="Form-rowData">
+              <%= f.text_field :google_maps_key, class: "Form-input Form-input--long is-disabled", :readonly => "true" %>
+            </div>
+            <div class="Form-rowInfo">
+              <p class="Form-rowInfoText Form-rowInfoText--multipleLines">
+                This is the <%= @organization.name %> Google Maps private key
+                contact with <a href="mailto:support@cartodb.com">support@cartodb.com</a> to change it.
               </p>
             </div>
           </div>

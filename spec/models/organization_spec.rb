@@ -23,6 +23,10 @@ describe 'refactored behaviour' do
       @the_organization.get_geocoding_calls
     end
 
+    def get_organization
+      @the_organization
+    end
+
   end
 end
 

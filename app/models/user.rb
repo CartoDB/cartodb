@@ -13,11 +13,13 @@ require_relative './external_data_import'
 require_relative './feature_flag'
 require_relative '../../lib/cartodb/stats/api_calls'
 require_relative '../../lib/carto/http/client'
+require_dependency 'cartodb_config_utils'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
   include CartoDB::UserDecorator
   include Concerns::CartodbCentralSynchronizable
+  include CartoDB::ConfigUtils
 
   self.strict_param_setting = false
 
@@ -73,6 +75,13 @@ class User < Sequel::Model
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
 
+  def self.new_with_organization(organization)
+    user = ::User.new
+    user.organization = organization
+    user.quota_in_bytes = organization.default_quota_in_bytes
+    user
+  end
+
   ## Validations
   def validate
     super
@@ -93,15 +102,20 @@ class User < Sequel::Model
       errors.add(:password, "is not confirmed") unless password == password_confirmation
     end
     validate_password_change
-    if organization.present?
-      if new?
-        errors.add(:organization, "not enough seats") if organization.users.count >= organization.seats
-        errors.add(:quota_in_bytes, "not enough disk quota") if quota_in_bytes.to_i + organization.assigned_quota > organization.quota_in_bytes
-      else
-        # Organization#assigned_quota includes the OLD quota for this user,
-        # so we have to ammend that in the calculation:
-        errors.add(:quota_in_bytes, "not enough disk quota") if quota_in_bytes.to_i + organization.assigned_quota - initial_value(:quota_in_bytes) > organization.quota_in_bytes
-      end
+
+    organization_validation if organization.present?
+  end
+
+  def organization_validation
+    if new?
+      errors.add(:organization, "not enough seats") if organization.users.count >= organization.seats
+      errors.add(:quota_in_bytes, "not enough disk quota") if quota_in_bytes.to_i + organization.assigned_quota > organization.quota_in_bytes
+
+      organization.validate_new_user(self, errors)
+    else
+      # Organization#assigned_quota includes the OLD quota for this user,
+      # so we have to ammend that in the calculation:
+      errors.add(:quota_in_bytes, "not enough disk quota") if quota_in_bytes.to_i + organization.assigned_quota - initial_value(:quota_in_bytes) > organization.quota_in_bytes
     end
   end
 
@@ -138,6 +152,14 @@ class User < Sequel::Model
       self.sync_tables_enabled ||= true
     end
   end #before_save
+
+  def twitter_datasource_enabled
+    if has_organization?
+      organization.twitter_datasource_enabled || super
+    else
+      super
+    end
+  end
 
   def after_create
     super
@@ -331,10 +353,18 @@ class User < Sequel::Model
     monitor_user_notification
   end
 
-  def drop_database(conn = self.in_database(as: :cluster_admin))
-    conn.run("UPDATE pg_database SET datallowconn = 'false' WHERE datname = '#{database_name}'")
-    User.terminate_database_connections(database_name, database_host)
-    conn.run("DROP DATABASE \"#{database_name}\"")
+  def drop_database_and_user
+    conn = self.in_database(as: :cluster_admin)
+
+    if !database_name.nil? && !database_name.empty?
+      conn.run("UPDATE pg_database SET datallowconn = 'false' WHERE datname = '#{database_name}'")
+      User.terminate_database_connections(database_name, database_host)
+      conn.run("DROP DATABASE \"#{database_name}\"")
+    end
+
+    if !database_username.nil? && !database_username.empty?
+      conn.run("DROP USER \"#{database_username}\"")
+    end
   end
 
   def drop_user(conn = self.in_database(as: :cluster_admin), username = database_username)
@@ -860,7 +890,11 @@ class User < Sequel::Model
   end
 
   def import_quota
-    self.account_type.downcase == 'free' ? 1 : 3
+    if self.max_concurrent_import_count.nil?
+      self.account_type.downcase == 'free' ? 1 : 3
+    else
+      self.max_concurrent_import_count
+    end
   end
 
   def view_dashboard
@@ -1052,7 +1086,7 @@ class User < Sequel::Model
 
 
   def enabled?
-    self.enabled
+    self.enabled && self.enable_account_token.nil?
   end
 
   def disabled?
@@ -1591,7 +1625,11 @@ class User < Sequel::Model
   def move_tables_to_schema(old_schema, new_schema)
     self.real_tables(old_schema).each do |t|
       self.in_database(as: :superuser) do |database|
-        database.run(%Q{ ALTER TABLE #{old_schema}.#{t[:relname]} SET SCHEMA "#{new_schema}" })
+        old_name = "#{old_schema}.#{t[:relname]}"
+        new_name = "#{new_schema}.#{t[:relname]}"
+        database.run(%Q{ SELECT cartodb._CDB_drop_triggers('#{old_name}'::REGCLASS) })
+        database.run(%Q{ ALTER TABLE #{old_name} SET SCHEMA "#{new_schema}" })
+        database.run(%Q{ SELECT cartodb._CDB_create_triggers('#{new_schema}'::TEXT, '#{new_name}'::REGCLASS) })
       end
     end
   end
@@ -1804,7 +1842,9 @@ class User < Sequel::Model
   #
 
   def create_function_invalidate_varnish
-    if Cartodb.config[:varnish_management].fetch('http_port', false)
+    if Cartodb.config[:invalidation_service] && Cartodb.config[:invalidation_service].fetch('enabled', false)
+      create_function_invalidate_varnish_invalidation_service
+    elsif Cartodb.config[:varnish_management].fetch('http_port', false)
       create_function_invalidate_varnish_http
     else
       create_function_invalidate_varnish_telnet
@@ -1922,6 +1962,58 @@ TRIGGER
     LANGUAGE 'plpythonu' VOLATILE;
     REVOKE ALL ON FUNCTION public.cdb_invalidate_varnish(TEXT) FROM PUBLIC;
     COMMIT;
+TRIGGER
+    )
+  end
+
+  # Invalidate through external service
+  def create_function_invalidate_varnish_invalidation_service
+
+    add_python
+
+    invalidation_host = Cartodb.config[:invalidation_service].try(:[], 'host') || '127.0.0.1'
+    invalidation_port = Cartodb.config[:invalidation_service].try(:[],'port') || 3142
+    invalidation_timeout = Cartodb.config[:invalidation_service].try(:[],'timeout') || 5
+    invalidation_critical = Cartodb.config[:invalidation_service].try(:[], 'critical') ? 1 : 0
+    invalidation_retry = Cartodb.config[:invalidation_service].try(:[],'retry') || 5
+
+    in_database(:as => :superuser).run(<<-TRIGGER
+  BEGIN;
+  CREATE OR REPLACE FUNCTION public.cdb_invalidate_varnish(table_name text) RETURNS void AS
+  $$
+      critical = #{invalidation_critical}
+      timeout = #{invalidation_timeout}
+      retry = #{invalidation_retry}
+
+      client = GD.get('invalidation', None)
+
+      while True:
+
+        if not client:
+            try:
+              import redis
+              client = GD['invalidation'] = redis.Redis(host='#{invalidation_host}', port=#{invalidation_port}, socket_timeout=timeout)
+            except Exception as err:
+              # NOTE: we won't retry on connection error
+              if critical:
+                plpy.error('Invalidation Service connection error: ' +  str(err))
+              break
+
+        try:
+          client.execute_command('TCH', '#{self.database_name}', table_name)
+          break
+        except Exception as err:
+          plpy.warning('Invalidation Service warning: ' + str(err))
+          client = GD['invalidation'] = None # force reconnect
+          if not retry:
+            if critical:
+              plpy.error('Invalidation Service error: ' +  str(err))
+            break
+          retry -= 1 # try reconnecting
+  $$
+  LANGUAGE 'plpythonu' VOLATILE;
+  REVOKE ALL ON FUNCTION public.cdb_invalidate_varnish(TEXT) FROM PUBLIC;
+  COMMIT;
 TRIGGER
     )
   end
@@ -2347,7 +2439,7 @@ TRIGGER
 
   # Special url that goes to Central if active
   def upgrade_url(request_protocol)
-    account_url(request_protocol) + '/upgrade'
+    cartodb_com_hosted? ? '' : (account_url(request_protocol) + '/upgrade')
   end
 
   def organization_username
@@ -2390,6 +2482,27 @@ TRIGGER
     end
   end
 
+  # TODO: this is the correct name for what's stored in the model, refactor changing that name
+  alias_method :google_maps_query_string, :google_maps_api_key
+
+  # Returns the google maps private key. If the user is in an organization and
+  # that organization has a private key, the org's private key is returned.
+  def google_maps_private_key
+    if has_organization?
+      organization.google_maps_private_key || super
+    else
+      super
+    end
+  end
+
+  def google_maps_geocoder_enabled?
+    google_maps_private_key.present? && google_maps_client_id.present?
+  end
+
+  def google_maps_client_id
+    Rack::Utils.parse_nested_query(google_maps_query_string)['client'] if google_maps_query_string
+  end
+
   # returnd a list of basemaps enabled for the user
   # when google map key is set it gets the basemaps inside the group "GMaps"
   # if not it get everything else but GMaps in any case GMaps and other groups can work together
@@ -2419,6 +2532,17 @@ TRIGGER
     end
     # return only the attributes
     default.first[1]
+  end
+
+  def copy_account_features(to)
+    to.set_fields(self, [
+      :private_tables_enabled, :sync_tables_enabled, :max_layers, :user_timeout,
+      :database_timeout, :geocoding_quota, :map_view_quota, :table_quota, :database_host,
+      :period_end_date, :map_view_block_price, :geocoding_block_price, :account_type,
+      :twitter_datasource_enabled, :soft_twitter_datasource_limit, :twitter_datasource_quota,
+      :twitter_datasource_block_price, :twitter_datasource_block_size
+    ])
+    to.invite_token = User.make_token
   end
 
   private

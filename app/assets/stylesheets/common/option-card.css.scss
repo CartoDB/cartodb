@@ -34,15 +34,15 @@
   border-radius: $sCard-borderRadius;
   background-color: $cStructure-mainBkg;
 }
-.OptionCard--privacy {
+.OptionCard--blocky {
   position:relative;
   max-width: 230px; // set a max-width to appear nicer for dataset privacy dialog
   padding: 33px 33px 27px 33px;
 }
-.OptionCard--privacy .OptionCard-title {
+.OptionCard--blocky .OptionCard-title {
   margin-bottom: 0;
 }
-.OptionCard--privacy .OptionCard-desc {
+.OptionCard--blocky .OptionCard-desc {
   margin-bottom: 0;
 }
 
@@ -53,7 +53,6 @@
   @include justify-content(center);
 }
 .OptionCard.is-disabled {
-  background-color: $cStructure-grayBkg;
   @include opacity(0.4);
 }
 .OptionCard.is-selected {

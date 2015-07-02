@@ -1,4 +1,5 @@
 # encoding: utf-8
+require_relative 'exceptions'
 require_relative '../../../lib/carto/http/client'
 
 module CartoDB
@@ -38,7 +39,6 @@ module CartoDB
     def get_cache_results
       begin
         count = count + 1 rescue 0
-        sql   = "WITH addresses(address) AS (VALUES "
         limit = [@batch_size, @max_rows - (count * @batch_size)].min
         rows = connection.fetch(%Q{
             SELECT DISTINCT(md5(#{formatter})) AS searchtext
@@ -46,6 +46,7 @@ module CartoDB
             WHERE cartodb_georef_status IS NULL
             LIMIT #{limit} OFFSET #{count * @batch_size}
         }).all
+        sql   = "WITH addresses(address) AS (VALUES "
         sql << rows.map { |r| "('#{r[:searchtext]}')" }.join(',')
         sql << ") SELECT DISTINCT ON(geocode_string) st_x(g.the_geom) longitude, st_y(g.the_geom) latitude,g.geocode_string FROM addresses a INNER JOIN #{sql_api[:table_name]} g ON md5(g.geocode_string)=a.address"
         response = run_query(sql, 'csv').gsub(/\A.*/, '').gsub(/^$\n/, '')
@@ -79,10 +80,9 @@ module CartoDB
         rows = connection.fetch(%Q{
           SELECT DISTINCT(quote_nullable(#{formatter})) AS searchtext, the_geom 
           FROM #{@qualified_table_name} AS orig
-          WHERE orig.cartodb_georef_status IS NOT NULL
+          WHERE orig.cartodb_georef_status IS NOT NULL AND the_geom IS NOT NULL
           LIMIT #{@batch_size} OFFSET #{count * @batch_size}
         }).all
-        rows.reject! { |r| r[:the_geom] == nil }
         sql.gsub! '%%VALUES%%', rows.map { |r| "(#{r[:searchtext]}, '#{r[:the_geom]}')" }.join(',')
         run_query(sql) if rows && rows.size > 0
       end while rows.size >= @batch_size
@@ -134,11 +134,14 @@ module CartoDB
       response.body
     end # run_query
 
+    # It handles in such a way that the caching is silently stopped
     def handle_cache_exception(exception)
       drop_temp_table
-      ::Rollbar.report_exception(exception)
-    rescue => e
-      raise exception
+      if exception.class == Sequel::DatabaseError && exception.message =~ /canceling statement due to statement timeout/
+        # for the moment we just wrap the exception to get a specific error in rollbar
+        exception =  Carto::GeocoderErrors::GeocoderCacheDbTimeoutError.new(exception)
+      end
+      CartoDB.notify_exception(exception)
     end
 
   end # GeocoderCache

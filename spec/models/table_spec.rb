@@ -8,6 +8,7 @@
 # 1275 # Table merging two+ tables should import and then export file SHP1.zip as sql
 
 require_relative '../spec_helper'
+
 def check_schema(table, expected_schema, options={})
   table_schema = table.schema(:cartodb_types => options[:cartodb_types] || false)
   schema_differences = (expected_schema - table_schema) + (table_schema - expected_schema)
@@ -31,6 +32,10 @@ def create_import(user, file_name, name=nil)
 end
 
 describe Table do
+  before(:each) do
+    User.any_instance.stubs(:enable_remote_db_user).returns(true)
+  end
+
   before(:all) do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
     puts "\n[rspec][table_spec] Creating test user database..."

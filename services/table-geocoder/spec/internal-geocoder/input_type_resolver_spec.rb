@@ -1,10 +1,7 @@
 # encoding: utf-8
 
 require_relative '../../lib/internal-geocoder/input_type_resolver.rb'
-
-RSpec.configure do |config|
-  config.mock_with :mocha
-end
+require_relative '../../../../spec/rspec_configuration.rb'
 
 class String
   # We just need this instead of adding the whole rails thing

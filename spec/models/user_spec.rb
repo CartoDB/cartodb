@@ -6,13 +6,21 @@ describe 'refactored behaviour' do
 
   it_behaves_like 'user models' do
     def get_twitter_imports_count_by_user_id(user_id)
-      User.where(id: user_id).first.get_twitter_imports_count
+      get_user_by_id(user_id).get_twitter_imports_count
+    end
+
+    def get_user_by_id(user_id)
+      User.where(id: user_id).first
     end
   end
 
 end
 
 describe User do
+  before(:each) do
+    User.any_instance.stubs(:enable_remote_db_user).returns(true)
+  end
+
   before(:all) do
     CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
     
@@ -174,6 +182,41 @@ describe User do
       user.valid?
       user.errors.keys.should_not include(:quota_in_bytes)
       organization.destroy
+    end
+
+    describe 'organization email whitelisting' do
+
+      before(:each) do
+        @organization = create_org('testorg', 10.megabytes, 1)
+      end
+
+      after(:each) do
+        @organization.destroy
+      end
+
+      it 'valid_user is valid' do
+        user = FactoryGirl.build(:valid_user)
+        user.valid?.should == true
+      end
+
+      it 'user email is valid if organization has not whitelisted domains' do
+        user = FactoryGirl.build(:valid_user, organization: @organization)
+        user.valid?.should == true
+      end
+
+      it 'user email is not valid if organization has whitelisted domains and email is not under that domain' do
+        @organization.whitelisted_email_domains = [ 'organization.org' ]
+        user = FactoryGirl.build(:valid_user, organization: @organization)
+        user.valid?.should == false
+        user.errors[:email].should_not be_nil
+      end
+
+      it 'user email is valid if organization has whitelisted domains and email is under that domain' do
+        user = FactoryGirl.build(:valid_user, organization: @organization)
+        @organization.whitelisted_email_domains = [ user.email.split('@')[1] ]
+        user.valid?.should == true
+        user.errors[:email].should == []
+      end
     end
 
     describe 'when updating user quota' do

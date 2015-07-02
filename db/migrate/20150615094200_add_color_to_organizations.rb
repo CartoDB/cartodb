@@ -8,7 +8,7 @@ Sequel.migration do
   end
 
   down do
-    drop_column :organizations, :text
+    drop_column :organizations, :color
   end
 end
 

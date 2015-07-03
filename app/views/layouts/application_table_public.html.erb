@@ -17,7 +17,9 @@
 
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:site" content="@cartodb">
-    <meta name="twitter:creator" content="<%= @twitter_username.nil? ? "@cartodb" : "@#{@twitter_username}" %>">
+    <% unless @twitter_username.nil? %>
+      <meta name="twitter:creator" "@#{@twitter_username}" ">
+    <% end %>
     <meta name="twitter:title" content="<%= yield :page_title %>">
     <meta name="twitter:description" content="<%= yield :description %>">
     <meta name="twitter:image" content="<%= yield :twitter_card %>">

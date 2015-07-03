@@ -89,6 +89,10 @@ body.is-inDialog {
   width: $sLayout-width;
   margin: 0 auto;
 }
+.Dialog-body.Dialog-body--centered {
+  @include justify-content(center);
+  text-align: center;
+}
 .Dialog-body--withoutBorder {
   border-top: none;
 }

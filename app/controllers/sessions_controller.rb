@@ -38,8 +38,6 @@ class SessionsController < ApplicationController
       user = authenticate!(:password, scope: username)
     end
 
-    update_session_security_token(user) if user.present?
-
     render :action => 'new' and return unless params[:user_domain].present? || user.present?
 
     CartodbStats.increment_login_counter(user.email)

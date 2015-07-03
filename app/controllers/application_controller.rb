@@ -34,6 +34,7 @@ class ApplicationController < ActionController::Base
 
   protected
 
+  # @see Warden::Manager.after_set_user
   def update_session_security_token(user)
     warden.session(user.username)[:sec_token] = Digest::SHA1.hexdigest(user.crypted_password)
   end

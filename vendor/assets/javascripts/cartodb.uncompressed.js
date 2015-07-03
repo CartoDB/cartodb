@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: 7ef99ba2ddd4ba2d9bd10326d591feef9f801667
+// sha: 36127e1c0bb4d84cad3e5e7676c5e8bdc711a537
 (function() {
   var root = this;
 
@@ -26977,8 +26977,8 @@ cdb.geo.MapLayer = cdb.core.Model.extend({
       if(myType === 'Tiled') {
         var myTemplate  = me.urlTemplate? me.urlTemplate : me.options.urlTemplate
           , itsTemplate = other.urlTemplate? other.urlTemplate : other.options.urlTemplate;
-        var myName = me.name;
-        var itsName = other.name;
+        var myName = me.name? me.name : me.options.name;
+        var itsName = other.name? other.name : other.options.name;
 
         return myTemplate === itsTemplate && myName === itsName;
       } else if(myType === 'WMS') {

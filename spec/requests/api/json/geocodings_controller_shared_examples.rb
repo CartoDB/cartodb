@@ -14,8 +14,8 @@ shared_examples_for "geocoding controllers" do
     before(:each) do
       CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
       delete_user_data @user
-      host! 'test.localhost.lan'
-      login_as(@user)
+      host! "#{@user.username}.localhost.lan"
+      login_as(@user, scope: @user.username)
     end
 
     after(:all) do

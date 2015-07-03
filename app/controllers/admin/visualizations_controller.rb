@@ -475,9 +475,10 @@ class Admin::VisualizationsController < ApplicationController
       # Might be an org url, try getting the org
       organization = Organization.where(name: org_name).first
       unless organization.nil?
-        authenticated_users = request.session.select { |k,v| k.start_with?("warden.user") }.values
-        authenticated_users.each { |session|
-          username = session[0] #session[1] contains the session data inside a hash
+        authenticated_users = request.session.select { |k, v|
+          k.start_with?("warden.user") && !k.end_with?(".session")
+        }                                    .values
+        authenticated_users.each { |username|
           user = User.where(username:username).first
           if url.nil? && !user.nil? && !user.organization.nil?
             if user.organization.id == organization.id

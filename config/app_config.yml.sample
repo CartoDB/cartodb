@@ -293,7 +293,7 @@ defaults: &defaults
         minZoom: '0'
         maxZoom: '18'
         name: 'Dark matter'
-        className: 'positron_rainbow_labels'
+        className: 'dark_matter_rainbow_labels'
         attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href= "http://cartodb.com/attributions#basemaps">CartoDB</a>'
         labels:
           url: 'http://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}.png'

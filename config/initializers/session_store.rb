@@ -1,2 +1,2 @@
-CartoDB::Application.config.session_store :cookie_store, :key => '_cartodb_session', 
+CartoDB::Application.config.session_store :cookie_store, :key => '_cartodb_session', secure_random: true,
                                           :domain => Cartodb.config[:session_domain], expire_after: 7.days

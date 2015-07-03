@@ -29,7 +29,7 @@ class Admin::UsersController < ApplicationController
   def account_update
     @services = get_oauth_services
     changed_password = false
-    
+
     attributes = params[:user]
     if attributes[:new_password].present? || attributes[:confirm_password].present?
       @user.change_password(
@@ -43,12 +43,12 @@ class Admin::UsersController < ApplicationController
     if @user.can_change_email && attributes[:email].present?
       @user.set_fields(attributes, [:email])
     end
-    
+
     @user.save(raise_on_failure: true)
     @user.update_in_central
 
     if changed_password
-      update_session_security_token
+      update_session_security_token(@user)
     end
 
     redirect_to CartoDB.url(self, 'account_user', {}, current_user), flash: { success: "Your changes have been saved correctly." }
@@ -130,7 +130,7 @@ class Admin::UsersController < ApplicationController
       enabled = false
       title = ''
       revoke_url = ''
-      
+
       case serv
         when 'gdrive'
           enabled = true if Cartodb.config[:oauth]['gdrive']['client_id'].present?

@@ -16,7 +16,6 @@ class ApplicationController < ActionController::Base
   before_filter :browser_is_html5_compliant?
   before_filter :allow_cross_domain_access
   before_filter :set_asset_debugging
-  before_filter :validate_session
   after_filter  :remove_flash_cookie
   after_filter  :add_revision_header
 
@@ -36,18 +35,16 @@ class ApplicationController < ActionController::Base
   protected
 
   # INFO: Use only with current_user for now
-  def update_session_security_token
-    warden.session(current_user.username)[:sec_token] = Digest::SHA1.hexdigest(current_user.crypted_password)
+  def update_session_security_token(user)
+    warden.session(user.username)[:sec_token] = Digest::SHA1.hexdigest(user.crypted_password)
   end
 
   def session_security_token_valid?
-    warden.session(current_user.username).key?(:sec_token) && 
+    warden.session(current_user.username).key?(:sec_token) &&
     warden.session(current_user.username)[:sec_token] == Digest::SHA1.hexdigest(current_user.crypted_password)
   end
 
   def validate_session
-    return if current_user.nil?
-
     reset_session unless session_security_token_valid?
   end
 
@@ -113,11 +110,22 @@ class ApplicationController < ActionController::Base
   end
 
   def login_required
-    authenticated?(CartoDB.extract_subdomain(request)) || not_authorized
+    is_auth = authenticated?(CartoDB.extract_subdomain(request))
+    is_auth ? validate_session : not_authorized
   end
 
   def api_authorization_required
     authenticate!(:api_key, :api_authentication, :scope => CartoDB.extract_subdomain(request))
+    validate_session
+  end
+
+  # This only allows to authenticate if sending an API request to username.api_key subdomain,
+  # but doesn't breaks the request if can't authenticate
+  def optional_api_authorization
+    if params[:api_key].present?
+      got_auth = authenticate(:api_key, :api_authentication, :scope => CartoDB.extract_subdomain(request))
+      validate_session if got_auth
+    end
   end
 
   def not_authorized
@@ -238,7 +246,8 @@ class ApplicationController < ActionController::Base
         @current_viewer = current_user
       else
         authenticated_usernames = request.session.select {|k,v| k.start_with?("warden.user")}.values
-        current_user_present = authenticated_usernames.select { |username|
+        current_user_present = authenticated_usernames.select { |session|
+          username = session[0] #session[1] contains the session data inside a hash
           CartoDB.extract_subdomain(request) == username
         }.first
 

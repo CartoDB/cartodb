@@ -61,6 +61,17 @@ describe("geo.map", function() {
       expect(layer3.isEqual(layer4)).toBeTruthy();
     })
 
+    it("should compare TileLayers", function() {
+      var layer1 = new cdb.geo.TileLayer({ urlTemplate: 'urlTemplate', name: 'layer1', other: 'something' });
+      var layer2 = new cdb.geo.TileLayer({ urlTemplate: 'urlTemplate', name: 'layer2', other: 'else' });
+
+      expect(layer1.isEqual(layer2)).toBeFalsy();
+
+      layer2.set({ name: 'layer1' }, { silent: true});
+
+      expect(layer1.isEqual(layer2)).toBeTruthy();
+    })
+
     it("should assign indices", function() {
       var baseLayer = new cdb.geo.TileLayer({order: 10});
       var layer1 = new cdb.geo.PlainLayer({});

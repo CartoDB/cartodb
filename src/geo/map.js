@@ -39,7 +39,10 @@ cdb.geo.MapLayer = cdb.core.Model.extend({
       if(myType === 'Tiled') {
         var myTemplate  = me.urlTemplate? me.urlTemplate : me.options.urlTemplate
           , itsTemplate = other.urlTemplate? other.urlTemplate : other.options.urlTemplate;
-        return myTemplate === itsTemplate;
+        var myName = me.options.name;
+        var itsName = other.options.name;
+
+        return myTemplate === itsTemplate && myName === itsName;
       } else if(myType === 'WMS') {
         var myTemplate  = me.urlTemplate? me.urlTemplate : me.options.urlTemplate
           , itsTemplate = other.urlTemplate? other.urlTemplate : other.options.urlTemplate;

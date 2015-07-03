@@ -1,6 +1,7 @@
 # encoding: utf-8
 require_relative '../../models/map/presenter'
 require_dependency 'resque/user_jobs'
+require_dependency 'static_maps_url_helper'
 require_relative '../carto/admin/user_table_public_map_adapter'
 require_relative '../carto/admin/visualization_public_map_adapter'
 require_relative '../../helpers/embed_redis_cache'

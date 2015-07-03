@@ -168,6 +168,7 @@ CartoDBSubLayer.prototype = _.extend({}, SubLayerBase.prototype, {
     }
 
     if (this.get('raster')) {
+      json.options.raster = true;
       json.options.geom_column = "the_raster_webmercator";
       json.options.geom_type = "raster";
       json.options.raster_band = this.get('raster_band') || 0;

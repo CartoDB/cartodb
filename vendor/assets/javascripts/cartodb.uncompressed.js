@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: a209f021e439cd0cca73ad212ff2867ae4fe4161
+// sha: a3916a8958cedd877a2d996c24f22f1a7991d094
 (function() {
   var root = this;
 
@@ -41104,9 +41104,7 @@ Layers.register('torque', function(vis, data) {
                    'stddev_pop({{column}}) / count({{column}}) as stddev,',
                    'log(stddev_pop({{column}}) / count({{column}})) as lstddev,',
                    'CASE WHEN abs(avg({{column}})) > 1e-7 THEN stddev({{column}}) / abs(avg({{column}})) ELSE 1e12 END as stddevmean,',
-                   ' \'F\' as dist_type ',
-                   // CDB_DistType needs to be in production before using
-                   // 'CDB_DistType(array_agg("{{column}}"::numeric)) as dist_type ',
+                    'CDB_DistType(array_agg("{{column}}"::numeric)) as dist_type ',
               'from ({{sql}}) _wrap ',
         '),',
         'params as (select min(a) as min, (max(a) - min(a)) / 7 as diff from ( select {{column}} as a from ({{sql}}) _table_sql where {{column}} is not null ) as foo ),',
@@ -41131,45 +41129,11 @@ Layers.register('torque', function(vis, data) {
          'select * from histogram, stats, buckets'
       ];
 
-      // if(normalization == '_area'){
-      //   var wrap_sql = "SELECT {{column}}/ST_Area(the_geom::geography) as _target_column FROM ({{sql}}) a where the_geom is not null AND {{column}} is not null ";
-      // } else if (normalization == null) {
-      //   var wrap_sql = "SELECT {{column}} as _target_column FROM ({{sql}}) a where {{column}} is not null ";
-      // } else {
-      //   var wrap_sql = "SELECT {{column}}/{{normalization}} as _target_column FROM ({{sql}}) a where {{normalization}} is not null AND {{column}} is not null ";
-
-      // }
-
-      // wrap_sql = Mustache.render(wrap_sql.join('\n'), {
-      //   normalization: normalization, 
-      //   column: column, 
-      //   sql: sql
-      // });
-
-      // var newS = [
-      //   'with stats as (',
-      //       'select min(_target_column) as min,',
-      //              'max(_target_column) as max,',
-      //              'avg(_target_column) as avg,',
-      //              'stddev(_target_column) as stddev,',
-      //              'stddev(_target_column) / avg(_target_column) as stdevmean, ',
-      //              'CDB_DistType(array_agg(_target_column::numeric)) as dist_type ',
-      //         'from ({{sql}}) _wrap ',
-      //   '),',
-      //    'buckets as (',
-      //       'select CDB_QuantileBins(array_agg(_target_column::numeric), 7) as quantiles, ',
-      //       '       CDB_EqualIntervalBins(array_agg(_target_column::numeric), 7) as equalint, ',
-      //       '       CDB_JenksBins(array_agg(_target_column::numeric), 7) as jenks, ',
-      //       '       CDB_HeadsTailsBins(array_agg(_target_column::numeric), 7) as headtails ',
-      //       'from ({{sql}}) _table_sql',
-      //    ')',
-      //    'select * from histogram, stats, buckets'
-      // ];
-
       var query = Mustache.render(s.join('\n'), {
         column: column, 
         sql: sql
       });
+
       this.execute(query, function(data) {
         var row = data.rows[0];
         var s = array_agg(row.hist);
@@ -41249,7 +41213,8 @@ var ramps = {
   pink: ['#F1EEF6', '#D4B9DA', '#C994C7', '#DF65B0', '#E7298A', '#CE1256', '#91003F'],
   black:  ['#F7F7F7', '#D9D9D9', '#BDBDBD', '#969696', '#737373', '#525252', '#252525'],
   red:  ['#FFFFB2', '#FED976', '#FEB24C', '#FD8D3C', '#FC4E2A', '#E31A1C', '#B10026'],
-  category: ['#A6CEE3', '#1F78B4', '#B2DF8A', '#33A02C', '#FB9A99', '#E31A1C', '#FDBF6F', '#FF7F00', '#CAB2D6', '#6A3D9A', '#DDDDDD']
+  category: ['#A6CEE3', '#1F78B4', '#B2DF8A', '#33A02C', '#FB9A99', '#E31A1C', '#FDBF6F', '#FF7F00', '#CAB2D6', '#6A3D9A', '#DDDDDD'],
+  divergent: ['rgb(215,48,39)','rgb(252,141,89)','rgb(254,224,144)','rgb(255,255,191)','rgb(224,243,248)','rgb(145,191,219)','rgb(69,117,180)']
 };
 
 function geoAttr(geometryType) {
@@ -41378,7 +41343,7 @@ function guessMap(sql, tableName, column, stats) {
       css = CSS.choropleth(stats.equalint, tableName, columnName, geometryType, ramps.red);
     } else {
       if (stats.dist_type === 'J') {
-        css = CSS.choropleth(stats.headtails, tableName, columnName, geometryType, ramps.red);
+        css = CSS.choropleth(stats.headtails, tableName, columnName, geometryType, ramps.green);
       } else {
         var inverse_ramp = (_.clone(ramps.red)).reverse();
         css = CSS.choropleth(stats.headtails, tableName, columnName, geometryType, inverse_ramp);
@@ -41388,12 +41353,17 @@ function guessMap(sql, tableName, column, stats) {
   } else if (stats.type == 'string') {
 
       wizard   = "category";
-      css      = CSS.category(stats.hist.slice(0, ramps.category.length).map(function(r) { return r[0]; }),tableName, columnName, geometryType);
+      css      = CSS.category(stats.hist.slice(0, ramps.category.length).map(function(r) { return r[0]; }), tableName, columnName, geometryType);
 
+      var metadata = CSS.categoryMetadata(stats.hist.slice(0, ramps.category.length).map(function(r) { return r[0]; }), tableName, columnName, geometryType);
     }
 
-  if (css) {
-    return { sql: sql, css: css, geometryType: geometryType, column: columnName, bbox: bbox, stats: stats, type: type, wizard: wizard  };
+    if (css) {
+      if (metadata) {
+        return { sql: sql, css: css, metadata: metadata, geometryType: geometryType, column: columnName, bbox: bbox, stats: stats, type: type, wizard: wizard  };
+      } else {
+        return { sql: sql, css: css, geometryType: geometryType, column: columnName, bbox: bbox, stats: stats, type: type, wizard: wizard  };
+      }
   } else {
     return { sql: sql, css: null, geometryType: geometryType, column: columnName, bbox: bbox, weight: -100, type: type, wizard: wizard };
   }

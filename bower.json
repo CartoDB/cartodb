@@ -1,10 +1,20 @@
 {
   "name": "cartodb.js",
-  "version": "0.0.1",
-  "dependencies": {},
-  "devDependencies": {
-    "backbone": "~1.1.2",
-    "modernizr": "~2.8.3",
-    "jquery": "~2.1.1"
-  }
+  "main": [
+    "cartodb.js",
+    "themes/css/cartodb.css"
+  ],
+  "version": "3.15.1",
+  "homepage": "https://github.com/CartoDB/cartodb.js",
+  "authors": [
+    "CartoDB <support@cartodb.com>"
+  ],
+  "description": "CartoDB javascript library",
+  "license": "BSD",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test"
+  ]
 }

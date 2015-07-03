@@ -16,3 +16,4 @@ test/SpecRunner.html
 .rvmrc
 .idea/
 themes/css/cartodb.css
+cartodb.js-bower/

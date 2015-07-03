@@ -51,6 +51,12 @@ git push --all
 git push --tags
 ```
 
+- Publish to the [cartodb.js bower repo](https://github.com/CartoDB/cartodb.js-bower)
+
+```
+./bower.sh
+```
+
 - If possible, don't forget to change CartoDB.js docs.
 
 - Done. Celebrate! :)

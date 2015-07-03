@@ -173,7 +173,6 @@ CartoDBSubLayer.prototype = _.extend({}, SubLayerBase.prototype, {
       json.options.raster_band = this.get('raster_band') || 0;
       // raster needs 2.3.0 to work
       json.options.cartocss_version = this.get('cartocss_version') || '2.3.0';
-      json.options.cartocss_version = this.get('cartocss_version') || '2.3.0';
     }
     return json;
   },

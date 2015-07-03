@@ -47,7 +47,7 @@ describe("geo.map", function() {
     });
 
     it("should compare equal layers correctly", function() {
-      var layer1 = new cdb.geo.PlainLayer({});
+      var layer1 = new cdb.geo.PlainLayer({ name: 'Positron' });
       var layer2 = new cdb.geo.PlainLayer({});
       var layer3 = new cdb.geo.PlainLayer({});
       var layer4 = new cdb.geo.PlainLayer({});

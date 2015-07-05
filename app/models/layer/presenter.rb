@@ -160,7 +160,6 @@ module CartoDB
             sql_api_domain:     (configuration[:sql_api]["public"]["domain"] rescue nil),
             sql_api_endpoint:   (configuration[:sql_api]["public"]["endpoint"] rescue nil),
             sql_api_port:       (configuration[:sql_api]["public"]["port"] rescue nil),
-            cdn_url:            configuration.fetch(:cdn_url, nil),
             layer_name:         name_for(layer),
             dynamic_cdn:        options[:viewer_user] ? options[:viewer_user].dynamic_cdn_enabled : false
           }.merge(

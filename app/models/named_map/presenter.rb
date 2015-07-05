@@ -61,7 +61,6 @@ module CartoDB
               tiler_port:       @visualization.password_protected? ?
                                   @configuration[:tiler]['private']['port'] :
                                   @configuration[:tiler]['public']['port'],
-              cdn_url:          @configuration.fetch(:cdn_url, nil),
               dynamic_cdn:        @options.fetch(:dynamic_cdn_enabled),
               filter:           @configuration[:tiler].fetch('filter', DEFAULT_TILER_FILTER),
               named_map:        {

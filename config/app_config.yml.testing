@@ -157,20 +157,7 @@ defaults: &defaults
     background:
       kind: "background"
       options: { color: '#ffffff' }
-    base:
-      kind: "tiled"
       options:
-        visible:      true
-        type:         "Tiled"
-        urlTemplate:  "https://maps.nlp.nokia.com/maptiler/v2/maptile/newest/normal.day/{z}/{x}/{y}/256/png8?lg=eng&token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24"
-        name:         'Nokia Day'
-        className:    "nokia_day"
-        attribution:  "©2012 Nokia <a href='http://here.net/services/terms' target='_blank'>Terms of use</a>"
-    gmaps:
-      kind: "gmapsbase"
-      options:
-        base_type: "roadmap"
-        style: ""
   cartodb_com_hosted: true
   cartodb_central_domain_name: 'cartodb.com'
   cartodb_central_api:

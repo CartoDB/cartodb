@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: a3916a8958cedd877a2d996c24f22f1a7991d094
+// sha: e20a6cd1a35d22de8941c17a961cafb9067c4cc6
 (function() {
   var root = this;
 
@@ -39362,6 +39362,7 @@ cdb.vis.Vis = Vis;
 
       this.userOptions = options;
 
+      this.options.api_key        = layerDefinition.api_key;
       this.options.user_name      = layerDefinition.user_name;
       this.options.tiler_protocol = layerDefinition.tiler_protocol;
       this.options.tiler_domain   = layerDefinition.tiler_domain;
@@ -40999,6 +41000,7 @@ Layers.register('torque', function(vis, data) {
         'stats as (', 
            'select count(distinct({{column}})) as uniq, ',
            '       count(*) as cnt, ',
+           '       sum(case when {{column}} is null then 1 else 0 end)::numeric as null_count, ',
            '       sum(case when {{column}} is null then 1 else 0 end)::numeric / count(*)::numeric as null_ratio, ',
            // '       CDB_DistinctMeasure(array_agg({{column}}::text)) as cat_weight ',
            '       (SELECT max(cumperc) weight FROM c) As skew ',
@@ -41014,6 +41016,7 @@ Layers.register('torque', function(vis, data) {
         column: column, 
         sql: sql
       });
+
       this.execute(query, function(data) {
         var row = data.rows[0];
         var s = array_agg(row.array_agg);
@@ -41025,11 +41028,44 @@ Layers.register('torque', function(vis, data) {
           }),
           distinct: row.uniq,
           count: row.cnt,
+          null_count: row.null_count,
           null_ratio: row.null_ratio,
           skew: row.skew,
           weight: row.skew * (1 - row.null_ratio) * (1 - row.uniq / row.cnt) * ( row.uniq > 1 ? 1 : 0)
         });
       });
+  }
+
+  SQL.prototype.describeDate = function(sql, column, options, callback) {
+    var s = [
+      'with minimum as (',
+        'SELECT min({{column}}) as start_time FROM ({{sql}}) _wrap), ',
+      'maximum as (SELECT max({{column}}) as end_time FROM ({{sql}}) _wrap), ',
+      'moments as (SELECT count(DISTINCT {{column}}) as moments FROM ({{sql}}) _wrap)',
+      'SELECT * FROM minimum, maximum, moments'
+    ];
+    var query = Mustache.render(s.join('\n'), {
+      column: column,
+      sql: sql
+    });
+
+    this.execute(query, function(data) {
+      var row = data.rows[0];
+      var e = new Date(row.end_time);
+      var s = new Date(row.start_time);
+
+      var moments = row.moments;
+
+      var steps = Math.min(row.moments, 1024);
+      
+      callback({
+        type: 'date',
+        start_time: s,
+        end_time: e,
+        range: e - s,
+        steps: steps
+      });
+    });
   }
 
   SQL.prototype.describeGeom = function(sql, column, options, callback) {
@@ -41191,8 +41227,10 @@ Layers.register('torque', function(vis, data) {
           self.describeFloat(sql, column, options, callback);
         } else if (type === 'geometry') {
           self.describeGeom(sql, column, options, callback);
+        } else if (type === 'date') {
+          self.describeDate(sql, column, options, callback);
         } else {
-          callback(new Error("column type does not supported"));
+          callback(new Error("column type is not supported"));
         }
       });
   }
@@ -41214,7 +41252,7 @@ var ramps = {
   black:  ['#F7F7F7', '#D9D9D9', '#BDBDBD', '#969696', '#737373', '#525252', '#252525'],
   red:  ['#FFFFB2', '#FED976', '#FEB24C', '#FD8D3C', '#FC4E2A', '#E31A1C', '#B10026'],
   category: ['#A6CEE3', '#1F78B4', '#B2DF8A', '#33A02C', '#FB9A99', '#E31A1C', '#FDBF6F', '#FF7F00', '#CAB2D6', '#6A3D9A', '#DDDDDD'],
-  divergent: ['rgb(215,48,39)','rgb(252,141,89)','rgb(254,224,144)','rgb(255,255,191)','rgb(224,243,248)','rgb(145,191,219)','rgb(69,117,180)']
+  divergent: ['#0080ff', '#40a0ff', '#7fbfff', '#fff2cc', '#ffa6a6', '#ff7a7a', '#ff4d4d']
 };
 
 function geoAttr(geometryType) {
@@ -41299,6 +41337,35 @@ var CSS = {
       }
     }
     return css;
+  },
+
+  torque: function(stats, tableName){
+    var tableID = "#" + tableName;
+    var css = [
+        '/** torque visualization */',
+        'Map {',
+        '  -torque-time-attribute: ' + stats.column + ';',
+        '  -torque-aggregation-function: "count(cartodb_id)";',
+        '  -torque-frame-count: ' + stats.steps + ';',
+        '  -torque-animation-duration: 10;',
+        '  -torque-resolution: 2',
+        '}',
+        tableID + " {",
+        '  marker-width: 3;',
+        '  marker-fill-opacity: 0.8;',
+        '  marker-fill: #FEE391; ',
+        '  comp-op: "lighten";',
+        '  [value > 2] { marker-fill: #FEC44F; }',
+        '  [value > 3] { marker-fill: #FE9929; }',
+        '  [value > 4] { marker-fill: #EC7014; }',
+        '  [value > 5] { marker-fill: #CC4C02; }',
+        '  [value > 6] { marker-fill: #993404; }',
+        '  [value > 7] { marker-fill: #662506; }',
+        '  [frame-offset = 1] { marker-width: 10; marker-fill-opacity: 0.05;}',
+        '  [frame-offset = 2] { marker-width: 15; marker-fill-opacity: 0.02;}',
+        '}'
+    ].join('\n');
+    return css;
   }
 }
 
@@ -41328,12 +41395,12 @@ function guess(o, callback) {
 
 function guessMap(sql, tableName, column, stats) {
   var geometryType = column.get("geometry_type");
-    var bbox =  column.get("bbox");
-    var columnName = column.get("name");
-    var wizard = "choropleth";
-    var css = null
-    var type = stats.type;
-    var metadata = []
+  var bbox =  column.get("bbox");
+  var columnName = column.get("name");
+  var wizard = "choropleth";
+  var css = null
+  var type = stats.type;
+  var metadata = []
 
   if (stats.type == 'number') {
     if (['A','U'].indexOf(stats.dist_type) != -1) {
@@ -41349,21 +41416,24 @@ function guessMap(sql, tableName, column, stats) {
         css = CSS.choropleth(stats.headtails, tableName, columnName, geometryType, inverse_ramp);
       }
     }
-  
+
   } else if (stats.type == 'string') {
 
-      wizard   = "category";
-      css      = CSS.category(stats.hist.slice(0, ramps.category.length).map(function(r) { return r[0]; }), tableName, columnName, geometryType);
+    wizard   = "category";
+    css      = CSS.category(stats.hist.slice(0, ramps.category.length).map(function(r) { return r[0]; }), tableName, columnName, geometryType);
+    metadata = CSS.categoryMetadata(stats.hist.slice(0, ramps.category.length).map(function(r) { return r[0]; }), tableName, columnName, geometryType);
 
-      var metadata = CSS.categoryMetadata(stats.hist.slice(0, ramps.category.length).map(function(r) { return r[0]; }), tableName, columnName, geometryType);
+  } else if (stats.type === 'date') {
+    wizard = "torque";
+    css = CSS.torque(stats, tableName);
+  }
+
+  if (css) {
+    if (metadata) {
+      return { sql: sql, css: css, metadata: metadata, geometryType: geometryType, column: columnName, bbox: bbox, stats: stats, type: type, wizard: wizard  };
+    } else {
+      return { sql: sql, css: css, geometryType: geometryType, column: columnName, bbox: bbox, stats: stats, type: type, wizard: wizard  };
     }
-
-    if (css) {
-      if (metadata) {
-        return { sql: sql, css: css, metadata: metadata, geometryType: geometryType, column: columnName, bbox: bbox, stats: stats, type: type, wizard: wizard  };
-      } else {
-        return { sql: sql, css: css, geometryType: geometryType, column: columnName, bbox: bbox, stats: stats, type: type, wizard: wizard  };
-      }
   } else {
     return { sql: sql, css: null, geometryType: geometryType, column: columnName, bbox: bbox, weight: -100, type: type, wizard: wizard };
   }

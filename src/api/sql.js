@@ -376,6 +376,7 @@
         'stats as (', 
            'select count(distinct({{column}})) as uniq, ',
            '       count(*) as cnt, ',
+           '       sum(case when {{column}} is null then 1 else 0 end)::numeric as null_count, ',
            '       sum(case when {{column}} is null then 1 else 0 end)::numeric / count(*)::numeric as null_ratio, ',
            // '       CDB_DistinctMeasure(array_agg({{column}}::text)) as cat_weight ',
            '       (SELECT max(cumperc) weight FROM c) As skew ',
@@ -391,6 +392,7 @@
         column: column, 
         sql: sql
       });
+
       this.execute(query, function(data) {
         var row = data.rows[0];
         var s = array_agg(row.array_agg);
@@ -402,11 +404,44 @@
           }),
           distinct: row.uniq,
           count: row.cnt,
+          null_count: row.null_count,
           null_ratio: row.null_ratio,
           skew: row.skew,
           weight: row.skew * (1 - row.null_ratio) * (1 - row.uniq / row.cnt) * ( row.uniq > 1 ? 1 : 0)
         });
       });
+  }
+
+  SQL.prototype.describeDate = function(sql, column, options, callback) {
+    var s = [
+      'with minimum as (',
+        'SELECT min({{column}}) as start_time FROM ({{sql}}) _wrap), ',
+      'maximum as (SELECT max({{column}}) as end_time FROM ({{sql}}) _wrap), ',
+      'moments as (SELECT count(DISTINCT {{column}}) as moments FROM ({{sql}}) _wrap)',
+      'SELECT * FROM minimum, maximum, moments'
+    ];
+    var query = Mustache.render(s.join('\n'), {
+      column: column,
+      sql: sql
+    });
+
+    this.execute(query, function(data) {
+      var row = data.rows[0];
+      var e = new Date(row.end_time);
+      var s = new Date(row.start_time);
+
+      var moments = row.moments;
+
+      var steps = Math.min(row.moments, 1024);
+      
+      callback({
+        type: 'date',
+        start_time: s,
+        end_time: e,
+        range: e - s,
+        steps: steps
+      });
+    });
   }
 
   SQL.prototype.describeGeom = function(sql, column, options, callback) {
@@ -568,8 +603,10 @@
           self.describeFloat(sql, column, options, callback);
         } else if (type === 'geometry') {
           self.describeGeom(sql, column, options, callback);
+        } else if (type === 'date') {
+          self.describeDate(sql, column, options, callback);
         } else {
-          callback(new Error("column type does not supported"));
+          callback(new Error("column type is not supported"));
         }
       });
   }

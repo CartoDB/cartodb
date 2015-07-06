@@ -1,6 +1,6 @@
-// cartodb.js version: 3.15.1
+// cartodb.js version: 3.15.2
 // uncompressed version: cartodb.uncompressed.js
-// sha: e20a6cd1a35d22de8941c17a961cafb9067c4cc6
+// sha: 69ef7f259bb17b73888999897a87fae09f3d501e
 (function() {
   var root = this;
 
@@ -41252,7 +41252,7 @@ var ramps = {
   black:  ['#F7F7F7', '#D9D9D9', '#BDBDBD', '#969696', '#737373', '#525252', '#252525'],
   red:  ['#FFFFB2', '#FED976', '#FEB24C', '#FD8D3C', '#FC4E2A', '#E31A1C', '#B10026'],
   category: ['#A6CEE3', '#1F78B4', '#B2DF8A', '#33A02C', '#FB9A99', '#E31A1C', '#FDBF6F', '#FF7F00', '#CAB2D6', '#6A3D9A', '#DDDDDD'],
-  divergent: ['#0080ff', '#40a0ff', '#7fbfff', '#fff2cc', '#ffa6a6', '#ff7a7a', '#ff4d4d']
+  divergent: ['#0080FF', '#40A0FF', '#7FBFFF', '#FFF2CC', '#FFA6A6', '#FF7A7A', '#FF4D4D']
 };
 
 function geoAttr(geometryType) {

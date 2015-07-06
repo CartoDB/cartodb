@@ -126,6 +126,7 @@ class Geocoding < Sequel::Model
     # INFO: this is where the real stuff is done
     table_geocoder.run
 
+    self.update(table_geocoder.update_geocoding_status)
     self.update remote_id: table_geocoder.remote_id
 
     raise 'Geocoding failed'  if state == 'failed'

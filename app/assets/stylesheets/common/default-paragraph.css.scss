@@ -32,3 +32,7 @@
   width: 100%;
   text-align: center
 }
+.DefaultParagraph--normalSize {
+  font-size: $sFontSize-normal;
+  line-height: $sLineHeight-normal;
+}

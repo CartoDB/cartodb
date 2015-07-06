@@ -34,3 +34,7 @@ $size: $sIcon-layout - $sBorderCompensation;
   border-color: $cHighlight-negative;
   color: $cHighlight-negative;
 }
+.LayoutIcon--warning {
+  border-color: $cHighlight-alert4;
+  color: $cHighlight-alert4;
+}

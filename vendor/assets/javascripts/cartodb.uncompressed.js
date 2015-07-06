@@ -1,6 +1,6 @@
-// cartodb.js version: 3.15.2
+// cartodb.js version: 3.15.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: 69ef7f259bb17b73888999897a87fae09f3d501e
+// sha: 5fc46f613a42f43640e30ae983ee99757298133c
 (function() {
   var root = this;
 
@@ -41138,7 +41138,7 @@ Layers.register('torque', function(vis, data) {
                    'count(*) as cnt,',
                    'sum(case when {{column}} is null then 1 else 0 end)::numeric / count(*)::numeric as null_ratio,',
                    'stddev_pop({{column}}) / count({{column}}) as stddev,',
-                   'log(stddev_pop({{column}}) / count({{column}})) as lstddev,',
+                   //'log(stddev_pop({{column}}) / count({{column}})) as lstddev,',
                    'CASE WHEN abs(avg({{column}})) > 1e-7 THEN stddev({{column}}) / abs(avg({{column}})) ELSE 1e12 END as stddevmean,',
                     'CDB_DistType(array_agg("{{column}}"::numeric)) as dist_type ',
               'from ({{sql}}) _wrap ',
@@ -41187,12 +41187,12 @@ Layers.register('torque', function(vis, data) {
           null_ratio: row.null_ratio,
           count: row.cnt,
           distinct: row.uniq,
-          lstddev: row.lstddev,
+          //lstddev: row.lstddev,
           avg: row.avg,
           max: row.max,
           min: row.min,
           stddevmean: row.stddevmean,
-          weight: (row.uniq > 1 ? 1 : 0) * (1 - row.null_ratio) * (row.lstddev < -1 ? 1 : (row.lstddev < 1 ? 0.5 : (row.lstddev < 3 ? 0.25 : 0.1))),
+          weight: (row.uniq > 1 ? 1 : 0) * (1 - row.null_ratio) * (row.stddev < -1 ? 1 : (row.stddev < 1 ? 0.5 : (row.stddev < 3 ? 0.25 : 0.1))),
           quantiles: row.quantiles,
           equalint: row.equalint,
           jenks: row.jenks,
@@ -41397,7 +41397,7 @@ function guessMap(sql, tableName, column, stats) {
   var geometryType = column.get("geometry_type");
   var bbox =  column.get("bbox");
   var columnName = column.get("name");
-  var wizard = "choropleth";
+  var visualizationType = "choropleth";
   var css = null
   var type = stats.type;
   var metadata = []
@@ -41419,23 +41419,23 @@ function guessMap(sql, tableName, column, stats) {
 
   } else if (stats.type == 'string') {
 
-    wizard   = "category";
+    visualizationType   = "category";
     css      = CSS.category(stats.hist.slice(0, ramps.category.length).map(function(r) { return r[0]; }), tableName, columnName, geometryType);
     metadata = CSS.categoryMetadata(stats.hist.slice(0, ramps.category.length).map(function(r) { return r[0]; }), tableName, columnName, geometryType);
 
   } else if (stats.type === 'date') {
-    wizard = "torque";
+    visualizationType = "torque";
     css = CSS.torque(stats, tableName);
   }
 
   if (css) {
     if (metadata) {
-      return { sql: sql, css: css, metadata: metadata, geometryType: geometryType, column: columnName, bbox: bbox, stats: stats, type: type, wizard: wizard  };
+      return { sql: sql, css: css, metadata: metadata, geometryType: geometryType, column: columnName, bbox: bbox, stats: stats, type: type, visualizationType: visualizationType  };
     } else {
-      return { sql: sql, css: css, geometryType: geometryType, column: columnName, bbox: bbox, stats: stats, type: type, wizard: wizard  };
+      return { sql: sql, css: css, geometryType: geometryType, column: columnName, bbox: bbox, stats: stats, type: type, visualizationType: visualizationType  };
     }
   } else {
-    return { sql: sql, css: null, geometryType: geometryType, column: columnName, bbox: bbox, weight: -100, type: type, wizard: wizard };
+    return { sql: sql, css: null, geometryType: geometryType, column: columnName, bbox: bbox, weight: -100, type: type, visualizationType: visualizationType };
   }
 }
 /*

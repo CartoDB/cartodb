@@ -2026,7 +2026,7 @@ TRIGGER
   # Upgrade the cartodb postgresql extension
   def upgrade_cartodb_postgres_extension(statement_timeout=nil, cdb_extension_target_version=nil)
     if cdb_extension_target_version.nil?
-      cdb_extension_target_version = '0.7.3'
+      cdb_extension_target_version = '0.8.0'
     end
 
     in_database({
@@ -2466,6 +2466,17 @@ TRIGGER
     end
     # return only the attributes
     default.first[1]
+  end
+
+  def copy_account_features(to)
+    to.set_fields(self, [
+      :private_tables_enabled, :sync_tables_enabled, :max_layers, :user_timeout,
+      :database_timeout, :geocoding_quota, :map_view_quota, :table_quota, :database_host,
+      :period_end_date, :map_view_block_price, :geocoding_block_price, :account_type,
+      :twitter_datasource_enabled, :soft_twitter_datasource_limit, :twitter_datasource_quota,
+      :twitter_datasource_block_price, :twitter_datasource_block_size
+    ])
+    to.invite_token = User.make_token
   end
 
   private

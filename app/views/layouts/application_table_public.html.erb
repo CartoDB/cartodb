@@ -10,14 +10,23 @@
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 
     <meta property="og:title" content="<%= yield :title %>" />
+    <meta property="og:site_name" content="CartoDB" />
     <meta property="og:description" content="<%= yield :description %>" />
-    <meta property="og:type" content="visualization" />
+    <meta property="og:type" content="article" />
     <meta property="og:url" content="<%= request.original_url %>" />
-    <meta property="og:image" content="<%= yield :twitter_card %>">
-
+    <meta property="og:image" content="<%= yield :facebook_card %>">
+    <% if Cartodb.config[:facebook].present? && Cartodb.config[:facebook]['app_id'].present? %>
+      <meta property="fb:app_id" content="<%= Cartodb.config[:facebook]['app_id'] %>" />
+    <% end %>
+    <% if Cartodb.config[:facebook].present? && Cartodb.config[:facebook]['admins'].present? %>
+      <meta property="fb:admins" content="<%= Cartodb.config[:facebook]['admins'] %>" />
+    <% end %>
+    <meta property="article:publisher" content="https://www.facebook.com/cartodb" />
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:site" content="@cartodb">
-    <meta name="twitter:creator" content="<%= @twitter_username.nil? ? "@cartodb" : "@#{@twitter_username}" %>">
+    <% unless @twitter_username.nil? %>
+      <meta name="twitter:creator" "@#{@twitter_username}" ">
+    <% end %>
     <meta name="twitter:title" content="<%= yield :page_title %>">
     <meta name="twitter:description" content="<%= yield :description %>">
     <meta name="twitter:image" content="<%= yield :twitter_card %>">

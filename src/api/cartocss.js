@@ -157,7 +157,7 @@ function guessMap(sql, tableName, column, stats) {
   var geometryType = column.get("geometry_type");
   var bbox =  column.get("bbox");
   var columnName = column.get("name");
-  var wizard = "choropleth";
+  var visualizationType = "choropleth";
   var css = null
   var type = stats.type;
   var metadata = []
@@ -179,23 +179,23 @@ function guessMap(sql, tableName, column, stats) {
 
   } else if (stats.type == 'string') {
 
-    wizard   = "category";
+    visualizationType   = "category";
     css      = CSS.category(stats.hist.slice(0, ramps.category.length).map(function(r) { return r[0]; }), tableName, columnName, geometryType);
     metadata = CSS.categoryMetadata(stats.hist.slice(0, ramps.category.length).map(function(r) { return r[0]; }), tableName, columnName, geometryType);
 
   } else if (stats.type === 'date') {
-    wizard = "torque";
+    visualizationType = "torque";
     css = CSS.torque(stats, tableName);
   }
 
   if (css) {
     if (metadata) {
-      return { sql: sql, css: css, metadata: metadata, geometryType: geometryType, column: columnName, bbox: bbox, stats: stats, type: type, wizard: wizard  };
+      return { sql: sql, css: css, metadata: metadata, geometryType: geometryType, column: columnName, bbox: bbox, stats: stats, type: type, visualizationType: visualizationType  };
     } else {
-      return { sql: sql, css: css, geometryType: geometryType, column: columnName, bbox: bbox, stats: stats, type: type, wizard: wizard  };
+      return { sql: sql, css: css, geometryType: geometryType, column: columnName, bbox: bbox, stats: stats, type: type, visualizationType: visualizationType  };
     }
   } else {
-    return { sql: sql, css: null, geometryType: geometryType, column: columnName, bbox: bbox, weight: -100, type: type, wizard: wizard };
+    return { sql: sql, css: null, geometryType: geometryType, column: columnName, bbox: bbox, weight: -100, type: type, visualizationType: visualizationType };
   }
 }
 /*

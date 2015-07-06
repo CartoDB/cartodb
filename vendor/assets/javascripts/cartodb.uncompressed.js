@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: 0045618b8ed6f93aaee6351c6cb89787d8620e99
+// sha: a209f021e439cd0cca73ad212ff2867ae4fe4161
 (function() {
   var root = this;
 
@@ -25764,6 +25764,7 @@ if (typeof window !== 'undefined') {
         // PUBLIC API
         'api/layers.js',
         'api/sql.js',
+        'api/cartocss.js',
         'api/vis.js'
     ];
 
@@ -40940,6 +40941,7 @@ Layers.register('torque', function(vis, data) {
 
   }
 
+
   /*
    * sql.filter(sql.f().distance('< 10km')
    */
@@ -40959,8 +40961,457 @@ Layers.register('torque', function(vis, data) {
     return f;
   }
   */
+  function array_agg(s) {
+    return JSON.parse(s.replace(/^{/, '[').replace(/}$/,']'));
+  }
+
+
+  SQL.prototype.describeString = function(sql, column, options, callback) {
+
+      var s = [
+        'WITH t as (',
+        '        SELECT count(*) as total,',
+        '               count(DISTINCT {{column}}) as ndist',
+        '        FROM ({{sql}}) _wrap',
+        '      ), a as (',
+        '        SELECT ',
+        '          count(*) cnt, ',
+        '          {{column}}',
+        '        FROM ',
+        '          ({{sql}}) _wrap ',
+        '        GROUP BY ',
+        '          {{column}} ',
+        '        ORDER BY ',
+        '          cnt DESC',
+        '        ), b As (',
+        '         SELECT',
+        '          row_number() OVER (ORDER BY cnt DESC) rn,',
+        '          cnt',
+        '         FROM a',
+        '        ), c As (',
+        '        SELECT ',
+        '          sum(cnt) OVER (ORDER BY rn ASC) / t.total cumperc,',
+        '          rn,',
+        '          cnt ',
+        '         FROM b, t',
+        '         LIMIT 10',
+        '         ),',
+        'stats as (', 
+           'select count(distinct({{column}})) as uniq, ',
+           '       count(*) as cnt, ',
+           '       sum(case when {{column}} is null then 1 else 0 end)::numeric / count(*)::numeric as null_ratio, ',
+           // '       CDB_DistinctMeasure(array_agg({{column}}::text)) as cat_weight ',
+           '       (SELECT max(cumperc) weight FROM c) As skew ',
+           'from ({{sql}}) __wrap',
+        '),',
+        'hist as (', 
+           'select array_agg(row(d, c)) array_agg from (select distinct({{column}}) d, count(*) as c from ({{sql}}) __wrap, stats group by 1 limit 100) _a',
+        ')',
+        'select * from stats, hist'
+      ];
+
+      var query = Mustache.render(s.join('\n'), {
+        column: column, 
+        sql: sql
+      });
+      this.execute(query, function(data) {
+        var row = data.rows[0];
+        var s = array_agg(row.array_agg);
+        callback({
+          type: 'string',
+          hist: _(s).map(function(row) {
+            var r = row.match(/\((.*),(\d+)/);
+            return [r[1], +r[2]];
+          }),
+          distinct: row.uniq,
+          count: row.cnt,
+          null_ratio: row.null_ratio,
+          skew: row.skew,
+          weight: row.skew * (1 - row.null_ratio) * (1 - row.uniq / row.cnt) * ( row.uniq > 1 ? 1 : 0)
+        });
+      });
+  }
+
+  SQL.prototype.describeGeom = function(sql, column, options, callback) {
+      var s = [
+        'with stats as (', 
+           'select st_asgeojson(st_extent({{column}})) as bbox',
+           'from ({{sql}}) _wrap',
+        '),',
+        'geotype as (', 
+          'select st_geometrytype({{column}}) as geometry_type from ({{sql}}) _w where {{column}} is not null limit 1',
+        ')',
+        'select * from stats, geotype'
+      ];
+
+      var query = Mustache.render(s.join('\n'), {
+        column: column, 
+        sql: sql
+      });
+      function simplifyType(g) {
+        return { 
+        'st_multipolygon': 'polygon',
+        'st_polygon': 'polygon',
+        'st_multilinestring': 'line',
+        'st_linestring': 'line',
+        'st_multipoint': 'point',
+        'st_point': 'point'
+        }[g.toLowerCase()]
+      };
+
+      this.execute(query, function(data) {
+        var row = data.rows[0];
+        var bbox = JSON.parse(row.bbox).coordinates[0]
+        callback({
+          type: 'geom',
+          //lon,lat -> lat, lon
+          bbox: [[bbox[0][1],bbox[0][0]], [bbox[2][1], bbox[2][0]]],
+          geometry_type: row.geometry_type,
+          simplified_geometry_type: simplifyType(row.geometry_type)
+        });
+      });
+  }
+
+  SQL.prototype.columns = function(sql, options, callback) {
+    var args = arguments,
+        fn = args[args.length -1];
+    if(_.isFunction(fn)) {
+      callback = fn;
+    }
+    var s = "select * from (" + sql + ") __wrap limit 0";
+    var exclude = ['cartodb_id','latitude','longitude','created_at','updated_at','lat','lon','the_geom_webmercator'];
+    this.execute(s, function(data) {
+      var t = {}
+      for (var i in data.fields) {
+        if (exclude.indexOf(i) === -1) {
+          t[i] = data.fields[i].type;
+        }
+      }
+      callback(t);
+    });
+  };
+
+  SQL.prototype.describeFloat = function(sql, column, options, callback) {
+      var s = [
+        'with stats as (',
+            'select min({{column}}) as min,',
+                   'max({{column}}) as max,',
+                   'avg({{column}}) as avg,',
+                   'count(DISTINCT {{column}}) as cnt,',
+                   'count(distinct({{column}})) as uniq,',
+                   'count(*) as cnt,',
+                   'sum(case when {{column}} is null then 1 else 0 end)::numeric / count(*)::numeric as null_ratio,',
+                   'stddev_pop({{column}}) / count({{column}}) as stddev,',
+                   'log(stddev_pop({{column}}) / count({{column}})) as lstddev,',
+                   'CASE WHEN abs(avg({{column}})) > 1e-7 THEN stddev({{column}}) / abs(avg({{column}})) ELSE 1e12 END as stddevmean,',
+                   ' \'F\' as dist_type ',
+                   // CDB_DistType needs to be in production before using
+                   // 'CDB_DistType(array_agg("{{column}}"::numeric)) as dist_type ',
+              'from ({{sql}}) _wrap ',
+        '),',
+        'params as (select min(a) as min, (max(a) - min(a)) / 7 as diff from ( select {{column}} as a from ({{sql}}) _table_sql where {{column}} is not null ) as foo ),',
+         'histogram as (',
+           'select array_agg(row(bucket, range, freq)) as hist from (',
+           'select width_bucket({{column}}, min-0.01*abs(min), max+0.01*abs(max), 100) as bucket,',
+                  'numrange(min({{column}})::numeric, max({{column}})::numeric) as range,',
+                  'count(*) as freq',
+             'from ({{sql}}) _w, stats',
+             'group by 1',
+             'order by 1',
+          ') __wrap',
+         '),',
+         'buckets as (',
+            'select CDB_QuantileBins(array_agg({{column}}::numeric), 7) as quantiles, ',
+            '       (select array_agg(x::numeric) FROM (SELECT (min + n * diff)::numeric as x FROM generate_series(1,7) n, params) p) as equalint,',
+            // '       CDB_EqualIntervalBins(array_agg({{column}}::numeric), 7) as equalint, ',
+            '       CDB_JenksBins(array_agg({{column}}::numeric), 7) as jenks, ',
+            '       CDB_HeadsTailsBins(array_agg({{column}}::numeric), 7) as headtails ',
+            'from ({{sql}}) _table_sql where {{column}} is not null',
+         ')',
+         'select * from histogram, stats, buckets'
+      ];
+
+      // if(normalization == '_area'){
+      //   var wrap_sql = "SELECT {{column}}/ST_Area(the_geom::geography) as _target_column FROM ({{sql}}) a where the_geom is not null AND {{column}} is not null ";
+      // } else if (normalization == null) {
+      //   var wrap_sql = "SELECT {{column}} as _target_column FROM ({{sql}}) a where {{column}} is not null ";
+      // } else {
+      //   var wrap_sql = "SELECT {{column}}/{{normalization}} as _target_column FROM ({{sql}}) a where {{normalization}} is not null AND {{column}} is not null ";
+
+      // }
+
+      // wrap_sql = Mustache.render(wrap_sql.join('\n'), {
+      //   normalization: normalization, 
+      //   column: column, 
+      //   sql: sql
+      // });
+
+      // var newS = [
+      //   'with stats as (',
+      //       'select min(_target_column) as min,',
+      //              'max(_target_column) as max,',
+      //              'avg(_target_column) as avg,',
+      //              'stddev(_target_column) as stddev,',
+      //              'stddev(_target_column) / avg(_target_column) as stdevmean, ',
+      //              'CDB_DistType(array_agg(_target_column::numeric)) as dist_type ',
+      //         'from ({{sql}}) _wrap ',
+      //   '),',
+      //    'buckets as (',
+      //       'select CDB_QuantileBins(array_agg(_target_column::numeric), 7) as quantiles, ',
+      //       '       CDB_EqualIntervalBins(array_agg(_target_column::numeric), 7) as equalint, ',
+      //       '       CDB_JenksBins(array_agg(_target_column::numeric), 7) as jenks, ',
+      //       '       CDB_HeadsTailsBins(array_agg(_target_column::numeric), 7) as headtails ',
+      //       'from ({{sql}}) _table_sql',
+      //    ')',
+      //    'select * from histogram, stats, buckets'
+      // ];
+
+      var query = Mustache.render(s.join('\n'), {
+        column: column, 
+        sql: sql
+      });
+      this.execute(query, function(data) {
+        var row = data.rows[0];
+        var s = array_agg(row.hist);
+        callback({
+          type: 'number',
+          hist: _(s).map(function(row) {
+            var r = row.match(/\((.*),".(\d+),(\d+).",(\d+)/);
+            var range = null;
+            if (r) {
+              //range = [+r[2], +r[3]]
+            }
+            return null;//{ index: r[1], range: range, freq: +r[4] }
+          }),
+          stddev: row.stddev,
+          null_ratio: row.null_ratio,
+          count: row.cnt,
+          distinct: row.uniq,
+          lstddev: row.lstddev,
+          avg: row.avg,
+          max: row.max,
+          min: row.min,
+          stddevmean: row.stddevmean,
+          weight: (row.uniq > 1 ? 1 : 0) * (1 - row.null_ratio) * (row.lstddev < -1 ? 1 : (row.lstddev < 1 ? 0.5 : (row.lstddev < 3 ? 0.25 : 0.1))),
+          quantiles: row.quantiles,
+          equalint: row.equalint,
+          jenks: row.jenks,
+          headtails: row.headtails,
+          dist_type: row.dist_type
+        });
+      });
+  }
+
+  // describe a column
+  SQL.prototype.describe = function(sql, column, options) {
+      var self = this;
+      var args = arguments,
+          fn = args[args.length -1];
+      if(_.isFunction(fn)) {
+        var _callback = fn;
+      }
+      var callback = function(data) {
+        data.column = column;
+        _callback(data);
+      }
+      var s = "select * from (" + sql + ") __wrap limit 0";
+      this.execute(s, function(data) {
+        var type = data.fields[column].type;
+        if (!type) {
+          callback(new Error("column does not exist"));
+          return;
+        }
+        else if (type === 'string') {
+          self.describeString(sql, column, options, callback);
+        } else if (type === 'number') {
+          self.describeFloat(sql, column, options, callback);
+        } else if (type === 'geometry') {
+          self.describeGeom(sql, column, options, callback);
+        } else {
+          callback(new Error("column type does not supported"));
+        }
+      });
+  }
 
   root.cartodb.SQL = SQL;
+
+})();
+
+;(function() {
+
+var root = this;
+
+root.cartodb = root.cartodb || {};
+
+var ramps = {
+  green:  ['#EDF8FB', '#D7FAF4', '#CCECE6', '#66C2A4', '#41AE76', '#238B45', '#005824'],
+  blue:  ['#FFFFCC', '#C7E9B4', '#7FCDBB', '#41B6C4', '#1D91C0', '#225EA8', '#0C2C84'],
+  pink: ['#F1EEF6', '#D4B9DA', '#C994C7', '#DF65B0', '#E7298A', '#CE1256', '#91003F'],
+  black:  ['#F7F7F7', '#D9D9D9', '#BDBDBD', '#969696', '#737373', '#525252', '#252525'],
+  red:  ['#FFFFB2', '#FED976', '#FEB24C', '#FD8D3C', '#FC4E2A', '#E31A1C', '#B10026'],
+  category: ['#A6CEE3', '#1F78B4', '#B2DF8A', '#33A02C', '#FB9A99', '#E31A1C', '#FDBF6F', '#FF7F00', '#CAB2D6', '#6A3D9A', '#DDDDDD']
+};
+
+function geoAttr(geometryType) {
+  return {
+    "line": 'line-color',
+    'polygon': "polygon-fill",
+    'point': "marker-fill"
+  }[geometryType]
+}
+
+function getDefaultCSSForGeometryType(geometryType) {
+  if (geometryType === "polygon") {
+    return [
+      "polygon-opacity: 0.7;",
+      "line-color: #FFF;",
+      "line-width: 0.5;",
+      "line-opacity: 1;"
+    ];
+  }
+  if (geometryType === "line") {
+    return  [
+      "line-width: 2;",
+      "line-opacity: 0.7;"
+    ];
+  }
+  return [
+    "line-color: #0C2C84;",
+    "line-opacity: 1;",
+    "marker-fill-opacity: 0.9;",
+    "marker-line-color: #FFF;",
+    "marker-line-width: 1.5;",
+    "marker-line-opacity: 1;",
+    "marker-placement: point;",
+    "marker-type: ellipse;",
+    "marker-width: 10;",
+    "marker-allow-overlap: true;"
+  ];
+}
+
+var CSS = {
+  choropleth: function(quartiles, tableName, prop, geometryType, ramp) {
+    var attr = geoAttr(geometryType);
+    var tableID = "#" + tableName;
+
+    var defaultCSS = getDefaultCSSForGeometryType(geometryType);
+    var css = "/** choropleth visualization */\n\n" + tableID + " {\n  " + attr + ": " + ramps.category[0] + ";\n" + defaultCSS.join("\n") + "\n}\n";
+
+    for (var i = quartiles.length - 1; i >= 0; --i) {
+      if (quartiles[i] !== undefined && quartiles[i] != null) {
+        css += "\n" + tableID + "[" + prop + " <= " + quartiles[i] + "] {\n";
+        css += "  " + attr  + ":" + ramp[i] + ";\n}"
+      }
+    }
+    return css;
+  },
+
+  categoryMetadata: function(cats, prop, geometryType) {
+    var metadata = [];
+
+    for (var i = cats.length - 1; i >= 0; --i) {
+      if (cats[i] !== undefined && cats[i] != null) {
+        metadata.push({ title: cats[i], title_type: "string", value_type: 'color', color: ramps.category[i] });
+      }
+    }
+
+    return metadata;
+  },
+
+  category: function(cats, tableName, prop, geometryType) {
+    var attr = geoAttr(geometryType);
+    var tableID = "#" + tableName;
+    var ramp = ramps.category;
+
+    var defaultCSS = getDefaultCSSForGeometryType(geometryType);
+
+    var css = "/** category visualization */\n\n" + tableID + " {\n  " + attr + ": " + ramps.category[0] + ";\n" + defaultCSS.join("\n") + "\n}\n";
+
+    for (var i = cats.length - 1; i >= 0; --i) {
+      if (cats[i] !== undefined && cats[i] != null) {
+        css += "\n" + tableID + "[" + prop + " = '" + cats[i] + "'] {\n";
+        css += "  " + attr  + ":" + ramp[i] + ";\n}"
+      }
+    }
+    return css;
+  }
+}
+
+function guessCss(sql, geometryType, column, stats) {
+  var css = null
+  if (stats.type == 'number') {
+    css =  CSS.choropleth(stats.quantiles, column, geometryType, ramps.red);
+  } else if(stats.type == 'string') {
+    css = CSS.category(stats.hist.slice(0, ramps.cat.length).map(function(r) { return r[0]; }), column, geometryType)
+  }
+  return css;
+}
+
+function guess(o, callback) {
+  if (!callback) throw new Error("no callback");
+  var s = cartodb.SQL({ user: o.user });
+  s.describe(o.sql, 'the_geom', function(data) {
+    var geometryType = data.simplified_geometry_type;
+    s.describe(o.sql, o.column, function(data) {
+      callback(
+        null, 
+        guessCss(o.sql, geometryType, data.column, data)
+      )
+    });
+  })
+}
+
+function guessMap(sql, tableName, column, stats) {
+  var geometryType = column.get("geometry_type");
+    var bbox =  column.get("bbox");
+    var columnName = column.get("name");
+    var wizard = "choropleth";
+    var css = null
+    var type = stats.type;
+    var metadata = []
+
+  if (stats.type == 'number') {
+    if (['A','U'].indexOf(stats.dist_type) != -1) {
+      // apply divergent scheme
+      css = CSS.choropleth(stats.jenks, tableName, columnName, geometryType, ramps.divergent);
+    } else if (stats.dist_type === 'F') {
+      css = CSS.choropleth(stats.equalint, tableName, columnName, geometryType, ramps.red);
+    } else {
+      if (stats.dist_type === 'J') {
+        css = CSS.choropleth(stats.headtails, tableName, columnName, geometryType, ramps.red);
+      } else {
+        var inverse_ramp = (_.clone(ramps.red)).reverse();
+        css = CSS.choropleth(stats.headtails, tableName, columnName, geometryType, inverse_ramp);
+      }
+    }
+  
+  } else if (stats.type == 'string') {
+
+      wizard   = "category";
+      css      = CSS.category(stats.hist.slice(0, ramps.category.length).map(function(r) { return r[0]; }),tableName, columnName, geometryType);
+
+    }
+
+  if (css) {
+    return { sql: sql, css: css, geometryType: geometryType, column: columnName, bbox: bbox, stats: stats, type: type, wizard: wizard  };
+  } else {
+    return { sql: sql, css: null, geometryType: geometryType, column: columnName, bbox: bbox, weight: -100, type: type, wizard: wizard };
+  }
+}
+/*
+CartoCSS.guess({
+  user: '  '
+  sql: '...'
+  column:
+})
+*/
+
+CSS.guess = guess;
+CSS.guessCss = guessCss;
+CSS.guessMap = guessMap;
+
+
+root.cartodb.CartoCSS = CSS;
 
 })();
 (function() {

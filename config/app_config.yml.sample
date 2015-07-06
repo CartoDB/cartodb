@@ -62,6 +62,9 @@ defaults: &defaults
     app_keys:
       editor: ''
       embeds: ''
+  facebook:
+    app_id: ''
+    admins: ''
   hubspot: ''
   metrics:
     hubspot:

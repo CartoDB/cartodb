@@ -225,6 +225,14 @@ class Organization < Sequel::Model
     !whitelisted_email_domains.nil? && !whitelisted_email_domains.empty?
   end
 
+  def remaining_seats
+    seats - assigned_seats
+  end
+
+  def assigned_seats
+    users.nil? ? 0 : users.count
+  end
+
   private
 
   def quota_dates(options)

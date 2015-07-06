@@ -1607,19 +1607,22 @@ class User < Sequel::Model
 
     # INFO: organization privileges are set for org_member_role, which is assigned to each org user
     if organization_owner?
-      org_member_role = in_database.fetch("SELECT cartodb.CDB_Organization_Member_Group_Role_Member_Name() as org_member_role;")[:org_member_role][:org_member_role]
-      set_user_privileges_in_public_schema(org_member_role)
-      self.run_queries_in_transaction(
-        grant_connect_on_database_queries(org_member_role), true
-      )
-      self.set_geo_columns_privileges(org_member_role)
-      self.set_raster_privileges(org_member_role)
-      self.set_user_privileges_in_cartodb_schema(org_member_role)
-      self.set_user_privileges_in_importer_schema(org_member_role)
-      self.set_user_privileges_in_geocoding_schema(org_member_role)
+      setup_organization_role_permissions
     end
   end
 
+  def setup_organization_role_permissions
+    org_member_role = in_database.fetch("SELECT cartodb.CDB_Organization_Member_Group_Role_Member_Name() as org_member_role;")[:org_member_role][:org_member_role]
+    set_user_privileges_in_public_schema(org_member_role)
+    self.run_queries_in_transaction(
+      grant_connect_on_database_queries(org_member_role), true
+    )
+    self.set_geo_columns_privileges(org_member_role)
+    self.set_raster_privileges(org_member_role)
+    self.set_user_privileges_in_cartodb_schema(org_member_role)
+    self.set_user_privileges_in_importer_schema(org_member_role)
+    self.set_user_privileges_in_geocoding_schema(org_member_role)
+  end
 
   def move_tables_to_schema(old_schema, new_schema)
     self.real_tables(old_schema).each do |t|

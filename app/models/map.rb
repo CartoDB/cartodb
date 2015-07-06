@@ -267,9 +267,9 @@ class Map < Sequel::Model
     torque_layers.length >= 1 && is_table_visualization? ? false : true
   end
 
+  # TODO: We need to allow more than one `tiled` layer now
   def admits_more_base_layers?
-    user_layers.length < 1
+    true
   end
-
 end
 

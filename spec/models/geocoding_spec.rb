@@ -93,14 +93,20 @@ describe Geocoding do
 
   describe '#run!' do
     it 'updates geocoding stats' do
+      # TODO: this doesn't really test anything but parameter passing, consider deleting it
       geocoding = FactoryGirl.create(:geocoding, user: @user, user_table: @table, formatter: 'b')
       geocoding.table_geocoder.stubs(:run).returns true
+      geocoding.table_geocoder.stubs(:used_batch_request?).returns false
       geocoding.table_geocoder.stubs(:cache).returns  OpenStruct.new(hits: 5000)
       geocoding.table_geocoder.stubs(:process_results).returns true
       geocoding.class.stubs(:processable_rows).returns 10
-      CartoDB::Geocoder.any_instance.stubs(:status).returns 'completed'
-      CartoDB::Geocoder.any_instance.stubs(:update_status).returns true
-      CartoDB::Geocoder.any_instance.stubs(:processed_rows).returns 10
+
+      hires_geocoder_mock = mock
+      hires_geocoder_mock.stubs(:status).returns 'completed'
+      hires_geocoder_mock.stubs(:update_status).returns true
+      hires_geocoder_mock.stubs(:processed_rows).returns 10
+      geocoding.table_geocoder.stubs(:geocoder).returns hires_geocoder_mock
+
       geocoding.run!
       geocoding.processed_rows.should eq 10
       geocoding.state.should eq 'finished'

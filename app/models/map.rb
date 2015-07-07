@@ -111,7 +111,7 @@ class Map < Sequel::Model
   def admits_layer?(layer)
     return admits_more_torque_layers? if layer.torque_layer?
     return admits_more_data_layers? if layer.data_layer?
-    return admits_more_base_layers? if layer.base_layer?
+    return admits_more_base_layers?(layer) if layer.base_layer?
   end
 
   def can_add_layer(user)
@@ -267,9 +267,11 @@ class Map < Sequel::Model
     torque_layers.length >= 1 && is_table_visualization? ? false : true
   end
 
-  # TODO: We need to allow more than one `tiled` layer now
-  def admits_more_base_layers?
-    true
+  def admits_more_base_layers?(layer)
+    # no basemap layer, always allow
+    return true if user_layers.length < 1
+    # have basemap? then allow only if comes on top (for labels)
+    layer.order >= layers.last.order && user_layers.length >= 1
   end
 end
 

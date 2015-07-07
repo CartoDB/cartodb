@@ -72,11 +72,11 @@ describe("geo.map", function() {
       expect(layer1.isEqual(layer2)).toBeTruthy();
     })
 
-    it("should assign indices", function() {
-      var baseLayer = new cdb.geo.TileLayer({order: 10});
-      var layer1 = new cdb.geo.PlainLayer({});
-      var layer2 = new cdb.geo.PlainLayer({});
-      var layer3 = new cdb.geo.PlainLayer({});
+    it("should re-assign order when new layers are added to the collection", function() {
+      var baseLayer = new cdb.geo.TileLayer();
+      var layer1 = new cdb.geo.CartoDBLayer();
+      var layer2 = new cdb.geo.CartoDBLayer();
+      var layer3 = new cdb.geo.CartoDBLayer();
 
       // Sets the order to 0
       layers.add(baseLayer);
@@ -108,7 +108,7 @@ describe("geo.map", function() {
       expect(layer1.get('order')).toEqual(2);
       expect(layer2.get('order')).toEqual(3);
       expect(layer3.get('order')).toEqual(1);
-      expect(torqueLayer.get('order')).toEqual(101);
+      expect(torqueLayer.get('order')).toEqual(4);
 
       var tiledLayer = new cdb.geo.TileLayer({});
 
@@ -119,10 +119,10 @@ describe("geo.map", function() {
       expect(layer1.get('order')).toEqual(2);
       expect(layer2.get('order')).toEqual(3);
       expect(layer3.get('order')).toEqual(1);
-      expect(torqueLayer.get('order')).toEqual(101);
-      expect(tiledLayer.get('order')).toEqual(1001);
+      expect(torqueLayer.get('order')).toEqual(4);
+      expect(tiledLayer.get('order')).toEqual(5);
 
-      var layer4 = new cdb.geo.PlainLayer({});
+      var layer4 = new cdb.geo.CartoDBLayer({});
       layers.add(layer4);
 
       expect(baseLayer.get('order')).toEqual(0);
@@ -130,9 +130,8 @@ describe("geo.map", function() {
       expect(layer2.get('order')).toEqual(3);
       expect(layer3.get('order')).toEqual(1);
       expect(layer4.get('order')).toEqual(4);
-
-      expect(torqueLayer.get('order')).toEqual(101);
-      expect(tiledLayer.get('order')).toEqual(1001);
+      expect(torqueLayer.get('order')).toEqual(5);
+      expect(tiledLayer.get('order')).toEqual(6);
     });
   });
 

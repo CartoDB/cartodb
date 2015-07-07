@@ -1,16 +1,29 @@
 # encoding: utf-8
 require_relative '../../../spec/rspec_configuration.rb'
-require_relative '../lib/geocoder.rb'
+require_relative '../lib/hires_batch_geocoder'
 
-describe CartoDB::Geocoder do
-  let(:default_params) { {app_id: '', token: '', mailto: '', force_batch: true, base_url: 'http://wadus.nokia.com', non_batch_base_url: 'http://wadus.nokia.com'} }
+
+# TODO rename to hires_batch_geocoder_spec.rb or split into batch/non-batch
+
+describe CartoDB::HiresBatchGeocoder do
+
+  before(:each) do
+    CartoDB::HiresBatchGeocoder.any_instance.stubs(:config).returns({
+        'base_url' => 'http://wadus.nokia.com',
+        'app_id' => '',
+        'token' => '',
+        'mailto' => ''
+      })
+  end
 
   describe '#upload' do
     it 'returns rec_id on success' do
       stub_api_request 200, 'response_example.xml'
       filepath = path_to 'without_country.csv'
-      rec_id = CartoDB::Geocoder.new(default_params.merge(input_file: filepath)).upload
-      rec_id.should eq "K8DmCWzsZGh4gbawxOuMv2BUcZsIkt7v"
+      Dir.mktmpdir do |working_dir|
+        rec_id = CartoDB::HiresBatchGeocoder.new(filepath, working_dir).upload
+        rec_id.should eq "K8DmCWzsZGh4gbawxOuMv2BUcZsIkt7v"
+      end
     end
 
     it 'raises error on failure' do

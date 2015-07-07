@@ -221,12 +221,12 @@ describe CartoDB::TableGeocoder do
     File.expand_path(
       File.join(File.dirname(__FILE__), "../spec/fixtures/#{filepath}")
     )
-  end #path_to
+  end
 
 
   def load_csv(path)
     @db.run("CREATE TABLE #{@table_name} (the_geom geometry, cartodb_id integer, name text, iso3 text)")
     @db.run("COPY #{@table_name.lit}(cartodb_id, name, iso3) FROM '#{path}' DELIMITER ',' CSV")
-  end # create_table
+  end
 
 end

@@ -237,13 +237,11 @@ cdb.geo.Layers = Backbone.Collection.extend({
     var CARTODB_LAYER_TYPE = 'CartoDB';
     var TORQUE_LAYER_TYPE = 'torque';
 
-    var layersByType = {};
-
     // First layer has order 0
     this.models[0].set({ order: 0 });
 
     if (this.size() > 1) {
-      // Index layers by type
+      var layersByType = {};
       for (var i = 1; i < this.size(); ++i) {
         var layer = this.models[i];
         var layerType = layer.get('type');

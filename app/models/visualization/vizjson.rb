@@ -92,9 +92,9 @@ module CartoDB
       end
 
       def layers_for(visualization)
-        layers_data = [
-          base_layers_for(visualization)
-        ]
+        layers_data = [ basemap_layer_for(visualization) ]
+
+        label_layers = labels_base_layers_for(visualization)
 
         if visualization.retrieve_named_map?
           presenter_options = {
@@ -113,7 +113,13 @@ module CartoDB
           named_maps_presenter = nil
           layers_data.push( layer_group_for(visualization) )
         end
-        layers_data.push( other_layers_for( visualization, named_maps_presenter ) )
+
+        layers_data.push(other_layers_for(visualization, named_maps_presenter))
+
+        if !label_layers.nil? && contains_torque_layer?(visualization)
+          layers_data.push(label_layers)
+        end
+
         layers_data.compact.flatten
       end
 
@@ -134,6 +140,24 @@ module CartoDB
           layer_num += 1
         }
         layers_data
+      end
+
+      def contains_torque_layer?(visualization)
+        visualization.layers(:torque).length > 0
+      end
+
+      def labels_base_layers_for(visualization)
+        visualization.layers(:base).reject { |layer|
+          layer.order == 0  # Remove basemap
+        }
+                                    .map { |layer|
+          CartoDB::Layer::Presenter.new(layer, options, configuration).to_vizjson_v2
+        }
+      end
+
+      def basemap_layer_for(visualization)
+        layer = visualization.layers(:base).first
+        CartoDB::Layer::Presenter.new(layer, options, configuration).to_vizjson_v2 unless layer.nil?
       end
 
       def base_layers_for(visualization)

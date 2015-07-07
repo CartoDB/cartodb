@@ -14,7 +14,8 @@ module CartoDB
                         cartodb:          :data_layers,
                         carto_and_torque: :carto_and_torque_layers,
                         others:           :other_layers,
-                        named_map:        :named_maps_layers
+                        named_map:        :named_maps_layers,
+                        torque:           :torque_layers
                       }
 
       INTERFACE     = %w{ overlays map user table related_tables layers stats mapviews total_mapviews single_data_layer? synchronization

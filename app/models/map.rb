@@ -8,13 +8,13 @@ class Map < Sequel::Model
   one_to_many   :tables, class: ::UserTable
   many_to_one   :user
 
-  many_to_many :layers, order: :order, after_add: proc { |map, layer| 
+  many_to_many :layers, order: :order, after_add: proc { |map, layer|
     layer.set_default_order(map)
   }
 
   many_to_many  :base_layers, clone: :layers, right_key: :layer_id
 
-  many_to_many  :data_layers, clone: :layers, right_key: :layer_id, 
+  many_to_many  :data_layers, clone: :layers, right_key: :layer_id,
                 conditions: { kind: "carto" }
 
   many_to_many  :user_layers, clone: :layers, right_key: :layer_id,
@@ -49,7 +49,7 @@ class Map < Sequel::Model
     minlon: -179,
     maxlon: 179,
     minlat: -85.0511,
-    maxlat: 85.0511 
+    maxlat: 85.0511
   }
 
   attr_accessor :table_id,
@@ -111,7 +111,7 @@ class Map < Sequel::Model
   def admits_layer?(layer)
     return admits_more_torque_layers? if layer.torque_layer?
     return admits_more_data_layers? if layer.data_layer?
-    return admits_more_base_layers? if layer.base_layer?
+    return admits_more_base_layers?(layer) if layer.base_layer?
   end
 
   def can_add_layer(user)
@@ -156,7 +156,7 @@ class Map < Sequel::Model
       end
 
       {
-        # LowerCorner longitude, in decimal degrees 
+        # LowerCorner longitude, in decimal degrees
         west:  bbox_sw[1],
         # LowerCorner latitude, in decimal degrees
         south: bbox_sw[0],
@@ -267,9 +267,11 @@ class Map < Sequel::Model
     torque_layers.length >= 1 && is_table_visualization? ? false : true
   end
 
-  def admits_more_base_layers?
-    user_layers.length < 1
+  def admits_more_base_layers?(layer)
+    # no basemap layer, always allow
+    return true if user_layers.length < 1
+    # have basemap? then allow only if comes on top (for labels)
+    (layer.order >= layers.last.order && user_layers.length < 2)
   end
-
 end
 

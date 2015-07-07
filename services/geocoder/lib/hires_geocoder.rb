@@ -66,6 +66,11 @@ module CartoDB
       @result
     end
 
+    def request_id
+      # INFO: there's no request_id for non-batch geocodings
+      nil
+    end
+
 
     private
 

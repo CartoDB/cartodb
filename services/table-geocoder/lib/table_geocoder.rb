@@ -38,6 +38,7 @@ module CartoDB
       mark_rows_to_geocode
       @csv_file = generate_csv()
       geocoder.run
+      self.remote_id = geocoder.request_id
       process_results if geocoder.status == 'completed'
       cache.store unless cache_disabled?
     end
@@ -135,10 +136,10 @@ module CartoDB
     def create_temp_table
       connection.run(%Q{
         CREATE TABLE #{temp_table_name} (
-          recId text, 
-          SeqNumber int, 
-          seqLength int, 
-          displayLatitude float, 
+          recId text,
+          SeqNumber int,
+          seqLength int,
+          displayLatitude float,
           displayLongitude float
         );}
       )

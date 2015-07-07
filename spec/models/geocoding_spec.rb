@@ -117,6 +117,7 @@ describe Geocoding do
     it 'marks the geocoding as failed if the geocoding job fails' do
       geocoding = FactoryGirl.build(:geocoding, user: @user, formatter: 'a', user_table: @table, formatter: 'b')
       geocoding.class.stubs(:processable_rows).returns 10
+      CartoDB::TableGeocoder.any_instance.stubs(:used_batch_request?).returns false
       CartoDB::TableGeocoder.any_instance.stubs(:run).raises("Error")
       CartoDB.expects(:notify_exception).times(1)
 

@@ -32,8 +32,8 @@ describe CartoDB::HiresBatchGeocoder do
     it 'raises error on failure' do
       stub_api_request 400, 'response_failure.xml'
       filepath = path_to 'without_country.csv'
-      expect { 
-        CartoDB::Geocoder.new(default_params.merge(input_file: filepath)).upload 
+      expect {
+        CartoDB::HiresBatchGeocoder.new(filepath, @working_dir).upload
       }.to raise_error('Geocoding API communication failure: Input parameter validation failed. JobId: 9rFyj7kbGMmpF50ZUFAkRnroEiOpDOEZ Email Address is missing!')
     end
   end
@@ -58,6 +58,7 @@ describe CartoDB::HiresBatchGeocoder do
 
   describe '#result' do
     it "saves result file on working directory" do
+      pending 'move to non-batch suite' # TODO
       filepath = path_to 'without_country.csv'
       stub_api_request 200, 'response_example_non_batch.json'
       geocoder = CartoDB::Geocoder.new(default_params.merge(input_file: filepath, force_batch: false))
@@ -71,7 +72,7 @@ describe CartoDB::HiresBatchGeocoder do
 
   describe '#cancel' do
     before { stub_api_request(200, 'response_cancel.xml') }
-    let(:geocoder) { CartoDB::Geocoder.new(default_params.merge(request_id: 'wadus')) }
+    let(:geocoder) { CartoDB::HiresBatchGeocoder.new('dummy_input_file.csv', @working_dir) }
 
     it "updates the status" do
       expect { geocoder.cancel }.to change(geocoder, :status).from(nil).to('cancelled')

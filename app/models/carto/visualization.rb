@@ -43,6 +43,10 @@ class Carto::Visualization < ActiveRecord::Base
 
   belongs_to :map
 
+  def ==(other_visualization)
+    self.id == other_visualization.id
+  end
+
   def size
     # Only canonical visualizations (Datasets) have a related table and then count against disk quota,
     # but we want to not break and even allow ordering by size multiple types

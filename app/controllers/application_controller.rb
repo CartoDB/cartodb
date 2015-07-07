@@ -34,6 +34,25 @@ class ApplicationController < ActionController::Base
 
   protected
 
+  # @see Warden::Manager.after_set_user
+  def update_session_security_token(user)
+    warden.session(user.username)[:sec_token] = Digest::SHA1.hexdigest(user.crypted_password)
+  end
+
+  def session_security_token_valid?(user)
+    warden.session(user.username).key?(:sec_token) &&
+    warden.session(user.username)[:sec_token] == Digest::SHA1.hexdigest(user.crypted_password)
+  end
+
+  def validate_session(user = current_user, reset_session_on_error = true)
+    if session_security_token_valid?(user)
+      true
+    else
+      reset_session if reset_session_on_error
+      false
+    end
+  end
+
   def is_https?
     request.protocol == 'https://'
   end
@@ -96,11 +115,22 @@ class ApplicationController < ActionController::Base
   end
 
   def login_required
-    authenticated?(CartoDB.extract_subdomain(request)) || not_authorized
+    is_auth = authenticated?(CartoDB.extract_subdomain(request))
+    is_auth ? validate_session(current_user) : not_authorized
   end
 
   def api_authorization_required
     authenticate!(:api_key, :api_authentication, :scope => CartoDB.extract_subdomain(request))
+    validate_session(current_user)
+  end
+
+  # This only allows to authenticate if sending an API request to username.api_key subdomain,
+  # but doesn't breaks the request if can't authenticate
+  def optional_api_authorization
+    if params[:api_key].present?
+      got_auth = authenticate(:api_key, :api_authentication, :scope => CartoDB.extract_subdomain(request))
+      validate_session(current_user) if got_auth
+    end
   end
 
   def not_authorized
@@ -218,16 +248,24 @@ class ApplicationController < ActionController::Base
   def current_viewer
     if @current_viewer.nil?
       if current_user && env["warden"].authenticated?(current_user.username)
-        @current_viewer = current_user
+        @current_viewer = current_user if validate_session(current_user)
       else
-        authenticated_usernames = request.session.select {|k,v| k.start_with?("warden.user")}.values
+        authenticated_usernames = request.session.select {|k, v|
+          k.start_with?("warden.user") && !k.end_with?(".session")
+        }
+                                                    .values
+        # See if there's a session of the viewed subdomain corresponding user
         current_user_present = authenticated_usernames.select { |username|
           CartoDB.extract_subdomain(request) == username
         }.first
 
+        # If current user session was there, do nothing; else, retrieve first available
         if current_user_present.nil?
-          authenticated_username = authenticated_usernames.first
-          @current_viewer = authenticated_username.nil? ? nil : User.where(username: authenticated_username).first
+          unless authenticated_usernames.first.nil?
+            user = User.where(username: authenticated_usernames.first).first
+            validate_session(user, reset_session = false) unless user.nil?
+            @current_viewer = user
+          end
         end
       end
     end

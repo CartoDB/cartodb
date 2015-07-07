@@ -3,6 +3,7 @@
 <%= content_for(:description) do %><%= @visualization.description_clean ? "#{@visualization.description_clean}. Map created by #{@name} in CartoDB" : "Map created by #{@name} in CartoDB" %><% end %>
 
 <%= content_for(:twitter_card) do %><%= Carto::StaticMapsURLHelper.new.url_for_static_map(request, @visualization, 560, 300) %><% end %>
+<%= content_for(:facebook_card) do %><%= Carto::StaticMapsURLHelper.new.url_for_static_map(request, @visualization, 1200, 630) %><% end %>
 
 <%= content_for(:css) do %>
   <%= render :partial => 'admin/visualizations/public/embed_map_inline_css' %>

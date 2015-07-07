@@ -87,6 +87,8 @@ module CartoDB
       @request_id = extract_response_field(response.body, '//Response/MetaInfo/RequestId')
       # TODO: this is a critical error, deal with it appropriately
       raise 'Could not get the request ID' unless @request_id
+
+      return @request_id
     end
 
     def used_batch_request?

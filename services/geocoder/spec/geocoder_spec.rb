@@ -80,40 +80,47 @@ describe CartoDB::HiresBatchGeocoder do
   end
 
   describe '#extract_response_field' do
-    let(:geocoder) { CartoDB::Geocoder.new(default_params) }
+    let(:geocoder) { CartoDB::HiresBatchGeocoder.new('dummy_input.csv', @working_dir) }
     let(:response) { File.open(path_to('response_example.xml')).read }
 
-    it 'extracts response_id by default' do
-      geocoder.extract_response_field(response).should == 'K8DmCWzsZGh4gbawxOuMv2BUcZsIkt7v'
-    end
-
     it 'returns specified element value' do
-      geocoder.extract_response_field(response, '//Response/Status').should == 'submitted'
+      geocoder.send(:extract_response_field, response, '//Response/Status').should == 'submitted'
     end
 
     it 'returns nil for missing elements' do
-      geocoder.extract_response_field(response, 'MissingField').should == nil
+      CartoDB.expects(:notify_exception).once
+      geocoder.send(:extract_response_field, response, 'MissingField').should == nil
     end
   end
 
   describe '#api_url' do
-    let(:geocoder) { CartoDB::Geocoder.new(app_id: 'a', token: 'b', mailto: 'c') }
+    # TODO move to common place for both geocoders
+    before(:each) {
+      CartoDB::HiresBatchGeocoder.any_instance.stubs(:config).returns({
+        'base_url' => '',
+        'app_id' => 'a',
+        'token' => 'b',
+        'mailto' => 'c'
+        })
+      @geocoder =  CartoDB::HiresBatchGeocoder.new('dummy_input.csv', @working_dir)
+    }
 
     it 'returns base url by default' do
-      geocoder.api_url({}).should == "/?app_id=a&token=b&mailto=c"
+      @geocoder.send(:api_url, {}).should == "/?app_id=a&token=b&mailto=c"
     end
 
     it 'allows for api method specification' do
-      geocoder.api_url({}, 'all').should == "/all/?app_id=a&token=b&mailto=c"
+      @geocoder.send(:api_url, {}, 'all').should == "/all/?app_id=a&token=b&mailto=c"
     end
 
     it 'allows for api attributes specification' do
-      geocoder.api_url({attr: 'wadus'}, 'all').should == "/all/?attr=wadus&app_id=a&token=b&mailto=c"
+      @geocoder.send(:api_url, {attr: 'wadus'}, 'all').should == "/all/?attr=wadus&app_id=a&token=b&mailto=c"
     end
   end
 
   describe '#geocode_text' do
     it 'returns lat/lon on success' do
+      pending 'move to non-batched suite' # TODO
       stub_api_request 200, 'response_example_non_batch.json'
       g = CartoDB::Geocoder.new(default_params)
       g.geocode_text("United States").should eq [38.89037, -77.03196]
@@ -122,6 +129,7 @@ describe CartoDB::HiresBatchGeocoder do
 
   describe '#used_batch_request?' do
     it 'returns true if sent a request to hi-res batch api' do
+      pending 'move these to the factory tests' # TODO
       stub_api_request 200, 'response_example.xml'
       filepath = path_to 'without_country.csv'
       geocoder = CartoDB::Geocoder.new(default_params.merge(input_file: filepath))
@@ -130,6 +138,7 @@ describe CartoDB::HiresBatchGeocoder do
     end
 
     it 'returns false if sent the request was non-batched' do
+      pending 'move these to the factory tests' # TODO
       stub_api_request 200, 'response_example_non_batch.json'
       filepath = path_to 'without_country.csv'
       g = CartoDB::Geocoder.new(default_params.merge(force_batch: false, input_file: filepath))

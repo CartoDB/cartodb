@@ -376,6 +376,7 @@
         'stats as (', 
            'select count(distinct({{column}})) as uniq, ',
            '       count(*) as cnt, ',
+           '       sum(case when {{column}} is null then 1 else 0 end)::numeric as null_count, ',
            '       sum(case when {{column}} is null then 1 else 0 end)::numeric / count(*)::numeric as null_ratio, ',
            // '       CDB_DistinctMeasure(array_agg({{column}}::text)) as cat_weight ',
            '       (SELECT max(cumperc) weight FROM c) As skew ',
@@ -391,6 +392,7 @@
         column: column, 
         sql: sql
       });
+
       this.execute(query, function(data) {
         var row = data.rows[0];
         var s = array_agg(row.array_agg);
@@ -402,11 +404,44 @@
           }),
           distinct: row.uniq,
           count: row.cnt,
+          null_count: row.null_count,
           null_ratio: row.null_ratio,
           skew: row.skew,
           weight: row.skew * (1 - row.null_ratio) * (1 - row.uniq / row.cnt) * ( row.uniq > 1 ? 1 : 0)
         });
       });
+  }
+
+  SQL.prototype.describeDate = function(sql, column, options, callback) {
+    var s = [
+      'with minimum as (',
+        'SELECT min({{column}}) as start_time FROM ({{sql}}) _wrap), ',
+      'maximum as (SELECT max({{column}}) as end_time FROM ({{sql}}) _wrap), ',
+      'moments as (SELECT count(DISTINCT {{column}}) as moments FROM ({{sql}}) _wrap)',
+      'SELECT * FROM minimum, maximum, moments'
+    ];
+    var query = Mustache.render(s.join('\n'), {
+      column: column,
+      sql: sql
+    });
+
+    this.execute(query, function(data) {
+      var row = data.rows[0];
+      var e = new Date(row.end_time);
+      var s = new Date(row.start_time);
+
+      var moments = row.moments;
+
+      var steps = Math.min(row.moments, 1024);
+      
+      callback({
+        type: 'date',
+        start_time: s,
+        end_time: e,
+        range: e - s,
+        steps: steps
+      });
+    });
   }
 
   SQL.prototype.describeGeom = function(sql, column, options, callback) {
@@ -479,11 +514,9 @@
                    'count(*) as cnt,',
                    'sum(case when {{column}} is null then 1 else 0 end)::numeric / count(*)::numeric as null_ratio,',
                    'stddev_pop({{column}}) / count({{column}}) as stddev,',
-                   'log(stddev_pop({{column}}) / count({{column}})) as lstddev,',
+                   //'log(stddev_pop({{column}}) / count({{column}})) as lstddev,',
                    'CASE WHEN abs(avg({{column}})) > 1e-7 THEN stddev({{column}}) / abs(avg({{column}})) ELSE 1e12 END as stddevmean,',
-                   ' \'F\' as dist_type ',
-                   // CDB_DistType needs to be in production before using
-                   // 'CDB_DistType(array_agg("{{column}}"::numeric)) as dist_type ',
+                    'CDB_DistType(array_agg("{{column}}"::numeric)) as dist_type ',
               'from ({{sql}}) _wrap ',
         '),',
         'params as (select min(a) as min, (max(a) - min(a)) / 7 as diff from ( select {{column}} as a from ({{sql}}) _table_sql where {{column}} is not null ) as foo ),',
@@ -508,45 +541,11 @@
          'select * from histogram, stats, buckets'
       ];
 
-      // if(normalization == '_area'){
-      //   var wrap_sql = "SELECT {{column}}/ST_Area(the_geom::geography) as _target_column FROM ({{sql}}) a where the_geom is not null AND {{column}} is not null ";
-      // } else if (normalization == null) {
-      //   var wrap_sql = "SELECT {{column}} as _target_column FROM ({{sql}}) a where {{column}} is not null ";
-      // } else {
-      //   var wrap_sql = "SELECT {{column}}/{{normalization}} as _target_column FROM ({{sql}}) a where {{normalization}} is not null AND {{column}} is not null ";
-
-      // }
-
-      // wrap_sql = Mustache.render(wrap_sql.join('\n'), {
-      //   normalization: normalization, 
-      //   column: column, 
-      //   sql: sql
-      // });
-
-      // var newS = [
-      //   'with stats as (',
-      //       'select min(_target_column) as min,',
-      //              'max(_target_column) as max,',
-      //              'avg(_target_column) as avg,',
-      //              'stddev(_target_column) as stddev,',
-      //              'stddev(_target_column) / avg(_target_column) as stdevmean, ',
-      //              'CDB_DistType(array_agg(_target_column::numeric)) as dist_type ',
-      //         'from ({{sql}}) _wrap ',
-      //   '),',
-      //    'buckets as (',
-      //       'select CDB_QuantileBins(array_agg(_target_column::numeric), 7) as quantiles, ',
-      //       '       CDB_EqualIntervalBins(array_agg(_target_column::numeric), 7) as equalint, ',
-      //       '       CDB_JenksBins(array_agg(_target_column::numeric), 7) as jenks, ',
-      //       '       CDB_HeadsTailsBins(array_agg(_target_column::numeric), 7) as headtails ',
-      //       'from ({{sql}}) _table_sql',
-      //    ')',
-      //    'select * from histogram, stats, buckets'
-      // ];
-
       var query = Mustache.render(s.join('\n'), {
         column: column, 
         sql: sql
       });
+
       this.execute(query, function(data) {
         var row = data.rows[0];
         var s = array_agg(row.hist);
@@ -564,12 +563,12 @@
           null_ratio: row.null_ratio,
           count: row.cnt,
           distinct: row.uniq,
-          lstddev: row.lstddev,
+          //lstddev: row.lstddev,
           avg: row.avg,
           max: row.max,
           min: row.min,
           stddevmean: row.stddevmean,
-          weight: (row.uniq > 1 ? 1 : 0) * (1 - row.null_ratio) * (row.lstddev < -1 ? 1 : (row.lstddev < 1 ? 0.5 : (row.lstddev < 3 ? 0.25 : 0.1))),
+          weight: (row.uniq > 1 ? 1 : 0) * (1 - row.null_ratio) * (row.stddev < -1 ? 1 : (row.stddev < 1 ? 0.5 : (row.stddev < 3 ? 0.25 : 0.1))),
           quantiles: row.quantiles,
           equalint: row.equalint,
           jenks: row.jenks,
@@ -604,8 +603,10 @@
           self.describeFloat(sql, column, options, callback);
         } else if (type === 'geometry') {
           self.describeGeom(sql, column, options, callback);
+        } else if (type === 'date') {
+          self.describeDate(sql, column, options, callback);
         } else {
-          callback(new Error("column type does not supported"));
+          callback(new Error("column type is not supported"));
         }
       });
   }

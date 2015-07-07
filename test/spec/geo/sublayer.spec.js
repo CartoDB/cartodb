@@ -277,17 +277,20 @@ describe('Sublayers', function() {
         expect(sublayer.toJSON().options.geom_column).toEqual("the_raster_webmercator");
         expect(sublayer.toJSON().options.geom_type).toEqual("raster");
         expect(sublayer.toJSON().options.cartocss_version).toEqual('2.3.0');
+        expect(sublayer.toJSON().options.raster_band).toEqual(0);
       });
 
       it('should include geometry options with a given cartocss_version if raster option is true', function() {
         sublayer.set({
           raster: true,
+          raster_band: 2,
           cartocss_version: '2.4.0'
         });
 
         expect(sublayer.toJSON().options.geom_column).toEqual("the_raster_webmercator");
         expect(sublayer.toJSON().options.geom_type).toEqual("raster");
         expect(sublayer.toJSON().options.cartocss_version).toEqual('2.4.0');
+        expect(sublayer.toJSON().options.raster_band).toEqual(2);
       });
     });
 

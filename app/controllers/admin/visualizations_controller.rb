@@ -4,6 +4,7 @@ require_dependency 'resque/user_jobs'
 require_relative '../carto/admin/user_table_public_map_adapter'
 require_relative '../carto/admin/visualization_public_map_adapter'
 require_relative '../../helpers/embed_redis_cache'
+require_dependency 'static_maps_url_helper'
 
 class Admin::VisualizationsController < ApplicationController
 
@@ -474,7 +475,9 @@ class Admin::VisualizationsController < ApplicationController
       # Might be an org url, try getting the org
       organization = Organization.where(name: org_name).first
       unless organization.nil?
-        authenticated_users = request.session.select { |k,v| k.start_with?("warden.user") }.values
+        authenticated_users = request.session.select { |k, v|
+          k.start_with?("warden.user") && !k.end_with?(".session")
+        }                                    .values
         authenticated_users.each { |username|
           user = User.where(username:username).first
           if url.nil? && !user.nil? && !user.organization.nil?

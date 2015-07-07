@@ -88,12 +88,16 @@ module CartoDB
       # Extract relevant information from layers
       def configure_layers_data
         # Http/base layers don't appear at viz.json
-        layers = @visualization.layers(:cartodb)
+        cartodb_layers = @visualization.layers(:cartodb)
         layers_data = Array.new
-        layers.each { |layer|
+        cartodb_layers.each { |layer|
           layer_vizjson = layer.get_presenter(@options, @configuration).to_vizjson_v2
+
+          # TODO: Check type to call instead layers_data.push(data_for_base_layer(layer_vizjson))
+
           layers_data.push(data_for_carto_layer(layer_vizjson))
         }
+
         layers_data
       end
 
@@ -119,6 +123,14 @@ module CartoDB
           data[:legend] = layer_vizjson[:legend]
         end
         data
+      end
+
+      def data_for_base_layer(layer_vizjson)
+        {
+          layer_name: nil,
+          interactivity: nil,
+          visible: true
+        }
       end
 
       # Loads the data of a given named map

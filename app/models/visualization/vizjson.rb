@@ -60,7 +60,15 @@ module CartoDB
       end
 
       def layer_group_for(visualization)
-        LayerGroup::Presenter.new(visualization.layers(:cartodb), options, configuration).to_poro
+        layers = visualization.layers(:cartodb)
+
+        unless contains_torque_layer?(visualization)
+          labels_base_layers(visualization).each { |layer| 
+            layers.push(layer)
+          }
+        end
+
+        LayerGroup::Presenter.new(layers, options, configuration).to_poro
       end
 
       def named_map_layer_group_for(visualization)
@@ -94,8 +102,6 @@ module CartoDB
       def layers_for(visualization)
         layers_data = [ basemap_layer_for(visualization) ]
 
-        label_layers = labels_base_layers_for(visualization)
-
         if visualization.retrieve_named_map?
           presenter_options = {
             user_name: options.fetch(:user_name),
@@ -116,8 +122,10 @@ module CartoDB
 
         layers_data.push(other_layers_for(visualization, named_maps_presenter))
 
-        if !label_layers.nil? && contains_torque_layer?(visualization)
-          layers_data.push(label_layers)
+        if contains_torque_layer?(visualization)
+          decorated_labels_base_layers(visualization).each { |layer| 
+            layers_data.push(layer)
+          }
         end
 
         layers_data.compact.flatten
@@ -146,11 +154,14 @@ module CartoDB
         visualization.layers(:torque).length > 0
       end
 
-      def labels_base_layers_for(visualization)
+      def labels_base_layers(visualization)
         visualization.layers(:base).reject { |layer|
           layer.order == 0  # Remove basemap
         }
-                                    .map { |layer|
+      end
+
+      def decorated_labels_base_layers(visualization)
+        labels_base_layers(visualization).map { |layer|
           CartoDB::Layer::Presenter.new(layer, options, configuration).to_vizjson_v2
         }
       end

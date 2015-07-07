@@ -272,6 +272,7 @@ module CartoDB
         if layer[:options]['type'] == 'Plain'
           self.plain_color_basemap_layer(layer, layer_num, template_data)
         else
+          # labels layer are also http, just with highest [:options]['order']
           self.http_basemap_layer(layer, layer_num, template_data)
         end
       end

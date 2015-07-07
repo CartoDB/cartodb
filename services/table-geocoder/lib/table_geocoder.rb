@@ -8,7 +8,7 @@ require_relative 'abstract_table_geocoder'
 module CartoDB
   class TableGeocoder < AbstractTableGeocoder
 
-    attr_reader   :connection, :working_dir, :geocoder, :result, 
+    attr_reader   :connection, :working_dir, :csv_file, :result,
                   :max_rows, :cache
 
     attr_accessor :table_name, :formatter, :remote_id
@@ -36,8 +36,7 @@ module CartoDB
 
       cache.run unless cache_disabled?
       mark_rows_to_geocode
-      csv_file = generate_csv()
-      @geocoder = CartoDB::HiresGeocoderFactory.get(csv_file, working_dir)
+      @csv_file = generate_csv()
       geocoder.run
       process_results if geocoder.status == 'completed'
       cache.store unless cache_disabled?
@@ -78,6 +77,10 @@ module CartoDB
 
 
     private
+
+    def geocoder
+      @geocoder ||= CartoDB::HiresGeocoderFactory.get(csv_file, working_dir)
+    end
 
     def cache_disabled?
       Cartodb.config[:geocoder]['disable_cache'] || false

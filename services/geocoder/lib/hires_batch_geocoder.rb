@@ -41,7 +41,7 @@ module CartoDB
       @used_batch_request = false
 
       begin
-        @batch_api_disabled = Cartodb.config[:geocoder]['batch_api_disabled'] == true
+        @batch_api_disabled = config['batch_api_disabled'] == true
       rescue
         @batch_api_disabled = false
       end

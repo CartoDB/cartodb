@@ -64,20 +64,20 @@ describe CartoDB::TableGeocoder do
         connection: @db,
         max_rows: 1000
       }))
-      @tg.add_georef_status_column
+      @tg.send(:add_georef_status_column)
     end
 
     it "generates a csv file with the correct format" do
-      @tg.mark_rows_to_geocode
-      @tg.generate_csv
+      @tg.send(:mark_rows_to_geocode)
+      @tg.send(:generate_csv)
       File.readlines("#{@tg.working_dir}/wadus.csv").to_set.should == File.readlines(path_to('nokia_input.csv')).to_set
     end
 
     it "honors max_rows" do
       max_rows = 10
       @tg.stubs(:max_rows).returns max_rows
-      @tg.mark_rows_to_geocode
-      @tg.generate_csv
+      @tg.send(:mark_rows_to_geocode)
+      @tg.send(:generate_csv)
 
       # Note there might be duplicate input strings but we send unique inputs to the geocoder api.
       # Also note the csv file has a header.
@@ -88,8 +88,10 @@ describe CartoDB::TableGeocoder do
   describe '#download_results' do
     it 'gets the geocoder results' do
       tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, max_rows: 1000)
-      tg.geocoder.expects(:result).times(1).returns('a')
-      tg.download_results
+      geocoder = mock
+      geocoder.expects(:result).times(1).returns('a')
+      tg.stubs(:geocoder).returns(geocoder)
+      tg.send(:download_results)
       tg.result.should == 'a'
     end
   end
@@ -98,14 +100,14 @@ describe CartoDB::TableGeocoder do
     it 'does not raise an error if no results file' do
       dir = Dir.mktmpdir
       tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, working_dir: dir, max_rows: 1000)
-      expect { tg.deflate_results }.to_not raise_error
+      expect { tg.send(:deflate_results) }.to_not raise_error
     end
 
     it 'extracts nokia result files' do
       dir = Dir.mktmpdir
       `cp #{path_to('kXYkQhuDfxnUSmWFP3dmq6TzTZAzwy4x.zip')} #{dir}`
       tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, working_dir: dir, max_rows: 1000)
-      tg.deflate_results
+      tg.send(:deflate_results)
       filename = 'result_20130919-04-55_6.2.46.1_out.txt'
       destfile = File.open(File.join(dir, filename))
       destfile.read.should eq File.open(path_to(filename)).read
@@ -115,49 +117,35 @@ describe CartoDB::TableGeocoder do
   describe '#create_temp_table' do
     it 'raises error if no remote_id' do
       tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, max_rows: 1000)
-      expect { tg.create_temp_table }.to raise_error(Sequel::DatabaseError)
+      expect { tg.send(:create_temp_table) }.to raise_error(Sequel::DatabaseError)
     end
 
     it 'creates a temporary table' do
       tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, remote_id: 'geo_HvyxzttLyFhaQ7JKmnrZxdCVySd8N0Ua', schema: 'public', max_rows: 1000)
-      tg.drop_temp_table
-      tg.create_temp_table
-      @db.fetch("select * from #{tg.temp_table_name}").all.should eq []
-    end
-  end
-
-  describe '#temp_table_name' do
-    it 'returns geo_remote_id if available' do
-      tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, remote_id: 'doesnotexist', max_rows: 1000)
-      tg.temp_table_name.should eq 'cdb.geo_doesnotexist'
-    end
-
-    it 'returns an alternative name if the table exists' do
-      tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, remote_id: 'wadus', schema: 'public', max_rows: 1000)
-      @db.run("drop table if exists geo_wadus; create table geo_wadus (id int)")
-      @db.run("drop table if exists geo_wadus_1; create table geo_wadus_1 (id int)")
-      tg.temp_table_name.should eq 'public.geo_wadus'
+      tg.send(:drop_temp_table)
+      tg.send(:create_temp_table)
+      @db.fetch("select * from #{tg.send(:temp_table_name)}").all.should eq []
     end
   end
 
   describe '#import_results_to_temp_table' do
+    before do
+      @tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, remote_id: 'temp_table', schema: 'public', max_rows: 1000)
+      @tg.send(:create_temp_table)
+    end
+
     after do
-      @db.drop_table('geo_temp_table')
+      @tg.send(:drop_temp_table)
     end
     
     it 'loads the Nokia output format to an existing temp table' do
-      tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, remote_id: 'temp_table', schema: 'public', max_rows: 1000)
-      tg.create_temp_table
-      tg.stubs(:deflated_results_path).returns(path_to('nokia_output.txt'))
-      tg.import_results_to_temp_table
+      @tg.stubs(:deflated_results_path).returns(path_to('nokia_output.txt'))
+      @tg.send(:import_results_to_temp_table)
       @db.fetch(%Q{
-        SELECT count(*) FROM #{tg.temp_table_name} 
+        SELECT count(*) FROM #{@tg.send(:temp_table_name)}
         WHERE displayLatitude IS NOT NULL AND displayLongitude IS NOT NULL
       }).first[:count].should eq 44
     end
-  end
-
-  describe '#load_results_into_original_table' do
   end
 
   describe '#add_georef_status_column' do
@@ -178,19 +166,19 @@ describe CartoDB::TableGeocoder do
     end
 
     it 'adds a boolean cartodb_georef_status column' do
-      @tg.add_georef_status_column
+      @tg.send(:add_georef_status_column)
       @db.run("select cartodb_georef_status from wwwwww").should eq nil
     end
 
     it 'does nothing when the column already exists' do
       @tg.expects(:cast_georef_status_column).once
-      @tg.add_georef_status_column
-      @tg.add_georef_status_column
+      @tg.send(:add_georef_status_column)
+      @tg.send(:add_georef_status_column)
     end
 
     it 'casts cartodb_georef_status to boolean if needed' do
       @db.run('alter table wwwwww add column cartodb_georef_status text')
-      @tg.add_georef_status_column
+      @tg.send(:add_georef_status_column)
       @db.fetch("select data_type from information_schema.columns where table_name = 'wwwwww' and column_name = 'cartodb_georef_status'")
         .first[:data_type].should eq 'boolean'
     end

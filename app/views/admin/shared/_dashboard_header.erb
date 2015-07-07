@@ -1,0 +1,44 @@
+<div class="Header" id="header">
+  <div class="u-inner Header-inner">
+    <div class="Header-navigation">
+      <ul class="Header-navigationList">
+        <li class="js-logo">
+          <% if cartodb_com_hosted? %>
+            <a href="<%= CartoDB.url(self, 'root') %>">
+          <% else %>
+            <a href="http://cartodb.com">
+          <% end %>
+            <span class="Logo Logo--avatar">
+              <i class="iconFont iconFont-CartoFante"></i>
+            </span>
+            <span class="Logo Logo--text Header-logoText u-hideOnMobile">
+              <i class="iconFont iconFont-CartoDB"></i>
+            </span>
+          </a>
+        </li>
+      </ul>
+    </div>
+    <div class="Header-settings">
+      <ul class="Header-settingsList">
+        <% unless cartodb_com_hosted? %>
+        <li class="Header-settingsItem u-hideOnMobile">
+          <a href="http://cartodb.com/gallery/" class="Header-settingsLink">Explore</a>
+        </li>
+        <li class="Header-settingsItem js-login">
+          <a href="<%= CartoDB.url(self, 'login') %>" class="Header-settingsLink">Login</a>
+        </li>
+        <li class="Header-settingsItem js-learn" style="display:none;">
+          <a href="http://docs.cartodb.com/" class="Header-settingsLink">Learn</a>
+        </li>
+        <% end %>
+        <li class="Header-settingsItem Header-settingsItem--avatar js-user-settings">
+            <% unless cartodb_com_hosted? %>
+                <a href="http://cartodb.com/signup" class="Button Button--headerPositive">
+                  <span>Sign up</span>
+                </a>
+            <% end %>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

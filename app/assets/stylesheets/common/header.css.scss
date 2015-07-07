@@ -39,13 +39,17 @@ $cHeader-dark:  rgba(#3A91D7, 1);
   line-height: $sLineHeight-largest;
   color: rgba(white, 0.6);
 }
+.Header-navigationItem {
+  margin-left: $sMargin-elementLarge;
+}
 .Header-navigationLink {
-  font-size: $sFontSize-largest;
-  font-weight: $sFontWeight-lighter;
+  font-weight: $sFontWeight-normal;
+  font-size: $sFontSize-smallUpperCase;
   line-height: $sLineHeight-largest;
+  text-transform: uppercase;
   color: rgba(white, 0.6);
   &:hover {
-    text-decoration: underline;
+    text-decoration: none;
     color: white;
   }
 }
@@ -77,18 +81,19 @@ $cHeader-dark:  rgba(#3A91D7, 1);
 }
 .Header-settingsItem {
   position: relative;
-  margin-left: $sMargin-element;
-  font-size: $sFontSize-larger;
+  margin-left: $sMargin-elementLarge;
+  font-weight: $sFontWeight-normal;
+  font-size: $sFontSize-smallUpperCase;
   line-height: $sLineHeight-larger;
+  text-transform: uppercase;
 }
-.Header-settingsItem--avatar { height: 42px }
+.Header-settingsItem--avatar { height: 46px }
 .Header-settingsLink {
-  font-weight: $sFontWeight-lighter;
   color: rgba(white, 0.6);
 
   &:hover {
     color: white;
-    text-decoration: underline;
+    text-decoration: none;
   }
 }
 

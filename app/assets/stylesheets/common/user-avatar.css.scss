@@ -32,7 +32,9 @@
   text-align: center;
 }
 .UserAvatar-img {
-  border: 1px solid transparent;
+  border: 3px solid transparent;
+  border-left: 0;
+  border-right: 0;
 }
 .UserAvatar-img--no-src {
   background-image: image-url("avatars/avatar_ghost_red.png");

@@ -14,16 +14,19 @@ describe CartoDB::HiresBatchGeocoder do
         'token' => '',
         'mailto' => ''
       })
+    @working_dir = Dir.mktmpdir
+  end
+
+  after(:each) do
+    FileUtils.remove_entry_secure @working_dir
   end
 
   describe '#upload' do
     it 'returns rec_id on success' do
       stub_api_request 200, 'response_example.xml'
       filepath = path_to 'without_country.csv'
-      Dir.mktmpdir do |working_dir|
-        rec_id = CartoDB::HiresBatchGeocoder.new(filepath, working_dir).upload
-        rec_id.should eq "K8DmCWzsZGh4gbawxOuMv2BUcZsIkt7v"
-      end
+      rec_id = CartoDB::HiresBatchGeocoder.new(filepath, @working_dir).upload
+      rec_id.should eq "K8DmCWzsZGh4gbawxOuMv2BUcZsIkt7v"
     end
 
     it 'raises error on failure' do
@@ -36,8 +39,11 @@ describe CartoDB::HiresBatchGeocoder do
   end
 
   describe '#update_status' do
-    before { stub_api_request(200, 'response_status.xml') }
-    let(:geocoder) { CartoDB::Geocoder.new(default_params.merge(request_id: 'wadus')) }
+    before {
+      stub_api_request(200, 'response_status.xml')
+      CartoDB::HiresBatchGeocoder.any_instance.stubs(:request_id).returns('wadus')
+    }
+    let(:geocoder) { CartoDB::HiresBatchGeocoder.new('/tmp/dummy_input_file.csv', @working_dir) }
 
     it "updates status" do
       expect { geocoder.update_status }.to change(geocoder, :status).from(nil).to('completed')

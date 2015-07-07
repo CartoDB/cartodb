@@ -10,6 +10,7 @@ module CartoDB
   class HiresBatchGeocoder < HiresGeocoderInterface
 
     DEFAULT_TIMEOUT = 5.hours
+    POLLING_SLEEP_TIME = 5.seconds
 
     # Options for the csv upload endpoint of the Batch Geocoder API
     UPLOAD_OPTIONS = {
@@ -54,7 +55,7 @@ module CartoDB
       # INFO: this loop polls for the state of the table_geocoder batch process
       update_status
       until ['completed', 'cancelled'].include? status do
-        if (Time.now - started_at) > DEFAULT_TIMEOUT
+        if (Time.now - started_at) > default_timeout
           begin
             cancel
           ensure
@@ -64,7 +65,7 @@ module CartoDB
 
         break if ['failed', 'timeout'].include? status
 
-        sleep 5
+        sleep polling_sleep_time
         update_status
       end
 
@@ -152,7 +153,15 @@ module CartoDB
 
     def handle_api_error(response)
       raise "Geocoding API communication failure: #{extract_response_field(response.body, '//Details')}" if response.code != 200
-    end # handle_api_errpr
+    end
+
+    def default_timeout
+      DEFAULT_TIMEOUT
+    end
+
+    def polling_sleep_time
+      POLLING_SLEEP_TIME
+    end
 
   end # Geocoder
 end # CartoDB

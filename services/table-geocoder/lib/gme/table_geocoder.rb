@@ -13,7 +13,7 @@ module Carto
       # See https://developers.google.com/maps/documentation/geocoding/#Types
       ACCEPTED_ADDRESS_TYPES = ['street_address', 'route', 'intersection', 'neighborhood']
 
-      attr_reader :connection, :original_formatter, :processed_rows, :state, :max_block_size
+      attr_reader :original_formatter, :processed_rows, :state, :max_block_size
 
       def initialize(arguments)
         super(arguments)

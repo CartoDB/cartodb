@@ -11,7 +11,7 @@ module CartoDB
 
       SQLAPI_CALLS_TIMEOUT = 45
 
-      attr_reader   :connection, :temp_table_name, :sql_api, :geocoding_results,
+      attr_reader   :temp_table_name, :sql_api, :geocoding_results,
                     :working_dir, :remote_id, :state, :processed_rows, :country_column, :region_column,
                     :qualified_table_name, :batch_size, :countries, :regions, :kind, :geometry_type
 

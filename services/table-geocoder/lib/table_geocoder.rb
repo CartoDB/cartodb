@@ -8,7 +8,7 @@ require_relative 'abstract_table_geocoder'
 module CartoDB
   class TableGeocoder < AbstractTableGeocoder
 
-    attr_reader   :connection, :working_dir, :csv_file, :result,
+    attr_reader   :working_dir, :csv_file, :result,
                   :max_rows, :cache
 
     attr_accessor :table_name, :formatter, :remote_id

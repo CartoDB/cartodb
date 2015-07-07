@@ -8,6 +8,8 @@ module CartoDB
 
     DB_STATEMENT_TIMEOUT_MS = 5.hours.to_i * 1000
 
+    attr_reader :connection
+
     def initialize(arguments)
       @connection  = arguments.fetch(:connection)
       @table_name  = arguments[:table_name]

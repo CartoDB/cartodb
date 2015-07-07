@@ -1,6 +1,5 @@
 # encoding: utf-8
 require_relative '../lib/table_geocoder.rb'
-require_relative '../../geocoder/lib/geocoder.rb'
 require_relative 'factories/pg_connection'
 require 'set'
 require_relative '../../../spec/rspec_configuration.rb'
@@ -29,9 +28,13 @@ describe CartoDB::TableGeocoder do
         connection: @db,
         max_rows: 1000
       }))
-      @tg.geocoder.stubs(:upload).returns(true)
-      @tg.geocoder.stubs(:request_id).returns('111')
-      @tg.cache.stubs(:run).returns(true)
+      geocoder = mock
+      geocoder.stubs(:upload).returns(true)
+      geocoder.stubs(:request_id).returns('111')
+      geocoder.stubs(:run).returns(true)
+      geocoder.stubs(:status).returns('foo')
+      @tg.stubs(:geocoder).returns(geocoder)
+      @tg.stubs(:cache_disabled?).returns(true)
       @tg.run
     end
 
@@ -238,4 +241,4 @@ describe CartoDB::TableGeocoder do
     @db.run("COPY #{@table_name.lit}(cartodb_id, name, iso3) FROM '#{path}' DELIMITER ',' CSV")
   end # create_table
 
-end # CartoDB::Geocoder
+end

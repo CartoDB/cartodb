@@ -271,7 +271,7 @@ class Map < Sequel::Model
     # no basemap layer, always allow
     return true if user_layers.length < 1
     # have basemap? then allow only if comes on top (for labels)
-    (layers.length == layer.order && user_layers.length < 2)
+    (layer.order >= layers.last.order && user_layers.length < 2)
   end
 end
 

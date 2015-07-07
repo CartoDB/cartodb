@@ -9,9 +9,6 @@ require_relative 'hires_geocoder_interface'
 module CartoDB
   class HiresBatchGeocoder < HiresGeocoderInterface
 
-    # TODO replace with better exception
-    class HiresBatchGeocoderTimeout < StandardError; end
-
     DEFAULT_TIMEOUT = 5.hours
 
     # Options for the csv upload endpoint of the Batch Geocoder API

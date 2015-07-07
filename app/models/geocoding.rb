@@ -129,7 +129,9 @@ class Geocoding < Sequel::Model
     self.update(table_geocoder.update_geocoding_status)
     self.update remote_id: table_geocoder.remote_id
 
+    # TODO better exception handling here
     raise 'Geocoding failed'  if state == 'failed'
+    raise 'Geocoding timed out'  if state == 'timeout'
     return false if state == 'cancelled'
 
     self.update(cache_hits: table_geocoder.cache.hits) if table_geocoder.respond_to?(:cache)

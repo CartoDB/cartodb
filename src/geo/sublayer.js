@@ -168,8 +168,10 @@ CartoDBSubLayer.prototype = _.extend({}, SubLayerBase.prototype, {
     }
 
     if (this.get('raster')) {
+      json.options.raster = true;
       json.options.geom_column = "the_raster_webmercator";
       json.options.geom_type = "raster";
+      json.options.raster_band = this.get('raster_band') || 0;
       // raster needs 2.3.0 to work
       json.options.cartocss_version = this.get('cartocss_version') || '2.3.0';
     }

@@ -128,3 +128,9 @@ Warden::Strategies.add(:api_key) do
     end
   end
 end
+
+# @see ApplicationController.update_session_security_token
+Warden::Manager.after_set_user except: :fetch do |user, auth, opts|
+  auth.session(opts[:scope])[:sec_token] = Digest::SHA1.hexdigest(user.crypted_password)
+end
+

@@ -143,6 +143,43 @@ END_XML
     end
   end
 
+  describe '#result' do
+    it "raises an exception if there's no request_id from a previous upload" do
+      expect {
+        @batch_geocoder.result
+      }.to raise_error(RuntimeError, /No request_id provided/)
+    end
+
+    it 'downloads the result file from the remote server' do
+      request_id = 'dummy_request_id'
+      @batch_geocoder.stubs(:request_id).returns(request_id)
+      expected_response_body = 'dummy result file contents'
+      url = @batch_geocoder.send(:api_url, {}, 'result')
+      response = Typhoeus::Response.new(code: 200, body: expected_response_body)
+      Typhoeus.stub(url, method: :get).and_return(response)
+
+      result_file = @batch_geocoder.result
+      File.open(result_file).read.should == expected_response_body
+
+      # it also "memoizes" the result file and avoids further downloads
+      @batch_geocoder.expects(:http_client).never
+      @batch_geocoder.result.should == result_file
+    end
+
+    it 'raises an exception if cannot get a result file' do
+      request_id = 'dummy_request_id'
+      @batch_geocoder.stubs(:request_id).returns(request_id)
+      expected_response_body = 'dummy result file contents'
+      url = @batch_geocoder.send(:api_url, {}, 'result')
+      response = Typhoeus::Response.new(code: 400)
+      Typhoeus.stub(url, method: :get).and_return(response)
+
+      expect {
+        @batch_geocoder.result
+      }.to raise_error(RuntimeError, /Download request failed/)
+    end
+  end
+
 
   def path_to(filepath = '')
     File.expand_path(

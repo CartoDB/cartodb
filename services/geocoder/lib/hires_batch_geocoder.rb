@@ -1,7 +1,6 @@
 # encoding: utf-8
 require 'nokogiri'
 require 'csv'
-require 'open3'
 require 'active_support/core_ext/numeric'
 require_relative '../../../lib/carto/http/client'
 require_relative 'hires_geocoder_interface'

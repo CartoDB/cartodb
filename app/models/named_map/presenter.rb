@@ -98,11 +98,10 @@ module CartoDB
         layers_data = Array.new
         cartodb_layers.each { |layer|
           layer_vizjson = layer.get_presenter(@options, @configuration).to_vizjson_v2
-
-          if layer.options['type'].downcase == 'tiled'
-            layers_data.push(data_for_base_layer(layer_vizjson))
-          else
+          if layer.kind == 'carto'
             layers_data.push(data_for_carto_layer(layer_vizjson))
+          else
+            layers_data.push(data_for_base_layer(layer_vizjson))
           end
         }
 

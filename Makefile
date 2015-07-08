@@ -180,6 +180,8 @@ WORKING_SPECS_10 = \
 	spec/models/carto/user_spec.rb \
 	spec/models/carto/user_creation_spec.rb \
 	spec/models/carto/organization_spec.rb \
+	services/table-geocoder/spec/lib/abstract_table_geocoder_spec.rb \
+	services/geocoder/spec/hires_batch_geocoder_spec.rb \
   $(NULL)
 
 CDB_PATH=lib/assets/javascripts/cdb

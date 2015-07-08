@@ -226,6 +226,7 @@ cdb.geo.Layers = Backbone.Collection.extend({
       return parseInt(m.get('order'), 10);
     };
     this.bind('add', this._assignIndexes);
+    this.bind('remove', this._assignIndexes);
   },
 
   /**
@@ -237,28 +238,31 @@ cdb.geo.Layers = Backbone.Collection.extend({
     var CARTODB_LAYER_TYPE = 'CartoDB';
     var TORQUE_LAYER_TYPE = 'torque';
 
-    // First layer has order 0
-    this.models[0].set({ order: 0 });
+    if (this.size() > 0) {
 
-    if (this.size() > 1) {
-      var layersByType = {};
-      for (var i = 1; i < this.size(); ++i) {
-        var layer = this.models[i];
-        var layerType = layer.get('type');
-        layersByType[layerType] = layersByType[layerType] || [];
-        layersByType[layerType].push(layer);
-      }
+      // Assign an order of 0 to the first layer
+      this.models[0].set({ order: 0 });
 
-      var lastOrder = 0;
-      var sortedTypes = [CARTODB_LAYER_TYPE, TORQUE_LAYER_TYPE, TILED_LAYER_TYPE];
-      for (var i = 0; i < sortedTypes.length; ++i) {
-        var type = sortedTypes[i];
-        var layers = layersByType[type] || [];
-        for (var j = 0; j < layers.length; ++j) {
-          var layer = layers[j];
-          layer.set({
-            order: ++lastOrder
-          });
+      if (this.size() > 1) {
+        var layersByType = {};
+        for (var i = 1; i < this.size(); ++i) {
+          var layer = this.models[i];
+          var layerType = layer.get('type');
+          layersByType[layerType] = layersByType[layerType] || [];
+          layersByType[layerType].push(layer);
+        }
+
+        var lastOrder = 0;
+        var sortedTypes = [CARTODB_LAYER_TYPE, TORQUE_LAYER_TYPE, TILED_LAYER_TYPE];
+        for (var i = 0; i < sortedTypes.length; ++i) {
+          var type = sortedTypes[i];
+          var layers = layersByType[type] || [];
+          for (var j = 0; j < layers.length; ++j) {
+            var layer = layers[j];
+            layer.set({
+              order: ++lastOrder
+            });
+          }
         }
       }
     }

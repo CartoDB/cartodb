@@ -133,6 +133,45 @@ describe("geo.map", function() {
       expect(torqueLayer.get('order')).toEqual(5);
       expect(tiledLayer.get('order')).toEqual(6);
     });
+
+    it("should re-assign order when new layers are removed from the collection", function() {
+      var baseLayer = new cdb.geo.TileLayer();
+      var layer1 = new cdb.geo.CartoDBLayer();
+      var layer2 = new cdb.geo.CartoDBLayer();
+      var torqueLayer = new cdb.geo.TorqueLayer({});
+      var labelsLayer = new cdb.geo.TileLayer();
+
+      // Sets the order to 0
+      layers.add(baseLayer);
+      layers.add(layer1);
+      layers.add(layer2);
+      layers.add(torqueLayer);
+      layers.add(labelsLayer);
+
+      expect(baseLayer.get('order')).toEqual(0);
+      expect(layer1.get('order')).toEqual(1);
+      expect(layer2.get('order')).toEqual(2);
+      expect(torqueLayer.get('order')).toEqual(3);
+      expect(labelsLayer.get('order')).toEqual(4);
+
+      layers.remove(layer1);
+
+      expect(baseLayer.get('order')).toEqual(0);
+      expect(layer2.get('order')).toEqual(1);
+      expect(torqueLayer.get('order')).toEqual(2);
+      expect(labelsLayer.get('order')).toEqual(3);
+
+      layers.remove(torqueLayer);
+
+      expect(baseLayer.get('order')).toEqual(0);
+      expect(layer2.get('order')).toEqual(1);
+      expect(labelsLayer.get('order')).toEqual(2);
+
+      layers.remove(labelsLayer);
+
+      expect(baseLayer.get('order')).toEqual(0);
+      expect(layer2.get('order')).toEqual(1);
+    });
   });
 
   describe("Map", function() {

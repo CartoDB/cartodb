@@ -417,7 +417,7 @@
       'with minimum as (',
         'SELECT min({{column}}) as start_time FROM ({{sql}}) _wrap), ',
       'maximum as (SELECT max({{column}}) as end_time FROM ({{sql}}) _wrap), ',
-      'null_ratio as (SELECT sum(case when COALESCE(NULLIF({{column}},\'\')) is null then 0 else 1 end)::numeric / count(*)::numeric as null_ratio FROM ({{sql}}) _wrap), ',
+      'null_ratio as (SELECT sum(case when {{column}} is null then 1 else 0 end)::numeric / count(*)::numeric as null_ratio FROM ({{sql}}) _wrap), ',
       'moments as (SELECT count(DISTINCT {{column}}) as moments FROM ({{sql}}) _wrap)',
       'SELECT * FROM minimum, maximum, moments, null_ratio'
     ];
@@ -514,7 +514,7 @@
                    'count(DISTINCT {{column}}) as cnt,',
                    'count(distinct({{column}})) as uniq,',
                    'count(*) as cnt,',
-                   'sum(case when {{column}} is null or "" then 1 else 0 end)::numeric / count(*)::numeric as null_ratio,',
+                   'sum(case when {{column}} is null then 1 else 0 end)::numeric / count(*)::numeric as null_ratio,',
                    'stddev_pop({{column}}) / count({{column}}) as stddev,',
                    //'log(stddev_pop({{column}}) / count({{column}})) as lstddev,',
                    'CASE WHEN abs(avg({{column}})) > 1e-7 THEN stddev({{column}}) / abs(avg({{column}})) ELSE 1e12 END as stddevmean,',

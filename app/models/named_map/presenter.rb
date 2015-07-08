@@ -91,12 +91,24 @@ module CartoDB
         data
       end
 
+        # TODO: Copied from VizJSON.contains_torque_layer
+      def contains_torque_layer?(visualization)
+        visualization.layers(:torque).length > 0
+      end
+
       # Extract relevant information from layers
       def configure_layers_data
-        # Http/base layers don't appear at viz.json
-        cartodb_layers = @visualization.layers(:cartodb)
+        if contains_torque_layer?(@visualization)
+          valid_layers = @visualization.layers(:cartodb)
+        else
+          valid_layers = @visualization.layers(:named_map).reject { |layer|
+            # Http/base layers don't appear at viz.json, so exclude them
+            layer.kind == 'tiled' && layer.order == 0
+          }
+        end
+
         layers_data = Array.new
-        cartodb_layers.each { |layer|
+        valid_layers.each { |layer|
           layer_vizjson = layer.get_presenter(@options, @configuration).to_vizjson_v2
           if layer.kind == 'carto'
             layers_data.push(data_for_carto_layer(layer_vizjson))

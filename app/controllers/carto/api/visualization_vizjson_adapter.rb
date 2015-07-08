@@ -60,6 +60,8 @@ module Carto
           map.other_layers
         when :torque
           map.torque_layers
+        when :named_map
+          map.named_maps_layers
         else
           raise "Unknown: #{kind}"
         end

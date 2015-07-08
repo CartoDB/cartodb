@@ -62,7 +62,6 @@ module CartoDB
       user.organization          = attributes[:organization] || nil
       user.twitter_datasource_enabled = attributes[:twitter_datasource_enabled] || false
       user.avatar_url            = user.default_avatar
-      user.dynamic_cdn_enabled   = attributes[:dynamic_cdn_enabled] || false
 
       user
     end

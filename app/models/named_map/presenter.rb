@@ -146,7 +146,7 @@ module CartoDB
 
       def data_for_base_layer(layer_vizjson)
         {
-          layer_name: nil,
+          layer_name: layer_vizjson[:options][:layer_name],
           interactivity: nil,
           visible: true
         }

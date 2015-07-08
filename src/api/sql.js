@@ -462,7 +462,7 @@
       
       callback({
         type: 'boolean',
-        null_ratio: row.null_ratio
+        null_ratio: row.null_ratio,
         true_ratio: row.true_ratio
       });
     });
@@ -536,7 +536,7 @@
                    'count(DISTINCT {{column}}) as cnt,',
                    'count(distinct({{column}})) as uniq,',
                    'count(*) as cnt,',
-                   'sum(case when {{column}} is null or "" then 1 else 0 end)::numeric / count(*)::numeric as null_ratio,',
+                   'sum(case when {{column}} is null or \'\'\'\' then 1 else 0 end)::numeric / count(*)::numeric as null_ratio,',
                    'stddev_pop({{column}}) / count({{column}}) as stddev,',
                    //'log(stddev_pop({{column}}) / count({{column}})) as lstddev,',
                    'CASE WHEN abs(avg({{column}})) > 1e-7 THEN stddev({{column}}) / abs(avg({{column}})) ELSE 1e12 END as stddevmean,',

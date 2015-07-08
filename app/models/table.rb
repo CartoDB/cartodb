@@ -622,7 +622,8 @@ class Table
         options: base_layer.options.except('name', 'className', 'labels').merge({
           'urlTemplate' => labels_layer_url,
           'url' => labels_layer_url,
-          'type' => 'Tiled'
+          'type' => 'Tiled',
+          'name' => "#{base_layer.options['name']} Labels"
         })
       })
       m.add_layer(labels_layer)

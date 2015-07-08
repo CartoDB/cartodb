@@ -23,6 +23,10 @@ def login(user)
   host! "#{user.username}.localhost.lan"
 end
 
+def create_random_table(user, name = "viz#{rand(999)}")
+  create_table( { user_id: user.id, name: name } )
+end
+
 shared_context 'database configuration' do
 
   before(:each) do
@@ -60,13 +64,11 @@ shared_context 'organization with users helper' do
       username: username,
       email: "#{username}@example.com",
       password: username,
-      private_tables_enabled: true
+      private_tables_enabled: true,
+      organization: organization
     )
-    unless organization.nil?
-      user.organization_id = organization.id
-      user.save.reload
-      user.reload
-    end
+    user.save.reload
+    organization.reload if organization
     user
   end
 
@@ -74,25 +76,27 @@ shared_context 'organization with users helper' do
     @organization = test_organization.save
     @organization_2 = test_organization.save
 
-    @org_user_1 = create_test_user("a#{random_username}")
-    user_org = CartoDB::UserOrganization.new(@organization.id, @org_user_1.id)
+    @org_user_owner = create_test_user("o#{random_username}")
+    user_org = CartoDB::UserOrganization.new(@organization.id, @org_user_owner.id)
     user_org.promote_user_to_admin
     @organization.reload
-    @org_user_1.reload
+    @org_user_owner.reload
 
+    @org_user_1 = create_test_user("a#{random_username}", @organization)
     @org_user_2 = create_test_user("b#{random_username}", @organization)
-    @org_user_2.organization_id = @organization.id
-    @org_user_2.save.reload
+
     @organization.reload
   end
 
   before(:each) do
     bypass_named_maps
+    delete_user_data @org_user_owner
     delete_user_data @org_user_1
     delete_user_data @org_user_2
   end
 
   after(:all) do
+    delete_user_data @org_user_owner if @org_user_owner
     @organization.destroy_cascade
   end
 
@@ -173,10 +177,6 @@ shared_context 'visualization creation helpers' do
 
   before(:each) do
     bypass_named_maps
-  end
-
-  def create_random_table(user, name = "viz#{rand(999)}")
-    create_table( { user_id: user.id, name: name } )
   end
 
   private

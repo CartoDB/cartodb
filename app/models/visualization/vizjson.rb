@@ -99,6 +99,19 @@ module CartoDB
         # Do nothing
       end
 
+      # Brief intro
+      # - Basemap layer always present first and outside layergroups/named maps
+      # - All layers inside a layergroup get rendered together
+      # - If there is a named map, all layers inside get rendered together
+      # - A "labels on top" map type contain two http layers: the basemap without layers + only the labels
+      #  - basemap http layer acts the same as normal one
+      #  - labels layer will be the last one (highest order), and has special behaviour:
+      #   - if named map + torque layer, goes separate, as last layer
+      #   - if no named map + torque layer, goes separate, as last layer
+      #   - if named map but no torque layer, goes inside the named map (as its last layer)
+      #   - if no named map and no torque layer, goes inside the layergroup (as its last layer)
+      # - See also the NamedMaps Presenter for their specifics
+      # - As basemap and labels are both http layers some logic to separate them
       def layers_for(visualization)
         layers_data = [ basemap_layer_for(visualization) ]
 

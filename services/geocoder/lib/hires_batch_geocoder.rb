@@ -117,9 +117,36 @@ module CartoDB
 
     def result
       return @result unless @result.nil?
+
+      raise 'No request_id provided' unless request_id
       results_filename = File.join(dir, "#{request_id}.zip")
-      # TODO: check for status
-      stdout, stderr, status  = Open3.capture3('wget', '-nv', '-E', '-O', results_filename, api_url({}, 'result'))
+      download_url = api_url({}, 'result')
+
+      request = http_client.request(download_url, method: :get)
+
+      File.open(results_filename, 'wb') do |download_file|
+
+        request.on_headers do |response|
+          if response.code != 200
+            # TODO: better error handling
+            raise 'Download request failed'
+          end
+        end
+
+        request.on_body do |chunk|
+          download_file.write(chunk)
+        end
+
+        request.on_complete do |response|
+          if response.code != 200
+            # TODO: better error handling
+            raise 'Download request failed'
+          end
+        end
+
+        request.run
+      end
+
       @result = Dir[File.join(dir, '*')][0]
     end
 

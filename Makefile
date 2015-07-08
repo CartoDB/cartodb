@@ -53,6 +53,7 @@ WORKING_SPECS_3 = \
   services/importer/spec/acceptance/shp_spec.rb \
   services/importer/spec/acceptance/sql_spec.rb \
   services/importer/spec/acceptance/zip_spec.rb \
+  services/importer/spec/acceptance/gz_tgz_spec.rb \
   services/importer/spec/acceptance/raster2pgsql_spec.rb \
   services/importer/spec/unit/column_spec.rb \
   services/importer/spec/unit/csv_normalizer_spec.rb \
@@ -179,6 +180,8 @@ WORKING_SPECS_10 = \
 	spec/models/carto/user_spec.rb \
 	spec/models/carto/user_creation_spec.rb \
 	spec/models/carto/organization_spec.rb \
+	services/table-geocoder/spec/lib/abstract_table_geocoder_spec.rb \
+	services/geocoder/spec/hires_batch_geocoder_spec.rb \
   $(NULL)
 
 CDB_PATH=lib/assets/javascripts/cdb

@@ -147,7 +147,7 @@ module CartoDB
         request.run
       end
 
-      @result = Dir[File.join(dir, '*')][0]
+      @result = results_filename
     end
 
 

@@ -1365,26 +1365,12 @@ describe("NamedMap", function() {
         name: 'testing',
         layers: [
           {
-            "type": "cartodb",
-            "options": {
-            }
           },
           {
-            "type": "http",
-            "options": {
-              "hidden": false
-            }
-          },
-          {
-            "type": "cartodb",
-            "options": {
-              "hidden": true
-            }
-          },
-          {
-            "type": "cartodb",
-            "options": { },
             "visible": false
+          },
+          {
+            "visible": true
           }
         ]
       };
@@ -1393,9 +1379,8 @@ describe("NamedMap", function() {
       // Layers 0 and 1 are visible, but layer 2 is hidden
       expect(namedMap.toJSON()).toEqual({
         layer0: 1,
-        layer1: 1,
-        layer2: 0,
-        layer3: 0
+        layer1: 0,
+        layer2: 1
       });
     })
   })

@@ -78,8 +78,8 @@ describe Admin::PagesController do
     it 'redirects to public maps home if current user and current viewer are different' do
       anyuser = prepare_user('anyuser')
       anyviewer = prepare_user('anyviewer')
-      login_as anyviewer
-      host! 'anyuser.localhost.lan'
+      login_as(anyviewer, scope: anyviewer.username)
+      host! "#{anyuser.username}.localhost.lan"
 
       get '', {}, JSON_HEADER
 
@@ -123,7 +123,7 @@ describe Admin::PagesController do
     it 'redirects and loads the dashboard if the user is logged in' do
       anyuser = prepare_user('anyuser')
       host! 'localhost.lan'
-      login_as anyuser
+      login_as(anyuser, scope: anyuser.username)
       CartoDB.stubs(:session_domain).returns('localhost.lan')
       CartoDB.stubs(:subdomainless_urls?).returns(true)
 

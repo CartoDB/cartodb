@@ -12,7 +12,7 @@ gem 'activerecord-postgres-array'
 
 gem 'vizzuality-sequel-rails', '0.3.7', git: 'https://github.com/Vizzuality/sequel-rails.git'
 
-gem 'rails_warden',            '0.5.2' # Auth via the Warden Rack framework
+gem 'rails_warden',            '0.5.8' # Auth via the Warden Rack framework
 gem 'oauth',                   '0.4.5'
 gem 'oauth-plugin',            '0.4.0.pre4'
 

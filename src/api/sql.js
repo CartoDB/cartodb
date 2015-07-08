@@ -629,6 +629,8 @@
           self.describeGeom(sql, column, options, callback);
         } else if (type === 'date') {
           self.describeDate(sql, column, options, callback);
+        } else if (type === 'boolean') {
+          self.describeBoolean(sql, column, options, callback);
         } else {
           callback(new Error("column type is not supported"));
         }

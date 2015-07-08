@@ -255,7 +255,7 @@ describe Table do
       table.map.layers[2].options["subdomains"].should == "abcd"
       table.map.layers[2].options["minZoom"].should == "0"
       table.map.layers[2].options["maxZoom"].should == "18"
-      table.map.layers[2].options["name"].should be_nil
+      table.map.layers[2].options["name"].should == "Waduson Labels"
       table.map.layers[2].options["className"].should be_nil
       table.map.layers[2].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"http://cartodb.com/attributions#basemaps\">CartoDB</a>"
       table.map.layers[2].options["type"].should == "Tiled"

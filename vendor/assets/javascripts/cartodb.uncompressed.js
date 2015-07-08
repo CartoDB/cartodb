@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: 40b4ba0e7064147bf6e1afa4a69f27171c28091c
+// sha: c5dcbb4ef6ff39f979870e110b19d3fd48644a03
 (function() {
   var root = this;
 
@@ -33875,7 +33875,7 @@ NamedMap.prototype = _.extend({}, MapBase.prototype, {
     this.layers = _.clone(named_map.layers) || [];
     for(var i = 0; i < this.layers.length; ++i) {
       var layer = this.layers[i];
-      layer.options = layer.options || { hidden: false };
+      layer.options = layer.options || { 'hidden': layer.visible === false };
       layer.options.layer_name = layer.layer_name;
     }
     this.named_map = named_map;

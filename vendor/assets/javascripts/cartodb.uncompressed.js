@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: a02a85421f70e3d227aab6061d32606a8799f8f8
+// sha: 76d156aadb997734ade33eb0dc999c1a7f91821c
 (function() {
   var root = this;
 
@@ -41002,8 +41002,8 @@ Layers.register('torque', function(vis, data) {
         'stats as (', 
            'select count(distinct({{column}})) as uniq, ',
            '       count(*) as cnt, ',
-           '       sum(case when COALESCE(NULLIF({{column}},\'\')) is null then 0 else 1 end)::numeric as null_count, ',
-           '       sum(case when COALESCE(NULLIF({{column}},\'\')) is null then 0 else 1 end)::numeric / count(*)::numeric as null_ratio, ',
+           '       sum(case when COALESCE(NULLIF({{column}},\'\')) is null then 1 else 0 end)::numeric as null_count, ',
+           '       sum(case when COALESCE(NULLIF({{column}},\'\')) is null then 1 else 0 end)::numeric / count(*)::numeric as null_ratio, ',
            // '       CDB_DistinctMeasure(array_agg({{column}}::text)) as cat_weight ',
            '       (SELECT max(cumperc) weight FROM c) As skew ',
            'from ({{sql}}) __wrap',

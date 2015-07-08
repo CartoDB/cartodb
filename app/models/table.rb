@@ -619,9 +619,10 @@ class Table
     if labels_layer_url
       labels_layer = ::Layer.new({
         kind: 'tiled',
-        options: base_layer.options.except('name', 'className').merge({
+        options: base_layer.options.except('name', 'className', 'labels').merge({
           'urlTemplate' => labels_layer_url,
-          'url' => labels_layer_url
+          'url' => labels_layer_url,
+          'type' => 'Tiled'
         })
       })
       m.add_layer(labels_layer)

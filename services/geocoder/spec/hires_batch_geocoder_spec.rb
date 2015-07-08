@@ -47,7 +47,7 @@ describe CartoDB::HiresBatchGeocoder do
     end
   end
 
-  describe 'upload' do
+  describe '#upload' do
     it 'uploads a file to the batch service' do
       url = @batch_geocoder.send(:api_url, CartoDB::HiresBatchGeocoder::UPLOAD_OPTIONS)
       expected_request_id = 'dummy_id'
@@ -85,6 +85,34 @@ describe CartoDB::HiresBatchGeocoder do
 
   end
 
+  describe '#cancel' do
+    it 'sends a cancel put request and gets the status, processed and total rows' do
+      request_id = 'dummy_request_id'
+      @batch_geocoder.stubs(:request_id).returns(request_id)
+      url = @batch_geocoder.send(:api_url, action: 'cancel')
+      url.should match(%r'/#{request_id}/')
+      url.should match(%r'action=cancel')
+
+      expected_status = 'cancelled'
+      expected_processed_rows = '20'
+      expected_total_rows = '30'
+
+      response_body = <<END_XML
+<Response>
+  <Status>#{expected_status}</Status>
+  <ProcessedCount>#{expected_processed_rows}</ProcessedCount>
+  <TotalCount>#{expected_total_rows}</TotalCount>
+</Response>
+END_XML
+
+      response = Typhoeus::Response.new(code: 200, body: response_body)
+      Typhoeus.stub(url, method: :put).and_return(response)
+      @batch_geocoder.cancel
+      @batch_geocoder.status.should == expected_status
+      @batch_geocoder.processed_rows.should == expected_processed_rows
+      @batch_geocoder.total_rows.should == expected_total_rows
+    end
+  end
 
 
   def path_to(filepath = '')

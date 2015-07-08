@@ -1074,5 +1074,21 @@ namespace :cartodb do
       end
     end
 
+    desc "Assign permissions to organization shared role. See #3859 and #3881. This is used to upgrade existing organizations to new permission schema. You can optionally speciy an organization name to restrict the execution to it."
+    task :assign_org_permissions_to_org_role, [:organization_name] => :environment do |t, args|
+      organizations = args[:organization_name].present? ? Organization.where(name: args[:organization_name]).all : Organization.all
+      puts "Updating #{organizations.count} organizations"
+      organizations.each { |o|
+        owner = o.owner
+        puts "#{o.name}\t#{o.id}\tOwner: #{owner.username}\t#{owner.id}"
+        begin
+          owner.setup_organization_role_permissions
+        rescue => e
+          puts "Error: #{e.message}"
+          CartoDB.notify_exception(e)
+        end
+      }
+    end
+
   end
 end

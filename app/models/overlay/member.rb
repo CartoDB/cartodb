@@ -94,7 +94,7 @@ module CartoDB
         true
       end
 
-      def invalidate_cache(vis_id=nil)
+      def invalidate_cache(vis_id = nil)
         begin
           v = visualization(vis_id)
           v.invalidate_cache

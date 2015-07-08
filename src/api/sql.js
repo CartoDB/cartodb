@@ -446,6 +446,28 @@
     });
   }
 
+  SQL.prototype.describeBoolean = function(sql, column, options, callback){
+    var s = [
+      'null_ratio as (SELECT sum(case when {{column}} is null or "" then 1 else 0 end)::numeric / count(*)::numeric as null_ratio FROM ({{sql}}) _wrap), ',
+      'true_ratio as (SELECT sum(case when {{column}} is true then 1 else 0 end)::numeric / count(*)::numeric as true_ratio FROM ({{sql}}) _wrap), ',
+      'SELECT * FROM true_ratio, null_ratio'
+    ];
+    var query = Mustache.render(s.join('\n'), {
+      column: column,
+      sql: sql
+    });
+
+    this.execute(query, function(data) {
+      var row = data.rows[0];
+      
+      callback({
+        type: 'boolean',
+        null_ratio: row.null_ratio
+        true_ratio: row.true_ratio
+      });
+    });
+  }
+
   SQL.prototype.describeGeom = function(sql, column, options, callback) {
       var s = [
         'with stats as (', 

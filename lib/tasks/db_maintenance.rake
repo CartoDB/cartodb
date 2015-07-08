@@ -1080,12 +1080,16 @@ namespace :cartodb do
       puts "Updating #{organizations.count} organizations"
       organizations.each { |o|
         owner = o.owner
-        puts "#{o.name}\t#{o.id}\tOwner: #{owner.username}\t#{owner.id}"
-        begin
-          owner.setup_organization_role_permissions
-        rescue => e
-          puts "Error: #{e.message}"
-          CartoDB.notify_exception(e)
+        if owner
+          puts "#{o.name}\t#{o.id}\tOwner: #{owner.username}\t#{owner.id}"
+          begin
+            owner.setup_organization_role_permissions
+          rescue => e
+            puts "Error: #{e.message}"
+            CartoDB.notify_exception(e)
+          end
+        else
+          puts "#{o.name}\t#{o.id}\t Has no owner, skipping"
         end
       }
     end

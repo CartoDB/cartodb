@@ -14,12 +14,15 @@
 .PecanMap-MapsList.MapsList {
   display: block;
   width: 5000px;
-  height: 245px;
+  height: 247px;
   overflow: hidden;
   clear: both;
   padding: 0;
   margin: 0;
   @include transition(margin, 150ms);
+}
+.MapCard-content--small {
+  height: 35px;
 }
 .PecanMap-MapsList .DefaultTitle,
 .PecanMap-MapsList .DefaultTitle a {
@@ -65,5 +68,27 @@
   font-size: 11px;
   font-style: italic;
   color: #999999;
-  line-height:120%;
+  line-height:0;
+}
+
+.MapCard-footer {
+  position:relative;
+  margin: 10px 0 0 0;
+}
+.CategoryList {
+  float:left;
+  padding: 0;
+  margin: 0;
+  line-height:0;
+}
+.CategoryList .CategoryList-item {
+  @include inline-block();
+  width: 5px;
+  height: 5px;
+  background:#ddd;
+  border-radius: 50%;
+  margin: 0 2px 0 0;
+}
+.CategoryList .CategoryList-item:last-child {
+  margin: 0;
 }

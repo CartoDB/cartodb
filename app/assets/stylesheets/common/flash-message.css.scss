@@ -19,6 +19,7 @@
   position: fixed;
   top: 157px;
   border-bottom: 1px solid $cStructure-mainLine;
+  z-index: 2; // to place any scrolled content under the flash message
   & > .u-inner { @include justify-content(center, center) }
 }
 .FlashMessage--success { background: #E8F0D6 }

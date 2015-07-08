@@ -50,6 +50,7 @@ $sLabel-width: 140px;
   @include justify-content(center);
 }
 .Form-row.Form-row--step {
+  position: relative;
   @include justify-content(space-between, justify);
   @include align-items(center);
   &:before {
@@ -66,6 +67,8 @@ $sLabel-width: 140px;
   &:first-child:before { content: '1' }
   &:nth-child(2):before { content: '2' }
   &:nth-child(3):before { content: '3' }
+  &:nth-child(4):before { content: '4' }
+  &:nth-child(5):before { content: '5' }
 }
 .Form-row.has-label {
   // compensate for label width, to make the rowData appear as centered
@@ -157,6 +160,11 @@ $sLabel-width: 140px;
 .Form-rowData--step {
   width: 260px;
   margin-right: 0;
+}
+.Form-rowDataExtra {
+  position: absolute;
+  right: -52px;
+  top: 10px;
 }
 
 .Form-input {

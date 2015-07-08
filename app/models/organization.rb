@@ -70,7 +70,11 @@ class Organization < Sequel::Model
   def destroy_cascade
     destroy_permissions
     destroy_non_owner_users
-    self.owner.destroy
+    if self.owner
+      self.owner.destroy
+    else
+      self.destroy
+    end
   end
 
   def destroy_permissions
@@ -223,6 +227,14 @@ class Organization < Sequel::Model
 
   def signup_page_enabled
     !whitelisted_email_domains.nil? && !whitelisted_email_domains.empty?
+  end
+
+  def remaining_seats
+    seats - assigned_seats
+  end
+
+  def assigned_seats
+    users.nil? ? 0 : users.count
   end
 
   private

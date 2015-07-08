@@ -22,23 +22,49 @@
         return parent.document.domain.match(document.domain + "$").length > 0;
       }
     </script>
-    <style>
+    <style type="text/css">
+      html,
       body {
-        background: white;
         padding: 0;
         margin: 0;
+        min-width: 100%;
+        background: transparent;
+      }
+      #signinButton span {
+        display: block;
+        background: #dd4b39;
+        color: white;
+        width: 100%;
+        height: 41px;
+        border-radius: 21px;
+        text-align: center;
+        transition: all .15s;
+        cursor: pointer;
+      }
+      #signinButton span:hover {
+        color: #dd4b39;
+        background: #fff;
+      }
+      span.g-signin {
+        text-align: center;
+        font-weight: 400;
+        line-height: 41px;
+        font-size: 12px;
+        font-family: 'Proxima Nova W01', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        text-transform: uppercase;
       }
     </style>
   </head>
-  <body>
-    <span id="signinButton">
-      <span
-        class="g-signin"
-        data-callback="signinCallback"
-        data-clientid="<%= @config.client_id %>"
-        data-cookiepolicy="<%= @config.cookie_policy %>"
-        data-scope="email">
-      </span>
-    </span>
+   <body>
+    <div id="gSignInWrapper">
+      <div id="signinButton" class="customGPlusSignIn">
+        <span
+          class="g-signin"
+          data-callback="signinCallback"
+          data-clientid="<%= @config.client_id %>"
+          data-cookiepolicy="<%= @config.cookie_policy %>"
+          data-scope="email">Login with Google</span>
+      </div>
+    </div>
   </body>
 </html>

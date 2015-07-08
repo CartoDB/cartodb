@@ -1,8 +1,9 @@
-<%= content_for(:page_title) do %>CartoDB · <%= @table.name.gsub(/_/," ") %><% end %>
+<%= content_for(:page_title) do %><%= @table.name.gsub(/_/," ") %><% end %>
 
-<%= content_for(:description) do %><%= @table.description || "#{@table.name.gsub(/_/," ")} published by #{@name} in CartoDB" %><% end %>
+<%= content_for(:description) do %><%= @table.description ? "#{@table.description}. Map created by #{@name} in CartoDB" : "Map created by #{@name} in CartoDB" %><% end %>
 
 <%= content_for(:twitter_card) do %><%= Carto::StaticMapsURLHelper.new.url_for_static_map(request, @table.table_visualization, 560, 300) %><% end %>
+<%= content_for(:facebook_card) do %><%= Carto::StaticMapsURLHelper.new.url_for_static_map(request, @table.table_visualization, 1200, 630) %><% end %>
 
 <% content_for(:css) do %>
   <%= stylesheet_link_tag 'cartodb.css', 'public_table.css', :media => 'all' %>

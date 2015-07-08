@@ -146,11 +146,11 @@ module CartoDB
 
       def error_code
         runner.results.map(&:error_code).compact.first
-      end #errors_from
+      end
 
       def runner_log_trace
         runner.results.map(&:log_trace).compact.first
-      end #runner_log_trace
+      end
 
       def error_message
         ''

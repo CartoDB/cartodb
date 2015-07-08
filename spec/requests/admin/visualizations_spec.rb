@@ -32,17 +32,17 @@ describe Admin::VisualizationsController do
 
   before(:each) do
     CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
-    
+
     @db = Rails::Sequel.connection
     Sequel.extension(:pagination)
 
     CartoDB::Visualization.repository  = DataRepository::Backend::Sequel.new(@db, :visualizations)
 
     delete_user_data @user
-    @headers = { 
+    @headers = {
       'CONTENT_TYPE'  => 'application/json',
     }
-    host! 'test.localhost.lan'
+    host! "#{@user.username}.localhost.lan"
   end
 
   after(:all) do
@@ -51,7 +51,7 @@ describe Admin::VisualizationsController do
 
   describe 'GET /viz' do
     it 'returns a list of visualizations' do
-      login_as(@user, scope: 'test')
+      login_as(@user, scope: @user.username)
 
       get "/viz", {}, @headers
       last_response.status.should == 200
@@ -66,7 +66,7 @@ describe Admin::VisualizationsController do
   describe 'GET /viz:id' do
     it 'returns a visualization' do
       id = factory.fetch('id')
-      login_as(@user, scope: 'test')
+      login_as(@user, scope: @user.username)
 
       get "/viz/#{id}", {}, @headers
       last_response.status.should == 200
@@ -168,7 +168,7 @@ describe Admin::VisualizationsController do
       id                = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC).table_visualization.id
       payload           = { source_visualization_id: id }
 
-      post "/api/v1/viz?api_key=#{@api_key}", 
+      post "/api/v1/viz?api_key=#{@api_key}",
         payload.to_json, @headers
       last_response.status.should == 200
 
@@ -213,7 +213,7 @@ describe Admin::VisualizationsController do
       name = table.table_visualization.name
       name = URI::encode(name)
 
-      login_as(@user, scope: 'test')
+      login_as(@user, scope: @user.username)
 
       get "/viz/#{name}/embed_map", {}, @headers
       last_response.status.should == 403
@@ -221,7 +221,7 @@ describe Admin::VisualizationsController do
     end
 
     it 'renders embed map error when an exception is raised' do
-      login_as(@user, scope: 'test')
+      login_as(@user, scope: @user.username)
 
       get "/viz/220d2f46-b371-11e4-93f7-080027880ca6/embed_map", {}, @headers
       last_response.status.should == 404
@@ -258,7 +258,7 @@ describe Admin::VisualizationsController do
   describe 'GET /viz/:name/track_embed' do
     it 'renders the view by passing a visualization name' do
       name = URI::encode(factory.fetch('name'))
-      login_as(@user, scope: 'test')
+      login_as(@user, scope: @user.username)
 
       get "/viz/track_embed", {}, @headers
       last_response.status.should == 200
@@ -267,7 +267,7 @@ describe Admin::VisualizationsController do
 
   describe 'non existent visualization' do
     it 'returns 404' do
-      login_as(@user, scope: 'test')
+      login_as(@user, scope: @user.username)
 
       get "/viz/220d2f46-b371-11e4-93f7-080027880ca6?api_key=#{@api_key}", {}, @headers
       last_response.status.should == 404

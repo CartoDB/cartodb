@@ -22,6 +22,7 @@
 git submodule init && git submodule update
 cd lib/sql; sudo make all install
 ```
+* General security improvements: CookieStore now expires cookies after 7 days, always use SecureRandom for SID generation; Session management now invalidates other sessions upon password change
 
 Bugfixes:
 * Fixed deletion of layers upon disconnecting synced datasources [#3718](https://github.com/CartoDB/cartodb/pull/3718)
@@ -41,7 +42,7 @@ New features:
 
 #### Steps to avoid problems with submodules changes
 ```shell
-# Before get last changes from master, let's remove the 
+# Before get last changes from master, let's remove the
 # common submodule
 git submodule deinit app/assets/stylesheets/common
 # Clean tmp sass folder, avoiding possible compass problems

@@ -138,7 +138,7 @@ describe Carto::Gme::TableGeocoder do
 
     it 'performs (floor(rows / max_block_size) + 1) queries' do
       rows = @db[@table_name.to_sym].count
-      @table_geocoder.add_georef_status_column
+      @table_geocoder.send(:add_georef_status_column)
 
       count = 0
       @table_geocoder.send(:data_input_blocks).each { |data_block|

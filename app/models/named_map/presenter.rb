@@ -80,7 +80,13 @@ module CartoDB
       def placeholders_data
         data = {}
         @layergroup_data.each { |layer|
-          data["layer#{layer[:index].to_s}".to_sym] = layer[:visible] ? 1: 0
+          if layer[:type].downcase == 'tiled'
+            # INFO: Assuming that the only tiled layer coming here is the labels one, so always visible
+            # if this changes in the future, modify this behaviour
+            data["layer#{layer[:index].to_s}".to_sym] = 1
+          else
+            data["layer#{layer[:index].to_s}".to_sym] = layer[:visible] ? 1: 0
+          end
         }
         data
       end
@@ -93,9 +99,11 @@ module CartoDB
         cartodb_layers.each { |layer|
           layer_vizjson = layer.get_presenter(@options, @configuration).to_vizjson_v2
 
-          # TODO: Check type to call instead layers_data.push(data_for_base_layer(layer_vizjson))
-
-          layers_data.push(data_for_carto_layer(layer_vizjson))
+          if layer.options['type'].downcase == 'tiled'
+            layers_data.push(data_for_base_layer(layer_vizjson))
+          else
+            layers_data.push(data_for_carto_layer(layer_vizjson))
+          end
         }
 
         layers_data

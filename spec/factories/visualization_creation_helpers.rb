@@ -19,8 +19,8 @@ def random_username
 end
 
 def login(user)
-  login_as(user, scope: user.subdomain)
-  host! "#{user.subdomain}.localhost.lan"
+  login_as(user, scope: user.username)
+  host! "#{user.username}.localhost.lan"
 end
 
 shared_context 'database configuration' do

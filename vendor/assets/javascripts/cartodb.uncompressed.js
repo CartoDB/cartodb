@@ -41026,7 +41026,9 @@ Layers.register('torque', function(vis, data) {
           type: 'string',
           hist: _(s).map(function(row) {
             var r = row.match(/\((.*),(\d+)/);
-            return [r[1], +r[2]];
+            var name = r[1];
+            name = name.replace(/^"(.+(?="$))"$/, '$1'); // replace surrounding quotes
+            return [name, +r[2]];
           }),
           distinct: row.uniq,
           count: row.cnt,

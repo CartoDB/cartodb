@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: 76d156aadb997734ade33eb0dc999c1a7f91821c
+// sha: e37e6c65e501303b65cb2dc0b2a3d4f2035835d0
 (function() {
   var root = this;
 
@@ -41019,6 +41019,11 @@ Layers.register('torque', function(vis, data) {
         sql: sql
       });
 
+      var normalizeName = function(str) {
+        var normalizedStr = str.replace(/^"(.+(?="$))?"$/, '$1'); // removes surrounding quotes
+        return normalizedStr.replace(/""/g, '"'); // removes duplicated quotes
+      }
+
       this.execute(query, function(data) {
         var row = data.rows[0];
         var s = array_agg(row.array_agg);
@@ -41026,8 +41031,7 @@ Layers.register('torque', function(vis, data) {
           type: 'string',
           hist: _(s).map(function(row) {
             var r = row.match(/\((.*),(\d+)/);
-            var name = r[1];
-            name = name.replace(/^"(.+(?="$))"$/, '$1'); // replace surrounding quotes
+            var name = normalizeName(r[1]);
             return [name, +r[2]];
           }),
           distinct: row.uniq,
@@ -41152,7 +41156,7 @@ Layers.register('torque', function(vis, data) {
         'params as (select min(a) as min, (max(a) - min(a)) / 7 as diff from ( select {{column}} as a from ({{sql}}) _table_sql where {{column}} is not null ) as foo ),',
          'histogram as (',
            'select array_agg(row(bucket, range, freq)) as hist from (',
-           'select width_bucket({{column}}, min-0.01*abs(min), max+0.01*abs(max), 100) as bucket,',
+           'select CASE WHEN uniq > 1 then width_bucket({{column}}, min-0.01*abs(min), max+0.01*abs(max), 100) ELSE 1 END as bucket,',
                   'numrange(min({{column}})::numeric, max({{column}})::numeric) as range,',
                   'count(*) as freq',
              'from ({{sql}}) _w, stats',
@@ -41319,8 +41323,9 @@ var CSS = {
     var metadata = [];
 
     for (var i = cats.length - 1; i >= 0; --i) {
-      if (cats[i] !== undefined && cats[i] != null) {
-        metadata.push({ title: cats[i], title_type: "string", value_type: 'color', color: ramps.category[i] });
+      var cat = cats[i];
+      if (cat !== undefined && cat != null) {
+        metadata.push({ title: cat, title_type: "string", value_type: 'color', color: ramps.category[i] });
       }
     }
 
@@ -41337,11 +41342,17 @@ var CSS = {
     var css = "/** category visualization */\n\n" + tableID + " {\n  " + attr + ": " + ramps.category[0] + ";\n" + defaultCSS.join("\n") + "\n}\n";
 
     for (var i = cats.length - 1; i >= 0; --i) {
-      if (cats[i] !== undefined && cats[i] != null) {
-        css += "\n" + tableID + "[" + prop + " = '" + cats[i] + "'] {\n";
+
+      var cat  = cats[i];
+      var name = cat.replace(/\n/g,'\\n').replace(/\"/g, "\\\"");
+      var value = "\"" + name + "\"";
+
+      if (cat !== undefined && cat != null) {
+        css += "\n" + tableID + "[" + prop + "=" + value + "] {\n";
         css += "  " + attr  + ":" + ramp[i] + ";\n}"
       }
     }
+
     return css;
   },
 

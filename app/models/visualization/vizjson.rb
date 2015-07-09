@@ -63,7 +63,7 @@ module CartoDB
         layers = visualization.layers(:cartodb)
 
         unless labels_layers_go_separate?(visualization)
-          labels_base_layers(visualization).each { |layer| 
+          visualization.layers(:labels).each { |layer| 
             layers.push(layer)
           }
         end
@@ -164,22 +164,13 @@ module CartoDB
         layers_data
       end
 
+      
       def labels_layers_go_separate?(visualization)
-        contains_torque_layer?(visualization) || visualization.retrieve_named_map?
-      end
-
-      def contains_torque_layer?(visualization)
-        visualization.layers(:torque).length > 0
-      end
-
-      def labels_base_layers(visualization)
-        visualization.layers(:base).reject { |layer|
-          layer.order == 0  # Remove basemap
-        }
+        visualization.layers(:torque).length > 0 || visualization.retrieve_named_map?
       end
 
       def decorated_labels_base_layers(visualization)
-        labels_base_layers(visualization).map { |layer|
+        visualization.layers(:labels).map { |layer|
           CartoDB::Layer::Presenter.new(layer, options, configuration).to_vizjson_v2
         }
       end

@@ -62,6 +62,10 @@ module Carto
           map.torque_layers
         when :named_map
           map.named_maps_layers
+        when :labels
+          map.user_layers.reject { |layer|
+            layer.order == 0  # Remove basemap
+          }
         else
           raise "Unknown: #{kind}"
         end

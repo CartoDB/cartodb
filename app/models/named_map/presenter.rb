@@ -97,21 +97,15 @@ module CartoDB
         true || contains_torque_layer?(visualization)
       end
 
-        # TODO: Copied from VizJSON.contains_torque_layer
+      # TODO: Substitute for content once labels_layers_go_separate? is no longer needed
       def contains_torque_layer?(visualization)
         visualization.layers(:torque).length > 0
       end
 
       # Extract relevant information from layers
       def configure_layers_data
-        if labels_layers_go_separate?(@visualization)
-          valid_layers = @visualization.layers(:cartodb)
-        else
-          valid_layers = @visualization.layers(:named_map).reject { |layer|
-            # Http/base layers don't appear at viz.json, so exclude them
-            layer.kind == 'tiled' && layer.order == 0
-          }
-        end
+        valid_layers = labels_layers_go_separate?(@visualization) ? @visualization.layers(:cartodb) : 
+          @visualization.layers(:labels)
 
         layers_data = Array.new
         valid_layers.each { |layer|

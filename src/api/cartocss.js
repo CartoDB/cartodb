@@ -73,8 +73,9 @@ var CSS = {
     var metadata = [];
 
     for (var i = cats.length - 1; i >= 0; --i) {
-      if (cats[i] !== undefined && cats[i] != null) {
-        metadata.push({ title: cats[i], title_type: "string", value_type: 'color', color: ramps.category[i] });
+      var cat = cats[i];
+      if (cat !== undefined && cat != null) {
+        metadata.push({ title: cat, title_type: "string", value_type: 'color', color: ramps.category[i] });
       }
     }
 
@@ -91,11 +92,17 @@ var CSS = {
     var css = "/** category visualization */\n\n" + tableID + " {\n  " + attr + ": " + ramps.category[0] + ";\n" + defaultCSS.join("\n") + "\n}\n";
 
     for (var i = cats.length - 1; i >= 0; --i) {
-      if (cats[i] !== undefined && cats[i] != null) {
-        css += "\n" + tableID + "[" + prop + " = '" + cats[i] + "'] {\n";
+
+      var cat  = cats[i];
+      var name = cat.replace(/\n/g,'\\n').replace(/\"/g, "\\\"");
+      var value = "\"" + name + "\"";
+
+      if (cat !== undefined && cat != null) {
+        css += "\n" + tableID + "[" + prop + "=" + value + "] {\n";
         css += "  " + attr  + ":" + ramp[i] + ";\n}"
       }
     }
+
     return css;
   },
 

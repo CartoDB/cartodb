@@ -478,7 +478,7 @@
         null_ratio: row.null_ratio,
         true_ratio: row.true_ratio,
         distinct: row.uniq,
-        count: cnt
+        count: row.cnt
       });
     });
   }

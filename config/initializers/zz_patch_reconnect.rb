@@ -19,9 +19,6 @@ module ActiveRecord
   module ConnectionAdapters
     class PostgreSQLAdapter
 
-      alias_method :real_exec_query, :exec_query
-      alias_method :real_exec_delete, :exec_delete
-
       # Queries the database and returns the results in an Array-like object
       def query(sql, name = nil) #:nodoc:
         wrap_execute(sql, name) do
@@ -37,18 +34,27 @@ module ActiveRecord
         end
       end
 
+
       def exec_query(sql, name = 'SQL', binds = [])
         wrap_execute(sql, name, binds) do
-          real_exec_query(sql, name, binds)
+          result = binds.empty? ? exec_no_cache(sql, binds) :
+                                  exec_cache(sql, binds)
+
+          ret = ActiveRecord::Result.new(result.fields, result_as_array(result))
+          result.clear
+          return ret
         end
       end
 
       def exec_delete(sql, name = 'SQL', binds = [])
         wrap_execute(sql, name, binds) do
-          real_exec_delete(sql, name, binds)
+          result = binds.empty? ? exec_no_cache(sql, binds) :
+                                  exec_cache(sql, binds)
+          affected = result.cmd_tuples
+          result.clear
+          affected
         end
       end
-
 
       def wrap_execute(sql, name = "SQL", binds = [])
         with_auto_reconnect do

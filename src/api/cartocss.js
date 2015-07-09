@@ -120,7 +120,7 @@ var CSS = {
         tableID + " {",
         '  marker-width: 3;',
         '  marker-fill-opacity: 0.8;',
-        '  marker-fill: #FEE391; ',
+        '  marker-fill: #FF6347; ',
         '  comp-op: "lighten";',
         '  [value > 2] { marker-fill: #FEC44F; }',
         '  [value > 3] { marker-fill: #FE9929; }',

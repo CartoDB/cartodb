@@ -62,7 +62,7 @@ module CartoDB
       def layer_group_for(visualization)
         layers = visualization.layers(:cartodb)
 
-        unless contains_torque_layer?(visualization)
+        unless labels_layers_go_separate?(visualization)
           labels_base_layers(visualization).each { |layer| 
             layers.push(layer)
           }
@@ -108,7 +108,8 @@ module CartoDB
       #  - labels layer will be the last one (highest order), and has special behaviour:
       #   - if named map + torque layer, goes separate, as last layer
       #   - if no named map + torque layer, goes separate, as last layer
-      #   - if named map but no torque layer, goes inside the named map (as its last layer)
+      #   NOT YET: - if named map but no torque layer, goes inside the named map (as its last layer) 
+      #   - if named map but no torque layer, goes separate, as last layer (TEMPORAL FIX)
       #   - if no named map and no torque layer, goes inside the layergroup (as its last layer)
       # - See also the NamedMaps Presenter for their specifics
       # - As basemap and labels are both http layers some logic to separate them
@@ -135,7 +136,7 @@ module CartoDB
 
         layers_data.push(other_layers_for(visualization, named_maps_presenter))
 
-        if contains_torque_layer?(visualization)
+        if labels_layers_go_separate?(visualization)
           decorated_labels_base_layers(visualization).each { |layer| 
             layers_data.push(layer)
           }
@@ -161,6 +162,10 @@ module CartoDB
           layer_num += 1
         }
         layers_data
+      end
+
+      def labels_layers_go_separate?(visualization)
+        contains_torque_layer?(visualization) || visualization.retrieve_named_map?
       end
 
       def contains_torque_layer?(visualization)

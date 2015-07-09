@@ -91,6 +91,12 @@ module CartoDB
         data
       end
 
+      # TODO: When Windshaft allows to render properly the labels inside the named map, remove this and leave
+      # only contains_torque_layer? check
+      def labels_layers_go_separate?(visualization)
+        true || contains_torque_layer?(visualization)
+      end
+
         # TODO: Copied from VizJSON.contains_torque_layer
       def contains_torque_layer?(visualization)
         visualization.layers(:torque).length > 0
@@ -98,7 +104,7 @@ module CartoDB
 
       # Extract relevant information from layers
       def configure_layers_data
-        if contains_torque_layer?(@visualization)
+        if labels_layers_go_separate?(@visualization)
           valid_layers = @visualization.layers(:cartodb)
         else
           valid_layers = @visualization.layers(:named_map).reject { |layer|

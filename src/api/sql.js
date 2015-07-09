@@ -393,6 +393,11 @@
         sql: sql
       });
 
+      var normalizeName = function(str) {
+        var normalizedStr = str.replace(/^"(.+(?="$))?"$/, '$1'); // removes surrounding quotes
+        return normalizedStr.replace(/""/g, '"'); // removes duplicated quotes
+      }
+
       this.execute(query, function(data) {
         var row = data.rows[0];
         var s = array_agg(row.array_agg);
@@ -400,8 +405,7 @@
           type: 'string',
           hist: _(s).map(function(row) {
             var r = row.match(/\((.*),(\d+)/);
-            var name = r[1];
-            name = name.replace(/^"(.+(?="$))"$/, '$1'); // replace surrounding quotes
+            var name = normalizeName(r[1]);
             return [name, +r[2]];
           }),
           distinct: row.uniq,

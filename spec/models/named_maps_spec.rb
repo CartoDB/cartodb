@@ -17,6 +17,8 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
     Visualization.repository = DataRepository::Backend::Sequel.new(Rails::Sequel.connection, :visualizations)
 
     @user = create_user( :quota_in_bytes => 524288000, :table_quota => 100, :private_tables_enabled => true )
+
+    @old_basemap_config = Cartodb.config[:basemaps]
   end
 
   before(:each) do
@@ -36,6 +38,9 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
     user_name = 'whatever'
     user_apikey = '123'
     CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user)
+
+    # so if any spec changes the basemap config, it gets automatically reset no matter if passes of fails
+    Cartodb.config[:basemaps] = @old_basemap_config
   end
 
   after(:all) do
@@ -822,35 +827,34 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
 
       vizjson = get_vizjson(derived_vis)
 
-      vizjson[:layers].size.should eq 2
+      # INFO: This happens only while tiler doesn't knows how to render http labels layer inside namedmap, 
+      # remove last layer when it does
+      vizjson[:layers].size.should eq 3
       vizjson[:layers][0][:type].should eq 'tiled'
       vizjson[:layers][1][:type].should eq 'namedmap'
+      vizjson[:layers][2][:type].should eq 'tiled'
 
       vizjson[:layers][1].include?(:order).should eq true
       vizjson[:layers][1][:options][:type].should eq 'namedmap'
-      vizjson[:layers][1][:options][:named_map][:params].size.should eq 2
+      vizjson[:layers][1][:options][:named_map][:params].size.should eq 1
       vizjson[:layers][1][:options][:named_map][:params].include?(:layer0).should eq true
-      vizjson[:layers][1][:options][:named_map][:params].include?(:layer1).should eq true
+      vizjson[:layers][1][:options][:named_map][:params].include?(:layer1).should eq false
       vizjson[:layers][1][:options][:named_map][:params].include?(:layer2).should eq false
       vizjson[:layers][1][:options][:named_map][:params][:layer0].should eq 1
-      vizjson[:layers][1][:options][:named_map][:params][:layer1].should eq 1
+      #vizjson[:layers][1][:options][:named_map][:params][:layer1].should eq 1
 
       # When there is no torque layer, it appears inside the named map
-      vizjson[:layers][1][:options][:named_map][:layers].size.should eq 2
+      vizjson[:layers][1][:options][:named_map][:layers].size.should eq 1
       vizjson[:layers][1][:options][:named_map][:layers][0].deep_symbolize_keys()
       vizjson[:layers][1][:options][:named_map][:layers][0].include?(:layer_name).should eq true
       vizjson[:layers][1][:options][:named_map][:layers][0][:interactivity].should eq 'cartodb_id'
       vizjson[:layers][1][:options][:named_map][:layers][0][:visible].should eq true
-      vizjson[:layers][1][:options][:named_map][:layers][1].deep_symbolize_keys()
-      vizjson[:layers][1][:options][:named_map][:layers][1][:interactivity].should eq nil
-      vizjson[:layers][1][:options][:named_map][:layers][1][:visible].should eq true
-
-      Cartodb.config[:basemaps] = old_basemap_config
+      #vizjson[:layers][1][:options][:named_map][:layers][1].deep_symbolize_keys()
+      #vizjson[:layers][1][:options][:named_map][:layers][1][:interactivity].should eq nil
+      #vizjson[:layers][1][:options][:named_map][:layers][1][:visible].should eq true
     end
 
     it 'checks that a tiled labels layer appears outside of the named map when there is a torque layer also present' do
-      old_basemap_config = Cartodb.config[:basemaps]
-
       # Basemap with labels for this scenario.
       Cartodb.config[:basemaps] = {
         CartoDB: {
@@ -950,8 +954,6 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
 
       # When there is a torque layer, it appears outside the named map
       ((vizjson[:layers][3][:options][:url] =~ /_only_labels/) > 0).should eq true
-
-      Cartodb.config[:basemaps] = old_basemap_config
     end
 
   end

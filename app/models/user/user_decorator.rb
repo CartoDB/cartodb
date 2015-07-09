@@ -1,7 +1,10 @@
 module CartoDB
   module UserDecorator
+    # Options:
+    # - show_api_calls: load api calls. Default: true.
+    # - extended: load real_table_count and last_active_time. Default: false.
     def data(options = {})
-      calls = self.get_api_calls(from: self.last_billing_cycle, to: Date.today)
+      calls = options.fetch(:show_api_calls, true) ? self.get_api_calls(from: self.last_billing_cycle, to: Date.today) : []
       calls.fill(0, calls.size..29)
 
       db_size_in_bytes = self.db_size_in_bytes

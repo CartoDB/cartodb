@@ -193,6 +193,11 @@ function guessMap(sql, tableName, column, stats) {
   } else if (stats.type === 'date') {
     visualizationType = "torque";
     css = CSS.torque(stats, tableName);
+
+  } else if (stats.type === 'boolean') {
+    visualizationType   = "category";
+    css      = CSS.category(['true', 'false'], tableName, columnName, geometryType);
+    metadata = CSS.categoryMetadata(['true', 'false'], tableName, columnName, geometryType);
   }
 
   if (css) {

@@ -37,17 +37,17 @@ cdb.geo.MapLayer = cdb.core.Model.extend({
     if(myType && (myType === itsType)) {
 
       if(myType === 'Tiled') {
-        var myTemplate  = me.urlTemplate? me.urlTemplate : me.options.urlTemplate
-          , itsTemplate = other.urlTemplate? other.urlTemplate : other.options.urlTemplate;
+        var myTemplate  = me.urlTemplate? me.urlTemplate : me.options.urlTemplate;
+        var itsTemplate = other.urlTemplate? other.urlTemplate : other.options.urlTemplate;
         var myName = me.name? me.name : me.options.name;
         var itsName = other.name? other.name : other.options.name;
 
         return myTemplate === itsTemplate && myName === itsName;
       } else if(myType === 'WMS') {
-        var myTemplate  = me.urlTemplate? me.urlTemplate : me.options.urlTemplate
-          , itsTemplate = other.urlTemplate? other.urlTemplate : other.options.urlTemplate;
-        var myLayer  = me.layers? me.layers : me.options.layers
-          , itsLayer = other.layers? other.layers : other.options.layers;
+        var myTemplate  = me.urlTemplate? me.urlTemplate : me.options.urlTemplate;
+        var itsTemplate = other.urlTemplate? other.urlTemplate : other.options.urlTemplate;
+        var myLayer  = me.layers? me.layers : me.options.layers;
+        var itsLayer = other.layers? other.layers : other.options.layers;
         return myTemplate === itsTemplate && myLayer === itsLayer;
       }
       else if (myType === 'torque') {
@@ -217,6 +217,10 @@ cdb.geo.CartoDBNamedMapLayer = cdb.geo.MapLayer.extend({
 
 });
 
+var TILED_LAYER_TYPE = 'Tiled';
+var CARTODB_LAYER_TYPE = 'CartoDB';
+var TORQUE_LAYER_TYPE = 'torque';
+
 cdb.geo.Layers = Backbone.Collection.extend({
 
   model: cdb.geo.MapLayer,
@@ -234,19 +238,15 @@ cdb.geo.Layers = Backbone.Collection.extend({
    * the index should be recalculated
    */
   _assignIndexes: function(model, col, options) {
-    var TILED_LAYER_TYPE = 'Tiled';
-    var CARTODB_LAYER_TYPE = 'CartoDB';
-    var TORQUE_LAYER_TYPE = 'torque';
-
     if (this.size() > 0) {
 
       // Assign an order of 0 to the first layer
-      this.models[0].set({ order: 0 });
+      this.at(0).set({ order: 0 });
 
       if (this.size() > 1) {
         var layersByType = {};
         for (var i = 1; i < this.size(); ++i) {
-          var layer = this.models[i];
+          var layer = this.at(i);
           var layerType = layer.get('type');
           layersByType[layerType] = layersByType[layerType] || [];
           layersByType[layerType].push(layer);

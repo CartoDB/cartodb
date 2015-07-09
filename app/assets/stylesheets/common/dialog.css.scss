@@ -154,6 +154,13 @@ body.is-inDialog {
   color: $cHighlight-main;
   border-color: $cHighlight-main;
 }
+.Dialog-headerIcon--neutral {
+  // TODO: !important to not be overrided by .CreateDialog-headerIcon overriding stuff over here :(
+  border-color: $cIcons-active !important;
+  .iconFont {
+    color: $cIcons-active !important;
+  }
+}
 .Dialog-headerIcon--negative {
   color: $cHighlight-negative;
   border-color: $cHighlight-negative;

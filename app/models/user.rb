@@ -195,7 +195,7 @@ class User < Sequel::Model
     rebuild_quota_trigger    if changes.include?(:quota_in_bytes)
     if changes.include?(:account_type) || changes.include?(:available_for_hire) || changes.include?(:disqus_shortname) || changes.include?(:email) || \
        changes.include?(:website) || changes.include?(:name) || changes.include?(:description) || \
-       changes.include?(:twitter_username) || changes.include?(:dynamic_cdn_enabled)
+       changes.include?(:twitter_username)
       invalidate_varnish_cache(regex: '.*:vizjson')
     end
     if changes.include?(:database_host)
@@ -2082,7 +2082,7 @@ TRIGGER
   # Upgrade the cartodb postgresql extension
   def upgrade_cartodb_postgres_extension(statement_timeout=nil, cdb_extension_target_version=nil)
     if cdb_extension_target_version.nil?
-      cdb_extension_target_version = '0.8.0'
+      cdb_extension_target_version = '0.8.1'
     end
 
     in_database({
@@ -2474,7 +2474,7 @@ TRIGGER
     CartoDB::Visualization::RedisVizjsonCache.new().purge(vizs)
   end
 
-  # returns google maps api key. If the user is in an organization and 
+  # returns google maps api key. If the user is in an organization and
   # that organization has api key it's used
   def google_maps_api_key
     if has_organization?
@@ -2514,7 +2514,7 @@ TRIGGER
     google_maps_enabled = !google_maps_api_key.blank?
     basemaps = Cartodb.config[:basemaps]
     if basemaps
-      basemaps.select { |group| 
+      basemaps.select { |group|
         g = group == 'GMaps'
         google_maps_enabled ? g : !g
       }

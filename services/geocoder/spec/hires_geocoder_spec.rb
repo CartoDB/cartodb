@@ -44,12 +44,30 @@ describe CartoDB::HiresGeocoder do
   describe '#process_row' do
     it 'increments the number of processed rows by one when called' do
       output_csv_mock = mock
-      input_row = {'searchtext': 'olakase'}
+      output_csv_mock.expects(:add_row).once
+      input_row = {'searchtext' => 'olakase'}
       @geocoder.expects(:geocode_text).once.returns(MOCK_COORDINATES)
       @geocoder.processed_rows.should == 0
-      @geocoder.send(:process_row)
+      @geocoder.send(:process_row, input_row, output_csv_mock)
       @geocoder.processed_rows.should == 1
     end
+
+    it 'adds a row with the expected format when success' do
+      output_csv_mock = mock
+      output_csv_mock.expects(:add_row).once.with ['olakase', 1, 1, MOCK_COORDINATES[0], MOCK_COORDINATES[1]]
+      input_row = {'searchtext' => 'olakase'}
+      @geocoder.expects(:geocode_text).once.returns(MOCK_COORDINATES)
+      @geocoder.send(:process_row, input_row, output_csv_mock)
+    end
+
+    it 'does not add any row when it when geolocation fails' do
+      output_csv_mock = mock
+      output_csv_mock.expects(:add_row).never
+      input_row = {'searchtext' => 'olakase'}
+      @geocoder.expects(:geocode_text).once.returns([nil, nil])
+      @geocoder.send(:process_row, input_row, output_csv_mock)
+    end
+
   end
 
   def path_to(filepath = '')

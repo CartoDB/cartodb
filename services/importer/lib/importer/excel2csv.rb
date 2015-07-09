@@ -1,5 +1,6 @@
 # encoding: utf-8
 require 'csv'
+require 'open3'
 require_relative './job'
 require_relative './csv_normalizer'
 
@@ -24,7 +25,15 @@ module CartoDB
 
       def run
         job.log "Converting #{@format.upcase} to CSV"
-        %x[in2csv #{filepath} | #{in2csv_warning_filter} | #{newline_remover_path} > #{converted_filepath}]
+
+        Open3.popen3("file -b --mime-type #{filepath}") do |stdin, stdout, stderr, process|
+          @file_mime_type = stdout.read.delete("\n")
+          job.log "Can't get the mime type of the file" unless process.value.to_s =~ /exit 0/
+        end
+
+        # Take into account that here should come or csv files with xls extensions or xls documents
+        file_format = (@file_mime_type == "text/plain") ? "-f csv" : ""
+        %x[in2csv #{filepath} #{file_format} | #{in2csv_warning_filter} | #{newline_remover_path} > #{converted_filepath}]
 
         # Can be check locally using wc -l ... (converted_filepath)
         job.log "Orig file: #{filepath}\nTemp destination: #{converted_filepath}"

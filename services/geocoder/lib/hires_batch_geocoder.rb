@@ -1,7 +1,6 @@
 # encoding: utf-8
 require 'nokogiri'
 require 'csv'
-require 'open3'
 require 'active_support/core_ext/numeric'
 require_relative '../../../lib/carto/http/client'
 require_relative 'hires_geocoder_interface'
@@ -117,10 +116,37 @@ module CartoDB
 
     def result
       return @result unless @result.nil?
+
+      raise 'No request_id provided' unless request_id
       results_filename = File.join(dir, "#{request_id}.zip")
-      # TODO: check for status
-      stdout, stderr, status  = Open3.capture3('wget', '-nv', '-E', '-O', results_filename, api_url({}, 'result'))
-      @result = Dir[File.join(dir, '*')][0]
+      download_url = api_url({}, 'result')
+
+      request = http_client.request(download_url, method: :get)
+
+      File.open(results_filename, 'wb') do |download_file|
+
+        request.on_headers do |response|
+          if response.code != 200
+            # TODO: better error handling
+            raise 'Download request failed'
+          end
+        end
+
+        request.on_body do |chunk|
+          download_file.write(chunk)
+        end
+
+        request.on_complete do |response|
+          if response.code != 200
+            # TODO: better error handling
+            raise 'Download request failed'
+          end
+        end
+
+        request.run
+      end
+
+      @result = results_filename
     end
 
 

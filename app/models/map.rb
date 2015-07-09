@@ -32,8 +32,8 @@ class Map < Sequel::Model
   many_to_many  :named_maps_layers, clone: :layers, right_key: :layer_id,
                 conditions: "kind in ('tiled', 'background', 'gmapsbase', 'wms', 'carto')"
 
-  many_to_many :labels_layers, clone: :user_layers, right_key: :layer_id,
-                conditions: 'order > 0'
+  many_to_many :labels_layers, clone: :layers, right_key: :layer_id,
+                conditions: "kind in ('tiled', 'background', 'gmapsbase', 'wms') AND \"order\" > 0"
 
   plugin :association_dependencies, :layers => :nullify
 

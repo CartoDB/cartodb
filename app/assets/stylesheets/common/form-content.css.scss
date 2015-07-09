@@ -73,6 +73,12 @@ $sLabel-width: 140px;
   &:nth-child(5):before { content: '5' }
 }
 .Form-row.Form-row--step:first-child { padding-top: 0 }
+.Form-row.Form-row--step.is-done {
+  &:before {
+    color: $cHighlight-stepDone;
+    border-color: $cHighlight-stepDone;
+  }
+}
 .Form-row.has-label {
   // compensate for label width, to make the rowData appear as centered
   margin-left: -$sLabel-width;
@@ -169,6 +175,7 @@ $sLabel-width: 140px;
   right: -52px;
 }
 .Form-rowData ~ .Form-rowDataExtra { top: 10px } // to compensate for its top-padding
+.Form-rowData--step ~ .Form-rowDataExtra { top: 0 }
 
 .Form-input {
   position: relative;

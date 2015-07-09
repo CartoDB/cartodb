@@ -196,7 +196,12 @@ class Carto::User < ActiveRecord::Base
   end
 
   def remaining_geocoding_quota(options = {})
-    geocoding_quota - get_geocoding_calls(options)
+    if organization.present?
+      remaining = organization.geocoding_quota.to_i - organization.get_geocoding_calls(options)
+    else
+      remaining = geocoding_quota - get_geocoding_calls(options)
+    end
+    (remaining > 0 ? remaining : 0)
   end
 
   def oauth_for_service(service)

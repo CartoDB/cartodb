@@ -53,6 +53,8 @@ $sLabel-width: 140px;
   position: relative;
   @include justify-content(space-between, justify);
   @include align-items(center);
+  padding-top: 0;
+  padding-bottom: $sMargin-group;
   &:before {
     content: '';
     border-radius: 50px;
@@ -70,6 +72,7 @@ $sLabel-width: 140px;
   &:nth-child(4):before { content: '4' }
   &:nth-child(5):before { content: '5' }
 }
+.Form-row.Form-row--step:first-child { padding-top: 0 }
 .Form-row.has-label {
   // compensate for label width, to make the rowData appear as centered
   margin-left: -$sLabel-width;

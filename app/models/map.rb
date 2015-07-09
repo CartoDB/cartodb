@@ -32,6 +32,9 @@ class Map < Sequel::Model
   many_to_many  :named_maps_layers, clone: :layers, right_key: :layer_id,
                 conditions: "kind in ('tiled', 'background', 'gmapsbase', 'wms', 'carto')"
 
+  many_to_many :labels_layers, clone: :layers, right_key: :layer_id,
+                conditions: "kind in ('tiled', 'background', 'gmapsbase', 'wms') AND \"order\" > 0"
+
   plugin :association_dependencies, :layers => :nullify
 
   PUBLIC_ATTRIBUTES = %W{ id user_id provider bounding_box_sw

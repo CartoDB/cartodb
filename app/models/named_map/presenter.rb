@@ -80,20 +80,43 @@ module CartoDB
       def placeholders_data
         data = {}
         @layergroup_data.each { |layer|
-          data["layer#{layer[:index].to_s}".to_sym] = layer[:visible] ? 1: 0
+          if layer[:type].downcase == 'tiled'
+            # INFO: Assuming that the only tiled layer coming here is the labels one, so always visible
+            # if this changes in the future, modify this behaviour
+            data["layer#{layer[:index].to_s}".to_sym] = 1
+          else
+            data["layer#{layer[:index].to_s}".to_sym] = layer[:visible] ? 1: 0
+          end
         }
         data
       end
 
+      # TODO: When Windshaft allows to render properly the labels inside the named map, remove this and leave
+      # only contains_torque_layer? check
+      def labels_layers_go_separate?(visualization)
+        true || contains_torque_layer?(visualization)
+      end
+
+      # TODO: Substitute for content once labels_layers_go_separate? is no longer needed
+      def contains_torque_layer?(visualization)
+        visualization.layers(:torque).length > 0
+      end
+
       # Extract relevant information from layers
       def configure_layers_data
-        # Http/base layers don't appear at viz.json
-        layers = @visualization.layers(:cartodb)
+        valid_layers = labels_layers_go_separate?(@visualization) ? @visualization.layers(:cartodb) : 
+          @visualization.layers(:labels)
+
         layers_data = Array.new
-        layers.each { |layer|
+        valid_layers.each { |layer|
           layer_vizjson = layer.get_presenter(@options, @configuration).to_vizjson_v2
-          layers_data.push(data_for_carto_layer(layer_vizjson))
+          if layer.kind == 'carto'
+            layers_data.push(data_for_carto_layer(layer_vizjson))
+          else
+            layers_data.push(data_for_base_layer(layer_vizjson))
+          end
         }
+
         layers_data
       end
 
@@ -119,6 +142,14 @@ module CartoDB
           data[:legend] = layer_vizjson[:legend]
         end
         data
+      end
+
+      def data_for_base_layer(layer_vizjson)
+        {
+          layer_name: layer_vizjson[:options][:layer_name],
+          interactivity: nil,
+          visible: true
+        }
       end
 
       # Loads the data of a given named map

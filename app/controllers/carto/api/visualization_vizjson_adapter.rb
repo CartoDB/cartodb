@@ -58,6 +58,14 @@ module Carto
           map.data_layers
         when :others
           map.other_layers
+        when :torque
+          map.torque_layers
+        when :named_map
+          map.named_maps_layers
+        when :labels
+          map.user_layers.reject { |layer|
+            layer.order == 0  # Remove basemap
+          }
         else
           raise "Unknown: #{kind}"
         end

@@ -17,6 +17,8 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
     Visualization.repository = DataRepository::Backend::Sequel.new(Rails::Sequel.connection, :visualizations)
 
     @user = create_user( :quota_in_bytes => 524288000, :table_quota => 100, :private_tables_enabled => true )
+
+    @old_basemap_config = Cartodb.config[:basemaps]
   end
 
   before(:each) do
@@ -36,6 +38,9 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
     user_name = 'whatever'
     user_apikey = '123'
     CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user)
+
+    # so if any spec changes the basemap config, it gets automatically reset no matter if passes of fails
+    Cartodb.config[:basemaps] = @old_basemap_config
   end
 
   after(:all) do
@@ -668,7 +673,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
     end
   end
 
-  describe 'http_layer' do
+  describe 'http_layers' do
     it 'checks that a tiled layer appears as http layer on a named map but not on the viz.json' do
       template_data = {
         template: {
@@ -751,6 +756,206 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       template[:layergroup][:layers][1][:options].include?(:urlTemplate).should eq false
       template[:layergroup][:layers][1][:options].include?(:subdomains).should eq false
     end
+
+    it 'checks that a tiled layer can appear on the viz.json if is not the basemap layer' do
+      old_basemap_config = Cartodb.config[:basemaps]
+
+      # Basemap with labels for this scenario.
+      Cartodb.config[:basemaps] = {
+        CartoDB: {
+          "waduson" => {
+            "default" => true,
+            "url" => "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
+            "subdomains" => "abcd",
+            "minZoom" => "0",
+            "maxZoom" => "18",
+            "name" => "Waduson",
+            "className" => "waduson",
+            "attribution" => "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"http://cartodb.com/attributions#basemaps\">CartoDB</a>",
+            "labels" => { "url" => 'http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png' }
+          }
+        }
+      }
+
+      template_data = {
+        template: {
+          version: '0.0.1',
+          name: '@@PLACEHOLDER@@',
+          auth: {
+            method: 'open'
+          },
+          placeholders: {
+            layer0: {
+              type: "number",
+              default: 1
+            }
+          },
+          layergroup: {
+            layers: [
+              {
+                type: "http",
+                options: {
+                  urlTemplate: "http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png",
+                  subdomains: "abcd"
+                }
+              },
+              {
+                type: "cartodb",
+                options: {
+                  sql: "WITH wrapped_query AS (select * from test2) SELECT * from wrapped_query where <%= layer0 %>=1",
+                  layer_name: "test2",
+                  cartocss: "/** */",
+                  cartocss_version: "2.1.1",
+                  interactivity: "cartodb_id"
+                }
+              },
+              {
+                type: "http",
+                options: {
+                  urlTemplate: "http://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}.png",
+                  subdomains: "abcd"
+                }
+              },
+            ]
+          }
+        }
+      }
+
+      table, derived_vis, template_id = create_private_table_with_public_visualization(template_data)
+
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+
+      vizjson = get_vizjson(derived_vis)
+
+      # INFO: This happens only while tiler doesn't knows how to render http labels layer inside namedmap, 
+      # remove last layer when it does
+      vizjson[:layers].size.should eq 3
+      vizjson[:layers][0][:type].should eq 'tiled'
+      vizjson[:layers][1][:type].should eq 'namedmap'
+      vizjson[:layers][2][:type].should eq 'tiled'
+
+      vizjson[:layers][1].include?(:order).should eq true
+      vizjson[:layers][1][:options][:type].should eq 'namedmap'
+      vizjson[:layers][1][:options][:named_map][:params].size.should eq 1
+      vizjson[:layers][1][:options][:named_map][:params].include?(:layer0).should eq true
+      vizjson[:layers][1][:options][:named_map][:params].include?(:layer1).should eq false
+      vizjson[:layers][1][:options][:named_map][:params].include?(:layer2).should eq false
+      vizjson[:layers][1][:options][:named_map][:params][:layer0].should eq 1
+      #vizjson[:layers][1][:options][:named_map][:params][:layer1].should eq 1
+
+      # When there is no torque layer, it appears inside the named map
+      vizjson[:layers][1][:options][:named_map][:layers].size.should eq 1
+      vizjson[:layers][1][:options][:named_map][:layers][0].deep_symbolize_keys()
+      vizjson[:layers][1][:options][:named_map][:layers][0].include?(:layer_name).should eq true
+      vizjson[:layers][1][:options][:named_map][:layers][0][:interactivity].should eq 'cartodb_id'
+      vizjson[:layers][1][:options][:named_map][:layers][0][:visible].should eq true
+      #vizjson[:layers][1][:options][:named_map][:layers][1].deep_symbolize_keys()
+      #vizjson[:layers][1][:options][:named_map][:layers][1][:interactivity].should eq nil
+      #vizjson[:layers][1][:options][:named_map][:layers][1][:visible].should eq true
+    end
+
+    it 'checks that a tiled labels layer appears outside of the named map when there is a torque layer also present' do
+      # Basemap with labels for this scenario.
+      Cartodb.config[:basemaps] = {
+        CartoDB: {
+          "waduson" => {
+            "default" => true,
+            "url" => "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
+            "subdomains" => "abcd",
+            "minZoom" => "0",
+            "maxZoom" => "18",
+            "name" => "Waduson",
+            "className" => "waduson",
+            "attribution" => "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"http://cartodb.com/attributions#basemaps\">CartoDB</a>",
+            "labels" => { "url" => 'http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png' }
+          }
+        }
+      }
+
+      template_data = {
+        template: {
+          version: '0.0.1',
+          name: '@@PLACEHOLDER@@',
+          auth: {
+            method: 'open'
+          },
+          placeholders: {
+            layer0: {
+              type: "number",
+              default: 1
+            }
+          },
+          layergroup: {
+            layers: [
+              {
+                type: "http",
+                options: {
+                  urlTemplate: "http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png",
+                  subdomains: "abcd"
+                }
+              },
+              {
+                type: "cartodb",
+                options: {
+                  sql: "WITH wrapped_query AS (select * from test2) SELECT * from wrapped_query where <%= layer0 %>=1",
+                  layer_name: "test2",
+                  cartocss: "/** */",
+                  cartocss_version: "2.1.1",
+                  interactivity: "cartodb_id"
+                }
+              },
+              {
+                type: 'torque',
+                  options: {
+                    cartocss_version: '2.0.1',
+                    cartocss: '/** */',
+                    sql: 'select * from ne_10m_populated_places_simple'
+                  }
+                },
+              {
+                type: "http",
+                options: {
+                  urlTemplate: "http://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}.png",
+                  subdomains: "abcd"
+                }
+              },
+            ]
+          }
+        }
+      }
+
+      table, derived_vis, template_id = create_private_table_with_public_visualization(template_data)
+
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+
+      derived_vis.map.add_layer( Layer.create( 
+        kind: 'torque', 
+        options: { 
+          query: "select * from #{table.name}", 
+          table_name: table.name ,
+          tile_style: '',
+        } 
+      ) )
+      derived_vis.store()
+
+      vizjson = get_vizjson(derived_vis)
+
+      vizjson[:layers].size.should eq 4
+      vizjson[:layers][0][:type].should eq 'tiled'
+      vizjson[:layers][1][:type].should eq 'namedmap'
+      vizjson[:layers][2][:type].should eq 'torque'
+      vizjson[:layers][3][:type].should eq 'tiled'
+
+      vizjson[:layers][1].include?(:order).should eq true
+      vizjson[:layers][1][:options][:type].should eq 'namedmap'
+      vizjson[:layers][1][:options][:named_map][:params].size.should eq 1
+      vizjson[:layers][1][:options][:named_map][:params].include?(:layer0).should eq true
+      vizjson[:layers][1][:options][:named_map][:params][:layer0].should eq 1
+
+      # When there is a torque layer, it appears outside the named map
+      ((vizjson[:layers][3][:options][:url] =~ /_only_labels/) > 0).should eq true
+    end
+
   end
 
   describe 'view data' do

@@ -60,7 +60,15 @@ module CartoDB
       end
 
       def layer_group_for(visualization)
-        LayerGroup::Presenter.new(visualization.layers(:cartodb), options, configuration).to_poro
+        layers = visualization.layers(:cartodb)
+
+        unless labels_layers_go_separate?(visualization)
+          visualization.layers(:labels).each { |layer| 
+            layers.push(layer)
+          }
+        end
+
+        LayerGroup::Presenter.new(layers, options, configuration).to_poro
       end
 
       def named_map_layer_group_for(visualization)
@@ -91,10 +99,22 @@ module CartoDB
         # Do nothing
       end
 
+      # Brief intro
+      # - Basemap layer always present first and outside layergroups/named maps
+      # - All layers inside a layergroup get rendered together
+      # - If there is a named map, all layers inside get rendered together
+      # - A "labels on top" map type contain two http layers: the basemap without layers + only the labels
+      #  - basemap http layer acts the same as normal one
+      #  - labels layer will be the last one (highest order), and has special behaviour:
+      #   - if named map + torque layer, goes separate, as last layer
+      #   - if no named map + torque layer, goes separate, as last layer
+      #   NOT YET: - if named map but no torque layer, goes inside the named map (as its last layer) 
+      #   - if named map but no torque layer, goes separate, as last layer (TEMPORAL FIX)
+      #   - if no named map and no torque layer, goes inside the layergroup (as its last layer)
+      # - See also the NamedMaps Presenter for their specifics
+      # - As basemap and labels are both http layers some logic to separate them
       def layers_for(visualization)
-        layers_data = [
-          base_layers_for(visualization)
-        ]
+        layers_data = [ basemap_layer_for(visualization) ]
 
         if visualization.retrieve_named_map?
           presenter_options = {
@@ -113,7 +133,15 @@ module CartoDB
           named_maps_presenter = nil
           layers_data.push( layer_group_for(visualization) )
         end
-        layers_data.push( other_layers_for( visualization, named_maps_presenter ) )
+
+        layers_data.push(other_layers_for(visualization, named_maps_presenter))
+
+        if labels_layers_go_separate?(visualization)
+          decorated_labels_base_layers(visualization).each { |layer| 
+            layers_data.push(layer)
+          }
+        end
+
         layers_data.compact.flatten
       end
 
@@ -134,6 +162,22 @@ module CartoDB
           layer_num += 1
         }
         layers_data
+      end
+
+      
+      def labels_layers_go_separate?(visualization)
+        visualization.layers(:torque).length > 0 || visualization.retrieve_named_map?
+      end
+
+      def decorated_labels_base_layers(visualization)
+        visualization.layers(:labels).map { |layer|
+          CartoDB::Layer::Presenter.new(layer, options, configuration).to_vizjson_v2
+        }
+      end
+
+      def basemap_layer_for(visualization)
+        layer = visualization.layers(:base).first
+        CartoDB::Layer::Presenter.new(layer, options, configuration).to_vizjson_v2 unless layer.nil?
       end
 
       def base_layers_for(visualization)

@@ -162,7 +162,7 @@ defaults: &defaults
     public_opts: ["type", "active", "query", "opacity", "auto_bound",
                   "interactivity", "debug", "visible", "tiler_domain",
                   "tiler_port", "tiler_protocol", "sql_domain", "sql_port",
-                  "sql_protocol", "extra_params", "cdn_url", "table_name",
+                  "sql_protocol", "extra_params", "table_name",
                   "user_name", "style_version", "tile_style", "query_wrapper"]
     default_tile_styles:
       point: "{\n  marker-fill: #FF6600;\n  marker-opacity: 0.9;\n  marker-width: 12;\n  marker-line-color: white;\n  marker-line-width: 3;\n  marker-line-opacity: 0.9;\n  marker-placement: point;\n  marker-type: ellipse;\n  marker-allow-overlap: true;\n}"
@@ -186,7 +186,6 @@ defaults: &defaults
         sql_port:           "80"
         sql_protocol:       "http"
         extra_params:       { cache_policy: 'persist' }
-        cdn_url:            ""
         tile_style_history: []
         style_version:      "2.1.1"
       infowindow:

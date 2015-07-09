@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: 580c60a9ca5f54ed77ccd6c96caab4a738abf4aa
+// sha: e37e6c65e501303b65cb2dc0b2a3d4f2035835d0
 (function() {
   var root = this;
 
@@ -32806,8 +32806,10 @@ CartoDBSubLayer.prototype = _.extend({}, SubLayerBase.prototype, {
     }
 
     if (this.get('raster')) {
+      json.options.raster = true;
       json.options.geom_column = "the_raster_webmercator";
       json.options.geom_type = "raster";
+      json.options.raster_band = this.get('raster_band') || 0;
       // raster needs 2.3.0 to work
       json.options.cartocss_version = this.get('cartocss_version') || '2.3.0';
     }
@@ -39227,7 +39229,7 @@ var Vis = cdb.core.View.extend({
 
 cdb.vis.INFOWINDOW_TEMPLATE = {
   light: [
-    '<div class="cartodb-popup">',
+    '<div class="cartodb-popup v2">',
     '<a href="#close" class="cartodb-popup-close-button close">x</a>',
     '<div class="cartodb-popup-content-wrapper">',
       '<div class="cartodb-popup-content">',
@@ -41000,8 +41002,8 @@ Layers.register('torque', function(vis, data) {
         'stats as (', 
            'select count(distinct({{column}})) as uniq, ',
            '       count(*) as cnt, ',
-           '       sum(case when {{column}} is null then 1 else 0 end)::numeric as null_count, ',
-           '       sum(case when {{column}} is null then 1 else 0 end)::numeric / count(*)::numeric as null_ratio, ',
+           '       sum(case when COALESCE(NULLIF({{column}},\'\')) is null then 1 else 0 end)::numeric as null_count, ',
+           '       sum(case when COALESCE(NULLIF({{column}},\'\')) is null then 1 else 0 end)::numeric / count(*)::numeric as null_ratio, ',
            // '       CDB_DistinctMeasure(array_agg({{column}}::text)) as cat_weight ',
            '       (SELECT max(cumperc) weight FROM c) As skew ',
            'from ({{sql}}) __wrap',
@@ -41017,6 +41019,11 @@ Layers.register('torque', function(vis, data) {
         sql: sql
       });
 
+      var normalizeName = function(str) {
+        var normalizedStr = str.replace(/^"(.+(?="$))?"$/, '$1'); // removes surrounding quotes
+        return normalizedStr.replace(/""/g, '"'); // removes duplicated quotes
+      }
+
       this.execute(query, function(data) {
         var row = data.rows[0];
         var s = array_agg(row.array_agg);
@@ -41024,7 +41031,8 @@ Layers.register('torque', function(vis, data) {
           type: 'string',
           hist: _(s).map(function(row) {
             var r = row.match(/\((.*),(\d+)/);
-            return [r[1], +r[2]];
+            var name = normalizeName(r[1]);
+            return [name, +r[2]];
           }),
           distinct: row.uniq,
           count: row.cnt,
@@ -41041,8 +41049,9 @@ Layers.register('torque', function(vis, data) {
       'with minimum as (',
         'SELECT min({{column}}) as start_time FROM ({{sql}}) _wrap), ',
       'maximum as (SELECT max({{column}}) as end_time FROM ({{sql}}) _wrap), ',
+      'null_ratio as (SELECT sum(case when {{column}} is null then 1 else 0 end)::numeric / count(*)::numeric as null_ratio FROM ({{sql}}) _wrap), ',
       'moments as (SELECT count(DISTINCT {{column}}) as moments FROM ({{sql}}) _wrap)',
-      'SELECT * FROM minimum, maximum, moments'
+      'SELECT * FROM minimum, maximum, moments, null_ratio'
     ];
     var query = Mustache.render(s.join('\n'), {
       column: column,
@@ -41063,7 +41072,8 @@ Layers.register('torque', function(vis, data) {
         start_time: s,
         end_time: e,
         range: e - s,
-        steps: steps
+        steps: steps,
+        null_ratio: row.null_ratio
       });
     });
   }
@@ -41146,7 +41156,7 @@ Layers.register('torque', function(vis, data) {
         'params as (select min(a) as min, (max(a) - min(a)) / 7 as diff from ( select {{column}} as a from ({{sql}}) _table_sql where {{column}} is not null ) as foo ),',
          'histogram as (',
            'select array_agg(row(bucket, range, freq)) as hist from (',
-           'select width_bucket({{column}}, min-0.01*abs(min), max+0.01*abs(max), 100) as bucket,',
+           'select CASE WHEN uniq > 1 then width_bucket({{column}}, min-0.01*abs(min), max+0.01*abs(max), 100) ELSE 1 END as bucket,',
                   'numrange(min({{column}})::numeric, max({{column}})::numeric) as range,',
                   'count(*) as freq',
              'from ({{sql}}) _w, stats',
@@ -41313,8 +41323,9 @@ var CSS = {
     var metadata = [];
 
     for (var i = cats.length - 1; i >= 0; --i) {
-      if (cats[i] !== undefined && cats[i] != null) {
-        metadata.push({ title: cats[i], title_type: "string", value_type: 'color', color: ramps.category[i] });
+      var cat = cats[i];
+      if (cat !== undefined && cat != null) {
+        metadata.push({ title: cat, title_type: "string", value_type: 'color', color: ramps.category[i] });
       }
     }
 
@@ -41331,11 +41342,17 @@ var CSS = {
     var css = "/** category visualization */\n\n" + tableID + " {\n  " + attr + ": " + ramps.category[0] + ";\n" + defaultCSS.join("\n") + "\n}\n";
 
     for (var i = cats.length - 1; i >= 0; --i) {
-      if (cats[i] !== undefined && cats[i] != null) {
-        css += "\n" + tableID + "[" + prop + " = '" + cats[i] + "'] {\n";
+
+      var cat  = cats[i];
+      var name = cat.replace(/\n/g,'\\n').replace(/\"/g, "\\\"");
+      var value = "\"" + name + "\"";
+
+      if (cat !== undefined && cat != null) {
+        css += "\n" + tableID + "[" + prop + "=" + value + "] {\n";
         css += "  " + attr  + ":" + ramp[i] + ";\n}"
       }
     }
+
     return css;
   },
 

@@ -59,7 +59,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       body: json_data.to_json
     ).run
     parsed_response = JSON.parse(response.body)
-    if response.code == 200 && 
+    if response.code == 200 &&
        parsed_response['retcode'] == 0 &&
        !parsed_response['return_values']['local_file'].nil? &&
        !parsed_response['return_values']['local_file'].empty? &&
@@ -76,7 +76,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       sa_response = {
         :dumper_response => parsed_response
       }
-      render json: sa_response, status: 400   
+      render json: sa_response, status: 400
     end
   end
 

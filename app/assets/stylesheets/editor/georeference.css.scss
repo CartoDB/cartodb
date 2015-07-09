@@ -1,13 +1,15 @@
 @import "../variables/mixins";
 @import "../variables/sizes";
 @import "../variables/colors";
+@import "../variables/progress-bar";
 
 $sIcon: 70px;
+$sWidth: 636px;
 
 .Georeference-content {
   // Should match the width as the .Filters-type container has with the current set of tabs,
   // so the content is aligned width the filters' item
-  width: 636px;
+  width: $sWidth;
   margin-left: auto;
   margin-right: auto;
 }
@@ -54,3 +56,40 @@ $sIcon: 70px;
   }
  }
 .Georeference-geometryIconImg.u-disabled .Georeference-geometryIconMarker { background-color: #DDD }
+
+.Georeference-preFooter {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+  width: $sWidth;
+  margin-left: auto;
+  margin-right: auto;
+  padding-top: $sMargin-group;
+  padding-bottom: $sMargin-group;
+  border-top: 1px solid $cStructure-mainLine;
+}
+.Georeference-estimation {
+  width: 340px;
+  @include display-flex();
+  @include justify-content(flex-start, start);
+  @include align-items(center, center);
+  & > *:not(:last-child) { margin-right: $sMargin-elementInline }
+}
+.Georeference-quota {
+  width: 240px;
+  @include display-flex();
+  @include flex-direction(column);
+  @include align-items(flex-end, end);
+  @include justify-content(center, center);
+  & > *:not(:last-child) { margin-bottom: $sMargin-elementInline }
+}
+.Georeference-progressBar {
+  @include progress-bar(6px, 9px, true, false);
+  position: relative;
+  width: 100%;
+  div.progress-bar {
+    // Override the defaults from mixin
+    background: #EEE;
+    box-shadow: inset 0 1px 0 0 rgba(0,0,0, 0.05);
+  }
+}

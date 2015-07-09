@@ -62,6 +62,9 @@ defaults: &defaults
     app_keys:
       editor: ''
       embeds: ''
+  facebook:
+    app_id: ''
+    admins: ''
   hubspot: ''
   metrics:
     hubspot:
@@ -122,6 +125,8 @@ defaults: &defaults
     username: "superadmin"
     password: "monkey"
   geocoder:
+    #force_batch: true
+    #disable_cache: true
     app_id: ''
     token:  ''
     mailto: ''

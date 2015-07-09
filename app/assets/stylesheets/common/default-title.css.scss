@@ -10,10 +10,6 @@
   line-height: 20px;
   color: $cTypography-paragraphs;
 }
-.DefaultTitle.DefaultTitle--larger {
-  font-size: $sFontSize-larger;
-  line-height: $sLineHeight-larger;
-}
 .DefaultTitle.is-disabled {
   color: rgba($cTypography-paragraphs, 0.4);
 }

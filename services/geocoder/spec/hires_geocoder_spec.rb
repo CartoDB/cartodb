@@ -39,7 +39,17 @@ describe CartoDB::HiresGeocoder do
       @geocoder.run
       @geocoder.status.should == 'completed'
     end
+  end
 
+  describe '#process_row' do
+    it 'increments the number of processed rows by one when called' do
+      output_csv_mock = mock
+      input_row = {'searchtext': 'olakase'}
+      @geocoder.expects(:geocode_text).once.returns(MOCK_COORDINATES)
+      @geocoder.processed_rows.should == 0
+      @geocoder.send(:process_row)
+      @geocoder.processed_rows.should == 1
+    end
   end
 
   def path_to(filepath = '')

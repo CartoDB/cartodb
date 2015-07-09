@@ -238,14 +238,6 @@ $sStickyHeight: 97px;
 .Dialog-expandedSubContentInner {
   position: relative; // necessary to position subHeader properly
 }
-.Dialog-stickySubHeader {
-  position: fixed;
-  background-color: $cStructure-grayBkg;
-  padding: $sMargin-group 0;
-  border-bottom: 1px solid $cStructure-mainLine;
-  width: $sLayout-width;
-  z-index: 100; // for underlying content not to be visible
-}
 .Dialog-body--expanded.is-expandedWithSubHeader {
   padding-top: $sStickyHeight + $sMargin-group;
 }
@@ -260,6 +252,15 @@ $sStickyHeight: 97px;
   bottom: 0;
   width: 100%;
   height: $sStickyHeight;
+}
+.Dialog-contentSubHeader {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+  width: 100%;
+  padding-top: $sMargin-group;
+  padding-bottom: $sMargin-group;
+  border-bottom: 1px solid $cStructure-mainLine;
 }
 
 @include keyframes(fade-and-scale-in) {

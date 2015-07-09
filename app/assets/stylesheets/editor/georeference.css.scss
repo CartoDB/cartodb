@@ -4,7 +4,7 @@
 @import "../variables/progress-bar";
 
 $sIcon: 70px;
-$sWidth: 636px;
+$sWidth: 681px;
 
 .Georeference-content {
   // Should match the width as the .Filters-type container has with the current set of tabs,
@@ -69,7 +69,7 @@ $sWidth: 636px;
   border-top: 1px solid $cStructure-mainLine;
 }
 .Georeference-estimation {
-  width: 340px;
+  width: 380px;
   @include display-flex();
   @include justify-content(flex-start, start);
   @include align-items(center, center);

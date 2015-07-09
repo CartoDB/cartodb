@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: 580c60a9ca5f54ed77ccd6c96caab4a738abf4aa
+// sha: 76d156aadb997734ade33eb0dc999c1a7f91821c
 (function() {
   var root = this;
 
@@ -32806,8 +32806,10 @@ CartoDBSubLayer.prototype = _.extend({}, SubLayerBase.prototype, {
     }
 
     if (this.get('raster')) {
+      json.options.raster = true;
       json.options.geom_column = "the_raster_webmercator";
       json.options.geom_type = "raster";
+      json.options.raster_band = this.get('raster_band') || 0;
       // raster needs 2.3.0 to work
       json.options.cartocss_version = this.get('cartocss_version') || '2.3.0';
     }
@@ -39227,7 +39229,7 @@ var Vis = cdb.core.View.extend({
 
 cdb.vis.INFOWINDOW_TEMPLATE = {
   light: [
-    '<div class="cartodb-popup">',
+    '<div class="cartodb-popup v2">',
     '<a href="#close" class="cartodb-popup-close-button close">x</a>',
     '<div class="cartodb-popup-content-wrapper">',
       '<div class="cartodb-popup-content">',
@@ -41000,8 +41002,8 @@ Layers.register('torque', function(vis, data) {
         'stats as (', 
            'select count(distinct({{column}})) as uniq, ',
            '       count(*) as cnt, ',
-           '       sum(case when {{column}} is null then 1 else 0 end)::numeric as null_count, ',
-           '       sum(case when {{column}} is null then 1 else 0 end)::numeric / count(*)::numeric as null_ratio, ',
+           '       sum(case when COALESCE(NULLIF({{column}},\'\')) is null then 1 else 0 end)::numeric as null_count, ',
+           '       sum(case when COALESCE(NULLIF({{column}},\'\')) is null then 1 else 0 end)::numeric / count(*)::numeric as null_ratio, ',
            // '       CDB_DistinctMeasure(array_agg({{column}}::text)) as cat_weight ',
            '       (SELECT max(cumperc) weight FROM c) As skew ',
            'from ({{sql}}) __wrap',
@@ -41024,7 +41026,9 @@ Layers.register('torque', function(vis, data) {
           type: 'string',
           hist: _(s).map(function(row) {
             var r = row.match(/\((.*),(\d+)/);
-            return [r[1], +r[2]];
+            var name = r[1];
+            name = name.replace(/^"(.+(?="$))"$/, '$1'); // replace surrounding quotes
+            return [name, +r[2]];
           }),
           distinct: row.uniq,
           count: row.cnt,
@@ -41041,8 +41045,9 @@ Layers.register('torque', function(vis, data) {
       'with minimum as (',
         'SELECT min({{column}}) as start_time FROM ({{sql}}) _wrap), ',
       'maximum as (SELECT max({{column}}) as end_time FROM ({{sql}}) _wrap), ',
+      'null_ratio as (SELECT sum(case when {{column}} is null then 1 else 0 end)::numeric / count(*)::numeric as null_ratio FROM ({{sql}}) _wrap), ',
       'moments as (SELECT count(DISTINCT {{column}}) as moments FROM ({{sql}}) _wrap)',
-      'SELECT * FROM minimum, maximum, moments'
+      'SELECT * FROM minimum, maximum, moments, null_ratio'
     ];
     var query = Mustache.render(s.join('\n'), {
       column: column,
@@ -41063,7 +41068,8 @@ Layers.register('torque', function(vis, data) {
         start_time: s,
         end_time: e,
         range: e - s,
-        steps: steps
+        steps: steps,
+        null_ratio: row.null_ratio
       });
     });
   }

@@ -256,6 +256,9 @@ module CartoDB
           if ogr2ogr.exit_code == 256 && ogr2ogr.command_output =~ /Unable to open(.*)with the following drivers/
             raise UnsupportedFormatError.new(job.logger)
           end
+          if ogr2ogr.exit_code == 256 && ogr2ogr.command_output =~ /invalid byte sequence for encoding/
+            raise EncodingError.new(job.logger)
+          end
           raise LoadError.new(job.logger)
         end
       end

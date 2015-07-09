@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: e37e6c65e501303b65cb2dc0b2a3d4f2035835d0
+// sha: 3332b1692c6459327d3fe6782c512261850ed009
 (function() {
   var root = this;
 
@@ -41370,7 +41370,7 @@ var CSS = {
         tableID + " {",
         '  marker-width: 3;',
         '  marker-fill-opacity: 0.8;',
-        '  marker-fill: #FEE391; ',
+        '  marker-fill: #FF6347; ',
         '  comp-op: "lighten";',
         '  [value > 2] { marker-fill: #FEC44F; }',
         '  [value > 3] { marker-fill: #FE9929; }',

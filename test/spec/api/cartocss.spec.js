@@ -1,4 +1,4 @@
-fdescribe("cartocss generators", function(){
+describe("cartocss generators", function(){
 	beforeAll(function(){
 		this.query = 'SELECT * FROM testable';
 	})

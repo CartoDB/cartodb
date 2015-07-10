@@ -376,8 +376,8 @@
         'stats as (', 
            'select count(distinct({{column}})) as uniq, ',
            '       count(*) as cnt, ',
-           '       sum(case when {{column}} is null then 1 else 0 end)::numeric as null_count, ',
-           '       sum(case when {{column}} is null then 1 else 0 end)::numeric / count(*)::numeric as null_ratio, ',
+           '       sum(case when COALESCE(NULLIF({{column}},\'\')) is null then 1 else 0 end)::numeric as null_count, ',
+           '       sum(case when COALESCE(NULLIF({{column}},\'\')) is null then 1 else 0 end)::numeric / count(*)::numeric as null_ratio, ',
            // '       CDB_DistinctMeasure(array_agg({{column}}::text)) as cat_weight ',
            '       (SELECT max(cumperc) weight FROM c) As skew ',
            'from ({{sql}}) __wrap',
@@ -393,6 +393,11 @@
         sql: sql
       });
 
+      var normalizeName = function(str) {
+        var normalizedStr = str.replace(/^"(.+(?="$))?"$/, '$1'); // removes surrounding quotes
+        return normalizedStr.replace(/""/g, '"'); // removes duplicated quotes
+      }
+
       this.execute(query, function(data) {
         var row = data.rows[0];
         var s = array_agg(row.array_agg);
@@ -400,7 +405,8 @@
           type: 'string',
           hist: _(s).map(function(row) {
             var r = row.match(/\((.*),(\d+)/);
-            return [r[1], +r[2]];
+            var name = normalizeName(r[1]);
+            return [name, +r[2]];
           }),
           distinct: row.uniq,
           count: row.cnt,
@@ -417,8 +423,9 @@
       'with minimum as (',
         'SELECT min({{column}}) as start_time FROM ({{sql}}) _wrap), ',
       'maximum as (SELECT max({{column}}) as end_time FROM ({{sql}}) _wrap), ',
+      'null_ratio as (SELECT sum(case when {{column}} is null then 1 else 0 end)::numeric / count(*)::numeric as null_ratio FROM ({{sql}}) _wrap), ',
       'moments as (SELECT count(DISTINCT {{column}}) as moments FROM ({{sql}}) _wrap)',
-      'SELECT * FROM minimum, maximum, moments'
+      'SELECT * FROM minimum, maximum, moments, null_ratio'
     ];
     var query = Mustache.render(s.join('\n'), {
       column: column,
@@ -439,7 +446,39 @@
         start_time: s,
         end_time: e,
         range: e - s,
-        steps: steps
+        steps: steps,
+        null_ratio: row.null_ratio
+      });
+    });
+  }
+
+  SQL.prototype.describeBoolean = function(sql, column, options, callback){
+    var s = [
+      'with stats as (',
+            'select count(distinct({{column}})) as uniq,',
+                   'count(*) as cnt',
+              'from ({{sql}}) _wrap ',
+        '),',
+      'null_ratio as (',
+        'SELECT sum(case when {{column}} is null then 1 else 0 end)::numeric / count(*)::numeric as null_ratio FROM ({{sql}}) _wrap), ',
+      'true_ratio as (',
+        'SELECT sum(case when {{column}} is true then 1 else 0 end)::numeric / count(*)::numeric as true_ratio FROM ({{sql}}) _wrap) ',
+      'SELECT * FROM true_ratio, null_ratio, stats'
+    ];
+    var query = Mustache.render(s.join('\n'), {
+      column: column,
+      sql: sql
+    });
+
+    this.execute(query, function(data) {
+      var row = data.rows[0];
+      
+      callback({
+        type: 'boolean',
+        null_ratio: row.null_ratio,
+        true_ratio: row.true_ratio,
+        distinct: row.uniq,
+        count: row.cnt
       });
     });
   }
@@ -522,7 +561,7 @@
         'params as (select min(a) as min, (max(a) - min(a)) / 7 as diff from ( select {{column}} as a from ({{sql}}) _table_sql where {{column}} is not null ) as foo ),',
          'histogram as (',
            'select array_agg(row(bucket, range, freq)) as hist from (',
-           'select width_bucket({{column}}, min-0.01*abs(min), max+0.01*abs(max), 100) as bucket,',
+           'select CASE WHEN uniq > 1 then width_bucket({{column}}, min-0.01*abs(min), max+0.01*abs(max), 100) ELSE 1 END as bucket,',
                   'numrange(min({{column}})::numeric, max({{column}})::numeric) as range,',
                   'count(*) as freq',
              'from ({{sql}}) _w, stats',
@@ -605,6 +644,8 @@
           self.describeGeom(sql, column, options, callback);
         } else if (type === 'date') {
           self.describeDate(sql, column, options, callback);
+        } else if (type === 'boolean') {
+          self.describeBoolean(sql, column, options, callback);
         } else {
           callback(new Error("column type is not supported"));
         }

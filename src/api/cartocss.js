@@ -194,17 +194,22 @@ function guessMap(sql, tableName, column, stats) {
   var metadata = []
 
   if (stats.type == 'number') {
+    var visualizationType = "bubble";
+    var visFunction = CSS.choropleth;
+    if(geometryType === 'point'){
+      visFunction = CSS.bubble;
+    }
     if (['A','U'].indexOf(stats.dist_type) != -1) {
       // apply divergent scheme
-      css = CSS.choropleth(stats.jenks, tableName, columnName, geometryType, ramps.divergent);
+      css = visFunction(stats.jenks, tableName, columnName, geometryType, ramps.divergent);
     } else if (stats.dist_type === 'F') {
-      css = CSS.choropleth(stats.equalint, tableName, columnName, geometryType, ramps.red);
+      css = visFunction(stats.equalint, tableName, columnName, geometryType, ramps.red);
     } else {
       if (stats.dist_type === 'J') {
-        css = CSS.choropleth(stats.headtails, tableName, columnName, geometryType, ramps.green);
+        css = visFunction(stats.headtails, tableName, columnName, geometryType, ramps.green);
       } else {
         var inverse_ramp = (_.clone(ramps.red)).reverse();
-        css = CSS.choropleth(stats.headtails, tableName, columnName, geometryType, inverse_ramp);
+        css = visFunction(stats.headtails, tableName, columnName, geometryType, inverse_ramp);
       }
     }
 

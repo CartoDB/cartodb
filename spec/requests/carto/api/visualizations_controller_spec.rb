@@ -1249,6 +1249,14 @@ describe Carto::Api::VisualizationsController do
         ::JSON.parse(last_response.body).keys.length.should > 1
       end
 
+      it 'returns 200 if subdomain is empty' do
+        viz = api_visualization_creation(@user, @headers, { privacy: Visualization::Member::PRIVACY_PUBLIC, type: Visualization::Member::TYPE_DERIVED })
+        # INFO: I couldn't get rid of subdomain, so I stubbed
+        CartoDB.stubs(:extract_subdomain).returns('')
+        get api_v2_visualizations_vizjson_url(id: viz.id)
+        last_response.status.should == 200
+      end
+
       it 'returns 200 if subdomain matches' do
         viz = api_visualization_creation(@user, @headers, { privacy: Visualization::Member::PRIVACY_PUBLIC, type: Visualization::Member::TYPE_DERIVED })
         get api_v2_visualizations_vizjson_url(user_domain: @user.username, id: viz.id)

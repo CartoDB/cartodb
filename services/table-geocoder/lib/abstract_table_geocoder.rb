@@ -45,8 +45,23 @@ module CartoDB
       false
     end
 
+    def reset_cartodb_georef_status
+      if has_valid_cartodb_georef_status_column?
+        set_georef_status_to_null
+      end
+    end
+
 
     protected
+
+    def has_valid_cartodb_georef_status_column?
+      schema = connection.schema(@sequel_qualified_table_name, reload: true)
+      schema.select {|col| col[0] == :cartodb_georef_status && col[1][:type] == :boolean}.present?
+    end
+
+    def set_georef_status_to_null
+      connection.select.from(@sequel_qualified_table_name).update(:cartodb_georef_status => nil)
+    end
 
     def add_georef_status_column
       connection.run(%Q{

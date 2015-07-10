@@ -133,6 +133,30 @@ var CSS = {
         '}'
     ].join('\n');
     return css;
+  },
+
+  bubble: function(quartiles, tableName, prop, geometryType, ramp) {
+    var css = getDefaultCSSForGeometryType("point").join('\n');
+
+    var min = 10;
+    var max = 30;
+
+    var values = [];
+
+    var NPOINS = 10;
+    for(var i = 0; i < NPOINS; ++i) {
+      var t = i/(NPOINS-1);
+      values.push(min + t*(max - min));
+    }
+
+    // generate carto
+    for(var i = NPOINS - 1; i >= 0; --i) {
+      if(quartiles[i] !== undefined && quartiles[i] != null) {
+        css += "\n#" + tableName +" [ " + prop + " <= " + quartiles[i] + "] {\n"
+        css += "   marker-width: " + values[i].toFixed(1) + ";\n}"
+      }
+    }
+    return css;
   }
 }
 

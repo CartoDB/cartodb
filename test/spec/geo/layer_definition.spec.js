@@ -295,12 +295,12 @@ describe("LayerDefinition", function() {
       expect(layerDefinition.getLayerNumberByIndex(10)).toEqual(-1);
     });
 
-    it("should return -1 if layer has no options", function() {
+    it("should return -1 if layer is hidden", function() {
       var layer_definition = {
         version: '1.0.0',
         stat_tag: 'vis_id',
         layers: [
-          { }
+          { options: { 'hidden': true } }
         ]
       };
 
@@ -309,12 +309,15 @@ describe("LayerDefinition", function() {
       expect(layerDefinition.getLayerNumberByIndex(0)).toEqual(-1);
     });
 
-    it("should return -1 if layer is hidden", function() {
+    it("should return -1 if layer is not visible", function() {
       var layer_definition = {
         version: '1.0.0',
         stat_tag: 'vis_id',
         layers: [
-          { options: { 'hidden': true } }
+          { 
+            visible: false,
+            options: { }
+          }
         ]
       };
 

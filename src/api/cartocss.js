@@ -136,7 +136,7 @@ var CSS = {
   },
 
   bubble: function(quartiles, tableName, prop, geometryType, ramp) {
-    var css = getDefaultCSSForGeometryType("point").join('\n');
+    var css = "/** bubble visualization */\n" + getDefaultCSSForGeometryType("point").join('\n');
 
     var min = 10;
     var max = 30;

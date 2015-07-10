@@ -174,6 +174,25 @@ function guess(o, callback) {
   })
 }
 
+
+function generateChoropleth(tableName, columnName, stats, geometryType) {
+  if (['A','U'].indexOf(stats.dist_type) != -1) {
+    css = CSS.choropleth(stats.jenks, tableName, columnName, geometryType, ramps.divergent);
+  } else if (stats.dist_type === 'F') {
+    css = CSS.choropleth(stats.equalint, tableName, columnName, geometryType, ramps.red);
+  } else {
+    if (stats.dist_type === 'J' && stats.headtails) {
+      css = CSS.choropleth(stats.headtails, tableName, columnName, geometryType, ramps.green);
+    } else if (stats.headtails){
+      var inverse_ramp = (_.clone(ramps.red)).reverse();
+      css = CSS.choropleth(stats.headtails, tableName, columnName, geometryType, inverse_ramp);
+    } else {
+      return false;
+    }
+  }
+  return { css: css };
+}
+
 function guessMap(sql, tableName, column, stats) {
   var geometryType = column.get("geometry_type");
   var bbox =  column.get("bbox");
@@ -182,24 +201,32 @@ function guessMap(sql, tableName, column, stats) {
   var css = null
   var type = stats.type;
   var metadata = []
+  var response = {};
 
   if (stats.type === 'number') {
-    if (['A','U'].indexOf(stats.dist_type) != -1) {
-      // apply divergent scheme
-      css = CSS.choropleth(stats.jenks, tableName, columnName, geometryType, ramps.divergent);
-    } else if (stats.dist_type === 'F') {
-      css = CSS.choropleth(stats.equalint, tableName, columnName, geometryType, ramps.red);
-    } else {
-      if (stats.dist_type === 'J' && stats.headtails) {
-        css = CSS.choropleth(stats.headtails, tableName, columnName, geometryType, ramps.green);
-      } else if (stats.headtails){
-        var inverse_ramp = (_.clone(ramps.red)).reverse();
-        css = CSS.choropleth(stats.headtails, tableName, columnName, geometryType, inverse_ramp);
-      } else {
-        return false;
-      }
 
+    var distinctPercentage = (stats.distinct / stats.count) * 100;
+
+    if (stats.weight > 0.5 || distinctPercentage < 25) {
+
+      if (distinctPercentage < 1) {
+          response = generateChoropleth(tableName, columnName, stats, geometryType, ramps); // bubble
+          css = response.css;
+          // category
+      } else {
+        if (geometryType === "point") {
+          response = generateChoropleth(tableName, columnName, stats, geometryType, ramps); // bubble
+          css = response.css;
+        } else {
+          response = generateChoropleth(tableName, columnName, stats, geometryType, ramps);
+          css = response.css;
+        }
+      }
+    } else {
+      response = generateChoropleth(tableName, columnName, stats, geometryType, ramps);
+      css = response.css;
     }
+
 
   } else if (stats.type === 'string') {
 
@@ -224,19 +251,30 @@ function guessMap(sql, tableName, column, stats) {
 
     css      = CSS.category(cats, tableName, columnName, geometryType, options);
     metadata = CSS.categoryMetadata(cats, options);
-
   }
+
+  var properties = {
+    sql: sql,
+    geometryType: geometryType,
+    column: columnName,
+    bbox: bbox,
+    stats: stats,
+    type: type,
+    visualizationType: visualizationType
+  };
 
   if (css) {
-    if (metadata) {
-      return { sql: sql, css: css, metadata: metadata, geometryType: geometryType, column: columnName, bbox: bbox, stats: stats, type: type, visualizationType: visualizationType  };
-    } else {
-      return { sql: sql, css: css, geometryType: geometryType, column: columnName, bbox: bbox, stats: stats, type: type, visualizationType: visualizationType  };
-    }
-  } else {
-    return { sql: sql, css: null, geometryType: geometryType, column: columnName, bbox: bbox, weight: -100, type: type, visualizationType: visualizationType };
+    properties.css = css;
   }
+
+  if (metadata) {
+    properties.metadata = metadata;
+  }
+
+  return properties;
+
 }
+
 /*
 CartoCSS.guess({
   user: '  '

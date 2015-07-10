@@ -2759,12 +2759,12 @@ function hasUnicode(string) {
     return (/[^\u0000-\u00ff]/).test(string);
 }
 
-function Proxy(src, proxyUrl, document) {
-    if (!proxyUrl) {
+function Proxy(src, proxy, document) {
+    if (!proxy.url) {
         return Promise.reject("No proxy configured");
     }
     var callback = createCallback(supportsCORS);
-    var url = createProxyUrl(proxyUrl, src, callback);
+    var url = createProxyUrl(proxy.url, src, callback);
 
     return supportsCORS ? XHR(url) : (jsonp(document, url, callback).then(function(response) {
         return decode64(response.content);
@@ -2775,9 +2775,9 @@ var proxyCount = 0;
 var supportsCORS = ('withCredentials' in new XMLHttpRequest());
 var supportsCORSImage = ('crossOrigin' in new Image());
 
-function ProxyURL(src, proxyUrl, document) {
+function ProxyURL(src, proxy, document) {
     var callback = createCallback(supportsCORSImage);
-    var url = createProxyUrl(proxyUrl, src, callback);
+    var url = createProxyUrl(proxy, src, callback);
     return (supportsCORSImage ? Promise.resolve(url) : jsonp(document, url, callback).then(function(response) {
         return "data:" + response.type + ";base64," + response.content;
     }));
@@ -2807,8 +2807,12 @@ function createCallback(useCORS) {
     return !useCORS ? "html2canvas_" + Date.now() + "_" + (++proxyCount) + "_" + Math.round(Math.random() * 100000) : "";
 }
 
-function createProxyUrl(proxyUrl, src, callback) {
-    return proxyUrl + "?url=" + encodeURIComponent(src) + (callback.length ? "&callback=html2canvas.proxy." + callback : "");
+function createProxyUrl(proxy, src, callback) {
+    var url = proxy.url + "?url=" + encodeURIComponent(src) + (callback.length ? "&callback=html2canvas.proxy." + callback : "");
+    if (proxy.api_key) {
+      url += "&api_key=" + proxy.api_key;
+    }
+    return url;
 }
 
 function ProxyImageContainer(src, proxy) {

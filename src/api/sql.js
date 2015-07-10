@@ -596,7 +596,7 @@
           type: 'number',
           cat_hist: 
             _(h).map(function(row) {
-            var r = row.match(/\((\d+),(\d+)/);
+            var r = row.match(/\((.*),(\d+)/);
             return [+r[1], +r[2]];
           }),
           hist: _(s).map(function(row) {

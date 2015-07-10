@@ -46,14 +46,14 @@ module CartoDB
     end
 
     def reset_cartodb_georef_status
-      add_georef_status_column
+      ensure_georef_status_colummn_valid
       set_georef_status_to_null
     end
 
 
     protected
 
-    def add_georef_status_column
+    def ensure_georef_status_colummn_valid
       connection.run(%Q{
           ALTER TABLE #{@qualified_table_name}
           ADD COLUMN cartodb_georef_status BOOLEAN DEFAULT NULL

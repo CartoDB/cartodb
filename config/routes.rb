@@ -292,17 +292,17 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:table_id/records/:id'       => 'records#show',      as: :api_v1_1_tables_records_show,   constraints: { table_id: /[^\/]+/ }
 
     # Imports
-    get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/imports'                          => 'imports#index',                       as: :api_v1_1_imports_index
-    get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/imports/:id'                      => 'imports#show',                        as: :api_v1_1_imports_show
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1/imports'                          => 'imports#index',                       as: :api_v1_imports_index
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1/imports/:id'                      => 'imports#show',                        as: :api_v1_imports_show
 
     # Import services
-    get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/imports/service/:id/token_valid'         => 'imports#service_token_valid?',        as: :api_v1_1_imports_service_token_valid
-    get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/imports/service/:id/list_files'          => 'imports#list_files_for_service',      as: :api_v1_1_imports_service_list_files
-    get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/imports/service/:id/auth_url'            => 'imports#get_service_auth_url',        as: :api_v1_1_imports_service_auth_url
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1/imports/service/:id/token_valid'         => 'imports#service_token_valid?',        as: :api_v1_imports_service_token_valid
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1/imports/service/:id/list_files'          => 'imports#list_files_for_service',      as: :api_v1_imports_service_list_files
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1/imports/service/:id/auth_url'            => 'imports#get_service_auth_url',        as: :api_v1_imports_service_auth_url
     # TODO: deprecate?
-    get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/imports/service/:id/validate_code/:code' => 'imports#validate_service_oauth_code', as: :api_v1_1_imports_service_validate_code
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1/imports/service/:id/validate_code/:code' => 'imports#validate_service_oauth_code', as: :api_v1_imports_service_validate_code
     # Must be GET verb despite altering state
-    get     '(/user/:user_domain)(/u/:user_domain)/api/v1_1/imports/service/:id/oauth_callback/'    => 'imports#service_oauth_callback',      as: :api_v1_1_imports_service_oauth_callback
+    get     '(/user/:user_domain)(/u/:user_domain)/api/v1/imports/service/:id/oauth_callback/'    => 'imports#service_oauth_callback',      as: :api_v1_imports_service_oauth_callback
 
     # Custom layers grouped by user
     get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/users/:user_id/layers'              => 'layers#custom_layers_by_user',   as: :api_v1_1_users_layers_index
@@ -388,18 +388,13 @@ CartoDB::Application.routes.draw do
     post '(/user/:user_domain)(/u/:user_domain)/api/v1/uploads' => 'uploads#create', as: :api_v1_uploads_create
 
     # Imports
-    post   '(/user/:user_domain)(/u/:user_domain)/api/v1/imports'                          => 'imports#create',                      as: :api_v1_imports_create
-    get    '(/user/:user_domain)(/u/:user_domain)/api/v1/imports/:id'                      => 'imports#show',                        as: :api_v1_imports_show
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/imports'                          => 'imports#index',                       as: :api_v1_imports_index
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1/imports/:id'                      => 'imports#show',                        as: :api_v1_imports_show
+
+    post   '(/user/:user_domain)(/u/:user_domain)/api/v1/imports'                          => 'imports#create',                      as: :api_v1_imports_create
 
     # Import services
-    get    '(/user/:user_domain)(/u/:user_domain)/api/v1/imports/service/:id/token_valid'         => 'imports#service_token_valid?',        as: :api_v1_imports_service_token_valid
-    get    '(/user/:user_domain)(/u/:user_domain)/api/v1/imports/service/:id/list_files'          => 'imports#list_files_for_service',      as: :api_v1_imports_service_list_files
-    get    '(/user/:user_domain)(/u/:user_domain)/api/v1/imports/service/:id/auth_url'            => 'imports#get_service_auth_url',        as: :api_v1_imports_service_auth_url
-    get    '(/user/:user_domain)(/u/:user_domain)/api/v1/imports/service/:id/validate_code/:code' => 'imports#validate_service_oauth_code', as: :api_v1_imports_service_validate_code
     delete '(/user/:user_domain)(/u/:user_domain)/api/v1/imports/service/:id/invalidate_token'    => 'imports#invalidate_service_token',    as: :api_v1_imports_service_invalidate_token
-    # Must be GET verb despite altering state
-    get     '(/user/:user_domain)(/u/:user_domain)/api/v1/imports/service/:id/oauth_callback/'    => 'imports#service_oauth_callback',      as: :api_v1_imports_service_oauth_callback
 
     # User layers
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/users/:user_id/layers'     => 'layers#index',   as: :api_v1_users_layers_index

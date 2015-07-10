@@ -83,6 +83,7 @@ module.exports = {
           "src/vis/overlays.js",
           "src/api/layers.js",
           "src/api/sql.js",
+          "src/api/cartocss.js",
           "src/api/vis.js"
         ],
         options: {

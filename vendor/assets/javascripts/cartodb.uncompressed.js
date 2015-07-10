@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: 81cd95fab9acc8d1eab1c443b66b9b1618cddb51
+// sha: 404cfc3392856efe151d180e1b44668751f7dc39
 (function() {
   var root = this;
 
@@ -41222,7 +41222,7 @@ Layers.register('torque', function(vis, data) {
           type: 'number',
           cat_hist: 
             _(h).map(function(row) {
-            var r = row.match(/\((\d+),(\d+)/);
+            var r = row.match(/\((.*),(\d+)/);
             return [+r[1], +r[2]];
           }),
           hist: _(s).map(function(row) {

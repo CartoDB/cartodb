@@ -6,6 +6,9 @@ var root = this;
 root.cartodb = root.cartodb || {};
 
 var ramps = {
+  bool: [
+    ['#5CA2D1', '#0F3B82', '#CCCCCC']
+  ],
   green:  ['#EDF8FB', '#D7FAF4', '#CCECE6', '#66C2A4', '#41AE76', '#238B45', '#005824'],
   blue:  ['#FFFFCC', '#C7E9B4', '#7FCDBB', '#41B6C4', '#1D91C0', '#225EA8', '#0C2C84'],
   pink: ['#F1EEF6', '#D4B9DA', '#C994C7', '#DF65B0', '#E7298A', '#CE1256', '#91003F'],
@@ -69,35 +72,47 @@ var CSS = {
     return css;
   },
 
-  categoryMetadata: function(cats, prop, geometryType) {
+  categoryMetadata: function(cats, options) {
     var metadata = [];
+
+    var ramp = (options && options.ramp) ? options.ramp : ramps.category;
+    var type = options && options.type ? options.type : "string";
 
     for (var i = cats.length - 1; i >= 0; --i) {
       var cat = cats[i];
-      if (cat !== undefined && cat != null) {
-        metadata.push({ title: cat, title_type: "string", value_type: 'color', color: ramps.category[i] });
+      if (cat !== undefined && ((type === 'string' && cat != null) || (type !== 'string'))) {
+        metadata.push({ title: cat, title_type: type, value_type: 'color', color: ramp[i] });
       }
     }
 
     return metadata;
   },
 
-  category: function(cats, tableName, prop, geometryType) {
+  category: function(cats, tableName, prop, geometryType, options) {
     var attr = geoAttr(geometryType);
     var tableID = "#" + tableName;
     var ramp = ramps.category;
+    var name, value;
+
+    var type = options && options.type ? options.type : "string";
+    var ramp = (options && options.ramp) ? options.ramp : ramps.category;
 
     var defaultCSS = getDefaultCSSForGeometryType(geometryType);
 
-    var css = "/** category visualization */\n\n" + tableID + " {\n  " + attr + ": " + ramps.category[0] + ";\n" + defaultCSS.join("\n") + "\n}\n";
+    var css = "/** category visualization */\n\n" + tableID + " {\n  " + attr + ": " + ramp[0] + ";\n" + defaultCSS.join("\n") + "\n}\n";
 
     for (var i = cats.length - 1; i >= 0; --i) {
 
       var cat  = cats[i];
-      var name = cat.replace(/\n/g,'\\n').replace(/\"/g, "\\\"");
-      var value = "\"" + name + "\"";
 
-      if (cat !== undefined && cat != null) {
+      if (type === 'string') {
+        name = cat.replace(/\n/g,'\\n').replace(/\"/g, "\\\"");
+        value = "\"" + name + "\"";
+      } else {
+        value = cat;
+      }
+
+      if (cat !== undefined && ((type === 'string' && cat != null) || (type !== 'string'))) {
         css += "\n" + tableID + "[" + prop + "=" + value + "] {\n";
         css += "  " + attr  + ":" + ramp[i] + ";\n}"
       }
@@ -162,9 +177,9 @@ var CSS = {
 
 function guessCss(sql, geometryType, column, stats) {
   var css = null
-  if (stats.type == 'number') {
+  if (stats.type === 'number') {
     css =  CSS.choropleth(stats.quantiles, column, geometryType, ramps.red);
-  } else if(stats.type == 'string') {
+  } else if(stats.type === 'string') {
     css = CSS.category(stats.hist.slice(0, ramps.cat.length).map(function(r) { return r[0]; }), column, geometryType)
   }
   return css;
@@ -192,32 +207,46 @@ function guessMap(sql, tableName, column, stats) {
   var css = null
   var type = stats.type;
   var metadata = []
+  var distinctPercentage = (stats.distinct / stats.count) * 100;
 
-  if (stats.type == 'number') {
-    var visualizationType = "bubble";
-    var visFunction = CSS.choropleth;
-    if(geometryType === 'point'){
-      visFunction = CSS.bubble;
-    }
-    if (['A','U'].indexOf(stats.dist_type) != -1) {
-      // apply divergent scheme
-      css = visFunction(stats.jenks, tableName, columnName, geometryType, ramps.divergent);
-    } else if (stats.dist_type === 'F') {
-      css = visFunction(stats.equalint, tableName, columnName, geometryType, ramps.red);
-    } else {
-      if (stats.dist_type === 'J') {
-        css = visFunction(stats.headtails, tableName, columnName, geometryType, ramps.green);
+  if (stats.type === 'number') {
+
+    if (stats.weight > 0.5 || distinctPercentage < 25) {
+
+      if (distinctPercentage < 1) {
+        visualizationType   = "category";
+        var cats = stats.cat_hist.slice(0, ramps.category.length).map(function(r) { return r[0]; });
+        css      = CSS.category(cats, tableName, columnName, geometryType, { type: stats.type });
+        metadata = CSS.categoryMetadata(cats, { type: stats.type });
+
+      } else if (geometryType === 'point'){
+        visualizationType = "bubble";
+        visFunction = CSS.bubble;
       } else {
-        var inverse_ramp = (_.clone(ramps.red)).reverse();
-        css = visFunction(stats.headtails, tableName, columnName, geometryType, inverse_ramp);
+
+        var visFunction = CSS.choropleth;
+        if (['A','U'].indexOf(stats.dist_type) != -1) {
+          // apply divergent scheme
+          css = visFunction(stats.jenks, tableName, columnName, geometryType, ramps.divergent);
+        } else if (stats.dist_type === 'F') {
+          css = visFunction(stats.equalint, tableName, columnName, geometryType, ramps.red);
+        } else {
+          if (stats.dist_type === 'J') {
+            css = visFunction(stats.headtails, tableName, columnName, geometryType, ramps.green);
+          } else {
+            var inverse_ramp = (_.clone(ramps.red)).reverse();
+            css = visFunction(stats.headtails, tableName, columnName, geometryType, inverse_ramp);
+          }
+        }
       }
     }
 
-  } else if (stats.type == 'string') {
+  } else if (stats.type === 'string') {
 
     visualizationType   = "category";
-    css      = CSS.category(stats.hist.slice(0, ramps.category.length).map(function(r) { return r[0]; }), tableName, columnName, geometryType);
-    metadata = CSS.categoryMetadata(stats.hist.slice(0, ramps.category.length).map(function(r) { return r[0]; }), tableName, columnName, geometryType);
+    var cats = stats.hist.slice(0, ramps.category.length).map(function(r) { return r[0]; });
+    css      = CSS.category(cats, tableName, columnName, geometryType);
+    metadata = CSS.categoryMetadata(cats);
 
   } else if (stats.type === 'date') {
     visualizationType = "torque";
@@ -225,20 +254,35 @@ function guessMap(sql, tableName, column, stats) {
 
   } else if (stats.type === 'boolean') {
     visualizationType   = "category";
-    css      = CSS.category(['true', 'false'], tableName, columnName, geometryType);
-    metadata = CSS.categoryMetadata(['true', 'false'], tableName, columnName, geometryType);
+    var ramp = _.shuffle(ramps.bool)[0];
+    var cats = ['true', 'false', null];
+    var options = { type: stats.type, ramp: ramp };
+    css      = CSS.category(cats, tableName, columnName, geometryType, options);
+    metadata = CSS.categoryMetadata(cats, options);
   }
 
+  var properties = {
+    sql: sql, geometryType: geometryType, column: columnName, bbox: bbox, type: type, visualizationType: visualizationType
+  };
+
   if (css) {
-    if (metadata) {
-      return { sql: sql, css: css, metadata: metadata, geometryType: geometryType, column: columnName, bbox: bbox, stats: stats, type: type, visualizationType: visualizationType  };
-    } else {
-      return { sql: sql, css: css, geometryType: geometryType, column: columnName, bbox: bbox, stats: stats, type: type, visualizationType: visualizationType  };
-    }
+    properties.css = css;
   } else {
-    return { sql: sql, css: null, geometryType: geometryType, column: columnName, bbox: bbox, weight: -100, type: type, visualizationType: visualizationType };
+    properties.css = null;
+    properties.weight = -100;
   }
+
+  if (stats) {
+    properties.stats = stats;
+  }
+
+  if (metadata) {
+    properties.metadata = metadata;
+  }
+
+  return properties;
 }
+
 /*
 CartoCSS.guess({
   user: '  '

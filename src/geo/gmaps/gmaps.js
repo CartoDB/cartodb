@@ -228,8 +228,8 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
     pixelToLatLon: function(pos) {
       var latLng = this.projector.pixelToLatLng(new google.maps.Point(pos[0], pos[1]));
       return {
-        lat: latLng.k,
-        lng: latLng.D
+        lat: latLng.lat(),
+        lng: latLng.lng()
       }
     },
 

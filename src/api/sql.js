@@ -591,12 +591,11 @@
         callback({
           type: 'number',
           hist: _(s).map(function(row) {
-            var r = row.match(/\((.*),".(\d+),(\d+).",(\d+)/);
-            var range = null;
-            if (r) {
-              //range = [+r[2], +r[3]]
-            }
-            return null;//{ index: r[1], range: range, freq: +r[4] }
+            if(row.indexOf("empty") > -1) return;
+            var els = row.split('"');
+            return { index: els[0].replace(/\D/g,''), 
+                     range: els[1].split(",").map(function(d){return d.replace(/\D/g,'')}), 
+                     freq: els[2].replace(/\D/g,'') };
           }),
           stddev: row.stddev,
           null_ratio: row.null_ratio,

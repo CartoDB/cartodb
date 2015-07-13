@@ -183,6 +183,7 @@ WORKING_SPECS_10 = \
 	services/table-geocoder/spec/lib/abstract_table_geocoder_spec.rb \
 	services/geocoder/spec/hires_batch_geocoder_spec.rb \
 	services/geocoder/spec/hires_geocoder_spec.rb \
+	services/geocoder/spec/hires_geocoder_factory_spec.rb \
   $(NULL)
 
 CDB_PATH=lib/assets/javascripts/cdb

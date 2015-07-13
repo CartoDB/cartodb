@@ -48,7 +48,7 @@ module CartoDB
 
       def run(post_import_handler_instance=nil)
         @file_extension = source_file.extension.split('.').last
-        @importer_stats.gauge(%Q{loader.#{@file_extension}}, 1)
+        @importer_stats.increment(%Q{loader.#{@file_extension}})
         @importer_stats.timing('loader') do
 
           @post_import_handler = post_import_handler_instance
@@ -252,8 +252,7 @@ module CartoDB
         if ogr2ogr.command_output =~ /canceling statement due to statement timeout/i
           raise StatementTimeoutError.new(ogr2ogr.command_output, ERRORS_MAP[CartoDB::Importer2::StatementTimeoutError])
         end
-        if (ogr2ogr.command_output =~ /has no equivalent in encoding/ ||
-            ogr2ogr.command_output =~ /invalid byte sequence for encoding/) &&
+        if (ogr2ogr.command_output =~ /has no equivalent in encoding/ || ogr2ogr.command_output =~ /invalid byte sequence for encoding/) &&
             ogr2ogr.imported_rows == 0
           raise RowsEncodingColumnError.new(ogr2ogr.command_output)
         end

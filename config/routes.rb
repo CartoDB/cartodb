@@ -388,9 +388,6 @@ CartoDB::Application.routes.draw do
     post '(/user/:user_domain)(/u/:user_domain)/api/v1/uploads' => 'uploads#create', as: :api_v1_uploads_create
 
     # Imports
-    get    '(/user/:user_domain)(/u/:user_domain)/api/v1/imports'                          => 'imports#index',                       as: :api_v1_imports_index
-    get    '(/user/:user_domain)(/u/:user_domain)/api/v1/imports/:id'                      => 'imports#show',                        as: :api_v1_imports_show
-
     post   '(/user/:user_domain)(/u/:user_domain)/api/v1/imports'                          => 'imports#create',                      as: :api_v1_imports_create
 
     # Import services

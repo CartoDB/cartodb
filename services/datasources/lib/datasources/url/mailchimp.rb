@@ -43,8 +43,8 @@ module CartoDB
           @app_key = config.fetch('app_key')
           @app_secret = config.fetch('app_secret')
 
-          @http_timeout = config.fetch(:http_timeout)
-          @http_connect_timeout = config.fetch(:http_connect_timeout)
+          @http_timeout = config.fetch(:http_timeout, 600)
+          @http_connect_timeout = config.fetch(:http_connect_timeout, 60)
 
           service_name = service_name_for_user(DATASOURCE_NAME, @user)
           placeholder = CALLBACK_STATE_DATA_PLACEHOLDER.sub('user', @user.username).sub('service', service_name)
@@ -377,7 +377,7 @@ module CartoDB
                 if action["action"] == "open"
                   subscribers[subject] = true
                 end
-                opened_action = true 
+                opened_action = true
               }
             end
           }

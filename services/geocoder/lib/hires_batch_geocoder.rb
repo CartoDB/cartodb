@@ -11,6 +11,11 @@ module CartoDB
     DEFAULT_TIMEOUT = 5.hours
     POLLING_SLEEP_TIME = 5.seconds
 
+    # Generous timeouts, overriden for big files upload/download
+    HTTP_CONNECTION_TIMEOUT = 60
+    HTTP_REQUEST_TIMEOUT = 600
+
+
     # Options for the csv upload endpoint of the Batch Geocoder API
     UPLOAD_OPTIONS = {
       action: 'run',
@@ -78,7 +83,8 @@ module CartoDB
       response = http_client.post(
         api_url(UPLOAD_OPTIONS),
         body: File.open(input_file,"r").read,
-        headers: { "Content-Type" => "text/plain" }
+        headers: { "Content-Type" => "text/plain" },
+        timeout: 5.hours # more than generous timeout for big file upload
       )
       handle_api_error(response)
       @request_id = extract_response_field(response.body, '//Response/MetaInfo/RequestId')
@@ -121,12 +127,16 @@ module CartoDB
       results_filename = File.join(dir, "#{request_id}.zip")
       download_url = api_url({}, 'result')
 
-      request = http_client.request(download_url, method: :get)
+      request = http_client.request(
+        download_url,
+        method: :get,
+        timeout: 5.hours # generous timeout for download of results
+        )
 
       File.open(results_filename, 'wb') do |download_file|
 
         request.on_headers do |response|
-          if response.code != 200
+          if response.success? == false
             # TODO: better error handling
             raise 'Download request failed'
           end
@@ -137,7 +147,7 @@ module CartoDB
         end
 
         request.on_complete do |response|
-          if response.code != 200
+          if response.success? == false
             # TODO: better error handling
             raise 'Download request failed'
           end
@@ -158,7 +168,11 @@ module CartoDB
     end
 
     def http_client
-      @http_client ||= Carto::Http::Client.get('hires_batch_geocoder', log_requests: true)
+      @http_client ||= Carto::Http::Client.get('hires_batch_geocoder',
+        log_requests: true,
+        connecttimeout: HTTP_CONNECTION_TIMEOUT,
+        timeout: HTTP_REQUEST_TIMEOUT
+        )
     end
 
     def api_url(arguments, extra_components = nil)
@@ -178,7 +192,7 @@ module CartoDB
     end
 
     def handle_api_error(response)
-      raise "Geocoding API communication failure: #{extract_response_field(response.body, '//Details')}" if response.code != 200
+      raise "Geocoding API communication failure: #{extract_response_field(response.body, '//Details')}" if response.success? == false
     end
 
     def default_timeout

@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: d71da2d0fc39536e83ddd21bb51abc4e1203d620
+// sha: 7dee94bfe94ec26397418b24fb3ab4f49a2acb98
 (function() {
   var root = this;
 
@@ -33562,7 +33562,7 @@ MapBase.prototype = {
     var layers = [];
     for(var i = 0; i < this.layers.length; ++i) {
       var layer = this.layers[i];
-      if(layer.options && !layer.options.hidden) {
+      if(this._isLayerVisible(layer)) {
         layers.push(i);
       }
     }
@@ -39458,6 +39458,7 @@ cdb.vis.Vis = Vis;
           layers.push(basemap);
         }
 
+        var labelsLayer;
         for (var i = 1; i < data.layers.length; i++) {
           var layer = data.layers[i];
 
@@ -39466,7 +39467,7 @@ cdb.vis.Vis = Vis;
           } else if (layer.type === "namedmap") {
             layers.push(this._getNamedmapLayerDefinition(layer));
           } else if (layer.type === "tiled") {
-            layers.push(this._getHTTPLayer(layer));
+            labelsLayer = this._getHTTPLayer(layer);
           } else if (layer.type !== "torque" && layer.type !== "namedmap") {
             var ll = this._getLayergroupLayerDefinition(layer);
 
@@ -39474,6 +39475,12 @@ cdb.vis.Vis = Vis;
               layers.push(ll[j]);
             }
           }
+        }
+
+        // If there's a second `tiled` layer, it's a layer with labels and
+        // it needs to be on top of all other layers
+        if (labelsLayer) {
+          layers.push(labelsLayer);
         }
 
         this.options.layers = { layers: layers };
@@ -41008,8 +41015,8 @@ Layers.register('torque', function(vis, data) {
         'stats as (', 
            'select count(distinct({{column}})) as uniq, ',
            '       count(*) as cnt, ',
-           '       sum(case when {{column}} is null then 1 else 0 end)::numeric as null_count, ',
-           '       sum(case when {{column}} is null then 1 else 0 end)::numeric / count(*)::numeric as null_ratio, ',
+           '       sum(case when COALESCE(NULLIF({{column}},\'\')) is null then 1 else 0 end)::numeric as null_count, ',
+           '       sum(case when COALESCE(NULLIF({{column}},\'\')) is null then 1 else 0 end)::numeric / count(*)::numeric as null_ratio, ',
            // '       CDB_DistinctMeasure(array_agg({{column}}::text)) as cat_weight ',
            '       (SELECT max(cumperc) weight FROM c) As skew ',
            'from ({{sql}}) __wrap',
@@ -41025,6 +41032,11 @@ Layers.register('torque', function(vis, data) {
         sql: sql
       });
 
+      var normalizeName = function(str) {
+        var normalizedStr = str.replace(/^"(.+(?="$))?"$/, '$1'); // removes surrounding quotes
+        return normalizedStr.replace(/""/g, '"'); // removes duplicated quotes
+      }
+
       this.execute(query, function(data) {
         var row = data.rows[0];
         var s = array_agg(row.array_agg);
@@ -41032,7 +41044,8 @@ Layers.register('torque', function(vis, data) {
           type: 'string',
           hist: _(s).map(function(row) {
             var r = row.match(/\((.*),(\d+)/);
-            return [r[1], +r[2]];
+            var name = normalizeName(r[1]);
+            return [name, +r[2]];
           }),
           distinct: row.uniq,
           count: row.cnt,
@@ -41049,8 +41062,9 @@ Layers.register('torque', function(vis, data) {
       'with minimum as (',
         'SELECT min({{column}}) as start_time FROM ({{sql}}) _wrap), ',
       'maximum as (SELECT max({{column}}) as end_time FROM ({{sql}}) _wrap), ',
+      'null_ratio as (SELECT sum(case when {{column}} is null then 1 else 0 end)::numeric / count(*)::numeric as null_ratio FROM ({{sql}}) _wrap), ',
       'moments as (SELECT count(DISTINCT {{column}}) as moments FROM ({{sql}}) _wrap)',
-      'SELECT * FROM minimum, maximum, moments'
+      'SELECT * FROM minimum, maximum, moments, null_ratio'
     ];
     var query = Mustache.render(s.join('\n'), {
       column: column,
@@ -41071,7 +41085,39 @@ Layers.register('torque', function(vis, data) {
         start_time: s,
         end_time: e,
         range: e - s,
-        steps: steps
+        steps: steps,
+        null_ratio: row.null_ratio
+      });
+    });
+  }
+
+  SQL.prototype.describeBoolean = function(sql, column, options, callback){
+    var s = [
+      'with stats as (',
+            'select count(distinct({{column}})) as uniq,',
+                   'count(*) as cnt',
+              'from ({{sql}}) _wrap ',
+        '),',
+      'null_ratio as (',
+        'SELECT sum(case when {{column}} is null then 1 else 0 end)::numeric / count(*)::numeric as null_ratio FROM ({{sql}}) _wrap), ',
+      'true_ratio as (',
+        'SELECT sum(case when {{column}} is true then 1 else 0 end)::numeric / count(*)::numeric as true_ratio FROM ({{sql}}) _wrap) ',
+      'SELECT * FROM true_ratio, null_ratio, stats'
+    ];
+    var query = Mustache.render(s.join('\n'), {
+      column: column,
+      sql: sql
+    });
+
+    this.execute(query, function(data) {
+      var row = data.rows[0];
+      
+      callback({
+        type: 'boolean',
+        null_ratio: row.null_ratio,
+        true_ratio: row.true_ratio,
+        distinct: row.uniq,
+        count: row.cnt
       });
     });
   }
@@ -41154,7 +41200,7 @@ Layers.register('torque', function(vis, data) {
         'params as (select min(a) as min, (max(a) - min(a)) / 7 as diff from ( select {{column}} as a from ({{sql}}) _table_sql where {{column}} is not null ) as foo ),',
          'histogram as (',
            'select array_agg(row(bucket, range, freq)) as hist from (',
-           'select width_bucket({{column}}, min-0.01*abs(min), max+0.01*abs(max), 100) as bucket,',
+           'select CASE WHEN uniq > 1 then width_bucket({{column}}, min-0.01*abs(min), max+0.01*abs(max), 100) ELSE 1 END as bucket,',
                   'numrange(min({{column}})::numeric, max({{column}})::numeric) as range,',
                   'count(*) as freq',
              'from ({{sql}}) _w, stats',
@@ -41237,6 +41283,8 @@ Layers.register('torque', function(vis, data) {
           self.describeGeom(sql, column, options, callback);
         } else if (type === 'date') {
           self.describeDate(sql, column, options, callback);
+        } else if (type === 'boolean') {
+          self.describeBoolean(sql, column, options, callback);
         } else {
           callback(new Error("column type is not supported"));
         }
@@ -41254,6 +41302,9 @@ var root = this;
 root.cartodb = root.cartodb || {};
 
 var ramps = {
+  bool: [
+    ['#5CA2D1', '#0F3B82', '#CCCCCC']
+  ],
   green:  ['#EDF8FB', '#D7FAF4', '#CCECE6', '#66C2A4', '#41AE76', '#238B45', '#005824'],
   blue:  ['#FFFFCC', '#C7E9B4', '#7FCDBB', '#41B6C4', '#1D91C0', '#225EA8', '#0C2C84'],
   pink: ['#F1EEF6', '#D4B9DA', '#C994C7', '#DF65B0', '#E7298A', '#CE1256', '#91003F'],
@@ -41317,33 +41368,51 @@ var CSS = {
     return css;
   },
 
-  categoryMetadata: function(cats, prop, geometryType) {
+  categoryMetadata: function(cats, options) {
     var metadata = [];
 
+    var ramp = (options && options.ramp) ? options.ramp : ramps.category;
+    var type = (options && options.type) ? options.type : "string";
+
     for (var i = cats.length - 1; i >= 0; --i) {
-      if (cats[i] !== undefined && cats[i] != null) {
-        metadata.push({ title: cats[i], title_type: "string", value_type: 'color', color: ramps.category[i] });
+      var cat = cats[i];
+      if (cat !== undefined && ((type === 'string' && cat != null) || (type === 'boolean'))) {
+        metadata.push({ title: cat, title_type: type, value_type: 'color', color: ramp[i] });
       }
     }
 
     return metadata;
   },
 
-  category: function(cats, tableName, prop, geometryType) {
+  category: function(cats, tableName, prop, geometryType, options) {
     var attr = geoAttr(geometryType);
     var tableID = "#" + tableName;
-    var ramp = ramps.category;
+
+    var ramp = (options && options.ramp) ? options.ramp : ramps.category;
+    var type = (options && options.type) ? options.type : "string";
 
     var defaultCSS = getDefaultCSSForGeometryType(geometryType);
 
-    var css = "/** category visualization */\n\n" + tableID + " {\n  " + attr + ": " + ramps.category[0] + ";\n" + defaultCSS.join("\n") + "\n}\n";
+    var css = "/** category visualization */\n\n" + tableID + " {\n  " + attr + ": " + ramp[0] + ";\n" + defaultCSS.join("\n") + "\n}\n";
 
     for (var i = cats.length - 1; i >= 0; --i) {
-      if (cats[i] !== undefined && cats[i] != null) {
-        css += "\n" + tableID + "[" + prop + " = '" + cats[i] + "'] {\n";
+
+      var cat  = cats[i];
+      var value = '';
+
+      if (type === 'string') {
+        var name = cat.replace(/\n/g,'\\n').replace(/\"/g, "\\\"");
+        value = "\"" + name + "\"";
+      } else {
+        value = cat;
+      }
+
+      if (cat !== undefined && ((type === 'string' && cat != null) || (type === 'boolean'))) {
+        css += "\n" + tableID + "[" + prop + "=" + value + "] {\n";
         css += "  " + attr  + ":" + ramp[i] + ";\n}"
       }
     }
+
     return css;
   },
 
@@ -41361,7 +41430,7 @@ var CSS = {
         tableID + " {",
         '  marker-width: 3;',
         '  marker-fill-opacity: 0.8;',
-        '  marker-fill: #FEE391; ',
+        '  marker-fill: #FF6347; ',
         '  comp-op: "lighten";',
         '  [value > 2] { marker-fill: #FEC44F; }',
         '  [value > 3] { marker-fill: #FE9929; }',
@@ -41381,7 +41450,7 @@ function guessCss(sql, geometryType, column, stats) {
   var css = null
   if (stats.type == 'number') {
     css =  CSS.choropleth(stats.quantiles, column, geometryType, ramps.red);
-  } else if(stats.type == 'string') {
+  } else if (stats.type === 'string') {
     css = CSS.category(stats.hist.slice(0, ramps.cat.length).map(function(r) { return r[0]; }), column, geometryType)
   }
   return css;
@@ -41410,30 +41479,48 @@ function guessMap(sql, tableName, column, stats) {
   var type = stats.type;
   var metadata = []
 
-  if (stats.type == 'number') {
+  if (stats.type === 'number') {
     if (['A','U'].indexOf(stats.dist_type) != -1) {
       // apply divergent scheme
       css = CSS.choropleth(stats.jenks, tableName, columnName, geometryType, ramps.divergent);
     } else if (stats.dist_type === 'F') {
       css = CSS.choropleth(stats.equalint, tableName, columnName, geometryType, ramps.red);
     } else {
-      if (stats.dist_type === 'J') {
+      if (stats.dist_type === 'J' && stats.headtails) {
         css = CSS.choropleth(stats.headtails, tableName, columnName, geometryType, ramps.green);
-      } else {
+      } else if (stats.headtails){
         var inverse_ramp = (_.clone(ramps.red)).reverse();
         css = CSS.choropleth(stats.headtails, tableName, columnName, geometryType, inverse_ramp);
+      } else {
+        return false;
       }
+
     }
 
-  } else if (stats.type == 'string') {
+  } else if (stats.type === 'string') {
 
     visualizationType   = "category";
-    css      = CSS.category(stats.hist.slice(0, ramps.category.length).map(function(r) { return r[0]; }), tableName, columnName, geometryType);
-    metadata = CSS.categoryMetadata(stats.hist.slice(0, ramps.category.length).map(function(r) { return r[0]; }), tableName, columnName, geometryType);
+
+    var cats = stats.hist.slice(0, ramps.category.length).map(function(r) { return r[0]; });
+    css      = CSS.category(cats, tableName, columnName, geometryType);
+    metadata = CSS.categoryMetadata(cats);
 
   } else if (stats.type === 'date') {
+
     visualizationType = "torque";
     css = CSS.torque(stats, tableName);
+
+  } else if (stats.type === 'boolean') {
+
+    visualizationType = "category";
+
+    var ramp = _.shuffle(ramps.bool)[0];
+    var cats = ['true', 'false', null];
+    var options = { type: stats.type, ramp: ramp };
+
+    css      = CSS.category(cats, tableName, columnName, geometryType, options);
+    metadata = CSS.categoryMetadata(cats, options);
+
   }
 
   if (css) {

@@ -30,13 +30,13 @@ module CartoDB
       end
 
       def command_for_import
-        "#{OSM_INDEXING_OPTION} #{PG_COPY_OPTION} #{client_encoding_option} #{shape_encoding_option} " +
+        "#{OSM_INDEXING_OPTION} #{PG_COPY_OPTION} #{client_encoding_option} " +
         "#{executable_path} #{OUTPUT_FORMAT_OPTION} #{guessing_option} #{postgres_options} #{projection_option} " +
         "#{layer_creation_options} #{filepath} #{layer} #{layer_name_option} #{NEW_LAYER_TYPE_OPTION}"
       end
 
       def command_for_append
-        "#{OSM_INDEXING_OPTION} #{PG_COPY_OPTION} #{client_encoding_option} #{shape_encoding_option} " +
+        "#{OSM_INDEXING_OPTION} #{PG_COPY_OPTION} #{client_encoding_option} " +
         "#{executable_path} #{APPEND_MODE_OPTION} #{OUTPUT_FORMAT_OPTION} #{postgres_options} " +
         "#{projection_option} #{filepath} #{layer} #{layer_name_option} #{NEW_LAYER_TYPE_OPTION}"
       end
@@ -90,12 +90,6 @@ module CartoDB
 
       def client_encoding_option
         "PGCLIENTENCODING=#{options.fetch(:encoding, ENCODING)}"
-      end
-
-      def shape_encoding_option
-        encoding = options.fetch(:shape_encoding, nil)
-        return unless encoding
-        "SHAPE_ENCODING=#{encoding}"
       end
 
       def layer_name_option

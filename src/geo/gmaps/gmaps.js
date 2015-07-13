@@ -226,7 +226,11 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
     },
 
     pixelToLatLon: function(pos) {
-      return this.projector.fromContainerPixelToLatLng(new google.maps.Point(pos[0], pos[1]));
+      var latLng = this.projector.pixelToLatLng(new google.maps.Point(pos[0], pos[1]));
+      return {
+        lat: latLng.lat(),
+        lng: latLng.lng()
+      }
     },
 
     latLonToPixel: function(latlon) {

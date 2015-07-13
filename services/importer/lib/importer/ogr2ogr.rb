@@ -15,9 +15,10 @@ module CartoDB
 
       DEFAULT_BINARY = 'which ogr2ogr'
 
-      def initialize(table_name, filepath, pg_options, layer=nil, options={})
+      def initialize(table_name, filepath, pg_options, db, layer=nil, options={})
         self.filepath   = filepath
         self.pg_options = pg_options
+        self.db = db
         self.table_name = table_name
         self.layer      = layer
         self.options    = options
@@ -50,18 +51,19 @@ module CartoDB
       def run(use_append_mode=false)
         @append_mode = use_append_mode
         stdout, stderr, status  = Open3.capture3(command)
+        self.imported_rows = get_imported_rows
         self.command_output     = (stdout + stderr).encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '?????')
         self.exit_code          = status.to_i
         self
       end
 
       attr_accessor :append_mode, :filepath
-      attr_reader   :exit_code, :command_output
+      attr_reader   :exit_code, :command_output, :imported_rows
 
       private
 
-      attr_writer   :exit_code, :command_output
-      attr_accessor :pg_options, :options, :table_name, :layer, :ogr2ogr2_binary, :csv_guessing, :quoted_fields_guessing
+      attr_writer   :exit_code, :command_output, :imported_rows
+      attr_accessor :pg_options, :options, :table_name, :layer, :ogr2ogr2_binary, :csv_guessing, :quoted_fields_guessing, :db
 
       def is_csv?
         !(filepath =~ /\.csv$/i).nil?
@@ -112,6 +114,12 @@ module CartoDB
 
       def projection_option
         is_csv? || filepath =~ /\.ods/ ? nil : '-t_srs EPSG:4326 '
+      end
+
+      def get_imported_rows
+          rows = db.fetch(%Q{SELECT COUNT(*) FROM #{SCHEMA}.#{table_name}}).first
+
+          return rows[:count]
       end
     end
   end

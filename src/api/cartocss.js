@@ -124,12 +124,12 @@ var CSS = {
   torque: function(stats, tableName, options){
     var tableID = "#" + tableName;
     var ramp = ramps.category;
-    var value = options.torque.type === "value"? options.torque.column.get("name"): "cartodb_id";
+    var aggFunction = "count(cartodb_id)";
     var css = [
         '/** torque visualization */',
         'Map {',
         '  -torque-time-attribute: ' + stats.column + ';',
-        '  -torque-aggregation-function: "count('+  +')";',
+        '  -torque-aggregation-function: {{aggfunction}};',
         '  -torque-frame-count: ' + stats.steps + ';',
         '  -torque-animation-duration: 10;',
         '  -torque-resolution: 2',
@@ -156,7 +156,16 @@ var CSS = {
             + "marker-fill: " + ramp[i] + ";\n}");
       }
     }
-    return css.join('\n');
+    css = css.join('\n');
+
+    if(options.torque.type === "category"){
+      css.replace("{{aggfunction}}", "CDB_Math_Mode(torque_category)");
+    } else if (options.torque.type === "value"){
+      css.replace("{{aggfunction}}", options.torque.column.get("name"));
+    }
+
+    return css;
+
   },
 
   bubble: function(quartiles, tableName, prop, geometryType, ramp) {

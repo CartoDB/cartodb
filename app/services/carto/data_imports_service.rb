@@ -9,7 +9,7 @@ module Carto
       @users_metadata = users_metadata
       @tables_metadata = tables_metadata
     end
-    
+
     def process_recent_user_imports(user)
       imports = DataImportQueryBuilder.new.with_user(user).with_state_not_in([Carto::DataImport::STATE_COMPLETE, Carto::DataImport::STATE_FAILURE]).with_created_at_after(Time.now - 24.hours).with_order(:created_at, :desc).build.all
 
@@ -77,7 +77,7 @@ module Carto
       oauth = user.oauth_for_service(service)
       raise CartoDB::Datasources::AuthError.new("OAuth already set for service #{service}") if oauth
 
-      get_datasource(user, service).get_auth_url.gsub('/v1/', '/v1_1/')
+      get_datasource(user, service).get_auth_url
     end
 
     def validate_service_oauth_code(user, service, code)

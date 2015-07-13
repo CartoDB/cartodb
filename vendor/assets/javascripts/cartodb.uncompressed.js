@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: 404cfc3392856efe151d180e1b44668751f7dc39
+// sha: 7ff98fadd96c22109de87e680fdbdd1a2f9466fb
 (function() {
   var root = this;
 
@@ -41513,12 +41513,15 @@ function guessMap(sql, tableName, column, stats) {
         css      = CSS.category(cats, tableName, columnName, geometryType, { type: stats.type });
         metadata = CSS.categoryMetadata(cats, { type: stats.type });
 
-      } else if (geometryType === 'point'){
-        visualizationType = "bubble";
-        visFunction = CSS.bubble;
-      } else {
-
+      } else if (distinctPercentage >=1) {
+      
         var visFunction = CSS.choropleth;
+
+        if (geometryType === 'point'){
+          visualizationType = "bubble";
+          visFunction = CSS.bubble;
+        }
+
         if (['A','U'].indexOf(stats.dist_type) != -1) {
           // apply divergent scheme
           css = visFunction(stats.jenks, tableName, columnName, geometryType, ramps.divergent);

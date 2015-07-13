@@ -267,8 +267,8 @@ function guessMap(sql, tableName, column, stats, options) {
     metadata = CSS.categoryMetadata(cats);
 
   } else if (stats.type === 'date') {
-    visualizationType = "torque";
     css = CSS.torque(stats, tableName, options);
+    visualizationType = css.indexOf("CDB_Math_Mode(torque_category)") > -1?  "torque category": "torque";
 
   } else if (stats.type === 'boolean') {
     visualizationType   = "category";

@@ -20,6 +20,14 @@ module CartoDB
           String.new
         end
 
+        def total_rows
+          nil
+        end
+
+        def imported_rows
+          0
+        end
+
       end
     end
   end

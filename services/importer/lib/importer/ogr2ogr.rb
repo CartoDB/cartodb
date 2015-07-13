@@ -1,5 +1,6 @@
 # encoding: utf-8
 require 'open3'
+require_relative './shp_helper'
 
 module CartoDB
   module Importer2
@@ -51,18 +52,19 @@ module CartoDB
       def run(use_append_mode=false)
         @append_mode = use_append_mode
         stdout, stderr, status  = Open3.capture3(command)
-        self.imported_rows = get_imported_rows
         self.command_output     = (stdout + stderr).encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '?????')
         self.exit_code          = status.to_i
+        self.total_rows         = (exit_code == 0) ? get_total_rows : nil
+        self.imported_rows      = (exit_code == 0) ? get_imported_rows : nil
         self
       end
 
       attr_accessor :append_mode, :filepath
-      attr_reader   :exit_code, :command_output, :imported_rows
+      attr_reader   :exit_code, :command_output, :imported_rows, :total_rows
 
       private
 
-      attr_writer   :exit_code, :command_output, :imported_rows
+      attr_writer   :exit_code, :command_output, :imported_rows, :total_rows
       attr_accessor :pg_options, :options, :table_name, :layer, :ogr2ogr2_binary, :csv_guessing, :quoted_fields_guessing, :db
 
       def is_csv?
@@ -71,6 +73,10 @@ module CartoDB
 
       def is_geojson?
         !(filepath =~ /\.geojson$/i).nil?
+      end
+
+      def is_shp?
+        !(filepath =~ /\.shp$/i).nil?
       end
 
       def guessing_option
@@ -120,6 +126,15 @@ module CartoDB
           rows = db.fetch(%Q{SELECT COUNT(*) FROM #{SCHEMA}.#{table_name}}).first
 
           return rows[:count]
+      end
+
+      def get_total_rows
+        if is_shp?
+          @helper = @shp_helper ||= ShpHelper.new(filepath)
+          return @helper.total_rows
+        else
+          return nil
+        end
       end
     end
   end

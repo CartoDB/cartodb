@@ -136,7 +136,7 @@ var CSS = {
         tableID + " {",
         '  marker-width: 3;',
         '  marker-fill-opacity: 0.8;',
-        '  marker-fill: #FEE391; ',
+        '  marker-fill: #0F3B82; ',
         '  comp-op: "lighten"; ',
         '  [frame-offset = 1] { marker-width: 10; marker-fill-opacity: 0.05;}',
         '  [frame-offset = 2] { marker-width: 15; marker-fill-opacity: 0.02;}',
@@ -205,6 +205,8 @@ function guess(o, callback) {
 }
 
 function guessMap(sql, tableName, column, stats, options) {
+  if(!stats) return;
+
   var geometryType = column.get("geometry_type");
   var bbox =  column.get("bbox");
   var columnName = column.get("name");

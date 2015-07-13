@@ -33,7 +33,7 @@ describe CartoDB::HiresGeocoder do
   end
 
   describe '#run' do
-    it 'takes every row from input and calss geocode_text on them' do
+    it 'takes every row from input and calls geocode_text on them' do
       rows_to_geocode = ::CSV.read(@input_csv_file, headers: true).length
       @geocoder.expects(:geocode_text).times(rows_to_geocode).returns(MOCK_COORDINATES)
       @geocoder.run

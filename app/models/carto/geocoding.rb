@@ -8,9 +8,11 @@ module Carto
 
     PUBLIC_ATTRIBUTES = [:id, :table_id, :table_name, :state, :kind, :country_code, :region_code, :formatter, :geometry_type, :error, :processed_rows, :cache_hits, :processable_rows, :real_rows, :price, :used_credits, :remaining_quota, :country_column, :region_column, :data_import_id, :error_code]
 
-    def self.processable_rows(table_service)
+    def self.processable_rows(table_service, force_all_rows=false)
       dataset = table_service.owner.in_database.select.from(table_service.sequel_qualified_table_name)
-      dataset = dataset.where(cartodb_georef_status: [false, nil]) if dataset.columns.include?(:cartodb_georef_status)
+      if !force_all_rows && dataset.columns.include?(:cartodb_georef_status)
+        dataset = dataset.where(cartodb_georef_status: [false, nil])
+      end
       dataset.count
     end
 

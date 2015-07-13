@@ -117,7 +117,8 @@ class Api::Json::GeocodingsController < Api::ApplicationController
   end
 
   def estimation_for
-    total_rows       = Geocoding.processable_rows(@table)
+    force_all_rows = (params[:force_all_rows] == true)
+    total_rows = Geocoding.processable_rows(@table, force_all_rows)
     remaining_quota  = current_user.geocoding_quota - current_user.get_geocoding_calls
     remaining_quota  = (remaining_quota > 0 ? remaining_quota : 0)
     used_credits     = total_rows - remaining_quota

@@ -169,9 +169,11 @@ class Geocoding < Sequel::Model
     geocoding_logger.info(payload.to_json)
   end
 
-  def self.processable_rows(table_service)
+  def self.processable_rows(table_service, force_all_rows=false)
     dataset = table_service.owner.in_database.select.from(table_service.sequel_qualified_table_name)
-    dataset = dataset.where(cartodb_georef_status: [nil, false]) if dataset.columns.include?(:cartodb_georef_status)
+    if !force_all_rows && dataset.columns.include?(:cartodb_georef_status)
+      dataset = dataset.where(cartodb_georef_status: [nil, false])
+    end
     dataset.count
   end # self.processable_rows
 

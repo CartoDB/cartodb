@@ -47,6 +47,8 @@ module CartoDB
       end
 
       def run(post_import_handler_instance=nil)
+        @file_extension = source_file.extension.split('.').last
+        @importer_stats.gauge(%Q{loader.#{@file_extension}}, 1)
         @importer_stats.timing('loader') do
 
           @post_import_handler = post_import_handler_instance
@@ -228,11 +230,19 @@ module CartoDB
       def run_ogr2ogr(append_mode=false)
         ogr2ogr.run(append_mode)
 
+        unless ogr2ogr.total_rows.nil?
+          #TODO Right now is only calculating SHP files but it'll great
+          #to use for all the file types
+          update_error_percent
+        end
+
         # too verbose in append mode
         unless append_mode
-          job.log "ogr2ogr call:      #{ogr2ogr.command}"
-          job.log "ogr2ogr output:    #{ogr2ogr.command_output}"
-          job.log "ogr2ogr exit code: #{ogr2ogr.exit_code}"
+          job.log "ogr2ogr call:            #{ogr2ogr.command}"
+          job.log "ogr2ogr output:          #{ogr2ogr.command_output}"
+          job.log "ogr2ogr total rows:      #{ogr2ogr.total_rows}"
+          job.log "ogr2ogr rows imported:   #{ogr2ogr.imported_rows}"
+          job.log "ogr2ogr exit code:       #{ogr2ogr.exit_code}"
         end
 
         raise DuplicatedColumnError.new(job.logger) if ogr2ogr.command_output =~ /column (.*) of relation (.*) already exists/
@@ -266,6 +276,11 @@ module CartoDB
           end
           raise LoadError.new(job.logger)
         end
+      end
+
+      def update_error_percent
+        error_percent = ((ogr2ogr.imported_rows - ogr2ogr.total_rows).abs.to_f/ogr2ogr.total_rows)*100
+        @importer_stats.gauge(%Q{loader.#{@file_extension}.error_percent}, error_percent) unless ogr2ogr.total_rows
       end
     end
   end

@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: e37e6c65e501303b65cb2dc0b2a3d4f2035835d0
+// sha: e921ebda681a966004c4c31c4cc21442b4ddb635
 (function() {
   var root = this;
 
@@ -36581,7 +36581,11 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
     },
 
     pixelToLatLon: function(pos) {
-      return this.projector.fromContainerPixelToLatLng(new google.maps.Point(pos[0], pos[1]));
+      var latLng = this.projector.pixelToLatLng(new google.maps.Point(pos[0], pos[1]));
+      return {
+        lat: latLng.lat(),
+        lng: latLng.lng()
+      }
     },
 
     latLonToPixel: function(latlon) {
@@ -41078,6 +41082,37 @@ Layers.register('torque', function(vis, data) {
     });
   }
 
+  SQL.prototype.describeBoolean = function(sql, column, options, callback){
+    var s = [
+      'with stats as (',
+            'select count(distinct({{column}})) as uniq,',
+                   'count(*) as cnt',
+              'from ({{sql}}) _wrap ',
+        '),',
+      'null_ratio as (',
+        'SELECT sum(case when {{column}} is null then 1 else 0 end)::numeric / count(*)::numeric as null_ratio FROM ({{sql}}) _wrap), ',
+      'true_ratio as (',
+        'SELECT sum(case when {{column}} is true then 1 else 0 end)::numeric / count(*)::numeric as true_ratio FROM ({{sql}}) _wrap) ',
+      'SELECT * FROM true_ratio, null_ratio, stats'
+    ];
+    var query = Mustache.render(s.join('\n'), {
+      column: column,
+      sql: sql
+    });
+
+    this.execute(query, function(data) {
+      var row = data.rows[0];
+      
+      callback({
+        type: 'boolean',
+        null_ratio: row.null_ratio,
+        true_ratio: row.true_ratio,
+        distinct: row.uniq,
+        count: row.cnt
+      });
+    });
+  }
+
   SQL.prototype.describeGeom = function(sql, column, options, callback) {
       var s = [
         'with stats as (', 
@@ -41239,6 +41274,8 @@ Layers.register('torque', function(vis, data) {
           self.describeGeom(sql, column, options, callback);
         } else if (type === 'date') {
           self.describeDate(sql, column, options, callback);
+        } else if (type === 'boolean') {
+          self.describeBoolean(sql, column, options, callback);
         } else {
           callback(new Error("column type is not supported"));
         }
@@ -41256,6 +41293,9 @@ var root = this;
 root.cartodb = root.cartodb || {};
 
 var ramps = {
+  bool: [
+    ['#5CA2D1', '#0F3B82', '#CCCCCC']
+  ],
   green:  ['#EDF8FB', '#D7FAF4', '#CCECE6', '#66C2A4', '#41AE76', '#238B45', '#005824'],
   blue:  ['#FFFFCC', '#C7E9B4', '#7FCDBB', '#41B6C4', '#1D91C0', '#225EA8', '#0C2C84'],
   pink: ['#F1EEF6', '#D4B9DA', '#C994C7', '#DF65B0', '#E7298A', '#CE1256', '#91003F'],
@@ -41319,35 +41359,46 @@ var CSS = {
     return css;
   },
 
-  categoryMetadata: function(cats, prop, geometryType) {
+  categoryMetadata: function(cats, options) {
     var metadata = [];
+
+    var ramp = (options && options.ramp) ? options.ramp : ramps.category;
+    var type = (options && options.type) ? options.type : "string";
 
     for (var i = cats.length - 1; i >= 0; --i) {
       var cat = cats[i];
-      if (cat !== undefined && cat != null) {
-        metadata.push({ title: cat, title_type: "string", value_type: 'color', color: ramps.category[i] });
+      if (cat !== undefined && ((type === 'string' && cat != null) || (type === 'boolean'))) {
+        metadata.push({ title: cat, title_type: type, value_type: 'color', color: ramp[i] });
       }
     }
 
     return metadata;
   },
 
-  category: function(cats, tableName, prop, geometryType) {
+  category: function(cats, tableName, prop, geometryType, options) {
     var attr = geoAttr(geometryType);
     var tableID = "#" + tableName;
-    var ramp = ramps.category;
+
+    var ramp = (options && options.ramp) ? options.ramp : ramps.category;
+    var type = (options && options.type) ? options.type : "string";
 
     var defaultCSS = getDefaultCSSForGeometryType(geometryType);
 
-    var css = "/** category visualization */\n\n" + tableID + " {\n  " + attr + ": " + ramps.category[0] + ";\n" + defaultCSS.join("\n") + "\n}\n";
+    var css = "/** category visualization */\n\n" + tableID + " {\n  " + attr + ": " + ramp[0] + ";\n" + defaultCSS.join("\n") + "\n}\n";
 
     for (var i = cats.length - 1; i >= 0; --i) {
 
       var cat  = cats[i];
-      var name = cat.replace(/\n/g,'\\n').replace(/\"/g, "\\\"");
-      var value = "\"" + name + "\"";
+      var value = '';
 
-      if (cat !== undefined && cat != null) {
+      if (type === 'string') {
+        var name = cat.replace(/\n/g,'\\n').replace(/\"/g, "\\\"");
+        value = "\"" + name + "\"";
+      } else {
+        value = cat;
+      }
+
+      if (cat !== undefined && ((type === 'string' && cat != null) || (type === 'boolean'))) {
         css += "\n" + tableID + "[" + prop + "=" + value + "] {\n";
         css += "  " + attr  + ":" + ramp[i] + ";\n}"
       }
@@ -41370,7 +41421,7 @@ var CSS = {
         tableID + " {",
         '  marker-width: 3;',
         '  marker-fill-opacity: 0.8;',
-        '  marker-fill: #FEE391; ',
+        '  marker-fill: #FF6347; ',
         '  comp-op: "lighten";',
         '  [value > 2] { marker-fill: #FEC44F; }',
         '  [value > 3] { marker-fill: #FE9929; }',
@@ -41390,7 +41441,7 @@ function guessCss(sql, geometryType, column, stats) {
   var css = null
   if (stats.type == 'number') {
     css =  CSS.choropleth(stats.quantiles, column, geometryType, ramps.red);
-  } else if(stats.type == 'string') {
+  } else if (stats.type === 'string') {
     css = CSS.category(stats.hist.slice(0, ramps.cat.length).map(function(r) { return r[0]; }), column, geometryType)
   }
   return css;
@@ -41419,30 +41470,48 @@ function guessMap(sql, tableName, column, stats) {
   var type = stats.type;
   var metadata = []
 
-  if (stats.type == 'number') {
+  if (stats.type === 'number') {
     if (['A','U'].indexOf(stats.dist_type) != -1) {
       // apply divergent scheme
       css = CSS.choropleth(stats.jenks, tableName, columnName, geometryType, ramps.divergent);
     } else if (stats.dist_type === 'F') {
       css = CSS.choropleth(stats.equalint, tableName, columnName, geometryType, ramps.red);
     } else {
-      if (stats.dist_type === 'J') {
+      if (stats.dist_type === 'J' && stats.headtails) {
         css = CSS.choropleth(stats.headtails, tableName, columnName, geometryType, ramps.green);
-      } else {
+      } else if (stats.headtails){
         var inverse_ramp = (_.clone(ramps.red)).reverse();
         css = CSS.choropleth(stats.headtails, tableName, columnName, geometryType, inverse_ramp);
+      } else {
+        return false;
       }
+
     }
 
-  } else if (stats.type == 'string') {
+  } else if (stats.type === 'string') {
 
     visualizationType   = "category";
-    css      = CSS.category(stats.hist.slice(0, ramps.category.length).map(function(r) { return r[0]; }), tableName, columnName, geometryType);
-    metadata = CSS.categoryMetadata(stats.hist.slice(0, ramps.category.length).map(function(r) { return r[0]; }), tableName, columnName, geometryType);
+
+    var cats = stats.hist.slice(0, ramps.category.length).map(function(r) { return r[0]; });
+    css      = CSS.category(cats, tableName, columnName, geometryType);
+    metadata = CSS.categoryMetadata(cats);
 
   } else if (stats.type === 'date') {
+
     visualizationType = "torque";
     css = CSS.torque(stats, tableName);
+
+  } else if (stats.type === 'boolean') {
+
+    visualizationType = "category";
+
+    var ramp = _.shuffle(ramps.bool)[0];
+    var cats = ['true', 'false', null];
+    var options = { type: stats.type, ramp: ramp };
+
+    css      = CSS.category(cats, tableName, columnName, geometryType, options);
+    metadata = CSS.categoryMetadata(cats, options);
+
   }
 
   if (css) {

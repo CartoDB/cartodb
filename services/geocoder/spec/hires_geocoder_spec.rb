@@ -70,6 +70,49 @@ describe CartoDB::HiresGeocoder do
 
   end
 
+  describe '#geocode_text' do
+    it 'sends a request to the non-batched geocoder service and gets a couple of coordinates' do
+      json_response_body = {
+        response: {
+          view: [
+            result: [
+              location: {
+                displayPosition: {
+                  latitude: MOCK_COORDINATES[0],
+                  longitude: MOCK_COORDINATES[1]
+                }
+              }
+            ]
+          ]
+        }
+      }.to_json
+      mocked_response  = Typhoeus::Response.new(code: 200, body: json_response_body)
+      Typhoeus.stub(//, method: :get).and_return(mocked_response)
+
+      @geocoder.send(:geocode_text, 'Dummy address').should == MOCK_COORDINATES
+    end
+
+    it "returns nil coordinates if the http request doesn't succeed" do
+      mocked_response  = Typhoeus::Response.new(code: 500)
+      Typhoeus.stub(//, method: :get).and_return(mocked_response)
+      CartoDB.expects(:notify_debug).with('Non-batched geocoder failed request', mocked_response).once
+
+      @geocoder.send(:geocode_text, 'Dummy address').should == [nil, nil]
+    end
+
+    it 'returns nil coordinates and log a trace if it is not able to parse the response' do
+      input_text = 'Dummy address'
+      json_response_body = {
+        unexpected: 'this response body has unexpected format for whatever reason'
+      }.to_json
+      mocked_response  = Typhoeus::Response.new(code: 200, body: json_response_body)
+      Typhoeus.stub(//, method: :get).and_return(mocked_response)
+      CartoDB.expects(:notify_debug).with("Non-batched geocoder couldn't parse response", anything()).once
+
+      @geocoder.send(:geocode_text, input_text).should == [nil, nil]
+    end
+  end
+
   def path_to(filepath = '')
     File.expand_path(
       File.join(File.dirname(__FILE__), "../fixtures/#{filepath}")

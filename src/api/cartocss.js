@@ -151,7 +151,11 @@ var CSS = {
   },
 
   bubble: function(quartiles, tableName, prop, geometryType, ramp) {
-    var css = "/** bubble visualization */\n" + getDefaultCSSForGeometryType("point").join('\n');
+    var tableID = "#" + tableName;
+    var css = "/** bubble visualization */\n\n" + tableID + " {\n";
+    css += getDefaultCSSForGeometryType("point").join('\n');
+    css += "\nmarker-fill: #FF5C00;";
+    css += "\n}\n\n";
 
     var min = 10;
     var max = 30;

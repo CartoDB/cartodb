@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: 7ff98fadd96c22109de87e680fdbdd1a2f9466fb
+// sha: 3c71d08459a80e5b380f2c62eace98d23d5ee9f2
 (function() {
   var root = this;
 
@@ -41445,7 +41445,11 @@ var CSS = {
   },
 
   bubble: function(quartiles, tableName, prop, geometryType, ramp) {
-    var css = "/** bubble visualization */\n" + getDefaultCSSForGeometryType("point").join('\n');
+    var tableID = "#" + tableName;
+    var css = "/** bubble visualization */\n\n" + tableID + " {\n";
+    css += getDefaultCSSForGeometryType("point").join('\n');
+    css += "\nmarker-fill: #FF5C00;";
+    css += "\n}\n\n";
 
     var min = 10;
     var max = 30;
@@ -41522,19 +41526,26 @@ function guessMap(sql, tableName, column, stats) {
           visFunction = CSS.bubble;
         }
 
-        if (['A','U'].indexOf(stats.dist_type) != -1) {
-          // apply divergent scheme
-          css = visFunction(stats.jenks, tableName, columnName, geometryType, ramps.divergent);
+        var method, ramp;
+
+        if (['A','U'].indexOf(stats.dist_type) != -1) { // apply divergent scheme
+          method = stats.jenks;
+          ramp = ramps.divergent;
         } else if (stats.dist_type === 'F') {
-          css = visFunction(stats.equalint, tableName, columnName, geometryType, ramps.red);
+          method = stats.equalint;
+          ramp = ramps.red;
         } else {
           if (stats.dist_type === 'J') {
-            css = visFunction(stats.headtails, tableName, columnName, geometryType, ramps.green);
+            method = stats.headtails;
+            ramp = ramps.green;
           } else {
-            var inverse_ramp = (_.clone(ramps.red)).reverse();
-            css = visFunction(stats.headtails, tableName, columnName, geometryType, inverse_ramp);
+            method = stats.headtails;
+            ramp = (_.clone(ramps.red)).reverse();
           }
         }
+
+        css = visFunction(method, tableName, columnName, geometryType, ramp);
+
       }
     }
 

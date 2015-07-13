@@ -121,8 +121,9 @@ var CSS = {
     return css;
   },
 
-  torque: function(stats, tableName){
+  torque: function(stats, tableName, options){
     var tableID = "#" + tableName;
+    var ramp = ramps.category;
     var css = [
         '/** torque visualization */',
         'Map {',
@@ -146,8 +147,18 @@ var CSS = {
         '  [frame-offset = 1] { marker-width: 10; marker-fill-opacity: 0.05;}',
         '  [frame-offset = 2] { marker-width: 15; marker-fill-opacity: 0.02;}',
         '}'
-    ].join('\n');
-    return css;
+    ];
+    if(options.torque.type === "category"){
+      var hist = options.torque.dataColumn.get("stats").hist;
+      for (var i = 0; i< hist.length; i++){
+        css.push(tableID + '[' + options.torque.dataColumn.get("name") + "=" + hist[i][0] + "]{\n"
+            + "marker-fill: " + ramp[i] + ";\n}");
+      }
+    }
+    else if(options.torque.type === "value"){
+
+    }
+    return css.join('\n');
   },
 
   bubble: function(quartiles, tableName, prop, geometryType, ramp) {
@@ -199,7 +210,7 @@ function guess(o, callback) {
   })
 }
 
-function guessMap(sql, tableName, column, stats) {
+function guessMap(sql, tableName, column, stats, options) {
   var geometryType = column.get("geometry_type");
   var bbox =  column.get("bbox");
   var columnName = column.get("name");
@@ -250,7 +261,7 @@ function guessMap(sql, tableName, column, stats) {
 
   } else if (stats.type === 'date') {
     visualizationType = "torque";
-    css = CSS.torque(stats, tableName);
+    css = CSS.torque(stats, tableName, options);
 
   } else if (stats.type === 'boolean') {
     visualizationType   = "category";

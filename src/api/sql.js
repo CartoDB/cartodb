@@ -188,7 +188,7 @@
       var s = 'SELECT ST_XMin(ST_Extent(the_geom)) as minx,' +
               '       ST_YMin(ST_Extent(the_geom)) as miny,'+
               '       ST_XMax(ST_Extent(the_geom)) as maxx,' +
-              '       ST_YMax(ST_Extent(the_geom)) as maxy' +
+      '       ST_YMax(ST_Extent(the_geom)) as maxy' +
               ' from ({{{ sql }}}) as subq';
       sql = Mustache.render(sql, vars);
       this.execute(s, { sql: sql }, options)
@@ -483,20 +483,24 @@
     });
   }
 
-  SQL.prototype.describeGeom = function(sql, column, callback) {
-      var s = [
-        'with stats as (', 
-           'select st_asgeojson(st_extent({{column}})) as bbox',
-           'from ({{sql}}) _wrap',
-        '),',
-        'geotype as (', 
-          'select st_geometrytype({{column}}) as geometry_type from ({{sql}}) _w where {{column}} is not null limit 1',
-        ')',
-        'select * from stats, geotype'
-      ];
+  SQL.prototype.describeGeom = function(tableName, sql, column, callback) {
+
+    var s = [
+      "WITH ext as (",
+      "SELECT",
+      "ST_Transform(ST_SetSRID(ST_Extent(ST_Union(ARRAY[",
+      "ST_EstimatedExtent('{{tableName}}', 'the_geom_webmercator')",
+      "])), 3857), 4326) geom)",
+      "SELECT",
+      "ST_XMin(geom) west,",
+      "ST_YMin(geom) south,",
+      "ST_XMax(geom) east,",
+      "ST_YMax(geom) north",
+      "FROM ext"];
 
       var query = Mustache.render(s.join('\n'), {
         column: column, 
+        tableName: tableName,
         sql: sql
       });
       function simplifyType(g) {
@@ -512,13 +516,9 @@
 
       this.execute(query, function(data) {
         var row = data.rows[0];
-        var bbox = JSON.parse(row.bbox).coordinates[0]
         callback({
           type: 'geom',
-          //lon,lat -> lat, lon
-          bbox: [[bbox[0][1],bbox[0][0]], [bbox[2][1], bbox[2][0]]],
-          geometry_type: row.geometry_type,
-          simplified_geometry_type: simplifyType(row.geometry_type)
+          bbox: [[row.west, row.south], [row.east, row.north]],
         });
       });
   }
@@ -626,7 +626,7 @@
   }
 
   // describe a column
-  SQL.prototype.describe = function(sql, column, options) {
+  SQL.prototype.describe = function(tableName, sql, column, options) {
       var self = this;
       var args = arguments,
           fn = args[args.length -1];
@@ -637,7 +637,7 @@
         data.column = column;
         _callback(data);
       }
-      var s = "select * from (" + sql + ") __wrap limit 0";
+      var s = "SELECT * FROM (" + sql + ") __wrap LIMIT 0";
       this.execute(s, function(data) {
 
         var type = (options && options.type) ? options.type : data.fields[column].type;
@@ -652,7 +652,7 @@
         } else if (type === 'number') {
           self.describeFloat(sql, column, callback);
         } else if (type === 'geometry') {
-          self.describeGeom(sql, column, callback);
+          self.describeGeom(tableName, sql, column, callback);
         } else if (type === 'date') {
           self.describeDate(sql, column, callback);
         } else if (type === 'boolean') {

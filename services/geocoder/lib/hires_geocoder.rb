@@ -108,7 +108,7 @@ module CartoDB
         return [nil, nil]
       end
     rescue => e
-      CartoDB.notify_exception(e)
+      CartoDB.notify_debug("Non-batched geocoder couldn't parse response", {error: e, text: text, response: http_response})
       [nil, nil]
     end
 

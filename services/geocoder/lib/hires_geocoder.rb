@@ -32,21 +32,19 @@ module CartoDB
       @app_id             = config.fetch('app_id')
       @token              = config.fetch('token')
       @mailto             = config.fetch('mailto')
+
+      @processed_rows = 0
     end
 
     def run
       @result = File.join(dir, 'generated_csv_out.txt')
       @status = 'running'
       @total_rows = input_rows
-      @processed_rows = 0
-      csv = ::CSV.open(@result, "wb")
-      ::CSV.foreach(input_file, headers: true) do |row|
-        @processed_rows = @processed_rows + 1
-        latitude, longitude = geocode_text(row["searchtext"])
-        next if latitude == "" || latitude == nil
-        csv << [row["searchtext"], 1, 1, latitude, longitude]
+      ::CSV.open(@result, "wb") do |output_csv_file|
+        ::CSV.foreach(input_file, headers: true) do |input_row|
+          process_row(input_row, output_csv_file)
+        end
       end
-      csv.close
       @status = 'completed'
     end
 
@@ -89,6 +87,14 @@ module CartoDB
       0
     end
 
+    def process_row(input_row, output_csv_file)
+      @processed_rows = @processed_rows + 1
+      latitude, longitude = geocode_text(input_row["searchtext"])
+      if !(latitude.nil? || latitude == "" || longitude.nil? && longitude == "")
+        output_csv_file.add_row [input_row["searchtext"], 1, 1, latitude, longitude]
+      end
+    end
+
     def geocode_text(text)
       options = GEOCODER_OPTIONS.merge(searchtext: text, app_id: app_id, app_code: token)
       url = "#{non_batch_base_url}?#{URI.encode_www_form(options)}"
@@ -102,7 +108,7 @@ module CartoDB
         return [nil, nil]
       end
     rescue => e
-      CartoDB.notify_exception(e)
+      CartoDB.notify_debug("Non-batched geocoder couldn't parse response", {error: e, text: text, response: http_response})
       [nil, nil]
     end
 
@@ -112,7 +118,7 @@ module CartoDB
       components << extra_components unless extra_components.nil?
       components << '?' + URI.encode_www_form(arguments)
       components.join('/')
-    end # api_url
+    end
 
-  end # Geocoder
-end # CartoDB
+  end
+end

@@ -156,7 +156,11 @@ var CSS = {
   },
 
   bubble: function(quartiles, tableName, prop, geometryType, ramp) {
-    var css = "/** bubble visualization */\n" + getDefaultCSSForGeometryType("point").join('\n');
+    var tableID = "#" + tableName;
+    var css = "/** bubble visualization */\n\n" + tableID + " {\n";
+    css += getDefaultCSSForGeometryType("point").join('\n');
+    css += "\nmarker-fill: #FF5C00;";
+    css += "\n}\n\n";
 
     var min = 10;
     var max = 30;
@@ -226,25 +230,35 @@ function guessMap(sql, tableName, column, stats, options) {
         css      = CSS.category(cats, tableName, columnName, geometryType, { type: stats.type });
         metadata = CSS.categoryMetadata(cats, { type: stats.type });
 
-      } else if (geometryType === 'point'){
-        visualizationType = "bubble";
-        visFunction = CSS.bubble;
-      } else {
-
+      } else if (distinctPercentage >=1) {
+      
         var visFunction = CSS.choropleth;
-        if (['A','U'].indexOf(stats.dist_type) != -1) {
-          // apply divergent scheme
-          css = visFunction(stats.jenks, tableName, columnName, geometryType, ramps.divergent);
+
+        if (geometryType === 'point'){
+          visualizationType = "bubble";
+          visFunction = CSS.bubble;
+        }
+
+        var method, ramp;
+
+        if (['A','U'].indexOf(stats.dist_type) != -1) { // apply divergent scheme
+          method = stats.jenks;
+          ramp = ramps.divergent;
         } else if (stats.dist_type === 'F') {
-          css = visFunction(stats.equalint, tableName, columnName, geometryType, ramps.red);
+          method = stats.equalint;
+          ramp = ramps.red;
         } else {
           if (stats.dist_type === 'J') {
-            css = visFunction(stats.headtails, tableName, columnName, geometryType, ramps.green);
+            method = stats.headtails;
+            ramp = ramps.green;
           } else {
-            var inverse_ramp = (_.clone(ramps.red)).reverse();
-            css = visFunction(stats.headtails, tableName, columnName, geometryType, inverse_ramp);
+            method = stats.headtails;
+            ramp = (_.clone(ramps.red)).reverse();
           }
         }
+
+        css = visFunction(method, tableName, columnName, geometryType, ramp);
+
       }
     }
 

@@ -105,7 +105,11 @@ class Geocoding < Sequel::Model
 
   # INFO: this method shall always be called from a queue processor
   def run!
-    table_geocoder.reset_cartodb_georef_status if self.force_all_rows == true
+    if self.force_all_rows == true
+      table_geocoder.reset_cartodb_georef_status
+    else
+      table_geocoder.mark_rows_to_geocode
+    end
 
     processable_rows = self.class.processable_rows(table_service)
     if processable_rows == 0

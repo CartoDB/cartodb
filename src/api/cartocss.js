@@ -123,45 +123,32 @@ var CSS = {
 
   torque: function(stats, tableName, options){
     var tableID = "#" + tableName;
-    var ramp = ramps.category;
     var aggFunction = "count(cartodb_id)";
     var css = [
         '/** torque visualization */',
         'Map {',
         '  -torque-time-attribute: ' + stats.column + ';',
-        '  -torque-aggregation-function: {{aggfunction}};',
+        '  -torque-aggregation-function: "{{aggfunction}}";',
         '  -torque-frame-count: ' + stats.steps + ';',
         '  -torque-animation-duration: 10;',
-        '  -torque-resolution: 2',
+        '  -torque-resolution: 2;',
         '}',
         tableID + " {",
         '  marker-width: 3;',
         '  marker-fill-opacity: 0.8;',
         '  marker-fill: #FEE391; ',
-        '  comp-op: "lighten";',
-        '  [value > 2] { marker-fill: #FEC44F; }',
-        '  [value > 3] { marker-fill: #FE9929; }',
-        '  [value > 4] { marker-fill: #EC7014; }',
-        '  [value > 5] { marker-fill: #CC4C02; }',
-        '  [value > 6] { marker-fill: #993404; }',
-        '  [value > 7] { marker-fill: #662506; }',
+        '  comp-op: "lighten"; ',
         '  [frame-offset = 1] { marker-width: 10; marker-fill-opacity: 0.05;}',
         '  [frame-offset = 2] { marker-width: 15; marker-fill-opacity: 0.02;}',
         '}'
     ];
-    if(options.torque.type === "category"){
-      var hist = options.torque.dataColumn.get("stats").hist;
-      for (var i = 0; i< hist.length; i++){
-        css.push(tableID + '[' + options.torque.dataColumn.get("name") + "=" + hist[i][0] + "]{\n"
-            + "marker-fill: " + ramp[i] + ";\n}");
-      }
-    }
     css = css.join('\n');
 
-    if(options.torque.type === "category"){
-      css.replace("{{aggfunction}}", "CDB_Math_Mode(torque_category)");
-    } else if (options.torque.type === "value"){
-      css.replace("{{aggfunction}}", options.torque.column.get("name"));
+    if (options.torque.type === "value"){
+      css = css.replace("{{aggfunction}}", "count(" + options.torque.column.get("name")+")");
+    }
+    else{
+      css = css.replace("{{aggfunction}}", "count(cartodb_id)");
     }
 
     return css;

@@ -8,6 +8,10 @@ require_relative 'hires_geocoder_interface'
 module CartoDB
   class HiresGeocoder < HiresGeocoderInterface
 
+    # Generous timeouts for this
+    HTTP_CONNECTION_TIMEOUT = 60
+    HTTP_REQUEST_TIMEOUT = 600
+
     # Default options for the regular HERE Geocoding API
     # Refer to developer.here.com for further reading
     GEOCODER_OPTIONS = {
@@ -79,7 +83,11 @@ module CartoDB
     end
 
     def http_client
-      @http_client ||= Carto::Http::Client.get('hires_geocoder', log_requests: true)
+      @http_client ||= Carto::Http::Client.get('hires_geocoder',
+        log_requests: true,
+        connecttimeout: HTTP_CONNECTION_TIMEOUT,
+        timeout: HTTP_REQUEST_TIMEOUT
+        )
     end
 
     def input_rows

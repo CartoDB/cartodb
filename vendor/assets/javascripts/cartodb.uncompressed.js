@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: 3c71d08459a80e5b380f2c62eace98d23d5ee9f2
+// sha: 305c03815c745095729ece420c5177c66f5d57d4
 (function() {
   var root = this;
 
@@ -41142,7 +41142,7 @@ Layers.register('torque', function(vis, data) {
         callback({
           type: 'geom',
           //lon,lat -> lat, lon
-          bbox: [[bbox[0][1],bbox[0][0]], [bbox[2][1], bbox[2][0]]],
+          bbox: [[bbox[0][0],bbox[0][1]], [bbox[2][0], bbox[2][1]]],
           geometry_type: row.geometry_type,
           simplified_geometry_type: simplifyType(row.geometry_type)
         });

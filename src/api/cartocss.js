@@ -124,11 +124,12 @@ var CSS = {
   torque: function(stats, tableName, options){
     var tableID = "#" + tableName;
     var ramp = ramps.category;
+    var value = options.torque.type === "value"? options.torque.column.get("name"): "cartodb_id";
     var css = [
         '/** torque visualization */',
         'Map {',
         '  -torque-time-attribute: ' + stats.column + ';',
-        '  -torque-aggregation-function: "count(cartodb_id)";',
+        '  -torque-aggregation-function: "count('+  +')";',
         '  -torque-frame-count: ' + stats.steps + ';',
         '  -torque-animation-duration: 10;',
         '  -torque-resolution: 2',
@@ -154,9 +155,6 @@ var CSS = {
         css.push(tableID + '[' + options.torque.dataColumn.get("name") + "=" + hist[i][0] + "]{\n"
             + "marker-fill: " + ramp[i] + ";\n}");
       }
-    }
-    else if(options.torque.type === "value"){
-
     }
     return css.join('\n');
   },

@@ -219,12 +219,15 @@ function guessMap(sql, tableName, column, stats) {
         css      = CSS.category(cats, tableName, columnName, geometryType, { type: stats.type });
         metadata = CSS.categoryMetadata(cats, { type: stats.type });
 
-      } else if (geometryType === 'point'){
-        visualizationType = "bubble";
-        visFunction = CSS.bubble;
-      } else {
-
+      } else if (distinctPercentage >=1) {
+      
         var visFunction = CSS.choropleth;
+
+        if (geometryType === 'point'){
+          visualizationType = "bubble";
+          visFunction = CSS.bubble;
+        }
+
         if (['A','U'].indexOf(stats.dist_type) != -1) {
           // apply divergent scheme
           css = visFunction(stats.jenks, tableName, columnName, geometryType, ramps.divergent);

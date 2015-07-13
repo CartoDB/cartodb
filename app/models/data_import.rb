@@ -325,7 +325,7 @@ class DataImport < Sequel::Model
   # Calculates the maximum timeout in seconds for a given user, to be used when performing HTTP requests
   # TODO: Candidate for being private if we join syncs and data imports someday
   # TODO: Add timeout config (if we need to change this)
-  def self.http_timeout_for(user, assumed_kb_sec = 100*1024)
+  def self.http_timeout_for(user, assumed_kb_sec = 75*1024)
     if user.nil? || !user.respond_to?(:quota_in_bytes)
       raise ArgumentError.new('Need a User object to calculate its download speed')
     end

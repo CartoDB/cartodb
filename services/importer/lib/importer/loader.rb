@@ -126,7 +126,7 @@ module CartoDB
 
       def ogr2ogr
         @ogr2ogr ||= Ogr2ogr.new(
-          job.table_name, @source_file.fullpath, job.pg_options, @source_file.layer, ogr2ogr_options
+          job.table_name, @source_file.fullpath, job.pg_options, job.db, @source_file.layer, ogr2ogr_options
         )
       end
 
@@ -241,6 +241,11 @@ module CartoDB
         raise TooManyColumnsError.new(job.logger) if ogr2ogr.command_output =~ /tables can have at most 1600 columns/
         if ogr2ogr.command_output =~ /canceling statement due to statement timeout/i
           raise StatementTimeoutError.new(ogr2ogr.command_output, ERRORS_MAP[CartoDB::Importer2::StatementTimeoutError])
+        end
+        if (ogr2ogr.command_output =~ /has no equivalent in encoding/ ||
+            ogr2ogr.command_output =~ /invalid byte sequence for encoding/) &&
+            ogr2ogr.imported_rows == 0
+          raise RowsEncodingColumnError.new(ogr2ogr.command_output)
         end
 
         if ogr2ogr.exit_code != 0

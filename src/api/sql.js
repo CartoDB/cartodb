@@ -513,7 +513,6 @@
       this.execute(query, function(data) {
         var row = data.rows[0];
         var bbox = JSON.parse(row.bbox).coordinates[0]
-        debugger
         callback({
           type: 'geom',
           //lon,lat -> lat, lon

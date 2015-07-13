@@ -190,6 +190,7 @@
           layers.push(basemap);
         }
 
+        var labelsLayer;
         for (var i = 1; i < data.layers.length; i++) {
           var layer = data.layers[i];
 
@@ -198,7 +199,7 @@
           } else if (layer.type === "namedmap") {
             layers.push(this._getNamedmapLayerDefinition(layer));
           } else if (layer.type === "tiled") {
-            layers.push(this._getHTTPLayer(layer));
+            labelsLayer = this._getHTTPLayer(layer);
           } else if (layer.type !== "torque" && layer.type !== "namedmap") {
             var ll = this._getLayergroupLayerDefinition(layer);
 
@@ -206,6 +207,12 @@
               layers.push(ll[j]);
             }
           }
+        }
+
+        // If there's a second `tiled` layer, it's a layer with labels and
+        // it needs to be on top of all other layers
+        if (labelsLayer) {
+          layers.push(labelsLayer);
         }
 
         this.options.layers = { layers: layers };

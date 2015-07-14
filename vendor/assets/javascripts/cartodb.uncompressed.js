@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: 7dee94bfe94ec26397418b24fb3ab4f49a2acb98
+// sha: daf414b4050c5205eefdc0a935d7da7a081e608f
 (function() {
   var root = this;
 
@@ -36597,7 +36597,11 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
     },
 
     pixelToLatLon: function(pos) {
-      return this.projector.fromContainerPixelToLatLng(new google.maps.Point(pos[0], pos[1]));
+      var latLng = this.projector.pixelToLatLng(new google.maps.Point(pos[0], pos[1]));
+      return {
+        lat: latLng.lat(),
+        lng: latLng.lng()
+      }
     },
 
     latLonToPixel: function(latlon) {

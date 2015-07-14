@@ -46,8 +46,8 @@ $sDates-defaultWidth: 434px;
   font-size: $sFontSize-larger;
   color: $cTypography-help;
 }
-.DatePicker-dates:hover,
-.DatePicker-dates:focus {
+.DatePicker-dates:hover:not(.has-errors),
+.DatePicker-dates:focus:not(.has-errors) {
   border-color: #999;
   .DatePicker-datesIcon { color: $cTypography-secondary }
 }
@@ -57,6 +57,12 @@ $sDates-defaultWidth: 434px;
     border-color: #CCC;
     color: $cTypography-help;
     .DatePicker-datesIcon { color: $cTypography-help }
+  }
+}
+.DatePicker-dates.has-errors {
+  border-color: $cHighlight-negative;
+  .DatePicker-datesIcon {
+    color: rgba($cHighlight-negative,0.7);
   }
 }
 .DatePicker-dropdown {

@@ -61,17 +61,9 @@ module CartoDB
     user_domain.nil? ? self.subdomain_from_request(request) : user_domain
   end
 
-  # Subdomain extraction from request taking subdomainless_urls into account
-  def self.subdomain_from_request(request)
-    self.subdomainless_urls? ? '' : extract_subdomain_from_request(request)
-  end
-
   # Raw subdomain extraction from request
-  def self.extract_subdomain_from_request(request)
-    host = request.host.to_s
-    # If host doesn't contain session domain subdomain is empty.
-    # A simple replacement won't work because session_domain doesn't contain beginning dot and host does
-    host =~ /#{self.session_domain}/ ? host.gsub(self.session_domain, '') : ''
+  def self.subdomain_from_request(request)
+    self.subdomainless_urls? ? '' : request.host.to_s.gsub(self.session_domain, '')
   end
 
   # Flexible subdomain extraction: If /u/xxx or /user/xxxx present uses it, else uses request host (xxx.cartodb.com)

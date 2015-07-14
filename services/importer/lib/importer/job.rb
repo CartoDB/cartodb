@@ -63,6 +63,14 @@ module CartoDB
         end
       end
 
+      def delete_job_table
+        delete_temp_table(table_name)
+      end
+
+      def delete_temp_table(table_name)
+        db.run(%Q{DROP TABLE #{@schema}.#{table_name}})
+      end
+
       attr_reader :id, :logger, :pg_options, :schema
       attr_accessor :success_status, :source_file_rows, :imported_rows
 

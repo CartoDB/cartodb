@@ -17,6 +17,9 @@ module CartoDB
         def qualified_table_name; ''; end
         def id;                   0; end
         def import_error_percent;  0; end
+        def rows_number;          0; end
+        def delete_job_table;     end
+        def delete_temp_table(table_name); end;
         def pg_options
           {
             host:     '',

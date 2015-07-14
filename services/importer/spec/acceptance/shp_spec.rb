@@ -15,10 +15,6 @@ describe 'SHP regression tests' do
   include AcceptanceHelpers
   include_context 'cdb_importer schema'
 
-  before do
-    @pg_options  = Factories::PGConnection.new.pg_options
-  end
-
   it 'imports SHP files' do
     filepath    = path_to('TM_WORLD_BORDERS_SIMPL-0.3.zip')
     downloader  = Downloader.new(filepath)

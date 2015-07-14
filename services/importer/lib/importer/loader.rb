@@ -68,6 +68,12 @@ module CartoDB
 
           self
         end
+      rescue => exception
+        begin
+          job.delete_job_table
+        ensure
+          raise exception
+        end
       end
 
       def streamed_run_init

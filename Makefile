@@ -40,6 +40,7 @@ WORKING_SPECS_2 = \
 
 WORKING_SPECS_2b = \
 	spec/helpers/uuidhelper_spec.rb \
+	spec/helpers/carto_db_spec.rb \
   $(NULL)
 
 WORKING_SPECS_3 = \

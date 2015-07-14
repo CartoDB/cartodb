@@ -230,15 +230,13 @@ module CartoDB
       def run_ogr2ogr(append_mode=false)
         ogr2ogr.run(append_mode)
 
-        if ogr2ogr.exit_code == 0
-          self.total_rows = get_total_rows
-          self.imported_rows = get_imported_rows
+        self.total_rows = get_total_rows
+        self.imported_rows = get_imported_rows
 
-          unless total_rows.nil?
-            #TODO Right now is only calculating SHP files but it'll great
-            #to use for all the file types
-            update_error_percent
-          end
+        if !total_rows.nil? && !imported_rows.nil?
+          #TODO Right now is only calculating SHP files but it'll great
+          #to use for all the file types
+          update_error_percent
         end
 
         # too verbose in append mode
@@ -256,7 +254,7 @@ module CartoDB
           raise StatementTimeoutError.new(ogr2ogr.command_output, ERRORS_MAP[CartoDB::Importer2::StatementTimeoutError])
         end
         if (ogr2ogr.command_output =~ /has no equivalent in encoding/ || ogr2ogr.command_output =~ /invalid byte sequence for encoding/) &&
-            ogr2ogr.imported_rows == 0
+            imported_rows == 0
           raise RowsEncodingColumnError.new(ogr2ogr.command_output)
         end
 
@@ -287,8 +285,9 @@ module CartoDB
 
       def get_imported_rows
         rows = @job.db.fetch(%Q{SELECT COUNT(*) FROM #{SCHEMA}.#{@job.table_name}}).first
-
-        return rows[:count]
+        return (!rows.nil? && rows.has_key?(:count)) ? rows[:count] : nil
+      rescue
+        return nil
       end
 
       def get_total_rows

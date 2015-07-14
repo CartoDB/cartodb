@@ -18,8 +18,8 @@ module CartoDB
         def initialize(config)
           super
 
-          @http_timeout = config.fetch(:http_timeout)
-          @http_connect_timeout = config.fetch(:http_connect_timeout)
+          @http_timeout = config.fetch(:http_timeout, 3200)
+          @http_connect_timeout = config.fetch(:http_connect_timeout, 60)
           @service_name = DATASOURCE_NAME
           @headers = nil
         end

@@ -16,10 +16,9 @@ module CartoDB
 
       DEFAULT_BINARY = 'which ogr2ogr'
 
-      def initialize(table_name, filepath, pg_options, db, layer=nil, options={})
+      def initialize(table_name, filepath, pg_options, layer=nil, options={})
         self.filepath   = filepath
         self.pg_options = pg_options
-        self.db = db
         self.table_name = table_name
         self.layer      = layer
         self.options    = options
@@ -54,18 +53,16 @@ module CartoDB
         stdout, stderr, status  = Open3.capture3(command)
         self.command_output     = (stdout + stderr).encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '?????')
         self.exit_code          = status.to_i
-        self.total_rows         = (exit_code == 0) ? get_total_rows : nil
-        self.imported_rows      = (exit_code == 0) ? get_imported_rows : nil
         self
       end
 
       attr_accessor :append_mode, :filepath
-      attr_reader   :exit_code, :command_output, :imported_rows, :total_rows
+      attr_reader   :exit_code, :command_output
 
       private
 
-      attr_writer   :exit_code, :command_output, :imported_rows, :total_rows
-      attr_accessor :pg_options, :options, :table_name, :layer, :ogr2ogr2_binary, :csv_guessing, :quoted_fields_guessing, :db
+      attr_writer   :exit_code, :command_output
+      attr_accessor :pg_options, :options, :table_name, :layer, :ogr2ogr2_binary, :csv_guessing, :quoted_fields_guessing 
 
       def is_csv?
         !(filepath =~ /\.csv$/i).nil?
@@ -114,21 +111,6 @@ module CartoDB
 
       def projection_option
         is_csv? || filepath =~ /\.ods/ ? nil : '-t_srs EPSG:4326 '
-      end
-
-      def get_imported_rows
-          rows = db.fetch(%Q{SELECT COUNT(*) FROM #{SCHEMA}.#{table_name}}).first
-
-          return rows[:count]
-      end
-
-      def get_total_rows
-        if is_shp?
-          @helper = @shp_helper ||= ShpHelper.new(filepath)
-          return @helper.total_rows
-        else
-          return nil
-        end
       end
     end
   end

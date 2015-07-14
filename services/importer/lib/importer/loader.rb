@@ -128,7 +128,7 @@ module CartoDB
 
       def ogr2ogr
         @ogr2ogr ||= Ogr2ogr.new(
-          job.table_name, @source_file.fullpath, job.pg_options, job.db, @source_file.layer, ogr2ogr_options
+          job.table_name, @source_file.fullpath, job.pg_options, @source_file.layer, ogr2ogr_options
         )
       end
 
@@ -218,7 +218,7 @@ module CartoDB
       private
 
       attr_writer     :ogr2ogr, :georeferencer
-      attr_accessor   :job, :layer
+      attr_accessor   :job, :layer, :imported_rows, :total_rows
 
       # @throws DuplicatedColumnError
       # @throws InvalidGeoJSONError
@@ -230,18 +230,21 @@ module CartoDB
       def run_ogr2ogr(append_mode=false)
         ogr2ogr.run(append_mode)
 
-        unless ogr2ogr.total_rows.nil?
-          #TODO Right now is only calculating SHP files but it'll great
-          #to use for all the file types
-          update_error_percent
+        if ogr2ogr.exit_code == 0
+          self.total_rows = get_total_rows
+          self.imported_rows = get_imported_rows
+
+          unless total_rows.nil?
+            #TODO Right now is only calculating SHP files but it'll great
+            #to use for all the file types
+            update_error_percent
+          end
         end
 
         # too verbose in append mode
         unless append_mode
           job.log "ogr2ogr call:            #{ogr2ogr.command}"
           job.log "ogr2ogr output:          #{ogr2ogr.command_output}"
-          job.log "ogr2ogr total rows:      #{ogr2ogr.total_rows}"
-          job.log "ogr2ogr rows imported:   #{ogr2ogr.imported_rows}"
           job.log "ogr2ogr exit code:       #{ogr2ogr.exit_code}"
         end
 
@@ -278,8 +281,26 @@ module CartoDB
       end
 
       def update_error_percent
-        error_percent = ((ogr2ogr.imported_rows - ogr2ogr.total_rows).abs.to_f/ogr2ogr.total_rows)*100
-        @importer_stats.gauge(%Q{loader.#{@file_extension}.error_percent}, error_percent) unless ogr2ogr.total_rows
+        error_percent = ((imported_rows - total_rows).abs.to_f/total_rows)*100
+        @importer_stats.gauge(%Q{loader.#{@file_extension}.#{job.id}.error_percent}, error_percent) unless total_rows
+      end
+
+      def get_imported_rows
+        rows = @job.db.fetch(%Q{SELECT COUNT(*) FROM #{SCHEMA}.#{@job.table_name}}).first
+
+        return rows[:count]
+      end
+
+      def get_total_rows
+        if is_shp?
+          return ShpHelper.new(@source_file.fullpath).total_rows
+        else
+          return nil
+        end
+      end
+
+      def is_shp?
+        !(@source_file.fullpath =~ /\.shp$/i).nil?
       end
     end
   end

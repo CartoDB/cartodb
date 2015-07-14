@@ -1,4 +1,5 @@
 # encoding: utf-8
+require 'ostruct'
 require_relative '../../lib/importer/loader'
 require_relative '../../lib/importer/source_file'
 require_relative '../doubles/job'
@@ -9,7 +10,10 @@ require_relative '../../../../spec/rspec_configuration.rb'
 
 describe CartoDB::Importer2::Loader do
   before do
-    @job            = CartoDB::Importer2::Doubles::Job.new
+    resultset = OpenStruct.new(:first => {:count => 10})
+    db = Object.new
+    db.stubs(:fetch).returns(resultset)
+    @job            = CartoDB::Importer2::Doubles::Job.new(db)
     @source_file    = CartoDB::Importer2::SourceFile.new('/var/tmp/foo')
     @ogr2ogr        = CartoDB::Importer2::Doubles::Ogr2ogr.new
     @georeferencer  = CartoDB::Importer2::Doubles::Georeferencer.new
@@ -28,8 +32,6 @@ describe CartoDB::Importer2::Loader do
       ogr2ogr_mock.stubs(:command).returns('').at_least_once
       ogr2ogr_mock.stubs(:command_output).returns('').at_least_once
       ogr2ogr_mock.stubs(:exit_code).returns(0).at_least_once
-      ogr2ogr_mock.stubs(:total_rows).returns(nil).at_least_once
-      ogr2ogr_mock.stubs(:imported_rows).returns(0).at_least_once
       ogr2ogr_mock.stubs(:run).returns(Object.new).at_least_once
 
       loader   = CartoDB::Importer2::Loader.new(@job, @source_file, layer=nil, ogr2ogr_mock, @georeferencer)
@@ -65,7 +67,10 @@ describe CartoDB::Importer2::Loader do
 
   describe 'stats logger' do
     before do
-      @job            = CartoDB::Importer2::Doubles::Job.new
+      resultset = OpenStruct.new(:first => {:count => 10})
+      db = Object.new
+      db.stubs(:fetch).returns(resultset)
+      @job            = CartoDB::Importer2::Doubles::Job.new(db)
       @source_file    = CartoDB::Importer2::SourceFile.new('/var/tmp/foo')
       @ogr2ogr        = CartoDB::Importer2::Doubles::Ogr2ogr.new
       @georeferencer  = CartoDB::Importer2::Doubles::Georeferencer.new

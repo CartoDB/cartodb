@@ -53,7 +53,59 @@ describe("Image", function() {
       expect(url).toMatch(regexp);
       done();
     });
+  });
 
+  it("should generate the right layer configuration for map with a layer of labels", function(done) {
+    var oldLoaderGet = cdb.core.Loader.get;
+
+    var vizjson = {
+      layers: [
+        {
+          type: 'tiled',
+          options: {
+            urlTemplate: 'urlTemplate'
+          },
+          visible: true
+        },
+        {
+          type: 'tiled',
+          options: {
+            urlTemplate: 'urlTemplateLabels'
+          },
+          visible: true
+        },
+        {
+          type: 'layergroup',
+          options: {
+            layer_definition: {
+              layers: [{
+                options: {},
+                visible: true
+              }]
+            }
+          }
+        }
+      ],
+      center: "[52.5897007687178, 52.734375]",
+      zoom: 2
+    }
+    cdb.core.Loader.get = function(a, callback) {
+      callback(vizjson);
+    }
+
+    var image = cartodb.Image("wadus.json");
+
+    image.getUrl(function(err, url) {
+      expect(image.options.layers.layers.length).toEqual(3);
+      expect(image.options.layers.layers[0].type).toEqual("http");
+      expect(image.options.layers.layers[0].options.urlTemplate).toEqual("urlTemplate");
+      expect(image.options.layers.layers[1].type).toEqual("cartodb");
+      expect(image.options.layers.layers[2].type).toEqual("http");
+      expect(image.options.layers.layers[2].options.urlTemplate).toEqual("urlTemplateLabels");
+      done();
+    });
+
+    cdb.core.Loader.get = oldLoaderGet;
   });
 
   it("should generate the right layer configuration for a torque layer and a named map", function(done) {

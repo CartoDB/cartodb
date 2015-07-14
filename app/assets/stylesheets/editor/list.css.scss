@@ -51,11 +51,9 @@
   margin-right: 0;
 }
 .List-rowItem.List-rowItem--withoutBottomBorder { border-bottom: 0 }
+.List-rowItem.List-rowItem--withoutBottomPadding { padding-bottom: 0 }
 .List-row.is-selected > .List-rowItem { border-bottom: 1px solid transparent }
+.List-row.is-selected > .List-rowItem.List-rowItem--compact {
+  padding-top: 19px;
+  padding-bottom: 18px;
 }
-.List-rowItemContentLeft {
-  @include display-flex();
-  @include justify-content(flex-start, start);
-  @include align-items(center);
-}
-.List-rowItemContentLeft > *:first-child { margin-right: $sMargin-element }

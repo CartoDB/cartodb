@@ -2,6 +2,7 @@
 require 'ostruct'
 require_relative '../../lib/importer/loader'
 require_relative '../../lib/importer/source_file'
+require_relative '../../lib/importer/exceptions'
 require_relative '../doubles/job'
 require_relative '../doubles/ogr2ogr'
 require_relative '../doubles/georeferencer'
@@ -47,6 +48,17 @@ describe CartoDB::Importer2::Loader do
     it 'logs any output from ogr2ogr' do
       @loader.run
       (@job.logger.to_s =~ /ogr2ogr output: \w*/).should_not be nil
+    end
+
+    it 'encoding problem importing but return 0 should raise an error' do
+      resultset = OpenStruct.new(:first => {:count => 0})
+      db = Object.new
+      db.stubs(:fetch).returns(resultset)
+      @job  = CartoDB::Importer2::Doubles::Job.new(db)
+      @ogr2ogr.command_output = "ERROR:  character with byte sequence 0x81 in encoding " +
+        "\"WIN1252\" has no equivalent in encoding \"UTF8\""
+      loader = CartoDB::Importer2::Loader.new(@job, @source_file, layer=nil, @ogr2ogr, @georeferencer)
+      expect { loader.run }.to raise_error(CartoDB::Importer2::RowsEncodingColumnError)
     end
   end
 

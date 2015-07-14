@@ -90,33 +90,3 @@
   border: none;
   bottom: -2px;
 }
-.MergeDatasets-ornamentsBottom {
-  position: relative;
-  width: 29px;
-  height: 108px;
-  float: right;
-  border-left: 1px solid $cStructure-mainLine;
-  border-bottom: 1px solid $cStructure-mainLine;
-
-  &:after {
-    content: '';
-    display: block;
-    width: 10px;
-    height: 10px;
-    position: absolute;
-    bottom: -6px;
-    right: -15px;
-    border-radius: 50px;
-    border: 1px solid $cStructure-mainLine;
-    background-color: $cStructure-mainLine;
-  }
-}
-.MergeDatasets-ornamentsBottomText {
-  position: absolute;
-  top: 40px;
-  left: -13px;
-  padding-top: 2px;
-  padding-bottom: 2px;
-  background-color: $cStructure-grayBkg;
-  text-transform: uppercase;
-}

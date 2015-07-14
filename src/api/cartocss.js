@@ -181,6 +181,30 @@ var CSS = {
       }
     }
     return css;
+  },
+
+  heatmap: function(stats, tableName, options){
+    var tableID = "#" + tableName;
+    var css = [
+        '/** heatmap visualization */',
+        'Map {',
+        '  -torque-time-attribute: cartodb_id;',
+        '  -torque-aggregation-function: "count(cartodb_id)";',
+        '  -torque-frame-count: 1;',
+        '  -torque-animation-duration: 10;',
+        '  -torque-resolution: 2;',
+        '}',
+        tableID + " {",
+        '  marker-width: 10;',
+        '  marker-fill-opacity: 0.4;',
+        '  marker-fill: #0F3B82; ',
+        '  comp-op: "lighten"; ',
+        '  image-filters: colorize-alpha(blue, cyan, lightgreen, yellow , orange, red);',
+        '  marker-file: url(http://s3.amazonaws.com/com.cartodb.assets.static/alphamarker.png);',
+        '}'
+    ];
+    css = css.join('\n');
+    return css;
   }
 }
 

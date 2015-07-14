@@ -98,13 +98,6 @@ module ApplicationHelper
       config[:statsd_port] = Cartodb.config[:graphite_public]['port']
     end
 
-    if Cartodb.config[:cdn_url].present?
-      config[:cdn_url] = {
-        http:              Cartodb.config[:cdn_url].try("fetch", "http", nil),
-        https:             Cartodb.config[:cdn_url].try("fetch", "https", nil)
-      }
-    end
-
     if Cartodb.config[:error_track].present?
       config[:error_track_url] = Cartodb.config[:error_track]["url"]
       config[:error_track_percent_users] = Cartodb.config[:error_track]["percent_users"]
@@ -131,13 +124,6 @@ module ApplicationHelper
     if Cartodb.config[:graphite_public].present?
       config[:statsd_host] = Cartodb.config[:graphite_public]['host']
       config[:statsd_port] = Cartodb.config[:graphite_public]['port']
-    end
-
-    if Cartodb.config[:cdn_url].present?
-      config[:cdn_url] = {
-        http:              Cartodb.config[:cdn_url].try("fetch", "http", nil),
-        https:             Cartodb.config[:cdn_url].try("fetch", "https", nil)
-      }
     end
 
     if Cartodb.config[:error_track].present?

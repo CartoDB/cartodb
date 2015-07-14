@@ -37,7 +37,7 @@ module Carto
 
       def to_hash(options={})
         # TODO: using an Api presenter here smells, refactor
-        presenter = Carto::Api::VisualizationPresenter.new(@visualization, @current_viewer, options)
+        presenter = Carto::Api::VisualizationPresenter.new(@visualization, @current_viewer, options.merge(show_stats: false))
         options.delete(:public_fields_only) === true ? presenter.to_public_poro : presenter.to_poro
       end
 

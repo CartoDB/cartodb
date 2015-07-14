@@ -45,7 +45,7 @@ end
 # Importer & sync tables
 gem 'roo',                     '1.13.2'
 gem 'state_machine',           '1.1.2'
-gem 'typhoeus',                '0.6.7'
+gem 'typhoeus',                '0.7.2'
 gem 'charlock_holmes',         '0.7.2'
 gem 'dbf',                     '2.0.6'
 gem 'faraday',                 '0.9.0'

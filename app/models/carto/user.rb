@@ -33,7 +33,7 @@ class Carto::User < ActiveRecord::Base
 
   # INFO: select filter is done for security and performance reasons. Add new columns if needed.
   DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," + 
-                   "users.api_key, users.dynamic_cdn_enabled, users.database_schema, users.database_name, users.name," +
+                   "users.api_key, users.database_schema, users.database_name, users.name," +
                    "users.disqus_shortname, users.account_type, users.twitter_username, users.google_maps_key"
 
   SELECT_WITH_DATABASE = DEFAULT_SELECT + ", users.quota_in_bytes, users.database_host"
@@ -196,7 +196,12 @@ class Carto::User < ActiveRecord::Base
   end
 
   def remaining_geocoding_quota(options = {})
-    geocoding_quota - get_geocoding_calls(options)
+    if organization.present?
+      remaining = organization.geocoding_quota.to_i - organization.get_geocoding_calls(options)
+    else
+      remaining = geocoding_quota - get_geocoding_calls(options)
+    end
+    (remaining > 0 ? remaining : 0)
   end
 
   def oauth_for_service(service)

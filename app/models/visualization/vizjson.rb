@@ -100,7 +100,6 @@ module CartoDB
           presenter_options = {
             user_name: options.fetch(:user_name),
             api_key: options.delete(:user_api_key),
-            dynamic_cdn_enabled: @user != nil ? @user.dynamic_cdn_enabled: false,
             https_request: options.fetch(:https_request, false),
             viewer_user: @user,
             owner: visualization.user

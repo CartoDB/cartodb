@@ -17,10 +17,11 @@ module CartoDB
         extension == ".#{@format}"
       end #self.supported?
 
-      def initialize(supported_format, filepath, job=nil)
+      def initialize(supported_format, filepath, job=nil, csv_normalizer=nil)
         @format = "#{supported_format.downcase}"
         @filepath = filepath
         @job      = job || Job.new
+        @csv_normalizer = csv_normalizer || CsvNormalizer.new(converted_filepath, @job)
       end #initialize
 
       def run
@@ -37,10 +38,9 @@ module CartoDB
 
         # Can be check locally using wc -l ... (converted_filepath)
         job.log "Orig file: #{filepath}\nTemp destination: #{converted_filepath}"
-        normalizer = CsvNormalizer.new(converted_filepath, job)
         # Roo gem is not exporting always correctly when source Excel has atypical UTF-8 characters
-        normalizer.force_normalize
-        normalizer.run
+        @csv_normalizer.force_normalize
+        @csv_normalizer.run
         self
       end #run
 

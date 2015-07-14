@@ -94,9 +94,6 @@ class Table
 
   # ----------------------------------------------------------------------------
 
-
-
-
   def public_values(options = {}, viewer_user=nil)
     selected_attrs = options[:except].present? ?
       PUBLIC_ATTRIBUTES.select { |k, v| !options[:except].include?(k.to_sym) } : PUBLIC_ATTRIBUTES
@@ -209,7 +206,6 @@ class Table
       Carto::UserTable.where(user_id: user_id, name: table_name).first
     }
   end
-
 
   def self.table_and_schema(table_name)
     if table_name =~ /\./
@@ -598,6 +594,8 @@ class Table
   end
 
   def create_default_map_and_layers
+
+    # Adds the default baselayer
     baselayer = default_baselayer_for_user
     provider = ::Map.provider_for_baselayer(baselayer)
     m = ::Map.create(::Map::DEFAULT_OPTIONS.merge(table_id: self.id, user_id: self.user_id, provider: provider))
@@ -605,6 +603,7 @@ class Table
     base_layer = ::Layer.new(baselayer)
     m.add_layer(base_layer)
 
+    # Adds the default data layer
     data_layer = ::Layer.new(Cartodb.config[:layer_opts]['data'])
     data_layer.options['table_name'] = self.name
     data_layer.options['user_name'] = self.owner.username
@@ -614,6 +613,21 @@ class Table
     data_layer.tooltip ||= {}
     data_layer.tooltip['fields'] = []
     m.add_layer(data_layer)
+
+    # Adds a layer with labels at top if the baselayer has that option
+    labels_layer_url = base_layer.options['labels'] && base_layer.options['labels']['url']
+    if labels_layer_url
+      labels_layer = ::Layer.new({
+        kind: 'tiled',
+        options: base_layer.options.except('name', 'className', 'labels').merge({
+          'urlTemplate' => labels_layer_url,
+          'url' => labels_layer_url,
+          'type' => 'Tiled',
+          'name' => "#{base_layer.options['name']} Labels"
+        })
+      })
+      m.add_layer(labels_layer)
+    end
   end
 
   def create_default_visualization

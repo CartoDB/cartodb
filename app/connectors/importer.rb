@@ -29,7 +29,6 @@ module CartoDB
         @database               = database
         @data_import_id         = data_import_id
         @destination_schema     = destination_schema
-        @rename_attempts        = 0
         @support_tables_helper  = CartoDB::Visualization::SupportTables.new(database,
                                                                             {public_user_roles: public_user_roles})
         @data_import            = nil
@@ -106,11 +105,15 @@ module CartoDB
       def rename(result, current_name, new_name, rename_attempts=0)
         target_new_name = new_name
         new_name = table_registrar.get_valid_table_name(new_name)
-
         if rename_attempts > 0
           new_name = "#{new_name}_#{rename_attempts}"
         end
         rename_attempts = rename_attempts + 1
+
+        if self.data_import
+          user_id = self.data_import.user_id
+          raise "#{new_name} already registered for #{user_id}" if exists_table_for_user_id(new_name, user_id)
+        end
 
         database.execute(%Q{
           ALTER TABLE "#{ORIGIN_SCHEMA}"."#{current_name}" RENAME TO "#{new_name}"
@@ -170,10 +173,14 @@ module CartoDB
       end
 
       def data_import
-        @data_import ||= DataImport[@data_import_id]
+        DataImport[@data_import_id]
       end
 
       private
+
+      def exists_table_for_user_id(table_name, user_id)
+        !Carto::UserTable.where(name: table_name, user_id: user_id).first.nil?
+      end
 
       attr_reader :runner, :table_registrar, :quota_checker, :database, :data_import_id
 

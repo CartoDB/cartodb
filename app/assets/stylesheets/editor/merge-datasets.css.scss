@@ -12,6 +12,15 @@
   width: 420px;
   margin-bottom: 190px; // compensate for fixed dialog footer + fixed stuff above footer
 }
+.MergeDatasets-rowItem {
+  @include display-flex();
+  @include justify-content(flex-start, start);
+  @include align-items(flex-start);
+}
+.MergeDatasets-rowItem > *:first-child {
+  margin-top: $sMargin-min;
+  margin-right: $sMargin-elementInline
+}
 .MergeDatasets-fixedAboveFooter {
   position: fixed;
   bottom: 90px; //to appear above fixed footer
@@ -65,7 +74,7 @@
 }
 .MergeDatasets-ornamentsTop {
   position: relative;
-  height: 118px;
+  height: 80px;
   border-bottom: 1px solid $cStructure-mainLine;
   &:before,
   &:after {

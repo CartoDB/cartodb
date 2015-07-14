@@ -94,7 +94,7 @@ module CartoDB
         WITH geocodable AS (
           SELECT DISTINCT(#{clean_formatter}) recId, #{clean_formatter} searchText
           FROM #{@qualified_table_name}
-          WHERE cartodb_georef_status = NULL
+          WHERE cartodb_georef_status IS NULL
           LIMIT #{@max_rows - cache.hits}
         )
         SELECT * FROM geocodable

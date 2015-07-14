@@ -1,8 +1,8 @@
 # encoding: utf-8
-require_relative '../lib/table_geocoder.rb'
+require_relative '../lib/table_geocoder'
 require_relative 'factories/pg_connection'
 require 'set'
-require_relative '../../../spec/rspec_configuration.rb'
+require_relative '../../../spec/rspec_configuration'
 
 describe CartoDB::TableGeocoder do
   let(:default_params) { {app_id: '', token: '', mailto: ''} }

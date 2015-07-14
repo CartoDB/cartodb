@@ -304,6 +304,9 @@ function guessMap(sql, tableName, column, stats, options) {
     var options = { type: stats.type, ramp: ramp };
     css      = CSS.category(cats, tableName, columnName, geometryType, options);
     metadata = CSS.categoryMetadata(cats, options);
+  } else if (stats.type === 'geom') {
+    visualizationType = "heatmap";
+    css      = CSS.heatmap(stats, tableName, options);
   }
 
   var properties = {

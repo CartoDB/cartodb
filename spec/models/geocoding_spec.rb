@@ -290,6 +290,38 @@ describe Geocoding do
     end
   end
 
+  describe 'self.processable_rows' do
+    before(:each) do
+      @my_table = FactoryGirl.create(:user_table, user_id: @user.id)
+    end
+
+    after(:each) do
+      @my_table.destroy
+    end
+
+    it "returns all rows if there's no cartodb_georef_status column" do
+      3.times { @my_table.service.insert_row!({}) }
+      Geocoding.processable_rows(@my_table.service).should == 3
+    end
+
+    it "returns all rows where cartodb_georef_status <> true" do
+      @my_table.service.add_column!(name: 'cartodb_georef_status', type: 'bool')
+      3.times { @my_table.service.insert_row!(cartodb_georef_status: nil) }
+      @my_table.service.insert_row!(cartodb_georef_status: true)
+      @my_table.service.insert_row!(cartodb_georef_status: false)
+      Geocoding.processable_rows(@my_table.service).should == 4
+    end
+
+    it "returns all rows regardless of cartodb_georef_status if force_all_rows=true" do
+      @my_table.service.add_column!(name: 'cartodb_georef_status', type: 'bool')
+      3.times { @my_table.service.insert_row!(cartodb_georef_status: nil) }
+      @my_table.service.insert_row!(cartodb_georef_status: true)
+      @my_table.service.insert_row!(cartodb_georef_status: false)
+      Geocoding.processable_rows(@my_table.service, true).should == 5
+    end
+
+  end
+
   describe '#failed_rows and #successful_rows' do
     before(:each) do
       @user.geocodings_dataset.delete

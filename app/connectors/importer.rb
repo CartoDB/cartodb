@@ -110,7 +110,10 @@ module CartoDB
         end
         rename_attempts = rename_attempts + 1
 
-        raise "#{new_name} already registered for #{user}" if exists_table_for_user_id(new_name, self.data_import.user_id)
+        if self.data_import
+          user_id = self.data_import.user_id
+          raise "#{new_name} already registered for #{user_id}" if exists_table_for_user_id(new_name, user_id)
+        end
 
         database.execute(%Q{
           ALTER TABLE "#{ORIGIN_SCHEMA}"."#{current_name}" RENAME TO "#{new_name}"

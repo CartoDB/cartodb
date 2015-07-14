@@ -142,6 +142,30 @@ describe Geocoding do
       geocoding.reload.state.should eq 'finished'
     end
 
+    it 'marks rows to geocode with cartodb_georef_status = null' do
+      geocoding = FactoryGirl.build(:geocoding, user: @user, user_table: @table, kind: 'admin0', geometry_type: 'polygon', formatter: 'b')
+      geocoding.stubs(:run_geocoding!)
+      @table.service.add_column!(name: 'cartodb_georef_status', type: 'bool')
+      @table.service.insert_row!(cartodb_georef_status: nil)
+      @table.service.insert_row!(cartodb_georef_status: true)
+      @table.service.insert_row!(cartodb_georef_status: false)
+
+      geocoding.run!
+      @table.service.sequel.where(cartodb_georef_status: nil).count.should == 2
+    end
+
+    it 'sets cartodb_georef_status to null on all rows if force_all_rows=true' do
+      geocoding = FactoryGirl.build(:geocoding, user: @user, user_table: @table, kind: 'admin0', geometry_type: 'polygon', formatter: 'b', force_all_rows: true)
+      geocoding.stubs(:run_geocoding!)
+      @table.service.add_column!(name: 'cartodb_georef_status', type: 'bool')
+      @table.service.insert_row!(cartodb_georef_status: nil)
+      @table.service.insert_row!(cartodb_georef_status: true)
+      @table.service.insert_row!(cartodb_georef_status: false)
+
+      geocoding.run!
+      @table.service.sequel.where(cartodb_georef_status: nil).count.should == 3
+    end
+
     it 'succeeds if there are no rows to geocode' do
       geocoding = FactoryGirl.build(:geocoding, user: @user, formatter: 'a', user_table: @table, formatter: 'b')
       geocoding.class.stubs(:processable_rows).returns 0

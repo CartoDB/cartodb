@@ -284,7 +284,10 @@ module CartoDB
 
         # Revokes current set token
         def revoke_token
-          http_client = Carto::Http::Client.get('gdrive')
+          http_client = Carto::Http::Client.get('gdrive',
+            connecttimeout: 60,
+            timeout: 600
+            )
           response = http_client.get("https://accounts.google.com/o/oauth2/revoke?token=#{token}")
             if response.code == 200
               true

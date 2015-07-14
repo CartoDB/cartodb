@@ -520,7 +520,7 @@
         callback({
           type: 'geom',
           //lon,lat -> lat, lon
-          bbox: [[bbox[0][1],bbox[0][0]], [bbox[2][1], bbox[2][0]]],
+          bbox: [[bbox[0][0],bbox[0][1]], [bbox[2][0], bbox[2][1]]],
           geometry_type: row.geometry_type,
           simplified_geometry_type: simplifyType(row.geometry_type)
         });

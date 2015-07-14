@@ -173,7 +173,7 @@ module CartoDB
       end
 
       def data_import
-        @data_import ||= DataImport[@data_import_id]
+        DataImport[@data_import_id]
       end
 
       private

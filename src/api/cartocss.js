@@ -128,7 +128,7 @@ var CSS = {
         '/** torque visualization */',
         'Map {',
         '  -torque-time-attribute: ' + stats.column + ';',
-        '  -torque-aggregation-function: "{{aggfunction}}";',
+        '  -torque-aggregation-function: "count(cartodb_id)";',
         '  -torque-frame-count: ' + stats.steps + ';',
         '  -torque-animation-duration: 10;',
         '  -torque-resolution: 2;',
@@ -143,13 +143,6 @@ var CSS = {
         '}'
     ];
     css = css.join('\n');
-
-    if (options.torque.type === "value"){
-      css = css.replace("{{aggfunction}}", "count(" + options.torque.column.get("name")+")");
-    }
-    else{
-      css = css.replace("{{aggfunction}}", "count(cartodb_id)");
-    }
 
     return css;
 

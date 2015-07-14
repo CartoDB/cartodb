@@ -58,6 +58,7 @@ module CartoDB
       create_temp_table
       import_results_to_temp_table
       load_results_into_original_table
+      mark_rows_not_geocoded
     rescue Sequel::DatabaseError => e
       if e.message =~ /canceling statement due to statement timeout/
         # INFO: Timeouts here are not recoverable for batched geocodes, but they are for non-batched
@@ -153,6 +154,10 @@ module CartoDB
         FROM #{temp_table_name} AS orig
         WHERE #{clean_formatter} = orig.recId
       })
+    end
+
+    def mark_rows_not_geocoded
+      connection.run(%Q{UPDATE #{@qualified_table_name} SET cartodb_georef_status = FALSE WHERE cartodb_georef_status IS NULL})
     end
 
     def temp_table_name

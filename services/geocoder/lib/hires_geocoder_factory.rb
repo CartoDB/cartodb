@@ -28,7 +28,7 @@ module CartoDB
     end
 
     def self.force_batch?
-      Cartodb.config[:geocoder]['force_batch'] || false
+      ::Cartodb.config[:geocoder]['force_batch'] || false
     end
 
     def self.input_rows(input_csv_file)

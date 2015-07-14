@@ -28,6 +28,8 @@ describe CartoDB::Importer2::Loader do
       ogr2ogr_mock.stubs(:command).returns('').at_least_once
       ogr2ogr_mock.stubs(:command_output).returns('').at_least_once
       ogr2ogr_mock.stubs(:exit_code).returns(0).at_least_once
+      ogr2ogr_mock.stubs(:total_rows).returns(nil).at_least_once
+      ogr2ogr_mock.stubs(:imported_rows).returns(0).at_least_once
       ogr2ogr_mock.stubs(:run).returns(Object.new).at_least_once
 
       loader   = CartoDB::Importer2::Loader.new(@job, @source_file, layer=nil, ogr2ogr_mock, @georeferencer)
@@ -37,7 +39,7 @@ describe CartoDB::Importer2::Loader do
 
     it 'logs the exit code from ogr2ogr' do
       @loader.run
-      (@job.logger.to_s =~ /ogr2ogr exit code: \d+/).should_not be nil
+      (@job.logger.to_s =~ /ogr2ogr exit code:\s+\d+/).should_not be nil
     end
 
     it 'logs any output from ogr2ogr' do

@@ -11,10 +11,6 @@
   border-top: 1px solid #ddd;
 }
 
-.PecanMap-MapsList .MapCard {
-  display:none;
-}
-
 .PecanMap-MapsList {
   position: relative;
   display: block;
@@ -64,6 +60,7 @@
 }
 
 .GalleryList-item.MapsList-item {
+  @include opacity(0);
   @include inline-block();
   margin: 0 30px 0 0;
 

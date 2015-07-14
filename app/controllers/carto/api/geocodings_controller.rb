@@ -37,7 +37,8 @@ module Carto
         table = get_table(params[:table_name])
         render_jsonp( { description: "table #{params[:table_name]} doesn't exist" }, 500) and return unless table
 
-        total_rows       = Carto::Geocoding.processable_rows(table)
+        force_all_rows   = (params[:force_all_rows].to_s == 'true')
+        total_rows       = Carto::Geocoding.processable_rows(table, force_all_rows)
         remaining_quota  = uri_user.remaining_geocoding_quota
         remaining_quota  = (remaining_quota > 0 ? remaining_quota : 0)
         used_credits     = total_rows - remaining_quota

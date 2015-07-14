@@ -31,10 +31,8 @@ module CartoDB
       case event
       when :import
         mixpanel_event("Import failed", mixpanel_payload(event, metric_payload))
-        Rollbar.report_message("Failed import", "error", error_info: metric_payload)
       when :geocoding
         mixpanel_event("Geocoding failed", mixpanel_payload(event, metric_payload))
-        Rollbar.report_message("Failed geocoding", "error", error_info: metric_payload)
       end
     end #report_failure
 

@@ -343,7 +343,7 @@
   }
 
 
-  SQL.prototype.describeString = function(sql, column, options, callback) {
+  SQL.prototype.describeString = function(sql, column, callback) {
 
       var s = [
         'WITH t as (',
@@ -418,7 +418,7 @@
       });
   }
 
-  SQL.prototype.describeDate = function(sql, column, options, callback) {
+  SQL.prototype.describeDate = function(sql, column, callback) {
     var s = [
       'with minimum as (',
         'SELECT min({{column}}) as start_time FROM ({{sql}}) _wrap), ',
@@ -452,7 +452,7 @@
     });
   }
 
-  SQL.prototype.describeBoolean = function(sql, column, options, callback){
+  SQL.prototype.describeBoolean = function(sql, column, callback){
     var s = [
       'with stats as (',
             'select count(distinct({{column}})) as uniq,',
@@ -483,7 +483,7 @@
     });
   }
 
-  SQL.prototype.describeGeom = function(sql, column, options, callback) {
+  SQL.prototype.describeGeom = function(sql, column, callback) {
       var s = [
         'with stats as (', 
            'select st_asgeojson(st_extent({{column}})) as bbox',
@@ -516,7 +516,7 @@
         callback({
           type: 'geom',
           //lon,lat -> lat, lon
-          bbox: [[bbox[0][1],bbox[0][0]], [bbox[2][1], bbox[2][0]]],
+          bbox: [[bbox[0][0],bbox[0][1]], [bbox[2][0], bbox[2][1]]],
           geometry_type: row.geometry_type,
           simplified_geometry_type: simplifyType(row.geometry_type)
         });
@@ -542,7 +542,7 @@
     });
   };
 
-  SQL.prototype.describeFloat = function(sql, column, options, callback) {
+  SQL.prototype.describeFloat = function(sql, column, callback) {
       var s = [
         'with stats as (',
             'select min({{column}}) as min,',
@@ -559,7 +559,7 @@
               'from ({{sql}}) _wrap ',
         '),',
         'params as (select min(a) as min, (max(a) - min(a)) / 7 as diff from ( select {{column}} as a from ({{sql}}) _table_sql where {{column}} is not null ) as foo ),',
-         'histogram as (',
+        'histogram as (',
            'select array_agg(row(bucket, range, freq)) as hist from (',
            'select CASE WHEN uniq > 1 then width_bucket({{column}}, min-0.01*abs(min), max+0.01*abs(max), 100) ELSE 1 END as bucket,',
                   'numrange(min({{column}})::numeric, max({{column}})::numeric) as range,',
@@ -569,6 +569,9 @@
              'order by 1',
           ') __wrap',
          '),',
+        'hist as (', 
+           'select array_agg(row(d, c)) cat_hist from (select distinct({{column}}) d, count(*) as c from ({{sql}}) __wrap, stats group by 1 limit 100) _a',
+        '),',
          'buckets as (',
             'select CDB_QuantileBins(array_agg({{column}}::numeric), 7) as quantiles, ',
             '       (select array_agg(x::numeric) FROM (SELECT (min + n * diff)::numeric as x FROM generate_series(1,7) n, params) p) as equalint,',
@@ -577,7 +580,7 @@
             '       CDB_HeadsTailsBins(array_agg({{column}}::numeric), 7) as headtails ',
             'from ({{sql}}) _table_sql where {{column}} is not null',
          ')',
-         'select * from histogram, stats, buckets'
+         'select * from histogram, stats, buckets, hist'
       ];
 
       var query = Mustache.render(s.join('\n'), {
@@ -588,15 +591,20 @@
       this.execute(query, function(data) {
         var row = data.rows[0];
         var s = array_agg(row.hist);
+        var h = array_agg(row.cat_hist);
         callback({
           type: 'number',
+          cat_hist: 
+            _(h).map(function(row) {
+            var r = row.match(/\((.*),(\d+)/);
+            return [+r[1], +r[2]];
+          }),
           hist: _(s).map(function(row) {
-            var r = row.match(/\((.*),".(\d+),(\d+).",(\d+)/);
-            var range = null;
-            if (r) {
-              //range = [+r[2], +r[3]]
-            }
-            return null;//{ index: r[1], range: range, freq: +r[4] }
+            if(row.indexOf("empty") > -1) return;
+            var els = row.split('"');
+            return { index: els[0].replace(/\D/g,''), 
+                     range: els[1].split(",").map(function(d){return d.replace(/\D/g,'')}), 
+                     freq: els[2].replace(/\D/g,'') };
           }),
           stddev: row.stddev,
           null_ratio: row.null_ratio,
@@ -631,21 +639,24 @@
       }
       var s = "select * from (" + sql + ") __wrap limit 0";
       this.execute(s, function(data) {
-        var type = data.fields[column].type;
+
+        var type = (options && options.type) ? options.type : data.fields[column].type;
+
         if (!type) {
           callback(new Error("column does not exist"));
           return;
         }
+
         else if (type === 'string') {
-          self.describeString(sql, column, options, callback);
+          self.describeString(sql, column, callback);
         } else if (type === 'number') {
-          self.describeFloat(sql, column, options, callback);
+          self.describeFloat(sql, column, callback);
         } else if (type === 'geometry') {
-          self.describeGeom(sql, column, options, callback);
+          self.describeGeom(sql, column, callback);
         } else if (type === 'date') {
-          self.describeDate(sql, column, options, callback);
+          self.describeDate(sql, column, callback);
         } else if (type === 'boolean') {
-          self.describeBoolean(sql, column, options, callback);
+          self.describeBoolean(sql, column, callback);
         } else {
           callback(new Error("column type is not supported"));
         }

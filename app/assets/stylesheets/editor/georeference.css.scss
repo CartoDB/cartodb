@@ -22,7 +22,7 @@ $sWidth: 681px;
   border: 1px solid $cStructure-mainLine;
   border-radius: 50px;
 }
-.Georeference-geometryIconImg.Georeference-geometryIconImg--point { @include background(image-url("layout/georeference_points.png") repeat center center) }
+.Georeference-geometryIconImg.Georeference-geometryIconImg--point { @include background(image-url("layout/georeference_points2.png") repeat center center) }
 .Georeference-geometryIconFont {
   width: $sIcon;
   height: $sIcon;
@@ -43,16 +43,16 @@ $sWidth: 681px;
   border: 1px solid #979797;
   border-radius: 50px;
   &.Georeference-geometryIconMarker--a {
-    left: 24px;
-    top: 18px;
+    left: 32px;
+    top: 15px;
   }
   &.Georeference-geometryIconMarker--b {
-    left: 10px;
-    top: 40px;
+    left: 24px;
+    top: 39px;
   }
   &.Georeference-geometryIconMarker--c {
-    left: 45px;
-    top: 50px;
+    left: 58px;
+    top: 43px;
   }
  }
 .Georeference-geometryIconImg.u-disabled .Georeference-geometryIconMarker { background-color: #DDD }

@@ -9,12 +9,9 @@ module CartoDB
       # And appended anywhere in the querystring used as callback url with param "state=xxxxxx"
       CALLBACK_STATE_DATA_PLACEHOLDER = '__user__service__'
 
+      # TODO: Helper method to aid with migration of endpoints, can be removed after full AR migration
       def service_name_for_user(service_name, user)
-        if(user.has_feature_flag?('active_record_imports_service_endpoint'))
-          "v1_1_#{service_name}"
-        else
-          service_name
-        end
+        service_name
       end
 
       # Return the url to be displayed or sent the user to to authenticate and get authorization code

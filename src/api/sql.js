@@ -491,8 +491,12 @@
         '),',
         'geotype as (', 
           'select st_geometrytype({{column}}) as geometry_type from ({{sql}}) _w where {{column}} is not null limit 1',
+        '),',
+        'clusters as (', 
+          'with clus as (SELECT distinct(ST_snaptogrid(the_geom, 10)) as cluster, count(*) as clustercount FROM ({{sql}}) _wrap group by 1 order by 2 desc limit 3), total as (SELECT count(*) FROM ({{sql}})) select sum(clus.clustercount)/sum(total.count) FROM clus, total',
         ')',
-        'select * from stats, geotype'
+
+        'select * from stats, geotype, clusters'
       ];
 
       var query = Mustache.render(s.join('\n'), {

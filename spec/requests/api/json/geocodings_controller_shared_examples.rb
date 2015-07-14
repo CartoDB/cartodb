@@ -88,6 +88,31 @@ shared_examples_for "geocoding controllers" do
         end
       end
 
+      it 'takes the parameter force_all_rows into consideration' do
+        @user.geocoding_quota = 0
+        @user.save
+        table = create_table(user_id: @user.id)
+        table.add_column!(name: 'cartodb_georef_status', type: 'bool')
+        table.insert_row!(cartodb_georef_status: nil)
+        table.insert_row!(cartodb_georef_status: true)
+        table.insert_row!(cartodb_georef_status: false)
+
+        expected_rows = 2
+        expected_estimation = expected_rows * @user.geocoding_block_price / User::GEOCODING_BLOCK_SIZE.to_f
+        get_json api_v1_geocodings_estimation_url(params.merge(table_name: table.name, force_all_rows: false)) do |response|
+          response.status.should be_success
+          response.body.should == {rows: expected_rows, estimation: expected_estimation}
+        end
+
+        expected_rows = 3
+        expected_estimation = expected_rows * @user.geocoding_block_price / User::GEOCODING_BLOCK_SIZE.to_f
+        get_json api_v1_geocodings_estimation_url(params.merge(table_name: table.name, force_all_rows: true)) do |response|
+          response.status.should be_success
+          response.body.should == {rows: expected_rows, estimation: expected_estimation}
+        end
+
+      end
+
     end
   end
 

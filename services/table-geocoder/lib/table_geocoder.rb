@@ -32,7 +32,7 @@ module CartoDB
     end # initialize
 
     def run
-      add_georef_status_column
+      ensure_georef_status_colummn_valid
 
       cache.run unless cache_disabled?
       mark_rows_to_geocode

@@ -35,6 +35,7 @@ class Api::Json::GeocodingsController < Api::ApplicationController
     geocoding.table_id = @table.try(:id)
     geocoding.table_name = params[:table_name] ? params[:table_name] : @table.try(:name)
     geocoding.raise_on_save_failure = true
+    geocoding.force_all_rows = (params[:force_all_rows] == true)
 
     geocoding.formatter = "{#{ params[:column_name] }}" if params[:column_name].present?
 

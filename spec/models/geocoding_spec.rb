@@ -145,7 +145,7 @@ describe Geocoding do
     it 'marks rows to geocode with cartodb_georef_status = null' do
       geocoding = FactoryGirl.build(:geocoding, user: @user, user_table: @table, kind: 'admin0', geometry_type: 'polygon', formatter: 'b')
       geocoding.stubs(:run_geocoding!)
-      @table.service.add_column!(name: 'cartodb_georef_status', type: 'bool')
+      @table.service.add_column!(name: 'cartodb_georef_status', type: 'bool') rescue nil
       @table.service.insert_row!(cartodb_georef_status: nil)
       @table.service.insert_row!(cartodb_georef_status: true)
       @table.service.insert_row!(cartodb_georef_status: false)
@@ -157,7 +157,7 @@ describe Geocoding do
     it 'sets cartodb_georef_status to null on all rows if force_all_rows=true' do
       geocoding = FactoryGirl.build(:geocoding, user: @user, user_table: @table, kind: 'admin0', geometry_type: 'polygon', formatter: 'b', force_all_rows: true)
       geocoding.stubs(:run_geocoding!)
-      @table.service.add_column!(name: 'cartodb_georef_status', type: 'bool')
+      @table.service.add_column!(name: 'cartodb_georef_status', type: 'bool') rescue nil
       @table.service.insert_row!(cartodb_georef_status: nil)
       @table.service.insert_row!(cartodb_georef_status: true)
       @table.service.insert_row!(cartodb_georef_status: false)

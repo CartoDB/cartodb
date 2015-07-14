@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: daf414b4050c5205eefdc0a935d7da7a081e608f
+// sha: 6c01055803ab6884c6dc3807b1de84515eb3ce4a
 (function() {
   var root = this;
 
@@ -40986,7 +40986,7 @@ Layers.register('torque', function(vis, data) {
   }
 
 
-  SQL.prototype.describeString = function(sql, column, options, callback) {
+  SQL.prototype.describeString = function(sql, column, callback) {
 
       var s = [
         'WITH t as (',
@@ -41061,7 +41061,7 @@ Layers.register('torque', function(vis, data) {
       });
   }
 
-  SQL.prototype.describeDate = function(sql, column, options, callback) {
+  SQL.prototype.describeDate = function(sql, column, callback) {
     var s = [
       'with minimum as (',
         'SELECT min({{column}}) as start_time FROM ({{sql}}) _wrap), ',
@@ -41095,7 +41095,7 @@ Layers.register('torque', function(vis, data) {
     });
   }
 
-  SQL.prototype.describeBoolean = function(sql, column, options, callback){
+  SQL.prototype.describeBoolean = function(sql, column, callback){
     var s = [
       'with stats as (',
             'select count(distinct({{column}})) as uniq,',
@@ -41126,7 +41126,7 @@ Layers.register('torque', function(vis, data) {
     });
   }
 
-  SQL.prototype.describeGeom = function(sql, column, options, callback) {
+  SQL.prototype.describeGeom = function(sql, column, callback) {
       var s = [
         'with stats as (', 
            'select st_asgeojson(st_extent({{column}})) as bbox',
@@ -41159,7 +41159,7 @@ Layers.register('torque', function(vis, data) {
         callback({
           type: 'geom',
           //lon,lat -> lat, lon
-          bbox: [[bbox[0][1],bbox[0][0]], [bbox[2][1], bbox[2][0]]],
+          bbox: [[bbox[0][0],bbox[0][1]], [bbox[2][0], bbox[2][1]]],
           geometry_type: row.geometry_type,
           simplified_geometry_type: simplifyType(row.geometry_type)
         });
@@ -41185,7 +41185,7 @@ Layers.register('torque', function(vis, data) {
     });
   };
 
-  SQL.prototype.describeFloat = function(sql, column, options, callback) {
+  SQL.prototype.describeFloat = function(sql, column, callback) {
       var s = [
         'with stats as (',
             'select min({{column}}) as min,',
@@ -41202,7 +41202,7 @@ Layers.register('torque', function(vis, data) {
               'from ({{sql}}) _wrap ',
         '),',
         'params as (select min(a) as min, (max(a) - min(a)) / 7 as diff from ( select {{column}} as a from ({{sql}}) _table_sql where {{column}} is not null ) as foo ),',
-         'histogram as (',
+        'histogram as (',
            'select array_agg(row(bucket, range, freq)) as hist from (',
            'select CASE WHEN uniq > 1 then width_bucket({{column}}, min-0.01*abs(min), max+0.01*abs(max), 100) ELSE 1 END as bucket,',
                   'numrange(min({{column}})::numeric, max({{column}})::numeric) as range,',
@@ -41212,6 +41212,9 @@ Layers.register('torque', function(vis, data) {
              'order by 1',
           ') __wrap',
          '),',
+        'hist as (', 
+           'select array_agg(row(d, c)) cat_hist from (select distinct({{column}}) d, count(*) as c from ({{sql}}) __wrap, stats group by 1 limit 100) _a',
+        '),',
          'buckets as (',
             'select CDB_QuantileBins(array_agg({{column}}::numeric), 7) as quantiles, ',
             '       (select array_agg(x::numeric) FROM (SELECT (min + n * diff)::numeric as x FROM generate_series(1,7) n, params) p) as equalint,',
@@ -41220,7 +41223,7 @@ Layers.register('torque', function(vis, data) {
             '       CDB_HeadsTailsBins(array_agg({{column}}::numeric), 7) as headtails ',
             'from ({{sql}}) _table_sql where {{column}} is not null',
          ')',
-         'select * from histogram, stats, buckets'
+         'select * from histogram, stats, buckets, hist'
       ];
 
       var query = Mustache.render(s.join('\n'), {
@@ -41231,15 +41234,20 @@ Layers.register('torque', function(vis, data) {
       this.execute(query, function(data) {
         var row = data.rows[0];
         var s = array_agg(row.hist);
+        var h = array_agg(row.cat_hist);
         callback({
           type: 'number',
+          cat_hist: 
+            _(h).map(function(row) {
+            var r = row.match(/\((.*),(\d+)/);
+            return [+r[1], +r[2]];
+          }),
           hist: _(s).map(function(row) {
-            var r = row.match(/\((.*),".(\d+),(\d+).",(\d+)/);
-            var range = null;
-            if (r) {
-              //range = [+r[2], +r[3]]
-            }
-            return null;//{ index: r[1], range: range, freq: +r[4] }
+            if(row.indexOf("empty") > -1) return;
+            var els = row.split('"');
+            return { index: els[0].replace(/\D/g,''), 
+                     range: els[1].split(",").map(function(d){return d.replace(/\D/g,'')}), 
+                     freq: els[2].replace(/\D/g,'') };
           }),
           stddev: row.stddev,
           null_ratio: row.null_ratio,
@@ -41274,21 +41282,24 @@ Layers.register('torque', function(vis, data) {
       }
       var s = "select * from (" + sql + ") __wrap limit 0";
       this.execute(s, function(data) {
-        var type = data.fields[column].type;
+
+        var type = (options && options.type) ? options.type : data.fields[column].type;
+
         if (!type) {
           callback(new Error("column does not exist"));
           return;
         }
+
         else if (type === 'string') {
-          self.describeString(sql, column, options, callback);
+          self.describeString(sql, column, callback);
         } else if (type === 'number') {
-          self.describeFloat(sql, column, options, callback);
+          self.describeFloat(sql, column, callback);
         } else if (type === 'geometry') {
-          self.describeGeom(sql, column, options, callback);
+          self.describeGeom(sql, column, callback);
         } else if (type === 'date') {
-          self.describeDate(sql, column, options, callback);
+          self.describeDate(sql, column, callback);
         } else if (type === 'boolean') {
-          self.describeBoolean(sql, column, options, callback);
+          self.describeBoolean(sql, column, callback);
         } else {
           callback(new Error("column type is not supported"));
         }
@@ -41376,11 +41387,11 @@ var CSS = {
     var metadata = [];
 
     var ramp = (options && options.ramp) ? options.ramp : ramps.category;
-    var type = (options && options.type) ? options.type : "string";
+    var type = options && options.type ? options.type : "string";
 
     for (var i = cats.length - 1; i >= 0; --i) {
       var cat = cats[i];
-      if (cat !== undefined && ((type === 'string' && cat != null) || (type === 'boolean'))) {
+      if (cat !== undefined && ((type === 'string' && cat != null) || (type !== 'string'))) {
         metadata.push({ title: cat, title_type: type, value_type: 'color', color: ramp[i] });
       }
     }
@@ -41391,9 +41402,11 @@ var CSS = {
   category: function(cats, tableName, prop, geometryType, options) {
     var attr = geoAttr(geometryType);
     var tableID = "#" + tableName;
+    var ramp = ramps.category;
+    var name, value;
 
+    var type = options && options.type ? options.type : "string";
     var ramp = (options && options.ramp) ? options.ramp : ramps.category;
-    var type = (options && options.type) ? options.type : "string";
 
     var defaultCSS = getDefaultCSSForGeometryType(geometryType);
 
@@ -41402,16 +41415,15 @@ var CSS = {
     for (var i = cats.length - 1; i >= 0; --i) {
 
       var cat  = cats[i];
-      var value = '';
 
       if (type === 'string') {
-        var name = cat.replace(/\n/g,'\\n').replace(/\"/g, "\\\"");
+        name = cat.replace(/\n/g,'\\n').replace(/\"/g, "\\\"");
         value = "\"" + name + "\"";
       } else {
         value = cat;
       }
 
-      if (cat !== undefined && ((type === 'string' && cat != null) || (type === 'boolean'))) {
+      if (cat !== undefined && ((type === 'string' && cat != null) || (type !== 'string'))) {
         css += "\n" + tableID + "[" + prop + "=" + value + "] {\n";
         css += "  " + attr  + ":" + ramp[i] + ";\n}"
       }
@@ -41447,14 +41459,42 @@ var CSS = {
         '}'
     ].join('\n');
     return css;
+  },
+
+  bubble: function(quartiles, tableName, prop) {
+    var tableID = "#" + tableName;
+    var css = "/** bubble visualization */\n\n" + tableID + " {\n";
+    css += getDefaultCSSForGeometryType("point").join('\n');
+    css += "\nmarker-fill: #FF5C00;";
+    css += "\n}\n\n";
+
+    var min = 10;
+    var max = 30;
+
+    var values = [];
+
+    var NPOINS = 10;
+    for(var i = 0; i < NPOINS; ++i) {
+      var t = i/(NPOINS-1);
+      values.push(min + t*(max - min));
+    }
+
+    // generate carto
+    for(var i = NPOINS - 1; i >= 0; --i) {
+      if(quartiles[i] !== undefined && quartiles[i] != null) {
+        css += "\n#" + tableName +" [ " + prop + " <= " + quartiles[i] + "] {\n"
+        css += "   marker-width: " + values[i].toFixed(1) + ";\n}"
+      }
+    }
+    return css;
   }
 }
 
 function guessCss(sql, geometryType, column, stats) {
   var css = null
-  if (stats.type == 'number') {
+  if (stats.type === 'number') {
     css =  CSS.choropleth(stats.quantiles, column, geometryType, ramps.red);
-  } else if (stats.type === 'string') {
+  } else if(stats.type === 'string') {
     css = CSS.category(stats.hist.slice(0, ramps.cat.length).map(function(r) { return r[0]; }), column, geometryType)
   }
   return css;
@@ -41474,69 +41514,135 @@ function guess(o, callback) {
   })
 }
 
+function getWeightFromShape(dist_type){
+  return {
+    U: 0.9,
+    A: 0.9,
+    L: 0.7,
+    J: 0.7,
+    S: 0.5,
+    F: 0.3
+  }[dist_type];
+}
+
+function getMethodProperties(stats) {
+
+  var method, ramp;
+
+  if (['A','U'].indexOf(stats.dist_type) != -1) { // apply divergent scheme
+    method = stats.jenks;
+    ramp = ramps.divergent;
+  } else if (stats.dist_type === 'F') {
+    method = stats.equalint;
+    ramp = ramps.red;
+  } else {
+    if (stats.dist_type === 'J') {
+      method = stats.headtails;
+      ramp = ramps.green;
+    } else {
+      method = stats.headtails;
+      ramp = (_.clone(ramps.red)).reverse();
+    }
+  }
+
+  return { ramp: ramp, method: method };
+
+}
+
 function guessMap(sql, tableName, column, stats) {
   var geometryType = column.get("geometry_type");
-  var bbox =  column.get("bbox");
   var columnName = column.get("name");
   var visualizationType = "choropleth";
   var css = null
   var type = stats.type;
   var metadata = []
+  var distinctPercentage = (stats.distinct / stats.count) * 100;
 
-  if (stats.type === 'number') {
-    if (['A','U'].indexOf(stats.dist_type) != -1) {
-      // apply divergent scheme
-      css = CSS.choropleth(stats.jenks, tableName, columnName, geometryType, ramps.divergent);
-    } else if (stats.dist_type === 'F') {
-      css = CSS.choropleth(stats.equalint, tableName, columnName, geometryType, ramps.red);
-    } else {
-      if (stats.dist_type === 'J' && stats.headtails) {
-        css = CSS.choropleth(stats.headtails, tableName, columnName, geometryType, ramps.green);
-      } else if (stats.headtails){
-        var inverse_ramp = (_.clone(ramps.red)).reverse();
-        css = CSS.choropleth(stats.headtails, tableName, columnName, geometryType, inverse_ramp);
-      } else {
-        return false;
+  if (type === 'number') {
+
+    var calc_weight = getWeightFromShape(stats.dist_type);
+
+    if (calc_weight === 0.9) {
+
+      var visFunction = CSS.choropleth;
+      var properties = getMethodProperties(stats);
+
+      if (stats.count < 200 && geometryType === 'point'){
+        visualizationType = "bubble";
+        visFunction = CSS.bubble;
       }
 
+      css = visFunction(properties.method, tableName, columnName, geometryType, properties.ramp);
+
+    } else if (stats.weight > 0.5 || distinctPercentage < 25) {
+
+      if (distinctPercentage < 1) {
+        visualizationType   = "category";
+        var cats = stats.cat_hist.slice(0, ramps.category.length).map(function(r) { return r[0]; });
+        css      = CSS.category(cats, tableName, columnName, geometryType, { type: type });
+        metadata = CSS.categoryMetadata(cats, { type: type });
+
+      } else if (distinctPercentage >=1) {
+
+        var visFunction = CSS.choropleth;
+
+        if (geometryType === 'point'){
+          visualizationType = "bubble";
+          visFunction = CSS.bubble;
+        }
+
+        var properties = getMethodProperties(stats);
+        css = visFunction(properties.method, tableName, columnName, geometryType, properties.ramp);
+      }
     }
 
-  } else if (stats.type === 'string') {
+  } else if (type === 'string') {
 
     visualizationType   = "category";
-
     var cats = stats.hist.slice(0, ramps.category.length).map(function(r) { return r[0]; });
     css      = CSS.category(cats, tableName, columnName, geometryType);
     metadata = CSS.categoryMetadata(cats);
 
-  } else if (stats.type === 'date') {
-
+  } else if (type === 'date') {
     visualizationType = "torque";
     css = CSS.torque(stats, tableName);
 
-  } else if (stats.type === 'boolean') {
-
-    visualizationType = "category";
-
+  } else if (type === 'boolean') {
+    visualizationType   = "category";
     var ramp = _.shuffle(ramps.bool)[0];
     var cats = ['true', 'false', null];
-    var options = { type: stats.type, ramp: ramp };
-
+    var options = { type: type, ramp: ramp };
     css      = CSS.category(cats, tableName, columnName, geometryType, options);
     metadata = CSS.categoryMetadata(cats, options);
-
   }
+
+  var properties = {
+    sql: sql,
+    geometryType: geometryType,
+    column: columnName,
+    bbox: column.get("bbox"),
+    type: type,
+    visualizationType: visualizationType
+  };
 
   if (css) {
-    if (metadata) {
-      return { sql: sql, css: css, metadata: metadata, geometryType: geometryType, column: columnName, bbox: bbox, stats: stats, type: type, visualizationType: visualizationType  };
-    } else {
-      return { sql: sql, css: css, geometryType: geometryType, column: columnName, bbox: bbox, stats: stats, type: type, visualizationType: visualizationType  };
-    }
+    properties.css = css;
   } else {
-    return { sql: sql, css: null, geometryType: geometryType, column: columnName, bbox: bbox, weight: -100, type: type, visualizationType: visualizationType };
+    properties.css = null;
+    properties.weight = -100;
   }
+
+  if (stats) {
+    properties.stats = stats;
+  }
+
+  if (metadata) {
+    properties.metadata = metadata;
+  }
+
+  return properties;
 }
+
 /*
 CartoCSS.guess({
   user: '  '
@@ -41548,6 +41654,7 @@ CartoCSS.guess({
 CSS.guess = guess;
 CSS.guessCss = guessCss;
 CSS.guessMap = guessMap;
+CSS.getWeightFromShape = getWeightFromShape;
 
 
 root.cartodb.CartoCSS = CSS;

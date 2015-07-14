@@ -11,7 +11,7 @@ module Carto
     def self.processable_rows(table_service, force_all_rows=false)
       dataset = table_service.owner.in_database.select.from(table_service.sequel_qualified_table_name)
       if !force_all_rows && dataset.columns.include?(:cartodb_georef_status)
-        dataset = dataset.where(cartodb_georef_status: [false, nil])
+        dataset = dataset.exclude(cartodb_georef_status: true)
       end
       dataset.count
     end

@@ -273,7 +273,7 @@ function guessMap(sql, tableName, column, stats) {
 
     var calc_weight = getWeightFromShape(stats.dist_type);
 
-    if (calc_weight === 0.9) {
+    if (calc_weight >= 0.5) {
 
       var visFunction = CSS.choropleth;
       var properties = getMethodProperties(stats);

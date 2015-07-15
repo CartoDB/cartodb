@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: bf9d866f5aab18835ef430eed69de57445ed4de2
+// sha: e1c523b1f4fd6fa2063b8ca047b16933cb47f7d5
 (function() {
   var root = this;
 
@@ -41369,7 +41369,7 @@ function getDefaultCSSForGeometryType(geometryType) {
     "line-opacity: 1;",
     "marker-fill-opacity: 0.9;",
     "marker-line-color: #FFF;",
-    "marker-line-width: 1.5;",
+    "marker-line-width: 1;",
     "marker-line-opacity: 1;",
     "marker-placement: point;",
     "marker-type: ellipse;",
@@ -41596,7 +41596,7 @@ function guessMap(sql, tableName, column, stats) {
 
   if (type === 'number') {
 
-    var calc_weight = getWeightFromShape(stats.dist_type);
+    var calc_weight = ((getWeightFromShape(stats.dist_type) + stats.weight)) / 2;
 
     if (calc_weight === 0.9) {
 

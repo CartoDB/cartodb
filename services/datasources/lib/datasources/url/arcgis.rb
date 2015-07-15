@@ -192,8 +192,7 @@ module CartoDB
             {
               # Store original id, not the sanitized one
               id:           id,
-              subresources: get_layers_list(@url),
-              size:         NO_CONTENT_SIZE_PROVIDED
+              subresources: get_layers_list(@url)
             }
           else
             sub_id = get_subresource_id(id)

@@ -236,20 +236,25 @@ function getWeightFromShape(dist_type){
   }[dist_type];
 }
 
-function getMethodProperties(stats) {
+function getmethodproperties(stats) {
 
-  var method, ramp;
+  var method;
+  var ramp = ramps.pink;
 
   if (['A','U'].indexOf(stats.dist_type) != -1) { // apply divergent scheme
     method = stats.jenks;
-    ramp = ramps.divergent;
+
+    if (stats.min < 0 && stats.max > 0){
+      ramp = ramps.divergent;
+    }
+
   } else if (stats.dist_type === 'F') {
     method = stats.equalint;
     ramp = ramps.red;
   } else {
     if (stats.dist_type === 'J') {
       method = stats.headtails;
-      ramp = ramps.green;
+      ramp = ramps.blue;
     } else {
       method = stats.headtails;
       ramp = (_.clone(ramps.red)).reverse();

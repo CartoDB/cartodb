@@ -10,7 +10,7 @@ describe("cartocss generators", function(){
 	});
 
 	it("should return bubble for point, number columns", function(){
-		var stats = JSON.parse('{"type":"number","stddev":0.00399008175326912,"null_ratio":0,"count":903,"distinct":10,"avg":4.4781284606866,"max":25,"min":0,"stddevmean":0.805032851171774,"weight":0.8,"quantiles":[0.001,2,4,5,6,8,25],"jenks":[3,3,5,7.4,8.2,13,25],"headtails":[4.4781284606866,7.369585253456221,10.139506172839507,13.511538461538462,17.08823529411765,20.8,24.5],"dist_type":"L","column":"asdfd"}');
+		var stats = JSON.parse('{"type":"number","stddev":0.00399008175326912,"null_ratio":0,"count":103,"distinct":10,"avg":4.4781284606866,"max":25,"min":0,"stddevmean":0.805032851171774,"weight":0.8,"quantiles":[0.001,2,4,5,6,8,25],"jenks":[3,3,5,7.4,8.2,13,25],"headtails":[4.4781284606866,7.369585253456221,10.139506172839507,13.511538461538462,17.08823529411765,20.8,24.5],"dist_type":"U","column":"asdfd"}');
 		var col = new Backbone.Model(JSON.parse('{"name":"asdfd","type":"number","geometry_type":"point"}'));
 		expect(cdb.CartoCSS.guessMap(this.query, "testable", col, stats).css.indexOf("bubble")).not.toEqual(-1);
 	});

@@ -12,7 +12,7 @@
 
 // compensate for List--selections that occupy more space and thus adds more margins to items
 .MergeDatasets-list.MergeDatasets-list--sticky { margin-left: 6px }
-.MergeDatasets-radioPlaceholder { width: 20px }
+.MergeDatasets-radioPlaceholder { width: 16px }
 
 .MergeDatasets-rowItem {
   @include display-flex();

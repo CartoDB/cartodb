@@ -43,7 +43,7 @@ namespace :cartodb do
 
           # Sad, but using the Collection causes OOM, so instantiate one by one even if takes a while
           vis = CartoDB::Visualization::Member.new(id: viz_id).fetch
-          vis.send(:save_named_map) unless dry_run
+          vis.send(:save_named_map)
           if current % 50 == 0
             print '.'
           end

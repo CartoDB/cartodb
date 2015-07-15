@@ -47,6 +47,7 @@ module CartoDB
       end
 
       def run(post_import_handler_instance=nil)
+        @file_extension = source_file.extension.split('.').last
         @importer_stats.timing('loader') do
 
           @post_import_handler = post_import_handler_instance
@@ -216,7 +217,7 @@ module CartoDB
       private
 
       attr_writer     :ogr2ogr, :georeferencer
-      attr_accessor   :job, :layer
+      attr_accessor   :job, :layer, :imported_rows, :total_rows
 
       # @throws DuplicatedColumnError
       # @throws InvalidGeoJSONError
@@ -228,11 +229,20 @@ module CartoDB
       def run_ogr2ogr(append_mode=false)
         ogr2ogr.run(append_mode)
 
+        self.total_rows = get_total_rows
+        self.imported_rows = get_imported_rows
+
+        if !total_rows.nil? && !imported_rows.nil?
+          #TODO Right now is only calculating SHP files but it'll great
+          #to use for all the file types
+          update_error_percent
+        end
+
         # too verbose in append mode
         unless append_mode
-          job.log "ogr2ogr call:      #{ogr2ogr.command}"
-          job.log "ogr2ogr output:    #{ogr2ogr.command_output}"
-          job.log "ogr2ogr exit code: #{ogr2ogr.exit_code}"
+          job.log "ogr2ogr call:            #{ogr2ogr.command}"
+          job.log "ogr2ogr output:          #{ogr2ogr.command_output}"
+          job.log "ogr2ogr exit code:       #{ogr2ogr.exit_code}"
         end
 
         raise DuplicatedColumnError.new(job.logger) if ogr2ogr.command_output =~ /column (.*) of relation (.*) already exists/
@@ -241,6 +251,10 @@ module CartoDB
         raise TooManyColumnsError.new(job.logger) if ogr2ogr.command_output =~ /tables can have at most 1600 columns/
         if ogr2ogr.command_output =~ /canceling statement due to statement timeout/i
           raise StatementTimeoutError.new(ogr2ogr.command_output, ERRORS_MAP[CartoDB::Importer2::StatementTimeoutError])
+        end
+        if (ogr2ogr.command_output =~ /has no equivalent in encoding/ || ogr2ogr.command_output =~ /invalid byte sequence for encoding/) &&
+            imported_rows == 0
+          raise RowsEncodingColumnError.new(ogr2ogr.command_output)
         end
 
         if ogr2ogr.exit_code != 0
@@ -261,6 +275,29 @@ module CartoDB
           end
           raise LoadError.new(job.logger)
         end
+      end
+
+      def update_error_percent
+        error_percent = ((imported_rows - total_rows).abs.to_f/total_rows)*100
+      end
+
+      def get_imported_rows
+        rows = @job.db.fetch(%Q{SELECT COUNT(*) FROM #{SCHEMA}.#{@job.table_name}}).first
+        return (!rows.nil? && rows.has_key?(:count)) ? rows[:count] : nil
+      rescue
+        return nil
+      end
+
+      def get_total_rows
+        if is_shp?
+          return ShpHelper.new(@source_file.fullpath).total_rows
+        else
+          return nil
+        end
+      end
+
+      def is_shp?
+        !(@source_file.fullpath =~ /\.shp$/i).nil?
       end
     end
   end

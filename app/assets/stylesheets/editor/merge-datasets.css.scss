@@ -8,9 +8,12 @@
   @include justify-content(space-between, justify);
   @include align-items(stretch, stretch);
 }
-.MergeDatasets-list {
-  width: 420px;
-}
+.MergeDatasets-list { width: 420px }
+
+// compensate for List--selections that occupy more space and thus adds more margins to items
+.MergeDatasets-list.MergeDatasets-list--sticky { margin-left: 6px }
+.MergeDatasets-radioPlaceholder { width: 20px }
+
 .MergeDatasets-rowItem {
   @include display-flex();
   @include justify-content(flex-start, start);
@@ -19,6 +22,20 @@
 .MergeDatasets-rowItem > *:first-child {
   margin-top: $sMargin-min;
   margin-right: $sMargin-elementInline
+}
+.MergeDatasets-stickyHeader {
+  background-color: $cStructure-mainBkg;
+  border-bottom: 1px solid $cStructure-mainLine;
+  position: fixed;
+  top: 157px; // compensate for dialog header
+  left: 0;
+  width: 100%;
+  z-index: 2;
+}
+.MergeDatasets-stickyHeaderContent {
+  @include display-flex();
+  @include justify-content(flex-start, start);
+  @include align-items(flex-start);
 }
 .MergeDatasets-fixedAboveFooter {
   position: fixed;
@@ -71,6 +88,7 @@
   padding-left: 13px;
   padding-right: 13px;
 }
+.MergeDatasets-ornaments--sticky { margin-left: 6px }
 .MergeDatasets-ornamentsTop {
   position: relative;
   height: 80px;
@@ -89,8 +107,9 @@
   &:before { left: -15px }
   &:after { right: -15px }
 }
+.MergeDatasets-ornamentsTop.is-sticky { height: 34px }  // to be valigned with columns names
 .MergeDatasets-ornamentsTop.MergeDatasets-ornamentsTop--column:after { background-color: $cStructure-mainLine }
-.MergeDatasets-ornamentsTop.MergeDatasets-ornamentsTop--withSpatialKeyColumn:before {
+.MergeDatasets-ornamentsTop.MergeDatasets-ornamentsTop--spatial:before {
   content: '︎◀';
   font-family: serif; // for content to get a symmetric look
   font-size: 12px;

@@ -238,13 +238,11 @@ function getWeightFromShape(dist_type){
 
 function getMethodProperties(stats) {
 
-  var method;
-  var ramp = ramps[_.shuffle(["green", "blue", "pink", "black", "red"])[0]]
+  var method, ramp;
+
   if (['A','U'].indexOf(stats.dist_type) != -1) { // apply divergent scheme
     method = stats.jenks;
-    if (stats.min < 0 && stats.max > 0){
-      ramp = ramps.divergent;
-    }
+    ramp = ramps.divergent;
   } else if (stats.dist_type === 'F') {
     method = stats.equalint;
     ramp = ramps.red;

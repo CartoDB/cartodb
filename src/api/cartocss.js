@@ -236,7 +236,7 @@ function getWeightFromShape(dist_type){
   }[dist_type];
 }
 
-function getmethodproperties(stats) {
+function getMethodProperties(stats) {
 
   var method;
   var ramp = ramps.pink;

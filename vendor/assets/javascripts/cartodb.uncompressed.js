@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: de76238e8453aab531c42cd9c1d200eb6e86cf2f
+// sha: 156634a03901b079a6c28b27231620e3eb44992c
 (function() {
   var root = this;
 
@@ -41561,25 +41561,36 @@ function getWeightFromShape(dist_type){
 
 function getMethodProperties(stats) {
 
-  var method, ramp;
+  var method;
+  var ramp = ramps.pink;
+  var name = "pink";
 
   if (['A','U'].indexOf(stats.dist_type) != -1) { // apply divergent scheme
     method = stats.jenks;
-    ramp = ramps.divergent;
+
+    if (stats.min < 0 && stats.max > 0){
+      ramp = ramps.divergent;
+      name = "spectrum2";
+    }
+
   } else if (stats.dist_type === 'F') {
     method = stats.equalint;
     ramp = ramps.red;
+    name = "red";
   } else {
     if (stats.dist_type === 'J') {
       method = stats.headtails;
-      ramp = ramps.green;
+      ramp = ramps.blue;
+      name = "blue";
     } else {
+      //ramp = (_.clone(ramps.red)).reverse();
       method = stats.headtails;
-      ramp = (_.clone(ramps.red)).reverse();
+      ramp = ramps.red;
+      name = "red";
     }
   }
 
-  return { ramp: ramp, method: method };
+  return { name: name, ramp: ramp, method: method };
 
 }
 
@@ -41693,6 +41704,7 @@ CSS.guess = guess;
 CSS.guessCss = guessCss;
 CSS.guessMap = guessMap;
 CSS.getWeightFromShape = getWeightFromShape;
+CSS.getMethodProperties = getMethodProperties;
 
 
 root.cartodb.CartoCSS = CSS;

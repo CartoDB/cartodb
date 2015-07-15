@@ -426,27 +426,21 @@ Used for making public maps with private data. See [Named Maps](http://docs.cart
 <div class="code-title">cartodb.createLayer combining multiple types of layers and setting a filter</div>
 
 ```javascript
-var map;
-var mapOptions = {
-  zoom: 5,
-  center: [43, 0]
-};
-map = new L.Map('map', mapOptions);
-
 cartodb.createLayer(map, {
-  {
-    type: "http",
-    urlTemplate: "http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
-    subdomains: [ "a", "b", "c" ]
-  },
-  {
-    sql: 'select * from country_boundaries',
-    cartocss: '#layer { polygon-fill: #F00; polygon-opacity: 0.3; line-color: #F00; }'
-  }
-}, {
-  filter: ['http', 'mapnik']
-})
-.addTo(map)
+  user_name: 'examples',
+  type: 'cartodb',
+  sublayers: [
+    {
+      type: "http",
+      urlTemplate: "http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png",
+      subdomains: [ "a", "b", "c" ]
+    },
+    {
+       sql: 'select * from country_boundaries',
+       cartocss: '#layer { polygon-fill: #F00; polygon-opacity: 0.3; line-color: #F00; }'
+    },
+  ],
+}, { filter: ['http', 'mapnik'] })
 ```
 
 ### cartodb.CartoDBLayer

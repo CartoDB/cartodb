@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: 6c01055803ab6884c6dc3807b1de84515eb3ce4a
+// sha: 17db27ffd426c810aa211c94060db0f92bb989ad
 (function() {
   var root = this;
 
@@ -26976,17 +26976,14 @@ cdb.geo.MapLayer = cdb.core.Model.extend({
     if(myType && (myType === itsType)) {
 
       if(myType === 'Tiled') {
-        var myTemplate  = me.urlTemplate? me.urlTemplate : me.options.urlTemplate;
-        var itsTemplate = other.urlTemplate? other.urlTemplate : other.options.urlTemplate;
-        var myName = me.name? me.name : me.options.name;
-        var itsName = other.name? other.name : other.options.name;
-
-        return myTemplate === itsTemplate && myName === itsName;
+        var myTemplate  = me.urlTemplate? me.urlTemplate : me.options.urlTemplate
+          , itsTemplate = other.urlTemplate? other.urlTemplate : other.options.urlTemplate;
+        return myTemplate === itsTemplate;
       } else if(myType === 'WMS') {
-        var myTemplate  = me.urlTemplate? me.urlTemplate : me.options.urlTemplate;
-        var itsTemplate = other.urlTemplate? other.urlTemplate : other.options.urlTemplate;
-        var myLayer  = me.layers? me.layers : me.options.layers;
-        var itsLayer = other.layers? other.layers : other.options.layers;
+        var myTemplate  = me.urlTemplate? me.urlTemplate : me.options.urlTemplate
+          , itsTemplate = other.urlTemplate? other.urlTemplate : other.options.urlTemplate;
+        var myLayer  = me.layers? me.layers : me.options.layers
+          , itsLayer = other.layers? other.layers : other.options.layers;
         return myTemplate === itsTemplate && myLayer === itsLayer;
       }
       else if (myType === 'torque') {
@@ -27156,10 +27153,6 @@ cdb.geo.CartoDBNamedMapLayer = cdb.geo.MapLayer.extend({
 
 });
 
-var TILED_LAYER_TYPE = 'Tiled';
-var CARTODB_LAYER_TYPE = 'CartoDB';
-var TORQUE_LAYER_TYPE = 'torque';
-
 cdb.geo.Layers = Backbone.Collection.extend({
 
   model: cdb.geo.MapLayer,
@@ -27169,7 +27162,6 @@ cdb.geo.Layers = Backbone.Collection.extend({
       return parseInt(m.get('order'), 10);
     };
     this.bind('add', this._assignIndexes);
-    this.bind('remove', this._assignIndexes);
   },
 
   /**
@@ -27177,33 +27169,25 @@ cdb.geo.Layers = Backbone.Collection.extend({
    * the index should be recalculated
    */
   _assignIndexes: function(model, col, options) {
-    if (this.size() > 0) {
-
-      // Assign an order of 0 to the first layer
-      this.at(0).set({ order: 0 });
-
-      if (this.size() > 1) {
-        var layersByType = {};
-        for (var i = 1; i < this.size(); ++i) {
-          var layer = this.at(i);
-          var layerType = layer.get('type');
-          layersByType[layerType] = layersByType[layerType] || [];
-          layersByType[layerType].push(layer);
-        }
-
-        var lastOrder = 0;
-        var sortedTypes = [CARTODB_LAYER_TYPE, TORQUE_LAYER_TYPE, TILED_LAYER_TYPE];
-        for (var i = 0; i < sortedTypes.length; ++i) {
-          var type = sortedTypes[i];
-          var layers = layersByType[type] || [];
-          for (var j = 0; j < layers.length; ++j) {
-            var layer = layers[j];
-            layer.set({
-              order: ++lastOrder
-            });
-          }
-        }
-      }
+    var layerTypeWeight = {
+      'torque': 100
+    };
+    function layerWeight(layer) {
+      var t = layer.get('type');
+      return layerTypeWeight[t] || 0;
+    }
+    var from = 0;//this.size() - 1;
+    if(options && options.at !== undefined) {
+      from = options.at;
+    }
+    if(from === 0) {
+      this.models[0].set({ order: 0 });
+      ++from;
+    }
+    for(var i = from; i < this.size(); ++i) {
+      var prev = this.models[i - 1]
+      var prev_order = prev.get('order') - layerWeight(prev);
+      this.models[i].set({ order: layerWeight(this.models[i]) + prev_order + 1 });
     }
   }
 });
@@ -33562,7 +33546,7 @@ MapBase.prototype = {
     var layers = [];
     for(var i = 0; i < this.layers.length; ++i) {
       var layer = this.layers[i];
-      if(this._isLayerVisible(layer)) {
+      if(layer.options && !layer.options.hidden) {
         layers.push(i);
       }
     }
@@ -33875,7 +33859,7 @@ NamedMap.prototype = _.extend({}, MapBase.prototype, {
     this.layers = _.clone(named_map.layers) || [];
     for(var i = 0; i < this.layers.length; ++i) {
       var layer = this.layers[i];
-      layer.options = layer.options || { 'hidden': layer.visible === false };
+      layer.options = layer.options || { hidden: false };
       layer.options.layer_name = layer.layer_name;
     }
     this.named_map = named_map;
@@ -36597,11 +36581,7 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
     },
 
     pixelToLatLon: function(pos) {
-      var latLng = this.projector.pixelToLatLng(new google.maps.Point(pos[0], pos[1]));
-      return {
-        lat: latLng.lat(),
-        lng: latLng.lng()
-      }
+      return this.projector.fromContainerPixelToLatLng(new google.maps.Point(pos[0], pos[1]));
     },
 
     latLonToPixel: function(latlon) {
@@ -38911,13 +38891,15 @@ var Vis = cdb.core.View.extend({
 
     // activate interactivity for layers with infowindows
     for(var i = 0; i < layerView.getLayerCount(); ++i) {
-
-      if (layerView.getInfowindowData(i)) {
+      //var interactivity = layerView.getSubLayer(i).get('interactivity');
+      // if interactivity is not enabled we can't enable it
+      if(layerView.getInfowindowData(i)) {// && interactivity && interactivity.indexOf('cartodb_id') !== -1) {
         if(!infowindow) {
           infowindow = Overlay.create('infowindow', this, layerView.getInfowindowData(i), true);
           mapView.addInfowindow(infowindow);
         }
-        layerView.setInteraction(i, true);
+        var index = layerView.getLayerNumberByIndex(i);
+        layerView.setInteraction(index, true);
       }
     }
 
@@ -39406,7 +39388,7 @@ cdb.vis.Vis = Vis;
 
         var layerDefinition;
         var baseLayer = data.layers[0];
-        var dataLayer = this._getDataLayer(data.layers);
+        var dataLayer = data.layers[1];
 
         if (dataLayer.options) {
           this.options.user_name = dataLayer.options.user_name;
@@ -39420,9 +39402,11 @@ cdb.vis.Vis = Vis;
         }
 
         this.auth_tokens = data.auth_tokens;
+
         this.endPoint = "/api/v1/map";
 
         var bbox = [];
+
         var bounds = data.bounds;
 
         if (bounds) {
@@ -39441,10 +39425,13 @@ cdb.vis.Vis = Vis;
 
         /* If the vizjson contains a named map and a torque layer with a named map,
            ignore the torque layer */
+
         var ignoreTorqueLayer = false;
+
         var namedMap = this._getLayerByType(data.layers, "namedmap");
 
         if (namedMap) {
+
           var torque = this._getLayerByType(data.layers, "torque");
 
           if (torque && torque.options && torque.options.named_map) {
@@ -39452,7 +39439,9 @@ cdb.vis.Vis = Vis;
             if (torque.options.named_map.name === namedMap.options.named_map.name) {
               ignoreTorqueLayer = true;
             }
+
           }
+
         }
 
         var layers = [];
@@ -39462,40 +39451,34 @@ cdb.vis.Vis = Vis;
           layers.push(basemap);
         }
 
-        var labelsLayer;
         for (var i = 1; i < data.layers.length; i++) {
+
           var layer = data.layers[i];
 
           if (layer.type === "torque" && !ignoreTorqueLayer) {
+
             layers.push(this._getTorqueLayerDefinition(layer));
+
           } else if (layer.type === "namedmap") {
+
             layers.push(this._getNamedmapLayerDefinition(layer));
-          } else if (layer.type === "tiled") {
-            labelsLayer = this._getHTTPLayer(layer);
+
           } else if (layer.type !== "torque" && layer.type !== "namedmap") {
+
             var ll = this._getLayergroupLayerDefinition(layer);
 
             for (var j = 0; j < ll.length; j++) {
               layers.push(ll[j]);
             }
-          }
-        }
 
-        // If there's a second `tiled` layer, it's a layer with labels and
-        // it needs to be on top of all other layers
-        if (labelsLayer) {
-          layers.push(labelsLayer);
+          }
         }
 
         this.options.layers = { layers: layers };
         this._requestLayerGroupID();
-      }
-    },
 
-    _getDataLayer: function(layers) {
-      return this._getLayerByType(layers, "namedmap") ||
-        this._getLayerByType(layers, "layergroup") ||
-          this._getLayerByType(layers, "torque");
+      }
+
     },
 
     visibleLayers: function() {
@@ -39555,7 +39538,7 @@ cdb.vis.Vis = Vis;
 
     },
 
-    _getHTTPLayer: function(basemap) {
+    _getHTTPBasemapLayer: function(basemap) {
 
       var urlTemplate = basemap.options.urlTemplate;
 
@@ -39600,7 +39583,7 @@ cdb.vis.Vis = Vis;
         if (type === "plain") {
           return this._getPlainBasemapLayer(basemap.options.color);
         } else {
-          return this._getHTTPLayer(basemap);
+          return this._getHTTPBasemapLayer(basemap);
         }
 
       }
@@ -41446,7 +41429,7 @@ var CSS = {
         tableID + " {",
         '  marker-width: 3;',
         '  marker-fill-opacity: 0.8;',
-        '  marker-fill: #FF6347; ',
+        '  marker-fill: #FEE391; ',
         '  comp-op: "lighten";',
         '  [value > 2] { marker-fill: #FEC44F; }',
         '  [value > 3] { marker-fill: #FE9929; }',
@@ -41551,7 +41534,7 @@ function getMethodProperties(stats) {
 
 function guessMap(sql, tableName, column, stats) {
   var geometryType = column.get("geometry_type");
-  var columnName = column.get("name");
+  var columnName = column.get("column");
   var visualizationType = "choropleth";
   var css = null
   var type = stats.type;

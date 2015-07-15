@@ -240,28 +240,34 @@ function getMethodProperties(stats) {
 
   var method;
   var ramp = ramps.pink;
+  var name = "pink";
 
   if (['A','U'].indexOf(stats.dist_type) != -1) { // apply divergent scheme
     method = stats.jenks;
 
     if (stats.min < 0 && stats.max > 0){
       ramp = ramps.divergent;
+      name = "divergent";
     }
 
   } else if (stats.dist_type === 'F') {
     method = stats.equalint;
     ramp = ramps.red;
+    name = "red";
   } else {
     if (stats.dist_type === 'J') {
       method = stats.headtails;
       ramp = ramps.blue;
+      name = "blue";
     } else {
+      //ramp = (_.clone(ramps.red)).reverse();
       method = stats.headtails;
-      ramp = (_.clone(ramps.red)).reverse();
+      ramp = ramps.red;
+      name = "red";
     }
   }
 
-  return { ramp: ramp, method: method };
+  return { name: name, ramp: ramp, method: method };
 
 }
 

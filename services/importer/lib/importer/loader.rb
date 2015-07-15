@@ -48,7 +48,6 @@ module CartoDB
 
       def run(post_import_handler_instance=nil)
         @file_extension = source_file.extension.split('.').last
-        @importer_stats.increment(%Q{loader.#{@file_extension}})
         @importer_stats.timing('loader') do
 
           @post_import_handler = post_import_handler_instance
@@ -233,7 +232,6 @@ module CartoDB
         self.total_rows = get_total_rows
         self.imported_rows = get_imported_rows
 
-        debugger
         if !total_rows.nil? && !imported_rows.nil?
           #TODO Right now is only calculating SHP files but it'll great
           #to use for all the file types
@@ -281,7 +279,6 @@ module CartoDB
 
       def update_error_percent
         error_percent = ((imported_rows - total_rows).abs.to_f/total_rows)*100
-        @importer_stats.gauge(%Q{loader.#{@file_extension}.#{job.id}.error_percent}, error_percent)
       end
 
       def get_imported_rows

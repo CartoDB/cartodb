@@ -9,23 +9,28 @@ require_relative '../factories/pg_connection'
 include CartoDB::Importer2
 
 describe Ogr2ogr do
+  before(:all) do
+    @pg_options       = Factories::PGConnection.new.pg_options
+    @db               = Factories::PGConnection.new.connection
+    @db.execute('CREATE SCHEMA IF NOT EXISTS cdb_importer')
+    @db.execute('SET search_path TO cdb_importer,public')
+  end
+
   before(:each) do
     @csv              = Factories::CSV.new.write
     @filepath         = @csv.filepath
-    @pg_options       = Factories::PGConnection.new.pg_options
     @table_name       = "importer_#{rand(99999)}"
-    @db               = Factories::PGConnection.new.connection
     @full_table_name  = "cdb_importer.#{@table_name}"
     @dataset          = @db[@table_name.to_sym]
     @wrapper          = CartoDB::Importer2::Ogr2ogr.new(@table_name, @filepath, @pg_options)
-
-    @db.execute('CREATE SCHEMA IF NOT EXISTS cdb_importer')
-    @db.execute('SET search_path TO cdb_importer,public')
   end
 
   after(:each) do
     @csv.delete
     @db.drop_table? @full_table_name
+  end
+
+  after(:all) do
     @db.execute('DROP SCHEMA cdb_importer cascade')
     @db.disconnect
   end

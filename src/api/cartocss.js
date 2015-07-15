@@ -247,7 +247,7 @@ function getMethodProperties(stats) {
 
     if (stats.min < 0 && stats.max > 0){
       ramp = ramps.divergent;
-      name = "divergent";
+      name = "spectrum2";
     }
 
   } else if (stats.dist_type === 'F') {

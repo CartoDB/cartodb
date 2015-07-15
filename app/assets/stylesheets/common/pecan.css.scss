@@ -60,7 +60,6 @@
 }
 
 .GalleryList-item.MapsList-item {
-  @include opacity(0);
   @include inline-block();
   margin: 0 30px 0 0;
 
@@ -68,7 +67,16 @@
     margin: 0;
   }
 }
-
+.Pecan-TorqueWirzardIcon {
+  position: absolute;
+  top: 49px;
+  left: 50%;
+  width: 84px;
+  height: 84px;
+  margin-left: -42px;
+  @include background(image-url('layout/pecan_torque_wizard.png') center center);
+  z-index: 10;
+}
 .NullCount {
   float: right;
   font-size: 11px;
@@ -76,7 +84,6 @@
   color: #999999;
   line-height:0;
 }
-
 .MapCard-footer {
   position:relative;
   margin: 10px 0 0 0;
@@ -98,7 +105,6 @@
 .CategoryList .CategoryList-item:last-child {
   margin: 0;
 }
-
 .HistogramGraph {
   position:absolute;
   bottom: -9px;

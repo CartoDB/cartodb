@@ -375,6 +375,7 @@ CSS.guess = guess;
 CSS.guessCss = guessCss;
 CSS.guessMap = guessMap;
 CSS.getWeightFromShape = getWeightFromShape;
+CSS.getMethodProperties = getMethodProperties;
 
 
 root.cartodb.CartoCSS = CSS;

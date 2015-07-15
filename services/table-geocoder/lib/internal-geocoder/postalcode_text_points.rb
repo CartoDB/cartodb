@@ -26,7 +26,7 @@ module CartoDB
           UPDATE #{dest_table}
           SET the_geom = orig.the_geom, cartodb_georef_status = orig.cartodb_georef_status
           FROM #{@internal_geocoder.temp_table_name} AS orig
-          WHERE trim("#{@internal_geocoder.column_name}"::text) = orig.geocode_string AND #{dest_table}.cartodb_georef_status IS NULL
+          WHERE trim(#{dest_table}."#{@internal_geocoder.column_name}"::text) = orig.geocode_string AND #{dest_table}.cartodb_georef_status IS NULL
         }
       end
 

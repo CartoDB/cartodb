@@ -240,7 +240,7 @@ function getMethodProperties(stats) {
 
 function guessMap(sql, tableName, column, stats) {
   var geometryType = column.get("geometry_type");
-  var columnName = column.get("name");
+  var columnName = column.get("column");
   var visualizationType = "choropleth";
   var css = null
   var type = stats.type;

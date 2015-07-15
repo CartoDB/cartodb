@@ -94,7 +94,7 @@ module CartoDB
       def layers_for(visualization)
         basemap_layer = basemap_layer_for(visualization)
         layers_data = []
-        layers_data.push(basemap_layer) unless basemap_layer.nil?
+        layers_data.push(basemap_layer) if basemap_layer
 
         if visualization.retrieve_named_map?
           presenter_options = {
@@ -114,7 +114,7 @@ module CartoDB
         end
         layers_data.push(other_layers_for(visualization, named_maps_presenter))
 
-        layers_data + non_basemap_base_layers_for(visualization)
+        layers_data += non_basemap_base_layers_for(visualization)
 
         layers_data.compact.flatten
       end

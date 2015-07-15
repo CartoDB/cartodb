@@ -233,6 +233,7 @@ module CartoDB
         self.total_rows = get_total_rows
         self.imported_rows = get_imported_rows
 
+        debugger
         if !total_rows.nil? && !imported_rows.nil?
           #TODO Right now is only calculating SHP files but it'll great
           #to use for all the file types
@@ -280,7 +281,7 @@ module CartoDB
 
       def update_error_percent
         error_percent = ((imported_rows - total_rows).abs.to_f/total_rows)*100
-        @importer_stats.gauge(%Q{loader.#{@file_extension}.#{job.id}.error_percent}, error_percent) unless total_rows
+        @importer_stats.gauge(%Q{loader.#{@file_extension}.#{job.id}.error_percent}, error_percent)
       end
 
       def get_imported_rows

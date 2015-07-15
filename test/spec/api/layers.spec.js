@@ -18,7 +18,7 @@ describe('api.layers', function() {
 
 
   describe('loadLayer unknow', function() {
-    it("shoudl return an error for unknow map types", function(done) {
+    it("should return an error for unknow map types", function(done) {
       var map = {};
       var err = false;
       cartodb.createLayer(map, { kind: 'plain', options: {} }, function(l) {
@@ -184,9 +184,16 @@ describe('api.layers', function() {
         cartodb.createLayer(map, {
           updated_at: 'jaja',
           layers: [
-            null,
-            //{kind: 'plain', options: {} }
-            {kind: 'cartodb', options: { tile_style: 'test', user_name: 'test', table_name: 'test', extra_params: { cache_buster: 'cb' }} }
+            { type: 'tiled', options: {} },
+            {
+              type: 'layergroup',
+              options: {
+                layer_definition: {
+                  layers: []
+                },
+                extra_params: { cache_buster: 'cb' }
+              }
+            }
           ]
         }, s).done(function(lyr) {
           layer = lyr;
@@ -194,32 +201,9 @@ describe('api.layers', function() {
 
         setTimeout(function() {
           expect(s.called).toEqual(true);
-          //expect(layer.model.attributes.extra_params.updated_at).toEqual('jaja');
           expect(layer.model.attributes.extra_params.cache_buster).toEqual('cb');
-          //expect(layer.model.attributes.extra_params.cache_buster).toEqual(undefined);
           done();
         }, 10);
-      });
-
-      it("should load vis.json without infowindows", function(done) {
-        var layer;
-        var s = sinon.spy();
-        
-        cartodb.createLayer(map, {
-          updated_at: 'jaja',
-          layers: [
-            null,
-            {kind: 'cartodb', options: { user_name: 'test', table_name: 'test', tile_style: 'test'}, infowindow: { fields: [], template: '' } }
-          ]
-        }, s).done(function(lyr) {
-          layer = lyr;
-        });
-
-        setTimeout(function() {
-          expect(s.called).toEqual(true);
-          done();
-        }, 10);
-
       });
 
       it("should load specified layer", function(done) {
@@ -242,7 +226,64 @@ describe('api.layers', function() {
           expect(layer.model.get('type')).toEqual('torque');
           done();
         }, 500);
+      });
 
+      it("should load the `namedmap` layer by default", function(done) {
+        var layer;
+
+        cartodb.createLayer(map, {
+          updated_at: 'jaja',
+          layers: [
+            { type: 'tiled', options: {} },
+            { type: 'tiled', options: {} },
+            {
+              type: 'namedmap',
+              user_name: 'dev',
+              options: {
+                named_map: {
+                  name: 'testing',
+                  params: {
+                    color: 'red'
+                  }
+                }
+              }
+            }
+          ]
+        }).done(function(lyr) {
+          layer = lyr;
+        });
+
+        setTimeout(function() {
+          expect(layer.options.type).toEqual('namedmap');
+          done();
+        }, 100);
+      });
+
+      it("should load the `layergroup` by default", function(done) {
+        var layer;
+
+        cartodb.createLayer(map, {
+          updated_at: 'jaja',
+          layers: [
+            { type: 'tiled', options: {} },
+            { type: 'tiled', options: {} },
+            {
+              type: 'layergroup',
+              options: {
+                layer_definition: {
+                  layers: []
+                }
+              }
+            }
+          ]
+        }).done(function(lyr) {
+          layer = lyr;
+        });
+
+        setTimeout(function() {
+          expect(layer.options.type).toEqual('layergroup');
+          done();
+        }, 100);
       });
 
       it("should add a torque layer", function(done) {
@@ -369,7 +410,6 @@ describe('api.layers', function() {
           expect(layer.toJSON()).toEqual({ color: 'red' });
           done();
         }, 100);
-
       });
 
       it("should use access_token", function(done) {

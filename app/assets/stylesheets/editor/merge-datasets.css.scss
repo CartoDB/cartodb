@@ -10,7 +10,6 @@
 }
 .MergeDatasets-list {
   width: 420px;
-  margin-bottom: 190px; // compensate for fixed dialog footer + fixed stuff above footer
 }
 .MergeDatasets-rowItem {
   @include display-flex();

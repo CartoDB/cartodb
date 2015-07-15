@@ -146,6 +146,37 @@ describe Admin::VisualizationsController do
       get "/viz/#{vis_id}/public_map", @headers
       last_response.status.should == 200
     end
+
+    it 'does not load daily mapviews stats' do
+      CartoDB::Visualization::Stats.expects(:mapviews).never
+      CartoDB::Visualization::Stats.any_instance.expects(:to_poro).never
+      CartoDB::Visualization.expects(:stats).never
+      Carto::Visualization.expects(:stats).never
+
+      id = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC).table_visualization.id
+
+      get public_visualizations_public_map_url(id: id), {}, @headers
+      last_response.status.should == 200
+    end
+  end
+
+  describe 'public_visualizations_show_map' do
+
+    it 'does not load daily mapviews stats' do
+      CartoDB::Visualization::Stats.expects(:mapviews).never
+      CartoDB::Visualization::Stats.any_instance.expects(:to_poro).never
+      CartoDB::Stats::APICalls.any_instance.expects(:get_api_calls_from_redis_source).never
+
+      CartoDB::Visualization.expects(:stats).never
+      Carto::Visualization.expects(:stats).never
+
+      id = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC).table_visualization.id
+
+      login_as(@user, scope: 'test')
+      get public_visualizations_show_map_url(id: id), {}, @headers
+      last_response.status.should == 200
+    end
+
   end
 
   describe 'GET /viz/:id/public' do

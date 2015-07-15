@@ -234,6 +234,10 @@ class Carto::Visualization < ActiveRecord::Base
     table.nil? ? nil : table.service
   end
 
+  def has_read_permission?(user)
+    user && (is_owner_user?(user) || (permission && permission.user_has_read_permission?(user)))
+  end
+
   private
 
   def get_named_map
@@ -297,10 +301,6 @@ class Carto::Visualization < ActiveRecord::Base
 
   def get_related_visualizations
     Carto::Visualization.where(map_id: related_tables.collect(&:map_id), type: TYPE_CANONICAL).all
-  end
-
-  def has_read_permission?(user)
-    user && (is_owner_user?(user) || (permission && permission.user_has_read_permission?(user)))
   end
 
   def has_write_permission?(user)

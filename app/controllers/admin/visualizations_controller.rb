@@ -1,6 +1,7 @@
 # encoding: utf-8
 require_relative '../../models/map/presenter'
 require_dependency 'resque/user_jobs'
+require_dependency 'static_maps_url_helper'
 require_relative '../carto/admin/user_table_public_map_adapter'
 require_relative '../carto/admin/visualization_public_map_adapter'
 require_relative '../../helpers/embed_redis_cache'
@@ -200,7 +201,20 @@ class Admin::VisualizationsController < ApplicationController
     end
 
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
-    response.headers['Surrogate-Key'] = "#{CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES} #{@visualization.surrogate_key}"
+
+    if @more_visualizations && @more_visualizations.length > 0
+      additional_keys = []
+      @more_visualizations.each do |vis_adapter|
+        additional_keys << vis_adapter.visualization.surrogate_key
+      end
+      additional_keys = " #{additional_keys.join(' ')}"
+    else
+       additional_keys = ''
+    end
+
+    response.headers['Surrogate-Key'] = 
+      "#{CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES} #{@visualization.surrogate_key}#{additional_keys}"
+
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
 
     @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)

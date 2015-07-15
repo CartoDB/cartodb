@@ -168,15 +168,33 @@ describe Map do
   end #updated_at
 
   describe '#admits?' do
-    it 'returns false if passed a base layer and it is already linked to a a base layer' do
+    it 'checks base layer admission rules' do
       map   = Map.create(user_id: @user.id, table_id: @table.id)
-      layer = Layer.new(kind: 'tiled')
 
+      # First base layer is always allowed 
+      layer = Layer.new(kind: 'tiled')
       map.admits_layer?(layer).should == true
       map.add_layer(layer)
       map.save.reload
 
-      map.admits_layer?(Layer.new(kind: 'tiled')).should == false
+      map.add_layer(Layer.new(kind: 'carto', order: 5))
+      map.save.reload
+
+      second__tiled_layer = Layer.new(kind: 'tiled')
+      # more tiled layers allowed only if at top
+      second__tiled_layer.order = 0
+      map.admits_layer?(second__tiled_layer).should == false
+      second__tiled_layer.order = 15
+      map.admits_layer?(second__tiled_layer).should == true
+      map.add_layer(layer)
+      map.save.reload
+
+      # This is now a valid scenario, for example switcing from a basemap with labels on top to another that has too
+      third_layer = Layer.new(kind: 'tiled', order: 15)
+      map.admits_layer?(third_layer).should == true
+      third_layer.order = 100
+      map.admits_layer?(third_layer).should == true
+
       map.destroy
     end
 

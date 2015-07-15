@@ -52,4 +52,47 @@ shared_examples_for "user models" do
 
   end
 
+  describe 'User#remaining_geocoding_quota' do
+
+    include_context 'users helper'
+    include_context 'organization with users helper'
+
+    it 'calculates the remaining quota for a non-org user correctly' do
+      @user1.geocoding_quota = 500
+      @user1.save
+      Geocoding.new({
+          kind: 'high-resolution',
+          user: @user1,
+          formatter: '{dummy}',
+          processed_rows: 100
+        }).save
+
+      get_user_by_id(@user1.id).remaining_geocoding_quota.should == 400
+    end
+
+
+    it 'takes into account geocodings performed by the org users #4033' do
+      @organization.geocoding_quota = 500
+      @organization.save.reload
+
+      Geocoding.new({
+          kind: 'high-resolution',
+          user: @org_user_1,
+          formatter: '{dummy}',
+          processed_rows: 100
+        }).save
+
+      Geocoding.new({
+          kind: 'high-resolution',
+          user: @org_user_2,
+          formatter: '{dummy}',
+          processed_rows: 100
+        }).save
+
+      get_user_by_id(@org_user_1.id).remaining_geocoding_quota.should == 300
+      get_user_by_id(@org_user_2.id).remaining_geocoding_quota.should == 300
+    end
+
+  end
+
 end

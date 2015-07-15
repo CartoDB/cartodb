@@ -70,7 +70,11 @@ class Organization < Sequel::Model
   def destroy_cascade
     destroy_permissions
     destroy_non_owner_users
-    self.owner.destroy
+    if self.owner
+      self.owner.destroy
+    else
+      self.destroy
+    end
   end
 
   def destroy_permissions

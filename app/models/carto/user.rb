@@ -325,4 +325,8 @@ class Carto::User < ActiveRecord::Base
     return false
   end
 
+  def self.columns
+    super.reject { |c| c.name == "dynamic_cdn_enabled" }
+  end
+
 end

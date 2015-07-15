@@ -410,6 +410,7 @@ class DataImport < Sequel::Model
 
     query = table_copy ? "SELECT * FROM #{table_copy}" : from_query
     new_table_name = import_from_query(table_name, query)
+    sanitize_columns(new_table_name)
 
     self.update(table_names: new_table_name)
     migrate_existing(new_table_name)
@@ -448,6 +449,14 @@ class DataImport < Sequel::Model
 
     table_name
   end
+
+  def sanitize_columns(table_name)
+    Table.sanitize_columns(table_name, {
+        connection: current_user.in_database,
+        database_schema: current_user.database_schema
+      })
+  end
+
 
   def migrate_existing(imported_name=migrate_table, name=nil)
     new_name = imported_name || name

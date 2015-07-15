@@ -78,7 +78,7 @@ module CartoDB
     end #conversion_method_for
 
     def column_type(column_name)
-      user_database.schema(table_name, schema: @schema).select { |c|
+      user_database.schema(table_name, schema: @schema, reload: true).select { |c|
         c[0] == column_name.to_sym
       }.flatten.last.fetch(:db_type).to_s
     end #column_type

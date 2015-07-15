@@ -92,9 +92,9 @@ module CartoDB
       end
 
       def layers_for(visualization)
-        layers_data = [
-          basemap_layer_for(visualization)
-        ]
+        basemap_layer = basemap_layer_for(visualization)
+        layers_data = []
+        layers_data.push(basemap_layer) unless basemap_layer.nil?
 
         if visualization.retrieve_named_map?
           presenter_options = {
@@ -114,7 +114,7 @@ module CartoDB
         end
         layers_data.push(other_layers_for(visualization, named_maps_presenter))
 
-        layers_data.push(non_basemap_base_layers_for(visualization))
+        layers_data + non_basemap_base_layers_for(visualization)
 
         layers_data.compact.flatten
       end
@@ -140,16 +140,21 @@ module CartoDB
 
       # INFO: Assumes layers come always ordered by order (they do)
       def basemap_layer_for(visualization)
-        CartoDB::Layer::Presenter.new(visualization.layers(:base).first, options, configuration).to_vizjson_v2
+        layer = visualization.layers(:base).first
+        CartoDB::Layer::Presenter.new(layer, options, configuration).to_vizjson_v2 unless layer.nil?
       end
 
       # INFO: Assumes layers come always ordered by order (they do)
       def non_basemap_base_layers_for(visualization)
-        # Remove the basemap, which is always first
-        visualization.layers(:base)
-                     .slice(1, visualization.layers(:base).length)
+        base_layers = visualization.layers(:base)
+        if base_layers.length > 0
+          # Remove the basemap, which is always first
+          base_layers.slice(1, visualization.layers(:base).length)
                      .map do |layer|
-          CartoDB::Layer::Presenter.new(layer, options, configuration).to_vizjson_v2
+            CartoDB::Layer::Presenter.new(layer, options, configuration).to_vizjson_v2
+          end
+        else
+          []
         end
       end
 

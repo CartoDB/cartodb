@@ -51,11 +51,15 @@ WORKING_SPECS_3 = \
   services/importer/spec/acceptance/kml_spec.rb \
   services/importer/spec/acceptance/mapinfo_spec.rb \
   services/importer/spec/acceptance/osm_spec.rb \
-  services/importer/spec/acceptance/shp_spec.rb \
   services/importer/spec/acceptance/sql_spec.rb \
   services/importer/spec/acceptance/zip_spec.rb \
   services/importer/spec/acceptance/gz_tgz_spec.rb \
   services/importer/spec/acceptance/raster2pgsql_spec.rb \
+  $(NULL)
+
+WORKING_SPECS_3b = \
+  spec/rspec_configuration.rb \
+  services/importer/spec/acceptance/shp_spec.rb \
   services/importer/spec/unit/column_spec.rb \
   services/importer/spec/unit/csv_normalizer_spec.rb \
 	services/importer/spec/unit/shp_normalizer_spec.rb \
@@ -204,6 +208,8 @@ check-2b:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_2b)
 check-3:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_3)
+check-3b:
+	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_3b)
 check-4:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_4)
 check-5:
@@ -219,7 +225,7 @@ check-9:
 check-10:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_10)
 
-check-prepared: check-1 check-2 check-2b check-3 check-4 check-5 check-6 check-7 check-8 check-9 check-10
+check-prepared: check-1 check-2 check-2b check-3 check-3b check-4 check-5 check-6 check-7 check-8 check-9 check-10
 
 check: prepare-test-db check-prepared
 check-frontend:

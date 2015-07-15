@@ -1,6 +1,7 @@
 # encoding: utf-8
 require 'uuidtools'
 require_relative '../../geocoder/lib/hires_geocoder_factory'
+require_relative '../../geocoder/lib/geocoder_config'
 require_relative 'geocoder_cache'
 require_relative 'abstract_table_geocoder'
 
@@ -84,7 +85,7 @@ module CartoDB
     end
 
     def cache_disabled?
-      Cartodb.config[:geocoder]['disable_cache'] || false
+      GeocoderConfig.instance.get['disable_cache'] || false
     end
 
     # Mark the rows to be sent with cartodb_georef_status = FALSE

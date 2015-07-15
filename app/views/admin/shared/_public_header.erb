@@ -13,7 +13,7 @@
 
         <li class="Header-navigationItem"><a href="<%= logo_url %>" class="Header-navigationLink u-hideOnMobile">CartoDB</a></li>
         <% unless cartodb_com_hosted? %>
-          <li class="Header-navigationItem"><a href="#/industries" class="Header-navigationLink u-hideOnMobile">Industries</a></li>
+          <li class="Header-navigationItem js-user-industries"><a href="#/industries" class="Header-navigationLink u-hideOnMobile js-dropdown-target">Industries</a></li>
           <li class="Header-navigationItem"><a href="http://cartodb.com/gallery/" class="Header-navigationLink u-hideOnMobile">Explore</a></li>
           <li class="Header-navigationItem"><a href="http://cartodb.com/pricing/" class="Header-navigationLink u-hideOnMobile">Pricing</a></li>
         <% end %>
@@ -21,14 +21,14 @@
     </div>
 
     <div class="Header-settings">
-      <ul class="Header-settingsList">
+      <ul class="Header-settingsList js-user-settings">
         <% unless cartodb_com_hosted? %>
           <li class="Header-settingsItem js-login">
             <a href="<%= CartoDB.url(self, 'login') %>" class="Header-settingsLink">Login</a>
           </li>
         <% end %>
 
-        <li class="Header-settingsItem Header-settingsItem--avatar js-user-settings">
+        <li class="Header-settingsItem">
           <% unless cartodb_com_hosted? %>
             <a href="http://cartodb.com/signup" class="Button Button--headerPositive">
               <span>Sign up</span>

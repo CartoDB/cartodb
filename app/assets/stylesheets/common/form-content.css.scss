@@ -53,6 +53,8 @@ $sLabel-width: 140px;
   position: relative;
   @include justify-content(space-between, justify);
   @include align-items(center);
+  padding-top: 0;
+  padding-bottom: $sMargin-group;
   &:before {
     content: '';
     border-radius: 50px;
@@ -69,6 +71,13 @@ $sLabel-width: 140px;
   &:nth-child(3):before { content: '3' }
   &:nth-child(4):before { content: '4' }
   &:nth-child(5):before { content: '5' }
+}
+.Form-row.Form-row--step:first-child { padding-top: 0 }
+.Form-row.Form-row--step.is-done {
+  &:before {
+    color: $cHighlight-stepDone;
+    border-color: $cHighlight-stepDone;
+  }
 }
 .Form-row.has-label {
   // compensate for label width, to make the rowData appear as centered
@@ -164,8 +173,9 @@ $sLabel-width: 140px;
 .Form-rowDataExtra {
   position: absolute;
   right: -52px;
-  top: 10px;
 }
+.Form-rowData ~ .Form-rowDataExtra { top: 10px } // to compensate for its top-padding
+.Form-rowData--step ~ .Form-rowDataExtra { top: 0 }
 
 .Form-input {
   position: relative;

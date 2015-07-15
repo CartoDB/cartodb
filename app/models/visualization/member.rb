@@ -426,10 +426,6 @@ module CartoDB
         parent.invalidate_cache unless parent_id.nil?
       end
 
-      def invalidate_all_varnish_vizsjon_keys
-        user.invalidate_varnish_cache({regex: '.*:vizjson'})
-      end
-
       def has_private_tables?
         has_private_tables = false
         related_tables.each { |table|
@@ -438,7 +434,7 @@ module CartoDB
         has_private_tables
       end
 
-      # Despite storing always a named map, no need to retrievfe it for "public" visualizations
+      # Despite storing always a named map, no need to retrieve it for "public" visualizations
       def retrieve_named_map?
         password_protected? || has_private_tables?
       end
@@ -690,7 +686,6 @@ module CartoDB
         # now we need to purgue everything to avoid cached stale data or public->priv still showing scenarios
         if name_changed || privacy_changed || table_privacy_changed || dirty
           invalidate_cache
-          invalidate_all_varnish_vizsjon_keys
         end
 
         set_timestamps

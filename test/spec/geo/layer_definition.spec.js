@@ -278,21 +278,122 @@ describe("LayerDefinition", function() {
     });
   });
 
-  describe('.getLayerNumberByIndex, getLayerIndexByNumber', function() {
+  describe('.getLayerNumberByIndex', function() {
 
-    it("should manage layer index with hidden layers", function() {
+    var layers;
+    var layer_definition;
+
+    it("should return -1 if there are no layers", function() {
+      layer_definition = {
+        version: '1.0.0',
+        stat_tag: 'vis_id',
+        layers: []
+      };
+      layerDefinition.setLayerDefinition(layer_definition);
+
+      expect(layerDefinition.getLayerNumberByIndex(0)).toEqual(-1);
+      expect(layerDefinition.getLayerNumberByIndex(10)).toEqual(-1);
+    });
+
+    it("should return -1 if layer is hidden", function() {
+      var layer_definition = {
+        version: '1.0.0',
+        stat_tag: 'vis_id',
+        layers: [
+          { options: { 'hidden': true } }
+        ]
+      };
+
+      layerDefinition.setLayerDefinition(layer_definition);
+
+      expect(layerDefinition.getLayerNumberByIndex(0)).toEqual(-1);
+    });
+
+    it("should return -1 if layer is not visible", function() {
+      var layer_definition = {
+        version: '1.0.0',
+        stat_tag: 'vis_id',
+        layers: [
+          { 
+            visible: false,
+            options: { }
+          }
+        ]
+      };
+
+      layerDefinition.setLayerDefinition(layer_definition);
+
+      expect(layerDefinition.getLayerNumberByIndex(0)).toEqual(-1);
+    });
+
+    it("should return 0 if layer is not hidden", function() {
+      var layer_definition = {
+        version: '1.0.0',
+        stat_tag: 'vis_id',
+        layers: [
+          { options: { 'hidden': false } }
+        ]
+      };
+
+      layerDefinition.setLayerDefinition(layer_definition);
+
       expect(layerDefinition.getLayerNumberByIndex(0)).toEqual(0);
-      expect(layerDefinition.getLayerNumberByIndex(1)).toEqual(1);
+    });
 
-      expect(layerDefinition.getLayerIndexByNumber(0)).toEqual(0);
-      expect(layerDefinition.getLayerIndexByNumber(1)).toEqual(1);
+    it("should return the index of the layer given the index of visible layers", function() {
+      layers = [
+        { options: { 'hidden': false } },
+        { options: { 'hidden': true } },
+        { options: { 'hidden': false } }
+      ]
+      layer_definition = {
+        version: '1.0.0',
+        stat_tag: 'vis_id',
+        layers: layers
+      };
 
-      layerDefinition.getSubLayer(0).hide();
-      expect(layerDefinition.getLayerNumberByIndex(0)).toEqual(1);
-      expect(layerDefinition.getLayerNumberByIndex(1)).toEqual(-1);
+      layerDefinition.setLayerDefinition(layer_definition);
+
+      expect(layerDefinition.getLayerNumberByIndex(0)).toEqual(0);
+      expect(layerDefinition.getLayerNumberByIndex(1)).toEqual(2);
+      expect(layerDefinition.getLayerNumberByIndex(2)).toEqual(-1);
+    });
+  });
+
+  describe('.getLayerIndexByNumber', function() {
+
+    var layers;
+    var layer_definition;
+
+    it("should return undefined if there are no layers", function() {
+      layer_definition = {
+        version: '1.0.0',
+        stat_tag: 'vis_id',
+        layers: []
+      };
+      layerDefinition.setLayerDefinition(layer_definition);
+
+      expect(layerDefinition.getLayerIndexByNumber(0)).toBeUndefined();
+      expect(layerDefinition.getLayerIndexByNumber(2)).toBeUndefined();
+    });
+
+    it("should return the index of the visible layer given the index of the layer", function() {
+      var layer_definition = {
+        version: '1.0.0',
+        stat_tag: 'vis_id',
+        layers: [
+          { options: { 'hidden': true }},
+          { options: { 'hidden': false }},
+          { options: { 'hidden': true }}
+        ]
+      };
+
+      layerDefinition.setLayerDefinition(layer_definition);
 
       expect(layerDefinition.getLayerIndexByNumber(0)).toEqual(0);
       expect(layerDefinition.getLayerIndexByNumber(1)).toEqual(0);
+      expect(layerDefinition.getLayerIndexByNumber(2)).toEqual(1);
+      expect(layerDefinition.getLayerIndexByNumber(3)).toBeUndefined();
     });
   });
 
@@ -1365,26 +1466,12 @@ describe("NamedMap", function() {
         name: 'testing',
         layers: [
           {
-            "type": "cartodb",
-            "options": {
-            }
           },
           {
-            "type": "http",
-            "options": {
-              "hidden": false
-            }
-          },
-          {
-            "type": "cartodb",
-            "options": {
-              "hidden": true
-            }
-          },
-          {
-            "type": "cartodb",
-            "options": { },
             "visible": false
+          },
+          {
+            "visible": true
           }
         ]
       };
@@ -1393,9 +1480,8 @@ describe("NamedMap", function() {
       // Layers 0 and 1 are visible, but layer 2 is hidden
       expect(namedMap.toJSON()).toEqual({
         layer0: 1,
-        layer1: 1,
-        layer2: 0,
-        layer3: 0
+        layer1: 0,
+        layer2: 1
       });
     })
   })

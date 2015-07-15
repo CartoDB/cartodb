@@ -47,7 +47,7 @@ describe("geo.map", function() {
     });
 
     it("should compare equal layers correctly", function() {
-      var layer1 = new cdb.geo.PlainLayer({color: '#zipote'});
+      var layer1 = new cdb.geo.PlainLayer({ name: 'Positron' });
       var layer2 = new cdb.geo.PlainLayer({});
       var layer3 = new cdb.geo.PlainLayer({});
       var layer4 = new cdb.geo.PlainLayer({});
@@ -61,17 +61,116 @@ describe("geo.map", function() {
       expect(layer3.isEqual(layer4)).toBeTruthy();
     })
 
-    it("should assign indices", function() {
-      var layer1 = new cdb.geo.PlainLayer({order: 10, color: '#zipote'});
-      var layer2 = new cdb.geo.PlainLayer({});
-      var layer3 = new cdb.geo.PlainLayer({});
+    it("should compare TileLayers", function() {
+      var layer1 = new cdb.geo.TileLayer({ urlTemplate: 'urlTemplate', name: 'layer1', other: 'something' });
+      var layer2 = new cdb.geo.TileLayer({ urlTemplate: 'urlTemplate', name: 'layer2', other: 'else' });
+
+      expect(layer1.isEqual(layer2)).toBeFalsy();
+
+      layer2.set({ name: 'layer1' }, { silent: true});
+
+      expect(layer1.isEqual(layer2)).toBeTruthy();
+    })
+
+    it("should re-assign order when new layers are added to the collection", function() {
+      var baseLayer = new cdb.geo.TileLayer();
+      var layer1 = new cdb.geo.CartoDBLayer();
+      var layer2 = new cdb.geo.CartoDBLayer();
+      var layer3 = new cdb.geo.CartoDBLayer();
+
+      // Sets the order to 0
+      layers.add(baseLayer);
+
+      expect(baseLayer.get('order')).toEqual(0);
+
+      // Sets the order to 1
       layers.add(layer1);
-      expect(layer1.get('order')).toEqual(0);
       layers.add(layer2);
-      expect(layer2.get('order')).toEqual(1);
-      layers.add(layer3, { at: 1});
+
+      expect(baseLayer.get('order')).toEqual(0);
+      expect(layer1.get('order')).toEqual(1);
       expect(layer2.get('order')).toEqual(2);
+
+      // Sets the order to 1 and re-orders the rest of the layers
+      layers.add(layer3, { at: 1});
+
+      expect(baseLayer.get('order')).toEqual(0);
+      expect(layer1.get('order')).toEqual(2);
+      expect(layer2.get('order')).toEqual(3);
       expect(layer3.get('order')).toEqual(1);
+
+      var torqueLayer = new cdb.geo.TorqueLayer({});
+
+      // Torque layer should be at the top
+      layers.add(torqueLayer);
+
+      expect(baseLayer.get('order')).toEqual(0);
+      expect(layer1.get('order')).toEqual(2);
+      expect(layer2.get('order')).toEqual(3);
+      expect(layer3.get('order')).toEqual(1);
+      expect(torqueLayer.get('order')).toEqual(4);
+
+      var tiledLayer = new cdb.geo.TileLayer({});
+
+      // Tiled layer should be at the top
+      layers.add(tiledLayer);
+
+      expect(baseLayer.get('order')).toEqual(0);
+      expect(layer1.get('order')).toEqual(2);
+      expect(layer2.get('order')).toEqual(3);
+      expect(layer3.get('order')).toEqual(1);
+      expect(torqueLayer.get('order')).toEqual(4);
+      expect(tiledLayer.get('order')).toEqual(5);
+
+      var layer4 = new cdb.geo.CartoDBLayer({});
+      layers.add(layer4);
+
+      expect(baseLayer.get('order')).toEqual(0);
+      expect(layer1.get('order')).toEqual(2);
+      expect(layer2.get('order')).toEqual(3);
+      expect(layer3.get('order')).toEqual(1);
+      expect(layer4.get('order')).toEqual(4);
+      expect(torqueLayer.get('order')).toEqual(5);
+      expect(tiledLayer.get('order')).toEqual(6);
+    });
+
+    it("should re-assign order when new layers are removed from the collection", function() {
+      var baseLayer = new cdb.geo.TileLayer();
+      var layer1 = new cdb.geo.CartoDBLayer();
+      var layer2 = new cdb.geo.CartoDBLayer();
+      var torqueLayer = new cdb.geo.TorqueLayer({});
+      var labelsLayer = new cdb.geo.TileLayer();
+
+      // Sets the order to 0
+      layers.add(baseLayer);
+      layers.add(layer1);
+      layers.add(layer2);
+      layers.add(torqueLayer);
+      layers.add(labelsLayer);
+
+      expect(baseLayer.get('order')).toEqual(0);
+      expect(layer1.get('order')).toEqual(1);
+      expect(layer2.get('order')).toEqual(2);
+      expect(torqueLayer.get('order')).toEqual(3);
+      expect(labelsLayer.get('order')).toEqual(4);
+
+      layers.remove(layer1);
+
+      expect(baseLayer.get('order')).toEqual(0);
+      expect(layer2.get('order')).toEqual(1);
+      expect(torqueLayer.get('order')).toEqual(2);
+      expect(labelsLayer.get('order')).toEqual(3);
+
+      layers.remove(torqueLayer);
+
+      expect(baseLayer.get('order')).toEqual(0);
+      expect(layer2.get('order')).toEqual(1);
+      expect(labelsLayer.get('order')).toEqual(2);
+
+      layers.remove(labelsLayer);
+
+      expect(baseLayer.get('order')).toEqual(0);
+      expect(layer2.get('order')).toEqual(1);
     });
   });
 

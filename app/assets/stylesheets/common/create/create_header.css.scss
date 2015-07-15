@@ -18,7 +18,11 @@
   margin-right: 98px;
 }
 .CreateDialog-headerStep:last-child { margin-right: 0 }
+// TODO: this should be deprecated/removed by using standalone .LayoutIcon instead
 .CreateDialog-header .Dialog-headerIcon {
+  @include display-flex();
+  @include justify-content(center, center);
+  @include align-items(center, center);
   margin-bottom: 12px;
   border-color: #CCC;
   line-height: 42px;

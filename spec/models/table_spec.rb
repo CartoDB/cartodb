@@ -683,12 +683,6 @@ describe Table do
       .with(".*#{id}:vizjson")
       .returns(true)
 
-    # Save and privacy changes now trigger full user vizjson list invalidations
-    CartoDB::Varnish.any_instance.expects(:purge)
-      .times(2)
-      .with("#{@user.database_name}.*:vizjson")
-      .returns(true)
-
     CartoDB::TablePrivacyManager.any_instance
       .expects(:propagate_to_varnish)
     table.privacy = UserTable::PRIVACY_PUBLIC
@@ -2318,7 +2312,6 @@ describe Table do
       CartoDB::Visualization::Member.stubs(:new).with(has_entry(:id => derived.id)).returns(derived)
       CartoDB::Visualization::Member.stubs(:new).with(has_entry(:type => 'table')).returns(table.table_visualization)
 
-      derived.expects(:invalidate_all_varnish_vizsjon_keys).once()
       derived.expects(:invalidate_cache).once()
 
       table.privacy = UserTable::PRIVACY_PUBLIC

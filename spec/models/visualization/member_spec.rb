@@ -129,7 +129,7 @@ describe Visualization::Member do
       CartoDB::Visualization::NameChecker.any_instance.stubs(:available?).returns(true)
 
       member = Visualization::Member.new(id: member.id).fetch
-      @user_mock.expects(:invalidate_varnish_cache)
+      CartoDB::Varnish.any_instance.expects(:purge).with(member.varnish_vizzjson_key)
       member.name = 'changed'
       member.store
     end
@@ -142,7 +142,7 @@ describe Visualization::Member do
       member.store
 
       member = Visualization::Member.new(id: member.id).fetch
-      @user_mock.expects(:invalidate_varnish_cache)
+      CartoDB::Varnish.any_instance.expects(:purge).with(member.varnish_vizzjson_key)
       member.privacy = Visualization::Member::PRIVACY_PRIVATE
       member.store
     end
@@ -152,7 +152,7 @@ describe Visualization::Member do
       member.store
 
       member = Visualization::Member.new(id: member.id).fetch
-      @user_mock.expects(:invalidate_varnish_cache)
+      CartoDB::Varnish.any_instance.expects(:purge).with(member.varnish_vizzjson_key)
       member.description = 'changed description'
       member.store
     end

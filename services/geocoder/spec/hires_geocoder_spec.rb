@@ -111,6 +111,15 @@ describe CartoDB::HiresGeocoder do
 
       @geocoder.send(:geocode_text, input_text).should == [nil, nil]
     end
+
+    it 'returns nil coordinates and stops there if the response does not contain any location' do
+      input_text = 'Dummy address'
+      json_response_body = '{"response":{"metaInfo":{"timestamp":"2015-07-14T15:33:35.023+0000"},"view":[]}}'
+      mocked_response  = Typhoeus::Response.new(code: 200, body: json_response_body)
+      Typhoeus.stub(//, method: :get).and_return(mocked_response)
+
+      @geocoder.send(:geocode_text, input_text).should == [nil, nil]
+    end
   end
 
   def path_to(filepath = '')

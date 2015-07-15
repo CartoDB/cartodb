@@ -32,7 +32,7 @@ module Carto
       def run
         @state = 'processing'
         @processed_rows = 0
-        add_georef_status_column
+        ensure_georef_status_colummn_valid
 
         # Here's the actual stuff
         data_input_blocks.each do |data_block|

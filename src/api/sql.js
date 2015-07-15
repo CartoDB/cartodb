@@ -498,9 +498,11 @@
           'total as (',
             'SELECT count(*) FROM ({{sql}}) _wrap)',
           'SELECT sum(clus.clustercount)/sum(total.count) AS clusterrate FROM clus, total',
+        '),',
+        'density as (',
+          'SELECT count(*) / st_area(st_extent(the_geom)) as density FROM ({{sql}}) _wrap',
         ')',
-
-        'select * from stats, geotype, clusters'
+        'select * from stats, geotype, clusters, density'
       ];
 
       var query = Mustache.render(s.join('\n'), {
@@ -527,7 +529,8 @@
           bbox: [[bbox[0][0],bbox[0][1]], [bbox[2][0], bbox[2][1]]],
           geometry_type: row.geometry_type,
           simplified_geometry_type: simplifyType(row.geometry_type),
-          cluster_rate: row.clusterrate
+          cluster_rate: row.clusterrate,
+          density: row.density
         });
       });
   }

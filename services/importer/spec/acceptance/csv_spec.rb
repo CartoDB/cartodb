@@ -6,9 +6,9 @@ require_relative '../../lib/importer/downloader'
 require_relative '../factories/pg_connection'
 require_relative '../doubles/log'
 require_relative '../doubles/user'
-require_relative 'cdb_importer_context'
 require_relative 'acceptance_helpers'
 require_relative '../../spec/doubles/importer_stats'
+require_relative 'cdb_importer_context'
 
 include CartoDB::Importer2
 

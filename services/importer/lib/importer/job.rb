@@ -16,6 +16,17 @@ module CartoDB
         @logger     = new_logger if @logger.nil?
         @pg_options = attributes.fetch(:pg_options, {})
         @schema     = attributes.fetch(:schema, DEFAULT_IMPORT_SCHEMA)
+
+        @table_names = []
+        new_table_name
+      end
+
+      def new_table_name
+        new_name = "importer_#{id.gsub(/-/, '')}"
+        if @table_names.length > 0 
+          new_name = "#{new_name}_#{@table_names.length}"
+        end
+        @table_names << new_name
       end
 
       def new_logger
@@ -27,7 +38,7 @@ module CartoDB
       end
 
       def table_name
-        %Q(importer_#{id.gsub(/-/, '')})
+        @table_names[@table_names.length - 1]
       end
 
       def db
@@ -62,7 +73,6 @@ module CartoDB
       attr_reader :id, :logger, :pg_options, :schema
       attr_accessor :success_status
 
-      private
     end
   end
 end

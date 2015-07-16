@@ -25,5 +25,4 @@ describe 'GPX regression tests' do
     geometry_type_for(runner).should be
   end
 
-end # SHP regression tests
- 
+end

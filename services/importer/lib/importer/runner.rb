@@ -22,6 +22,9 @@ module CartoDB
       DEFAULT_LOADER          = Loader
       UNKNOWN_ERROR_CODE      = 99999
 
+      # Hard-limit on number of spawned tables (zip files, KMLs and so on)
+      MAX_TABLES_PER_IMPORT = 10
+
       # @param options Hash
       # {
       #   :pg Hash { ... }
@@ -155,7 +158,6 @@ module CartoDB
       attr_writer :results, :tracker
 
       def import(source_file, downloader, loader_object=nil)
-        # noinspection RubyArgCount
         loader = loader_object || loader_for(source_file).new(@job, source_file)
 
         raise EmptyFileError if source_file.empty?
@@ -252,7 +254,12 @@ module CartoDB
           end
 
           @importer_stats.timing('import') do
-            unpacker.source_files.each { |source_file|
+            unpacker.source_files.each_with_index { |source_file, index|
+
+              next if (index >= MAX_TABLES_PER_IMPORT)
+
+              @job.new_table_name if (index > 0)
+
               # TODO: Move this stats inside import, for streaming scenarios, or differentiate
               log.append "Filename: #{source_file.fullpath} Size (bytes): #{source_file.size}"
               @stats << {
@@ -274,7 +281,9 @@ module CartoDB
       def multi_resource_import
         log.append "Starting multi-resources import"
         # [ {:id, :title} ]
-        @downloader.item_metadata[:subresources].each { |subresource|
+        @downloader.item_metadata[:subresources].each_with_index { |subresource, index|
+          @job.new_table_name if index > 0
+
           @importer_stats.timing('subresource') do
             datasource = nil
             item_metadata = nil

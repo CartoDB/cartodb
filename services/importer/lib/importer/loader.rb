@@ -49,7 +49,6 @@ module CartoDB
       def run(post_import_handler_instance=nil)
         @file_extension = source_file.extension.split('.').last
         @importer_stats.timing('loader') do
-
           @post_import_handler = post_import_handler_instance
 
           @importer_stats.timing('normalize') do

@@ -68,7 +68,7 @@ class Geocoding < Sequel::Model
     if !defined?(@table_geocoder)
       begin
         @table_geocoder = Carto::TableGeocoderFactory.get(user,
-                                                          GeocoderConfig.instance.get,
+                                                          CartoDB::GeocoderConfig.instance.get,
                                                           table_service,
                                                           original_formatter: formatter,
                                                           formatter: sanitize_formatter,
@@ -196,7 +196,7 @@ class Geocoding < Sequel::Model
 
   def cost
     return 0 unless kind == 'high-resolution'
-    processed_rows.to_i * GeocoderConfig.instance.get['cost_per_hit_in_cents'] rescue 0
+    processed_rows.to_i * CartoDB::GeocoderConfig.instance.get['cost_per_hit_in_cents'] rescue 0
   end
 
   def remaining_quota

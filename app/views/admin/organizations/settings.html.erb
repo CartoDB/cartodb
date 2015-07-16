@@ -208,6 +208,12 @@
 
 </div>
 
+<%= form_for @organization, url: CartoDB.url(self, 'regenerate_organization_users_api_key', {}, current_user), :class =>'Form', method: 'POST' do |f| %>
+  <button class="Button Button--secondary js-regenerateApiKey">
+    <span>Request a new API key all users</span>
+  </button>
+<% end %>
+
 <% if !Cartodb.config[:cartodb_com_hosted].present? %>
   <div class="SupportBanner" id="support-banner"></div>
 <% end %>

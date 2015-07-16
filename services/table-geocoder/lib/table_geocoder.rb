@@ -32,10 +32,9 @@ module CartoDB
     end # initialize
 
     def run
-      add_georef_status_column
+      ensure_georef_status_colummn_valid
 
       cache.run unless cache_disabled?
-      mark_rows_to_geocode
       @csv_file = generate_csv()
       geocoder.run
       self.remote_id = geocoder.request_id
@@ -59,6 +58,7 @@ module CartoDB
       create_temp_table
       import_results_to_temp_table
       load_results_into_original_table
+      mark_rows_not_geocoded
     rescue Sequel::DatabaseError => e
       if e.message =~ /canceling statement due to statement timeout/
         # INFO: Timeouts here are not recoverable for batched geocodes, but they are for non-batched
@@ -87,16 +87,6 @@ module CartoDB
       Cartodb.config[:geocoder]['disable_cache'] || false
     end
 
-    # Mark the rows to be sent with cartodb_georef_status = FALSE
-    # This is necessary for cache.store to work correctly.
-    def mark_rows_to_geocode
-      connection.run(%Q{
-        UPDATE #{@qualified_table_name} SET cartodb_georef_status = FALSE
-        WHERE (cartodb_georef_status IS NULL)
-        AND (cartodb_id IN (SELECT cartodb_id FROM #{@qualified_table_name} WHERE (cartodb_georef_status IS NULL) LIMIT #{@max_rows - cache.hits}))
-     })
-    end
-
     # Generate a csv input file from the geocodable rows
     def generate_csv
       csv_file = File.join(working_dir, "wadus.csv")
@@ -105,7 +95,7 @@ module CartoDB
         WITH geocodable AS (
           SELECT DISTINCT(#{clean_formatter}) recId, #{clean_formatter} searchText
           FROM #{@qualified_table_name}
-          WHERE cartodb_georef_status = FALSE
+          WHERE cartodb_georef_status IS NULL
           LIMIT #{@max_rows - cache.hits}
         )
         SELECT * FROM geocodable
@@ -160,10 +150,14 @@ module CartoDB
             'POINT(' || orig.displayLongitude || ' ' ||
               orig.displayLatitude || ')', 4326
             ),
-            cartodb_georef_status = true
+            cartodb_georef_status = TRUE
         FROM #{temp_table_name} AS orig
         WHERE #{clean_formatter} = orig.recId
       })
+    end
+
+    def mark_rows_not_geocoded
+      connection.run(%Q{UPDATE #{@qualified_table_name} SET cartodb_georef_status = FALSE WHERE cartodb_georef_status IS NULL})
     end
 
     def temp_table_name

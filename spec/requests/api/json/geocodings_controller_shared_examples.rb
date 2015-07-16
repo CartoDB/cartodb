@@ -88,6 +88,31 @@ shared_examples_for "geocoding controllers" do
         end
       end
 
+      it 'takes the parameter force_all_rows into consideration' do
+        @user.geocoding_quota = 0
+        @user.save
+        table = create_table(user_id: @user.id)
+        table.add_column!(name: 'cartodb_georef_status', type: 'bool')
+        table.insert_row!(cartodb_georef_status: nil)
+        table.insert_row!(cartodb_georef_status: true)
+        table.insert_row!(cartodb_georef_status: false)
+
+        expected_rows = 2
+        expected_estimation = expected_rows * @user.geocoding_block_price / User::GEOCODING_BLOCK_SIZE.to_f
+        get_json api_v1_geocodings_estimation_url(params.merge(table_name: table.name, force_all_rows: false)) do |response|
+          response.status.should be_success
+          response.body.should == {rows: expected_rows, estimation: expected_estimation}
+        end
+
+        expected_rows = 3
+        expected_estimation = expected_rows * @user.geocoding_block_price / User::GEOCODING_BLOCK_SIZE.to_f
+        get_json api_v1_geocodings_estimation_url(params.merge(table_name: table.name, force_all_rows: true)) do |response|
+          response.status.should be_success
+          response.body.should == {rows: expected_rows, estimation: expected_estimation}
+        end
+
+      end
+
     end
   end
 
@@ -206,7 +231,7 @@ shared_examples_for "geocoding controllers" do
       get api_v1_geocodings_index_url
       last_response.status.should eq 200
 
-      expected = {"geocodings"=>[{"table_name"=>nil, "processed_rows"=>1, "remote_id"=>nil, "formatter"=>nil, "state"=>"started", "cache_hits"=>0, "id"=>geocoding1.id, "user_id"=>@user1.id,"table_id"=>nil, "automatic_geocoding_id"=>nil, "kind"=>"high-resolution", "country_code"=>nil, "geometry_type"=>nil, "processable_rows"=>nil, "real_rows"=>nil, "used_credits"=>nil, "country_column"=>nil, "data_import_id"=>nil, "region_code"=>nil, "region_column"=>nil, "batched"=>nil, "error_code"=>nil}]}
+      expected = {"geocodings"=>[{"table_name"=>nil, "processed_rows"=>1, "remote_id"=>nil, "formatter"=>nil, "state"=>"started", "cache_hits"=>0, "id"=>geocoding1.id, "user_id"=>@user1.id,"table_id"=>nil, "automatic_geocoding_id"=>nil, "kind"=>"high-resolution", "country_code"=>nil, "geometry_type"=>nil, "processable_rows"=>nil, "real_rows"=>nil, "used_credits"=>nil, "country_column"=>nil, "data_import_id"=>nil, "region_code"=>nil, "region_column"=>nil, "batched"=>nil, "error_code"=>nil, "force_all_rows"=>false}]}
       received_without_dates = { 'geocodings' => JSON.parse(last_response.body)['geocodings'].map { |g| remove_dates(g) } }
       received_without_dates.should == expected
     end

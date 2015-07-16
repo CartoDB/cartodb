@@ -1,6 +1,5 @@
 # encoding: utf-8
 require_relative '../lib/table_geocoder.rb'
-require_relative '../../geocoder/lib/geocoder.rb'
 require_relative 'factories/pg_connection'
 require_relative '../../../spec/rspec_configuration.rb'
 
@@ -21,7 +20,7 @@ describe CartoDB::GeocoderCache do
     @db.drop_table @table_name
   end
 
-  let(:default_params) { { table_name: @table_name, formatter: "concat(name, iso3)", connection: @db, sql_api: { table_name: '' } } }
+  let(:default_params) { { table_name: @table_name, formatter: "concat(name, iso3)", connection: @db, sql_api: { table_name: '' }, qualified_table_name: @table_name } }
 
   describe '#get_cache_results' do
     it "runs the query in batches" do

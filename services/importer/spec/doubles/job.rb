@@ -16,6 +16,7 @@ module CartoDB
         def table_name;           ''; end
         def qualified_table_name; ''; end
         def id;                   0; end
+        def rows_number;          0; end
         def pg_options
           {
             host:     '',

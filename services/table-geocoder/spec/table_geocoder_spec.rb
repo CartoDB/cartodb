@@ -1,8 +1,8 @@
 # encoding: utf-8
-require_relative '../lib/table_geocoder.rb'
+require_relative '../lib/table_geocoder'
 require_relative 'factories/pg_connection'
 require 'set'
-require_relative '../../../spec/rspec_configuration.rb'
+require_relative '../../../spec/rspec_configuration'
 
 describe CartoDB::TableGeocoder do
   let(:default_params) { {app_id: '', token: '', mailto: ''} }
@@ -64,7 +64,7 @@ describe CartoDB::TableGeocoder do
         connection: @db,
         max_rows: 1000
       }))
-      @tg.send(:add_georef_status_column)
+      @tg.send(:ensure_georef_status_colummn_valid)
     end
 
     it "generates a csv file with the correct format" do
@@ -148,7 +148,7 @@ describe CartoDB::TableGeocoder do
     end
   end
 
-  describe '#add_georef_status_column' do
+  describe '#ensure_georef_status_colummn_valid' do
     before do
       table_name = 'wwwwww'
       @db.run("create table #{table_name} (id integer)")
@@ -166,19 +166,19 @@ describe CartoDB::TableGeocoder do
     end
 
     it 'adds a boolean cartodb_georef_status column' do
-      @tg.send(:add_georef_status_column)
+      @tg.send(:ensure_georef_status_colummn_valid)
       @db.run("select cartodb_georef_status from wwwwww").should eq nil
     end
 
     it 'does nothing when the column already exists' do
       @tg.expects(:cast_georef_status_column).once
-      @tg.send(:add_georef_status_column)
-      @tg.send(:add_georef_status_column)
+      @tg.send(:ensure_georef_status_colummn_valid)
+      @tg.send(:ensure_georef_status_colummn_valid)
     end
 
     it 'casts cartodb_georef_status to boolean if needed' do
       @db.run('alter table wwwwww add column cartodb_georef_status text')
-      @tg.send(:add_georef_status_column)
+      @tg.send(:ensure_georef_status_colummn_valid)
       @db.fetch("select data_type from information_schema.columns where table_name = 'wwwwww' and column_name = 'cartodb_georef_status'")
         .first[:data_type].should eq 'boolean'
     end

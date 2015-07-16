@@ -34,7 +34,7 @@ describe CartoDB::AbstractTableGeocoder do
   end
 
 
-  describe '#add_georef_status_column' do
+  describe '#ensure_georef_status_colummn_valid' do
 
     before(:each) do
       @tg = ConcreteTableGeocoder.new({
@@ -45,19 +45,19 @@ describe CartoDB::AbstractTableGeocoder do
     end
 
     it 'adds a georef_status_column if it does not exists' do
-      @tg.send(:add_georef_status_column)
+      @tg.send(:ensure_georef_status_colummn_valid)
       assert_correctness_of_georef_status_column
     end
 
     it 'does nothing if the column already exists' do
-      @tg.send(:add_georef_status_column)
-      @tg.send(:add_georef_status_column)
+      @tg.send(:ensure_georef_status_colummn_valid)
+      @tg.send(:ensure_georef_status_colummn_valid)
       assert_correctness_of_georef_status_column
     end
 
     it 'casts its type if the column exists and is not bool' do
       @db.add_column @table_name, :georef_status_column, :text
-      @tg.send(:add_georef_status_column)
+      @tg.send(:ensure_georef_status_colummn_valid)
       assert_correctness_of_georef_status_column
     end
 

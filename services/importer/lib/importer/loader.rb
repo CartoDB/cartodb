@@ -229,8 +229,8 @@ module CartoDB
       def run_ogr2ogr(append_mode=false)
         ogr2ogr.run(append_mode)
 
-        self.total_rows = get_total_rows
-        self.imported_rows = get_imported_rows
+        self.total_rows = get_file_rows
+        self.imported_rows = @job.rows_number
 
         if !total_rows.nil? && !imported_rows.nil?
           #TODO Right now is only calculating SHP files but it'll great
@@ -243,6 +243,7 @@ module CartoDB
           job.log "ogr2ogr call:            #{ogr2ogr.command}"
           job.log "ogr2ogr output:          #{ogr2ogr.command_output}"
           job.log "ogr2ogr exit code:       #{ogr2ogr.exit_code}"
+          job.log "ogr2ogr imported rows:   #{imported_rows}"
         end
 
         raise DuplicatedColumnError.new(job.logger) if ogr2ogr.command_output =~ /column (.*) of relation (.*) already exists/
@@ -281,14 +282,7 @@ module CartoDB
         error_percent = ((imported_rows - total_rows).abs.to_f/total_rows)*100
       end
 
-      def get_imported_rows
-        rows = @job.db.fetch(%Q{SELECT COUNT(*) FROM #{SCHEMA}.#{@job.table_name}}).first
-        return (!rows.nil? && rows.has_key?(:count)) ? rows[:count] : nil
-      rescue
-        return nil
-      end
-
-      def get_total_rows
+      def get_file_rows
         if is_shp?
           return ShpHelper.new(@source_file.fullpath).total_rows
         else

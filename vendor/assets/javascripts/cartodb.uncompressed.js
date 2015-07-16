@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: 6c01055803ab6884c6dc3807b1de84515eb3ce4a
+// sha: 21fdf4200c563b7aae85e6ce54e416603da83f86
 (function() {
   var root = this;
 
@@ -41043,20 +41043,32 @@ Layers.register('torque', function(vis, data) {
 
       this.execute(query, function(data) {
         var row = data.rows[0];
-        var s = array_agg(row.array_agg);
+        var weight = 0;
+        var histogram = [];
+
+        try {
+          var s = array_agg(row.array_agg);
+
+          var histogram = _(s).map(function(row) {
+              var r = row.match(/\((.*),(\d+)/);
+              var name = normalizeName(r[1]);
+              return [name, +r[2]];
+          });
+
+          weight = row.skew * (1 - row.null_ratio) * (1 - row.uniq / row.cnt) * ( row.uniq > 1 ? 1 : 0);
+        } catch(e) {
+
+        }
+
         callback({
           type: 'string',
-          hist: _(s).map(function(row) {
-            var r = row.match(/\((.*),(\d+)/);
-            var name = normalizeName(r[1]);
-            return [name, +r[2]];
-          }),
+          hist: histogram,
           distinct: row.uniq,
           count: row.cnt,
           null_count: row.null_count,
           null_ratio: row.null_ratio,
           skew: row.skew,
-          weight: row.skew * (1 - row.null_ratio) * (1 - row.uniq / row.cnt) * ( row.uniq > 1 ? 1 : 0)
+          weight: weight
         });
       });
   }
@@ -41134,8 +41146,18 @@ Layers.register('torque', function(vis, data) {
         '),',
         'geotype as (', 
           'select st_geometrytype({{column}}) as geometry_type from ({{sql}}) _w where {{column}} is not null limit 1',
+        '),',
+        'clusters as (', 
+          'with clus as (',
+            'SELECT distinct(ST_snaptogrid(the_geom, 10)) as cluster, count(*) as clustercount FROM ({{sql}}) _wrap group by 1 order by 2 desc limit 3),', 
+          'total as (',
+            'SELECT count(*) FROM ({{sql}}) _wrap)',
+          'SELECT sum(clus.clustercount)/sum(total.count) AS clusterrate FROM clus, total',
+        '),',
+        'density as (',
+          'SELECT count(*) / st_area(st_extent(the_geom)) as density FROM ({{sql}}) _wrap',
         ')',
-        'select * from stats, geotype'
+        'select * from stats, geotype, clusters, density'
       ];
 
       var query = Mustache.render(s.join('\n'), {
@@ -41161,7 +41183,9 @@ Layers.register('torque', function(vis, data) {
           //lon,lat -> lat, lon
           bbox: [[bbox[0][0],bbox[0][1]], [bbox[2][0], bbox[2][1]]],
           geometry_type: row.geometry_type,
-          simplified_geometry_type: simplifyType(row.geometry_type)
+          simplified_geometry_type: simplifyType(row.geometry_type),
+          cluster_rate: row.clusterrate,
+          density: row.density
         });
       });
   }
@@ -41317,9 +41341,7 @@ var root = this;
 root.cartodb = root.cartodb || {};
 
 var ramps = {
-  bool: [
-    ['#5CA2D1', '#0F3B82', '#CCCCCC']
-  ],
+  bool: ['#229A00', '#F84F40', '#DDDDDD'],
   green:  ['#EDF8FB', '#D7FAF4', '#CCECE6', '#66C2A4', '#41AE76', '#238B45', '#005824'],
   blue:  ['#FFFFCC', '#C7E9B4', '#7FCDBB', '#41B6C4', '#1D91C0', '#225EA8', '#0C2C84'],
   pink: ['#F1EEF6', '#D4B9DA', '#C994C7', '#DF65B0', '#E7298A', '#CE1256', '#91003F'],
@@ -41357,7 +41379,7 @@ function getDefaultCSSForGeometryType(geometryType) {
     "line-opacity: 1;",
     "marker-fill-opacity: 0.9;",
     "marker-line-color: #FFF;",
-    "marker-line-width: 1.5;",
+    "marker-line-width: 1;",
     "marker-line-opacity: 1;",
     "marker-placement: point;",
     "marker-type: ellipse;",
@@ -41432,8 +41454,9 @@ var CSS = {
     return css;
   },
 
-  torque: function(stats, tableName){
+  torque: function(stats, tableName, options){
     var tableID = "#" + tableName;
+    var aggFunction = "count(cartodb_id)";
     var css = [
         '/** torque visualization */',
         'Map {',
@@ -41441,24 +41464,21 @@ var CSS = {
         '  -torque-aggregation-function: "count(cartodb_id)";',
         '  -torque-frame-count: ' + stats.steps + ';',
         '  -torque-animation-duration: 10;',
-        '  -torque-resolution: 2',
+        '  -torque-resolution: 2;',
         '}',
         tableID + " {",
         '  marker-width: 3;',
         '  marker-fill-opacity: 0.8;',
-        '  marker-fill: #FF6347; ',
-        '  comp-op: "lighten";',
-        '  [value > 2] { marker-fill: #FEC44F; }',
-        '  [value > 3] { marker-fill: #FE9929; }',
-        '  [value > 4] { marker-fill: #EC7014; }',
-        '  [value > 5] { marker-fill: #CC4C02; }',
-        '  [value > 6] { marker-fill: #993404; }',
-        '  [value > 7] { marker-fill: #662506; }',
+        '  marker-fill: #0F3B82; ',
+        '  comp-op: "lighten"; ',
         '  [frame-offset = 1] { marker-width: 10; marker-fill-opacity: 0.05;}',
         '  [frame-offset = 2] { marker-width: 15; marker-fill-opacity: 0.02;}',
         '}'
-    ].join('\n');
+    ];
+    css = css.join('\n');
+
     return css;
+
   },
 
   bubble: function(quartiles, tableName, prop) {
@@ -41486,6 +41506,30 @@ var CSS = {
         css += "   marker-width: " + values[i].toFixed(1) + ";\n}"
       }
     }
+    return css;
+  },
+
+  heatmap: function(stats, tableName, options){
+    var tableID = "#" + tableName;
+    var css = [
+        '/** heatmap visualization */',
+        'Map {',
+        '  -torque-time-attribute: "cartodb_id";',
+        '  -torque-aggregation-function: "count(cartodb_id)";',
+        '  -torque-frame-count: 1;',
+        '  -torque-animation-duration: 10;',
+        '  -torque-resolution: 2;',
+        '}',
+        tableID + " {",
+        '  marker-width: 10;',
+        '  marker-fill-opacity: 0.4;',
+        '  marker-fill: #0F3B82; ',
+        '  comp-op: "lighten"; ',
+        '  image-filters: colorize-alpha(blue, cyan, lightgreen, yellow , orange, red);',
+        '  marker-file: url(http://s3.amazonaws.com/com.cartodb.assets.static/alphamarker.png);',
+        '}'
+    ];
+    css = css.join('\n');
     return css;
   }
 }
@@ -41527,31 +41571,42 @@ function getWeightFromShape(dist_type){
 
 function getMethodProperties(stats) {
 
-  var method, ramp;
+  var method;
+  var ramp = ramps.pink;
+  var name = "pink";
 
   if (['A','U'].indexOf(stats.dist_type) != -1) { // apply divergent scheme
     method = stats.jenks;
-    ramp = ramps.divergent;
+
+    if (stats.min < 0 && stats.max > 0){
+      ramp = ramps.divergent;
+      name = "spectrum2";
+    }
+
   } else if (stats.dist_type === 'F') {
     method = stats.equalint;
     ramp = ramps.red;
+    name = "red";
   } else {
     if (stats.dist_type === 'J') {
       method = stats.headtails;
-      ramp = ramps.green;
+      ramp = ramps.blue;
+      name = "blue";
     } else {
+      //ramp = (_.clone(ramps.red)).reverse();
       method = stats.headtails;
-      ramp = (_.clone(ramps.red)).reverse();
+      ramp = ramps.red;
+      name = "red";
     }
   }
 
-  return { ramp: ramp, method: method };
+  return { name: name, ramp: ramp, method: method };
 
 }
 
 function guessMap(sql, tableName, column, stats) {
   var geometryType = column.get("geometry_type");
-  var columnName = column.get("name");
+  var columnName = column.get("column");
   var visualizationType = "choropleth";
   var css = null
   var type = stats.type;
@@ -41560,9 +41615,9 @@ function guessMap(sql, tableName, column, stats) {
 
   if (type === 'number') {
 
-    var calc_weight = getWeightFromShape(stats.dist_type);
+    var calc_weight = (stats.weight + getWeightFromShape(stats.dist_type)) / 2;
 
-    if (calc_weight === 0.9) {
+    if (calc_weight >= 0.5) {
 
       var visFunction = CSS.choropleth;
       var properties = getMethodProperties(stats);
@@ -41603,17 +41658,21 @@ function guessMap(sql, tableName, column, stats) {
     css      = CSS.category(cats, tableName, columnName, geometryType);
     metadata = CSS.categoryMetadata(cats);
 
+
   } else if (type === 'date') {
     visualizationType = "torque";
     css = CSS.torque(stats, tableName);
 
   } else if (type === 'boolean') {
-    visualizationType   = "category";
-    var ramp = _.shuffle(ramps.bool)[0];
+    visualizationType  = "category";
+    var ramp = ramps.bool;
     var cats = ['true', 'false', null];
     var options = { type: type, ramp: ramp };
     css      = CSS.category(cats, tableName, columnName, geometryType, options);
     metadata = CSS.categoryMetadata(cats, options);
+  } else if (stats.type === 'geom') {
+    visualizationType = "heatmap";
+    css = CSS.heatmap(stats, tableName, options);
   }
 
   var properties = {
@@ -41655,6 +41714,7 @@ CSS.guess = guess;
 CSS.guessCss = guessCss;
 CSS.guessMap = guessMap;
 CSS.getWeightFromShape = getWeightFromShape;
+CSS.getMethodProperties = getMethodProperties;
 
 
 root.cartodb.CartoCSS = CSS;

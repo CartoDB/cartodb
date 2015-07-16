@@ -47,6 +47,18 @@ module CartoDB
         pg_options.reject { |key, value| key.to_s == 'password' }
       end
 
+      def rows_number
+        rows = db.fetch(%Q{SELECT n_live_tup as num_rows
+                     FROM pg_stat_user_tables
+                     WHERE schemaname = '#{@schema}'
+                     AND relname = '#{table_name}'}).first
+        return rows.nil? ? nil : rows.fetch(:num_rows, nil)
+      rescue => e
+        CartoDB.notify_debug("Cant get the imported rows number from PG stats", 
+                             {error: e.inspect, backtrace: e.backtrace})
+        return 0
+      end
+
       attr_reader :id, :logger, :pg_options, :schema
       attr_accessor :success_status
 

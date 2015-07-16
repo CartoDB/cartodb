@@ -37,7 +37,7 @@ module CartoDB
 
       def run
         @state = 'processing'
-        add_georef_status_column
+        ensure_georef_status_colummn_valid
         download_results
         create_temp_table
         load_results_to_temp_table

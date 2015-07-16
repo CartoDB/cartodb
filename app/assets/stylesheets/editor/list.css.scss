@@ -29,7 +29,10 @@
   border-radius: $sCard-borderRadius;
 }
 .List-row.List-row.is-disabled { opacity: 0.4 }
-.List-row:last-child > .List-rowItem { border-bottom: 1px solid transparent }
+.List-row:last-child > .List-rowItem {
+  // to have same height as the other items, w/o the visible border
+  border-bottom: 1px solid transparent
+}
 .List-rowItem {
   @include display-flex();
   @include justify-content(space-between, justify);
@@ -42,18 +45,14 @@
   width: 100%;
   border-bottom: 1px solid $cStructure-mainLine;
 }
-.List-rowItem--withoutSideMargins {
+.List-rowItem.List-rowItem--compact {
+  padding-top: $sMargin-elementInline;
+  padding-bottom: $sMargin-elementInline;
+}
+.List-rowItem.List-rowItem--withoutSideMargins {
   margin-left: 0;
   margin-right: 0;
 }
+.List-rowItem.List-rowItem--withoutBottomBorder { border-bottom: 0 }
+.List-rowItem.List-rowItem--withoutBottomPadding { padding-bottom: 0 }
 .List-row.is-selected > .List-rowItem { border-bottom: 1px solid transparent }
-.List-rowItem.List-rowItem--tight {
-  padding-top: 16px;
-  padding-bottom: 16px;
-}
-.List-rowItemContentLeft {
-  @include display-flex();
-  @include justify-content(flex-start, start);
-  @include align-items(center);
-}
-.List-rowItemContentLeft > *:first-child { margin-right: $sMargin-element }

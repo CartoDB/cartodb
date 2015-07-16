@@ -1,5 +1,4 @@
-// Make iconFont to behave like a superscript text, necessary for icons that are not square-sized to center vertically 
+// Make iconFont to behave like a superscript text, necessary for icons that are not square-sized to center vertically
 // in a container
-.iconFont--super:before {
-  vertical-align: super;
-}
+.iconFont--super:before { vertical-align: super }
+.iconFont-Play:before { vertical-align: 6px } // center it, super pushes it too high

@@ -8,32 +8,23 @@
   @include justify-content(space-between, justify);
   @include align-items(stretch, stretch);
 }
-.MergeDatasets-list {
-  width: 420px;
-  margin-bottom: 190px; // compensate for fixed dialog footer + fixed stuff above footer
-}
-.MergeDatasets-fixedAboveFooter {
+.MergeDatasets-stickyHeader {
+  background-color: $cStructure-mainBkg;
+  border-bottom: 1px solid $cStructure-mainLine;
   position: fixed;
-  bottom: 90px; //to appear above fixed footer
-  background: $cStructure-grayBkg;
-  margin-bottom: 0;
-
-  // same as .CreateDialog-footerShadow but using :before to not have to add more markup
-  &:before {
-    content: '';
-    position: absolute;
-    top: -18px;
-    display: block;
-    width: 100%;
-    height: 18px;
-    @include background-gradient(rgba(#F9F9F9, 0), rgba(#F9F9F9, 1));
-    z-index: 2;
-  }
+  top: 157px; // compensate for dialog header
+  left: 0;
+  width: 100%;
+  z-index: 2;
 }
-
+.MergeDatasets-stickyHeaderContent {
+  @include display-flex();
+  @include justify-content(flex-start, start);
+  @include align-items(flex-start);
+}
 .MergeDatasets-instructions {
   width: 630px;
-  margin: 0 auto $sMargin-section auto;
+  margin: 0 auto $sMargin-group auto;
   text-align: center;
 }
 .MergeDatasets-desc {
@@ -42,6 +33,9 @@
   @include justify-content(space-between, justify);
   @include align-items(center, center);
   text-align: center;
+  width: 245px;
+  margin-left: auto;
+  margin-right: auto;
   &.MergeDatasets-desc--legend {
     & > *:first-child { margin-top: $sMargin-group }
     & > *:nth-child(even) { margin-bottom: $sMargin-group }
@@ -49,13 +43,32 @@
   }
 }
 .MergeDatasets-countDescIcon {
-  width: 72px;
-  height: 68px;
+  width: 50px;
+  height: 50px;
   @include background(sprite($table-sprites, 'spatial-merge-count') no-repeat);
   margin-top: $sMargin-section;
-  margin-bottom: $sMargin-group;
+  margin-bottom: $sMargin-elementInline;
 }
 .MergeDatasets-countDesc { margin-bottom: $sMargin-section }
+
+.MergeDatasets-select {
+  margin-left: $sMargin-element;
+  margin-right: $sMargin-element;
+  margin-bottom: $sMargin-elementInline;
+}
+.MergeDatasets-list { width: 420px }
+// compensate for List--selections that occupy more space and thus adds more margins to items
+.MergeDatasets-list.MergeDatasets-list--sticky { margin-left: 6px }
+.MergeDatasets-rowItem {
+  @include display-flex();
+  @include justify-content(flex-start, start);
+  @include align-items(flex-start);
+}
+.MergeDatasets-rowItemRadio {
+  margin-top: $sMargin-min; // make the radio button aligned with the text on the right side
+  margin-right: $sMargin-elementInline;
+}
+.MergeDatasets-radioPlaceholder { width: 16px }
 
 .MergeDatasets-ornaments {
   box-sizing: border-box; // for paddings to be part of total width
@@ -63,9 +76,10 @@
   padding-left: 13px;
   padding-right: 13px;
 }
+.MergeDatasets-ornaments--sticky { margin-left: 6px }
 .MergeDatasets-ornamentsTop {
   position: relative;
-  height: 118px;
+  height: 80px;
   border-bottom: 1px solid $cStructure-mainLine;
   &:before,
   &:after {
@@ -81,8 +95,9 @@
   &:before { left: -15px }
   &:after { right: -15px }
 }
+.MergeDatasets-ornamentsTop.is-sticky { height: 34px }  // to be valigned with columns names
 .MergeDatasets-ornamentsTop.MergeDatasets-ornamentsTop--column:after { background-color: $cStructure-mainLine }
-.MergeDatasets-ornamentsTop.MergeDatasets-ornamentsTop--withSpatialKeyColumn:before {
+.MergeDatasets-ornamentsTop.MergeDatasets-ornamentsTop--spatial:before {
   content: '︎◀';
   font-family: serif; // for content to get a symmetric look
   font-size: 12px;
@@ -90,33 +105,23 @@
   border: none;
   bottom: -2px;
 }
-.MergeDatasets-ornamentsBottom {
-  position: relative;
-  width: 29px;
-  height: 108px;
-  float: right;
-  border-left: 1px solid $cStructure-mainLine;
-  border-bottom: 1px solid $cStructure-mainLine;
 
-  &:after {
+.MergeDatasets-selectAllText { margin-right: $sMargin-elementInline }
+.MergeDatasets-fixedAboveFooter {
+  position: fixed;
+  bottom: 100px; //to appear above fixed footer
+  background: $cStructure-grayBkg;
+  margin-bottom: 0;
+
+  // same as .CreateDialog-footerShadow but using :before to not have to add more markup
+  &:before {
     content: '';
-    display: block;
-    width: 10px;
-    height: 10px;
     position: absolute;
-    bottom: -6px;
-    right: -15px;
-    border-radius: 50px;
-    border: 1px solid $cStructure-mainLine;
-    background-color: $cStructure-mainLine;
+    top: -18px;
+    display: block;
+    width: 100%;
+    height: 18px;
+    @include background-gradient(rgba(#F9F9F9, 0), rgba(#F9F9F9, 1));
+    z-index: 2;
   }
-}
-.MergeDatasets-ornamentsBottomText {
-  position: absolute;
-  top: 40px;
-  left: -13px;
-  padding-top: 2px;
-  padding-bottom: 2px;
-  background-color: $cStructure-grayBkg;
-  text-transform: uppercase;
 }

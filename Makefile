@@ -45,16 +45,19 @@ WORKING_SPECS_2b = \
 
 WORKING_SPECS_3 = \
   spec/rspec_configuration.rb \
-  services/importer/spec/acceptance/csv_spec.rb \
   services/importer/spec/acceptance/geojson_spec.rb \
   services/importer/spec/acceptance/gpx_spec.rb \
   services/importer/spec/acceptance/kml_spec.rb \
   services/importer/spec/acceptance/mapinfo_spec.rb \
   services/importer/spec/acceptance/osm_spec.rb \
   services/importer/spec/acceptance/sql_spec.rb \
-  services/importer/spec/acceptance/zip_spec.rb \
-  services/importer/spec/acceptance/gz_tgz_spec.rb \
   services/importer/spec/acceptance/raster2pgsql_spec.rb \
+  $(NULL)
+
+WORKING_SPECS_3a = \
+  services/importer/spec/acceptance/csv_spec.rb \
+  services/importer/spec/acceptance/gz_tgz_spec.rb \
+  services/importer/spec/acceptance/zip_spec.rb \
   $(NULL)
 
 WORKING_SPECS_3b = \
@@ -85,6 +88,7 @@ WORKING_SPECS_3b = \
   services/importer/spec/unit/content_guesser_spec.rb \
   services/importer/spec/unit/namedplaces_guesser_spec.rb \
   $(NULL)
+
 
 WORKING_SPECS_4 = \
   spec/rspec_configuration.rb \
@@ -209,6 +213,8 @@ check-2b:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_2b)
 check-3:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_3)
+check-3a:
+	RAILS_ENV=test bundle exec rspec $(	WORKING_SPECS_3a)
 check-3b:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_3b)
 check-4:
@@ -226,7 +232,7 @@ check-9:
 check-10:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_10)
 
-check-prepared: check-1 check-2 check-2b check-3 check-3b check-4 check-5 check-6 check-7 check-8 check-9 check-10
+check-prepared: check-1 check-2 check-2b check-3 check-3a check-3b check-4 check-5 check-6 check-7 check-8 check-9 check-10
 
 check: prepare-test-db check-prepared
 check-frontend:

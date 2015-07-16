@@ -174,7 +174,7 @@ module CartoDB
           end
 
           @importer_stats.timing('file_size_limit_check') do
-            if hit_platform_file_size_limit?(source_file)
+            if hit_platform_file_size_limit?(source_file, downloader)
               raise CartoDB::Importer2::FileTooBigError.new("#{source_file.fullpath}")
             end
           end
@@ -242,7 +242,7 @@ module CartoDB
 
           # Leaving this limit check as if a compressed source weights too much we avoid even decompressing it
           @importer_stats.timing('file_size_limit_check') do
-            if hit_platform_file_size_limit?(@downloader.source_file)
+            if hit_platform_file_size_limit?(@downloader.source_file, @downloader)
               raise CartoDB::Importer2::FileTooBigError.new("#{@downloader.source_file.fullpath}")
             end
           end
@@ -354,7 +354,11 @@ module CartoDB
         Job.new({ logger: log, pg_options: pg_options })
       end
 
-      def hit_platform_file_size_limit?(source_file)
+      def hit_platform_file_size_limit?(source_file, downloader)
+        # INFO: For Twitter imports skipping this check, as might be hit and we rather apply only row count
+        # If more exceptions appear move inside Datasource base class so each decides if disables or not any limit
+        return false if downloader.datasource.class.to_s == CartoDB::Datasources::Search::Twitter.to_s
+
         file_size = File.size(source_file.fullpath)
         @import_file_limit.is_over_limit!(file_size)
       end

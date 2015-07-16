@@ -453,7 +453,8 @@ class DataImport < Sequel::Model
   def sanitize_columns(table_name)
     Table.sanitize_columns(table_name, {
         connection: current_user.in_database,
-        database_schema: current_user.database_schema
+        database_schema: current_user.database_schema,
+        reserved_words: CartoDB::Importer2::Column::RESERVED_WORDS
       })
   end
 

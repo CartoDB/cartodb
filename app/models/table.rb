@@ -35,7 +35,7 @@ class Table
 
   # @see services/importer/lib/importer/column.rb -> RESERVED_WORDS
   # @see config/initializers/carto_db.rb -> RESERVED_COLUMN_NAMES
-  RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid ogc_fid column }
+  RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid ogc_fid }
   PUBLIC_ATTRIBUTES = {
       :id                           => :id,
       :name                         => :name,
@@ -1545,7 +1545,7 @@ class Table
 
   def self.sanitize_columns(table_name, options={})
     connection = options.fetch(:connection)
-    database_schema = options[:database_schema].present? ? options[:database_schema] : 'public'
+    database_schema = options.fetch(:database_schema, 'public')
 
     connection.schema(table_name, schema: database_schema, reload: true).each do |column|
       column_name = column[0].to_s
@@ -1565,7 +1565,7 @@ class Table
 
   def self.ensure_column_has_valid_name(table_name, column_name, options={})
     connection = options.fetch(:connection)
-    database_schema = options[:database_schema].present? ? options[:database_schema] : 'public'
+    database_schema = options.fetch(:database_schema, 'public')
 
     valid_column_name = get_valid_column_name(table_name, column_name, options)
     if valid_column_name != column_name
@@ -1577,7 +1577,8 @@ class Table
 
   def self.get_valid_column_name(table_name, column_name, options={})
     connection = options.fetch(:connection)
-    database_schema = options[:database_schema].present? ? options[:database_schema] : 'public'
+    database_schema = options.fetch(:database_schema, 'public')
+    reserved_words = options.fetch(:reserved_words, [])
 
     column_name = column_name.to_s.squish #.downcase
     column_name = 'untitled_column' if column_name.blank?
@@ -1594,7 +1595,7 @@ class Table
     # Avoid collisions
     count = 1
     new_column_name = column_name
-    while existing_names.include?(new_column_name) || RESERVED_COLUMN_NAMES.include?(new_column_name)
+    while existing_names.include?(new_column_name) || reserved_words.include?(new_column_name.upcase)
       suffix = "_#{count}"
       new_column_name = column_name[0..PG_IDENTIFIER_MAX_LENGTH-suffix.length] + suffix
       count += 1

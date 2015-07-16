@@ -124,9 +124,13 @@ body.is-inDialog {
   position: fixed;
   bottom: 100px; // to be located on top of the .Dialog-footer
   left: 0;
-  width: 100%;
   background: $cStructure-grayBkg;
   z-index: 3;
+  // Make the item not go all the way to the edge, since that would cover the scrollbar…
+  // Make margins on both sides to accomodate this
+  left: 5%;
+  right: 5%;
+  width: 90%;
 
   // same as .CreateDialog-footerShadow but using :before to not have to add more markup
   &:before {

@@ -7,7 +7,7 @@ require_relative '../../lib/cartodb/mixpanel'
 class Geocoding < Sequel::Model
 
   ALLOWED_KINDS   = %w(admin0 admin1 namedplace postalcode high-resolution ipaddress)
-  DEFAULT_TIMEOUT = 5.hours
+
 
   PUBLIC_ATTRIBUTES = [:id, :table_id, :table_name, :state, :kind, :country_code, :region_code, :formatter,
                        :geometry_type, :error, :processed_rows, :cache_hits, :processable_rows, :real_rows,
@@ -26,8 +26,6 @@ class Geocoding < Sequel::Model
   attr_reader :table_geocoder
   attr_reader :started_at, :finished_at
 
-  attr_accessor :run_timeout
-
   def self.get_geocoding_calls(dataset, date_from, date_to)
     dataset.where(kind: 'high-resolution').where('geocodings.created_at >= ? and geocodings.created_at <= ?', date_from, date_to + 1.days).sum("processed_rows + cache_hits".lit).to_i
   end
@@ -43,11 +41,6 @@ class Geocoding < Sequel::Model
     # validates_presence :table_id
     validates_includes ALLOWED_KINDS, :kind
   end # validate
-
-  def after_initialize
-    super
-    @run_timeout = DEFAULT_TIMEOUT
-  end #after_initialize
 
   def before_save
     super
@@ -112,6 +105,12 @@ class Geocoding < Sequel::Model
 
   # INFO: this method shall always be called from a queue processor
   def run!
+    if self.force_all_rows == true
+      table_geocoder.reset_cartodb_georef_status
+    else
+      table_geocoder.mark_rows_to_geocode
+    end
+
     processable_rows = self.class.processable_rows(table_service)
     if processable_rows == 0
       self.update(state: 'finished', real_rows: 0, used_credits: 0, processed_rows: 0, cache_hits: 0)
@@ -133,23 +132,17 @@ class Geocoding < Sequel::Model
     # INFO: this is where the real stuff is done
     table_geocoder.run
 
+    self.update(table_geocoder.update_geocoding_status)
     self.update remote_id: table_geocoder.remote_id
 
-    # INFO: this loop polls for the state of the table_geocoder batch process and cannot be simply removed
-    begin
-      self.update(table_geocoder.update_geocoding_status)
-      raise 'Geocoding timeout' if Time.now - @started_at > run_timeout and ['started', 'submitted', 'accepted'].include? state
-      raise 'Geocoding failed'  if state == 'failed'
-      sleep(2)
-    end until ['completed', 'cancelled'].include? state
-
+    # TODO better exception handling here
     raise 'Geocoding failed'  if state == 'failed'
+    raise 'Geocoding timed out'  if state == 'timeout'
     return false if state == 'cancelled'
 
     self.update(cache_hits: table_geocoder.cache.hits) if table_geocoder.respond_to?(:cache)
     Statsd.gauge("geocodings.requests", "+#{self.processed_rows}") rescue nil
     Statsd.gauge("geocodings.cache_hits", "+#{self.cache_hits}") rescue nil
-    table_geocoder.process_results if state == 'completed'
     rows_geocoded_after = table_service.owner.in_database.select.from(table_service.sequel_qualified_table_name).where('cartodb_georef_status is true and the_geom is not null').count rescue 0
 
     @finished_at = Time.now
@@ -176,9 +169,11 @@ class Geocoding < Sequel::Model
     geocoding_logger.info(payload.to_json)
   end
 
-  def self.processable_rows(table_service)
+  def self.processable_rows(table_service, force_all_rows=false)
     dataset = table_service.owner.in_database.select.from(table_service.sequel_qualified_table_name)
-    dataset = dataset.where(cartodb_georef_status: nil) if dataset.columns.include?(:cartodb_georef_status)
+    if !force_all_rows && dataset.columns.include?(:cartodb_georef_status)
+      dataset = dataset.exclude(cartodb_georef_status: true)
+    end
     dataset.count
   end # self.processable_rows
 

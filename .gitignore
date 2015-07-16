@@ -23,6 +23,7 @@ config.status
 config/database.yml
 .idea/*
 config/app_config.yml
+config/app_config.yml.local
 config/redis.conf
 config/grunt_production.json
 spec/support/data/failed_remote/*

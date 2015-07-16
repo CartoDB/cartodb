@@ -12,7 +12,7 @@ gem 'activerecord-postgres-array'
 
 gem 'vizzuality-sequel-rails', '0.3.7', git: 'https://github.com/Vizzuality/sequel-rails.git'
 
-gem 'rails_warden',            '0.5.2' # Auth via the Warden Rack framework
+gem 'rails_warden',            '0.5.8' # Auth via the Warden Rack framework
 gem 'oauth',                   '0.4.5'
 gem 'oauth-plugin',            '0.4.0.pre4'
 
@@ -45,7 +45,7 @@ end
 # Importer & sync tables
 gem 'roo',                     '1.13.2'
 gem 'state_machine',           '1.1.2'
-gem 'typhoeus',                '0.6.7'
+gem 'typhoeus',                '0.7.2'
 gem 'charlock_holmes',         '0.7.2'
 gem 'dbf',                     '2.0.6'
 gem 'faraday',                 '0.9.0'

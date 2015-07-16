@@ -4,7 +4,7 @@ require 'spec_helper'
 describe Geocoding do
   before(:all) do
     @user  = create_user(geocoding_quota: 200, geocoding_block_price: 1500)
-    
+
     CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
     @table = FactoryGirl.create(:user_table, user_id: @user.id)
   end
@@ -93,14 +93,20 @@ describe Geocoding do
 
   describe '#run!' do
     it 'updates geocoding stats' do
+      # TODO: this doesn't really test anything but parameter passing, consider deleting it
       geocoding = FactoryGirl.create(:geocoding, user: @user, user_table: @table, formatter: 'b')
       geocoding.table_geocoder.stubs(:run).returns true
+      geocoding.table_geocoder.stubs(:used_batch_request?).returns false
       geocoding.table_geocoder.stubs(:cache).returns  OpenStruct.new(hits: 5000)
       geocoding.table_geocoder.stubs(:process_results).returns true
       geocoding.class.stubs(:processable_rows).returns 10
-      CartoDB::Geocoder.any_instance.stubs(:status).returns 'completed'
-      CartoDB::Geocoder.any_instance.stubs(:update_status).returns true
-      CartoDB::Geocoder.any_instance.stubs(:processed_rows).returns 10
+
+      hires_geocoder_mock = mock
+      hires_geocoder_mock.stubs(:status).returns 'completed'
+      hires_geocoder_mock.stubs(:update_status).returns true
+      hires_geocoder_mock.stubs(:processed_rows).returns 10
+      geocoding.table_geocoder.stubs(:geocoder).returns hires_geocoder_mock
+
       geocoding.run!
       geocoding.processed_rows.should eq 10
       geocoding.state.should eq 'finished'
@@ -111,6 +117,7 @@ describe Geocoding do
     it 'marks the geocoding as failed if the geocoding job fails' do
       geocoding = FactoryGirl.build(:geocoding, user: @user, formatter: 'a', user_table: @table, formatter: 'b')
       geocoding.class.stubs(:processable_rows).returns 10
+      CartoDB::TableGeocoder.any_instance.stubs(:used_batch_request?).returns false
       CartoDB::TableGeocoder.any_instance.stubs(:run).raises("Error")
       CartoDB.expects(:notify_exception).times(1)
 
@@ -135,6 +142,42 @@ describe Geocoding do
       geocoding.reload.state.should eq 'finished'
     end
 
+    describe 'cartodb_georef_status interactions' do
+
+      before(:each) do
+        @my_table = FactoryGirl.create(:user_table, user_id: @user.id)
+      end
+
+      after(:each) do
+        @my_table.destroy
+      end
+
+      it 'marks rows to geocode with cartodb_georef_status = null' do
+        geocoding = FactoryGirl.build(:geocoding, user: @user, user_table: @my_table, kind: 'admin0', geometry_type: 'polygon', formatter: 'b')
+        geocoding.stubs(:run_geocoding!)
+        @my_table.service.add_column!(name: 'cartodb_georef_status', type: 'bool')
+        @my_table.service.insert_row!(cartodb_georef_status: nil)
+        @my_table.service.insert_row!(cartodb_georef_status: true)
+        @my_table.service.insert_row!(cartodb_georef_status: false)
+
+        geocoding.run!
+        @my_table.service.sequel.where(cartodb_georef_status: nil).count.should == 2
+      end
+
+      it 'sets cartodb_georef_status to null on all rows if force_all_rows=true' do
+        geocoding = FactoryGirl.build(:geocoding, user: @user, user_table: @my_table, kind: 'admin0', geometry_type: 'polygon', formatter: 'b', force_all_rows: true)
+        geocoding.stubs(:run_geocoding!)
+        @my_table.service.add_column!(name: 'cartodb_georef_status', type: 'bool')
+        @my_table.service.insert_row!(cartodb_georef_status: nil)
+        @my_table.service.insert_row!(cartodb_georef_status: true)
+        @my_table.service.insert_row!(cartodb_georef_status: false)
+
+        geocoding.run!
+        @my_table.service.sequel.where(cartodb_georef_status: nil).count.should == 3
+      end
+
+    end
+
     it 'succeeds if there are no rows to geocode' do
       geocoding = FactoryGirl.build(:geocoding, user: @user, formatter: 'a', user_table: @table, formatter: 'b')
       geocoding.class.stubs(:processable_rows).returns 0
@@ -143,17 +186,6 @@ describe Geocoding do
       geocoding.state.should eq 'finished'
       geocoding.cache_hits.should eq 0
       geocoding.used_credits.should eq 0
-    end
-
-    pending 'creates an automatic geocoder' do
-      geocoding = Geocoding.create(user: @user, user_table: @table, formatter: 'b')
-      CartoDB::TableGeocoder.any_instance.stubs(:run).returns true
-      CartoDB::TableGeocoder.any_instance.stubs(:process_results).returns true
-      CartoDB::Geocoder.any_instance.stubs(:status).returns 'completed'
-      CartoDB::Geocoder.any_instance.stubs(:update_status).returns true
-      CartoDB.expects(:notify_exception).once.returns(true)
-      expect { geocoding.run! }.to change { AutomaticGeocoding.count }.by(1)
-      geocoding.automatic_geocoding_id.should_not be_nil
     end
 
     pending 'raises an exception if the geocoding times out' do
@@ -268,6 +300,38 @@ describe Geocoding do
       geocoding = FactoryGirl.create(:geocoding, user: @user, used_credits: 3)
       geocoding.price.should eq 4.5
     end
+  end
+
+  describe 'self.processable_rows' do
+    before(:each) do
+      @my_table = FactoryGirl.create(:user_table, user_id: @user.id)
+    end
+
+    after(:each) do
+      @my_table.destroy
+    end
+
+    it "returns all rows if there's no cartodb_georef_status column" do
+      3.times { @my_table.service.insert_row!({}) }
+      Geocoding.processable_rows(@my_table.service).should == 3
+    end
+
+    it "returns all rows where cartodb_georef_status <> true" do
+      @my_table.service.add_column!(name: 'cartodb_georef_status', type: 'bool')
+      3.times { @my_table.service.insert_row!(cartodb_georef_status: nil) }
+      @my_table.service.insert_row!(cartodb_georef_status: true)
+      @my_table.service.insert_row!(cartodb_georef_status: false)
+      Geocoding.processable_rows(@my_table.service).should == 4
+    end
+
+    it "returns all rows regardless of cartodb_georef_status if force_all_rows=true" do
+      @my_table.service.add_column!(name: 'cartodb_georef_status', type: 'bool')
+      3.times { @my_table.service.insert_row!(cartodb_georef_status: nil) }
+      @my_table.service.insert_row!(cartodb_georef_status: true)
+      @my_table.service.insert_row!(cartodb_georef_status: false)
+      Geocoding.processable_rows(@my_table.service, true).should == 5
+    end
+
   end
 
   describe '#failed_rows and #successful_rows' do

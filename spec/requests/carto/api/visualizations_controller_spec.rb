@@ -85,7 +85,7 @@ describe Carto::Api::VisualizationsController do
                        .returns("http://#{@user1.username}.localhost.lan:8181")
 
       get api_v2_visualizations_static_map_url({
-          user_domain: @user1.username, 
+          user_domain: @user1.username,
           id: table1.table_visualization.id,
           width: width,
           height: height
@@ -108,7 +108,7 @@ describe Carto::Api::VisualizationsController do
                                 .returns("{protocol}://cdn.local.lan/{user}")
 
       get api_v2_visualizations_static_map_url({
-          user_domain: @user1.username, 
+          user_domain: @user1.username,
           #api_key: @user1.api_key,
           id: table1.table_visualization.id,
           width: width,
@@ -142,7 +142,7 @@ describe Carto::Api::VisualizationsController do
                        .returns("http://#{@user1.username}.localhost.lan:8181")
 
       get api_v2_visualizations_static_map_url({
-          user_domain: @user1.username, 
+          user_domain: @user1.username,
           id: public_table.table_visualization.id,
           width: width,
           height: height
@@ -153,7 +153,7 @@ describe Carto::Api::VisualizationsController do
       last_response.location.should == "http://#{@user1.username}.localhost.lan:8181/api/v1/map/static/named/#{tpl_id}/#{width}/#{height}.png"
 
       get api_v2_visualizations_static_map_url({
-          user_domain: @user1.username, 
+          user_domain: @user1.username,
           id: private_table.table_visualization.id,
           width: width,
           height: height
@@ -162,7 +162,7 @@ describe Carto::Api::VisualizationsController do
       last_response.status.should == 403
 
       get api_v2_visualizations_static_map_url({
-          user_domain: @user1.username, 
+          user_domain: @user1.username,
           api_key: @user1.api_key,
           id: private_table.table_visualization.id,
           width: width,
@@ -185,7 +185,7 @@ describe Carto::Api::VisualizationsController do
                                      .returns("{protocol}://cdn.local.lan/{user}")
 
       get api_v2_visualizations_static_map_url({
-          user_domain: @user1.username, 
+          user_domain: @user1.username,
           #api_key: @user1.api_key,
           id: table1.table_visualization.id,
           width: width,
@@ -229,7 +229,13 @@ describe Carto::Api::VisualizationsController do
       ).to_json)
       expected_visualization = normalize_hash(expected_visualization)
 
-      response_body(type: CartoDB::Visualization::Member::TYPE_CANONICAL).should == { 'visualizations' => [expected_visualization], 'total_entries' => 1, 'total_user_entries' => 1, 'total_likes' => 0, 'total_shared' => 0}
+      response_body(type: CartoDB::Visualization::Member::TYPE_CANONICAL).should == {
+        'visualizations' => [expected_visualization],
+        'total_entries' => 1,
+        'total_user_entries' => 1,
+        'total_likes' => 0,
+        'total_shared' => 0
+      }
     end
 
     it 'returns liked count' do
@@ -275,7 +281,7 @@ describe Carto::Api::VisualizationsController do
 
     before(:each) do
       CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
-      
+
       CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
       @db = Rails::Sequel.connection
       Sequel.extension(:pagination)
@@ -733,7 +739,7 @@ describe Carto::Api::VisualizationsController do
         body['total_entries'].should eq 3
         body['total_likes'].should eq 0
         body['total_shared'].should eq 2
-        body['visualizations'][0]['table']['name'].should == "public.#{u2_t_2.name}"
+        body['visualizations'][0]['table']['name'].should == "#{@org_user_2.database_schema}.#{u2_t_2.name}"
 
         post api_v1_visualizations_add_like_url(user_domain: @org_user_1.username, id: u1_t_1_id, api_key: @org_user_1.api_key)
 
@@ -1007,6 +1013,13 @@ describe Carto::Api::VisualizationsController do
         body = JSON.parse(last_response.body)
         body['id'].should eq u1_vis_1_id
 
+        # Check visualization id under wrong subdomain triggers 404
+        get api_v2_visualizations_vizjson_url(user_domain: @user.username, id: u1_vis_1_id, api_key: @user.api_key)
+        last_response.status.should == 404
+
+        # Check visualization id under shared with user subdomain triggers 200
+        get api_v2_visualizations_vizjson_url(user_domain: user_2.username, id: u1_vis_1_id, api_key: user_2.api_key)
+        last_response.status.should == 200
       end
 
       it 'Sanitizes vizjson callback' do
@@ -1229,12 +1242,31 @@ describe Carto::Api::VisualizationsController do
       end
 
       it 'renders vizjson v2' do
-        table_attributes  = table_factory
-        table_id          = table_attributes.fetch('id')
+        table_id          = table_factory.fetch('id')
         get "/api/v2/viz/#{table_id}/viz?api_key=#{@api_key}",
           {}, @headers
         last_response.status.should == 200
         ::JSON.parse(last_response.body).keys.length.should > 1
+      end
+
+      it 'returns 200 if subdomain is empty' do
+        viz = api_visualization_creation(@user, @headers, { privacy: Visualization::Member::PRIVACY_PUBLIC, type: Visualization::Member::TYPE_DERIVED })
+        # INFO: I couldn't get rid of subdomain, so I stubbed
+        CartoDB.stubs(:extract_subdomain).returns('')
+        get api_v2_visualizations_vizjson_url(id: viz.id)
+        last_response.status.should == 200
+      end
+
+      it 'returns 200 if subdomain matches' do
+        viz = api_visualization_creation(@user, @headers, { privacy: Visualization::Member::PRIVACY_PUBLIC, type: Visualization::Member::TYPE_DERIVED })
+        get api_v2_visualizations_vizjson_url(user_domain: @user.username, id: viz.id)
+        last_response.status.should == 200
+      end
+
+      it 'returns 404 if subdomain does not match' do
+        viz = api_visualization_creation(@user, @headers, { privacy: Visualization::Member::PRIVACY_PUBLIC, type: Visualization::Member::TYPE_DERIVED })
+        get api_v2_visualizations_vizjson_url(user_domain: 'whatever', id: viz.id)
+        last_response.status.should == 404
       end
 
       it 'returns children (slides) vizjson' do
@@ -1465,8 +1497,8 @@ describe Carto::Api::VisualizationsController do
   end
 
   def login(user)
-    login_as(user, scope: user.subdomain)
-    host! "#{user.subdomain}.localhost.lan"
+    login_as(user, {scope: user.username })
+    host! "#{user.username}.localhost.lan"
   end
 
   def base_url

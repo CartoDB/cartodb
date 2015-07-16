@@ -11,7 +11,7 @@ module CartoDB
 
       SQLAPI_CALLS_TIMEOUT = 45
 
-      attr_reader   :connection, :temp_table_name, :sql_api, :geocoding_results,
+      attr_reader   :temp_table_name, :sql_api, :geocoding_results,
                     :working_dir, :remote_id, :state, :processed_rows, :country_column, :region_column,
                     :qualified_table_name, :batch_size, :countries, :regions, :kind, :geometry_type
 
@@ -37,7 +37,7 @@ module CartoDB
 
       def run
         @state = 'processing'
-        add_georef_status_column
+        ensure_georef_status_colummn_valid
         download_results
         create_temp_table
         load_results_to_temp_table

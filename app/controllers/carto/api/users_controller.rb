@@ -69,7 +69,6 @@ module Carto
           email: user.email,
           organization: Carto::Api::OrganizationPresenter.new(user.organization).to_poro,
           base_url: user.public_url,
-          feature_flags: user.feature_flag_names
         }
       end
 

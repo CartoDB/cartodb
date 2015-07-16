@@ -22,7 +22,7 @@ module CartoDB
       when :import
         # Import failed
         @hubspot.track_import_failed(payload)
-        Rollbar.report_message("Failed import", "error", error_info: payload)
+        Rollbar.report_message("Failed import", import_error_level(payload), error_info: payload)
       when :geocoding
         # Geocoding failed
         @hubspot.track_geocoding_failed(payload)
@@ -39,6 +39,13 @@ module CartoDB
         # Geocoding successful
         @hubspot.track_geocoding_success(payload)
       end
+    end
+
+    private
+
+    def import_error_level(payload)
+      error_code = payload.nil? ? nil : payload[:error_code]
+      error_code.nil? || error_code == 99999 ? 'error' : 'debug'
     end
 
   end

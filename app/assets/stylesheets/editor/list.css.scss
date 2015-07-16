@@ -10,7 +10,6 @@
   background-color: $cStructure-mainBkg;
   border: 1px solid $cStructure-mainLine;
   border-radius: $sCard-borderRadius;
-  margin-bottom: $sMargin-elementInline;
 }
 .List-row {
   @include display-flex();

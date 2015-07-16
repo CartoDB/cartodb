@@ -78,7 +78,7 @@ module CartoDB
     private
 
     def config
-      @config ||= GeocoderConfig.instance.get
+      GeocoderConfig.instance.get
     end
 
     def http_client

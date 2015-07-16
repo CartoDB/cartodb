@@ -31,7 +31,7 @@ class Table
   GEOMETRY_TYPES_PRESENT_CACHING_TIMEOUT = 24.hours
 
   # See http://www.postgresql.org/docs/9.3/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
-  TABLENAME_MAX_LENGTH = 63
+  PG_IDENTIFIER_MAX_LENGTH = 63
 
   # @see services/importer/lib/importer/column.rb -> RESERVED_WORDS
   # @see config/initializers/carto_db.rb -> RESERVED_COLUMN_NAMES
@@ -1516,7 +1516,7 @@ class Table
     name = name.gsub(/[^a-z0-9]/,'_').gsub(/_{2,}/, '_')
 
     # Postgresql table name limit
-    name = name[0...TABLENAME_MAX_LENGTH]
+    name = name[0...PG_IDENTIFIER_MAX_LENGTH]
 
     return name if name == options[:current_name]
 
@@ -1534,13 +1534,78 @@ class Table
     while existing_names.include?(name)
       count = count + 1
       suffix = "_#{count}"
-      name = name[0...TABLENAME_MAX_LENGTH-suffix.length]
+      name = name[0...PG_IDENTIFIER_MAX_LENGTH-suffix.length]
       name = name[rx] ? name.gsub(rx, suffix) : "#{name}#{suffix}"
       # Re-check for duplicated underscores
       name = name.gsub(/_{2,}/, '_')
     end
 
     name
+  end
+
+  def self.sanitize_columns(table_name, options={})
+    connection = options.fetch(:connection)
+    database_schema = options.fetch(:database_schema, 'public')
+
+    connection.schema(table_name, schema: database_schema, reload: true).each do |column|
+      column_name = column[0].to_s
+      column_type = column[1][:db_type]
+      column_name = ensure_column_has_valid_name(table_name, column_name, options)
+      if column_type == 'unknown'
+        CartoDB::ColumnTypecaster.new(
+          user_database:  connection,
+          schema:         database_schema,
+          table_name:     table_name,
+          column_name:    column_name,
+          new_type:       'text'
+          ).run
+      end
+    end
+  end
+
+  def self.ensure_column_has_valid_name(table_name, column_name, options={})
+    connection = options.fetch(:connection)
+    database_schema = options.fetch(:database_schema, 'public')
+
+    valid_column_name = get_valid_column_name(table_name, column_name, options)
+    if valid_column_name != column_name
+      connection.run(%Q{ALTER TABLE "#{database_schema}"."#{table_name}" RENAME COLUMN "#{column_name}" TO "#{valid_column_name}";})
+    end
+
+    valid_column_name
+  end
+
+  def self.get_valid_column_name(table_name, candidate_column_name, options={})
+    reserved_words = options.fetch(:reserved_words, [])
+
+    existing_names = get_column_names(table_name, options) - [candidate_column_name]
+
+    candidate_column_name = 'untitled_column' if candidate_column_name.blank?
+    candidate_column_name = candidate_column_name.to_s.squish
+
+    # Subsequent characters can be letters, underscores or digits
+    candidate_column_name = candidate_column_name.gsub(/[^a-z0-9]/,'_').gsub(/_{2,}/, '_')
+
+    # Valid names start with a letter or an underscore
+    candidate_column_name = "column_#{candidate_column_name}" unless candidate_column_name[/^[a-z_]{1}/]
+
+    # Avoid collisions
+    count = 1
+    new_column_name = candidate_column_name
+    while existing_names.include?(new_column_name) || reserved_words.include?(new_column_name.upcase)
+      suffix = "_#{count}"
+      new_column_name = candidate_column_name[0..PG_IDENTIFIER_MAX_LENGTH-suffix.length] + suffix
+      count += 1
+    end
+
+    new_column_name
+  end
+
+  def self.get_column_names(table_name, options={})
+    connection = options.fetch(:connection)
+    database_schema = options.fetch(:database_schema, 'public')
+    table_schema = connection.schema(table_name, schema: database_schema, reload: true)
+    table_schema.map { |column| column[0].to_s }
   end
 
   def get_new_column_type(invalid_column)

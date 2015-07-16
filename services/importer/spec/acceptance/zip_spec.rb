@@ -104,4 +104,23 @@ describe 'zip regression tests' do
     }
   end
 
+    it 'imports all non-failing items from a zip without failing the whole import' do
+    filepath    = path_to('file_ok_and_file_ko.zip')
+    downloader  = Downloader.new(filepath)
+    runner      = Runner.new({
+                               pg: @pg_options,
+                               downloader: downloader,
+                               log: CartoDB::Importer2::Doubles::Log.new,
+                               user: CartoDB::Importer2::Doubles::User.new
+                             })
+    runner.run
+
+    runner.results.select(&:success?).length.should eq 1
+    runner.results.length.should eq 2
+    runner.results.select(&:success?).each { |result|
+      name = runner.db[%Q{ SELECT * FROM pg_class WHERE relname='#{result.table_name}' }].first[:relname]
+      name.should eq result.table_name
+    }
+  end
+
 end

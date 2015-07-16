@@ -80,6 +80,7 @@ describe Carto::Api::ImportsController do
 
     import = JSON.parse(response.body)
     import['state'].should be == 'complete'
+    import['display_name'].should be == 'wadus.csv'
   end
 
   it 'gets the detail of an import stuck unpacking' do
@@ -114,6 +115,7 @@ describe Carto::Api::ImportsController do
     response.code.should be == '200'
     import = JSON.parse(response.body)
     import['state'].should be == 'complete'
+    import['display_name'].should be == 'Weird_Filename_(2).tgz'
   end
 
   it 'fails with password protected files' do

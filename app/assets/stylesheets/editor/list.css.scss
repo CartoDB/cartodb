@@ -10,6 +10,7 @@
   background-color: $cStructure-mainBkg;
   border: 1px solid $cStructure-mainLine;
   border-radius: $sCard-borderRadius;
+  margin-bottom: $sMargin-elementInline;
 }
 .List-row {
   @include display-flex();
@@ -55,9 +56,3 @@
 .List-rowItem.List-rowItem--withoutBottomBorder { border-bottom: 0 }
 .List-rowItem.List-rowItem--withoutBottomPadding { padding-bottom: 0 }
 .List-row.is-selected > .List-rowItem { border-bottom: 1px solid transparent }
-
-.List-rowItem.List-rowItem--compactSelected,
-.List-row.is-selected > .List-rowItem.List-rowItem--compact {
-  padding-top: 19px;
-  padding-bottom: 18px;
-}

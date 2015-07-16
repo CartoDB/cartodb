@@ -6,7 +6,8 @@
 
 .CreateDialog-listing {
   display: block;
-  padding: 45px 0 70px;
+  padding-top: 52px; // padded on top of the normal Dialog-body it seems, for content to appear below the subheader (.Filters) fold
+  padding-bottom: 70px;
 }
 .CreateDialog-listing.CreateDialog-listing--withFlashMessage { padding-top: 126px }
 .DatasetsPaginator {

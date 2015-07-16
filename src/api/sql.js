@@ -400,20 +400,32 @@
 
       this.execute(query, function(data) {
         var row = data.rows[0];
-        var s = array_agg(row.array_agg);
+        var weight = 0;
+        var histogram = [];
+
+        try {
+          var s = array_agg(row.array_agg);
+
+          var histogram = _(s).map(function(row) {
+              var r = row.match(/\((.*),(\d+)/);
+              var name = normalizeName(r[1]);
+              return [name, +r[2]];
+          });
+
+          weight = row.skew * (1 - row.null_ratio) * (1 - row.uniq / row.cnt) * ( row.uniq > 1 ? 1 : 0);
+        } catch(e) {
+
+        }
+
         callback({
           type: 'string',
-          hist: _(s).map(function(row) {
-            var r = row.match(/\((.*),(\d+)/);
-            var name = normalizeName(r[1]);
-            return [name, +r[2]];
-          }),
+          hist: histogram,
           distinct: row.uniq,
           count: row.cnt,
           null_count: row.null_count,
           null_ratio: row.null_ratio,
           skew: row.skew,
-          weight: row.skew * (1 - row.null_ratio) * (1 - row.uniq / row.cnt) * ( row.uniq > 1 ? 1 : 0)
+          weight: weight
         });
       });
   }

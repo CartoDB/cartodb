@@ -8,22 +8,6 @@
   @include justify-content(space-between, justify);
   @include align-items(stretch, stretch);
 }
-.MergeDatasets-list { width: 420px }
-
-// compensate for List--selections that occupy more space and thus adds more margins to items
-.MergeDatasets-list.MergeDatasets-list--sticky { margin-left: 6px }
-.MergeDatasets-radioPlaceholder { width: 16px }
-
-.MergeDatasets-rowItem {
-  @include display-flex();
-  @include justify-content(flex-start, start);
-  @include align-items(flex-start);
-}
-.MergeDatasets-selectAllText { margin-right: $sMargin-elementInline }
-.MergeDatasets-rowItemRadio {
-  margin-top: $sMargin-min; // make the radio button aligned with the text on the right side
-  margin-right: $sMargin-elementInline;
-}
 .MergeDatasets-stickyHeader {
   background-color: $cStructure-mainBkg;
   border-bottom: 1px solid $cStructure-mainLine;
@@ -38,25 +22,6 @@
   @include justify-content(flex-start, start);
   @include align-items(flex-start);
 }
-.MergeDatasets-fixedAboveFooter {
-  position: fixed;
-  bottom: 100px; //to appear above fixed footer
-  background: $cStructure-grayBkg;
-  margin-bottom: 0;
-
-  // same as .CreateDialog-footerShadow but using :before to not have to add more markup
-  &:before {
-    content: '';
-    position: absolute;
-    top: -18px;
-    display: block;
-    width: 100%;
-    height: 18px;
-    @include background-gradient(rgba(#F9F9F9, 0), rgba(#F9F9F9, 1));
-    z-index: 2;
-  }
-}
-
 .MergeDatasets-instructions {
   width: 630px;
   margin: 0 auto $sMargin-group auto;
@@ -82,6 +47,25 @@
   margin-bottom: $sMargin-group;
 }
 .MergeDatasets-countDesc { margin-bottom: $sMargin-section }
+
+.MergeDatasets-select {
+  margin-left: $sMargin-element;
+  margin-right: $sMargin-element;
+  margin-bottom: $sMargin-elementInline;
+}
+.MergeDatasets-list { width: 420px }
+// compensate for List--selections that occupy more space and thus adds more margins to items
+.MergeDatasets-list.MergeDatasets-list--sticky { margin-left: 6px }
+.MergeDatasets-rowItem {
+  @include display-flex();
+  @include justify-content(flex-start, start);
+  @include align-items(flex-start);
+}
+.MergeDatasets-rowItemRadio {
+  margin-top: $sMargin-min; // make the radio button aligned with the text on the right side
+  margin-right: $sMargin-elementInline;
+}
+.MergeDatasets-radioPlaceholder { width: 16px }
 
 .MergeDatasets-ornaments {
   box-sizing: border-box; // for paddings to be part of total width
@@ -117,4 +101,24 @@
   color: $cStructure-mainLine;
   border: none;
   bottom: -2px;
+}
+
+.MergeDatasets-selectAllText { margin-right: $sMargin-elementInline }
+.MergeDatasets-fixedAboveFooter {
+  position: fixed;
+  bottom: 100px; //to appear above fixed footer
+  background: $cStructure-grayBkg;
+  margin-bottom: 0;
+
+  // same as .CreateDialog-footerShadow but using :before to not have to add more markup
+  &:before {
+    content: '';
+    position: absolute;
+    top: -18px;
+    display: block;
+    width: 100%;
+    height: 18px;
+    @include background-gradient(rgba(#F9F9F9, 0), rgba(#F9F9F9, 1));
+    z-index: 2;
+  }
 }

@@ -106,6 +106,12 @@ class Geocoding < Sequel::Model
 
   # INFO: this method shall always be called from a queue processor
   def run!
+    if self.force_all_rows == true
+      table_geocoder.reset_cartodb_georef_status
+    else
+      table_geocoder.mark_rows_to_geocode
+    end
+
     processable_rows = self.class.processable_rows(table_service)
     if processable_rows == 0
       self.update(state: 'finished', real_rows: 0, used_credits: 0, processed_rows: 0, cache_hits: 0)
@@ -164,9 +170,11 @@ class Geocoding < Sequel::Model
     geocoding_logger.info(payload.to_json)
   end
 
-  def self.processable_rows(table_service)
+  def self.processable_rows(table_service, force_all_rows=false)
     dataset = table_service.owner.in_database.select.from(table_service.sequel_qualified_table_name)
-    dataset = dataset.where(cartodb_georef_status: nil) if dataset.columns.include?(:cartodb_georef_status)
+    if !force_all_rows && dataset.columns.include?(:cartodb_georef_status)
+      dataset = dataset.exclude(cartodb_georef_status: true)
+    end
     dataset.count
   end # self.processable_rows
 

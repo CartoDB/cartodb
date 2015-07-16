@@ -92,9 +92,9 @@ module CartoDB
       end
 
       def layers_for(visualization)
-        layers_data = [
-          base_layers_for(visualization)
-        ]
+        basemap_layer = basemap_layer_for(visualization)
+        layers_data = []
+        layers_data.push(basemap_layer) if basemap_layer
 
         if visualization.retrieve_named_map?
           presenter_options = {
@@ -107,12 +107,15 @@ module CartoDB
           named_maps_presenter = CartoDB::NamedMapsWrapper::Presenter.new(
             visualization, layer_group_for_named_map(visualization), presenter_options, configuration
           )
-          layers_data.push( named_maps_presenter.to_poro )
+          layers_data.push(named_maps_presenter.to_poro)
         else
           named_maps_presenter = nil
-          layers_data.push( layer_group_for(visualization) )
+          layers_data.push(layer_group_for(visualization))
         end
-        layers_data.push( other_layers_for( visualization, named_maps_presenter ) )
+        layers_data.push(other_layers_for(visualization, named_maps_presenter))
+
+        layers_data += non_basemap_base_layers_for(visualization)
+
         layers_data.compact.flatten
       end
 
@@ -135,9 +138,23 @@ module CartoDB
         layers_data
       end
 
-      def base_layers_for(visualization)
-        visualization.layers(:base).map do |layer|
-          CartoDB::Layer::Presenter.new(layer, options, configuration).to_vizjson_v2
+      # INFO: Assumes layers come always ordered by order (they do)
+      def basemap_layer_for(visualization)
+        layer = visualization.layers(:base).first
+        CartoDB::Layer::Presenter.new(layer, options, configuration).to_vizjson_v2 unless layer.nil?
+      end
+
+      # INFO: Assumes layers come always ordered by order (they do)
+      def non_basemap_base_layers_for(visualization)
+        base_layers = visualization.layers(:base)
+        if base_layers.length > 0
+          # Remove the basemap, which is always first
+          base_layers.slice(1, visualization.layers(:base).length)
+                     .map do |layer|
+            CartoDB::Layer::Presenter.new(layer, options, configuration).to_vizjson_v2
+          end
+        else
+          []
         end
       end
 

@@ -1,4 +1,5 @@
 # encoding: utf-8
+require_relative '../../../../spec/rspec_configuration'
 require 'rspec/core'
 require 'rspec/expectations'
 require 'rspec/mocks'

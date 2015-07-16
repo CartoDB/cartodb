@@ -38,7 +38,7 @@ module CartoDB
       end
 
       def table_name
-        @table_names[@table_names.length - 1]
+        @table_names.last
       end
 
       def db

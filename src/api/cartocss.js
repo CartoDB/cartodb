@@ -6,9 +6,7 @@ var root = this;
 root.cartodb = root.cartodb || {};
 
 var ramps = {
-  bool: [
-    ['#5CA2D1', '#0F3B82', '#CCCCCC']
-  ],
+  bool: ['#229A00', '#F84F40', '#DDDDDD'],
   green:  ['#EDF8FB', '#D7FAF4', '#CCECE6', '#66C2A4', '#41AE76', '#238B45', '#005824'],
   blue:  ['#FFFFCC', '#C7E9B4', '#7FCDBB', '#41B6C4', '#1D91C0', '#225EA8', '#0C2C84'],
   pink: ['#F1EEF6', '#D4B9DA', '#C994C7', '#DF65B0', '#E7298A', '#CE1256', '#91003F'],
@@ -331,15 +329,15 @@ function guessMap(sql, tableName, column, stats) {
     css = CSS.torque(stats, tableName);
 
   } else if (type === 'boolean') {
-    visualizationType   = "category";
-    var ramp = _.shuffle(ramps.bool)[0];
+    visualizationType  = "category";
+    var ramp = ramps.bool;
     var cats = ['true', 'false', null];
     var options = { type: type, ramp: ramp };
     css      = CSS.category(cats, tableName, columnName, geometryType, options);
     metadata = CSS.categoryMetadata(cats, options);
   } else if (stats.type === 'geom') {
     visualizationType = "heatmap";
-    css      = CSS.heatmap(stats, tableName, options);
+    css = CSS.heatmap(stats, tableName, options);
   }
 
   var properties = {

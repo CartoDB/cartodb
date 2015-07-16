@@ -282,7 +282,7 @@ function guessMap(sql, tableName, column, stats) {
 
   if (type === 'number') {
 
-    var calc_weight = getWeightFromShape(stats.dist_type);
+    var calc_weight = (stats.weight + getWeightFromShape(stats.dist_type)) / 2;
 
     if (calc_weight >= 0.5) {
 

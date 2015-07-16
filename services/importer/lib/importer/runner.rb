@@ -257,12 +257,20 @@ module CartoDB
               log.store   # Checkpoint-save
 
               # TODO: Move this stats inside import, for streaming scenarios, or differentiate
-              log.append "Filename: #{source_file.fullpath} Size (bytes): #{source_file.size}"
-              @stats << {
-                type: source_file.extension,
-                size: source_file.size
-              }
-              import(source_file, @downloader)
+              import_stats = {}
+              begin
+                log.append "Filename: #{source_file.fullpath} Size (bytes): #{source_file.size}"
+                import_stats[:type] = source_file.extension
+                import_stats[:size] = source_file.size
+
+                import(source_file, @downloader)
+
+                import_stats[:file_rows] = @job.source_file_rows.nil? ? nil : @job.source_file_rows
+                import_stats[:imported_rows] = @job.imported_rows
+                import_stats[:error_percent] = @job.import_error_percent
+              ensure
+                @stats << import_stats
+              end
             }
           end
 
@@ -309,15 +317,22 @@ module CartoDB
             end
 
             @importer_stats.timing('import') do
-              tracker.call('unpacking')
-              source_file = subres_downloader.source_file
-              log.append "Filename: #{source_file.fullpath} Size (bytes): #{source_file.size}"
-              @stats << {
-                type: source_file.extension,
-                size: source_file.size
-              }
+              import_stats = {}
+              begin
+                tracker.call('unpacking')
+                source_file = subres_downloader.source_file
+                log.append "Filename: #{source_file.fullpath} Size (bytes): #{source_file.size}"
+                import_stats[:type] = source_file.extension
+                import_stats[:size] = source_file.size
 
-              import(source_file, subres_downloader)
+                import(source_file, subres_downloader)
+
+                import_stats[:file_rows] = @job.source_file_rows.nil? ? nil : @job.source_file_rows
+                import_stats[:imported_rows] = @job.imported_rows
+                import_stats[:error_percent] = @job.import_error_percent
+              ensure
+                @stats << import_stats
+              end
             end
 
             @importer_stats.timing('cleanup') do

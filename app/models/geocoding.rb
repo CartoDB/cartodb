@@ -68,7 +68,7 @@ class Geocoding < Sequel::Model
     if !defined?(@table_geocoder)
       begin
         @table_geocoder = Carto::TableGeocoderFactory.get(user,
-                                                          GeocoderConfig.instance.get
+                                                          GeocoderConfig.instance.get,
                                                           table_service,
                                                           original_formatter: formatter,
                                                           formatter: sanitize_formatter,

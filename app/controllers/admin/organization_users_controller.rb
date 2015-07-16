@@ -10,7 +10,7 @@ class Admin::OrganizationUsersController < ApplicationController
 
   before_filter :get_config
   before_filter :login_required, :check_permissions
-  before_filter :get_user, only: [:edit, :update, :destroy]
+  before_filter :get_user, only: [:edit, :update, :destroy, :regenerate_api_key]
   before_filter :initialize_google_plus_config, only: [:edit, :update]
 
   layout 'application'
@@ -113,6 +113,16 @@ class Admin::OrganizationUsersController < ApplicationController
   rescue => e
     flash[:error] = "User was not deleted. #{e.message}"
     redirect_to organization_path(user_domain: params[:user_domain])
+  end
+
+  def regenerate_api_key
+    @user.regenerate_api_key
+    flash[:success] = "User API key regenerated"
+    render 'edit'
+  rescue => e
+    CartoDB.notify_exception(e, { user_id: @user.id, current_user: current_user.id })
+    flash[:error] = "There was an error regenerating the API key. Please, try again and contact us if the problem persists"
+    render 'edit'
   end
 
   private

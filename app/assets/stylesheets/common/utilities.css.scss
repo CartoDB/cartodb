@@ -24,6 +24,23 @@
   @include grayscale();
 }
 
+.u-valign:before {
+  display: inline-block;
+  vertical-align: middle;
+  content: "";
+  height: 100%;
+}
+.u-malign {
+  vertical-align: middle;
+}
+
+.u-rspace-xl { margin-right: 60px; }
+.u-rspace-l { margin-right: 40px; }
+.u-rspace-m { margin-right: 24px; }
+.u-rspace-s { margin-right: 12px; }
+.u-rspace-xs { margin-right: 8px; }
+
+
 @media (min-width: $sMedia-desktop) {
   .u-inner {
     width: $sLayout-width;

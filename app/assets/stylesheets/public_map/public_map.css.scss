@@ -2,239 +2,89 @@
 @import "../variables/colors";
 @import "../variables/sizes";
 
-// Public map styles
-//
-// --------------------------------------------------------------------------------------------------------------------
+// Components
+// --------------------------------------------------
 
-.PublicMap {
-
-}
-.PublicMap--rightAligned { text-align: right }
 .PublicMap-map {
   position: relative;
   background: $cStructure-grayBkg;
   width: 100%;
   height: 400px;
 }
-.PublicMap-map.js-map::after{
+.PublicMap-map.js-map:after {
   content: '';
   display: block;
   position: relative;
   height: 1px;
   width: 100%;
-  background: rgba(0,0,0,0.25);
+  background: rgba(#000, .25);
   bottom: 1px;
 }
-
 .PublicMap-block {
   display: block;
   overflow: auto;
 }
-.PublicMap-block.with-margin { margin-top: 50px }
-.PublicMap-block.with-border { border-top: 1px solid $cStructure-mainLine }
+.PublicMap-breadcrumb {
+  border-bottom: 1px solid #ddd;
+}
 .PublicMap-leftBlock {
   float: left;
   width: 580px;
 }
-.PublicMap-leftBlock.with-padding,
-.PublicMap-rightBlock.with-padding { padding-bottom: 16px }
-.PublicMap-rightBlock {
-  float: right;
-  width: 300px;
-}
-.PublicMap-map .Spinner {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  margin: -20px 0 0 -20px;
-}
-.PublicMap-info {
-  overflow: auto;
-  padding: 40px 0 50px;
-}
-.PublicMap-title {
-  padding: 0;
-  margin: 0;
-  color: $cTypography-headers;
-  font-size: 26px;
-  font-weight: 400;
-  line-height: 32px;
-  @include nicer-lato-typography();
-}
-.PublicMap-meta {
-  display: inline-block;
-  margin-top: 4px;
-  vertical-align: top;
-  font-weight: $sFontWeight-lighter;
-}
-.PublicMap-metaTime {
-  @include flex-wrap(wrap);
-  font-size: 15px;
-}
-.PublicMap-owner { margin-left: 5px }
-.PublicMap-ownerAvatar {
-  display: inline-block;
-  vertical-align: middle;
-  margin-right: 2px;
-  height: 16px;
-}
-.PublicMap-ownerName {
-  display: inline-block;
-  vertical-align: middle;
-}
-.PublicMap-desc {
-  padding: 22px 0 0;
-  @include nicer-lato-typography();
-  font-size: $sFontSize-large;
-  font-weight: $sFontWeight-normal;
-  line-height: $sLineHeight-large;
-  color: $cTypography-secondary;
-}
-.DefaultDescription.PublicMap-desc > * { font-size: $sFontSize-large }
-.PublicMap-buttons {
-  margin-top: 3px;
-  text-align: right;
-}
-
-@mixin shareButton($c, $f: 14px, $lh: 28px) {
-  color: $c;
-  border-color: $c;
-  font-size: $f;
-  line-height: $lh;
-  &:hover {
-    color: $c;
-    border-color: $c;
-  }
-}
-.PublicMap-shareButton {
-  display: inline-block;
-  vertical-align: middle;
-  width: 26px;
-  height: 26px;
-  margin-left: 6px;
-  border-radius: 28px;
-  line-height: 28px;
-  border: 1px solid $cStructure-softLine;
-  text-align: center;
-}
-.PublicMap-shareButton--facebook { @include shareButton(#2E4DA7, 12px, 30px) }
-.PublicMap-shareButton--twitter { @include shareButton(#00ACEE, 14px, 28px) }
-.PublicMap-editButton {
-  display: none;
-  vertical-align: middle;
-  width: auto;
-  height: 26px;
-  padding: 0 16px;
-  border-radius: 28px;
-  line-height: 28px;
-  border: 1px solid $cNavButton-default;
-  text-align: center;
-  color: $cNavButton-default;
-  text-transform: uppercase;
-  font-size: 12px;
-  font-weight: $sFontWeight-normal;
-  &:hover {
-    text-decoration: none;
-    border-color: $cNavButton-active;
-    color: $cNavButton-active;
-  }
-}
-.PublicMap-editButton.is-visible { display: inline-block }
-.PublicMap-stat {
-  display: inline-block;
-  vertical-align: middle;
-  margin: 15px 20px 0 0;
-  font-size: $sFontSize-normal;
-  color: $cTypography-secondary;
-  @include nicer-lato-typography();
-}
-.PublicMap-stat--onRight {
-  text-align: right;
-  margin-left: 20px;
-  margin-right: 0;
-}
-.PublicMap-stat--leftMargin { margin-left: 10px }
-.PublicMap-stat--rightMargin { margin-right: 10px }
-.PublicMap-stat .iconFont {
-  margin-right: 3px;
-  font-size: 12px;
-  color: #D8D8D8;
-}
-.PublicMap-stat .iconFont-Stats {
-  font-size: 16px;
-}
-
 .PublicMap-secondary {
-  padding: 40px 0 80px;
-  background: $cStructure-grayBkg;
-  border-top: 1px solid #D8DADD;
+  background: #f9f9f9;
 }
-.PublicMap-secondaryTitle {
-  padding: 11px 0 11px;
-  line-height: normal;
-  font-size: $sFontSize-large;
-  color: #3F4549;
-  text-align: left;
-  border-bottom: 2px solid #E2E5E6;
-}
-.PublicMap .DatasetsList {
-  width: 100%;
-  padding: 0;
-  margin: 0;
-}
-.PublicMap .DatasetsList-item {
-  padding: $sMargin-element 0;
-}
-.PublicMap .DatasetsList-itemPrimaryInfo {
-  width: 200px;
-}
-.PublicMap .DatasetsList-itemSecondaryInfo {
-  width: 40px;
-  padding-top: 2px;
-  text-align: right;
-}
-.PublicMap-privateDatasets {
-  margin-left: $sMargin-element;
-  line-height: 40px;
-  color: $cTypography-secondary;
-}
-.PublicMap .MapCard-content { min-height: 45px }
 
-@media (max-width: 940px) {
-  .u-inner { padding: 0 20px }
-  .PublicMap-block.with-border { border-top: 0 }
-  .PublicMap-rightBlock,
-  .PublicMap-leftBlock {
-    float: none;
-    width: 100%;
-  }
-  .PublicMap-secondary { padding-top: 30px }
-  .PublicMap .DatasetsList { padding-bottom: 30px }
-  .PublicMap--rightAligned,
-  .PublicMap-stat--onRight {
-    margin-left: 0;
+
+// Navmenu
+.Navmenu {
+  display: inline-block;
+  height: 81px;
+}
+.Navmenu-item {
+  position: relative;
+  margin-right: $sMargin-section;
+
+  &:last-child {
     margin-right: 0;
-    text-align: left;
-  }
-  .PublicMap-info { padding: 30px 0 }
-  .PublicMap-stat { display: block }
-
-  .PublicMap .DatasetsList-itemPrimaryInfo,
-  .PublicMap .DatasetsList-itemPrimaryInfo {
-    width: auto;
-    max-width: 440px;
-  }
-  .PublicMap .DatasetsList-itemSecondaryInfo {
-    width: auto;
-    text-align: left;
-  }
-  .PublicMap-buttons{
-    display: none;
   }
 }
-@media only screen and (max-width: 360px) {
-  .PublicMap .DatasetsList-itemSecondaryInfo {
-    width: auto;
-    text-align: left;
-  }
+.Navmenu-item,
+.Navmenu-subItem {
+  display: inline-block;
+  margin-right: $sMargin-section;
+  text-transform: uppercase;
+}
+.Navmenu-sep {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: -20px;
+  width: 1px;
+  height: 20px;
+  color: $cNavmenu-sep;
+}
+.Navmenu-rarrow {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: -20px;
+  width: 9px;
+  height: 9px;
+  color: $cNavmenu-sep;
+}
+.Navmenu-subItem {
+  margin-right: $sMargin-group;
+}
+.Navmenu-link {
+  color: $cTypography-linkSecondary;
+}
+.Navmenu-link:hover {
+  color: $cTypography-linkSecondaryHover;
+}
+.Navmenu-icon {
+  font-size: $sFontSize-largest;
+}
+.Navmenu-share {
+  display: inline-block;
 }

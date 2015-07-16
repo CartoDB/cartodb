@@ -5,7 +5,6 @@ $sLayout-width: 940px;
 $sMargin-section:            40px; // To separate main section
 $sMargin-group:              28px; // To separate groups inside a section
 $sMargin-element:            20px; // To separate elements inside a group
-$sMargin-elementLarge:       40px; // To separate elements inside a group (large separation)
 $sMargin-elementInline:      12px; // To separate inline elements
 $sMargin-min:                4px;  // Minimum margin, special cases only
 $sMargin-formRow:            20px; // Each row in a form should have a margin-bottom of this value.
@@ -73,3 +72,7 @@ $sMedia-max:     1000px;
 $sMedia-desktop: 960px;  // slightly larger than $sLayout-width
 $sMedia-tablet:  760px;
 $sMedia-mobile:  400px;
+
+
+// Margins
+$sMargin

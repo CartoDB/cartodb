@@ -40,7 +40,7 @@ $cHeader-dark:  rgba(#3A91D7, 1);
   color: rgba(white, 0.6);
 }
 .Header-navigationItem {
-  margin-left: $sMargin-elementLarge;
+  margin-left: $sMargin-section;
 }
 .Header-navigationLink {
   font-weight: $sFontWeight-normal;
@@ -81,7 +81,7 @@ $cHeader-dark:  rgba(#3A91D7, 1);
 }
 .Header-settingsItem {
   position: relative;
-  margin-left: $sMargin-elementLarge;
+  margin-left: $sMargin-section;
   font-weight: $sFontWeight-normal;
   font-size: $sFontSize-smallUpperCase;
   line-height: $sLineHeight-larger;

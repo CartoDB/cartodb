@@ -2,6 +2,7 @@
 
 require_relative 'hires_geocoder'
 require_relative 'hires_batch_geocoder'
+require_relative 'geocoder_config'
 
 
 module CartoDB
@@ -28,7 +29,7 @@ module CartoDB
     end
 
     def self.force_batch?
-      ::Cartodb.config[:geocoder]['force_batch'] || false
+      GeocoderConfig.instance.get['force_batch'] || false
     end
 
     def self.input_rows(input_csv_file)

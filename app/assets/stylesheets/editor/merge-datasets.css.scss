@@ -19,9 +19,10 @@
   @include justify-content(flex-start, start);
   @include align-items(flex-start);
 }
-.MergeDatasets-rowItem > *:first-child {
-  margin-top: $sMargin-min;
-  margin-right: $sMargin-elementInline
+.MergeDatasets-selectAllText { margin-right: $sMargin-elementInline }
+.MergeDatasets-rowItemRadio {
+  margin-top: $sMargin-min; // make the radio button aligned with the text on the right side
+  margin-right: $sMargin-elementInline;
 }
 .MergeDatasets-stickyHeader {
   background-color: $cStructure-mainBkg;

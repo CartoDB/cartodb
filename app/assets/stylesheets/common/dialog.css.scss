@@ -84,13 +84,20 @@ body.is-inDialog {
   padding: $sMargin-group 0;
 }
 .Dialog-body {
-  padding: $sMargin-group 0;
+  padding-top: $sMargin-group;
+  padding-bottom: $sMargin-group;
   border-top: 1px solid $cStructure-mainLine;
   width: $sLayout-width;
   margin: 0 auto;
 }
-.Dialog-body--withoutBorder {
+.Dialog-body.Dialog-body--withoutBorder {
   border-top: none;
+}
+.Dialog-body.Dialog-body--create {
+  position: relative;
+  width: 100%;
+  padding-bottom: 0;
+  overflow: auto;
 }
 .Dialog-Stretcher {
   width: $sLayout-width;

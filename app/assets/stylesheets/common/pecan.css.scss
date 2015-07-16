@@ -81,17 +81,13 @@
 .PecanCard-footer {
   position: relative;
   margin-top: 12px;
+  border-top: 0;
 }
 .NullCount {
-  float: right;
   font-size: 11px;
   font-style: italic;
   color: #999999;
   line-height:0;
-}
-.MapCard-footer {
-  position:relative;
-  margin: 10px 0 0 0;
 }
 .CategoryList {
   float:left;
@@ -109,8 +105,4 @@
 }
 .CategoryList .CategoryList-item:last-child {
   margin: 0;
-}
-.HistogramGraph {
-  position:absolute;
-  bottom: -9px;
 }

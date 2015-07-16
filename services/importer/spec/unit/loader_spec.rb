@@ -1,6 +1,8 @@
 # encoding: utf-8
+require 'ostruct'
 require_relative '../../lib/importer/loader'
 require_relative '../../lib/importer/source_file'
+require_relative '../../lib/importer/exceptions'
 require_relative '../doubles/job'
 require_relative '../doubles/ogr2ogr'
 require_relative '../doubles/georeferencer'
@@ -9,7 +11,10 @@ require_relative '../../../../spec/rspec_configuration.rb'
 
 describe CartoDB::Importer2::Loader do
   before do
-    @job            = CartoDB::Importer2::Doubles::Job.new
+    resultset = OpenStruct.new(:first => {:count => 10})
+    db = Object.new
+    db.stubs(:fetch).returns(resultset)
+    @job            = CartoDB::Importer2::Doubles::Job.new(db)
     @source_file    = CartoDB::Importer2::SourceFile.new('/var/tmp/foo')
     @ogr2ogr        = CartoDB::Importer2::Doubles::Ogr2ogr.new
     @georeferencer  = CartoDB::Importer2::Doubles::Georeferencer.new
@@ -37,12 +42,23 @@ describe CartoDB::Importer2::Loader do
 
     it 'logs the exit code from ogr2ogr' do
       @loader.run
-      (@job.logger.to_s =~ /ogr2ogr exit code: \d+/).should_not be nil
+      (@job.logger.to_s =~ /ogr2ogr exit code:\s+\d+/).should_not be nil
     end
 
     it 'logs any output from ogr2ogr' do
       @loader.run
       (@job.logger.to_s =~ /ogr2ogr output: \w*/).should_not be nil
+    end
+
+    it 'encoding problem importing but return 0 should raise an error' do
+      resultset = OpenStruct.new(:first => {:count => 0})
+      db = Object.new
+      db.stubs(:fetch).returns(resultset)
+      @job  = CartoDB::Importer2::Doubles::Job.new(db)
+      @ogr2ogr.command_output = "ERROR:  character with byte sequence 0x81 in encoding " +
+        "\"WIN1252\" has no equivalent in encoding \"UTF8\""
+      loader = CartoDB::Importer2::Loader.new(@job, @source_file, layer=nil, @ogr2ogr, @georeferencer)
+      expect { loader.run }.to raise_error(CartoDB::Importer2::RowsEncodingColumnError)
     end
   end
 
@@ -63,7 +79,10 @@ describe CartoDB::Importer2::Loader do
 
   describe 'stats logger' do
     before do
-      @job            = CartoDB::Importer2::Doubles::Job.new
+      resultset = OpenStruct.new(:first => {:count => 10})
+      db = Object.new
+      db.stubs(:fetch).returns(resultset)
+      @job            = CartoDB::Importer2::Doubles::Job.new(db)
       @source_file    = CartoDB::Importer2::SourceFile.new('/var/tmp/foo')
       @ogr2ogr        = CartoDB::Importer2::Doubles::Ogr2ogr.new
       @georeferencer  = CartoDB::Importer2::Doubles::Georeferencer.new

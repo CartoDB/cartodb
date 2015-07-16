@@ -45,10 +45,22 @@ module CartoDB
       false
     end
 
+    def reset_cartodb_georef_status
+      ensure_georef_status_colummn_valid
+      set_georef_status_to_null
+    end
+
+    # Makes sure there's a cartodb_georef_status_column and marks all geocodifiable rows with NULL.
+    # This is important because otherwise it is hard to track what rows have been processed or not.
+    def mark_rows_to_geocode
+      ensure_georef_status_colummn_valid
+      set_georef_status_from_false_to_null
+    end
+
 
     protected
 
-    def add_georef_status_column
+    def ensure_georef_status_colummn_valid
       connection.run(%Q{
           ALTER TABLE #{@qualified_table_name}
           ADD COLUMN cartodb_georef_status BOOLEAN DEFAULT NULL
@@ -63,6 +75,14 @@ module CartoDB
 
 
     private
+
+    def set_georef_status_to_null
+      connection.select.from(@sequel_qualified_table_name).update(:cartodb_georef_status => nil)
+    end
+
+    def set_georef_status_from_false_to_null
+      connection.select.from(@sequel_qualified_table_name).where(:cartodb_georef_status => false).update(:cartodb_georef_status => nil)
+    end
 
     def cast_georef_status_column
       connection.run(%Q{

@@ -75,6 +75,7 @@ module CartoDB
     class MalformedCSVException                 < GenericImportError; end
     class TooManyColumnsError                   < GenericImportError; end
     class DuplicatedColumnError                 < GenericImportError; end
+    class RowsEncodingColumnError               < GenericImportError; end
     class EncodingError                         < StandardError; end
 
     class StatementTimeoutError                 < BaseImportError; end
@@ -107,6 +108,7 @@ module CartoDB
       TooManyColumnsError                   => 2004,
       DuplicatedColumnError                 => 2005,
       EncodingError                         => 2006,
+      RowsEncodingColumnError               => 2007,
       InvalidGeoJSONError                   => 3007,
       UnknownSridError                      => 3008,
       ShpNormalizationError                 => 3009,

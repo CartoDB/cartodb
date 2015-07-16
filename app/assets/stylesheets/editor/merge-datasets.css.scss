@@ -33,6 +33,9 @@
   @include justify-content(space-between, justify);
   @include align-items(center, center);
   text-align: center;
+  width: 245px;
+  margin-left: auto;
+  margin-right: auto;
   &.MergeDatasets-desc--legend {
     & > *:first-child { margin-top: $sMargin-group }
     & > *:nth-child(even) { margin-bottom: $sMargin-group }
@@ -40,11 +43,11 @@
   }
 }
 .MergeDatasets-countDescIcon {
-  width: 72px;
-  height: 68px;
+  width: 50px;
+  height: 50px;
   @include background(sprite($table-sprites, 'spatial-merge-count') no-repeat);
   margin-top: $sMargin-section;
-  margin-bottom: $sMargin-group;
+  margin-bottom: $sMargin-elementInline;
 }
 .MergeDatasets-countDesc { margin-bottom: $sMargin-section }
 

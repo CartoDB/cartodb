@@ -28,6 +28,7 @@
 }
 .MapCard-content--small {
   height: 35px;
+  padding-top: 18px; // 'Hack' to leave title in the best position
 }
 .PecanMap-MapsList .DefaultTitle,
 .PecanMap-MapsList .DefaultTitle a {
@@ -76,6 +77,10 @@
   margin-left: -42px;
   @include background(image-url('layout/pecan_torque_wizard.png') center center);
   z-index: 10;
+}
+.PecanCard-footer {
+  position: relative;
+  margin-top: 12px;
 }
 .NullCount {
   float: right;

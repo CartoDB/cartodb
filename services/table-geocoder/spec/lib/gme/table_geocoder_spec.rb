@@ -22,7 +22,7 @@ describe Carto::Gme::TableGeocoder do
 
     it 'returns an object that responds to AbstractTableGeocoder interface' do
       table_geocoder = Carto::Gme::TableGeocoder.new(@mandatory_args)
-      interface_methods = [:add_georef_status_column,
+      interface_methods = [:ensure_georef_status_colummn_valid,
                            :cancel,
                            :run,
                            :remote_id,
@@ -73,7 +73,7 @@ describe Carto::Gme::TableGeocoder do
     end
 
     it "set's the state to 'completed' when it ends" do
-      @table_geocoder.stubs(:add_georef_status_column)
+      @table_geocoder.stubs(:ensure_georef_status_colummn_valid)
       @table_geocoder.stubs(:data_input_blocks).returns([])
 
       @table_geocoder.run
@@ -81,7 +81,7 @@ describe Carto::Gme::TableGeocoder do
     end
 
     it "if there's an uncontrolled exception, sets the state to 'failed' and raises it" do
-      @table_geocoder.stubs(:add_georef_status_column)
+      @table_geocoder.stubs(:ensure_georef_status_colummn_valid)
       @table_geocoder.stubs(:data_input_blocks).returns([{cartodb_id: 1, searchtext: 'dummy text'}])
       @table_geocoder.stubs(:geocode).raises(StandardError, 'unexpected exception')
 
@@ -92,7 +92,7 @@ describe Carto::Gme::TableGeocoder do
     end
 
     it "processes 1 block at a time, keeping track of processed rows in each block" do
-      @table_geocoder.stubs(:add_georef_status_column)
+      @table_geocoder.stubs(:ensure_georef_status_colummn_valid)
       mocked_input = Enumerator.new do |enum|
         # 2 blocks of 2 rows each as input
         enum.yield [{cartodb_id: 1, searchtext: 'dummy text'}, {cartodb_id: 2, searchtext: 'dummy text'}]
@@ -138,7 +138,7 @@ describe Carto::Gme::TableGeocoder do
 
     it 'performs (floor(rows / max_block_size) + 1) queries' do
       rows = @db[@table_name.to_sym].count
-      @table_geocoder.send(:add_georef_status_column)
+      @table_geocoder.send(:ensure_georef_status_colummn_valid)
 
       count = 0
       @table_geocoder.send(:data_input_blocks).each { |data_block|

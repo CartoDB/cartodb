@@ -1,23 +1,22 @@
 # encoding: utf-8
 require_relative '../../../spec/rspec_configuration'
 require_relative '../lib/hires_geocoder_factory'
+require_relative '../lib/geocoder_config'
 
 describe CartoDB::HiresGeocoderFactory do
 
-  before(:all) do
-    # Allow stubbing of Cartodb module if it isn't already defined
-    module Cartodb; end
+  after(:all) do
+    # reset config
+    CartoDB::GeocoderConfig.instance.set(nil)
   end
 
   describe '#get' do
     it 'returns a HiresGeocoder instance if the input file has less than N rows' do
-      Cartodb.stubs(:config).returns({
-          geocoder: {
-            'non_batch_base_url' => 'http://api.example.com',
-            'app_id' => 'dummy_app_id',
-            'token' => 'dummy_token',
-            'mailto' => 'dummy_mail_addr'
-          }
+      CartoDB::GeocoderConfig.instance.set({
+          'non_batch_base_url' => 'http://api.example.com',
+          'app_id' => 'dummy_app_id',
+          'token' => 'dummy_token',
+          'mailto' => 'dummy_mail_addr'
         })
       dummy_input_file = 'dummy_input_file.csv'
       working_dir = '/tmp/any_dir'
@@ -28,13 +27,11 @@ describe CartoDB::HiresGeocoderFactory do
     end
 
     it 'returns a HiresBatchGeocoder instance if the input file is above N rows' do
-      Cartodb.stubs(:config).returns({
-          geocoder: {
-            'base_url' => 'http://api.example.com',
-            'app_id' => 'dummy_app_id',
-            'token' => 'dummy_token',
-            'mailto' => 'dummy_mail_addr'
-          }
+      CartoDB::GeocoderConfig.instance.set({
+          'base_url' => 'http://api.example.com',
+          'app_id' => 'dummy_app_id',
+          'token' => 'dummy_token',
+          'mailto' => 'dummy_mail_addr'
         })
       dummy_input_file = 'dummy_input_file.csv'
       working_dir = '/tmp/any_dir'
@@ -45,14 +42,12 @@ describe CartoDB::HiresGeocoderFactory do
     end
 
     it 'returns a batch geocoder if config has force_batch set to true' do
-      Cartodb.stubs(:config).returns({
-          geocoder: {
-            'force_batch' => true,
-            'base_url' => 'http://api.example.com',
-            'app_id' => 'dummy_app_id',
-            'token' => 'dummy_token',
-            'mailto' => 'dummy_mail_addr'
-          }
+      CartoDB::GeocoderConfig.instance.set({
+          'force_batch' => true,
+          'base_url' => 'http://api.example.com',
+          'app_id' => 'dummy_app_id',
+          'token' => 'dummy_token',
+          'mailto' => 'dummy_mail_addr'
         })
       dummy_input_file = 'dummy_input_file.csv'
       working_dir = '/tmp/any_dir'

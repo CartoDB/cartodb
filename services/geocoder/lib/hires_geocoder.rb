@@ -4,6 +4,7 @@ require 'json'
 require 'open3'
 require_relative '../../../lib/carto/http/client'
 require_relative 'hires_geocoder_interface'
+require_relative 'geocoder_config'
 
 module CartoDB
   class HiresGeocoder < HiresGeocoderInterface
@@ -77,7 +78,7 @@ module CartoDB
     private
 
     def config
-      Cartodb.config[:geocoder]
+      GeocoderConfig.instance.get
     end
 
     def http_client
@@ -109,6 +110,10 @@ module CartoDB
       http_response = http_client.get(url)
       if http_response.success?
         response =  ::JSON.parse(http_response.body)["response"]
+        if response['view'].empty?
+          # no location info for the text input, stop here
+          return [nil, nil]
+        end
         position = response["view"][0]["result"][0]["location"]["displayPosition"]
         return position["latitude"], position["longitude"]
       else
@@ -116,7 +121,7 @@ module CartoDB
         return [nil, nil]
       end
     rescue => e
-      CartoDB.notify_debug("Non-batched geocoder couldn't parse response", {error: e, text: text, response: http_response})
+      CartoDB.notify_debug("Non-batched geocoder couldn't parse response", {error: e.inspect, backtrace: e.backtrace, text: text, response_body: http_response.body})
       [nil, nil]
     end
 

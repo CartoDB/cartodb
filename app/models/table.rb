@@ -1575,33 +1575,37 @@ class Table
     valid_column_name
   end
 
-  def self.get_valid_column_name(table_name, column_name, options={})
-    connection = options.fetch(:connection)
-    database_schema = options.fetch(:database_schema, 'public')
+  def self.get_valid_column_name(table_name, candidate_column_name, options={})
     reserved_words = options.fetch(:reserved_words, [])
 
-    column_name = column_name.to_s.squish #.downcase
-    column_name = 'untitled_column' if column_name.blank?
+    existing_names = get_column_names(table_name, options) - [candidate_column_name]
+
+    candidate_column_name = 'untitled_column' if candidate_column_name.blank?
+    candidate_column_name = candidate_column_name.to_s.squish
 
     # Subsequent characters can be letters, underscores or digits
-    column_name = column_name.gsub(/[^a-z0-9]/,'_').gsub(/_{2,}/, '_')
+    candidate_column_name = candidate_column_name.gsub(/[^a-z0-9]/,'_').gsub(/_{2,}/, '_')
 
     # Valid names start with a letter or an underscore
-    column_name = "column_#{column_name}" unless column_name[/^[a-z_]{1}/]
-
-    table_schema = connection.schema(table_name, schema: database_schema, reload: true)
-    existing_names = table_schema.map { |column| column[0].to_s }
+    candidate_column_name = "column_#{candidate_column_name}" unless candidate_column_name[/^[a-z_]{1}/]
 
     # Avoid collisions
     count = 1
-    new_column_name = column_name
+    new_column_name = candidate_column_name
     while existing_names.include?(new_column_name) || reserved_words.include?(new_column_name.upcase)
       suffix = "_#{count}"
-      new_column_name = column_name[0..PG_IDENTIFIER_MAX_LENGTH-suffix.length] + suffix
+      new_column_name = candidate_column_name[0..PG_IDENTIFIER_MAX_LENGTH-suffix.length] + suffix
       count += 1
     end
 
     new_column_name
+  end
+
+  def self.get_column_names(table_name, options={})
+    connection = options.fetch(:connection)
+    database_schema = options.fetch(:database_schema, 'public')
+    table_schema = connection.schema(table_name, schema: database_schema, reload: true)
+    table_schema.map { |column| column[0].to_s }
   end
 
   def get_new_column_type(invalid_column)

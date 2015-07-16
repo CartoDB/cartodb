@@ -73,7 +73,7 @@ module Carto
       end
 
       def display_name
-        url = [@data_import.data_source, @data_import.service_item_id].compact.first
+        url = [@data_import.data_source, @data_import.service_item_id].compact.select { |s| s != '' }.first
         display_name = url.nil? ? @data_import.id : extract_filename(url)
         display_name || @data_import.id
       rescue => e

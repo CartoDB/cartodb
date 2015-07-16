@@ -21,7 +21,7 @@ rescue => e
 end
 
 config = load_config(environment)
-CartoDB::GeocoderConfig.instance.set config.merge(force_batch: !non_batch)
+CartoDB::GeocoderConfig.instance.set config.merge('force_batch' => !non_batch)
 input_file = File.expand_path('../../services/geocoder/spec/fixtures/nokia_input.csv',  __FILE__)
 working_dir = Dir.mktmpdir
 geocoder = CartoDB::HiresGeocoderFactory.get(input_file, working_dir)

@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: 156634a03901b079a6c28b27231620e3eb44992c
+// sha: 21fdf4200c563b7aae85e6ce54e416603da83f86
 (function() {
   var root = this;
 
@@ -41043,20 +41043,32 @@ Layers.register('torque', function(vis, data) {
 
       this.execute(query, function(data) {
         var row = data.rows[0];
-        var s = array_agg(row.array_agg);
+        var weight = 0;
+        var histogram = [];
+
+        try {
+          var s = array_agg(row.array_agg);
+
+          var histogram = _(s).map(function(row) {
+              var r = row.match(/\((.*),(\d+)/);
+              var name = normalizeName(r[1]);
+              return [name, +r[2]];
+          });
+
+          weight = row.skew * (1 - row.null_ratio) * (1 - row.uniq / row.cnt) * ( row.uniq > 1 ? 1 : 0);
+        } catch(e) {
+
+        }
+
         callback({
           type: 'string',
-          hist: _(s).map(function(row) {
-            var r = row.match(/\((.*),(\d+)/);
-            var name = normalizeName(r[1]);
-            return [name, +r[2]];
-          }),
+          hist: histogram,
           distinct: row.uniq,
           count: row.cnt,
           null_count: row.null_count,
           null_ratio: row.null_ratio,
           skew: row.skew,
-          weight: row.skew * (1 - row.null_ratio) * (1 - row.uniq / row.cnt) * ( row.uniq > 1 ? 1 : 0)
+          weight: weight
         });
       });
   }
@@ -41329,9 +41341,7 @@ var root = this;
 root.cartodb = root.cartodb || {};
 
 var ramps = {
-  bool: [
-    ['#5CA2D1', '#0F3B82', '#CCCCCC']
-  ],
+  bool: ['#229A00', '#F84F40', '#DDDDDD'],
   green:  ['#EDF8FB', '#D7FAF4', '#CCECE6', '#66C2A4', '#41AE76', '#238B45', '#005824'],
   blue:  ['#FFFFCC', '#C7E9B4', '#7FCDBB', '#41B6C4', '#1D91C0', '#225EA8', '#0C2C84'],
   pink: ['#F1EEF6', '#D4B9DA', '#C994C7', '#DF65B0', '#E7298A', '#CE1256', '#91003F'],
@@ -41605,7 +41615,7 @@ function guessMap(sql, tableName, column, stats) {
 
   if (type === 'number') {
 
-    var calc_weight = getWeightFromShape(stats.dist_type);
+    var calc_weight = (stats.weight + getWeightFromShape(stats.dist_type)) / 2;
 
     if (calc_weight >= 0.5) {
 
@@ -41654,15 +41664,15 @@ function guessMap(sql, tableName, column, stats) {
     css = CSS.torque(stats, tableName);
 
   } else if (type === 'boolean') {
-    visualizationType   = "category";
-    var ramp = _.shuffle(ramps.bool)[0];
+    visualizationType  = "category";
+    var ramp = ramps.bool;
     var cats = ['true', 'false', null];
     var options = { type: type, ramp: ramp };
     css      = CSS.category(cats, tableName, columnName, geometryType, options);
     metadata = CSS.categoryMetadata(cats, options);
   } else if (stats.type === 'geom') {
     visualizationType = "heatmap";
-    css      = CSS.heatmap(stats, tableName, options);
+    css = CSS.heatmap(stats, tableName, options);
   }
 
   var properties = {

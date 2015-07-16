@@ -55,6 +55,7 @@ WORKING_SPECS_3 = \
   $(NULL)
 
 WORKING_SPECS_3a = \
+  spec/rspec_configuration.rb \
   services/importer/spec/acceptance/csv_spec.rb \
   services/importer/spec/acceptance/gz_tgz_spec.rb \
   services/importer/spec/acceptance/zip_spec.rb \

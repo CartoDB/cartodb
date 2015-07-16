@@ -82,4 +82,24 @@ describe 'KML regression tests' do
     runner.results.first.error_code.should eq 3202
   end
 
-end # KML regression tests
+  it 'imports a maximum of Runner::MAX_TABLES_PER_IMPORT KMLs from a zip ok' do
+    # https://developers.google.com/kml/documentation/KML_Samples.kml
+    filepath    = path_to('kml_samples.zip')
+    downloader  = CartoDB::Importer2::Downloader.new(filepath)
+    runner      = CartoDB::Importer2::Runner.new({
+                               pg: @pg_options,
+                               downloader: downloader,
+                               log: CartoDB::Importer2::Doubles::Log.new,
+                               user: CartoDB::Importer2::Doubles::User.new
+                             })
+    runner.run
+
+    runner.results.select(&:success?).length.should eq CartoDB::Importer2::Runner::MAX_TABLES_PER_IMPORT
+    runner.results.length.should eq CartoDB::Importer2::Runner::MAX_TABLES_PER_IMPORT
+    runner.results.each { |result|
+      name = runner.db[%Q{ SELECT * FROM pg_class WHERE relname='#{result.table_name}' }].first[:relname]
+      name.should eq result.table_name
+    }
+  end
+
+end

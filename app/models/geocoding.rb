@@ -122,6 +122,9 @@ class Geocoding < Sequel::Model
     rows_geocoded_before = table_service.owner.in_database.select.from(table_service.sequel_qualified_table_name).where(cartodb_georef_status: true).count rescue 0
 
     self.run_geocoding!(processable_rows, rows_geocoded_before)
+  rescue => e
+    CartoDB.notify_exception(e)
+    raise e
   ensure
     user.reset_pooled_connections
   end

@@ -13,7 +13,6 @@ module Carto
       # NOTE: This assumes it's being called from a Resque job
       user.reset_pooled_connections
 
-      # TODO: test with content guessing
       if user == table_service.owner
         user_connection = user.in_database
       else

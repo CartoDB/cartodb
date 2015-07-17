@@ -216,7 +216,7 @@ check-2b:
 check-3:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_3)
 check-3a:
-	RAILS_ENV=test bundle exec rspec $(	WORKING_SPECS_3a)
+	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_3a)
 check-3b:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_3b)
 check-4:

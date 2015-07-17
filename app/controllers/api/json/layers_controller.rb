@@ -33,7 +33,7 @@ class Api::Json::LayersController < Api::ApplicationController
       end
       if ::Layer::DATA_LAYER_KINDS.include?(@layer.kind)
         table_visualization = Helpers::TableLocator.new.get_by_id_or_name(
-            @layer.options['table_name'], 
+            @layer.options['table_name'],
             current_user
           ).table_visualization
         unless table_visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
@@ -46,6 +46,8 @@ class Api::Json::LayersController < Api::ApplicationController
       @parent.add_layer(@layer)
       @layer.register_table_dependencies if @parent.is_a?(::Map)
       @parent.process_privacy_in(@layer) if @parent.is_a?(::Map)
+      # .add_layer doesn't triggers sequel handlers, force a save so all after_save logic gets executed
+      @parent.save
 
       render_jsonp CartoDB::Layer::Presenter.new(@layer, {:viewer_user => current_user}).to_poro
     else

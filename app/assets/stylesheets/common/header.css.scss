@@ -101,10 +101,6 @@ $cHeader-dark:  rgba(#3A91D7, 1);
   .Header-logoText { margin-left: $sMargin-elementInline }
 }
 
-@media (min-width: $sMedia-tablet) {
-  .Header-settingsItem { margin-left: $sMargin-group }
-}
-
 @media only screen and (max-width: 360px) {
   $height: 60px;
 

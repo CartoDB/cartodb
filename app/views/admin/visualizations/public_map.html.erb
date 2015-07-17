@@ -31,10 +31,10 @@
     </div>
 
     <div class="u-inner">
-      <div class="PublicMap-block">
-        <div class="PublicMap-nav">
+      <div class="Navmenu">
+        <div class="PublicMap-block">
           <div class="PublicMap-leftBlock">
-            <ul class="Navmenu u-valign u-rspace-l">
+            <ul class="Navmenu-list Navmenu-list--avatar u-valign">
               <li class="Navmenu-item u-malign">
                 <a href="<%= CartoDB.url(self, 'public_maps_home', {}, @visualization.user) %>" target="_blank" class="UserAvatar">
                   <img class="UserAvatar-img--medium" src="<%= @visualization.user.avatar %>" alt="<%= @name %>" title="<%= @name %>" />
@@ -42,19 +42,18 @@
               </li>
             </ul>
 
-            <ul class="Navmenu u-valign">
+            <ul class="Navmenu-list u-valign">
               <li class="Navmenu-item u-malign">
-                <i class="Navmenu-rarrow iconFont iconFont-Rarrow"></i>
                 <a href="<%= CartoDB.url(self, 'public_maps_home', {}, @visualization.user) %>" class="Navmenu-link"><%= @name %></a>
               </li>
 
-              <li class="Navmenu-item u-malign">
+              <li class="Navmenu-item u-malign u-hideOnTablet">
                 <i class="Navmenu-rarrow iconFont iconFont-Rarrow"></i>
                 <a href="<%= CartoDB.url(self, 'public_maps_home', {}, @visualization.user) %>" class="Navmenu-link">Maps</a>
               </li>
 
               <% if @visualization.tags.size > 0 %>
-                <li class="Navmenu-item u-malign">
+                <li class="Navmenu-item u-malign u-hideOnTablet">
                   <i class="Navmenu-rarrow iconFont iconFont-Rarrow"></i>
                   <a href="<%= CartoDB.url(self, 'public_tag', {tag: @visualization.tags.first}, @visualization.user) %>" class="Navmenu-link"><%= @visualization.tags.first %></a>
                 </li>
@@ -62,10 +61,10 @@
             </ul>
           </div>
 
-          <div class="PublicMap-rightBlock">
-            <ul class="Navmenu u-valign">
+          <div class="PublicMap-rightBlock u-txt-right">
+            <ul class="Navmenu-list u-valign">
               <li class="Navmenu-item u-malign">
-                <a href="<%= CartoDB.url(self, 'public_visualizations_embed_map', {id: @visualization.id}, @visualization.user) %>" target="_blank">
+                <a href="<%= CartoDB.url(self, 'public_visualizations_embed_map', {id: @visualization.id}, @visualization.user) %>" target="_blank" class="Navmenu-link">
                   <i class="iconFont iconFont-Fullscreen Navmenu-icon"></i>
                 </a>
               </li>
@@ -77,13 +76,13 @@
                 </a>
               </li>
 
-              <li class="Navmenu-item u-malign">
+              <li class="Navmenu-item u-malign js-Navmenu-share">
                 <div class="Navmenu-sep"></div>
-                <a href="#" class="Navmenu-link u-showOnMobile">
+                <a href="#" class="Navmenu-link Navmenu-shareLink js-Navmenu-shareLink">
                   <i class="iconFont iconFont-Share Navmenu-icon"></i>
                 </a>
 
-                <ul class="Navmenu-share u-hideOnMobile">
+                <ul class="Navmenu-shareList js-Navmenu-shareList u-valign">
                   <li class="Navmenu-subItem">
                     <a href="#" class="Navmenu-link">
                       <i class="iconFont iconFont-Twitter Navmenu-icon"></i>
@@ -100,6 +99,12 @@
                     <a href="#" class="Navmenu-link">
                       <i class="iconFont iconFont-Linkedin Navmenu-icon"></i>
                     </a>
+                  </li>
+
+                  <li class="Navmenu-subItem u-showOnTablet">
+                    <button class="ImportItem-closeButton Navmenu-link js-Navmenu-closeLink">
+                      <i class="iconFont iconFont-Close ImportItem-closeButtonIcon"></i>
+                    </button>
                   </li>
                 </ul>
               </li>

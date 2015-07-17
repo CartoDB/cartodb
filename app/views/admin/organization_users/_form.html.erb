@@ -166,9 +166,19 @@
 
 <%= form_for @user, url: CartoDB.url(self, 'regenerate_organization_user_api_key', {id: @user.username}, current_user), :class =>'Form', method: 'POST' do |f| %>
   <% if !@user.new? && current_user.organization_owner? -%>
-    <button class="Button Button--secondary js-regenerateOrganizationUserApiKey">
-      <span>Request a new API key for this user</span>
-    </button>
+
+    <div class="Form-title">
+      <p class="Form-titleText">Company users API key management</p>
+    </div>
+
+    <div class="Form-footer">
+      <p class="Form-footerText"></p>
+        <button class="Button Button--main js-regenerateOrganizationUserApiKey">
+          <span>Request a new API key for this user</span>
+        </button>
+      </p>
+    </div>
+
   <% end %>
 <% end %>
 

@@ -203,16 +203,25 @@
           <% end %>
         </div>
       <% end %>
+
+      <%= form_for @organization, url: CartoDB.url(self, 'regenerate_organization_users_api_key', {}, current_user), :class =>'Form', method: 'POST' do |f| %>
+        <div class="Form-title">
+          <p class="Form-titleText">Company users API key management</p>
+        </div>
+
+        <div class="Form-footer">
+          <p class="Form-footerText"></p>
+            <button class="Button Button--main js-regenerateOrganizationUsersApiKey">
+              <span>Request a new API key all users</span>
+            </button>
+          </p>
+        </div>
+      <% end %>
+
     </div>
   </div>
 
 </div>
-
-<%= form_for @organization, url: CartoDB.url(self, 'regenerate_organization_users_api_key', {}, current_user), :class =>'Form', method: 'POST' do |f| %>
-  <button class="Button Button--secondary js-regenerateOrganizationUsersApiKey">
-    <span>Request a new API key all users</span>
-  </button>
-<% end %>
 
 <% if !Cartodb.config[:cartodb_com_hosted].present? %>
   <div class="SupportBanner" id="support-banner"></div>

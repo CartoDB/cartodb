@@ -73,9 +73,6 @@ var CSS = {
   categoryMetadata: function(cats, options) {
     var metadata = [];
 
-    cats = _.sortBy(cats, function(cat) { return cat[1]; }).reverse().slice(0, 11);
-    cats = _.sortBy(cats, function(cat) { return cat[0]; });
-
     var ramp = (options && options.ramp) ? options.ramp : ramps.category;
     var type = options && options.type ? options.type : "string";
 
@@ -103,9 +100,6 @@ var CSS = {
     var ramp = (options && options.ramp) ? options.ramp : ramps.category;
 
     var defaultCSS = getDefaultCSSForGeometryType(geometryType);
-
-    cats = _.sortBy(cats, function(cat) { return cat[1]; }).reverse().slice(0, 11);
-    cats = _.sortBy(cats, function(cat) { return cat[0]; });
 
     var css = "/** category visualization */\n\n" + tableID + " {\n  " + attr + ": " + ramp[0] + ";\n" + defaultCSS.join("\n") + "\n}\n";
 
@@ -313,7 +307,12 @@ function guessMap(sql, tableName, column, stats) {
 
       if (distinctPercentage < 1) {
         visualizationType   = "category";
-        var cats = stats.cat_hist.slice(0, ramps.category.length).map(function(r) { return r[0]; });
+
+        var cats = stats.cat_hist;
+        cats = _.sortBy(cats, function(cat) { return cat[1]; }).reverse().slice(0, ramps.category.length);
+        cats = _.sortBy(cats, function(cat) { return cat[0]; });
+        cats = cats.map(function(r) { return r[0]; });
+
         css      = CSS.category(cats, tableName, columnName, geometryType, { type: type });
         metadata = CSS.categoryMetadata(cats, { type: type });
 
@@ -334,7 +333,12 @@ function guessMap(sql, tableName, column, stats) {
   } else if (type === 'string') {
 
     visualizationType   = "category";
-    var cats = stats.hist.slice(0, ramps.category.length).map(function(r) { return r[0]; });
+
+    var cats = stats.hist;
+    cats = _.sortBy(cats, function(cat) { return cat[1]; }).reverse().slice(0, ramps.category.length);
+    cats = _.sortBy(cats, function(cat) { return cat[0]; });
+    cats = cats.map(function(r) { return r[0]; });
+
     css      = CSS.category(cats, tableName, columnName, geometryType);
     metadata = CSS.categoryMetadata(cats);
 

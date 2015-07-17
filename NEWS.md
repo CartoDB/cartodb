@@ -26,6 +26,7 @@ cd lib/sql; sudo make all install
 * General security improvements: CookieStore now expires cookies after 7 days, always use SecureRandom for SID generation; Session management now invalidates other sessions upon password change
 * Support for large (5k users) organizations.
 * Added support for new basemaps with labels on top [4286](https://github.com/CartoDB/cartodb/pull/4286).
+* Ability to geocode tables shared with write permissions within an organization [#4509](https://github.com/CartoDB/cartodb/pull/4509)
 
 Bugfixes:
 * Fixed deletion of layers upon disconnecting synced datasources [#3718](https://github.com/CartoDB/cartodb/pull/3718)

@@ -76,7 +76,7 @@ var CSS = {
     var ramp = (options && options.ramp) ? options.ramp : ramps.category;
     var type = options && options.type ? options.type : "string";
 
-    for (var i = 0; i < cats.length- 1; i++) {
+    for (var i = 0; i < cats.length; i++) {
       var cat = cats[i];
       if (i < 11 && cat !== undefined && ((type === 'string' && cat != null) || (type !== 'string'))) {
         metadata.push({ title: cat, title_type: type, value_type: 'color', color: ramp[i] });
@@ -105,7 +105,7 @@ var CSS = {
 
     for (var i = 0; i < cats.length; i++) {
 
-      var cat  = cats[i];
+      var cat = cats[i];
 
       if (type === 'string') {
         name = cat.replace(/\n/g,'\\n').replace(/\"/g, "\\\"");
@@ -114,7 +114,7 @@ var CSS = {
         value = cat;
       }
 
-      if (cat !== undefined && ((type === 'string' && cat != null) || (type !== 'string'))) {
+      if (i < 11 && cat !== undefined && ((type === 'string' && cat != null) || (type !== 'string'))) {
         css += "\n" + tableID + "[" + prop + "=" + value + "] {\n";
         css += "  " + attr  + ":" + ramp[i] + ";\n}"
       }

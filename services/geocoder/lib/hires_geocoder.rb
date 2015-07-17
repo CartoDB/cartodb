@@ -4,6 +4,7 @@ require 'json'
 require 'open3'
 require_relative '../../../lib/carto/http/client'
 require_relative 'hires_geocoder_interface'
+require_relative 'geocoder_config'
 
 module CartoDB
   class HiresGeocoder < HiresGeocoderInterface
@@ -77,7 +78,7 @@ module CartoDB
     private
 
     def config
-      Cartodb.config[:geocoder]
+      GeocoderConfig.instance.get
     end
 
     def http_client

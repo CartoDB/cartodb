@@ -1,6 +1,7 @@
 # encoding: UTF-8'
 require_relative '../../services/table-geocoder/lib/table_geocoder_factory'
 require_relative '../../services/table-geocoder/lib/exceptions'
+require_relative '../../services/geocoder/lib/geocoder_config'
 require_relative '../../lib/cartodb/metrics'
 require_relative '../../lib/cartodb/mixpanel'
 
@@ -67,7 +68,7 @@ class Geocoding < Sequel::Model
     if !defined?(@table_geocoder)
       begin
         @table_geocoder = Carto::TableGeocoderFactory.get(user,
-                                                          Cartodb.config[:geocoder],
+                                                          CartoDB::GeocoderConfig.instance.get,
                                                           table_service,
                                                           original_formatter: formatter,
                                                           formatter: sanitize_formatter,
@@ -195,7 +196,7 @@ class Geocoding < Sequel::Model
 
   def cost
     return 0 unless kind == 'high-resolution'
-    processed_rows.to_i * Cartodb.config[:geocoder]['cost_per_hit_in_cents'] rescue 0
+    processed_rows.to_i * CartoDB::GeocoderConfig.instance.get['cost_per_hit_in_cents'] rescue 0
   end
 
   def remaining_quota

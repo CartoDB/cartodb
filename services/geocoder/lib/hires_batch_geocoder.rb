@@ -4,6 +4,7 @@ require 'csv'
 require 'active_support/core_ext/numeric'
 require_relative '../../../lib/carto/http/client'
 require_relative 'hires_geocoder_interface'
+require_relative 'geocoder_config'
 
 module CartoDB
   class HiresBatchGeocoder < HiresGeocoderInterface
@@ -163,8 +164,7 @@ module CartoDB
     private
 
     def config
-      # TODO deal with script/geocoder_test
-      Cartodb.config[:geocoder]
+      GeocoderConfig.instance.get
     end
 
     def http_client

@@ -348,10 +348,10 @@ module CartoDB
         Job.new({ logger: log, pg_options: pg_options })
       end
 
-      def hit_platform_file_size_limit?(source_file, downloader)
+      def hit_platform_file_size_limit?(source_file, downloader=nil)
         # INFO: For Twitter imports skipping this check, as might be hit and we rather apply only row count
         # If more exceptions appear move inside Datasource base class so each decides if disables or not any limit
-        return false if downloader.datasource.class.to_s == CartoDB::Datasources::Search::Twitter.to_s
+        return false if (downloader && downloader.datasource.class.to_s == CartoDB::Datasources::Search::Twitter.to_s)
 
         file_size = File.size(source_file.fullpath)
         @import_file_limit.is_over_limit!(file_size)

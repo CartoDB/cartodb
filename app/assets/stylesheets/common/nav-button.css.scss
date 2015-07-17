@@ -21,5 +21,11 @@
     color: $cNavButton-active;
   }
 }
+.NavButton--withText {
+  font-size: $sFontSize-largest;
+  line-height: $sLineHeight-largest;
+  font-weight: $sFontWeight-normal;
+  color: $cTypography-paragraphs;
+}
 
 .NavButton--back { line-height: 40px }

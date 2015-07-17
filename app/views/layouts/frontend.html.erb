@@ -13,29 +13,8 @@
 </head>
 <body class="frontend">
   <%= yield %>
-
   <%= yield :js %>
-
-  <script>
-    WebFontConfig = {
-      monotype: {
-        projectId: 'b6470a43-5105-49d3-95ae-75217a436bf8' // TODO: app_config.yml
-      }
-    };
-
-    (function() {
-      var wf = document.createElement('script');
-      wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
-                '://ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js';
-      wf.type = 'text/javascript';
-      wf.async = 'true';
-      var s = document.getElementsByTagName('script')[0];
-      s.parentNode.insertBefore(wf, s);
-    })();
-  </script>
-
   <%= insert_google_analytics('primary') %>
-
   <%= insert_trackjs() %>
 </body>
 </html>

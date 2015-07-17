@@ -283,7 +283,7 @@ module CartoDB
             @importer_stats.timing('datasource_metadata') do
               # TODO: Support sending user and options to the datasource factory
               datasource = CartoDB::Datasources::DatasourcesFactory.get_datasource(
-                @downloader.datasource.class::DATASOURCE_NAME, nil, nil)
+                @downloader.datasource.class::DATASOURCE_NAME, nil, additional_config = {})
               item_metadata = datasource.get_resource_metadata(subresource[:id])
             end
 
@@ -320,6 +320,7 @@ module CartoDB
       end
 
       def result_for(job, source_file, table_names, support_table_names=[], exception_klass=nil)
+        job.logger.store
         Result.new(
           name:           source_file.name,
           schema:         source_file.target_schema,

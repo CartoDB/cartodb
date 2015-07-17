@@ -150,6 +150,16 @@ module CartoDB
       what_about: 'Your file has the same header for two or more columns. Please make column names unique and try again.',
       source: ERROR_SOURCE_USER
     },
+    2006 => {
+      title: 'Encoding error',
+      what_about: "There was a problem reading your file. Encoding seems wrong, probably because there's a wrong character. In order to sort it out, open your file with a text editor, save it with encoding UTF-8 and try again.",
+      source: ERROR_SOURCE_USER
+    },
+    2007 => {
+      title: 'Encoding error',
+      what_about: "The file you tried to import failed due to encoding issues. To fix this, force the encoding of your file using a text editor or a tool like QGis. You just need to export your files in \"UTF-8\" format.",
+      source: ERROR_SOURCE_USER
+    },
     3007 => {
       title: 'JSON may not be valid GeoJSON',
       what_about: "We can only import GeoJSON formated JSON files. See if the source of this data supports GeoJSON or another file format for download.",

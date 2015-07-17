@@ -1,12 +1,13 @@
 # encoding: UTF-8
-require_relative '../../lib/google_plus_api'
+require_dependency 'google_plus_api'
 
 class GooglePlusController < ApplicationController
 
   layout 'frontend'
 
   def google_plus
-    @config = GooglePlusConfig.new(CartoDB, Cartodb.config, Cartodb::Central.new.google_signup_url)
+    signup_url = Cartodb::Central.sync_data_with_cartodb_central? ? Cartodb::Central.new.google_signup_url : CartoDB.path(self, 'google_plus_signup')
+    @config = GooglePlusConfig.new(CartoDB, Cartodb.config, signup_url)
     render 'google_plus'
   end
 
@@ -15,18 +16,14 @@ class GooglePlusController < ApplicationController
     throw 'illegal Google token' unless user_data.present?
 
     email = user_data.email
-    username = email.split('@')[0]
+    username = user_data.auto_username
 
     existing_user = User.where("email = '#{email}' OR username = '#{username}'").first
 
     throw 'existing user' unless existing_user == nil
 
     user = User.new
-    user.username = username
-    user.email = email
-    dummy_password = (0...15).map { ('a'..'z').to_a[rand(26)] }.join
-    user.password = dummy_password
-    user.password_confirmation = dummy_password
+    user_data.set_values(user)
     user.save(raise_on_failure: true)
     user.create_in_central
 

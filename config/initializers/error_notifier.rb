@@ -15,21 +15,27 @@ end
 
 module CartoDB
   def self.notify_exception(e, extra={})
-    user = extra.delete(:user)
-    request = extra.delete(:request)
-    backtrace = e.backtrace ? e.backtrace : ['']
-    ::Logger.new(STDOUT).error (e.message + "\n " + backtrace.join("\n ")) if Rails.env.development? || Rails.env.test?
-    Rollbar.report_exception(e, request, user)
+    if Rails.env.development? || Rails.env.test?
+      backtrace = e.backtrace ? e.backtrace : ['']
+      ::Logger.new(STDOUT).error "exception: " + extra.delete(:message).to_s + (e.message + "\n " + backtrace.join("\n ")) 
+    end
+    Rollbar.report_exception(e, extra.delete(:request), extra.delete(:user))
   rescue
     # If Rollbar fails, bubble up the exception
     raise e
   end
 
   def self.notify_error(message, additional_data={})
+    if Rails.env.development? || Rails.env.test?
+      ::Logger.new(STDOUT).error "error: " + message + "\n" + additional_data.inspect + "\n"
+    end
     Rollbar.report_message(message, 'error', additional_data)
   end
 
   def self.notify_debug(message, additional_data={})
+    if Rails.env.development? || Rails.env.test?
+      ::Logger.new(STDOUT).error "debug: " + message + "\n" + additional_data.inspect + "\n"
+    end
     Rollbar.report_message(message, 'debug', additional_data)
   end
 

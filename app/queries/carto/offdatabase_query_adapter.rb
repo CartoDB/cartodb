@@ -55,6 +55,8 @@ module Carto
         all = all.sort { |x, y|
           x_attribute = is_array ? x.send(attribute).count : x.send(attribute)
           y_attribute = is_array ? y.send(attribute).count : y.send(attribute)
+          x_attribute = 0 if x_attribute.nil?
+          y_attribute = 0 if y_attribute.nil?
           asc_or_desc == :asc ? x_attribute <=> y_attribute : y_attribute <=> x_attribute
         }
       }

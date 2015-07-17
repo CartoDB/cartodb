@@ -20,12 +20,13 @@
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
-  width: 940px;
   margin: 0 auto;
   padding: 15px 40px;
   background: $cStructure-grayBkg;
   min-height: 70px; // To have same consistent height regardless if the footer has buttons or not
 }
+@media (min-width: $sMedia-tablet) { .CreateDialog-footerInner { width: $sMedia-tablet } }
+@media (min-width: 940px) { .CreateDialog-footerInner { width: 940px } }
 .CreateDialog-footerShadow {
   position: absolute;
   top: -19px;

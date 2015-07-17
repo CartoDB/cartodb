@@ -25,7 +25,7 @@ feature "API 1.0 map layers management" do
   let(:params) { { api_key: @user.api_key } }
 
   scenario "Create a new layer associated to a map" do
-    opts = { "type" => "GMapsBase", "base_type" => "roadmap", "style" => "null", "order" => "0" }
+    opts = { "type" => "GMapsBase", "base_type" => "roadmap", "style" => "null", "order" => "0", "query_history" => [] }
     infowindow = ['column1', 'column2', 'column3']
 
     data = { kind: 'gmapsbase', infowindow: infowindow, options: opts }

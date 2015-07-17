@@ -43,12 +43,12 @@ body.is-inDialog {
 }
 .Dialog-closeBtn {
   position: fixed;
-  top: $sMargin-section;
+  top: $sMargin-group; // to be aligned with header icon
   right: $sMargin-section;
 }
 .Dialog-backBtn {
   position: fixed;
-  top: $sMargin-section;
+  top: $sMargin-group; // to be aligned with header icon
   left: $sMargin-section;
 }
 .Dialog-content {
@@ -84,13 +84,20 @@ body.is-inDialog {
   padding: $sMargin-group 0;
 }
 .Dialog-body {
-  padding: $sMargin-group 0;
+  padding-top: $sMargin-group;
+  padding-bottom: $sMargin-group;
   border-top: 1px solid $cStructure-mainLine;
   width: $sLayout-width;
   margin: 0 auto;
 }
-.Dialog-body--withoutBorder {
+.Dialog-body.Dialog-body--withoutBorder {
   border-top: none;
+}
+.Dialog-body.Dialog-body--create {
+  position: relative;
+  width: 100%;
+  padding-bottom: 0;
+  overflow: auto;
 }
 .Dialog-Stretcher {
   width: $sLayout-width;
@@ -120,6 +127,30 @@ body.is-inDialog {
   @include display-flex();
   @include justify-content(center);
 }
+.Dialog-preFooter {
+  position: fixed;
+  bottom: 100px; // to be located on top of the .Dialog-footer
+  left: 0;
+  background: $cStructure-grayBkg;
+  z-index: 3;
+  // Make the item not go all the way to the edge, since that would cover the scrollbar…
+  // Make margins on both sides to accomodate this
+  left: 5%;
+  right: 5%;
+  width: 90%;
+
+  // same as .CreateDialog-footerShadow but using :before to not have to add more markup
+  &:before {
+    content: '';
+    position: absolute;
+    top: -18px;
+    display: block;
+    width: 100%;
+    height: 18px;
+    @include background-gradient(rgba(#F9F9F9, 0), rgba(#F9F9F9, 1));
+    z-index: 2;
+  }
+}
 .Dialog-headerIcon {
   position: relative;
   width: $sIcon-layout;
@@ -133,6 +164,13 @@ body.is-inDialog {
 .Dialog-headerIcon--main {
   color: $cHighlight-main;
   border-color: $cHighlight-main;
+}
+.Dialog-headerIcon--neutral {
+  // TODO: !important to not be overrided by .CreateDialog-headerIcon overriding stuff over here :(
+  border-color: $cIcons-active !important;
+  .iconFont {
+    color: $cIcons-active !important;
+  }
 }
 .Dialog-headerIcon--negative {
   color: $cHighlight-negative;
@@ -211,25 +249,29 @@ $sStickyHeight: 97px;
 .Dialog-expandedSubContentInner {
   position: relative; // necessary to position subHeader properly
 }
-.Dialog-stickySubHeader {
-  position: fixed;
-  background-color: $cStructure-grayBkg;
-  padding: $sMargin-group 0;
-  border-bottom: 1px solid $cStructure-mainLine;
-  width: $sLayout-width;
-  z-index: 100; // for underlying content not to be visible
-}
 .Dialog-body--expanded.is-expandedWithSubHeader {
   padding-top: $sStickyHeight + $sMargin-group;
 }
 .Dialog-body--expanded.is-expandedWithSubFooter {
   padding-bottom: $sStickyHeight;
 }
+.Dialog-body--expanded.is-expandedWithPreFooter {
+  padding-bottom: $sStickyHeight + 100px;
+}
 .Dialog-stickyFooter {
   position: fixed;
   bottom: 0;
   width: 100%;
   height: $sStickyHeight;
+}
+.Dialog-contentSubHeader {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+  width: 100%;
+  padding-top: $sMargin-group;
+  padding-bottom: $sMargin-group;
+  border-bottom: 1px solid $cStructure-mainLine;
 }
 
 @include keyframes(fade-and-scale-in) {

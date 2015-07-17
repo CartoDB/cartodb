@@ -59,7 +59,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       body: json_data.to_json
     ).run
     parsed_response = JSON.parse(response.body)
-    if response.code == 200 && 
+    if response.code == 200 &&
        parsed_response['retcode'] == 0 &&
        !parsed_response['return_values']['local_file'].nil? &&
        !parsed_response['return_values']['local_file'].empty? &&
@@ -76,7 +76,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       sa_response = {
         :dumper_response => parsed_response
       }
-      render json: sa_response, status: 400   
+      render json: sa_response, status: 400
     end
   end
 
@@ -95,7 +95,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     data_import = DataImport[params[:data_import_id]]
     respond_with({
                    data: data_import,
-                   log: data_import.nil? ? nil : data_import.log.entries
+                   log: data_import.nil? ? nil : data_import.log.to_s
                  })
   end
 
@@ -103,7 +103,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
 
   def get_user
     @user = User[params[:id]]
-    raise RecordNotFound unless @user
-  end # get_user
+    render json: { error: 'User not found' }, status: 404 unless @user
+  end
 
 end # Superadmin::UsersController

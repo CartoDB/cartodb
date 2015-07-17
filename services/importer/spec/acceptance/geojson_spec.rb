@@ -1,5 +1,7 @@
 # encoding: utf-8
-require 'rspec'
+require 'rspec/core'
+require 'rspec/expectations'
+require 'rspec/mocks'
 
 require_relative '../../lib/importer/runner'
 require_relative '../../lib/importer/job'

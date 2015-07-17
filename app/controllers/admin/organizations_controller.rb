@@ -28,19 +28,24 @@ class Admin::OrganizationsController < ApplicationController
     @organization.description = attributes[:description]
     @organization.display_name = attributes[:display_name]
     @organization.color = attributes[:color]
+    @organization.whitelisted_email_domains = attributes[:whitelisted_email_domains].split(",")
+    if attributes.include?(:default_quota_in_bytes)
+      default_quota_in_bytes = attributes[:default_quota_in_bytes]
+      @organization.default_quota_in_bytes = default_quota_in_bytes.blank? ? nil : default_quota_in_bytes.to_i * 1024 * 1024
+    end
     @organization.discus_shortname = attributes[:discus_shortname]
     @organization.twitter_username = attributes[:twitter_username]
 
     @organization.update_in_central
     @organization.save(raise_on_failure: true)
 
-    redirect_to CartoDB.url(self, 'organization_settings', {}, current_user), flash: { success: "Updated successfully" }
+    redirect_to CartoDB.url(self, 'organization_settings', {}, current_user), flash: { success: "Your changes have been saved correctly." }
   rescue CartoDB::CentralCommunicationFailure => e
     @organization.reload
     flash.now[:error] = "There was a problem while updating your organization. Please, try again and contact us if the problem persists. #{e.user_message}"
     render action: 'settings'
   rescue Sequel::ValidationFailed => e
-    flash.now[:error] = e.message
+    flash.now[:error] = "There's been a validation error, check your values"
     render action: 'settings'
   end
 

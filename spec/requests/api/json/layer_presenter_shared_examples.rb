@@ -4,6 +4,10 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
 
   describe '#show legacy tests' do
 
+    before(:each) do
+      User.any_instance.stubs(:enable_remote_db_user).returns(true)
+    end
+
     before(:all) do
       set_tested_classes(tested_klass, model_klass)
       puts "Testing class #{tested_klass.to_s} with model #{model_klass.to_s}"
@@ -327,9 +331,7 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
             sql_api_domain: nil,
             sql_api_endpoint: nil,
             sql_api_port: nil,
-            cdn_url: nil,
             layer_name: layer.options['table_name'],
-            dynamic_cdn: false, 
             'table_name' => layer.options['table_name'], 
             'query' => "select * from #{layer.options['table_name']}"
           }

@@ -1,9 +1,15 @@
 # encoding: utf-8
-require 'rspec'
+require 'rspec/core'
+require 'rspec/expectations'
+require 'rspec/mocks'
 require_relative '../../spec_helper'
 
 describe CartoDB::TableRelator do
   describe '.rows_and_size' do
+    before(:each) do
+      User.any_instance.stubs(:enable_remote_db_user).returns(true)
+    end
+
     before do
       CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
 

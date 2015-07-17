@@ -28,10 +28,10 @@ describe Admin::TablesController do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
     @db = Rails::Sequel.connection
     delete_user_data @user
-    @headers = { 
+    @headers = {
       'CONTENT_TYPE'  => 'application/json',
     }
-    host! 'test.localhost.lan'
+    host! "#{@user.username}.localhost.lan"
   end
 
   after(:all) do
@@ -40,7 +40,7 @@ describe Admin::TablesController do
 
   describe 'GET /dashboard' do
     it 'returns a list of tables' do
-      login_as(@user, scope: 'test')
+      login_as(@user, scope: @user.username)
 
       get "/dashboard", {}, @headers
       last_response.status.should == 200
@@ -50,7 +50,7 @@ describe Admin::TablesController do
   describe 'GET /tables/:id' do
     it 'returns a table' do
       id = factory.id
-      login_as(@user, scope: 'test')
+      login_as(@user, scope: @user.username)
 
       get "/tables/#{id}", {}, @headers
       last_response.status.should == 200

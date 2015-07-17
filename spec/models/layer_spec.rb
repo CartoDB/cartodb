@@ -15,6 +15,7 @@ describe Layer do
   end
 
   before(:each) do
+    User.any_instance.stubs(:enable_remote_db_user).returns(true)
     CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
 
     CartoDB::Overlay::Member.any_instance.stubs(:can_store).returns(true)
@@ -34,12 +35,6 @@ describe Layer do
       l = Layer.create(Cartodb.config[:layer_opts]["background"]).reload
       l.kind.should == 'background'
       l.options.should == Cartodb.config[:layer_opts]["background"]["options"]
-      l = Layer.create(Cartodb.config[:layer_opts]["base"]).reload
-      l.kind.should == 'tiled'
-      l.options.should == Cartodb.config[:layer_opts]["base"]["options"]
-      l = Layer.create(Cartodb.config[:layer_opts]["gmaps"]).reload
-      l.kind.should == 'gmapsbase'
-      l.options.should == Cartodb.config[:layer_opts]["gmaps"]["options"]
     end
 
     it "should not allow to create layers of unkown types" do

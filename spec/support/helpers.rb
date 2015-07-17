@@ -30,7 +30,7 @@ module HelperMethods
     server = WEBrick::HTTPServer.new(
       :AccessLog       => [],
       :Logger          => WEBrick::Log::new("/dev/null", 7), #comment this line if weird things happen
-      :Port            => 9999,
+      :Port            => 9779,
       :DocumentRoot    => File.dirname(file_path),
       :RequestCallback => Proc.new() { |req, res|
         options[:headers].each { |k, v| res[k] = v } if options[:headers].present?
@@ -45,7 +45,7 @@ module HelperMethods
     a = Thread.new { server.start }
 
     begin
-      yield "http://localhost:9999/#{File.basename(file_path)}" if block_given?
+      yield "http://localhost:9779/#{File.basename(file_path)}" if block_given?
     rescue => e
       raise e
     ensure

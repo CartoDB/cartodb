@@ -1,7 +1,7 @@
 REV=$(shell git rev-parse HEAD)
 
 all:
-	bundle install
+	RAILS_ENV=test bundle install
 	# I cannot remmeber why gdal is being skipped from this list...
 	cat python_requirements.txt | grep -v gdal | sudo pip install -r /dev/stdin
 	npm install
@@ -36,7 +36,11 @@ WORKING_SPECS_2 = \
   spec/lib/image_metadata_spec.rb \
   spec/lib/central_spec.rb \
   spec/lib/carto/http/client_spec.rb \
+  $(NULL)
+
+WORKING_SPECS_2b = \
 	spec/helpers/uuidhelper_spec.rb \
+	spec/helpers/carto_db_spec.rb \
   $(NULL)
 
 WORKING_SPECS_3 = \
@@ -47,10 +51,15 @@ WORKING_SPECS_3 = \
   services/importer/spec/acceptance/kml_spec.rb \
   services/importer/spec/acceptance/mapinfo_spec.rb \
   services/importer/spec/acceptance/osm_spec.rb \
-  services/importer/spec/acceptance/shp_spec.rb \
   services/importer/spec/acceptance/sql_spec.rb \
   services/importer/spec/acceptance/zip_spec.rb \
+  services/importer/spec/acceptance/gz_tgz_spec.rb \
   services/importer/spec/acceptance/raster2pgsql_spec.rb \
+  $(NULL)
+
+WORKING_SPECS_3b = \
+  spec/rspec_configuration.rb \
+  services/importer/spec/acceptance/shp_spec.rb \
   services/importer/spec/unit/column_spec.rb \
   services/importer/spec/unit/csv_normalizer_spec.rb \
 	services/importer/spec/unit/shp_normalizer_spec.rb \
@@ -145,6 +154,8 @@ WORKING_SPECS_8 = \
   spec/rspec_configuration.rb \
   spec/requests/api/permissions_controller_spec.rb \
   spec/models/shared_entity_spec.rb \
+	spec/requests/signup_controller_spec.rb \
+	spec/requests/account_tokens_controller_spec.rb \
   spec/requests/superadmin/users_spec.rb \
   spec/requests/superadmin/organizations_spec.rb \
   spec/requests/api/visualizations_spec.rb \
@@ -172,7 +183,13 @@ WORKING_SPECS_9 = \
 WORKING_SPECS_10 = \
 	spec/models/carto/user_service_spec.rb \
 	spec/models/carto/user_spec.rb \
+	spec/models/carto/user_creation_spec.rb \
 	spec/models/carto/organization_spec.rb \
+	services/table-geocoder/spec/lib/abstract_table_geocoder_spec.rb \
+	services/geocoder/spec/hires_batch_geocoder_spec.rb \
+	services/geocoder/spec/hires_geocoder_spec.rb \
+	services/geocoder/spec/hires_geocoder_factory_spec.rb \
+	services/table-geocoder/spec/geocoder_cache_spec.rb \
   $(NULL)
 
 CDB_PATH=lib/assets/javascripts/cdb
@@ -182,30 +199,34 @@ ifdef JENKINS_URL
 	cp .rspec_ci .rspec
 endif
 	# TODO skip this if db already exists ?
-	bundle exec rake cartodb:test:prepare
+	MOCHA_OPTIONS=skip_integration RAILS_ENV=test bundle exec rake cartodb:test:prepare
 
 check-1:
-	bundle exec rspec $(WORKING_SPECS_1)
+	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_1)
 check-2:
-	bundle exec rspec $(WORKING_SPECS_2)
+	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_2)
+check-2b:
+	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_2b)
 check-3:
-	bundle exec rspec $(WORKING_SPECS_3)
+	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_3)
+check-3b:
+	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_3b)
 check-4:
-	bundle exec rspec $(WORKING_SPECS_4)
+	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_4)
 check-5:
-	bundle exec rspec $(WORKING_SPECS_5)
+	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_5)
 check-6:
-	bundle exec rspec $(WORKING_SPECS_6)
+	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_6)
 check-7:
-	bundle exec rspec $(WORKING_SPECS_7)
+	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_7)
 check-8:
-	bundle exec rspec $(WORKING_SPECS_8)
+	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_8)
 check-9:
-	bundle exec rspec $(WORKING_SPECS_9)
+	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_9)
 check-10:
-	bundle exec rspec $(WORKING_SPECS_10)
+	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_10)
 
-check-prepared: check-1 check-2 check-3 check-4 check-5 check-6 check-7 check-8 check-9 check-10
+check-prepared: check-1 check-2 check-2b check-3 check-3b check-4 check-5 check-6 check-7 check-8 check-9 check-10
 
 check: prepare-test-db check-prepared
 check-frontend:

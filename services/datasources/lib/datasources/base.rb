@@ -32,7 +32,7 @@ module CartoDB
       # @param resource_metadata Hash { :size, ... }
       # @return bool
       def has_resource_size?(resource_metadata)
-        resource_metadata[:size] > NO_CONTENT_SIZE_PROVIDED
+        resource_metadata[:size] && resource_metadata[:size] > NO_CONTENT_SIZE_PROVIDED
       end
 
       # Factory method

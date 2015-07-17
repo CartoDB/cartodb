@@ -103,14 +103,40 @@ module CartoDB
       def get_api_calls_from_redis_source(username, api_call_type, options = {})
         redis_key = redis_api_call_key(username, api_call_type, options[:stat_tag])
         date_to = (options[:to] ? options[:to].to_date : Date.today)
-        date_from = (options[:from] ? options[:from].to_date : Date.today - 29.days)
-        calls = {}
-        date_to.downto(date_from) do |date|
-          stat_date = date.strftime("%Y%m%d")
-          calls[stat_date] = $users_metadata.ZSCORE(redis_key, stat_date).to_i
+        date_from = (options[:from] ? options[:from].to_date : date_to - 29.days)
+
+        # Retrieve matching months from Redis with ZSCAN
+        # TODO: move to single request if Redis gem ever supports multiple matches
+        calls = []
+        matching_months_date = date_from
+        while(matching_months_date < date_to + 1.month) do
+          calls = calls.concat $users_metadata.zscan(redis_key, 0, { match: "#{matching_months_date.strftime('%Y%m')}*"} )
+          matching_months_date += 1.month
         end
 
-        return calls
+        # Take only the date, score tuples (arrays), flatten (to remove array levels), group again date,score pairs and sort it by date desc
+        calls_in_reverse_order = calls.select { |a| a.kind_of? Array }.flatten.each_slice(2).to_a.sort { |a1, a2| a1[0] <=> a2[0]}.reverse
+
+        # Crop requested window
+        last_requested_day = date_to.strftime("%Y%m%d")
+        first_requested_day = date_from.strftime("%Y%m%d")
+        first_requested_index = calls_in_reverse_order.index { |day_and_count|
+          day_and_count[0] <= last_requested_day
+        }
+        calls_in_reverse_order = calls_in_reverse_order.drop(first_requested_index) if first_requested_index
+        last_requested_index = calls_in_reverse_order.index { |day_and_count|
+          day_and_count[0] <= first_requested_day
+        }
+        calls_in_reverse_order = calls_in_reverse_order.take(last_requested_index + 1) if last_requested_index
+
+        # Fill gaps
+        whole_range_zero = {}
+        date_to.downto(date_from) do |date|
+          stat_date = date.strftime("%Y%m%d")
+          whole_range_zero[stat_date] = 0
+        end
+
+        whole_range_zero.merge(Hash[*calls_in_reverse_order.flatten])
       end
 
       # Returns total api calls from a redis key

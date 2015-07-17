@@ -5,6 +5,20 @@ require 'resque-metrics'
 module Resque
   module UserJobs
 
+    module Signup
+
+      module NewUser
+        @queue = :users
+
+        def self.perform(user_creation_id)
+          user_creation = Carto::UserCreation.where(id: user_creation_id).first
+          user_creation.next_creation_step! until user_creation.finished?
+        end
+
+      end
+
+    end
+
     module SyncTables
 
       module LinkGhostTables 

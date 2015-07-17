@@ -40,51 +40,51 @@ module CartoDB
       CONTENT_TYPES_MAPPING = [
         {
           content_types: ['text/plain'],
-          extension: 'txt'
+          extensions: ['txt']
         },
         {
           content_types: ['text/csv'],
-          extension: 'csv'
+          extensions: ['csv']
         },
         {
           content_types: ['application/vnd.ms-excel'],
-          extension: 'xls'
+          extensions: ['xls']
         },
         {
           content_types: ['application/vnd.ms-excel.sheet.binary.macroEnabled.12'],
-          extension: 'xlsb'
+          extensions: ['xlsb']
         },
         {
           content_types: ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
-          extension: 'xlsx'
+          extensions: ['xlsx']
         },
         {
           content_types: ['application/vnd.geo+json'],
-          extension: 'geojson'
+          extensions: ['geojson']
         },
         {
           content_types: ['application/vnd.google-earth.kml+xml'],
-          extension: 'kml'
+          extensions: ['kml']
         },
         {
           content_types: ['application/vnd.google-earth.kmz'],
-          extension: 'kmz'
+          extensions: ['kmz']
         },
         {
           content_types: ['application/gpx+xml'],
-          extension: 'gpx'
+          extensions: ['gpx']
         },
         {
           content_types: ['application/zip'],
-          extension: 'zip'
+          extensions: ['zip']
         },
         {
           content_types: ['application/x-gzip'],
-          extension: 'tgz'
+          extensions: ['tgz','gz']
         },
         {
           content_types: ['application/json', 'text/javascript', 'application/javascript'],
-          extension: 'json'
+          extensions: ['json']
         }
       ]
 
@@ -133,7 +133,7 @@ module CartoDB
         etag                    = etag_from(headers)
         last_modified           = last_modified_from(headers)
 
-        return true unless (previous_etag || previous_last_modified) 
+        return true unless (previous_etag || previous_last_modified)
         return true if previous_etag && etag && previous_etag != etag
         return true if previous_last_modified && last_modified && previous_last_modified.to_i < last_modified.to_i
         false
@@ -166,7 +166,7 @@ module CartoDB
 
         url
       end
-      
+
       attr_reader :http_options, :repository, :seed
       attr_writer :source_file
 
@@ -279,30 +279,34 @@ module CartoDB
         name_with_extension(name, headers)
       end
 
-      def extension_by_content_type(content_type)
+      def extensions_by_content_type(content_type)
         downcased_content_type = content_type.downcase
         CONTENT_TYPES_MAPPING.each do |item|
           if item[:content_types].include?(downcased_content_type)
-            return item[:extension]
+            return item[:extensions]
           end
         end
-        nil
+        return []
       end
 
       def name_with_extension(name, headers)
+        # No content-type
         return name if content_type.nil? || content_type.empty?
 
-        extension = File.extname(name)
-        extension_from_content_type = extension_by_content_type(content_type)
+        content_type_extensions = extensions_by_content_type(content_type)
+        # We don't have extension registered for that content-type
+        return name if content_type_extensions.empty?
 
-        if !extension.nil? && !extension.empty? && 
-           (extension_from_content_type.nil? || (extension == extension_from_content_type))
-           return name
+        file_extension = File.extname(name).split('.').last
+        name_without_extension = File.basename(name, ".*")
+
+        #If there is no extension or file extension match in the content type extensions, add content type
+        #extension to the file name deleting the previous extension (if exist)
+        if (file_extension.nil? || file_extension.empty?) || !content_type_extensions.include?(file_extension)
+          return "#{name_without_extension}.#{content_type_extensions.first}"
+        else
+          return name
         end
-
-        return name if extension_from_content_type.nil?
-
-        "#{name}.#{extension_from_content_type}"
       end
 
       def content_length_from(headers)

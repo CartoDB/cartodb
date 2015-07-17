@@ -2,6 +2,7 @@
 
 require_relative '../../lib/internal-geocoder/query_generator_factory.rb'
 require_relative '../../lib/internal-geocoder/abstract_query_generator.rb'
+require_relative '../../../../spec/rspec_configuration.rb'
 
 RSpec.configure do |config|
   config.mock_with :mocha
@@ -79,7 +80,7 @@ describe CartoDB::InternalGeocoder::QueryGeneratorFactory do
         UPDATE "public"."untitled_table"
         SET the_geom = orig.the_geom, cartodb_georef_status = orig.cartodb_georef_status
         FROM any_temp_table AS orig
-        WHERE trim("any_column_name"::text) = orig.geocode_string AND "public"."untitled_table".cartodb_georef_status IS NULL
+        WHERE trim("public"."untitled_table"."any_column_name"::text) = orig.geocode_string AND "public"."untitled_table".cartodb_georef_status IS NULL
       }.squish
     end
   end

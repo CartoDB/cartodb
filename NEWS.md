@@ -11,8 +11,21 @@
 * Added more customized Google basemaps.
 * New optional config option `maps_api_cdn_template` for static maps [#4153](https://github.com/CartoDB/cartodb/issues/4153)
 * New `api/v2/viz/{id}/static/{width}/{height}.png` endpoint for retrieving static maps
+* New twitter cards [#4153](https://github.com/CartoDB/cartodb/issues/4153)
+* New facebook cards [#4280](https://github.com/CartoDB/cartodb/pull/4280)
+* Improve email template [#4190](https://github.com/CartoDB/cartodb/pull/4190)
 * Added `filter` option to layer_definition and named_map in vizjson [#4197](https://github.com/CartoDB/cartodb/pull/4197)
+* Log model improvements: Stores only upon finish (to hit way less the DB) and size constraints
 * Updated cartodb.js to 3.15.1.
+* [Stat loading times improves with Redis ZSCAN](https://github.com/CartoDB/cartodb/issues/3943). Redis 3.0.0+ is now required.
+* Upgraded [cartodb-postgresql](https://github.com/CartoDB/cartodb-postgresql) extension to `0.8.0`. Run the following commands to get it installed in your system:
+```
+git submodule init && git submodule update
+cd lib/sql; sudo make all install
+```
+* General security improvements: CookieStore now expires cookies after 7 days, always use SecureRandom for SID generation; Session management now invalidates other sessions upon password change
+* Support for large (5k users) organizations.
+* Added support for new basemaps with labels on top [4286](https://github.com/CartoDB/cartodb/pull/4286).
 
 Bugfixes:
 * Fixed deletion of layers upon disconnecting synced datasources [#3718](https://github.com/CartoDB/cartodb/pull/3718)
@@ -22,6 +35,9 @@ Bugfixes:
 * Do not cache geocodes if the_geom is NULL [#3793](https://github.com/CartoDB/cartodb/pull/3793)
 * Reverse order of varnish/redis invalidation [#3555](https://github.com/CartoDB/cartodb/pull/3945)
 
+New features:
+* Organization signup: [#3902](https://github.com/CartoDB/cartodb/issues/3902)
+
 3.10.2 (2015-05-20)
 ---------
 * Ongoing backend refactor and migration from Sequel to ActiveRecord.
@@ -29,7 +45,7 @@ Bugfixes:
 
 #### Steps to avoid problems with submodules changes
 ```shell
-# Before get last changes from master, let's remove the 
+# Before get last changes from master, let's remove the
 # common submodule
 git submodule deinit app/assets/stylesheets/common
 # Clean tmp sass folder, avoiding possible compass problems

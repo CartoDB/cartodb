@@ -384,7 +384,6 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       vizjson[:layers][1][:options][:sql_api_domain].should eq 'localhost.lan'
       vizjson[:layers][1][:options][:sql_api_endpoint].should eq '/api/v1/sql'
       vizjson[:layers][1][:options][:sql_api_port].should eq 8080
-      vizjson[:layers][1][:options].include?(:cdn_url).should eq true
       vizjson[:layers][1][:options].include?(:layer_name).should eq true
       vizjson[:layers][1][:options].include?(:table_name).should eq true
       vizjson[:layers][1][:options].include?(:tile_style).should eq true
@@ -449,7 +448,6 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       vizjson[:layers][1][:options][:tiler_protocol].should eq 'http'
       vizjson[:layers][1][:options][:tiler_domain].should eq 'localhost.lan'
       vizjson[:layers][1][:options][:tiler_port].should eq public_tiler_port
-      vizjson[:layers][1][:options].include?(:cdn_url).should eq true
       vizjson[:layers][1][:options].include?(:named_map).should eq true
       vizjson[:layers][1][:options][:named_map][:name].should eq template_id
       vizjson[:layers][1][:options][:named_map][:params].size.should eq 1
@@ -536,7 +534,6 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       vizjson[:layers][1][:options][:tiler_protocol].should eq 'http'
       vizjson[:layers][1][:options][:tiler_domain].should eq 'localhost.lan'
       vizjson[:layers][1][:options][:tiler_port].should eq public_tiler_port
-      vizjson[:layers][1][:options].include?(:cdn_url).should eq true
       vizjson[:layers][1][:options].include?(:named_map).should eq true
       vizjson[:layers][1][:options][:named_map][:name].should eq template_id
       vizjson[:layers][1][:options][:named_map][:params].size.should eq 1
@@ -556,7 +553,6 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       vizjson[:layers][2][:options][:sql_api_domain].should eq 'localhost.lan'
       vizjson[:layers][2][:options][:sql_api_endpoint].should eq '/api/v1/sql'
       vizjson[:layers][2][:options][:sql_api_port].should eq 8080
-      vizjson[:layers][2][:options].include?(:cdn_url).should eq true
       vizjson[:layers][2][:options].include?(:layer_name).should eq true
       vizjson[:layers][2][:options].include?(:table_name).should eq true
       vizjson[:layers][2][:options].include?(:tile_style).should eq true
@@ -649,7 +645,6 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       vizjson[:layers][1][:options][:tiler_protocol].should eq 'http'
       vizjson[:layers][1][:options][:tiler_domain].should eq 'localhost.lan'
       vizjson[:layers][1][:options][:tiler_port].should eq public_tiler_port
-      vizjson[:layers][1][:options].include?(:cdn_url).should eq true
       vizjson[:layers][1][:options].include?(:named_map).should eq true
       vizjson[:layers][1][:options][:named_map][:name].should eq template_id
       vizjson[:layers][1][:options][:named_map][:params].size.should eq 2

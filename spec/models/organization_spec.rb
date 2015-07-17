@@ -23,6 +23,10 @@ describe 'refactored behaviour' do
       @the_organization.get_geocoding_calls
     end
 
+    def get_organization
+      @the_organization
+    end
+
   end
 end
 
@@ -45,6 +49,7 @@ describe Organization do
     it 'Destroys users and owner as well' do
       User.any_instance.stubs(:create_in_central).returns(true)
       User.any_instance.stubs(:update_in_central).returns(true)
+
       organization = Organization.new(quota_in_bytes: 1234567890, name: 'wadus', seats: 5).save
 
       owner = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
@@ -71,7 +76,7 @@ describe Organization do
   describe '#add_user_to_org' do
     it 'Tests adding a user to an organization (but no owner)' do
       org_quota = 1234567890
-      org_name = 'wadus'
+      org_name = "wadus#{rand(10000)}"
       org_seats = 5
 
       username = @user.username
@@ -105,7 +110,8 @@ describe Organization do
     end
 
     it 'Tests setting a user as the organization owner' do
-      organization = Organization.new(quota_in_bytes: 1234567890, name: 'wadus', seats: 5).save
+      org_name = "wadus#{rand(10000)}"
+      organization = Organization.new(quota_in_bytes: 1234567890, name: org_name, seats: 5).save
 
       user = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
 
@@ -131,10 +137,13 @@ describe Organization do
   end
 
   describe '#org_members_and_owner_removal' do
+
     it 'Tests removing a normal member from the organization' do
       User.any_instance.stubs(:create_in_central).returns(true)
       User.any_instance.stubs(:update_in_central).returns(true)
-      organization = Organization.new(quota_in_bytes: 1234567890, name: 'wadus', seats: 5).save
+
+      org_name = "wadus#{rand(10000)}"
+      organization = Organization.new(quota_in_bytes: 1234567890, name: org_name, seats: 5).save
 
       owner = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
 
@@ -198,17 +207,16 @@ describe Organization do
 
   describe '#non_org_user_removal' do
     it 'Tests removing a normal user' do
-      User.all.count.should eq 1  # @user
-      User.first.id.should eq @user.id
+      initial_count = User.all.count
 
       user = create_user(:quota_in_bytes => 524288000, :table_quota => 50)
 
-      User.all.count.should eq 2
+      User.all.count.should eq (initial_count + 1)
 
       user.destroy
 
-      User.all.count.should eq 1  # @user
-      User.first.id.should eq @user.id
+      User.all.count.should eq initial_count
+      User.all.collect(&:id).should_not include(user.id)
     end
   end
 
@@ -226,7 +234,7 @@ describe Organization do
 
   describe '#unique_name' do
     it 'Tests uniqueness of name' do
-      org_name = 'wadus'
+      org_name = "wadus#{rand(1000)}"
 
       organization = Organization.new
       organization.name = org_name

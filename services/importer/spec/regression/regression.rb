@@ -9,7 +9,7 @@ require_relative '../../../../services/importer/spec/acceptance/cdb_importer_con
 
 include CartoDB::Importer2
 
-describe 'Importer regression test' do  
+describe 'Importer regression test' do
   include_context "cdb_importer schema"
 
   folder = ENV['TEST_FILES'] || File.join(File.dirname(__FILE__), 'failing/')
@@ -30,7 +30,6 @@ describe 'Importer regression test' do
       runner.results.each do |result|
         result.success?.should be_true, "error code: #{result.error_code}, trace: #{result.log_trace}"
       end
-      runner.db.disconnect
     end
   end
 end

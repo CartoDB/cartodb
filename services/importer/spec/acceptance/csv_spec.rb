@@ -54,7 +54,7 @@ describe 'csv regression tests' do
     result = runner.results.first
     result.success?.should be_true, "error code: #{result.error_code}, trace: #{result.log_trace}"
     table = result.tables.first
-    columns = runner.db[%Q{ SELECT * FROM information_schema.columns WHERE table_schema = 'cdb_importer' AND table_name   = '#{table}' }].map { |c| c[:column_name] }
+    columns = @db[%Q{ SELECT * FROM information_schema.columns WHERE table_schema = 'cdb_importer' AND table_name   = '#{table}' }].map { |c| c[:column_name] }
     columns.should include('column')
     columns.should include('column2')
   end
@@ -143,7 +143,7 @@ describe 'csv regression tests' do
   it 'imports files with invalid the_geom but previous valid geometry column (see #2108)' do
     runner = runner_with_fixture('invalid_the_geom_valid_wkb_geometry.csv')
     runner.run
-    
+
     result = runner.results.first
     result.success?.should be_true, "error code: #{result.error_code}, trace: #{result.log_trace}"
   end
@@ -167,7 +167,7 @@ describe 'csv regression tests' do
     runner.run
 
     result = runner.results.first
-    runner.db[%Q{
+    @db[%Q{
       SELECT count(*)
       FROM #{result.schema}.#{result.table_name}
       AS count

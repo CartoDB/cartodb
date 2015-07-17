@@ -60,7 +60,7 @@ describe 'geojson regression tests' do
     result      = runner.results.first
     table_name  = result.tables.first
 
-    runner.db.schema(table_name, schema: 'importer')
+    @db.schema(table_name, schema: 'importer')
       .find { |element| element.first == :boolean }.last
       .fetch(:type)
       .must_equal :boolean

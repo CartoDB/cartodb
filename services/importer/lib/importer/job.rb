@@ -23,7 +23,7 @@ module CartoDB
 
       def new_table_name
         new_name = "importer_#{id.gsub(/-/, '')}"
-        if @table_names.length > 0 
+        if @table_names.length > 0
           new_name = "#{new_name}_#{@table_names.length}"
         end
         @table_names << new_name
@@ -42,12 +42,9 @@ module CartoDB
       end
 
       def db
-        @db = Sequel.postgres(pg_options.merge(:after_connect=>(proc do |conn|
+        @db ||= Sequel.postgres(pg_options.merge(:after_connect=>(proc do |conn|
           conn.execute('SET search_path TO "$user", public, cartodb')
         end)))
-        @db.extension(:connection_validator)
-        @db.pool.connection_validation_timeout = pg_options.fetch(:conn_validator_timeout, 900)
-        @db
       end
 
       def qualified_table_name
@@ -65,7 +62,7 @@ module CartoDB
                      AND relname = '#{table_name}'}).first
         return rows.nil? ? nil : rows.fetch(:num_rows, nil)
       rescue => e
-        CartoDB.notify_debug("Cant get the imported rows number from PG stats", 
+        CartoDB.notify_debug("Cant get the imported rows number from PG stats",
                              {error: e.inspect, backtrace: e.backtrace})
         return 0
       end

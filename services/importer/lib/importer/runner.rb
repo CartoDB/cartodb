@@ -60,7 +60,7 @@ module CartoDB
 
         @import_file_limit = limit_instances.fetch(:import_file_size_instance, input_file_size_limit_instance(@user))
         @table_row_count_limit =
-          limit_instances.fetch(:table_row_count_limit_instance, table_row_count_limit_instance(@user, db))
+          limit_instances.fetch(:table_row_count_limit_instance, table_row_count_limit_instance(@user, @job.db))
         @loader_options      = {}
         @results             = []
         @stats               = []
@@ -108,12 +108,6 @@ module CartoDB
 
       def report
         "Log Report: #{log.to_s}"
-      end
-
-      def db
-        @db ||= Sequel.postgres(pg_options.merge(:after_connect=>(proc do |conn|
-          conn.execute('SET search_path TO "$user", public, cartodb')
-        end)))
       end
 
       def loader_for(source_file)

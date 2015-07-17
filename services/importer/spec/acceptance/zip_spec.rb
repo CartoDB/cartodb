@@ -61,7 +61,7 @@ describe 'zip regression tests' do
     runner.results.select(&:success?).length.should eq 2
     runner.results.length.should eq 2
     runner.results.each { |result|
-      name = runner.db[%Q{ SELECT * FROM pg_class WHERE relname='#{result.table_name}' }].first[:relname]
+      name = @db[%Q{ SELECT * FROM pg_class WHERE relname='#{result.table_name}' }].first[:relname]
       name.should eq result.table_name
     }
   end
@@ -80,7 +80,7 @@ describe 'zip regression tests' do
     runner.results.select(&:success?).length.should eq Runner::MAX_TABLES_PER_IMPORT
     runner.results.length.should eq Runner::MAX_TABLES_PER_IMPORT
     runner.results.each { |result|
-      name = runner.db[%Q{ SELECT * FROM pg_class WHERE relname='#{result.table_name}' }].first[:relname]
+      name = @db[%Q{ SELECT * FROM pg_class WHERE relname='#{result.table_name}' }].first[:relname]
       name.should eq result.table_name
     }
   end
@@ -100,7 +100,7 @@ describe 'zip regression tests' do
     runner.results.select(&:success?).length.should eq 1
     runner.results.length.should eq 1
     runner.results.each { |result|
-      name = runner.db[%Q{ SELECT * FROM pg_class WHERE relname='#{result.table_name}' }].first[:relname]
+      name = @db[%Q{ SELECT * FROM pg_class WHERE relname='#{result.table_name}' }].first[:relname]
       name.should eq result.table_name
     }
   end
@@ -119,7 +119,7 @@ describe 'zip regression tests' do
     runner.results.select(&:success?).length.should eq 1
     runner.results.length.should eq 2
     runner.results.select(&:success?).each { |result|
-      name = runner.db[%Q{ SELECT * FROM pg_class WHERE relname='#{result.table_name}' }].first[:relname]
+      name = @db[%Q{ SELECT * FROM pg_class WHERE relname='#{result.table_name}' }].first[:relname]
       name.should eq result.table_name
     }
   end

@@ -99,7 +99,7 @@ describe 'KML regression tests' do
     runner.results.select(&:success?).length.should eq CartoDB::Importer2::Runner::MAX_TABLES_PER_IMPORT
     runner.results.length.should eq CartoDB::Importer2::Runner::MAX_TABLES_PER_IMPORT
     runner.results.each { |result|
-      name = runner.db[%Q{ SELECT * FROM pg_class WHERE relname='#{result.table_name}' }].first[:relname]
+      name = @db[%Q{ SELECT * FROM pg_class WHERE relname='#{result.table_name}' }].first[:relname]
       name.should eq result.table_name
     }
   end

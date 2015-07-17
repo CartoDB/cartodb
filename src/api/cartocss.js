@@ -78,7 +78,7 @@ var CSS = {
 
     for (var i = 0; i < cats.length; i++) {
       var cat = cats[i];
-      if (i < 11 && cat !== undefined && ((type === 'string' && cat != null) || (type !== 'string'))) {
+      if (i < 10 && cat !== undefined && ((type === 'string' && cat != null) || (type !== 'string'))) {
         metadata.push({ title: cat, title_type: type, value_type: 'color', color: ramp[i] });
       }
     }
@@ -114,7 +114,7 @@ var CSS = {
         value = cat;
       }
 
-      if (i < 11 && cat !== undefined && ((type === 'string' && cat != null) || (type !== 'string'))) {
+      if (i < 10 && cat !== undefined && ((type === 'string' && cat != null) || (type !== 'string'))) {
         css += "\n" + tableID + "[" + prop + "=" + value + "] {\n";
         css += "  " + attr  + ":" + ramp[i] + ";\n}"
       }

@@ -53,8 +53,8 @@ class Admin::OrganizationsController < ApplicationController
     @organization.users.each { |user|
       user.regenerate_api_key
     }
-    flash[:success] = "Users API keys regenerated successfully"
-    render action: 'settings'
+
+    redirect_to CartoDB.url(self, 'organization_settings', {}, current_user), flash: { success: "Users API keys regenerated successfully" }
   rescue => e
     CartoDB.notify_exception(e, { organization: @organization.id, current_user: current_user.id })
     flash[:error] = "There was an error regenerating the API keys. Please, try again and contact us if the problem persists"

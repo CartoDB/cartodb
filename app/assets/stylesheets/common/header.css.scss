@@ -58,7 +58,7 @@ $cHeader-dark:  rgba(#3A91D7, 1);
   font-size: $sFontSize-largest;
   font-weight: $sFontWeight-lighter;
   line-height: $sLineHeight-largest;
-  color: rgba(white, 0.6);
+  color: white;
 
   &:hover {
     color: white;
@@ -66,6 +66,8 @@ $cHeader-dark:  rgba(#3A91D7, 1);
     &:after { border-top-color: white }
   }
   &.is-disabled {
+    color: rgba(white, 0.6);
+
     &:hover {
       color: rgba(white, 0.6);
       text-decoration: none;

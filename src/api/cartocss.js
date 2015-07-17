@@ -73,14 +73,21 @@ var CSS = {
   categoryMetadata: function(cats, options) {
     var metadata = [];
 
+    cats = _.sortBy(cats, function(cat) { return cat[1]; }).reverse().slice(0, 11);
+    cats = _.sortBy(cats, function(cat) { return cat[0]; });
+
     var ramp = (options && options.ramp) ? options.ramp : ramps.category;
     var type = options && options.type ? options.type : "string";
 
-    for (var i = cats.length - 1; i >= 0; --i) {
+    for (var i = 0; i < cats.length- 1; i++) {
       var cat = cats[i];
-      if (cat !== undefined && ((type === 'string' && cat != null) || (type !== 'string'))) {
+      if (i < 11 && cat !== undefined && ((type === 'string' && cat != null) || (type !== 'string'))) {
         metadata.push({ title: cat, title_type: type, value_type: 'color', color: ramp[i] });
       }
+    }
+
+    if (cats.length > 10) {
+      metadata.push({ title: "Others", value_type: 'color', default: true, color: ramp[ramp.length - 1] });
     }
 
     return metadata;
@@ -97,9 +104,12 @@ var CSS = {
 
     var defaultCSS = getDefaultCSSForGeometryType(geometryType);
 
+    cats = _.sortBy(cats, function(cat) { return cat[1]; }).reverse().slice(0, 11);
+    cats = _.sortBy(cats, function(cat) { return cat[0]; });
+
     var css = "/** category visualization */\n\n" + tableID + " {\n  " + attr + ": " + ramp[0] + ";\n" + defaultCSS.join("\n") + "\n}\n";
 
-    for (var i = cats.length - 1; i >= 0; --i) {
+    for (var i = 0; i < cats.length; i++) {
 
       var cat  = cats[i];
 
@@ -114,6 +124,11 @@ var CSS = {
         css += "\n" + tableID + "[" + prop + "=" + value + "] {\n";
         css += "  " + attr  + ":" + ramp[i] + ";\n}"
       }
+    }
+
+    if (cats.length > 10) {
+      css += "\n" + tableID + "{\n";
+      css += "  " + attr  + ": " + ramp[ramp.length - 1]+ ";\n}"
     }
 
     return css;

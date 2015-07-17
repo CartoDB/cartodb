@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: a5cd1912d80c05793590a2fa63addf2008dadef1
+// sha: 28e45a823b14113e400adbcc008f310b85de6283
 (function() {
   var root = this;
 
@@ -41411,9 +41411,9 @@ var CSS = {
     var ramp = (options && options.ramp) ? options.ramp : ramps.category;
     var type = options && options.type ? options.type : "string";
 
-    for (var i = 0; i < cats.length- 1; i++) {
+    for (var i = 0; i < cats.length; i++) {
       var cat = cats[i];
-      if (i < 11 && cat !== undefined && ((type === 'string' && cat != null) || (type !== 'string'))) {
+      if (i < 10 && cat !== undefined && ((type === 'string' && cat != null) || (type !== 'string'))) {
         metadata.push({ title: cat, title_type: type, value_type: 'color', color: ramp[i] });
       }
     }
@@ -41440,7 +41440,7 @@ var CSS = {
 
     for (var i = 0; i < cats.length; i++) {
 
-      var cat  = cats[i];
+      var cat = cats[i];
 
       if (type === 'string') {
         name = cat.replace(/\n/g,'\\n').replace(/\"/g, "\\\"");
@@ -41449,7 +41449,7 @@ var CSS = {
         value = cat;
       }
 
-      if (cat !== undefined && ((type === 'string' && cat != null) || (type !== 'string'))) {
+      if (i < 10 && cat !== undefined && ((type === 'string' && cat != null) || (type !== 'string'))) {
         css += "\n" + tableID + "[" + prop + "=" + value + "] {\n";
         css += "  " + attr  + ":" + ramp[i] + ";\n}"
       }

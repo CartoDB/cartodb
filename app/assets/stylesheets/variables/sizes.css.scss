@@ -2,12 +2,13 @@
 $sLayout-width: 940px;
 
 // Margins
-$sMargin-section:       40px; // To separate main section
-$sMargin-group:         28px; // To separate groups inside a section
-$sMargin-element:       20px; // To separate elements inside a group
-$sMargin-elementInline: 12px; // To separate inline elements
-$sMargin-min:           4px;  // Minimum margin, special cases only
-$sMargin-formRow:       20px; // Each row in a form should have a margin-bottom of this value.
+$sMargin-section:            40px; // To separate main section
+$sMargin-group:              28px; // To separate groups inside a section
+$sMargin-element:            20px; // To separate elements inside a group
+$sMargin-elementLarge:       40px; // To separate elements inside a group (large separation)
+$sMargin-elementInline:      12px; // To separate inline elements
+$sMargin-min:                4px;  // Minimum margin, special cases only
+$sMargin-formRow:            20px; // Each row in a form should have a margin-bottom of this value.
 
 // Font sizes
 $sFontSize-smaller:        10px;

@@ -1,49 +1,50 @@
 # encoding: utf-8
-require 'rspec/core'
-require 'rspec/expectations'
-require 'rspec/mocks'
-require_relative '../../spec_helper'
+
+require_relative '../../rspec_configuration'
+require_relative '../../../app/models/table/column_typecaster'
 
 describe CartoDB::ColumnTypecaster do
-  before do
-    quota_in_bytes  = 524288000
-    table_quota     = 500
-    @user           = create_user(
-                        quota_in_bytes: quota_in_bytes,
-                        table_quota:    table_quota
-                      )
-  end
 
-  after do
-    @user.destroy
-  end
-
-  pending 'raises NonConvertibleData when trying to cast a non-supported time format to date' do
-    @user.in_database { |database| @db = database }
-
-    table_name  = "test_#{rand(999)}"
-    schema      = @user.database_schema
-    dataset     = @db[table_name.to_sym]
-    time_text   = 'Mon Oct 13 1997 15:32:18 GMT+0200 (CEST)'
-
-    @db.create_table?(table_name) do
-      String  :time_with_timezone
+  describe '#pg_replace_expression' do
+    before(:all) do
+      @column_typecaster = CartoDB::ColumnTypecaster.new({
+          user_database: nil,
+          schema: nil,
+          table_name: nil,
+          column_name: nil,
+          new_type: nil
+        })
     end
 
-    5.times { dataset.insert(time_with_timezone: time_text) }
+    it 'takes a column_name and a set of replacements and returns a postgres expression that implements them' do
+      # e.g.: as it if where in spanish locale
+      thousand_separator = '.'
+      decimal_separator = ','
 
-    typecaster  = CartoDB::ColumnTypecaster.new(
-      user_database:  @db,
-      schema:         schema,
-      table_name:     table_name,
-      column_name:    :time_with_timezone,
-      new_type:       'date'
-    )
+      # order matters, the innermost expression will be applied first
+      replacements = [
+        [thousand_separator, ''],
+        [decimal_separator, '.'],
+        ['$', '']
+      ]
 
-    expect { typecaster.run }.to raise_error CartoDB::NonConvertibleData
-    dataset.first.fetch(:time_with_timezone).should_not be_nil
+      @column_typecaster.send(:pg_replace_expression, 'my_column', replacements)
+        .should == %Q{replace(replace(replace("my_column", '.', ''), ',', '.'), '$', '')}
+    end
 
-    @db.drop_table?(table_name)
+    it 'returns an expression quasi-equivalent to the previous implementation' do
+      # us locale
+      thousand_separator = ','
+      decimal_separator = '.'
+
+      replacements = [
+        [thousand_separator, ''],
+        [decimal_separator, '.']
+      ]
+
+      @column_typecaster.send(:pg_replace_expression, 'my_column', replacements)
+        .should == %Q{replace(replace("my_column", ',', ''), '.', '.')}
+    end
   end
 end
 

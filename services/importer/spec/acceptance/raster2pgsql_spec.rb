@@ -1,4 +1,5 @@
 # encoding: utf-8
+require_relative '../../../../spec/rspec_configuration'
 require_relative '../../lib/importer/raster2pgsql'
 
 include CartoDB::Importer2

@@ -27,6 +27,7 @@ cd lib/sql; sudo make all install
 * Support for large (5k users) organizations.
 * Added support for new basemaps with labels on top [4286](https://github.com/CartoDB/cartodb/pull/4286).
 * Fixed multi-resource import (ZIP with >1 supported files, ArcGIS, etc.). Limited to 10 tables/files, except in the case of ArcGIS
+* Ability to geocode tables shared with write permissions within an organization [#4509](https://github.com/CartoDB/cartodb/pull/4509)
 
 Bugfixes:
 * Fixed deletion of layers upon disconnecting synced datasources [#3718](https://github.com/CartoDB/cartodb/pull/3718)

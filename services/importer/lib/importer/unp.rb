@@ -56,11 +56,12 @@ module CartoDB
         Dir.foreach(path) do |subpath|
           next if hidden?(subpath)
           next if subpath =~ /.*readme.*\.txt/i
+          next if subpath =~ /\.version\.txt/i
 
           fullpath = normalize("#{path}/#{subpath}")
           (crawl(fullpath, files) and next) if File.directory?(fullpath)
           files.push(fullpath)
-        end # foreach
+        end
 
         files
       end

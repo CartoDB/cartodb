@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: 21fdf4200c563b7aae85e6ce54e416603da83f86
+// sha: ac595ce758863bd2ae54d0342733636a6c0d7977
 (function() {
   var root = this;
 
@@ -41220,7 +41220,6 @@ Layers.register('torque', function(vis, data) {
                    'count(*) as cnt,',
                    'sum(case when {{column}} is null then 1 else 0 end)::numeric / count(*)::numeric as null_ratio,',
                    'stddev_pop({{column}}) / count({{column}}) as stddev,',
-                   //'log(stddev_pop({{column}}) / count({{column}})) as lstddev,',
                    'CASE WHEN abs(avg({{column}})) > 1e-7 THEN stddev({{column}}) / abs(avg({{column}})) ELSE 1e12 END as stddevmean,',
                     'CDB_DistType(array_agg("{{column}}"::numeric)) as dist_type ',
               'from ({{sql}}) _wrap ',
@@ -41240,11 +41239,11 @@ Layers.register('torque', function(vis, data) {
            'select array_agg(row(d, c)) cat_hist from (select distinct({{column}}) d, count(*) as c from ({{sql}}) __wrap, stats group by 1 limit 100) _a',
         '),',
          'buckets as (',
-            'select CDB_QuantileBins(array_agg({{column}}::numeric), 7) as quantiles, ',
+            'select CDB_QuantileBins(array_agg(distinct({{column}}::numeric)), 7) as quantiles, ',
             '       (select array_agg(x::numeric) FROM (SELECT (min + n * diff)::numeric as x FROM generate_series(1,7) n, params) p) as equalint,',
             // '       CDB_EqualIntervalBins(array_agg({{column}}::numeric), 7) as equalint, ',
-            '       CDB_JenksBins(array_agg({{column}}::numeric), 7) as jenks, ',
-            '       CDB_HeadsTailsBins(array_agg({{column}}::numeric), 7) as headtails ',
+            '       CDB_JenksBins(array_agg(distinct({{column}}::numeric)), 7) as jenks, ',
+            '       CDB_HeadsTailsBins(array_agg(distinct({{column}}::numeric)), 7) as headtails ',
             'from ({{sql}}) _table_sql where {{column}} is not null',
          ')',
          'select * from histogram, stats, buckets, hist'
@@ -41394,7 +41393,7 @@ var CSS = {
     var tableID = "#" + tableName;
 
     var defaultCSS = getDefaultCSSForGeometryType(geometryType);
-    var css = "/** choropleth visualization */\n\n" + tableID + " {\n  " + attr + ": " + ramps.category[0] + ";\n" + defaultCSS.join("\n") + "\n}\n";
+    var css = "/** choropleth visualization */\n\n" + tableID + " {\n  " + attr + ": " + ramp[0] + ";\n" + defaultCSS.join("\n") + "\n}\n";
 
     for (var i = quartiles.length - 1; i >= 0; --i) {
       if (quartiles[i] !== undefined && quartiles[i] != null) {
@@ -41411,11 +41410,15 @@ var CSS = {
     var ramp = (options && options.ramp) ? options.ramp : ramps.category;
     var type = options && options.type ? options.type : "string";
 
-    for (var i = cats.length - 1; i >= 0; --i) {
+    for (var i = 0; i < cats.length; i++) {
       var cat = cats[i];
-      if (cat !== undefined && ((type === 'string' && cat != null) || (type !== 'string'))) {
+      if (i < 10 && cat !== undefined && ((type === 'string' && cat != null) || (type !== 'string'))) {
         metadata.push({ title: cat, title_type: type, value_type: 'color', color: ramp[i] });
       }
+    }
+
+    if (cats.length > 10) {
+      metadata.push({ title: "Others", value_type: 'color', default: true, color: ramp[ramp.length - 1] });
     }
 
     return metadata;
@@ -41434,9 +41437,9 @@ var CSS = {
 
     var css = "/** category visualization */\n\n" + tableID + " {\n  " + attr + ": " + ramp[0] + ";\n" + defaultCSS.join("\n") + "\n}\n";
 
-    for (var i = cats.length - 1; i >= 0; --i) {
+    for (var i = 0; i < cats.length; i++) {
 
-      var cat  = cats[i];
+      var cat = cats[i];
 
       if (type === 'string') {
         name = cat.replace(/\n/g,'\\n').replace(/\"/g, "\\\"");
@@ -41445,10 +41448,15 @@ var CSS = {
         value = cat;
       }
 
-      if (cat !== undefined && ((type === 'string' && cat != null) || (type !== 'string'))) {
+      if (i < 10 && cat !== undefined && ((type === 'string' && cat != null) || (type !== 'string'))) {
         css += "\n" + tableID + "[" + prop + "=" + value + "] {\n";
         css += "  " + attr  + ":" + ramp[i] + ";\n}"
       }
+    }
+
+    if (cats.length > 10) {
+      css += "\n" + tableID + "{\n";
+      css += "  " + attr  + ": " + ramp[ramp.length - 1]+ ";\n}"
     }
 
     return css;
@@ -41569,7 +41577,7 @@ function getWeightFromShape(dist_type){
   }[dist_type];
 }
 
-function getMethodProperties(stats) {
+function getMethodProperties(stats) { // TODO: only require the necessary params
 
   var method;
   var ramp = ramps.pink;
@@ -41633,7 +41641,12 @@ function guessMap(sql, tableName, column, stats) {
 
       if (distinctPercentage < 1) {
         visualizationType   = "category";
-        var cats = stats.cat_hist.slice(0, ramps.category.length).map(function(r) { return r[0]; });
+
+        var cats = stats.cat_hist;
+        cats = _.sortBy(cats, function(cat) { return cat[1]; }).reverse().slice(0, ramps.category.length);
+        cats = _.sortBy(cats, function(cat) { return cat[0]; });
+        cats = cats.map(function(r) { return r[0]; });
+
         css      = CSS.category(cats, tableName, columnName, geometryType, { type: type });
         metadata = CSS.categoryMetadata(cats, { type: type });
 
@@ -41654,7 +41667,12 @@ function guessMap(sql, tableName, column, stats) {
   } else if (type === 'string') {
 
     visualizationType   = "category";
-    var cats = stats.hist.slice(0, ramps.category.length).map(function(r) { return r[0]; });
+
+    var cats = stats.hist;
+    cats = _.sortBy(cats, function(cat) { return cat[1]; }).reverse().slice(0, ramps.category.length);
+    cats = _.sortBy(cats, function(cat) { return cat[0]; });
+    cats = cats.map(function(r) { return r[0]; });
+
     css      = CSS.category(cats, tableName, columnName, geometryType);
     metadata = CSS.categoryMetadata(cats);
 

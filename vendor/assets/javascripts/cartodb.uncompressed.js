@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: 21fdf4200c563b7aae85e6ce54e416603da83f86
+// sha: 28e45a823b14113e400adbcc008f310b85de6283
 (function() {
   var root = this;
 
@@ -41411,11 +41411,15 @@ var CSS = {
     var ramp = (options && options.ramp) ? options.ramp : ramps.category;
     var type = options && options.type ? options.type : "string";
 
-    for (var i = cats.length - 1; i >= 0; --i) {
+    for (var i = 0; i < cats.length; i++) {
       var cat = cats[i];
-      if (cat !== undefined && ((type === 'string' && cat != null) || (type !== 'string'))) {
+      if (i < 10 && cat !== undefined && ((type === 'string' && cat != null) || (type !== 'string'))) {
         metadata.push({ title: cat, title_type: type, value_type: 'color', color: ramp[i] });
       }
+    }
+
+    if (cats.length > 10) {
+      metadata.push({ title: "Others", value_type: 'color', default: true, color: ramp[ramp.length - 1] });
     }
 
     return metadata;
@@ -41434,9 +41438,9 @@ var CSS = {
 
     var css = "/** category visualization */\n\n" + tableID + " {\n  " + attr + ": " + ramp[0] + ";\n" + defaultCSS.join("\n") + "\n}\n";
 
-    for (var i = cats.length - 1; i >= 0; --i) {
+    for (var i = 0; i < cats.length; i++) {
 
-      var cat  = cats[i];
+      var cat = cats[i];
 
       if (type === 'string') {
         name = cat.replace(/\n/g,'\\n').replace(/\"/g, "\\\"");
@@ -41445,10 +41449,15 @@ var CSS = {
         value = cat;
       }
 
-      if (cat !== undefined && ((type === 'string' && cat != null) || (type !== 'string'))) {
+      if (i < 10 && cat !== undefined && ((type === 'string' && cat != null) || (type !== 'string'))) {
         css += "\n" + tableID + "[" + prop + "=" + value + "] {\n";
         css += "  " + attr  + ":" + ramp[i] + ";\n}"
       }
+    }
+
+    if (cats.length > 10) {
+      css += "\n" + tableID + "{\n";
+      css += "  " + attr  + ": " + ramp[ramp.length - 1]+ ";\n}"
     }
 
     return css;
@@ -41633,7 +41642,12 @@ function guessMap(sql, tableName, column, stats) {
 
       if (distinctPercentage < 1) {
         visualizationType   = "category";
-        var cats = stats.cat_hist.slice(0, ramps.category.length).map(function(r) { return r[0]; });
+
+        var cats = stats.cat_hist;
+        cats = _.sortBy(cats, function(cat) { return cat[1]; }).reverse().slice(0, ramps.category.length);
+        cats = _.sortBy(cats, function(cat) { return cat[0]; });
+        cats = cats.map(function(r) { return r[0]; });
+
         css      = CSS.category(cats, tableName, columnName, geometryType, { type: type });
         metadata = CSS.categoryMetadata(cats, { type: type });
 
@@ -41654,7 +41668,12 @@ function guessMap(sql, tableName, column, stats) {
   } else if (type === 'string') {
 
     visualizationType   = "category";
-    var cats = stats.hist.slice(0, ramps.category.length).map(function(r) { return r[0]; });
+
+    var cats = stats.hist;
+    cats = _.sortBy(cats, function(cat) { return cat[1]; }).reverse().slice(0, ramps.category.length);
+    cats = _.sortBy(cats, function(cat) { return cat[0]; });
+    cats = cats.map(function(r) { return r[0]; });
+
     css      = CSS.category(cats, tableName, columnName, geometryType);
     metadata = CSS.categoryMetadata(cats);
 

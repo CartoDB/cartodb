@@ -22,6 +22,9 @@ module CartoDB
       DEFAULT_LOADER          = Loader
       UNKNOWN_ERROR_CODE      = 99999
 
+      # Hard-limit on number of spawned tables (zip files, KMLs and so on)
+      MAX_TABLES_PER_IMPORT = 10
+
       # @param options Hash
       # {
       #   :pg Hash { ... }
@@ -57,7 +60,7 @@ module CartoDB
 
         @import_file_limit = limit_instances.fetch(:import_file_size_instance, input_file_size_limit_instance(@user))
         @table_row_count_limit =
-          limit_instances.fetch(:table_row_count_limit_instance, table_row_count_limit_instance(@user, db))
+          limit_instances.fetch(:table_row_count_limit_instance, table_row_count_limit_instance(@user, @job.db))
         @loader_options      = {}
         @results             = []
         @stats               = []
@@ -107,12 +110,6 @@ module CartoDB
         "Log Report: #{log.to_s}"
       end
 
-      def db
-        @db = Sequel.postgres(pg_options.merge(:after_connect=>(proc do |conn|
-          conn.execute('SET search_path TO "$user", public, cartodb')
-        end)))
-      end
-
       def loader_for(source_file)
         loaders = LOADERS
         loaders.find(DEFAULT_LOADER) { |loader_klass|
@@ -155,7 +152,6 @@ module CartoDB
       attr_writer :results, :tracker
 
       def import(source_file, downloader, loader_object=nil)
-        # noinspection RubyArgCount
         loader = loader_object || loader_for(source_file).new(@job, source_file)
 
         raise EmptyFileError if source_file.empty?
@@ -172,7 +168,7 @@ module CartoDB
           end
 
           @importer_stats.timing('file_size_limit_check') do
-            if hit_platform_file_size_limit?(source_file)
+            if hit_platform_file_size_limit?(source_file, downloader)
               raise CartoDB::Importer2::FileTooBigError.new("#{source_file.fullpath}")
             end
           end
@@ -240,7 +236,7 @@ module CartoDB
 
           # Leaving this limit check as if a compressed source weights too much we avoid even decompressing it
           @importer_stats.timing('file_size_limit_check') do
-            if hit_platform_file_size_limit?(@downloader.source_file)
+            if hit_platform_file_size_limit?(@downloader.source_file, @downloader)
               raise CartoDB::Importer2::FileTooBigError.new("#{@downloader.source_file.fullpath}")
             end
           end
@@ -252,7 +248,12 @@ module CartoDB
           end
 
           @importer_stats.timing('import') do
-            unpacker.source_files.each { |source_file|
+            unpacker.source_files.each_with_index { |source_file, index|
+
+              next if (index >= MAX_TABLES_PER_IMPORT)
+
+              @job.new_table_name if (index > 0)
+
               # TODO: Move this stats inside import, for streaming scenarios, or differentiate
               log.append "Filename: #{source_file.fullpath} Size (bytes): #{source_file.size}"
               @stats << {
@@ -274,7 +275,9 @@ module CartoDB
       def multi_resource_import
         log.append "Starting multi-resources import"
         # [ {:id, :title} ]
-        @downloader.item_metadata[:subresources].each { |subresource|
+        @downloader.item_metadata[:subresources].each_with_index { |subresource, index|
+          @job.new_table_name if index > 0
+
           @importer_stats.timing('subresource') do
             datasource = nil
             item_metadata = nil
@@ -345,7 +348,11 @@ module CartoDB
         Job.new({ logger: log, pg_options: pg_options })
       end
 
-      def hit_platform_file_size_limit?(source_file)
+      def hit_platform_file_size_limit?(source_file, downloader=nil)
+        # INFO: For Twitter imports skipping this check, as might be hit and we rather apply only row count
+        # If more exceptions appear move inside Datasource base class so each decides if disables or not any limit
+        return false if (downloader && downloader.datasource.class.to_s == CartoDB::Datasources::Search::Twitter.to_s)
+
         file_size = File.size(source_file.fullpath)
         @import_file_limit.is_over_limit!(file_size)
       end

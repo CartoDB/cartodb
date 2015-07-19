@@ -59,7 +59,7 @@ var CSS = {
     var tableID = "#" + tableName;
 
     var defaultCSS = getDefaultCSSForGeometryType(geometryType);
-    var css = "/** choropleth visualization */\n\n" + tableID + " {\n  " + attr + ": " + ramps.category[0] + ";\n" + defaultCSS.join("\n") + "\n}\n";
+    var css = "/** choropleth visualization */\n\n" + tableID + " {\n  " + attr + ": " + ramp[0] + ";\n" + defaultCSS.join("\n") + "\n}\n";
 
     for (var i = quartiles.length - 1; i >= 0; --i) {
       if (quartiles[i] !== undefined && quartiles[i] != null) {
@@ -243,7 +243,7 @@ function getWeightFromShape(dist_type){
   }[dist_type];
 }
 
-function getMethodProperties(stats) {
+function getMethodProperties(stats) { // TODO: only require the necessary params
 
   var method;
   var ramp = ramps.pink;

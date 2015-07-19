@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: 2b0df605c87e8afc6a1375d3bc93c33e5982b247
+// sha: ac595ce758863bd2ae54d0342733636a6c0d7977
 (function() {
   var root = this;
 
@@ -41393,7 +41393,7 @@ var CSS = {
     var tableID = "#" + tableName;
 
     var defaultCSS = getDefaultCSSForGeometryType(geometryType);
-    var css = "/** choropleth visualization */\n\n" + tableID + " {\n  " + attr + ": " + ramps.category[0] + ";\n" + defaultCSS.join("\n") + "\n}\n";
+    var css = "/** choropleth visualization */\n\n" + tableID + " {\n  " + attr + ": " + ramp[0] + ";\n" + defaultCSS.join("\n") + "\n}\n";
 
     for (var i = quartiles.length - 1; i >= 0; --i) {
       if (quartiles[i] !== undefined && quartiles[i] != null) {
@@ -41577,7 +41577,7 @@ function getWeightFromShape(dist_type){
   }[dist_type];
 }
 
-function getMethodProperties(stats) {
+function getMethodProperties(stats) { // TODO: only require the necessary params
 
   var method;
   var ramp = ramps.pink;

@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: 28e45a823b14113e400adbcc008f310b85de6283
+// sha: 2b0df605c87e8afc6a1375d3bc93c33e5982b247
 (function() {
   var root = this;
 
@@ -41220,7 +41220,6 @@ Layers.register('torque', function(vis, data) {
                    'count(*) as cnt,',
                    'sum(case when {{column}} is null then 1 else 0 end)::numeric / count(*)::numeric as null_ratio,',
                    'stddev_pop({{column}}) / count({{column}}) as stddev,',
-                   //'log(stddev_pop({{column}}) / count({{column}})) as lstddev,',
                    'CASE WHEN abs(avg({{column}})) > 1e-7 THEN stddev({{column}}) / abs(avg({{column}})) ELSE 1e12 END as stddevmean,',
                     'CDB_DistType(array_agg("{{column}}"::numeric)) as dist_type ',
               'from ({{sql}}) _wrap ',
@@ -41240,11 +41239,11 @@ Layers.register('torque', function(vis, data) {
            'select array_agg(row(d, c)) cat_hist from (select distinct({{column}}) d, count(*) as c from ({{sql}}) __wrap, stats group by 1 limit 100) _a',
         '),',
          'buckets as (',
-            'select CDB_QuantileBins(array_agg({{column}}::numeric), 7) as quantiles, ',
+            'select CDB_QuantileBins(array_agg(distinct({{column}}::numeric)), 7) as quantiles, ',
             '       (select array_agg(x::numeric) FROM (SELECT (min + n * diff)::numeric as x FROM generate_series(1,7) n, params) p) as equalint,',
             // '       CDB_EqualIntervalBins(array_agg({{column}}::numeric), 7) as equalint, ',
-            '       CDB_JenksBins(array_agg({{column}}::numeric), 7) as jenks, ',
-            '       CDB_HeadsTailsBins(array_agg({{column}}::numeric), 7) as headtails ',
+            '       CDB_JenksBins(array_agg(distinct({{column}}::numeric)), 7) as jenks, ',
+            '       CDB_HeadsTailsBins(array_agg(distinct({{column}}::numeric)), 7) as headtails ',
             'from ({{sql}}) _table_sql where {{column}} is not null',
          ')',
          'select * from histogram, stats, buckets, hist'

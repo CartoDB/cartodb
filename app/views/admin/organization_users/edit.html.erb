@@ -8,7 +8,7 @@
     var user_data = <%= safe_js_object current_user.data.to_json.html_safe %>;
     var authenticity_token = "<%= form_authenticity_token %>";
   </script>
-  <%= javascript_include_tag 'cdb.js', 'models.js', 'organization_templates.js', 'organization_deps.js', 'organization.js', 'keys_templates.js', 'keys_deps.js', 'keys.js' -%>
+  <%= javascript_include_tag 'cdb.js', 'models.js', 'organization_templates.js', 'organization_deps.js', 'organization.js' -%>
 <% end %>
 <%= content_for(:css) do %>
   <%= stylesheet_link_tag 'organization.css',  :media => 'all' %>

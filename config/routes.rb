@@ -473,6 +473,8 @@ CartoDB::Application.routes.draw do
         get '/:id/dump' => 'users#dump'
         get '/:id/data_imports' => 'users#data_imports'
         get '/:id/data_imports/:data_import_id' => 'users#data_import'
+        get '/:id/synchronizations' => 'users#synchronizations'
+        get '/:id/synchronizations/:synchronization_id' => 'users#synchronization'
       end
     end
     resources :organizations

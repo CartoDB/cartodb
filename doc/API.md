@@ -1022,7 +1022,8 @@ You can use the results from `getBounds` to center data on your maps using Leafl
 <div class="code-title">sql.getBounds</div>
 ```javascript
 sql.getBounds('select * from table').done(function(bounds) {
-  map.fitBounds(bounds);
+  map.setBounds(bounds);
+  // or map.fitBounds(bounds, mapView.getSize());
 });
 ```
 

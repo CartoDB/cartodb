@@ -245,6 +245,7 @@ div.table {
             }
 
             p {
+              line-height: 20px;
               padding:0 10px;
               a {
                 padding:0 10px 0 0;
@@ -263,7 +264,7 @@ div.table {
                   &.own:after {
                     position:absolute;
                     right:0;
-                    margin:8px 0 0 5px;
+                    margin:10px 0 0 5px;
                     border-top:3px solid #7C7C7C;
                     border-right:3px solid transparent;
                     border-left:3px solid transparent;

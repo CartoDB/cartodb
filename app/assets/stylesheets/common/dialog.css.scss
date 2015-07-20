@@ -2,8 +2,6 @@
 @import "../variables/colors";
 @import "../variables/sizes";
 
-$sNarrower-width: 620px;
-
 /* set by base dialog */
 body.is-inDialog {
   overflow: hidden;
@@ -95,20 +93,12 @@ body.is-inDialog {
 .Dialog-body.Dialog-body--withoutBorder {
   border-top: none;
 }
-.Dialog-body.Dialog-body--narrower {
-  @include display-flex();
-  @include justify-content(flex-start, justify);
-  @include align-items(flex-start, justify);
-  width: $sNarrower-width;
-}
 .Dialog-body.Dialog-body--create {
   position: relative;
   width: 100%;
   padding-bottom: 0;
   overflow: auto;
 }
-.Dialog-bodyIcon { margin-right: $sMargin-group }
-.Dialog-bodyParagraph { width: 480px }
 .Dialog-Stretcher {
   width: $sLayout-width;
   @include display-flex();
@@ -131,7 +121,6 @@ body.is-inDialog {
   border-top: 1px solid $cStructure-mainLine;
 }
 .Dialog-footer--withoutBorder { border-top: none }
-.Dialog-footer--narrower { width: $sNarrower-width }
 .Dialog-footer--simple {
   @include display-flex();
   @include justify-content(center);

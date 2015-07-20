@@ -85,13 +85,6 @@ class Admin::PagesController < ApplicationController
   def public
     maps = CartoDB::ControllerFlows::Public::Maps.new(self)
     content = CartoDB::ControllerFlows::Public::Content.new(self, request, maps)
-    @organization = content.viewed_organization
-    viewed_user = content.viewed_user
-    if !viewed_user.nil?
-      @user = viewed_user
-    elsif !@organization.nil?
-      @user = @organization.owner
-    end
     content.render()
   end
 

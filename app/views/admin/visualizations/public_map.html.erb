@@ -34,26 +34,26 @@
       <div class="Navmenu">
         <div class="PublicMap-block">
           <div class="PublicMap-leftBlock">
-            <ul class="Navmenu-list Navmenu-list--avatar u-valign">
-              <li class="Navmenu-item u-malign">
+            <ul class="Navmenu-list Navmenu-list--avatar">
+              <li class="Navmenu-item">
                 <a href="<%= CartoDB.url(self, 'public_maps_home', {}, @visualization.user) %>" target="_blank" class="UserAvatar">
                   <img class="UserAvatar-img--medium" src="<%= @visualization.user.avatar %>" alt="<%= @name %>" title="<%= @name %>" />
                 </a>
               </li>
             </ul>
 
-            <ul class="Navmenu-list u-valign">
-              <li class="Navmenu-item u-malign">
+            <ul class="Navmenu-list">
+              <li class="Navmenu-item">
                 <a href="<%= CartoDB.url(self, 'public_maps_home', {}, @visualization.user) %>" class="Navmenu-link"><%= @name %></a>
               </li>
 
-              <li class="Navmenu-item u-malign u-hideOnTablet">
+              <li class="Navmenu-item u-hideOnTablet">
                 <i class="Navmenu-rarrow iconFont iconFont-Rarrow"></i>
                 <a href="<%= CartoDB.url(self, 'public_maps_home', {}, @visualization.user) %>" class="Navmenu-link">Maps</a>
               </li>
 
               <% if @visualization.tags.size > 0 %>
-                <li class="Navmenu-item u-malign u-hideOnTablet">
+                <li class="Navmenu-item u-hideOnTablet">
                   <i class="Navmenu-rarrow iconFont iconFont-Rarrow"></i>
                   <a href="<%= CartoDB.url(self, 'public_tag', {tag: @visualization.tags.first}, @visualization.user) %>" class="Navmenu-link"><%= @visualization.tags.first %></a>
                 </li>
@@ -62,30 +62,31 @@
           </div>
 
           <div class="PublicMap-rightBlock u-txt-right">
-            <ul class="Navmenu-list u-valign">
-              <li class="Navmenu-item u-malign">
+            <ul class="Navmenu-list">
+              <li class="Navmenu-item">
                 <a href="<%= CartoDB.url(self, 'public_visualizations_embed_map', {id: @visualization.id}, @visualization.user) %>" target="_blank" class="Navmenu-link">
                   <i class="iconFont iconFont-Fullscreen Navmenu-icon"></i>
                 </a>
               </li>
 
-              <li class="Navmenu-item u-malign">
+              <li class="Navmenu-item">
                 <div class="Navmenu-sep"></div>
-                <a href="#" class="Navmenu-link">
-                  <i class="iconFont iconFont-Heart--fill Navmenu-icon"></i>
-                </a>
+                <button class="Navmenu-link js-likes"
+                  data-vis-id="<%= @visualization.id %>"
+                  data-likes-count="<%= @likes_count %>">
+                </button>
               </li>
 
-              <li class="Navmenu-item u-malign js-Navmenu-share">
+              <li class="Navmenu-item js-Navmenu-share">
                 <div class="Navmenu-sep"></div>
                 <a href="#" class="Navmenu-link Navmenu-shareLink js-Navmenu-shareLink">
                   <i class="iconFont iconFont-Share Navmenu-icon"></i>
                 </a>
 
-                <ul class="Navmenu-shareList js-Navmenu-shareList u-valign">
+                <ul class="Navmenu-shareList js-Navmenu-shareList">
                   <li class="Navmenu-subItem">
                     <a href="#" class="Navmenu-link">
-                      <i class="iconFont iconFont-Twitter Navmenu-icon"></i>
+                      <i class="iconFont iconFont-Twitter Navmenu-icon Navmenu-icon--twitter"></i>
                     </a>
                   </li>
 
@@ -109,16 +110,21 @@
                 </ul>
               </li>
             </ul>
+            <ul class="Navmenu-list">
+              <li class="Navmenu-item">
+                <a class="Navmenu-editLink js-Navmenu-editLink" href="<%= CartoDB.url(self, 'public_visualizations_show', {id: @visualization.id }, @visualization.user) %>">Edit in cartodb</a>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
 
       <div class="PublicMap-info">
         <div class="PublicMap-block">
-          <div class="PublicMap-leftBlock">
-            <h1 class="PublicMap-title"><%= @visualization.name %></h1>
+          <div class="PublicMap-leftBlock PublicMap-leftBlock--large">
+            <h1 class="js-PublicMap-title Title Title--m"><%= @visualization.name %></h1>
             <% if @visualization.description_clean %>
-              <p class="PublicMap-title"><%= @visualization.description %></p>
+              <p class="PublicMap-description"><%= @visualization.description %></p>
             <% end %>
 
             <div class="PublicMap-meta">
@@ -144,7 +150,7 @@
 
         <%# DISQUS %>
         <div class="PublicMap-block">
-          <div class="PublicMap-leftBlock PublicMap-leftBlock--short">
+          <div class="PublicMap-leftBlock">
             <div id="disqus_thread"></div>
             <script type="text/javascript">
               var disqus_shortname  = '<%= @disqus_shortname %>';

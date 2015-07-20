@@ -29,35 +29,50 @@
 }
 .PublicMap-leftBlock {
   float: left;
-  width: 580px;
+  width: 50%;
+}
+.PublicMap-leftBlock.PublicMap-leftBlock--large {
+  width: 780px;
 }
 .PublicMap-rightBlock {
   float: right;
-  width: 300px;
+  width: 50%;
+}
+.PublicMap-description {
+  font-size: 20px;
+  font-weight: 200;
+  line-height: 32px;
+  @include nicer-lato-typography();
 }
 .PublicMap-secondary {
   background: #f9f9f9;
 }
 
-
 // Navmenu
 .Navmenu {
   position: relative;
   border-bottom: 1px solid $cStructure-mainLine;
+  overflow: hidden;
 }
 .Navmenu-list {
   display: inline-block;
   height: 81px;
+}
+.Navmenu-list:before {
+  display: inline-block;
+  vertical-align: middle;
+  content: "";
+  height: 100%;
 }
 .Navmenu-list.Navmenu-list--avatar {
   margin-right: $sMargin-section;
 }
 .Navmenu-item {
   margin-right: $sMargin-section;
-
-  &:last-child {
-    margin-right: 0;
-  }
+  vertical-align: middle;
+}
+.Navmenu-item:last-child {
+  margin-right: 0;
 }
 .Navmenu-item,
 .Navmenu-subItem {
@@ -83,10 +98,9 @@
 }
 .Navmenu-subItem {
   margin-left: $sMargin-group;
-
-  &:first-child {
-    margin-left: 0;
-  }
+}
+.Navmenu-subItem:first-child {
+  margin-left: 0;
 }
 .Navmenu-link {
   color: $cTypography-linkSecondary;
@@ -97,38 +111,65 @@
 .Navmenu-icon {
   font-size: $sFontSize-largest;
 }
+.Navmenu-icon.Navmenu-icon--twitter {
+  font-size: 22px; // hack for twitter icon is small
+}
+.Navmenu-editLink {
+  display: none;
+  vertical-align: middle;
+  width: auto;
+  height: 26px;
+  padding: 0 16px;
+  border-radius: 28px;
+  line-height: 28px;
+  border: 1px solid $cNavButton-default;
+  text-align: center;
+  color: $cNavButton-default;
+  margin-left: $sMargin-section;
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: $sFontWeight-normal;
+}
+.Navmenu-editLink:hover {
+  text-decoration: none;
+  border-color: $cNavButton-active;
+  color: $cNavButton-active;
+}
+.Navmenu-editLink.is-active {
+  display: inline-block;
+}
 .Navmenu-share {
   display: inline-block;
+  vertical-align: middle;
 }
 .Navmenu-shareLink {
   display: none;
 }
 .Navmenu-shareList {
   display: inline-block;
-
-  &.is-active {
-    display: block;
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 50%;
-    height: 81px;
-    background: #fff;
-  }
+  transition: all .15s;
+}
+.Navmenu-shareList.is-active {
+  margin-top: 0;
 }
 
 @media (max-width: $sMedia-desktop) {
-  .PublicMap-leftBlock,
-  .PublicMap-rightBlock {
-    width: 50%;
-  }
-
   .Navmenu-shareLink {
     display: inline-block;
   }
   .Navmenu-shareList {
-    display: none;
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin-top: -81px;
+    width: 50%;
+    height: 81px;
+    background: #fff;
   }
+  // .Navmenu-subItem {
+  //   vertical-align: middle;
+  //  } 
   .Navmenu-list.Navmenu-list--avatar {
     margin-right: $sMargin-element;
   }

@@ -1,0 +1,64 @@
+// Titles
+// --------------------------------------------------
+
+.Title--l {
+  font-size: 48px;
+  line-height: 58px;
+}
+
+.Title--m {
+  font-size: 34px;
+  line-height: 48px;
+}
+
+.Title--s {
+  font-size: 26px;
+  line-height: 33px;
+}
+
+.Title--xs {
+  font-size: 20px;
+  line-height: 30px;
+  font-weight: 300;
+}
+
+.Title--light {
+  font-weight: 200;
+}
+
+.Title--bold {
+  font-weight: 500;
+}
+
+.Title--dark {
+  color: #333;
+}
+
+.Title--grey {
+  color: #ccc;
+}
+
+.Title--white {
+  color: #fff;
+}
+
+.Title--em {
+  font-style: italic;
+  font-weight: 200;
+  font-size: 18px;
+  line-height: 1;
+  color: rgba(#fff, .6);
+}
+
+.Title--bold {
+  font-weight: 500;
+}
+
+.Title-small {
+  font-size: 16px;
+  line-height: 19px;
+  color: rgba(#fff, .5);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}

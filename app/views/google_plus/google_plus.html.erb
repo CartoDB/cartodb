@@ -55,7 +55,14 @@
       }
     </style>
   </head>
-   <body>
+  <body>
+    <% if !@button_color.nil? %>
+      <style>
+        #signinButton span {
+          background: <%= @button_color %>;
+        }
+      </style>
+    <% end %>
     <div id="gSignInWrapper">
       <div id="signinButton" class="customGPlusSignIn">
         <span

@@ -4,6 +4,7 @@ require_dependency 'google_plus_api'
 class GooglePlusController < ApplicationController
 
   layout 'frontend'
+  before_filter :load_button_color
 
   def google_plus
     signup_url = Cartodb::Central.sync_data_with_cartodb_central? ? Cartodb::Central.new.google_signup_url : CartoDB.path(self, 'google_plus_signup')
@@ -28,6 +29,10 @@ class GooglePlusController < ApplicationController
     user.create_in_central
 
     redirect_to CartoDB.path(self, 'dashboard', {trailing_slash: true})
+  end
+
+  def load_button_color
+    @button_color = params[:button_color].nil? ? nil : "##{params[:button_color]}"
   end
   
 end

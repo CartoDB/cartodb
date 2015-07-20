@@ -53,17 +53,9 @@ WORKING_SPECS_3 = \
   services/importer/spec/acceptance/osm_spec.rb \
   services/importer/spec/acceptance/sql_spec.rb \
   services/importer/spec/acceptance/raster2pgsql_spec.rb \
-  $(NULL)
-
-WORKING_SPECS_3a = \
-  spec/rspec_configuration.rb \
   services/importer/spec/acceptance/csv_spec.rb \
   services/importer/spec/acceptance/gz_tgz_spec.rb \
   services/importer/spec/acceptance/zip_spec.rb \
-  $(NULL)
-
-WORKING_SPECS_3b = \
-  spec/rspec_configuration.rb \
   services/importer/spec/acceptance/shp_spec.rb \
   services/importer/spec/unit/column_spec.rb \
   services/importer/spec/unit/csv_normalizer_spec.rb \
@@ -90,7 +82,6 @@ WORKING_SPECS_3b = \
   services/importer/spec/unit/content_guesser_spec.rb \
   services/importer/spec/unit/namedplaces_guesser_spec.rb \
   $(NULL)
-
 
 WORKING_SPECS_4 = \
   spec/rspec_configuration.rb \
@@ -215,10 +206,6 @@ check-2b:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_2b)
 check-3:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_3)
-check-3a:
-	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_3a)
-check-3b:
-	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_3b)
 check-4:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_4)
 check-5:

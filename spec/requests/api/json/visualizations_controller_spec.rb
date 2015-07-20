@@ -11,4 +11,44 @@ describe Api::Json::VisualizationsController do
   include Rack::Test::Methods
   include Warden::Test::Helpers
   include CacheHelper
+
+  before(:all) do
+    @user = create_user(username: 'test')
+  end
+
+  after(:all) do
+    @user.destroy
+  end
+
+  # let(:params) { { api_key: @user.api_key } }
+
+  before(:each) do
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+    host! "#{@user.username}.localhost.lan"
+  end
+
+  after(:each) do
+    delete_user_data @user
+  end
+
+  describe '#likes' do
+
+    before(:each) do
+      login(@user)
+    end
+
+    it "when a map is liked should send an email to the owner" do
+      vis = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC).table_visualization
+      Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::MapLiked, vis.id, @user.id).returns(true)
+      post_json api_v1_visualizations_add_like_url({
+          id: vis.id
+        }) do |response|
+        response.status.should be_success
+      end
+    end
+  end
+
+  def table_factory(attrs = {})
+    new_table(attrs.merge(user_id: $user_1.id)).save.reload
+  end
 end

@@ -59,4 +59,15 @@ class UserMailer < ActionMailer::Base
          :subject => @subject
   end
 
+  def map_liked(visualization, viewer_user)
+    @user = visualization.user
+    @map_name = visualization.name
+    @viewer_name = viewer_user.name.nil? ? viewer_user.username : viewer_user.name
+    @subject = "Your map #{@map_name} got some love!"
+    @greetings = ["congrats", "congratulations", "cool", "awesome", "hooray", "nice", "wow", "rad", "bravo", "yay"]
+    @link = "#{@user.public_url}#{CartoDB.path(self, 'public_tables_show_map', { id: visualization.id })}"
+    mail :to => @user.email,
+         :subject => @subject
+  end
+
 end

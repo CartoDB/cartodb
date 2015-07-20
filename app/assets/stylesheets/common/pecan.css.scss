@@ -32,11 +32,14 @@
 }
 .PecanMap-MapsList .DefaultTitle,
 .PecanMap-MapsList .DefaultTitle a {
-  font-weight: 100;
+  font-weight: 300;
+  color: #999;
 }
 .PecanMap-MapsList .DefaultTitle strong {
   font-weight: normal;
+  color: #666;
 }
+.PecanMap-MapsList .DefaultTitle a:hover { color: #666 }
 
 .PecanMap-navigation {
   position:absolute;

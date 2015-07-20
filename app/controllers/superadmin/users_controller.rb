@@ -4,7 +4,8 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   respond_to :json
 
   ssl_required :show, :create, :update, :destroy, :index if Rails.env.production? || Rails.env.staging?
-  before_filter :get_user, only: [:update, :destroy, :show, :dump, :data_imports, :data_import]
+  before_filter :get_user, only: [ :update, :destroy, :show, :dump, :data_imports, :data_import ]
+  before_filter :get_carto_user, only: [ :synchronizations, :synchronization ]
 
   layout 'application'
 
@@ -99,10 +100,34 @@ class Superadmin::UsersController < Superadmin::SuperadminController
                  })
   end
 
+  def synchronizations
+    respond_with(@user.synchronizations.map { |entry|
+      {
+        id: entry.id,
+        data_type: entry.service_name,
+        date: entry.updated_at,
+        status: entry.success?
+      }
+    })
+  end
+
+  def synchronization
+    synchronization = Carto::Synchronization.where(id: params[:synchronization_id]).first
+    respond_with({
+                   data: synchronization,
+                   log: synchronization.nil? ? nil : synchronization.log.to_s
+                 })
+  end
+
   private
 
   def get_user
     @user = User[params[:id]]
+    render json: { error: 'User not found' }, status: 404 unless @user
+  end
+
+  def get_carto_user
+    @user = Carto::User.where(id: params[:id]).first
     render json: { error: 'User not found' }, status: 404 unless @user
   end
 

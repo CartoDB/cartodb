@@ -32,7 +32,7 @@ class GooglePlusController < ApplicationController
   end
 
   def load_button_color
-    @button_color = params[:button_color].nil? ? nil : "##{params[:button_color]}"
+    @button_color = params[:button_color].nil? ? nil : "##{params[:button_color].tr('^A-Za-z0-9', '')}"
   end
   
 end

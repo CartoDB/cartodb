@@ -21,6 +21,7 @@ describe Carto::Api::ImportsController do
   end
 
   after(:all) do
+    Resque.inline = false
     @user.destroy
   end
 

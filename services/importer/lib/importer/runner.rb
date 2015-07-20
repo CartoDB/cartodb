@@ -233,6 +233,7 @@ module CartoDB
           end
 
           log.append "Starting import for #{@downloader.source_file.fullpath}"
+          log.store   # Checkpoint-save
 
           # Leaving this limit check as if a compressed source weights too much we avoid even decompressing it
           @importer_stats.timing('file_size_limit_check') do
@@ -251,8 +252,9 @@ module CartoDB
             unpacker.source_files.each_with_index { |source_file, index|
 
               next if (index >= MAX_TABLES_PER_IMPORT)
-
               @job.new_table_name if (index > 0)
+
+              log.store   # Checkpoint-save
 
               # TODO: Move this stats inside import, for streaming scenarios, or differentiate
               log.append "Filename: #{source_file.fullpath} Size (bytes): #{source_file.size}"
@@ -278,6 +280,8 @@ module CartoDB
         @downloader.item_metadata[:subresources].each_with_index { |subresource, index|
           @job.new_table_name if index > 0
 
+          log.store   # Checkpoint-save
+
           @importer_stats.timing('subresource') do
             datasource = nil
             item_metadata = nil
@@ -300,6 +304,7 @@ module CartoDB
 
             @importer_stats.timing('quota_check') do
               log.append "Starting import for #{subres_downloader.source_file.fullpath}"
+              log.store   # Checkpoint-save
               raise_if_over_storage_quota(subres_downloader.source_file)
             end
 

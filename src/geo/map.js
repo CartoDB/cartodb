@@ -504,6 +504,9 @@ cdb.geo.Map = cdb.core.Model.extend({
   // set center and zoom according to fit bounds
   fitBounds: function(bounds, mapSize) {
     var z = this.getBoundsZoom(bounds, mapSize);
+    if(z === null) {
+      return;
+    }
 
     // project -> calculate center -> unproject
     var swPoint = cdb.geo.Map.latlngToMercator(bounds[0], z);
@@ -520,7 +523,8 @@ cdb.geo.Map = cdb.core.Model.extend({
   },
 
   // adapted from leaflat src
-  // @return {Number} Calculated zoom from given bounds, or the maxZoom if no appropriate zoom level could be found
+  // @return {Number, null} Calculated zoom from given bounds or the maxZoom if no appropriate zoom level could be found
+  //   or null if given mapSize has no size.
   getBoundsZoom: function(boundsSWNE, mapSize) {
     // sometimes the map reports size = 0 so return null
     if(mapSize.x === 0 || mapSize.y === 0) return null;

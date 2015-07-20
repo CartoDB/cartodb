@@ -90,6 +90,28 @@ feature "API 1.0 map layers management" do
     end
   end
 
+  scenario "Update several layers at once" do
+    layer_1 = Layer.create kind: 'carto', order: 0
+    layer_2 = Layer.create kind: 'carto', order: 1
+    @map.add_layer layer_1
+    @map.add_layer layer_2
+
+    data = { layers: [
+      { id: layer_1.id, options: { opt1: 'value' }, infowindow: ['column1', 'column2'], order: 2, kind: 'carto' },
+      { id: layer_2.id, options: { opt1: 'value' }, infowindow: ['column1', 'column2'], order: 3, kind: 'carto' }
+    ]}
+
+    put_json api_v1_maps_layers_update_url(params.merge(map_id: @map.id)), data do |response|
+      response.status.should be_success
+      response_layers = response.body[:layers]
+      response_layers.count.should == 2
+      response_layers.select { |l| l['id'] == layer_1.id }.first['order'].should == 2
+      response_layers.select { |l| l['id'] == layer_2.id }.first['order'].should == 3
+      layer_1.reload.order.should == 2
+      layer_2.reload.order.should == 3
+    end
+  end
+
   scenario "Update a layer does not change table_name neither user_name" do
     layer = Layer.create kind: 'carto', order: 0, options: {'table_name' => 'table1', 'user_name' => @user.username}
     @map.add_layer layer

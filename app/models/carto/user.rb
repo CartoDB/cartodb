@@ -24,6 +24,7 @@ class Carto::User < ActiveRecord::Base
   has_many :geocodings, inverse_of: :user
   has_many :synchronization_oauths, class_name: Carto::SynchronizationOauth, inverse_of: :user, dependent: :destroy
   has_many :search_tweets, inverse_of: :user
+  has_many :synchronizations, inverse_of: :user
 
   delegate [ 
       :database_username, :database_password, :in_database, :load_cartodb_functions, :rebuild_quota_trigger,

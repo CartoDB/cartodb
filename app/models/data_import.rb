@@ -651,6 +651,8 @@ class DataImport < Sequel::Model
 
   def update_synchronization(importer)
     if synchronization_id
+      log.type = CartoDB::Log::TYPE_SYNCHRONIZATION
+      log.store
       log.append "synchronization_id: #{synchronization_id}"
       synchronization = CartoDB::Synchronization::Member.new(id: synchronization_id).fetch
       synchronization.name    = self.table_name

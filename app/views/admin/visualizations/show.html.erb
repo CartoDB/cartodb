@@ -6,11 +6,7 @@
   <% end %>
 
   <% content_for(:css) do %>
-    <% if current_user.has_feature_flag?('new_modals') %>
-      <%= stylesheet_link_tag 'common.css', 'editor.css', 'cdb.css', 'map.css', :media => 'all' %>
-    <% else  %>
-      <%= stylesheet_link_tag 'old_common.css', 'table.css', 'cdb.css', 'map.css', :media => 'all' %>
-    <% end %>
+    <%= stylesheet_link_tag 'common.css', 'editor.css','old_common.css', 'table.css', 'cdb.css', 'map.css', :media => 'all' %>
   <% end %>
 
   <script type="text/javascript" id="dropboxjs" src="//www.dropbox.com/static/api/1/dropins.js" data-app-key="<%= Cartodb.config[:dropbox_api_key] %>"></script>
@@ -31,9 +27,7 @@
         </script>
     <% end %>
     <%= javascript_include_tag 'cdb.js','models.js', 'templates.js', 'templates_mustache.js', 'table.js' %>
-    <% if current_user.has_feature_flag?('new_modals') %>
-      <%= javascript_include_tag 'editor.js' %>
-    <% end %>
+    <%= javascript_include_tag 'editor.js' %>
   <% end %>
 
   <div class="panes"></div>

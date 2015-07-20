@@ -51,7 +51,11 @@ module CartoDB
     class InvalidGeoJSONError                   < StandardError; end
     class InvalidShpError                       < StandardError; end
     class KmlNetworkLinkError                   < StandardError; end
-    class InvalidNameError                      < StandardError; end
+    class InvalidNameError                      < BaseImportError
+      def initialize(message)
+        super(message, 1014)
+      end
+    end
     class LoadError                             < StandardError; end
     class MissingProjectionError                < StandardError; end
     class ShpNormalizationError                 < StandardError; end

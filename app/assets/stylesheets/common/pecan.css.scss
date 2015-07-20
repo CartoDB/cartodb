@@ -3,7 +3,7 @@
 @import "../variables/sizes";
 
 .MapsGallery {
-  width: 960px;
+  width: 940px;
   margin: auto;
   padding: 40px 0;
   overflow: hidden;
@@ -28,6 +28,7 @@
 }
 .MapCard-content--small {
   height: 35px;
+  padding-top: 18px; // 'Hack' to leave title in the best position
 }
 .PecanMap-MapsList .DefaultTitle,
 .PecanMap-MapsList .DefaultTitle a {
@@ -39,7 +40,7 @@
 
 .PecanMap-navigation {
   position:absolute;
-  width: 960px;
+  width: 940px;
   z-index: 100000;
 }
 .PecanMap-navigation.is-hidden {
@@ -61,7 +62,7 @@
 
 .GalleryList-item.MapsList-item {
   @include inline-block();
-  margin: 0 30px 0 0;
+  margin: 0 20px 0 0;
 
   &:last-child {
     margin: 0;
@@ -77,16 +78,16 @@
   @include background(image-url('layout/pecan_torque_wizard.png') center center);
   z-index: 10;
 }
+.PecanCard-footer {
+  position: relative;
+  margin-top: 12px;
+  border-top: 0;
+}
 .NullCount {
-  float: right;
   font-size: 11px;
   font-style: italic;
   color: #999999;
   line-height:0;
-}
-.MapCard-footer {
-  position:relative;
-  margin: 10px 0 0 0;
 }
 .CategoryList {
   float:left;
@@ -104,8 +105,4 @@
 }
 .CategoryList .CategoryList-item:last-child {
   margin: 0;
-}
-.HistogramGraph {
-  position:absolute;
-  bottom: -9px;
 }

@@ -27,6 +27,7 @@
   color: white;
   text-transform: uppercase;
   white-space: nowrap;
+  box-sizing: border-box;
 }
 .Button-inner { line-height: $sButton-height }
 .Button {

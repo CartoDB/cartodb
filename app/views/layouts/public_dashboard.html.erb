@@ -96,7 +96,7 @@
         el: '#<%= fav_map_target_id %>',
         <% if @most_viewed_vis_map %>
           createVis: {
-            url: '<%= vis_json_url(@most_viewed_vis_map.id, self, @user) %>',
+            url: '<%= vis_json_url(@most_viewed_vis_map.id, self, (@most_viewed_vis_map.user)) %>',
             opts: {
               no_cdn: <%= Rails.env.production? ? 'false' : 'true' %>
             }

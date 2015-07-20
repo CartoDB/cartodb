@@ -10,12 +10,19 @@ module CartoDB
           @renderer = renderer
         end
 
+        def viewed_user
+          User.where(username: username).first
+        end
+
+        def viewed_organization
+          Organization.where(name: username).first
+        end
+
         def render
-          username = CartoDB.extract_subdomain(@request).strip.downcase
-          viewed_user = User.where(username: username).first
+          viewed_user = self.viewed_user
 
           if viewed_user.nil?
-            org = Organization.where(name: username).first
+            org = self.viewed_organization
             unless org.nil?
               return @renderer.organization_content(org)
             end
@@ -34,6 +41,10 @@ module CartoDB
         end
 
         private
+
+        def username
+          CartoDB.extract_subdomain(@request).strip.downcase
+        end
 
         def eligible_for_redirect?(user)
           return if CartoDB.subdomainless_urls?

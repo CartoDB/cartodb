@@ -200,7 +200,6 @@ body.is-inDialog {
   color: $cTypography-paragraphs;
 }
 .Dialog-headerText.Dialog-headerText--centered { margin: auto }
-.Dialog-headerText.Dialog-headerText--limitedWidth { width: 480px }
 .Dialog-headerText.Dialog-headerText--ellipsis {
   text-overflow: ellipsis;
   white-space: nowrap;

@@ -832,6 +832,13 @@ class User < Sequel::Model
     }
   end
 
+  def is_subscribed_to?(notification_id)
+    subscription = self.user_notifications.select{|n| 
+      n.notification_id == notification_id && n.enabled == true
+    }
+    return self.has_feature_flag?("notifications_management") && !subscription.empty?
+  end
+
   # Retrive list of user tables from database catalogue
   #
   # You can use this to check for dangling records in the

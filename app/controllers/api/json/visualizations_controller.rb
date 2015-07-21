@@ -373,10 +373,12 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end
 
   def send_like_email(vis, current_viewer, vis_preview_image)
-    if vis.type == Carto::Visualization::TYPE_CANONICAL
-      ::Resque.enqueue(::Resque::UserJobs::Mail::TableLiked, vis.id, current_viewer.id, vis_preview_image)
-    elsif vis.type == Carto::Visualization::TYPE_DERIVED
-      ::Resque.enqueue(::Resque::UserJobs::Mail::MapLiked, vis.id, current_viewer.id, vis_preview_image)
+    if (vis.user.is_subscribed_to?(Carto::UserNotifications::LIKE_NOTIFICATION))
+      if vis.type == Carto::Visualization::TYPE_CANONICAL
+        ::Resque.enqueue(::Resque::UserJobs::Mail::TableLiked, vis.id, current_viewer.id, vis_preview_image)
+      elsif vis.type == Carto::Visualization::TYPE_DERIVED
+        ::Resque.enqueue(::Resque::UserJobs::Mail::MapLiked, vis.id, current_viewer.id, vis_preview_image)
+      end
     end
   end
 

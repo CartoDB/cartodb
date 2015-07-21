@@ -5,9 +5,9 @@ require 'active_record'
 module Carto
   class UserNotifications < ActiveRecord::Base
 
-      LIKE_NOTIFICACION = 1
+      LIKE_NOTIFICATION = 1
       SHARE_NOTIFICATION = 2
-      NOTIFICATIONS_TYPE = [LIKE_NOTIFICACION, SHARE_NOTIFICATION]
+      NOTIFICATIONS_TYPE = [LIKE_NOTIFICATION, SHARE_NOTIFICATION]
 
       validates :notification_id, inclusion: { in: NOTIFICATIONS_TYPE,
                                                    message: "%{value} is not a valid notification type" }

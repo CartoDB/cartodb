@@ -491,9 +491,9 @@
     span.radio {
       position:relative;
       @include inline-block();
-      vertical-align:top;
+      vertical-align: middle;
       @include size(10px);
-      margin:2px 7px 0 0;
+      margin:0 7px 2px 0;
 
       @include border-radius(10px);
       border:1px solid #397DBA;
@@ -570,10 +570,10 @@
     span.check {
       position:relative;
       @include inline-block();
-      vertical-align:top;
+      vertical-align: middle;
       width:10px;
       height:10px;
-      margin:0;
+      margin: 0 0 1px 0;
       @include border-radius(3px);
       border:1px solid #999999;
       background:white;

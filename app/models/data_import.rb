@@ -61,7 +61,8 @@ class DataImport < Sequel::Model
     #   twitter_credits: Integer
     # }
     # No automatic conversion coded
-    'user_defined_limits'
+    'user_defined_limits',
+    'original_url'
   ]
 
   # This attributes will get removed from public_values upon calling api_call_public_values
@@ -246,6 +247,9 @@ class DataImport < Sequel::Model
       self.values[:data_type] = TYPE_URL
       self.values[:data_source] = data_source
     end
+
+    self.original_url = self.values[:data_source] if (self.original_url.to_s.length == 0)
+
     # else SQL-based import
   end
 

@@ -6,7 +6,12 @@
   <% end %>
 
   <% content_for(:css) do %>
-    <%= stylesheet_link_tag 'old_common.css', 'common.css', 'cdb.css', 'table.css', 'editor.css', 'map.css', :media => 'all' %>
+    <% if current_user.has_feature_flag?('new_modals') %>
+      <%= stylesheet_link_tag 'old_common_without_core.css', :media => 'all' %>
+    <% else %>
+      <%= stylesheet_link_tag 'old_common.css', :media => 'all' %>
+    <% end %>
+    <%= stylesheet_link_tag  'common.css', 'cdb.css', 'table.css', 'editor.css', 'map.css', :media => 'all' %>
   <% end %>
 
   <script type="text/javascript" id="dropboxjs" src="//www.dropbox.com/static/api/1/dropins.js" data-app-key="<%= Cartodb.config[:dropbox_api_key] %>"></script>

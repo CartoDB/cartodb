@@ -87,10 +87,6 @@ WORKING_SPECS_4 = \
   spec/requests/admin/tables_spec.rb \
   spec/requests/admin/pages_controller_spec.rb \
 	spec/requests/carto/api/organizations_controller_spec.rb \
-  $(NULL)
-
-WORKING_SPECS_5 = \
-  spec/rspec_configuration.rb \
   spec/requests/api/imports_spec.rb \
   spec/requests/api/json/imports_controller_spec.rb \
 	spec/requests/carto/api/imports_controller_spec.rb \
@@ -113,10 +109,6 @@ WORKING_SPECS_6 = \
   spec/requests/carto/api/records_controller_spec.rb \
   spec/requests/api/json/columns_controller_spec.rb \
   spec/requests/carto/api/columns_controller_spec.rb \
-  $(NULL)
-
-WORKING_SPECS_7 = \
-  spec/rspec_configuration.rb \
   spec/requests/api/synchronizations_spec.rb \
 	spec/requests/api/json/synchronizations_controller_spec.rb \
 	spec/requests/carto/api/synchronizations_controller_spec.rb \
@@ -135,23 +127,6 @@ WORKING_SPECS_7 = \
 	spec/models/overlay/member_spec.rb \
 	spec/models/overlay/collection_spec.rb \
   $(NULL)
-  # spec/models/synchronization/collection_spec.rb not working right now \
-
-WORKING_SPECS_8 = \
-  spec/models/asset_spec.rb \
-  spec/rspec_configuration.rb \
-  spec/requests/api/permissions_controller_spec.rb \
-  spec/models/shared_entity_spec.rb \
-	spec/requests/signup_controller_spec.rb \
-	spec/requests/account_tokens_controller_spec.rb \
-  spec/requests/superadmin/users_spec.rb \
-  spec/requests/superadmin/organizations_spec.rb \
-  spec/requests/api/visualizations_spec.rb \
-  spec/requests/api/json/maps_controller_spec.rb \
-  spec/requests/carto/api/maps_controller_spec.rb \
-  spec/requests/api/json/overlays_controller_spec.rb \
-  spec/requests/carto/api/overlays_controller_spec.rb \
-  $(NULL)
 
 WORKING_SPECS_9 = \
   spec/rspec_configuration.rb \
@@ -166,7 +141,21 @@ WORKING_SPECS_9 = \
   spec/lib/initializers/carto_db_spec.rb \
   spec/requests/carto/api/oembed_controller_spec.rb \
   spec/models/carto/ \
+  spec/models/asset_spec.rb \
+  spec/rspec_configuration.rb \
+  spec/requests/api/permissions_controller_spec.rb \
+  spec/models/shared_entity_spec.rb \
+	spec/requests/signup_controller_spec.rb \
+	spec/requests/account_tokens_controller_spec.rb \
+  spec/requests/superadmin/users_spec.rb \
+  spec/requests/superadmin/organizations_spec.rb \
+  spec/requests/api/visualizations_spec.rb \
+  spec/requests/api/json/maps_controller_spec.rb \
+  spec/requests/carto/api/maps_controller_spec.rb \
+  spec/requests/api/json/overlays_controller_spec.rb \
+  spec/requests/carto/api/overlays_controller_spec.rb \
   $(NULL)
+  # spec/models/synchronization/collection_spec.rb not working right now \
 
 WORKING_SPECS_10 = \
 	spec/models/carto/user_service_spec.rb \
@@ -201,14 +190,8 @@ check-3:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_3)
 check-4:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_4)
-check-5:
-	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_5)
 check-6:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_6)
-check-7:
-	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_7)
-check-8:
-	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_8)
 check-9:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_9)
 check-10:
@@ -216,7 +199,7 @@ check-10:
 check-carto-db-class:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_carto_db_class)
 
-check-prepared: check-1 check-3 check-4 check-5 check-6 check-7 check-8 check-9 check-10 check-carto-db-class
+check-prepared: check-1 check-3 check-4 check-6 check-9 check-10 check-carto-db-class
 
 check: prepare-test-db check-prepared
 check-frontend:

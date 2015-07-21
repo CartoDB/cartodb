@@ -36,12 +36,7 @@ WORKING_SPECS_2 = \
   spec/lib/image_metadata_spec.rb \
   spec/lib/central_spec.rb \
   spec/lib/carto/http/client_spec.rb \
-  $(NULL)
-
-WORKING_SPECS_2b = \
-	spec/rspec_configuration.rb \
 	spec/helpers/uuidhelper_spec.rb \
-	spec/helpers/carto_db_spec.rb \
   $(NULL)
 
 WORKING_SPECS_3 = \
@@ -189,6 +184,11 @@ WORKING_SPECS_10 = \
 	services/table-geocoder/spec/geocoder_cache_spec.rb \
   $(NULL)
 
+# This class must be tested isolated as pollutes namespace
+WORKING_SPECS_carto_db_class = \
+	spec/helpers/carto_db_spec.rb \
+  $(NULL)
+
 CDB_PATH=lib/assets/javascripts/cdb
 
 prepare-test-db:
@@ -202,8 +202,6 @@ check-1:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_1)
 check-2:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_2)
-check-2b:
-	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_2b)
 check-3:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_3)
 check-4:
@@ -220,8 +218,10 @@ check-9:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_9)
 check-10:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_10)
+check-carto-db-class:
+	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_carto_db_class)
 
-check-prepared: check-1 check-2 check-2b check-3 check-4 check-5 check-6 check-7 check-8 check-9 check-10
+check-prepared: check-1 check-2 check-3 check-4 check-5 check-6 check-7 check-8 check-9 check-10 check-carto-db-class
 
 check: prepare-test-db check-prepared
 check-frontend:

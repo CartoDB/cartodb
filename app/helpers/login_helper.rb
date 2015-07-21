@@ -19,6 +19,10 @@ module LoginHelper
     "#%02x%02x%02x" % rgb
   end
 
+  def organization_color(organization)
+    !organization.nil? ? darken_color(organization.color, 0.7) : "#292E33"
+  end
+
   def login_org_avatar
     @organization && @organization.name != "team" && !@organization.avatar_url.blank?
   end

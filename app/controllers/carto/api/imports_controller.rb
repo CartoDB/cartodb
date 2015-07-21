@@ -15,7 +15,7 @@ module Carto
         import = DataImportsService.new.process_by_id(params[:id])
         render_404 and return if import.nil?
 
-        data = import.api_public_values
+        data = Carto::Api::DataImportPresenter.new(import).api_public_values
         if import.state == Carto::DataImport::STATE_COMPLETE
           data[:any_table_raster] = import.is_raster?
 

@@ -43,6 +43,15 @@ See [doc/frontend.md](doc/frontend.md) for more in-depth documentation.
 
 Until our guidelines are publically available follow the existing file/directory and style structure.
 
+### Update CartoDB.js
+
+Follow these steps to update to get latest changes:
+
+- go to `lib/assets/javascripts/cdb/`
+- `git checkout develop && git pull`
+- go back to root and run `grunt cdb`
+- commit both the new revision of the submodule and the generated file `vendor/assets/javascripts/cartodb.uncompressed.js`
+
 ### Writing & running tests
 
 Tests reside in the `lib/assets/test` directory. We use

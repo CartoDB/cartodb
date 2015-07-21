@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: ac595ce758863bd2ae54d0342733636a6c0d7977
+// sha: 96897e1d4789cdb6bc755582f51276409676a0d4
 (function() {
   var root = this;
 
@@ -27446,6 +27446,7 @@ cdb.geo.Map = cdb.core.Model.extend({
     if(z === null) {
       return;
     }
+
     // project -> calculate center -> unproject
     var swPoint = cdb.geo.Map.latlngToMercator(bounds[0], z);
     var nePoint = cdb.geo.Map.latlngToMercator(bounds[1], z);
@@ -27461,6 +27462,8 @@ cdb.geo.Map = cdb.core.Model.extend({
   },
 
   // adapted from leaflat src
+  // @return {Number, null} Calculated zoom from given bounds or the maxZoom if no appropriate zoom level could be found
+  //   or null if given mapSize has no size.
   getBoundsZoom: function(boundsSWNE, mapSize) {
     // sometimes the map reports size = 0 so return null
     if(mapSize.x === 0 || mapSize.y === 0) return null;
@@ -27484,7 +27487,7 @@ cdb.geo.Map = cdb.core.Model.extend({
     } while (zoomNotFound && zoom <= maxZoom);
 
     if (zoomNotFound) {
-      return null;
+      return maxZoom;
     }
 
     return zoom - 1;

@@ -120,9 +120,7 @@ body.is-inDialog {
   text-align: center;
   border-top: 1px solid $cStructure-mainLine;
 }
-.Dialog-footer--withoutBorder {
-  border-top: none;
-}
+.Dialog-footer--withoutBorder { border-top: none }
 .Dialog-footer--simple {
   @include display-flex();
   @include justify-content(center);
@@ -201,9 +199,7 @@ body.is-inDialog {
   font-weight: $sFontWeight-lighter;
   color: $cTypography-paragraphs;
 }
-.Dialog-headerText.Dialog-headerText--centered {
-  margin: auto;
-}
+.Dialog-headerText.Dialog-headerText--centered { margin: auto }
 .Dialog-headerText.Dialog-headerText--ellipsis {
   text-overflow: ellipsis;
   white-space: nowrap;

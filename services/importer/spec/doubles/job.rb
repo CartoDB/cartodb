@@ -17,18 +17,19 @@ module CartoDB
         def qualified_table_name; ''; end
         def id;                   0; end
         def rows_number;          0; end
+        def schema; ''; end
         def pg_options
           {
             host:     '',
             user:     '',
             password: '',
-            database: '' 
+            database: ''
           }
-        end #pg_options
+        end
 
         alias_method :concealed_pg_options, :pg_options
-      end # Job
-    end # Doubles
-  end # Importer2
-end # CartoDB
+      end
+    end
+  end
+end
 

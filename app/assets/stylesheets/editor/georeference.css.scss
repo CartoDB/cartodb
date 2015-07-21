@@ -69,24 +69,26 @@ $sWidth: 681px;
   border-top: 1px solid $cStructure-mainLine;
 }
 .Georeference-estimation {
-  width: 380px;
+  width: 410px; // to keep quota info on 2 lines
   @include display-flex();
   @include justify-content(flex-start, start);
   @include align-items(center, center);
   & > *:not(:last-child) { margin-right: $sMargin-elementInline }
 }
 .Georeference-quota {
-  width: 240px;
+  width: 210px;
+  height: 40px; // to match .Georeference-estimation
   @include display-flex();
   @include flex-direction(column);
   @include align-items(flex-end, end);
-  @include justify-content(center, center);
-  & > *:not(:last-child) { margin-bottom: $sMargin-elementInline }
+  @include justify-content(space-between, justify);
+  & > *:not(:last-child) { margin-bottom: 8px }
 }
 .Georeference-progressBar {
   @include progress-bar(6px, 9px, true, false);
   position: relative;
   width: 100%;
+  margin-bottom: 5px; // align with baseline of 2nd line of text in .Georeference-estimation
   div.progress-bar {
     // Override the defaults from mixin
     background: #EEE;

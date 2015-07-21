@@ -53,16 +53,17 @@
         font-family: 'Proxima Nova W01', 'Helvetica Neue', Helvetica, Arial, sans-serif;
         text-transform: uppercase;
       }
-    </style>
-  </head>
-  <body>
-    <% if !@button_color.nil? %>
-      <style>
+      <% if !@button_color.nil? %>
         #signinButton span {
           background: <%= @button_color %>;
         }
-      </style>
-    <% end %>
+        #signinButton span:hover {
+          color: <%= @button_color %>;
+        }
+      <% end %>
+    </style>
+  </head>
+  <body>
     <div id="gSignInWrapper">
       <div id="signinButton" class="customGPlusSignIn">
         <span

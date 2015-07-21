@@ -23,7 +23,7 @@ describe User do
 
   before(:all) do
     CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
-    
+
     @user_password = 'admin123'
     puts "\n[rspec][user_spec] Creating test user databases..."
     @user     = create_user :email => 'admin@example.com', :username => 'admin', :password => @user_password
@@ -300,6 +300,7 @@ describe User do
       user.save
       Cartodb::Central.any_instance.expects(:create_organization_user).with(organization.name, user.allowed_attributes_to_central(:create)).once
       user.create_in_central.should be_true
+      user.destroy
     end
     it 'should update remote user in central if needed' do
       pending
@@ -313,6 +314,7 @@ describe User do
     user.set_relationships_from_central({ feature_flags: [ ff.id.to_s ]})
     user.save
     user.feature_flags_user.map { |ffu| ffu.feature_flag_id }.should include(ff.id)
+    user.destroy
   end
 
   it 'should delete feature flags assignations to a deleted user' do
@@ -536,27 +538,32 @@ describe User do
     it 'should not have private maps enabled by default' do
       user_missing_private_maps = create_user :email => 'user_mpm@example.com',  :username => 'usermpm',  :password => 'usermpm'
       user_missing_private_maps.private_maps_enabled?.should eq false
+      user_missing_private_maps.destroy
     end
 
     it 'should have private maps if enabled' do
       user_with_private_maps = create_user :email => 'user_wpm@example.com',  :username => 'userwpm',  :password => 'userwpm', :private_maps_enabled => true
       user_with_private_maps.private_maps_enabled?.should eq true
+      user_with_private_maps.destroy
     end
 
     it 'should not have private maps if disabled' do
       user_without_private_maps = create_user :email => 'user_opm@example.com',  :username => 'useropm',  :password => 'useropm', :private_maps_enabled => false
       user_without_private_maps.private_maps_enabled?.should eq false
+      user_without_private_maps.destroy
     end
 
     it 'should have private maps if he has private_tables_enabled, even if disabled' do
       user_without_private_maps = create_user :email => 'user_opm3@example.com',  :username => 'useropm3',  :password => 'useropm3', :private_maps_enabled => false, :private_tables_enabled => true
       user_without_private_maps.private_maps_enabled?.should eq true
+      user_without_private_maps.destroy
     end
 
     it 'should have private maps if he is AMBASSADOR even if disabled' do
       user_without_private_maps = create_user :email => 'user_opm2@example.com',  :username => 'useropm2',  :password => 'useropm2', :private_maps_enabled => false
       user_without_private_maps.stubs(:account_type).returns('AMBASSADOR')
       user_without_private_maps.private_maps_enabled?.should eq true
+      user_without_private_maps.destroy
     end
 
   end
@@ -621,6 +628,8 @@ describe User do
       u1.reload
       u1.get_geocoding_calls.should == 1
       u1.get_twitter_imports_count.should == 5
+
+      org.destroy
     end
   end
 
@@ -1297,6 +1306,7 @@ describe User do
         u1.destroy
       }.to raise_exception CartoDB::BaseCartoDBError
 
+      org.destroy
     end
   end
 
@@ -1371,7 +1381,7 @@ describe User do
 
   end
 
-  # INFO: since user can be also created in Central, and it can fail, we need to request notification explicitly. See #3022 for more info 
+  # INFO: since user can be also created in Central, and it can fail, we need to request notification explicitly. See #3022 for more info
   it "can notify a new user creation" do
 
     ::Resque.stubs(:enqueue).returns(nil)
@@ -1390,9 +1400,6 @@ describe User do
   end
 
   it "Tests password change" do
-    # @user_password = 'admin123'
-    # @user     = create_user :email => 'admin@example.com', :username => 'admin', :password => @user_password
-
     new_valid_password = '123456'
 
     old_crypted_password = @user.crypted_password
@@ -1528,6 +1535,8 @@ describe User do
       CartoDB::Visualization::Member.expects(:redis_cache).never
 
       user.purge_redis_vizjson_cache
+
+      user.destroy
     end
   end
 

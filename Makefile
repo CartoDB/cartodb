@@ -22,10 +22,6 @@ WORKING_SPECS_1 = \
   spec/requests/carto/api/layer_presenter_spec.rb \
   spec/models/map_spec.rb \
   spec/models/map/copier_spec.rb \
-  $(NULL)
-
-WORKING_SPECS_2 = \
-  spec/rspec_configuration.rb \
   spec/models/visualization/*.rb \
   spec/models/named_maps_spec.rb \
   spec/models/geocoding_spec.rb \
@@ -198,10 +194,9 @@ endif
 	# TODO skip this if db already exists ?
 	MOCHA_OPTIONS=skip_integration RAILS_ENV=test bundle exec rake cartodb:test:prepare
 
+# TODO: Ongoing removal of groups, that's the reason of holes in numbering
 check-1:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_1)
-check-2:
-	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_2)
 check-3:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_3)
 check-4:
@@ -221,7 +216,7 @@ check-10:
 check-carto-db-class:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_carto_db_class)
 
-check-prepared: check-1 check-2 check-3 check-4 check-5 check-6 check-7 check-8 check-9 check-10 check-carto-db-class
+check-prepared: check-1 check-3 check-4 check-5 check-6 check-7 check-8 check-9 check-10 check-carto-db-class
 
 check: prepare-test-db check-prepared
 check-frontend:

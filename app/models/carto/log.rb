@@ -25,4 +25,8 @@ class Carto::Log < ActiveRecord::Base
     self.save
   end
 
+  def store
+    self.save
+  end
+
 end

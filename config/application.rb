@@ -88,6 +88,7 @@ module CartoDB
       public_like.js
       common.js
       old_common.js
+      old_common_without_core.js
       templates.js
       templates_mustache.js
       specs.js

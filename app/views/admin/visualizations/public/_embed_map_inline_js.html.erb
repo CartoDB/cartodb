@@ -62,6 +62,8 @@
 
   // On load...
   $(function(){
+    // Set visualization user url prefix
+    cartodb.config.set('url_prefix', '<%= @visualization.user.public_url(nil, request.protocol == "https://" ? "https" : "http") %>');
 
     var bool_fn = function(v) { return v == 'true' };
     var is_custom_install = <%= Cartodb.config[:cartodb_com_hosted].present? %>;

@@ -221,7 +221,7 @@ check-9:
 check-10:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_10)
 
-check-prepared: check-1 check-2 check-2b check-3 check-3a check-3b check-4 check-5 check-6 check-7 check-8 check-9 check-10
+check-prepared: check-1 check-2 check-2b check-3 check-4 check-5 check-6 check-7 check-8 check-9 check-10
 
 check: prepare-test-db check-prepared
 check-frontend:

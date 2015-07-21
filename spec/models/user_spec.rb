@@ -300,10 +300,7 @@ describe User do
       user.save
       Cartodb::Central.any_instance.expects(:create_organization_user).with(organization.name, user.allowed_attributes_to_central(:create)).once
       user.create_in_central.should be_true
-      user.destroy
-    end
-    it 'should update remote user in central if needed' do
-      pending
+      organization.destroy
     end
   end
 

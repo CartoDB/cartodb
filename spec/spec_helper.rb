@@ -39,6 +39,9 @@ RSpec.configure do |config|
       )
       Rails::Sequel.connection.run("drop database \"#{user_database_name}\"")
     }
+
+    $user_1 = create_user(:quota_in_bytes => 524288000, :table_quota => 500, :private_tables_enabled => true)
+    $user_2 = create_user(:quota_in_bytes => 524288000, :table_quota => 500, :private_tables_enabled => true)
   end
 
   config.after(:all) do

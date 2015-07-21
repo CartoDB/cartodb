@@ -25,6 +25,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     @user.enabled = true
 
     if @user.save
+      @user.subscribe_to_notifications
       @user.reload
       common_data_url = CartoDB::Visualization::CommonDataService.build_url(self)
       @user.load_common_data(common_data_url)

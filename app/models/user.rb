@@ -45,6 +45,7 @@ class User < Sequel::Model
   }
 
   one_to_many :feature_flags_user
+  one_to_many :user_notifications, class: ::UserNotifications
 
   # Sequel setup & plugins
   plugin :association_dependencies, :client_application => :destroy, :synchronization_oauths => :destroy, :feature_flags_user => :destroy
@@ -310,6 +311,7 @@ class User < Sequel::Model
     end
 
     self.feature_flags_user.each { |ffu| ffu.delete }
+    self.user_notifications.each { |user_notification| user_notification.delete }
   end
 
   def delete_external_data_imports
@@ -819,6 +821,15 @@ class User < Sequel::Model
   def gravatar_user_url(size = 128)
     digest = Digest::MD5.hexdigest(email.downcase)
     return "gravatar.com/avatar/#{digest}?s=#{size}"
+  end
+
+  def subscribe_to_notifications
+    Carto::UserNotifications.notifications_type.each { |notification|
+      user_notification = Carto::UserNotifications.new
+      user_notification.user_id = self.id
+      user_notification.notification_id = notification
+      user_notification.save
+    }
   end
 
   # Retrive list of user tables from database catalogue

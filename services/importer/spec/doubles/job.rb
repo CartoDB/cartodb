@@ -4,7 +4,7 @@ module CartoDB
   module Importer2
     module Doubles
       class Job
-        attr_accessor :db
+        attr_accessor :db, :source_file_rows, :imp, :source_file_rows, :imported_rows
         def initialize(db=nil, *args);
           @log = '';
           self.db = (!db.nil?) ? db : Object.new
@@ -16,7 +16,7 @@ module CartoDB
         def table_name;           ''; end
         def qualified_table_name; ''; end
         def id;                   0; end
-        def rows_number;          0; end
+        def import_error_percent;  0; end
         def pg_options
           {
             host:     '',

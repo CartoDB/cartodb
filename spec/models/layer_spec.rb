@@ -11,6 +11,7 @@ describe Layer do
   after(:all) do
     # Using Mocha stubs until we update RSpec (@see http://gofreerange.com/mocha/docs/Mocha/ClassMethods.html)
     CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+    delete_user_data @user
     @user.destroy
   end
 

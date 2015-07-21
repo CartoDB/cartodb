@@ -118,14 +118,18 @@ WORKING_SPECS_6 = \
 	services/table-geocoder/spec/internal-geocoder/query_generator_factory_spec.rb \
 	services/table-geocoder/spec/lib/gme/table_geocoder_spec.rb \
 	spec/models/synchronization/member_spec.rb \
-	spec/requests/api/json/geocodings_controller_spec.rb \
-	spec/requests/carto/api/geocodings_controller_spec.rb \
   spec/models/organization_spec.rb \
 	spec/models/user_organization_spec.rb \
   spec/models/synchronization/synchronization_oauth_spec.rb \
   spec/models/permission_spec.rb \
 	spec/models/overlay/member_spec.rb \
 	spec/models/overlay/collection_spec.rb \
+  $(NULL)
+
+WORKING_SPECS_7 = \
+  spec/rspec_configuration.rb \
+	spec/requests/api/json/geocodings_controller_spec.rb \
+	spec/requests/carto/api/geocodings_controller_spec.rb \
   $(NULL)
 
 WORKING_SPECS_9 = \
@@ -192,6 +196,8 @@ check-4:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_4)
 check-6:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_6)
+check-7:
+	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_7)
 check-9:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_9)
 check-10:
@@ -199,7 +205,7 @@ check-10:
 check-carto-db-class:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_carto_db_class)
 
-check-prepared: check-1 check-3 check-4 check-6 check-9 check-10 check-carto-db-class
+check-prepared: check-1 check-3 check-4 check-6 check-7 check-9 check-10 check-carto-db-class
 
 check: prepare-test-db check-prepared
 check-frontend:

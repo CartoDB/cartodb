@@ -35,12 +35,12 @@ describe Visualization::Collection do
     user_id = UUIDTools::UUID.timestamp_create.to_s
     user_name = 'whatever'
     user_apikey = '123'
-    $user_1_mock = mock
-    $user_1_mock.stubs(:id).returns(user_id)
-    $user_1_mock.stubs(:username).returns(user_name)
-    $user_1_mock.stubs(:api_key).returns(user_apikey)
-    $user_1_mock.stubs(:invalidate_varnish_cache).returns(nil)
-    CartoDB::Visualization::Relator.any_instance.stubs(:user).returns($user_1_mock)
+    @user_1_mock = mock
+    @user_1_mock.stubs(:id).returns(user_id)
+    @user_1_mock.stubs(:username).returns(user_name)
+    @user_1_mock.stubs(:api_key).returns(user_apikey)
+    @user_1_mock.stubs(:invalidate_varnish_cache).returns(nil)
+    CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user_1_mock)
   end
 
   after(:each) do

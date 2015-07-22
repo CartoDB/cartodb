@@ -12,4 +12,14 @@ if redis_conf[:tcp_keepalive] and redis_conf[:tcp_keepalive].is_a? Hash
   redis_conf[:tcp_keepalive] = redis_conf[:tcp_keepalive].symbolize_keys
 end
 
+#https://github.com/resque/resque/issues/447
+if Rails.env == "development"
+  unless Rails.application.config.cache_classes
+    Resque.after_fork do |job|
+      ActionDispatch::Reloader.cleanup!
+      ActionDispatch::Reloader.prepare!
+    end
+  end
+end
+
 Resque.redis = Redis.new(redis_conf)

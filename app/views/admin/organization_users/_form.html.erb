@@ -151,7 +151,7 @@
         <%= f.text_field :api_key, :class => "Form-input Form-input--med is-disabled", :readonly => true %>
       </div>
       <div class="Form-rowInfo">
-        <a class="js-renewOrgUserApiKey" data-username="<%= @user.username %>" data-cdb-current_username="<%= current_user.username %>" href="#">Renew API key</a>
+        <a class="js-regenerateOrgUserApiKey" data-username="<%= @user.username %>" data-current_username="<%= current_user.username %>" href="#">Regenerate API key</a>
       </div>
     </div>
   <% end %>
@@ -177,14 +177,6 @@
   </div>
 
 <% end %>
-
-<div style="display: none">
-  <%= form_for @user, url: CartoDB.url(self, 'regenerate_organization_user_api_key', {id: @user.username}, current_user), :class =>'Form', method: 'POST' do |f| %>
-      <button class="js-regenerateOrganizationUserApiKey">
-        <span>Request a new API key for this user</span>
-      </button>
-  <% end %>
-</div>
 
 <script type="text/javascript">
   <% if !@user.new? %>

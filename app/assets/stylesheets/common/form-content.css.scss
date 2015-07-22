@@ -46,6 +46,9 @@ $sLabel-width: 140px;
   @include justify-content(flex-start, start);
   padding: 10px 0;
 }
+.Form-title + .Form-row {
+  padding-top: 0;
+}
 .Form-row.Form-row--centered {
   @include justify-content(center);
 }

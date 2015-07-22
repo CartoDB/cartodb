@@ -4,6 +4,7 @@ require_relative '../../services/table-geocoder/lib/exceptions'
 require_relative '../../services/geocoder/lib/geocoder_config'
 require_relative '../../lib/cartodb/metrics'
 require_relative '../../lib/cartodb/mixpanel'
+require_relative 'log'
 
 class Geocoding < Sequel::Model
 
@@ -26,6 +27,7 @@ class Geocoding < Sequel::Model
 
   attr_reader :table_geocoder
   attr_reader :started_at, :finished_at
+  attr_reader :log
 
   def self.get_geocoding_calls(dataset, date_from, date_to)
     dataset.where(kind: 'high-resolution').where('geocodings.created_at >= ? and geocodings.created_at <= ?', date_from, date_to + 1.days).sum("processed_rows + cache_hits".lit).to_i
@@ -292,11 +294,30 @@ class Geocoding < Sequel::Model
     payload
   end
 
+  def log
+    @log ||= instantiate_log
+  end
+
 
   private
 
   def table_service
     @table_service ||= Table.new(user_table: user_table) if user_table.present?
+  end
+
+  def instantiate_log
+    if self.log_id
+      @log = CartoDB::Log.where(id: log_id).first
+    else
+      @log = CartoDB::Log.new({
+          type: CartoDB::Log::TYPE_GEOCODING,
+          user_id: user.id
+        })
+      @log.store
+      self.log_id = @log.id
+      self.save
+    end
+    @log
   end
 
 end

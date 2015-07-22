@@ -34,6 +34,9 @@ WORKING_SPECS_1 = \
   spec/lib/central_spec.rb \
   spec/lib/carto/http/client_spec.rb \
 	spec/helpers/uuidhelper_spec.rb \
+  $(NULL)
+
+WORKING_SPECS_2 = \
   services/importer/spec/acceptance/geojson_spec.rb \
   services/importer/spec/acceptance/gpx_spec.rb \
   services/importer/spec/acceptance/kml_spec.rb \
@@ -181,6 +184,8 @@ endif
 # TODO: Ongoing removal of groups, that's the reason of holes in numbering
 check-1:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_1)
+check-2:
+	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_2)
 check-4:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_4)
 check-7:
@@ -190,7 +195,7 @@ check-9:
 check-carto-db-class:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_carto_db_class)
 
-check-prepared: check-1 check-4 check-7 check-9 check-carto-db-class
+check-prepared: check-1 check-2 check-4 check-7 check-9 check-carto-db-class
 
 check: prepare-test-db check-prepared
 check-frontend:

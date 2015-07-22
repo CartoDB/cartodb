@@ -24,7 +24,7 @@
         <%= csrf_meta_tags %>
 
         <div class="Form-title">
-          <p class="Form-titleText">Edit your company settings</p>
+          <p class="Form-titleText">Edit your organization settings</p>
         </div>
 
         <div class="Form-row">
@@ -99,6 +99,18 @@
           </div>
           <div class="Form-rowInfo">
             <p class="Form-rowInfoText">Moderate the comments in your maps</p>
+          </div>
+        </div>
+
+        <div class="Form-row">
+          <div class="Form-rowLabel">
+            <label class="Form-label">Users API Key</label>
+          </div>
+          <div class="Form-rowData">
+            <a class="js-renewOrgUsersApiKey" data-current_username="<%= current_user.username %>" href="#">Renew all API keys</a>
+          </div>
+          <div class="Form-rowInfo">
+            <p class="Form-rowInfoText">This involves all your organization users API keys</p>
           </div>
         </div>
 
@@ -201,20 +213,6 @@
           <%= button_tag(type: 'submit', class: 'Button Button--main') do %>
             <% content_tag(:span, 'Save changes') %>
           <% end %>
-        </div>
-      <% end %>
-
-      <%= form_for @organization, url: CartoDB.url(self, 'regenerate_organization_users_api_key', {}, current_user), :class =>'Form', method: 'POST' do |f| %>
-        <div class="Form-title">
-          <p class="Form-titleText">Company users API key management</p>
-        </div>
-
-        <div class="Form-footer">
-          <p class="Form-footerText"></p>
-            <button class="Button Button--main js-regenerateOrganizationUsersApiKey">
-              <span>Request a new API key all users</span>
-            </button>
-          </p>
         </div>
       <% end %>
 

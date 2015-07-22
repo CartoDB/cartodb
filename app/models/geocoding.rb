@@ -82,7 +82,8 @@ class Geocoding < Sequel::Model
                                                           kind: kind,
                                                           max_rows: max_geocodable_rows,
                                                           country_column: country_column,
-                                                          region_column: region_column)
+                                                          region_column: region_column,
+                                                          log: self.log)
       rescue => e
         @table_geocoder = nil
         raise e

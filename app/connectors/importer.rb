@@ -110,9 +110,22 @@ module CartoDB
         end
         rename_attempts = rename_attempts + 1
 
+        byebug
         if self.data_import
           user_id = self.data_import.user_id
-          raise "#{new_name} already registered for #{user_id}" if exists_table_for_user_id(new_name, user_id)
+          if exists_user_table_for_user_id(new_name, user_id)
+            # Since get_valid_table_name should only return nonexisting table names (with a retry limit)
+            # this is likely caused by a table deletion, so we run ghost tables to cleanup and retry
+            if rename_attempts == 1
+              User.where(id: user_id).link_ghost_tables
+
+              if exists_user_table_for_user_id(new_name, user_id)
+                raise "Existing #{new_name} already registered for #{user_id}. Running ghost tables did not help."
+              end
+            else
+              raise "Existing #{new_name} already registered for #{user_id}"
+            end
+          end
         end
 
         database.execute(%Q{
@@ -179,7 +192,7 @@ module CartoDB
 
       private
 
-      def exists_table_for_user_id(table_name, user_id)
+      def exists_user_table_for_user_id(table_name, user_id)
         !Carto::UserTable.where(name: table_name, user_id: user_id).first.nil?
       end
 

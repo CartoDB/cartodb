@@ -1,6 +1,6 @@
 # coding: UTF-8
 
-class UserNotifications < Sequel::Model
+class UserNotification < Sequel::Model
   include CartoDB::MiniSequel
 
   many_to_one :user

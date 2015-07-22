@@ -9,6 +9,7 @@ class ImportMailer < ActionMailer::Base
     @subject = set_subject
     @first_table = first_imported_table.nil? ? first_table : first_imported_table
     @link = first_imported_table.nil? ? "#{user.public_url}#{CartoDB.path(self, 'tables_index')}" : "#{user.public_url}#{CartoDB.path(self, 'public_tables_show', { id: @first_table['name'] })}"
+    @unsubscribe_link = generate_unsubscribe_link(user, Carto::Notification::DATA_IMPORT_FINISHED_NOTIFICATION)
 
     mail :to => user.email,
          :subject => @subject
@@ -32,6 +33,11 @@ class ImportMailer < ActionMailer::Base
     end
 
     subject
+  end
+
+  def generate_unsubscribe_link(user, notification_type)
+    hash = Carto::UserNotification.generate_unsubscribe_hash(user, notification_type)
+    return "#{user.public_url}#{CartoDB.path(self, 'notifications_unsubscribe', { notification_hash: hash })}"
   end
 
 end

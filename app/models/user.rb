@@ -45,7 +45,7 @@ class User < Sequel::Model
   }
 
   one_to_many :feature_flags_user
-  one_to_many :user_notifications, class: ::UserNotifications
+  one_to_many :user_notifications, class: ::UserNotification
 
   # Sequel setup & plugins
   plugin :association_dependencies, :client_application => :destroy, :synchronization_oauths => :destroy, :feature_flags_user => :destroy
@@ -824,8 +824,8 @@ class User < Sequel::Model
   end
 
   def subscribe_to_notifications
-    Carto::UserNotifications.notifications_type.each { |notification|
-      user_notification = Carto::UserNotifications.new
+    Carto::Notification.types.each { |notification|
+      user_notification = Carto::UserNotification.new
       user_notification.user_id = self.id
       user_notification.notification_id = notification
       user_notification.save

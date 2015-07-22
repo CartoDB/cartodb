@@ -82,6 +82,7 @@
 // Step selected or selectable
 .CreateDialog-headerStep.is-selected,
 .CreateDialog-headerStep.is-selectable:hover {
+  color: $cIcons-active;
   .Dialog-headerIcon { border-color: $cIcons-active }
   .iconFont { color: $cIcons-active }
   .Dialog-headerText,
@@ -89,7 +90,7 @@
     color: $cTypography-paragraphs;
   }
   .Dialog-headerIconBadge {
-    border-color: $cHighlight-main;
+    border-color: $cIcons-active;
     color: $cHighlight-positive;
   }
 }

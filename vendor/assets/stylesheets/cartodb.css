@@ -3468,39 +3468,57 @@ div.cartodb-timeslider p {
 
 
 /* HELVETICA */
+.cartodb-overlay.overlay-annotation .content > .text,
 .cartodb-overlay.overlay-text .content > .text { font-family: 'Helvetica Neue', Helvetica, sans-serif; font-weight: 400; }
+.cartodb-overlay.overlay-annotation .content > .text strong,
 .cartodb-overlay.overlay-text .content > .text strong { font-family: 'Helvetica Neue', Helvetica, sans-serif; font-weight: 700; }
 
 /* DROID */
+.cartodb-overlay.overlay-annotation.droid .content > .text,
 .cartodb-overlay.overlay-text.droid .content > .text { font-family: 'Droid Sans', serif; font-weight: 400; }
+.cartodb-overlay.overlay-annotation.droid .content > .text strong,
 .cartodb-overlay.overlay-text.droid .content > .text strong { font-family: 'Droid Sans', Helvetica, sans-serif; font-weight: 700; }
 
 /* ROBOTO */
+.cartodb-overlay.overlay-annotation.roboto .content > .text,
 .cartodb-overlay.overlay-text.roboto .content > .text { font-family: 'Roboto Slab', serif; font-weight: 400; }
+.cartodb-overlay.overlay-annotation.roboto .content > .text strong,
 .cartodb-overlay.overlay-text.roboto .content > .text strong { font-family: 'Roboto Slab', serif; font-weight: 700; }
 
 /* VOLLKORN */
+.cartodb-overlay.overlay-annotation.vollkorn .content > .text,
 .cartodb-overlay.overlay-text.vollkorn .content > .text { font-family: 'Vollkorn', serif; font-weight: 400; }
+.cartodb-overlay.overlay-annotation.vollkorn .content > .text strong,
 .cartodb-overlay.overlay-text.vollkorn .content > .text strong { font-family: 'Vollkorn', serif; font-weight: 700; }
 
 /* OPEN SANS */
+.cartodb-overlay.overlay-annotation.open_sans .content > .text,
 .cartodb-overlay.overlay-text.open_sans .content > .text { font-family: 'Open Sans', sans-serif; font-weight: 400; }
+.cartodb-overlay.overlay-annotation.open_sans .content > .text strong,
 .cartodb-overlay.overlay-text.open_sans .content > .text strong { font-family: 'Open Sans', sans-serif; font-weight: 700; }
 
 /* LATO */
+.cartodb-overlay.overlay-annotation.lato .content > .text,
 .cartodb-overlay.overlay-text.lato .content > .text { font-family: 'Lato', sans-serif; font-weight: 400;}
+.cartodb-overlay.overlay-annotation.lato .content > .text strong,
 .cartodb-overlay.overlay-text.lato .content > .text strong { font-family: 'Lato', sans-serif; font-weight: 700; }
 
 /* GRADUATE */
+.cartodb-overlay.overlay-annotation.graduate .content > .text,
 .cartodb-overlay.overlay-text.graduate .content > .text { font-family: 'Graduate', sans-serif; font-weight: 400; }
+.cartodb-overlay.overlay-annotation.graduate .content > .text strong,
 .cartodb-overlay.overlay-text.graduate .content > .text strong { font-family: 'Graduate', sans-serif; font-weight: 400; }
 
 /* OLD STANDARD TT */
+.cartodb-overlay.overlay-annotation.old_standard_tt .content > .text,
 .cartodb-overlay.overlay-text.old_standard_tt .content > .text { font-family: 'Old Standard TT', sans-serif; font-weight: 400; }
+.cartodb-overlay.overlay-annotation.old_standard_tt .content > .text strong,
 .cartodb-overlay.overlay-text.old_standard_tt .content > .text strong { font-family: 'Old Standard TT', sans-serif; font-weight: 700; }
 
 /* GRAVITAS ONE */
+.cartodb-overlay.overlay-annotation.gravitas_one .content > .text,
 .cartodb-overlay.overlay-text.gravitas_one .content > .text { font-family: 'Gravitas One', sans-serif; font-weight: 400; }
+.cartodb-overlay.overlay-annotation.gravitas_one .content > .text strong,
 .cartodb-overlay.overlay-text.gravitas_one .content > .text strong { font-family: 'Gravitas One', sans-serif; font-weight: 400; }
 
 .cartodb-header .cartodb-slides-controller { background: none; }

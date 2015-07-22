@@ -151,7 +151,7 @@
         <%= f.text_field :api_key, :class => "Form-input Form-input--med is-disabled", :readonly => true %>
       </div>
       <div class="Form-rowInfo">
-        <button class="OrganizationUser-renewApiKeyLink" data-cdb-username="<%= @user.username %>" data-cdb-current_viewer_username="<%= current_user.username %>">Renew API key</button>
+        <button class="OrganizationUser-renewApiKeyLink" data-username="<%= @user.username %>" data-cdb-current_username="<%= current_user.username %>">Renew API key</button>
       </div>
     </div>
   <% end %>

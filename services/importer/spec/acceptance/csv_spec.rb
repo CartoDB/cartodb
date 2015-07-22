@@ -198,6 +198,19 @@ describe 'csv regression tests' do
     runner.results.first.error_code.should eq CartoDB::Importer2::ERRORS_MAP[TooManyColumnsError]
   end
 
+  it 'errors after created temporary table should clean the table' do
+    log         = CartoDB::Importer2::Doubles::Log.new
+    job         = Job.new({ logger: log, pg_options: @pg_options })
+    runner = runner_with_fixture('too_many_columns.csv', job)
+    runner.run
+
+    table_exists = @db.execute(%Q{SELECT 1
+                    FROM   information_schema.tables
+                    WHERE  table_schema = '#{job.schema}'
+                    AND    table_name = '#{job.table_name}'})
+    table_exists.should be 0
+  end
+
   it 'displays a specific error message for a file with 10000 columns' do
     runner = runner_with_fixture('10000_columns.csv')
     runner.run
@@ -212,14 +225,15 @@ describe 'csv regression tests' do
     }].first
   end #sample_for
 
-  def runner_with_fixture(file)
+  def runner_with_fixture(file, job=nil)
     filepath = path_to(file)
     downloader = Downloader.new(filepath)
     Runner.new({
                  pg: @pg_options,
                  downloader: downloader,
                  log: CartoDB::Importer2::Doubles::Log.new,
-                 user: CartoDB::Importer2::Doubles::User.new
+                 user: CartoDB::Importer2::Doubles::User.new,
+                 job: job
                })
   end
 

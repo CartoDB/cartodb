@@ -233,6 +233,7 @@ module CartoDB
           end
 
           log.append "Starting import for #{@downloader.source_file.fullpath}"
+          log.store   # Checkpoint-save
 
           # Leaving this limit check as if a compressed source weights too much we avoid even decompressing it
           @importer_stats.timing('file_size_limit_check') do
@@ -251,16 +252,13 @@ module CartoDB
             unpacker.source_files.each_with_index { |source_file, index|
 
               next if (index >= MAX_TABLES_PER_IMPORT)
-
               @job.new_table_name if (index > 0)
 
-              # TODO: Move this stats inside import, for streaming scenarios, or differentiate
+              log.store   # Checkpoint-save
               log.append "Filename: #{source_file.fullpath} Size (bytes): #{source_file.size}"
-              @stats << {
-                type: source_file.extension,
-                size: source_file.size
-              }
-              import(source_file, @downloader)
+              import_stats = execute_import(source_file, @downloader)
+              @stats << import_stats
+
             }
           end
 
@@ -277,6 +275,8 @@ module CartoDB
         # [ {:id, :title} ]
         @downloader.item_metadata[:subresources].each_with_index { |subresource, index|
           @job.new_table_name if index > 0
+
+          log.store   # Checkpoint-save
 
           @importer_stats.timing('subresource') do
             datasource = nil
@@ -300,6 +300,7 @@ module CartoDB
 
             @importer_stats.timing('quota_check') do
               log.append "Starting import for #{subres_downloader.source_file.fullpath}"
+              log.store   # Checkpoint-save
               raise_if_over_storage_quota(subres_downloader.source_file)
             end
 
@@ -307,12 +308,8 @@ module CartoDB
               tracker.call('unpacking')
               source_file = subres_downloader.source_file
               log.append "Filename: #{source_file.fullpath} Size (bytes): #{source_file.size}"
-              @stats << {
-                type: source_file.extension,
-                size: source_file.size
-              }
-
-              import(source_file, subres_downloader)
+              import_stats =  execute_import(source_file, subres_downloader)
+              @stats << import_stats
             end
 
             @importer_stats.timing('cleanup') do
@@ -320,6 +317,22 @@ module CartoDB
             end
           end
         }
+      end
+
+      def execute_import(source_file, downloader)
+        import_stats = {}
+        begin
+          import_stats[:type] = source_file.extension
+          import_stats[:size] = source_file.size
+
+          import(source_file, downloader)
+
+          import_stats[:file_rows] = @job.source_file_rows.nil? ? nil : @job.source_file_rows
+          import_stats[:imported_rows] = @job.imported_rows
+          import_stats[:error_percent] = @job.import_error_percent
+        ensure
+          return import_stats
+        end
       end
 
       def result_for(job, source_file, table_names, support_table_names=[], exception_klass=nil)

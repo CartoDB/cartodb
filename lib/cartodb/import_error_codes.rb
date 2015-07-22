@@ -7,6 +7,7 @@ module CartoDB
   ERROR_SOURCE_EXTERNAL = 'external'
 
 # @see services/importer/lib/importer/exceptions.rb For mapping between exceptions and errors
+# @see https://github.com/CartoDB/docs/edit/master/cartodb-editor.md Whenever you add a relevant error, add there please
   IMPORTER_ERROR_CODES = {
     1 => {
       title: 'Install error',

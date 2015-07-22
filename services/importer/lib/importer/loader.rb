@@ -68,6 +68,12 @@ module CartoDB
 
           self
         end
+      rescue => exception
+        begin
+          job.delete_job_table
+        ensure
+          raise exception
+        end
       end
 
       def streamed_run_init
@@ -216,7 +222,7 @@ module CartoDB
       private
 
       attr_writer     :ogr2ogr, :georeferencer
-      attr_accessor   :job, :layer, :imported_rows, :total_rows
+      attr_accessor   :job, :layer
 
       # @throws DuplicatedColumnError
       # @throws InvalidGeoJSONError
@@ -228,21 +234,14 @@ module CartoDB
       def run_ogr2ogr(append_mode=false)
         ogr2ogr.run(append_mode)
 
-        self.total_rows = get_file_rows
-        self.imported_rows = @job.rows_number
-
-        if !total_rows.nil? && !imported_rows.nil?
-          #TODO Right now is only calculating SHP files but it'll great
-          #to use for all the file types
-          update_error_percent
-        end
+        @job.source_file_rows = get_source_file_rows
+        @job.imported_rows = get_imported_rows
 
         # too verbose in append mode
         unless append_mode
           job.log "ogr2ogr call:            #{ogr2ogr.command}"
           job.log "ogr2ogr output:          #{ogr2ogr.command_output}"
           job.log "ogr2ogr exit code:       #{ogr2ogr.exit_code}"
-          job.log "ogr2ogr imported rows:   #{imported_rows}"
         end
 
         raise DuplicatedColumnError.new(job.logger) if ogr2ogr.command_output =~ /column (.*) of relation (.*) already exists/
@@ -253,7 +252,7 @@ module CartoDB
           raise StatementTimeoutError.new(ogr2ogr.command_output, ERRORS_MAP[CartoDB::Importer2::StatementTimeoutError])
         end
         if (ogr2ogr.command_output =~ /has no equivalent in encoding/ || ogr2ogr.command_output =~ /invalid byte sequence for encoding/) &&
-            imported_rows == 0
+            @job.imported_rows == 0
           raise RowsEncodingColumnError.new(ogr2ogr.command_output)
         end
 
@@ -277,11 +276,16 @@ module CartoDB
         end
       end
 
-      def update_error_percent
-        error_percent = ((imported_rows - total_rows).abs.to_f/total_rows)*100
+      def get_imported_rows
+        #Maybe we could use a cheaper solution
+        rows = @job.db.fetch(%Q{SELECT COUNT(1) as num_rows FROM #{SCHEMA}.#{@job.table_name}}).first
+        return rows.nil? ? nil : rows.fetch(:num_rows, nil)
+      rescue
+        # If there is an import error and try to get the imported rows
+        return nil
       end
 
-      def get_file_rows
+      def get_source_file_rows
         if is_shp?
           return ShpHelper.new(@source_file.fullpath).total_rows
         else

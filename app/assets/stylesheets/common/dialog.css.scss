@@ -155,7 +155,9 @@ body.is-inDialog {
   height: $sIcon-layout;
   border: 1px solid $cStructure-softLine;
   border-radius: $sIcon-borderRadius;
-  margin: 0 auto $sMargin-element auto; /* center icon */
+  margin-left: auto; // auto to center it in the container
+  margin-right: auto;
+  margin-bottom: $sMargin-elementInline;
   font-size: 22px;
   line-height: 44px;
 }

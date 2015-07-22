@@ -9,8 +9,8 @@
 
 }
 .FeatureData .Dialog-header {
-  height: 253px;
-  min-height: 253px;
+  height: 245px;
+  min-height: 245px;
   padding-top: 30px;
   padding-bottom: 0;
 }
@@ -65,7 +65,7 @@
   }
 
   &:before {
-    top: 284px;
+    top: 276px;
     background-color: transparent!important;
     @include background-gradient(rgba(#F9F9F9,1),rgba(#F9F9F9,0));
   }

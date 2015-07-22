@@ -112,15 +112,19 @@ cdb.geo.ui.Annotation = cdb.core.View.extend({
   },
 
   _getStandardPropertyName: function(name) {
-
-    if (!name) return;
-    var parts = name.split("-");
-
-    if (parts.length === 1) return name;
-    else if (parts.length === 2) {
-      return parts[0] + parts[1].slice(0, 1).toUpperCase() + parts[1].slice(1);
+    if (!name) {
+      return;
     }
 
+    var parts = name.split("-");
+
+    if (parts.length === 1) {
+      return name;
+    } else {
+      return parts[0] + _.map(parts.slice(1), function(l) { 
+        return l.slice(0,1).toUpperCase() + l.slice(1);
+      }).join("");
+    }
   },
 
   _cleanStyleProperties: function(hash) {

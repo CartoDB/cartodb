@@ -5,8 +5,6 @@ require 'active_record'
 module Carto
   class UserNotification < ActiveRecord::Base
 
-      validates :notification_id, inclusion: { in: Carto::Notification.types,
-                                                   message: "%{value} is not a valid notification type" }
       belongs_to :user
 
       # Used to unsubscribe using the link provided in the email
@@ -17,18 +15,21 @@ module Carto
       end
 
       def unsubscribe(hash)
-        if Carto::UserNotification.generate_unsubscribe_hash(self.user, self.notification_id) == hash
-          UserNotification.connection.update_sql("UPDATE user_notifications
-                                                  SET enabled=false
-                                                  WHERE user_id = '#{self.user.id}'
-                                                  AND notification_id = #{self.notification_id}")
+        Carto::Notification.types.each do |type|
+          debugger
+          if Carto::UserNotification.generate_unsubscribe_hash(self.user, type) == hash
+            UserNotification.connection.update_sql("UPDATE user_notifications
+                                                    SET #{type}=false
+                                                    WHERE user_id = '#{self.user.id}'")
+            break
+          end
         end
       end
 
       private
 
-      def self.generate_hash_string(user, notification_id)
-        return user.username + ":" + user.email + ":" + notification_id.to_s
+      def self.generate_hash_string(user, notification_type)
+        return user.username + ":" + user.email + ":" + notification_type.to_s
       end
   end
 end

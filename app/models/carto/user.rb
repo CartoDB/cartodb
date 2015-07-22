@@ -114,9 +114,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def unsubscribe_notification(hash)
-    self.user_notifications.each{ |n|
-      n.unsubscribe(hash)
-    }
+    self.user_notifications.first.unsubscribe(hash)
   end
 
   def has_feature_flag?(feature_flag_name)

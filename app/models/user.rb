@@ -824,19 +824,14 @@ class User < Sequel::Model
   end
 
   def subscribe_to_notifications
-    Carto::Notification.types.each { |notification|
-      user_notification = Carto::UserNotification.new
-      user_notification.user_id = self.id
-      user_notification.notification_id = notification
-      user_notification.save
-    }
+    user_notification = Carto::UserNotification.new
+    user_notification.user_id = self.id
+    user_notification.save
   end
 
-  def is_subscribed_to?(notification_id)
-    subscription = self.user_notifications.select{|n| 
-      n.notification_id == notification_id && n.enabled == true
-    }
-    return self.has_feature_flag?("notifications_management") && !subscription.empty?
+  def is_subscribed_to?(notification_type)
+    subscribed = self.user_notifications.first.send(notification_type)
+    return self.has_feature_flag?("notifications_management") && subscribed
   end
 
   # Retrive list of user tables from database catalogue

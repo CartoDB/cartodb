@@ -1,0 +1,77 @@
+@import "../variables/mixins";
+@import "../variables/sizes";
+@import "../variables/colors";
+
+// A Puzzle is a set of jigsaw pieces that fit together in one way or another
+.Puzzle {
+  @include display-flex();
+  @include justify-content(flex-start, justify);
+  @include align-items(center, center);
+
+  & > .Puzzle-jigsaw:not(:first-child):not(:last-child) {
+    border-radius: 0;
+    border-left: 0;
+    border-right: 0;
+    margin-left: -1px;
+    margin-right: -1px;
+  }
+}
+.Puzzle-jigsaw {
+  position: relative;
+  box-sizing: border-box;
+  min-width: 100px;
+  min-height: 34px;
+  padding: 8px;
+  border: 1px solid $cStructure-mainLine;
+  border-radius: 3px;
+  font-size: 14px;
+  line-height: 1;
+
+  &.is-placeholder,
+  &.is-placeholder.fit-left:before,
+  &.is-placeholder.fit-right:after {
+    border-style: dashed;
+  }
+
+  &.fit-left:before,
+  &.fit-left:after,
+  &.fit-right:before,
+  &.fit-right:after {
+    content: '';
+    position: absolute;
+    top: 10px;
+    display: block;
+    width: 10px;
+    height: 10px;
+    border: 1px solid $cStructure-mainLine;
+    background-color: $cStructure-grayBkg;
+  }
+
+  &.fit-left:before,
+  &.fit-right:before {
+    border-radius: 50px;
+    z-index: 2;
+  }
+
+  &.fit-left:after,
+  &.fit-right:after {
+    height: 12px;
+    border: 0;
+    z-index: 3;
+  }
+
+  &.fit-left:before { left: -7px }
+  &.fit-left:after { left: 0 }
+
+  &.fit-right:before { right: -7px }
+  &.fit-right:after { right: 0 }
+}
+.Puzzle-jigsaw--inset {
+  min-width: 50px;
+  background-color: rgba(#ddd, 0.2);
+}
+.Puzzle-jigsawIcon {
+  max-height: 13px; // for content not to expand it's size
+  margin-top: -2px; // vertically center, since not square
+  color: #ccc;
+}

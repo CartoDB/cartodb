@@ -42,7 +42,7 @@
 
         <div class="Form-row Form-row--spaced">
           <div class="Form-rowLabel">
-            <label class="Form-label">Example write</label>
+            <label class="Form-label Form-label--verticalAlignTop">Example write</label>
           </div>
           <div class="Form-rowPreview">
             <p class="Form-text Form-text--preview">https://<%= current_user.username %>.<%= CartoDB.account_host %>/api/v2/sql?q=INSERT INTO table_name (the_geom, observation) VALUES (ST_GeomFromText(’POINT(-71.2 42.5)’, 4326),'rare bird spotted')&api_key=<%= current_user.api_key %></p>
@@ -51,7 +51,7 @@
 
         <div class="Form-row Form-row--spaced">
           <div class="Form-rowLabel">
-            <label class="Form-label">Example read private</label>
+            <label class="Form-label Form-label--verticalAlignTop">Example read private</label>
           </div>
           <div class="Form-rowPreview">
             <p class="Form-text Form-text--preview">https://<%= current_user.username %>.<%= CartoDB.account_host %>/api/v2/sql?q=SELECT * FROM private_table&api_key=<%= current_user.api_key %></p>

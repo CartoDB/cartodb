@@ -161,10 +161,6 @@ body.is-inDialog {
   font-size: 22px;
   line-height: 44px;
 }
-.Dialog-headerIcon--main {
-  color: $cHighlight-main;
-  border-color: $cHighlight-main;
-}
 .Dialog-headerIcon--neutral {
   // TODO: !important to not be overrided by .CreateDialog-headerIcon overriding stuff over here :(
   border-color: $cIcons-active !important;

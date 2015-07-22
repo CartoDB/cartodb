@@ -31,6 +31,10 @@ CartoDB::Application.routes.draw do
   match '(/user/:user_domain)(/u/:user_domain)/oauth/access_token'   => 'oauth#access_token',  as: :access_token
   get   '(/user/:user_domain)(/u/:user_domain)/oauth/identity'       => 'sessions#show',       as: :oauth_show_sessions
 
+  # Notifications management
+  get   '(/user/:user_domain)(/u/:user_domain)/notifications/:notification_hash/unsubscribe' => 'notifications#unsubscribe',  as: :notifications_unsubscribe, defaults: { dont_rewrite: true }
+
+  # Google plus
   get '/google_plus' => 'google_plus#google_plus', as: :google_plus
   post '/google/signup' => 'google_plus#google_signup', as: :google_plus_signup
 

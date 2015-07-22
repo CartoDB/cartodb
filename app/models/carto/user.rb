@@ -18,6 +18,7 @@ class Carto::User < ActiveRecord::Base
   has_many :layers, :through => :layers_user
   belongs_to :organization, inverse_of: :users
   has_many :feature_flags_user, dependent: :destroy
+  has_many :user_notifications, class_name: Carto::UserNotifications, dependent: :destroy
   has_many :assets, inverse_of: :user
   has_many :data_imports, inverse_of: :user
   has_many :geocodings, inverse_of: :user
@@ -110,6 +111,12 @@ class Carto::User < ActiveRecord::Base
     @feature_flag_names ||= (self.feature_flags_user
                                  .map { |ff| ff.feature_flag.name } + FeatureFlag.where(restricted: false)
                                                                                  .map { |ff| ff.name }).uniq.sort
+  end
+
+  def unsubscribe_notification(hash)
+    self.user_notifications.each{ |n|
+      n.unsubscribe(hash)
+    }
   end
 
   def has_feature_flag?(feature_flag_name)

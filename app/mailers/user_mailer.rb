@@ -68,6 +68,7 @@ class UserMailer < ActionMailer::Base
     @greetings = ["congrats", "congratulations", "cool", "awesome", "hooray", "nice", "wow", "rad", "bravo", "yay", "boom"]
     @link = "#{@user.public_url}#{CartoDB.path(self, 'public_visualizations_show_map', { id: visualization.id })}"
     @viewer_maps_link = "#{viewer_user.public_url}#{CartoDB.path(self, 'public_maps_home')}"
+    @unsubscribe_link = generate_unsubscribe_link(Carto::UserNotifications::LIKE_NOTIFICATION)
     mail :to => @user.email,
          :subject => @subject
   end
@@ -81,8 +82,16 @@ class UserMailer < ActionMailer::Base
     @greetings = ["congrats", "congratulations", "cool", "awesome", "hooray", "nice", "wow", "rad", "bravo", "yay", "boom"]
     @link = "#{@user.public_url}#{CartoDB.path(self, 'public_visualizations_show', { id: canonical_visualization.id })}"
     @viewer_datasets_link = "#{viewer_user.public_url}#{CartoDB.path(self, 'public_datasets_home')}"
+    @unsubscribe_link = generate_unsubscribe_link(Carto::UserNotifications::LIKE_NOTIFICATION)
     mail :to => @user.email,
          :subject => @subject
+  end
+
+  private
+
+  def generate_unsubscribe_link(notification_type)
+    hash = Carto::UserNotifications.generate_unsubscribe_hash(@user, notification_type)
+    return "#{@user.public_url}#{CartoDB.path(self, 'notifications_unsubscribe', { notification_hash: hash })}"
   end
 
 end

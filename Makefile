@@ -33,10 +33,6 @@ WORKING_SPECS_1 = \
   spec/lib/central_spec.rb \
   spec/lib/carto/http/client_spec.rb \
 	spec/helpers/uuidhelper_spec.rb \
-  $(NULL)
-
-WORKING_SPECS_3 = \
-  spec/rspec_configuration.rb \
   services/importer/spec/acceptance/geojson_spec.rb \
   services/importer/spec/acceptance/gpx_spec.rb \
   services/importer/spec/acceptance/kml_spec.rb \
@@ -96,10 +92,6 @@ WORKING_SPECS_4 = \
   services/importer/spec/unit/url_translator/osm2_spec.rb \
   services/importer/spec/unit/mail_notifier_spec.rb \
   services/relocator/spec/relocator_spec.rb \
-  $(NULL)
-
-WORKING_SPECS_6 = \
-  spec/rspec_configuration.rb \
   spec/requests/api/assets_spec.rb \
   spec/requests/api/user_layers_spec.rb \
   spec/requests/api/json/layers_controller_spec.rb \
@@ -126,6 +118,7 @@ WORKING_SPECS_6 = \
 	spec/models/overlay/collection_spec.rb \
   $(NULL)
 
+# TODO: This block also breaks if run alongside other specs, needs checking why
 WORKING_SPECS_7 = \
   spec/rspec_configuration.rb \
 	spec/requests/api/json/geocodings_controller_spec.rb \
@@ -158,10 +151,6 @@ WORKING_SPECS_9 = \
   spec/requests/carto/api/maps_controller_spec.rb \
   spec/requests/api/json/overlays_controller_spec.rb \
   spec/requests/carto/api/overlays_controller_spec.rb \
-  $(NULL)
-  # spec/models/synchronization/collection_spec.rb not working right now \
-
-WORKING_SPECS_10 = \
 	spec/models/carto/user_service_spec.rb \
 	spec/models/carto/user_spec.rb \
 	spec/models/carto/user_creation_spec.rb \
@@ -172,6 +161,7 @@ WORKING_SPECS_10 = \
 	services/geocoder/spec/hires_geocoder_factory_spec.rb \
 	services/table-geocoder/spec/geocoder_cache_spec.rb \
   $(NULL)
+  # spec/models/synchronization/collection_spec.rb not working right now \
 
 # This class must be tested isolated as pollutes namespace
 WORKING_SPECS_carto_db_class = \
@@ -190,22 +180,16 @@ endif
 # TODO: Ongoing removal of groups, that's the reason of holes in numbering
 check-1:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_1)
-check-3:
-	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_3)
 check-4:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_4)
-check-6:
-	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_6)
 check-7:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_7)
 check-9:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_9)
-check-10:
-	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_10)
 check-carto-db-class:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_carto_db_class)
 
-check-prepared: check-1 check-3 check-4 check-6 check-7 check-9 check-10 check-carto-db-class
+check-prepared: check-1 check-4 check-7 check-9 check-carto-db-class
 
 check: prepare-test-db check-prepared
 check-frontend:

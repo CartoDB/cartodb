@@ -1,4 +1,5 @@
 # encoding: UTF-8'
+require 'socket'
 require_relative '../../services/table-geocoder/lib/table_geocoder_factory'
 require_relative '../../services/table-geocoder/lib/exceptions'
 require_relative '../../services/geocoder/lib/geocoder_config'
@@ -108,6 +109,7 @@ class Geocoding < Sequel::Model
 
   # INFO: this method shall always be called from a queue processor
   def run!
+    log.append "Running geocoding job on server #{Socket.gethostname} with PID: #{Process.pid}"
     if self.force_all_rows == true
       table_geocoder.reset_cartodb_georef_status
     else
@@ -125,13 +127,17 @@ class Geocoding < Sequel::Model
 
     self.run_geocoding!(processable_rows, rows_geocoded_before)
   rescue => e
+    log.append "Unexpected exception: #{e.to_s}"
+    log.append e.backtrace
     CartoDB.notify_exception(e)
     raise e
   ensure
+    log.store # Make sure the log is stored in DB
     user.reset_pooled_connections
   end
 
   def run_geocoding!(processable_rows, rows_geocoded_before = 0)
+    log.append "run_geocoding!()"
     self.update state: 'started', processable_rows: processable_rows
     @started_at = Time.now
 
@@ -154,6 +160,7 @@ class Geocoding < Sequel::Model
     @finished_at = Time.now
     self.batched = table_geocoder.used_batch_request?
     self.update(state: 'finished', real_rows: rows_geocoded_after - rows_geocoded_before, used_credits: calculate_used_credits)
+    log.append "Geocoding finished"
     self.report
   rescue => e
     @finished_at = Time.now

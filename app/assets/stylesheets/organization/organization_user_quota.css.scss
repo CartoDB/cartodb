@@ -51,7 +51,7 @@
   width: 380px;
   color: $cTypography-help;
 }
-.OrganizationUser-quotaInfoLink {
+.OrganizationUser-quotaInfoLink, .OrganizationUser-renewApiKeyLink {
   color: $cTypography-link;
   &:hover {
     text-decoration: underline;

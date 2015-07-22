@@ -45,6 +45,9 @@ RSpec.configure do |config|
   end
 
   config.after(:all) do
+    $user_1.destroy
+    $user_2.destroy
+
     $pool.close_connections!
     Rails::Sequel.connection[
       "SELECT datname FROM pg_database WHERE datistemplate IS FALSE AND datallowconn IS TRUE AND datname like 'cartodb_test_user_%'"

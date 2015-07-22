@@ -142,19 +142,9 @@ shared_context 'users helper' do
   end
 
   before(:all) do
-    username1 = random_username
-    @user1 = create_user(
-      username: username1,
-      email: "#{username1}@example.com",
-      password: 'clientex'
-    )
-
-    username2 = random_username
-    @user2 = create_user(
-      username: username2,
-      email: "#{username2}@example.com",
-      password: 'clientex2'
-    )
+    # TODO: Remove this and either all use the global instances or create a true general context with sample users
+    @user1 = $user_1
+    @user2 = $user_2
   end
 
   before(:each) do
@@ -166,8 +156,7 @@ shared_context 'users helper' do
   after(:all) do
     delete_user_data @user1 if @user1
     delete_user_data @user2 if @user2
-    @user1.destroy if @user1
-    @user2.destroy if @user2
+    # User destruction is handled at spec_helper
   end
 
 end

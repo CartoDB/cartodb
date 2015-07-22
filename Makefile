@@ -96,6 +96,9 @@ WORKING_SPECS_4 = \
   services/importer/spec/unit/url_translator/osm2_spec.rb \
   services/importer/spec/unit/mail_notifier_spec.rb \
   services/relocator/spec/relocator_spec.rb \
+
+WORKING_SPECS_5 = \
+  spec/rspec_configuration.rb \
   spec/requests/api/assets_spec.rb \
   spec/requests/api/user_layers_spec.rb \
   spec/requests/api/json/layers_controller_spec.rb \
@@ -188,6 +191,8 @@ check-2:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_2)
 check-4:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_4)
+check-5:
+	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_5)
 check-7:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_7)
 check-9:
@@ -195,7 +200,7 @@ check-9:
 check-carto-db-class:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_carto_db_class)
 
-check-prepared: check-1 check-2 check-4 check-7 check-9 check-carto-db-class
+check-prepared: check-1 check-2 check-4 check-5 check-7 check-9 check-carto-db-class
 
 check: prepare-test-db check-prepared
 check-frontend:

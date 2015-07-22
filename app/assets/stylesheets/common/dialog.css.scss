@@ -189,9 +189,9 @@ body.is-inDialog {
   @include animation(fade-and-bounce-up 0.6s 350ms ease-in-out backwards);
 }
 .Dialog-headerTitle {
-  font-size: $sFontSize-largest;
+  line-height: $sLineHeight-larger;
+  font-size: $sFontSize-larger;
   font-weight: $sFontWeight-normal;
-  line-height: $sLineHeight-largest;
   color: $cTypography-paragraphs;
 }
 .Dialog-headerTitle--error { color: $cHighlight-negative }
@@ -235,7 +235,7 @@ $sStickyHeight: 97px;
 }
 .Dialog-header--expanded {
   @include flex-grow(1);
-  min-height: 117px; // required to have its content visible, actual height is more like 17Xpx
+  min-height: 100px; // required to have its content visible, actual height is more like 17Xpx
 }
 .Dialog-expandedSubContent {
   @include flex-grow(100);

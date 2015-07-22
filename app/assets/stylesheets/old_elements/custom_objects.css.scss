@@ -328,11 +328,11 @@
     min-width:20px;
     width:auto!important;
     padding:2px 19px 2px 4px;
-    height:15px;
+    line-height: 15px;
     margin:0;
     border:1px solid #9E9E9E;
     @include border-radius(3px);
-    @include background(linear-gradient(#FFF,#F2F2F2));
+    background: #FFF;
 
     &.with-label {
       margin: 0;

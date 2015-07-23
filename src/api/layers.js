@@ -96,12 +96,21 @@
         if(visData.layers.length < 2) {
           promise.trigger('error', "visualization file does not contain layer info");
         }
-        var idx = options.layerIndex === undefined ? 1: options.layerIndex;
-        if(visData.layers.length <= idx) {
-          promise.trigger('error', 'layerIndex out of bounds');
-          return;
+        var index = options.layerIndex;
+        if (index !== undefined) {
+          if(visData.layers.length <= index) {
+            promise.trigger('error', 'layerIndex out of bounds');
+            return;
+          }
+          layerData = visData.layers[index];
+        } else {
+          var DATA_LAYER_TYPES = ['namedmap', 'layergroup'];
+
+          // Select the first data layer (namedmap or layergroup)
+          layerData = _.find(visData.layers, function(layer){
+            return DATA_LAYER_TYPES.indexOf(layer.type) !== -1;
+          });
         }
-        layerData = visData.layers[idx];
       } else {
         layerData = visData;
       }

@@ -31,10 +31,14 @@ module CartoDB
         @kind                 = arguments.fetch(:kind, '').to_sym
         @batch_size           = (@geometry_type == :point ? 1000 : 10)
         @working_dir          = arguments[:working_dir] || Dir.mktmpdir
-        @geocoding_results = File.join(working_dir, "#{temp_table_name}_results.csv")
+        @geocoding_results = File.join(working_dir, "#{temp_table_name}_results.csv".gsub('"', ''))
         @query_generator = CartoDB::InternalGeocoder::QueryGeneratorFactory.get self
         @log = arguments[:log]
       end # initialize
+
+      def set_log(log)
+        @log = log
+      end
 
       def run
         log.append 'run()'
@@ -62,10 +66,11 @@ module CartoDB
           unless search_terms.size == 0
             sql = @query_generator.dataservices_query(search_terms)
             response = sql_api.fetch(sql, 'csv').gsub(/\A.*/, '').gsub(/^$\n/, '')
+            log.append "Saving results to #{geocoding_results}"
             File.open(geocoding_results, 'a') { |f| f.write(response.force_encoding("UTF-8")) } unless response == "\n"
           end
         end while search_terms.size >= @batch_size
-        @processed_rows = `wc -l #{geocoding_results} 2>&1`.to_i
+        @processed_rows = `wc -l '#{geocoding_results}' 2>&1`.to_i
         geocoding_results
       end # download_results
 

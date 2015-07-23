@@ -1,4 +1,5 @@
 # encoding: utf-8
+require 'open3'
 require_relative '../lib/table_geocoder'
 require_relative 'factories/pg_connection'
 require 'set'
@@ -11,7 +12,12 @@ describe CartoDB::TableGeocoder do
     @db           = conn.connection
     @pg_options   = conn.pg_options
     @table_name   = "ne_10m_populated_places_simple"
-    load_csv path_to("populated_places_short.csv")
+
+    # Avoid issues on some machines if postgres system account can't read fixtures subfolder for the COPY
+    filename = 'populated_places_short.csv'
+    stdout, stderr, status =  Open3.capture3("cp #{path_to(filename)} /tmp/#{filename}")
+    raise if stderr != ''
+    load_csv "/tmp/#{filename}"
   end
 
   after do
@@ -137,7 +143,7 @@ describe CartoDB::TableGeocoder do
     after do
       @tg.send(:drop_temp_table)
     end
-    
+
     it 'loads the Nokia output format to an existing temp table' do
       @tg.stubs(:deflated_results_path).returns(path_to('nokia_output.txt'))
       @tg.send(:import_results_to_temp_table)

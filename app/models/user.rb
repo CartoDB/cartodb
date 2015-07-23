@@ -1873,7 +1873,7 @@ class User < Sequel::Model
         critical = #{varnish_critical}
         timeout = #{varnish_timeout}
         retry = #{varnish_retry}
-        trigger_verbose = varnish_trigger_verbose
+        trigger_verbose = #{varnish_trigger_verbose}
 
         client = GD.get('varnish', None)
 
@@ -1935,7 +1935,7 @@ TRIGGER
         critical = #{varnish_critical}
         timeout = #{varnish_timeout}
         retry = #{varnish_retry}
-        trigger_verbose = varnish_trigger_verbose
+        trigger_verbose = #{varnish_trigger_verbose}
 
         import httplib
 
@@ -1989,7 +1989,7 @@ TRIGGER
       critical = #{invalidation_critical}
       timeout = #{invalidation_timeout}
       retry = #{invalidation_retry}
-      trigger_verbose = invalidation_trigger_verbose
+      trigger_verbose = #{invalidation_trigger_verbose}
 
       client = GD.get('invalidation', None)
 

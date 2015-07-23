@@ -6,11 +6,20 @@ class NotificationsController < ApplicationController
     username = CartoDB.extract_subdomain(request)
     user = Carto::User.where(:username => username).first
     if user.nil?
-      # TODO Send error
-    else
-      ok = user.unsubscribe_notification(params[:notification_hash])
       respond_to do |format|
-        format.html { render 'unsubscribed' }
+        format.html { render 'error' }
+      end
+    else
+      type = Carto::UserNotification.verify_hash(user)
+      if type.nil?
+        respond_to do |format|
+          format.html { render 'error' }
+        end
+      else
+        ok = user.unsubscribe_notification(type)
+        respond_to do |format|
+          format.html { render 'unsubscribed' }
+        end
       end
     end
   end

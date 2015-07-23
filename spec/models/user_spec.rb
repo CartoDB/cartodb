@@ -1,5 +1,8 @@
 # coding: UTF-8
 require_relative '../spec_helper'
+require_relative '../../app/models/carto/user'
+require_relative '../../app/models/carto/user_notification'
+require_relative '../../app/models/carto/notification'
 require_relative 'user_shared_examples'
 
 describe 'refactored behaviour' do
@@ -1591,6 +1594,32 @@ describe User do
       user.purge_redis_vizjson_cache
 
       user.destroy
+    end
+  end
+
+  describe "#notifications" do
+    before(:each) do
+      @user = create_user
+      User.any_instance.stubs(:has_feature_flag?).returns(true)
+    end
+
+    it "When a user is created should be suscribed to notifications" do
+      @user.user_notifications.length.should be 1
+      @user.user_notifications.first.share_table.should be true
+    end
+
+    it "When a user usubscribe from a notification should be put the flag to false" do
+      carto_user = Carto::User.find(@user.id)
+      carto_user.unsubscribe_notification(Carto::Notification::SHARE_TABLE_NOTIFICATION)
+      carto_user.user_notifications.first.share_table.should be false
+    end
+
+    it "When a user is subscribed should return true, if unsubscribed should return false" do
+      carto_user = Carto::User.find(@user.id)
+      @user.is_subscribed_to?(Carto::Notification::SHARE_TABLE_NOTIFICATION).should be true
+      carto_user.unsubscribe_notification(Carto::Notification::SHARE_TABLE_NOTIFICATION)
+      @user.reload
+      @user.is_subscribed_to?(Carto::Notification::SHARE_TABLE_NOTIFICATION).should be false
     end
   end
 

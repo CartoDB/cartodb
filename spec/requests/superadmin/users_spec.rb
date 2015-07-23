@@ -47,7 +47,9 @@ feature "Superadmin's users API" do
       user.id.should == response.body[:id]
       User.authenticate(user.username, "this_is_a_password").should == user
     end
-    User.where(:username => @user_atts[:username]).first.destroy
+    user = User.where(:username => @user_atts[:username]).first
+    user.user_notifications.length.should be 1
+    user.destroy
   end
 
   scenario "user create with crypted_password and salt success" do
@@ -64,7 +66,9 @@ feature "Superadmin's users API" do
       user.id.should == response.body[:id]
       User.authenticate(user.username, "this_is_a_password").should == user
     end
-    User.where(:username => @user_atts[:username]).first.destroy
+    user = User.where(:username => @user_atts[:username]).first
+    user.user_notifications.length.should be 1
+    user.destroy
   end
 
   scenario "user create default account settings" do
@@ -90,7 +94,9 @@ feature "Superadmin's users API" do
       user.private_tables_enabled.should == false
       user.upgraded_at.should.to_s == t.to_s
     end
-    User.where(:username => @user_atts[:username]).first.destroy
+    user = User.where(:username => @user_atts[:username]).first
+    user.user_notifications.length.should be 1
+    user.destroy
   end
 
 

@@ -1,3 +1,4 @@
+require_relative '../rspec_configuration.rb'
 require_relative '../../lib/carto/uuidhelper'
 
 class Carto::UUIDHelperInstance
@@ -35,4 +36,4 @@ describe 'UUIDHelper' do
   end
 
 end
-    
+

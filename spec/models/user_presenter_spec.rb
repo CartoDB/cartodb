@@ -12,9 +12,9 @@ describe Carto::Api::UserPresenter do
     CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
 
     # Non-org user
-    user = create_user({ 
-        email: 'example@carto.com', 
-        username: 'example', 
+    user = create_user({
+        email: 'example@carto.com',
+        username: 'example',
         password: 'example123',
         name: "my example name",
         sync_tables_enabled: true,
@@ -62,9 +62,9 @@ describe Carto::Api::UserPresenter do
 
     # Now org user, organization and another member
 
-    owner = create_user({ 
-        email: 'owner@carto.com', 
-        username: 'owner', 
+    owner = create_user({
+        email: 'owner@carto.com',
+        username: 'owner',
         password: 'owner123',
         name: "owner name",
         sync_tables_enabled: true,
@@ -82,9 +82,9 @@ describe Carto::Api::UserPresenter do
     organization.reload
     owner.reload
 
-    user2 = create_user({ 
-        email: 'example2@carto.com', 
-        username: 'example2', 
+    user2 = create_user({
+        email: 'example2@carto.com',
+        username: 'example2',
         password: 'example123'
       })
 
@@ -94,6 +94,11 @@ describe Carto::Api::UserPresenter do
     organization.reload
 
     compare_data(owner.data, Carto::Api::UserPresenter.new(Carto::User.where(id: owner.id).first).data, true)
+
+    Rails::Sequel.connection.run( %Q{ DELETE FROM geocodings } )
+    Rails::Sequel.connection.run( %Q{ DELETE FROM data_imports } )
+    user.destroy
+    organization.destroy
   end
 
   protected
@@ -101,7 +106,7 @@ describe Carto::Api::UserPresenter do
   def compare_data(old_data, new_data, org_user = false)
     # INFO: new organization presenter now doesn't contain users
     old_data[:organization].delete(:users) if old_data[:organization]
-    
+
     # TODO: This fails at CI server, until there's time to research...
     #new_data.should eq old_data
 
@@ -148,11 +153,11 @@ describe Carto::Api::UserPresenter do
 
     if org_user
       new_data[:organization].keys.should == old_data[:organization].keys
-      
+
       # This is an implicit test of OrganizationPresenter...
       # INFO: we have a weird error sometimes running builds that fails comparing dates despite having equal value...
-      # > Diff:2015-06-23 17:27:02 +0200.==(2015-06-23 17:27:02 +0200) returned false even though the diff between 
-      #   2015-06-23 17:27:02 +0200 and 2015-06-23 17:27:02 +0200 is empty. Check the implementation of 
+      # > Diff:2015-06-23 17:27:02 +0200.==(2015-06-23 17:27:02 +0200) returned false even though the diff between
+      #   2015-06-23 17:27:02 +0200 and 2015-06-23 17:27:02 +0200 is empty. Check the implementation of
       #   2015-06-23 17:27:02 +0200.==.
       new_data[:organization][:created_at].to_s.should == old_data[:organization][:created_at].to_s
       new_data[:organization][:description].should == old_data[:organization][:description]

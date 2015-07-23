@@ -703,11 +703,6 @@ module CartoDB
           repository.store(id, attributes.to_hash)
         end
 
-        # when visualization turns private remove the acl
-        if privacy == PRIVACY_PRIVATE && permission.acl.size > 0 && privacy_changed
-          permission.clear
-        end
-
         save_named_map
 
         if type == TYPE_REMOTE || type == TYPE_CANONICAL

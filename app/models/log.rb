@@ -22,6 +22,14 @@ module CartoDB
     TYPE_DATA_IMPORT     = 'import'
     TYPE_SYNCHRONIZATION = 'sync'
     TYPE_USER_CREATION   = 'user_creation'
+    TYPE_GEOCODING       = 'geocoding'
+
+    SUPPORTED_TYPES = [
+      TYPE_DATA_IMPORT,
+      TYPE_SYNCHRONIZATION,
+      TYPE_USER_CREATION,
+      TYPE_GEOCODING
+    ]
 
     # @param id Numeric
     # @param type String
@@ -68,7 +76,7 @@ module CartoDB
         @dirty = false
       end
     rescue => e
-      CartoDB.notify_error("Error appending log, likely an encoding issue", 
+      CartoDB.notify_error("Error appending log, likely an encoding issue",
         {
           error_info: "id: #{id}. #{self.inspect} --------- #{e.backtrace.join}"
         })
@@ -76,19 +84,19 @@ module CartoDB
         fix_entries_encoding
         self.save
       rescue => e2
-        CartoDB.notify_exception(e2, 
+        CartoDB.notify_exception(e2,
           {
-            message: "Error saving fallback log info.", 
+            message: "Error saving fallback log info.",
             error_info: "id: #{id}"
           })
         begin
-          self.entries = "Previous log entries stripped because of an error, check Rollbar. Id: #{id}\n" + 
+          self.entries = "Previous log entries stripped because of an error, check Rollbar. Id: #{id}\n" +
                          END_OF_LOG_MARK
           self.save
         rescue => e3
-          CartoDB.notify_exception(e3, 
+          CartoDB.notify_exception(e3,
             {
-              message: "Error saving stripped fallback log info.", 
+              message: "Error saving stripped fallback log info.",
               error_info: "id: #{id}"
             })
         end
@@ -165,7 +173,7 @@ module CartoDB
 
     def validate
       super
-      errors.add(:type, 'unsupported type') unless (self.type == TYPE_DATA_IMPORT || self.type == TYPE_SYNCHRONIZATION)
+      errors.add(:type, 'unsupported type') unless SUPPORTED_TYPES.include?(self.type)
     end
 
     def before_save

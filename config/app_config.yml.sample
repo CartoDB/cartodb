@@ -105,6 +105,8 @@ defaults: &defaults
     purge_command: 'purge'
     retries: 5
     timeout: 5
+    # 'warning' or 'error'
+    trigger_verbose: true
   invalidation_service:
     enabled: false
     host: '127.0.0.1'
@@ -112,6 +114,7 @@ defaults: &defaults
     retries: 5 # number of retries before considering failure
     critical: false # either the failure is considered an error or a warning
     timeout: 5 # socket timeout
+    trigger_verbose: true
   redis:
     host: '127.0.0.1'
     port: 6379

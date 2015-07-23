@@ -11,7 +11,7 @@ require_relative '../../../../spec/rspec_configuration.rb'
 
 describe CartoDB::Importer2::Loader do
   before do
-    resultset = OpenStruct.new(:first => {:count => 10})
+    resultset = OpenStruct.new(:first => {:num_rows => 10})
     db = Object.new
     db.stubs(:fetch).returns(resultset)
     @job            = CartoDB::Importer2::Doubles::Job.new(db)
@@ -51,7 +51,7 @@ describe CartoDB::Importer2::Loader do
     end
 
     it 'encoding problem importing but return 0 should raise an error' do
-      resultset = OpenStruct.new(:first => {:count => 0})
+      resultset = OpenStruct.new(:first => {:num_rows => 0})
       db = Object.new
       db.stubs(:fetch).returns(resultset)
       @job  = CartoDB::Importer2::Doubles::Job.new(db)
@@ -79,7 +79,7 @@ describe CartoDB::Importer2::Loader do
 
   describe 'stats logger' do
     before do
-      resultset = OpenStruct.new(:first => {:count => 10})
+      resultset = OpenStruct.new(:first => {:num_rows => 10})
       db = Object.new
       db.stubs(:fetch).returns(resultset)
       @job            = CartoDB::Importer2::Doubles::Job.new(db)

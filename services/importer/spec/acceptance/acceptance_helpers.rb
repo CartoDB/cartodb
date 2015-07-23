@@ -5,7 +5,7 @@ module AcceptanceHelpers
     table_name  = result.tables.first
     schema      = result.schema
 
-    runner.db[%Q{
+    @db[%Q{
       SELECT public.GeometryType(the_geom)
       FROM "#{schema}"."#{table_name}"
     }].first.fetch(:geometrytype)

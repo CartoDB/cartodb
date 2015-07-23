@@ -32,6 +32,7 @@
     var auth_token          = <%= safe_js_object @auth_tokens.to_json %>;
     var use_https           = <%= @use_https =%>;
     var api_key             = <%= safe_js_object @api_key.to_json %>;
+    var base_url            = '<%= @table.owner.public_url(nil, request.protocol == "https://" ? "https" : "http") %>';
 
     var debug = false;
     <% if Rails.env.development? || Cartodb.config[:no_cdn] == true %>

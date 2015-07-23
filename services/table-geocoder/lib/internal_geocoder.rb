@@ -15,7 +15,7 @@ module CartoDB
                     :working_dir, :remote_id, :state, :processed_rows, :country_column, :region_column,
                     :qualified_table_name, :batch_size, :countries, :regions, :kind, :geometry_type
 
-      attr_accessor :table_schema, :table_name, :column_name
+      attr_accessor :table_schema, :table_name, :column_name, :log
 
       def initialize(arguments)
         super(arguments)
@@ -33,9 +33,15 @@ module CartoDB
         @working_dir          = arguments[:working_dir] || Dir.mktmpdir
         @geocoding_results = File.join(working_dir, "#{temp_table_name}_results.csv")
         @query_generator = CartoDB::InternalGeocoder::QueryGeneratorFactory.get self
+        @log = arguments[:log]
       end # initialize
 
+      def set_log(log)
+        @log = log
+      end
+
       def run
+        log.append 'run()'
         @state = 'processing'
         ensure_georef_status_colummn_valid
         download_results
@@ -53,6 +59,7 @@ module CartoDB
       end
 
       def download_results
+        log.append 'download_results()'
         begin
           count = count + 1 rescue 0
           search_terms = get_search_terms(count)
@@ -72,6 +79,7 @@ module CartoDB
       end # get_search_terms
 
       def create_temp_table
+        log.append 'create_temp_table()'
         connection.run(%Q{
           CREATE TABLE #{temp_table_name} (
             geocode_string text, country text, region text, the_geom geometry, cartodb_georef_status boolean
@@ -87,10 +95,12 @@ module CartoDB
       def cancel; end
 
       def load_results_to_temp_table
+        log.append 'load_results_to_temp_table()'
         connection.copy_into(temp_table_name.lit, data: File.read(geocoding_results), format: :csv)
       end # load_results_to_temp_table
 
       def copy_results_to_table
+        log.append 'copy_results_to_table()'
         # 'InternalGeocoder::copy_results_to_table'
         CartoDB::Importer2::QueryBatcher.new(
             connection,

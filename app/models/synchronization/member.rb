@@ -1,7 +1,7 @@
 # encoding: utf-8
 require 'virtus'
 require_relative 'adapter'
-require_relative '../../../services/importer/lib/importer' 
+require_relative '../../../services/importer/lib/importer'
 require_relative '../visualization/collection'
 require_relative '../../../services/importer/lib/importer/datasource_downloader'
 require_relative '../../../services/datasources/lib/datasources'
@@ -90,7 +90,7 @@ module CartoDB
         " user_id:\"#{@user_id}\" type_guessing:\"#{@type_guessing}\" " \
         "quoted_fields_guessing:\"#{@quoted_fields_guessing}\">"
       end
-  
+
       def synchronizations_logger
         @@synchronizations_logger ||= ::Logger.new("#{Rails.root}/log/synchronizations.log")
       end
@@ -132,8 +132,8 @@ module CartoDB
       # @return bool
       def can_manually_sync?
         # Last sync ok, last sync failed, or too much time in queued state
-        (  self.state == STATE_SUCCESS || 
-           self.state == STATE_FAILURE || 
+        (  self.state == STATE_SUCCESS ||
+           self.state == STATE_FAILURE ||
           (self.state == STATE_QUEUED && self.updated_at + SYNC_NOW_TIMESPAN < Time.now)
          ) && (self.ran_at + SYNC_NOW_TIMESPAN < Time.now)
       end
@@ -149,6 +149,7 @@ module CartoDB
         self.state = STATE_SYNCING
         self.store
 
+        # TODO: See if we can remove this code
         # First import is a "normal import" so still has no id, then run gets called and will get log first time
         # but we need this to fix old logs
         if log.nil?
@@ -157,6 +158,7 @@ module CartoDB
           self.log_id = @log.id
           store
         else
+          @log.type = CartoDB::Log::TYPE_SYNCHRONIZATION
           @log.clear
           @log.store
         end
@@ -214,7 +216,7 @@ module CartoDB
         end
 
         store
-        
+
         notify
 
       rescue => exception
@@ -424,7 +426,7 @@ module CartoDB
             database: user.database_name,
 	          host:     user.user_database_host
           )
-      end 
+      end
 
       def ogr2ogr_options
         options = Cartodb.config.fetch(:ogr2ogr, {})
@@ -454,7 +456,6 @@ module CartoDB
         return @log unless @log.nil?
 
         log_attributes = {
-          type: CartoDB::Log::TYPE_SYNCHRONIZATION,
           id: self.log_id
         }
 

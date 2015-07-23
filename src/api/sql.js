@@ -400,20 +400,32 @@
 
       this.execute(query, function(data) {
         var row = data.rows[0];
-        var s = array_agg(row.array_agg);
+        var weight = 0;
+        var histogram = [];
+
+        try {
+          var s = array_agg(row.array_agg);
+
+          var histogram = _(s).map(function(row) {
+              var r = row.match(/\((.*),(\d+)/);
+              var name = normalizeName(r[1]);
+              return [name, +r[2]];
+          });
+
+          weight = row.skew * (1 - row.null_ratio) * (1 - row.uniq / row.cnt) * ( row.uniq > 1 ? 1 : 0);
+        } catch(e) {
+
+        }
+
         callback({
           type: 'string',
-          hist: _(s).map(function(row) {
-            var r = row.match(/\((.*),(\d+)/);
-            var name = normalizeName(r[1]);
-            return [name, +r[2]];
-          }),
+          hist: histogram,
           distinct: row.uniq,
           count: row.cnt,
           null_count: row.null_count,
           null_ratio: row.null_ratio,
           skew: row.skew,
-          weight: row.skew * (1 - row.null_ratio) * (1 - row.uniq / row.cnt) * ( row.uniq > 1 ? 1 : 0)
+          weight: weight
         });
       });
   }
@@ -491,8 +503,18 @@
         '),',
         'geotype as (', 
           'select st_geometrytype({{column}}) as geometry_type from ({{sql}}) _w where {{column}} is not null limit 1',
+        '),',
+        'clusters as (', 
+          'with clus as (',
+            'SELECT distinct(ST_snaptogrid(the_geom, 10)) as cluster, count(*) as clustercount FROM ({{sql}}) _wrap group by 1 order by 2 desc limit 3),', 
+          'total as (',
+            'SELECT count(*) FROM ({{sql}}) _wrap)',
+          'SELECT sum(clus.clustercount)/sum(total.count) AS clusterrate FROM clus, total',
+        '),',
+        'density as (',
+          'SELECT count(*) / st_area(st_extent(the_geom)) as density FROM ({{sql}}) _wrap',
         ')',
-        'select * from stats, geotype'
+        'select * from stats, geotype, clusters, density'
       ];
 
       var query = Mustache.render(s.join('\n'), {
@@ -518,7 +540,9 @@
           //lon,lat -> lat, lon
           bbox: [[bbox[0][0],bbox[0][1]], [bbox[2][0], bbox[2][1]]],
           geometry_type: row.geometry_type,
-          simplified_geometry_type: simplifyType(row.geometry_type)
+          simplified_geometry_type: simplifyType(row.geometry_type),
+          cluster_rate: row.clusterrate,
+          density: row.density
         });
       });
   }
@@ -553,7 +577,6 @@
                    'count(*) as cnt,',
                    'sum(case when {{column}} is null then 1 else 0 end)::numeric / count(*)::numeric as null_ratio,',
                    'stddev_pop({{column}}) / count({{column}}) as stddev,',
-                   //'log(stddev_pop({{column}}) / count({{column}})) as lstddev,',
                    'CASE WHEN abs(avg({{column}})) > 1e-7 THEN stddev({{column}}) / abs(avg({{column}})) ELSE 1e12 END as stddevmean,',
                     'CDB_DistType(array_agg("{{column}}"::numeric)) as dist_type ',
               'from ({{sql}}) _wrap ',
@@ -573,11 +596,11 @@
            'select array_agg(row(d, c)) cat_hist from (select distinct({{column}}) d, count(*) as c from ({{sql}}) __wrap, stats group by 1 limit 100) _a',
         '),',
          'buckets as (',
-            'select CDB_QuantileBins(array_agg({{column}}::numeric), 7) as quantiles, ',
+            'select CDB_QuantileBins(array_agg(distinct({{column}}::numeric)), 7) as quantiles, ',
             '       (select array_agg(x::numeric) FROM (SELECT (min + n * diff)::numeric as x FROM generate_series(1,7) n, params) p) as equalint,',
             // '       CDB_EqualIntervalBins(array_agg({{column}}::numeric), 7) as equalint, ',
-            '       CDB_JenksBins(array_agg({{column}}::numeric), 7) as jenks, ',
-            '       CDB_HeadsTailsBins(array_agg({{column}}::numeric), 7) as headtails ',
+            '       CDB_JenksBins(array_agg(distinct({{column}}::numeric)), 7) as jenks, ',
+            '       CDB_HeadsTailsBins(array_agg(distinct({{column}}::numeric)), 7) as headtails ',
             'from ({{sql}}) _table_sql where {{column}} is not null',
          ')',
          'select * from histogram, stats, buckets, hist'

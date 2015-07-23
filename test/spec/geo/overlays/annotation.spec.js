@@ -219,8 +219,12 @@ describe("cdb.geo.ui.Annotation", function() {
       expect(view.$el.find(".text").css("color")).toEqual('rgb(0, 0, 0)');
     });
 
-
+    it("should generate a standard name for a property", function() {
+      expect(view._getStandardPropertyName("")).toEqual(undefined);
+      expect(view._getStandardPropertyName("color")).toEqual("color");
+      expect(view._getStandardPropertyName("font-size")).toEqual("fontSize");
+      expect(view._getStandardPropertyName("font-family-name")).toEqual("fontFamilyName");
+      expect(view._getStandardPropertyName("z-index")).toEqual("zIndex");
+    });
   });
-
-
 });

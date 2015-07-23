@@ -6,9 +6,7 @@ var root = this;
 root.cartodb = root.cartodb || {};
 
 var ramps = {
-  bool: [
-    ['#5CA2D1', '#0F3B82', '#CCCCCC']
-  ],
+  bool: ['#229A00', '#F84F40', '#DDDDDD'],
   green:  ['#EDF8FB', '#D7FAF4', '#CCECE6', '#66C2A4', '#41AE76', '#238B45', '#005824'],
   blue:  ['#FFFFCC', '#C7E9B4', '#7FCDBB', '#41B6C4', '#1D91C0', '#225EA8', '#0C2C84'],
   pink: ['#F1EEF6', '#D4B9DA', '#C994C7', '#DF65B0', '#E7298A', '#CE1256', '#91003F'],
@@ -46,7 +44,7 @@ function getDefaultCSSForGeometryType(geometryType) {
     "line-opacity: 1;",
     "marker-fill-opacity: 0.9;",
     "marker-line-color: #FFF;",
-    "marker-line-width: 1.5;",
+    "marker-line-width: 1;",
     "marker-line-opacity: 1;",
     "marker-placement: point;",
     "marker-type: ellipse;",
@@ -61,7 +59,7 @@ var CSS = {
     var tableID = "#" + tableName;
 
     var defaultCSS = getDefaultCSSForGeometryType(geometryType);
-    var css = "/** choropleth visualization */\n\n" + tableID + " {\n  " + attr + ": " + ramps.category[0] + ";\n" + defaultCSS.join("\n") + "\n}\n";
+    var css = "/** choropleth visualization */\n\n" + tableID + " {\n  " + attr + ": " + ramp[0] + ";\n" + defaultCSS.join("\n") + "\n}\n";
 
     for (var i = quartiles.length - 1; i >= 0; --i) {
       if (quartiles[i] !== undefined && quartiles[i] != null) {
@@ -78,11 +76,15 @@ var CSS = {
     var ramp = (options && options.ramp) ? options.ramp : ramps.category;
     var type = options && options.type ? options.type : "string";
 
-    for (var i = cats.length - 1; i >= 0; --i) {
+    for (var i = 0; i < cats.length; i++) {
       var cat = cats[i];
-      if (cat !== undefined && ((type === 'string' && cat != null) || (type !== 'string'))) {
+      if (i < 10 && cat !== undefined && ((type === 'string' && cat != null) || (type !== 'string'))) {
         metadata.push({ title: cat, title_type: type, value_type: 'color', color: ramp[i] });
       }
+    }
+
+    if (cats.length > 10) {
+      metadata.push({ title: "Others", value_type: 'color', default: true, color: ramp[ramp.length - 1] });
     }
 
     return metadata;
@@ -101,9 +103,9 @@ var CSS = {
 
     var css = "/** category visualization */\n\n" + tableID + " {\n  " + attr + ": " + ramp[0] + ";\n" + defaultCSS.join("\n") + "\n}\n";
 
-    for (var i = cats.length - 1; i >= 0; --i) {
+    for (var i = 0; i < cats.length; i++) {
 
-      var cat  = cats[i];
+      var cat = cats[i];
 
       if (type === 'string') {
         name = cat.replace(/\n/g,'\\n').replace(/\"/g, "\\\"");
@@ -112,17 +114,23 @@ var CSS = {
         value = cat;
       }
 
-      if (cat !== undefined && ((type === 'string' && cat != null) || (type !== 'string'))) {
+      if (i < 10 && cat !== undefined && ((type === 'string' && cat != null) || (type !== 'string'))) {
         css += "\n" + tableID + "[" + prop + "=" + value + "] {\n";
         css += "  " + attr  + ":" + ramp[i] + ";\n}"
       }
     }
 
+    if (cats.length > 10) {
+      css += "\n" + tableID + "{\n";
+      css += "  " + attr  + ": " + ramp[ramp.length - 1]+ ";\n}"
+    }
+
     return css;
   },
 
-  torque: function(stats, tableName){
+  torque: function(stats, tableName, options){
     var tableID = "#" + tableName;
+    var aggFunction = "count(cartodb_id)";
     var css = [
         '/** torque visualization */',
         'Map {',
@@ -130,24 +138,21 @@ var CSS = {
         '  -torque-aggregation-function: "count(cartodb_id)";',
         '  -torque-frame-count: ' + stats.steps + ';',
         '  -torque-animation-duration: 10;',
-        '  -torque-resolution: 2',
+        '  -torque-resolution: 2;',
         '}',
         tableID + " {",
         '  marker-width: 3;',
         '  marker-fill-opacity: 0.8;',
-        '  marker-fill: #FF6347; ',
-        '  comp-op: "lighten";',
-        '  [value > 2] { marker-fill: #FEC44F; }',
-        '  [value > 3] { marker-fill: #FE9929; }',
-        '  [value > 4] { marker-fill: #EC7014; }',
-        '  [value > 5] { marker-fill: #CC4C02; }',
-        '  [value > 6] { marker-fill: #993404; }',
-        '  [value > 7] { marker-fill: #662506; }',
+        '  marker-fill: #0F3B82; ',
+        '  comp-op: "lighten"; ',
         '  [frame-offset = 1] { marker-width: 10; marker-fill-opacity: 0.05;}',
         '  [frame-offset = 2] { marker-width: 15; marker-fill-opacity: 0.02;}',
         '}'
-    ].join('\n');
+    ];
+    css = css.join('\n');
+
     return css;
+
   },
 
   bubble: function(quartiles, tableName, prop) {
@@ -175,6 +180,30 @@ var CSS = {
         css += "   marker-width: " + values[i].toFixed(1) + ";\n}"
       }
     }
+    return css;
+  },
+
+  heatmap: function(stats, tableName, options){
+    var tableID = "#" + tableName;
+    var css = [
+        '/** heatmap visualization */',
+        'Map {',
+        '  -torque-time-attribute: "cartodb_id";',
+        '  -torque-aggregation-function: "count(cartodb_id)";',
+        '  -torque-frame-count: 1;',
+        '  -torque-animation-duration: 10;',
+        '  -torque-resolution: 2;',
+        '}',
+        tableID + " {",
+        '  marker-width: 10;',
+        '  marker-fill-opacity: 0.4;',
+        '  marker-fill: #0F3B82; ',
+        '  comp-op: "lighten"; ',
+        '  image-filters: colorize-alpha(blue, cyan, lightgreen, yellow , orange, red);',
+        '  marker-file: url(http://s3.amazonaws.com/com.cartodb.assets.static/alphamarker.png);',
+        '}'
+    ];
+    css = css.join('\n');
     return css;
   }
 }
@@ -214,33 +243,44 @@ function getWeightFromShape(dist_type){
   }[dist_type];
 }
 
-function getMethodProperties(stats) {
+function getMethodProperties(stats) { // TODO: only require the necessary params
 
-  var method, ramp;
+  var method;
+  var ramp = ramps.pink;
+  var name = "pink";
 
   if (['A','U'].indexOf(stats.dist_type) != -1) { // apply divergent scheme
     method = stats.jenks;
-    ramp = ramps.divergent;
+
+    if (stats.min < 0 && stats.max > 0){
+      ramp = ramps.divergent;
+      name = "spectrum2";
+    }
+
   } else if (stats.dist_type === 'F') {
     method = stats.equalint;
     ramp = ramps.red;
+    name = "red";
   } else {
     if (stats.dist_type === 'J') {
       method = stats.headtails;
-      ramp = ramps.green;
+      ramp = ramps.blue;
+      name = "blue";
     } else {
+      //ramp = (_.clone(ramps.red)).reverse();
       method = stats.headtails;
-      ramp = (_.clone(ramps.red)).reverse();
+      ramp = ramps.red;
+      name = "red";
     }
   }
 
-  return { ramp: ramp, method: method };
+  return { name: name, ramp: ramp, method: method };
 
 }
 
 function guessMap(sql, tableName, column, stats) {
   var geometryType = column.get("geometry_type");
-  var columnName = column.get("name");
+  var columnName = column.get("column");
   var visualizationType = "choropleth";
   var css = null
   var type = stats.type;
@@ -249,9 +289,9 @@ function guessMap(sql, tableName, column, stats) {
 
   if (type === 'number') {
 
-    var calc_weight = getWeightFromShape(stats.dist_type);
+    var calc_weight = (stats.weight + getWeightFromShape(stats.dist_type)) / 2;
 
-    if (calc_weight === 0.9) {
+    if (calc_weight >= 0.5) {
 
       var visFunction = CSS.choropleth;
       var properties = getMethodProperties(stats);
@@ -267,7 +307,12 @@ function guessMap(sql, tableName, column, stats) {
 
       if (distinctPercentage < 1) {
         visualizationType   = "category";
-        var cats = stats.cat_hist.slice(0, ramps.category.length).map(function(r) { return r[0]; });
+
+        var cats = stats.cat_hist;
+        cats = _.sortBy(cats, function(cat) { return cat[1]; }).reverse().slice(0, ramps.category.length);
+        cats = _.sortBy(cats, function(cat) { return cat[0]; });
+        cats = cats.map(function(r) { return r[0]; });
+
         css      = CSS.category(cats, tableName, columnName, geometryType, { type: type });
         metadata = CSS.categoryMetadata(cats, { type: type });
 
@@ -288,21 +333,30 @@ function guessMap(sql, tableName, column, stats) {
   } else if (type === 'string') {
 
     visualizationType   = "category";
-    var cats = stats.hist.slice(0, ramps.category.length).map(function(r) { return r[0]; });
+
+    var cats = stats.hist;
+    cats = _.sortBy(cats, function(cat) { return cat[1]; }).reverse().slice(0, ramps.category.length);
+    cats = _.sortBy(cats, function(cat) { return cat[0]; });
+    cats = cats.map(function(r) { return r[0]; });
+
     css      = CSS.category(cats, tableName, columnName, geometryType);
     metadata = CSS.categoryMetadata(cats);
+
 
   } else if (type === 'date') {
     visualizationType = "torque";
     css = CSS.torque(stats, tableName);
 
   } else if (type === 'boolean') {
-    visualizationType   = "category";
-    var ramp = _.shuffle(ramps.bool)[0];
+    visualizationType  = "category";
+    var ramp = ramps.bool;
     var cats = ['true', 'false', null];
     var options = { type: type, ramp: ramp };
     css      = CSS.category(cats, tableName, columnName, geometryType, options);
     metadata = CSS.categoryMetadata(cats, options);
+  } else if (stats.type === 'geom') {
+    visualizationType = "heatmap";
+    css = CSS.heatmap(stats, tableName, options);
   }
 
   var properties = {
@@ -344,6 +398,7 @@ CSS.guess = guess;
 CSS.guessCss = guessCss;
 CSS.guessMap = guessMap;
 CSS.getWeightFromShape = getWeightFromShape;
+CSS.getMethodProperties = getMethodProperties;
 
 
 root.cartodb.CartoCSS = CSS;

@@ -1864,7 +1864,7 @@ class User < Sequel::Model
     varnish_critical = Cartodb.config[:varnish_management].try(:[],'critical') == true ? 1 : 0
     varnish_retry = Cartodb.config[:varnish_management].try(:[],'retry') || 5
     purge_command = Cartodb::config[:varnish_management]["purge_command"]
-    varnish_log_level = Cartodb.config[:varnish_management].try(:[],'log_level') || 'warning'
+    varnish_trigger_verbose = Cartodb.config[:varnish_management].fetch('trigger_verbose', true) == true ? 1 : 0
 
     in_database(:as => :superuser).run(<<-TRIGGER
     BEGIN;
@@ -1873,7 +1873,7 @@ class User < Sequel::Model
         critical = #{varnish_critical}
         timeout = #{varnish_timeout}
         retry = #{varnish_retry}
-        log_level = '#{varnish_log_level}'
+        trigger_verbose = varnish_trigger_verbose
 
         client = GD.get('varnish', None)
 
@@ -1900,7 +1900,7 @@ class User < Sequel::Model
             client.fetch('#{purge_command} obj.http.X-Cache-Channel ~ "^#{self.database_name}:(.*%s.*)|(cdb_tablemetadata)|(table)$"' % table_name.replace('"',''))
             break
           except Exception as err:
-            if log_level == 'warning':
+            if trigger_verbose:
               plpy.warning('Varnish fetch error: ' + str(err))
             client = GD['varnish'] = None # force reconnect
             if not retry:
@@ -1926,8 +1926,7 @@ TRIGGER
     varnish_critical = Cartodb.config[:varnish_management].try(:[],'critical') == true ? 1 : 0
     varnish_retry = Cartodb.config[:varnish_management].try(:[],'retry') || 5
     purge_command = Cartodb::config[:varnish_management]["purge_command"]
-    varnish_log_level = Cartodb.config[:varnish_management].try(:[],'log_level') || 'warning'
-
+    varnish_trigger_verbose = Cartodb.config[:varnish_management].fetch('trigger_verbose', true) == true ? 1 : 0
 
     in_database(:as => :superuser).run(<<-TRIGGER
     BEGIN;
@@ -1936,7 +1935,7 @@ TRIGGER
         critical = #{varnish_critical}
         timeout = #{varnish_timeout}
         retry = #{varnish_retry}
-        log_level = '#{varnish_log_level}'
+        trigger_verbose = varnish_trigger_verbose
 
         import httplib
 
@@ -1956,7 +1955,7 @@ TRIGGER
             assert response.status == 204
             break
           except Exception as err:
-            if log_level == 'warning':
+            if trigger_verbose:
               plpy.warning('Varnish purge error: ' + str(err))
             if not retry:
               if critical:
@@ -1981,7 +1980,7 @@ TRIGGER
     invalidation_timeout = Cartodb.config[:invalidation_service].try(:[],'timeout') || 5
     invalidation_critical = Cartodb.config[:invalidation_service].try(:[], 'critical') ? 1 : 0
     invalidation_retry = Cartodb.config[:invalidation_service].try(:[],'retry') || 5
-    invalidation_log_level = Cartodb.config[:invalidation_service].try(:[],'log_level') || 'warning'
+    invalidation_trigger_verbose = Cartodb.config[:invalidation_service].fetch('trigger_verbose', true) == true ? 1 : 0
 
     in_database(:as => :superuser).run(<<-TRIGGER
   BEGIN;
@@ -1990,7 +1989,7 @@ TRIGGER
       critical = #{invalidation_critical}
       timeout = #{invalidation_timeout}
       retry = #{invalidation_retry}
-      log_level = '#{invalidation_log_level}'
+      trigger_verbose = invalidation_trigger_verbose
 
       client = GD.get('invalidation', None)
 
@@ -2010,7 +2009,7 @@ TRIGGER
           client.execute_command('TCH', '#{self.database_name}', table_name)
           break
         except Exception as err:
-          if log_level == 'warning':
+          if trigger_verbose:
             plpy.warning('Invalidation Service warning: ' + str(err))
           client = GD['invalidation'] = None # force reconnect
           if not retry:

@@ -65,7 +65,7 @@ defaults: &defaults
     purge_command: 'purge'
     retries: 5
     timeout: 5
-    log_level: 'error'
+    trigger_verbose: false
   redis:
     host: '127.0.0.1'
     port: 6379

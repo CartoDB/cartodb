@@ -18,6 +18,7 @@ module CartoDB
         def id;                   0; end
         def import_error_percent;  0; end
         def rows_number;          0; end
+        def schema; ''; end
         def delete_job_table;     end
         def delete_temp_table(table_name); end;
         def pg_options
@@ -25,13 +26,13 @@ module CartoDB
             host:     '',
             user:     '',
             password: '',
-            database: '' 
+            database: ''
           }
-        end #pg_options
+        end
 
         alias_method :concealed_pg_options, :pg_options
-      end # Job
-    end # Doubles
-  end # Importer2
-end # CartoDB
+      end
+    end
+  end
+end
 

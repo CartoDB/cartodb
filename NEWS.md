@@ -29,6 +29,8 @@ cd lib/sql; sudo make all install
 * Fixed multi-resource import (ZIP with >1 supported files, ArcGIS, etc.). Limited to 10 tables/files, except in the case of ArcGIS
 * Ability to geocode tables shared with write permissions within an organization [#4509](https://github.com/CartoDB/cartodb/pull/4509)
 * Layers are saved in bulk when re-ordered [#4251](https://github.com/CartoDB/cartodb/pull/4251)
+* Improving test suite speed. Whenever possible, use global test users $user_1 and $user_2 (see TESTING.md for details)
+* New optional config values varnish_management[:trigger_verbose] & invalidation_service[:trigger_verbose] to control output verbosity of invalidation services (set now by default to off only at testing)
 * Better number normalization to support casting of currency strings [#4530](https://github.com/CartoDB/cartodb/pull/4530)
 * Added in-database logging capabilities to geocodings [#4625](https://github.com/CartoDB/cartodb/pull/4625)
 

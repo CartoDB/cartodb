@@ -36,6 +36,10 @@ module CartoDB
         @log = arguments[:log]
       end # initialize
 
+      def set_log(log)
+        @log = log
+      end
+
       def run
         log.append 'run()'
         @state = 'processing'

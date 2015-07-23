@@ -46,27 +46,6 @@ describe 'geojson regression tests' do
     runner.run
   end
 
-  it 'imports a file with boolean values' do
-    pending 'Need a boolean values geojson example'
-    filepath    = path_to('boolean_values.geojson')
-    downloader  = Downloader.new(filepath)
-    runner      = Runner.new({
-                               pg: @pg_options,
-                               downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
-                               user: CartoDB::Importer2::Doubles::User.new
-                             })
-    runner.run
-
-    result      = runner.results.first
-    table_name  = result.tables.first
-
-    @db.schema(table_name, schema: 'importer')
-      .find { |element| element.first == :boolean }.last
-      .fetch(:type)
-      .must_equal :boolean
-  end
-
   it "raises if GeoJSON isn't valid" do
     filepath    = path_to('invalid.geojson')
     downloader  = Downloader.new(filepath)
@@ -81,5 +60,5 @@ describe 'geojson regression tests' do
     runner.results.first.error_code.should eq 1002
   end
 
-end # geojson regression tests
+end
 

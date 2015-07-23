@@ -11,6 +11,11 @@ Sequel.migration do
       DateTime  :created_at,        default: Sequel::CURRENT_TIMESTAMP
       DateTime  :updated_at,        default: Sequel::CURRENT_TIMESTAMP
     end
+
+    # Subscribe all the users to the notifications
+    Rails::Sequel.connection.run(%Q{
+      INSERT INTO user_notifications (user_id) (SELECT id FROM users)
+    })
   end
 
   down do

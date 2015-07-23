@@ -1,6 +1,7 @@
 # encoding: UTF-8
 
 require_relative '../../../../lib/resque/user_jobs'
+require_relative '../../../../app/models/carto/notification'
 
 module CartoDB
   module Importer2

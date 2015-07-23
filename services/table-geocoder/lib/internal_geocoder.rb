@@ -82,7 +82,7 @@ module CartoDB
       def create_temp_table
         log.append 'create_temp_table()'
         connection.run(%Q{
-          CREATE TABLE #{temp_table_name} (
+          CREATE UNLOGGED TABLE #{temp_table_name} (
             geocode_string text, country text, region text, the_geom geometry, cartodb_georef_status boolean
           );
         })

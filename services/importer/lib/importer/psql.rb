@@ -47,7 +47,7 @@ module CartoDB
       def create_table_statement(stream)
         stream.rewind
         skip_lines(stream, START_CREATE_TABLE_REGEX) 
-        %Q(CREATE TABLE "#{SCHEMA}"."#{table_name}" (\n#{schema_from(stream)});\n)
+        %Q(CREATE UNLOGGED TABLE "#{SCHEMA}"."#{table_name}" (\n#{schema_from(stream)});\n)
       end
 
       def copy_statement(stream)

@@ -94,10 +94,10 @@ module CartoDB
     end #straight_cast
 
     def string_to_number
-      thousand, decimal = get_digit_separators_for(column_name)
-      normalize_digit_separators(thousand, decimal)
+      thousand_separator, decimal_separator = get_digit_separators_for(column_name)
+      normalize_number(thousand_separator, decimal_separator)
       nullify_if_non_convertible
-    end #string_to_number
+    end
 
     def string_to_datetime
       straight_cast('timestamptz', cast: "cartodb.CDB_StringToDate(#{column_name})")
@@ -209,14 +209,35 @@ module CartoDB
       }, &:to_a).first.values
     end #get_digit_separators
 
-    def normalize_digit_separators(thousand=nil, decimal=nil)
-      return unless thousand && decimal
+    def normalize_number(thousand_separator=nil, decimal_separator=nil)
+      return unless thousand_separator && decimal_separator
+
+      replacements = [
+        [thousand_separator, ''],
+        [decimal_separator, '.'],
+        ['$', ''],
+        ['€', '']
+      ]
+
       user_database.execute(%Q{
         UPDATE #{qualified_table}
-        SET #{column_name} = replace(
-          replace(#{column_name}, '#{thousand}', ''), '#{decimal}', '.'
-        )
+        SET "#{column_name}" = trim(#{pg_replace_expression(column_name, replacements)})
       })
+    end
+
+    # Takes a column_name and a mapping of replacements and returns an expression such as:
+    #   replace(replace(replace(column_name, k1, v1), k2, v2), k3, v3)
+    def pg_replace_expression(column_name, replacement_map=[])
+      # base case
+      k1, v1 = replacement_map.shift
+      expression = %Q{replace("#{column_name}", '#{k1}', '#{v1}')}
+
+      # rest
+      replacement_map.each do |k, v|
+        expression = %Q{replace(#{expression}, '#{k}', '#{v}')}
+      end
+
+      return expression
     end
   end
 end

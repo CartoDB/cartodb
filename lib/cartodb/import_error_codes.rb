@@ -161,6 +161,11 @@ module CartoDB
       what_about: "The file you tried to import failed due to encoding issues. To fix this, force the encoding of your file using a text editor or a tool like QGis. You just need to export your files in \"UTF-8\" format.",
       source: ERROR_SOURCE_USER
     },
+    2008 => {
+      title: 'Malformed XLS',
+      what_about: "The Excel file has an unsupported format or is corrupt. To fix this, open it and save as CSV or XLSX.",
+      source: ERROR_SOURCE_USER
+    },
     3007 => {
       title: 'JSON may not be valid GeoJSON',
       what_about: "We can only import GeoJSON formated JSON files. See if the source of this data supports GeoJSON or another file format for download.",

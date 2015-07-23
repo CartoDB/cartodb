@@ -95,7 +95,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   def data_import
     data_import = DataImport[params[:data_import_id]]
     respond_with({
-                   data: data_import,
+                   data: data_import.to_hash,
                    log: data_import.nil? ? nil : data_import.log.to_s
                  })
   end
@@ -114,7 +114,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   def synchronization
     synchronization = Carto::Synchronization.where(id: params[:synchronization_id]).first
     respond_with({
-                   data: synchronization,
+                   data: synchronization.to_hash,
                    log: synchronization.nil? ? nil : synchronization.log.to_s
                  })
   end

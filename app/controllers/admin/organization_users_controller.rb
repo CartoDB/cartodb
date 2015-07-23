@@ -82,8 +82,7 @@ class Admin::OrganizationUsersController < ApplicationController
 
     @user.save(raise_on_failure: true)
 
-    redirect_to CartoDB.url(self, 'edit_organization_user', { id: @user.username }, current_user),
-                flash: { success: "Your changes have been saved correctly." }
+    redirect_to CartoDB.url(self, 'edit_organization_user', { id: @user.username }, current_user), flash: { success: "Your changes have been saved correctly." }
   rescue CartoDB::CentralCommunicationFailure => e
     set_flash_flags
     flash.now[:error] = "There was a problem while updating this user. Please, try again and contact us if the problem persists. #{e.user_message}"
@@ -118,7 +117,7 @@ class Admin::OrganizationUsersController < ApplicationController
   def regenerate_api_key
     @user.regenerate_api_key
     flash[:success] = "User API key regenerated successfully"
-    redirect_to CartoDB.url(self, 'organization', {}, current_user)
+    redirect_to CartoDB.url(self, 'edit_organization_user', { id: @user.username }, current_user), flash: { success: "Your changes have been saved correctly." }
   rescue => e
     CartoDB.notify_exception(e, { user_id: @user.id, current_user: current_user.id })
     flash[:error] = "There was an error regenerating the API key. Please, try again and contact us if the problem persists"

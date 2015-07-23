@@ -96,19 +96,20 @@ WORKING_SPECS_4 = \
   spec/queries/carto/visualization_query_builder_spec.rb \
   spec/requests/admin/tables_spec.rb \
   spec/requests/admin/pages_controller_spec.rb \
-	spec/requests/carto/api/organizations_controller_spec.rb \
+  spec/requests/carto/api/organizations_controller_spec.rb \
   spec/requests/api/imports_spec.rb \
   spec/requests/api/json/imports_controller_spec.rb \
-	spec/requests/carto/api/imports_controller_spec.rb \
+  spec/requests/carto/api/imports_controller_spec.rb \
   spec/connectors/importer_spec.rb \
   spec/requests/api/geocodings_spec.rb \
   services/importer/spec/unit/url_translator/osm_spec.rb \
   services/importer/spec/unit/url_translator/osm2_spec.rb \
-  services/importer/spec/unit/mail_notifier_spec.rb \
   services/relocator/spec/relocator_spec.rb \
+  $(NULL)
 
 WORKING_SPECS_5 = \
   spec/rspec_configuration.rb \
+  services/importer/spec/unit/mail_notifier_spec.rb \
   spec/requests/api/assets_spec.rb \
   spec/requests/carto/api/assets_controller_spec.rb \
   spec/requests/api/user_layers_spec.rb \
@@ -120,27 +121,27 @@ WORKING_SPECS_5 = \
   spec/requests/api/json/columns_controller_spec.rb \
   spec/requests/carto/api/columns_controller_spec.rb \
   spec/requests/api/synchronizations_spec.rb \
-	spec/requests/api/json/synchronizations_controller_spec.rb \
-	spec/requests/carto/api/synchronizations_controller_spec.rb \
-	services/geocoder/spec/geocoder_spec.rb \
-	services/table-geocoder/spec/table_geocoder_spec.rb \
-	services/table-geocoder/spec/internal-geocoder/input_type_resolver_spec.rb \
-	services/table-geocoder/spec/internal-geocoder/query_generator_factory_spec.rb \
-	services/table-geocoder/spec/lib/gme/table_geocoder_spec.rb \
-	spec/models/synchronization/member_spec.rb \
+  spec/requests/api/json/synchronizations_controller_spec.rb \
+  spec/requests/carto/api/synchronizations_controller_spec.rb \
+  services/geocoder/spec/geocoder_spec.rb \
+  services/table-geocoder/spec/table_geocoder_spec.rb \
+  services/table-geocoder/spec/internal-geocoder/input_type_resolver_spec.rb \
+  services/table-geocoder/spec/internal-geocoder/query_generator_factory_spec.rb \
+  services/table-geocoder/spec/lib/gme/table_geocoder_spec.rb \
+  spec/models/synchronization/member_spec.rb \
   spec/models/organization_spec.rb \
-	spec/models/user_organization_spec.rb \
+  spec/models/user_organization_spec.rb \
   spec/models/synchronization/synchronization_oauth_spec.rb \
   spec/models/permission_spec.rb \
-	spec/models/overlay/member_spec.rb \
-	spec/models/overlay/collection_spec.rb \
+  spec/models/overlay/member_spec.rb \
+  spec/models/overlay/collection_spec.rb \
   $(NULL)
 
 # TODO: This block also breaks if run alongside other specs, needs checking why
 WORKING_SPECS_7 = \
   spec/rspec_configuration.rb \
-	spec/requests/api/json/geocodings_controller_spec.rb \
-	spec/requests/carto/api/geocodings_controller_spec.rb \
+  spec/requests/api/json/geocodings_controller_spec.rb \
+  spec/requests/carto/api/geocodings_controller_spec.rb \
   $(NULL)
 
 WORKING_SPECS_9 = \
@@ -160,8 +161,8 @@ WORKING_SPECS_9 = \
   spec/rspec_configuration.rb \
   spec/requests/api/permissions_controller_spec.rb \
   spec/models/shared_entity_spec.rb \
-	spec/requests/signup_controller_spec.rb \
-	spec/requests/account_tokens_controller_spec.rb \
+  spec/requests/signup_controller_spec.rb \
+  spec/requests/account_tokens_controller_spec.rb \
   spec/requests/superadmin/users_spec.rb \
   spec/requests/superadmin/organizations_spec.rb \
   spec/requests/api/visualizations_spec.rb \
@@ -184,7 +185,7 @@ WORKING_SPECS_9 = \
 
 # This class must be tested isolated as pollutes namespace
 WORKING_SPECS_carto_db_class = \
-	spec/helpers/carto_db_spec.rb \
+  spec/helpers/carto_db_spec.rb \
   $(NULL)
 
 CDB_PATH=lib/assets/javascripts/cdb

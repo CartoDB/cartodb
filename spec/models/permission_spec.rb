@@ -550,8 +550,16 @@ describe CartoDB::Permission do
 
       permission.save
      
+      user2_mock = mock
       user2_id = "17d5b1e6-0d14-11e4-a3ef-0800274a1928"
+      user2_mock.stubs(:id).returns(user2_id)
+      user2_mock.stubs(:is_subscribed_to?).returns(true)
+      User.stubs(:find).with(:id => user2_id).returns(user2_mock)
+      user3_mock = mock
       user3_id = "28d09bc0-0d14-11e4-a3ef-0800274a1928"
+      user3_mock.stubs(:id).returns(user3_id)
+      user3_mock.stubs(:is_subscribed_to?).returns(true)
+      User.stubs(:find).with(:id => user3_id).returns(user3_mock)
       permissions_changes = {
         "user" => {
           user2_id => [{ "action"=>"grant", "type"=>"r" }],

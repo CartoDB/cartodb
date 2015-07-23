@@ -30,7 +30,11 @@ describe Admin::PagesController do
   end
 
   after(:each) do
-    User.all.each {|u| u.delete}
+    User.all.each do |u|
+      # Don't do destroy because the user don't have a db created
+      u.user_notifications.each { |un| un.destroy }
+      u.delete
+    end
   end
 
   describe '#index' do

@@ -1,5 +1,6 @@
 # encoding: utf-8
 require_relative '../../../lib/importer/url_translator/osm2'
+require_relative '../../../../../spec/rspec_configuration.rb'
 
 include CartoDB::Importer2
 

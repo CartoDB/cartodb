@@ -64,7 +64,7 @@ module CartoDB
               # Perm is an array. For the moment just one type of permission can
               # be applied to a type of object. But with an array this is open
               # to more than one permission change at a time
-              user = ::User.find(:id => affected_id)
+              user = User.find(:id => affected_id)
               perm.each do |p|
                 if self.real_entity_type == CartoDB::Visualization::Member::TYPE_DERIVED
                   if p['action'] == 'grant'

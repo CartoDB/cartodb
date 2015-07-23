@@ -14,9 +14,9 @@ module Carto
         return OpenSSL::HMAC.hexdigest(digest, user.salt, data)
       end
 
-      def self.verify_hash(hash)
+      def self.verify_hash(user, hash)
         Carto::Notification.types.each do |type|
-          if Carto::UserNotification.generate_unsubscribe_hash(self.user, type) == hash
+          if Carto::UserNotification.generate_unsubscribe_hash(user, type) == hash
             return type
             break
           end
@@ -26,9 +26,10 @@ module Carto
       end
 
       def unsubscribe(type)
-        UserNotification.connection.update_sql("UPDATE user_notifications
+        number_rows = UserNotification.connection.update_sql("UPDATE user_notifications
                                                 SET #{type}=false
                                                 WHERE user_id = '#{self.user.id}'")
+        return (number_rows == 1) ? true : false
       end
 
       private

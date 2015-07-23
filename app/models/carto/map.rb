@@ -28,6 +28,21 @@ class Carto::Map < ActiveRecord::Base
 
   has_many :tables, class_name: Carto::UserTable
 
+  DEFAULT_BOUNDS = {
+    minlon: -179,
+    maxlon: 179,
+    minlat: -85.0511,
+    maxlat: 85.0511 
+  }
+
+  DEFAULT_OPTIONS = {
+    zoom:            3,
+    bounding_box_sw: [ DEFAULT_BOUNDS[:minlat], DEFAULT_BOUNDS[:minlon] ],
+    bounding_box_ne: [ DEFAULT_BOUNDS[:maxlat], DEFAULT_BOUNDS[:maxlon] ],
+    provider:        'leaflet',
+    center:          [30, 0]
+  }
+
   def viz_updated_at
     get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons
   end
@@ -43,12 +58,12 @@ class Carto::Map < ActiveRecord::Base
 
   def view_bounds_data
       if view_bounds_sw.nil? || view_bounds_sw == ''
-        bbox_sw = [0.0, 0.0]
+        bbox_sw = DEFAULT_OPTIONS[:bounding_box_sw]
       else
         bbox_sw = view_bounds_sw.gsub(/\[|\]|\s*/, '').split(',').map(&:to_f)
       end
       if view_bounds_ne.nil? || view_bounds_ne == ''
-        bbox_ne = [0.0, 0.0]
+        bbox_ne = DEFAULT_OPTIONS[:bounding_box_ne]
       else
         bbox_ne = view_bounds_ne.gsub(/\[|\]|\s*/, '').split(',').map(&:to_f)
       end

@@ -19,7 +19,7 @@ describe Geocoding do
   end
 
   describe '#setup' do
-    let(:geocoding) { FactoryGirl.create(:geocoding, user: @user, user_table: @table) }
+    let(:geocoding) { FactoryGirl.create(:geocoding, user: @user, user_table: @table, formatter: 'foo', kind: 'admin0') }
 
     it 'sets default timestamps value' do
       geocoding.created_at.should_not be_nil
@@ -33,17 +33,17 @@ describe Geocoding do
 
   describe '#table_geocoder' do
     it 'returns an instance of TableGeocoder when kind is high-resolution' do
-      geocoding = FactoryGirl.build(:geocoding, user: @user, user_table: @table, kind: 'high-resolution')
+      geocoding = FactoryGirl.build(:geocoding, user: @user, user_table: @table, kind: 'high-resolution', formatter: 'foo')
       geocoding.table_geocoder.should be_kind_of(CartoDB::TableGeocoder)
     end
 
     it 'returns an instance of InternalGeocoder when kind is not high-resolution' do
-      geocoding = FactoryGirl.build(:geocoding, user: @user, user_table: @table, kind: 'admin0', geometry_type: 'polygon')
+      geocoding = FactoryGirl.build(:geocoding, user: @user, user_table: @table, kind: 'admin0', geometry_type: 'polygon', formatter: 'foo')
       geocoding.table_geocoder.should be_kind_of(CartoDB::InternalGeocoder::Geocoder)
     end
 
     it 'memoizes' do
-      geocoding = FactoryGirl.build(:geocoding, user: @user, user_table: @table, kind: 'admin0', geometry_type: 'polygon')
+      geocoding = FactoryGirl.build(:geocoding, user: @user, user_table: @table, kind: 'admin0', geometry_type: 'polygon', formatter: 'foo')
       geocoder = geocoding.table_geocoder
       geocoder.should be_kind_of(CartoDB::InternalGeocoder::Geocoder)
       geocoder.should eq geocoding.table_geocoder
@@ -94,7 +94,7 @@ describe Geocoding do
   describe '#run!' do
     it 'updates geocoding stats' do
       # TODO: this doesn't really test anything but parameter passing, consider deleting it
-      geocoding = FactoryGirl.create(:geocoding, user: @user, user_table: @table, formatter: 'b')
+      geocoding = FactoryGirl.create(:geocoding, user: @user, user_table: @table, formatter: 'b', kind: 'high-resolution')
       geocoding.table_geocoder.stubs(:run).returns true
       geocoding.table_geocoder.stubs(:used_batch_request?).returns false
       geocoding.table_geocoder.stubs(:cache).returns  OpenStruct.new(hits: 5000)
@@ -189,7 +189,7 @@ describe Geocoding do
     end
 
     pending 'raises an exception if the geocoding times out' do
-      geocoding = FactoryGirl.create(:geocoding, user: @user, user_table: @table, formatter: 'b')
+      geocoding = FactoryGirl.create(:geocoding, user: @user, user_table: @table, formatter: 'b', kind: 'high-resolution')
       geocoding.class.stubs(:processable_rows).returns 10
       geocoding.stubs(:processing_timeout_seconds).returns 0.01 # set timeout to 10 ms
 
@@ -220,13 +220,13 @@ describe Geocoding do
       @user.stubs('hard_geocoding_limit?').returns(true)
       delete_user_data @user
       geocoding.max_geocodable_rows.should eq 200
-      FactoryGirl.create(:geocoding, user: @user, processed_rows: 100, remote_id: 'wadus')
+      FactoryGirl.create(:geocoding, user: @user, processed_rows: 100, remote_id: 'wadus', formatter: 'foo', kind: 'high-resolution')
       geocoding.max_geocodable_rows.should eq 100
     end
 
     it 'returns 50000 if the user has soft limit' do
       @user.stubs('soft_geocoding_limit?').returns(true)
-      FactoryGirl.create(:geocoding, user: @user, processed_rows: 100)
+      FactoryGirl.create(:geocoding, user: @user, processed_rows: 100, formatter: 'foo', kind: 'high-resolution')
       geocoding.max_geocodable_rows.should eq 50000
     end
 
@@ -237,7 +237,7 @@ describe Geocoding do
       org_geocoding = FactoryGirl.build(:geocoding, user: org_user)
       organization.geocoding_quota.should eq 150
       org_geocoding.max_geocodable_rows.should eq 150
-      FactoryGirl.create(:geocoding, user: org_user, processed_rows: 100, remote_id: 'wadus')
+      FactoryGirl.create(:geocoding, user: org_user, processed_rows: 100, remote_id: 'wadus', formatter: 'foo', kind: 'high-resolution')
       org_geocoding.max_geocodable_rows.should eq 50
       organization.destroy
     end
@@ -245,7 +245,7 @@ describe Geocoding do
   end
 
   describe '#cancel' do
-    let(:geocoding) { FactoryGirl.build(:geocoding, user: @user, user_table: @table) }
+    let(:geocoding) { FactoryGirl.build(:geocoding, user: @user, user_table: @table, formatter: 'foo', kind: 'high-resolution') }
 
     it 'cancels the geocoding job' do
       geocoding.table_geocoder.expects(:cancel).times(1).returns(true)
@@ -265,24 +265,24 @@ describe Geocoding do
     end
 
     it 'returns 0 when the geocode is not high-resolution' do
-      geocoding = FactoryGirl.create(:geocoding, user: @user, kind: 'admin0', processed_rows: 10500)
+      geocoding = FactoryGirl.create(:geocoding, user: @user, kind: 'admin0', processed_rows: 10500, formatter: 'foo')
       geocoding.calculate_used_credits.should eq 0
     end
 
     it 'returns 0 when the user has enough quota' do
       # User has 200 geocoding credits, so geocoding 200 strings should take 0 credits
-      geocoding = FactoryGirl.create(:geocoding, user: @user, processed_rows: 0, cache_hits: 200, kind: 'high-resolution')
+      geocoding = FactoryGirl.create(:geocoding, user: @user, processed_rows: 0, cache_hits: 200, kind: 'high-resolution', formatter: 'foo')
       geocoding.calculate_used_credits.should eq 0
     end
 
     it 'returns the used credits when the user is over geocoding quota' do
-      geocoding = FactoryGirl.create(:geocoding, user: @user, processed_rows: 0, cache_hits: 100, kind: 'high-resolution')
+      geocoding = FactoryGirl.create(:geocoding, user: @user, processed_rows: 0, cache_hits: 100, kind: 'high-resolution', formatter: 'foo')
       # 100 total (user has 200) => 0 used credits
       geocoding.calculate_used_credits.should eq 0
-      geocoding = FactoryGirl.create(:geocoding, user: @user, processed_rows: 0, cache_hits: 150, kind: 'high-resolution')
+      geocoding = FactoryGirl.create(:geocoding, user: @user, processed_rows: 0, cache_hits: 150, kind: 'high-resolution', formatter: 'foo')
       # 250 total => 50 used credits
       geocoding.calculate_used_credits.should eq 50
-      geocoding = FactoryGirl.create(:geocoding, user: @user, processed_rows: 100, cache_hits: 0, kind: 'high-resolution')
+      geocoding = FactoryGirl.create(:geocoding, user: @user, processed_rows: 100, cache_hits: 0, kind: 'high-resolution', formatter: 'foo')
       # 350 total => 100 used credits
       geocoding.calculate_used_credits.should eq 100
     end
@@ -290,14 +290,14 @@ describe Geocoding do
 
   describe '#price' do
     it 'returns 0 when the job used no credits' do
-      geocoding = FactoryGirl.create(:geocoding, user: @user, used_credits: 0)
+      geocoding = FactoryGirl.create(:geocoding, user: @user, used_credits: 0, formatter: 'foo', kind: 'admin0')
       geocoding.price.should eq 0
     end
 
     it 'returns the expected price when the geocoding used some credits' do
-      geocoding = FactoryGirl.create(:geocoding, user: @user, used_credits: 100)
+      geocoding = FactoryGirl.create(:geocoding, user: @user, used_credits: 100, formatter: 'foo', kind: 'high-resolution')
       geocoding.price.should eq 150
-      geocoding = FactoryGirl.create(:geocoding, user: @user, used_credits: 3)
+      geocoding = FactoryGirl.create(:geocoding, user: @user, used_credits: 3, formatter: 'foo', kind: 'high-resolution')
       geocoding.price.should eq 4.5
     end
   end
@@ -339,19 +339,19 @@ describe Geocoding do
       @user.geocodings_dataset.delete
     end
     it 'returns expected results' do
-      geocoding = FactoryGirl.create(:geocoding, user: @user, processed_rows: 0, cache_hits: 100, real_rows: 100, processable_rows: 100, kind: 'high-resolution')
+      geocoding = FactoryGirl.create(:geocoding, user: @user, processed_rows: 0, cache_hits: 100, real_rows: 100, processable_rows: 100, kind: 'high-resolution', formatter: 'foo')
       geocoding.failed_rows.should eq 0
       geocoding.successful_rows.should eq 100
-      geocoding = FactoryGirl.create(:geocoding, user: @user, processed_rows: 10, cache_hits: 150, real_rows: 155, processable_rows: 160, kind: 'high-resolution')
+      geocoding = FactoryGirl.create(:geocoding, user: @user, processed_rows: 10, cache_hits: 150, real_rows: 155, processable_rows: 160, kind: 'high-resolution', formatter: 'foo')
       geocoding.failed_rows.should eq 5
       geocoding.successful_rows.should eq 155
-      geocoding = FactoryGirl.create(:geocoding, user: @user, processed_rows: 100, cache_hits: 0, real_rows: 100, processable_rows: 100, kind: 'high-resolution')
+      geocoding = FactoryGirl.create(:geocoding, user: @user, processed_rows: 100, cache_hits: 0, real_rows: 100, processable_rows: 100, kind: 'high-resolution', formatter: 'foo')
       geocoding.failed_rows.should eq 0
       geocoding.successful_rows.should eq 100
-      geocoding = FactoryGirl.create(:geocoding, user: @user, processed_rows: 0, cache_hits: 0, real_rows: 0, processable_rows: 0, kind: 'high-resolution')
+      geocoding = FactoryGirl.create(:geocoding, user: @user, processed_rows: 0, cache_hits: 0, real_rows: 0, processable_rows: 0, kind: 'high-resolution', formatter: 'foo')
       geocoding.failed_rows.should eq 0
       geocoding.successful_rows.should eq 0
-      geocoding = FactoryGirl.create(:geocoding, user: @user, processed_rows: 100, cache_hits: 0, real_rows: 0, processable_rows: 100, kind: 'high-resolution')
+      geocoding = FactoryGirl.create(:geocoding, user: @user, processed_rows: 100, cache_hits: 0, real_rows: 0, processable_rows: 100, kind: 'high-resolution', formatter: 'foo')
       geocoding.failed_rows.should eq 100
       geocoding.successful_rows.should eq 0
     end

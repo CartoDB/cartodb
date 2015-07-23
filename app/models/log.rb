@@ -22,6 +22,14 @@ module CartoDB
     TYPE_DATA_IMPORT     = 'import'
     TYPE_SYNCHRONIZATION = 'sync'
     TYPE_USER_CREATION   = 'user_creation'
+    TYPE_GEOCODING       = 'geocoding'
+
+    SUPPORTED_TYPES = [
+      TYPE_DATA_IMPORT,
+      TYPE_SYNCHRONIZATION,
+      TYPE_USER_CREATION,
+      TYPE_GEOCODING
+    ]
 
     # @param id Numeric
     # @param type String
@@ -165,7 +173,7 @@ module CartoDB
 
     def validate
       super
-      errors.add(:type, 'unsupported type') unless (self.type == TYPE_DATA_IMPORT || self.type == TYPE_SYNCHRONIZATION)
+      errors.add(:type, 'unsupported type') unless SUPPORTED_TYPES.include?(self.type)
     end
 
     def before_save

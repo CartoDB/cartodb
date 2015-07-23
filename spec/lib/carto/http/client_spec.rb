@@ -1,24 +1,18 @@
 # encoding: utf-8
 
-# Uncomment to use rails goodies, including Logger
-require_relative '../../../../config/environment'
-require 'rspec/rails'
+require_relative '../../../spec_helper'
 
-require 'rspec'
+require 'rspec/core'
+require 'rspec/expectations'
+require 'rspec/mocks'
 require 'mocha'
-require 'typhoeus'
 require_relative '../../../../lib/carto/http/client'
-
-RSpec.configure do |config|
-  config.mock_with :mocha
-end
 
 describe Carto::Http::Client do
 
-  HTTP_CLIENT_TAG = 'test'
-
   before(:each) do
-    @client = Carto::Http::Client.get(HTTP_CLIENT_TAG, log_requests: true)
+    http_client_tag = 'test'
+    @client = Carto::Http::Client.get(http_client_tag, log_requests: true)
   end
 
 

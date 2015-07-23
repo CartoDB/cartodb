@@ -48,6 +48,10 @@ module CartoDB
         Statsd.gauge("#{fully_qualified_prefix}.#{key}", value)
       end
 
+      def increment(key)
+        Statsd.increment("#{fully_qualified_prefix}.#{key}")
+      end
+
     end
 
     class NullImporterStats
@@ -57,6 +61,8 @@ module CartoDB
       end
 
       def gauge(key, value); end
+
+      def increment(key); end
 
     end
 

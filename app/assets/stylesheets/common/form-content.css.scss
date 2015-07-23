@@ -7,7 +7,6 @@
 
 $sLabel-width: 140px;
 
-.Form {}
 .Form--minHeight { min-height: 400px }
 .Form-title {
   display: block;
@@ -29,7 +28,9 @@ $sLabel-width: 140px;
   font-weight: $sFontWeight-lighter;
   color: $cTypography-paragraphs;
   line-height: $sLineHeight-large;
+  font-style: normal;
 }
+.Form-titleText--negative { color: $cHighlight-negative }
 .Form-list {
   padding: 0 0 20px 160px;
   color: $cTypography-paragraphs;
@@ -47,6 +48,36 @@ $sLabel-width: 140px;
 }
 .Form-row.Form-row--centered {
   @include justify-content(center);
+}
+.Form-row.Form-row--step {
+  position: relative;
+  @include justify-content(space-between, justify);
+  @include align-items(center);
+  padding-top: 0;
+  padding-bottom: $sMargin-group;
+  &:before {
+    content: '';
+    border-radius: 50px;
+    padding: 5px 10px;
+    margin-right: $sMargin-elementInline;
+    border: 1px solid $cStructure-mainLine;
+    font-size: $sFontSize-smallUpperCase;
+    font-weight: $sFontWeight-small;
+    color: $cTypography-paragraphs;
+    line-height: $sLineHeight-small;
+  }
+  &:first-child:before { content: '1' }
+  &:nth-child(2):before { content: '2' }
+  &:nth-child(3):before { content: '3' }
+  &:nth-child(4):before { content: '4' }
+  &:nth-child(5):before { content: '5' }
+}
+.Form-row.Form-row--step:first-child { padding-top: 0 }
+.Form-row.Form-row--step.is-done {
+  &:before {
+    color: $cHighlight-stepDone;
+    border-color: $cHighlight-stepDone;
+  }
 }
 .Form-row.has-label {
   // compensate for label width, to make the rowData appear as centered
@@ -70,12 +101,10 @@ $sLabel-width: 140px;
   @include nicer-lato-typography();
   color: $cTypography-paragraphs;
 }
-.Form-label.Form-label--large {
-  font-size: $sFontSize-large;
-}
-.Form-rowPreview {
-  width: 735px;
-}
+.Form-label--multipleLines { line-height: 20px }
+.Form-label.Form-label--large { font-size: $sFontSize-large }
+.Form-label.Form-label--step { @include flex-grow(1) }
+.Form-rowPreview { width: 735px }
 .Form-separator {
   position: relative;
   display: block;
@@ -137,6 +166,16 @@ $sLabel-width: 140px;
 .Form-rowData--long { width: 380px }
 .Form-rowData--med { width: 300px }
 .Form-rowData--short { width: 170px }
+.Form-rowData--step {
+  width: 260px;
+  margin-right: 0;
+}
+.Form-rowDataExtra {
+  position: absolute;
+  right: -52px;
+}
+.Form-rowData ~ .Form-rowDataExtra { top: 10px } // to compensate for its top-padding
+.Form-rowData--step ~ .Form-rowDataExtra { top: 0 }
 
 .Form-input {
   position: relative;
@@ -398,7 +437,7 @@ $sLabel-width: 140px;
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
-  margin: $sMargin-formRow 0;
+  margin: $sMargin-section 0;
   padding: $sMargin-formRow 0;
   border-top: 1px solid $cStructure-mainLine;
 }

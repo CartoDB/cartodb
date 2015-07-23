@@ -1,10 +1,7 @@
 # encoding: utf-8
 
 require_relative '../../lib/importer/content_guesser'
-
-RSpec.configure do |config|
-  config.mock_with :mocha
-end
+require_relative '../../../../spec/rspec_configuration.rb'
 
 describe CartoDB::Importer2::ContentGuesser do
 

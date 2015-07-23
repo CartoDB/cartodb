@@ -89,6 +89,25 @@ feature "Superadmin's organization API" do
     end
   end
 
+  describe 'users destruction logic' do
+    include_context 'organization with users helper'
+
+    it 'keeps a table shared with an user when that user is deleted' do
+      table = create_random_table(@org_user_1)
+      share_table(table, @org_user_1, @org_user_2)
+      @org_user_2.destroy
+
+      Carto::UserTable.where(id: table.id).first.should_not be_nil
+
+      expect {
+        @org_user_1.destroy
+      }.to raise_error(CartoDB::BaseCartoDBError, "Cannot delete user, has shared entities")
+    end
+
+  end
+
+
+
   private
 
   def default_headers(user = Cartodb.config[:superadmin]["username"], password = Cartodb.config[:superadmin]["password"])

@@ -27,9 +27,7 @@
     <div class="Form-rowInfo">
       <% if (@user.errors[:username].present?) %>
         <p class="Form-rowInfoText Form-rowInfoText--error">Username not valid</p>
-      <% elsif !@user.new? %>
-        <p class="Form-rowInfoText">You enter through <%= link_to 'here', @user.public_url %></p>
-      <% else %>
+      <% elsif @user.new? %>
         <p class="Form-rowInfoText">Once you choose the username, you won't be able to change it</p>
       <% end %>
     </div>

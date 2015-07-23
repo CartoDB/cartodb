@@ -1,0 +1,61 @@
+// Base
+// --------------------------------------------------
+
+@import "_variables";
+@import "_mixins";
+@import "_helpers";
+@import "compass/reset";
+
+* {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  min-width: 360px;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: $body-background;
+  text-rendering: optimizeLegibility;
+  -webkit-text-rendering: optimizeLegibility;
+  color: $text-color;
+  font-weight: $font-weight-base;
+  font-size: $font-size-base;
+  line-height: $line-height-base;
+  font-family: $font-family-base;
+}
+
+a {
+  text-decoration: none;
+  color: $cPrincipal;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+strong {
+  font-weight: 700;
+}
+
+em {
+  font-style: italic;
+}
+
+abbr {
+  border-bottom: 1px dotted #ddd;
+}
+
+button {
+  margin: 0;
+  border: 0;
+  outline: none;
+  cursor: pointer;
+  font-family: $font-family-base;
+}

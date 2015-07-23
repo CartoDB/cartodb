@@ -88,10 +88,14 @@ module CartoDB
       public_like.js
       common.js
       old_common.js
+      old_common_without_core.js
       templates.js
       templates_mustache.js
       specs.js
       sessions.js
+      signup.js
+      confirmation_templates.js
+      confirmation.js
 
       tipsy.js
       modernizr.js

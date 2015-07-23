@@ -1,6 +1,9 @@
-<%= content_for(:title) do %>CartoDB · <%= @visualization.name.gsub(/_/," ") %><% end %>
+<%= content_for(:title) do %><%= @visualization.name %><% end %>
 
-<%= content_for(:description) do %><%= @visualization.description_clean || "#{@visualization.name.gsub(/_/," ")} created by #{@name} in CartoDB" %><% end %>
+<%= content_for(:description) do %><%= @visualization.description_clean ? "#{@visualization.description_clean}. Map created by #{@name} in CartoDB" : "Map created by #{@name} in CartoDB" %><% end %>
+
+<%= content_for(:twitter_card) do %><%= Carto::StaticMapsURLHelper.new.url_for_static_map(request, @visualization, 560, 300) %><% end %>
+<%= content_for(:facebook_card) do %><%= Carto::StaticMapsURLHelper.new.url_for_static_map(request, @visualization, 1200, 630) %><% end %>
 
 <%= content_for(:body_class) do %> PublicMap <% end %>
 

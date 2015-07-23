@@ -40,3 +40,11 @@ div.dropdown ul li a,
 .CodeMirror { font-size: 15px }
 
 div.legends_panel div.forms.panel_content .right .checkbox { margin-top:11px; line-height:1 }
+
+
+// New dialogs
+.Dialog-headerTitle,
+.Dialog-headerText,
+.IntermediateInfo-title {
+  font-family: 'Lato', sans-serif; // TODO: remove when old styles are deleted  
+}

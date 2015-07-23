@@ -25,7 +25,7 @@ feature "API 1.0 map layers management" do
   let(:params) { { api_key: @user.api_key } }
 
   scenario "Create a new layer associated to a map" do
-    opts = { "type" => "GMapsBase", "base_type" => "roadmap", "style" => "null", "order" => "0" }
+    opts = { "type" => "GMapsBase", "base_type" => "roadmap", "style" => "null", "order" => "0", "query_history" => [] }
     infowindow = ['column1', 'column2', 'column3']
 
     data = { kind: 'gmapsbase', infowindow: infowindow, options: opts }
@@ -87,6 +87,28 @@ feature "API 1.0 map layers management" do
       response.body[:infowindow].should == ['column1', 'column2']
       response.body[:kind].should == 'carto'      
       response.body[:order].should == 3
+    end
+  end
+
+  scenario "Update several layers at once" do
+    layer_1 = Layer.create kind: 'carto', order: 0
+    layer_2 = Layer.create kind: 'carto', order: 1
+    @map.add_layer layer_1
+    @map.add_layer layer_2
+
+    data = { layers: [
+      { id: layer_1.id, options: { opt1: 'value' }, infowindow: ['column1', 'column2'], order: 2, kind: 'carto' },
+      { id: layer_2.id, options: { opt1: 'value' }, infowindow: ['column1', 'column2'], order: 3, kind: 'carto' }
+    ]}
+
+    put_json api_v1_maps_layers_update_url(params.merge(map_id: @map.id)), data do |response|
+      response.status.should be_success
+      response_layers = response.body[:layers]
+      response_layers.count.should == 2
+      response_layers.select { |l| l['id'] == layer_1.id }.first['order'].should == 2
+      response_layers.select { |l| l['id'] == layer_2.id }.first['order'].should == 3
+      layer_1.reload.order.should == 2
+      layer_2.reload.order.should == 3
     end
   end
 

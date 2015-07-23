@@ -1,5 +1,6 @@
 # encoding: utf-8
-require 'rspec'
+require_relative '../../spec_helper'
+require 'rspec/core'
 require 'ostruct'
 require_relative '../../../app/models/layer/presenter'
 

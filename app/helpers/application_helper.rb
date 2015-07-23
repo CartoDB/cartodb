@@ -1,6 +1,8 @@
 # coding: utf-8
+require_dependency 'cartodb_config_utils'
 
 module ApplicationHelper
+  include CartoDB::ConfigUtils
 
   def current_user
     super(CartoDB.extract_subdomain(request))
@@ -96,13 +98,6 @@ module ApplicationHelper
       config[:statsd_port] = Cartodb.config[:graphite_public]['port']
     end
 
-    if Cartodb.config[:cdn_url].present?
-      config[:cdn_url] = {
-        http:              Cartodb.config[:cdn_url].try("fetch", "http", nil),
-        https:             Cartodb.config[:cdn_url].try("fetch", "https", nil)
-      }
-    end
-
     if Cartodb.config[:error_track].present?
       config[:error_track_url] = Cartodb.config[:error_track]["url"]
       config[:error_track_percent_users] = Cartodb.config[:error_track]["percent_users"]
@@ -133,13 +128,6 @@ module ApplicationHelper
     if Cartodb.config[:graphite_public].present?
       config[:statsd_host] = Cartodb.config[:graphite_public]['host']
       config[:statsd_port] = Cartodb.config[:graphite_public]['port']
-    end
-
-    if Cartodb.config[:cdn_url].present?
-      config[:cdn_url] = {
-        http:              Cartodb.config[:cdn_url].try("fetch", "http", nil),
-        https:             Cartodb.config[:cdn_url].try("fetch", "https", nil)
-      }
     end
 
     if Cartodb.config[:error_track].present?
@@ -224,15 +212,19 @@ module ApplicationHelper
     end
   end
 
+  def terms_path
+    'http://cartodb.com/terms'
+  end
+
+  def privacy_path
+    'https://cartodb.com/privacy'
+  end
+
   def vis_json_url(vis_id, context, user=nil)
     "#{ CartoDB.url(context, 'api_v2_visualizations_vizjson', { id: vis_id }, user).sub(/(http:|https:)/i, '') }.json"
   end
 
   #if cartodb_com_hosted is false, means that it is SaaS. If it's true (or doesn't exist), it's a custom installation
-  def cartodb_com_hosted?
-    Cartodb.config[:cartodb_com_hosted].nil? || Cartodb.config[:cartodb_com_hosted]
-  end
-
   def cartodb_onpremise_version
     Cartodb.config[:onpremise_version]
   end

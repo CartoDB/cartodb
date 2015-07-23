@@ -10,6 +10,8 @@ describe Downloader do
     @file_filepath  = path_to('foo.png')
     @file_url_without_extension = "http://www.example.com/foowithoutextension"
     @file_filepath_without_extension  = path_to('foowithoutextension')
+    @file_url_with_wrong_extension = "http://www.example.com/csvwithwrongextension.xml"
+    @file_filepath_with_wrong_extension  = path_to('csvwithwrongextension.xml')
     @fusion_tables_url =
       "https://www.google.com/fusiontables/exporttable" +
       "?query=select+*+from+1dimNIKKwROG1yTvJ6JlMm4-B4LxMs2YbncM4p9g"
@@ -51,6 +53,67 @@ describe Downloader do
       downloader = Downloader.new(@file_url_without_extension)
       downloader.run
       downloader.source_file.filename.should eq 'foowithoutextension.csv'
+    end
+
+    it 'uses file name for file without extension and with unknown Content-Type header' do
+      stub_download(
+          url: @file_url_without_extension, 
+          filepath: @file_filepath_without_extension, 
+          headers: { 'Content-Type' => 'application/octet-stream' }
+      )
+      downloader = Downloader.new(@file_url_without_extension)
+      downloader.run
+      downloader.source_file.filename.should eq 'foowithoutextension'
+    end
+
+    it 'uses file name for file with extension and with unknown Content-Type header' do
+      url_csv_with_extension = "http://www.example.com/ngos.csv"
+      csv_filepath_with_extension  = path_to('ngos.csv')
+      stub_download(
+          url: url_csv_with_extension, 
+          filepath: csv_filepath_with_extension, 
+          headers: { 'Content-Type' => 'application/octet-stream' }
+      )
+      downloader = Downloader.new(url_csv_with_extension)
+      downloader.run
+      downloader.source_file.filename.should eq 'ngos.csv'
+    end
+
+    it 'uses Content-Type header extension for files with different extension' do
+      stub_download(
+          url: @file_url_with_wrong_extension, 
+          filepath: @file_filepath_with_wrong_extension, 
+          headers: { 'Content-Type' => 'text/csv' }
+      )
+      downloader = Downloader.new(@file_url_with_wrong_extension)
+      downloader.run
+      downloader.source_file.filename.should eq 'csvwithwrongextension.csv'
+    end
+
+    it 'sets the right file extension for file without extension in a multi extension Content-Type' do
+      url_tgz_without_extension = "http://www.example.com/csvwithwrongextension.xml"
+      tgz_filepath_without_extension  = path_to('csvwithwrongextension.xml')
+      stub_download(
+          url: url_tgz_without_extension, 
+          filepath: tgz_filepath_without_extension, 
+          headers: { 'Content-Type' => 'text/csv' }
+      )
+      downloader = Downloader.new(url_tgz_without_extension)
+      downloader.run
+      downloader.source_file.filename.should eq 'csvwithwrongextension.csv'
+    end
+
+    it 'uses the right file extension based in a multiple file extension Content-Type scenario' do
+      url_tgz_without_extension = "http://www.example.com/ok_data.csv.gz"
+      tgz_filepath_without_extension  = path_to('ok_data.csv.gz')
+      stub_download(
+          url: url_tgz_without_extension, 
+          filepath: tgz_filepath_without_extension, 
+          headers: { 'Content-Type' => 'application/x-gzip' }
+      )
+      downloader = Downloader.new(url_tgz_without_extension)
+      downloader.run
+      downloader.source_file.filename.should eq 'ok_data.csv.gz'
     end
 
     it 'extracts the source_file name from Content-Disposition header' do

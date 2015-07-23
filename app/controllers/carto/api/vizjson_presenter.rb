@@ -27,8 +27,7 @@ module Carto
           user_name: user.username,
           user_api_key: user.api_key,
           user: user,
-          viewer_user: user,
-          dynamic_cdn_enabled: user.dynamic_cdn_enabled
+          viewer_user: user
         }.merge(options)
         CartoDB::Visualization::VizJSON.new(Carto::Api::VisualizationVizJSONAdapter.new(@visualization, @redis_cache), vizjson_options, Cartodb.config).to_poro
       end

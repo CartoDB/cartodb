@@ -6,7 +6,7 @@
       _gaq.push(['_setAllowLinker', true]);
       <% if defined? custom_vars -%> 
       <% custom_vars.each do |var| %>
-      <%= "_gaq.push(['_setCustomVar', 1, '#{var[:title]}', '#{var[:value]}', #{var[:num]} ]);" %>
+        _gaq.push(['_setCustomVar', 1, '<%= var[:title] %>', '<%= var[:value] %>', <%= var[:num] %> ]);
       <% end %>
       <% end -%>
       <% unless defined? page_owner -%> 

@@ -1,7 +1,7 @@
 # encoding: utf-8
 require 'open3'
-require 'dbf'
 require_relative './exceptions'
+require_relative './shp_helper'
 
 module CartoDB
   module Importer2
@@ -64,6 +64,8 @@ module CartoDB
       def initialize(filepath, job)
         @job      = job
         @filepath = filepath
+        @helper = ShpHelper.new(filepath)
+        @helper.verify_file
       end
 
       def encoding
@@ -77,12 +79,11 @@ module CartoDB
 
       def shape_encoding_guessing
         normalize
-        dbf       = filepath.gsub(%r{\.shp$}, '.dbf')
-        encoding  = read_encoding_files || DBF::Table.new(dbf).encoding ||
+        encoding  = read_encoding_files || @helper.dbf_encoding ||
                     normalizer_output.fetch(:encoding, nil)
         encoding  = DEFAULT_ENCODING if encoding == 'None' 
         encoding  = codepage_for(encoding) if windows?(encoding)
-        return(tab_encoding || encoding) if tab?
+        return(tab_encoding || encoding) if @helper.tab?
         encoding
       end
 
@@ -90,24 +91,11 @@ module CartoDB
       # ArcGIS and Geopublisher, AtlasStyler and Geoserver: .cpg
       # Geoserver: cst
       def read_encoding_files
-        filter_supported_encodings(read_encoding_file('cpg') || read_encoding_file('cst'))
+        filter_supported_encodings(@helper.read_encoding_file('cpg') || @helper.read_encoding_file('cst'))
       end
 
       def filter_supported_encodings(encoding)
         encoding.nil? || !SUPPORTED_ENCODINGS_DOWNCASED.include?(encoding.downcase) ? nil : encoding
-      end
-
-      def read_encoding_file(extension)
-        current_extension = File.extname(filepath)
-        path = filepath.gsub(/#{current_extension}$/, ".#{extension}")
-        return nil unless File.exists?(path)
-        saved_encoding = nil
-        f = File.open(path, 'r') { |file|
-          saved_encoding = file.read
-        }
-        saved_encoding
-      rescue => e
-        nil
       end
 
       def tab_encoding
@@ -119,9 +107,6 @@ module CartoDB
       end 
 
       def normalize
-        raise InvalidShpError         unless dbf? && shx?
-        raise MissingProjectionError  unless prj?
-
         stdout, stderr, status  = Open3.capture3(normalizer_command)
         output                  = stdout.strip.split(/, */, 4)
         self.normalizer_output  = {
@@ -134,22 +119,6 @@ module CartoDB
         raise ShpNormalizationError unless status.to_i == 0 
         raise ShpNormalizationError unless !!normalizer_output
         self
-      end
-
-      def prj?
-        File.exists?(filepath.gsub(%r{\.shp$}, '.prj'))
-      end
-
-      def tab?
-        File.extname(filepath) == '.tab'
-      end
-
-      def dbf?
-        File.exists?(filepath.gsub(%r{\.shp$}, '.dbf'))
-      end
-
-      def shx?
-        File.exists?(filepath.gsub(%r{\.shp$}, '.shx'))
       end
 
       attr_accessor :exit_code, :command_output, :normalizer_output, :filepath,

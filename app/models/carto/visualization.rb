@@ -43,6 +43,10 @@ class Carto::Visualization < ActiveRecord::Base
 
   belongs_to :map
 
+  def ==(other_visualization)
+    self.id == other_visualization.id
+  end
+
   def size
     # Only canonical visualizations (Datasets) have a related table and then count against disk quota,
     # but we want to not break and even allow ordering by size multiple types
@@ -230,11 +234,15 @@ class Carto::Visualization < ActiveRecord::Base
     table.nil? ? nil : table.service
   end
 
+  def has_read_permission?(user)
+    user && (is_owner_user?(user) || (permission && permission.user_has_read_permission?(user)))
+  end
+
   private
 
   def get_named_map
     return nil if type == TYPE_REMOTE
-    data = named_maps.get(CartoDB::NamedMapsWrapper::NamedMap.normalize_name(id))
+    data = named_maps.get(CartoDB::NamedMapsWrapper::NamedMap.template_name(id))
     data.nil? ? false : data
   end
 
@@ -293,10 +301,6 @@ class Carto::Visualization < ActiveRecord::Base
 
   def get_related_visualizations
     Carto::Visualization.where(map_id: related_tables.collect(&:map_id), type: TYPE_CANONICAL).all
-  end
-
-  def has_read_permission?(user)
-    user && (is_owner_user?(user) || (permission && permission.user_has_read_permission?(user)))
   end
 
   def has_write_permission?(user)

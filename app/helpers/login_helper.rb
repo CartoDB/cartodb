@@ -7,7 +7,7 @@ module LoginHelper
   def background
     base_color = @organization && @organization.color ? @organization.color : DEFAULT_BACKGROUND_COLOR
     color = "#{darken_color(base_color,0.6)}, #{base_color}"
-    "background: url(#{image_path('backgrounds/sessions.png')}), linear-gradient(to bottom right, #{color});"
+    "background-image: url(#{image_path('backgrounds/sessions.png')}), linear-gradient(to bottom right, #{color});"
   end
 
   def darken_color(hex_color, amount=0.4)
@@ -17,6 +17,10 @@ module LoginHelper
     rgb[1] = (rgb[1].to_i * amount).round
     rgb[2] = (rgb[2].to_i * amount).round
     "#%02x%02x%02x" % rgb
+  end
+
+  def organization_color(organization)
+    !organization.nil? ? darken_color(organization.color, 0.7) : "#292E33"
   end
 
   def login_org_avatar

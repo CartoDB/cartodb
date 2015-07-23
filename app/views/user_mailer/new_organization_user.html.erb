@@ -1,23 +1,70 @@
-<% content_for(:header_color) {"3B7EBB"} %>
-<% content_for(:header_img) {"top.png"} %>
+<% content_for(:subject) { @subject } %>
 
 <% content_for :body do %>
-
-<p style="text-align: center;">You have been invited to CartoDB as part of the <strong><%= @organization.name %> organization</strong>. From now on you will be able to enter to your CartoDB dashboard by login in with your username (<%= @user.username %>) and the password provided by your administrator.</p>
-
-<table border="0" cellspacing="0" cellpadding="0" style="margin: 0 auto;">
   <tr>
-    <td style="background: url(http://cartodb.s3.amazonaws.com/mails/editor/button-bg.png) no-repeat left; padding: 10px 0; font-size: 16px; width: 21px;">&nbsp;</td>
-    <td style="background: #407CC0; color:#fff; padding: 10px;">
-      <a href="<%= @link %>" style="color: #fff; text-decoration: none;">Go to your dashboard</a>
+    <td>
+      <!-- HEADER -->
+      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; border: 1px solid #dddddd; border-bottom: 0; border-collapse: separate !important; border-top-left-radius: 4px; border-top-right-radius: 4px; width: 100% !important;">
+        <% if @user_needs_password %>
+          <tr>
+            <td align="left" style="padding: 40px 50px 0 50px; font-weight: bold; font-size: 25px; font-family: Helvetica, Arial, sans-serif; color: #333333;">You have been invited to CartoDB</td>
+          </tr>
+
+          <tr>
+            <td align="left" style="padding: 20px 50px 40px 50px; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;">If you have not received your password yet, contact with your administrator at <strong><%= @owner.username %></strong>.</td>
+          </tr>
+        <% else %>
+          <tr>
+            <td align="left" style="padding: 40px 50px 40px 50px; font-weight: bold; font-size: 25px; font-family: Helvetica, Arial, sans-serif; color: #333333;">You have been invited to CartoDB</td>
+          </tr>
+        <% end %>
+      </table>
     </td>
-    <td style="background: url(http://cartodb.s3.amazonaws.com/mails/editor/button-bg.png) no-repeat right; padding: 10px 0; font-size: 16px; width: 21px;">&nbsp;</td>
   </tr>
+
   <tr>
-    <td style="height: 20px;">&nbsp;</td>
+    <td>
+      <!-- CONTENT -->
+      <table cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #ffffff; border: 1px solid #dddddd; border-top: 1px solid #dddddd; border-bottom: 1px solid #cccccc; border-bottom-left-radius: 4px; border-bottom-right-radius: 4px; width: 100% !important;">
+        <tr>
+          <td valign="top" style="padding: 0;">
+            <table cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #F2FAE8; border-bottom: 1px solid #dddddd; width: 100% !important;">
+              <tr>
+                <td align="left" style="padding: 40px 50px 40px 50px; font-family: Helvetica, Arial, sans-serif;">
+                  <p style="margin: 0; font-size: 16px; line-height: 25px; color: #666666;">You have been invited to CartoDB as part of the <strong><%= @organization.name %></strong> organization. From now on you will be able to enter to your CartoDB dashboard by login in with your username (<%= @user.username %>) and the password <%= @user_needs_password ? 'provided by your administrator' : 'you typed' %><%= ' as soon as you activate your account' unless @enable_account_link.nil? %>.</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="padding: 40px 50px 40px 50px;" align="center" class="padding">
+            <table border="0" cellspacing="0" cellpadding="0" class="mobile-button-container">
+              <tr>
+                <td align="center">
+                  <!-- BULLETPROOF BUTTON -->
+                  <table width="100%" border="0" cellspacing="0" cellpadding="0" class="mobile-button-container">
+                    <tr>
+                      <td align="center" style="padding: 0;">
+                        <table border="0" cellspacing="0" cellpadding="0" class="responsive-table">
+                          <tr>
+                            <% if @enable_account_link.nil? %>
+                              <td align="center"><a href="<%= @link %>" target="_blank" style="font-size: 16px; font-family: Helvetica, Arial, sans-serif; font-weight: normal; color: #ffffff; text-decoration: none; background-color: #3AA9E3; border-top: 15px solid #3AA9E3; border-bottom: 15px solid #3AA9E3; border-left: 25px solid #3AA9E3; border-right: 25px solid #3AA9E3; border-radius: 3px; -webkit-border-radius: 3px; -moz-border-radius: 3px; display: inline-block;" class="mobile-button">Go to your dashboard</a></td>
+                            <% else %>
+                              <td align="center"><a href="<%= @enable_account_link %>" target="_blank" style="font-size: 16px; font-family: Helvetica, Arial, sans-serif; font-weight: normal; color: #ffffff; text-decoration: none; background-color: #3AA9E3; border-top: 15px solid #3AA9E3; border-bottom: 15px solid #3AA9E3; border-left: 25px solid #3AA9E3; border-right: 25px solid #3AA9E3; border-radius: 3px; -webkit-border-radius: 3px; -moz-border-radius: 3px; display: inline-block;" class="mobile-button">Activate your account</a></td>
+                            <% end %>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
   </tr>
-</table>
-
-<p style="text-align: center; font-size: 12px; color: #A8A8A8;">If you have not received your password yet, contact with your administrator at <%= @owner.username %></p>
-
 <% end %>

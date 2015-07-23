@@ -19,8 +19,12 @@ def random_username
 end
 
 def login(user)
-  login_as(user, scope: user.subdomain)
-  host! "#{user.subdomain}.localhost.lan"
+  login_as(user, scope: user.username)
+  host! "#{user.username}.localhost.lan"
+end
+
+def create_random_table(user, name = "viz#{rand(999)}")
+  create_table( { user_id: user.id, name: name } )
 end
 
 shared_context 'database configuration' do
@@ -43,7 +47,9 @@ shared_context 'organization with users helper' do
   include CacheHelper
   include_context 'database configuration'
 
-  bypass_named_maps
+  before(:each) do
+    bypass_named_maps
+  end
 
   def test_organization
     organization = Organization.new
@@ -58,13 +64,11 @@ shared_context 'organization with users helper' do
       username: username,
       email: "#{username}@example.com",
       password: username,
-      private_tables_enabled: true
+      private_tables_enabled: true,
+      organization: organization
     )
-    unless organization.nil?
-      user.organization_id = organization.id
-      user.save.reload
-      user.reload
-    end
+    user.save.reload
+    organization.reload if organization
     user
   end
 
@@ -72,25 +76,27 @@ shared_context 'organization with users helper' do
     @organization = test_organization.save
     @organization_2 = test_organization.save
 
-    @org_user_1 = create_test_user("a#{random_username}")
-    user_org = CartoDB::UserOrganization.new(@organization.id, @org_user_1.id)
+    @org_user_owner = create_test_user("o#{random_username}")
+    user_org = CartoDB::UserOrganization.new(@organization.id, @org_user_owner.id)
     user_org.promote_user_to_admin
     @organization.reload
-    @org_user_1.reload
+    @org_user_owner.reload
 
+    @org_user_1 = create_test_user("a#{random_username}", @organization)
     @org_user_2 = create_test_user("b#{random_username}", @organization)
-    @org_user_2.organization_id = @organization.id
-    @org_user_2.save.reload
+
     @organization.reload
   end
 
   before(:each) do
     bypass_named_maps
+    delete_user_data @org_user_owner
     delete_user_data @org_user_1
     delete_user_data @org_user_2
   end
 
   after(:all) do
+    delete_user_data @org_user_owner if @org_user_owner
     @organization.destroy_cascade
   end
 
@@ -131,20 +137,14 @@ end
 shared_context 'users helper' do
   include_context 'database configuration'
 
-  before(:all) do
-    username1 = random_username
-    @user1 = create_user(
-      username: username1,
-      email: "#{username1}@example.com",
-      password: 'clientex'
-    )
+  before(:each) do
+    User.any_instance.stubs(:enable_remote_db_user).returns(true)
+  end
 
-    username2 = random_username
-    @user2 = create_user(
-      username: username2,
-      email: "#{username2}@example.com",
-      password: 'clientex2'
-    )
+  before(:all) do
+    # TODO: Remove this and either all use the global instances or create a true general context with sample users
+    @user1 = $user_1
+    @user2 = $user_2
   end
 
   before(:each) do
@@ -156,18 +156,16 @@ shared_context 'users helper' do
   after(:all) do
     delete_user_data @user1 if @user1
     delete_user_data @user2 if @user2
-    @user1.destroy if @user1
-    @user2.destroy if @user2
+    # User destruction is handled at spec_helper
   end
 
 end
 
 shared_context 'visualization creation helpers' do
   include Warden::Test::Helpers
-  bypass_named_maps
 
-  def create_random_table(user, name = "viz#{rand(999)}")
-    create_table( { user_id: user.id, name: name } )
+  before(:each) do
+    bypass_named_maps
   end
 
   private

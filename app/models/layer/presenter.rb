@@ -160,9 +160,7 @@ module CartoDB
             sql_api_domain:     (configuration[:sql_api]["public"]["domain"] rescue nil),
             sql_api_endpoint:   (configuration[:sql_api]["public"]["endpoint"] rescue nil),
             sql_api_port:       (configuration[:sql_api]["public"]["port"] rescue nil),
-            cdn_url:            configuration.fetch(:cdn_url, nil),
             layer_name:         name_for(layer),
-            dynamic_cdn:        options[:viewer_user] ? options[:viewer_user].dynamic_cdn_enabled : false
           }.merge(
             layer_options.select { |k| TORQUE_ATTRS.include? k })
         }
@@ -221,7 +219,6 @@ module CartoDB
             unless data['user_name'] == viewer.username
               data['table_name'] = "\"#{data['user_name']}\".#{data['table_name']}"
             end
-            data['dynamic_cdn'] = viewer.dynamic_cdn_enabled
           end
           data
         end

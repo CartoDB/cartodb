@@ -61,7 +61,8 @@ class DataImport < Sequel::Model
     #   twitter_credits: Integer
     # }
     # No automatic conversion coded
-    'user_defined_limits'
+    'user_defined_limits',
+    'original_url'
   ]
 
   # This attributes will get removed from public_values upon calling api_call_public_values
@@ -98,7 +99,7 @@ class DataImport < Sequel::Model
 
   # This before_create should be only necessary to track old dashboard data imports.
   # New ones are already tracked during the data_import create inside the controller
-  # For the old dashboard 
+  # For the old dashboard
   def before_create
     if self.from_common_data?
       self.extra_options = self.extra_options.merge({:common_data => true})
@@ -109,12 +110,12 @@ class DataImport < Sequel::Model
     self.logger = self.log.id unless self.logger.present?
     self.updated_at = Time.now
   end
-  
+
   def from_common_data?
-    if Cartodb.config[:common_data] && 
-       !Cartodb.config[:common_data]['username'].blank? && 
+    if Cartodb.config[:common_data] &&
+       !Cartodb.config[:common_data]['username'].blank? &&
        !Cartodb.config[:common_data]['host'].blank?
-      if !self.extra_options.has_key?('common_data') && 
+      if !self.extra_options.has_key?('common_data') &&
          self.data_source &&
          self.data_source.include?("#{Cartodb.config[:common_data]['username']}.#{Cartodb.config[:common_data]['host']}")
         return true
@@ -176,6 +177,7 @@ class DataImport < Sequel::Model
     end
 
     success ? handle_success : handle_failure
+    log.store
     Rails.logger.debug log.to_s
     self
   rescue CartoDB::QuotaExceeded => quota_exception
@@ -245,6 +247,9 @@ class DataImport < Sequel::Model
       self.values[:data_type] = TYPE_URL
       self.values[:data_source] = data_source
     end
+
+    self.original_url = self.values[:data_source] if (self.original_url.to_s.length == 0)
+
     # else SQL-based import
   end
 
@@ -262,6 +267,7 @@ class DataImport < Sequel::Model
     self.table_names = table_names.join(' ')
     self.tables_created_count = table_names.size
     log.append "Import finished\n"
+    log.store
     save
     begin
       CartoDB::PlatformLimits::Importer::UserConcurrentImportsAmount.new({
@@ -286,6 +292,7 @@ class DataImport < Sequel::Model
       self.error_code = supplied_exception.error_code
     end
     log.append "ERROR!\n"
+    log.store
     self.save
     begin
       CartoDB::PlatformLimits::Importer::UserConcurrentImportsAmount.new({
@@ -304,6 +311,7 @@ class DataImport < Sequel::Model
   rescue => exception
     log.append "Exception: #{exception.to_s}"
     log.append exception.backtrace
+    log.store
     self
   end
 
@@ -321,7 +329,7 @@ class DataImport < Sequel::Model
   # Calculates the maximum timeout in seconds for a given user, to be used when performing HTTP requests
   # TODO: Candidate for being private if we join syncs and data imports someday
   # TODO: Add timeout config (if we need to change this)
-  def self.http_timeout_for(user, assumed_kb_sec = 50*1024)
+  def self.http_timeout_for(user, assumed_kb_sec = 75*1024)
     if user.nil? || !user.respond_to?(:quota_in_bytes)
       raise ArgumentError.new('Need a User object to calculate its download speed')
     end
@@ -379,7 +387,7 @@ class DataImport < Sequel::Model
           type:     CartoDB::Log::TYPE_DATA_IMPORT,
           user_id:  current_user.id
       )
-      self.log.save
+      self.log.store
     end
   end
 
@@ -406,6 +414,7 @@ class DataImport < Sequel::Model
 
     query = table_copy ? "SELECT * FROM #{table_copy}" : from_query
     new_table_name = import_from_query(table_name, query)
+    sanitize_columns(new_table_name)
 
     self.update(table_names: new_table_name)
     migrate_existing(new_table_name)
@@ -444,6 +453,15 @@ class DataImport < Sequel::Model
 
     table_name
   end
+
+  def sanitize_columns(table_name)
+    Table.sanitize_columns(table_name, {
+        connection: current_user.in_database,
+        database_schema: current_user.database_schema,
+        reserved_words: CartoDB::Importer2::Column::RESERVED_WORDS
+      })
+  end
+
 
   def migrate_existing(imported_name=migrate_table, name=nil)
     new_name = imported_name || name
@@ -572,7 +590,7 @@ class DataImport < Sequel::Model
         when Search::Twitter::DATASOURCE_NAME
           post_import_handler.add_transform_geojson_geom_column
       end
-      
+
       database_options = pg_options
       self.host = database_options[:host]
 
@@ -637,6 +655,8 @@ class DataImport < Sequel::Model
 
   def update_synchronization(importer)
     if synchronization_id
+      log.type = CartoDB::Log::TYPE_SYNCHRONIZATION
+      log.store
       log.append "synchronization_id: #{synchronization_id}"
       synchronization = CartoDB::Synchronization::Member.new(id: synchronization_id).fetch
       synchronization.name    = self.table_name
@@ -749,6 +769,7 @@ class DataImport < Sequel::Model
   end
 
   def payload_for(result=nil)
+    log.store
     payload = {
       file_url:       public_url,
       distinct_id:    current_user.username,

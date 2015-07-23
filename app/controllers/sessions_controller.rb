@@ -1,16 +1,19 @@
 # encoding: UTF-8
-require_dependency '../../lib/google_plus_api'
-require_dependency '../../lib/google_plus_config'
+require_dependency 'google_plus_api'
+require_dependency 'google_plus_config'
 
 class SessionsController < ApplicationController
+  include LoginHelper
+
   layout 'frontend'
   ssl_required :new, :create, :destroy, :show, :unauthenticated
 
+  before_filter :load_organization
   before_filter :initialize_google_plus_config
   before_filter :api_authorization_required, :only => :show
-  before_filter :load_organization
   # Don't force org urls
   skip_before_filter :ensure_org_url_if_org_user
+  skip_before_filter :ensure_account_has_been_activated, :only => :account_token_authentication_error
 
 
   def new
@@ -70,11 +73,17 @@ class SessionsController < ApplicationController
     end
   end
 
+  def account_token_authentication_error
+    warden.custom_failure!
+    user_id = warden.env['warden.options'][:user_id] if warden.env['warden.options']
+    @user = User.where(id: user_id).first if user_id
+  end
+
   protected
 
   def initialize_google_plus_config
     signup_action = Cartodb::Central.sync_data_with_cartodb_central? ? Cartodb::Central.new.google_signup_url : '/google/signup'
-    @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, signup_action)
+    @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, signup_action, 'google_access_token', @organization.nil? || @organization.color.nil? ? nil : organization_color(@organization))
   end
 
   def extract_username(request, params)
@@ -89,7 +98,7 @@ class SessionsController < ApplicationController
   private
 
   def load_organization
-    subdomain = CartoDB.extract_subdomain(request)
+    subdomain = CartoDB.subdomain_from_request(request)
     @organization = Carto::Organization.where(name: subdomain).first if subdomain
   end
 

@@ -129,7 +129,7 @@ describe Visualization::Member do
       CartoDB::Visualization::NameChecker.any_instance.stubs(:available?).returns(true)
 
       member = Visualization::Member.new(id: member.id).fetch
-      @user_mock.expects(:invalidate_varnish_cache)
+      CartoDB::Varnish.any_instance.expects(:purge).with(member.varnish_vizzjson_key)
       member.name = 'changed'
       member.store
     end
@@ -142,7 +142,7 @@ describe Visualization::Member do
       member.store
 
       member = Visualization::Member.new(id: member.id).fetch
-      @user_mock.expects(:invalidate_varnish_cache)
+      CartoDB::Varnish.any_instance.expects(:purge).with(member.varnish_vizzjson_key)
       member.privacy = Visualization::Member::PRIVACY_PRIVATE
       member.store
     end
@@ -152,7 +152,7 @@ describe Visualization::Member do
       member.store
 
       member = Visualization::Member.new(id: member.id).fetch
-      @user_mock.expects(:invalidate_varnish_cache)
+      CartoDB::Varnish.any_instance.expects(:purge).with(member.varnish_vizzjson_key)
       member.description = 'changed description'
       member.store
     end
@@ -228,7 +228,6 @@ describe Visualization::Member do
     end
 
     it 'checks has_permission? permissions' do
-      @user = create_user(:quota_in_bytes => 1234567890, :table_quota => 400)
       Permission.any_instance.stubs(:grant_db_permission).returns(nil)
 
       Permission.any_instance.stubs(:notify_permissions_change).returns(nil)
@@ -250,7 +249,7 @@ describe Visualization::Member do
           privacy: Visualization::Member::PRIVACY_PUBLIC,
           name: 'test',
           type: Visualization::Member::TYPE_CANONICAL,
-          user_id: @user.id
+          user_id: $user_1.id
       )
       visualization.store
 
@@ -300,7 +299,7 @@ describe Visualization::Member do
       visualization.has_permission?(user4_mock, Visualization::Member::PERMISSION_READONLY).should eq false
       visualization.has_permission?(user4_mock, Visualization::Member::PERMISSION_READWRITE).should eq false
 
-      @user.destroy
+      delete_user_data($user_1)
     end
   end
 
@@ -552,14 +551,13 @@ describe Visualization::Member do
   end
 
   it 'should not allow to change permission from the outside' do
-    @user = create_user(:quota_in_bytes => 1234567890, :table_quota => 400)
-    member = Visualization::Member.new(random_attributes_for_vis_member({user_id: @user.id}))
+    member = Visualization::Member.new(random_attributes_for_vis_member({user_id: $user_1.id}))
     member.store
     member = Visualization::Member.new(id: member.id).fetch
     member.permission.should_not be nil
     member.permission_id = UUIDTools::UUID.timestamp_create.to_s
     member.valid?.should eq false
-    @user.destroy
+    delete_user_data($user_1)
   end
 
   describe '#likes' do

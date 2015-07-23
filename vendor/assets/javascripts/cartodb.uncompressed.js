@@ -1,6 +1,6 @@
-// cartodb.js version: 3.14.6
+// cartodb.js version: 3.15.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: 701551429aad9ec00c5704fdffc55262e3f8b6af
+// sha: 49d1b11bd07a12eb8d58bebc58d85d7d17cdcf65
 (function() {
   var root = this;
 
@@ -25652,7 +25652,7 @@ if (typeof window !== 'undefined') {
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = "3.14.6";
+    cdb.VERSION = "3.15.1";
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -25764,6 +25764,7 @@ if (typeof window !== 'undefined') {
         // PUBLIC API
         'api/layers.js',
         'api/sql.js',
+        'api/cartocss.js',
         'api/vis.js'
     ];
 
@@ -26949,13 +26950,13 @@ cdb.geo.MapLayer = cdb.core.Model.extend({
     visible: true,
     type: 'Tiled'
   },
+
   /***
   * Compare the layer with the received one
   * @method isEqual
   * @param layer {Layer}
   */
   isEqual: function(layer) {
-
     var me          = this.toJSON()
       , other       = layer.toJSON()
       // Select params generated when layer is added to the map
@@ -26975,14 +26976,17 @@ cdb.geo.MapLayer = cdb.core.Model.extend({
     if(myType && (myType === itsType)) {
 
       if(myType === 'Tiled') {
-        var myTemplate  = me.urlTemplate? me.urlTemplate : me.options.urlTemplate
-          , itsTemplate = other.urlTemplate? other.urlTemplate : other.options.urlTemplate;
-        return myTemplate === itsTemplate;
+        var myTemplate  = me.urlTemplate? me.urlTemplate : me.options.urlTemplate;
+        var itsTemplate = other.urlTemplate? other.urlTemplate : other.options.urlTemplate;
+        var myName = me.name? me.name : me.options.name;
+        var itsName = other.name? other.name : other.options.name;
+
+        return myTemplate === itsTemplate && myName === itsName;
       } else if(myType === 'WMS') {
-        var myTemplate  = me.urlTemplate? me.urlTemplate : me.options.urlTemplate
-          , itsTemplate = other.urlTemplate? other.urlTemplate : other.options.urlTemplate;
-        var myLayer  = me.layers? me.layers : me.options.layers
-          , itsLayer = other.layers? other.layers : other.options.layers;
+        var myTemplate  = me.urlTemplate? me.urlTemplate : me.options.urlTemplate;
+        var itsTemplate = other.urlTemplate? other.urlTemplate : other.options.urlTemplate;
+        var myLayer  = me.layers? me.layers : me.options.layers;
+        var itsLayer = other.layers? other.layers : other.options.layers;
         return myTemplate === itsTemplate && myLayer === itsLayer;
       }
       else if (myType === 'torque') {
@@ -27002,13 +27006,10 @@ cdb.geo.MapLayer = cdb.core.Model.extend({
         } else { // not gmaps
           return true;
         }
-
       }
     }
     return false; // different type
   }
-
-
 });
 
 // Good old fashioned tile layer
@@ -27024,7 +27025,6 @@ cdb.geo.GMapsBaseLayer = cdb.geo.MapLayer.extend({
     base_type: 'gray_roadmap',
     style: null
   }
-
 });
 
 /**
@@ -27068,7 +27068,6 @@ cdb.geo.TorqueLayer = cdb.geo.MapLayer.extend({
       return other.get(p) === self.get(p);
     });
   }
-
 });
 
 // CartoDB layer
@@ -27157,6 +27156,10 @@ cdb.geo.CartoDBNamedMapLayer = cdb.geo.MapLayer.extend({
 
 });
 
+var TILED_LAYER_TYPE = 'Tiled';
+var CARTODB_LAYER_TYPE = 'CartoDB';
+var TORQUE_LAYER_TYPE = 'torque';
+
 cdb.geo.Layers = Backbone.Collection.extend({
 
   model: cdb.geo.MapLayer,
@@ -27166,6 +27169,7 @@ cdb.geo.Layers = Backbone.Collection.extend({
       return parseInt(m.get('order'), 10);
     };
     this.bind('add', this._assignIndexes);
+    this.bind('remove', this._assignIndexes);
   },
 
   /**
@@ -27173,25 +27177,33 @@ cdb.geo.Layers = Backbone.Collection.extend({
    * the index should be recalculated
    */
   _assignIndexes: function(model, col, options) {
-    var layerTypeWeight = {
-      'torque': 100
-    };
-    function layerWeight(layer) {
-      var t = layer.get('type');
-      return layerTypeWeight[t] || 0;
-    }
-    var from = 0;//this.size() - 1;
-    if(options && options.at !== undefined) {
-      from = options.at;
-    }
-    if(from === 0) {
-      this.models[0].set({ order: 0 });
-      ++from;
-    }
-    for(var i = from; i < this.size(); ++i) {
-      var prev = this.models[i - 1]
-      var prev_order = prev.get('order') - layerWeight(prev);
-      this.models[i].set({ order: layerWeight(this.models[i]) + prev_order + 1 });
+    if (this.size() > 0) {
+
+      // Assign an order of 0 to the first layer
+      this.at(0).set({ order: 0 });
+
+      if (this.size() > 1) {
+        var layersByType = {};
+        for (var i = 1; i < this.size(); ++i) {
+          var layer = this.at(i);
+          var layerType = layer.get('type');
+          layersByType[layerType] = layersByType[layerType] || [];
+          layersByType[layerType].push(layer);
+        }
+
+        var lastOrder = 0;
+        var sortedTypes = [CARTODB_LAYER_TYPE, TORQUE_LAYER_TYPE, TILED_LAYER_TYPE];
+        for (var i = 0; i < sortedTypes.length; ++i) {
+          var type = sortedTypes[i];
+          var layers = layersByType[type] || [];
+          for (var j = 0; j < layers.length; ++j) {
+            var layer = layers[j];
+            layer.set({
+              order: ++lastOrder
+            });
+          }
+        }
+      }
     }
   }
 });
@@ -27288,7 +27300,6 @@ cdb.geo.Map = cdb.core.Model.extend({
 
     // Set options
     _.defaults(this.options, options);
-
   },
 
   /**
@@ -27427,7 +27438,6 @@ cdb.geo.Map = cdb.core.Model.extend({
 
     // change both at the same time
     this.trigger('change:view_bounds_ne', this);
-
   },
 
   // set center and zoom according to fit bounds
@@ -27436,6 +27446,7 @@ cdb.geo.Map = cdb.core.Model.extend({
     if(z === null) {
       return;
     }
+
     // project -> calculate center -> unproject
     var swPoint = cdb.geo.Map.latlngToMercator(bounds[0], z);
     var nePoint = cdb.geo.Map.latlngToMercator(bounds[1], z);
@@ -27451,6 +27462,8 @@ cdb.geo.Map = cdb.core.Model.extend({
   },
 
   // adapted from leaflat src
+  // @return {Number, null} Calculated zoom from given bounds or the maxZoom if no appropriate zoom level could be found
+  //   or null if given mapSize has no size.
   getBoundsZoom: function(boundsSWNE, mapSize) {
     // sometimes the map reports size = 0 so return null
     if(mapSize.x === 0 || mapSize.y === 0) return null;
@@ -27474,15 +27487,13 @@ cdb.geo.Map = cdb.core.Model.extend({
     } while (zoomNotFound && zoom <= maxZoom);
 
     if (zoomNotFound) {
-      return null;
+      return maxZoom;
     }
 
     return zoom - 1;
-
   }
 
 }, {
-
   latlngToMercator: function(latlng, zoom) {
     var ll = new L.LatLng(latlng[0], latlng[1]);
     var pp = L.CRS.EPSG3857.latLngToPoint(ll, zoom);
@@ -27493,7 +27504,6 @@ cdb.geo.Map = cdb.core.Model.extend({
     var ll = L.CRS.EPSG3857.pointToLatLng(point, zoom);
     return [ll.lat, ll.lng]
   }
-
 });
 
 
@@ -27705,7 +27715,6 @@ cdb.geo.MapView = cdb.core.View.extend({
 
 
 }, {
-
   _getClass: function(provider) {
     var mapViewClass = cdb.geo.LeafletMapView;
     if(provider === 'googlemaps') {
@@ -27725,9 +27734,7 @@ cdb.geo.MapView = cdb.core.View.extend({
       map: mapModel
     });
   }
-
-}
-);
+});
 cdb.geo.ui.Text = cdb.core.View.extend({
 
   className: "cartodb-overlay overlay-text",
@@ -28026,15 +28033,19 @@ cdb.geo.ui.Annotation = cdb.core.View.extend({
   },
 
   _getStandardPropertyName: function(name) {
-
-    if (!name) return;
-    var parts = name.split("-");
-
-    if (parts.length === 1) return name;
-    else if (parts.length === 2) {
-      return parts[0] + parts[1].slice(0, 1).toUpperCase() + parts[1].slice(1);
+    if (!name) {
+      return;
     }
 
+    var parts = name.split("-");
+
+    if (parts.length === 1) {
+      return name;
+    } else {
+      return parts[0] + _.map(parts.slice(1), function(l) { 
+        return l.slice(0,1).toUpperCase() + l.slice(1);
+      }).join("");
+    }
   },
 
   _cleanStyleProperties: function(hash) {
@@ -32648,30 +32659,44 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
   }
 
 });
-function SubLayer(_parent, position) {
+function SubLayerFactory() {};
+
+SubLayerFactory.createSublayer = function(type, layer, position) {
+  type = type && type.toLowerCase();
+  if (!type || type === 'mapnik' || type === 'cartodb') {
+    return new CartoDBSubLayer(layer, position);
+  } else if (type === 'http') {
+    return new HttpSubLayer(layer, position);
+  } else {
+    throw 'Sublayer type not supported';
+  }
+};
+
+function SubLayerBase(_parent, position) {
   this._parent = _parent;
   this._position = position;
   this._added = true;
-  this._bindInteraction();
-  if (Backbone.Model && this._parent.getLayer(this._position)) {
-    this.infowindow = new Backbone.Model(this._parent.getLayer(this._position).infowindow);
-    this.infowindow.bind('change', function() {
-      var def = this._parent.getLayer(this._position);
-      def.infowindow = this.infowindow.toJSON();
-      this._parent.setLayer(this._position, def);
-    }, this);
-  }
 }
 
-SubLayer.prototype = {
+SubLayerBase.prototype = {
+
+  toJSON: function() {
+    throw 'toJSON must be implemented';
+  },
+
+  isValid: function() {
+    throw 'isValid must be implemented';
+  },
 
   remove: function() {
     this._check();
     this._parent.removeLayer(this._position);
-    this._unbindInteraction();
     this._added = false;
     this.trigger('remove', this);
+    this._onRemove();
   },
+
+  _onRemove: function() {},
 
   toggle: function() {
     this.get('hidden') ? this.show() : this.hide();
@@ -32714,40 +32739,14 @@ SubLayer.prototype = {
     this._parent.setLayer(this._position, def);
   },
 
-  setSQL: function(sql) {
-    return this.set({
-      sql: sql
-    });
-  },
-
-  setCartoCSS: function(cartocss) {
-    return this.set({
-      cartocss: cartocss
-    });
-  },
-
-  setInteractivity: function(fields) {
-    return this.set({
-      interactivity: fields
-    });
-  },
-
-  setInteraction: function(active) {
-    this._parent.setInteraction(this._position, active);
-  },
-
   get: function(attr) {
     this._check();
     var attrs = this._parent.getLayer(this._position);
     return attrs.options[attr];
   },
 
-  getSQL: function() {
-    return this.get('sql');
-  },
-
-  getCartoCSS: function() {
-    return this.get('cartocss');
+  isVisible: function(){
+    return ! this.get('hidden');
   },
 
   _check: function() {
@@ -32786,7 +32785,190 @@ SubLayer.prototype = {
 };
 
 // give events capabilitues
-_.extend(SubLayer.prototype, Backbone.Events);
+_.extend(SubLayerBase.prototype, Backbone.Events);
+
+
+// CartoDB / Mapnik sublayers
+function CartoDBSubLayer(layer, position) {
+  SubLayerBase.call(this, layer, position);
+  this._bindInteraction();
+
+  var layer = this._parent.getLayer(this._position);
+  // TODO: Test this
+  if (Backbone.Model && layer) {
+    this.infowindow = new Backbone.Model(layer.infowindow);
+    this.infowindow.bind('change', function() {
+      layer.infowindow = this.infowindow.toJSON();
+      this._parent.setLayer(this._position, layer);
+    }, this);
+  }
+};
+
+CartoDBSubLayer.prototype = _.extend({}, SubLayerBase.prototype, {
+
+  toJSON: function() {
+    var json = {
+      type: 'cartodb',
+      options: {
+        sql: this.getSQL(),
+        cartocss: this.getCartoCSS(),
+        cartocss_version: this.get('cartocss_version') || '2.1.0'
+      }
+    };
+
+    var interactivity = this.getInteractivity();
+    if (interactivity && interactivity.length > 0) {
+      json.options.interactivity = interactivity;
+      var attributes = this.getAttributes();
+      if (attributes.length > 0) {
+        json.options.attributes = {
+          id: 'cartodb_id',
+          columns: attributes
+        }
+      }
+    }
+
+    if (this.get('raster')) {
+      json.options.raster = true;
+      json.options.geom_column = "the_raster_webmercator";
+      json.options.geom_type = "raster";
+      json.options.raster_band = this.get('raster_band') || 0;
+      // raster needs 2.3.0 to work
+      json.options.cartocss_version = this.get('cartocss_version') || '2.3.0';
+    }
+    return json;
+  },
+
+  isValid: function() {
+    return this.get('sql') && this.get('cartocss');
+  },
+
+  _onRemove: function() {
+    this._unbindInteraction();
+  },
+
+  setSQL: function(sql) {
+    return this.set({
+      sql: sql
+    });
+  },
+
+  setCartoCSS: function(cartocss) {
+    return this.set({
+      cartocss: cartocss
+    });
+  },
+
+  setInteractivity: function(fields) {
+    return this.set({
+      interactivity: fields
+    });
+  },
+
+  setInteraction: function(active) {
+    this._parent.setInteraction(this._position, active);
+  },
+
+  getSQL: function() {
+    return this.get('sql');
+  },
+
+  getCartoCSS: function() {
+    return this.get('cartocss');
+  },
+
+  getInteractivity: function() {
+    var interactivity = this.get('interactivity');
+    if (interactivity) {
+      if (typeof(interactivity) === 'string') {
+        interactivity = interactivity.split(',');
+      }
+      return this._trimArrayItems(interactivity);
+    }
+  },
+
+  getAttributes: function() {
+    var columns = [];
+    if (this.get('attributes')) {
+      columns = this.get('attributes');
+    } else {
+      columns = _.map(this.infowindow.get('fields'), function(field){
+        return field.name;
+      });
+    }
+    return this._trimArrayItems(columns);
+  },
+
+  _trimArrayItems: function(array) {
+    return _.map(array, function(item) {
+      return item.trim();
+    })
+  }
+});
+
+// Http sublayer
+
+function HttpSubLayer(layer, position) {
+  SubLayerBase.call(this, layer, position);
+};
+
+HttpSubLayer.prototype = _.extend({}, SubLayerBase.prototype, {
+
+  toJSON: function() {
+    var json = {
+      type: 'http',
+      options: {
+        urlTemplate: this.getURLTemplate()
+      }
+    };
+
+    var subdomains = this.get('subdomains');
+    if (subdomains) {
+      json.options.subdomains = subdomains;
+    }
+
+    var tms = this.get('tms');
+    if (tms !== undefined) {
+      json.options.tms = tms;
+    }
+    return json;
+  },
+
+  isValid: function() {
+    return this.get('urlTemplate');
+  },
+
+  setURLTemplate: function(urlTemplate) {
+    return this.set({
+      urlTemplate: urlTemplate
+    });
+  },
+
+  setSubdomains: function(subdomains) {
+    return this.set({
+      subdomains: subdomains
+    });
+  },
+
+  setTms: function(tms) {
+    return this.set({
+      tms: tms
+    });
+  },
+
+  getURLTemplate: function(urlTemplate) {
+    return this.get('urlTemplate');
+  },
+
+  getSubdomains: function(subdomains) {
+    return this.get('subdomains');
+  },
+
+  getTms: function(tms) {
+    return this.get('tms');
+  }
+});
+
 /**
  * Wrapper for map properties returned by the tiler
  */
@@ -32800,6 +32982,9 @@ MapProperties.prototype.getMapId = function() {
 
 /**
  * Returns the index of a layer of a given type, as the tiler kwows it.
+ *
+ * @param {integer} index - number of layer of the specified type
+ * @param {string} layerType - type of the layers
  */
 MapProperties.prototype.getLayerIndexByType = function(index, layerType) {
   var layers = this.mapProperties.metadata && this.mapProperties.metadata.layers;
@@ -32822,8 +33007,34 @@ MapProperties.prototype.getLayerIndexByType = function(index, layerType) {
   return tilerLayerIndex[index];
 }
 
+/**
+ * Returns the index of a layer of a given type, as the tiler kwows it.
+ *
+ * @param {string|array} types - Type or types of layers
+ */
+MapProperties.prototype.getLayerIndexesByType = function(types) {
+  var layers = this.mapProperties.metadata && this.mapProperties.metadata.layers;
+
+  if (!layers) {
+    return;
+  }
+  var layerIndexes = [];
+  for (var i = 0; i < layers.length; i++) {
+    var layer = layers[i];
+    var isValidType = layer.type !== 'torque';
+    if (types && types.length > 0) {
+      isValidType = isValidType && types.indexOf(layer.type) != -1
+    }
+    if (isValidType) {
+      layerIndexes.push(i);
+    }
+  }
+  return layerIndexes;
+}
+
 function MapBase(options) {
   var self = this;
+
   this.options = _.defaults(options, {
     ajax: window.$ ? window.$.ajax : reqwest.compat,
     pngParams: ['map_key', 'api_key', 'cache_policy', 'updated_at'],
@@ -32840,9 +33051,9 @@ function MapBase(options) {
   this.urls = null;
   this.silent = false;
   this.interactionEnabled = []; //TODO: refactor, include inside layer
-  this._layerTokenQueue = [];
   this._timeout = -1;
-  this._queue = [];
+  this._createMapCallsStack = [];
+  this._createMapCallbacks = [];
   this._waiting = false;
   this.lastTimeUpdated = null;
   this._refreshTimer = -1;
@@ -32866,25 +33077,24 @@ MapBase.prototype = {
     opts.maps_api_template = [tilerProtocol, "://", username, tilerDomain, tilerPort].join('');
   },
 
-  getLayerToken: function(callback) {
+  createMap: function(callback) {
     var self = this;
-    function _done(data, err) {
+    function invokeStackedCallbacks(data, err) {
       var fn;
-      while(fn = self._layerTokenQueue.pop()) {
+      while(fn = self._createMapCallbacks.pop()) {
         fn(data, err);
       }
     }
     clearTimeout(this._timeout);
-    this._queue.push(_done);
-    this._layerTokenQueue.push(callback);
+    this._createMapCallsStack.push(invokeStackedCallbacks);
+    this._createMapCallbacks.push(callback);
     this._timeout = setTimeout(function() {
-      self._getLayerToken(_done);
+      self._createMap(invokeStackedCallbacks);
     }, 4);
   },
 
-  _getLayerToken: function(callback) {
+  _createMap: function(callback) {
     var self = this;
-    var params = [];
     callback = callback || function() {};
 
     // if the previous request didn't finish, queue it
@@ -32892,7 +33102,7 @@ MapBase.prototype = {
       return this;
     }
 
-    this._queue = [];
+    this._createMapCallsStack = [];
 
     // when it's a named map the number of layers is not known
     // so fetch the map
@@ -32901,12 +33111,28 @@ MapBase.prototype = {
       return;
     }
 
-    // setup params
-    var extra_params = this.options.extra_params || {};
-    var api_key = this.options.map_key || this.options.api_key || extra_params.map_key || extra_params.api_key;
+    // mark as the request is being done
+    this._waiting = true;
+    var req = null;
+    if (this._usePOST()) {
+      req = this._requestPOST;
+    } else {
+      req = this._requestGET;
+    }
+    var params = this._getParamsFromOptions(this.options);
+    req.call(this, params, callback);
+    return this;
+  },
+
+  _getParamsFromOptions: function(options) {
+    var params = [];
+    var extra_params = options.extra_params || {};
+    var api_key = options.map_key || options.api_key || extra_params.map_key || extra_params.api_key;
+
     if(api_key) {
       params.push("map_key=" + api_key);
     }
+
     if(extra_params.auth_token) {
       if (_.isArray(extra_params.auth_token)) {
         for (var i = 0, len = extra_params.auth_token.length; i < len; i++) {
@@ -32920,16 +33146,7 @@ MapBase.prototype = {
     if (this.stat_tag) {
       params.push("stat_tag=" + this.stat_tag);
     }
-    // mark as the request is being done
-    this._waiting = true;
-    var req = null;
-    if (this._usePOST()) {
-      req = this._requestPOST;
-    } else {
-      req = this._requestGET;
-    }
-    req.call(this, params, callback);
-    return this;
+    return params;
   },
 
   _usePOST: function() {
@@ -32963,9 +33180,15 @@ MapBase.prototype = {
       success: function(data) {
         loadingTime.end();
         // discard previous calls when there is another call waiting
-        if(0 === self._queue.length) {
-          callback(data);
+        if(0 === self._createMapCallsStack.length) {
+          if (data.errors) {
+            cartodb.core.Profiler.metric('cartodb-js.layergroup.post.error').inc();
+            callback(null, data);
+          } else {
+            callback(data);
+          }
         }
+
         self._requestFinished();
       },
       error: function(xhr) {
@@ -32978,7 +33201,7 @@ MapBase.prototype = {
         try {
           err = JSON.parse(xhr.responseText);
         } catch(e) {}
-        if(0 === self._queue.length) {
+        if(0 === self._createMapCallsStack.length) {
           callback(null, err);
         }
         self._requestFinished();
@@ -33003,7 +33226,7 @@ MapBase.prototype = {
         cache: !!self.options.instanciateCallback,
         success: function(data) {
           loadingTime.end();
-          if(0 === self._queue.length) {
+          if(0 === self._createMapCallsStack.length) {
             // check for errors
             if (data.errors) {
               cartodb.core.Profiler.metric('cartodb-js.layergroup.get.error').inc();
@@ -33021,7 +33244,7 @@ MapBase.prototype = {
           try {
             err = JSON.parse(xhr.responseText);
           } catch(e) {}
-          if(0 === self._queue.length) {
+          if(0 === self._createMapCallsStack.length) {
             callback(null, err);
           }
           self._requestFinished();
@@ -33066,9 +33289,9 @@ MapBase.prototype = {
     }, this.options.refreshTime || (60*120*1000)); // default layergroup ttl
 
     // check request queue
-    if(this._queue.length) {
-      var last = this._queue[this._queue.length - 1];
-      this._getLayerToken(last);
+    if(this._createMapCallsStack.length) {
+      var request = this._createMapCallsStack.pop();
+      this._createMap(request);
     }
   },
 
@@ -33097,6 +33320,32 @@ MapBase.prototype = {
     return cdb.core.util.uniqueCallbackName(JSON.stringify(this.toJSON()));
   },
 
+  _attributesUrl: function(layer, feature_id) {
+    var host = this._host();
+    var url = [
+      host,
+      MapBase.BASE_URL.slice(1),
+      this.mapProperties.getMapId(),
+      this.mapProperties.getLayerIndexByType(this.getLayerIndexByNumber(layer), "mapnik"),
+      'attributes',
+      feature_id].join('/');
+
+    var extra_params = this.options.extra_params || {};
+    var token = extra_params.auth_token;
+    if (token) {
+      if (_.isArray(token)) {
+        var tokenParams = [];
+        for (var i = 0, len = token.length; i < len; i++) {
+          tokenParams.push("auth_token[]=" + token[i]);
+        }
+        url += "?" + tokenParams.join('&')
+      } else {
+        url += "?auth_token=" + token
+      }
+    }
+    return url;
+  },
+
   invalidate: function() {
     this.mapProperties = null;
     this.urls = null;
@@ -33109,14 +33358,16 @@ MapBase.prototype = {
       callback && callback(self._layerGroupTiles(self.mapProperties, self.options.extra_params));
       return this;
     }
-    this.getLayerToken(function(data, err) {
+    this.createMap(function(data, err) {
       if(data) {
         self.mapProperties = new MapProperties(data);
         // if cdn_url is present, use it
         if (data.cdn_url) {
-          var c = self.options.cdn_url = self.options.cdn_url || {};
-          c.http = data.cdn_url.http || c.http;
-          c.https = data.cdn_url.https || c.https;
+          self.options.cdn_url = self.options.cdn_url || {}
+          self.options.cdn_url = {
+            http: data.cdn_url.http || self.options.cdn_url.http,
+            https: data.cdn_url.https || self.options.cdn_url.https
+          }
         }
         self.urls = self._layerGroupTiles(self.mapProperties, self.options.extra_params);
         callback && callback(self.urls);
@@ -33140,28 +33391,33 @@ MapBase.prototype = {
   },
 
   _layerGroupTiles: function(mapProperties, params) {
-    var layerGroupId = mapProperties.getMapId();
+    var grids = [];
+    var tiles = [];
+    var pngParams = this._encodeParams(params, this.options.pngParams);
+    var gridParams = this._encodeParams(params, this.options.gridParams);
     var subdomains = this.options.subdomains || ['0', '1', '2', '3'];
     if(this.isHttps()) {
       subdomains = [null]; // no subdomain
     }
 
-    var tileTemplate = '/{z}/{x}/{y}';
-    var grids = []
-    var tiles = [];
-    var pngParams = this._encodeParams(params, this.options.pngParams);
+    var layerIndexes = mapProperties.getLayerIndexesByType(this.options.filter);
+    if (layerIndexes.length) {
+      var tileTemplate = '/' +  layerIndexes.join(',') +'/{z}/{x}/{y}';
+      var gridTemplate = '/{z}/{x}/{y}';
 
-    for(var i = 0; i < subdomains.length; ++i) {
-      var s = subdomains[i]
-      var cartodb_url = this._host(s) + MapBase.BASE_URL + '/' + layerGroupId
-      tiles.push(cartodb_url + tileTemplate + ".png" + (pngParams ? "?" + pngParams: '') );
+      for(var i = 0; i < subdomains.length; ++i) {
+        var s = subdomains[i];
+        var cartodb_url = this._host(s) + MapBase.BASE_URL + '/' + mapProperties.getMapId();
+        tiles.push(cartodb_url + tileTemplate + ".png" + (pngParams ? "?" + pngParams: '') );
 
-      var gridParams = this._encodeParams(params, this.options.gridParams);
-      for(var layer = 0; layer < this.layers.length; ++layer) {
-        var index = mapProperties.getLayerIndexByType(layer, "mapnik");
-        grids[layer] = grids[layer] || [];
-        grids[layer].push(cartodb_url + "/" + index +  tileTemplate + ".grid.json" + (gridParams ? "?" + gridParams: ''));
+        for(var layer = 0; layer < this.layers.length; ++layer) {
+          var index = mapProperties.getLayerIndexByType(layer, "mapnik");
+          grids[layer] = grids[layer] || [];
+          grids[layer].push(cartodb_url + "/" + index +  gridTemplate + ".grid.json" + (gridParams ? "?" + gridParams: ''));
+        }
       }
+    } else {
+      tiles = [MapBase.EMPTY_GIF];
     }
 
     return {
@@ -33313,7 +33569,7 @@ MapBase.prototype = {
     var layers = [];
     for(var i = 0; i < this.layers.length; ++i) {
       var layer = this.layers[i];
-      if(layer.options && !layer.options.hidden) {
+      if(this._isLayerVisible(layer)) {
         layers.push(i);
       }
     }
@@ -33327,11 +33583,19 @@ MapBase.prototype = {
     var layers = [];
     for(var i = 0; i < this.layers.length; ++i) {
       var layer = this.layers[i];
-      if(!layer.options.hidden) {
+      if (this._isLayerVisible(layer)) {
         layers.push(layer);
       }
     }
     return layers;
+  },
+
+  _isLayerVisible: function(layer) {
+    if (layer.options && 'hidden' in layer.options) {
+      return !layer.options.hidden;
+    }
+
+    return layer.visible !== false;
   },
 
   setLayer: function(layer, def) {
@@ -33398,7 +33662,7 @@ MapBase.prototype = {
 
   getSubLayer: function(index) {
     var layer = this.layers[index];
-    layer.sub = layer.sub || new SubLayer(this, index);
+    layer.sub = layer.sub || SubLayerFactory.createSublayer(layer.type, this, index);
     return layer.sub;
   },
 
@@ -33415,6 +33679,7 @@ MapBase.prototype = {
   }
 };
 
+// TODO: This is actually an AnonymousMap -> Rename?
 function LayerDefinition(layerDefinition, options) {
   MapBase.call(this, options);
   this.endPoint = MapBase.BASE_URL;
@@ -33431,20 +33696,22 @@ LayerDefinition.layerDefFromSubLayers = function(sublayers) {
 
   if(!sublayers || sublayers.length === undefined) throw new Error("sublayers should be an array");
 
-  var layer_definition = {
-    version: '1.0.0',
-    stat_tag: 'API',
-    layers: []
-  };
+  sublayers = _.map(sublayers, function(sublayer) {
+    var type = sublayer.type;
+    delete sublayer.type;
+    return {
+      type: type,
+      options: sublayer
+    }
+  });
 
-  for (var i = 0; i < sublayers.length; ++i) {
-    layer_definition.layers.push({
-      type: 'cartodb',
-      options: sublayers[i]
-    });
+  var layerDefinition = {
+    version: '1.3.0',
+    stat_tag: 'API',
+    layers: sublayers
   }
 
-  return layer_definition;
+  return new LayerDefinition(layerDefinition, {}).toJSON();
 };
 
 LayerDefinition.prototype = _.extend({}, MapBase.prototype, {
@@ -33468,57 +33735,10 @@ LayerDefinition.prototype = _.extend({}, MapBase.prototype, {
     obj.layers = [];
     var layers = this.visibleLayers();
     for(var i = 0; i < layers.length; ++i) {
-      var layer = layers[i];
-      var layer_def = {
-        type: 'cartodb',
-        options: {
-          sql: layer.options.sql,
-          cartocss: layer.options.cartocss,
-          cartocss_version: layer.options.cartocss_version || '2.1.0',
-        }
-      };
-
-      if (layer.options.interactivity) {
-        function fields(f) {
-          var n = []
-          for(var i = 0; i < f.length; ++i) {
-            n.push(f[i].name);
-          }
-          return n;
-        }
-        layer_def.options.interactivity = this._cleanInteractivity(layer.options.interactivity);
-        var infowindow = this.getInfowindowData(this.getLayerNumberByIndex(i));
-        var attrs = layer.options.attributes ? this._cleanInteractivity(this.options.attributes):(infowindow && fields(infowindow.fields));
-        if (attrs) {
-          layer_def.options.attributes = {
-             id: 'cartodb_id',
-             columns: attrs
-          }
-        }
-      }
-
-      if (layer.options.raster) {
-        layer_def.options.geom_column = "the_raster_webmercator";
-        layer_def.options.geom_type = "raster";
-        // raster needs 2.3.0 to work
-        layer_def.options.cartocss_version = layer.options.cartocss_version || '2.3.0';
-      }
-      obj.layers.push(layer_def);
+      var sublayer = this.getSubLayer(this.getLayerNumberByIndex(i));
+      obj.layers.push(sublayer.toJSON());
     }
     return obj;
-  },
-
-  _cleanInteractivity: function(attributes) {
-    if(!attributes) return;
-    if(typeof(attributes) == 'string') {
-      attributes = attributes.split(',');
-    }
-
-    for(var i = 0; i < attributes.length; ++i) {
-      attributes[i] = attributes[i].replace(/ /g, '');
-    }
-
-    return attributes;
   },
 
   removeLayer: function(layer) {
@@ -33540,18 +33760,25 @@ LayerDefinition.prototype = _.extend({}, MapBase.prototype, {
     }
   },
 
-  addLayer: function(def, layer) {
-    layer = layer === undefined ? this.getLayerCount(): layer;
-    if(layer <= this.getLayerCount() && layer >= 0) {
-      if(!def.sql || !def.cartocss) {
-        throw new Error("layer definition should contain at least a sql and a cartocss");
-        return this;
-      }
-      this.layers.splice(layer, 0, {
-        type: 'cartodb',
+  addLayer: function(def, index) {
+    index = index === undefined ? this.getLayerCount(): index;
+    if(index <= this.getLayerCount() && index >= 0) {
+
+      var type = def.type || 'cartodb';
+      delete def.type;
+
+      this.layers.splice(index, 0, {
+        type: type,
         options: def
       });
-      this._definitionUpdated();
+
+      var sublayer = this.getSubLayer(index);
+      if (sublayer.isValid()) {
+        this._definitionUpdated();
+      } else { // Remove it from the definition
+        sublayer.remove();
+        throw 'Layer definition should contain all the required attributes';
+      }
     }
     return this;
   },
@@ -33622,19 +33849,6 @@ LayerDefinition.prototype = _.extend({}, MapBase.prototype, {
   createSubLayer: function(attrs, options) {
     this.addLayer(attrs);
     return this.getSubLayer(this.getLayerCount() - 1);
-  },
-
-  _attributesUrl: function(layer, feature_id) {
-    var host = this._host();
-    var url = [
-      host,
-      MapBase.BASE_URL.slice(1),
-      this.mapProperties.getMapId(),
-      this.mapProperties.getLayerIndexByType(layer, "mapnik"),
-      'attributes',
-      feature_id].join('/');
-
-    return url;
   }
 });
 
@@ -33657,7 +33871,7 @@ NamedMap.prototype = _.extend({}, MapBase.prototype, {
         options: {}
       };
     }
-    layer.sub = layer.sub || new SubLayer(this, index);
+    layer.sub = layer.sub || SubLayerFactory.createSublayer(layer.type, this, index);
     return layer.sub;
   },
 
@@ -33668,7 +33882,7 @@ NamedMap.prototype = _.extend({}, MapBase.prototype, {
     this.layers = _.clone(named_map.layers) || [];
     for(var i = 0; i < this.layers.length; ++i) {
       var layer = this.layers[i];
-      layer.options = layer.options || { hidden: false };
+      layer.options = layer.options || { 'hidden': layer.visible === false };
       layer.options.layer_name = layer.layer_name;
     }
     this.named_map = named_map;
@@ -33714,12 +33928,12 @@ NamedMap.prototype = _.extend({}, MapBase.prototype, {
   },
 
   toJSON: function() {
-    var p = this.named_map.params || {};
+    var payload = this.named_map.params || {};
     for(var i = 0; i < this.layers.length; ++i) {
       var layer = this.layers[i];
-      p['layer' + i] = layer.options.hidden ? 0: 1;
+      payload['layer' + i] = this._isLayerVisible(layer) ? 1 : 0;
     }
-    return p;
+    return payload;
   },
 
   containInfowindow: function() {
@@ -33743,33 +33957,6 @@ NamedMap.prototype = _.extend({}, MapBase.prototype, {
     }
     return false;
   },
-
-  _attributesUrl: function(layer, feature_id) {
-    var host = this._host();
-    var url = [
-      host,
-      MapBase.BASE_URL.slice(1),
-      this.mapProperties.getMapId(),
-      this.mapProperties.getLayerIndexByType(layer, "mapnik"),
-      'attributes',
-      feature_id].join('/');
-
-    var extra_params = this.options.extra_params || {};
-    var token = extra_params.auth_token;
-    if (token) {
-      if (_.isArray(token)) {
-        var tokenParams = [];
-        for (var i = 0, len = token.length; i < len; i++) {
-          tokenParams.push("auth_token[]=" + token[i]);
-        }
-        url += "?" + tokenParams.join('&')
-      } else {
-        url += "?auth_token=" + token
-      }
-    }
-    return url;
-  },
-
 
   setSQL: function(sql) {
     throw new Error("SQL is read-only in NamedMaps");
@@ -33825,9 +34012,7 @@ NamedMap.prototype = _.extend({}, MapBase.prototype, {
  */
 
 function CartoDBLayerCommon() {
-
   this.visible = true;
-
 }
 
 CartoDBLayerCommon.prototype = {
@@ -33852,9 +34037,7 @@ CartoDBLayerCommon.prototype = {
   },
 
   toggle: function() {
-
     this.isVisible() ? this.hide() : this.show();
-
     return this.isVisible();
   },
 
@@ -33945,7 +34128,6 @@ CartoDBLayerCommon.prototype = {
     opts.visible ? this.show() : this.hide();
     this.setSilent(false);
     this._definitionUpdated();
-
   },
 
   _getLayerDefinition: function() {
@@ -33971,7 +34153,6 @@ CartoDBLayerCommon.prototype = {
     cartocss = cartocss.replace(/\{\{table_name\}\}/g, opts.table_name);
     cartocss = cartocss.replace(new RegExp( opts.table_name, "g"), "layer0");
 
-
     return {
       sql: sql,
       cartocss: cartocss,
@@ -33979,7 +34160,6 @@ CartoDBLayerCommon.prototype = {
       params: params,
       interactivity: opts.interactivity
     }
-
   },
 
   error: function(e) {
@@ -34046,9 +34226,6 @@ CartoDBLayerCommon.prototype = {
 
   }
 };
-
-
-
 
 cdb.geo.common = {};
 
@@ -35753,7 +35930,6 @@ CartoDBLayerGroupBase.prototype.getTile = function(coord, zoom, ownerDocument) {
     finished();
   }
 
-
   return im;
 };
 
@@ -35784,7 +35960,6 @@ CartoDBLayerGroupBase.prototype.update = function (done) {
     }
   });
 };
-
 
 CartoDBLayerGroupBase.prototype.refreshView = function() {
   var self = this;
@@ -35955,8 +36130,6 @@ function LayerGroupView(base) {
     base.call(this, opts);
     cdb.geo.GMapsLayerView.call(this, layerModel, this, gmapsMap);
   };
-
-
 
   _.extend(
     GMapsCartoDBLayerGroupView.prototype,
@@ -36431,7 +36604,11 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
     },
 
     pixelToLatLon: function(pos) {
-      return this.projector.fromContainerPixelToLatLng(new google.maps.Point(pos[0], pos[1]));
+      var latLng = this.projector.pixelToLatLng(new google.maps.Point(pos[0], pos[1]));
+      return {
+        lat: latLng.lat(),
+        lng: latLng.lng()
+      }
     },
 
     latLonToPixel: function(latlon) {
@@ -37776,8 +37953,6 @@ var Vis = cdb.core.View.extend({
             this.timeSlider.hide();
           }
         }
-      } else {
-        if (o.visible === false) subLayer.hide();
       }
     }
   },
@@ -38743,15 +38918,13 @@ var Vis = cdb.core.View.extend({
 
     // activate interactivity for layers with infowindows
     for(var i = 0; i < layerView.getLayerCount(); ++i) {
-      //var interactivity = layerView.getSubLayer(i).get('interactivity');
-      // if interactivity is not enabled we can't enable it
-      if(layerView.getInfowindowData(i)) {// && interactivity && interactivity.indexOf('cartodb_id') !== -1) {
+
+      if (layerView.getInfowindowData(i)) {
         if(!infowindow) {
           infowindow = Overlay.create('infowindow', this, layerView.getInfowindowData(i), true);
           mapView.addInfowindow(infowindow);
         }
-        var index = layerView.getLayerNumberByIndex(i);
-        layerView.setInteraction(index, true);
+        layerView.setInteraction(i, true);
       }
     }
 
@@ -39081,7 +39254,7 @@ var Vis = cdb.core.View.extend({
 
 cdb.vis.INFOWINDOW_TEMPLATE = {
   light: [
-    '<div class="cartodb-popup">',
+    '<div class="cartodb-popup v2">',
     '<a href="#close" class="cartodb-popup-close-button close">x</a>',
     '<div class="cartodb-popup-content-wrapper">',
       '<div class="cartodb-popup-content">',
@@ -39216,6 +39389,7 @@ cdb.vis.Vis = Vis;
 
       this.userOptions = options;
 
+      this.options.api_key        = layerDefinition.api_key;
       this.options.user_name      = layerDefinition.user_name;
       this.options.tiler_protocol = layerDefinition.tiler_protocol;
       this.options.tiler_domain   = layerDefinition.tiler_domain;
@@ -39239,7 +39413,7 @@ cdb.vis.Vis = Vis;
 
         var layerDefinition;
         var baseLayer = data.layers[0];
-        var dataLayer = data.layers[1];
+        var dataLayer = this._getDataLayer(data.layers);
 
         if (dataLayer.options) {
           this.options.user_name = dataLayer.options.user_name;
@@ -39253,11 +39427,9 @@ cdb.vis.Vis = Vis;
         }
 
         this.auth_tokens = data.auth_tokens;
-
         this.endPoint = "/api/v1/map";
 
         var bbox = [];
-
         var bounds = data.bounds;
 
         if (bounds) {
@@ -39276,13 +39448,10 @@ cdb.vis.Vis = Vis;
 
         /* If the vizjson contains a named map and a torque layer with a named map,
            ignore the torque layer */
-
         var ignoreTorqueLayer = false;
-
         var namedMap = this._getLayerByType(data.layers, "namedmap");
 
         if (namedMap) {
-
           var torque = this._getLayerByType(data.layers, "torque");
 
           if (torque && torque.options && torque.options.named_map) {
@@ -39290,9 +39459,7 @@ cdb.vis.Vis = Vis;
             if (torque.options.named_map.name === namedMap.options.named_map.name) {
               ignoreTorqueLayer = true;
             }
-
           }
-
         }
 
         var layers = [];
@@ -39302,34 +39469,40 @@ cdb.vis.Vis = Vis;
           layers.push(basemap);
         }
 
+        var labelsLayer;
         for (var i = 1; i < data.layers.length; i++) {
-
           var layer = data.layers[i];
 
           if (layer.type === "torque" && !ignoreTorqueLayer) {
-
             layers.push(this._getTorqueLayerDefinition(layer));
-
           } else if (layer.type === "namedmap") {
-
             layers.push(this._getNamedmapLayerDefinition(layer));
-
+          } else if (layer.type === "tiled") {
+            labelsLayer = this._getHTTPLayer(layer);
           } else if (layer.type !== "torque" && layer.type !== "namedmap") {
-
             var ll = this._getLayergroupLayerDefinition(layer);
 
             for (var j = 0; j < ll.length; j++) {
               layers.push(ll[j]);
             }
-
           }
+        }
+
+        // If there's a second `tiled` layer, it's a layer with labels and
+        // it needs to be on top of all other layers
+        if (labelsLayer) {
+          layers.push(labelsLayer);
         }
 
         this.options.layers = { layers: layers };
         this._requestLayerGroupID();
-
       }
+    },
 
+    _getDataLayer: function(layers) {
+      return this._getLayerByType(layers, "namedmap") ||
+        this._getLayerByType(layers, "layergroup") ||
+          this._getLayerByType(layers, "torque");
     },
 
     visibleLayers: function() {
@@ -39360,7 +39533,7 @@ cdb.vis.Vis = Vis;
 
       var self = this;
 
-      this.getLayerToken(function(data, error) {
+      this.createMap(function(data, error) {
 
         if (error) {
           self.error = error;
@@ -39389,7 +39562,7 @@ cdb.vis.Vis = Vis;
 
     },
 
-    _getHTTPBasemapLayer: function(basemap) {
+    _getHTTPLayer: function(basemap) {
 
       var urlTemplate = basemap.options.urlTemplate;
 
@@ -39434,7 +39607,7 @@ cdb.vis.Vis = Vis;
         if (type === "plain") {
           return this._getPlainBasemapLayer(basemap.options.color);
         } else {
-          return this._getHTTPBasemapLayer(basemap);
+          return this._getHTTPLayer(basemap);
         }
 
       }
@@ -40258,10 +40431,7 @@ Layers.register('torque', function(vis, data) {
 /**
  * public api for cartodb
  */
-
 (function() {
-
-
   function _Promise() {
 
   }
@@ -40299,7 +40469,7 @@ Layers.register('torque', function(vis, data) {
     } else if(layer.table !== undefined && layer.user !== undefined) {
       // layer object points to cartodbjson
       url = cartodbUrl(layer);
-    } else if(layer.indexOf && layer.indexOf('http') === 0) {
+    } else if(layer.indexOf) {
       // fetch from url
       url = layer;
     }
@@ -40318,7 +40488,6 @@ Layers.register('torque', function(vis, data) {
    * @param options layer options
    *
    */
-
   cartodb.createLayer = function(map, layer, options, callback) {
     if(map === undefined) {
       throw new TypeError("map should be provided");
@@ -40474,13 +40643,10 @@ Layers.register('torque', function(vis, data) {
       } else {
         createLayer();
       }
-
     });
 
     return promise;
   };
-
-
 })();
 
 ;(function() {
@@ -40802,6 +40968,7 @@ Layers.register('torque', function(vis, data) {
 
   }
 
+
   /*
    * sql.filter(sql.f().distance('< 10km')
    */
@@ -40821,8 +40988,761 @@ Layers.register('torque', function(vis, data) {
     return f;
   }
   */
+  function array_agg(s) {
+    return JSON.parse(s.replace(/^{/, '[').replace(/}$/,']'));
+  }
+
+
+  SQL.prototype.describeString = function(sql, column, callback) {
+
+      var s = [
+        'WITH t as (',
+        '        SELECT count(*) as total,',
+        '               count(DISTINCT {{column}}) as ndist',
+        '        FROM ({{sql}}) _wrap',
+        '      ), a as (',
+        '        SELECT ',
+        '          count(*) cnt, ',
+        '          {{column}}',
+        '        FROM ',
+        '          ({{sql}}) _wrap ',
+        '        GROUP BY ',
+        '          {{column}} ',
+        '        ORDER BY ',
+        '          cnt DESC',
+        '        ), b As (',
+        '         SELECT',
+        '          row_number() OVER (ORDER BY cnt DESC) rn,',
+        '          cnt',
+        '         FROM a',
+        '        ), c As (',
+        '        SELECT ',
+        '          sum(cnt) OVER (ORDER BY rn ASC) / t.total cumperc,',
+        '          rn,',
+        '          cnt ',
+        '         FROM b, t',
+        '         LIMIT 10',
+        '         ),',
+        'stats as (', 
+           'select count(distinct({{column}})) as uniq, ',
+           '       count(*) as cnt, ',
+           '       sum(case when COALESCE(NULLIF({{column}},\'\')) is null then 1 else 0 end)::numeric as null_count, ',
+           '       sum(case when COALESCE(NULLIF({{column}},\'\')) is null then 1 else 0 end)::numeric / count(*)::numeric as null_ratio, ',
+           // '       CDB_DistinctMeasure(array_agg({{column}}::text)) as cat_weight ',
+           '       (SELECT max(cumperc) weight FROM c) As skew ',
+           'from ({{sql}}) __wrap',
+        '),',
+        'hist as (', 
+           'select array_agg(row(d, c)) array_agg from (select distinct({{column}}) d, count(*) as c from ({{sql}}) __wrap, stats group by 1 limit 100) _a',
+        ')',
+        'select * from stats, hist'
+      ];
+
+      var query = Mustache.render(s.join('\n'), {
+        column: column, 
+        sql: sql
+      });
+
+      var normalizeName = function(str) {
+        var normalizedStr = str.replace(/^"(.+(?="$))?"$/, '$1'); // removes surrounding quotes
+        return normalizedStr.replace(/""/g, '"'); // removes duplicated quotes
+      }
+
+      this.execute(query, function(data) {
+        var row = data.rows[0];
+        var weight = 0;
+        var histogram = [];
+
+        try {
+          var s = array_agg(row.array_agg);
+
+          var histogram = _(s).map(function(row) {
+              var r = row.match(/\((.*),(\d+)/);
+              var name = normalizeName(r[1]);
+              return [name, +r[2]];
+          });
+
+          weight = row.skew * (1 - row.null_ratio) * (1 - row.uniq / row.cnt) * ( row.uniq > 1 ? 1 : 0);
+        } catch(e) {
+
+        }
+
+        callback({
+          type: 'string',
+          hist: histogram,
+          distinct: row.uniq,
+          count: row.cnt,
+          null_count: row.null_count,
+          null_ratio: row.null_ratio,
+          skew: row.skew,
+          weight: weight
+        });
+      });
+  }
+
+  SQL.prototype.describeDate = function(sql, column, callback) {
+    var s = [
+      'with minimum as (',
+        'SELECT min({{column}}) as start_time FROM ({{sql}}) _wrap), ',
+      'maximum as (SELECT max({{column}}) as end_time FROM ({{sql}}) _wrap), ',
+      'null_ratio as (SELECT sum(case when {{column}} is null then 1 else 0 end)::numeric / count(*)::numeric as null_ratio FROM ({{sql}}) _wrap), ',
+      'moments as (SELECT count(DISTINCT {{column}}) as moments FROM ({{sql}}) _wrap)',
+      'SELECT * FROM minimum, maximum, moments, null_ratio'
+    ];
+    var query = Mustache.render(s.join('\n'), {
+      column: column,
+      sql: sql
+    });
+
+    this.execute(query, function(data) {
+      var row = data.rows[0];
+      var e = new Date(row.end_time);
+      var s = new Date(row.start_time);
+
+      var moments = row.moments;
+
+      var steps = Math.min(row.moments, 1024);
+      
+      callback({
+        type: 'date',
+        start_time: s,
+        end_time: e,
+        range: e - s,
+        steps: steps,
+        null_ratio: row.null_ratio
+      });
+    });
+  }
+
+  SQL.prototype.describeBoolean = function(sql, column, callback){
+    var s = [
+      'with stats as (',
+            'select count(distinct({{column}})) as uniq,',
+                   'count(*) as cnt',
+              'from ({{sql}}) _wrap ',
+        '),',
+      'null_ratio as (',
+        'SELECT sum(case when {{column}} is null then 1 else 0 end)::numeric / count(*)::numeric as null_ratio FROM ({{sql}}) _wrap), ',
+      'true_ratio as (',
+        'SELECT sum(case when {{column}} is true then 1 else 0 end)::numeric / count(*)::numeric as true_ratio FROM ({{sql}}) _wrap) ',
+      'SELECT * FROM true_ratio, null_ratio, stats'
+    ];
+    var query = Mustache.render(s.join('\n'), {
+      column: column,
+      sql: sql
+    });
+
+    this.execute(query, function(data) {
+      var row = data.rows[0];
+      
+      callback({
+        type: 'boolean',
+        null_ratio: row.null_ratio,
+        true_ratio: row.true_ratio,
+        distinct: row.uniq,
+        count: row.cnt
+      });
+    });
+  }
+
+  SQL.prototype.describeGeom = function(sql, column, callback) {
+      var s = [
+        'with stats as (', 
+           'select st_asgeojson(st_extent({{column}})) as bbox',
+           'from ({{sql}}) _wrap',
+        '),',
+        'geotype as (', 
+          'select st_geometrytype({{column}}) as geometry_type from ({{sql}}) _w where {{column}} is not null limit 1',
+        '),',
+        'clusters as (', 
+          'with clus as (',
+            'SELECT distinct(ST_snaptogrid(the_geom, 10)) as cluster, count(*) as clustercount FROM ({{sql}}) _wrap group by 1 order by 2 desc limit 3),', 
+          'total as (',
+            'SELECT count(*) FROM ({{sql}}) _wrap)',
+          'SELECT sum(clus.clustercount)/sum(total.count) AS clusterrate FROM clus, total',
+        '),',
+        'density as (',
+          'SELECT count(*) / st_area(st_extent(the_geom)) as density FROM ({{sql}}) _wrap',
+        ')',
+        'select * from stats, geotype, clusters, density'
+      ];
+
+      var query = Mustache.render(s.join('\n'), {
+        column: column, 
+        sql: sql
+      });
+      function simplifyType(g) {
+        return { 
+        'st_multipolygon': 'polygon',
+        'st_polygon': 'polygon',
+        'st_multilinestring': 'line',
+        'st_linestring': 'line',
+        'st_multipoint': 'point',
+        'st_point': 'point'
+        }[g.toLowerCase()]
+      };
+
+      this.execute(query, function(data) {
+        var row = data.rows[0];
+        var bbox = JSON.parse(row.bbox).coordinates[0]
+        callback({
+          type: 'geom',
+          //lon,lat -> lat, lon
+          bbox: [[bbox[0][0],bbox[0][1]], [bbox[2][0], bbox[2][1]]],
+          geometry_type: row.geometry_type,
+          simplified_geometry_type: simplifyType(row.geometry_type),
+          cluster_rate: row.clusterrate,
+          density: row.density
+        });
+      });
+  }
+
+  SQL.prototype.columns = function(sql, options, callback) {
+    var args = arguments,
+        fn = args[args.length -1];
+    if(_.isFunction(fn)) {
+      callback = fn;
+    }
+    var s = "select * from (" + sql + ") __wrap limit 0";
+    var exclude = ['cartodb_id','latitude','longitude','created_at','updated_at','lat','lon','the_geom_webmercator'];
+    this.execute(s, function(data) {
+      var t = {}
+      for (var i in data.fields) {
+        if (exclude.indexOf(i) === -1) {
+          t[i] = data.fields[i].type;
+        }
+      }
+      callback(t);
+    });
+  };
+
+  SQL.prototype.describeFloat = function(sql, column, callback) {
+      var s = [
+        'with stats as (',
+            'select min({{column}}) as min,',
+                   'max({{column}}) as max,',
+                   'avg({{column}}) as avg,',
+                   'count(DISTINCT {{column}}) as cnt,',
+                   'count(distinct({{column}})) as uniq,',
+                   'count(*) as cnt,',
+                   'sum(case when {{column}} is null then 1 else 0 end)::numeric / count(*)::numeric as null_ratio,',
+                   'stddev_pop({{column}}) / count({{column}}) as stddev,',
+                   'CASE WHEN abs(avg({{column}})) > 1e-7 THEN stddev({{column}}) / abs(avg({{column}})) ELSE 1e12 END as stddevmean,',
+                    'CDB_DistType(array_agg("{{column}}"::numeric)) as dist_type ',
+              'from ({{sql}}) _wrap ',
+        '),',
+        'params as (select min(a) as min, (max(a) - min(a)) / 7 as diff from ( select {{column}} as a from ({{sql}}) _table_sql where {{column}} is not null ) as foo ),',
+        'histogram as (',
+           'select array_agg(row(bucket, range, freq)) as hist from (',
+           'select CASE WHEN uniq > 1 then width_bucket({{column}}, min-0.01*abs(min), max+0.01*abs(max), 100) ELSE 1 END as bucket,',
+                  'numrange(min({{column}})::numeric, max({{column}})::numeric) as range,',
+                  'count(*) as freq',
+             'from ({{sql}}) _w, stats',
+             'group by 1',
+             'order by 1',
+          ') __wrap',
+         '),',
+        'hist as (', 
+           'select array_agg(row(d, c)) cat_hist from (select distinct({{column}}) d, count(*) as c from ({{sql}}) __wrap, stats group by 1 limit 100) _a',
+        '),',
+         'buckets as (',
+            'select CDB_QuantileBins(array_agg(distinct({{column}}::numeric)), 7) as quantiles, ',
+            '       (select array_agg(x::numeric) FROM (SELECT (min + n * diff)::numeric as x FROM generate_series(1,7) n, params) p) as equalint,',
+            // '       CDB_EqualIntervalBins(array_agg({{column}}::numeric), 7) as equalint, ',
+            '       CDB_JenksBins(array_agg(distinct({{column}}::numeric)), 7) as jenks, ',
+            '       CDB_HeadsTailsBins(array_agg(distinct({{column}}::numeric)), 7) as headtails ',
+            'from ({{sql}}) _table_sql where {{column}} is not null',
+         ')',
+         'select * from histogram, stats, buckets, hist'
+      ];
+
+      var query = Mustache.render(s.join('\n'), {
+        column: column, 
+        sql: sql
+      });
+
+      this.execute(query, function(data) {
+        var row = data.rows[0];
+        var s = array_agg(row.hist);
+        var h = array_agg(row.cat_hist);
+        callback({
+          type: 'number',
+          cat_hist: 
+            _(h).map(function(row) {
+            var r = row.match(/\((.*),(\d+)/);
+            return [+r[1], +r[2]];
+          }),
+          hist: _(s).map(function(row) {
+            if(row.indexOf("empty") > -1) return;
+            var els = row.split('"');
+            return { index: els[0].replace(/\D/g,''), 
+                     range: els[1].split(",").map(function(d){return d.replace(/\D/g,'')}), 
+                     freq: els[2].replace(/\D/g,'') };
+          }),
+          stddev: row.stddev,
+          null_ratio: row.null_ratio,
+          count: row.cnt,
+          distinct: row.uniq,
+          //lstddev: row.lstddev,
+          avg: row.avg,
+          max: row.max,
+          min: row.min,
+          stddevmean: row.stddevmean,
+          weight: (row.uniq > 1 ? 1 : 0) * (1 - row.null_ratio) * (row.stddev < -1 ? 1 : (row.stddev < 1 ? 0.5 : (row.stddev < 3 ? 0.25 : 0.1))),
+          quantiles: row.quantiles,
+          equalint: row.equalint,
+          jenks: row.jenks,
+          headtails: row.headtails,
+          dist_type: row.dist_type
+        });
+      });
+  }
+
+  // describe a column
+  SQL.prototype.describe = function(sql, column, options) {
+      var self = this;
+      var args = arguments,
+          fn = args[args.length -1];
+      if(_.isFunction(fn)) {
+        var _callback = fn;
+      }
+      var callback = function(data) {
+        data.column = column;
+        _callback(data);
+      }
+      var s = "select * from (" + sql + ") __wrap limit 0";
+      this.execute(s, function(data) {
+
+        var type = (options && options.type) ? options.type : data.fields[column].type;
+
+        if (!type) {
+          callback(new Error("column does not exist"));
+          return;
+        }
+
+        else if (type === 'string') {
+          self.describeString(sql, column, callback);
+        } else if (type === 'number') {
+          self.describeFloat(sql, column, callback);
+        } else if (type === 'geometry') {
+          self.describeGeom(sql, column, callback);
+        } else if (type === 'date') {
+          self.describeDate(sql, column, callback);
+        } else if (type === 'boolean') {
+          self.describeBoolean(sql, column, callback);
+        } else {
+          callback(new Error("column type is not supported"));
+        }
+      });
+  }
 
   root.cartodb.SQL = SQL;
+
+})();
+
+;(function() {
+
+var root = this;
+
+root.cartodb = root.cartodb || {};
+
+var ramps = {
+  bool: ['#229A00', '#F84F40', '#DDDDDD'],
+  green:  ['#EDF8FB', '#D7FAF4', '#CCECE6', '#66C2A4', '#41AE76', '#238B45', '#005824'],
+  blue:  ['#FFFFCC', '#C7E9B4', '#7FCDBB', '#41B6C4', '#1D91C0', '#225EA8', '#0C2C84'],
+  pink: ['#F1EEF6', '#D4B9DA', '#C994C7', '#DF65B0', '#E7298A', '#CE1256', '#91003F'],
+  black:  ['#F7F7F7', '#D9D9D9', '#BDBDBD', '#969696', '#737373', '#525252', '#252525'],
+  red:  ['#FFFFB2', '#FED976', '#FEB24C', '#FD8D3C', '#FC4E2A', '#E31A1C', '#B10026'],
+  category: ['#A6CEE3', '#1F78B4', '#B2DF8A', '#33A02C', '#FB9A99', '#E31A1C', '#FDBF6F', '#FF7F00', '#CAB2D6', '#6A3D9A', '#DDDDDD'],
+  divergent: ['#0080FF', '#40A0FF', '#7FBFFF', '#FFF2CC', '#FFA6A6', '#FF7A7A', '#FF4D4D']
+};
+
+function geoAttr(geometryType) {
+  return {
+    "line": 'line-color',
+    'polygon': "polygon-fill",
+    'point': "marker-fill"
+  }[geometryType]
+}
+
+function getDefaultCSSForGeometryType(geometryType) {
+  if (geometryType === "polygon") {
+    return [
+      "polygon-opacity: 0.7;",
+      "line-color: #FFF;",
+      "line-width: 0.5;",
+      "line-opacity: 1;"
+    ];
+  }
+  if (geometryType === "line") {
+    return  [
+      "line-width: 2;",
+      "line-opacity: 0.7;"
+    ];
+  }
+  return [
+    "line-color: #0C2C84;",
+    "line-opacity: 1;",
+    "marker-fill-opacity: 0.9;",
+    "marker-line-color: #FFF;",
+    "marker-line-width: 1;",
+    "marker-line-opacity: 1;",
+    "marker-placement: point;",
+    "marker-type: ellipse;",
+    "marker-width: 10;",
+    "marker-allow-overlap: true;"
+  ];
+}
+
+var CSS = {
+  choropleth: function(quartiles, tableName, prop, geometryType, ramp) {
+    var attr = geoAttr(geometryType);
+    var tableID = "#" + tableName;
+
+    var defaultCSS = getDefaultCSSForGeometryType(geometryType);
+    var css = "/** choropleth visualization */\n\n" + tableID + " {\n  " + attr + ": " + ramp[0] + ";\n" + defaultCSS.join("\n") + "\n}\n";
+
+    for (var i = quartiles.length - 1; i >= 0; --i) {
+      if (quartiles[i] !== undefined && quartiles[i] != null) {
+        css += "\n" + tableID + "[" + prop + " <= " + quartiles[i] + "] {\n";
+        css += "  " + attr  + ":" + ramp[i] + ";\n}"
+      }
+    }
+    return css;
+  },
+
+  categoryMetadata: function(cats, options) {
+    var metadata = [];
+
+    var ramp = (options && options.ramp) ? options.ramp : ramps.category;
+    var type = options && options.type ? options.type : "string";
+
+    for (var i = 0; i < cats.length; i++) {
+      var cat = cats[i];
+      if (i < 10 && cat !== undefined && ((type === 'string' && cat != null) || (type !== 'string'))) {
+        metadata.push({ title: cat, title_type: type, value_type: 'color', color: ramp[i] });
+      }
+    }
+
+    if (cats.length > 10) {
+      metadata.push({ title: "Others", value_type: 'color', default: true, color: ramp[ramp.length - 1] });
+    }
+
+    return metadata;
+  },
+
+  category: function(cats, tableName, prop, geometryType, options) {
+    var attr = geoAttr(geometryType);
+    var tableID = "#" + tableName;
+    var ramp = ramps.category;
+    var name, value;
+
+    var type = options && options.type ? options.type : "string";
+    var ramp = (options && options.ramp) ? options.ramp : ramps.category;
+
+    var defaultCSS = getDefaultCSSForGeometryType(geometryType);
+
+    var css = "/** category visualization */\n\n" + tableID + " {\n  " + attr + ": " + ramp[0] + ";\n" + defaultCSS.join("\n") + "\n}\n";
+
+    for (var i = 0; i < cats.length; i++) {
+
+      var cat = cats[i];
+
+      if (type === 'string') {
+        name = cat.replace(/\n/g,'\\n').replace(/\"/g, "\\\"");
+        value = "\"" + name + "\"";
+      } else {
+        value = cat;
+      }
+
+      if (i < 10 && cat !== undefined && ((type === 'string' && cat != null) || (type !== 'string'))) {
+        css += "\n" + tableID + "[" + prop + "=" + value + "] {\n";
+        css += "  " + attr  + ":" + ramp[i] + ";\n}"
+      }
+    }
+
+    if (cats.length > 10) {
+      css += "\n" + tableID + "{\n";
+      css += "  " + attr  + ": " + ramp[ramp.length - 1]+ ";\n}"
+    }
+
+    return css;
+  },
+
+  torque: function(stats, tableName, options){
+    var tableID = "#" + tableName;
+    var aggFunction = "count(cartodb_id)";
+    var css = [
+        '/** torque visualization */',
+        'Map {',
+        '  -torque-time-attribute: ' + stats.column + ';',
+        '  -torque-aggregation-function: "count(cartodb_id)";',
+        '  -torque-frame-count: ' + stats.steps + ';',
+        '  -torque-animation-duration: 10;',
+        '  -torque-resolution: 2;',
+        '}',
+        tableID + " {",
+        '  marker-width: 3;',
+        '  marker-fill-opacity: 0.8;',
+        '  marker-fill: #0F3B82; ',
+        '  comp-op: "lighten"; ',
+        '  [frame-offset = 1] { marker-width: 10; marker-fill-opacity: 0.05;}',
+        '  [frame-offset = 2] { marker-width: 15; marker-fill-opacity: 0.02;}',
+        '}'
+    ];
+    css = css.join('\n');
+
+    return css;
+
+  },
+
+  bubble: function(quartiles, tableName, prop) {
+    var tableID = "#" + tableName;
+    var css = "/** bubble visualization */\n\n" + tableID + " {\n";
+    css += getDefaultCSSForGeometryType("point").join('\n');
+    css += "\nmarker-fill: #FF5C00;";
+    css += "\n}\n\n";
+
+    var min = 10;
+    var max = 30;
+
+    var values = [];
+
+    var NPOINS = 10;
+    for(var i = 0; i < NPOINS; ++i) {
+      var t = i/(NPOINS-1);
+      values.push(min + t*(max - min));
+    }
+
+    // generate carto
+    for(var i = NPOINS - 1; i >= 0; --i) {
+      if(quartiles[i] !== undefined && quartiles[i] != null) {
+        css += "\n#" + tableName +" [ " + prop + " <= " + quartiles[i] + "] {\n"
+        css += "   marker-width: " + values[i].toFixed(1) + ";\n}"
+      }
+    }
+    return css;
+  },
+
+  heatmap: function(stats, tableName, options){
+    var tableID = "#" + tableName;
+    var css = [
+        '/** heatmap visualization */',
+        'Map {',
+        '  -torque-time-attribute: "cartodb_id";',
+        '  -torque-aggregation-function: "count(cartodb_id)";',
+        '  -torque-frame-count: 1;',
+        '  -torque-animation-duration: 10;',
+        '  -torque-resolution: 2;',
+        '}',
+        tableID + " {",
+        '  marker-width: 10;',
+        '  marker-fill-opacity: 0.4;',
+        '  marker-fill: #0F3B82; ',
+        '  comp-op: "lighten"; ',
+        '  image-filters: colorize-alpha(blue, cyan, lightgreen, yellow , orange, red);',
+        '  marker-file: url(http://s3.amazonaws.com/com.cartodb.assets.static/alphamarker.png);',
+        '}'
+    ];
+    css = css.join('\n');
+    return css;
+  }
+}
+
+function guessCss(sql, geometryType, column, stats) {
+  var css = null
+  if (stats.type === 'number') {
+    css =  CSS.choropleth(stats.quantiles, column, geometryType, ramps.red);
+  } else if(stats.type === 'string') {
+    css = CSS.category(stats.hist.slice(0, ramps.cat.length).map(function(r) { return r[0]; }), column, geometryType)
+  }
+  return css;
+}
+
+function guess(o, callback) {
+  if (!callback) throw new Error("no callback");
+  var s = cartodb.SQL({ user: o.user });
+  s.describe(o.sql, 'the_geom', function(data) {
+    var geometryType = data.simplified_geometry_type;
+    s.describe(o.sql, o.column, function(data) {
+      callback(
+        null, 
+        guessCss(o.sql, geometryType, data.column, data)
+      )
+    });
+  })
+}
+
+function getWeightFromShape(dist_type){
+  return {
+    U: 0.9,
+    A: 0.9,
+    L: 0.7,
+    J: 0.7,
+    S: 0.5,
+    F: 0.3
+  }[dist_type];
+}
+
+function getMethodProperties(stats) { // TODO: only require the necessary params
+
+  var method;
+  var ramp = ramps.pink;
+  var name = "pink";
+
+  if (['A','U'].indexOf(stats.dist_type) != -1) { // apply divergent scheme
+    method = stats.jenks;
+
+    if (stats.min < 0 && stats.max > 0){
+      ramp = ramps.divergent;
+      name = "spectrum2";
+    }
+
+  } else if (stats.dist_type === 'F') {
+    method = stats.equalint;
+    ramp = ramps.red;
+    name = "red";
+  } else {
+    if (stats.dist_type === 'J') {
+      method = stats.headtails;
+      ramp = ramps.blue;
+      name = "blue";
+    } else {
+      //ramp = (_.clone(ramps.red)).reverse();
+      method = stats.headtails;
+      ramp = ramps.red;
+      name = "red";
+    }
+  }
+
+  return { name: name, ramp: ramp, method: method };
+
+}
+
+function guessMap(sql, tableName, column, stats) {
+  var geometryType = column.get("geometry_type");
+  var columnName = column.get("column");
+  var visualizationType = "choropleth";
+  var css = null
+  var type = stats.type;
+  var metadata = []
+  var distinctPercentage = (stats.distinct / stats.count) * 100;
+
+  if (type === 'number') {
+
+    var calc_weight = (stats.weight + getWeightFromShape(stats.dist_type)) / 2;
+
+    if (calc_weight >= 0.5) {
+
+      var visFunction = CSS.choropleth;
+      var properties = getMethodProperties(stats);
+
+      if (stats.count < 200 && geometryType === 'point'){
+        visualizationType = "bubble";
+        visFunction = CSS.bubble;
+      }
+
+      css = visFunction(properties.method, tableName, columnName, geometryType, properties.ramp);
+
+    } else if (stats.weight > 0.5 || distinctPercentage < 25) {
+
+      if (distinctPercentage < 1) {
+        visualizationType   = "category";
+
+        var cats = stats.cat_hist;
+        cats = _.sortBy(cats, function(cat) { return cat[1]; }).reverse().slice(0, ramps.category.length);
+        cats = _.sortBy(cats, function(cat) { return cat[0]; });
+        cats = cats.map(function(r) { return r[0]; });
+
+        css      = CSS.category(cats, tableName, columnName, geometryType, { type: type });
+        metadata = CSS.categoryMetadata(cats, { type: type });
+
+      } else if (distinctPercentage >=1) {
+
+        var visFunction = CSS.choropleth;
+
+        if (geometryType === 'point'){
+          visualizationType = "bubble";
+          visFunction = CSS.bubble;
+        }
+
+        var properties = getMethodProperties(stats);
+        css = visFunction(properties.method, tableName, columnName, geometryType, properties.ramp);
+      }
+    }
+
+  } else if (type === 'string') {
+
+    visualizationType   = "category";
+
+    var cats = stats.hist;
+    cats = _.sortBy(cats, function(cat) { return cat[1]; }).reverse().slice(0, ramps.category.length);
+    cats = _.sortBy(cats, function(cat) { return cat[0]; });
+    cats = cats.map(function(r) { return r[0]; });
+
+    css      = CSS.category(cats, tableName, columnName, geometryType);
+    metadata = CSS.categoryMetadata(cats);
+
+
+  } else if (type === 'date') {
+    visualizationType = "torque";
+    css = CSS.torque(stats, tableName);
+
+  } else if (type === 'boolean') {
+    visualizationType  = "category";
+    var ramp = ramps.bool;
+    var cats = ['true', 'false', null];
+    var options = { type: type, ramp: ramp };
+    css      = CSS.category(cats, tableName, columnName, geometryType, options);
+    metadata = CSS.categoryMetadata(cats, options);
+  } else if (stats.type === 'geom') {
+    visualizationType = "heatmap";
+    css = CSS.heatmap(stats, tableName, options);
+  }
+
+  var properties = {
+    sql: sql,
+    geometryType: geometryType,
+    column: columnName,
+    bbox: column.get("bbox"),
+    type: type,
+    visualizationType: visualizationType
+  };
+
+  if (css) {
+    properties.css = css;
+  } else {
+    properties.css = null;
+    properties.weight = -100;
+  }
+
+  if (stats) {
+    properties.stats = stats;
+  }
+
+  if (metadata) {
+    properties.metadata = metadata;
+  }
+
+  return properties;
+}
+
+/*
+CartoCSS.guess({
+  user: '  '
+  sql: '...'
+  column:
+})
+*/
+
+CSS.guess = guess;
+CSS.guessCss = guessCss;
+CSS.guessMap = guessMap;
+CSS.getWeightFromShape = getWeightFromShape;
+CSS.getMethodProperties = getMethodProperties;
+
+
+root.cartodb.CartoCSS = CSS;
 
 })();
 (function() {

@@ -10,7 +10,7 @@ class Api::Json::GeocodingsController < Api::ApplicationController
   GEOCODING_SQLAPI_CALLS_TIMEOUT = 45
 
   def index
-    geocodings = Geocoding.where("user_id = ? AND (state NOT IN ?)", current_user.id, ['failed', 'finished', 'cancelled'])
+    geocodings = Geocoding.where("user_id = ? AND (state NOT IN ?) AND (data_import_id IS NULL)", current_user.id, ['failed', 'finished', 'cancelled'])
     render json: { geocodings: geocodings }
   end
 
@@ -33,7 +33,9 @@ class Api::Json::GeocodingsController < Api::ApplicationController
     geocoding          = Geocoding.new params.slice(:kind, :geometry_type, :formatter, :country_code, :region_code)
     geocoding.user     = current_user
     geocoding.table_id = @table.try(:id)
+    geocoding.table_name = params[:table_name] ? params[:table_name] : @table.try(:name)
     geocoding.raise_on_save_failure = true
+    geocoding.force_all_rows = (params[:force_all_rows].to_s == 'true')
 
     geocoding.formatter = "{#{ params[:column_name] }}" if params[:column_name].present?
 
@@ -66,8 +68,10 @@ class Api::Json::GeocodingsController < Api::ApplicationController
 
     render_jsonp(geocoding.to_json)
   rescue Sequel::ValidationFailed => e
+    CartoDB.notify_exception(e)
     render_jsonp( { description: e.message }, 422)
   rescue => e
+    CartoDB.notify_exception(e)
     render_jsonp( { description: e.message }, 500)
   end
 
@@ -115,7 +119,8 @@ class Api::Json::GeocodingsController < Api::ApplicationController
   end
 
   def estimation_for
-    total_rows       = Geocoding.processable_rows(@table)
+    force_all_rows = (params[:force_all_rows].to_s == 'true')
+    total_rows = Geocoding.processable_rows(@table, force_all_rows)
     remaining_quota  = current_user.geocoding_quota - current_user.get_geocoding_calls
     remaining_quota  = (remaining_quota > 0 ? remaining_quota : 0)
     used_credits     = total_rows - remaining_quota

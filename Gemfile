@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-gem 'rails',                   '3.2.2'
+gem 'rails',                   '3.2.20'
 
 gem 'rake',                    '0.9.2.2'
 gem 'pg',                      '0.13.2'
@@ -12,7 +12,7 @@ gem 'activerecord-postgres-array'
 
 gem 'vizzuality-sequel-rails', '0.3.7', git: 'https://github.com/Vizzuality/sequel-rails.git'
 
-gem 'rails_warden',            '0.5.2' # Auth via the Warden Rack framework
+gem 'rails_warden',            '0.5.8' # Auth via the Warden Rack framework
 gem 'oauth',                   '0.4.5'
 gem 'oauth-plugin',            '0.4.0.pre4'
 
@@ -45,7 +45,7 @@ end
 # Importer & sync tables
 gem 'roo',                     '1.13.2'
 gem 'state_machine',           '1.1.2'
-gem 'typhoeus',                '0.6.7'
+gem 'typhoeus',                '0.7.2'
 gem 'charlock_holmes',         '0.7.2'
 gem 'dbf',                     '2.0.6'
 gem 'faraday',                 '0.9.0'
@@ -85,17 +85,17 @@ group :test do
   gem 'capybara',              '1.1.2'
   gem 'delorean'
   gem 'webrick',               '1.3.1'
-  gem 'mocha',                 '0.10.5'
+  gem 'mocha',                 '1.1.0'
   gem 'ci_reporter',           '1.8.4'
-  gem 'rspec-rails',           '2.10.1'
   gem 'poltergeist',           '>= 1.0.0'
   gem 'activerecord-nulldb-adapter', '0.3.1'
 end
 
 group :development, :test do
+  gem 'rspec-rails',           '2.12.0'
   gem 'rb-readline'
   gem 'debugger',              '1.6.8'
-  gem 'rack',                  '1.4.1'
+  gem 'rack'
 
   # Server
   gem 'thin',                           require: false

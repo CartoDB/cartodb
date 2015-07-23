@@ -31,7 +31,7 @@ class Table
   GEOMETRY_TYPES_PRESENT_CACHING_TIMEOUT = 24.hours
 
   # See http://www.postgresql.org/docs/9.3/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
-  TABLENAME_MAX_LENGTH = 63
+  PG_IDENTIFIER_MAX_LENGTH = 63
 
   # @see services/importer/lib/importer/column.rb -> RESERVED_WORDS
   # @see config/initializers/carto_db.rb -> RESERVED_COLUMN_NAMES
@@ -56,7 +56,6 @@ class Table
   DEFAULT_THE_GEOM_TYPE = 'geometry'
 
   VALID_GEOMETRY_TYPES = %W{ geometry multipolygon point multilinestring }
-  DEFAULT_DERIVED_VISUALIZATION_POSTFIX = 'Map'
 
 
   def_delegators :relator, *CartoDB::TableRelator::INTERFACE
@@ -94,9 +93,6 @@ class Table
   end
 
   # ----------------------------------------------------------------------------
-
-
-
 
   def public_values(options = {}, viewer_user=nil)
     selected_attrs = options[:except].present? ?
@@ -210,7 +206,6 @@ class Table
       Carto::UserTable.where(user_id: user_id, name: table_name).first
     }
   end
-
 
   def self.table_and_schema(table_name)
     if table_name =~ /\./
@@ -599,6 +594,8 @@ class Table
   end
 
   def create_default_map_and_layers
+
+    # Adds the default baselayer
     baselayer = default_baselayer_for_user
     provider = ::Map.provider_for_baselayer(baselayer)
     m = ::Map.create(::Map::DEFAULT_OPTIONS.merge(table_id: self.id, user_id: self.user_id, provider: provider))
@@ -606,6 +603,7 @@ class Table
     base_layer = ::Layer.new(baselayer)
     m.add_layer(base_layer)
 
+    # Adds the default data layer
     data_layer = ::Layer.new(Cartodb.config[:layer_opts]['data'])
     data_layer.options['table_name'] = self.name
     data_layer.options['user_name'] = self.owner.username
@@ -615,6 +613,21 @@ class Table
     data_layer.tooltip ||= {}
     data_layer.tooltip['fields'] = []
     m.add_layer(data_layer)
+
+    # Adds a layer with labels at top if the baselayer has that option
+    labels_layer_url = base_layer.options['labels'] && base_layer.options['labels']['url']
+    if labels_layer_url
+      labels_layer = ::Layer.new({
+        kind: 'tiled',
+        options: base_layer.options.except('name', 'className', 'labels').merge({
+          'urlTemplate' => labels_layer_url,
+          'url' => labels_layer_url,
+          'type' => 'Tiled',
+          'name' => "#{base_layer.options['name']} Labels"
+        })
+      })
+      m.add_layer(labels_layer)
+    end
   end
 
   def create_default_visualization
@@ -643,7 +656,7 @@ class Table
     map = blender.blend
     vis = CartoDB::Visualization::Member.new(
       {
-        name:     beautify_name([self.name, DEFAULT_DERIVED_VISUALIZATION_POSTFIX].join(' ')),
+        name:     beautify_name(self.name),
         map_id:   map.id,
         type:     CartoDB::Visualization::Member::TYPE_DERIVED,
         privacy:  blender.blended_privacy,
@@ -1503,7 +1516,7 @@ class Table
     name = name.gsub(/[^a-z0-9]/,'_').gsub(/_{2,}/, '_')
 
     # Postgresql table name limit
-    name = name[0...TABLENAME_MAX_LENGTH]
+    name = name[0...PG_IDENTIFIER_MAX_LENGTH]
 
     return name if name == options[:current_name]
 
@@ -1521,13 +1534,78 @@ class Table
     while existing_names.include?(name)
       count = count + 1
       suffix = "_#{count}"
-      name = name[0...TABLENAME_MAX_LENGTH-suffix.length]
+      name = name[0...PG_IDENTIFIER_MAX_LENGTH-suffix.length]
       name = name[rx] ? name.gsub(rx, suffix) : "#{name}#{suffix}"
       # Re-check for duplicated underscores
       name = name.gsub(/_{2,}/, '_')
     end
 
     name
+  end
+
+  def self.sanitize_columns(table_name, options={})
+    connection = options.fetch(:connection)
+    database_schema = options.fetch(:database_schema, 'public')
+
+    connection.schema(table_name, schema: database_schema, reload: true).each do |column|
+      column_name = column[0].to_s
+      column_type = column[1][:db_type]
+      column_name = ensure_column_has_valid_name(table_name, column_name, options)
+      if column_type == 'unknown'
+        CartoDB::ColumnTypecaster.new(
+          user_database:  connection,
+          schema:         database_schema,
+          table_name:     table_name,
+          column_name:    column_name,
+          new_type:       'text'
+          ).run
+      end
+    end
+  end
+
+  def self.ensure_column_has_valid_name(table_name, column_name, options={})
+    connection = options.fetch(:connection)
+    database_schema = options.fetch(:database_schema, 'public')
+
+    valid_column_name = get_valid_column_name(table_name, column_name, options)
+    if valid_column_name != column_name
+      connection.run(%Q{ALTER TABLE "#{database_schema}"."#{table_name}" RENAME COLUMN "#{column_name}" TO "#{valid_column_name}";})
+    end
+
+    valid_column_name
+  end
+
+  def self.get_valid_column_name(table_name, candidate_column_name, options={})
+    reserved_words = options.fetch(:reserved_words, [])
+
+    existing_names = get_column_names(table_name, options) - [candidate_column_name]
+
+    candidate_column_name = 'untitled_column' if candidate_column_name.blank?
+    candidate_column_name = candidate_column_name.to_s.squish
+
+    # Subsequent characters can be letters, underscores or digits
+    candidate_column_name = candidate_column_name.gsub(/[^a-z0-9]/,'_').gsub(/_{2,}/, '_')
+
+    # Valid names start with a letter or an underscore
+    candidate_column_name = "column_#{candidate_column_name}" unless candidate_column_name[/^[a-z_]{1}/]
+
+    # Avoid collisions
+    count = 1
+    new_column_name = candidate_column_name
+    while existing_names.include?(new_column_name) || reserved_words.include?(new_column_name.upcase)
+      suffix = "_#{count}"
+      new_column_name = candidate_column_name[0..PG_IDENTIFIER_MAX_LENGTH-suffix.length] + suffix
+      count += 1
+    end
+
+    new_column_name
+  end
+
+  def self.get_column_names(table_name, options={})
+    connection = options.fetch(:connection)
+    database_schema = options.fetch(:database_schema, 'public')
+    table_schema = connection.schema(table_name, schema: database_schema, reload: true)
+    table_schema.map { |column| column[0].to_s }
   end
 
   def get_new_column_type(invalid_column)

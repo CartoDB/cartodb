@@ -37,6 +37,19 @@ module CartoDB
         })
 
         self
+      rescue => exception
+        begin
+          clean_temporary_tables
+        ensure
+          raise exception
+        end
+      end
+
+      def clean_temporary_tables
+        additional_support_tables.each { |table_name|
+          job.delete_temp_table(table_name)
+        }
+        job.delete_job_table
       end
 
       # CONVENTION: support_tables will always end in "_tablename"

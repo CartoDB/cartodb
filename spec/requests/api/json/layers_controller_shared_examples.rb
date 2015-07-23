@@ -3,6 +3,9 @@
 shared_examples_for "layers controllers" do
 
   describe 'index' do
+    include Rack::Test::Methods
+    include Warden::Test::Helpers
+    include CacheHelper
     include_context 'visualization creation helpers'
     include_context 'users helper'
 
@@ -69,6 +72,8 @@ shared_examples_for "layers controllers" do
       user_3.save.reload
       organization.reload
 
+      default_url_options[:host] = "#{user_2.subdomain}.localhost.lan"
+
       table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: "table#{rand(9999)}_1", user_id: user_1.id)
       u1_t_1_id = table.table_visualization.id
       u1_t_1_perm_id = table.table_visualization.permission.id
@@ -91,17 +96,16 @@ shared_examples_for "layers controllers" do
 
       table.map.add_layer layer
 
-      login_as(user_2, scope: user_2.subdomain)
-      host! "#{user_2.subdomain}.localhost.lan"
-      get api_v1_maps_layers_index_url(map_id: table.map.id) do |response|
+      login_as(user_2, scope: user_2.username)
+      get api_v1_maps_layers_index_url(user_domain: user_2.username, map_id: table.map.id) do |response|
         response.status.should be_success
         body = JSON.parse(last_response.body)
         body['layers'].size.should == 3
       end
 
-      login_as(user_3, scope: user_3.subdomain)
-      host! "#{user_3.subdomain}.localhost.lan"
-      get api_v1_maps_layers_index_url(map_id: table.map.id) do |response|
+      login_as(user_3, scope: user_3.username)
+      host! "#{user_3.username}.localhost.lan"
+      get api_v1_maps_layers_index_url(user_domain: user_3.username, map_id: table.map.id) do |response|
         response.status.should == 404
       end
 
@@ -118,7 +122,7 @@ shared_examples_for "layers controllers" do
         password: 'clientex'
       )
 
-      host! 'test.localhost.lan'
+      host! "#{@user.username}.localhost.lan"
     end
 
     before(:each) do
@@ -140,6 +144,7 @@ shared_examples_for "layers controllers" do
       @user.add_layer layer
       @user.add_layer layer2
 
+      default_url_options[:host] = "#{@user.subdomain}.localhost.lan"
       get api_v1_users_layers_index_url(params.merge(user_id: @user.id)) do |response|
         last_response.status.should be_success
         response_body = JSON.parse(last_response.body)
@@ -172,6 +177,7 @@ shared_examples_for "layers controllers" do
       @table.map.add_layer layer
       @table.map.add_layer layer2
 
+      default_url_options[:host] = "#{@user.subdomain}.localhost.lan"
       get api_v1_maps_layers_index_url(params.merge(map_id: @table.map.id)) do |response|
         last_response.status.should be_success
         response_body = JSON.parse(last_response.body)

@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: 96897e1d4789cdb6bc755582f51276409676a0d4
+// sha: 49d1b11bd07a12eb8d58bebc58d85d7d17cdcf65
 (function() {
   var root = this;
 
@@ -28033,15 +28033,19 @@ cdb.geo.ui.Annotation = cdb.core.View.extend({
   },
 
   _getStandardPropertyName: function(name) {
-
-    if (!name) return;
-    var parts = name.split("-");
-
-    if (parts.length === 1) return name;
-    else if (parts.length === 2) {
-      return parts[0] + parts[1].slice(0, 1).toUpperCase() + parts[1].slice(1);
+    if (!name) {
+      return;
     }
 
+    var parts = name.split("-");
+
+    if (parts.length === 1) {
+      return name;
+    } else {
+      return parts[0] + _.map(parts.slice(1), function(l) { 
+        return l.slice(0,1).toUpperCase() + l.slice(1);
+      }).join("");
+    }
   },
 
   _cleanStyleProperties: function(hash) {

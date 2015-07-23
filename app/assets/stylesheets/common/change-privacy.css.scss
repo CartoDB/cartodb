@@ -104,8 +104,3 @@
   @include justify-content(space-between, justify);
   @include align-items(center);
 }
-.ChangePrivacy-shareFooterGroup {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center);
-}

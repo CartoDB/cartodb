@@ -6,8 +6,6 @@ Sequel.migration do
       Boolean   :map_like, null: false, default: true
       Boolean   :share_table, null: false, default: true
       Boolean   :share_visualization, null: false, default: true
-      Boolean   :unshare_table, null: false, default: true
-      Boolean   :unshare_visualization, null: false, default: true
       Boolean   :data_import, null: false, default: true
       Boolean   :geocode, null: false, default: true
       DateTime  :created_at,        default: Sequel::CURRENT_TIMESTAMP

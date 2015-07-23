@@ -21,7 +21,7 @@
   box-sizing: border-box;
   min-width: 100px;
   min-height: 34px;
-  padding: 8px;
+  padding: 8px 10px; // sufficient padding on sides to not be overlapped by :after blocks
   border: 1px solid $cStructure-mainLine;
   border-radius: 3px;
   font-size: 14px;

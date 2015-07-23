@@ -12,9 +12,15 @@
   @include align-items(center);
   @include flex-wrap(wrap);
   position: relative;
-  width: $sLayout-width + 20;
-  margin: 10px auto 0;
-  padding: 0 $sMargin-elementInline;
+  width: $sLayout-width + $sMargin-element;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: $sMargin-elementInline;
+  padding-right: $sMargin-elementInline;
+}
+.MapsList-footer {
+  // To match the MapsList size above, with its margin+padding
+  width: $sLayout-width + $sMargin-element + 2*$sMargin-elementInline;
 }
 .MapsList--centerItems {
   @include justify-content(center, center);
@@ -24,6 +30,10 @@
   position: relative;
   width: 300px;
   margin: 10px;
+}
+.MapsList-item--woTopBottomMargins {
+  margin-top: 0;
+  margin-bottom: 0;
 }
 .MapsList .MapsList-item.MapsList-item--fake {
   @include opacity(0.6);

@@ -42,8 +42,6 @@ class SignupController < ApplicationController
     if account_creator.valid?
       creation_data = account_creator.enqueue_creation(self)
 
-      # MOVE THIS TO USER CREATION
-      # @user.subscribe_to_notifications
       flash.now[:success] = 'User creation in progress'
       # Template variables
       @user_creation_id = creation_data[:id]

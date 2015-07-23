@@ -182,6 +182,7 @@ class User < Sequel::Model
     setup_user
     save_metadata
     self.load_avatar
+    self.subscribe_to_notifications
     monitor_user_notification
     sleep 1
     set_statement_timeouts
@@ -824,9 +825,7 @@ class User < Sequel::Model
   end
 
   def subscribe_to_notifications
-    user_notification = Carto::UserNotification.new
-    user_notification.user_id = self.id
-    user_notification.save
+    self.add_user_notification(:user_id => self.id)
   end
 
   def is_subscribed_to?(notification_type)

@@ -53,7 +53,6 @@
                         <table border="0" cellspacing="0" cellpadding="0" class="responsive-table">
                           <tr>
                             <td align="center"><a href="<%= @link %>" target="_blank" style="font-size: 16px; font-family: Helvetica, Arial, sans-serif; font-weight: normal; color: #ffffff; text-decoration: none; background-color: #3AA9E3; border-top: 15px solid #3AA9E3; border-bottom: 15px solid #3AA9E3; border-left: 25px solid #3AA9E3; border-right: 25px solid #3AA9E3; border-radius: 3px; -webkit-border-radius: 3px; -moz-border-radius: 3px; display: inline-block;" class="mobile-button">View your map</a></td>
-                            <td align="center"><a href="<%= @unsubscribe_link %>" target="_blank" style="font-size: 16px; font-family: Helvetica, Arial, sans-serif; font-weight: normal; color: #ffffff; text-decoration: none; background-color: #3AA9E3; border-top: 15px solid #3AA9E3; border-bottom: 15px solid #3AA9E3; border-left: 25px solid #3AA9E3; border-right: 25px solid #3AA9E3; border-radius: 3px; -webkit-border-radius: 3px; -moz-border-radius: 3px; display: inline-block;" class="mobile-button">Unsubscribe</a></td>
                           </tr>
                         </table>
                       </td>
@@ -64,6 +63,13 @@
             </table>
           </td>
         </tr>
+        <% if @user.has_feature_flag?("notifications_management") %>
+          <tr>
+            <td align="center">
+              <p>If you don't want to receive this email again, you may cancel the subscription clicking in this <a href="<%= @unsubscribe_link %>">link</a></p>
+            </td>
+          </tr>
+        <% end %>
       </table>
     </td>
   </tr>

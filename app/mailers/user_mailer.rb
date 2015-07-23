@@ -48,7 +48,7 @@ class UserMailer < ActionMailer::Base
     @table_visualization_owner_name = table_visualization_owner_name
     @user = user
     @subject = "#{@table_visualization_owner_name} has stopped sharing a CartoDB dataset with you"
-    @unsubscribe_link = generate_unsubscribe_link(user, Carto::Notification::UNSHARE_TABLE_NOTIFICATION)
+    @unsubscribe_link = generate_unsubscribe_link(user, Carto::Notification::SHARE_TABLE_NOTIFICATION)
     mail :to => @user.email,
          :subject => @subject
   end
@@ -58,7 +58,7 @@ class UserMailer < ActionMailer::Base
     @visualization_owner_name = visualization_owner_name
     @user = user
     @subject = "#{@visualization_owner_name} has stopped sharing a CartoDB map with you"
-    @unsubscribe_link = generate_unsubscribe_link(user, Carto::Notification::UNSHARE_VISUALIZATION_NOTIFICATION)
+    @unsubscribe_link = generate_unsubscribe_link(user, Carto::Notification::SHARE_VISUALIZATION_NOTIFICATION)
     mail :to => @user.email,
          :subject => @subject
   end

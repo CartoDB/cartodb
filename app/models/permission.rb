@@ -64,26 +64,27 @@ module CartoDB
               # Perm is an array. For the moment just one type of permission can
               # be applied to a type of object. But with an array this is open
               # to more than one permission change at a time
+              user = ::User.find(:id => affected_id)
               perm.each do |p|
                 if self.real_entity_type == CartoDB::Visualization::Member::TYPE_DERIVED
                   if p['action'] == 'grant'
                     # At this moment just inform as read grant
-                    if p['type'].include?('r')
+                    if p['type'].include?('r') && user.is_subscribed_to?(Carto::Notification::SHARE_VISUALIZATION_NOTIFICATION)
                       ::Resque.enqueue(::Resque::UserJobs::Mail::ShareVisualization, self.entity.id, affected_id)
                     end
                   elsif p['action'] == 'revoke'
-                    if p['type'].include?('r')
+                    if p['type'].include?('r') && user.is_subscribed_to?(Carto::Notification::SHARE_VISUALIZATION_NOTIFICATION)
                       ::Resque.enqueue(::Resque::UserJobs::Mail::UnshareVisualization, self.entity.name, self.owner_username, affected_id)
                     end
                   end
                 elsif self.real_entity_type == CartoDB::Visualization::Member::TYPE_CANONICAL
                   if p['action'] == 'grant'
                     # At this moment just inform as read grant
-                    if p['type'].include?('r')
+                    if p['type'].include?('r') && user.is_subscribed_to?(Carto::Notification::SHARE_TABLE_NOTIFICATION)
                       ::Resque.enqueue(::Resque::UserJobs::Mail::ShareTable, self.entity.id, affected_id)
                     end
                   elsif p['action'] == 'revoke'
-                    if p['type'].include?('r')
+                    if p['type'].include?('r') && user.is_subscribed_to?(Carto::Notification::SHARE_TABLE_NOTIFICATION)
                       ::Resque.enqueue(::Resque::UserJobs::Mail::UnshareTable, self.entity.name, self.owner_username, affected_id)
                     end
                   end

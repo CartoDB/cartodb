@@ -49,6 +49,13 @@
             </table>
           </td>
         </tr>
+        <% if @user.has_feature_flag?("notifications_management") %>
+          <tr>
+            <td align="center">
+              <p>If you don't want to receive this email again, you may cancel the subscription clicking in this <a href="<%= @unsubscribe_link %>">link</a></p>
+            </td>
+          </tr>
+        <% end %>
       </table>
     </td>
   </tr>

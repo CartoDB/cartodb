@@ -29,13 +29,15 @@ module CartoDB
       end
 
       def send!
-        user_id = @data_import.user_id
+        user = @data_import.current_user
         imported_tables = @results.select {|r| r.success }.length
         total_tables = @results.length
         first_imported_table = imported_tables == 0 ? nil : @results.select {|r| r.success }.first
         first_table = @results.first
         errors = imported_tables == total_tables ? nil : @data_import.get_error_text
-        @mail_sent = @resque.enqueue(::Resque::UserJobs::Mail::DataImportFinished, user_id, imported_tables, total_tables, first_imported_table, first_table, errors)
+        if user.is_subscribed_to?(Carto::Notification::DATA_IMPORT_FINISHED_NOTIFICATION)
+          @mail_sent = @resque.enqueue(::Resque::UserJobs::Mail::DataImportFinished, user.id, imported_tables, total_tables, first_imported_table, first_table, errors)
+        end
       end
 
       def mail_sent?

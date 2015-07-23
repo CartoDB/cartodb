@@ -830,8 +830,11 @@ class User < Sequel::Model
   end
 
   def is_subscribed_to?(notification_type)
-    subscribed = self.user_notifications.first.send(notification_type)
-    return self.has_feature_flag?("notifications_management") && subscribed
+    if !self.has_feature_flag?("notifications_management")
+      return true
+    else
+      return self.user_notifications.first.send(notification_type)
+    end
   end
 
   # Retrive list of user tables from database catalogue

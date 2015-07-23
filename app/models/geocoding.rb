@@ -1,9 +1,11 @@
 # encoding: UTF-8'
+require 'socket'
 require_relative '../../services/table-geocoder/lib/table_geocoder_factory'
 require_relative '../../services/table-geocoder/lib/exceptions'
 require_relative '../../services/geocoder/lib/geocoder_config'
 require_relative '../../lib/cartodb/metrics'
 require_relative '../../lib/cartodb/mixpanel'
+require_relative 'log'
 
 class Geocoding < Sequel::Model
 
@@ -26,6 +28,7 @@ class Geocoding < Sequel::Model
 
   attr_reader :table_geocoder
   attr_reader :started_at, :finished_at
+  attr_reader :log
 
   def self.get_geocoding_calls(dataset, date_from, date_to)
     dataset.where(kind: 'high-resolution').where('geocodings.created_at >= ? and geocodings.created_at <= ?', date_from, date_to + 1.days).sum("processed_rows + cache_hits".lit).to_i
@@ -79,7 +82,8 @@ class Geocoding < Sequel::Model
                                                           kind: kind,
                                                           max_rows: max_geocodable_rows,
                                                           country_column: country_column,
-                                                          region_column: region_column)
+                                                          region_column: region_column,
+                                                          log: self.log)
       rescue => e
         @table_geocoder = nil
         raise e
@@ -106,6 +110,7 @@ class Geocoding < Sequel::Model
 
   # INFO: this method shall always be called from a queue processor
   def run!
+    log.append "Running geocoding job on server #{Socket.gethostname} with PID: #{Process.pid}"
     if self.force_all_rows == true
       table_geocoder.reset_cartodb_georef_status
     else
@@ -123,13 +128,17 @@ class Geocoding < Sequel::Model
 
     self.run_geocoding!(processable_rows, rows_geocoded_before)
   rescue => e
+    log.append "Unexpected exception: #{e.to_s}"
+    log.append e.backtrace
     CartoDB.notify_exception(e)
     raise e
   ensure
+    log.store # Make sure the log is stored in DB
     user.reset_pooled_connections
   end
 
   def run_geocoding!(processable_rows, rows_geocoded_before = 0)
+    log.append "run_geocoding!()"
     self.update state: 'started', processable_rows: processable_rows
     @started_at = Time.now
 
@@ -152,6 +161,7 @@ class Geocoding < Sequel::Model
     @finished_at = Time.now
     self.batched = table_geocoder.used_batch_request?
     self.update(state: 'finished', real_rows: rows_geocoded_after - rows_geocoded_before, used_credits: calculate_used_credits)
+    log.append "Geocoding finished"
     self.report
   rescue => e
     @finished_at = Time.now
@@ -292,11 +302,30 @@ class Geocoding < Sequel::Model
     payload
   end
 
+  def log
+    @log ||= instantiate_log
+  end
+
 
   private
 
   def table_service
     @table_service ||= Table.new(user_table: user_table) if user_table.present?
+  end
+
+  def instantiate_log
+    if self.log_id
+      @log = CartoDB::Log.where(id: log_id).first
+    else
+      @log = CartoDB::Log.new({
+          type: CartoDB::Log::TYPE_GEOCODING,
+          user_id: user.id
+        })
+      @log.store
+      self.log_id = @log.id
+      self.save
+    end
+    @log
   end
 
 end

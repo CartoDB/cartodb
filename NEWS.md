@@ -31,6 +31,7 @@ cd lib/sql; sudo make all install
 * Ability to geocode tables shared with write permissions within an organization [#4509](https://github.com/CartoDB/cartodb/pull/4509)
 * Layers are saved in bulk when re-ordered [#4251](https://github.com/CartoDB/cartodb/pull/4251)
 * Better number normalization to support casting of currency strings [#4530](https://github.com/CartoDB/cartodb/pull/4530)
+* Added in-database logging capabilities to geocodings [#4625](https://github.com/CartoDB/cartodb/pull/4625)
 
 Bugfixes:
 * Fixed deletion of layers upon disconnecting synced datasources [#3718](https://github.com/CartoDB/cartodb/pull/3718)

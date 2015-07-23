@@ -2,13 +2,11 @@ require 'spec_helper'
 require_relative '../../lib/cartodb/central'
 
 def config
-  Cartodb.config[:cartodb_central_api].deep_symbolize_keys
+  Cartodb.config[:cartodb_central_api].present? ? Cartodb.config[:cartodb_central_api].deep_symbolize_keys : nil
 end
 
 def config_present?
-  config.present? &&
-  config[:username].present? &&
-  config[:password].present?
+  config.present? && config[:username].present? && config[:password].present?
 end
 
 def assert_headers_and_auth(request)

@@ -33,7 +33,7 @@ class Api::Json::LayersController < Api::ApplicationController
       end
       if ::Layer::DATA_LAYER_KINDS.include?(@layer.kind)
         table_visualization = Helpers::TableLocator.new.get_by_id_or_name(
-            @layer.options['table_name'], 
+            @layer.options['table_name'],
             current_user
           ).table_visualization
         unless table_visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
@@ -46,6 +46,8 @@ class Api::Json::LayersController < Api::ApplicationController
       @parent.add_layer(@layer)
       @layer.register_table_dependencies if @parent.is_a?(::Map)
       @parent.process_privacy_in(@layer) if @parent.is_a?(::Map)
+      # .add_layer doesn't triggers sequel handlers, force a save so all after_save logic gets executed
+      @parent.save
 
       render_jsonp CartoDB::Layer::Presenter.new(@layer, {:viewer_user => current_user}).to_poro
     else
@@ -57,15 +59,27 @@ class Api::Json::LayersController < Api::ApplicationController
   end
 
   def update
-    @layer = ::Layer[params[:id]]
-    @layer.raise_on_save_failure = true
-    # don't allow to override table_name and user_name
-    # https://cartodb.atlassian.net/browse/CDB-3350
-    params[:options]['table_name'] = @layer.options['table_name'] if params.include?(:options) && params[:options].include?('table_name')
-    params[:options]['user_name'] = @layer.options['user_name'] if params.include?(:options) && params[:options].include?('user_name')
-    @layer.update(params.slice(:options, :kind, :infowindow, :tooltip, :order))
+    ids = ids_from_url_or_parameters
+    layers = []
 
-    render_jsonp CartoDB::Layer::Presenter.new(@layer, {:viewer_user => current_user}).to_poro
+    ids.each { |id|
+      layer = ::Layer[id]
+      layer.raise_on_save_failure = true
+      # don't allow to override table_name and user_name
+      # https://cartodb.atlassian.net/browse/CDB-3350
+      layer_params = ids.length == 1 ? params : params[:layers].select { |p| p['id'] == id }.first
+      layer_params[:options]['table_name'] = layer.options['table_name'] if layer_params.include?(:options) && layer_params[:options].include?('table_name')
+      layer_params[:options]['user_name'] = layer.options['user_name'] if layer_params.include?(:options) && layer_params[:options].include?('user_name')
+      layer.update(layer_params.slice(:options, :kind, :infowindow, :tooltip, :order))
+      layers << layer
+    }
+
+    if layers.count > 1
+      layers_json = layers.map { |l| CartoDB::Layer::Presenter.new(l, {:viewer_user => current_user}).to_poro }
+      render_jsonp({ layers: layers_json })
+    else
+      render_jsonp CartoDB::Layer::Presenter.new(layers[0], {:viewer_user => current_user}).to_poro
+    end
   rescue Sequel::ValidationFailed, RuntimeError => e
     render_jsonp({ description: e.message }, 400)
   end
@@ -99,11 +113,18 @@ class Api::Json::LayersController < Api::ApplicationController
     ::Map.filter(id: params[:map_id]).first
   end #map_from
 
+  def ids_from_url_or_parameters
+    params[:id].present? ? [ params[:id] ] : params[:layers].map { |l| l['id'] }
+  end
+
   def validate_read_write_permission
-    layer = ::Layer[params[:id]]
-    layer.maps.each { |map|
-      map.visualizations.each { |vis|
-        return head(403) unless vis.is_owner?(current_user) || vis.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READWRITE)
+    ids = ids_from_url_or_parameters
+    ids.each { |id|
+      layer = ::Layer[id]
+      layer.maps.each { |map|
+        map.visualizations.each { |vis|
+          return head(403) unless vis.is_owner?(current_user) || vis.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READWRITE)
+        }
       }
     }
     true

@@ -6,9 +6,9 @@ require_relative '../../lib/importer/downloader'
 require_relative '../factories/pg_connection'
 require_relative '../doubles/log'
 require_relative '../doubles/user'
-require_relative 'cdb_importer_context'
 require_relative 'acceptance_helpers'
 require_relative '../../spec/doubles/importer_stats'
+require_relative 'cdb_importer_context'
 
 include CartoDB::Importer2
 
@@ -54,7 +54,7 @@ describe 'csv regression tests' do
     result = runner.results.first
     result.success?.should be_true, "error code: #{result.error_code}, trace: #{result.log_trace}"
     table = result.tables.first
-    columns = runner.db[%Q{ SELECT * FROM information_schema.columns WHERE table_schema = 'cdb_importer' AND table_name   = '#{table}' }].map { |c| c[:column_name] }
+    columns = @db[%Q{ SELECT * FROM information_schema.columns WHERE table_schema = 'cdb_importer' AND table_name   = '#{table}' }].map { |c| c[:column_name] }
     columns.should include('column')
     columns.should include('column2')
   end
@@ -143,7 +143,7 @@ describe 'csv regression tests' do
   it 'imports files with invalid the_geom but previous valid geometry column (see #2108)' do
     runner = runner_with_fixture('invalid_the_geom_valid_wkb_geometry.csv')
     runner.run
-    
+
     result = runner.results.first
     result.success?.should be_true, "error code: #{result.error_code}, trace: #{result.log_trace}"
   end
@@ -167,7 +167,7 @@ describe 'csv regression tests' do
     runner.run
 
     result = runner.results.first
-    runner.db[%Q{
+    @db[%Q{
       SELECT count(*)
       FROM #{result.schema}.#{result.table_name}
       AS count
@@ -198,6 +198,19 @@ describe 'csv regression tests' do
     runner.results.first.error_code.should eq CartoDB::Importer2::ERRORS_MAP[TooManyColumnsError]
   end
 
+  it 'errors after created temporary table should clean the table' do
+    log         = CartoDB::Importer2::Doubles::Log.new
+    job         = Job.new({ logger: log, pg_options: @pg_options })
+    runner = runner_with_fixture('too_many_columns.csv', job)
+    runner.run
+
+    table_exists = @db.execute(%Q{SELECT 1
+                    FROM   information_schema.tables
+                    WHERE  table_schema = '#{job.schema}'
+                    AND    table_name = '#{job.table_name}'})
+    table_exists.should be 0
+  end
+
   it 'displays a specific error message for a file with 10000 columns' do
     runner = runner_with_fixture('10000_columns.csv')
     runner.run
@@ -212,14 +225,15 @@ describe 'csv regression tests' do
     }].first
   end #sample_for
 
-  def runner_with_fixture(file)
+  def runner_with_fixture(file, job=nil)
     filepath = path_to(file)
     downloader = Downloader.new(filepath)
     Runner.new({
                  pg: @pg_options,
                  downloader: downloader,
                  log: CartoDB::Importer2::Doubles::Log.new,
-                 user: CartoDB::Importer2::Doubles::User.new
+                 user: CartoDB::Importer2::Doubles::User.new,
+                 job: job
                })
   end
 

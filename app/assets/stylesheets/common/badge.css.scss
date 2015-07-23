@@ -16,7 +16,11 @@
   font-weight: $sFontWeight-normal;
   text-align: center;
   background-color: $cIcons-default;
+  &.is-icon {
+    position: relative;
+    top: auto;
+    right: auto;
+  }
 }
 .Badge--negative { background-color: $cHighlight-negative }
 .Badge--positive { background-color: $cHighlight-positive }
-.Badge--alert { background-color: $cHighlight-alert }

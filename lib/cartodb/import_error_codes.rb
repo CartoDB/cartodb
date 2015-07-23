@@ -7,6 +7,7 @@ module CartoDB
   ERROR_SOURCE_EXTERNAL = 'external'
 
 # @see services/importer/lib/importer/exceptions.rb For mapping between exceptions and errors
+# @see https://github.com/CartoDB/docs/edit/master/cartodb-editor.md Whenever you add a relevant error, add there please
   IMPORTER_ERROR_CODES = {
     1 => {
       title: 'Install error',
@@ -158,6 +159,11 @@ module CartoDB
     2007 => {
       title: 'Encoding error',
       what_about: "The file you tried to import failed due to encoding issues. To fix this, force the encoding of your file using a text editor or a tool like QGis. You just need to export your files in \"UTF-8\" format.",
+      source: ERROR_SOURCE_USER
+    },
+    2008 => {
+      title: 'Malformed XLS',
+      what_about: "The Excel file has an unsupported format or is corrupt. To fix this, open it and save as CSV or XLSX.",
       source: ERROR_SOURCE_USER
     },
     3007 => {

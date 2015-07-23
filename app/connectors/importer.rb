@@ -135,7 +135,8 @@ module CartoDB
 
         new_name
       rescue => exception
-        message = "Silently retrying renaming #{current_name} to #{target_new_name} (current: #{new_name}). "
+        CartoDB.notify_debug('Error while renaming at importer', { current_name: current_name, new_name: new_name, rename_attempts: rename_attempts, result: result.inspect, error: exception.inspect}) if rename_attempts == 1
+        message = "Silently retrying renaming #{current_name} to #{target_new_name} (current: #{new_name}). ERROR: #{exception}"
         runner.log.append(message)
         if rename_attempts <= MAX_RENAME_RETRIES
           rename(result, current_name, target_new_name, rename_attempts)

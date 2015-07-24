@@ -2474,9 +2474,11 @@ TRIGGER
 
   # Probably not needed with versioning of keys
   # @see RedisVizjsonCache
+  # @see EmbedRedisCache
   def purge_redis_vizjson_cache
     vizs = CartoDB::Visualization::Collection.new.fetch(user_id: self.id)
     CartoDB::Visualization::RedisVizjsonCache.new().purge(vizs)
+    EmbedRedisCache.new().purge(vizs)
   end
 
   # returns google maps api key. If the user is in an organization and

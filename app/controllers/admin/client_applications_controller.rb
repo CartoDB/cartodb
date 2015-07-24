@@ -21,8 +21,7 @@ class Admin::ClientApplicationsController < ApplicationController
 
   def regenerate_api_key
     begin
-      current_user.invalidate_varnish_cache
-      current_user.update api_key: User.make_token
+      current_user.regenerate_api_key
       flash_message = "Your API key has been successfully generated"
     rescue Errno::ECONNREFUSED => e
       CartoDB::Logger.info "Could not clear varnish cache", "#{e.inspect}"

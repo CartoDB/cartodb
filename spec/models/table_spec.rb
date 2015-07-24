@@ -186,8 +186,15 @@ describe Table do
       table = create_table(name: "epaminondas_pantulis", user_id: $user_1.id)
       CartoDB::Visualization::Collection.new.fetch.to_a.length.should == visualizations + 1
 
+      default_map_values = {
+        zoom: 3,
+        bounding_box_sw: "[#{::Map::DEFAULT_OPTIONS[:bounding_box_sw][0]}, #{::Map::DEFAULT_OPTIONS[:bounding_box_sw][1]}]",
+        bounding_box_ne: "[#{::Map::DEFAULT_OPTIONS[:bounding_box_ne][0]}, #{::Map::DEFAULT_OPTIONS[:bounding_box_ne][1]}]",
+        provider: 'leaflet'
+      }
+
       table.map.should be_an_instance_of(Map)
-      table.map.values.slice(:zoom, :bounding_box_sw, :bounding_box_ne, :provider).should == { zoom: 3, bounding_box_sw: "[0, 0]", bounding_box_ne: "[0, 0]", provider: 'leaflet'}
+      table.map.values.slice(:zoom, :bounding_box_sw, :bounding_box_ne, :provider).should == default_map_values
       table.map.layers.count.should == 2
       table.map.layers.map(&:kind).should == ['tiled', 'carto']
       table.map.data_layers.first.infowindow["fields"].should == []
@@ -717,7 +724,6 @@ describe Table do
 
     it "should update denormalized counters" do
       $user_1.reload
-      $user_1.tables_count.should == 0
       Tag.count.should == 0
       UserTable.count == 0
     end

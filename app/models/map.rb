@@ -37,19 +37,19 @@ class Map < Sequel::Model
   PUBLIC_ATTRIBUTES = %W{ id user_id provider bounding_box_sw
     bounding_box_ne center zoom view_bounds_sw view_bounds_ne legends scrollwheel }
 
-  DEFAULT_OPTIONS = {
-    zoom:            3,
-    bounding_box_sw: [0, 0],
-    bounding_box_ne: [0, 0],
-    provider:        'leaflet',
-    center:          [30, 0]
-  }
-
   DEFAULT_BOUNDS = {
     minlon: -179,
     maxlon: 179,
     minlat: -85.0511,
     maxlat: 85.0511 
+  }
+
+  DEFAULT_OPTIONS = {
+    zoom:            3,
+    bounding_box_sw: [ DEFAULT_BOUNDS[:minlat], DEFAULT_BOUNDS[:minlon] ],
+    bounding_box_ne: [ DEFAULT_BOUNDS[:maxlat], DEFAULT_BOUNDS[:maxlon] ],
+    provider:        'leaflet',
+    center:          [30, 0]
   }
 
   attr_accessor :table_id,
@@ -145,12 +145,12 @@ class Map < Sequel::Model
 
   def view_bounds_data
       if view_bounds_sw.nil? || view_bounds_sw == ''
-        bbox_sw = [0.0, 0.0]
+        bbox_sw = DEFAULT_OPTIONS[:bounding_box_sw]
       else
         bbox_sw = view_bounds_sw.gsub(/\[|\]|\s*/, '').split(',').map(&:to_f)
       end
       if view_bounds_ne.nil? || view_bounds_ne == ''
-        bbox_ne = [0.0, 0.0]
+        bbox_ne = DEFAULT_OPTIONS[:bounding_box_ne]
       else
         bbox_ne = view_bounds_ne.gsub(/\[|\]|\s*/, '').split(',').map(&:to_f)
       end
@@ -168,6 +168,13 @@ class Map < Sequel::Model
   end
 
   private
+
+  def default_map_bounds
+    {
+      max: [ DEFAULT_BOUNDS[:maxlat], DEFAULT_BOUNDS[:maxlon] ],
+      min: [ DEFAULT_BOUNDS[:minlat], DEFAULT_BOUNDS[:minlon] ]
+    }
+  end
 
   def get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons
     table       = tables.first
@@ -236,13 +243,6 @@ class Map < Sequel::Model
     }
   rescue Sequel::DatabaseError
     default_map_bounds
-  end
-
-  def default_map_bounds
-    {
-      max: [0, 0],
-      min: [0, 0]
-    }
   end
 
   def bound_for(value, minimum, maximum)

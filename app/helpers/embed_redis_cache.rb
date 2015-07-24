@@ -46,6 +46,12 @@ class EmbedRedisCache
     "visualization:#{visualization_id}:embed:#{protocol}:#{VERSION}"
   end
 
+  def purge(vizs)
+    return unless vizs.count > 0
+    keys = vizs.map {|v| [key(v.id, false), key(v.id, true)]}.flatten
+    redis.del keys
+  end
+
 
   private
 

@@ -802,9 +802,10 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       template = CartoDB::NamedMapsWrapper::NamedMap.get_template_data(derived_vis, named_maps_instance)
 
       template.keys.should == [:version, :name, :auth, :placeholders, :layergroup, :view]
-      template[:view].should == template_data[:template][:view]
+      # Ignore on purpose default bounds, as now there will always be a non-zero value
+      template[:view][:zoom].should == template_data[:template][:view][:zoom]
+      template[:view][:center].should == template_data[:template][:view][:center]
 
-      # now change the viewed bounds to make them appear (if they are zero they don't)
       ::Map.any_instance.stubs(:get_map_bounds).returns({
           maxy: 15,
           maxx: 14,

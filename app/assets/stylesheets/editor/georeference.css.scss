@@ -112,6 +112,7 @@ $sNarrower-width: 620px;
   @include align-items(flex-start, justify);
   width: $sNarrower-width;
 }
+.Georeference-resultsBody--vcenter { @include align-items(center, center) }
 .Georeference-resultsBodyIcon { margin-right: $sMargin-element }
 .Georeference-resultsBodyTexts {
   @include display-flex();

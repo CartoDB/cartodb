@@ -3,11 +3,12 @@
 @import "../variables/sizes";
 
 .NavButton {
-  display: inline-block;
+  @include display-flex();
+  @include justify-content(center, center);
+  @include align-items(center, center);
   width: 40px;
   height: 40px;
   line-height: 42px;
-  text-align: center;
   background: transparent;
   border-radius: 30px;
   border: 1px solid $cNavButton-default;

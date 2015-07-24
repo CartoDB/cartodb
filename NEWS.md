@@ -15,6 +15,7 @@
 * New facebook cards [#4280](https://github.com/CartoDB/cartodb/pull/4280)
 * Improve email template [#4190](https://github.com/CartoDB/cartodb/pull/4190)
 * Added `filter` option to layer_definition and named_map in vizjson [#4197](https://github.com/CartoDB/cartodb/pull/4197)
+* Organization owners can reset users API keys.
 * Log model improvements: Stores only upon finish (to hit way less the DB) and size constraints
 * Updated cartodb.js to 3.15.1.
 * [Stat loading times improves with Redis ZSCAN](https://github.com/CartoDB/cartodb/issues/3943). Redis 3.0.0+ is now required.
@@ -33,6 +34,7 @@ cd lib/sql; sudo make all install
 * New optional config values varnish_management[:trigger_verbose] & invalidation_service[:trigger_verbose] to control output verbosity of invalidation services (set now by default to off only at testing)
 * Better number normalization to support casting of currency strings [#4530](https://github.com/CartoDB/cartodb/pull/4530)
 * Added in-database logging capabilities to geocodings [#4625](https://github.com/CartoDB/cartodb/pull/4625)
+* New Maps without geometries no longer have zeroed-bounds 
 
 Bugfixes:
 * Fixed deletion of layers upon disconnecting synced datasources [#3718](https://github.com/CartoDB/cartodb/pull/3718)

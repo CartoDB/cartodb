@@ -103,6 +103,7 @@
   }
 }
 .Button--link {
+  text-transform: inherit;
   color: $cTypography-link;
   &:hover {
     color: $cTypography-linkSelected;

@@ -2552,6 +2552,11 @@ TRIGGER
     to.invite_token = User.make_token
   end
 
+  def regenerate_api_key
+    invalidate_varnish_cache
+    update api_key: User.make_token
+  end
+
   private
 
   def quota_dates(options)

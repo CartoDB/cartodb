@@ -171,6 +171,8 @@ class Geocoding < Sequel::Model
     end
     self.update(state: 'failed', processed_rows: 0, cache_hits: 0)
     CartoDB::notify_exception(e, user: user)
+    log.append "Unexpected exception: #{e.to_s}"
+    log.append e.backtrace
     self.report(e)
   end # run!
 

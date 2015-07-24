@@ -5,13 +5,12 @@ describe Layer do
   before(:all) do
     @quota_in_bytes = 500.megabytes
     @table_quota = 500
-    @user = create_user(:quota_in_bytes => @quota_in_bytes, :table_quota => @table_quota, :private_tables_enabled => true)
   end
 
   after(:all) do
     # Using Mocha stubs until we update RSpec (@see http://gofreerange.com/mocha/docs/Mocha/ClassMethods.html)
     CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
-    @user.destroy
+    delete_user_data $user_1
   end
 
   before(:each) do
@@ -20,9 +19,9 @@ describe Layer do
 
     CartoDB::Overlay::Member.any_instance.stubs(:can_store).returns(true)
 
-    delete_user_data @user
+    delete_user_data $user_1
     @table = Table.new
-    @table.user_id = @user.id
+    @table.user_id = $user_1.id
     @table.save
   end
 
@@ -44,11 +43,11 @@ describe Layer do
 
     it "should allow to be linked to many maps" do
       table2 = Table.new
-      table2.user_id = @user.id
+      table2.user_id = $user_1.id
       table2.save
       layer = Layer.create(:kind => 'carto')
-      map   = Map.create(:user_id => @user.id, :table_id => @table.id)
-      map2  = Map.create(:user_id => @user.id, :table_id => table2.id)
+      map   = Map.create(:user_id => $user_1.id, :table_id => @table.id)
+      map2  = Map.create(:user_id => $user_1.id, :table_id => table2.id)
 
       map.add_layer(layer)
       map2.add_layer(layer)
@@ -60,14 +59,14 @@ describe Layer do
 
     it "should allow to be linked to many users" do
       layer = Layer.create(:kind => 'carto')
-      layer.add_user(@user)
+      layer.add_user($user_1)
 
-      @user.reload.layers.map(&:id).should include(layer.id)
-      layer.users.map(&:id).should include(@user.id)
+      $user_1.reload.layers.map(&:id).should include(layer.id)
+      layer.users.map(&:id).should include($user_1.id)
     end
 
     it "should set default order when adding layers to a map" do
-      map = Map.create(:user_id => @user.id, :table_id => @table.id)
+      map = Map.create(:user_id => $user_1.id, :table_id => @table.id)
       5.times do |i|
         layer = Layer.create(:kind => 'carto')
         map.add_layer(layer)
@@ -78,14 +77,14 @@ describe Layer do
     it "should set default order when adding layers to a user" do
       5.times do |i|
         layer = Layer.create(:kind => 'carto')
-        @user.add_layer(layer)
+        $user_1.add_layer(layer)
         layer.reload.order.should == i
       end
     end
 
     context "when the type is cartodb and the layer is updated" do
       before do
-        @map = Map.create(:user_id => @user.id, :table_id => @table.id)
+        @map = Map.create(:user_id => $user_1.id, :table_id => @table.id)
         @layer = Layer.create(kind: 'carto', options: { query: "select * from #{@table.name}" })
         @map.add_layer(@layer)
       end
@@ -107,7 +106,7 @@ describe Layer do
 
     context "when the type is not cartodb" do
       before do
-        @map = Map.create(:user_id => @user.id, :table_id => @table.id)
+        @map = Map.create(:user_id => $user_1.id, :table_id => @table.id)
         @layer = Layer.create(kind: 'tiled')
         @map.add_layer(@layer)
       end
@@ -135,9 +134,9 @@ describe Layer do
 
     it "should correctly identify affected tables" do
       table2 = Table.new
-      table2.user_id = @user.id
+      table2.user_id = $user_1.id
       table2.save
-      map = Map.create(:user_id => @user.id, :table_id => @table.id)
+      map = Map.create(:user_id => $user_1.id, :table_id => @table.id)
       layer = Layer.create(
         kind: 'carto',
         options: { query: "select * from #{@table.name}, #{table2.name};select 1;select * from #{table2.name}" }
@@ -148,7 +147,7 @@ describe Layer do
     end
 
     it "should return empty affected tables when no tables are involved" do
-      map = Map.create(user_id: @user.id, table_id: @table.id)
+      map = Map.create(user_id: $user_1.id, table_id: @table.id)
       layer = Layer.create(
         kind: 'carto',
         options: { query: "select 1" }
@@ -159,7 +158,7 @@ describe Layer do
     end
 
     it 'includes table_name option in the results' do
-      map = Map.create(user_id: @user.id, table_id: @table.id)
+      map = Map.create(user_id: $user_1.id, table_id: @table.id)
       layer = Layer.create(
         kind: 'carto',
         options: { query: "select 1", table_name: @table.name }
@@ -264,7 +263,7 @@ describe Layer do
 
   describe '#before_destroy' do
     it 'invalidates the vizjson cache of all related maps' do
-      map   = Map.create(:user_id => @user.id, :table_id => @table.id)
+      map   = Map.create(:user_id => $user_1.id, :table_id => @table.id)
       layer = Layer.create(kind: 'carto')
       map.add_layer(layer)
 
@@ -277,16 +276,16 @@ describe Layer do
     it 'returns true if any of the affected tables is private' do
       CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
 
-      map     = Map.create(:user_id => @user.id, :table_id => @table.id)
+      map     = Map.create(:user_id => $user_1.id, :table_id => @table.id)
       source  = @table.table_visualization
-      derived = CartoDB::Visualization::Copier.new(@user, source).copy
+      derived = CartoDB::Visualization::Copier.new($user_1, source).copy
       derived.store
 
       derived.layers(:cartodb).length.should == 1
       derived.layers(:cartodb).first.uses_private_tables?.should be_true
       @table.privacy = UserTable::PRIVACY_PUBLIC
       @table.save
-      @user.reload
+      $user_1.reload
 
       derived.layers(:cartodb).first.uses_private_tables?.should be_false
     end

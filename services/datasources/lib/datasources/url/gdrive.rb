@@ -151,12 +151,20 @@ module CartoDB
           self.filter = filter
 
           batch_request = Google::APIClient::BatchRequest.new do |result|
-            raise DataDownloadError.new("get_resources_list() #{result.data['error']['message']} (#{result.status})", DATASOURCE_NAME) if result.status != 200
-            data = result.data.to_hash
-            if data.include? 'items'
-              data['items'].each do |item|
-                all_results.push(format_item_data(item))
-              end
+
+          case result.status
+          when 200
+            # Everything's fine
+          when 403
+            raise GDriveNoExternalAppsAllowedError.new(result.data['error']['message'], DATASOURCE_NAME)
+          else
+            raise DataDownloadError.new("get_resources_list() #{result.data['error']['message']} (#{result.status})", DATASOURCE_NAME)
+          end
+
+          data = result.data.to_hash
+          if data.include? 'items'
+            data['items'].each do |item|
+              all_results.push(format_item_data(item))
             end
           end
 

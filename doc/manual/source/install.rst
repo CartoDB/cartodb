@@ -274,7 +274,7 @@ This is the main cartodb repository
     git clone --recursive https://github.com/CartoDB/cartodb.git
     cd cartodb
     bundle install
-
+    cp config/app_config.yml.sample config/app_config.yml
 
 Install problems and common solutions 
 -------------------------------------

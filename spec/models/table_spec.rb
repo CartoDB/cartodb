@@ -724,7 +724,6 @@ describe Table do
 
     it "should update denormalized counters" do
       $user_1.reload
-      $user_1.tables_count.should == 0
       Tag.count.should == 0
       UserTable.count == 0
     end

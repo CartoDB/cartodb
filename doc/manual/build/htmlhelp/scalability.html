@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=cp1252" />
+    
+    <title>Scalability</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="top" title="CartoDB Platform Documentation 1.0.0 documentation" href="index.html" />
+    <link rel="next" title="Monitoring" href="monitoring.html" />
+    <link rel="prev" title="Deploy" href="deploy.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="monitoring.html" title="Monitoring"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="deploy.html" title="Deploy"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CartoDB Platform Documentation 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body">
+            
+  <div class="section" id="scalability">
+<h1>Scalability</h1>
+<p>Scalability in CartoDB depends a lot on the kind of data and applications using it, it&#8217;s hard to do good setup valid of all the scenarios.</p>
+<dl class="docutils">
+<dt>The worst case scenarios are the ones with:</dt>
+<dd><ul class="first last simple">
+<li>lot of data</li>
+<li>frequent updates</li>
+<li>applications running complex queries</li>
+<li>applications with high number of layers</li>
+</ul>
+</dd>
+</dl>
+<div class="section" id="some-examples">
+<h2>Some examples</h2>
+<blockquote>
+<div><ul class="simple">
+<li>Case 1: Openstreetmap is a good example of lot of data and frequent updates but the queries are not really complex (just a dump of data)</li>
+<li>Case 2: a map that shows the number of sales per district can have very few data but the query to count the number of points inside each polygon is complex</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="vertical-scalability">
+<h2>Vertical scalability</h2>
+<p>When running CartoDB as a <a class="reference internal" href="deploy.html#single-instance"><em>single instance</em></a> multiple changes can be done in order to archieve more performance:</p>
+<blockquote>
+<div><ul>
+<li><dl class="first docutils">
+<dt>CPU number: there are many things in CartoDB that are CPU bound:</dt>
+<dd><ul class="first simple">
+<li>windshaft: rendering tiles is an expensive operation</li>
+<li>postgres: depending on the SQL query it could use a lot of CPU (+ disk IO)</li>
+</ul>
+<p class="last">Depending on the application usage it may need to use more CPU&#8217;s for rendering (Case 1) or for postgres (Case 2)</p>
+</dd>
+</dl>
+</li>
+<li><p class="first">disk: main IO bottleneck is in postgres so having an SSD disk will improve the performance.</p>
+</li>
+<li><p class="first">memory: postgres and editor workers are the process that require more memory so if the machine is going to be used for a editing makes sense to memory.</p>
+</li>
+</ul>
+</div></blockquote>
+<p>Configuration options:</p>
+<ul>
+<li><dl class="first docutils">
+<dt>Postgres:</dt>
+<dd><ul class="first simple">
+<li>shared memory (so all the indices are in memory)</li>
+<li>cluster tables regurarly by the_geom_webmercator index</li>
+</ul>
+<p class="last">//TODO: alejandro</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Windshaft:</dt>
+<dd><ul class="first simple">
+<li>number of mapnik workers. As many workers, less latency but more memory usage. <tt class="docutils literal"><span class="pre">uv_threadpool_size</span></tt> and <tt class="docutils literal"><span class="pre">renderer.mapnik.poolSize</span></tt> are the variables needed.</li>
+</ul>
+<p class="last">//TODO: rochoa</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Importer</dt>
+<dd><ul class="first last simple">
+<li>if the number of imports is high, number of resque workers should be increased. It may also need to provide more memory for database since part of the import is processed by postgres</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Rails app:</dt>
+<dd><ul class="first simple">
+<li>the bottleneck for <cite>editor</cite> processes is memory so if the machine is going to be used for editing a reasonable number of editor workers is 8 (around 300mb per instance)</li>
+</ul>
+<p class="last">//TODO: kartones</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="section" id="horizontal-scalability">
+<h2>Horizontal scalability</h2>
+<p>All the concepts from vertical scalability apply here, the recommended setup is to have as many machines as needed depending on the load for editor, import workers and windshaft. SQL API could be run in the same machine than windshaft.</p>
+</div>
+</div>
+
+
+          </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="monitoring.html" title="Monitoring"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="deploy.html" title="Deploy"
+             >previous</a> |</li>
+        <li><a href="index.html">CartoDB Platform Documentation 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Javi Santana.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

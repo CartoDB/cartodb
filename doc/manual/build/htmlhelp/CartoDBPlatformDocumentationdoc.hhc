@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.1">
+<!-- Sitemap 1.0 -->
+</HEAD><BODY>
+<OBJECT type="text/site properties">
+        <param name="Window Styles" value="0x801227">
+        <param name="ImageType" value="Folder">
+</OBJECT>
+<UL>
+<LI> <OBJECT type="text/sitemap">
+    <param name="Name" value="CartoDB Platform Documentation 1.0.0 documentation">
+    <param name="Local" value="index.html">
+</OBJECT>
+<LI> <OBJECT type="text/sitemap">
+    <param name="Name" value="CartoDB architecture introduction">
+    <param name="Local" value="intro.html">
+</OBJECT>
+<LI> <OBJECT type="text/sitemap">
+    <param name="Name" value="Components">
+    <param name="Local" value="components.html">
+</OBJECT>
+<UL>
+<LI> <OBJECT type="text/sitemap">
+    <param name="Name" value="versions">
+    <param name="Local" value="components.html#versions">
+</OBJECT>
+<LI> <OBJECT type="text/sitemap">
+    <param name="Name" value="nginx">
+    <param name="Local" value="components.html#id1">
+</OBJECT>
+<LI> <OBJECT type="text/sitemap">
+    <param name="Name" value="varnish">
+    <param name="Local" value="components.html#varnish">
+</OBJECT>
+<LI> <OBJECT type="text/sitemap">
+    <param name="Name" value="redis">
+    <param name="Local" value="components.html#redis">
+</OBJECT>
+<LI> <OBJECT type="text/sitemap">
+    <param name="Name" value="editor">
+    <param name="Local" value="components.html#editor">
+</OBJECT>
+<LI> <OBJECT type="text/sitemap">
+    <param name="Name" value="SQL API">
+    <param name="Local" value="components.html#sql-api">
+</OBJECT>
+<LI> <OBJECT type="text/sitemap">
+    <param name="Name" value="Maps API">
+    <param name="Local" value="components.html#maps-api">
+</OBJECT>
+<LI> <OBJECT type="text/sitemap">
+    <param name="Name" value="Postgres">
+    <param name="Local" value="components.html#postgres">
+</OBJECT>
+<LI> <OBJECT type="text/sitemap">
+    <param name="Name" value="Workers">
+    <param name="Local" value="components.html#workers">
+</OBJECT>
+</UL>
+<LI> <OBJECT type="text/sitemap">
+    <param name="Name" value="Deploy">
+    <param name="Local" value="deploy.html">
+</OBJECT>
+<UL>
+<LI> <OBJECT type="text/sitemap">
+    <param name="Name" value="single instance">
+    <param name="Local" value="deploy.html#single-instance">
+</OBJECT>
+<LI> <OBJECT type="text/sitemap">
+    <param name="Name" value="distributed">
+    <param name="Local" value="deploy.html#distributed">
+</OBJECT>
+</UL>
+<LI> <OBJECT type="text/sitemap">
+    <param name="Name" value="Scalability">
+    <param name="Local" value="scalability.html">
+</OBJECT>
+<UL>
+<LI> <OBJECT type="text/sitemap">
+    <param name="Name" value="Some examples">
+    <param name="Local" value="scalability.html#some-examples">
+</OBJECT>
+<LI> <OBJECT type="text/sitemap">
+    <param name="Name" value="Vertical scalability">
+    <param name="Local" value="scalability.html#vertical-scalability">
+</OBJECT>
+<LI> <OBJECT type="text/sitemap">
+    <param name="Name" value="Horizontal scalability">
+    <param name="Local" value="scalability.html#horizontal-scalability">
+</OBJECT>
+</UL>
+<LI> <OBJECT type="text/sitemap">
+    <param name="Name" value="Monitoring">
+    <param name="Local" value="monitoring.html">
+</OBJECT>
+<UL>
+<LI> <OBJECT type="text/sitemap">
+    <param name="Name" value="servers monitor">
+    <param name="Local" value="monitoring.html#servers-monitor">
+</OBJECT>
+<LI> <OBJECT type="text/sitemap">
+    <param name="Name" value="app health checks">
+    <param name="Local" value="monitoring.html#app-health-checks">
+</OBJECT>
+<LI> <OBJECT type="text/sitemap">
+    <param name="Name" value="application monitoring">
+    <param name="Local" value="monitoring.html#application-monitoring">
+</OBJECT>
+</UL>
+</UL></BODY></HTML>

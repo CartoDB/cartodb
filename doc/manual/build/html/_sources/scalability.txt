@@ -1,0 +1,57 @@
+Scalability
+===========
+
+Scalability in CartoDB depends a lot on the kind of data and applications using it, it's hard to do good setup valid of all the scenarios.
+
+The worst case scenarios are the ones with:
+    * lot of data
+    * frequent updates
+    * applications running complex queries
+    * applications with high number of layers
+
+
+
+Some examples
+-------------
+
+ * Case 1: Openstreetmap is a good example of lot of data and frequent updates but the queries are not really complex (just a dump of data)
+ * Case 2: a map that shows the number of sales per district can have very few data but the query to count the number of points inside each polygon is complex
+
+Vertical scalability
+--------------------
+When running CartoDB as a :ref:`single_instance` multiple changes can be done in order to archieve more performance:
+
+ * CPU number: there are many things in CartoDB that are CPU bound:
+    * windshaft: rendering tiles is an expensive operation
+    * postgres: depending on the SQL query it could use a lot of CPU (+ disk IO)
+
+    Depending on the application usage it may need to use more CPU's for rendering (Case 1) or for postgres (Case 2)
+
+ * disk: main IO bottleneck is in postgres so having an SSD disk will improve the performance.
+
+ * memory: postgres and editor workers are the process that require more memory so if the machine is going to be used for a editing makes sense to memory.
+
+Configuration options:
+
+* Postgres:
+    - shared memory (so all the indices are in memory)
+    - cluster tables regurarly by the_geom_webmercator index
+    //TODO: alejandro
+
+* Windshaft:
+    - number of mapnik workers. As many workers, less latency but more memory usage. ``uv_threadpool_size`` and ``renderer.mapnik.poolSize`` are the variables needed.
+    //TODO: rochoa
+
+* Importer
+    - if the number of imports is high, number of resque workers should be increased. It may also need to provide more memory for database since part of the import is processed by postgres
+
+* Rails app:
+    - the bottleneck for `editor` processes is memory so if the machine is going to be used for editing a reasonable number of editor workers is 8 (around 300mb per instance)
+    //TODO: kartones
+
+
+Horizontal scalability
+----------------------
+All the concepts from vertical scalability apply here, the recommended setup is to have as many machines as needed depending on the load for editor, import workers and windshaft. SQL API could be run in the same machine than windshaft.
+
+

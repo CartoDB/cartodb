@@ -1,0 +1,41 @@
+Deploy
+======
+
+There are two deployment options for CartoDB:
+
+    * `single instance`_ where everything runs in the same machine. 
+    * `distributed`_, every component runs in its on machine
+
+.. image:: _static/overview_architecture.png
+
+.. _single_instance:
+
+single instance
+---------------
+
+Single machine instance installation it's useful for simple installations where scalability is not the key.
+
+In this case all the components run as processes:
+
+    * 1 postgres + pgbouncer
+    * 1 nginx
+    * 1 varnish
+    * N editor
+    * 1 batch machines (same editor code)
+    * 1 SQL API
+    * 1 Maps PI
+
+.. _distributed:
+
+distributed
+---------------
+
+Distributed installation is meant for enviorments where scalability and performanc are important, the setup is more complex since each component requires 1 or more machines
+
+    * 1 postgres + pgbouncer
+    * 1 nginx
+    * 1 varnish
+    * N editor
+    * 1 batch machines (same editor code)
+    * 1 SQL API
+    * 1 Maps PI

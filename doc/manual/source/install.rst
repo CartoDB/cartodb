@@ -1,0 +1,282 @@
+
+Installation
+============
+
+intro
+-----
+
+CartoDB is under heavy development. This means that this README 
+can fail at some point. If see any issues, please let us know and we will fix them as soon as we can. Also if you feel that something is wrong or even missing we will be happy to fix it.
+
+For any doubt about the process you can ask in our [Google 
+Group](https://groups.google.com/forum/#!forum/cartodb).
+
+.. warning::
+    This README is intended for **Ubuntu 12.04**. This doesn't mean that it can't be installed on other Linux versions or OSX systems, but that it's guaranteed to work only in Ubuntu 12.04.
+    If anyone wants to share with us the installation process for any other system we will be more than happy to point it from this README.  That said, there are also many successful installations on Amazon EC2, Linode, dedicated instances and development machines running OS X and Ubuntu 12.04+.
+
+
+system configuration
+--------------------
+
+Installations assume you use UTF8, you can set it like this:
+.. highlight:: bash
+
+::
+    echo -e 'LANG=en_US.UTF-8\nLC_ALL=en_US.UTF-8' | sudo tee /etc/default/locale
+    source /etc/default/locale
+
+system dependencies
+-------------------
+
+These are the third party modules we use:
+
+  - Ubuntu 12.04
+  - Postgres 9.3.x (with plpythonu extension)
+  - [cartodb-postgresql](https://github.com/CartoDB/cartodb-postgresql) extension
+  - Redis 2.8+
+  - Ruby 1.9.3
+  - Node.js 0.10.x
+  - CartoDB-SQL-API
+  - GEOS 3.3.4
+  - GDAL 1.10.x (Starting with CartoDB 2.2.0)
+  - PostGIS 2.1.x
+  - Mapnik 2.1.1
+  - Windshaft-cartodb
+  - ImageMagick 6.6.9+ (for the testsuite)
+
+In order to install it using apt-get you need to install cartodb [PPA](https://help.ubuntu.com/community/PPA)s
+
+.. highlight:: bash
+
+::
+
+    sudo apt-get update
+    sudo apt-get install python-software-properties
+    sudo add-apt-repository ppa:cartodb/base
+    sudo add-apt-repository ppa:cartodb/gis
+    sudo add-apt-repository ppa:cartodb/mapnik
+    sudo add-apt-repository ppa:cartodb/nodejs
+    sudo add-apt-repository ppa:cartodb/redis
+    sudo add-apt-repository ppa:cartodb/postgresql-9.3
+    sudo add-apt-repository ppa:cartodb/nodejs-010
+    sudo apt-get update
+    sudo apt-get install build-essential checkinstall
+    sudo apt-get install unp
+    sudo apt-get install zip
+    sudo apt-get install libgeos-c1 libgeos-dev
+    sudo apt-get install gdal-bin libgdal1-dev
+    sudo apt-get install libjson0 python-simplejson libjson0-dev
+    sudo apt-get install proj-bin proj-data libproj-dev
+    sudo apt-get install postgresql-9.3 postgresql-client-9.3 postgresql-contrib-9.3 postgresql-server-dev-9.3
+    sudo apt-get install postgresql-plpython-9.3
+    sudo apt-get install redis-server
+    sudo apt-get install python2.7-dev
+    sudo apt-get install build-essential
+    sudo apt-get install python-setuptools
+    sudo apt-get install libmapnik-dev python-mapnik mapnik-utils
+    sudo apt-get install nodejs
+    sudo apt-get install imagemagick
+
+
+After install everything postgres need to be configured since there is an error with credential-based connections for development, and all connections must be performed using method "trust" inside config file `pg_hba.conf`.
+
+.. highlight:: bash
+
+::
+
+    cd /etc/postgresql/9.3/main
+    sudo vim pg_hba.conf
+
+And change inside all local connections from ``peer/md5/...`` to ``trust``.
+
+Then restart postgres and you're done.
+
+.. highlight:: bash
+
+::
+
+    sudo /etc/init.d/postgresql restart
+
+Install PostGIS
+---------------
+[PostGIS](http://postgis.net) is
+the geospatial extension that allows PostgreSQL to support geospatial
+queries. This is the heart of CartoDB!
+
+.. highlight:: bash
+
+::
+
+    cd /usr/local/src
+    sudo wget http://download.osgeo.org/postgis/source/postgis-2.1.7.tar.gz
+    sudo tar -xvzf postgis-2.1.7.tar.gz
+    cd postgis-2.1.7
+    sudo ./configure --with-raster --with-topology
+    sudo make
+    sudo make install
+
+Finally, CartoDB depends on a geospatial database template named
+`template_postgis`. 
+
+.. highlight:: bash
+
+::
+
+    sudo su - postgres
+    POSTGIS_SQL_PATH=`pg_config --sharedir`/contrib/postgis-2.1
+    createdb -E UTF8 template_postgis
+    createlang -d template_postgis plpgsql
+    psql -d postgres -c "UPDATE pg_database SET datistemplate='true' WHERE datname='template_postgis'"
+    psql -d template_postgis -c "CREATE EXTENSION postgis"
+    psql -d template_postgis -c "CREATE EXTENSION postgis_topology"
+    psql -d template_postgis -c "GRANT ALL ON geometry_columns TO PUBLIC;"
+    psql -d template_postgis -c "GRANT ALL ON spatial_ref_sys TO PUBLIC;"
+    exit
+
+Install Python dependencies 
+---------------------------
+
+This needs to be done from the cartodb local copy.
+To install the Python modules that CartoDB depends on.
+
+.. highlight:: bash
+
+::
+
+    easy_install pip
+    export CPLUS_INCLUDE_PATH=/usr/include/gdal
+    export C_INCLUDE_PATH=/usr/include/gdal
+    pip install --no-use-wheel -r python_requirements.txt
+    exit
+
+If the previous step fails, try this alternative:
+
+.. highlight:: bash
+
+::
+
+    export CPLUS_INCLUDE_PATH=/usr/include/gdal
+    export C_INCLUDE_PATH=/usr/include/gdal
+    sudo pip install --no-install GDAL
+    cd /tmp/pip_build_root/GDAL
+    sudo python setup.py build_ext --include-dirs=/usr/include/gdal
+    sudo pip install --no-download GDAL
+
+
+Install Ruby 
+-------------
+
+We implemented CartoDB in the [Ruby](http://ruby-lang.org) programming language, you'll need to install Ruby **1.9.3**. You can use rbenv or a system install, up to you.
+
+For rbenv the official guide on https://github.com/sstephenson/rbenv#installation
+
+For bundler simply run:
+
+.. highlight:: bash
+
+::
+
+    gem install bundler
+
+
+cartodb-postgresql 
+------------------
+
+This is the postgres extension needed to run cartodb
+
+.. highlight:: bash
+
+::
+
+    cd /tmp
+    git clone https://github.com/CartoDB/pg_schema_triggers.git
+    cd pg_schema_triggers
+    sudo make all install PGUSER=postgres
+    sudo make installcheck PGUSER=postgres # to run tests
+    cd ..
+    git clone https://github.com/CartoDB/cartodb-postgresql.git
+    cd cartodb-postgresql
+    git checkout cdb
+    sudo make all install
+    sudo PGUSER=postgres make installcheck # to run tests
+
+.. warning::
+    if test_ddl_triggers fails it's likely due to an incomplete installation of schema_triggers.
+    You need to add schema_triggers.so to the shared_preload_libraries setting in postgresql.conf :
+
+    ::
+
+        $ sudo vim /etc/postgresql/9.3/main/postgresql.conf
+         shared_preload_libraries = 'schema_triggers.so'
+        $ sudo service postgresql restart # restart postgres
+
+After this change the 2nd installcheck of cartodb-postresql should be OK.
+
+Check https://github.com/cartodb/cartodb-postgresql/ for further reference
+
+
+
+
+
+Install CartoDB SQL API 
+-----------------------
+The [CartoDB SQL API](https://github.com/CartoDB/CartoDB-SQL-API) 
+component powers the SQL queries over HTTP. To install it:
+
+.. highlight:: bash
+
+::
+
+    git clone git://github.com/CartoDB/CartoDB-SQL-API.git
+    cd CartoDB-SQL-API
+    git checkout master
+    npm install
+    cp config/environments/development.js.example config/environments/development.js
+
+To run CartoDB SQL API in development mode, simply type:
+
+```bash
+node app.js development
+```
+
+Install Windshaft-cartodb 
+-------------------------
+
+
+The [Windshaft-cartodb](https://github.com/CartoDB/Windshaft-cartodb)
+component powers the CartoDB Maps API. To install it:
+
+.. highlight:: bash
+
+::
+    git clone git://github.com/CartoDB/Windshaft-cartodb.git
+    cd Windshaft-cartodb
+    git checkout master
+    npm install
+    cp config/environments/development.js.example config/environments/development.js
+
+To run Windshaft-cartodb in development mode, simply type:
+
+```bash
+node app.js development
+```
+
+CartoDB
+-------
+
+This is the main cartodb repository
+
+.. highlight:: bash
+
+::
+
+    git clone --recursive https://github.com/CartoDB/cartodb.git
+    cd cartodb
+    bundle install
+
+
+Install problems and common solutions 
+-------------------------------------
+
+Installing the full stack might not always be smooth due to other component updates, so if you run into problems installing CartoDB, please check [this list of problems and solutions](https://github.com/CartoDB/cartodb/wiki/Problems-faced-during-CartoDB-install-&-solutions-if-known) first to see if your problem already happened in the past and somebody else found a workaround, solution or fix to it.

@@ -34,7 +34,8 @@ cd lib/sql; sudo make all install
 * New optional config values varnish_management[:trigger_verbose] & invalidation_service[:trigger_verbose] to control output verbosity of invalidation services (set now by default to off only at testing)
 * Better number normalization to support casting of currency strings [#4530](https://github.com/CartoDB/cartodb/pull/4530)
 * Added in-database logging capabilities to geocodings [#4625](https://github.com/CartoDB/cartodb/pull/4625)
-* New Maps without geometries no longer have zeroed-bounds 
+* New Maps without geometries no longer have zeroed-bounds
+* Rake task `cartodb:redis:purge_vizjson` now also purges embeds [#4653](https://github.com/CartoDB/cartodb/pull/4653)
 
 Bugfixes:
 * Fixed deletion of layers upon disconnecting synced datasources [#3718](https://github.com/CartoDB/cartodb/pull/3718)

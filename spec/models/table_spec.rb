@@ -107,7 +107,7 @@ describe Table do
       table = create_table(name: 'bogus_name', user_id: @user.id)
       table.table_visualization.name.should == table.name
 
-      table.name = 'bogus_name_1' 
+      table.name = 'bogus_name_1'
       table.save
 
       table.reload
@@ -145,7 +145,7 @@ describe Table do
       visualization = CartoDB::Visualization::Member.new(id: visualization_id)
         .fetch
       visualization.name = 'bogus name 3'
-      visualization.store 
+      visualization.store
       table.reload
       table.name.should == 'bogus_name_3'
 
@@ -155,7 +155,7 @@ describe Table do
       table.reload
       table.name.should == 'bogus_name_3'
     end
-    
+
     it 'propagates name changes to affected layers' do
       table = create_table(name: 'bogus_name', user_id: @user.id)
       layer = table.layers.first
@@ -191,8 +191,15 @@ describe Table do
       table = create_table(name: "epaminondas_pantulis", user_id: @user.id)
       CartoDB::Visualization::Collection.new.fetch.to_a.length.should == visualizations + 1
 
+      default_map_values = {
+        zoom: 3,
+        bounding_box_sw: "[#{::Map::DEFAULT_OPTIONS[:bounding_box_sw][0]}, #{::Map::DEFAULT_OPTIONS[:bounding_box_sw][1]}]",
+        bounding_box_ne: "[#{::Map::DEFAULT_OPTIONS[:bounding_box_ne][0]}, #{::Map::DEFAULT_OPTIONS[:bounding_box_ne][1]}]",
+        provider: 'leaflet'
+      }
+
       table.map.should be_an_instance_of(Map)
-      table.map.values.slice(:zoom, :bounding_box_sw, :bounding_box_ne, :provider).should == { zoom: 3, bounding_box_sw: "[0, 0]", bounding_box_ne: "[0, 0]", provider: 'leaflet'}
+      table.map.values.slice(:zoom, :bounding_box_sw, :bounding_box_ne, :provider).should == default_map_values
       table.map.layers.count.should == 2
       table.map.layers.map(&:kind).should == ['tiled', 'carto']
       table.map.data_layers.first.infowindow["fields"].should == []
@@ -662,8 +669,8 @@ describe Table do
 
       5.times { |t| create_table(name: "table #{t}", user_id: user.id) }
 
-      expect { 
-        create_table(name: "table 6", user_id: user.id) 
+      expect {
+        create_table(name: "table 6", user_id: user.id)
       }.to raise_error(CartoDB::QuotaExceeded)
 
       user.destroy
@@ -672,7 +679,7 @@ describe Table do
 
   it "should remove varnish cache when updating the table privacy" do
     CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
-    
+
     @user.private_tables_enabled = true
     @user.save
     table = create_table(user_id: @user.id, name: "varnish_privacy", privacy: UserTable::PRIVACY_PRIVATE)
@@ -692,7 +699,7 @@ describe Table do
   context "when removing the table" do
     before(:all) do
       CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
-      
+
       CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
       @doomed_table = create_table(user_id: @user.id)
       @automatic_geocoding = FactoryGirl.create(:automatic_geocoding, table: @doomed_table)
@@ -706,7 +713,7 @@ describe Table do
     it "should remove the automatic_geocoding" do
       expect { @automatic_geocoding.reload }.to raise_error
     end
-    
+
     it "should remove the table from the user database" do
       expect {
         @user.in_database["select * from #{@doomed_table.name}"].all
@@ -1068,14 +1075,14 @@ describe Table do
       table.add_column!(name: column_name, type: 'boolean')
       table.insert_row!(sanitized_column_name.to_sym => 't')
       table.modify_column!(name: sanitized_column_name, type: 'date')
-      
+
       table.records[:rows][0][sanitized_column_name.to_sym].should be_nil
 
       table = create_table(user_id: @user.id)
       table.add_column!(name: sanitized_column_name, type: 'boolean')
       table.insert_row!(sanitized_column_name.to_sym => 'f')
       table.modify_column!(name: sanitized_column_name, type: 'date')
-      
+
       table.records[:rows][0][sanitized_column_name.to_sym].should be_nil
     end
 
@@ -1084,14 +1091,14 @@ describe Table do
       table.add_column!(name: 'numeric_col', type: 'double precision')
       table.insert_row!(numeric_col: 12345.67)
       table.modify_column!(name: 'numeric_col', type: 'date')
-      
+
       table.records[:rows][0][:numeric_col].should be_nil
 
       table = create_table(user_id: @user.id)
       table.add_column!(name: 'numeric_col', type: 'double precision')
       table.insert_row!(numeric_col: 12345)
       table.modify_column!(name: 'numeric_col', type: 'date')
-      
+
       table.records[:rows][0][:numeric_col].should be_nil
     end
 
@@ -1656,7 +1663,7 @@ describe Table do
       # Check if the schema stored in memory is fresh and contains latitude and longitude still
       check_schema(table, [
         [:cartodb_id, "number"], [:name, "string"], [:address, "string"],
-        [:the_geom, "geometry", "geometry", "point"], 
+        [:the_geom, "geometry", "geometry", "point"],
         [:created_at, "date"], [:updated_at, "date"],
         [:latitude, "number"], [:longitude, "number"]
       ], :cartodb_types => true)
@@ -1683,7 +1690,7 @@ describe Table do
       # Check if the schema stored in memory is fresh and contains latitude and longitude still
       check_schema(table, [
         [:cartodb_id, "number"], [:name, "string"], [:address, "string"],
-        [:the_geom, "geometry", "geometry", "point"], [:created_at, "date"], 
+        [:the_geom, "geometry", "geometry", "point"], [:created_at, "date"],
         [:updated_at, "date"],
         [:latitude, "string"], [:longitude, "string"]
       ], :cartodb_types => true)

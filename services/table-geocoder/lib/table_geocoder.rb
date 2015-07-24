@@ -126,7 +126,7 @@ module CartoDB
 
     def create_temp_table
       connection.run(%Q{
-        CREATE TABLE #{temp_table_name} (
+        CREATE UNLOGGED TABLE #{temp_table_name} (
           recId text,
           SeqNumber int,
           seqLength int,

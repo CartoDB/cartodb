@@ -1695,7 +1695,7 @@ class Table
                                unshift('created_at timestamp with time zone').
                                unshift('updated_at timestamp with time zone')
         user_database.run(<<-SQL
-          CREATE TABLE #{qualified_table_name} (#{sanitized_force_schema.join(', ')});
+          CREATE UNLOGGED TABLE #{qualified_table_name} (#{sanitized_force_schema.join(', ')});
           ALTER TABLE  #{qualified_table_name} ALTER COLUMN created_at SET DEFAULT now();
           ALTER TABLE  #{qualified_table_name} ALTER COLUMN updated_at SET DEFAULT now();
         SQL

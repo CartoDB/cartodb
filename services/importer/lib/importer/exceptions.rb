@@ -143,8 +143,9 @@ module CartoDB
       CartoDB::Datasources::ResponseError                         => 1011,
       CartoDB::Datasources::ExternalServiceError                  => 1012,
       CartoDB::Datasources::GNIPServiceError                      => 1009,
-      CartoDB::Datasources::DropboxPermissionError                => 1016
+      CartoDB::Datasources::DropboxPermissionError                => 1016,
+      CartoDB::Datasources::GDriveNoExternalAppsAllowedError      => 1008
     }
-  end # Importer2
-end # CartoDB
+  end
+end
 

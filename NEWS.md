@@ -15,6 +15,7 @@
 * New facebook cards [#4280](https://github.com/CartoDB/cartodb/pull/4280)
 * Improve email template [#4190](https://github.com/CartoDB/cartodb/pull/4190)
 * Added `filter` option to layer_definition and named_map in vizjson [#4197](https://github.com/CartoDB/cartodb/pull/4197)
+* Organization owners can reset users API keys.
 * Log model improvements: Stores only upon finish (to hit way less the DB) and size constraints
 * Updated cartodb.js to 3.15.1.
 * [Stat loading times improves with Redis ZSCAN](https://github.com/CartoDB/cartodb/issues/3943). Redis 3.0.0+ is now required.

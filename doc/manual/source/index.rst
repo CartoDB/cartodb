@@ -14,6 +14,7 @@ Contents:
    intro 
    components
    install
+   run
    configuration
    administration
 

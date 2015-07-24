@@ -36,6 +36,7 @@ cd lib/sql; sudo make all install
 * Added in-database logging capabilities to geocodings [#4625](https://github.com/CartoDB/cartodb/pull/4625)
 * New Maps without geometries no longer have zeroed-bounds
 * Rake task `cartodb:redis:purge_vizjson` now also purges embeds [#4653](https://github.com/CartoDB/cartodb/pull/4653)
+* Properly and fully disallowing multilogins, by killing other existing sessions upon login
 
 Bugfixes:
 * Fixed deletion of layers upon disconnecting synced datasources [#3718](https://github.com/CartoDB/cartodb/pull/3718)

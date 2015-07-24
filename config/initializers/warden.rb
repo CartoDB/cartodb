@@ -132,5 +132,19 @@ end
 # @see ApplicationController.update_session_security_token
 Warden::Manager.after_set_user except: :fetch do |user, auth, opts|
   auth.session(opts[:scope])[:sec_token] = Digest::SHA1.hexdigest(user.crypted_password)
+
+  # Only at the editor, and only after new authentications, destroy other sessions
+  # @see #4656
+  warden_proxy = auth.env['warden']
+  # On testing there is no warden global so we cannot run this logic
+  if warden_proxy
+    auth.env['rack.session'].select { |key, value|
+      key.start_with?("warden.user") && !key.end_with?(".session")
+    }.each { |key, value|
+      unless value == user.username
+        warden_proxy.logout(value) if warden_proxy.authenticated?(value)
+      end
+    }
+  end
 end
 

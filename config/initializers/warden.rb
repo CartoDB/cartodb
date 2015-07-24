@@ -133,6 +133,8 @@ end
 Warden::Manager.after_set_user except: :fetch do |user, auth, opts|
   auth.session(opts[:scope])[:sec_token] = Digest::SHA1.hexdigest(user.crypted_password)
 
+  # Only at the editor, and only after new authentications, destroy other sessions
+  # @see #4656
   warden_proxy = auth.env['warden']
   # On testing there is no warden global so we cannot run this logic
   if warden_proxy

@@ -53,6 +53,18 @@
 
         <div class="Form-row">
           <div class="Form-rowLabel">
+            <label class="Form-label">Contact email</label>
+          </div>
+          <div class="Form-rowData">
+            <%= f.text_field :admin_email, :class => "Form-input Form-input--long" %>
+          </div>
+          <div class="Form-rowInfo">
+            <p class="Form-rowInfoText">User support email, default: <%= @organization.owner.email %></p>
+          </div>
+        </div>
+
+        <div class="Form-row">
+          <div class="Form-rowLabel">
             <label class="Form-label">Description</label>
           </div>
           <div class="Form-rowData">

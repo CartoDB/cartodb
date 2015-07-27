@@ -47,16 +47,16 @@ module CartoDB
             type:       'CartoDB',
             infowindow: infowindow_data_v2,
             tooltip:    tooltip_data_v2,
-            legend:     layer.legend,
+            legend:     legend_for(layer),
             order:      layer.order,
-            visible:    layer.public_values['options']['visible'],
+            visible:    visibility_for(layer),
             options:    options_data_v2
           }
         end
       end
 
-      # Old layers_controller directly does layer.to_json, but to be uniform with new controller, 
-      # always call through the presenter at least in tests 
+      # Old layers_controller directly does layer.to_json, but to be uniform with new controller,
+      # always call through the presenter at least in tests
       def to_json(*args)
         layer.to_json(*args)
       end
@@ -92,17 +92,29 @@ module CartoDB
           # if the table_name already have a schema don't add another one
           # this case happens when you share a layer already shared with you
           if user_name != options[:viewer_user].username && !poro['options']['table_name'].include?('.')
-            poro['options']['table_name'] = schema_name.include?('-') ? 
-              "\"#{schema_name}\".#{poro['options']['table_name']}" : 
+            poro['options']['table_name'] = schema_name.include?('-') ?
+              "\"#{schema_name}\".#{poro['options']['table_name']}" :
               "#{schema_name}.#{poro['options']['table_name']}"
           end
         end
         poro
       end
-  
+
       private
 
       attr_reader :layer, :options, :configuration
+
+      def visibility_for(layer)
+        layer.public_values['options']['visible']
+      end
+
+      def legend_for(label)
+        legend = label.legend
+        if legend && !legend['visible'].nil?
+          legend['visible'] = legend['visible'] && visibility_for(layer)
+        end
+        legend
+      end
 
       def children_for(layer, as_hash=true)
         items = layer.children.nil? ? [] : layer.children.map { |child_layer| { id: child_layer.id } }
@@ -111,10 +123,10 @@ module CartoDB
 
       # Decorates the layer presentation with data if needed. nils on the decoration act as removing the field
       def decorate_with_data(source_hash, decoration_data)
-        decoration_data.each { |key, value| 
+        decoration_data.each { |key, value|
           source_hash[key] = value
-          source_hash.delete_if { |k, v| 
-            v.nil? 
+          source_hash.delete_if { |k, v|
+            v.nil?
           }
         }
         source_hash
@@ -136,7 +148,7 @@ module CartoDB
         api_templates_type = options.fetch(:https_request, false) ? 'private' : 'public'
         layer_options = decorate_with_data(
             # Make torque always have a SQL query too (as vizjson v2)
-            layer.options.merge({ 'query' => wrap(sql_from(layer.options), layer.options) }), 
+            layer.options.merge({ 'query' => wrap(sql_from(layer.options), layer.options) }),
             @decoration_data
           )
 
@@ -146,7 +158,7 @@ module CartoDB
           children:   children_for(layer, false),
           type:       'torque',
           order:      layer.order,
-          legend:     layer.legend,
+          legend:     legend_for(layer),
           options:    {
             stat_tag:           options.fetch(:visualization_id),
             maps_api_template: ApplicationHelper.maps_api_template(api_templates_type),
@@ -180,7 +192,7 @@ module CartoDB
         throw e
       end
 
-      def tooltip_data_v2 
+      def tooltip_data_v2
         whitelisted_infowindow(with_template(layer.tooltip, layer.tooltip_template_path))
       rescue => e
         Rollbar.report_exception(e)
@@ -226,7 +238,7 @@ module CartoDB
 
       def name_for(layer)
         layer_alias = layer.options.fetch('table_name_alias', nil)
-        table_name  = layer.options.fetch('table_name') 
+        table_name  = layer.options.fetch('table_name')
 
         return table_name unless layer_alias && !layer_alias.empty?
         layer_alias
@@ -257,7 +269,7 @@ module CartoDB
       def default_query_for(layer_options)
         if options[:viewer_user]
           unless layer_options['user_name'] == options[:viewer_user].username
-            name = layer_options['user_name'].include?('-') ? 
+            name = layer_options['user_name'].include?('-') ?
               "\"#{layer_options['user_name']}\"" : layer_options['user_name']
             return "select * from #{name}.#{layer_options['table_name']}"
           end
@@ -271,7 +283,7 @@ module CartoDB
       end
 
       def whitelisted_infowindow(infowindow)
-        infowindow.nil? ? nil : infowindow.select { |key, value| 
+        infowindow.nil? ? nil : infowindow.select { |key, value|
                                                     INFOWINDOW_KEYS.include?(key) || INFOWINDOW_KEYS.include?(key.to_s)
                                                   }
       end

@@ -20,7 +20,7 @@ module CartoDB
       def initialize(pg_options={}, relation=DEFAULT_RELATION)
         @db = Rails::Sequel.connection
         @relation = relation
-        @records  = [] 
+        @records  = []
       end
 
       def print_log(message, error=false)
@@ -45,9 +45,9 @@ module CartoDB
             ))
           else
             query = db.fetch(%Q(
-              SELECT name, id FROM #{relation}
+              SELECT name, id, user_id FROM #{relation}
               WHERE EXTRACT(EPOCH FROM run_at) < #{Time.now.utc.to_f}
-              AND 
+              AND
                 (
                   state = '#{CartoDB::Synchronization::Member::STATE_SUCCESS}'
                   OR (state = '#{CartoDB::Synchronization::Member::STATE_FAILURE}'
@@ -63,14 +63,7 @@ module CartoDB
 
         if success
           print_log "Fetched #{query.count} records"
-          query.each { |record|
-            print_log "Enqueueing '#{record[:name]}' (#{record[:id]})"
-            Resque.enqueue(Resque::SynchronizationJobs, job_id: record[:id])
-            db.run(%Q(
-               UPDATE #{relation} SET state = '#{CartoDB::Synchronization::Member::STATE_QUEUED}'
-                WHERE id = '#{record[:id]}'
-             ))
-          }
+          force_all_syncs ? enqueue_all(query) : enqueue_rate_limited(query)
         end
 
         self
@@ -88,6 +81,33 @@ module CartoDB
       attr_reader :records, :members
 
       private
+
+      def enqueue_all(query)
+        query.each { |record|
+          print_log "Enqueueing '#{record[:name]}' (#{record[:id]})"
+          Resque.enqueue(Resque::SynchronizationJobs, job_id: record[:id])
+          db.run(%Q(
+             UPDATE #{relation} SET state = '#{CartoDB::Synchronization::Member::STATE_QUEUED}'
+              WHERE id = '#{record[:id]}'
+           ))
+        }
+      end
+
+      def enqueue_rate_limited(query)
+        # TODO: - Instantiate user (and maybe need also to instantiate record, or fake object containing an .id)
+        # - check platform limit (peek, not increasing)
+        # - enqueue if not hit
+        # - make job logic decrease platform limit in case of ok/ko (as imports)
+        query.each { |record|
+          print_log "Enqueueing '#{record[:name]}' (#{record[:id]})"
+          Resque.enqueue(Resque::SynchronizationJobs, job_id: record[:id])
+          db.run(%Q(
+             UPDATE #{relation} SET state = '#{CartoDB::Synchronization::Member::STATE_QUEUED}'
+              WHERE id = '#{record[:id]}'
+           ))
+        }
+      end
+
 
       attr_reader :db, :relation
       attr_writer :records, :members

@@ -1,5 +1,8 @@
 namespace :cartodb do
   namespace :features do
+
+    # WARNING: Not for use in central. 
+    # Refer to https://github.com/CartoDB/cartodb-management/wiki/Feature-Flags
     desc "enable feature for all users"
     task :enable_feature_for_all_users, [:feature] => :environment do |t, args|
       
@@ -13,6 +16,8 @@ namespace :cartodb do
       end
     end
 
+    # WARNING: Not for use in central. 
+    # Refer to https://github.com/CartoDB/cartodb-management/wiki/Feature-Flags
     desc "enable feature for a given user"
     task :enable_feature_for_user, [:feature, :username] => :environment do |t, args|
       
@@ -29,6 +34,8 @@ namespace :cartodb do
       end
     end
 
+    # WARNING: Not for use in central. 
+    # Refer to https://github.com/CartoDB/cartodb-management/wiki/Feature-Flags
     desc "enable feature for a given organization"
     task :enable_feature_for_organization, [:feature, :org_name] => :environment do |t, args|
       
@@ -45,6 +52,8 @@ namespace :cartodb do
       end
     end
 
+    # WARNING: Not for use in central. 
+    # Refer to https://github.com/CartoDB/cartodb-management/wiki/Feature-Flags
     desc "disable feature for all users"
     task :disable_feature_for_all_users, [:feature] => :environment do |t, args|
       
@@ -59,6 +68,8 @@ namespace :cartodb do
       end
     end
 
+    # WARNING: Not for use in central. 
+    # Refer to https://github.com/CartoDB/cartodb-management/wiki/Feature-Flags
     desc "disable feature for a given user"
     task :disable_feature_for_user, [:feature, :username] => :environment do |t, args|
       
@@ -75,6 +86,8 @@ namespace :cartodb do
       end
     end
 
+    # WARNING: Not for use in central. 
+    # Refer to https://github.com/CartoDB/cartodb-management/wiki/Feature-Flags
     desc "disable feature for a given organization"
     task :disable_feature_for_organization, [:feature, :org_name] => :environment do |t, args|
       
@@ -93,6 +106,8 @@ namespace :cartodb do
       end
     end
 
+    # WARNING: Not for use in central. 
+    # Refer to https://github.com/CartoDB/cartodb-management/wiki/Feature-Flags
     desc "list all features"
     task :list_all_features => :environment do
 

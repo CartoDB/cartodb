@@ -1350,6 +1350,15 @@ class Table
     data
   end
 
+  def estimated_row_count
+    row_count_and_size = self.row_count_and_size
+    row_count_and_size.nil? ? nil : row_count_and_size[0]
+  end
+
+  def actual_row_count
+    self.row_count
+  end
+
   private
 
   def beautify_name(name)

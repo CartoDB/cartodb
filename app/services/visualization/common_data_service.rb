@@ -57,7 +57,13 @@ module CartoDB
               ExternalSource.new(visualization.id, d['url'], d['geometry_types'], d['rows'], d['size'], 'common-data').save
             end
           rescue => e
-            Rollbar.report_exception(e)
+            CartoDB.notify_exception(e, {
+              name: d.fetch('name', 'ERR: name'),
+              source: d.fetch('source', 'ERR: source'),
+              rows: d.fetch('rows', 'ERR: rows'),
+              updated_at: d.fetch('updated_at', 'ERR: updated_at'),
+              url: d.fetch('url', 'ERR: url')
+            })
             failed += 1
           end
         end

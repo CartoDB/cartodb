@@ -25,6 +25,7 @@ class Admin::OrganizationsController < ApplicationController
     end
 
     @organization.website = attributes[:website]
+    @organization.admin_email = attributes[:admin_email]
     @organization.description = attributes[:description]
     @organization.display_name = attributes[:display_name]
     @organization.color = attributes[:color]

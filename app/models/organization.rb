@@ -169,6 +169,7 @@ class Organization < Sequel::Model
       :twitter_username         => self.twitter_username,
       :updated_at               => self.updated_at,
       :website          => self.website,
+      :admin_email      => self.admin_email,
       :avatar_url       => self.avatar_url
     }
     if options[:show_organization_users] == true

@@ -256,6 +256,9 @@
   .Navmenu-list.Navmenu-list--avatar {
     margin-right: $sMargin-element;
   }
+  .Navmenu-item.last-child {
+    margin-right: 0;
+  }
   .Navmenu-editLink {
     display: block;
   }

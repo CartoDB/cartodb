@@ -28,13 +28,14 @@ module CartoDB
 
       def copy_results_to_table_query
         %Q{
-          UPDATE #{dest_table}
-          SET the_geom = orig.the_geom, cartodb_georef_status = orig.cartodb_georef_status
+          UPDATE #{dest_table} AS dest
+          SET the_geom = CASE WHEN orig.cartodb_georef_status THEN orig.the_geom ELSE dest.the_geom END,
+              cartodb_georef_status = orig.cartodb_georef_status
           FROM #{@internal_geocoder.temp_table_name} AS orig
-          WHERE trim(#{dest_table}."#{@internal_geocoder.column_name}"::text) = orig.geocode_string
-            AND trim(#{dest_table}.#{@internal_geocoder.country_column}::text) = orig.country
-            AND trim(#{dest_table}.#{@internal_geocoder.region_column}::text) = orig.region
-            AND #{dest_table}.cartodb_georef_status IS NULL
+          WHERE trim(dest."#{@internal_geocoder.column_name}"::text) = orig.geocode_string
+            AND trim(dest.#{@internal_geocoder.country_column}::text) = orig.country
+            AND trim(dest.#{@internal_geocoder.region_column}::text) = orig.region
+            AND dest.cartodb_georef_status IS NULL
         }
       end
 

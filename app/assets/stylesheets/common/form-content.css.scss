@@ -46,6 +46,9 @@ $sLabel-width: 140px;
   @include justify-content(flex-start, start);
   padding: 10px 0;
 }
+.Form-title + .Form-row {
+  padding-top: 0;
+}
 .Form-row.Form-row--centered {
   @include justify-content(center);
 }
@@ -100,6 +103,9 @@ $sLabel-width: 140px;
   font-weight: $sFontWeight-normal;
   @include nicer-lato-typography();
   color: $cTypography-paragraphs;
+}
+.Form-label.Form-label--verticalAlignTop {
+  line-height: inherit;
 }
 .Form-label--multipleLines { line-height: 20px }
 .Form-label.Form-label--large { font-size: $sFontSize-large }

@@ -102,6 +102,12 @@ $cHeader-dark:  rgba(#3A91D7, 1);
     text-decoration: none;
   }
 }
+.Header-darrow {
+  font-size: 7px;
+  margin-left: 6px;
+  position: relative;
+  top: -1px;
+}
 
 @media (min-width: $sMedia-mobile) {
   .Header-logoText { margin-left: $sMargin-elementInline }

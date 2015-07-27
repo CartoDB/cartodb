@@ -5,8 +5,7 @@ namespace :cartodb do
       
       ff = FeatureFlag[:name => args[:feature]]
       if ff.nil?
-        except 'Feature', args[:feature]
-        break
+        raise "[ERROR]  Feature '#{args[:feature]}' does not exist"
       end
 
       User.all.each do |user|
@@ -21,14 +20,11 @@ namespace :cartodb do
       
       ff = FeatureFlag[:name => args[:feature]]
       if ff.nil?
-        except 'Feature', args[:feature]
-        break
+        raise "[ERROR]  Feature '#{args[:feature]}' does not exist"
       end
 
       user = User[username: args[:username]] 
       if user.nil?
-        except 'User', args[:username]
-        break
       end
 
       if FeatureFlagsUser[feature_flag_id: ff.id, user_id: user.id].nil?
@@ -43,14 +39,12 @@ namespace :cartodb do
       
       ff = FeatureFlag[:name => args[:feature]]
       if ff.nil?
-        except 'Feature', args[:feature]
-        break
+        raise "[ERROR]  Feature '#{args[:feature]}' does not exist"
       end
 
       organization = Organization[name: args[:org_name]] 
       if organization.nil?
-        except 'Organization', args[:org_name]
-        break
+        raise "[ERROR]  Organization '#{args[:org_name]}' does not exist"
       end
 
       organization.users.each do |user|
@@ -65,8 +59,7 @@ namespace :cartodb do
       
       ff = FeatureFlag[:name => args[:feature]]
       if ff.nil?
-        except 'Feature', args[:feature]
-        break
+        raise "[ERROR]  Feature '#{args[:feature]}' does not exist"
       end
 
       ffus = FeatureFlagsUser[:feature_flag_id => ff.id]
@@ -82,14 +75,12 @@ namespace :cartodb do
       
       ff = FeatureFlag[:name => args[:feature]]
       if ff.nil?
-        except 'Feature', args[:feature]
-        break
+        raise "[ERROR]  Feature '#{args[:feature]}' does not exist"
       end
 
       user = User[username: args[:username]]
       if user.nil?
-        except 'User', args[:username]
-        break
+        raise "[ERROR]  User '#{args[:username]}' does not exist"
       end
 
       if FeatureFlagsUser[feature_flag_id: ff.id, user_id: user.id].nil?
@@ -104,14 +95,12 @@ namespace :cartodb do
       
       ff = FeatureFlag[:name => args[:feature]]
       if ff.nil?
-        except 'Feature', args[:feature]
-        break
+        raise "[ERROR]  Feature '#{args[:feature]}' does not exist"
       end
 
       organization = Organization[name: args[:org_name]] 
       if organization.nil?
-        except 'Organization', args[:org_name]
-        break
+        raise "[ERROR]  Organization '#{args[:org_name]}' does not exist"
       end
 
       organization.users.each do |user|
@@ -130,11 +119,6 @@ namespace :cartodb do
       FeatureFlag.all.each do |feature|
         puts "  - #{feature.name}"
       end
-    end
-
-    private
-    def except(type, value)
-      puts "[ERROR] #{type} '#{value}' does not exist"
     end
 
   end # Features

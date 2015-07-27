@@ -738,8 +738,9 @@ class Table
     user.in_database["SELECT reltuples::integer FROM pg_class WHERE oid = '#{self.name}'::regclass"].first[:reltuples]
   end
 
+  # Preferred: `actual_row_count`
   def rows_counted
-    sequel.count
+    actual_row_count
   end
 
   # Returns table size in bytes
@@ -1324,6 +1325,7 @@ class Table
     perform_organization_table_permission_change('CDB_Organization_Remove_Organization_Access_Permission')
   end
 
+  # Estimated row count and size
   def row_count_and_size
     begin
       # Keep in sync with lib/sql/scripts-available/CDB_Quota.sql -> CDB_UserDataSize()
@@ -1356,7 +1358,7 @@ class Table
   end
 
   def actual_row_count
-    self.row_count
+    sequel.count
   end
 
   private

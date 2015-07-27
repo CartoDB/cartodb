@@ -1080,7 +1080,7 @@ class User < Sequel::Model
   end
 
   def self.find_with_custom_fields(user_id)
-    User.filter(:id => user_id).select(:id,:email,:username,:tables_count,:crypted_password,:database_name,:admin).first
+    User.filter(:id => user_id).select(:id,:email,:username,:crypted_password,:database_name,:admin).first
   end
 
 

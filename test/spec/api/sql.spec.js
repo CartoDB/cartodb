@@ -338,34 +338,40 @@ describe("column descriptions", function(){
       sql.describeString(sql, this.colString, callback); // THE COLS DON'T MATCH!!!
     });
     
-    it("should return a valid histogram", function(){
-      expect(description.hist.constructor).toEqual(Array);
-    });
-    
-    it("should return correct type", function(){
+    it("should return correct properties", function(){
+      expect(description.hist.constructor).toEqual(Array); // Right now it's an empty array because JSON.parse doesn't like our way of notating histograms
       expect(description.type).toEqual("string");
-    });
-    
-    it("should return a null count", function(){
       expect(description.null_count).toEqual("number");
-    });
-    
-    it("should return a distinct count", function(){
       expect(description.distinct).toEqual("number");
-    });
-    
-    it("should return a null ratio", function(){
       expect(description.null_ratio).toEqual("number");
-    });
-    
-    it("should return skew", function(){
       expect(description.skew).toEqual("number");
-    });
-    
-    it("should return weight", function(){
       expect(typeof description.weight).toEqual("number");
     });
-
-    
-  })
+  });
+  
+  describe("geometry describer", function(){
+    var description;
+    beforeAll(function(done){
+      sql.execute = function(sql, callback){
+        var data = JSON.parse('{"rows":[{"bbox":"{\\"type\\":\\"Polygon\\",\\"coordinates\\":[[[-179.9284,-65.2446],[-179.9284,81.8962],[179.9698,81.8962],[179.9698,-65.2446],[-179.9284,-65.2446]]]}","geometry_type":"ST_Point","clusterrate":0.20359746623640493,"density":0.105333307745705}],"time":0.035,"fields":{"bbox":{"type":"string"},"geometry_type":{"type":"string"},"clusterrate":{"type":"number"},"density":{"type":"number"}},"total_rows":1}');
+        callback(data);
+      }
+      var callback = function(stuff){
+        description = stuff;
+        done();
+      }
+      sql.describeGeom(sql, this.colGeom, callback);
+    });
+    it("should return correct properties", function(){
+      expect(description.type).toEqual("geom");
+      expect(["ST_Point", "ST_Line", "ST_Polygon"].indexOf(description.geometry_type) > -1).toBe(true);
+      expect(description.bbox.constructor).toEqual(Array);
+      expect(typeof description.density).toEqual("number");
+      expect(typeof description.cluster_rate).toEqual("number");
+    })
+  });
 });
+
+
+
+

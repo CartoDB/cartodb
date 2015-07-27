@@ -234,6 +234,10 @@ module CartoDB
       def run_ogr2ogr(append_mode=false)
         ogr2ogr.run(append_mode)
 
+        if (ogr2ogr.command_output =~ /ERROR 1:/ || ogr2ogr.command_output =~ /ERROR:/) && ogr2ogr.exit_code == 0
+          try_fallback(append_mode)
+        end
+
         @job.source_file_rows = get_source_file_rows
         @job.imported_rows = get_imported_rows
 
@@ -251,8 +255,9 @@ module CartoDB
         if ogr2ogr.command_output =~ /canceling statement due to statement timeout/i
           raise StatementTimeoutError.new(ogr2ogr.command_output, ERRORS_MAP[CartoDB::Importer2::StatementTimeoutError])
         end
+
         if (ogr2ogr.command_output =~ /has no equivalent in encoding/ || ogr2ogr.command_output =~ /invalid byte sequence for encoding/) &&
-            @job.imported_rows == 0
+                      @job.imported_rows == 0
           raise RowsEncodingColumnError.new(ogr2ogr.command_output)
         end
 
@@ -274,6 +279,22 @@ module CartoDB
           end
           raise LoadError.new(job.logger)
         end
+      end
+
+      # Sometimes we could try to recover from a know failure
+      def try_fallback(append_mode)
+        if ogr2ogr.command_output =~ /date\/time field value out of range/
+          job.log "Fallback: Disabling autoguessing because there are wrong dates in the source file"
+          ogr2ogr.overwrite = true
+          ogr2ogr.csv_guessing = false
+          ogr2ogr.run(append_mode)
+        elsif (ogr2ogr.command_output =~ /has no equivalent in encoding/ || ogr2ogr.command_output =~ /invalid byte sequence for encoding/) 
+          job.log "Fallback: There is an encoding problem, trying with ISO-8859-1"
+          ogr2ogr.overwrite = true
+          ogr2ogr.encoding = "ISO-8859-1"
+          ogr2ogr.run(append_mode)
+        end
+        ogr2ogr.set_default_properties
       end
 
       def get_imported_rows

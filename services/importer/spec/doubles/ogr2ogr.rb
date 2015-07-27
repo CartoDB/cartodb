@@ -4,7 +4,7 @@ module CartoDB
   module Importer2
     module Doubles
       class Ogr2ogr
-        attr_accessor :exit_code, :command, :command_output
+        attr_accessor :exit_code, :command, :command_output, :csv_guessing, :overwrite, :encoding, :shape_encoding
         def initialize
           self.exit_code = 0
           self.command = String.new
@@ -13,6 +13,7 @@ module CartoDB
         def run(append_mode=false)
           Object.new
         end
+        def set_default_properties; return; end
       end
     end
   end

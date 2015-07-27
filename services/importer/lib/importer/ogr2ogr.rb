@@ -22,15 +22,22 @@ module CartoDB
         self.table_name = table_name
         self.layer      = layer
         self.options    = options
+        set_default_properties
+      end
+
+      def set_default_properties
         self.append_mode = false
+        self.overwrite = false
         self.ogr2ogr2_binary = options.fetch(:ogr2ogr_binary, DEFAULT_BINARY)
         self.csv_guessing = options.fetch(:ogr2ogr_csv_guessing, false)
         self.quoted_fields_guessing = options.fetch(:quoted_fields_guessing, true)
+        self.encoding = options.fetch(:encoding, ENCODING)
+        self.shape_encoding = ''
       end
 
       def command_for_import
-        "#{OSM_INDEXING_OPTION} #{PG_COPY_OPTION} #{client_encoding_option} " +
-        "#{executable_path} #{OUTPUT_FORMAT_OPTION} #{guessing_option} #{postgres_options} #{projection_option} " +
+        "#{OSM_INDEXING_OPTION} #{PG_COPY_OPTION} #{client_encoding_option} #{shape_encoding_option} " +
+        "#{executable_path} #{OUTPUT_FORMAT_OPTION} #{overwrite_option} #{guessing_option} #{postgres_options} #{projection_option} " +
         "#{layer_creation_options} #{filepath} #{layer} #{layer_name_option} #{NEW_LAYER_TYPE_OPTION}"
       end
 
@@ -56,13 +63,13 @@ module CartoDB
         self
       end
 
-      attr_accessor :append_mode, :filepath
+      attr_accessor :append_mode, :filepath, :csv_guessing, :overwrite, :encoding, :shape_encoding
       attr_reader   :exit_code, :command_output
 
       private
 
       attr_writer   :exit_code, :command_output
-      attr_accessor :pg_options, :options, :table_name, :layer, :ogr2ogr2_binary, :csv_guessing, :quoted_fields_guessing 
+      attr_accessor :pg_options, :options, :table_name, :layer, :ogr2ogr2_binary, :quoted_fields_guessing 
 
       def is_csv?
         !(filepath =~ /\.csv$/i).nil?
@@ -85,8 +92,20 @@ module CartoDB
         end
       end
 
+      def overwrite_option
+        overwrite ? "-overwrite" : ''
+      end
+
       def client_encoding_option
-        "PGCLIENTENCODING=#{options.fetch(:encoding, ENCODING)}"
+        "PGCLIENTENCODING=#{encoding}"
+      end
+
+      def shape_encoding_option
+        if !shape_encoding.nil? && !shape_encoding.empty?
+          "SHAPE_ENCODING=#{shape_encoding}"
+        else
+          ''
+        end
       end
 
       def layer_name_option

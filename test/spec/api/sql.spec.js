@@ -281,3 +281,46 @@ describe('sql.table', function() {
   })
 
 });
+
+fdescribe("column descriptions", function(){
+  var USER = 'manolo';
+  var sql;
+
+  beforeAll(function(){
+    this.colDate = new Backbone.Model(JSON.parse('{"name":"object_postedtime","type":"date","geometry_type":"point","bbox":[[-28.92163128242129,-201.09375],[75.84516854027044,196.875]],"analyzed":true,"success":true,"stats":{"type":"date","start_time":"2015-02-19T15:13:16.000Z","end_time":"2015-02-22T04:34:05.000Z","range":220849000,"steps":1024,"null_ratio":0,"column":"object_postedtime"}}'));
+    this.colFloat = new Backbone.Model(JSON.parse('{"name":"asdfd","type":"number","geometry_type":"point"}'));
+    this.colString = new Backbone.Model(JSON.parse('{"name":"asdfd","type":"string","geometry_type":"point"}'));
+    this.colGeom = new Backbone.Model(JSON.parse('{"name":"asdfd","type":"geometry","geometry_type":"point"}'));
+    this.colBoolean = new Backbone.Model(JSON.parse('{"name":"asdfd","type":"boolean","geometry_type":"point"}'));
+    this.query = "SELECT * FROM whatevs";
+    sql = new cartodb.SQL({
+      user: USER,
+      protocol: 'https'
+    });
+    sql.execute = function(sql, callback){
+      callback({});
+    }
+  });
+
+  it("should deduct correct describe method", function(){
+      spyOn(sql, "describeDate");
+      sql.describe(this.query, this.colDate, {type: this.colDate.get("type")}, function(){});
+      expect(sql.describeDate).toHaveBeenCalled;
+
+      spyOn(sql, "describeFloat");
+      sql.describe(this.query, this.colFloat, {type: this.colFloat.get("type")}, function(){});
+      expect(sql.describeFloat).toHaveBeenCalled();
+
+      spyOn(sql, "describeString");
+      sql.describe(this.query, this.colString, {type: this.colString.get("type")}, function(){});
+      expect(sql.describeString).toHaveBeenCalled();
+
+      spyOn(sql, "describeGeom");
+      sql.describe(this.query, this.colGeom, {type: this.colGeom.get("type")}, function(){});
+      expect(sql.describeGeom).toHaveBeenCalled();
+
+      spyOn(sql, "describeBoolean");
+      sql.describe(this.query, this.colBoolean, {type: this.colBoolean.get("type")}, function(){});
+      expect(sql.describeBoolean).toHaveBeenCalled();
+  });
+});

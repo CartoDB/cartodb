@@ -1,5 +1,12 @@
+@import "../variables/sizes";
+
 // Titles
 // --------------------------------------------------
+
+.Title {
+  margin: 0;
+  font-weight: 400;
+}
 
 .Title--l {
   font-size: 48px;
@@ -19,15 +26,14 @@
 .Title--xs {
   font-size: 20px;
   line-height: 30px;
-  font-weight: 300;
 }
 
 .Title--light {
-  font-weight: 200;
+  font-weight: $sFontWeight-small;
 }
 
 .Title--bold {
-  font-weight: 500;
+  font-weight: $sFontWeight-normal;
 }
 
 .Title--dark {

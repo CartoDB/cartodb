@@ -25,6 +25,10 @@
   @include grayscale();
 }
 
+.u-iblock {
+  display: inline-block;
+}
+
 .u-txt-center {
   text-align: center;
 }
@@ -44,6 +48,18 @@
 .u-malign {
   vertical-align: middle;
 }
+
+.u-vspace-xl { margin-bottom: 60px; }
+.u-vspace-l { margin-bottom: 40px; }
+.u-vspace-m { margin-bottom: 24px; }
+.u-vspace-s { margin-bottom: 12px; }
+.u-vspace-xs { margin-bottom: 8px; }
+
+.u-tspace-xl { margin-top: 60px; }
+.u-tspace-l { margin-top: 40px; }
+.u-tspace-m { margin-top: 24px; }
+.u-tspace-s { margin-top: 12px; }
+.u-tspace-xs { margin-top: 8px; }
 
 .u-rspace-xl { margin-right: 60px; }
 .u-rspace-l { margin-right: 40px; }

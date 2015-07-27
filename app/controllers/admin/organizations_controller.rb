@@ -1,6 +1,6 @@
 # coding: utf-8
 class Admin::OrganizationsController < ApplicationController
-  ssl_required :show, :settings, :settings_update
+  ssl_required :show, :settings, :settings_update, :regenerate_all_api_keys
   before_filter :login_required, :load_organization_and_members
 
   layout 'application'
@@ -47,6 +47,18 @@ class Admin::OrganizationsController < ApplicationController
     render action: 'settings'
   rescue Sequel::ValidationFailed => e
     flash.now[:error] = "There's been a validation error, check your values"
+    render action: 'settings'
+  end
+
+  def regenerate_all_api_keys
+    @organization.users.each { |user|
+      user.regenerate_api_key
+    }
+
+    redirect_to CartoDB.url(self, 'organization_settings', {}, current_user), flash: { success: "Users API keys regenerated successfully" }
+  rescue => e
+    CartoDB.notify_exception(e, { organization: @organization.id, current_user: current_user.id })
+    flash[:error] = "There was an error regenerating the API keys. Please, try again and contact us if the problem persists"
     render action: 'settings'
   end
 

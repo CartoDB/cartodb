@@ -186,8 +186,15 @@ describe Table do
       table = create_table(name: "epaminondas_pantulis", user_id: $user_1.id)
       CartoDB::Visualization::Collection.new.fetch.to_a.length.should == visualizations + 1
 
+      default_map_values = {
+        zoom: 3,
+        bounding_box_sw: "[#{::Map::DEFAULT_OPTIONS[:bounding_box_sw][0]}, #{::Map::DEFAULT_OPTIONS[:bounding_box_sw][1]}]",
+        bounding_box_ne: "[#{::Map::DEFAULT_OPTIONS[:bounding_box_ne][0]}, #{::Map::DEFAULT_OPTIONS[:bounding_box_ne][1]}]",
+        provider: 'leaflet'
+      }
+
       table.map.should be_an_instance_of(Map)
-      table.map.values.slice(:zoom, :bounding_box_sw, :bounding_box_ne, :provider).should == { zoom: 3, bounding_box_sw: "[0, 0]", bounding_box_ne: "[0, 0]", provider: 'leaflet'}
+      table.map.values.slice(:zoom, :bounding_box_sw, :bounding_box_ne, :provider).should == default_map_values
       table.map.layers.count.should == 2
       table.map.layers.map(&:kind).should == ['tiled', 'carto']
       table.map.data_layers.first.infowindow["fields"].should == []
@@ -717,7 +724,6 @@ describe Table do
 
     it "should update denormalized counters" do
       $user_1.reload
-      $user_1.tables_count.should == 0
       Tag.count.should == 0
       UserTable.count == 0
     end
@@ -1785,36 +1791,6 @@ describe Table do
       table.name.should == 'exttable'
       table.rows_counted.should == 2
       check_schema(table, [[:cartodb_id, "integer"], [:bed, "text"], [:created_at, "timestamp with time zone"], [:updated_at, "timestamp with time zone"], [:the_geom, "geometry", "geometry", "point"]])
-    end
-  end
-
-  context "merging two+ tables" do
-    it "should merge two twitters.csv" do
-      # load a table to treat as our 'existing' table
-      table = new_table :user_id => $user_1.id
-      table.name  = 'twitters'
-      fixture     = "#{Rails.root}/db/fake_data/twitters.csv"
-      data_import = create_import($user_1, fixture)
-      table       = data_import.table
-
-      #create a second table from a file to treat as the data we want to append
-      #append_this = new_table :user_id => $user_1.id
-      data_import = create_import($user_1,
-      "#{Rails.root}/db/fake_data/clubbing.csv")
-
-      append_this = data_import.table
-      append_this.migrate_existing_table = data_import.table.name
-      append_this.save.reload
-
-      # envoke the append_to_table method
-      table.append_to_table(:from_table => append_this)
-      table.save.reload
-      # append_to_table doesn't automatically destroy the table
-      append_this.destroy
-
-      UserTable[append_this.id].should == nil
-      table.name.should match(/^twitters/)
-      table.rows_counted.should == 2005
     end
   end
 

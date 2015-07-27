@@ -35,7 +35,6 @@ class Admin::VisualizationsController < ApplicationController
   skip_before_filter :verify_authenticity_token, only: [:show_protected_public_map, :show_protected_embed_map]
 
   def index
-    @tables_count  = current_user.tables.count
     @first_time    = !current_user.dashboard_viewed?
     @just_logged_in = !!flash['logged']
     @google_maps_query_string = current_user.google_maps_query_string
@@ -212,7 +211,7 @@ class Admin::VisualizationsController < ApplicationController
        additional_keys = ''
     end
 
-    response.headers['Surrogate-Key'] = 
+    response.headers['Surrogate-Key'] =
       "#{CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES} #{@visualization.surrogate_key}#{additional_keys}"
 
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"

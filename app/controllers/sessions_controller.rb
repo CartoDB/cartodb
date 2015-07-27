@@ -1,12 +1,12 @@
 # encoding: UTF-8
-require_dependency 'google_plus_api'
 require_dependency 'google_plus_config'
+require_dependency 'google_plus_api'
 
 class SessionsController < ApplicationController
   include LoginHelper
 
   layout 'frontend'
-  ssl_required :new, :create, :destroy, :show, :unauthenticated
+  ssl_required :new, :create, :destroy, :show, :unauthenticated, :account_token_authentication_error
 
   before_filter :load_organization
   before_filter :initialize_google_plus_config

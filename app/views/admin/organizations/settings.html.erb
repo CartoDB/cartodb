@@ -24,7 +24,7 @@
         <%= csrf_meta_tags %>
 
         <div class="Form-title">
-          <p class="Form-titleText">Edit your company settings</p>
+          <p class="Form-titleText">Edit your organization settings</p>
         </div>
 
         <div class="Form-row">
@@ -111,6 +111,18 @@
           </div>
           <div class="Form-rowInfo">
             <p class="Form-rowInfoText">Moderate the comments in your maps</p>
+          </div>
+        </div>
+
+        <div class="Form-row">
+          <div class="Form-rowLabel">
+            <label class="Form-label">Users API Key</label>
+          </div>
+          <div class="Form-rowData">
+            <button class="Button--link js-regenerateOrgUsersApiKey" data-current_username="<%= current_user.username %>">Regenerate all API keys</button>
+          </div>
+          <div class="Form-rowInfo">
+            <p class="Form-rowInfoText">This involves all your organization users API keys</p>
           </div>
         </div>
 
@@ -215,6 +227,7 @@
           <% end %>
         </div>
       <% end %>
+
     </div>
   </div>
 

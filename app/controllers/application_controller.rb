@@ -231,7 +231,16 @@ class ApplicationController < ActionController::Base
   def ensure_account_has_been_activated
     return unless current_user
 
-    redirect_to CartoDB.url(self, 'account_token_authentication_error') unless current_user.enable_account_token.nil?
+    if !current_user.enable_account_token.nil?
+      respond_to do |format|
+        format.html {
+          redirect_to CartoDB.url(self, 'account_token_authentication_error')
+        }
+        format.all  {
+          head :forbidden
+        }
+      end
+    end
   end
 
   def add_revision_header

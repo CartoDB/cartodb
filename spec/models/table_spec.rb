@@ -1794,36 +1794,6 @@ describe Table do
     end
   end
 
-  context "merging two+ tables" do
-    it "should merge two twitters.csv" do
-      # load a table to treat as our 'existing' table
-      table = new_table :user_id => $user_1.id
-      table.name  = 'twitters'
-      fixture     = "#{Rails.root}/db/fake_data/twitters.csv"
-      data_import = create_import($user_1, fixture)
-      table       = data_import.table
-
-      #create a second table from a file to treat as the data we want to append
-      #append_this = new_table :user_id => $user_1.id
-      data_import = create_import($user_1,
-      "#{Rails.root}/db/fake_data/clubbing.csv")
-
-      append_this = data_import.table
-      append_this.migrate_existing_table = data_import.table.name
-      append_this.save.reload
-
-      # envoke the append_to_table method
-      table.append_to_table(:from_table => append_this)
-      table.save.reload
-      # append_to_table doesn't automatically destroy the table
-      append_this.destroy
-
-      UserTable[append_this.id].should == nil
-      table.name.should match(/^twitters/)
-      table.rows_counted.should == 2005
-    end
-  end
-
   context "imports" do
     it "file twitters.csv" do
       delete_user_data $user_1

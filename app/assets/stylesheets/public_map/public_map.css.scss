@@ -134,7 +134,6 @@
 .Navmenu-subItem {
   margin-left: $sMargin-group;
 }
-.Navmenu-item.Navmenu-item.last-child,
 .Navmenu-item.Navmenu-item:last-child {
   margin-right: 0;
 }
@@ -258,6 +257,9 @@
   }
   .Navmenu-list.Navmenu-list--avatar {
     margin-right: $sMargin-element;
+  }
+  .Navmenu-item.Navmenu-item.last-child {
+    margin-right: 0;
   }
   .Navmenu-editLink {
     display: block;

@@ -41,7 +41,9 @@ class ApplicationController < ActionController::Base
 
   def session_security_token_valid?(user)
     warden.session(user.username).key?(:sec_token) &&
-    warden.session(user.username)[:sec_token] == Digest::SHA1.hexdigest(user.crypted_password)
+      warden.session(user.username)[:sec_token] == Digest::SHA1.hexdigest(user.crypted_password)
+  rescue Warden::NotAuthenticated
+    false
   end
 
   def validate_session(user = current_user, reset_session_on_error = true)

@@ -5,8 +5,8 @@
 
       <div class="vis_navigation">
         <nav>
-          <%= link_to "Data view", "#/table", :class => "smaller strong tab selected" %>
-          <%= link_to "Map view",  "#/map",   :class => "smaller strong tab" %>
+          <%= link_to "Data view", "#/table", :class => "smaller strong tab selected", :"data-cdb-st-id" => "data-view" %>
+          <%= link_to "Map view",  "#/map",   :class => "smaller strong tab", :"data-cdb-st-id" => "map-view" %>
         </nav>
       </div>
 
@@ -23,7 +23,7 @@
       
       <div class="right">
         <ul class="options">
-          <li><%= link_to "Edit", "#/options", :class => "dropdown options" %></li>
+          <li><%= link_to "Edit", "#/options", :class => "dropdown options", :"data-cdb-st-id" => "edit" %></li>
           <li><a class="rounded share" href="#/visualize"><span>VISUALIZE</span></a></li>
         </ul>
       </div>

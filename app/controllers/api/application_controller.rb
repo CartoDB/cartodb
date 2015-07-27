@@ -3,6 +3,7 @@ class Api::ApplicationController < ApplicationController
   # Don't force org urls
   skip_before_filter :ensure_org_url_if_org_user, :browser_is_html5_compliant?, :verify_authenticity_token
   before_filter :api_authorization_required
+  before_filter :ensure_account_has_been_activated
 
   protected
 

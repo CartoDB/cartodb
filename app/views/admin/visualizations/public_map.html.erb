@@ -195,10 +195,10 @@
                             <%= number_with_delimiter(vis.table.service.rows_counted) %> row<%= vis.table.service.rows_counted.size == 1 ? "" : "s" %>
                           </span>
                         <% end %>
-                        <!--span class="SizeIndicator u-hideOnTablet">
+                        <span class="SizeIndicator u-hideOnTablet">
                           <i class="iconFont iconFont-Floppy SizeIndicator-icon"></i>
-                          <%#= number_to_human_size(vis.table.service.size) %>
-                        </span-->
+                          <%= number_to_human_size(vis.table.service.rows_counted.size) %>
+                        </span>
                         <span class="DatasetsList-itemTimeDiff DefaultTimeDiff u-hideOnTablet">
                           <i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i>
                           <%= time_ago_in_words(vis.updated_at) %> ago by

@@ -82,8 +82,11 @@
   float: left;
   vertical-align: top;
 }
-.Footer-credits {
+.Footer-credits,
+.Footer-credits .Footer-link {
   line-height: 18px;
+}
+.Footer-credits {
   position: relative;
 }
 .Footer-credits span {

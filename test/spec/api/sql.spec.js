@@ -341,10 +341,10 @@ describe("column descriptions", function(){
     it("should return correct properties", function(){
       expect(description.hist.constructor).toEqual(Array); // Right now it's an empty array because JSON.parse doesn't like our way of notating histograms
       expect(description.type).toEqual("string");
-      expect(description.null_count).toEqual("number");
-      expect(description.distinct).toEqual("number");
-      expect(description.null_ratio).toEqual("number");
-      expect(description.skew).toEqual("number");
+      expect(typeof description.null_count).toEqual("number");
+      expect(typeof description.distinct).toEqual("number");
+      expect(typeof description.null_ratio).toEqual("number");
+      expect(typeof description.skew).toEqual("number");
       expect(typeof description.weight).toEqual("number");
     });
   });

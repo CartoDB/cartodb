@@ -323,4 +323,49 @@ describe("column descriptions", function(){
       sql.describe(this.query, this.colBoolean, {type: this.colBoolean.get("type")}, function(){});
       expect(sql.describeBoolean).toHaveBeenCalled();
   });
+
+  describe("string describer", function(){
+    var description;
+    beforeAll(function(done){
+      sql.execute = function(sql, callback){
+        var data = JSON.parse('{"rows":[{"uniq":462,"cnt":487,"null_count":1,"null_ratio":0.002053388090349076,"skew":0.043121149897330596,"array_agg":""}],"time":0.01,"fields":{"uniq":{"type":"number"},"cnt":{"type":"number"},"null_count":{"type":"number"},"null_ratio":{"type":"number"},"skew":{"type":"number"},"array_agg":{"type":"unknown(2287)"}},"total_rows":1}');
+        callback(data);
+      }
+      var callback = function(stuff){
+        description = stuff;
+        done();
+      }
+      sql.describeString(sql, this.colString, callback); // THE COLS DON'T MATCH!!!
+    });
+    
+    it("should return a valid histogram", function(){
+      expect(description.hist.constructor).toEqual(Array);
+    });
+    
+    it("should return correct type", function(){
+      expect(description.type).toEqual("string");
+    });
+    
+    it("should return a null count", function(){
+      expect(description.null_count).toEqual("number");
+    });
+    
+    it("should return a distinct count", function(){
+      expect(description.distinct).toEqual("number");
+    });
+    
+    it("should return a null ratio", function(){
+      expect(description.null_ratio).toEqual("number");
+    });
+    
+    it("should return skew", function(){
+      expect(description.skew).toEqual("number");
+    });
+    
+    it("should return weight", function(){
+      expect(typeof description.weight).toEqual("number");
+    });
+
+    
+  })
 });

@@ -4,9 +4,7 @@ namespace :cartodb do
     task :enable_feature_for_all_users, [:feature] => :environment do |t, args|
       
       ff = FeatureFlag[:name => args[:feature]]
-      if ff.nil?
-        raise "[ERROR]  Feature '#{args[:feature]}' does not exist"
-      end
+      raise "[ERROR]  Feature '#{args[:feature]}' does not exist" if ff.nil?
 
       User.all.each do |user|
         if FeatureFlagsUser[feature_flag_id: ff.id, user_id: user.id].nil?
@@ -19,13 +17,10 @@ namespace :cartodb do
     task :enable_feature_for_user, [:feature, :username] => :environment do |t, args|
       
       ff = FeatureFlag[:name => args[:feature]]
-      if ff.nil?
-        raise "[ERROR]  Feature '#{args[:feature]}' does not exist"
-      end
+      raise "[ERROR]  Feature '#{args[:feature]}' does not exist" if ff.nil?
 
       user = User[username: args[:username]] 
-      if user.nil?
-      end
+      raise "[ERROR]  User '#{args[:username]}' does not exist" if user.nil?
 
       if FeatureFlagsUser[feature_flag_id: ff.id, user_id: user.id].nil?
         FeatureFlagsUser.new(feature_flag_id: ff.id, user_id: user.id).save
@@ -38,14 +33,10 @@ namespace :cartodb do
     task :enable_feature_for_organization, [:feature, :org_name] => :environment do |t, args|
       
       ff = FeatureFlag[:name => args[:feature]]
-      if ff.nil?
-        raise "[ERROR]  Feature '#{args[:feature]}' does not exist"
-      end
+      raise "[ERROR]  Feature '#{args[:feature]}' does not exist" if ff.nil?
 
       organization = Organization[name: args[:org_name]] 
-      if organization.nil?
-        raise "[ERROR]  Organization '#{args[:org_name]}' does not exist"
-      end
+      raise "[ERROR]  Organization '#{args[:org_name]}' does not exist" if organization.nil?
 
       organization.users.each do |user|
         if FeatureFlagsUser[feature_flag_id: ff.id, user_id: user.id].nil?
@@ -58,9 +49,7 @@ namespace :cartodb do
     task :disable_feature_for_all_users, [:feature] => :environment do |t, args|
       
       ff = FeatureFlag[:name => args[:feature]]
-      if ff.nil?
-        raise "[ERROR]  Feature '#{args[:feature]}' does not exist"
-      end
+      raise "[ERROR]  Feature '#{args[:feature]}' does not exist" if ff.nil?
 
       ffus = FeatureFlagsUser[:feature_flag_id => ff.id]
       if ffus.nil?
@@ -74,14 +63,10 @@ namespace :cartodb do
     task :disable_feature_for_user, [:feature, :username] => :environment do |t, args|
       
       ff = FeatureFlag[:name => args[:feature]]
-      if ff.nil?
-        raise "[ERROR]  Feature '#{args[:feature]}' does not exist"
-      end
+      raise "[ERROR]  Feature '#{args[:feature]}' does not exist" if ff.nil?
 
       user = User[username: args[:username]]
-      if user.nil?
-        raise "[ERROR]  User '#{args[:username]}' does not exist"
-      end
+      raise "[ERROR]  User '#{args[:username]}' does not exist" if user.nil?
 
       if FeatureFlagsUser[feature_flag_id: ff.id, user_id: user.id].nil?
         puts "[INFO]  Feature '#{args[:feature]}' was already disabled for user '#{args[:username]}'"
@@ -94,14 +79,10 @@ namespace :cartodb do
     task :disable_feature_for_organization, [:feature, :org_name] => :environment do |t, args|
       
       ff = FeatureFlag[:name => args[:feature]]
-      if ff.nil?
-        raise "[ERROR]  Feature '#{args[:feature]}' does not exist"
-      end
+      raise "[ERROR]  Feature '#{args[:feature]}' does not exist" if ff.nil?
 
       organization = Organization[name: args[:org_name]] 
-      if organization.nil?
-        raise "[ERROR]  Organization '#{args[:org_name]}' does not exist"
-      end
+      raise "[ERROR]  Organization '#{args[:org_name]}' does not exist" if organization.nil?
 
       organization.users.each do |user|
         if FeatureFlagsUser[feature_flag_id: ff.id, user_id: user.id].nil?

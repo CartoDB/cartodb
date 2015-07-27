@@ -252,7 +252,7 @@
           </div>
         </div>
 
-        <ul class="MapsList">
+        <ul class="MapsList PublicMap-mapsList">
           <% @more_visualizations.each do |vis| %>
             <li class="MapsList-item">
               <div class="MapCard" data-zoom="<%= '' %>" data-vizjson-url="<%= CartoDB.url(self, 'api_v2_visualizations_vizjson', {id: vis.id}, vis.user) %>.json">

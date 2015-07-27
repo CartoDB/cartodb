@@ -282,7 +282,7 @@ describe('sql.table', function() {
 
 });
 
-fdescribe("column descriptions", function(){
+describe("column descriptions", function(){
   var USER = 'manolo';
   var sql;
 

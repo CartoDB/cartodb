@@ -13,8 +13,8 @@ module Carto
         'table/views/infowindow_light_header_green' =>  'infowindow_light_header_green',
         'table/views/infowindow_header_with_image' =>   'infowindow_header_with_image'
       }
-      
-      delegate [:options, :kind, :id, :order, :parent_id, :children, :legend] => :layer
+
+      delegate [:options, :kind, :id, :order, :parent_id, :children] => :layer
 
       attr_reader :layer
 
@@ -44,6 +44,18 @@ module Carto
         Carto::Api::LayerPresenter.new(self, options, configuration)
       end
 
+      def layer_visibility
+        @layer.options['visible']
+      end
+
+      def legend
+        legend = layer.legend
+        unless legend['visible'].nil?
+          legend['visible'] = legend['visible'] && layer_visibility
+        end
+        legend
+      end
+
       def infowindow
         @layer.infowindow
       end
@@ -52,7 +64,7 @@ module Carto
         @layer.tooltip
       end
 
-      def infowindow_template_path 
+      def infowindow_template_path
         if infowindow.present? && infowindow['template_name'].present?
           template_name = TEMPLATES_MAP.fetch(infowindow['template_name'], self.infowindow['template_name'])
           Rails.root.join("lib/assets/javascripts/cartodb/table/views/infowindow/templates/#{template_name}.jst.mustache")

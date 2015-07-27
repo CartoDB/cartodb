@@ -370,8 +370,60 @@ describe("column descriptions", function(){
       expect(typeof description.cluster_rate).toEqual("number");
     })
   });
+
+  describe("number describer", function(){
+    var description;
+    beforeAll(function(done){
+      sql.execute = function(sql, callback){
+        var data = JSON.parse('{"rows":[{"hist":"{\\"(1,empty,69368)\\",\\"(25,empty,11063)\\"}","min":0,"max":4,"avg":0.3745819397993311,"cnt":89401,"uniq":5,"null_ratio":0,"stddev":0.000009057366328792043,"stddevmean":2.1617223091836313,"dist_type":"U","quantiles":[0,1,2,2,3,4,4],"equalint":[0,0,0,0,0,0,0],"jenks":[0,1,2,3,4],"headtails":[0,1,2,3,4],"cat_hist":"{\\"(1,empty,69368)\\",\\"(25,empty,11063)\\"}"}],"time":1.442,"fields":{"hist":{"type":"unknown(2287)"},"min":{"type":"number"},"max":{"type":"number"},"avg":{"type":"number"},"cnt":{"type":"number"},"uniq":{"type":"number"},"null_ratio":{"type":"number"},"stddev":{"type":"number"},"stddevmean":{"type":"number"},"dist_type":{"type":"string"},"quantiles":{"type":"number[]"},"equalint":{"type":"number[]"},"jenks":{"type":"number[]"},"headtails":{"type":"number[]"},"cat_hist":{"type":"unknown(2287)"}},"total_rows":1}');
+        callback(data);
+      }
+      var callback = function(stuff){
+        description = stuff;
+        done();
+      }
+      sql.describeFloat(sql, this.colGeom, callback);
+    });
+    it("should return correct properties", function(){
+      expect(description.type).toEqual("number");
+      expect(["A", "U", "F", "J"].indexOf(description.dist_type) > -1).toBe(true);
+      var numTypes = ["avg", "max", "min", "stddevmean", "weight", "stddev", "null_ratio", "count"];
+      for(var i = 0; i < numTypes.length; i++){
+        expect(typeof description[numTypes[i]]).toEqual("number");
+      }
+      var arrayTypes = ["quantiles", "equalint", "jenks", "headtails", "cat_hist", "hist"];
+      for(var i = 0; i < arrayTypes.length; i++){
+        expect(description[arrayTypes[i]].constructor).toEqual(Array);
+      }
+    })
+  });
+  
+  describe("boolean describer", function(){
+    var description;
+    beforeAll(function(done){
+      sql.execute = function(sql, callback){
+        var data = {"rows":[
+                    {"true_ratio":0.3377926421404682,"null_ratio":0,"uniq":2,"cnt":89401}
+                    ],
+                    "time":0.251,
+                    "fields":{"true_ratio":{"type":"number"},"null_ratio":{"type":"number"},"uniq":{"type":"number"},"cnt":{"type":"number"}},
+                    "total_rows":1
+                  };
+        callback(data);
+      }
+      var callback = function(stuff){
+        description = stuff;
+        done();
+      }
+      sql.describeBoolean(sql, this.colGeom, callback);
+    });
+    it("should return correct properties", function(){
+      expect(description.type).toEqual("boolean");
+      expect(typeof description.true_ratio).toEqual("number");
+      expect(typeof description.distinct).toEqual("number");
+      expect(typeof description.count).toEqual("number");
+      expect(typeof description.null_ratio).toEqual("number");
+    })
+  });
+  
 });
-
-
-
-

@@ -1508,13 +1508,20 @@ describe User do
       collection = CartoDB::Visualization::Collection.new.fetch({user_id: @user.id})
       redis_mock = mock
       redis_vizjson_cache = CartoDB::Visualization::RedisVizjsonCache.new()
+      redis_embed_cache = EmbedRedisCache.new()
       CartoDB::Visualization::RedisVizjsonCache.any_instance.stubs(:redis).returns(redis_mock)
+      EmbedRedisCache.any_instance.stubs(:redis).returns(redis_mock)
 
 
-      redis_keys = collection.map {|v| [redis_vizjson_cache.key(v.id, false), redis_vizjson_cache.key(v.id, true)] }.flatten
-      redis_keys.should_not be_empty
+      redis_vizjson_keys = collection.map {|v| [redis_vizjson_cache.key(v.id, false), redis_vizjson_cache.key(v.id, true)] }.flatten
+      redis_vizjson_keys.should_not be_empty
 
-      redis_mock.expects(:del).once.with(redis_keys)
+      redis_embed_keys = collection.map {|v| [redis_embed_cache.key(v.id, false), redis_embed_cache.key(v.id, true)] }.flatten
+      redis_embed_keys.should_not be_empty
+
+
+      redis_mock.expects(:del).once.with(redis_vizjson_keys)
+      redis_mock.expects(:del).once.with(redis_embed_keys)
 
       @user.purge_redis_vizjson_cache
     end

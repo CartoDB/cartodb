@@ -1080,7 +1080,7 @@ class User < Sequel::Model
   end
 
   def self.find_with_custom_fields(user_id)
-    User.filter(:id => user_id).select(:id,:email,:username,:tables_count,:crypted_password,:database_name,:admin).first
+    User.filter(:id => user_id).select(:id,:email,:username,:crypted_password,:database_name,:admin).first
   end
 
 
@@ -2474,9 +2474,11 @@ TRIGGER
 
   # Probably not needed with versioning of keys
   # @see RedisVizjsonCache
+  # @see EmbedRedisCache
   def purge_redis_vizjson_cache
     vizs = CartoDB::Visualization::Collection.new.fetch(user_id: self.id)
     CartoDB::Visualization::RedisVizjsonCache.new().purge(vizs)
+    EmbedRedisCache.new().purge(vizs)
   end
 
   # returns google maps api key. If the user is in an organization and
@@ -2550,6 +2552,11 @@ TRIGGER
       :twitter_datasource_block_price, :twitter_datasource_block_size
     ])
     to.invite_token = User.make_token
+  end
+
+  def regenerate_api_key
+    invalidate_varnish_cache
+    update api_key: User.make_token
   end
 
   private

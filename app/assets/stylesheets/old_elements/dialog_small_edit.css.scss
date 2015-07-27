@@ -275,7 +275,14 @@
       p {width:17px; text-align:center; font-size:20px;}
 
       label {
-        position:absolute; top:10px; left:8px; font-style:italic; color:#AAAAAA; z-index:10; font-size:13px; pointer-events:none;
+        position:absolute;
+        top:6px;
+        left:8px;
+        font-style:italic;
+        color:#AAAAAA; 
+        font-size:13px;
+        pointer-events:none;
+        z-index:10;
       }
     }
   }

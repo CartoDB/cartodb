@@ -353,7 +353,7 @@ describe("column descriptions", function(){
     var description;
     beforeAll(function(done){
       sql.execute = function(sql, callback){
-        var data = JSON.parse('{"rows":[{"bbox":"{\\"type\\":\\"Polygon\\",\\"coordinates\\":[[[-179.9284,-65.2446],[-179.9284,81.8962],[179.9698,81.8962],[179.9698,-65.2446],[-179.9284,-65.2446]]]}","geometry_type":"ST_Point","clusterrate":0.20359746623640493,"density":0.105333307745705}],"time":0.035,"fields":{"bbox":{"type":"string"},"geometry_type":{"type":"string"},"clusterrate":{"type":"number"},"density":{"type":"number"}},"total_rows":1}');
+        var data = {"rows":[{"bbox": {"type":"Polygon","coordinates":[[[-179.9284,-65.2446],[-179.9284,81.8962],[179.9698,81.8962],[179.9698,-65.2446],[-179.9284,-65.2446]]]},"geometry_type":"ST_Point","clusterrate":0.20359746623640493,"density":0.105333307745705}],"time":0.035,"fields":{"bbox":{"type":"string"},"geometry_type":{"type":"string"},"clusterrate":{"type":"number"},"density":{"type":"number"}},"total_rows":1};
         callback(data);
       }
       var callback = function(stuff){

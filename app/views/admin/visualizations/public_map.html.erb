@@ -71,11 +71,11 @@
 
               <li class="Navmenu-item">
                 <div class="Navmenu-sep"></div>
-                <button class="Navmenu-link js-likes"
+                <a href="#/like" class="Navmenu-link js-likes"
                   data-vis-id="<%= @visualization.id %>"
                   data-likes-count="<%= @likes_count %>"
                   data-likes-size="big">
-                </button>
+                </a>
               </li>
 
               <li class="Navmenu-item js-Navmenu-share">
@@ -184,11 +184,11 @@
 
                     <div class="DatasetsList-itemSecondaryInfo">
                       <div class="DatasetsList-itemMeta">
-                        <button class="PrivacyIndicator is-<%= vis.privacy %> u-hideOnTablet"><%= vis.privacy %></button>
-                        <button class="js-likes"
+                        <span class="PrivacyIndicator is-<%= vis.privacy %> u-hideOnTablet"><%= vis.privacy %></span>
+                        <a href="#/like" class="js-likes"
                           data-vis-id="<%= vis.id %>"
                           data-likes-count="<%= vis.likes.count %>">
-                        </button>
+                        </a>
                         <% if (vis.table.service.rows_counted) %>
                           <span class="RowsIndicator u-hideOnTablet">
                             <i class="iconFont iconFont-Rows RowsIndicator-icon"></i>
@@ -332,6 +332,7 @@
     var belong_organization = <%= @visualization.user.has_organization? %>;
     var config = <%= safe_js_object frontend_config_public({https_apis: request.protocol == 'https://' }) %>;
     var vizdata = <%= safe_js_object @visualization.to_vizjson({https_request: request.protocol == 'https://'}).to_json %>;
+    var login_url = "<%= CartoDB.url(self, 'login') %>";
 
     // Generating map options
     var bool_fn = function(v) { return v == 'true' };

@@ -9,7 +9,6 @@ $cLiked: #D93F56;
 
 .LikesIndicator {
   color:$cTypography-secondary;
-  cursor: default;
   @include nicer-lato-typography();
 }
 .LikesIndicator-count {

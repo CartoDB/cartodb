@@ -1258,7 +1258,16 @@ class Table
 
       unless register_table_only
         begin
-          owner.in_database.rename_table(@name_changed_from, name)
+          if name.starts_with?('_')
+            # PG gem uses an intermediate file for renaming
+            # and uses '_original_name' as it's name. This
+            # hack avoids a PG::ERROR raising
+            owner.in_database.rename_table(@name_changed_from, "aux-#{name}")
+            owner.in_database.rename_table("aux-#{name}", name)
+          else
+            owner.in_database.rename_table(@name_changed_from, name)
+          end
+          
         rescue StandardError => exception
           exception_to_raise = CartoDB::BaseCartoDBError.new(
               "Table update_name_changes(): '#{@name_changed_from}' doesn't exist", exception)

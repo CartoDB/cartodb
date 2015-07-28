@@ -281,3 +281,149 @@ describe('sql.table', function() {
   })
 
 });
+
+describe("column descriptions", function(){
+  var USER = 'manolo';
+  var sql;
+
+  beforeAll(function(){
+    this.colDate = new Backbone.Model(JSON.parse('{"name":"object_postedtime","type":"date","geometry_type":"point","bbox":[[-28.92163128242129,-201.09375],[75.84516854027044,196.875]],"analyzed":true,"success":true,"stats":{"type":"date","start_time":"2015-02-19T15:13:16.000Z","end_time":"2015-02-22T04:34:05.000Z","range":220849000,"steps":1024,"null_ratio":0,"column":"object_postedtime"}}'));
+    this.colFloat = new Backbone.Model(JSON.parse('{"name":"asdfd","type":"number","geometry_type":"point"}'));
+    this.colString = new Backbone.Model(JSON.parse('{"name":"asdfd","type":"string","geometry_type":"point"}'));
+    this.colGeom = new Backbone.Model(JSON.parse('{"name":"asdfd","type":"geometry","geometry_type":"point"}'));
+    this.colBoolean = new Backbone.Model(JSON.parse('{"name":"asdfd","type":"boolean","geometry_type":"point"}'));
+    this.query = "SELECT * FROM whatevs";
+    sql = new cartodb.SQL({
+      user: USER,
+      protocol: 'https'
+    });
+    sql.execute = function(sql, callback){
+      callback({});
+    }
+  });
+
+  it("should deduct correct describe method", function(){
+      spyOn(sql, "describeDate");
+      sql.describe(this.query, this.colDate, {type: this.colDate.get("type")}, function(){});
+      expect(sql.describeDate).toHaveBeenCalled;
+
+      spyOn(sql, "describeFloat");
+      sql.describe(this.query, this.colFloat, {type: this.colFloat.get("type")}, function(){});
+      expect(sql.describeFloat).toHaveBeenCalled();
+
+      spyOn(sql, "describeString");
+      sql.describe(this.query, this.colString, {type: this.colString.get("type")}, function(){});
+      expect(sql.describeString).toHaveBeenCalled();
+
+      spyOn(sql, "describeGeom");
+      sql.describe(this.query, this.colGeom, {type: this.colGeom.get("type")}, function(){});
+      expect(sql.describeGeom).toHaveBeenCalled();
+
+      spyOn(sql, "describeBoolean");
+      sql.describe(this.query, this.colBoolean, {type: this.colBoolean.get("type")}, function(){});
+      expect(sql.describeBoolean).toHaveBeenCalled();
+  });
+
+  describe("string describer", function(){
+    var description;
+    beforeAll(function(done){
+      sql.execute = function(sql, callback){
+        var data = JSON.parse('{"rows":[{"uniq":462,"cnt":487,"null_count":1,"null_ratio":0.002053388090349076,"skew":0.043121149897330596,"array_agg":""}],"time":0.01,"fields":{"uniq":{"type":"number"},"cnt":{"type":"number"},"null_count":{"type":"number"},"null_ratio":{"type":"number"},"skew":{"type":"number"},"array_agg":{"type":"unknown(2287)"}},"total_rows":1}');
+        callback(data);
+      }
+      var callback = function(stuff){
+        description = stuff;
+        done();
+      }
+      sql.describeString(sql, this.colString, callback); // THE COLS DON'T MATCH!!!
+    });
+    
+    it("should return correct properties", function(){
+      expect(description.hist.constructor).toEqual(Array); // Right now it's an empty array because JSON.parse doesn't like our way of notating histograms
+      expect(description.type).toEqual("string");
+      expect(typeof description.null_count).toEqual("number");
+      expect(typeof description.distinct).toEqual("number");
+      expect(typeof description.null_ratio).toEqual("number");
+      expect(typeof description.skew).toEqual("number");
+      expect(typeof description.weight).toEqual("number");
+    });
+  });
+  
+  describe("geometry describer", function(){
+    var description;
+    beforeAll(function(done){
+      sql.execute = function(sql, callback){
+        var data = {"rows":[{"bbox": '{"type":"Polygon","coordinates":[[[-179.9284,-65.2446],[-179.9284,81.8962],[179.9698,81.8962],[179.9698,-65.2446],[-179.9284,-65.2446]]]}',"geometry_type":"ST_Point","clusterrate":0.20359746623640493,"density":0.105333307745705}],"time":0.035,"fields":{"bbox":{"type":"string"},"geometry_type":{"type":"string"},"clusterrate":{"type":"number"},"density":{"type":"number"}},"total_rows":1};
+        callback(data);
+      }
+      var callback = function(stuff){
+        description = stuff;
+        done();
+      }
+      sql.describeGeom(sql, this.colGeom, callback);
+    });
+    it("should return correct properties", function(){
+      expect(description.type).toEqual("geom");
+      expect(["ST_Point", "ST_Line", "ST_Polygon"].indexOf(description.geometry_type) > -1).toBe(true);
+      expect(description.bbox.constructor).toEqual(Array);
+      expect(typeof description.density).toEqual("number");
+      expect(typeof description.cluster_rate).toEqual("number");
+    })
+  });
+
+  describe("number describer", function(){
+    var description;
+    beforeAll(function(done){
+      sql.execute = function(sql, callback){
+        var data = JSON.parse('{"rows":[{"hist":"{\\"(1,empty,69368)\\",\\"(25,empty,11063)\\"}","min":0,"max":4,"avg":0.3745819397993311,"cnt":89401,"uniq":5,"null_ratio":0,"stddev":0.000009057366328792043,"stddevmean":2.1617223091836313,"dist_type":"U","quantiles":[0,1,2,2,3,4,4],"equalint":[0,0,0,0,0,0,0],"jenks":[0,1,2,3,4],"headtails":[0,1,2,3,4],"cat_hist":"{\\"(1,empty,69368)\\",\\"(25,empty,11063)\\"}"}],"time":1.442,"fields":{"hist":{"type":"unknown(2287)"},"min":{"type":"number"},"max":{"type":"number"},"avg":{"type":"number"},"cnt":{"type":"number"},"uniq":{"type":"number"},"null_ratio":{"type":"number"},"stddev":{"type":"number"},"stddevmean":{"type":"number"},"dist_type":{"type":"string"},"quantiles":{"type":"number[]"},"equalint":{"type":"number[]"},"jenks":{"type":"number[]"},"headtails":{"type":"number[]"},"cat_hist":{"type":"unknown(2287)"}},"total_rows":1}');
+        callback(data);
+      }
+      var callback = function(stuff){
+        description = stuff;
+        done();
+      }
+      sql.describeFloat(sql, this.colGeom, callback);
+    });
+    it("should return correct properties", function(){
+      expect(description.type).toEqual("number");
+      expect(["A", "U", "F", "J"].indexOf(description.dist_type) > -1).toBe(true);
+      var numTypes = ["avg", "max", "min", "stddevmean", "weight", "stddev", "null_ratio", "count"];
+      for(var i = 0; i < numTypes.length; i++){
+        expect(typeof description[numTypes[i]]).toEqual("number");
+      }
+      var arrayTypes = ["quantiles", "equalint", "jenks", "headtails", "cat_hist", "hist"];
+      for(var i = 0; i < arrayTypes.length; i++){
+        expect(description[arrayTypes[i]].constructor).toEqual(Array);
+      }
+    })
+  });
+  
+  describe("boolean describer", function(){
+    var description;
+    beforeAll(function(done){
+      sql.execute = function(sql, callback){
+        var data = {"rows":[
+                    {"true_ratio":0.3377926421404682,"null_ratio":0,"uniq":2,"cnt":89401}
+                    ],
+                    "time":0.251,
+                    "fields":{"true_ratio":{"type":"number"},"null_ratio":{"type":"number"},"uniq":{"type":"number"},"cnt":{"type":"number"}},
+                    "total_rows":1
+                  };
+        callback(data);
+      }
+      var callback = function(stuff){
+        description = stuff;
+        done();
+      }
+      sql.describeBoolean(sql, this.colGeom, callback);
+    });
+    it("should return correct properties", function(){
+      expect(description.type).toEqual("boolean");
+      expect(typeof description.true_ratio).toEqual("number");
+      expect(typeof description.distinct).toEqual("number");
+      expect(typeof description.count).toEqual("number");
+      expect(typeof description.null_ratio).toEqual("number");
+    })
+  });
+  
+});

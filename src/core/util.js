@@ -91,12 +91,11 @@ cdb.core.util._makeCRCTable = function() {
 
 cdb.core.util.browser = (function(){
   var browser = {};
+  var ua = window.navigator.userAgent;
   function detectIE() {
-    var ua = window.navigator.userAgent;
     var msie = ua.indexOf('MSIE ');
     var trident = ua.indexOf('Trident/');
-    var edge = ua.indexOf('Edge/');
-    if (msie > 0 || trident > 0 || edge > 0) return true;
+    if (msie > -1 || trident > -1) return true;
     return false;
   };
 
@@ -113,10 +112,11 @@ cdb.core.util.browser = (function(){
     browser.ie = {version: getIEVersion()}
   }
 
-  else if(navigator.userAgent.indexOf('Chrome') > -1) browser.chrome = navigator.userAgent;
-  else if(navigator.userAgent.indexOf('Firefox') > -1) browser.firefox = navigator.userAgent;
-  else if(navigator.userAgent.indexOf("Safari") > -1) browser.safari = navigator.userAgent;
-  else if(navigator.userAgent.toLowerCase().indexOf("op") > -1) browser.opera = navigator.userAgent;
+  else if(ua.indexOf('Chrome') > -1) browser.chrome = ua;
+  else if(ua.indexOf('Firefox') > -1) browser.firefox = ua;
+  else if(ua.indexOf("Safari") > -1) browser.safari = ua;
+  else if(ua.toLowerCase().indexOf("op") > -1) browser.opera = ua;
+  else if(ua.indexOf('Edge/') > -1) browser.edge = ua;
   return browser;
 
 })();

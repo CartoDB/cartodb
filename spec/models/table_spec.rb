@@ -2319,9 +2319,9 @@ describe Table do
       table = new_table(:user_id => $user_1.id)
       table.save
 
-      pk_row1 = table.insert_row!(:name => 'jisl', :age => "33")
-      table.estimated_row_count.should == 1
-      [0, 1].should include(table.actual_row_count.should)
+      pk_row1 = table.insert_row!(:name => 'name1')
+      table.actual_row_count.should == 1
+      [0, 1].should include(table.estimated_row_count)
     end
   end
 

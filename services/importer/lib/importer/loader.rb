@@ -281,15 +281,17 @@ module CartoDB
         end
       end
 
-      # Sometimes we could try to recover from a know failure
+      # Sometimes we could try to recover from a known failure
       def try_fallback(append_mode)
         if ogr2ogr.command_output =~ /date\/time field value out of range/
           job.log "Fallback: Disabling autoguessing because there are wrong dates in the source file"
+          @job.fallback_executed = "date"
           ogr2ogr.overwrite = true
           ogr2ogr.csv_guessing = false
           ogr2ogr.run(append_mode)
         elsif (ogr2ogr.command_output =~ /has no equivalent in encoding/ || ogr2ogr.command_output =~ /invalid byte sequence for encoding/) 
           job.log "Fallback: There is an encoding problem, trying with ISO-8859-1"
+          @job.fallback_executed = "encoding"
           ogr2ogr.overwrite = true
           ogr2ogr.encoding = "ISO-8859-1"
           ogr2ogr.run(append_mode)

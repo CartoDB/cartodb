@@ -89,8 +89,8 @@ module CartoDB
         }
       end
 
+      # @see /app/controllers/api/json/synchronizations_controller -> sync()
       def enqueue_rate_limited(query)
-        # TODO: Inject at least the classname to instantiate
         query.each { |record|
           user = Carto::User.where(id: record[:user_id]).first
           next if user.nil?

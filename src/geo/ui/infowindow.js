@@ -764,7 +764,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
    *  Animate infowindow to show up
    */
   _animateIn: function(delay) {
-    if (!$.browser.msie || ($.browser.msie && parseInt($.browser.version) > 8 )) {
+    if (!cdb.core.util.ie || (cdb.core.util.browser.ie && cdb.core.util.browser.ie.version > 8)) {
       this.$el.css({
         'marginBottom':'-10px',
         'display':'block',

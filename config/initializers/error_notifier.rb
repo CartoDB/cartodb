@@ -17,7 +17,7 @@ module CartoDB
   def self.notify_exception(e, extra={})
     if Rails.env.development? || Rails.env.test?
       backtrace = e.backtrace ? e.backtrace : ['']
-      ::Logger.new(STDOUT).error "exception: " + extra.delete(:message).to_s + (e.message + "\n " + backtrace.join("\n ")) 
+      ::Logger.new(STDOUT).error "exception: #{extra.delete(:message)} #{e.message}\n#{backtrace.join("\n ")}\nExtra: #{extra}"
     end
     Rollbar.report_exception(e, extra.delete(:request), extra.delete(:user))
   rescue

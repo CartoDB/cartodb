@@ -284,4 +284,14 @@ class UserTable < Sequel::Model
     self.updated_at = Time.now
   end
 
+  def estimated_row_count
+    service.estimated_row_count
+  end
+
+  def actual_row_count
+    service.actual_row_count
+  end
+
+  private
+
 end

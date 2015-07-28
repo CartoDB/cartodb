@@ -764,7 +764,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
    *  Animate infowindow to show up
    */
   _animateIn: function(delay) {
-    if (document.addEventListener) { // Will filter out IE8 and below
+    if (!$.browser.msie || ($.browser.msie && parseInt($.browser.version) > 8 )) {
       this.$el.css({
         'marginBottom':'-10px',
         'display':'block',
@@ -786,7 +786,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
    *  Animate infowindow to disappear
    */
   _animateOut: function() {
-    if (document.addEventListener) { // Will filter out IE8 and below
+    if (!$.browser.msie || ($.browser.msie && parseInt($.browser.version) > 8 )) {
       var self = this;
       this.$el.animate({
         marginBottom: "-10px",

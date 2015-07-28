@@ -693,7 +693,7 @@ var Vis = cdb.core.View.extend({
       if (this.mobile_enabled && (type === "zoom" || type === "header" || type === "loader")) return;
 
       // IE<10 doesn't support the Fullscreen API
-      if (!window.atob) return;
+      if (type === 'fullscreen' && $.browser.msie && parseFloat($.browser.version) <= 10) return;
 
       // Decide to create or not the custom overlays
       if (type === 'image' || type === 'text' || type === 'annotation') {

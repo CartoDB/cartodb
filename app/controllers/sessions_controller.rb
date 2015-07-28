@@ -1,6 +1,6 @@
 # encoding: UTF-8
-require_dependency 'google_plus_api'
 require_dependency 'google_plus_config'
+require_dependency 'google_plus_api'
 
 class SessionsController < ApplicationController
   include LoginHelper

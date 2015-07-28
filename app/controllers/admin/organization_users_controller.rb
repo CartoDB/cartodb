@@ -17,6 +17,7 @@ class Admin::OrganizationUsersController < ApplicationController
 
   def new
     @user = User.new
+    current_user.organization.copy_account_features(@user)
     @user.quota_in_bytes = (current_user.organization.unassigned_quota < 100.megabytes ? current_user.organization.unassigned_quota : 100.megabytes)
 
     respond_to do |format|
@@ -34,10 +35,10 @@ class Admin::OrganizationUsersController < ApplicationController
 
   def create
     @user = User.new
+    current_user.organization.copy_account_features(@user)
     @user.set_fields(params[:user], [:username, :email, :password, :quota_in_bytes, :password_confirmation, :twitter_datasource_enabled, :soft_geocoding_limit, :soft_twitter_datasource_limit, :private_tables_enabled, :private_maps_enabled, :sync_tables_enabled])
     @user.organization = current_user.organization
     @user.username = "#{@user.username}"
-    current_user.copy_account_features(@user)
     @user.save(raise_on_failure: true)
     @user.create_in_central
     @user.notify_new_organization_user

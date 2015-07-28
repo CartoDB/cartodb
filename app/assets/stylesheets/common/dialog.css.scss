@@ -197,8 +197,9 @@ body.is-inDialog {
   font-weight: $sFontWeight-lighter;
   color: $cTypography-paragraphs;
 }
-.Dialog-headerText.Dialog-headerText--centered { margin: auto }
-.Dialog-headerText.Dialog-headerText--ellipsis {
+.Dialog-headerText:not(:last-child) { margin-bottom: $sMargin-elementInline }
+.Dialog-headerText--centered { margin: auto }
+.Dialog-headerText--ellipsis {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;

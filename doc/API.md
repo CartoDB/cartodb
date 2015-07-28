@@ -1446,13 +1446,7 @@ We recommend that you always develop against the most recent version of CartoDB.
 <script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script>
 ```
 
-Anytime you wish to push a stable version of your site to the web though, you can find the version of CartoDB.js you are using by looking at the first line of the library, here:
-
-```html
-<script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
-```
-
-Or, by running the following in your code:
+Anytime you wish to push a stable version of your site to the web though, you can find the version of CartoDB.js you are using by looking at the first line of the library or running the following in your code:
 
 ```javascript
 alert(cartodb.VERSION)

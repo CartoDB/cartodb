@@ -142,63 +142,6 @@
     </div>
   <% end %>
 
-  <div class="Form-row">
-    <div class="Form-rowLabel">
-      <label class="Form-label">Private datasets</label>
-    </div>
-    <div class="Form-rowData Form-rowData--med">
-      <div class="Toggler">
-        <%= f.check_box :private_tables_enabled, :id => "private_tables_enabled" %>
-        <%= label_tag(:private_tables_enabled, '') %>
-      </div>
-    </div>
-    <div class="Form-rowInfo">
-      <% if (@user.errors[:private_tables_enabled].present?) %>
-        <p class="Form-rowInfoText Form-rowInfoText--error"><%= @user.errors[:private_tables_enabled].first %></p>
-      <% else %>
-        <p class="Form-rowInfoText">User can mark datasets as private</p>
-      <% end %>
-    </div>
-  </div>
-
-  <div class="Form-row">
-    <div class="Form-rowLabel">
-      <label class="Form-label">Private maps</label>
-    </div>
-    <div class="Form-rowData Form-rowData--med">
-      <div class="Toggler">
-        <%= f.check_box :private_maps_enabled, :id => "private_maps_enabled" %>
-        <%= label_tag(:private_maps_enabled, '') %>
-      </div>
-    </div>
-    <div class="Form-rowInfo">
-      <% if (@user.errors[:private_maps_enabled].present?) %>
-        <p class="Form-rowInfoText Form-rowInfoText--error"><%= @user.errors[:private_maps_enabled].first %></p>
-      <% else %>
-        <p class="Form-rowInfoText">User can mark maps as private</p>
-      <% end %>
-    </div>
-  </div>
-
-  <div class="Form-row">
-    <div class="Form-rowLabel">
-      <label class="Form-label">Sync tables</label>
-    </div>
-    <div class="Form-rowData Form-rowData--med">
-      <div class="Toggler">
-        <%= f.check_box :sync_tables_enabled, :id => "sync_tables_enabled" %>
-        <%= label_tag(:sync_tables_enabled, '') %>
-      </div>
-    </div>
-    <div class="Form-rowInfo">
-      <% if (@user.errors[:sync_tables_enabled].present?) %>
-        <p class="Form-rowInfoText Form-rowInfoText--error"><%= @user.errors[:sync_tables_enabled].first %></p>
-      <% else %>
-        <p class="Form-rowInfoText">User can sync tables</p>
-      <% end %>
-    </div>
-  </div>
-
   <% if !@user.new? && current_user.organization_owner? -%>
     <div class="Form-row">
       <div class="Form-rowLabel">

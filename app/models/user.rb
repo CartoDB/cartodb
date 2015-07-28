@@ -149,7 +149,7 @@ class User < Sequel::Model
       self.max_layers ||= 6
       self.private_tables_enabled = true if self.private_tables_enabled.nil? && self.private_tables_enabled.nil?
       self.private_maps_enabled = true if self.private_maps_enabled.nil? && self.private_maps_enabled.nil?
-      self.sync_tables_enabled = true if self.sync_tables_enabled,nil? && self.sync_tables_enabled.nil?
+      self.sync_tables_enabled = true if self.sync_tables_enabled.nil? && self.sync_tables_enabled.nil?
     end
   end #before_save
 

@@ -106,6 +106,7 @@ cdb.core.util.browser = (function(){
     if (!document.addEventListener) return 8;
     if (!window.atob) return 9;
     if (!document.all) return 10;
+    else return 11;
   };
 
   if(detectIE()){

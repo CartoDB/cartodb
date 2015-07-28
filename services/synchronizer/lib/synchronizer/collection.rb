@@ -91,6 +91,11 @@ module CartoDB
 
       # @see /app/controllers/api/json/synchronizations_controller -> sync()
       def enqueue_rate_limited(query)
+
+        platform_limit = CartoDB::PlatformLimits::Importer::UserConcurrentSyncsAmount.new({
+          user: Carto::User.where(username:'kartones').first, redis: { db: $users_metadata }
+        })
+
         query.each { |record|
           user = Carto::User.where(id: record[:user_id]).first
           next if user.nil?

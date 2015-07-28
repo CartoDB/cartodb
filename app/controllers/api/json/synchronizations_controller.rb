@@ -99,6 +99,7 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
       if platform_limit.is_within_limit?
         member.enqueue
         enqueued = true
+        platform_limit.increment!
       end
     end
 

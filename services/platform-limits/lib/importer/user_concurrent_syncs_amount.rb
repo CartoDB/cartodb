@@ -4,16 +4,16 @@ module CartoDB
   module PlatformLimits
     module Importer
 
-      # In seconds
-      KEY_TTL = 2*60*60
-
-      MAX_SYNCS_PER_USER = 3
-
       # This limit controls how many synchronizations a user can have at once.
       # Uses Redis storage.
       #
       # 'context' is unused in this limit
       class UserConcurrentSyncsAmount < AbstractLimit
+
+        # In seconds
+        KEY_TTL = 2*60*60
+
+        MAX_SYNCS_PER_USER = 3
 
         # This limit needs additional fields present at options Hash:
         # :redis Hash {
@@ -74,18 +74,20 @@ module CartoDB
         end
 
         # Increases the limit
-        # @remark Will always increment by 1, no matter the value of the parameter
         # @param context mixed
         # @param amount integer
         def increase(context, amount=1)
+          actual_amount = [max_value - get(context), amount].min
+          return if actual_amount <= 0
+
           if redis.exists(key)
             redis.rpushx(key, user.username)
 
             redis.multi do
-              (amount-1).times do
+              (actual_amount-1).times do
                 redis.rpushx(key, user.username)
               end
-            end if amount > 1
+            end if actual_amount > 1
           else
             redis.multi do
               redis.rpush(key, user.username)
@@ -93,10 +95,10 @@ module CartoDB
             end
 
             redis.multi do
-              (amount-1).times do
+              (actual_amount-1).times do
                 redis.rpushx(key, user.username)
               end
-            end if amount > 1
+            end if actual_amount > 1
           end
         end
 
@@ -104,7 +106,13 @@ module CartoDB
         # @param context mixed
         # @param amount integer
         def decrease(context, amount=1)
-          amount.times do
+          current_amount = get(context)
+
+          actual_amount = [current_amount, amount].min
+
+          return if actual_amount <= 0
+
+          actual_amount.times do
             if redis.exists(key)
               redis.rpop(key)
             end

@@ -5,10 +5,6 @@ require_relative '../../../services/named-maps-api-wrapper/lib/named_maps_wrappe
 
 include CartoDB
 
-# Specs for /services/named-maps-api-wrapper
-# NOTES:
-# - Does not check responses from the windshaft API endpoint, stubs them
-# - Typhoeus allows stubbing, but no easy way of knowing how many times (if any) you called it
 describe CartoDB::PlatformLimits::Importer::UserConcurrentImportsAmount do
 
   before(:all) do

@@ -89,11 +89,34 @@ cdb.core.util._makeCRCTable = function() {
   return crcTable;
 };
 
-cdb.core.util.getIEVersion = function(){
+cdb.core.util.browser = (function(){
+  var browser = {};
+  function detectIE() {
+    var ua = window.navigator.userAgent;
+    var msie = ua.indexOf('MSIE ');
+    var trident = ua.indexOf('Trident/');
+    var edge = ua.indexOf('Edge/');
+    if (msie > 0 || trident > 0 || edge > 0) return true;
+    return false;
+  };
+
+  function getIEVersion(){
     if (!document.compatMode) return 5
     if (!window.XMLHttpRequest) return 6
     if (!document.querySelector) return 7;
     if (!document.addEventListener) return 8;
     if (!window.atob) return 9;
     if (!document.all) return 10;
-};
+  };
+
+  if(detectIE()){
+    browser.ie = {version: getIEVersion()}
+  }
+
+  else if(navigator.userAgent.indexOf('Chrome') > -1) browser.chrome = navigator.userAgent;
+  else if(navigator.userAgent.indexOf('Firefox') > -1) browser.firefox = navigator.userAgent;
+  else if(navigator.userAgent.indexOf("Safari") > -1) browser.safari = navigator.userAgent;
+  else if(navigator.userAgent.toLowerCase().indexOf("op") > -1) browser.opera = navigator.userAgent;
+  return browser;
+
+})();

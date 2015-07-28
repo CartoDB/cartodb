@@ -21,6 +21,19 @@ describe Carto::Visualization do
     @user.destroy
   end
 
+  describe '#estimated_row_count and #actual_row_count' do
+
+    it 'should query Table estimated an actual row count methods' do
+      ::Table.any_instance.stubs(:estimated_row_count).returns(999)
+      ::Table.any_instance.stubs(:actual_row_count).returns(1000)
+      table = create_table({:name => 'table1', :user_id => @user.id})
+      vis = Carto::Visualization.find(table.table_visualization.id)
+      vis.estimated_row_count.should == 999
+      vis.actual_row_count.should == 1000
+    end
+
+  end
+
   describe '#tags=' do
     it 'should not set blank tags' do
       vis = Carto::Visualization.new

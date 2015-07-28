@@ -108,6 +108,39 @@ namespace :cartodb do
 
     # WARNING: For use only at development, opensource and custom installs. 
     # Refer to https://github.com/CartoDB/cartodb-management/wiki/Feature-Flags
+    desc "add feature flag"
+    task :add_feature_flag, [:feature] => :environment do |t, args|
+      
+      ff = FeatureFlag[:name => args[:feature]]
+      if ff.nil?
+        ff = FeatureFlag.new(name: args[:feature], restricted: true)
+        ff.id = FeatureFlag.order(:id).last.id + 1
+        ff.save
+      else
+        raise "[ERROR]  Feature '#{args[:feature]}' already exists"
+      end
+    end
+
+    # WARNING: For use only at development, opensource and custom installs. 
+    # Refer to https://github.com/CartoDB/cartodb-management/wiki/Feature-Flags
+    desc "remove feature flag"
+    task :remove_feature_flag, [:feature] => :environment do |t, args|
+      
+      ff = FeatureFlag[:name => args[:feature]]
+      raise "[ERROR]  Feature '#{args[:feature]}' does not exist" if ff.nil?
+
+      ffus = FeatureFlagsUser[:feature_flag_id => ff.id]
+      if ffus.nil?
+        puts "[INFO]  No users had feature '#{args[:feature]}' enabled"
+      else
+        ffus.destroy
+      end
+
+      ff.destroy()
+    end
+
+    # WARNING: For use only at development, opensource and custom installs. 
+    # Refer to https://github.com/CartoDB/cartodb-management/wiki/Feature-Flags
     desc "list all features"
     task :list_all_features => :environment do
 

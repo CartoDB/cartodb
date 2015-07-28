@@ -1,12 +1,14 @@
 // Paragraphs
-$cTypography-headers:           rgba(#333, 1);
-$cTypography-paragraphs:        rgba(#666, 1);
-$cTypography-secondary:         rgba(#999, 1);
-$cTypography-help:              rgba(#CCC, 1); // Help text & tips
-$cTypography-headersOverBlack:  rgba(#FFF, 1);
-$cTypography-link:              rgba(#0090D7, 1);
-$cTypography-linkHover:         rgba(#62B4E3, 1);
-$cTypography-linkSelected:      rgba(#333, 1);
+$cTypography-headers:             rgba(#333, 1);
+$cTypography-paragraphs:          rgba(#666, 1);
+$cTypography-secondary:           rgba(#999, 1);
+$cTypography-help:                rgba(#CCC, 1); // Help text & tips
+$cTypography-headersOverBlack:    rgba(#FFF, 1);
+$cTypography-link:                rgba(#0090D7, 1);
+$cTypography-linkHover:           rgba(#62B4E3, 1);
+$cTypography-linkSelected:        rgba(#333, 1);
+$cTypography-linkSecondary:       rgba(#aaa, 1);
+$cTypography-linkSecondaryHover:  rgba(#BEC5C9, 1);
 
 // Structure
 $cStructure-mainBkg:        rgba(#FFF, 1);
@@ -41,3 +43,6 @@ $cForms-border: rgba(#CCC, 1);
 // Lateral nav buttons
 $cNavButton-default: rgba(#BBB, 1);
 $cNavButton-active: rgba(#888, 1);
+
+// Navmenu
+$cNavmenu-arrow: rgba(#ddd, 1);

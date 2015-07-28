@@ -2087,7 +2087,7 @@ TRIGGER
   # Upgrade the cartodb postgresql extension
   def upgrade_cartodb_postgres_extension(statement_timeout=nil, cdb_extension_target_version=nil)
     if cdb_extension_target_version.nil?
-      cdb_extension_target_version = '0.8.1'
+      cdb_extension_target_version = '0.8.2'
     end
 
     in_database({

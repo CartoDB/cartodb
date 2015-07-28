@@ -238,6 +238,14 @@ class Carto::Visualization < ActiveRecord::Base
     user && (is_owner_user?(user) || (permission && permission.user_has_read_permission?(user)))
   end
 
+  def estimated_row_count
+    table_service.nil? ? nil : table_service.estimated_row_count
+  end
+
+  def actual_row_count
+    table_service.nil? ? nil : table_service.actual_row_count
+  end
+
   private
 
   def get_named_map

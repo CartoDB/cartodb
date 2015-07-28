@@ -3,38 +3,54 @@
     <div class="Header-navigation">
       <ul class="Header-navigationList">
         <li class="js-logo">
-          <% logo_url = cartodb_com_hosted? ? CartoDB.url(self, 'root') : "http://cartodb.com" %>
-          <a href="<%= logo_url %>">
+          <a href="<%= cartodb_com_hosted? ? CartoDB.url(self, 'root') : "http://cartodb.com" %>">
             <span class="Logo Logo--avatar">
               <i class="iconFont iconFont-CartoFante"></i>
             </span>
           </a>
         </li>
 
-        <li class="Header-navigationItem"><a href="<%= logo_url %>" class="Header-navigationLink u-hideOnMobile">CartoDB</a></li>
-        <% unless cartodb_com_hosted? %>
-          <li class="Header-navigationItem js-user-industries"><a href="#/industries" class="Header-navigationLink u-hideOnMobile js-dropdown-target">Industries</a></li>
-          <li class="Header-navigationItem"><a href="http://cartodb.com/gallery/" class="Header-navigationLink u-hideOnMobile">Gallery</a></li>
-          <li class="Header-navigationItem"><a href="http://cartodb.com/pricing/" class="Header-navigationLink u-hideOnMobile">Pricing</a></li>
+        <% if cartodb_com_hosted? %>
+          <li class="Header-navigationItem u-hideOnMobile">
+            <a href="<%= CartoDB.url(self, 'root') %>" class="Header-navigationLink">CartoDB</a>
+          </li>
+        <% else %>
+          <li class="Header-navigationItem js-user-tour u-hideOnMobile">
+            <a href="http://cartodb.com" class="Header-navigationLink js-dropdown-target">Tour <i class="Header-darrow iconFont iconFont-ArrowMenu"></i></a>
+          </li>
+
+          <li class="Header-navigationItem js-user-industries u-hideOnMobile">
+            <a href="#/industries" class="Header-navigationLink js-dropdown-target">Industries <i class="Header-darrow iconFont iconFont-ArrowMenu"></i></a>
+          </li>
+
+          <li class="Header-navigationItem u-hideOnMobile">
+            <a href="http://cartodb.com/gallery/" class="Header-navigationLink">Gallery</a>
+          </li>
+
+          <li class="Header-navigationItem u-hideOnMobile">
+            <a href="http://cartodb.com/pricing/" class="Header-navigationLink">Pricing</a>
+          </li>
+
+          <li class="Header-navigationItem js-user-resources u-hideOnMobile">
+            <a href="#/resources" class="Header-navigationLink js-dropdown-target">Resources <i class="Header-darrow iconFont iconFont-ArrowMenu"></i></a>
+          </li>
         <% end %>
       </ul>
     </div>
 
     <div class="Header-settings">
       <ul class="Header-settingsList js-user-settings">
-        <% unless cartodb_com_hosted? %>
-          <li class="Header-settingsItem js-login">
-            <a href="<%= CartoDB.url(self, 'login') %>" class="Header-settingsLink">Login</a>
-          </li>
-        <% end %>
+        <li class="Header-settingsItem js-login">
+          <a href="<%= CartoDB.url(self, 'login') %>" class="Header-settingsLink">Login</a>
+        </li>
 
-        <li class="Header-settingsItem">
-          <% unless cartodb_com_hosted? %>
+        <% unless cartodb_com_hosted? %>
+          <li class="Header-settingsItem">
             <a href="http://cartodb.com/signup" class="Button Button--headerPositive">
               <span>Sign up</span>
             </a>
-          <% end %>
-        </li>
+          </li>
+        <% end %>
       </ul>
     </div>
   </div>

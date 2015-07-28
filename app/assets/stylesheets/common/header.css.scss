@@ -40,17 +40,19 @@ $cHeader-dark:  rgba(#3A91D7, 1);
   color: rgba(white, 0.6);
 }
 .Header-navigationItem {
-  margin-left: $sMargin-elementLarge;
+  margin-left: $sMargin-section;
 }
 .Header-navigationLink {
   font-weight: $sFontWeight-normal;
   font-size: $sFontSize-smallUpperCase;
   line-height: $sLineHeight-largest;
   text-transform: uppercase;
-  color: rgba(white, 0.6);
+  color: #fff;
+  transition: all .15s;
+
   &:hover {
     text-decoration: none;
-    color: white;
+    color: rgba(#fff, .6);;
   }
 }
 .Header-navigationBreadcrumbItem:first-child { padding-left: 0 }
@@ -84,7 +86,7 @@ $cHeader-dark:  rgba(#3A91D7, 1);
 }
 .Header-settingsItem {
   position: relative;
-  margin-left: $sMargin-elementLarge;
+  margin-left: $sMargin-section;
   font-weight: $sFontWeight-normal;
   font-size: $sFontSize-smallUpperCase;
   line-height: $sLineHeight-larger;
@@ -92,20 +94,23 @@ $cHeader-dark:  rgba(#3A91D7, 1);
 }
 .Header-settingsItem--avatar { height: 46px }
 .Header-settingsLink {
-  color: rgba(white, 0.6);
+  color: #fff;
+  transition: all .2s;
 
   &:hover {
-    color: white;
+    color: rgba(#fff, .6);
     text-decoration: none;
   }
+}
+.Header-darrow {
+  font-size: 7px;
+  margin-left: 6px;
+  position: relative;
+  top: -1px;
 }
 
 @media (min-width: $sMedia-mobile) {
   .Header-logoText { margin-left: $sMargin-elementInline }
-}
-
-@media (min-width: $sMedia-tablet) {
-  .Header-settingsItem { margin-left: $sMargin-group }
 }
 
 @media only screen and (max-width: 360px) {

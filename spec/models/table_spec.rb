@@ -2314,4 +2314,15 @@ describe Table do
 
   end
 
+  describe '#estimated_row_count and #actual_row_count' do
+    it "should return row counts" do
+      table = new_table(:user_id => $user_1.id)
+      table.save
+
+      pk_row1 = table.insert_row!(:name => 'name1')
+      table.actual_row_count.should == 1
+      [0, 1].should include(table.estimated_row_count)
+    end
+  end
+
 end

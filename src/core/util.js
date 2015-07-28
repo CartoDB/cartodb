@@ -87,4 +87,13 @@ cdb.core.util._makeCRCTable = function() {
     crcTable[n] = c;
   }
   return crcTable;
-}
+};
+
+cdb.core.util.getIEVersion = function(){
+    if (!document.compatMode) return 5
+    if (!window.XMLHttpRequest) return 6
+    if (!document.querySelector) return 7;
+    if (!document.addEventListener) return 8;
+    if (!window.atob) return 9;
+    if (!document.all) return 10;
+};

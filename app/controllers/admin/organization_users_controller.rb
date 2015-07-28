@@ -35,7 +35,6 @@ class Admin::OrganizationUsersController < ApplicationController
   def create
     @user = User.new
     @user.set_fields(params[:user], [:username, :email, :password, :quota_in_bytes, :password_confirmation, :twitter_datasource_enabled, :soft_geocoding_limit, :soft_twitter_datasource_limit, :private_tables_enabled, :private_maps_enabled, :sync_tables_enabled])
-    @user.update_in_central
     @user.organization = current_user.organization
     @user.username = "#{@user.username}"
     current_user.copy_account_features(@user)

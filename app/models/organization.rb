@@ -238,6 +238,17 @@ class Organization < Sequel::Model
     users.nil? ? 0 : users.count
   end
 
+  # Sets account features from owner and org defaults
+  def copy_account_features(to_user)
+    owner.copy_account_features(to_user)
+
+    to_user.private_tables_enabled = self.default_private_tables_enabled unless self.default_private_tables_enabled.nil?
+    to_user.private_maps_enabled = self.default_private_maps_enabled unless self.default_private_maps_enabled.nil?
+    to_user.soft_twitter_datasource_limit = self.default_soft_twitter_datasource_limit unless self.default_soft_twitter_datasource_limit.nil?
+    to_user.soft_geocoding_limit = self.default_soft_geocoding_limit unless self.default_soft_geocoding_limit.nil?
+    to_user.sync_tables_enabled = self.default_sync_tables_enabled unless self.default_sync_tables_enabled.nil?
+  end
+
   private
 
   def quota_dates(options)

@@ -78,6 +78,9 @@ class Admin::OrganizationUsersController < ApplicationController
     @user.soft_geocoding_limit = attributes[:soft_geocoding_limit] if attributes[:soft_geocoding_limit].present?
     @user.twitter_datasource_enabled = attributes[:twitter_datasource_enabled] if attributes[:twitter_datasource_enabled].present?
     @user.soft_twitter_datasource_limit = attributes[:soft_twitter_datasource_limit] if attributes[:soft_twitter_datasource_limit].present?
+    @user.private_tables_enabled = attributes[:private_tables_enabled] if attributes[:private_tables_enabled].present?
+    @user.private_maps_enabled = attributes[:private_maps_enabled] if attributes[:private_maps_enabled].present?
+    @user.sync_tables_enabled = attributes[:sync_tables_enabled] if attributes[:sync_tables_enabled].present?
     @user.update_in_central
 
     @user.save(raise_on_failure: true)

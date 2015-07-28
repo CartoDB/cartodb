@@ -12,6 +12,10 @@ FactoryGirl.define do
     discus_shortname 'cartodb'
     twitter_username 'cartodb'
 
+    factory :organization_with_id do
+      id UUIDTools::UUID.timestamp_create.to_s
+    end
+
     factory :organization_with_users do
       after(:create) do |org|
         owner = FactoryGirl.create(:user)
@@ -25,6 +29,7 @@ FactoryGirl.define do
         org.reload
       end
     end
+
   end
 
 end

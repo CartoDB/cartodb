@@ -164,6 +164,11 @@
           </div>
         </div>
 
+        <div class="Form-title">
+          <h4 class="Form-titleHeader">Organization users defaults</h4>
+          <p class="Form-titleText">Default settings for new users</p>
+        </div>
+
         <div class="Form-row">
           <div class="Form-rowLabel">
             <label class="Form-label">Default new user quota</label>
@@ -176,6 +181,103 @@
               <p class="Form-rowInfoText Form-rowInfoText--error"><%= @organization.errors[:default_quota_in_bytes].first %></p>
             <% else %>
               <p class="Form-rowInfoText">Set (in MB) the quota of new users in your organization</p>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="Form-row">
+          <div class="Form-rowLabel">
+            <label class="Form-label">Extra geocoding</label>
+          </div>
+          <div class="Form-rowData">
+            <div class="Toggler">
+              <%= f.check_box :default_soft_geocoding_limit, :id => "default_soft_geocoding_limit" %>
+              <%= label_tag(:default_soft_geocoding_limit, '') %>
+            </div>
+          </div>
+          <div class="Form-rowInfo">
+            <% if (@organization.errors[:default_soft_geocoding_limit].present?) %>
+              <p class="Form-rowInfoText Form-rowInfoText--error"><%= @organization.errors[:default_soft_geocoding_limit].first %></p>
+            <% else %>
+              <p class="Form-rowInfoText">User has permission to exceed organization's geocoding quota</p>
+            <% end %>
+          </div>
+        </div>
+
+        <% if @organization.twitter_datasource_enabled %>
+          <div class="Form-row">
+            <div class="Form-rowLabel">
+              <label class="Form-label">Extra tweets</label>
+            </div>
+            <div class="Form-rowData">
+              <div class="Toggler">
+                <%= f.check_box :default_soft_twitter_datasource_limit, :id => "default_soft_twitter_datasource_limit" %>
+                <%= label_tag(:default_soft_twitter_datasource_limit, '') %>
+              </div>
+            </div>
+            <div class="Form-rowInfo">
+              <% if (@organization.errors[:default_soft_twitter_datasource_limit].present?) %>
+                <p class="Form-rowInfoText Form-rowInfoText--error"><%= @organization.errors[:default_soft_twitter_datasource_limit].first %></p>
+              <% else %>
+                <p class="Form-rowInfoText">User has permission to exceed organization's twitter quota</p>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+
+        <div class="Form-row">
+          <div class="Form-rowLabel">
+            <label class="Form-label">Private datasets</label>
+          </div>
+          <div class="Form-rowData">
+            <div class="Toggler">
+              <%= f.check_box :default_private_tables_enabled, :id => "default_private_tables_enabled" %>
+              <%= label_tag(:default_private_tables_enabled, '') %>
+            </div>
+          </div>
+          <div class="Form-rowInfo">
+            <% if (@organization.errors[:default_private_tables_enabled].present?) %>
+              <p class="Form-rowInfoText Form-rowInfoText--error"><%= @organization.errors[:default_private_tables_enabled].first %></p>
+            <% else %>
+              <p class="Form-rowInfoText">User can mark datasets as private</p>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="Form-row">
+          <div class="Form-rowLabel">
+            <label class="Form-label">Private maps</label>
+          </div>
+          <div class="Form-rowData">
+            <div class="Toggler">
+              <%= f.check_box :default_private_maps_enabled, :id => "default_private_maps_enabled" %>
+              <%= label_tag(:default_private_maps_enabled, '') %>
+            </div>
+          </div>
+          <div class="Form-rowInfo">
+            <% if (@organization.errors[:default_private_maps_enabled].present?) %>
+              <p class="Form-rowInfoText Form-rowInfoText--error"><%= @organization.errors[:default_private_maps_enabled].first %></p>
+            <% else %>
+              <p class="Form-rowInfoText">User can mark maps as private</p>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="Form-row">
+          <div class="Form-rowLabel">
+            <label class="Form-label">Sync tables</label>
+          </div>
+          <div class="Form-rowData">
+            <div class="Toggler">
+              <%= f.check_box :default_sync_tables_enabled, :id => "default_sync_tables_enabled" %>
+              <%= label_tag(:default_sync_tables_enabled, '') %>
+            </div>
+          </div>
+          <div class="Form-rowInfo">
+            <% if (@organization.errors[:default_sync_tables_enabled].present?) %>
+              <p class="Form-rowInfoText Form-rowInfoText--error"><%= @organization.errors[:default_sync_tables_enabled].first %></p>
+            <% else %>
+              <p class="Form-rowInfoText">User can sync tables</p>
             <% end %>
           </div>
         </div>

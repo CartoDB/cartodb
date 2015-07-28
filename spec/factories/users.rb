@@ -43,6 +43,16 @@ FactoryGirl.define do
       crypted_password 'kkkkkkkkk'
     end
 
+    # For unit testing, without database
+    factory :organization_owner do
+      id { UUIDTools::UUID.timestamp_create.to_s }
+      organization FactoryGirl.build(:organization_with_id)
+
+      after(:build) do |owner|
+        owner.organization.owner = owner
+      end
+    end
+
   end
 
 end

@@ -89,9 +89,9 @@ cdb.core.util._makeCRCTable = function() {
   return crcTable;
 };
 
-cdb.core.util.browser = (function(){
+cdb.core.util._inferBrowser = function(ua){
   var browser = {};
-  var ua = window.navigator.userAgent;
+  ua = ua || window.navigator.userAgent;
   function detectIE() {
     var msie = ua.indexOf('MSIE ');
     var trident = ua.indexOf('Trident/');
@@ -113,11 +113,12 @@ cdb.core.util.browser = (function(){
     browser.ie = {version: getIEVersion()}
   }
 
+  else if(ua.indexOf('Edge/') > -1) browser.edge = ua;
   else if(ua.indexOf('Chrome') > -1) browser.chrome = ua;
   else if(ua.indexOf('Firefox') > -1) browser.firefox = ua;
-  else if(ua.indexOf("Safari") > -1) browser.safari = ua;
   else if(ua.indexOf("Opera") > -1) browser.opera = ua;
-  else if(ua.indexOf('Edge/') > -1) browser.edge = ua;
+  else if(ua.indexOf("Safari") > -1) browser.safari = ua;
   return browser;
+}
 
-})();
+cdb.core.util.browser = cdb.core.util._inferBrowser();

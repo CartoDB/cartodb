@@ -21,7 +21,7 @@ class Carto::LdapConfiguration < ActiveRecord::Base
       connect("#{username_filter},#{d}", password).bind
     }
 
-    domain_base.nil? ? false : search(domain_base, username_filter)
+    domain_base.nil? ? false : search(domain_base, username_filter).first
   end
 
   def test_connection

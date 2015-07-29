@@ -33,7 +33,21 @@
 .PublicMap-leftBlock {
   float: left;
   width: 50%;
-  max-width: 100%;
+}
+.PublicMap-leftBlock.PublicMap-leftBlock--owner {
+  width: 100%;
+  position: absolute;
+  z-index: -1;
+}
+.PublicMap-gradient {
+  content: '';
+  display: none;
+  position: absolute;
+  left: -10px;
+  height: 100%;
+  width: 100%;
+  max-width: 315px; 
+  background-image: linear-gradient(to right, rgba(#fff, 0) 45%, #fff 50%, #fff 100%);
 }
 .PublicMap-leftBlock.PublicMap-leftBlock--large {
   width: 780px;
@@ -125,11 +139,14 @@
   content: "";
   height: 100%;
 }
+.Navmenu-list.Navmenu-list--owner {
+  float: left;
+}
 .Navmenu-list.Navmenu-list--avatar {
-  margin-right: $sMargin-section;
+  margin-right: $sMargin-element;
 }
 .Navmenu-item {
-  margin-right: $sMargin-group;
+  margin-right: $sMargin-section;
 }
 .Navmenu-subItem {
   margin-left: $sMargin-group;
@@ -139,9 +156,6 @@
 }
 .Navmenu-subItem.Navmenu-subItem:first-child {
   margin-left: 0;
-}
-.Navmenu-item.Navmenu-item--withArrow {
-  margin-right: $sMargin-section;
 }
 .Navmenu-item,
 .Navmenu-subItem {
@@ -156,6 +170,16 @@
   height: 9px;
   font-size: 9px;
   color: $cNavmenu-arrow;
+}
+.Navmenu-sep {
+  position: relative;
+  top: 3px;
+  display: inline-block;
+  margin-left: -20px;
+  margin-right: 20px;
+  width: 1px;
+  height: 20px;
+  background-color: $cNavmenu-sep;
 }
 .Navmenu-link {
   color: $cTypography-linkSecondary;
@@ -225,7 +249,6 @@
 }
 .Navmenu-shareList {
   display: inline-block;
-  margin-left: $sMargin-elementInline;
   transition: all .2s;
 }
 .Navmenu-shareList.is-active {
@@ -243,6 +266,9 @@
   }
 }
 @media (max-width: $sMedia-desktop) {
+  .PublicMap-gradient {
+    display: block;
+  }
   .Navmenu-shareLink {
     display: inline-block;
   }
@@ -255,14 +281,14 @@
     height: 76px;
     background: #fff;
   }
-  .Navmenu-list.Navmenu-list--avatar {
-    margin-right: $sMargin-element;
-  }
   .Navmenu-item.Navmenu-item.last-child {
     margin-right: 0;
   }
   .Navmenu-editLink {
     display: block;
+  }
+  .LikesIndicator-count {
+    display: none;
   }
   .PublicMap-metaList {
     display: block;

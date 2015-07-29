@@ -33,8 +33,10 @@
     <div class="Navmenu js-Navmenu">
       <div class="u-inner">
         <div class="PublicMap-block">
-          <div class="PublicMap-leftBlock">
-            <ul class="Navmenu-list Navmenu-list--avatar">
+          <div class="PublicMap-leftBlock PublicMap-leftBlock--owner">
+            <div class="PublicMap-gradient"></div>
+
+            <ul class="Navmenu-list Navmenu-list--owner Navmenu-list--avatar">
               <li class="Navmenu-item">
                 <a href="<%= CartoDB.url(self, 'public_maps_home', {}, @visualization.user) %>" target="_blank" class="UserAvatar">
                   <img class="UserAvatar-img--medium" src="<%= @visualization.user.avatar %>" alt="<%= @name %>" title="<%= @name %>" />
@@ -42,42 +44,42 @@
               </li>
             </ul>
 
-            <ul class="Navmenu-list">
-              <li class="Navmenu-item Navmenu-item--withArrow last-child">
+            <ul class="Navmenu-list Navmenu-list--owner">
+              <li class="Navmenu-item last-child">
                 <a href="<%= CartoDB.url(self, 'public_maps_home', {}, @visualization.user) %>" class="Navmenu-link"><%= @name %></a>
               </li>
 
-              <li class="Navmenu-item Navmenu-item--withArrow u-hideOnTablet">
+              <li class="Navmenu-item u-hideOnTablet">
                 <i class="Navmenu-rarrow iconFont iconFont-Rarrow"></i>
                 <a href="<%= CartoDB.url(self, 'public_maps_home', {}, @visualization.user) %>" class="Navmenu-link">Maps</a>
               </li>
-
-              <% if @visualization.tags.size > 0 %>
-                <li class="Navmenu-item Navmenu-item--withArrow u-hideOnTablet">
-                  <i class="Navmenu-rarrow iconFont iconFont-Rarrow"></i>
-                  <a href="<%= CartoDB.url(self, 'public_tag', {tag: @visualization.tags.first}, @visualization.user) %>" class="Navmenu-link"><%= @visualization.tags.first %></a>
-                </li>
-              <% end %>
             </ul>
           </div>
 
           <div class="PublicMap-rightBlock u-txt-right">
             <ul class="Navmenu-list">
               <li class="Navmenu-item">
-                <a href="<%= CartoDB.url(self, 'public_visualizations_embed_map', {id: @visualization.id}, @visualization.user) %>" target="_blank" class="Navmenu-link">
-                  <i class="iconFont iconFont-Fullscreen Navmenu-icon"></i>
-                </a>
-              </li>
+                <ul class="u-valign">
+                  <li class="Navmenu-subItem">
+                    <a href="<%= CartoDB.url(self, 'public_visualizations_embed_map', {id: @visualization.id}, @visualization.user) %>" target="_blank" class="Navmenu-link">
+                      <i class="iconFont iconFont-Fullscreen Navmenu-icon"></i>
+                    </a>
 
-              <li class="Navmenu-item">
-                <a href="#/like" class="Navmenu-link js-likes"
-                  data-vis-id="<%= @visualization.id %>"
-                  data-likes-count="<%= @likes_count %>"
-                  data-likes-size="big">
-                </a>
+                  </li>
+
+                  <li class="Navmenu-subItem">
+                    <a href="#/like" class="Navmenu-link js-likes"
+                      data-vis-id="<%= @visualization.id %>"
+                      data-likes-count="<%= @likes_count %>"
+                      data-likes-size="big">
+                    </a>
+                  </li>
+                </ul>
               </li>
 
               <li class="Navmenu-item js-Navmenu-share">
+                <div class="Navmenu-sep"></div>
+
                 <a href="#" class="Navmenu-link Navmenu-shareLink js-Navmenu-shareLink">
                   <i class="iconFont iconFont-Share Navmenu-icon"></i>
                 </a>
@@ -170,7 +172,7 @@
                     <div class="DatasetsList-itemInfo">
                       <div class="DatasetsList-itemPrimaryInfo">
                         <h3 class="DatasetsList-itemTitle DefaultTitle u-ellipsLongText">
-                          <a href="<%= CartoDB.url(self, 'public_table', {id: vis.table.name}, @user_domain.nil? ? nil : @related_tables_owners[vis.table.user_id]) %>" title="<%= vis.table.name %>" class="DefaultTitle-link u-ellipsLongText"><%= vis.table.name %></a>
+                          <a href="<%= CartoDB.url(self, 'public_table', {id: vis.table.name}, @user_domain.nil? ? nil : @related_tables_owners[vis.table.user_id]) %>" title="<%= vis.table.name %>" class="DefaultTitle-link u-ellipsLongText">table_50m_rivers_lake_centerlines_with_scale_r</a>
                           <!-- span class="DatasetsList-itemTitlePermission PermissionIndicator">READ</span -->
                         </h3>
 
@@ -192,13 +194,9 @@
                         <% if (vis.table.service.rows_counted) %>
                           <span class="RowsIndicator u-hideOnTablet">
                             <i class="iconFont iconFont-Rows RowsIndicator-icon"></i>
-                            <%= number_with_delimiter(vis.table.service.rows_counted) %> row<%= vis.table.service.rows_counted.size == 1 ? "" : "s" %>
+                            <%= "#{number_to_human(1611611000, format: "%n%u", units: { unit: "", thousand: "K", million: "M" }, delimiter: ",")} row#{vis.table.service.rows_counted.size == 1 ? "" : "s"}" %>
                           </span>
                         <% end %>
-                        <span class="SizeIndicator u-hideOnTablet">
-                          <i class="iconFont iconFont-Floppy SizeIndicator-icon"></i>
-                          <%= number_to_human_size(vis.table.service.rows_counted.size) %>
-                        </span>
                         <span class="DatasetsList-itemTimeDiff DefaultTimeDiff u-hideOnTablet">
                           <i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i>
                           <%= time_ago_in_words(vis.updated_at) %> ago by
@@ -213,7 +211,8 @@
               <% end %>
             <% end %>
 
-            <% if @nonpublic_tables_count.present? && @nonpublic_tables_count > 0 %>
+            <%# if @nonpublic_tables_count.present? && @nonpublic_tables_count > 0 %>
+            <% unless @nonpublic_tables_count.present? && @nonpublic_tables_count > 0 %>
               <li class="DatasetsList-item">
                 <div class="LayoutIcon">
                   <i class="iconFont iconFont-Lock"></i>

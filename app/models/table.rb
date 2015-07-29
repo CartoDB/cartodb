@@ -1261,9 +1261,11 @@ class Table
           if name.starts_with?('_')
             # PG gem uses an intermediate file for renaming
             # and uses '_original_name' as it's name. This
-            # hack avoids a PG::ERROR raising
-            owner.in_database.rename_table(@name_changed_from, "aux-#{name}")
-            owner.in_database.rename_table("aux-#{name}", name)
+            # hack avoids a PG::ERROR raising. It works beacuse
+            # none of our tables can have a '-' character in their
+            # name, thus collision is imposible
+            owner.in_database.rename_table(@name_changed_from, "-#{name}")
+            owner.in_database.rename_table("-#{name}", name)
           else
             owner.in_database.rename_table(@name_changed_from, name)
           end

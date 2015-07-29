@@ -35,12 +35,14 @@ module CartoDB
         self.quoted_fields_guessing = options.fetch(:quoted_fields_guessing, true)
         self.encoding = options.fetch(:encoding, ENCODING)
         self.shape_encoding = ''
+        self.shape_coordinate_system = options.fetch(:shape_coordinate_system, '')
       end
 
       def command_for_import
         "#{OSM_INDEXING_OPTION} #{PG_COPY_OPTION} #{client_encoding_option} #{shape_encoding_option} " +
         "#{executable_path} #{OUTPUT_FORMAT_OPTION} #{overwrite_option} #{guessing_option} #{postgres_options} #{projection_option} " +
-        "#{layer_creation_options} #{filepath} #{layer} #{layer_name_option} #{NEW_LAYER_TYPE_OPTION}"
+        "#{layer_creation_options} #{filepath} #{layer} #{layer_name_option} #{NEW_LAYER_TYPE_OPTION}" +
+        " #{shape_coordinate_option} "
       end
 
       def command_for_append
@@ -106,7 +108,8 @@ module CartoDB
         exit_code == 35584 && command_output =~ /Segmentation fault/
       end
 
-      attr_accessor :append_mode, :filepath, :csv_guessing, :overwrite, :encoding, :shape_encoding
+      attr_accessor :append_mode, :filepath, :csv_guessing, :overwrite, :encoding, :shape_encoding,
+                    :shape_coordinate_system
       attr_reader   :exit_code, :command_output
 
       private
@@ -144,11 +147,11 @@ module CartoDB
       end
 
       def shape_encoding_option
-        if !shape_encoding.nil? && !shape_encoding.empty?
-          "SHAPE_ENCODING=#{shape_encoding}"
-        else
-          ''
-        end
+        !shape_encoding.nil? && !shape_encoding.empty? ? "SHAPE_ENCODING=#{shape_encoding}" : ''
+      end
+
+      def shape_coordinate_option
+        shape_coordinate_system.empty? ? '' : "-t_srs EPSG:#{shape_coordinate_system}"
       end
 
       def layer_name_option

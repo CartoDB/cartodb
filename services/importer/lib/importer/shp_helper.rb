@@ -31,7 +31,7 @@ module CartoDB
 
       def verify_file
         raise InvalidShpError         unless dbf? && shx?
-        raise MissingProjectionError  unless prj?
+        #raise MissingProjectionError  unless prj?
         true
       end
 

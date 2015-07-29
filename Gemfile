@@ -32,6 +32,7 @@ gem 'ejs',                     '~> 1.1.1'
 gem 'execjs',                  '~> 0.4' # Required by ejs
 gem 'therubyracer',            '0.12.1' # Required by ejs
 
+gem 'net-ldap',                '0.11'
 
 group :production, :staging do
   gem 'unicorn',               '4.8.2'

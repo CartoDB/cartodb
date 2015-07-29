@@ -40,8 +40,6 @@ function getDefaultCSSForGeometryType(geometryType) {
     ];
   }
   return [
-    "line-color: #0C2C84;",
-    "line-opacity: 1;",
     "marker-fill-opacity: 0.9;",
     "marker-line-color: #FFF;",
     "marker-line-width: 1;",

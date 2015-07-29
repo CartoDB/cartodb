@@ -4,7 +4,7 @@ module CartoDB
   module Importer2
     module Doubles
       class Job
-        attr_accessor :db, :source_file_rows, :imp, :source_file_rows, :imported_rows
+        attr_accessor :db, :source_file_rows, :imp, :source_file_rows, :imported_rows, :fallback_executed
         def initialize(db=nil, *args);
           @log = '';
           self.db = (!db.nil?) ? db : Object.new

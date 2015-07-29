@@ -30,9 +30,20 @@ describe CartoDB::Importer2::Loader do
 
     it 'runs the ogr2ogr command to load the file' do
       ogr2ogr_mock = mock
-      ogr2ogr_mock.stubs(:command).returns('').at_least_once
-      ogr2ogr_mock.stubs(:command_output).returns('').at_least_once
-      ogr2ogr_mock.stubs(:exit_code).returns(0).at_least_once
+      ogr2ogr_mock.stubs(:generic_error?).returns(false).twice
+      ogr2ogr_mock.stubs(:command).returns('')
+      ogr2ogr_mock.stubs(:command_output).returns('')
+      ogr2ogr_mock.stubs(:encoding_error?).returns(false)
+      ogr2ogr_mock.stubs(:invalid_dates?).returns(false)
+      ogr2ogr_mock.stubs(:duplicate_column?).returns(false)
+      ogr2ogr_mock.stubs(:invalid_geojson?).returns(false)
+      ogr2ogr_mock.stubs(:too_many_columns?).returns(false)
+      ogr2ogr_mock.stubs(:unsupported_format?).returns(false)
+      ogr2ogr_mock.stubs(:file_too_big?).returns(false)
+      ogr2ogr_mock.stubs(:statement_timeout?).returns(false)
+      ogr2ogr_mock.stubs(:duplicate_column?).returns(false)
+      ogr2ogr_mock.stubs(:segfault_error?).returns(false)
+      ogr2ogr_mock.stubs(:exit_code).returns(0)
       ogr2ogr_mock.stubs(:run).returns(Object.new).at_least_once
 
       loader   = CartoDB::Importer2::Loader.new(@job, @source_file, layer=nil, ogr2ogr_mock, @georeferencer)
@@ -55,8 +66,11 @@ describe CartoDB::Importer2::Loader do
       db = Object.new
       db.stubs(:fetch).returns(resultset)
       @job  = CartoDB::Importer2::Doubles::Job.new(db)
-      @ogr2ogr.command_output = "ERROR:  character with byte sequence 0x81 in encoding " +
-        "\"WIN1252\" has no equivalent in encoding \"UTF8\""
+      # Enter fallback
+      @ogr2ogr.stubs(:generic_error?).returns(true)
+      # Fails after fallback
+      @ogr2ogr.stubs(:encoding_error?).returns(true)
+      @ogr2ogr.stubs(:exit_code).returns(0)
       loader = CartoDB::Importer2::Loader.new(@job, @source_file, layer=nil, @ogr2ogr, @georeferencer)
       loader.expects(:try_fallback).once
       expect { loader.run }.to raise_error(CartoDB::Importer2::RowsEncodingColumnError)

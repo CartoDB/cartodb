@@ -13,7 +13,19 @@ module CartoDB
         def run(append_mode=false)
           Object.new
         end
+
         def set_default_properties; return; end
+
+        def generic_error?; return; end
+        def encoding_error?; return; end
+        def invalid_dates?; return; end
+        def duplicate_column?; return; end
+        def invalid_geojson?; return; end
+        def too_many_columns?; return; end
+        def unsupported_format?; return; end
+        def file_too_big?; return; end
+        def statement_timeout?; return; end
+        def segfault_error?; return; end
       end
     end
   end

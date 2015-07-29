@@ -235,7 +235,7 @@ module CartoDB
         ogr2ogr.run(append_mode)
 
         #In case there are not an specific error we try to fix it
-        if ogr2ogr_error? && ogr2ogr.exit_code == 0
+        if ogr2ogr.generic_error? && ogr2ogr.exit_code == 0
           try_fallback(append_mode)
         end
 
@@ -252,50 +252,15 @@ module CartoDB
         check_for_import_errors
       end
 
-      def check_for_import_errors
-        raise DuplicatedColumnError.new(job.logger) if ogr2ogr_duplicate_column?
-        raise InvalidGeoJSONError.new(job.logger) if ogr2ogr_invalid_geojson?
-        raise TooManyColumnsError.new(job.logger) if ogr2ogr_too_many_columns?
-
-        if ogr2ogr.command_output =~ /canceling statement due to statement timeout/i
-          raise StatementTimeoutError.new(ogr2ogr.command_output, ERRORS_MAP[CartoDB::Importer2::StatementTimeoutError])
-        end
-
-        if (ogr2ogr_encoding_error? and @job.imported_rows == 0)
-          raise RowsEncodingColumnError.new(ogr2ogr.command_output) 
-        end
-
-        # OOM
-        if (ogr2ogr.exit_code == 256 && ogr2ogr.command_output =~ /calloc failed/) ||
-           (ogr2ogr.exit_code == 35072 && ogr2ogr.command_output =~ /Killed/)
-          raise FileTooBigError.new(job.logger)
-        end
-        # Could be OOM, could be wrong input
-        if ogr2ogr.exit_code == 35584 && ogr2ogr.command_output =~ /Segmentation fault/
-          raise LoadError.new(job.logger)
-        end
-        if ogr2ogr.exit_code == 256 && ogr2ogr.command_output =~ /Unable to open(.*)with the following drivers/
-          raise UnsupportedFormatError.new(job.logger)
-        end
-        if ogr2ogr.exit_code == 256 && ogr2ogr.command_output =~ /invalid byte sequence for encoding/
-          raise EncodingError.new(job.logger)
-        end
-
-        # Some kind of error in ogr2ogr could lead to a partial import and we don't want it
-        if ogr2ogr_error? || ogr2ogr.exit_code != 0
-          raise LoadError.new(job.logger)
-        end
-      end
-
       # Sometimes we could try to recover from a known failure
       def try_fallback(append_mode)
-        if ogr2ogr_invalid_dates?
+        if ogr2ogr.invalid_dates?
           job.log "Fallback: Disabling autoguessing because there are wrong dates in the source file"
           @job.fallback_executed = "date"
           ogr2ogr.overwrite = true
           ogr2ogr.csv_guessing = false
           ogr2ogr.run(append_mode)
-        elsif ogr2ogr_encoding_error?
+        elsif ogr2ogr.encoding_error?
           job.log "Fallback: There is an encoding problem, trying with ISO-8859-1"
           @job.fallback_executed = "encoding"
           ogr2ogr.overwrite = true
@@ -305,28 +270,40 @@ module CartoDB
         ogr2ogr.set_default_properties
       end
 
-      def ogr2ogr_error?
-        ogr2ogr.command_output =~ /ERROR 1:/ || ogr2ogr.command_output =~ /ERROR:/
-      end
+      def check_for_import_errors
+        raise DuplicatedColumnError.new(job.logger) if ogr2ogr.duplicate_column?
+        raise InvalidGeoJSONError.new(job.logger) if ogr2ogr.invalid_geojson?
+        raise TooManyColumnsError.new(job.logger) if ogr2ogr.too_many_columns?
 
-      def ogr2ogr_encoding_error?
-        ogr2ogr.command_output =~ /has no equivalent in encoding/ || ogr2ogr.command_output =~ /invalid byte sequence for encoding/
-      end
+        if ogr2ogr.statement_timeout?
+          raise StatementTimeoutError.new(ogr2ogr.command_output, ERRORS_MAP[CartoDB::Importer2::StatementTimeoutError])
+        end
 
-      def ogr2ogr_invalid_dates?
-        ogr2ogr.command_output =~ /date\/time field value out of range/
-      end
+        if (ogr2ogr.encoding_error? and @job.imported_rows == 0)
+          raise RowsEncodingColumnError.new(ogr2ogr.command_output)
+        end
 
-      def ogr2ogr_duplicate_column?
-        ogr2ogr.command_output =~ /column (.*) of relation (.*) already exists/ || ogr2ogr.command_output =~ /specified more than once/
-      end
+        if ogr2ogr.file_too_big?
+          raise FileTooBigError.new(job.logger)
+        end
 
-      def ogr2ogr_invalid_geojson?
-        ogr2ogr.command_output =~ /nrecognized GeoJSON/
-      end
+        if ogr2ogr.unsupported_format?
+          raise UnsupportedFormatError.new(job.logger)
+        end
 
-      def ogr2ogr_too_many_columns?
-        ogr2ogr.command_output =~ /tables can have at most 1600 columns/
+        # Could be OOM, could be wrong input
+        if ogr2ogr.segfault_error?
+          raise LoadError.new(job.logger)
+        end
+
+        if ogr2ogr.exit_code == 256 && ogr2ogr.encoding_error?
+          raise EncodingError.new(job.logger)
+        end
+
+        # Some kind of error in ogr2ogr could lead to a partial import and we don't want it
+        if ogr2ogr.generic_error? || ogr2ogr.exit_code != 0
+          raise LoadError.new(job.logger)
+        end
       end
 
       def get_imported_rows

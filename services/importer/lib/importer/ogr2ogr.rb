@@ -22,6 +22,8 @@ module CartoDB
         self.table_name = table_name
         self.layer      = layer
         self.options    = options
+        self.command_output = ''
+        self.exit_code = 0
         set_default_properties
       end
 
@@ -63,13 +65,54 @@ module CartoDB
         self
       end
 
+      def generic_error?
+        command_output =~ /ERROR 1:/ || command_output =~ /ERROR:/
+      end
+
+      def encoding_error?
+        command_output =~ /has no equivalent in encoding/ || command_output =~ /invalid byte sequence for encoding/
+      end
+
+      def invalid_dates?
+        command_output =~ /date\/time field value out of range/
+      end
+
+      def duplicate_column?
+        command_output =~ /column (.*) of relation (.*) already exists/ || command_output =~ /specified more than once/
+      end
+
+      def invalid_geojson?
+        command_output =~ /nrecognized GeoJSON/
+      end
+
+      def too_many_columns?
+        command_output =~ /tables can have at most 1600 columns/
+      end
+
+      def unsupported_format?
+        exit_code == 256 && command_output =~ /Unable to open(.*)with the following drivers/
+      end
+
+      def file_too_big?
+        (exit_code == 256 && command_output =~ /calloc failed/) ||
+        (exit_code == 35072 && command_output =~ /Killed/)
+      end
+
+      def statement_timeout?
+        command_output =~ /canceling statement due to statement timeout/i
+      end
+
+      def segfault_error?
+        exit_code == 35584 && command_output =~ /Segmentation fault/
+      end
+
       attr_accessor :append_mode, :filepath, :csv_guessing, :overwrite, :encoding, :shape_encoding
       attr_reader   :exit_code, :command_output
 
       private
 
       attr_writer   :exit_code, :command_output
-      attr_accessor :pg_options, :options, :table_name, :layer, :ogr2ogr2_binary, :quoted_fields_guessing 
+      attr_accessor :pg_options, :options, :table_name, :layer, :ogr2ogr2_binary, :quoted_fields_guessing
 
       def is_csv?
         !(filepath =~ /\.csv$/i).nil?

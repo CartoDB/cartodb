@@ -24,6 +24,18 @@ class Carto::LdapConfiguration < ActiveRecord::Base
     domain_base.nil? ? false : search(domain_base, username_filter).first
   end
 
+  def get_user_id(ldap_entry)
+    extract_field(ldap_entry, self.user_id_field)
+  end
+
+  def get_username(ldap_entry)
+    extract_field(ldap_entry, self.username_field)
+  end
+
+  def get_email(ldap_entry)
+    extract_field(ldap_entry, self.email_field)
+  end
+
   def test_connection
     connection.bind
   end
@@ -34,6 +46,12 @@ class Carto::LdapConfiguration < ActiveRecord::Base
 
   def groups(objectClass = 'organization')
     search_in_domain_bases("objectClass=#{objectClass}")
+  end
+
+  # TODO: make private?
+  def extract_field(ldap_entry, field)
+    value = ldap_entry[field]
+    value.nil? ? nil : value.first
   end
 
   # TODO: make private?

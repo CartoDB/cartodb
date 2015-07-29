@@ -1,4 +1,5 @@
 # encoding: utf-8
+require 'open3'
 require_relative '../lib/table_geocoder.rb'
 require_relative 'factories/pg_connection'
 require_relative '../../../spec/rspec_configuration.rb'
@@ -13,7 +14,12 @@ describe CartoDB::GeocoderCache do
     @db           = conn.connection
     @pg_options   = conn.pg_options
     @table_name   = "ne_10m_populated_places_simple"
-    load_csv path_to("populated_places_short.csv")
+
+    # Avoid issues on some machines if postgres system account can't read fixtures subfolder for the COPY
+    filename = 'populated_places_short.csv'
+    stdout, stderr, status =  Open3.capture3("cp #{path_to(filename)} /tmp/#{filename}")
+    raise if stderr != ''
+    load_csv "/tmp/#{filename}"
   end
 
   after do

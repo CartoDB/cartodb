@@ -1,4 +1,5 @@
 # encoding: utf-8
+require 'open3'
 require_relative 'factories/pg_connection'
 require_relative '../lib/internal_geocoder.rb'
 require_relative '../../../spec/rspec_configuration.rb'
@@ -14,7 +15,11 @@ describe CartoDB::InternalGeocoder::Geocoder do
 
   describe '#download_results' do
     before do
-      load_csv path_to("adm0.csv"), 'adm0'
+      # Avoid issues on some machines if postgres system account can't read fixtures subfolder for the COPY
+      filename = 'adm0.csv'
+      stdout, stderr, status =  Open3.capture3("cp #{path_to(filename)} /tmp/#{filename}")
+      raise if stderr != ''
+      load_csv "/tmp/#{filename}", 'adm0'
     end
 
     after do

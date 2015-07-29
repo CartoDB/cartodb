@@ -15,6 +15,7 @@
 * New facebook cards [#4280](https://github.com/CartoDB/cartodb/pull/4280)
 * Improve email template [#4190](https://github.com/CartoDB/cartodb/pull/4190)
 * Added `filter` option to layer_definition and named_map in vizjson [#4197](https://github.com/CartoDB/cartodb/pull/4197)
+* Organization owners can reset users API keys.
 * Log model improvements: Stores only upon finish (to hit way less the DB) and size constraints
 * Updated cartodb.js to 3.15.1.
 * [Stat loading times improves with Redis ZSCAN](https://github.com/CartoDB/cartodb/issues/3943). Redis 3.0.0+ is now required.
@@ -29,7 +30,14 @@ cd lib/sql; sudo make all install
 * Fixed multi-resource import (ZIP with >1 supported files, ArcGIS, etc.). Limited to 10 tables/files, except in the case of ArcGIS
 * Ability to geocode tables shared with write permissions within an organization [#4509](https://github.com/CartoDB/cartodb/pull/4509)
 * Layers are saved in bulk when re-ordered [#4251](https://github.com/CartoDB/cartodb/pull/4251)
+* Improving test suite speed. Whenever possible, use global test users $user_1 and $user_2 (see TESTING.md for details)
+* New optional config values varnish_management[:trigger_verbose] & invalidation_service[:trigger_verbose] to control output verbosity of invalidation services (set now by default to off only at testing)
 * Better number normalization to support casting of currency strings [#4530](https://github.com/CartoDB/cartodb/pull/4530)
+* Added in-database logging capabilities to geocodings [#4625](https://github.com/CartoDB/cartodb/pull/4625)
+* New Maps without geometries no longer have zeroed-bounds
+* Rake task `cartodb:redis:purge_vizjson` now also purges embeds [#4653](https://github.com/CartoDB/cartodb/pull/4653)
+* Properly and fully disallowing multilogins, by killing other existing sessions upon login
+* Added new Platform Limit for concurrent syncs per user. Currently 2 hours TTL, 3 syncs per user max. allowed
 
 Bugfixes:
 * Fixed deletion of layers upon disconnecting synced datasources [#3718](https://github.com/CartoDB/cartodb/pull/3718)

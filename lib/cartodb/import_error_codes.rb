@@ -12,7 +12,7 @@ module CartoDB
     1 => {
       title: 'Install error',
       what_about: "Something seems to be wrong with the cartodb install. Please <a href='mailto:support@cartob.com?subject=Install error'>contact us</a> and we'll try to fix that quickly.",
-      source: ERROR_SOURCE_CARTODB 
+      source: ERROR_SOURCE_CARTODB
     },
     1000 => {
       title: 'File I/O error',
@@ -52,6 +52,11 @@ module CartoDB
     1007 => {
       title: 'Too many nodes',
       what_about: 'You requested too many nodes. Either request a smaller area, or use planet.osm.',
+      source: ERROR_SOURCE_USER
+    },
+    1008 => {
+      title: 'GDrive access forbidden',
+      what_about: "Google denied access to GDrive. If you use Google Apps contact your administrator to allow third party Drive applications and try again.",
       source: ERROR_SOURCE_USER
     },
     1009 => {

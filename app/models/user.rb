@@ -1084,7 +1084,7 @@ class User < Sequel::Model
   end
 
   def self.find_with_custom_fields(user_id)
-    User.filter(:id => user_id).select(:id,:email,:username,:tables_count,:crypted_password,:database_name,:admin).first
+    User.filter(:id => user_id).select(:id,:email,:username,:crypted_password,:database_name,:admin).first
   end
 
 
@@ -1868,8 +1868,7 @@ class User < Sequel::Model
     varnish_critical = Cartodb.config[:varnish_management].try(:[],'critical') == true ? 1 : 0
     varnish_retry = Cartodb.config[:varnish_management].try(:[],'retry') || 5
     purge_command = Cartodb::config[:varnish_management]["purge_command"]
-
-
+    varnish_trigger_verbose = Cartodb.config[:varnish_management].fetch('trigger_verbose', true) == true ? 1 : 0
 
     in_database(:as => :superuser).run(<<-TRIGGER
     BEGIN;
@@ -1878,6 +1877,7 @@ class User < Sequel::Model
         critical = #{varnish_critical}
         timeout = #{varnish_timeout}
         retry = #{varnish_retry}
+        trigger_verbose = #{varnish_trigger_verbose}
 
         client = GD.get('varnish', None)
 
@@ -1904,7 +1904,8 @@ class User < Sequel::Model
             client.fetch('#{purge_command} obj.http.X-Cache-Channel ~ "^#{self.database_name}:(.*%s.*)|(cdb_tablemetadata)|(table)$"' % table_name.replace('"',''))
             break
           except Exception as err:
-            plpy.warning('Varnish fetch error: ' + str(err))
+            if trigger_verbose:
+              plpy.warning('Varnish fetch error: ' + str(err))
             client = GD['varnish'] = None # force reconnect
             if not retry:
               if critical:
@@ -1929,8 +1930,7 @@ TRIGGER
     varnish_critical = Cartodb.config[:varnish_management].try(:[],'critical') == true ? 1 : 0
     varnish_retry = Cartodb.config[:varnish_management].try(:[],'retry') || 5
     purge_command = Cartodb::config[:varnish_management]["purge_command"]
-
-
+    varnish_trigger_verbose = Cartodb.config[:varnish_management].fetch('trigger_verbose', true) == true ? 1 : 0
 
     in_database(:as => :superuser).run(<<-TRIGGER
     BEGIN;
@@ -1939,6 +1939,7 @@ TRIGGER
         critical = #{varnish_critical}
         timeout = #{varnish_timeout}
         retry = #{varnish_retry}
+        trigger_verbose = #{varnish_trigger_verbose}
 
         import httplib
 
@@ -1958,7 +1959,8 @@ TRIGGER
             assert response.status == 204
             break
           except Exception as err:
-            plpy.warning('Varnish purge error: ' + str(err))
+            if trigger_verbose:
+              plpy.warning('Varnish purge error: ' + str(err))
             if not retry:
               if critical:
                 plpy.error('Varnish purge error: ' +  str(err))
@@ -1982,6 +1984,7 @@ TRIGGER
     invalidation_timeout = Cartodb.config[:invalidation_service].try(:[],'timeout') || 5
     invalidation_critical = Cartodb.config[:invalidation_service].try(:[], 'critical') ? 1 : 0
     invalidation_retry = Cartodb.config[:invalidation_service].try(:[],'retry') || 5
+    invalidation_trigger_verbose = Cartodb.config[:invalidation_service].fetch('trigger_verbose', true) == true ? 1 : 0
 
     in_database(:as => :superuser).run(<<-TRIGGER
   BEGIN;
@@ -1990,6 +1993,7 @@ TRIGGER
       critical = #{invalidation_critical}
       timeout = #{invalidation_timeout}
       retry = #{invalidation_retry}
+      trigger_verbose = #{invalidation_trigger_verbose}
 
       client = GD.get('invalidation', None)
 
@@ -2009,7 +2013,8 @@ TRIGGER
           client.execute_command('TCH', '#{self.database_name}', table_name)
           break
         except Exception as err:
-          plpy.warning('Invalidation Service warning: ' + str(err))
+          if trigger_verbose:
+            plpy.warning('Invalidation Service warning: ' + str(err))
           client = GD['invalidation'] = None # force reconnect
           if not retry:
             if critical:
@@ -2086,7 +2091,7 @@ TRIGGER
   # Upgrade the cartodb postgresql extension
   def upgrade_cartodb_postgres_extension(statement_timeout=nil, cdb_extension_target_version=nil)
     if cdb_extension_target_version.nil?
-      cdb_extension_target_version = '0.8.1'
+      cdb_extension_target_version = '0.8.2'
     end
 
     in_database({
@@ -2473,9 +2478,11 @@ TRIGGER
 
   # Probably not needed with versioning of keys
   # @see RedisVizjsonCache
+  # @see EmbedRedisCache
   def purge_redis_vizjson_cache
     vizs = CartoDB::Visualization::Collection.new.fetch(user_id: self.id)
     CartoDB::Visualization::RedisVizjsonCache.new().purge(vizs)
+    EmbedRedisCache.new().purge(vizs)
   end
 
   # returns google maps api key. If the user is in an organization and
@@ -2549,6 +2556,11 @@ TRIGGER
       :twitter_datasource_block_price, :twitter_datasource_block_size
     ])
     to.invite_token = User.make_token
+  end
+
+  def regenerate_api_key
+    invalidate_varnish_cache
+    update api_key: User.make_token
   end
 
   private

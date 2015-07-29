@@ -12,6 +12,9 @@ module Carto
       # Reset old connections to make sure changes apply.
       # NOTE: This assumes it's being called from a Resque job
       user.reset_pooled_connections
+      log = params.fetch(:log)
+      log.append 'TableGeocoderFactory.get()'
+      log.append "params: #{params.select{|k| k != :log}.to_s}"
 
       if user == table_service.owner
         user_connection = user.in_database
@@ -50,6 +53,7 @@ module Carto
         geocoder_class = CartoDB::InternalGeocoder::Geocoder
       end
 
+      log.append "geocoder_class = #{geocoder_class.to_s}"
       return geocoder_class.new(instance_config)
     end
 

@@ -4,33 +4,18 @@ require_relative '../../app/models/map'
 require_relative '../../app/models/visualization/member'
 
 describe Map do
-  before(:all) do
-    @quota_in_bytes = 524288000
-    @table_quota    = 500
-    @user           = create_user(
-                        quota_in_bytes: @quota_in_bytes,
-                        table_quota:    @table_quota,
-                        private_tables_enabled: true
-                      )
-  end
-
-  after(:all) do
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
-    @user.destroy
-  end
-
   before(:each) do
     User.any_instance.stubs(:enable_remote_db_user).returns(true)
     CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
 
     @table = Table.new
-    @table.user_id = @user.id
+    @table.user_id = $user_1.id
     @table.save
   end
 
   describe '#bounds' do
     it 'checks max-min bounds' do
-      new_map = Map.create(user_id: @user.id, table_id: @table.id)
+      new_map = Map.create(user_id: $user_1.id, table_id: @table.id)
 
       max_value= :maxlon  # 179
       min_value= :minlon  # -179
@@ -50,13 +35,23 @@ describe Map do
       new_map.send(:bound_for, value5, min_value, max_value).should eq Map::DEFAULT_BOUNDS[min_value]
       new_map.send(:bound_for, value6, min_value, max_value).should eq value6
 
+      # As map has no geometries, bounds should still be default ones instead of zeros
+      map_bounds = new_map.send(:get_map_bounds)
+      default_bounds = new_map.send(:default_map_bounds)
+
+      map_bounds[:maxx].should eq default_bounds[:max][0]
+      map_bounds[:maxy].should eq default_bounds[:max][1]
+      map_bounds[:minx].should eq default_bounds[:min][0]
+      map_bounds[:miny].should eq default_bounds[:min][1]
+
+
       new_map.destroy
     end
   end
 
   describe '#tables' do
     it 'returns the associated tables' do
-      map = Map.create(user_id: @user.id, table_id: @table.id)
+      map = Map.create(user_id: $user_1.id, table_id: @table.id)
       @table.reload
       map.reload
       map.tables.map(&:id).should include(@table.id)
@@ -64,18 +59,18 @@ describe Map do
     end
 
     it 'updates associated tables/vis upon change' do
-      map = Map.create(user_id: @user.id, table_id: @table.id)
+      map = Map.create(user_id: $user_1.id, table_id: @table.id)
       @table.reload
 
       CartoDB::Visualization::Member.new(
         privacy:  CartoDB::Visualization::Member::PRIVACY_PUBLIC,
         name:     'wadus',
         type:     CartoDB::Visualization::Member::TYPE_CANONICAL,
-        user_id:  @user.id,
+        user_id:  $user_1.id,
         map_id:   map.id
       ).store
 
-      map2 = Map.create(user_id: @user.id, table_id: @table.id)
+      map2 = Map.create(user_id: $user_1.id, table_id: @table.id)
       # Change map_id on the table, but visualization still points to old map.id
       @table.map_id = map2.id
       @table.save
@@ -91,7 +86,7 @@ describe Map do
 
   describe '#base_layers' do
     it 'returns the associated base layer' do
-      map = Map.create(user_id: @user.id, table_id: @table.id)
+      map = Map.create(user_id: $user_1.id, table_id: @table.id)
       base_layer = Layer.create(kind: 'carto')
       map.add_layer(base_layer)
       5.times { map.add_layer(Layer.create(kind: 'carto')) }
@@ -103,7 +98,7 @@ describe Map do
 
   describe 'data_layers' do
     it 'returns the associated data layers' do
-      map = Map.create(user_id: @user.id, table_id: @table.id)
+      map = Map.create(user_id: $user_1.id, table_id: @table.id)
       5.times { map.add_layer(Layer.create(kind: 'tiled')) }
       data_layer = Layer.create(kind: 'carto')
       map.add_layer(data_layer)
@@ -115,7 +110,7 @@ describe Map do
 
   describe '#user_layers' do
     it 'returns all user-defined layers' do
-      map = Map.create(user_id: @user.id, table_id: @table.id)
+      map = Map.create(user_id: $user_1.id, table_id: @table.id)
       5.times { map.add_layer(Layer.create(kind: 'tiled')) }
       data_layer = Layer.create(kind: 'carto')
       map.add_layer(data_layer)
@@ -137,7 +132,7 @@ describe Map do
 
     it "recalculates bounds" do
       table = Table.new :privacy => UserTable::PRIVACY_PRIVATE, :name => 'Madrid Bars', :tags => 'movies, personal'
-      table.user_id = @user.id
+      table.user_id = $user_1.id
       table.force_schema = "name text, address text, latitude float, longitude float"
       table.save
       table.insert_row!({:name => "Hawai", :address => "Calle de Pérez Galdós 9, Madrid, Spain", :latitude => 40.423012, :longitude => -3.699732})
@@ -157,7 +152,7 @@ describe Map do
 
   describe '#updated_at' do
     it 'is updated after saving the map' do
-      map         = Map.create(user_id: @user.id, table_id: @table.id)
+      map         = Map.create(user_id: $user_1.id, table_id: @table.id)
       updated_at  = map.updated_at
 
       sleep 0.5
@@ -169,9 +164,9 @@ describe Map do
 
   describe '#admits?' do
     it 'checks base layer admission rules' do
-      map   = Map.create(user_id: @user.id, table_id: @table.id)
+      map   = Map.create(user_id: $user_1.id, table_id: @table.id)
 
-      # First base layer is always allowed 
+      # First base layer is always allowed
       layer = Layer.new(kind: 'tiled')
       map.admits_layer?(layer).should == true
       map.add_layer(layer)
@@ -214,7 +209,7 @@ describe Map do
   end #admits?
 
   it "should correcly set vizjson updated_at" do
-    map = Map.create(user_id: @user.id, table_id: @table.id)
+    map = Map.create(user_id: $user_1.id, table_id: @table.id)
 
     # When the table data is newer
     time = Time.now + 2.minutes
@@ -241,15 +236,15 @@ describe Map do
       pending("To be checked when private tables are coded")
 
       @table1 = Table.new
-      @table1.user_id = @user.id
+      @table1.user_id = $user_1.id
       @table1.save
 
       @table2 = Table.new
-      @table2.user_id = @user.id
+      @table2.user_id = $user_1.id
       @table2.save
 
       source  = @table1.table_visualization
-      derived = CartoDB::Visualization::Copier.new(@user, source).copy
+      derived = CartoDB::Visualization::Copier.new($user_1, source).copy
       derived.store
 
       derived.layers(:cartodb).length.should == 1
@@ -267,7 +262,7 @@ describe Map do
       layer.add_map(derived.map)
       layer.save
       layer.reload
-      @user.reload
+      $user_1.reload
 
       layer.uses_private_tables?.should be_true
 

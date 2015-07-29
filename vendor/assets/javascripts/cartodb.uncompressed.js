@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: 96897e1d4789cdb6bc755582f51276409676a0d4
+// sha: 0773d34325a698933121bfe731573e0165f0861e
 (function() {
   var root = this;
 
@@ -26784,7 +26784,41 @@ cdb.core.util._makeCRCTable = function() {
     crcTable[n] = c;
   }
   return crcTable;
+};
+
+cdb.core.util._inferBrowser = function(ua){
+  var browser = {};
+  ua = ua || window.navigator.userAgent;
+  function detectIE() {
+    var msie = ua.indexOf('MSIE ');
+    var trident = ua.indexOf('Trident/');
+    if (msie > -1 || trident > -1) return true;
+    return false;
+  };
+
+  function getIEVersion(){
+    if (!document.compatMode) return 5
+    if (!window.XMLHttpRequest) return 6
+    if (!document.querySelector) return 7;
+    if (!document.addEventListener) return 8;
+    if (!window.atob) return 9;
+    if (document.all) return 10;
+    else return 11;
+  };
+
+  if(detectIE()){
+    browser.ie = {version: getIEVersion()}
+  }
+
+  else if(ua.indexOf('Edge/') > -1) browser.edge = ua;
+  else if(ua.indexOf('Chrome') > -1) browser.chrome = ua;
+  else if(ua.indexOf('Firefox') > -1) browser.firefox = ua;
+  else if(ua.indexOf("Opera") > -1) browser.opera = ua;
+  else if(ua.indexOf("Safari") > -1) browser.safari = ua;
+  return browser;
 }
+
+cdb.core.util.browser = cdb.core.util._inferBrowser();
 
 /**
  * geocoders for different services
@@ -28033,15 +28067,19 @@ cdb.geo.ui.Annotation = cdb.core.View.extend({
   },
 
   _getStandardPropertyName: function(name) {
-
-    if (!name) return;
-    var parts = name.split("-");
-
-    if (parts.length === 1) return name;
-    else if (parts.length === 2) {
-      return parts[0] + parts[1].slice(0, 1).toUpperCase() + parts[1].slice(1);
+    if (!name) {
+      return;
     }
 
+    var parts = name.split("-");
+
+    if (parts.length === 1) {
+      return name;
+    } else {
+      return parts[0] + _.map(parts.slice(1), function(l) { 
+        return l.slice(0,1).toUpperCase() + l.slice(1);
+      }).join("");
+    }
   },
 
   _cleanStyleProperties: function(hash) {
@@ -30797,7 +30835,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
    *  Animate infowindow to show up
    */
   _animateIn: function(delay) {
-    if (!$.browser.msie || ($.browser.msie && parseInt($.browser.version) > 8 )) {
+    if (!cdb.core.util.ie || (cdb.core.util.browser.ie && cdb.core.util.browser.ie.version > 8)) {
       this.$el.css({
         'marginBottom':'-10px',
         'display':'block',
@@ -32253,7 +32291,7 @@ cdb.geo.ui.TilesLoader = cdb.core.View.extend({
 
   show: function(ev) {
     if(this.isVisible) return;
-    if (!$.browser.msie || ($.browser.msie && $.browser.version.indexOf("9.") != 0)) {
+    if (!cdb.core.util.ie || (cdb.core.util.browser.ie && cdb.core.util.browser.ie.version >= 10)) {
       this.$el.fadeTo(this.options.animationSpeed, 1)
     } else {
       this.$el.show();
@@ -32265,7 +32303,7 @@ cdb.geo.ui.TilesLoader = cdb.core.View.extend({
     this.isVisible--;
     if(this.isVisible > 0) return;
     this.isVisible = 0;
-    if (!$.browser.msie || ($.browser.msie && $.browser.version.indexOf("9.") == 0)) {
+    if (!cdb.core.util.ie || (cdb.core.util.browser.ie && cdb.core.util.browser.ie.version >= 10)) {
       this.$el.stop(true).fadeTo(this.options.animationSpeed, 0)
     } else {
       this.$el.hide();
@@ -38443,7 +38481,7 @@ var Vis = cdb.core.View.extend({
       if (this.mobile_enabled && (type === "zoom" || type === "header" || type === "loader")) return;
 
       // IE<10 doesn't support the Fullscreen API
-      if (type === 'fullscreen' && $.browser.msie && parseFloat($.browser.version) <= 10) return;
+      if (type === 'fullscreen' && cdb.core.util.browser.ie && cdb.core.util.browser.ie.version <= 10) return;
 
       // Decide to create or not the custom overlays
       if (type === 'image' || type === 'text' || type === 'annotation') {
@@ -40522,12 +40560,21 @@ Layers.register('torque', function(vis, data) {
         if(visData.layers.length < 2) {
           promise.trigger('error', "visualization file does not contain layer info");
         }
-        var idx = options.layerIndex === undefined ? 1: options.layerIndex;
-        if(visData.layers.length <= idx) {
-          promise.trigger('error', 'layerIndex out of bounds');
-          return;
+        var index = options.layerIndex;
+        if (index !== undefined) {
+          if(visData.layers.length <= index) {
+            promise.trigger('error', 'layerIndex out of bounds');
+            return;
+          }
+          layerData = visData.layers[index];
+        } else {
+          var DATA_LAYER_TYPES = ['namedmap', 'layergroup'];
+
+          // Select the first data layer (namedmap or layergroup)
+          layerData = _.find(visData.layers, function(layer){
+            return DATA_LAYER_TYPES.indexOf(layer.type) !== -1;
+          });
         }
-        layerData = visData.layers[idx];
       } else {
         layerData = visData;
       }
@@ -41377,8 +41424,6 @@ function getDefaultCSSForGeometryType(geometryType) {
     ];
   }
   return [
-    "line-color: #0C2C84;",
-    "line-opacity: 1;",
     "marker-fill-opacity: 0.9;",
     "marker-line-color: #FFF;",
     "marker-line-width: 1;",
@@ -41583,8 +41628,8 @@ function getWeightFromShape(dist_type){
 function getMethodProperties(stats) { // TODO: only require the necessary params
 
   var method;
-  var ramp = ramps.pink;
-  var name = "pink";
+  var ramp = ramps.blue;
+  var name = "blue";
 
   if (['A','U'].indexOf(stats.dist_type) != -1) { // apply divergent scheme
     method = stats.jenks;

@@ -243,8 +243,9 @@ module CartoDB
 
           begin
             geocoding = Geocoding.new config.slice(:kind, :geometry_type, :formatter, :table_name, :country_column, :country_code)
-            geocoding.force_geocoder(geocoder)
             geocoding.user = user
+            geocoder.set_log(geocoding.log)
+            geocoding.force_geocoder(geocoder)
             geocoding.data_import_id = data_import.id unless data_import.nil?
             geocoding.raise_on_save_failure = true
             geocoding.run_geocoding!(row_count)

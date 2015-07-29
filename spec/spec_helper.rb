@@ -39,9 +39,15 @@ RSpec.configure do |config|
       )
       Rails::Sequel.connection.run("drop database \"#{user_database_name}\"")
     }
+
+    $user_1 = create_user(:quota_in_bytes => 524288000, :table_quota => 500, :private_tables_enabled => true)
+    $user_2 = create_user(:quota_in_bytes => 524288000, :table_quota => 500, :private_tables_enabled => true)
   end
 
   config.after(:all) do
+    $user_1.destroy
+    $user_2.destroy
+
     $pool.close_connections!
     Rails::Sequel.connection[
       "SELECT datname FROM pg_database WHERE datistemplate IS FALSE AND datallowconn IS TRUE AND datname like 'cartodb_test_user_%'"

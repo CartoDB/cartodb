@@ -173,7 +173,6 @@
                       <div class="DatasetsList-itemPrimaryInfo">
                         <h3 class="DatasetsList-itemTitle DefaultTitle u-ellipsLongText">
                           <a href="<%= CartoDB.url(self, 'public_table', {id: vis.table.name}, @user_domain.nil? ? nil : @related_tables_owners[vis.table.user_id]) %>" title="<%= vis.table.name %>" class="DefaultTitle-link u-ellipsLongText"><%= vis.table.name %></a>
-                          <!-- span class="DatasetsList-itemTitlePermission PermissionIndicator">READ</span -->
                         </h3>
 
                         <% if vis.description %>
@@ -211,8 +210,7 @@
               <% end %>
             <% end %>
 
-            <%# if @nonpublic_tables_count.present? && @nonpublic_tables_count > 0 %>
-            <% unless @nonpublic_tables_count.present? && @nonpublic_tables_count > 0 %>
+            <% if @nonpublic_tables_count.present? && @nonpublic_tables_count > 0 %>
               <li class="DatasetsList-item">
                 <div class="LayoutIcon">
                   <i class="iconFont iconFont-Lock"></i>

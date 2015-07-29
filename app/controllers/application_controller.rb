@@ -41,7 +41,9 @@ class ApplicationController < ActionController::Base
 
   def session_security_token_valid?(user)
     warden.session(user.username).key?(:sec_token) &&
-    warden.session(user.username)[:sec_token] == Digest::SHA1.hexdigest(user.crypted_password)
+      warden.session(user.username)[:sec_token] == Digest::SHA1.hexdigest(user.crypted_password)
+  rescue Warden::NotAuthenticated
+    false
   end
 
   def validate_session(user = current_user, reset_session_on_error = true)
@@ -231,7 +233,16 @@ class ApplicationController < ActionController::Base
   def ensure_account_has_been_activated
     return unless current_user
 
-    redirect_to CartoDB.url(self, 'account_token_authentication_error') unless current_user.enable_account_token.nil?
+    if !current_user.enable_account_token.nil?
+      respond_to do |format|
+        format.html {
+          redirect_to CartoDB.url(self, 'account_token_authentication_error')
+        }
+        format.all  {
+          head :forbidden
+        }
+      end
+    end
   end
 
   def add_revision_header

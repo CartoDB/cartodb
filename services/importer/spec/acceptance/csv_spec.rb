@@ -218,6 +218,13 @@ describe 'csv regression tests' do
     runner.results.first.error_code.should eq CartoDB::Importer2::ERRORS_MAP[TooManyColumnsError]
   end
 
+  it 'files with wrong dates convert the column in string instead of date' do
+    runner = runner_with_fixture('wrong_date.csv', nil, true)
+    runner.run
+
+    runner.results.first.success?.should eq true
+  end
+
   def sample_for(job)
     job.db[%Q{
       SELECT *
@@ -225,16 +232,28 @@ describe 'csv regression tests' do
     }].first
   end #sample_for
 
-  def runner_with_fixture(file, job=nil)
+  # Using the version 2.x of ogr2ogr to check features like auto-guessing for example
+  def ogr2ogr2_options
+    {
+      ogr2ogr_binary:         'which ogr2ogr2',
+      ogr2ogr_csv_guessing:   'yes'
+    }
+  end
+
+  def runner_with_fixture(file, job=nil, add_ogr2ogr2_options=false)
     filepath = path_to(file)
     downloader = Downloader.new(filepath)
-    Runner.new({
+    runner = Runner.new({
                  pg: @pg_options,
                  downloader: downloader,
                  log: CartoDB::Importer2::Doubles::Log.new,
                  user: CartoDB::Importer2::Doubles::User.new,
                  job: job
                })
+    if add_ogr2ogr2_options
+      runner.loader_options = ogr2ogr2_options
+    end
+    runner
   end
 
 end # csv regression tests

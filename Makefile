@@ -17,6 +17,7 @@ WORKING_SPECS_1 = \
   spec/models/table/column_typecaster_spec.rb \
   spec/models/user_spec.rb \
   spec/models/user_presenter_spec.rb \
+	spec/models/user_table_spec.rb \
   spec/models/layer_spec.rb \
   spec/models/layer/presenter_spec.rb \
   spec/requests/api/json/layer_presenter_spec.rb \
@@ -158,9 +159,10 @@ WORKING_SPECS_9 = \
   spec/requests/carto/api/maps_controller_spec.rb \
   spec/requests/api/json/overlays_controller_spec.rb \
   spec/requests/carto/api/overlays_controller_spec.rb \
+	spec/models/carto/user_creation_spec.rb \
 	spec/models/carto/user_service_spec.rb \
 	spec/models/carto/user_spec.rb \
-	spec/models/carto/user_creation_spec.rb \
+	spec/models/carto/user_table_spec.rb \
 	spec/models/carto/organization_spec.rb \
 	services/table-geocoder/spec/lib/abstract_table_geocoder_spec.rb \
 	services/geocoder/spec/hires_batch_geocoder_spec.rb \

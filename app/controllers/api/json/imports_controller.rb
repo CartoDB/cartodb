@@ -170,7 +170,7 @@ class Api::Json::ImportsController < Api::ApplicationController
                                                                              }
                                                                            })
       # It's ok to decrease always as if over limit, will get just at limit and next try again go overlimit
-      concurrent_import_limit.decrement
+      concurrent_import_limit.decrement!
       concurrent_import_limit.peek  # return limit value
     rescue => sub_exception
       CartoDB::Logger.info('Error decreasing concurrent import limit',

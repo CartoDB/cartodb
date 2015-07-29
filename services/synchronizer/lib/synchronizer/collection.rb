@@ -4,6 +4,7 @@ require 'resque'
 require_relative '../../../../app/models/log'
 require_relative '../../../../app/models/synchronization/member'
 require_relative '../../../../lib/resque/synchronization_jobs'
+require_relative '../../../../services/platform-limits/platform_limits'
 
 unless defined? Cartodb
   config = YAML.load_file(
@@ -20,7 +21,7 @@ module CartoDB
       def initialize(pg_options={}, relation=DEFAULT_RELATION)
         @db = Rails::Sequel.connection
         @relation = relation
-        @records  = [] 
+        @records  = []
       end
 
       def print_log(message, error=false)
@@ -45,9 +46,9 @@ module CartoDB
             ))
           else
             query = db.fetch(%Q(
-              SELECT name, id FROM #{relation}
+              SELECT name, id, user_id FROM #{relation}
               WHERE EXTRACT(EPOCH FROM run_at) < #{Time.now.utc.to_f}
-              AND 
+              AND
                 (
                   state = '#{CartoDB::Synchronization::Member::STATE_SUCCESS}'
                   OR (state = '#{CartoDB::Synchronization::Member::STATE_FAILURE}'
@@ -63,14 +64,7 @@ module CartoDB
 
         if success
           print_log "Fetched #{query.count} records"
-          query.each { |record|
-            print_log "Enqueueing '#{record[:name]}' (#{record[:id]})"
-            Resque.enqueue(Resque::SynchronizationJobs, job_id: record[:id])
-            db.run(%Q(
-               UPDATE #{relation} SET state = '#{CartoDB::Synchronization::Member::STATE_QUEUED}'
-                WHERE id = '#{record[:id]}'
-             ))
-          }
+          force_all_syncs ? enqueue_all(query) : enqueue_rate_limited(query)
         end
 
         self
@@ -85,12 +79,46 @@ module CartoDB
         }
       end
 
-      attr_reader :records, :members
+      attr_reader :records
 
       private
 
+      def enqueue_all(query)
+        query.each { |record|
+          enqueue_record(record)
+        }
+      end
+
+      # @see /app/controllers/api/json/synchronizations_controller -> sync()
+      def enqueue_rate_limited(query)
+
+        query.each { |record|
+          user = Carto::User.where(id: record[:user_id]).first
+          next if user.nil?
+
+          platform_limit = CartoDB::PlatformLimits::Importer::UserConcurrentSyncsAmount.new({ 
+              user: user, redis: { db: $users_metadata } 
+            })
+          if platform_limit.is_within_limit?
+            enqueue_record(record)
+            platform_limit.increment!
+          else
+            print_log "User '#{user.username}' hit concurrent syncs rate limit, '#{record[:name]}' skipped"
+          end
+        }
+      end
+
+      def enqueue_record(record_data)
+        print_log "Enqueueing '#{record_data[:name]}' (#{record_data[:id]})"
+        Resque.enqueue(Resque::SynchronizationJobs, job_id: record_data[:id])
+        db.run(%Q(
+           UPDATE #{relation} SET state = '#{CartoDB::Synchronization::Member::STATE_QUEUED}'
+            WHERE id = '#{record_data[:id]}'
+         ))
+      end
+
       attr_reader :db, :relation
-      attr_writer :records, :members
+      attr_writer :records
     end
   end
 end

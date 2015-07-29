@@ -249,6 +249,10 @@ module CartoDB
         end
         notify
         self
+      ensure
+        CartoDB::PlatformLimits::Importer::UserConcurrentSyncsAmount.new({ 
+              user: user, redis: { db: $users_metadata } 
+            }).decrement!
       end
 
       def notify

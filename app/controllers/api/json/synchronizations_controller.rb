@@ -3,6 +3,7 @@ require 'json'
 require_relative '../../../models/synchronization/member'
 require_relative '../../../models/synchronization/collection'
 require_relative '../../../../services/datasources/lib/datasources'
+require_relative '../../../../services/platform-limits/platform_limits'
 
 class Api::Json::SynchronizationsController < Api::ApplicationController
   include CartoDB
@@ -19,6 +20,7 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
     render_jsonp(response)
   end
 
+  # Upon creation, no rate limit checks
   def create
     # Keep in sync with http://docs.cartodb.com/cartodb-platform/import-api.html#params-4
     type_guessing_param    = !["false", false].include?(params[:type_guessing])
@@ -89,9 +91,16 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
     member = Synchronization::Member.new(id: params[:id]).fetch
     return head(401) unless member.authorize?(current_user)
 
-    if member.should_auto_sync? || (from_sync_now && member.can_manually_sync?)
-      enqueued = true
-      member.enqueue
+    # @see /services/synchronizer/lib/synchronizer/collection.rb -> enqueue_rate_limited()
+    if ( member.should_auto_sync? || (from_sync_now && member.can_manually_sync?) )
+      platform_limit = CartoDB::PlatformLimits::Importer::UserConcurrentSyncsAmount.new({
+        user: current_user, redis: { db: $users_metadata }
+      })
+      if platform_limit.is_within_limit?
+        member.enqueue
+        enqueued = true
+        platform_limit.increment!
+      end
     end
 
     render_jsonp( { enqueued: enqueued, synchronization_id: member.id})

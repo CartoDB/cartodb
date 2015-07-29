@@ -1,5 +1,6 @@
 # encoding: UTF-8
 
+# See http://www.rubydoc.info/gems/net-ldap/0.11
 require 'net/ldap'
 
 class Carto::LdapConfiguration < ActiveRecord::Base
@@ -11,6 +12,12 @@ class Carto::LdapConfiguration < ActiveRecord::Base
   validates :domain_bases, :length => { :minimum => 1, :allow_nil => false }
   validates :encryption, :inclusion => { :in => %w( start_tls simple_tls ), :allow_nil => true }
   validates :ssl_version, :inclusion => { :in => %w( TLSv1_1 ), :allow_nil => true }
+
+  def authenticate(username, password)
+    !(self.domain_bases.find { |d|
+      connect("cn=#{username},#{d}", password).bind
+    }.nil?)
+  end
 
   def test_connection
     connection.bind
@@ -25,7 +32,7 @@ class Carto::LdapConfiguration < ActiveRecord::Base
   end
 
   # TODO: make private?
-  def search_in_domain_bases(filter)
+  def search_in_domain_bases(objectClass)
     domain_bases.map { |d|
       search(d, "objectClass=#{objectClass}")
     }.flatten
@@ -46,12 +53,12 @@ class Carto::LdapConfiguration < ActiveRecord::Base
     @conn ||= connect
   end
 
-  def connect
+  def connect(user = self.connection_user, password = self.connection_password)
     ldap = Net::LDAP.new
     ldap.host = self.host
     ldap.port = self.port
     configure_encryption(ldap)
-    ldap.auth self.connection_user, self.connection_password
+    ldap.auth(user, password)
     ldap
   end
 

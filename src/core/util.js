@@ -116,7 +116,7 @@ cdb.core.util.browser = (function(){
   else if(ua.indexOf('Chrome') > -1) browser.chrome = ua;
   else if(ua.indexOf('Firefox') > -1) browser.firefox = ua;
   else if(ua.indexOf("Safari") > -1) browser.safari = ua;
-  else if(ua.toLowerCase().indexOf("op") > -1) browser.opera = ua;
+  else if(ua.indexOf("Opera") > -1) browser.opera = ua;
   else if(ua.indexOf('Edge/') > -1) browser.edge = ua;
   return browser;
 

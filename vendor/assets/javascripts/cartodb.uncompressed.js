@@ -41587,8 +41587,8 @@ function getWeightFromShape(dist_type){
 function getMethodProperties(stats) { // TODO: only require the necessary params
 
   var method;
-  var ramp = ramps.pink;
-  var name = "pink";
+  var ramp = ramps.blue;
+  var name = "blue";
 
   if (['A','U'].indexOf(stats.dist_type) != -1) { // apply divergent scheme
     method = stats.jenks;

@@ -330,6 +330,7 @@ module CartoDB
           import_stats[:file_rows] = @job.source_file_rows.nil? ? nil : @job.source_file_rows
           import_stats[:imported_rows] = @job.imported_rows
           import_stats[:error_percent] = @job.import_error_percent
+          import_stats[:fallback_executed] = @job.fallback_executed
         ensure
           return import_stats
         end

@@ -7,7 +7,9 @@ Sequel.migration do
       foreign_key :organization_id, :organizations, type: 'uuid', null: false
       String    :host,              null: false
       Integer   :port,              null: false
-      String    :encryption,        null: false
+      String    :encryption
+      String    :ca_file # Certificate file for start_tls encryption. Example: "/etc/cafile.pem"
+      String    :ssl_version # For start_tls_encryption. Example: "TLSv1_1"
       String    :connection_user,   null: false
       String    :connection_password,     null: false
       String    :user_id_field,     null: false

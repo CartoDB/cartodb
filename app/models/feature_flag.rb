@@ -4,6 +4,12 @@
 class FeatureFlag < Sequel::Model
   include CartoDB::MiniSequel
 
+  one_to_many :feature_flags_user
+  many_to_many :users, :join_table => :feature_flags_user
+  
+  plugin :association_dependencies
+  add_association_dependencies :feature_flags_user => :destroy
+
   # @param name       String
   # @param restricted boolean
 

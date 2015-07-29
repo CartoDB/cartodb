@@ -362,6 +362,54 @@ feature "Superadmin's users API" do
     end
   end
 
+  describe '#update' do
+    it 'should remove user feature_flag relation' do
+      user         = FactoryGirl.create(:user)
+      first_feature_flag = FactoryGirl.create(:feature_flag)
+      second_feature_flag = FactoryGirl.create(:feature_flag)
+
+      first_feature_flag_user  = FactoryGirl.create(:feature_flags_user, feature_flag_id: first_feature_flag.id, user_id: user.id)
+      second_feature_flag_user = FactoryGirl.create(:feature_flags_user, feature_flag_id: second_feature_flag.id, user_id: user.id)
+
+      expect {
+        put superadmin_user_url(user.id), { :user => { :feature_flags => second_feature_flag.id.to_s.split(",") }, id: user.id }.to_json, {'CONTENT_TYPE'  => 'application/json'}
+      }.to change(FeatureFlagsUser, :count).by(-1)
+    end
+
+    it 'should create user feature_flag relation' do
+      user         = FactoryGirl.create(:user)
+      first_feature_flag = FactoryGirl.create(:feature_flag)
+      second_feature_flag = FactoryGirl.create(:feature_flag)
+
+      second_feature_flag_user = FactoryGirl.create(:feature_flags_user, feature_flag_id: second_feature_flag.id, user_id: user.id)
+
+      expect {
+        put superadmin_user_url(user.id), { :user => { :feature_flags => [first_feature_flag.id.to_s, second_feature_flag.id.to_s] }, id: user.id }.to_json, {'CONTENT_TYPE'  => 'application/json'}
+      }.to change(FeatureFlagsUser, :count).by(1)
+    end
+  end
+
+  describe '#destroy' do
+    it 'should destroy user' do
+      user = FactoryGirl.create(:user)
+
+      expect {
+        delete superadmin_user_url(user.id), { user: user }.to_json, {'CONTENT_TYPE'  => 'application/json'}
+      }.to change(User, :count).by(-1)
+    end
+
+    it 'should destroy user feature flag relations' do
+      user         = FactoryGirl.create(:user)
+      feature_flag = FactoryGirl.create(:feature_flag)
+
+      feature_flag_user = FactoryGirl.create(:feature_flags_user, feature_flag_id: feature_flag.id, user_id: user.id)
+
+      expect {
+        delete superadmin_user_url(user.id), { user: user }.to_json, {'CONTENT_TYPE'  => 'application/json'}
+      }.to change(FeatureFlagsUser, :count).by(-1)
+    end
+  end
+
   private
 
   def default_headers(user = Cartodb.config[:superadmin]["username"], password = Cartodb.config[:superadmin]["password"])

@@ -45,6 +45,10 @@ class User < Sequel::Model
   }
 
   one_to_many :feature_flags_user
+  many_to_many :feature_flags, :join_table => :feature_flags_user
+  
+  plugin :association_dependencies
+  add_association_dependencies :feature_flags_user => :destroy
 
   # Sequel setup & plugins
   plugin :association_dependencies, :client_application => :destroy, :synchronization_oauths => :destroy

@@ -13,7 +13,7 @@ class Carto::LdapConfiguration < ActiveRecord::Base
   validates :encryption, :inclusion => { :in => %w( start_tls simple_tls ), :allow_nil => true }
   validates :ssl_version, :inclusion => { :in => %w( TLSv1_1 ), :allow_nil => true }
 
-  # Returns matching Net::LDAP::Entry or false if credentials are wrong
+  # Returns matching Carto::LdapEntry or false if credentials are wrong
   def authenticate(username, password)
     username_filter = "cn=#{username}"
 
@@ -21,19 +21,7 @@ class Carto::LdapConfiguration < ActiveRecord::Base
       connect("#{username_filter},#{d}", password).bind
     }
 
-    domain_base.nil? ? false : search(domain_base, username_filter).first
-  end
-
-  def get_user_id(ldap_entry)
-    extract_field(ldap_entry, self.user_id_field)
-  end
-
-  def get_username(ldap_entry)
-    extract_field(ldap_entry, self.username_field)
-  end
-
-  def get_email(ldap_entry)
-    extract_field(ldap_entry, self.email_field)
+    domain_base.nil? ? false : Carto::LdapEntry.new(search(domain_base, username_filter).first, self)
   end
 
   def test_connection
@@ -46,12 +34,6 @@ class Carto::LdapConfiguration < ActiveRecord::Base
 
   def groups(objectClass = 'organization')
     search_in_domain_bases("objectClass=#{objectClass}")
-  end
-
-  # TODO: make private?
-  def extract_field(ldap_entry, field)
-    value = ldap_entry[field]
-    value.nil? ? nil : value.first
   end
 
   # TODO: make private?

@@ -39,9 +39,19 @@
 .TabLink.selected,
 .TabLink.selected:hover {
   background: white;
-  border-color: rgba(#BBD7F2, 1);
   color: $cTypography-paragraphs;
   cursor: default;
+}
+.TabLink:hover {
+  border-color: rgba(#BBD7F2, 1);
+}
+.TabLink.selected,
+.TabLink.selected:hover {
+  border-color: rgba(#666666, 1);
+}
+.TabLink.TabLink--positive.selected,
+.TabLink.TabLink--positive.selected:hover {
+  border-color: rgba(#BBD7F2, 1);
 }
 .TabLink.disabled {
   @include opacity(0.5);

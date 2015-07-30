@@ -38,7 +38,7 @@ describe FeatureFlag do
   describe '#destroy' do
 
     it 'should destroy feature flag' do
-      feature_flag = FactoryGirl.build(:feature_flag)
+      feature_flag = FactoryGirl.create(:feature_flag)
 
       expect {
         delete superadmin_feature_flag_url(feature_flag.id), { feature_flag: feature_flag }.to_json, @headers

@@ -27,30 +27,31 @@
 .PublicMap-block.with-padding {
   padding-top: 40px;
 }
-.PublicMap-breadcrumb {
-  border-bottom: 1px solid #ddd;
+.PublicMap-navmenu {
+  position: relative;
+  z-index: 30;
+}
+.PublicMap-navmenu--owner {
+  position: relative;
+  z-index: 10;
 }
 .PublicMap-leftBlock {
   float: left;
   width: 50%;
 }
-.PublicMap-leftBlock.PublicMap-leftBlock--owner {
-  width: 100%;
-  position: absolute;
-  z-index: -1;
-}
 .PublicMap-gradient {
   content: '';
   display: none;
   position: absolute;
-  left: -10px;
+  z-index: 20;
+  right: 0;
   height: 100%;
-  width: 100%;
-  max-width: 315px; 
-  background-image: linear-gradient(to right, rgba(#fff, 0) 45%, #fff 50%, #fff 100%);
+  width: 50%;
+  background-image: linear-gradient(to right, rgba(#fff, 0) 5%, #fff 10%, #fff 100%);
 }
 .PublicMap-leftBlock.PublicMap-leftBlock--large {
-  width: 780px;
+  max-width: 780px;
+  width: 100%;
 }
 .PublicMap-rightBlock {
   float: right;
@@ -189,6 +190,10 @@
   color: $cTypography-linkSecondaryHover;
   text-decoration: none;
 }
+.Navmenu-link.Navmenu-link--owner {
+  float: left;
+  white-space: nowrap;
+}
 .Navmenu-icon {
   font-size: $sFontSize-largest;
   color: $cTypography-linkSecondaryHover;
@@ -251,14 +256,9 @@
   display: inline-block;
   transition: all .2s;
 }
-.Navmenu-shareList.is-active {
-  margin-top: 0;
-  width: 100%;
-}
 .Navmenu-closeLink {
   position: relative;
   top: -2px;
-  margin-right: $sMargin-elementInline;
 }
 @media (min-width: $sMedia-desktop +1) {
   .PublicMap-metaList.PublicMap-metaList--mobile {
@@ -268,6 +268,17 @@
 @media (max-width: $sMedia-desktop) {
   .PublicMap-gradient {
     display: block;
+  }
+  .PublicMap-leftBlock.PublicMap-leftBlock--owner {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+  }
+  .PublicMap-rightBlock.PublicMap-rightBlock--owner {
+    position: absolute;
+    z-index: 30;
+    right: 0;
+    width: 50%;
   }
   .Navmenu-shareLink {
     display: inline-block;
@@ -280,6 +291,13 @@
     margin-top: 76px;
     height: 76px;
     background: #fff;
+  }
+  .Navmenu-shareList.is-active {
+    margin-top: 0;
+    width: 200%;
+  }
+  .Navmenu-sep {
+    top: 0;
   }
   .Navmenu-item.Navmenu-item.last-child {
     margin-right: 0;

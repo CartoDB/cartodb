@@ -33,9 +33,9 @@
     <div class="Navmenu js-Navmenu">
       <div class="u-inner">
         <div class="PublicMap-block">
-          <div class="PublicMap-leftBlock PublicMap-leftBlock--owner">
-            <div class="PublicMap-gradient"></div>
+          <div class="PublicMap-gradient"></div>
 
+          <div class="PublicMap-leftBlock PublicMap-leftBlock--owner">
             <ul class="Navmenu-list Navmenu-list--owner Navmenu-list--avatar">
               <li class="Navmenu-item">
                 <a href="<%= CartoDB.url(self, 'public_maps_home', {}, @visualization.user) %>" target="_blank" class="UserAvatar">
@@ -46,7 +46,7 @@
 
             <ul class="Navmenu-list Navmenu-list--owner">
               <li class="Navmenu-item last-child">
-                <a href="<%= CartoDB.url(self, 'public_maps_home', {}, @visualization.user) %>" class="Navmenu-link"><%= @name %></a>
+                <a href="<%= CartoDB.url(self, 'public_maps_home', {}, @visualization.user) %>" class="Navmenu-link Navmenu-link--owner"><%= @name %></a>
               </li>
 
               <li class="Navmenu-item u-hideOnTablet">
@@ -56,7 +56,7 @@
             </ul>
           </div>
 
-          <div class="PublicMap-rightBlock u-txt-right">
+          <div class="PublicMap-rightBlock PublicMap-rightBlock--owner u-txt-right">
             <ul class="Navmenu-list">
               <li class="Navmenu-item">
                 <ul class="u-valign">
@@ -64,7 +64,6 @@
                     <a href="<%= CartoDB.url(self, 'public_visualizations_embed_map', {id: @visualization.id}, @visualization.user) %>" target="_blank" class="Navmenu-link">
                       <i class="iconFont iconFont-Fullscreen Navmenu-icon"></i>
                     </a>
-
                   </li>
 
                   <li class="Navmenu-subItem">

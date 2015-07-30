@@ -15,7 +15,6 @@ module CartoDB
       @table_name  = arguments[:table_name]
       @table_schema  = arguments[:table_schema]
       @qualified_table_name = arguments[:qualified_table_name]
-      @qualified_table_name = arguments[:qualified_table_name]
       @schema = arguments[:schema] || 'cdb'
       @state = 'submitted'
       @connection.run("SET statement_timeout TO #{DB_STATEMENT_TIMEOUT_MS}")

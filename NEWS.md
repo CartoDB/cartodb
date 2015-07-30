@@ -37,6 +37,7 @@ cd lib/sql; sudo make all install
 * New Maps without geometries no longer have zeroed-bounds
 * Rake task `cartodb:redis:purge_vizjson` now also purges embeds [#4653](https://github.com/CartoDB/cartodb/pull/4653)
 * Properly and fully disallowing multilogins, by killing other existing sessions upon login
+* Added new Platform Limit for concurrent syncs per user. Currently 2 hours TTL, 3 syncs per user max. allowed
 
 Bugfixes:
 * Fixed deletion of layers upon disconnecting synced datasources [#3718](https://github.com/CartoDB/cartodb/pull/3718)

@@ -250,105 +250,6 @@ class Table
     @user_table.privacy ||= (owner.try(:private_tables_enabled) ? UserTable::PRIVACY_PRIVATE : UserTable::PRIVACY_PUBLIC)
   end
 
-  def append_from_importer(new_table_name, new_schema_name)
-    new_schema            = owner.in_database.schema(
-                              new_table_name,
-                              reload: true,
-                              schema: new_schema_name
-                            )
-    new_schema_hash       = Hash[new_schema]
-    append_to_table       = self
-    new_schema_names      = new_schema.map(&:first)
-    existing_schema_hash  = Hash[append_to_table.schema(reload: true)]
-    drop_names            = %W{ cartodb_id created_at updated_at ogc_fid}
-    configuration         = ::Rails::Sequel.configuration.environment_for(Rails.env)
-
-    # fun schema check here
-    new_schema_hash.keys.each do |column_name|
-      if RESERVED_COLUMN_NAMES.include?(column_name.to_s) || drop_names.include?(column_name.to_s)
-        new_schema_names.delete(column_name)
-      elsif column_name.to_s != 'the_geom'
-        if existing_schema_hash.keys.include?(column_name)
-          # column name exists in new and old table
-          if existing_schema_hash[column_name] != new_schema_hash[column_name]
-            #the new column type does not match the existing, force change to existing
-            column_data = configuration.merge(
-              type: existing_schema_hash[column_name][:type].to_s,
-              name: column_name
-            ).symbolize_keys
-            self.modify_column!(column_data)
-          end
-        else
-          # add column and type to old table
-          column_data =  configuration.merge(
-            type: new_schema_hash[column_name][:type].to_s,
-            name: column_name
-          ).symbolize_keys
-          append_to_table.add_column!(column_data)
-        end
-      end
-    end
-
-    # append table 2 to table 1
-    owner.in_database.run(%Q{
-      INSERT INTO "#{append_to_table.name}" (
-        #{new_schema_names.join(',')}
-      )
-      (
-        SELECT #{new_schema_names.join(',')}
-        FROM "#{new_schema_name}"."#{new_table_name}"
-      )
-    })
-  end #append_from_importer
-
-  def append_to_table(options)
-    from_table = options[:from_table]
-    append_to_table = self
-    # if concatenate_to_table is set, it will join the table just created
-    # to the table named in concatenate_to_table and then drop the created table
-    #get schemas of uploaded and existing tables
-    new_schema        = from_table.schema(reload: true)
-    new_schema_hash   = Hash[new_schema]
-    new_schema_names  = new_schema.collect {|x| x[0]}
-
-    existing_schema_hash = Hash[append_to_table.schema(reload: true)]
-
-    # fun schema check here
-    drop_names = %W{ cartodb_id created_at updated_at ogc_fid}
-    new_schema_hash.keys.each do |column_name|
-      if RESERVED_COLUMN_NAMES.include?(column_name.to_s) or drop_names.include?column_name.to_s
-        new_schema_names.delete(column_name)
-      elsif column_name.to_s != 'the_geom'
-        if existing_schema_hash.keys.include?(column_name)
-          # column name exists in new and old table
-          if existing_schema_hash[column_name] != new_schema_hash[column_name]
-            #the new column type does not match the existing, force change to existing
-            hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-              :type => existing_schema_hash[column_name],
-              :name => column_name
-            ).symbolize_keys
-            self.modify_column! hash_in
-          end
-        else
-          # add column and type to old table
-            hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-              :type => new_schema_hash[column_name],
-              :name => column_name
-            ).symbolize_keys
-          append_to_table.add_column! hash_in
-        end
-      end
-    end
-    # append table 2 to table 1
-    owner.in_database.run(%Q{INSERT INTO "#{append_to_table.name}" (#{new_schema_names.join(',')}) (SELECT #{new_schema_names.join(',')} FROM "#{from_table.name}")})
-    # so that we can use the same method to allow the user to merge two tables
-    # that already exist in the API
-    # a future might be merge_two_tables
-    # => where tableA is duplicated
-    # => then tableB is append_to_table onto tableA
-    # => leaving both in tact while creating a new tthat contains both
-  end
-
   def import_to_cartodb(uniname=nil)
     @data_import ||= DataImport.where(id: @user_table.data_import_id).first || DataImport.new(user_id: owner.id)
     if migrate_existing_table.present? || uniname
@@ -837,8 +738,9 @@ class Table
     user.in_database["SELECT reltuples::integer FROM pg_class WHERE oid = '#{self.name}'::regclass"].first[:reltuples]
   end
 
+  # Preferred: `actual_row_count`
   def rows_counted
-    sequel.count
+    actual_row_count
   end
 
   # Returns table size in bytes
@@ -1423,6 +1325,7 @@ class Table
     perform_organization_table_permission_change('CDB_Organization_Remove_Organization_Access_Permission')
   end
 
+  # Estimated row count and size
   def row_count_and_size
     begin
       # Keep in sync with lib/sql/scripts-available/CDB_Quota.sql -> CDB_UserDataSize()
@@ -1447,6 +1350,15 @@ class Table
     data = { size: nil, row_count: nil } if data.nil?
 
     data
+  end
+
+  def estimated_row_count
+    row_count_and_size = self.row_count_and_size
+    row_count_and_size.nil? ? nil : row_count_and_size[:row_count]
+  end
+
+  def actual_row_count
+    sequel.count
   end
 
   private

@@ -9,7 +9,6 @@ $cLiked: #D93F56;
 
 .LikesIndicator {
   color:$cTypography-secondary;
-  cursor: default;
   @include nicer-lato-typography();
 }
 .LikesIndicator-count {
@@ -19,6 +18,9 @@ $cLiked: #D93F56;
   @include transform(1);
   font-size: $sFontSize-small;
   color: $cTypography-help;
+}
+.LikesIndicator-icon.LikesIndicator-icon--big {
+  font-size: $sFontSize-largest;
 }
 .LikesIndicator.is-likeable {
   cursor: pointer;
@@ -40,7 +42,9 @@ $cLiked: #D93F56;
     @include animation(pulse 400ms both ease-in);
   }
 }
+.LikesIndicator-icon--big {
 
+}
 @include keyframes(pulse) {
   0% {
     @include transform(scale(1));

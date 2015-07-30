@@ -5,7 +5,6 @@ $sLayout-width: 940px;
 $sMargin-section:            40px; // To separate main section
 $sMargin-group:              28px; // To separate groups inside a section
 $sMargin-element:            20px; // To separate elements inside a group
-$sMargin-elementLarge:       40px; // To separate elements inside a group (large separation)
 $sMargin-elementInline:      12px; // To separate inline elements
 $sMargin-min:                4px;  // Minimum margin, special cases only
 $sMargin-formRow:            20px; // Each row in a form should have a margin-bottom of this value.
@@ -43,7 +42,7 @@ $sButton-borderRadius: 28px;
 $sAvatar-borderRadiusSmall: 2px;
 $sAvatar-borderRadius:      4px;
 $sAvatar-public:            96px;
-$sAvatar-default:           40px;
+$sAvatar-default:           36px;
 $sAvatar-small:             20px;
 $sAvatar-meta:              16px;
 

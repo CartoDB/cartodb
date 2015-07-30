@@ -151,7 +151,7 @@ module CartoDB
       end
 
       def shape_coordinate_option
-        shape_coordinate_system.empty? ? '' : "-t_srs EPSG:#{shape_coordinate_system}"
+        shape_coordinate_system.empty? ? '' : "-s_srs EPSG:#{shape_coordinate_system}"
       end
 
       def layer_name_option

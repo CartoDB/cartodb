@@ -148,7 +148,7 @@ module CartoDB
 
       private
 
-      attr_reader :pg_options, :unpacker, :available_quota
+      attr_reader :pg_options, :unpacker, :available_quota, :job
       attr_writer :results, :tracker
 
       def import(source_file, downloader, loader_object=nil)

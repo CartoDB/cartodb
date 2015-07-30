@@ -124,7 +124,7 @@ class Geocoding < Sequel::Model
       return
     end
 
-    rows_geocoded_before = table_service.owner.in_database.select.from(table_service.sequel_qualified_table_name).where(cartodb_georef_status: true).count rescue 0
+    rows_geocoded_before = table_service.owner.in_database.fetch(%Q{ SELECT * FROM #{table_service.qualified_table_name} WHERE cartodb_georef_status = TRUE }).count rescue 0
 
     self.run_geocoding!(processable_rows, rows_geocoded_before)
   rescue => e
@@ -156,7 +156,7 @@ class Geocoding < Sequel::Model
     self.update(cache_hits: table_geocoder.cache.hits) if table_geocoder.respond_to?(:cache)
     Statsd.gauge("geocodings.requests", "+#{self.processed_rows}") rescue nil
     Statsd.gauge("geocodings.cache_hits", "+#{self.cache_hits}") rescue nil
-    rows_geocoded_after = table_service.owner.in_database.select.from(table_service.sequel_qualified_table_name).where('cartodb_georef_status is true and the_geom is not null').count rescue 0
+    rows_geocoded_after = table_service.owner.in_database.fetch(%Q{ SELECT * FROM #{table_service.qualified_table_name} WHERE cartodb_georef_status = TRUE AND the_geom IS NOT NULL }).count rescue 0
 
     @finished_at = Time.now
     self.batched = table_geocoder.used_batch_request?
@@ -186,12 +186,13 @@ class Geocoding < Sequel::Model
   end
 
   def self.processable_rows(table_service, force_all_rows=false)
-    dataset = table_service.owner.in_database.select.from(table_service.sequel_qualified_table_name)
+    dataset = table_service.owner.in_database.fetch(%Q{ SELECT * FROM #{table_service.qualified_table_name} WHERE cartodb_georef_status IS NOT TRUE })
     if !force_all_rows && dataset.columns.include?(:cartodb_georef_status)
       dataset = dataset.exclude(cartodb_georef_status: true)
     end
+
     dataset.count
-  end # self.processable_rows
+  end
 
   def calculate_used_credits
     return 0 unless kind == 'high-resolution'
@@ -202,7 +203,7 @@ class Geocoding < Sequel::Model
     remaining_quota  = (remaining_quota > 0 ? remaining_quota : 0)
     used_credits     = total_rows - remaining_quota
     (used_credits > 0 ? used_credits : 0)
-  end # calculate_used_credits
+  end
 
   def price
     return 0 unless used_credits.to_i > 0
@@ -216,7 +217,7 @@ class Geocoding < Sequel::Model
 
   def remaining_quota
     user.remaining_geocoding_quota
-  end # remaining_quota
+  end
 
   def sanitize_formatter
     translated_formatter = translate_formatter
@@ -240,7 +241,7 @@ class Geocoding < Sequel::Model
               .gsub(/\}$/, '')
               .gsub(/\}/, ", '")
               .gsub(/\{/, "', ")
-  end # translate_formatter
+  end
 
   def max_geocodable_rows
     # This is an arbitrary number, previously set to 1M

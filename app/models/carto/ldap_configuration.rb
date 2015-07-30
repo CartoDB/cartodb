@@ -36,14 +36,14 @@ class Carto::LdapConfiguration < ActiveRecord::Base
     search_in_domain_bases("objectClass=#{objectClass}")
   end
 
-  # TODO: make private?
+  private
+
   def search_in_domain_bases(filter)
     domain_bases.map { |d|
       search(d, filter)
     }.flatten
   end
 
-  # TODO: make private?
   def search(base, filter = nil)
     if filter
       connection.search(base: base, filter: filter)
@@ -51,8 +51,6 @@ class Carto::LdapConfiguration < ActiveRecord::Base
       connection.search(base: base)
     end
   end
-
-  private
 
   def connection
     @conn ||= connect

@@ -50,7 +50,8 @@ class SignupController < ApplicationController
   private
 
   def initialize_google_plus_config
-    @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, '/signup', 'google_access_token', @organization.nil? || @organization.color.nil? ? nil : organization_color(@organization))
+    button_color = @organization.nil? || @organization.color.nil? ? nil : organization_color(@organization)
+    @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, '/signup', 'google_access_token', button_color)
   end
 
   def load_organization

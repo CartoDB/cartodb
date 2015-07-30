@@ -150,6 +150,7 @@ module CartoDB
 
         if source_file.extension == '.shp'
           ogr_options.merge!(shape_encoding: shape_encoding)
+          ogr_options.merge!(shape_coordinate_system: '4326') if shapefile_without_prj?
         end
         ogr_options
       end
@@ -164,6 +165,14 @@ module CartoDB
         }
         return DEFAULT_ENCODING unless normalizer
         normalizer.new(source_file.fullpath, job).encoding
+      end
+
+      def shapefile_without_prj?
+        normalizer = [ShpNormalizer].find { |normalizer|
+          normalizer.supported?(source_file.extension)
+        }
+        return false unless normalizer
+        !normalizer.new(source_file.fullpath, job).prj_file_present?
       end
 
       def shape_encoding

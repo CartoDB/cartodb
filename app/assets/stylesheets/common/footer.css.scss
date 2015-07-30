@@ -50,8 +50,7 @@
 }
 .Footer-title {
   margin-bottom: 12px;
-  font-weight: 400;
-  font-family: "ProximaNova-Semibold";
+  font-weight: 700;
   font-size: 12px;
   text-transform: uppercase;
   color: #333;
@@ -94,7 +93,7 @@
 }
 .Footer-credits span {
   color: #333;
-  font-family: "ProximaNova-Semibold";
+  font-weight: 700;
 }
 .Newsletter {
   position: relative;
@@ -119,7 +118,8 @@
   bottom: 3px;
   width: 60px;
   border: 0;
-  font: 400 12px "ProximaNova-Semibold";
+  font: 700 12px Lato, sans-serif;
+  font-weight: 700;
   color: #fff;
   background: #3AA9E3;
   border-radius: 17px;
@@ -218,5 +218,15 @@
   .Footer-brand,
   .Footer-credits {
     float: none;
+  }
+}
+
+@media (max-width: $sMedia-mobile) {
+  .Footer-brand {
+    margin: 0 0 20px;
+  }
+
+  .Footer-credits {
+    width: 100%;
   }
 }

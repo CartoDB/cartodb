@@ -7,8 +7,8 @@ class Carto::LdapConfiguration < ActiveRecord::Base
 
   belongs_to :organization, class_name: Carto::Organization
 
-  validates :organization, :host, :port, :connection_user, :connection_password, :user_id_field, :email_field, :presence => true
-  validates :ca_file, :username_field, :user_groups, :length => { :minimum => 0, :allow_nil => true }
+  validates :organization, :host, :port, :connection_user, :connection_password, :user_id_field, :email_field, :user_object_class, :group_object_class, :presence => true
+  validates :ca_file, :username_field, :length => { :minimum => 0, :allow_nil => true }
   validates :domain_bases, :length => { :minimum => 1, :allow_nil => false }
   validates :encryption, :inclusion => { :in => %w( start_tls simple_tls ), :allow_nil => true }
   validates :ssl_version, :inclusion => { :in => %w( TLSv1_1 ), :allow_nil => true }
@@ -28,11 +28,11 @@ class Carto::LdapConfiguration < ActiveRecord::Base
     connection.bind
   end
 
-  def users(objectClass = 'organizationalRole')
+  def users(objectClass = self.user_object_class)
     search_in_domain_bases("objectClass=#{objectClass}")
   end
 
-  def groups(objectClass = 'organization')
+  def groups(objectClass = self.group_object_class)
     search_in_domain_bases("objectClass=#{objectClass}")
   end
 

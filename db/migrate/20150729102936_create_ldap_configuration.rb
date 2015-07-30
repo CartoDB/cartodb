@@ -16,7 +16,10 @@ Sequel.migration do
       String    :username_field
       String    :email_field,       null: false
       String    :domain_bases,      type: 'text[]'
-      String    :user_groups,       type: 'text[]'
+      String    :user_object_class,  null: false
+      String    :group_object_class, null: false
+      # This configuration is not confirmed
+      # String    :user_groups,       type: 'text[]'
       DateTime  :created_at,        default: Sequel::CURRENT_TIMESTAMP
       DateTime  :updated_at,        default: Sequel::CURRENT_TIMESTAMP
     end

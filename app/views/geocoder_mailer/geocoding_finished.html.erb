@@ -5,18 +5,9 @@
     <td>
       <!-- HEADER -->
       <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; border: 1px solid #dddddd; border-bottom: 0; border-collapse: separate !important; border-top-left-radius: 4px; border-top-right-radius: 4px; width: 100% !important;">
-        <% if @geocoding_failed %>
-          <tr>
-            <td align="left" style="padding: 40px 50px 40px 50px; font-weight: bold; font-size: 25px; font-family: Helvetica, Arial, sans-serif; color: #333333;">Your dataset geocoding failed</td>
-          </tr>
-          <tr>
-            <td align="left" style="padding: 20px 50px 40px 50px; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;">There was some error while geocoding your dataset <strong><%= @table_name %></strong>:</td>
-          </tr>
-        <% else %>
-          <tr>
-            <td align="left" style="padding: 40px 50px 0 50px; font-weight: bold; font-size: 25px; font-family: Helvetica, Arial, sans-serif; color: #333333;">Your dataset geocoding just finished</td>
-          </tr>
-        <% end %>
+        <tr>
+          <td align="left" style="padding: 40px 50px 40px 50px; font-weight: bold; font-size: 25px; font-family: Helvetica, Arial, sans-serif; color: #333333;"><% if @geocoding_failed %>Your dataset geocoding have just finished<% else %>Your dataset was successfully geocoded<% end %></td>
+        </tr>
       </table>
     </td>
   </tr>
@@ -26,33 +17,21 @@
       <table cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #ffffff; border: 1px solid #dddddd; border-top: 1px solid #dddddd; border-bottom: 1px solid #cccccc; border-bottom-left-radius: 4px; border-bottom-right-radius: 4px; width: 100% !important;">
         <tr>
           <td valign="top" style="padding: 0;">
-            <% if !@geocoding_failed %>
-              <table cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #F2FAE8; border-bottom: 1px solid #dddddd; width: 100% !important;">
-                <tr>
-                  <td align="left" style="padding: 40px 50px 40px 50px; font-family: Helvetica, Arial, sans-serif;">
-                    <p style="margin: 0; font-size: 16px; line-height: 25px; color: #666666;">Your dataset <strong><%= @table_name %></strong> was successfully geocoded.</p>
-                  </td>
-                </tr>
-              </table>
-            <% else %>
-              <table cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #FEFAF4; border-bottom: 1px solid #dddddd; width: 100% !important;">
-                <tr>
-                  <td align="left" style="padding: 40px 50px 40px 50px; font-family: Helvetica, Arial, sans-serif;">
-                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                      <tr>
-                        <td align="left" style="font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;"><strong>Unable to geocode your dataset</strong></td>
-                      </tr>
-
-                      <tr>
-                        <td align="left" style="padding: 20px 0 0 0; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;">We couldn't geocode your dataset. Please <a href="mailto:support@cartodb.com?subject=Geocoding+error" target="_blank">contact us</a> and we will help you to load your data.</td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-              </table>
-            <% end %>
+            <table cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: <% if @geocoding_failed %>#FEFAF4;<% else %>#F2FAE8;<% end %> border-bottom: 1px solid #dddddd; width: 100% !important;">
+              <tr>
+                <td align="left" style="padding: 40px 50px 40px 50px; font-family: Helvetica, Arial, sans-serif;">
+                  <p style="margin: 0; font-size: 16px; line-height: 25px; color: #666666;">We've successfully geocoded <strong><%= @real_rows %></strong> out of <strong><%= @processable_rows %></strong> points from <strong><%= @table_name %></strong>.</p>
+                </td>
+              </tr>
+            </table>
           </td>
         </tr>
+
+        <% if @geocoding_failed %>
+          <tr>
+            <td align="left" style="padding: 40px 50px 0 50px; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;">Rows that are not geocoded could have errors on theis column values, or just doesn't exist in our data. To try again set "Override all values" checkbox for those rows you want to geocode try again.</td>
+          </tr>
+        <% end %>
 
         <tr>
           <td style="padding: 40px 50px 40px 50px;" align="center" class="padding">

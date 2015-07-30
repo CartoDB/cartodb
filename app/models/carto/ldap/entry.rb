@@ -1,4 +1,4 @@
-class Carto::LdapEntry
+class Carto::Ldap::Entry
 
   def initialize(ldap_entry, ldap_configuration)
     @entry = ldap_entry

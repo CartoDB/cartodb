@@ -3,7 +3,8 @@
 # See http://www.rubydoc.info/gems/net-ldap/0.11
 require 'net/ldap'
 
-class Carto::LdapConfiguration < ActiveRecord::Base
+class Carto::Ldap::Configuration < ActiveRecord::Base
+  self.table_name = 'ldap_configurations'
 
   belongs_to :organization, class_name: Carto::Organization
 
@@ -13,7 +14,7 @@ class Carto::LdapConfiguration < ActiveRecord::Base
   validates :encryption, :inclusion => { :in => %w( start_tls simple_tls ), :allow_nil => true }
   validates :ssl_version, :inclusion => { :in => %w( TLSv1_1 ), :allow_nil => true }
 
-  # Returns matching Carto::LdapEntry or false if credentials are wrong
+  # Returns matching Carto::Ldap::Entry or false if credentials are wrong
   def authenticate(username, password)
     username_filter = "cn=#{username}"
 
@@ -21,7 +22,7 @@ class Carto::LdapConfiguration < ActiveRecord::Base
       connect("#{username_filter},#{d}", password).bind
     }
 
-    domain_base.nil? ? false : Carto::LdapEntry.new(search(domain_base, username_filter).first, self)
+    domain_base.nil? ? false : Carto::Ldap::Entry.new(search(domain_base, username_filter).first, self)
   end
 
   def test_connection

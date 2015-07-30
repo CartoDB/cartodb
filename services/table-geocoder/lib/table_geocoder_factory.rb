@@ -31,7 +31,6 @@ module Carto
                table_schema:  table_service.try(:database_schema),
                table_name:    table_service.try(:name),
                qualified_table_name: table_service.try(:qualified_table_name),
-               sequel_qualified_table_name: table_service.try(:sequel_qualified_table_name),
                connection:    user_connection
                )
         .merge(params)

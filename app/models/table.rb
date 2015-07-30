@@ -724,7 +724,7 @@ class Table
 
   # TODO: change name and refactor for ActiveRecord
   def sequel
-    owner.in_database.from(sequel_qualified_table_name)
+    owner.in_database.run(%Q{ SELECT * FROM #{qualified_table_name} })
   end
 
   def rows_estimated_query(query)
@@ -1296,11 +1296,6 @@ class Table
     @name_changed_from = nil
   end
 
-  # @see https://github.com/jeremyevans/sequel#qualifying-identifiers-columntable-names
-  def sequel_qualified_table_name
-    "#{owner.database_schema}__#{@user_table.name}".to_sym
-  end
-
   def qualified_table_name
     "\"#{owner.database_schema}\".\"#{@user_table.name}\""
   end
@@ -1605,7 +1600,7 @@ class Table
 
     owner.in_database do |user_database|
       if force_schema.blank?
-        user_database.create_table sequel_qualified_table_name do
+        user_database.create_table qualified_table_name do
           column :cartodb_id, 'SERIAL PRIMARY KEY'
           String :name
           String :description, :text => true

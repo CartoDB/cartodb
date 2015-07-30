@@ -62,11 +62,11 @@ module Carto
       def data_input_blocks
         Enumerator.new do |enum|
           begin
-            data_input = connection.select(:cartodb_id, searchtext_expression)
-              .from(@sequel_qualified_table_name)
-              .where(cartodb_georef_status: nil)
-              .limit(max_block_size)
-              .all
+            data_input = connection.run(%Q{ SELECT cartodb_id, #{searchtext_expression} 
+                FROM #{@qualified_table_name}
+                WHERE cartodb_georef_status = NULL
+                LIMIT #{max_block_size} }
+              )
             enum.yield data_input
             # last iteration when data_input.length < max_block_size, no need for another query
           end while data_input.length == max_block_size

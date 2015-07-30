@@ -9,69 +9,11 @@
 @import "old_common/form-elements";
 @import "old_common/mixins";
 
-.HelperSouth,
-.HelperEast,
-.HelperWest,
-.HelperNorth {
-  position: absolute;
-  top: 0;
-  left: 0;
-  background:rgba(#000, 0.6);
-}
-
-.CanvasExport {
-  position:absolute;
-  border: 1px dashed #fff;
-  &.draggable {
-    z-index: 1000000000;
-    cursor:move;
-  }
-}
-
-$resizeHandlerSize: 8px;
-
-.CanvasExport {
-
-  .ui-resizable { position: relative; }
-  .ui-resizable-handle { 
-    position: absolute;
-    width: $resizeHandlerSize;
-    height: $resizeHandlerSize;
-    display: block;
-
-    @include box-shadow(1px 1px 2px rgba(#000, .5));
-
-    background: rgb(254,254,254); /* Old browsers */
-    background: -moz-linear-gradient(top, rgba(254,254,254,1) 0%, rgba(229,229,229,1) 100%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(254,254,254,1)), color-stop(100%,rgba(229,229,229,1))); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top, rgba(254,254,254,1) 0%,rgba(229,229,229,1) 100%); /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top, rgba(254,254,254,1) 0%,rgba(229,229,229,1) 100%); /* Opera 11.10+ */
-    background: -ms-linear-gradient(top, rgba(254,254,254,1) 0%,rgba(229,229,229,1) 100%); /* IE10+ */
-    background: linear-gradient(to bottom, rgba(254,254,254,1) 0%,rgba(229,229,229,1) 100%); /* W3C */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fefefe', endColorstr='#e5e5e5',GradientType=0 ); /* IE6-9 */
-
-    z-index: 104;
-  }
-  .ui-resizable-disabled .ui-resizable-handle, 
-  .ui-resizable-autohide .ui-resizable-handle { 
-    display: none;
-  }
-  .ui-resizable-n { cursor: ns-resize; top: -5px; left: 50%; margin-left: -4px; }
-  .ui-resizable-s { cursor: ns-resize; bottom: -5px; left: 50%; margin-left: -4px; }
-  .ui-resizable-e { cursor: ew-resize; right: -5px; top: 50%; margin-top: -4px; }
-  .ui-resizable-w { cursor: ew-resize; left: -5px; top: 50%; margin-top: -4px; }
-  .ui-resizable-se { cursor: nwse-resize; right: -4px; bottom: -4px; }
-  .ui-resizable-sw { cursor: nesw-resize; left: -4px;  bottom: -4px; }
-  .ui-resizable-nw { cursor: nwse-resize; left: -4px;  top: -4px;  }
-  .ui-resizable-ne { cursor: nesw-resize; right: -4px; top: -4px; }
-}
-
 .ExportImageView {
   position: absolute;
   width: 100%;
   height: 100%;
 }
-
 .ExportImageView-Header {
   position: absolute;
   text-align: center;
@@ -91,7 +33,6 @@ $resizeHandlerSize: 8px;
   top: 0;
   right: 0;
 }
-
 .ExportImageView-Footer {
   position: absolute;
   text-align: center;
@@ -99,7 +40,6 @@ $resizeHandlerSize: 8px;
   bottom: 25px;
   z-index: 105;
 }
-
 .ExportImageView--dimensions  {
   @include inline-block();
   padding: 3px 5px;
@@ -111,6 +51,13 @@ $resizeHandlerSize: 8px;
 .ExportImageView--dimensions strong {
   color: #fff;
   font-weight: normal;
+}
+
+.ExportHelper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background:rgba(#000, 0.6);
 }
 
 .Button--micro {
@@ -147,3 +94,44 @@ $resizeHandlerSize: 8px;
   }
 }
 
+$resizeHandlerSize: 8px;
+
+.CanvasExport {
+  position:absolute;
+  border: 1px dashed #fff;
+  &.draggable {
+    z-index: 1000000000;
+    cursor:move;
+  }
+}
+.CanvasExport {
+  .ui-resizable { position: relative; }
+  .ui-resizable-handle { 
+    position: absolute;
+    width: $resizeHandlerSize;
+    height: $resizeHandlerSize;
+    display: block;
+    @include box-shadow(1px 1px 2px rgba(#000, .5));
+    background: rgb(254,254,254); /* Old browsers */
+    background: -moz-linear-gradient(top, rgba(254,254,254,1) 0%, rgba(229,229,229,1) 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(254,254,254,1)), color-stop(100%,rgba(229,229,229,1))); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, rgba(254,254,254,1) 0%,rgba(229,229,229,1) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, rgba(254,254,254,1) 0%,rgba(229,229,229,1) 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top, rgba(254,254,254,1) 0%,rgba(229,229,229,1) 100%); /* IE10+ */
+    background: linear-gradient(to bottom, rgba(254,254,254,1) 0%,rgba(229,229,229,1) 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fefefe', endColorstr='#e5e5e5',GradientType=0 ); /* IE6-9 */
+    z-index: 104;
+  }
+  .ui-resizable-disabled .ui-resizable-handle, 
+  .ui-resizable-autohide .ui-resizable-handle { 
+    display: none;
+  }
+  .ui-resizable-n  { cursor: ns-resize; top: -5px; left: 50%; margin-left: -4px; }
+  .ui-resizable-s  { cursor: ns-resize; bottom: -5px; left: 50%; margin-left: -4px; }
+  .ui-resizable-e  { cursor: ew-resize; right: -5px; top: 50%; margin-top: -4px; }
+  .ui-resizable-w  { cursor: ew-resize; left: -5px; top: 50%; margin-top: -4px; }
+  .ui-resizable-se { cursor: nwse-resize; right: -4px; bottom: -4px; }
+  .ui-resizable-sw { cursor: nesw-resize; left: -4px;  bottom: -4px; }
+  .ui-resizable-nw { cursor: nwse-resize; left: -4px;  top: -4px;  }
+  .ui-resizable-ne { cursor: nesw-resize; right: -4px; top: -4px; }
+}

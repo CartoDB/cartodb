@@ -83,7 +83,8 @@ class SessionsController < ApplicationController
 
   def initialize_google_plus_config
     signup_action = Cartodb::Central.sync_data_with_cartodb_central? ? Cartodb::Central.new.google_signup_url : '/google/signup'
-    @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, signup_action, 'google_access_token', @organization.nil? || @organization.color.nil? ? nil : organization_color(@organization))
+    button_color = @organization.nil? || @organization.color.nil? ? nil : organization_color(@organization)
+    @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, signup_action, 'google_access_token', button_color)
   end
 
   def extract_username(request, params)

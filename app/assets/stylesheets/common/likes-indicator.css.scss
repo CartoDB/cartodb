@@ -12,7 +12,9 @@ $cLiked: #D93F56;
   @include nicer-lato-typography();
 }
 .LikesIndicator-count {
+  display: inline-block;
   margin: 0 0 0 5px;
+  vertical-align: top;
 }
 .LikesIndicator-icon {
   @include transform(1);

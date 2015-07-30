@@ -105,7 +105,7 @@
                 <% hubspot_form = Cartodb.config[:metrics].present? && Cartodb.config[:metrics]['hubspot'].present? && Cartodb.config[:metrics]['hubspot']['token'].present? && Cartodb.config[:metrics]['hubspot']['form_id'].present? %>
 
                 <ul class="Grid-cell <%= hubspot_form ? "Grid-cell--col6" : "Grid-cell--col12" %> Grid-cell--col12--mobile u-tspace-l u-ilist Social-links">
-                  <li class="Social-item"><a class="Social-link" href="https://twitter.com/cartodb"><i class="iconFont iconFont-Twitter Navmenu-icon Navmenu-icon--twitter"></i></a></li>
+                  <li class="Social-item"><a class="Social-link Social-link--twitter" href="https://twitter.com/cartodb"><i class="iconFont iconFont-Twitter Navmenu-icon"></i></a></li>
                   <li class="Social-item"><a class="Social-link" href="https://www.facebook.com/CartoDB"><i class="iconFont iconFont-FacebookSquare Navmenu-icon"></i></a></li>
                   <li class="Social-item"><a class="Social-link" href="https://www.linkedin.com/company/cartodb"><i class="iconFont iconFont-Linkedin Navmenu-icon"></i></a></li>
                 </ul>

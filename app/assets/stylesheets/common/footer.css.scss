@@ -147,6 +147,9 @@
 .Social-link:hover {
   color: #ccc; 
 }
+.Social-link.Social-link--twitter .Navmenu-icon {
+  font-size: 22px;
+}
 
 @media only screen and (max-width: $sMedia-mobile) {
   .Footer-inner .Footer-logo {

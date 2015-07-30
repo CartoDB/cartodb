@@ -15,7 +15,7 @@
       <% if current_user.notification.present? %>
         <div class="FlashMessage">
           <div class="u-inner">
-            <p class="FlashMessage-info"><%= current_user.notification %></p>
+            <p class="FlashMessage-info"><%= raw current_user.notification %></p>
           </div>
         </div>
       <% end %>

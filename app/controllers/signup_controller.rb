@@ -2,6 +2,8 @@ require_dependency 'google_plus_api'
 require_dependency 'google_plus_config'
 
 class SignupController < ApplicationController
+  include LoginHelper
+
   layout 'frontend'
 
   ssl_required :signup, :create
@@ -48,7 +50,7 @@ class SignupController < ApplicationController
   private
 
   def initialize_google_plus_config
-    @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, '/signup')
+    @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, '/signup', 'google_access_token', @organization.nil? || @organization.color.nil? ? nil : organization_color(@organization))
   end
 
   def load_organization

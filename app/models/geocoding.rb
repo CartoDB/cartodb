@@ -354,9 +354,9 @@ class Geocoding < Sequel::Model
   # Used in the run! method
   def send_report_mail(state, table_name, error_code=nil, processable_rows, real_rows)
     geocoding_time = @finished_at - @started_at
-    # if geocoding_time >= MIN_GEOCODING_TIME_TO_NOTIFY
+    if geocoding_time >= MIN_GEOCODING_TIME_TO_NOTIFY
       GeocoderMailer.geocoding_finished(user, state, table_name, error_code, processable_rows, real_rows).deliver
-    # end
+    end
   end
 
 end

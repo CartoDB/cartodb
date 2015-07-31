@@ -50,7 +50,7 @@ class SessionsController < ApplicationController
   def destroy
     # Destroy session on both scopes: username and default
     logout(CartoDB.extract_subdomain(request))
-    logout
+    logout if authenticated?
     redirect_to CartoDB.url(self, 'public_visualizations_home')
   end
 

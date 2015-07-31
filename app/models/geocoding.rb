@@ -129,7 +129,6 @@ class Geocoding < Sequel::Model
 
     rows_geocoded_before = table_service.owner.in_database.select.from(table_service.sequel_qualified_table_name).where(cartodb_georef_status: true).count rescue 0
 
-    return false if cancelled_geocoding?
     self.run_geocoding!(processable_rows, rows_geocoded_before)
   rescue => e
     log.append "Unexpected exception: #{e.to_s}"
@@ -152,11 +151,10 @@ class Geocoding < Sequel::Model
     self.update(table_geocoder.update_geocoding_status)
     self.update remote_id: table_geocoder.remote_id
 
-    return false if cancelled_geocoding?
-
     # TODO better exception handling here
     raise 'Geocoding failed'  if state == 'failed'
     raise 'Geocoding timed out'  if state == 'timeout'
+    return false if state == 'cancelled'
 
     handle_geocoding_success(rows_geocoded_before)
   rescue => e
@@ -315,13 +313,6 @@ class Geocoding < Sequel::Model
       self.save
     end
     @log
-  end
-
-  def cancelled_geocoding?
-    # The user cancel using the the frontend so we need to reload the
-    # model to refresh any change in the state
-    self.reload
-    self.state == 'cancelled'
   end
 
   def handle_geocoding_success(rows_geocoded_before)

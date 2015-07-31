@@ -19,11 +19,15 @@ class SignupController < ApplicationController
     @user = ::User.new_with_organization(@organization)
 
     if params[:google_access_token].present? && @google_plus_config.present?
+      # Keep in mind get_user_data can return nil
       user_data = GooglePlusAPI.new.get_user_data(params[:google_access_token])
     end
 
     if user_data
       user_data.set_values(@user)
+      if params[:user] && params[:user][:username].present?
+        @user.username = params[:user][:username]
+      end
     else
       @user.username = params[:user][:username]
       @user.email = params[:user][:email]

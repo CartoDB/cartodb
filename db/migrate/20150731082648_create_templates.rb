@@ -16,17 +16,23 @@ Sequel.migration do
 
     Rails::Sequel.connection.run(%Q{
       ALTER TABLE "templates"
-      ADD CONSTRAINT  source_visualization_id_fkey FOREIGN KEY (source_visualization_id) REFERENCES visualizations(id)
+        ADD CONSTRAINT  source_visualization_id_fkey
+        FOREIGN KEY (source_visualization_id)
+        REFERENCES visualizations(id)
+        ON DELETE CASCADE
       })
 
     Rails::Sequel.connection.run(%Q{
       ALTER TABLE "templates"
-      ADD CONSTRAINT  organization_id_fkey FOREIGN KEY (organization_id) REFERENCES organizations(id)
+        ADD CONSTRAINT  organization_id_fkey
+        FOREIGN KEY (organization_id)
+        REFERENCES organizations(id)
+        ON DELETE CASCADE
       })
 
     Rails::Sequel.connection.run(%Q{
       ALTER TABLE "templates"
-      ADD COLUMN required_tables uuid[] NOT NULL DEFAULT '{}'
+        ADD COLUMN required_tables uuid[] NOT NULL DEFAULT '{}'
     })
 
     Rails::Sequel.connection.run(%Q{

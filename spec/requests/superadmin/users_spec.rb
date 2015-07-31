@@ -415,7 +415,7 @@ feature "Superadmin's users API" do
   def default_headers(user = Cartodb.config[:superadmin]["username"], password = Cartodb.config[:superadmin]["password"])
     {
       'HTTP_AUTHORIZATION' => ActionController::HttpAuthentication::Basic.encode_credentials(user, password),
-      'HTTP_ACCEPT' => "application/json",
+      'HTTP_ACCEPT' => "application/json"
     }
   end
 end

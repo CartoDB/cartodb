@@ -12,7 +12,7 @@ Sequel.migration do
       String      :max_supported_version,   null: false
       String      :code,                    null: false, default: ''
       Uuid        :organization_id,         null: false
-      String      :required_tables,         type: 'text[]'
+      String      :required_tables,         type: 'text[]', null: false
     end
 
     Rails::Sequel.connection.run(%Q{
@@ -30,11 +30,6 @@ Sequel.migration do
         REFERENCES organizations(id)
         ON DELETE CASCADE
       })
-
-    #Rails::Sequel.connection.run(%Q{
-    #  ALTER TABLE "templates"
-    #    ADD COLUMN required_tables text[] NOT NULL DEFAULT '{}'
-    #})
 
     Rails::Sequel.connection.run(%Q{
       CREATE INDEX organization_id_idx ON templates(organization_id)

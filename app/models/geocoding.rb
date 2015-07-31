@@ -21,7 +21,7 @@ class Geocoding < Sequel::Model
   # plus spaces and single quotes
   SANITIZED_FORMATTER_REGEXP = /\A[[[:word:]]\s\,\']*\z/
 
-  MIN_GEOCODING_TIME_TO_NOTIFY = 5 * 60 #seconds
+  MIN_GEOCODING_TIME_TO_NOTIFY = 3 * 60 #seconds
 
   many_to_one :user
   many_to_one :user_table, :key => :table_id
@@ -159,7 +159,7 @@ class Geocoding < Sequel::Model
 
     handle_geocoding_success(rows_geocoded_before)
   rescue => e
-    handle_geocoding_failure(e)
+    handle_geocoding_failure(e, rows_geocoded_before)
   end
 
   def report(error = nil)
@@ -327,17 +327,17 @@ class Geocoding < Sequel::Model
     self.update(cache_hits: table_geocoder.cache.hits) if table_geocoder.respond_to?(:cache)
     Statsd.gauge("geocodings.requests", "+#{self.processed_rows}") rescue nil
     Statsd.gauge("geocodings.cache_hits", "+#{self.cache_hits}") rescue nil
-    rows_geocoded_after = table_service.owner.in_database.select.from(table_service.sequel_qualified_table_name).where('cartodb_georef_status is true and the_geom is not null').count rescue 0
 
     @finished_at = Time.now
     self.batched = table_geocoder.used_batch_request?
-    self.update(state: 'finished', real_rows: rows_geocoded_after - rows_geocoded_before, used_credits: calculate_used_credits)
-    send_report_mail(state, table_geocoder.table_name, nil, self.processable_rows, self.real_rows)
+    geocoded_rows = total_geocoded_rows(rows_geocoded_before)
+    self.update(state: 'finished', real_rows: geocoded_rows, used_credits: calculate_used_credits)
+    send_report_mail(state, table_geocoder.table_name, nil, self.processable_rows, geocoded_rows)
     log.append "Geocoding finished"
     self.report
   end
 
-  def handle_geocoding_failure(raised_exception)
+  def handle_geocoding_failure(raised_exception, rows_geocoded_before)
     @finished_at = Time.now
     self.batched = table_geocoder.nil? ? false : table_geocoder.used_batch_request?
     if raised_exception.is_a? Carto::GeocoderErrors::GeocoderBaseError
@@ -345,17 +345,23 @@ class Geocoding < Sequel::Model
     end
     self.update(state: 'failed', processed_rows: 0, cache_hits: 0)
     CartoDB::notify_exception(raised_exception, user: user)
-    send_report_mail(state, table_geocoder.table_name, error_code, self.processable_rows, self.real_rows)
+    geocoded_rows = total_geocoded_rows(rows_geocoded_before)
+    send_report_mail(state, table_geocoder.table_name, error_code, self.processable_rows, geocoded_rows)
     log.append "Unexpected exception: #{raised_exception.to_s}"
     log.append raised_exception.backtrace
     self.report(raised_exception)
   end
 
+  def total_geocoded_rows(rows_geocoded_before)
+    rows_geocoded_after = table_service.owner.in_database.select.from(table_service.sequel_qualified_table_name).where('cartodb_georef_status is true and the_geom is not null').count rescue 0
+    rows_geocoded_after - rows_geocoded_before
+  end
+
   # Used in the run! method
-  def send_report_mail(state, table_name, error_code=nil, processable_rows, real_rows)
+  def send_report_mail(state, table_name, error_code=nil, processable_rows, number_geocoded_rows)
     geocoding_time = @finished_at - @started_at
     if geocoding_time >= MIN_GEOCODING_TIME_TO_NOTIFY
-      GeocoderMailer.geocoding_finished(user, state, table_name, error_code, processable_rows, real_rows).deliver
+      GeocoderMailer.geocoding_finished(user, state, table_name, error_code, processable_rows, number_geocoded_rows).deliver
     end
   end
 

@@ -1,0 +1,53 @@
+<% content_for :title do %>CartoDB Diagnosis<% end %>
+
+<%= content_for(:css) do %>
+<style>
+  body {
+    padding: 40px;
+  }
+
+  ul, dl {
+    margin-left: 20px;
+  }
+
+  .component {
+    font-size: 110%;
+    font-weight: bold;
+  }
+
+  .component:after {
+    content: ': ';
+  }
+
+  .code {
+    font-family: courier;
+  }
+
+  .status.ok {
+    color: green;
+  }
+  .status.error {
+    color: red;
+  }
+  .status.warning {
+    color: orange;
+  }
+</style>
+<% end %>
+
+<h1>CartoDB diagnosis</h1>
+
+<dl>
+<% @diagnosis.each { |d| %>
+  <dt><span class="component"><%= d[0] %></span> <span class="status <%= d[1] %>"><%= d[1] %></span></dt>
+  <% if d[2].length > 0 %>
+    <dd>
+      <ul>
+        <% d[2].each { |i| %>
+          <li><%= raw i %></li>
+        <% } %>
+      </ul>
+    </dd>
+  <% end %>
+<% } %>
+</dl>

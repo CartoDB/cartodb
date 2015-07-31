@@ -108,6 +108,10 @@ module CartoDB
         exit_code == 35584 && command_output =~ /Segmentation fault/
       end
 
+      def kml_style_missing?
+        is_kml? && command_output =~/Parseing kml Style: No id/
+      end
+
       attr_accessor :append_mode, :filepath, :csv_guessing, :overwrite, :encoding, :shape_encoding,
                     :shape_coordinate_system
       attr_reader   :exit_code, :command_output
@@ -119,6 +123,10 @@ module CartoDB
 
       def is_csv?
         !(filepath =~ /\.csv$/i).nil?
+      end
+
+      def is_kml?
+        !(filepath =~ /\.kml$/i).nil?
       end
 
       def is_geojson?

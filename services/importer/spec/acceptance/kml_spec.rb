@@ -104,4 +104,18 @@ describe 'KML regression tests' do
     }
   end
 
+  it 'raises exception if KML style tag dont have and ID' do
+    filepath    = path_to('style_without_id.kml')
+    downloader  = CartoDB::Importer2::Downloader.new(filepath)
+    runner      = CartoDB::Importer2::Runner.new({
+                               pg: @pg_options,
+                               downloader: downloader,
+                               log: CartoDB::Importer2::Doubles::Log.new,
+                               user: CartoDB::Importer2::Doubles::User.new
+                             })
+    runner.run
+
+    runner.results.first.error_code.should eq 2009
+  end
+
 end

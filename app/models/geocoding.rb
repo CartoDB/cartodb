@@ -2,6 +2,7 @@
 require 'socket'
 require_relative '../../services/table-geocoder/lib/table_geocoder_factory'
 require_relative '../../services/table-geocoder/lib/exceptions'
+require_relative '../../services/table-geocoder/lib/mail_geocoder'
 require_relative '../../services/geocoder/lib/geocoder_config'
 require_relative '../../lib/cartodb/metrics'
 require_relative '../../lib/cartodb/mixpanel'
@@ -360,9 +361,7 @@ class Geocoding < Sequel::Model
   # Used in the run! method
   def send_report_mail(state, table_name, error_code=nil, processable_rows, number_geocoded_rows)
     geocoding_time = @finished_at - @started_at
-    if geocoding_time >= MIN_GEOCODING_TIME_TO_NOTIFY
-      GeocoderMailer.geocoding_finished(user, state, table_name, error_code, processable_rows, number_geocoded_rows).deliver
-    end
+    CartoDB::Geocoder::MailNotifier.new(user.id, state, table_name, error_code, processable_rows, number_geocoded_rows, geocoding_time).notify_if_needed
   end
 
 end

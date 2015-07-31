@@ -113,6 +113,16 @@ module Resque
         end
       end
 
+      module GeocoderFinished
+        extend ::Resque::Metrics
+        @queue = :users
+
+        def self.perform(user_id, state, table_name, error_code, processable_rows, number_geocoded_rows)
+          user = User.where(id: user_id).first
+          GeocoderMailer.geocoding_finished(user, state, table_name, error_code, processable_rows, number_geocoded_rows).deliver
+        end
+      end
+
     end
   end
 end

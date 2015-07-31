@@ -3,7 +3,6 @@
 require_relative '../../../rspec_configuration'
 require 'ostruct'
 require 'uuidtools'
-require 'byebug'
 require_relative '../../../../app/controllers/carto/api/data_import_presenter'
 
 module CartoDB; end

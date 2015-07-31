@@ -102,6 +102,12 @@ $cHeader-dark:  rgba(#3A91D7, 1);
     text-decoration: none;
   }
 }
+.Header-settingsLink.Header-settingsLink--dashboard {
+  color: rgba(#fff, .6);
+}
+.Header-settingsLink.Header-settingsLink--dashboard:hover {
+  color: #fff;
+}
 .Header-darrow {
   font-size: 7px;
   margin-left: 6px;

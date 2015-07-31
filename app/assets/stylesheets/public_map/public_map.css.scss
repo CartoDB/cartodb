@@ -27,16 +27,31 @@
 .PublicMap-block.with-padding {
   padding-top: 40px;
 }
-.PublicMap-breadcrumb {
-  border-bottom: 1px solid #ddd;
+.PublicMap-navmenu {
+  position: relative;
+  z-index: 30;
+}
+.PublicMap-navmenu--owner {
+  position: relative;
+  z-index: 10;
 }
 .PublicMap-leftBlock {
   float: left;
   width: 50%;
-  max-width: 100%;
+}
+.PublicMap-gradient {
+  content: '';
+  display: none;
+  position: absolute;
+  z-index: 20;
+  right: 0;
+  height: 100%;
+  width: 50%;
+  background-image: linear-gradient(to right, rgba(#fff, 0) 5%, #fff 10%, #fff 100%);
 }
 .PublicMap-leftBlock.PublicMap-leftBlock--large {
-  width: 780px;
+  max-width: 780px;
+  width: 100%;
 }
 .PublicMap-rightBlock {
   float: right;
@@ -125,11 +140,15 @@
   content: "";
   height: 100%;
 }
+.Navmenu-list.Navmenu-list--owner {
+  float: left;
+  margin-top: 2px;
+}
 .Navmenu-list.Navmenu-list--avatar {
-  margin-right: $sMargin-section;
+  margin-right: $sMargin-element;
 }
 .Navmenu-item {
-  margin-right: $sMargin-group;
+  margin-right: $sMargin-section;
 }
 .Navmenu-subItem {
   margin-left: $sMargin-group;
@@ -139,9 +158,6 @@
 }
 .Navmenu-subItem.Navmenu-subItem:first-child {
   margin-left: 0;
-}
-.Navmenu-item.Navmenu-item--withArrow {
-  margin-right: $sMargin-section;
 }
 .Navmenu-item,
 .Navmenu-subItem {
@@ -157,6 +173,16 @@
   font-size: 9px;
   color: $cNavmenu-arrow;
 }
+.Navmenu-sep {
+  position: relative;
+  top: 3px;
+  display: inline-block;
+  margin-left: -20px;
+  margin-right: 20px;
+  width: 1px;
+  height: 20px;
+  background-color: $cNavmenu-sep;
+}
 .Navmenu-link {
   color: $cTypography-linkSecondary;
   transition: all .2s;
@@ -164,6 +190,10 @@
 .Navmenu-link:hover {
   color: $cTypography-linkSecondaryHover;
   text-decoration: none;
+}
+.Navmenu-link.Navmenu-link--owner {
+  float: left;
+  white-space: nowrap;
 }
 .Navmenu-icon {
   font-size: $sFontSize-largest;
@@ -225,17 +255,11 @@
 }
 .Navmenu-shareList {
   display: inline-block;
-  margin-left: $sMargin-elementInline;
   transition: all .2s;
-}
-.Navmenu-shareList.is-active {
-  margin-top: 0;
-  width: 100%;
 }
 .Navmenu-closeLink {
   position: relative;
   top: -2px;
-  margin-right: $sMargin-elementInline;
 }
 @media (min-width: $sMedia-desktop +1) {
   .PublicMap-metaList.PublicMap-metaList--mobile {
@@ -243,6 +267,20 @@
   }
 }
 @media (max-width: $sMedia-desktop) {
+  .PublicMap-gradient {
+    display: block;
+  }
+  .PublicMap-leftBlock.PublicMap-leftBlock--owner {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+  }
+  .PublicMap-rightBlock.PublicMap-rightBlock--owner {
+    position: absolute;
+    z-index: 30;
+    right: 0;
+    width: 50%;
+  }
   .Navmenu-shareLink {
     display: inline-block;
   }
@@ -255,14 +293,21 @@
     height: 76px;
     background: #fff;
   }
-  .Navmenu-list.Navmenu-list--avatar {
-    margin-right: $sMargin-element;
+  .Navmenu-shareList.is-active {
+    margin-top: 0;
+    width: 200%;
+  }
+  .Navmenu-sep {
+    top: 0;
   }
   .Navmenu-item.Navmenu-item.last-child {
     margin-right: 0;
   }
   .Navmenu-editLink {
     display: block;
+  }
+  .LikesIndicator-count {
+    display: none;
   }
   .PublicMap-metaList {
     display: block;

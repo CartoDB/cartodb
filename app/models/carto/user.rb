@@ -18,7 +18,6 @@ class Carto::User < ActiveRecord::Base
   has_many :layers, :through => :layers_user
   belongs_to :organization, inverse_of: :users
   has_many :feature_flags_user, dependent: :destroy
-  has_many :feature_flags, :through => :feature_flags_user
   has_many :assets, inverse_of: :user
   has_many :data_imports, inverse_of: :user
   has_many :geocodings, inverse_of: :user

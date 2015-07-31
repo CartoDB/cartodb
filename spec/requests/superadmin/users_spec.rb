@@ -364,27 +364,27 @@ feature "Superadmin's users API" do
 
   describe '#update' do
     it 'should remove user feature_flag relation' do
-      user         = FactoryGirl.create(:user)
-      first_feature_flag = FactoryGirl.create(:feature_flag)
+      user                = FactoryGirl.create(:user)
+      first_feature_flag  = FactoryGirl.create(:feature_flag)
       second_feature_flag = FactoryGirl.create(:feature_flag)
 
       first_feature_flag_user  = FactoryGirl.create(:feature_flags_user, feature_flag_id: first_feature_flag.id, user_id: user.id)
       second_feature_flag_user = FactoryGirl.create(:feature_flags_user, feature_flag_id: second_feature_flag.id, user_id: user.id)
 
       expect {
-        put superadmin_user_url(user.id), { :user => { :feature_flags => second_feature_flag.id.to_s.split(",") }, id: user.id }.to_json, {'CONTENT_TYPE'  => 'application/json'}
+        put superadmin_user_url(user.id), { :user => { :feature_flags => [second_feature_flag.id] }, id: user.id }, default_headers
       }.to change(FeatureFlagsUser, :count).by(-1)
     end
 
     it 'should create user feature_flag relation' do
-      user         = FactoryGirl.create(:user)
-      first_feature_flag = FactoryGirl.create(:feature_flag)
+      user                = FactoryGirl.create(:user)
+      first_feature_flag  = FactoryGirl.create(:feature_flag)
       second_feature_flag = FactoryGirl.create(:feature_flag)
 
       second_feature_flag_user = FactoryGirl.create(:feature_flags_user, feature_flag_id: second_feature_flag.id, user_id: user.id)
 
       expect {
-        put superadmin_user_url(user.id), { :user => { :feature_flags => [first_feature_flag.id.to_s, second_feature_flag.id.to_s] }, id: user.id }.to_json, {'CONTENT_TYPE'  => 'application/json'}
+        put superadmin_user_url(user.id), { :user => { :feature_flags => [first_feature_flag.id.to_s, second_feature_flag.id.to_s] }, id: user.id }, default_headers
       }.to change(FeatureFlagsUser, :count).by(1)
     end
   end
@@ -394,7 +394,7 @@ feature "Superadmin's users API" do
       user = FactoryGirl.create(:user)
 
       expect {
-        delete superadmin_user_url(user.id), { user: user }.to_json, {'CONTENT_TYPE'  => 'application/json'}
+        delete superadmin_user_url(user.id), { user: user }.to_json, default_headers
       }.to change(User, :count).by(-1)
     end
 
@@ -405,7 +405,7 @@ feature "Superadmin's users API" do
       feature_flag_user = FactoryGirl.create(:feature_flags_user, feature_flag_id: feature_flag.id, user_id: user.id)
 
       expect {
-        delete superadmin_user_url(user.id), { user: user }.to_json, {'CONTENT_TYPE'  => 'application/json'}
+        delete superadmin_user_url(user.id), { user: user }.to_json, default_headers
       }.to change(FeatureFlagsUser, :count).by(-1)
     end
   end
@@ -415,7 +415,7 @@ feature "Superadmin's users API" do
   def default_headers(user = Cartodb.config[:superadmin]["username"], password = Cartodb.config[:superadmin]["password"])
     {
       'HTTP_AUTHORIZATION' => ActionController::HttpAuthentication::Basic.encode_credentials(user, password),
-      'HTTP_ACCEPT' => "application/json"
+      'HTTP_ACCEPT' => "application/json",
     }
   end
 end

@@ -53,6 +53,7 @@ WORKING_SPECS_2 = \
   services/importer/spec/unit/column_spec.rb \
   services/importer/spec/unit/csv_normalizer_spec.rb \
 	services/importer/spec/unit/shp_normalizer_spec.rb \
+	services/importer/spec/unit/shp_helper_spec.rb \
   services/importer/spec/unit/downloader_spec.rb \
   services/importer/spec/unit/georeferencer_spec.rb \
   services/importer/spec/unit/importer_stats_spec.rb \

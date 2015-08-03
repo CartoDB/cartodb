@@ -111,8 +111,6 @@ describe Carto::Template do
     table_vis = table.table_visualization
     other_table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: 'table2', user_id: @org_user_owner.id)
 
-    table_vis.expects(:related_tables).returns([table])
-
     template = Carto::Template.new({
         title: 'title',
         code: '',
@@ -132,11 +130,11 @@ describe Carto::Template do
     related_vis = CartoDB::Visualization::Member.new(id: table_vis.id).fetch
                                                                       .related_templates.should eq expected_templates
 
-    Carto::Visualization.where(id: other_table.id).first
-                                                  .related_templates.should eq []
+    Carto::Visualization.where(id: other_table.table_visualization.id).first
+                                                                      .related_templates.should eq []
 
-    CartoDB::Visualization::Member.new(id: other_table.id).fetch
-                                                          .related_templates.should eq []
+    CartoDB::Visualization::Member.new(id: other_table.table_visualization.id).fetch
+                                                                              .related_templates.should eq []
 
   end
 

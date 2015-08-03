@@ -28,7 +28,13 @@ module Carto
       @users_cache = []
       ensure_required_tables_not_empty
       visualization.related_tables.each do |table|
-        table_name = "#{table.owner.database_schema}.#{table.name}"
+        # TODO: Remove this when solving https://github.com/CartoDB/cartodb/issues/4838
+        # HACK: Layer models return different instances
+        if table.class == Carto::UserTable
+          table_name = "#{table.user.database_schema}.#{table.name}"
+        else
+          table_name = "#{table.owner.database_schema}.#{table.name}"
+        end
         return true  if self.required_tables.include?(table_name)
       end
       

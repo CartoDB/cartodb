@@ -121,11 +121,6 @@ describe User do
     end
   end
 
-  it "should cast nil geocoding_quota to 0" do
-    @user.geocoding_quota = nil
-    @user.remaining_geocoding_quota
-  end
-
   it "should not allow a username in use by an organization" do
     create_org('testusername', 10.megabytes, 1)
     @user.username = 'testusername'

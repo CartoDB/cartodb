@@ -104,6 +104,8 @@ class User < Sequel::Model
     validate_password_change
 
     organization_validation if organization.present?
+
+    errors.add(:geocoding_quota, "cannot be nil") if geocoding_quota.nil?
   end
 
   def organization_validation
@@ -972,9 +974,9 @@ class User < Sequel::Model
 
   def remaining_geocoding_quota
     if organization.present?
-      remaining = organization.geocoding_quota.to_i - organization.get_geocoding_calls
+      remaining = organization.geocoding_quota - organization.get_geocoding_calls
     else
-      remaining = geocoding_quota.to_i - get_geocoding_calls
+      remaining = geocoding_quota - get_geocoding_calls
     end
     (remaining > 0 ? remaining : 0)
   end

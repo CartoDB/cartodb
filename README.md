@@ -365,7 +365,13 @@ pip install --no-use-wheel -r python_requirements.txt
 exit
 ```
 
-If the previous step fails, try this alternative:
+If you are told 'no such file python_requirements.txt', then check that submodules are updated for your `cartodb` repo:
+```bash
+git submodule init
+git submodule update
+```
+
+For other failures, try this alternative:
 ```bash
 export CPLUS_INCLUDE_PATH=/usr/include/gdal
 export C_INCLUDE_PATH=/usr/include/gdal

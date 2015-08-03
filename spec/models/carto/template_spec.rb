@@ -46,7 +46,12 @@ describe Carto::Template do
     new_template.valid?.should eq false
     (new_template.errors.messages.keys - [:source_visualization_id]).should eq []
 
-    table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: 'some_table_name', user_id: @org_user_owner.id)
+    table = create_table({ privacy: UserTable::PRIVACY_PRIVATE, name: 'some_table_name', user_id: @org_user_owner.id })
+    another_table = create_table({ privacy: UserTable::PRIVACY_PRIVATE, name: 'some_other_table_name', 
+                                   user_id: @org_user_owner.id })
+
+    expected_required_tables = [ "#{@org_user_owner.database_schema}.#{table.name}",
+                                "#{@org_user_owner.database_schema}.#{another_table.name}" ]
 
     new_template.source_visualization_id = table.table_visualization.id
     new_template.valid?.should eq true
@@ -144,7 +149,50 @@ describe Carto::Template do
 
     CartoDB::Visualization::Member.new(id: other_table.table_visualization.id).fetch
                                   .related_templates.should eq []
+  end
 
+  it 'tests you cannot see tables outside the organization' do
+    org2 = test_organization.save
+    org2_user_owner = create_test_user("o2#{random_username}")
+    user_org = CartoDB::UserOrganization.new(org2.id, org2_user_owner.id)
+    user_org.promote_user_to_admin
+    org2.reload
+    org2_user_owner.reload
+
+    o_table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: 'table1', user_id: @org_user_owner.id)
+    o2_table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: 'table', user_id: org2_user_owner.id)
+
+    template = Carto::Template.new({
+        title: 'title',
+        code: '',
+        min_supported_version: '1.2.3',
+        max_supported_version: '2.0.0',
+        source_visualization_id: o_table.table_visualization.id,
+        organization_id: @org_user_owner.organization.id,
+        required_tables: [ "#{org2_user_owner.database_schema}.#{o2_table.name}" ]
+        })
+    template.save.should eq false
+    (template.errors.messages.keys - [:required_tables]).should eq []
+
+    template.organization_id = org2.id
+    template.required_tables = [ "#{@org_user_owner.database_schema}.#{o_table.name}" ]
+    template.save.should eq false
+    (template.errors.messages.keys - [:required_tables]).should eq []
+
+    # But setting all ok should go ahead
+    template = Carto::Template.new({
+        title: 'title',
+        code: '',
+        min_supported_version: '1.2.3',
+        max_supported_version: '2.0.0',
+        source_visualization_id: o2_table.table_visualization.id,
+        organization_id: org2.id,
+        required_tables: [ "#{org2_user_owner.database_schema}.#{o2_table.name}" ]
+        })
+    template.save.should eq true
+
+    delete_user_data org2_user_owner
+    org2.destroy_cascade
   end
 
 end

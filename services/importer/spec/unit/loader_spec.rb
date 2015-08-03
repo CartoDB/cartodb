@@ -43,6 +43,7 @@ describe CartoDB::Importer2::Loader do
       ogr2ogr_mock.stubs(:statement_timeout?).returns(false)
       ogr2ogr_mock.stubs(:duplicate_column?).returns(false)
       ogr2ogr_mock.stubs(:segfault_error?).returns(false)
+      ogr2ogr_mock.stubs(:kml_style_missing?).returns(false)
       ogr2ogr_mock.stubs(:exit_code).returns(0)
       ogr2ogr_mock.stubs(:run).returns(Object.new).at_least_once
 

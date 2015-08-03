@@ -300,6 +300,10 @@ module CartoDB
           raise UnsupportedFormatError.new(job.logger)
         end
 
+        if ogr2ogr.kml_style_missing?
+          raise KmlWithoutStyleIdError.new(job.logger)
+        end
+
         # Could be OOM, could be wrong input
         if ogr2ogr.segfault_error?
           raise LoadError.new(job.logger)

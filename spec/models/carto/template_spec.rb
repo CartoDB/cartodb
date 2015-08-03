@@ -108,7 +108,6 @@ describe Carto::Template do
 
   it 'tests Visualization models related_templates()' do
     table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: 'table1', user_id: @org_user_owner.id)
-    table_vis = table.table_visualization
     other_table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: 'table2', user_id: @org_user_owner.id)
 
     template = Carto::Template.new({
@@ -116,25 +115,35 @@ describe Carto::Template do
         code: '',
         min_supported_version: '1.2.3',
         max_supported_version: '2.0.0',
-        source_visualization_id: table_vis.id,
+        source_visualization_id: table.table_visualization.id,
         organization_id: @org_user_owner.organization.id,
         required_tables: [ "#{@org_user_owner.database_schema}.#{table.name}" ]
         })
     template.save.should eq true
 
+    another_template_from_user = Carto::Template.new({
+        title: 'title',
+        code: '',
+        min_supported_version: '1.2.3',
+        max_supported_version: '2.0.0',
+        source_visualization_id: other_table.table_visualization.id,
+        organization_id: @org_user_owner.organization.id,
+        required_tables: [ "#{@org_user_owner.database_schema}.#{other_table.name}" ]
+      })
+
     expected_templates = [ template ]
 
-    related_vis = Carto::Visualization.where(id: table_vis.id).first
-                                                              .related_templates.should eq expected_templates
+    related_vis = Carto::Visualization.where(id: table.table_visualization.id).first
+                                      .related_templates.should eq expected_templates
 
-    related_vis = CartoDB::Visualization::Member.new(id: table_vis.id).fetch
-                                                                      .related_templates.should eq expected_templates
+    related_vis = CartoDB::Visualization::Member.new(id: table.table_visualization.id).fetch
+                                                .related_templates.should eq expected_templates
 
     Carto::Visualization.where(id: other_table.table_visualization.id).first
-                                                                      .related_templates.should eq []
+                        .related_templates.should eq []
 
     CartoDB::Visualization::Member.new(id: other_table.table_visualization.id).fetch
-                                                                              .related_templates.should eq []
+                                  .related_templates.should eq []
 
   end
 

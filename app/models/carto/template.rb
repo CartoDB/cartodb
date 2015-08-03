@@ -17,16 +17,21 @@ module Carto
     validates :max_supported_version, presence: true
     validate :required_tables_should_be_qualified
 
-    before_validation :ensure_required_tables_not_empty
-
     def ==(other_template)
       self.id == other_template.id
+    end
+
+    def required_tables
+      self.required_tables_list.split(',')
+    end
+
+    def required_tables=(list=[])
+      self.required_tables_list = list.join(',')
     end
 
     # INFO: Only checks regarding user tables, not organization ones
     def relates_to?(visualization)
       @users_cache = []
-      ensure_required_tables_not_empty
       visualization.related_tables.each do |table|
         # TODO: Remove this when solving https://github.com/CartoDB/cartodb/issues/4838
         # HACK: Layer models return different instances
@@ -53,13 +58,5 @@ module Carto
         errors.add(:required_tables, "must be fully qualified, lowercase table names")
       end
     end
-
-    # Avoids null values at DB as arrays support is a bit picky
-    def ensure_required_tables_not_empty
-      if self.required_tables.nil?
-        self.required_tables = []
-      end
-    end
-
   end
 end

@@ -56,7 +56,7 @@ module Carto
       wrong_table_names = required_tables.select { |table_name|
           (table_name =~ /^[a-z\-_0-9]+\.[a-z\-_0-9]+?$/) != 0
         }
-      errors.add(:required_tables, "must be fully qualified, lowercase table names") if wrong_table_names.length > 0
+      errors.add(:required_tables, "Invalid names: #{wrong_tables.join(', ')}") if wrong_table_names.length > 0
     end
 
     def required_tables_referential_integrity

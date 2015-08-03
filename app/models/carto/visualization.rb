@@ -69,6 +69,10 @@ class Carto::Visualization < ActiveRecord::Base
     super(tags)
   end
 
+  def related_templates
+    @related_templates ||= get_related_templates
+  end
+
   def related_tables
     @related_tables ||= get_related_tables
   end
@@ -322,6 +326,12 @@ class Carto::Visualization < ActiveRecord::Base
   def configuration
     return {} unless defined?(Cartodb)
     Cartodb.config
+  end
+
+  def get_related_templates
+    Carto::Template.all.select { |template|
+      template.relates_to?(self)
+    }
   end
 
 end

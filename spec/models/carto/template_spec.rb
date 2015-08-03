@@ -4,6 +4,12 @@ require_relative '../../spec_helper'
 describe Carto::Template do
   include_context 'organization with users helper'
 
+  after(:each) do
+    Carto::Template.all.each { |template| template.delete }
+
+    delete_user_data(@org_user_owner)
+  end
+
   it "Tests basic creation and FKs" do
     expected_title = 'my_first_template'
     expected_min_supported_version = '3.12.0'
@@ -66,6 +72,71 @@ describe Carto::Template do
     template.organization_id.should eq new_template.organization_id
     template.code.should eq new_template.code
     template.required_tables.should eq new_template.required_tables
+
+    template.required_tables = [ 1 ]
+    template.valid?.should eq false
+    (template.errors.messages.keys - [:required_tables]).should eq []
+
+    template.required_tables = [ 'invalid name!' ]
+    template.valid?.should eq false
+    (template.errors.messages.keys - [:required_tables]).should eq []
+
+    template.required_tables = [ 'not_qualified' ]
+    template.valid?.should eq false
+    (template.errors.messages.keys - [:required_tables]).should eq []
+  end
+
+  it 'tests relates_to?() functionality' do
+    table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: 'table1', user_id: @org_user_owner.id)
+    table_vis = table.table_visualization
+    other_table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: 'table2', user_id: @org_user_owner.id)
+
+    template = Carto::Template.new({
+        title: 'title',
+        code: '',
+        min_supported_version: '1.2.3',
+        max_supported_version: '2.0.0',
+        source_visualization_id: table_vis.id,
+        organization_id: @org_user_owner.organization.id,
+        required_tables: [ "#{@org_user_owner.database_schema}.#{table.name}" ]
+        })
+    template.save.should eq true
+
+    template.relates_to?(table_vis).should eq true
+    template.relates_to?(other_table.table_visualization).should eq false
+  end
+
+  it 'tests Visualization models related_templates()' do
+    table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: 'table1', user_id: @org_user_owner.id)
+    table_vis = table.table_visualization
+    other_table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: 'table2', user_id: @org_user_owner.id)
+
+    table_vis.expects(:related_tables).returns([table])
+
+    template = Carto::Template.new({
+        title: 'title',
+        code: '',
+        min_supported_version: '1.2.3',
+        max_supported_version: '2.0.0',
+        source_visualization_id: table_vis.id,
+        organization_id: @org_user_owner.organization.id,
+        required_tables: [ "#{@org_user_owner.database_schema}.#{table.name}" ]
+        })
+    template.save.should eq true
+
+    expected_templates = [ template ]
+
+    related_vis = Carto::Visualization.where(id: table_vis.id).first
+                                                              .related_templates.should eq expected_templates
+
+    related_vis = CartoDB::Visualization::Member.new(id: table_vis.id).fetch
+                                                                      .related_templates.should eq expected_templates
+
+    Carto::Visualization.where(id: other_table.id).first
+                                                  .related_templates.should eq []
+
+    CartoDB::Visualization::Member.new(id: other_table.id).fetch
+                                                          .related_templates.should eq []
 
   end
 

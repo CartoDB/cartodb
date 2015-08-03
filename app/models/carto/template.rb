@@ -23,17 +23,32 @@ module Carto
       self.id == other_template.id
     end
 
+    # INFO: Only checks regarding user tables, not organization ones
+    def relates_to?(visualization)
+      @users_cache = []
+      ensure_required_tables_not_empty
+      visualization.related_tables.each do |table|
+        table_name = "#{table.owner.database_schema}.#{table.name}"
+        return true  if self.required_tables.include?(table_name)
+      end
+      
+      false
+    ensure
+      @users_cache = []
+    end
+
     private
 
     def required_tables_should_be_qualified
       wrong_table_names = self.required_tables.select { |table_name|
-          (table_name =~ /^[a-z\-_0-9]+\.[a-z\-_0-9]+?$/i) != 0
+          (table_name =~ /^[a-z\-_0-9]+\.[a-z\-_0-9]+?$/) != 0
         }
       if wrong_table_names.length > 0
-        errors.add(:required_tables, "must be fully qualified table names")
+        errors.add(:required_tables, "must be fully qualified, lowercase table names")
       end
     end
 
+    # Avoids null values at DB as arrays support is a bit picky
     def ensure_required_tables_not_empty
       if self.required_tables.nil?
         self.required_tables = []

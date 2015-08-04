@@ -66,6 +66,7 @@ module CartoDB
       attribute :description,         String
       attribute :license,             String
       attribute :source,              String
+      attribute :attributions,        String
       attribute :title,               String
       attribute :created_at,          Time
       attribute :updated_at,          Time
@@ -100,7 +101,7 @@ module CartoDB
         @redis_vizjson_cache = RedisVizjsonCache.new()
       end
 
-      def self.remote_member(name, user_id, privacy, description, tags, license, source)
+      def self.remote_member(name, user_id, privacy, description, tags, license, source, attributions)
         Member.new({
           name: name,
           user_id: user_id,
@@ -109,10 +110,11 @@ module CartoDB
           tags: tags,
           license: license,
           source: source,
+          attributions: attributions,
           type: TYPE_REMOTE})
       end
 
-      def update_remote_data(privacy, description, tags, license, source)
+      def update_remote_data(privacy, description, tags, license, source, attributions)
         changed = false
         if self.privacy != privacy
           changed = true
@@ -133,6 +135,10 @@ module CartoDB
         if self.source != source
           changed = true
           self.source = source
+        end
+        if self.attributions != attributions
+          changed = true
+          self.attributions = attributions
         end
         changed
       end

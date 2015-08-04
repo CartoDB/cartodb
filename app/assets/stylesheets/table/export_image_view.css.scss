@@ -2,13 +2,6 @@
  *  Export Image dialog styles
  */
 
-@import "compass/css3/box-sizing";
-@import "compass/css3/opacity";
-@import "compass/css3/images";
-@import "compass/css3/transition";
-@import "old_common/form-elements";
-@import "old_common/mixins";
-
 .ExportImageView {
   position: absolute;
   width: 100%;
@@ -41,10 +34,10 @@
   z-index: 105;
 }
 .ExportImageView--dimensions  {
-  @include inline-block();
+  display: inline-block;
   padding: 3px 5px;
   background: rgba(#000, .7);
-  @include border-radius(3px);
+  border-radius: 3px;
   font-size: 12px;
   color: #9B9B9B;
 }
@@ -61,10 +54,10 @@
 }
 
 .Button--micro {
-  @include inline-block();
+  display: inline-block;
   background: #fff;
   padding: 4px 5px;
-  @include border-radius(3px);
+  border-radius: 3px;
   height: auto;
   border:none;
 
@@ -83,7 +76,7 @@
   border: 1px solid #fff;
   background: #000;
   padding: 2px 5px 2px 6px;
-  @include border-radius(5px);
+  border-radius: 5px;
   span {
     color:#fff;
   }
@@ -111,7 +104,7 @@ $resizeHandlerSize: 8px;
     width: $resizeHandlerSize;
     height: $resizeHandlerSize;
     display: block;
-    @include box-shadow(1px 1px 2px rgba(#000, .5));
+    box-shadow: 1px 1px 2px rgba(#000, .5);
     background: rgb(254,254,254); /* Old browsers */
     background: -moz-linear-gradient(top, rgba(254,254,254,1) 0%, rgba(229,229,229,1) 100%); /* FF3.6+ */
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(254,254,254,1)), color-stop(100%,rgba(229,229,229,1))); /* Chrome,Safari4+ */

@@ -1,2 +1,20 @@
-@import "../_variables";
-@import "../common/_grid";
+// Data library
+// --------------------------------------------------
+
+// Non-rendering scss
+// @import "../_variables";
+// @import "../_mixins";
+
+// Helpers & utilities
+// @import "_helpers";
+// @import "_utilities";
+
+// Components
+// @import "../_components";
+
+// Layout
+// @import "_base";
+
+body {
+  background: #ccc;
+}

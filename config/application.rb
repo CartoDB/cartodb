@@ -120,8 +120,9 @@ module CartoDB
       organization.css
       password_protected.css
       public_dashboard.css
-      public_table.css
       public_map.css
+      public_data_dashboard.css
+      public_table.css
       sessions.css
 
       plugins/tipsy.css

@@ -51,6 +51,9 @@
       // Compass files generation
       compass:  require('./lib/build/tasks/compass').task(),
 
+      // Postcss for autoprefixer
+      postcss: require('./lib/build/tasks/postcss').task(),
+
       // Copy assets (stylesheets, javascripts, images...)
       copy:     require('./lib/build/tasks/copy').task(grunt),
 
@@ -170,7 +173,7 @@
     grunt.registerTask('pre_default', ['clean', 'config', 'js']);
     grunt.registerTask('test', '(CI env) Re-build JS files and run all tests. ' +
     'For manual testing use `grunt jasmine` directly', ['pre_default', 'jasmine']);
-    grunt.registerTask('css',         ['copy:vendor', 'copy:app', 'compass', 'concat:css']);
+    grunt.registerTask('css',         ['copy:vendor', 'copy:app', 'compass', 'postcss', 'concat:css']);
     grunt.registerTask('default',     ['pre_default', 'css', 'manifest']);
     grunt.registerTask('minimize',    ['default', 'copy:js', 'exorcise', 'uglify']);
     grunt.registerTask('release',     ['check_release', 'minimize', 's3', 'invalidate']);

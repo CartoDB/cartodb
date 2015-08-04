@@ -91,7 +91,7 @@ describe Carto::Template do
     (template.errors.messages.keys - [:required_tables]).should eq []
   end
 
-  it 'tests relates_to?() functionality' do
+  it 'tests relates_to_table?() functionality' do
     table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: 'table1', user_id: @org_user_owner.id)
     table_vis = table.table_visualization
     other_table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: 'table2', user_id: @org_user_owner.id)
@@ -107,8 +107,8 @@ describe Carto::Template do
         })
     template.save.should eq true
 
-    template.relates_to?(table_vis).should eq true
-    template.relates_to?(other_table.table_visualization).should eq false
+    template.relates_to_table?(table).should eq true
+    template.relates_to_table?(other_table).should eq false
   end
 
   it 'tests Visualization models related_templates()' do

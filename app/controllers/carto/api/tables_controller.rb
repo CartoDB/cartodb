@@ -17,6 +17,14 @@ module Carto
         render_jsonp(table.public_values({request:request}, current_user).merge(schema: table.schema(reload: true)))
       end
 
+      def related_templates
+        templates = Carto::Template.all.select { |template| template.relates_to_table?(table) }
+
+        render_jsonp({ items: templates.map { |template| Carto::Api::TemplatePresenter.new(template).public_values } })
+      rescue => e
+        render json: { error: [e.message] }, status: 400
+      end
+
       private
 
       def table

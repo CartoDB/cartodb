@@ -84,6 +84,7 @@ WORKING_SPECS_4 = \
   spec/requests/api/json/visualizations_controller_spec.rb \
   spec/requests/carto/api/visualizations_controller_spec.rb \
   spec/requests/api/json/tables_controller_spec.rb \
+  spec/requests/carto/api/tables_controller_legacy_spec.rb \
   spec/requests/carto/api/tables_controller_spec.rb \
   spec/queries/carto/visualization_query_builder_spec.rb \
   spec/requests/admin/tables_spec.rb \

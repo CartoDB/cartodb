@@ -70,7 +70,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def related_templates
-    @related_templates ||= get_related_templates
+    @related_templates ||= get_templates_using_vis
   end
 
   def related_tables
@@ -328,10 +328,9 @@ class Carto::Visualization < ActiveRecord::Base
     Cartodb.config
   end
 
-  def get_related_templates
-    Carto::Template.all.select { |template|
-      template.relates_to?(self)
-    }
+  def get_templates_using_vis()
+    Carto::Template.where(source_visualization_id: self.id).all
   end
+
 
 end

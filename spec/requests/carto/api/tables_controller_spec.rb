@@ -6,37 +6,77 @@ require_relative '../../../../spec/requests/api/json/tables_controller_shared_ex
 
 
 describe Carto::Api::TablesController do
-  it_behaves_like 'tables controllers' do
-  end
+  include Rack::Test::Methods
+  include Warden::Test::Helpers
+  
+  describe 'dependant templates' do
+    include_context 'organization with users helper'
 
-  before(:all) do
+    before(:each) do
+      User.any_instance.stubs(:has_feature_flag?)
+                       .with('templated_workflows')
+                       .returns(true)
+      Carto::User.any_instance.stubs(:has_feature_flag?)
+                              .with('templated_workflows')
+                              .returns(true)
 
-    # Spec the routes so that it uses the new controller. Needed for alternative routes testing
-    Rails.application.routes.draw do
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+      @table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: 'table1', user_id: @org_user_owner.id)
+      @other_table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: 'table2', user_id: @org_user_owner.id)
 
-      # new controller
-      scope :module => 'carto/api', :format => :json do
-        get '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:id'                         => 'tables#show',     as: :api_v1_tables_show, constraints: { id: /[^\/]+/ }
+      @template_1_data = {
+        title: 'title1',
+        description: 'description 1',
+        code: '{ /* 1 */ }',
+        min_supported_version: '1.2.3',
+        max_supported_version: '2.0.0',
+        source_visualization_id: @table.table_visualization.id,
+        organization_id: @org_user_owner.organization.id,
+        required_tables: [ "#{@org_user_owner.database_schema}.#{@table.name}" ]
+      }
 
-        get '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:table_id/records/:id'       => 'records#show',    as: :api_v1_tables_records_show,   constraints: { table_id: /[^\/]+/ }
+      @template_2_data = {
+        title: 'title2',
+        description: 'description 2',
+        code: '{ /* 2 */ }',
+        min_supported_version: '4.5.6',
+        max_supported_version: '99.0.0',
+        source_visualization_id: @other_table.table_visualization.id,
+        organization_id: @org_user_owner.organization.id,
+        required_tables: [ "#{@org_user_owner.database_schema}.#{@other_table.name}" ]
+      }
 
-        get '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:table_id/columns'           => 'columns#index',   as: :api_v1_tables_columns_index,   constraints: { table_id: /[^\/]+/ }
-        get '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:table_id/columns/:id'       => 'columns#show',    as: :api_v1_tables_columns_show,    constraints: { table_id: /[^\/]+/ }
+      @template = Carto::Template.new({
+        title: @template_1_data[:title],
+        code: @template_1_data[:code],
+        description: @template_1_data[:description],
+        min_supported_version: @template_1_data[:min_supported_version],
+        max_supported_version: @template_1_data[:max_supported_version],
+        source_visualization_id: @template_1_data[:source_visualization_id],
+        organization_id: @template_1_data[:organization_id],
+        required_tables: @template_1_data[:required_tables]
+        })
+      @template.save
+
+      login_as(@org_user_owner, scope: @org_user_owner.username)
+      host! "#{@org_user_owner.username}.localhost.lan"
+    end
+
+    after(:each) do
+      Carto::Template.all.each { |template| template.delete }
+      delete_user_data(@org_user_owner)
+    end
+
+    it 'tests api_v1_tables_related_templates action' do
+      get_json(api_v1_tables_related_templates_url({ id: @template_1_data[:required_tables][0] })) do |response|
+        response.status.should be_success
+        response.body[:items].count.should eq 1
+        response.body[:items][0]['id'] = @template.id
+        response.body[:items][0]['title'] = @template.title
       end
-
-      # old controller
-      scope :module => 'api/json', :format => :json do
-        post '(/user/:user_domain)(/u/:user_domain)/api/v1/tables'     => 'tables#create', as: :api_v1_tables_create
-        put '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:id'  => 'tables#update', as: :api_v1_tables_update, constraints: { id: /[^\/]+/ }
-        put '(/user/:user_domain)(/u/:user_domain)/api/v1/perm/:id' => 'permissions#update', as: :api_v1_permissions_update
-      end
-
     end
 
   end
 
-  after(:all) do
-    Rails.application.reload_routes!
-  end
 
 end

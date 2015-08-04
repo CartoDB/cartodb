@@ -96,10 +96,7 @@ module CartoDB
       end
 
       def related_templates
-        vis = Visualization::Member.new(id: @id).fetch
-        Carto::Template.all.select { |template|
-          template.relates_to?(vis)
-        }
+        Carto::Template.where(source_visualization_id: @id).all
       end
 
       def related_tables

@@ -115,6 +115,19 @@ module Carto
         redirect_to Carto::StaticMapsURLHelper.new.url_for_static_map(request, @visualization, map_width, map_height)
       end
 
+      def related_templates
+        return head(400) if params[:id].nil?
+
+        vis = Carto::Visualization.where(id: params[:id]).first
+        return head(400) if vis.nil?
+
+        templates = vis.related_templates
+
+        render_jsonp({ items: templates.map { |template| Carto::Api::TemplatePresenter.new(template).public_values } })
+      rescue => e
+        render json: { error: [e.message] }, status: 400
+      end
+
       private
 
       def load_by_name_or_id

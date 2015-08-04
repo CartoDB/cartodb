@@ -32,23 +32,16 @@ module Carto
       self.required_tables_list = list.join(',')
     end
 
-    # INFO: Only checks regarding user tables, not organization ones
-    def relates_to?(visualization)
-      @users_cache = []
-      visualization.related_tables.each do |table|
-        # TODO: Remove this when solving https://github.com/CartoDB/cartodb/issues/4838
-        # HACK: Layer models return different instances
-        if table.class == Carto::UserTable
-          table_name = "#{table.user.database_schema}.#{table.name}"
-        else
-          table_name = "#{table.owner.database_schema}.#{table.name}"
-        end
-        return true  if required_tables.include?(table_name)
+    def relates_to_table?(table)
+      # TODO: Remove this when solving https://github.com/CartoDB/cartodb/issues/4838
+      # HACK: Layer models return different instances
+      if table.class == Carto::UserTable
+        table_name = "#{table.user.database_schema}.#{table.name}"
+      else
+        table_name = "#{table.owner.database_schema}.#{table.name}"
       end
-      
-      false
-    ensure
-      @users_cache = []
+
+      required_tables.include?(table_name)
     end
 
     private

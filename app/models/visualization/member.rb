@@ -221,6 +221,10 @@ module CartoDB
           validator.errors.store(:permission_id, 'Cannot modify permission') unless permission_change_valid
         end
 
+        if !license.nil? && !license.empty? && Carto::License.get(license.to_sym).nil?
+          validator.errors.store(:license, 'License should be an empty or a valid value')
+        end
+
         validator.valid?
       end
 
@@ -626,7 +630,7 @@ module CartoDB
       end
 
       def license_info
-        Carto::License.get(license)
+        Carto::License.get(license.to_sym)
       end
 
       private

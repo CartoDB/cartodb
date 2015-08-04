@@ -90,23 +90,15 @@ describe Carto::Visualization do
   describe 'licenses' do
     it 'should store correctly a visualization with its license' do
       table = create_table({:name => 'table1', :user_id => @user.id})
-      vis = Carto::Visualization.find(table.table_visualization.id)
-      vis.license = "apache"
-      vis.save
-      vis.reload
+      v = table.table_visualization
+      v.license = Carto::License::APACHE_LICENSE
+      v.store
+      vis = Carto::Visualization.find(v.id)
       vis.license_info.id.should eq :apache
       vis.license_info.name.should eq "Apache license"
       vis.license_info.image_url.empty?.should eq true
     end
 
-    it 'should return nil if the license dont exists' do
-      table = create_table({:name => 'table1', :user_id => @user.id})
-      vis = Carto::Visualization.find(table.table_visualization.id)
-      vis.license = "wadus"
-      vis.save
-      vis.reload
-      vis.license_info.nil?.should eq true
-    end
   end
 
 end

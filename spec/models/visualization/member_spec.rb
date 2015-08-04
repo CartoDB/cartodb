@@ -1139,4 +1139,35 @@ describe Visualization::Member do
       redis_vizjson_cache.send(:redis).get(redis_key).should be_nil
     end
   end
+
+  describe 'licenses' do
+
+    before(:all) do
+      @user = create_user
+    end
+
+    after(:all) do
+      @user.delete
+    end
+
+    it 'should store correctly a visualization with its license' do
+      table = create_table({:name => 'table1', :user_id => @user.id})
+      vis = table.table_visualization
+      vis.license = "apache"
+      vis.store
+      vis.fetch
+      vis.license_info.id.should eq :apache
+      vis.license_info.name.should eq "Apache license"
+      vis.license_info.image_url.empty?.should eq true
+    end
+
+    it 'should return nil if the license dont exists' do
+      table = create_table({:name => 'table1', :user_id => @user.id})
+      vis = table.table_visualization
+      vis.license = "wadus"
+      expect {
+        vis.store
+      }.to raise_error CartoDB::InvalidMember
+    end
+  end
 end

@@ -7,6 +7,7 @@ module Carto
     GPLV3_LICENSE = :gplv3
     APACHE_LICENSE = :apache
 
+    # TODO Add more license when we know what licenses we want to include here
     LICENSE_VALUES = {
       :mit => { :name => 'MIT', :image_url => 'https://upload.wikimedia.org/wikipedia/commons/f/f8/License_icon-mit-88x31-2.svg'},
       :apache => { :name => 'Apache license', :image_url => ''},

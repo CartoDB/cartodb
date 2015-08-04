@@ -16,6 +16,7 @@ module Carto
     validates :min_supported_version, presence: true
     validates :max_supported_version, presence: true
 
+    validate :source_visualization_referential_integrity
     validate :required_tables_should_be_qualified
     validate :required_tables_referential_integrity
 
@@ -51,6 +52,17 @@ module Carto
     end
 
     private
+
+    def source_visualization_referential_integrity
+      return if errors.keys.include?(:source_visualization_id)
+
+      visualization = Carto::Visualization.where(id: self.source_visualization_id).first
+      errors.add(:source_visualization_id, "Source visualization not found") if visualization.nil?
+
+      if visualization.user.organization_id != self.organization_id
+        errors.add(:source_visualization_id, "Source visualization not found")
+      end
+    end
 
     def required_tables_should_be_qualified
       wrong_table_names = required_tables.select { |table_name|

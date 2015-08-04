@@ -177,7 +177,8 @@ describe Carto::Template do
     template.organization_id = org2.id
     template.required_tables = [ "#{@org_user_owner.database_schema}.#{o_table.name}" ]
     template.save.should eq false
-    (template.errors.messages.keys - [:required_tables]).should eq []
+    # Because organization_id has changed, it must match with source_visualization_id or won't let you save
+    (template.errors.messages.keys - [:required_tables, :source_visualization_id]).should eq []
 
     # But setting all ok should go ahead
     template = Carto::Template.new({

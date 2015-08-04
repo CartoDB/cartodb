@@ -8,9 +8,9 @@ module Carto
       before_filter :load_template, only: [ :show, :update, :destroy ]
 
       def index
-        templates = Carto::Template.where(organization_id: current_user.organization_id).all
+        templates = Carto::Template.where(organization_id: current_user.organization_id).order(:created_at).reverse
 
-        render_jsonp({ items: templates.map { |template| template.id }})
+        render_jsonp({ items: templates.map { |template| Carto::Api::TemplatePresenter.new(template).public_values } })
       rescue => e
         render json: { error: [e.message] }, status: 400
       end
@@ -18,7 +18,7 @@ module Carto
       def show
         render_jsonp({ :errors => ["Template #{params[:id]} not found"] }, 404) and return if @template.nil?
 
-        render_jsonp({ id: @template.id })
+        render_jsonp(Carto::Api::TemplatePresenter.new(@template).public_values)
       rescue => e
         render json: { error: [e.message] }, status: 400
       end
@@ -38,7 +38,7 @@ module Carto
         result = @template.save
         render_jsonp({ :errors => ["#{@template.errors.messages.values.join(',')}"] }, 400) and return unless result
 
-        render_jsonp({ id: @template.id })
+        render_jsonp(Carto::Api::TemplatePresenter.new(@template).public_values)
       rescue => e
         render json: { error: [e.message] }, status: 400
       end
@@ -56,7 +56,9 @@ module Carto
         result = @template.save
         render_jsonp({ :errors => ["#{@template.errors.messages.values.join(',')}"] }, 400) and return unless result
 
-        render_jsonp({ id: @template.id })
+        @template.reload
+
+        render_jsonp(Carto::Api::TemplatePresenter.new(@template).public_values)
       rescue => e
         render json: { error: [e.message] }, status: 400
       end

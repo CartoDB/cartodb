@@ -13,6 +13,7 @@ Sequel.migration do
       String      :code,                    null: false, default: ''
       Uuid        :organization_id,         null: false
       String      :required_tables_list,    null: false, default: ''
+      DateTime    :created_at,              null: false, default: Sequel::CURRENT_TIMESTAMP
     end
 
     Rails::Sequel.connection.run(%Q{

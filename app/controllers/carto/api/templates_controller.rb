@@ -6,6 +6,7 @@ module Carto
 
       ssl_required :index, :show, :create, :update, :destroy
       before_filter :load_template, only: [ :show, :update, :destroy ]
+      before_filter :check_feature_flag
 
       def index
         templates = Carto::Template.where(organization_id: current_user.organization_id).order(:created_at).reverse
@@ -79,6 +80,10 @@ module Carto
         @template = Carto::Template.where(id: params[:id]).first
       rescue
         @template = nil
+      end
+
+      def check_feature_flag
+        raise "Endpoint disabled for this user" unless current_user.has_feature_flag?('templated_workflows')
       end
 
     end

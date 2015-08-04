@@ -9,6 +9,13 @@ describe Carto::Api::TemplatesController do
   include Warden::Test::Helpers
 
   before(:each) do
+    User.any_instance.stubs(:has_feature_flag?)
+                     .with('templated_workflows')
+                     .returns(true)
+    Carto::User.any_instance.stubs(:has_feature_flag?)
+                            .with('templated_workflows')
+                            .returns(true)
+
     CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
     @table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: 'table1', user_id: @org_user_owner.id)
     @other_table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: 'table2', user_id: @org_user_owner.id)

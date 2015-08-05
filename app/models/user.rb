@@ -72,6 +72,8 @@ class User < Sequel::Model
 
   TRIAL_DURATION_DAYS = 15
 
+  DEFAULT_GEOCODING_QUOTA = 0
+
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
 
@@ -127,8 +129,8 @@ class User < Sequel::Model
 
   ## Callbacks
   def before_validation
-    # Convert email to downcase
     self.email = self.email.to_s.strip.downcase
+    self.geocoding_quota ||= DEFAULT_GEOCODING_QUOTA
   end
 
   def before_create
@@ -153,7 +155,7 @@ class User < Sequel::Model
       self.private_maps_enabled ||= true
       self.sync_tables_enabled ||= true
     end
-  end #before_save
+  end
 
   def twitter_datasource_enabled
     if has_organization?

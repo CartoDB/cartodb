@@ -7,7 +7,7 @@ module Carto
   module Api
     class TablesController < ::Api::ApplicationController
 
-      ssl_required :show
+      ssl_required :show, :related_templates
 
       before_filter :set_start_time
 
@@ -22,6 +22,7 @@ module Carto
 
         render_jsonp({ items: templates.map { |template| Carto::Api::TemplatePresenter.new(template).public_values } })
       rescue => e
+        CartoDB.notify_exception(e)
         render json: { error: [e.message] }, status: 400
       end
 

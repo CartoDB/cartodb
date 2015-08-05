@@ -12,7 +12,7 @@ module Carto
       include PagedSearcher
       include Carto::UUIDHelper
 
-      ssl_required :index, :show
+      ssl_required :index, :show, :related_templates
       ssl_allowed  :vizjson2, :likes_count, :likes_list, :is_liked, :list_watching, :static_map
 
       # TODO: compare with older, there seems to be more optional authentication endpoints
@@ -125,6 +125,7 @@ module Carto
 
         render_jsonp({ items: templates.map { |template| Carto::Api::TemplatePresenter.new(template).public_values } })
       rescue => e
+        CartoDB.notify_exception(e)
         render json: { error: [e.message] }, status: 400
       end
 

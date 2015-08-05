@@ -1298,6 +1298,11 @@ class Table
     owner.database_schema
   end
 
+  # INFO: Qualified but without double quotes
+  def self.is_qualified_name_valid?(name)
+    (name =~ /^[a-z\-_0-9]+\.[a-z\-_0-9]+?$/) == 0
+  end
+
   ############################### Sharing tables ##############################
 
   # @param [User] organization_user Gives read permission to this user

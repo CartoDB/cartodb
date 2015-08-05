@@ -18,21 +18,18 @@ module Carto
     validate :required_tables_should_be_qualified
     validate :required_tables_referential_integrity
 
-    def ==(other_template)
-      self.id == other_template.id
-    end
-
+    # INFO: Needed as rails 3 + activerecord-postgres-array gem is still buggy
     def required_tables
       self.required_tables_list.split(',')
     end
 
+    # INFO: Needed as rails 3 + activerecord-postgres-array gem is still buggy
     def required_tables=(list=[])
       self.required_tables_list = list.join(',')
     end
 
     def relates_to_table?(table)
-      table_name = "#{table.owner.database_schema}.#{table.name}"
-      required_tables.include?(table_name)
+      required_tables.include?(table.qualified_table_name.gsub('"',''))
     end
 
     private
@@ -50,7 +47,7 @@ module Carto
 
     def required_tables_should_be_qualified
       wrong_table_names = required_tables.select { |table_name|
-          (table_name =~ /^[a-z\-_0-9]+\.[a-z\-_0-9]+?$/) != 0
+          !::Table.is_qualified_name_valid?(table_name)
         }
       errors.add(:required_tables, "Invalid names: #{wrong_table_names.join(', ')}") if wrong_table_names.length > 0
     end

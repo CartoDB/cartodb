@@ -36,6 +36,10 @@ Sequel.migration do
       CREATE INDEX organization_id_idx ON templates(organization_id)
     })
 
+    Rails::Sequel.connection.run(%Q{
+      CREATE INDEX source_visualization_id_idx ON templates(source_visualization_id)
+    })
+
   end
 
   down do

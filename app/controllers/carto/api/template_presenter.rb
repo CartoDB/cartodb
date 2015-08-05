@@ -2,8 +2,6 @@ module Carto
   module Api
     class TemplatePresenter
 
-      attr_reader :template
-
       def initialize(template)
         @template = template
       end
@@ -14,13 +12,13 @@ module Carto
           id:                     @template.id,
           title:                  @template.title,
           description:            @template.description,
-          source_visualization:   { 
+          source_visualization:   {
                                     id: @template.source_visualization_id
                                   },
           min_supported_version:  @template.min_supported_version,
           max_supported_version:  @template.max_supported_version,
           code:                   @template.code,
-          organization:           { 
+          organization:           {
                                     id: @template.organization_id
                                   },
           required_tables:        @template.required_tables,

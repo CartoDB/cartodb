@@ -9,18 +9,21 @@ module Carto
       before_filter :check_feature_flag
 
       def index
-        templates = Carto::Template.where(organization_id: current_user.organization_id).order(:created_at).reverse
+        templates = Carto::Template.where(organization_id: current_user.organization_id)
+                                   .order(:created_at)
+                                   .reverse_order
+                                   .all
 
         render_jsonp({ items: templates.map { |template| Carto::Api::TemplatePresenter.new(template).public_values } })
       rescue => e
+        CartoDB.notify_exception(e)
         render json: { error: [e.message] }, status: 400
       end
 
       def show
-        render_jsonp({ :errors => ["Template #{params[:id]} not found"] }, 404) and return if @template.nil?
-
         render_jsonp(Carto::Api::TemplatePresenter.new(@template).public_values)
       rescue => e
+        CartoDB.notify_exception(e)
         render json: { error: [e.message] }, status: 400
       end
 
@@ -41,12 +44,11 @@ module Carto
 
         render_jsonp(Carto::Api::TemplatePresenter.new(@template).public_values)
       rescue => e
+        CartoDB.notify_exception(e)
         render json: { error: [e.message] }, status: 400
       end
 
       def update
-        render_jsonp({ :errors => ["Template #{params[:id]} not found"] }, 404) and return if @template.nil?
-
         @template.title =                 params['title']
         @template.description =           params.fetch('description', '')
         @template.min_supported_version = params['min_supported_version']
@@ -61,16 +63,16 @@ module Carto
 
         render_jsonp(Carto::Api::TemplatePresenter.new(@template).public_values)
       rescue => e
+        CartoDB.notify_exception(e)
         render json: { error: [e.message] }, status: 400
       end
 
       def destroy
-        render_jsonp({ :errors => ["Template #{params[:id]} not found"] }, 404) and return if @template.nil?
-
         @template.delete
 
         head :ok
       rescue => e
+        CartoDB.notify_exception(e)
         render json: { error: [e.message] }, status: 400
       end
 
@@ -78,12 +80,16 @@ module Carto
 
       def load_template
         @template = Carto::Template.where(id: params[:id]).first
-      rescue
-        @template = nil
+        return render json: { errors: ["Template #{params[:id]} not found"] }, status: 404 if @template.nil?
+      rescue => e
+        CartoDB.notify_exception(e)
+        render json: { error: [e.message] }, status: 400
       end
 
       def check_feature_flag
-        raise "Endpoint disabled for this user" unless current_user.has_feature_flag?('templated_workflows')
+        unless current_user.has_feature_flag?('templated_workflows')
+          render json: { error: "Endpoint disabled for this user" }, status: 403
+        end
       end
 
     end

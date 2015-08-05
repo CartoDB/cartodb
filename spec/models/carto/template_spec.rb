@@ -217,9 +217,8 @@ describe Carto::Template do
     template_1.save.should eq true
 
     table_2.table_visualization.delete
-    expect {
-      template_1.reload
-    }.to raise_exception(ActiveRecord::RecordNotFound)
+    template_1 = Carto::Template.where(id: template_1.id).first
+    template_1.nil?.should eq true
 
     # Related tables deletion
 
@@ -238,9 +237,8 @@ describe Carto::Template do
     template_2.save.should eq true
 
     table_3.destroy
-    expect {
-      template_2.reload
-    }.to raise_exception(ActiveRecord::RecordNotFound)
+    template_2 = Carto::Template.where(id: template_2.id).first
+    template_2.nil?.should eq true
 
     # Organization deletion
 
@@ -259,9 +257,8 @@ describe Carto::Template do
     template_3.save.should eq true
 
     org.destroy_cascade
-    expect {
-      template_3.reload
-    }.to raise_exception(ActiveRecord::RecordNotFound)
+    template_3 = Carto::Template.where(id: template_3.id).first
+    template_3.nil?.should eq true
   end
 
 end

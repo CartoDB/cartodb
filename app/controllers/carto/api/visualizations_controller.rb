@@ -12,7 +12,7 @@ module Carto
       include PagedSearcher
       include Carto::UUIDHelper
 
-      ssl_required :index, :show, :related_templates
+      ssl_required :index, :show
       ssl_allowed  :vizjson2, :likes_count, :likes_list, :is_liked, :list_watching, :static_map
 
       # TODO: compare with older, there seems to be more optional authentication endpoints
@@ -113,20 +113,6 @@ module Carto
         response.headers['Cache-Control']   = "max-age=86400,must-revalidate, public"
 
         redirect_to Carto::StaticMapsURLHelper.new.url_for_static_map(request, @visualization, map_width, map_height)
-      end
-
-      def related_templates
-        return head(400) if params[:id].nil?
-
-        vis = Carto::Visualization.where(id: params[:id]).first
-        return head(400) if vis.nil?
-
-        templates = vis.related_templates
-
-        render_jsonp({ items: templates.map { |template| Carto::Api::TemplatePresenter.new(template).public_values } })
-      rescue => e
-        CartoDB.notify_exception(e)
-        render json: { error: [e.message] }, status: 400
       end
 
       private

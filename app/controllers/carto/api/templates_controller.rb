@@ -4,7 +4,8 @@ module Carto
   module Api
     class TemplatesController < ::Api::ApplicationController
 
-      ssl_required :index, :show, :create, :update, :destroy
+      ssl_required :index, :show, :create, :update, :destroy, :related_templates_by_visualization,
+                   :related_templates_by_table
       before_filter :load_template, only: [ :show, :update, :destroy ]
       before_filter :check_feature_flag
 
@@ -71,6 +72,30 @@ module Carto
         @template.delete
 
         head :ok
+      rescue => e
+        CartoDB.notify_exception(e)
+        render json: { error: [e.message] }, status: 400
+      end
+
+
+      def related_templates_by_visualization
+        return head(400) if params[:id].nil?
+        vis = Carto::Visualization.where(id: params[:id]).first
+        return head(400) if vis.nil?
+
+        templates = vis.related_templates
+
+        render_jsonp({ items: templates.map { |template| Carto::Api::TemplatePresenter.new(template).public_values } })
+      rescue => e
+        CartoDB.notify_exception(e)
+        render json: { error: [e.message] }, status: 400
+      end
+
+      def related_templates_by_table
+        table = Carto::Helpers::TableLocator.new.get_by_id_or_name(params.fetch('id'), current_user)
+        templates = table.related_templates
+
+        render_jsonp({ items: templates.map { |template| Carto::Api::TemplatePresenter.new(template).public_values } })
       rescue => e
         CartoDB.notify_exception(e)
         render json: { error: [e.message] }, status: 400

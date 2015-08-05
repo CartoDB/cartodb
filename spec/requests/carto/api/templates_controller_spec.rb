@@ -227,4 +227,20 @@ describe Carto::Api::TemplatesController do
     Carto::Template.where(id: third_template.id).first.should eq nil
   end
 
+  it 'tests related_tables_by_xxx actions' do
+    get_json(api_v1_tables_related_templates_url({ id: @template_1_data[:required_tables][0] })) do |response|
+      response.status.should be_success
+      response.body[:items].count.should eq 1
+      response.body[:items][0]['id'] = @template.id
+      response.body[:items][0]['title'] = @template.title
+    end
+
+    get_json(api_v1_visualizations_related_templates_url({ id: @table.table_visualization.id })) do |response|
+      response.status.should be_success
+      response.body[:items].count.should eq 1
+      response.body[:items][0]['id'] = @template.id
+      response.body[:items][0]['title'] = @template.title
+    end
+  end
+
 end

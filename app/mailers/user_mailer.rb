@@ -1,5 +1,6 @@
 class UserMailer < ActionMailer::Base
   default from: "cartodb.com <support@cartodb.com>"
+  helper ApplicationHelper
   layout 'mail'
 
   def new_organization_user(user)
@@ -59,12 +60,13 @@ class UserMailer < ActionMailer::Base
          :subject => @subject
   end
 
-  def map_liked(visualization, viewer_user)
+  def map_liked(visualization, viewer_user, visualization_preview_image)
     @user = visualization.user
     @map_name = visualization.name
     @viewer_name = viewer_user.name.nil? ? viewer_user.username : viewer_user.name
-    @subject = "Your map #{@map_name} has received a like from #{@viewer_name}, congratulations!"
-    @link = "#{@user.public_url}#{CartoDB.path(self, 'public_tables_show', { id: visualization.id })}"
+    @preview_image = visualization_preview_image
+    @subject = "Your map #{@map_name} got some love!"
+    @link = "#{@user.public_url}#{CartoDB.path(self, 'public_visualizations_show_map', { id: visualization.id })}"
     @viewer_maps_link = "#{viewer_user.public_url}#{CartoDB.path(self, 'public_maps_home')}"
     mail :to => @user.email,
          :subject => @subject

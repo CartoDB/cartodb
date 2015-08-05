@@ -237,6 +237,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     return(head 403) unless current_viewer
 
     vis = Visualization::Member.new(id: @table_id).fetch
+
     raise KeyError if !vis.has_permission?(current_viewer, Visualization::Member::PERMISSION_READONLY) &&
       vis.privacy != Visualization::Member::PRIVACY_PUBLIC && vis.privacy != Visualization::Member::PRIVACY_LINK
 
@@ -244,7 +245,9 @@ class Api::Json::VisualizationsController < Api::ApplicationController
        .fetch
        .invalidate_cache
 
-    ::Resque.enqueue(::Resque::UserJobs::Mail::MapLiked, vis.id, current_viewer.id)
+    vis_preview_image = Carto::StaticMapsURLHelper.new.url_for_static_map(request, vis, 600, 300)
+
+    ::Resque.enqueue(::Resque::UserJobs::Mail::MapLiked, vis.id, current_viewer.id, vis_preview_image)
     render_jsonp({
                    id:    vis.id,
                    likes: vis.likes.count,

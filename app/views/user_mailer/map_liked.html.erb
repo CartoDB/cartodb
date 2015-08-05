@@ -6,7 +6,7 @@
       <!-- HEADER -->
       <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; border: 1px solid #dddddd; border-bottom: 0; border-collapse: separate !important; border-top-left-radius: 4px; border-top-right-radius: 4px; width: 100% !important;">
         <tr>
-          <td align="left" style="padding: 40px 50px 40px 50px; font-weight: bold; font-size: 25px; font-family: Helvetica, Arial, sans-serif; color: #333333;">Your map <%= @map_name %> has received a like</td>
+          <td align="left" style="padding: 40px 50px 40px 50px; font-weight: bold; font-size: 25px; font-family: Helvetica, Arial, sans-serif; color: #333333;">Your map got some love!</td>
         </tr>
       </table>
     </td>
@@ -17,10 +17,24 @@
       <table cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #ffffff; border: 1px solid #dddddd; border-top: 1px solid #dddddd; border-bottom: 1px solid #cccccc; border-bottom-left-radius: 4px; border-bottom-right-radius: 4px; width: 100% !important;">
         <tr>
           <td valign="top" style="padding: 0;">
+            <table cellspacing="0" cellpadding="0" border="0" width="100%" style="background:url('<%= @preview_image %>'); border-bottom: 1px solid #dddddd; width: 100% !important; height: 300px;">
+              <tr>
+                <td align="left" style="padding: 75px 50px 75px 50px; font-family: Helvetica, Arial, sans-serif;">
+                  <p style="margin: 0;">
+                    <img alt="Like" src="http://cartodb.s3.amazonaws.com/mails/metrics/like.png" width="150" height="150" style="display: block; margin: 0 auto;" border="0">
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <tr>
+          <td valign="top" style="padding: 0;">
             <table cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #F2FAE8; border-bottom: 1px solid #dddddd; width: 100% !important;">
               <tr>
                 <td align="left" style="padding: 40px 50px 40px 50px; font-family: Helvetica, Arial, sans-serif;">
-                  <p style="margin: 0; font-size: 16px; line-height: 25px; color: #666666;">Your map <strong><%= @map_name %></strong> has received a like from <a href="<%= @viewer_maps_link %>" target="_blank"><%= @viewer_name %></a>, congratulations!.</p>
+                  <p style="margin: 0; font-size: 16px; line-height: 25px; color: #666666;"><%= liked_map_body(@map_name, @viewer_name, @viewer_maps_link).html_safe %></p>
                 </td>
               </tr>
             </table>

@@ -106,10 +106,10 @@ module Resque
         extend ::Resque::Metrics
         @queue = :users
 
-        def self.perform(visualization_id, viewer_user_id)
+        def self.perform(visualization_id, viewer_user_id, vis_preview_image)
           viz = CartoDB::Visualization::Member.new(id: visualization_id).fetch
           viewer_user = User.where(id: viewer_user_id).first
-          UserMailer.map_liked(viz, viewer_user).deliver
+          UserMailer.map_liked(viz, viewer_user, vis_preview_image).deliver
         end
       end
 

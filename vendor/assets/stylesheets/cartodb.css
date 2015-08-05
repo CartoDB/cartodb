@@ -4307,7 +4307,7 @@ div.cartodb-timeslider .ui-slider-vertical .ui-slider-range-max {
     min-width:120px;
     max-width:180px;
     overflow-y:hidden;
-    z-index: 5;
+    z-index: 50;
   }
 
   div.cartodb-tooltip-content-wrapper {

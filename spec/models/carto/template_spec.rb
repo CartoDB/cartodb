@@ -22,24 +22,17 @@ describe Carto::Template do
     new_template = Carto::Template.new
 
     new_template.valid?.should eq false
-    (new_template.errors.messages.keys - [:title, :organization_id, :source_visualization_id,
-                                                 :min_supported_version, :max_supported_version]).should eq []
+    (new_template.errors.messages.keys - [:title, :organization_id, :source_visualization_id]).should eq []
 
     new_template.save.should eq false
 
     new_template.title = expected_title
     # errors list is only updated upon call to valid?
     new_template.valid?.should eq false
-    (new_template.errors.messages.keys - [:organization_id, :source_visualization_id,
-                                                 :min_supported_version, :max_supported_version]).should eq []
+    (new_template.errors.messages.keys - [:organization_id, :source_visualization_id]).should eq []
 
     new_template.min_supported_version = expected_min_supported_version
-    new_template.valid?.should eq false
-    (new_template.errors.messages.keys - [:organization_id, :source_visualization_id,
-                                                 :max_supported_version]).should eq []
-
     new_template.max_supported_version = expected_max_supported_version
-    new_template.valid?.should eq false
     (new_template.errors.messages.keys - [:organization_id, :source_visualization_id]).should eq []
 
     new_template.organization_id = @organization.id
@@ -47,7 +40,7 @@ describe Carto::Template do
     (new_template.errors.messages.keys - [:source_visualization_id]).should eq []
 
     table = create_table({ privacy: UserTable::PRIVACY_PRIVATE, name: 'some_table_name', user_id: @org_user_owner.id })
-    another_table = create_table({ privacy: UserTable::PRIVACY_PRIVATE, name: 'some_other_table_name', 
+    another_table = create_table({ privacy: UserTable::PRIVACY_PRIVATE, name: 'some_other_table_name',
                                    user_id: @org_user_owner.id })
 
     expected_required_tables = [ "#{@org_user_owner.database_schema}.#{table.name}",

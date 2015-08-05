@@ -13,8 +13,6 @@ module Carto
     validates :organization_id, presence: true
     validates :source_visualization_id, presence: true
     validates :title, presence: true
-    validates :min_supported_version, presence: true
-    validates :max_supported_version, presence: true
 
     validate :source_visualization_referential_integrity
     validate :required_tables_should_be_qualified
@@ -81,7 +79,7 @@ module Carto
             true
           end
         }
-      
+
       errors.add(:required_tables, "Invalid tables: #{wrong_tables.join(', ')}") if wrong_tables.length > 0
     end
 

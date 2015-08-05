@@ -8,8 +8,8 @@ Sequel.migration do
       Uuid        :source_visualization_id, null: false
       String      :title,                   null: false
       String      :description,             null: false, default: ''
-      String      :min_supported_version,   null: false
-      String      :max_supported_version,   null: false
+      String      :min_supported_version,   null: false, default: ''
+      String      :max_supported_version,   null: false, default: ''
       String      :code,                    null: false, default: ''
       Uuid        :organization_id,         null: false
       String      :required_tables_list,    null: false, default: ''

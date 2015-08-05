@@ -39,7 +39,7 @@ describe Api::Json::VisualizationsController do
 
     it "when a map is liked should send an email to the owner" do
       vis = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC).table_visualization
-      Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::MapLiked, vis.id, @user.id).returns(true)
+      Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::MapLiked, vis.id, @user.id, kind_of(String)).returns(true)
       post_json api_v1_visualizations_add_like_url({
           id: vis.id
         }) do |response|

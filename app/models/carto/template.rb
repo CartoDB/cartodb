@@ -31,14 +31,7 @@ module Carto
     end
 
     def relates_to_table?(table)
-      # TODO: Remove this when solving https://github.com/CartoDB/cartodb/issues/4838
-      # HACK: Layer models return different instances
-      if table.class == Carto::UserTable
-        table_name = "#{table.user.database_schema}.#{table.name}"
-      else
-        table_name = "#{table.owner.database_schema}.#{table.name}"
-      end
-
+      table_name = "#{table.owner.database_schema}.#{table.name}"
       required_tables.include?(table_name)
     end
 

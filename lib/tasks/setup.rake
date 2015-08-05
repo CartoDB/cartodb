@@ -49,35 +49,44 @@ DESC
       # when running this task along with db:migrate
       User.set_dataset :users
       
-      u = User.new
-      u.email = ENV['EMAIL']
-      u.password = ENV['PASSWORD']
-      u.password_confirmation = ENV['PASSWORD']
-      u.username = ENV['SUBDOMAIN']
-      u.database_host = ENV['DATABASE_HOST'] || ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
-      u.save
+      user = User.new
+      user.email = ENV['EMAIL']
+      user.password = ENV['PASSWORD']
+      user.password_confirmation = ENV['PASSWORD']
+      user.username = ENV['SUBDOMAIN']
+      user.database_host = ENV['DATABASE_HOST'] || ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
+      user.save
 
-      raise u.errors.inspect if u.new?
-      puts "User #{u.username} created successfully"
+      raise user.errors.inspect if user.new?
+      puts "User #{user.username} created successfully"
       
       # 10 Gb of quota
       quota = 1073741824
-      u.update(:quota_in_bytes => quota)
+      user.update(:quota_in_bytes => quota)
       
-      u.rebuild_quota_trigger
-      puts "User: #{u.username} quota updated to: 10 GB. #{u.tables.count} tables updated."
+      user.rebuild_quota_trigger
+      puts "User: #{user.username} quota updated to: 10 GB. #{user.tables.count} tables updated."
 
-      u.update(:table_quota => nil)             
-      puts "User: #{u.username} table quota updated to: unlimited"
+      user.update(:table_quota => nil)             
+      puts "User: #{user.username} table quota updated to: unlimited"
       
-      u.update(:private_tables_enabled => true)      
-      puts "User: #{u.username} private tables enabled: true"
+      user.update(:private_tables_enabled => true)      
+      puts "User: #{user.username} private tables enabled: true"
      
-      u.update(:account_type => '[DEDICATED]')       
-      puts "User: #{u.username} table account type updated to: [DEDICATED]"
+      user.update(:account_type => '[DEDICATED]')       
+      puts "User: #{user.username} table account type updated to: [DEDICATED]"
 
-      u.update(:sync_tables_enabled => true)
-      puts "User: #{u.username} sync tables enabled"
+      user.update(:sync_tables_enabled => true)
+      puts "User: #{user.username} sync tables enabled"
+
+      file_size_quota = 1500*1024*1024
+      row_count_quota = 5000000
+      
+      user.update(:max_import_file_size => file_size_quota) if file_size_quota > user.max_import_file_size
+      puts "Twitter import user: #{user.username} max_import_file_size is now #{user.max_import_file_size}"
+
+      user.update(:max_import_table_row_count => row_count_quota) if row_count_quota > user.max_import_table_row_count
+      puts "Twitter import user: #{user.username} max_import_table_row_count is now #{user.max_import_table_row_count}"
     end
 
     desc "make public and tile users"

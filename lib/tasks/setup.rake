@@ -75,6 +75,9 @@ DESC
      
       u.update(:account_type => '[DEDICATED]')       
       puts "User: #{u.username} table account type updated to: [DEDICATED]"
+
+      u.update(:sync_tables_enabled => true)
+      puts "User: #{u.username} sync tables enabled"
     end
 
     desc "make public and tile users"

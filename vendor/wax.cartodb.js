@@ -1,4 +1,4 @@
-/* wax - 7.0.1 - v6.0.4-178-gc113470 */
+/* wax - 7.0.1 - v6.0.4-181-ga34788e */
 
 
 !function (name, context, definition) {
@@ -3223,7 +3223,7 @@ wax = wax || {};
 wax.g = wax.g || {};
 
 wax.g.interaction = function() {
-    var dirty = false, _grid, map;
+    var dirty = false, _grid, map, interactionEnabled = false;
     var tileloadListener = null,
         idleListener = null;
 
@@ -3231,7 +3231,8 @@ wax.g.interaction = function() {
 
     function grid() {
 
-        if (!dirty && _grid) {
+        // when interaction is enabled there should be grid tiles
+        if (!dirty && _grid && (_grid.length > 0 || !interactionEnabled)) {
             return _grid;
         } else {
             _grid = [];
@@ -3239,6 +3240,7 @@ wax.g.interaction = function() {
             var mapOffset = wax.u.offset(map.getDiv());
             var get = function(mapType) {
                 if (!mapType || !mapType.interactive) return;
+                interactionEnabled = true;
                 for (var key in mapType.cache) {
                     if (key.split('/')[0] != zoom) continue;
                     var tileOffset = wax.u.offset(mapType.cache[key]);

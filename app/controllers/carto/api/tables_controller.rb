@@ -18,7 +18,7 @@ module Carto
       end
 
       def related_templates
-        templates = Carto::Template.all.select { |template| template.relates_to_table?(table) }
+        templates = table.related_templates
 
         render_jsonp({ items: templates.map { |template| Carto::Api::TemplatePresenter.new(template).public_values } })
       rescue => e

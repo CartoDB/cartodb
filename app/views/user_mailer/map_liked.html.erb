@@ -34,7 +34,7 @@
             <table cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #F2FAE8; border-bottom: 1px solid #dddddd; width: 100% !important;">
               <tr>
                 <td align="left" style="padding: 40px 50px 40px 50px; font-family: Helvetica, Arial, sans-serif;">
-                  <p style="margin: 0; font-size: 16px; line-height: 25px; color: #666666;"><%= liked_map_body(@map_name, @viewer_name, @viewer_maps_link).html_safe %></p>
+                  <p style="margin: 0; font-size: 16px; line-height: 25px; color: #666666;"><%= @greetings.sample.capitalize %>, <a href="<%= @viewer_maps_link %>" style="color: #0090D7;"><%= @viewer_name %></a> likes your map <strong><%= @map_name %></strong>!</p>
                 </td>
               </tr>
             </table>

@@ -66,15 +66,6 @@ module ApplicationHelper
   module_function :maps_api_template
   module_function :sql_api_template
 
-
-  def liked_map_body(map_name, viewer_name, viewer_maps_link)
-    title = ['Congrats', 'Congratulations', 'Cool', 'Awesome', 'Hooray', 'Nice', 'Wow', 'Boom'].sample
-
-    title << ", your map <strong>#{map_name}</strong> got a like from <a href='#{viewer_maps_link}' style='color: #0090D7;'>#{viewer_name}</a>!"
-
-    title
-  end
-  
   def frontend_config
     config = {
       maps_api_template:          maps_api_template,

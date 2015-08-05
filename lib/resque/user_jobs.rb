@@ -107,8 +107,8 @@ module Resque
         @queue = :users
 
         def self.perform(visualization_id, viewer_user_id, vis_preview_image)
-          viz = CartoDB::Visualization::Member.new(id: visualization_id).fetch
-          viewer_user = User.where(id: viewer_user_id).first
+          viz = Carto::Visualization.find(visualization_id)
+          viewer_user = Carto::User.find(viewer_user_id)
           UserMailer.map_liked(viz, viewer_user, vis_preview_image).deliver
         end
       end

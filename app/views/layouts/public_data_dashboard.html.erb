@@ -5,9 +5,12 @@
 <!--[if gt IE 8]><!--><html class="no-js"><!--<![endif]-->
   <%= render 'admin/shared/public_head' %>
 
-  <body>
+  <body class="PublicBody">
+    <%= render partial: 'admin/shared/public_header', locals: { header_class: 'Header--tall Header--dark', logo_icon_class: 'Logo-icon--dark' } %>
+
     <%= render 'admin/shared/public_footer' %>
 
+    <%= javascript_include_tag 'cdb.js', 'public_data_dashboard_deps', 'public_data_dashboard' %>
     <%= yield :js %>
 
     <%= insert_trackjs() -%>

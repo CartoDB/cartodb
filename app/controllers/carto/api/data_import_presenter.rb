@@ -1,4 +1,5 @@
 require 'uri'
+require 'json'
 
 module Carto
   module Api
@@ -86,7 +87,7 @@ module Carto
       end
 
       def extract_filename(url)
-        File.basename(URI.parse(url).path)
+        URI.decode(File.basename(URI.parse(URI.encode(url.strip)).path))
       end
 
       def extract_twitter_display_name(data_import)

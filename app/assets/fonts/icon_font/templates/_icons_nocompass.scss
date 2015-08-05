@@ -1,0 +1,27 @@
+// New dashboard icon font :)
+// 
+// TODO: remove Compass
+// 
+// --------------------------------------------------
+
+@import "compass/css3/font-face";
+
+
+@include font-face("CartoIcon", font-files("cartoIcon.woff", "cartoIcon.ttf", "cartoIcon.svg"), "cartoIcon.eot", normal, normal);
+
+
+.iconFont {
+  font-family:'CartoIcon';
+  display: inline-block;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+<% _.each(glyphs, function(glyph) { %>
+.iconFont-<%= glyph.fileName.split("_")[2] %>:before {
+  content: "\<%= glyph.codePoint %>";
+}
+<% }); %>

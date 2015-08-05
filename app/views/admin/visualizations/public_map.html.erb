@@ -127,7 +127,7 @@
             <div class="js-user-meta">
               <h1 class="PublicMap-title js-PublicMap-title Title Title--m"><%= @visualization.name %></h1>
               <% if @visualization.description_clean %>
-                <p class="PublicMap-description"><%= @visualization.description %></p>
+                <div class="PublicMap-description"><%= raw @visualization.description_html_safe %></div>
               <% end %>
 
               <div class="PublicMap-meta">

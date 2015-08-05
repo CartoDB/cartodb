@@ -35,7 +35,7 @@ describe CartoDB::SQLApi do
 
   def stub_api_request(code, response_file)
     response = File.open(path_to(response_file)).read
-    Typhoeus.stub(/.*cartodb.com/).and_return(
+    Typhoeus.stub(/.*cartodb.com\/api\/v[12]/).and_return(
       Typhoeus::Response.new(code: code, body: response)
     )
   end # stub_api_request

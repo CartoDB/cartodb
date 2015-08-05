@@ -1,11 +1,12 @@
-<div class="Header" id="header">
+<div class="Header <%= header_class ||= '' %>" id="header">
   <div class="u-inner Header-inner">
     <div class="Header-navigation">
       <ul class="Header-navigationList">
-        <li class="js-logo">
+        <%# TODO: Apply js styleguide "js-Logo" %>
+        <li class="Header-navigationItem js-logo">
           <a href="<%= cartodb_com_hosted? ? CartoDB.url(self, 'root') : "http://cartodb.com" %>">
             <span class="Logo Logo--avatar">
-              <i class="iconFont iconFont-CartoFante"></i>
+              <i class="iconFont iconFont-CartoFante Logo-icon <%= logo_icon_class ||= '' %>"></i>
             </span>
           </a>
         </li>
@@ -38,14 +39,14 @@
       </ul>
     </div>
 
-    <div class="Header-settings">
-      <ul class="Header-settingsList js-user-settings">
-        <li class="Header-settingsItem js-login">
-          <a href="<%= CartoDB.url(self, 'login') %>" class="Header-settingsLink">Login</a>
+    <div class="Header-navigation">
+      <ul class="Header-navigationList js-user-settings">
+        <li class="Header-navigationItem js-login">
+          <a href="<%= CartoDB.url(self, 'login') %>" class="Header-navigationLink">Login</a>
         </li>
 
         <% unless cartodb_com_hosted? %>
-          <li class="Header-settingsItem">
+          <li class="Header-navigationItem">
             <a href="http://cartodb.com/signup" class="Button Button--headerPositive">
               <span>Sign up</span>
             </a>

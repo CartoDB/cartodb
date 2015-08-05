@@ -110,7 +110,7 @@
             <%= f.text_field :discus_shortname, :class => "Form-input Form-input--long" %>
           </div>
           <div class="Form-rowInfo">
-            <p class="Form-rowInfoText">Moderate the comments in your maps</p>
+            <p class="Form-rowInfoText">Moderate the comments on all maps across your organization</p>
           </div>
         </div>
 
@@ -130,8 +130,11 @@
           <h4 class="Form-titleHeader">Organization log in/sign up</h4>
           <p class="Form-titleText">
             Customize your organization log in and sign up.<br/>
-            <% if @organization[:whitelisted_email_domains].length === 0 %><span class="Form-titleText--negative"><% end %>
-            Sign up will only be enabled when whitelist is not empty<% if @organization[:whitelisted_email_domains].length === 0 %></span><% end %>.
+            <% if @organization[:whitelisted_email_domains].length === 0 %>
+              <span class="Form-titleText--negative">Sign up will only be enabled when whitelist is not empty.</span>
+            <% else %>
+              Sign up url is: <a href="<%= @organization_signup_url %>"><%= @organization_signup_url %></a>.
+            <% end %>
           </p>
         </div>
 

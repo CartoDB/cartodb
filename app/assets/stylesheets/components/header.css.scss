@@ -1,0 +1,32 @@
+// Header
+// --------------------------------------------------
+
+$sHeight: 71px;
+$sMargin-item: 40px;
+
+.Header {
+  display: flex;
+}
+.Header--dark {
+  background: #2E3C43;
+}
+.Header--tall {
+  min-height: 450px;
+}
+.Header-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: $sHeight;
+}
+.Header-navigationList {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.Header-navigationItem {
+  margin-left: $sMargin-item;
+}
+.Header-navigationItem:first-child {
+  margin-left: 0;
+}

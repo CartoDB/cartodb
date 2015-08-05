@@ -22,6 +22,7 @@ WORKING_SPECS_1 = \
   spec/models/layer/presenter_spec.rb \
   spec/requests/api/json/layer_presenter_spec.rb \
   spec/requests/carto/api/layer_presenter_spec.rb \
+	spec/requests/carto/api/data_import_presenter_spec.rb \
   spec/models/map_spec.rb \
   spec/models/map/copier_spec.rb \
   spec/models/visualization/*.rb \
@@ -52,6 +53,7 @@ WORKING_SPECS_2 = \
   services/importer/spec/unit/column_spec.rb \
   services/importer/spec/unit/csv_normalizer_spec.rb \
 	services/importer/spec/unit/shp_normalizer_spec.rb \
+	services/importer/spec/unit/shp_helper_spec.rb \
   services/importer/spec/unit/downloader_spec.rb \
   services/importer/spec/unit/georeferencer_spec.rb \
   services/importer/spec/unit/importer_stats_spec.rb \

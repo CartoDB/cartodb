@@ -113,6 +113,11 @@ module CartoDB
     @@request_host=value
   end
 
+  def self.protocol(protocol_override=nil)
+    default_protocol = self.use_https? ? 'https' : 'http'
+    protocol_override.nil? ? default_protocol : protocol_override
+  end
+
   # "private" methods, not intended for direct usage
   # ------------------------------------------------
 
@@ -133,11 +138,6 @@ module CartoDB
   def self.https_port
     return @@https_port if defined?(@@https_port)
     @@https_port = self.get_https_port
-  end
-
-  def self.protocol(protocol_override=nil)
-    default_protocol = self.use_https? ? 'https' : 'http'
-    protocol_override.nil? ? default_protocol : protocol_override
   end
 
   def self.subdomain_based_base_url(subdomain, org_username=nil, protocol_override=nil)

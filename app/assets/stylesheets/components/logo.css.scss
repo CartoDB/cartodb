@@ -1,0 +1,77 @@
+// Logo
+// --------------------------------------------------
+
+$size: 36px;
+
+.Logo {
+  position: relative;
+  display: inline-block;
+}
+.Logo:after {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  width: $size + 4;
+  height: $size + 4;
+  border-radius: $size;
+  background-color: #fff;
+  border: 2px solid rgba(#fff, .7);
+  border-bottom-color: transparent;
+  background: transparent;
+  opacity: 0;
+  transition: all, .4s, ease-in;
+}
+.Logo.is-loading {
+  border-radius: ($size/2)+1;
+}
+.Logo.is-loading:after {
+  opacity: 1;
+  animation: spin 0.7s linear infinite;
+}
+.Logo--avatar {
+  display: inline-block;
+  vertical-align: top;
+  width: $size;
+  height: $size;
+  line-height: $size + 10;
+  background: white;
+  border-radius: 4px;
+  text-align: center;
+  transition: border-radius, .2s, linear;
+}
+.Logo-icon {
+  font-size: $size - 14;
+  color: #3C93D8;
+}
+.Logo-icon--dark {
+  color: #2E3C43;
+}
+
+@keyframes(spin) {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes(fade-and-bounce-up) {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  15% {
+    opacity: .8;
+    transform: translateY(-3px);
+  }
+  45% {
+    opacity: 1;
+    transform: translateY(2px);
+  }
+  70% {
+    transform: translateY(-1px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -92,7 +92,7 @@ var cancelAnimationFrame = global.cancelAnimationFrame
       this.range = torque.math.linear(0, this.options.steps);
       this.rangeInv = this.range.invert();
       this.time(this._time);
-      this.start();
+      this.running? this.start(): this.pause();
       return this;
     },
 
@@ -1819,7 +1819,7 @@ GMapsTorqueLayer.prototype = torque.extend({},
    * set the cartocss for the current renderer
    */
   setCartoCSS: function(cartocss) {
-    if (this.provider.options.named_map) throw new Error("CartoCSS style on named maps is read-only");
+    if (this.provider && this.provider.options.named_map) throw new Error("CartoCSS style on named maps is read-only");
     var shader = new carto.RendererJS().render(cartocss);
     this.shader = shader;
     if (this.renderer) {
@@ -3580,7 +3580,7 @@ var Profiler = require('../profiler');
       torque.net.jsonp(url, function (data) {
         var query = format("select * from ({sql}) __torque_wrap_sql limit 0", { sql: self.getSQL() });
         self.sql(query, function (queryData) {
-          if (data) {
+          if (data && queryData) {
             callback({
               updated_at: data.last_updated,
               fields: queryData.fields

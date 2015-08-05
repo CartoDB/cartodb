@@ -39,6 +39,44 @@ DESC
       puts "User #{u.username} created successfully"
     end
 
+    task :create_dev_user => 
+      ["rake:db:create", "rake:db:migrate", "cartodb:db:create_publicuser"] do
+      raise "You should provide a valid e-mail"    if ENV['EMAIL'].blank?
+      raise "You should provide a valid password"  if ENV['PASSWORD'].blank?
+      raise "You should provide a valid subdomain" if ENV['SUBDOMAIN'].blank?
+
+      # Reload User model schema to avoid errors
+      # when running this task along with db:migrate
+      User.set_dataset :users
+      
+      u = User.new
+      u.email = ENV['EMAIL']
+      u.password = ENV['PASSWORD']
+      u.password_confirmation = ENV['PASSWORD']
+      u.username = ENV['SUBDOMAIN']
+      u.database_host = ENV['DATABASE_HOST'] || ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
+      u.save
+
+      raise u.errors.inspect if u.new?
+      puts "User #{u.username} created successfully"
+      
+      # 10 Gb of quota
+      quota = 1073741824
+      u.update(:quota_in_bytes => quota)
+      
+      u.rebuild_quota_trigger
+      puts "User: #{u.username} quota updated to: 10 GB. #{u.tables.count} tables updated."
+
+      u.update(:table_quota => nil)             
+      puts "User: #{u.username} table quota updated to: unlimited"
+      
+      u.update(:private_tables_enabled => true)      
+      puts "User: #{u.username} private tables enabled: true"
+     
+      u.update(:account_type => '[DEDICATED]')       
+      puts "User: #{u.username} table account type updated to: [DEDICATED]"
+    end
+
     desc "make public and tile users"
     task :create_publicuser => :environment do
       [CartoDB::PUBLIC_DB_USER, CartoDB::TILE_DB_USER].each do |u|

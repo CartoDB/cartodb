@@ -16,6 +16,7 @@ Sequel.migration do
       DateTime    :created_at,              null: false, default: Sequel::CURRENT_TIMESTAMP
     end
 
+    debugger
     Rails::Sequel.connection.run(%Q{
       ALTER TABLE "templates"
         ADD CONSTRAINT  source_visualization_id_fkey

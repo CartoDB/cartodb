@@ -3,14 +3,38 @@
 <!--[if IE 7]><html class="no-js lt-ie9 lt-ie8"><![endif]-->
 <!--[if IE 8]><html class="no-js lt-ie9"><![endif]-->
 <!--[if gt IE 8]><!--><html class="no-js"><!--<![endif]-->
-  <%= render 'admin/shared/public_head' %>
+  <head>
+    <%= favicon_link_tag "/favicons/favicon.ico" %>
+    <title><%= yield :title %></title>
+    <meta name="description" content="<%= yield :description %>">
+    <meta name="keywords" content="<%= @name %>, datasets, maps, data visualization, spatial data, geospatial, cartodb">
+    <meta name="author" content="<%= @name %>">
+    <meta charset='utf-8' />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+
+    <meta property="og:title" content="<%= yield :title %>" />
+    <meta property="og:description" content="<%= yield :description %>" />
+    <meta property="og:type" content="visualization" />
+    <meta property="og:url" content="<%= request.original_url %>" />
+    <meta property="og:image" content="<%= @avatar_url %>" />
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@cartodb">
+    <meta name="twitter:creator" content="@cartodb">
+    <meta name="twitter:title" content="<%= yield :title %>">
+    <meta name="twitter:description" content="<%= yield :description %>">
+    <meta name="twitter:image" content="<%= @avatar_url %>">
+    <meta name="twitter:url" content="<%= request.original_url %>" />
+
+    <%= stylesheet_link_tag 'cartodb', 'common', 'public_dashboard', 'public_data_dashboard' %>
+  </head>
 
   <body class="PublicBody">
     <%= render partial: 'admin/shared/public_header', locals: { header_class: 'Header--tall Header--dark', logo_icon_class: 'Logo-icon--dark' } %>
 
     <%= render 'admin/shared/public_footer' %>
 
-    <%= javascript_include_tag 'cdb.js', 'public_data_dashboard_deps', 'public_data_dashboard' %>
+    <%= javascript_include_tag 'cdb.js', 'templates', 'public_dashboard_deps', 'public_dashboard', 'public_data_dashboard' %>
     <%= yield :js %>
 
     <%= insert_trackjs() -%>

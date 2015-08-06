@@ -16,11 +16,13 @@ require_relative './overlay/presenter'
 require_relative '../../services/importer/lib/importer/query_batcher'
 require_relative '../../services/datasources/lib/datasources/decorators/factory'
 require_relative '../../services/table-geocoder/lib/internal-geocoder/latitude_longitude'
+require_relative '../helpers/bounding_box_helper'
 
 require_relative '../../lib/cartodb/stats/user_tables'
 
 class Table
   extend Forwardable
+  include BoundingBoxHelper
 
   SYSTEM_TABLE_NAMES = %w( spatial_ref_sys geography_columns geometry_columns raster_columns raster_overviews cdb_tablemetadata geometry raster )
 
@@ -60,7 +62,6 @@ class Table
   DEFAULT_THE_GEOM_TYPE = 'geometry'
 
   VALID_GEOMETRY_TYPES = %W{ geometry multipolygon point multilinestring }
-
 
   def_delegators :relator, *CartoDB::TableRelator::INTERFACE
   def_delegators :@user_table, *::UserTable::INTERFACE
@@ -566,6 +567,7 @@ class Table
     member.store
 
     member.map.recalculate_bounds!
+    add_bounding_box_info
 
     CartoDB::Visualization::Overlays.new(member).create_default_overlays
   end
@@ -1372,6 +1374,12 @@ class Table
     rescue
       []
     end
+  end
+
+  def add_bounding_box_info
+    db = table_visualization.user.in_database
+    bounds = calculate_bounding_box(db, qualified_table_name)
+    table_visualization.save_bounding_box(bounds)
   end
 
   def cache

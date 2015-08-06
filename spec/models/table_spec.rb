@@ -2294,4 +2294,46 @@ describe Table do
     end
   end
 
+  describe '#calculate and store bounding box' do
+    it "should add bounding box to member" do
+      bbox_calculated = "0103000020110F00000100000005000000A53F3F12202160C1F41" \
+                        "A18D775954FC1A53F3F12202160C1D232DCD53C5F574188F7845A" \
+                        "4C213C41D232DCD53C5F574188F7845A4C213C41F41A18D775954" \
+                        "FC1A53F3F12202160C1F41A18D775954FC1"
+      table = new_table(:user_id => $user_1.id)
+      table.force_schema = "the_geom geometry"
+      table.the_geom_type = "point"
+      table.save.reload
+      insert_points(table)
+      table.send :add_bounding_box_info
+      bbox = Rails::Sequel.connection.fetch(
+        "SELECT bounding_box from visualizations WHERE id = '#{table.table_visualization.id}'"
+      ).first[:bounding_box]
+      bbox.should eq bbox_calculated
+    end
+  end
+
+  def insert_points(table)
+    points = [
+      [16.5607329, 48.1199611],
+      [-75.96557, 4.58971],
+      [7.6493752, 45.1974684],
+      [-58.5363498, -34.8222787]
+    ]
+    points.each do |point|
+      the_geom = %Q{{"type":"Point","coordinates":[#{point[0]},#{point[1]}]}}
+      pk = table.insert_row!({:the_geom => the_geom})
+    end
+  end
+
+  def generate_random_geopoints(number = 10)
+    randomizer = Random.new(9009900)
+    points = []
+    number.each do
+      lat = randomizer(-90.000,90.000)
+      lon = randomizer(-180.000,180.000)
+      points << {lat: lat, lon: lon }
+    end
+  end
+
 end

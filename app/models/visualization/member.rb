@@ -641,6 +641,14 @@ module CartoDB
         end
       end
 
+      def save_bounding_box(bounds)
+        update_sql = "UPDATE visualizations SET bounding_box = ST_Transform(ST_Envelope('SRID=4326;POLYGON((" \
+                     "#{bounds[:minx]} #{bounds[:miny]},#{bounds[:minx]} #{bounds[:maxy]}," \
+                     "#{bounds[:maxx]} #{bounds[:maxy]},#{bounds[:maxx]} #{bounds[:miny]}," \
+                     "#{bounds[:minx]} #{bounds[:miny]}))'::geometry), 3857) WHERE id = '#{self.id}'"
+        Rails::Sequel.connection.execute(update_sql)
+      end
+
       private
 
       attr_reader   :repository, :name_checker, :validator

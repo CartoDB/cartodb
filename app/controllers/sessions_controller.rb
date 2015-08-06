@@ -94,7 +94,16 @@ class SessionsController < ApplicationController
   protected
 
   def initialize_google_plus_config
-    signup_action = Cartodb::Central.sync_data_with_cartodb_central? ? Cartodb::Central.new.google_signup_url : '/google/signup'
+
+    if !@organization.nil?
+      # TODO: remove duplication (app/controllers/admin/organizations_controller.rb)
+      signup_action = "#{CartoDB.protocol}://#{@organization.name}.#{CartoDB.account_host}#{CartoDB.path(self, 'signup_organization_user')}"
+    elsif Cartodb::Central.sync_data_with_cartodb_central?
+      signup_action = Cartodb::Central.new.google_signup_url
+    else
+      signup_action = '/google/signup'
+    end
+
     button_color = @organization.nil? || @organization.color.nil? ? nil : organization_color(@organization)
     @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, signup_action, 'google_access_token', button_color)
   end

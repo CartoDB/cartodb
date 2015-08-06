@@ -237,12 +237,19 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     return(head 403) unless current_viewer
 
     vis = Visualization::Member.new(id: @table_id).fetch
+
     raise KeyError if !vis.has_permission?(current_viewer, Visualization::Member::PERMISSION_READONLY) &&
       vis.privacy != Visualization::Member::PRIVACY_PUBLIC && vis.privacy != Visualization::Member::PRIVACY_LINK
 
     vis.add_like_from(current_viewer.id)
        .fetch
        .invalidate_cache
+
+    if (current_viewer.id != vis.user.id)
+      vis_preview_image = Carto::StaticMapsURLHelper.new.url_for_static_map(request, vis, 600, 300)
+      ::Resque.enqueue(::Resque::UserJobs::Mail::MapLiked, vis.id, current_viewer.id, vis_preview_image)
+    end
+
     render_jsonp({
                    id:    vis.id,
                    likes: vis.likes.count,
@@ -352,7 +359,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     # TODO: refactor for making default parameters and total counting obvious
     if params[:type].nil? || params[:type] == ''
       types = params.fetch('types', '').split(',')
-      type = types.include?(Visualization::Member::TYPE_DERIVED) ? Visualization::Member::TYPE_DERIVED : Visualization::Member::TYPE_CANONICAL 
+      type = types.include?(Visualization::Member::TYPE_DERIVED) ? Visualization::Member::TYPE_DERIVED : Visualization::Member::TYPE_CANONICAL
       params.merge( { type: type } )
     else
       params[:type] == Visualization::Member::TYPE_REMOTE ? params.merge( { type: Visualization::Member::TYPE_CANONICAL } ) : params

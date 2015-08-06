@@ -1,0 +1,130 @@
+/**
+ *  Export Image dialog styles
+ */
+
+.ExportImageView {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+.ExportImageView-Header {
+  position: absolute;
+  text-align: center;
+  left:50%;
+  height: 40px;
+  top: 30px;
+  z-index: 105;
+}
+.ExportImageView--help {
+  position:relative;
+  font-size: 13px;
+  text-align:center;
+  color: rgba(#fff, .4);
+}
+.ExportImageView-Header .Button {
+  position:absolute;
+  top: 0;
+  right: 0;
+}
+.ExportImageView-Footer {
+  position: absolute;
+  text-align: center;
+  width: 100%;
+  bottom: 25px;
+  z-index: 105;
+}
+.ExportImageView--dimensions  {
+  display: inline-block;
+  padding: 3px 5px;
+  background: rgba(#000, .7);
+  border-radius: 3px;
+  font-size: 12px;
+  color: #9B9B9B;
+}
+.ExportImageView--dimensions strong {
+  color: #fff;
+  font-weight: normal;
+}
+
+.ExportHelper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background:rgba(#000, 0.6);
+}
+
+.Button--micro {
+  display: inline-block;
+  background: #fff;
+  padding: 4px 5px;
+  border-radius: 3px;
+  height: auto;
+  border:none;
+
+  &:hover {
+    background:#ddd;
+  }
+
+  span {
+    color: #666;
+    font-weight:normal;
+    font-size: 12px;
+    text-transform: none;
+  }
+}
+.Button--micro.Button--negative {
+  border: 1px solid #fff;
+  background: #000;
+  padding: 2px 5px 2px 6px;
+  border-radius: 5px;
+  span {
+    color:#fff;
+  }
+  &:before {
+    content: "×";
+    position: relative;
+    left: -1px;
+  }
+}
+
+$resizeHandlerSize: 8px;
+
+.CanvasExport {
+  position:absolute;
+  border: 1px dashed #fff;
+  &.draggable {
+    z-index: 1000000000;
+    cursor:move;
+  }
+}
+.CanvasExport {
+  .ui-resizable { position: relative; }
+  .ui-resizable-handle { 
+    position: absolute;
+    width: $resizeHandlerSize;
+    height: $resizeHandlerSize;
+    display: block;
+    box-shadow: 1px 1px 2px rgba(#000, .5);
+    background: rgb(254,254,254); /* Old browsers */
+    background: -moz-linear-gradient(top, rgba(254,254,254,1) 0%, rgba(229,229,229,1) 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(254,254,254,1)), color-stop(100%,rgba(229,229,229,1))); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, rgba(254,254,254,1) 0%,rgba(229,229,229,1) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, rgba(254,254,254,1) 0%,rgba(229,229,229,1) 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top, rgba(254,254,254,1) 0%,rgba(229,229,229,1) 100%); /* IE10+ */
+    background: linear-gradient(to bottom, rgba(254,254,254,1) 0%,rgba(229,229,229,1) 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fefefe', endColorstr='#e5e5e5',GradientType=0 ); /* IE6-9 */
+    z-index: 104;
+  }
+  .ui-resizable-disabled .ui-resizable-handle, 
+  .ui-resizable-autohide .ui-resizable-handle { 
+    display: none;
+  }
+  .ui-resizable-n  { cursor: ns-resize; top: -5px; left: 50%; margin-left: -4px; }
+  .ui-resizable-s  { cursor: ns-resize; bottom: -5px; left: 50%; margin-left: -4px; }
+  .ui-resizable-e  { cursor: ew-resize; right: -5px; top: 50%; margin-top: -4px; }
+  .ui-resizable-w  { cursor: ew-resize; left: -5px; top: 50%; margin-top: -4px; }
+  .ui-resizable-se { cursor: nwse-resize; right: -4px; bottom: -4px; }
+  .ui-resizable-sw { cursor: nesw-resize; left: -4px;  bottom: -4px; }
+  .ui-resizable-nw { cursor: nwse-resize; left: -4px;  top: -4px;  }
+  .ui-resizable-ne { cursor: nesw-resize; right: -4px; top: -4px; }
+}

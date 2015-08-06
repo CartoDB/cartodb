@@ -171,6 +171,11 @@ module CartoDB
       what_about: "The Excel file has an unsupported format or is corrupt. To fix this, open it and save as CSV or XLSX.",
       source: ERROR_SOURCE_USER
     },
+    2009 => {
+      title: 'KML without style Id',
+      what_about: "The KML file you tried to import failed because a style element doesn't have an ID attribute. To fix this error, please open the file and add an ID to all the style tags.",
+      source: ERROR_SOURCE_USER
+    },
     3007 => {
       title: 'JSON may not be valid GeoJSON',
       what_about: "We can only import GeoJSON formated JSON files. See if the source of this data supports GeoJSON or another file format for download.",

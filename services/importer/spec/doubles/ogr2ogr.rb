@@ -26,6 +26,7 @@ module CartoDB
         def file_too_big?; return; end
         def statement_timeout?; return; end
         def segfault_error?; return; end
+        def kml_style_missing?; return; end
       end
     end
   end

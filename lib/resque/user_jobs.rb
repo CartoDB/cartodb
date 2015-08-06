@@ -97,9 +97,19 @@ module Resque
         @queue = :users
 
         def self.perform(table_name, table_owner_name, user_id)
-          #t = CartoDB::Visualization::Member.new(id: table_id).fetch
           u = User.where(id: user_id).first
           UserMailer.unshare_table(table_name, table_owner_name, u).deliver
+        end
+      end
+
+      module MapLiked
+        extend ::Resque::Metrics
+        @queue = :users
+
+        def self.perform(visualization_id, viewer_user_id, vis_preview_image)
+          viz = Carto::Visualization.find(visualization_id)
+          viewer_user = Carto::User.find(viewer_user_id)
+          UserMailer.map_liked(viz, viewer_user, vis_preview_image).deliver
         end
       end
 
@@ -110,6 +120,16 @@ module Resque
         def self.perform(user_id, imported_tables, total_tables, first_imported_table, first_table, errors)
           u = User.where(id: user_id).first
           ImportMailer.data_import_finished(u, imported_tables, total_tables, first_imported_table, first_table, errors).deliver
+        end
+      end
+
+      module GeocoderFinished
+        extend ::Resque::Metrics
+        @queue = :users
+
+        def self.perform(user_id, state, table_name, error_code, processable_rows, number_geocoded_rows)
+          user = User.where(id: user_id).first
+          GeocoderMailer.geocoding_finished(user, state, table_name, error_code, processable_rows, number_geocoded_rows).deliver
         end
       end
 

@@ -24,7 +24,7 @@
         <%= csrf_meta_tags %>
 
         <div class="Form-title">
-          <p class="Form-titleText">Edit your company settings</p>
+          <p class="Form-titleText">Edit your organization settings</p>
         </div>
 
         <div class="Form-row">
@@ -48,6 +48,18 @@
           </div>
           <div class="Form-rowInfo">
             <p class="Form-rowInfoText"></p>
+          </div>
+        </div>
+
+        <div class="Form-row">
+          <div class="Form-rowLabel">
+            <label class="Form-label">Contact email</label>
+          </div>
+          <div class="Form-rowData">
+            <%= f.text_field :admin_email, :class => "Form-input Form-input--long" %>
+          </div>
+          <div class="Form-rowInfo">
+            <p class="Form-rowInfoText">User support email, default: <%= @organization.owner.email %></p>
           </div>
         </div>
 
@@ -98,7 +110,19 @@
             <%= f.text_field :discus_shortname, :class => "Form-input Form-input--long" %>
           </div>
           <div class="Form-rowInfo">
-            <p class="Form-rowInfoText">Moderate the comments in your maps</p>
+            <p class="Form-rowInfoText">Moderate the comments on all maps across your organization</p>
+          </div>
+        </div>
+
+        <div class="Form-row">
+          <div class="Form-rowLabel">
+            <label class="Form-label">Users API Key</label>
+          </div>
+          <div class="Form-rowData">
+            <button class="Button--link js-regenerateOrgUsersApiKey" data-current_username="<%= current_user.username %>">Regenerate all API keys</button>
+          </div>
+          <div class="Form-rowInfo">
+            <p class="Form-rowInfoText">This involves all your organization users API keys</p>
           </div>
         </div>
 
@@ -106,8 +130,11 @@
           <h4 class="Form-titleHeader">Organization log in/sign up</h4>
           <p class="Form-titleText">
             Customize your organization log in and sign up.<br/>
-            <% if @organization[:whitelisted_email_domains].length === 0 %><span class="Form-titleText--negative"><% end %>
-            Sign up will only be enabled when whitelist is not empty<% if @organization[:whitelisted_email_domains].length === 0 %></span><% end %>.
+            <% if @organization[:whitelisted_email_domains].length === 0 %>
+              <span class="Form-titleText--negative">Sign up will only be enabled when whitelist is not empty.</span>
+            <% else %>
+              Sign up url is: <a href="<%= @organization_signup_url %>"><%= @organization_signup_url %></a>.
+            <% end %>
           </p>
         </div>
 
@@ -203,6 +230,7 @@
           <% end %>
         </div>
       <% end %>
+
     </div>
   </div>
 

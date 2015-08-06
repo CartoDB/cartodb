@@ -35,6 +35,16 @@ describe Map do
       new_map.send(:bound_for, value5, min_value, max_value).should eq Map::DEFAULT_BOUNDS[min_value]
       new_map.send(:bound_for, value6, min_value, max_value).should eq value6
 
+      # As map has no geometries, bounds should still be default ones instead of zeros
+      map_bounds = new_map.send(:get_map_bounds)
+      default_bounds = new_map.send(:default_map_bounds)
+
+      map_bounds[:maxx].should eq default_bounds[:max][0]
+      map_bounds[:maxy].should eq default_bounds[:max][1]
+      map_bounds[:minx].should eq default_bounds[:min][0]
+      map_bounds[:miny].should eq default_bounds[:min][1]
+
+
       new_map.destroy
     end
   end

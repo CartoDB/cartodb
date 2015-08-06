@@ -9,7 +9,6 @@ class Admin::TablesController < ApplicationController
   after_filter       :update_user_last_activity,   :only => [:index, :show]
 
   def index
-    @tables_count  = current_user.tables.count
   end
 
   # We only require login for index, so we must manage the security at this level.
@@ -65,6 +64,6 @@ class Admin::TablesController < ApplicationController
   def update_user_last_activity
     return true unless current_user.present?
     current_user.set_last_active_time
-    current_user.set_last_ip_address request.remote_ip    
+    current_user.set_last_ip_address request.remote_ip
   end
 end

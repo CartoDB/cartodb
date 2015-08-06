@@ -17,10 +17,12 @@ WORKING_SPECS_1 = \
   spec/models/table/column_typecaster_spec.rb \
   spec/models/user_spec.rb \
   spec/models/user_presenter_spec.rb \
+	spec/models/user_table_spec.rb \
   spec/models/layer_spec.rb \
   spec/models/layer/presenter_spec.rb \
   spec/requests/api/json/layer_presenter_spec.rb \
   spec/requests/carto/api/layer_presenter_spec.rb \
+	spec/requests/carto/api/data_import_presenter_spec.rb \
   spec/models/map_spec.rb \
   spec/models/map/copier_spec.rb \
   spec/models/visualization/*.rb \
@@ -51,6 +53,7 @@ WORKING_SPECS_2 = \
   services/importer/spec/unit/column_spec.rb \
   services/importer/spec/unit/csv_normalizer_spec.rb \
 	services/importer/spec/unit/shp_normalizer_spec.rb \
+	services/importer/spec/unit/shp_helper_spec.rb \
   services/importer/spec/unit/downloader_spec.rb \
   services/importer/spec/unit/georeferencer_spec.rb \
   services/importer/spec/unit/importer_stats_spec.rb \
@@ -158,9 +161,10 @@ WORKING_SPECS_9 = \
   spec/requests/carto/api/maps_controller_spec.rb \
   spec/requests/api/json/overlays_controller_spec.rb \
   spec/requests/carto/api/overlays_controller_spec.rb \
+	spec/models/carto/user_creation_spec.rb \
 	spec/models/carto/user_service_spec.rb \
 	spec/models/carto/user_spec.rb \
-	spec/models/carto/user_creation_spec.rb \
+	spec/models/carto/user_table_spec.rb \
 	spec/models/carto/organization_spec.rb \
 	services/table-geocoder/spec/lib/abstract_table_geocoder_spec.rb \
 	services/geocoder/spec/hires_batch_geocoder_spec.rb \

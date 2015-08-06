@@ -54,7 +54,7 @@ module CartoDB
       }
       SUPPORTED_ENCODINGS_DOWNCASED = SUPPORTED_ENCODINGS.map(&:downcase)
 
-      NORMALIZER_RELATIVE_PATH = 
+      NORMALIZER_RELATIVE_PATH =
         "../../../../../lib/importer/misc/shp_normalizer.py"
 
       def self.supported?(extension)
@@ -81,7 +81,7 @@ module CartoDB
         normalize
         encoding  = read_encoding_files || @helper.dbf_encoding ||
                     normalizer_output.fetch(:encoding, nil)
-        encoding  = DEFAULT_ENCODING if encoding == 'None' 
+        encoding  = DEFAULT_ENCODING if encoding == 'None'
         encoding  = codepage_for(encoding) if windows?(encoding)
         return(tab_encoding || encoding) if @helper.tab?
         encoding
@@ -104,7 +104,7 @@ module CartoDB
         }
       rescue
         false
-      end 
+      end
 
       def normalize
         stdout, stderr, status  = Open3.capture3(normalizer_command)
@@ -116,9 +116,13 @@ module CartoDB
           destination:  output[3]
         }
 
-        raise ShpNormalizationError unless status.to_i == 0 
+        raise ShpNormalizationError unless status.to_i == 0
         raise ShpNormalizationError unless !!normalizer_output
         self
+      end
+
+      def prj_file_present?
+        @helper.prj?
       end
 
       attr_accessor :exit_code, :command_output, :normalizer_output, :filepath,
@@ -129,7 +133,7 @@ module CartoDB
       end
 
       def normalizer_path
-        File.expand_path(NORMALIZER_RELATIVE_PATH, __FILE__) 
+        File.expand_path(NORMALIZER_RELATIVE_PATH, __FILE__)
       end
 
       def normalizer_command

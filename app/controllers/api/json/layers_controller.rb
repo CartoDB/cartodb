@@ -5,22 +5,9 @@ require_relative '../../../models/visualization/collection'
 
 class Api::Json::LayersController < Api::ApplicationController
 
-  ssl_required :index, :show, :create, :update, :destroy
+  ssl_required :create, :update, :destroy
   before_filter :load_parent
   before_filter :validate_read_write_permission, only: [:update, :destroy]
-
-  def index
-    @layers = @parent.layers
-    layers = @layers.map { |layer|
-      CartoDB::Layer::Presenter.new(layer, {:viewer_user => current_user}).to_poro
-    }
-    render_jsonp layers: layers, total_entries: @layers.size
-  end
-
-  def show
-    @layer = @parent.layers_dataset.where(layer_id: params[:id]).first
-    render_jsonp @layer.to_json
-  end
 
   def create
     @layer = ::Layer.new(params.slice(:kind, :options, :infowindow, :tooltip, :order))

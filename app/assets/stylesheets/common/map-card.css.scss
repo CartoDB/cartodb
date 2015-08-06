@@ -54,6 +54,7 @@ $sEditButtonSize: 50px;
   margin-bottom: $sMargin-element;
 }
 .MapCard-tags {
+  position: relative;
   @include line-clamp(1);
 }
 .MapCard--selectable{

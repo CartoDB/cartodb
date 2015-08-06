@@ -2,6 +2,8 @@ require_dependency 'google_plus_api'
 require_dependency 'google_plus_config'
 
 class SignupController < ApplicationController
+  include LoginHelper
+
   layout 'frontend'
 
   ssl_required :signup, :create
@@ -16,12 +18,20 @@ class SignupController < ApplicationController
   def create
     @user = ::User.new_with_organization(@organization)
 
-    if params[:google_access_token].present? && @google_plus_config.present?
-      user_data = GooglePlusAPI.new.get_user_data(params[:google_access_token])
+    google_access_token = [params.fetch(:google_access_token, nil), params.fetch(:google_signup_access_token, nil)].uniq.compact.first
+    # Merge both sources (signup and login) in a single param
+    params[:google_access_token] = google_access_token
+
+    if google_access_token.present? && @google_plus_config.present?
+      # Keep in mind get_user_data can return nil
+      user_data = GooglePlusAPI.new.get_user_data(google_access_token)
     end
 
     if user_data
       user_data.set_values(@user)
+      if params[:user] && params[:user][:username].present?
+        @user.username = params[:user][:username]
+      end
     else
       @user.username = params[:user][:username]
       @user.email = params[:user][:email]
@@ -48,7 +58,8 @@ class SignupController < ApplicationController
   private
 
   def initialize_google_plus_config
-    @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, '/signup')
+    button_color = @organization.nil? || @organization.color.nil? ? nil : organization_color(@organization)
+    @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, '/signup', 'google_access_token', button_color)
   end
 
   def load_organization

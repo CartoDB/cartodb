@@ -26,8 +26,26 @@ describe 'SHP regression tests' do
                              })
     runner.run
 
-    geometry_type_for(runner).should be
+    geometry_type_for(runner).should eq "MULTIPOLYGON"
+    job = runner.send(:job)
+    job.db.fetch(%Q{SELECT * FROM #{job.schema}.#{job.table_name}}).count
   end
 
-end # SHP regression tests
- 
+  it 'imports shp files without .prj' do
+    filepath    = path_to('shp_no_prj.zip')
+
+    downloader  = Downloader.new(filepath)
+    runner      = Runner.new({
+                               pg: @pg_options,
+                               downloader: downloader,
+                               log: CartoDB::Importer2::Doubles::Log.new,
+                               user:CartoDB::Importer2::Doubles::User.new
+                             })
+    runner.run
+
+    geometry_type_for(runner).should eq "MULTIPOLYGON"
+    job = runner.send(:job)
+    job.db.fetch(%Q{SELECT * FROM #{job.schema}.#{job.table_name}}).count
+  end
+
+end

@@ -22,68 +22,67 @@
 
   <div class="CredentialsContent">
     <div class="u-inner">
-      <%= form_tag(CartoDB.url(self, 'regenerate_oauth', {}, current_user), :method => :delete, :id => 'regenerate_oauth_keys', :class => "Form") do %>
 
-        <div class="Form-title">
-          <p class="Form-titleText">OAuth is an authentication protocol that allows users to approve application to act on their behalf without sharing their password.</p>
+      <div class="Form-title">
+        <p class="Form-titleText">OAuth is an authentication protocol that allows users to approve application to act on their behalf without sharing their password.</p>
+      </div>
+
+      <div class="Form-row">
+        <div class="Form-rowLabel">
+          <label class="Form-label">Consumer key</label>
         </div>
-
-        <div class="Form-row">
-          <div class="Form-rowLabel">
-            <label class="Form-label">Consumer key</label>
-          </div>
-          <div class="Form-rowData">
-            <input type="text" class="Form-input Form-input--long has-icon js-input" value="<%= current_user.client_application.key %>" readonly />
-            <i data-title="Copy this" class="iconFont iconFont-Anchor Form-inputIcon Form-copyIcon js-copy-value"></i>
-          </div>
-          <div class="Form-rowInfo">
-            <p class="Form-rowInfoText">Learn more about <%= link_to "using oauth in CartoDB", Cartodb.config[:developers_host] + "/cartodb-platform.html" %>.</p>
-          </div>
+        <div class="Form-rowData">
+          <input type="text" class="Form-input Form-input--long has-icon js-input" value="<%= current_user.client_application.key %>" readonly />
+          <i data-title="Copy this" class="iconFont iconFont-Anchor Form-inputIcon Form-copyIcon js-copy-value"></i>
         </div>
-
-        <div class="Form-row">
-          <div class="Form-rowLabel">
-            <label class="Form-label">Consumer secret</label>
-          </div>
-          <div class="Form-rowData">
-            <input type="text" class="Form-input Form-input--long has-icon js-input" value="<%= current_user.client_application.secret %>" readonly />
-            <i data-title="Copy this" class="iconFont iconFont-Anchor Form-inputIcon Form-copyIcon js-copy-value"></i>
-          </div>
+        <div class="Form-rowInfo">
+          <p class="Form-rowInfoText">Learn more about <%= link_to "using oauth in CartoDB", Cartodb.config[:developers_host] + "/cartodb-platform.html" %>.</p>
         </div>
+      </div>
 
-        <span class="Form-separator"></span>
-
-        <div class="Form-row">
-          <div class="Form-rowLabel">
-            <label class="Form-label">Request token URL</label>
-          </div>
-          <div class="Form-rowData">
-            <input type="text" class="Form-input Form-input--long has-icon js-input" value="<%= CartoDB.url(self, 'request_token', {}, current_user) %>" readonly />
-            <i data-title="Copy this" class="iconFont iconFont-Anchor Form-inputIcon Form-copyIcon js-copy-value"></i>
-          </div>
+      <div class="Form-row">
+        <div class="Form-rowLabel">
+          <label class="Form-label">Consumer secret</label>
         </div>
-
-        <div class="Form-row">
-          <div class="Form-rowLabel">
-            <label class="Form-label">Access token URL</label>
-          </div>
-          <div class="Form-rowData">
-            <input type="text" class="Form-input Form-input--long has-icon js-input" value="<%= CartoDB.url(self, 'access_token', {}, current_user) %>" readonly />
-            <i data-title="Copy this" class="iconFont iconFont-Anchor Form-inputIcon Form-copyIcon js-copy-value"></i>
-          </div>
+        <div class="Form-rowData">
+          <input type="text" class="Form-input Form-input--long has-icon js-input" value="<%= current_user.client_application.secret %>" readonly />
+          <i data-title="Copy this" class="iconFont iconFont-Anchor Form-inputIcon Form-copyIcon js-copy-value"></i>
         </div>
-
-        <div class="Form-footer">
-          <p class="Form-footerText">
-            <i class="iconFont iconFont-Info Form-footerIcon"></i>
-            Learn more about <%= link_to "using your simple app key", Cartodb.config[:developers_host] + "/documentation/apis-overview.html" %> in CartoDB
-          </p>
-          <%= button_tag(type: 'submit', class: 'Button Button--main js-submit', value: 'oauth') do %>
-            <% content_tag(:span, 'Request new oauth keys') %>
-          <% end %>
+        <div class="Form-rowInfo">
+          <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>" />
+          <a class="js-regenerateOauth" href="#">Request new OAuth key</a>
         </div>
+      </div>
 
-      <% end %>
+      <span class="Form-separator"></span>
+
+      <div class="Form-row">
+        <div class="Form-rowLabel">
+          <label class="Form-label">Request token URL</label>
+        </div>
+        <div class="Form-rowData">
+          <input type="text" class="Form-input Form-input--long has-icon js-input" value="<%= CartoDB.url(self, 'request_token', {}, current_user) %>" readonly />
+          <i data-title="Copy this" class="iconFont iconFont-Anchor Form-inputIcon Form-copyIcon js-copy-value"></i>
+        </div>
+      </div>
+
+      <div class="Form-row">
+        <div class="Form-rowLabel">
+          <label class="Form-label">Access token URL</label>
+        </div>
+        <div class="Form-rowData">
+          <input type="text" class="Form-input Form-input--long has-icon js-input" value="<%= CartoDB.url(self, 'access_token', {}, current_user) %>" readonly />
+          <i data-title="Copy this" class="iconFont iconFont-Anchor Form-inputIcon Form-copyIcon js-copy-value"></i>
+        </div>
+      </div>
+
+      <div class="Form-footer">
+        <p class="Form-footerText">
+          <i class="iconFont iconFont-Info Form-footerIcon"></i>
+          Learn more about <%= link_to "using your simple app key", Cartodb.config[:developers_host] + "/documentation/apis-overview.html" %> in CartoDB
+        </p>
+      </div>
+
     </div>
   </div>
 

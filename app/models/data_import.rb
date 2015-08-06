@@ -276,7 +276,7 @@ class DataImport < Sequel::Model
                                                                                db: $users_metadata
                                                                              }
                                                                          })
-                                                                    .decrement
+                                                                    .decrement!
     rescue => exception
       CartoDB::Logger.info('Error decreasing concurrent import limit',
                            "#{exception.message} #{exception.backtrace.inspect}")
@@ -301,7 +301,7 @@ class DataImport < Sequel::Model
                                                                              db: $users_metadata
                                                                            }
                                                                          })
-      .decrement
+      .decrement!
     rescue => exception
       CartoDB::Logger.info('Error decreasing concurrent import limit',
                            "#{exception.message} #{exception.backtrace.inspect}")

@@ -5,21 +5,21 @@ Sequel.migration do
     })
 
     Rails::Sequel.connection.run(%Q{
-      ALTER TABLE visualizations ADD COLUMN bbox geometry;
+      ALTER TABLE visualizations ADD COLUMN bounding_box geometry;
     })
 
     Rails::Sequel.connection.run(%Q{
-      CREATE INDEX bbox_visualizations_gix ON visualizations USING GIST (bbox);
+      CREATE INDEX bounding_box_visualizations_gix ON visualizations USING GIST (bounding_box);
     })
   end
 
   down do
     Rails::Sequel.connection.run(%Q{
-      DROP INDEX IF EXISTS bbox_visualizations_gix
+      DROP INDEX IF EXISTS bounding_box_visualizations_gix
     })
 
     Rails::Sequel.connection.run(%Q{
-      ALTER TABLE visualizations DROP COLUMN IF EXISTS bbox
+      ALTER TABLE visualizations DROP COLUMN IF EXISTS bounding_box
     })
 
     Rails::Sequel.connection.run(%Q{

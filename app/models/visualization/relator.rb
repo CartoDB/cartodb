@@ -17,7 +17,9 @@ module CartoDB
                         named_map:        :named_maps_layers
                       }
 
-      INTERFACE     = %w{ overlays map user table related_tables layers stats mapviews total_mapviews single_data_layer? synchronization permission parent children support_tables prev_list_item next_list_item likes likes_count reload_likes estimated_row_count actual_row_count }
+      INTERFACE     = %w{ overlays map user table related_templates related_tables layers stats mapviews total_mapviews 
+                          single_data_layer? synchronization permission parent children support_tables prev_list_item 
+                          next_list_item likes likes_count reload_likes estimated_row_count actual_row_count }
 
       def initialize(attributes={})
         @id             = attributes.fetch(:id)
@@ -91,6 +93,10 @@ module CartoDB
 
       def actual_row_count
         table.nil? ? nil : table.actual_row_count
+      end
+
+      def related_templates
+        Carto::Template.where(source_visualization_id: @id).all
       end
 
       def related_tables

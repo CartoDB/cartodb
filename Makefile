@@ -36,6 +36,7 @@ WORKING_SPECS_1 = \
   spec/lib/central_spec.rb \
   spec/lib/carto/http/client_spec.rb \
 	spec/helpers/uuidhelper_spec.rb \
+	spec/models/carto/template_spec.rb \
   $(NULL)
 
 WORKING_SPECS_2 = \

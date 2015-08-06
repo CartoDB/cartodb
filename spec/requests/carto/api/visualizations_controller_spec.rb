@@ -57,7 +57,6 @@ describe Carto::Api::VisualizationsController do
     }
   }
 
-
   describe 'static_map' do
     include_context 'visualization creation helpers'
     include_context 'users helper'

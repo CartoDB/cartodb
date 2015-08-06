@@ -19,9 +19,9 @@
           <td valign="top" style="padding: 0;">
             <table cellspacing="0" cellpadding="0" border="0" width="100%" style="background:url('<%= @preview_image %>'); border-bottom: 1px solid #dddddd; width: 100% !important; height: 300px;">
               <tr>
-                <td align="left" style="padding: 75px 50px 75px 50px; font-family: Helvetica, Arial, sans-serif;">
+                <td align="left" style="padding: 0; font-family: Helvetica, Arial, sans-serif;">
                   <p style="margin: 0;">
-                    <img alt="Like" src="http://cartodb.s3.amazonaws.com/mails/metrics/like.png" width="150" height="150" style="display: block; margin: 0 auto;" border="0">
+                    <a href="<%= @link %>" target="_blank"><img alt="Like" src="http://cartodb.s3.amazonaws.com/mails/metrics/like_with_link.png" width="150" height="300" style="display: block; margin: 0 auto;" border="0"></a>
                   </p>
                 </td>
               </tr>
@@ -39,6 +39,17 @@
               </tr>
             </table>
           </td>
+        </tr>
+
+        <%# TODO: remove when competition ends %>
+        <tr>
+          <td align="left" style="padding: 40px 50px 0 50px; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;">Your map is getting a lot of love! Why not submit it to our <strong>Insight and Design competition</strong> open call?</td>
+        </tr>
+        <tr>
+          <td align="left" style="padding: 20px 50px 0 50px; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;">You could win $500.00, Premium CartoDB infrastructure, and have your work displayed at Measure, a New York City exhibit hosted by the Storefront for Art and Architecture.</td>
+        </tr>
+        <tr>
+          <td align="left" style="padding: 20px 50px 0 50px; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;">Learn more and submit maps <a href="http://go.cartodb.com/insight-competition" style="color: #0090D7">here</a>!</td>
         </tr>
 
         <tr>

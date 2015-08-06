@@ -1,4 +1,4 @@
-<a href="#/like" class="js-likes"
+<a href="<%= CartoDB.url(self, 'api_v1_visualizations_add_like', {id: vis.fetch(:id)}, current_user) %>" class="js-likes"
   data-vis-id="<%= vis.fetch(:id) %>"
   data-likes-count="<%= vis.fetch(:likes_count) %>">
 </a>

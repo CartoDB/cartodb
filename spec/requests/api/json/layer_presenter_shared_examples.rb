@@ -480,7 +480,7 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
           tooltip: {
               'fields' => nil,
               'template_name' => "tooltip_light",
-              'template' => "<div><div>",
+              'template' => "<div></div>",
               'alternative_names' => { },
               'maxHeight' => 180
             }

@@ -47,7 +47,7 @@ class User < Sequel::Model
   one_to_many :feature_flags_user
 
   # Sequel setup & plugins
-  plugin :association_dependencies, :client_application => :destroy, :synchronization_oauths => :destroy
+  plugin :association_dependencies, :client_application => :destroy, :synchronization_oauths => :destroy, :feature_flags_user => :destroy
   plugin :validation_helpers
   plugin :json_serializer
   plugin :dirty

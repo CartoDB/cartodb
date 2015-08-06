@@ -16,10 +16,9 @@ Sequel.migration do
       DateTime    :created_at,              null: false, default: Sequel::CURRENT_TIMESTAMP
     end
 
-    debugger
     Rails::Sequel.connection.run(%Q{
       ALTER TABLE "templates"
-        ADD CONSTRAINT  source_visualization_id_fkey
+        ADD CONSTRAINT  source_visualization_id_fkey_cascade_del
         FOREIGN KEY (source_visualization_id)
         REFERENCES visualizations(id)
         ON DELETE CASCADE
@@ -27,7 +26,7 @@ Sequel.migration do
 
     Rails::Sequel.connection.run(%Q{
       ALTER TABLE "templates"
-        ADD CONSTRAINT  organization_id_fkey
+        ADD CONSTRAINT  organization_id_fkey_cascade_del
         FOREIGN KEY (organization_id)
         REFERENCES organizations(id)
         ON DELETE CASCADE
@@ -40,7 +39,6 @@ Sequel.migration do
     Rails::Sequel.connection.run(%Q{
       CREATE INDEX source_visualization_id_idx ON templates(source_visualization_id)
     })
-
   end
 
   down do

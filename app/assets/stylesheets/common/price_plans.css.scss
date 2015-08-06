@@ -32,6 +32,10 @@ $br: 4px;
   border-top-right-radius: $br;
   background: white;
 }
+.PricePlans-list--round {
+  border-radius: $br;
+  border: 1px solid $cStructure-mainLine;
+}
 .PricePlans-item {
   width: 100%;
   border-right: 1px solid $cStructure-mainLine;
@@ -69,6 +73,10 @@ $br: 4px;
   @include nicer-lato-typography();
 }
 .PricePlans-itemContentAttr.is-disabled { color: rgba($cTypography-paragraphs,.4) }
+.PricePlans-itemContentAttr.is-highlighted {
+  font-weight: $sFontWeight-bold;
+  color: $cTypography-headers;
+}
 .PricePlans-itemContentAttr:last-child { border-bottom: 0 }
 .PricePlans-trial {
   @include display-flex();
@@ -86,5 +94,5 @@ $br: 4px;
 }
 .PricePlans-trialIcon {
   margin-right: 3px;
-  color: #0090D7
+  color: #0090D7;
 }

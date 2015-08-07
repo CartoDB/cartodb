@@ -244,15 +244,11 @@ $sStickyHeight: 97px;
 .Dialog-expandedSubContentInner {
   position: relative; // necessary to position subHeader properly
 }
-.Dialog-body--expanded.is-expandedWithSubHeader {
-  padding-top: $sStickyHeight + $sMargin-group;
-}
-.Dialog-body--expanded.is-expandedWithSubFooter {
-  padding-bottom: $sStickyHeight;
-}
-.Dialog-body--expanded.is-expandedWithPreFooter {
-  padding-bottom: $sStickyHeight + 100px;
-}
+// These additional paddings are required to be applied on an inner element, for the paddings to apply in FF
+// See http://stackoverflow.com/questions/26888428/display-flex-loses-right-padding-when-overflowing for an isolated explanation
+.Dialog-bodyInnerExpandedWithSubFooter { padding-bottom: $sStickyHeight }
+.Dialog-bodyInnerExpandedWithPreFooter { padding-bottom: $sStickyHeight + 100px }
+
 .Dialog-stickyFooter {
   position: fixed;
   bottom: 0;

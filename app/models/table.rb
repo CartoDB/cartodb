@@ -486,7 +486,7 @@ class Table
         kind: 'gmapsbase',
         options: basemap
       }
-    else 
+    else
       {
         kind: 'tiled',
         options: basemap.merge({ 'urlTemplate' => basemap['url'] })
@@ -591,6 +591,8 @@ class Table
     end
     remove_table_from_user_database unless keep_user_database_table
     synchronization.delete if synchronization
+
+    related_templates.each { |template| template.destroy }
   end
 
   def remove_table_from_user_database
@@ -1296,6 +1298,11 @@ class Table
     owner.database_schema
   end
 
+  # INFO: Qualified but without double quotes
+  def self.is_qualified_name_valid?(name)
+    (name =~ /^[a-z\-_0-9]+\.[a-z\-_0-9]+?$/) == 0
+  end
+
   ############################### Sharing tables ##############################
 
   # @param [User] organization_user Gives read permission to this user
@@ -1437,7 +1444,7 @@ class Table
     database_schema = options[:database_schema].present? ? options[:database_schema] : 'public'
 
     # We don't want to use an existing table name
-    # 
+    #
     existing_names = []
     existing_names = options[:name_candidates] || options[:connection]["select relname from pg_stat_user_tables WHERE schemaname='#{database_schema}'"].map(:relname) if options[:connection]
     existing_names = existing_names + SYSTEM_TABLE_NAMES

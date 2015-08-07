@@ -3,12 +3,14 @@ class AccountTokensController < ApplicationController
 
   ssl_required :enable, :resend
 
+  skip_before_filter :ensure_account_has_been_activated, :only => :enable
+
   def enable
     token = params[:id]
-    render_404 and return unless token
+    render_400 and return unless token
 
     user = User.where(enable_account_token: token).first
-    render_404 and return unless user
+    render(file: 'signup/account_already_enabled', status: 404) and return unless user
 
     authenticate!(:enable_account_token, scope: params[:user_domain].present? ?  params[:user_domain] : user.username)
 

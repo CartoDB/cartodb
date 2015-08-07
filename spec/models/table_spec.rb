@@ -2305,11 +2305,28 @@ describe Table do
       table.the_geom_type = "point"
       table.save.reload
       insert_points(table)
-      table.send :add_bounding_box_info
+      table.update_bounding_box_info
       bbox = Rails::Sequel.connection.fetch(
         "SELECT bounding_box from visualizations WHERE id = '#{table.table_visualization.id}'"
       ).first[:bounding_box]
       bbox.should eq bbox_calculated
+    end
+
+    it "update the_geom should trigger bouding box recalculation" do
+      bbox_updated = "0103000020110F00000100000005000000A53F3F12202160C1F41" \
+                     "A18D775954FC1A53F3F12202160C1167D53C5F2985941F57EB31A" \
+                     "89FC2941167D53C5F2985941F57EB31A89FC2941F41A18D775954" \
+                     "FC1A53F3F12202160C1F41A18D775954FC1"
+      table = new_table(:user_id => $user_1.id)
+      table.force_schema = "the_geom geometry"
+      table.the_geom_type = "point"
+      table.save.reload
+      insert_points(table)
+      table.update_row!(1, {:the_geom=>"{\"type\":\"Point\",\"coordinates\":[-1.2163667,51.5]}", :cartodb_id=>1, :id=>"1"})
+      bbox = Rails::Sequel.connection.fetch(
+        "SELECT bounding_box from visualizations WHERE id = '#{table.table_visualization.id}'"
+      ).first[:bounding_box]
+      bbox.should eq bbox_updated
     end
   end
 

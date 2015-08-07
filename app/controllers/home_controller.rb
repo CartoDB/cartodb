@@ -82,15 +82,17 @@ class HomeController < ApplicationController
   end
 
   def windshaft_diagnosis
-    response = http_client.get('http://localhost.lan:8181/version')
+    tiler_url = configuration_url(Cartodb.config[:tiler]['internal'])
+    response = http_client.get("#{tiler_url}/version")
     info = JSON.parse(response.body)
-    [STATUS[response.response_code == 200], info.to_a.map {|s, v| "<span class='lib'>#{s}</strong>: <span class='version'>#{v}</span>"}]
+    [STATUS[response.response_code == 200], info.to_a.map {|s, v| "<span class='lib'>#{s}</strong>: <span class='version'>#{v}</span>"}.append("internal url: #{tiler_url}")]
   end
 
   def sql_api_diagnosis
-    response = http_client.get('http://localhost.lan:8080/api/v1/version')
+    sql_api_url = configuration_url(Cartodb.config[:sql_api]['private'])
+    response = http_client.get("#{sql_api_url}/api/v1/version")
     info = JSON.parse(response.body)
-    [STATUS[response.response_code == 200], info.to_a.map {|s, v| "<span class='lib'>#{s}</strong>: <span class='version'>#{v}</span>"}]
+    [STATUS[response.response_code == 200], info.to_a.map {|s, v| "<span class='lib'>#{s}</strong>: <span class='version'>#{v}</span>"}.append("private url: #{sql_api_url}")]
   end
 
   def resque_diagnosis
@@ -98,8 +100,15 @@ class HomeController < ApplicationController
       output = stdout.read
       status = output != nil && output != ''
       messages = output.split("\n")
-      [STATUS[status], messages]
+      [STATUS[status], messages.append("Running pids: #{running_import_ids}")]
     end
+  end
+
+  def running_import_ids
+    Resque::Worker.all.map do |worker|
+      next unless worker.job['queue'] == 'imports'
+      worker.job['payload']['args'].first['job_id'] rescue nil
+    end.compact
   end
 
   def check_db
@@ -147,6 +156,10 @@ class HomeController < ApplicationController
       output = stdout.read.split("\n")
       [output[line_index], output]
     }
+  end
+
+  def configuration_url(conf)
+    "#{conf['protocol']}://#{conf['domain']}:#{conf['port']}"
   end
 
 end

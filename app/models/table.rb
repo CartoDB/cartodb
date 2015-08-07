@@ -549,7 +549,7 @@ class Table
     member.store
 
     member.map.recalculate_bounds!
-    add_bounding_box_info
+    update_bounding_box_info
 
     CartoDB::Visualization::Overlays.new(member).create_default_overlays
   end
@@ -1084,6 +1084,7 @@ class Table
         CartoDB::InternalGeocoder::LatitudeLongitude.new(user_database).geocode(owner.database_schema, self.name, options[:latitude_column], options[:longitude_column])
       end
       schema(reload: true)
+      update_bounding_box_info
     else
       raise InvalidArgument
     end
@@ -1363,7 +1364,7 @@ class Table
     sequel.count
   end
 
-  def add_bounding_box_info
+  def update_bounding_box_info
     db = table_visualization.user.in_database
     bounds = calculate_bounding_box(db, qualified_table_name)
     table_visualization.save_bounding_box(bounds)
@@ -1638,6 +1639,7 @@ class Table
       owner.in_database(:as => :superuser).run(%Q{UPDATE #{qualified_table_name} SET the_geom =
       ST_Transform(ST_GeomFromGeoJSON('#{geojson}'),4326) where cartodb_id =
       #{primary_key}})
+      update_bounding_box_info
     rescue
       raise CartoDB::InvalidGeoJSONFormat, 'Invalid geometry'
     end

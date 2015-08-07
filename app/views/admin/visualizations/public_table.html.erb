@@ -5,19 +5,18 @@
 <%= content_for(:twitter_card) do %><%= Carto::StaticMapsURLHelper.new.url_for_static_map(request, @table.table_visualization, 560, 300) %><% end %>
 <%= content_for(:facebook_card) do %><%= Carto::StaticMapsURLHelper.new.url_for_static_map(request, @table.table_visualization, 1200, 630) %><% end %>
 
-<% content_for(:css) do %>
-  <%= stylesheet_link_tag 'cartodb.css', 'public_table.css', :media => 'all' %>
-  <!--[if gt IE 8]><%= stylesheet_link_tag "fonts_ie" %><![endif]-->
+<%= content_for(:css) do %>
+  <%= stylesheet_link_tag 'cartodb', 'common', 'public_map' %>
 <% end %>
 
 <% content_for(:js) do %>
-    <% if @table.map.provider == 'googlemaps' %>
-        <script type="text/javascript"
-            src="//maps.googleapis.com/maps/api/js?sensor=false&v=3.12&<%= @user.google_maps_query_string %>">
-        </script>
-    <% end %>
+  <% if @table.map.provider == 'googlemaps' %>
+    <script type="text/javascript"
+      src="//maps.googleapis.com/maps/api/js?sensor=false&v=3.12&<%= @user.google_maps_query_string %>">
+    </script>
+  <% end %>
 
-  <%= javascript_include_tag 'cdb.js', 'templates.js', 'public_table.js' %>
+  <%= javascript_include_tag 'cdb.js', 'templates.js', 'public_map_deps' %>
 
   <script>
     var table_name          = '<%=raw @table.owner.sql_safe_database_schema %>.<%= @table.name %>';
@@ -63,8 +62,135 @@
   
 <% end %>
 
+<%= content_for(:content) do %>
+  <%= render 'admin/shared/public_header' %>
 
-  <div class="globalerror"></div>
+  <div class="PublicMap-map js-map" id="map">
+    <div class="Spinner Spinner--center"></div>
+  </div>
+
+  <%# Legacy from current embed %>
+  <div class="NotSupportedDialog" id="not_supported_dialog" style="display: none">
+    <h2 class="NotSupportedDialog-title">CartoDB</h2>
+    <p class="NotSupportedDialog-desc">This visualization only works in modern browsers. Upgrade yours and enjoy.</p>
+    <ul class="NotSupportedDialog-list">
+      <li class="NotSupportedDialog-item"><a class="NotSupportedDialog-itemLink NotSupportedDialog-itemLink--Safari" href="http://www.apple.com/safari/" class="safari">Safari</a></li>
+      <li class="NotSupportedDialog-item"><a class="NotSupportedDialog-itemLink NotSupportedDialog-itemLink--Chrome" href="https://www.google.com/chrome/" class="chrome">Chrome</a></li>
+      <li class="NotSupportedDialog-item is-last"><a class="NotSupportedDialog-itemLink NotSupportedDialog-itemLink--Firefox" href="http://www.mozilla.org/en-US/firefox/all/‎" class="firefox">Firefox</a></li>
+    </ul>
+  </div>
+
+  <div class="Navmenu js-Navmenu">
+    <div class="u-inner">
+      <div class="PublicMap-block">
+        <div class="PublicMap-gradient"></div>
+
+        <div class="PublicMap-leftBlock PublicMap-leftBlock--owner">
+          <ul class="Navmenu-list Navmenu-list--owner Navmenu-list--avatar">
+            <li class="Navmenu-item">
+              <a href="<%= CartoDB.url(self, 'root', {}, @visualization.user) %>" target="_blank" class="UserAvatar">
+                <img class="UserAvatar-img--medium" src="<%= @visualization.user.avatar %>" alt="<%= @name %>" title="<%= @name %>" />
+              </a>
+            </li>
+          </ul>
+
+          <ul class="Navmenu-list Navmenu-list--owner">
+            <li class="Navmenu-item last-child">
+              <a href="<%= CartoDB.url(self, 'root', {}, @visualization.user) %>" class="Navmenu-link Navmenu-link--owner"><%= @name %></a>
+            </li>
+
+            <li class="Navmenu-item u-hideOnTablet">
+              <i class="Navmenu-rarrow iconFont iconFont-Rarrow"></i>
+              <a href="<%= CartoDB.url(self, 'public_datasets_home', {}, @visualization.user) %>" class="Navmenu-link">Datasets</a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="PublicMap-rightBlock PublicMap-rightBlock--owner u-txt-right">
+          <ul class="Navmenu-list">
+            <li class="Navmenu-item Navmenu-item--action u-hideOnTablet">
+              <i class="Navmenu-actionIcon iconFont iconFont-Markup"></i>
+              <a href="#" class="Navmenu-link Navmenu-link--action">API call</a>
+            </li>
+
+            <li class="Navmenu-item Navmenu-item--action u-hideOnTablet">
+              <i class="Navmenu-actionIcon iconFont iconFont-Floppy"></i>
+              <a href="#" class="Navmenu-link Navmenu-link--action">Download</a>
+            </li>
+
+            <% if !Cartodb.config[:cartodb_com_hosted].present? %>
+              <li class="Navmenu-item">
+                <a class="Button Button--main Navmenu-editLink Navmenu-editLink--create is-active" href="http://oneclick.cartodb.com/?file=<%= CGI.escape( @export_sql_api_url ) %>&provider=<%= URI.encode(@table.owner.username) %>&logo=<%= URI.encode(@avatar_url) %>">Create map</a>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="PublicMap-secondary">
+    <div class="u-inner">
+      <div class="PublicMap-block">
+        <div class="PublicMap-leftBlock PublicMap-leftBlock--large">
+          <div class="js-user-meta">
+            <h1 class="PublicMap-title js-PublicMap-title Title Title--m"><%= @visualization.name %></h1>
+            <% if @visualization.description_clean %>
+              <div class="PublicMap-description"><%= raw @visualization.description_html_safe %></div>
+            <% end %>
+
+            <div class="PublicMap-meta">
+              <% if @visualization.tags.size > 0 %>
+                <ul class="PublicMap-metaList">
+                  <li class="PublicMap-metaItem">
+                    <i class="PublicMap-metaIcon iconFont iconFont-Label"></i>
+                    <%# Keep on one line to avoid unwanted spaces %>
+                    <% formatted_tags(@visualization.tags) do |tag| %><a class="PublicMap-metaLink" href="<%= CartoDB.url(self, 'public_tag', {tag: tag}, @visualization.user) %>"><%= tag %></a><% end %>
+                  </li>
+                </ul>
+              <% end %>
+
+              <ul class="PublicMap-metaList PublicMap-metaList--mobile js-PublicMap-metaList--mobile">
+                <li class="PublicMap-metaItem"><i class="PublicMap-metaIcon iconFont iconFont-Calendar"></i> <%= time_ago_in_words(@visualization.updated_at) %> ago</li>
+                <li class="PublicMap-metaItem"><i class="PublicMap-metaIcon iconFont iconFont-Stats"></i> <%= number_with_delimiter(@mapviews) %> <%= 'mapview'.pluralize(@mapviews) %></li>
+              </ul>
+            </div>
+
+            <a class="Navmenu-editLink Navmenu-editLink--more js-Navmenu-editLink--more" href="#/more">More info</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%# DISQUS %>
+    <div class="u-inner">
+      <div class="PublicMap-block PublicMap-info">
+        <div class="PublicMap-leftBlock PublicMap-leftBlock--large">
+          <div id="disqus_thread"></div>
+          <script type="text/javascript">
+            var disqus_shortname  = '<%= @disqus_shortname %>';
+            var disqus_identifier = '<%= @visualization.id %>';
+
+            (function() {
+              var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+              dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+              (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+          </script>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <% if cartodb_com_hosted? %>
+    <%= render 'admin/shared/footer', :light => true %>
+  <% else %>
+    <%= render 'admin/shared/public_footer', :light => false %>
+  <% end %>
+<% end %>
+
+
+  <!--div class="globalerror"></div>
   <div class="panes"></div>
 
   <div class="navigation">
@@ -76,61 +202,6 @@
 
   <div class="separator_shadow"></div>
   <div class="separator bottom"></div>
-  <div class="cartodb-map-data">
-    <div class="cartodb-info">
-      <div class="inner">
-
-        <div class="user_details">
-          
-          <div class="details embed-left-col">
-            <div class="content">
-              <h1><%= @visualization.name %></h1>
-              <p><%=raw @visualization.description_html_safe %></p>
-            </div>
-          </div>
-
-          <div class="user embed-right-col">
-            <div class="user-info">
-              <a href="<%= public_datasets_home_url %>" title="Datasets by <%= @name %>" class="content">
-                <h4>by <%= @name %></h4>
-              </a>
-
-              <h5><%= "#{@public_tables_count} dataset#{@public_tables_count != 1 ? "s" :""} created" %></h5>
-            </div>
-
-            <a href="<%= public_datasets_home_url %>" title="Datasets by <%= @name %>" class="content">
-              <img src="<%= @avatar_url %>" class="avatar" />
-            </a>
-          </div>
-        </div>
-
-        <div class="extra_options">
-          <div class="left">
-            <div class="row_count"><%= number_with_delimiter(@table.rows_counted) %> row<%= @table.rows_counted != 1 ? 's' : '' %></div>
-            <div class="download_options"></div>
-          </div>
-          <div class="user-options">
-            <% if !Cartodb.config[:cartodb_com_hosted].present? %>
-              <a href="http://oneclick.cartodb.com/?file=<%= CGI.escape( @export_sql_api_url ) %>&provider=<%= URI.encode(@table.owner.username) %>&logo=<%= URI.encode(@avatar_url) %>" class="oneclick button grey">
-                CREATE MAP
-              </a>
-            <% end %>
-
-            <a href="#like" class="like button grey js-like">
-              <span class="icon"></span>
-              <span class="counter"><%= @likes_count %></span>
-            </a>
-            <a href="<%= CartoDB.url(self, 'public_tables_show', {id: @table.name}, @table.owner.organization ? @table.owner : nil) %>" class="edit button grey">Edit in CartoDB</a>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="cartodb-body">
-      <div class="inner">
-
-        <div class="map-info embed-right-col">
-          <div class="content">
 
             <h2>Maps using this data</h2>
             <ul>
@@ -154,31 +225,3 @@
                 </li>
               <% end %>
             </ul>
-
-          </div>
-        </div>
-
-        <div class="comments embed-left-col">
-          <div class="content">
-            <div id="disqus_thread"></div>
-            <script type="text/javascript">
-
-              var disqus_shortname  = '<%= @disqus_shortname %>';
-              var disqus_identifier = '<%= @table.id %>';
-
-              (function() {
-                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-                dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-              })();
-
-            </script>
-            <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript" class="no_script">comments powered by Disqus.</a></noscript>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <%= render 'admin/visualizations/public/old_public_map_footer' %>
-  </div>

@@ -29,12 +29,14 @@
     <%= stylesheet_link_tag 'cartodb', 'common', 'public_dashboard', 'public_data_dashboard' %>
   </head>
 
-  <body class="PublicBody">
-    <%= render partial: 'admin/shared/public_header', locals: { header_class: 'Header--tall Header--dark', logo_icon_class: 'Logo-icon--dark' } %>
+  <body class="PublicBody PublicBody--grey">
+    <%= render partial: 'admin/shared/public_data_header' %>
+
+    <%= yield %>
 
     <%= render 'admin/shared/public_footer' %>
 
-    <%= javascript_include_tag 'cdb.js', 'templates', 'public_dashboard_deps', 'public_dashboard', 'public_data_dashboard' %>
+    <%= javascript_include_tag 'cdb.js', 'templates', 'public_dashboard_deps', 'public_data_dashboard' %>
     <%= yield :js %>
 
     <%= insert_trackjs() -%>

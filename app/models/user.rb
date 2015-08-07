@@ -112,9 +112,7 @@ class User < Sequel::Model
 
   def organization_validation
     if new?
-      errors.add(:organization, "not enough seats") if organization.users.count >= organization.seats
-      errors.add(:quota_in_bytes, "not enough disk quota") if quota_in_bytes.to_i + organization.assigned_quota > organization.quota_in_bytes
-
+      organization.validate_for_signup(errors, quota_in_bytes)
       organization.validate_new_user(self, errors)
     else
       # Organization#assigned_quota includes the OLD quota for this user,

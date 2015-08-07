@@ -72,6 +72,8 @@ class User < Sequel::Model
 
   TRIAL_DURATION_DAYS = 15
 
+  DEFAULT_GEOCODING_QUOTA = 0
+
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
 
@@ -104,6 +106,8 @@ class User < Sequel::Model
     validate_password_change
 
     organization_validation if organization.present?
+
+    errors.add(:geocoding_quota, "cannot be nil") if geocoding_quota.nil?
   end
 
   def organization_validation
@@ -125,8 +129,8 @@ class User < Sequel::Model
 
   ## Callbacks
   def before_validation
-    # Convert email to downcase
     self.email = self.email.to_s.strip.downcase
+    self.geocoding_quota ||= DEFAULT_GEOCODING_QUOTA
   end
 
   def before_create
@@ -151,7 +155,7 @@ class User < Sequel::Model
       self.private_maps_enabled ||= true
       self.sync_tables_enabled ||= true
     end
-  end #before_save
+  end
 
   def twitter_datasource_enabled
     if has_organization?
@@ -972,7 +976,7 @@ class User < Sequel::Model
 
   def remaining_geocoding_quota
     if organization.present?
-      remaining = organization.geocoding_quota.to_i - organization.get_geocoding_calls
+      remaining = organization.geocoding_quota - organization.get_geocoding_calls
     else
       remaining = geocoding_quota - get_geocoding_calls
     end

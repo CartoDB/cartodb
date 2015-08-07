@@ -77,7 +77,7 @@
 .NotificationsList-item .iconFont-trial_ends_soon,
 .NotificationsList-item .iconFont-custom {
   line-height: 17px;
-  &:before { content: "\E00C" }
+  &:before { content: "\E00D" } 
 }
 .NotificationsList-item.is--new .iconFont-trial_ends_soon,
 .NotificationsList-item.is--new .iconFont-custom {
@@ -94,7 +94,7 @@
 }
 .NotificationsList-item .iconFont-try_trial {
   line-height: 17px;
-  &:before { content: "\E016" }
+  &:before { content: "\E018" } 
 }
 .NotificationsList-item.is--new .iconFont-try_trial {
   color: $cHighlight-positive;
@@ -102,7 +102,7 @@
 }
 .NotificationsList-item .iconFont-close_limits {
   line-height: 17px;
-  &:before { content: "\E01A" }
+  &:before { content: "\E01C" } 
 }
 .NotificationsList-item.is--new .iconFont-close_limits {
   color: $cHighlight-alert;
@@ -110,15 +110,15 @@
 }
 .NotificationsList-item .iconFont-limits_exceeded {
   line-height: 17px;
-  &:before { content: "\E01A" }
+  &:before { content: "\E01C" } 
 }
 .NotificationsList-item.is--new .iconFont-limits_exceeded {
   color: $cHighlight-negative;
   border-color: $cHighlight-negative;
 }
-.NotificationsList-item .iconFont-new_dashboard {
+.NotificationsList-item .iconFont-new_dashboard { 
   line-height: 17px;
-  &:before { content: "\E01B" }
+  &:before { content: "\E01D" } 
 }
 .NotificationsList-item.is--new .iconFont-new_dashboard {
   color: $cHighlight-main;
@@ -126,7 +126,7 @@
 }
 .NotificationsList-item .iconFont-new_public_dashboard {
   line-height: 17px;
-  &:before { content: "\E016" }
+  &:before { content: "\E018" } 
 }
 .NotificationsList-item.is--new .iconFont-new_public_dashboard {
   color: $cHighlight-positive;

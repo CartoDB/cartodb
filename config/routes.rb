@@ -12,7 +12,7 @@ CartoDB::Application.routes.draw do
   root :to => 'admin/pages#index'
 
   get   '(/user/:user_domain)(/u/:user_domain)/signup'           => 'signup#signup',     as: :signup
-  post   '(/user/:user_domain)(/u/:user_domain)/signup'           => 'signup#create',  as: :signup_organization_user
+  post  '(/user/:user_domain)(/u/:user_domain)/signup'           => 'signup#create',  as: :signup_organization_user
 
   get   '(/user/:user_domain)(/u/:user_domain)/enable_account_token/:id' => 'account_tokens#enable',     as: :enable_account_token_show
   get   '(/user/:user_domain)(/u/:user_domain)/resend_validation_mail/:user_id' => 'account_tokens#resend',     as: :resend_validation_mail
@@ -282,9 +282,11 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/likes'                      => 'visualizations#likes_count',     as: :api_v1_visualizations_likes_count,     constraints: { id: /[^\/]+/ }
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/likes/detailed'             => 'visualizations#likes_list',      as: :api_v1_visualizations_likes_list,      constraints: { id: /[^\/]+/ }
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/like'                       => 'visualizations#is_liked',        as: :api_v1_visualizations_is_liked,        constraints: { id: /[^\/]+/ }
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/related_templates'          => 'templates#related_templates_by_visualization', as: :api_v1_visualizations_related_templates, constraints: { id: /[^\/]+/ }
 
     # Tables
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:id'                         => 'tables#show',       as: :api_v1_1_tables_show, constraints: { id: /[^\/]+/ }
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:id'                        => 'tables#show',             as: :api_v1_1_tables_show, constraints: { id: /[^\/]+/ }
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:id/related_templates'        => 'templates#related_templates_by_table', as: :api_v1_tables_related_templates, constraints: { id: /[^\/]+/ }
 
     # Table columns
     get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:table_id/columns'           => 'columns#index',     as: :api_v1_1_tables_columns_index,   constraints: { table_id: /[^\/]+/ }
@@ -352,6 +354,13 @@ CartoDB::Application.routes.draw do
 
     # User creations
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/user_creations/:id' => 'user_creations#show', as: :api_v1_user_creations_show, constraints: { id: /[^\/]+/ }
+
+    # Visualization templates
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1/templates'     => 'templates#index',   as: :api_v1_vis_templates_index
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1/templates/:id' => 'templates#show',    as: :api_v1_vis_templates_show,    constraints: { id: /[^\/]+/ }
+    post   '(/user/:user_domain)(/u/:user_domain)/api/v1/templates'     => 'templates#create',  as: :api_v1_vis_templates_create
+    put    '(/user/:user_domain)(/u/:user_domain)/api/v1/templates/:id' => 'templates#update',  as: :api_v1_vis_templates_update,  constraints: { id: /[^\/]+/ }
+    delete '(/user/:user_domain)(/u/:user_domain)/api/v1/templates/:id' => 'templates#destroy', as: :api_v1_vis_templates_destroy, constraints: { id: /[^\/]+/ }
 
     # V2 api/json calls
 

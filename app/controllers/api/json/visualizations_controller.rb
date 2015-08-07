@@ -245,9 +245,11 @@ class Api::Json::VisualizationsController < Api::ApplicationController
        .fetch
        .invalidate_cache
 
-    vis_preview_image = Carto::StaticMapsURLHelper.new.url_for_static_map(request, vis, 600, 300)
+    if (current_viewer.id != vis.user.id)
+      vis_preview_image = Carto::StaticMapsURLHelper.new.url_for_static_map(request, vis, 600, 300)
+      ::Resque.enqueue(::Resque::UserJobs::Mail::MapLiked, vis.id, current_viewer.id, vis_preview_image)
+    end
 
-    ::Resque.enqueue(::Resque::UserJobs::Mail::MapLiked, vis.id, current_viewer.id, vis_preview_image)
     render_jsonp({
                    id:    vis.id,
                    likes: vis.likes.count,

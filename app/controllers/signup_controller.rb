@@ -22,7 +22,7 @@ class SignupController < ApplicationController
     # Merge both sources (signup and login) in a single param
     params[:google_access_token] = google_access_token
 
-    if google_access_token.present? && @google_plus_config.present?
+    if !user_password_signup? && google_access_token.present? && @google_plus_config.present?
       # Keep in mind get_user_data can return nil
       user_data = GooglePlusAPI.new.get_user_data(google_access_token)
     end
@@ -56,6 +56,10 @@ class SignupController < ApplicationController
   end
 
   private
+
+  def user_password_signup?
+    params && params['user'] && params['user']['username'].present? && params['user']['email'].present? && params['user']['password'].present?
+  end
 
   def initialize_google_plus_config
     button_color = @organization.nil? || @organization.color.nil? ? nil : organization_color(@organization)

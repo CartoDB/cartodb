@@ -85,7 +85,6 @@ module CartoDB
       organization.js
       table.js
       public_dashboard.js
-      public_table.js
       public_like.js
       common.js
       old_common.js

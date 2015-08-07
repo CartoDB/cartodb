@@ -43,6 +43,8 @@ class Carto::Visualization < ActiveRecord::Base
 
   belongs_to :map
 
+  has_many :related_templates, class_name: Carto::Template, foreign_key: :source_visualization_id
+
   def ==(other_visualization)
     self.id == other_visualization.id
   end
@@ -221,7 +223,7 @@ class Carto::Visualization < ActiveRecord::Base
   def mapviews
     @mapviews ||= CartoDB::Visualization::Stats.mapviews(stats)
   end
-  
+
   def total_mapviews(user=nil)
     @total_mapviews ||= CartoDB::Visualization::Stats.new(self, user).total_mapviews
   end
@@ -255,7 +257,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def named_maps(force_init = false)
-    # TODO: read refactor skips all write complexity, check visualization/member for more details 
+    # TODO: read refactor skips all write complexity, check visualization/member for more details
     if @named_maps.nil? || force_init
       name_param = user.username
       api_key_param = user.api_key

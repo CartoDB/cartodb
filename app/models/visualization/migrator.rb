@@ -45,7 +45,7 @@ module CartoDB
       end
 
       def drop(relation=:visualizations)
-        @db.drop_table(relation.to_sym)
+        @db.drop_table(relation.to_sym, :cascade=>true)
       end
     end
   end

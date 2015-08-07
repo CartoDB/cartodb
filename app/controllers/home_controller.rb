@@ -37,7 +37,7 @@ class HomeController < ApplicationController
   end
 
   def app_diagnosis
-    return head(400) if Cartodb.config[:cartodb_com_hosted] == true
+    return head(400) if Cartodb.config[:cartodb_com_hosted] == false
 
     @diagnosis = [
       diagnosis_output('Operating System') { single_line_command_version_diagnosis(OS_VERSION, 'lsb_release -a', 1) },

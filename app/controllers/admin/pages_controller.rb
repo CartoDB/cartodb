@@ -308,6 +308,7 @@ class Admin::PagesController < ApplicationController
     @maps_url            = CartoDB.url(view_context, 'public_visualizations_home', {}, required.fetch(:user, nil))
     @datasets_url        = CartoDB.url(view_context, 'public_datasets_home', {}, required.fetch(:user, nil))
     @default_fallback_basemap = required.fetch(:default_fallback_basemap, {})
+    @base_url            = required.fetch(:base_url, {})
   end
 
   def set_pagination_vars(required)

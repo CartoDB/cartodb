@@ -1,7 +1,7 @@
 class AccountTokensController < ApplicationController
   layout 'frontend'
 
-  ssl_required :enable
+  ssl_required :enable, :resend
 
   def enable
     token = params[:id]

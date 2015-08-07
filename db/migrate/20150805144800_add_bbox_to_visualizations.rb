@@ -21,9 +21,5 @@ Sequel.migration do
     Rails::Sequel.connection.run(%Q{
       ALTER TABLE visualizations DROP COLUMN IF EXISTS bounding_box
     })
-
-    Rails::Sequel.connection.run(%Q{
-      DROP EXTENSION IF EXISTS "postgis" CASCADE
-    })
   end
 end

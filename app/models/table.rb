@@ -1363,6 +1363,12 @@ class Table
     sequel.count
   end
 
+  def add_bounding_box_info
+    db = table_visualization.user.in_database
+    bounds = calculate_bounding_box(db, qualified_table_name)
+    table_visualization.save_bounding_box(bounds)
+  end
+
   private
 
   def beautify_name(name)
@@ -1391,12 +1397,6 @@ class Table
     rescue
       []
     end
-  end
-
-  def add_bounding_box_info
-    db = table_visualization.user.in_database
-    bounds = calculate_bounding_box(db, qualified_table_name)
-    table_visualization.save_bounding_box(bounds)
   end
 
   def cache

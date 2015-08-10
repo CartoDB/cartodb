@@ -3,6 +3,7 @@
 require 'active_record'
 
 require_relative '../../models/carto/shared_entity'
+require_relative '../../helpers/bounding_box_helper'
 require_dependency 'carto/uuidhelper'
 
 # TODO: consider moving some of this to model scopes if convenient
@@ -159,6 +160,11 @@ class Carto::VisualizationQueryBuilder
     self
   end
 
+  def with_bounding_box(bounding_box)
+    @bounding_box = bounding_box
+    self
+  end
+
   def build
     query = Carto::Visualization.scoped
 
@@ -239,6 +245,13 @@ class Carto::VisualizationQueryBuilder
 
     if @tags
       query = query.where("ARRAY[?]::text[] && visualizations.tags", @tags)
+    end
+
+    if @bounding_box
+      bbox_coords = @bounding_box.split(',').select { |coord| true if Float(coord) rescue false }
+      raise CartoDB::BoundingBoxError.new('bounding box must have 4 coordinates: minx, miny, maxx, maxy') if bbox_coords.length != 4
+      bbox_sql = BoundingBoxHelper.to_polygon(*bbox_coords)
+      query = query.where("visualizations.bounding_box is not null AND visualizations.bounding_box && #{bbox_sql}")
     end
 
     @include_associations.each { |association|

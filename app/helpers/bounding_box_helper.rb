@@ -90,4 +90,8 @@ module BoundingBoxHelper
     result
   end
 
+  def self.to_polygon(minx, miny, maxx, maxy)
+    "ST_Transform(ST_Envelope('SRID=4326;POLYGON((#{minx} #{miny}, #{minx} #{maxy}, #{maxx} #{maxy}, #{maxx} #{miny}, #{minx} #{miny}))'::geometry), 3857)"
+  end
+
 end

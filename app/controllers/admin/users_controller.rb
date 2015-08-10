@@ -4,6 +4,8 @@ require_dependency 'google_plus_config'
 require_relative '../../../services/datasources/lib/datasources'
 
 class Admin::UsersController < ApplicationController
+  include LoginHelper
+
   ssl_required  :account, :profile, :account_update, :profile_update, :delete
 
   before_filter :login_required
@@ -96,6 +98,7 @@ class Admin::UsersController < ApplicationController
 
     @user.delete_in_central
     @user.destroy
+    cdb_logout
 
     if Cartodb::Central.sync_data_with_cartodb_central?
       redirect_to "http://www.cartodb.com"

@@ -9,6 +9,10 @@ require 'rspec/rails'
 # in spec/support/ and its subdirectories.
 Dir[Rails.root.join('spec/support/**/*.rb')].each {|f| require f}
 
+def stub_named_maps_calls 
+  CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+end
+
 # Inline Resque for queue handling
 Resque.inline = true
 

@@ -7,8 +7,6 @@ class AccountTokensController < ApplicationController
 
   def enable
     token = params[:id]
-    render_400 and return unless token
-
     user = User.where(enable_account_token: token).first
     render(file: 'signup/account_already_enabled', status: 404) and return unless user
 

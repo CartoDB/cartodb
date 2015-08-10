@@ -18,7 +18,9 @@ class HomeController < ApplicationController
   GEOS_VERSION = '3.3.4'
   GDAL_VERSION = '1.10'
 
+  WINDSHAFT_VERSION = '2.9.0'
   RUN_WINDSHAFT_INSTRUCTIONS = 'Run Windshaft: <span class="code">cd /Windshaft-cartodb && node app.js development</span>'
+  SQL_API_VERSION = '1.24.0'
   RUN_SQL_API_INSTRUCTIONS = 'Run SQL API: <span class="code">cd /CartoDB-SQL-API; node app.js development</span>'
   RUN_RESQUE_INSTRUCTIONS =  'Run Resque: <span class="code">bundle exec script/resque</span>'
 
@@ -50,8 +52,8 @@ class HomeController < ApplicationController
       diagnosis_output('Database connection') { db_diagnosis },
       diagnosis_output('Redis') { redis_diagnosis },
       diagnosis_output('Redis connection') { redis_connection_diagnosis },
-      diagnosis_output('Windshaft', RUN_WINDSHAFT_INSTRUCTIONS) { windshaft_diagnosis },
-      diagnosis_output('SQL API', RUN_SQL_API_INSTRUCTIONS) { sql_api_diagnosis },
+      diagnosis_output('Windshaft', RUN_WINDSHAFT_INSTRUCTIONS) { windshaft_diagnosis(WINDSHAFT_VERSION) },
+      diagnosis_output('SQL API', RUN_SQL_API_INSTRUCTIONS) { sql_api_diagnosis(SQL_API_VERSION) },
       diagnosis_output('Resque') { resque_diagnosis(RUN_RESQUE_INSTRUCTIONS) },
       diagnosis_output('GEOS') { single_line_command_version_diagnosis('geos-config --version', GEOS_VERSION) },
       diagnosis_output('GDAL') { single_line_command_version_diagnosis('gdal-config --version', GDAL_VERSION) },
@@ -82,18 +84,30 @@ class HomeController < ApplicationController
     [STATUS[check_redis], []]
   end
 
-  def windshaft_diagnosis
+  def windshaft_diagnosis(supported_version)
     tiler_url = configuration_url(Cartodb.config[:tiler]['internal'])
     response = http_client.get("#{tiler_url}/version")
     info = JSON.parse(response.body)
-    [STATUS[response.response_code == 200], info.to_a.map {|s, v| "<span class='lib'>#{s}</strong>: <span class='version'>#{v}</span>"}.append("internal url: #{tiler_url}")]
+    version = info['windshaft_cartodb']
+    messages = info.to_a.map {|s, v| "<span class='lib'>#{s}</strong>: <span class='version'>#{v}</span>"}.append("internal url: #{tiler_url}")
+    valid = valid?(supported_version, version) 
+    messages << "Currently we only support #{supported_version}." unless valid
+    [STATUS[response.response_code == 200 && valid], messages]
   end
 
-  def sql_api_diagnosis
+  def valid?(supported_version, version)
+    version =~ /\A#{supported_version}/ ? true : false
+  end
+
+  def sql_api_diagnosis(supported_version)
     sql_api_url = configuration_url(Cartodb.config[:sql_api]['private'])
     response = http_client.get("#{sql_api_url}/api/v1/version")
     info = JSON.parse(response.body)
-    [STATUS[response.response_code == 200], info.to_a.map {|s, v| "<span class='lib'>#{s}</strong>: <span class='version'>#{v}</span>"}.append("private url: #{sql_api_url}")]
+    version = info['cartodb_sql_api']
+    messages = info.to_a.map {|s, v| "<span class='lib'>#{s}</strong>: <span class='version'>#{v}</span>"}.append("private url: #{sql_api_url}")
+    valid = valid?(supported_version, version)
+    messages << "Currently we only support #{supported_version}." unless valid
+    [STATUS[response.response_code == 200 && valid], messages]
   end
 
   def resque_diagnosis(help)

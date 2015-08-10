@@ -33,6 +33,7 @@ DESC
       u.password_confirmation = ENV['PASSWORD']
       u.username = ENV['SUBDOMAIN']
       u.database_host = ENV['DATABASE_HOST'] || ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
+      
       u.save
 
       raise u.errors.inspect if u.new?

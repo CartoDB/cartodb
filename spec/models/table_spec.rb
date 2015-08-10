@@ -2295,38 +2295,30 @@ describe Table do
   end
 
   describe '#calculate and store bounding box' do
+    before(:each) do
+      @table = new_table(:user_id => $user_1.id)
+      @table.force_schema = "the_geom geometry"
+      @table.the_geom_type = "point"
+      @table.save.reload
+      insert_points(@table)
+    end
+
     it "should add bounding box to member" do
-      bbox_calculated = "0103000020110F00000100000005000000A53F3F12202160C1F41" \
-                        "A18D775954FC1A53F3F12202160C1D232DCD53C5F574188F7845A" \
-                        "4C213C41D232DCD53C5F574188F7845A4C213C41F41A18D775954" \
-                        "FC1A53F3F12202160C1F41A18D775954FC1"
-      table = new_table(:user_id => $user_1.id)
-      table.force_schema = "the_geom geometry"
-      table.the_geom_type = "point"
-      table.save.reload
-      insert_points(table)
-      table.update_bounding_box_info
+      bbox_wkt = "POLYGON((-8456448.57022078 -4139755.68042313,-8456448.57022078 6126835.34156485,1843532.35359141 6126835.34156485,1843532.35359141 -4139755.68042313,-8456448.57022078 -4139755.68042313))"
+      @table.update_bounding_box_info
       bbox = Rails::Sequel.connection.fetch(
-        "SELECT bounding_box from visualizations WHERE id = '#{table.table_visualization.id}'"
+        "SELECT ST_AsText(bounding_box) as bounding_box from visualizations WHERE id = '#{@table.table_visualization.id}'"
       ).first[:bounding_box]
-      bbox.should eq bbox_calculated
+      bbox.should eq bbox_wkt
     end
 
     it "update the_geom should trigger bouding box recalculation" do
-      bbox_updated = "0103000020110F00000100000005000000A53F3F12202160C1F41" \
-                     "A18D775954FC1A53F3F12202160C1167D53C5F2985941F57EB31A" \
-                     "89FC2941167D53C5F2985941F57EB31A89FC2941F41A18D775954" \
-                     "FC1A53F3F12202160C1F41A18D775954FC1"
-      table = new_table(:user_id => $user_1.id)
-      table.force_schema = "the_geom geometry"
-      table.the_geom_type = "point"
-      table.save.reload
-      insert_points(table)
-      table.update_row!(1, {:the_geom=>"{\"type\":\"Point\",\"coordinates\":[-1.2163667,51.5]}", :cartodb_id=>1, :id=>"1"})
+      bbox_updated_wkt = "POLYGON((-8456448.57022078 -4139755.68042313,-8456448.57022078 6710219.08322074,851524.552150695 6710219.08322074,851524.552150695 -4139755.68042313,-8456448.57022078 -4139755.68042313))"
+      @table.update_row!(1, {:the_geom=>"{\"type\":\"Point\",\"coordinates\":[-1.2163667,51.5]}", :cartodb_id=>1, :id=>"1"})
       bbox = Rails::Sequel.connection.fetch(
-        "SELECT bounding_box from visualizations WHERE id = '#{table.table_visualization.id}'"
+        "SELECT ST_AsText(bounding_box) as bounding_box from visualizations WHERE id = '#{@table.table_visualization.id}'"
       ).first[:bounding_box]
-      bbox.should eq bbox_updated
+      bbox.should eq bbox_updated_wkt
     end
   end
 

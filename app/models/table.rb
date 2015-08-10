@@ -1344,9 +1344,13 @@ class Table
   end
 
   def update_bounding_box_info
-    db = table_visualization.user.in_database
-    bounds = calculate_bounding_box(db, qualified_table_name)
-    table_visualization.save_bounding_box(bounds)
+    begin
+      db = table_visualization.user.in_database
+      bounds = calculate_bounding_box(db, qualified_table_name)
+      table_visualization.save_bounding_box(bounds)
+    rescue => exception
+      raise exception
+    end
   end
 
   private

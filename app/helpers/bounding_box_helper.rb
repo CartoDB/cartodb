@@ -10,8 +10,9 @@ module BoundingBoxHelper
   }
 
   def calculate_bounding_box(db,table_name)
-    result = get_table_bounds(db,table_name)
+    get_table_bounds(db,table_name)
   rescue Sequel::DatabaseError => exception
+    CartoDB.notify_exception(exception, { table: table_name })
     raise BoundingBoxError.new("Can't calculate the bounding box for table #{table_name}. ERROR: #{exception}")
   end
 
@@ -40,6 +41,7 @@ module BoundingBoxHelper
         default_bbox
       end
     else
+      CartoDB.notify_exception(e, { table: table_name })
       default_bbox
     end
   end
@@ -58,6 +60,7 @@ module BoundingBoxHelper
       }
     end
   rescue Sequel::DatabaseError => exception
+    CartoDB.notify_exception(exception, { table: table_name })
     raise BoundingBoxError.new("Can't calculate the bounding box for table #{table_name}. ERROR: #{exception}")
   end
 
@@ -73,7 +76,7 @@ module BoundingBoxHelper
     }
   end
 
-  def get_bbox_values(db, table_name, column_name, where = nil)
+  def get_bbox_values(db, table_name, column_name)
 
     result = db.fetch(%Q{
       SELECT
@@ -82,7 +85,6 @@ module BoundingBoxHelper
         ST_XMax(ST_Extent(#{column_name})) AS maxx,
         ST_YMax(ST_Extent(#{column_name})) AS maxy
       FROM #{table_name} AS subq
-      #{where}
     }).first
 
     result

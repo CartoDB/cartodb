@@ -6,6 +6,14 @@
     padding: 40px;
   }
 
+  h1 {
+    font-size: 200%;
+  }
+
+  p {
+    margin: 30px 0;
+  }
+
   ul, dl {
     margin-left: 20px;
   }
@@ -36,6 +44,8 @@
 <% end %>
 
 <h1>CartoDB diagnosis</h1>
+
+<p>If you have any problem with your installation please write to <a href="https://groups.google.com/forum/#!forum/cartodb">CartoDB Google Group</a> including this information.</p>
 
 <dl>
 <% @diagnosis.each { |d| %>

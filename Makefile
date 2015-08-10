@@ -10,6 +10,10 @@ PENDING_SPECS = \
   spec/lib/varnish_spec.rb (#321) \
   $(NULL)
 
+WORKING_SPECS_INTEGRATIONS = \
+  spec/integrations/common_data_integration.rb \
+  $(NULL)
+
 WORKING_SPECS_1 = \
   spec/rspec_configuration.rb \
   spec/models/table_spec.rb \
@@ -204,6 +208,10 @@ check-9:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_9)
 check-carto-db-class:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_carto_db_class)
+check-integrations:
+	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_INTEGRATIONS)	
+
+check-external: prepare-test-db check-integrations
 
 check-prepared: check-1 check-2 check-4 check-5 check-7 check-9 check-carto-db-class
 

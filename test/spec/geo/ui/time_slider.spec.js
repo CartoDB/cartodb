@@ -100,7 +100,7 @@ describe('cdb.geo.ui.TimeSlider', function() {
 
       it("should return a formatter function that renders both date and local time", function() {
         var moment = new Date("2014-11-20T01:16:00Z");
-        expect(formatter(moment).match(/\d?\d\/\d?\d\/\d{4} \d?\d:\d\d/g).length > 0).toBe(true);
+        expect(formatter(moment).match(/\d?\d:\d\d/g).length > 0).toBe(true);
       });
     });
   });

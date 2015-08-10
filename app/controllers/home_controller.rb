@@ -52,7 +52,7 @@ class HomeController < ApplicationController
       diagnosis_output('Redis connection') { redis_connection_diagnosis },
       diagnosis_output('Windshaft', RUN_WINDSHAFT_INSTRUCTIONS) { windshaft_diagnosis },
       diagnosis_output('SQL API', RUN_SQL_API_INSTRUCTIONS) { sql_api_diagnosis },
-      diagnosis_output('Resque', RUN_RESQUE_INSTRUCTIONS) { resque_diagnosis },
+      diagnosis_output('Resque') { resque_diagnosis(RUN_RESQUE_INSTRUCTIONS) },
       diagnosis_output('GEOS') { single_line_command_version_diagnosis('geos-config --version', GEOS_VERSION) },
       diagnosis_output('GDAL') { single_line_command_version_diagnosis('gdal-config --version', GDAL_VERSION) },
     ]
@@ -96,12 +96,12 @@ class HomeController < ApplicationController
     [STATUS[response.response_code == 200], info.to_a.map {|s, v| "<span class='lib'>#{s}</strong>: <span class='version'>#{v}</span>"}.append("private url: #{sql_api_url}")]
   end
 
-  def resque_diagnosis
+  def resque_diagnosis(help)
     Open3.popen3('ps xah | grep "[s]cript/resque"') do |stdin, stdout, stderr, process|
       output = stdout.read
       status = output != nil && output != ''
       messages = output.split("\n")
-      [STATUS[status], messages.append("Running pids: #{running_import_ids}")]
+      [STATUS[status], messages.append(status ? ("Running pids: #{running_import_ids}") : help)]
     end
   end
 

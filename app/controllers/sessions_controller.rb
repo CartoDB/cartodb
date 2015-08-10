@@ -49,17 +49,7 @@ class SessionsController < ApplicationController
 
   def destroy
     # Make sure sessions are destroyed on both scopes: username and default
-    logout(CartoDB.extract_subdomain(request))
-    logout
-
-    if env['warden']
-      env['warden'].logout
-      request.session.select { |k, v|
-        k.start_with?("warden.user") && !k.end_with?(".session")
-      }.each { |k, v|
-        env['warden'].logout(value) if warden_proxy.authenticated?(value)
-      }
-    end
+    cdb_logout
 
     redirect_to CartoDB.url(self, 'public_visualizations_home')
   end

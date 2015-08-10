@@ -9,34 +9,41 @@ module Carto
 
     # TODO Add more license when we know what licenses we want to include here
     LICENSE_VALUES = {
-      :mit => { :name => 'MIT', :image_url => 'https://upload.wikimedia.org/wikipedia/commons/f/f8/License_icon-mit-88x31-2.svg'},
-      :apache => { :name => 'Apache license', :image_url => ''},
-      :gplv3 => { :name => 'GPLv3 license', :image_url => 'https://upload.wikimedia.org/wikipedia/commons/8/8b/License_icon-gpl-2.svg'},
-      :gplv2 => { :name => 'GPLv2 license', :image_url => 'https://upload.wikimedia.org/wikipedia/commons/8/8b/License_icon-gpl-2.svg'}
+      :mit => { :name => 'MIT'},
+      :apache => { :name => 'Apache license'},
+      :gplv3 => { :name => 'GPLv3 license'},
+      :gplv2 => { :name => 'GPLv2 license'}
     }
 
-    attr_reader :id, :name, :image_url
+    attr_reader :id, :name
 
     private_class_method :new
 
     def self.get(license_id)
       if !license_id.nil?  && !license_id.empty? && LICENSE_VALUES.has_key?(license_id)
         data = LICENSE_VALUES[license_id]
-        license = new(license_id, data[:name], data[:image_url])
+        license = new(license_id, data[:name])
         license
       else
         return nil
       end
     end
 
+    def self.all
+      values = []
+      LICENSE_VALUES.each do |k, v|
+        values << { :id => k, :name => v[:name]}
+      end
+      values
+    end
+
     private
 
-    attr_writer :id, :name, :image_url
+    attr_writer :id, :name
 
-    def initialize(id, name, image_url='')
+    def initialize(id, name)
       self.id = id
       self.name = name
-      self.image_url = image_url
     end
   end
 end

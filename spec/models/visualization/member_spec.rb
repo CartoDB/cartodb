@@ -1158,7 +1158,6 @@ describe Visualization::Member do
       vis.fetch
       vis.license_info.id.should eq :apache
       vis.license_info.name.should eq "Apache license"
-      vis.license_info.image_url.empty?.should eq true
     end
 
     it 'should return nil if the license dont exists' do

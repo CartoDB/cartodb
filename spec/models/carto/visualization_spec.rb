@@ -96,7 +96,6 @@ describe Carto::Visualization do
       vis = Carto::Visualization.find(v.id)
       vis.license_info.id.should eq :apache
       vis.license_info.name.should eq "Apache license"
-      vis.license_info.image_url.empty?.should eq true
     end
 
   end

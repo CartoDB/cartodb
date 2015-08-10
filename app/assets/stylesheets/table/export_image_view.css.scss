@@ -64,7 +64,17 @@
   width: 100%;
   box-sizing: border-box;
   background:rgba(#000, 0.6);
+}
+
+.ExportHelperTitle {
+  font-size: 15px;
+  font-weight:bold;
   color: #fff;
+}
+.ExportHelperDescription {
+  color: #fff;
+  font-size: 13px;
+  line-height: 19px;
 }
 
 .Button--micro {

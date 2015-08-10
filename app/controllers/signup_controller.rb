@@ -46,6 +46,7 @@ class SignupController < ApplicationController
       flash.now[:success] = 'User creation in progress'
       render action: 'signup_confirmation'
     else
+      CartoDB.notify_debug('User not valid at signup', { errors: @user.errors } )
       flash.now[:error] = 'User not valid'
       render action: 'signup'
     end

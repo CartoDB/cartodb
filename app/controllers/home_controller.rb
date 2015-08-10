@@ -41,9 +41,9 @@ class HomeController < ApplicationController
     return head(400) if Cartodb.config[:cartodb_com_hosted] == false
 
     @diagnosis = [
-      diagnosis_output('Operating System') { single_line_command_version_diagnosis(OS_VERSION, 'lsb_release -a', 1) },
-      diagnosis_output('Ruby') { single_line_command_version_diagnosis(RUBY_BIN_VERSION, 'ruby --version') },
-      diagnosis_output('Node') { single_line_command_version_diagnosis(NODE_VERSION, 'node --version') },
+      diagnosis_output('Operating System') { single_line_command_version_diagnosis('lsb_release -a', OS_VERSION, 1) },
+      diagnosis_output('Ruby') { single_line_command_version_diagnosis('ruby --version', RUBY_BIN_VERSION) },
+      diagnosis_output('Node') { single_line_command_version_diagnosis('node --version', NODE_VERSION) },
       diagnosis_output('PostgreSQL') { pg_diagnosis },
       diagnosis_output('PostGIS') { extension_diagnosis('postgis', POSTGIS_VERSION) },
       diagnosis_output('CartoDB extension') { extension_diagnosis('cartodb', CDB_VALID_VERSION, CDB_LATEST_VERSION) },
@@ -53,8 +53,8 @@ class HomeController < ApplicationController
       diagnosis_output('Windshaft', RUN_WINDSHAFT_INSTRUCTIONS) { windshaft_diagnosis },
       diagnosis_output('SQL API', RUN_SQL_API_INSTRUCTIONS) { sql_api_diagnosis },
       diagnosis_output('Resque', RUN_RESQUE_INSTRUCTIONS) { resque_diagnosis },
-      diagnosis_output('GEOS') { single_line_command_version_diagnosis(GEOS_VERSION, 'geos-config --version') },
-      diagnosis_output('GDAL') { single_line_command_version_diagnosis(GDAL_VERSION, 'gdal-config --version') },
+      diagnosis_output('GEOS') { single_line_command_version_diagnosis('geos-config --version', GEOS_VERSION) },
+      diagnosis_output('GDAL') { single_line_command_version_diagnosis('gdal-config --version', GDAL_VERSION) },
     ]
   end
 
@@ -136,6 +136,18 @@ class HomeController < ApplicationController
 
   def extension_diagnosis(extension, supported_version, latest_version = nil)
     version = Rails::Sequel.connection.fetch("select default_version from pg_available_extensions where name = '#{extension}'").first.values[0]
+
+    status_and_messages(version, [], supported_version, latest_version)
+  end
+
+  def version_diagnosis(supported_version, latest_version = nil)
+    version_and_messages = yield
+    version = version_and_messages[0]
+    messages = version_and_messages[1]
+    status_and_messages(version, messages, supported_version, latest_version)
+  end
+
+  def status_and_messages(version, messages, supported_version, latest_version)
     valid = version =~ /\A#{supported_version}/ ? true : false
     messages = ["Installed version: #{version}"]
     messages << "Currently we only support #{supported_version}." unless valid
@@ -148,20 +160,13 @@ class HomeController < ApplicationController
     end
   end
 
-  def version_diagnosis(supported_version)
-    version_and_messages = yield
-    version = version_and_messages[0]
-    messages = version_and_messages[1]
-    valid = version =~ /#{supported_version}/ ? true : nil
-    messages << "Currently we only support #{supported_version}" unless valid
-    [STATUS[valid], messages]
-  end
-
-  def single_line_command_version_diagnosis(supported_version, command, line_index = 0)
-    version_diagnosis(supported_version) {
+  def single_line_command_version_diagnosis(command, supported_version, line_index = 0, latest_version = nil)
+    version_diagnosis(supported_version, latest_version) {
       stdin, stdout, stderr, process = Open3.popen3(command)
       output = stdout.read.split("\n")
-      [output[line_index], output]
+      if latest_version.nil?
+        [output[line_index], output]
+      end
     }
   end
 

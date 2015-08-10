@@ -3,7 +3,7 @@ class AccountTokensController < ApplicationController
 
   ssl_required :enable, :resend
 
-  skip_before_filter :ensure_account_has_been_activated, :only => :enable
+  skip_before_filter :ensure_account_has_been_activated, :only => [ :enable, :resend ]
 
   def enable
     token = params[:id]

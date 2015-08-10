@@ -10,7 +10,8 @@ class HomeController < ApplicationController
   OS_VERSION = "Description:\tUbuntu 12.04"
   PG_VERSION = 'PostgreSQL 9.3'
   POSTGIS_VERSION = '2.1'
-  CDB_VERSION = '0.8.2'
+  CDB_VALID_VERSION = '0.8'
+  CDB_LATEST_VERSION = '0.8.2'
   REDIS_VERSION = '3.0'
   RUBY_BIN_VERSION = 'ruby 1.9.3'
   NODE_VERSION = 'v0.10'
@@ -45,7 +46,7 @@ class HomeController < ApplicationController
       diagnosis_output('Node') { single_line_command_version_diagnosis(NODE_VERSION, 'node --version') },
       diagnosis_output('PostgreSQL') { pg_diagnosis },
       diagnosis_output('PostGIS') { extension_diagnosis('postgis', POSTGIS_VERSION) },
-      diagnosis_output('CartoDB extension') { extension_diagnosis('cartodb', CDB_VERSION) },
+      diagnosis_output('CartoDB extension') { extension_diagnosis('cartodb', CDB_VALID_VERSION, CDB_LATEST_VERSION) },
       diagnosis_output('Database connection') { db_diagnosis },
       diagnosis_output('Redis') { redis_diagnosis },
       diagnosis_output('Redis connection') { redis_connection_diagnosis },
@@ -133,12 +134,18 @@ class HomeController < ApplicationController
     [ STATUS[false], [ help, e.to_s ].compact ]
   end
 
-  def extension_diagnosis(extension, supported_version)
+  def extension_diagnosis(extension, supported_version, latest_version = nil)
     version = Rails::Sequel.connection.fetch("select default_version from pg_available_extensions where name = '#{extension}'").first.values[0]
-    valid = version =~ /\A#{supported_version}/ ? true : nil
-    messages = [version]
-    messages << "Currently we only support #{supported_version}" unless valid
-    [STATUS[valid], messages]
+    valid = version =~ /\A#{supported_version}/ ? true : false
+    messages = ["Installed version: #{version}"]
+    messages << "Currently we only support #{supported_version}." unless valid
+    if latest_version && valid
+      latest = version =~ /\A#{latest_version}/ ? true : false
+      messages << "Latest version is #{latest_version}" unless latest
+      [STATUS[latest || 'supported'], messages]
+    else
+      [STATUS[valid], messages]
+    end
   end
 
   def version_diagnosis(supported_version)

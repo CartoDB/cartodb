@@ -47,7 +47,7 @@ class SignupController < ApplicationController
       render action: 'signup_confirmation'
     else
       CartoDB.notify_debug('User not valid at signup', { errors: @user.errors } )
-      if @user.errors['organization'] && !@user.errors['organization'].empty?
+      if @user.errors['organization'] && !@user.errors[:organization].empty?
         render 'organization_signup_issue'
       else
         flash.now[:error] = 'User not valid'

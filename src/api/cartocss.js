@@ -40,8 +40,6 @@ function getDefaultCSSForGeometryType(geometryType) {
     ];
   }
   return [
-    "line-color: #0C2C84;",
-    "line-opacity: 1;",
     "marker-fill-opacity: 0.9;",
     "marker-line-color: #FFF;",
     "marker-line-width: 1;",
@@ -246,8 +244,8 @@ function getWeightFromShape(dist_type){
 function getMethodProperties(stats) { // TODO: only require the necessary params
 
   var method;
-  var ramp = ramps.pink;
-  var name = "pink";
+  var ramp = ramps.blue;
+  var name = "blue";
 
   if (['A','U'].indexOf(stats.dist_type) != -1) { // apply divergent scheme
     method = stats.jenks;

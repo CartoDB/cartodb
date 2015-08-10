@@ -1,3 +1,10 @@
+/**
+Torque 2.11.4
+Temporal mapping for CartoDB
+https://github.com/cartodb/torque
+**/
+
+
 !function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.torque=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 (function (global){
 var torque = require('./');
@@ -85,7 +92,7 @@ var cancelAnimationFrame = global.cancelAnimationFrame
       this.range = torque.math.linear(0, this.options.steps);
       this.rangeInv = this.range.invert();
       this.time(this._time);
-      this.start();
+      this.running? this.start(): this.pause();
       return this;
     },
 
@@ -1660,6 +1667,9 @@ GMapsTorqueLayer.prototype = torque.extend({},
     if(!this.hidden) return this;
     this.hidden = false;
     this.play();
+    if (this.options.steps === 1){
+      this.redraw();
+    }
     return this;
   },
 
@@ -1809,7 +1819,7 @@ GMapsTorqueLayer.prototype = torque.extend({},
    * set the cartocss for the current renderer
    */
   setCartoCSS: function(cartocss) {
-    if (this.provider.options.named_map) throw new Error("CartoCSS style on named maps is read-only");
+    if (this.provider && this.provider.options.named_map) throw new Error("CartoCSS style on named maps is read-only");
     var shader = new carto.RendererJS().render(cartocss);
     this.shader = shader;
     if (this.renderer) {
@@ -2470,6 +2480,9 @@ L.TorqueLayer = L.CanvasLayer.extend({
     this.options.renderer = this.options.renderer || 'point';
     this.options.provider = this.options.provider || 'windshaft';
 
+    this.provider = new this.providers[this.options.provider](options);
+    this.renderer = new this.renderers[this.options.renderer](this.getCanvas(), options);
+
     options.ready = function() {
       self.fire("change:bounds", {
         bounds: self.provider.getBounds()
@@ -2481,9 +2494,6 @@ L.TorqueLayer = L.CanvasLayer.extend({
       });
       self.setKey(self.key);
     };
-
-    this.provider = new this.providers[this.options.provider](options);
-    this.renderer = new this.renderers[this.options.renderer](this.getCanvas(), options);
 
     this.renderer.on("allIconsLoaded", this.render.bind(this));
 
@@ -2568,6 +2578,9 @@ L.TorqueLayer = L.CanvasLayer.extend({
     if(!this.hidden) return this;
     this.hidden = false;
     this.play();
+    if (this.options.steps === 1){
+      this.redraw();
+    }
     return this;
   },
 
@@ -2680,7 +2693,7 @@ L.TorqueLayer = L.CanvasLayer.extend({
   },
 
   /**
-   * helper function, does the same than ``setKey`` but only 
+   * helper function, does the same than ``setKey`` but only
    * accepts scalars.
    */
   setStep: function(time) {
@@ -2691,17 +2704,17 @@ L.TorqueLayer = L.CanvasLayer.extend({
   },
 
   /**
-   * transform from animation step to Date object 
+   * transform from animation step to Date object
    * that contains the animation time
    *
-   * ``step`` should be between 0 and ``steps - 1`` 
+   * ``step`` should be between 0 and ``steps - 1``
    */
   stepToTime: function(step) {
     var times = this.provider.getKeySpan();
     var time = times.start + (times.end - times.start)*(step/this.provider.getSteps());
     return new Date(time);
   },
-  
+
   timeToStep: function(timestamp) {
     if (typeof timestamp === "Date") timestamp = timestamp.getTime();
     if (!this.provider) return 0;
@@ -3567,7 +3580,7 @@ var Profiler = require('../profiler');
       torque.net.jsonp(url, function (data) {
         var query = format("select * from ({sql}) __torque_wrap_sql limit 0", { sql: self.getSQL() });
         self.sql(query, function (queryData) {
-          if (data) {
+          if (data && queryData) {
             callback({
               updated_at: data.last_updated,
               fields: queryData.fields

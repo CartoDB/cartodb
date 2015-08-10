@@ -30,7 +30,7 @@ cdb.geo.ui.TilesLoader = cdb.core.View.extend({
 
   show: function(ev) {
     if(this.isVisible) return;
-    if (!$.browser.msie || ($.browser.msie && $.browser.version.indexOf("9.") != 0)) {
+    if (!cdb.core.util.ie || (cdb.core.util.browser.ie && cdb.core.util.browser.ie.version >= 10)) {
       this.$el.fadeTo(this.options.animationSpeed, 1)
     } else {
       this.$el.show();
@@ -42,7 +42,7 @@ cdb.geo.ui.TilesLoader = cdb.core.View.extend({
     this.isVisible--;
     if(this.isVisible > 0) return;
     this.isVisible = 0;
-    if (!$.browser.msie || ($.browser.msie && $.browser.version.indexOf("9.") == 0)) {
+    if (!cdb.core.util.ie || (cdb.core.util.browser.ie && cdb.core.util.browser.ie.version >= 10)) {
       this.$el.stop(true).fadeTo(this.options.animationSpeed, 0)
     } else {
       this.$el.hide();

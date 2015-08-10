@@ -87,4 +87,38 @@ cdb.core.util._makeCRCTable = function() {
     crcTable[n] = c;
   }
   return crcTable;
+};
+
+cdb.core.util._inferBrowser = function(ua){
+  var browser = {};
+  ua = ua || window.navigator.userAgent;
+  function detectIE() {
+    var msie = ua.indexOf('MSIE ');
+    var trident = ua.indexOf('Trident/');
+    if (msie > -1 || trident > -1) return true;
+    return false;
+  };
+
+  function getIEVersion(){
+    if (!document.compatMode) return 5
+    if (!window.XMLHttpRequest) return 6
+    if (!document.querySelector) return 7;
+    if (!document.addEventListener) return 8;
+    if (!window.atob) return 9;
+    if (document.all) return 10;
+    else return 11;
+  };
+
+  if(detectIE()){
+    browser.ie = {version: getIEVersion()}
+  }
+
+  else if(ua.indexOf('Edge/') > -1) browser.edge = ua;
+  else if(ua.indexOf('Chrome') > -1) browser.chrome = ua;
+  else if(ua.indexOf('Firefox') > -1) browser.firefox = ua;
+  else if(ua.indexOf("Opera") > -1) browser.opera = ua;
+  else if(ua.indexOf("Safari") > -1) browser.safari = ua;
+  return browser;
 }
+
+cdb.core.util.browser = cdb.core.util._inferBrowser();

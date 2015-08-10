@@ -1,3 +1,5 @@
+@import "../variables/mixins";
+
 /**
  *  Export Image dialog styles
  */
@@ -53,6 +55,18 @@
   background:rgba(#000, 0.6);
 }
 
+.ExportHelper.ExportHelper--header {
+  @include transition(opacity, 500ms, ease-in-out);
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  background:rgba(#000, 0.6);
+  color: #fff;
+}
+
 .Button--micro {
   display: inline-block;
   background: #fff;
@@ -96,6 +110,10 @@ $resizeHandlerSize: 8px;
     z-index: 1000000000;
     cursor:move;
   }
+}
+
+.CanvasExport:hover .ExportHelper.ExportHelper--header {
+  opacity: 0.5;
 }
 .CanvasExport {
   .ui-resizable { position: relative; }

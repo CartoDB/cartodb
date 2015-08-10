@@ -142,17 +142,28 @@
             <div class="PublicMap-meta">
               <% if @visualization.tags.size > 0 %>
                 <ul class="PublicMap-metaList">
-                  <li class="PublicMap-metaItem">
-                    <i class="PublicMap-metaIcon iconFont iconFont-Label"></i>
-                    <%# Keep on one line to avoid unwanted spaces %>
-                    <% formatted_tags(@visualization.tags) do |tag| %><a class="PublicMap-metaLink" href="<%= CartoDB.url(self, 'public_tag', {tag: tag}, @visualization.user) %>"><%= tag %></a><% end %>
-                  </li>
+                  <li class="PublicMap-metaItem"><i class="PublicMap-metaIcon iconFont iconFont-Calendar"></i> <%= time_ago_in_words(@visualization.updated_at) %> ago</li>
                 </ul>
               <% end %>
 
               <ul class="PublicMap-metaList PublicMap-metaList--mobile js-PublicMap-metaList--mobile">
-                <li class="PublicMap-metaItem"><i class="PublicMap-metaIcon iconFont iconFont-Calendar"></i> <%= time_ago_in_words(@visualization.updated_at) %> ago</li>
-                <li class="PublicMap-metaItem"><i class="PublicMap-metaIcon iconFont iconFont-Stats"></i> <%= number_with_delimiter(@mapviews) %> <%= 'mapview'.pluralize(@mapviews) %></li>
+                <% if !@table.rows_counted.blank? %>
+                  <li class="PublicMap-metaItem">
+                    <i class="PublicMap-metaIcon iconFont iconFont-Rows RowsIndicator-icon"></i>
+                    <% if @table.rows_counted < 10000 %>
+                      <%= number_with_delimiter(@table.rows_counted) %>
+                    <% else %>
+                      <%= number_to_human(@table.rows_counted, units: { unit:"", thousand: "K", million: "M" }, precision: 2, format: '%n%u') %>
+                    <% end %>
+                    <%= 'row'.pluralize(@table.rows_counted) %>
+                  </li>
+                <% end %>
+
+                <li class="PublicMap-metaItem">
+                  <i class="PublicMap-metaIcon iconFont iconFont-Label"></i>
+                  <%# Keep on one line to avoid unwanted spaces %>
+                  <% formatted_tags(@visualization.tags) do |tag| %><a class="PublicMap-metaLink" href="<%= CartoDB.url(self, 'public_tag', {tag: tag}, @visualization.user) %>"><%= tag %></a><% end %>
+                </li>
               </ul>
             </div>
 
@@ -188,40 +199,3 @@
     <%= render 'admin/shared/public_footer', :light => false %>
   <% end %>
 <% end %>
-
-
-  <!--div class="globalerror"></div>
-  <div class="panes"></div>
-
-  <div class="navigation">
-    <ul>
-      <li><%= link_to "Table view", "#/table", :class => 'smaller strong tab selected' %></li>
-      <li><%= link_to "Map view", "#/map"%></li>
-    </ul>
-  </div>
-
-  <div class="separator_shadow"></div>
-  <div class="separator bottom"></div>
-
-            <h2>Maps using this data</h2>
-            <ul>
-
-              <% if @total_visualizations.count == 0 && @total_nonpublic_total_vis_count == 0 %>
-                <li class="private">This dataset is not used in any map</li>
-              <% end %>
-
-              <% @total_visualizations.each do |vis| %>
-                <% if vis.privacy == "public" %>
-                  <li>
-                    <a href="<%= CartoDB.url(self, 'public_visualizations_public_map', {id: vis.id}, @table.owner) %>" title="<%= vis.name.gsub(/_/," ") %>"><%= vis.name.gsub(/_/, " ") %></a>
-                  </li>
-                <% end %>
-              <% end %>
-
-              <% if @total_nonpublic_total_vis_count > 0 %>
-
-                <li class="private">
-                  <%= @total_nonpublic_total_vis_count %> private map<%= @total_nonpublic_total_vis_count != 1 ? 's' : '' %><span class="help" original-title="This dataset is used in <%= @total_nonpublic_total_vis_count %> map<%= @total_nonpublic_total_vis_count != 1 ? 's' : '' %> made private by the publisher">(?)</span>
-                </li>
-              <% end %>
-            </ul>

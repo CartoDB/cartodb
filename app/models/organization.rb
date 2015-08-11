@@ -54,6 +54,11 @@ class Organization < Sequel::Model
     end
   end
 
+  def validate_for_signup(errors, quota_in_bytes)
+    errors.add(:organization, "not enough seats") if remaining_seats <= 0
+    errors.add(:quota_in_bytes, "not enough disk quota") if unassigned_quota <= 0 || (!quota_in_bytes.nil? && unassigned_quota < quota_in_bytes)
+  end
+
   # Just to make code more uniform with user.database_schema
   def database_schema
     self.name

@@ -39,7 +39,7 @@ class SignupController < ApplicationController
       @user.password_confirmation = params[:user][:password]
     end
 
-    if @user.valid? && user_from_central(@user).nil?
+    if @user.valid?
       @user_creation = Carto::UserCreation.new_user_signup(@user)
       @user_creation.save
       ::Resque.enqueue(::Resque::UserJobs::Signup::NewUser, @user_creation.id)
@@ -61,15 +61,6 @@ class SignupController < ApplicationController
   end
 
   private
-
-  def user_from_central(user)
-    return nil unless Cartodb::Central.sync_data_with_cartodb_central?
-
-    central = Cartodb::Central.new
-    central_user = central.get_user(user.username)
-
-    central_user = central.get_user(user.email)
-  end
 
   def user_password_signup?
     params && params['user'] && params['user']['username'].present? && params['user']['email'].present? && params['user']['password'].present?

@@ -79,10 +79,6 @@ module Cartodb
       return send_request("api/users/#{username}", nil, :delete, [204])
     end
 
-    def get_user(username_or_email)
-      return send_request("api/users/#{ username_or_email }", nil, :get, [200])
-    end
-
     ############################################################################
     # Organizations
 

@@ -10,9 +10,9 @@
 // Public map
 .cartodb-map.public {
 
-  @include position(65px, 0, 0, 0);
-
-  border-top:1px solid #999999;
+  @include position(15px, 15px, 15px, 65%);
+  border-radius: 3px;
+  overflow: hidden;
 
   .cartodb-map-wrapper.with_header div.cartodb-zoom,
   .cartodb-map-wrapper.with_header div.cartodb-share,

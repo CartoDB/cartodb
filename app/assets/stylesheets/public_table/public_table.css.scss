@@ -6,8 +6,10 @@
 
 @import "compass/css3/opacity";
 @import "compass/css3/images";
-@import "../old_common/vars";
+@import "compass/css3/box-shadow";
+@import "compass/css3/border-radius";
 
+$link-color: #397DBA;
 
 body .inner { width: auto; }
 
@@ -44,6 +46,53 @@ div.separator {
   &.bottom { top: -1px; position: relative; }
 }
 
+a {
+  // font-family:$text-fonts;
+  color:#2483B4;
+  text-decoration:none;
+  &:hover {text-decoration:underline; color:#333}
+  &.disabled { @include opacity(0.3); &:hover {color:$link-color; text-decoration:none; cursor:default;}}
+  &.tag {
+    padding:6px 7px;
+    // font:normal 15px $text-fonts2;
+    color:#397DB9;
+    background:#E1ECF5;
+    @include border-radius(2px);
+    border:1px solid #397DBA;
+    @include box-shadow(rgba(0,0,0,0.12) 0 0 2px 2px);
+  }
+}
+
+.left {float:left}
+.right {float:right}
+// .inner {position:relative; width:$w; margin:0 auto;}
+.margin40 {margin-top:40px;}
+.margin35 {margin-top:35px;}
+.margin30 {margin-top:30px;}
+.margin25 {margin-top:25px;}
+.margin20 {margin-top:20px;}
+.margin15 {margin-top:15px}
+.margin10 {margin-top:10px;}
+.margin5 {margin-top:5px}
+.margin-bottom-10 { margin-bottom: 10px; }
+.ellipsis {text-overflow:ellipsis; overflow:hidden; white-space:nowrap;}
+.hide {display: none;}
+.overflow {overflow:visible}
+.center {width:100%; text-align:center}
+
+.light {color:#999999;}
+.lighter {color:#CCCCCC;}
+.dark {color:#333333;}
+.uppercase {text-transform:uppercase}
+.strong {font-weight:bold}
+.small {font-size:13px}
+.smaller {font-size:11px}
+.tiny {font-size:8px;}
+.underline {text-decoration:underline;}
+.red {color:#E95850;}
+.italic {font-style:italic}
+
+.separate {display:block; width:100%; margin:40px 0; height:1px; background:rgba(#CCCCCC,0.5);}
 
 // Hello media queries
 

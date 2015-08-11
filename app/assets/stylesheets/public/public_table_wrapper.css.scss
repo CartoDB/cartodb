@@ -8,13 +8,24 @@
 @import "compass/css3/inline-block";
 @import "../old_common/vars";
 @import "../old_common/mixins";
+@import "compass/reset/utilities";
 
-
+html {
+  line-height: 1;
+}
 
 body.public { /* Public table CSS */
 
-  &.table .panes { top: 67px; }
-  &.map .panes   { top: 0px; overflow-x: hidden; }
+  .pane_table {
+    @include position(15px, calc(35% + 15px), 15px, 15px);
+    z-index: 10;
+    border-radius: 3px;
+    overflow: hidden;
+
+    @include reset-table-cell();
+  }
+
+  .pane_map { top: 0px; overflow-x: hidden; }
 
   .panes .emptyTableContainer {
     position:relative;
@@ -98,17 +109,27 @@ body.public { /* Public table CSS */
   }
 
   div.separator_shadow {
-    display:none;
-    position: relative;
+    position: absolute;
     height: 20px;
-    margin-top: -20px;
+    bottom: 0;
     width: 100%;
     @extend .black-gradient-shadow-bottom;
     z-index: 100;
   }
 
+  div.table table thead tr th {
+    > div {
+      label.interactuable .coloptions:after {
+        display:none;
+      }
 
-  div.table table thead tr th>div label.interactuable .coloptions:after {
+      p {
+        font-weight: normal;
+      }
+    }
+  }
+
+  div.table table tfoot.page_loader {
     display:none;
   }
 

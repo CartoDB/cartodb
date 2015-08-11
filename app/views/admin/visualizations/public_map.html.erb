@@ -131,21 +131,23 @@
               <% end %>
 
               <div class="PublicMap-meta">
-                <% if @visualization.tags.size > 0 %>
-                  <ul class="PublicMap-metaList">
+                <ul class="PublicMap-metaList">
+                  <li class="PublicMap-metaItem"><i class="PublicMap-metaIcon iconFont iconFont-Calendar"></i> <%= time_ago_in_words(@visualization.updated_at) %> ago</li>
+                </ul>
+
+                <ul class="PublicMap-metaList PublicMap-metaList--mobile js-PublicMap-metaList--mobile">
+                  <li class="PublicMap-metaItem"><i class="PublicMap-metaIcon iconFont iconFont-Stats"></i> <%= number_with_delimiter(@mapviews) %> <%= 'mapview'.pluralize(@mapviews) %></li>
+
+                  <% if @visualization.tags.size > 0 %>
                     <li class="PublicMap-metaItem">
                       <i class="PublicMap-metaIcon iconFont iconFont-Label"></i>
                       <%# Keep on one line to avoid unwanted spaces %>
                       <% formatted_tags(@visualization.tags) do |tag| %><a class="PublicMap-metaLink" href="<%= CartoDB.url(self, 'public_tag', {tag: tag}, @visualization.user) %>"><%= tag %></a><% end %>
                     </li>
-                  </ul>
-                <% end %>
-
-                <ul class="PublicMap-metaList PublicMap-metaList--mobile js-PublicMap-metaList--mobile">
-                  <li class="PublicMap-metaItem"><i class="PublicMap-metaIcon iconFont iconFont-Calendar"></i> <%= time_ago_in_words(@visualization.updated_at) %> ago</li>
-                  <li class="PublicMap-metaItem"><i class="PublicMap-metaIcon iconFont iconFont-Stats"></i> <%= number_with_delimiter(@mapviews) %> <%= 'mapview'.pluralize(@mapviews) %></li>
+                  <% end %>
                 </ul>
               </div>
+
               <a class="Navmenu-editLink Navmenu-editLink--more js-Navmenu-editLink--more" href="#/more">More info</a>
             </div>
           </div>

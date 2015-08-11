@@ -6,7 +6,7 @@
 <%= content_for(:facebook_card) do %><%= Carto::StaticMapsURLHelper.new.url_for_static_map(request, @table.table_visualization, 1200, 630) %><% end %>
 
 <%= content_for(:css) do %>
-  <%= stylesheet_link_tag 'cartodb', 'common', 'public_map' %>
+  <%= stylesheet_link_tag 'cartodb', 'common', 'public_table', 'public_map' %>
 <% end %>
 
 <% content_for(:js) do %>
@@ -16,7 +16,7 @@
     </script>
   <% end %>
 
-  <%= javascript_include_tag 'cdb.js', 'templates.js', 'public_map_deps' %>
+  <%= javascript_include_tag 'cdb.js', 'templates.js', 'public_table.js', 'public_map_deps', 'new_public_table'  %>
 
   <script>
     var table_name          = '<%=raw @table.owner.sql_safe_database_schema %>.<%= @table.name %>';
@@ -67,6 +67,9 @@
 
   <div class="PublicMap-map js-map" id="map">
     <div class="Spinner Spinner--center"></div>
+
+    <div class="panes pane_table"></div>
+    <div class="panes pane_map"></div>
   </div>
 
   <%# Legacy from current embed %>
@@ -79,6 +82,8 @@
       <li class="NotSupportedDialog-item is-last"><a class="NotSupportedDialog-itemLink NotSupportedDialog-itemLink--Firefox" href="http://www.mozilla.org/en-US/firefox/all/‎" class="firefox">Firefox</a></li>
     </ul>
   </div>
+
+  <div class="separator bottom"></div>
 
   <div class="Navmenu js-Navmenu">
     <div class="u-inner">
@@ -108,7 +113,21 @@
 
         <div class="PublicMap-rightBlock PublicMap-rightBlock--owner u-txt-right">
           <ul class="Navmenu-list">
+            <li class="Navmenu-item last-child">
+              <ul class="u-valign">
+                <li class="Navmenu-subItem">
+                  <a href="#/like" class="Navmenu-link js-likes"
+                    data-vis-id="<%= @visualization.id %>"
+                    data-likes-count="<%= @likes_count %>"
+                    data-likes-size="big">
+                  </a>
+                </li>
+              </ul>
+            </li>
+
             <li class="Navmenu-item Navmenu-item--action u-hideOnTablet">
+              <div class="Navmenu-sep"></div>
+
               <i class="Navmenu-actionIcon iconFont iconFont-Markup"></i>
               <a href="#" class="Navmenu-link Navmenu-link--action">API call</a>
             </li>
@@ -119,7 +138,7 @@
             </li>
 
             <% if !Cartodb.config[:cartodb_com_hosted].present? %>
-              <li class="Navmenu-item">
+              <li class="Navmenu-item u-hideOnTablet">
                 <a class="Button Button--main Navmenu-editLink Navmenu-editLink--create is-active" href="http://oneclick.cartodb.com/?file=<%= CGI.escape( @export_sql_api_url ) %>&provider=<%= URI.encode(@table.owner.username) %>&logo=<%= URI.encode(@avatar_url) %>">Create map</a>
               </li>
             <% end %>
@@ -140,11 +159,9 @@
             <% end %>
 
             <div class="PublicMap-meta">
-              <% if @visualization.tags.size > 0 %>
-                <ul class="PublicMap-metaList">
-                  <li class="PublicMap-metaItem"><i class="PublicMap-metaIcon iconFont iconFont-Calendar"></i> <%= time_ago_in_words(@visualization.updated_at) %> ago</li>
-                </ul>
-              <% end %>
+              <ul class="PublicMap-metaList">
+                <li class="PublicMap-metaItem"><i class="PublicMap-metaIcon iconFont iconFont-Calendar"></i> <%= time_ago_in_words(@visualization.updated_at) %> ago</li>
+              </ul>
 
               <ul class="PublicMap-metaList PublicMap-metaList--mobile js-PublicMap-metaList--mobile">
                 <% if !@table.rows_counted.blank? %>
@@ -159,17 +176,124 @@
                   </li>
                 <% end %>
 
-                <li class="PublicMap-metaItem">
-                  <i class="PublicMap-metaIcon iconFont iconFont-Label"></i>
-                  <%# Keep on one line to avoid unwanted spaces %>
-                  <% formatted_tags(@visualization.tags) do |tag| %><a class="PublicMap-metaLink" href="<%= CartoDB.url(self, 'public_tag', {tag: tag}, @visualization.user) %>"><%= tag %></a><% end %>
-                </li>
+                <% if @visualization.tags.size > 0 %>
+                  <li class="PublicMap-metaItem">
+                    <i class="PublicMap-metaIcon iconFont iconFont-Label"></i>
+                    <%# Keep on one line to avoid unwanted spaces %>
+                    <% formatted_tags(@visualization.tags) do |tag| %><a class="PublicMap-metaLink" href="<%= CartoDB.url(self, 'public_tag', {tag: tag}, @visualization.user) %>"><%= tag %></a><% end %>
+                  </li>
+                <% end %>
               </ul>
             </div>
 
             <a class="Navmenu-editLink Navmenu-editLink--more js-Navmenu-editLink--more" href="#/more">More info</a>
           </div>
         </div>
+      </div>
+    </div>
+
+    <%# Maps %>
+    <div class="u-inner">
+      <div class="PublicMap-block with-padding">
+        <h3 class="PublicMap-secondaryTitle">Maps using this dataset</h3>
+      </div>
+    </div>
+
+    <div class="u-inner">
+      <div class="PublicMap-block">
+        <% if @total_visualizations.count == 0 && @total_nonpublic_total_vis_count == 0 %>
+          <ul>
+            <li class="DatasetsList-item">
+              <div class="LayoutIcon">
+                <i class="iconFont iconFont-Lock"></i>
+              </div>
+              <div class="DefaultTitle PublicMap-privateDatasets">This dataset is not used in any map</div>
+            </li>
+          </ul>
+        <% end %>
+      </div>
+    </div>
+
+    <% if @total_visualizations.count > 0 %>
+      <ul class="MapsList">
+        <% @total_visualizations.each do |vis| %>
+          <%# TODO: mapcard %>
+          <%#= render 'admin/pages/shared/mapcard', vis: vis %>
+
+          <li class="MapsList-item">
+            <div class="MapCard" data-zoom="#" data-vizjson-url="#">
+              <a href="#" class="MapCard-header js-header">
+                <div class="MapCard-loader"></div>
+              </a>
+
+              <div class="MapCard-content">
+                <div class="MapCard-contentBody">
+                  <div class="MapCard-contentBodyRow MapCard-contentBodyRow--flex">
+                    <h3 class="MapCard-title DefaultTitle">
+                      <a href="#" class="DefaultTitle-link u-ellipsLongText" title="<%= vis[:name] %>"><%= vis[:name] %></a>
+                    </h3>
+                  </div>
+
+                  <div class="MapCard-contentBodyRow MapCard-contentBodyRow--flex">
+                    <% if vis[:description_html_safe] %>
+                      <div class="MapCard-desc">
+                        <div class="DefaultDescription" title="<%= vis[:description_html_safe].strip_tags %>"><%= raw vis[:description_html_safe] %></div>
+                      </div>
+                    <% else %>
+                      <span class="NoResults"></span>
+                    <% end %>
+                  </div>
+
+                  <div class="MapCard-tags">
+                    <div class="DefaultTags MapCard-contentBodyRow">
+                      <% if vis[:tags].size > 0 %>
+                        <%# Keep on one line to avoid unwanted spaces %>
+                        <% formatted_tags(vis[:tags]) do |tag| %><a class="DefaultTags-item js-tag-link" href="<%= CartoDB.url(self, 'public_tag', {tag: tag}, vis[:owner]) %>"><%= tag %></a><% end %>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="MapCard-contentFooter">
+                  <div class="MapCard-contentFooterDetails--left">
+                    <div class="MapCard-contentFooterTimeDiff DefaultTimeDiff">
+                      <i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i>
+                      <%= time_ago_in_words(vis[:updated_at]) %> ago
+                    </div>
+                  </div>
+                  <div class="MapCard-contentFooterDetails--right">
+                    <%#= render 'admin/pages/shared/like_button', vis: vis %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+        <% end %>
+
+        <%# at most 3 cards per line, visbility is handled by CSS depending on viewport size %>
+        <% ((3 - @total_visualizations.size + 3) % 3).times.each do %>
+          <li class="MapsList-item MapsList-item--fake">
+            <div class="MapCard">
+              <div class="MapCard-header MapCard-header--fake"></div>
+              <div class="MapCard-content"></div>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+
+    <div class="u-inner">
+      <div class="PublicMap-block">
+        <% if @total_nonpublic_total_vis_count > 0 %>
+          <ul>
+            <li class="DatasetsList-item">
+              <div class="LayoutIcon">
+                <i class="iconFont iconFont-Lock"></i>
+              </div>
+              <div class="DefaultTitle PublicMap-privateDatasets"><%= pluralize(@total_nonpublic_total_vis_count, 'private map') %></div>
+            </li>
+          </ul>
+        <% end %>
       </div>
     </div>
 

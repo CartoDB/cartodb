@@ -83,9 +83,6 @@
   display: inline-block;
   margin-right: 30px;
 }
-.PublicMap-metaItem:last-child {
-  margin-right: 0;
-}
 .PublicMap-metaItem {
   display: inline-block;
   margin-right: 30px;
@@ -141,7 +138,7 @@
   .PublicMap-rightBlock.PublicMap-rightBlock--owner {
     position: absolute;
     z-index: 30;
-    right: 10px;
+    right: 15px;
     width: 50%;
   }
   .PublicMap-metaList {

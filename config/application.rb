@@ -96,6 +96,7 @@ module CartoDB
       signup.js
       confirmation_templates.js
       confirmation.js
+      new_public_table.js
 
       tipsy.js
       modernizr.js

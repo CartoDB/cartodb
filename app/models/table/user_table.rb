@@ -48,7 +48,7 @@ class UserTable < Sequel::Model
     values
   }
 
-  RESERVED_TABLE_NAMES = %W{ layergroup all }
+  RESERVED_TABLE_NAMES = (%W{ layergroup all } + CartoDB::POSTGRESQL_RESERVED_WORDS.map(&:downcase)).uniq!
 
   PRIVACY_PRIVATE = 0
   PRIVACY_PUBLIC = 1

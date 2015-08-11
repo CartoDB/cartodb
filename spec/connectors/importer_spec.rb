@@ -1,8 +1,8 @@
 # encoding: utf-8
-require_relative  '../spec_helper'
-require_relative  '../../app/connectors/importer'
-require_relative  '../doubles/result'
-require           'csv'
+require_relative '../spec_helper'
+require_relative '../../app/connectors/importer'
+require_relative '../doubles/result'
+require 'csv'
 
 describe CartoDB::Connector::Importer do
 

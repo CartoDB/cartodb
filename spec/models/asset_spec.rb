@@ -9,6 +9,7 @@ describe Asset do
   end
 
   after(:all) do
+    stub_named_maps_calls
     @user.destroy
   end
 

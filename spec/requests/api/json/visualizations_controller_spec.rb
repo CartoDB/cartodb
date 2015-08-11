@@ -17,17 +17,19 @@ describe Api::Json::VisualizationsController do
   end
 
   after(:all) do
+    stub_named_maps_calls
     @user.destroy
   end
 
   # let(:params) { { api_key: @user.api_key } }
 
   before(:each) do
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+    stub_named_maps_calls
     host! "#{@user.username}.localhost.lan"
   end
 
   after(:each) do
+    stub_named_maps_calls
     delete_user_data @user
   end
 

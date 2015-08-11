@@ -1440,6 +1440,7 @@ class Table
     return name if name == options[:current_name]
 
     name = "#{name}_t" if UserTable::RESERVED_TABLE_NAMES.include?(name)
+    name = "#{name}_t" if CartoDB::POSTGRESQL_RESERVED_WORDS.map(&:downcase).include?(name)
 
     database_schema = options[:database_schema].present? ? options[:database_schema] : 'public'
 

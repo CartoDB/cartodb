@@ -27,6 +27,10 @@
   position:absolute;
   top: 0;
   right: 0;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 .ExportImageView-Footer {
   position: absolute;
@@ -57,7 +61,10 @@
     opacity: 0.6;
   }
 
+
   .CanvasExport.ui-resizable > div.ui-resizable-handle,
+  .ExportImageView-Header,
+  .ExportImageView-Footer,
   .ExportHelper--north,
   .ExportHelper--south,
   .ExportHelper--west,

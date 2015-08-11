@@ -53,30 +53,30 @@ describe CartoDB::Connector::Importer do
     stub_named_maps_calls
     bogus_user = create_user(:quota_in_bytes => 1000.megabyte, :table_quota => 400)
 
-    CartoDB::POSTGRESQL_RESERVED_WORDS.each do |reserved_word|
-      filepath        = "/tmp/#{reserved_word.downcase}.csv"
-      expected_rename = reserved_word.downcase + '_t'
+    reserved_word = CartoDB::POSTGRESQL_RESERVED_WORDS.sample
 
-      CSV.open(filepath, 'wb') do |csv|
-        csv << ['nombre', 'apellido', 'profesion']
-        csv << ['Manolo', 'Escobar', 'Artista']
-      end
-    
-      data_import = DataImport.create(
-        :user_id       => bogus_user.id,
-        :data_source   => filepath,
-        :updated_at    => Time.now,
-        :append        => false
-      )
-      data_import.values[:data_source] = filepath
+    filepath        = "/tmp/#{reserved_word.downcase}.csv"
+    expected_rename = reserved_word.downcase + '_t'
 
-      data_import.run_import!
-
-      File.delete(filepath)
-
-      data_import.success.should(eq(true), "File with reserved name '#{filepath}' failed to be renamed")
-      data_import.table_name.should(eq(expected_rename), "Table was incorrectly renamed to '#{data_import.table_name}', should be '#{expected_rename}'")
+    CSV.open(filepath, 'wb') do |csv|
+      csv << ['nombre', 'apellido', 'profesion']
+      csv << ['Manolo', 'Escobar', 'Artista']
     end
+  
+    data_import = DataImport.create(
+      :user_id       => bogus_user.id,
+      :data_source   => filepath,
+      :updated_at    => Time.now,
+      :append        => false
+    )
+    data_import.values[:data_source] = filepath
+
+    data_import.run_import!
+
+    File.delete(filepath)
+
+    data_import.success.should(eq(true), "File with reserved name '#{filepath}' failed to be renamed")
+    data_import.table_name.should(eq(expected_rename), "Table was incorrectly renamed to '#{data_import.table_name}', should be '#{expected_rename}'")
 
     bogus_user.destroy
   end

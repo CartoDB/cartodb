@@ -35,30 +35,6 @@ shared_examples_for 'synchronization controllers' do
     @user.destroy
   end
 
-  describe 'GET /api/v1/synchronizations' do
-    it 'returns a synchronization list' do
-      payload = {
-        table_name: 'table_1',
-        interval:   3600,
-        url:        'http://www.foo.com'
-      }
-
-      post "/api/v1/synchronizations?api_key=#{@api_key}", payload.to_json, @headers
-      id = JSON.parse(last_response.body).fetch('id')
-
-      get "/api/v1/synchronizations?api_key=#{@api_key}", nil, @headers
-      last_response.status.should == 200
-
-      response = JSON.parse(last_response.body)
-      synchronizations = response.fetch('synchronizations')
-      synchronizations.count.should == 1
-      synchronizations.each { |s|
-        s.fetch('id').should == id
-        s.fetch('url').should == payload.fetch(:url)
-      }
-    end
-  end
-
   describe 'GET /api/v1/synchronizations/:id' do
     it 'returns a synchronization record' do
       payload = {

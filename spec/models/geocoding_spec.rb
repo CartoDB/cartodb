@@ -5,16 +5,16 @@ describe Geocoding do
   before(:all) do
     @user  = create_user(geocoding_quota: 200, geocoding_block_price: 1500)
 
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+    stub_named_maps_calls
     @table = FactoryGirl.create(:user_table, user_id: @user.id)
   end
 
   before(:each) do
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+    stub_named_maps_calls
   end
 
   after(:all) do
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+    stub_named_maps_calls
     @user.destroy
   end
 

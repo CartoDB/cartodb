@@ -23,6 +23,7 @@ CartoDB::Application.routes.draw do
   match '(/user/:user_domain)(/u/:user_domain)/sessions/create' => 'sessions#create',  as: :create_session
 
   match '(/user/:user_domain)(/u/:user_domain)/status'          => 'home#app_status'
+  match '(/user/:user_domain)(/u/:user_domain)/diagnosis'          => 'home#app_diagnosis'
 
   # OAuth
   match '(/user/:user_domain)(/u/:user_domain)/oauth/authorize'      => 'oauth#authorize',     as: :authorize
@@ -324,11 +325,12 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:visualization_id/overlays/:id' => 'overlays#show',     as: :api_v1_visualizations_overlays_show,   constraints: { visualization_id: /[^\/]+/ }
 
     # Synchronizations
-    # TODO: deprecated?
-    get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/synchronizations'              => 'synchronizations#index',    as: :api_v1_1_synchronizations_index
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/synchronizations/:id'          => 'synchronizations#show',     as: :api_v1_1_synchronizations_show
     # INFO: sync_now is public API
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/synchronizations/:id/sync_now' => 'synchronizations#syncing?', as: :api_v1_1_synchronizations_syncing
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations/:id'            => 'synchronizations#show',     as: :api_v1_synchronizations_show
+    # INFO: sync_now is public API
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations/:id/sync_now'   => 'synchronizations#syncing?', as: :api_v1_synchronizations_syncing
 
     # Watching
     get     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/watching'                   => 'visualizations#list_watching',   as: :api_v1_visualizations_notify_watching, constraints: { id: /[^\/]+/ }
@@ -445,19 +447,14 @@ CartoDB::Application.routes.draw do
     post    '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/like'                       => 'visualizations#add_like',        as: :api_v1_visualizations_add_like,        constraints: { id: /[^\/]+/ }
     delete  '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/like'                       => 'visualizations#remove_like',     as: :api_v1_visualizations_remove_like,     constraints: { id: /[^\/]+/ }
 
-# Tags
+    # Tags
     # Common data
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/common_data' => 'common_data#index', as: :api_v1_common_data_index
 
     # Synchronizations
-    # TODO: deprecated?
-    get    '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations'              => 'synchronizations#index',    as: :api_v1_synchronizations_index
     post   '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations'              => 'synchronizations#create',   as: :api_v1_synchronizations_create
-    get    '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations/:id'          => 'synchronizations#show',     as: :api_v1_synchronizations_show
     put    '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations/:id'          => 'synchronizations#update',   as: :api_v1_synchronizations_update
     delete '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations/:id'          => 'synchronizations#destroy',  as: :api_v1_synchronizations_destroy
-    # INFO: sync_now is public API
-    get    '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations/:id/sync_now' => 'synchronizations#syncing?', as: :api_v1_synchronizations_syncing
     put    '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations/:id/sync_now' => 'synchronizations#sync_now', as: :api_v1_synchronizations_sync_now
 
     # Permissions

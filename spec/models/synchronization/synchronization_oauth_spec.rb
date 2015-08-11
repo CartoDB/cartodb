@@ -8,6 +8,7 @@ describe SynchronizationOauth do
   end
 
   after(:all) do
+    stub_named_maps_calls
     @user.destroy
   end
 

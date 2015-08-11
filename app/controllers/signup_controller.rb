@@ -46,8 +46,13 @@ class SignupController < ApplicationController
       flash.now[:success] = 'User creation in progress'
       render action: 'signup_confirmation'
     else
-      flash.now[:error] = 'User not valid'
-      render action: 'signup'
+      CartoDB.notify_debug('User not valid at signup', { errors: @user.errors } )
+      if @user.errors['organization'] && !@user.errors[:organization].empty?
+        render 'organization_signup_issue'
+      else
+        flash.now[:error] = 'User not valid'
+        render action: 'signup'
+      end
     end
   rescue => e
     CartoDB.notify_exception(e, { new_user: @user.inspect })
@@ -70,7 +75,9 @@ class SignupController < ApplicationController
     subdomain = CartoDB.subdomain_from_request(request)
     @organization = ::Organization.where(name: subdomain).first if subdomain
     render_404 and return false unless @organization && @organization.signup_page_enabled
-    render 'organization_signup_issue' unless @organization.remaining_seats > 0
+    check_signup_errors = Sequel::Model::Errors.new
+    @organization.validate_for_signup(check_signup_errors, ::User.new_with_organization(@organization).quota_in_bytes)
+    render 'organization_signup_issue' if check_signup_errors.length > 0
   end
 
 end

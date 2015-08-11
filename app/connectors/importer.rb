@@ -56,8 +56,9 @@ module CartoDB
       def register(result)
         @support_tables_helper.reset
 
-        if result.name == 'table'
-          result.name.prepend('t_')
+        if CartoDB::POSTGRESQL_RESERVED_WORDS.include?(result.name.upcase)
+          runner.log.append("Sanitized #{result.name} to #{result.name + '_t'}")
+          result.name = "#{result.name + '_t'}"
         end
 
         runner.log.append("Before renaming from #{result.table_name} to #{result.name}")

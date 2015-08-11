@@ -19,7 +19,7 @@ describe Admin::TablesController do
   end
 
   before(:each) do
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+    stub_named_maps_calls
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
     @db = Rails::Sequel.connection
     delete_user_data $user_1
@@ -30,8 +30,9 @@ describe Admin::TablesController do
   end
 
   after(:all) do
-    $user_1.destroy
+    stub_named_maps_calls
     delete_user_data($user_1)
+    $user_1.destroy
   end
 
   describe 'GET /dashboard' do

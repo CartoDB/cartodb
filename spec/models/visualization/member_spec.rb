@@ -1160,10 +1160,18 @@ describe Visualization::Member do
       vis.license_info.name.should eq "Apache license"
     end
 
-    it 'should return nil if the license dont exists' do
+    it 'should raise exception when try to store a unknown license, empty or nil' do
       table = create_table({:name => 'table1', :user_id => @user.id})
       vis = table.table_visualization
       vis.license = "wadus"
+      expect {
+        vis.store
+      }.to raise_error CartoDB::InvalidMember
+      vis.license = ""
+      expect {
+        vis.store
+      }.to raise_error CartoDB::InvalidMember
+      vis.license = nil
       expect {
         vis.store
       }.to raise_error CartoDB::InvalidMember

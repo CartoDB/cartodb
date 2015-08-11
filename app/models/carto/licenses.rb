@@ -9,20 +9,20 @@ module Carto
 
     # TODO Add more license when we know what licenses we want to include here
     LICENSE_VALUES = {
-      :mit => { :name => 'MIT'},
-      :apache => { :name => 'Apache license'},
-      :gplv3 => { :name => 'GPLv3 license'},
-      :gplv2 => { :name => 'GPLv2 license'}
+      MIT_LICENSE => { :id => MIT_LICENSE, :name => 'MIT'},
+      APACHE_LICENSE => { :id => APACHE_LICENSE, :name => 'Apache license'},
+      GPLV3_LICENSE => { :id => GPLV3_LICENSE, :name => 'GPLv3 license'},
+      GPLV2_LICENSE => { :id => GPLV2_LICENSE, :name => 'GPLv2 license'}
     }
 
     attr_reader :id, :name
 
     private_class_method :new
 
-    def self.get(license_id)
+    def self.find(license_id)
       if !license_id.nil?  && !license_id.empty? && LICENSE_VALUES.has_key?(license_id)
         data = LICENSE_VALUES[license_id]
-        license = new(license_id, data[:name])
+        license = new(data[:id], data[:name])
         license
       else
         return nil
@@ -32,7 +32,7 @@ module Carto
     def self.all
       values = []
       LICENSE_VALUES.each do |k, v|
-        values << { :id => k, :name => v[:name]}
+        values << find(k)
       end
       values
     end

@@ -7,7 +7,10 @@ class Api::Json::LicensesController < Api::ApplicationController
   skip_before_filter :api_authorization_required, only: [:index]
 
   def index
-    render_jsonp(Carto::License.all)
+    licenses = Carto::License.all do |license|
+      Carto::LicensePresenter.new(license).to_poro
+    end
+    render_jsonp(licenses)
   end
 
 end

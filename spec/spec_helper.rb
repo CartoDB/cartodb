@@ -49,22 +49,28 @@ RSpec.configure do |config|
   end
 
   config.after(:all) do
-    $user_1.destroy
-    $user_2.destroy
 
-    $pool.close_connections!
-    Rails::Sequel.connection[
-      "SELECT datname FROM pg_database WHERE datistemplate IS FALSE AND datallowconn IS TRUE AND datname like 'cartodb_test_user_%'"
-    ].map(:datname).each { |user_database_name|
-      puts "Dropping leaked test database #{user_database_name}"
-      User::terminate_database_connections(
-        user_database_name, ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
-      )
-      Rails::Sequel.connection.run("drop database \"#{user_database_name}\"")
-    }
-    Rails::Sequel.connection[
-      'SELECT u.usename FROM pg_catalog.pg_user u'
-    ].map{ |r| r.values.first }.each { |username| Rails::Sequel.connection.run("drop user \"#{username}\"") if username =~ /^test_cartodb_user_/ }
+    begin
+      stub_named_maps_calls
+      delete_user_data($user_1)
+      delete_user_data($user_2)
+      $user_1.destroy
+      $user_2.destroy
+    ensure
+      $pool.close_connections!
+      Rails::Sequel.connection[
+        "SELECT datname FROM pg_database WHERE datistemplate IS FALSE AND datallowconn IS TRUE AND datname like 'cartodb_test_user_%'"
+      ].map(:datname).each { |user_database_name|
+        puts "Dropping leaked test database #{user_database_name}"
+        User::terminate_database_connections(
+          user_database_name, ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
+        )
+        Rails::Sequel.connection.run("drop database \"#{user_database_name}\"")
+      }
+      Rails::Sequel.connection[
+        'SELECT u.usename FROM pg_catalog.pg_user u'
+      ].map{ |r| r.values.first }.each { |username| Rails::Sequel.connection.run("drop user \"#{username}\"") if username =~ /^test_cartodb_user_/ }
+    end
   end
 
   config.after(:suite) do

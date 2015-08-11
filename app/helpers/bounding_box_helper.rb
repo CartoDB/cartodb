@@ -9,14 +9,25 @@ module BoundingBoxHelper
     maxlat: 85.0511
   }
 
-  def calculate_bounding_box(db,table_name)
+  def self.update_visualizations_bbox(table)
+    begin
+      db = table.owner.in_database
+      table.update_table_pg_stats
+      bounds = BoundingBoxHelper.calculate_bounding_box(db, table.qualified_table_name)
+      save_bounding_box(bounds, "visualizations", "bbox", table.table_visualization.id)
+    rescue => exception
+      CartoDB.notify_exception(exception)
+    end
+  end
+
+  def self.calculate_bounding_box(db,table_name)
     get_table_bounds(db,table_name)
   rescue Sequel::DatabaseError => exception
     CartoDB.notify_exception(exception, { table: table_name })
     raise BoundingBoxError.new("Can't calculate the bounding box for table #{table_name}. ERROR: #{exception}")
   end
 
-  def get_table_bounds(db,table_name)
+  def self.get_table_bounds(db,table_name)
     # (lon,lat) as comes out from postgis
     result = current_bbox_using_stats(db, table_name)
     {
@@ -28,7 +39,7 @@ module BoundingBoxHelper
   end
   
   # Postgis stats-based calculation of bounds. Much faster but not always present, so needs a fallback
-  def current_bbox_using_stats(db,table_name)
+  def self.current_bbox_using_stats(db,table_name)
     # (lon,lat) as comes from postgis
     ::JSON.parse(db.fetch(%Q{
       SELECT _postgis_stats ('#{table_name}', 'the_geom');
@@ -41,12 +52,11 @@ module BoundingBoxHelper
         default_bbox
       end
     else
-      CartoDB.notify_exception(e, { table: table_name })
       default_bbox
     end
   end
 
-  def current_bbox(db,table_name)
+  def self.current_bbox(db,table_name)
     # (lon, lat) as comes from postgis (ST_X = Longitude, ST_Y = Latitude)
     # map has no geometries
     result = get_bbox_values(db, table_name, "the_geom")
@@ -64,11 +74,11 @@ module BoundingBoxHelper
     raise BoundingBoxError.new("Can't calculate the bounding box for table #{table_name}. ERROR: #{exception}")
   end
 
-  def bound_for(value, minimum, maximum)
+  def self.bound_for(value, minimum, maximum)
     [[value, DEFAULT_BOUNDS.fetch(minimum)].max, DEFAULT_BOUNDS.fetch(maximum)].min
   end
 
-  def default_bbox
+  def self.default_bbox
     # (lon, lat) to be consistent with postgis queries
     {
       max: [ DEFAULT_BOUNDS[:maxlon], DEFAULT_BOUNDS[:maxlat] ],
@@ -76,7 +86,7 @@ module BoundingBoxHelper
     }
   end
 
-  def get_bbox_values(db, table_name, column_name)
+  def self.get_bbox_values(db, table_name, column_name)
 
     result = db.fetch(%Q{
       SELECT
@@ -92,6 +102,16 @@ module BoundingBoxHelper
 
   def self.to_polygon(minx, miny, maxx, maxy)
     "ST_Transform(ST_Envelope('SRID=4326;POLYGON((#{minx} #{miny}, #{minx} #{maxy}, #{maxx} #{maxy}, #{maxx} #{miny}, #{minx} #{miny}))'::geometry), 3857)"
+  end
+
+  private
+
+  def self.save_bounding_box(bounds, table_name, column_name, id)
+    update_sql = "UPDATE #{table_name} SET #{column_name} = ST_Transform(ST_Envelope('SRID=4326;POLYGON((" \
+                 "#{bounds[:minx]} #{bounds[:miny]},#{bounds[:minx]} #{bounds[:maxy]}," \
+                 "#{bounds[:maxx]} #{bounds[:maxy]},#{bounds[:maxx]} #{bounds[:miny]}," \
+                 "#{bounds[:minx]} #{bounds[:miny]}))'::geometry), 3857) WHERE id = '#{id}';"
+    Rails::Sequel.connection.run(update_sql)
   end
 
 end

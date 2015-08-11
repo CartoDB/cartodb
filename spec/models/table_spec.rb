@@ -1514,7 +1514,7 @@ describe Table do
       table.sequel.insert(:test_id => '12', :f1 => "")
 
       # update datatype
-      table.modify_column! :name=>"f1", :type=>"boolean", :name=>"f1", :new_name=>nil
+      table.modify_column! :type=>"boolean", :name=>"f1", :new_name=>nil
 
       # test
       table.sequel.where(:cartodb_id => '1').first[:f1].should == true
@@ -2291,57 +2291,6 @@ describe Table do
       pk_row1 = table.insert_row!(:name => 'name1')
       table.actual_row_count.should == 1
       [0, 1].should include(table.estimated_row_count)
-    end
-  end
-
-  describe '#calculate and store bounding box' do
-    before(:each) do
-      @table = new_table(:user_id => $user_1.id)
-      @table.force_schema = "the_geom geometry"
-      @table.the_geom_type = "point"
-      @table.save.reload
-      insert_points(@table)
-    end
-
-    it "should add bounding box to member" do
-      bbox_wkt = "POLYGON((-8456448.57022078 -4139755.68042313,-8456448.57022078 6126835.34156485,1843532.35359141 6126835.34156485,1843532.35359141 -4139755.68042313,-8456448.57022078 -4139755.68042313))"
-      @table.update_bounding_box_info
-      bbox = Rails::Sequel.connection.fetch(
-        "SELECT ST_AsText(bounding_box) as bounding_box from visualizations WHERE id = '#{@table.table_visualization.id}'"
-      ).first[:bounding_box]
-      bbox.should eq bbox_wkt
-    end
-
-    it "update the_geom should trigger bouding box recalculation" do
-      bbox_updated_wkt = "POLYGON((-8456448.57022078 -4139755.68042313,-8456448.57022078 6710219.08322074,851524.552150695 6710219.08322074,851524.552150695 -4139755.68042313,-8456448.57022078 -4139755.68042313))"
-      @table.update_row!(1, {:the_geom=>"{\"type\":\"Point\",\"coordinates\":[-1.2163667,51.5]}", :cartodb_id=>1, :id=>"1"})
-      bbox = Rails::Sequel.connection.fetch(
-        "SELECT ST_AsText(bounding_box) as bounding_box from visualizations WHERE id = '#{@table.table_visualization.id}'"
-      ).first[:bounding_box]
-      bbox.should eq bbox_updated_wkt
-    end
-  end
-
-  def insert_points(table)
-    points = [
-      [16.5607329, 48.1199611],
-      [-75.96557, 4.58971],
-      [7.6493752, 45.1974684],
-      [-58.5363498, -34.8222787]
-    ]
-    points.each do |point|
-      the_geom = %Q{{"type":"Point","coordinates":[#{point[0]},#{point[1]}]}}
-      pk = table.insert_row!({:the_geom => the_geom})
-    end
-  end
-
-  def generate_random_geopoints(number = 10)
-    randomizer = Random.new(9009900)
-    points = []
-    number.each do
-      lat = randomizer(-90.000,90.000)
-      lon = randomizer(-180.000,180.000)
-      points << {lat: lat, lon: lon }
     end
   end
 

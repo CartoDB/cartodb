@@ -251,7 +251,7 @@ class Carto::VisualizationQueryBuilder
       bbox_coords = @bounding_box.split(',').select { |coord| true if Float(coord) rescue false }
       raise CartoDB::BoundingBoxError.new('bounding box must have 4 coordinates: minx, miny, maxx, maxy') if bbox_coords.length != 4
       bbox_sql = BoundingBoxHelper.to_polygon(*bbox_coords)
-      query = query.where("visualizations.bounding_box is not null AND visualizations.bounding_box && #{bbox_sql}")
+      query = query.where("visualizations.bbox is not null AND visualizations.bbox && #{bbox_sql}")
     end
 
     @include_associations.each { |association|

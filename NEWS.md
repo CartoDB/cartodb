@@ -55,7 +55,6 @@ cd lib/sql; sudo make all install
   * requires a `npm install` for grunt tasks
 * New modals [#5068](https://github.com/CartoDB/cartodb/pull/5068)
 * Now canonical tables store the bounding box at import time. It's also recalculated when `the_geom` change. This need to install the postgis extension in the metadata database
-* Canonical visualizations can be filtered by bounding box
 
 Bugfixes:
 * Fixed deletion of layers upon disconnecting synced datasources [#3718](https://github.com/CartoDB/cartodb/pull/3718)

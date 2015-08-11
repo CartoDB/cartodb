@@ -6,6 +6,7 @@ require_relative '../../services/table-geocoder/lib/mail_geocoder'
 require_relative '../../services/geocoder/lib/geocoder_config'
 require_relative '../../lib/cartodb/metrics'
 require_relative '../../lib/cartodb/mixpanel'
+require_relative '../../app/helpers/bounding_box_helper'
 require_relative 'log'
 require_relative '../../lib/cartodb/stats/geocoding'
 
@@ -328,6 +329,8 @@ class Geocoding < Sequel::Model
     self.update(state: 'finished', real_rows: geocoded_rows, used_credits: calculate_used_credits)
     send_report_mail(state, table_geocoder.table_name, nil, self.processable_rows, geocoded_rows)
     log.append "Geocoding finished"
+    # To store the bbox in visualizations
+    BoundingBoxHelper.update_visualizations_bbox(table_service)
     self.report
   end
 

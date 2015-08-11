@@ -55,7 +55,6 @@ module CartoDB
 
       def register(result)
         @support_tables_helper.reset
-
         runner.log.append("Before renaming from #{result.table_name} to #{result.name}")
         name = rename(result, result.table_name, result.name)
         result.name = name

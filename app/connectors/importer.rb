@@ -55,6 +55,10 @@ module CartoDB
 
       def register(result)
         @support_tables_helper.reset
+        
+        # Sanitizing table name if it corresponds with a PostgreSQL reseved word
+        result.table_name = "#{result.table_name}_t" if CartoDB::POSTGRESQL_RESERVED_WORDS.map(&:downcase).include?(result.table_name.downcase)
+        
         runner.log.append("Before renaming from #{result.table_name} to #{result.name}")
         name = rename(result, result.table_name, result.name)
         result.name = name

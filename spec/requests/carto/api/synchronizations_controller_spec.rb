@@ -33,6 +33,7 @@ describe Carto::Api::SynchronizationsController do
 
       CartoDB::Synchronization.repository  = DataRepository::Backend::Sequel.new(@db, :synchronizations)
 
+      stub_named_maps_calls
       delete_user_data @user
       @headers = {
         'CONTENT_TYPE'  => 'application/json',
@@ -41,6 +42,7 @@ describe Carto::Api::SynchronizationsController do
     end
 
     after(:all) do
+      stub_named_maps_calls
       @user.destroy
     end
 

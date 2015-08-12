@@ -37,6 +37,7 @@ class Carto::VisualizationQueryBuilder
     @eager_load_nested_associations = {}
     @order = {}
     @off_database_order = {}
+    @exclude_synced_external_sources = false
   end
 
   def with_id_or_name(id_or_name)
@@ -54,6 +55,11 @@ class Carto::VisualizationQueryBuilder
 
   def with_excluded_ids(ids)
     @excluded_ids = ids
+    self
+  end
+
+  def without_synced_external_sources
+    @exclude_synced_external_sources = true
     self
   end
 
@@ -190,10 +196,25 @@ class Carto::VisualizationQueryBuilder
       # TODO: sql strings are suboptimal and compromise compositability, but
       # I haven't found a better way to do this OR in Rails
       query = query.where(' ("visualizations"."user_id" = (?) or "visualizations"."id" in (?))',
-          @owned_by_or_shared_with_user_id, 
+          @owned_by_or_shared_with_user_id,
           ::Carto::VisualizationQueryBuilder.new.with_shared_with_user_id(@owned_by_or_shared_with_user_id)
                                             .build.uniq.pluck('visualizations.id')
         )
+    end
+
+    if @exclude_synced_external_sources
+      query = query.joins(%Q{
+                            LEFT JOIN synchronizations
+                            ON synchronizations.name = LOWER(visualizations.name)
+                            AND synchronizations.user_id = visualizations.user_id
+                          })
+                   .joins(%Q{
+                            LEFT JOIN external_data_imports
+                            ON external_data_imports.synchronization_id = synchronizations.id
+                          })
+                   .where("external_data_imports.id IS NULL")
+                   # Although improvable, if there is a synchronization for the user with same name, make sure that
+                   # there is no external data import
     end
 
     if @type

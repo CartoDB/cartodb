@@ -69,8 +69,16 @@
   <div class="PublicMap-map js-map" id="map">
     <div class="Spinner Spinner--center"></div>
 
-    <div class="panes pane_table"></div>
-    <div class="panes pane_map"></div>
+    <div class="panes pane_table u-hideOnTablet"></div>
+    <div class="panes pane_map u-hideOnTablet"></div>
+    <div class="panes panes_mobile u-showOnTablet"></div>
+
+    <div class="navigation u-showOnTablet">
+      <ul>
+        <li><%= link_to "Table view", "#/table", :class => 'smaller strong tab selected' %></li>
+        <li><%= link_to "Map view", "#/map"%></li>
+      </ul>
+    </div>
   </div>
 
   <%# Legacy from current embed %>

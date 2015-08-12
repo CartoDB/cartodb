@@ -31,6 +31,19 @@ body.public { /* Public table CSS */
     position:relative;
   }
 
+  .panes_mobile {
+    top: 0px;
+    background: #333;
+
+    .table.public,
+    .cartodb-map.public {
+      @include position(15px, 15px, 60px, 15px);
+      z-index: 10;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+  }
+
   min-width: inherit;
   
   .dialog {
@@ -119,8 +132,12 @@ body.public { /* Public table CSS */
 
   div.table table thead tr th {
     > div {
-      label.interactuable .coloptions:after {
-        display:none;
+      label.interactuable .coloptions {
+        line-height: 1;
+
+        &:after {
+          display:none;
+        }
       }
 
       p {

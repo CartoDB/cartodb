@@ -8,9 +8,12 @@
 
 
 // Public map
-.cartodb-map.public {
-
+.pane_map .cartodb-map.public {
   @include position(15px, 15px, 15px, 65%);
+}
+
+.cartodb-map.public {
+  @include position(0, 0, 0, 0);
   border-radius: 3px;
   overflow: hidden;
 

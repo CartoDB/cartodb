@@ -27,7 +27,6 @@ describe Column do
 
   after(:all) do
     @db.execute('DROP SCHEMA cdb_importer CASCADE')
-    @db.execute('DROP EXTENSION postgis CASCADE')
     @db.disconnect
   end
 

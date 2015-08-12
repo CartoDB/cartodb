@@ -495,6 +495,10 @@ module CartoDB
         datasource
       end
 
+      def from_external_source?
+        ::ExternalDataImport.where(synchronization_id: self.id).first != nil
+      end
+
       attr_reader :repository
 
       attr_accessor :log_trace, :service_name, :service_item_id

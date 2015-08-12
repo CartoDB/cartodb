@@ -1,7 +1,7 @@
 require 'active_record'
 
 class Carto::Synchronization < ActiveRecord::Base
-  
+
   belongs_to :user
 
   STATE_CREATED   = 'created'
@@ -27,6 +27,10 @@ class Carto::Synchronization < ActiveRecord::Base
 
   def success?
     state == STATE_SUCCESS
+  end
+
+  def from_external_source?
+    ::ExternalDataImport.where(synchronization_id: self.id).first != nil
   end
 
   # TODO: Properly migrate log to AR and remove this

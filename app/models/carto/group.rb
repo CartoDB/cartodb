@@ -14,13 +14,11 @@ module Carto
     validates :name, :database_role, :organization_id, :presence => true
 
     def self.new_instance(database_name, database_role)
-      organization = Carto::Organization
-          .joins('INNER JOIN users ON organizations.owner_id = users.id')
-          .where('users.database_name = ?', database_name).first
+      organization = Organization.find_by_database_name(database_name)
 
       raise "Organization not found for database #{database_name}" unless organization
 
-      group = new(name: database_role, database_role: database_role, organization: organization)
+      new(name: database_role, database_role: database_role, organization: organization)
     end
 
     def database_name

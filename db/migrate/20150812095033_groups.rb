@@ -25,6 +25,12 @@ Sequel.migration do
         UNIQUE (organization_id, name)
     })
 
+    Rails::Sequel.connection.run(%Q{
+      ALTER TABLE "groups"
+        ADD CONSTRAINT groups_organization_id_database_role_uq
+        UNIQUE (organization_id, database_role)
+    })
+
     create_table :users_groups do
       Uuid    :id,              primary_key: true, default: 'uuid_generate_v4()'.lit
       Uuid    :user_id,         null: false

@@ -6,6 +6,12 @@ module Carto
     has_many :users, inverse_of: :organization, order: :username
     belongs_to :owner, class_name: Carto::User
 
+    def self.find_by_database_name(database_name)
+      Carto::Organization
+          .joins('INNER JOIN users ON organizations.owner_id = users.id')
+          .where('users.database_name = ?', database_name).first
+    end
+
     def get_geocoding_calls(options = {})
       date_to = (options[:to] ? options[:to].to_date : Date.today)
       date_from = (options[:from] ? options[:from].to_date : owner.last_billing_cycle)

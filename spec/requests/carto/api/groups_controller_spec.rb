@@ -7,7 +7,7 @@ require_relative '../../../../app/controllers/carto/api/groups_controller'
 describe Carto::Api::GroupsController do
   include_context 'organization with users helper'
 
-  describe '#create' do
+  describe 'Groups management', :order => :defined do
 
     before(:all) do
       @no_auth_headers = {'CONTENT_TYPE'  => 'application/json', :format => "json" }
@@ -18,18 +18,24 @@ describe Carto::Api::GroupsController do
     end
 
     it "Throws 401 error without http auth" do
-      post api_v1_organization_group_create_url(org_id: @carto_organization.id), {}.to_json, @no_auth_headers
+      post api_v1_databases_group_create_url(database_name: @carto_organization.database_name), {}, @no_auth_headers
       response.status.should == 401
     end
 
-    it 'creates a new group' do
-      group_information = { database_name: @carto_organization.database_name, name: 'g_org_database_group' }
-      post api_v1_organization_group_create_url(org_id: @carto_organization.id), group_information, default_headers
+    it '#creates a new group using the role for the name as well' do
+      group_information = { database_role: 'g_org_database_group' }
+      post api_v1_databases_group_create_url(database_name: @carto_organization.database_name), group_information, default_headers
       response.status.should == 200
-      group = Carto::Group.where(organization_id: @carto_organization.id, name: group_information[:name]).first
+      group = Carto::Group.where(organization_id: @carto_organization.id, database_role: group_information[:database_role], name: group_information[:database_role]).first
       group.should_not be_nil
-      group.name.should == group_information[:name]
-      group.database_name.should == group_information[:database_name]
+    end
+
+    it '#destroy an existing group' do
+      group = FactoryGirl.create(:carto_group, organization: @carto_organization)
+      Carto::Group.where(id: group.id).first.should_not be_nil
+      delete api_v1_databases_group_destroy_url(database_name: group.database_name, database_role: group.database_role), nil, default_headers
+      response.status.should == 200
+      Carto::Group.where(id: group.id).first.should be_nil
     end
 
   end

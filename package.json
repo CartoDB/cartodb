@@ -21,7 +21,7 @@
     "aws-sdk": "2.0.0-rc11",
     "browserify": "9.0.3",
     "browserify-shim": "3.8.3",
-    "cartodb-pecan": "0.x",
+    "cartodb-pecan": "1.x",
     "git-rev": "~0.2.1",
     "grunt": "~0.4.4",
     "grunt-available-tasks": "^0.5.4",

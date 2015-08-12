@@ -1,4 +1,3 @@
-
 3.10.3 (2015-mm-dd)
 ---
 * Mailchimp decorator enables category wizard and legends [#3874](https://github.com/CartoDB/cartodb/pull/3874)

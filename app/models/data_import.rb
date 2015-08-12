@@ -663,13 +663,18 @@ class DataImport < Sequel::Model
       synchronization.log_id  = log.id
 
       if importer.success?
+        imported_table = ::Table.get_by_table_id(self.table_id)
+        if !imported_table.nil? && imported_table.table_visualization
+          synchronization.visualization_id = imported_table.table_visualization.id
+        end
+
         synchronization.state = 'success'
         synchronization.error_code = nil
         synchronization.error_message = nil
       else
         synchronization.state = 'failure'
         synchronization.error_code = error_code
-        synchronization.error_message = get_error_text
+        synchronization.error_message = get_error_text[:title] + ' ' + get_error_text[:what_about]
       end
       log.append "importer.success? #{synchronization.state}"
       synchronization.store
@@ -788,7 +793,7 @@ class DataImport < Sequel::Model
     payload.merge!(
       file_url_hostname: URI.parse(public_url).hostname
     ) if public_url rescue nil
-    payload.merge!(error_title: get_error_text) if state == STATE_FAILURE
+    payload.merge!(error_title: get_error_text[:title]) if state == STATE_FAILURE
     payload
   end
 

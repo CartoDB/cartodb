@@ -174,6 +174,13 @@ class Table
     table
   end
 
+  # Getter by table uuid using canonical visualizations. No privacy checks
+  # @param table_id String
+  def self.get_by_table_id(table_id)
+    table_temp = UserTable.where(id: table_id).first
+    table_temp.service unless table_temp.nil?
+  end
+
   # Get a list of tables given an array with the names
   # (can be fully qualified).
   # it also needs the user used to search a table when the

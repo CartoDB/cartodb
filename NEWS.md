@@ -95,7 +95,6 @@ Bugfixes:
 * Enabled Google Maps Basemaps [#3429](https://github.com/CartoDB/cartodb/pull/3429)
 * Remove need of api_key to enjoy common-data "Data library" [#3523](https://github.com/CartoDB/cartodb/pull/3523)
 
-
 Bugfixes:
 * Fixed interaction when there are hidden layers [#3090](https://github.com/CartoDB/cartodb/pull/3090)
 * Fix http cancelled requests [#3227](https://github.com/CartoDB/cartodb/pull/3227)

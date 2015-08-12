@@ -148,7 +148,7 @@
     </div>
   </div>
 
-  <div class="PublicMap-secondary">
+  <div class="PublicMap-secondary PublicMap-secondary--bottom">
     <div class="u-inner">
       <div class="PublicMap-block">
         <div class="PublicMap-leftBlock PublicMap-leftBlock--large">
@@ -215,67 +215,35 @@
     </div>
 
     <% if @total_visualizations.count > 0 %>
-      <ul class="MapsList">
+      <ul class="MapsList PublicMap-mapsList">
         <% @total_visualizations.each do |vis| %>
-          <%# TODO: mapcard %>
-          <%#= render 'admin/pages/shared/mapcard', vis: vis %>
-
           <li class="MapsList-item">
-            <div class="MapCard" data-zoom="#" data-vizjson-url="#">
-              <a href="#" class="MapCard-header js-header">
+            <div class="MapCard" data-zoom="<%= '' %>" data-vizjson-url="<%= CartoDB.url(self, 'api_v2_visualizations_vizjson', {id: vis.id}, vis.user) %>.json">
+              <a href="<%= CartoDB.url(self, 'public_visualizations_public_map', {id: vis.id}, user) %>" class="MapCard-header js-header">
                 <div class="MapCard-loader"></div>
               </a>
-
-              <div class="MapCard-content">
+              <div class="MapCard-content MapCard-content--compact">
                 <div class="MapCard-contentBody">
                   <div class="MapCard-contentBodyRow MapCard-contentBodyRow--flex">
                     <h3 class="MapCard-title DefaultTitle">
-                      <a href="#" class="DefaultTitle-link u-ellipsLongText" title="<%= vis[:name] %>"><%= vis[:name] %></a>
+                      <a href="<%= CartoDB.url(self, 'public_visualizations_public_map', {id: vis.id}, vis.user) %>" class="DefaultTitle-link u-ellipsLongText" title="<%= vis.name %>"><%= vis.name %></a>
                     </h3>
                   </div>
-
-                  <div class="MapCard-contentBodyRow MapCard-contentBodyRow--flex">
-                    <% if vis[:description_html_safe] %>
-                      <div class="MapCard-desc">
-                        <div class="DefaultDescription" title="<%= vis[:description_html_safe].strip_tags %>"><%= raw vis[:description_html_safe] %></div>
-                      </div>
-                    <% else %>
-                      <span class="NoResults"></span>
-                    <% end %>
-                  </div>
-
-                  <div class="MapCard-tags">
-                    <div class="DefaultTags MapCard-contentBodyRow">
-                      <% if vis[:tags].size > 0 %>
-                        <%# Keep on one line to avoid unwanted spaces %>
-                        <% formatted_tags(vis[:tags]) do |tag| %><a class="DefaultTags-item js-tag-link" href="<%= CartoDB.url(self, 'public_tag', {tag: tag}, vis[:owner]) %>"><%= tag %></a><% end %>
-                      <% end %>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="MapCard-contentFooter">
-                  <div class="MapCard-contentFooterDetails--left">
-                    <div class="MapCard-contentFooterTimeDiff DefaultTimeDiff">
-                      <i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i>
-                      <%= time_ago_in_words(vis[:updated_at]) %> ago
-                    </div>
-                  </div>
-                  <div class="MapCard-contentFooterDetails--right">
-                    <%#= render 'admin/pages/shared/like_button', vis: vis %>
+                  <div class="MapCard-contentFooterTimeDiff DefaultTimeDiff">
+                    <i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i>
+                    <%= time_ago_in_words(vis.updated_at) %> ago
                   </div>
                 </div>
               </div>
             </div>
           </li>
         <% end %>
-
         <%# at most 3 cards per line, visbility is handled by CSS depending on viewport size %>
-        <% ((3 - @total_visualizations.size + 3) % 3).times.each do %>
+        <% ((3 - @total_visualizations.count + 3) % 3).times.each do %>
           <li class="MapsList-item MapsList-item--fake">
             <div class="MapCard">
               <div class="MapCard-header MapCard-header--fake"></div>
-              <div class="MapCard-content"></div>
+              <div class="MapCard-content MapCard-content--compact"></div>
             </div>
           </li>
         <% end %>

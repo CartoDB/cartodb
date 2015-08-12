@@ -7,5 +7,4 @@ shared_examples_for 'synchronization controllers' do
   include Warden::Test::Helpers
   include CacheHelper
 
-
 end

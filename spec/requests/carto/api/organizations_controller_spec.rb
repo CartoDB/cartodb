@@ -23,8 +23,9 @@ describe Carto::Api::OrganizationsController do
     end
 
     after(:all) do
-     delete_user_data(@org_user_3)
-     @org_user_3.destroy
+      stub_named_maps_calls
+      delete_user_data(@org_user_3)
+      @org_user_3.destroy
     end
 
     before(:each) do
@@ -41,7 +42,7 @@ describe Carto::Api::OrganizationsController do
       get api_v1_organization_users_url(id: @organization.id, api_key: @org_user_1.api_key), @headers
       last_response.status.should == 200
       json_body = JSON.parse(last_response.body)
-      ids = json_body['users'].map { |u| u['id'] } 
+      ids = json_body['users'].map { |u| u['id'] }
       ids[0].should == @org_user_1.id
       ids[1].should == @org_user_2.id
       ids[2].should == @org_user_3.id

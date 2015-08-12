@@ -25,11 +25,12 @@ describe Visualization::Relator do
   end
 
   before(:each) do
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+    stub_named_maps_calls
     delete_user_data(@user)
   end
 
   after(:all) do
+    stub_named_maps_calls
     @user.destroy
   end
 

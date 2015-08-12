@@ -22,7 +22,7 @@ describe User do
   end
 
   before(:all) do
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+    stub_named_maps_calls
 
     @user_password = 'admin123'
     puts "\n[rspec][user_spec] Creating test user databases..."
@@ -36,12 +36,13 @@ describe User do
   end
 
   before(:each) do
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+    stub_named_maps_calls
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
     User.any_instance.stubs(:enable_remote_db_user).returns(true)
   end
 
   after(:all) do
+    stub_named_maps_calls
     @user.destroy
     @user2.destroy
   end

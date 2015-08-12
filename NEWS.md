@@ -50,6 +50,7 @@ Bugfixes:
 
 New features:
 * Organization signup: [#3902](https://github.com/CartoDB/cartodb/issues/3902)
+* Diagnosis page at http://localhost.lan:3000/diagnosis
 
 3.10.2 (2015-05-20)
 ---------

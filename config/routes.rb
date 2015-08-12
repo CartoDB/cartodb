@@ -451,9 +451,6 @@ CartoDB::Application.routes.draw do
     # Common data
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/common_data' => 'common_data#index', as: :api_v1_common_data_index
 
-    # Licenses
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1/licenses' => 'licenses#index', as: :api_v1_licenses_index
-
     # Synchronizations
     post   '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations'              => 'synchronizations#create',   as: :api_v1_synchronizations_create
     put    '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations/:id'          => 'synchronizations#update',   as: :api_v1_synchronizations_update

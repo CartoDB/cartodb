@@ -51,6 +51,7 @@ Bugfixes:
 New features:
 * Organization signup: [#3902](https://github.com/CartoDB/cartodb/issues/3902)
 * Diagnosis page at http://localhost.lan:3000/diagnosis
+* Remote/External sources now imported via a synchronization (that will sync monthly), and dissapear from the data-library section until the user unsyncs the dataset.
 
 3.10.2 (2015-05-20)
 ---------

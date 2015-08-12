@@ -12,7 +12,7 @@ module BoundingBoxHelper
   def self.update_visualizations_bbox(table)
     begin
       db = table.owner.in_database
-      table.update_table_pg_stats
+      table.update_table_geom_pg_stats
       bounds = BoundingBoxHelper.calculate_bounding_box(db, table.qualified_table_name)
       save_bounding_box(bounds, "visualizations", "bbox", table.table_visualization.id)
     rescue => exception

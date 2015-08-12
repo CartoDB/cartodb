@@ -1188,6 +1188,10 @@ class Table
     owner.in_database[%Q{ANALYZE #{qualified_table_name};}]
   end
 
+  def update_table_geom_pg_stats
+    owner.in_database[%Q{ANALYZE #{qualified_table_name}(the_geom);}]
+  end
+
   def owner
     @owner ||= User[self.user_id]
   end

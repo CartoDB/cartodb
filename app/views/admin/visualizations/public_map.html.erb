@@ -67,7 +67,7 @@
                   </li>
 
                   <li class="Navmenu-subItem">
-                    <a href="#/like" class="Navmenu-link js-likes"
+                    <a href="<%= CartoDB.url(self, 'api_v1_visualizations_add_like', {id: @visualization.id}, @visualization.user) %>" class="Navmenu-link js-likes"
                       data-vis-id="<%= @visualization.id %>"
                       data-likes-count="<%= @likes_count %>"
                       data-likes-size="big">
@@ -187,7 +187,7 @@
                     <div class="DatasetsList-itemSecondaryInfo">
                       <div class="DatasetsList-itemMeta">
                         <span class="PrivacyIndicator is-<%= vis.privacy %> u-hideOnTablet"><%= vis.privacy %></span>
-                        <a href="#/like" class="js-likes"
+                        <a href="<%= CartoDB.url(self, 'api_v1_visualizations_add_like', {id: vis.id}, vis.user) %>" class="js-likes"
                           data-vis-id="<%= vis.id %>"
                           data-likes-count="<%= vis.likes.count %>">
                         </a>

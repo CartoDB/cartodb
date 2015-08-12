@@ -6,6 +6,7 @@ describe UserOrganization do
     include_context 'visualization creation helpers'
 
     after(:all) do
+      stub_named_maps_calls
       @organization.destroy_cascade if @organization
       @owner = User.where(id: @owner.id).first
       @owner.destroy if @owner

@@ -34,10 +34,10 @@
 .Navmenu-subItem {
   margin-left: $sMargin-group;
 }
-.Navmenu-item:last-child {
+.Navmenu-item.Navmenu-item:last-child {
   margin-right: 0;
 }
-.Navmenu-subItem:first-child {
+.Navmenu-subItem.Navmenu-subItem:first-child {
   margin-left: 0;
 }
 .Navmenu-item,
@@ -72,7 +72,7 @@
   color: $cTypography-linkSecondaryHover;
   text-decoration: none;
 }
-.Navmenu-link--owner {
+.Navmenu-link.Navmenu-link--owner {
   float: left;
   white-space: nowrap;
 }
@@ -116,8 +116,10 @@
     color: #fff;
   }
 }
-.Navmenu-editLink--edit {
+.Navmenu-editLink.Navmenu-editLink--edit {
   margin-left: $sMargin-section;
+  border-color: #0090d7;
+  color: #fff;
 }
 .Navmenu-editLink.Navmenu-editLink--more {
   width: 100%;
@@ -158,6 +160,11 @@
   margin-right: 5px;
   font-size: 10px;
 }
+div.cartodb-timeslider {
+  margin-bottom: 0;
+}
+
+
 @media (max-width: $sMedia-desktop) {
   .Navmenu-shareLink {
     display: inline-block;

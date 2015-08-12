@@ -96,6 +96,7 @@ shared_context 'organization with users helper' do
   end
 
   after(:all) do
+    bypass_named_maps
     delete_user_data @org_user_owner if @org_user_owner
     @organization.destroy_cascade
   end
@@ -154,6 +155,7 @@ shared_context 'users helper' do
   end
 
   after(:all) do
+    bypass_named_maps
     delete_user_data @user1 if @user1
     delete_user_data @user2 if @user2
     # User destruction is handled at spec_helper

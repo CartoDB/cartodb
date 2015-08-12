@@ -35,6 +35,7 @@ describe Api::Json::VisualizationsController do
 
   before(:each) do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
+    stub_named_maps_calls
     @db = Rails::Sequel.connection
     Sequel.extension(:pagination)
 
@@ -55,6 +56,7 @@ describe Api::Json::VisualizationsController do
   end
 
   after(:all) do
+    stub_named_maps_calls
     @user.destroy
   end
 

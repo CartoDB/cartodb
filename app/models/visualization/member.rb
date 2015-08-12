@@ -641,6 +641,10 @@ module CartoDB
         end
       end
 
+      def license_info
+        Carto::License.find(license.to_sym)
+      end
+
       private
 
       attr_reader   :repository, :name_checker, :validator

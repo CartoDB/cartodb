@@ -101,16 +101,14 @@ module BoundingBoxHelper
   end
 
   def self.to_polygon(minx, miny, maxx, maxy)
-    "ST_Transform(ST_Envelope('SRID=4326;POLYGON((#{minx} #{miny}, #{minx} #{maxy}, #{maxx} #{maxy}, #{maxx} #{miny}, #{minx} #{miny}))'::geometry), 3857)"
+    %Q{ST_Transform(ST_Envelope('SRID=4326;POLYGON((#{minx} #{miny}, #{minx} #{maxy}, #{maxx} #{maxy}, #{maxx} #{miny}, #{minx} #{miny}))'::geometry), 3857)}
   end
 
   private
 
   def self.save_bounding_box(bounds, table_name, column_name, id)
-    update_sql = "UPDATE #{table_name} SET #{column_name} = ST_Transform(ST_Envelope('SRID=4326;POLYGON((" \
-                 "#{bounds[:minx]} #{bounds[:miny]},#{bounds[:minx]} #{bounds[:maxy]}," \
-                 "#{bounds[:maxx]} #{bounds[:maxy]},#{bounds[:maxx]} #{bounds[:miny]}," \
-                 "#{bounds[:minx]} #{bounds[:miny]}))'::geometry), 3857) WHERE id = '#{id}';"
+    polygon_sql = to_polygon(bounds[:minx], bounds[:miny], bounds[:maxx], bounds[:maxy])
+    update_sql = %Q{UPDATE #{table_name} SET #{column_name} = #{polygon_sql} WHERE id = '#{id}';}
     Rails::Sequel.connection.run(update_sql)
   end
 

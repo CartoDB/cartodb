@@ -9,13 +9,13 @@ Sequel.migration do
     })
 
     Rails::Sequel.connection.run(%Q{
-      CREATE INDEX bounding_box_visualizations_gix ON visualizations USING GIST (bbox);
+      CREATE INDEX visualizations_bbox_idx ON visualizations USING GIST (bbox);
     })
   end
 
   down do
     Rails::Sequel.connection.run(%Q{
-      DROP INDEX IF EXISTS bbox_visualizations_gix
+      DROP INDEX IF EXISTS visualizations_bbox_idx
     })
 
     Rails::Sequel.connection.run(%Q{

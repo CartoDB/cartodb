@@ -109,7 +109,7 @@ module Carto
       end
 
       def validate_parameters(types, parameters)
-        if (!params.fetch(:bbox, nil).nil? && !types.include?(Carto::Visualization::TYPE_CANONICAL))
+        if (!params.fetch(:bbox, nil).nil? && (types.length > 1 || !types.include?(Carto::Visualization::TYPE_CANONICAL)))
           raise CartoDB::BoundingBoxError.new('Filter by bbox is only supported for type table')
         end
       end

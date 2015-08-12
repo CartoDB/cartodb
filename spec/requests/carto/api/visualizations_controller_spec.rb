@@ -1474,6 +1474,12 @@ describe Carto::Api::VisualizationsController do
       last_response.status.should eq 400
     end
 
+    it 'should return 400 when try to filter by bbox and with more than only canonical visualizations' do
+      get api_v1_visualizations_index_url(user_domain: $user_1.username,
+          types: "#{CartoDB::Visualization::Member::TYPE_DERIVED}, #{CartoDB::Visualization::Member::TYPE_CANONICAL}", bbox: '-18.166667,27.633333,4.333333,43.916667'), @headers
+      last_response.status.should eq 400
+    end
+
     it 'should return 400 when try to filter by bbox with less than 4 coordinates' do
       get api_v1_visualizations_index_url(user_domain: $user_1.username,
           types: CartoDB::Visualization::Member::TYPE_DERIVED, bbox: '27.633333,4.333333,43.916667'), @headers
@@ -1482,10 +1488,10 @@ describe Carto::Api::VisualizationsController do
 
     it 'should return 400 when try to filter by bbox with wrong typed coordinates' do
       get api_v1_visualizations_index_url(user_domain: $user_1.username,
-          types: CartoDB::Visualization::Member::TYPE_DERIVED, bbox: '18.323232,alal,4.333333,43.916667'), @headers
+          types: CartoDB::Visualization::Member::TYPE_CANONICAL, bbox: '18.323232,alal,4.333333,43.916667'), @headers
       last_response.status.should eq 400
       get api_v1_visualizations_index_url(user_domain: $user_1.username,
-          types: CartoDB::Visualization::Member::TYPE_DERIVED, bbox: 'true,2.393939,4.333333,43.916667'), @headers
+          types: CartoDB::Visualization::Member::TYPE_CANONICAL, bbox: 'true,2.393939,4.333333,43.916667'), @headers
       last_response.status.should eq 400
     end
 

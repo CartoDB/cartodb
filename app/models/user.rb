@@ -1939,8 +1939,17 @@ TRIGGER
         retry = #{varnish_retry}
         trigger_verbose = #{varnish_trigger_verbose}
 
-        import httplib
-        import time
+        if 'httplib' not in GD:
+          import httplib
+          GD['httplib'] = httplib
+        else:  
+          httplib = GD['httplib']
+        
+        if 'time' not in GD:
+          import time
+          GD['time'] = time
+        else:  
+          time = GD['time']
 
         start = time.time()
 

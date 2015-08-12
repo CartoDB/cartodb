@@ -15,7 +15,7 @@
               <p class="Sessions-description">Please check your email inbox and click the "Activate your account" button in the welcome mail.</p>
 
             <% if @user %>
-              <p class="Sessions-description">If you didn't receive your validation email, click <a href="<%= CartoDB.url(self, 'resend_validation_mail', :user_id => @user.id) %>">here</a> and a new email will be sent directly to your inbox.</p>
+              <p class="Sessions-description">If you didn't receive your validation email, click <a href="<%= CartoDB.url(self, 'resend_validation_mail', :user_id => @user.id) %>">here</a> and a new email will be sent directly to you.</p>
             <% end %>
           </div>
         </div>

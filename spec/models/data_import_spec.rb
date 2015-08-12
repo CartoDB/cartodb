@@ -9,7 +9,7 @@ describe DataImport do
   end
 
   after(:all) do
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+    stub_named_maps_calls
     @user.destroy
   end
 

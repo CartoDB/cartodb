@@ -23,7 +23,7 @@ class SessionsController < ApplicationController
   end
 
   def create
-    user = if params[:google_access_token].present? && @google_plus_config.present?
+    user = if !user_password_authentication? && params[:google_access_token].present? && @google_plus_config.present?
       user = GooglePlusAPI.new.get_user(params[:google_access_token])
       if user
         authenticate!(:google_access_token, scope: params[:user_domain].present? ?  params[:user_domain] : user.username)
@@ -49,17 +49,7 @@ class SessionsController < ApplicationController
 
   def destroy
     # Make sure sessions are destroyed on both scopes: username and default
-    logout(CartoDB.extract_subdomain(request))
-    logout
-
-    if env['warden']
-      env['warden'].logout
-      request.session.select { |k, v|
-        k.start_with?("warden.user") && !k.end_with?(".session")
-      }.each { |k, v|
-        env['warden'].logout(value) if warden_proxy.authenticated?(value)
-      }
-    end
+    cdb_logout
 
     redirect_to CartoDB.url(self, 'public_visualizations_home')
   end
@@ -118,6 +108,10 @@ class SessionsController < ApplicationController
   end
 
   private
+
+  def user_password_authentication?
+    params && params['email'].present? && params['password'].present?
+  end
 
   def load_organization
     subdomain = CartoDB.subdomain_from_request(request)

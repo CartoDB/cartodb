@@ -6,8 +6,7 @@ module Carto
    
     validates :name, presence: true
 
-    has_many :feature_flags_user, :dependent => :restrict
-    has_many :users, :through => :feature_flags_user, :dependent => :restrict
+    has_many :feature_flags_user, :dependent => :destroy
 
     def self.find_by_user(user)
       FeatureFlag.where(restricted: false) + user.feature_flags.select { |feature_flag| feature_flag.restricted }

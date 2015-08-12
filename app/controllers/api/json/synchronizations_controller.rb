@@ -8,17 +8,7 @@ require_relative '../../../../services/platform-limits/platform_limits'
 class Api::Json::SynchronizationsController < Api::ApplicationController
   include CartoDB
 
-  ssl_required :index, :show, :create, :update, :destroy, :sync, :sync_now, :syncing?
-
-  def index
-    collection = Synchronization::Collection.new.fetch(user_id: current_user.id)
-    representation = collection.map(&:to_hash)
-    response  = {
-      synchronizations: representation,
-      total_entries:    collection.total_entries
-    }
-    render_jsonp(response)
-  end
+  ssl_required :show, :create, :update, :destroy, :sync, :sync_now, :syncing?
 
   # Upon creation, no rate limit checks
   def create
@@ -64,14 +54,14 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
       content_guessing:       content_guessing_param,
       create_visualization:   create_derived_vis
     }
-      
+
     data_import = DataImport.create(options)
     ::Resque.enqueue(::Resque::ImporterJobs, job_id: data_import.id)
 
     member.store
 
     response = {
-      data_import: { 
+      data_import: {
         endpoint:       '/api/v1/imports',
         item_queue_id:  data_import.id
       }

@@ -9,8 +9,14 @@ require 'rspec/rails'
 # in spec/support/ and its subdirectories.
 Dir[Rails.root.join('spec/support/**/*.rb')].each {|f| require f}
 
+# TODO: deprecate and use bypass_named_maps (or viceversa)
 def stub_named_maps_calls 
   CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+end
+
+def bypass_named_maps
+  CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+  CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
 end
 
 # Inline Resque for queue handling
@@ -95,3 +101,10 @@ RSpec.configure do |config|
     end
   end
 end
+
+def default_headers(user = Cartodb.config[:superadmin]["username"], password = Cartodb.config[:superadmin]["password"])
+  {
+    'HTTP_AUTHORIZATION' => ActionController::HttpAuthentication::Basic.encode_credentials(user, password),
+    'HTTP_ACCEPT' => "application/json"
+  }
+  end

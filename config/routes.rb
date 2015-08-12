@@ -350,6 +350,9 @@ CartoDB::Application.routes.draw do
     # Organization (new endpoint that deprecates old, unused one, so v1)
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:id/users' => 'organizations#users', as: :api_v1_organization_users, constraints: { id: /[^\/]+/ }
 
+    # Organization groups
+    post '(/user/:user_domain)(/u/:user_domain)/api/v1/org/:org_id/groups'                          => 'groups#create',  as: :api_v1_organization_group_create
+
     # User creations
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/user_creations/:id' => 'user_creations#show', as: :api_v1_user_creations_show, constraints: { id: /[^\/]+/ }
 
@@ -458,7 +461,6 @@ CartoDB::Application.routes.draw do
 
     # Organizations
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/org/'      => 'organizations#show',  as: :api_v1_organization_show
-
 
     # V2
     # --

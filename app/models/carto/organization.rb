@@ -28,6 +28,10 @@ module Carto
       !whitelisted_email_domains.nil? && !whitelisted_email_domains.empty?
     end
 
+    def database_name
+      owner ? owner.database_name : nil
+    end
+
   end
 
 end

@@ -18,7 +18,7 @@ namespace :cartodb do
 
 
   desc 'Adds visualization_id to every Synchronization'
-  task :populate_visualization_ids => [:environment] do |task, args|
+  task :populate_synchronization_visualization_ids => [:environment] do |task, args|
     require_relative '../../services/synchronizer/lib/synchronizer/collection'
     collection = CartoDB::Synchronizer::Collection.new
 

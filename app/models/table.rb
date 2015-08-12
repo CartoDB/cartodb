@@ -155,7 +155,7 @@ class Table
                 # Handy for rakes and custom ghost table registers, won't delete user table in case of error
                 :keep_user_database_table
 
-  # Getter by table uuid or table name using canonical visualizations
+  # Getter by table uuid osing canonical visualizations
   # @param table_id String
   # @param viewer_user User
   def self.get_by_id(table_id, viewer_user)

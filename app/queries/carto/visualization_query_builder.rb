@@ -203,9 +203,10 @@ class Carto::VisualizationQueryBuilder
     end
 
     if @exclude_synced_external_sources
+      # TODO: Partial commit, this is not yet working as logic changes
       query = query.joins(%Q{
                             LEFT JOIN synchronizations
-                            ON synchronizations.name = LOWER(visualizations.name)
+                            ON synchronizations.visualization_id = visualizations.id
                             AND synchronizations.user_id = visualizations.user_id
                           })
                    .joins(%Q{
@@ -213,8 +214,6 @@ class Carto::VisualizationQueryBuilder
                             ON external_data_imports.synchronization_id = synchronizations.id
                           })
                    .where("external_data_imports.id IS NULL")
-                   # Although improvable, if there is a synchronization for the user with same name, make sure that
-                   # there is no external data import
     end
 
     if @type

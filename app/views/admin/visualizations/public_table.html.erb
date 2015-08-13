@@ -16,7 +16,7 @@
     </script>
   <% end %>
 
-  <%= javascript_include_tag 'cdb.js', 'templates.js', 'public_table.js', 'public_map_deps', 'new_public_table'  %>
+  <%= javascript_include_tag 'cdb.js', 'templates.js', 'public_map_deps', 'new_public_table', 'public_table.js' %>
 
   <script>
     var table_name          = '<%=raw @table.owner.sql_safe_database_schema %>.<%= @table.name %>';
@@ -66,7 +66,7 @@
 <%= content_for(:content) do %>
   <%= render 'admin/shared/public_header' %>
 
-  <div class="PublicMap-map js-map" id="map">
+  <div class="PublicMap-map PublicMap-map--dataset js-map" id="map">
     <div class="Spinner Spinner--center"></div>
 
     <div class="panes pane_table u-hideOnTablet"></div>
@@ -138,12 +138,12 @@
               <div class="Navmenu-sep"></div>
 
               <i class="Navmenu-actionIcon iconFont iconFont-Markup"></i>
-              <a href="#" class="Navmenu-link Navmenu-link--action">API call</a>
+              <a href="#" class="Navmenu-link Navmenu-link--action js-Navmenu-link--api">API call</a>
             </li>
 
             <li class="Navmenu-item Navmenu-item--action u-hideOnTablet">
               <i class="Navmenu-actionIcon iconFont iconFont-Floppy"></i>
-              <a href="#" class="Navmenu-link Navmenu-link--action">Download</a>
+              <a href="#" class="Navmenu-link Navmenu-link--action js-Navmenu-link--download">Download</a>
             </li>
 
             <% if !Cartodb.config[:cartodb_com_hosted].present? %>
@@ -185,11 +185,19 @@
                   </li>
                 <% end %>
 
-                <% if @visualization.tags.size > 0 %>
+                <% if @visualization.visualization.license_info.present? %>
                   <li class="PublicMap-metaItem">
-                    <i class="PublicMap-metaIcon iconFont iconFont-Label"></i>
+                    <i class="PublicMap-metaIcon iconFont iconFont-License iconFont-License<%= @visualization.visualization.license_info.id.to_s.gsub(/_/,"").downcase %>"></i>
                     <%# Keep on one line to avoid unwanted spaces %>
-                    <% formatted_tags(@visualization.tags) do |tag| %><a class="PublicMap-metaLink" href="<%= CartoDB.url(self, 'public_tag', {tag: tag}, @visualization.user) %>"><%= tag %></a><% end %>
+                    <%= @visualization.visualization.license_info.name %>
+                  </li>
+                <% end %>
+
+                <% if @visualization.visualization.source.present? %>
+                  <li class="PublicMap-metaItem">
+                    <i class="PublicMap-metaIcon iconFont iconFont-License iconFont-Source %>"></i>
+                    <%# Keep on one line to avoid unwanted spaces %>
+                    <%= @visualization.visualization.source %>
                   </li>
                 <% end %>
               </ul>

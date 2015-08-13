@@ -17,12 +17,12 @@ html {
 body.public { /* Public table CSS */
 
   .pane_table {
+    @include reset-table-cell();
     @include position(15px, calc(35% + 15px), 15px, 15px);
     z-index: 10;
     border-radius: 3px;
     overflow: hidden;
-
-    @include reset-table-cell();
+    background: #fff;
   }
 
   .pane_map { top: 0px; overflow-x: hidden; }
@@ -34,6 +34,10 @@ body.public { /* Public table CSS */
   .panes_mobile {
     top: 0px;
     background: #333;
+
+    .table.public {
+      background: #fff;
+    }
 
     .table.public,
     .cartodb-map.public {

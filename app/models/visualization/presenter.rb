@@ -37,6 +37,7 @@ module CartoDB
           title: visualization.title,
           parent_id: visualization.parent_id,
           license: visualization.license,
+          attributions: visualization.attributions,
           kind: visualization.kind,
           likes: visualization.likes_count,
           prev_id: visualization.prev_id,

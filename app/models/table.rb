@@ -155,7 +155,7 @@ class Table
                 # Handy for rakes and custom ghost table registers, won't delete user table in case of error
                 :keep_user_database_table
 
-  # Getter by table uuid or table name using canonical visualizations
+  # Getter by table uuid using canonical visualizations
   # @param table_id String
   # @param viewer_user User
   def self.get_by_id(table_id, viewer_user)
@@ -172,6 +172,13 @@ class Table
       table = vis.table unless vis.nil?
     end
     table
+  end
+
+  # Getter by table uuid using canonical visualizations. No privacy checks
+  # @param table_id String
+  def self.get_by_table_id(table_id)
+    table_temp = UserTable.where(id: table_id).first
+    table_temp.service unless table_temp.nil?
   end
 
   # Get a list of tables given an array with the names
@@ -1153,61 +1160,13 @@ class Table
   end
 
   def cartodbfy
-    if owner.cartodb_extension_version_pre_mu?
-      schema_name = 'public'
-    else
-      schema_name = owner.database_schema
-    end
+    schema_name = owner.database_schema
     table_name = "#{owner.database_schema}.#{self.name}"
 
-    # Following is equivalent to running "SELECT cartodb.CDB_CartodbfyTable('#{schema_name}','#{table_name}')"
     owner.in_database do |user_database|
       user_database.run(%Q{
-        SELECT cartodb._CDB_check_prerequisites('#{schema_name}'::TEXT, '#{table_name}'::REGCLASS);
+        SELECT cartodb.CDB_CartodbfyTable('#{schema_name}'::TEXT,'#{table_name}'::REGCLASS);
       })
-
-      user_database.run(%Q{
-        SELECT cartodb._CDB_drop_triggers('#{table_name}'::REGCLASS);
-      })
-
-      user_database.run(%Q{
-        SELECT cartodb._CDB_create_cartodb_id_column('#{table_name}'::REGCLASS);
-      })
-      user_database.run(%Q{
-        SELECT cartodb._CDB_create_timestamp_columns('#{table_name}'::REGCLASS);
-      })
-
-      # Avoid breaking on extension versions < 0.5.0
-      begin
-        is_raster = user_database[%Q{
-          SELECT cartodb._CDB_is_raster_table('#{schema_name}'::TEXT, '#{table_name}'::REGCLASS) AS is_raster;
-        }].first
-      rescue
-        is_raster = nil
-      end
-
-      if !is_raster.nil? && is_raster[:is_raster]
-        user_database.run(%Q{
-          SELECT cartodb._CDB_create_raster_triggers('#{schema_name}'::TEXT, '#{table_name}'::REGCLASS);
-        })
-      else
-        exists_geom_cols = user_database[%Q{
-          SELECT cartodb._CDB_create_the_geom_columns('#{table_name}'::REGCLASS);
-        }].first
-        exists_geoms = "'{" + exists_geom_cols[:_cdb_create_the_geom_columns].join(',') + "}'::BOOLEAN[]"
-
-        # This are the two hot zones
-        user_database.run(%Q{
-          SELECT cartodb._CDB_populate_the_geom_from_the_geom_webmercator('#{table_name}'::REGCLASS, #{exists_geoms});
-        })
-          user_database.run(%Q{
-          SELECT cartodb._CDB_populate_the_geom_webmercator_from_the_geom('#{table_name}'::REGCLASS, #{exists_geoms});
-        })
-
-        user_database.run(%Q{
-          SELECT cartodb._CDB_create_triggers('#{schema_name}'::TEXT, '#{table_name}'::REGCLASS);
-        })
-      end
     end
 
     self.schema(reload:true)

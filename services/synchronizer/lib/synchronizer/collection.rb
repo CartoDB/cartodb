@@ -34,6 +34,12 @@ module CartoDB
         print_log 'Pass finished'
       end
 
+      def fetch_all
+        query = db.fetch(%Q(
+            SELECT id FROM #{relation}
+          ))
+      end
+
       # Fetches and enqueues all syncs that should run
       # @param force_all_syncs bool
       def fetch_and_enqueue(force_all_syncs=false)
@@ -96,8 +102,8 @@ module CartoDB
           user = Carto::User.where(id: record[:user_id]).first
           next if user.nil?
 
-          platform_limit = CartoDB::PlatformLimits::Importer::UserConcurrentSyncsAmount.new({ 
-              user: user, redis: { db: $users_metadata } 
+          platform_limit = CartoDB::PlatformLimits::Importer::UserConcurrentSyncsAmount.new({
+              user: user, redis: { db: $users_metadata }
             })
           if platform_limit.is_within_limit?
             enqueue_record(record)

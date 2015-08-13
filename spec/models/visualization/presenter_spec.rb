@@ -81,6 +81,7 @@ describe Visualization::Member do
       vis_mock.stubs(:locked).returns(true)
       vis_mock.stubs(:source).returns('')
       vis_mock.stubs(:license).returns('')
+      vis_mock.stubs(:attributions).returns('')
       vis_mock.stubs(:title).returns('')
       vis_mock.stubs(:parent_id).returns(nil)
       vis_mock.stubs(:children).returns([])

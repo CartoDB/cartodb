@@ -80,26 +80,7 @@ describe CartoDB::Connector::Importer do
   end
 
   it 'should change privacy of imported tables to value specified through API' do
-    filepath = '/tmp/bogus.csv'
-
-    CSV.open(filepath, 'wb') do |csv|
-      csv << ['nombre', 'apellido', 'profesion']
-      csv << ['Manolo', 'Escobar', 'Artista']
-    end
-
-    data_import = DataImport.create(
-      :user_id       => @user.id,
-      :data_source   => filepath,
-      :updated_at    => Time.now,
-      :append        => false,
-      :privacy       => 'public'
-    )
-
-    File.delete(filepath)
-
-    debugger
-
-    
+    pending('Need to figure out how to test this properly')
   end
 
 end

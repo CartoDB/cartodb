@@ -134,8 +134,6 @@ class Api::Json::ImportsController < Api::ApplicationController
       user_defined_limits:    user_defined_limits,
       privacy:                privacy
     }
-
-    debugger
   end
 
   def decorate_twitter_import_data!(data, data_import)
@@ -185,11 +183,11 @@ class Api::Json::ImportsController < Api::ApplicationController
   def privacy
     if params[:privacy].present?
       privacy = UserTable::PRIVACY_TEXTS_TO_VALUES[params[:privacy]]
-      raise "Unknown value '#{params[:privacy]} for 'privacy'" if privacy.nil?
+      raise "Unknown value '#{params[:privacy]}' for 'privacy'" if privacy.nil?
+      raise "You can't create private tables yet! You need to upgrade. Check https://cartodb.com/pricing for more info." if privacy != UserTable::PRIVACY_PUBLIC && !current_user.private_tables_enabled
       privacy
     else
-      UserTable::PRIVACY_PRIVATE
+      nil
     end
   end
-
 end

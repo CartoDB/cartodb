@@ -4,7 +4,11 @@ Sequel.migration do
 
     create_table :groups do
       Uuid      :id,                primary_key: true, default: 'uuid_generate_v4()'.lit
+      # INFO: name is the name of the group from a database point of view
       String    :name,              null: false
+      # INFO: display_name is the name of the group from a user point of view
+      String    :display_name,      null: false
+      # INFO: database_role is the PostgreSQL role. It should not be needed from editor, stored as preventive measure
       String    :database_role,     null: false
       Uuid      :organization_id,   null: false
       DateTime  :created_at,        default: Sequel::CURRENT_TIMESTAMP

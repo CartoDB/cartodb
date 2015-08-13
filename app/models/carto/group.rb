@@ -13,12 +13,12 @@ module Carto
 
     validates :name, :database_role, :organization_id, :presence => true
 
-    def self.new_instance(database_name, database_role)
+    def self.new_instance(database_name, name, database_role, display_name = name)
       organization = Organization.find_by_database_name(database_name)
 
       raise "Organization not found for database #{database_name}" unless organization
 
-      new(name: database_role, database_role: database_role, organization: organization)
+      new(name: name, database_role: database_role, display_name: display_name, organization: organization)
     end
 
     def database_name

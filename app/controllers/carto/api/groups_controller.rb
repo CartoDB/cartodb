@@ -12,7 +12,7 @@ module Carto
       before_filter :load_group_from_loaded_parameters, :only => [:destroy]
 
       def create
-        group = Group.new_instance(@database_name, @database_role)
+        group = Group.new_instance(@database_name, @name, @database_role)
         group.save
         render json: group.to_json
       rescue => e
@@ -32,6 +32,7 @@ module Carto
 
       def load_parameters
         @database_name = params[:database_name]
+        @name = params[:name]
         @database_role = params[:database_role]
       end
 

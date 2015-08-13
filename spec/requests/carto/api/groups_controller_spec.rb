@@ -22,11 +22,11 @@ describe Carto::Api::GroupsController do
       response.status.should == 401
     end
 
-    it '#creates a new group using the role for the name as well' do
-      group_information = { database_role: 'g_org_database_group' }
+    it '#creates a new group from name and role, and initializes display_name as name' do
+      group_information = { name: 'org_group', database_role: 'g_org_database_group' }
       post api_v1_databases_group_create_url(database_name: @carto_organization.database_name), group_information, default_headers
       response.status.should == 200
-      group = Carto::Group.where(organization_id: @carto_organization.id, database_role: group_information[:database_role], name: group_information[:database_role]).first
+      group = Carto::Group.where(organization_id: @carto_organization.id, database_role: group_information[:database_role], name: group_information[:name], display_name: group_information[:name]).first
       group.should_not be_nil
     end
 

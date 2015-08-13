@@ -125,7 +125,6 @@ body.is-inDialog {
 }
 .Dialog-footer--withoutBorder { border-top: none }
 .Dialog-footer--simple {
-  width: 100%;
   @include display-flex();
   @include justify-content(center);
 }

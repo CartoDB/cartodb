@@ -6,15 +6,106 @@
 @import "../variables/sizes";
 @import "../variables/progress-bar";
 
-.Filters {
-  position: absolute;
-  display:block;
-  top: 0;
-  left: 0;
-  width:100%;
+.UserSection {
+  overflow: hidden;
+  @include display-flex();
+  @include flex-direction(row);
+  @include justify-content(space-between);
+}
+
+.CredentialsContent {
+  width: 65%;
+  position: relative;
+  display: block;
+}
+
+.AsideFilters {
+  display: block;
   background: transparent;
   z-index: 10;
 }
+
+.AsideFilters-progress {
+  @include display-flex();
+  @include justify-content(space-between);
+  @include flex-direction(row);
+  @include align-items(center, center);
+  margin: 30px 0;
+}
+.AsideFilters-progressSize {
+  margin-left: 12px;
+  color: $cTypography-secondary;
+  font-size: $sFontSize-smallUpperCase;
+  font-weight: $sFontWeight-lighter;
+}
+.AsideFilters-progressBar {
+  @include progress-bar(6px, 9px, true, false);
+  width: 140px;
+}
+
+.AsideFilters-separator {
+  position: relative;
+  display: block;
+  width:100%;
+  height:1px;
+  background-color: $cStructure-darkGrey;
+  z-index:0;
+}
+
+.AsideFilters-list {
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+  margin: 30px 0;
+}
+
+.AsideFilters-typeItem {
+  position:relative;
+  line-height: 35px;
+
+  &:first-child { margin-left: 0 }
+  &:last-child { margin-right: 0 }
+}
+
+.AsideFilters-typeLink {
+  display: inline-block;
+  font-size: 14px;
+  color: $cTypography-link;
+  background: transparent;
+  border: none;
+  outline: none;
+
+  &:hover {
+    color: $cTypography-linkHover;
+    text-decoration: none;
+  }
+}
+.AsideFilters-typeLink.is-selected {
+  color:$cTypography-linkSelected;
+  font-weight: bold;
+
+  &:hover {
+    cursor:default;
+    text-decoration: none;
+  }
+}
+.AsideFilters-typeLink.is-disabled {
+  color: rgba(black, 0.3);
+  &:hover {
+    cursor: default;
+    text-decoration: none;
+    color: rgba(black, 0.3);
+  }
+}
+
+.AsideFilters-typeLink.is-disabled {
+  color: rgba(black, 0.3);
+  &:hover {
+    cursor: default;
+    text-decoration: none;
+    color: rgba(black, 0.3);
+  }
+}
+
 // Moved with scroll behaviour
 .Filters.is-fixed {
   position: fixed;
@@ -36,7 +127,6 @@
 .Filters > .u-inner {
   position:relative;
   display:block;
-  height:81px;
   padding: 0;
   overflow:hidden;
 }
@@ -54,6 +144,7 @@
   background-color:$cStructure-softLine;
   z-index:0;
 }
+
 .Filters.is--fixed .Filters-separator { display: none }
 .Filters-row {
   @include display-flex();
@@ -67,6 +158,7 @@
   @include justify-content(space-between, justify);
   @include align-items(center, center);
 }
+
 .Filters-typeItem {
   position:relative;
   height:80px;
@@ -167,6 +259,7 @@ a.Filters-cleanSearch { line-height:32px }
   font-style:italic;
   color:#DDD;
 }
+
 .Filters-typeLink {
   display: inline-block;
   line-height: 80px;
@@ -194,6 +287,7 @@ a.Filters-cleanSearch { line-height:32px }
     height:1px;
     background:$cTypography-linkSelected;
   }
+
   &:hover {
     cursor:default;
     text-decoration: none;
@@ -284,16 +378,20 @@ a.Filters-cleanSearch { line-height:32px }
 }
 .Filters-progress {
   @include display-flex();
+  @include justify-content(space-between);
+  @include flex-direction(row);
   @include align-items(center, center);
+  margin: 30px 0;
 }
 .Filters-progressSize {
-  margin-right: 12px;
+  margin-left: 12px;
   color: $cTypography-secondary;
   font-size: $sFontSize-smallUpperCase;
+  font-weight: $sFontWeight-lighter;
 }
 .Filters-progressBar {
   @include progress-bar(6px, 9px, true, false);
-  width: 178px;
+  width: 140px;
 }
 .Filters-link:hover {
   text-decoration: none;

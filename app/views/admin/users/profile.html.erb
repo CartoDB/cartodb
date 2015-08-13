@@ -16,117 +16,124 @@
 
 <%= render :partial => 'shared/flash_message' %>
 
-<div>
+<div class="UserSection u-inner">
   <%= render :partial => 'admin/shared/pages_subheader' %>
 
   <div class="CredentialsContent">
-    <div class="u-inner">
 
-      <%= form_for @user, url: CartoDB.url(self, 'profile_update_user', {id: @user.username}, current_user) do |f| %>
-        <%= csrf_meta_tags %>
+    <%= form_for @user, url: CartoDB.url(self, 'profile_update_user', {id: @user.username}, current_user) do |f| %>
+      <%= csrf_meta_tags %>
 
-        <div class="Form-title">
-          <p class="Form-titleText">Edit your profile settings  </p>
+      <div class="Form-title">
+        <p class="Form-titleText">Your profile information</p>
+      </div>
+
+      <span class="Form-separator"></span>
+
+      <div class="Form-row js-avatarSelector">
+        <div class="Form-rowLabel">
+          <label class="Form-label">Avatar</label>
         </div>
+        <div class="Form-rowData Form-avatar">
+          <div class="Form-avatarPreview">
+            <img src="<%= @user.avatar %>" class="Form-avatarPreviewImage" />  
+          </div>
+          <%= f.file_field :avatar_url, :class => "js-fileAvatar", :value => "Change image" %>
+        </div>
+        <div class="Form-rowInfo">
+          <p class="Form-rowInfoText">Recommended images should be 128x128 of size</p>
+        </div>
+      </div>
 
-        <div class="Form-row">
-          <div class="Form-rowLabel">
-            <label class="Form-label">Name</label>
-          </div>
-          <div class="Form-rowData">
-            <%= f.text_field :name, :class => "Form-input Form-input--long" %>
-          </div>
-          <div class="Form-rowInfo">
+      <div class="Form-row">
+        <div class="Form-rowLabel">
+          <label class="Form-label">Name</label>
+        </div>
+        <div class="Form-rowData">
+          <%= f.text_field :name, :class => "Form-input Form-input--med" %>
+
+          <div class="Form-rowInfo Form-rowInfo--marginLeft">
             <p class="Form-rowInfoText">Other users would reach you by your public name</p>
           </div>
         </div>
+      </div>
 
-        <div class="Form-row">
-          <div class="Form-rowLabel">
-            <label class="Form-label">Website</label>
-          </div>
-          <div class="Form-rowData">
-            <%= f.text_field :website, :class => "Form-input Form-input--long" %>
-          </div>
-          <div class="Form-rowInfo">
-            <p class="Form-rowInfoText"></p>
+      <div class="Form-row">
+        <div class="Form-rowLabel">
+          <label class="Form-label">Website</label>
+        </div>
+        <div class="Form-rowData">
+          <%= f.text_field :website, :class => "Form-input Form-input--med" %>
+        </div>
+        <div class="Form-rowInfo">
+          <p class="Form-rowInfoText"></p>
+        </div>
+      </div>
+
+      <div class="Form-row">
+        <div class="Form-rowLabel">
+          <label class="Form-label">Your description</label>
+        </div>
+        <div class="Form-rowData">
+          <%= f.text_area :description, :class => "Form-textarea Form-input Form-input--totalwidth" %>
+        </div>
+        <div class="Form-rowInfo">
+          <p class="Form-rowInfoText"></p>
+        </div>
+      </div>
+
+      <div class="Form-row">
+        <div class="Form-rowLabel">
+          <label class="Form-label">Twitter username</label>
+        </div>
+        <div class="Form-rowData">
+          <%= f.text_field :twitter_username, :class => "Form-input Form-input--med" %>
+        </div>
+        <div class="Form-rowInfo">
+          <p class="Form-rowInfoText"></p>
+        </div>
+      </div>
+
+      <div class="Form-row">
+        <div class="Form-rowLabel">
+          <label class="Form-label">Disqus shortname</label>
+        </div>
+        <div class="Form-rowData">
+          <%= f.text_field :disqus_shortname, :class => "Form-input Form-input--med", :placeholder => "If empty, CartoDB will moderate them for you" %>
+          <div class="Form-rowInfo Form-rowInfo--marginLeft">
+            <p class="Form-rowInfoText">Be notified by new comments in your pages</p>
           </div>
         </div>
+      </div>
 
-        <div class="Form-row">
-          <div class="Form-rowLabel">
-            <label class="Form-label">Your description</label>
-          </div>
-          <div class="Form-rowData">
-            <%= f.text_area :description, :class => "Form-textarea Form-input Form-input--long" %>
-          </div>
-          <div class="Form-rowInfo">
-            <p class="Form-rowInfoText"></p>
-          </div>
+      <div class="Form-title">
+        <p class="Form-titleText">Jobs profile</p>
+      </div>
+
+      <span class="Form-separator"></span>
+
+      <div class="Form-row">
+        <div class="Form-rowLabel">
+          <label class="Form-label">Available for hire</label>
         </div>
-
-        <div class="Form-row js-avatarSelector">
-          <div class="Form-rowLabel">
-            <label class="Form-label">Avatar</label>
+        <div class="Form-rowData">
+          <div class="Toggler">
+            <%= f.check_box :available_for_hire, :id => "available_for_hire" %>
+            <%= label_tag(:available_for_hire, '') %>
           </div>
-          <div class="Form-rowData Form-avatar">
-            <div class="Form-avatarPreview">
-              <img src="<%= @user.avatar %>" class="Form-avatarPreviewImage" />  
-            </div>
-            <%= f.file_field :avatar_url, :class => "js-fileAvatar", :value => "Change avatar" %>
-          </div>
-          <div class="Form-rowInfo">
-            <p class="Form-rowInfoText">Recommended images should be 128x128 of size</p>
-          </div>
-        </div>
-
-        <div class="Form-row">
-          <div class="Form-rowLabel">
-            <label class="Form-label">Twitter username</label>
-          </div>
-          <div class="Form-rowData">
-            <%= f.text_field :twitter_username, :class => "Form-input Form-input--long" %>
-          </div>
-          <div class="Form-rowInfo">
-            <p class="Form-rowInfoText"></p>
-          </div>
-        </div>
-
-        <div class="Form-row">
-          <div class="Form-rowLabel">
-            <label class="Form-label">Disqus shortname</label>
-          </div>
-          <div class="Form-rowData">
-            <%= f.text_field :disqus_shortname, :class => "Form-input Form-input--long" %>
-          </div>
-          <div class="Form-rowInfo">
-            <p class="Form-rowInfoText">Moderate the comments in your maps</p>
-          </div>
-        </div>
-
-        <div class="Form-row">
-          <div class="Form-rowLabel">
-            <label class="Form-label">Available for hire</label>
-          </div>
-          <div class="Form-rowData">
-            <div class="Toggler">
-              <%= f.check_box :available_for_hire, :id => "available_for_hire" %>
-              <%= label_tag(:available_for_hire, '') %>
-            </div>
-          </div>
-          <div class="Form-rowInfo">
+          <div class="Form-rowInfo Form-rowInfo--marginLeft">
             <p class="Form-rowInfoText">Show a banner in your public profile linked to your email</p>
           </div>
         </div>
+      </div>
 
-        <div class="Form-footer">
-          <p class="Form-footerText"></p>
-          <%= button_tag(type: 'submit', class: 'Button Button--main') do %>
-            <% content_tag(:span, 'Save changes') %>
-          <% end %>
-        </div>
-      <% end %>
-    </div>
+      <div class="Form-footer">
+        <p class="Form-footerText"></p>
+        <%= button_tag(type: 'submit', class: 'Button Button--main') do %>
+          <% content_tag(:span, 'Save changes') %>
+        <% end %>
+      </div>
+    <% end %>
   </div>
 
 </div>

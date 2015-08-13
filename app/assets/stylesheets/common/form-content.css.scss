@@ -10,7 +10,7 @@ $sLabel-width: 140px;
 .Form--minHeight { min-height: 400px }
 .Form-title {
   display: block;
-  margin: $sMargin-section 0;
+  margin: 30px 0;
   width: 100%;
 }
 .Form-titleHeader {
@@ -23,11 +23,9 @@ $sLabel-width: 140px;
   font-weight: $sFontWeight-bold;
 }
 .Form-titleText {
-  width: 460px;
   font-size: $sFontSize-large;
   font-weight: $sFontWeight-lighter;
   color: $cTypography-paragraphs;
-  line-height: $sLineHeight-large;
   font-style: normal;
 }
 .Form-titleText--negative { color: $cHighlight-negative }
@@ -41,10 +39,18 @@ $sLabel-width: 140px;
   font-weight: $sFontWeight-lighter;
   color: $cTypography-paragraphs;
 }
+
+.VerticalAligned--FormRow {
+  @include display-flex();
+  @include flex-direction(row);
+  @include justify-content(space-between);
+}
+
 .Form-row {
   @include display-flex();
+  @include flex-direction(column);
   @include justify-content(flex-start, start);
-  padding: 10px 0;
+  margin: 0 0 20px 0;
 }
 .Form-title + .Form-row {
   padding-top: 0;
@@ -84,13 +90,21 @@ $sLabel-width: 140px;
 }
 .Form-row.has-label {
   // compensate for label width, to make the rowData appear as centered
+  margin: 0;
   margin-left: -$sLabel-width;
+  @include flex-direction(row);
+  padding: 10px 0;
+
+  .Form-rowLabel {
+    margin-right: 20px;
+    line-height: 40px;
+    width: 140px;
+    text-align: right;
+  }
 }
 .Form-row.Form-row--spaced { padding: $sMargin-element 0 }
 .Form-rowLabel {
-  width: 140px;
-  margin-right: $sMargin-element;
-  text-align: right;
+  text-align: left;
 }
 .Form-rowLabel.Form-rowLabel--leftAligned {
   width: $sLabel-width;
@@ -98,11 +112,11 @@ $sLabel-width: 140px;
   text-align: left;
 }
 .Form-label {
-  line-height: 40px;
+  line-height: 30px;
   font-size: $sFontSize-normal;
   font-weight: $sFontWeight-normal;
   @include nicer-lato-typography();
-  color: $cTypography-paragraphs;
+  color: $cTypography-labels;
 }
 .Form-label.Form-label--verticalAlignTop {
   line-height: inherit;
@@ -114,21 +128,11 @@ $sLabel-width: 140px;
 .Form-separator {
   position: relative;
   display: block;
-  height: 1px;
-  width: 100%;
-  padding: $sMargin-element 0;
-  z-index: 0;
-  background: transparent;
-  &:before {
-    content: '';
-    position: absolute;
-    top: $sMargin-element;
-    left: 0;
-    right: 0;
-    width: 100%;
-    height: 1px;
-    background: $cStructure-mainLine;
-  }
+  width:100%;
+  height:1px;
+  background-color: $cStructure-darkGrey;
+  z-index:0;
+  margin-bottom: 25px;
 }
 .Form-separator.Form-separator--or {
   position: relative;
@@ -155,11 +159,8 @@ $sLabel-width: 140px;
 .Form-rowData {
   position: relative;
   @include display-flex();
-  @include justify-content(space-between, justify);
   @include align-items(center);
-  width: 380px;
   min-height: 40px; // if there's no input on row (e.g. only radio buttons), to avoid "jumpy" behaviour on re-renders
-  margin-right: $sMargin-element;
 }
 
 .Form-rowData.Form-rowData--alignLeft { @include justify-content(flex-start, start) }
@@ -192,6 +193,7 @@ $sLabel-width: 140px;
   border-radius: 4px;
   color: #666;
   z-index: 2;
+  font-weight: $sFontWeight-lighter;
 
   &:focus { border-color: #999 }
 }
@@ -204,6 +206,7 @@ $sLabel-width: 140px;
 .Form-input::-moz-placeholder          { font-style: italic; color: #AAA }
 .Form-input:-ms-input-placeholder      { font-style: italic; color: #AAA }
 // Sizes
+.Form-input--totalwidth { width: 100%; }
 .Form-input--longer { width: 434px }
 .Form-input--long { width: 354px }
 .Form-input--med { width: 274px }
@@ -274,13 +277,14 @@ $sLabel-width: 140px;
 
 .Form-textarea {
   padding: 9px 12px;
-  min-height: 110px;
+  min-height: 60px;
   max-height: 110px;
 }
 .Form-textarea.is-disabled { color: $cTypography-help }
 .Form-copyIcon {
-  top: 10px;
-  right: 12px;
+  top: 0;
+  right: 30px;
+  position: relative;
   font-size: $sFontSize-largest;
 }
 .Form-copyIcon.hover { color: $cTypography-paragraphs }
@@ -423,10 +427,13 @@ $sLabel-width: 140px;
   @include display-flex();
   line-height: 40px;
   max-width: 380px;
+
+  &.Form-rowInfo--marginLeft { margin-left: $sMargin-element; }
 }
 .Form-rowInfoText {
   font-size: $sFontSize-normal;
-  color: $cTypography-help;
+  color: $cTypography-secondary;
+  font-weight: $sFontWeight-lighter;
 }
 .Form-rowInfoText--centered { text-align: center }
 .Form-rowInfoText--smaller { font-size: $sFontSize-smallUpperCase }

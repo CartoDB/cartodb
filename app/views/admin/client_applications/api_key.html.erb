@@ -16,57 +16,55 @@
 
 <%= render :partial => 'shared/flash_message' %>
 
-<div>
+<div class="UserSection u-inner">
 
   <%= render :partial => 'admin/shared/pages_subheader' %>
 
   <div class="CredentialsContent">
-    <div class="u-inner">
 
-      <div class="Form-title">
-        <p class="Form-titleText">This offers the simplest way to access your private data or perform writes and updates to your account.</p>
+    <div class="Form-title">
+      <p class="Form-titleText">The simplest way to access your private data or perform writes and updates to your account.</p>
+    </div>
+
+    <span class="Form-separator"></span>
+
+    <div class="Form-row Form-row--spaced">
+      <div class="Form-rowLabel">
+        <label class="Form-label">Your API Key</label>
       </div>
-
-      <div class="Form-row Form-row--spaced">
-        <div class="Form-rowLabel">
-          <label class="Form-label">Your API Key</label>
-        </div>
-        <div class="Form-rowData">
-          <input type="text" class="Form-input Form-input--long has-icon js-input" placeholder="No API key" value="<%= current_user.api_key %>" readonly />
-          <i data-title="Copy this" class="iconFont iconFont-Anchor Form-inputIcon Form-copyIcon js-copy-value"></i>
-        </div>
-        <div class="Form-rowInfo">
+      <div class="Form-rowData">
+        <input type="text" class="Form-input Form-input--long has-icon js-input" placeholder="No API key" value="<%= current_user.api_key %>" readonly />
+        <i data-title="Copy this" class="iconFont iconFont-Anchor Form-inputIcon Form-copyIcon js-copy-value"></i>
+        <div class="Form-rowInfo Form-rowInfo--marginLeft">
           <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>" />
           <a class="js-regenerateApiKey" href="#">Request a new API key</a>
         </div>
       </div>
+    </div>
 
-      <span class="Form-separator"></span>
-
-      <div class="Form-row Form-row--spaced">
-        <div class="Form-rowLabel">
-          <label class="Form-label Form-label--verticalAlignTop">Example write</label>
-        </div>
-        <div class="Form-rowPreview">
-          <p class="Form-text Form-text--preview">https://<%= current_user.username %>.<%= CartoDB.account_host %>/api/v2/sql?q=INSERT INTO table_name (the_geom, observation) VALUES (ST_GeomFromText(’POINT(-71.2 42.5)’, 4326),'rare bird spotted')&api_key=<%= current_user.api_key %></p>
-        </div>
+    <div class="Form-row Form-row--spaced">
+      <div class="Form-rowLabel">
+        <label class="Form-label Form-label--verticalAlignTop">Example write</label>
       </div>
-
-      <div class="Form-row Form-row--spaced">
-        <div class="Form-rowLabel">
-          <label class="Form-label Form-label--verticalAlignTop">Example read private</label>
-        </div>
-        <div class="Form-rowPreview">
-          <p class="Form-text Form-text--preview">https://<%= current_user.username %>.<%= CartoDB.account_host %>/api/v2/sql?q=SELECT * FROM private_table&api_key=<%= current_user.api_key %></p>
-        </div>
+      <div class="Form-rowPreview">
+        <p class="Form-text Form-text--preview">https://<%= current_user.username %>.<%= CartoDB.account_host %>/api/v2/sql?q=INSERT INTO table_name (the_geom, observation) VALUES (ST_GeomFromText(’POINT(-71.2 42.5)’, 4326),'rare bird spotted')&api_key=<%= current_user.api_key %></p>
       </div>
+    </div>
 
-      <div class="Form-footer">
-        <p class="Form-footerText">
-          <i class="iconFont iconFont-Info Form-footerIcon"></i>
-          Learn more about <%= link_to "using your simple app key", Cartodb.config[:developers_host] + "/cartodb-platform.html" %> in CartoDB
-        </p>
+    <div class="Form-row Form-row--spaced">
+      <div class="Form-rowLabel">
+        <label class="Form-label Form-label--verticalAlignTop">Example read private</label>
       </div>
+      <div class="Form-rowPreview">
+        <p class="Form-text Form-text--preview">https://<%= current_user.username %>.<%= CartoDB.account_host %>/api/v2/sql?q=SELECT * FROM private_table&api_key=<%= current_user.api_key %></p>
+      </div>
+    </div>
+
+    <div class="Form-footer">
+      <p class="Form-footerText">
+        <i class="iconFont iconFont-Info Form-footerIcon"></i>
+        Learn more about <%= link_to "using your simple app key", Cartodb.config[:developers_host] + "/cartodb-platform.html" %> in CartoDB
+      </p>
     </div>
   </div>
 

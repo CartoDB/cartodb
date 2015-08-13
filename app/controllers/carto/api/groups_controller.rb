@@ -37,7 +37,7 @@ module Carto
       end
 
       def load_group_from_loaded_parameters
-        @group = Group.where(organization_id: Organization.find_by_database_name(@database_name).id, database_role: @database_role).first
+        @group = Group.where(organization_id: Organization.find_by_database_name(@database_name).id, name: @name).first
       end
     end
   end

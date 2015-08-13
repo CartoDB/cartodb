@@ -3,6 +3,7 @@ require 'active_record'
 class Carto::Synchronization < ActiveRecord::Base
 
   belongs_to :user
+  belongs_to :visualization, class_name: Carto::Visualization
 
   STATE_CREATED   = 'created'
   # Already at resque, waiting for slot

@@ -117,6 +117,7 @@ module HelperMethods
       title:              attributes.fetch(:title, ''),
       source:             attributes.fetch(:source, ''),
       license:            attributes.fetch(:license, ''),
+      attributiosn:       attributes.fetch(:attributions, ''),
       parent_id:          attributes.fetch(:parent_id, nil),
       kind:               attributes.fetch(:kind, Visualization::Member::KIND_GEOM),
       prev_id:            attributes.fetch(:prev_id, nil),

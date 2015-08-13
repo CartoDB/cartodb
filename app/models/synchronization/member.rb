@@ -59,6 +59,7 @@ module CartoDB
       attribute :type_guessing,           Boolean, default: true
       attribute :quoted_fields_guessing,  Boolean, default: true
       attribute :content_guessing,        Boolean, default: false
+      attribute :visualization_id,        String
 
       def initialize(attributes={}, repository=Synchronization.repository)
         super(attributes)
@@ -88,7 +89,7 @@ module CartoDB
         "service_name:\"#{@service_name}\" service_item_id:\"#{@service_item_id}\" checksum:\"#{@checksum}\" " \
         "url:\"#{@url}\" error_code:\"#{@error_code}\" error_message:\"#{@error_message}\" modified_at:\"#{@modified_at}\" " \
         " user_id:\"#{@user_id}\" type_guessing:\"#{@type_guessing}\" " \
-        "quoted_fields_guessing:\"#{@quoted_fields_guessing}\">"
+        "quoted_fields_guessing:\"#{@quoted_fields_guessing}\" visualization_id:\"#{@visualization_id}\">"
       end
 
       def synchronizations_logger
@@ -416,6 +417,12 @@ module CartoDB
           @table = ::Table.new(name: name, user_id: user.id)
         end
         @table
+      end
+
+      def visualization
+        @visualization ||= CartoDB::Visualization::Member.new(id: @visualization_id).fetch
+      rescue KeyErrror
+        @visualization = nil
       end
 
       def authorize?(user)

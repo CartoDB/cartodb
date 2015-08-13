@@ -29,6 +29,7 @@ module CartoDB
           Boolean   :locked
           String    :license
           String    :source
+          String    :attributions
           String    :title
           String    :parent_id
           String    :kind

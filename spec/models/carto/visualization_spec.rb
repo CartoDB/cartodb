@@ -87,4 +87,17 @@ describe Carto::Visualization do
     end
   end
 
+  describe 'licenses' do
+    it 'should store correctly a visualization with its license' do
+      table = create_table({:name => 'table1', :user_id => @user.id})
+      v = table.table_visualization
+      v.license = Carto::License::APACHE_LICENSE
+      v.store
+      vis = Carto::Visualization.find(v.id)
+      vis.license_info.id.should eq :apache
+      vis.license_info.name.should eq "Apache license"
+    end
+
+  end
+
 end

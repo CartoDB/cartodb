@@ -131,8 +131,11 @@ class Api::Json::ImportsController < Api::ApplicationController
       state:                  DataImport::STATE_PENDING,  # Pending == enqueue the task
       upload_host:            Socket.gethostname,
       create_visualization:   ["true", true].include?(params[:create_vis]),
-      user_defined_limits:    user_defined_limits
+      user_defined_limits:    user_defined_limits,
+      privacy:                privacy
     }
+
+    debugger
   end
 
   def decorate_twitter_import_data!(data, data_import)
@@ -176,6 +179,16 @@ class Api::Json::ImportsController < Api::ApplicationController
       CartoDB::Logger.info('Error decreasing concurrent import limit',
                            "#{sub_exception.message} #{sub_exception.backtrace.inspect}")
       nil
+    end
+  end
+
+  def privacy
+    if params[:privacy].present?
+      privacy = UserTable::PRIVACY_TEXTS_TO_VALUES[params[:privacy]]
+      raise "Unknown value '#{params[:privacy]} for 'privacy'" if privacy.nil?
+      privacy
+    else
+      UserTable::PRIVACY_PRIVATE
     end
   end
 

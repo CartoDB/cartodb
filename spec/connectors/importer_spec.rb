@@ -6,10 +6,13 @@ require 'csv'
 
 describe CartoDB::Connector::Importer do
 
-  before do
+  before(:each) do
+    @user = create_user(:quota_in_bytes => 1000.megabyte, :table_quota => 400)
+    stub_named_maps_calls
   end
 
-  after do
+  after(:each) do
+    @user.destroy
   end
 
   it 'should not fail to return a new_name when ALTERing the INDEX fails' do
@@ -50,9 +53,6 @@ describe CartoDB::Connector::Importer do
   # This test checks that the importer detects files with names that are
   # psql reserved words and knows how to rename them (appending '_t')
   it 'should allow importing tables with reserved names' do
-    stub_named_maps_calls
-    bogus_user = create_user(:quota_in_bytes => 1000.megabyte, :table_quota => 400)
-
     reserved_word = CartoDB::POSTGRESQL_RESERVED_WORDS.sample
 
     filepath        = "/tmp/#{reserved_word.downcase}.csv"
@@ -64,7 +64,7 @@ describe CartoDB::Connector::Importer do
     end
   
     data_import = DataImport.create(
-      :user_id       => bogus_user.id,
+      :user_id       => @user.id,
       :data_source   => filepath,
       :updated_at    => Time.now,
       :append        => false
@@ -77,8 +77,29 @@ describe CartoDB::Connector::Importer do
 
     data_import.success.should(eq(true), "File with reserved name '#{filepath}' failed to be renamed")
     data_import.table_name.should(eq(expected_rename), "Table was incorrectly renamed to '#{data_import.table_name}', should be '#{expected_rename}'")
+  end
 
-    bogus_user.destroy
+  it 'should change privacy of imported tables to value specified through API' do
+    filepath = '/tmp/bogus.csv'
+
+    CSV.open(filepath, 'wb') do |csv|
+      csv << ['nombre', 'apellido', 'profesion']
+      csv << ['Manolo', 'Escobar', 'Artista']
+    end
+
+    data_import = DataImport.create(
+      :user_id       => @user.id,
+      :data_source   => filepath,
+      :updated_at    => Time.now,
+      :append        => false,
+      :privacy       => 'public'
+    )
+
+    File.delete(filepath)
+
+    debugger
+
+    
   end
 
 end

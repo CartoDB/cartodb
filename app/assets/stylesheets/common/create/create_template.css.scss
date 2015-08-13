@@ -1,0 +1,24 @@
+@import "../../variables/mixins";
+@import "../../variables/colors";
+@import "../../variables/sizes";
+
+.TemplatedWorkflows {}
+.TemplatedWorkflows-Form {}
+
+.TemplatedWorkflows-FormDescription {
+  width: 100%;
+  padding: 40px 0;
+  margin-bottom: 40px;
+  text-align: center;
+  border-bottom: 1px solid $cStructure-mainLine;
+}
+.DefaultDescription.TemplatedWorkflows-FormDescriptionElement {
+  font-size: $sFontSize-large;
+  color: $cTypography-paragraphs;
+}
+.TemplatedWorkflows-FormError {
+  color: $cHighlight-negative;
+  font-size: $sFontSize-large;
+}
+.Form-row.TemplatedWorkflows-FormRow { @include justify-content(center) }
+.Form-row.TemplatedWorkflows-FormRow.TemplatedWorkflows-FormErrorRow { display: none }

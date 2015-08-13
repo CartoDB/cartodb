@@ -167,6 +167,15 @@ a.Filters-cleanSearch { line-height:32px }
   font-style:italic;
   color:#DDD;
 }
+.Filters-typeBreadcrumb {
+  display: inline-block;
+  line-height: 80px;
+  font-size: 15px;
+  font-weight: bold;
+  color: $cTypography-help;
+  border: none;
+  outline: none;
+}
 .Filters-typeLink {
   display: inline-block;
   line-height: 80px;

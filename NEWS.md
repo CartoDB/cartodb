@@ -1,3 +1,7 @@
+3.10.4 (2015-mm-dd)
+---
+* Introducing new "Templated workflows".
+
 
 3.10.3 (2015-mm-dd)
 ---

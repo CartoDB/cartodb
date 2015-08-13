@@ -31,6 +31,12 @@
   color: $cTypography-help;
 }
 // Credits usage
+.CreditsUsage {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center);
+  width: 100%;
+}
 .CreditsUsage-info {
   width: 300px;
   color: $cTypography-paragraphs;

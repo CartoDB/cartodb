@@ -162,11 +162,13 @@ body.is-inDialog {
   margin-right: auto;
   margin-bottom: $sMargin-elementInline;
   font-size: 22px;
+  color: $cStructure-softLine;
   line-height: 44px;
 }
 .Dialog-headerIcon--neutral {
   // TODO: !important to not be overrided by .CreateDialog-headerIcon overriding stuff over here :(
   border-color: $cIcons-active !important;
+  color: $cIcons-active !important;
   .iconFont {
     color: $cIcons-active !important;
   }

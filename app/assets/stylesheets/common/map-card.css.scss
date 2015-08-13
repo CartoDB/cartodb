@@ -59,6 +59,7 @@ $sEditButtonSize: 50px;
 }
 .MapCard--selectable{
   &:hover {
+    cursor: pointer;
     background-color: $cCard-hoverFill;
     border-color: $cCard-hoverBorder;
     .MapCard-desc .DefaultDescription:after,
@@ -88,19 +89,16 @@ $sEditButtonSize: 50px;
   display: block;
   width: 100%;
   height: 170px;
-  @include background(image-url("layout/default-map-bkg.png") no-repeat center 0);
+  @include background(image-url("layout/default-map-bkg.png") no-repeat center center);
   border-radius: 2px 2px 0 0;
   @include opacity(1);
   @include transition(opacity, $opacityTransition);
   overflow:hidden;
   z-index: 1;
 }
-.MapCard-header.is-loading .MapCard-loader {
-  display: block;
-}
-.MapCard-header--compact {
-  height: 130px;
-}
+.MapCard-header.is-loading .MapCard-loader { display: block }
+.MapCard-header--compact { height: 130px }
+.MapCard-header--higher { height: 190px }
 .MapCard-header:after {
   content: ' ';
   position: absolute;
@@ -184,9 +182,7 @@ $sEditButtonSize: 50px;
   height: 100%;
   border-radius: $sCard-borderRadius $sCard-borderRadius 0 0;
 }
-.MapCard.has-error .MapCard-error {
-  display: block;
-}
+.MapCard.has-error .MapCard-error { display: block }
 .MapCard-error {
   display: none;
   position:absolute;
@@ -197,7 +193,7 @@ $sEditButtonSize: 50px;
   width: 60px;
   height: 59px;
   border-radius: $sCard-borderRadius $sCard-borderRadius 0 0;
-  @include background(image-url("layout/map-card-error.png") no-repeat center 0);
+  @include background(image-url("layout/map-card-error.png") no-repeat center center);
 }
 .MapCard-content { // To position contentDetail at top of content, and contentFooter at bottom
   position: relative;
@@ -212,15 +208,9 @@ $sEditButtonSize: 50px;
   @include transition(opacity, $opacityTransition);
   z-index: 1;
 }
-.MapCard-content--compact {
-  height: auto;
-}
-.MapCard-contentBody {
-  width: 100%;
-}
-.MapCard-contentBodyRow {
-  margin-bottom: $sMargin-min;
-}
+.MapCard-content--compact { height: auto }
+.MapCard-contentBody { width: 100% }
+.MapCard-contentBodyRow { margin-bottom: $sMargin-min }
 .MapCard-itemTitlePermission { background-color: $cStructure-mainBkg }
 
 .MapCard-editButton {

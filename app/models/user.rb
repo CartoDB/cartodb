@@ -1491,10 +1491,15 @@ class User < Sequel::Model
   def create_db_user
     conn = self.in_database(as: :cluster_admin)
     begin
-      conn.run("CREATE USER \"#{database_username}\" PASSWORD '#{database_password}'")
-    rescue => e
-      puts "#{Time.now} USER SETUP ERROR (#{database_username}): #{$!}"
-      raise e
+      conn.transaction do
+        begin
+          conn.run("CREATE USER \"#{database_username}\" PASSWORD '#{database_password}'")
+          conn.run("GRANT publicuser to \"#{database_username}\"")
+          rescue => e
+            puts "#{Time.now} USER SETUP ERROR (#{database_username}): #{$!}"
+            raise e
+          end
+      end
     end
   end
 

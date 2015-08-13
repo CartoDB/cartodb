@@ -98,9 +98,7 @@ module HelperMethods
   def default_schema
     [
       ["cartodb_id", "number"], ["name", "string"], ["description", "string"],
-      ["the_geom", "geometry", "geometry", "geometry"],
-      ["created_at", "date"],
-      ["updated_at", "date"]
+      ["the_geom", "geometry", "geometry", "geometry"]
     ]
   end
 

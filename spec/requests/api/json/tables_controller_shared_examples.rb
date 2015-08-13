@@ -47,7 +47,7 @@ shared_examples_for "tables controllers" do
         response.status.should be_success
         response.body[:name].should == "tm_world_borders_simpl_0_3"
         response.body[:privacy].should == "PRIVATE"
-        response.body[:schema].should == [["cartodb_id", "number"], ["the_geom", "geometry", "geometry", "multipolygon"], ["area", "number"], ["fips", "string"], ["iso2", "string"], ["iso3", "string"], ["lat", "number"], ["lon", "number"], ["name", "string"], ["pop2005", "number"], ["region", "number"], ["subregion", "number"], ["un", "number"], ["created_at", "date"], ["updated_at", "date"]]
+        response.body[:schema].should == [["cartodb_id", "number"], ["the_geom", "geometry", "geometry", "multipolygon"], ["area", "number"], ["fips", "string"], ["iso2", "string"], ["iso3", "string"], ["lat", "number"], ["lon", "number"], ["name", "string"], ["pop2005", "number"], ["region", "number"], ["subregion", "number"], ["un", "number"]]
         response.body[:rows_counted].should == 246
         response.body[:description].should == nil
         response.body[:geometry_types].should == ["ST_MultiPolygon"]
@@ -85,7 +85,7 @@ shared_examples_for "tables controllers" do
         response.body[:schema].should =~ [
            ["cartodb_id", "number"], ["code", "string"], ["title", "string"], ["did", "number"],
            ["the_geom", "geometry", "geometry", "geometry"],
-           ["date_prod", "date"], ["kind", "string"], ["created_at", "date"], ["updated_at", "date"]
+           ["date_prod", "date"], ["kind", "string"]
          ]
       end
     end

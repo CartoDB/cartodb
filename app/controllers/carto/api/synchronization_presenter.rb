@@ -32,7 +32,8 @@ module Carto
           etag:             @synchronization.etag,
           log_id:           @synchronization.log_id,
           quoted_fields_guessing: @synchronization.quoted_fields_guessing,
-          type_guessing:    @synchronization.type_guessing
+          type_guessing:    @synchronization.type_guessing,
+          visualization_id: @synchronization.visualization_id
         }
       end
 

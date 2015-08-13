@@ -8,7 +8,7 @@ require_relative '../../../../services/platform-limits/platform_limits'
 class Api::Json::SynchronizationsController < Api::ApplicationController
   include CartoDB
 
-  ssl_required :show, :create, :update, :destroy, :sync, :sync_now, :syncing?
+  ssl_required :create, :update, :destroy, :sync, :sync_now
 
   # Upon creation, no rate limit checks
   def create
@@ -104,27 +104,6 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
 
   def sync_now
     sync(true)
-  end
-
-  def syncing?
-    member = Synchronization::Member.new(id: params[:id]).fetch
-    return head(401) unless member.authorize?(current_user)
-
-    render_jsonp( { state: member.state } )
-  rescue => exception
-    CartoDB.notify_exception(exception)
-    head(404)
-  end
-
-  def show
-    member = Synchronization::Member.new(id: params[:id]).fetch
-
-    return(head 401) unless member.authorize?(current_user)
-    render_jsonp(member)
-  rescue KeyError => exception
-    puts exception.to_s
-    puts exception.backtrace
-    head(404)
   end
 
   def update

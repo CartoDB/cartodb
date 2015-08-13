@@ -37,7 +37,7 @@
 
           <div class="PublicMap-leftBlock PublicMap-leftBlock--owner">
             <ul class="Navmenu-list Navmenu-list--owner Navmenu-list--avatar">
-              <li class="Navmenu-item">
+              <li class="Navmenu-item Navmenu-item--owner">
                 <a href="<%= CartoDB.url(self, 'public_maps_home', {}, @visualization.user) %>" target="_blank" class="UserAvatar">
                   <img class="UserAvatar-img--medium" src="<%= @visualization.user.avatar %>" alt="<%= @name %>" title="<%= @name %>" />
                 </a>
@@ -58,7 +58,7 @@
 
           <div class="PublicMap-rightBlock PublicMap-rightBlock--owner u-txt-right">
             <ul class="Navmenu-list">
-              <li class="Navmenu-item">
+              <li class="Navmenu-item Navmenu-item--owner">
                 <ul class="u-valign">
                   <li class="Navmenu-subItem">
                     <a href="<%= CartoDB.url(self, 'public_visualizations_embed_map', {id: @visualization.id}, @visualization.user) %>" target="_blank" class="Navmenu-link">
@@ -76,15 +76,21 @@
                 </ul>
               </li>
 
-              <li class="Navmenu-item js-Navmenu-share">
-                <div class="Navmenu-sep"></div>
+              <li class="Navmenu-item Navmenu-item--owner js-Navmenu-share u-showOnTablet">
+                <div class="Navmenu-sep u-showOnTablet"></div>
 
                 <a href="#" class="Navmenu-link Navmenu-shareLink js-Navmenu-shareLink">
                   <i class="iconFont iconFont-Share Navmenu-icon"></i>
                 </a>
+              </li>
+            </ul>
 
-                <ul class="Navmenu-shareList js-Navmenu-shareList u-valign">
-                  <li class="Navmenu-subItem">
+            <ul class="Navmenu-list Navmenu-shareList js-Navmenu-shareList u-valign">
+              <li class="Navmenu-item Navmenu-item--owner">
+                <div class="Navmenu-sep u-hideOnTablet"></div>
+
+                <ul class="u-valign">
+                  <li class="Navmenu-subItem"> 
                     <a href="https://twitter.com/intent/tweet?text=<%= url_encode(@visualization.name) %>&url=<%= url_encode(request.original_url) %>&via=cartoDB">
                       <i class="iconFont iconFont-Twitter Navmenu-icon Navmenu-icon--twitter"></i>
                     </a>
@@ -110,6 +116,7 @@
                 </ul>
               </li>
             </ul>
+
             <ul class="Navmenu-list u-hideOnTablet">
               <li class="Navmenu-item">
                 <a class="Button Button--main Navmenu-editLink Navmenu-editLink--edit js-Navmenu-editLink" href="<%= CartoDB.url(self, 'public_visualizations_show', {id: @visualization.id }, @visualization.user) %>">Edit in cartodb</a>

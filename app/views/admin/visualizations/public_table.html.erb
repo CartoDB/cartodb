@@ -101,7 +101,7 @@
 
         <div class="PublicMap-leftBlock PublicMap-leftBlock--owner">
           <ul class="Navmenu-list Navmenu-list--owner Navmenu-list--avatar">
-            <li class="Navmenu-item">
+            <li class="Navmenu-item Navmenu-item--owner">
               <a href="<%= CartoDB.url(self, 'root', {}, @visualization.user) %>" target="_blank" class="UserAvatar">
                 <img class="UserAvatar-img--medium" src="<%= @visualization.user.avatar %>" alt="<%= @name %>" title="<%= @name %>" />
               </a>
@@ -122,7 +122,7 @@
 
         <div class="PublicMap-rightBlock PublicMap-rightBlock--owner u-txt-right">
           <ul class="Navmenu-list">
-            <li class="Navmenu-item last-child">
+            <li class="Navmenu-item Navmenu-item--like last-child">
               <ul class="u-valign">
                 <li class="Navmenu-subItem">
                   <a href="#/like" class="Navmenu-link js-likes"
@@ -134,7 +134,7 @@
               </ul>
             </li>
 
-            <li class="Navmenu-item Navmenu-item--action u-hideOnTablet">
+            <li class="Navmenu-item Navmenu-item--action Navmenu-item--withsep u-hideOnTablet">
               <div class="Navmenu-sep"></div>
 
               <i class="Navmenu-actionIcon iconFont iconFont-Markup"></i>

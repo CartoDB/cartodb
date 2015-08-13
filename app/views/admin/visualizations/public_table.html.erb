@@ -185,7 +185,7 @@
                   </li>
                 <% end %>
 
-                <% if @visualization.visualization.license_info.present? %>
+                <% if !@visualization.visualization.license_info.nil? %>
                   <li class="PublicMap-metaItem">
                     <i class="PublicMap-metaIcon iconFont iconFont-License iconFont-License<%= @visualization.visualization.license_info.id.to_s.gsub(/_/,"").downcase %>"></i>
                     <%# Keep on one line to avoid unwanted spaces %>

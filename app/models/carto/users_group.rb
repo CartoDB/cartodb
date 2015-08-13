@@ -6,7 +6,7 @@ module Carto
   class UsersGroup < ActiveRecord::Base
 
     belongs_to :user, class_name: Carto::User
-    belongs_to :organization, class_name: Carto::Organization
+    belongs_to :group, class_name: Carto::Group
 
   end
 end

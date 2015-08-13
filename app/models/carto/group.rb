@@ -21,6 +21,14 @@ module Carto
       new(name: name, database_role: database_role, display_name: display_name, organization: organization)
     end
 
+    def add_member(username)
+      user = Carto::User.find_by_username(username)
+
+      raise "User #{username} not found" unless user
+
+      users_group << Carto::UsersGroup.new(user: user, group: self)
+    end
+
     def database_name
       organization.database_name
     end

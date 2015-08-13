@@ -30,6 +30,15 @@ describe Carto::Api::GroupsController do
       group.should_not be_nil
     end
 
+    it '#add_member from username' do
+      group = Carto::Group.where(organization_id: @carto_organization.id).first
+      user_information = { username: @org_user_1.username }
+      post api_v1_databases_group_add_member_url(database_name: group.database_name, name: group.name), user_information, default_headers
+      response.status.should == 200
+      group.reload
+      group.users.collect(&:username).should include(@org_user_1.username)
+    end
+
     it '#destroy an existing group' do
       group = FactoryGirl.create(:carto_group, organization: @carto_organization)
       Carto::Group.where(id: group.id).first.should_not be_nil

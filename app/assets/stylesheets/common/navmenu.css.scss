@@ -95,11 +95,11 @@
 }
 .Navmenu-icon {
   font-size: $sFontSize-largest;
-  color: $cTypography-linkSecondaryHover;
+  color: #BEC5C9;
   transition: all .2s;
 }
 .Navmenu-icon:hover {
-  color: $cTypography-linkSecondary;
+  color: #aaa;
 }
 .Navmenu-icon.Navmenu-icon--twitter {
   position: relative;

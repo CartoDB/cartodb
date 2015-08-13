@@ -113,6 +113,8 @@ $cHeader-dark:  rgba(#3A91D7, 1);
   margin-left: 6px;
   position: relative;
   top: -1px;
+  -webkit-font-smoothing: auto;
+  -moz-osx-font-smoothing: auto;
 }
 
 @media (min-width: $sMedia-mobile) {

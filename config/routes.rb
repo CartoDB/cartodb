@@ -355,6 +355,7 @@ CartoDB::Application.routes.draw do
     post '(/user/:user_domain)(/u/:user_domain)/api/v1/databases/:database_name/groups'                           => 'groups#create',  as: :api_v1_databases_group_create
     delete '(/user/:user_domain)(/u/:user_domain)/api/v1/databases/:database_name/groups/:name'          => 'groups#destroy',  as: :api_v1_databases_group_destroy
     post '(/user/:user_domain)(/u/:user_domain)/api/v1/databases/:database_name/groups/:name/users'          => 'groups#add_member',  as: :api_v1_databases_group_add_member
+    delete '(/user/:user_domain)(/u/:user_domain)/api/v1/databases/:database_name/groups/:name/users/:username'          => 'groups#remove_member',  as: :api_v1_databases_group_remove_member
 
     # User creations
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/user_creations/:id' => 'user_creations#show', as: :api_v1_user_creations_show, constraints: { id: /[^\/]+/ }

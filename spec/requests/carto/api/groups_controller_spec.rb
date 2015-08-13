@@ -39,6 +39,15 @@ describe Carto::Api::GroupsController do
       group.users.collect(&:username).should include(@org_user_1.username)
     end
 
+    it '#remove_member from username' do
+      group = Carto::Group.where(organization_id: @carto_organization.id).first
+      username = group.users.first.username
+      delete api_v1_databases_group_remove_member_url(database_name: group.database_name, name: group.name, username: username), {}, default_headers
+      response.status.should == 200
+      group.reload
+      group.users.collect(&:username).should_not include(username)
+    end
+
     it '#destroy an existing group' do
       group = FactoryGirl.create(:carto_group, organization: @carto_organization)
       Carto::Group.where(id: group.id).first.should_not be_nil

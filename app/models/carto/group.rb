@@ -6,7 +6,7 @@ module Carto
   class Group < ActiveRecord::Base
 
     belongs_to :organization, class_name: Carto::Organization
-    has_many :users_group, class_name: Carto::UsersGroup
+    has_many :users_group, dependent: :destroy, class_name: Carto::UsersGroup
     has_many :users, :through => :users_group
 
     private_class_method :new
@@ -27,6 +27,17 @@ module Carto
       raise "User #{username} not found" unless user
 
       users_group << Carto::UsersGroup.new(user: user, group: self)
+      user
+    end
+
+    def remove_member(username)
+      user = Carto::User.find_by_username(username)
+
+      raise "User #{username} not found" unless user
+
+      # users_group.delete(Carto::UsersGroup.find_by_user_id_and_group_id(user.id, self.id))
+      users.destroy(user)
+      user
     end
 
     def database_name

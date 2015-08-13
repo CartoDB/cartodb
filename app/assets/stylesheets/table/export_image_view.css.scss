@@ -1,3 +1,5 @@
+@import "../variables/mixins";
+
 /**
  *  Export Image dialog styles
  */
@@ -25,6 +27,10 @@
   position:absolute;
   top: 0;
   right: 0;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 .ExportImageView-Footer {
   position: absolute;
@@ -46,11 +52,67 @@
   font-weight: normal;
 }
 
+.ExportImageView.is-exportable {
+  .CanvasExport {
+    border: none;
+  }
+  .CanvasExport .ExportHelper.ExportHelper--header {
+    opacity: 0.6;
+  }
+  .CanvasExport .ExportHelper.ExportHelper--attribution {
+    opacity: 0.7;
+  }
+  .CanvasExport.ui-resizable > div.ui-resizable-handle,
+  .ExportImageView-Header,
+  .ExportImageView-Footer,
+  .ExportHelper--north,
+  .ExportHelper--south,
+  .ExportHelper--west,
+  .ExportHelper--east {
+    display:none!important;
+  }
+}
+
 .ExportHelper {
   position: absolute;
   top: 0;
   left: 0;
   background:rgba(#000, 0.6);
+}
+
+.ExportHelper.ExportHelper--header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  background:rgba(#000, 0.75);
+  @include transition(opacity, 500ms, ease-in-out);
+}
+.ExportHelper.ExportHelper--attribution {
+  position: absolute;
+  top: auto;
+  left: auto;
+  bottom: 0;
+  right: 0;
+  width: auto;
+  padding: 0 5px;
+  box-sizing: border-box;
+  font-size: 11px;
+  background:rgba(#fff, 0.75);
+  @include transition(opacity, 500ms, ease-in-out);
+}
+
+.ExportHelperTitle {
+  font-size: 15px;
+  font-weight:bold;
+  color: #fff;
+}
+.ExportHelperDescription {
+  color: #fff;
+  font-size: 13px;
+  line-height: 19px;
 }
 
 .Button--micro {
@@ -81,7 +143,7 @@
     color:#fff;
   }
   &:before {
-    content: "×";
+    content: "\d7";
     position: relative;
     left: -1px;
   }
@@ -96,6 +158,11 @@ $resizeHandlerSize: 8px;
     z-index: 1000000000;
     cursor:move;
   }
+}
+.CanvasExport.draggable .ExportHelper.ExportHelper--header,
+.CanvasExport.draggable .ExportHelper.ExportHelper--attribution {
+ opacity: 1;
+  opacity: 0.2;
 }
 .CanvasExport {
   .ui-resizable { position: relative; }

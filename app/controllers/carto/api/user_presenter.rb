@@ -22,7 +22,7 @@ module Carto
 
       def data(options = {})
         return {} if @user.nil?
-        
+
         calls = @user.get_api_calls(from: @user.last_billing_cycle, to: Date.today)
         calls.fill(0, calls.size..29)
 
@@ -82,6 +82,12 @@ module Carto
             remove_logo: @user.remove_logo?,
             sync_tables: @user.sync_tables_enabled,
             arcgis_datasource: @user.arcgis_datasource_enabled?
+          },
+          limits: {
+            concurrent_syncs: CartoDB::PlatformLimits::Importer::UserConcurrentSyncsAmount::MAX_SYNCS_PER_USER,
+            concurrent_imports: @user.max_concurrent_import_count,
+            import_file_size: @user.max_import_file_size,
+            import_table_rows: @user.max_import_table_row_count
           },
           notification: @user.notification,
           avatar_url: @user.avatar,

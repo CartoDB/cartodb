@@ -54,6 +54,7 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
     }
 
     if params[:remote_visualization_id].present?
+      member_attributes[:interval] = Carto::ExternalSource::REFRESH_INTERVAL
       external_source = get_external_source(params[:remote_visualization_id])
       member_attributes.merge!( {
         url: external_source.import_url.presence,

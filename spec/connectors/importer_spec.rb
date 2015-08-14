@@ -96,7 +96,7 @@ describe CartoDB::Connector::Importer do
       :data_source   => filepath,
       :updated_at    => Time.now,
       :append        => false,
-      :privacy       => UserTable::PRIVACY_TEXTS_TO_VALUES['public']
+      :privacy       => Carto::UserTable::PRIVACY_TEXTS_TO_VALUES['public']
     )
     data_import.values[:data_source] = filepath
 
@@ -104,7 +104,7 @@ describe CartoDB::Connector::Importer do
 
     File.delete(filepath)
 
-    UserTable[id: data_import.table.id].privacy.should eq UserTable::PRIVACY_TEXTS_TO_VALUES['public']
+    UserTable[id: data_import.table.id].privacy.should eq Carto::UserTable::PRIVACY_TEXTS_TO_VALUES['public']
   end
 
   it 'should import tables as private if privacy param is set to private' do
@@ -124,7 +124,7 @@ describe CartoDB::Connector::Importer do
       :data_source   => filepath,
       :updated_at    => Time.now,
       :append        => false,
-      :privacy       => UserTable::PRIVACY_TEXTS_TO_VALUES['private']
+      :privacy       => Carto::UserTable::PRIVACY_TEXTS_TO_VALUES['private']
     )
     data_import.values[:data_source] = filepath
 
@@ -132,7 +132,7 @@ describe CartoDB::Connector::Importer do
 
     File.delete(filepath)
 
-    UserTable[id: data_import.table.id].privacy.should eq UserTable::PRIVACY_TEXTS_TO_VALUES['private']
+    UserTable[id: data_import.table.id].privacy.should eq Carto::UserTable::PRIVACY_TEXTS_TO_VALUES['private']
   end
 end
 

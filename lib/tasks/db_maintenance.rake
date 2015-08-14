@@ -317,6 +317,23 @@ namespace :cartodb do
       }, threads, thread_sleep, database_host)
     end
 
+    ######################################
+    # GRANT `publicuser` ROLE TO ALL USERS
+    ######################################
+    desc 'Grant `publicuser` role to all users'
+    task :grant_publicuser_to_all_users => :environment do
+      User.all.each do |user|
+        # already granted users will raise a NOTICE
+        grant_query = "GRANT publicuser to \"#{user.database_username}\""
+        conn = user.in_database(as: :cluster_admin)
+        begin
+          conn.run(grant_query)
+        rescue => e
+          log("Failed to execute `#{grant_query}`", :grant_publicuser_to_all_users.to_s, user.database_host)
+        end
+      end
+    end
+
     ##########################################
     # SET ORGANIZATION GROUP ROLE TO ALL USERS
     ##########################################

@@ -412,6 +412,10 @@ class Table
       @data_import.table_name = name
       @data_import.save
 
+      if self.owner.private_tables_enabled
+        @user_table.privacy = @data_import.privacy
+      end
+
       decorator = CartoDB::Datasources::Decorators::Factory.decorator_for(@data_import.service_name)
       if !decorator.nil? && decorator.decorates_layer?
         self.map.layers.each do |layer|

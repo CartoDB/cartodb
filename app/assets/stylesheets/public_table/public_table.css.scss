@@ -97,14 +97,6 @@ a {
 // Hello media queries
 
 @media only screen and (max-width: 710px) {
-  .navigation {
-    max-width: 1024px;
-    margin: auto;
-    clear: both;
-    overflow: hidden;
-    padding: 0 20px;
-  }
-
   .inner .embed-left-col  { margin: 0; float: none; width: 100%; }
   .inner .embed-left-col .content { margin-left: 0px; border-right: none; padding-right: 0; max-width: none; }
   .inner .embed-right-col { float: none;  width: 100%; }
@@ -116,27 +108,10 @@ and (min-device-width : 320px)
 and (max-device-width : 480px)
 and (orientation : portrait) {
   .cartodb-public-wrapper div.separator.top { top: 66px }
-
-  .navigation {
-    max-width: 1024px;
-    margin: auto;
-    clear: both;
-    overflow: hidden;
-    padding: 0 20px;
-  }
 }
 
 @media only screen and (min-width: 711px) and (max-width: 1035px) {
   .inner .embed-left-col  { margin: 0; float: none; width: 100%; }
   .inner .embed-left-col .content { margin-left: 0px; border-right: none; padding-right: 0; max-width: none; }
   .inner .embed-right-col { float: none;  width: 100%; }
-
-  .navigation {
-    max-width: 1024px;
-    margin: auto;
-    clear: both;
-    overflow: hidden;
-    padding: 0 20px;
-  }
-
 }

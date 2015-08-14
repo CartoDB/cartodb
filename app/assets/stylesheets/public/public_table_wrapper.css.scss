@@ -9,6 +9,7 @@
 @import "../old_common/vars";
 @import "../old_common/mixins";
 @import "compass/reset/utilities";
+@import "../variables/sizes";
 
 html {
   line-height: 1;
@@ -163,8 +164,8 @@ body.public { /* Public table CSS */
     position:relative;
     z-index: 100;
     @include opacity(0);
-
-    pointer-events: none;
+    width: 100%;
+    text-align: center;
 
     ul {
 
@@ -174,34 +175,33 @@ body.public { /* Public table CSS */
 
       li {
 
-        float: left;
+        display: inline-block;
         list-style:none;
         margin: 0 1px 0 0;
-        pointer-events:all;
 
-        &:first-child a { @include border-radius(2px 0 0 2px); }
-        &:last-child  a { @include border-radius(0 2px 2px 0); }
+        &:last-child { margin-left: $sMargin-group; }
 
         a {
-
           &:hover {
-            text-decoration: underline;
+
           }
 
-          font-family: $text-fonts;
-
           display:block;
-          padding: 9px 10px 10px 10px;
-          background: rgba(#000000, .7);
-          font-size: 11px;
-          font-weight:bold;
-          color: #FFFFFF;
-          text-transform: uppercase;
+          width: 36px;
+          height: 36px;
+          border: 1px solid #636D72;
+          border-radius: 19px;
+          color: #636D72;
+          text-align: center;
+
+          i {
+            font-size: 14px;
+          }
         }
 
         a.selected { 
-          text-decoration: none;
-          color: rgba(#fff, .7);
+          color: #fff;
+          border-color: #fff;
           cursor:default;
         }
 

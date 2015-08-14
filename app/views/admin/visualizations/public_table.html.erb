@@ -75,8 +75,8 @@
 
     <div class="navigation u-showOnTablet">
       <ul>
-        <li><%= link_to "Table view", "#/table", :class => 'smaller strong tab selected' %></li>
-        <li><%= link_to "Map view", "#/map"%></li>
+        <li><a href="#/table" class=" tab selected u-valign"><i class="iconFont iconFont-Table u-iblock u-malign"></i></a></li>
+        <li><a href="#/map" class="u-valign"><i class="iconFont iconFont-Map u-iblock u-malign"></i></a></li>
       </ul>
     </div>
   </div>
@@ -195,7 +195,7 @@
 
                 <% if @visualization.visualization.source.present? %>
                   <li class="PublicMap-metaItem">
-                    <i class="PublicMap-metaIcon iconFont iconFont-License iconFont-Source %>"></i>
+                    <i class="PublicMap-metaIcon iconFont iconFont-Anchor"></i>
                     <%# Keep on one line to avoid unwanted spaces %>
                     <%= @visualization.visualization.source %>
                   </li>

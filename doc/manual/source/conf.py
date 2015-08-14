@@ -48,7 +48,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'CartoDB Platform Documentation'
-copyright = u'2015, Javi Santana'
+copyright = u'2015, CartoDB, Inc.'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -201,7 +201,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
   ('index', 'CartoDBPlatformDocumentation.tex', u'CartoDB Platform Documentation Documentation',
-   u'Javi Santana', 'manual'),
+   u'CartoDB, Inc.', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -231,7 +231,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'cartodbplatformdocumentation', u'CartoDB Platform Documentation',
-     [u'Javi Santana'], 1)
+     [u'CartoDB, Inc.'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -245,7 +245,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   ('index', 'CartoDBPlatformDocumentation', u'CartoDB Platform Documentation',
-   u'Javi Santana', 'CartoDBPlatformDocumentation', 'One line description of project.',
+   u'CartoDB, Inc.', 'CartoDBPlatformDocumentation', 'One line description of project.',
    'Miscellaneous'),
 ]
 

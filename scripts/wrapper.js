@@ -2,6 +2,7 @@
 // uncompressed version: cartodb.uncompressed.js
 // sha: <%= sha %>
 (function() {
+  var define;  // Undefine define (require.js), see https://github.com/CartoDB/cartodb.js/issues/543
   var root = this;
 
   if(!<%= load_jquery %>) {

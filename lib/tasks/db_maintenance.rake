@@ -322,7 +322,8 @@ namespace :cartodb do
     ######################################
     desc 'Grant `publicuser` role to all users'
     task :grant_publicuser_to_all_users => :environment do
-      Carto::User.all.each do |user|
+      Carto::User.pluck(:id).each do |user_id|
+        user = Carto::User.where(id: user_id).first
         # already granted users will raise a NOTICE
         grant_query = "GRANT publicuser to \"#{user.database_username}\""
         conn = user.in_database(as: :cluster_admin)

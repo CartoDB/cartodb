@@ -1,4 +1,3 @@
-
 3.10.3 (2015-mm-dd)
 ---
 * Mailchimp decorator enables category wizard and legends [#3874](https://github.com/CartoDB/cartodb/pull/3874)
@@ -97,7 +96,6 @@ Bugfixes:
 * Enable new dashboard for everyone by means of migration [#3509](https://github.com/CartoDB/cartodb/pull/3509)
 * Enabled Google Maps Basemaps [#3429](https://github.com/CartoDB/cartodb/pull/3429)
 * Remove need of api_key to enjoy common-data "Data library" [#3523](https://github.com/CartoDB/cartodb/pull/3523)
-
 
 Bugfixes:
 * Fixed interaction when there are hidden layers [#3090](https://github.com/CartoDB/cartodb/pull/3090)

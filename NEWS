@@ -1,5 +1,6 @@
 3.X ()
 * Take `visible` attribute into account when determining visibility of layers and serializing maps (#546)
+* Only show legends if the layer is visible (#651)
 
 3.15 (24//06//2015)
 * cartodb.js knows how to work with multiple types of sublayers (#508):

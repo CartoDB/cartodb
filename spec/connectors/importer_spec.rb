@@ -6,14 +6,18 @@ require 'csv'
 
 describe CartoDB::Connector::Importer do
 
-  before(:each) do
+  before(:all) do
     @user = create_user(:quota_in_bytes => 1000.megabyte, :table_quota => 400)
+  end
+
+  before(:each) do
     stub_named_maps_calls
   end
 
-  after(:each) do
+  after(:all) do
     @user.destroy
   end
+
 
   it 'should not fail to return a new_name when ALTERing the INDEX fails' do
 
@@ -96,7 +100,7 @@ describe CartoDB::Connector::Importer do
       :data_source   => filepath,
       :updated_at    => Time.now,
       :append        => false,
-      :privacy       => Carto::UserTable::PRIVACY_TEXTS_TO_VALUES['public']
+      :privacy       => ::UserTable::PRIVACY_TEXTS_TO_VALUES['public']
     )
     data_import.values[:data_source] = filepath
 
@@ -104,7 +108,7 @@ describe CartoDB::Connector::Importer do
 
     File.delete(filepath)
 
-    UserTable[id: data_import.table.id].privacy.should eq Carto::UserTable::PRIVACY_TEXTS_TO_VALUES['public']
+    UserTable[id: data_import.table.id].privacy.should eq ::UserTable::PRIVACY_TEXTS_TO_VALUES['public']
   end
 
   it 'should import tables as private if privacy param is set to private' do
@@ -124,7 +128,7 @@ describe CartoDB::Connector::Importer do
       :data_source   => filepath,
       :updated_at    => Time.now,
       :append        => false,
-      :privacy       => Carto::UserTable::PRIVACY_TEXTS_TO_VALUES['private']
+      :privacy       => ::UserTable::PRIVACY_TEXTS_TO_VALUES['private']
     )
     data_import.values[:data_source] = filepath
 
@@ -132,7 +136,61 @@ describe CartoDB::Connector::Importer do
 
     File.delete(filepath)
 
-    UserTable[id: data_import.table.id].privacy.should eq Carto::UserTable::PRIVACY_TEXTS_TO_VALUES['private']
+    UserTable[id: data_import.table.id].privacy.should eq ::UserTable::PRIVACY_TEXTS_TO_VALUES['private']
+  end
+
+  it 'should import tables as private by default if user has private tables enabled' do
+    @user.private_tables_enabled = true
+    @user.save
+
+    o = [('a'..'z'), ('A'..'Z'), (0..9)].map { |i| i.to_a }.flatten
+    filepath        = "/tmp/#{(0...12).map { o[rand(o.length)] }.join}.csv"
+
+    CSV.open(filepath, 'wb') do |csv|
+      csv << ['nombre', 'apellido', 'profesion']
+      csv << ['Manolo', 'Escobar', 'Artista']
+    end
+  
+    data_import = DataImport.create(
+      :user_id       => @user.id,
+      :data_source   => filepath,
+      :updated_at    => Time.now,
+      :append        => false
+    )
+    data_import.values[:data_source] = filepath
+
+    data_import.run_import!
+
+    File.delete(filepath)
+
+    UserTable[id: data_import.table.id].privacy.should eq ::UserTable::PRIVACY_TEXTS_TO_VALUES['private']
+  end
+
+  it 'should import tables as public by default if user doesnt have private tables enabled' do
+    @user.private_tables_enabled = false
+    @user.save
+
+    o = [('a'..'z'), ('A'..'Z'), (0..9)].map { |i| i.to_a }.flatten
+    filepath        = "/tmp/#{(0...12).map { o[rand(o.length)] }.join}.csv"
+
+    CSV.open(filepath, 'wb') do |csv|
+      csv << ['nombre', 'apellido', 'profesion']
+      csv << ['Manolo', 'Escobar', 'Artista']
+    end
+  
+    data_import = DataImport.create(
+      :user_id       => @user.id,
+      :data_source   => filepath,
+      :updated_at    => Time.now,
+      :append        => false
+    )
+    data_import.values[:data_source] = filepath
+
+    data_import.run_import!
+
+    File.delete(filepath)
+
+    UserTable[id: data_import.table.id].privacy.should eq ::UserTable::PRIVACY_TEXTS_TO_VALUES['public']
   end
 end
 

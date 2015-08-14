@@ -130,6 +130,9 @@
   border-color: #0090d7;
   color: #fff;
 }
+.Navmenu-editLink.Navmenu-editLink--oneclick {
+  margin-left: 0;
+}
 .Navmenu-editLink.Navmenu-editLink--more {
   width: 100%;
   padding: 0 16px;
@@ -170,6 +173,10 @@
 .Navmenu-actionIcon {
   margin-right: 5px;
   font-size: 10px;
+}
+.Navmenu-tableIcon {
+  position: relative;
+  top: -2px;
 }
 div.cartodb-timeslider {
   margin-bottom: 0;

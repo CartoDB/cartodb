@@ -40,7 +40,7 @@
 }
 .PublicMap-leftBlock {
   float: left;
-  width: 50%;
+  width: 40%;
 }
 .PublicMap-gradient {
   content: '';
@@ -49,7 +49,7 @@
   z-index: 20;
   right: 0;
   height: 100%;
-  width: 50%;
+  width: 60%;
   background-image: linear-gradient(to right, rgba(#fff, 0) 5%, #fff 10%, #fff 100%);
 }
 .PublicMap-leftBlock.PublicMap-leftBlock--large {
@@ -58,7 +58,7 @@
 }
 .PublicMap-rightBlock {
   float: right;
-  width: 50%;
+  width: 60%;
 }
 .PublicMap-description p {
   font-size: 20px;
@@ -146,7 +146,7 @@
     position: absolute;
     z-index: 30;
     right: 15px;
-    width: 50%;
+    width: 60%;
   }
   .PublicMap-metaList {
     display: block;

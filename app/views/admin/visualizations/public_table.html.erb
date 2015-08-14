@@ -75,7 +75,7 @@
 
     <div class="navigation u-showOnTablet">
       <ul>
-        <li><a href="#/table" class=" tab selected u-valign"><i class="iconFont iconFont-Table u-iblock u-malign"></i></a></li>
+        <li><a href="#/table" class=" tab selected u-valign"><i class="Navmenu-tableIcon iconFont iconFont-Table u-iblock u-malign"></i></a></li>
         <li><a href="#/map" class="u-valign"><i class="iconFont iconFont-Map u-iblock u-malign"></i></a></li>
       </ul>
     </div>
@@ -148,7 +148,8 @@
 
             <% if !Cartodb.config[:cartodb_com_hosted].present? %>
               <li class="Navmenu-item u-hideOnTablet">
-                <a class="Button Button--main Navmenu-editLink Navmenu-editLink--create is-active" href="http://oneclick.cartodb.com/?file=<%= CGI.escape( @export_sql_api_url ) %>&provider=<%= URI.encode(@table.owner.username) %>&logo=<%= URI.encode(@avatar_url) %>">Create map</a>
+                <a class="Button Button--main Navmenu-editLink Navmenu-editLink--edit Navmenu-editLink--oneclick is-active oneclick" href="http://oneclick.cartodb.com/?file=<%= CGI.escape( @export_sql_api_url ) %>&provider=<%= URI.encode(@table.owner.username) %>&logo=<%= URI.encode(@avatar_url) %>">Create map</a>
+                <a href="<%= CartoDB.url(self, 'public_tables_show', {id: @table.name}, @table.owner.organization ? @table.owner : nil) %>" class="Button Button--main Navmenu-editLink Navmenu-editLink--edit Navmenu-editLink--oneclick edit">Edit in CartoDB</a>
               </li>
             <% end %>
           </ul>

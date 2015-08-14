@@ -802,9 +802,7 @@ var Vis = cdb.core.View.extend({
         options: options,
         torqueLayer: this.torqueLayer
       });
-
     }
-
   },
 
   _createLegendView: function(layer, layerView) {
@@ -813,12 +811,16 @@ var Vis = cdb.core.View.extend({
       var legend = layer.legend;
 
       if ((legend.items && legend.items.length) || legend.template) {
-        var view = new cdb.geo.ui.Legend(layer.legend);
-        layerView.legend = view.model; // cdb.geo.ui.LegendModel
-        layerView.bind('change:visibility', function(layer, hidden) {
-          view[hidden? 'hide': 'show']();
+        var legendAttrs = _.extend(layer.legend, {
+          visible: layer.visible
         });
-        return view;
+        var legendModel = new cdb.geo.ui.LegendModel(legendAttrs);
+        var legendView = new cdb.geo.ui.Legend({ model: legendModel });
+        layerView.bind('change:visibility', function(layer, hidden) {
+          legendView[hidden ? 'hide': 'show']();
+        });
+        layerView.legend = legendModel;
+        return legendView;
       }
     }
     return null;

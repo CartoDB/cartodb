@@ -40,7 +40,7 @@
     <![endif]-->
   </head>
   <body class="public">
-    <%= render 'admin/shared/old_public_header', :clone => true, :signin => false %>
+    <%= render 'admin/shared/old_public_header' %>
     <%= yield %>
     <%= yield :js %>
     <%= insert_trackjs() %>

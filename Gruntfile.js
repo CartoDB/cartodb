@@ -33,8 +33,7 @@ module.exports = function(grunt) {
       minor:      version[0] + '.' + version[1],
       bugfixing:  pkg.version
     },
-    pkg:  pkg,
-    secrets: grunt.file.readJSON('secrets.json')
+    pkg:  pkg
   };
 
   grunt.initConfig({
@@ -47,7 +46,6 @@ module.exports = function(grunt) {
       bugfixing:  pkg.version
     },
     pkg:  pkg,
-    secrets: grunt.file.readJSON('secrets.json'),
     gitinfo: {},
     s3: require('./grunt/tasks/s3').task(grunt, config),
     prompt: require('./grunt/tasks/prompt').task(grunt, config),

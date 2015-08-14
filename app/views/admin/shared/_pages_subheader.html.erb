@@ -19,19 +19,38 @@
     <span class="AsideFilters-progressSize"><%= number_to_human_size(current_user.db_size_in_bytes) %> of <%= number_to_human_size(current_user.quota_in_bytes) %></span>
   </div>
 
-<span class="AsideFilters-separator"></span>
+  <span class="AsideFilters-separator"></span>
 
-<div class="AsideFilters-type">
-  <ul class="AsideFilters-list">
-    <li class="AsideFilters-typeItem"><a href="<%= CartoDB.url(self, 'profile_user') %>" class="AsideFilters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/users_profile" %>">Profile</a></li>
-    <li class="AsideFilters-typeItem"><a href="<%= CartoDB.url(self, 'account_user') %>" class="AsideFilters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/users_account" %>">Account</a></li>
-    <li class="AsideFilters-typeItem"><a href="<%= CartoDB.url(self, 'api_key_credentials') %>" class="AsideFilters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/client_applications_api_key" %>">API keys</a></li>
-    <li class="AsideFilters-typeItem"><a href="<%= CartoDB.url(self, 'oauth_credentials')%>" class="AsideFilters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/client_applications_oauth" %>">OAuth credentials</a></li>
-    <% if (!Cartodb.config[:cartodb_com_hosted].present? && (!current_user.organization.present? || current_user.organization_owner?))  %>
-      <li class="AsideFilters-typeItem"><a href="<%= current_user.plan_url(request.protocol) %>" class="AsideFilters-typeLink">Billing</a></li>
-    <% end %>
-  </ul>
-</div>
+  <div class="AsideFilters-type">
+    <ul class="AsideFilters-list">
+      <li class="AsideFilters-typeItem"><a href="<%= CartoDB.url(self, 'profile_user') %>" class="AsideFilters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/users_profile" %>">Profile</a></li>
+      <li class="AsideFilters-typeItem"><a href="<%= CartoDB.url(self, 'account_user') %>" class="AsideFilters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/users_account" %>">Account</a></li>
+      <li class="AsideFilters-typeItem"><a href="<%= CartoDB.url(self, 'api_key_credentials') %>" class="AsideFilters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/client_applications_api_key" %>">API keys</a></li>
+      <li class="AsideFilters-typeItem"><a href="<%= CartoDB.url(self, 'oauth_credentials')%>" class="AsideFilters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/client_applications_oauth" %>">OAuth credentials</a></li>
+      <% if (!Cartodb.config[:cartodb_com_hosted].present? && (!current_user.organization.present? || current_user.organization_owner?))  %>
+        <li class="AsideFilters-typeItem"><a href="<%= current_user.plan_url(request.protocol) %>" class="AsideFilters-typeLink">Billing</a></li>
+      <% end %>
+      <% if current_user.organization_owner? %>
+        <li class="AsideFilters-typeItem"><a href="<%= CartoDB.url(self, 'organization_settings') %>" class="AsideFilters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_settings" %>" class="AsideFilters-typeLink">Organization settings</a></li>
+      <% end %>
+    </ul>
+  </div>
+
+  <div class="AsideFilters-helpSegment">
+    <div class="AsideFilters-helpSegment--icon">
+      <i class="iconFont iconFont-Boss"></i>
+    </div>
+    <div class="AsideFilters-helpSegment--paragraph">
+      <p>Having issues?</p>
+      <p>
+        <% if !current_user.organization.present? %>
+          <a href="mailto:support@cartodb.com">Contact support</a>
+        <% else %>
+          <a href="mailto:<%= current_user.organization.admin_email%>">Contact your org. admin</a>
+        <% end %>
+      </p>
+    </div>
+  </div>
 
   <% if !Cartodb.config[:cartodb_com_hosted].present? %>
     </a>

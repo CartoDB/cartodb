@@ -106,6 +106,39 @@
   }
 }
 
+.AsideFilters-helpSegment {
+  @include display-flex();
+  @include flex-direction(row);
+  border-radius: 4px;
+  padding: 15px;
+  background: $cStructure-grayBkg;
+  border: 1px solid $cTypography-help;
+}
+
+.AsideFilters-helpSegment--icon {
+  border-radius: 4px;
+  width: 40px;
+  height: 40px;
+  line-height: 50px;
+  text-align: center;
+  border: 1px solid $cStructure-darkLine;
+  margin-right: 15px;
+
+  i { 
+    font-size: 20px;
+    color: $cIcons-active;
+  }
+}
+
+.AsideFilters-helpSegment--paragraph {
+  @include display-flex();
+  @include flex-direction(column);
+  @include justify-content(center);
+
+  color: $cTypography-paragraphs;
+  font-size: 13px;
+}
+
 // Moved with scroll behaviour
 .Filters.is-fixed {
   position: fixed;

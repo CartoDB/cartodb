@@ -53,6 +53,11 @@
         </div>
         <div class="Form-rowData">
           <%= f.text_field :email, class: "Form-input Form-input--med #{ 'Form-input--error' if @user.errors[:email].present? } #{ 'is-disabled' unless @user.can_change_email }", readonly: !@user.can_change_email %>
+          <% if current_user.organization.present? %>
+            <div class="Form-rowInfo Form-rowInfo--marginLeft">
+              <p class="Form-rowInfoText">Your URL: <%= "#{current_user.organization.name}.#{CartoDB.account_host}/u/#{current_user.username}" %></p>
+            </div>
+          <% end %>
         </div>
         <div class="Form-rowInfo">
           <% if @user.errors[:email].present? %>
@@ -103,12 +108,19 @@
         </div>
       </div>
 
+      <div class="Form-title">
+        <p class="Form-titleText">Account type</p>
+      </div>
+
+      <span class="Form-separator"></span>
+
       <%# if none of the services are activated, this block shouldn't appear %>
       <% if @services.size > 0 %>
         <div class="Form-title js-datasourcesContent">
-          <h4 class="Form-titleHeader">Connect with external data sources</h4>
-          <p class="Form-titleText">Link your services to import data and create amazing maps.</p>
+          <p class="Form-titleText">Account and 3rd party services connected</p>
         </div>
+
+        <span class="Form-separator"></span>
       <% end %>
 
       <% if current_user.has_feature_flag?('google_maps') %>

@@ -66,6 +66,7 @@ Sequel.migration do
   end
   
   down do
+    drop_table :users_groups
     drop_table :groups
   end
 end

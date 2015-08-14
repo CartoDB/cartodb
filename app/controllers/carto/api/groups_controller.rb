@@ -3,6 +3,7 @@
 module Carto
   module Api
     class GroupsController < Superadmin::SuperadminController
+      # TODO: not SuperadminController
 
       respond_to :json
 
@@ -14,8 +15,11 @@ module Carto
 
       def create
         group = Group.new_instance(@database_name, @name, @database_role)
-        group.save
-        render json: group.to_json
+        if group.save
+          render json: group.to_json
+        else
+          render json: { errors: "Error saving group: #{group.errors}" }, status: 400
+        end
       rescue => e
         CartoDB.notify_exception(e, { params: params , group: (group ? group : 'not created') })
         render json: { errors: e.message }, status: 400

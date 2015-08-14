@@ -7,7 +7,11 @@ namespace :cartodb do
     task :migrate_external_sources, [:user_id, :simulation] => :environment do |t, args|
       # We user external_sources because remote visualization don't have map or user_tables rows
       if args[:user_id].nil?
-        puts "Use: rake cartodb:db:migrate_external_sources['user_id'[,true]]. User id should be the id for the common-data user"
+        puts %Q[
+          Usage: rake cartodb:db:migrate_external_sources['user_id'[,simulation?]]
+            ie migration without simulation: rake cartodb:db:migrate_external_sources['beacfd17-418e-4e71-b307-95b5c96105dc', false]
+            ie migration with simulation: rake cartodb:db:migrate_external_sources['beacfd17-418e-4e71-b307-95b5c96105dc', true]
+        ]
         exit 1
       end
       common_datasets = get_datasets
@@ -33,6 +37,7 @@ namespace :cartodb do
             puts CartoDB::Visualization::Presenter.new(vis).to_poro
             puts '------------------------------------------------------'
           else
+            puts %Q[Visualization data: Id #{vis.id}, name #{vis.name}]
             vis.license = data[:license]
             vis.source = data[:source]
             vis.tags = data[:tags]

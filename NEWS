@@ -1,5 +1,6 @@
 3.X ()
 * Take `visible` attribute into account when determining visibility of layers and serializing maps (#546)
+* Only show legends if the layer is visible (#651)
 
 3.15 (24//06//2015)
 * cartodb.js knows how to work with multiple types of sublayers (#508):
@@ -14,6 +15,7 @@
 * Remove check for http-beginng vizjson addresses
 * Use local time in timeslider instead of UTC
 * New sublayer.isVisible() function
+* `cartodb.createLayer` selects the first data layer instead of assuming that it's in position 1
 
 3.14.6 (16//06//2015)
 * Use the right indexes when fetching grids and attributes (#518)

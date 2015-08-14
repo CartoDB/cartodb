@@ -62,8 +62,7 @@ class DataImport < Sequel::Model
     # }
     # No automatic conversion coded
     'user_defined_limits',
-    'original_url',
-    'privacy'
+    'original_url'
   ]
 
   # This attributes will get removed from public_values upon calling api_call_public_values

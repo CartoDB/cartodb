@@ -412,8 +412,11 @@ class Table
       @data_import.table_name = name
       @data_import.save
 
-      if !@data_import.privacy.nil? && self.owner.private_tables_enabled
-        @user_table.privacy = @data_import.privacy
+      if !@data_import.import_extra_options.nil?
+        extra_options = ::JSON.parse(@data_import.import_extra_options)
+        if !extra_options["privacy"].nil? && self.owner.private_tables_enabled
+          @user_table.privacy = extra_options["privacy"]
+        end
       end
 
       decorator = CartoDB::Datasources::Decorators::Factory.decorator_for(@data_import.service_name)

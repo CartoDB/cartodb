@@ -55,9 +55,15 @@ class UserTable < Sequel::Model
   PRIVACY_LINK = 2
 
   PRIVACY_VALUES_TO_TEXTS = {
-      PRIVACY_PRIVATE => 'private',
-      PRIVACY_PUBLIC => 'public',
-      PRIVACY_LINK => 'link'
+    PRIVACY_PRIVATE => 'private',
+    PRIVACY_PUBLIC => 'public',
+    PRIVACY_LINK => 'link'
+  }
+
+  PRIVACY_TEXTS_TO_VALUES = {
+    'private' => PRIVACY_PRIVATE,
+    'public' => PRIVACY_PUBLIC,
+    'link' => PRIVACY_LINK
   }
 
   # Associations

@@ -132,7 +132,7 @@ class Api::Json::ImportsController < Api::ApplicationController
       upload_host:            Socket.gethostname,
       create_visualization:   ["true", true].include?(params[:create_vis]),
       user_defined_limits:    user_defined_limits,
-      privacy:                privacy
+      import_extra_options:   import_extra_options
     }
   end
 
@@ -178,6 +178,15 @@ class Api::Json::ImportsController < Api::ApplicationController
                            "#{sub_exception.message} #{sub_exception.backtrace.inspect}")
       nil
     end
+  end
+
+  def import_extra_options
+    extra_options = {}
+    
+    # All parameter to extra options sould go here      
+    extra_options['privacy'] = privacy if !privacy.nil?
+
+    ::JSON.dump(extra_options)
   end
 
   def privacy

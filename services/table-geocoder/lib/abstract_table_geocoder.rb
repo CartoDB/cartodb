@@ -15,7 +15,6 @@ module CartoDB
       @table_name  = arguments[:table_name]
       @table_schema  = arguments[:table_schema]
       @qualified_table_name = arguments[:qualified_table_name]
-      @sequel_qualified_table_name = arguments[:sequel_qualified_table_name]
       @schema = arguments[:schema] || 'cdb'
       @state = 'submitted'
       @connection.run("SET statement_timeout TO #{DB_STATEMENT_TIMEOUT_MS}")
@@ -77,11 +76,11 @@ module CartoDB
     private
 
     def set_georef_status_to_null
-      connection.select.from(@sequel_qualified_table_name).update(:cartodb_georef_status => nil)
+      connection.run(%Q{ UPDATE #{@qualified_table_name} SET #{cartodb_georef_status} = NULL })
     end
 
     def set_georef_status_from_false_to_null
-      connection.select.from(@sequel_qualified_table_name).where(:cartodb_georef_status => false).update(:cartodb_georef_status => nil)
+      connection.run(%Q{ UPDATE #{@qualified_table_name} SET cartodb_georef_status = NULL WHERE cartodb_georef_status = FALSE })
     end
 
     def cast_georef_status_column

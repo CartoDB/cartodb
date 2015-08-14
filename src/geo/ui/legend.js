@@ -899,12 +899,11 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
     }
 
     _.each(this.options.legends, function(item) {
-      var type = item.model.get("type");
-
-      if (type && type != "none") {
-        item.show();
-      } else {
+      var legendModel = item.model;
+      if (legendModel.get("type") === "none" || legendModel.get("visible") === false) {
         item.hide();
+      } else {
+        item.show();
       }
     }, this);
   },

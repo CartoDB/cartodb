@@ -79,10 +79,61 @@ describe CartoDB::Connector::Importer do
     data_import.table_name.should(eq(expected_rename), "Table was incorrectly renamed to '#{data_import.table_name}', should be '#{expected_rename}'")
   end
 
-  it 'should change privacy of imported tables to value specified through API' do
-    pending('Need to figure out how to test this properly')
+  it 'should import tables as public if privacy param is set to public' do
+    @user.private_tables_enabled = false
+    @user.save
+
+    o = [('a'..'z'), ('A'..'Z'), (0..9)].map { |i| i.to_a }.flatten
+    filepath        = "/tmp/#{(0...12).map { o[rand(o.length)] }.join}.csv"
+
+    CSV.open(filepath, 'wb') do |csv|
+      csv << ['nombre', 'apellido', 'profesion']
+      csv << ['Manolo', 'Escobar', 'Artista']
+    end
+  
+    data_import = DataImport.create(
+      :user_id       => @user.id,
+      :data_source   => filepath,
+      :updated_at    => Time.now,
+      :append        => false,
+      :privacy       => UserTable::PRIVACY_TEXTS_TO_VALUES['public']
+    )
+    data_import.values[:data_source] = filepath
+
+    data_import.run_import!
+
+    File.delete(filepath)
+
+    UserTable[id: data_import.table.id].privacy.should eq UserTable::PRIVACY_TEXTS_TO_VALUES['public']
   end
 
+  it 'should import tables as private if privacy param is set to private' do
+    @user.private_tables_enabled = true
+    @user.save
+
+    o = [('a'..'z'), ('A'..'Z'), (0..9)].map { |i| i.to_a }.flatten
+    filepath        = "/tmp/#{(0...12).map { o[rand(o.length)] }.join}.csv"
+
+    CSV.open(filepath, 'wb') do |csv|
+      csv << ['nombre', 'apellido', 'profesion']
+      csv << ['Manolo', 'Escobar', 'Artista']
+    end
+  
+    data_import = DataImport.create(
+      :user_id       => @user.id,
+      :data_source   => filepath,
+      :updated_at    => Time.now,
+      :append        => false,
+      :privacy       => UserTable::PRIVACY_TEXTS_TO_VALUES['private']
+    )
+    data_import.values[:data_source] = filepath
+
+    data_import.run_import!
+
+    File.delete(filepath)
+
+    UserTable[id: data_import.table.id].privacy.should eq UserTable::PRIVACY_TEXTS_TO_VALUES['private']
+  end
 end
 
 

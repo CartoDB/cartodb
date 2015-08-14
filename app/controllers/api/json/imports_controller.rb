@@ -183,7 +183,7 @@ class Api::Json::ImportsController < Api::ApplicationController
   def import_extra_options
     extra_options = {}
     
-    # All parameter to extra options sould go here      
+    # All parameter passing to 'import_extra_options' sould be done here      
     extra_options['privacy'] = privacy if !privacy.nil?
 
     ::JSON.dump(extra_options)

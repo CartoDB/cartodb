@@ -131,7 +131,7 @@ class DataImport < Sequel::Model
 
   def extra_options=(value)
     if !value.nil?
-      self.import_extra_options = ::JSON.dump(value)
+      self.import_extra_options = value
     end
   end
 

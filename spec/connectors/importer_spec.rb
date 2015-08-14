@@ -94,13 +94,13 @@ describe CartoDB::Connector::Importer do
       csv << ['nombre', 'apellido', 'profesion']
       csv << ['Manolo', 'Escobar', 'Artista']
     end
-  
+
     data_import = DataImport.create(
       :user_id       => @user.id,
       :data_source   => filepath,
       :updated_at    => Time.now,
       :append        => false,
-      :privacy       => ::UserTable::PRIVACY_TEXTS_TO_VALUES['public']
+      :extra_options => ::JSON.dump({'privacy' => ::UserTable::PRIVACY_TEXTS_TO_VALUES['public']})
     )
     data_import.values[:data_source] = filepath
 
@@ -128,7 +128,7 @@ describe CartoDB::Connector::Importer do
       :data_source   => filepath,
       :updated_at    => Time.now,
       :append        => false,
-      :privacy       => ::UserTable::PRIVACY_TEXTS_TO_VALUES['private']
+      :extra_options => ::JSON.dump({'privacy' => ::UserTable::PRIVACY_TEXTS_TO_VALUES['private']})
     )
     data_import.values[:data_source] = filepath
 

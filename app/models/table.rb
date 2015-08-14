@@ -412,7 +412,7 @@ class Table
       @data_import.table_name = name
       @data_import.save
 
-      if self.owner.private_tables_enabled
+      if !@data_import.privacy.nil? && self.owner.private_tables_enabled
         @user_table.privacy = @data_import.privacy
       end
 
@@ -575,7 +575,7 @@ class Table
         user_id:  self.owner.id
       }
     )
-    CartoDB::Visualization::Overlays.new(vis).create_default_overlays
+    CartoDB::Visualization::Overlays.new(vis).create_default_overlays  
     vis.store
     vis
   end

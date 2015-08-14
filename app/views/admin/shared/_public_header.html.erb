@@ -11,27 +11,27 @@
         </li>
 
         <% if cartodb_com_hosted? %>
-          <li class="Header-navigationItem u-hideOnMobile">
+          <li class="Header-navigationItem u-hideOnTablet">
             <a href="<%= CartoDB.url(self, 'root') %>" class="Header-navigationLink">CartoDB</a>
           </li>
         <% else %>
-          <li class="Header-navigationItem js-user-tour u-hideOnMobile">
+          <li class="Header-navigationItem js-user-tour u-hideOnTablet">
             <a href="http://cartodb.com" class="Header-navigationLink js-dropdown-target">Tour <i class="Header-darrow iconFont iconFont-ArrowMenu"></i></a>
           </li>
 
-          <li class="Header-navigationItem js-user-industries u-hideOnMobile">
+          <li class="Header-navigationItem js-user-industries u-hideOnTablet">
             <a href="#/industries" class="Header-navigationLink js-dropdown-target">Industries <i class="Header-darrow iconFont iconFont-ArrowMenu"></i></a>
           </li>
 
-          <li class="Header-navigationItem u-hideOnMobile">
+          <li class="Header-navigationItem u-hideOnTablet">
             <a href="http://cartodb.com/gallery/" class="Header-navigationLink">Gallery</a>
           </li>
 
-          <li class="Header-navigationItem u-hideOnMobile">
+          <li class="Header-navigationItem u-hideOnTablet">
             <a href="http://cartodb.com/pricing/" class="Header-navigationLink">Pricing</a>
           </li>
 
-          <li class="Header-navigationItem js-user-resources u-hideOnMobile">
+          <li class="Header-navigationItem js-user-resources u-hideOnTablet">
             <a href="#/resources" class="Header-navigationLink js-dropdown-target">Resources <i class="Header-darrow iconFont iconFont-ArrowMenu"></i></a>
           </li>
         <% end %>

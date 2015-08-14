@@ -27,7 +27,7 @@
     var belong_organization = <%= @table.owner.has_organization? %>;
     var map                 = <%= safe_js_object @table.map.to_json %>;
     var config              = <%= safe_js_object frontend_config_public({https_apis: request.protocol == 'https://' }) %>;
-    var vizjson             = <%= safe_js_object @vizjson.to_json %>;
+    var vizjson_obj         = <%= safe_js_object @vizjson.to_json %>;
     var auth_token          = <%= safe_js_object @auth_tokens.to_json %>;
     var use_https           = <%= @use_https =%>;
     var api_key             = <%= safe_js_object @api_key.to_json %>;

@@ -1,4 +1,4 @@
-Chaging limits
+Changing limits
 ==============
 
 This section explains how to use rake tasks to change several limits for users.

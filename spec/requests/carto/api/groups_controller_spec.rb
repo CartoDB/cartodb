@@ -30,6 +30,12 @@ describe Carto::Api::GroupsController do
       group.should_not be_nil
     end
 
+    it '#creates return 409 if a group with that data has already been created' do
+      group_information = { name: 'org_group', database_role: 'g_org_database_group' }
+      post api_v1_databases_group_create_url(database_name: @carto_organization.database_name), group_information, default_headers
+      response.status.should == 409
+    end
+
     it '#rename a new group from name and role' do
       group = Carto::Group.where(organization_id: @carto_organization.id).first
       group_information = { name: 'org_group_2', database_role: 'g_org_database_group_2' }

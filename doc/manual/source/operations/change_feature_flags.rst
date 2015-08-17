@@ -42,7 +42,7 @@ And an example to enable the 'special_dashboard' feature for user with user name
 Enabling a feature for a given organization
 -------------------------------------------
 
-Enabling a feature for a given organization is done with a rake task called `enable_feature_for_organization`` and it takes two parameters.
+Enabling a feature for a given organization is done with a rake task called ``enable_feature_for_organization`` and it takes two parameters.
 
 * ``feature_flag_name`` is the name of the feature flag to be enabled. For example: 'special_dashboard'.
 * ``organization_name`` is the internal name ('cartodb' vs 'CartoDB Inc.') to which the feature flag is to be enabled. For example: 'cartodb'.
@@ -96,7 +96,7 @@ And an example to disable the 'special_dashboard' feature for user with user nam
 Disabling a feature for a given organization
 --------------------------------------------
 
-Disabling a feature for a given organization is done with a rake task called `disable_feature_for_organization`` and it takes two parameters.
+Disabling a feature for a given organization is done with a rake task called ``disable_feature_for_organization`` and it takes two parameters.
 
 * ``feature_flag_name`` is the name of the feature flag to be disabled. For example: 'special_dashboard'.
 * ``organization_name`` is the internal name ('cartodb' vs 'CartoDB Inc.') to which the feature flag is to be disabled. For example: 'cartodb'.

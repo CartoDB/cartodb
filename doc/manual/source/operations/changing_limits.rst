@@ -17,11 +17,15 @@ Using the rake task ``set_custom_limits_for_user``, you can change import limits
 
 This task is executed like:
 
-``bundle exec rake cartodb:set_custom_limits_for_user[<user_name>,<import_file_size>,<table_row_count>,<concurrent_imports>]``
+.. code-block:: bash
+
+  $ bundle exec rake cartodb:set_custom_limits_for_user[<user_name>,<import_file_size>,<table_row_count>,<concurrent_imports>]
 
 and an example execution could be:
 
-``bundle exec rake cartodb:set_custom_limits_for_user["manolo","1048576","50000","5"]``
+.. code-block:: bash
+
+  $ bundle exec rake cartodb:set_custom_limits_for_user["manolo","1048576","50000","5"]
 
 Increasing Twitter imports limit
 --------------------------------

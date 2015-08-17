@@ -13,11 +13,15 @@ Enabling a feature for all users is done with a rake task called ``enable_featur
 
 This task is executed like:
 
-``bundle exec rake cartodb:features:enable_feature_for_all_users[<feature_flag_name>]``
+.. code-block:: bash
+
+  $ bundle exec rake cartodb:features:enable_feature_for_all_users[<feature_flag_name>]
 
 And an example to enable the 'special_dashboard' feature could be:
 
-``bundle exec rake cartodb:features:enable_feature_for_all_users["special_dashboard"]``
+.. code-block:: bash
+
+  $ bundle exec rake cartodb:features:enable_feature_for_all_users["special_dashboard"]
 
 
 Enabling a feature for a given user
@@ -30,13 +34,17 @@ Enabling a feature for a given user is done with a rake task called ``enable_fea
 
 This task is executed like:
 
-``bundle exec rake cartodb:features:enable_feature_for_user[<feature_flag_name>,<user_name>]``
+.. code-block:: bash
+
+  $ bundle exec rake cartodb:features:enable_feature_for_user[<feature_flag_name>,<user_name>]
 
 **NOTE** Please be very careful **NOT** to leave a space between parameters, as it will cause rake to spit ``don't know how to build task`` error.
 
 And an example to enable the 'special_dashboard' feature for user with user name 'manolo' could be:
 
-``bundle exec rake cartodb:features:enable_feature_for_user["special_dashboard","manolo"]``
+.. code-block:: bash
+
+  $ bundle exec rake cartodb:features:enable_feature_for_user["special_dashboard","manolo"]
 
 
 Enabling a feature for a given organization
@@ -49,13 +57,17 @@ Enabling a feature for a given organization is done with a rake task called ``en
 
 This task is executed like:
 
-``bundle exec rake cartodb:features:enable_feature_for_organization[<feature_flag_name>,<organization_name>]``
+.. code-block:: bash
+
+  $ bundle exec rake cartodb:features:enable_feature_for_organization[<feature_flag_name>,<organization_name``
 
 **NOTE** Please be very careful **NOT** to leave a space between parameters, as it will cause rake to spit ``don't know how to build task`` error.
 
 And an example to enable the 'special_dashboard' feature for organization 'cartodb' could be:
 
-``bundle exec rake cartodb:features:enable_feature_for_organization["special_dashboard","cartodb"]``
+.. code-block:: bash
+
+  $ bundle exec rake cartodb:features:enable_feature_for_organization["special_dashboard","cartodb"]
 
 
 Disabling a feature for all users
@@ -67,11 +79,15 @@ Disabling a feature for all users is done with a rake task called ``disable_feat
 
 This task is executed like:
 
-``bundle exec rake cartodb:features:disable_feature_for_all_users[<feature_flag_name>]``
+.. code-block:: bash
+
+  $ bundle exec rake cartodb:features:disable_feature_for_all_users[<feature_flag_name>]
 
 And an example to disable the 'special_dashboard' feature could be:
 
-``bundle exec rake cartodb:features:disable_feature_for_all_users["special_dashboard"]``
+.. code-block:: bash
+
+  $ bundle exec rake cartodb:features:disable_feature_for_all_users["special_dashboard"]
 
 
 Disabling a feature for a given user
@@ -84,13 +100,17 @@ Disabling a feature for a given user is done with a rake task called ``disable_f
 
 This task is executed like:
 
-``bundle exec rake cartodb:features:disable_feature_for_user[<feature_flag_name>,<user_name>]``
+.. code-block:: bash
+
+  $ bundle exec rake cartodb:features:disable_feature_for_user[<feature_flag_name>,<user_name>]
 
 **NOTE** Please be very careful **NOT** to leave a space between parameters, as it will cause rake to spit ``don't know how to build task`` error.
 
 And an example to disable the 'special_dashboard' feature for user with user name 'manolo' could be:
 
-``bundle exec rake cartodb:features:disable_feature_for_user["special_dashboard","manolo"]``
+.. code-block:: bash
+
+  $ bundle exec rake cartodb:features:disable_feature_for_user["special_dashboard","manolo"]
 
 
 Disabling a feature for a given organization
@@ -103,13 +123,17 @@ Disabling a feature for a given organization is done with a rake task called ``d
 
 This task is executed like:
 
-``bundle exec rake cartodb:features:disable_feature_for_organization[<feature_flag_name>,<organization_name>]``
+.. code-block:: bash
+
+  $ bundle exec rake cartodb:features:disable_feature_for_organization[<feature_flag_name>,<organization_name``
 
 **NOTE** Please be very careful **NOT** to leave a space between parameters, as it will cause rake to spit ``don't know how to build task`` error.
 
 And an example to disable the 'special_dashboard' feature for organization 'cartodb' could be:
 
-``bundle exec rake cartodb:features:disable_feature_for_organization["special_dashboard","cartodb"]``
+.. code-block:: bash
+
+  $ bundle exec rake cartodb:features:disable_feature_for_organization["special_dashboard","cartodb"]
 
 
 Adding a feature flag
@@ -121,11 +145,15 @@ Adding feature flags should be done using the rake task called ``add_feature fla
 
 This task is executed like:
 
-``bundle exec rake cartodb:features:add_feature flag[<feature_flag_name>]``
+.. code-block:: bash
+
+  $ bundle exec rake cartodb:features:add_feature flag[<feature_flag_name>]
 
 And an example to create a feature flag named "special_dashboard" could be:
 
-``bundle exec rake cartodb:features:add_feature flag["special_dashboard"]``
+.. code-block:: bash
+
+  $ bundle exec rake cartodb:features:add_feature flag["special_dashboard"]
 
 
 Removing a feature flag
@@ -137,11 +165,15 @@ Removing feature flags should be done using the rake task called ``remove_featur
 
 This task is executed like:
 
-``bundle exec rake cartodb:features:remove_feature flag[<feature_flag_name>]``
+.. code-block:: bash
+
+  $ bundle exec rake cartodb:features:remove_feature flag[<feature_flag_name>]
 
 And an example to remove a feature flag named "special_dashboard" could be:
 
-``bundle exec rake cartodb:features:remove_feature flag["special_dashboard"]``
+.. code-block:: bash
+
+  $ bundle exec rake cartodb:features:remove_feature flag["special_dashboard"]
 
 
 Listing all feature flags
@@ -151,7 +183,9 @@ All existing feature flags can be listed using the rake task called ``list_all_f
 
 This task is executed like:
 
-``bundle exec rake cartodb:features:list_all_features``
+.. code-block:: bash
+
+  $ bundle exec rake cartodb:features:list_all_features
 
 
 

@@ -13,9 +13,13 @@ In order to create the organization, 4 parameters must be set:
 
 This task is executed like:
 
-``bundle exec rake cartodb:db:create_new_organization_with_owner ORGANIZATION_NAME="<org_name>" ORGANIZATION_DISPLAY_NAME="<org_display_name>" ORGANIZATION_SEATS="<org_seats>" ORGANIZATION_QUOTA="<org_quota>" USERNAME="<username>"``
+.. code-block:: bash
+
+  $ bundle exec rake cartodb:db:create_new_organization_with_owner ORGANIZATION_NAME="<org_name>" ORGANIZATION_DISPLAY_NAME="<org_display_name>" ORGANIZATION_SEATS="<org_seats>" ORGANIZATION_QUOTA="<org_quota>" USERNAME="<username>"
 
 
 and an example execution for creating an organization owned by 'manolo', named 'CartoDB Inc.', referred to as 'cartodb', with 5 seats and a 1GB quota, would be:
 
-``bundle exec rake cartodb:db:create_new_organization_with_owner ORGANIZATION_NAME="cartodb" ORGANIZATION_DISPLAY_NAME="CartoDB Inc." ORGANIZATION_SEATS="5" ORGANIZATION_QUOTA="1073741824" USERNAME="manolo"``
+.. code-block:: bash
+
+  $ bundle exec rake cartodb:db:create_new_organization_with_owner ORGANIZATION_NAME="cartodb" ORGANIZATION_DISPLAY_NAME="CartoDB Inc." ORGANIZATION_SEATS="5" ORGANIZATION_QUOTA="1073741824" USERNAME="manolo"

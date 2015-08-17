@@ -58,6 +58,7 @@ module CartoDB
       # app/models/visualization/presenter.rb
       attribute :id,                  String
       attribute :name,                String
+      attribute :display_name,        String
       attribute :map_id,              String
       attribute :active_layer_id,     String
       attribute :type,                String

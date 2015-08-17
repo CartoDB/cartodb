@@ -84,7 +84,8 @@ module ApplicationHelper
       tumblr_api_key:             Cartodb.config[:tumblr]['api_key'],
       max_asset_file_size:        Cartodb.config[:assets]["max_file_size"],
       watcher_ttl:                Cartodb.config[:watcher].try("fetch", 'ttl', 60),
-      upgrade_url:                cartodb_com_hosted? ? "''" : "#{current_user.upgrade_url(request.protocol)}"
+      upgrade_url:                cartodb_com_hosted? ? "''" : "#{current_user.upgrade_url(request.protocol)}",
+      licenses:                   Carto::License.all
     }
 
     if Cartodb.config[:datasource_search].present? && Cartodb.config[:datasource_search]['twitter_search'].present? \

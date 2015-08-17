@@ -1,50 +1,33 @@
-<div class="Filters is-relative">
-  <div class="u-inner">
-    <div class="Filters-inner">
-      <span class="Filters-separator"></span>
-      <div class="Filters-row">
-        <div class="Filters-type">
-          <ul class="Filters-list">
-            <li class="Filters-typeItem">
-              <a href="<%= CartoDB.url(self, 'organization_settings') %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_settings" %>">
-                Organization profile
-              </a>
-            </li>
-            <li class="Filters-typeItem">
-              <a href="<%= CartoDB.url(self, 'organization') %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_show" %>">
-                <%= current_user.organization.users.count %>/<%= current_user.organization.seats %> users
-              </a>
-            </li>
-            <% if (!Cartodb.config[:cartodb_com_hosted].present? && (!current_user.organization.present? || current_user.organization_owner?))  %>
-              <li class="Filters-typeItem"><a href="<%= current_user.plan_url(request.protocol) %>" class="Filters-typeLink">Your plan</a></li>
-            <% end %>
-          </ul>
-        </div>
-        <div class="Filters-order"> 
-          <% if (!Cartodb.config[:cartodb_com_hosted].present? && (!current_user.organization.present? || current_user.organization_owner?))  %>
-            <a class="Filters-link" href="<%= current_user.plan_url(request.protocol) %>">
-          <% end %>
-          
-          <div class="Filters-progress">
-            <% per = (current_user.organization.users.count * 100) / current_user.organization.seats %>
-            <% className = '' %>
-            <% if (per > 80 && per < 90) %>
-              <% className = 'caution' %>
-            <% elsif (per > 89) %>
-              <% className = 'danger' %>
-            <% end %>
-            <span class="Filters-progressSize"><%= current_user.organization.users.count %> of <%= current_user.organization.seats %> seats used</span>
-            <div class="Filters-progressBar">
-              <div class="progress-bar">
-                <span class="bar-2 <%= className %>" style="width:<%= per %>%"></span>
-              </div>
-            </div>  
-          </div>
-
-          <% if (!Cartodb.config[:cartodb_com_hosted].present? && (!current_user.organization.present? || current_user.organization_owner?))  %>
+<div class="Filters above-form">
+  <div class="Filters-inner">
+    <span class="Filters-separator"></span>
+    <div class="Filters-row">
+      <div class="Filters-type">
+        <ul class="Filters-list">
+          <li class="Filters-typeItem">
+            <a href="<%= CartoDB.url(self, 'organization_settings') %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_settings" %>">
+              Organization profile
             </a>
+          </li>
+          <li class="Filters-typeItem">
+            <a href="<%= CartoDB.url(self, 'organization_auth') %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_auth" %>">
+              Auth settings
+            </a>
+          </li>
+          <li class="Filters-typeItem">
+            <a href="<%= CartoDB.url(self, 'organization') %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_show" %>">
+              <%= current_user.organization.users.count %>/<%= current_user.organization.seats %> users
+            </a>
+          </li>
+          <li class="Filters-typeItem">
+            <a href="<%= CartoDB.url(self, 'organization_groups') %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_groups" %>">
+              Groups
+            </a>
+          </li>
+          <% if (!Cartodb.config[:cartodb_com_hosted].present? && (!current_user.organization.present? || current_user.organization_owner?))  %>
+            <li class="Filters-typeItem"><a href="<%= current_user.plan_url(request.protocol) %>" class="Filters-typeLink">Your plan</a></li>
           <% end %>
-        </div>
+        </ul>
       </div>
     </div>
   </div>

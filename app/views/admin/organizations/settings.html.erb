@@ -24,63 +24,15 @@
     <%= form_for @organization, url: CartoDB.url(self, 'organization_settings_update', {}, current_user), multipart: true do |f| %>
       <%= csrf_meta_tags %>
 
-      <div class="Form-row">
-        <div class="Form-rowLabel">
-          <label class="Form-label">Public name</label>
-        </div>
-        <div class="Form-rowData">
-          <%= f.text_field :name, :class => "Form-input Form-input--long" %>
-        </div>
-        <div class="Form-rowInfo">
-          <p class="Form-rowInfoText">Check your <a href="<%= CartoDB.base_url(@organization.name) %>">public page</a></p>
-        </div>
-      </div>
-
-      <div class="Form-row">
-        <div class="Form-rowLabel">
-          <label class="Form-label">Website</label>
-        </div>
-        <div class="Form-rowData">
-          <%= f.text_field :website, :class => "Form-input Form-input--long" %>
-        </div>
-        <div class="Form-rowInfo">
-          <p class="Form-rowInfoText"></p>
-        </div>
-      </div>
-
-      <div class="Form-row">
-        <div class="Form-rowLabel">
-          <label class="Form-label">Contact email</label>
-        </div>
-        <div class="Form-rowData">
-          <%= f.text_field :admin_email, :class => "Form-input Form-input--long" %>
-        </div>
-        <div class="Form-rowInfo">
-          <p class="Form-rowInfoText">User support email, default: <%= @organization.owner.email %></p>
-        </div>
-      </div>
-
-      <div class="Form-row">
-        <div class="Form-rowLabel">
-          <label class="Form-label">Description</label>
-        </div>
-        <div class="Form-rowData">
-          <%= f.text_area :description, :class => "Form-textarea Form-input Form-input--long" %>
-        </div>
-        <div class="Form-rowInfo">
-          <p class="Form-rowInfoText"></p>
-        </div>
-      </div>
-
       <div class="Form-row js-avatarSelector">
         <div class="Form-rowLabel">
-          <label class="Form-label">Avatar</label>
+          <label class="Form-label">Organization logo</label>
         </div>
         <div class="Form-rowData Form-avatar">
           <div class="Form-avatarPreview">
             <img src="<%= @organization.avatar_url %>" title="" alt="" class="Form-avatarPreviewImage" />
           </div>
-          <%= f.file_field :avatar_url, :class => "js-fileAvatar", :value => "Change avatar" %>
+          <%= f.file_field :avatar_url, :class => "js-fileAvatar", :value => "Choose image" %>
         </div>
         <div class="Form-rowInfo">
           <p class="Form-rowInfoText">Recommended images should be 128x128 of size</p>
@@ -89,10 +41,60 @@
 
       <div class="Form-row">
         <div class="Form-rowLabel">
+          <label class="Form-label">Brand color</label>
+        </div>
+        <div class="Form-rowData">
+          <button type="button" class="js-colorPicker UserSettings-ColorPicker" style="background:<%= @organization.color.blank? ? "#354046" : @organization.color %>">
+            <span class="ColorPicker-handle">
+              <b class="ColorPicker-handleTriangle"></b>
+            </span>
+          </button>
+          <%= f.hidden_field :color, :class => "js-colorInput" %>
+        </div>
+      </div>
+
+      <div class="Form-row">
+        <div class="Form-rowLabel">
+          <label class="Form-label">Name</label>
+        </div>
+        <div class="Form-rowData">
+          <%= f.text_field :name, :class => "Form-input Form-input--med" %>
+          <div class="Form-rowInfo Form-rowInfo--marginLeft">
+            <p class="Form-rowInfoText">Check your <a href="<%= CartoDB.base_url(@organization.name) %>">public page</a></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="Form-row">
+        <div class="Form-rowLabel">
+          <label class="Form-label">Website</label>
+        </div>
+        <div class="Form-rowData">
+          <%= f.text_field :website, :class => "Form-input Form-input--med" %>
+        </div>
+        <div class="Form-rowInfo">
+          <p class="Form-rowInfoText"></p>
+        </div>
+      </div>
+
+      <div class="Form-row">
+        <div class="Form-rowLabel">
+          <label class="Form-label">Description</label>
+        </div>
+        <div class="Form-rowData">
+          <%= f.text_area :description, :class => "Form-textarea Form-input Form-input--totalwidth" %>
+        </div>
+        <div class="Form-rowInfo">
+          <p class="Form-rowInfoText"></p>
+        </div>
+      </div>
+
+      <div class="Form-row">
+        <div class="Form-rowLabel">
           <label class="Form-label">Twitter username</label>
         </div>
         <div class="Form-rowData">
-          <%= f.text_field :twitter_username, :class => "Form-input Form-input--long" %>
+          <%= f.text_field :twitter_username, :class => "Form-input Form-input--med" %>
         </div>
         <div class="Form-rowInfo">
           <p class="Form-rowInfoText"></p>
@@ -104,12 +106,30 @@
           <label class="Form-label">Disqus shortname</label>
         </div>
         <div class="Form-rowData">
-          <%= f.text_field :discus_shortname, :class => "Form-input Form-input--long" %>
-        </div>
-        <div class="Form-rowInfo">
-          <p class="Form-rowInfoText">Moderate the comments on all maps across your organization</p>
+          <%= f.text_field :discus_shortname, :class => "Form-input Form-input--med", :placeholder => "If empty, CartoDB will moderate them for you" %>
+          <div class="Form-rowInfo Form-rowInfo--marginLeft">
+            <p class="Form-rowInfoText">Be notified by new comments in your pages</p>
+          </div>
         </div>
       </div>
+
+      <div class="Form-row">
+        <div class="Form-rowLabel">
+          <label class="Form-label">Internal support email</label>
+        </div>
+        <div class="Form-rowData">
+          <%= f.text_field :admin_email, :class => "Form-input Form-input--med", :placeholder => "if empty, we will user your email" %>
+          <div class="Form-rowInfo Form-rowInfo--marginLeft">
+            <p class="Form-rowInfoText">Email you will use to give support to your users</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="Form-title">
+        <p class="Form-titleText">New member account defaults</p>
+      </div>
+
+      <span class="Form-separator"></span>
 
       <div class="Form-row">
         <div class="Form-rowLabel">
@@ -133,35 +153,6 @@
             Sign up url is: <a href="<%= @organization_signup_url %>"><%= @organization_signup_url %></a>.
           <% end %>
         </p>
-      </div>
-
-      <div class="Form-row">
-        <div class="Form-rowLabel">
-          <label class="Form-label">Brand color</label>
-        </div>
-        <div class="Form-rowData">
-          <button type="button" class="js-colorPicker ColorPicker" style="background:<%= @organization.color.blank? ? "#354046" : @organization.color %>">
-            <span class="ColorPicker-handle">
-              <b class="ColorPicker-handleTriangle"></b>
-            </span>
-          </button>
-          <%= f.hidden_field :color, :class => "js-colorInput" %>
-        </div>
-      </div>
-
-      <div class="Form-row">
-        <div class="Form-rowLabel">
-          <label class="Form-label Form-label--multipleLines">Whitelisted email domains</label>
-        </div>
-        <div class="Form-rowData">
-          <div class="Form-tags js-domains">
-            <ul class="Form-tagsList js-domainsList"></ul>
-          </div>
-          <%= f.hidden_field :whitelisted_email_domains, :value => "#{ @organization[:whitelisted_email_domains].join(',') if !@organization[:whitelisted_email_domains].blank? }", :class => "js-whitelist" %>
-        </div>
-        <div class="Form-rowInfo">
-          <p class="Form-rowInfoText">Only valid domains will be added (ex. cartodb.com)</p>
-        </div>
       </div>
 
       <div class="Form-row">

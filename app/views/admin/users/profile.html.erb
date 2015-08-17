@@ -36,12 +36,12 @@
         </div>
         <div class="Form-rowData Form-avatar">
           <div class="Form-avatarPreview">
-            <img src="<%= @user.avatar %>" class="Form-avatarPreviewImage" />  
+            <img src="<%= @user.avatar %>" class="Form-avatarPreviewImage" />
           </div>
           <%= f.file_field :avatar_url, :class => "js-fileAvatar", :value => "Change image" %>
-        </div>
-        <div class="Form-rowInfo">
-          <p class="Form-rowInfoText">Recommended images should be 128x128 of size</p>
+          <div class="Form-rowInfo Form-rowInfo--marginLeft">
+            <p class="Form-rowInfoText">Recommended images should be 128x128 of size</p>
+          </div>
         </div>
       </div>
 

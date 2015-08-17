@@ -1,6 +1,6 @@
 # coding: utf-8
 class Admin::OrganizationsController < ApplicationController
-  ssl_required :show, :settings, :settings_update, :regenerate_all_api_keys
+  ssl_required :show, :settings, :settings_update, :auth, :regenerate_all_api_keys
   before_filter :login_required, :load_organization_and_members
 
   layout 'application'
@@ -29,7 +29,7 @@ class Admin::OrganizationsController < ApplicationController
     @organization.description = attributes[:description]
     @organization.display_name = attributes[:display_name]
     @organization.color = attributes[:color]
-    @organization.whitelisted_email_domains = attributes[:whitelisted_email_domains].split(",")
+    
     if attributes.include?(:default_quota_in_bytes)
       default_quota_in_bytes = attributes[:default_quota_in_bytes]
       @organization.default_quota_in_bytes = default_quota_in_bytes.blank? ? nil : default_quota_in_bytes.to_i * 1024 * 1024
@@ -60,6 +60,34 @@ class Admin::OrganizationsController < ApplicationController
     CartoDB.notify_exception(e, { organization: @organization.id, current_user: current_user.id })
     flash[:error] = "There was an error regenerating the API keys. Please, try again and contact us if the problem persists"
     render action: 'settings'
+  end
+
+  def auth
+    respond_to do |format|
+      format.html { render 'auth' }
+    end
+  end
+
+  def auth_update
+    attributes = params[:organization]
+    @organization.whitelisted_email_domains = attributes[:whitelisted_email_domains].split(",")
+    @organization.update_in_central
+    @organization.save(raise_on_failure: true)
+
+    redirect_to CartoDB.url(self, 'organization_auth', {}, current_user), flash: { success: "Your changes have been saved correctly." }
+  rescue CartoDB::CentralCommunicationFailure => e
+    @organization.reload
+    flash.now[:error] = "There was a problem while updating your organization. Please, try again and contact us if the problem persists. #{e.user_message}"
+    render action: 'settings'
+  rescue Sequel::ValidationFailed => e
+    flash.now[:error] = "There's been a validation error, check your values"
+    render action: 'settings'
+  end
+
+  def groups
+    respond_to do |format|
+      format.html { render 'groups' }
+    end
   end
 
   private

@@ -156,7 +156,7 @@
   }
 }
 // Positionate relative to the content
-.Filters.is-relative { position: relative }
+.Filters.above-form { position: relative; margin-bottom: 30px; }
 .Filters > .u-inner {
   position:relative;
   display:block;
@@ -184,12 +184,46 @@
   @include justify-content(space-between, justify);
   @include align-items(center, center);
   height:80px;
+
+  &.Filters-row--underFilters { height: 62px; }
 }
 .Filters-row.Filters-row--centered { @include justify-content(center) }
 .Filters-list {
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
+}
+
+.Filters-list--underFilter {
+  .Filters-searchEnabler--underFilter {
+    display:inline;
+    min-width: 83px;
+  }
+
+  .Filters-searchLinkIcon--underFilter { 
+    display:inline;
+    font-weight: bold;
+    margin-right: 10px;
+   }
+
+  .Filters-searchItem--underFilter {
+    display:inline;
+    width: 320px;
+
+    .Filters-cleanSearch {
+      top: 26px;
+    }
+  }
+
+  .Filters-searchInput--underFilter { width: 320px; }
+  .Filters-actionButton--underFilter { 
+    margin-left: 48px;
+
+    .Button {
+      padding: 0 15px;
+      height: 30px;
+    }
+  }
 }
 
 .Filters-typeItem {
@@ -399,7 +433,8 @@ a.Filters-cleanSearch { line-height:32px }
 }
 .Filters-inner.search--enabled {
 
-  .Filters-typeItem,
+  .Filters-typeItem:not(&.Filters-searchEnabler--underFilter),
+  .Filters-typeItem:not(&.Filters-searchInput--underFilter),
   .Filters-orderItem,
   .Button--positive { display:none }
 
@@ -407,7 +442,10 @@ a.Filters-cleanSearch { line-height:32px }
     display:inline;
     min-width: 65px;
   }
+
   .Filters-searchItem { display:inherit }
+
+  &.search--underFilters { margin-top: -30px; }
 }
 .Filters-progress {
   @include display-flex();

@@ -10,7 +10,7 @@
   @include display-flex();
   @include justify-content(flex-start, start);
   @include flex-wrap(wrap);
-  width: 940px;
+  width: 100%;
   padding: 0 0 30px;
 }
 .OrganizationList--centered {
@@ -19,9 +19,7 @@
   @include align-items(center, center);
 }
 .OrganizationList-user {
-  width: 300px;
-  height: 84px;
-  margin: $sMargin-element $sMargin-element 0 0;
+  width: 100%;
 }
 .OrganizationList-userAvatar {
   width: 42px;
@@ -41,25 +39,29 @@
 .OrganizationList > div:nth-child(3n) .OrganizationList-user { margin-right: 0 }
 .OrganizationList-userLink {
   @include display-flex();
-  @include justify-content(space-between, justify);
-  width: 258px;
-  height: 42px;
   padding: $sMargin-element;
-  border: 1px solid $cStructure-mainLine;
-  border-radius: 2px;
   text-decoration: none!important;
+
+  &:not(:first-child) { border-top: 1px solid $cStructure-mainLine; }
+
 }
 .OrganizationList-user--empty .OrganizationList-userLink { border: 1px dashed $cStructure-mainLine }
-.OrganizationList-userInfo { width: 200px }
+.OrganizationList-userInfo { margin-left: 20px; }
 .OrganizationList-userInfoName {
   @include display-flex();
+  @include flex-direction(column);
   @include justify-content(flex-start, start);
-  @include align-items(center, center);
 }
 .OrganizationList-userInfoTitle {
   max-width: 200px;
-  font-size: $sFontSize-larger;
+  font-size: 14px;
   font-weight: $sFontWeight-normal;
+  color: $cHighlight-main;
+}
+.OrganizationList-userInfoSubtitle {
+  max-width: 200px;
+  font-size: 14px;
+  font-weight: 300;
   color: $cTypography-paragraphs;
 }
 .OrganizationList-userInfoTitle--default { color: $cTypography-help }
@@ -67,10 +69,10 @@
   color: $cTypography-help;
 }
 .OrganizationList-userInfoLabel {
-  min-width: 40px;
-  padding: 0 12px;
-  margin-left: 12px;
-  line-height: 20px;
+  min-width: 30px;
+  padding: 0 10px;
+  margin-left: 8px;
+  line-height: 17px;
   background: #8EB83F;
   border-radius: 35px;
   font-size: $sFontSize-smaller;

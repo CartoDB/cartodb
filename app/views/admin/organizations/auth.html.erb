@@ -1,0 +1,88 @@
+<% content_for(:page_title) do %>
+  <%= current_user.organization.name %> auth settings |
+<% end %>
+<%= content_for(:js) do %>
+  <script type="text/javascript">
+    var username = "<%= current_user.username %>";
+    var config = <%= safe_js_object frontend_config %>;
+    var user_data = <%= safe_js_object current_user.data.to_json.html_safe %>;
+  </script>
+  <%= javascript_include_tag 'cdb.js', 'models.js', 'organization_templates.js', 'organization_deps.js', 'organization.js' -%>
+<% end %>
+<%= content_for(:css) do %>
+  <%= stylesheet_link_tag 'organization.css', :media => 'all' %>
+<% end %>
+
+<%= render :partial => 'shared/flash_message' %>
+
+<div class="UserSection u-inner">
+  <%= render :partial => 'admin/shared/pages_subheader' %>
+
+  <div class="CredentialsContent">
+    <%= render :partial => 'admin/shared/org_subheader' %>
+
+    <%= form_for @organization, url: CartoDB.url(self, 'organization_auth_update', {}, current_user), multipart: true do |f| %>
+      <%= csrf_meta_tags %>
+
+      <div class="Form-row">
+        <div class="Form-rowLabel">
+          <label class="Form-label Form-label--multipleLines">Whitelisted email domains</label>
+        </div>
+        <div class="Form-rowData">
+          <div class="Form-tags js-domains">
+            <ul class="Form-tagsList js-domainsList">
+              <span class= "Form-tagsList--placeholder js-placeholder">Only valid domains will be added (ex. cartodb.com)</span>
+            </ul>
+          </div>
+          <%= f.hidden_field :whitelisted_email_domains, :value => "#{ @organization[:whitelisted_email_domains].join(',') if !@organization[:whitelisted_email_domains].blank? }", :class => "js-whitelist", :placeholder => "Only valid domains will be added (ex. cartodb.com)" %>
+          <div class="Form-rowInfo Form-rowInfo--marginLeft">
+            <p class="Form-rowInfoText warning">If empty, login and signup pages will be disabled</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="Form-title">
+        <h4 class="Form-titleHeader">Organization log in/sign up</h4>
+        <p class="Form-titleText">
+          Customize your organization log in and sign up.<br/>
+          <% if @organization[:whitelisted_email_domains].length === 0 %>
+            <span class="Form-titleText--negative">Sign up will only be enabled when whitelist is not empty.</span>
+          <% else %>
+            Sign up url is: <a href="<%= @organization_signup_url %>"><%= @organization_signup_url %></a>.
+          <% end %>
+        </p>
+      </div>
+
+      <div class="Form-row">
+        <div class="Form-rowLabel">
+          <label class="Form-label">Default new user quota</label>
+        </div>
+        <div class="Form-rowData">
+          <%= f.text_field :default_quota_in_bytes, :value => "#{ ( @organization[:default_quota_in_bytes].to_i / (1024 * 1024) ) if !@organization[:default_quota_in_bytes].blank? }", :class => "Form-input Form-input--long #{ 'Form-input--error' if @organization.errors[:default_quota_in_bytes].present? } js-userQuota" %>
+        </div>
+        <div class="Form-rowInfo">
+          <% if (@organization.errors[:default_quota_in_bytes].present?) %>
+            <p class="Form-rowInfoText Form-rowInfoText--error"><%= @organization.errors[:default_quota_in_bytes].first %></p>
+          <% else %>
+            <p class="Form-rowInfoText">Set (in MB) the quota of new users in your organization</p>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="Form-footer">
+        <p class="Form-footerText"></p>
+        <%= button_tag(type: 'submit', class: 'Button Button--main') do %>
+          <% content_tag(:span, 'Save changes') %>
+        <% end %>
+      </div>
+    <% end %>
+
+  </div>
+
+</div>
+
+<% if !Cartodb.config[:cartodb_com_hosted].present? %>
+  <div class="SupportBanner" id="support-banner"></div>
+<% end %>
+
+<%= render 'admin/shared/footer' %>

@@ -1,37 +1,28 @@
 <% content_for(:page_title) do %>
-  <%= current_user.organization.name %> |
+  <%= current_user.organization.name %> auth settings |
 <% end %>
 <%= content_for(:js) do %>
   <script type="text/javascript">
     var username = "<%= current_user.username %>";
-    var type = "oauth";
     var config = <%= safe_js_object frontend_config %>;
-    var organization_data = {
-      base_url: "<%= CartoDB.url(self, 'create_organization_user', {}, current_user) %>", // HACK!!!
-      id: "<%= current_user.organization.id %>",
-      quota_in_bytes: <%= current_user.organization.quota_in_bytes %>,
-      seats: <%= current_user.organization.seats %>,
-      owner: { id: "<%= current_user.id %>" }
-    };
     var user_data = <%= safe_js_object current_user.data.to_json.html_safe %>;
-    var upgrade_url = "<%= current_user.upgrade_url(request.protocol) %>";
   </script>
   <%= javascript_include_tag 'cdb.js', 'models.js', 'organization_templates.js', 'organization_deps.js', 'organization.js' -%>
 <% end %>
 <%= content_for(:css) do %>
-  <%= stylesheet_link_tag  'organization.css',  :media => 'all' %>
+  <%= stylesheet_link_tag 'organization.css', :media => 'all' %>
 <% end %>
 
 <%= render :partial => 'shared/flash_message' %>
 
 <div class="UserSection u-inner">
   <%= render :partial => 'admin/shared/pages_subheader' %>
-  
+
   <div class="CredentialsContent">
     <%= render :partial => 'admin/shared/org_subheader' %>
 
-    <div class="Form Form--minHeight js-orgUsersList"></div>
   </div>
+
 </div>
 
 <% if !Cartodb.config[:cartodb_com_hosted].present? %>

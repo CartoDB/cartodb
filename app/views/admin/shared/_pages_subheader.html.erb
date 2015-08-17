@@ -31,7 +31,7 @@
         <li class="AsideFilters-typeItem"><a href="<%= current_user.plan_url(request.protocol) %>" class="AsideFilters-typeLink">Billing</a></li>
       <% end %>
       <% if current_user.organization_owner? %>
-        <li class="AsideFilters-typeItem"><a href="<%= CartoDB.url(self, 'organization_settings') %>" class="AsideFilters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_settings" %>" class="AsideFilters-typeLink">Organization settings</a></li>
+        <li class="AsideFilters-typeItem"><a href="<%= CartoDB.url(self, 'organization_settings') %>" class="AsideFilters-typeLink <%= 'is-selected' if "#{params[:controller]}" == "admin/organizations" %>" class="AsideFilters-typeLink">Organization settings</a></li>
       <% end %>
     </ul>
   </div>

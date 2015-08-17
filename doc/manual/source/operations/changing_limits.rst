@@ -26,5 +26,5 @@ and an example execution could be:
 Increasing Twitter imports limit
 --------------------------------
 
-Increasing the Twitter imports limit should done using rake task ``increase_limits_for_twitter_import_users``. This rake task takes no parameters. Upon execution, all users with Twitter imports enabled will have **1500MB of filesize quota** and a **5M row quota** limit.
+Increasing the Twitter imports limit should done using rake task ``increase_limits_for_twitter_import_users``. This rake task takes no parameters. Upon execution, all users with Twitter imports enabled will have **1500MB of file size quota** and a **5M row quota** limit.
 

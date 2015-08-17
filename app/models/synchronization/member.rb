@@ -391,11 +391,11 @@ module CartoDB
       end # geocode_table
 
       def to_hash
-        attributes.to_hash
+        attributes.merge({from_external_source: from_external_source?}).to_hash
       end
 
       def to_json(*args)
-        attributes.to_json(*args)
+        attributes.merge({from_external_source: from_external_source?}).to_json(*args)
       end
 
       def valid?

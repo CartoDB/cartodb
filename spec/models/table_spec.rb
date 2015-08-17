@@ -12,6 +12,10 @@ require_relative '../spec_helper'
 def check_schema(table, expected_schema, options={})
   table_schema = table.schema(:cartodb_types => options[:cartodb_types] || false)
   schema_differences = (expected_schema - table_schema) + (table_schema - expected_schema)
+
+  # Filter out timestamp columns for backwards compatibility with new CDB_CartodbfyTable
+  schema_differences.reject! {|x| [:created_at, :updated_at].include?(x[0]) }
+
   schema_differences.should be_empty, "difference: #{schema_differences.inspect}"
 end
 

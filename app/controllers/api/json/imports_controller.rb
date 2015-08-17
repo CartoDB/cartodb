@@ -193,7 +193,7 @@ class Api::Json::ImportsController < Api::ApplicationController
     if params[:privacy].present?
       privacy = (UserTable::PRIVACY_VALUES_TO_TEXTS.invert)[params[:privacy].downcase]
       raise "Unknown value '#{params[:privacy]}' for 'privacy'. 'private', 'public' and 'link' are allowed." if privacy.nil?
-      raise "Your account type (#{current_user.account_type.tr('[]','')}) does not allow to create private datasets. [Check https://cartodb.com/pricing for more info]" if privacy != UserTable::PRIVACY_PUBLIC && !current_user.private_tables_enabled
+      raise "Your account type (#{current_user.account_type.tr('[]','')}) does not allow to create private datasets. Check https://cartodb.com/pricing for more info." if privacy != UserTable::PRIVACY_PUBLIC && !current_user.private_tables_enabled
       privacy
     else
       nil

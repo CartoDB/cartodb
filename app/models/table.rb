@@ -414,7 +414,12 @@ class Table
 
       if !@data_import.import_extra_options.nil?
         extra_options = ::JSON.parse(@data_import.import_extra_options)
-        if !extra_options["privacy"].nil? && self.owner.private_tables_enabled
+        if !extra_options['privacy'].nil?
+          if extra_options['privacy'] != (UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']
+            if !self.owner.private_tables_enabled
+              raise "User can't create private tables"
+            end
+          end
           @user_table.privacy = extra_options["privacy"]
         end
       end

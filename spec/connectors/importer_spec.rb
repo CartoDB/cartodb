@@ -87,13 +87,7 @@ describe CartoDB::Connector::Importer do
     @user.private_tables_enabled = false
     @user.save
 
-    o = [('a'..'z'), ('A'..'Z'), (0..9)].map { |i| i.to_a }.flatten
-    filepath        = "/tmp/#{(0...12).map { o[rand(o.length)] }.join}.csv"
-
-    CSV.open(filepath, 'wb') do |csv|
-      csv << ['nombre', 'apellido', 'profesion']
-      csv << ['Manolo', 'Escobar', 'Artista']
-    end
+    filepath = "#{Rails.root}/spec/support/data/elecciones2008.csv"
 
     data_import = DataImport.create(
       :user_id       => @user.id,
@@ -106,8 +100,6 @@ describe CartoDB::Connector::Importer do
 
     data_import.run_import!
 
-    File.delete(filepath)
-
     UserTable[id: data_import.table.id].privacy.should eq (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']
   end
 
@@ -115,13 +107,7 @@ describe CartoDB::Connector::Importer do
     @user.private_tables_enabled = true
     @user.save
 
-    o = [('a'..'z'), ('A'..'Z'), (0..9)].map { |i| i.to_a }.flatten
-    filepath        = "/tmp/#{(0...12).map { o[rand(o.length)] }.join}.csv"
-
-    CSV.open(filepath, 'wb') do |csv|
-      csv << ['nombre', 'apellido', 'profesion']
-      csv << ['Manolo', 'Escobar', 'Artista']
-    end
+    filepath = "#{Rails.root}/spec/support/data/elecciones2008.csv"
   
     data_import = DataImport.create(
       :user_id       => @user.id,
@@ -134,8 +120,6 @@ describe CartoDB::Connector::Importer do
 
     data_import.run_import!
 
-    File.delete(filepath)
-
     UserTable[id: data_import.table.id].privacy.should eq (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['private']
   end
 
@@ -143,13 +127,7 @@ describe CartoDB::Connector::Importer do
     @user.private_tables_enabled = true
     @user.save
 
-    o = [('a'..'z'), ('A'..'Z'), (0..9)].map { |i| i.to_a }.flatten
-    filepath        = "/tmp/#{(0...12).map { o[rand(o.length)] }.join}.csv"
-
-    CSV.open(filepath, 'wb') do |csv|
-      csv << ['nombre', 'apellido', 'profesion']
-      csv << ['Manolo', 'Escobar', 'Artista']
-    end
+    filepath = "#{Rails.root}/spec/support/data/elecciones2008.csv"
   
     data_import = DataImport.create(
       :user_id       => @user.id,
@@ -160,8 +138,6 @@ describe CartoDB::Connector::Importer do
     data_import.values[:data_source] = filepath
 
     data_import.run_import!
-
-    File.delete(filepath)
 
     UserTable[id: data_import.table.id].privacy.should eq (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['private']
   end
@@ -170,13 +146,7 @@ describe CartoDB::Connector::Importer do
     @user.private_tables_enabled = false
     @user.save
 
-    o = [('a'..'z'), ('A'..'Z'), (0..9)].map { |i| i.to_a }.flatten
-    filepath        = "/tmp/#{(0...12).map { o[rand(o.length)] }.join}.csv"
-
-    CSV.open(filepath, 'wb') do |csv|
-      csv << ['nombre', 'apellido', 'profesion']
-      csv << ['Manolo', 'Escobar', 'Artista']
-    end
+    filepath = "#{Rails.root}/spec/support/data/elecciones2008.csv"
   
     data_import = DataImport.create(
       :user_id       => @user.id,
@@ -188,9 +158,47 @@ describe CartoDB::Connector::Importer do
 
     data_import.run_import!
 
-    File.delete(filepath)
-
     UserTable[id: data_import.table.id].privacy.should eq (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']
+  end
+
+  it 'should import as public with private_tables_enabled' do 
+    @user.private_tables_enabled = true
+    @user.save
+
+    filepath = "#{Rails.root}/spec/support/data/elecciones2008.csv"
+  
+    data_import = DataImport.create(
+      :user_id       => @user.id,
+      :data_source   => filepath,
+      :updated_at    => Time.now,
+      :append        => false,
+      :extra_options => ::JSON.dump({'privacy' => (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']})
+    )
+    data_import.values[:data_source] = filepath
+
+    data_import.run_import!
+
+    data_import.success.should eq true
+  end
+
+  it 'should not import as private if private_tables_enabled is disabled' do 
+    @user.private_tables_enabled = false
+    @user.save
+
+    filepath = "#{Rails.root}/spec/support/data/elecciones2008.csv"
+  
+    data_import = DataImport.create(
+      :user_id       => @user.id,
+      :data_source   => filepath,
+      :updated_at    => Time.now,
+      :append        => false,
+      :extra_options => ::JSON.dump({'privacy' => (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['private']})
+    )
+    data_import.values[:data_source] = filepath
+
+    data_import.run_import!
+
+    data_import.success.should_not eq true
   end
 end
 

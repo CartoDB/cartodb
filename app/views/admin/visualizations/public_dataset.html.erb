@@ -234,7 +234,7 @@
 
     <% if @total_visualizations.count > 0 %>
       <ul class="MapsList PublicMap-mapsList">
-        <% @total_visualizations.each do |vis| %>
+        <% @total_visualizations.take(3).each do |vis| %>
           <li class="MapsList-item">
             <div class="MapCard" data-zoom="<%= '' %>" data-vizjson-url="<%= CartoDB.url(self, 'api_v2_visualizations_vizjson', {id: vis.id}, vis.user) %>.json">
               <a href="<%= CartoDB.url(self, 'public_visualizations_public_map', {id: vis.id}, user) %>" class="MapCard-header js-header">

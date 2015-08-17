@@ -3,7 +3,7 @@
 class EmbedRedisCache
 
   # This needs to be changed whenever there're changes in the code that require invalidation of old keys
-  VERSION = '2'
+  VERSION = '3'
 
 
   def initialize(redis_cache = $tables_metadata)

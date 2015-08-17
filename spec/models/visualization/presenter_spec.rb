@@ -68,6 +68,7 @@ describe Visualization::Member do
       vis_mock = mock
       vis_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
       vis_mock.stubs(:name).returns('vis1')
+      vis_mock.stubs(:display_name).returns('vis1')
       vis_mock.stubs(:map_id).returns(UUIDTools::UUID.timestamp_create.to_s)
       vis_mock.stubs(:active_layer_id).returns(1)
       vis_mock.stubs(:type).returns(Visualization::Member::TYPE_CANONICAL)
@@ -100,6 +101,7 @@ describe Visualization::Member do
 
       data[:id].present?.should eq true
       data[:name].present?.should eq true
+      data[:display_name].present?.should eq true
       data[:map_id].present?.should eq true
       data[:active_layer_id].present?.should eq true
       data[:type].present?.should eq true

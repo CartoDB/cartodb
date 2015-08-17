@@ -10,8 +10,8 @@ module Carto
       ssl_required :create unless Rails.env.development? || Rails.env.test?
 
       before_filter :load_parameters
-      before_filter :load_group_from_loaded_parameters, :only => [:destroy, :add_member, :remove_member]
-      before_filter :load_user_from_username, :only => [:add_member, :remove_member]
+      before_filter :load_group_from_loaded_parameters, :only => [:update, :destroy, :add_member, :remove_member]
+      before_filter :load_user_from_username, :only => [:update, :add_member, :remove_member]
 
       def create
         group = Group.new_instance(@database_name, @name, @database_role)
@@ -22,7 +22,19 @@ module Carto
         end
       rescue => e
         CartoDB.notify_exception(e, { params: params , group: (group ? group : 'not created') })
-        render json: { errors: e.message }, status: 400
+        render json: { errors: e.message }, status: 500
+      end
+
+      def update
+        @group.rename(params['name'], @database_role)
+        if @group.save
+          render json: @group.to_json
+        else
+          render json: { errors: "Error saving group: #{@group.errors}" }, status: 400
+        end
+      rescue => e
+        CartoDB.notify_exception(e, { params: params , group: (@group ? @group : 'not loaded') })
+        render json: { errors: e.message }, status: 500
       end
 
       def destroy
@@ -30,7 +42,7 @@ module Carto
         render json: {}, status: 200
       rescue => e
         CartoDB.notify_exception(e, { params: params , group: (@group ? @group : 'not loaded') })
-        render json: { errors: e.message }, status: 400
+        render json: { errors: e.message }, status: 500
       end
 
       def add_member
@@ -38,7 +50,7 @@ module Carto
         render json: {}, status: 200
       rescue => e
         CartoDB.notify_exception(e, { params: params , group: (@group ? @group : 'not loaded') })
-        render json: { errors: e.message }, status: 400
+        render json: { errors: e.message }, status: 500
       end
 
       def remove_member
@@ -46,14 +58,14 @@ module Carto
         render json: {}, status: 200
       rescue => e
         CartoDB.notify_exception(e, { params: params , group: (@group ? @group : 'not loaded') })
-        render json: { errors: e.message }, status: 400
+        render json: { errors: e.message }, status: 500
       end
 
       private
 
       def load_parameters
         @database_name = params[:database_name]
-        @name = params[:name]
+        @name = [params[:old_name], params[:name]].compact.first
         @database_role = params[:database_role]
         @username = params[:username]
       end

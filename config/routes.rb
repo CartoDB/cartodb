@@ -353,6 +353,7 @@ CartoDB::Application.routes.draw do
     # Databases (organization) groups
     # Note: url doesn't contain org_id because this needs to be triggered from the SQL API
     post '(/user/:user_domain)(/u/:user_domain)/api/v1/databases/:database_name/groups'                           => 'groups#create',  as: :api_v1_databases_group_create
+    put '(/user/:user_domain)(/u/:user_domain)/api/v1/databases/:database_name/groups/:old_name'          => 'groups#update',  as: :api_v1_databases_group_update
     delete '(/user/:user_domain)(/u/:user_domain)/api/v1/databases/:database_name/groups/:name'          => 'groups#destroy',  as: :api_v1_databases_group_destroy
     post '(/user/:user_domain)(/u/:user_domain)/api/v1/databases/:database_name/groups/:name/users'          => 'groups#add_member',  as: :api_v1_databases_group_add_member
     delete '(/user/:user_domain)(/u/:user_domain)/api/v1/databases/:database_name/groups/:name/users/:username'          => 'groups#remove_member',  as: :api_v1_databases_group_remove_member

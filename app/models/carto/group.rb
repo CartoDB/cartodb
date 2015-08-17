@@ -21,6 +21,11 @@ module Carto
       new(name: name, database_role: database_role, display_name: display_name, organization: organization)
     end
 
+    def rename(new_name, new_database_role)
+      self.name = new_name
+      self.database_role = new_database_role
+    end
+
     def add_member(username)
       user = Carto::User.find_by_username(username)
 

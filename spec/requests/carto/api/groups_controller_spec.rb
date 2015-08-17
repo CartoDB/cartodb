@@ -30,6 +30,18 @@ describe Carto::Api::GroupsController do
       group.should_not be_nil
     end
 
+    it '#rename a new group from name and role' do
+      group = Carto::Group.where(organization_id: @carto_organization.id).first
+      group_information = { name: 'org_group_2', database_role: 'g_org_database_group_2' }
+      put api_v1_databases_group_update_url(database_name: group.database_name, old_name: group.name), group_information, default_headers
+      response.status.should == 200
+      updated_group = Carto::Group.find(group.id)
+      updated_group.should_not be_nil
+      updated_group.name.should eq group_information[:name]
+      updated_group.database_role.should eq group_information[:database_role]
+      updated_group.display_name.should eq group.display_name
+    end
+
     it '#add_member from username' do
       group = Carto::Group.where(organization_id: @carto_organization.id).first
       user_information = { username: @org_user_1.username }

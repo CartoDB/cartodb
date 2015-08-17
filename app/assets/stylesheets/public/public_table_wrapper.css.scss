@@ -206,7 +206,7 @@ body.public { /* Public table CSS */
 
   div.panes {
     overflow-y:hidden;
-    overflow-x:scroll;
+    overflow-x: auto;
     clear:both;
 
     div.shadow { display:none; }

@@ -32,16 +32,13 @@
     <meta name="twitter:image" content="<%= yield :twitter_card %>">
 
     <%= yield :css %>
-    <!--[if gt IE 8]><%= stylesheet_link_tag 'fonts_ie.css' %><![endif]-->
-    <%= csrf_meta_tag %>
 
     <!--[if lt IE 9]>
       <%= javascript_include_tag 'modernizr' %>
     <![endif]-->
   </head>
   <body class="public">
-    <%= render 'admin/shared/old_public_header', :clone => true, :signin => false %>
-    <%= yield %>
+    <%= yield :content %>
     <%= yield :js %>
     <%= insert_trackjs() %>
     <%= insert_google_analytics('primary') %>

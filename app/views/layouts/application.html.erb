@@ -33,6 +33,6 @@
     <%= render 'shared/mixpanel' -%>
     <%= yield :js -%>
     <%= insert_google_analytics('primary') -%>
-    <%= render 'shared/hubspot' -%>
+    <%= insert_hubspot() -%>
   </body>
 </html>

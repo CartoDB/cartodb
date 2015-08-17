@@ -57,6 +57,8 @@ div.panes {
         background: image-url('layout/empty_table.png') no-repeat 0 0 #FFF;
       }
       &.emptyPublicTableInfo {
+        position: absolute;
+        left: 5%;
         background: image-url('layout/empty_public.png') no-repeat center 70px #FFF;
       }
       &.emptySQLInfo {

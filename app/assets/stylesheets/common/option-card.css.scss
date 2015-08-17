@@ -39,6 +39,20 @@
   max-width: 230px; // set a max-width to appear nicer for dataset privacy dialog
   padding: 33px 33px 27px 33px;
 }
+.OptionCard--code {
+  @include align-items(flex-start, start);
+  position: relative;
+  max-height: 200px;
+  text-align: left;
+  color: #2E3C43;
+  background-color: #f9f9f9;
+  overflow: hidden;
+}
+.OptionCard--codeRequest pre { white-space: pre-wrap }
+.OptionCard--codeResult { padding-bottom: 0 }
+.OptionCard--codeResult,
+.OptionCard--codeResult pre { overflow: hidden }
+
 .OptionCard--blocky .OptionCard-title {
   margin-bottom: 0;
 }
@@ -83,4 +97,16 @@
   color: $cTypography-secondary;
   @include nicer-lato-typography();
   margin-bottom: $sMargin-elementInline;
+}
+.OptionCard-shadow {
+  position: absolute;
+  height: 60px;
+  bottom: 0;
+  width: 100%;
+  left: 0;
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(#f9f9f9,0.04)), color-stop(100%, rgba(#f9f9f9,0.95)));
+  background-image: -webkit-linear-gradient(top, rgba(#f9f9f9,0.04) 0%, rgba(#f9f9f9,0.95) 100%);
+  background-image: -moz-linear-gradient(top, rgba(#f9f9f9,0.04) 0%, rgba(#f9f9f9,0.95) 100%);
+  background-image: -o-linear-gradient(top, rgba(#f9f9f9,0.04) 0%, rgba(#f9f9f9,0.95) 100%);
+  background-image: linear-gradient(top, rgba(#f9f9f9,0.04) 0%,rgba(#f9f9f9,0.95) 100%);
 }

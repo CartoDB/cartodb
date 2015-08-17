@@ -19,7 +19,7 @@ body.public { /* Public table CSS */
 
   .pane_table {
     @include reset-table-cell();
-    @include position(15px, calc(35% + 15px), 15px, 15px);
+    @include position(8px, calc(35% + 8px), 8px, 8px);
     z-index: 10;
     border-radius: 3px;
     overflow: hidden;

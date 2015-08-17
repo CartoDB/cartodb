@@ -48,12 +48,10 @@
   background-color: #f9f9f9;
   overflow: hidden;
 }
-.OptionCard--codeRequest pre {
-  white-space: pre-wrap;
-}
-.OptionCard--codeResult {
-  overflow-x: scroll;
-}
+.OptionCard--codeRequest pre { white-space: pre-wrap }
+.OptionCard--codeResult { padding-bottom: 0 }
+.OptionCard--codeResult,
+.OptionCard--codeResult pre { overflow: hidden }
 
 .OptionCard--blocky .OptionCard-title {
   margin-bottom: 0;

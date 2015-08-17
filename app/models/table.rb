@@ -24,6 +24,7 @@ class Table
 
    # TODO Part of a service along with schema
   # INFO: created_at and updated_at cannot be dropped from existing tables without dropping the triggers first
+  CARTODB_REQUIRED_COLUMNS = %W{ cartodb_id the_geom }
   CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at the_geom }
   THE_GEOM_WEBMERCATOR = :the_geom_webmercator
   THE_GEOM = :the_geom

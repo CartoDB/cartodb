@@ -9,7 +9,7 @@ Enabling a feature for all users
 
 Enabling a feature for all users is done with a rake task called ``enable_feature_for_all_users`` and it takes one parameter.
 
-* **Feature name** is the name of the feature flag to be enabled. For example: 'special_dashboard'.
+* **Feature name <feature name>** is the name of the feature flag to be enabled. For example: 'special_dashboard'.
 
 This task is executed like:
 
@@ -25,8 +25,8 @@ Enabling a feature for a given user
 
 Enabling a feature for a given user is done with a rake task called ``enable_feature_for_user`` and it takes two parameters.
 
-* **Feature name** is the name of the feature flag to be enabled. For example: 'special_dashboard'.
-* **User's user name** is the user name of the user to whom the feature flag is to be enabled. For example: 'manolo'.
+* **Feature name <feature name>** is the name of the feature flag to be enabled. For example: 'special_dashboard'.
+* **User's user name <user name>** is the user name of the user to whom the feature flag is to be enabled. For example: 'manolo'.
 
 This task is executed like:
 
@@ -42,10 +42,10 @@ And an example to enable the 'special_dashboard' feature for user with user name
 Enabling a feature for a given organization
 -------------------------------------------
 
-Enabling a feature for a given organization is done with a rake task called ``enable_feature_for_organization`` and it takes two parameters.
+Enabling a feature for a given organization is done with a rake task called `enable_feature_for_organization`` and it takes two parameters.
 
-* **Feature name** is the name of the feature flag to be enabled. For example: 'special_dashboard'.
-* **Organization name** is the internal name ('cartodb' vs 'CartoDB Inc.') to which the feature flag is to be enabled. For example: 'cartodb'.
+* **Feature name <feature name>** is the name of the feature flag to be enabled. For example: 'special_dashboard'.
+* **Organization name <organization name>** is the internal name ('cartodb' vs 'CartoDB Inc.') to which the feature flag is to be enabled. For example: 'cartodb'.
 
 This task is executed like:
 
@@ -63,7 +63,7 @@ Disabling a feature for all users
 
 Disabling a feature for all users is done with a rake task called ``disable_feature_for_all_users`` and it takes one parameter.
 
-* **Feature name** is the name of the feature flag to be disabled. For example: 'special_dashboard'.
+* **Feature name <feature name>** is the name of the feature flag to be disabled. For example: 'special_dashboard'.
 
 This task is executed like:
 
@@ -79,8 +79,8 @@ Disabling a feature for a given user
 
 Disabling a feature for a given user is done with a rake task called ``disable_feature_for_user`` and it takes two parameters.
 
-* **Feature name** is the name of the feature flag to be disabled. For example: 'special_dashboard'.
-* **User's user name** is the user name of the user to whom the feature flag is to be disabled. For example: 'manolo'.
+* **Feature name <feature name>** is the name of the feature flag to be disabled. For example: 'special_dashboard'.
+* **User's user name <user name>** is the user name of the user to whom the feature flag is to be disabled. For example: 'manolo'.
 
 This task is executed like:
 
@@ -96,10 +96,10 @@ And an example to disable the 'special_dashboard' feature for user with user nam
 Disabling a feature for a given organization
 --------------------------------------------
 
-Disabling a feature for a given organization is done with a rake task called ``disable_feature_for_organization`` and it takes two parameters.
+Disabling a feature for a given organization is done with a rake task called `disable_feature_for_organization`` and it takes two parameters.
 
-* **Feature name** is the name of the feature flag to be disabled. For example: 'special_dashboard'.
-* **Organization name** is the internal name ('cartodb' vs 'CartoDB Inc.') to which the feature flag is to be disabled. For example: 'cartodb'.
+* **Feature name <feature name>** is the name of the feature flag to be disabled. For example: 'special_dashboard'.
+* **Organization name <organization name>** is the internal name ('cartodb' vs 'CartoDB Inc.') to which the feature flag is to be disabled. For example: 'cartodb'.
 
 This task is executed like:
 
@@ -117,7 +117,7 @@ Adding a feature flag
 
 Adding feature flags should be done using the rake task called ``add_feature flag``. This rake task only takes one argument:
 
-* **Feature name** is the name of the feature flag to be created.
+* **Feature name <feature name>** is the name of the feature flag to be created.
 
 This task is executed like:
 
@@ -133,7 +133,7 @@ Removing a feature flag
 
 Removing feature flags should be done using the rake task called ``remove_feature flag``. This rake task only takes one argument:
 
-* **Feature name** is the name of the feature flag to be removed.
+* **Feature name <feature name>** is the name of the feature flag to be removed.
 
 This task is executed like:
 

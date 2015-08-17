@@ -118,6 +118,7 @@ $sEditButtonSize: 50px;
   @include justify-content(center);
   @include align-items(center);
   background: $cStructure-mainBkg;
+  border-radius: $sCard-borderRadius;
 }
 .MapCard-header--fake:after {
   left: $sMargin-element;
@@ -213,16 +214,12 @@ $sEditButtonSize: 50px;
   z-index: 1;
 }
 .MapCard-content--compact {
+  min-height: 44px;
   height: auto;
 }
-.MapCard-contentBody {
-  width: 100%;
-}
-.MapCard-contentBodyRow {
-  margin-bottom: $sMargin-min;
-}
+.MapCard-contentBody { width: 100% }
+.MapCard-contentBodyRow { margin-bottom: $sMargin-min }
 .MapCard-itemTitlePermission { background-color: $cStructure-mainBkg }
-
 .MapCard-editButton {
   position: absolute;
   top: -$sEditButtonSize/2; 

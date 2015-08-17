@@ -37,7 +37,7 @@
 
           <div class="PublicMap-leftBlock PublicMap-leftBlock--owner">
             <ul class="Navmenu-list Navmenu-list--owner Navmenu-list--avatar">
-              <li class="Navmenu-item Navmenu-item--owner">
+              <li class="Navmenu-item">
                 <a href="<%= CartoDB.url(self, 'public_maps_home', {}, @visualization.user) %>" target="_blank" class="UserAvatar">
                   <img class="UserAvatar-img--medium" src="<%= @visualization.user.avatar %>" alt="<%= @name %>" title="<%= @name %>" />
                 </a>
@@ -58,7 +58,7 @@
 
           <div class="PublicMap-rightBlock PublicMap-rightBlock--owner u-txt-right">
             <ul class="Navmenu-list">
-              <li class="Navmenu-item Navmenu-item--owner">
+              <li class="Navmenu-item Navmenu-item--buttons">
                 <ul class="u-valign">
                   <li class="Navmenu-subItem">
                     <a href="<%= CartoDB.url(self, 'public_visualizations_embed_map', {id: @visualization.id}, @visualization.user) %>" target="_blank" class="Navmenu-link">
@@ -76,7 +76,7 @@
                 </ul>
               </li>
 
-              <li class="Navmenu-item Navmenu-item--owner js-Navmenu-share u-showOnTablet">
+              <li class="Navmenu-item Navmenu-item--buttons js-Navmenu-share u-showOnTablet">
                 <div class="Navmenu-sep u-showOnTablet"></div>
 
                 <a href="#" class="Navmenu-link Navmenu-shareLink js-Navmenu-shareLink">
@@ -86,7 +86,7 @@
             </ul>
 
             <ul class="Navmenu-list Navmenu-shareList js-Navmenu-shareList u-valign">
-              <li class="Navmenu-item Navmenu-item--owner">
+              <li class="Navmenu-item Navmenu-item--buttons">
                 <div class="Navmenu-sep u-hideOnTablet"></div>
 
                 <ul class="u-valign">

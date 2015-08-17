@@ -20,35 +20,21 @@
   content: "";
   height: 100%;
 }
-.Navmenu-list.Navmenu-list--owner {
-  float: left;
-}
-.Navmenu-list.Navmenu-list--avatar {
-  margin-right: $sMargin-element;
-}
-.Navmenu-item {
-  margin-right: $sMargin-section;
-}
-.Navmenu-subItem {
-  margin-left: $sMargin-group;
-}
-.Navmenu-item.Navmenu-item:last-child {
-  margin-right: 0;
-}
-.Navmenu-item.Navmenu-item--owner {
+.Navmenu-list.Navmenu-list--owner { float: left }
+.Navmenu-list.Navmenu-list--avatar { margin-right: $sMargin-element }
+.Navmenu-item { margin-right: $sMargin-section }
+.Navmenu-subItem { margin-left: $sMargin-group }
+.Navmenu-item.Navmenu-item:last-child { margin-right: 0 }
+.Navmenu-item.Navmenu-item--buttons {
   position: relative;
   top: 3px;
 }
 .Navmenu-item.Navmenu-item--like {
   position: relative;
-  top: 1px;
+  top: 2px;
 }
-.Navmenu-item.Navmenu-item--withsep {
-  position: relative;
-}
-.Navmenu-subItem.Navmenu-subItem:first-child {
-  margin-left: 0;
-}
+.Navmenu-item.Navmenu-item--withsep { position: relative }
+.Navmenu-subItem.Navmenu-subItem:first-child { margin-left: 0 }
 .Navmenu-item,
 .Navmenu-subItem {
   display: inline-block;
@@ -89,18 +75,14 @@
 .Navmenu-item--action {
   color: #0090d7;
 
-  &:hover {
-    color: #007fbd;
-  }
+  &:hover { color: #007fbd }
 }
 .Navmenu-icon {
   font-size: $sFontSize-largest;
   color: #BEC5C9;
   transition: all .2s;
 }
-.Navmenu-icon:hover {
-  color: #aaa;
-}
+.Navmenu-icon:hover { color: #aaa }
 .Navmenu-icon.Navmenu-icon--twitter {
   position: relative;
   top: -2px;
@@ -130,9 +112,7 @@
   border-color: #0090d7;
   color: #fff;
 }
-.Navmenu-editLink.Navmenu-editLink--oneclick {
-  margin-left: 0;
-}
+.Navmenu-editLink.Navmenu-editLink--oneclick { margin-left: 0 }
 .Navmenu-editLink.Navmenu-editLink--more {
   width: 100%;
   padding: 0 16px;
@@ -146,12 +126,8 @@
   border-color: $cNavButton-active;
   color: $cNavButton-active;
 }
-.Navmenu-editLink:hover {
-  text-decoration: none;
-}
-.Navmenu-editLink.is-active {
-  display: inline-block;
-}
+.Navmenu-editLink:hover { text-decoration: none }
+.Navmenu-editLink.is-active { display: inline-block }
 .Navmenu-share {
   display: inline-block;
   vertical-align: middle;
@@ -178,9 +154,7 @@
   position: relative;
   top: -2px;
 }
-div.cartodb-timeslider {
-  margin-bottom: 0;
-}
+div.cartodb-timeslider { margin-bottom: 0 }
 
 
 @media (max-width: $sMedia-desktop) {

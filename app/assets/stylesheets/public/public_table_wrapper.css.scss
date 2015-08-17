@@ -111,15 +111,6 @@ body.public { /* Public table CSS */
     border-top: 1px solid #E5E5E5;
   }
 
-  div.separator_shadow {
-    position: absolute;
-    height: 20px;
-    bottom: 0;
-    width: 100%;
-    @extend .black-gradient-shadow-bottom;
-    z-index: 100;
-  }
-
   div.table.public table tbody tr td div.cell {
     cursor: default; 
   }

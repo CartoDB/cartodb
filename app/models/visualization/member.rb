@@ -105,7 +105,6 @@ module CartoDB
       def self.remote_member(name, user_id, privacy, description, tags, license, source, attributions)
         Member.new({
           name: name,
-          display_name: display_name,
           user_id: user_id,
           privacy: privacy,
           description: description,
@@ -121,10 +120,6 @@ module CartoDB
         if self.privacy != privacy
           changed = true
           self.privacy = privacy
-        end
-        if self.display_name != display_name
-          changed = true
-          self.display_name = display_name
         end
         if self.description != description
           changed = true

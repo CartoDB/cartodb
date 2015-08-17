@@ -15,7 +15,7 @@ This task is executed like:
 
 ``bundle exec rake cartodb:features:enable_feature_for_all_users[<feature_flag_name>]``
 
-And an example to enable the 'special_dashboard' feature would be:
+And an example to enable the 'special_dashboard' feature could be:
 
 ``bundle exec rake cartodb:features:enable_feature_for_all_users["special_dashboard"]``
 
@@ -34,7 +34,7 @@ This task is executed like:
 
 **NOTE** Please be very careful **NOT** to leave a space between parameters, as it will cause rake to spit ``don't know how to build task`` error.
 
-And an example to enable the 'special_dashboard' feature for user with user name 'manolo' would be:
+And an example to enable the 'special_dashboard' feature for user with user name 'manolo' could be:
 
 ``bundle exec rake cartodb:features:enable_feature_for_user["special_dashboard","manolo"]``
 
@@ -53,7 +53,7 @@ This task is executed like:
 
 **NOTE** Please be very careful **NOT** to leave a space between parameters, as it will cause rake to spit ``don't know how to build task`` error.
 
-And an example to enable the 'special_dashboard' feature for organization 'cartodb' would be:
+And an example to enable the 'special_dashboard' feature for organization 'cartodb' could be:
 
 ``bundle exec rake cartodb:features:enable_feature_for_organization["special_dashboard","cartodb"]``
 
@@ -69,7 +69,7 @@ This task is executed like:
 
 ``bundle exec rake cartodb:features:disable_feature_for_all_users[<feature_flag_name>]``
 
-And an example to disable the 'special_dashboard' feature would be:
+And an example to disable the 'special_dashboard' feature could be:
 
 ``bundle exec rake cartodb:features:disable_feature_for_all_users["special_dashboard"]``
 
@@ -88,7 +88,7 @@ This task is executed like:
 
 **NOTE** Please be very careful **NOT** to leave a space between parameters, as it will cause rake to spit ``don't know how to build task`` error.
 
-And an example to disable the 'special_dashboard' feature for user with user name 'manolo' would be:
+And an example to disable the 'special_dashboard' feature for user with user name 'manolo' could be:
 
 ``bundle exec rake cartodb:features:disable_feature_for_user["special_dashboard","manolo"]``
 
@@ -107,7 +107,7 @@ This task is executed like:
 
 **NOTE** Please be very careful **NOT** to leave a space between parameters, as it will cause rake to spit ``don't know how to build task`` error.
 
-And an example to disable the 'special_dashboard' feature for organization 'cartodb' would be:
+And an example to disable the 'special_dashboard' feature for organization 'cartodb' could be:
 
 ``bundle exec rake cartodb:features:disable_feature_for_organization["special_dashboard","cartodb"]``
 
@@ -123,7 +123,7 @@ This task is executed like:
 
 ``bundle exec rake cartodb:features:add_feature flag[<feature_flag_name>]``
 
-And an example to create a feature flag named "special_dashboard" would be:
+And an example to create a feature flag named "special_dashboard" could be:
 
 ``bundle exec rake cartodb:features:add_feature flag["special_dashboard"]``
 
@@ -139,7 +139,7 @@ This task is executed like:
 
 ``bundle exec rake cartodb:features:remove_feature flag[<feature_flag_name>]``
 
-And an example to remove a feature flag named "special_dashboard" would be:
+And an example to remove a feature flag named "special_dashboard" could be:
 
 ``bundle exec rake cartodb:features:remove_feature flag["special_dashboard"]``
 

@@ -233,19 +233,17 @@
       <%# DISQUS %>
       <div class="u-inner">
         <div class="PublicMap-block PublicMap-info">
-          <div class="PublicMap-leftBlock PublicMap-leftBlock--large">
-            <div id="disqus_thread"></div>
-            <script type="text/javascript">
-              var disqus_shortname  = '<%= @disqus_shortname %>';
-              var disqus_identifier = '<%= @visualization.id %>';
+          <div id="disqus_thread"></div>
+          <script type="text/javascript">
+            var disqus_shortname  = '<%= @disqus_shortname %>';
+            var disqus_identifier = '<%= @visualization.id %>';
 
-              (function() {
-                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-                dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-              })();
-            </script>
-          </div>
+            (function() {
+              var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+              dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+              (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+          </script>
         </div>
       </div>
 
@@ -424,6 +422,6 @@
     page_owner: @visualization.user
   } %>
 
-  <%= render 'shared/hubspot' -%>
+  <%= insert_hubspot() -%>
 
 <% end %>

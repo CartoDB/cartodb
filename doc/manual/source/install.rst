@@ -2,29 +2,277 @@
 Installation
 ============
 
-intro
+.. warning::
+  CartoDB is guaranteed to run without any issue in Ubuntu 12.04 x64. This documentation describes de process to install CartoDB in this specific OS version.
+
+  However this doesn't mean that it won't work with other Operating Systems or other Ubuntu. There are also many successful installations on Amazon EC2, Linode, dedicated instances and development machines running OS X and Ubuntu 12.04+.
+
+System requirements
+-------------------
+Besides the OS version mentioned in the introduction, there are some systems requirements needed before starting with the installation of the stack. Also this process assumes that you have enough permissions in the system to run successfully most part of the commands of this doc.
+
+System locales
+~~~~~~~~~~~~~~
+
+Installations assume you use UTF8. You can set the locale by doing this:
+
+.. highlight:: bash
+
+::
+
+  sudo locale-gen en_US.UTF-8
+  sudo update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
+
+Build essentials
+~~~~~~~~~~~~~~~~
+
+Althoug we try to maintain packaged versions of almost every part of the stack, there are some parts like gems or npm packages that need some development tools in the system in order to compile. You can install all the needed build tools by doing this:
+
+.. highlight:: bash
+
+::
+ 
+  sudo apt-get install autoconf binutils-doc bison build-essential flex
+
+GIT
+~~~
+
+You will need git commands in order to handle some repositories and install some dependencies:
+
+.. highlight:: bash
+
+::
+
+  sudo apt-get install git
+
+APT tools
+~~~~~~~~~
+In order to easily install some packages repositories sources is suggested to install this tool:
+
+.. highlight:: bash
+
+::
+
+  sudo apt-get install python-software-properties
+
+
+PostgreSQL
+----------
+
+* Add PPA repository
+
+.. highlight:: bash
+
+::
+
+  sudo add-apt-repository ppa:cartodb/postgresql-9.3
+
+
+* Install client packages
+
+.. highlight:: bash
+
+::
+
+  sudo apt-get install libpq5 \
+                       libpq-dev \
+                       postgresql-client-9.3 \
+                       postgresql-client-common
+
+* Install server packages
+
+.. highlight:: bash
+
+::
+
+  sudo apt-get install postgresql-9.3 \ 
+                       postgresql-contrib-9.3 \
+                       postgresql-server-dev-9.3 \
+                       postgresql-plpython-9.3
+
+  
+* Install schema triggers. This is a extension of packaged by cartodb needed for other postgresql extensions
+
+.. highlight:: bash
+
+::
+
+  sudo add-apt-repository ppa:cartodb/pg-schema-trigger
+  sudo apt-get install postgresql-9.3-pg-schema-triggers
+
+
+PostgreSQL access authorization is managed through pg_hba.conf configuration file. Here it's defined how the users created in postgresql cluster can access the server. This involves several aspects like type of authentication (md5, no password, etc..) or source IP of the connection. In order to simplify the process of the installation we are going to allow connections with postgres user from localhost without authentication. Of course this can be configured in a different way at any moment but changes here should imply changes in database access configuration of CartoDB apps. 
+
+This is the pg_hba.conf with the no password access from localhost:
+
+.. highlight:: bash
+
+::
+  
+  local   all             all                                     trust
+  host    all             all             127.0.0.1/32            trust
+
+* Create some users in PostgreSQL. These users are used by some CartoDB apps internally
+
+.. highlight:: bash
+
+::
+
+  sudo createuser publicuser --no-createrole --no-createdb --no-superuser -U postgres
+  sudo createuser tileuser --no-createrole --no-createdb --no-superuser -U postgres
+
+GIS dependencies
+----------------
+
+* Add GIS PPA
+
+.. highlight:: bash
+
+::
+
+  sudo add-apt-repository ppa:cartodb/gis
+
+* Install Proj
+    
+.. highlight:: bash
+
+::
+
+  sudo apt-get install proj proj-bin proj-data libproj-dev
+
+* Install JSON
+
+.. highlight:: bash
+
+::
+
+  sudo apt-get install libjson0 libjson0-dev python-simplejson
+
+* Install GEOS
+
+.. highlight:: bash
+
+::
+
+  sudo apt-get install libgeos-c1 libgeos-dev
+
+* Install GDAL
+
+.. highlight:: bash
+
+::
+    
+  sudo apt-get install gdal-bin libgdal1-dev
+
+
+PostGIS
+-------
+
+* Install PostGIS
+
+.. highlight:: bash
+
+::
+    
+  sudo apt-get install libxml2-dev
+  sudo apt-get install liblwgeom-2.1.8 postgis postgresql-9.3-postgis-2.1 postgresql-9.3-postgis-2.1-scripts
+
+* Initialize template postgis database. We create a template database in postgresql that will contain the postgis extension. This way, every time CartoDB creates a new user database it just clones this template database
+
+.. highlight:: bash
+
+::
+    
+  sudo createdb -T template0 -O postgres -U postgres -E UTF8 template_postgis
+  sudo createlang plpgsql -U postgres -d template_postgis
+  psql -U postgres template_postgis -c 'CREATE EXTENSION postgis;CREATE EXTENSION postgis_topology;'
+  sudo ldconfig
+
+Redis
 -----
 
-CartoDB is under heavy development. This means that this README 
-can fail at some point. If see any issues, please let us know and we will fix them as soon as we can. Also if you feel that something is wrong or even missing we will be happy to fix it.
+* Add redis PPA
+
+.. highlight:: bash
+
+::
+ 
+  sudo add-apt-repository ppa:cartodb/redis
+
+* Install redis
+
+.. highlight:: bash
+
+::
+ 
+  sudo apt-get install redis-server
+
+.. warning::
+
+  By default redis server is configured to not have any type of disk persistence. If stopped or restarted everything stored in redis will be lost. In CartoDB redis is not just a simple cache storage. It stores information that need to be persisted.
+
+  Make sure to have proper values of *save*, *appendonly* and *appendfsync* config attributes. For more information check `http://redis.io/topics/persistence`
+
+NodeJS
+------
+
+NodeJS is required by different parts of the stack. The more significant are the Maps and SQL APIs. It's also used to install and execute some dependencies of the editor.
+
+* Add the PPA
+
+.. highlight:: bash
+
+::
+ 
+  sudo add-apt-repository ppa:cartodb/nodejs-010
+
+* Install NodeJS
+
+.. highlight:: bash
+
+::
+ 
+  sudo apt-get install nodejs npm
+
+SQL API
+-------
+
+
+
+
+* Install NodeJS
+
+
+Ruby
+----
+
+Editor
+------
+
+CartoDB PostgreSQL extension
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+DB Setup
+~~~~~~~~
+
+DB migration
+~~~~~~~~~~~~
+
+Assets
+~~~~~~
+
+
+
+CartoDB is under heavy development. This means that this README can fail at some point. If see any issues, please let us know and we will fix them as soon as we can. Also if you feel that something is wrong or even missing we will be happy to fix it.
 
 For any doubt about the process you can ask in our [Google 
 Group](https://groups.google.com/forum/#!forum/cartodb).
 
-.. warning::
-    This README is intended for **Ubuntu 12.04**. This doesn't mean that it can't be installed on other Linux versions or OSX systems, but that it's guaranteed to work only in Ubuntu 12.04.
-    If anyone wants to share with us the installation process for any other system we will be more than happy to point it from this README.  That said, there are also many successful installations on Amazon EC2, Linode, dedicated instances and development machines running OS X and Ubuntu 12.04+.
 
 
 system configuration
 --------------------
 
-Installations assume you use UTF8, you can set it like this:
-.. highlight:: bash
-
-::
-    echo -e 'LANG=en_US.UTF-8\nLC_ALL=en_US.UTF-8' | sudo tee /etc/default/locale
-    source /etc/default/locale
 
 system dependencies
 -------------------

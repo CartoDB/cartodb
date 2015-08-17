@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require_dependency 'cartodb/errors'
+
 module Carto
   module Api
     class GroupsController < Superadmin::SuperadminController
@@ -20,7 +22,7 @@ module Carto
         else
           render json: { errors: "Error saving group: #{group.errors}" }, status: 400
         end
-      rescue ModelAlreadyExists => e
+      rescue CartoDB::ModelAlreadyExists => e
         CartoDB.notify_debug('Group already exists', { params: params })
         render json: { errors: "A group with that data already exists" }, status: 409
       rescue => e

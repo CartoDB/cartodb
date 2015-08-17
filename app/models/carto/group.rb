@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require 'active_record'
+require_dependency 'cartodb/errors'
 
 module Carto
   class Group < ActiveRecord::Base
@@ -18,7 +19,7 @@ module Carto
 
       raise "Organization not found for database #{database_name}" unless organization
 
-      raise ModelAlreadyExists if Group.find_by_organization_id_and_name_and_database_role(organization.id, name, database_role)
+      raise CartoDB::ModelAlreadyExists if Group.find_by_organization_id_and_name_and_database_role(organization.id, name, database_role)
 
       new(name: name, database_role: database_role, display_name: display_name, organization: organization)
     end

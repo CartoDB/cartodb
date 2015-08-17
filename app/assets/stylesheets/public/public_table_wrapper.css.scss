@@ -120,6 +120,17 @@ body.public { /* Public table CSS */
     z-index: 100;
   }
 
+  div.table.public table tbody tr td div.cell {
+    cursor: default; 
+  }
+
+  div.table.public table tbody tr:hover {
+    background: inherit;
+    border-top: 1px solid #ECECEC;
+
+    & + tr { border-top: 1px solid #ECECEC; }    
+  }
+  
   div.table table thead tr th {
     > div {
       label.interactuable .coloptions {

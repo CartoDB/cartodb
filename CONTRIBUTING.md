@@ -1,5 +1,5 @@
 The development tracker for cartodb is on github:
-http://github.com/cartodb/cartodb/
+http://github.com/cartodb/cartodb
 
 Bug fixes are best reported as pull requests over there.
 Features are best discussed on the mailing list:

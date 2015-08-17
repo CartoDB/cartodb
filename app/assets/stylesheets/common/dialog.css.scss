@@ -128,6 +128,10 @@ body.is-inDialog {
   @include display-flex();
   @include justify-content(center);
 }
+.Dialog-footerContent {
+  @include display-flex();
+  @include justify-content(center);
+}
 .Dialog-preFooter {
   position: fixed;
   bottom: 100px; // to be located on top of the .Dialog-footer

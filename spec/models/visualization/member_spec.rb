@@ -1160,6 +1160,22 @@ describe Visualization::Member do
       vis.license_info.name.should eq "Apache license"
     end
 
+    it 'should return nil if the license is nil, empty or unkown' do
+      table = create_table({:name => 'table1', :user_id => @user.id})
+      vis = table.table_visualization
+      vis.license = nil
+      vis.store
+      vis.fetch
+      vis.license_info.nil?.should eq true
+      vis.license = ""
+      vis.store
+      vis.fetch
+      vis.license_info.nil?.should eq true
+      # I cant save with a wrong value
+      vis.stubs(:license).returns("lololo")
+      vis.license_info.nil?.should eq true
+    end
+
     it 'should raise exception when try to store a unknown license, empty or nil' do
       table = create_table({:name => 'table1', :user_id => @user.id})
       vis = table.table_visualization

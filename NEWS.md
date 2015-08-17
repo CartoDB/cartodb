@@ -46,6 +46,10 @@ cd lib/sql; sudo make all install
 * Added new Platform Limit for concurrent syncs per user. Currently 2 hours TTL, 3 syncs per user max. allowed
 * Importer now tries to import shapefile zips without .prj file, by setting 4326 projection.
 * Prevent geocoding and import polling requests from being queued up [#4980](https://github.com/CartoDB/cartodb/pull/4980)
+* Prevent geocoding and import polling requests from being queued up [#4980](https://github.com/CartoDB/cartodb/pull/4980)
+* Added new fields source, attributions, and license, to metadata modal [#5016](https://github.com/CartoDB/cartodb/pull/5016)
+* Code related to pecan extracted to separate module [#4999](https://github.com/CartoDB/cartodb/pull/4999)
+  * requires a `npm install` for grunt tasks
 
 Bugfixes:
 * Fixed deletion of layers upon disconnecting synced datasources [#3718](https://github.com/CartoDB/cartodb/pull/3718)
@@ -103,7 +107,6 @@ Bugfixes:
 * Enable new dashboard for everyone by means of migration [#3509](https://github.com/CartoDB/cartodb/pull/3509)
 * Enabled Google Maps Basemaps [#3429](https://github.com/CartoDB/cartodb/pull/3429)
 * Remove need of api_key to enjoy common-data "Data library" [#3523](https://github.com/CartoDB/cartodb/pull/3523)
-
 
 Bugfixes:
 * Fixed interaction when there are hidden layers [#3090](https://github.com/CartoDB/cartodb/pull/3090)

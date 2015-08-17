@@ -103,7 +103,7 @@ class Admin::VisualizationsController < ApplicationController
     # Legacy redirect, now all public pages also with org. name
     if eligible_for_redirect?(@visualization.user)
       redirect_to CartoDB.url(self,
-                              'public_dataset',
+                              'public_table',
                               { id: "#{params[:id]}", redirected:true },
                               @visualization.user
                               ) and return

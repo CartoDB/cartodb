@@ -16,6 +16,7 @@ Contents:
    install
    run
    configuration
+   operations
    administration
 
 

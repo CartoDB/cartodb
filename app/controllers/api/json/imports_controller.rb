@@ -132,7 +132,8 @@ class Api::Json::ImportsController < Api::ApplicationController
       upload_host:            Socket.gethostname,
       create_visualization:   ["true", true].include?(params[:create_vis]),
       user_defined_limits:    user_defined_limits,
-      import_extra_options:   import_extra_options
+      import_extra_options:   import_extra_options,
+      privacy:                privacy
     }
   end
 
@@ -184,7 +185,7 @@ class Api::Json::ImportsController < Api::ApplicationController
     extra_options = {}
     
     # All parameter passing to 'import_extra_options' sould be done here      
-    extra_options['privacy'] = privacy if !privacy.nil?
+    # extra_options['example'] = 'foo'
 
     ::JSON.dump(extra_options)
   end

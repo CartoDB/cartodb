@@ -94,7 +94,7 @@ describe CartoDB::Connector::Importer do
       :data_source   => filepath,
       :updated_at    => Time.now,
       :append        => false,
-      :extra_options => ::JSON.dump({'privacy' => (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']})
+      :privacy       => (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']
     )
     data_import.values[:data_source] = filepath
 
@@ -114,7 +114,7 @@ describe CartoDB::Connector::Importer do
       :data_source   => filepath,
       :updated_at    => Time.now,
       :append        => false,
-      :extra_options => ::JSON.dump({'privacy' => (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['private']})
+      :privacy       => (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['private']
     )
     data_import.values[:data_source] = filepath
 
@@ -172,7 +172,7 @@ describe CartoDB::Connector::Importer do
       :data_source   => filepath,
       :updated_at    => Time.now,
       :append        => false,
-      :extra_options => ::JSON.dump({'privacy' => (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']})
+      :privacy       => (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']
     )
     data_import.values[:data_source] = filepath
 
@@ -192,7 +192,7 @@ describe CartoDB::Connector::Importer do
       :data_source   => filepath,
       :updated_at    => Time.now,
       :append        => false,
-      :extra_options => ::JSON.dump({'privacy' => (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['private']})
+      :privacy       => (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['private']
     )
     data_import.values[:data_source] = filepath
 

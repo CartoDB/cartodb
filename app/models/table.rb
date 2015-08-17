@@ -412,16 +412,18 @@ class Table
       @data_import.table_name = name
       @data_import.save
 
-      if !@data_import.import_extra_options.nil?
-        extra_options = ::JSON.parse(@data_import.import_extra_options)
-        if !extra_options['privacy'].nil?
-          if extra_options['privacy'] != (UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']
-            if !self.owner.private_tables_enabled
-              raise "User can't create private tables"
-            end
+      if !@data_import.privacy.nil?
+        if @data_import.privacy != (UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']
+          if !self.owner.private_tables_enabled
+            raise "This user doesn't have private tables enabled"
           end
-          @user_table.privacy = extra_options["privacy"]
         end
+
+        @user_table.privacy = @data_import.privacy
+      end
+
+      if !@data_import.import_extra_options.nil?
+        # All import_extra_options procesing should be done here
       end
 
       decorator = CartoDB::Datasources::Decorators::Factory.decorator_for(@data_import.service_name)

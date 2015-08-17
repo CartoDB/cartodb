@@ -418,7 +418,6 @@ class Table
             raise "This user doesn't have private tables enabled"
           end
         end
-
         @user_table.privacy = @data_import.privacy
       end
 

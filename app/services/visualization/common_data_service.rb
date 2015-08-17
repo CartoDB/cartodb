@@ -35,8 +35,8 @@ module CartoDB
             if visualization
               if visualization.update_remote_data(
                   Member::PRIVACY_PUBLIC,
-                  d['description'], [ d['category'] ], d['license'],
-                  d['source'], d['attributions'])
+                  d['description'], d['category'], d['license'],
+                  d['source'], d['attributions'], d['display_name'])
                 visualization.store
                 updated += 1
               else
@@ -45,8 +45,8 @@ module CartoDB
             else
               visualization = Member.remote_member(
                 d['name'], user.id, Member::PRIVACY_PUBLIC,
-                d['description'], [ d['category'] ], d['license'],
-                d['source'], d['attributions']).store
+                d['description'], d['category'], d['license'],
+                d['source'], d['attributions'], d['display_name']).store
               added += 1
             end
 
@@ -84,7 +84,7 @@ module CartoDB
       private
 
       def get_datasets
-        @datasets ||= CommonDataSingleton.instance.datasets[:datasets]
+        @datasets ||= CommonDataSingleton.instance.datasets
       end
 
       def delete_remote_visualization(visualization)

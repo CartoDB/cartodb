@@ -10,7 +10,7 @@ class CommonData
   def datasets
     if @datasets.nil?
 
-      _datasets = DATASETS_EMPTY
+      _datasets = []
 
       if is_enabled?
         _datasets = get_datasets(get_datasets_json)
@@ -30,40 +30,46 @@ class CommonData
 
   def get_datasets(json)
     begin
-      rows = JSON.parse(json).fetch('rows', [])
+      rows = JSON.parse(json).fetch('visualizations', [])
     rescue => e
       CartoDB.notify_exception(e)
       rows = []
     end
     CartoDB.notify_error('common-data empty', { rows: rows }) if rows.nil? || rows.empty?
 
-    _categories = {}
     _datasets = []
 
-    rows.each { |row|
-      category = row['category']
-      unless _categories.has_key?(category)
-        _categories[category] = {
-            :name => category,
-            :image_url => row['category_image_url'],
-            :count => 0
-        }
-      end
-      _categories[category][:count] += 1
+    rows.each do |row|
+      next if row["name"] =~ /meta_/
+      _datasets << get_common_data_from_visualization(row)
+    end
 
-      row.delete('category_image_url')
-      row['url'] = export_url(row['tabname'])
-      _datasets << row
-    }
+    _datasets
+  end
 
-    {:datasets => _datasets, :categories => _categories.values}
+  def get_common_data_from_visualization(row)
+      row_data = {}
+      row_data["name"] = row["name"]
+      row_data["display_name"] = !row["display_name"].nil? ? row["display_name"] : row["name"]
+      row_data["tabname"] = row["name"]
+      row_data["description"] = row["description"]
+      row_data["source"] = row["source"]
+      row_data["license"] = row["license"]
+      row_data["category"] = row["tags"]
+      row_data["geometry_types"] = %Q[{#{row["table"]["geometry_types"].join(',')}}]
+      row_data["rows"] = row["table"]["row_count"]
+      row_data["size"] = row["table"]["size"]
+      row_data["url"] = export_url(row["name"])
+      row_data["created_at"] = row["created_at"]
+      row_data["updated_at"] = row["updated_at"]
+      row_data
   end
 
   def get_datasets_json
     body = nil
     begin
       http_client = Carto::Http::Client.get('common_data', log_requests: true)
-      response = http_client.get(datasets_url, followlocation:true)
+      response = http_client.get(visualizations_datasets_url, followlocation:true)
       if response.code == 200
         body = response.response_body
       end
@@ -73,8 +79,8 @@ class CommonData
     body
   end
 
-  def datasets_url
-    sql_api_url(DATASETS_QUERY, 'v1')
+  def visualizations_datasets_url
+    visualizations_api_url
   end
 
   def export_url(table_name)
@@ -83,6 +89,10 @@ class CommonData
 
   def sql_api_url(query, version='v2')
     "#{config('protocol', 'https')}://#{config('username')}.#{config('host')}/api/#{version}/sql?q=#{URI::encode query}"
+  end
+
+  def visualizations_api_url(version='v1')
+    "#{config('protocol', 'https')}://#{config('username')}.#{config('host')}/api/#{version}/viz?type=table&privacy=public"
   end
 
   def export_query(table_name)
@@ -96,28 +106,6 @@ class CommonData
       default
     end
   end
-
-  DATASETS_EMPTY = {
-      :datasets => [],
-      :categories => []
-  }
-
-  DATASETS_QUERY = <<-query
-SELECT
-  name,
-  tabname,
-  description,
-  source,
-  license,
-  geometry_types,
-  rows,
-  size,
-  created_at,
-  updated_at,
-  category,
-  image_url
-FROM CDB_CommonDataCatalog();
-query
 
 end
 

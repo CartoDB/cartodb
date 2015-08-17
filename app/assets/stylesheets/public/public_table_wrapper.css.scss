@@ -34,36 +34,6 @@ body.public { /* Public table CSS */
     position:relative;
   }
 
-  .panes_mobile {
-    top: 0px;
-
-    .table.public {
-      background: #fff;
-    }
-
-    .Checkbox {
-      position: absolute;
-      top: 35px;
-      right: 35px;
-      z-index: 30;
-      background-color: rgba(#000, .5);
-      padding: 3px 5px;
-      border-radius: 3px;
-    }
-
-    .Checkbox-label {
-      color: #fff;
-    }
-
-    .table.public,
-    .cartodb-map.public {
-      @include position(15px, 15px, 60px, 15px);
-      z-index: 10;
-      border-radius: 3px;
-      overflow: hidden;
-    }
-  }
-
   min-width: inherit;
   
   .dialog {
@@ -243,6 +213,37 @@ body.public { /* Public table CSS */
 
     div.table table thead tr th > div > div {
       position:relative;
+    }
+  }
+
+  div.panes.panes_mobile {
+    top: 0px;
+    overflow-x: hidden;
+
+    .table.public {
+      background: #fff;
+    }
+
+    .Checkbox {
+      position: absolute;
+      top: 35px;
+      right: 35px;
+      z-index: 30;
+      background-color: rgba(#000, .5);
+      padding: 3px 5px;
+      border-radius: 3px;
+    }
+
+    .Checkbox-label {
+      color: #fff;
+    }
+
+    .table.public,
+    .cartodb-map.public {
+      @include position(15px, 15px, 60px, 15px);
+      z-index: 10;
+      border-radius: 3px;
+      overflow: hidden;
     }
   }
 }

@@ -104,6 +104,12 @@ module BoundingBoxHelper
     %Q{ST_Transform(ST_Envelope('SRID=4326;POLYGON((#{minx} #{miny}, #{minx} #{maxy}, #{maxx} #{maxy}, #{maxx} #{miny}, #{minx} #{miny}))'::geometry), 3857)}
   end
 
+  def self.parse_bbox_parameters(bounding_box)
+    bbox_coords = bounding_box.split(',').map { |coord| Float(coord) rescue nil }.compact
+    raise CartoDB::BoundingBoxError.new('bounding box must have 4 coordinates: minx, miny, maxx, maxy') if bbox_coords.length != 4
+    {:minx => bbox_coords[0], :miny => bbox_coords[1], :maxx => bbox_coords[2], :maxy => bbox_coords[3]}
+  end
+
   private
 
   def self.save_bounding_box(bounds, table_name, column_name, id)

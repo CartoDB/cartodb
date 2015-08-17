@@ -1,3 +1,5 @@
+require_relative '../../../helpers/bounding_box_helper'
+
 module Carto
   module Api
     module VisualizationSearcher
@@ -23,7 +25,7 @@ module Carto
         shared = compose_shared(params[:shared], only_shared, exclude_shared)
         tags = params.fetch(:tags, '').split(',')
         tags = nil if tags.empty?
-        bounding_box = params.fetch(:bbox, nil)
+        bbox_parameter = params.fetch(:bbox,nil)
 
         vqb = VisualizationQueryBuilder.new
             .with_prefetch_user
@@ -32,7 +34,10 @@ module Carto
             .with_prefetch_external_source
             .with_types(types)
             .with_tags(tags)
-            .with_bounding_box(bounding_box)
+
+        if !bbox_parameter.nil?
+          vqb.with_bounding_box(BoundingBoxHelper.parse_bbox_parameters(bbox_parameter))
+        end
 
         if current_user
           if only_liked

@@ -7,7 +7,7 @@ Creating users in CartoDB is simple thanks to the ``create_dev_user`` script loc
 
 You will be prompted to input 3 parameters:
 
-* **subdomain** is the same as "username". This is what you will enter in the browser to access the user's dashboard: ``https://username.cartodb.com``. Set it to whatever you want the user's user name to be.
+* **subdomain** is the same as the user's user name. This is what you will enter in the browser to access the user's dashboard: ``https://<user_name>.cartodb.com``. Set it to whatever you want the user's user name to be.
 * **password** this is the password the new user will use to login into their account.
 * **admin password** this password will be an admin password for the newly created users.
 

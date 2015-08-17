@@ -148,8 +148,8 @@
 
             <% if !Cartodb.config[:cartodb_com_hosted].present? %>
               <li class="Navmenu-item u-hideOnTablet">
-                <a class="Button Button--main Navmenu-editLink Navmenu-editLink--edit Navmenu-editLink--oneclick is-active oneclick" href="http://oneclick.cartodb.com/?file=<%= CGI.escape( @export_sql_api_url ) %>&provider=<%= URI.encode(@table.owner.username) %>&logo=<%= URI.encode(@avatar_url) %>">Create map</a>
-                <a href="<%= CartoDB.url(self, 'public_tables_show', {id: @table.name}, @table.owner.organization ? @table.owner : nil) %>" class="Button Button--main Navmenu-editLink Navmenu-editLink--edit Navmenu-editLink--oneclick edit">Edit in CartoDB</a>
+                <a class="Button Button--main Navmenu-editLink Navmenu-editLink--edit Navmenu-editLink--oneclick is-active js-oneclick" href="http://oneclick.cartodb.com/?file=<%= CGI.escape( @export_sql_api_url ) %>&provider=<%= URI.encode(@table.owner.username) %>&logo=<%= URI.encode(@avatar_url) %>">Create map</a>
+                <a href="<%= CartoDB.url(self, 'public_tables_show', {id: @table.name}, @table.owner.organization ? @table.owner : nil) %>" class="Button Button--main Navmenu-editLink Navmenu-editLink--edit Navmenu-editLink--oneclick js-edit">Edit in CartoDB</a>
               </li>
             <% end %>
           </ul>

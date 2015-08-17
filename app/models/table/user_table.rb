@@ -60,12 +60,6 @@ class UserTable < Sequel::Model
     PRIVACY_LINK => 'link'
   }
 
-  PRIVACY_TEXTS_TO_VALUES = {
-    'private' => PRIVACY_PRIVATE,
-    'public' => PRIVACY_PUBLIC,
-    'link' => PRIVACY_LINK
-  }
-
   # Associations
   many_to_one  :map
   many_to_many :layers, join_table: :layers_user_tables,

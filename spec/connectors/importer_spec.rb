@@ -100,7 +100,7 @@ describe CartoDB::Connector::Importer do
       :data_source   => filepath,
       :updated_at    => Time.now,
       :append        => false,
-      :extra_options => ::JSON.dump({'privacy' => ::UserTable::PRIVACY_TEXTS_TO_VALUES['public']})
+      :extra_options => ::JSON.dump({'privacy' => (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']})
     )
     data_import.values[:data_source] = filepath
 
@@ -108,7 +108,7 @@ describe CartoDB::Connector::Importer do
 
     File.delete(filepath)
 
-    UserTable[id: data_import.table.id].privacy.should eq ::UserTable::PRIVACY_TEXTS_TO_VALUES['public']
+    UserTable[id: data_import.table.id].privacy.should eq (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']
   end
 
   it 'should import tables as private if privacy param is set to private' do
@@ -128,7 +128,7 @@ describe CartoDB::Connector::Importer do
       :data_source   => filepath,
       :updated_at    => Time.now,
       :append        => false,
-      :extra_options => ::JSON.dump({'privacy' => ::UserTable::PRIVACY_TEXTS_TO_VALUES['private']})
+      :extra_options => ::JSON.dump({'privacy' => (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['private']})
     )
     data_import.values[:data_source] = filepath
 
@@ -136,7 +136,7 @@ describe CartoDB::Connector::Importer do
 
     File.delete(filepath)
 
-    UserTable[id: data_import.table.id].privacy.should eq ::UserTable::PRIVACY_TEXTS_TO_VALUES['private']
+    UserTable[id: data_import.table.id].privacy.should eq (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['private']
   end
 
   it 'should import tables as private by default if user has private tables enabled' do
@@ -163,7 +163,7 @@ describe CartoDB::Connector::Importer do
 
     File.delete(filepath)
 
-    UserTable[id: data_import.table.id].privacy.should eq ::UserTable::PRIVACY_TEXTS_TO_VALUES['private']
+    UserTable[id: data_import.table.id].privacy.should eq (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['private']
   end
 
   it 'should import tables as public by default if user doesnt have private tables enabled' do
@@ -190,7 +190,7 @@ describe CartoDB::Connector::Importer do
 
     File.delete(filepath)
 
-    UserTable[id: data_import.table.id].privacy.should eq ::UserTable::PRIVACY_TEXTS_TO_VALUES['public']
+    UserTable[id: data_import.table.id].privacy.should eq (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']
   end
 end
 

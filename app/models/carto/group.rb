@@ -40,7 +40,6 @@ module Carto
 
       raise "User #{username} not found" unless user
 
-      # users_group.delete(Carto::UsersGroup.find_by_user_id_and_group_id(user.id, self.id))
       users.destroy(user)
       user
     end

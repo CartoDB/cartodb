@@ -106,6 +106,7 @@ module HelperMethods
     random = UUIDTools::UUID.timestamp_create.to_s
     {
       name:               attributes.fetch(:name, "name #{random}"),
+      display_name:       attributes.fetch(:display_name, "display name #{random}"),
       description:        attributes.fetch(:description, "description #{random}"),
       privacy:            attributes.fetch(:privacy, Visualization::Member::PRIVACY_PUBLIC),
       tags:               attributes.fetch(:tags, ['tag 1']),

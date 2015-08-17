@@ -257,31 +257,18 @@
           </li>
         <% end %>
         <%# at most 3 cards per line, visbility is handled by CSS depending on viewport size %>
-        <% ((3 - @total_visualizations.count + 3) % 3).times.each do %>
-          <li class="MapsList-item MapsList-item--fake">
-            <div class="MapCard">
-              <div class="MapCard-header MapCard-header--fake"></div>
-              <div class="MapCard-content MapCard-content--compact"></div>
-            </div>
-          </li>
+        <% if @total_visualizations.count < 3 %>
+          <% ((3 - @total_visualizations.count + 3) % 3).times.each do %>
+            <li class="MapsList-item MapsList-item--fake">
+              <div class="MapCard">
+                <div class="MapCard-header MapCard-header--fake"></div>
+                <div class="MapCard-content MapCard-content--compact"></div>
+              </div>
+            </li>
+          <% end %>
         <% end %>
       </ul>
     <% end %>
-
-    <div class="u-inner">
-      <div class="PublicMap-block">
-        <% if @total_nonpublic_total_vis_count > 0 %>
-          <ul>
-            <li class="DatasetsList-item">
-              <div class="LayoutIcon">
-                <i class="iconFont iconFont-Lock"></i>
-              </div>
-              <div class="DefaultTitle PublicMap-privateDatasets"><%= pluralize(@total_nonpublic_total_vis_count, 'private map') %></div>
-            </li>
-          </ul>
-        <% end %>
-      </div>
-    </div>
 
     <%# DISQUS %>
     <div class="u-inner">

@@ -47,7 +47,7 @@ shared_examples_for "tables controllers" do
         response.status.should be_success
         response.body[:name].should == "tm_world_borders_simpl_0_3"
         response.body[:privacy].should == "PRIVATE"
-        response.body[:schema].should == [["cartodb_id", "number"], ["the_geom", "geometry", "geometry", "multipolygon"], ["area", "number"], ["fips", "string"], ["iso2", "string"], ["iso3", "string"], ["lat", "number"], ["lon", "number"], ["name", "string"], ["pop2005", "number"], ["region", "number"], ["subregion", "number"], ["un", "number"]]
+        filter_timestamps(response.body[:schema]).should == [["cartodb_id", "number"], ["the_geom", "geometry", "geometry", "multipolygon"], ["area", "number"], ["fips", "string"], ["iso2", "string"], ["iso3", "string"], ["lat", "number"], ["lon", "number"], ["name", "string"], ["pop2005", "number"], ["region", "number"], ["subregion", "number"], ["un", "number"]]
         response.body[:rows_counted].should == 246
         response.body[:description].should == nil
         response.body[:geometry_types].should == ["ST_MultiPolygon"]
@@ -59,7 +59,7 @@ shared_examples_for "tables controllers" do
         response.status.should be_success
         response.body[:id].should == response.headers['Location'].match(/\/([a-f\-\d]+)$/)[1]
         response.body[:name].should match(/^untitled/)
-        response.body[:schema].should =~ default_schema
+        filter_timestamps(response.body[:schema]).should =~ default_schema
       end
     end
 
@@ -69,7 +69,7 @@ shared_examples_for "tables controllers" do
         response.status.should be_success
         response.body[:name].should match(/^untitled_table/)
         response.body[:name].should_not == 'untitled_table'
-        response.body[:schema].should =~ default_schema
+        filter_timestamps(response.body[:schema]).should =~ default_schema
       end
       $user_1.tables.count.should == 2
     end
@@ -82,7 +82,7 @@ shared_examples_for "tables controllers" do
         response.status.should be_success
         response.body[:name].should == "my_new_blank_table"
         response.body[:description].should == "Testing is awesome"
-        response.body[:schema].should =~ [
+        filter_timestamps(response.body[:schema]).should =~ [
            ["cartodb_id", "number"], ["code", "string"], ["title", "string"], ["did", "number"],
            ["the_geom", "geometry", "geometry", "geometry"],
            ["date_prod", "date"], ["kind", "string"]
@@ -104,7 +104,7 @@ shared_examples_for "tables controllers" do
         response.body[:name].should == table.name
         response.body[:privacy] == "PRIVATE"
         response.body[:description].should == "Testing is awesome"
-        (response.body[:schema] - default_schema).should be_empty
+        (filter_timestamps(response.body[:schema]) - default_schema).should be_empty
       end
     end
 
@@ -165,6 +165,12 @@ shared_examples_for "tables controllers" do
         json_body[:table_visualization]['permission']['owner']['username'].should == @org_user_1.username
       end
     end
+  end
+
+  # Filter out timestamp columns for compatibility as they won't be
+  # present in next version of cartodb-postgresql extension.
+  def filter_timestamps(schema)
+    schema.reject { |item| ['created_at', 'updated_at'].include?(item[0]) }
   end
 
 end

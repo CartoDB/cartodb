@@ -247,7 +247,9 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def license_info
-    Carto::License.find(license.to_sym)
+    if !license.nil?
+      Carto::License.find(license.to_sym)
+    end
   end
 
   private

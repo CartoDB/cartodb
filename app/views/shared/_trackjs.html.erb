@@ -1,9 +1,7 @@
-<% unless customer.blank? %>
-  <script>
-    window._trackJs = {
-      enabled: <%= enabled ? 'true' : 'false' %>,
-      application: '<%= app_key %>'
-    };
-  </script>
-  <script type="text/javascript" src="//d2zah9y47r7bi2.cloudfront.net/releases/current/tracker.js" data-token="<%= customer %>"></script>
-<% end %>
+<script>
+  window._trackJs = {
+    enabled: <%= enabled ? 'true' : 'false' %>,
+    application: '<%= app_key %>'
+  };
+</script>
+<script type="text/javascript" src="//d2zah9y47r7bi2.cloudfront.net/releases/current/tracker.js" data-token="<%= customer %>"></script>

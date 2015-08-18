@@ -48,6 +48,13 @@ describe Carto::Api::GroupsController do
       updated_group.display_name.should eq group.display_name
     end
 
+    it '#rename triggers 409 if it looks like renaming already occurred: existing new name, nonexisting old name' do
+      group_old_information = { name: 'org_group', database_role: 'g_org_database_group' }
+      group_new_information = { name: 'org_group_2', database_role: 'g_org_database_group_2' }
+      put api_v1_databases_group_update_url(database_name: @carto_organization.database_name, old_name: group_old_information[:name]), group_new_information, default_headers
+      response.status.should == 409
+    end
+
     it '#add_member from username' do
       group = Carto::Group.where(organization_id: @carto_organization.id).first
       user_information = { username: @org_user_1.username }

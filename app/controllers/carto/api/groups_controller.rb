@@ -9,7 +9,7 @@ module Carto
 
       respond_to :json
 
-      ssl_required :create, :update, :destroy, :add_member, :remove_member
+      ssl_required :create, :update, :destroy, :add_member, :remove_member unless Rails.env.development? || Rails.env.test?
 
       before_filter :load_parameters
       before_filter :load_group_from_loaded_parameters, :only => [:update, :destroy, :add_member, :remove_member]

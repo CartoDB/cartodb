@@ -1,7 +1,8 @@
 // cartodb.js version: 3.15.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: c942686a747b755e7448d6438d63ea42e9f1d051
+// sha: 616808d10a23675c975a9453f2243f044b563a02
 (function() {
+  var define;  // Undefine define (require.js), see https://github.com/CartoDB/cartodb.js/issues/543
   var root = this;
 
   if(!true) {
@@ -11707,7 +11708,7 @@ L.Map.include({
 
 
 }(window, document));
-/* wax - 7.0.1 - v6.0.4-178-gc113470 */
+/* wax - 7.0.1 - v6.0.4-181-ga34788e */
 
 
 !function (name, context, definition) {
@@ -14932,7 +14933,7 @@ wax = wax || {};
 wax.g = wax.g || {};
 
 wax.g.interaction = function() {
-    var dirty = false, _grid, map;
+    var dirty = false, _grid, map, interactionEnabled = false;
     var tileloadListener = null,
         idleListener = null;
 
@@ -14940,7 +14941,8 @@ wax.g.interaction = function() {
 
     function grid() {
 
-        if (!dirty && _grid) {
+        // when interaction is enabled there should be grid tiles
+        if (!dirty && _grid && (_grid.length > 0 || !interactionEnabled)) {
             return _grid;
         } else {
             _grid = [];
@@ -14948,6 +14950,7 @@ wax.g.interaction = function() {
             var mapOffset = wax.u.offset(map.getDiv());
             var get = function(mapType) {
                 if (!mapType || !mapType.interactive) return;
+                interactionEnabled = true;
                 for (var key in mapType.cache) {
                     if (key.split('/')[0] != zoom) continue;
                     var tileOffset = wax.u.offset(mapType.cache[key]);
@@ -28580,11 +28583,13 @@ cdb.geo.ui.ZoomInfo = cdb.core.View.extend({
     return this;
   }
 });
+
+// MODELS & COLLECTIONS
+
 /*
  * Model for the legend item
  *
  * */
-
 cdb.geo.ui.LegendItemModel = cdb.core.Model.extend({
 
   defaults: {
@@ -28599,16 +28604,65 @@ cdb.geo.ui.LegendItemModel = cdb.core.Model.extend({
  * Collection of items for a legend
  *
  * */
-
 cdb.geo.ui.LegendItems = Backbone.Collection.extend({
   model: cdb.geo.ui.LegendItemModel
 });
+
+
+/*
+ * Legend Model
+ *
+ **/
+cdb.geo.ui.LegendModel = cdb.core.Model.extend({
+
+  defaults: {
+    type: null,
+    show_title: false,
+    title: "",
+    template: "",
+    visible: true
+  },
+
+  initialize: function() {
+
+    this.items = new cdb.geo.ui.LegendItems(this.get("items"));
+
+    this.items.bind("add remove reset change", function() {
+      this.set({ items: this.items.toJSON() });
+    }, this);
+
+    this.bind("change:items", this._onUpdateItems, this);
+    this.bind("change:title change:show_title", this._onUpdateTitle, this);
+    this.bind("change:template", this._onUpdateTemplate, this);
+
+  },
+
+  _onUpdateTemplate: function() {
+    this.template = this.get("template");
+  },
+
+  _onUpdateTitle: function() {
+    this.title = this.get("title");
+    this.show_title = this.get("show_title");
+  },
+
+  _onUpdateItems: function() {
+    var items = this.get("items");
+    this.items.reset(items);
+  }
+
+});
+
+cdb.geo.ui.Legends = Backbone.Collection.extend({
+  model: cdb.geo.ui.LegendModel
+});
+
+// VIEWS
 
 /*
  * Legend item
  *
  * */
-
 cdb.geo.ui.LegendItem = cdb.core.View.extend({
 
   tagName: "li",
@@ -28636,7 +28690,6 @@ cdb.geo.ui.LegendItem = cdb.core.View.extend({
     this.$el.html(this.template(options));
 
     return this.$el;
-
   }
 
 });
@@ -28645,13 +28698,11 @@ cdb.geo.ui.LegendItem = cdb.core.View.extend({
  * Legend View: wrapper for the different types of lengeds
  *
  * */
-
 cdb.geo.ui.Legend = cdb.core.View.extend({
 
   className: "cartodb-legend",
 
   events: {
-
     "dragstart":            "_stopPropagation",
     "mousedown":            "_stopPropagation",
     "touchstart":           "_stopPropagation",
@@ -28661,11 +28712,9 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
     "DOMMouseScroll":       "_stopPropagation",
     "dbclick":              "_stopPropagation",
     "click":                "_stopPropagation"
-
   },
 
   initialize: function() {
-
     _.bindAll(this, "render", "show", "hide");
 
     _.defaults(this.options, this.default_options);
@@ -28676,17 +28725,13 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
     this._setupItems();
 
     this._updateLegendType();
-
   },
 
   _stopPropagation: function(ev) {
-
     ev.stopPropagation();
-
   },
 
   _setupModel: function() {
-
     if (!this.model) {
 
       this.model = new cdb.geo.ui.LegendModel({
@@ -28695,42 +28740,39 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
         show_title: this.options.show_title || cdb.geo.ui.LegendModel.prototype.defaults.show_title,
         template: this.options.template || cdb.geo.ui.LegendModel.prototype.defaults.template
       });
-
     }
 
     this.add_related_model(this.model);
 
     //this.model.bind("change:template change:type change:items change:title change:show_title",  this._updateLegendType, this);
     this.model.bind("change",  this._updateLegendType, this);
-
   },
 
   _updateLegendType: function() {
-
     var type = this.model.get("type");
-
     this.legend_name = this._capitalize(type) + "Legend";
 
     if (type == 'none' || type == null) {
-
       this.legend_name = null;
       this.model.set({ type: "none" }, { silent: true });
-
     } else if (!cdb.geo.ui[this.legend_name]) {
 
       // set the previous type
       this.legend_name = null;
       this.model.set({ type: this.model.previous("type") }, { silent: true });
       return;
-
     }
 
     this._refresh();
+  },
 
+  _capitalize: function(string) {
+    if (string && _.isString(string)) {
+      return string.charAt(0).toUpperCase() + string.slice(1);
+    }
   },
 
   _refresh: function() {
-
     var self = this;
 
     if (this.view) this.view.clean();
@@ -28741,7 +28783,6 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
     var template = this.model.get("template");
 
     if (type && this.legend_name) {
-
       this.view = new cdb.geo.ui[this.legend_name]({
         model: this.model
       });
@@ -28749,24 +28790,17 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
       // Set the type as the element class for styling
       this.$el.removeClass();
       this.$el.addClass(this.className + " " + this.model.get("type"));
-
-      this.show();
-
     } else {
-
       this.hide();
 
       this.$el.removeClass();
       this.$el.addClass(this.className + " none");
-
     }
 
     this.render();
-
   },
 
   _setupItems: function() {
-
     var self = this;
 
     this.items = this.model.items;
@@ -28776,26 +28810,9 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
     }
 
     this.items.bind("add remove change:value change:name", this.render, this);
-
-  },
-
-  show: function(callback) {
-    var type = this.model.get("type");
-    if (type && type != "none") this.$el.show();
-  },
-
-  hide: function(callback) {
-    if (this.model.get("type")) this.$el.hide();
-  },
-
-  _capitalize: function(string) {
-    if (string && _.isString(string)) {
-      return string.charAt(0).toUpperCase() + string.slice(1);
-    }
   },
 
   render: function() {
-
     if (this.view) {
 
       if (this.model.get("template")) {
@@ -28814,8 +28831,16 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
     }
 
     return this;
-  }
+  },
 
+  show: function(callback) {
+    var type = this.model.get("type");
+    if (type && type != "none") this.$el.show();
+  },
+
+  hide: function(callback) {
+    if (this.model.get("type")) this.$el.hide();
+  }
 });
 
 /*
@@ -29396,7 +29421,6 @@ cdb.geo.ui.Legend.Color = cdb.geo.ui.Legend.Category.extend({ });
 cdb.geo.ui.StackedLegend = cdb.core.View.extend({
 
   events: {
-
     "dragstart":            "_stopPropagation",
     "mousedown":            "_stopPropagation",
     "touchstart":           "_stopPropagation",
@@ -29406,25 +29430,18 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
     "DOMMouseScroll":       "_stopPropagation",
     "dbclick":              "_stopPropagation",
     "click":                "_stopPropagation"
-
   },
 
   className: "cartodb-legend-stack",
 
   initialize: function() {
-
     _.each(this.options.legends, this._setupBinding, this);
-
   },
 
   _stopPropagation: function(ev) {
-
     ev.stopPropagation();
-
   },
 
-  //TODO: change this method to
-  // getLegendByIndex
   getLegendByIndex: function(index) {
     if (!this._layerByIndex) {
       this._layerByIndex = {};
@@ -29438,14 +29455,24 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
   },
 
   _setupBinding: function(legend) {
-
     legend.model.bind("change:type", this._checkVisibility, this);
     this.add_related_model(legend.model);
+  },
 
+  render: function() {
+    this._renderItems();
+    this._checkVisibility();
+
+    return this;
+  },
+
+  _renderItems: function() {
+    _.each(this.options.legends, function(item) {
+      this.$el.append(item.render().$el);
+    }, this);
   },
 
   _checkVisibility: function() {
-
     var visible = _.some(this.options.legends, function(legend) {
       return legend.model.get("type") && (legend.model.get("type") != "none"  || legend.model.get("template"))
     }, this);
@@ -29457,26 +29484,13 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
     }
 
     _.each(this.options.legends, function(item) {
-
-      var type = item.model.get("type");
-
-      if (type && type != "none") {
-        item.show();
-      } else {
+      var legendModel = item.model;
+      if (legendModel.get("type") === "none" || legendModel.get("visible") === false) {
         item.hide();
+      } else {
+        item.show();
       }
-
     }, this);
-
-
-  },
-
-  _renderItems: function() {
-
-    _.each(this.options.legends, function(item) {
-      this.$el.append(item.render().$el);
-    }, this);
-
   },
 
   show: function() {
@@ -29489,22 +29503,9 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
 
   addTo: function(element) {
     $(element).html(this.render().$el);
-  },
-
-  render: function() {
-
-    this._renderItems();
-    this._checkVisibility();
-
-    return this;
-
   }
-
 });
 
-cdb.geo.ui.Legends = Backbone.Collection.extend({
-  model: cdb.geo.ui.LegendModel
-});
 
 /*
  * Stacked Legend public interface
@@ -29594,51 +29595,6 @@ cdb.geo.ui.Legend.Stacked = cdb.geo.ui.StackedLegend.extend({
     var legend = this.legendItems.at(n);
     this.legendItems.remove(legend);
 
-  }
-
-});
-
-
-/*
- * Legend Model
- *
- * */
-cdb.geo.ui.LegendModel = cdb.core.Model.extend({
-
-  defaults: {
-    type: null,
-    show_title: false,
-    title: "",
-    template: "",
-    visible: true
-  },
-
-  initialize: function() {
-
-    this.items = new cdb.geo.ui.LegendItems(this.get("items"));
-
-    this.items.bind("add remove reset change", function() {
-      this.set({ items: this.items.toJSON() });
-    }, this);
-
-    this.bind("change:items", this._onUpdateItems, this);
-    this.bind("change:title change:show_title", this._onUpdateTitle, this);
-    this.bind("change:template", this._onUpdateTemplate, this);
-
-  },
-
-  _onUpdateTemplate: function() {
-    this.template = this.get("template");
-  },
-
-  _onUpdateTitle: function() {
-    this.title = this.get("title");
-    this.show_title = this.get("show_title");
-  },
-
-  _onUpdateItems: function() {
-    var items = this.get("items");
-    this.items.reset(items);
   }
 
 });
@@ -38590,9 +38546,7 @@ var Vis = cdb.core.View.extend({
         options: options,
         torqueLayer: this.torqueLayer
       });
-
     }
-
   },
 
   _createLegendView: function(layer, layerView) {
@@ -38601,12 +38555,16 @@ var Vis = cdb.core.View.extend({
       var legend = layer.legend;
 
       if ((legend.items && legend.items.length) || legend.template) {
-        var view = new cdb.geo.ui.Legend(layer.legend);
-        layerView.legend = view.model; // cdb.geo.ui.LegendModel
-        layerView.bind('change:visibility', function(layer, hidden) {
-          view[hidden? 'hide': 'show']();
+        var legendAttrs = _.extend(layer.legend, {
+          visible: layer.visible
         });
-        return view;
+        var legendModel = new cdb.geo.ui.LegendModel(legendAttrs);
+        var legendView = new cdb.geo.ui.Legend({ model: legendModel });
+        layerView.bind('change:visibility', function(layer, hidden) {
+          legendView[hidden ? 'hide': 'show']();
+        });
+        layerView.legend = legendModel;
+        return legendView;
       }
     }
     return null;

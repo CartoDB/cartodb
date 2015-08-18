@@ -1,11 +1,11 @@
-<div class="Header" id="header">
-  <div class="u-inner Header-inner">
+<div class="Header Header--tall Header--dark" id="header">
+  <div class="Header-inner u-inner">
     <div class="Header-navigation">
       <ul class="Header-navigationList">
         <li class="js-logo">
           <a href="<%= cartodb_com_hosted? ? CartoDB.url(self, 'root') : "http://cartodb.com" %>">
             <span class="Logo Logo--avatar">
-              <i class="iconFont iconFont-CartoFante"></i>
+              <i class="iconFont iconFont-CartoFante Logo-icon Logo-icon--dark"></i>
             </span>
           </a>
         </li>
@@ -52,6 +52,20 @@
           </li>
         <% end %>
       </ul>
+    </div>
+  </div>
+
+  <div class="Header-inner Header-title u-inner">
+    <div class="Header-innerTitle">
+      <h1 class="Title-small">Data library</h1>
+      <p class="Title Title--l Title--white u-vspace-l">Open resources to help you populate your maps</p>
+    </div>
+  </div>
+
+  <div class="Header-inner u-inner">
+    <div class="CountrySelector">
+      <p class="CountrySelector-text">Filter datasets by country selecting it in this map</p>
+      <button class="CountrySelector-button js-country"></button>
     </div>
   </div>
 </div>

@@ -168,7 +168,7 @@ class Admin::VisualizationsController < ApplicationController
     @export_sql_api_url = "#{ sql_api_url("SELECT * FROM #{ @table.owner.sql_safe_database_schema }.#{ @table.name }", @user) }&format=shp"
 
     respond_to do |format|
-      format.html { render 'public_table', layout: 'application_table_public' }
+      format.html { render 'public_dataset', layout: 'application_table_public' }
     end
 
   end

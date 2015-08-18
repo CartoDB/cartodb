@@ -92,7 +92,7 @@ $cHeader-dark:  rgba(#3A91D7, 1);
   line-height: $sLineHeight-larger;
   text-transform: uppercase;
 }
-.Header-settingsItem--avatar { height: 46px }
+.Header-settingsItem--avatar {}
 .Header-settingsLink {
   color: #fff;
   transition: all .2s;
@@ -113,6 +113,8 @@ $cHeader-dark:  rgba(#3A91D7, 1);
   margin-left: 6px;
   position: relative;
   top: -1px;
+  -webkit-font-smoothing: auto;
+  -moz-osx-font-smoothing: auto;
 }
 
 @media (min-width: $sMedia-mobile) {
@@ -120,7 +122,7 @@ $cHeader-dark:  rgba(#3A91D7, 1);
 }
 
 @media only screen and (max-width: 360px) {
-  $height: 60px;
+  $height: 64px;
 
   .Header .Header-inner {
     height: $height;
@@ -140,8 +142,8 @@ $cHeader-dark:  rgba(#3A91D7, 1);
     padding: 0 20px;
   }
   .Header .Logo--avatar {
-    width: 32px;
-    height: 32px;
+    width: $height/2;
+    height: $height/2;
     line-height: 45px;
   }
   .Header .Logo--avatar i {

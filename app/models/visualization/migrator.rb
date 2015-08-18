@@ -14,6 +14,7 @@ module CartoDB
         @db.create_table(relation.to_sym) do
           UUID      :id, primary_key: true
           String    :name
+          String    :display_name
           String    :description
           UUID      :map_id, index: true
           String    :active_layer_id

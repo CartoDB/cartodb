@@ -19,7 +19,7 @@ module Carto
 
       raise "Organization not found for database #{database_name}" unless organization
 
-      raise CartoDB::ModelAlreadyExists if Group.find_by_organization_id_and_name_and_database_role(organization.id, name, database_role)
+      raise CartoDB::ModelAlreadyExistsError if Group.find_by_organization_id_and_name_and_database_role(organization.id, name, database_role)
 
       new(name: name, database_role: database_role, display_name: display_name, organization: organization)
     end
@@ -34,7 +34,7 @@ module Carto
 
       raise "User #{username} not found" unless user
 
-      raise CartoDB::ModelAlreadyExists unless users_group.where(user_id: user.id, group_id: self.id).first.nil?
+      raise CartoDB::ModelAlreadyExistsError unless users_group.where(user_id: user.id, group_id: self.id).first.nil?
 
       user_group = Carto::UsersGroup.new(user: user, group: self)
       users_group << user_group

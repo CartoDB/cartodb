@@ -22,7 +22,7 @@ module Carto
         else
           render json: { errors: "Error saving group: #{group.errors}" }, status: 400
         end
-      rescue CartoDB::ModelAlreadyExists => e
+      rescue CartoDB::ModelAlreadyExistsError => e
         CartoDB.notify_debug('Group already exists', { params: params })
         render json: { errors: "A group with that data already exists" }, status: 409
       rescue => e
@@ -53,7 +53,7 @@ module Carto
       def add_member
         @group.add_member(@username)
         render json: {}, status: 200
-      rescue CartoDB::ModelAlreadyExists => e
+      rescue CartoDB::ModelAlreadyExistsError => e
         CartoDB.notify_debug('Group member already exists', { params: params })
         render json: { errors: "That user is already in the group" }, status: 409
       rescue => e

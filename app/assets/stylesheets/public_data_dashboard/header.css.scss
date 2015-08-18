@@ -1,0 +1,34 @@
+@import "../old_common/mixins";
+@import "../variables/mixins";
+
+// Public data dashboard header
+// --------------------------------------------------
+
+.Header--dark {
+  background: #2E3C43;
+}
+.Header--tall {
+  @include clearfix();
+  min-height: 450px;
+  @include display-flex();
+  @include flex-direction(column);
+  width: 100%;
+  height: 100%;
+}
+.Header-title {
+  margin: 0 auto;
+  padding-top: 50px;
+  padding-bottom: 50px;
+  @include display-flex();
+  @include flex-grow(1);
+  @include align-items(center);
+}
+.Header-innerTitle {
+  max-width: 780px;
+  width: 100%;
+}
+.Header-inner {
+  @include css3-prefix(box-sizing, border-box);
+  width: 100%;
+  max-width: 940px;
+}

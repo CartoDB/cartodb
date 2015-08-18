@@ -8,11 +8,30 @@
 
 
 // Public map
+.pane_map {
+  .cartodb-map.public {
+    @include position(8px, 8px, 8px, 65%);
+  }
+
+  .Checkbox {
+    position: absolute;
+    top: 28px;
+    right: 28px;
+    z-index: 30;
+    background-color: rgba(#000, .5);
+    padding: 3px 5px;
+    border-radius: 3px;
+  }
+
+  .Checkbox-label {
+    color: #fff;
+  }
+}
+
 .cartodb-map.public {
-
-  @include position(65px, 0, 0, 0);
-
-  border-top:1px solid #999999;
+  @include position(0, 0, 0, 0);
+  border-radius: 3px;
+  overflow: hidden;
 
   .cartodb-map-wrapper.with_header div.cartodb-zoom,
   .cartodb-map-wrapper.with_header div.cartodb-share,

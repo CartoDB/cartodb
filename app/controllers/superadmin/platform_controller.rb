@@ -31,6 +31,10 @@ class Superadmin::PlatformController < Superadmin::SuperadminController
     respond_with({:count => CartoDB::Stats::Platform.new.users})
   end
   
+  def total_pay_users
+    respond_with({:count => CartoDB::Stats::Platform.new.pay_users})
+  end
+
   def total_datasets
     respond_with({:count => CartoDB::Stats::Platform.new.datasets})
   end
@@ -41,6 +45,22 @@ class Superadmin::PlatformController < Superadmin::SuperadminController
   
   def total_shared_objects_among_orgs
     respond_with(CartoDB::Stats::Platform.new.shared_objects_among_orgs)
+  end
+
+  def total_visualizations
+    respond_with(CartoDB::Stats::Platform.new.visualizations)
+  end
+
+  def total_maps
+    respond_with(CartoDB::Stats::Platform.new.maps)
+  end
+
+  def total_active_users
+    respond_with(CartoDB::Stats::Platform.new.active_users)
+  end
+
+  def total_likes
+    respond_with(CartoDB::Stats::Platform.new.likes)
   end
 
 end # Superadmin::PlatformController

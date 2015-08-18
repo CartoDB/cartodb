@@ -7,6 +7,11 @@ module CartoDB
         return User.count
       end
 
+      # Total users that aren't FREE
+      def pay_users
+        return User.where("upper(account_type) != 'FREE'").count
+      end
+
       # Total datasets
       def datasets
         return UserTable.count
@@ -36,6 +41,46 @@ module CartoDB
         end
         conn.disconnect
         return shared_objects
+      end
+
+      # Total visualizations
+      def visualizations
+        visualizations = "SELECT COUNT(*) FROM visualizations WHERE lower(type)='derived'"
+        db = ::Rails::Sequel.configuration.environment_for(Rails.env)
+        conn = Sequel.connect(db)
+        v_count = conn.fetch(visualizations).first
+        conn.disconnect
+        return v_count
+      end
+
+      # Total maps
+      def maps
+        maps = "SELECT COUNT(*) FROM visualizations WHERE lower(type)!='remote'"
+        db = ::Rails::Sequel.configuration.environment_for(Rails.env)
+        conn = Sequel.connect(db)
+        m_count = conn.fetch(maps).first
+        conn.disconnect
+        return m_count
+      end
+
+      # Total active users
+      def active_users
+        active_users = "SELECT COUNT(DISTINCT(user_id)) FROM visualizations WHERE lower(type)!='remote'"
+        db = ::Rails::Sequel.configuration.environment_for(Rails.env)
+        conn = Sequel.connect(db)
+        au_count = conn.fetch(active_users).first
+        conn.disconnect
+        return au_count
+      end
+
+      # Total likes
+      def likes
+        likes = "SELECT COUNT(*) FROM likes"
+        db = ::Rails::Sequel.configuration.environment_for(Rails.env)
+        conn = Sequel.connect(db)
+        likes_count = conn.fetch(likes).first
+        conn.disconnect
+        return likes_count
       end
 
     end

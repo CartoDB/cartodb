@@ -4,8 +4,11 @@ require_dependency 'cartodb/errors'
 
 module Carto
   module Api
+
+    # Group metadata registration. Exclusively for usage from PostgreSQL Extension, not from the Editor.
+    # It only registers metadata, actual group roles management must be done by the extension.
     class GroupsController < Superadmin::SuperadminController
-      # TODO: not SuperadminController
+      # TODO: not SuperadminController?
 
       respond_to :json
 

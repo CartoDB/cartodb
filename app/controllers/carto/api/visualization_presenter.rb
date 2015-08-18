@@ -21,6 +21,7 @@ module Carto
         poro = {
           id: @visualization.id,
           name: @visualization.name,
+          display_name: @visualization.display_name,
           map_id: @visualization.map_id,
           active_layer_id: @visualization.active_layer_id,
           type: @visualization.type,

@@ -10,6 +10,7 @@ describe DataRepository::Backend::Sequel do
     db.create_table :visualizations do
       UUID      :id, primary_key: true
       String    :name
+      String    :display_name
       String    :title
       String    :description
       String    :license

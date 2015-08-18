@@ -11,6 +11,9 @@
   @include flex-direction(column);
   min-height: 100vh;
 }
+.PublicBody--grey {
+  background: #F9F9F9;
+}
 .PublicBody-content {
   @include display-flex();
   @include flex-grow(1);

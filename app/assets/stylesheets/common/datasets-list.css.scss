@@ -121,6 +121,9 @@ $bannedColor: #E1A7A5;
   text-align: center;
   z-index: 2;
 }
+.DatasetsList-aditionalItemStatus {
+  top: 10px;
+}
 .DatasetsList-itemStatus.iconFont-Book { font-size: 12px }
 .DatasetsList-itemStatus.is-public { color: $cHighlight-positive }
 .DatasetsList-itemStatus.is-banned { color: $bannedColor }

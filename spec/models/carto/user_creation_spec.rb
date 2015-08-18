@@ -74,6 +74,28 @@ describe Carto::UserCreation do
       user_creation.reload
       user_creation.state.should == 'failure'
     end
+
+    it 'neither creates a new User nor sends the mail and marks creation as failure if Central has a registered user matching username' do
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+      user = FactoryGirl.build(:valid_user)
+      user_data = JSON.parse(user.to_json)
+      # Central doesn't return exactly the same attributes, but this is good enough for testing
+      Cartodb::Central.any_instance.stubs(:get_user).returns(user_data)
+
+      ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::NewOrganizationUser).never
+
+      user_data.organization = @organization
+      user_data.google_sign_in = true
+
+      user_creation = Carto::UserCreation.new_user_signup(user_data)
+      user_creation.next_creation_step until user_creation.finished?
+
+      saved_user = Carto::User.where(username: user_data.username).first
+      saved_user.should == nil
+
+      user_creation.reload
+      user_creation.state.should == 'failure'
+    end
   end
 
   describe 'validation email' do

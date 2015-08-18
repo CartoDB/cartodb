@@ -4,6 +4,9 @@ class Carto::UserCreation < ActiveRecord::Base
 
   belongs_to :log, class_name: Carto::Log
 
+  validates  :username, :email, :crypted_password, :presence => true
+  validate :credentials_not_taken_in_central
+
   def self.new_user_signup(user)
     raise 'User needs an organization' unless user.organization
 
@@ -61,6 +64,12 @@ class Carto::UserCreation < ActiveRecord::Base
       end
     end
     
+  end
+
+  def credentials_not_taken_in_central
+    return unless Cartodb::Central.sync_data_with_cartodb_central?
+
+
   end
 
   private

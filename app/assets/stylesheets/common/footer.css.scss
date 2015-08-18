@@ -90,6 +90,8 @@
 }
 .Footer-credits {
   position: relative;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 .Footer-credits span {
   color: #333;
@@ -231,5 +233,6 @@
 
   .Footer-credits {
     width: 100%;
+    text-align: center;
   }
 }

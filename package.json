@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "3.18.46",
+  "version": "3.18.48",
   "description": "CartoDB UI frontend",
   "repository": {
     "type": "git",
@@ -18,10 +18,12 @@
     }
   ],
   "devDependencies": {
+    "autoprefixer-core": "^5.2.1",
     "aws-sdk": "2.0.0-rc11",
     "browserify": "9.0.3",
     "browserify-shim": "3.8.3",
     "cartodb-pecan": "0.2.x",
+    "csswring": "^3.0.5",
     "git-rev": "~0.2.1",
     "grunt": "~0.4.4",
     "grunt-available-tasks": "^0.5.4",
@@ -41,6 +43,7 @@
     "grunt-contrib-watch": "~0.6.0",
     "grunt-exorcise": "~1.0.x",
     "grunt-mustache": "~0.1.6",
+    "grunt-postcss": "^0.5.5",
     "grunt-timer": "~0.3.3",
     "gulp": "~3.8.10",
     "gulp-iconfont": "~1.0.0",

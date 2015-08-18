@@ -97,34 +97,22 @@
                   <i class="iconFont iconFont-CartoFante"></i>
                 </span>
               </a>
-              <p class="Footer-credits u-iblock u-txt-left"><span>CartoDB™ 2015</span><br /><a href="https://cartodb.com/love/" class="Footer-link">Love</a> · <a href="https://cartodb.com/terms/" class="Footer-link">Terms of service</a> · <a href="https://cartodb.com/privacy/" class="Footer-link">Privacy policy</a></p>
+              <p class="Footer-credits u-iblock u-txt-left"><span>CartoDB™ 2015</span><br /><a href="https://cartodb.com/love/" class="Footer-link">Love</a> · <%= link_to 'Terms of service', terms_path, class: 'Footer-link' %> · <%= link_to 'Privacy policy', privacy_path, class: 'Footer-link' %></p>
             </li>
 
             <li id="newsletter" class="Grid-cell Grid-cell--col7 Grid-cell--col12--mobile Grid">
               <div class="Grid-inner Grid-inner--vcenter">
-                <% hubspot_form = Cartodb.config[:metrics].present? && Cartodb.config[:metrics]['hubspot'].present? && Cartodb.config[:metrics]['hubspot']['token'].present? && Cartodb.config[:metrics]['hubspot']['form_id'].present? %>
-
-                <ul class="Grid-cell <%= hubspot_form ? "Grid-cell--col6" : "Grid-cell--col12" %> Grid-cell--col12--mobile u-tspace-l u-ilist Social-links">
+                <ul class="Grid-cell Grid-cell--col6 Grid-cell--col12--mobile u-tspace-l u-ilist Social-links">
                   <li class="Social-item"><a class="Social-link Social-link--twitter" href="https://twitter.com/cartodb"><i class="iconFont iconFont-Twitter Navmenu-icon"></i></a></li>
                   <li class="Social-item"><a class="Social-link" href="https://www.facebook.com/CartoDB"><i class="iconFont iconFont-FacebookSquare Navmenu-icon"></i></a></li>
                   <li class="Social-item"><a class="Social-link" href="https://www.linkedin.com/company/cartodb"><i class="iconFont iconFont-Linkedin Navmenu-icon"></i></a></li>
                 </ul>
 
-                <% if hubspot_form %>
-                  <div class="Grid-cell Grid-cell--col6 Grid-cell--col12--mobile u-tspace-l">
-                    <div class="Newsletter">
-                      <script charset="utf-8" src="//js.hsforms.net/forms/current.js"></script>
-                      <script>
-                        hbspt.forms.create({
-                          portalId: "<%= Cartodb.config[:metrics]['hubspot']['token'] %>",
-                          formId: "<%= Cartodb.config[:metrics]['hubspot']['form_id'] %>",
-                          submitButtonClass: 'hs-newsletter',
-                          css: '<%= render "admin/shared/hubspot_css" %>'
-                       });
-                      </script>
-                    </div>
+                <div class="Grid-cell Grid-cell--col6 Grid-cell--col12--mobile u-tspace-l">
+                  <div class="Newsletter">
+                    <%= insert_hubspot_form() -%>
                   </div>
-                <% end %>
+                </div>
               </div>
             </li>
           </ul>

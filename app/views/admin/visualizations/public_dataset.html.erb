@@ -148,8 +148,8 @@
 
             <% if !Cartodb.config[:cartodb_com_hosted].present? %>
               <li class="Navmenu-item u-hideOnTablet">
-                <a class="Button Button--main Navmenu-editLink Navmenu-editLink--edit Navmenu-editLink--oneclick is-active oneclick" href="http://oneclick.cartodb.com/?file=<%= CGI.escape( @export_sql_api_url ) %>&provider=<%= URI.encode(@table.owner.username) %>&logo=<%= URI.encode(@avatar_url) %>">Create map</a>
-                <a href="<%= CartoDB.url(self, 'public_tables_show', {id: @table.name}, @table.owner.organization ? @table.owner : nil) %>" class="Button Button--main Navmenu-editLink Navmenu-editLink--edit Navmenu-editLink--oneclick edit">Edit in CartoDB</a>
+                <a class="Button Button--main Navmenu-editLink Navmenu-editLink--edit Navmenu-editLink--oneclick is-active js-oneclick" href="http://oneclick.cartodb.com/?file=<%= CGI.escape( @export_sql_api_url ) %>&provider=<%= URI.encode(@table.owner.username) %>&logo=<%= URI.encode(@avatar_url) %>">Create map</a>
+                <a href="<%= CartoDB.url(self, 'public_tables_show', {id: @table.name}, @table.owner.organization ? @table.owner : nil) %>" class="Button Button--main Navmenu-editLink Navmenu-editLink--edit Navmenu-editLink--oneclick js-edit">Edit in CartoDB</a>
               </li>
             <% end %>
           </ul>
@@ -234,7 +234,7 @@
 
     <% if @total_visualizations.count > 0 %>
       <ul class="MapsList PublicMap-mapsList">
-        <% @total_visualizations.each do |vis| %>
+        <% @total_visualizations.take(3).each do |vis| %>
           <li class="MapsList-item">
             <div class="MapCard" data-zoom="<%= '' %>" data-vizjson-url="<%= CartoDB.url(self, 'api_v2_visualizations_vizjson', {id: vis.id}, vis.user) %>.json">
               <a href="<%= CartoDB.url(self, 'public_visualizations_public_map', {id: vis.id}, user) %>" class="MapCard-header js-header">
@@ -257,31 +257,18 @@
           </li>
         <% end %>
         <%# at most 3 cards per line, visbility is handled by CSS depending on viewport size %>
-        <% ((3 - @total_visualizations.count + 3) % 3).times.each do %>
-          <li class="MapsList-item MapsList-item--fake">
-            <div class="MapCard">
-              <div class="MapCard-header MapCard-header--fake"></div>
-              <div class="MapCard-content MapCard-content--compact"></div>
-            </div>
-          </li>
+        <% if @total_visualizations.count < 3 %>
+          <% ((3 - @total_visualizations.count + 3) % 3).times.each do %>
+            <li class="MapsList-item MapsList-item--fake">
+              <div class="MapCard">
+                <div class="MapCard-header MapCard-header--fake"></div>
+                <div class="MapCard-content MapCard-content--compact"></div>
+              </div>
+            </li>
+          <% end %>
         <% end %>
       </ul>
     <% end %>
-
-    <div class="u-inner">
-      <div class="PublicMap-block">
-        <% if @total_nonpublic_total_vis_count > 0 %>
-          <ul>
-            <li class="DatasetsList-item">
-              <div class="LayoutIcon">
-                <i class="iconFont iconFont-Lock"></i>
-              </div>
-              <div class="DefaultTitle PublicMap-privateDatasets"><%= pluralize(@total_nonpublic_total_vis_count, 'private map') %></div>
-            </li>
-          </ul>
-        <% end %>
-      </div>
-    </div>
 
     <%# DISQUS %>
     <div class="u-inner">

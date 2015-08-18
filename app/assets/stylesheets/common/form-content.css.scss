@@ -103,6 +103,7 @@ $sLabel-width: 140px;
   font-weight: $sFontWeight-normal;
   @include nicer-lato-typography();
   color: $cTypography-paragraphs;
+  text-transform: capitalize;
 }
 .Form-label.Form-label--verticalAlignTop {
   line-height: inherit;

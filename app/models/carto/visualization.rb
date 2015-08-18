@@ -248,6 +248,12 @@ class Carto::Visualization < ActiveRecord::Base
     table_service.nil? ? nil : table_service.actual_row_count
   end
 
+  def license_info
+    if !license.nil?
+      Carto::License.find(license.to_sym)
+    end
+  end
+
   private
 
   def get_named_map

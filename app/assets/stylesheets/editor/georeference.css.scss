@@ -99,7 +99,7 @@ $sWidth: 681px;
   @include display-flex();
   @include justify-content(flex-start, start);
   @include align-items(center, center);
-  width: 575px;
+  width: 100%;
   text-align: left;
   & > *:not(:last-child) { margin-right: $sMargin-elementInline }
 }

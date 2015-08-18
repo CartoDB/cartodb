@@ -125,63 +125,48 @@
         </div>
       </div>
 
-      <div class="Form-title">
-        <p class="Form-titleText">New member account defaults</p>
-      </div>
-
-      <span class="Form-separator"></span>
-
-      <div class="Form-row">
-        <div class="Form-rowLabel">
-          <label class="Form-label">Users API Key</label>
-        </div>
-        <div class="Form-rowData">
-          <button class="Button--link js-regenerateOrgUsersApiKey" data-current_username="<%= current_user.username %>">Regenerate all API keys</button>
-        </div>
-        <div class="Form-rowInfo">
-          <p class="Form-rowInfoText">This involves all your organization users API keys</p>
-        </div>
-      </div>
-
-      <div class="Form-title">
-        <h4 class="Form-titleHeader">Organization log in/sign up</h4>
-        <p class="Form-titleText">
-          Customize your organization log in and sign up.<br/>
-          <% if @organization[:whitelisted_email_domains].length === 0 %>
-            <span class="Form-titleText--negative">Sign up will only be enabled when whitelist is not empty.</span>
-          <% else %>
-            Sign up url is: <a href="<%= @organization_signup_url %>"><%= @organization_signup_url %></a>.
-          <% end %>
-        </p>
-      </div>
-
       <div class="Form-row">
         <div class="Form-rowLabel">
           <label class="Form-label">Default new user quota</label>
         </div>
         <div class="Form-rowData">
-          <%= f.text_field :default_quota_in_bytes, :value => "#{ ( @organization[:default_quota_in_bytes].to_i / (1024 * 1024) ) if !@organization[:default_quota_in_bytes].blank? }", :class => "Form-input Form-input--long #{ 'Form-input--error' if @organization.errors[:default_quota_in_bytes].present? } js-userQuota" %>
+          <%= f.text_field :default_quota_in_bytes, :value => "#{ ( @organization[:default_quota_in_bytes].to_i / (1024 * 1024) ) if !@organization[:default_quota_in_bytes].blank? }", :class => "Form-input Form-input--med #{ 'Form-input--error' if @organization.errors[:default_quota_in_bytes].present? } js-userQuota" %>
+          <div class="Form-rowInfo Form-rowInfo--marginLeft">
+            <% if (@organization.errors[:default_quota_in_bytes].present?) %>
+              <p class="Form-rowInfoText Form-rowInfoText--error"><%= @organization.errors[:default_quota_in_bytes].first %></p>
+            <% else %>
+              <p class="Form-rowInfoText">Set (in MB) the quota of new users in your organization</p>
+            <% end %>
+          </div>
         </div>
-        <div class="Form-rowInfo">
-          <% if (@organization.errors[:default_quota_in_bytes].present?) %>
-            <p class="Form-rowInfoText Form-rowInfoText--error"><%= @organization.errors[:default_quota_in_bytes].first %></p>
-          <% else %>
-            <p class="Form-rowInfoText">Set (in MB) the quota of new users in your organization</p>
-          <% end %>
+      </div>
+
+      <div class="Form-title">
+        <p class="Form-titleText">Users API key</p>
+      </div>
+
+      <span class="Form-separator"></span>
+
+      <div class="Form-row">
+        <div class="Form-rowData">
+          <button class="Button--link js-regenerateOrgUsersApiKey" data-current_username="<%= current_user.username %>">Regenerate all API keys</button>
+          <div class="Form-rowInfo Form-rowInfo--marginLeft">
+            <p class="Form-rowInfoText">This involves all your organization users API keys</p>
+          </div>
         </div>
       </div>
 
       <% if current_user.has_feature_flag?('google_maps') && current_user.organization_owner? %>
       
         <div class="Form-title">
-          <h4 class="Form-titleHeader">Configure API keys from external providers</h4>
-          <p class="Form-titleText">Configure here the API keys from other services like
-          Google Cloud Platform, so your organization users won't be asked later for them.</p>
+          <p class="Form-titleText">Configure API keys from external providers</p>
         </div>
+
+        <span class="Form-separator"></span>
 
         <div class="Form-row">
           <div class="Form-rowLabel">
-            <label class="Form-label Form-label--multipleLines">Google Maps<br/>query string</label>
+            <label class="Form-label Form-label--multipleLines">Google Maps query string</label>
           </div>
           <div class="Form-rowData">
             <%= f.text_field :google_maps_key, class: "Form-input Form-input--long is-disabled", :readonly => "true" %>
@@ -196,7 +181,7 @@
 
         <div class="Form-row">
           <div class="Form-rowLabel">
-            <label class="Form-label Form-label--multipleLines">Google Maps<br/>private key</label>
+            <label class="Form-label Form-label--multipleLines">Google Maps private key</label>
           </div>
           <div class="Form-rowData">
             <%= f.text_field :google_maps_key, class: "Form-input Form-input--long is-disabled", :readonly => "true" %>

@@ -157,6 +157,7 @@
 }
 // Positionate relative to the content
 .Filters.above-form { position: relative; margin-bottom: 30px; }
+.Filters.above-form .Filters-separator { background-color: $cStructure-darkGrey; }
 .Filters > .u-inner {
   position:relative;
   display:block;

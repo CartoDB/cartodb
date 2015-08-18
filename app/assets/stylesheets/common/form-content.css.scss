@@ -425,7 +425,7 @@ $sLabel-width: 140px;
 }
 .Form-rowInfo {
   @include display-flex();
-  max-width: 380px;
+  max-width: 290px;
 
   &.Form-rowInfo--marginLeft { margin-left: 18px; }
 }

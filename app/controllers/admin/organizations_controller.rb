@@ -84,12 +84,6 @@ class Admin::OrganizationsController < ApplicationController
     render action: 'settings'
   end
 
-  def groups
-    respond_to do |format|
-      format.html { render 'groups' }
-    end
-  end
-
   private
 
   def load_organization_and_members

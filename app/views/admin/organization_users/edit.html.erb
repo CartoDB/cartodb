@@ -17,9 +17,11 @@
 
 <%= render :partial => 'shared/flash_message' %>
 
-<div>
-  <div class="Filters above-form">
-    <div class="u-inner">
+<div class="UserSection u-inner">
+  <%= render :partial => 'admin/shared/pages_subheader' %>
+
+  <div class="CredentialsContent">
+    <div class="Filters above-form">
       <div class="Filters-inner">
         <span class="Filters-separator"></span>
         <div class="Filters-row">
@@ -30,89 +32,19 @@
                   <i class="iconFont iconFont-ArrowPrev"></i>
                 </a>
               </li>
-              <li class="Filters-typeItem"><a class="Filters-typeLink is-selected"><%= @user.username.capitalize %> details</a></li>
+              <li class="Filters-typeItem">
+                <div class="Form-title">
+                  <p class="Form-titleText"><%= @user.username.capitalize %></p>
+                </div>
+              </li>
             </ul>
           </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <div class="OrganizationContent">
-    <div class="u-inner">
-      <div class="OrganizationUser">
-        <ul class="OrganizationUser-stats">
-          <li class="OrganizationUser-stat">
-            <i class="iconFont iconFont-Document OrganizationUser-statIcon"></i>
-            <div class="OrganizationUser-statInfo">
-              <em class="OrganizationUser-statTitle"><%= number_with_delimiter(@user.tables.count) %></em>
-              <label class="OrganizationUser-statLabel"><%= "Dataset".pluralize(@user.tables.count) %></label>
-            </div>
-          </li>
-          <li class="OrganizationUser-stat">
-            <i class="iconFont iconFont-Eye OrganizationUser-statIcon"></i>
-            <div class="OrganizationUser-statInfo">
-              <% mapCount = @user.owned_visualizations_count %>
-              <em class="OrganizationUser-statTitle"><%= number_with_delimiter(mapCount) %></em>
-              <label class="OrganizationUser-statLabel"><%= "Map".pluralize(mapCount) %></label>
-            </div>
-          </li>
-          <li class="OrganizationUser-stat">
-            <i class="iconFont iconFont-Marker OrganizationUser-statIcon"></i>
-            <div class="OrganizationUser-statInfo">
-              <em class="OrganizationUser-statTitle"><%= number_with_delimiter(@user.get_geocoding_calls) %></em>
-              <label class="OrganizationUser-statLabel"><%= "Georeferenced row".pluralize(@user.get_geocoding_calls) %></label>
-            </div>
-          </li>
-          <% if ( @user.organization.present? && @user.organization.twitter_datasource_enabled ) || @user.twitter_datasource_enabled %>
-            <li class="OrganizationUser-stat">
-              <i class="iconFont iconFont-Twitter OrganizationUser-statIcon"></i>
-              <div class="OrganizationUser-statInfo">
-                <em class="OrganizationUser-statTitle"><%= number_with_delimiter(@user.get_twitter_imports_count) %></em>
-                <label class="OrganizationUser-statLabel"><%= "Tweet".pluralize(@user.get_twitter_imports_count) %> imported</label>
-              </div>
-            </li>
-          <% end %>
-          <li class="OrganizationUser-stat">
-            <i class="iconFont iconFont-ProgressBar OrganizationUser-statIcon"></i>
-            <div class="OrganizationUser-statInfo">
-              <%
-                if @user.quota_in_bytes == 0
-                  userPer = '0%'
-                else
-                  userPer = number_to_percentage ((@user.db_size_in_bytes * 100) / @user.quota_in_bytes.to_f), precision: 0
-                end
-              %>
-              <em class="OrganizationUser-statTitle"><%= userPer %></em>
-              <label class="OrganizationUser-statLabel">Quota used</label>
-            </div>
-          </li>
-          <li class="OrganizationUser-stat">
-            <i class="iconFont iconFont-Map OrganizationUser-statIcon"></i>
-            <div class="OrganizationUser-statInfo">
-              <em class="OrganizationUser-statTitle"><%= number_with_delimiter(@user.get_api_calls(from: @user.last_billing_cycle, to: Date.today).sum) %></em>
-              <label class="OrganizationUser-statLabel"><%= "Map view".pluralize(@user.get_api_calls(from: @user.last_billing_cycle, to: Date.today).sum) %></label>
-            </div>
-          </li>
-          <li class="OrganizationUser-stat">
-            <i class="iconFont iconFont-Clock OrganizationUser-statIcon"></i>
-            <div class="OrganizationUser-statInfo">
-              <% last_access = distance_of_time_in_words_to_now(@user.get_last_active_time) rescue 'Never' %>
-              <em class="OrganizationUser-statTitle"><%= last_access %></em>
-              <label class="OrganizationUser-statLabel">
-                <% if last_access == "Never" %>
-                  <%= "connected" %>
-                <% else %>
-                  <%= "ago last access" %>
-                <% end %>
-              </label>
-            </div>
-          </li>
-        </ul>
-      </div>
-    
-      <%= render partial: 'form' %>
-    </div>
+    <%= render partial: 'form' %>
+
   </div>
 </div>
 

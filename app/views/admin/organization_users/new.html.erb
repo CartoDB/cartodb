@@ -15,9 +15,10 @@
 
 <%= render :partial => 'shared/flash_message' %>
 
-<div>
-  <div class="Filters above-form">
-    <div class="u-inner">
+<div class="UserSection u-inner">
+  <%= render :partial => 'admin/shared/pages_subheader' %>
+  <div class="CredentialsContent">
+    <div class="Filters above-form">
       <div class="Filters-inner">
         <span class="Filters-separator"></span>
         <div class="Filters-row">
@@ -28,18 +29,18 @@
                   <i class="iconFont iconFont-ArrowPrev"></i>
                 </a>
               </li>
-              <li class="Filters-typeItem"><a class="Filters-typeLink is-selected">New user</a></li>
+              <li class="Filters-typeItem">
+                <div class="Form-title">
+                  <p class="Form-titleText">New user</p>
+                </div>
+              </li>
             </ul>
           </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <div class="OrganizationContent">
-    <div class="u-inner">
-      <%= render partial: 'form' %>
-    </div>
+    <%= render partial: 'form' %>
   </div>
 </div>
 

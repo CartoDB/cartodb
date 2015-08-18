@@ -78,6 +78,10 @@ module Carto
       end
     end
 
+    def maps_count
+      Carto::Map.where(user_id: @user.id).count
+    end
+
     def database_username
       if Rails.env.production?
         "cartodb_user_#{@user.id}"

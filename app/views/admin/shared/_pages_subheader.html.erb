@@ -21,6 +21,9 @@
 
   <span class="AsideFilters-separator"></span>
 
+  <%- puts "==============================================" %>
+  <%- puts "#{params[:controller]} _ #{params[:action]}" %>
+
   <div class="AsideFilters-type">
     <ul class="AsideFilters-list">
       <li class="AsideFilters-typeItem"><a href="<%= CartoDB.url(self, 'profile_user') %>" class="AsideFilters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/users_profile" %>">Profile</a></li>
@@ -31,7 +34,7 @@
         <li class="AsideFilters-typeItem"><a href="<%= current_user.plan_url(request.protocol) %>" class="AsideFilters-typeLink">Billing</a></li>
       <% end %>
       <% if current_user.organization_owner? %>
-        <li class="AsideFilters-typeItem"><a href="<%= CartoDB.url(self, 'organization_settings') %>" class="AsideFilters-typeLink <%= 'is-selected' if "#{params[:controller]}" == "admin/organizations" %>" class="AsideFilters-typeLink">Organization settings</a></li>
+        <li class="AsideFilters-typeItem"><a href="<%= CartoDB.url(self, 'organization_settings') %>" class="AsideFilters-typeLink <%= 'is-selected' if ["admin/organizations", "admin/organization", "admin/organization_users"].include?("#{params[:controller]}") %>" class="AsideFilters-typeLink">Organization settings</a></li>
       <% end %>
     </ul>
   </div>

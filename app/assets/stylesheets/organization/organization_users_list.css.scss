@@ -20,37 +20,39 @@
 }
 .OrganizationList-user {
   width: 100%;
+
+  &:not(:first-child) { border-top: 1px solid $cStructure-softLine; }
 }
 .OrganizationList-userAvatar {
   width: 42px;
   height: 42px;
 }
-.OrganizationList-userAvatar--default {
-  line-height: 48px;
-  background: #DDDDDD;
-  border-radius: 4px;
-  text-align: center;
-}
-.OrganizationList-userAvatar--default i.iconFont-DefaultUser {
-  font-size: 20px;
-  color: white;
+.OrganizationList-userAvatar--img {
+  border: 0;
 }
 .OrganizationList-user:nth-child(3n),
 .OrganizationList > div:nth-child(3n) .OrganizationList-user { margin-right: 0 }
 .OrganizationList-userLink {
   @include display-flex();
-  padding: $sMargin-element;
+  @include flex-direction(row);
+  @include align-items(flex-end);
+  padding: $sMargin-element 0;
   text-decoration: none!important;
-
-  &:not(:first-child) { border-top: 1px solid $cStructure-mainLine; }
-
 }
-.OrganizationList-user--empty .OrganizationList-userLink { border: 1px dashed $cStructure-mainLine }
-.OrganizationList-userInfo { margin-left: 20px; }
+.OrganizationList-userInfo { 
+  @include display-flex();
+  @include flex-direction(row);
+  @include align-items(flex-end);
+  @include justify-content(space-between);
+  margin-left: 20px;
+  width: 100%;
+}
 .OrganizationList-userInfoName {
   @include display-flex();
   @include flex-direction(column);
+  @include align-content(space-between);
   @include justify-content(flex-start, start);
+  height: 42px;
 }
 .OrganizationList-userInfoTitle {
   max-width: 200px;
@@ -64,15 +66,11 @@
   font-weight: 300;
   color: $cTypography-paragraphs;
 }
-.OrganizationList-userInfoTitle--default { color: $cTypography-help }
-.OrganizationList-userInfoDes {
-  color: $cTypography-help;
-}
 .OrganizationList-userInfoLabel {
-  min-width: 30px;
-  padding: 0 10px;
+  display: inline-block;
+  padding: 0 8px;
   margin-left: 8px;
-  line-height: 17px;
+  height: 18px;
   background: #8EB83F;
   border-radius: 35px;
   font-size: $sFontSize-smaller;
@@ -80,6 +78,24 @@
   text-transform: uppercase;
   text-align: center;
 }
+.OrganizationList-userInfoData {
+  @include display-flex();
+  @include flex-direction(row);
+}
+
+.OrganizationLisr-userInfoData--paragraph {
+  color: $cTypography-linkSecondary;
+  font-size: 14px;
+  font-weight: 300;
+
+  &:not(:last-child) { margin-right: 20px; }
+}
+
+.OrganizationLisr-userInfoData--paragraph-icon {
+  font-size: 10px;
+  margin-right: 4px;
+}
+
 .OrganizationList-userStats {
   width: 200px;
   margin-top: 10px;

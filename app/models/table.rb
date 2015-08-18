@@ -413,10 +413,8 @@ class Table
       @data_import.save
 
       if !@data_import.privacy.nil?
-        if @data_import.privacy != (UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']
-          if !self.owner.private_tables_enabled
-            raise "This user doesn't have private tables enabled"
-          end
+        if !self.owner.valid_privacy?(@data_import.privacy)
+          raise "This user doesn't have private tables enabled"
         end
         @user_table.privacy = @data_import.privacy
       end

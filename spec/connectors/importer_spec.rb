@@ -2,6 +2,7 @@
 require_relative '../spec_helper'
 require_relative '../../app/connectors/importer'
 require_relative '../doubles/result'
+require 'csv'
 
 describe CartoDB::Connector::Importer do
 
@@ -44,6 +45,40 @@ describe CartoDB::Connector::Importer do
     importer = CartoDB::Connector::Importer.new(runner, table_registrar, quota_checker, database, id, destination_schema)
     new_table_name = importer.rename(result_mock, importer_table_name, desired_table_name)
     new_table_name.should_not == nil
+  end
+
+  # This test checks that the importer detects files with names that are
+  # psql reserved words and knows how to rename them (appending '_t')
+  it 'should allow importing tables with reserved names' do
+    stub_named_maps_calls
+    bogus_user = create_user(:quota_in_bytes => 1000.megabyte, :table_quota => 400)
+
+    reserved_word = CartoDB::POSTGRESQL_RESERVED_WORDS.sample
+
+    filepath        = "/tmp/#{reserved_word.downcase}.csv"
+    expected_rename = reserved_word.downcase + '_t'
+
+    CSV.open(filepath, 'wb') do |csv|
+      csv << ['nombre', 'apellido', 'profesion']
+      csv << ['Manolo', 'Escobar', 'Artista']
+    end
+  
+    data_import = DataImport.create(
+      :user_id       => bogus_user.id,
+      :data_source   => filepath,
+      :updated_at    => Time.now,
+      :append        => false
+    )
+    data_import.values[:data_source] = filepath
+
+    data_import.run_import!
+
+    File.delete(filepath)
+
+    data_import.success.should(eq(true), "File with reserved name '#{filepath}' failed to be renamed")
+    data_import.table_name.should(eq(expected_rename), "Table was incorrectly renamed to '#{data_import.table_name}', should be '#{expected_rename}'")
+
+    bogus_user.destroy
   end
 
 end

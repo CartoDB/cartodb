@@ -13,7 +13,7 @@ $height: 280px;
 .FavMap {
   position: relative;
   height: $height / 2;
-  background: white;
+  background: #333 image-url('layout/noise.png') repeat 0 0;;
 }
 .FavMap:before {
   content: '';

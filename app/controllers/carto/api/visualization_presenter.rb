@@ -21,6 +21,7 @@ module Carto
         poro = {
           id: @visualization.id,
           name: @visualization.name,
+          display_name: @visualization.display_name,
           map_id: @visualization.map_id,
           active_layer_id: @visualization.active_layer_id,
           type: @visualization.type,
@@ -36,6 +37,7 @@ module Carto
           title: @visualization.title,
           parent_id: @visualization.parent_id,
           license: @visualization.license,
+          attributions: @visualization.attributions,
           kind: @visualization.kind,
           likes: @visualization.likes.count,
           prev_id: @visualization.prev_id,

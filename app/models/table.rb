@@ -23,6 +23,8 @@ class Table
   SYSTEM_TABLE_NAMES = %w( spatial_ref_sys geography_columns geometry_columns raster_columns raster_overviews cdb_tablemetadata geometry raster )
 
    # TODO Part of a service along with schema
+  # INFO: created_at and updated_at cannot be dropped from existing tables without dropping the triggers first
+  CARTODB_REQUIRED_COLUMNS = %W{ cartodb_id the_geom }
   CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at the_geom }
   THE_GEOM_WEBMERCATOR = :the_geom_webmercator
   THE_GEOM = :the_geom
@@ -155,7 +157,7 @@ class Table
                 # Handy for rakes and custom ghost table registers, won't delete user table in case of error
                 :keep_user_database_table
 
-  # Getter by table uuid or table name using canonical visualizations
+  # Getter by table uuid using canonical visualizations
   # @param table_id String
   # @param viewer_user User
   def self.get_by_id(table_id, viewer_user)
@@ -172,6 +174,13 @@ class Table
       table = vis.table unless vis.nil?
     end
     table
+  end
+
+  # Getter by table uuid using canonical visualizations. No privacy checks
+  # @param table_id String
+  def self.get_by_table_id(table_id)
+    table_temp = UserTable.where(id: table_id).first
+    table_temp.service unless table_temp.nil?
   end
 
   # Get a list of tables given an array with the names
@@ -1550,8 +1559,6 @@ class Table
           column :cartodb_id, 'SERIAL PRIMARY KEY'
           String :name
           String :description, :text => true
-          column :created_at, 'timestamp with time zone', :default => Sequel::CURRENT_TIMESTAMP
-          column :updated_at, 'timestamp with time zone', :default => Sequel::CURRENT_TIMESTAMP
         end
       else
         sanitized_force_schema = force_schema.split(',').map do |column|
@@ -1562,13 +1569,9 @@ class Table
             column.gsub(/primary\s+key/i,'UNIQUE')
           end
         end
-        sanitized_force_schema.unshift('cartodb_id SERIAL PRIMARY KEY').
-                               unshift('created_at timestamp with time zone').
-                               unshift('updated_at timestamp with time zone')
+        sanitized_force_schema.unshift('cartodb_id SERIAL PRIMARY KEY')
         user_database.run(<<-SQL
           CREATE TABLE #{qualified_table_name} (#{sanitized_force_schema.join(', ')});
-          ALTER TABLE  #{qualified_table_name} ALTER COLUMN created_at SET DEFAULT now();
-          ALTER TABLE  #{qualified_table_name} ALTER COLUMN updated_at SET DEFAULT now();
         SQL
         )
       end

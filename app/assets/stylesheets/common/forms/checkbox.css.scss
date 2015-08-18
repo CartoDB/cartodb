@@ -66,3 +66,6 @@
 .Checkbox.is-disabled .Checkbox-label {
   @include opacity(0.4);
 }
+.Checkbox-strong {
+  color: #2E3C43;
+}

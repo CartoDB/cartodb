@@ -90,6 +90,10 @@ body.is-inDialog {
   width: $sLayout-width;
   margin: 0 auto;
 }
+.Dialog-body.Dialog-body--tall {
+  padding-top: $sMargin-section;
+  padding-bottom: $sMargin-section;
+}
 .Dialog-body.Dialog-body--withoutBorder {
   border-top: none;
 }
@@ -125,6 +129,10 @@ body.is-inDialog {
 }
 .Dialog-footer--withoutBorder { border-top: none }
 .Dialog-footer--simple {
+  @include display-flex();
+  @include justify-content(center);
+}
+.Dialog-footerContent {
   @include display-flex();
   @include justify-content(center);
 }
@@ -182,6 +190,12 @@ body.is-inDialog {
 .Dialog-headerIcon--alert {
   color: $cHighlight-alert2;
   border-color: $cHighlight-alert2;
+}
+.Dialog-headerIcon--small {
+  font-size: 10px;
+  vertical-align: middle;
+  position: relative;
+  top: -3px;
 }
 .Dialog-headerIconBadge {
   /* "backwards" to use the first keyframe's styles before animation starts */

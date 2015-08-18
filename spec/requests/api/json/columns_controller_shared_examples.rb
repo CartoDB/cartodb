@@ -26,6 +26,7 @@ shared_examples_for "columns controllers" do
     it "gets the columns from a table" do    
       get_json api_v1_tables_columns_index_url(params) do |response|
         response.status.should be_success
+        # Filter out timestamp columns for compatibility as they won't be added in new cartodbfy
         (response.body - default_schema - [["created_at", "date"],["updated_at", "date"]]).should be_empty
       end
     end

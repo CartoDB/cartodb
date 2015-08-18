@@ -34,8 +34,11 @@ module Carto
 
       raise "User #{username} not found" unless user
 
-      users_group << Carto::UsersGroup.new(user: user, group: self)
-      user
+      raise CartoDB::ModelAlreadyExists unless users_group.where(user_id: user.id, group_id: self.id).first.nil?
+
+      user_group = Carto::UsersGroup.new(user: user, group: self)
+      users_group << user_group
+      user_group
     end
 
     def remove_member(username)
@@ -43,8 +46,7 @@ module Carto
 
       raise "User #{username} not found" unless user
 
-      users.destroy(user)
-      user
+      users.include?(user) ? users.destroy(user) : nil
     end
 
     def database_name

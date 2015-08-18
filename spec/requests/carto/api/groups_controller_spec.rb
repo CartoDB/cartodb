@@ -57,6 +57,13 @@ describe Carto::Api::GroupsController do
       group.users.collect(&:username).should include(@org_user_1.username)
     end
 
+    it '#add_member returns 409 if username is already added' do
+      group = Carto::Group.where(organization_id: @carto_organization.id).first
+      user_information = { username: @org_user_1.username }
+      post api_v1_databases_group_add_member_url(database_name: group.database_name, name: group.name), user_information, default_headers
+      response.status.should == 409
+    end
+
     it '#remove_member from username' do
       group = Carto::Group.where(organization_id: @carto_organization.id).first
       username = group.users.first.username
@@ -64,6 +71,13 @@ describe Carto::Api::GroupsController do
       response.status.should == 200
       group.reload
       group.users.collect(&:username).should_not include(username)
+    end
+
+    it '#remove_member from username throws 404 if member is not found' do
+      group = Carto::Group.where(organization_id: @carto_organization.id).first
+      username = @org_user_1.username
+      delete api_v1_databases_group_remove_member_url(database_name: group.database_name, name: group.name, username: username), {}, default_headers
+      response.status.should == 404
     end
 
     it '#destroy an existing group' do

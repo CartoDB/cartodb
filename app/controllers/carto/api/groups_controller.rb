@@ -53,14 +53,22 @@ module Carto
       def add_member
         @group.add_member(@username)
         render json: {}, status: 200
+      rescue CartoDB::ModelAlreadyExists => e
+        CartoDB.notify_debug('Group member already exists', { params: params })
+        render json: { errors: "That user is already in the group" }, status: 409
       rescue => e
         CartoDB.notify_exception(e, { params: params , group: (@group ? @group : 'not loaded') })
         render json: { errors: e.message }, status: 500
       end
 
       def remove_member
-        @group.remove_member(@username)
-        render json: {}, status: 200
+        removed = @group.remove_member(@username)
+        if removed
+          render json: {}, status: 200
+        else
+        CartoDB.notify_debug('Group member not in the group', { params: params })
+        render json: { errors: "That user is not in the group" }, status: 404
+        end
       rescue => e
         CartoDB.notify_exception(e, { params: params , group: (@group ? @group : 'not loaded') })
         render json: { errors: e.message }, status: 500

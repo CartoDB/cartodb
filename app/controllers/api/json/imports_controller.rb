@@ -132,7 +132,6 @@ class Api::Json::ImportsController < Api::ApplicationController
       upload_host:            Socket.gethostname,
       create_visualization:   ["true", true].include?(params[:create_vis]),
       user_defined_limits:    user_defined_limits,
-      import_extra_options:   import_extra_options,
       privacy:                privacy
     }
   end
@@ -181,19 +180,10 @@ class Api::Json::ImportsController < Api::ApplicationController
     end
   end
 
-  def import_extra_options
-    extra_options = {}
-    
-    # All parameter passing to 'import_extra_options' sould be done here      
-    # extra_options['example'] = 'foo'
-
-    ::JSON.dump(extra_options)
-  end
-
   def privacy
     if params[:privacy].present?
       privacy = (UserTable::PRIVACY_VALUES_TO_TEXTS.invert)[params[:privacy].downcase]
-      raise "Unknown value '#{params[:privacy]}' for 'privacy'. 'private', 'public' and 'link' are allowed." if privacy.nil?
+      raise "Unknown value '#{params[:privacy]}' for 'privacy'. Allowed values are: #{[UserTable::PRIVACY_VALUES_TO_TEXTS.values[0..-2].join(', '), UserTable::PRIVACY_VALUES_TO_TEXTS.values[-1]].join(' and ')}" if privacy.nil?
       raise "Your account type (#{current_user.account_type.tr('[]','')}) does not allow to create private datasets. Check https://cartodb.com/pricing for more info." if !current_user.valid_privacy?(privacy)
       privacy
     else

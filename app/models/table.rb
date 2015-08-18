@@ -414,13 +414,9 @@ class Table
 
       if !@data_import.privacy.nil?
         if !self.owner.valid_privacy?(@data_import.privacy)
-          raise "This user doesn't have private tables enabled"
+          raise "Error: User '#{self.owner.username}' doesn't have private tables enabled"
         end
         @user_table.privacy = @data_import.privacy
-      end
-
-      if !@data_import.import_extra_options.nil?
-        # All import_extra_options procesing should be done here
       end
 
       decorator = CartoDB::Datasources::Decorators::Factory.decorator_for(@data_import.service_name)

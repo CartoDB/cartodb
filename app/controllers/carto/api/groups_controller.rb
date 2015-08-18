@@ -85,7 +85,7 @@ module Carto
 
       def load_group_from_loaded_parameters
         @group = Group.where(organization_id: Organization.find_by_database_name(@database_name).id, name: @name).first
-        render json: { errors: "Group with database_name #{@database_name} and name #{@name} not found" }, status: 400 unless @group
+        render json: { errors: "Group with database_name #{@database_name} and name #{@name} not found" }, status: 404 unless @group
       end
 
       def load_user_from_username

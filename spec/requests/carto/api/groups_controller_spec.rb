@@ -81,11 +81,15 @@ describe Carto::Api::GroupsController do
     end
 
     it '#destroy an existing group' do
-      group = FactoryGirl.create(:carto_group, organization: @carto_organization)
-      Carto::Group.where(id: group.id).first.should_not be_nil
+      group = Carto::Group.where(organization_id: @carto_organization.id).first
       delete api_v1_databases_group_destroy_url(database_name: group.database_name, name: group.name), nil, default_headers
       response.status.should == 200
       Carto::Group.where(id: group.id).first.should be_nil
+    end
+
+    it '#destroy a nonexisting group returns 404' do
+      delete api_v1_databases_group_destroy_url(database_name: @carto_organization.database_name, name: 'org_group'), nil, default_headers
+      response.status.should == 404
     end
 
   end

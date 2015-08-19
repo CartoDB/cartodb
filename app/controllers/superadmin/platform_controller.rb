@@ -56,7 +56,7 @@ class Superadmin::PlatformController < Superadmin::SuperadminController
   end
 
   def total_active_users
-    respond_with(CartoDB::Stats::Platform.new.active_users)
+    respond_with({:count => CartoDB::Stats::Platform.new.active_users})
   end
 
   def total_likes

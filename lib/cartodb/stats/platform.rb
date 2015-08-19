@@ -58,7 +58,7 @@ module CartoDB
         active_users = "SELECT COUNT(DISTINCT(user_id)) FROM visualizations WHERE lower(type)!='remote'"
         db = ::Rails::Sequel.configuration.environment_for(Rails.env)
         conn = Sequel.connect(db)
-        au_count = conn.fetch(active_users).first
+        au_count = conn.fetch(active_users).first[:count]
         conn.disconnect
         return au_count
       end

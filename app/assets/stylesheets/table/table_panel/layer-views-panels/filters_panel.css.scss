@@ -484,7 +484,7 @@
           &:last-child { margin-bottom: 0; }
 
           &:before {
-            @include position(12px, false, false, 0);
+            @include position(15px, false, false, 0);
             content: '';
             @include size(9px);
 
@@ -497,7 +497,7 @@
 
           &:after {
             @include opacity(1);
-            @include position(12px, false, false, 0);
+            @include position(15px, false, false, 0);
             content: '';
             @include size(7px);
 

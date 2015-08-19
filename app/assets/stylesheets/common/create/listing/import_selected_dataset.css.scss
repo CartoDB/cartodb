@@ -31,7 +31,10 @@ $br: 4px;
   color: #419CDB;
   text-transform: uppercase;
 }
-.DatasetSelected-itemInfo { margin-left: 20px }
+.DatasetSelected-itemInfo { 
+  width: 740px;
+  margin-left: 20px;
+}
 .DatasetSelected-itemTitle {
   display: block;
   font-size: $sFontSize-larger;

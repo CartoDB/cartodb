@@ -16,7 +16,7 @@
     <%= render 'admin/shared/public_header' %>
 
     <div class="PublicMap-map js-map" id="map">
-      <div class="Spinner Spinner--center"></div>
+      <div class="Spinner Spinner--center js-spinner"></div>
     </div>
 
     <%# Legacy from current embed %>
@@ -58,7 +58,7 @@
 
           <div class="PublicMap-rightBlock PublicMap-rightBlock--owner u-txt-right">
             <ul class="Navmenu-list">
-              <li class="Navmenu-item">
+              <li class="Navmenu-item Navmenu-item--buttons">
                 <ul class="u-valign">
                   <li class="Navmenu-subItem">
                     <a href="<%= CartoDB.url(self, 'public_visualizations_embed_map', {id: @visualization.id}, @visualization.user) %>" target="_blank" class="Navmenu-link">
@@ -76,15 +76,21 @@
                 </ul>
               </li>
 
-              <li class="Navmenu-item js-Navmenu-share">
-                <div class="Navmenu-sep"></div>
+              <li class="Navmenu-item Navmenu-item--buttons js-Navmenu-share u-showOnTablet">
+                <div class="Navmenu-sep u-showOnTablet"></div>
 
                 <a href="#" class="Navmenu-link Navmenu-shareLink js-Navmenu-shareLink">
                   <i class="iconFont iconFont-Share Navmenu-icon"></i>
                 </a>
+              </li>
+            </ul>
 
-                <ul class="Navmenu-shareList js-Navmenu-shareList u-valign">
-                  <li class="Navmenu-subItem">
+            <ul class="Navmenu-list Navmenu-shareList js-Navmenu-shareList u-valign">
+              <li class="Navmenu-item Navmenu-item--buttons">
+                <div class="Navmenu-sep u-hideOnTablet"></div>
+
+                <ul class="u-valign">
+                  <li class="Navmenu-subItem"> 
                     <a href="https://twitter.com/intent/tweet?text=<%= url_encode(@visualization.name) %>&url=<%= url_encode(request.original_url) %>&via=cartoDB">
                       <i class="iconFont iconFont-Twitter Navmenu-icon Navmenu-icon--twitter"></i>
                     </a>
@@ -110,6 +116,7 @@
                 </ul>
               </li>
             </ul>
+
             <ul class="Navmenu-list u-hideOnTablet">
               <li class="Navmenu-item">
                 <a class="Button Button--main Navmenu-editLink Navmenu-editLink--edit js-Navmenu-editLink" href="<%= CartoDB.url(self, 'public_visualizations_show', {id: @visualization.id }, @visualization.user) %>">Edit in cartodb</a>
@@ -131,21 +138,23 @@
               <% end %>
 
               <div class="PublicMap-meta">
-                <% if @visualization.tags.size > 0 %>
-                  <ul class="PublicMap-metaList">
+                <ul class="PublicMap-metaList">
+                  <li class="PublicMap-metaItem"><i class="PublicMap-metaIcon iconFont iconFont-Calendar"></i> <%= time_ago_in_words(@visualization.updated_at) %> ago</li>
+                </ul>
+
+                <ul class="PublicMap-metaList PublicMap-metaList--mobile js-PublicMap-metaList--mobile">
+                  <li class="PublicMap-metaItem"><i class="PublicMap-metaIcon iconFont iconFont-Stats"></i> <%= number_with_delimiter(@mapviews) %> <%= 'mapview'.pluralize(@mapviews) %></li>
+
+                  <% if @visualization.tags.size > 0 %>
                     <li class="PublicMap-metaItem">
                       <i class="PublicMap-metaIcon iconFont iconFont-Label"></i>
                       <%# Keep on one line to avoid unwanted spaces %>
                       <% formatted_tags(@visualization.tags) do |tag| %><a class="PublicMap-metaLink" href="<%= CartoDB.url(self, 'public_tag', {tag: tag}, @visualization.user) %>"><%= tag %></a><% end %>
                     </li>
-                  </ul>
-                <% end %>
-
-                <ul class="PublicMap-metaList PublicMap-metaList--mobile js-PublicMap-metaList--mobile">
-                  <li class="PublicMap-metaItem"><i class="PublicMap-metaIcon iconFont iconFont-Calendar"></i> <%= time_ago_in_words(@visualization.updated_at) %> ago</li>
-                  <li class="PublicMap-metaItem"><i class="PublicMap-metaIcon iconFont iconFont-Stats"></i> <%= number_with_delimiter(@mapviews) %> <%= 'mapview'.pluralize(@mapviews) %></li>
+                  <% end %>
                 </ul>
               </div>
+
               <a class="Navmenu-editLink Navmenu-editLink--more js-Navmenu-editLink--more" href="#/more">More info</a>
             </div>
           </div>
@@ -173,11 +182,8 @@
                         <h3 class="DatasetsList-itemTitle DefaultTitle u-ellipsLongText">
                           <a href="<%= CartoDB.url(self, 'public_table', {id: vis.table.name}, @user_domain.nil? ? nil : @related_tables_owners[vis.table.user_id]) %>" title="<%= vis.table.name %>" class="DefaultTitle-link u-ellipsLongText"><%= vis.table.name %></a>
                         </h3>
-
                         <% if vis.description %>
                           <div class="DefaultDescription DatasetsList-itemDescription u-ellipsLongText"><%= raw vis.description_html_safe %></div>
-                        <% else %>
-                          <span class="NoResults DatasetsList-itemDescription">No description</span>
                         <% end %>
                       </div>
                     </div>
@@ -197,10 +203,13 @@
                         <% end %>
                         <span class="DatasetsList-itemTimeDiff DefaultTimeDiff u-hideOnTablet">
                           <i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i>
-                          <%= time_ago_in_words(vis.updated_at) %> ago by
-                          <span class="UserAvatar">
-                            <img class="UserAvatar-img UserAvatar-img--smaller" src="<%= vis.user.avatar_url %>" alt="<%= vis.user.name || vis.user.username %>" title="<%= vis.user.name || vis.user.username %>" />
-                          </span>
+                          <%= time_ago_in_words(vis.updated_at) %> ago
+                          <% if vis.user.username != @visualization.user.username %>
+                            by
+                            <span class="UserAvatar">
+                              <img class="UserAvatar-img UserAvatar-img--smaller" src="<%= vis.user.avatar_url %>" alt="<%= vis.user.name || vis.user.username %>" title="<%= vis.user.name || vis.user.username %>" />
+                            </span>
+                          <% end %>
                         </span>
                       </div>
                     </div>
@@ -224,19 +233,17 @@
       <%# DISQUS %>
       <div class="u-inner">
         <div class="PublicMap-block PublicMap-info">
-          <div class="PublicMap-leftBlock PublicMap-leftBlock--large">
-            <div id="disqus_thread"></div>
-            <script type="text/javascript">
-              var disqus_shortname  = '<%= @disqus_shortname %>';
-              var disqus_identifier = '<%= @visualization.id %>';
+          <div id="disqus_thread"></div>
+          <script type="text/javascript">
+            var disqus_shortname  = '<%= @disqus_shortname %>';
+            var disqus_identifier = '<%= @visualization.id %>';
 
-              (function() {
-                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-                dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-              })();
-            </script>
-          </div>
+            (function() {
+              var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+              dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+              (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+          </script>
         </div>
       </div>
 
@@ -415,15 +422,6 @@
     page_owner: @visualization.user
   } %>
 
-  <% if Cartodb.config[:metrics].present? && Cartodb.config[:metrics]['hubspot'].present? && Cartodb.config[:metrics]['hubspot']['token'].present? %>
-    <script type="text/javascript">
-     (function(d,s,i,r) {
-       if (d.getElementById(i)){return;}
-       var n=d.createElement(s),e=d.getElementsByTagName(s)[0];
-       n.id=i;n.src="//js.hs-analytics.net/analytics/'+(Math.ceil(new Date()/r)*r)+'/<%= Cartodb.config[:metrics]['hubspot']['token'] %>.js";
-       e.parentNode.insertBefore(n, e);
-     })(document,"script","hs-analytics",300000);
-    </script>
-  <% end %>
+  <%= insert_hubspot() -%>
 
 <% end %>

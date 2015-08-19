@@ -16,7 +16,8 @@ describe 'Mapinfo regression tests' do
   include_context "cdb_importer schema"
 
   it 'imports Mapinfo files' do
-    filepath    = "http://dl.dropboxusercontent.com/u/931536/Ivanovo.zip"
+    # Rails.root not loaded yet. This is a workaround
+    filepath    = "#{File.expand_path('../..', __FILE__)}/fixtures/Ivanovo.zip"
     downloader  = Downloader.new(filepath)
     runner      = Runner.new({
                                pg: @pg_options,

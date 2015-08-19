@@ -73,7 +73,6 @@ module CartoDB
       def cartodbfy(table_name)
         table = ::Table.new(:user_table => ::UserTable.where(name: table_name, user_id: user.id).first)
         table.force_schema = true
-        table.send :update_updated_at
         table.import_to_cartodb(table_name)
         table.schema(reload: true)
         table.send :set_the_geom_column!
@@ -85,7 +84,6 @@ module CartoDB
         table.save
         table.send(:invalidate_varnish_cache)
         update_cdb_tablemetadata(table.name)
-        database.run("UPDATE \"#{user.database_schema}\".\"#{table_name}\" SET updated_at = NOW() WHERE cartodb_id IN (SELECT MAX(cartodb_id) from \"#{user.database_schema}\".\"#{table_name}\")")
       rescue => exception
         puts "Sync cartodbfy ERROR: #{exception.message}: #{exception.backtrace.join}"
         Rollbar.report_exception(exception)

@@ -24,6 +24,27 @@ def create_random_table(user, name = "viz#{rand(999)}")
   create_table( { user_id: user.id, name: name } )
 end
 
+def create_table_with_options(user, headers = {'CONTENT_TYPE'  => 'application/json'}, options = {})
+  privacy = options.fetch(:privacy, 1)
+
+  seed    = rand(9999)
+  payload = {
+    name:         "table #{seed}",
+    description:  "table #{seed} description"
+  }
+
+  table_attributes = nil
+  post_json api_v1_tables_create_url(user_domain: user.username, api_key: user.api_key), payload.to_json, headers do |r|
+    table_attributes  = r.body.stringify_keys
+    table_id          = table_attributes.fetch('id')
+
+    put api_v1_tables_update_url(id: table_id, user_domain: user.username, api_key: user.api_key),
+      { privacy: privacy }.to_json, headers
+  end
+
+  table_attributes
+end
+
 shared_context 'users helper' do
   include_context 'database configuration'
 

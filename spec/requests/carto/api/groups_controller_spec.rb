@@ -2,6 +2,7 @@
 
 require_relative '../../../spec_helper'
 require_relative '.././../../factories/organizations_contexts'
+require_relative '.././../../factories/visualization_creation_helpers'
 require_relative '../../../../app/controllers/carto/api/groups_controller'
 
 describe Carto::Api::GroupsController do
@@ -77,6 +78,93 @@ describe Carto::Api::GroupsController do
       post api_v1_databases_group_add_member_url(database_name: group.database_name, name: group.name), user_information, default_headers
       response.status.should == 409
     end
+
+    it '#update_permission granting read to a table' do
+      bypass_named_maps
+      @table_user_1 = create_table_with_options(@org_user_1)
+
+      group = Carto::Group.where(organization_id: @carto_organization.id).first
+      permission = { 'access': 'r' }
+      put api_v1_databases_group_update_permission_url(database_name: group.database_name, name: group.name, username: @org_user_1.username, table_name: @table_user_1['name']), permission, default_headers
+      response.status.should == 200
+
+      permission = ::Permission.where(entity_id: @table_user_1['table_visualization']['id']).first
+      permission.should_not be_nil
+
+      expected_acl = [
+          {
+              type: Permission::TYPE_GROUP,
+              entity: {
+                  id:         group.id,
+                  name:       group.name
+              },
+              access: Permission::ACCESS_READONLY
+          }
+      ]
+      permission.to_poro[:acl].should == expected_acl
+    end
+
+    it '#update_permission granting write to a table' do
+      bypass_named_maps
+      @table_user_1 = create_table_with_options(@org_user_1)
+
+      group = Carto::Group.where(organization_id: @carto_organization.id).first
+      # First read, then write, to ensure there're no duplicates
+      permission = { 'access': 'r' }
+      put api_v1_databases_group_update_permission_url(database_name: group.database_name, name: group.name, username: @org_user_1.username, table_name: @table_user_1['name']), permission, default_headers
+      response.status.should == 200
+
+      permission = { 'access': 'w' }
+      put api_v1_databases_group_update_permission_url(database_name: group.database_name, name: group.name, username: @org_user_1.username, table_name: @table_user_1['name']), permission, default_headers
+      response.status.should == 200
+
+      permission = ::Permission.where(entity_id: @table_user_1['table_visualization']['id']).first
+      permission.should_not be_nil
+
+      expected_acl = [
+          {
+              type: Permission::TYPE_GROUP,
+              entity: {
+                  id:         group.id,
+                  name:       group.name
+              },
+              access: Permission::ACCESS_READWRITE
+          }
+      ]
+      permission.to_poro[:acl].should == expected_acl
+    end
+
+    it '#destroy_permission to a table' do
+      bypass_named_maps
+      @table_user_1 = create_table_with_options(@org_user_1)
+
+      group = Carto::Group.where(organization_id: @carto_organization.id).first
+      permission = { 'access': 'r' }
+      put api_v1_databases_group_update_permission_url(database_name: group.database_name, name: group.name, username: @org_user_1.username, table_name: @table_user_1['name']), permission, default_headers
+      response.status.should == 200
+
+      expected_acl = [
+          {
+              type: Permission::TYPE_GROUP,
+              entity: {
+                  id:         group.id,
+                  name:       group.name
+              },
+              access: Permission::ACCESS_NONE
+          }
+      ]
+
+      delete api_v1_databases_group_destroy_permission_url(database_name: group.database_name, name: group.name, username: @org_user_1.username, table_name: @table_user_1['name']), '', default_headers
+      response.status.should == 200
+      permission = ::Permission.where(entity_id: @table_user_1['table_visualization']['id']).first
+      permission.to_poro[:acl].should == expected_acl
+
+      # Check it doesn't duplicate
+      delete api_v1_databases_group_destroy_permission_url(database_name: group.database_name, name: group.name, username: @org_user_1.username, table_name: @table_user_1['name']), '', default_headers
+      response.status.should == 404
+    end
+
+    # TODO: support for tables not yet registered?
 
     it '#remove_member from username' do
       group = Carto::Group.where(organization_id: @carto_organization.id).first

@@ -1501,23 +1501,7 @@ describe Carto::Api::VisualizationsController do
   end
 
   def table_factory(options={})
-    privacy = options.fetch(:privacy, 1)
-
-    seed    = rand(9999)
-    payload = {
-      name:         "table #{seed}",
-      description:  "table #{seed} description"
-    }
-    post api_v1_tables_create_url(api_key: @api_key),
-      payload.to_json, @headers
-
-    table_attributes  = JSON.parse(last_response.body)
-    table_id          = table_attributes.fetch('id')
-
-    put api_v1_tables_update_url(id: table_id, api_key: @api_key),
-      { privacy: privacy }.to_json, @headers
-
-    table_attributes
+    create_table_with_options($user_1, @headers, options)
   end
 
   def api_visualization_creation(user, headers, additional_fields = {})

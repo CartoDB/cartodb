@@ -180,6 +180,7 @@ module CartoDB
       raise PermissionError.new('ACL is not an array') unless incoming_acl.kind_of? Array
       incoming_acl.map { |item|
         unless item.kind_of?(Hash) && acl_has_required_fields?(item) && acl_has_valid_access?(item)
+          byebug
           raise PermissionError.new('Wrong ACL entry format')
         end
       }
@@ -199,12 +200,39 @@ module CartoDB
       self.access_control_list = ::JSON.dump(cleaned_acl)
     end
 
+    def set_group_permission(group, access)
+      granted_access = granted_access_for_group(group)
+      if granted_access == access
+        raise ModelAlreadyExistsError.new("Group #{group.name} already has #{access} access")
+      elsif granted_access == ACCESS_NONE
+        set_subject_permission(group.id, access, TYPE_GROUP)
+      else
+        acl_entry = {
+          type: TYPE_GROUP,
+          entity: {
+            id: group.id,
+            name: group.name
+          },
+          access: access
+        }
+        acl_without_this_group = self.inputable_acl.select { |entry| entry[:entity][:id] != group.id }
+        self.acl = (acl_without_this_group << acl_entry)
+      end
+    end
+
+    def remove_group_permission(group)
+      set_group_permission(group, ACCESS_NONE)
+    end
+
     def set_user_permission(subject, access)
       set_subject_permission(subject.id, access, TYPE_USER)
     end
 
-    def set_subject_permission(subject_id, access, type)
-      new_acl = self.acl.map { |entry|
+    # acl write method expects entries to have entity, although they're not
+    # stored.
+    # TODO: fix this, since this is coupled to representation.
+    def inputable_acl
+      self.acl.map { |entry|
         {
           type: entry[:type],
           entity: {
@@ -216,6 +244,10 @@ module CartoDB
           access: entry[:access]
         }
       }
+    end
+
+    def set_subject_permission(subject_id, access, type)
+      new_acl = inputable_acl
 
       new_acl << {
           type: type,
@@ -333,6 +365,18 @@ module CartoDB
         end
       }
       ACCESS_NONE if permission.nil?
+    end
+
+    def granted_access_for_group(group)
+      permission = nil
+
+      acl.map { |entry|
+        if entry[:type] == TYPE_GROUP && entry[:id] == group.id
+          permission = entry[:access]
+        end
+      }
+      permission = ACCESS_NONE if permission.nil?
+      permission
     end
 
     # Note: Does not check ownership

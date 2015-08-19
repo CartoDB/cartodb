@@ -12,11 +12,12 @@ module Carto
 
       respond_to :json
 
-      ssl_required :create, :update, :destroy, :add_member, :remove_member unless Rails.env.development? || Rails.env.test?
+      ssl_required :create, :update, :destroy, :add_member, :remove_member, :update_permission, :destroy_permission unless Rails.env.development? || Rails.env.test?
 
       before_filter :load_parameters
-      before_filter :load_mandatory_group, :only => [:destroy, :add_member, :remove_member]
-      before_filter :load_user_from_username, :only => [:update, :add_member, :remove_member]
+      before_filter :load_mandatory_group, :only => [:destroy, :add_member, :remove_member, :update_permission, :destroy_permission]
+      before_filter :load_user_from_username, :only => [:add_member, :remove_member, :load_table, :update_permission, :destroy_permission]
+      before_filter :load_table, :only => [:update_permission, :destroy_permission]
 
       def create
         group = Group.new_instance(@database_name, @name, @database_role)
@@ -89,6 +90,32 @@ module Carto
         render json: { errors: e.message }, status: 500
       end
 
+      def update_permission
+        permission = CartoDB::Permission[@table.permission.id]
+        permission.set_group_permission(@group, @access)
+        permission.save
+        render json: {}, status: 200
+      rescue CartoDB::ModelAlreadyExistsError => e
+        CartoDB.notify_debug('Permission already granted', { params: params })
+        render json: { errors: "That permission is already granted" }, status: 409
+      rescue => e
+        CartoDB.notify_exception(e, { params: params , group: (@group ? @group : 'not loaded') })
+        render json: { errors: e.message }, status: 500
+      end
+
+      def destroy_permission
+        permission = CartoDB::Permission[@table.permission.id]
+        permission.remove_group_permission(@group)
+        permission.save
+        render json: {}, status: 200
+      rescue CartoDB::ModelAlreadyExistsError => e
+        CartoDB.notify_debug('Permission already revoked', { params: params })
+        render json: { errors: "That permission is already revoked" }, status: 404
+      rescue => e
+        CartoDB.notify_exception(e, { params: params , group: (@group ? @group : 'not loaded') })
+        render json: { errors: e.message }, status: 500
+      end
+
       private
 
       def load_parameters
@@ -96,6 +123,15 @@ module Carto
         @name = [params[:old_name], params[:name]].compact.first
         @database_role = params[:database_role]
         @username = params[:username]
+        @table_name = params[:table_name]
+        case params['access']
+            when nil
+            when 'r'
+              @access = CartoDB::Permission::ACCESS_READONLY
+            when 'w'
+              @access = CartoDB::Permission::ACCESS_READWRITE
+            else raise "Unknown access #{params['access']}"
+            end
       end
 
       def get_group_from_loaded_parameters
@@ -113,6 +149,11 @@ module Carto
 
       def load_user_from_username
         @user = Carto::User.where(username: @username).first
+      end
+
+      def load_table
+        @table = Carto::Visualization.where(user_id: @user.id, name: @table_name).first
+        render json: { errors: "Table #{@username}.#{@table_name} not found" }, status: 404 unless @table
       end
 
     end

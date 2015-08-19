@@ -103,7 +103,7 @@ describe CartoDB::Importer2::Loader do
       @ogr2ogr        = CartoDB::Importer2::Doubles::Ogr2ogr.new
       @georeferencer  = CartoDB::Importer2::Doubles::Georeferencer.new
       @loader         = CartoDB::Importer2::Loader.new(@job, @source_file, layer=nil, @ogr2ogr, @georeferencer)
-      @importer_stats_spy = CartoDB::Doubles::ImporterStats.instance
+      @importer_stats_spy = CartoDB::Doubles::Stats::Importer.instance
     end
 
     it 'logs stats' do

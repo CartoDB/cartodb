@@ -9,7 +9,7 @@ require_relative './result'
 require_relative '../../../datasources/lib/datasources/datasources_factory'
 require_relative '../../../platform-limits/platform_limits'
 
-require_dependency 'lib/cartodb/stats/importer'
+require_relative '../../../../lib/cartodb/stats/importer'
 
 module CartoDB
   module Importer2
@@ -35,7 +35,6 @@ module CartoDB
       #   :user User|nil
       #   :unpacker Unp|nil
       #   :post_import_handler CartoDB::Importer2::PostImportHandler|nil
-      #   :importer_stats Hash|nil
       #   :limits Hash|nil {
       #       :import_file_size_instance CartoDB::PlatformLimits::Importer::InputFileSize|nil
       #       :table_row_count_limit_instance CartoDB::PlatformLimits::Importer::TableRowCount|nil

@@ -73,6 +73,10 @@ module CartoDB
       def self.read_config
         config = Cartodb.config[:graphite]
         config.nil? ? {} : config
+      rescue
+        # TODO: This rescue is setup just to support Importer specs who don't have full context and thus no config
+        # Revisit when we improve config system
+        {}
       end
 
       private

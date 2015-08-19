@@ -5,7 +5,7 @@ require_relative './query_batcher'
 require_relative './content_guesser'
 require_relative '../../../table-geocoder/lib/internal-geocoder/latitude_longitude'
 
-require_dependency 'lib/cartodb/stats/importer'
+require_relative '../../../../lib/cartodb/stats/importer'
 
 module CartoDB
   module Importer2

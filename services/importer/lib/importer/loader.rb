@@ -12,7 +12,7 @@ require_relative '../importer/post_import_handler'
 require_relative './geometry_fixer'
 require_relative './typecaster'
 
-require_dependency 'lib/cartodb/stats/importer'
+require_relative '../../../../lib/cartodb/stats/importer'
 
 module CartoDB
   module Importer2

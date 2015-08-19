@@ -4,7 +4,7 @@ require 'ipaddr'
 require_relative 'table_sampler'
 require_relative 'namedplaces_guesser'
 
-require_dependency 'lib/cartodb/stats/importer'
+require_relative '../../../../lib/cartodb/stats/importer'
 
 module CartoDB
   module Importer2

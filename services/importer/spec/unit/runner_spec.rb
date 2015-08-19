@@ -192,7 +192,7 @@ describe Runner do
   describe 'stats logger' do
 
     before(:each) do
-      @importer_stats_spy = CartoDB::Doubles::ImporterStats.instance
+      @importer_stats_spy = CartoDB::Doubles::Stats::Importer.instance
     end
 
     it 'logs total import time' do

@@ -1,4 +1,4 @@
-require_dependency 'lib/cartodb/stats/aggregator'
+require_relative 'aggregator'
 
 module CartoDB
   module Stats

@@ -8,7 +8,7 @@ require_relative '../../../../spec/rspec_configuration.rb'
 include Mocha::ParameterMatchers
 
 module CartoDB
-  module Importer2
+  module Stats
 
     describe ImporterStats do
       TEST_HOST = '172.28.128.3'

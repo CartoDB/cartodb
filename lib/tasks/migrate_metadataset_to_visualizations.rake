@@ -40,7 +40,7 @@ namespace :cartodb do
             puts %Q[Visualization data: Id #{vis.id}, name #{vis.name}]
             vis.license = data[:license]
             vis.source = data[:source]
-            vis.tags = data[:tags]
+            vis.tags = [data[:category]]
             vis.display_name = data[:name]
             vis.description = data[:description]
             vis.store

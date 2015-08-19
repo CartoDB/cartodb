@@ -3,7 +3,6 @@
 require 'rspec/core'
 require 'rspec/expectations'
 require 'rspec/mocks'
-require_relative '../../lib/importer/importer_stats'
 require_relative '../../../../spec/rspec_configuration.rb'
 
 include Mocha::ParameterMatchers

@@ -12,7 +12,6 @@ require_relative '../../lib/cartodb/errors'
 require_relative '../../lib/cartodb/import_error_codes'
 require_relative '../../lib/cartodb/metrics'
 require_relative '../../lib/cartodb/mixpanel'
-require_relative '../../lib/cartodb_stats'
 require_relative '../../config/initializers/redis'
 require_relative '../../services/importer/lib/importer'
 require_relative '../connectors/importer'
@@ -603,10 +602,7 @@ class DataImport < Sequel::Model
                                                 post_import_handler: post_import_handler
                                               })
       runner.loader_options = ogr2ogr_options.merge content_guessing_options
-      graphite_conf = Cartodb.config[:graphite]
-      unless graphite_conf.nil?
-        runner.set_importer_stats_options(graphite_conf['host'], graphite_conf['port'], Socket.gethostname)
-      end
+      runner.set_importer_stats_host_info(Socket.gethostname)
       registrar     = CartoDB::TableRegistrar.new(current_user, ::Table)
       quota_checker = CartoDB::QuotaChecker.new(current_user)
       database      = current_user.in_database

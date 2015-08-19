@@ -7,32 +7,34 @@ module CartoDB
 
       PREFIX = 'logins'
 
-      def self.instance(config={}, host_info = Socket.gethostname)
-        super(PREFIX, config, host_info)
+      def self.instance(config={})
+        # INFO: We explicitly not want anything on the prefix other than PREFIX constant
+        super(PREFIX, config, host_info=nil)
       end
 
       def increment_login_counter(email)
         begin
-          # TODO: Migrate to AR model (and same below)
-          u = User.select(:username).filter(:email => email).or(:username => email).first
-          username = u ? u.username : 'UNKNOWN'
-
           increment("success.total")
           increment("success.hosts.#{Socket.gethostname.gsub('.', '_')}")
-          increment("success.users.#{username}")
+          increment("success.users.#{get_username(email)}")
         rescue
         end
       end
     
       def increment_failed_login_counter(email)
         begin
-          u = User.select(:username).filter(:email => email).or(:username => email).first
-          username = u ? u.username : 'UNKNOWN'
           increment("failed.total")
           increment("failed.hosts.#{Socket.gethostname.gsub('.', '_')}")
-          increment("failed.users.#{username}")
+          increment("failed.users.#{get_username(email)}")
         rescue
         end
+      end
+
+      private
+
+      def get_username(email)
+        user = Carto::User.where("username=? OR email=?", email, email).first
+        user ? user.username : 'UNKNOWN'
       end
 
     end

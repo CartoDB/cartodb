@@ -1,3 +1,4 @@
+require 'socket'
 require 'statsd'
 
 module CartoDB
@@ -11,6 +12,9 @@ module CartoDB
 
       # Always tries to read config and return a real aggregator by default, 
       # returning the dummy one if there's no config
+      # @param String prefix 
+      # @param Hash config Graphite config. Leave as empty hash to try to load from CartoDB configuration
+      # @param String host_info (Optional) If set to nil, will only use prefix, else is used also as part of the prefix
       def self.instance(prefix, config={}, host_info = Socket.gethostname)
         config = read_config if config.empty?
 
@@ -24,8 +28,13 @@ module CartoDB
       end
 
       def initialize(prefix, host_info)
-        @fully_qualified_prefix = "#{prefix}.#{host_info}"
-        @timing_stack = [fully_qualified_prefix]
+        @prefix = prefix
+        set_host_info(host_info)
+      end
+
+      def set_host_info(host_info)
+        @fully_qualified_prefix = host_info.nil? ? "#{@prefix}" : "#{@prefix}.#{host_info}"
+        reset_timing_stack
       end
 
       def timing(key)
@@ -55,11 +64,21 @@ module CartoDB
         Statsd.increment("#{fully_qualified_prefix}.#{key}")
       end
 
+      def decrement(key)
+        Statsd.decrement("#{fully_qualified_prefix}.#{key}")
+      end
+
       protected
 
       def self.read_config
         config = Cartodb.config[:graphite]
         config.nil? ? {} : config
+      end
+
+      private
+
+      def reset_timing_stack
+        @timing_stack = [ @fully_qualified_prefix ]
       end
 
     end
@@ -74,6 +93,9 @@ module CartoDB
       end
 
       def increment(key)
+      end
+
+      def decrement(key)
       end
 
       # INFO: Provided as catch-all for specific aggregator convenience methods

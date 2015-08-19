@@ -11,7 +11,8 @@ require_relative './georeferencer'
 require_relative '../importer/post_import_handler'
 require_relative './geometry_fixer'
 require_relative './typecaster'
-require_relative 'importer_stats'
+
+require_dependency 'lib/cartodb/stats/importer'
 
 module CartoDB
   module Importer2
@@ -39,7 +40,7 @@ module CartoDB
         self.georeferencer  = georeferencer
         self.options        = {}
         @post_import_handler = nil
-        @importer_stats = ImporterStats.instance
+        @importer_stats = CartoDB::Stats::Importer.instance
       end
 
       def set_importer_stats(importer_stats)

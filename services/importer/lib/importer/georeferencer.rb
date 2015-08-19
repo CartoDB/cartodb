@@ -5,6 +5,8 @@ require_relative './query_batcher'
 require_relative './content_guesser'
 require_relative '../../../table-geocoder/lib/internal-geocoder/latitude_longitude'
 
+require_dependency 'lib/cartodb/stats/importer'
+
 module CartoDB
   module Importer2
     class Georeferencer
@@ -27,7 +29,7 @@ module CartoDB
         @options = options
         @tracker = @options[:tracker] || lambda { |state| state }
         @content_guesser = CartoDB::Importer2::ContentGuesser.new(@db, @table_name, @schema, @options, @job)
-        @importer_stats = ImporterStats.instance
+        @importer_stats = CartoDB::Stats::Importer.instance
       end
 
       def set_importer_stats(importer_stats)

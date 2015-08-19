@@ -68,6 +68,16 @@ class Carto::UserCreation < ActiveRecord::Base
     
   end
 
+  def validate_credentials_not_taken_in_central
+    return unless Cartodb::Central.sync_data_with_cartodb_central?
+
+    central_client = Cartodb::Central.new
+
+    errors.add(:username, "Username taken") if central_client.get_user(self.username)['username'] == self.username
+    errors.add(:email, "Email taken") if central_client.get_user(self.email)['email'] == self.email
+    errors.empty?
+  end
+
   private
 
   def user
@@ -112,13 +122,7 @@ class Carto::UserCreation < ActiveRecord::Base
 
   # Central validation
   def validate_user
-    return unless Cartodb::Central.sync_data_with_cartodb_central?
-
-    central_client = Cartodb::Central.new
-
-    errors.add(:username, "Username taken") if central_client.get_user(self.username)['username'] == self.username
-    errors.add(:email, "Email taken") if central_client.get_user(self.email)['email'] == self.email
-
+    validate_credentials_not_taken_in_central
     raise "Credentials already used" unless errors.empty?
   rescue => e
     handle_failure(e, mark_as_failure = true)

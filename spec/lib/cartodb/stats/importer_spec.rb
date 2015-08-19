@@ -3,7 +3,7 @@
 require 'rspec/core'
 require 'rspec/expectations'
 require 'rspec/mocks'
-require_relative '../../../../spec/rspec_configuration.rb'
+require_relative '../../../rspec_configuration.rb'
 
 require_relative '../../../../lib/cartodb/stats/importer'
 

@@ -24,6 +24,7 @@ module CartoDB
 
     TYPE_USER         = 'user'
     TYPE_ORGANIZATION = 'org'
+    TYPE_GROUP = 'group'
 
     ENTITY_TYPE_VISUALIZATION = 'vis'
 
@@ -395,6 +396,18 @@ module CartoDB
         end
       end
 
+      group = relevant_group_acl_entry(acl)
+      if group
+        shared_entity = CartoDB::SharedEntity.new(
+            recipient_id:   group[:id],
+            recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_GROUP,
+            entity_id:      self.entity_id,
+            entity_type:    type_for_shared_entity(self.entity_type)
+        ).save
+
+        # TODO: handle group permission or delegate to DB?
+      end
+
       if e.table? and (org or users.any?)
         e.invalidate_cache
       end
@@ -507,6 +520,10 @@ module CartoDB
 
     def relevant_org_acl_entry(acl_list)
       relevant_acl_entries(acl_list, TYPE_ORGANIZATION).first
+    end
+
+    def relevant_group_acl_entry(acl_list)
+      relevant_acl_entries(acl_list, TYPE_GROUP).first
     end
 
     def relevant_acl_entries(acl_list, type)

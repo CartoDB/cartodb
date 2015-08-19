@@ -11,6 +11,7 @@ class Carto::Permission < ActiveRecord::Base
 
   TYPE_USER         = 'user'
   TYPE_ORGANIZATION = 'org'
+  TYPE_GROUP = 'group'
 
   belongs_to :owner, class_name: User, select: Carto::User::SELECT_WITH_DATABASE
 

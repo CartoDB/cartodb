@@ -104,7 +104,7 @@
         </div>
 
         <%# if none of the services are activated, this block shouldn't appear %>
-        <% if @services.size > 0 %>
+        <% if !@services.nil? && @services.size > 0 %>
           <div class="Form-title js-datasourcesContent">
             <h4 class="Form-titleHeader">Connect with external data sources</h4>
             <p class="Form-titleText">Link your services to import data and create amazing maps.</p>

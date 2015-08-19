@@ -42,7 +42,7 @@ class SessionsController < ApplicationController
 
     render :action => 'new' and return unless params[:user_domain].present? || user.present?
 
-    CartodbStats.increment_login_counter(user.email)
+    CartoDB::Stats::Authentication.instance(Cartodb.config[:graphite]).increment_login_counter(user.email)
 
     redirect_to user.public_url << CartoDB.path(self, 'dashboard', {trailing_slash: true})
   end

@@ -5,8 +5,9 @@ module CartoDB
 
       PREFIX = 'logins'
 
-      def self.instance(host = nil, port = nil, host_info = nil)
-        super(PREFIX, host, port, host_info)
+      # TODO: get config by default?
+      def self.instance(config=[], host_info = Socket.gethostname)
+        super(PREFIX, config, host_info)
       end
 
       def increment_login_counter(email)
@@ -18,7 +19,7 @@ module CartoDB
           increment("success.total")
           increment("success.hosts.#{Socket.gethostname.gsub('.', '_')}")
           increment("success.users.#{username}")
-        rescue => e
+        rescue
         end
       end
     
@@ -29,7 +30,7 @@ module CartoDB
           increment("failed.total")
           increment("failed.hosts.#{Socket.gethostname.gsub('.', '_')}")
           increment("failed.users.#{username}")
-        rescue => e
+        rescue
         end
       end
 

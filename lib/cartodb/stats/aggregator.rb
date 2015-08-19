@@ -9,14 +9,13 @@ module CartoDB
 
       attr_reader :fully_qualified_prefix
 
-      def self.instance(prefix, host = nil, port = nil, host_info = nil)
-        if host && port
-          Statsd.host = host
-          Statsd.port = port
-
-          return new(prefix, host_info)
-        else
+      def self.instance(prefix, config=[], host_info = Socket.gethostname)
+        if config.nil? || config['host'].nil? || config['port'].nil?
           NullAggregator.new
+        else
+          Statsd.host = config['host']
+          Statsd.port = config['port']
+          return new(prefix, host_info)
         end
       end
 

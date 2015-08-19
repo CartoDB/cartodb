@@ -1,7 +1,7 @@
 PostgreSQL
 ----------
 
-PostgreSQL (http://postgresql.org) is the open source database powering CartoDB.
+`PostgreSQL <http://postgresql.org>`_ is the open source database powering CartoDB.
 
 CartoDB uses PostgreSQL for two purposes:
 
@@ -16,7 +16,7 @@ At this moment CartoDB requires PostgreSQL 9.3.x version.
 
 PostGIS
 -------
-PostGIS <http://postgis.net> is the extension which adds spatial capabilities to PostgreSQL.
+`PostGIS <http://postgis.net>`_ is the extension which adds spatial capabilities to PostgreSQL.
 It allows working with geospatial types or running geospatial functions in PostgreSQL.
 Is is required both on the user data clusters and the metadata cluster.
 

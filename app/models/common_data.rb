@@ -96,6 +96,7 @@ class CommonData
 
   def sql_api_url(query, filename, format)
     CartoDB::SQLApi.new({
+      protocol: 'https',
       username: config('username'),
     }).url(query, format, filename)
   end

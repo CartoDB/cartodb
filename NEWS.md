@@ -1,4 +1,11 @@
-3.10.3 (2015-mm-dd)
+
+3.11.0 (2015-mm-dd)
+-------------------
+* Synchronizations model now has a new field (and FK) to visualizations.id and joins to them using that instead of by matching name to canonical visualization's table name. It also gets deleted if FK dissapears.
+* Code also switches to using syncrhonizations.visualization_id for linking, so in order to have back existing synchronizations, the following rake needs to be run: `bundle exec rake cartodb:populate_synchronization_visualization_ids`
+
+
+3.10.3 (2015-08-13)
 ---
 * Mailchimp decorator enables category wizard and legends [#3874](https://github.com/CartoDB/cartodb/pull/3874)
 * Cache public and with link embeds in redis [#3733](https://github.com/CartoDB/cartodb/pull/3733)
@@ -38,7 +45,6 @@ cd lib/sql; sudo make all install
 * Properly and fully disallowing multilogins, by killing other existing sessions upon login
 * Added new Platform Limit for concurrent syncs per user. Currently 2 hours TTL, 3 syncs per user max. allowed
 * Importer now tries to import shapefile zips without .prj file, by setting 4326 projection.
-* Synchronizations model now has a new field (and FK) to visualizations.id and joins to them using that instead of by matching name to canonical visualization's table name. It also gets deleted if FK dissapears.
 * Prevent geocoding and import polling requests from being queued up [#4980](https://github.com/CartoDB/cartodb/pull/4980)
 * Prevent geocoding and import polling requests from being queued up [#4980](https://github.com/CartoDB/cartodb/pull/4980)
 * Added new fields source, attributions, and license, to metadata modal [#5016](https://github.com/CartoDB/cartodb/pull/5016)
@@ -57,6 +63,7 @@ Bugfixes:
 New features:
 * Organization signup: [#3902](https://github.com/CartoDB/cartodb/issues/3902)
 * Diagnosis page at http://localhost.lan:3000/diagnosis
+* Remote/External sources now imported via a synchronization (that will sync monthly), and dissapear from the data-library section until the user unsyncs the dataset.
 
 3.10.2 (2015-05-20)
 ---------

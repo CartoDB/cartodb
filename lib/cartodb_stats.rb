@@ -47,17 +47,6 @@ class CartodbStats
       end
     end
 
-    def increment_login_counter(email)
-      begin
-        u = User.select(:username).filter(:email => email).or(:username => email).first
-        username = u ? u.username : 'UNKNOWN'
-        Statsd.increment("logins.success.total")
-        Statsd.increment("logins.success.hosts.#{Socket.gethostname.gsub('.', '_')}")
-        Statsd.increment("logins.success.users.#{username}")
-      rescue => e
-      end
-    end
-  
     def increment_failed_login_counter(email)
       begin
         u = User.select(:username).filter(:email => email).or(:username => email).first

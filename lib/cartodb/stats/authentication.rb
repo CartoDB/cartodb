@@ -1,3 +1,5 @@
+require_dependency 'lib/cartodb/stats/aggregator'
+
 module CartoDB
   module Stats
 
@@ -5,8 +7,7 @@ module CartoDB
 
       PREFIX = 'logins'
 
-      # TODO: get config by default?
-      def self.instance(config=[], host_info = Socket.gethostname)
+      def self.instance(config={}, host_info = Socket.gethostname)
         super(PREFIX, config, host_info)
       end
 

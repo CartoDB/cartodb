@@ -9,8 +9,12 @@ module CartoDB
 
       attr_reader :fully_qualified_prefix
 
-      def self.instance(prefix, config=[], host_info = Socket.gethostname)
-        if config.nil? || config['host'].nil? || config['port'].nil?
+      # Always tries to read config and return a real aggregator by default, 
+      # returning the dummy one if there's no config
+      def self.instance(prefix, config={}, host_info = Socket.gethostname)
+        config = read_config if config.empty?
+
+        if config['host'].nil? || config['port'].nil?
           NullAggregator.new
         else
           Statsd.host = config['host']
@@ -51,9 +55,17 @@ module CartoDB
         Statsd.increment("#{fully_qualified_prefix}.#{key}")
       end
 
+      protected
+
+      def self.read_config
+        config = Cartodb.config[:graphite]
+        config.nil? ? {} : config
+      end
+
     end
 
     class NullAggregator
+
       def timing(key)
         yield
       end
@@ -63,6 +75,12 @@ module CartoDB
 
       def increment(key)
       end
+
+      # INFO: Provided as catch-all for specific aggregator convenience methods
+      # @see CartoDB::Stats::Authentication increment_login_counter() as an example
+      def method_missing(method, *arguments, &block)
+      end
+
     end
 
   end

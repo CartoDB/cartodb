@@ -1,6 +1,7 @@
 # encoding: UTF-8
 require_dependency 'google_plus_config'
 require_dependency 'google_plus_api'
+require_dependency 'lib/cartodb/stats/authentication'
 
 class SessionsController < ApplicationController
   include LoginHelper
@@ -42,7 +43,7 @@ class SessionsController < ApplicationController
 
     render :action => 'new' and return unless params[:user_domain].present? || user.present?
 
-    CartoDB::Stats::Authentication.instance(Cartodb.config[:graphite]).increment_login_counter(user.email)
+    CartoDB::Stats::Authentication.instance.increment_login_counter(user.email)
 
     redirect_to user.public_url << CartoDB.path(self, 'dashboard', {trailing_slash: true})
   end

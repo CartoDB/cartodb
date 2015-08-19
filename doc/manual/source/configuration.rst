@@ -24,68 +24,64 @@ same order than in the app_config will be used as default.
 
 Here is an example config.yml:
 
-.. highlight:: yml
+.. code-block:: yaml
 
-::
+  basemaps:
+      CartoDB:
+        positron_rainbow:
+          default: true # Ident with spaces not with tab
+          url: 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
+          subdomains: 'abcd'
+          minZoom: '0'
+          maxZoom: '18'
+          name: 'Positron'
+          className: 'positron_rainbow'
+          attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href= "http://cartodb.com/attributions#basemaps">CartoDB</a>'
+        dark_matter_rainbow:
+          url: 'http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'
+          subdomains: 'abcd'
+          minZoom: '0'
+          maxZoom: '18'
+          name: 'Dark matter'
+          className: 'dark_matter_rainbow'
+          attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="http://cartodb.com/attributions#basemaps">CartoDB</a>'
+        positron_lite_rainbow:
+          url: 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png'
+          subdomains: 'abcd'
+          minZoom: '0'
+          maxZoom: '18'
+          name: 'Positron (lite)'
+          className: 'positron_lite_rainbow'
+          attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="http://cartodb.com/attributions#basemaps">CartoDB</a>'
 
-    basemaps:
-        CartoDB:
-          positron_rainbow:
-            default: true # Ident with spaces not with tab
-            url: 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
-            subdomains: 'abcd'
-            minZoom: '0'
-            maxZoom: '18'
-            name: 'Positron'
-            className: 'positron_rainbow'
-            attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href= "http://cartodb.com/attributions#basemaps">CartoDB</a>'
-          dark_matter_rainbow:
-            url: 'http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'
-            subdomains: 'abcd'
-            minZoom: '0'
-            maxZoom: '18'
-            name: 'Dark matter'
-            className: 'dark_matter_rainbow'
-            attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="http://cartodb.com/attributions#basemaps">CartoDB</a>'
-          positron_lite_rainbow:
-            url: 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png'
-            subdomains: 'abcd'
-            minZoom: '0'
-            maxZoom: '18'
-            name: 'Positron (lite)'
-            className: 'positron_lite_rainbow'
-            attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="http://cartodb.com/attributions#basemaps">CartoDB</a>'
-
-        stamen:
-          toner_stamen:
-            url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}.png'
-            subdomains: 'abcd'
-            minZoom: '0'
-            maxZoom: '18'
-            name: 'Toner'
-            className: 'toner_stamen'
-            attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
+      stamen:
+        toner_stamen:
+          url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}.png'
+          subdomains: 'abcd'
+          minZoom: '0'
+          maxZoom: '18'
+          name: 'Toner'
+          className: 'toner_stamen'
+          attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
 
 Basemaps with a layer of labels
 -------------------------------
 Basemaps can optionally add a layer with labels on top of other layers. To do so,
 you should add the labels key to the basemap config, as follows:
 
-.. highlight:: yml
+.. code-block:: yaml
 
-::
-
-    positron_rainbow:
-      default: true
-      url: 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
-      subdomains: 'abcd'
-      minZoom: '0'
-      maxZoom: '18'
-      name: 'Positron'
-      className: 'positron_rainbow'
-      attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href= "http://cartodb.com/attributions#basemaps">CartoDB</a>'
-      labels:
-        url: 'http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png'
+  positron_rainbow:
+    default: true
+    url: 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
+    subdomains: 'abcd'
+    minZoom: '0'
+    maxZoom: '18'
+    name: 'Positron'
+    className: 'positron_rainbow'
+    attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href= "http://cartodb.com/attributions#basemaps">CartoDB</a>'
+    labels:
+      url: 'http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png'
 
 Domainless URLs
 ---------------
@@ -104,34 +100,31 @@ The following sections details the steps to make it work and the limitations it 
 Configuration changes for Domainless URLs
 ------------------------------------------
 
-- For a default installation, **app_config.yml** contains this relevant values:
-    .. highlight:: yml
+* For a default installation, **app_config.yml** contains this relevant values:
 
-    ::
+  .. code-block:: yaml
 
-        session_domain:     '.localhost.lan'
-        subdomainless_urls: false
+    session_domain:     '.localhost.lan'
+    subdomainless_urls: false
 
-- To activate subdomainless urls, change to (notice the removed starting dot from session_domain:
-    .. highlight:: yml
+* To activate subdomainless urls, change to (notice the removed starting dot from session_domain:
 
-    ::
+  .. code-block:: yaml
 
-        session_domain:     'localhost.lan'
-        subdomainless_urls: true
+    session_domain:     'localhost.lan'
+    subdomainless_urls: true
 
 
-- Non-default HTTP and HTTPs ports can also be configured here for REST API calls, with the following **app_config.yml** attributes:
-    .. highlight:: yml
+* Non-default HTTP and HTTPs ports can also be configured here for REST API calls, with the following **app_config.yml** attributes:
 
-    ::
+  .. code-block:: yaml
 
-        # nil|integer. HTTP port to use when building urls.
-        # Leave empty to use default (80)
-        http_port:
-        # nil|integer. HTTPS port to use when building urls.
-        # Leave empty to use default (443)
-        https_port:
+    # nil|integer. HTTP port to use when building urls.
+    # Leave empty to use default (80)
+    http_port:
+    # nil|integer. HTTPS port to use when building urls.
+    # Leave empty to use default (443)
+    https_port:
 
 Remember that as with other configuration changes, Rails application must be restarted to apply them.
 

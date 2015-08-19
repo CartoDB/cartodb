@@ -44,7 +44,7 @@ defaults: &defaults
     public:
       protocol:   'http'
       domain:     'localhost.lan'
-      endpoint:   '/api/v1/sql'
+      endpoint:   '/api/v2/sql'
       port:       8080
   api_requests_service_url: ''
   developers_host:    'http://developers.localhost.lan:3000'

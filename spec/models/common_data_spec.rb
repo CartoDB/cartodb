@@ -57,7 +57,7 @@ describe CommonData do
   it 'should use SQL API V2 for export URLs' do
     stub_valid_api_response
 
-    @common_data.datasets.first['url'].should match (/^https:\/\/common-data\.example\.com\/api\/v2/)
+    @common_data.datasets.first['url'].should match (/common-data\.localhost\.lan\/api\/v2/)
   end
 
   def stub_valid_api_response

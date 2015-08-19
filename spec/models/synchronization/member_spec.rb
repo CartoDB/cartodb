@@ -13,15 +13,13 @@ describe Synchronization::Member do
     Synchronization.repository = DataRepository.new
   end
 
-  describe '#initialize' do
+  describe 'Basic actions' do
     it 'assigns an id by default' do
       member = Synchronization::Member.new
       member.should be_an_instance_of Synchronization::Member
       member.id.should_not be_nil
     end
-  end #initialize
 
-  describe '#store' do
     it 'persists attributes to the repository' do
       attributes  = random_attributes
       member      = Synchronization::Member.new(attributes)
@@ -33,9 +31,7 @@ describe Synchronization::Member do
       member.fetch
       member.name             .should == attributes.fetch(:name)
     end
-  end
 
-  describe '#fetch' do
     it 'fetches attributes from the repository' do
       attributes  = random_attributes
       member      = Synchronization::Member.new(attributes).store
@@ -44,9 +40,7 @@ describe Synchronization::Member do
       member.fetch
       member.name.should == attributes.fetch(:name)
     end
-  end
 
-  describe '#delete' do
     it 'deletes this member from the repository' do
       member      = Synchronization::Member.new(random_attributes).store
       member.fetch
@@ -59,12 +53,36 @@ describe Synchronization::Member do
     end
   end
 
+  describe "External sources" do
+    it "Authorizes to sync always if from an external source" do
+      member  = Synchronization::Member.new(random_attributes({user_id: $user_1.id})).store
+      member.fetch
+
+      member.expects(:from_external_source?)
+            .returns(true)
+
+      $user_1.sync_tables_enabled = true
+      $user_2.sync_tables_enabled = true
+
+      member.authorize?($user_1).should eq true
+      member.authorize?($user_2).should eq false
+
+      $user_1.sync_tables_enabled = false
+      $user_2.sync_tables_enabled = false
+
+      member.authorize?($user_1).should eq true
+    end
+  end
+
+  private
+
   def random_attributes(attributes={})
     random = rand(999)
     {
       name:       attributes.fetch(:name, "name #{random}"),
       interval:   attributes.fetch(:interval, 15 * 60 + random),
       state:      attributes.fetch(:state, 'enabled'),
+      user_id:    attributes.fetch(:user_id, nil)
     }
   end
 end

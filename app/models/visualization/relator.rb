@@ -110,8 +110,9 @@ module CartoDB
       end
 
       def synchronization
-        return {} unless table
-        table.synchronization
+        CartoDB::Synchronization::Member.new(id: @id).fetch
+      rescue KeyError
+        {}
       end
 
       def stats(user=nil)

@@ -18,6 +18,8 @@ describe Carto::Api::SynchronizationsController do
     # INFO: this tests come from spec/requests/api/json/synchronizations_controller_spec.rb
 
     before(:all) do
+      @old_resque_inline_status = Resque.inline
+      Resque.inline = false
       @user = create_user(
         username: 'test',
         email:    'client@example.com',
@@ -42,6 +44,7 @@ describe Carto::Api::SynchronizationsController do
     end
 
     after(:all) do
+      Resque.inline = @old_resque_inline_status
       stub_named_maps_calls
       @user.destroy
     end

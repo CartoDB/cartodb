@@ -33,6 +33,7 @@ module Carto
           log_id:           @synchronization.log_id,
           quoted_fields_guessing: @synchronization.quoted_fields_guessing,
           type_guessing:    @synchronization.type_guessing,
+          from_external_source: @synchronization.from_external_source?,
           visualization_id: @synchronization.visualization_id
         }
       end

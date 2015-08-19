@@ -113,6 +113,17 @@ module Resque
         end
       end
 
+      module TableLiked
+        extend ::Resque::Metrics
+        @queue = :users
+
+        def self.perform(visualization_id, viewer_user_id, vis_preview_image)
+          viz = Carto::Visualization.find(visualization_id)
+          viewer_user = Carto::User.find(viewer_user_id)
+          UserMailer.table_liked(viz, viewer_user, vis_preview_image).deliver
+        end
+      end
+
       module DataImportFinished
         extend ::Resque::Metrics
         @queue = :users

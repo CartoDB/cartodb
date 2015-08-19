@@ -433,8 +433,15 @@ class Admin::VisualizationsController < ApplicationController
 
   def load_common_data
     return true unless current_user.present?
-
-    ::Resque.enqueue(::Resque::UserJobs::CommonData::LoadCommonData, current_user.id) if current_user.should_load_common_data?
+    begin
+      common_data_user = Carto::User.where(username: Cartodb.config[:common_data]['username']).first
+      visualizations_api_url = CartoDB.url(self, 'api_v1_visualizations_index', {type: 'table', privacy: 'public'}, common_data_user)
+      ::Resque.enqueue(::Resque::UserJobs::CommonData::LoadCommonData, current_user.id, visualizations_api_url) if current_user.should_load_common_data?
+    rescue Exception => e
+      # We don't block the load of the index because we aren't able to load common dat
+      CartoDB.notify_exception(e, {user:current_user})
+      return true
+    end
   end
 
   def more_visualizations(user, excluded_visualization)

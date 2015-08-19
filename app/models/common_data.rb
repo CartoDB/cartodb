@@ -1,21 +1,25 @@
 require_relative '../../lib/carto/http/client'
+require_relative '../../services/sql-api/sql_api'
 
 class CommonData
 
-  def initialize
+  # seconds
+  CONNECT_TIMEOUT = 45
+  DEFAULT_TIMEOUT = 60
+
+  def initialize(visualizations_api_url)
     @datasets = nil
     @http_client = Carto::Http::Client.get('common_data', log_requests: true)
+    @visualizations_api_url = visualizations_api_url
   end
 
   def datasets
+
     if @datasets.nil?
-
       _datasets = []
-
       if is_enabled?
         _datasets = get_datasets(get_datasets_json)
       end
-
       @datasets = _datasets
     end
 
@@ -69,7 +73,12 @@ class CommonData
     body = nil
     begin
       http_client = Carto::Http::Client.get('common_data', log_requests: true)
-      response = http_client.get(visualizations_datasets_url, followlocation:true)
+      response = http_client.request(
+        @visualizations_api_url,
+        method: :get,
+        connecttimeout: CONNECT_TIMEOUT,
+        timeout: DEFAULT_TIMEOUT,
+      ).run
       if response.code == 200
         body = response.response_body
       end
@@ -77,10 +86,6 @@ class CommonData
       body = nil
     end
     body
-  end
-
-  def visualizations_datasets_url
-    visualizations_api_url
   end
 
   def export_url(table_name)
@@ -106,7 +111,6 @@ class CommonData
       default
     end
   end
-
 end
 
 
@@ -114,14 +118,14 @@ class CommonDataSingleton
   include Singleton
 
   def initialize
-    @common_data = CommonData.new
+    @common_data = nil
     @last_usage = Time.now
   end
 
-  def datasets
+  def datasets(visualizations_api_url)
     now = Time.now
-    if now - @last_usage > (cache_ttl * 60)
-      @common_data = CommonData.new
+    if @common_data.nil? || (now - @last_usage > (cache_ttl * 60))
+      @common_data = CommonData.new(visualizations_api_url)
       @last_usage = now
     end
     @common_data.datasets

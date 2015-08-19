@@ -10,8 +10,9 @@ module CartoDB
 
     class CommonDataService
 
-      def initialize(datasets = nil)
+      def initialize(visualizations_api_url, datasets = nil)
         @datasets = datasets
+        @visualizations_api_url = visualizations_api_url
       end
 
       def load_common_data_for_user(user)
@@ -84,7 +85,7 @@ module CartoDB
       private
 
       def get_datasets
-        @datasets ||= CommonDataSingleton.instance.datasets
+        @datasets ||= CommonDataSingleton.instance.datasets(@visualizations_api_url)
       end
 
       def delete_remote_visualization(visualization)

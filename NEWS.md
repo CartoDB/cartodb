@@ -1,8 +1,8 @@
+
 3.11.0 (2015-mm-dd)
 -------------------
 * Synchronizations model now has a new field (and FK) to visualizations.id and joins to them using that instead of by matching name to canonical visualization's table name. It also gets deleted if FK dissapears.
 * Code also switches to using syncrhonizations.visualization_id for linking, so in order to have back existing synchronizations, the following rake needs to be run: `bundle exec rake cartodb:populate_synchronization_visualization_ids`
-* Upgrade cartodb-postgresql extension to 0.9.0, which includes the new cartodbfy process. As part of this change new user tables won't have the columns `created_at` nor `updated_at`. See [#4962](https://github.com/CartoDB/cartodb/issues/4962) and [#78](https://github.com/CartoDB/cartodb-postgresql/pull/78)
 
 
 3.10.3 (2015-08-13)

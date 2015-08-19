@@ -210,31 +210,16 @@
       </div>
     </div>
 
-    <%# Maps %>
-    <div class="u-inner">
-      <div class="PublicMap-block with-padding">
-        <h3 class="PublicMap-secondaryTitle">Maps using this dataset</h3>
-      </div>
-    </div>
-
-    <div class="u-inner">
-      <div class="PublicMap-block">
-        <% if @total_visualizations.count == 0 && @total_nonpublic_total_vis_count == 0 %>
-          <ul>
-            <li class="DatasetsList-item">
-              <div class="LayoutIcon">
-                <i class="iconFont iconFont-Lock"></i>
-              </div>
-              <div class="DefaultTitle PublicMap-privateDatasets">This dataset is not used in any map</div>
-            </li>
-          </ul>
-        <% end %>
-      </div>
-    </div>
-
+    <%# Related maps %>
     <% if @total_visualizations.count > 0 %>
+      <div class="u-inner">
+        <div class="PublicMap-block with-padding">
+          <h3 class="PublicMap-secondaryTitle">Maps using this dataset</h3>
+        </div>
+      </div>
+
       <ul class="MapsList PublicMap-mapsList">
-        <% @total_visualizations.take(3).each do |vis| %>
+        <% @total_visualizations.last(3).each do |vis| %>
           <li class="MapsList-item">
             <div class="MapCard" data-zoom="<%= '' %>" data-vizjson-url="<%= CartoDB.url(self, 'api_v2_visualizations_vizjson', {id: vis.id}, vis.user) %>.json">
               <a href="<%= CartoDB.url(self, 'public_visualizations_public_map', {id: vis.id}, user) %>" class="MapCard-header js-header">
@@ -256,6 +241,7 @@
             </div>
           </li>
         <% end %>
+        
         <%# at most 3 cards per line, visbility is handled by CSS depending on viewport size %>
         <% if @total_visualizations.count < 3 %>
           <% ((3 - @total_visualizations.count + 3) % 3).times.each do %>

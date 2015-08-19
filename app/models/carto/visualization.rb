@@ -45,6 +45,8 @@ class Carto::Visualization < ActiveRecord::Base
 
   has_many :related_templates, class_name: Carto::Template, foreign_key: :source_visualization_id
 
+  has_one :synchronization, class_name: Carto::Synchronization
+
   def ==(other_visualization)
     self.id == other_visualization.id
   end
@@ -85,10 +87,6 @@ class Carto::Visualization < ActiveRecord::Base
 
   def transition_options
     @transition_options ||= JSON.parse(self.slide_transition_options).symbolize_keys
-  end
-
-  def synchronization
-    table.nil? ? nil : table.synchronization
   end
 
   def children

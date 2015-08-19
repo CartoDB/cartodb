@@ -37,6 +37,7 @@ class Carto::VisualizationQueryBuilder
     @eager_load_nested_associations = {}
     @order = {}
     @off_database_order = {}
+    @exclude_synced_external_sources = false
   end
 
   def with_id_or_name(id_or_name)
@@ -54,6 +55,11 @@ class Carto::VisualizationQueryBuilder
 
   def with_excluded_ids(ids)
     @excluded_ids = ids
+    self
+  end
+
+  def without_synced_external_sources
+    @exclude_synced_external_sources = true
     self
   end
 
@@ -190,10 +196,23 @@ class Carto::VisualizationQueryBuilder
       # TODO: sql strings are suboptimal and compromise compositability, but
       # I haven't found a better way to do this OR in Rails
       query = query.where(' ("visualizations"."user_id" = (?) or "visualizations"."id" in (?))',
-          @owned_by_or_shared_with_user_id, 
+          @owned_by_or_shared_with_user_id,
           ::Carto::VisualizationQueryBuilder.new.with_shared_with_user_id(@owned_by_or_shared_with_user_id)
                                             .build.uniq.pluck('visualizations.id')
         )
+    end
+
+    if @exclude_synced_external_sources
+      query = query.joins(%Q{
+                            LEFT JOIN external_sources es
+                              ON es.visualization_id = visualizations.id
+                          })
+                   .joins(%Q{
+                            LEFT JOIN external_data_imports edi
+                              ON  edi.external_source_id = es.id
+                              AND edi.synchronization_id IS NOT NULL
+                          })
+                   .where("edi.id IS NULL")
     end
 
     if @type

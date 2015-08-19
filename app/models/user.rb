@@ -125,6 +125,17 @@ class User < Sequel::Model
     self.organization_user? ? [CartoDB::PUBLIC_DB_USER, database_public_username] : [CartoDB::PUBLIC_DB_USER]
   end
 
+  #                             +--------+---------+------+
+  #       valid_privacy logic   | Public | Private | Link |
+  #   +-------------------------+--------+---------+------+
+  #   | private_tables_enabled  |    T   |    T    |   T  |
+  #   | !private_tables_enabled |    T   |    F    |   F  |
+  #   +-------------------------+--------+---------+------+
+  # 
+  def valid_privacy?(privacy)
+    self.private_tables_enabled || privacy == UserTable::PRIVACY_PUBLIC
+  end
+
   ## Callbacks
   def before_validation
     self.email = self.email.to_s.strip.downcase

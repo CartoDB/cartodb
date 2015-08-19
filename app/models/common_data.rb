@@ -89,19 +89,14 @@ class CommonData
   end
 
   def export_url(table_name)
-    "#{sql_api_url export_query(table_name)}&filename=#{table_name}&format=#{config('format', 'shp')}"
+    query = "select * from #{table_name}"
+    sql_api_url(query, table_name, config('format', 'shp'))
   end
 
-  def sql_api_url(query, version='v2')
-    "#{config('protocol', 'https')}://#{config('username')}.#{config('host')}/api/#{version}/sql?q=#{URI::encode query}"
-  end
-
-  def visualizations_api_url(version='v1')
-    "#{config('protocol', 'https')}://#{config('username')}.#{config('host')}/api/#{version}/viz?type=table&privacy=public"
-  end
-
-  def export_query(table_name)
-    "select * from #{table_name}"
+  def sql_api_url(query, filename, format)
+    CartoDB::SQLApi.new({
+      username: config('username'),
+    }).url(query, format, filename)
   end
 
   def config(key, default=nil)

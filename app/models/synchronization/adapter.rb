@@ -84,7 +84,6 @@ module CartoDB
         table.save
         table.send(:invalidate_varnish_cache)
         update_cdb_tablemetadata(table.name)
-        database.run("UPDATE \"#{user.database_schema}\".\"#{table_name}\" SET updated_at = NOW() WHERE cartodb_id IN (SELECT MAX(cartodb_id) from \"#{user.database_schema}\".\"#{table_name}\")")
       rescue => exception
         puts "Sync cartodbfy ERROR: #{exception.message}: #{exception.backtrace.join}"
         Rollbar.report_exception(exception)

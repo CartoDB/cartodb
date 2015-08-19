@@ -17,7 +17,7 @@ require_relative '../../services/importer/lib/importer/query_batcher'
 require_relative '../../services/datasources/lib/datasources/decorators/factory'
 require_relative '../../services/table-geocoder/lib/internal-geocoder/latitude_longitude'
 
-require_dependency 'lib/cartodb/stats/user_tables'
+require_relative '../../lib/cartodb/stats/user_tables'
 
 class Table
   extend Forwardable

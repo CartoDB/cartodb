@@ -1,7 +1,8 @@
 # encoding: UTF-8
 require_dependency 'google_plus_config'
 require_dependency 'google_plus_api'
-require_dependency 'lib/cartodb/stats/authentication'
+
+require_relative '../../lib/cartodb/stats/authentication'
 
 class SessionsController < ApplicationController
   include LoginHelper

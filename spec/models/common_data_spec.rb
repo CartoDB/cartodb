@@ -5,7 +5,7 @@ describe CommonData do
 
   before(:each) do
     Typhoeus::Expectation.clear
-    @common_data = CommonData.new
+    @common_data = CommonData.new('http://common-data.example.com/api/v1/viz?type=table&privacy=public')
     @common_data.stubs(:config).with('protocol', 'https').returns('https')
     @common_data.stubs(:config).with('username').returns('common-data')
     @common_data.stubs(:config).with('host').returns('example.com')
@@ -50,7 +50,7 @@ describe CommonData do
     stub_valid_api_response
     CartoDB.expects(:notify_error).times(0)
 
-    (@common_data.datasets.first['category'].is_a? Array).should eq true
+    (@common_data.datasets.first['tags'].is_a? Array).should eq true
   end
 
 

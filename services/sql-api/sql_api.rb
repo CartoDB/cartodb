@@ -52,7 +52,7 @@ module CartoDB
     end
 
     def base_url(sql_api_config_type)
-      config = Cartodb.config[:sql_api][sql_api_config_type.to_s]
+      config = ::Cartodb.config[:sql_api][sql_api_config_type.to_s]
       %Q[#{config["protocol"]}://#{username}.#{config["domain"]}#{config["endpoint"]}]
     end
 

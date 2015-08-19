@@ -45,22 +45,12 @@ module CartoDB
 
       # Total visualizations
       def visualizations
-        visualizations = "SELECT COUNT(*) FROM visualizations WHERE lower(type)='derived'"
-        db = ::Rails::Sequel.configuration.environment_for(Rails.env)
-        conn = Sequel.connect(db)
-        v_count = conn.fetch(visualizations).first
-        conn.disconnect
-        return v_count
+        Carto::Visualization.where("lower(type) = 'derived'").count
       end
 
       # Total maps
       def maps
-        maps = "SELECT COUNT(*) FROM visualizations WHERE lower(type)!='remote'"
-        db = ::Rails::Sequel.configuration.environment_for(Rails.env)
-        conn = Sequel.connect(db)
-        m_count = conn.fetch(maps).first
-        conn.disconnect
-        return m_count
+        return Carto::Visualization.where("lower(type) != 'remote'").count
       end
 
       # Total active users
@@ -75,12 +65,7 @@ module CartoDB
 
       # Total likes
       def likes
-        likes = "SELECT COUNT(*) FROM likes"
-        db = ::Rails::Sequel.configuration.environment_for(Rails.env)
-        conn = Sequel.connect(db)
-        likes_count = conn.fetch(likes).first
-        conn.disconnect
-        return likes_count
+        return Carto::Like.count
       end
 
     end

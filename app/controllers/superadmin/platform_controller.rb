@@ -48,11 +48,11 @@ class Superadmin::PlatformController < Superadmin::SuperadminController
   end
 
   def total_visualizations
-    respond_with(CartoDB::Stats::Platform.new.visualizations)
+    respond_with({:count => CartoDB::Stats::Platform.new.visualizations})
   end
 
   def total_maps
-    respond_with(CartoDB::Stats::Platform.new.maps)
+    respond_with({:count => CartoDB::Stats::Platform.new.maps})
   end
 
   def total_active_users
@@ -60,7 +60,7 @@ class Superadmin::PlatformController < Superadmin::SuperadminController
   end
 
   def total_likes
-    respond_with(CartoDB::Stats::Platform.new.likes)
+    respond_with({:count => CartoDB::Stats::Platform.new.likes})
   end
 
 end # Superadmin::PlatformController

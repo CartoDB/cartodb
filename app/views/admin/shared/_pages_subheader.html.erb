@@ -21,9 +21,6 @@
 
   <span class="AsideFilters-separator"></span>
 
-  <%- puts "==============================================" %>
-  <%- puts "#{params[:controller]} _ #{params[:action]}" %>
-
   <div class="AsideFilters-type">
     <ul class="AsideFilters-list">
       <li class="AsideFilters-typeItem"><a href="<%= CartoDB.url(self, 'profile_user') %>" class="AsideFilters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/users_profile" %>">Profile</a></li>
@@ -46,6 +43,8 @@
     <div class="AsideFilters-helpSegment--paragraph">
       <p>Having issues?</p>
       <p>
+        <%- puts "=========================================="%>
+        <%- puts current_user.organization.inspect %>
         <% if !current_user.organization.present? %>
           <a href="mailto:support@cartodb.com">Contact support</a>
         <% else %>

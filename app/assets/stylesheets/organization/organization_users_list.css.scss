@@ -51,7 +51,7 @@
   @include display-flex();
   @include flex-direction(column);
   @include align-content(space-between);
-  @include justify-content(flex-start, start);
+  @include justify-content(space-between, start);
   height: 42px;
 }
 .OrganizationList-userInfoTitle {
@@ -69,11 +69,12 @@
 .OrganizationList-userInfoLabel {
   display: inline-block;
   padding: 0 8px;
-  margin-left: 8px;
+  margin-left: 4px;
   height: 18px;
   background: #8EB83F;
   border-radius: 35px;
   font-size: $sFontSize-smaller;
+  line-height: 18px;
   color: white;
   text-transform: uppercase;
   text-align: center;

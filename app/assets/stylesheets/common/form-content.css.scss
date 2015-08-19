@@ -210,7 +210,7 @@ $sLabel-width: 140px;
 .Form-input--totalwidth { width: 100%; }
 .Form-input--longer { width: 434px }
 .Form-input--long { width: 354px }
-.Form-input--med { width: 274px }
+.Form-input--med { min-width: 274px }
 .Form-input--short { width: 114px }
 // Types
 .Form-input.has-icon {
@@ -426,7 +426,6 @@ $sLabel-width: 140px;
 }
 .Form-rowInfo {
   @include display-flex();
-  max-width: 290px;
 
   &.Form-rowInfo--marginLeft { margin-left: 18px; }
 }

@@ -101,9 +101,9 @@ defaults: &defaults
     url: 'https://viz2.cartodb.com/api/v1/sql'
     percent_users: 10
   # graphite endpoint used to post frontend stats
-  graphite_public:
-    host: "graphite.dioc.cartodb.net"
-    port: 8127
+  #graphite_public:
+    #host: ""
+    #port: 
 
   basemaps:
     GMaps:

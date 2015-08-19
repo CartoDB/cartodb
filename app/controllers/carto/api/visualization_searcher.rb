@@ -50,7 +50,6 @@ module Carto
             vqb.with_locked(false)
           end
 
-          # INFO: We don't want to filter out if showing more than only remote vis
           if types.include? Carto::Visualization::TYPE_REMOTE
             vqb.without_synced_external_sources
           end

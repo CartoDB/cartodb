@@ -44,6 +44,7 @@ class CommonData
     _datasets = []
 
     rows.each do |row|
+      # Common-data's meta tables starts with meta_ and we want to avoid them
       next if row["name"] =~ /meta_/
       _datasets << get_common_data_from_visualization(row)
     end
@@ -54,12 +55,12 @@ class CommonData
   def get_common_data_from_visualization(row)
       row_data = {}
       row_data["name"] = row["name"]
-      row_data["display_name"] = !row["display_name"].nil? ? row["display_name"] : row["name"]
+      row_data["display_name"] = row["display_name"].nil? ? row["name"] : row["display_name"]
       row_data["tabname"] = row["name"]
       row_data["description"] = row["description"]
       row_data["source"] = row["source"]
       row_data["license"] = row["license"]
-      row_data["category"] = row["tags"]
+      row_data["tags"] = row["tags"]
       row_data["geometry_types"] = %Q[{#{row["table"]["geometry_types"].join(',')}}]
       row_data["rows"] = row["table"]["row_count"]
       row_data["size"] = row["table"]["size"]

@@ -35,7 +35,7 @@ describe CommonData do
     stub_valid_api_response
     CartoDB.expects(:notify_error).times(0)
 
-    #Should not be included any meta_* dataset
+    @common_data.datasets.select{ |d| d["name"] =~ /meta_/}.length.should eq 0
     @common_data.datasets.length.should eq 5
   end
 

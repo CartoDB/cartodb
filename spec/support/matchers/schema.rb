@@ -3,7 +3,7 @@ require 'rspec/expectations'
 RSpec::Matchers.define :be_equal_to_default_cartodb_schema do
   expected = [
     [:cartodb_id, "number"], [:name, "string"], [:description, "string"],
-    [:the_geom, "geometry", "geometry", "geometry"], [:created_at, "date"], [:updated_at, "date"]
+    [:the_geom, "geometry", "geometry", "geometry"]
   ]
   match do |actual|
    diff = expected - actual
@@ -14,7 +14,7 @@ end
 RSpec::Matchers.define :be_equal_to_default_db_schema do
   expected = [
     [:cartodb_id, "integer"], [:name, "text"], [:description, "text"],
-    [:the_geom, "geometry", "geometry", "geometry"], [:created_at, "timestamp with time zone"], [:updated_at, "timestamp with time zone"]]
+    [:the_geom, "geometry", "geometry", "geometry"]]
   match do |actual|
    diff = expected - actual
    diff.should == []
@@ -30,12 +30,9 @@ RSpec::Matchers.define :have_required_indexes_and_triggers do
   match do |actual|
     @diff = []
     @diff << "update_the_geom_webmercator_trigger" unless actual.has_trigger?('update_the_geom_webmercator_trigger')
-    @diff << "update_updated_at_trigger"           unless actual.has_trigger?('update_updated_at_trigger')
     @diff << "track_updates"                       unless actual.has_trigger?('track_updates')
     @diff << "the_geom_idx"                        unless actual.has_index?("the_geom")
     @diff << "the_geom_webmercator_idx"            unless actual.has_index?("the_geom_webmercator")
-    @diff << "created_at_default"                  unless actual.owner.in_database.schema(actual.name).select {|i| i[0] == :created_at }[0][1][:default] == "now()"
-    @diff << "updated_at_default"                  unless actual.owner.in_database.schema(actual.name).select {|i| i[0] == :updated_at }[0][1][:default] == "now()"
     @diff.should == []
   end
 

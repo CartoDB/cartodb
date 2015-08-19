@@ -6,11 +6,18 @@ require 'csv'
 
 describe CartoDB::Connector::Importer do
 
-  before do
+  before(:all) do
+    @user = create_user(:quota_in_bytes => 1000.megabyte, :table_quota => 400)
   end
 
-  after do
+  before(:each) do
+    stub_named_maps_calls
   end
+
+  after(:all) do
+    @user.destroy
+  end
+
 
   it 'should not fail to return a new_name when ALTERing the INDEX fails' do
 
@@ -50,9 +57,6 @@ describe CartoDB::Connector::Importer do
   # This test checks that the importer detects files with names that are
   # psql reserved words and knows how to rename them (appending '_t')
   it 'should allow importing tables with reserved names' do
-    stub_named_maps_calls
-    bogus_user = create_user(:quota_in_bytes => 1000.megabyte, :table_quota => 400)
-
     reserved_word = CartoDB::POSTGRESQL_RESERVED_WORDS.sample
 
     filepath        = "/tmp/#{reserved_word.downcase}.csv"
@@ -64,7 +68,7 @@ describe CartoDB::Connector::Importer do
     end
   
     data_import = DataImport.create(
-      :user_id       => bogus_user.id,
+      :user_id       => @user.id,
       :data_source   => filepath,
       :updated_at    => Time.now,
       :append        => false
@@ -77,10 +81,125 @@ describe CartoDB::Connector::Importer do
 
     data_import.success.should(eq(true), "File with reserved name '#{filepath}' failed to be renamed")
     data_import.table_name.should(eq(expected_rename), "Table was incorrectly renamed to '#{data_import.table_name}', should be '#{expected_rename}'")
-
-    bogus_user.destroy
   end
 
+  it 'should import tables as public if privacy param is set to public' do
+    @user.private_tables_enabled = false
+    @user.save
+
+    filepath = "#{Rails.root}/spec/support/data/elecciones2008.csv"
+
+    data_import = DataImport.create(
+      :user_id       => @user.id,
+      :data_source   => filepath,
+      :updated_at    => Time.now,
+      :append        => false,
+      :privacy       => (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']
+    )
+    data_import.values[:data_source] = filepath
+
+    data_import.run_import!
+
+    UserTable[id: data_import.table.id].privacy.should eq (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']
+  end
+
+  it 'should import tables as private if privacy param is set to private' do
+    @user.private_tables_enabled = true
+    @user.save
+
+    filepath = "#{Rails.root}/spec/support/data/elecciones2008.csv"
+  
+    data_import = DataImport.create(
+      :user_id       => @user.id,
+      :data_source   => filepath,
+      :updated_at    => Time.now,
+      :append        => false,
+      :privacy       => (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['private']
+    )
+    data_import.values[:data_source] = filepath
+
+    data_import.run_import!
+
+    UserTable[id: data_import.table.id].privacy.should eq (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['private']
+  end
+
+  it 'should import tables as private by default if user has private tables enabled' do
+    @user.private_tables_enabled = true
+    @user.save
+
+    filepath = "#{Rails.root}/spec/support/data/elecciones2008.csv"
+  
+    data_import = DataImport.create(
+      :user_id       => @user.id,
+      :data_source   => filepath,
+      :updated_at    => Time.now,
+      :append        => false
+    )
+    data_import.values[:data_source] = filepath
+
+    data_import.run_import!
+
+    UserTable[id: data_import.table.id].privacy.should eq (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['private']
+  end
+
+  it 'should import tables as public by default if user doesnt have private tables enabled' do
+    @user.private_tables_enabled = false
+    @user.save
+
+    filepath = "#{Rails.root}/spec/support/data/elecciones2008.csv"
+  
+    data_import = DataImport.create(
+      :user_id       => @user.id,
+      :data_source   => filepath,
+      :updated_at    => Time.now,
+      :append        => false
+    )
+    data_import.values[:data_source] = filepath
+
+    data_import.run_import!
+
+    UserTable[id: data_import.table.id].privacy.should eq (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']
+  end
+
+  it 'should import as public with private_tables_enabled' do 
+    @user.private_tables_enabled = true
+    @user.save
+
+    filepath = "#{Rails.root}/spec/support/data/elecciones2008.csv"
+  
+    data_import = DataImport.create(
+      :user_id       => @user.id,
+      :data_source   => filepath,
+      :updated_at    => Time.now,
+      :append        => false,
+      :privacy       => (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']
+    )
+    data_import.values[:data_source] = filepath
+
+    data_import.run_import!
+
+    data_import.success.should eq true
+  end
+
+  it 'should not import as private if private_tables_enabled is disabled' do 
+    @user.private_tables_enabled = false
+    @user.save
+
+    filepath = "#{Rails.root}/spec/support/data/elecciones2008.csv"
+  
+    data_import = DataImport.create(
+      :user_id       => @user.id,
+      :data_source   => filepath,
+      :updated_at    => Time.now,
+      :append        => false,
+      :privacy       => (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['private']
+    )
+    data_import.values[:data_source] = filepath
+
+    data_import.run_import!
+
+    data_import.success.should_not eq true
+  end
 end
 
 

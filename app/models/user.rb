@@ -1172,8 +1172,8 @@ class User < Sequel::Model
     metadata_table_names = self.tables.select(:name).map(&:name).map { |t| "'" + t + "'" }.join(',')
 
     db = self.in_database(:as => :superuser)
-    reserved_columns = Table::CARTODB_COLUMNS + [Table::THE_GEOM_WEBMERCATOR]
-    cartodb_columns = (reserved_columns).map { |t| "'" + t.to_s + "'" }.join(',')
+    required_columns = Table::CARTODB_REQUIRED_COLUMNS + [Table::THE_GEOM_WEBMERCATOR]
+    cartodb_columns = (required_columns).map { |t| "'" + t.to_s + "'" }.join(',')
     sql = %Q{
       WITH a as (
         SELECT table_name, count(column_name::text) cdb_columns_count
@@ -1199,7 +1199,7 @@ class User < Sequel::Model
 
           GROUP BY 1
       )
-      SELECT table_name FROM a WHERE cdb_columns_count = #{reserved_columns.length}
+      SELECT table_name FROM a WHERE cdb_columns_count = #{required_columns.length}
     }
 
     db[sql].all.map { |t| t[:table_name] }

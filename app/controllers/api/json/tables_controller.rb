@@ -14,8 +14,8 @@ class Api::Json::TablesController < Api::ApplicationController
   # All other table creation things are controlled via the imports_controller#create
   def create
     @stats_aggregator.timing('tables.create') do
-      begin
 
+      begin
         @table = ::Table.new
         @table.user_id = current_user.id
         if params[:name]
@@ -59,8 +59,8 @@ class Api::Json::TablesController < Api::ApplicationController
 
   def update
     @stats_aggregator.timing('tables.update') do
-      begin
 
+      begin
         return head(404) if @table == nil
         return head(403) unless @table.table_visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READWRITE)
         warnings = []
@@ -95,8 +95,8 @@ class Api::Json::TablesController < Api::ApplicationController
           render_jsonp(@table.public_values({request:request}).merge(warnings: warnings)) and return
         end
 
-        @stats_aggregator.timing('save') do
-          update_status = @table.update(@table.values.delete_if {|k,v| k == :tags_names})
+        update_status = @stats_aggregator.timing('save') do
+          @table.update(@table.values.delete_if {|k,v| k == :tags_names})
         end
 
         if update_status != false
@@ -121,8 +121,8 @@ class Api::Json::TablesController < Api::ApplicationController
 
   def destroy
     @stats_aggregator.timing('tables.destroy') do
-      begin
 
+      begin
         @stats_aggregator.timing('ownership-check') do
           return head(403) unless @table.table_visualization.is_owner?(current_user)
         end
@@ -137,8 +137,8 @@ class Api::Json::TablesController < Api::ApplicationController
         render_jsonp({ errors: { named_map: exception } }, 400)
       rescue CartoDB::NamedMapsWrapper::NamedMapsDataError => exception
         render_jsonp({ errors: { named_maps: exception } }, 400)
-
       end
+      
     end
   end
 

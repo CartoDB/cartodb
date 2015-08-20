@@ -35,60 +35,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         # Don't allow to modify next_id/prev_id, force to use set_next_id()
         prev_id = vis_data.delete(:prev_id) || vis_data.delete('prev_id')
         next_id = vis_data.delete(:next_id) || vis_data.delete('next_id')
-        vis = nil
 
-        if params[:source_visualization_id]
-          source,  = @stats_aggregator.timing('locate') do
-            locator.get(params.fetch(:source_visualization_id), CartoDB.extract_subdomain(request))
-          end
-          return(head 403) if source.nil? || source.kind == Visualization::Member::KIND_RASTER
-
-          copy_overlays = params.fetch(:copy_overlays, true)
-          copy_layers = params.fetch(:copy_layers, true)
-
-          additional_fields = {
-            type:       params.fetch(:type, Visualization::Member::TYPE_DERIVED),
-            parent_id:  params.fetch(:parent_id, nil)
-          }
-
-          vis = @stats_aggregator.timing('copy') do
-              Visualization::Copier.new(
-              current_user, source, name_candidate
-            ).copy(copy_overlays, copy_layers, additional_fields)
-          end
-
-        elsif params[:tables]
-          viewed_user = User.find(:username => CartoDB.extract_subdomain(request))
-          tables = @stats_aggregator.timing('locate-table') do
-              params[:tables].map { |table_name|
-              if viewed_user
-                Helpers::TableLocator.new.get_by_id_or_name(table_name,  viewed_user)
-              end
-            }.flatten
-          end
-          blender = Visualization::TableBlender.new(current_user, tables)
-          map = blender.blend
-          vis = Visualization::Member.new(
-              vis_data.merge(
-                name:     name_candidate,
-                map_id:   map.id,
-                type:     'derived',
-                privacy:  blender.blended_privacy,
-                user_id:  current_user.id
-              )
-            )
-
-          @stats_aggregator.timing('default-overlays') do
-            Visualization::Overlays.new(vis).create_default_overlays
-          end
-        else
-          vis = Visualization::Member.new(
-              add_default_privacy(vis_data).merge(
-                name: name_candidate,
-                user_id:  current_user.id
-              )
-            )
-        end
+        vis = setup_new_visualization(vis_data)
 
         vis.privacy = vis.default_privacy(current_user)
 
@@ -106,18 +54,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
           vis.store
         end
 
-        # Setup prev/next
-        if !prev_id.nil?
-          prev_vis = Visualization::Member.new(id: prev_id).fetch
-          return head(403) unless prev_vis.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
-
-          prev_vis.set_next_list_item!(vis)
-        elsif !next_id.nil?
-          next_vis = Visualization::Member.new(id: next_id).fetch
-          return head(403) unless next_vis.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
-
-          next_vis.set_prev_list_item!(vis)
-        end
+        vis = set_visualization_prev_next(vis, prev_id, next_id)
 
         render_jsonp(vis)
       rescue CartoDB::InvalidMember
@@ -241,6 +178,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     render_jsonp(watcher.list)
   end
 
+  # TODO: Add stats if is used in the future
   def set_next_id
     next_id = payload[:next_id] || payload['next_id']
 
@@ -440,6 +378,78 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     elsif vis.type == Carto::Visualization::TYPE_DERIVED
       ::Resque.enqueue(::Resque::UserJobs::Mail::MapLiked, vis.id, current_viewer.id, vis_preview_image)
     end
+  end
+
+  def setup_new_visualization(vis_data)
+    vis = nil
+
+    if params[:source_visualization_id]
+      source,  = @stats_aggregator.timing('locate') do
+        locator.get(params.fetch(:source_visualization_id), CartoDB.extract_subdomain(request))
+      end
+      return(head 403) if source.nil? || source.kind == Visualization::Member::KIND_RASTER
+
+      copy_overlays = params.fetch(:copy_overlays, true)
+      copy_layers = params.fetch(:copy_layers, true)
+
+      additional_fields = {
+        type:       params.fetch(:type, Visualization::Member::TYPE_DERIVED),
+        parent_id:  params.fetch(:parent_id, nil)
+      }
+
+      vis = @stats_aggregator.timing('copy') do
+          Visualization::Copier.new(
+          current_user, source, name_candidate
+        ).copy(copy_overlays, copy_layers, additional_fields)
+      end
+
+    elsif params[:tables]
+      viewed_user = User.find(:username => CartoDB.extract_subdomain(request))
+      tables = @stats_aggregator.timing('locate-table') do
+          params[:tables].map { |table_name|
+          if viewed_user
+            Helpers::TableLocator.new.get_by_id_or_name(table_name,  viewed_user)
+          end
+        }.flatten
+      end
+      blender = Visualization::TableBlender.new(current_user, tables)
+      map = blender.blend
+      vis = Visualization::Member.new(
+          vis_data.merge(
+            name:     name_candidate,
+            map_id:   map.id,
+            type:     'derived',
+            privacy:  blender.blended_privacy,
+            user_id:  current_user.id
+          )
+        )
+
+      @stats_aggregator.timing('default-overlays') do
+        Visualization::Overlays.new(vis).create_default_overlays
+      end
+    else
+      vis = Visualization::Member.new(
+          add_default_privacy(vis_data).merge(
+            name: name_candidate,
+            user_id:  current_user.id
+          )
+        )
+    end
+    
+    vis
+  end
+
+  def set_visualization_prev_next(vis, prev_id, next_id)
+    if !prev_id.nil?
+      prev_vis = Visualization::Member.new(id: prev_id).fetch
+      return head(403) unless prev_vis.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
+      prev_vis.set_next_list_item!(vis)
+    elsif !next_id.nil?
+      next_vis = Visualization::Member.new(id: next_id).fetch
+      return head(403) unless next_vis.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
+      next_vis.set_prev_list_item!(vis)
+    end
+    vis
   end
 
 end

@@ -119,8 +119,6 @@ module Carto
       private
 
       def authenticate_extension
-        return true if Rails.env.development?
-
         raise "missing sync_db_api configuration" unless Cartodb.config[:sync_db_api]
 
         authenticate_or_request_with_http_basic do |username, password|

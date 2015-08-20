@@ -3,7 +3,7 @@ module Concerns
 
     def validate_credentials_not_taken_in_central
       return true unless self.is_a?(User)
-      return unless Cartodb::Central.sync_data_with_cartodb_central?
+      return true unless Cartodb::Central.sync_data_with_cartodb_central?
 
       central_client = Cartodb::Central.new
 

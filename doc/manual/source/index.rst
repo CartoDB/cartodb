@@ -17,7 +17,6 @@ Contents:
    run
    configuration
    operations
-   administration
 
 
 

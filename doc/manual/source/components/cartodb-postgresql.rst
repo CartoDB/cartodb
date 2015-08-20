@@ -1,13 +1,15 @@
-cartodb-postgresql extension
+CartoDB PostgreSQL extension
 ----------------------------
-The CartoDB-postgresql extension can be found at https://github.com/CartoDB/cartodb-postgresql.
-It needs to be installed on the PostgreSQL clusters which will host user databases and
-includes most of the triggers and functions used by the CartoDB applications such as:
-  - CartoDBfying (adapting user tables to the schema CartoDB expects them to have, by adding
-    some additional columns and triggers)
-  - Multiuser schema handling
-  - Quota handling
-  - Cache helpers
+The CartoDB PostgreSQL extension can be found at https://github.com/CartoDB/cartodb-postgresql.
 
-The CartoDB extension depends on :ref:`PostGIS` and on the `pg_schema_triggers <https://github.com/CartoDB/pg_schema_triggers>`_
-extension.
+This extensions is required by all the components of CartoDB and it must be installed in the server where user databases are stored.
+
+It provides functions and other helpers needed by the Editor, Maps and SQL APIs like:
+  
+  - CartoDBfying functions which convert raw PostgreSQL tables in tables recognized by CartoDB by adding some additional columns and triggers
+  - Multiuser schema handling functions
+  - Quota helpers
+  - Cache helpers
+  - etc..
+
+The CartoDB extension depends on :ref:`PostGIS` and on the `pg_schema_triggers <https://github.com/CartoDB/pg_schema_triggers>`_ extension.

@@ -9,6 +9,7 @@ First run, setting up first time to run your development version of CartoDB. Let
 .. highlight:: bash
 
 ::
+
     cd cartodb
     export SUBDOMAIN=development
 
@@ -43,6 +44,7 @@ Node apps
 .. highlight:: bash
 
 ::
+
     cd cartodb-sql-api && node app.js
     cd windshaft-cartodb && node app.js
 

@@ -38,7 +38,9 @@ This task is executed like:
 
   $ bundle exec rake cartodb:features:enable_feature_for_user[<feature_flag_name>,<user_name>]
 
-**NOTE** Please be very careful **NOT** to leave a space between parameters, as it will cause rake to spit a ``don't know how to build task`` type error.
+.. warning::
+  
+  Please be very careful **NOT** to leave a space between parameters, as it will cause rake to spit a ``don't know how to build task`` type error.
 
 And an example to enable the 'special_dashboard' feature for user with user name 'manolo' could be:
 
@@ -61,7 +63,9 @@ This task is executed like:
 
   $ bundle exec rake cartodb:features:enable_feature_for_organization[<feature_flag_name>,<organization_name``
 
-**NOTE** Please be very careful **NOT** to leave a space between parameters, as it will cause rake to spit a ``don't know how to build task`` type error.
+.. warning::
+  
+  Please be very careful **NOT** to leave a space between parameters, as it will cause rake to spit a ``don't know how to build task`` type error.
 
 And an example to enable the 'special_dashboard' feature for organization 'cartodb' could be:
 
@@ -104,7 +108,9 @@ This task is executed like:
 
   $ bundle exec rake cartodb:features:disable_feature_for_user[<feature_flag_name>,<user_name>]
 
-**NOTE** Please be very careful **NOT** to leave a space between parameters, as it will cause rake to spit a ``don't know how to build task`` type error.
+.. warning::
+  
+  Please be very careful **NOT** to leave a space between parameters, as it will cause rake to spit a ``don't know how to build task`` type error.
 
 And an example to disable the 'special_dashboard' feature for user with user name 'manolo' could be:
 
@@ -127,7 +133,9 @@ This task is executed like:
 
   $ bundle exec rake cartodb:features:disable_feature_for_organization[<feature_flag_name>,<organization_name``
 
-**NOTE** Please be very careful **NOT** to leave a space between parameters, as it will cause rake to spit a ``don't know how to build task`` type error.
+.. warning::
+  
+  Please be very careful **NOT** to leave a space between parameters, as it will cause rake to spit a ``don't know how to build task`` type error.
 
 And an example to disable the 'special_dashboard' feature for organization 'cartodb' could be:
 

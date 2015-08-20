@@ -180,7 +180,6 @@ module CartoDB
       raise PermissionError.new('ACL is not an array') unless incoming_acl.kind_of? Array
       incoming_acl.map { |item|
         unless item.kind_of?(Hash) && acl_has_required_fields?(item) && acl_has_valid_access?(item)
-          byebug
           raise PermissionError.new('Wrong ACL entry format')
         end
       }

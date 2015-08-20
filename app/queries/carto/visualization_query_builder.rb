@@ -238,6 +238,9 @@ class Carto::VisualizationQueryBuilder
     end
 
     if @tags
+      @tags.each do |t|
+        t.downcase!
+      end
       query = query.where("ARRAY[?]::text[] && visualizations.tags", @tags)
     end
 

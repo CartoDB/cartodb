@@ -2,6 +2,7 @@
 
 require_relative 'permission_user_presenter'
 require_relative 'permission_organization_presenter'
+require_relative 'permission_group_presenter'
 
 module CartoDB
   class PermissionPresenter

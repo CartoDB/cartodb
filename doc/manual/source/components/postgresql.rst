@@ -14,6 +14,8 @@ The editor only knows how to connect to metadata database. However, within every
 
 At this moment CartoDB requires PostgreSQL 9.3.x version.
 
+.. _postgis_label:
+
 PostGIS
 -------
 `PostGIS <http://postgis.net>`_ is the extension which adds spatial capabilities to PostgreSQL.

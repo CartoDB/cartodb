@@ -13,7 +13,7 @@ If you would like to see some live demos, check out our
 `videos <http://vimeo.com/channels/cartodb>`_ on Vimeo.
 We hope you like it!
 
-.. image:: http://cartodb.s3.amazonaws.com/github/map_view.png
+.. image:: static/map_view.png
    :alt: Map View
    :align: center
 
@@ -34,11 +34,11 @@ powerful geospatial applications! Definitely check out the `CartoDB
 Develop <https://cartodb.com/docs/>`_ for interactive examples
 and code.
 
-.. image:: http://cartodb.s3.amazonaws.com/github/map_view_wizard.png
+.. image:: static/map_view_wizard.png
    :alt: Map View Wizard
    :align: center
 
 
-.. image:: http://cartodb.s3.amazonaws.com/github/data_view.png
+.. image:: static/data_view.png
    :alt: Data View
    :align: center

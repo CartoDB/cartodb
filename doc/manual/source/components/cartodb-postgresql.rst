@@ -12,4 +12,4 @@ It provides functions and other helpers needed by the Editor, Maps and SQL APIs 
   - Cache helpers
   - etc..
 
-The CartoDB extension depends on :ref:`PostGIS` and on the `pg_schema_triggers <https://github.com/CartoDB/pg_schema_triggers>`_ extension.
+The CartoDB extension depends on :ref:`postgis_label` and on the `pg_schema_triggers <https://github.com/CartoDB/pg_schema_triggers>`_ extension.

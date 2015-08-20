@@ -42,7 +42,6 @@ $br: 4px;
   display: block;
   margin-top: 3px;
   font-size: $sFontSize-normal;
-  @include nicer-lato-typography();
   color: $cTypography-secondary;
 }
 .DatasetSelected-sync {

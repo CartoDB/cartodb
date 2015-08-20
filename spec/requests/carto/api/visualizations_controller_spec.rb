@@ -1456,6 +1456,8 @@ describe Carto::Api::VisualizationsController do
     include_context 'visualization creation helpers'
 
     before(:each) do
+      fflag = FactoryGirl.build(:feature_flag, name: 'bbox_store', restricted: false)
+      Carto::FeatureFlag.stubs(:where => [fflag])
       @table_inside_bbox = create_geometry_table($user_1, BBOX_GEOM)
       @table_outside_bbox = create_geometry_table($user_1, OUTSIDE_BBOX_GEOM)
     end

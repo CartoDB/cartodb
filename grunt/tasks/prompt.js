@@ -9,7 +9,6 @@ var semver = require('semver');
 module.exports = {
   task: function(grunt, config) {
     return {
-
       bump: {
         options: {
           questions: [
@@ -76,14 +75,12 @@ module.exports = {
 
             var version_arr = bump.version.split('.');
             bump.minor = version_arr[0] + '.' + version_arr[1];
-            
+
             grunt.config.set('bump', bump);
             done();
           }
         }
-
       }
-
     }
   }
 }

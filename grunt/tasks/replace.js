@@ -7,7 +7,7 @@
 module.exports = {
   task: function(grunt, config) {
     return {
-      
+
       cdb: {
         options: {
           patterns: [{

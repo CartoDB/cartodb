@@ -4,10 +4,8 @@
  *  framework
  *
  */
-
-
 module.exports = function(grunt) {
-  
+
   require('load-grunt-tasks')(grunt);
   require('time-grunt')(grunt);
   var semver = require('semver');
@@ -33,7 +31,7 @@ module.exports = function(grunt) {
       minor:      version[0] + '.' + version[1],
       bugfixing:  pkg.version
     },
-    pkg:  pkg
+    pkg: pkg
   };
 
   grunt.initConfig({

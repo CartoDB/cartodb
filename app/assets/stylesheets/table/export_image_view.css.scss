@@ -12,9 +12,9 @@
 .ExportImageView-Header {
   position: absolute;
   width: 100%;
-  text-align: center;
   top: -35px;
   height: 40px;
+  text-align: center;
   z-index: 105;
 }
 .ExportImageView-Header--inner {
@@ -44,9 +44,9 @@
 }
 .ExportImageView-Footer {
   position: absolute;
+  width: 100%;
   bottom: -20px;
   text-align: center;
-  width: 100%;
   z-index: 105;
 }
 .ExportImageView-Footer--inner {

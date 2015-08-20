@@ -35,6 +35,7 @@ module.exports = function(grunt) {
   };
 
   grunt.initConfig({
+    secrets: {},
     config: config,
     dist: 'dist',
     app:  'www',
@@ -170,32 +171,30 @@ module.exports = function(grunt) {
   grunt.registerTask('pages', [ 'buildcontrol:pages' ]);
 
   grunt.registerTask('build', [
-      'js',
-      'useminPrepare',
-      'cssmin',
-      // don't copy images since image min will copy them
-      //'copy:distStatic',
-      'imagemin',
-      'svgmin',
-      'filerev',
-      'usemin',
-      'htmlmin',
-      'uglify'
-  ]);
-
-  grunt.registerTask('js', [
-      'replace',
-      'gitinfo',
-      'clean:dist',
-      'concurrent:dist',
-      'concat',
-      'autoprefixer:dist'
+    'dist_js',
+    'useminPrepare',
+    'cssmin',
+    'imagemin',
+    'svgmin',
+    'filerev',
+    'usemin',
+    'htmlmin',
+    'uglify'
   ]);
 
   grunt.registerTask('dist_js', [
     'set_current_version',
     'js'
   ])
+
+  grunt.registerTask('js', [
+    'replace',
+    'gitinfo',
+    'clean:dist',
+    'concurrent:dist',
+    'concat',
+    'autoprefixer:dist'
+  ]);
 
   grunt.registerTask('dist', [
     'set_current_version',

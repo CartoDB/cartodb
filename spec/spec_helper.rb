@@ -102,10 +102,19 @@ RSpec.configure do |config|
   end
 end
 
-# TODO: improve naming, this is by no means "default"
-def default_headers(user = Cartodb.config[:superadmin]["username"], password = Cartodb.config[:superadmin]["password"])
+def superadmin_headers
+  http_json_authorization_headers(Cartodb.config[:superadmin]["username"], Cartodb.config[:superadmin]["password"])
+end
+
+def sync_db_api_headers
+  http_json_authorization_headers(Cartodb.config[:sync_db_api]["username"], Cartodb.config[:sync_db_api]["password"])
+end
+
+
+def http_json_authorization_headers(user, password)
   {
     'HTTP_AUTHORIZATION' => ActionController::HttpAuthentication::Basic.encode_credentials(user, password),
-    'HTTP_ACCEPT' => "application/json"
+    'HTTP_ACCEPT' => "application/json",
+    'CONTENT_TYPE'  => 'application/json'
   }
   end

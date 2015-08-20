@@ -7,13 +7,13 @@ module Carto
 
     # Group metadata registration. Exclusively for usage from PostgreSQL Extension, not from the Editor.
     # It only registers metadata, actual group roles management must be done by the extension.
-    class GroupsController < Superadmin::SuperadminController
-      # TODO: not SuperadminController?
+    class GroupsController < ::ApplicationController
 
       respond_to :json
 
       ssl_required :create, :update, :destroy, :add_member, :remove_member, :update_permission, :destroy_permission unless Rails.env.development? || Rails.env.test?
 
+      before_filter :authenticate_extension
       before_filter :load_parameters
       before_filter :load_mandatory_group, :only => [:destroy, :add_member, :remove_member, :update_permission, :destroy_permission]
       before_filter :load_user_from_username, :only => [:add_member, :remove_member, :load_table, :update_permission, :destroy_permission]
@@ -117,6 +117,16 @@ module Carto
       end
 
       private
+
+      def authenticate_extension
+        return true if Rails.env.development?
+
+        raise "missing sync_db_api configuration" unless Cartodb.config[:sync_db_api]
+
+        authenticate_or_request_with_http_basic do |username, password|
+          username == Cartodb.config[:sync_db_api]["username"] && password == Cartodb.config[:sync_db_api]["password"]
+        end
+      end
 
       def load_parameters
         @database_name = params[:database_name]

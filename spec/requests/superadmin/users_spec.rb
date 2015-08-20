@@ -22,7 +22,7 @@ feature "Superadmin's users API" do
   scenario "user create fail" do
     @user_atts[:email] = nil
 
-    post_json superadmin_users_path, { :user => @user_atts }, default_headers do |response|
+    post_json superadmin_users_path, { :user => @user_atts }, superadmin_headers do |response|
       response.status.should == 422
       response.body[:errors]['email'].should be_present
       response.body[:errors]['email'].should include("is not present")
@@ -34,7 +34,7 @@ feature "Superadmin's users API" do
     @user_atts.delete(:salt)
     @user_atts.merge!(:password => "this_is_a_password")
 
-    post_json superadmin_users_path, { :user => @user_atts }, default_headers do |response|
+    post_json superadmin_users_path, { :user => @user_atts }, superadmin_headers do |response|
       response.status.should == 201
       response.body[:email].should == @user_atts[:email]
       response.body[:username].should == @user_atts[:username]
@@ -51,7 +51,7 @@ feature "Superadmin's users API" do
   end
 
   scenario "user create with crypted_password and salt success" do
-    post_json superadmin_users_path, { :user => @user_atts }, default_headers do |response|
+    post_json superadmin_users_path, { :user => @user_atts }, superadmin_headers do |response|
       response.status.should == 201
       response.body[:email].should == @user_atts[:email]
       response.body[:username].should == @user_atts[:username]
@@ -73,7 +73,7 @@ feature "Superadmin's users API" do
     @user_atts[:map_view_quota] = 80
     t = Time.now
     @user_atts[:upgraded_at] = t
-    post_json superadmin_users_path, { :user => @user_atts }, default_headers do |response|
+    post_json superadmin_users_path, { :user => @user_atts }, superadmin_headers do |response|
       response.status.should == 201
       response.body[:quota_in_bytes].should == 104857600
       response.body[:table_quota].should == 5
@@ -105,7 +105,7 @@ feature "Superadmin's users API" do
     @user_atts[:geocoding_block_price] = 2
     @user_atts[:notification] = 'Test'
 
-    post_json superadmin_users_path, { :user => @user_atts }, default_headers do |response|
+    post_json superadmin_users_path, { :user => @user_atts }, superadmin_headers do |response|
       response.status.should == 201
       response.body[:quota_in_bytes].should == 2000
       response.body[:table_quota].should == 20
@@ -154,7 +154,7 @@ feature "Superadmin's users API" do
                     :disqus_shortname => 'abc' }
 
     # test to true
-    put_json superadmin_user_path(user), { :user => @update_atts }, default_headers do |response|
+    put_json superadmin_user_path(user), { :user => @update_atts }, superadmin_headers do |response|
       response.status.should == 204
     end
     user = User[user.id]
@@ -175,7 +175,7 @@ feature "Superadmin's users API" do
     user.available_for_hire.should == true
 
     # then test back to false
-    put_json superadmin_user_path(user), { :user => {:private_tables_enabled => false} }, default_headers do |response|
+    put_json superadmin_user_path(user), { :user => {:private_tables_enabled => false} }, superadmin_headers do |response|
       response.status.should == 204
     end
     user = User[user.id]
@@ -191,7 +191,7 @@ feature "Superadmin's users API" do
   scenario "user update fail" do
     user = create_user
 
-    put_json superadmin_user_path(user), { :user => { :email => "" } }, default_headers do |response|
+    put_json superadmin_user_path(user), { :user => { :email => "" } }, superadmin_headers do |response|
       response.status.should == 422
     end
 
@@ -200,7 +200,7 @@ feature "Superadmin's users API" do
 
   scenario "user update success" do
     user = create_user
-    put_json superadmin_user_path(user), { :user => { :email => "newmail@test.com", :map_view_quota => 80 } }, default_headers do |response|
+    put_json superadmin_user_path(user), { :user => { :email => "newmail@test.com", :map_view_quota => 80 } }, superadmin_headers do |response|
       response.status.should == 204
     end
     user = User[user.id]
@@ -218,7 +218,7 @@ feature "Superadmin's users API" do
       organization_attributes: { name: 'wadus', seats: 25, quota_in_bytes: 40000 }
     }
 
-    put_json superadmin_user_path(user), { user: @update_atts }, default_headers do |response|
+    put_json superadmin_user_path(user), { user: @update_atts }, superadmin_headers do |response|
       response.status.should eq 204
     end
     user = User[user.id]
@@ -231,7 +231,7 @@ feature "Superadmin's users API" do
       quota_in_bytes: 2001,
       organization_attributes: { name: 'wadus', seats: 26 }
     }
-    put_json superadmin_user_path(user), { user: @update_atts }, default_headers do |response|
+    put_json superadmin_user_path(user), { user: @update_atts }, superadmin_headers do |response|
       response.status.should eq 204
     end
     user = User[user.id]
@@ -246,7 +246,7 @@ feature "Superadmin's users API" do
   scenario "user delete success" do
     pending "This scenario is failing and needs to be fixed, but the destroy action is actually working"
     user = create_user
-    delete_json superadmin_user_path(user), default_headers do |response|
+    delete_json superadmin_user_path(user), superadmin_headers do |response|
       response.status.should == 204
     end
     User[user.id].should be_nil
@@ -272,7 +272,7 @@ feature "Superadmin's users API" do
                     Typhoeus::Response.new(code: 200, body: response_body.to_json) 
                   )
 
-    get_json "/superadmin/users/#{user.id}/dump", {}, default_headers do |response|
+    get_json "/superadmin/users/#{user.id}/dump", {}, superadmin_headers do |response|
       response.status.should == 200
       response.body['retcode'] == 0
     end
@@ -290,7 +290,7 @@ feature "Superadmin's users API" do
                     Typhoeus::Response.new(code: 200, body: '{"retcode": 111}') 
                   )
 
-    get_json "/superadmin/users/#{user.id}/dump", {}, default_headers do |response|
+    get_json "/superadmin/users/#{user.id}/dump", {}, superadmin_headers do |response|
       response.status.should == 400
       response.body['retcode'] != 0
     end
@@ -308,7 +308,7 @@ feature "Superadmin's users API" do
                     Typhoeus::Response.new(code: 500, body: '{"retcode": 0}') 
                   )
 
-    get_json "/superadmin/users/#{user.id}/dump", {}, default_headers do |response|
+    get_json "/superadmin/users/#{user.id}/dump", {}, superadmin_headers do |response|
       response.status.should == 400
     end
     user.destroy
@@ -316,7 +316,7 @@ feature "Superadmin's users API" do
 
   scenario "user get info success" do
     user = create_user
-    get_json superadmin_user_path(user), {}, default_headers do |response|
+    get_json superadmin_user_path(user), {}, superadmin_headers do |response|
       response.status.should == 200
       response.body[:id].should == user.id
     end
@@ -336,7 +336,7 @@ feature "Superadmin's users API" do
     end
 
     it "gets all users" do
-      get_json superadmin_users_path, {}, default_headers do |response|
+      get_json superadmin_users_path, {}, superadmin_headers do |response|
         response.status.should == 200
         response.body.map { |u| u["username"] }.should include(@user.username, @user2.username)
         response.body.length.should >= 2
@@ -345,7 +345,7 @@ feature "Superadmin's users API" do
 
     it "gets overquota users" do
       User.stubs(:overquota).returns [@user]
-      get_json superadmin_users_path, { overquota: true }, default_headers do |response|
+      get_json superadmin_users_path, { overquota: true }, superadmin_headers do |response|
         response.status.should == 200
         response.body[0]["username"].should == @user.username
         response.body.length.should == 1
@@ -355,7 +355,7 @@ feature "Superadmin's users API" do
     it "doesn't get organization users" do
       User.stubs(:organization).returns(Organization.new)
       User.stubs(:organization_id).returns("organization-id")
-      get_json superadmin_users_path, { overquota: true }, default_headers do |response|
+      get_json superadmin_users_path, { overquota: true }, superadmin_headers do |response|
         response.status.should == 200
         response.body.length.should == 0
       end
@@ -372,7 +372,7 @@ feature "Superadmin's users API" do
       second_feature_flag_user = FactoryGirl.create(:feature_flags_user, feature_flag_id: second_feature_flag.id, user_id: user.id)
 
       expect {
-        put superadmin_user_url(user.id), { :user => { :feature_flags => [second_feature_flag.id] }, id: user.id }, default_headers
+        put superadmin_user_url(user.id), { :user => { :feature_flags => [second_feature_flag.id] }, id: user.id }, superadmin_headers
       }.to change(FeatureFlagsUser, :count).by(-1)
     end
 
@@ -384,7 +384,7 @@ feature "Superadmin's users API" do
       second_feature_flag_user = FactoryGirl.create(:feature_flags_user, feature_flag_id: second_feature_flag.id, user_id: user.id)
 
       expect {
-        put superadmin_user_url(user.id), { :user => { :feature_flags => [first_feature_flag.id.to_s, second_feature_flag.id.to_s] }, id: user.id }, default_headers
+        put superadmin_user_url(user.id), { :user => { :feature_flags => [first_feature_flag.id.to_s, second_feature_flag.id.to_s] }, id: user.id }, superadmin_headers
       }.to change(FeatureFlagsUser, :count).by(1)
     end
   end
@@ -394,7 +394,7 @@ feature "Superadmin's users API" do
       user = FactoryGirl.create(:user)
 
       expect {
-        delete superadmin_user_url(user.id), { user: user }.to_json, default_headers
+        delete superadmin_user_url(user.id), { user: user }.to_json, superadmin_headers
       }.to change(User, :count).by(-1)
     end
 
@@ -405,7 +405,7 @@ feature "Superadmin's users API" do
       feature_flag_user = FactoryGirl.create(:feature_flags_user, feature_flag_id: feature_flag.id, user_id: user.id)
 
       expect {
-        delete superadmin_user_url(user.id), { user: user }.to_json, default_headers
+        delete superadmin_user_url(user.id), { user: user }.to_json, superadmin_headers
       }.to change(FeatureFlagsUser, :count).by(-1)
     end
   end

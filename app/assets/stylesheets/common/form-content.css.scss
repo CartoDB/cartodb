@@ -101,7 +101,7 @@ $sLabel-width: 140px;
   line-height: 40px;
   font-size: $sFontSize-normal;
   font-weight: $sFontWeight-normal;
-  @include nicer-lato-typography();
+  
   color: $cTypography-paragraphs;
   text-transform: capitalize;
 }
@@ -287,7 +287,6 @@ $sLabel-width: 140px;
 .Form-copyIcon.hover { color: $cTypography-paragraphs }
 .Form-text--preview {
   font-size: $sFontSize-normal;
-  @include nicer-lato-typography();
   color: $cTypography-secondary;
   line-height: $sLineHeight-large;
 }

@@ -55,6 +55,10 @@ describe Carto::UserCreation do
       user_creation.state.should == 'failure'
     end
 
+    after(:each) do
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+    end
+
     it 'neither creates a new User nor sends the mail and marks creation as failure if Central fails' do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
       User.any_instance.stubs(:create_in_central).raises('Error on state creating_user_in_central, mark_as_failure: false. Error: Application server responded with http 422: {"errors":["Existing username."]}')

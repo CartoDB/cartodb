@@ -1,6 +1,7 @@
 # coding: utf-8
 
 class Api::Json::ColumnsController < Api::ApplicationController
+
   ssl_required :index, :create, :show, :update, :destroy
 
   before_filter :load_table, :set_start_time
@@ -12,7 +13,9 @@ class Api::Json::ColumnsController < Api::ApplicationController
   end
 
   def create
-    render_jsonp(@table.add_column!(params.slice(:type, :name)))
+    @stats_aggregator.timing('columns.create') do
+      render_jsonp(@table.add_column!(params.slice(:type, :name)))
+    end
   rescue => e
     errors = e.is_a?(CartoDB::InvalidType) ? [e.db_message] : [translate_error(e.message.split("\n").first)]
     render_jsonp({:errors => errors}, 400) and return
@@ -26,17 +29,20 @@ class Api::Json::ColumnsController < Api::ApplicationController
   end
 
   def update
-    render_jsonp(@table.modify_column!(name: params[:id], 
-                                       type: params[:type], 
-                                       new_name: params[:new_name]))
+    @stats_aggregator.timing('columns.update') do
+      render_jsonp(@table.modify_column!(name: params[:id], 
+                                         type: params[:type], 
+                                         new_name: params[:new_name]))
+    end
   rescue => e  
     errors = e.is_a?(CartoDB::InvalidType) ? [e.db_message] : [translate_error(e.message.split("\n").first)]
     render_jsonp({:errors => errors}, 400) and return
   end
 
   def destroy
-    @table.drop_column!(:name => params[:id])
-
+    @stats_aggregator.timing('columns.destroy') do
+      @table.drop_column!(:name => params[:id])
+    end
     # disabled because cluster raise an error when the owner of the table
     # is not the current user (in MU)
     

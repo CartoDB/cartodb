@@ -88,25 +88,12 @@ module CartoDB
     end
 
     class NullAggregator
-
-      def timing(key)
-        yield
-      end
-
-      def gauge(key, value)
-      end
-
-      def increment(key)
-      end
-
-      def decrement(key)
-      end
-
-      # INFO: Provided as catch-all for specific aggregator convenience methods
-      # @see CartoDB::Stats::Authentication increment_login_counter() as an example
+      # INFO: Provided as catch-all for both general increment/decrement/etc. & specific aggregator convenience methods
       def method_missing(method, *arguments, &block)
+        if block
+          yield
+        end
       end
-
     end
 
   end

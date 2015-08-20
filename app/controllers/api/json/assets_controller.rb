@@ -1,5 +1,7 @@
 #encoding: UTF-8
+
 class Api::Json::AssetsController < Api::ApplicationController
+  
   ssl_required :index, :create, :destroy
 
   def index
@@ -17,7 +19,10 @@ class Api::Json::AssetsController < Api::ApplicationController
     @asset.url = params[:url]
     @asset.kind = params[:kind]
 
-    @asset.save
+    @stats_aggregator.timing('assets.create.save') do
+      @asset.save
+    end
+
     render_jsonp(@asset.public_values)
   rescue Sequel::ValidationFailed => e
     render json: { error: @asset.errors.full_messages }, status: 400
@@ -26,7 +31,10 @@ class Api::Json::AssetsController < Api::ApplicationController
   end
 
   def destroy
-    Asset[params[:id]].destroy
+    @stats_aggregator.timing('assets.destroy.delete') do
+      Asset[params[:id]].destroy
+    end
     head :ok
   end
+
 end

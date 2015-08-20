@@ -84,7 +84,7 @@ describe Carto::Api::GroupsController do
       @table_user_1 = create_table_with_options(@org_user_1)
 
       group = Carto::Group.where(organization_id: @carto_organization.id).first
-      permission = { 'access': 'r' }
+      permission = { 'access' => 'r' }
       put api_v1_databases_group_update_permission_url(database_name: group.database_name, name: group.name, username: @org_user_1.username, table_name: @table_user_1['name']), permission, default_headers
       response.status.should == 200
 
@@ -110,11 +110,11 @@ describe Carto::Api::GroupsController do
 
       group = Carto::Group.where(organization_id: @carto_organization.id).first
       # First read, then write, to ensure there're no duplicates
-      permission = { 'access': 'r' }
+      permission = { 'access' => 'r' }
       put api_v1_databases_group_update_permission_url(database_name: group.database_name, name: group.name, username: @org_user_1.username, table_name: @table_user_1['name']), permission, default_headers
       response.status.should == 200
 
-      permission = { 'access': 'w' }
+      permission = { 'access' => 'w' }
       put api_v1_databases_group_update_permission_url(database_name: group.database_name, name: group.name, username: @org_user_1.username, table_name: @table_user_1['name']), permission, default_headers
       response.status.should == 200
 
@@ -139,7 +139,7 @@ describe Carto::Api::GroupsController do
       @table_user_1 = create_table_with_options(@org_user_1)
 
       group = Carto::Group.where(organization_id: @carto_organization.id).first
-      permission = { 'access': 'r' }
+      permission = { 'access' => 'r' }
       put api_v1_databases_group_update_permission_url(database_name: group.database_name, name: group.name, username: @org_user_1.username, table_name: @table_user_1['name']), permission, default_headers
       response.status.should == 200
 

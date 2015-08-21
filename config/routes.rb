@@ -352,6 +352,7 @@ CartoDB::Application.routes.draw do
 
     # Groups
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:organization_id/groups' => 'groups#index', as: :api_v1_organization_groups, constraints: { organization_id: /[^\/]+/ }
+    post '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:organization_id/groups' => 'groups#create', as: :api_v1_organization_groups_create, constraints: { organization_id: /[^\/]+/ }
 
     # Databases (organization) groups
     # Note: url doesn't contain org_id because this needs to be triggered from the SQL API

@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require_relative 'paged_searcher'
+require_dependency 'cartodb/errors'
 
 module Carto
   module Api
@@ -18,6 +19,17 @@ module Carto
           total_entries: @organization.groups.count,
           total_org_entries: @organization.groups.count
         }, 200)
+      end
+
+      def create
+        group = @organization.create_group(params['display_name'])
+        render_jsonp(Carto::Api::GroupPresenter.new(group).to_poro, 200)
+      rescue CartoDB::ModelAlreadyExistsError => e
+        CartoDB.notify_debug('Group already exists', { params: params })
+        render json: { errors: "A group with that data already exists" }, status: 409
+      rescue => e
+        CartoDB.notify_exception(e, { params: params , group: (group ? group : 'not created') })
+        render json: { errors: e.message }, status: 500
       end
 
       private

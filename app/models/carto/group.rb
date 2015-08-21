@@ -16,6 +16,7 @@ module Carto
 
     validates :name, :database_role, :organization_id, :presence => true
 
+    # Constructor for groups already existing in the database
     def self.new_instance(database_name, name, database_role, display_name = name)
       organization = Organization.find_by_database_name(database_name)
 
@@ -24,6 +25,19 @@ module Carto
       raise CartoDB::ModelAlreadyExistsError if Group.find_by_organization_id_and_name_and_database_role(organization.id, name, database_role)
 
       new(name: name, database_role: database_role, display_name: display_name, organization: organization)
+    end
+
+    # Creation of brand-new group with the extension
+    def self.create_group(organization, display_name)
+      name = valid_group_name(display_name)
+      organization.owner.in_database(:as => :superuser) do |conn|
+        create_group_with_extension(conn, name)
+      end
+      # Extension triggers a request to the editor databases endpoint which actually creates the group
+      group = Carto::Group.find_by_organization_id_and_name(organization.id, name)
+      group.display_name = display_name
+      group.save
+      group
     end
 
     def rename(new_name, new_database_role)
@@ -53,6 +67,19 @@ module Carto
 
     def database_name
       organization.database_name
+    end
+
+    private
+
+    # TODO: PG Format("%I", strvar); ?
+    def self.valid_group_name(display_name)
+      name = display_name.squish
+      name = "g_#{name}" unless name[/^[a-z_]{1}/]
+      name.gsub(/[^a-z0-9_]/,'_').gsub(/_{2,}/, '_')
+    end
+
+    def self.create_group_with_extension(conn, name)
+      conn.execute(%Q{ select cartodb.CDB_Group_CreateGroup('#{name}') })
     end
 
   end

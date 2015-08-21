@@ -39,6 +39,12 @@ module Carto
       owner ? owner.database_name : nil
     end
 
+    def create_group(display_name)
+      Carto::Group.create_group(self, display_name)
+    end
+
+    private
+
   end
 
 end

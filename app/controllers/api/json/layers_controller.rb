@@ -10,38 +10,62 @@ class Api::Json::LayersController < Api::ApplicationController
   before_filter :validate_read_write_permission, only: [:update, :destroy]
 
   def create
-    @layer = ::Layer.new(params.slice(:kind, :options, :infowindow, :tooltip, :order))
-    if @parent.is_a?(::Map)
-      unless @parent.admits_layer?(@layer)
-        return(render status: 400, text: "Can't add more layers of this type")
-      end
-      unless @parent.can_add_layer(current_user)
-        return(render_jsonp({:description => 'You cannot add a layer in this visualization'}, 403))
-      end
-      if ::Layer::DATA_LAYER_KINDS.include?(@layer.kind)
-        table_visualization = Helpers::TableLocator.new.get_by_id_or_name(
-            @layer.options['table_name'],
-            current_user
-          ).table_visualization
-        unless table_visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
-          return(render_jsonp({:description => 'You do not have permission in the layer you are trying to add'}, 400))
+    @stats_aggregator.timing('layers.create') do
+
+      begin
+        @layer = ::Layer.new(params.slice(:kind, :options, :infowindow, :tooltip, :order))
+        if @parent.is_a?(::Map)
+          unless @parent.admits_layer?(@layer)
+            return(render status: 400, text: "Can't add more layers of this type")
+          end
+          unless @parent.can_add_layer(current_user)
+            return(render_jsonp({:description => 'You cannot add a layer in this visualization'}, 403))
+          end
+
+          if ::Layer::DATA_LAYER_KINDS.include?(@layer.kind)
+            table_visualization = @stats_aggregator.timing('locate') do
+                Helpers::TableLocator.new.get_by_id_or_name(
+                  @layer.options['table_name'],
+                  current_user
+                ).table_visualization
+              end
+            unless table_visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
+              return(render_jsonp({:description => 'You do not have permission in the layer you are trying to add'}, 400))
+            end
+          end
+        end
+
+        layer_saved = @stats_aggregator.timing('save') do
+          @layer.save
+        end
+
+        if layer_saved
+          @stats_aggregator.timing('parent.add') do
+            @parent.add_layer(@layer)
+          end
+          if @parent.is_a?(::Map)
+            @stats_aggregator.timing('dependencies') do
+              @layer.register_table_dependencies
+            end
+            @stats_aggregator.timing('privacy') do
+              @parent.process_privacy_in(@layer)
+            end
+          end
+
+          @stats_aggregator.timing('parent.save') do
+            # .add_layer doesn't triggers sequel handlers, force a save so all after_save logic gets executed
+            @parent.save
+          end
+
+          render_jsonp CartoDB::Layer::Presenter.new(@layer, {:viewer_user => current_user}).to_poro
+        else
+          CartoDB::Logger.info "Error on layers#create", @layer.errors.full_messages
+          render_jsonp( { :description => @layer.errors.full_messages,
+                          :stack => @layer.errors.full_messages
+                        }, 400)
         end
       end
-    end
 
-    if @layer.save
-      @parent.add_layer(@layer)
-      @layer.register_table_dependencies if @parent.is_a?(::Map)
-      @parent.process_privacy_in(@layer) if @parent.is_a?(::Map)
-      # .add_layer doesn't triggers sequel handlers, force a save so all after_save logic gets executed
-      @parent.save
-
-      render_jsonp CartoDB::Layer::Presenter.new(@layer, {:viewer_user => current_user}).to_poro
-    else
-      CartoDB::Logger.info "Error on layers#create", @layer.errors.full_messages
-      render_jsonp( { :description => @layer.errors.full_messages,
-                      :stack => @layer.errors.full_messages
-                    }, 400)
     end
   end
 

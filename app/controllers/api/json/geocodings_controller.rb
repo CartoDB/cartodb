@@ -10,7 +10,8 @@ class Api::Json::GeocodingsController < Api::ApplicationController
   GEOCODING_SQLAPI_CALLS_TIMEOUT = 45
 
   def index
-    geocodings = Geocoding.where("user_id = ? AND (state NOT IN ?) AND (data_import_id IS NULL)", current_user.id, ['failed', 'finished', 'cancelled'])
+    geocodings = Geocoding.where("user_id = ? AND (state NOT IN ?) AND (data_import_id IS NULL)", current_user.id,
+                                 ['failed', 'finished', 'cancelled'])
     render json: { geocodings: geocodings }
   end
 

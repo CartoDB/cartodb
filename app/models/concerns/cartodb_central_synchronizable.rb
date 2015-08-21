@@ -1,6 +1,7 @@
 module Concerns
   module CartodbCentralSynchronizable
 
+    # This validation can't be added to the model because if a user creation begins at Central we can't know if user is the same or existing
     def validate_credentials_not_taken_in_central
       return true unless self.is_a?(User)
       return true unless Cartodb::Central.sync_data_with_cartodb_central?

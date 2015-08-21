@@ -100,8 +100,6 @@ class User < Sequel::Model
 
     validates_presence :password if new? && (crypted_password.blank? || salt.blank?)
 
-    validate_credentials_not_taken_in_central if (new? || changed_columns.include?(username) || changed_columns.include?(email))
-
     if new? || (password.present? && !@new_password.present?)
       errors.add(:password, "is not confirmed") unless password == password_confirmation
     end

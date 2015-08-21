@@ -2,9 +2,11 @@
 
 require 'active_record'
 require_dependency 'cartodb/errors'
+require_relative 'paged_model'
 
 module Carto
   class Group < ActiveRecord::Base
+    include PagedModel
 
     belongs_to :organization, class_name: Carto::Organization
     has_many :users_group, dependent: :destroy, class_name: Carto::UsersGroup

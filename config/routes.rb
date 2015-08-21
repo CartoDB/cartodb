@@ -350,6 +350,9 @@ CartoDB::Application.routes.draw do
     # Organization (new endpoint that deprecates old, unused one, so v1)
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:id/users' => 'organizations#users', as: :api_v1_organization_users, constraints: { id: /[^\/]+/ }
 
+    # Groups
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:organization_id/groups' => 'groups#index', as: :api_v1_organization_groups, constraints: { organization_id: /[^\/]+/ }
+
     # Databases (organization) groups
     # Note: url doesn't contain org_id because this needs to be triggered from the SQL API
     post '(/user/:user_domain)(/u/:user_domain)/api/v1/databases/:database_name/groups'                           => 'database_groups#create',  as: :api_v1_databases_group_create

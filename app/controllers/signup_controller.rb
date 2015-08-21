@@ -39,7 +39,7 @@ class SignupController < ApplicationController
       @user.password_confirmation = params[:user][:password]
     end
 
-    if @user.valid?
+    if @user.valid? && @user.validate_credentials_not_taken_in_central
       @user_creation = Carto::UserCreation.new_user_signup(@user)
       @user_creation.save
       ::Resque.enqueue(::Resque::UserJobs::Signup::NewUser, @user_creation.id)

@@ -70,6 +70,8 @@ defaults: &defaults
     hubspot:
       events_host: 'http://track.hubspot.com'
       token: 'yourtoken'
+      form_ids:
+        newsletter: ''
       event_ids:
         import_failed: ''
         geocoding_failed: ''

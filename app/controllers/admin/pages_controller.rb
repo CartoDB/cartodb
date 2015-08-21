@@ -183,11 +183,17 @@ class Admin::PagesController < ApplicationController
         geometry_type = table_geometry_types.first.present? ? geometry_mapping.fetch(table_geometry_types.first.downcase, '') : ''
       end
 
-      @datasets << vis_item(vis).merge({
-          rows_count:    vis.table.rows_counted,
-          size_in_bytes: vis.table.table_size,
-          geometry_type: geometry_type,
-        })
+      begin
+        @datasets << vis_item(vis).merge({
+            rows_count:    vis.table.rows_counted,
+            size_in_bytes: vis.table.table_size,
+            geometry_type: geometry_type,
+          })
+      rescue => e
+        # A dataset might be invalid. For example, having the table deleted and not yet cleaned.
+        # We don't want public page to be broken, but error must be traced.
+        CartoDB.notify_exception(e, { vis: vis })
+      end
     end
 
     description = "#{@name} has"
@@ -204,6 +210,7 @@ class Admin::PagesController < ApplicationController
     @page_description = description
 
     respond_to do |format|
+      # TODO: data_library
       format.html { render 'public_datasets', layout: 'public_dashboard' }
     end
   end

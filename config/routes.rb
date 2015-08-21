@@ -495,9 +495,14 @@ CartoDB::Application.routes.draw do
   scope :module => 'superadmin', :format => :json do
     get '/superadmin/get_databases_info' => 'platform#databases_info'
     get '/superadmin/stats/total_users' => 'platform#total_users'
+    get '/superadmin/stats/total_pay_users' => 'platform#total_pay_users'
     get '/superadmin/stats/total_datasets' => 'platform#total_datasets'
     get '/superadmin/stats/total_seats_among_orgs' => 'platform#total_seats_among_orgs'
     get '/superadmin/stats/total_shared_objects_among_orgs' => 'platform#total_shared_objects_among_orgs'
+    get '/superadmin/stats/total_visualizations' => 'platform#total_visualizations'
+    get '/superadmin/stats/total_maps' => 'platform#total_maps'
+    get '/superadmin/stats/total_active_users' => 'platform#total_active_users'
+    get '/superadmin/stats/total_likes' => 'platform#total_likes'
   end
 
 end

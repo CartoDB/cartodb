@@ -2,23 +2,23 @@
 @import "../variables/colors";
 @import "../variables/sizes";
 
-// Components
+// PublicMap-map
 // --------------------------------------------------
 
 .PublicMap-map {
   position: relative;
-  background: $cStructure-grayBkg;
+  background: #333 image-url('layout/noise.png') repeat 0 0;
   width: 100%;
   height: 400px;
 }
 .PublicMap-map.js-map:after {
   content: '';
   display: block;
-  position: relative;
+  position: absolute;
   height: 1px;
   width: 100%;
   background: rgba(#000, .25);
-  bottom: 1px;
+  bottom: 0;
 }
 .PublicMap-block {
   display: block;
@@ -37,7 +37,7 @@
 }
 .PublicMap-leftBlock {
   float: left;
-  width: 50%;
+  width: 40%;
 }
 .PublicMap-gradient {
   content: '';
@@ -46,7 +46,7 @@
   z-index: 20;
   right: 0;
   height: 100%;
-  width: 50%;
+  width: 60%;
   background-image: linear-gradient(to right, rgba(#fff, 0) 5%, #fff 10%, #fff 100%);
 }
 .PublicMap-leftBlock.PublicMap-leftBlock--large {
@@ -55,13 +55,12 @@
 }
 .PublicMap-rightBlock {
   float: right;
-  width: 50%;
+  width: 60%;
 }
 .PublicMap-description p {
   font-size: 20px;
   font-weight: $sFontWeight-lighter;
   line-height: 32px;
-  @include nicer-lato-typography();
 }
 .PublicMap-secondary {
   background: #f9f9f9;
@@ -69,6 +68,9 @@
 .PublicMap-secondary,
 .PublicMap-info {
   padding: 60px 0;
+}
+.PublicMap-secondary--bottom {
+  padding-bottom: 0;
 }
 .PublicMap-title,
 .PublicMap-description {
@@ -82,9 +84,6 @@
 .PublicMap-metaList {
   display: inline-block;
   margin-right: 30px;
-}
-.PublicMap-metaItem:last-child {
-  margin-right: 0;
 }
 .PublicMap-metaItem {
   display: inline-block;
@@ -123,148 +122,7 @@
 .PublicMap-mapsList {
   padding-top: 10px;
 }
-// Navmenu
-.Navmenu {
-  position: relative;
-  border-bottom: 1px solid $cStructure-mainLine;
-  overflow: hidden;
-}
-.Navmenu-list {
-  display: inline-block;
-  margin-top: 5px;
-  height: 76px;
-}
-.Navmenu-list:before {
-  display: inline-block;
-  vertical-align: middle;
-  content: "";
-  height: 100%;
-}
-.Navmenu-list.Navmenu-list--owner {
-  float: left;
-  margin-top: 2px;
-}
-.Navmenu-list.Navmenu-list--avatar {
-  margin-right: $sMargin-element;
-}
-.Navmenu-item {
-  margin-right: $sMargin-section;
-}
-.Navmenu-subItem {
-  margin-left: $sMargin-group;
-}
-.Navmenu-item.Navmenu-item:last-child {
-  margin-right: 0;
-}
-.Navmenu-subItem.Navmenu-subItem:first-child {
-  margin-left: 0;
-}
-.Navmenu-item,
-.Navmenu-subItem {
-  display: inline-block;
-  text-transform: uppercase;
-  vertical-align: middle;
-}
-.Navmenu-rarrow {
-  margin-left: -20px;
-  margin-right: 20px;
-  width: 2px;
-  height: 9px;
-  font-size: 9px;
-  color: $cNavmenu-arrow;
-}
-.Navmenu-sep {
-  position: relative;
-  top: 3px;
-  display: inline-block;
-  margin-left: -20px;
-  margin-right: 20px;
-  width: 1px;
-  height: 20px;
-  background-color: $cNavmenu-sep;
-}
-.Navmenu-link {
-  color: $cTypography-linkSecondary;
-  transition: all .2s;
-}
-.Navmenu-link:hover {
-  color: $cTypography-linkSecondaryHover;
-  text-decoration: none;
-}
-.Navmenu-link.Navmenu-link--owner {
-  float: left;
-  white-space: nowrap;
-}
-.Navmenu-icon {
-  font-size: $sFontSize-largest;
-  color: $cTypography-linkSecondaryHover;
-  transition: all .2s;
-}
-.Navmenu-icon:hover {
-  color: $cTypography-linkSecondary;
-}
-.Navmenu-icon.Navmenu-icon--twitter {
-  position: relative;
-  top: -2px;
-  font-size: 22px;
-}
-.Navmenu-editLink {
-  display: none;
-  vertical-align: middle;
-  width: auto;
-  text-align: center;
-  color: $cNavButton-default;
-  text-transform: uppercase;
-  font-size: 12px;
-  font-weight: $sFontWeight-normal;
-  border: 1px solid $cNavButton-default;
-  height: 36px;
-  line-height: 36px;
-}
-.Navmenu-editLink.Navmenu-editLink--edit {
-  margin-left: $sMargin-section;
-  border-color: #0090d7;
-  color: #fff;
-}
-.Navmenu-editLink.Navmenu-editLink--more {
-  width: 100%;
-  padding: 0 16px;
-  border-radius: 28px;
-  margin-top: 20px;
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
-}
-.Navmenu-editLink.Navmenu-editLink--more:hover {
-  border-color: $cNavButton-active;
-  color: $cNavButton-active;
-}
-.Navmenu-editLink:hover {
-  text-decoration: none;
-}
-.Navmenu-editLink.is-active {
-  display: inline-block;
-}
-.Navmenu-share {
-  display: inline-block;
-  vertical-align: middle;
-}
-.Navmenu-shareLink {
-  display: none;
-  margin-right: $sMargin-elementInline;
-}
-.Navmenu-shareList {
-  display: inline-block;
-  transition: all .2s;
-}
-.Navmenu-closeLink {
-  position: relative;
-  top: -2px;
-}
 
-div.cartodb-timeslider {
-  margin-bottom: 0;
-}
 
 @media (min-width: $sMedia-desktop +1) {
   .PublicMap-metaList.PublicMap-metaList--mobile {
@@ -283,36 +141,8 @@ div.cartodb-timeslider {
   .PublicMap-rightBlock.PublicMap-rightBlock--owner {
     position: absolute;
     z-index: 30;
-    right: 0;
-    width: 50%;
-  }
-  .Navmenu-shareLink {
-    display: inline-block;
-  }
-  .Navmenu-shareList {
-    display: block;
-    position: absolute;
-    top: 5px;
-    right: 10px;
-    margin-top: 76px;
-    height: 76px;
-    background: #fff;
-  }
-  .Navmenu-shareList.is-active {
-    margin-top: 0;
-    width: 200%;
-  }
-  .Navmenu-sep {
-    top: 0;
-  }
-  .Navmenu-item.Navmenu-item.last-child {
-    margin-right: 0;
-  }
-  .Navmenu-editLink {
-    display: block;
-  }
-  .LikesIndicator-count {
-    display: none;
+    right: 15px;
+    width: 60%;
   }
   .PublicMap-metaList {
     display: block;

@@ -1,0 +1,35 @@
+@import "../variables/colors";
+@import "../variables/sizes";
+@import "../variables/mixins";
+
+// CountrySelector
+// --------------------------------------------------
+
+.CountrySelector {
+  margin-left: auto;
+  margin-bottom: 30px;
+  text-align: right;
+}
+.CountrySelector-button {
+  display: inline-block;
+  width: $sButton-height;
+  height: $sButton-height;
+  margin-left: 12px;
+  border: $sButton-border solid $cNavButton-default;
+  border-radius: $sButton-borderRadius;
+  text-align: center;
+  @include background(image-url('layout/public_data_datasets/country_selector.png') no-repeat center center);
+  outline: none;
+  vertical-align: middle;
+}
+.CountrySelector-button:hover {
+  border-color: $cNavButton-active;
+
+  .CountrySelector-icon { color: $cNavButton-active }
+}
+.CountrySelector-text {
+  display: inline-block;
+  font-size: $sFontSize-large;
+  line-height: 40px;
+  color :#fff;
+}

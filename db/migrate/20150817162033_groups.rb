@@ -72,6 +72,7 @@ Sequel.migration do
   down do
     #run "ALTER TABLE shared_entities ALTER CONSTRAINT recipient_type_check CHECK (recipient_type IN ('user', 'org'));"
     run "ALTER TABLE shared_entities DROP CONSTRAINT recipient_type_check;"
+    run "delete from shared_entities where recipient_type = 'group';"
     run "ALTER TABLE shared_entities ADD CONSTRAINT recipient_type_check CHECK (recipient_type IN ('user', 'org'));"
 
     drop_table :users_groups

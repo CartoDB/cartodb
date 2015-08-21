@@ -98,9 +98,7 @@ module HelperMethods
   def default_schema
     [
       ["cartodb_id", "number"], ["name", "string"], ["description", "string"],
-      ["the_geom", "geometry", "geometry", "geometry"],
-      ["created_at", "date"],
-      ["updated_at", "date"]
+      ["the_geom", "geometry", "geometry", "geometry"]
     ]
   end
 
@@ -108,6 +106,7 @@ module HelperMethods
     random = UUIDTools::UUID.timestamp_create.to_s
     {
       name:               attributes.fetch(:name, "name #{random}"),
+      display_name:       attributes.fetch(:display_name, "display name #{random}"),
       description:        attributes.fetch(:description, "description #{random}"),
       privacy:            attributes.fetch(:privacy, Visualization::Member::PRIVACY_PUBLIC),
       tags:               attributes.fetch(:tags, ['tag 1']),
@@ -117,6 +116,7 @@ module HelperMethods
       title:              attributes.fetch(:title, ''),
       source:             attributes.fetch(:source, ''),
       license:            attributes.fetch(:license, ''),
+      attributiosn:       attributes.fetch(:attributions, ''),
       parent_id:          attributes.fetch(:parent_id, nil),
       kind:               attributes.fetch(:kind, Visualization::Member::KIND_GEOM),
       prev_id:            attributes.fetch(:prev_id, nil),

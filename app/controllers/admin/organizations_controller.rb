@@ -25,6 +25,7 @@ class Admin::OrganizationsController < ApplicationController
     end
 
     @organization.website = attributes[:website]
+    @organization.admin_email = attributes[:admin_email]
     @organization.description = attributes[:description]
     @organization.display_name = attributes[:display_name]
     @organization.color = attributes[:color]
@@ -66,6 +67,10 @@ class Admin::OrganizationsController < ApplicationController
   def load_organization_and_members
     @organization = current_user.organization
     raise RecordNotFound unless @organization.present? && current_user.organization_owner?
+
+    # INFO: Special scenario of handcrafted URL to go to organization-based signup page
+    @organization_signup_url = 
+      "#{CartoDB.protocol}://#{@organization.name}.#{CartoDB.account_host}#{CartoDB.path(self, 'signup_organization_user')}"
   end
 
 end

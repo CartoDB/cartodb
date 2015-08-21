@@ -28,7 +28,7 @@
   <body class="PublicBody">
     <%= render 'admin/shared/public_header' %>
     <div class="FavMap is-pre-loading" id="<%= fav_map_target_id = 'fav-map-container' %>">
-      <div class="Spinner FavMap-spinner"></div>
+      <div class="Spinner FavMap-spinner js-spinner"></div>
     </div>
     <div class="UserInfo js-user-info">
       <div class="UserAvatar UserInfo-avatar">
@@ -91,6 +91,9 @@
     <script type="text/javascript">
       var config = <%= safe_js_object frontend_config_public({https_apis: request.protocol == 'https://' }) %>;
       var account_host = '<%= CartoDB.account_host %>';
+      var base_url = '<%= @base_url %>';
+      var login_url = "<%= CartoDB.url(self, 'login') %>";
+
       var favMapViewAttrs = {
         el: '#<%= fav_map_target_id %>',
         <% if @most_viewed_vis_map %>

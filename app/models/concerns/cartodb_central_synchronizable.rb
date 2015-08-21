@@ -1,6 +1,18 @@
 module Concerns
   module CartodbCentralSynchronizable
 
+    # This validation can't be added to the model because if a user creation begins at Central we can't know if user is the same or existing
+    def validate_credentials_not_taken_in_central
+      return true unless self.is_a?(User)
+      return true unless Cartodb::Central.sync_data_with_cartodb_central?
+
+      central_client = Cartodb::Central.new
+
+      errors.add(:username, "Username taken") if central_client.get_user(self.username)['username'] == self.username
+      errors.add(:email, "Email taken") if central_client.get_user(self.email)['email'] == self.email
+      errors.empty?
+    end
+
     def create_in_central
       return true unless sync_data_with_cartodb_central?
       if self.is_a?(User) && organization.present?

@@ -9,13 +9,13 @@ describe Layer do
 
   after(:all) do
     # Using Mocha stubs until we update RSpec (@see http://gofreerange.com/mocha/docs/Mocha/ClassMethods.html)
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+    stub_named_maps_calls
     delete_user_data $user_1
   end
 
   before(:each) do
     User.any_instance.stubs(:enable_remote_db_user).returns(true)
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+    stub_named_maps_calls
 
     CartoDB::Overlay::Member.any_instance.stubs(:can_store).returns(true)
 

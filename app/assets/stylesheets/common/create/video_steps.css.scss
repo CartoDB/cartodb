@@ -31,7 +31,6 @@ $blueColor: #3190DB;
   height: 16px;
   line-height: $sLineHeight-small;
   font-size: $sFontSize-smallUpperCase;
-  @include nicer-lato-typography();
   border-radius: 16px;
   text-align: center;
   color: white;

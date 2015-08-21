@@ -60,3 +60,4 @@ vendor/assets/stylesheets/cartodb.*
 public/test_support.csv
 public/test_guess_country.csv
 doc/manual/build
+.gem/

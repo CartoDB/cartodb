@@ -73,7 +73,6 @@ $w: 700px;
   padding-bottom: 10px;
   text-transform: uppercase;
   font-size: $sFontSize-small;
-  @include nicer-lato-typography();
   color: $cTypography-secondary;
   border-bottom: 1px solid $cStructure-mainLine;
 }
@@ -138,7 +137,6 @@ $w: 700px;
 .CreateDialog-templateDes {
   margin: 3px 25px 0 25px;
   font-size: $sFontSize-normal;
-  @include nicer-lato-typography();
   color: $cTypography-secondary;
 }
 .CreateDialog-templateInfo {

@@ -10,9 +10,8 @@
 @import "../variables/sizes";
 
 .UserAvatar {
-  position: relative;
-  @include inline-block();
-  vertical-align: middle;
+  @include display-flex();
+  @include align-items(center);
 }
 .UserAvatar.is-error:before {
   content: 'x';
@@ -28,11 +27,9 @@
   background-color: $cHighlight-negative;
   color: white;
   font-size: $sFontSize-smallUpperCase;
-  @include nicer-lato-typography();
   text-align: center;
 }
 .UserAvatar-img {
-  border: 3px solid transparent;
   border-left: 0;
   border-right: 0;
 }

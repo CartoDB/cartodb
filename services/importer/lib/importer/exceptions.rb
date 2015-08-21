@@ -51,6 +51,7 @@ module CartoDB
     class InvalidGeoJSONError                   < StandardError; end
     class InvalidShpError                       < StandardError; end
     class KmlNetworkLinkError                   < StandardError; end
+    class KmlWithoutStyleIdError                < GenericImportError; end
     class InvalidNameError                      < BaseImportError
       def initialize(message)
         super(message, 1014)
@@ -115,6 +116,7 @@ module CartoDB
       EncodingError                         => 2006,
       RowsEncodingColumnError               => 2007,
       MalformedXLSException                 => 2008,
+      KmlWithoutStyleIdError                => 2009,
       InvalidGeoJSONError                   => 3007,
       UnknownSridError                      => 3008,
       ShpNormalizationError                 => 3009,

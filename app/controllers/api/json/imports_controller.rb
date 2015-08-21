@@ -131,7 +131,8 @@ class Api::Json::ImportsController < Api::ApplicationController
       state:                  DataImport::STATE_PENDING,  # Pending == enqueue the task
       upload_host:            Socket.gethostname,
       create_visualization:   ["true", true].include?(params[:create_vis]),
-      user_defined_limits:    user_defined_limits
+      user_defined_limits:    user_defined_limits,
+      privacy:                privacy
     }
   end
 
@@ -170,7 +171,7 @@ class Api::Json::ImportsController < Api::ApplicationController
                                                                              }
                                                                            })
       # It's ok to decrease always as if over limit, will get just at limit and next try again go overlimit
-      concurrent_import_limit.decrement
+      concurrent_import_limit.decrement!
       concurrent_import_limit.peek  # return limit value
     rescue => sub_exception
       CartoDB::Logger.info('Error decreasing concurrent import limit',
@@ -179,4 +180,14 @@ class Api::Json::ImportsController < Api::ApplicationController
     end
   end
 
+  def privacy
+    if params[:privacy].present?
+      privacy = (UserTable::PRIVACY_VALUES_TO_TEXTS.invert)[params[:privacy].downcase]
+      raise "Unknown value '#{params[:privacy]}' for 'privacy'. Allowed values are: #{[UserTable::PRIVACY_VALUES_TO_TEXTS.values[0..-2].join(', '), UserTable::PRIVACY_VALUES_TO_TEXTS.values[-1]].join(' and ')}" if privacy.nil?
+      raise "Your account type (#{current_user.account_type.tr('[]','')}) does not allow to create private datasets. Check https://cartodb.com/pricing for more info." if !current_user.valid_privacy?(privacy)
+      privacy
+    else
+      nil
+    end
+  end
 end

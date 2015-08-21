@@ -23,6 +23,8 @@ class Table
   SYSTEM_TABLE_NAMES = %w( spatial_ref_sys geography_columns geometry_columns raster_columns raster_overviews cdb_tablemetadata geometry raster )
 
    # TODO Part of a service along with schema
+  # INFO: created_at and updated_at cannot be dropped from existing tables without dropping the triggers first
+  CARTODB_REQUIRED_COLUMNS = %W{ cartodb_id the_geom }
   CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at the_geom }
   THE_GEOM_WEBMERCATOR = :the_geom_webmercator
   THE_GEOM = :the_geom
@@ -155,7 +157,7 @@ class Table
                 # Handy for rakes and custom ghost table registers, won't delete user table in case of error
                 :keep_user_database_table
 
-  # Getter by table uuid or table name using canonical visualizations
+  # Getter by table uuid using canonical visualizations
   # @param table_id String
   # @param viewer_user User
   def self.get_by_id(table_id, viewer_user)
@@ -172,6 +174,13 @@ class Table
       table = vis.table unless vis.nil?
     end
     table
+  end
+
+  # Getter by table uuid using canonical visualizations. No privacy checks
+  # @param table_id String
+  def self.get_by_table_id(table_id)
+    table_temp = UserTable.where(id: table_id).first
+    table_temp.service unless table_temp.nil?
   end
 
   # Get a list of tables given an array with the names
@@ -248,105 +257,6 @@ class Table
   def before_validation
     # ensure privacy variable is set to one of the constants. this is bad.
     @user_table.privacy ||= (owner.try(:private_tables_enabled) ? UserTable::PRIVACY_PRIVATE : UserTable::PRIVACY_PUBLIC)
-  end
-
-  def append_from_importer(new_table_name, new_schema_name)
-    new_schema            = owner.in_database.schema(
-                              new_table_name,
-                              reload: true,
-                              schema: new_schema_name
-                            )
-    new_schema_hash       = Hash[new_schema]
-    append_to_table       = self
-    new_schema_names      = new_schema.map(&:first)
-    existing_schema_hash  = Hash[append_to_table.schema(reload: true)]
-    drop_names            = %W{ cartodb_id created_at updated_at ogc_fid}
-    configuration         = ::Rails::Sequel.configuration.environment_for(Rails.env)
-
-    # fun schema check here
-    new_schema_hash.keys.each do |column_name|
-      if RESERVED_COLUMN_NAMES.include?(column_name.to_s) || drop_names.include?(column_name.to_s)
-        new_schema_names.delete(column_name)
-      elsif column_name.to_s != 'the_geom'
-        if existing_schema_hash.keys.include?(column_name)
-          # column name exists in new and old table
-          if existing_schema_hash[column_name] != new_schema_hash[column_name]
-            #the new column type does not match the existing, force change to existing
-            column_data = configuration.merge(
-              type: existing_schema_hash[column_name][:type].to_s,
-              name: column_name
-            ).symbolize_keys
-            self.modify_column!(column_data)
-          end
-        else
-          # add column and type to old table
-          column_data =  configuration.merge(
-            type: new_schema_hash[column_name][:type].to_s,
-            name: column_name
-          ).symbolize_keys
-          append_to_table.add_column!(column_data)
-        end
-      end
-    end
-
-    # append table 2 to table 1
-    owner.in_database.run(%Q{
-      INSERT INTO "#{append_to_table.name}" (
-        #{new_schema_names.join(',')}
-      )
-      (
-        SELECT #{new_schema_names.join(',')}
-        FROM "#{new_schema_name}"."#{new_table_name}"
-      )
-    })
-  end #append_from_importer
-
-  def append_to_table(options)
-    from_table = options[:from_table]
-    append_to_table = self
-    # if concatenate_to_table is set, it will join the table just created
-    # to the table named in concatenate_to_table and then drop the created table
-    #get schemas of uploaded and existing tables
-    new_schema        = from_table.schema(reload: true)
-    new_schema_hash   = Hash[new_schema]
-    new_schema_names  = new_schema.collect {|x| x[0]}
-
-    existing_schema_hash = Hash[append_to_table.schema(reload: true)]
-
-    # fun schema check here
-    drop_names = %W{ cartodb_id created_at updated_at ogc_fid}
-    new_schema_hash.keys.each do |column_name|
-      if RESERVED_COLUMN_NAMES.include?(column_name.to_s) or drop_names.include?column_name.to_s
-        new_schema_names.delete(column_name)
-      elsif column_name.to_s != 'the_geom'
-        if existing_schema_hash.keys.include?(column_name)
-          # column name exists in new and old table
-          if existing_schema_hash[column_name] != new_schema_hash[column_name]
-            #the new column type does not match the existing, force change to existing
-            hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-              :type => existing_schema_hash[column_name],
-              :name => column_name
-            ).symbolize_keys
-            self.modify_column! hash_in
-          end
-        else
-          # add column and type to old table
-            hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-              :type => new_schema_hash[column_name],
-              :name => column_name
-            ).symbolize_keys
-          append_to_table.add_column! hash_in
-        end
-      end
-    end
-    # append table 2 to table 1
-    owner.in_database.run(%Q{INSERT INTO "#{append_to_table.name}" (#{new_schema_names.join(',')}) (SELECT #{new_schema_names.join(',')} FROM "#{from_table.name}")})
-    # so that we can use the same method to allow the user to merge two tables
-    # that already exist in the API
-    # a future might be merge_two_tables
-    # => where tableA is duplicated
-    # => then tableB is append_to_table onto tableA
-    # => leaving both in tact while creating a new tthat contains both
   end
 
   def import_to_cartodb(uniname=nil)
@@ -504,6 +414,13 @@ class Table
       @data_import.table_name = name
       @data_import.save
 
+      if !@data_import.privacy.nil?
+        if !self.owner.valid_privacy?(@data_import.privacy)
+          raise "Error: User '#{self.owner.username}' doesn't have private tables enabled"
+        end
+        @user_table.privacy = @data_import.privacy
+      end
+
       decorator = CartoDB::Datasources::Decorators::Factory.decorator_for(@data_import.service_name)
       if !decorator.nil? && decorator.decorates_layer?
         self.map.layers.each do |layer|
@@ -585,7 +502,7 @@ class Table
         kind: 'gmapsbase',
         options: basemap
       }
-    else 
+    else
       {
         kind: 'tiled',
         options: basemap.merge({ 'urlTemplate' => basemap['url'] })
@@ -663,7 +580,7 @@ class Table
         user_id:  self.owner.id
       }
     )
-    CartoDB::Visualization::Overlays.new(vis).create_default_overlays
+    CartoDB::Visualization::Overlays.new(vis).create_default_overlays  
     vis.store
     vis
   end
@@ -690,6 +607,8 @@ class Table
     end
     remove_table_from_user_database unless keep_user_database_table
     synchronization.delete if synchronization
+
+    related_templates.each { |template| template.destroy }
   end
 
   def remove_table_from_user_database
@@ -837,8 +756,9 @@ class Table
     user.in_database["SELECT reltuples::integer FROM pg_class WHERE oid = '#{self.name}'::regclass"].first[:reltuples]
   end
 
+  # Preferred: `actual_row_count`
   def rows_counted
-    sequel.count
+    actual_row_count
   end
 
   # Returns table size in bytes
@@ -1249,61 +1169,13 @@ class Table
   end
 
   def cartodbfy
-    if owner.cartodb_extension_version_pre_mu?
-      schema_name = 'public'
-    else
-      schema_name = owner.database_schema
-    end
+    schema_name = owner.database_schema
     table_name = "#{owner.database_schema}.#{self.name}"
 
-    # Following is equivalent to running "SELECT cartodb.CDB_CartodbfyTable('#{schema_name}','#{table_name}')"
     owner.in_database do |user_database|
       user_database.run(%Q{
-        SELECT cartodb._CDB_check_prerequisites('#{schema_name}'::TEXT, '#{table_name}'::REGCLASS);
+        SELECT cartodb.CDB_CartodbfyTable('#{schema_name}'::TEXT,'#{table_name}'::REGCLASS);
       })
-
-      user_database.run(%Q{
-        SELECT cartodb._CDB_drop_triggers('#{table_name}'::REGCLASS);
-      })
-
-      user_database.run(%Q{
-        SELECT cartodb._CDB_create_cartodb_id_column('#{table_name}'::REGCLASS);
-      })
-      user_database.run(%Q{
-        SELECT cartodb._CDB_create_timestamp_columns('#{table_name}'::REGCLASS);
-      })
-
-      # Avoid breaking on extension versions < 0.5.0
-      begin
-        is_raster = user_database[%Q{
-          SELECT cartodb._CDB_is_raster_table('#{schema_name}'::TEXT, '#{table_name}'::REGCLASS) AS is_raster;
-        }].first
-      rescue
-        is_raster = nil
-      end
-
-      if !is_raster.nil? && is_raster[:is_raster]
-        user_database.run(%Q{
-          SELECT cartodb._CDB_create_raster_triggers('#{schema_name}'::TEXT, '#{table_name}'::REGCLASS);
-        })
-      else
-        exists_geom_cols = user_database[%Q{
-          SELECT cartodb._CDB_create_the_geom_columns('#{table_name}'::REGCLASS);
-        }].first
-        exists_geoms = "'{" + exists_geom_cols[:_cdb_create_the_geom_columns].join(',') + "}'::BOOLEAN[]"
-
-        # This are the two hot zones
-        user_database.run(%Q{
-          SELECT cartodb._CDB_populate_the_geom_from_the_geom_webmercator('#{table_name}'::REGCLASS, #{exists_geoms});
-        })
-          user_database.run(%Q{
-          SELECT cartodb._CDB_populate_the_geom_webmercator_from_the_geom('#{table_name}'::REGCLASS, #{exists_geoms});
-        })
-
-        user_database.run(%Q{
-          SELECT cartodb._CDB_create_triggers('#{schema_name}'::TEXT, '#{table_name}'::REGCLASS);
-        })
-      end
     end
 
     self.schema(reload:true)
@@ -1394,6 +1266,11 @@ class Table
     owner.database_schema
   end
 
+  # INFO: Qualified but without double quotes
+  def self.is_qualified_name_valid?(name)
+    (name =~ /^[a-z\-_0-9]+\.[a-z\-_0-9]+?$/) == 0
+  end
+
   ############################### Sharing tables ##############################
 
   # @param [User] organization_user Gives read permission to this user
@@ -1423,6 +1300,7 @@ class Table
     perform_organization_table_permission_change('CDB_Organization_Remove_Organization_Access_Permission')
   end
 
+  # Estimated row count and size
   def row_count_and_size
     begin
       # Keep in sync with lib/sql/scripts-available/CDB_Quota.sql -> CDB_UserDataSize()
@@ -1447,6 +1325,15 @@ class Table
     data = { size: nil, row_count: nil } if data.nil?
 
     data
+  end
+
+  def estimated_row_count
+    row_count_and_size = self.row_count_and_size
+    row_count_and_size.nil? ? nil : row_count_and_size[:row_count]
+  end
+
+  def actual_row_count
+    sequel.count
   end
 
   private
@@ -1525,7 +1412,7 @@ class Table
     database_schema = options[:database_schema].present? ? options[:database_schema] : 'public'
 
     # We don't want to use an existing table name
-    # 
+    #
     existing_names = []
     existing_names = options[:name_candidates] || options[:connection]["select relname from pg_stat_user_tables WHERE schemaname='#{database_schema}'"].map(:relname) if options[:connection]
     existing_names = existing_names + SYSTEM_TABLE_NAMES
@@ -1679,8 +1566,6 @@ class Table
           column :cartodb_id, 'SERIAL PRIMARY KEY'
           String :name
           String :description, :text => true
-          column :created_at, 'timestamp with time zone', :default => Sequel::CURRENT_TIMESTAMP
-          column :updated_at, 'timestamp with time zone', :default => Sequel::CURRENT_TIMESTAMP
         end
       else
         sanitized_force_schema = force_schema.split(',').map do |column|
@@ -1691,13 +1576,9 @@ class Table
             column.gsub(/primary\s+key/i,'UNIQUE')
           end
         end
-        sanitized_force_schema.unshift('cartodb_id SERIAL PRIMARY KEY').
-                               unshift('created_at timestamp with time zone').
-                               unshift('updated_at timestamp with time zone')
+        sanitized_force_schema.unshift('cartodb_id SERIAL PRIMARY KEY')
         user_database.run(<<-SQL
           CREATE TABLE #{qualified_table_name} (#{sanitized_force_schema.join(', ')});
-          ALTER TABLE  #{qualified_table_name} ALTER COLUMN created_at SET DEFAULT now();
-          ALTER TABLE  #{qualified_table_name} ALTER COLUMN updated_at SET DEFAULT now();
         SQL
         )
       end

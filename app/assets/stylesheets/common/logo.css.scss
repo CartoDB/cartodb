@@ -4,7 +4,7 @@
 
 @import "../variables/mixins";
 
-$size: 40px;
+$size: 36px;
 
 .Logo {
   position: relative;
@@ -37,15 +37,26 @@ $size: 40px;
   vertical-align: top;
   width: $size;
   height: $size;
-  line-height: 54px;
+  line-height: $size + 10;
   background: white;
-  border-radius: 2px;
+  border-radius: 4px;
   text-align: center;
   @include transition(border-radius, .2s, linear);
 
   i {
-    font-size: 25px;
+    font-size: $size - 14;
     color: #3C93D8;
+
+    &.Logo-icon--dark {
+      color: #2E3C43;
+    }
+  }
+}
+.Logo--footer {
+  background: #2E3C43;
+
+  i {
+    color: #fff;
   }
 }
 .Logo--grey {

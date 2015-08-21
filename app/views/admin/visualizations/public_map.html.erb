@@ -1,6 +1,6 @@
 <%= content_for(:title) do %><%= @visualization.name %><% end %>
 
-<%= content_for(:description) do %><%= @visualization.description_clean ? "#{@visualization.description_clean}. Map created by #{@name} in CartoDB" : "Map created by #{@name} in CartoDB" %><% end %>
+<%= content_for(:description) do %><%= @visualization.description_clean ? "#{@visualization.description_clean} — Map created by #{@name} in CartoDB" : "Map created by #{@name} in CartoDB" %><% end %>
 
 <%= content_for(:twitter_card) do %><%= Carto::StaticMapsURLHelper.new.url_for_static_map(request, @visualization, 560, 300) %><% end %>
 <%= content_for(:facebook_card) do %><%= Carto::StaticMapsURLHelper.new.url_for_static_map(request, @visualization, 1200, 630) %><% end %>
@@ -16,7 +16,7 @@
     <%= render 'admin/shared/public_header' %>
 
     <div class="PublicMap-map js-map" id="map">
-      <div class="Spinner"></div>
+      <div class="Spinner Spinner--center js-spinner"></div>
     </div>
 
     <%# Legacy from current embed %>
@@ -30,77 +30,98 @@
       </ul>
     </div>
 
-    <div class="u-inner">
-      <div class="PublicMap-info">
-
-        <%#= 1st block %>
+    <div class="Navmenu js-Navmenu">
+      <div class="u-inner">
         <div class="PublicMap-block">
-          <div class="PublicMap-leftBlock with-padding">
-            <h1 class="PublicMap-title"><%= @visualization.name %></h1>
-            <div class="PublicMap-meta">
-              <span class="PublicMap-metaTime DefaultTimeDiff">
-                <i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i>
-                <%= time_ago_in_words(@visualization.updated_at) %> ago
-                by
-                <a href="<%= CartoDB.url(self, 'public_maps_home', {}, @visualization.user) %>" target="_blank" class="UserAvatar PublicMap-owner">
-                  <img class="UserAvatar-img UserAvatar-img--smaller PublicMap-ownerAvatar" src="<%= @visualization.user.avatar %>" alt="<%= @name %>" title="<%= @name %>" />
-                  <span class="PublicMap-ownerName"><%= @name %></span>
+          <div class="PublicMap-gradient"></div>
+
+          <div class="PublicMap-leftBlock PublicMap-leftBlock--owner">
+            <ul class="Navmenu-list Navmenu-list--owner Navmenu-list--avatar">
+              <li class="Navmenu-item">
+                <a href="<%= CartoDB.url(self, 'public_maps_home', {}, @visualization.user) %>" target="_blank" class="UserAvatar">
+                  <img class="UserAvatar-img--medium" src="<%= @visualization.user.avatar %>" alt="<%= @name %>" title="<%= @name %>" />
                 </a>
-              </span>
-            </div>
-            <% if @visualization.description.present? %>
-              <div class="DefaultDescription PublicMap-desc">
-                <%= raw @visualization.description_html_safe %>
-              </div>
-            <% end %>
-          </div>
-          <div class="PublicMap-rightBlock">
-            <nav class="PublicMap-buttons">
-              <a class="PublicMap-shareButton PublicMap-editButton js-editMap" href="<%= CartoDB.url(self, 'public_visualizations_show', {id: @visualization.id }, @visualization.user) %>">
-                edit in cartodb
-              </a>
+              </li>
+            </ul>
 
-              <a href="http://www.facebook.com/sharer.php?u=<%= url_encode(request.original_url) %>&text=<%= url_encode("#{@visualization.name} created by #{@name} in CartoDB") %>" target="_blank" class="PublicMap-shareButton PublicMap-shareButton--facebook">
-                <i class="iconFont iconFont-Facebook"></i>
-              </a>
+            <ul class="Navmenu-list Navmenu-list--owner">
+              <li class="Navmenu-item last-child">
+                <a href="<%= CartoDB.url(self, 'public_maps_home', {}, @visualization.user) %>" class="Navmenu-link Navmenu-link--owner"><%= @name %></a>
+              </li>
 
-              <a href="https://twitter.com/share?url=<%= url_encode(request.original_url) %>&text=<%= url_encode("#{@visualization.name} created by #{@visualization.user.twitter_username.present? ? "@#{@visualization.user.twitter_username}" : @name} in @cartoDB") %>" target="_blank" class="PublicMap-shareButton PublicMap-shareButton--twitter">
-                <i class="iconFont iconFont-Twitter"></i>
-              </a>
-            </nav>
+              <li class="Navmenu-item u-hideOnTablet">
+                <i class="Navmenu-rarrow iconFont iconFont-Rarrow"></i>
+                <a href="<%= CartoDB.url(self, 'public_maps_home', {}, @visualization.user) %>" class="Navmenu-link">Maps</a>
+              </li>
+            </ul>
           </div>
-        </div>
 
-        <%#= 2nd block %>
-        <div class="PublicMap-block with-border">
-          <div class="PublicMap-leftBlock">
-            <% if @visualization.tags.size > 0 %>
-              <div class="PublicMap-stat">
-                <i class="iconFont iconFont-Label"></i>
-                <span class="DefaultTags">
-                  <%# Keep on one line to avoid unwanted spaces %>
-                  <% formatted_tags(@visualization.tags) do |tag| %><a class="DefaultTags-item" href="<%= CartoDB.url(self, 'public_tag', {tag: tag}, @visualization.user) %>"><%= tag %></a><% end %>
-                </span>
-              </div>
-            <% end %>
-            <div class="PublicMap-stat">
-              <i class="iconFont iconFont-Outside"></i>
-              <a href="<%= CartoDB.url(self, 'public_visualizations_embed_map', {id: @visualization.id}, @visualization.user) %>" target="_blank">Full page map</a>
-            </div>
-          </div>
-          <div class="PublicMap-rightBlock PublicMap--rightAligned">
-            <% if !@mapviews.blank? %>
-              <div class="PublicMap-stat PublicMap-stat--onRight">
-                <i class="iconFont iconFont-Stats"></i>
-                <%= number_with_delimiter(@mapviews) %> <%= 'mapview'.pluralize(@mapviews) %>
-              </div>
-            <% end %>
-            <div class="PublicMap-stat PublicMap-stat--onRight">
-              <button class="js-likes"
-                data-vis-id="<%= @visualization.id %>"
-                data-likes-count="<%= @likes_count %>">
-              </button>
-            </div>
+          <div class="PublicMap-rightBlock PublicMap-rightBlock--owner u-txt-right">
+            <ul class="Navmenu-list">
+              <li class="Navmenu-item Navmenu-item--buttons">
+                <ul class="u-valign">
+                  <li class="Navmenu-subItem">
+                    <a href="<%= CartoDB.url(self, 'public_visualizations_embed_map', {id: @visualization.id}, @visualization.user) %>" target="_blank" class="Navmenu-link">
+                      <i class="iconFont iconFont-Fullscreen Navmenu-icon"></i>
+                    </a>
+                  </li>
+
+                  <li class="Navmenu-subItem">
+                    <a href="<%= CartoDB.url(self, 'api_v1_visualizations_add_like', {id: @visualization.id}, @visualization.user) %>" class="Navmenu-link js-likes"
+                      data-vis-id="<%= @visualization.id %>"
+                      data-likes-count="<%= @likes_count %>"
+                      data-likes-size="big">
+                    </a>
+                  </li>
+                </ul>
+              </li>
+
+              <li class="Navmenu-item Navmenu-item--buttons js-Navmenu-share u-showOnTablet">
+                <div class="Navmenu-sep u-showOnTablet"></div>
+
+                <a href="#" class="Navmenu-link Navmenu-shareLink js-Navmenu-shareLink">
+                  <i class="iconFont iconFont-Share Navmenu-icon"></i>
+                </a>
+              </li>
+            </ul>
+
+            <ul class="Navmenu-list Navmenu-shareList js-Navmenu-shareList u-valign">
+              <li class="Navmenu-item Navmenu-item--buttons">
+                <div class="Navmenu-sep u-hideOnTablet"></div>
+
+                <ul class="u-valign">
+                  <li class="Navmenu-subItem"> 
+                    <a href="https://twitter.com/intent/tweet?text=<%= url_encode(@visualization.name) %>&url=<%= url_encode(request.original_url) %>&via=cartoDB">
+                      <i class="iconFont iconFont-Twitter Navmenu-icon Navmenu-icon--twitter"></i>
+                    </a>
+                  </li>
+
+                  <li class="Navmenu-subItem">
+                    <a href="http://www.facebook.com/sharer.php?u=<%= url_encode(request.original_url) %>" target="_blank" class="Navmenu-link js-Navmenu-link--facebook">
+                      <i class="iconFont iconFont-FacebookSquare Navmenu-icon"></i>
+                    </a>
+                  </li>
+
+                  <li class="Navmenu-subItem">
+                    <a href="https://www.linkedin.com/shareArticle?mini=true&url=<%= url_encode(request.original_url) %>&title=<%= url_encode(@visualization.name) %>&summary=<%= url_encode(@visualization.description_clean ? "#{@visualization.description_clean} — Map created by #{@name} in CartoDB" : "Map created by #{@name} in CartoDB") %>&source=CartoDB" target="_blank" class="Navmenu-link js-Navmenu-link--linkedin">
+                      <i class="iconFont iconFont-Linkedin Navmenu-icon"></i>
+                    </a>
+                  </li>
+
+                  <li class="Navmenu-subItem u-showOnTablet">
+                    <button class="ImportItem-closeButton Navmenu-link js-Navmenu-closeLink Navmenu-closeLink">
+                      <i class="iconFont iconFont-Close ImportItem-closeButtonIcon"></i>
+                    </button>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+
+            <ul class="Navmenu-list u-hideOnTablet">
+              <li class="Navmenu-item">
+                <a class="Button Button--main Navmenu-editLink Navmenu-editLink--edit js-Navmenu-editLink" href="<%= CartoDB.url(self, 'public_visualizations_show', {id: @visualization.id }, @visualization.user) %>">Edit in cartodb</a>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
@@ -109,76 +130,136 @@
     <div class="PublicMap-secondary">
       <div class="u-inner">
         <div class="PublicMap-block">
-          <div class="PublicMap-rightBlock">
-            <h3 class="PublicMap-secondaryTitle">
-              <%= pluralize(@related_tables.size, 'dataset') %>
-            </h3>
-            <ul class="DatasetsList">
-              <% if @related_visualizations.present? %>
-                <% @related_visualizations.each do |vis| %>
-                  <% if vis.privacy == "public" %>
-                    <li class="DatasetsList-item">
-                      <div class="DatasetsList-itemCategory is--<%= vis.related_visualizations_simple_geometry_types[0] if vis.related_visualizations_simple_geometry_types.present? %>Dataset"></div>
-                      <div class="DatasetsList-itemInfo">
-                        <div class="DatasetsList-itemPrimaryInfo">
-                          <h3 class="DatasetsList-itemTitle DefaultTitle">
-                            <a href="<%= CartoDB.url(self, 'public_table', {id: vis.table.name}, @user_domain.nil? ? nil : @related_tables_owners[vis.table.user_id]) %>" title="<%= vis.table.name %>" class="DefaultTitle-link u-ellipsLongText"><%= vis.table.name %></a>
-                          </h3>
-                          <% if vis.description %>
-                            <div class="DefaultDescription DatasetsList-itemDescription u-ellipsLongText"><%= raw vis.description_html_safe %></div>
-                          <% end %>
-                        </div>
-                        <div class="DatasetsList-itemSecondaryInfo">
-                          <button class="js-likes"
-                            data-vis-id="<%= vis.id %>"
-                            data-likes-count="<%= vis.likes.count %>">
-                          </button>
-                        </div>
-                      </div>
+          <div class="PublicMap-leftBlock PublicMap-leftBlock--large">
+            <div class="js-user-meta">
+              <h1 class="PublicMap-title js-PublicMap-title Title Title--m"><%= @visualization.name %></h1>
+              <% if @visualization.description_clean %>
+                <div class="PublicMap-description"><%= raw @visualization.description_html_safe %></div>
+              <% end %>
+
+              <div class="PublicMap-meta">
+                <ul class="PublicMap-metaList">
+                  <li class="PublicMap-metaItem"><i class="PublicMap-metaIcon iconFont iconFont-Calendar"></i> <%= time_ago_in_words(@visualization.updated_at) %> ago</li>
+                </ul>
+
+                <ul class="PublicMap-metaList PublicMap-metaList--mobile js-PublicMap-metaList--mobile">
+                  <li class="PublicMap-metaItem"><i class="PublicMap-metaIcon iconFont iconFont-Stats"></i> <%= number_with_delimiter(@mapviews) %> <%= 'mapview'.pluralize(@mapviews) %></li>
+
+                  <% if @visualization.tags.size > 0 %>
+                    <li class="PublicMap-metaItem">
+                      <i class="PublicMap-metaIcon iconFont iconFont-Label"></i>
+                      <%# Keep on one line to avoid unwanted spaces %>
+                      <% formatted_tags(@visualization.tags) do |tag| %><a class="PublicMap-metaLink" href="<%= CartoDB.url(self, 'public_tag', {tag: tag}, @visualization.user) %>"><%= tag %></a><% end %>
                     </li>
                   <% end %>
-                <% end %>
-              <% end %>
+                </ul>
+              </div>
 
-              <% if @nonpublic_tables_count.present? && @nonpublic_tables_count > 0 %>
-                <li class="DatasetsList-item">
-                  <div class="LayoutIcon">
-                    <i class="iconFont iconFont-Lock"></i>
-                  </div>
-                  <div class="DefaultTitle PublicMap-privateDatasets"><%= pluralize(@nonpublic_tables_count, 'private dataset') %></div>
-                </li>
-              <% end %>
-            </ul>
-          </div>
-
-          <div class="PublicMap-leftBlock">
-            <%# Hello DISQUS %>
-            <div id="disqus_thread"></div>
-            <script type="text/javascript">
-              var disqus_shortname  = '<%= @disqus_shortname %>';
-              var disqus_identifier = '<%= @visualization.id %>';
-
-              (function() {
-                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-                dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-              })();
-            </script>
+              <a class="Navmenu-editLink Navmenu-editLink--more js-Navmenu-editLink--more" href="#/more">More info</a>
+            </div>
           </div>
         </div>
       </div>
 
+      <%# Datasets %>
+      <div class="u-inner">
+        <div class="PublicMap-block with-padding">
+          <h3 class="PublicMap-secondaryTitle">Datasets in use</h3>
+        </div>
+      </div>
+
+      <div class="u-inner">
+        <div class="PublicMap-block">
+          <ul>
+            <% if @related_visualizations.present? %>
+              <% @related_visualizations.each do |vis| %>
+                <% if vis.privacy == "public" %>
+                  <li class="DatasetsList-item">
+                    <div class="DatasetsList-itemCategory is--<%= vis.related_visualizations_simple_geometry_types[0] if vis.related_visualizations_simple_geometry_types.present? %>Dataset"></div>
+
+                    <div class="DatasetsList-itemInfo">
+                      <div class="DatasetsList-itemPrimaryInfo">
+                        <h3 class="DatasetsList-itemTitle DefaultTitle u-ellipsLongText">
+                          <a href="<%= CartoDB.url(self, 'public_table', {id: vis.table.name}, @user_domain.nil? ? nil : @related_tables_owners[vis.table.user_id]) %>" title="<%= vis.table.name %>" class="DefaultTitle-link u-ellipsLongText"><%= vis.table.name %></a>
+                        </h3>
+                        <% if vis.description %>
+                          <div class="DefaultDescription DatasetsList-itemDescription u-ellipsLongText"><%= raw vis.description_html_safe %></div>
+                        <% end %>
+                      </div>
+                    </div>
+
+                    <div class="DatasetsList-itemSecondaryInfo">
+                      <div class="DatasetsList-itemMeta">
+                        <span class="PrivacyIndicator is-<%= vis.privacy %> u-hideOnTablet"><%= vis.privacy %></span>
+                        <a href="<%= CartoDB.url(self, 'api_v1_visualizations_add_like', {id: vis.id}, vis.user) %>" class="js-likes"
+                          data-vis-id="<%= vis.id %>"
+                          data-likes-count="<%= vis.likes.count %>">
+                        </a>
+                        <% if (vis.table.service.rows_counted) %>
+                          <span class="RowsIndicator u-hideOnTablet">
+                            <i class="iconFont iconFont-Rows RowsIndicator-icon"></i>
+                            <%= "#{number_to_human(vis.table.service.rows_counted, format: "%n%u", units: { unit: "", thousand: "K", million: "M" }, delimiter: ",")} row#{vis.table.service.rows_counted.size == 1 ? "" : "s"}" %>
+                          </span>
+                        <% end %>
+                        <span class="DatasetsList-itemTimeDiff DefaultTimeDiff u-hideOnTablet">
+                          <i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i>
+                          <%= time_ago_in_words(vis.updated_at) %> ago
+                          <% if vis.user.username != @visualization.user.username %>
+                            by
+                            <span class="UserAvatar">
+                              <img class="UserAvatar-img UserAvatar-img--smaller" src="<%= vis.user.avatar_url %>" alt="<%= vis.user.name || vis.user.username %>" title="<%= vis.user.name || vis.user.username %>" />
+                            </span>
+                          <% end %>
+                        </span>
+                      </div>
+                    </div>
+                  </li>
+                <% end %>
+              <% end %>
+            <% end %>
+
+            <% if @nonpublic_tables_count.present? && @nonpublic_tables_count > 0 %>
+              <li class="DatasetsList-item">
+                <div class="LayoutIcon">
+                  <i class="iconFont iconFont-Lock"></i>
+                </div>
+                <div class="DefaultTitle PublicMap-privateDatasets"><%= pluralize(@nonpublic_tables_count, 'private dataset') %></div>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+
+      <%# DISQUS %>
+      <div class="u-inner">
+        <div class="PublicMap-block PublicMap-info">
+          <div id="disqus_thread"></div>
+          <script type="text/javascript">
+            var disqus_shortname  = '<%= @disqus_shortname %>';
+            var disqus_identifier = '<%= @visualization.id %>';
+
+            (function() {
+              var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+              dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+              (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+          </script>
+        </div>
+      </div>
+
+      <%# Related %>
       <% if @more_visualizations && @more_visualizations.count > 0 %>
         <div class="u-inner">
-          <div class="PublicMap-block with-margin">
+          <div class="PublicMap-block">
             <h3 class="PublicMap-secondaryTitle">More from <%= @name %></h3>
           </div>
         </div>
-        <ul class="MapsList">
+
+        <ul class="MapsList PublicMap-mapsList">
           <% @more_visualizations.each do |vis| %>
             <li class="MapsList-item">
               <div class="MapCard" data-zoom="<%= '' %>" data-vizjson-url="<%= CartoDB.url(self, 'api_v2_visualizations_vizjson', {id: vis.id}, vis.user) %>.json">
-                <a href="<%= CartoDB.url(self, 'public_visualizations_public_map', {id: vis.id}, user) %>" class="MapCard-header js-header">
+                <a href="<%= CartoDB.url(self, 'public_visualizations_public_map', {id: vis.id}, vis.user) %>" class="MapCard-header js-header">
                   <div class="MapCard-loader"></div>
                 </a>
                 <div class="MapCard-content MapCard-content--compact">
@@ -210,7 +291,11 @@
       <% end %>
     </div>
 
-    <%= render 'admin/shared/footer', :light => true %>
+    <% if cartodb_com_hosted? %>
+      <%= render 'admin/shared/footer', :light => true %>
+    <% else %>
+      <%= render 'admin/shared/public_footer', :light => false %>
+    <% end %>
   <% end %>
 <% end %>
 
@@ -250,6 +335,7 @@
     var belong_organization = <%= @visualization.user.has_organization? %>;
     var config = <%= safe_js_object frontend_config_public({https_apis: request.protocol == 'https://' }) %>;
     var vizdata = <%= safe_js_object @visualization.to_vizjson({https_request: request.protocol == 'https://'}).to_json %>;
+    var login_url = "<%= CartoDB.url(self, 'login') %>";
 
     // Generating map options
     var bool_fn = function(v) { return v == 'true' };
@@ -335,4 +421,7 @@
     custom_vars: [{title: "Public Pages", value: "Other", num: 3}],
     page_owner: @visualization.user
   } %>
+
+  <%= insert_hubspot() -%>
+
 <% end %>

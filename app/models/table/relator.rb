@@ -15,6 +15,7 @@ module CartoDB
       serialize_synchronization
       row_count_and_size
       set_table_visualization
+      related_templates
     }
 
     def initialize(db, table)
@@ -81,6 +82,10 @@ module CartoDB
 
     def row_count_and_size
       @table.row_count_and_size
+    end
+
+    def related_templates
+      Carto::Template.all.select { |template| template.relates_to_table?(@table) }
     end
 
     private

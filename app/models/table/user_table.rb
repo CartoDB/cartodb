@@ -55,9 +55,9 @@ class UserTable < Sequel::Model
   PRIVACY_LINK = 2
 
   PRIVACY_VALUES_TO_TEXTS = {
-      PRIVACY_PRIVATE => 'private',
-      PRIVACY_PUBLIC => 'public',
-      PRIVACY_LINK => 'link'
+    PRIVACY_PRIVATE => 'private',
+    PRIVACY_PUBLIC => 'public',
+    PRIVACY_LINK => 'link'
   }
 
   # Associations
@@ -283,5 +283,15 @@ class UserTable < Sequel::Model
   def update_updated_at
     self.updated_at = Time.now
   end
+
+  def estimated_row_count
+    service.estimated_row_count
+  end
+
+  def actual_row_count
+    service.actual_row_count
+  end
+
+  private
 
 end

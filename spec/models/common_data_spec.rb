@@ -67,6 +67,7 @@ describe CommonData do
       "description": "All the New York counties",
       "source": null,
       "license": null,
+      "attributions": null,
       "rows": 62,
       "size": 65536,
       "created_at": "2014-09-08T12:09:46Z",
@@ -80,6 +81,7 @@ describe CommonData do
       "description": "World countries borders",
       "source": null,
       "license": null,
+      "attributions": null,
       "rows": 246,
       "size": 450560,
       "created_at": "2014-09-08T10:15:54Z",
@@ -93,6 +95,7 @@ describe CommonData do
       "description": "Areas of human habitation",
       "source": "[Naturalearthdata](http://naturalearthdata.com)",
       "license": null,
+      "attributions": null,
       "rows": 2143,
       "size": 1556480,
       "created_at": "2014-09-08T12:15:09Z",
@@ -106,6 +109,7 @@ describe CommonData do
       "description": "Most populated places",
       "source": "[Naturalearthdata](http://naturalearthdata.com)",
       "license": null,
+      "attributions": null,
       "rows": 7313,
       "size": 2588672,
       "created_at": "2014-09-08T12:16:29Z",
@@ -119,6 +123,7 @@ describe CommonData do
       "description": "Most of the world rivers",
       "source": "[Naturalearthdata](http://naturalearthdata.com)",
       "license": null,
+      "attributions": null,
       "rows": 1611,
       "size": 1163264,
       "created_at": "2014-09-08T12:17:18Z",
@@ -132,6 +137,7 @@ describe CommonData do
       "description": "All the NYC Subways",
       "source": null,
       "license": null,
+      "attributions": null,
       "rows": 1904,
       "size": 417792,
       "created_at": "2014-09-08T12:18:36Z",
@@ -145,6 +151,7 @@ describe CommonData do
       "description": "European countries geometries",
       "source": null,
       "license": null,
+      "attributions": null,
       "rows": 46,
       "size": 245760,
       "created_at": "2014-09-08T12:19:41Z",
@@ -168,6 +175,9 @@ describe CommonData do
       "type": "string"
     },
     "license": {
+      "type": "string"
+    },
+    "attributions": {
       "type": "string"
     },
     "rows": {

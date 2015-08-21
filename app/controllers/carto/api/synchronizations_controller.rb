@@ -2,25 +2,12 @@ module Carto
   module Api
     class SynchronizationsController < ::Api::ApplicationController
 
-      ssl_required :show, :index, :syncing?
+      ssl_required :show, :syncing?
 
       before_filter :load_synchronization, only: [:show, :syncing?]
 
       def show
         render_jsonp(@synchronization)
-      rescue => exception
-        CartoDB.notify_exception(exception)
-        head(404)
-      end
-
-      def index
-        synchronizations = Carto::Synchronization.where(user_id: current_user.id)
-        representation = synchronizations.map(&:to_hash)
-        response  = {
-          synchronizations: representation,
-          total_entries: synchronizations.count
-        }
-        render_jsonp(response)
       rescue => exception
         CartoDB.notify_exception(exception)
         head(404)

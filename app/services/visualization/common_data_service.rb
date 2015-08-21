@@ -36,7 +36,7 @@ module CartoDB
               if visualization.update_remote_data(
                   Member::PRIVACY_PUBLIC,
                   d['description'], [ d['category'] ], d['license'],
-                  d['source'])
+                  d['source'], d['attributions'])
                 visualization.store
                 updated += 1
               else
@@ -46,7 +46,7 @@ module CartoDB
               visualization = Member.remote_member(
                 d['name'], user.id, Member::PRIVACY_PUBLIC,
                 d['description'], [ d['category'] ], d['license'],
-                d['source']).store
+                d['source'], d['attributions']).store
               added += 1
             end
 
@@ -57,7 +57,13 @@ module CartoDB
               ExternalSource.new(visualization.id, d['url'], d['geometry_types'], d['rows'], d['size'], 'common-data').save
             end
           rescue => e
-            Rollbar.report_exception(e)
+            CartoDB.notify_exception(e, {
+              name: d.fetch('name', 'ERR: name'),
+              source: d.fetch('source', 'ERR: source'),
+              rows: d.fetch('rows', 'ERR: rows'),
+              updated_at: d.fetch('updated_at', 'ERR: updated_at'),
+              url: d.fetch('url', 'ERR: url')
+            })
             failed += 1
           end
         end

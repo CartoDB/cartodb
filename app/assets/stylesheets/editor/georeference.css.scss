@@ -99,25 +99,7 @@ $sWidth: 681px;
   @include display-flex();
   @include justify-content(flex-start, start);
   @include align-items(center, center);
-  width: 575px;
+  width: 100%;
   text-align: left;
   & > *:not(:last-child) { margin-right: $sMargin-elementInline }
 }
-
-// Results, modal content displayed _after_ a geocoding process is finished
-$sNarrower-width: 620px;
-.Georeference-resultsBody {
-  @include display-flex();
-  @include justify-content(flex-start, justify);
-  @include align-items(flex-start, justify);
-  width: $sNarrower-width;
-}
-.Georeference-resultsBodyIcon { margin-right: $sMargin-element }
-.Georeference-resultsBodyTexts {
-  @include display-flex();
-  @include flex-direction(column);
-  @include justify-content(flex-start, justify);
-  @include align-items(flex-start, justify);
-  width: 520px;
-}
-.Georeference-narrowerContent { width: $sNarrower-width }

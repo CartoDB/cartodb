@@ -33,6 +33,7 @@ module Carto
           :twitter_username         => @organization.twitter_username,
           :updated_at               => @organization.updated_at,
           :website          => @organization.website,
+          :admin_email      => @organization.admin_email,
           :avatar_url       => @organization.avatar_url
         }
       end

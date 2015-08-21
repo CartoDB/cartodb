@@ -18,7 +18,6 @@ class Carto::User < ActiveRecord::Base
   has_many :layers, :through => :layers_user
   belongs_to :organization, inverse_of: :users
   has_many :feature_flags_user, dependent: :destroy
-  has_many :feature_flags, :through => :feature_flags_user
   has_many :assets, inverse_of: :user
   has_many :data_imports, inverse_of: :user
   has_many :geocodings, inverse_of: :user
@@ -81,6 +80,17 @@ class Carto::User < ActiveRecord::Base
 
   def service
     @service ||= Carto::UserService.new(self)
+  end
+
+  #                             +--------+---------+------+
+  #       valid_privacy logic   | Public | Private | Link |
+  #   +-------------------------+--------+---------+------+
+  #   | private_tables_enabled  |    T   |    T    |   T  |
+  #   | !private_tables_enabled |    T   |    F    |   F  |
+  #   +-------------------------+--------+---------+------+
+  # 
+  def valid_privacy?(privacy)
+    self.private_tables_enabled || privacy == UserTable::PRIVACY_PUBLIC
   end
 
   # @return String public user url, which is also the base url for a given user

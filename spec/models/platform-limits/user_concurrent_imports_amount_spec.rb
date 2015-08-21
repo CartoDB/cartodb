@@ -5,10 +5,6 @@ require_relative '../../../services/named-maps-api-wrapper/lib/named_maps_wrappe
 
 include CartoDB
 
-# Specs for /services/named-maps-api-wrapper
-# NOTES:
-# - Does not check responses from the windshaft API endpoint, stubs them
-# - Typhoeus allows stubbing, but no easy way of knowing how many times (if any) you called it
 describe CartoDB::PlatformLimits::Importer::UserConcurrentImportsAmount do
 
   before(:all) do
@@ -19,6 +15,7 @@ describe CartoDB::PlatformLimits::Importer::UserConcurrentImportsAmount do
   end
 
   after(:all) do
+    stub_named_maps_calls
     @user.destroy
   end
 
@@ -61,7 +58,7 @@ describe CartoDB::PlatformLimits::Importer::UserConcurrentImportsAmount do
       limit.peek.should eq 3
       limit.is_over_limit?.should eq true
       limit.peek.should eq 3
-      limit.decrement
+      limit.decrement!
       limit.peek.should eq 2
       limit.is_over_limit?.should eq false
 
@@ -69,8 +66,8 @@ describe CartoDB::PlatformLimits::Importer::UserConcurrentImportsAmount do
       # We redis won't take more than 2 seconds on performing key creation + retrieval of TTL
       (ttl -  (@user.database_timeout/1000)).should be_within(2.0).of(0.0)
 
-      limit.decrement
-      limit.decrement
+      limit.decrement!
+      limit.decrement!
       limit.peek.should eq 0
 
       limit.is_within_limit!.should eq true

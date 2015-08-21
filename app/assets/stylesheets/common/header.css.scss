@@ -40,17 +40,19 @@ $cHeader-dark:  rgba(#3A91D7, 1);
   color: rgba(white, 0.6);
 }
 .Header-navigationItem {
-  margin-left: $sMargin-elementLarge;
+  margin-left: $sMargin-section;
 }
 .Header-navigationLink {
   font-weight: $sFontWeight-normal;
   font-size: $sFontSize-smallUpperCase;
   line-height: $sLineHeight-largest;
   text-transform: uppercase;
-  color: rgba(white, 0.6);
+  color: #fff;
+  transition: all .15s;
+
   &:hover {
     text-decoration: none;
-    color: white;
+    color: rgba(#fff, .6);;
   }
 }
 .Header-navigationBreadcrumbItem:first-child { padding-left: 0 }
@@ -84,32 +86,43 @@ $cHeader-dark:  rgba(#3A91D7, 1);
 }
 .Header-settingsItem {
   position: relative;
-  margin-left: $sMargin-elementLarge;
+  margin-left: $sMargin-section;
   font-weight: $sFontWeight-normal;
   font-size: $sFontSize-smallUpperCase;
   line-height: $sLineHeight-larger;
   text-transform: uppercase;
 }
-.Header-settingsItem--avatar { height: 46px }
+.Header-settingsItem--avatar {}
 .Header-settingsLink {
-  color: rgba(white, 0.6);
+  color: #fff;
+  transition: all .2s;
 
   &:hover {
-    color: white;
+    color: rgba(#fff, .6);
     text-decoration: none;
   }
+}
+.Header-settingsLink.Header-settingsLink--dashboard {
+  color: rgba(#fff, .6);
+}
+.Header-settingsLink.Header-settingsLink--dashboard:hover {
+  color: #fff;
+}
+.Header-darrow {
+  font-size: 7px;
+  margin-left: 6px;
+  position: relative;
+  top: -1px;
+  -webkit-font-smoothing: auto;
+  -moz-osx-font-smoothing: auto;
 }
 
 @media (min-width: $sMedia-mobile) {
   .Header-logoText { margin-left: $sMargin-elementInline }
 }
 
-@media (min-width: $sMedia-tablet) {
-  .Header-settingsItem { margin-left: $sMargin-group }
-}
-
 @media only screen and (max-width: 360px) {
-  $height: 60px;
+  $height: 64px;
 
   .Header .Header-inner {
     height: $height;
@@ -129,8 +142,8 @@ $cHeader-dark:  rgba(#3A91D7, 1);
     padding: 0 20px;
   }
   .Header .Logo--avatar {
-    width: 32px;
-    height: 32px;
+    width: $height/2;
+    height: $height/2;
     line-height: 45px;
   }
   .Header .Logo--avatar i {

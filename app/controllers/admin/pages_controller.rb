@@ -183,11 +183,17 @@ class Admin::PagesController < ApplicationController
         geometry_type = table_geometry_types.first.present? ? geometry_mapping.fetch(table_geometry_types.first.downcase, '') : ''
       end
 
-      @datasets << vis_item(vis).merge({
-          rows_count:    vis.table.rows_counted,
-          size_in_bytes: vis.table.table_size,
-          geometry_type: geometry_type,
-        })
+      begin
+        @datasets << vis_item(vis).merge({
+            rows_count:    vis.table.rows_counted,
+            size_in_bytes: vis.table.table_size,
+            geometry_type: geometry_type,
+          })
+      rescue => e
+        # A dataset might be invalid. For example, having the table deleted and not yet cleaned.
+        # We don't want public page to be broken, but error must be traced.
+        CartoDB.notify_exception(e, { vis: vis })
+      end
     end
 
     description = "#{@name} has"
@@ -204,6 +210,7 @@ class Admin::PagesController < ApplicationController
     @page_description = description
 
     respond_to do |format|
+      # TODO: data_library
       format.html { render 'public_datasets', layout: 'public_dashboard' }
     end
   end
@@ -276,7 +283,8 @@ class Admin::PagesController < ApplicationController
           }).first,
         content_type: content_type,
         default_fallback_basemap: user.default_basemap,
-        user: user
+        user: user,
+        base_url: user.public_url(nil, request.protocol == "https://" ? "https" : "http")
       })
     set_shared_layout_vars(user, {
         name:       user.name_or_username,
@@ -292,7 +300,8 @@ class Admin::PagesController < ApplicationController
     set_layout_vars({
         most_viewed_vis_map: org.public_vis_by_type(Visualization::Member::TYPE_DERIVED, 1, 1, nil, 'mapviews').first,
         content_type:        content_type,
-        default_fallback_basemap: org.owner.default_basemap
+        default_fallback_basemap: org.owner.default_basemap,
+        base_url: ''
       })
     set_shared_layout_vars(org, {
         name:       org.display_name.blank? ? org.name : org.display_name,
@@ -306,6 +315,7 @@ class Admin::PagesController < ApplicationController
     @maps_url            = CartoDB.url(view_context, 'public_visualizations_home', {}, required.fetch(:user, nil))
     @datasets_url        = CartoDB.url(view_context, 'public_datasets_home', {}, required.fetch(:user, nil))
     @default_fallback_basemap = required.fetch(:default_fallback_basemap, {})
+    @base_url            = required.fetch(:base_url, {})
   end
 
   def set_pagination_vars(required)

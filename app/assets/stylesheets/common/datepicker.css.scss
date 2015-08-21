@@ -63,9 +63,9 @@ $sDates-defaultWidth: 434px;
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 55px;
-  width: 422px;
-  padding: 18px;
+  bottom: 43px;
+  width: 458px;
+  padding: 0;
   border: 1px solid #CCC;
   background: white;
   border-radius: $border-radius;
@@ -83,7 +83,7 @@ $sDates-defaultWidth: 434px;
   margin-left: -4px;
   border-left: 8px solid transparent;
   border-right: 8px solid transparent;
-  border-top: 8px solid white;
+  border-top: 8px solid $cCard-hoverFill;
   z-index: 1;
 }
 .DatePicker-dropdown:after {
@@ -100,6 +100,7 @@ $sDates-defaultWidth: 434px;
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
+  margin: 0 18px;
 }
 .DatePicker-timersFrom ,
 .DatePicker-timersTo {
@@ -117,12 +118,32 @@ $sDates-defaultWidth: 434px;
   text-transform: uppercase;
 }
 
+// Date picker shortcuts
+.DatePicker-shortcuts {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center);
+  width: 422px;
+  height: 39px;
+  margin-top: 9px;
+  padding: 0 18px;
+  border-top: 1px solid $cStructure-mainLine;
+  background: $cCard-hoverFill;
+  border-bottom-left-radius: $border-radius;
+  border-bottom-right-radius: $border-radius;
+}
+.DatePicker-shortcutsText {
+  font-size: $sFontSize-smallUpperCase;
+  color: $cTypography-paragraphs;
+}
+
 // Calendar :S
 
 // Default datepicker styles
 .DatePicker-calendar {
-  width: 100%;
-  height: 200px;
+  width: 422px;
+  height: 196px;
+  margin: 16px 18px 0;
   font-size: 11px;
   cursor: default;
 }

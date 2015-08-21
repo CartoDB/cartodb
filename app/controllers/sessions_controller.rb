@@ -1,6 +1,6 @@
 # encoding: UTF-8
-require_dependency 'google_plus_api'
 require_dependency 'google_plus_config'
+require_dependency 'google_plus_api'
 
 class SessionsController < ApplicationController
   include LoginHelper
@@ -23,7 +23,7 @@ class SessionsController < ApplicationController
   end
 
   def create
-    user = if params[:google_access_token].present? && @google_plus_config.present?
+    user = if !user_password_authentication? && params[:google_access_token].present? && @google_plus_config.present?
       user = GooglePlusAPI.new.get_user(params[:google_access_token])
       if user
         authenticate!(:google_access_token, scope: params[:user_domain].present? ?  params[:user_domain] : user.username)
@@ -48,7 +48,9 @@ class SessionsController < ApplicationController
   end
 
   def destroy
-    logout(CartoDB.extract_subdomain(request))
+    # Make sure sessions are destroyed on both scopes: username and default
+    cdb_logout
+
     redirect_to CartoDB.url(self, 'public_visualizations_home')
   end
 
@@ -82,8 +84,18 @@ class SessionsController < ApplicationController
   protected
 
   def initialize_google_plus_config
-    signup_action = Cartodb::Central.sync_data_with_cartodb_central? ? Cartodb::Central.new.google_signup_url : '/google/signup'
-    @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, signup_action, 'google_access_token', @organization.nil? || @organization.color.nil? ? nil : organization_color(@organization))
+
+    if !@organization.nil?
+      # TODO: remove duplication (app/controllers/admin/organizations_controller.rb)
+      signup_action = "#{CartoDB.protocol}://#{@organization.name}.#{CartoDB.account_host}#{CartoDB.path(self, 'signup_organization_user')}"
+    elsif Cartodb::Central.sync_data_with_cartodb_central?
+      signup_action = Cartodb::Central.new.google_signup_url
+    else
+      signup_action = '/google/signup'
+    end
+
+    button_color = @organization.nil? || @organization.color.nil? ? nil : organization_color(@organization)
+    @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, signup_action, 'google_access_token', button_color)
   end
 
   def extract_username(request, params)
@@ -96,6 +108,10 @@ class SessionsController < ApplicationController
   end
 
   private
+
+  def user_password_authentication?
+    params && params['email'].present? && params['password'].present?
+  end
 
   def load_organization
     subdomain = CartoDB.subdomain_from_request(request)

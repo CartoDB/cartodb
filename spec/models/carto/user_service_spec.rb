@@ -8,6 +8,7 @@ describe Carto::UserService do
         username: 'admin', 
         password: '123456'
       })
+
   end
 
   before(:each) do
@@ -16,6 +17,7 @@ describe Carto::UserService do
   end
 
   after(:all) do
+    stub_named_maps_calls
     @user.destroy
   end
 
@@ -72,22 +74,13 @@ describe Carto::UserService do
 
   it "Tests search_path correctly set" do
     expected_returned_normal_search_path = { search_path: "#{@user.database_schema}, cartodb, public" }
-    expected_returned_cluster_admin_search_path = { search_path: "\"$user\",public" }
 
     @normal_search_path = nil
-    @cluster_admin_search_path = nil
     @normal_search_path_new = nil
-    @cluster_admin_search_path_new = nil
-
     @user.in_database do |db|
       @normal_search_path = db[%Q{SHOW search_path}].first
     end
     @normal_search_path.should eq expected_returned_normal_search_path
-
-    @user.in_database({ as: :cluster_admin }) do |db|
-      @cluster_admin_search_path = db[%Q{SHOW search_path}].first
-    end
-    @cluster_admin_search_path.should eq expected_returned_cluster_admin_search_path
 
     # Try now with the new model
     user = Carto::User.where(id: @user.id).first
@@ -98,14 +91,7 @@ describe Carto::UserService do
     @normal_search_path_new.symbolize_keys!
     @normal_search_path_new.should eq expected_returned_normal_search_path
 
-    user.in_database({ as: :cluster_admin }) do |db|
-      @cluster_admin_search_path_new = db.execute(%Q{SHOW search_path}).first
-    end
-    @cluster_admin_search_path_new.symbolize_keys!
-    @cluster_admin_search_path_new.should eq expected_returned_cluster_admin_search_path
-
     @normal_search_path_new.should eq @normal_search_path
-    @cluster_admin_search_path_new.should eq @cluster_admin_search_path
   end
 
 end

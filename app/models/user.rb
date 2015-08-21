@@ -47,7 +47,7 @@ class User < Sequel::Model
   one_to_many :feature_flags_user
 
   # Sequel setup & plugins
-  plugin :association_dependencies, :client_application => :destroy, :synchronization_oauths => :destroy
+  plugin :association_dependencies, :client_application => :destroy, :synchronization_oauths => :destroy, :feature_flags_user => :destroy
   plugin :validation_helpers
   plugin :json_serializer
   plugin :dirty
@@ -71,6 +71,8 @@ class User < Sequel::Model
   GEOCODING_BLOCK_SIZE = 1000
 
   TRIAL_DURATION_DAYS = 15
+
+  DEFAULT_GEOCODING_QUOTA = 0
 
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
@@ -104,13 +106,13 @@ class User < Sequel::Model
     validate_password_change
 
     organization_validation if organization.present?
+
+    errors.add(:geocoding_quota, "cannot be nil") if geocoding_quota.nil?
   end
 
   def organization_validation
     if new?
-      errors.add(:organization, "not enough seats") if organization.users.count >= organization.seats
-      errors.add(:quota_in_bytes, "not enough disk quota") if quota_in_bytes.to_i + organization.assigned_quota > organization.quota_in_bytes
-
+      organization.validate_for_signup(errors, quota_in_bytes)
       organization.validate_new_user(self, errors)
     else
       # Organization#assigned_quota includes the OLD quota for this user,
@@ -123,10 +125,21 @@ class User < Sequel::Model
     self.organization_user? ? [CartoDB::PUBLIC_DB_USER, database_public_username] : [CartoDB::PUBLIC_DB_USER]
   end
 
+  #                             +--------+---------+------+
+  #       valid_privacy logic   | Public | Private | Link |
+  #   +-------------------------+--------+---------+------+
+  #   | private_tables_enabled  |    T   |    T    |   T  |
+  #   | !private_tables_enabled |    T   |    F    |   F  |
+  #   +-------------------------+--------+---------+------+
+  # 
+  def valid_privacy?(privacy)
+    self.private_tables_enabled || privacy == UserTable::PRIVACY_PUBLIC
+  end
+
   ## Callbacks
   def before_validation
-    # Convert email to downcase
     self.email = self.email.to_s.strip.downcase
+    self.geocoding_quota ||= DEFAULT_GEOCODING_QUOTA
   end
 
   def before_create
@@ -151,7 +164,7 @@ class User < Sequel::Model
       self.private_maps_enabled ||= true
       self.sync_tables_enabled ||= true
     end
-  end #before_save
+  end
 
   def twitter_datasource_enabled
     if has_organization?
@@ -972,7 +985,7 @@ class User < Sequel::Model
 
   def remaining_geocoding_quota
     if organization.present?
-      remaining = organization.geocoding_quota.to_i - organization.get_geocoding_calls
+      remaining = organization.geocoding_quota - organization.get_geocoding_calls
     else
       remaining = geocoding_quota - get_geocoding_calls
     end
@@ -1170,8 +1183,8 @@ class User < Sequel::Model
     metadata_table_names = self.tables.select(:name).map(&:name).map { |t| "'" + t + "'" }.join(',')
 
     db = self.in_database(:as => :superuser)
-    reserved_columns = Table::CARTODB_COLUMNS + [Table::THE_GEOM_WEBMERCATOR]
-    cartodb_columns = (reserved_columns).map { |t| "'" + t.to_s + "'" }.join(',')
+    required_columns = Table::CARTODB_REQUIRED_COLUMNS + [Table::THE_GEOM_WEBMERCATOR]
+    cartodb_columns = (required_columns).map { |t| "'" + t.to_s + "'" }.join(',')
     sql = %Q{
       WITH a as (
         SELECT table_name, count(column_name::text) cdb_columns_count
@@ -1197,7 +1210,7 @@ class User < Sequel::Model
 
           GROUP BY 1
       )
-      SELECT table_name FROM a WHERE cdb_columns_count = #{reserved_columns.length}
+      SELECT table_name FROM a WHERE cdb_columns_count = #{required_columns.length}
     }
 
     db[sql].all.map { |t| t[:table_name] }
@@ -1489,10 +1502,15 @@ class User < Sequel::Model
   def create_db_user
     conn = self.in_database(as: :cluster_admin)
     begin
-      conn.run("CREATE USER \"#{database_username}\" PASSWORD '#{database_password}'")
-    rescue => e
-      puts "#{Time.now} USER SETUP ERROR (#{database_username}): #{$!}"
-      raise e
+      conn.transaction do
+        begin
+          conn.run("CREATE USER \"#{database_username}\" PASSWORD '#{database_password}'")
+          conn.run("GRANT publicuser to \"#{database_username}\"")
+          rescue => e
+            puts "#{Time.now} USER SETUP ERROR (#{database_username}): #{$!}"
+            raise e
+          end
+      end
     end
   end
 
@@ -2087,7 +2105,7 @@ TRIGGER
   # Upgrade the cartodb postgresql extension
   def upgrade_cartodb_postgres_extension(statement_timeout=nil, cdb_extension_target_version=nil)
     if cdb_extension_target_version.nil?
-      cdb_extension_target_version = '0.8.1'
+      cdb_extension_target_version = '0.8.2'
     end
 
     in_database({

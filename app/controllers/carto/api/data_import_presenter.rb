@@ -1,4 +1,5 @@
 require 'uri'
+require 'json'
 
 module Carto
   module Api
@@ -73,16 +74,27 @@ module Carto
       end
 
       def display_name
-        url = [@data_import.data_source, @data_import.service_item_id].compact.select { |s| s != '' }.first
-        display_name = url.nil? ? @data_import.id : extract_filename(url)
-        display_name || @data_import.id
+        if @data_import.service_name == 'twitter_search'
+          extract_twitter_display_name(@data_import)
+        else
+          url = [@data_import.data_source, @data_import.service_item_id].compact.select { |s| s != '' }.first
+          display_name = url.nil? ? @data_import.id : extract_filename(url)
+          display_name || @data_import.id
+        end
       rescue => e
-        CartoDB.notify_debug('Error extracting display name', { data_import_id: @data_import.id })
+        CartoDB.notify_debug('Error extracting display name', { data_import_id: @data_import.id, service_item_id: @data_import.service_item_id, data_source: @data_import.data_source })
         @data_import.id
       end
 
       def extract_filename(url)
-        File.basename(URI.parse(url).path)
+        URI.decode(File.basename(URI.parse(URI.encode(url.strip)).path))
+      end
+
+      def extract_twitter_display_name(data_import)
+        "Tweets about '#{JSON.parse(data_import.service_item_id)['categories'].map { |c| c['terms'] }.join(', ')}'"
+      rescue => e
+        CartoDB.notify_debug('Error extracting Twitter import display name', { data_import_id: data_import.id, service_item_id: data_import.service_item_id, data_source: data_import.data_source })
+        "Twitter search #{data_import.id}"
       end
 
     end

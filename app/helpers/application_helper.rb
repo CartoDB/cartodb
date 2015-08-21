@@ -66,7 +66,6 @@ module ApplicationHelper
   module_function :maps_api_template
   module_function :sql_api_template
 
-
   def frontend_config
     config = {
       maps_api_template:          maps_api_template,
@@ -85,7 +84,8 @@ module ApplicationHelper
       tumblr_api_key:             Cartodb.config[:tumblr]['api_key'],
       max_asset_file_size:        Cartodb.config[:assets]["max_file_size"],
       watcher_ttl:                Cartodb.config[:watcher].try("fetch", 'ttl', 60),
-      upgrade_url:                cartodb_com_hosted? ? "''" : "#{current_user.upgrade_url(request.protocol)}"
+      upgrade_url:                cartodb_com_hosted? ? "''" : "#{current_user.upgrade_url(request.protocol)}",
+      licenses:                   Carto::License.all
     }
 
     if Cartodb.config[:datasource_search].present? && Cartodb.config[:datasource_search]['twitter_search'].present? \
@@ -139,17 +139,38 @@ module ApplicationHelper
   end
 
   def insert_google_analytics(track, custom_vars = {})
-    if not Cartodb.config[:google_analytics].blank? and not Cartodb.config[:google_analytics][track].blank? and not Cartodb.config[:google_analytics]["domain"].blank?
-      render(:partial => 'shared/analytics', :locals => { ua: Cartodb.config[:google_analytics][track], domain: Cartodb.config[:google_analytics]["domain"], custom_vars: custom_vars })
+    if !Cartodb.config[:google_analytics].blank? && !Cartodb.config[:google_analytics][track].blank? && !Cartodb.config[:google_analytics]["domain"].blank?
+      ua = Cartodb.config[:google_analytics][track]
+      domain = Cartodb.config[:google_analytics]["domain"]
+
+      render(:partial => 'shared/analytics', :locals => { ua: ua, domain: domain, custom_vars: custom_vars })
     end
   end
 
   def insert_trackjs(app = 'editor')
-    if not Cartodb.config[:trackjs].blank? and not Cartodb.config[:trackjs]['customer'].blank?
+    if !Cartodb.config[:trackjs].blank? && !Cartodb.config[:trackjs]['customer'].blank?
       customer = Cartodb.config[:trackjs]['customer']
       enabled = Cartodb.config[:trackjs]['enabled']
       app_key = Cartodb.config[:trackjs]['app_keys'][app]
+
       render(:partial => 'shared/trackjs', :locals => { customer: customer, enabled: enabled, app_key: app_key })
+    end
+  end
+
+  def insert_hubspot(app = 'editor')
+    if CartoDB::Hubspot::instance.enabled? && !CartoDB::Hubspot::instance.token.blank?
+      token = CartoDB::Hubspot::instance.token
+      event_ids = CartoDB::Hubspot::instance.event_ids
+
+      render(:partial => 'shared/hubspot', :locals => { token: token, event_ids: event_ids })
+    end
+  end
+
+  def insert_hubspot_form(form = 'newsletter')
+    if CartoDB::Hubspot::instance.enabled? && !CartoDB::Hubspot::instance.token.blank? && CartoDB::Hubspot::instance.form_ids.present? && !CartoDB::Hubspot::instance.form_ids[form].blank?
+      token = CartoDB::Hubspot::instance.token
+
+      render(:partial => 'shared/hubspot_form', :locals => { token: token, form_id: CartoDB::Hubspot::instance.form_ids[form] })
     end
   end
 
@@ -209,7 +230,7 @@ module ApplicationHelper
   end
 
   def terms_path
-    'http://cartodb.com/terms'
+    'https://cartodb.com/terms'
   end
 
   def privacy_path

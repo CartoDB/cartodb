@@ -1,9 +1,9 @@
 FactoryGirl.define do
 
   factory :feature_flag do
-
-    id 1000
-    name 'ff1000'
+    id { rand(10000) }
+    sequence(:name) {|n| "FF#{n}" }
+    restricted true
 
   end
 

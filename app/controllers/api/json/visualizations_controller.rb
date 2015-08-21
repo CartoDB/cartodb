@@ -10,6 +10,7 @@ require_relative '../../../models/visualization/table_blender'
 require_relative '../../../models/visualization/watcher'
 require_relative '../../../models/map/presenter'
 require_relative '../../../../services/named-maps-api-wrapper/lib/named-maps-wrapper/exceptions'
+require_relative '../../../../lib/static_maps_url_helper'
 
 class Api::Json::VisualizationsController < Api::ApplicationController
   include CartoDB
@@ -237,12 +238,19 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     return(head 403) unless current_viewer
 
     vis = Visualization::Member.new(id: @table_id).fetch
+
     raise KeyError if !vis.has_permission?(current_viewer, Visualization::Member::PERMISSION_READONLY) &&
       vis.privacy != Visualization::Member::PRIVACY_PUBLIC && vis.privacy != Visualization::Member::PRIVACY_LINK
 
     vis.add_like_from(current_viewer.id)
        .fetch
        .invalidate_cache
+
+    if (current_viewer.id != vis.user.id)
+      vis_preview_image = Carto::StaticMapsURLHelper.new.url_for_static_map(request, vis, 600, 300)
+      send_like_email(vis, current_viewer, vis_preview_image)
+    end
+
     render_jsonp({
                    id:    vis.id,
                    likes: vis.likes.count,
@@ -352,7 +360,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     # TODO: refactor for making default parameters and total counting obvious
     if params[:type].nil? || params[:type] == ''
       types = params.fetch('types', '').split(',')
-      type = types.include?(Visualization::Member::TYPE_DERIVED) ? Visualization::Member::TYPE_DERIVED : Visualization::Member::TYPE_CANONICAL 
+      type = types.include?(Visualization::Member::TYPE_DERIVED) ? Visualization::Member::TYPE_DERIVED : Visualization::Member::TYPE_CANONICAL
       params.merge( { type: type } )
     else
       params[:type] == Visualization::Member::TYPE_REMOTE ? params.merge( { type: Visualization::Member::TYPE_CANONICAL } ) : params
@@ -362,6 +370,14 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   # Need to always send request object to visualizations upon rendering their json
   def render_jsonp(obj, status = 200, options = {})
     super(obj, status, options.merge({request: request}))
+  end
+
+  def send_like_email(vis, current_viewer, vis_preview_image)
+    if vis.type == Carto::Visualization::TYPE_CANONICAL
+      ::Resque.enqueue(::Resque::UserJobs::Mail::TableLiked, vis.id, current_viewer.id, vis_preview_image)
+    elsif vis.type == Carto::Visualization::TYPE_DERIVED
+      ::Resque.enqueue(::Resque::UserJobs::Mail::MapLiked, vis.id, current_viewer.id, vis_preview_image)
+    end
   end
 
 end

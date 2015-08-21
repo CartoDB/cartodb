@@ -7,6 +7,11 @@ module CartoDB
         return User.count
       end
 
+      # Total users that aren't FREE
+      def pay_users
+        return User.where("upper(account_type) != 'FREE'").count
+      end
+
       # Total datasets
       def datasets
         return UserTable.count
@@ -36,6 +41,31 @@ module CartoDB
         end
         conn.disconnect
         return shared_objects
+      end
+
+      # Total visualizations
+      def visualizations
+        Carto::Visualization.where("lower(type) = 'derived'").count
+      end
+
+      # Total maps
+      def maps
+        return Carto::Visualization.where("lower(type) != 'remote'").count
+      end
+
+      # Total active users
+      def active_users
+        active_users = "SELECT COUNT(DISTINCT(user_id)) FROM visualizations WHERE lower(type)!='remote'"
+        db = ::Rails::Sequel.configuration.environment_for(Rails.env)
+        conn = Sequel.connect(db)
+        au_count = conn.fetch(active_users).first[:count]
+        conn.disconnect
+        return au_count
+      end
+
+      # Total likes
+      def likes
+        return Carto::Like.count
       end
 
     end

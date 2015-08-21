@@ -31,7 +31,8 @@ module CartoDB
 
       def verify_file
         raise InvalidShpError         unless dbf? && shx?
-        raise MissingProjectionError  unless prj?
+        # Now we allow prj not present as we'll try to project to 4326
+        #raise MissingProjectionError  unless prj?
         true
       end
 

@@ -15,6 +15,7 @@ def random_username
   "user#{rand(10000)}"
 end
 
+# requires include Warden::Test::Helpers
 def login(user)
   login_as(user, scope: user.username)
   host! "#{user.username}.localhost.lan"

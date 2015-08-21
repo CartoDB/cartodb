@@ -8,8 +8,7 @@
 $fieldBgColor: transparent;
 $fieldBorderColor: #DFE8EC;
 
-.EditableField {
-  @include nicer-lato-typography();
+.EditableField {  
 
   .EditableField-button {
     font-style: italic;

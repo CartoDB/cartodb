@@ -69,7 +69,6 @@
 .VideoTutorial-itemDes {
   margin: 3px 25px 0 25px;
   font-size: $sFontSize-normal;
-  @include nicer-lato-typography();
   color: $cTypography-secondary;
 }
 .VideoTutorial-itemInfo {

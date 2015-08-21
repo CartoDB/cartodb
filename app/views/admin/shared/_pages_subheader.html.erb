@@ -43,12 +43,12 @@
     <div class="AsideFilters-helpSegment--paragraph">
       <p>Having issues?</p>
       <p>
-        <%- puts "=========================================="%>
-        <%- puts current_user.organization.inspect %>
         <% if !current_user.organization.present? %>
           <a href="mailto:support@cartodb.com">Contact support</a>
-        <% else %>
+        <% elsif !current_user.organization_owner? %>
           <a href="mailto:<%= current_user.organization.admin_email%>">Contact your org. admin</a>
+        <% else %>
+          <a href="mailto:enterprise-support@cartodb.com">Contact your VIP support</a>
         <% end %>
       </p>
     </div>

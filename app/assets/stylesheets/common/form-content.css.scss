@@ -9,7 +9,7 @@ $sLabel-width: 140px;
 
 .Form--minHeight { min-height: 400px }
 .Form-title {
-  display: block;
+  display: inline-block;
   margin: 30px 0;
   width: 100%;
 }
@@ -162,6 +162,15 @@ $sLabel-width: 140px;
   @include display-flex();
   @include align-items(center);
   min-height: 40px; // if there's no input on row (e.g. only radio buttons), to avoid "jumpy" behaviour on re-renders
+}
+
+.Form-planTag {
+  background-color: #00CC32;
+  color: #FFFFFF;
+  font-size: 13px;
+  font-weight: normal;
+  padding: 5px 10px;
+  border-radius: 4px;
 }
 
 .Form-rowData.Form-rowData--alignLeft { @include justify-content(flex-start, start) }

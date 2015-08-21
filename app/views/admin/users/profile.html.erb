@@ -40,7 +40,7 @@
           </div>
           <%= f.file_field :avatar_url, :class => "js-fileAvatar", :value => "Change image" %>
           <div class="Form-rowInfo Form-rowInfo--marginLeft">
-            <p class="Form-rowInfoText">Recommended images should be 128x128 of size</p>
+            <p class="Form-rowInfoText">Recommended images should be 128x128 pixels of size</p>
           </div>
         </div>
       </div>
@@ -137,9 +137,5 @@
   </div>
 
 </div>
-
-<% if !Cartodb.config[:cartodb_com_hosted].present? %>
-  <div class="SupportBanner" id="support-banner"></div>
-<% end %>
 
 <%= render 'admin/shared/footer' %>

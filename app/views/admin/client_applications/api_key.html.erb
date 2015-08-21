@@ -60,18 +60,45 @@
       </div>
     </div>
 
+    <% if current_user.has_feature_flag?('google_maps') %>
+      <div class="Form-title">
+        <p class="Form-titleText">Configure API keys from external providers</p>
+      </div>
+
+      <span class="Form-separator"></span>
+
+      <div class="Form-row">
+        <div class="Form-rowLabel">
+          <label class="Form-label">Google Maps</label>
+        </div>
+        <div class="Form-rowData">
+          <input type="text" value="<%= current_user.organization.present? ? current_user.organization.google_maps_key : current_user.google_maps_key %>" class="Form-input Form-input--long is-disabled" readonly />
+        </div>
+        <div class="Form-rowInfo">
+          <% if !current_user.organization.present? %>
+            <p class="Form-rowInfoText Form-rowInfoText--multipleLines">
+              This is your Google Maps query string, contact with <a href="mailto:support@cartodb.com">support@cartodb.com</a> to change it.
+            </p>
+          <% elsif current_user.organization.present? && current_user.organization_owner? %>
+            <p class="Form-rowInfoText Form-rowInfoText--multipleLines">
+              This is the <%= current_user.organization.name %> Google Maps query string, contact with <a href="mailto:support@cartodb.com">support@cartodb.com</a> to change it.
+            </p>
+          <% else %>
+            <p class="Form-rowInfoText">This is the organization Google Maps API key</p>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
     <div class="Form-footer">
       <p class="Form-footerText">
         <i class="iconFont iconFont-Info Form-footerIcon"></i>
         Learn more about <%= link_to "using your simple app key", Cartodb.config[:developers_host] + "/cartodb-platform.html" %> in CartoDB
       </p>
     </div>
+
   </div>
 
 </div>
-
-<% if !Cartodb.config[:cartodb_com_hosted].present? %>
-  <div class="SupportBanner" id="support-banner"></div>
-<% end %>
 
 <%= render 'admin/shared/footer' %>

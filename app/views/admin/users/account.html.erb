@@ -115,46 +115,27 @@
 
       <span class="Form-separator"></span>
 
+      <div class="Form-row">
+        <div class="Form-rowLabel">
+          <label class="Form-label">Your billing plan</label>
+        </div>
+        <div class="Form-rowData">
+          <div class="Form-planTag"><%= current_user.account_type %></div>
+          <div class="Form-rowInfo Form-rowInfo--marginLeft">
+            <p class="Form-rowInfoText"><a href="<%= current_user.plan_url(request.protocol) %>">View details</a></p>
+          </div>
+        </div>
+      </div>
+
       <%# if none of the services are activated, this block shouldn't appear %>
       <% if @services.size > 0 %>
         <div class="Form-title">
-          <p class="Form-titleText">Account and 3rd party services connected</p>
+          <p class="Form-titleText">Connect to external data sources</p>
         </div>
 
         <span class="Form-separator"></span>
 
         <div class="js-datasourcesContent"></div>
-      <% end %>
-
-      <% if current_user.has_feature_flag?('google_maps') %>
-        <div class="Form-title">
-          <h4 class="Form-titleHeader">Configure API keys from external providers</h4>
-          <p class="Form-titleText">Configure here the API keys from other services like
-          Google Cloud Platform, so you won’t be asked later for them.</p>
-        </div>
-        <div class="Form-row">
-          <div class="Form-rowLabel">
-            <label class="Form-label">Google Maps</label>
-          </div>
-          <div class="Form-rowData">
-            <input type="text" value="<%= current_user.organization.present? ? current_user.organization.google_maps_key : current_user.google_maps_key %>" class="Form-input Form-input--long is-disabled" readonly />
-          </div>
-          <div class="Form-rowInfo">
-            <% if !current_user.organization.present? %>
-              <p class="Form-rowInfoText Form-rowInfoText--multipleLines">
-                This is your Google Maps query string,
-                contact with <a href="mailto:support@cartodb.com">support@cartodb.com</a> to change it.
-              </p>
-            <% elsif current_user.organization.present? && current_user.organization_owner? %>
-              <p class="Form-rowInfoText Form-rowInfoText--multipleLines">
-                This is the <%= current_user.organization.name %> Google Maps query string,
-                contact with <a href="mailto:support@cartodb.com">support@cartodb.com</a> to change it.
-              </p>
-            <% else %>
-              <p class="Form-rowInfoText">This is the organization Google Maps API key</p>
-            <% end %>
-          </div>
-        </div>
       <% end %>
 
       <div class="Form-footer">
@@ -177,9 +158,5 @@
   </div>
 
 </div>
-
-<% if !Cartodb.config[:cartodb_com_hosted].present? %>
-  <div class="SupportBanner" id="support-banner"></div>
-<% end %>
 
 <%= render 'admin/shared/footer' %>

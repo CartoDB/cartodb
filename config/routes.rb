@@ -9,6 +9,20 @@
 # Can be also done at controller source files by using -> skip_before_filter :ensure_org_url_if_org_user
 
 CartoDB::Application.routes.draw do
+  get "bloomberg_sso/index"
+
+  get "bloomberg_sso/sso"
+
+  get "bloomberg_sso/scs"
+
+  get "bloomberg_sso/metadata"
+
+  get "bloomberg_sso/sp_logout_request"
+
+  get "bloomberg_sso/process_logout_response"
+
+  get "bloomberg_sso/idp_logout_request"
+
   # Double use: for user public dashboard AND org dashboard
   get   '/[(user/:user_domain)(u/:user_domain)]'                 => 'admin/pages#public', as: :root
   root :to => 'admin/pages#index'
@@ -346,6 +360,10 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:visualization_id/overlays'     => 'overlays#index',    as: :api_v1_visualizations_overlays_index,  constraints: { visualization_id: /[^\/]+/ }
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:visualization_id/overlays/:id' => 'overlays#show',     as: :api_v1_visualizations_overlays_show,   constraints: { visualization_id: /[^\/]+/ }
 
+    # Synchronizations
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/synchronizations/:id'          => 'synchronizations#show',     as: :api_v1_1_synchronizations_show
+    # INFO: sync_now is public API
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1_1/synchronizations/:id/sync_now' => 'synchronizations#syncing?', as: :api_v1_1_synchronizations_syncing
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations/:id'            => 'synchronizations#show',     as: :api_v1_synchronizations_show
     # INFO: sync_now is public API
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations/:id/sync_now'   => 'synchronizations#syncing?', as: :api_v1_synchronizations_syncing
@@ -525,14 +543,9 @@ CartoDB::Application.routes.draw do
   scope :module => 'superadmin', :format => :json do
     get '/superadmin/get_databases_info' => 'platform#databases_info'
     get '/superadmin/stats/total_users' => 'platform#total_users'
-    get '/superadmin/stats/total_pay_users' => 'platform#total_pay_users'
     get '/superadmin/stats/total_datasets' => 'platform#total_datasets'
     get '/superadmin/stats/total_seats_among_orgs' => 'platform#total_seats_among_orgs'
     get '/superadmin/stats/total_shared_objects_among_orgs' => 'platform#total_shared_objects_among_orgs'
-    get '/superadmin/stats/total_visualizations' => 'platform#total_visualizations'
-    get '/superadmin/stats/total_maps' => 'platform#total_maps'
-    get '/superadmin/stats/total_active_users' => 'platform#total_active_users'
-    get '/superadmin/stats/total_likes' => 'platform#total_likes'
   end
 
 end

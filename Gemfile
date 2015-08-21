@@ -32,8 +32,8 @@ gem 'addressable',             '2.3.2', require: 'addressable/uri'
 gem 'ejs',                     '~> 1.1.1'
 gem 'execjs',                  '~> 0.4' # Required by ejs
 gem 'therubyracer',            '0.12.1' # Required by ejs
-
 gem 'net-ldap',                '0.11'
+gem 'ruby-saml',               '~>1.0.0'
 
 group :production, :staging do
   gem 'unicorn',               '4.8.2'

@@ -3,9 +3,9 @@
 require_relative '../../../spec_helper'
 require_relative '.././../../factories/organizations_contexts'
 require_relative '.././../../factories/visualization_creation_helpers'
-require_relative '../../../../app/controllers/carto/api/groups_controller'
+require_relative '../../../../app/controllers/carto/api/database_groups_controller'
 
-describe Carto::Api::GroupsController do
+describe Carto::Api::DatabaseGroupsController do
   include_context 'organization with users helper'
 
   describe 'Groups management', :order => :defined do

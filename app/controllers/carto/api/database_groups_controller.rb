@@ -7,7 +7,8 @@ module Carto
 
     # Group metadata registration. Exclusively for usage from PostgreSQL Extension, not from the Editor.
     # It only registers metadata, actual group roles management must be done by the extension.
-    class GroupsController < ::ApplicationController
+    # Named "DatabaseGroups" because it receives _databases_, not organizations.
+    class DatabaseGroupsController < ::ApplicationController
 
       respond_to :json
 

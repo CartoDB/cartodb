@@ -2,7 +2,7 @@ require 'rollbar'
 require_relative '../../models/visualization/member'
 require_relative '../../models/visualization/collection'
 require_relative '../../models/visualization/external_source'
-require_relative '../../models/common_data'
+require_relative '../../models/common_data/singleton'
 
 module CartoDB
 

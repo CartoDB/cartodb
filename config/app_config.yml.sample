@@ -95,7 +95,7 @@ defaults: &defaults
   common_data:
     protocol: 'https'
     username: 'common-data'
-    host: 'cartodb.com'
+    # base_url: 'https://common-data.cartodb.com'
     format: 'shp'
     generate_every: 86400
   explore-api:

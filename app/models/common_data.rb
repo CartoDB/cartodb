@@ -16,11 +16,11 @@ class CommonData
   def datasets
 
     if @datasets.nil?
-      _datasets = []
+      datasets = []
       if is_enabled?
-        _datasets = get_datasets(get_datasets_json)
+        datasets = get_datasets(get_datasets_json)
       end
-      @datasets = _datasets
+      @datasets = datasets
     end
 
     @datasets
@@ -41,15 +41,13 @@ class CommonData
     end
     CartoDB.notify_error('common-data empty', { rows: rows }) if rows.nil? || rows.empty?
 
-    _datasets = []
-
+    datasets = []
     rows.each do |row|
       # Common-data's meta tables starts with meta_ and we want to avoid them
       next if row["name"] =~ /meta_/
-      _datasets << get_common_data_from_visualization(row)
+      datasets << get_common_data_from_visualization(row)
     end
-
-    _datasets
+    datasets
   end
 
   def get_common_data_from_visualization(row)
@@ -95,7 +93,9 @@ class CommonData
   end
 
   def sql_api_url(query, filename, format)
+    common_data_base_url = config('base_url')
     CartoDB::SQLApi.new({
+      base_url: common_data_base_url,
       protocol: 'https',
       username: config('username'),
     }).url(query, format, filename)

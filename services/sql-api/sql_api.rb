@@ -12,13 +12,14 @@ module CartoDB
     CONNECT_TIMEOUT = 45
     DEFAULT_TIMEOUT = 60
 
-    attr_accessor :api_key, :username, :timeout
+    attr_accessor :api_key, :username, :timeout, :base_url
     attr_reader   :response_code, :parsed_response
 
     def initialize(arguments)
       self.username = arguments.fetch(:username)
       self.api_key  = arguments.fetch(:api_key, nil)
       self.timeout  = arguments.fetch(:timeout, DEFAULT_TIMEOUT)
+      self.base_url = arguments.fetch(:base_url, nil)
     end
 
     def url(query, format = '', filename = '')
@@ -51,16 +52,20 @@ module CartoDB
       raise SQLError.new(error_message) if response_code != 200
     end
 
-    def base_url(sql_api_config_type)
+    def build_base_url(sql_api_config_type)
       config = ::Cartodb.config[:sql_api][sql_api_config_type.to_s]
-      %Q[#{config["protocol"]}://#{username}.#{config["domain"]}#{config["endpoint"]}]
+      if base_url.nil?
+        %Q[#{config["protocol"]}://#{username}.#{config["domain"]}#{config["endpoint"]}]
+      else
+        %Q[#{base_url}#{config["endpoint"]}]
+      end
     end
 
     def build_request(query, format = '', filename = '', method = :post, config_type = :private)
       params = build_params(query, format, filename)
       http_client = Carto::Http::Client.get('sql_api')
       request = http_client.request(
-        base_url(config_type),
+        build_base_url(config_type),
         method: method,
         headers: { 'Accept-Encoding' => 'gzip,deflate' },
         connecttimeout: CONNECT_TIMEOUT,

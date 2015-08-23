@@ -6,6 +6,7 @@ class CommonData
   # seconds
   CONNECT_TIMEOUT = 45
   DEFAULT_TIMEOUT = 60
+  NO_PAGE_LIMIT = 100000
 
   def initialize(visualizations_api_url)
     @datasets = nil
@@ -51,21 +52,21 @@ class CommonData
   end
 
   def get_common_data_from_visualization(row)
-      row_data = {}
-      row_data["name"] = row["name"]
-      row_data["display_name"] = row["display_name"].nil? ? row["name"] : row["display_name"]
-      row_data["tabname"] = row["name"]
-      row_data["description"] = row["description"]
-      row_data["source"] = row["source"]
-      row_data["license"] = row["license"]
-      row_data["tags"] = row["tags"]
-      row_data["geometry_types"] = %Q[{#{row["table"]["geometry_types"].join(',')}}]
-      row_data["rows"] = row["table"]["row_count"]
-      row_data["size"] = row["table"]["size"]
-      row_data["url"] = export_url(row["name"])
-      row_data["created_at"] = row["created_at"]
-      row_data["updated_at"] = row["updated_at"]
-      row_data
+      {
+        "name" => row["name"],
+        "display_name" => row["display_name"].nil? ? row["name"] : row["display_name"],
+        "tabname" => row["name"],
+        "description" => row["description"],
+        "source" => row["source"],
+        "license" => row["license"],
+        "tags" => row["tags"],
+        "geometry_types" => %Q[{#{row["table"]["geometry_types"].join(',')}}],
+        "rows" => row["table"]["row_count"],
+        "size" => row["table"]["size"],
+        "url" => export_url(row["name"]),
+        "created_at" => row["created_at"],
+        "updated_at" => row["updated_at"]
+      }
   end
 
   def get_datasets_json
@@ -77,18 +78,20 @@ class CommonData
         method: :get,
         connecttimeout: CONNECT_TIMEOUT,
         timeout: DEFAULT_TIMEOUT,
+        params: {per_page: NO_PAGE_LIMIT}
       ).run
       if response.code == 200
         body = response.response_body
       end
-    rescue
+    rescue Exception => e
+      CartoDB.notify_exception(e)
       body = nil
     end
     body
   end
 
   def export_url(table_name)
-    query = "select * from #{table_name}"
+    query = %Q[select * from "#{table_name}"]
     sql_api_url(query, table_name, config('format', 'shp'))
   end
 

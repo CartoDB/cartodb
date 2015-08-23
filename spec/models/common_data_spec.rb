@@ -8,7 +8,7 @@ describe CommonData do
     @common_data = CommonData.new('http://common-data.example.com/api/v1/viz?type=table&privacy=public')
     @common_data.stubs(:config).with('protocol', 'https').returns('https')
     @common_data.stubs(:config).with('username').returns('common-data')
-    @common_data.stubs(:config).with('host').returns('example.com')
+    @common_data.stubs(:config).with('base_url').returns(nil)
     @common_data.stubs(:config).with('api_key').returns('wadus')
     @common_data.stubs(:config).with('format', 'shp').returns('shp')
   end
@@ -58,6 +58,13 @@ describe CommonData do
     stub_valid_api_response
 
     @common_data.datasets.first['url'].should match (/common-data\.localhost\.lan\/api\/v2/)
+  end
+
+  it 'should use SQL API V2 from user defined base url for export URLs' do
+    @common_data.stubs(:config).with('base_url').returns("https://www.userdefinedurl.com")
+    stub_valid_api_response
+
+    @common_data.datasets.first['url'].should match (/^https:\/\/www\.userdefinedurl\.com\/api\/v2/)
   end
 
   def stub_valid_api_response

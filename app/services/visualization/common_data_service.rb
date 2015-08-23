@@ -30,14 +30,14 @@ module CartoDB
         user_remotes.each { |r|
           remotes_by_name[r.name] = r
         }
-        get_datasets.each do |d|
+        get_datasets.each do |dataset|
           begin
-            visualization = remotes_by_name.delete(d['name'])
+            visualization = remotes_by_name.delete(dataset['name'])
             if visualization
               if visualization.update_remote_data(
                   Member::PRIVACY_PUBLIC,
-                  d['description'], d['tags'], d['license'],
-                  d['source'], d['attributions'], d['display_name'])
+                  dataset['description'], dataset['tags'], dataset['license'],
+                  dataset['source'], dataset['attributions'], dataset['display_name'])
                 visualization.store
                 updated += 1
               else
@@ -45,25 +45,25 @@ module CartoDB
               end
             else
               visualization = Member.remote_member(
-                d['name'], user.id, Member::PRIVACY_PUBLIC,
-                d['description'], d['tags'], d['license'],
-                d['source'], d['attributions'], d['display_name']).store
+                dataset['name'], user.id, Member::PRIVACY_PUBLIC,
+                dataset['description'], dataset['tags'], dataset['license'],
+                dataset['source'], dataset['attributions'], dataset['display_name']).store
               added += 1
             end
 
             external_source = ExternalSource.where(visualization_id: visualization.id).first
             if external_source
-              external_source.save if !(external_source.update_data(d['url'], d['geometry_types'], d['rows'], d['size'], 'common-data').changed_columns.empty?)
+              external_source.save if !(external_source.update_data(dataset['url'], dataset['geometry_types'], dataset['rows'], dataset['size'], 'common-data').changed_columns.empty?)
             else
-              ExternalSource.new(visualization.id, d['url'], d['geometry_types'], d['rows'], d['size'], 'common-data').save
+              ExternalSource.new(visualization.id, dataset['url'], dataset['geometry_types'], dataset['rows'], dataset['size'], 'common-data').save
             end
           rescue => e
             CartoDB.notify_exception(e, {
-              name: d.fetch('name', 'ERR: name'),
-              source: d.fetch('source', 'ERR: source'),
-              rows: d.fetch('rows', 'ERR: rows'),
-              updated_at: d.fetch('updated_at', 'ERR: updated_at'),
-              url: d.fetch('url', 'ERR: url')
+              name: dataset.fetch('name', 'ERR: name'),
+              source: dataset.fetch('source', 'ERR: source'),
+              rows: dataset.fetch('rows', 'ERR: rows'),
+              updated_at: dataset.fetch('updated_at', 'ERR: updated_at'),
+              url: dataset.fetch('url', 'ERR: url')
             })
             failed += 1
           end

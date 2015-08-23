@@ -54,10 +54,10 @@ module CartoDB
 
     def build_base_url(sql_api_config_type)
       config = ::Cartodb.config[:sql_api][sql_api_config_type.to_s]
-      if base_url.nil?
+      if self.base_url.nil?
         %Q[#{config["protocol"]}://#{username}.#{config["domain"]}#{config["endpoint"]}]
       else
-        %Q[#{base_url}#{config["endpoint"]}]
+        %Q[#{self.base_url}#{config["endpoint"]}]
       end
     end
 

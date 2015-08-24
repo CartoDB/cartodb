@@ -10,9 +10,10 @@ module Carto
       include PagedSearcher
 
       before_filter :load_organization
-      before_filter :load_group, :only => [:show, :update, :destroy]
-      before_filter :org_owner_only, :only => [:create, :update, :destroy]
+      before_filter :load_group, :only => [:show, :update, :destroy, :add_member]
+      before_filter :org_owner_only, :only => [:create, :update, :destroy, :add_member]
       before_filter :org_users_only, :only => [:show, :index]
+      before_filter :load_user, :only => [:add_member]
 
       def index
         page, per_page, order = page_per_page_order_params
@@ -41,7 +42,7 @@ module Carto
         CartoDB.notify_debug('Group already exists', { params: params })
         render json: { errors: "A group with that data already exists" }, status: 409
       rescue => e
-        CartoDB.notify_exception(e, { params: params , group: (group ? group : 'not created') })
+        CartoDB.notify_exception(e, { params: params , group: (group ? group : 'not created') }, organization: @organization)
         render json: { errors: e.message }, status: 500
       end
 
@@ -58,6 +59,14 @@ module Carto
         render json: {}, status: 200
       rescue => e
         CartoDB.notify_exception(e, { params: params , group: @group })
+        render json: { errors: e.message }, status: 500
+      end
+
+      def add_member
+        @group.add_member_with_extension(@user)
+        render json: {}, status: 200
+      rescue => e
+        CartoDB.notify_exception(e, { params: params , group: @group, user: @user })
         render json: { errors: e.message }, status: 500
       end
 
@@ -79,6 +88,11 @@ module Carto
       def load_group
         @group = @organization.groups.where(id: params['group_id']).first
         render json: { errors: "Group #{params['group_id']} not found" }, status: 404 unless @group
+      end
+
+      def load_user
+        @user = @organization.users.where(id: params['user_id']).first
+        render json: { errors: "User #{params['user_id']} not found" }, status: 404 unless @user
       end
 
     end

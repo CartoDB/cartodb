@@ -13,6 +13,7 @@ module Carto
   # - create_group_with_extension
   # - rename_group_with_extension
   # - destroy_group_with_extension
+  # - add_member_with_extension
   class Group < ActiveRecord::Base
     include PagedModel
 
@@ -68,6 +69,13 @@ module Carto
       end
     end
 
+    def add_member_with_extension(user)
+      organization.owner.in_database do |conn|
+        Carto::Group.add_member_group_extension_query(conn, name, user.username)
+      end
+      self.reload
+    end
+
     def rename(new_name, new_database_role)
       self.name = new_name
       self.database_role = new_database_role
@@ -116,6 +124,10 @@ module Carto
 
     def self.destroy_group_extension_query(conn, name)
       conn.execute(%Q{ select cartodb.CDB_Group_DropGroup('#{name}') })
+    end
+
+    def self.add_member_group_extension_query(conn, name, username)
+      conn.execute(%Q{ select cartodb.CDB_Group_AddMember('#{name}', '#{username}') })
     end
 
   end

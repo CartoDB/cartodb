@@ -133,6 +133,18 @@ describe Carto::Api::GroupsController do
       end
     end
 
+    it '#add_member triggers group inclusion' do
+      group = @carto_organization.groups.first
+      user = @org_user_1
+
+      Carto::Group.expects(:add_member_group_extension_query).with(anything, group.name, user.username)
+
+      post_json api_v1_organization_groups_add_member_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, group_id: group.id, api_key: @org_user_owner.api_key), { user_id: user.id }, @headers do |response|
+        response.status.should == 200
+        # INFO: since test doesn't actually trigger the extension we only check expectation on membership call
+      end
+    end
+
     it '#drops triggers deletion of existing groups' do
       group = @carto_organization.groups.first
 

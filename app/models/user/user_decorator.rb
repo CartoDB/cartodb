@@ -56,7 +56,6 @@ module CartoDB
           private_tables: self.private_tables_enabled,
           private_maps: self.private_maps_enabled?,
           dedicated_support: self.dedicated_support?,
-          import_quota: self.import_quota,
           remove_logo: self.remove_logo?,
           sync_tables: self.sync_tables_enabled,
           arcgis_datasource: self.arcgis_datasource_enabled?

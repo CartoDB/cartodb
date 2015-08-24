@@ -11,6 +11,7 @@ describe Carto::Api::GroupsController do
 
     before(:all) do
       @carto_organization = Carto::Organization.find(@organization.id)
+      @carto_org_user_1 = Carto::User.find(@org_user_1.id)
       @group_1 = FactoryGirl.create(:random_group, display_name: 'g_1', organization: @carto_organization)
       @group_1_json = { 'id' => @group_1.id, 'organization_id' => @group_1.organization_id, 'name' => @group_1.name, 'display_name' => @group_1.display_name }
       @group_2 = FactoryGirl.create(:random_group, display_name: 'g_2', organization: @carto_organization)
@@ -140,6 +141,22 @@ describe Carto::Api::GroupsController do
       Carto::Group.expects(:add_member_group_extension_query).with(anything, group.name, user.username)
 
       post_json api_v1_organization_groups_add_member_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, group_id: group.id, api_key: @org_user_owner.api_key), { user_id: user.id }, @headers do |response|
+        response.status.should == 200
+        # INFO: since test doesn't actually trigger the extension we only check expectation on membership call
+      end
+    end
+
+    it '#remove_member triggers group exclusion' do
+      group = @carto_organization.groups.first
+      user = @carto_org_user_1
+      group.users << user
+      group.save
+      group.reload
+      group.users.include?(user)
+
+      Carto::Group.expects(:remove_member_group_extension_query).with(anything, group.name, user.username)
+
+      delete_json api_v1_organization_groups_remove_member_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, group_id: group.id, api_key: @org_user_owner.api_key, user_id: user.id), {}, @headers do |response|
         response.status.should == 200
         # INFO: since test doesn't actually trigger the extension we only check expectation on membership call
       end

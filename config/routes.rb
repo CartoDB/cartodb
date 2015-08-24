@@ -358,6 +358,7 @@ CartoDB::Application.routes.draw do
     delete '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:organization_id/groups/:group_id' => 'groups#destroy', as: :api_v1_organization_groups_destroy, constraints: { organization_id: /[^\/]+/, group_id: /[^\/]+/ }
 
     post '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:organization_id/groups/:group_id/users' => 'groups#add_member', as: :api_v1_organization_groups_add_member, constraints: { organization_id: /[^\/]+/, group_id: /[^\/]+/ }
+    delete '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:organization_id/groups/:group_id/users/:user_id' => 'groups#remove_member', as: :api_v1_organization_groups_remove_member, constraints: { organization_id: /[^\/]+/, group_id: /[^\/]+/ , user_id: /[^\/]+/ }
 
     # Databases (organization) groups
     # Note: url doesn't contain org_id because this needs to be triggered from the SQL API

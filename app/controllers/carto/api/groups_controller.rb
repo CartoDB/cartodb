@@ -9,11 +9,13 @@ module Carto
     class GroupsController < ::Api::ApplicationController
       include PagedSearcher
 
+      ssl_required :index, :show, :create, :update, :destroy, :add_member, :remove_member unless Rails.env.development? || Rails.env.test?
+
       before_filter :load_organization
-      before_filter :load_group, :only => [:show, :update, :destroy, :add_member]
-      before_filter :org_owner_only, :only => [:create, :update, :destroy, :add_member]
+      before_filter :load_group, :only => [:show, :update, :destroy, :add_member, :remove_member]
+      before_filter :org_owner_only, :only => [:create, :update, :destroy, :add_member, :remove_member]
       before_filter :org_users_only, :only => [:show, :index]
-      before_filter :load_user, :only => [:add_member]
+      before_filter :load_user, :only => [:add_member, :remove_member]
 
       def index
         page, per_page, order = page_per_page_order_params
@@ -64,6 +66,14 @@ module Carto
 
       def add_member
         @group.add_member_with_extension(@user)
+        render json: {}, status: 200
+      rescue => e
+        CartoDB.notify_exception(e, { params: params , group: @group, user: @user })
+        render json: { errors: e.message }, status: 500
+      end
+
+      def remove_member
+        @group.remove_member_with_extension(@user)
         render json: {}, status: 200
       rescue => e
         CartoDB.notify_exception(e, { params: params , group: @group, user: @user })

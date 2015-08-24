@@ -6,7 +6,6 @@
 @import "../variables/sizes";
 @import "../variables/progress-bar";
 
-// Moved with scroll behaviour
 .Filters {
   position: absolute;
   display:block;
@@ -16,9 +15,11 @@
   background: transparent;
   z-index: 10;
 }
+// Positionate relative to the content
 .Filters.is-relative {
   position: relative;
 }
+// Moved with scroll behaviour
 .Filters.is-fixed {
   position: fixed;
   background: white;
@@ -34,7 +35,6 @@
     z-index: 0;
   }
 }
-// Positionate relative to the content
 .Filters.above-form { position: relative; margin-bottom: 30px; }
 .Filters.above-form .Filters-separator { background-color: $cStructure-darkGrey; }
 .Filters > .u-inner {

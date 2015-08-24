@@ -512,10 +512,10 @@ Start the resque daemon (needed for import jobs):
 $ bundle exec script/resque
 ```
 
-Finally, start the CartoDB development server on port 3000:
+Finally, start the CartoDB development server on port 3000 (multithread support is needed for organization groups):
 
 ```bash
-$ bundle exec rails s -p 3000
+$ bundle exec thin start --threaded -p 3000
 ```
 
 You should now be able to access

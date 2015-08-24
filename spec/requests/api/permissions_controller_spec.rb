@@ -201,7 +201,7 @@ describe 'group permission support' do
     permission.acl = acl_initial
     permission.save
 
-    put_json(api_v1_permissions_update_url(user_domain: @org_user_1.username, id: permission.id, api_key: @org_user_1.api_key), {acl: client_acl_modified}.to_json, @headers) do |response|
+    put_json(api_v1_permissions_update_url(user_domain: @org_user_1.username, id: permission.id, api_key: @org_user_1.api_key), {acl: client_acl_modified}, @headers) do |response|
       response.status.should == 200
       response_body = response.body.deep_symbolize_keys
       response_body.fetch(:id).should eq permission.id

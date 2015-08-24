@@ -3,6 +3,7 @@
 -------------------
 * Synchronizations model now has a new field (and FK) to visualizations.id and joins to them using that instead of by matching name to canonical visualization's table name. It also gets deleted if FK dissapears.
 * Code also switches to using syncrhonizations.visualization_id for linking, so in order to have back existing synchronizations, the following rake needs to be run: `bundle exec rake cartodb:populate_synchronization_visualization_ids`
+* Group support for organizations. Note: in order to use groups you need to run the server in multithread mode: `bundle exec thin start --threaded -p 3000`.
 
 
 3.10.3 (2015-08-13)

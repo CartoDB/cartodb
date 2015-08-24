@@ -19,7 +19,7 @@ describe Carto::Api::DatabaseGroupsController do
     end
 
     it "Throws 401 error without http auth" do
-      post api_v1_databases_group_create_url(database_name: @carto_organization.database_name), {}, @no_auth_headers
+      post api_v1_databases_group_create_url(user_domain: @org_user_owner.username, database_name: @carto_organization.database_name), {}, @no_auth_headers
       response.status.should == 401
     end
 

@@ -5,6 +5,7 @@ module Carto
 
     has_many :users, inverse_of: :organization, order: :username
     belongs_to :owner, class_name: Carto::User
+    has_many :groups, inverse_of: :organization, order: :display_name
 
     def self.find_by_database_name(database_name)
       Carto::Organization
@@ -37,6 +38,12 @@ module Carto
     def database_name
       owner ? owner.database_name : nil
     end
+
+    def create_group(display_name)
+      Carto::Group.create_group_with_extension(self, display_name)
+    end
+
+    private
 
   end
 

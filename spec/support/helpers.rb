@@ -65,7 +65,8 @@ module HelperMethods
   end
 
   def put_json(path, params = {}, headers ={}, &block)
-    put path, params, headers
+    headers = headers.merge({"CONTENT_TYPE" => 'application/json'})
+    put path, JSON.dump(params), headers
     the_response = response || get_last_response
     response_parsed = the_response.body.blank? ? {} : ::JSON.parse(the_response.body)
     yield OpenStruct.new(:body => (response_parsed.is_a?(Hash) ? response_parsed.symbolize_keys : response_parsed), :status => the_response.status, :headers => the_response.headers) if block_given?

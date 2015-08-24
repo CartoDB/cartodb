@@ -10,6 +10,7 @@ module Carto
       include PagedSearcher
 
       before_filter :load_organization
+      before_filter :load_group, :only => [:destroy]
 
       def index
         page, per_page, order = page_per_page_order_params
@@ -32,12 +33,25 @@ module Carto
         render json: { errors: e.message }, status: 500
       end
 
+      def destroy
+        @group.destroy_group_with_extension
+        render json: {}, status: 200
+      rescue => e
+        CartoDB.notify_exception(e, { params: params , group: @group })
+        render json: { errors: e.message }, status: 500
+      end
+
       private
 
       def load_organization
         @organization = Carto::Organization.where(id: params['organization_id']).first
         render json: { errors: "Organization #{params['organization_id']} not found" }, status: 404 unless @organization
         render json: { errors: "Not organization owner" }, status: 400 unless @organization.owner_id == current_user.id
+      end
+
+      def load_group
+        @group = @organization.groups.where(id: params['group_id']).first
+        render json: { errors: "Group #{params['group_id']} not found" }, status: 404 unless @group
       end
 
     end

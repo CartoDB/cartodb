@@ -74,7 +74,7 @@ describe Carto::Api::GroupsController do
       fake_database_role = 'fake_database_role'
       fake_group_creation = Carto::Group.new_instance(@carto_organization.database_name, name, fake_database_role)
       fake_group_creation.save
-      Carto::Group.expects(:create_group_with_extension).with(anything, name).returns(fake_group_creation)
+      Carto::Group.expects(:create_group_extension_query).with(anything, name).returns(fake_group_creation)
 
       post_json api_v1_organization_groups_create_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, api_key: @org_user_owner.api_key), { display_name: display_name }, @headers do |response|
         response.status.should == 200
@@ -94,6 +94,9 @@ describe Carto::Api::GroupsController do
 
     it '#drops existing groups' do
       group = @carto_organization.groups.first
+
+      Carto::Group.expects(:destroy_group_extension_query).with(anything, group.name)
+
       delete_json api_v1_organization_groups_destroy_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, group_id: group.id, api_key: @org_user_owner.api_key), { }, @headers do |response|
         response.status.should == 200
 

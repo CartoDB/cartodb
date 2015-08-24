@@ -40,7 +40,7 @@ module Carto
     end
 
     def create_group(display_name)
-      Carto::Group.create_group(self, display_name)
+      Carto::Group.create_group_with_extension(self, display_name)
     end
 
     private

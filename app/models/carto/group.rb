@@ -5,6 +5,13 @@ require_dependency 'cartodb/errors'
 require_relative 'paged_model'
 
 module Carto
+
+  # Groups are created by the editor because of extension requests, so
+  # standard Rails operations (creation, destruction, etc) doesn't trigger
+  # extension management functions. In order to keep extension and database
+  # in sync, there're several methods that do trigger it:
+  # - create_group_with_extension
+  # - destroy_group_with_extension
   class Group < ActiveRecord::Base
     include PagedModel
 
@@ -28,10 +35,10 @@ module Carto
     end
 
     # Creation of brand-new group with the extension
-    def self.create_group(organization, display_name)
+    def self.create_group_with_extension(organization, display_name)
       name = valid_group_name(display_name)
       organization.owner.in_database do |conn|
-        create_group_with_extension(conn, name)
+        create_group_extension_query(conn, name)
       end
       # Extension triggers a request to the editor databases endpoint which actually creates the group
       group = Carto::Group.find_by_organization_id_and_name(organization.id, name)
@@ -40,6 +47,14 @@ module Carto
       group.display_name = display_name
       group.save
       group
+    end
+
+    # INFO: public because it's called by Organization.
+    def destroy_group_with_extension
+      # INFO: currently only a superuser can destroy a group. See CartoDB/cartodb-postgresql#114
+      organization.owner.in_database(as: :superuser) do |conn|
+        Carto::Group.destroy_group_extension_query(conn, name)
+      end
     end
 
     def rename(new_name, new_database_role)
@@ -80,8 +95,12 @@ module Carto
       name.gsub(/[^a-z0-9_]/,'_').gsub(/_{2,}/, '_')
     end
 
-    def self.create_group_with_extension(conn, name)
+    def self.create_group_extension_query(conn, name)
       conn.execute(%Q{ select cartodb.CDB_Group_CreateGroup('#{name}') })
+    end
+
+    def self.destroy_group_extension_query(conn, name)
+      conn.execute(%Q{ select cartodb.CDB_Group_DropGroup('#{name}') })
     end
 
   end

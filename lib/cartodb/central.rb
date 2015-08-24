@@ -48,6 +48,10 @@ module Cartodb
       end
     end
 
+    def get_user(username_or_email)
+      return send_request("api/users/#{username_or_email}", nil, :get, [200,404])
+    end # get_organization_users
+
     def get_organization_users(organization_name)
       return send_request("api/organizations/#{ organization_name }/users", nil, :get, [200], 600)
     end # get_organization_users

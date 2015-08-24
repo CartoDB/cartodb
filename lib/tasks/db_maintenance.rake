@@ -1114,5 +1114,25 @@ namespace :cartodb do
       }
     end
 
+    desc "Assign organization owner admin role at database. See CartoDB/cartodb-postgresql#104 and #5187"
+    task :assign_org_owner_role, [:organization_name] => :environment do |t, args|
+      organizations = args[:organization_name].present? ? Organization.where(name: args[:organization_name]).all : Organization.all
+      puts "Updating #{organizations.count} organizations"
+      organizations.each { |o|
+        owner = o.owner
+        if owner
+          puts "#{o.name}\t#{o.id}\tOwner: #{owner.username}\t#{owner.id}"
+          begin
+            owner.setup_owner_permissions
+          rescue => e
+            puts "Error: #{e.message}"
+            CartoDB.notify_exception(e)
+          end
+        else
+          puts "#{o.name}\t#{o.id}\t Has no owner, skipping"
+        end
+      }
+    end
+
   end
 end

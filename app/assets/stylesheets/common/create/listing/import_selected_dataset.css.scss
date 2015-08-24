@@ -71,6 +71,9 @@ $br: 4px;
   @include display-flex();
   @include align-items(center, center);
 }
+.DatasetSelected-syncOptionsList--syncView {
+  margin-left: auto;
+}
 .DatasetSelected-syncOptionsItem { margin-left: 24px }
 .DatasetSelected-syncOptionsItem .RadioButton-label { font-size: $sFontSize-normal }
 .UpgradeElement.DatasetSelected-upgrade {

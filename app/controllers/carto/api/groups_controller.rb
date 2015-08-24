@@ -11,6 +11,7 @@ module Carto
 
       before_filter :load_organization
       before_filter :load_group, :only => [:show, :update, :destroy]
+      before_filter :org_owner_only, :only => [:create, :update, :destroy]
 
       def index
         page, per_page, order = page_per_page_order_params
@@ -64,6 +65,9 @@ module Carto
       def load_organization
         @organization = Carto::Organization.where(id: params['organization_id']).first
         render json: { errors: "Organization #{params['organization_id']} not found" }, status: 404 unless @organization
+      end
+
+      def org_owner_only
         render json: { errors: "Not organization owner" }, status: 400 unless @organization.owner_id == current_user.id
       end
 

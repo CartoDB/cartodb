@@ -30,7 +30,7 @@ module Carto
     # Creation of brand-new group with the extension
     def self.create_group(organization, display_name)
       name = valid_group_name(display_name)
-      organization.owner.in_database(:as => :superuser) do |conn|
+      organization.owner.in_database do |conn|
         create_group_with_extension(conn, name)
       end
       # Extension triggers a request to the editor databases endpoint which actually creates the group

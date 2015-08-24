@@ -37,6 +37,7 @@ module Carto
       def load_organization
         @organization = Carto::Organization.where(id: params['organization_id']).first
         render json: { errors: "Organization #{params['organization_id']} not found" }, status: 404 unless @organization
+        render json: { errors: "Not organization owner" }, status: 400 unless @organization.owner_id == current_user.id
       end
 
     end

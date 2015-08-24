@@ -56,6 +56,12 @@ describe Carto::Api::GroupsController do
       end
     end
 
+    it '#create fails if user is not owner' do
+      post_json api_v1_organization_groups_create_url(user_domain: @org_user_1.username, organization_id: @carto_organization.id, api_key: @org_user_1.api_key), { display_name: 'willfail' }, @headers do |response|
+        response.status.should == 400
+      end
+    end
+
     it '#create new groups' do
       display_name = 'a new group'
       name = 'a_new_group'
@@ -81,8 +87,6 @@ describe Carto::Api::GroupsController do
         new_group.database_role.should_not be_nil
       end
     end
-
-    # TODO: check only owner can
 
   end
 

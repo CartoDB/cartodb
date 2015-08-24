@@ -46,7 +46,6 @@ module CartoDB
           hard_limit:  self.hard_twitter_datasource_limit
         },
         billing_period: self.last_billing_cycle,
-        max_layers: self.max_layers,
         api_key: self.api_key,
         layers: self.layers.map(&:public_values),
         trial_ends_at: self.trial_ends_at,
@@ -66,7 +65,8 @@ module CartoDB
           concurrent_syncs: CartoDB::PlatformLimits::Importer::UserConcurrentSyncsAmount::MAX_SYNCS_PER_USER,
           concurrent_imports: self.max_concurrent_import_count,
           import_file_size: self.max_import_file_size,
-          import_table_rows: self.max_import_table_row_count
+          import_table_rows: self.max_import_table_row_count,
+          max_layers: self.max_layers
         },
         notification: self.notification,
         avatar_url: self.avatar,

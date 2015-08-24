@@ -40,7 +40,7 @@ class CommonData
       CartoDB.notify_exception(e)
       rows = []
     end
-    CartoDB.notify_error('common-data empty', { rows: rows }) if rows.nil? || rows.empty?
+    CartoDB.notify_error('common-data empty', { rows: rows, url: @visualizations_api_url}) if rows.nil? || rows.empty?
 
     datasets = []
     rows.each do |row|

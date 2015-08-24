@@ -19,14 +19,14 @@ describe CommonData do
 
   it 'should return empty datasets response and notify error for SQL API error response' do
     stub_api_response(503)
-    CartoDB.expects(:notify_error).with('common-data empty', { rows: [] })
+    CartoDB.expects(:notify_error).with('common-data empty', { rows: [] , url: 'http://common-data.example.com/api/v1/viz?type=table&privacy=public'})
 
     @common_data.datasets.should eq []
   end
 
   it 'should return empty datasets and notify error for invalid json' do
     stub_api_response(200, INVALID_JSON_RESPONSE)
-    CartoDB.expects(:notify_error).with('common-data empty', { rows: [] })
+    CartoDB.expects(:notify_error).with('common-data empty', { rows: [] , url: 'http://common-data.example.com/api/v1/viz?type=table&privacy=public'})
 
     @common_data.datasets.should eq []
   end

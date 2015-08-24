@@ -445,11 +445,13 @@ class Admin::VisualizationsController < ApplicationController
 
   def build_common_data_url
     common_data_base_url = Cartodb.config[:common_data]['base_url']
-    common_data_user = Carto::User.where(username: Cartodb.config[:common_data]['username']).first
+    common_data_username = Cartodb.config[:common_data]['username']
+    common_data_user = Carto::User.where(username: common_data_username).first
     if common_data_base_url.nil?
       CartoDB.url(self, 'api_v1_visualizations_index', {type: 'table', privacy: 'public'}, common_data_user)
     else
-      common_data_base_url + CartoDB.path(self, 'api_v1_visualizations_index', {type: 'table', privacy: 'public'})
+      # We set user_domain to nil to avoid the user of the user_domain of the current_user (/u/xxxx)
+      common_data_base_url + CartoDB.path(self, 'api_v1_visualizations_index', {type: 'table', privacy: 'public', user_domain: nil})
     end
   end
 

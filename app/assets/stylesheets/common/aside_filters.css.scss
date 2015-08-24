@@ -6,29 +6,29 @@
 @import "../variables/sizes";
 @import "../variables/progress-bar";
 
-.AsideFilters {
+.SideMenu {
   display: block;
   background: transparent;
   z-index: 10;
 }
-.AsideFilters-progress {
+.SideMenu-progress {
   @include display-flex();
   @include justify-content(space-between);
   @include flex-direction(row);
   @include align-items(center, center);
   margin: 30px 0;
 }
-.AsideFilters-progressSize {
+.SideMenu-progressSize {
   margin-left: 12px;
   color: $cTypography-secondary;
   font-size: $sFontSize-smallUpperCase;
   font-weight: $sFontWeight-lighter;
 }
-.AsideFilters-progressBar {
+.SideMenu-progressBar {
   @include progress-bar(6px, 9px, true, false);
   width: 140px;
 }
-.AsideFilters-separator {
+.SideMenu-separator {
   position: relative;
   display: block;
   width:100%;
@@ -36,19 +36,19 @@
   background-color: $cStructure-darkGrey;
   z-index:0;
 }
-.AsideFilters-list {
+.SideMenu-list {
   @include justify-content(space-between, justify);
   @include align-items(center, center);
   margin: 30px 0;
 }
-.AsideFilters-typeItem {
+.SideMenu-typeItem {
   position:relative;
   line-height: 35px;
 
   &:first-child { margin-left: 0 }
   &:last-child { margin-right: 0 }
 }
-.AsideFilters-typeLink {
+.SideMenu-typeLink {
   display: inline-block;
   font-size: 14px;
   color: $cTypography-link;
@@ -61,7 +61,7 @@
     text-decoration: none;
   }
 }
-.AsideFilters-typeLink.is-selected {
+.SideMenu-typeLink.is-selected {
   color:$cTypography-linkSelected;
   font-weight: bold;
 
@@ -70,7 +70,7 @@
     text-decoration: none;
   }
 }
-.AsideFilters-typeLink.is-disabled {
+.SideMenu-typeLink.is-disabled {
   color: rgba(black, 0.3);
   &:hover {
     cursor: default;
@@ -78,7 +78,7 @@
     color: rgba(black, 0.3);
   }
 }
-.AsideFilters-typeLink.is-disabled {
+.SideMenu-typeLink.is-disabled {
   color: rgba(black, 0.3);
   &:hover {
     cursor: default;
@@ -86,7 +86,7 @@
     color: rgba(black, 0.3);
   }
 }
-.AsideFilters-helpSegment {
+.SideMenu-helpSegment {
   @include display-flex();
   @include flex-direction(row);
   border-radius: 4px;
@@ -94,7 +94,7 @@
   background: $cStructure-grayBkg;
   border: 1px solid $cTypography-help;
 }
-.AsideFilters-helpSegment--icon {
+.SideMenu-helpSegment--icon {
   border-radius: 4px;
   width: 40px;
   height: 40px;
@@ -108,7 +108,7 @@
     color: $cIcons-active;
   }
 }
-.AsideFilters-helpSegment--paragraph {
+.SideMenu-helpSegment--paragraph {
   @include display-flex();
   @include flex-direction(column);
   @include justify-content(center);

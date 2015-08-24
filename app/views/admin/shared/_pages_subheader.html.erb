@@ -1,9 +1,9 @@
-<div class="AsideFilters">
+<div class="SideMenu">
   <% if !Cartodb.config[:cartodb_com_hosted].present? %>
     <a class="Filters-link" href="<%= current_user.plan_url(request.protocol) %>">
   <% end %>
 
-  <div class="AsideFilters-progress">
+  <div class="SideMenu-progress">
     <% per = (current_user.db_size_in_bytes * 100) / current_user.quota_in_bytes %>
     <% className = '' %>
     <% if (per > 80 && per < 90) %>
@@ -11,36 +11,36 @@
     <% elsif (per > 89) %>
       <% className = 'danger' %>
     <% end %>
-    <div class="AsideFilters-progressBar">
+    <div class="SideMenu-progressBar">
       <div class="progress-bar">
         <span class="bar-2 <%= className %>" style="width:<%= per %>%"></span>
       </div>
     </div>
-    <span class="AsideFilters-progressSize"><%= number_to_human_size(current_user.db_size_in_bytes) %> of <%= number_to_human_size(current_user.quota_in_bytes) %></span>
+    <span class="SideMenu-progressSize"><%= number_to_human_size(current_user.db_size_in_bytes) %> of <%= number_to_human_size(current_user.quota_in_bytes) %></span>
   </div>
 
-  <span class="AsideFilters-separator"></span>
+  <span class="SideMenu-separator"></span>
 
-  <div class="AsideFilters-type">
-    <ul class="AsideFilters-list">
-      <li class="AsideFilters-typeItem"><a href="<%= CartoDB.url(self, 'profile_user') %>" class="AsideFilters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/users_profile" %>">Profile</a></li>
-      <li class="AsideFilters-typeItem"><a href="<%= CartoDB.url(self, 'account_user') %>" class="AsideFilters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/users_account" %>">Account</a></li>
-      <li class="AsideFilters-typeItem"><a href="<%= CartoDB.url(self, 'api_key_credentials') %>" class="AsideFilters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/client_applications_api_key" %>">API keys</a></li>
-      <li class="AsideFilters-typeItem"><a href="<%= CartoDB.url(self, 'oauth_credentials')%>" class="AsideFilters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/client_applications_oauth" %>">OAuth credentials</a></li>
+  <div class="SideMenu-type">
+    <ul class="SideMenu-list">
+      <li class="SideMenu-typeItem"><a href="<%= CartoDB.url(self, 'profile_user') %>" class="SideMenu-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/users_profile" %>">Profile</a></li>
+      <li class="SideMenu-typeItem"><a href="<%= CartoDB.url(self, 'account_user') %>" class="SideMenu-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/users_account" %>">Account</a></li>
+      <li class="SideMenu-typeItem"><a href="<%= CartoDB.url(self, 'api_key_credentials') %>" class="SideMenu-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/client_applications_api_key" %>">API keys</a></li>
+      <li class="SideMenu-typeItem"><a href="<%= CartoDB.url(self, 'oauth_credentials')%>" class="SideMenu-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/client_applications_oauth" %>">OAuth credentials</a></li>
       <% if (!Cartodb.config[:cartodb_com_hosted].present? && (!current_user.organization.present? || current_user.organization_owner?))  %>
-        <li class="AsideFilters-typeItem"><a href="<%= current_user.plan_url(request.protocol) %>" class="AsideFilters-typeLink">Billing</a></li>
+        <li class="SideMenu-typeItem"><a href="<%= current_user.plan_url(request.protocol) %>" class="SideMenu-typeLink">Billing</a></li>
       <% end %>
       <% if current_user.organization_owner? %>
-        <li class="AsideFilters-typeItem"><a href="<%= CartoDB.url(self, 'organization_settings') %>" class="AsideFilters-typeLink <%= 'is-selected' if ["admin/organizations", "admin/organization", "admin/organization_users"].include?("#{params[:controller]}") %>" class="AsideFilters-typeLink">Organization settings</a></li>
+        <li class="SideMenu-typeItem"><a href="<%= CartoDB.url(self, 'organization_settings') %>" class="SideMenu-typeLink <%= 'is-selected' if ["admin/organizations", "admin/organization", "admin/organization_users"].include?("#{params[:controller]}") %>" class="SideMenu-typeLink">Organization settings</a></li>
       <% end %>
     </ul>
   </div>
 
-  <div class="AsideFilters-helpSegment">
-    <div class="AsideFilters-helpSegment--icon">
+  <div class="SideMenu-helpSegment">
+    <div class="SideMenu-helpSegment--icon">
       <i class="iconFont iconFont-Boss"></i>
     </div>
-    <div class="AsideFilters-helpSegment--paragraph">
+    <div class="SideMenu-helpSegment--paragraph">
       <p>Having issues?</p>
       <p>
         <% if !current_user.organization.present? %>

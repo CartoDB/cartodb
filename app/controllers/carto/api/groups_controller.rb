@@ -15,9 +15,15 @@ module Carto
       def index
         page, per_page, order = page_per_page_order_params
 
+        groups = @organization.groups
+        groups = groups.where('name like ?', "%#{params[:q]}%") if params[:q]
+        total_entries = groups.count
+
+        groups = Carto::PagedModel.paged_association(groups, page, per_page, order)
+
         render_jsonp({
-          groups: Carto::PagedModel.paged_association(@organization.groups, page, per_page, order).map { |g| Carto::Api::GroupPresenter.new(g).to_poro },
-          total_entries: @organization.groups.count,
+          groups: groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro },
+          total_entries: total_entries,
           total_org_entries: @organization.groups.count
         }, 200)
       end

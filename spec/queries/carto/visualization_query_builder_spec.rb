@@ -187,6 +187,8 @@ describe Carto::VisualizationQueryBuilder do
 
     stub_named_maps_calls
 
+    table = create_random_table(@user1)
+
     remote_vis_1 = CartoDB::Visualization::Member.new({
           user_id: @user1.id,
           name:    "remote vis #{rand(9999)}",
@@ -289,6 +291,15 @@ describe Carto::VisualizationQueryBuilder do
         .build
         .all.map(&:id)
     ids.should == [ remote_vis_2.id, remote_vis_1.id ]
+
+    # Searching for multiple types should not hide or show more/less remote tables, neither break search
+    ids = @vqb.with_types([ Carto::Visualization::TYPE_CANONICAL, Carto::Visualization::TYPE_REMOTE ])
+        .with_order(:updated_at, :desc)
+        .without_synced_external_sources
+        .build
+        .all.map(&:id)
+    ids.should == [ remote_vis_2.id, remote_vis_1.id, table.table_visualization.id]
+
 
   end
 

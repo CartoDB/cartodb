@@ -2,7 +2,7 @@ require 'rollbar'
 require_relative '../../models/visualization/member'
 require_relative '../../models/visualization/collection'
 require_relative '../../models/visualization/external_source'
-require_relative '../../models/common_data'
+require_relative '../../models/common_data/singleton'
 
 module CartoDB
 
@@ -10,8 +10,9 @@ module CartoDB
 
     class CommonDataService
 
-      def initialize(datasets = nil)
+      def initialize(visualizations_api_url, datasets = nil)
         @datasets = datasets
+        @visualizations_api_url = visualizations_api_url
       end
 
       def load_common_data_for_user(user)
@@ -29,14 +30,14 @@ module CartoDB
         user_remotes.each { |r|
           remotes_by_name[r.name] = r
         }
-        get_datasets.each do |d|
+        get_datasets.each do |dataset|
           begin
-            visualization = remotes_by_name.delete(d['name'])
+            visualization = remotes_by_name.delete(dataset['name'])
             if visualization
               if visualization.update_remote_data(
                   Member::PRIVACY_PUBLIC,
-                  d['description'], [ d['category'] ], d['license'],
-                  d['source'], d['attributions'])
+                  dataset['description'], dataset['tags'], dataset['license'],
+                  dataset['source'], dataset['attributions'], dataset['display_name'])
                 visualization.store
                 updated += 1
               else
@@ -44,25 +45,25 @@ module CartoDB
               end
             else
               visualization = Member.remote_member(
-                d['name'], user.id, Member::PRIVACY_PUBLIC,
-                d['description'], [ d['category'] ], d['license'],
-                d['source'], d['attributions']).store
+                dataset['name'], user.id, Member::PRIVACY_PUBLIC,
+                dataset['description'], dataset['tags'], dataset['license'],
+                dataset['source'], dataset['attributions'], dataset['display_name']).store
               added += 1
             end
 
             external_source = ExternalSource.where(visualization_id: visualization.id).first
             if external_source
-              external_source.save if !(external_source.update_data(d['url'], d['geometry_types'], d['rows'], d['size'], 'common-data').changed_columns.empty?)
+              external_source.save if !(external_source.update_data(dataset['url'], dataset['geometry_types'], dataset['rows'], dataset['size'], 'common-data').changed_columns.empty?)
             else
-              ExternalSource.new(visualization.id, d['url'], d['geometry_types'], d['rows'], d['size'], 'common-data').save
+              ExternalSource.new(visualization.id, dataset['url'], dataset['geometry_types'], dataset['rows'], dataset['size'], 'common-data').save
             end
           rescue => e
             CartoDB.notify_exception(e, {
-              name: d.fetch('name', 'ERR: name'),
-              source: d.fetch('source', 'ERR: source'),
-              rows: d.fetch('rows', 'ERR: rows'),
-              updated_at: d.fetch('updated_at', 'ERR: updated_at'),
-              url: d.fetch('url', 'ERR: url')
+              name: dataset.fetch('name', 'ERR: name'),
+              source: dataset.fetch('source', 'ERR: source'),
+              rows: dataset.fetch('rows', 'ERR: rows'),
+              updated_at: dataset.fetch('updated_at', 'ERR: updated_at'),
+              url: dataset.fetch('url', 'ERR: url')
             })
             failed += 1
           end
@@ -84,7 +85,7 @@ module CartoDB
       private
 
       def get_datasets
-        @datasets ||= CommonDataSingleton.instance.datasets[:datasets]
+        @datasets ||= CommonDataSingleton.instance.datasets(@visualizations_api_url)
       end
 
       def delete_remote_visualization(visualization)

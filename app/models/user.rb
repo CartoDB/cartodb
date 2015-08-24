@@ -192,12 +192,12 @@ class User < Sequel::Model
     last_common_data_update_date.nil? || last_common_data_update_date < Time.now - 1.month
   end
 
-  def load_common_data
-    CartoDB::Visualization::CommonDataService.new.load_common_data_for_user(self)
+  def load_common_data(visualizations_api_url)
+    CartoDB::Visualization::CommonDataService.new(visualizations_api_url).load_common_data_for_user(self)
   end
 
-  def delete_common_data
-    CartoDB::Visualization::CommonDataService.new.delete_common_data_for_user(self)
+  def delete_common_data(visualizations_api_url)
+    CartoDB::Visualization::CommonDataService.new(visualization_api_url).delete_common_data_for_user(self)
   end
 
   def after_save
@@ -1502,10 +1502,15 @@ class User < Sequel::Model
   def create_db_user
     conn = self.in_database(as: :cluster_admin)
     begin
-      conn.run("CREATE USER \"#{database_username}\" PASSWORD '#{database_password}'")
-    rescue => e
-      puts "#{Time.now} USER SETUP ERROR (#{database_username}): #{$!}"
-      raise e
+      conn.transaction do
+        begin
+          conn.run("CREATE USER \"#{database_username}\" PASSWORD '#{database_password}'")
+          conn.run("GRANT publicuser to \"#{database_username}\"")
+          rescue => e
+            puts "#{Time.now} USER SETUP ERROR (#{database_username}): #{$!}"
+            raise e
+          end
+      end
     end
   end
 

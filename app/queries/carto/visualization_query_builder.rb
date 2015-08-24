@@ -119,11 +119,17 @@ class Carto::VisualizationQueryBuilder
   end
 
   def with_type(type)
+    # Clear always the other "types holder"
+    @types = nil
+
     @type = type == nil || type == '' ? nil : type
     self
   end
 
   def with_types(types)
+    # Clear always the other "types holder"
+    @type = nil
+
     @types = types
     self
   end

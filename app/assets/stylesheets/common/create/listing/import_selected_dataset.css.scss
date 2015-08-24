@@ -42,7 +42,6 @@ $br: 4px;
   display: block;
   margin-top: 3px;
   font-size: $sFontSize-normal;
-  @include nicer-lato-typography();
   color: $cTypography-secondary;
 }
 .DatasetSelected-sync {
@@ -71,6 +70,9 @@ $br: 4px;
 .DatasetSelected-syncOptionsList {
   @include display-flex();
   @include align-items(center, center);
+}
+.DatasetSelected-syncOptionsList--syncView {
+  margin-left: auto;
 }
 .DatasetSelected-syncOptionsItem { margin-left: 24px }
 .DatasetSelected-syncOptionsItem .RadioButton-label { font-size: $sFontSize-normal }

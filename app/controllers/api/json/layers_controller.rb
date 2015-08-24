@@ -70,34 +70,46 @@ class Api::Json::LayersController < Api::ApplicationController
   end
 
   def update
-    ids = ids_from_url_or_parameters
-    layers = []
+    @stats_aggregator.timing('layers.update') do
 
-    ids.each { |id|
-      layer = ::Layer[id]
-      layer.raise_on_save_failure = true
-      # don't allow to override table_name and user_name
-      # https://cartodb.atlassian.net/browse/CDB-3350
-      layer_params = ids.length == 1 ? params : params[:layers].select { |p| p['id'] == id }.first
-      layer_params[:options]['table_name'] = layer.options['table_name'] if layer_params.include?(:options) && layer_params[:options].include?('table_name')
-      layer_params[:options]['user_name'] = layer.options['user_name'] if layer_params.include?(:options) && layer_params[:options].include?('user_name')
-      layer.update(layer_params.slice(:options, :kind, :infowindow, :tooltip, :order))
-      layers << layer
-    }
+      begin
+        ids = ids_from_url_or_parameters
+        layers = []
 
-    if layers.count > 1
-      layers_json = layers.map { |l| CartoDB::Layer::Presenter.new(l, {:viewer_user => current_user}).to_poro }
-      render_jsonp({ layers: layers_json })
-    else
-      render_jsonp CartoDB::Layer::Presenter.new(layers[0], {:viewer_user => current_user}).to_poro
+        @stats_aggregator.timing("layers.save-#{layers.count}") do
+          ids.each { |id|
+            layer = ::Layer[id]
+            layer.raise_on_save_failure = true
+            # don't allow to override table_name and user_name
+            # https://cartodb.atlassian.net/browse/CDB-3350
+            layer_params = ids.length == 1 ? params : params[:layers].select { |p| p['id'] == id }.first
+            layer_params[:options]['table_name'] = layer.options['table_name'] if layer_params.include?(:options) && layer_params[:options].include?('table_name')
+            layer_params[:options]['user_name'] = layer.options['user_name'] if layer_params.include?(:options) && layer_params[:options].include?('user_name')
+            layer.update(layer_params.slice(:options, :kind, :infowindow, :tooltip, :order))
+            layers << layer
+          }
+        end
+
+        if layers.count > 1
+          layers_json = layers.map { |l| CartoDB::Layer::Presenter.new(l, {:viewer_user => current_user}).to_poro }
+          render_jsonp({ layers: layers_json })
+        else
+          render_jsonp CartoDB::Layer::Presenter.new(layers[0], {:viewer_user => current_user}).to_poro
+        end
+      rescue Sequel::ValidationFailed, RuntimeError => e
+        render_jsonp({ description: e.message }, 400)
+      end
+
     end
-  rescue Sequel::ValidationFailed, RuntimeError => e
-    render_jsonp({ description: e.message }, 400)
   end
 
   def destroy
-    @parent.layers_dataset.where(layer_id: params[:id]).destroy
-    head :no_content
+    @stats_aggregator.timing('layers.destroy') do
+
+      @parent.layers_dataset.where(layer_id: params[:id]).destroy
+      head :no_content
+
+    end
   end
 
   protected

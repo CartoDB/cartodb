@@ -75,8 +75,9 @@ class Api::Json::GeocodingsController < Api::ApplicationController
           geocoding
         end
 
-        @stats_aggregator.timing('save') do
+        geocoding = @stats_aggregator.timing('save') do
           geocoding.save
+          geocoding
         end
 
         @table.automatic_geocoding.destroy if @table.automatic_geocoding.present?

@@ -22,7 +22,6 @@
     "aws-sdk": "2.0.0-rc11",
     "browserify": "11.0.1",
     "browserify-shim": "3.8.10",
-    "buffer": "git://github.com/feross/buffer",
     "cartodb-pecan": "0.2.x",
     "csswring": "^3.0.5",
     "git-rev": "0.2.1",

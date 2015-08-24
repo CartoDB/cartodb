@@ -39,8 +39,8 @@ module Resque
       module LoadCommonData
         @queue = :users
 
-        def self.perform(user_id)
-          User.where(id: user_id).first.load_common_data
+        def self.perform(user_id, visualizations_api_url)
+          User.where(id: user_id).first.load_common_data(visualizations_api_url)
         end
       end
 

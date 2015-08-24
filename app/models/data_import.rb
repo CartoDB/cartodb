@@ -733,6 +733,8 @@ class DataImport < Sequel::Model
     owner = User.where(:id => self.user_id).first
     imported_tables = results.select {|r| r.success }.length
     failed_tables = results.length - imported_tables
+    total_size = 0
+    ::JSON.parse(self.stats).each {|stat| total_size += stat['size']}
     import_log = {'user'              => owner.username,
                   'state'             => self.state,
                   'tables'            => results.length,
@@ -750,7 +752,8 @@ class DataImport < Sequel::Model
                   'resque_ppid'       => self.resque_ppid,
                   'user_timeout'      => ::DataImport.http_timeout_for(current_user),
                   'error_source'      => get_error_source,
-                  'id'                => self.id
+                  'id'                => self.id,
+                  'total_size'        => total_size
                  }
     if !self.extra_options.nil?
       import_log['extra_options'] = self.extra_options

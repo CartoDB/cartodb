@@ -75,7 +75,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     @stats_aggregator.timing('visualizations.update') do
 
       begin
-        vis,  = @stats_aggregator.timing('locate') do
+        vis, = @stats_aggregator.timing('locate') do
           locator.get(@table_id, CartoDB.extract_subdomain(request))
         end
         return(head 404) unless vis
@@ -106,6 +106,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
             if new_vis_name != old_vis_name && vis.table.name == old_table_name
               vis.name = old_vis_name
               vis.store.fetch
+            else
+              vis
             end
           end
         else
@@ -130,7 +132,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       rescue => e
         render_jsonp({ errors: ['Unknown error'] }, 400)
       end
-
     end
   end
 
@@ -435,7 +436,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
           )
         )
     end
-    
+
     vis
   end
 

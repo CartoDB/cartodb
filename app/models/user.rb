@@ -1625,7 +1625,18 @@ class User < Sequel::Model
 
     # INFO: organization privileges are set for org_member_role, which is assigned to each org user
     if organization_owner?
-      setup_organization_role_permissions
+      setup_organization_owner
+    end
+  end
+
+  def setup_organization_owner
+    setup_organization_role_permissions
+    setup_owner_permissions
+  end
+
+  def setup_owner_permissions
+    self.in_database(as: :superuser) do |database|
+      database.run(%Q{ SELECT cartodb.CDB_Organization_AddAdmin('#{self.username}') })
     end
   end
 

@@ -340,3 +340,10 @@ a.Filters-cleanSearch { line-height:32px }
   background: none;
   color: $cTypography-link;
 }
+.Filters.Filters--navListing.Filters--static {
+  position: relative;
+  width: 100%;
+  left: auto;
+  top: auto;
+  margin-left: auto;
+}

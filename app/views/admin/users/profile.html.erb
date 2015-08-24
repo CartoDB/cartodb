@@ -16,10 +16,10 @@
 
 <%= render :partial => 'shared/flash_message' %>
 
-<div class="UserSection u-inner">
+<div class="Form-accountSection u-inner">
   <%= render :partial => 'admin/shared/pages_subheader' %>
 
-  <div class="CredentialsContent">
+  <div class="Form-accountContent">
 
     <%= form_for @user, url: CartoDB.url(self, 'profile_update_user', {id: @user.username}, current_user) do |f| %>
       <%= csrf_meta_tags %>

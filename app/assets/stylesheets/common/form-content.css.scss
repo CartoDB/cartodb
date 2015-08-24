@@ -7,6 +7,19 @@
 
 $sLabel-width: 140px;
 
+.Form-accountSection {
+  overflow: hidden;
+  @include display-flex();
+  @include flex-direction(row);
+  @include justify-content(space-between);
+}
+
+.Form-accountContent {
+  width: 65%;
+  position: relative;
+  display: block;
+}
+
 .Form--minHeight { min-height: 400px }
 .Form-title {
   display: inline-block;

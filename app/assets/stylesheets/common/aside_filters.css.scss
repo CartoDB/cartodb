@@ -1,0 +1,118 @@
+// Account aside filters
+// --------------------------------------------------
+
+@import "../variables/mixins";
+@import "../variables/colors";
+@import "../variables/sizes";
+@import "../variables/progress-bar";
+
+.AsideFilters {
+  display: block;
+  background: transparent;
+  z-index: 10;
+}
+.AsideFilters-progress {
+  @include display-flex();
+  @include justify-content(space-between);
+  @include flex-direction(row);
+  @include align-items(center, center);
+  margin: 30px 0;
+}
+.AsideFilters-progressSize {
+  margin-left: 12px;
+  color: $cTypography-secondary;
+  font-size: $sFontSize-smallUpperCase;
+  font-weight: $sFontWeight-lighter;
+}
+.AsideFilters-progressBar {
+  @include progress-bar(6px, 9px, true, false);
+  width: 140px;
+}
+.AsideFilters-separator {
+  position: relative;
+  display: block;
+  width:100%;
+  height:1px;
+  background-color: $cStructure-darkGrey;
+  z-index:0;
+}
+.AsideFilters-list {
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+  margin: 30px 0;
+}
+.AsideFilters-typeItem {
+  position:relative;
+  line-height: 35px;
+
+  &:first-child { margin-left: 0 }
+  &:last-child { margin-right: 0 }
+}
+.AsideFilters-typeLink {
+  display: inline-block;
+  font-size: 14px;
+  color: $cTypography-link;
+  background: transparent;
+  border: none;
+  outline: none;
+
+  &:hover {
+    color: $cTypography-linkHover;
+    text-decoration: none;
+  }
+}
+.AsideFilters-typeLink.is-selected {
+  color:$cTypography-linkSelected;
+  font-weight: bold;
+
+  &:hover {
+    cursor:default;
+    text-decoration: none;
+  }
+}
+.AsideFilters-typeLink.is-disabled {
+  color: rgba(black, 0.3);
+  &:hover {
+    cursor: default;
+    text-decoration: none;
+    color: rgba(black, 0.3);
+  }
+}
+.AsideFilters-typeLink.is-disabled {
+  color: rgba(black, 0.3);
+  &:hover {
+    cursor: default;
+    text-decoration: none;
+    color: rgba(black, 0.3);
+  }
+}
+.AsideFilters-helpSegment {
+  @include display-flex();
+  @include flex-direction(row);
+  border-radius: 4px;
+  padding: 15px;
+  background: $cStructure-grayBkg;
+  border: 1px solid $cTypography-help;
+}
+.AsideFilters-helpSegment--icon {
+  border-radius: 4px;
+  width: 40px;
+  height: 40px;
+  line-height: 50px;
+  text-align: center;
+  border: 1px solid $cStructure-darkLine;
+  margin-right: 15px;
+
+  i { 
+    font-size: 20px;
+    color: $cIcons-active;
+  }
+}
+.AsideFilters-helpSegment--paragraph {
+  @include display-flex();
+  @include flex-direction(column);
+  @include justify-content(center);
+
+  color: $cTypography-paragraphs;
+  font-size: 13px;
+}

@@ -35,6 +35,8 @@ module Carto
       end
       # Extension triggers a request to the editor databases endpoint which actually creates the group
       group = Carto::Group.find_by_organization_id_and_name(organization.id, name)
+      raise "Group was not created by the extension. Is it installed and configured?" if group.nil?
+
       group.display_name = display_name
       group.save
       group

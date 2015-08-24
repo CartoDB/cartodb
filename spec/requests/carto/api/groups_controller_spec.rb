@@ -26,6 +26,10 @@ describe Carto::Api::GroupsController do
       @group_3.destroy
     end
 
+    before(:each) do
+      @carto_organization.reload
+    end
+
     it '#index returns 401 without authentication' do
       get_json api_v1_organization_groups_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id), {}, @headers do |response|
         response.status.should == 401
@@ -85,6 +89,16 @@ describe Carto::Api::GroupsController do
         new_group.name.should == name
         new_group.display_name.should == display_name
         new_group.database_role.should_not be_nil
+      end
+    end
+
+    it '#drops existing groups' do
+      group = @carto_organization.groups.first
+      delete_json api_v1_organization_groups_destroy_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, group_id: group.id, api_key: @org_user_owner.api_key), { }, @headers do |response|
+        response.status.should == 200
+
+        # Extension is simulated, so we delete the group manually
+        group.delete
       end
     end
 

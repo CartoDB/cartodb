@@ -11,6 +11,7 @@ require_relative '../../../../spec/rspec_configuration.rb'
 
 describe CartoDB::Importer2::Loader do
   before do
+    CartoDB::Stats::Aggregator.stubs(:read_config).returns({})
     resultset = OpenStruct.new(:first => {:num_rows => 10})
     db = Object.new
     db.stubs(:fetch).returns(resultset)
@@ -19,6 +20,10 @@ describe CartoDB::Importer2::Loader do
     @ogr2ogr        = CartoDB::Importer2::Doubles::Ogr2ogr.new
     @georeferencer  = CartoDB::Importer2::Doubles::Georeferencer.new
     @loader         = CartoDB::Importer2::Loader.new(@job, @source_file, layer=nil, @ogr2ogr, @georeferencer)
+  end
+
+  before(:each) do
+    CartoDB::Stats::Aggregator.stubs(:read_config).returns({})
   end
 
   describe '#run' do

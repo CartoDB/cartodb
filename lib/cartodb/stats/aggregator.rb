@@ -10,9 +10,9 @@ module CartoDB
 
       attr_reader :fully_qualified_prefix
 
-      # Always tries to read config and return a real aggregator by default, 
+      # Always tries to read config and return a real aggregator by default,
       # returning the dummy one if there's no config
-      # @param String prefix 
+      # @param String prefix
       # @param Hash config Graphite config. Leave as empty hash to try to load from CartoDB configuration
       # @param String host_info (Optional) If set to nil, will only use prefix, else is used also as part of the prefix
       def self.instance(prefix, config={}, host_info = Socket.gethostname)
@@ -73,9 +73,8 @@ module CartoDB
       def self.read_config
         config = Cartodb.config[:graphite]
         config.nil? ? {} : config
-      rescue
-        # TODO: This rescue is setup just to support Importer specs who don't have full context and thus no config
-        # Revisit when we improve config system
+      rescue => exception
+        CartoDB.notify_exception(exception)
         {}
       end
 

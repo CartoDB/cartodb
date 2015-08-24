@@ -29,6 +29,10 @@ describe Runner do
     @fake_multiple_downloader_2 = CartoDB::Importer2::Doubles::MultipleDownloaderFake.instance(2)
   end
 
+  before(:each) do
+    CartoDB::Stats::Aggregator.stubs(:read_config).returns({})
+  end
+
   describe '#initialize' do
     it 'requires postgres options and a downloader object' do
       expect {

@@ -3,7 +3,9 @@
 -------------------
 * Synchronizations model now has a new field (and FK) to visualizations.id and joins to them using that instead of by matching name to canonical visualization's table name. It also gets deleted if FK dissapears.
 * Code also switches to using syncrhonizations.visualization_id for linking, so in order to have back existing synchronizations, the following rake needs to be run: `bundle exec rake cartodb:populate_synchronization_visualization_ids`
-
+* Data library feature is not cartodb user dependent anymore. By default the username you defined in the common-data config section, will be used with your base url to query for public datasets to build your own data-library based on that user. You can define the `base_url` property and point to other domain to retreive the public datasets from that user. For example set to `https://common-data.cartodb.com` you are going to keep using the cartodb data-library. Please refer to the example configuration file (app_config.yml.sample) `common_data`section  to check how it could be configured
+* New modals (removing old code & feature flag restricting access to new ones) [#5068](https://github.com/CartoDB/cartodb/pull/5068)
+* Updated (most of) frontend dependencies [#5171](https://github.com/CartoDB/cartodb/pull/5171)
 
 3.10.3 (2015-08-13)
 ---
@@ -50,7 +52,6 @@ cd lib/sql; sudo make all install
 * Added new fields source, attributions, and license, to metadata modal [#5016](https://github.com/CartoDB/cartodb/pull/5016)
 * Code related to pecan extracted to separate module [#4999](https://github.com/CartoDB/cartodb/pull/4999)
   * requires a `npm install` for grunt tasks
-* New modals [#5068](https://github.com/CartoDB/cartodb/pull/5068)
 
 Bugfixes:
 * Fixed deletion of layers upon disconnecting synced datasources [#3718](https://github.com/CartoDB/cartodb/pull/3718)

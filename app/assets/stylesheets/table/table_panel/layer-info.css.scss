@@ -34,11 +34,12 @@
 
     
     // Layer info block
-    a.info {
+    button.info {
       display:block;
       left:0!important;
       top:0!important;
-      padding-left:24px;
+      text-align: left;
+      padding-left: 24px;
 
       * {@include inline-block(); vertical-align:middle; letter-spacing:0px;}
 
@@ -60,7 +61,7 @@
         width:auto;
         @include text-overflow();
         overflow:hidden;
-        margin-left:27px;
+        margin-left:23px;
         font:bold 17px $text-fonts;
         color:#A9A9A9;
         line-height:20px;
@@ -85,15 +86,18 @@
       // Layer info (second name?)
       .name_info {
         position:absolute;
-        top:34px;
-        left:67px;
-        overflow:hidden;
-        max-width:80%;
-        width:auto;
-        font:normal 11px $text-fonts;
-        color:#AAA;
+        @include display-flex();
+        top: 34px;
+        left: 67px;
+        overflow: hidden;
+        max-width: 80%;
+        width: auto;
+        font: normal 11px $text-fonts;
+        color: #AAA;
         @include text-overflow();
         line-height:15px;
+
+        a { margin-left: 5px }
       }
 
 

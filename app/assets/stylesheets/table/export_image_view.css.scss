@@ -11,11 +11,17 @@
 }
 .ExportImageView-Header {
   position: absolute;
-  text-align: center;
-  left:50%;
+  width: 100%;
+  top: -35px;
   height: 40px;
-  top: 30px;
+  text-align: center;
   z-index: 105;
+}
+.ExportImageView-Header--inner {
+  position:absolute;
+  width: 400px;
+  left: 50%;
+  margin-left: -200px;
 }
 .ExportImageView--help {
   position:relative;
@@ -32,12 +38,22 @@
   -ms-user-select: none;
   user-select: none;
 }
+.ExportImageView.is-small .ButtonClose {
+  right: -70px;
+  top: 30px;
+}
 .ExportImageView-Footer {
   position: absolute;
-  text-align: center;
   width: 100%;
-  bottom: 25px;
+  bottom: -20px;
+  text-align: center;
   z-index: 105;
+}
+.ExportImageView-Footer--inner {
+  position:absolute;
+  left: 50%;
+  margin-left: -84px;
+  width: 168px;
 }
 .ExportImageView--dimensions  {
   display: inline-block;
@@ -47,9 +63,13 @@
   font-size: 12px;
   color: #9B9B9B;
 }
-.ExportImageView--dimensions strong {
+.ExportImageView--dimensions input {
+  width: 20px;
+  border: none;
+  background: transparent;
   color: #fff;
   font-weight: normal;
+  outline: none;
 }
 
 .ExportImageView.is-exportable {

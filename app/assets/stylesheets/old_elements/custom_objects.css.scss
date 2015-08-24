@@ -179,61 +179,6 @@
         span.handle { background:rgba(black,0.4) }
       }
     }
-
-
-    /*
-
-    span.color {
-      @include inline-block();
-      @include border-left-radius(3px);
-      width:27px;
-      height:21px;
-
-      &:before {
-        content:' ';
-        position:absolute;
-        left:0;
-        top:0;
-        width:25px;
-        height:19px;
-        background:none;
-        @include border-left-radius(3px);
-        border:1px solid rgba(0,0,0,0.2);
-      }
-      &.image-color {
-        @include elements-sprite(image_color);
-      }
-    }
-
-    a.picker {
-      position:absolute;
-      right:0;
-      top:0;
-      width:15px;
-      height:19px;
-      border:1px solid #9E9E9E;
-      @include border-right-radius(3px);
-      border-left:0;
-      @include text-indent();
-
-      &:before {
-        content:' ';
-        position:absolute;
-        left:5px;
-        top:9px;
-        width:0;
-        height:0;
-        border-left:2px solid transparent;
-        border-right:2px solid transparent;
-        border-top:3px solid #666666;
-      }
-    }
-
-    &:hover {
-      cursor:pointer;
-      a:before {border-top:3px solid #000000;}
-    }
-    */
   }
 
   .form_align {
@@ -342,7 +287,7 @@
       @include border-radius(0);
       background: none;
 
-      .label { 
+      .label {
         margin: 0 4px 0 0;
         font-size: 11px;
         color: #797979;
@@ -381,7 +326,7 @@
       border: 1px solid #7E7E7E;
     }
 
-    &:hover input.value { 
+    &:hover input.value {
       color: #333;
     }
 

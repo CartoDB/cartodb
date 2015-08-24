@@ -300,7 +300,6 @@ $sLabel-width: 140px;
 .Form-copyIcon.hover { color: $cTypography-paragraphs }
 .Form-text--preview {
   font-size: $sFontSize-normal;
-  @include nicer-lato-typography();
   color: $cTypography-secondary;
   line-height: $sLineHeight-large;
 }

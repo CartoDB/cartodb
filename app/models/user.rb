@@ -125,6 +125,17 @@ class User < Sequel::Model
     self.organization_user? ? [CartoDB::PUBLIC_DB_USER, database_public_username] : [CartoDB::PUBLIC_DB_USER]
   end
 
+  #                             +--------+---------+------+
+  #       valid_privacy logic   | Public | Private | Link |
+  #   +-------------------------+--------+---------+------+
+  #   | private_tables_enabled  |    T   |    T    |   T  |
+  #   | !private_tables_enabled |    T   |    F    |   F  |
+  #   +-------------------------+--------+---------+------+
+  # 
+  def valid_privacy?(privacy)
+    self.private_tables_enabled || privacy == UserTable::PRIVACY_PUBLIC
+  end
+
   ## Callbacks
   def before_validation
     self.email = self.email.to_s.strip.downcase
@@ -1495,10 +1506,15 @@ class User < Sequel::Model
   def create_db_user
     conn = self.in_database(as: :cluster_admin)
     begin
-      conn.run("CREATE USER \"#{database_username}\" PASSWORD '#{database_password}'")
-    rescue => e
-      puts "#{Time.now} USER SETUP ERROR (#{database_username}): #{$!}"
-      raise e
+      conn.transaction do
+        begin
+          conn.run("CREATE USER \"#{database_username}\" PASSWORD '#{database_password}'")
+          conn.run("GRANT publicuser to \"#{database_username}\"")
+          rescue => e
+            puts "#{Time.now} USER SETUP ERROR (#{database_username}): #{$!}"
+            raise e
+          end
+      end
     end
   end
 

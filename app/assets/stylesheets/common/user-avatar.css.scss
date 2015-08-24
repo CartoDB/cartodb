@@ -27,7 +27,6 @@
   background-color: $cHighlight-negative;
   color: white;
   font-size: $sFontSize-smallUpperCase;
-  @include nicer-lato-typography();
   text-align: center;
 }
 .UserAvatar-img {

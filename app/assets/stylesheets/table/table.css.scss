@@ -7,7 +7,7 @@
   @import "../table/table-sprite";
   @import "../old_elements/progress-bar";
 
-  @-webkit-keyframes highlight-fade {   
+  @-webkit-keyframes highlight-fade {
     0%   { background: none; }
     20%   { background: #ECFCE5; }
     80%   { background: #ECFCE5; }
@@ -515,7 +515,7 @@ div.table {
     &.vis {
       div.shadow {
         top:144px;
-      } 
+      }
     }
 
     // tbody
@@ -718,27 +718,9 @@ div.order_selector {
   background: image-url('layout/clock.png') no-repeat 0 0 transparent;
 }
 
-.data_download {
-  cursor: pointer;
-
-  span.icon {
-    @include inline-block();
-    vertical-align:middle;
-    height: 9px;
-    width: 13px;
-    margin:0 0 1px;
-    padding:0;
-    @include table-sprite(download_blue);
-  }
-
-  &:hover span.icon {
-    @include table-sprite(download_dark);
-  }
-}
-
 
 // Hello hacks for Firefox
-@-moz-document url-prefix() { 
+@-moz-document url-prefix() {
   table { border-collapse: inherit; }
   thead div.sqlview { z-index:1!important; }
   thead tr th div { z-index:2!important; }

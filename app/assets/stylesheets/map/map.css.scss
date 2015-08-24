@@ -82,7 +82,7 @@ div.map {
 
       @include border-radius(0);
 
-      .cartodb-logo { 
+      .cartodb-logo {
         margin-bottom: 0px;
         bottom: 10px!important;
       }
@@ -471,7 +471,7 @@ div.map {
 
   }
 
-  div.cartodb-layer-selector-box { 
+  div.cartodb-layer-selector-box {
     display:none;
     font-weight: normal;
     margin: 0;
@@ -497,7 +497,7 @@ div.map {
     }
   }
 
-  // Fullscreen 
+  // Fullscreen
   div.cartodb-fullscreen {
     display:none;
     position:absolute;
@@ -691,38 +691,7 @@ div.map {
 
 } // div.cartodb-map
 
-section.block.noGeoRef {
-  background-color: #FFF0C1;
-  padding: 5px;
-
-  .innerBlock {
-    background-color: white;
-
-    .content {
-      color: #666;
-      line-height:120%;
-    }
-
-    .foot {
-      border-top: 0;
-      padding-top: 0px;
-
-      .cancel {
-        margin-top: 15px;
-
-        a { text-decoration: underline; }
-
-      }
-    }
-
-    .enabled { display: block; }
-
-  } // .innerBlock
-
-} // section.bloc.noGeoRef
-
 /* FOOTER EDIT BUTTONS  for infowindow */
-
 @mixin edit-bottom-states($x,$y,$c1,$c2,$c3,$c4) {
   @include background(sprite($map-sprites, infowindow-edit-tools, $offset-x: $x, $offset-y: $y) no-repeat, $c1); // IE
   @include background(sprite($map-sprites, infowindow-edit-tools, $offset-x: $x, $offset-y: $y) no-repeat, linear-gradient($c1,$c2) 0 0);
@@ -866,17 +835,15 @@ div.cartodb-edit-buttons {
   border:1px solid #397DBA;
 }
 
-:-webkit-full-screen { 
+:-webkit-full-screen {
   top: 0!Important; left: 0!Important; right: 0!Important; bottom: 0!Important;
 }
-:-moz-full-screen { 
+:-moz-full-screen {
   top: 0!Important; left: 0!Important; right: 0!Important; bottom: 0!Important;
 }
-:-ms-fullscreen { 
+:-ms-fullscreen {
   top: 0!Important; left: 0!Important; right: 0!Important; bottom: 0!Important;
 }
-:fullscreen { 
+:fullscreen {
   top: 0!Important; left: 0!Important; right: 0!Important; bottom: 0!Important;
 }
-
-

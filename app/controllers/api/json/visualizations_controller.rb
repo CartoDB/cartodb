@@ -10,6 +10,7 @@ require_relative '../../../models/visualization/table_blender'
 require_relative '../../../models/visualization/watcher'
 require_relative '../../../models/map/presenter'
 require_relative '../../../../services/named-maps-api-wrapper/lib/named-maps-wrapper/exceptions'
+require_relative '../../../../lib/static_maps_url_helper'
 
 class Api::Json::VisualizationsController < Api::ApplicationController
   include CartoDB
@@ -247,7 +248,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
     if (current_viewer.id != vis.user.id)
       vis_preview_image = Carto::StaticMapsURLHelper.new.url_for_static_map(request, vis, 600, 300)
-      ::Resque.enqueue(::Resque::UserJobs::Mail::MapLiked, vis.id, current_viewer.id, vis_preview_image)
+      send_like_email(vis, current_viewer, vis_preview_image)
     end
 
     render_jsonp({
@@ -369,6 +370,14 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   # Need to always send request object to visualizations upon rendering their json
   def render_jsonp(obj, status = 200, options = {})
     super(obj, status, options.merge({request: request}))
+  end
+
+  def send_like_email(vis, current_viewer, vis_preview_image)
+    if vis.type == Carto::Visualization::TYPE_CANONICAL
+      ::Resque.enqueue(::Resque::UserJobs::Mail::TableLiked, vis.id, current_viewer.id, vis_preview_image)
+    elsif vis.type == Carto::Visualization::TYPE_DERIVED
+      ::Resque.enqueue(::Resque::UserJobs::Mail::MapLiked, vis.id, current_viewer.id, vis_preview_image)
+    end
   end
 
 end

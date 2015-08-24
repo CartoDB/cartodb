@@ -49,6 +49,11 @@ module Carto
           elsif locked == 'false'
             vqb.with_locked(false)
           end
+
+          if types.include? Carto::Visualization::TYPE_REMOTE
+            vqb.without_synced_external_sources
+          end
+
         else
           # TODO: ok, this looks like business logic, refactor
           subdomain = CartoDB.extract_subdomain(request)

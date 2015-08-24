@@ -33,14 +33,23 @@ namespace :cartodb do
           table = UserTable.where({
               name: synchronization.name,
               user_id: synchronization.user_id
-            }).first.service
+            }).first
+          if table.nil?
+            puts "\nSync id '#{record[:id]}' related table not found"
+          else
+            table = table.service
+          end
         rescue => exception
           table = nil
           puts "\nSync id '#{record[:id]}' errored: #{exception.inspect}"
         end
         unless table.nil?
           if synchronization.visualization_id.nil?
-            synchronization.visualization_id = table.table_visualization.id
+            begin
+              synchronization.visualization_id = table.table_visualization.id
+            rescue => exception
+              puts "\nSync id '#{record[:id]}' errored, canonical visualization not found"
+            end
             begin
               synchronization.store
               printf '.'
@@ -50,13 +59,12 @@ namespace :cartodb do
           else
             printf 'S'
           end
-      end
+        end
       else
         puts "\nSync id '#{record[:id]}' errored: missing synchronization entry"
       end
     }
-
-
+    puts "\nFINISHED"
 
   end
 end

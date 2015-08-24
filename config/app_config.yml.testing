@@ -101,9 +101,9 @@ defaults: &defaults
     url: 'https://viz2.cartodb.com/api/v1/sql'
     percent_users: 10
   # graphite endpoint used to post frontend stats
-  graphite_public:
-    host: "graphite.dioc.cartodb.net"
-    port: 8127
+  #graphite_public:
+    #host: ""
+    #port: 
 
   basemaps:
     GMaps:
@@ -159,12 +159,13 @@ defaults: &defaults
       options: { color: '#ffffff' }
       options:
   cartodb_com_hosted: true
-  cartodb_central_domain_name: 'cartodb.com'
-  cartodb_central_api:
-    host: 'admin.localhost.lan'
-    port: 4000
-    username: 'api'
-    password: 'test'
+  # Test don't have Central
+  #cartodb_central_domain_name: 'cartodb.com'
+  #cartodb_central_api:
+  #  host: 'admin.localhost.lan'
+  #  port: 4000
+  #  username: 'api'
+  #  password: 'test'
   aws:
     s3:
       access_key_id: "test"

@@ -115,7 +115,6 @@ $sLabel-width: 140px;
   line-height: 30px;
   font-size: $sFontSize-normal;
   font-weight: $sFontWeight-normal;
-  @include nicer-lato-typography();
   color: $cTypography-labels;
   text-transform: capitalize;
 }

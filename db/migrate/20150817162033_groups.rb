@@ -31,6 +31,12 @@ Sequel.migration do
 
     Rails::Sequel.connection.run(%Q{
       ALTER TABLE "groups"
+        ADD CONSTRAINT groups_organization_id_display_name_uq
+        UNIQUE (organization_id, display_name)
+    })
+
+    Rails::Sequel.connection.run(%Q{
+      ALTER TABLE "groups"
         ADD CONSTRAINT groups_organization_id_database_role_uq
         UNIQUE (organization_id, database_role)
     })

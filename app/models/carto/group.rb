@@ -11,6 +11,7 @@ module Carto
   # extension management functions. In order to keep extension and database
   # in sync, there're several methods that do trigger it:
   # - create_group_with_extension
+  # - rename_group_with_extension
   # - destroy_group_with_extension
   class Group < ActiveRecord::Base
     include PagedModel
@@ -47,6 +48,16 @@ module Carto
       group.display_name = display_name
       group.save
       group
+    end
+
+    def rename_group_with_extension(new_display_name)
+      new_name = Carto::Group.valid_group_name(new_display_name)
+      organization.owner.in_database do |conn|
+        Carto::Group.rename_group_extension_query(conn, name, new_name)
+      end
+      self.reload
+      self.display_name = new_display_name
+      self.save
     end
 
     # INFO: public because it's called by Organization.
@@ -91,12 +102,16 @@ module Carto
     # TODO: PG Format("%I", strvar); ?
     def self.valid_group_name(display_name)
       name = display_name.squish
-      name = "g_#{name}" unless name[/^[a-z_]{1}/]
-      name.gsub(/[^a-z0-9_]/,'_').gsub(/_{2,}/, '_')
+      name = "g_#{name}" unless name[/^[a-zA-Z_]{1}/]
+      name.gsub(/[^a-zA-Z0-9_]/,'_').gsub(/_{2,}/, '_')
     end
 
     def self.create_group_extension_query(conn, name)
       conn.execute(%Q{ select cartodb.CDB_Group_CreateGroup('#{name}') })
+    end
+
+    def self.rename_group_extension_query(conn, name, new_name)
+      conn.execute(%Q{ select cartodb.CDB_Group_RenameGroup('#{name}', '#{new_name}') })
     end
 
     def self.destroy_group_extension_query(conn, name)

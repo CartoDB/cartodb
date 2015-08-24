@@ -111,6 +111,28 @@ describe Carto::Api::GroupsController do
       end
     end
 
+    it '#update triggers group renaming' do
+      group = @carto_organization.groups.first
+      new_display_name = 'A Group Renamed'
+      expected_new_name = 'A_Group_Renamed'
+
+      Carto::Group.expects(:rename_group_extension_query).with(anything, group.name, expected_new_name)
+
+      put_json api_v1_organization_groups_update_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, group_id: group.id, api_key: @org_user_owner.api_key), { display_name: new_display_name }, @headers do |response|
+        response.status.should == 200
+        response.body[:id].should_not be_nil
+        response.body[:organization_id].should == @carto_organization.id
+        # INFO: since test doesn't actually trigger the extension we only check expectation on renaming call and display name
+        response.body[:display_name].should == new_display_name
+
+        # Also check database data because Group changes something after extension interaction
+        new_group = Carto::Group.find(response.body[:id])
+        new_group.organization_id.should == @carto_organization.id
+        new_group.display_name.should == new_display_name
+        new_group.database_role.should_not be_nil
+      end
+    end
+
     it '#drops triggers deletion of existing groups' do
       group = @carto_organization.groups.first
 

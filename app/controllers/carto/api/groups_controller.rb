@@ -10,7 +10,7 @@ module Carto
       include PagedSearcher
 
       before_filter :load_organization
-      before_filter :load_group, :only => [:show, :destroy]
+      before_filter :load_group, :only => [:show, :update, :destroy]
 
       def index
         page, per_page, order = page_per_page_order_params
@@ -40,6 +40,14 @@ module Carto
         render json: { errors: "A group with that data already exists" }, status: 409
       rescue => e
         CartoDB.notify_exception(e, { params: params , group: (group ? group : 'not created') })
+        render json: { errors: e.message }, status: 500
+      end
+
+      def update
+        @group.rename_group_with_extension(params['display_name'])
+        render_jsonp(Carto::Api::GroupPresenter.new(@group).to_poro, 200)
+      rescue => e
+        CartoDB.notify_exception(e, { params: params , group: @group })
         render json: { errors: e.message }, status: 500
       end
 

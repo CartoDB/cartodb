@@ -30,7 +30,7 @@
       <%= csrf_meta_tags %>
 
       <div class="Form-title">
-        <p class="Form-titleText">Your account preferences</p>
+        <p class="Form-titleText">Edit your plan information</p>
       </div>
 
       <span class="Form-separator"></span>
@@ -108,24 +108,25 @@
           </div>
         </div>
       </div>
-      
-      <div class="Form-title">
-        <p class="Form-titleText">Account type</p>
-      </div>
-
-      <span class="Form-separator"></span>
-
-      <div class="Form-row">
-        <div class="Form-rowLabel">
-          <label class="Form-label">Your billing plan</label>
+      <% if (!Cartodb.config[:cartodb_com_hosted].present? && (!current_user.organization.present? || current_user.organization_owner?))  %>
+        <div class="Form-title">
+          <p class="Form-titleText">Account type</p>
         </div>
-        <div class="Form-rowData">
-          <div class="Form-planTag"><%= current_user.account_type %></div>
-          <div class="Form-rowInfo Form-rowInfo--marginLeft">
-            <p class="Form-rowInfoText"><a href="<%= current_user.plan_url(request.protocol) %>">View details</a></p>
+
+        <span class="Form-separator"></span>
+
+        <div class="Form-row">
+          <div class="Form-rowLabel">
+            <label class="Form-label">Your billing plan</label>
+          </div>
+          <div class="Form-rowData">
+            <div class="Form-planTag"><%= current_user.account_type %></div>
+            <div class="Form-rowInfo Form-rowInfo--marginLeft">
+              <p class="Form-rowInfoText"><a href="<%= current_user.plan_url(request.protocol) %>">View details</a></p>
+            </div>
           </div>
         </div>
-      </div>
+      <% end %>
 
       <%# if none of the services are activated, this block shouldn't appear %>
       <% if @services.size > 0 %>
@@ -138,22 +139,36 @@
         <div class="js-datasourcesContent"></div>
       <% end %>
 
-      <div class="Form-footer">
-        <% if !current_user.organization_owner? -%>
-          <button type="button" class="Button Button--secondary js-deleteAccount">
-            <span>Delete my account</span>
-          </button>
-        <% else %>
+      <div class="Form-footer Form-footer--withoutMarginBottom">
+        <% if current_user.organization_owner? -%>
           <p class="Form-footerText">
             <i class="iconFont iconFont-Info Form-footerIcon"></i>
             You can't delete your account because you are admin of an organization
           </p>
+        <% else %>
+          <p class="Form-footerText"></p>
         <% end %>
         <%= button_tag(type: 'submit', class: 'Button Button--main') do %>
           <% content_tag(:span, 'Save changes') %>
         <% end %>
       </div>
 
+      <% if !current_user.organization_owner? -%>
+        <div class="Form-title">
+          <p class="Form-titleText">Delete account</p>
+        </div>
+
+        <span class="Form-separator"></span>
+
+        <div class="Form-row">
+          <div class="Form-rowLabel">
+            <label class="Form-label">Are you sure?</label>
+          </div>
+          <div class="Form-rowData">
+            <span class="Form-button--deleteAccount js-deleteAccount">Delete my account and all my data</span>
+          </div>
+        </div>
+      <% end %>
     <% end %>
   </div>
 

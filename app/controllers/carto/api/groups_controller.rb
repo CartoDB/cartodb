@@ -10,7 +10,7 @@ module Carto
       include PagedSearcher
 
       before_filter :load_organization
-      before_filter :load_group, :only => [:destroy]
+      before_filter :load_group, :only => [:show, :destroy]
 
       def index
         page, per_page, order = page_per_page_order_params
@@ -20,6 +20,10 @@ module Carto
           total_entries: @organization.groups.count,
           total_org_entries: @organization.groups.count
         }, 200)
+      end
+
+      def show
+        render_jsonp(Carto::Api::GroupPresenter.new(@group).to_poro, 200)
       end
 
       def create

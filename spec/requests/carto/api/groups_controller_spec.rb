@@ -60,6 +60,13 @@ describe Carto::Api::GroupsController do
       end
     end
 
+    it '#show returns a group' do
+      get_json api_v1_organization_groups_show_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, group_id: @group_1.id, api_key: @org_user_owner.api_key), { }, @headers do |response|
+        response.status.should == 200
+        response.body.should == @group_1_json.symbolize_keys
+      end
+    end
+
     it '#create fails if user is not owner' do
       post_json api_v1_organization_groups_create_url(user_domain: @org_user_1.username, organization_id: @carto_organization.id, api_key: @org_user_1.api_key), { display_name: 'willfail' }, @headers do |response|
         response.status.should == 400

@@ -140,6 +140,18 @@
 }
 
 // Moved with scroll behaviour
+.Filters {
+  position: absolute;
+  display:block;
+  top: 0;
+  left: 0;
+  width:100%;
+  background: transparent;
+  z-index: 10;
+}
+.Filters.is-relative {
+  position: relative;
+}
 .Filters.is-fixed {
   position: fixed;
   background: white;

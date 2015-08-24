@@ -50,6 +50,7 @@ cd lib/sql; sudo make all install
 * Added new fields source, attributions, and license, to metadata modal [#5016](https://github.com/CartoDB/cartodb/pull/5016)
 * Code related to pecan extracted to separate module [#4999](https://github.com/CartoDB/cartodb/pull/4999)
   * requires a `npm install` for grunt tasks
+* New modals [#5068](https://github.com/CartoDB/cartodb/pull/5068)
 
 Bugfixes:
 * Fixed deletion of layers upon disconnecting synced datasources [#3718](https://github.com/CartoDB/cartodb/pull/3718)

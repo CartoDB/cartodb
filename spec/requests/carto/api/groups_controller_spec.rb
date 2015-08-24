@@ -85,7 +85,7 @@ describe Carto::Api::GroupsController do
       end
     end
 
-    it '#create new groups' do
+    it '#create triggers group creation' do
       display_name = 'a new group'
       name = 'a_new_group'
 
@@ -111,7 +111,7 @@ describe Carto::Api::GroupsController do
       end
     end
 
-    it '#drops existing groups' do
+    it '#drops triggers deletion of existing groups' do
       group = @carto_organization.groups.first
 
       Carto::Group.expects(:destroy_group_extension_query).with(anything, group.name)

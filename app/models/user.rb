@@ -1636,7 +1636,10 @@ class User < Sequel::Model
 
   def setup_owner_permissions
     self.in_database(as: :superuser) do |database|
-      database.run(%Q{ SELECT cartodb.CDB_Organization_AddAdmin('#{self.username}') })
+      # TODO: remvove the check after extension install
+      if !Rails.env.test?
+        database.run(%Q{ SELECT cartodb.CDB_Organization_AddAdmin('#{self.username}') })
+      end
     end
   end
 

@@ -59,6 +59,7 @@ module CartoDB
       attribute :type_guessing,           Boolean, default: true
       attribute :quoted_fields_guessing,  Boolean, default: true
       attribute :content_guessing,        Boolean, default: false
+      attribute :visualization_id,        String
 
       def initialize(attributes={}, repository=Synchronization.repository)
         super(attributes)
@@ -84,11 +85,11 @@ module CartoDB
 
       def to_s
         "<CartoDB::Synchronization::Member id:\"#{@id}\" name:\"#{@name}\" ran_at:\"#{@ran_at}\" run_at:\"#{@run_at}\" " \
-        "interval:\"#{@interval}\" state:\"#{@state}\" retried_times:\"#{@retried_times}\" log_id:\"#{log.id}\" " \
+        "interval:\"#{@interval}\" state:\"#{@state}\" retried_times:\"#{@retried_times}\" log_id:\"#{self.log_id}\" " \
         "service_name:\"#{@service_name}\" service_item_id:\"#{@service_item_id}\" checksum:\"#{@checksum}\" " \
         "url:\"#{@url}\" error_code:\"#{@error_code}\" error_message:\"#{@error_message}\" modified_at:\"#{@modified_at}\" " \
         " user_id:\"#{@user_id}\" type_guessing:\"#{@type_guessing}\" " \
-        "quoted_fields_guessing:\"#{@quoted_fields_guessing}\">"
+        "quoted_fields_guessing:\"#{@quoted_fields_guessing}\" visualization_id:\"#{@visualization_id}\">"
       end
 
       def synchronizations_logger
@@ -250,8 +251,8 @@ module CartoDB
         notify
         self
       ensure
-        CartoDB::PlatformLimits::Importer::UserConcurrentSyncsAmount.new({ 
-              user: user, redis: { db: $users_metadata } 
+        CartoDB::PlatformLimits::Importer::UserConcurrentSyncsAmount.new({
+              user: user, redis: { db: $users_metadata }
             }).decrement!
       end
 
@@ -390,11 +391,11 @@ module CartoDB
       end # geocode_table
 
       def to_hash
-        attributes.to_hash
+        attributes.merge({from_external_source: from_external_source?}).to_hash
       end
 
       def to_json(*args)
-        attributes.to_json(*args)
+        attributes.merge({from_external_source: from_external_source?}).to_json(*args)
       end
 
       def valid?
@@ -418,8 +419,14 @@ module CartoDB
         @table
       end
 
+      def visualization
+        @visualization ||= CartoDB::Visualization::Member.new(id: @visualization_id).fetch
+      rescue KeyErrror
+        @visualization = nil
+      end
+
       def authorize?(user)
-        user.id == user_id && !!user.sync_tables_enabled
+        user.id == user_id && (!!user.sync_tables_enabled || from_external_source?)
       end
 
       def pg_options
@@ -493,6 +500,10 @@ module CartoDB
           datasource = nil
         end
         datasource
+      end
+
+      def from_external_source?
+        ::ExternalDataImport.where(synchronization_id: self.id).first != nil
       end
 
       attr_reader :repository

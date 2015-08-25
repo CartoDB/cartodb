@@ -13,30 +13,54 @@ class Api::Json::OverlaysController < Api::ApplicationController
   before_filter :check_owner_by_id, only: [ :update, :destroy ]
 
   def create
-    member_attributes = payload.merge(
-      type:       params[:type],
-      options:    params[:options],
-      template:   params[:template],
-      order:      params[:order]
-    )
+    @stats_aggregator.timing('overlays.create') do
 
-    member= Overlay::Member.new(member_attributes).store
-    render_jsonp(member.attributes)
+      begin
+        member_attributes = payload.merge(
+          type:       params[:type],
+          options:    params[:options],
+          template:   params[:template],
+          order:      params[:order]
+        )
+
+        member = @stats_aggregator.timing('save') do
+          Overlay::Member.new(member_attributes).store
+        end
+        render_jsonp(member.attributes)
+      end
+
+    end
   end
 
   def update
-    member = Overlay::Member.new(id: params.fetch('id')).fetch
-    member.attributes = payload
-    member.store
-    render_jsonp(member.attributes)
-  rescue KeyError
-    head :not_found
+    @stats_aggregator.timing('overlays.update') do
+
+      begin
+        member = Overlay::Member.new(id: params.fetch('id')).fetch
+        member.attributes = payload
+
+        member = @stats_aggregator.timing('save') do
+          member.store.fetch
+        end
+
+        render_jsonp(member.attributes)
+      rescue KeyError
+        head :not_found
+      end
+
+    end
   end
 
   def destroy
-    member = Overlay::Member.new(id: params.fetch('id'))
-    member.delete
-    head 204
+    @stats_aggregator.timing('overlays.destroy') do
+
+      member = Overlay::Member.new(id: params.fetch('id'))
+      @stats_aggregator.timing('delete') do
+        member.delete
+      end
+      head 204
+
+    end
   end
 
   protected

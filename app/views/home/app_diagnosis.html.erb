@@ -1,0 +1,64 @@
+<% content_for :title do %>CartoDB Diagnosis<% end %>
+
+<%= content_for(:css) do %>
+<style>
+  body {
+    padding: 40px;
+  }
+
+  h1 {
+    font-size: 200%;
+  }
+
+  p {
+    margin: 30px 0;
+  }
+
+  ul, dl {
+    margin-left: 20px;
+  }
+
+  .component {
+    font-size: 110%;
+    font-weight: bold;
+  }
+
+  .component:after {
+    content: ': ';
+  }
+
+  .code {
+    font-family: courier;
+  }
+
+  .status.ok {
+    color: green;
+  }
+  .status.error {
+    color: red;
+  }
+  .status.warning {
+    color: orange;
+  }
+</style>
+<% end %>
+
+<h1>CartoDB diagnosis</h1>
+
+<p>This page displays information about your installation of CartoDB and dependencies. If any of the checks displays an error please follow instructions and install supported versions.</p>
+<p>If you have any problem with your installation please write to <a href="https://groups.google.com/forum/#!forum/cartodb">CartoDB Google Group</a> including this information.</p>
+
+<dl>
+<% @diagnosis.each { |d| %>
+  <dt><span class="component"><%= d[0] %></span> <span class="status <%= d[1] %>"><%= d[1] %></span></dt>
+  <% if d[2].length > 0 %>
+    <dd>
+      <ul>
+        <% d[2].each { |i| %>
+          <li><%= raw i %></li>
+        <% } %>
+      </ul>
+    </dd>
+  <% end %>
+<% } %>
+</dl>

@@ -17,7 +17,9 @@ module CartoDB
                         named_map:        :named_maps_layers
                       }
 
-      INTERFACE     = %w{ overlays map user table related_tables layers stats mapviews total_mapviews single_data_layer? synchronization permission parent children support_tables prev_list_item next_list_item likes likes_count reload_likes estimated_row_count actual_row_count }
+      INTERFACE     = %w{ overlays map user table related_templates related_tables layers stats mapviews total_mapviews 
+                          single_data_layer? synchronization permission parent children support_tables prev_list_item 
+                          next_list_item likes likes_count reload_likes estimated_row_count actual_row_count }
 
       def initialize(attributes={})
         @id             = attributes.fetch(:id)
@@ -93,6 +95,10 @@ module CartoDB
         table.nil? ? nil : table.actual_row_count
       end
 
+      def related_templates
+        Carto::Template.where(source_visualization_id: @id).all
+      end
+
       def related_tables
         @related_tables ||= layers(:carto_and_torque)
           .flat_map{|layer| layer.affected_tables.map{|t| t.service}}.uniq
@@ -104,8 +110,9 @@ module CartoDB
       end
 
       def synchronization
-        return {} unless table
-        table.synchronization
+        CartoDB::Synchronization::Member.new(id: @id).fetch
+      rescue KeyError
+        {}
       end
 
       def stats(user=nil)

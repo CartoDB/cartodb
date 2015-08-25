@@ -8,7 +8,8 @@ gem 'sequel',                  '3.42.0'
 gem 'sequel_pg',               '1.6.3', require: 'sequel'
 
 gem 'activerecord-postgresql-adapter'
-gem 'activerecord-postgres-array'
+# NOTE: Forced on purpose due to this bug https://github.com/tlconnor/activerecord-postgres-array/issues/37
+gem 'activerecord-postgres-array', '0.0.9'
 
 gem 'vizzuality-sequel-rails', '0.3.7', git: 'https://github.com/Vizzuality/sequel-rails.git'
 
@@ -66,7 +67,7 @@ gem 'aequitas',                 '0.0.2'
 gem 'uuidtools',                '2.1.5'
 
 # Markdown
-gem 'redcarpet', '3.2.2'
+gem 'redcarpet', '3.2.3'
 
 # TODO we should be able to remove this using the new
 #      Rails routes DSL

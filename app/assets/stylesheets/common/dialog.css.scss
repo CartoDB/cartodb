@@ -2,6 +2,8 @@
 @import "../variables/colors";
 @import "../variables/sizes";
 
+$sSmallWidth: 670px;
+
 /* set by base dialog */
 body.is-inDialog {
   overflow: hidden;
@@ -90,6 +92,10 @@ body.is-inDialog {
   width: $sLayout-width;
   margin: 0 auto;
 }
+.Dialog-body.Dialog-body--tall {
+  padding-top: $sMargin-section;
+  padding-bottom: $sMargin-section;
+}
 .Dialog-body.Dialog-body--withoutBorder {
   border-top: none;
 }
@@ -99,6 +105,9 @@ body.is-inDialog {
   padding-bottom: 0;
   overflow: auto;
 }
+.Dialog-body.Dialog-body--small {
+  width: $sSmallWidth;
+}
 .Dialog-Stretcher {
   width: $sLayout-width;
   @include display-flex();
@@ -106,6 +115,9 @@ body.is-inDialog {
 }
 .Dialog-Stretcher--small {
   width: 700px;
+}
+.Dialog-Stretcher--medium {
+  width: 830px;
 }
 .Filters.Dialog-bodyFilters {
   position: relative;
@@ -122,6 +134,13 @@ body.is-inDialog {
 }
 .Dialog-footer--withoutBorder { border-top: none }
 .Dialog-footer--simple {
+  @include display-flex();
+  @include justify-content(center);
+}
+.Dialog-footer--small {
+  width: $sSmallWidth;
+}
+.Dialog-footerContent {
   @include display-flex();
   @include justify-content(center);
 }
@@ -180,6 +199,12 @@ body.is-inDialog {
   color: $cHighlight-alert2;
   border-color: $cHighlight-alert2;
 }
+.Dialog-headerIcon--small {
+  font-size: 10px;
+  vertical-align: middle;
+  position: relative;
+  top: -3px;
+}
 .Dialog-headerIconBadge {
   /* "backwards" to use the first keyframe's styles before animation starts */
   @include animation(fade-and-bounce-up 0.6s 350ms ease-in-out backwards);
@@ -203,6 +228,9 @@ body.is-inDialog {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
+}
+.Dialog-headerText--small {
+  width: $sSmallWidth;
 }
 .Dialog-footerBtn {
   margin-right: $sMargin-element;
@@ -241,15 +269,11 @@ $sStickyHeight: 97px;
 .Dialog-expandedSubContentInner {
   position: relative; // necessary to position subHeader properly
 }
-.Dialog-body--expanded.is-expandedWithSubHeader {
-  padding-top: $sStickyHeight + $sMargin-group;
-}
-.Dialog-body--expanded.is-expandedWithSubFooter {
-  padding-bottom: $sStickyHeight;
-}
-.Dialog-body--expanded.is-expandedWithPreFooter {
-  padding-bottom: $sStickyHeight + 100px;
-}
+// These additional paddings are required to be applied on an inner element, for the paddings to apply in FF
+// See http://stackoverflow.com/questions/26888428/display-flex-loses-right-padding-when-overflowing for an isolated explanation
+.Dialog-bodyInnerExpandedWithSubFooter { padding-bottom: $sStickyHeight }
+.Dialog-bodyInnerExpandedWithPreFooter { padding-bottom: $sStickyHeight + 100px }
+
 .Dialog-stickyFooter {
   position: fixed;
   bottom: 0;

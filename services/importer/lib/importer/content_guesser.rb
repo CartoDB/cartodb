@@ -2,8 +2,9 @@
 
 require 'ipaddr'
 require_relative 'table_sampler'
-require_relative 'importer_stats'
 require_relative 'namedplaces_guesser'
+
+require_relative '../../../../lib/cartodb/stats/importer'
 
 module CartoDB
   module Importer2
@@ -23,7 +24,7 @@ module CartoDB
         @schema     = schema
         @options    = options
         @job        = job
-        @importer_stats = ImporterStats.instance
+        @importer_stats = CartoDB::Stats::Importer.instance
         @country_name_normalizer = Proc.new {|str| str.nil? ? '' : str.gsub(/[^a-zA-Z\u00C0-\u00ff]+/, '').downcase }
       end
 

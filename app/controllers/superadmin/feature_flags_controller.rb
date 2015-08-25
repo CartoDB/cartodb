@@ -24,6 +24,8 @@ class Superadmin::FeatureFlagsController < Superadmin::SuperadminController
     render json: @feature_flag, status: 204
   end
 
+  private
+
   def get_feature_flag
     feature_flag_params = params[:feature_flag]
     @feature_flag = FeatureFlag[feature_flag_params[:id]]

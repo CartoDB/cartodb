@@ -28,10 +28,12 @@ describe CartoDB::Importer2::ShpHelper do
     end
 
     it 'verify return exception if shp file doesnt has prj file in the same folder' do
-      path = File.expand_path(File.join(File.dirname(__FILE__), "../fixtures/shp_no_prj.shp"))
-      expect{
-        shp_helper = CartoDB::Importer2::ShpHelper.new(path)
-      }.to raise_error MissingProjectionError
+      pending("removed method to give a default projection to file") do
+        path = File.expand_path(File.join(File.dirname(__FILE__), "../fixtures/shp_no_prj.shp"))
+        expect{
+          shp_helper = CartoDB::Importer2::ShpHelper.new(path)
+        }.to raise_error MissingProjectionError
+      end
     end
 
   end

@@ -72,7 +72,7 @@ module CartoDB
       end
 
       attr_reader :id, :logger, :pg_options, :schema
-      attr_accessor :success_status, :source_file_rows, :imported_rows
+      attr_accessor :success_status, :source_file_rows, :imported_rows, :fallback_executed
 
     end
   end

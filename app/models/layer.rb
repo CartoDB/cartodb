@@ -2,10 +2,12 @@
 
 require_relative 'layer/presenter'
 require_relative 'table/user_table'
+require_relative '../../lib/cartodb/stats/editor_apis'
+
 
 class Layer < Sequel::Model
   plugin :serialization, :json, :options, :infowindow, :tooltip
-  
+
   ALLOWED_KINDS = %W{ carto tiled background gmapsbase torque wms }
   BASE_LAYER_KINDS  = %w(tiled background gmapsbase wms)
   DATA_LAYER_KINDS = ALLOWED_KINDS - BASE_LAYER_KINDS
@@ -21,7 +23,7 @@ class Layer < Sequel::Model
     'table/views/infowindow_light_header_green' =>  'infowindow_light_header_green',
     'table/views/infowindow_header_with_image' =>   'infowindow_header_with_image'
   }
-  
+
   # Sets default order to the maximum order of the sibling layers + 1
   def set_default_order(parent)
     max_order = parent.layers_dataset.select(:order).map(&:order).compact.max
@@ -53,14 +55,15 @@ class Layer < Sequel::Model
       style = options.include?('tile_style') ? options['tile_style'] : nil
       if style.nil? || style.strip.empty?
         errors.add(:options, 'Tile style is empty')
-        Statsd.increment('cartodb-com.errors.empty-css')
-        Statsd.increment('cartodb-com.errors.total')
+        stats_aggregator = CartoDB::Stats::EditorAPIs.instance
+        stats_aggregator.increment("errors.layer.empty-css")
+        stats_aggregator.increment("errors.total")
       end
     end
   end
 
   def before_save
-    super  
+    super
     self.updated_at = Time.now
   end
 
@@ -98,7 +101,7 @@ class Layer < Sequel::Model
     "rails:layer_styles:#{self.id}"
   end
 
-  def infowindow_template_path 
+  def infowindow_template_path
     if self.infowindow.present? && self.infowindow['template_name'].present?
       template_name = TEMPLATES_MAP.fetch(self.infowindow['template_name'], self.infowindow['template_name'])
       Rails.root.join("lib/assets/javascripts/cartodb/table/views/infowindow/templates/#{template_name}.jst.mustache")
@@ -107,7 +110,7 @@ class Layer < Sequel::Model
     end
   end
 
-  def tooltip_template_path 
+  def tooltip_template_path
     if self.tooltip.present? && self.tooltip['template_name'].present?
       template_name = TEMPLATES_MAP.fetch(self.tooltip['template_name'], self.tooltip['template_name'])
       Rails.root.join("lib/assets/javascripts/cartodb/table/views/tooltip/templates/#{template_name}.jst.mustache")

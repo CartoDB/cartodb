@@ -29,6 +29,10 @@ describe Importer2::Georeferencer do
     @db.disconnect
   end
 
+  before(:each) do
+    CartoDB::Stats::Aggregator.stubs(:read_config).returns({})
+  end
+
   describe '#initialize' do
     it 'requires a db connection and a table name' do
       expect {

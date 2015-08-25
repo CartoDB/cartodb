@@ -123,6 +123,8 @@ module CartoDB
       user.assets_dataset.destroy
       user.data_imports_dataset.destroy
       user.geocodings_dataset.destroy
+      user.delete_external_data_imports
+      user.delete_external_sources
       CartoDB::Visualization::Collection.new.fetch(user_id: user.id).each { |v|
         # INFO: no need for explicit children deletion, parent will delete it
         v.delete unless v.parent_id

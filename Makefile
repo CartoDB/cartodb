@@ -10,6 +10,10 @@ PENDING_SPECS = \
   spec/lib/varnish_spec.rb (#321) \
   $(NULL)
 
+WORKING_SPECS_INTEGRATIONS = \
+  spec/integrations/common_data_integration.rb \
+  $(NULL)
+
 WORKING_SPECS_1 = \
   spec/rspec_configuration.rb \
   spec/models/table_spec.rb \
@@ -22,6 +26,7 @@ WORKING_SPECS_1 = \
   spec/models/layer/presenter_spec.rb \
   spec/requests/api/json/layer_presenter_spec.rb \
   spec/requests/carto/api/layer_presenter_spec.rb \
+	spec/requests/carto/api/data_import_presenter_spec.rb \
   spec/models/map_spec.rb \
   spec/models/map/copier_spec.rb \
   spec/models/visualization/*.rb \
@@ -35,9 +40,11 @@ WORKING_SPECS_1 = \
   spec/lib/central_spec.rb \
   spec/lib/carto/http/client_spec.rb \
 	spec/helpers/uuidhelper_spec.rb \
+	spec/models/carto/template_spec.rb \
   $(NULL)
 
 WORKING_SPECS_2 = \
+  spec/lib/cartodb/stats/importer_spec.rb \
   services/importer/spec/acceptance/geojson_spec.rb \
   services/importer/spec/acceptance/gpx_spec.rb \
   services/importer/spec/acceptance/kml_spec.rb \
@@ -52,9 +59,9 @@ WORKING_SPECS_2 = \
   services/importer/spec/unit/column_spec.rb \
   services/importer/spec/unit/csv_normalizer_spec.rb \
 	services/importer/spec/unit/shp_normalizer_spec.rb \
+	services/importer/spec/unit/shp_helper_spec.rb \
   services/importer/spec/unit/downloader_spec.rb \
   services/importer/spec/unit/georeferencer_spec.rb \
-  services/importer/spec/unit/importer_stats_spec.rb \
   services/importer/spec/unit/json2csv_spec.rb \
   services/importer/spec/unit/kml_splitter_spec.rb \
   services/importer/spec/unit/loader_spec.rb \
@@ -184,6 +191,8 @@ ifdef JENKINS_URL
 	cp .rspec_ci .rspec
 endif
 	# TODO skip this if db already exists ?
+	# Clean DB connections before drop test DB
+	psql -U postgres -c "select pg_terminate_backend(pid) from pg_stat_activity where datname='carto_db_test'"
 	MOCHA_OPTIONS=skip_integration RAILS_ENV=test bundle exec rake cartodb:test:prepare
 
 # TODO: Ongoing removal of groups, that's the reason of holes in numbering
@@ -201,6 +210,10 @@ check-9:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_9)
 check-carto-db-class:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_carto_db_class)
+check-integrations:
+	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_INTEGRATIONS)	
+
+check-external: prepare-test-db check-integrations
 
 check-prepared: check-1 check-2 check-4 check-5 check-7 check-9 check-carto-db-class
 

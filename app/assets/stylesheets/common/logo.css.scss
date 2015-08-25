@@ -46,6 +46,10 @@ $size: 36px;
   i {
     font-size: $size - 14;
     color: #3C93D8;
+
+    &.Logo-icon--dark {
+      color: #2E3C43;
+    }
   }
 }
 .Logo--footer {

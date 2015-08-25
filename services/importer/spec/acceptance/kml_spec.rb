@@ -8,11 +8,13 @@ require_relative '../doubles/log'
 require_relative '../doubles/user'
 require_relative 'acceptance_helpers'
 require_relative 'cdb_importer_context'
+require_relative 'no_stats_context'
 
 
 describe 'KML regression tests' do
   include AcceptanceHelpers
   include_context "cdb_importer schema"
+  include_context "no stats"
 
   it 'imports KML files' do
     filepath    = path_to('counties_ny_export.kml')
@@ -102,6 +104,20 @@ describe 'KML regression tests' do
       name = @db[%Q{ SELECT * FROM pg_class WHERE relname='#{result.table_name}' }].first[:relname]
       name.should eq result.table_name
     }
+  end
+
+  it 'raises exception if KML style tag dont have and ID' do
+    filepath    = path_to('style_without_id.kml')
+    downloader  = CartoDB::Importer2::Downloader.new(filepath)
+    runner      = CartoDB::Importer2::Runner.new({
+                               pg: @pg_options,
+                               downloader: downloader,
+                               log: CartoDB::Importer2::Doubles::Log.new,
+                               user: CartoDB::Importer2::Doubles::User.new
+                             })
+    runner.run
+
+    runner.results.first.error_code.should eq 2009
   end
 
 end

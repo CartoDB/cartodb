@@ -8,13 +8,27 @@
 @import "compass/css3/inline-block";
 @import "../old_common/vars";
 @import "../old_common/mixins";
+@import "compass/reset/utilities";
+@import "../variables/sizes";
 
-
+html {
+  line-height: 1;
+}
 
 body.public { /* Public table CSS */
 
-  &.table .panes { top: 67px; }
-  &.map .panes   { top: 0px; overflow-x: hidden; }
+  .pane_table {
+    @include reset-table-cell();
+    @include position(8px, calc(35% + 8px), 8px, 8px);
+    z-index: 10;
+    border-radius: 3px;
+    overflow: hidden;
+    &.is-active {
+      background: #fff;
+    }
+  }
+
+  .pane_map { top: 0px; overflow-x: hidden; }
 
   .panes .emptyTableContainer {
     position:relative;
@@ -97,18 +111,34 @@ body.public { /* Public table CSS */
     border-top: 1px solid #E5E5E5;
   }
 
-  div.separator_shadow {
-    display:none;
-    position: relative;
-    height: 20px;
-    margin-top: -20px;
-    width: 100%;
-    @extend .black-gradient-shadow-bottom;
-    z-index: 100;
+  div.table.public table tbody tr td div.cell {
+    cursor: default; 
   }
 
+  div.table.public table tbody tr:hover {
+    background: inherit;
+    border-top: 1px solid #ECECEC;
 
-  div.table table thead tr th>div label.interactuable .coloptions:after {
+    & + tr { border-top: 1px solid #ECECEC; }    
+  }
+  
+  div.table table thead tr th {
+    > div {
+      label.interactuable .coloptions {
+        line-height: 1;
+
+        &:after {
+          display:none;
+        }
+      }
+
+      p {
+        font-weight: normal;
+      }
+    }
+  }
+
+  div.table table tfoot.page_loader {
     display:none;
   }
 
@@ -121,8 +151,8 @@ body.public { /* Public table CSS */
     position:relative;
     z-index: 100;
     @include opacity(0);
-
-    pointer-events: none;
+    width: 100%;
+    text-align: center;
 
     ul {
 
@@ -132,34 +162,33 @@ body.public { /* Public table CSS */
 
       li {
 
-        float: left;
+        display: inline-block;
         list-style:none;
         margin: 0 1px 0 0;
-        pointer-events:all;
 
-        &:first-child a { @include border-radius(2px 0 0 2px); }
-        &:last-child  a { @include border-radius(0 2px 2px 0); }
+        &:last-child { margin-left: $sMargin-group; }
 
         a {
-
           &:hover {
-            text-decoration: underline;
+
           }
 
-          font-family: $text-fonts;
-
           display:block;
-          padding: 9px 10px 10px 10px;
-          background: rgba(#000000, .7);
-          font-size: 11px;
-          font-weight:bold;
-          color: #FFFFFF;
-          text-transform: uppercase;
+          width: 36px;
+          height: 36px;
+          border: 1px solid #636D72;
+          border-radius: 19px;
+          color: #636D72;
+          text-align: center;
+
+          i {
+            font-size: 14px;
+          }
         }
 
         a.selected { 
-          text-decoration: none;
-          color: rgba(#fff, .7);
+          color: #fff;
+          border-color: #fff;
           cursor:default;
         }
 
@@ -179,13 +208,44 @@ body.public { /* Public table CSS */
 
   div.panes {
     overflow-y:hidden;
-    overflow-x:scroll;
+    overflow-x: auto;
     clear:both;
 
     div.shadow { display:none; }
 
     div.table table thead tr th > div > div {
       position:relative;
+    }
+  }
+
+  div.panes.panes_mobile {
+    top: 0px;
+    overflow-x: hidden;
+
+    .table.public {
+      background: #fff;
+    }
+
+    .Checkbox {
+      position: absolute;
+      top: 35px;
+      right: 35px;
+      z-index: 30;
+      background-color: rgba(#000, .5);
+      padding: 3px 5px;
+      border-radius: 3px;
+    }
+
+    .Checkbox-label {
+      color: #fff;
+    }
+
+    .table.public,
+    .cartodb-map.public {
+      @include position(15px, 15px, 60px, 15px);
+      z-index: 10;
+      border-radius: 3px;
+      overflow: hidden;
     }
   }
 }

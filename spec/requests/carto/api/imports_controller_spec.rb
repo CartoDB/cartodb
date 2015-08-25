@@ -11,12 +11,13 @@ describe Carto::Api::ImportsController do
   @headers = { 'CONTENT_TYPE'  => 'application/json' }
 
   before(:each) do
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+    stub_named_maps_calls
     delete_user_data $user_1
     host! "#{$user_1.username}.localhost.lan"
   end
 
   after(:all) do
+    stub_named_maps_calls
     Resque.inline = false
     delete_user_data $user_1
   end

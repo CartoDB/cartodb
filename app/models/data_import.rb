@@ -12,7 +12,6 @@ require_relative '../../lib/cartodb/errors'
 require_relative '../../lib/cartodb/import_error_codes'
 require_relative '../../lib/cartodb/metrics'
 require_relative '../../lib/cartodb/mixpanel'
-require_relative '../../lib/cartodb_stats'
 require_relative '../../config/initializers/redis'
 require_relative '../../services/importer/lib/importer'
 require_relative '../connectors/importer'
@@ -62,7 +61,8 @@ class DataImport < Sequel::Model
     # }
     # No automatic conversion coded
     'user_defined_limits',
-    'original_url'
+    'original_url',
+    'privacy'
   ]
 
   # This attributes will get removed from public_values upon calling api_call_public_values
@@ -603,10 +603,7 @@ class DataImport < Sequel::Model
                                                 post_import_handler: post_import_handler
                                               })
       runner.loader_options = ogr2ogr_options.merge content_guessing_options
-      graphite_conf = Cartodb.config[:graphite]
-      unless graphite_conf.nil?
-        runner.set_importer_stats_options(graphite_conf['host'], graphite_conf['port'], Socket.gethostname)
-      end
+      runner.set_importer_stats_host_info(Socket.gethostname)
       registrar     = CartoDB::TableRegistrar.new(current_user, ::Table)
       quota_checker = CartoDB::QuotaChecker.new(current_user)
       database      = current_user.in_database
@@ -663,13 +660,18 @@ class DataImport < Sequel::Model
       synchronization.log_id  = log.id
 
       if importer.success?
+        imported_table = ::Table.get_by_table_id(self.table_id)
+        if !imported_table.nil? && imported_table.table_visualization
+          synchronization.visualization_id = imported_table.table_visualization.id
+        end
+
         synchronization.state = 'success'
         synchronization.error_code = nil
         synchronization.error_message = nil
       else
         synchronization.state = 'failure'
         synchronization.error_code = error_code
-        synchronization.error_message = get_error_text
+        synchronization.error_message = get_error_text[:title] + ' ' + get_error_text[:what_about]
       end
       log.append "importer.success? #{synchronization.state}"
       synchronization.store
@@ -788,7 +790,7 @@ class DataImport < Sequel::Model
     payload.merge!(
       file_url_hostname: URI.parse(public_url).hostname
     ) if public_url rescue nil
-    payload.merge!(error_title: get_error_text) if state == STATE_FAILURE
+    payload.merge!(error_title: get_error_text[:title]) if state == STATE_FAILURE
     payload
   end
 

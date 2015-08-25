@@ -8,14 +8,12 @@
 .DefaultTimeDiff {
   @include display-flex();
   @include align-items(center, center);
-  font-size: $sFontSize-normal;
-  @include nicer-lato-typography();
+  font-size: $sFontSize-normal;  
   color:$cTypography-secondary;
 }
 .DefaultTimeDiff-icon {
   margin-right: 5px;
   font-size: $sFontSize-smallUpperCase;
-  @include nicer-lato-typography();
   color: $cTypography-help;
 }
 .DefaultTimeDiff p { margin-left: 5px }

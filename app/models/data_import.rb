@@ -22,6 +22,7 @@ require_relative '../../services/datasources/lib/datasources'
 require_relative '../../services/importer/lib/importer/unp'
 require_relative '../../services/importer/lib/importer/post_import_handler'
 require_relative '../../services/importer/lib/importer/mail_notifier'
+require_relative '../../services/importer/lib/importer/cartodbfy_time'
 require_relative '../../services/platform-limits/platform_limits'
 
 include CartoDB::Datasources
@@ -177,6 +178,7 @@ class DataImport < Sequel::Model
       save
     end
 
+    self.cartodbfy_time = CartoDB::Importer2::CartodbfyTime::instance(self.id).get()
     success ? handle_success : handle_failure
     log.store
     Rails.logger.debug log.to_s

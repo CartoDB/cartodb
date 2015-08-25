@@ -14,6 +14,7 @@ require_relative './overlay/member'
 require_relative './overlay/collection'
 require_relative './overlay/presenter'
 require_relative '../../services/importer/lib/importer/query_batcher'
+require_relative '../../services/importer/lib/importer/cartodbfy_time'
 require_relative '../../services/datasources/lib/datasources/decorators/factory'
 require_relative '../../services/table-geocoder/lib/internal-geocoder/latitude_longitude'
 
@@ -1186,8 +1187,7 @@ class Table
 
     elapsed = Time.now - start
     if @data_import
-      @data_import.cartodbfy_time += elapsed
-      @data_import.save
+      CartoDB::Importer2::CartodbfyTime::instance(@data_import.id).add(elapsed)
     end
 
     self.schema(reload:true)

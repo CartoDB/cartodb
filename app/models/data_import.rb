@@ -28,7 +28,7 @@ include CartoDB::Datasources
 class DataImport < Sequel::Model
   MERGE_WITH_UNMATCHING_COLUMN_TYPES_RE = /No .*matches.*argument type.*/
 
-  attr_accessor   :log, :results, :cartodbfy_time
+  attr_accessor   :log, :results
 
   # @see store_results() method also when adding new fields
   PUBLIC_ATTRIBUTES = [
@@ -94,7 +94,6 @@ class DataImport < Sequel::Model
   def after_initialize
     instantiate_log
     self.results  = []
-    self.cartodbfy_time = 0.0
     self.state    ||= STATE_PENDING
   end
 
@@ -758,10 +757,10 @@ class DataImport < Sequel::Model
                   'error_source'           => get_error_source,
                   'id'                     => self.id,
                   'total_size'             => total_size,
-                  'cartodbfy_time'         => cartodbfy_time,
+                  'cartodbfy_time'         => self.cartodbfy_time,
                   'import_throughput'      => (total_size / import_time),
-                  'cartodbfy_throughtput'  => (total_size / cartodbfy_time),
-                  'cartodbfy_import_ratio' => (cartodbfy_time / import_time)
+                  'cartodbfy_throughtput'  => (total_size / self.cartodbfy_time),
+                  'cartodbfy_import_ratio' => (self.cartodbfy_time / import_time)
                  }
     if !self.extra_options.nil?
       import_log['extra_options'] = self.extra_options

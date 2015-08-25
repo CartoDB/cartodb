@@ -1182,8 +1182,12 @@ class Table
         })
       end
     end
+
     elapsed = Time.now - start
-    @data_import.cartodbfy_time += elapsed if @data_import
+    if @data_import
+      @data_import.cartodbfy_time += elapsed
+      @data_import.save
+    end
 
     self.schema(reload:true)
   end

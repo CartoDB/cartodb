@@ -10,12 +10,11 @@ module CartoDB
 
     class CommonDataService
 
-      def initialize(visualizations_api_url, datasets = nil)
+      def initialize(datasets = nil)
         @datasets = datasets
-        @visualizations_api_url = visualizations_api_url
       end
 
-      def load_common_data_for_user(user)
+      def load_common_data_for_user(user, visualizations_api_url)
         user.last_common_data_update_date = Time.now
         user.save
 
@@ -30,7 +29,7 @@ module CartoDB
         user_remotes.each { |r|
           remotes_by_name[r.name] = r
         }
-        get_datasets.each do |dataset|
+        get_datasets(visualizations_api_url).each do |dataset|
           begin
             visualization = remotes_by_name.delete(dataset['name'])
             if visualization
@@ -84,8 +83,8 @@ module CartoDB
 
       private
 
-      def get_datasets
-        @datasets ||= CommonDataSingleton.instance.datasets(@visualizations_api_url)
+      def get_datasets(visualizations_api_url)
+        @datasets ||= CommonDataSingleton.instance.datasets(visualizations_api_url)
       end
 
       def delete_remote_visualization(visualization)

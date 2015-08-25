@@ -72,4 +72,17 @@ class UserMailer < ActionMailer::Base
          :subject => @subject
   end
 
+  def table_liked(canonical_visualization, viewer_user, visualization_preview_image)
+    @user = canonical_visualization.user
+    @dataset_name = canonical_visualization.name
+    @viewer_name = (!viewer_user.name.nil? && !viewer_user.name.empty?) ? viewer_user.name : viewer_user.username
+    @preview_image = visualization_preview_image
+    @subject = "Your dataset #{@dataset_name} got some love!"
+    @greetings = ["congrats", "congratulations", "cool", "awesome", "hooray", "nice", "wow", "rad", "bravo", "yay", "boom"]
+    @link = "#{@user.public_url}#{CartoDB.path(self, 'public_visualizations_show', { id: canonical_visualization.id })}"
+    @viewer_datasets_link = "#{viewer_user.public_url}#{CartoDB.path(self, 'public_datasets_home')}"
+    mail :to => @user.email,
+         :subject => @subject
+  end
+
 end

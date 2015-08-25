@@ -7,8 +7,7 @@
 
 .DefaultTags {
   color: $cTypography-secondary;
-  position: relative;
-  @include nicer-lato-typography();
+  position: relative;  
 }
 .DefaultTags-item {
   border: none;

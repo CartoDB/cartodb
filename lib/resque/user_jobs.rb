@@ -39,8 +39,8 @@ module Resque
       module LoadCommonData
         @queue = :users
 
-        def self.perform(user_id)
-          User.where(id: user_id).first.load_common_data
+        def self.perform(user_id, visualizations_api_url)
+          User.where(id: user_id).first.load_common_data(visualizations_api_url)
         end
       end
 
@@ -110,6 +110,17 @@ module Resque
           viz = Carto::Visualization.find(visualization_id)
           viewer_user = Carto::User.find(viewer_user_id)
           UserMailer.map_liked(viz, viewer_user, vis_preview_image).deliver
+        end
+      end
+
+      module TableLiked
+        extend ::Resque::Metrics
+        @queue = :users
+
+        def self.perform(visualization_id, viewer_user_id, vis_preview_image)
+          viz = Carto::Visualization.find(visualization_id)
+          viewer_user = Carto::User.find(viewer_user_id)
+          UserMailer.table_liked(viz, viewer_user, vis_preview_image).deliver
         end
       end
 

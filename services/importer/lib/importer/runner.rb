@@ -6,9 +6,10 @@ require_relative './unp'
 require_relative './column'
 require_relative './exceptions'
 require_relative './result'
-require_relative './importer_stats'
 require_relative '../../../datasources/lib/datasources/datasources_factory'
 require_relative '../../../platform-limits/platform_limits'
+
+require_relative '../../../../lib/cartodb/stats/importer'
 
 module CartoDB
   module Importer2
@@ -34,7 +35,6 @@ module CartoDB
       #   :user User|nil
       #   :unpacker Unp|nil
       #   :post_import_handler CartoDB::Importer2::PostImportHandler|nil
-      #   :importer_stats Hash|nil
       #   :limits Hash|nil {
       #       :import_file_size_instance CartoDB::PlatformLimits::Importer::InputFileSize|nil
       #       :table_row_count_limit_instance CartoDB::PlatformLimits::Importer::TableRowCount|nil
@@ -53,11 +53,8 @@ module CartoDB
           !@user.nil? && @user.respond_to?(:remaining_quota) ? @user.remaining_quota : DEFAULT_AVAILABLE_QUOTA
         @unpacker            = options.fetch(:unpacker, nil) || Unp.new
         @post_import_handler = options.fetch(:post_import_handler, nil)
-        importer_stats_options = options.fetch(:importer_stats, { host: nil, port: nil, queue_id: nil})
-        @importer_stats = set_importer_stats_options(importer_stats_options[:host], importer_stats_options[:port],
-                                                     importer_stats_options[:queue_id])
+        @importer_stats = CartoDB::Stats::Importer.instance
         limit_instances = options.fetch(:limits, {})
-
         @import_file_limit = limit_instances.fetch(:import_file_size_instance, input_file_size_limit_instance(@user))
         @table_row_count_limit =
           limit_instances.fetch(:table_row_count_limit_instance, table_row_count_limit_instance(@user, @job.db))
@@ -70,8 +67,8 @@ module CartoDB
         @loader_options = value
       end
 
-      def set_importer_stats_options(host, port, queue_id)
-        @importer_stats = ImporterStats.instance(host, port, queue_id)
+      def set_importer_stats_host_info(queue_id)
+        @importer_stats.set_host_info(queue_id)
       end
 
       def new_logger

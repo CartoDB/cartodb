@@ -55,6 +55,10 @@ describe Carto::UserCreation do
       user_creation.state.should == 'failure'
     end
 
+    after(:each) do
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+    end
+
     it 'neither creates a new User nor sends the mail and marks creation as failure if Central fails' do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
       User.any_instance.stubs(:create_in_central).raises('Error on state creating_user_in_central, mark_as_failure: false. Error: Application server responded with http 422: {"errors":["Existing username."]}')
@@ -73,6 +77,70 @@ describe Carto::UserCreation do
 
       user_creation.reload
       user_creation.state.should == 'failure'
+    end
+
+    it 'neither creates a new User nor sends the mail and marks creation as failure if Central has a registered user matching username' do
+      user = prepare_fake_central_user
+      # This tests only matching usernames
+      user.email = 'other@whatever.com'
+
+      ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::NewOrganizationUser).never
+
+      user.organization = @organization
+
+      user_creation = Carto::UserCreation.new_user_signup(user)
+      user_creation.next_creation_step until user_creation.finished?
+
+      Carto::User.where(username: user.username).first.should == nil
+
+      user_creation.reload
+      user_creation.state.should == 'failure'
+    end
+
+    it 'neither creates a new User nor sends the mail and marks creation as failure if Central has a registered user matching email' do
+      user = prepare_fake_central_user
+      # This tests only matching emails
+      user.username = 'other_whatever'
+
+      ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::NewOrganizationUser).never
+
+      user.organization = @organization
+
+      user_creation = Carto::UserCreation.new_user_signup(user)
+      user_creation.next_creation_step until user_creation.finished?
+
+      Carto::User.where(username: user.username).first.should == nil
+
+      user_creation.reload
+      user_creation.state.should == 'failure'
+    end
+
+    it 'neither creates a new User nor sends the mail and marks creation as failure if username es empty' do
+      user = prepare_fake_central_user
+      # This tests only matching emails
+      user.username = nil
+
+      ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::NewOrganizationUser).never
+
+      user.organization = @organization
+
+      expect {
+        user_creation = Carto::UserCreation.new_user_signup(user)
+      }.to raise_error
+    end
+
+    def prepare_fake_central_user
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+      fake_central_client = {}
+      fake_central_client.stubs(:create_organization_user).returns(true)
+      User.any_instance.stubs(:cartodb_central_client).returns(fake_central_client)
+      Cartodb::Central.stubs(:new).returns(fake_central_client)
+      user = FactoryGirl.build(:valid_user)
+      central_user_data = JSON.parse(user.to_json)
+      # Central doesn't return exactly the same attributes, but this is good enough for testing
+      Cartodb::Central.any_instance.stubs(:get_user).returns(central_user_data)
+      fake_central_client.stubs(:get_user).returns(central_user_data)
+      user
     end
   end
 

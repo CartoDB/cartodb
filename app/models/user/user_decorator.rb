@@ -62,13 +62,19 @@ module CartoDB
           sync_tables: self.sync_tables_enabled,
           arcgis_datasource: self.arcgis_datasource_enabled?
         },
+        limits: {
+          concurrent_syncs: CartoDB::PlatformLimits::Importer::UserConcurrentSyncsAmount::MAX_SYNCS_PER_USER,
+          concurrent_imports: self.max_concurrent_import_count,
+          import_file_size: self.max_import_file_size,
+          import_table_rows: self.max_import_table_row_count
+        },
         notification: self.notification,
         avatar_url: self.avatar,
         feature_flags: self.feature_flags,
         base_url: self.public_url
       }
 
-      data[:organization] = self.organization.to_poro(self, options) if self.organization.present?
+      data[:organization] = self.organization.to_poro if self.organization.present?
 
       if options[:extended]
         data.merge({

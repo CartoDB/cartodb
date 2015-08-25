@@ -2,14 +2,10 @@
 @import "../variables/sizes";
 @import "../variables/mixins";
 
-.RowsIndicator {
-  color: $cTypography-secondary;
-  @include nicer-lato-typography();
-}
+.RowsIndicator { color: $cTypography-secondary }
 .RowsIndicator-icon {
   margin-right: 4px;
   font-size: $sFontSize-smaller;
-  @include nicer-lato-typography();
   line-height: $sLineHeight-smaller;
   color: $cTypography-help;
 }

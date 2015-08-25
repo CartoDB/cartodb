@@ -182,11 +182,8 @@
                         <h3 class="DatasetsList-itemTitle DefaultTitle u-ellipsLongText">
                           <a href="<%= CartoDB.url(self, 'public_table', {id: vis.table.name}, @user_domain.nil? ? nil : @related_tables_owners[vis.table.user_id]) %>" title="<%= vis.table.name %>" class="DefaultTitle-link u-ellipsLongText"><%= vis.table.name %></a>
                         </h3>
-
                         <% if vis.description %>
                           <div class="DefaultDescription DatasetsList-itemDescription u-ellipsLongText"><%= raw vis.description_html_safe %></div>
-                        <% else %>
-                          <span class="NoResults DatasetsList-itemDescription">No description</span>
                         <% end %>
                       </div>
                     </div>
@@ -206,10 +203,13 @@
                         <% end %>
                         <span class="DatasetsList-itemTimeDiff DefaultTimeDiff u-hideOnTablet">
                           <i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i>
-                          <%= time_ago_in_words(vis.updated_at) %> ago by
-                          <span class="UserAvatar">
-                            <img class="UserAvatar-img UserAvatar-img--smaller" src="<%= vis.user.avatar_url %>" alt="<%= vis.user.name || vis.user.username %>" title="<%= vis.user.name || vis.user.username %>" />
-                          </span>
+                          <%= time_ago_in_words(vis.updated_at) %> ago
+                          <% if vis.user.username != @visualization.user.username %>
+                            by
+                            <span class="UserAvatar">
+                              <img class="UserAvatar-img UserAvatar-img--smaller" src="<%= vis.user.avatar_url %>" alt="<%= vis.user.name || vis.user.username %>" title="<%= vis.user.name || vis.user.username %>" />
+                            </span>
+                          <% end %>
                         </span>
                       </div>
                     </div>
@@ -259,7 +259,7 @@
           <% @more_visualizations.each do |vis| %>
             <li class="MapsList-item">
               <div class="MapCard" data-zoom="<%= '' %>" data-vizjson-url="<%= CartoDB.url(self, 'api_v2_visualizations_vizjson', {id: vis.id}, vis.user) %>.json">
-                <a href="<%= CartoDB.url(self, 'public_visualizations_public_map', {id: vis.id}, user) %>" class="MapCard-header js-header">
+                <a href="<%= CartoDB.url(self, 'public_visualizations_public_map', {id: vis.id}, vis.user) %>" class="MapCard-header js-header">
                   <div class="MapCard-loader"></div>
                 </a>
                 <div class="MapCard-content MapCard-content--compact">

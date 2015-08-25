@@ -1174,10 +1174,12 @@ class Table
     schema_name = owner.database_schema
     table_name = "#{owner.database_schema}.#{self.name}"
 
-    owner.in_database do |user_database|
-      user_database.run(%Q{
-        SELECT cartodb.CDB_CartodbfyTable('#{schema_name}'::TEXT,'#{table_name}'::REGCLASS);
-      })
+    importer_stats.timing('cartodbfy') do
+      owner.in_database do |user_database|
+        user_database.run(%Q{
+          SELECT cartodb.CDB_CartodbfyTable('#{schema_name}'::TEXT,'#{table_name}'::REGCLASS);
+        })
+      end
     end
 
     self.schema(reload:true)
@@ -1339,6 +1341,10 @@ class Table
   end
 
   private
+
+  def importer_stats
+    @importer_stats ||= CartoDB::Stats::Importer.instance
+  end
 
   def beautify_name(name)
     return name unless name

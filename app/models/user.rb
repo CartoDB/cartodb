@@ -193,11 +193,11 @@ class User < Sequel::Model
   end
 
   def load_common_data(visualizations_api_url)
-    CartoDB::Visualization::CommonDataService.new(visualizations_api_url).load_common_data_for_user(self)
+    CartoDB::Visualization::CommonDataService.new.load_common_data_for_user(self, visualization_api_url)
   end
 
-  def delete_common_data(visualizations_api_url)
-    CartoDB::Visualization::CommonDataService.new(visualization_api_url).delete_common_data_for_user(self)
+  def delete_common_data
+    CartoDB::Visualization::CommonDataService.new.delete_common_data_for_user(self)
   end
 
   def after_save
@@ -314,13 +314,13 @@ class User < Sequel::Model
     external_data_imports = ExternalDataImport.by_user_id(self.id)
     external_data_imports.each { |edi| edi.destroy }
   rescue => e
-    Rollbar.report_message('Error deleting external data imports at user deletion', 'error', { user: self.inspect, error: e.inspect })
+    CartoDB.notify_error('Error deleting external data imports at user deletion', { user: self.inspect, error: e.inspect })
   end
 
   def delete_external_sources
     delete_common_data
   rescue => e
-    Rollbar.report_message('Error deleting external data imports at user deletion', 'error', { user: self.inspect, error: e.inspect })
+    CartoDB.notify_error('Error deleting external data imports at user deletion', { user: self.inspect, error: e.inspect })
   end
 
   def after_destroy

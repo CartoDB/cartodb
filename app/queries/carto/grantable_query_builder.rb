@@ -6,7 +6,7 @@
 class Carto::GrantableQueryBuilder
 
   def initialize(organization)
-    @filter = ''
+    @filter = nil
     @organization = organization
   end
 
@@ -16,21 +16,18 @@ class Carto::GrantableQueryBuilder
   end
 
   def run(page = 1, per_page = 200, order = 'name')
-    offset = (page - 1) * per_page
-    query = ActiveRecord::Base.send(:sanitize_sql_array,
-        [paged_query(order), @organization.id, @filter, per_page, offset])
+    query = ActiveRecord::Base.send(:sanitize_sql_array, paged_query_array(page, per_page, order))
     ActiveRecord::Base.connection.execute(query).map { |r| Carto::Grantable.new(r) }
   end
 
   def count
-    query = ActiveRecord::Base.send(:sanitize_sql_array,
-        [count_query, @organization.id, @filter])
+    query = ActiveRecord::Base.send(:sanitize_sql_array, count_query_array)
     ActiveRecord::Base.connection.execute(query).first['count'].to_i
   end
 
   private
 
-  def query
+  def compose_query
     query = <<-SQL
     select * from
       (select id, display_name as name, 'group' as type, '' as avatar_url,
@@ -44,15 +41,26 @@ class Carto::GrantableQueryBuilder
         from users) grantables
     where grantables.organization_id = ?
     SQL
-    @filter.nil? || @filter == '' ? "#{query} and ? = ''" : "#{query} and name like ?"
+    @filter.nil? ? query : "#{query} and name like ?"
   end
 
-  def paged_query(order)
-    "#{query} order by #{safe_order(order)} limit ? offset ?"
+  def paged_query_array(page, per_page, order)
+    offset = (page - 1) * per_page
+    query = "#{compose_query} order by #{safe_order(order)} limit ? offset ?"
+    if @filter.nil?
+      [query, @organization.id, per_page, offset]
+    else
+      [query, @organization.id, @filter, per_page, offset]
+    end
   end
 
-  def count_query
-    "select count(1) from (#{query}) c"
+  def count_query_array
+    query = "select count(1) from (#{compose_query}) c"
+    if @filter.nil?
+      [query, @organization.id]
+    else
+      [query, @organization.id, @filter]
+    end
   end
 
   def safe_order(order)

@@ -370,6 +370,9 @@ CartoDB::Application.routes.draw do
     put '(/user/:user_domain)(/u/:user_domain)/api/v1/databases/:database_name/groups/:name/permission/:username/tables/:table_name' => 'database_groups#update_permission', as: :api_v1_databases_group_update_permission
     delete '(/user/:user_domain)(/u/:user_domain)/api/v1/databases/:database_name/groups/:name/permission/:username/tables/:table_name' => 'database_groups#destroy_permission', as: :api_v1_databases_group_destroy_permission
 
+    # Grantables (entities you can share maps or datasets with)
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:organization_id/grantables' => 'grantables#index', as: :api_v1_grantables_index, constraints: { id: /[^\/]+/ }
+
     # User creations
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/user_creations/:id' => 'user_creations#show', as: :api_v1_user_creations_show, constraints: { id: /[^\/]+/ }
 

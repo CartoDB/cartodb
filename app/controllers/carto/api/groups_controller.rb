@@ -21,7 +21,7 @@ module Carto
         page, per_page, order = page_per_page_order_params
 
         groups = @organization.groups
-        groups = groups.where('name like ?', "%#{params[:q]}%") if params[:q]
+        groups = groups.where('name ilike ?', "%#{params[:q]}%") if params[:q]
         total_entries = groups.count
 
         groups = Carto::PagedModel.paged_association(groups, page, per_page, order)

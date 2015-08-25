@@ -41,7 +41,7 @@ class Carto::GrantableQueryBuilder
         from users) grantables
     where grantables.organization_id = ?
     SQL
-    @filter.nil? ? query : "#{query} and name like ?"
+    @filter.nil? ? query : "#{query} and name ilike ?"
   end
 
   def paged_query_array(page, per_page, order)

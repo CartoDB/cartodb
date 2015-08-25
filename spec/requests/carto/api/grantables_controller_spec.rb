@@ -76,6 +76,15 @@ describe Carto::Api::GrantablesController do
         }
       end
 
+      it "can order by type" do
+        expected_types = (1..@carto_organization.groups.count).map{'group'} + (1..@carto_organization.users.count).map{'user'}
+
+        get_json api_v1_grantables_index_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, api_key: @org_user_owner.api_key), { order: 'type' }, @headers do |response|
+          response.status.should == 200
+          response.body[:grantables].map { |g| g['type'] }.should == expected_types
+        end
+      end
+
     end
 
   end

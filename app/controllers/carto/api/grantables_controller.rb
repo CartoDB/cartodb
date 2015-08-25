@@ -18,7 +18,7 @@ module Carto
         page, per_page, order = page_per_page_order_params
 
         grantable_query = Carto::GrantableQueryBuilder.new(@organization)
-        grantables = grantable_query.run(page, per_page)
+        grantables = grantable_query.run(page, per_page, order)
         total_entries = grantable_query.count
         total_org_entries = grantable_query.count
 

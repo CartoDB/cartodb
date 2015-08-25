@@ -7,12 +7,13 @@ class Carto::GrantableQueryBuilder
     @organization = organization
   end
 
-  def run(page = 1, per_page = 200)
+  def run(page = 1, per_page = 200, order = 'name')
     ActiveRecord::Base.connection.exec_query(
-      paged_query, 'grantable_query', [
+      paged_query(order), 'grantable_query', [
         [nil, @organization.id],
-        [nil, (page - 1) * per_page],
-        [nil, per_page]]).map { |r| Carto::Grantable.new(r) }
+        [nil, per_page],
+        [nil, (page - 1) * per_page]
+    ]).map { |r| Carto::Grantable.new(r) }
   end
 
   def count
@@ -26,20 +27,21 @@ class Carto::GrantableQueryBuilder
   def query
     query = <<-SQL
     select * from
-      (select id as id, display_name as name, 'group' as type, '' as avatar_url,
+      (select id, display_name as name, 'group' as type, '' as avatar_url,
+        created_at, updated_at,
         organization_id
         from groups
       union
-      select id as id, username as name, 'user' as type, avatar_url as avatar_url,
+      select id, username as name, 'user' as type, avatar_url,
+        created_at, updated_at,
         organization_id
         from users) grantables
     where grantables.organization_id = $1
-    order by name
     SQL
   end
 
-  def paged_query
-    "#{query} limit $3 offset $2"
+  def paged_query(order)
+    "#{query} order by #{order} limit $2 offset $3"
   end
 
   def count_query

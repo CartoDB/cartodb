@@ -61,7 +61,6 @@
   font-size: 20px;
   font-weight: $sFontWeight-lighter;
   line-height: 32px;
-  @include nicer-lato-typography();
 }
 .PublicMap-secondary {
   background: #f9f9f9;

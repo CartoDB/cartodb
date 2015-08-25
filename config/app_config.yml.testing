@@ -42,7 +42,7 @@ defaults: &defaults
     public:
       protocol:   'http'
       domain:     'localhost.lan'
-      endpoint:   '/api/v1/sql'
+      endpoint:   '/api/v2/sql'
       port:       8080
   api_requests_service_url: ''
   developers_host:    'http://developers.localhost.lan:3000'
@@ -159,12 +159,13 @@ defaults: &defaults
       options: { color: '#ffffff' }
       options:
   cartodb_com_hosted: true
-  cartodb_central_domain_name: 'cartodb.com'
-  cartodb_central_api:
-    host: 'admin.localhost.lan'
-    port: 4000
-    username: 'api'
-    password: 'test'
+  # Test don't have Central
+  #cartodb_central_domain_name: 'cartodb.com'
+  #cartodb_central_api:
+  #  host: 'admin.localhost.lan'
+  #  port: 4000
+  #  username: 'api'
+  #  password: 'test'
   aws:
     s3:
       access_key_id: "test"

@@ -8,12 +8,14 @@ require_relative '../doubles/user'
 require_relative 'acceptance_helpers'
 require_relative 'cdb_importer_context'
 require_relative '../../../../spec/rspec_configuration.rb'
+require_relative 'no_stats_context'
 
 include CartoDB::Importer2
 
 describe 'SHP regression tests' do
   include AcceptanceHelpers
   include_context 'cdb_importer schema'
+  include_context "no stats"
 
   it 'imports SHP files' do
     filepath    = path_to('TM_WORLD_BORDERS_SIMPL-0.3.zip')

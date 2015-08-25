@@ -17,6 +17,8 @@ require_relative '../../services/importer/lib/importer/query_batcher'
 require_relative '../../services/datasources/lib/datasources/decorators/factory'
 require_relative '../../services/table-geocoder/lib/internal-geocoder/latitude_longitude'
 
+require_relative '../../lib/cartodb/stats/user_tables'
+
 class Table
   extend Forwardable
 
@@ -1631,17 +1633,17 @@ class Table
   end
 
   def add_table_to_stats
-    CartodbStats.update_tables_counter(1)
-    CartodbStats.update_tables_counter_per_user(1, self.owner.username)
-    CartodbStats.update_tables_counter_per_host(1)
-    CartodbStats.update_tables_counter_per_plan(1, self.owner.account_type)
+    CartoDB::Stats::UserTables.instance.update_tables_counter(1)
+    CartoDB::Stats::UserTables.instance.update_tables_counter_per_user(1, self.owner.username)
+    CartoDB::Stats::UserTables.instance.update_tables_counter_per_host(1)
+    CartoDB::Stats::UserTables.instance.update_tables_counter_per_plan(1, self.owner.account_type)
   end
 
   def remove_table_from_stats
-    CartodbStats.update_tables_counter(-1)
-    CartodbStats.update_tables_counter_per_user(-1, self.owner.username)
-    CartodbStats.update_tables_counter_per_host(-1)
-    CartodbStats.update_tables_counter_per_plan(-1, self.owner.account_type)
+    CartoDB::Stats::UserTables.instance.update_tables_counter(-1)
+    CartoDB::Stats::UserTables.instance.update_tables_counter_per_user(-1, self.owner.username)
+    CartoDB::Stats::UserTables.instance.update_tables_counter_per_host(-1)
+    CartoDB::Stats::UserTables.instance.update_tables_counter_per_plan(-1, self.owner.account_type)
   end
 
   ############################### Sharing tables ##############################

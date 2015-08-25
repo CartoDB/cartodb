@@ -9,12 +9,14 @@ require_relative '../doubles/user'
 require_relative 'acceptance_helpers'
 require_relative '../../spec/doubles/importer_stats'
 require_relative 'cdb_importer_context'
+require_relative 'no_stats_context'
 
 include CartoDB::Importer2
 
 describe 'csv regression tests' do
   include AcceptanceHelpers
   include_context "cdb_importer schema"
+  include_context "no stats"
 
   it 'georeferences files with lat / lon columns' do
     filepath    = path_to('../../../../spec/support/data/csv_with_lat_lon.csv')

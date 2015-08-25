@@ -135,7 +135,6 @@ $sDates-defaultWidth: 434px;
 .DatePicker-shortcutsText {
   font-size: $sFontSize-smallUpperCase;
   color: $cTypography-paragraphs;
-  @include nicer-lato-typography();
 }
 
 // Calendar :S

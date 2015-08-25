@@ -61,7 +61,6 @@ class Table
 
   VALID_GEOMETRY_TYPES = %W{ geometry multipolygon point multilinestring }
 
-
   def_delegators :relator, *CartoDB::TableRelator::INTERFACE
   def_delegators :@user_table, *::UserTable::INTERFACE
 
@@ -1187,6 +1186,10 @@ class Table
 
   def update_table_pg_stats
     owner.in_database[%Q{ANALYZE #{qualified_table_name};}]
+  end
+
+  def update_table_geom_pg_stats
+    owner.in_database[%Q{ANALYZE #{qualified_table_name}(the_geom);}]
   end
 
   def owner

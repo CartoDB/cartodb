@@ -1,5 +1,6 @@
 # coding: UTF-8
 require_relative '../../../models/visualization/presenter'
+require_relative '../../../helpers/bounding_box_helper'
 require_relative '../../../../services/named-maps-api-wrapper/lib/named-maps-wrapper/exceptions'
 
 class Api::Json::TablesController < Api::ApplicationController
@@ -92,6 +93,7 @@ class Api::Json::TablesController < Api::ApplicationController
           @stats_aggregator.timing('georeference') do
             @table.georeference_from!(:latitude_column => latitude_column, :longitude_column => longitude_column)
           end
+          BoundingBoxHelper.update_visualizations_bbox(@table)
           render_jsonp(@table.public_values({request:request}).merge(warnings: warnings)) and return
         end
 

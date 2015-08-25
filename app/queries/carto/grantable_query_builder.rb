@@ -1,22 +1,30 @@
+# encoding: utf-8
+
 # Class that allows "Grantable" searches.
 # Note a Grantable is not an actual ActiveRecord model but an aggregation of User and Group.
 # Since ActiveRecord doesn't support polymorphic queries or has_many associations with table per class inheritance, we do it manually here
 class Carto::GrantableQueryBuilder
 
   def initialize(organization)
+    @filter = ''
     @organization = organization
+  end
+
+  def with_filter(filter)
+    @filter = "%#{filter}%"
+    self
   end
 
   def run(page = 1, per_page = 200, order = 'name')
     offset = (page - 1) * per_page
     query = ActiveRecord::Base.send(:sanitize_sql_array,
-        [paged_query(order), @organization.id, per_page, offset])
+        [paged_query(order), @organization.id, @filter, per_page, offset])
     ActiveRecord::Base.connection.execute(query).map { |r| Carto::Grantable.new(r) }
   end
 
   def count
     query = ActiveRecord::Base.send(:sanitize_sql_array,
-        [count_query, @organization.id])
+        [count_query, @organization.id, @filter])
     ActiveRecord::Base.connection.execute(query).first['count'].to_i
   end
 
@@ -36,6 +44,7 @@ class Carto::GrantableQueryBuilder
         from users) grantables
     where grantables.organization_id = ?
     SQL
+    @filter.nil? || @filter == '' ? "#{query} and ? = ''" : "#{query} and name like ?"
   end
 
   def paged_query(order)

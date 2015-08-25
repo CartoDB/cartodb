@@ -49,7 +49,7 @@ describe Carto::Api::GrantablesController do
         get_json api_v1_grantables_index_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, api_key: @org_user_owner.api_key), {}, @headers do |response|
           response.status.should == 200
           response.body[:grantables].length.should == count_grantables(@carto_organization)
-          response.body[:total_entries].should ==  count_grantables(@carto_organization)
+          response.body[:total_entries].should == count_grantables(@carto_organization)
           response.body[:total_org_entries].should == count_grantables(@carto_organization)
         end
       end
@@ -82,6 +82,17 @@ describe Carto::Api::GrantablesController do
         get_json api_v1_grantables_index_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, api_key: @org_user_owner.api_key), { order: 'type' }, @headers do |response|
           response.status.should == 200
           response.body[:grantables].map { |g| g['type'] }.should == expected_types
+        end
+      end
+
+      it 'can filter by name' do
+        group = @carto_organization.groups.first 
+        get_json api_v1_grantables_index_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, api_key: @org_user_owner.api_key), {q: group.display_name}, @headers do |response|
+          response.status.should == 200
+          response.body[:grantables].length.should == 1
+          response.body[:total_entries].should == 1
+          response.body[:grantables][0]['id'].should == group.id
+          response.body[:total_org_entries].should == count_grantables(@carto_organization)
         end
       end
 

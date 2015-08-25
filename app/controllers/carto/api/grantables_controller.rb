@@ -16,11 +16,12 @@ module Carto
 
       def index
         page, per_page, order = page_per_page_order_params
+        query = params[:q]
 
-        grantable_query = Carto::GrantableQueryBuilder.new(@organization)
+        grantable_query = Carto::GrantableQueryBuilder.new(@organization).with_filter(query)
         grantables = grantable_query.run(page, per_page, order)
         total_entries = grantable_query.count
-        total_org_entries = grantable_query.count
+        total_org_entries = Carto::GrantableQueryBuilder.new(@organization).count
 
         render_jsonp({
           grantables: grantables.map { |g| Carto::Api::GrantablePresenter.new(g).to_poro },

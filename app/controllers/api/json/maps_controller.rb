@@ -30,7 +30,7 @@ class Api::Json::MapsController < Api::ApplicationController
         end
       rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
         CartoDB::Logger.info("Communication error with tiler API. HTTP Code: #{exception.message}",
-          xception.template_data)
+          exception.template_data)
         render_jsonp({ errors: {
             named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}"
           } }, 400)

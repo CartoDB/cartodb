@@ -43,10 +43,6 @@ module Carto
       Carto::Group.create_group_with_extension(self, display_name)
     end
 
-    def grantables
-      users + groups
-    end
-
     private
 
   end

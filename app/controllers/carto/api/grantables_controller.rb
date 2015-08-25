@@ -6,6 +6,7 @@ module Carto
   module Api
 
     class GrantablesController < ::Api::ApplicationController
+      include PagedSearcher
 
       respond_to :json
 
@@ -14,13 +15,17 @@ module Carto
       before_filter :load_organization
 
       def index
-        grantables = @organization.grantables
-        total_entries = grantables.count
+        page, per_page, order = page_per_page_order_params
+
+        grantable_query = Carto::GrantableQueryBuilder.new(@organization)
+        grantables = grantable_query.run(page, per_page)
+        total_entries = grantable_query.count
+        total_org_entries = grantable_query.count
 
         render_jsonp({
           grantables: grantables.map { |g| Carto::Api::GrantablePresenter.new(g).to_poro },
           total_entries: total_entries,
-          total_org_entries: @organization.grantables.count
+          total_org_entries: total_org_entries
         }, 200)
       rescue => e
         CartoDB.notify_exception(e, { params: params })

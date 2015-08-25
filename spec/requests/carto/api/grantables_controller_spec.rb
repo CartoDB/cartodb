@@ -8,6 +8,10 @@ require_relative '../../../../app/controllers/carto/api/grantables_controller'
 describe Carto::Api::GrantablesController do
   include_context 'organization with users helper'
 
+  def count_grantables(organization)
+    organization.users.length + organization.groups.length
+  end
+
   describe 'Grantables', :order => :defined do
 
     before(:all) do
@@ -28,9 +32,11 @@ describe Carto::Api::GrantablesController do
       it "returns all organization users as a grantable of type user" do
         get_json api_v1_grantables_index_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, api_key: @org_user_owner.api_key), {}, @headers do |response|
           response.status.should == 200
-          response.body[:grantables].length.should == @carto_organization.users.length
-          response.body[:total_entries].should == @carto_organization.grantables.length
-          response.body[:total_org_entries].should == @carto_organization.grantables.length
+          grantables = response.body[:grantables]
+          grantables.length.should == @carto_organization.users.length
+          grantables.map { |g| g['id'] }.should include(@org_user_1.id)
+          response.body[:total_entries].should == @carto_organization.users.length
+          response.body[:total_org_entries].should == @carto_organization.users.length
         end
       end
 
@@ -41,10 +47,32 @@ describe Carto::Api::GrantablesController do
 
         get_json api_v1_grantables_index_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, api_key: @org_user_owner.api_key), {}, @headers do |response|
           response.status.should == 200
-          response.body[:grantables].length.should == @carto_organization.users.length + @carto_organization.groups.length
-          response.body[:total_entries].should == @carto_organization.grantables.length
-          response.body[:total_org_entries].should == @carto_organization.grantables.length
+          response.body[:grantables].length.should == count_grantables(@carto_organization)
+          response.body[:total_entries].should ==  count_grantables(@carto_organization)
+          response.body[:total_org_entries].should == count_grantables(@carto_organization)
         end
+      end
+
+      it "can paginate results" do
+        group_1 = @carto_organization.groups[0]
+        group_2 = @carto_organization.groups[1]
+
+        per_page = 1
+
+        # this expectation is based on known naming:
+        expected_ids = [@org_user_1.id, @org_user_2.id, group_1.id, group_2.id, @org_user_owner.id]
+
+        expected_ids.each { |expected_id|
+          page = expected_ids.index(expected_id) + 1
+
+          get_json api_v1_grantables_index_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, api_key: @org_user_owner.api_key), { page: page, per_page: per_page, order: 'name' }, @headers do |response|
+            response.status.should == 200
+            response.body[:grantables][0]['id'].should eq(expected_id), "#{response.body[:grantables][0]['id']} != #{expected_id}. Failing page: #{page}"
+            response.body[:grantables].length.should == per_page
+            response.body[:total_entries].should == count_grantables(@carto_organization)
+            response.body[:total_org_entries].should == count_grantables(@carto_organization)
+          end
+        }
       end
 
     end

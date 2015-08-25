@@ -1185,9 +1185,7 @@ class Table
     end
 
     elapsed = Time.now - start
-
     if @data_import
-      @data_import.reload
       @data_import.cartodbfy_time += elapsed
       @data_import.save
     end

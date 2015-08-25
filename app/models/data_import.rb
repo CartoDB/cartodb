@@ -262,10 +262,6 @@ class DataImport < Sequel::Model
   end
 
   def handle_success
-
-    #INFO: this is needed because of the coupling between DataImport <-> Table
-    reload
-
     self.success  = true
     self.state    = STATE_COMPLETE
     table_names = results.map { |result| result.name }.select { |name| name != nil}.sort

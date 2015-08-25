@@ -193,7 +193,7 @@ class User < Sequel::Model
   end
 
   def load_common_data(visualizations_api_url)
-    CartoDB::Visualization::CommonDataService.new.load_common_data_for_user(self, visualization_api_url)
+    CartoDB::Visualization::CommonDataService.new.load_common_data_for_user(self, visualizations_api_url)
   end
 
   def delete_common_data

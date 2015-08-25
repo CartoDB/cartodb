@@ -94,25 +94,12 @@
   background: $cStructure-grayBkg;
   border: 1px solid $cTypography-help;
 }
-.SideMenu-helpSegment--icon {
-  border-radius: 4px;
-  width: 40px;
-  height: 40px;
-  line-height: 50px;
-  text-align: center;
-  border: 1px solid $cStructure-darkLine;
-  margin-right: 15px;
-
-  i { 
-    font-size: 20px;
-    color: $cIcons-active;
-  }
-}
 .SideMenu-helpSegment--paragraph {
   @include display-flex();
   @include flex-direction(column);
   @include justify-content(center);
 
   color: $cTypography-paragraphs;
+  margin-left: 15px;
   font-size: 13px;
 }

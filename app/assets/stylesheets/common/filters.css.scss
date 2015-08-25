@@ -65,8 +65,6 @@
   @include justify-content(space-between, justify);
   @include align-items(center, center);
   height:80px;
-
-  &.Filters-row--underFilters { height: 62px; }
 }
 .Filters-row.Filters-row--centered { @include justify-content(center) }
 .Filters-list {
@@ -74,39 +72,6 @@
   @include justify-content(space-between, justify);
   @include align-items(center, center);
 }
-
-.Filters-list--underFilter {
-  .Filters-searchEnabler--underFilter {
-    display:inline;
-    min-width: 83px;
-  }
-
-  .Filters-searchLinkIcon--underFilter { 
-    display:inline;
-    font-weight: bold;
-    margin-right: 10px;
-   }
-
-  .Filters-searchItem--underFilter {
-    display:inline;
-    width: 320px;
-
-    .Filters-cleanSearch {
-      top: 26px;
-    }
-  }
-
-  .Filters-searchInput--underFilter { width: 320px; }
-  .Filters-actionButton--underFilter { 
-    margin-left: 48px;
-
-    .Button {
-      padding: 0 15px;
-      height: 30px;
-    }
-  }
-}
-
 .Filters-typeItem {
   position:relative;
   height:80px;
@@ -325,8 +290,6 @@ a.Filters-cleanSearch { line-height:32px }
   }
 
   .Filters-searchItem { display:inherit }
-
-  &.search--underFilters { margin-top: -30px; }
 }
 .Filters-progress {
   @include display-flex();

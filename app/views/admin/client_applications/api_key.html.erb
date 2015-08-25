@@ -16,83 +16,83 @@
 
 <%= render :partial => 'shared/flash_message' %>
 
-<div class="Form-accountSection u-inner">
+<div class="FormAccount-Section u-inner">
 
   <%= render :partial => 'admin/shared/pages_subheader' %>
 
-  <div class="Form-accountContent">
+  <div class="FormAccount-Content">
 
-    <div class="Form-title">
-      <p class="Form-titleText">The simplest way to access your private data or perform writes and updates to your account</p>
+    <div class="FormAccount-title">
+      <p class="FormAccount-titleText">The simplest way to access your private data or perform writes and updates to your account</p>
     </div>
 
-    <span class="Form-separator"></span>
+    <span class="FormAccount-separator"></span>
 
-    <div class="Form-row Form-row--spaced">
-      <div class="Form-rowLabel">
-        <label class="Form-label">Your API Key</label>
+    <div class="FormAccount-row FormAccount-row--spaced">
+      <div class="FormAccount-rowLabel">
+        <label class="FormAccount-label">Your API Key</label>
       </div>
-      <div class="Form-rowData">
-        <input type="text" class="Form-input Form-input--long has-icon js-input" placeholder="No API key" value="<%= current_user.api_key %>" readonly />
-        <i data-title="Copy this" class="iconFont iconFont-Anchor Form-inputIcon Form-copyIcon js-copy-value"></i>
-        <div class="Form-rowInfo Form-rowInfo--marginLeft">
+      <div class="FormAccount-rowData">
+        <input type="text" class="FormAccount-input FormAccount-input--long has-icon js-input" placeholder="No API key" value="<%= current_user.api_key %>" readonly />
+        <i data-title="Copy this" class="iconFont iconFont-Anchor FormAccount-inputIcon FormAccount-copyIcon js-copy-value"></i>
+        <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
           <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>" />
           <a class="js-regenerateApiKey" href="#">Request a new API key</a>
         </div>
       </div>
     </div>
 
-    <div class="Form-row Form-row--spaced">
-      <div class="Form-rowLabel">
-        <label class="Form-label Form-label--verticalAlignTop">Example write</label>
+    <div class="FormAccount-row FormAccount-row--spaced">
+      <div class="FormAccount-rowLabel">
+        <label class="FormAccount-label FormAccount-label--verticalAlignTop">Example write</label>
       </div>
-      <div class="Form-rowPreview">
-        <p class="Form-text Form-text--preview">https://<%= current_user.username %>.<%= CartoDB.account_host %>/api/v2/sql?q=INSERT INTO table_name (the_geom, observation) VALUES (ST_GeomFromText(’POINT(-71.2 42.5)’, 4326),'rare bird spotted')&api_key=<%= current_user.api_key %></p>
+      <div class="FormAccount-rowPreview">
+        <p class="FormAccount-text FormAccount-text--preview">https://<%= current_user.username %>.<%= CartoDB.account_host %>/api/v2/sql?q=INSERT INTO table_name (the_geom, observation) VALUES (ST_GeomFromText(’POINT(-71.2 42.5)’, 4326),'rare bird spotted')&api_key=<%= current_user.api_key %></p>
       </div>
     </div>
 
-    <div class="Form-row Form-row--spaced">
-      <div class="Form-rowLabel">
-        <label class="Form-label Form-label--verticalAlignTop">Example read private</label>
+    <div class="FormAccount-row FormAccount-row--spaced">
+      <div class="FormAccount-rowLabel">
+        <label class="FormAccount-label FormAccount-label--verticalAlignTop">Example read private</label>
       </div>
-      <div class="Form-rowPreview">
-        <p class="Form-text Form-text--preview">https://<%= current_user.username %>.<%= CartoDB.account_host %>/api/v2/sql?q=SELECT * FROM private_table&api_key=<%= current_user.api_key %></p>
+      <div class="FormAccount-rowPreview">
+        <p class="FormAccount-text FormAccount-text--preview">https://<%= current_user.username %>.<%= CartoDB.account_host %>/api/v2/sql?q=SELECT * FROM private_table&api_key=<%= current_user.api_key %></p>
       </div>
     </div>
 
     <% if current_user.has_feature_flag?('google_maps') %>
-      <div class="Form-title">
-        <p class="Form-titleText">Configure API keys from external providers</p>
+      <div class="FormAccount-title">
+        <p class="FormAccount-titleText">Configure API keys from external providers</p>
       </div>
 
-      <span class="Form-separator"></span>
+      <span class="FormAccount-separator"></span>
 
-      <div class="Form-row">
-        <div class="Form-rowLabel">
-          <label class="Form-label">Google Maps</label>
+      <div class="FormAccount-row">
+        <div class="FormAccount-rowLabel">
+          <label class="FormAccount-label">Google Maps</label>
         </div>
-        <div class="Form-rowData">
-          <input type="text" value="<%= current_user.organization.present? ? current_user.organization.google_maps_key : current_user.google_maps_key %>" class="Form-input Form-input--long is-disabled" readonly />
+        <div class="FormAccount-rowData">
+          <input type="text" value="<%= current_user.organization.present? ? current_user.organization.google_maps_key : current_user.google_maps_key %>" class="FormAccount-input FormAccount-input--long is-disabled" readonly />
         </div>
-        <div class="Form-rowInfo">
+        <div class="FormAccount-rowInfo">
           <% if !current_user.organization.present? %>
-            <p class="Form-rowInfoText Form-rowInfoText--multipleLines">
+            <p class="FormAccount-rowInfoText FormAccount-rowInfoText--multipleLines">
               This is your Google Maps query string, contact with <a href="mailto:support@cartodb.com">support@cartodb.com</a> to change it.
             </p>
           <% elsif current_user.organization.present? && current_user.organization_owner? %>
-            <p class="Form-rowInfoText Form-rowInfoText--multipleLines">
+            <p class="FormAccount-rowInfoText FormAccount-rowInfoText--multipleLines">
               This is the <%= current_user.organization.name %> Google Maps query string, contact with <a href="mailto:support@cartodb.com">support@cartodb.com</a> to change it.
             </p>
           <% else %>
-            <p class="Form-rowInfoText">This is the organization Google Maps API key</p>
+            <p class="FormAccount-rowInfoText">This is the organization Google Maps API key</p>
           <% end %>
         </div>
       </div>
     <% end %>
 
-    <div class="Form-footer">
-      <p class="Form-footerText">
-        <i class="iconFont iconFont-Info Form-footerIcon"></i>
+    <div class="FormAccount-footer">
+      <p class="FormAccount-footerText">
+        <i class="iconFont iconFont-Info FormAccount-footerIcon"></i>
         Learn more about <%= link_to "using your simple app key", Cartodb.config[:developers_host] + "/cartodb-platform.html" %> in CartoDB
       </p>
     </div>

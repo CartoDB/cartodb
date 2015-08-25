@@ -15,34 +15,34 @@
 
 <%= render :partial => 'shared/flash_message' %>
 
-<div class="Form-accountSection u-inner">
+<div class="FormAccount-Section u-inner">
   <%= render :partial => 'admin/shared/pages_subheader' %>
 
-  <div class="Form-accountContent">
+  <div class="FormAccount-Content">
     <%= render :partial => 'admin/shared/org_subheader' %>
 
     <%= form_for @organization, url: CartoDB.url(self, 'organization_auth_update', {}, current_user), multipart: true do |f| %>
       <%= csrf_meta_tags %>
 
-      <div class="Form-row">
-        <div class="Form-rowLabel">
-          <label class="Form-label Form-label--multipleLines">Whitelisted email domains</label>
+      <div class="FormAccount-row">
+        <div class="FormAccount-rowLabel">
+          <label class="FormAccount-label FormAccount-label--multipleLines">Whitelisted email domains</label>
         </div>
-        <div class="Form-rowData">
-          <div class="Form-tags js-domains">
-            <ul class="Form-tagsList js-domainsList">
-              <span class= "Form-tagsList--placeholder js-placeholder">Only valid domains will be added (ex. cartodb.com)</span>
+        <div class="FormAccount-rowData">
+          <div class="FormAccount-tags js-domains">
+            <ul class="FormAccount-tagsList js-domainsList">
+              <span class= "FormAccount-tagsList--placeholder js-placeholder">Only valid domains will be added (ex. cartodb.com)</span>
             </ul>
           </div>
           <%= f.hidden_field :whitelisted_email_domains, :value => "#{ @organization[:whitelisted_email_domains].join(',') if !@organization[:whitelisted_email_domains].blank? }", :class => "js-whitelist", :placeholder => "Only valid domains will be added (ex. cartodb.com)" %>
-          <div class="Form-rowInfo Form-rowInfo--marginLeft">
-            <p class="Form-rowInfoText warning">If empty, login and signup pages will be disabled</p>
+          <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+            <p class="FormAccount-rowInfoText warning">If empty, login and signup pages will be disabled</p>
           </div>
         </div>
       </div>
 
-      <div class="Form-footer">
-        <p class="Form-footerText"></p>
+      <div class="FormAccount-footer">
+        <p class="FormAccount-footerText"></p>
         <%= button_tag(type: 'submit', class: 'Button Button--main') do %>
           <% content_tag(:span, 'Save changes') %>
         <% end %>

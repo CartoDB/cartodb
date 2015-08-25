@@ -15,35 +15,35 @@
 
 <%= render :partial => 'shared/flash_message' %>
 
-<div class="Form-accountSection u-inner">
+<div class="FormAccount-Section u-inner">
   <%= render :partial => 'admin/shared/pages_subheader' %>
 
-  <div class="Form-accountContent">
+  <div class="FormAccount-Content">
     <%= render :partial => 'admin/shared/org_subheader' %>
 
     <%= form_for @organization, url: CartoDB.url(self, 'organization_settings_update', {}, current_user), multipart: true do |f| %>
       <%= csrf_meta_tags %>
 
-      <div class="Form-row js-avatarSelector">
-        <div class="Form-rowLabel">
-          <label class="Form-label">Organization logo</label>
+      <div class="FormAccount-row js-avatarSelector">
+        <div class="FormAccount-rowLabel">
+          <label class="FormAccount-label">Organization logo</label>
         </div>
-        <div class="Form-rowData Form-avatar">
-          <div class="Form-avatarPreview">
-            <img src="<%= @organization.avatar_url %>" title="" alt="" class="Form-avatarPreviewImage" />
+        <div class="FormAccount-rowData FormAccount-avatar">
+          <div class="FormAccount-avatarPreview">
+            <img src="<%= @organization.avatar_url %>" title="" alt="" class="FormAccount-avatarPreviewImage" />
           </div>
           <%= f.file_field :avatar_url, :class => "js-fileAvatar", :value => "Choose image" %>
         </div>
-        <div class="Form-rowInfo">
-          <p class="Form-rowInfoText">Recommended images should be 128x128 pixels of size</p>
+        <div class="FormAccount-rowInfo">
+          <p class="FormAccount-rowInfoText">Recommended images should be 128x128 pixels of size</p>
         </div>
       </div>
 
-      <div class="Form-row">
-        <div class="Form-rowLabel">
-          <label class="Form-label">Brand color</label>
+      <div class="FormAccount-row">
+        <div class="FormAccount-rowLabel">
+          <label class="FormAccount-label">Brand color</label>
         </div>
-        <div class="Form-rowData">
+        <div class="FormAccount-rowData">
           <button type="button" class="js-colorPicker UserSettings-ColorPicker" style="background:<%= @organization.color.blank? ? "#354046" : @organization.color %>">
             <span class="ColorPicker-handle">
               <b class="ColorPicker-handleTriangle"></b>
@@ -53,141 +53,141 @@
         </div>
       </div>
 
-      <div class="Form-row">
-        <div class="Form-rowLabel">
-          <label class="Form-label">Name</label>
+      <div class="FormAccount-row">
+        <div class="FormAccount-rowLabel">
+          <label class="FormAccount-label">Name</label>
         </div>
-        <div class="Form-rowData">
-          <%= f.text_field :name, :class => "Form-input Form-input--med" %>
-          <div class="Form-rowInfo Form-rowInfo--marginLeft">
-            <p class="Form-rowInfoText">Check your <a href="<%= CartoDB.base_url(@organization.name) %>">public page</a></p>
+        <div class="FormAccount-rowData">
+          <%= f.text_field :name, :class => "FormAccount-input FormAccount-input--med" %>
+          <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+            <p class="FormAccount-rowInfoText">Check your <a href="<%= CartoDB.base_url(@organization.name) %>">public page</a></p>
           </div>
         </div>
       </div>
 
-      <div class="Form-row">
-        <div class="Form-rowLabel">
-          <label class="Form-label">Website</label>
+      <div class="FormAccount-row">
+        <div class="FormAccount-rowLabel">
+          <label class="FormAccount-label">Website</label>
         </div>
-        <div class="Form-rowData">
-          <%= f.text_field :website, :class => "Form-input Form-input--med" %>
+        <div class="FormAccount-rowData">
+          <%= f.text_field :website, :class => "FormAccount-input FormAccount-input--med" %>
         </div>
-        <div class="Form-rowInfo">
-          <p class="Form-rowInfoText"></p>
-        </div>
-      </div>
-
-      <div class="Form-row">
-        <div class="Form-rowLabel">
-          <label class="Form-label">Description</label>
-        </div>
-        <div class="Form-rowData">
-          <%= f.text_area :description, :class => "Form-textarea Form-input Form-input--totalwidth" %>
-        </div>
-        <div class="Form-rowInfo">
-          <p class="Form-rowInfoText"></p>
+        <div class="FormAccount-rowInfo">
+          <p class="FormAccount-rowInfoText"></p>
         </div>
       </div>
 
-      <div class="Form-row">
-        <div class="Form-rowLabel">
-          <label class="Form-label">Twitter username</label>
+      <div class="FormAccount-row">
+        <div class="FormAccount-rowLabel">
+          <label class="FormAccount-label">Description</label>
         </div>
-        <div class="Form-rowData">
-          <%= f.text_field :twitter_username, :class => "Form-input Form-input--med" %>
+        <div class="FormAccount-rowData">
+          <%= f.text_area :description, :class => "FormAccount-textarea FormAccount-input FormAccount-input--totalwidth" %>
         </div>
-        <div class="Form-rowInfo">
-          <p class="Form-rowInfoText"></p>
+        <div class="FormAccount-rowInfo">
+          <p class="FormAccount-rowInfoText"></p>
         </div>
       </div>
 
-      <div class="Form-row">
-        <div class="Form-rowLabel">
-          <label class="Form-label">Disqus shortname</label>
+      <div class="FormAccount-row">
+        <div class="FormAccount-rowLabel">
+          <label class="FormAccount-label">Twitter username</label>
         </div>
-        <div class="Form-rowData">
-          <%= f.text_field :discus_shortname, :class => "Form-input Form-input--med", :placeholder => "If empty, CartoDB will moderate them for you" %>
-          <div class="Form-rowInfo Form-rowInfo--marginLeft">
-            <p class="Form-rowInfoText">Be notified by new comments in your pages</p>
+        <div class="FormAccount-rowData">
+          <%= f.text_field :twitter_username, :class => "FormAccount-input FormAccount-input--med" %>
+        </div>
+        <div class="FormAccount-rowInfo">
+          <p class="FormAccount-rowInfoText"></p>
+        </div>
+      </div>
+
+      <div class="FormAccount-row">
+        <div class="FormAccount-rowLabel">
+          <label class="FormAccount-label">Disqus shortname</label>
+        </div>
+        <div class="FormAccount-rowData">
+          <%= f.text_field :discus_shortname, :class => "FormAccount-input FormAccount-input--med", :placeholder => "If empty, CartoDB will moderate them for you" %>
+          <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+            <p class="FormAccount-rowInfoText">Be notified by new comments in your pages</p>
           </div>
         </div>
       </div>
 
-      <div class="Form-row">
-        <div class="Form-rowLabel">
-          <label class="Form-label">Internal support email</label>
+      <div class="FormAccount-row">
+        <div class="FormAccount-rowLabel">
+          <label class="FormAccount-label">Internal support email</label>
         </div>
-        <div class="Form-rowData">
-          <%= f.text_field :admin_email, :class => "Form-input Form-input--med", :placeholder => "if empty, we will use your email" %>
-          <div class="Form-rowInfo Form-rowInfo--marginLeft">
-            <p class="Form-rowInfoText">Email you will use to give support to your users</p>
+        <div class="FormAccount-rowData">
+          <%= f.text_field :admin_email, :class => "FormAccount-input FormAccount-input--med", :placeholder => "if empty, we will use your email" %>
+          <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+            <p class="FormAccount-rowInfoText">Email you will use to give support to your users</p>
           </div>
         </div>
       </div>
 
-      <div class="Form-row">
-        <div class="Form-rowLabel">
-          <label class="Form-label">Default new user quota</label>
+      <div class="FormAccount-row">
+        <div class="FormAccount-rowLabel">
+          <label class="FormAccount-label">Default new user quota</label>
         </div>
-        <div class="Form-rowData">
-          <%= f.text_field :default_quota_in_bytes, :value => "#{ ( @organization[:default_quota_in_bytes].to_i / (1024 * 1024) ) if !@organization[:default_quota_in_bytes].blank? }", :class => "Form-input Form-input--med #{ 'Form-input--error' if @organization.errors[:default_quota_in_bytes].present? } js-userQuota" %>
-          <div class="Form-rowInfo Form-rowInfo--marginLeft">
+        <div class="FormAccount-rowData">
+          <%= f.text_field :default_quota_in_bytes, :value => "#{ ( @organization[:default_quota_in_bytes].to_i / (1024 * 1024) ) if !@organization[:default_quota_in_bytes].blank? }", :class => "FormAccount-input FormAccount-input--med #{ 'FormAccount-input--error' if @organization.errors[:default_quota_in_bytes].present? } js-userQuota" %>
+          <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
             <% if (@organization.errors[:default_quota_in_bytes].present?) %>
-              <p class="Form-rowInfoText Form-rowInfoText--error"><%= @organization.errors[:default_quota_in_bytes].first %></p>
+              <p class="FormAccount-rowInfoText FormAccount-rowInfoText--error"><%= @organization.errors[:default_quota_in_bytes].first %></p>
             <% else %>
-              <p class="Form-rowInfoText">Set (in MB) the quota of new users in your organization</p>
+              <p class="FormAccount-rowInfoText">Set (in MB) the quota of new users in your organization</p>
             <% end %>
           </div>
         </div>
       </div>
 
-      <div class="Form-title">
-        <p class="Form-titleText">Users API key</p>
+      <div class="FormAccount-title">
+        <p class="FormAccount-titleText">Users API key</p>
       </div>
 
-      <span class="Form-separator"></span>
+      <span class="FormAccount-separator"></span>
 
-      <div class="Form-row">
-        <div class="Form-rowData">
+      <div class="FormAccount-row">
+        <div class="FormAccount-rowData">
           <button class="Button--link js-regenerateOrgUsersApiKey" data-current_username="<%= current_user.username %>">Regenerate all API keys</button>
-          <div class="Form-rowInfo Form-rowInfo--marginLeft">
-            <p class="Form-rowInfoText">This involves all your organization users API keys</p>
+          <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+            <p class="FormAccount-rowInfoText">This involves all your organization users API keys</p>
           </div>
         </div>
       </div>
 
       <% if current_user.has_feature_flag?('google_maps') && current_user.organization_owner? %>
       
-        <div class="Form-title">
-          <p class="Form-titleText">Configure API keys from external providers</p>
+        <div class="FormAccount-title">
+          <p class="FormAccount-titleText">Configure API keys from external providers</p>
         </div>
 
-        <span class="Form-separator"></span>
+        <span class="FormAccount-separator"></span>
 
-        <div class="Form-row">
-          <div class="Form-rowLabel">
-            <label class="Form-label Form-label--multipleLines">Google Maps query string</label>
+        <div class="FormAccount-row">
+          <div class="FormAccount-rowLabel">
+            <label class="FormAccount-label FormAccount-label--multipleLines">Google Maps query string</label>
           </div>
-          <div class="Form-rowData">
-            <%= f.text_field :google_maps_key, class: "Form-input Form-input--long is-disabled", :readonly => "true" %>
+          <div class="FormAccount-rowData">
+            <%= f.text_field :google_maps_key, class: "FormAccount-input FormAccount-input--long is-disabled", :readonly => "true" %>
           </div>
-          <div class="Form-rowInfo">
-            <p class="Form-rowInfoText Form-rowInfoText--multipleLines">
+          <div class="FormAccount-rowInfo">
+            <p class="FormAccount-rowInfoText FormAccount-rowInfoText--multipleLines">
               This is the <%= @organization.name %> Google Maps query string. 
               Contact with <a href="mailto:support@cartodb.com">support@cartodb.com</a> to change it.
             </p>
           </div>
         </div>
 
-        <div class="Form-row">
-          <div class="Form-rowLabel">
-            <label class="Form-label Form-label--multipleLines">Google Maps private key</label>
+        <div class="FormAccount-row">
+          <div class="FormAccount-rowLabel">
+            <label class="FormAccount-label FormAccount-label--multipleLines">Google Maps private key</label>
           </div>
-          <div class="Form-rowData">
-            <%= f.text_field :google_maps_key, class: "Form-input Form-input--long is-disabled", :readonly => "true" %>
+          <div class="FormAccount-rowData">
+            <%= f.text_field :google_maps_key, class: "FormAccount-input FormAccount-input--long is-disabled", :readonly => "true" %>
           </div>
-          <div class="Form-rowInfo">
-            <p class="Form-rowInfoText Form-rowInfoText--multipleLines">
+          <div class="FormAccount-rowInfo">
+            <p class="FormAccount-rowInfoText FormAccount-rowInfoText--multipleLines">
               This is the <%= @organization.name %> Google Maps private key
               contact with <a href="mailto:support@cartodb.com">support@cartodb.com</a> to change it.
             </p>
@@ -196,8 +196,8 @@
 
       <% end %>
 
-      <div class="Form-footer">
-        <p class="Form-footerText"></p>
+      <div class="FormAccount-footer">
+        <p class="FormAccount-footerText"></p>
         <%= button_tag(type: 'submit', class: 'Button Button--main') do %>
           <% content_tag(:span, 'Save changes') %>
         <% end %>

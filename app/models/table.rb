@@ -1171,6 +1171,7 @@ class Table
   end
 
   def cartodbfy
+    start = Time.now
     schema_name = owner.database_schema
     table_name = "#{owner.database_schema}.#{self.name}"
 
@@ -1181,6 +1182,8 @@ class Table
         })
       end
     end
+    elapsed = Time.now - start
+    @data_import.cartodbfy_time += elapsed if @data_import
 
     self.schema(reload:true)
   end

@@ -241,7 +241,7 @@ class Carto::VisualizationQueryBuilder
       @tags.each do |t|
         t.downcase!
       end
-      query = query.where("array_to_string(visualizations.tags, ',') similar to array_to_string(ARRAY[?]::text[], ',')", @tags)
+      query = query.where("array_to_string(visualizations.tags, ', ') ILIKE '%' || array_to_string(ARRAY[?]::text[], ', ') || '%'", @tags)
     end
 
     @include_associations.each { |association|

@@ -1,6 +1,6 @@
 # coding: utf-8
 class Admin::OrganizationsController < ApplicationController
-  ssl_required :show, :settings, :settings_update, :auth, :regenerate_all_api_keys
+  ssl_required :show, :settings, :settings_update, :auth, :auth_update, :regenerate_all_api_keys
   before_filter :login_required, :load_organization_and_members
 
   layout 'application'

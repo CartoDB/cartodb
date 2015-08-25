@@ -1,4 +1,3 @@
-
 module Carto
   module Api
     class UserPresenter

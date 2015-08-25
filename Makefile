@@ -44,6 +44,7 @@ WORKING_SPECS_1 = \
   $(NULL)
 
 WORKING_SPECS_2 = \
+  spec/lib/cartodb/stats/importer_spec.rb \
   services/importer/spec/acceptance/geojson_spec.rb \
   services/importer/spec/acceptance/gpx_spec.rb \
   services/importer/spec/acceptance/kml_spec.rb \
@@ -61,7 +62,6 @@ WORKING_SPECS_2 = \
 	services/importer/spec/unit/shp_helper_spec.rb \
   services/importer/spec/unit/downloader_spec.rb \
   services/importer/spec/unit/georeferencer_spec.rb \
-  services/importer/spec/unit/importer_stats_spec.rb \
   services/importer/spec/unit/json2csv_spec.rb \
   services/importer/spec/unit/kml_splitter_spec.rb \
   services/importer/spec/unit/loader_spec.rb \

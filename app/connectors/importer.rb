@@ -2,6 +2,7 @@
 require 'uuidtools'
 
 require_relative '../models/visualization/support_tables'
+require_relative '../helpers/bounding_box_helper'
 
 module CartoDB
   module Connector
@@ -177,6 +178,7 @@ module CartoDB
       def persist_metadata(result, name, data_import_id)
         table_registrar.register(name, data_import_id)
         self.table = table_registrar.table
+        BoundingBoxHelper.update_visualizations_bbox(table)
         self
       end
 

@@ -7,10 +7,12 @@ require_relative '../factories/pg_connection'
 require_relative '../doubles/log'
 require_relative 'cdb_importer_context'
 require_relative 'acceptance_helpers'
+require_relative 'no_stats_context'
 
 describe 'GPX regression tests' do
   include AcceptanceHelpers
   include_context "cdb_importer schema"
+  include_context "no stats"
 
   it 'imports GPX files' do
     filepath    = path_to('route2.gpx')

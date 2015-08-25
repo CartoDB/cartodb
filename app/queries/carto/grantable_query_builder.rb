@@ -8,18 +8,16 @@ class Carto::GrantableQueryBuilder
   end
 
   def run(page = 1, per_page = 200, order = 'name')
-    ActiveRecord::Base.connection.exec_query(
-      paged_query(order), 'grantable_query', [
-        [nil, @organization.id],
-        [nil, per_page],
-        [nil, (page - 1) * per_page]
-    ]).map { |r| Carto::Grantable.new(r) }
+    offset = (page - 1) * per_page
+    query = ActiveRecord::Base.send(:sanitize_sql_array,
+        [paged_query(order), @organization.id, per_page, offset])
+    ActiveRecord::Base.connection.execute(query).map { |r| Carto::Grantable.new(r) }
   end
 
   def count
-    ActiveRecord::Base.connection.exec_query(
-      count_query, 'grantable_query', [
-        [nil, @organization.id]]).first['count'].to_i
+    query = ActiveRecord::Base.send(:sanitize_sql_array,
+        [count_query, @organization.id])
+    ActiveRecord::Base.connection.execute(query).first['count'].to_i
   end
 
   private
@@ -36,15 +34,19 @@ class Carto::GrantableQueryBuilder
         created_at, updated_at,
         organization_id
         from users) grantables
-    where grantables.organization_id = $1
+    where grantables.organization_id = ?
     SQL
   end
 
   def paged_query(order)
-    "#{query} order by #{order} limit $2 offset $3"
+    "#{query} order by #{safe_order(order)} limit ? offset ?"
   end
 
   def count_query
     "select count(1) from (#{query}) c"
+  end
+
+  def safe_order(order)
+    order && %w{ id name type avatar_url created_at updated_at organization_id }.include?(order.to_s) ? order.to_s : 'name'
   end
 end

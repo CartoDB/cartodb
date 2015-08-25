@@ -737,6 +737,8 @@ class DataImport < Sequel::Model
     ::JSON.parse(self.stats).each {|stat| total_size += stat['size']}
     importer_stats_aggregator.gauge('total_size', total_size)
 
+    import_time = self.updated_at - self.created_at
+
     import_log = {'user'                   => owner.username,
                   'state'                  => self.state,
                   'tables'                 => results.length,
@@ -749,7 +751,7 @@ class DataImport < Sequel::Model
                   'service_name'           => self.service_name,
                   'data_type'              => self.data_type,
                   'is_sync_import'         => !self.synchronization_id.nil?,
-                  'import_time'            => self.updated_at - self.created_at,
+                  'import_time'            => import_time,
                   'file_stats'             => ::JSON.parse(self.stats),
                   'resque_ppid'            => self.resque_ppid,
                   'user_timeout'           => ::DataImport.http_timeout_for(current_user),

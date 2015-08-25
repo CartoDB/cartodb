@@ -42,7 +42,8 @@ module CartoDB
 
         @db.run(%Q{
           ALTER TABLE "#{relation}"
-          ADD COLUMN tags text[]
+          ADD COLUMN tags text[],
+          ADD COLUMN bbox geometry
         })
       end
 

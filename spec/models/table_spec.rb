@@ -1514,7 +1514,7 @@ describe Table do
       table.sequel.insert(:test_id => '12', :f1 => "")
 
       # update datatype
-      table.modify_column! :name=>"f1", :type=>"boolean", :name=>"f1", :new_name=>nil
+      table.modify_column! :type=>"boolean", :name=>"f1", :new_name=>nil
 
       # test
       table.sequel.where(:cartodb_id => '1').first[:f1].should == true

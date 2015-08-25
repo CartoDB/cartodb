@@ -8,12 +8,14 @@ require_relative '../doubles/log'
 require_relative '../doubles/user'
 require_relative 'cdb_importer_context'
 require_relative 'acceptance_helpers'
+require_relative 'no_stats_context'
 
 include CartoDB::Importer2
 
 describe 'raster2pgsql acceptance tests' do
   include AcceptanceHelpers
   include_context "cdb_importer schema"
+  include_context "no stats"
 
   before(:all) do
     @table_name = 'raster_test'

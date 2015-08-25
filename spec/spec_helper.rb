@@ -36,7 +36,12 @@ RSpec.configure do |config|
     $api_credentials.flushdb
     $users_metadata.flushdb
 
-    Rails::Sequel.connection.tables.each{ |t| next if [:schema_migrations].include?(t); Rails::Sequel.connection.run("TRUNCATE TABLE \"#{t}\" CASCADE") }
+    protected_tables = [:schema_migrations, :spatial_ref_sys]
+    Rails::Sequel.connection.tables.each do |t|
+      if !protected_tables.include?(t)
+        Rails::Sequel.connection.run("TRUNCATE TABLE \"#{t}\" CASCADE")
+      end
+    end
 
     # To avoid Travis and connection leaks
     $pool.close_connections!

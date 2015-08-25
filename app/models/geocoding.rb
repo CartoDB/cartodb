@@ -6,7 +6,9 @@ require_relative '../../services/table-geocoder/lib/mail_geocoder'
 require_relative '../../services/geocoder/lib/geocoder_config'
 require_relative '../../lib/cartodb/metrics'
 require_relative '../../lib/cartodb/mixpanel'
+require_relative '../../app/helpers/bounding_box_helper'
 require_relative 'log'
+require_relative '../../lib/cartodb/stats/geocoding'
 
 class Geocoding < Sequel::Model
 
@@ -317,8 +319,9 @@ class Geocoding < Sequel::Model
 
   def handle_geocoding_success(rows_geocoded_before)
     self.update(cache_hits: table_geocoder.cache.hits) if table_geocoder.respond_to?(:cache)
-    Statsd.gauge("geocodings.requests", "+#{self.processed_rows}") rescue nil
-    Statsd.gauge("geocodings.cache_hits", "+#{self.cache_hits}") rescue nil
+    stats_aggregator = CartoDB::Stats::Geocoding.instance
+    stats_aggregator.gauge("requests", "+#{self.processed_rows}") rescue nil
+    stats_aggregator.gauge("cache_hits", "+#{self.cache_hits}") rescue nil
 
     @finished_at = Time.now
     self.batched = table_geocoder.used_batch_request?
@@ -326,6 +329,8 @@ class Geocoding < Sequel::Model
     self.update(state: 'finished', real_rows: geocoded_rows, used_credits: calculate_used_credits)
     send_report_mail(state, table_geocoder.table_name, nil, self.processable_rows, geocoded_rows)
     log.append "Geocoding finished"
+    # To store the bbox in visualizations
+    BoundingBoxHelper.update_visualizations_bbox(table_service)
     self.report
   end
 

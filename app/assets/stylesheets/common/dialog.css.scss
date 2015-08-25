@@ -2,6 +2,8 @@
 @import "../variables/colors";
 @import "../variables/sizes";
 
+$sSmallWidth: 670px;
+
 /* set by base dialog */
 body.is-inDialog {
   overflow: hidden;
@@ -94,15 +96,15 @@ body.is-inDialog {
   padding-top: $sMargin-section;
   padding-bottom: $sMargin-section;
 }
-.Dialog-body.Dialog-body--withoutBorder {
-  border-top: none;
-}
+.Dialog-body.Dialog-body--noPaddingTop { padding-top: 0 }
+.Dialog-body.Dialog-body--withoutBorder { border-top: none }
 .Dialog-body.Dialog-body--create {
   position: relative;
   width: 100%;
   padding-bottom: 0;
   overflow: auto;
 }
+.Dialog-body.Dialog-body--small { width: $sSmallWidth }
 .Dialog-Stretcher {
   width: $sLayout-width;
   @include display-flex();
@@ -131,6 +133,9 @@ body.is-inDialog {
 .Dialog-footer--simple {
   @include display-flex();
   @include justify-content(center);
+}
+.Dialog-footer--small {
+  width: $sSmallWidth;
 }
 .Dialog-footerContent {
   @include display-flex();
@@ -220,6 +225,9 @@ body.is-inDialog {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
+}
+.Dialog-headerText--small {
+  width: $sSmallWidth;
 }
 .Dialog-footerBtn {
   margin-right: $sMargin-element;

@@ -1,0 +1,18 @@
+@import "../variables/mixins";
+@import "../variables/colors";
+@import "../variables/sizes";
+
+.VideoTutorial {}
+.Videotutorial-headerIcon { line-height: 34px }
+.VideoTutorial-content {}
+.VideoTutorial-footerInner {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center);
+}
+.VideoTutorial-footerInfo {
+  font-size: $sFontSize-larger;
+  font-weight: $sFontWeight-lighter;
+  color: $cTypography-secondary;
+}
+.VideoTutorial-footerInfoIcon { margin-right: 10px }

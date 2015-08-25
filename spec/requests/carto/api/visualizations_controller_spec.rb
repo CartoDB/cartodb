@@ -6,6 +6,7 @@ require_relative '../../../../app/controllers/carto/api/visualizations_controlle
 
 # TODO: Remove once Carto::Visualization is complete enough
 require_relative '../../../../app/models/visualization/member'
+require_relative '../../../../app/helpers/bounding_box_helper'
 
 describe Carto::Api::VisualizationsController do
   it_behaves_like 'visualization controllers' do
@@ -56,6 +57,9 @@ describe Carto::Api::VisualizationsController do
       }
     }
   }
+
+  BBOX_GEOM = '{"type":"MultiPolygon","coordinates":[[[[-75.234375,54.57206166],[4.921875,54.36775852],[7.03125,-0.35156029],[-71.71875,1.75753681],[-75.234375,54.57206166]]]]}'
+  OUTSIDE_BBOX_GEOM = '{"type":"MultiPolygon","coordinates":[[[[-149.4140625,79.74993208],[-139.921875,79.74993208],[-136.0546875,78.13449318],[-148.7109375,78.06198919],[-149.4140625,79.74993208]]]]}'
 
   describe 'static_map' do
     include_context 'visualization creation helpers'
@@ -1448,6 +1452,53 @@ describe Carto::Api::VisualizationsController do
 
   end
 
+  describe 'filter canonical viz by bounding box' do
+    include_context 'visualization creation helpers'
+
+    before(:each) do
+      fflag = FactoryGirl.build(:feature_flag, name: 'bbox_store', restricted: false)
+      Carto::FeatureFlag.stubs(:where => [fflag])
+      @table_inside_bbox = create_geometry_table($user_1, BBOX_GEOM)
+      @table_outside_bbox = create_geometry_table($user_1, OUTSIDE_BBOX_GEOM)
+    end
+
+    it 'should show return only visualizations that intersect with the bbox' do
+      get api_v1_visualizations_index_url(user_domain: $user_1.username,
+          types: CartoDB::Visualization::Member::TYPE_CANONICAL, bbox: '-18.166667,27.633333,4.333333,43.916667'), @headers
+      body = JSON.parse(last_response.body)
+      body["visualizations"].length.should eq 1
+      body["visualizations"][0]["id"].should eq @table_inside_bbox.table_visualization.id
+    end
+
+    it 'should return 400 when try to filter by bbox and not canonical visualizations' do
+      get api_v1_visualizations_index_url(user_domain: $user_1.username,
+          types: CartoDB::Visualization::Member::TYPE_DERIVED, bbox: '-18.166667,27.633333,4.333333,43.916667'), @headers
+      last_response.status.should eq 400
+    end
+
+    it 'should return 400 when try to filter by bbox and with more than only canonical visualizations' do
+      get api_v1_visualizations_index_url(user_domain: $user_1.username,
+          types: "#{CartoDB::Visualization::Member::TYPE_DERIVED}, #{CartoDB::Visualization::Member::TYPE_CANONICAL}", bbox: '-18.166667,27.633333,4.333333,43.916667'), @headers
+      last_response.status.should eq 400
+    end
+
+    it 'should return 400 when try to filter by bbox with less than 4 coordinates' do
+      get api_v1_visualizations_index_url(user_domain: $user_1.username,
+          types: CartoDB::Visualization::Member::TYPE_DERIVED, bbox: '27.633333,4.333333,43.916667'), @headers
+      last_response.status.should eq 400
+    end
+
+    it 'should return 400 when try to filter by bbox with wrong typed coordinates' do
+      get api_v1_visualizations_index_url(user_domain: $user_1.username,
+          types: CartoDB::Visualization::Member::TYPE_CANONICAL, bbox: '18.323232,alal,4.333333,43.916667'), @headers
+      last_response.status.should eq 400
+      get api_v1_visualizations_index_url(user_domain: $user_1.username,
+          types: CartoDB::Visualization::Member::TYPE_CANONICAL, bbox: 'true,2.393939,4.333333,43.916667'), @headers
+      last_response.status.should eq 400
+    end
+
+  end
+
   include Rack::Test::Methods
   include Warden::Test::Helpers
   include CacheHelper
@@ -1518,5 +1569,14 @@ describe Carto::Api::VisualizationsController do
     organization
   end
 
+  def create_geometry_table(user, the_geom)
+    table = new_table(privacy: UserTable::PRIVACY_PUBLIC, :user_id => $user_1.id)
+    table.force_schema = "the_geom geometry"
+    table.the_geom_type = "point"
+    table.save.reload
+    table.insert_row!({:the_geom => the_geom})
+    BoundingBoxHelper.update_visualizations_bbox(table)
+    table
+  end
 
 end

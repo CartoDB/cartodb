@@ -22,6 +22,7 @@ module CartoDB
   class InvalidGeomType < StandardError; end
   class InvalidSRID < StandardError; end
   class InvalidGeoJSONFormat < StandardError; end
+  class BoundingBoxError < StandardError; end
   class QueryNotAllowed < StandardError; end
 
   class InvalidMember < StandardError; end

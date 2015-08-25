@@ -166,13 +166,13 @@
 
         <div class="FormAccount-row">
           <div class="FormAccount-rowLabel">
-            <label class="FormAccount-label FormAccount-label--multipleLines">Google Maps query string</label>
+            <label class="FormAccount-label">Google Maps query string</label>
           </div>
           <div class="FormAccount-rowData">
             <%= f.text_field :google_maps_key, class: "FormAccount-input FormAccount-input--long is-disabled", :readonly => "true" %>
           </div>
           <div class="FormAccount-rowInfo">
-            <p class="FormAccount-rowInfoText FormAccount-rowInfoText--multipleLines">
+            <p class="FormAccount-rowInfoText">
               This is the <%= @organization.name %> Google Maps query string. 
               Contact with <a href="mailto:support@cartodb.com">support@cartodb.com</a> to change it.
             </p>
@@ -187,7 +187,7 @@
             <%= f.text_field :google_maps_key, class: "FormAccount-input FormAccount-input--long is-disabled", :readonly => "true" %>
           </div>
           <div class="FormAccount-rowInfo">
-            <p class="FormAccount-rowInfoText FormAccount-rowInfoText--multipleLines">
+            <p class="FormAccount-rowInfoText">
               This is the <%= @organization.name %> Google Maps private key
               contact with <a href="mailto:support@cartodb.com">support@cartodb.com</a> to change it.
             </p>

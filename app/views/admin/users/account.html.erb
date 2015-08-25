@@ -63,7 +63,7 @@
           <% if @user.errors[:email].present? %>
             <p class="FormAccount-rowInfoText FormAccount-rowInfoText--error">Email not valid</p>
           <% elsif @user.google_sign_in %>
-            <p class="FormAccount-rowInfoText <%= 'FormAccount-rowInfoText--multipleLines' unless @user.should_display_old_password? %>">Your account is linked to your Google account. <% unless @user.should_display_old_password? %> You can change the email if you set a password.</p> <% end %>
+            <p class="FormAccount-rowInfoText">Your account is linked to your Google account. <% unless @user.should_display_old_password? %> You can change the email if you set a password.</p> <% end %>
           <% end %>
         </div>
       </div>

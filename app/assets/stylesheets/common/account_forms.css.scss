@@ -458,8 +458,8 @@ $sLabel-width: 140px;
 .FormAccount-rowInfoText--centered { text-align: center }
 .FormAccount-rowInfoText--smaller { font-size: $sFontSize-smallUpperCase }
 .FormAccount-rowInfoText--block { width: 100% }
-.FormAccount-rowInfoText--multipleLines {
-  line-height: 20px;
+.FormAccount-rowInfoText--maxWidth {
+  max-width: 480px;
 }
 .FormAccount-rowInfoText--error { color: #DD3B37 }
 .FormAccount-rowInfoText--error .FormAccount-link {

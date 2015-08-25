@@ -19,7 +19,7 @@
   margin: 30px 0;
 }
 .SideMenu-progressSize {
-  margin-left: 12px;
+  margin-left: $sMargin-elementInline;
   color: $cTypography-secondary;
   font-size: $sFontSize-smallUpperCase;
   font-weight: $sFontWeight-lighter;
@@ -39,7 +39,7 @@
 .SideMenu-list {
   @include justify-content(space-between, justify);
   @include align-items(center, center);
-  margin: 30px 0;
+  margin: 25px 0;
 }
 .SideMenu-typeItem {
   position:relative;

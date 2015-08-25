@@ -5,6 +5,10 @@ require_relative '../../../../spec/rspec_configuration.rb'
 
 describe CartoDB::Importer2::ContentGuesser do
 
+  before(:each) do
+    CartoDB::Stats::Aggregator.stubs(:read_config).returns({})
+  end
+
   describe '#enabled?' do
     it 'returns a true value if set so in options' do
       guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, {guessing: {enabled: true}}

@@ -66,7 +66,7 @@ gem 'aequitas',                 '0.0.2'
 gem 'uuidtools',                '2.1.5'
 
 # Markdown
-gem 'redcarpet', '3.2.2'
+gem 'redcarpet', '3.2.3'
 
 # TODO we should be able to remove this using the new
 #      Rails routes DSL

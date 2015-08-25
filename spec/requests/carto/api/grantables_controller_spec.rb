@@ -41,7 +41,7 @@ describe Carto::Api::GrantablesController do
         end
       end
 
-      it "returns all organization users and groups as a grantable of type user" do
+      it "returns all organization users and groups as a grantable of the right type, including additional information" do
         group_1 = FactoryGirl.create(:random_group, display_name: 'g_1', organization: @carto_organization)
         group_2 = FactoryGirl.create(:random_group, display_name: 'g_2', organization: @carto_organization)
         @carto_organization.reload
@@ -51,6 +51,18 @@ describe Carto::Api::GrantablesController do
           response.body[:grantables].length.should == count_grantables(@carto_organization)
           response.body[:total_entries].should == count_grantables(@carto_organization)
           response.body[:total_org_entries].should == count_grantables(@carto_organization)
+
+          response.body[:grantables].each { |g|
+            g['id'].should == g['model']['id']
+            case g['type']
+            when 'user'
+              g['name'].should == g['model']['username']
+            when 'group'
+              g['name'].should == g['model']['display_name']
+            else
+              raise "Unknown type #{g['type']}"
+            end
+          }
         end
       end
 

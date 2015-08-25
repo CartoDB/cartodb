@@ -10,8 +10,8 @@ namespace :cartodb do
 
       u = User.where(username: username).first
       require_relative '../../app/services/visualization/common_data_service'
-      common_data_service = get_common_data_service
-      common_data_service.delete_common_data_for_user(u)
+      deleted = CartoDB::Visualization::CommonDataService.new.delete_common_data_for_user(u)
+      puts "Deleted #{deleted} remote visualizations"
     end
 
     task :clear_org, [:org_name] => [:environment] do |t, args|

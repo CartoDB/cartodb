@@ -76,9 +76,22 @@ module CartoDB
       end
 
       def delete_common_data_for_user(user)
-        Collection.new.fetch({type: 'remote', user_id: user.id}).map do |v|
-          delete_remote_visualization(v)
+        #TODO This is ugly, I know, one query per vis but I've tried to use Collection pagination
+        #to do it without result. When the Carto::Visualization model could be used to delete this
+        #should be move to AR and paginate removing the extra query
+        deleted = 0
+        vqb = Carto::VisualizationQueryBuilder.new
+                                              .with_type(Carto::Visualization::TYPE_REMOTE)
+                                              .with_user_id(user.id)
+                                              .build
+
+        vis_ids = vqb.pluck(:id)
+        vis_ids.each do |vis_id|
+          vis = CartoDB::Visualization::Member.new(id: vis_id).fetch
+          delete_remote_visualization(vis)
+          deleted += 1
         end
+        deleted
       end
 
       private
@@ -99,6 +112,7 @@ module CartoDB
             puts "Couldn't delete #{visualization.id} visualization because it's been imported"
             false
           else
+            CartoDB.notify_exception(e)
             raise e
           end
         end

@@ -314,13 +314,13 @@ class User < Sequel::Model
     external_data_imports = ExternalDataImport.by_user_id(self.id)
     external_data_imports.each { |edi| edi.destroy }
   rescue => e
-    Rollbar.report_message('Error deleting external data imports at user deletion', 'error', { user: self.inspect, error: e.inspect })
+    CartoDB.notify_error('Error deleting external data imports at user deletion', { user: self.inspect, error: e.inspect })
   end
 
   def delete_external_sources
     delete_common_data
   rescue => e
-    Rollbar.report_message('Error deleting external data imports at user deletion', 'error', { user: self.inspect, error: e.inspect })
+    CartoDB.notify_error('Error deleting external data imports at user deletion', { user: self.inspect, error: e.inspect })
   end
 
   def after_destroy

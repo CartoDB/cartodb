@@ -94,7 +94,7 @@ class DataImport < Sequel::Model
   def after_initialize
     instantiate_log
     self.results  = []
-    self.cartodbfy_time = 0
+    self.cartodbfy_time = 0.0
     self.state    ||= STATE_PENDING
   end
 
@@ -737,26 +737,29 @@ class DataImport < Sequel::Model
     ::JSON.parse(self.stats).each {|stat| total_size += stat['size']}
     importer_stats_aggregator.gauge('total_size', total_size)
 
-    import_log = {'user'              => owner.username,
-                  'state'             => self.state,
-                  'tables'            => results.length,
-                  'imported_tables'   => imported_tables,
-                  'failed_tables'     => failed_tables,
-                  'error_code'        => self.error_code,
-                  'import_timestamp'  => Time.now,
-                  'queue_server'      => `hostname`.strip,
-                  'database_host'     => owner.database_host,
-                  'service_name'      => self.service_name,
-                  'data_type'         => self.data_type,
-                  'is_sync_import'    => !self.synchronization_id.nil?,
-                  'import_time'       => self.updated_at - self.created_at,
-                  'file_stats'        => ::JSON.parse(self.stats),
-                  'resque_ppid'       => self.resque_ppid,
-                  'user_timeout'      => ::DataImport.http_timeout_for(current_user),
-                  'error_source'      => get_error_source,
-                  'id'                => self.id,
-                  'total_size'        => total_size,
-                  'cartodbfy_time'    => cartodbfy_time
+    import_log = {'user'                   => owner.username,
+                  'state'                  => self.state,
+                  'tables'                 => results.length,
+                  'imported_tables'        => imported_tables,
+                  'failed_tables'          => failed_tables,
+                  'error_code'             => self.error_code,
+                  'import_timestamp'       => Time.now,
+                  'queue_server'           => `hostname`.strip,
+                  'database_host'          => owner.database_host,
+                  'service_name'           => self.service_name,
+                  'data_type'              => self.data_type,
+                  'is_sync_import'         => !self.synchronization_id.nil?,
+                  'import_time'            => self.updated_at - self.created_at,
+                  'file_stats'             => ::JSON.parse(self.stats),
+                  'resque_ppid'            => self.resque_ppid,
+                  'user_timeout'           => ::DataImport.http_timeout_for(current_user),
+                  'error_source'           => get_error_source,
+                  'id'                     => self.id,
+                  'total_size'             => total_size,
+                  'cartodbfy_time'         => cartodbfy_time,
+                  'import_throughput'      => (total_size / import_time),
+                  'cartodbfy_throughtput'  => (total_size / cartodbfy_time),
+                  'cartodbfy_import_ratio' => (cartodbfy_time / import_time)
                  }
     if !self.extra_options.nil?
       import_log['extra_options'] = self.extra_options

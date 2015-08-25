@@ -341,6 +341,7 @@ class DataImport < Sequel::Model
     (user.quota_in_bytes / assumed_kb_sec).round
   end
 
+
   private
 
   def dispatch
@@ -729,8 +730,12 @@ class DataImport < Sequel::Model
     owner = User.where(:id => self.user_id).first
     imported_tables = results.select {|r| r.success }.length
     failed_tables = results.length - imported_tables
+
+    # Calculate total size out of stats
     total_size = 0
     ::JSON.parse(self.stats).each {|stat| total_size += stat['size']}
+    importer_stats_aggregator.gauge('total_size', total_size)
+
     import_log = {'user'              => owner.username,
                   'state'             => self.state,
                   'tables'            => results.length,
@@ -760,6 +765,10 @@ class DataImport < Sequel::Model
     results.each { |result| CartoDB::Metrics.new.report(:import, payload_for(result)) }
     # TODO: remove mixpanel
     results.each { |result| CartoDB::Mixpanel.new.report(:import, payload_for(result)) }
+  end
+
+  def importer_stats_aggregator
+    @importer_stats_aggregator ||= CartoDB::Stats::Importer.instance
   end
 
   def decorate_log(data_import)

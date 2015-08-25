@@ -26,11 +26,11 @@ class Carto::GrantableQueryBuilder
   def query
     query = <<-SQL
     select * from
-      (select id as id, name as name, 'group' as type,
+      (select id as id, display_name as name, 'group' as type, '' as avatar_url,
         organization_id
         from groups
       union
-      select id as id, username as name, 'user' as type,
+      select id as id, username as name, 'user' as type, avatar_url as avatar_url,
         organization_id
         from users) grantables
     where grantables.organization_id = $1

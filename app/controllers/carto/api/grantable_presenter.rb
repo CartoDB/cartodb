@@ -10,7 +10,8 @@ module Carto
         {
           id: @grantable.id,
           type: @grantable.type,
-          name: @grantable.name
+          name: @grantable.name,
+          avatar_url: @grantable.avatar_url
         }
       end
 

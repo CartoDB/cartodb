@@ -29,12 +29,13 @@ describe Carto::Api::GrantablesController do
 
     describe "#index", :order => :defined do
 
-      it "returns all organization users as a grantable of type user" do
+      it "returns all organization users as a grantable of type user with avatar_url" do
         get_json api_v1_grantables_index_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, api_key: @org_user_owner.api_key), {}, @headers do |response|
           response.status.should == 200
           grantables = response.body[:grantables]
           grantables.length.should == @carto_organization.users.length
           grantables.map { |g| g['id'] }.should include(@org_user_1.id)
+          grantables.map { |g| g['avatar_url'] }.should include(@org_user_1.avatar_url)
           response.body[:total_entries].should == @carto_organization.users.length
           response.body[:total_org_entries].should == @carto_organization.users.length
         end

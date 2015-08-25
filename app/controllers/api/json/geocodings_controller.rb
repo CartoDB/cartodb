@@ -10,7 +10,8 @@ class Api::Json::GeocodingsController < Api::ApplicationController
   GEOCODING_SQLAPI_CALLS_TIMEOUT = 45
 
   def index
-    geocodings = Geocoding.where("user_id = ? AND (state NOT IN ?) AND (data_import_id IS NULL)", current_user.id, ['failed', 'finished', 'cancelled'])
+    geocodings = Geocoding.where("user_id = ? AND (state NOT IN ?) AND (data_import_id IS NULL)", current_user.id,
+                                 ['failed', 'finished', 'cancelled'])
     render json: { geocodings: geocodings }
   end
 
@@ -21,58 +22,77 @@ class Api::Json::GeocodingsController < Api::ApplicationController
   end
 
   def update
-    geocoding = current_user.geocodings_dataset.where(id: params[:id]).first
-    return head(401) unless geocoding && params[:state] == 'cancelled'
-    geocoding.update(state: 'cancelled')
-    render_jsonp(geocoding.reload)
-  rescue => e
-    render_jsonp({ errors: e.message }, 400)
+    @stats_aggregator.timing('geocodings.update') do
+
+      begin
+        geocoding = current_user.geocodings_dataset.where(id: params[:id]).first
+        return head(401) unless geocoding && params[:state] == 'cancelled'
+        @stats_aggregator.timing('save') do
+          geocoding.update(state: 'cancelled')
+        end
+        render_jsonp(geocoding.reload)
+      rescue => e
+        render_jsonp({ errors: e.message }, 400)
+      end
+
+    end
   end
 
   def create
-    geocoding          = Geocoding.new params.slice(:kind, :geometry_type, :formatter, :country_code, :region_code)
-    geocoding.user     = current_user
-    geocoding.table_id = @table.try(:id)
-    geocoding.table_name = params[:table_name] ? params[:table_name] : @table.try(:name)
-    geocoding.raise_on_save_failure = true
-    geocoding.force_all_rows = (params[:force_all_rows].to_s == 'true')
+    @stats_aggregator.timing('geocodings.create') do
 
-    geocoding.formatter = "{#{ params[:column_name] }}" if params[:column_name].present?
+      begin
+        geocoding  = Geocoding.new params.slice(:kind, :geometry_type, :formatter, :country_code, :region_code)
+        geocoding.user = current_user
+        geocoding.table_id = @table.try(:id)
+        geocoding.table_name = params[:table_name] ? params[:table_name] : @table.try(:name)
+        geocoding.raise_on_save_failure = true
+        geocoding.force_all_rows = (params[:force_all_rows].to_s == 'true')
 
-    # TODO api should be more regular
-    unless ['high-resolution', 'ipaddress'].include? params[:kind] then
+        geocoding.formatter = "{#{ params[:column_name] }}" if params[:column_name].present?
 
-      if params[:text]
-        countries = [params[:location]]
-      else
-        countries = @table.sequel.distinct.select_map(params[:location].to_sym)
-        geocoding.country_column = params[:location]
-      end
-      geocoding.country_code = countries.map{|c| "'#{ c }'"}.join(',')
+        geocoding = @stats_aggregator.timing('special-params') do
+          # TODO api should be more regular
+          unless ['high-resolution', 'ipaddress'].include? params[:kind] then
+            if params[:text]
+              countries = [params[:location]]
+            else
+              countries = @table.sequel.distinct.select_map(params[:location].to_sym)
+              geocoding.country_column = params[:location]
+            end
+            geocoding.country_code = countries.map{|c| "'#{ c }'"}.join(',')
 
-      if params[:region]
-        if params[:region_text]
-          regions = [params[:region]]
-        else
-          regions = @table.sequel.distinct.select_map(params[:region].to_sym)
-          geocoding.region_column = params[:region]
+            if params[:region]
+              if params[:region_text]
+                regions = [params[:region]]
+              else
+                regions = @table.sequel.distinct.select_map(params[:region].to_sym)
+                geocoding.region_column = params[:region]
+              end
+              geocoding.region_code = regions.map{|r| "'#{ r }'"}.join(',')
+            end
+          end
+          geocoding
         end
-        geocoding.region_code = regions.map{|r| "'#{ r }'"}.join(',')
+
+        geocoding = @stats_aggregator.timing('save') do
+          geocoding.save
+          geocoding
+        end
+
+        @table.automatic_geocoding.destroy if @table.automatic_geocoding.present?
+        Resque.enqueue(Resque::GeocoderJobs, job_id: geocoding.id)
+
+        render_jsonp(geocoding.to_json)
+      rescue Sequel::ValidationFailed => e
+        CartoDB.notify_exception(e)
+        render_jsonp( { description: e.message }, 422)
+      rescue => e
+        CartoDB.notify_exception(e)
+        render_jsonp( { description: e.message }, 500)
       end
+
     end
-
-    geocoding.save
-
-    @table.automatic_geocoding.destroy if @table.automatic_geocoding.present?
-    Resque.enqueue(Resque::GeocoderJobs, job_id: geocoding.id)
-
-    render_jsonp(geocoding.to_json)
-  rescue Sequel::ValidationFailed => e
-    CartoDB.notify_exception(e)
-    render_jsonp( { description: e.message }, 422)
-  rescue => e
-    CartoDB.notify_exception(e)
-    render_jsonp( { description: e.message }, 500)
   end
 
   def available_geometries

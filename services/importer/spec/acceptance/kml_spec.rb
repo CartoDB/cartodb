@@ -8,11 +8,13 @@ require_relative '../doubles/log'
 require_relative '../doubles/user'
 require_relative 'acceptance_helpers'
 require_relative 'cdb_importer_context'
+require_relative 'no_stats_context'
 
 
 describe 'KML regression tests' do
   include AcceptanceHelpers
   include_context "cdb_importer schema"
+  include_context "no stats"
 
   it 'imports KML files' do
     filepath    = path_to('counties_ny_export.kml')

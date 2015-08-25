@@ -9,12 +9,14 @@ require_relative '../doubles/user'
 require_relative 'acceptance_helpers'
 require_relative 'cdb_importer_context'
 require_relative '../../../../spec/rspec_configuration'
+require_relative 'no_stats_context'
 
 include CartoDB::Importer2
 
 describe 'gz and tgz regression tests' do
   include AcceptanceHelpers
   include_context "cdb_importer schema"
+  include_context "no stats"
 
   before do
     @pg_options  = Factories::PGConnection.new.pg_options

@@ -2,6 +2,8 @@
 require_dependency 'google_plus_config'
 require_dependency 'google_plus_api'
 
+require_relative '../../lib/cartodb/stats/authentication'
+
 class SessionsController < ApplicationController
   include LoginHelper
 
@@ -42,7 +44,7 @@ class SessionsController < ApplicationController
 
     render :action => 'new' and return unless params[:user_domain].present? || user.present?
 
-    CartodbStats.increment_login_counter(user.email)
+    CartoDB::Stats::Authentication.instance.increment_login_counter(user.email)
 
     redirect_to user.public_url << CartoDB.path(self, 'dashboard', {trailing_slash: true})
   end
@@ -60,7 +62,8 @@ class SessionsController < ApplicationController
 
   def unauthenticated
     username = extract_username(request, params)
-    CartodbStats.increment_failed_login_counter(username)
+    CartoDB::Stats::Authentication.instance.increment_failed_login_counter(username)
+    
     # Use an instance variable to show the error instead of the flash hash. Setting the flash here means setting
     # the flash for the next request and we want to show the message only in the current one
     @login_error = (params[:email].blank? && params[:password].blank?) ? 'Can\'t be blank' : 'Your account or your password is not ok'

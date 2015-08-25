@@ -21,84 +21,98 @@ class Api::Json::ImportsController < Api::ApplicationController
   # -------- Import process -------
 
   def create
-    external_source = nil
+    @stats_aggregator.timing('imports.create') do
 
-    concurrent_import_limit =
-      CartoDB::PlatformLimits::Importer::UserConcurrentImportsAmount.new({
-                                                                           user: current_user,
-                                                                           redis: {
-                                                                             db: $users_metadata
-                                                                           }
-                                                                         })
-    if concurrent_import_limit.is_over_limit!
-      raise CartoDB::Importer2::UserConcurrentImportsLimitError.new
+      begin
+        external_source = nil
+        concurrent_import_limit =
+          CartoDB::PlatformLimits::Importer::UserConcurrentImportsAmount.new({
+                                                                               user: current_user,
+                                                                               redis: { db: $users_metadata }
+                                                                             })
+        raise CartoDB::Importer2::UserConcurrentImportsLimitError.new if concurrent_import_limit.is_over_limit!
+
+        options = default_creation_options
+
+        if params[:url].present?
+          options.merge!({
+                           data_source: params.fetch(:url)
+                         })
+        elsif params[:remote_visualization_id].present?
+          external_source = external_source(params[:remote_visualization_id])
+          options.merge!( { data_source: external_source.import_url.presence } )
+        else
+          options = @stats_aggregator.timing('upload-or-enqueue') do
+            results = upload_file_to_storage(params, request, Cartodb.config[:importer]['s3'])
+            # Not queued import is set by skipping pending state and setting directly as already enqueued
+            options.merge({
+                              data_source: results[:file_uri].presence,
+                              state: results[:enqueue] ? DataImport::STATE_PENDING : DataImport::STATE_ENQUEUED
+                           })
+          end
+        end
+
+        # override param to store as string
+        user_limits = ::JSON.dump(options[:user_defined_limits])
+        data_import = @stats_aggregator.timing('save') do
+          DataImport.create(options.merge!({ user_defined_limits: user_limits }))
+        end
+
+        if external_source.present?
+          @stats_aggregator.timing('external-data-import.save') do
+            ExternalDataImport.new(data_import.id, external_source.id).save
+          end
+        end
+
+        Resque.enqueue(Resque::ImporterJobs, job_id: data_import.id) if options[:state] == DataImport::STATE_PENDING
+
+        render_jsonp({ item_queue_id: data_import.id, success: true })
+      rescue CartoDB::Importer2::UserConcurrentImportsLimitError
+        rl_value = decrement_concurrent_imports_rate_limit
+        render_jsonp({
+                       errors: { imports: "We're sorry but you're already using your allowed #{rl_value} import slots" }
+                     }, 429)
+      rescue => ex
+        decrement_concurrent_imports_rate_limit
+        CartoDB::Logger.info('Error: create', "#{ex.message} #{ex.backtrace.inspect}")
+        render_jsonp({ errors: { imports: ex.message } }, 400)
+      end
+
     end
-
-    options = default_creation_options
-
-    if params[:url].present?
-      options.merge!({
-                       data_source: params.fetch(:url)
-                     })
-    elsif params[:remote_visualization_id].present?
-      external_source = external_source(params[:remote_visualization_id])
-      options.merge!( { data_source: external_source.import_url.presence } )
-    else
-      results = upload_file_to_storage(params, request, Cartodb.config[:importer]['s3'])
-      options.merge!({
-                        data_source: results[:file_uri].presence,
-                        # Not queued import is set by skipping pending state and setting directly as already enqueued
-                        state: results[:enqueue] ? DataImport::STATE_PENDING : DataImport::STATE_ENQUEUED
-                     })
-    end
-
-    data_import = DataImport.create(options.merge!({
-                                                     # override param to store as string
-                                                     user_defined_limits: ::JSON.dump(options[:user_defined_limits])
-                                                   }))
-
-    if external_source.present?
-      ExternalDataImport.new(data_import.id, external_source.id).save
-    end
-
-    Resque.enqueue(Resque::ImporterJobs, job_id: data_import.id) if options[:state] == DataImport::STATE_PENDING
-
-    render_jsonp({ item_queue_id: data_import.id, success: true })
-  rescue CartoDB::Importer2::UserConcurrentImportsLimitError
-    rl_value = decrement_concurrent_imports_rate_limit
-    render_jsonp({
-                   errors: {
-                              imports: "We're sorry but you're already using your allowed #{rl_value} import slots"
-                           }
-                 }, 429)
-  rescue => ex
-    decrement_concurrent_imports_rate_limit
-
-    CartoDB::Logger.info('Error: create', "#{ex.message} #{ex.backtrace.inspect}")
-    render_jsonp({ errors: { imports: ex.message } }, 400)
   end
 
   # ----------- Import OAuths Management -----------
 
   def invalidate_service_token
-    oauth = current_user.oauths.select(params[:id])
-    raise CartoDB::Datasources::AuthError.new("No oauth set for service #{params[:id]}") if oauth.nil?
+    @stats_aggregator.timing('imports.invalidate-service-token') do
 
-    datasource = oauth.get_service_datasource
-    raise CartoDB::Datasources::AuthError.new("Couldn't fetch datasource for service #{params[:id]}") if datasource.nil?
-    unless datasource.kind_of? CartoDB::Datasources::BaseOAuth
-      raise CartoDB::Datasources::InvalidServiceError.new("Datasource #{params[:id]} does not support OAuth")
+      begin
+        oauth = current_user.oauths.select(params[:id])
+        raise CartoDB::Datasources::AuthError.new("No oauth set for service #{params[:id]}") if oauth.nil?
+
+        datasource = oauth.get_service_datasource
+        raise CartoDB::Datasources::AuthError.new("Couldn't fetch datasource for service #{params[:id]}") if datasource.nil?
+        unless datasource.kind_of? CartoDB::Datasources::BaseOAuth
+          raise CartoDB::Datasources::InvalidServiceError.new("Datasource #{params[:id]} does not support OAuth")
+        end
+
+        result = @stats_aggregator.timing('revoke') do
+          datasource.revoke_token
+        end
+
+        if result
+          @stats_aggregator.timing('remove') do
+            current_user.oauths.remove(oauth.service)
+          end
+        end
+
+        render_jsonp({ success: true })
+      rescue => ex
+        CartoDB::Logger.info('Error: invalidate_service_token', "#{ex.message} #{ex.backtrace.inspect}")
+        render_jsonp({ errors: { imports: ex.message } }, 400)
+      end
+
     end
-
-    result = datasource.revoke_token
-    if result
-      current_user.oauths.remove(oauth.service)
-    end
-
-    render_jsonp({ success: true })
-  rescue => ex
-    CartoDB::Logger.info('Error: invalidate_service_token', "#{ex.message} #{ex.backtrace.inspect}")
-    render_jsonp({ errors: { imports: ex.message } }, 400)
   end
 
   private

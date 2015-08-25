@@ -2,9 +2,16 @@
 require_relative '../sql_api.rb'
 require_relative '../../../spec/rspec_configuration.rb'
 
+module Cartodb; end
+
 describe CartoDB::SQLApi do
 
+  before(:each) do
+    Cartodb.stubs(:config).returns(TEST_SQL_API_CONFIG)
+  end
+
   describe '#fetch' do
+
     let(:api) { CartoDB::SQLApi.new(username: 'maloshumos') }
 
     it "returns an array of rows" do
@@ -45,5 +52,21 @@ describe CartoDB::SQLApi do
       File.join(File.dirname(__FILE__), "../spec/fixtures/#{filepath}")
     )
   end #path_to
+
+  TEST_SQL_API_CONFIG =  {:sql_api => {
+      "private" => {
+        "protocol" =>   'http',
+        "domain" => 'cartodb.com',
+        "endpoint" =>  '/api/v1/sql',
+        "port" =>       8080
+      },
+      "public" => {
+        "protocol" =>   'http',
+        "domain" =>    'cartodb.com',
+        "endpoint" =>   '/api/v2/sql',
+        "port" =>       8080
+      }
+    }
+  }
 
 end # CartoDB::SQLApi

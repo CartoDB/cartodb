@@ -12,11 +12,15 @@ require_relative '../factories/pg_connection'
 require_relative '../doubles/log'
 require_relative '../doubles/user'
 require_relative 'acceptance_helpers'
+require_relative 'no_stats_context'
+
 
 include CartoDB::Importer2
 
 describe 'geojson regression tests' do
   include AcceptanceHelpers
+  include_context "no stats"
+
   before do
     @pg_options  = Factories::PGConnection.new.pg_options
   end

@@ -25,7 +25,7 @@
   border: 1px solid $cTypography-help;
   border-radius: 20px;
   font-size: $sFontSize-small;
-  line-height: $sLineHeight-small;
+  line-height: 17px;
   color: $cTypography-help;
   text-align: center;
 }
@@ -60,7 +60,7 @@
   @include align-items(center, center);
   background: none;
 }
-.NotificationsList-item.is--new {
+.NotificationsList-item.is-new {
   margin: 0 $sMargin-element $sMargin-element!important;
   padding: $sMargin-element 0 0 33px!important;
   border-top: 1px solid $cStructure-mainLine;
@@ -73,62 +73,19 @@
   }
 }
 
-// Custom icons for different messages
-.NotificationsList-item .iconFont-trial_ends_soon,
-.NotificationsList-item .iconFont-custom {
-  line-height: 17px;
-  &:before { content: "\E001" } 
-}
-.NotificationsList-item.is--new .iconFont-trial_ends_soon,
-.NotificationsList-item.is--new .iconFont-custom {
+.NotificationsList-item.is-new .NotificationsList-itemIcon--alert {
   color: $cHighlight-alert;
   border-color: $cHighlight-alert;
 }
-.NotificationsList-item .iconFont-upgraded_message {
-  line-height: 17px;
-  &:before { content: "\E004" }
-}
-.NotificationsList-item.is--new .iconFont-upgraded_message {
+.NotificationsList-item.is-new .NotificationsList-itemIcon--positive {
   color: $cHighlight-positive;
   border-color: $cHighlight-positive;
 }
-.NotificationsList-item .iconFont-try_trial {
-  line-height: 17px;
-  &:before { content: "\E035" } 
-}
-.NotificationsList-item.is--new .iconFont-try_trial {
-  color: $cHighlight-positive;
-  border-color: $cHighlight-positive;
-}
-.NotificationsList-item .iconFont-close_limits {
-  line-height: 17px;
-  &:before { content: "\E02D" } 
-}
-.NotificationsList-item.is--new .iconFont-close_limits {
-  color: $cHighlight-alert;
-  border-color: $cHighlight-alert;
-}
-.NotificationsList-item .iconFont-limits_exceeded {
-  line-height: 17px;
-  &:before { content: "\E036" } 
-}
-.NotificationsList-item.is--new .iconFont-limits_exceeded {
+.NotificationsList-item.is-new .NotificationsList-itemIcon--negative {
   color: $cHighlight-negative;
   border-color: $cHighlight-negative;
 }
-.NotificationsList-item .iconFont-new_dashboard { 
-  line-height: 17px;
-  &:before { content: "\E016" } 
-}
-.NotificationsList-item.is--new .iconFont-new_dashboard {
+.NotificationsList-item.is-new .NotificationsList-itemIcon--main {
   color: $cHighlight-main;
   border-color: $cHighlight-main;
-}
-.NotificationsList-item .iconFont-new_public_dashboard {
-  line-height: 17px;
-  &:before { content: "\E008" }
-}
-.NotificationsList-item.is--new .iconFont-new_public_dashboard {
-  color: $cHighlight-positive;
-  border-color: $cHighlight-positive;
 }

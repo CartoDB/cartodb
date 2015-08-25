@@ -29,52 +29,78 @@ module Carto
       end
 
       def create
-        @template = Carto::Template.new({
-            source_visualization_id:  params['source_visualization_id'],
-            title:                    params['title'],
-            description:              params.fetch('description', ''),
-            min_supported_version:    params['min_supported_version'],
-            max_supported_version:    params['max_supported_version'],
-            code:                     params.fetch('code', ''),
-            organization_id:          current_user.organization_id,
-            required_tables:          params.fetch('required_tables', [])
-          })
+        @stats_aggregator.timing('templates.create') do
 
-        result = @template.save
-        render_jsonp({ :errors => ["#{@template.errors.messages.values.join(',')}"] }, 400) and return unless result
+          begin
+            @template = Carto::Template.new({
+                source_visualization_id:  params['source_visualization_id'],
+                title:                    params['title'],
+                description:              params.fetch('description', ''),
+                min_supported_version:    params['min_supported_version'],
+                max_supported_version:    params['max_supported_version'],
+                code:                     params.fetch('code', ''),
+                organization_id:          current_user.organization_id,
+                required_tables:          params.fetch('required_tables', [])
+              })
 
-        render_jsonp(Carto::Api::TemplatePresenter.new(@template).public_values)
-      rescue => e
-        CartoDB.notify_exception(e)
-        render json: { error: [e.message] }, status: 400
+            result = @stats_aggregator.timing('save') do
+              @template.save
+            end
+
+            render_jsonp({ :errors => ["#{@template.errors.messages.values.join(',')}"] }, 400) and return unless result
+
+            render_jsonp(Carto::Api::TemplatePresenter.new(@template).public_values)
+          rescue => e
+            CartoDB.notify_exception(e)
+            render json: { error: [e.message] }, status: 400
+          end
+
+        end
       end
 
       def update
-        @template.title =                 params['title']
-        @template.description =           params.fetch('description', '')
-        @template.min_supported_version = params['min_supported_version']
-        @template.max_supported_version = params['max_supported_version']
-        @template.code =                  params.fetch('code', '')
-        @template.required_tables =       params.fetch('required_tables', [])
+        @stats_aggregator.timing('templates.update') do
 
-        result = @template.save
-        render_jsonp({ :errors => ["#{@template.errors.messages.values.join(',')}"] }, 400) and return unless result
+          begin
+            @template.title =                 params['title']
+            @template.description =           params.fetch('description', '')
+            @template.min_supported_version = params['min_supported_version']
+            @template.max_supported_version = params['max_supported_version']
+            @template.code =                  params.fetch('code', '')
+            @template.required_tables =       params.fetch('required_tables', [])
 
-        @template.reload
+            result = @stats_aggregator.timing('save') do
+              @template.save
+            end
 
-        render_jsonp(Carto::Api::TemplatePresenter.new(@template).public_values)
-      rescue => e
-        CartoDB.notify_exception(e)
-        render json: { error: [e.message] }, status: 400
+            render_jsonp({ :errors => ["#{@template.errors.messages.values.join(',')}"] }, 400) and return unless result
+
+            @template.reload
+
+            render_jsonp(Carto::Api::TemplatePresenter.new(@template).public_values)
+          rescue => e
+            CartoDB.notify_exception(e)
+            render json: { error: [e.message] }, status: 400
+          end
+
+        end
       end
 
       def destroy
-        @template.delete
+        @stats_aggregator.timing('templates.destroy') do
 
-        head :ok
-      rescue => e
-        CartoDB.notify_exception(e)
-        render json: { error: [e.message] }, status: 400
+          begin
+            @stats_aggregator.timing('delete') do
+              @template.delete
+            end
+
+            head :ok
+          rescue => e
+            CartoDB.notify_exception(e)
+            render json: { error: [e.message] }, status: 400
+          end
+
+        end
       end
 
 

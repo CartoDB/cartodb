@@ -44,7 +44,8 @@ CartoDB::Application.configure do
   # config.action_mailer.delivery_method = :smtp
 
   # Enable threaded mode
-  # In order to run supporting concurrent requests, uncomment next line and run with `bundle exec thin start --threaded -p 3000`
+  # In order to run supporting concurrent requests, uncomment next line and run with `bundle exec thin start --threaded -p 3000`.
+  # The condition excludes this from resque, since it won't work with it and it doesn't need it.
   config.threadsafe! unless $rails_rake_task
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to

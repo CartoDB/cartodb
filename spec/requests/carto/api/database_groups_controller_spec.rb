@@ -143,16 +143,7 @@ describe Carto::Api::DatabaseGroupsController do
       put api_v1_databases_group_update_permission_url(database_name: group.database_name, name: group.name, username: @org_user_1.username, table_name: @table_user_1['name']), permission.to_json, sync_db_api_headers
       response.status.should == 200
 
-      expected_acl = [
-          {
-              type: Permission::TYPE_GROUP,
-              entity: {
-                  id:         group.id,
-                  name:       group.name
-              },
-              access: Permission::ACCESS_NONE
-          }
-      ]
+      expected_acl = []
 
       delete api_v1_databases_group_destroy_permission_url(database_name: group.database_name, name: group.name, username: @org_user_1.username, table_name: @table_user_1['name']), '', sync_db_api_headers
       response.status.should == 200

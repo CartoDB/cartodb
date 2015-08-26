@@ -206,16 +206,22 @@ module CartoDB
       elsif granted_access == ACCESS_NONE
         set_subject_permission(group.id, access, TYPE_GROUP)
       else
-        acl_entry = {
-          type: TYPE_GROUP,
-          entity: {
-            id: group.id,
-            name: group.name
-          },
-          access: access
-        }
-        acl_without_this_group = self.inputable_acl.select { |entry| entry[:entity][:id] != group.id }
-        self.acl = (acl_without_this_group << acl_entry)
+        # Remove group entry from acl in order to add new (or none if ACCESS_NONE)
+        new_acl = self.inputable_acl.select { |entry| entry[:entity][:id] != group.id }
+
+        unless access == ACCESS_NONE
+          acl_entry = {
+            type: TYPE_GROUP,
+            entity: {
+              id: group.id,
+              name: group.name
+            },
+            access: access
+          }
+          new_acl << acl_entry
+        end
+
+        self.acl = new_acl
       end
     end
 

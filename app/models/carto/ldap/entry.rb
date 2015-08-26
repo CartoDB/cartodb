@@ -20,7 +20,7 @@ class Carto::Ldap::Entry
   private
 
   def extract_field(field)
-    value = @entry[field]
+    value = @entry.fetch(field, nil)
     value.nil? ? nil : value.first
   end
 

@@ -1,5 +1,5 @@
 // Empty map view
-// 
+//
 // Map view when user doesn't have any map item
 // --------------------------------------------------
 
@@ -22,15 +22,20 @@
 }
 
 .OnBoarding {
+  position: relative;
   width: 100%;
 }
 .OnBoarding-welcome {
-  position: fixed;
+  position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
   background: rgba(#384047, .8);
+  z-index: 10;
+}
+.OnBoarding-welcome--fixed {
+  position: fixed;
   z-index: 1000;
 }
 .OnBoarding-welcomeContent {
@@ -42,7 +47,7 @@
   margin-top: -170px;
   z-index: 1001;
 }
-.OnBoarding-welcomeContent--wide{
+.OnBoarding-welcomeContent--wide {
   width: 800px;
   margin-left: -332px;
 }

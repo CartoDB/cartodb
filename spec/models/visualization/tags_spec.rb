@@ -62,23 +62,23 @@ describe Visualization::Tags do
       v2 = Visualization::Member.new(random_attributes(user_id: @user_mock.id, name: 'v2', locked:false, tags: [manolo_tag])).store
       v3 = Visualization::Member.new(random_attributes(user_id: @user_mock.id, name: 'v3', locked:false, tags: [manolo_escobar_tag, manoloescobar_tag])).store
 
-      vqb1 = Carto::VisualizationQueryBuilder.new.with_tags([manolo_tag.upcase])
+      vqb1 = Carto::VisualizationQueryBuilder.new.with_tags([manolo_tag.upcase]).build.map(&:id)
       
-      vqb1.build.map(&:id).should include v1.id
-      vqb1.build.map(&:id).should include v2.id # Searching for 'manolo' should bring up 'manoloescobar' as well
-      vqb1.build.map(&:id).should include v3.id
+      vqb1.should include v1.id
+      vqb1.should include v2.id # Searching for 'manolo' should bring up 'manoloescobar' as well
+      vqb1.should include v3.id
 
-      vqb2 = Carto::VisualizationQueryBuilder.new.with_tags([manoloescobar_tag.upcase])
+      vqb2 = Carto::VisualizationQueryBuilder.new.with_tags([manoloescobar_tag.upcase]).build.map(&:id)
       
-      vqb2.build.map(&:id).should include v1.id
-      vqb2.build.map(&:id).should_not include v2.id # 'manoloescobar' is not a substring of 'manolo'
-      vqb2.build.map(&:id).should include v3.id
+      vqb2.should include v1.id
+      vqb2.should_not include v2.id # 'manoloescobar' is not a substring of 'manolo'
+      vqb2.should include v3.id
 
-      vqb3 = Carto::VisualizationQueryBuilder.new.with_tags([manolo_escobar_tag.upcase])
+      vqb3 = Carto::VisualizationQueryBuilder.new.with_tags([manolo_escobar_tag.upcase]).build.map(&:id)
       
-      vqb3.build.map(&:id).should include v1.id
-      vqb3.build.map(&:id).should_not include v2.id
-      vqb3.build.map(&:id).should include v3.id
+      vqb3.should include v1.id
+      vqb3.should_not include v2.id
+      vqb3.should include v3.id
     end
   end
 

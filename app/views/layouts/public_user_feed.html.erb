@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%= favicon_link_tag "/favicons/favicon.ico" %>
+    <title><%= yield :title %></title>
+    <meta name="description" content="<%= yield :description %>">
+    <meta name="keywords" content="<%= @name %>, datasets, maps, data visualization, spatial data, geospatial, cartodb">
+    <meta name="author" content="<%= @name %>">
+    <meta charset='utf-8' />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+
+    <meta property="og:title" content="<%= yield :title %>" />
+    <meta property="og:description" content="<%= yield :description %>" />
+    <meta property="og:type" content="visualization" />
+    <meta property="og:url" content="<%= request.original_url %>" />
+    <meta property="og:image" content="<%= @avatar_url %>" />
+
+    <%= stylesheet_link_tag 'cartodb', 'common', 'public_dashboard' %>
+  </head>
+  <body class="PublicBody">
+    <%= render 'admin/shared/public_header' %>
+
+    <%= yield %>
+
+    <%= render 'admin/shared/footer' %>
+    <script type="text/javascript">
+      var config = <%= safe_js_object frontend_config_public({https_apis: request.protocol == 'https://' }) %>;
+      var account_host = '<%= CartoDB.account_host %>';
+      var base_url = '<%= @base_url %>';
+      var login_url = "<%= CartoDB.url(self, 'login') %>";
+    </script>
+    <%= yield :js %>
+  </body>
+</html>

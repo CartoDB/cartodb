@@ -229,10 +229,12 @@ CartoDB::Application.routes.draw do
 
     # Public dashboard
     # root also goes to 'pages#public', as: public_visualizations_home
-    get '(/user/:user_domain)(/u/:user_domain)/maps'                     => 'pages#public', as: :public_maps_home
-    get '(/user/:user_domain)(/u/:user_domain)/page/:page'               => 'pages#public', as: :public_page
-    get '(/user/:user_domain)(/u/:user_domain)/tag/:tag'                 => 'pages#public', as: :public_tag
-    get '(/user/:user_domain)(/u/:user_domain)/tag/:tag/:page'           => 'pages#public', as: :public_tag_page
+    get '(/user/:user_domain)(/u/:user_domain)/user_feed'                => 'pages#user_feed',                as: :public_user_feed_home
+    get '(/user/:user_domain)(/u/:user_domain)/page/:page'               => 'pages#public',                   as: :public_page
+    get '(/user/:user_domain)(/u/:user_domain)/tag/:tag'                 => 'pages#public',                   as: :public_tag
+    get '(/user/:user_domain)(/u/:user_domain)/tag/:tag/:page'           => 'pages#public',                   as: :public_tag_page
+    # Public maps
+    get '(/user/:user_domain)(/u/:user_domain)/maps'                     => 'pages#maps', as: :public_maps_home
     # Public dataset
     get '(/user/:user_domain)(/u/:user_domain)/datasets'                 => 'pages#datasets', as: :public_datasets_home
     get '(/user/:user_domain)(/u/:user_domain)/datasets/page/:page'      => 'pages#datasets', as: :public_datasets_page

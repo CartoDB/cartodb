@@ -88,11 +88,11 @@ describe Admin::PagesController do
       last_response.status.should == 200
       uri = URI.parse(last_request.url)
       uri.host.should == 'anyuser.localhost.lan'
-      uri.path.should == '/maps'
+      uri.path.should == '/user_feed'
     end
 
     it 'redirects to public maps home if not logged in' do
-      anyuser = prepare_user('anyuser')
+      prepare_user('anyuser')
       host! 'anyuser.localhost.lan'
 
       get '', {}, JSON_HEADER
@@ -100,7 +100,7 @@ describe Admin::PagesController do
       last_response.status.should == 302
       uri = URI.parse(last_response.location)
       uri.host.should == 'anyuser.localhost.lan'
-      uri.path.should == '/maps'
+      uri.path.should == '/user_feed'
       follow_redirect!
       last_response.status.should == 200
     end

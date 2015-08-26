@@ -13,7 +13,6 @@ class Admin::PagesController < ApplicationController
   USER_TAGS_LIMIT = 100
   PAGE_NUMBER_PLACEHOLDER = 'PAGENUMBERPLACEHOLDER'
 
-  ssl_required :common_data, :public, :datasets
   # TODO logic as done client-side, how and where to encapsulate this better?
   GEOMETRY_MAPPING = {
     'st_multipolygon'    => 'polygon',
@@ -25,12 +24,13 @@ class Admin::PagesController < ApplicationController
   }
 
 
+  ssl_required :common_data, :public, :datasets, :maps, :user_feed
   ssl_allowed :index, :sitemap, :datasets_for_user, :datasets_for_organization, :maps_for_user, :maps_for_organization,
               :render_not_found
 
-  before_filter :login_required, :except => [:public, :datasets, :sitemap, :index]
+  before_filter :login_required, :except => [:public, :datasets, :maps, :sitemap, :index, :user_feed]
   before_filter :ensure_organization_correct
-  skip_before_filter :browser_is_html5_compliant?, only: [:public, :datasets]
+  skip_before_filter :browser_is_html5_compliant?, only: [:public, :datasets, :maps, :user_feed]
   skip_before_filter :ensure_user_organization_valid, only: [:public]
 
 
@@ -93,10 +93,35 @@ class Admin::PagesController < ApplicationController
     content.render()
   end
 
-  def public
+  def maps
     maps = CartoDB::ControllerFlows::Public::Maps.new(self)
     content = CartoDB::ControllerFlows::Public::Content.new(self, request, maps)
     content.render()
+  end
+
+  def public
+    if current_user
+      index
+    else
+      user_feed
+    end
+  end
+
+  def user_feed
+    username = CartoDB.extract_subdomain(request).strip.downcase
+    @viewed_user = User.where(username: username).first
+
+    if @viewed_user.nil?
+      org = Organization.where(name: username).first
+      unless org.nil?
+        redirect_to CartoDB.url(self, 'public_maps_home')
+      end
+      render_404
+    else
+      respond_to do |format|
+        format.html { render 'user_feed', layout: 'public_user_feed' }
+      end
+    end
   end
 
   def datasets_for_user(user)
@@ -148,9 +173,9 @@ class Admin::PagesController < ApplicationController
       redirect_to CartoDB.url(self, 'dashboard')
     else
       # Asummes either current_user nil or at least different from current_viewer
-      # username.cartodb.com should redirect to the public user dashboard in the maps view if the username is not the user's username
-      # username.cartodb.com should redirect to the public user dashboard in the maps view if the user is not logged in
-      redirect_to CartoDB.url(self, 'public_maps_home')
+      # username.cartodb.com should redirect to the public user feeds view if the username is not the user's username
+      # username.cartodb.com should redirect to the public user feeds view if the user is not logged in
+      redirect_to CartoDB.url(self, 'public_user_feed_home')
     end
   end
 
@@ -161,7 +186,7 @@ class Admin::PagesController < ApplicationController
       # current_viewer always returns a user with a session
       redirect_to CartoDB.url(self, 'dashboard', {}, current_viewer)
     elsif CartoDB.username_from_request(request)
-      redirect_to CartoDB.url(self, 'public_maps_home')
+      redirect_to CartoDB.url(self, 'public_user_feed_home')
     else
       # We cannot get any user information from domain, path or session
       redirect_to login_url
@@ -289,7 +314,7 @@ class Admin::PagesController < ApplicationController
   def set_layout_vars(required)
     @most_viewed_vis_map = required.fetch(:most_viewed_vis_map)
     @content_type        = required.fetch(:content_type)
-    @maps_url            = CartoDB.url(view_context, 'public_visualizations_home', {}, required.fetch(:user, nil))
+    @maps_url            = CartoDB.url(view_context, 'public_maps_home', {}, required.fetch(:user, nil))
     @datasets_url        = CartoDB.url(view_context, 'public_datasets_home', {}, required.fetch(:user, nil))
     @default_fallback_basemap = required.fetch(:default_fallback_basemap, {})
     @base_url            = required.fetch(:base_url, {})

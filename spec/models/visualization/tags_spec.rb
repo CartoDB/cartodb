@@ -49,7 +49,37 @@ describe Visualization::Tags do
       records.length.should eq 1
       records.first.should eq vis_1_tag
     end
+  end
 
+  describe 'searching' do
+    it 'should search for tags correctly' do
+      manolo_tag = 'manolo'
+      manoloescobar_tag = 'manoloescobar'
+      manolo_escobar_tag = 'Manolo Escobar'
+
+
+      v1 = Visualization::Member.new(random_attributes(user_id: @user_mock.id, name: 'v1', locked:true, tags: [manolo_tag, manoloescobar_tag, manolo_escobar_tag])).store
+      v2 = Visualization::Member.new(random_attributes(user_id: @user_mock.id, name: 'v2', locked:false, tags: [manolo_tag])).store
+      v3 = Visualization::Member.new(random_attributes(user_id: @user_mock.id, name: 'v3', locked:false, tags: [manolo_escobar_tag, manoloescobar_tag])).store
+
+      vqb1 = Carto::VisualizationQueryBuilder.new.with_tags([manolo_tag.upcase])
+      
+      vqb1.build.map(&:id).should include v1.id
+      vqb1.build.map(&:id).should include v2.id # Searching for 'manolo' should bring up 'manoloescobar' as well
+      vqb1.build.map(&:id).should include v3.id
+
+      vqb2 = Carto::VisualizationQueryBuilder.new.with_tags([manoloescobar_tag.upcase])
+      
+      vqb2.build.map(&:id).should include v1.id
+      vqb2.build.map(&:id).should_not include v2.id # 'manoloescobar' is not a substring of 'manolo'
+      vqb2.build.map(&:id).should include v3.id
+
+      vqb3 = Carto::VisualizationQueryBuilder.new.with_tags([manolo_escobar_tag.upcase])
+      
+      vqb3.build.map(&:id).should include v1.id
+      vqb3.build.map(&:id).should_not include v2.id
+      vqb3.build.map(&:id).should include v3.id
+    end
   end
 
   def random_attributes(attributes={})

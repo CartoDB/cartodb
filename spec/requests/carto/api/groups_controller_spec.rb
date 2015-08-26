@@ -31,46 +31,58 @@ describe Carto::Api::GroupsController do
       @carto_organization.reload
     end
 
-    it '#index returns 401 without authentication' do
-      get_json api_v1_organization_groups_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id), {}, @headers do |response|
-        response.status.should == 401
-      end
-    end
+    describe '#index' do
 
-    it '#index returns groups with pagination metadata' do
-      get_json api_v1_organization_groups_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, api_key: @org_user_owner.api_key), {}, @headers do |response|
-        response.status.should == 200
-        expected_response = {
-          groups: [ @group_1_json, @group_2_json, @group_3_json ],
-          total_entries: 3,
-          total_org_entries: 3
-        }
-        response.body.should == expected_response
+      it 'returns 401 without authentication' do
+        get_json api_v1_organization_groups_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id), {}, @headers do |response|
+          response.status.should == 401
+        end
       end
-    end
 
-    it '#index returns paginated groups with pagination metadata' do
-      get_json api_v1_organization_groups_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, api_key: @org_user_owner.api_key), { page: 2, per_page: 1, order: 'display_name' }, @headers do |response|
-        response.status.should == 200
-        expected_response = {
-          groups: [ @group_2_json ],
-          total_entries: 3,
-          total_org_entries: 3
-        }
-        response.body.should == expected_response
+      it 'returns groups with pagination metadata' do
+        get_json api_v1_organization_groups_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, api_key: @org_user_owner.api_key), {}, @headers do |response|
+          response.status.should == 200
+          expected_response = {
+            groups: [ @group_1_json, @group_2_json, @group_3_json ],
+            total_entries: 3
+          }
+          response.body.should == expected_response
+        end
       end
-    end
 
-    it '#index can search by name' do
-      get_json api_v1_organization_groups_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, api_key: @org_user_owner.api_key, q: @group_2.name), { page: 1, per_page: 1, order: 'display_name' }, @headers do |response|
-        response.status.should == 200
-        expected_response = {
-          groups: [ @group_2_json ],
-          total_entries: 1,
-          total_org_entries: 3
-        }
-        response.body.should == expected_response
+      it 'returns paginated groups with pagination metadata' do
+        get_json api_v1_organization_groups_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, api_key: @org_user_owner.api_key), { page: 2, per_page: 1, order: 'display_name' }, @headers do |response|
+          response.status.should == 200
+          expected_response = {
+            groups: [ @group_2_json ],
+            total_entries: 3
+          }
+          response.body.should == expected_response
+        end
       end
+
+      it 'can search by name' do
+        get_json api_v1_organization_groups_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, api_key: @org_user_owner.api_key, q: @group_2.name), { page: 1, per_page: 1, order: 'display_name' }, @headers do |response|
+          response.status.should == 200
+          expected_response = {
+            groups: [ @group_2_json ],
+            total_entries: 1
+          }
+          response.body.should == expected_response
+        end
+      end
+
+      it 'returns user groups if user_id is requested' do
+        get_json api_v1_user_groups_url(user_domain: @org_user_owner.username, user_id: @org_user_owner.id, api_key: @org_user_owner.api_key), {}, @headers do |response|
+          response.status.should == 200
+          expected_response = {
+            groups: [ ],
+            total_entries: 0
+          }
+          response.body.should == expected_response
+        end
+      end
+
     end
 
     it '#show returns a group' do

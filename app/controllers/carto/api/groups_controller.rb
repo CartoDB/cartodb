@@ -12,15 +12,17 @@ module Carto
       ssl_required :index, :show, :create, :update, :destroy, :add_member, :remove_member unless Rails.env.development? || Rails.env.test?
 
       before_filter :load_organization
+      before_filter :load_user
+      before_filter :validate_organization_or_user_loaded
       before_filter :load_group, :only => [:show, :update, :destroy, :add_member, :remove_member]
       before_filter :org_owner_only, :only => [:create, :update, :destroy, :add_member, :remove_member]
       before_filter :org_users_only, :only => [:show, :index]
-      before_filter :load_user, :only => [:add_member, :remove_member]
+      before_filter :load_organization_user, :only => [:add_member, :remove_member]
 
       def index
         page, per_page, order = page_per_page_order_params
 
-        groups = @organization.groups
+        groups = @user ? @user.groups : @organization.groups
         groups = groups.where('name ilike ?', "%#{params[:q]}%") if params[:q]
         total_entries = groups.count
 
@@ -28,8 +30,7 @@ module Carto
 
         render_jsonp({
           groups: groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro },
-          total_entries: total_entries,
-          total_org_entries: @organization.groups.count
+          total_entries: total_entries
         }, 200)
       end
 
@@ -83,8 +84,25 @@ module Carto
       private
 
       def load_organization
+        return unless params['organization_id'].present?
         @organization = Carto::Organization.where(id: params['organization_id']).first
         render json: { errors: "Organization #{params['organization_id']} not found" }, status: 404 unless @organization
+      end
+
+      def load_user
+        return unless params['user_id'].present?
+        @user = Carto::User.where(id: params['user_id']).first
+        render json: { errors: "User #{params['user_id']} not found" }, status: 404 unless @user
+        if @organization.nil?
+          @organization = @user.organization
+        else
+          render json: { errors: "You can't get other organization users" }, status: 501 unless @user.organization_id == @organization.id
+        end
+        render json: { errors: "You can't get other users groups" }, status: 501 unless @user.id == current_user.id || current_user.organization_owner?
+      end
+
+      def validate_organization_or_user_loaded
+        render json: { errors: "You must set user_id or organization_id" }, status: 404 unless @organization || @user
       end
 
       def org_users_only
@@ -100,7 +118,7 @@ module Carto
         render json: { errors: "Group #{params['group_id']} not found" }, status: 404 unless @group
       end
 
-      def load_user
+      def load_organization_user
         @user = @organization.users.where(id: params['user_id']).first
         render json: { errors: "User #{params['user_id']} not found" }, status: 404 unless @user
       end

@@ -42,12 +42,10 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
     # To be used in real search
     username_filter =  Net::LDAP::Filter.eq('cn', username)
 
-    domain_base = self.domain_bases.find { |d|
-      connect("#{username_stringified_filter},#{d}", password).bind
+    domain_base = self.domain_bases.find { |domain|
+      connect("#{username_stringified_filter},#{domain}", password).bind
     }
     return false if domain_base.nil?
-
-    @conn = connect("#{username_stringified_filter},#{domain_base}", password)
 
     search_results = search(domain_base, username_filter)
     return false if search_results.nil?
@@ -78,9 +76,9 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
   private
 
   def search_in_domain_bases(filter)
-    domain_bases.map { |d|
-      search(d, filter)
-    }.flatten
+    domain_bases.map { |domain|
+      search(domain, filter)
+    }.flatten.compact
   end
 
   def search(base, filter = nil)

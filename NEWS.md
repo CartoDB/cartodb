@@ -8,6 +8,7 @@
 * New modals (removing old code & feature flag restricting access to new ones) [#5068](https://github.com/CartoDB/cartodb/pull/5068)
 * Updated (most of) frontend dependencies [#5171](https://github.com/CartoDB/cartodb/pull/5171)
 * Metadata is editable when datasets have a SQL Query is applied [#5195](https://github.com/CartoDB/cartodb/pull/5195)
+* LDAP configuration & authentication. If active deactivates standard CartoDB & Google authentications. [documentation](TBD)
 
 3.10.3 (2015-08-13)
 ---

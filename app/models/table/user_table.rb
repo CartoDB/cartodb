@@ -48,7 +48,7 @@ class UserTable < Sequel::Model
     values
   }
 
-  RESERVED_TABLE_NAMES = %W{ layergroup all }
+  RESERVED_TABLE_NAMES = %W{ all and any array as asc before both cast desc end fetch for from group intersect layergroup not offset on or select table then to union when where with }
 
   PRIVACY_PRIVATE = 0
   PRIVACY_PUBLIC = 1

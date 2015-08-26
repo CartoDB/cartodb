@@ -338,7 +338,8 @@ class Admin::PagesController < ApplicationController
     @email              = optional.fetch(:email, nil)
     @available_for_hire = optional.fetch(:available_for_hire, false)
     @user = optional.fetch(:user, nil)
-    @tables_num         = (model.is_a? Organization) ? model.public_datasets_count : model.public_table_count
+    @is_org             = model.is_a? Organization
+    @tables_num         = @is_org ? model.public_datasets_count : model.public_table_count
   end
 
   def user_public_vis_list(required)

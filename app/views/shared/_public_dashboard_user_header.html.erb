@@ -1,0 +1,41 @@
+<div class="Navmenu js-Navmenu">
+  <div class="u-inner">
+    <span class="Navmenu-separator"></span>
+    <div class="PublicMap-block">
+      <div class="PublicMap-gradient"></div>
+
+      <div class="PublicMap-leftBlock PublicMap-leftBlock--owner">
+        <ul class="Navmenu-list Navmenu-list--owner Navmenu-list--avatar">
+          <li class="Navmenu-item">
+            <a href="<%= CartoDB.url(self, 'profile_user') %>" target="_blank" class="UserAvatar">
+              <img class="UserAvatar-img--medium" src="<%= @avatar_url %>" alt="development" title="development" />
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Navmenu-list Navmenu-list--owner">
+          <li class="Navmenu-item last-child">
+            <a href="<%= CartoDB.url(self, 'profile_user') %>" class="Navmenu-link"><%= @name %></a>
+          </li>
+          <li class="Navmenu-item last-child">
+            <a href="<%= CartoDB.url(self, 'public_maps_home') %>" class="Navmenu-link <%= "#{@content_type == 'maps' ? 'is-selected' : '' }" %>"><%= pluralize(@tables_num, "Map") %></a>
+          </li>
+          <li class="Navmenu-item u-hideOnTablet">
+            <a href="<%= CartoDB.url(self, 'public_datasets_home') %>" class="Navmenu-link <%= "#{@content_type == 'maps' ? '' : 'is-selected' }" %>"><%= pluralize(@tables_num, "Dataset") %></a>
+          </li>
+        </ul>
+      </div>
+
+      <% unless @available_for_hire %>
+        <div class="PublicMap-rightBlock PublicMap-rightBlock--owner u-txt-right">
+          <ul class="Navmenu-list">
+            <li class="Navmenu-item">
+              <a class="Button Button--main is-active" href="mailto:<%= @email %>">Hire me</a>
+            </li>
+          </ul>
+        </div>
+      <% end %>
+
+    </div>
+  </div>
+</div>

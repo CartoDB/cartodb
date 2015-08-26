@@ -68,6 +68,10 @@ module CartoDB
         Statsd.decrement("#{fully_qualified_prefix}.#{key}")
       end
 
+      def update_counter(key, delta)
+        Statsd.update_counter("#{fully_qualified_prefix}.#{key}", delta)
+      end
+
       protected
 
       def self.read_config

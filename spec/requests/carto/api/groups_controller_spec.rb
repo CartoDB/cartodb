@@ -12,6 +12,8 @@ describe Carto::Api::GroupsController do
     before(:all) do
       @carto_organization = Carto::Organization.find(@organization.id)
       @carto_org_user_1 = Carto::User.find(@org_user_1.id)
+      @org_user_1_json = {"id"=>@org_user_1.id, "username"=>@org_user_1.username, "email"=>@org_user_1.email, "avatar_url"=>@org_user_1.avatar_url, "base_url"=>@org_user_1.public_url, "quota_in_bytes"=>@org_user_1.quota_in_bytes, "db_size_in_bytes"=>@org_user_1.db_size_in_bytes}
+
       @group_1 = FactoryGirl.create(:random_group, display_name: 'g_1', organization: @carto_organization)
       @group_1_json = { 'id' => @group_1.id, 'organization_id' => @group_1.organization_id, 'name' => @group_1.name, 'display_name' => @group_1.display_name }
       @group_2 = FactoryGirl.create(:random_group, display_name: 'g_2', organization: @carto_organization)
@@ -72,15 +74,44 @@ describe Carto::Api::GroupsController do
         end
       end
 
-      it 'returns user groups if user_id is requested' do
-        get_json api_v1_user_groups_url(user_domain: @org_user_owner.username, user_id: @org_user_owner.id, api_key: @org_user_owner.api_key), {}, @headers do |response|
-          response.status.should == 200
-          expected_response = {
-            groups: [ ],
-            total_entries: 0
-          }
-          response.body.should == expected_response
+      describe "users groups" do
+
+        before(:each) do
+          @group_1.add_member(@org_user_1.username)
         end
+
+        after(:each) do
+          @group_1.remove_member(@org_user_1.username)
+        end
+
+        it 'returns user groups if user_id is requested' do
+          get_json api_v1_user_groups_url(user_domain: @org_user_1.username, user_id: @org_user_1.id, api_key: @org_user_1.api_key), {}, @headers do |response|
+            response.status.should == 200
+            expected_response = {
+              groups: [ @group_1_json ],
+              total_entries: 1
+            }
+            response.body.should == expected_response
+          end
+        end
+
+        it 'can fetch number of shared tables, maps and members' do
+          get_json api_v1_user_groups_url(user_domain: @org_user_1.username, user_id: @org_user_1.id, api_key: @org_user_1.api_key, fetch_shared_tables_count: true, fetch_shared_maps_count: true, fetch_members: true), {}, @headers do |response|
+            response.status.should == 200
+            expected_response = {
+              groups: [
+                @group_1_json.merge({
+                  'shared_tables_count' => 0,
+                  'shared_maps_count' => 0,
+                  'members' => [ @org_user_1_json ]
+                })
+              ],
+              total_entries: 1
+            }
+            response.body.should == expected_response
+          end
+        end
+
       end
 
     end

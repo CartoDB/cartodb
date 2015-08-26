@@ -22,6 +22,12 @@ module Carto
       def index
         page, per_page, order = page_per_page_order_params
 
+        fetching_options = {
+          fetch_shared_tables_count: params[:fetch_shared_tables_count] == 'true',
+          fetch_shared_maps_count: params[:fetch_shared_maps_count] == 'true',
+          fetch_members: params[:fetch_members] == 'true'
+        }
+
         groups = @user ? @user.groups : @organization.groups
         groups = groups.where('name ilike ?', "%#{params[:q]}%") if params[:q]
         total_entries = groups.count
@@ -29,7 +35,7 @@ module Carto
         groups = Carto::PagedModel.paged_association(groups, page, per_page, order)
 
         render_jsonp({
-          groups: groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro },
+          groups: groups.map { |g| Carto::Api::GroupPresenter.new(g, fetching_options).to_poro },
           total_entries: total_entries
         }, 200)
       end

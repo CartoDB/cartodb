@@ -46,6 +46,9 @@ class User < Sequel::Model
 
   one_to_many :feature_flags_user
 
+  plugin :many_through_many
+  many_through_many :groups, [[:users_groups, :user_id, :group_id]]
+
   # Sequel setup & plugins
   plugin :association_dependencies, :client_application => :destroy, :synchronization_oauths => :destroy, :feature_flags_user => :destroy
   plugin :validation_helpers

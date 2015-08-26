@@ -25,6 +25,9 @@ class Carto::User < ActiveRecord::Base
   has_many :search_tweets, inverse_of: :user
   has_many :synchronizations, inverse_of: :user
 
+  has_many :users_group, dependent: :destroy, class_name: Carto::UsersGroup
+  has_many :groups, :through => :users_group
+
   delegate [ 
       :database_username, :database_password, :in_database, :load_cartodb_functions, :rebuild_quota_trigger,
       :db_size_in_bytes, :get_api_calls, :table_count, :public_visualization_count, :visualization_count,

@@ -45,7 +45,7 @@ CartoDB::Application.configure do
 
   # Enable threaded mode (https://github.com/resque/resque/issues/611)
   # config.threadsafe!
-  # In order to run supporting concurrent requests, uncomment next line and run with `bundle exec thin start --threaded -p 3000`.
+  # In order to run supporting concurrent requests, uncomment next line and run with `bundle exec thin start --threaded -p 3000 --threadpool-size 5`. Check your `config/database.yml` has `pool: 50` or higher for `development`.
   # The condition excludes this from resque, since it won't work with it and it doesn't need it.
   config.threadsafe! unless $rails_rake_task
 

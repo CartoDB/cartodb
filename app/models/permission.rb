@@ -351,6 +351,13 @@ module CartoDB
         if entry[:type] == TYPE_USER && entry[:id] == subject.id
           permission = entry[:access]
         end
+
+        if entry[:type] == TYPE_GROUP && permission == nil
+          if !subject.groups.nil? && subject.groups.collect(&:id).include?(entry[:id])
+            permission = entry[:access]
+          end
+        end
+
         # Organization has lower precedence than user, if set leave as it is
         if entry[:type] == TYPE_ORGANIZATION && permission == nil
           if !subject.organization.nil? && subject.organization.id == entry[:id]

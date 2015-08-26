@@ -14,6 +14,17 @@ class Admin::PagesController < ApplicationController
   PAGE_NUMBER_PLACEHOLDER = 'PAGENUMBERPLACEHOLDER'
 
   ssl_required :common_data, :public, :datasets
+  # TODO logic as done client-side, how and where to encapsulate this better?
+  GEOMETRY_MAPPING = {
+    'st_multipolygon'    => 'polygon',
+    'st_polygon'         => 'polygon',
+    'st_multilinestring' => 'line',
+    'st_linestring'      => 'line',
+    'st_multipoint'      => 'point',
+    'st_point'           => 'point'
+  }
+
+
   ssl_allowed :index, :sitemap, :datasets_for_user, :datasets_for_organization, :maps_for_user, :maps_for_organization,
               :render_not_found
 
@@ -166,35 +177,12 @@ class Admin::PagesController < ApplicationController
       })
 
     @datasets = []
-    # TODO logic as done client-side, how and where to encapsulate this better?
-    geometry_mapping = {
-      'st_multipolygon'    => 'polygon',
-      'st_polygon'         => 'polygon',
-      'st_multilinestring' => 'line',
-      'st_linestring'      => 'line',
-      'st_multipoint'      => 'point',
-      'st_point'           => 'point'
-    }
 
     vis_list.each do |vis|
-      geometry_type = vis.kind
-      if geometry_type != 'raster'
-        table_geometry_types = vis.table.geometry_types
-        geometry_type = table_geometry_types.first.present? ? geometry_mapping.fetch(table_geometry_types.first.downcase, '') : ''
-      end
-
-      begin
-        @datasets << vis_item(vis).merge({
-            rows_count:    vis.table.rows_counted,
-            size_in_bytes: vis.table.table_size,
-            geometry_type: geometry_type,
-          })
-      rescue => e
-        # A dataset might be invalid. For example, having the table deleted and not yet cleaned.
-        # We don't want public page to be broken, but error must be traced.
-        CartoDB.notify_exception(e, { vis: vis })
-      end
+      @datasets << process_dataset_render(vis)
     end
+
+    @datasets.compact
 
     description = "#{@name} has"
 
@@ -225,8 +213,10 @@ class Admin::PagesController < ApplicationController
 
     @visualizations = []
     vis_list.each do |vis|
-      @visualizations << vis_item(vis)
+      @visualizations << process_map_render(vis)
     end
+
+    @visualizations.compact
 
     description = "#{@name} has"
 
@@ -254,19 +244,6 @@ class Admin::PagesController < ApplicationController
     respond_to do |format|
       format.html { render 'public_maps', layout: 'public_dashboard' }
     end
-  end
-
-  def vis_item(vis)
-    return {
-      id:          vis.id,
-      title:       vis.name,
-      description_html_safe: vis.description_html_safe,
-      tags:        vis.tags,
-      updated_at:  vis.updated_at,
-      owner:       vis.user,
-      likes_count: vis.likes.count,
-      map_zoom:    vis.map.zoom
-    }
   end
 
   def set_layout_vars_for_user(user, content_type)
@@ -381,5 +358,44 @@ class Admin::PagesController < ApplicationController
       end
     end
   end
+
+  def process_dataset_render(dataset)
+    geometry_type = dataset.kind
+    if geometry_type != 'raster'
+      table_geometry_types = dataset.table.geometry_types
+      geometry_type = table_geometry_types.first.present? ? GEOMETRY_MAPPING.fetch(table_geometry_types.first.downcase, '') : ''
+    end
+
+    begin
+      vis_item(dataset).merge({
+          rows_count:    dataset.table.rows_counted,
+          size_in_bytes: dataset.table.table_size,
+          geometry_type: geometry_type,
+        })
+    rescue => e
+      # A dataset might be invalid. For example, having the table deleted and not yet cleaned.
+      # We don't want public page to be broken, but error must be traced.
+      CartoDB.notify_exception(e, { vis: dataset })
+      nil
+    end
+  end
+
+  def process_map_render(map)
+    vis_item(map)
+  end
+
+  def vis_item(vis)
+    return {
+      id:          vis.id,
+      title:       vis.name,
+      description_html_safe: vis.description_html_safe,
+      tags:        vis.tags,
+      updated_at:  vis.updated_at,
+      owner:       vis.user,
+      likes_count: vis.likes.count,
+      map_zoom:    vis.map.zoom
+    }
+  end
+
 
 end

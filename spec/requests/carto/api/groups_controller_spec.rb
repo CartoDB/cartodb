@@ -1,8 +1,9 @@
 # encoding: utf-8
 
+require 'rspec/mocks'
 require_relative '../../../spec_helper'
 require_relative '../../../../app/controllers/carto/api/database_groups_controller'
-require 'rspec/mocks'
+require_relative '.././../../factories/visualization_creation_helpers'
 
 describe Carto::Api::GroupsController do
   include_context 'organization with users helper'
@@ -96,12 +97,36 @@ describe Carto::Api::GroupsController do
         end
 
         it 'can fetch number of shared tables, maps and members' do
+
           get_json api_v1_user_groups_url(user_domain: @org_user_1.username, user_id: @org_user_1.id, api_key: @org_user_1.api_key, fetch_shared_tables_count: true, fetch_shared_maps_count: true, fetch_members: true), {}, @headers do |response|
             response.status.should == 200
             expected_response = {
               groups: [
                 @group_1_json.merge({
                   'shared_tables_count' => 0,
+                  'shared_maps_count' => 0,
+                  'members' => [ @org_user_1_json ]
+                })
+              ],
+              total_entries: 1
+            }
+            response.body.should == expected_response
+          end
+        end
+
+        it 'can fetch number of shared tables, maps and members when a table is shared' do
+          bypass_named_maps
+          table_user_2 = create_table_with_options(@org_user_2)
+          permission = CartoDB::Permission[Carto::Visualization.find(table_user_2['table_visualization']['id']).permission.id]
+          permission.set_group_permission(@group_1, Carto::Permission::ACCESS_READONLY)
+          permission.save
+
+          get_json api_v1_user_groups_url(user_domain: @org_user_1.username, user_id: @org_user_1.id, api_key: @org_user_1.api_key, fetch_shared_tables_count: true, fetch_shared_maps_count: true, fetch_members: true), {}, @headers do |response|
+            response.status.should == 200
+            expected_response = {
+              groups: [
+                @group_1_json.merge({
+                  'shared_tables_count' => 1,
                   'shared_maps_count' => 0,
                   'members' => [ @org_user_1_json ]
                 })

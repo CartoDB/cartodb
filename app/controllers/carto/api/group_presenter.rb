@@ -20,9 +20,17 @@ module Carto
           name: @group.name,
           display_name: @group.display_name
         }
-        poro.merge!({ shared_tables_count: shared_tables_count }) if @fetching_options[:fetch_shared_tables_count] == true
-        poro.merge!({ shared_maps_count: shared_maps_count }) if @fetching_options[:fetch_shared_maps_count] == true
-        poro.merge!({ members: members }) if @fetching_options[:fetch_members] == true
+
+        if @fetching_options[:fetch_shared_tables_count] == true
+          poro.merge!({ shared_tables_count: shared_tables_count })
+        end
+        if @fetching_options[:fetch_shared_maps_count] == true
+          poro.merge!({ shared_maps_count: shared_maps_count })
+        end
+        if @fetching_options[:fetch_members] == true
+          poro.merge!({ members: members })
+        end
+
         poro
       end
 

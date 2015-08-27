@@ -4,6 +4,14 @@
 require 'net/ldap'
 
 class Carto::Ldap::Configuration < ActiveRecord::Base
+
+  # Not encrypted
+  ENCRYPTION_NONE = nil
+  # Encrypted from start
+  ENCRYPTION_SIMPLE_TLS = 'simple_tls'
+  # Upgrade to encrypted once connected
+  ENCRYPTION_START_TLS = 'start_tls'
+
   self.table_name = 'ldap_configurations'
 
   belongs_to :organization, class_name: Carto::Organization
@@ -15,8 +23,8 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
   # @param String encryption (Optional) Encryption type to use. Empty means standard/simple Auth
   # @param String ca_file Certificate file path for start_tls encryption. Example: "/etc/cafile.pem"
   # @param String ssl_version For start_tls_encryption. Example: "TLSv1_1"
-  # @param String connection_user Full CN for "admin connections" to LDAP: `CN=admin, DC=cartodb, DC=COM`
-  # @param String connection_password Password for "admin connections" to LDAP
+  # @param String connection_user Full CN for "search connections" to LDAP: `CN=admin, DC=cartodb, DC=COM`
+  # @param String connection_password Password for "search connections" to LDAP
   # @param String user_id_field Which LDAP entry field represents the user id
   # @param String username_field Which LDAP entry field represents the username (Optional)
   # @param String username_field Which LDAP entry field represents the email
@@ -43,6 +51,7 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
     username_filter =  Net::LDAP::Filter.eq('cn', username)
 
     domain_base = self.domain_bases.find { |domain|
+      # This is just checking if provided auth user can connect, connection is not stored
       connect("#{username_stringified_filter},#{domain}", password).bind
     }
     return false if domain_base.nil?
@@ -81,6 +90,8 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
     }.flatten.compact
   end
 
+  # @param String base DC to search at
+  # @Param Net::LDAP::Filter filter (Optional)
   def search(base, filter = nil)
     if filter
       connection.search(base: base, filter: filter)
@@ -89,12 +100,15 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
     end
   end
 
+  # Performs connection always with the search connection user
   def connection
     @conn ||= connect
   end
 
-  # @param String User full CN, like `CN=test_user, CN=developers, DC=cartodb, DC=COM`
+  # Connect, by default with the search connection user
+  # @param String user full CN, like `CN=test_user, CN=developers, DC=cartodb, DC=COM`
   # @param String password Connection password
+  # @throws InvalidConfigurationEncryptionError
   def connect(user = self.connection_user, password = self.connection_password)
     ldap = Net::LDAP.new
     ldap.host = self.host
@@ -106,19 +120,30 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
   end
 
   def configure_encryption(ldap)
-    return unless self.encryption
-
-    encryption = self.encryption.to_sym
-
     tls_options = OpenSSL::SSL::SSLContext::DEFAULT_PARAMS
-    case encryption
-    when :start_tls
-    when :simple_tls
-      tls_options.merge!(:verify_mode => OpenSSL::SSL::VERIFY_NONE)
+
+    case self.encryption
+    when ENCRYPTION_NONE
+      return
+    when ENCRYPTION_START_TLS
+      tls_options.merge!(:ca_file => self.ca_file) if self.ca_file
+    when ENCRYPTION_SIMPLE_TLS
+      # No special value needed
+    else
+      raise InvalidConfigurationEncryptionError.new(self.encryption)
     end
-    tls_options.merge!(:ca_file => self.ca_file) if self.ca_file
+
+    tls_options.merge!(:verify_mode => OpenSSL::SSL::VERIFY_NONE)
+    
     tls_options.merge!(:ssl_version => self.ssl_version) if self.ssl_version
-    ldap.encryption(method: encryption, tls_options: tls_options)
+
+    ldap.encryption(method: self.encryption, tls_options: tls_options)
   end
 
+end
+
+class InvalidConfigurationEncryptionError < StandardError
+  def initialize(incorrect_encryption_value)
+    super("Invalid encryption value supplied: #{incorrect_encryption_value}. Valid values: [nil, '', '']")
+  end
 end

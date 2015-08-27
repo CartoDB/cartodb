@@ -41,7 +41,7 @@ WORKING_SPECS_1 = \
   spec/lib/carto/http/client_spec.rb \
 	spec/helpers/uuidhelper_spec.rb \
 	spec/models/carto/template_spec.rb \
-	spec/models/carto/ldap/configuration.rb \
+	spec/models/carto/ldap/configuration_spec.rb \
   $(NULL)
 
 WORKING_SPECS_2 = \

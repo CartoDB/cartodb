@@ -8,6 +8,7 @@
 * New modals (removing old code & feature flag restricting access to new ones) [#5068](https://github.com/CartoDB/cartodb/pull/5068)
 * Updated (most of) frontend dependencies [#5171](https://github.com/CartoDB/cartodb/pull/5171)
 * Metadata is editable when datasets have a SQL Query is applied [#5195](https://github.com/CartoDB/cartodb/pull/5195)
+* Upgrade cartodb-postgresql extension to 0.9.4, which includes the new cartodbfy process. As part of this change new user tables won't have the columns `created_at` nor `updated_at`. See the [release notes](https://github.com/CartoDB/cartodb-postgresql/blob/0.9.4/NEWS.md) for more details.
 
 3.10.3 (2015-08-13)
 ---

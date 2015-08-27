@@ -329,8 +329,11 @@ class Geocoding < Sequel::Model
     self.update(state: 'finished', real_rows: geocoded_rows, used_credits: calculate_used_credits)
     send_report_mail(state, table_geocoder.table_name, nil, self.processable_rows, geocoded_rows)
     log.append "Geocoding finished"
-    # To store the bbox in visualizations
-    BoundingBoxHelper.update_visualizations_bbox(table_service)
+    # In the import table_service could be nil
+    if !table_service.nil?
+      # To store the bbox in visualizations
+      BoundingBoxHelper.update_visualizations_bbox(table_service)
+    end
     self.report
   end
 

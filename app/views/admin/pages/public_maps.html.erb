@@ -8,7 +8,7 @@
   <% else %>
     <ul class="MapsList">
       <% @visualizations.each do |vis| %>
-        <%= render 'admin/pages/shared/mapcard', vis: vis %>
+        <%= render 'shared/mapcard', vis: vis %>
       <% end %>
       <%# at most 3 cards per line, visbility is handled by CSS depending on viewport size %>
       <% ((3 - @visualizations.size + 3) % 3).times.each do %>

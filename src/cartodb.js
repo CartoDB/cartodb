@@ -117,7 +117,6 @@
         // PUBLIC API
         'api/layers.js',
         'api/sql.js',
-        'api/cartocss.js',
         'api/vis.js'
     ];
 

@@ -99,7 +99,6 @@ describe('api.layers.cartodb', function() {
     });
 
     it("should expose the legend", function(done) {
-
       var legend = {
         type: "custom",
         show_title: true,
@@ -132,7 +131,8 @@ describe('api.layers.cartodb', function() {
           template: '<div></div>',
           fields: [{name: 'test', title: true, order: 0}]
         },
-        legend: legend
+        legend: legend,
+        visible: true
       }, function(l) {
         addFn(map, l);
         layer = l;
@@ -140,6 +140,7 @@ describe('api.layers.cartodb', function() {
 
       setTimeout(function() {
         expect(layer.legend instanceof cdb.geo.ui.LegendModel).toBeTruthy();
+        expect(layer.legend.get('visible')).toBeTruthy();
         expect(layer.legend.get('items')).toEqual(legend.items);
         done();
       }, 100);

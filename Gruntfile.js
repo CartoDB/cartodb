@@ -4,10 +4,8 @@
  *  framework
  *
  */
-
-
 module.exports = function(grunt) {
-  
+
   require('load-grunt-tasks')(grunt);
   require('time-grunt')(grunt);
   var semver = require('semver');
@@ -33,11 +31,11 @@ module.exports = function(grunt) {
       minor:      version[0] + '.' + version[1],
       bugfixing:  pkg.version
     },
-    pkg:  pkg,
-    secrets: grunt.file.readJSON('secrets.json')
+    pkg: pkg
   };
 
   grunt.initConfig({
+    secrets: {},
     config: config,
     dist: 'dist',
     app:  'www',
@@ -47,7 +45,6 @@ module.exports = function(grunt) {
       bugfixing:  pkg.version
     },
     pkg:  pkg,
-    secrets: grunt.file.readJSON('secrets.json'),
     gitinfo: {},
     s3: require('./grunt/tasks/s3').task(grunt, config),
     prompt: require('./grunt/tasks/prompt').task(grunt, config),
@@ -174,32 +171,30 @@ module.exports = function(grunt) {
   grunt.registerTask('pages', [ 'buildcontrol:pages' ]);
 
   grunt.registerTask('build', [
-      'js',
-      'useminPrepare',
-      'cssmin',
-      // don't copy images since image min will copy them
-      //'copy:distStatic',
-      'imagemin',
-      'svgmin',
-      'filerev',
-      'usemin',
-      'htmlmin',
-      'uglify'
-  ]);
-
-  grunt.registerTask('js', [
-      'replace',
-      'gitinfo',
-      'clean:dist',
-      'concurrent:dist',
-      'concat',
-      'autoprefixer:dist'
+    'dist_js',
+    'useminPrepare',
+    'cssmin',
+    'imagemin',
+    'svgmin',
+    'filerev',
+    'usemin',
+    'htmlmin',
+    'uglify'
   ]);
 
   grunt.registerTask('dist_js', [
     'set_current_version',
     'js'
   ])
+
+  grunt.registerTask('js', [
+    'replace',
+    'gitinfo',
+    'clean:dist',
+    'concurrent:dist',
+    'concat',
+    'autoprefixer:dist'
+  ]);
 
   grunt.registerTask('dist', [
     'set_current_version',

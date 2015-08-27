@@ -462,7 +462,7 @@ class Admin::VisualizationsController < ApplicationController
     vqb.with_excluded_ids([excluded_visualization.id]) if excluded_visualization
     visualizations = vqb.build_paged(1, MAX_MORE_VISUALIZATIONS)
     visualizations.map { |v|
-      Carto::Admin::VisualizationPublicMapAdapter.new(v, current_user)
+      Carto::Admin::VisualizationPublicMapAdapter.new(v, current_user, self)
     }
   end
 
@@ -624,7 +624,7 @@ class Admin::VisualizationsController < ApplicationController
                                                     .first
 
     return get_visualization_and_table_from_table_id(table_id) if visualization.nil?
-    return Carto::Admin::VisualizationPublicMapAdapter.new(visualization, current_user), visualization.table_service
+    return Carto::Admin::VisualizationPublicMapAdapter.new(visualization, current_user, self), visualization.table_service
   end
 
   def get_visualization_and_table_from_table_id(table_id)
@@ -632,7 +632,7 @@ class Admin::VisualizationsController < ApplicationController
     user_table = Carto::UserTable.where({ id: table_id }).first
     return nil, nil if user_table.nil?
     visualization = user_table.visualization
-    return Carto::Admin::VisualizationPublicMapAdapter.new(visualization, current_user), visualization.table_service
+    return Carto::Admin::VisualizationPublicMapAdapter.new(visualization, current_user, self), visualization.table_service
   end
 
   # TODO: remove this method and use  app/helpers/carto/uuidhelper.rb. Not used yet because this changed was pushed before

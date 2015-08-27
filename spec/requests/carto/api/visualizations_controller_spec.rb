@@ -1205,7 +1205,7 @@ describe Carto::Api::VisualizationsController do
       it 'returns a visualization' do
         payload = factory($user_1)
         post api_v1_visualizations_create_url(api_key: @api_key),
-          payload.to_json, @headers
+        payload.to_json, @headers
         id = JSON.parse(last_response.body).fetch('id')
 
         get api_v1_visualizations_show_url(id: id, api_key: @api_key), {}, @headers
@@ -1450,6 +1450,26 @@ describe Carto::Api::VisualizationsController do
       body['visualizations'].count.should eq 0
     end
 
+  end
+
+  describe 'visualization url generation' do
+    include_context 'visualization creation helpers'
+    include_context 'users helper'
+    include_context 'organization with users helper'
+
+    it 'generates a user table visualization url' do
+      table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: "table_#{rand(9999)}_1_1", user_id: $user_1.id)
+      vis_id = table.table_visualization.id
+
+      login($user_1)
+      get_json api_v1_visualizations_show_url(id: vis_id, api_key: $user_1.api_key), {}, http_json_headers do |response|
+        response.status.should == 200
+
+        response.body[:url].should == "http://#{$user_1.username}#{Cartodb.config[:session_domain]}:#{Cartodb.config[:http_port]}/tables/#{table.name}"
+        # http://central-user-1.localhost.lan:3000/viz/5145a2d2-429d-11e5-8dbe-080027880ca6/map
+        # http://central-user-1.localhost.lan:3000/tables/guess_ip_2
+      end
+    end
   end
 
   describe 'filter canonical viz by bounding box' do

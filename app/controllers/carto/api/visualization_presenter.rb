@@ -9,9 +9,10 @@ module Carto
       # options
       # - related: load related tables. Default: true.
       # - show_stats: load stats (daily mapview counts). Default: true.
-      def initialize(visualization, current_viewer, options = {})
+      def initialize(visualization, current_viewer, context, options = {})
         @visualization = visualization
         @current_viewer = current_viewer
+        @context = context
         @options = options
       end
 
@@ -48,7 +49,8 @@ module Carto
           external_source: Carto::Api::ExternalSourcePresenter.new(@visualization.external_source).to_poro,
           synchronization: Carto::Api::SynchronizationPresenter.new(@visualization.synchronization).to_poro,
           children: @visualization.children.map { |v| children_poro(v) },
-          liked: @current_viewer ? @visualization.is_liked_by_user_id?(@current_viewer.id) : false
+          liked: @current_viewer ? @visualization.is_liked_by_user_id?(@current_viewer.id) : false,
+          url: CartoDB.url(@context, 'public_tables_show_bis', {id: @visualization.name }, @current_viewer)
         }
         poro.merge!( { related_tables: related_tables } ) if @options.fetch(:related, true)
         poro

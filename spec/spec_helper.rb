@@ -122,4 +122,8 @@ def http_json_authorization_headers(user, password)
     'HTTP_ACCEPT' => "application/json",
     'CONTENT_TYPE'  => 'application/json'
   }
-  end
+end
+
+def http_json_headers
+  {'CONTENT_TYPE'  => 'application/json', :format => "json" }
+end

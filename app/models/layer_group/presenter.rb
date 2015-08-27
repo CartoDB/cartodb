@@ -38,7 +38,7 @@ module CartoDB
               version:            LAYER_GROUP_VERSION,
               layers:             cartodb_layers
             },
-            attribution: options.fetch(:attributions, []).join(' ')
+            attribution: options.fetch(:attributions).join(', ')
           }
         }
       end

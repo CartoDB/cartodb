@@ -68,7 +68,7 @@ module CartoDB
                 params:   placeholders_data,
                 layers:   configure_layers_data
               },
-              attribution: @visualization.attributions_from_derived_visualizations.join(' ')
+              attribution: @visualization.attributions_from_derived_visualizations.join(', ')
             }
           }
         end

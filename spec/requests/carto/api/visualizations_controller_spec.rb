@@ -1461,8 +1461,7 @@ describe Carto::Api::VisualizationsController do
       table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: "table_#{rand(9999)}_1_1", user_id: $user_1.id)
       vis_id = table.table_visualization.id
 
-      login($user_1)
-      get_json api_v1_visualizations_show_url(id: vis_id, api_key: $user_1.api_key), {}, http_json_headers do |response|
+      get_json api_v1_visualizations_show_url(user_domain: $user_1.username, id: vis_id, api_key: $user_1.api_key), {}, http_json_headers do |response|
         response.status.should == 200
 
         response.body[:url].should == "http://#{$user_1.username}#{Cartodb.config[:session_domain]}:#{Cartodb.config[:http_port]}/tables/#{table.name}"

@@ -1465,8 +1465,6 @@ describe Carto::Api::VisualizationsController do
         response.status.should == 200
 
         response.body[:url].should == "http://#{$user_1.username}#{Cartodb.config[:session_domain]}:#{Cartodb.config[:http_port]}/tables/#{table.name}"
-        # http://central-user-1.localhost.lan:3000/viz/5145a2d2-429d-11e5-8dbe-080027880ca6/map
-        # http://central-user-1.localhost.lan:3000/tables/guess_ip_2
       end
     end
 
@@ -1476,8 +1474,26 @@ describe Carto::Api::VisualizationsController do
         response.status.should == 200
 
         response.body[:url].should == "http://#{$user_1.username}#{Cartodb.config[:session_domain]}:#{Cartodb.config[:http_port]}/viz/#{visualization.id}/map"
-        # http://central-user-1.localhost.lan:3000/viz/5145a2d2-429d-11e5-8dbe-080027880ca6/map
-        # http://central-user-1.localhost.lan:3000/tables/guess_ip_2
+      end
+    end
+
+    it 'generates a org user table visualization url' do
+      table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: "table_#{rand(9999)}_1_1", user_id: @org_user_1.id)
+      vis_id = table.table_visualization.id
+
+      get_json api_v1_visualizations_show_url(user_domain: @org_user_1.username, id: vis_id, api_key: @org_user_1.api_key), {}, http_json_headers do |response|
+        response.status.should == 200
+
+        response.body[:url].should == "http://#{@org_user_1.organization.name}#{Cartodb.config[:session_domain]}:#{Cartodb.config[:http_port]}/u/#{@org_user_1.username}/tables/#{table.name}"
+      end
+    end
+
+    it 'generates a organization user map url' do
+      visualization = api_visualization_creation(@org_user_1, http_json_headers, { privacy: Visualization::Member::PRIVACY_PUBLIC, type: Visualization::Member::TYPE_DERIVED })
+      get_json api_v1_visualizations_show_url(user_domain: @org_user_1.username, id: visualization.id, api_key: @org_user_1.api_key), {}, http_json_headers do |response|
+        response.status.should == 200
+
+        response.body[:url].should == "http://#{@org_user_1.organization.name}#{Cartodb.config[:session_domain]}:#{Cartodb.config[:http_port]}/u/#{@org_user_1.username}/viz/#{visualization.id}/map"
       end
     end
 

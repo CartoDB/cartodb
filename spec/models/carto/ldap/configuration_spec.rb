@@ -107,17 +107,29 @@ describe Carto::Ldap::Configuration do
         user_id_field: @user_id_field
       })
 
-    register_ldap_user(user_a_cn, user_a_username, user_a_password, ldap_configuration.user_object_class)
-    register_ldap_user(user_b_cn, user_b_username, user_b_password, ldap_configuration.user_object_class)
+    register_ldap_user(user_a_cn, user_a_username, user_a_password)
+    register_ldap_user(user_b_cn, user_b_username, user_b_password)
 
-    pending 'not yet finished, this will only return one user'
+    ldap_search_user_entries = [
+      { @user_id_field => [user_a_username] },
+      { @user_id_field => [user_b_username] }
+    ]
+    FakeNetLdap.register_query(Net::LDAP::Filter.eq('objectClass', ldap_configuration.user_object_class), 
+      ldap_search_user_entries)
+
     ldap_configuration.users.should_not eq false
-    #ldap_configuration.users.count.should eq 2
+    ldap_configuration.users.count.should eq 2
+    search_results = ldap_configuration.users.map { |user_data|
+      user_data['cn'].first
+    }
+    search_results.should eq [ user_a_username, user_b_username ]
+
+    ldap_configuration.delete
   end
 
 private
 
-def register_ldap_user(cn, username, password, objectClass=nil)
+def register_ldap_user(cn, username, password)
   # Data to return as an LDAP result, that will be loaded into Carto::Ldap::Entry
   ldap_entry_data = { 
       @user_id_field => [username]
@@ -125,10 +137,6 @@ def register_ldap_user(cn, username, password, objectClass=nil)
 
   FakeNetLdap.register_user(:username => cn, :password => password)
   FakeNetLdap.register_query(Net::LDAP::Filter.eq('cn', username), ldap_entry_data)
-  # For searches
-  if objectClass
-    FakeNetLdap.register_query(Net::LDAP::Filter.eq('objectClass', objectClass), ldap_entry_data)
-  end
 end
 
 end

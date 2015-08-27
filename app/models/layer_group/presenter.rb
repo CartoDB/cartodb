@@ -37,7 +37,8 @@ module CartoDB
               stat_tag:           options.fetch(:visualization_id),
               version:            LAYER_GROUP_VERSION,
               layers:             cartodb_layers
-            }
+            },
+            attribution: options.fetch(:attributions, []).join(' ')
           }
         }
       end

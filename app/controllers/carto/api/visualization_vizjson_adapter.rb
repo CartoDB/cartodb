@@ -28,6 +28,10 @@ module Carto
         @layer_cache[kind] ||= get_layers(kind)
       end
 
+      def attributions_from_derived_visualizations
+        @visualization.related_visualizations.map(&:attributions).compact
+      end
+
       def children
         @visualization.children.map { |v|
           Carto::Api::VisualizationVizJSONAdapter.new(v, @redis_cache)

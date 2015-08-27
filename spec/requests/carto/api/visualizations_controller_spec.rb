@@ -1470,6 +1470,18 @@ describe Carto::Api::VisualizationsController do
         # http://central-user-1.localhost.lan:3000/tables/guess_ip_2
       end
     end
+
+    it 'generates a user map url' do
+      visualization = api_visualization_creation($user_1, http_json_headers, { privacy: Visualization::Member::PRIVACY_PUBLIC, type: Visualization::Member::TYPE_DERIVED })
+      get_json api_v1_visualizations_show_url(user_domain: $user_1.username, id: visualization.id, api_key: $user_1.api_key), {}, http_json_headers do |response|
+        response.status.should == 200
+
+        response.body[:url].should == "http://#{$user_1.username}#{Cartodb.config[:session_domain]}:#{Cartodb.config[:http_port]}/viz/#{visualization.id}/map"
+        # http://central-user-1.localhost.lan:3000/viz/5145a2d2-429d-11e5-8dbe-080027880ca6/map
+        # http://central-user-1.localhost.lan:3000/tables/guess_ip_2
+      end
+    end
+
   end
 
   describe 'filter canonical viz by bounding box' do
@@ -1578,6 +1590,7 @@ describe Carto::Api::VisualizationsController do
   def api_visualization_creation(user, headers, additional_fields = {})
     post api_v1_visualizations_create_url(user_domain: user.username, api_key: user.api_key), factory(user).merge(additional_fields).to_json, headers
     id = JSON.parse(last_response.body).fetch('id')
+    id.should_not be_nil
     CartoDB::Visualization::Member.new(id: id).fetch
   end
 

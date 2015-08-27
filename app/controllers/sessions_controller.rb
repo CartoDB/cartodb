@@ -25,24 +25,30 @@ class SessionsController < ApplicationController
   end
 
   def create
-    user = if !user_password_authentication? && params[:google_access_token].present? && @google_plus_config.present?
-      user = GooglePlusAPI.new.get_user(params[:google_access_token])
-      if user
-        authenticate!(:google_access_token, scope: params[:user_domain].present? ?  params[:user_domain] : user.username)
-      elsif user == false
-        # token not valid
-        nil
-      else
-        # token valid, unknown user
-        @google_plus_config.unauthenticated_valid_access_token = params[:google_access_token]
-        nil
-      end
+    if Carto::Ldap::Manager.new.domains_present?
+      username = params[:user_domain].present? ?  params[:user_domain] : params[:email]
+      # INFO: LDAP allows characters that we don't
+      user = authenticate!(:ldap, scope: Carto::Ldap::Manager.sanitize_for_cartodb(username))
     else
-      username = extract_username(request, params)
-      user = authenticate!(:password, scope: username)
+      user = if !user_password_authentication? && params[:google_access_token].present? && @google_plus_config.present?
+        user = GooglePlusAPI.new.get_user(params[:google_access_token])
+        if user
+          authenticate!(:google_access_token, scope: params[:user_domain].present? ?  params[:user_domain] : user.username)
+        elsif user == false
+          # token not valid
+          nil
+        else
+          # token valid, unknown user
+          @google_plus_config.unauthenticated_valid_access_token = params[:google_access_token]
+          nil
+        end
+      else
+        username = extract_username(request, params)
+        user = authenticate!(:password, scope: username)
+      end
     end
 
-    render :action => 'new' and return unless params[:user_domain].present? || user.present?
+    (render :action => 'new' and return) unless (params[:user_domain].present? || user.present?)
 
     CartoDB::Stats::Authentication.instance.increment_login_counter(user.email)
 

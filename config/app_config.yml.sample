@@ -98,7 +98,7 @@ defaults: &defaults
     # base_url: 'https://common-data.cartodb.com'
     format: 'shp'
     generate_every: 86400
-  explore-api:
+  explore_api:
     username: ''
   varnish_management:
     critical: false

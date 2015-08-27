@@ -34,18 +34,18 @@ $sEditButtonSize: 50px;
   border-radius: $sCard-borderRadius;
   margin: 0 auto;
 }
-.MapCard--squared {
+.MapCard.MapCard--squared {
 }
-.MapCard--squared .MapCard-header {
+.MapCard.MapCard--squared .MapCard-header {
   height: 220px;
 }
-.MapCard--squared .MapCard-header:after {
+.MapCard.MapCard--squared .MapCard-header:after {
   display: none;
 }
-.MapCard--squared .MapCard-content { 
+.MapCard.MapCard--squared .MapCard-content { 
   height: 40px;
 }
-.MapCard--squared .MapCard-contentFooter {
+.MapCard.MapCard--squared .MapCard-contentFooter {
   padding-top: 0;
   border-top: none;
 }

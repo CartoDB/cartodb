@@ -20,6 +20,7 @@
   &:hover {
     border-color: $cNavButton-active;
     color: $cNavButton-active;
+    text-decoration: none;
   }
 
   // For safari 8 the element node inside the NavButton is not centered horizontally with the flex layout, this uses the

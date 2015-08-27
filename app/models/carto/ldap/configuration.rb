@@ -31,7 +31,7 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
   # @param String user_id_field Which LDAP entry field represents the user id. e.g. `sAMAccountName`, `uid`
   # @param String username_field Which LDAP entry field represents the username (Optional)
   # @param String username_field Which LDAP entry field represents the email
-  # @param String[] domain_bases List of DCs conforming the path
+  # @param String domain_bases List of DCs conforming the path (serialized)
   # @param String user_object_class Name of the attribute where the sers are maped in LDAP
   # @param String group_object_class Name of the attribute where the groups are maped in LDAP
   # @param DateTime created_at (Self-generated)
@@ -40,9 +40,18 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
   validates :organization, :host, :port, :connection_user, :connection_password, :user_id_field, :email_field, 
               :user_object_class, :group_object_class, :presence => true
   validates :ca_file, :username_field, :length => { :minimum => 0, :allow_nil => true }
-  validates :domain_bases, :length => { :minimum => 1, :allow_nil => false }
+  # TODO: new validation 
+  #validates :domain_bases, :length => { :minimum => 1, :allow_nil => false }
   validates :encryption, :inclusion => { :in => [ ENCRYPTION_SIMPLE_TLS, ENCRYPTION_START_TLS ], :allow_nil => true }
   validates :ssl_version, :inclusion => { :in => [ ENCRYPTION_SSL_VERSION_TLSV1_1 ], :allow_nil => true }
+
+  def domain_bases_list
+    self.domain_bases.split(',')
+  end
+
+  def domain_bases_list=(list)
+    self.domain_bases = list.join(',')
+  end
 
   # Returns matching Carto::Ldap::Entry or false if credentials are wrong
   # @param String username. No full CN, just the username, e.g. 'administrator1'
@@ -53,7 +62,7 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
     # To be used in real search
     username_filter =  Net::LDAP::Filter.eq('cn', username)
 
-    domain_base = self.domain_bases.find { |domain|
+    domain_base = domain_bases_list.find { |domain|
       # This is just checking if provided auth user can connect, connection is not stored
       connect("#{username_stringified_filter},#{domain}", password).bind
     }
@@ -90,7 +99,7 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
   private
 
   def search_in_domain_bases(filter)
-    domain_bases.map { |domain|
+    domain_bases_list.map { |domain|
       search(domain, filter)
     }.flatten.compact
   end

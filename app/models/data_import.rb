@@ -189,7 +189,7 @@ class DataImport < Sequel::Model
     self
   rescue => exception
     log.append "Exception: #{exception.to_s}"
-    log.append exception.backtrace
+    log.append exception.backtrace, truncate = false
     stacktrace = exception.to_s + exception.backtrace.join
     Rollbar.report_message('Import error', 'error', error_info: stacktrace)
     handle_failure(exception)
@@ -313,7 +313,7 @@ class DataImport < Sequel::Model
     self
   rescue => exception
     log.append "Exception: #{exception.to_s}"
-    log.append exception.backtrace
+    log.append exception.backtrace, truncate = false
     log.store
     self
   end

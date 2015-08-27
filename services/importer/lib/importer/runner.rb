@@ -96,9 +96,9 @@ module CartoDB
         self
       rescue => exception
         log.append "Errored importing data:"
-        log.append "#{exception.class.to_s}: #{exception.to_s}"
+        log.append "#{exception.class.to_s}: #{exception.to_s}", truncate = false
         log.append '----------------------------------------------------'
-        log.append exception.backtrace
+        log.append exception.backtrace, truncate = false
         log.append '----------------------------------------------------'
         @results.push(Result.new(error_code: error_for(exception.class), log_trace: report))
       end
@@ -197,9 +197,9 @@ module CartoDB
         end
 
         @job.log "Errored importing data from #{source_file.fullpath}:"
-        @job.log "#{exception.class.to_s}: #{exception.to_s}"
+        @job.log "#{exception.class.to_s}: #{exception.to_s}", truncate = false
         @job.log '----------------------------------------------------'
-        @job.log exception.backtrace
+        @job.log exception.backtrace, truncate = false
         @job.log '----------------------------------------------------'
         @job.success_status = false
         @results.push(result_for(@job, source_file, valid_table_names, additional_support_tables, exception.class))

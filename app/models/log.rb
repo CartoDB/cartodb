@@ -104,9 +104,12 @@ module CartoDB
     end
 
     # INFO: Does not store log, only appens in-memory
-    def append(content, timestamp = Time.now.utc)
+    def append(content, timestamp = Time.now.utc, truncate = true)
       @dirty = true
-      add_to_entries(ENTRY_FORMAT % [ timestamp, content.slice(0..MAX_ENTRY_LENGTH) ])
+
+      content.slice!(MAX_ENTRY_LENGTH..-1) if truncate
+
+      add_to_entries(ENTRY_FORMAT % [ timestamp, content ])
     end
 
     private

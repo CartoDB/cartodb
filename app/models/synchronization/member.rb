@@ -222,8 +222,8 @@ module CartoDB
 
       rescue => exception
         Rollbar.report_exception(exception)
-        log.append exception.message
-        log.append exception.backtrace.join('\n')
+        log.append exception.message, truncate = false
+        log.append exception.backtrace.join('\n'), truncate = false
 
         if importer.nil?
           if exception.kind_of?(NotFoundDownloadError)

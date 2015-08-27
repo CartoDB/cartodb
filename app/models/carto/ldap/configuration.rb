@@ -12,20 +12,23 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
   # Upgrade to encrypted once connected
   ENCRYPTION_START_TLS = 'start_tls'
 
+  ENCRYPTION_SSL_VERSION_DEFAULT = nil
+  ENCRYPTION_SSL_VERSION_TLSV1_1 = 'TLSv1_1'
+
   self.table_name = 'ldap_configurations'
 
   belongs_to :organization, class_name: Carto::Organization
 
   # @param Uuid id  (Self-generated)
   # @param Uuid organization_id
-  # @param String host LDAP host/ip
-  # @param Int port LDAP port
+  # @param String host LDAP host or ip address
+  # @param Int port LDAP port e.g. 389, 636 (LDAPS)
   # @param String encryption (Optional) Encryption type to use. Empty means standard/simple Auth
   # @param String ca_file Certificate file path for start_tls encryption. Example: "/etc/cafile.pem"
   # @param String ssl_version For start_tls_encryption. Example: "TLSv1_1"
   # @param String connection_user Full CN for "search connections" to LDAP: `CN=admin, DC=cartodb, DC=COM`
   # @param String connection_password Password for "search connections" to LDAP
-  # @param String user_id_field Which LDAP entry field represents the user id
+  # @param String user_id_field Which LDAP entry field represents the user id. e.g. `sAMAccountName`, `uid`
   # @param String username_field Which LDAP entry field represents the username (Optional)
   # @param String username_field Which LDAP entry field represents the email
   # @param String[] domain_bases List of DCs conforming the path
@@ -38,8 +41,8 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
               :user_object_class, :group_object_class, :presence => true
   validates :ca_file, :username_field, :length => { :minimum => 0, :allow_nil => true }
   validates :domain_bases, :length => { :minimum => 1, :allow_nil => false }
-  validates :encryption, :inclusion => { :in => %w( start_tls simple_tls ), :allow_nil => true }
-  validates :ssl_version, :inclusion => { :in => %w( TLSv1_1 ), :allow_nil => true }
+  validates :encryption, :inclusion => { :in => [ ENCRYPTION_SIMPLE_TLS, ENCRYPTION_START_TLS ], :allow_nil => true }
+  validates :ssl_version, :inclusion => { :in => [ ENCRYPTION_SSL_VERSION_TLSV1_1 ], :allow_nil => true }
 
   # Returns matching Carto::Ldap::Entry or false if credentials are wrong
   # @param String username. No full CN, just the username, e.g. 'administrator1'
@@ -70,16 +73,18 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
     Carto::Ldap::Entry.new(search_results.is_a?(Array) ? search_results.first : search_results, self)
   end
 
+  # INFO: Resets connection if already made
   def test_connection
+    @conn = nil
     connection.bind
   end
 
   def users(objectClass = self.user_object_class)
-    search_in_domain_bases("objectClass=#{objectClass}")
+    search_in_domain_bases(Net::LDAP::Filter.eq('objectClass', objectClass))
   end
 
   def groups(objectClass = self.group_object_class)
-    search_in_domain_bases("objectClass=#{objectClass}")
+    search_in_domain_bases(Net::LDAP::Filter.eq('objectClass', objectClass))
   end
 
   private
@@ -135,9 +140,10 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
 
     tls_options.merge!(:verify_mode => OpenSSL::SSL::VERIFY_NONE)
     
+    # Default value is "SSLv23" at the gem
     tls_options.merge!(:ssl_version => self.ssl_version) if self.ssl_version
 
-    ldap.encryption(method: self.encryption, tls_options: tls_options)
+    ldap.encryption(method: self.encryption.to_sym, tls_options: tls_options)
   end
 
 end

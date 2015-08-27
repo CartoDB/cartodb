@@ -34,6 +34,21 @@ $sEditButtonSize: 50px;
   border-radius: $sCard-borderRadius;
   margin: 0 auto;
 }
+.MapCard--squared {
+}
+.MapCard--squared .MapCard-header {
+  height: 220px;
+}
+.MapCard--squared .MapCard-header:after {
+  display: none;
+}
+.MapCard--squared .MapCard-content { 
+  height: 40px;
+}
+.MapCard--squared .MapCard-contentFooter {
+  padding-top: 0;
+  border-top: none;
+}
 .MapCard-title {
   width: 100%; // required for child text-overflow to work as expected in FF
 }

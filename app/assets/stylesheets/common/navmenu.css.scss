@@ -1,3 +1,4 @@
+
 @import "../variables/mixins";
 @import "../variables/colors";
 @import "../variables/sizes";
@@ -7,8 +8,39 @@
 
 .Navmenu {
   position: relative;
+  border-bottom: 1px solid $cStructure-mainLine;
   overflow: hidden;
 }
+.Navmenu.Navmenu--borderless {
+  border-bottom: none;
+}
+.Navmenu.Navmenu--borderless .Navmenu-item { 
+  position: relative;
+}
+.Navmenu.Navmenu--borderless .Navmenu-link {
+  display: inline-block;
+  line-height: 80px;
+}
+.Navmenu-link.is-selected {
+  color:$cTypography-linkSelected;
+  font-weight: bold;
+
+  &:before {
+    content:'';
+    position:absolute;
+    bottom:0;
+    left:0;
+    right:0;
+    width:100%;
+    height:1px;
+    background:$cTypography-link;
+  }
+  &:hover {
+    cursor:default;
+    text-decoration: none;
+  }
+}
+
 .Navmenu-list {
   display: inline-block;
   height: 81px;
@@ -21,10 +53,7 @@
 }
 .Navmenu-list.Navmenu-list--owner { float: left }
 .Navmenu-list.Navmenu-list--avatar { margin-right: $sMargin-element }
-.Navmenu-item { 
-  position: relative;
-  margin-right: $sMargin-section;
-}
+.Navmenu-item { margin-right: $sMargin-section }
 .Navmenu-subItem { margin-left: $sMargin-group }
 .Navmenu-item.Navmenu-item:last-child { margin-right: 0 }
 .Navmenu-item.Navmenu-item--buttons {
@@ -71,29 +100,8 @@
   background-color: $cNavmenu-sep;
 }
 .Navmenu-link {
-  display: inline-block;
   color: $cTypography-linkSecondary;
-  line-height: 80px;
   transition: all .3s;
-}
-.Navmenu-link.is-selected {
-  color:$cTypography-linkSelected;
-  font-weight: bold;
-
-  &:before {
-    content:'';
-    position:absolute;
-    bottom:0;
-    left:0;
-    right:0;
-    width:100%;
-    height:1px;
-    background:$cTypography-link;
-  }
-  &:hover {
-    cursor:default;
-    text-decoration: none;
-  }
 }
 .Navmenu-link:hover {
   color: $cTypography-linkSecondaryHover;
@@ -120,6 +128,10 @@
   top: -2px;
   font-size: 22px;
 }
+.Navmenu-hireLink:hover {
+  color: #fff;
+}
+
 .Navmenu-editLink {
   display: none;
   vertical-align: middle;

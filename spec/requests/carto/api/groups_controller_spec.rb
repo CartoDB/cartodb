@@ -1,8 +1,9 @@
 # encoding: utf-8
 
+require 'rspec/mocks'
 require_relative '../../../spec_helper'
 require_relative '../../../../app/controllers/carto/api/database_groups_controller'
-require 'rspec/mocks'
+require_relative '.././../../factories/visualization_creation_helpers'
 
 describe Carto::Api::GroupsController do
   include_context 'organization with users helper'
@@ -12,6 +13,8 @@ describe Carto::Api::GroupsController do
     before(:all) do
       @carto_organization = Carto::Organization.find(@organization.id)
       @carto_org_user_1 = Carto::User.find(@org_user_1.id)
+      @org_user_1_json = {"id"=>@org_user_1.id, "username"=>@org_user_1.username, "email"=>@org_user_1.email, "avatar_url"=>@org_user_1.avatar_url, "base_url"=>@org_user_1.public_url, "quota_in_bytes"=>@org_user_1.quota_in_bytes, "db_size_in_bytes"=>@org_user_1.db_size_in_bytes}
+
       @group_1 = FactoryGirl.create(:random_group, display_name: 'g_1', organization: @carto_organization)
       @group_1_json = { 'id' => @group_1.id, 'organization_id' => @group_1.organization_id, 'name' => @group_1.name, 'display_name' => @group_1.display_name }
       @group_2 = FactoryGirl.create(:random_group, display_name: 'g_2', organization: @carto_organization)
@@ -31,46 +34,111 @@ describe Carto::Api::GroupsController do
       @carto_organization.reload
     end
 
-    it '#index returns 401 without authentication' do
-      get_json api_v1_organization_groups_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id), {}, @headers do |response|
-        response.status.should == 401
-      end
-    end
+    describe '#index' do
 
-    it '#index returns groups with pagination metadata' do
-      get_json api_v1_organization_groups_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, api_key: @org_user_owner.api_key), {}, @headers do |response|
-        response.status.should == 200
-        expected_response = {
-          groups: [ @group_1_json, @group_2_json, @group_3_json ],
-          total_entries: 3,
-          total_org_entries: 3
-        }
-        response.body.should == expected_response
+      it 'returns 401 without authentication' do
+        get_json api_v1_organization_groups_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id), {}, @headers do |response|
+          response.status.should == 401
+        end
       end
-    end
 
-    it '#index returns paginated groups with pagination metadata' do
-      get_json api_v1_organization_groups_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, api_key: @org_user_owner.api_key), { page: 2, per_page: 1, order: 'display_name' }, @headers do |response|
-        response.status.should == 200
-        expected_response = {
-          groups: [ @group_2_json ],
-          total_entries: 3,
-          total_org_entries: 3
-        }
-        response.body.should == expected_response
+      it 'returns groups with pagination metadata' do
+        get_json api_v1_organization_groups_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, api_key: @org_user_owner.api_key), {}, @headers do |response|
+          response.status.should == 200
+          expected_response = {
+            groups: [ @group_1_json, @group_2_json, @group_3_json ],
+            total_entries: 3
+          }
+          response.body.should == expected_response
+        end
       end
-    end
 
-    it '#index can search by name' do
-      get_json api_v1_organization_groups_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, api_key: @org_user_owner.api_key, q: @group_2.name), { page: 1, per_page: 1, order: 'display_name' }, @headers do |response|
-        response.status.should == 200
-        expected_response = {
-          groups: [ @group_2_json ],
-          total_entries: 1,
-          total_org_entries: 3
-        }
-        response.body.should == expected_response
+      it 'returns paginated groups with pagination metadata' do
+        get_json api_v1_organization_groups_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, api_key: @org_user_owner.api_key), { page: 2, per_page: 1, order: 'display_name' }, @headers do |response|
+          response.status.should == 200
+          expected_response = {
+            groups: [ @group_2_json ],
+            total_entries: 3
+          }
+          response.body.should == expected_response
+        end
       end
+
+      it 'can search by name' do
+        get_json api_v1_organization_groups_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, api_key: @org_user_owner.api_key, q: @group_2.name), { page: 1, per_page: 1, order: 'display_name' }, @headers do |response|
+          response.status.should == 200
+          expected_response = {
+            groups: [ @group_2_json ],
+            total_entries: 1
+          }
+          response.body.should == expected_response
+        end
+      end
+
+      describe "users groups" do
+
+        before(:each) do
+          @group_1.add_member(@org_user_1.username)
+        end
+
+        after(:each) do
+          @group_1.remove_member(@org_user_1.username)
+        end
+
+        it 'returns user groups if user_id is requested' do
+          get_json api_v1_user_groups_url(user_domain: @org_user_1.username, user_id: @org_user_1.id, api_key: @org_user_1.api_key), {}, @headers do |response|
+            response.status.should == 200
+            expected_response = {
+              groups: [ @group_1_json ],
+              total_entries: 1
+            }
+            response.body.should == expected_response
+          end
+        end
+
+        it 'can fetch number of shared tables, maps and members' do
+
+          get_json api_v1_user_groups_url(user_domain: @org_user_1.username, user_id: @org_user_1.id, api_key: @org_user_1.api_key, fetch_shared_tables_count: true, fetch_shared_maps_count: true, fetch_members: true), {}, @headers do |response|
+            response.status.should == 200
+            expected_response = {
+              groups: [
+                @group_1_json.merge({
+                  'shared_tables_count' => 0,
+                  'shared_maps_count' => 0,
+                  'members' => [ @org_user_1_json ]
+                })
+              ],
+              total_entries: 1
+            }
+            response.body.should == expected_response
+          end
+        end
+
+        it 'can fetch number of shared tables, maps and members when a table is shared' do
+          bypass_named_maps
+          table_user_2 = create_table_with_options(@org_user_2)
+          permission = CartoDB::Permission[Carto::Visualization.find(table_user_2['table_visualization']['id']).permission.id]
+          permission.set_group_permission(@group_1, Carto::Permission::ACCESS_READONLY)
+          permission.save
+
+          get_json api_v1_user_groups_url(user_domain: @org_user_1.username, user_id: @org_user_1.id, api_key: @org_user_1.api_key, fetch_shared_tables_count: true, fetch_shared_maps_count: true, fetch_members: true), {}, @headers do |response|
+            response.status.should == 200
+            expected_response = {
+              groups: [
+                @group_1_json.merge({
+                  'shared_tables_count' => 1,
+                  'shared_maps_count' => 0,
+                  'members' => [ @org_user_1_json ]
+                })
+              ],
+              total_entries: 1
+            }
+            response.body.should == expected_response
+          end
+        end
+
+      end
+
     end
 
     it '#show returns a group' do

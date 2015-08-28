@@ -1,6 +1,6 @@
 # coding: utf-8
 class Admin::OrganizationsController < ApplicationController
-  ssl_required :show, :settings, :settings_update, :regenerate_all_api_keys
+  ssl_required :show, :settings, :groups, :settings_update, :regenerate_all_api_keys
   before_filter :login_required, :load_organization_and_members
 
   layout 'application'
@@ -14,6 +14,12 @@ class Admin::OrganizationsController < ApplicationController
   def settings
     respond_to do |format|
       format.html { render 'settings' }
+    end
+  end
+
+  def groups
+    respond_to do |format|
+      format.html { render 'groups' }
     end
   end
 
@@ -69,7 +75,7 @@ class Admin::OrganizationsController < ApplicationController
     raise RecordNotFound unless @organization.present? && current_user.organization_owner?
 
     # INFO: Special scenario of handcrafted URL to go to organization-based signup page
-    @organization_signup_url = 
+    @organization_signup_url =
       "#{CartoDB.protocol}://#{@organization.name}.#{CartoDB.account_host}#{CartoDB.path(self, 'signup_organization_user')}"
   end
 

@@ -206,12 +206,10 @@ cdb.geo.ui.Search = cdb.core.View.extend({
 
   _bindEvents: function() {
     this.mapView.bind('click', this._destroySearchPin, this);
-    // this.model.bind('change:center', this._destroySearchPin, this);
   },
 
   _unbindEvents: function() {
     this.mapView.unbind('click', this._destroySearchPin, this);
-    // this.model.unbind('change:center', this._destroySearchPin, this);
   },
 
   clean: function() {

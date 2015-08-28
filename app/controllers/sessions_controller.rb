@@ -25,7 +25,7 @@ class SessionsController < ApplicationController
   end
 
   def create
-    if Carto::Ldap::Manager.new.domains_present?
+    if Carto::Ldap::Manager.new.configuration_present?
       username = params[:user_domain].present? ?  params[:user_domain] : params[:email]
       # INFO: LDAP allows characters that we don't
       user = authenticate!(:ldap, scope: Carto::Ldap::Manager.sanitize_for_cartodb(username))

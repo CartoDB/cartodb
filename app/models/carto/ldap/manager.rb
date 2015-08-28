@@ -23,7 +23,7 @@ module Carto
         user
       end
 
-      def domains_present?
+      def configuration_present?
         Carto::Ldap::Configuration.first != nil
       end
 

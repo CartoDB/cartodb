@@ -9,6 +9,7 @@ class SignupController < ApplicationController
   ssl_required :signup, :create
 
   before_filter :load_organization
+  before_filter :disable_if_ldap_configured
   before_filter :initialize_google_plus_config
 
   def signup
@@ -78,6 +79,10 @@ class SignupController < ApplicationController
     check_signup_errors = Sequel::Model::Errors.new
     @organization.validate_for_signup(check_signup_errors, ::User.new_with_organization(@organization).quota_in_bytes)
     render 'organization_signup_issue' if check_signup_errors.length > 0
+  end
+
+  def disable_if_ldap_configured
+    render_404 and return false if Carto::Ldap::Manager.new.configuration_present?
   end
 
 end

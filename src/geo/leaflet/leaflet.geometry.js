@@ -27,13 +27,15 @@ function PointView(geometryModel) {
   this.model = geometryModel;
   this.points = [];
 
+  var icon = {
+    iconUrl: this.model.get('iconUrl') || cdb.config.get('assets_url') + '/images/layout/default_marker.png',
+    iconAnchor: this.model.get('iconAnchor') || [11, 11]
+  };
+
   this.geom = L.GeoJSON.geometryToLayer(geometryModel.get('geojson'), function(geojson, latLng) {
       //TODO: create marker depending on the visualizacion options
-      var p = L.marker(latLng,{
-        icon: L.icon({
-          iconUrl: cdb.config.get('assets_url') + '/images/layout/default_marker.png',
-          iconAnchor: [11, 11]
-        })
+      var p = L.marker(latLng, {
+        icon: L.icon(icon)
       });
 
       var i;
@@ -44,7 +46,7 @@ function PointView(geometryModel) {
       return p;
   });
 
-  this.bind('dragend', function(e, pos) { 
+  this.bind('dragend', function(e, pos) {
     geometryModel.set({
       geojson: {
         type: 'Point',
@@ -96,11 +98,11 @@ function PathView(geometryModel) {
   this.model = geometryModel;
   this.points = [];
 
-  
+
   this.geom = L.GeoJSON.geometryToLayer(geometryModel.get('geojson'));
   this.geom.setStyle(geometryModel.get('style'));
 
-  
+
   /*for(var i = 0; i < events.length; ++i) {
     var e = events[i];
     this.geom.on(e, self._eventHandler(e));

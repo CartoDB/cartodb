@@ -21,21 +21,20 @@ function PointView(geometryModel) {
   this.points = [];
 
   var style = _.clone(geometryModel.get('style')) || {};
-  //style.path = google.maps.SymbolPath.CIRCLE;
-  //style.scale = style.weight;
-  //style.strokeColor = "ff0000";
-  //style.strokeOpacity = 1;
-  //style.strokeWeight = 1;
-  //style.fillColor = '00000';
-  //style.fillOpacity = 0.5;
+  var iconAnchor = this.model.get('iconAnchor');
+
+  var icon = {
+    url: this.model.get('iconUrl') || cdb.config.get('assets_url') + '/images/layout/default_marker.png',
+    anchor: {
+      x: iconAnchor && iconAnchor[0] || 10,
+      y: iconAnchor && iconAnchor[1] || 10,
+    }
+  };
 
   this.geom = new GeoJSON (
     geometryModel.get('geojson'),
     {
-      icon: {
-          url: cdb.config.get('assets_url') + '/images/layout/default_marker.png',
-          anchor: {x: 10, y: 10}
-      },
+      icon: icon,
       raiseOnDrag: false,
       crossOnDrag: false
     }
@@ -98,7 +97,7 @@ function PathView(geometryModel) {
   this.model = geometryModel;
   this.points = [];
 
-  
+
 
   var style = _.clone(geometryModel.get('style')) || {};
 

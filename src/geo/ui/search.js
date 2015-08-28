@@ -25,14 +25,15 @@ cdb.geo.ui.Search = cdb.core.View.extend({
   options: {
     searchPin: true,
     infowindowTemplate: '<div class="cartodb-infowindow">'+
-    '<div class="cartodb-popup v2">'+
+    '<div class="cartodb-popup v2 centered">'+
       '<a href="#close" class="cartodb-popup-close-button close">x</a>'+
        '<div class="cartodb-popup-content-wrapper">'+
          '<p>{{ address }}</p>'+
        '</div>'+
        '<div class="cartodb-popup-tip-container"></div>'+
     '</div>',
-    infowindowOffset: [28, 100],
+    infowindowWidth: 186,
+    infowindowOffset: [93, 90],
     iconUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAfCAYAAADXwvzvAAACuklEQVR4Ae3PQ+AsNxzA8e8vo/Xus237vVN9qW3b7qW2bdu2caxt29bu/meSmaTpqW63Pfc7wemTZPh9K/Xv3zhzxIgVrho0aMsLGo2N9o+iuYDwV02E5NJpM7d5fMGC515dMP/7l6dNMc+OGJY9Uq99cVMc33I4LOJXCQBQuXPBglNnDRm0Xa1RAWewP3yL/vJLul99Q/pNm0/b+qsnbLHngXAVgAI4b9KkXWc1m9vV58ykst56lKdMptyokdTKRJUIV1MMTGTgbOTknWABgFo2SSbOjuN9wlgIBrSIJ0yiVG9QUgGxUigRRAlpCQYrBs+A/QClliuXV6ppPVibDPPqi5irL8G+/QY2S3FZhityrLNYBWkAI2G5WTA2nGTthKDTJfP/FH1sCb76nNBa7I8/knba6Eyj8wJjLbk4qlCdAFNClWXKiiL72kGRUkSRhwUuTUm7XTqZ3z3KnMM7QhAFUfiKMZ9OQci+ydFFH32BIsDh8hxjDF2T0y0KtHHUczCg34P3wgesfWhZozstW1R/cJpuohA8dI7cWrSfxqM4gwEOnoJnn4HXBVDHwHnriNr2W3G0I8FEkKufMbjcIw1DC+iCuRw2OBduEYAKDD8drlkGlk6BHwAtIEDioD/QBnsnnHAI7A9YAAAGenwEnPuAd8+DewHcS+CeB3szvL0b7ADE/FWzYf5BCxa9dMvqa7oLll7WbTlsxKkDYRi9dPqhRz743L0PuKtOPMXtutHmm/InKf5Y6Co15Upl8qSCqVajXiEeUTRb6GqNIojoGaLEDwEA6B0KIKL8lH8JBeS/3AgK73qAPfc/tCLiAACUCmyvsJHnphwEAYFStNs/NoHgn2ATWPmlF54b/9GHH/Khn88/+9SywJx/+q0SsKTZbB45d/6CO0aNHnutv3kbYDQg9JAAIRDwF/0EjlkjUi3fkAMAAAAASUVORK5CYII=',
     iconAnchor: [7, 31]
   },
@@ -161,6 +162,7 @@ cdb.geo.ui.Search = cdb.core.View.extend({
     var infowindowModel = new cdb.geo.ui.InfowindowModel({
       template: this.options.infowindowTemplate,
       latlng: position,
+      width: this.options.infowindowWidth,
       offset: this.options.infowindowOffset,
       content: {
         fields: [{

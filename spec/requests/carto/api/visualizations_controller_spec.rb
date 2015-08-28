@@ -1332,7 +1332,12 @@ describe Carto::Api::VisualizationsController do
         # Attribution of the layergroup layer is right
         layer_group_layer = visualization["layers"][1]
         layer_group_layer["type"].should == 'layergroup'
-        layer_group_layer["options"]["attribution"].should == 'attribution1, attribution2, attribution3'
+
+        layer_group_attributions = layer_group_layer["options"]["attribution"].split(',').map(&:strip)
+
+        layer_group_attributions.should include('attribution1')
+        layer_group_attributions.should include('attribution2')
+        layer_group_attributions.should include('attribution3')
       end
 
       it 'joins the attributions of the layers in a namedmap in the viz.json' do
@@ -1372,9 +1377,14 @@ describe Carto::Api::VisualizationsController do
         visualization = JSON.parse(last_response.body)
 
         # Attribution of the layergroup layer is right
-        layer_group_layer = visualization["layers"][1]
-        layer_group_layer["type"].should == 'namedmap'
-        layer_group_layer["options"]["attribution"].should == 'attribution1, attribution2, attribution3'
+        named_map_layer = visualization["layers"][1]
+        named_map_layer["type"].should == 'namedmap'
+
+        named_map_attributions = named_map_layer["options"]["attribution"].split(',').map(&:strip)
+
+        named_map_attributions.should include('attribution1')
+        named_map_attributions.should include('attribution2')
+        named_map_attributions.should include('attribution3')
       end
     end
 

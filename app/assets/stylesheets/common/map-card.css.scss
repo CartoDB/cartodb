@@ -34,16 +34,14 @@ $sEditButtonSize: 50px;
   border-radius: $sCard-borderRadius;
   margin: 0 auto;
 }
-.MapCard.MapCard--squared {
-}
 .MapCard.MapCard--squared .MapCard-header {
   height: 220px;
 }
 .MapCard.MapCard--squared .MapCard-header:after {
   display: none;
 }
-.MapCard.MapCard--squared .MapCard-content { 
-  height: 40px;
+.MapCard.MapCard--squared .MapCard-content {
+  height: 38px;
 }
 .MapCard.MapCard--squared .MapCard-contentFooter {
   padding-top: 0;
@@ -109,6 +107,10 @@ $sEditButtonSize: 50px;
   @include transition(opacity, $opacityTransition);
   overflow:hidden;
   z-index: 1;
+}
+.MapCard.MapCard--squared .MapCard-header {
+  height: 220px;
+  @include background(image-url("layout/default-map-squared-bkg.png") no-repeat center 0);
 }
 .MapCard-header.is-loading .MapCard-loader {
   display: block;
@@ -281,6 +283,19 @@ $sEditButtonSize: 50px;
   width: 100%;
   padding-top: $sMargin-elementInline;
   border-top: 1px solid $cStructure-softLine;
+}
+.MapCard-contentFooter.MapCard-contentFooter--with-icon {
+  display: block;
+}
+.MapCard-contentFooter.MapCard-contentFooter--with-icon .MapCard-contentFooterIcon {
+  display: inline-block;
+  vertical-align: top;
+}
+.MapCard-contentFooter.MapCard-contentFooter--with-icon .MapCard-contentFooterDetails--right {
+  display: inline-block;
+}
+.MapCard-contentFooterDetails--left {
+  display: inline-block;
 }
 .MapCard-contentFooterDetails--left {
   @include display-flex();

@@ -14,6 +14,20 @@ module CartoDB
         @datasets = datasets
       end
 
+      def self.build_url(controller)
+        common_data_base_url = Cartodb.config[:common_data]['base_url']
+        common_data_username = Cartodb.config[:common_data]['username']
+        common_data_user = Carto::User.where(username: common_data_username).first
+        if !common_data_base_url.nil?
+          # We set user_domain to nil to avoid the user of the user_domain of the current_user (/u/xxxx)
+          common_data_base_url + CartoDB.path(controller, 'api_v1_visualizations_index', {type: 'table', privacy: 'public', user_domain: nil})
+        elsif !common_data_user.nil?
+          CartoDB.url(controller, 'api_v1_visualizations_index', {type: 'table', privacy: 'public'}, common_data_user)
+        else
+          CartoDB.notify_error('cant create common-data url. User doesnt exists and base_url is nil', { user: common_data_username})
+        end
+      end
+
       def load_common_data_for_user(user, visualizations_api_url)
         user.last_common_data_update_date = Time.now
         user.save

@@ -1422,13 +1422,13 @@ describe Table do
       cartodb_id_schema = table_schema.detect {|s| s[0].to_s == "cartodb_id"}
       cartodb_id_schema.should be_present
       cartodb_id_schema = cartodb_id_schema[1]
-      cartodb_id_schema[:db_type].should == "integer"
+      cartodb_id_schema[:db_type].should == "bigint"
       cartodb_id_schema[:default].should == "nextval('#{table.name}_cartodb_id_seq'::regclass)"
       cartodb_id_schema[:primary_key].should == true
       cartodb_id_schema[:allow_null].should == false
     end
 
-    it "should add a '_cartodb_id' column when importing a file with invalid data on the cartodb_id column" do
+    it "should add a 'cartodb_id_' column when importing a file with invalid data on the cartodb_id column" do
       data_import = DataImport.create( :user_id       => $user_1.id,
                                        :data_source   =>  '/../db/fake_data/duplicated_cartodb_id.zip')
       data_import.run_import!
@@ -1440,11 +1440,11 @@ describe Table do
       cartodb_id_schema = table_schema.detect {|s| s[0].to_s == 'cartodb_id'}
       cartodb_id_schema.should be_present
       cartodb_id_schema = cartodb_id_schema[1]
-      cartodb_id_schema[:db_type].should == 'integer'
+      cartodb_id_schema[:db_type].should == 'bigint'
       cartodb_id_schema[:default].should == "nextval('#{table.name}_cartodb_id_seq'::regclass)"
       cartodb_id_schema[:primary_key].should == true
       cartodb_id_schema[:allow_null].should == false
-      invalid_cartodb_id_schema = table_schema.detect {|s| s[0].to_s == '_cartodb_id0'}
+      invalid_cartodb_id_schema = table_schema.detect {|s| s[0].to_s == 'cartodb_id_1'}
       invalid_cartodb_id_schema.should be_present
     end
 
@@ -1514,7 +1514,7 @@ describe Table do
       table.sequel.insert(:test_id => '12', :f1 => "")
 
       # update datatype
-      table.modify_column! :name=>"f1", :type=>"boolean", :name=>"f1", :new_name=>nil
+      table.modify_column! :type=>"boolean", :name=>"f1", :new_name=>nil
 
       # test
       table.sequel.where(:cartodb_id => '1').first[:f1].should == true
@@ -1947,7 +1947,7 @@ describe Table do
       ')
       table.save
       check_schema(table, [
-          [:cartodb_id, 'integer'],
+          [:cartodb_id, 'bigint'],
           [:the_geom, 'geometry', 'geometry', 'point']
       ])
 
@@ -1959,9 +1959,8 @@ describe Table do
       ')
       table.save
       check_schema(table, [
-          [:cartodb_id, 'integer'],
+          [:cartodb_id, 'bigint'],
           [:the_geom, 'geometry', 'geometry', 'geometry'],
-          [:invalid_the_geom, 'geometry', 'geometry', 'geometry']
       ])
 
       # same as above (single multipoint), but with a SRID=4326 (latlong)
@@ -1972,7 +1971,7 @@ describe Table do
       ')
       table.save
       check_schema(table, [
-          [:cartodb_id, 'integer'],
+          [:cartodb_id, 'bigint'],
           [:the_geom, 'geometry', 'geometry', 'point']
       ])
 
@@ -1984,7 +1983,7 @@ describe Table do
       ')
       table.save
       check_schema(table, [
-          [:cartodb_id, 'integer'],
+          [:cartodb_id, 'bigint'],
           [:the_geom, 'geometry', 'geometry', 'multipolygon']
       ])
 
@@ -1996,7 +1995,7 @@ describe Table do
       ')
       table.save
       check_schema(table, [
-          [:cartodb_id, 'integer'],
+          [:cartodb_id, 'bigint'],
           [:the_geom, 'geometry', 'geometry', 'multilinestring']
       ])
 
@@ -2008,7 +2007,7 @@ describe Table do
       })
       table.save
       check_schema(table, [
-          [:cartodb_id, 'integer'],
+          [:cartodb_id, 'bigint'],
           [:the_geom, 'geometry', 'geometry', 'geometry'],
           [:invalid_the_geom, 'unknown']
       ])

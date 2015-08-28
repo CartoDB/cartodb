@@ -14,8 +14,12 @@ require_relative './overlay/member'
 require_relative './overlay/collection'
 require_relative './overlay/presenter'
 require_relative '../../services/importer/lib/importer/query_batcher'
+require_relative '../../services/importer/lib/importer/cartodbfy_time'
 require_relative '../../services/datasources/lib/datasources/decorators/factory'
 require_relative '../../services/table-geocoder/lib/internal-geocoder/latitude_longitude'
+
+require_relative '../../lib/cartodb/stats/user_tables'
+require_relative '../../lib/cartodb/stats/importer'
 
 class Table
   extend Forwardable
@@ -58,7 +62,6 @@ class Table
   DEFAULT_THE_GEOM_TYPE = 'geometry'
 
   VALID_GEOMETRY_TYPES = %W{ geometry multipolygon point multilinestring }
-
 
   def_delegators :relator, *CartoDB::TableRelator::INTERFACE
   def_delegators :@user_table, *::UserTable::INTERFACE
@@ -1169,13 +1172,21 @@ class Table
   end
 
   def cartodbfy
+    start = Time.now
     schema_name = owner.database_schema
     table_name = "#{owner.database_schema}.#{self.name}"
 
-    owner.in_database do |user_database|
-      user_database.run(%Q{
-        SELECT cartodb.CDB_CartodbfyTable('#{schema_name}'::TEXT,'#{table_name}'::REGCLASS);
-      })
+    importer_stats.timing('cartodbfy') do
+      owner.in_database do |user_database|
+        user_database.run(%Q{
+          SELECT cartodb.CDB_CartodbfyTable('#{schema_name}'::TEXT,'#{table_name}'::REGCLASS);
+        })
+      end
+    end
+
+    elapsed = Time.now - start
+    if @data_import
+      CartoDB::Importer2::CartodbfyTime::instance(@data_import.id).add(elapsed)
     end
 
     self.schema(reload:true)
@@ -1183,6 +1194,10 @@ class Table
 
   def update_table_pg_stats
     owner.in_database[%Q{ANALYZE #{qualified_table_name};}]
+  end
+
+  def update_table_geom_pg_stats
+    owner.in_database[%Q{ANALYZE #{qualified_table_name}(the_geom);}]
   end
 
   def owner
@@ -1337,6 +1352,10 @@ class Table
   end
 
   private
+
+  def importer_stats
+    @importer_stats ||= CartoDB::Stats::Importer.instance
+  end
 
   def beautify_name(name)
     return name unless name
@@ -1631,17 +1650,17 @@ class Table
   end
 
   def add_table_to_stats
-    CartodbStats.update_tables_counter(1)
-    CartodbStats.update_tables_counter_per_user(1, self.owner.username)
-    CartodbStats.update_tables_counter_per_host(1)
-    CartodbStats.update_tables_counter_per_plan(1, self.owner.account_type)
+    CartoDB::Stats::UserTables.instance.update_tables_counter(1)
+    CartoDB::Stats::UserTables.instance.update_tables_counter_per_user(1, self.owner.username)
+    CartoDB::Stats::UserTables.instance.update_tables_counter_per_host(1)
+    CartoDB::Stats::UserTables.instance.update_tables_counter_per_plan(1, self.owner.account_type)
   end
 
   def remove_table_from_stats
-    CartodbStats.update_tables_counter(-1)
-    CartodbStats.update_tables_counter_per_user(-1, self.owner.username)
-    CartodbStats.update_tables_counter_per_host(-1)
-    CartodbStats.update_tables_counter_per_plan(-1, self.owner.account_type)
+    CartoDB::Stats::UserTables.instance.update_tables_counter(-1)
+    CartoDB::Stats::UserTables.instance.update_tables_counter_per_user(-1, self.owner.username)
+    CartoDB::Stats::UserTables.instance.update_tables_counter_per_host(-1)
+    CartoDB::Stats::UserTables.instance.update_tables_counter_per_plan(-1, self.owner.account_type)
   end
 
   ############################### Sharing tables ##############################

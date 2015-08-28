@@ -1193,4 +1193,44 @@ describe Visualization::Member do
       }.to raise_error CartoDB::InvalidMember
     end
   end
+  describe 'remote member' do
+
+    before(:all) do
+      @user = create_user
+      @name = "example_name"
+      @display_name = "Example display name"
+      @user_id = @user.id
+      @privacy = "public"
+      @description = "Example description"
+      @tags = ["tag1", "tag2"]
+      @license = "apache"
+      @source = "[source](http://www.example.com)"
+      @attributions = "Attributions example"
+    end
+
+    it 'should create a new remote member' do
+      remote_member = CartoDB::Visualization::Member.remote_member(
+        @name, @user_id, @privacy, @description, @tags, @license, @source, @attributions, @display_name
+      )
+      remote_member.name.should eq @name
+      remote_member.user_id.should eq @user_id
+      remote_member.privacy.should eq @privacy
+      remote_member.description.should eq @description
+      remote_member.tags.should eq @tags
+      remote_member.license.should eq @license
+      remote_member.source.should eq @source
+      remote_member.attributions.should eq @attributions
+      remote_member.display_name.should eq @display_name
+    end
+
+    it 'should update a remote member' do
+      remote_member = CartoDB::Visualization::Member.remote_member(
+        @name, @user_id, @privacy, @description, @tags, @license, @source, @attributions, @display_name
+      )
+      remote_member.update_remote_data(@privacy, "Another description", @tags, @license, @source, @attributions, @display_name)
+      remote_member.store
+      remote_member.description.should eq "Another description"
+    end
+
+  end
 end

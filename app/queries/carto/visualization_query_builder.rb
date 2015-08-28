@@ -3,6 +3,7 @@
 require 'active_record'
 
 require_relative '../../models/carto/shared_entity'
+require_relative '../../helpers/bounding_box_helper'
 require_dependency 'carto/uuidhelper'
 
 # TODO: consider moving some of this to model scopes if convenient
@@ -159,6 +160,11 @@ class Carto::VisualizationQueryBuilder
     self
   end
 
+  def with_bounding_box(bounding_box)
+    @bounding_box = bounding_box
+    self
+  end
+
   def build
     query = Carto::Visualization.scoped
 
@@ -238,7 +244,15 @@ class Carto::VisualizationQueryBuilder
     end
 
     if @tags
-      query = query.where("ARRAY[?]::text[] && visualizations.tags", @tags)
+      @tags.each do |t|
+        t.downcase!
+      end
+      query = query.where("array_to_string(visualizations.tags, ', ') ILIKE '%' || array_to_string(ARRAY[?]::text[], ', ') || '%'", @tags)
+    end
+
+    if @bounding_box
+      bbox_sql = BoundingBoxHelper.to_polygon(@bounding_box[:minx], @bounding_box[:miny], @bounding_box[:maxx], @bounding_box[:maxy])
+      query = query.where("visualizations.bbox is not null AND visualizations.bbox && #{bbox_sql}")
     end
 
     @include_associations.each { |association|

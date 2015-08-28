@@ -95,7 +95,7 @@ $corner_radius: 6px;
     margin-bottom:20px;
     padding-bottom:0;
 
-    .layer-info a.info {
+    .layer-info .info {
       .order {background:#666666;}
       .name_info {color:#999;}
       .name { color:#666; }
@@ -111,7 +111,7 @@ $corner_radius: 6px;
   // Active layer in visualization
   .layer_panel.active.vis {
     .layer-info {
-      a.info .name:hover { color:#454545 }
+      .info .name:hover { color:#454545 }
     }
   }
 
@@ -130,7 +130,7 @@ $corner_radius: 6px;
 
   // Only hover state for visualizations, not for table view,
   // due to it is not possible drag layers in table view.
-  &.ui-sortable .layer_panel.active .layer-info a.info:hover {
+  &.ui-sortable .layer_panel.active .layer-info .info:hover {
     cursor:move;
     .order {
       @include table-sprite(layer_move_icon);

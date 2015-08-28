@@ -31,7 +31,6 @@
       pkg: grunt.file.readJSON('package.json'),
       aws: aws,
       env: env,
-      gitrev: exec('git rev-parse HEAD', { silent:true }).output.replace('\n', ''),
 
       assets_dir: ASSETS_DIR,
       root_assets_dir: ROOT_ASSETS_DIR,
@@ -114,7 +113,7 @@
     grunt.registerTask('config', "generates assets config for current configuration", function() {
       // Set assets url for static assets in our app
       var config = grunt.template.process("cdb.config.set('assets_url', '<%= env.http_path_prefix %>/assets/<%= pkg.version %>');");
-      config += grunt.template.process("\nconsole.log('cartodbui v<%= pkg.version %> sha1: <%= gitrev %>');");
+      config += grunt.template.process("\nconsole.log('cartodbui v<%= pkg.version %>');");
       grunt.file.write("lib/build/app_config.js", config);
     });
 

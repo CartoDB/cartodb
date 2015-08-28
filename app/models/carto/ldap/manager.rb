@@ -28,7 +28,7 @@ module Carto
       end
 
       def self.sanitize_for_cartodb(ldap_value)
-        ldap_value.downcase.gsub(/[^a-z0-9\-]/,'')
+        ldap_value.to_s.downcase.gsub(/[^a-z0-9\-]/,'')
       end
 
     end

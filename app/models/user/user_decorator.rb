@@ -60,7 +60,8 @@ module CartoDB
           import_quota: self.import_quota,
           remove_logo: self.remove_logo?,
           sync_tables: self.sync_tables_enabled,
-          arcgis_datasource: self.arcgis_datasource_enabled?
+          arcgis_datasource: self.arcgis_datasource_enabled?,
+          google_maps_geocoder: self.google_maps_geocoder_enabled?,
         },
         limits: {
           concurrent_syncs: CartoDB::PlatformLimits::Importer::UserConcurrentSyncsAmount::MAX_SYNCS_PER_USER,

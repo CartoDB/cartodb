@@ -45,6 +45,7 @@ class HomeController < ApplicationController
     return head(400) if Cartodb.config[:cartodb_com_hosted] == false
 
     @diagnosis = [
+      diagnosis_output('Configuration') { configuration_diagnosis() },
       diagnosis_output('Operating System') { single_line_command_version_diagnosis('lsb_release -a', OS_VERSION, 1) },
       diagnosis_output('Ruby') { single_line_command_version_diagnosis('ruby --version', RUBY_BIN_VERSION) },
       diagnosis_output('Node') { single_line_command_version_diagnosis('node --version', NODE_VERSION) },
@@ -63,6 +64,17 @@ class HomeController < ApplicationController
   end
 
   private
+
+  def configuration_diagnosis
+    ['', [
+      "Environment: #{environment}",
+      "Subdomainless URLs: #{Cartodb.config[:subdomainless_urls]}"
+    ]]
+  end
+
+  def environment
+    Rails.env
+  end
 
   def pg_diagnosis
     version_diagnosis(PG_VERSION) {
@@ -88,13 +100,22 @@ class HomeController < ApplicationController
 
   def windshaft_diagnosis(supported_version, latest_version)
     tiler_url = configuration_url(Cartodb.config[:tiler]['internal'])
-    response = http_client.get("#{tiler_url}/version")
-    info = JSON.parse(response.body)
+
+    info = JSON.parse(http_client.get("#{tiler_url}/version").body)
+
     version = info['windshaft_cartodb']
     messages = info.to_a.map {|s, v| "<span class='lib'>#{s}</strong>: <span class='version'>#{v}</span>"}.append("internal url: #{tiler_url}")
     valid = valid?(supported_version, latest_version, version)
-    messages << "Currently we only support #{supported_version}." unless valid
-    [STATUS[response.response_code == 200 && valid], messages]
+
+    health = JSON.parse(http_client.get("#{tiler_url}/health").body)
+    unless health['enabled'] == true
+      health['instructions'] = "Enable health checking at config/environments/#{environment}.js"
+    end
+    health_ok = health['ok'] == true
+    messages.concat(health.reject { |k, v| k == 'result' }.to_a.map {|s, v| "<span class='lib'>Health #{s}</strong>: <span class='version'>#{v}</span>"})
+
+    messages << "Currently we support #{supported_version}. Latest: #{latest_version}" unless valid
+    [STATUS[response.response_code == 200 && valid && health_ok], messages]
   end
 
   # true: latest
@@ -115,7 +136,7 @@ class HomeController < ApplicationController
     version = info['cartodb_sql_api']
     messages = info.to_a.map {|s, v| "<span class='lib'>#{s}</strong>: <span class='version'>#{v}</span>"}.append("private url: #{sql_api_url}")
     valid = valid?(supported_version, latest_version, version)
-    messages << "Currently we only support #{supported_version}." unless valid
+    messages << "Currently we support #{supported_version}. Latest: #{latest_version}" unless valid
     [STATUS[response.response_code == 200 && valid], messages]
   end
 
@@ -173,10 +194,10 @@ class HomeController < ApplicationController
   def status_and_messages(version, messages, supported_version, latest_version)
     valid = version =~ /\A#{supported_version}/ ? true : false
     messages = ["Installed version: #{version}"]
-    messages << "Currently we only support #{supported_version}." unless valid
+    messages << "Current supported version: #{supported_version}.#{ latest_version.nil? ? '' : "Latest version: #{latest_version}" }" unless valid
     if latest_version && valid
       latest = version =~ /\A#{latest_version}/ ? true : false
-      messages << "Latest version is #{latest_version}" unless latest
+      messages << "Latest version: #{latest_version}" unless latest
       [STATUS[latest || 'supported'], messages]
     else
       [STATUS[valid], messages]

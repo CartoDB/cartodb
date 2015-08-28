@@ -11,6 +11,7 @@ namespace :cartodb do
         visualization_description text,
         visualization_type text,
         visualization_synced boolean,
+        visualization_table_names text[],
         visualization_tags text[],
         visualization_created_at timestamp with time zone,
         visualization_updated_at timestamp with time zone,
@@ -202,6 +203,7 @@ namespace :cartodb do
             visualization_type: v.type,
             # Synchronization method from Visualization::Relator uses empty Hash when there is no sync
             visualization_synced: !v.synchronization.is_a?(Hash),
+            visualization_table_names: get_visualization_tables(v),
             visualization_tags: v.tags.nil? || v.tags.empty? ? nil : Sequel.pg_array(v.tags),
             visualization_created_at: v.created_at,
             visualization_updated_at: v.updated_at,
@@ -219,13 +221,21 @@ namespace :cartodb do
       }
     end
 
+    def get_visualization_tables(visualization)
+      table_names = visualization.related_tables.map{ |table| table.name }
+      %Q{{#{table_names.join(",")}}}
+    end
+
     def update_mapviews_and_likes_query(visualization)
       v = visualization
+      # Only derived visualizations could add or remove tables (layers)
+      update_tables = %Q{, visualization_table_names = '#{get_visualization_tables(v)}'} if v.type == CartoDB::Visualization::Member::TYPE_DERIVED
       # Synchronization method from Visualization::Relator uses empty Hash when there is no sync
       %Q{ UPDATE #{VISUALIZATIONS_TABLE} set
             visualization_mapviews = #{v.mapviews},
             visualization_likes = #{v.likes_count},
             visualization_synced = #{!v.synchronization.is_a?(Hash)}
+            #{update_tables}
           where visualization_id = '#{v.id}' }
     end
 

@@ -614,6 +614,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     var search = new cdb.geo.ui.Search({
       template: template,
+      mapView: this.mapView,
       model: this.mapView.map
     });
 
@@ -737,11 +738,11 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
       show_legends = this.visibility_options.legends;
     }
 
-    var layer = new cdb.geo.ui.MobileLayer({ 
+    var layer = new cdb.geo.ui.MobileLayer({
       model: data,
       show_legends: show_legends,
       show_title: !this.hasLayerSelector ? false : true,
-      hide_toggle: hide_toggle 
+      hide_toggle: hide_toggle
     });
 
     this.$el.find(".aside .layers").append(layer.render().$el);

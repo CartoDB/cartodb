@@ -35,6 +35,7 @@ class Carto::UserCreation < ActiveRecord::Base
     after_transition any => :creating_user, :do => :initialize_user
     after_transition any => :validating_user, :do => :validate_user
     after_transition any => :saving_user, :do => :save_user
+    after_transition any => :load_common_data, :do => :load_common_data
     after_transition any => :creating_user_in_central, :do => :create_in_central
 
     before_transition any => :success, :do => :close_creation
@@ -45,9 +46,9 @@ class Carto::UserCreation < ActiveRecord::Base
           :creating_user => :validating_user,
           :validating_user => :saving_user
 
-      transition :saving_user => :creating_user_in_central, :creating_user_in_central => :success, :if => :sync_data_with_cartodb_central?
+      transition :saving_user => :load_common_data, :load_common_data => :creating_user_in_central, :creating_user_in_central => :success, :if => :sync_data_with_cartodb_central?
 
-      transition :saving_user => :success, :unless => :sync_data_with_cartodb_central?
+      transition :saving_user => :load_common_data, :load_common_data => :success, :unless => :sync_data_with_cartodb_central?
     end
 
     event :fail_user_creation do
@@ -66,6 +67,10 @@ class Carto::UserCreation < ActiveRecord::Base
       end
     end
     
+  end
+
+  def set_common_data_url(common_data_url)
+    @common_data_url = common_data_url
   end
 
   private
@@ -127,16 +132,22 @@ class Carto::UserCreation < ActiveRecord::Base
     handle_failure(e, mark_as_failure = true)
   end
 
+  def load_common_data
+    ::Resque.enqueue(::Resque::UserJobs::CommonData::LoadCommonData, @user.id, @common_data_url) unless @common_data_url.nil?
+  rescue Exception => e
+    handle_failure(e, mark_as_failure = false)
+  end
+
   def create_in_central
     user.create_in_central
-  rescue => e
+  rescue Exception => e
     handle_failure(e, mark_as_failure = true)
   end
 
   def close_creation
     clean_password
     user.notify_new_organization_user
-  rescue => e
+  rescue Exception => e
     handle_failure(e, mark_as_failure = false)
   end
 

@@ -161,6 +161,33 @@ describe Carto::UserCreation do
       user_creation.next_creation_step until user_creation.finished?
     end
 
+    it 'triggers a ::Resque::UserJobs::CommonData::LoadCommonData' do
+      User.any_instance.stubs(:create_in_central).returns(true)
+      User.any_instance.stubs(:enable_remote_db_user).returns(true)
+      ::Resque.expects(:enqueue).with(::Resque::UserJobs::CommonData::LoadCommonData, instance_of(String), 'http://www.example.com').once
+
+      user_data = FactoryGirl.build(:valid_user)
+      user_data.organization = @organization
+      user_data.google_sign_in = false
+
+      user_creation = Carto::UserCreation.new_user_signup(user_data)
+      user_creation.set_common_data_url("http://www.example.com")
+      user_creation.next_creation_step until user_creation.finished?
+    end
+
+    it 'dont trigger a ::Resque::UserJobs::CommonData::LoadCommonData when no url is passed' do
+      User.any_instance.stubs(:create_in_central).returns(true)
+      User.any_instance.stubs(:enable_remote_db_user).returns(true)
+      ::Resque.expects(:enqueue).with(Resque::UserJobs::CommonData::LoadCommonData, instance_of(String), instance_of(String)).never
+
+      user_data = FactoryGirl.build(:valid_user)
+      user_data.organization = @organization
+      user_data.google_sign_in = false
+
+      user_creation = Carto::UserCreation.new_user_signup(user_data)
+      user_creation.next_creation_step until user_creation.finished?
+    end
+
   end
 
 end

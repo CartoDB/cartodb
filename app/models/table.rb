@@ -14,10 +14,12 @@ require_relative './overlay/member'
 require_relative './overlay/collection'
 require_relative './overlay/presenter'
 require_relative '../../services/importer/lib/importer/query_batcher'
+require_relative '../../services/importer/lib/importer/cartodbfy_time'
 require_relative '../../services/datasources/lib/datasources/decorators/factory'
 require_relative '../../services/table-geocoder/lib/internal-geocoder/latitude_longitude'
 
 require_relative '../../lib/cartodb/stats/user_tables'
+require_relative '../../lib/cartodb/stats/importer'
 
 class Table
   extend Forwardable
@@ -60,7 +62,6 @@ class Table
   DEFAULT_THE_GEOM_TYPE = 'geometry'
 
   VALID_GEOMETRY_TYPES = %W{ geometry multipolygon point multilinestring }
-
 
   def_delegators :relator, *CartoDB::TableRelator::INTERFACE
   def_delegators :@user_table, *::UserTable::INTERFACE
@@ -1171,6 +1172,7 @@ class Table
   end
 
   def cartodbfy
+    start = Time.now
     schema_name = owner.database_schema
     table_name = "#{owner.database_schema}.#{self.name}"
 
@@ -1182,11 +1184,20 @@ class Table
       end
     end
 
+    elapsed = Time.now - start
+    if @data_import
+      CartoDB::Importer2::CartodbfyTime::instance(@data_import.id).add(elapsed)
+    end
+
     self.schema(reload:true)
   end
 
   def update_table_pg_stats
     owner.in_database[%Q{ANALYZE #{qualified_table_name};}]
+  end
+
+  def update_table_geom_pg_stats
+    owner.in_database[%Q{ANALYZE #{qualified_table_name}(the_geom);}]
   end
 
   def owner

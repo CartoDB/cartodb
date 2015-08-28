@@ -9,6 +9,8 @@
 * Updated (most of) frontend dependencies [#5171](https://github.com/CartoDB/cartodb/pull/5171)
 * Metadata is editable when datasets have a SQL Query is applied [#5195](https://github.com/CartoDB/cartodb/pull/5195)
 * LDAP configuration & authentication. If active deactivates standard CartoDB & Google authentications. [documentation](TBD)
+* Upgrade cartodb-postgresql extension to 0.9.4, which includes the new cartodbfy process. As part of this change new user tables won't have the columns `created_at` nor `updated_at`. See the [release notes](https://github.com/CartoDB/cartodb-postgresql/blob/0.9.4/NEWS.md) for more details.
+
 
 3.10.3 (2015-08-13)
 ---
@@ -55,6 +57,8 @@ cd lib/sql; sudo make all install
 * Added new fields source, attributions, and license, to metadata modal [#5016](https://github.com/CartoDB/cartodb/pull/5016)
 * Code related to pecan extracted to separate module [#4999](https://github.com/CartoDB/cartodb/pull/4999)
   * requires a `npm install` for grunt tasks
+* New modals [#5068](https://github.com/CartoDB/cartodb/pull/5068)
+* Now canonical tables store the bounding box at import time. It's also recalculated when `the_geom` change. This need to install the postgis extension in the metadata database
 
 Bugfixes:
 * Fixed deletion of layers upon disconnecting synced datasources [#3718](https://github.com/CartoDB/cartodb/pull/3718)

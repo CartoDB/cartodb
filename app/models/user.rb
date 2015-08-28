@@ -193,7 +193,7 @@ class User < Sequel::Model
   end
 
   def load_common_data(visualizations_api_url)
-    CartoDB::Visualization::CommonDataService.new.load_common_data_for_user(self, visualization_api_url)
+    CartoDB::Visualization::CommonDataService.new.load_common_data_for_user(self, visualizations_api_url)
   end
 
   def delete_common_data
@@ -2105,7 +2105,7 @@ TRIGGER
   # Upgrade the cartodb postgresql extension
   def upgrade_cartodb_postgres_extension(statement_timeout=nil, cdb_extension_target_version=nil)
     if cdb_extension_target_version.nil?
-      cdb_extension_target_version = '0.8.2'
+      cdb_extension_target_version = '0.9.4'
     end
 
     in_database({

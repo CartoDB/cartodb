@@ -271,6 +271,8 @@ class Admin::PagesController < ApplicationController
 
   def set_layout_vars_for_user(user, content_type)
     set_layout_vars({
+        gmaps_enabled: user.has_feature_flag?('google_maps'),
+        gmaps_key: user.google_maps_query_string,
         most_viewed_vis_map: Visualization::Collection.new.fetch({
             user_id:        user.id,
             type:           Visualization::Member::TYPE_DERIVED,
@@ -298,6 +300,8 @@ class Admin::PagesController < ApplicationController
 
   def set_layout_vars_for_organization(org, content_type)
     set_layout_vars({
+        gmaps_enabled: org.has_feature_flag?('google_maps'),
+        gmaps_key: org.google_maps_query_string,
         most_viewed_vis_map: org.public_vis_by_type(Visualization::Member::TYPE_DERIVED, 1, 1, nil, 'mapviews').first,
         content_type:        content_type,
         default_fallback_basemap: org.owner.default_basemap,
@@ -311,6 +315,8 @@ class Admin::PagesController < ApplicationController
 
   def set_layout_vars(required)
     @most_viewed_vis_map = required.fetch(:most_viewed_vis_map)
+    @gmaps_enabled       = required.fetch(:gmaps_enabled)
+    @gmaps_key           = required.fetch(:gmaps_key)
     @content_type        = required.fetch(:content_type)
     @maps_url            = CartoDB.url(view_context, 'public_visualizations_home', {}, required.fetch(:user, nil))
     @datasets_url        = CartoDB.url(view_context, 'public_datasets_home', {}, required.fetch(:user, nil))

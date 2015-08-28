@@ -136,8 +136,16 @@ class HomeController < ApplicationController
     version = info['cartodb_sql_api']
     messages = info.to_a.map {|s, v| "<span class='lib'>#{s}</strong>: <span class='version'>#{v}</span>"}.append("private url: #{sql_api_url}")
     valid = valid?(supported_version, latest_version, version)
+
+    health = JSON.parse(http_client.get("#{sql_api_url}/api/v1/health").body)
+    unless health['enabled'] == true
+      health['instructions'] = "Enable health checking at config/environments/#{environment}.js"
+    end
+    health_ok = health['ok'] == true
+    messages.concat(health.reject { |k, v| k == 'result' }.to_a.map {|s, v| "<span class='lib'>Health #{s}</strong>: <span class='version'>#{v}</span>"})
+
     messages << "Currently we support #{supported_version}. Latest: #{latest_version}" unless valid
-    [STATUS[response.response_code == 200 && valid], messages]
+    [STATUS[response.response_code == 200 && valid && health_ok], messages]
   end
 
   def resque_diagnosis(help)

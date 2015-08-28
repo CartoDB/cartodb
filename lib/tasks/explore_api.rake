@@ -10,6 +10,7 @@ namespace :cartodb do
         visualization_name text,
         visualization_description text,
         visualization_type text,
+        visualization_synced boolean,
         visualization_tags text[],
         visualization_created_at timestamp with time zone,
         visualization_updated_at timestamp with time zone,
@@ -199,6 +200,8 @@ namespace :cartodb do
             visualization_name: v.name,
             visualization_description: v.description,
             visualization_type: v.type,
+            # Synchronization method from Visualization::Relator uses empty Hash when there is no sync
+            visualization_synced: !v.synchronization.is_a?(Hash),
             visualization_tags: v.tags.nil? || v.tags.empty? ? nil : Sequel.pg_array(v.tags),
             visualization_created_at: v.created_at,
             visualization_updated_at: v.updated_at,
@@ -218,9 +221,11 @@ namespace :cartodb do
 
     def update_mapviews_and_likes_query(visualization)
       v = visualization
+      # Synchronization method from Visualization::Relator uses empty Hash when there is no sync
       %Q{ UPDATE #{VISUALIZATIONS_TABLE} set
             visualization_mapviews = #{v.mapviews},
-            visualization_likes = #{v.likes_count}
+            visualization_likes = #{v.likes_count},
+            visualization_synced = #{!v.synchronization.is_a?(Hash)}
           where visualization_id = '#{v.id}' }
     end
 

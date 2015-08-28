@@ -4,8 +4,9 @@ namespace :cartodb do
 
   namespace :explore_api do
     VISUALIZATIONS_TABLE = 'visualizations'
+    PUBLIC_VISUALIZATIONS_VIEW = 'explore_api'
     CREATE_TABLE_SQL = %Q{ 
-      create table #{VISUALIZATIONS_TABLE} (
+      CREATE TABLE #{VISUALIZATIONS_TABLE} (
         visualization_id UUID primary key,
         visualization_name text,
         visualization_description text,
@@ -28,10 +29,35 @@ namespace :cartodb do
         user_available_for_hire boolean,
         language regconfig default 'english'
       ) }
+    CREATE_PUBLIC_VIEW = %Q{
+      CREATE OR REPLACE VIEW #{PUBLIC_VISUALIZATIONS_VIEW} AS
+        SELECT  visualization_id,
+                visualization_name,
+                visualization_description,
+                visualization_type,
+                visualization_synced,
+                visualization_table_names,
+                visualization_tags,
+                visualization_created_at,
+                visualization_updated_at,
+                visualization_map_id,
+                visualization_title,
+                visualization_likes,
+                user_id,
+                user_username,
+                user_organization_id,
+                user_twitter_username,
+                user_website,
+                user_avatar_url,
+                user_available_for_hire,
+                language
+        FROM visualizations
+    }
     FULL_TEXT_SEARCHABLE_COLUMNS = %w{ visualization_name visualization_description visualization_title }
-    DROP_TABLE_SQL = %Q{ drop table #{VISUALIZATIONS_TABLE} }
-    MOST_RECENT_CREATED_SQL = %Q{ select max(visualization_created_at) from #{VISUALIZATIONS_TABLE} }
-    MOST_RECENT_UPDATED_SQL = %Q{ select max(visualization_updated_at) from #{VISUALIZATIONS_TABLE} }
+    DROP_TABLE_SQL = %Q{ DROP TABLE IF EXISTS #{VISUALIZATIONS_TABLE} CASCADE}
+    DROP_PUBLIC_VIEW_SQL = %Q{ DROP TABLE IF EXISTS #{PUBLIC_VISUALIZATIONS_VIEW} }
+    MOST_RECENT_CREATED_SQL = %Q{ SELECT MAX(visualization_created_at) FROM #{VISUALIZATIONS_TABLE} }
+    MOST_RECENT_UPDATED_SQL = %Q{ SELECT max(visualization_updated_at) FROM #{VISUALIZATIONS_TABLE} }
     BATCH_SIZE = 1000
     # TODO: "in" searches are limited to 300. To increase batch replace with date ranges
     UPDATE_BATCH_SIZE = 300
@@ -40,6 +66,7 @@ namespace :cartodb do
     task :setup => [:environment] do
       user = target_user
       user.in_database.run CREATE_TABLE_SQL
+      user.in_database.run CREATE_PUBLIC_VIEW
 
       update(user)
 
@@ -51,9 +78,15 @@ namespace :cartodb do
       touch_metadata(user)
     end
 
+    task :setup_public_view => [:environment] do
+      user = target_user
+      user.in_database.run CREATE_PUBLIC_VIEW
+    end
+
     desc "Deletes the #{VISUALIZATIONS_TABLE} table"
     task :drop => [:environment] do
       target_user.in_database.run DROP_TABLE_SQL
+      target_user.in_database.run DROP_PUBLIC_VIEW_SQL
     end
 
     desc "Updates the data at #{VISUALIZATIONS_TABLE}"

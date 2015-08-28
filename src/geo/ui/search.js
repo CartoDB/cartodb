@@ -1,4 +1,3 @@
-
 /**
  *  UI component to place the map in the
  *  location found by the geocoder.
@@ -24,7 +23,7 @@ cdb.geo.ui.Search = cdb.core.View.extend({
   },
 
   options: {
-    searchPin: false,
+    searchPin: true,
     infowindowTemplate: '<div class="cartodb-infowindow">'+
     '<div class="cartodb-popup v2">'+
       '<a href="#close" class="cartodb-popup-close-button close">x</a>'+

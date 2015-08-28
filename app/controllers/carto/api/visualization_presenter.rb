@@ -95,7 +95,7 @@ module Carto
 
       def url
         if @visualization.canonical?
-          CartoDB.url(@context, 'public_tables_show_bis', { id: @visualization.name }, @current_viewer)
+          CartoDB.url(@context, 'public_tables_show_bis', { id: @visualization.qualified_name(@current_viewer) }, @current_viewer)
         else
           CartoDB.url(@context, 'public_visualizations_show_map', { id: @visualization.id }, @current_viewer)
         end

@@ -81,14 +81,14 @@ describe Carto::Api::DatabaseGroupsController do
 
     it '#update_permission granting read to a table' do
       bypass_named_maps
-      @table_user_1 = create_table_with_options(@org_user_1)
+      @table_user_2 = create_table_with_options(@org_user_2)
 
       group = Carto::Group.where(organization_id: @carto_organization.id).first
       permission = { 'access' => 'r' }
-      put api_v1_databases_group_update_permission_url(database_name: group.database_name, name: group.name, username: @org_user_1.username, table_name: @table_user_1['name']), permission.to_json, sync_db_api_headers
+      put api_v1_databases_group_update_permission_url(database_name: group.database_name, name: group.name, username: @org_user_2.username, table_name: @table_user_2['name']), permission.to_json, sync_db_api_headers
       response.status.should == 200
 
-      permission = ::Permission.where(entity_id: @table_user_1['table_visualization']['id']).first
+      permission = ::Permission.where(entity_id: @table_user_2['table_visualization']['id']).first
       permission.should_not be_nil
 
       expected_acl = [
@@ -102,6 +102,16 @@ describe Carto::Api::DatabaseGroupsController do
           }
       ]
       permission.to_poro[:acl].should == expected_acl
+
+      # URL generation for users of the granted group not table owners
+      user = group.users.first
+      user.id.should_not == @org_user_2.id
+      vis_id = @table_user_2['table_visualization']['id']
+      get_json api_v1_visualizations_show_url(user_domain: user.username, id: vis_id, api_key: user.api_key), {}, http_json_headers do |response|
+        response.status.should == 200
+
+        response.body[:url].should == "http://#{user.organization.name}#{Cartodb.config[:session_domain]}:#{Cartodb.config[:http_port]}/u/#{user.username}/tables/#{@org_user_2.username}.#{@table_user_2['name']}"
+      end
     end
 
     it '#update_permission granting write to a table' do

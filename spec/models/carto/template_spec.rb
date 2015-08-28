@@ -190,7 +190,6 @@ describe Carto::Template do
   end
 
   it 'tests related model deletions clean templates' do
-    pending "See https://github.com/CartoDB/cartodb/pull/4832 for issues regarding this, test DB is stuck at CI without correctly applying a constraint"
     org = test_organization.save
     org_owner = create_test_user("orgowner#{random_username}")
     user_org = CartoDB::UserOrganization.new(org.id, org_owner.id)

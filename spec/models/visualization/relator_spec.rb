@@ -16,9 +16,38 @@ describe Visualization::Relator do
     Overlay.repository        = DataRepository.new # In-memory storage
   end
 
-  before(:each) do
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+  before(:all) do
+    @user = create_user({
+        email: 'admin@cartotest.com',
+        username: 'admin',
+        password: '123456'
+      })
+  end
 
+  before(:each) do
+    stub_named_maps_calls
+    delete_user_data(@user)
+  end
+
+  after(:all) do
+    stub_named_maps_calls
+    @user.destroy
+  end
+
+  describe '#estimated_row_count and #actual_row_count' do
+
+    it 'should query Table estimated an actual row count methods' do
+      ::Table.any_instance.stubs(:estimated_row_count).returns(999)
+      ::Table.any_instance.stubs(:actual_row_count).returns(1000)
+      table = create_table({:name => 'table1', :user_id => @user.id})
+      vis = table.table_visualization
+      vis.estimated_row_count.should == 999
+      vis.actual_row_count.should == 1000
+    end
+
+  end
+
+  before(:each) do
     # For relator->permission
     user_id = UUIDTools::UUID.timestamp_create.to_s
     user_name = 'whatever'

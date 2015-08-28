@@ -245,7 +245,6 @@ describe Visualization::Member do
                 :cache_policy => 'persist',
                 :cache_buster => 1404930437358
             },
-            :cdn_url => '',
             :maxZoom => 28,
             :auto_bound => false,
             :visible => true,

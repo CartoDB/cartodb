@@ -4,7 +4,8 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   respond_to :json
 
   ssl_required :show, :create, :update, :destroy, :index if Rails.env.production? || Rails.env.staging?
-  before_filter :get_user, only: [:update, :destroy, :show, :dump, :data_imports, :data_import]
+  before_filter :get_user, only: [ :update, :destroy, :show, :dump, :data_imports, :data_import ]
+  before_filter :get_carto_user, only: [ :synchronizations, :synchronization ]
 
   layout 'application'
 
@@ -59,7 +60,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       body: json_data.to_json
     ).run
     parsed_response = JSON.parse(response.body)
-    if response.code == 200 && 
+    if response.code == 200 &&
        parsed_response['retcode'] == 0 &&
        !parsed_response['return_values']['local_file'].nil? &&
        !parsed_response['return_values']['local_file'].empty? &&
@@ -76,7 +77,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       sa_response = {
         :dumper_response => parsed_response
       }
-      render json: sa_response, status: 400   
+      render json: sa_response, status: 400
     end
   end
 
@@ -94,8 +95,27 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   def data_import
     data_import = DataImport[params[:data_import_id]]
     respond_with({
-                   data: data_import,
-                   log: data_import.nil? ? nil : data_import.log.entries
+                   data: data_import.to_hash,
+                   log: data_import.nil? ? nil : data_import.log.to_s
+                 })
+  end
+
+  def synchronizations
+    respond_with(@user.synchronizations.map { |entry|
+      {
+        id: entry.id,
+        data_type: entry.service_name,
+        date: entry.updated_at,
+        status: entry.success?
+      }
+    })
+  end
+
+  def synchronization
+    synchronization = Carto::Synchronization.where(id: params[:synchronization_id]).first
+    respond_with({
+                   data: synchronization.to_hash,
+                   log: synchronization.nil? ? nil : synchronization.log.to_s
                  })
   end
 
@@ -103,7 +123,12 @@ class Superadmin::UsersController < Superadmin::SuperadminController
 
   def get_user
     @user = User[params[:id]]
-    raise RecordNotFound unless @user
-  end # get_user
+    render json: { error: 'User not found' }, status: 404 unless @user
+  end
+
+  def get_carto_user
+    @user = Carto::User.where(id: params[:id]).first
+    render json: { error: 'User not found' }, status: 404 unless @user
+  end
 
 end # Superadmin::UsersController

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <link id="favicon" rel="shortcut icon" href="/favicons/favicon.ico" />
+    <%= favicon_link_tag "/favicons/favicon.ico" %>
     <title><%= yield :title %></title>
     <meta name="description" content="<%= yield :description %>">
     <meta name="keywords" content="<%= @name %>, datasets, maps, data visualization, spatial data, geospatial, cartodb">
@@ -28,7 +28,7 @@
   <body class="PublicBody">
     <%= render 'admin/shared/public_header' %>
     <div class="FavMap is-pre-loading" id="<%= fav_map_target_id = 'fav-map-container' %>">
-      <div class="Spinner FavMap-spinner"></div>
+      <div class="Spinner FavMap-spinner js-spinner"></div>
     </div>
     <div class="UserInfo js-user-info">
       <div class="UserAvatar UserInfo-avatar">
@@ -91,11 +91,14 @@
     <script type="text/javascript">
       var config = <%= safe_js_object frontend_config_public({https_apis: request.protocol == 'https://' }) %>;
       var account_host = '<%= CartoDB.account_host %>';
+      var base_url = '<%= @base_url %>';
+      var login_url = "<%= CartoDB.url(self, 'login') %>";
+
       var favMapViewAttrs = {
         el: '#<%= fav_map_target_id %>',
         <% if @most_viewed_vis_map %>
           createVis: {
-            url: '<%= vis_json_url(@most_viewed_vis_map.id, self, @user) %>',
+            url: '<%= vis_json_url(@most_viewed_vis_map.id, self, (@most_viewed_vis_map.user)) %>',
             opts: {
               no_cdn: <%= Rails.env.production? ? 'false' : 'true' %>
             }
@@ -106,7 +109,7 @@
       };
     </script>
     <% if @most_viewed_vis_map && @most_viewed_vis_map.map.provider == 'googlemaps' %>
-    <script type="text/javascript" src="//maps.googleapis.com/maps/api/js?sensor=false&v=3.12&<%= @user.google_maps_query_string %>"></script>
+      <script type="text/javascript" src="//maps.googleapis.com/maps/api/js?sensor=false&v=3.12&<%= @most_viewed_vis_map.user.google_maps_query_string %>"></script>
     <% end %>
     <%= javascript_include_tag 'cdb.js', 'templates', 'public_dashboard_deps', 'public_dashboard' %>
     <%= yield :js %>

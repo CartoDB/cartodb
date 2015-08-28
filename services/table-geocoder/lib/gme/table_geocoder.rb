@@ -13,7 +13,7 @@ module Carto
       # See https://developers.google.com/maps/documentation/geocoding/#Types
       ACCEPTED_ADDRESS_TYPES = ['street_address', 'route', 'intersection', 'neighborhood']
 
-      attr_reader :connection, :original_formatter, :processed_rows, :state, :max_block_size
+      attr_reader :original_formatter, :processed_rows, :state, :max_block_size
 
       def initialize(arguments)
         super(arguments)
@@ -32,7 +32,7 @@ module Carto
       def run
         @state = 'processing'
         @processed_rows = 0
-        add_georef_status_column
+        ensure_georef_status_colummn_valid
 
         # Here's the actual stuff
         data_input_blocks.each do |data_block|
@@ -49,7 +49,7 @@ module Carto
 
       # Empty methods, needed because they're triggered from geocoding.rb
       def remote_id; end
-      def process_results; end
+      def process_results; end # TODO: can be removed from here and abstract class
 
       def update_geocoding_status
         { processed_rows: processed_rows, state: state }

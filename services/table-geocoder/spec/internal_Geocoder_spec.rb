@@ -1,10 +1,8 @@
 # encoding: utf-8
+require 'open3'
 require_relative 'factories/pg_connection'
 require_relative '../lib/internal_geocoder.rb'
-
-RSpec.configure do |config|
-  config.mock_with :mocha
-end
+require_relative '../../../spec/rspec_configuration.rb'
 
 describe CartoDB::InternalGeocoder::Geocoder do
   before do
@@ -17,7 +15,11 @@ describe CartoDB::InternalGeocoder::Geocoder do
 
   describe '#download_results' do
     before do
-      load_csv path_to("adm0.csv"), 'adm0'
+      # Avoid issues on some machines if postgres system account can't read fixtures subfolder for the COPY
+      filename = 'adm0.csv'
+      stdout, stderr, status =  Open3.capture3("cp #{path_to(filename)} /tmp/#{filename}")
+      raise if stderr != ''
+      load_csv "/tmp/#{filename}", 'adm0'
     end
 
     after do
@@ -26,7 +28,7 @@ describe CartoDB::InternalGeocoder::Geocoder do
 
     it "generates a csv with geocoded data" do
       ig = CartoDB::InternalGeocoder.new(default_params.merge(table_name: 'adm0', formatter: 'geo_string'))
-      ig.add_georef_status_column
+      ig.ensure_georef_status_colummn_valid
       results = ig.download_results
       `wc -l #{results} 2>&1`.to_i.should eq 11
       ig.processed_rows.should eq 11

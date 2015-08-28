@@ -1,6 +1,7 @@
 @import "../../variables/mixins";
 @import "../../variables/colors";
 @import "../../variables/sizes";
+@import "../../map/map-sprite";
 
 $cNeutral:  $cHighlight-main;
 $cPositive: $cHighlight-positive;
@@ -42,10 +43,20 @@ $cLingon:     rgba(#AC638B, 1);
 .IllustrationIcon--royalDark { background-color: $cRoyalDark }
 .IllustrationIcon--magenta { background-color: $cMagenta }
 .IllustrationIcon--lingon { background-color: $cLingon }
+.IllustrationIcon--geometryLine {
+  @include map-sprite(geometry_line);
+}
+.IllustrationIcon--geometryPoint {
+  @include map-sprite(geometry_point);
+}
+.IllustrationIcon--geometryPolygon {
+  @include map-sprite(geometry_polygon);
+}
+
 
 .IllustrationIcon-text {
   font-size: $sFontSize-smallUpperCase;
-  font-weight: $sFontWeight-lighter;
+  font-weight: $sFontWeight-normal;
   line-height: $sLineHeight-smaller;
   text-transform: uppercase;
 }

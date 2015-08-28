@@ -2,6 +2,7 @@
 
 require_relative '../../lib/internal-geocoder/query_generator_factory.rb'
 require_relative '../../lib/internal-geocoder/abstract_query_generator.rb'
+require_relative '../../../../spec/rspec_configuration.rb'
 
 RSpec.configure do |config|
   config.mock_with :mocha
@@ -76,10 +77,11 @@ describe CartoDB::InternalGeocoder::QueryGeneratorFactory do
       query = query_generator.copy_results_to_table_query
 
       query.squish.should == %Q{
-        UPDATE "public"."untitled_table"
-        SET the_geom = orig.the_geom, cartodb_georef_status = orig.cartodb_georef_status
+        UPDATE "public"."untitled_table" AS dest
+        SET the_geom = CASE WHEN orig.cartodb_georef_status THEN orig.the_geom ELSE dest.the_geom END,
+            cartodb_georef_status = orig.cartodb_georef_status
         FROM any_temp_table AS orig
-        WHERE trim("any_column_name"::text) = orig.geocode_string AND "public"."untitled_table".cartodb_georef_status IS NULL
+        WHERE trim(dest."any_column_name"::text) = orig.geocode_string AND dest.cartodb_georef_status IS NULL
       }.squish
     end
   end
@@ -114,12 +116,13 @@ describe CartoDB::InternalGeocoder::QueryGeneratorFactory do
       }.squish
 
       query_generator.copy_results_to_table_query.squish.should == %Q{
-        UPDATE any_table_name
-          SET the_geom = orig.the_geom, cartodb_georef_status = orig.cartodb_georef_status
+        UPDATE any_table_name AS dest
+          SET the_geom = CASE WHEN orig.cartodb_georef_status THEN orig.the_geom ELSE dest.the_geom END,
+              cartodb_georef_status = orig.cartodb_georef_status
           FROM any_temp_tablename AS orig
-          WHERE trim(any_table_name.region_column_name::text) = orig.geocode_string
-            AND trim(any_table_name.country_column_name::text) = orig.country
-            AND any_table_name.cartodb_georef_status IS NULL
+          WHERE trim(dest.region_column_name::text) = orig.geocode_string
+            AND trim(dest.country_column_name::text) = orig.country
+            AND dest.cartodb_georef_status IS NULL
         }.squish
     end
   end

@@ -56,6 +56,94 @@ describe CartoDB::Stats::APICalls do
         }  
       ).should == expected_total_calls.to_a[0..6].to_h
     end
+  end
+
+  describe 'get_api_calls_from_redis_source' do
+
+    before(:each) do
+      @api_calls = CartoDB::Stats::APICalls.new
+      @username = "test_user#{rand(10000)}"
+      @type = "test_type#{rand(1000)}"
+      @options = { stat_tag: '000d1206-1fed-11e5-9964-080027880ca6' }
+    end
+
+    it 'fetches 30 days in inverse order even if there is no data' do
+      today = Date.today
+      first_expected_day = (today - 29.days).strftime('%Y%m%d')
+      last_expected_day = today.strftime('%Y%m%d')
+      calls = @api_calls.get_api_calls_from_redis_source('nonexisting_user', 'nonexisting_api_call_type')
+      calls.count.should == 30
+      calls.each { |day, count|
+        count.should == 0
+      }
+      calls.first[0] = last_expected_day
+      calls[last_expected_day].should == 0
+      calls[first_expected_day].should == 0
+    end
+
+    it 'fetches data' do
+      key = @api_calls.redis_api_call_key(@username, @type, @options[:stat_tag])
+
+      # Test data: 3 months, incremental count
+      date_to = Date.today + 30.days
+      date_from = Date.today - 60.days
+      score = 0
+      scores = {}
+      date_to.downto(date_from) do |date|
+        stat_date = date.strftime("%Y%m%d")
+        score += 1
+        $users_metadata.ZADD(key, score, stat_date).to_i
+        scores[stat_date] = score
+      end
+
+      calls = @api_calls.get_api_calls_from_redis_source(@username, @type, @options)
+      calls.count.should == 30
+
+      date_to = Date.today
+      date_from = Date.today - 29.days
+      date_to.downto(date_from) do |date|
+        stat_date = date.strftime("%Y%m%d")
+        calls[stat_date].should eq(scores[stat_date]), "Failed day #{stat_date}, it was #{calls[stat_date]} instead of #{scores[stat_date]}"
+      end
+    end
+
+    it 'fetches random data from 2 months' do
+      key = @api_calls.redis_api_call_key(@username, @type, @options[:stat_tag])
+
+      today = Date.today
+
+      random_data = {}
+      random_data[(today - 80.days).strftime("%Y%m%d")] = 1
+      random_data[(today - 79.days).strftime("%Y%m%d")] = 2
+      random_data[(today - 77.days).strftime("%Y%m%d")] = 3
+      random_data[(today - 74.days).strftime("%Y%m%d")] = 4
+      random_data[(today - 70.days).strftime("%Y%m%d")] = 5
+      random_data[(today - 65.days).strftime("%Y%m%d")] = 6
+      random_data[(today - 59.days).strftime("%Y%m%d")] = 7
+      random_data[(today - 52.days).strftime("%Y%m%d")] = 8
+      random_data[(today - 44.days).strftime("%Y%m%d")] = 9
+      random_data[(today - 35.days).strftime("%Y%m%d")] = 10
+      random_data[(today - 25.days).strftime("%Y%m%d")] = 11
+      random_data[(today - 14.days).strftime("%Y%m%d")] = 12
+      random_data[(today - 2.days).strftime("%Y%m%d")] = 13
+      random_data[(today + 11.days).strftime("%Y%m%d")] = 14
+
+      random_data.each do |date, score|
+        $users_metadata.ZADD(key, score, date).to_i
+      end
+
+      requested_days = 60
+      date_to = Date.today
+      date_from = Date.today - (requested_days - 1).days
+
+      calls = @api_calls.get_api_calls_from_redis_source(@username, @type, @options.merge({from: date_from, to: date_to}))
+      calls.count.should == requested_days
+
+      date_to.downto(date_from) do |date|
+        stat_date = date.strftime("%Y%m%d")
+        calls[stat_date].should eq(random_data.fetch(stat_date, 0)), "Failed day #{stat_date}, it was #{calls[stat_date]} instead of #{random_data[stat_date]}"
+      end
+    end
 
   end
 end

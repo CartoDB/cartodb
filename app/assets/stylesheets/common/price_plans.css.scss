@@ -1,0 +1,95 @@
+@import "../variables/mixins";
+@import "../variables/colors";
+@import "../variables/sizes";
+
+/*-----------------------
+
+ John Snow
+ $20/month
+-----------
+ Up to 1MB
+ ---------
+ 4 layers
+ ---------
+    ...
+-----------
+ 
+-------------------------*/
+
+$br: 4px;
+
+.PricePlans {
+  display: inline-block;
+  width: 100%;
+}
+.PricePlans-list {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center);
+  border: 1px solid $cStructure-mainLine;
+  border-bottom: 0;
+  border-top-left-radius: $br;
+  border-top-right-radius: $br;
+  background: white;
+}
+.PricePlans-list--round {
+  border-radius: $br;
+  border: 1px solid $cStructure-mainLine;
+}
+.PricePlans-item {
+  width: 100%;
+  border-right: 1px solid $cStructure-mainLine;
+}
+.PricePlans-item:last-child { border-right: 0 }
+.PricePlans-itemHeader {
+  @include display-flex();
+  @include justify-content(center);
+  @include align-items(center);
+  @include flex-direction(column);
+  height: 99px;
+  border-bottom: 1px solid $cStructure-mainLine;
+  text-align: center;
+}
+.PricePlans-itemTitle {
+  font-size: 26px;
+  color: $cTypography-headers;
+  text-transform: capitalize;
+}
+.PricePlans-itemPrice {
+  margin-top: 8px;
+  font-size: $sFontSize-larger;
+  color: $cTypography-headers;
+}
+.PricePlans-itemContent { padding: 0 20px }
+.PricePlans-itemContentAttr {
+  display: block;
+  padding: 15px 0;
+  border-bottom: 1px solid $cStructure-mainLine;
+  text-align: center;
+  font-size: $sFontSize-large;
+  color: $cTypography-paragraphs;
+}
+.PricePlans-itemContentAttr.is-disabled { color: rgba($cTypography-paragraphs,.4) }
+.PricePlans-itemContentAttr.is-highlighted {
+  font-weight: $sFontWeight-bold;
+  color: $cTypography-headers;
+}
+.PricePlans-itemContentAttr:last-child { border-bottom: 0 }
+.PricePlans-trial {
+  @include display-flex();
+  @include justify-content(center);
+  @include align-items(center);
+  height: 68px;
+  background: $cCard-hoverFill;
+  border: 1px solid $cCard-hoverBorder;
+  border-bottom-left-radius: $br;
+  border-bottom-right-radius: $br;
+}
+.PricePlans-trialText {
+  font-size: 14px;
+  color: $cTypography-paragraphs;
+}
+.PricePlans-trialIcon {
+  margin-right: 3px;
+  color: #0090D7;
+}

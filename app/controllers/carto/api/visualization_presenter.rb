@@ -6,6 +6,9 @@ module Carto
   module Api
     class VisualizationPresenter
 
+      # options
+      # - related: load related tables. Default: true.
+      # - show_stats: load stats (daily mapview counts). Default: true.
       def initialize(visualization, current_viewer, options = {})
         @visualization = visualization
         @current_viewer = current_viewer
@@ -13,16 +16,19 @@ module Carto
       end
 
       def to_poro
+        show_stats = @options.fetch(:show_stats, true)
+
         poro = {
           id: @visualization.id,
           name: @visualization.name,
+          display_name: @visualization.display_name,
           map_id: @visualization.map_id,
           active_layer_id: @visualization.active_layer_id,
           type: @visualization.type,
           tags: @visualization.tags,
           description: @visualization.description,
           privacy: @visualization.privacy.upcase,
-          stats: @visualization.stats,
+          stats: show_stats ? @visualization.stats : {},
           created_at: @visualization.created_at,
           updated_at: @visualization.updated_at,
           permission: @visualization.permission.nil? ? nil : Carto::Api::PermissionPresenter.new(@visualization.permission).to_poro,
@@ -31,6 +37,7 @@ module Carto
           title: @visualization.title,
           parent_id: @visualization.parent_id,
           license: @visualization.license,
+          attributions: @visualization.attributions,
           kind: @visualization.kind,
           likes: @visualization.likes.count,
           prev_id: @visualization.prev_id,

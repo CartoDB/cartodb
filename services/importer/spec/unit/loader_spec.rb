@@ -1,22 +1,29 @@
 # encoding: utf-8
+require 'ostruct'
 require_relative '../../lib/importer/loader'
 require_relative '../../lib/importer/source_file'
+require_relative '../../lib/importer/exceptions'
 require_relative '../doubles/job'
 require_relative '../doubles/ogr2ogr'
 require_relative '../doubles/georeferencer'
 require_relative '../../spec/doubles/importer_stats'
-
-RSpec.configure do |config|
-  config.mock_with :mocha
-end
+require_relative '../../../../spec/rspec_configuration.rb'
 
 describe CartoDB::Importer2::Loader do
   before do
-    @job            = CartoDB::Importer2::Doubles::Job.new
+    CartoDB::Stats::Aggregator.stubs(:read_config).returns({})
+    resultset = OpenStruct.new(:first => {:num_rows => 10})
+    db = Object.new
+    db.stubs(:fetch).returns(resultset)
+    @job            = CartoDB::Importer2::Doubles::Job.new(db)
     @source_file    = CartoDB::Importer2::SourceFile.new('/var/tmp/foo')
     @ogr2ogr        = CartoDB::Importer2::Doubles::Ogr2ogr.new
     @georeferencer  = CartoDB::Importer2::Doubles::Georeferencer.new
     @loader         = CartoDB::Importer2::Loader.new(@job, @source_file, layer=nil, @ogr2ogr, @georeferencer)
+  end
+
+  before(:each) do
+    CartoDB::Stats::Aggregator.stubs(:read_config).returns({})
   end
 
   describe '#run' do
@@ -28,9 +35,21 @@ describe CartoDB::Importer2::Loader do
 
     it 'runs the ogr2ogr command to load the file' do
       ogr2ogr_mock = mock
-      ogr2ogr_mock.stubs(:command).returns('').at_least_once
-      ogr2ogr_mock.stubs(:command_output).returns('').at_least_once
-      ogr2ogr_mock.stubs(:exit_code).returns(0).at_least_once
+      ogr2ogr_mock.stubs(:generic_error?).returns(false).twice
+      ogr2ogr_mock.stubs(:command).returns('')
+      ogr2ogr_mock.stubs(:command_output).returns('')
+      ogr2ogr_mock.stubs(:encoding_error?).returns(false)
+      ogr2ogr_mock.stubs(:invalid_dates?).returns(false)
+      ogr2ogr_mock.stubs(:duplicate_column?).returns(false)
+      ogr2ogr_mock.stubs(:invalid_geojson?).returns(false)
+      ogr2ogr_mock.stubs(:too_many_columns?).returns(false)
+      ogr2ogr_mock.stubs(:unsupported_format?).returns(false)
+      ogr2ogr_mock.stubs(:file_too_big?).returns(false)
+      ogr2ogr_mock.stubs(:statement_timeout?).returns(false)
+      ogr2ogr_mock.stubs(:duplicate_column?).returns(false)
+      ogr2ogr_mock.stubs(:segfault_error?).returns(false)
+      ogr2ogr_mock.stubs(:kml_style_missing?).returns(false)
+      ogr2ogr_mock.stubs(:exit_code).returns(0)
       ogr2ogr_mock.stubs(:run).returns(Object.new).at_least_once
 
       loader   = CartoDB::Importer2::Loader.new(@job, @source_file, layer=nil, ogr2ogr_mock, @georeferencer)
@@ -40,12 +59,27 @@ describe CartoDB::Importer2::Loader do
 
     it 'logs the exit code from ogr2ogr' do
       @loader.run
-      (@job.logger.to_s =~ /ogr2ogr exit code: \d+/).should_not be nil
+      (@job.logger.to_s =~ /ogr2ogr exit code:\s+\d+/).should_not be nil
     end
 
     it 'logs any output from ogr2ogr' do
       @loader.run
       (@job.logger.to_s =~ /ogr2ogr output: \w*/).should_not be nil
+    end
+
+    it 'encoding problem importing but return 0, should try fallback and then raise an error' do
+      resultset = OpenStruct.new(:first => {:num_rows => 0})
+      db = Object.new
+      db.stubs(:fetch).returns(resultset)
+      @job  = CartoDB::Importer2::Doubles::Job.new(db)
+      # Enter fallback
+      @ogr2ogr.stubs(:generic_error?).returns(true)
+      # Fails after fallback
+      @ogr2ogr.stubs(:encoding_error?).returns(true)
+      @ogr2ogr.stubs(:exit_code).returns(0)
+      loader = CartoDB::Importer2::Loader.new(@job, @source_file, layer=nil, @ogr2ogr, @georeferencer)
+      loader.expects(:try_fallback).once
+      expect { loader.run }.to raise_error(CartoDB::Importer2::RowsEncodingColumnError)
     end
   end
 
@@ -66,12 +100,15 @@ describe CartoDB::Importer2::Loader do
 
   describe 'stats logger' do
     before do
-      @job            = CartoDB::Importer2::Doubles::Job.new
+      resultset = OpenStruct.new(:first => {:num_rows => 10})
+      db = Object.new
+      db.stubs(:fetch).returns(resultset)
+      @job            = CartoDB::Importer2::Doubles::Job.new(db)
       @source_file    = CartoDB::Importer2::SourceFile.new('/var/tmp/foo')
       @ogr2ogr        = CartoDB::Importer2::Doubles::Ogr2ogr.new
       @georeferencer  = CartoDB::Importer2::Doubles::Georeferencer.new
       @loader         = CartoDB::Importer2::Loader.new(@job, @source_file, layer=nil, @ogr2ogr, @georeferencer)
-      @importer_stats_spy = CartoDB::Doubles::ImporterStats.instance
+      @importer_stats_spy = CartoDB::Doubles::Stats::Importer.instance
     end
 
     it 'logs stats' do

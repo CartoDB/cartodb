@@ -14,17 +14,12 @@
   padding-top: 30px;
   padding-bottom: 0;
 }
-.FeatureData .Dialog-headerIcon--main {
-  margin-bottom: 12px;
-  border-color: #66667C;
-  color: #66667C;
-}
 .FeatureData .Dialog-headerTitle { font-size: 16px }
 .FeatureData .Dialog-headerText { font-size: 14px }
 .FeatureData-mapWrapper {
   position: relative;
   width: 100%;
-  height: 113px;
+  height: 115px;
   margin-top: 30px;
   z-index: 1;
 }
@@ -65,7 +60,7 @@
   }
 
   &:before {
-    top: 276px;
+    top: 275px;
     background-color: transparent!important;
     @include background-gradient(rgba(#F9F9F9,1),rgba(#F9F9F9,0));
   }

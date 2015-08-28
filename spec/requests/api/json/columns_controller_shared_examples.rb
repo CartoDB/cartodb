@@ -10,12 +10,13 @@ shared_examples_for "columns controllers" do
     end
 
     before(:each) do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+      stub_named_maps_calls
       delete_user_data @user
       @table = create_table :user_id => @user.id
     end
 
     after(:all) do
+      stub_named_maps_calls
       @user.destroy
     end
 
@@ -25,7 +26,8 @@ shared_examples_for "columns controllers" do
     it "gets the columns from a table" do    
       get_json api_v1_tables_columns_index_url(params) do |response|
         response.status.should be_success
-        (response.body - default_schema).should be_empty
+        # Filter out timestamp columns for compatibility as they won't be added in new cartodbfy
+        (response.body - default_schema - [["created_at", "date"],["updated_at", "date"]]).should be_empty
       end
     end
 

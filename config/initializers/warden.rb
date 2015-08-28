@@ -17,9 +17,32 @@ end
 Warden::Strategies.add(:password) do
   def authenticate!
     if params[:email] && params[:password]
-      if (user = User.authenticate(params[:email], params[:password])) && user.enabled?
-        success!(user, :message => "Success")
-        request.flash['logged'] = true
+      if (user = User.authenticate(params[:email], params[:password]))
+        if user.enabled?
+          success!(user, :message => "Success")
+          request.flash['logged'] = true
+        elsif !user.enable_account_token.nil?
+          throw(:warden, :action => 'account_token_authentication_error', :user_id => user.id)
+        else
+          fail!
+        end
+      else
+        fail!
+      end
+    else
+      fail!
+    end
+  end
+end
+
+Warden::Strategies.add(:enable_account_token) do
+  def authenticate!
+    if params[:id]
+      user = User.where(enable_account_token: params[:id]).first
+      if user
+        user.enable_account_token = nil
+        user.save
+        success!(user)
       else
         fail!
       end
@@ -33,8 +56,12 @@ Warden::Strategies.add(:google_access_token) do
   def authenticate!
     if params[:google_access_token]
       user = GooglePlusAPI.new.get_user(params[:google_access_token])
-      if(user.present?)
-        success!(user)
+      if user
+        if user.enable_account_token.nil?
+          success!(user)
+        else
+          throw(:warden, :action => 'account_token_authentication_error', :user_id => user.id)
+        end
       else
         fail!
       end
@@ -59,7 +86,12 @@ Warden::Strategies.add(:api_authentication) do
         end
 
       if @oauth_token && @oauth_token.is_a?(::AccessToken)
-        success!(User.find_with_custom_fields(@oauth_token.user_id)) and return
+        user = User.find_with_custom_fields(@oauth_token.user_id)
+        if user.enable_account_token.nil?
+          success!(user) and return
+        else
+          throw(:warden, :action => 'account_token_authentication_error', :user_id => user.id)
+        end
       end
     end
     throw(:warden)
@@ -96,3 +128,23 @@ Warden::Strategies.add(:api_key) do
     end
   end
 end
+
+# @see ApplicationController.update_session_security_token
+Warden::Manager.after_set_user except: :fetch do |user, auth, opts|
+  auth.session(opts[:scope])[:sec_token] = Digest::SHA1.hexdigest(user.crypted_password)
+
+  # Only at the editor, and only after new authentications, destroy other sessions
+  # @see #4656
+  warden_proxy = auth.env['warden']
+  # On testing there is no warden global so we cannot run this logic
+  if warden_proxy
+    auth.env['rack.session'].select { |key, value|
+      key.start_with?("warden.user") && !key.end_with?(".session")
+    }.each { |key, value|
+      unless value == user.username
+        warden_proxy.logout(value) if warden_proxy.authenticated?(value)
+      end
+    }
+  end
+end
+

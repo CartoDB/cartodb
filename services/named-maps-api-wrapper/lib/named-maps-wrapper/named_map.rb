@@ -2,6 +2,7 @@
 
 require_relative '../../../../app/models/visualization/vizjson'
 require_relative '../../../../lib/carto/http/client'
+require_relative '../../../../lib/cartodb/stats/editor_apis'
 
 module CartoDB
   module NamedMapsWrapper
@@ -30,72 +31,78 @@ module CartoDB
 
       # Create a new named map
       # @throws HTTPResponseError
-      def self.create_new( visualization, parent )
-        template_data = NamedMap.get_template_data( visualization, parent )
+      def self.create_new(visualization, parent)
+        NamedMap.stats_aggregator.timing('named-map.create') do
+          template_data = NamedMap.get_template_data( visualization, parent )
 
-        response = http_client.post( parent.url + '?api_key=' + parent.api_key, {
-          headers:          parent.headers,
-          body:             ::JSON.dump( template_data ),
-          ssl_verifypeer:   parent.verify_cert,
-          ssl_verifyhost:   parent.verify_host,
-          followlocation:   true,
-          connecttimeout:  HTTP_CONNECT_TIMEOUT,
-          timeout:          HTTP_REQUEST_TIMEOUT
-          } )
-
-        unless response.code == 200
-          raise HTTPResponseError.new("POST:#{response.code} #{response.request.url} #{response.body}", template_data)
-        end
-
-        body = ::JSON.parse(response.response_body)
-
-        raise HTTPResponseError, "Missing template_id at response: #{response.response_body}" unless body['template_id'].present?
-
-        self.new( body['template_id'], template_data, parent )
-      end
-
-      # Update a named map's template data (full replace update)
-      def update( visualization )
-        @template = NamedMap.get_template_data( visualization, @parent )
-
-        retries = 0
-        success = true
-        begin
-          response = self.class.http_client.put( url + '?api_key=' + @parent.api_key, {
-            headers:          @parent.headers,
-            body:             ::JSON.dump( @template ),
-            ssl_verifypeer:   @parent.verify_cert,
-            ssl_verifyhost:   @parent.verify_host,
+          response = http_client.post( parent.url + '?api_key=' + parent.api_key, {
+            headers:          parent.headers,
+            body:             ::JSON.dump( template_data ),
+            ssl_verifypeer:   parent.verify_cert,
+            ssl_verifyhost:   parent.verify_host,
             followlocation:   true,
             connecttimeout:  HTTP_CONNECT_TIMEOUT,
             timeout:          HTTP_REQUEST_TIMEOUT
-          } )
+            } )
 
-          if response.code == 200
-            success = true
-          elsif response.code == 400 && response.body =~ /is locked/i && retries < 3
-            sleep(2**retries)
-            ## We hit a Tiler lock, wait and retry
-            retries += 1
-          else
-            raise HTTPResponseError.new("PUT:#{response.code} #{response.request.url} #{response.body}", @template)
+          unless response.code == 200
+            raise HTTPResponseError.new("POST:#{response.code} #{response.request.url} #{response.body}", template_data)
           end
-        end until success
-        @template
+
+          body = ::JSON.parse(response.response_body)
+
+          raise HTTPResponseError, "Missing template_id at response: #{response.response_body}" unless body['template_id'].present?
+
+          self.new(body['template_id'], template_data, parent)
+        end
+      end
+
+      # Update a named map's template data (full replace update)
+      def update(visualization)
+        NamedMap.stats_aggregator.timing('named-map.update') do
+          @template = NamedMap.get_template_data( visualization, @parent )
+
+          retries = 0
+          success = true
+          begin
+            response = self.class.http_client.put( url + '?api_key=' + @parent.api_key, {
+              headers:          @parent.headers,
+              body:             ::JSON.dump( @template ),
+              ssl_verifypeer:   @parent.verify_cert,
+              ssl_verifyhost:   @parent.verify_host,
+              followlocation:   true,
+              connecttimeout:  HTTP_CONNECT_TIMEOUT,
+              timeout:          HTTP_REQUEST_TIMEOUT
+            } )
+
+            if response.code == 200
+              success = true
+            elsif response.code == 400 && response.body =~ /is locked/i && retries < 3
+              sleep(2**retries)
+              ## We hit a Tiler lock, wait and retry
+              retries += 1
+            else
+              raise HTTPResponseError.new("PUT:#{response.code} #{response.request.url} #{response.body}", @template)
+            end
+          end until success
+          @template
+        end
       end
 
       # Delete existing named map
       def delete
-        response = self.class.http_client.delete( url + '?api_key=' + @parent.api_key,
-          { 
-            headers:          @parent.headers,
-            ssl_verifypeer:   @parent.verify_cert,
-            ssl_verifyhost:   @parent.verify_host,
-            followlocation:   true,
-            connecttimeout:  HTTP_CONNECT_TIMEOUT,
-            timeout:          HTTP_REQUEST_TIMEOUT
-          } )
-        raise HTTPResponseError, "DELETE:#{response.code} #{response.request.url} #{response.body}" unless response.code == 204
+        NamedMap.stats_aggregator.timing('named-map.delete') do
+          response = self.class.http_client.delete( url + '?api_key=' + @parent.api_key,
+            {
+              headers:          @parent.headers,
+              ssl_verifypeer:   @parent.verify_cert,
+              ssl_verifyhost:   @parent.verify_host,
+              followlocation:   true,
+              connecttimeout:  HTTP_CONNECT_TIMEOUT,
+              timeout:          HTTP_REQUEST_TIMEOUT
+            } )
+          raise HTTPResponseError, "DELETE:#{response.code} #{response.request.url} #{response.body}" unless response.code == 204
+        end
       end
 
       # Url to access a named map's tiles
@@ -104,102 +111,108 @@ module CartoDB
       end
 
       # Normalize a name to make it "named map valid"
-      def self.normalize_name( raw_name )
+      def self.template_name(raw_name)
         (NAME_PREFIX + raw_name).gsub(/[^a-zA-Z0-9\-\_.]/, '').gsub('-', '_')
       end
 
-      def self.get_template_data( visualization, parent )
-        presenter_options = {
-          full: false, 
-          user_name: parent.username, 
-          viewer_user: User.where(username: parent.username).first
-        }
+      def self.get_template_data(visualization, parent)
+        NamedMap.stats_aggregator.timing('named-map.template-data') do
+          presenter_options = {
+            full: false,
+            user_name: parent.username,
+            viewer_user: User.where(username: parent.username).first
+          }
 
-        # Layers are zero-based on the client
-        layer_num = 0
+          # Layers are zero-based on the client
+          layer_num = 0
 
-        auth_type = (visualization.password_protected? || visualization.organization?) ? AUTH_TYPE_SIGNED : AUTH_TYPE_OPEN
+          auth_type = (visualization.password_protected? || visualization.organization?) ? AUTH_TYPE_SIGNED : AUTH_TYPE_OPEN
 
-        # 1) general data
-        template_data = {
-          version:      NAMED_MAPS_VERSION,
-          name:         self.normalize_name(visualization.id),
-          auth:         {
-                          method:   auth_type
-                        },
-          placeholders: { },
-          layergroup:   {
-                          layers: []
-                        },
-          view:         self.view_data_from(visualization)
-        }
+          # 1) general data
+          template_data = {
+            version:      NAMED_MAPS_VERSION,
+            name:         self.template_name(visualization.id),
+            auth:         {
+                            method:   auth_type
+                          },
+            placeholders: { },
+            layergroup:   {
+                            layers: []
+                          },
+            view:         self.view_data_from(visualization)
+          }
 
-        if auth_type == AUTH_TYPE_SIGNED
-          if visualization.password_protected?
-            auth_token = visualization.make_auth_token
-            template_data[:auth][:valid_tokens] = [ auth_token ]
-          elsif visualization.organization?
-            org_allowed_users = visualization.all_users_with_read_permission
-            org_allowed_tokens = org_allowed_users.map { |user|
-              user.get_auth_tokens
-            }.flatten.uniq
-            template_data[:auth][:valid_tokens] = org_allowed_tokens
+          if auth_type == AUTH_TYPE_SIGNED
+            if visualization.password_protected?
+              auth_token = visualization.make_auth_token
+              template_data[:auth][:valid_tokens] = [ auth_token ]
+            elsif visualization.organization?
+              org_allowed_users = visualization.all_users_with_read_permission
+              org_allowed_tokens = org_allowed_users.map { |user|
+                user.get_auth_tokens
+              }.flatten.uniq
+              template_data[:auth][:valid_tokens] = org_allowed_tokens
+            end
           end
+
+          vizjson = CartoDB::Visualization::VizJSON.new(visualization, presenter_options, parent.vizjson_config)
+          layers_data = []
+
+          layer_group = vizjson.named_map_layer_group_for(visualization)
+          unless layer_group.nil?
+            layer_group[:options][:layer_definition][:layers].each { |layer|
+              layer_type = layer[:type].downcase
+
+              # INFO: Bypass image-bg layers for now
+              if layer_type == 'background' && (layer[:options]['image'].length > 0)
+                next
+              end
+
+              if layer_type == 'cartodb'
+                data = self.options_for_cartodb_layer(layer, layer_num, template_data)
+              else
+                data = self.options_for_basemap_layer(layer, layer_num, template_data)
+              end
+
+              layer_num = data[:layer_num]
+              template_data = data[:template_data]
+
+              layers_data.push( {
+                type:     data[:layer_name],
+                options:  data[:layer_options]
+              } )
+            }
+          end
+
+          other_layers = vizjson.other_layers_for(visualization)
+          unless other_layers.nil?
+            other_layers.compact.each { |layer|
+              layers_data.push( {
+                type:     layer[:type].downcase,
+                options:  {
+                            cartocss_version: '2.0.1',
+                            cartocss:         self.css_from(layer[:options]),
+                            sql:              layer[:options].fetch( 'query' )
+                          }
+              } )
+            }
+          end
+
+          template_data[:layergroup][:layers] = layers_data.compact.flatten
+          template_data[:layergroup][:stat_tag] = visualization.id
+
+          template_data[:view] = view_data_from(visualization)
+
+          template_data
         end
-
-        vizjson = CartoDB::Visualization::VizJSON.new(visualization, presenter_options, parent.vizjson_config)
-        layers_data = []
-
-        layer_group = vizjson.named_map_layer_group_for(visualization)
-        unless layer_group.nil?
-          layer_group[:options][:layer_definition][:layers].each { |layer|
-            layer_type = layer[:type].downcase
-
-            # INFO: Bypass image-bg layers for now
-            if layer_type == 'background' && (layer[:options]['image'].length > 0)
-              next
-            end
-
-            if layer_type == 'cartodb'
-              data = self.options_for_cartodb_layer(layer, layer_num, template_data)
-            else
-              data = self.options_for_basemap_layer(layer, layer_num, template_data)
-            end
-
-            layer_num = data[:layer_num]
-            template_data = data[:template_data]
-
-            layers_data.push( {
-              type:     data[:layer_name],
-              options:  data[:layer_options]
-            } )
-          }
-        end
-        
-        other_layers = vizjson.other_layers_for(visualization)
-        unless other_layers.nil?
-          other_layers.compact.each { |layer|
-            layers_data.push( {
-              type:     layer[:type].downcase,
-              options:  {
-                          cartocss_version: '2.0.1',
-                          cartocss:         self.css_from(layer[:options]),
-                          sql:              layer[:options].fetch( 'query' )
-                        }
-            } )
-          }
-        end
-
-        template_data[:layergroup][:layers] = layers_data.compact.flatten
-        template_data[:layergroup][:stat_tag] = visualization.id
-
-        template_data[:view] = view_data_from(visualization)
-
-        template_data
       end
 
       def self.css_from(options)
         options.fetch('tile_style').strip.empty? ? EMPTY_CSS : options.fetch('tile_style')
+      end
+
+      def self.stats_aggregator
+        @@stats_aggregator_instance ||= CartoDB::Stats::EditorAPIs.instance
       end
 
       attr_reader :template
@@ -212,7 +225,7 @@ module CartoDB
         data = {
           zoom:   visualization.map.zoom,
           center: {
-                    
+
                     lng: center[1].to_f,
                     lat: center[0].to_f
                   }
@@ -248,14 +261,14 @@ module CartoDB
         if layer.include?(:infowindow) && !layer[:infowindow].nil? && !layer[:infowindow].fetch('fields').nil? && layer[:infowindow].fetch('fields').size > 0
           layer_options[:interactivity] = layer[:options][:interactivity]
           layer_options[:attributes] = {
-            id:       'cartodb_id', 
+            id:       'cartodb_id',
             columns:  layer[:infowindow]['fields'].map { |field|
                       field.fetch('name')
             }
           }
         end
 
-        { 
+        {
           layer_name: 'cartodb',
           layer_options: layer_options,
           layer_num: layer_num,
@@ -284,7 +297,7 @@ module CartoDB
           layer_options[:subdomains] = layer[:options]['subdomains']
         end
 
-        { 
+        {
           layer_name: 'http',
           layer_options: layer_options,
           # Basemap layers don't increment layer index/number
@@ -294,11 +307,11 @@ module CartoDB
       end
 
       def self.plain_color_basemap_layer(layer, layer_num, template_data)
-        layer_options = { 
-          color: layer[:options]['color'] 
+        layer_options = {
+          color: layer[:options]['color']
         }
 
-        { 
+        {
           layer_name: 'plain',
           layer_options: layer_options,
           # Basemap layers don't increment layer index/number

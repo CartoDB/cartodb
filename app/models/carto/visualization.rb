@@ -43,6 +43,14 @@ class Carto::Visualization < ActiveRecord::Base
 
   belongs_to :map
 
+  has_many :related_templates, class_name: Carto::Template, foreign_key: :source_visualization_id
+
+  has_one :synchronization, class_name: Carto::Synchronization
+
+  def ==(other_visualization)
+    self.id == other_visualization.id
+  end
+
   def size
     # Only canonical visualizations (Datasets) have a related table and then count against disk quota,
     # but we want to not break and even allow ordering by size multiple types
@@ -79,10 +87,6 @@ class Carto::Visualization < ActiveRecord::Base
 
   def transition_options
     @transition_options ||= JSON.parse(self.slide_transition_options).symbolize_keys
-  end
-
-  def synchronization
-    table.nil? ? nil : table.synchronization
   end
 
   def children
@@ -217,7 +221,7 @@ class Carto::Visualization < ActiveRecord::Base
   def mapviews
     @mapviews ||= CartoDB::Visualization::Stats.mapviews(stats)
   end
-  
+
   def total_mapviews(user=nil)
     @total_mapviews ||= CartoDB::Visualization::Stats.new(self, user).total_mapviews
   end
@@ -230,16 +234,34 @@ class Carto::Visualization < ActiveRecord::Base
     table.nil? ? nil : table.service
   end
 
+  def has_read_permission?(user)
+    user && (is_owner_user?(user) || (permission && permission.user_has_read_permission?(user)))
+  end
+
+  def estimated_row_count
+    table_service.nil? ? nil : table_service.estimated_row_count
+  end
+
+  def actual_row_count
+    table_service.nil? ? nil : table_service.actual_row_count
+  end
+
+  def license_info
+    if !license.nil?
+      Carto::License.find(license.to_sym)
+    end
+  end
+
   private
 
   def get_named_map
     return nil if type == TYPE_REMOTE
-    data = named_maps.get(CartoDB::NamedMapsWrapper::NamedMap.normalize_name(id))
+    data = named_maps.get(CartoDB::NamedMapsWrapper::NamedMap.template_name(id))
     data.nil? ? false : data
   end
 
   def named_maps(force_init = false)
-    # TODO: read refactor skips all write complexity, check visualization/member for more details 
+    # TODO: read refactor skips all write complexity, check visualization/member for more details
     if @named_maps.nil? || force_init
       name_param = user.username
       api_key_param = user.api_key
@@ -293,10 +315,6 @@ class Carto::Visualization < ActiveRecord::Base
 
   def get_related_visualizations
     Carto::Visualization.where(map_id: related_tables.collect(&:map_id), type: TYPE_CANONICAL).all
-  end
-
-  def has_read_permission?(user)
-    user && (is_owner_user?(user) || (permission && permission.user_has_read_permission?(user)))
   end
 
   def has_write_permission?(user)

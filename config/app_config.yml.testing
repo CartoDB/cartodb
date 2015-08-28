@@ -42,7 +42,7 @@ defaults: &defaults
     public:
       protocol:   'http'
       domain:     'localhost.lan'
-      endpoint:   '/api/v1/sql'
+      endpoint:   '/api/v2/sql'
       port:       8080
   api_requests_service_url: ''
   developers_host:    'http://developers.localhost.lan:3000'
@@ -65,6 +65,7 @@ defaults: &defaults
     purge_command: 'purge'
     retries: 5
     timeout: 5
+    trigger_verbose: false
   redis:
     host: '127.0.0.1'
     port: 6379
@@ -100,9 +101,9 @@ defaults: &defaults
     url: 'https://viz2.cartodb.com/api/v1/sql'
     percent_users: 10
   # graphite endpoint used to post frontend stats
-  graphite_public:
-    host: "graphite.dioc.cartodb.net"
-    port: 8127
+  #graphite_public:
+    #host: ""
+    #port: 
 
   basemaps:
     GMaps:
@@ -114,18 +115,18 @@ defaults: &defaults
         className: 'googlemaps'
     CartoDB:
       positron_rainbow:
-        url: 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png' 
-        subdomains: 'abcd' 
-        minZoom: '0' 
-        maxZoom: '18' 
-        name: 'Positron' 
-        className: 'positron_rainbow' 
-        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href= "http://cartodb.com/attributions">CartoDB</a>' 
+        url: 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
+        subdomains: 'abcd'
+        minZoom: '0'
+        maxZoom: '18'
+        name: 'Positron'
+        className: 'positron_rainbow'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href= "http://cartodb.com/attributions">CartoDB</a>'
   layer_opts:
-    public_opts: ["type", "active", "query", "opacity", "auto_bound", 
-                  "interactivity", "debug", "visible", "tiler_domain", 
-                  "tiler_port", "tiler_protocol", "sql_domain", "sql_port", 
-                  "sql_protocol", "extra_params", "cdn_url", "table_name", 
+    public_opts: ["type", "active", "query", "opacity", "auto_bound",
+                  "interactivity", "debug", "visible", "tiler_domain",
+                  "tiler_port", "tiler_protocol", "sql_domain", "sql_port",
+                  "sql_protocol", "extra_params", "table_name",
                   "user_name", "style_version", "tile_style", "query_wrapper"]
     default_tile_styles:
       point: "{\n  marker-fill: #FF6600;\n  marker-opacity: 0.9;\n  marker-width: 12;\n  marker-line-color: white;\n  marker-line-width: 3;\n  marker-line-opacity: 0.9;\n  marker-placement: point;\n  marker-type: ellipse;\n  marker-allow-overlap: true;\n}"
@@ -149,7 +150,6 @@ defaults: &defaults
         sql_port:           "80"
         sql_protocol:       "http"
         extra_params:       { cache_policy: 'persist' }
-        cdn_url:            ""
         tile_style_history: []
         style_version:      "2.1.1"
       infowindow:
@@ -157,27 +157,15 @@ defaults: &defaults
     background:
       kind: "background"
       options: { color: '#ffffff' }
-    base:
-      kind: "tiled"
       options:
-        visible:      true
-        type:         "Tiled"
-        urlTemplate:  "https://maps.nlp.nokia.com/maptiler/v2/maptile/newest/normal.day/{z}/{x}/{y}/256/png8?lg=eng&token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24"
-        name:         'Nokia Day'
-        className:    "nokia_day"
-        attribution:  "©2012 Nokia <a href='http://here.net/services/terms' target='_blank'>Terms of use</a>"
-    gmaps:
-      kind: "gmapsbase"
-      options:
-        base_type: "roadmap"
-        style: ""
   cartodb_com_hosted: true
-  cartodb_central_domain_name: 'cartodb.com'
-  cartodb_central_api:
-    host: 'admin.localhost.lan'
-    port: 4000
-    username: 'api'
-    password: 'test'
+  # Test don't have Central
+  #cartodb_central_domain_name: 'cartodb.com'
+  #cartodb_central_api:
+  #  host: 'admin.localhost.lan'
+  #  port: 4000
+  #  username: 'api'
+  #  password: 'test'
   aws:
     s3:
       access_key_id: "test"
@@ -190,7 +178,7 @@ defaults: &defaults
     kinds: ['stars', 'mountains']
     colors: ['red', 'blue']
   dropbox_api_key: ""
-  gdrive: 
+  gdrive:
     api_key: ""
     app_id: ""
   enforce_non_empty_layer_css: false

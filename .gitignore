@@ -23,6 +23,7 @@ config.status
 config/database.yml
 .idea/*
 config/app_config.yml
+config/app_config.yml.local
 config/redis.conf
 config/grunt_production.json
 spec/support/data/failed_remote/*
@@ -58,3 +59,5 @@ vendor/assets/javascripts/cartodb.*
 vendor/assets/stylesheets/cartodb.*
 public/test_support.csv
 public/test_guess_country.csv
+doc/manual/build
+.gem/

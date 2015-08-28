@@ -1,9 +1,6 @@
 # coding: UTF-8
 require_relative '../../lib/cartodb/image_metadata.rb'
-
-RSpec.configure do |config|
-  config.mock_with :mocha
-end
+require_relative '../../spec/rspec_configuration.rb'
 
 describe CartoDB::ImageMetadata do
   let(:png_path) { File.expand_path('../../support/data/images/pattern.png', __FILE__) }

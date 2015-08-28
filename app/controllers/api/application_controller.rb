@@ -1,18 +1,16 @@
 # coding: utf-8
+
+require_relative '../../../lib/cartodb/stats/editor_apis'
+
 class Api::ApplicationController < ApplicationController
   # Don't force org urls
   skip_before_filter :ensure_org_url_if_org_user, :browser_is_html5_compliant?, :verify_authenticity_token
   before_filter :api_authorization_required
+  before_filter :ensure_account_has_been_activated
+
+  before_filter :setup_stats_instance
 
   protected
-
-  # This only allows to authenticate if sending an API request to username.api_key subdomain,
-  # but doesn't breaks the request if can't authenticate
-  def optional_api_authorization
-    if params[:api_key].present?
-      authenticate(:api_key, :api_authentication, :scope => CartoDB.extract_subdomain(request))
-    end
-  end
 
   def set_start_time
     @time_start = Time.now
@@ -26,6 +24,10 @@ class Api::ApplicationController < ApplicationController
       options.reverse_merge! :json => { errors: { callback: "Invalid callback format" } }, :status => 400
     end
     render options
+  end
+
+  def setup_stats_instance
+    @stats_aggregator = CartoDB::Stats::EditorAPIs.instance
   end
 
   private

@@ -22,7 +22,7 @@ module CartoDB
 
         MAX_CATEGORIES = 4
 
-        DEBUG_FLAG = true
+        DEBUG_FLAG = false
 
         # Used for each query page size, not as total
         FILTER_MAXRESULTS     = :maxResults

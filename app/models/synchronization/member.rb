@@ -1,7 +1,7 @@
 # encoding: utf-8
 require 'virtus'
 require_relative 'adapter'
-require_relative '../../../services/importer/lib/importer' 
+require_relative '../../../services/importer/lib/importer'
 require_relative '../visualization/collection'
 require_relative '../../../services/importer/lib/importer/datasource_downloader'
 require_relative '../../../services/datasources/lib/datasources'
@@ -59,6 +59,7 @@ module CartoDB
       attribute :type_guessing,           Boolean, default: true
       attribute :quoted_fields_guessing,  Boolean, default: true
       attribute :content_guessing,        Boolean, default: false
+      attribute :visualization_id,        String
 
       def initialize(attributes={}, repository=Synchronization.repository)
         super(attributes)
@@ -84,13 +85,13 @@ module CartoDB
 
       def to_s
         "<CartoDB::Synchronization::Member id:\"#{@id}\" name:\"#{@name}\" ran_at:\"#{@ran_at}\" run_at:\"#{@run_at}\" " \
-        "interval:\"#{@interval}\" state:\"#{@state}\" retried_times:\"#{@retried_times}\" log_id:\"#{log.id}\" " \
+        "interval:\"#{@interval}\" state:\"#{@state}\" retried_times:\"#{@retried_times}\" log_id:\"#{self.log_id}\" " \
         "service_name:\"#{@service_name}\" service_item_id:\"#{@service_item_id}\" checksum:\"#{@checksum}\" " \
         "url:\"#{@url}\" error_code:\"#{@error_code}\" error_message:\"#{@error_message}\" modified_at:\"#{@modified_at}\" " \
         " user_id:\"#{@user_id}\" type_guessing:\"#{@type_guessing}\" " \
-        "quoted_fields_guessing:\"#{@quoted_fields_guessing}\">"
+        "quoted_fields_guessing:\"#{@quoted_fields_guessing}\" visualization_id:\"#{@visualization_id}\">"
       end
-  
+
       def synchronizations_logger
         @@synchronizations_logger ||= ::Logger.new("#{Rails.root}/log/synchronizations.log")
       end
@@ -132,8 +133,8 @@ module CartoDB
       # @return bool
       def can_manually_sync?
         # Last sync ok, last sync failed, or too much time in queued state
-        (  self.state == STATE_SUCCESS || 
-           self.state == STATE_FAILURE || 
+        (  self.state == STATE_SUCCESS ||
+           self.state == STATE_FAILURE ||
           (self.state == STATE_QUEUED && self.updated_at + SYNC_NOW_TIMESPAN < Time.now)
          ) && (self.ran_at + SYNC_NOW_TIMESPAN < Time.now)
       end
@@ -149,15 +150,18 @@ module CartoDB
         self.state = STATE_SYNCING
         self.store
 
+        # TODO: See if we can remove this code
         # First import is a "normal import" so still has no id, then run gets called and will get log first time
         # but we need this to fix old logs
         if log.nil?
           @log = CartoDB::Log.new(type: CartoDB::Log::TYPE_SYNCHRONIZATION, user_id: user.id)
-          @log.save
+          @log.store
           self.log_id = @log.id
           store
         else
+          @log.type = CartoDB::Log::TYPE_SYNCHRONIZATION
           @log.clear
+          @log.store
         end
 
         if user.nil?
@@ -213,7 +217,7 @@ module CartoDB
         end
 
         store
-        
+
         notify
 
       rescue => exception
@@ -246,6 +250,10 @@ module CartoDB
         end
         notify
         self
+      ensure
+        CartoDB::PlatformLimits::Importer::UserConcurrentSyncsAmount.new({
+              user: user, redis: { db: $users_metadata }
+            }).decrement!
       end
 
       def notify
@@ -383,11 +391,11 @@ module CartoDB
       end # geocode_table
 
       def to_hash
-        attributes.to_hash
+        attributes.merge({from_external_source: from_external_source?}).to_hash
       end
 
       def to_json(*args)
-        attributes.to_json(*args)
+        attributes.merge({from_external_source: from_external_source?}).to_json(*args)
       end
 
       def valid?
@@ -411,8 +419,14 @@ module CartoDB
         @table
       end
 
+      def visualization
+        @visualization ||= CartoDB::Visualization::Member.new(id: @visualization_id).fetch
+      rescue KeyErrror
+        @visualization = nil
+      end
+
       def authorize?(user)
-        user.id == user_id && !!user.sync_tables_enabled
+        user.id == user_id && (!!user.sync_tables_enabled || from_external_source?)
       end
 
       def pg_options
@@ -423,7 +437,7 @@ module CartoDB
             database: user.database_name,
 	          host:     user.user_database_host
           )
-      end 
+      end
 
       def ogr2ogr_options
         options = Cartodb.config.fetch(:ogr2ogr, {})
@@ -453,7 +467,6 @@ module CartoDB
         return @log unless @log.nil?
 
         log_attributes = {
-          type: CartoDB::Log::TYPE_SYNCHRONIZATION,
           id: self.log_id
         }
 
@@ -487,6 +500,10 @@ module CartoDB
           datasource = nil
         end
         datasource
+      end
+
+      def from_external_source?
+        ::ExternalDataImport.where(synchronization_id: self.id).first != nil
       end
 
       attr_reader :repository

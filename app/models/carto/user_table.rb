@@ -19,14 +19,17 @@ module Carto
       @geometry_types ||= table.geometry_types
     end
 
+    # Estimated size
     def size
       row_count_and_size[:size]
     end
 
+    # Estimated row_count. Preferred: `estimated_row_count`
     def row_count
       row_count_and_size[:row_count]
     end
 
+    # Estimated row count and size. Preferred `estimated_row_count` for row count.
     def row_count_and_size
       @row_count_and_size ||= table.row_count_and_size
     end
@@ -66,6 +69,14 @@ module Carto
 
     def public_with_link_only?
       self.privacy == PRIVACY_LINK
+    end
+
+    def estimated_row_count
+      service.estimated_row_count
+    end
+
+    def actual_row_count
+      service.actual_row_count
     end
 
     private

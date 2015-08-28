@@ -1,31 +1,26 @@
 # encoding: utf-8
-require 'rspec'
+require 'rspec/core'
+require 'rspec/expectations'
+require 'rspec/mocks'
 require_relative '../../spec_helper'
 
 describe CartoDB::TableRelator do
   describe '.rows_and_size' do
-    before do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
-
-      quota_in_bytes  = 524288000
-      table_quota     = 500
-      @user           = create_user(
-                          quota_in_bytes: quota_in_bytes,
-                          table_quota:    table_quota
-                        )
+    before(:each) do
+      User.any_instance.stubs(:enable_remote_db_user).returns(true)
     end
 
-    after do
-      @user.destroy
+    before do
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
     end
 
     it 'checks row_count_and_size relator method' do
-      @user.in_database { |database| @db = database }
+      $user_1.in_database { |database| @db = database }
 
       table_name  = "test_#{rand(999)}"
 
       table = create_table({
-                               :user_id => @user.id,
+                               :user_id => $user_1.id,
                                name: table_name
                            })
 
@@ -54,15 +49,15 @@ describe CartoDB::TableRelator do
       db = { visualizations: vis_mock }
       @table_relator = CartoDB::TableRelator.new(db, table)
     end
-    
+
     describe 'given there are no dependent visualizations' do
       before :each do
         @dependents = @table_relator.serialize_dependent_visualizations
       end
-      
+
       it 'should return an empty list' do
         @dependents.should eq []
-      end 
+      end
     end
 
     describe 'given there are at least one dependent visualization' do
@@ -124,7 +119,7 @@ describe CartoDB::TableRelator do
     describe 'given there are at least one non_dependent visualization' do
       before :each do
         CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
-        
+
         CartoDB::Visualization::Member.any_instance.stubs(:non_dependent?).returns(true, false, false)
         @non_dependents = @table_relator.serialize_non_dependent_visualizations
       end
@@ -132,7 +127,7 @@ describe CartoDB::TableRelator do
       it 'should return a list with dependent visualizations' do
         @non_dependents.size.should eq 1
       end
-      
+
       it 'should contain expected datapoints required for dashboard' do
         @non_dependents[0][:id].should eq '1'
         @non_dependents[0][:name].should eq '1st'

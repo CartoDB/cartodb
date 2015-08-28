@@ -1,19 +1,22 @@
 # encoding: utf-8
+require_relative '../../../../spec/rspec_configuration'
 require_relative '../../lib/importer/runner'
 require_relative '../../lib/importer/job'
 require_relative '../../lib/importer/downloader'
 require_relative '../factories/pg_connection'
 require_relative '../doubles/log'
 require_relative '../doubles/user'
-require_relative 'cdb_importer_context'
 require_relative 'acceptance_helpers'
 require_relative '../../spec/doubles/importer_stats'
+require_relative 'cdb_importer_context'
+require_relative 'no_stats_context'
 
 include CartoDB::Importer2
 
 describe 'csv regression tests' do
   include AcceptanceHelpers
   include_context "cdb_importer schema"
+  include_context "no stats"
 
   it 'georeferences files with lat / lon columns' do
     filepath    = path_to('../../../../spec/support/data/csv_with_lat_lon.csv')
@@ -44,6 +47,27 @@ describe 'csv regression tests' do
 
     result = runner.results.first
     result.success?.should be_true, "error code: #{result.error_code}, trace: #{result.log_trace}"
+  end
+
+  it 'imports files with duplicated column names' do
+    runner = runner_with_fixture('../fixtures/duplicated_column_name.csv')
+    runner.run
+
+    result = runner.results.first
+    result.success?.should be_true, "error code: #{result.error_code}, trace: #{result.log_trace}"
+    table = result.tables.first
+    columns = @db[%Q{ SELECT * FROM information_schema.columns WHERE table_schema = 'cdb_importer' AND table_name   = '#{table}' }].map { |c| c[:column_name] }
+    columns.should include('column')
+    columns.should include('column2')
+  end
+
+  it 'raises DuplicatedColumnError with long duplicated column names' do
+    runner = runner_with_fixture('../fixtures/duplicated_long_column_name.csv')
+    runner.run
+
+    result = runner.results.first
+    result.success?.should be_false
+    result.error_code.should == 2005
   end
 
   it 'imports files exported from the SQL API' do
@@ -121,7 +145,7 @@ describe 'csv regression tests' do
   it 'imports files with invalid the_geom but previous valid geometry column (see #2108)' do
     runner = runner_with_fixture('invalid_the_geom_valid_wkb_geometry.csv')
     runner.run
-    
+
     result = runner.results.first
     result.success?.should be_true, "error code: #{result.error_code}, trace: #{result.log_trace}"
   end
@@ -145,7 +169,7 @@ describe 'csv regression tests' do
     runner.run
 
     result = runner.results.first
-    runner.db[%Q{
+    @db[%Q{
       SELECT count(*)
       FROM #{result.schema}.#{result.table_name}
       AS count
@@ -176,11 +200,31 @@ describe 'csv regression tests' do
     runner.results.first.error_code.should eq CartoDB::Importer2::ERRORS_MAP[TooManyColumnsError]
   end
 
+  it 'errors after created temporary table should clean the table' do
+    log         = CartoDB::Importer2::Doubles::Log.new
+    job         = Job.new({ logger: log, pg_options: @pg_options })
+    runner = runner_with_fixture('too_many_columns.csv', job)
+    runner.run
+
+    table_exists = @db.execute(%Q{SELECT 1
+                    FROM   information_schema.tables
+                    WHERE  table_schema = '#{job.schema}'
+                    AND    table_name = '#{job.table_name}'})
+    table_exists.should be 0
+  end
+
   it 'displays a specific error message for a file with 10000 columns' do
     runner = runner_with_fixture('10000_columns.csv')
     runner.run
 
     runner.results.first.error_code.should eq CartoDB::Importer2::ERRORS_MAP[TooManyColumnsError]
+  end
+
+  it 'files with wrong dates convert the column in string instead of date' do
+    runner = runner_with_fixture('wrong_date.csv', nil, true)
+    runner.run
+
+    runner.results.first.success?.should eq true
   end
 
   def sample_for(job)
@@ -190,15 +234,28 @@ describe 'csv regression tests' do
     }].first
   end #sample_for
 
-  def runner_with_fixture(file)
+  # Using the version 2.x of ogr2ogr to check features like auto-guessing for example
+  def ogr2ogr2_options
+    {
+      ogr2ogr_binary:         'which ogr2ogr2',
+      ogr2ogr_csv_guessing:   'yes'
+    }
+  end
+
+  def runner_with_fixture(file, job=nil, add_ogr2ogr2_options=false)
     filepath = path_to(file)
     downloader = Downloader.new(filepath)
-    Runner.new({
+    runner = Runner.new({
                  pg: @pg_options,
                  downloader: downloader,
                  log: CartoDB::Importer2::Doubles::Log.new,
-                 user: CartoDB::Importer2::Doubles::User.new
+                 user: CartoDB::Importer2::Doubles::User.new,
+                 job: job
                })
+    if add_ogr2ogr2_options
+      runner.loader_options = ogr2ogr2_options
+    end
+    runner
   end
 
 end # csv regression tests

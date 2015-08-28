@@ -21,17 +21,11 @@ div.vis_navigation nav a.tab {
   padding-bottom: 3px;
   font-weight: $sFontWeight-bold
 }
-.metadata_dialog label {
-  margin: 0;
-  margin-bottom: 7px;
-}
 
 div.table table tbody tr td div.cell,
 div.map .option-button,
 div.dropdown ul li a,
 .select2-results .select2-result-label,
-.metadata_dialog label,
-.metadata_dialog .hint,
 .form_spinner,
 .infowindow_panel .fields li .switches,
 .infowindow_panel .fields li.drag_field {
@@ -40,3 +34,11 @@ div.dropdown ul li a,
 .CodeMirror { font-size: 15px }
 
 div.legends_panel div.forms.panel_content .right .checkbox { margin-top:11px; line-height:1 }
+
+
+// New dialogs
+.Dialog-headerTitle,
+.Dialog-headerText,
+.IntermediateInfo-title {
+  font-family: 'Lato', sans-serif; // TODO: remove when old styles are deleted
+}

@@ -40,7 +40,23 @@ class Organization < Sequel::Model
     validates_presence [:name, :quota_in_bytes, :seats]
     validates_unique   :name
     validates_format   /\A[a-z0-9\-]+\z/, :name, message: 'must only contain lowercase letters, numbers & hyphens'
+    validates_integer  :default_quota_in_bytes, :allow_nil => true
+    if default_quota_in_bytes
+      errors.add(:default_quota_in_bytes, 'Default quota must be positive') if default_quota_in_bytes <= 0
+    end
     errors.add(:name, 'cannot exist as user') if name_exists_in_users?
+  end
+
+  def validate_new_user(user, errors)
+    if !whitelisted_email_domains.nil? and !whitelisted_email_domains.empty?
+      email_domain = user.email.split('@')[1]
+      errors.add(:email, "Email domain '#{email_domain}' not valid for #{name} organization") unless whitelisted_email_domains.include?(email_domain)
+    end
+  end
+
+  def validate_for_signup(errors, quota_in_bytes)
+    errors.add(:organization, "not enough seats") if remaining_seats <= 0
+    errors.add(:quota_in_bytes, "not enough disk quota") if unassigned_quota <= 0 || (!quota_in_bytes.nil? && unassigned_quota < quota_in_bytes)
   end
 
   # Just to make code more uniform with user.database_schema
@@ -59,7 +75,11 @@ class Organization < Sequel::Model
   def destroy_cascade
     destroy_permissions
     destroy_non_owner_users
-    self.owner.destroy
+    if self.owner
+      self.owner.destroy
+    else
+      self.destroy
+    end
   end
 
   def destroy_permissions
@@ -127,11 +147,8 @@ class Organization < Sequel::Model
     quota_in_bytes - assigned_quota
   end
 
-  # options:
-  # :show_organization_users: load all organization users under :users key
-  def to_poro(filtered_user = nil, options = {})
-    filtered_user ||= self.owner
-    poro = {
+  def to_poro
+    {
       :created_at       => self.created_at,
       :description      => self.description,
       :discus_shortname => self.discus_shortname,
@@ -154,19 +171,9 @@ class Organization < Sequel::Model
       :twitter_username         => self.twitter_username,
       :updated_at               => self.updated_at,
       :website          => self.website,
+      :admin_email      => self.admin_email,
       :avatar_url       => self.avatar_url
     }
-    if options[:show_organization_users] == true
-      poro[:users] = self.users.reject { |item| filtered_user && item.id == filtered_user.id }
-        .map { |u|
-        {
-          :id         => u.id,
-          :username   => u.username,
-          :avatar_url => u.avatar_url
-        }
-      }
-    end
-    poro
   end
 
   def public_visualizations(page_num = 1, items_per_page = 5, tag = nil)
@@ -208,6 +215,18 @@ class Organization < Sequel::Model
         order:    order,
         o:        {updated_at: :desc}
     )
+  end
+
+  def signup_page_enabled
+    !whitelisted_email_domains.nil? && !whitelisted_email_domains.empty?
+  end
+
+  def remaining_seats
+    seats - assigned_seats
+  end
+
+  def assigned_seats
+    users.nil? ? 0 : users.count
   end
 
   private

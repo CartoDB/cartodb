@@ -51,7 +51,12 @@ module CartoDB
     class InvalidGeoJSONError                   < StandardError; end
     class InvalidShpError                       < StandardError; end
     class KmlNetworkLinkError                   < StandardError; end
-    class InvalidNameError                      < StandardError; end
+    class KmlWithoutStyleIdError                < GenericImportError; end
+    class InvalidNameError                      < BaseImportError
+      def initialize(message)
+        super(message, 1014)
+      end
+    end
     class LoadError                             < StandardError; end
     class MissingProjectionError                < StandardError; end
     class ShpNormalizationError                 < StandardError; end
@@ -71,10 +76,14 @@ module CartoDB
     class TooManyNodesError                     < StandardError; end
     class GDriveNotPublicError                  < StandardError; end
     class EncodingDetectionError                < StandardError; end
+    class MalformedXLSException                 < StandardError; end
     class XLSXFormatError                       < StandardError; end
     class MalformedCSVException                 < GenericImportError; end
     class TooManyColumnsError                   < GenericImportError; end
     class DuplicatedColumnError                 < GenericImportError; end
+    class RowsEncodingColumnError               < GenericImportError; end
+    class EncodingError                         < StandardError; end
+
     class StatementTimeoutError                 < BaseImportError; end
 
     # @see also app/models/synchronization/member.rb => run() for more error codes
@@ -104,6 +113,10 @@ module CartoDB
       MalformedCSVException                 => 2003,
       TooManyColumnsError                   => 2004,
       DuplicatedColumnError                 => 2005,
+      EncodingError                         => 2006,
+      RowsEncodingColumnError               => 2007,
+      MalformedXLSException                 => 2008,
+      KmlWithoutStyleIdError                => 2009,
       InvalidGeoJSONError                   => 3007,
       UnknownSridError                      => 3008,
       ShpNormalizationError                 => 3009,
@@ -132,8 +145,9 @@ module CartoDB
       CartoDB::Datasources::ResponseError                         => 1011,
       CartoDB::Datasources::ExternalServiceError                  => 1012,
       CartoDB::Datasources::GNIPServiceError                      => 1009,
-      CartoDB::Datasources::DropboxPermissionError                => 1016
+      CartoDB::Datasources::DropboxPermissionError                => 1016,
+      CartoDB::Datasources::GDriveNoExternalAppsAllowedError      => 1008
     }
-  end # Importer2
-end # CartoDB
+  end
+end
 

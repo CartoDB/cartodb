@@ -17,9 +17,13 @@ describe 'refactored behaviour' do
 end
 
 describe User do
+  before(:each) do
+    User.any_instance.stubs(:enable_remote_db_user).returns(true)
+  end
+
   before(:all) do
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
-    
+    stub_named_maps_calls
+
     @user_password = 'admin123'
     puts "\n[rspec][user_spec] Creating test user databases..."
     @user     = create_user :email => 'admin@example.com', :username => 'admin', :password => @user_password
@@ -32,12 +36,13 @@ describe User do
   end
 
   before(:each) do
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+    stub_named_maps_calls
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
     User.any_instance.stubs(:enable_remote_db_user).returns(true)
   end
 
   after(:all) do
+    stub_named_maps_calls
     @user.destroy
     @user2.destroy
   end
@@ -180,6 +185,41 @@ describe User do
       organization.destroy
     end
 
+    describe 'organization email whitelisting' do
+
+      before(:each) do
+        @organization = create_org('testorg', 10.megabytes, 1)
+      end
+
+      after(:each) do
+        @organization.destroy
+      end
+
+      it 'valid_user is valid' do
+        user = FactoryGirl.build(:valid_user)
+        user.valid?.should == true
+      end
+
+      it 'user email is valid if organization has not whitelisted domains' do
+        user = FactoryGirl.build(:valid_user, organization: @organization)
+        user.valid?.should == true
+      end
+
+      it 'user email is not valid if organization has whitelisted domains and email is not under that domain' do
+        @organization.whitelisted_email_domains = [ 'organization.org' ]
+        user = FactoryGirl.build(:valid_user, organization: @organization)
+        user.valid?.should == false
+        user.errors[:email].should_not be_nil
+      end
+
+      it 'user email is valid if organization has whitelisted domains and email is under that domain' do
+        user = FactoryGirl.build(:valid_user, organization: @organization)
+        @organization.whitelisted_email_domains = [ user.email.split('@')[1] ]
+        user.valid?.should == true
+        user.errors[:email].should == []
+      end
+    end
+
     describe 'when updating user quota' do
       it 'should be valid if his organization has enough disk space' do
         organization = create_organization_with_users(quota_in_bytes: 70.megabytes)
@@ -261,9 +301,7 @@ describe User do
       user.save
       Cartodb::Central.any_instance.expects(:create_organization_user).with(organization.name, user.allowed_attributes_to_central(:create)).once
       user.create_in_central.should be_true
-    end
-    it 'should update remote user in central if needed' do
-      pending
+      organization.destroy
     end
   end
 
@@ -274,6 +312,7 @@ describe User do
     user.set_relationships_from_central({ feature_flags: [ ff.id.to_s ]})
     user.save
     user.feature_flags_user.map { |ffu| ffu.feature_flag_id }.should include(ff.id)
+    user.destroy
   end
 
   it 'should delete feature flags assignations to a deleted user' do
@@ -497,27 +536,32 @@ describe User do
     it 'should not have private maps enabled by default' do
       user_missing_private_maps = create_user :email => 'user_mpm@example.com',  :username => 'usermpm',  :password => 'usermpm'
       user_missing_private_maps.private_maps_enabled?.should eq false
+      user_missing_private_maps.destroy
     end
 
     it 'should have private maps if enabled' do
       user_with_private_maps = create_user :email => 'user_wpm@example.com',  :username => 'userwpm',  :password => 'userwpm', :private_maps_enabled => true
       user_with_private_maps.private_maps_enabled?.should eq true
+      user_with_private_maps.destroy
     end
 
     it 'should not have private maps if disabled' do
       user_without_private_maps = create_user :email => 'user_opm@example.com',  :username => 'useropm',  :password => 'useropm', :private_maps_enabled => false
       user_without_private_maps.private_maps_enabled?.should eq false
+      user_without_private_maps.destroy
     end
 
     it 'should have private maps if he has private_tables_enabled, even if disabled' do
       user_without_private_maps = create_user :email => 'user_opm3@example.com',  :username => 'useropm3',  :password => 'useropm3', :private_maps_enabled => false, :private_tables_enabled => true
       user_without_private_maps.private_maps_enabled?.should eq true
+      user_without_private_maps.destroy
     end
 
     it 'should have private maps if he is AMBASSADOR even if disabled' do
       user_without_private_maps = create_user :email => 'user_opm2@example.com',  :username => 'useropm2',  :password => 'useropm2', :private_maps_enabled => false
       user_without_private_maps.stubs(:account_type).returns('AMBASSADOR')
       user_without_private_maps.private_maps_enabled?.should eq true
+      user_without_private_maps.destroy
     end
 
   end
@@ -582,6 +626,8 @@ describe User do
       u1.reload
       u1.get_geocoding_calls.should == 1
       u1.get_twitter_imports_count.should == 5
+
+      org.destroy
     end
   end
 
@@ -714,7 +760,7 @@ describe User do
     query_result[:time].should_not be_blank
     query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
     query_result[:total_rows].should == 2
-    query_result[:rows].first.keys.should == [:id, :name_of_species, :kingdom, :family, :lat, :lon, :views, :the_geom, :cartodb_id, :created_at, :updated_at, :the_geom_webmercator]
+    query_result[:rows].first.keys.sort.should == [:cartodb_id, :the_geom, :the_geom_webmercator, :id, :name_of_species, :kingdom, :family, :lat, :lon, :views].sort
     query_result[:rows][0][:name_of_species].should == "Barrukia cristata"
     query_result[:rows][1][:name_of_species].should == "Eulagisca gigantea"
 
@@ -757,7 +803,7 @@ describe User do
     query_result[:time].should_not be_blank
     query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
     query_result[:total_rows].should == 2
-    query_result[:rows].first.keys.should == [:id, :name_of_species, :kingdom, :family, :lat, :lon, :views, :the_geom, :cartodb_id, :created_at, :updated_at, :the_geom_webmercator]
+    query_result[:rows].first.keys.sort.should == [:cartodb_id, :the_geom, :the_geom_webmercator, :id, :name_of_species, :kingdom, :family, :lat, :lon, :views].sort
     query_result[:rows][0][:name_of_species].should == "Barrukia cristata"
     query_result[:rows][1][:name_of_species].should == "Eulagisca gigantea"
     query_result[:results].should  == true
@@ -1258,6 +1304,7 @@ describe User do
         u1.destroy
       }.to raise_exception CartoDB::BaseCartoDBError
 
+      org.destroy
     end
   end
 
@@ -1332,7 +1379,7 @@ describe User do
 
   end
 
-  # INFO: since user can be also created in Central, and it can fail, we need to request notification explicitly. See #3022 for more info 
+  # INFO: since user can be also created in Central, and it can fail, we need to request notification explicitly. See #3022 for more info
   it "can notify a new user creation" do
 
     ::Resque.stubs(:enqueue).returns(nil)
@@ -1351,9 +1398,6 @@ describe User do
   end
 
   it "Tests password change" do
-    # @user_password = 'admin123'
-    # @user     = create_user :email => 'admin@example.com', :username => 'admin', :password => @user_password
-
     new_valid_password = '123456'
 
     old_crypted_password = @user.crypted_password
@@ -1465,13 +1509,20 @@ describe User do
       collection = CartoDB::Visualization::Collection.new.fetch({user_id: @user.id})
       redis_mock = mock
       redis_vizjson_cache = CartoDB::Visualization::RedisVizjsonCache.new()
+      redis_embed_cache = EmbedRedisCache.new()
       CartoDB::Visualization::RedisVizjsonCache.any_instance.stubs(:redis).returns(redis_mock)
+      EmbedRedisCache.any_instance.stubs(:redis).returns(redis_mock)
 
 
-      redis_keys = collection.map {|v| [redis_vizjson_cache.key(v.id, false), redis_vizjson_cache.key(v.id, true)] }.flatten
-      redis_keys.should_not be_empty
+      redis_vizjson_keys = collection.map {|v| [redis_vizjson_cache.key(v.id, false), redis_vizjson_cache.key(v.id, true)] }.flatten
+      redis_vizjson_keys.should_not be_empty
 
-      redis_mock.expects(:del).once.with(redis_keys)
+      redis_embed_keys = collection.map {|v| [redis_embed_cache.key(v.id, false), redis_embed_cache.key(v.id, true)] }.flatten
+      redis_embed_keys.should_not be_empty
+
+
+      redis_mock.expects(:del).once.with(redis_vizjson_keys)
+      redis_mock.expects(:del).once.with(redis_embed_keys)
 
       @user.purge_redis_vizjson_cache
     end
@@ -1489,6 +1540,8 @@ describe User do
       CartoDB::Visualization::Member.expects(:redis_cache).never
 
       user.purge_redis_vizjson_cache
+
+      user.destroy
     end
   end
 

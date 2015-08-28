@@ -13,12 +13,26 @@ describe Carto::Visualization do
   end
 
   before(:each) do
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+    stub_named_maps_calls
     delete_user_data(@user)
   end
 
   after(:all) do
+    stub_named_maps_calls
     @user.destroy
+  end
+
+  describe '#estimated_row_count and #actual_row_count' do
+
+    it 'should query Table estimated an actual row count methods' do
+      ::Table.any_instance.stubs(:estimated_row_count).returns(999)
+      ::Table.any_instance.stubs(:actual_row_count).returns(1000)
+      table = create_table({:name => 'table1', :user_id => @user.id})
+      vis = Carto::Visualization.find(table.table_visualization.id)
+      vis.estimated_row_count.should == 999
+      vis.actual_row_count.should == 1000
+    end
+
   end
 
   describe '#tags=' do
@@ -71,6 +85,19 @@ describe Carto::Visualization do
       parent.children.count.should == 2
 
     end
+  end
+
+  describe 'licenses' do
+    it 'should store correctly a visualization with its license' do
+      table = create_table({:name => 'table1', :user_id => @user.id})
+      v = table.table_visualization
+      v.license = Carto::License::APACHE_LICENSE
+      v.store
+      vis = Carto::Visualization.find(v.id)
+      vis.license_info.id.should eq :apache
+      vis.license_info.name.should eq "Apache license"
+    end
+
   end
 
 end

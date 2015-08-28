@@ -1,0 +1,68 @@
+// Navbar
+// --------------------------------------------------
+
+@import "_variables";
+@import "_mixins";
+@import "_helpers";
+
+$text-color: rgba(white, 0.5);
+
+.Navbar {
+  @extend %clearfix;
+  padding: 20px 0;
+  text-align: center;
+}
+
+.Navbar--left { text-align: left }
+
+.Navbar-brand {
+  display: inline-block;
+  width: 48px;
+  height: 48px;
+  vertical-align: middle;
+  margin-right: 5px;
+}
+
+.Navbar-menu { float: right }
+
+.Navbar-menuItem {
+  position: relative;
+  float: left;
+  margin: -20px 0 -20px 20px;
+  padding: 20px 0;
+  color: #999;
+
+  &:first-child {
+    margin-left: 0;
+  }
+
+  &.is-selected {
+    color: #333;
+
+    &:after {
+      content: "";
+      display: block;
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 3px;
+      background: $cPrincipal;
+    }
+  }
+}
+
+.Navbar-text {
+  margin-top: 18px;
+  font-size: 16px;
+  color: $text-color;
+}
+
+.Navbar-textLink {
+  color: $text-color;
+  text-decoration: underline;
+  &:hover { color: white }
+}
+
+.Navbar-link {
+  color: #fff;
+}

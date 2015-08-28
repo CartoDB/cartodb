@@ -28,3 +28,7 @@
   margin-top: 10px;
   margin-bottom: 10px;
 }
+.DefaultParagraph--normalSize {
+  font-size: $sFontSize-normal;
+  line-height: $sLineHeight-normal;
+}

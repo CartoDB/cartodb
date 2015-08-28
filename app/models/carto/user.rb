@@ -18,12 +18,12 @@ class Carto::User < ActiveRecord::Base
   has_many :layers, :through => :layers_user
   belongs_to :organization, inverse_of: :users
   has_many :feature_flags_user, dependent: :destroy
-  has_many :feature_flags, :through => :feature_flags_user
   has_many :assets, inverse_of: :user
   has_many :data_imports, inverse_of: :user
   has_many :geocodings, inverse_of: :user
   has_many :synchronization_oauths, class_name: Carto::SynchronizationOauth, inverse_of: :user, dependent: :destroy
   has_many :search_tweets, inverse_of: :user
+  has_many :synchronizations, inverse_of: :user
 
   delegate [ 
       :database_username, :database_password, :in_database, :load_cartodb_functions, :rebuild_quota_trigger,
@@ -33,7 +33,7 @@ class Carto::User < ActiveRecord::Base
 
   # INFO: select filter is done for security and performance reasons. Add new columns if needed.
   DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," + 
-                   "users.api_key, users.dynamic_cdn_enabled, users.database_schema, users.database_name, users.name," +
+                   "users.api_key, users.database_schema, users.database_name, users.name," +
                    "users.disqus_shortname, users.account_type, users.twitter_username, users.google_maps_key"
 
   SELECT_WITH_DATABASE = DEFAULT_SELECT + ", users.quota_in_bytes, users.database_host"
@@ -80,6 +80,17 @@ class Carto::User < ActiveRecord::Base
 
   def service
     @service ||= Carto::UserService.new(self)
+  end
+
+  #                             +--------+---------+------+
+  #       valid_privacy logic   | Public | Private | Link |
+  #   +-------------------------+--------+---------+------+
+  #   | private_tables_enabled  |    T   |    T    |   T  |
+  #   | !private_tables_enabled |    T   |    F    |   F  |
+  #   +-------------------------+--------+---------+------+
+  # 
+  def valid_privacy?(privacy)
+    self.private_tables_enabled || privacy == UserTable::PRIVACY_PUBLIC
   end
 
   # @return String public user url, which is also the base url for a given user
@@ -196,7 +207,12 @@ class Carto::User < ActiveRecord::Base
   end
 
   def remaining_geocoding_quota(options = {})
-    geocoding_quota - get_geocoding_calls(options)
+    if organization.present?
+      remaining = organization.geocoding_quota.to_i - organization.get_geocoding_calls(options)
+    else
+      remaining = geocoding_quota - get_geocoding_calls(options)
+    end
+    (remaining > 0 ? remaining : 0)
   end
 
   def oauth_for_service(service)
@@ -298,7 +314,11 @@ class Carto::User < ActiveRecord::Base
   end
 
   def import_quota
-    self.account_type.downcase == 'free' ? 1 : 3
+    if self.max_concurrent_import_count.nil?
+      self.account_type.downcase == 'free' ? 1 : 3
+    else
+      self.max_concurrent_import_count
+    end
   end
 
   def arcgis_datasource_enabled?

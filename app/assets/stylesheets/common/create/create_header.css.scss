@@ -7,6 +7,7 @@
   max-height: 100px;
   min-height: 100px!important;
 }
+.CreateDialog-header.with-separator { border-bottom: 1px solid $cStructure-mainLine }
 .CreateDialog-headerSteps {
   display: block;
   text-align: center;
@@ -18,7 +19,11 @@
   margin-right: 98px;
 }
 .CreateDialog-headerStep:last-child { margin-right: 0 }
+// TODO: this should be deprecated/removed by using standalone .LayoutIcon instead
 .CreateDialog-header .Dialog-headerIcon {
+  @include display-flex();
+  @include justify-content(center, center);
+  @include align-items(center, center);
   margin-bottom: 12px;
   border-color: #CCC;
   line-height: 42px;
@@ -78,8 +83,8 @@
 // Step selected or selectable
 .CreateDialog-headerStep.is-selected,
 .CreateDialog-headerStep.is-selectable:hover {
-  .Dialog-headerIcon { border-color: $cHighlight-main }
-  .iconFont { color: $cHighlight-main }
+  .Dialog-headerIcon { border-color: $cIcons-active }
+  .iconFont { color: $cIcons-active }
   .Dialog-headerText,
   .Dialog-headerTitle {
     color: $cTypography-paragraphs;

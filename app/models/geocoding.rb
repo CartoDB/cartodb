@@ -1,22 +1,30 @@
 # encoding: UTF-8'
+require 'socket'
 require_relative '../../services/table-geocoder/lib/table_geocoder_factory'
 require_relative '../../services/table-geocoder/lib/exceptions'
+require_relative '../../services/table-geocoder/lib/mail_geocoder'
+require_relative '../../services/geocoder/lib/geocoder_config'
 require_relative '../../lib/cartodb/metrics'
 require_relative '../../lib/cartodb/mixpanel'
+require_relative '../../app/helpers/bounding_box_helper'
+require_relative 'log'
+require_relative '../../lib/cartodb/stats/geocoding'
 
 class Geocoding < Sequel::Model
 
   ALLOWED_KINDS   = %w(admin0 admin1 namedplace postalcode high-resolution ipaddress)
-  DEFAULT_TIMEOUT = 5.hours
 
-  PUBLIC_ATTRIBUTES = [:id, :table_id, :state, :kind, :country_code, :region_code, :formatter, :geometry_type,
-                       :error, :processed_rows, :cache_hits, :processable_rows, :real_rows, :price,
-                       :used_credits, :remaining_quota, :country_column, :region_column, :data_import_id,
+
+  PUBLIC_ATTRIBUTES = [:id, :table_id, :table_name, :state, :kind, :country_code, :region_code, :formatter,
+                       :geometry_type, :error, :processed_rows, :cache_hits, :processable_rows, :real_rows,
+                       :price, :used_credits, :remaining_quota, :country_column, :region_column, :data_import_id,
                        :error_code]
 
   # Characters in the following Unicode categories: Letter, Mark, Number and Connector_Punctuation,
   # plus spaces and single quotes
   SANITIZED_FORMATTER_REGEXP = /\A[[[:word:]]\s\,\']*\z/
+
+  MIN_GEOCODING_TIME_TO_NOTIFY = 3 * 60 #seconds
 
   many_to_one :user
   many_to_one :user_table, :key => :table_id
@@ -25,8 +33,7 @@ class Geocoding < Sequel::Model
 
   attr_reader :table_geocoder
   attr_reader :started_at, :finished_at
-
-  attr_accessor :run_timeout
+  attr_reader :log
 
   def self.get_geocoding_calls(dataset, date_from, date_to)
     dataset.where(kind: 'high-resolution').where('geocodings.created_at >= ? and geocodings.created_at <= ?', date_from, date_to + 1.days).sum("processed_rows + cache_hits".lit).to_i
@@ -43,11 +50,6 @@ class Geocoding < Sequel::Model
     # validates_presence :table_id
     validates_includes ALLOWED_KINDS, :kind
   end # validate
-
-  def after_initialize
-    super
-    @run_timeout = DEFAULT_TIMEOUT
-  end #after_initialize
 
   def before_save
     super
@@ -74,7 +76,7 @@ class Geocoding < Sequel::Model
     if !defined?(@table_geocoder)
       begin
         @table_geocoder = Carto::TableGeocoderFactory.get(user,
-                                                          Cartodb.config[:geocoder],
+                                                          CartoDB::GeocoderConfig.instance.get,
                                                           table_service,
                                                           original_formatter: formatter,
                                                           formatter: sanitize_formatter,
@@ -85,7 +87,8 @@ class Geocoding < Sequel::Model
                                                           kind: kind,
                                                           max_rows: max_geocodable_rows,
                                                           country_column: country_column,
-                                                          region_column: region_column)
+                                                          region_column: region_column,
+                                                          log: self.log)
       rescue => e
         @table_geocoder = nil
         raise e
@@ -112,6 +115,13 @@ class Geocoding < Sequel::Model
 
   # INFO: this method shall always be called from a queue processor
   def run!
+    log.append "Running geocoding job on server #{Socket.gethostname} with PID: #{Process.pid}"
+    if self.force_all_rows == true
+      table_geocoder.reset_cartodb_georef_status
+    else
+      table_geocoder.mark_rows_to_geocode
+    end
+
     processable_rows = self.class.processable_rows(table_service)
     if processable_rows == 0
       self.update(state: 'finished', real_rows: 0, used_credits: 0, processed_rows: 0, cache_hits: 0)
@@ -122,51 +132,36 @@ class Geocoding < Sequel::Model
     rows_geocoded_before = table_service.owner.in_database.select.from(table_service.sequel_qualified_table_name).where(cartodb_georef_status: true).count rescue 0
 
     self.run_geocoding!(processable_rows, rows_geocoded_before)
+  rescue => e
+    log.append "Unexpected exception: #{e.to_s}"
+    log.append e.backtrace
+    CartoDB.notify_exception(e)
+    raise e
   ensure
-    user.reset_pooled_connections if user.present?
+    log.store # Make sure the log is stored in DB
+    user.reset_pooled_connections
   end
 
   def run_geocoding!(processable_rows, rows_geocoded_before = 0)
+    log.append "run_geocoding!()"
     self.update state: 'started', processable_rows: processable_rows
     @started_at = Time.now
 
     # INFO: this is where the real stuff is done
     table_geocoder.run
 
+    self.update(table_geocoder.update_geocoding_status)
     self.update remote_id: table_geocoder.remote_id
 
-    # INFO: this loop polls for the state of the table_geocoder batch process and cannot be simply removed
-    begin
-      self.update(table_geocoder.update_geocoding_status)
-      raise 'Geocoding timeout' if Time.now - @started_at > run_timeout and ['started', 'submitted', 'accepted'].include? state
-      raise 'Geocoding failed'  if state == 'failed'
-      sleep(2)
-    end until ['completed', 'cancelled'].include? state
-
+    # TODO better exception handling here
     raise 'Geocoding failed'  if state == 'failed'
+    raise 'Geocoding timed out'  if state == 'timeout'
     return false if state == 'cancelled'
 
-    self.update(cache_hits: table_geocoder.cache.hits) if table_geocoder.respond_to?(:cache)
-    Statsd.gauge("geocodings.requests", "+#{self.processed_rows}") rescue nil
-    Statsd.gauge("geocodings.cache_hits", "+#{self.cache_hits}") rescue nil
-    table_geocoder.process_results if state == 'completed'
-    create_automatic_geocoding if automatic_geocoding_id.blank?
-    rows_geocoded_after = table_service.owner.in_database.select.from(table_service.sequel_qualified_table_name).where('cartodb_georef_status is true and the_geom is not null').count rescue 0
-
-    @finished_at = Time.now
-    self.batched = table_geocoder.used_batch_request?
-    self.update(state: 'finished', real_rows: rows_geocoded_after - rows_geocoded_before, used_credits: calculate_used_credits)
-    self.report
+    handle_geocoding_success(rows_geocoded_before)
   rescue => e
-    @finished_at = Time.now
-    self.batched = table_geocoder.nil? ? false : table_geocoder.used_batch_request?
-    if e.is_a? Carto::GeocoderErrors::GeocoderBaseError
-      self.error_code = e.class.additional_info.error_code
-    end
-    self.update(state: 'failed', processed_rows: 0, cache_hits: 0)
-    CartoDB::notify_exception(e, user: user)
-    self.report(e)
-  end # run!
+    handle_geocoding_failure(e, rows_geocoded_before)
+  end
 
   def report(error = nil)
     payload = metrics_payload(error)
@@ -177,9 +172,11 @@ class Geocoding < Sequel::Model
     geocoding_logger.info(payload.to_json)
   end
 
-  def self.processable_rows(table_service)
+  def self.processable_rows(table_service, force_all_rows=false)
     dataset = table_service.owner.in_database.select.from(table_service.sequel_qualified_table_name)
-    dataset = dataset.where(cartodb_georef_status: nil) if dataset.columns.include?(:cartodb_georef_status)
+    if !force_all_rows && dataset.columns.include?(:cartodb_georef_status)
+      dataset = dataset.exclude(cartodb_georef_status: true)
+    end
     dataset.count
   end # self.processable_rows
 
@@ -201,19 +198,12 @@ class Geocoding < Sequel::Model
 
   def cost
     return 0 unless kind == 'high-resolution'
-    processed_rows.to_i * Cartodb.config[:geocoder]['cost_per_hit_in_cents'] rescue 0
+    processed_rows.to_i * CartoDB::GeocoderConfig.instance.get['cost_per_hit_in_cents'] rescue 0
   end
 
   def remaining_quota
     user.remaining_geocoding_quota
   end # remaining_quota
-
-  def create_automatic_geocoding
-    # Disabled until we stop sending previously failed rows
-    # best way to do this: use append mode on synchronizations
-    # geocoder = AutomaticGeocoding.create(table: table)
-    # self.update(automatic_geocoding_id: geocoder.id)
-  end # create_automatic_geocoder
 
   def sanitize_formatter
     translated_formatter = translate_formatter
@@ -240,11 +230,10 @@ class Geocoding < Sequel::Model
   end # translate_formatter
 
   def max_geocodable_rows
-    return nil if user.blank? || user.soft_geocoding_limit?
+    # This is an arbitrary number, previously set to 1M
+    return 50000 if user.soft_geocoding_limit?
     user.remaining_geocoding_quota
-  rescue
-    nil
-  end # max_geocodable_rows
+  end
 
   def successful_rows
     real_rows.to_i
@@ -302,11 +291,76 @@ class Geocoding < Sequel::Model
     payload
   end
 
+  def log
+    @log ||= instantiate_log
+  end
+
 
   private
 
   def table_service
     @table_service ||= Table.new(user_table: user_table) if user_table.present?
+  end
+
+  def instantiate_log
+    if self.log_id
+      @log = CartoDB::Log.where(id: log_id).first
+    else
+      @log = CartoDB::Log.new({
+          type: CartoDB::Log::TYPE_GEOCODING,
+          user_id: user.id
+        })
+      @log.store
+      self.log_id = @log.id
+      self.save
+    end
+    @log
+  end
+
+  def handle_geocoding_success(rows_geocoded_before)
+    self.update(cache_hits: table_geocoder.cache.hits) if table_geocoder.respond_to?(:cache)
+    stats_aggregator = CartoDB::Stats::Geocoding.instance
+    stats_aggregator.gauge("requests", "+#{self.processed_rows}") rescue nil
+    stats_aggregator.gauge("cache_hits", "+#{self.cache_hits}") rescue nil
+
+    @finished_at = Time.now
+    self.batched = table_geocoder.used_batch_request?
+    geocoded_rows = total_geocoded_rows(rows_geocoded_before)
+    self.update(state: 'finished', real_rows: geocoded_rows, used_credits: calculate_used_credits)
+    send_report_mail(state, self.table_name, nil, self.processable_rows, geocoded_rows)
+    log.append "Geocoding finished"
+    # In the import table_service could be nil
+    if !table_service.nil?
+      # To store the bbox in visualizations
+      BoundingBoxHelper.update_visualizations_bbox(table_service)
+    end
+    self.report
+  end
+
+  def handle_geocoding_failure(raised_exception, rows_geocoded_before)
+    @finished_at = Time.now
+    self.batched = table_geocoder.nil? ? false : table_geocoder.used_batch_request?
+    if raised_exception.is_a? Carto::GeocoderErrors::GeocoderBaseError
+      self.error_code = raised_exception.class.additional_info.error_code
+    end
+    self.update(state: 'failed', processed_rows: 0, cache_hits: 0)
+    CartoDB::notify_exception(raised_exception, user: user)
+    geocoded_rows = total_geocoded_rows(rows_geocoded_before)
+    send_report_mail(state, self.table_name, error_code, self.processable_rows, geocoded_rows)
+    log.append "Unexpected exception: #{raised_exception.to_s}"
+    log.append raised_exception.backtrace
+    self.report(raised_exception)
+  end
+
+  def total_geocoded_rows(rows_geocoded_before)
+    rows_geocoded_after = table_service.owner.in_database.select.from(table_service.sequel_qualified_table_name).where('cartodb_georef_status is true and the_geom is not null').count rescue 0
+    rows_geocoded_after - rows_geocoded_before
+  end
+
+  # Used in the run! method
+  def send_report_mail(state, table_name, error_code=nil, processable_rows, number_geocoded_rows)
+    geocoding_time = @finished_at - @started_at
+    CartoDB::Geocoder::MailNotifier.new(user.id, state, table_name, error_code, processable_rows, number_geocoded_rows, geocoding_time).notify_if_needed
   end
 
 end

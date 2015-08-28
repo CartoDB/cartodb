@@ -17,7 +17,8 @@ $selectedColor: white;
 .UserNotifications:hover {
   color: $selectedColor;
 }
-.UserNotifications-icon {
+.UserNotifications-Icon {
+  font-size: $sFontSize-large;
   color: $idleColor;
   &:hover { color: $selectedColor }
 }

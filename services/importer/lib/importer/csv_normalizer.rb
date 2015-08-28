@@ -135,7 +135,7 @@ module CartoDB
         temporary_csv.close
 
         @delimiter = OUTPUT_DELIMITER
-      rescue ArgumentError, Encoding::UndefinedConversionError
+      rescue ArgumentError, Encoding::UndefinedConversionError, Encoding::InvalidByteSequenceError => e
         raise EncodingDetectionError
       end
 

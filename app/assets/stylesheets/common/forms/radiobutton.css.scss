@@ -48,7 +48,6 @@
 .RadioButton-label {
   margin-left: 8px;
   color: $cTypography-secondary;
-  @include nicer-lato-typography();
 }
 
 .RadioButton.is-checked .RadioButton-label {

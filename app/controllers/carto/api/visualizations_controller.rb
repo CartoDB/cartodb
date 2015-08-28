@@ -3,6 +3,7 @@ require_relative 'vizjson_presenter'
 require_relative '../../../models/visualization/stats'
 require_relative 'paged_searcher'
 require_dependency 'carto/uuidhelper'
+require_dependency 'static_maps_url_helper'
 
 module Carto
   module Api
@@ -12,15 +13,16 @@ module Carto
       include Carto::UUIDHelper
 
       ssl_required :index, :show
-      ssl_allowed  :vizjson2, :likes_count, :likes_list, :is_liked, :list_watching
+      ssl_allowed  :vizjson2, :likes_count, :likes_list, :is_liked, :list_watching, :static_map
 
       # TODO: compare with older, there seems to be more optional authentication endpoints
-      skip_before_filter :api_authorization_required, only: [:index, :vizjson2, :is_liked]
-      before_filter :optional_api_authorization, only: [:index, :vizjson2, :is_liked]
+      skip_before_filter :api_authorization_required, only: [:index, :vizjson2, :is_liked, :static_map]
+      before_filter :optional_api_authorization, only: [:index, :vizjson2, :is_liked, :static_map]
 
       before_filter :id_and_schema_from_params
       before_filter :load_by_name_or_id, only: [:vizjson2]
-      before_filter :load_visualization, only: [:likes_count, :likes_list, :is_liked, :show, :stats, :list_watching]
+      before_filter :load_visualization, only: [:likes_count, :likes_list, :is_liked, :show, :stats, :list_watching,
+                                                :static_map]
 
       def show
         render_jsonp(to_json(@visualization))
@@ -47,6 +49,8 @@ module Carto
           })
         end
         render_jsonp(response)
+      rescue CartoDB::BoundingBoxError => e
+        render_jsonp({ error: e.message }, 400)
       end
 
       def likes_count
@@ -96,6 +100,23 @@ module Carto
         render_jsonp(watcher.list)
       end
 
+      def static_map
+        # Abusing here of .to_i fallback to 0 if not a proper integer
+        map_width = params.fetch('width',nil).to_i
+        map_height = params.fetch('height', nil).to_i
+
+        # @see https://github.com/CartoDB/Windshaft-cartodb/blob/b59e0a00a04f822154c6d69acccabaf5c2fdf628/docs/Map-API.md#limits
+        if map_width < 2 || map_height < 2 || map_width > 8192 || map_height > 8192
+          return(head 400)
+        end
+
+        response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
+        response.headers['Surrogate-Key'] = "#{CartoDB::SURROGATE_NAMESPACE_VIZJSON} #{@visualization.surrogate_key}"
+        response.headers['Cache-Control']   = "max-age=86400,must-revalidate, public"
+
+        redirect_to Carto::StaticMapsURLHelper.new.url_for_static_map(request, @visualization, map_width, map_height)
+      end
+
       private
 
       def load_by_name_or_id
@@ -123,6 +144,9 @@ module Carto
 
         return render(text: 'Visualization does not exist', status: 404) if @visualization.nil?
         return render(text: 'Visualization not viewable', status: 403) if !@visualization.is_viewable_by_user?(current_viewer)
+        subdomain = CartoDB.extract_subdomain(request)
+        # INFO: subdomain checking is not part of previous permission checking (and should not be), so we add an additional check here: subdomain must match visualization username.
+        return render(text: 'Visualization of that user does not exist', status: 404) if subdomain && !subdomain.empty? && subdomain != @visualization.user.username && !@visualization.has_read_permission?(current_viewer)
       end
 
       def id_and_schema_from_params

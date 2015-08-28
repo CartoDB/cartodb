@@ -317,6 +317,26 @@ namespace :cartodb do
       }, threads, thread_sleep, database_host)
     end
 
+    ######################################
+    # GRANT `publicuser` ROLE TO ALL USERS
+    ######################################
+    desc 'Grant `publicuser` role to all users'
+    task :grant_publicuser_to_all_users => :environment do
+      Carto::User.pluck(:id).each do |user_id|
+        user = Carto::User.where(id: user_id).first
+        # already granted users will raise a NOTICE
+        grant_query = "GRANT publicuser to \"#{user.database_username}\""
+        conn = user.in_database(as: :cluster_admin)
+        begin
+          conn.execute(grant_query)
+        rescue => e
+          log("Failed to execute `#{grant_query}`", :grant_publicuser_to_all_users.to_s, user.database_host)
+        ensure
+          conn.close unless conn.nil?
+        end
+      end
+    end
+
     ##########################################
     # SET ORGANIZATION GROUP ROLE TO ALL USERS
     ##########################################
@@ -1072,6 +1092,26 @@ namespace :cartodb do
           end
         end
       end
+    end
+
+    desc "Assign permissions to organization shared role. See #3859 and #3881. This is used to upgrade existing organizations to new permission schema. You can optionally speciy an organization name to restrict the execution to it."
+    task :assign_org_permissions_to_org_role, [:organization_name] => :environment do |t, args|
+      organizations = args[:organization_name].present? ? Organization.where(name: args[:organization_name]).all : Organization.all
+      puts "Updating #{organizations.count} organizations"
+      organizations.each { |o|
+        owner = o.owner
+        if owner
+          puts "#{o.name}\t#{o.id}\tOwner: #{owner.username}\t#{owner.id}"
+          begin
+            owner.setup_organization_role_permissions
+          rescue => e
+            puts "Error: #{e.message}"
+            CartoDB.notify_exception(e)
+          end
+        else
+          puts "#{o.name}\t#{o.id}\t Has no owner, skipping"
+        end
+      }
     end
 
   end

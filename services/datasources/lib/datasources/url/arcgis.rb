@@ -23,7 +23,9 @@ module CartoDB
 
         MINIMUM_SUPPORTED_VERSION = 10.1
 
-        # In seconds and for the full request
+        # In seconds, for connecting
+        HTTP_CONNECTION_TIMEOUT = 60
+        # In seconds, for the full request
         HTTP_TIMEOUT = 60
 
         # Amount to multiply or divide
@@ -495,6 +497,7 @@ module CartoDB
             headers:          { 'Accept-Charset' => 'utf-8' },
             ssl_verifyhost:   0,
             nosignal:         true,
+            connecttimeout:   HTTP_CONNECTION_TIMEOUT,
             timeout:          HTTP_TIMEOUT
           }
         end

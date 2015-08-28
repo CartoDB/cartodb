@@ -1,16 +1,20 @@
 # encoding: utf-8
+require_relative '../../../../spec/rspec_configuration'
 require_relative '../../lib/importer/runner'
 require_relative '../../lib/importer/job'
 require_relative '../../lib/importer/downloader'
 require_relative '../factories/pg_connection'
 require_relative '../doubles/log'
 require_relative '../doubles/user'
-require_relative 'cdb_importer_context'
 require_relative 'acceptance_helpers'
+require_relative 'cdb_importer_context'
+require_relative 'no_stats_context'
+
 
 describe 'KML regression tests' do
   include AcceptanceHelpers
   include_context "cdb_importer schema"
+  include_context "no stats"
 
   it 'imports KML files' do
     filepath    = path_to('counties_ny_export.kml')
@@ -82,4 +86,38 @@ describe 'KML regression tests' do
     runner.results.first.error_code.should eq 3202
   end
 
-end # KML regression tests
+  it 'imports a maximum of Runner::MAX_TABLES_PER_IMPORT KMLs from a zip ok' do
+    # https://developers.google.com/kml/documentation/KML_Samples.kml
+    filepath    = path_to('kml_samples.zip')
+    downloader  = CartoDB::Importer2::Downloader.new(filepath)
+    runner      = CartoDB::Importer2::Runner.new({
+                               pg: @pg_options,
+                               downloader: downloader,
+                               log: CartoDB::Importer2::Doubles::Log.new,
+                               user: CartoDB::Importer2::Doubles::User.new
+                             })
+    runner.run
+
+    runner.results.select(&:success?).length.should eq CartoDB::Importer2::Runner::MAX_TABLES_PER_IMPORT
+    runner.results.length.should eq CartoDB::Importer2::Runner::MAX_TABLES_PER_IMPORT
+    runner.results.each { |result|
+      name = @db[%Q{ SELECT * FROM pg_class WHERE relname='#{result.table_name}' }].first[:relname]
+      name.should eq result.table_name
+    }
+  end
+
+  it 'raises exception if KML style tag dont have and ID' do
+    filepath    = path_to('style_without_id.kml')
+    downloader  = CartoDB::Importer2::Downloader.new(filepath)
+    runner      = CartoDB::Importer2::Runner.new({
+                               pg: @pg_options,
+                               downloader: downloader,
+                               log: CartoDB::Importer2::Doubles::Log.new,
+                               user: CartoDB::Importer2::Doubles::User.new
+                             })
+    runner.run
+
+    runner.results.first.error_code.should eq 2009
+  end
+
+end

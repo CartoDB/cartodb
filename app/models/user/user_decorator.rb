@@ -76,6 +76,10 @@ module CartoDB
 
       data[:organization] = self.organization.to_poro if self.organization.present?
 
+      if !self.groups.nil?
+        data[:groups] = self.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro }
+      end
+
       if options[:extended]
         data.merge({
           :real_table_count => self.real_tables.size,

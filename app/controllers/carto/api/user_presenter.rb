@@ -99,6 +99,10 @@ module Carto
           data[:organization] = Carto::Api::OrganizationPresenter.new(@user.organization).to_poro
         end
 
+        if !@user.groups.nil?
+          data[:groups] = @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro }
+        end
+
         if options[:extended]
           # TODO: This fields are pending migration
           data.merge({

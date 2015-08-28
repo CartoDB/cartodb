@@ -99,22 +99,40 @@ class HomeController < ApplicationController
   end
 
   def windshaft_diagnosis(supported_version, latest_version)
-    tiler_url = configuration_url(Cartodb.config[:tiler]['internal'])
+    service_url = configuration_url(Cartodb.config[:tiler]['internal'])
+    endpoint_prefix = ""
+    version_key = 'windshaft_cartodb'
 
-    info = JSON.parse(http_client.get("#{tiler_url}/version").body)
+    api_service_diagnosis(supported_version, latest_version, service_url, endpoint_prefix, version_key)
+  end
 
-    version = info['windshaft_cartodb']
-    messages = info.to_a.map {|s, v| "<span class='lib'>#{s}</strong>: <span class='version'>#{v}</span>"}.append("internal url: #{tiler_url}")
+  def sql_api_diagnosis(supported_version, latest_version)
+    service_url = configuration_url(Cartodb.config[:sql_api]['private'])
+    endpoint_prefix = "api/v1/"
+    version_key = 'cartodb_sql_api'
+
+    api_service_diagnosis(supported_version, latest_version, service_url, endpoint_prefix, version_key)
+  end
+
+  def api_service_diagnosis(supported_version, latest_version, service_url, endpoint_prefix, version_key)
+    info = safe_json_get("#{service_url}/#{endpoint_prefix}version")
+
+    version = info[version_key]
+    messages = ["internal url: #{service_url}"]
+    messages.concat info.to_a.map {|s, v| "<span class='lib'>#{s}</strong>: <span class='version'>#{v}</span>"}
     valid = valid?(supported_version, latest_version, version)
 
-    health = JSON.parse(http_client.get("#{tiler_url}/health").body)
-    unless health['enabled'] == true
-      health['instructions'] = "Enable health checking at config/environments/#{environment}.js"
-    end
-    health_ok = health['ok'] == true
-    messages.concat(health.reject { |k, v| k == 'result' }.to_a.map {|s, v| "<span class='lib'>Health #{s}</strong>: <span class='version'>#{v}</span>"})
+    if valid != false
+      messages << "Currently we support #{supported_version}. Latest: #{latest_version}" unless valid
 
-    messages << "Currently we support #{supported_version}. Latest: #{latest_version}" unless valid
+      health = safe_json_get("#{service_url}/#{endpoint_prefix}health")
+      unless health['enabled'] == true
+        health['instructions'] = "Enable health checking at config/environments/#{environment}.js"
+      end
+      health_ok = health['ok'] == true
+      messages.concat(health.reject { |k, v| k == 'result' }.to_a.map {|s, v| "<span class='lib'>Health #{s}</strong>: <span class='version'>#{v}</span>"})
+    end
+
     [STATUS[response.response_code == 200 && valid && health_ok], messages]
   end
 
@@ -127,25 +145,6 @@ class HomeController < ApplicationController
     else
       version =~ /\A#{supported_version}/ ? nil : false
     end
-  end
-
-  def sql_api_diagnosis(supported_version, latest_version)
-    sql_api_url = configuration_url(Cartodb.config[:sql_api]['private'])
-    response = http_client.get("#{sql_api_url}/api/v1/version")
-    info = JSON.parse(response.body)
-    version = info['cartodb_sql_api']
-    messages = info.to_a.map {|s, v| "<span class='lib'>#{s}</strong>: <span class='version'>#{v}</span>"}.append("private url: #{sql_api_url}")
-    valid = valid?(supported_version, latest_version, version)
-
-    health = JSON.parse(http_client.get("#{sql_api_url}/api/v1/health").body)
-    unless health['enabled'] == true
-      health['instructions'] = "Enable health checking at config/environments/#{environment}.js"
-    end
-    health_ok = health['ok'] == true
-    messages.concat(health.reject { |k, v| k == 'result' }.to_a.map {|s, v| "<span class='lib'>Health #{s}</strong>: <span class='version'>#{v}</span>"})
-
-    messages << "Currently we support #{supported_version}. Latest: #{latest_version}" unless valid
-    [STATUS[response.response_code == 200 && valid && health_ok], messages]
   end
 
   def resque_diagnosis(help)
@@ -224,6 +223,12 @@ class HomeController < ApplicationController
 
   def configuration_url(conf)
     "#{conf['protocol']}://#{conf['domain']}:#{conf['port']}"
+  end
+
+  def safe_json_get(url)
+    JSON.parse(http_client.get(url).body)
+  rescue => e
+    { 'error fetching info' => e.message }
   end
 
 end

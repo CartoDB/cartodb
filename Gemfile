@@ -95,11 +95,12 @@ end
 group :development, :test do
   gem 'rspec-rails',           '2.12.0'
   gem 'rb-readline'
-  gem 'debugger',              '1.6.8'
+  gem 'byebug'
   gem 'rack'
 
   # Server
   gem 'thin',                           require: false
+  gem 'pry-rails'
 end
 
 # Load optional engines

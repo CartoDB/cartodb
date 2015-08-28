@@ -37,6 +37,8 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
   # @param DateTime created_at (Self-generated)
   # @param DateTime updated_at (Self-generated)
 
+  attr_readonly :user_id_field
+
   validates :organization, :host, :port, :connection_user, :connection_password, :user_id_field, :email_field, 
               :user_object_class, :group_object_class, :presence => true
   validates :ca_file, :username_field, :length => { :minimum => 0, :allow_nil => true }

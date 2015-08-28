@@ -127,6 +127,29 @@ describe Carto::Ldap::Configuration do
     ldap_configuration.delete
   end
 
+  it "Doens't allows to change user_id_field once set" do
+    # Dumb spec, but to make sure if this gets changed we notice
+    ldap_configuration = Carto::Ldap::Configuration.create({
+        organization_id: @organization.id,
+        host: "0.0.0.0",
+        port: 389,
+        domain_bases_list: @domain_bases,
+        connection_user: @ldap_admin_cn,
+        connection_password: @ldap_admin_password,
+        email_field: '.',
+        user_object_class: 'organizationalRole',
+        group_object_class: '.',
+        user_id_field: @user_id_field
+      })
+
+    ldap_configuration.user_id_field = "modified"
+    ldap_configuration.save
+    ldap_configuration.reload
+    ldap_configuration.user_id_field.should eq @user_id_field
+
+    ldap_configuration.delete
+  end
+
 private
 
 def register_ldap_user(cn, username, password)

@@ -1295,6 +1295,87 @@ describe Carto::Api::VisualizationsController do
         delete api_v1_visualizations_show_url(user_domain: $user_1.username, id: viz_id, api_key: @api_key),
                { }, @headers
       end
+
+      it 'joins the attributions of the layers in a layergroup in the viz.json' do
+        table1 = table_factory
+        table2 = table_factory
+        table3 = table_factory
+
+        payload = {
+          name: 'new visualization',
+          tables: [
+            table1.fetch('name'),
+            table2.fetch('name'),
+            table3.fetch('name')
+          ],
+          privacy: 'public'
+        }
+
+        post api_v1_visualizations_create_url(api_key: @api_key),
+              payload.to_json, @headers
+        last_response.status.should == 200
+
+        # Set the attributions of the tables to check that they are included in the viz.json
+        table1_visualization = Carto::Visualization.find(table1["table_visualization"]["id"])
+        table1_visualization.update_attribute(:attributions, 'attribution1')
+        table2_visualization = Carto::Visualization.find(table2["table_visualization"]["id"])
+        table2_visualization.update_attribute(:attributions, 'attribution2')
+        table3_visualization = Carto::Visualization.find(table3["table_visualization"]["id"])
+        table3_visualization.update_attribute(:attributions, 'attribution3')
+
+        visualization = JSON.parse(last_response.body)
+
+        get api_v2_visualizations_vizjson_url(id: visualization.fetch('id'), api_key: @api_key),{}, @headers
+
+        visualization = JSON.parse(last_response.body)
+
+        # Attribution of the layergroup layer is right
+        layer_group_layer = visualization["layers"][1]
+        layer_group_layer["type"].should == 'layergroup'
+        layer_group_layer["options"]["attribution"].should == 'attribution1, attribution2, attribution3'
+      end
+
+      it 'joins the attributions of the layers in a namedmap in the viz.json' do
+        table1 = table_factory
+        table2 = table_factory
+        table3 = table_factory
+
+        payload = {
+          name: 'new visualization',
+          tables: [
+            table1.fetch('name'),
+            table2.fetch('name'),
+            table3.fetch('name')
+          ],
+          privacy: 'private'
+        }
+
+        post api_v1_visualizations_create_url(api_key: @api_key),
+              payload.to_json, @headers
+        last_response.status.should == 200
+
+        # Set the attributions of the tables to check that they are included in the viz.json
+        table1_visualization = Carto::Visualization.find(table1["table_visualization"]["id"])
+        table1_visualization.update_attribute(:attributions, 'attribution1')
+        table2_visualization = Carto::Visualization.find(table2["table_visualization"]["id"])
+        table2_visualization.update_attribute(:attributions, 'attribution2')
+        table3_visualization = Carto::Visualization.find(table3["table_visualization"]["id"])
+        table3_visualization.update_attribute(:attributions, 'attribution3')
+
+        visualization = JSON.parse(last_response.body)
+
+        # Update the privacy of the visualization so that the viz_json generates a named_map
+        Carto::Visualization.find(visualization["id"]).update_attribute(:privacy, Carto::Visualization::PRIVACY_PROTECTED)
+
+        get api_v2_visualizations_vizjson_url(id: visualization.fetch('id'), api_key: @api_key),{}, @headers
+
+        visualization = JSON.parse(last_response.body)
+
+        # Attribution of the layergroup layer is right
+        layer_group_layer = visualization["layers"][1]
+        layer_group_layer["type"].should == 'namedmap'
+        layer_group_layer["options"]["attribution"].should == 'attribution1, attribution2, attribution3'
+      end
     end
 
     describe 'tests visualization listing filters' do

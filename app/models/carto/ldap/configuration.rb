@@ -87,7 +87,14 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
   # INFO: Resets connection if already made
   def test_connection
     @conn = nil
-    connection.bind
+    result = connection.bind
+    if result
+      { success: true, connection: result }
+    else
+      { success: false, error: last_operation_result.to_hash }
+    end
+  rescue => exception
+    { success: false, error: { message: exception.message } }
   end
 
   def users(objectClass = self.user_object_class)

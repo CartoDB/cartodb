@@ -29,6 +29,15 @@ module Carto
         @matched_dn || ""
       end
 
+      def to_hash
+        {
+          code:           code,
+          message:        message,
+          error_message:  error_message,
+          matched_dn:     matched_dn
+        }
+      end
+
       def success?
         @code == 0
       end

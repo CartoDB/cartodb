@@ -1,5 +1,41 @@
 namespace :cartodb do
   namespace :ldap do
+    desc "Tests an LDAP connection"
+    task :test_ldap_connection, [] => :environment do |t, args|
+
+      raise "Missing HOST" if ENV['HOST'].blank?
+      host = ENV['HOST']
+
+      raise "Missing PORT" if ENV['PORT'].blank?
+      port = ENV['PORT']
+
+      encryption = ENV['ENCRYPTION'].blank? ? nil : ENV['ENCRYPTION']
+
+      ssl_version = ENV['SSL_VERSION'].blank? ? nil : ENV['SSL_VERSION']
+
+      raise "Missing CONNECTION_USER" if ENV['CONNECTION_USER'].blank?
+      connection_user = ENV['CONNECTION_USER']
+
+      raise "Missing CONNECTION_PASSWORD" if ENV['CONNECTION_PASSWORD'].blank?
+      connection_password = ENV['CONNECTION_PASSWORD']
+
+      ldap = Carto::Ldap::Configuration.new({
+          host:                 host,
+          port:                 port,
+          encryption:           encryption,
+          ssl_version:          ssl_version,
+          connection_user:      connection_user,
+          connection_password:  connection_password,
+        })
+
+      result = ldap.test_connection
+
+      if result[:success]
+        puts "OK"
+      else
+        puts "ERROR:\n#{result[:error]}"
+      end
+    end
 
     # INFO: Separate multiple domain names by commas
     desc "Creates an LDAP Configuration entry"

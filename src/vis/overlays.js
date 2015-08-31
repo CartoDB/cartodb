@@ -399,10 +399,6 @@ cdb.vis.Overlay.register('share', function(data, vis) {
 // search content
 cdb.vis.Overlay.register('search', function(data, vis) {
 
-  var options = data.options;
-
-  //if (!options.display) return;
-
   var template = cdb.core.Template.compile(
     data.template || '\
       <form>\
@@ -414,10 +410,13 @@ cdb.vis.Overlay.register('search', function(data, vis) {
     data.templateType || 'mustache'
   );
 
-  var search = new cdb.geo.ui.Search({
-    template: template,
-    model: vis.map
-  });
+  var search = new cdb.geo.ui.Search(
+    _.extend(data, {
+      template: template,
+      mapView: vis.mapView,
+      model: vis.map
+    })
+  );
 
   return search.render();
 

@@ -34,6 +34,19 @@ $sEditButtonSize: 50px;
   border-radius: $sCard-borderRadius;
   margin: 0 auto;
 }
+.MapCard.MapCard--squared .MapCard-header {
+  height: 220px;
+}
+.MapCard.MapCard--squared .MapCard-header:after {
+  display: none;
+}
+.MapCard.MapCard--squared .MapCard-content {
+  height: 38px;
+}
+.MapCard.MapCard--squared .MapCard-contentFooter {
+  padding-top: 0;
+  border-top: none;
+}
 .MapCard-title {
   width: 100%; // required for child text-overflow to work as expected in FF
 }
@@ -95,13 +108,18 @@ $sEditButtonSize: 50px;
   overflow:hidden;
   z-index: 1;
 }
+.MapCard.MapCard--squared .MapCard-header {
+  height: 220px;
+  @include background(image-url("layout/default-map-squared-bkg.png") no-repeat center 0);
+}
 .MapCard-header.is-loading .MapCard-loader {
   display: block;
 }
 .MapCard-header--compact {
   height: 130px;
 }
-.MapCard-header:after {
+.MapCard-header:after,
+.MapCard.MapCard--squared .MapCard-header.MapCard-header--fake:after {
   content: ' ';
   position: absolute;
   left: 0;
@@ -113,14 +131,17 @@ $sEditButtonSize: 50px;
   @include opacity(.1);
   z-index:2;
 }
-.MapCard-header--fake {
+
+.MapCard-header--fake,
+.MapCard.MapCard--squared .MapCard-header--fake {
   @include display-flex();
   @include justify-content(center);
   @include align-items(center);
   background: $cStructure-mainBkg;
   border-radius: $sCard-borderRadius;
 }
-.MapCard-header--fake:after {
+.MapCard-header--fake:after,
+.MapCard.MapCard--squared .MapCard-header.MapCard-header--fake:after {
   left: $sMargin-element;
   right: $sMargin-element;
 }
@@ -266,6 +287,26 @@ $sEditButtonSize: 50px;
   width: 100%;
   padding-top: $sMargin-elementInline;
   border-top: 1px solid $cStructure-softLine;
+}
+.MapCard-contentFooter.MapCard-contentFooter--with-icon {
+  display: block;
+}
+.MapCard-contentFooter.MapCard-contentFooter--with-icon .MapCard-contentFooterIcon {
+  display: inline-block;
+  vertical-align: top;
+}
+.MapCard-contentFooter.MapCard-contentFooter--with-icon .MapCard-contentFooterDetails--right {
+  display: inline-block;
+}
+.MapCard-contentFooterDetails {
+  display: inline-block;
+}
+.MapCard-contentFooterTitle {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center);
+  @include flex-wrap(nowrap);
+  
 }
 .MapCard-contentFooterDetails--left {
   @include display-flex();

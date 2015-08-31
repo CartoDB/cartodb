@@ -1,0 +1,29 @@
+<li class="MapsList-item">
+  <div class="MapCard MapCard--squared" data-zoom="<%= vis[:map_zoom] %>" data-vizjson-url="<%= CartoDB.url(self, 'api_v2_visualizations_vizjson', {id: vis[:id]}, vis[:owner]) %>.json">
+    <a href="<%= CartoDB.url(self, 'public_visualizations_public_map', {id: vis[:id]}, vis[:owner]) %>" class="MapCard-header js-header">
+      <div class="MapCard-loader"></div>
+    </a>
+
+    <div class="MapCard-content">
+      <div class="MapCard-contentBody">
+        <div class="MapCard-contentBodyRow MapCard-contentBodyRow--flex">
+          <h3 class="MapCard-title DefaultTitle">
+            <a href="<%= CartoDB.url(self, 'public_visualizations_public_map', {id: vis[:id]}, vis[:owner]) %>" class="DefaultTitle-link u-ellipsLongText" title="<%= vis[:title] %>"><%= vis[:title] %></a>
+          </h3>
+        </div>
+      </div>
+
+      <div class="MapCard-contentFooter">
+        <div class="MapCard-contentFooterDetails--left">
+          <%= render 'admin/pages/shared/like_button', vis: vis %>
+        </div>
+        <div class="MapCard-contentFooterDetails--right">
+          <div class="MapCard-contentFooterTimeDiff DefaultTimeDiff">
+            <i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i>
+            <%= time_ago_in_words(vis[:updated_at]) %> ago
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</li>

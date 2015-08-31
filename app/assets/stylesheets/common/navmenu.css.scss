@@ -1,3 +1,4 @@
+
 @import "../variables/mixins";
 @import "../variables/colors";
 @import "../variables/sizes";
@@ -10,6 +11,36 @@
   border-bottom: 1px solid $cStructure-mainLine;
   overflow: hidden;
 }
+.Navmenu.Navmenu--borderless {
+  border-bottom: none;
+}
+.Navmenu.Navmenu--borderless .Navmenu-item { 
+  position: relative;
+}
+.Navmenu.Navmenu--borderless .Navmenu-link {
+  display: inline-block;
+  line-height: 80px;
+}
+.Navmenu-link.is-selected {
+  color:$cTypography-linkSelected;
+  font-weight: bold;
+
+  &:before {
+    content:'';
+    position:absolute;
+    bottom:0;
+    left:0;
+    right:0;
+    width:100%;
+    height:1px;
+    background:$cTypography-link;
+  }
+  &:hover {
+    cursor:default;
+    text-decoration: none;
+  }
+}
+
 .Navmenu-list {
   display: inline-block;
   height: 81px;
@@ -48,6 +79,15 @@
   height: 9px;
   font-size: 9px;
   color: $cNavmenu-arrow;
+}
+.Navmenu-separator {
+  position:absolute;
+  left:0;
+  top:80px;
+  width:100%;
+  height:1px;
+  background-color: $cStructure-softLine;
+  z-index:0;
 }
 .Navmenu-sep {
   position: absolute;
@@ -88,6 +128,10 @@
   top: -2px;
   font-size: 22px;
 }
+.Navmenu-hireLink:hover {
+  color: #fff;
+}
+
 .Navmenu-editLink {
   display: none;
   vertical-align: middle;

@@ -6,46 +6,31 @@
   <% if @datasets.size == 0 %>
     <%= render 'admin/shared/no_results', is_maps: false, alt_url: CartoDB.url(self, 'public_visualizations_home') %>
   <% else %>
-    <ul class="DatasetsList">
+    <ul class="MapsList">
       <% @datasets.each do |vis| %>
-        <li class="DatasetsList-item">
-          <div class="DatasetsList-itemCategory is--<%= vis[:geometry_type] %>Dataset"></div>
-          <div class="DatasetsList-itemInfo">
-            <div class="DatasetsList-itemPrimaryInfo">
-              <h3 class="DatasetsList-itemTitle DefaultTitle">
-                <a href="<%= CartoDB.url(self, 'public_table', {id: vis[:title]}, vis[:owner]) %>" title="<%= vis[:title] %>" class="DefaultTitle-link u-ellipsLongText"><%= vis[:title] %></a>
-              </h3>
-              <div class="DefaultDescription DatasetsList-itemDescription u-ellipsLongText"><%= raw vis[:description_html_safe] %></div>
-            </div>
-            <div class="DatasetsList-itemSecondaryInfo">
-              <div class="DatasetsList-itemMeta">
-                <%= render 'admin/pages/shared/like_button', vis: vis %>
-                <% if !vis[:rows_count].blank? %>
-                  <div class="RowsIndicator">
-                    <i class="iconFont iconFont-Rows RowsIndicator-icon"></i>
-                    <% if vis[:rows_count] < 10000 %>
-                      <%= number_with_delimiter(vis[:rows_count]) %>
-                    <% else %>
-                      <%= number_to_human(vis[:rows_count], units: { unit:"", thousand: "K", million: "M" }, precision: 2, format: '%n%u') %>
-                    <% end %>
-                    <%= 'row'.pluralize(vis[:rows_count]) %>
+
+        <li class="MapsList-item">
+          <div class="MapCard MapCard--squared" data-zoom="<%= vis[:map_zoom] %>" data-vizjson-url="<%= CartoDB.url(self, 'api_v2_visualizations_vizjson', {id: vis[:id]}, vis[:owner]) %>.json">
+            <a href="<%= CartoDB.url(self, 'public_table', {id: vis[:title]}, vis[:owner]) %>" class="MapCard-header js-header">
+              <div class="MapCard-loader"></div>
+            </a>
+
+            <div class="MapCard-content">
+              <div class="MapCard-contentFooter MapCard-contentFooter--with-icon">
+                <div class="MapCard-contentFooterIcon">
+                  <div class="DatasetsList-itemCategory is--<%= vis[:geometry_type] %>Dataset"></div>
+                </div>
+                <div class="MapCard-contentFooterDetails">
+                  <div class="MapCard-contentFooterTitle u-ellipsLongText">
+                    <h3 class="MapCard-title DefaultTitle u-ellipsLongText">
+                      <a href="<%= CartoDB.url(self, 'public_table', {id: vis[:title]}, vis[:owner]) %>" class="DefaultTitle-link u-ellipsLongText" title="<%= vis[:title] %>"><%= vis[:title] %></a>
+                    </h3>
                   </div>
-                <% end %>
-                <div class="SizeIndicator">
-                  <i class="iconFont iconFont-Floppy SizeIndicator-icon"></i>
-                  <%= number_to_human_size(vis[:size_in_bytes]) %>
-                </div>
-                <div class="DatasetsList-itemTimeDiff DefaultTimeDiff">
-                  <i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i>
-                  <%= time_ago_in_words(vis[:updated_at]) %> ago
-                </div>
-              </div>
-              <div class="DatasetsList-itemMeta">
-                <div class="DatasetsList-itemTags DefaultTags">
-                  <% if vis[:tags].size > 0 %>
-                    <%# Keep on one line to avoid unwanted spaces %>
-                    <% formatted_tags(vis[:tags]) do |tag| %><a class="DefaultTags-item js-tag-link" href="<%= CartoDB.url(self, 'public_datasets_tag', {tag: tag}, vis[:owner]) %>"><%= tag %></a><% end %>
-                  <% end %>
+                  <%= render 'shared/pages/like_button', vis: vis %>
+                  <div class="MapCard-contentFooterTimeDiff DefaultTimeDiff">
+                    <i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i>
+                    <%= time_ago_in_words(vis[:updated_at]) %> ago
+                  </div>
                 </div>
               </div>
             </div>

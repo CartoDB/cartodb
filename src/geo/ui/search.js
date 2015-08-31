@@ -95,7 +95,6 @@ cdb.geo.ui.Search = cdb.core.View.extend({
 
     if (places && places.length>0) {
       var location = places[0];
-      address = location.title || address;
       var validBBox = this._isBBoxValid(location);
 
       // Get BBox if possible and set bounds
@@ -154,9 +153,9 @@ cdb.geo.ui.Search = cdb.core.View.extend({
   },
 
   _destroySearchPin: function() {
+    this._unbindEvents();
     this._destroyPin();
     this._destroyInfowindow()
-    this._unbindEvents();
   },
 
   _createInfowindow: function(position, address) {
@@ -184,8 +183,12 @@ cdb.geo.ui.Search = cdb.core.View.extend({
 
   _destroyInfowindow: function() {
     if (this._searchInfowindow) {
-      this._searchInfowindow.clean();
-      delete this._searchInfowindow;
+      // Hide it and then destroy it (when animation ends)
+      this._searchInfowindow.hide(true);
+      var infowindow = this._searchInfowindow;
+      setTimeout(function() {
+        infowindow.clean();
+      }, 1000);
     }
   },
 
@@ -199,6 +202,11 @@ cdb.geo.ui.Search = cdb.core.View.extend({
     );
   },
 
+  _toggleSearchInfowindow: function() {
+    var infowindowVisibility = this._searchInfowindow.model.get('visibility');
+    this._searchInfowindow.model.set('visibility', !infowindowVisibility);
+  },
+
   _destroyPin: function() {
     if (this._searchPin) {
       this.mapView._removeGeomFromMap(this._searchPin);
@@ -207,16 +215,18 @@ cdb.geo.ui.Search = cdb.core.View.extend({
   },
 
   _bindEvents: function() {
+    this._searchPin && this._searchPin.bind('click', this._toggleSearchInfowindow, this);
     this.mapView.bind('click', this._destroySearchPin, this);
   },
 
   _unbindEvents: function() {
+    this._searchPin && this._searchPin.unbind('click', this._toggleSearchInfowindow, this);
     this.mapView.unbind('click', this._destroySearchPin, this);
   },
 
   clean: function() {
-    this._destroySearchPin();
     this._unbindEvents();
+    this._destroySearchPin();
     this.elder('clean');
   }
 

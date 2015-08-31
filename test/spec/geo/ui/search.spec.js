@@ -169,12 +169,15 @@ describe('cdb.geo.ui.Search', function() {
         expect(this.view._searchInfowindow.$('.cartodb-popup-content-wrapper p').text()).toBe('Madrid, Spain');
       });
 
-      it('should destroy/hide search pin when map is clicked', function() {
+      it('should destroy/hide search pin when map is clicked', function(done) {
         expect(this.view._searchPin).toBeDefined();
         expect(this.view._searchInfowindow).toBeDefined();
         this.mapView.trigger('click');
-        expect(this.view._searchPin).toBeUndefined();
-        expect(this.view._searchInfowindow).toBeUndefined();
+        setTimeout(function() {
+          expect(this.view._searchPin).toBeUndefined();
+          expect(this.view._searchInfowindow).toBeUndefined();
+          done();
+        }, 1500);
       });
     });
   });

@@ -120,10 +120,10 @@ module Carto
       private
 
       def authenticate_extension
-        raise "missing sync_db_api configuration" unless Cartodb.config[:sync_db_api]
+        raise "missing org_metadata_api configuration" unless Cartodb.config[:org_metadata_api]
 
         authenticate_or_request_with_http_basic do |username, password|
-          username == Cartodb.config[:sync_db_api]["username"] && password == Cartodb.config[:sync_db_api]["password"]
+          username == Cartodb.config[:org_metadata_api]["username"] && password == Cartodb.config[:org_metadata_api]["password"]
         end
       end
 

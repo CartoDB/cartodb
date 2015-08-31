@@ -54,12 +54,13 @@
       <label class="Form-label">User password</label>
     </div>
     <div class="Form-rowData Form-rowData--med">
-      <%= password_field_tag 'user[password]', nil, :placeholder => "new password", :class => "Form-input Form-input--short #{ 'Form-input--error' if @user.errors[:password].present? }", readonly: !@user.can_change_password? %>
-      <%= password_field_tag 'user[password_confirmation]', nil, :placeholder => "confirm new one", :class => "Form-input Form-input--short #{ 'Form-input--error' if @user.errors[:password].present?}", readonly: !@user.can_change_password? %>
+      <%= password_field_tag 'user[password]', nil, :placeholder => "new password", :class => "Form-input Form-input--short #{ 'is-disabled' if !@user.can_change_password? } #{ 'Form-input--error' if @user.errors[:password].present? }", readonly: !@user.can_change_password? %>
+      <%= password_field_tag 'user[password_confirmation]', nil, :placeholder => "confirm new one", :class => "Form-input Form-input--short #{ 'is-disabled' if !@user.can_change_password? } #{ 'Form-input--error' if @user.errors[:password].present?}", readonly: !@user.can_change_password? %>
     </div>
     <div class="Form-rowInfo">
       <% if (@user.errors[:password].present?) %>
         <p class="Form-rowInfoText Form-rowInfoText--error">Password not valid</p>
+      <% elsif !@user.can_change_password? %>
       <% else %>
         <p class="Form-rowInfoText">Password should be 6 characters at least</p>
       <% end %>

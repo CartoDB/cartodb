@@ -7,7 +7,7 @@
     var config = <%= safe_js_object frontend_config %>;
     var authenticity_token = "<%= form_authenticity_token %>";
     var user_data = <%= safe_js_object @user.data.to_json %>;
-    var can_change_email = <%= @user.can_change_email %>;
+    var can_change_email = <%= @user.can_change_email? %>;
     var upgrade_url = "<%= current_user.upgrade_url(request.protocol) %>";
     var services_list = <%= @services.to_json.html_safe %>;
     // Necessary for Google + actions
@@ -51,13 +51,15 @@
             <label class="Form-label">Email</label>
           </div>
           <div class="Form-rowData Form-rowData--med">
-            <%= f.text_field :email, class: "Form-input Form-input--med #{ 'Form-input--error' if @user.errors[:email].present? } #{ 'is-disabled' unless @user.can_change_email }", readonly: !@user.can_change_email %>
+            <%= f.text_field :email, class: "Form-input Form-input--med #{ 'Form-input--error' if @user.errors[:email].present? } #{ 'is-disabled' unless @user.can_change_email? }", readonly: !@user.can_change_email? %>
           </div>
           <div class="Form-rowInfo">
             <% if @user.errors[:email].present? %>
               <p class="Form-rowInfoText Form-rowInfoText--error">Email not valid</p>
             <% elsif @user.google_sign_in %>
               <p class="Form-rowInfoText <%= 'Form-rowInfoText--multipleLines' unless @user.should_display_old_password? %>">Your account is linked to your Google account. <% unless @user.should_display_old_password? %> You can change the email if you set a password.</p> <% end %>
+            <% elsif !@user.can_change_email? %>
+              <p class="Form-rowInfoText">Email cannot be changed</p>
             <% end %>
           </div>
         </div>
@@ -68,11 +70,13 @@
               <label class="Form-label">Old password</label>
             </div>
             <div class="Form-rowData Form-rowData--med">
-              <%= f.password_field :old_password, :class => "Form-input Form-input--med #{ 'Form-input--error' if @user.errors[:old_password].present? }" %>
+              <%= f.password_field :old_password, :class => "Form-input Form-input--med #{ 'Form-input--error' if @user.errors[:old_password].present? } #{ 'is-disabled' unless @user.can_change_password? }", readonly: !@user.can_change_password? %>
             </div>
             <div class="Form-rowInfo">
               <% if (@user.errors[:old_password].present?) %>
                 <p class="Form-rowInfoText Form-rowInfoText--error"><%= @user.errors[:old_password].first%></p>
+              <% elsif !@user.can_change_password? %>
+
               <% end %>
             </div>
           </div>
@@ -83,11 +87,13 @@
             <label class="Form-label">New password</label>
           </div>
           <div class="Form-rowData Form-rowData--med">
-            <%= f.password_field :new_password, :class => "Form-input Form-input--med #{ 'Form-input--error' if @user.errors[:new_password].present? }" %>
+            <%= f.password_field :new_password, :class => "Form-input Form-input--med #{ 'Form-input--error' if @user.errors[:new_password].present? } #{ 'is-disabled' unless @user.can_change_password? }", readonly: !@user.can_change_password? %>
           </div>
           <div class="Form-rowInfo">
             <% if (@user.errors[:new_password].present?) %>
               <p class="Form-rowInfoText Form-rowInfoText--error"><%= @user.errors[:new_password].first%></p>
+            <% elsif !@user.can_change_password? %>
+              <p class="Form-rowInfoText">Password cannot be changed</p>
             <% else %>
               <p class="Form-rowInfoText">Password should be 6 characters at least</p>
             <% end %>
@@ -99,7 +105,7 @@
             <label class="Form-label">Confirm password</label>
           </div>
           <div class="Form-rowData Form-rowData--med">
-            <%= f.password_field :confirm_password, :class => "Form-input Form-input--med" %>
+            <%= f.password_field :confirm_password, :class => "Form-input Form-input--med #{ 'is-disabled' unless @user.can_change_password? }", readonly: !@user.can_change_password? %>
           </div>
         </div>
 
@@ -137,7 +143,7 @@
                 </p>
               <% else %>
                 <p class="Form-rowInfoText">This is the organization Google Maps API key</p>
-              <% end %>             
+              <% end %>
             </div>
           </div>
         <% end %>

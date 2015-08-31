@@ -38,7 +38,7 @@
       <label class="Form-label">User email</label>
     </div>
     <div class="Form-rowData Form-rowData--med">
-      <%= f.text_field :email, :class => "Form-input Form-input--med #{ 'is-disabled' if !@user.can_change_email } #{ 'Form-input--error' if @user.errors[:email].present? }", readonly: !@user.can_change_email %>
+      <%= f.text_field :email, :class => "Form-input Form-input--med #{ 'is-disabled' if !@user.can_change_email? } #{ 'Form-input--error' if @user.errors[:email].present? }", readonly: !@user.can_change_email? %>
     </div>
     <div class="Form-rowInfo">
       <% if (@user.errors[:email].present?) %>
@@ -54,8 +54,8 @@
       <label class="Form-label">User password</label>
     </div>
     <div class="Form-rowData Form-rowData--med">
-      <%= password_field_tag 'user[password]', nil, :placeholder => "new password", :class => "Form-input Form-input--short #{ 'Form-input--error' if @user.errors[:password].present? }" %>
-      <%= password_field_tag 'user[password_confirmation]', nil, :placeholder => "confirm new one", :class => "Form-input Form-input--short #{ 'hello' if @user.errors[:password].present?}" %>
+      <%= password_field_tag 'user[password]', nil, :placeholder => "new password", :class => "Form-input Form-input--short #{ 'Form-input--error' if @user.errors[:password].present? }", readonly: !@user.can_change_password? %>
+      <%= password_field_tag 'user[password_confirmation]', nil, :placeholder => "confirm new one", :class => "Form-input Form-input--short #{ 'Form-input--error' if @user.errors[:password].present?}", readonly: !@user.can_change_password? %>
     </div>
     <div class="Form-rowInfo">
       <% if (@user.errors[:password].present?) %>
@@ -98,7 +98,7 @@
         </ul>
       </div>
       <div class="Form-rowInfo OrganizationUser-quotaInfo js-quotaInfo">
-        <span class="js-assignedSize"><%= number_to_human_size(@user.quota_in_bytes) %></span> assigned, <button class="OrganizationUser-quotaInfoLink js-changeQuota">change</button> 
+        <span class="js-assignedSize"><%= number_to_human_size(@user.quota_in_bytes) %></span> assigned, <button class="OrganizationUser-quotaInfoLink js-changeQuota">change</button>
         <% unless cartodb_com_hosted? %>
         or <a href="<%= current_user.upgrade_url(request.protocol) %>">upgrade your account</a> if needed
         <% else %>
@@ -185,8 +185,8 @@
   <%
     assigned_quota_in_bytes = 0
     current_user.organization.users.map { |u|
-      if (u.username != @user.username) 
-        assigned_quota_in_bytes = assigned_quota_in_bytes + u.quota_in_bytes 
+      if (u.username != @user.username)
+        assigned_quota_in_bytes = assigned_quota_in_bytes + u.quota_in_bytes
       end
     }
   %>

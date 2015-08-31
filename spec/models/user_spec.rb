@@ -47,6 +47,31 @@ describe User do
     @user2.destroy
   end
 
+  it "Should properly report ability to change (or not) email & password when proceeds" do
+    @user.google_sign_in = false
+    password_change_date = @user.last_password_change_date
+    Carto::Ldap::Manager.any_instance.stubs(:configuration_present?).returns(false)
+
+    @user.can_change_email?.should eq true
+    @user.can_change_password?.should eq true
+
+    @user.google_sign_in = true
+    @user.can_change_email?.should eq false
+
+    @user.last_password_change_date = nil
+    @user.can_change_email?.should eq false
+
+    Carto::Ldap::Manager.any_instance.stubs(:configuration_present?).returns(true)
+    @user.can_change_email?.should eq false
+
+    @user.last_password_change_date = password_change_date
+    @user.google_sign_in = false
+    @user.can_change_email?.should eq false
+
+    @user.can_change_password?.should eq false
+
+  end
+
   it "should set a default database_host" do
     @user.database_host.should eq ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
   end

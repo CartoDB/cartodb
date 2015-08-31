@@ -39,10 +39,10 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
 
   attr_readonly :user_id_field
 
-  validates :organization, :host, :port, :connection_user, :connection_password, :user_id_field, :email_field, 
+  validates :organization, :host, :port, :connection_user, :connection_password, :user_id_field, :email_field,
               :user_object_class, :group_object_class, :presence => true
   validates :ca_file, :username_field, :length => { :minimum => 0, :allow_nil => true }
-  # TODO: new validation 
+  # TODO: new validation
   #validates :domain_bases, :length => { :minimum => 1, :allow_nil => false }
   validates :encryption, :inclusion => { :in => [ ENCRYPTION_SIMPLE_TLS, ENCRYPTION_START_TLS ], :allow_nil => true }
   validates :ssl_version, :inclusion => { :in => [ ENCRYPTION_SSL_VERSION_TLSV1_1 ], :allow_nil => true }
@@ -75,11 +75,11 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
 
     #Sample result
     # [ #<Net::LDAP::Entry:0x00000008c54628 @myhash={
-    #     :dn=>["cn=test,dc=cartodb"], 
-    #     :objectclass=>["simpleSecurityObject", "organizationalRole"], 
-    #     :cn=>["test"], 
-    #     :description=>["xxxx"], 
-    #     :userpassword=>["{SSHA}aaaaa"] 
+    #     :dn=>["cn=test,dc=cartodb"],
+    #     :objectclass=>["simpleSecurityObject", "organizationalRole"],
+    #     :cn=>["test"],
+    #     :description=>["xxxx"],
+    #     :userpassword=>["{SSHA}aaaaa"]
     # }> ]
     Carto::Ldap::Entry.new(search_results.is_a?(Array) ? search_results.first : search_results, self)
   end
@@ -96,6 +96,12 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
 
   def groups(objectClass = self.group_object_class)
     search_in_domain_bases(Net::LDAP::Filter.eq('objectClass', objectClass))
+  end
+
+  def last_operation_result
+    ldap_result = connection.get_operation_result
+    Carto::Ldap::OperationResult.new(ldap_result.code, ldap_result.error_message, ldap_result.matched_dn,
+      ldap_result.message)
   end
 
   private
@@ -150,7 +156,7 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
     end
 
     tls_options.merge!(:verify_mode => OpenSSL::SSL::VERIFY_NONE)
-    
+
     # Default value is "SSLv23" at the gem
     tls_options.merge!(:ssl_version => self.ssl_version) if self.ssl_version
 

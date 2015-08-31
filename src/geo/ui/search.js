@@ -95,6 +95,7 @@ cdb.geo.ui.Search = cdb.core.View.extend({
 
     if (places && places.length>0) {
       var location = places[0];
+      address = location.title || address;
       var validBBox = this._isBBoxValid(location);
 
       // Get BBox if possible and set bounds

@@ -113,6 +113,9 @@ cdb.geo.geocoder.NOKIA = {
             if (r.category) {
               position.type = r.category.id;
             }
+            if (r.title) {
+              position.title = r.title;
+            }
             coordinates.push(position);
           }
         }

@@ -1,3 +1,4 @@
+require_relative 'group_presenter'
 
 module Carto
   module Api
@@ -16,7 +17,8 @@ module Carto
             avatar_url:       @user.avatar_url,
             base_url:         @user.public_url,
             quota_in_bytes:   @user.quota_in_bytes,
-            db_size_in_bytes: @user.db_size_in_bytes
+            db_size_in_bytes: @user.db_size_in_bytes,
+            groups:           @user.groups ? @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : []
         }
       end
 

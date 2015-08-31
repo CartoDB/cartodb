@@ -15,13 +15,13 @@
 
         <ul class="Navmenu-list Navmenu-list--owner">
           <li class="Navmenu-item last-child">
-            <a href="<%= CartoDB.url(self, 'profile_user') %>" class="Navmenu-link"><%= @name %></a>
+            <a href="<%= CartoDB.url(self, 'public_user_feed_home') %>" class="Navmenu-link <%= "#{@content_type != 'maps' and @content_type != 'datasets' ? 'is-selected' : '' }" %>"><%= @name %></a>
           </li>
           <li class="Navmenu-item last-child">
-            <a href="<%= CartoDB.url(self, 'public_maps_home') %>" class="Navmenu-link <%= "#{@content_type == 'maps' ? 'is-selected' : '' }" %>"><%= pluralize(@tables_num, "Map") %></a>
+            <a href="<%= CartoDB.url(self, 'public_maps_home') %>" class="Navmenu-link <%= "#{@content_type == 'maps' ? 'is-selected' : '' }" %>"><%= pluralize(@maps_count, "Map") %></a>
           </li>
           <li class="Navmenu-item u-hideOnTablet">
-            <a href="<%= CartoDB.url(self, 'public_datasets_home') %>" class="Navmenu-link <%= "#{@content_type == 'maps' ? '' : 'is-selected' }" %>"><%= pluralize(@tables_num, "Dataset") %></a>
+            <a href="<%= CartoDB.url(self, 'public_datasets_home') %>" class="Navmenu-link <%= "#{@content_type == 'datasets' ? 'is-selected' : '' }" %>"><%= pluralize(@tables_num, "Dataset") %></a>
           </li>
         </ul>
       </div>

@@ -111,6 +111,10 @@ class Admin::PagesController < ApplicationController
     username = CartoDB.extract_subdomain(request).strip.downcase
     @viewed_user = User.where(username: username).first
 
+    @name               = @viewed_user.username
+    @tables_num         = @is_org ? @viewed_user.public_datasets_count : @viewed_user.public_table_count
+    @maps_count         = @viewed_user.public_visualization_count 
+
     if @viewed_user.nil?
       org = Organization.where(name: username).first
       unless org.nil?
@@ -342,6 +346,7 @@ class Admin::PagesController < ApplicationController
     @user = optional.fetch(:user, nil)
     @is_org             = model.is_a? Organization
     @tables_num         = @is_org ? model.public_datasets_count : model.public_table_count
+    @maps_count         = model.public_visualization_count 
   end
 
   def user_public_vis_list(required)

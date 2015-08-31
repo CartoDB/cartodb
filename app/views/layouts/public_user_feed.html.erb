@@ -19,6 +19,15 @@
   </head>
   <body class="PublicBody">
     <%= render 'admin/shared/public_header' %>
+    <div class="FavMap is-pre-loading" id="<%= fav_map_target_id = 'fav-map-container' %>">
+      <div class="Spinner FavMap-spinner js-spinner"></div>
+    </div>
+
+    <% if @is_org %>
+      <%= render "shared/public_dashboard_org_header" %>
+    <% else %>
+      <%= render "shared/public_dashboard_user_header" %>
+    <% end %>
 
     <%= yield %>
 

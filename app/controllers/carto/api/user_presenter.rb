@@ -11,14 +11,16 @@ module Carto
       def to_poro
         return {} if @user.nil?
         {
-            id:               @user.id,
-            username:         @user.username,
-            email:            @user.email,
-            avatar_url:       @user.avatar_url,
-            base_url:         @user.public_url,
-            quota_in_bytes:   @user.quota_in_bytes,
-            db_size_in_bytes: @user.db_size_in_bytes,
-            groups:           @user.groups ? @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : []
+          id:               @user.id,
+          username:         @user.username,
+          email:            @user.email,
+          avatar_url:       @user.avatar_url,
+          base_url:         @user.public_url,
+          quota_in_bytes:   @user.quota_in_bytes,
+          db_size_in_bytes: @user.db_size_in_bytes,
+          table_count:      @user.table_count,
+          maps_count:       @user.maps_count,
+          groups:           @user.groups ? @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : []
         }
       end
 
@@ -38,6 +40,7 @@ module Carto
           account_type: @user.account_type,
           table_quota: @user.table_quota,
           table_count: @user.table_count,
+          maps_count: maps_count,
           public_visualization_count: @user.public_visualization_count,
           visualization_count: @user.visualization_count,
           failed_import_count: failed_import_count,
@@ -137,6 +140,10 @@ module Carto
                                                    .build_paged(1, 1)
                                                    .pluck(:created_at)
         row_data.nil? ? nil : row_data[0]
+      end
+
+      def maps_count
+        Carto::Map.where(user_id: @user.id).count
       end
 
     end

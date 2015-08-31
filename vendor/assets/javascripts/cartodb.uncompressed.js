@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: 52e9a7618831a939c6c7e65b71e9626f959fc868
+// sha: f04d45d5c4b849bb99669f29c070bf14868221ae
 (function() {
   var define;  // Undefine define (require.js), see https://github.com/CartoDB/cartodb.js/issues/543
   var root = this;
@@ -25743,6 +25743,7 @@ if (typeof window !== 'undefined') {
         'geo/leaflet/leaflet_wmslayer.js',
         'geo/leaflet/leaflet_cartodb_layergroup.js',
         'geo/leaflet/leaflet_cartodb_layer.js',
+        'geo/leaflet/leaflet.geometry.js',
         'geo/leaflet/leaflet.js',
 
         'geo/gmaps/gmaps_base.js',
@@ -25751,6 +25752,7 @@ if (typeof window !== 'undefined') {
         'geo/gmaps/gmaps_tiledlayer.js',
         'geo/gmaps/gmaps_cartodb_layergroup.js',
         'geo/gmaps/gmaps_cartodb_layer.js',
+        'geo/gmaps/gmaps.geometry.js',
         'geo/gmaps/gmaps.js',
 
         'ui/common/dialog.js',
@@ -26907,7 +26909,7 @@ cdb.geo.geocoder.NOKIA = {
       if(location.protocol.indexOf('http') === -1) {
         protocol = 'http:';
       }
-      
+
       $.getJSON(protocol + '//places.nlp.nokia.com/places/v1/discover/search/?q=' + encodeURIComponent(address) + '&app_id=' + this.keys.app_id + '&app_code=' + this.keys.app_code + '&Accept-Language=en-US&at=0,0&callback=?', function(data) {
 
          var coordinates = [];
@@ -26929,8 +26931,11 @@ cdb.geo.geocoder.NOKIA = {
                 north: r.bbox[3],
                 south: r.bbox[1],
                 east: r.bbox[2],
-                west: r.bbox[0] 
+                west: r.bbox[0]
               }
+            }
+            if (r.category) {
+              position.type = r.category.id;
             }
             coordinates.push(position);
           }
@@ -26942,8 +26947,6 @@ cdb.geo.geocoder.NOKIA = {
       });
   }
 }
-
-
 
 
 /**
@@ -30950,34 +30953,67 @@ cdb.geo.ui.Header = cdb.core.View.extend({
   }
 
 });
+/**
+ *  UI component to place the map in the
+ *  location found by the geocoder.
+ *
+ */
 
 cdb.geo.ui.Search = cdb.core.View.extend({
 
   className: 'cartodb-searchbox',
 
-  events: {
-    "click input[type='text']":   '_focus',
-    "submit form":                '_submit',
-    "click":                      '_stopPropagation',
-    "dblclick":                   '_stopPropagation',
-    "mousedown":                  '_stopPropagation'
+  _ZOOM_BY_CATEGORY: {
+    'building': 18,
+    'postal-area': 15,
+    'default': 12
   },
 
-  initialize: function() {},
+  events: {
+    "click input[type='text']": '_onFocus',
+    "submit form": '_onSubmit',
+    "click": '_stopPropagation',
+    "dblclick": '_stopPropagation',
+    "mousedown": '_stopPropagation'
+  },
+
+  options: {
+    searchPin: true,
+    infowindowTemplate: '<div class="cartodb-infowindow">'+
+    '<div class="cartodb-popup v2 centered">'+
+      '<a href="#close" class="cartodb-popup-close-button close">x</a>'+
+       '<div class="cartodb-popup-content-wrapper">'+
+         '<p>{{ address }}</p>'+
+       '</div>'+
+       '<div class="cartodb-popup-tip-container"></div>'+
+    '</div>',
+    infowindowWidth: 186,
+    infowindowOffset: [93, 90],
+    iconUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAfCAYAAADXwvzvAAACuklEQVR4Ae3PQ+AsNxzA8e8vo/Xus237vVN9qW3b7qW2bdu2caxt29bu/meSmaTpqW63Pfc7wemTZPh9K/Xv3zhzxIgVrho0aMsLGo2N9o+iuYDwV02E5NJpM7d5fMGC515dMP/7l6dNMc+OGJY9Uq99cVMc33I4LOJXCQBQuXPBglNnDRm0Xa1RAWewP3yL/vJLul99Q/pNm0/b+qsnbLHngXAVgAI4b9KkXWc1m9vV58ykst56lKdMptyokdTKRJUIV1MMTGTgbOTknWABgFo2SSbOjuN9wlgIBrSIJ0yiVG9QUgGxUigRRAlpCQYrBs+A/QClliuXV6ppPVibDPPqi5irL8G+/QY2S3FZhityrLNYBWkAI2G5WTA2nGTthKDTJfP/FH1sCb76nNBa7I8/knba6Eyj8wJjLbk4qlCdAFNClWXKiiL72kGRUkSRhwUuTUm7XTqZ3z3KnMM7QhAFUfiKMZ9OQci+ydFFH32BIsDh8hxjDF2T0y0KtHHUczCg34P3wgesfWhZozstW1R/cJpuohA8dI7cWrSfxqM4gwEOnoJnn4HXBVDHwHnriNr2W3G0I8FEkKufMbjcIw1DC+iCuRw2OBduEYAKDD8drlkGlk6BHwAtIEDioD/QBnsnnHAI7A9YAAAGenwEnPuAd8+DewHcS+CeB3szvL0b7ADE/FWzYf5BCxa9dMvqa7oLll7WbTlsxKkDYRi9dPqhRz743L0PuKtOPMXtutHmm/InKf5Y6Co15Upl8qSCqVajXiEeUTRb6GqNIojoGaLEDwEA6B0KIKL8lH8JBeS/3AgK73qAPfc/tCLiAACUCmyvsJHnphwEAYFStNs/NoHgn2ATWPmlF54b/9GHH/Khn88/+9SywJx/+q0SsKTZbB45d/6CO0aNHnutv3kbYDQg9JAAIRDwF/0EjlkjUi3fkAMAAAAASUVORK5CYII=',
+    iconAnchor: [7, 31]
+  },
+
+  initialize: function() {
+    this.mapView = this.options.mapView;
+    this.template = this.options.template;
+  },
 
   render: function() {
-    this.$el.html(this.options.template(this.options));
+    this.$el.html(this.template(this.options));
     return this;
   },
 
   _stopPropagation: function(ev) {
-    ev.stopPropagation();
+    if (ev) {
+      ev.stopPropagation();
+    }
   },
 
-  _focus: function(ev) {
-    ev.preventDefault();
-
-    $(ev.target).focus();
+  _onFocus: function(ev) {
+    if (ev) {
+      ev.preventDefault();
+      $(ev.target).focus();
+    }
   },
 
   _showLoader: function() {
@@ -30988,46 +31024,156 @@ cdb.geo.ui.Search = cdb.core.View.extend({
     this.$('span.loader').hide();
   },
 
-  _submit: function(ev) {
+  _onSubmit: function(ev) {
     ev.preventDefault();
+    var self = this;
+    var address = this.$('input.text').val();
 
-    var self = this
-      , address = this.$('input.text').val();
+    if (!address) {
+      return;
+    }
 
     // Show geocoder loader
     this._showLoader();
-     
-    cdb.geo.geocoder.NOKIA.geocode(address, function(coords) {
-      if (coords.length>0) {
-        var validBBox = true;
-        
-        // check bounding box is valid
-        if(!coords[0].boundingbox || coords[0].boundingbox.south == coords[0].boundingbox.north ||
-          coords[0].boundingbox.east == coords[0].boundingbox.west) {
-          validBBox = false;
-        }
-
-        if (validBBox && coords[0].boundingbox) {
-          self.model.setBounds([
-            [
-              parseFloat(coords[0].boundingbox.south),
-              parseFloat(coords[0].boundingbox.west)
-            ],
-            [
-              parseFloat(coords[0].boundingbox.north),
-              parseFloat(coords[0].boundingbox.east)
-            ]
-          ]);
-        } else if (coords[0].lat && coords[0].lon) {
-          self.model.setCenter([coords[0].lat, coords[0].lon]);
-          self.model.setZoom(10);
-        }
-      }
-
-      // Hide geocoder loader
+    // Remove previous pin
+    this._destroySearchPin();
+    cdb.geo.geocoder.NOKIA.geocode(address, function(places) {
+      self._onResult(places);
+      // Hide loader
       self._hideLoader();
     });
+  },
+
+  _onResult: function(places) {
+    var position = '';
+    var address = this.$('input.text').val();
+
+    if (places && places.length>0) {
+      var location = places[0];
+      var validBBox = this._isBBoxValid(location);
+
+      // Get BBox if possible and set bounds
+      if (validBBox) {
+        var s = parseFloat(location.boundingbox.south);
+        var w = parseFloat(location.boundingbox.west);
+        var n = parseFloat(location.boundingbox.north);
+        var e = parseFloat(location.boundingbox.east);
+
+        var centerLon = (w + e)/2;
+        var centerLat = (s + n)/2;
+        position = [centerLat, centerLon];
+        this.model.setBounds([ [ s, w ], [ n, e ] ]);
+      }
+
+      // If location is defined,
+      // let's store it
+      if (location.lat && location.lon) {
+        position = [location.lat, location.lon];
+      }
+
+      // In the case that BBox is not valid, let's
+      // center the map using the position
+      if (!validBBox) {
+        this.model.setCenter(position);
+        this.model.setZoom(this._getZoomByCategory(location.type));
+      }
+
+      if (this.options.searchPin) {
+        this._createSearchPin(position, address);
+      }
+    }
+  },
+
+  // Getting zoom for each type of location
+  _getZoomByCategory: function(type) {
+    if (type && this._ZOOM_BY_CATEGORY[type]) {
+      return this._ZOOM_BY_CATEGORY[type];
+    }
+    return this._ZOOM_BY_CATEGORY['default'];
+  },
+
+  _isBBoxValid: function(location) {
+    if(!location.boundingbox || location.boundingbox.south == location.boundingbox.north ||
+      location.boundingbox.east == location.boundingbox.west) {
+      return false;
+    }
+    return true;
+  },
+
+  _createSearchPin: function(position, address) {
+    this._destroySearchPin();
+    this._createPin(position, address);
+    this._createInfowindow(position, address);
+    this._bindEvents();
+  },
+
+  _destroySearchPin: function() {
+    this._destroyPin();
+    this._destroyInfowindow()
+    this._unbindEvents();
+  },
+
+  _createInfowindow: function(position, address) {
+    var infowindowModel = new cdb.geo.ui.InfowindowModel({
+      template: this.options.infowindowTemplate,
+      latlng: position,
+      width: this.options.infowindowWidth,
+      offset: this.options.infowindowOffset,
+      content: {
+        fields: [{
+          title: 'address',
+          value: address
+        }]
+      }
+    });
+
+    this._searchInfowindow = new cdb.geo.ui.Infowindow({
+      model: infowindowModel,
+      mapView: this.mapView
+    });
+
+    this.mapView.$el.append(this._searchInfowindow.el);
+    infowindowModel.set('visibility', true);
+  },
+
+  _destroyInfowindow: function() {
+    if (this._searchInfowindow) {
+      this._searchInfowindow.clean();
+      delete this._searchInfowindow;
+    }
+  },
+
+  _createPin: function(position, address) {
+    this._searchPin = this.mapView._addGeomToMap(
+      new cdb.geo.Geometry({
+        geojson: { type: "Point", "coordinates": [ position[1], position[0] ] },
+        iconUrl: this.options.iconUrl,
+        iconAnchor: this.options.iconAnchor
+      })
+    );
+  },
+
+  _destroyPin: function() {
+    if (this._searchPin) {
+      this.mapView._removeGeomFromMap(this._searchPin);
+      delete this._searchPin;
+    }
+  },
+
+  _bindEvents: function() {
+    this.mapView.bind('click', this._destroySearchPin, this);
+  },
+
+  _unbindEvents: function() {
+    this.mapView.unbind('click', this._destroySearchPin, this);
+  },
+
+  clean: function() {
+    this._destroySearchPin();
+    this._unbindEvents();
+    this.elder('clean');
   }
+
 });
 
 /**
@@ -32013,6 +32159,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     var search = new cdb.geo.ui.Search({
       template: template,
+      mapView: this.mapView,
       model: this.mapView.map
     });
 
@@ -32136,11 +32283,11 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
       show_legends = this.visibility_options.legends;
     }
 
-    var layer = new cdb.geo.ui.MobileLayer({ 
+    var layer = new cdb.geo.ui.MobileLayer({
       model: data,
       show_legends: show_legends,
       show_title: !this.hasLayerSelector ? false : true,
-      hide_toggle: hide_toggle 
+      hide_toggle: hide_toggle
     });
 
     this.$el.find(".aside .layers").append(layer.render().$el);
@@ -35131,6 +35278,165 @@ _.extend(
 cdb.geo.LeafLetLayerCartoDBView = LeafLetLayerCartoDBView;
 
 })();
+(function() {
+
+/**
+ * this module implements all the features related to overlay geometries
+ * in leaflet: markers, polygons, lines and so on
+ */
+
+
+/**
+ * view for markers
+ */
+function PointView(geometryModel) {
+  var self = this;
+  // events to link
+  var events = [
+    'click',
+    'dblclick',
+    'mousedown',
+    'mouseover',
+    'mouseout',
+    'dragstart',
+    'drag',
+    'dragend'
+  ];
+
+  this._eventHandlers = {};
+  this.model = geometryModel;
+  this.points = [];
+
+  var icon = {
+    iconUrl: this.model.get('iconUrl') || cdb.config.get('assets_url') + '/images/layout/default_marker.png',
+    iconAnchor: this.model.get('iconAnchor') || [11, 11]
+  };
+
+  this.geom = L.GeoJSON.geometryToLayer(geometryModel.get('geojson'), function(geojson, latLng) {
+      //TODO: create marker depending on the visualizacion options
+      var p = L.marker(latLng, {
+        icon: L.icon(icon)
+      });
+
+      var i;
+      for(i = 0; i < events.length; ++i) {
+        var e = events[i];
+        p.on(e, self._eventHandler(e));
+      }
+      return p;
+  });
+
+  this.bind('dragend', function(e, pos) {
+    geometryModel.set({
+      geojson: {
+        type: 'Point',
+        //geojson is lng,lat
+        coordinates: [pos[1], pos[0]]
+      }
+    });
+  });
+}
+
+PointView.prototype = new GeometryView();
+
+PointView.prototype.edit = function() {
+  this.geom.dragging.enable();
+};
+
+/**
+ * returns a function to handle events fot evtType
+ */
+PointView.prototype._eventHandler = function(evtType) {
+  var self = this;
+  var h = this._eventHandlers[evtType];
+  if(!h) {
+    h = function(e) {
+      var latlng = e.target.getLatLng();
+      var s = [latlng.lat, latlng.lng];
+      self.trigger(evtType, e.originalEvent, s);
+    };
+    this._eventHandlers[evtType] = h;
+  }
+  return h;
+};
+
+/**
+ * view for other geometries (polygons/lines)
+ */
+function PathView(geometryModel) {
+  var self = this;
+  // events to link
+  var events = [
+    'click',
+    'dblclick',
+    'mousedown',
+    'mouseover',
+    'mouseout',
+  ];
+
+  this._eventHandlers = {};
+  this.model = geometryModel;
+  this.points = [];
+
+
+  this.geom = L.GeoJSON.geometryToLayer(geometryModel.get('geojson'));
+  this.geom.setStyle(geometryModel.get('style'));
+
+
+  /*for(var i = 0; i < events.length; ++i) {
+    var e = events[i];
+    this.geom.on(e, self._eventHandler(e));
+  }*/
+
+}
+
+PathView.prototype = new GeometryView();
+
+PathView.prototype._leafletLayers = function() {
+  // check if this is a multi-feature or single-feature
+  if (this.geom.getLayers) {
+    return this.geom.getLayers();
+  }
+  return [this.geom];
+};
+
+
+PathView.prototype.enableEdit = function() {
+  var self = this;
+  var layers = this._leafletLayers();
+  _.each(layers, function(g) {
+    g.setStyle(self.model.get('style'));
+    g.on('edit', function() {
+      self.model.set('geojson', self.geom.toGeoJSON().geometry);
+    }, self);
+  });
+};
+
+PathView.prototype.disableEdit = function() {
+  var self = this;
+  var layers = this._leafletLayers();
+  _.each(layers, function(g) {
+    g.off('edit', null, self);
+  });
+};
+
+PathView.prototype.edit = function(enable) {
+  var self = this;
+  var fn = enable ? 'enable': 'disable';
+  var layers = this._leafletLayers();
+  _.each(layers, function(g) {
+    g.editing[fn]();
+    enable ? self.enableEdit(): self.disableEdit();
+  });
+};
+
+cdb.geo.leaflet = cdb.geo.leaflet || {};
+
+cdb.geo.leaflet.PointView = PointView;
+cdb.geo.leaflet.PathView = PathView;
+
+
+})();
 /**
 * leaflet implementation of a map
 */
@@ -36363,6 +36669,263 @@ _.extend(
 
 
 });
+
+})();
+(function() {
+/**
+ * view for markers
+ */
+function PointView(geometryModel) {
+  var self = this;
+  // events to link
+  var events = [
+    'click',
+    'dblclick',
+    'mousedown',
+    'mouseover',
+    'mouseout',
+    'dragstart',
+    'drag',
+    'dragend'
+  ];
+
+  this._eventHandlers = {};
+  this.model = geometryModel;
+  this.points = [];
+
+  var style = _.clone(geometryModel.get('style')) || {};
+  var iconAnchor = this.model.get('iconAnchor');
+
+  var icon = {
+    url: this.model.get('iconUrl') || cdb.config.get('assets_url') + '/images/layout/default_marker.png',
+    anchor: {
+      x: iconAnchor && iconAnchor[0] || 10,
+      y: iconAnchor && iconAnchor[1] || 10,
+    }
+  };
+
+  this.geom = new GeoJSON (
+    geometryModel.get('geojson'),
+    {
+      icon: icon,
+      raiseOnDrag: false,
+      crossOnDrag: false
+    }
+  );
+
+  // bind events
+  var i;
+  for(i = 0; i < events.length; ++i) {
+    var e = events[i];
+    google.maps.event.addListener(this.geom, e, self._eventHandler(e));
+  }
+
+  // link dragging
+  this.bind('dragend', function(e, pos) {
+    geometryModel.set({
+      geojson: {
+        type: 'Point',
+        // geojson is lng,lat
+        coordinates: [pos[1], pos[0]]
+      }
+    });
+  });
+}
+
+PointView.prototype = new GeometryView();
+
+PointView.prototype._eventHandler = function(evtType) {
+  var self = this;
+  var h = this._eventHandlers[evtType];
+  if(!h) {
+    h = function(e) {
+      var latlng = e.latLng;
+      var s = [latlng.lat(), latlng.lng()];
+      self.trigger(evtType, e, s);
+    };
+    this._eventHandlers[evtType] = h;
+  }
+  return h;
+};
+
+PointView.prototype.edit = function(enable) {
+  this.geom.setDraggable(enable);
+};
+
+/**
+ * view for other geometries (polygons/lines)
+ */
+function PathView(geometryModel) {
+  var self = this;
+  // events to link
+  var events = [
+    'click',
+    'dblclick',
+    'mousedown',
+    'mouseover',
+    'mouseout',
+  ];
+
+  this._eventHandlers = {};
+  this.model = geometryModel;
+  this.points = [];
+
+
+
+  var style = _.clone(geometryModel.get('style')) || {};
+
+  this.geom = new GeoJSON (
+    geometryModel.get('geojson'),
+    style
+  );
+
+  /*_.each(this.geom._layers, function(g) {
+    g.setStyle(geometryModel.get('style'));
+    g.on('edit', function() {
+      geometryModel.set('geojson', L.GeoJSON.toGeoJSON(self.geom));
+    }, self);
+  });
+  */
+
+  _.bindAll(this, '_updateModel');
+  var self = this;
+
+  function bindPath(p) {
+    google.maps.event.addListener(p, 'insert_at', self._updateModel);
+    /*
+    google.maps.event.addListener(p, 'remove_at', this._updateModel);
+    google.maps.event.addListener(p, 'set_at', this._updateModel);
+    */
+  }
+
+  // TODO: check this conditions
+
+  if(this.geom.getPaths) {
+    var paths = this.geom.getPaths();
+
+    if (paths && paths[0]) {
+      // More than one path
+      for(var i = 0; i < paths.length; ++i) {
+        bindPath(paths[i]);
+      }
+    } else {
+      // One path
+      bindPath(paths);
+      google.maps.event.addListener(this.geom, 'mouseup', this._updateModel);
+    }
+  } else {
+    // More than one path
+    if (this.geom.length) {
+      for(var i = 0; i < this.geom.length; ++i) {
+        bindPath(this.geom[i].getPath());
+        google.maps.event.addListener(this.geom[i], 'mouseup', this._updateModel);
+      }
+    } else {
+      // One path
+      bindPath(this.geom.getPath());
+      google.maps.event.addListener(this.geom, 'mouseup', this._updateModel);
+    }
+  }
+
+  /*for(var i = 0; i < events.length; ++i) {
+    var e = events[i];
+    this.geom.on(e, self._eventHandler(e));
+  }*/
+
+}
+
+PathView.prototype = new GeometryView();
+
+PathView.getGeoJSON = function(geom, gType) {
+
+  var coordFn = {
+    'Polygon': 'getPath',
+    'MultiPolygon': 'getPath',
+    'LineString': 'getPath',
+    'MultiLineString': 'getPath',
+    'Point': 'getPosition',
+    'MultiPoint': 'getPosition'
+  };
+
+  function _coord(latlng) {
+    return [latlng.lng(), latlng.lat()];
+  }
+
+  function _coords(latlngs) {
+    var c = [];
+    for(var i = 0; i < latlngs.length; ++i) {
+      c.push(_coord(latlngs.getAt(i)));
+    }
+    return c;
+  }
+
+  // single
+  if(!geom.length || geom.length == 1) {
+    var g = geom.length ? geom[0]: geom;
+    var coords;
+    if(gType == 'Point') {
+      coords = _coord(g.getPosition());
+    } else if(gType == 'MultiPoint') {
+      coords = [_coord(g.getPosition())]
+    } else if(gType == 'Polygon') {
+      coords = [_coords(g.getPath())];
+      coords[0].push(_coord(g.getPath().getAt(0)));
+    } else if(gType == 'MultiPolygon') {
+      coords = [];
+      for(var p = 0; p < g.getPaths().length; ++p) {
+        var c = _coords(g.getPaths().getAt(p));
+        c.push(_coord(g.getPaths().getAt(p).getAt(0)));
+        coords.push(c);
+      }
+      coords = [coords]
+    } else if(gType == 'LineString') {
+      coords = _coords(g.getPath());
+    } else if(gType == 'MultiLineString') {
+      //TODO: redo
+      coords = [_coords(g.getPath())];
+    }
+    return {
+      type: gType,
+      coordinates: coords
+    }
+  } else {
+    // poly
+    var c = [];
+    for(var i = 0; i < geom.length; ++i) {
+      c.push(PathView.getGeoJSON(geom[i], gType).coordinates[0]);
+    }
+    return  {
+      type: gType,
+      coordinates: c
+    }
+  }
+}
+
+PathView.prototype._updateModel = function(e) {
+  var self = this;
+  setTimeout(function() {
+  self.model.set('geojson', PathView.getGeoJSON(self.geom, self.model.get('geojson').type ));
+  }, 100)
+}
+
+PathView.prototype.edit = function(enable) {
+
+  var fn = enable ? 'enable': 'disable';
+  var g = this.geom.length ? this.geom: [this.geom];
+  for(var i = 0; i < g.length; ++i) {
+    g[i].setEditable(enable);
+  }
+  if(!enable) {
+    this.model.set('geojson', PathView.getGeoJSON(this.geom, this.model.get('geojson').type));
+  }
+};
+
+cdb.geo.gmaps = cdb.geo.gmaps || {};
+
+cdb.geo.gmaps.PointView = PointView;
+cdb.geo.gmaps.PathView = PathView;
+
+
 
 })();
 
@@ -40224,10 +40787,6 @@ cdb.vis.Overlay.register('share', function(data, vis) {
 // search content
 cdb.vis.Overlay.register('search', function(data, vis) {
 
-  var options = data.options;
-
-  //if (!options.display) return;
-
   var template = cdb.core.Template.compile(
     data.template || '\
       <form>\
@@ -40239,10 +40798,13 @@ cdb.vis.Overlay.register('search', function(data, vis) {
     data.templateType || 'mustache'
   );
 
-  var search = new cdb.geo.ui.Search({
-    template: template,
-    model: vis.map
-  });
+  var search = new cdb.geo.ui.Search(
+    _.extend(data, {
+      template: template,
+      mapView: vis.mapView,
+      model: vis.map
+    })
+  );
 
   return search.render();
 
@@ -42263,13 +42825,15 @@ function PointView(geometryModel) {
   this.model = geometryModel;
   this.points = [];
 
+  var icon = {
+    iconUrl: this.model.get('iconUrl') || cdb.config.get('assets_url') + '/images/layout/default_marker.png',
+    iconAnchor: this.model.get('iconAnchor') || [11, 11]
+  };
+
   this.geom = L.GeoJSON.geometryToLayer(geometryModel.get('geojson'), function(geojson, latLng) {
       //TODO: create marker depending on the visualizacion options
-      var p = L.marker(latLng,{
-        icon: L.icon({
-          iconUrl: cdb.config.get('assets_url') + '/images/layout/default_marker.png',
-          iconAnchor: [11, 11]
-        })
+      var p = L.marker(latLng, {
+        icon: L.icon(icon)
       });
 
       var i;
@@ -42280,7 +42844,7 @@ function PointView(geometryModel) {
       return p;
   });
 
-  this.bind('dragend', function(e, pos) { 
+  this.bind('dragend', function(e, pos) {
     geometryModel.set({
       geojson: {
         type: 'Point',
@@ -42332,11 +42896,11 @@ function PathView(geometryModel) {
   this.model = geometryModel;
   this.points = [];
 
-  
+
   this.geom = L.GeoJSON.geometryToLayer(geometryModel.get('geojson'));
   this.geom.setStyle(geometryModel.get('style'));
 
-  
+
   /*for(var i = 0; i < events.length; ++i) {
     var e = events[i];
     this.geom.on(e, self._eventHandler(e));
@@ -42414,21 +42978,20 @@ function PointView(geometryModel) {
   this.points = [];
 
   var style = _.clone(geometryModel.get('style')) || {};
-  //style.path = google.maps.SymbolPath.CIRCLE;
-  //style.scale = style.weight;
-  //style.strokeColor = "ff0000";
-  //style.strokeOpacity = 1;
-  //style.strokeWeight = 1;
-  //style.fillColor = '00000';
-  //style.fillOpacity = 0.5;
+  var iconAnchor = this.model.get('iconAnchor');
+
+  var icon = {
+    url: this.model.get('iconUrl') || cdb.config.get('assets_url') + '/images/layout/default_marker.png',
+    anchor: {
+      x: iconAnchor && iconAnchor[0] || 10,
+      y: iconAnchor && iconAnchor[1] || 10,
+    }
+  };
 
   this.geom = new GeoJSON (
     geometryModel.get('geojson'),
     {
-      icon: {
-          url: cdb.config.get('assets_url') + '/images/layout/default_marker.png',
-          anchor: {x: 10, y: 10}
-      },
+      icon: icon,
       raiseOnDrag: false,
       crossOnDrag: false
     }
@@ -42491,7 +43054,7 @@ function PathView(geometryModel) {
   this.model = geometryModel;
   this.points = [];
 
-  
+
 
   var style = _.clone(geometryModel.get('style')) || {};
 

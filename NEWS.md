@@ -11,6 +11,7 @@
 * Defaults Time Column to first date column or cartodb_id in Torque wizards [#4136](https://github.com/CartoDB/cartodb/pull/4136)
 * Added more customized Google basemaps.
 * Added `filter` option to layer_definition and named_map in vizjson [#4197](https://github.com/CartoDB/cartodb/pull/4197)
+* Added code coverage generation for tests suite. After a run, results will be stored at `coverage` subfolder
 
 Bugfixes:
 * Fixed deletion of layers upon disconnecting synced datasources [#3718](https://github.com/CartoDB/cartodb/pull/3718)
@@ -27,7 +28,7 @@ Bugfixes:
 
 #### Steps to avoid problems with submodules changes
 ```shell
-# Before get last changes from master, let's remove the 
+# Before get last changes from master, let's remove the
 # common submodule
 git submodule deinit app/assets/stylesheets/common
 # Clean tmp sass folder, avoiding possible compass problems

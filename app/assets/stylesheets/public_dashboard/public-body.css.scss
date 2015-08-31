@@ -19,3 +19,9 @@
   @include flex-grow(1);
   margin-top: $sMargin-group;
 }
+.PublicBody-content--marginless {
+  margin: 0;
+}
+.PublicBody-content--grey {
+  background: #F9F9F9;
+}

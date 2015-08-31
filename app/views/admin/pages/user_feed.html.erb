@@ -1,2 +1,107 @@
-<div class="PublicBody-content">
+<div class="PublicBody-content PublicBody-content--marginless PublicBody-content--grey">
+  <div class="PublicUserProfile">
+    <div class="PublicUserProfile-profile">
+
+      <h2 class="PublicUserProfile-name">Emilio García</h2>
+      <p class="PublicUserProfile-description">Hungarian-American illusionist and stunt performer, noted for his
+        sensational escape acts. He first attracted notice in vaudeville in the
+        US and then as "Harry Handcuff Houdini".</p>
+
+      <ul class="PublicUserProfile-details">
+        <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Twitter DefaultTimeDiff-icon"></i> <a href="#">piensaenpixel</a></li>
+        <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Anchor DefaultTimeDiff-icon"></i> <a href="#">www.piensaenpixel.com</a></li>
+        <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i> CartoDB</li>
+        <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Email DefaultTimeDiff-icon"></i> <a href="#">email@address.com</a></li>
+        <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i> Madrid</li>
+        <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Calendar DefaultTimeDiff-icon"></i> Member since June 1894</li>
+      </ul>
+
+      <%# @name %>
+      <%# @viewed_user.description %>
+      <%# @viewed_user.twitter_username %>
+      <%# @viewed_user.organization.name unless @viewed_user.organization.nil? %>
+      <%# @viewed_user.organization.name unless @viewed_user.organization.nil? %>
+    </div>
+    <div class="PublicUserProfile-line"></div>
+    <ul class="PublicUserFeed">
+      <li class="PublicUserFeed-item">
+        <div class="PublicUserFeed-avatar">
+          <% if @avatar_url %>
+            <img src="<%= @avatar_url %>" class="UserAvatar-img UserAvatar-img--big" />
+          <% else %>
+            <div class="UserAvatar-img UserAvatar-img--big UserAvatar-img--no-src"></div>
+          <% end %>
+        </div>
+
+        <div class="MapCard MapCard--long" data-zoom="1" data-vizjson-url="http://development.localhost.lan:3000/api/v2/viz/38062724-4662-11e5-a60c-080027880ca6/viz.json">
+          <a href="http://development.localhost.lan:3000/viz/38062724-4662-11e5-a60c-080027880ca6/public_map" class="MapCard-header js-header has-error">
+            <div class="MapCard-loader"></div>
+            <div class="MapCard-error" style="display: block;"></div></a>
+
+          <div class="MapCard-content">
+            <div class="MapCard-contentBody">
+              <div class="MapCard-contentBodyRow MapCard-contentBodyRow--flex">
+                <h3 class="MapCard-title DefaultTitle">
+                  <a href="http://development.localhost.lan:3000/viz/38062724-4662-11e5-a60c-080027880ca6/public_map" class="DefaultTitle-link u-ellipsLongText" title="fadslf jasdñlfjasdñlfjsdañl fjasdfasdfa+ fas dfasdfadslf jasdñlfjasdñlfjsdañl fjasdfasdfa">fadslf jasdñlfjasdñlfjsdañl fjasdfasdfa+ fas dfasdfadslf jasdñlfjasdñlfjsdañl fjasdfasdfa</a>
+                </h3>
+              </div>
+            </div>
+
+            <div class="MapCard-contentFooter">
+              <div class="MapCard-contentFooterDetails--left">
+                <a href="#/like" class="LikesIndicator is-likeable is-liked" data-vis-id="38062724-4662-11e5-a60c-080027880ca6" data-likes-count="1"><i class="iconFont iconFont-Heart--fill LikesIndicator-icon "></i>
+                </a>
+
+              </div>
+              <div class="MapCard-contentFooterDetails--right">
+                <div class="MapCard-contentFooterTimeDiff DefaultTimeDiff">
+                  <i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i>
+                  11 days ago
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+      <li class="PublicUserFeed-item">
+        <div class="PublicUserFeed-avatar">
+          <% if @avatar_url %>
+            <img src="<%= @avatar_url %>" class="UserAvatar-img UserAvatar-img--big" />
+          <% else %>
+            <div class="UserAvatar-img UserAvatar-img--big UserAvatar-img--no-src"></div>
+          <% end %>
+        </div>
+
+        <div class="MapCard MapCard--long" data-zoom="1" data-vizjson-url="http://development.localhost.lan:3000/api/v2/viz/38062724-4662-11e5-a60c-080027880ca6/viz.json">
+          <a href="http://development.localhost.lan:3000/viz/38062724-4662-11e5-a60c-080027880ca6/public_map" class="MapCard-header js-header has-error">
+            <div class="MapCard-loader"></div>
+            <div class="MapCard-error" style="display: block;"></div></a>
+
+          <div class="MapCard-content">
+            <div class="MapCard-contentBody">
+              <div class="MapCard-contentBodyRow MapCard-contentBodyRow--flex">
+                <h3 class="MapCard-title DefaultTitle">
+                  <a href="http://development.localhost.lan:3000/viz/38062724-4662-11e5-a60c-080027880ca6/public_map" class="DefaultTitle-link u-ellipsLongText" title="fadslf jasdñlfjasdñlfjsdañl fjasdfasdfa+ fas dfasdfadslf jasdñlfjasdñlfjsdañl fjasdfasdfa">fadslf jasdñlfjasdñlfjsdañl fjasdfasdfa+ fas dfasdfadslf jasdñlfjasdñlfjsdañl fjasdfasdfa</a>
+                </h3>
+              </div>
+            </div>
+
+            <div class="MapCard-contentFooter">
+              <div class="MapCard-contentFooterDetails--left">
+                <a href="#/like" class="LikesIndicator is-likeable is-liked" data-vis-id="38062724-4662-11e5-a60c-080027880ca6" data-likes-count="1"><i class="iconFont iconFont-Heart--fill LikesIndicator-icon "></i>
+                </a>
+
+              </div>
+              <div class="MapCard-contentFooterDetails--right">
+                <div class="MapCard-contentFooterTimeDiff DefaultTimeDiff">
+                  <i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i>
+                  11 days ago
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
 </div>

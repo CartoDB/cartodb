@@ -112,6 +112,7 @@ class Admin::PagesController < ApplicationController
     @viewed_user = User.where(username: username).first
 
     @name               = @viewed_user.username
+    @avatar_url         = @viewed_user.avatar
     @tables_num         = @is_org ? @viewed_user.public_datasets_count : @viewed_user.public_table_count
     @maps_count         = @viewed_user.public_visualization_count 
 

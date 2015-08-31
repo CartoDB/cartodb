@@ -34,7 +34,7 @@ module CartoDB
       end
 
       def log(message, truncate = true)
-        @logger.append(message, truncate)
+        @logger.append(message, nil, truncate)
       end
 
       def table_name

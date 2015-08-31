@@ -19,7 +19,10 @@ class Carto::Log < ActiveRecord::Base
     log
   end
 
-  def append(line, timestamp = Time.now.utc, truncate = true)
+  def append(line, timestamp = nil, truncate = nil)
+    timestamp ||= Time.now.utc 
+    truncate  ||= true
+
     line.slice!(MAX_ENTRY_LENGTH..-1) if truncate
 
     entry = ENTRY_FORMAT % [ timestamp, line.slice(0..MAX_ENTRY_LENGTH) ]

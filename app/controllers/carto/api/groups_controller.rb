@@ -11,6 +11,7 @@ module Carto
 
       ssl_required :index, :show, :create, :update, :destroy, :add_member, :remove_member unless Rails.env.development? || Rails.env.test?
 
+      before_filter :load_fetching_options, :only => [:show, :index]
       before_filter :load_organization
       before_filter :load_user
       before_filter :validate_organization_or_user_loaded
@@ -22,12 +23,6 @@ module Carto
       def index
         page, per_page, order = page_per_page_order_params
 
-        fetching_options = {
-          fetch_shared_tables_count: params[:fetch_shared_tables_count] == 'true',
-          fetch_shared_maps_count: params[:fetch_shared_maps_count] == 'true',
-          fetch_members: params[:fetch_members] == 'true'
-        }
-
         groups = @user ? @user.groups : @organization.groups
         groups = groups.where('name ilike ?', "%#{params[:q]}%") if params[:q]
         total_entries = groups.count
@@ -35,13 +30,13 @@ module Carto
         groups = Carto::PagedModel.paged_association(groups, page, per_page, order)
 
         render_jsonp({
-          groups: groups.map { |g| Carto::Api::GroupPresenter.new(g, fetching_options).to_poro },
+          groups: groups.map { |g| Carto::Api::GroupPresenter.new(g, @fetching_options).to_poro },
           total_entries: total_entries
         }, 200)
       end
 
       def show
-        render_jsonp(Carto::Api::GroupPresenter.new(@group).to_poro, 200)
+        render_jsonp(Carto::Api::GroupPresenter.new(@group, @fetching_options).to_poro, 200)
       end
 
       def create
@@ -88,6 +83,14 @@ module Carto
       end
 
       private
+
+      def load_fetching_options
+        @fetching_options = {
+          fetch_shared_tables_count: params[:fetch_shared_tables_count] == 'true',
+          fetch_shared_maps_count: params[:fetch_shared_maps_count] == 'true',
+          fetch_members: params[:fetch_members] == 'true'
+        }
+      end
 
       def load_organization
         return unless params['organization_id'].present?

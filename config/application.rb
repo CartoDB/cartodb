@@ -82,6 +82,7 @@ module CartoDB
       models.js
       organization_templates.js
       organization_deps.js
+      organization_groups.js
       organization.js
       table.js
       public_dashboard.js

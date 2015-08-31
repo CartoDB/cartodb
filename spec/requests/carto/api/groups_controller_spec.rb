@@ -148,6 +148,15 @@ describe Carto::Api::GroupsController do
       end
     end
 
+    it '#show support fetch_shared_maps_count, fetch_shared_tables_count and fetch_members' do
+      get_json api_v1_organization_groups_show_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, group_id: @group_1.id, api_key: @org_user_owner.api_key, fetch_shared_tables_count: true, fetch_shared_maps_count: true, fetch_members: true), { }, @headers do |response|
+        response.status.should == 200
+        response.body[:shared_tables_count].should_not be_nil
+        response.body[:shared_maps_count].should_not be_nil
+        response.body[:members].should_not be_nil
+      end
+    end
+
     it '#create fails if user is not owner' do
       post_json api_v1_organization_groups_create_url(user_domain: @org_user_1.username, organization_id: @carto_organization.id, api_key: @org_user_1.api_key), { display_name: 'willfail' }, @headers do |response|
         response.status.should == 400

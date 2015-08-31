@@ -1,0 +1,25 @@
+<% content_for(:page_title) do %>
+  <%= current_user.organization.name %> groups |
+<% end %>
+<%= content_for(:js) do %>
+  <script type="text/javascript">
+    var username = "<%= current_user.username %>";
+    var config = <%= safe_js_object frontend_config %>;
+    var user_data = <%= safe_js_object current_user.data.to_json.html_safe %>;
+  </script>
+  <%= javascript_include_tag 'cdb.js', 'models.js', 'organization_templates.js', 'organization_deps.js', 'organization_groups.js' -%>
+<% end %>
+<%= content_for(:css) do %>
+  <%= stylesheet_link_tag 'organization.css', :media => 'all' %>
+<% end %>
+
+<div>
+  <%= render :partial => 'admin/shared/org_subheader' %>
+  <div class="js-content"></div>
+</div>
+
+<% if !Cartodb.config[:cartodb_com_hosted].present? %>
+  <div class="SupportBanner" id="support-banner"></div>
+<% end %>
+
+<%= render 'admin/shared/footer' %>

@@ -14,7 +14,7 @@
 .OrganizationUser-quotaProgress {
   display: block;
   width: 300px;
-  margin: 14px 20px 0 0;
+  margin: 0 20px 0 0;
   @include progress-bar(12px, 20px, false, 6px);
 }
 .OrganizationUser-quotaBar {
@@ -48,8 +48,8 @@
 .OrganizationUser-quotaInfo {
   position: relative;
   display: inline-block;
-  width: 380px;
   color: $cTypography-help;
+  line-height: 14px;
 }
 .OrganizationUser-quotaInfoLink {
   color: $cTypography-link;

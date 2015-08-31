@@ -22,156 +22,156 @@
 
 <%= render :partial => 'shared/flash_message' %>
 
-<div>
+<div class="FormAccount-Section u-inner">
   <%= render :partial => 'admin/shared/pages_subheader' %>
 
-  <div class="CredentialsContent">
-    <div class="u-inner">
-      <%= form_for @user, url: CartoDB.url(self, 'account_update_user', {}, current_user), :class => "Form" do |f| %>
-        <%= csrf_meta_tags %>
+  <div class="FormAccount-Content">
+    <%= form_for @user, url: CartoDB.url(self, 'account_update_user', {}, current_user), :class => "Form" do |f| %>
+      <%= csrf_meta_tags %>
 
-        <div class="Form-title">
-          <p class="Form-titleText">Change your account preferences</p>
+      <div class="FormAccount-title">
+        <p class="FormAccount-titleText">Edit your plan information</p>
+      </div>
+
+      <span class="FormAccount-separator"></span>
+
+      <div class="FormAccount-row">
+        <div class="FormAccount-rowLabel">
+          <label class="FormAccount-label">Username</label>
         </div>
-
-        <div class="Form-row">
-          <div class="Form-rowLabel">
-            <label class="Form-label">Username</label>
-          </div>
-          <div class="Form-rowData Form-rowData--med">
-            <%= f.text_field :username, readonly: true, :class => "Form-input Form-input--med is-disabled" %>
-          </div>
-          <div class="Form-rowInfo">
-            <p class="Form-rowInfoText">Subdomain cannot be changed</p>
+        <div class="FormAccount-rowData">
+          <%= f.text_field :username, readonly: true, :class => "FormAccount-input FormAccount-input--med is-disabled" %>
+          <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+            <p class="FormAccount-rowInfoText">Subdomain cannot be changed</p>
           </div>
         </div>
+      </div>
 
-        <div class="Form-row">
-          <div class="Form-rowLabel">
-            <label class="Form-label">Email</label>
+      <div class="FormAccount-row">
+        <div class="FormAccount-rowLabel">
+          <label class="FormAccount-label">Email</label>
+        </div>
+        <div class="FormAccount-rowData">
+          <%= f.text_field :email, class: "FormAccount-input FormAccount-input--med #{ 'FormAccount-input--error' if @user.errors[:email].present? } #{ 'is-disabled' unless @user.can_change_email? }", readonly: !@user.can_change_email? %>
+          <% if current_user.organization.present? %>
+            <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+              <p class="FormAccount-rowInfoText">Your URL: <%= "#{current_user.organization.name}.#{CartoDB.account_host}/u/#{current_user.username}" %></p>
+            </div>
+          <% end %>
+        </div>
+        <div class="FormAccount-rowInfo">
+          <% if @user.errors[:email].present? %>
+            <p class="FormAccount-rowInfoText FormAccount-rowInfoText--error">Email not valid</p>
+          <% elsif @user.google_sign_in %>
+            <p class="FormAccount-rowInfoText">Your account is linked to your Google account. <% unless @user.should_display_old_password? %> You can change the email if you set a password.</p> <% end %>
+          <% end %>
+        </div>
+      </div>
+
+      <% if @user.should_display_old_password? %>
+        <div class="FormAccount-row">
+          <div class="FormAccount-rowLabel">
+            <label class="FormAccount-label">Old password</label>
           </div>
-          <div class="Form-rowData Form-rowData--med">
-            <%= f.text_field :email, class: "Form-input Form-input--med #{ 'Form-input--error' if @user.errors[:email].present? } #{ 'is-disabled' unless @user.can_change_email? }", readonly: !@user.can_change_email? %>
+          <div class="FormAccount-rowData">
+            <%= f.password_field :old_password, :class => "FormAccount-input FormAccount-input--med #{ 'FormAccount-input--error' if @user.errors[:old_password].present? } #{ 'is-disabled' unless @user.can_change_password? }", readonly: !@user.can_change_password? %>
           </div>
-          <div class="Form-rowInfo">
-            <% if @user.errors[:email].present? %>
-              <p class="Form-rowInfoText Form-rowInfoText--error">Email not valid</p>
-            <% elsif @user.google_sign_in %>
-              <p class="Form-rowInfoText <%= 'Form-rowInfoText--multipleLines' unless @user.should_display_old_password? %>">Your account is linked to your Google account. <% unless @user.should_display_old_password? %> You can change the email if you set a password.</p> <% end %>
-            <% elsif !@user.can_change_email? %>
-              <p class="Form-rowInfoText">Email cannot be changed</p>
+          <div class="FormAccount-rowInfo">
+            <% if (@user.errors[:old_password].present?) %>
+              <p class="FormAccount-rowInfoText FormAccount-rowInfoText--error"><%= @user.errors[:old_password].first%></p>
             <% end %>
           </div>
         </div>
-
-        <% if @user.should_display_old_password? %>
-          <div class="Form-row">
-            <div class="Form-rowLabel">
-              <label class="Form-label">Old password</label>
-            </div>
-            <div class="Form-rowData Form-rowData--med">
-              <%= f.password_field :old_password, :class => "Form-input Form-input--med #{ 'Form-input--error' if @user.errors[:old_password].present? } #{ 'is-disabled' unless @user.can_change_password? }", readonly: !@user.can_change_password? %>
-            </div>
-            <div class="Form-rowInfo">
-              <% if (@user.errors[:old_password].present?) %>
-                <p class="Form-rowInfoText Form-rowInfoText--error"><%= @user.errors[:old_password].first%></p>
-              <% elsif !@user.can_change_password? %>
-
-              <% end %>
-            </div>
-          </div>
-        <% end %>
-
-        <div class="Form-row">
-          <div class="Form-rowLabel">
-            <label class="Form-label">New password</label>
-          </div>
-          <div class="Form-rowData Form-rowData--med">
-            <%= f.password_field :new_password, :class => "Form-input Form-input--med #{ 'Form-input--error' if @user.errors[:new_password].present? } #{ 'is-disabled' unless @user.can_change_password? }", readonly: !@user.can_change_password? %>
-          </div>
-          <div class="Form-rowInfo">
-            <% if (@user.errors[:new_password].present?) %>
-              <p class="Form-rowInfoText Form-rowInfoText--error"><%= @user.errors[:new_password].first%></p>
-            <% elsif !@user.can_change_password? %>
-              <p class="Form-rowInfoText">Password cannot be changed</p>
-            <% else %>
-              <p class="Form-rowInfoText">Password should be 6 characters at least</p>
-            <% end %>
-          </div>
-        </div>
-
-        <div class="Form-row js-confirmPassword">
-          <div class="Form-rowLabel">
-            <label class="Form-label">Confirm password</label>
-          </div>
-          <div class="Form-rowData Form-rowData--med">
-            <%= f.password_field :confirm_password, :class => "Form-input Form-input--med #{ 'is-disabled' unless @user.can_change_password? }", readonly: !@user.can_change_password? %>
-          </div>
-        </div>
-
-        <%# if none of the services are activated, this block shouldn't appear %>
-        <% if !@services.nil? && @services.size > 0 %>
-          <div class="Form-title js-datasourcesContent">
-            <h4 class="Form-titleHeader">Connect with external data sources</h4>
-            <p class="Form-titleText">Link your services to import data and create amazing maps.</p>
-          </div>
-        <% end %>
-
-        <% if current_user.has_feature_flag?('google_maps') %>
-          <div class="Form-title">
-            <h4 class="Form-titleHeader">Configure API keys from external providers</h4>
-            <p class="Form-titleText">Configure here the API keys from other services like
-            Google Cloud Platform, so you won’t be asked later for them.</p>
-          </div>
-          <div class="Form-row">
-            <div class="Form-rowLabel">
-              <label class="Form-label">Google Maps</label>
-            </div>
-            <div class="Form-rowData">
-              <input type="text" value="<%= current_user.organization.present? ? current_user.organization.google_maps_key : current_user.google_maps_key %>" class="Form-input Form-input--long is-disabled" readonly />
-            </div>
-            <div class="Form-rowInfo">
-              <% if !current_user.organization.present? %>
-                <p class="Form-rowInfoText Form-rowInfoText--multipleLines">
-                  This is your Google Maps query string,
-                  contact with <a href="mailto:support@cartodb.com">support@cartodb.com</a> to change it.
-                </p>
-              <% elsif current_user.organization.present? && current_user.organization_owner? %>
-                <p class="Form-rowInfoText Form-rowInfoText--multipleLines">
-                  This is the <%= current_user.organization.name %> Google Maps query string,
-                  contact with <a href="mailto:support@cartodb.com">support@cartodb.com</a> to change it.
-                </p>
-              <% else %>
-                <p class="Form-rowInfoText">This is the organization Google Maps API key</p>
-              <% end %>
-            </div>
-          </div>
-        <% end %>
-
-        <div class="Form-footer">
-          <% if !current_user.organization_owner? -%>
-            <button type="button" class="Button Button--secondary js-deleteAccount">
-              <span>Delete my account</span>
-            </button>
-          <% else %>
-            <p class="Form-footerText">
-              <i class="iconFont iconFont-Info Form-footerIcon"></i>
-              You can't delete your account because you are admin of an organization
-            </p>
-          <% end %>
-          <%= button_tag(type: 'submit', class: 'Button Button--main') do %>
-            <% content_tag(:span, 'Save changes') %>
-          <% end %>
-        </div>
-
       <% end %>
-    </div>
+
+      <div class="VerticalAligned--FormRow">
+        <div class="FormAccount-row">
+          <div class="FormAccount-rowLabel">
+            <label class="FormAccount-label">New password</label>
+          </div>
+          <div class="FormAccount-rowData">
+            <%= f.password_field :new_password, :class => "FormAccount-input FormAccount-input--med #{ 'FormAccount-input--error' if @user.errors[:new_password].present? } #{ 'is-disabled' unless @user.can_change_password? }", readonly: !@user.can_change_password? %>
+          </div>
+          <div class="FormAccount-rowInfo">
+            <% if (@user.errors[:new_password].present?) %>
+              <p class="FormAccount-rowInfoText FormAccount-rowInfoText--error"><%= @user.errors[:new_password].first%></p>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="FormAccount-row js-confirmPassword">
+          <div class="FormAccount-rowLabel">
+            <label class="FormAccount-label">Confirm password</label>
+          </div>
+          <div class="FormAccount-rowData">
+            <%= f.password_field :confirm_password, :class => "FormAccount-input FormAccount-input--med #{ 'is-disabled' unless @user.can_change_password? }", readonly: !@user.can_change_password? %>
+          </div>
+        </div>
+      </div>
+      <% if (!Cartodb.config[:cartodb_com_hosted].present? && (!current_user.organization.present? || current_user.organization_owner?))  %>
+        <div class="FormAccount-title">
+          <p class="FormAccount-titleText">Account type</p>
+        </div>
+
+        <span class="FormAccount-separator"></span>
+
+        <div class="FormAccount-row">
+          <div class="FormAccount-rowLabel">
+            <label class="FormAccount-label">Your billing plan</label>
+          </div>
+          <div class="FormAccount-rowData">
+            <div class="FormAccount-planTag"><%= current_user.account_type %></div>
+            <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+              <p class="FormAccount-rowInfoText"><a href="<%= current_user.plan_url(request.protocol) %>">View details</a></p>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <%# if none of the services are activated, this block shouldn't appear %>
+      <% if @services.size > 0 %>
+        <div class="FormAccount-title">
+          <p class="FormAccount-titleText">Connect to external data sources</p>
+        </div>
+
+        <span class="FormAccount-separator"></span>
+
+        <div class="js-datasourcesContent"></div>
+      <% end %>
+
+      <div class="FormAccount-footer FormAccount-footer--withoutMarginBottom">
+        <% if current_user.organization_owner? -%>
+          <p class="FormAccount-footerText">
+            <i class="iconFont iconFont-Info FormAccount-footerIcon"></i>
+            You can't delete your account because you are admin of an organization
+          </p>
+        <% else %>
+          <p class="FormAccount-footerText"></p>
+        <% end %>
+        <%= button_tag(type: 'submit', class: 'Button Button--main') do %>
+          <% content_tag(:span, 'Save changes') %>
+        <% end %>
+      </div>
+
+      <% if !current_user.organization_owner? -%>
+        <div class="FormAccount-title">
+          <p class="FormAccount-titleText">Delete account</p>
+        </div>
+
+        <span class="FormAccount-separator"></span>
+
+        <div class="FormAccount-row">
+          <div class="FormAccount-rowLabel">
+            <label class="FormAccount-label">Are you sure?</label>
+          </div>
+          <div class="FormAccount-rowData">
+            <span class="FormAccount-button--deleteAccount js-deleteAccount">Delete my account and all my data</span>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
   </div>
 
 </div>
-
-<% if !Cartodb.config[:cartodb_com_hosted].present? %>
-  <div class="SupportBanner" id="support-banner"></div>
-<% end %>
 
 <%= render 'admin/shared/footer' %>

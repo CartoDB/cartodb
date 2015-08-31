@@ -1361,6 +1361,10 @@ class User < Sequel::Model
     DataImport.where(user_id: self.id).count
   end
 
+  def maps_count
+    Map.where(user_id: self.id).count
+  end
+
   # Get the count of public visualizations
   def public_visualization_count
     visualization_count({

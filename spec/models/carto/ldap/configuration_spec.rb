@@ -16,7 +16,7 @@ describe Carto::Ldap::Configuration do
     @user_id_field = 'cn'
   end
 
-  before(:each) do 
+  before(:each) do
     FakeNetLdap.register_user(:username => @ldap_admin_cn, :password => @ldap_admin_password)
   end
 
@@ -48,18 +48,18 @@ describe Carto::Ldap::Configuration do
       })
 
     # This uses ldap_admin credentials
-    ldap_configuration.test_connection.should eq true
+    ldap_configuration.test_connection[:success].should eq true
 
     ldap_configuration.connection_user = 'wrong1'
-    ldap_configuration.test_connection.should eq false
+    ldap_configuration.test_connection[:success].should eq false
 
     ldap_configuration.reload
     ldap_configuration.connection_user = "cn=wrong2,#{@domain_bases[0]}"
-    ldap_configuration.test_connection.should eq false
+    ldap_configuration.test_connection[:success].should eq false
 
     ldap_configuration.reload
     ldap_configuration.connection_password = 'wrong'
-    ldap_configuration.test_connection.should eq false
+    ldap_configuration.test_connection[:success].should eq false
 
     register_ldap_user(auth_cn, auth_username, auth_password)
 
@@ -79,8 +79,6 @@ describe Carto::Ldap::Configuration do
     result = ldap_configuration.authenticate(other_user_username, other_user_password)
     result.should_not eq false
     result.user_id.should eq other_user_username
-
-    # TODO: Test multiple accounts, that auths with first one (might not work well with the gem)
 
     ldap_configuration.delete
   end
@@ -114,7 +112,7 @@ describe Carto::Ldap::Configuration do
       { @user_id_field => [user_a_username] },
       { @user_id_field => [user_b_username] }
     ]
-    FakeNetLdap.register_query(Net::LDAP::Filter.eq('objectClass', ldap_configuration.user_object_class), 
+    FakeNetLdap.register_query(Net::LDAP::Filter.eq('objectClass', ldap_configuration.user_object_class),
       ldap_search_user_entries)
 
     ldap_configuration.users.should_not eq false
@@ -154,7 +152,7 @@ private
 
 def register_ldap_user(cn, username, password)
   # Data to return as an LDAP result, that will be loaded into Carto::Ldap::Entry
-  ldap_entry_data = { 
+  ldap_entry_data = {
       @user_id_field => [username]
     }
 

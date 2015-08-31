@@ -15,13 +15,13 @@
 
       <div class="MapCard-contentFooter">
         <div class="MapCard-contentFooterDetails--left">
+          <%= render 'admin/pages/shared/like_button', vis: vis %>
+        </div>
+        <div class="MapCard-contentFooterDetails--right">
           <div class="MapCard-contentFooterTimeDiff DefaultTimeDiff">
             <i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i>
             <%= time_ago_in_words(vis[:updated_at]) %> ago
           </div>
-        </div>
-        <div class="MapCard-contentFooterDetails--right">
-          <%= render 'admin/pages/shared/like_button', vis: vis %>
         </div>
       </div>
     </div>

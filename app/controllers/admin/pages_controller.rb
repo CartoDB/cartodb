@@ -114,8 +114,7 @@ class Admin::PagesController < ApplicationController
     if @viewed_user.nil?
       org = Organization.where(name: username).first
       unless org.nil?
-        redirect_to CartoDB.url(self, 'public_maps_home')
-        return
+        redirect_to CartoDB.url(self, 'public_maps_home') and return
       end
       render_404
     else

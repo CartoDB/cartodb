@@ -39,7 +39,7 @@ describe Carto::Api::VisualizationsController do
             attributes: [],
             associations: {
               'owner' => {
-                attributes: [ 'email', 'quota_in_bytes', 'db_size_in_bytes' ],
+                attributes: [ 'email', 'quota_in_bytes', 'db_size_in_bytes', 'maps_count', 'table_count' ],
                 associations: {}
               }
             }
@@ -50,7 +50,7 @@ describe Carto::Api::VisualizationsController do
         attributes: [],
         associations: {
           'owner' => {
-            attributes: [ 'email', 'quota_in_bytes', 'db_size_in_bytes' ],
+            attributes: [ 'email', 'quota_in_bytes', 'db_size_in_bytes', 'maps_count', 'table_count' ],
             associations: {}
           }
         }

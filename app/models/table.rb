@@ -14,10 +14,12 @@ require_relative './overlay/member'
 require_relative './overlay/collection'
 require_relative './overlay/presenter'
 require_relative '../../services/importer/lib/importer/query_batcher'
+require_relative '../../services/importer/lib/importer/cartodbfy_time'
 require_relative '../../services/datasources/lib/datasources/decorators/factory'
 require_relative '../../services/table-geocoder/lib/internal-geocoder/latitude_longitude'
 
 require_relative '../../lib/cartodb/stats/user_tables'
+require_relative '../../lib/cartodb/stats/importer'
 
 class Table
   extend Forwardable
@@ -1170,6 +1172,7 @@ class Table
   end
 
   def cartodbfy
+    start = Time.now
     schema_name = owner.database_schema
     table_name = "#{owner.database_schema}.#{self.name}"
 
@@ -1179,6 +1182,11 @@ class Table
           SELECT cartodb.CDB_CartodbfyTable('#{schema_name}'::TEXT,'#{table_name}'::REGCLASS);
         })
       end
+    end
+
+    elapsed = Time.now - start
+    if @data_import
+      CartoDB::Importer2::CartodbfyTime::instance(@data_import.id).add(elapsed)
     end
 
     self.schema(reload:true)

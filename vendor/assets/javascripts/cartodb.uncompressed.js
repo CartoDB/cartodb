@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: f04d45d5c4b849bb99669f29c070bf14868221ae
+// sha: da4329157f382ba27bda8cb7aafd39467fafc045
 (function() {
   var define;  // Undefine define (require.js), see https://github.com/CartoDB/cartodb.js/issues/543
   var root = this;
@@ -26937,6 +26937,9 @@ cdb.geo.geocoder.NOKIA = {
             if (r.category) {
               position.type = r.category.id;
             }
+            if (r.title) {
+              position.title = r.title;
+            }
             coordinates.push(position);
           }
         }
@@ -31108,9 +31111,9 @@ cdb.geo.ui.Search = cdb.core.View.extend({
   },
 
   _destroySearchPin: function() {
+    this._unbindEvents();
     this._destroyPin();
     this._destroyInfowindow()
-    this._unbindEvents();
   },
 
   _createInfowindow: function(position, address) {
@@ -31138,8 +31141,12 @@ cdb.geo.ui.Search = cdb.core.View.extend({
 
   _destroyInfowindow: function() {
     if (this._searchInfowindow) {
-      this._searchInfowindow.clean();
-      delete this._searchInfowindow;
+      // Hide it and then destroy it (when animation ends)
+      this._searchInfowindow.hide(true);
+      var infowindow = this._searchInfowindow;
+      setTimeout(function() {
+        infowindow.clean();
+      }, 1000);
     }
   },
 
@@ -31153,6 +31160,11 @@ cdb.geo.ui.Search = cdb.core.View.extend({
     );
   },
 
+  _toggleSearchInfowindow: function() {
+    var infowindowVisibility = this._searchInfowindow.model.get('visibility');
+    this._searchInfowindow.model.set('visibility', !infowindowVisibility);
+  },
+
   _destroyPin: function() {
     if (this._searchPin) {
       this.mapView._removeGeomFromMap(this._searchPin);
@@ -31161,16 +31173,18 @@ cdb.geo.ui.Search = cdb.core.View.extend({
   },
 
   _bindEvents: function() {
+    this._searchPin && this._searchPin.bind('click', this._toggleSearchInfowindow, this);
     this.mapView.bind('click', this._destroySearchPin, this);
   },
 
   _unbindEvents: function() {
+    this._searchPin && this._searchPin.unbind('click', this._toggleSearchInfowindow, this);
     this.mapView.unbind('click', this._destroySearchPin, this);
   },
 
   clean: function() {
-    this._destroySearchPin();
     this._unbindEvents();
+    this._destroySearchPin();
     this.elder('clean');
   }
 

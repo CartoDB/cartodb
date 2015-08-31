@@ -111,8 +111,8 @@ def superadmin_headers
   http_json_authorization_headers(Cartodb.config[:superadmin]["username"], Cartodb.config[:superadmin]["password"])
 end
 
-def sync_db_api_headers
-  http_json_authorization_headers(Cartodb.config[:sync_db_api]["username"], Cartodb.config[:sync_db_api]["password"])
+def org_metadata_api_headers
+  http_json_authorization_headers(Cartodb.config[:org_metadata_api]["username"], Cartodb.config[:org_metadata_api]["password"])
 end
 
 

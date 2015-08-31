@@ -1,3 +1,16 @@
+# Must be placed at the begginning
+# @see https://github.com/colszowka/simplecov#getting-started
+require 'simplecov'
+SimpleCov.start 'rails' do
+  # Default is just 10 mins, else will drop "old" coverage data
+  merge_timeout 3600
+  puts ENV['TEST_ENV_NUMBER']
+  command_name "specs_#{Process.pid}"
+  add_filter "/spec/"
+  add_filter "/tmp/"
+  add_filter "/db/"
+end
+
 require_relative './rspec_configuration'
 
 # This file is copied to spec/ when you run 'rails generate rspec:install'

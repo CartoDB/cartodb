@@ -13,9 +13,14 @@
   <%= stylesheet_link_tag 'organization.css', :media => 'all' %>
 <% end %>
 
-<div>
-  <%= render :partial => 'admin/shared/org_subheader' %>
-  <div class="js-content"></div>
+<div class="FormAccount-Section u-inner">
+  <%= render :partial => 'admin/shared/pages_subheader' %>
+
+  <div class="FormAccount-Content">
+    <%= render :partial => 'admin/shared/org_subheader' %>
+
+    <div class="js-content"></div>
+  </div>
 </div>
 
 <% if !Cartodb.config[:cartodb_com_hosted].present? %>

@@ -19,7 +19,7 @@ module CartoDB
         common_data_username = Cartodb.config[:common_data]['username']
         common_data_user = Carto::User.where(username: common_data_username).first
         if !common_data_base_url.nil?
-          # We set user_domain to nil to avoid the user of the user_domain of the current_user (/u/xxxx)
+          # We set user_domain to nil to avoid duplication in the url for subdomainfull urls. Ie. user.cartodb.com/u/cartodb/...
           common_data_base_url + CartoDB.path(controller, 'api_v1_visualizations_index', {type: 'table', privacy: 'public', user_domain: nil})
         elsif !common_data_user.nil?
           CartoDB.url(controller, 'api_v1_visualizations_index', {type: 'table', privacy: 'public'}, common_data_user)

@@ -161,10 +161,10 @@ describe Carto::UserCreation do
       user_creation.next_creation_step until user_creation.finished?
     end
 
-    it 'triggers a ::Resque::UserJobs::CommonData::LoadCommonData' do
+    it 'should trigger load_common_data in the user if common_data_url is setted' do
       User.any_instance.stubs(:create_in_central).returns(true)
       User.any_instance.stubs(:enable_remote_db_user).returns(true)
-      ::Resque.expects(:enqueue).with(::Resque::UserJobs::CommonData::LoadCommonData, instance_of(String), 'http://www.example.com').once
+      User.any_instance.expects(:load_common_data).with('http://www.example.com').once
 
       user_data = FactoryGirl.build(:valid_user)
       user_data.organization = @organization
@@ -175,10 +175,10 @@ describe Carto::UserCreation do
       user_creation.next_creation_step until user_creation.finished?
     end
 
-    it 'dont trigger a ::Resque::UserJobs::CommonData::LoadCommonData when no url is passed' do
+    it 'should not trigger load_common_data in the user if common_data_url is not setted' do
       User.any_instance.stubs(:create_in_central).returns(true)
       User.any_instance.stubs(:enable_remote_db_user).returns(true)
-      ::Resque.expects(:enqueue).with(Resque::UserJobs::CommonData::LoadCommonData, instance_of(String), instance_of(String)).never
+      User.any_instance.expects(:load_common_data).with('http://www.example.com').never
 
       user_data = FactoryGirl.build(:valid_user)
       user_data.organization = @organization

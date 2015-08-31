@@ -46,7 +46,7 @@ class Carto::UserCreation < ActiveRecord::Base
           :creating_user => :validating_user,
           :validating_user => :saving_user
 
-      transition :saving_user => :load_common_data, :load_common_data => :creating_user_in_central, :creating_user_in_central => :success, :if => :sync_data_with_cartodb_central?
+      transition :saving_user => :creating_user_in_central, :creating_user_in_central => :load_common_data, :load_common_data => :success, :if => :sync_data_with_cartodb_central?
 
       transition :saving_user => :load_common_data, :load_common_data => :success, :unless => :sync_data_with_cartodb_central?
     end
@@ -133,21 +133,21 @@ class Carto::UserCreation < ActiveRecord::Base
   end
 
   def load_common_data
-    ::Resque.enqueue(::Resque::UserJobs::CommonData::LoadCommonData, @user.id, @common_data_url) unless @common_data_url.nil?
-  rescue Exception => e
+    @user.load_common_data(@common_data_url) unless @common_data_url.nil?
+  rescue => e
     handle_failure(e, mark_as_failure = false)
   end
 
   def create_in_central
     user.create_in_central
-  rescue Exception => e
+  rescue => e
     handle_failure(e, mark_as_failure = true)
   end
 
   def close_creation
     clean_password
     user.notify_new_organization_user
-  rescue Exception => e
+  rescue => e
     handle_failure(e, mark_as_failure = false)
   end
 

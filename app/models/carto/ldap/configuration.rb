@@ -24,13 +24,13 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
   # @param String host LDAP host or ip address
   # @param Int port LDAP port e.g. 389, 636 (LDAPS)
   # @param String encryption (Optional) Encryption type to use. Empty means standard/simple Auth
-  # @param String ca_file Certificate file path for start_tls encryption. Example: "/etc/cafile.pem"
+  # @param String ca_file UNUSED FOR NOW - Certificate file path for start_tls encryption. Example: "/etc/cafile.pem"
   # @param String ssl_version For start_tls_encryption. Example: "TLSv1_1"
   # @param String connection_user Full CN for "search connections" to LDAP: `CN=admin, DC=cartodb, DC=COM`
   # @param String connection_password Password for "search connections" to LDAP
   # @param String user_id_field Which LDAP entry field represents the user id. e.g. `sAMAccountName`, `uid`
   # @param String username_field Which LDAP entry field represents the username (Optional)
-  # @param String username_field Which LDAP entry field represents the email
+  # @param String email_field Which LDAP entry field represents the email
   # @param String domain_bases List of DCs conforming the path (serialized)
   # @param String user_object_class Name of the attribute where the sers are maped in LDAP
   # @param String group_object_class Name of the attribute where the groups are maped in LDAP

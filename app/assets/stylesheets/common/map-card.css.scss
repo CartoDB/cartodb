@@ -34,6 +34,12 @@ $sEditButtonSize: 50px;
   border-radius: $sCard-borderRadius;
   margin: 0 auto;
 }
+.MapCard.MapCard--long {
+  width: 540px;
+}
+.MapCard.MapCard--long .MapCard-content {
+  height: auto;
+}
 .MapCard.MapCard--squared .MapCard-header {
   height: 220px;
 }

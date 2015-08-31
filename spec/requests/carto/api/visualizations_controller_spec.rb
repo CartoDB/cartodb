@@ -233,7 +233,10 @@ describe Carto::Api::VisualizationsController do
       ).to_json)
       expected_visualization = normalize_hash(expected_visualization)
 
-      response_body(type: CartoDB::Visualization::Member::TYPE_CANONICAL).should == {
+      response = response_body(type: CartoDB::Visualization::Member::TYPE_CANONICAL)
+      # INFO: old API won't support server side generated urls for visualizations. See #5250 and #5279
+      response['visualizations'][0].delete('url')
+      response.should == {
         'visualizations' => [expected_visualization],
         'total_entries' => 1,
         'total_user_entries' => 1,

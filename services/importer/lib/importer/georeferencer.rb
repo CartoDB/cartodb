@@ -5,6 +5,8 @@ require_relative './query_batcher'
 require_relative './content_guesser'
 require_relative '../../../table-geocoder/lib/internal-geocoder/latitude_longitude'
 
+require_relative '../../../../lib/cartodb/stats/importer'
+
 module CartoDB
   module Importer2
     class Georeferencer
@@ -27,7 +29,7 @@ module CartoDB
         @options = options
         @tracker = @options[:tracker] || lambda { |state| state }
         @content_guesser = CartoDB::Importer2::ContentGuesser.new(@db, @table_name, @schema, @options, @job)
-        @importer_stats = ImporterStats.instance
+        @importer_stats = CartoDB::Stats::Importer.instance
       end
 
       def set_importer_stats(importer_stats)
@@ -243,8 +245,9 @@ module CartoDB
 
           begin
             geocoding = Geocoding.new config.slice(:kind, :geometry_type, :formatter, :table_name, :country_column, :country_code)
-            geocoding.force_geocoder(geocoder)
             geocoding.user = user
+            geocoder.set_log(geocoding.log)
+            geocoding.force_geocoder(geocoder)
             geocoding.data_import_id = data_import.id unless data_import.nil?
             geocoding.raise_on_save_failure = true
             geocoding.run_geocoding!(row_count)

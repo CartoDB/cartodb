@@ -2,17 +2,18 @@
 
 require 'active_record'
 require_relative '../../lib/importer/namedplaces_guesser'
-
-RSpec.configure do |config|
-  config.mock_with :mocha
-end
+require_relative '../../../../spec/rspec_configuration.rb'
 
 module CartoDB::Importer2
 
   describe NamedplacesGuesser do
 
     before(:all) do
-      ActiveRecord::Base.establish_connection :adapter => :nulldb
+      @db = ActiveRecord::Base.establish_connection :adapter => :nulldb
+    end
+
+    after(:all) do
+      @db.disconnect!
     end
 
     describe '#found?' do

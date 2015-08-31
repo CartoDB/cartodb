@@ -1,27 +1,28 @@
 # encoding: utf-8
-
+require 'open3'
 require_relative '../../../lib/gme/table_geocoder'
 require_relative '../../factories/pg_connection'
-
-RSpec.configure do |config|
-  config.mock_with :mocha
-end
-
+require_relative '../../../../../spec/rspec_configuration.rb'
 
 describe Carto::Gme::TableGeocoder do
 
-  mandatory_args = {
-      connection: nil,
+  before(:all) do
+    connection_stub = mock
+    connection_stub.stubs(:run)
+
+    @mandatory_args = {
+      connection: connection_stub,
       original_formatter: '{mock}',
       client_id: 'my_client_id',
       private_key: 'my_private_key'
-  }
+    }
+  end
 
   describe '#initialize' do
 
     it 'returns an object that responds to AbstractTableGeocoder interface' do
-      table_geocoder = Carto::Gme::TableGeocoder.new(mandatory_args)
-      interface_methods = [:add_georef_status_column,
+      table_geocoder = Carto::Gme::TableGeocoder.new(@mandatory_args)
+      interface_methods = [:ensure_georef_status_colummn_valid,
                            :cancel,
                            :run,
                            :remote_id,
@@ -38,8 +39,8 @@ describe Carto::Gme::TableGeocoder do
         Carto::Gme::TableGeocoder.new
       }.to raise_error(ArgumentError)
 
-      mandatory_args.each do |arg|
-        args_missing_one = mandatory_args.dup
+      @mandatory_args.each do |arg|
+        args_missing_one = @mandatory_args.dup
         args_missing_one.delete(arg[0])
         lambda {
           Carto::Gme::TableGeocoder.new(args_missing_one)
@@ -52,7 +53,7 @@ describe Carto::Gme::TableGeocoder do
       Carto::Gme::Client.expects(:new).with('my_client_id', 'my_private_key').once.returns(gme_client_mock)
       Carto::Gme::GeocoderClient.expects(:new).with(gme_client_mock).once
 
-      table_geocoder = Carto::Gme::TableGeocoder.new(mandatory_args)
+      table_geocoder = Carto::Gme::TableGeocoder.new(@mandatory_args)
     end
   end
 
@@ -64,7 +65,7 @@ describe Carto::Gme::TableGeocoder do
       Carto::Gme::Client.expects(:new).with('my_client_id', 'my_private_key').once.returns(gme_client_mock)
       Carto::Gme::GeocoderClient.expects(:new).with(gme_client_mock).once
 
-      @table_geocoder = Carto::Gme::TableGeocoder.new(mandatory_args)
+      @table_geocoder = Carto::Gme::TableGeocoder.new(@mandatory_args)
     end
 
     it "set's the state to 'processing' when it starts" do
@@ -72,7 +73,7 @@ describe Carto::Gme::TableGeocoder do
     end
 
     it "set's the state to 'completed' when it ends" do
-      @table_geocoder.stubs(:add_georef_status_column)
+      @table_geocoder.stubs(:ensure_georef_status_colummn_valid)
       @table_geocoder.stubs(:data_input_blocks).returns([])
 
       @table_geocoder.run
@@ -80,7 +81,7 @@ describe Carto::Gme::TableGeocoder do
     end
 
     it "if there's an uncontrolled exception, sets the state to 'failed' and raises it" do
-      @table_geocoder.stubs(:add_georef_status_column)
+      @table_geocoder.stubs(:ensure_georef_status_colummn_valid)
       @table_geocoder.stubs(:data_input_blocks).returns([{cartodb_id: 1, searchtext: 'dummy text'}])
       @table_geocoder.stubs(:geocode).raises(StandardError, 'unexpected exception')
 
@@ -91,7 +92,7 @@ describe Carto::Gme::TableGeocoder do
     end
 
     it "processes 1 block at a time, keeping track of processed rows in each block" do
-      @table_geocoder.stubs(:add_georef_status_column)
+      @table_geocoder.stubs(:ensure_georef_status_colummn_valid)
       mocked_input = Enumerator.new do |enum|
         # 2 blocks of 2 rows each as input
         enum.yield [{cartodb_id: 1, searchtext: 'dummy text'}, {cartodb_id: 2, searchtext: 'dummy text'}]
@@ -115,7 +116,12 @@ describe Carto::Gme::TableGeocoder do
       @db           = conn.connection
       @pg_options   = conn.pg_options
       @table_name   = "ne_10m_populated_places_simple"
-      load_csv path_to("populated_places_short.csv")
+
+      # Avoid issues on some machines if postgres system account can't read fixtures subfolder for the COPY
+      filename = 'populated_places_short.csv'
+      stdout, stderr, status =  Open3.capture3("cp #{path_to(filename)} /tmp/#{filename}")
+      raise if stderr != ''
+      load_csv "/tmp/#{filename}"
 
       params = {
         connection: @db,
@@ -137,7 +143,7 @@ describe Carto::Gme::TableGeocoder do
 
     it 'performs (floor(rows / max_block_size) + 1) queries' do
       rows = @db[@table_name.to_sym].count
-      @table_geocoder.add_georef_status_column
+      @table_geocoder.send(:ensure_georef_status_colummn_valid)
 
       count = 0
       @table_geocoder.send(:data_input_blocks).each { |data_block|

@@ -15,8 +15,8 @@ module CartoDB
         FORMATS_TO_SEARCH_QUERIES = {
             FORMAT_CSV =>         %W( .csv ),
             FORMAT_EXCEL =>       %W( .xls .xlsx ),
-            FORMAT_GPX =>         %W( .kml ),
-            FORMAT_KML =>         %W( .gpx ),
+            FORMAT_GPX =>         %W( .gpx ),
+            FORMAT_KML =>         %W( .kml ),
             FORMAT_PNG =>         %W( .png ),
             FORMAT_JPG =>         %W( .jpg .jpeg ),
             FORMAT_SVG =>         %W( .svg ),

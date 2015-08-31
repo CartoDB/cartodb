@@ -11,7 +11,6 @@ $cPrivacy-other:    rgba(#F5A623, 1);
   display: inline-block;
   position: relative;
   color: $cTypography-secondary;
-  @include nicer-lato-typography();
 }
 .PrivacyIndicator:hover {
   text-decoration: none;

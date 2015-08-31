@@ -37,13 +37,13 @@ describe Importer::InputFileSize do
         Importer::InputFileSize.new({ user: EmptyClass.new })
       }.to raise_exception ArgumentError
       expect {
-        Importer::InputFileSize.new({ user: Doubles::User.new({username: 'invalid', max_import_file_size: -1}) })
+        Importer::InputFileSize.new({ user: CartoDB::PlatformLimits::Doubles::User.new({username: 'invalid', max_import_file_size: -1}) })
       }.to raise_exception ArgumentError
       expect {
-        Importer::InputFileSize.new({ user: Doubles::User.new({username: 'invalid', max_import_file_size: 0}) })
+        Importer::InputFileSize.new({ user: CartoDB::PlatformLimits::Doubles::User.new({username: 'invalid', max_import_file_size: 0}) })
       }.to raise_exception ArgumentError
       expect {
-        Importer::InputFileSize.new({ user: Doubles::User.new({username: 'invalid', max_import_file_size: nil}) })
+        Importer::InputFileSize.new({ user: CartoDB::PlatformLimits::Doubles::User.new({username: 'invalid', max_import_file_size: nil}) })
       }.to raise_exception ArgumentError
 
       instance = Importer::InputFileSize.new(options_1)
@@ -77,7 +77,7 @@ describe Importer::InputFileSize do
       max_value = 50*1024*1024
 
       options = {
-        user: Doubles::User.new({username: 'test_1', max_import_file_size: max_value })
+        user: CartoDB::PlatformLimits::Doubles::User.new({username: 'test_1', max_import_file_size: max_value })
       }
 
       instance = Importer::InputFileSize.new(options)

@@ -129,7 +129,7 @@ describe Visualization::Member do
       CartoDB::Visualization::NameChecker.any_instance.stubs(:available?).returns(true)
 
       member = Visualization::Member.new(id: member.id).fetch
-      @user_mock.expects(:invalidate_varnish_cache)
+      CartoDB::Varnish.any_instance.expects(:purge).with(member.varnish_vizzjson_key)
       member.name = 'changed'
       member.store
     end
@@ -142,7 +142,7 @@ describe Visualization::Member do
       member.store
 
       member = Visualization::Member.new(id: member.id).fetch
-      @user_mock.expects(:invalidate_varnish_cache)
+      CartoDB::Varnish.any_instance.expects(:purge).with(member.varnish_vizzjson_key)
       member.privacy = Visualization::Member::PRIVACY_PRIVATE
       member.store
     end
@@ -152,7 +152,7 @@ describe Visualization::Member do
       member.store
 
       member = Visualization::Member.new(id: member.id).fetch
-      @user_mock.expects(:invalidate_varnish_cache)
+      CartoDB::Varnish.any_instance.expects(:purge).with(member.varnish_vizzjson_key)
       member.description = 'changed description'
       member.store
     end
@@ -228,7 +228,6 @@ describe Visualization::Member do
     end
 
     it 'checks has_permission? permissions' do
-      @user = create_user(:quota_in_bytes => 1234567890, :table_quota => 400)
       Permission.any_instance.stubs(:grant_db_permission).returns(nil)
 
       Permission.any_instance.stubs(:notify_permissions_change).returns(nil)
@@ -250,7 +249,7 @@ describe Visualization::Member do
           privacy: Visualization::Member::PRIVACY_PUBLIC,
           name: 'test',
           type: Visualization::Member::TYPE_CANONICAL,
-          user_id: @user.id
+          user_id: $user_1.id
       )
       visualization.store
 
@@ -300,7 +299,7 @@ describe Visualization::Member do
       visualization.has_permission?(user4_mock, Visualization::Member::PERMISSION_READONLY).should eq false
       visualization.has_permission?(user4_mock, Visualization::Member::PERMISSION_READWRITE).should eq false
 
-      @user.destroy
+      delete_user_data($user_1)
     end
   end
 
@@ -552,14 +551,13 @@ describe Visualization::Member do
   end
 
   it 'should not allow to change permission from the outside' do
-    @user = create_user(:quota_in_bytes => 1234567890, :table_quota => 400)
-    member = Visualization::Member.new(random_attributes_for_vis_member({user_id: @user.id}))
+    member = Visualization::Member.new(random_attributes_for_vis_member({user_id: $user_1.id}))
     member.store
     member = Visualization::Member.new(id: member.id).fetch
     member.permission.should_not be nil
     member.permission_id = UUIDTools::UUID.timestamp_create.to_s
     member.valid?.should eq false
-    @user.destroy
+    delete_user_data($user_1)
   end
 
   describe '#likes' do
@@ -1140,5 +1138,99 @@ describe Visualization::Member do
       member.invalidate_cache
       redis_vizjson_cache.send(:redis).get(redis_key).should be_nil
     end
+  end
+
+  describe 'licenses' do
+
+    before(:all) do
+      @user = create_user
+    end
+
+    after(:all) do
+      @user.delete
+    end
+
+    it 'should store correctly a visualization with its license' do
+      table = create_table({:name => 'table1', :user_id => @user.id})
+      vis = table.table_visualization
+      vis.license = "apache"
+      vis.store
+      vis.fetch
+      vis.license_info.id.should eq :apache
+      vis.license_info.name.should eq "Apache license"
+    end
+
+    it 'should return nil if the license is nil, empty or unkown' do
+      table = create_table({:name => 'table1', :user_id => @user.id})
+      vis = table.table_visualization
+      vis.license = nil
+      vis.store
+      vis.fetch
+      vis.license_info.nil?.should eq true
+      vis.license = ""
+      vis.store
+      vis.fetch
+      vis.license_info.nil?.should eq true
+      # I cant save with a wrong value
+      vis.stubs(:license).returns("lololo")
+      vis.license_info.nil?.should eq true
+    end
+
+    it 'should raise exception when try to store a unknown license, empty or nil' do
+      table = create_table({:name => 'table1', :user_id => @user.id})
+      vis = table.table_visualization
+      vis.license = "wadus"
+      expect {
+        vis.store
+      }.to raise_error CartoDB::InvalidMember
+      vis.license = ""
+      expect {
+        vis.store
+      }.to raise_error CartoDB::InvalidMember
+      vis.license = nil
+      expect {
+        vis.store
+      }.to raise_error CartoDB::InvalidMember
+    end
+  end
+  describe 'remote member' do
+
+    before(:all) do
+      @user = create_user
+      @name = "example_name"
+      @display_name = "Example display name"
+      @user_id = @user.id
+      @privacy = "public"
+      @description = "Example description"
+      @tags = ["tag1", "tag2"]
+      @license = "apache"
+      @source = "[source](http://www.example.com)"
+      @attributions = "Attributions example"
+    end
+
+    it 'should create a new remote member' do
+      remote_member = CartoDB::Visualization::Member.remote_member(
+        @name, @user_id, @privacy, @description, @tags, @license, @source, @attributions, @display_name
+      )
+      remote_member.name.should eq @name
+      remote_member.user_id.should eq @user_id
+      remote_member.privacy.should eq @privacy
+      remote_member.description.should eq @description
+      remote_member.tags.should eq @tags
+      remote_member.license.should eq @license
+      remote_member.source.should eq @source
+      remote_member.attributions.should eq @attributions
+      remote_member.display_name.should eq @display_name
+    end
+
+    it 'should update a remote member' do
+      remote_member = CartoDB::Visualization::Member.remote_member(
+        @name, @user_id, @privacy, @description, @tags, @license, @source, @attributions, @display_name
+      )
+      remote_member.update_remote_data(@privacy, "Another description", @tags, @license, @source, @attributions, @display_name)
+      remote_member.store
+      remote_member.description.should eq "Another description"
+    end
+
   end
 end

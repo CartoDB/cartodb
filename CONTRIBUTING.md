@@ -1,5 +1,5 @@
 The development tracker for cartodb is on github:
-http://github.com/cartodb/cartodb/
+http://github.com/cartodb/cartodb
 
 Bug fixes are best reported as pull requests over there.
 Features are best discussed on the mailing list:
@@ -42,6 +42,15 @@ Source code is located at `lib/assets/javascripts`, dependencies at `vendor/asse
 See [doc/frontend.md](doc/frontend.md) for more in-depth documentation.
 
 Until our guidelines are publically available follow the existing file/directory and style structure.
+
+### Update CartoDB.js
+
+Follow these steps to update to get latest changes:
+
+- go to `lib/assets/javascripts/cdb/`
+- `git checkout develop && git pull`
+- go back to root and run `grunt cdb`
+- commit both the new revision of the submodule and the generated file `vendor/assets/javascripts/cartodb.uncompressed.js`
 
 ### Writing & running tests
 
@@ -96,13 +105,12 @@ After that, for typical frontend work, it's recommended to run once:
 ```bash
 grunt
 ```
-
-and then
+This will generate all necessary frontend assets, and then:
 
 ```bash
 grunt dev
 ```
-This will watch CSS and JS files and rebuild bundles automatically upon changes.
+That enables CSS and JS watchers for rebuilding bundles automatically upon changes.
 
 **Note!** Make sure `config/app_config.yml` don't contain the `app_assets` configuration, i.e.:
 

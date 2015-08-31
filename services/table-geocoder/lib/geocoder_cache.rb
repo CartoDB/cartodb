@@ -1,4 +1,5 @@
 # encoding: utf-8
+require_relative 'exceptions'
 require_relative '../../../lib/carto/http/client'
 
 module CartoDB
@@ -79,7 +80,7 @@ module CartoDB
         rows = connection.fetch(%Q{
           SELECT DISTINCT(quote_nullable(#{formatter})) AS searchtext, the_geom 
           FROM #{@qualified_table_name} AS orig
-          WHERE orig.cartodb_georef_status IS NOT NULL AND the_geom IS NOT NULL
+          WHERE orig.cartodb_georef_status IS TRUE AND the_geom IS NOT NULL
           LIMIT #{@batch_size} OFFSET #{count * @batch_size}
         }).all
         sql.gsub! '%%VALUES%%', rows.map { |r| "(#{r[:searchtext]}, '#{r[:the_geom]}')" }.join(',')
@@ -109,11 +110,11 @@ module CartoDB
         SET the_geom = ST_GeomFromText(
               'POINT(' || orig.longitude || ' ' || orig.latitude || ')', 4326
             ),
-            cartodb_georef_status = true
+            cartodb_georef_status = TRUE
         FROM #{temp_table_name} AS orig
         WHERE #{formatter} = orig.geocode_string
       })
-    end # copy_results_to_table
+    end
 
     def drop_temp_table
       connection.run("DROP TABLE IF EXISTS #{temp_table_name}")
@@ -133,11 +134,14 @@ module CartoDB
       response.body
     end # run_query
 
+    # It handles in such a way that the caching is silently stopped
     def handle_cache_exception(exception)
       drop_temp_table
-      ::Rollbar.report_exception(exception)
-    rescue => e
-      raise exception
+      if exception.class == Sequel::DatabaseError && exception.message =~ /canceling statement due to statement timeout/
+        # for the moment we just wrap the exception to get a specific error in rollbar
+        exception =  Carto::GeocoderErrors::GeocoderCacheDbTimeoutError.new(exception)
+      end
+      CartoDB.notify_exception(exception)
     end
 
   end # GeocoderCache

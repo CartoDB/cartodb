@@ -14,38 +14,47 @@
 .Select .select2-container:hover .select2-choice { border-color: $cStructure-mainLine !important }
 .Select .select2-container .select2-choice { background: $cStructure-mainBkg }
 .Select .select2-container .select2-choice span {
-  font-size: $sFontSize-large;
-  line-height: $sLineHeight-normal;
+  font-size: $sFontSize-normal;
+  line-height: 16px;
   font-weight: $sFontWeight-normal;
   color: $cTypography-paragraphs;
+  margin-right: 24px;
 }
 .Select .select2-container {
   .select2-choice,
   .select2-choice:hover {
-    border-color: $cStructure-mainLine;
+    border-color: $cForms-border;
     color: $cTypography-paragraphs;
-    padding: 7px;
+    padding-top: 11px;
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-bottom: 8px;
 
-    div b:after,
     div b:before {
-      top: inherit;
-      border-bottom: none;
-      border-top-style: solid;
-      border-top-width: 4px;
-      border-left-width: 4px;
-      border-right-width: 4px;
+      // since can't use iconFont here, we'll inline the iconFont styles here
+      font-family:'CartoIcon';
+      display: inline-block;
+      font-style: normal;
+      font-weight: normal;
+      line-height: 1;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+
+      // use the content of "iconFont-ChevronDown" to achieve the "arrow down" artifact
+      position: absolute;
+      top: 14px;
+      right: 12px;
+      content: "\E048"; // ChevronDown
+      font-size: 9px;
+      color: $cTypography-paragraphs;
     }
 
-    div b:after {
-      bottom: 15px;
-      border-top-color: $cStructure-mainBkg;
-      z-index: 2;
-    }
+    // override defaults select2 defaults to not interfere with the rules above
     div b:before {
-      bottom: 13px;
-      border-top-color: $cTypography-paragraphs;
-      z-index: 2;
+      border-bottom: 0;
+      width: auto;
     }
+    div b:after { display: none }
   }
 }
 .Select .select2-container.select2-container-disabled { opacity: 0.4 }

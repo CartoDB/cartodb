@@ -1,7 +1,7 @@
 REV=$(shell git rev-parse HEAD)
 
 all:
-	bundle install
+	RAILS_ENV=test bundle install
 	# I cannot remmeber why gdal is being skipped from this list...
 	cat python_requirements.txt | grep -v gdal | sudo pip install -r /dev/stdin
 	npm install
@@ -10,22 +10,25 @@ PENDING_SPECS = \
   spec/lib/varnish_spec.rb (#321) \
   $(NULL)
 
+WORKING_SPECS_INTEGRATIONS = \
+  spec/integrations/common_data_integration.rb \
+  $(NULL)
+
 WORKING_SPECS_1 = \
   spec/rspec_configuration.rb \
   spec/models/table_spec.rb \
-	spec/models/table/relator_spec.rb \
+  spec/models/table/relator_spec.rb \
+  spec/models/table/column_typecaster_spec.rb \
   spec/models/user_spec.rb \
   spec/models/user_presenter_spec.rb \
+	spec/models/user_table_spec.rb \
   spec/models/layer_spec.rb \
   spec/models/layer/presenter_spec.rb \
   spec/requests/api/json/layer_presenter_spec.rb \
   spec/requests/carto/api/layer_presenter_spec.rb \
+	spec/requests/carto/api/data_import_presenter_spec.rb \
   spec/models/map_spec.rb \
   spec/models/map/copier_spec.rb \
-  $(NULL)
-
-WORKING_SPECS_2 = \
-  spec/rspec_configuration.rb \
   spec/models/visualization/*.rb \
   spec/models/named_maps_spec.rb \
   spec/models/geocoding_spec.rb \
@@ -37,26 +40,28 @@ WORKING_SPECS_2 = \
   spec/lib/central_spec.rb \
   spec/lib/carto/http/client_spec.rb \
 	spec/helpers/uuidhelper_spec.rb \
+	spec/models/carto/template_spec.rb \
   $(NULL)
 
-WORKING_SPECS_3 = \
-  spec/rspec_configuration.rb \
-  services/importer/spec/acceptance/csv_spec.rb \
+WORKING_SPECS_2 = \
+  spec/lib/cartodb/stats/importer_spec.rb \
   services/importer/spec/acceptance/geojson_spec.rb \
   services/importer/spec/acceptance/gpx_spec.rb \
   services/importer/spec/acceptance/kml_spec.rb \
   services/importer/spec/acceptance/mapinfo_spec.rb \
   services/importer/spec/acceptance/osm_spec.rb \
-  services/importer/spec/acceptance/shp_spec.rb \
   services/importer/spec/acceptance/sql_spec.rb \
-  services/importer/spec/acceptance/zip_spec.rb \
   services/importer/spec/acceptance/raster2pgsql_spec.rb \
+  services/importer/spec/acceptance/csv_spec.rb \
+  services/importer/spec/acceptance/gz_tgz_spec.rb \
+  services/importer/spec/acceptance/zip_spec.rb \
+  services/importer/spec/acceptance/shp_spec.rb \
   services/importer/spec/unit/column_spec.rb \
   services/importer/spec/unit/csv_normalizer_spec.rb \
 	services/importer/spec/unit/shp_normalizer_spec.rb \
+	services/importer/spec/unit/shp_helper_spec.rb \
   services/importer/spec/unit/downloader_spec.rb \
   services/importer/spec/unit/georeferencer_spec.rb \
-  services/importer/spec/unit/importer_stats_spec.rb \
   services/importer/spec/unit/json2csv_spec.rb \
   services/importer/spec/unit/kml_splitter_spec.rb \
   services/importer/spec/unit/loader_spec.rb \
@@ -90,10 +95,6 @@ WORKING_SPECS_4 = \
   spec/requests/admin/tables_spec.rb \
   spec/requests/admin/pages_controller_spec.rb \
 	spec/requests/carto/api/organizations_controller_spec.rb \
-  $(NULL)
-
-WORKING_SPECS_5 = \
-  spec/rspec_configuration.rb \
   spec/requests/api/imports_spec.rb \
   spec/requests/api/json/imports_controller_spec.rb \
 	spec/requests/carto/api/imports_controller_spec.rb \
@@ -103,9 +104,8 @@ WORKING_SPECS_5 = \
   services/importer/spec/unit/url_translator/osm2_spec.rb \
   services/importer/spec/unit/mail_notifier_spec.rb \
   services/relocator/spec/relocator_spec.rb \
-  $(NULL)
 
-WORKING_SPECS_6 = \
+WORKING_SPECS_5 = \
   spec/rspec_configuration.rb \
   spec/requests/api/assets_spec.rb \
   spec/requests/api/user_layers_spec.rb \
@@ -116,10 +116,6 @@ WORKING_SPECS_6 = \
   spec/requests/carto/api/records_controller_spec.rb \
   spec/requests/api/json/columns_controller_spec.rb \
   spec/requests/carto/api/columns_controller_spec.rb \
-  $(NULL)
-
-WORKING_SPECS_7 = \
-  spec/rspec_configuration.rb \
   spec/requests/api/synchronizations_spec.rb \
 	spec/requests/api/json/synchronizations_controller_spec.rb \
 	spec/requests/carto/api/synchronizations_controller_spec.rb \
@@ -129,28 +125,19 @@ WORKING_SPECS_7 = \
 	services/table-geocoder/spec/internal-geocoder/query_generator_factory_spec.rb \
 	services/table-geocoder/spec/lib/gme/table_geocoder_spec.rb \
 	spec/models/synchronization/member_spec.rb \
-	spec/requests/api/json/geocodings_controller_spec.rb \
-	spec/requests/carto/api/geocodings_controller_spec.rb \
   spec/models/organization_spec.rb \
+	spec/models/user_organization_spec.rb \
   spec/models/synchronization/synchronization_oauth_spec.rb \
   spec/models/permission_spec.rb \
 	spec/models/overlay/member_spec.rb \
 	spec/models/overlay/collection_spec.rb \
   $(NULL)
-  # spec/models/synchronization/collection_spec.rb not working right now \
 
-WORKING_SPECS_8 = \
-  spec/models/asset_spec.rb \
+# TODO: This block also breaks if run alongside other specs, needs checking why
+WORKING_SPECS_7 = \
   spec/rspec_configuration.rb \
-  spec/requests/api/permissions_controller_spec.rb \
-  spec/models/shared_entity_spec.rb \
-  spec/requests/superadmin/users_spec.rb \
-  spec/requests/superadmin/organizations_spec.rb \
-  spec/requests/api/visualizations_spec.rb \
-  spec/requests/api/json/maps_controller_spec.rb \
-  spec/requests/carto/api/maps_controller_spec.rb \
-  spec/requests/api/json/overlays_controller_spec.rb \
-  spec/requests/carto/api/overlays_controller_spec.rb \
+	spec/requests/api/json/geocodings_controller_spec.rb \
+	spec/requests/carto/api/geocodings_controller_spec.rb \
   $(NULL)
 
 WORKING_SPECS_9 = \
@@ -166,12 +153,35 @@ WORKING_SPECS_9 = \
   spec/lib/initializers/carto_db_spec.rb \
   spec/requests/carto/api/oembed_controller_spec.rb \
   spec/models/carto/ \
-  $(NULL)
-
-WORKING_SPECS_10 = \
+  spec/models/asset_spec.rb \
+  spec/rspec_configuration.rb \
+  spec/requests/api/permissions_controller_spec.rb \
+  spec/models/shared_entity_spec.rb \
+	spec/requests/signup_controller_spec.rb \
+	spec/requests/account_tokens_controller_spec.rb \
+  spec/requests/superadmin/users_spec.rb \
+  spec/requests/superadmin/organizations_spec.rb \
+  spec/requests/api/visualizations_spec.rb \
+  spec/requests/api/json/maps_controller_spec.rb \
+  spec/requests/carto/api/maps_controller_spec.rb \
+  spec/requests/api/json/overlays_controller_spec.rb \
+  spec/requests/carto/api/overlays_controller_spec.rb \
+	spec/models/carto/user_creation_spec.rb \
 	spec/models/carto/user_service_spec.rb \
 	spec/models/carto/user_spec.rb \
+	spec/models/carto/user_table_spec.rb \
 	spec/models/carto/organization_spec.rb \
+	services/table-geocoder/spec/lib/abstract_table_geocoder_spec.rb \
+	services/geocoder/spec/hires_batch_geocoder_spec.rb \
+	services/geocoder/spec/hires_geocoder_spec.rb \
+	services/geocoder/spec/hires_geocoder_factory_spec.rb \
+	services/table-geocoder/spec/geocoder_cache_spec.rb \
+  $(NULL)
+  # spec/models/synchronization/collection_spec.rb not working right now \
+
+# This class must be tested isolated as pollutes namespace
+WORKING_SPECS_carto_db_class = \
+	spec/helpers/carto_db_spec.rb \
   $(NULL)
 
 CDB_PATH=lib/assets/javascripts/cdb
@@ -183,30 +193,31 @@ ifdef JENKINS_URL
 	cp .rspec_ci .rspec
 endif
 	# TODO skip this if db already exists ?
-	bundle exec rake cartodb:test:prepare
+	# Clean DB connections before drop test DB
+	psql -U postgres -c "select pg_terminate_backend(pid) from pg_stat_activity where datname='carto_db_test'"
+	MOCHA_OPTIONS=skip_integration RAILS_ENV=test bundle exec rake cartodb:test:prepare
 
+# TODO: Ongoing removal of groups, that's the reason of holes in numbering
 check-1:
-	bundle exec rspec $(WORKING_SPECS_1)
+	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_1)
 check-2:
-	bundle exec rspec $(WORKING_SPECS_2)
-check-3:
-	bundle exec rspec $(WORKING_SPECS_3)
+	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_2)
 check-4:
-	bundle exec rspec $(WORKING_SPECS_4)
+	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_4)
 check-5:
-	bundle exec rspec $(WORKING_SPECS_5)
-check-6:
-	bundle exec rspec $(WORKING_SPECS_6)
+	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_5)
 check-7:
-	bundle exec rspec $(WORKING_SPECS_7)
-check-8:
-	bundle exec rspec $(WORKING_SPECS_8)
+	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_7)
 check-9:
-	bundle exec rspec $(WORKING_SPECS_9)
-check-10:
-	bundle exec rspec $(WORKING_SPECS_10)
+	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_9)
+check-carto-db-class:
+	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_carto_db_class)
+check-integrations:
+	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_INTEGRATIONS)	
 
-check-prepared: check-1 check-2 check-3 check-4 check-5 check-6 check-7 check-8 check-9 check-10
+check-external: prepare-test-db check-integrations
+
+check-prepared: check-1 check-2 check-4 check-5 check-7 check-9 check-carto-db-class
 
 check: prepare-test-db check-prepared
 check-frontend:

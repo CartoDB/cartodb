@@ -1,14 +1,25 @@
 # encoding: utf-8
+require_relative '../../../../spec/rspec_configuration'
 require_relative '../../lib/importer/raster2pgsql'
+require_relative '../../lib/importer/downloader'
+require_relative '../../lib/importer/runner'
+require_relative '../../lib/importer/job'
+require_relative '../doubles/log'
+require_relative '../doubles/user'
+require_relative 'cdb_importer_context'
+require_relative 'acceptance_helpers'
+require_relative 'no_stats_context'
 
 include CartoDB::Importer2
 
 describe 'raster2pgsql acceptance tests' do
+  include AcceptanceHelpers
+  include_context "cdb_importer schema"
+  include_context "no stats"
 
   before(:all) do
     @table_name = 'raster_test'
     @filepath = File.expand_path(File.join(File.dirname(__FILE__), "../fixtures/raster_simple.tif"))
-    @pg_options = {}
   end
 
   # TODO: TempFile for other tests who operate with the file
@@ -17,7 +28,7 @@ describe 'raster2pgsql acceptance tests' do
   it 'tests extracting size from a tif' do
     expected_size = [2052, 1780]
 
-    rasterizer = Raster2Pgsql.new(@table_name, @filepath, @pg_options)
+    rasterizer = Raster2Pgsql.new(@table_name, @filepath, {})
 
     size = rasterizer.send(:extract_raster_size)
     size.should eq expected_size
@@ -37,7 +48,7 @@ describe 'raster2pgsql acceptance tests' do
                                      "o_32_raster_test", "o_64_raster_test", "o_128_raster_test", \
                                      "o_256_raster_test", "o_512_raster_test" ]
 
-    rasterizer = Raster2Pgsql.new(@table_name, @filepath, @pg_options)
+    rasterizer = Raster2Pgsql.new(@table_name, @filepath, {})
 
     overviews = rasterizer.send(:calculate_raster_overviews, raster_1_size)
     overviews.should eq expected_overviews_1
@@ -55,7 +66,7 @@ describe 'raster2pgsql acceptance tests' do
   it 'tests calculating raster scale' do
     pixel_size = 3667.822831377844
 
-    rasterizer = Raster2Pgsql.new(@table_name, @filepath, @pg_options)
+    rasterizer = Raster2Pgsql.new(@table_name, @filepath, {})
 
     scale = rasterizer.send(:calculate_raster_scale, pixel_size)
     # 4891.480651647949  but just in case decimals change
@@ -63,5 +74,35 @@ describe 'raster2pgsql acceptance tests' do
     scale.should < 4892
   end
 
+  it 'if there are some problem while importing should clean the temporary tables' do
+      filepath    = path_to('raster_simple.tif')
+      downloader  = CartoDB::Importer2::Downloader.new(filepath)
+      log         = CartoDB::Importer2::Doubles::Log.new
+      job         = Job.new({ logger: log, pg_options: @pg_options })
+      runner      = CartoDB::Importer2::Runner.new({
+                       pg: @pg_options,
+                       downloader: downloader,
+                       log: CartoDB::Importer2::Doubles::Log.new,
+                       user: CartoDB::Importer2::Doubles::User.new,
+                       job: job
+                     })
+      CartoDB::Importer2::Raster2Pgsql.any_instance.stubs(:exit_code).returns(256)
+      CartoDB::Importer2::Raster2Pgsql.any_instance.stubs(:command_output).returns('no space left on device')
+
+      runner.run
+
+      table_exists = @db.execute(%Q{SELECT *
+                      FROM   information_schema.tables
+                      WHERE  table_schema = '#{job.schema}'
+                      AND    table_name = '#{job.table_name}'})
+      table_exists.should be 0
+
+      raster_tables = @db.execute(%Q{SELECT *
+                      FROM   information_schema.tables
+                      WHERE  table_schema = '#{job.schema}'
+                      AND    table_name LIKE 'o_%_#{job.table_name}'})
+      raster_tables.should be 0
+  end
+
 end
- 
+

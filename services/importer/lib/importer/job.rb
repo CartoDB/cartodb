@@ -16,6 +16,17 @@ module CartoDB
         @logger     = new_logger if @logger.nil?
         @pg_options = attributes.fetch(:pg_options, {})
         @schema     = attributes.fetch(:schema, DEFAULT_IMPORT_SCHEMA)
+
+        @table_names = []
+        new_table_name
+      end
+
+      def new_table_name
+        new_name = "importer_#{id.gsub(/-/, '')}"
+        if @table_names.length > 0
+          new_name = "#{new_name}_#{@table_names.length}"
+        end
+        @table_names << new_name
       end
 
       def new_logger
@@ -27,16 +38,13 @@ module CartoDB
       end
 
       def table_name
-        %Q(importer_#{id.gsub(/-/, '')})
+        @table_names.last
       end
 
       def db
-        @db = Sequel.postgres(pg_options.merge(:after_connect=>(proc do |conn|
+        @db ||= Sequel.postgres(pg_options.merge(:after_connect=>(proc do |conn|
           conn.execute('SET search_path TO "$user", public, cartodb')
         end)))
-        @db.extension(:connection_validator)
-        @db.pool.connection_validation_timeout = pg_options.fetch(:conn_validator_timeout, 900)
-        @db
       end
 
       def qualified_table_name
@@ -47,11 +55,25 @@ module CartoDB
         pg_options.reject { |key, value| key.to_s == 'password' }
       end
 
-      attr_reader :id, :logger, :pg_options, :schema
-      attr_accessor :success_status
+      def import_error_percent
+        if !imported_rows.nil? && !source_file_rows.nil?
+          return ((imported_rows - source_file_rows).abs.to_f/source_file_rows)*100
+        else
+          return nil
+        end
+      end
 
-      private
+      def delete_job_table
+        delete_temp_table(table_name)
+      end
+
+      def delete_temp_table(table_name)
+        db.run(%Q{DROP TABLE #{@schema}.#{table_name}})
+      end
+
+      attr_reader :id, :logger, :pg_options, :schema
+      attr_accessor :success_status, :source_file_rows, :imported_rows, :fallback_executed
+
     end
   end
 end
-

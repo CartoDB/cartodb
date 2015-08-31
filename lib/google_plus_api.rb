@@ -1,5 +1,5 @@
-require_relative './google_plus_api_user_data'
-require_relative './google_plus_config'
+require_dependency 'google_plus_api_user_data'
+require_dependency 'google_plus_config'
 require_relative 'carto/http/client'
 
 class GooglePlusAPI

@@ -1,0 +1,24 @@
+/**
+ *  Export Image Result dialog
+ */
+
+@import "compass/css3/box-sizing";
+@import "compass/css3/opacity";
+@import "compass/css3/images";
+@import "compass/css3/transition";
+@import "old_common/form-elements";
+@import "old_common/mixins";
+
+.StaticImageResponse--input {
+  width: 100%;
+  outline:none;
+}
+.ExportImageResult--url {
+  @include inline-block();
+  width: 400px;
+  vertical-align: top;
+  text-overflow: ellipsis;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+}

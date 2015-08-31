@@ -10,11 +10,13 @@ shared_examples_for "assets controllers" do
     end
 
     before(:each) do
+      stub_named_maps_calls
       delete_user_data @user
       host! 'test.localhost.lan'
     end
 
     after(:all) do
+      stub_named_maps_calls
       @user.destroy
     end
 

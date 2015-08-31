@@ -12,12 +12,9 @@ require_relative '../doubles/loader'
 require_relative '../doubles/user'
 require_relative '../doubles/input_file_size_limit'
 require_relative '../doubles/table_row_count_limit'
+require_relative '../../../../spec/rspec_configuration.rb'
 
 include CartoDB::Importer2
-
-RSpec.configure do |config|
-  config.mock_with :mocha
-end
 
 describe Runner do
   before(:all) do
@@ -30,6 +27,10 @@ describe Runner do
     @fake_log = CartoDB::Importer2::Doubles::Log.new
     @downloader = Downloader.new(@filepath)
     @fake_multiple_downloader_2 = CartoDB::Importer2::Doubles::MultipleDownloaderFake.instance(2)
+  end
+
+  before(:each) do
+    CartoDB::Stats::Aggregator.stubs(:read_config).returns({})
   end
 
   describe '#initialize' do
@@ -195,7 +196,7 @@ describe Runner do
   describe 'stats logger' do
 
     before(:each) do
-      @importer_stats_spy = CartoDB::Doubles::ImporterStats.instance
+      @importer_stats_spy = CartoDB::Doubles::Stats::Importer.instance
     end
 
     it 'logs total import time' do

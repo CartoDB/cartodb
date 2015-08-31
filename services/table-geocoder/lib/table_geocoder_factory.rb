@@ -8,16 +8,21 @@ require_relative 'exceptions'
 module Carto
   class TableGeocoderFactory
 
-    DB_TIMEOUT_MS = 100.minutes.to_i * 1000
-
     def self.get(user, cartodb_geocoder_config, table_service, params = {})
       # Reset old connections to make sure changes apply.
       # NOTE: This assumes it's being called from a Resque job
-      if user.present?
-        user.reset_pooled_connections
-        user_connection = user.in_database(statement_timeout: DB_TIMEOUT_MS)
+      user.reset_pooled_connections
+      log = params.fetch(:log)
+      log.append 'TableGeocoderFactory.get()'
+      log.append "params: #{params.select{|k| k != :log}.to_s}"
+
+      if user == table_service.owner
+        user_connection = user.in_database
       else
-        user_connection = nil
+        if !table_service.table_visualization.has_permission?(user, CartoDB::Visualization::Member::PERMISSION_READWRITE)
+          raise 'Insufficient permissions on table'
+        end
+        user_connection = table_service.owner.in_database
       end
 
       instance_config = cartodb_geocoder_config
@@ -48,6 +53,7 @@ module Carto
         geocoder_class = CartoDB::InternalGeocoder::Geocoder
       end
 
+      log.append "geocoder_class = #{geocoder_class.to_s}"
       return geocoder_class.new(instance_config)
     end
 

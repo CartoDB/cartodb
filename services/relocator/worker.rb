@@ -65,7 +65,10 @@ module CartoDB
             rescue => e
               puts "Error #{e} while creating user. Ignoring as it probably already existed"
             end
-            user.grant_user_in_database
+            # TODO: remove, connect permission is now granted to org read user
+            if user.organization == nil
+              user.grant_user_in_database
+            end
           end.join
           begin
             user.create_public_db_user

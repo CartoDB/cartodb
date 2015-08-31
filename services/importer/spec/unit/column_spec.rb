@@ -2,28 +2,31 @@
 require_relative '../../lib/importer/column'
 require_relative '../factories/pg_connection'
 require_relative '../doubles/log'
-
+require_relative '../../../../spec/rspec_configuration.rb'
 include CartoDB::Importer2
 
 describe Column do
-  before do
+  before(:all) do
     @db           = Factories::PGConnection.new.connection
     @db.execute('CREATE SCHEMA IF NOT EXISTS cdb_importer')
-
     @db.execute('CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA public')
     @db.execute('CREATE EXTENSION IF NOT EXISTS postgis_topology')
     @db.execute('SET search_path TO cdb_importer,public')
+  end
 
+  before(:each) do
     @table_name   = create_table(@db)
     @column_name  = 'the_geom'
     @column       = Column.new(@db, @table_name, @column_name, Column::DEFAULT_SCHEMA, nil, CartoDB::Importer2::Doubles::Log.new, capture_exceptions = false)
     @dataset      = @db[@table_name.to_sym]
   end
 
-  after do
+  after(:each) do
     @db.drop_table?(@table_name.to_sym)
+  end
+
+  after(:all) do
     @db.execute('DROP SCHEMA cdb_importer CASCADE')
-    @db.execute('DROP EXTENSION postgis CASCADE')
     @db.disconnect
   end
 

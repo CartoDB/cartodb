@@ -7,7 +7,7 @@ module LoginHelper
   def background
     base_color = @organization && @organization.color ? @organization.color : DEFAULT_BACKGROUND_COLOR
     color = "#{darken_color(base_color,0.6)}, #{base_color}"
-    "background: url(#{image_path('backgrounds/sessions.png')}), linear-gradient(to bottom right, #{color});"
+    "background-image: url(#{image_path('backgrounds/sessions.png')}), linear-gradient(to bottom right, #{color});"
   end
 
   def darken_color(hex_color, amount=0.4)
@@ -19,6 +19,10 @@ module LoginHelper
     "#%02x%02x%02x" % rgb
   end
 
+  def organization_color(organization)
+    !organization.nil? ? darken_color(organization.color, 0.7) : "#292E33"
+  end
+
   def login_org_avatar
     @organization && @organization.name != "team" && !@organization.avatar_url.blank?
   end
@@ -26,6 +30,20 @@ module LoginHelper
   def forget_password_url
     if CartoDB.account_host
       "#{request.protocol}#{CartoDB.account_host}/password_resets/new"
+    end
+  end
+
+  def cdb_logout
+    logout(CartoDB.extract_subdomain(request))
+    logout
+
+    if env['warden']
+      env['warden'].logout
+      request.session.select { |k, v|
+        k.start_with?("warden.user") && !k.end_with?(".session")
+      }.each { |k, v|
+        env['warden'].logout(value) if warden_proxy.authenticated?(value)
+      }
     end
   end
   

@@ -58,6 +58,7 @@ module CartoDB
       # app/models/visualization/presenter.rb
       attribute :id,                  String
       attribute :name,                String
+      attribute :display_name,        String
       attribute :map_id,              String
       attribute :active_layer_id,     String
       attribute :type,                String
@@ -66,6 +67,7 @@ module CartoDB
       attribute :description,         String
       attribute :license,             String
       attribute :source,              String
+      attribute :attributions,        String
       attribute :title,               String
       attribute :created_at,          Time
       attribute :updated_at,          Time
@@ -100,7 +102,7 @@ module CartoDB
         @redis_vizjson_cache = RedisVizjsonCache.new()
       end
 
-      def self.remote_member(name, user_id, privacy, description, tags, license, source)
+      def self.remote_member(name, user_id, privacy, description, tags, license, source, attributions, display_name)
         Member.new({
           name: name,
           user_id: user_id,
@@ -109,14 +111,20 @@ module CartoDB
           tags: tags,
           license: license,
           source: source,
+          attributions: attributions,
+          display_name: display_name,
           type: TYPE_REMOTE})
       end
 
-      def update_remote_data(privacy, description, tags, license, source)
+      def update_remote_data(privacy, description, tags, license, source, attributions, display_name)
         changed = false
         if self.privacy != privacy
           changed = true
           self.privacy = privacy
+        end
+        if self.display_name != display_name
+          changed = true
+          self.display_name = display_name
         end
         if self.description != description
           changed = true
@@ -133,6 +141,10 @@ module CartoDB
         if self.source != source
           changed = true
           self.source = source
+        end
+        if self.attributions != attributions
+          changed = true
+          self.attributions = attributions
         end
         changed
       end
@@ -213,6 +225,10 @@ module CartoDB
 
         unless permission_id.nil?
           validator.errors.store(:permission_id, 'Cannot modify permission') unless permission_change_valid
+        end
+
+        if !license.nil? && !license.empty? && Carto::License.find(license.to_sym).nil?
+          validator.errors.store(:license, 'License should be an empty or a valid value')
         end
 
         validator.valid?
@@ -426,10 +442,6 @@ module CartoDB
         parent.invalidate_cache unless parent_id.nil?
       end
 
-      def invalidate_all_varnish_vizsjon_keys
-        user.invalidate_varnish_cache({regex: '.*:vizjson'})
-      end
-
       def has_private_tables?
         has_private_tables = false
         related_tables.each { |table|
@@ -438,7 +450,7 @@ module CartoDB
         has_private_tables
       end
 
-      # Despite storing always a named map, no need to retrievfe it for "public" visualizations
+      # Despite storing always a named map, no need to retrieve it for "public" visualizations
       def retrieve_named_map?
         password_protected? || has_private_tables?
       end
@@ -446,7 +458,7 @@ module CartoDB
       def get_named_map
         return false if type == TYPE_REMOTE
 
-        data = named_maps.get(CartoDB::NamedMapsWrapper::NamedMap.normalize_name(id))
+        data = named_maps.get(CartoDB::NamedMapsWrapper::NamedMap.template_name(id))
         if data.nil?
           false
         else
@@ -623,6 +635,12 @@ module CartoDB
         end
       end
 
+      def license_info
+        if !license.nil?
+          Carto::License.find(license.to_sym)
+        end
+      end
+
       private
 
       attr_reader   :repository, :name_checker, :validator
@@ -638,8 +656,7 @@ module CartoDB
           user_name: user.username,
           user_api_key: user.api_key,
           user: user,
-          viewer_user: user,
-          dynamic_cdn_enabled: user != nil ? user.dynamic_cdn_enabled: false
+          viewer_user: user
         }.merge(options)
         VizJSON.new(self, vizjson_options, configuration).to_poro
       end
@@ -691,7 +708,6 @@ module CartoDB
         # now we need to purgue everything to avoid cached stale data or public->priv still showing scenarios
         if name_changed || privacy_changed || table_privacy_changed || dirty
           invalidate_cache
-          invalidate_all_varnish_vizsjon_keys
         end
 
         set_timestamps
@@ -707,11 +723,6 @@ module CartoDB
           @permission_id = perm.id
           # Need to save again
           repository.store(id, attributes.to_hash)
-        end
-
-        # when visualization turns private remove the acl
-        if privacy == PRIVACY_PRIVATE && permission.acl.size > 0 && privacy_changed
-          permission.clear
         end
 
         save_named_map

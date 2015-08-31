@@ -1,0 +1,25 @@
+<% content_for :title do %><%= @user ? @user.username : 'User ' %> authentication error<% end %>
+
+<div class="Sessions" style="<%= background %>">
+  <div class="Sessions-content">
+    <div class="Sessions-inner">
+      <div class="u-inner">
+        <div class="Sessions-center Sessions--centered">
+          <div class="Logo js-logo">
+            <span class="Logo--avatar">
+              <i class="iconFont iconFont-CartoFante" style="color: <%= @organization && @organization.color ? darken_color(@organization.color,0.7) : "#292E33" %>"></i>
+            </span>
+          </div>
+          <div class="js-info">
+            <h1 class="Sessions-title u-tspace-m">You must validate your email account</h1>
+              <p class="Sessions-description">Please check your email inbox and click the "Activate your account" button in the welcome mail.</p>
+
+            <% if @user %>
+              <p class="Sessions-description">If you didn't receive your validation email, click <a href="<%= CartoDB.url(self, 'resend_validation_mail', :user_id => @user.id) %>">here</a> and a new email will be sent directly to you.</p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,16 @@
+/*
+ * Represents a field in the export dialog with a check inside:
+ *   ____________________________________
+ *  |                                    |
+ *  | [ ] Label                          |
+ *  |____________________________________|
+ *
+ */
+
+.OptionCheck {
+  margin-bottom: 20px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+}

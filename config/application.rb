@@ -69,6 +69,7 @@ module CartoDB
       dashboard_templates.js
       public_dashboard_deps.js
       public_dashboard.js
+      public_data_dashboard.js
       public_map.js
       public_map_deps.js
       editor.js
@@ -84,14 +85,18 @@ module CartoDB
       organization.js
       table.js
       public_dashboard.js
-      public_table.js
       public_like.js
       common.js
       old_common.js
+      old_common_without_core.js
       templates.js
       templates_mustache.js
       specs.js
       sessions.js
+      signup.js
+      confirmation_templates.js
+      confirmation.js
+      new_public_table.js
 
       tipsy.js
       modernizr.js
@@ -116,8 +121,9 @@ module CartoDB
       organization.css
       password_protected.css
       public_dashboard.css
-      public_table.css
       public_map.css
+      public_data_dashboard.css
+      public_table.css
       sessions.css
 
       plugins/tipsy.css
@@ -157,5 +163,4 @@ require 'cartodb/central'
 #require 'importer/lib/cartodb-importer'
 require 'importer/lib/cartodb-migrator'
 require 'varnish/lib/cartodb-varnish'
-require 'cartodb_stats'
 $pool = CartoDB::ConnectionPool.new

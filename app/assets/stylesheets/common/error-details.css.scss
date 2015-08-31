@@ -44,6 +44,10 @@ $width: 620px;
   font-size: $sFontSize-normal;
   text-align: center;
 }
+.ErrorDetails-itemStep--lessProminent {
+  color: #ddd;
+  border-color: #ddd;
+}
 .ErrorDetails-itemText {
   width: $width - 120;
   font-weight: $sFontWeight-lighter;

@@ -24,13 +24,16 @@
   min-height: 0;
 }
 .ContentResult.no-datasets {
+  $blueBkg: #F5FAFE;
   position: relative;
   width: auto;
-  margin: 0 auto;
-  padding: 100px 0;
+  height: 232px;
   min-height: 0;
-  @include background(image-url('layout/no_datasets_bkg.png') center center no-repeat #F1F7FC);
+  margin: 0 auto;
+  padding: 28px 0 0 0;
+  @include background(image-url('layout/no_datasets_bkg.png') center center no-repeat $blueBkg);
   box-shadow: 1px 0 0 1px $cStructure-softLine;
+  overflow: hidden;
   z-index: 9;
 
   &:after,
@@ -46,7 +49,7 @@
     left: 50%;
     right: 0;
     margin-left: 470px;
-    @include background-horizontal(rgba(#F1F7FC,0), rgba(#F1F7FC,1));
+    @include background-horizontal(rgba($blueBkg,0), rgba($blueBkg,1));
   }
 
   &:before {
@@ -54,8 +57,19 @@
     right: 50%;
     margin-right: 470px;
     background-color: transparent!important;
-    @include background-horizontal(rgba(#F1F7FC,1), rgba(#F1F7FC,0));
+    @include background-horizontal(rgba($blueBkg,1), rgba($blueBkg,0));
   }
+
+  .NoDatasets-illustration {
+    position: absolute;
+    left: 50%;
+    bottom: -52px;
+    width: 671px;
+    height: 195px;
+    margin-left: -335px;
+    @include background(image-url('layout/search_lens_bkg.png') center center no-repeat);
+  }
+  .NoDatasets-illustration--secondary { @include background(image-url('layout/connect-dataset.png') center center no-repeat) }
 }
 .ContentResult-smallLoader {
   position: absolute;

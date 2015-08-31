@@ -1,10 +1,7 @@
 # encoding: utf-8
 
 require_relative '../../lib/importer/table_sampler'
-
-RSpec.configure do |config|
-  config.mock_with :mocha
-end
+require_relative '../../../../spec/rspec_configuration.rb'
 
 # Open the class for adition of some stuff used only for testing
 class CartoDB::Importer2::TableSampler

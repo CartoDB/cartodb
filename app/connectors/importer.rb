@@ -2,6 +2,7 @@
 require 'uuidtools'
 
 require_relative '../models/visualization/support_tables'
+require_relative '../helpers/bounding_box_helper'
 
 module CartoDB
   module Connector
@@ -29,7 +30,6 @@ module CartoDB
         @database               = database
         @data_import_id         = data_import_id
         @destination_schema     = destination_schema
-        @rename_attempts        = 0
         @support_tables_helper  = CartoDB::Visualization::SupportTables.new(database,
                                                                             {public_user_roles: public_user_roles})
         @data_import            = nil
@@ -56,6 +56,10 @@ module CartoDB
 
       def register(result)
         @support_tables_helper.reset
+        
+        # Sanitizing table name if it corresponds with a PostgreSQL reseved word
+        result.name = "#{result.name}_t" if CartoDB::POSTGRESQL_RESERVED_WORDS.map(&:downcase).include?(result.name.downcase)
+        
         runner.log.append("Before renaming from #{result.table_name} to #{result.name}")
         name = rename(result, result.table_name, result.name)
         result.name = name
@@ -106,11 +110,31 @@ module CartoDB
       def rename(result, current_name, new_name, rename_attempts=0)
         target_new_name = new_name
         new_name = table_registrar.get_valid_table_name(new_name)
-
         if rename_attempts > 0
           new_name = "#{new_name}_#{rename_attempts}"
         end
         rename_attempts = rename_attempts + 1
+
+        if self.data_import
+          user_id = self.data_import.user_id
+          if exists_user_table_for_user_id(new_name, user_id)
+            # Since get_valid_table_name should only return nonexisting table names (with a retry limit)
+            # this is likely caused by a table deletion, so we run ghost tables to cleanup and retry
+            if rename_attempts == 1
+              runner.log.append("Triggering ghost tables for #{user_id} because collision on #{new_name}")
+              User.where(id: user_id).first.link_ghost_tables
+
+              if exists_user_table_for_user_id(new_name, user_id)
+                runner.log.append("Ghost tables didn't fix the collision.")
+                raise "Existing #{new_name} already registered for #{user_id}. Running ghost tables did not help."
+              else
+                runner.log.append("Ghost tables fixed the collision.")
+              end
+            else
+              raise "Existing #{new_name} already registered for #{user_id}"
+            end
+          end
+        end
 
         database.execute(%Q{
           ALTER TABLE "#{ORIGIN_SCHEMA}"."#{current_name}" RENAME TO "#{new_name}"
@@ -132,7 +156,8 @@ module CartoDB
 
         new_name
       rescue => exception
-        message = "Silently retrying renaming #{current_name} to #{target_new_name} (current: #{new_name}). "
+        CartoDB.notify_debug('Error while renaming at importer', { current_name: current_name, new_name: new_name, rename_attempts: rename_attempts, result: result.inspect, error: exception.inspect}) if rename_attempts == 1
+        message = "Silently retrying renaming #{current_name} to #{target_new_name} (current: #{new_name}). ERROR: #{exception}"
         runner.log.append(message)
         if rename_attempts <= MAX_RENAME_RETRIES
           rename(result, current_name, target_new_name, rename_attempts)
@@ -153,6 +178,7 @@ module CartoDB
       def persist_metadata(result, name, data_import_id)
         table_registrar.register(name, data_import_id)
         self.table = table_registrar.table
+        BoundingBoxHelper.update_visualizations_bbox(table)
         self
       end
 
@@ -170,10 +196,14 @@ module CartoDB
       end
 
       def data_import
-        @data_import ||= DataImport[@data_import_id]
+        DataImport[@data_import_id]
       end
 
       private
+
+      def exists_user_table_for_user_id(table_name, user_id)
+        !Carto::UserTable.where(name: table_name, user_id: user_id).first.nil?
+      end
 
       attr_reader :runner, :table_registrar, :quota_checker, :database, :data_import_id
 

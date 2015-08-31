@@ -3,7 +3,7 @@
 class EmbedRedisCache
 
   # This needs to be changed whenever there're changes in the code that require invalidation of old keys
-  VERSION = '2'
+  VERSION = '3'
 
 
   def initialize(redis_cache = $tables_metadata)
@@ -44,6 +44,12 @@ class EmbedRedisCache
   def key(visualization_id, https_request=false)
     protocol = https_request ? 'https' : 'http' 
     "visualization:#{visualization_id}:embed:#{protocol}:#{VERSION}"
+  end
+
+  def purge(vizs)
+    return unless vizs.count > 0
+    keys = vizs.map {|v| [key(v.id, false), key(v.id, true)]}.flatten
+    redis.del keys
   end
 
 

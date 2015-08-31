@@ -27,6 +27,7 @@
   color: white;
   text-transform: uppercase;
   white-space: nowrap;
+  box-sizing: border-box;
 }
 .Button-inner { line-height: $sButton-height }
 .Button {
@@ -42,6 +43,9 @@
   background-color: $cHighlight-main;
   border-color: $cHighlight-main;
   &:hover { background-color: rgba(#007FBD, 1) }
+  &.is-disabled:hover {
+    background-color: $cHighlight-main;
+  }
 }
 .Button--positive {
   background-color: $cHighlight-positive;
@@ -102,6 +106,7 @@
   }
 }
 .Button--link {
+  text-transform: inherit;
   color: $cTypography-link;
   &:hover {
     color: $cTypography-linkSelected;

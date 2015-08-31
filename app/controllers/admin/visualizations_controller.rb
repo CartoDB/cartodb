@@ -1,9 +1,11 @@
 # encoding: utf-8
 require_relative '../../models/map/presenter'
-require_dependency '../../lib/resque/user_jobs'
+require_dependency 'resque/user_jobs'
+require_dependency 'static_maps_url_helper'
 require_relative '../carto/admin/user_table_public_map_adapter'
 require_relative '../carto/admin/visualization_public_map_adapter'
 require_relative '../../helpers/embed_redis_cache'
+require_dependency 'static_maps_url_helper'
 
 class Admin::VisualizationsController < ApplicationController
 
@@ -33,7 +35,6 @@ class Admin::VisualizationsController < ApplicationController
   skip_before_filter :verify_authenticity_token, only: [:show_protected_public_map, :show_protected_embed_map]
 
   def index
-    @tables_count  = current_user.tables.count
     @first_time    = !current_user.dashboard_viewed?
     @just_logged_in = !!flash['logged']
     @google_maps_query_string = current_user.google_maps_query_string
@@ -136,6 +137,7 @@ class Admin::VisualizationsController < ApplicationController
 
     @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)
     @avatar_url             = @visualization.user.avatar
+    @twitter_username       = @visualization.user.twitter_username.present? ? @visualization.user.twitter_username : nil
 
     @user_domain = user_domain_variable(request)
 
@@ -166,7 +168,7 @@ class Admin::VisualizationsController < ApplicationController
     @export_sql_api_url = "#{ sql_api_url("SELECT * FROM #{ @table.owner.sql_safe_database_schema }.#{ @table.name }", @user) }&format=shp"
 
     respond_to do |format|
-      format.html { render 'public_table', layout: 'application_table_public' }
+      format.html { render 'public_dataset', layout: 'application_table_public' }
     end
 
   end
@@ -198,11 +200,25 @@ class Admin::VisualizationsController < ApplicationController
     end
 
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
-    response.headers['Surrogate-Key'] = "#{CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES} #{@visualization.surrogate_key}"
+
+    if @more_visualizations && @more_visualizations.length > 0
+      additional_keys = []
+      @more_visualizations.each do |vis_adapter|
+        additional_keys << vis_adapter.visualization.surrogate_key
+      end
+      additional_keys = " #{additional_keys.join(' ')}"
+    else
+       additional_keys = ''
+    end
+
+    response.headers['Surrogate-Key'] =
+      "#{CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES} #{@visualization.surrogate_key}#{additional_keys}"
+
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
 
     @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)
     @avatar_url             = @visualization.user.avatar
+    @twitter_username       = @visualization.user.twitter_username.present? ? @visualization.user.twitter_username : nil
     @google_maps_query_string = @visualization.user.google_maps_query_string
 
     @mapviews = @visualization.total_mapviews
@@ -417,8 +433,28 @@ class Admin::VisualizationsController < ApplicationController
 
   def load_common_data
     return true unless current_user.present?
+    begin
+      visualizations_api_url = build_common_data_url
+      ::Resque.enqueue(::Resque::UserJobs::CommonData::LoadCommonData, current_user.id, visualizations_api_url) if current_user.should_load_common_data?
+    rescue Exception => e
+      # We don't block the load of the dashboard because we aren't able to load common dat
+      CartoDB.notify_exception(e, {user:current_user})
+      return true
+    end
+  end
 
-    ::Resque.enqueue(::Resque::UserJobs::CommonData::LoadCommonData, current_user.id) if current_user.should_load_common_data?
+  def build_common_data_url
+    common_data_base_url = Cartodb.config[:common_data]['base_url']
+    common_data_username = Cartodb.config[:common_data]['username']
+    common_data_user = Carto::User.where(username: common_data_username).first
+    if !common_data_base_url.nil?
+      # We set user_domain to nil to avoid the user of the user_domain of the current_user (/u/xxxx)
+      common_data_base_url + CartoDB.path(self, 'api_v1_visualizations_index', {type: 'table', privacy: 'public', user_domain: nil})
+    elsif !common_data_user.nil?
+      CartoDB.url(self, 'api_v1_visualizations_index', {type: 'table', privacy: 'public'}, common_data_user)
+    else
+      CartoDB.notify_error('cant create common-data url. User doesnt exists and base_url is nil', { user: common_data_username})
+    end
   end
 
   def more_visualizations(user, excluded_visualization)
@@ -472,7 +508,9 @@ class Admin::VisualizationsController < ApplicationController
       # Might be an org url, try getting the org
       organization = Organization.where(name: org_name).first
       unless organization.nil?
-        authenticated_users = request.session.select { |k,v| k.start_with?("warden.user") }.values
+        authenticated_users = request.session.select { |k, v|
+          k.start_with?("warden.user") && !k.end_with?(".session")
+        }                                    .values
         authenticated_users.each { |username|
           user = User.where(username:username).first
           if url.nil? && !user.nil? && !user.organization.nil?

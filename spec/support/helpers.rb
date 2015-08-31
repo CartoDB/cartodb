@@ -30,7 +30,7 @@ module HelperMethods
     server = WEBrick::HTTPServer.new(
       :AccessLog       => [],
       :Logger          => WEBrick::Log::new("/dev/null", 7), #comment this line if weird things happen
-      :Port            => 9999,
+      :Port            => 9779,
       :DocumentRoot    => File.dirname(file_path),
       :RequestCallback => Proc.new() { |req, res|
         options[:headers].each { |k, v| res[k] = v } if options[:headers].present?
@@ -45,7 +45,7 @@ module HelperMethods
     a = Thread.new { server.start }
 
     begin
-      yield "http://localhost:9999/#{File.basename(file_path)}" if block_given?
+      yield "http://localhost:9779/#{File.basename(file_path)}" if block_given?
     rescue => e
       raise e
     ensure
@@ -82,7 +82,7 @@ module HelperMethods
   def delete_json(path, params = {}, headers ={}, &block)
     delete path, params, headers
     the_response = response || get_last_response
-    response_parsed = the_response.body.blank? ? {} : ::JSON.parse(the_response.body)
+    response_parsed = (the_response.body.blank? || the_response.body.to_s.length < 2) ? {} : ::JSON.parse(the_response.body)
     yield OpenStruct.new(:body => (response_parsed.is_a?(Hash) ? response_parsed.symbolize_keys : response_parsed), :status => the_response.status, :headers => the_response.headers) if block_given?
   end
 
@@ -98,9 +98,7 @@ module HelperMethods
   def default_schema
     [
       ["cartodb_id", "number"], ["name", "string"], ["description", "string"],
-      ["the_geom", "geometry", "geometry", "geometry"],
-      ["created_at", "date"],
-      ["updated_at", "date"]
+      ["the_geom", "geometry", "geometry", "geometry"]
     ]
   end
 
@@ -108,6 +106,7 @@ module HelperMethods
     random = UUIDTools::UUID.timestamp_create.to_s
     {
       name:               attributes.fetch(:name, "name #{random}"),
+      display_name:       attributes.fetch(:display_name, "display name #{random}"),
       description:        attributes.fetch(:description, "description #{random}"),
       privacy:            attributes.fetch(:privacy, Visualization::Member::PRIVACY_PUBLIC),
       tags:               attributes.fetch(:tags, ['tag 1']),
@@ -117,6 +116,7 @@ module HelperMethods
       title:              attributes.fetch(:title, ''),
       source:             attributes.fetch(:source, ''),
       license:            attributes.fetch(:license, ''),
+      attributiosn:       attributes.fetch(:attributions, ''),
       parent_id:          attributes.fetch(:parent_id, nil),
       kind:               attributes.fetch(:kind, Visualization::Member::KIND_GEOM),
       prev_id:            attributes.fetch(:prev_id, nil),

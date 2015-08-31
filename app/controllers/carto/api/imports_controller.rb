@@ -3,7 +3,7 @@ module Carto
     class ImportsController < ::Api::ApplicationController
 
       ssl_required :index, :show
-      ssl_allowed :service_token_valid?, :list_files_for_service, :get_service_auth_url, :validate_service_oauth_code, 
+      ssl_allowed :service_token_valid?, :list_files_for_service, :get_service_auth_url, :validate_service_oauth_code,
                   :service_oauth_callback
 
       def index
@@ -15,7 +15,7 @@ module Carto
         import = DataImportsService.new.process_by_id(params[:id])
         render_404 and return if import.nil?
 
-        data = import.api_public_values
+        data = Carto::Api::DataImportPresenter.new(import).api_public_values
         if import.state == Carto::DataImport::STATE_COMPLETE
           data[:any_table_raster] = import.is_raster?
 
@@ -61,8 +61,6 @@ module Carto
       end
 
       def validate_service_oauth_code
-        # TODO: remove debug trace
-        Rollbar.report_message('validate_service_oauth_code v1_1', 'debug')
         success = DataImportsService.new.validate_service_oauth_code(uri_user, params[:id], params[:code])
         render_jsonp({ success: success })
       rescue CartoDB::Datasources::TokenExpiredOrInvalidError => e
@@ -74,8 +72,6 @@ module Carto
       end
 
       def service_oauth_callback
-        # TODO: remove debug trace
-        Rollbar.report_message('service_oauth_callback v1_1', 'debug')
         DataImportsService.new.validate_callback(uri_user, params[:id], params)
         request.format = 'html'
         respond_to do |format|

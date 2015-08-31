@@ -14,6 +14,7 @@ module CartoDB
         @db.create_table(relation.to_sym) do
           UUID      :id, primary_key: true
           String    :name
+          String    :display_name
           String    :description
           UUID      :map_id, index: true
           String    :active_layer_id
@@ -29,6 +30,7 @@ module CartoDB
           Boolean   :locked
           String    :license
           String    :source
+          String    :attributions
           String    :title
           String    :parent_id
           String    :kind
@@ -40,12 +42,13 @@ module CartoDB
 
         @db.run(%Q{
           ALTER TABLE "#{relation}"
-          ADD COLUMN tags text[]
+          ADD COLUMN tags text[],
+          ADD COLUMN bbox geometry
         })
       end
 
       def drop(relation=:visualizations)
-        @db.drop_table(relation.to_sym)
+        @db.drop_table(relation.to_sym, :cascade=>true)
       end
     end
   end

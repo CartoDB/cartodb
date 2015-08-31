@@ -1,5 +1,17 @@
 
-3.10.3 (2015-mm-dd)
+3.11.0 (2015-mm-dd)
+-------------------
+* Synchronizations model now has a new field (and FK) to visualizations.id and joins to them using that instead of by matching name to canonical visualization's table name. It also gets deleted if FK dissapears.
+* Code also switches to using syncrhonizations.visualization_id for linking, so in order to have back existing synchronizations, the following rake needs to be run: `bundle exec rake cartodb:populate_synchronization_visualization_ids`
+* StatsD data gathering refactored. Check /lib/cartodb/stats for details
+* Data library feature is not cartodb user dependent anymore. By default the username you defined in the common-data config section, will be used with your base url to query for public datasets to build your own data-library based on that user. You can define the `base_url` property and point to other domain to retreive the public datasets from that user. For example set to `https://common-data.cartodb.com` you are going to keep using the cartodb data-library. Please refer to the example configuration file (app_config.yml.sample) `common_data`section  to check how it could be configured
+* New modals (removing old code & feature flag restricting access to new ones) [#5068](https://github.com/CartoDB/cartodb/pull/5068)
+* Updated (most of) frontend dependencies [#5171](https://github.com/CartoDB/cartodb/pull/5171)
+* Metadata is editable when datasets have a SQL Query is applied [#5195](https://github.com/CartoDB/cartodb/pull/5195)
+* Upgrade cartodb-postgresql extension to 0.9.4, which includes the new cartodbfy process. As part of this change new user tables won't have the columns `created_at` nor `updated_at`. See the [release notes](https://github.com/CartoDB/cartodb-postgresql/blob/0.9.4/NEWS.md) for more details.
+* Added code coverage generation for tests suite. After a run, results will be stored at `coverage` subfolder
+
+3.10.3 (2015-08-13)
 ---
 * Mailchimp decorator enables category wizard and legends [#3874](https://github.com/CartoDB/cartodb/pull/3874)
 * Cache public and with link embeds in redis [#3733](https://github.com/CartoDB/cartodb/pull/3733)
@@ -7,11 +19,45 @@
 * Named maps created for all visualizations, regardless of layers privacy [#3879](https://github.com/CartoDB/cartodb/issues/3879)
 * Added an [http client for ruby](https://github.com/CartoDB/cartodb/wiki/The-CartoDB-ruby-http-client) with some cool features
 * SQLViews are editable when filtering [#3812](https://github.com/CartoDB/cartodb/pull/3812)
-* Updated cartodb.js to 3.14.6
 * Defaults Time Column to first date column or cartodb_id in Torque wizards [#4136](https://github.com/CartoDB/cartodb/pull/4136)
 * Added more customized Google basemaps.
+* New optional config option `maps_api_cdn_template` for static maps [#4153](https://github.com/CartoDB/cartodb/issues/4153)
+* New `api/v2/viz/{id}/static/{width}/{height}.png` endpoint for retrieving static maps
+* New twitter cards [#4153](https://github.com/CartoDB/cartodb/issues/4153)
+* New facebook cards [#4280](https://github.com/CartoDB/cartodb/pull/4280)
+* Improve email template [#4190](https://github.com/CartoDB/cartodb/pull/4190)
 * Added `filter` option to layer_definition and named_map in vizjson [#4197](https://github.com/CartoDB/cartodb/pull/4197)
-* Added code coverage generation for tests suite. After a run, results will be stored at `coverage` subfolder
+* Organization owners can reset users API keys.
+* Log model improvements: Stores only upon finish (to hit way less the DB) and size constraints
+* Updated cartodb.js to 3.15.1.
+* [Stat loading times improves with Redis ZSCAN](https://github.com/CartoDB/cartodb/issues/3943). Redis 3.0.0+ is now required.
+* Upgraded [cartodb-postgresql](https://github.com/CartoDB/cartodb-postgresql) extension to `0.8.0`. Run the following commands to get it installed in your system:
+```
+git submodule init && git submodule update
+cd lib/sql; sudo make all install
+```
+* General security improvements: CookieStore now expires cookies after 7 days, always use SecureRandom for SID generation; Session management now invalidates other sessions upon password change
+* Support for large (5k users) organizations.
+* Added support for new basemaps with labels on top [4286](https://github.com/CartoDB/cartodb/pull/4286).
+* Fixed multi-resource import (ZIP with >1 supported files, ArcGIS, etc.). Limited to 10 tables/files, except in the case of ArcGIS
+* Ability to geocode tables shared with write permissions within an organization [#4509](https://github.com/CartoDB/cartodb/pull/4509)
+* Layers are saved in bulk when re-ordered [#4251](https://github.com/CartoDB/cartodb/pull/4251)
+* Improving test suite speed. Whenever possible, use global test users $user_1 and $user_2 (see TESTING.md for details)
+* New optional config values varnish_management[:trigger_verbose] & invalidation_service[:trigger_verbose] to control output verbosity of invalidation services (set now by default to off only at testing)
+* Better number normalization to support casting of currency strings [#4530](https://github.com/CartoDB/cartodb/pull/4530)
+* Added in-database logging capabilities to geocodings [#4625](https://github.com/CartoDB/cartodb/pull/4625)
+* New Maps without geometries no longer have zeroed-bounds
+* Rake task `cartodb:redis:purge_vizjson` now also purges embeds [#4653](https://github.com/CartoDB/cartodb/pull/4653)
+* Properly and fully disallowing multilogins, by killing other existing sessions upon login
+* Added new Platform Limit for concurrent syncs per user. Currently 2 hours TTL, 3 syncs per user max. allowed
+* Importer now tries to import shapefile zips without .prj file, by setting 4326 projection.
+* Prevent geocoding and import polling requests from being queued up [#4980](https://github.com/CartoDB/cartodb/pull/4980)
+* Prevent geocoding and import polling requests from being queued up [#4980](https://github.com/CartoDB/cartodb/pull/4980)
+* Added new fields source, attributions, and license, to metadata modal [#5016](https://github.com/CartoDB/cartodb/pull/5016)
+* Code related to pecan extracted to separate module [#4999](https://github.com/CartoDB/cartodb/pull/4999)
+  * requires a `npm install` for grunt tasks
+* New modals [#5068](https://github.com/CartoDB/cartodb/pull/5068)
+* Now canonical tables store the bounding box at import time. It's also recalculated when `the_geom` change. This need to install the postgis extension in the metadata database
 
 Bugfixes:
 * Fixed deletion of layers upon disconnecting synced datasources [#3718](https://github.com/CartoDB/cartodb/pull/3718)
@@ -20,6 +66,11 @@ Bugfixes:
 * Added options to create dataset from query while on the map view [#3771](https://github.com/CartoDB/cartodb/pull/3771)
 * Do not cache geocodes if the_geom is NULL [#3793](https://github.com/CartoDB/cartodb/pull/3793)
 * Reverse order of varnish/redis invalidation [#3555](https://github.com/CartoDB/cartodb/pull/3945)
+
+New features:
+* Organization signup: [#3902](https://github.com/CartoDB/cartodb/issues/3902)
+* Diagnosis page at http://localhost.lan:3000/diagnosis
+* Remote/External sources now imported via a synchronization (that will sync monthly), and dissapear from the data-library section until the user unsyncs the dataset.
 
 3.10.2 (2015-05-20)
 ---------
@@ -64,7 +115,6 @@ Bugfixes:
 * Enable new dashboard for everyone by means of migration [#3509](https://github.com/CartoDB/cartodb/pull/3509)
 * Enabled Google Maps Basemaps [#3429](https://github.com/CartoDB/cartodb/pull/3429)
 * Remove need of api_key to enjoy common-data "Data library" [#3523](https://github.com/CartoDB/cartodb/pull/3523)
-
 
 Bugfixes:
 * Fixed interaction when there are hidden layers [#3090](https://github.com/CartoDB/cartodb/pull/3090)

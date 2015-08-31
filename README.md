@@ -84,7 +84,7 @@ them as soon as we can. Also if you feel that something is wrong or even
 missing we will be happy to fix it.
 
 For any doubt about the process you can ask in our [Google 
-Group](https://groups.google.com/forum/#!forum/cartodb).
+Group](https://groups.google.com/forum/#!forum/cartodb). See **Installation diagnosis** section in order to send valuable information if you're already running the CartoDB server.
 
 If you want to give it a try, download CartoDB by cloning this repository:
 
@@ -101,7 +101,7 @@ file](https://github.com/CartoDB/cartodb/archive/master.zip).
   - Ubuntu 12.04
   - Postgres 9.3.x (with plpythonu extension)
   - [cartodb-postgresql](https://github.com/CartoDB/cartodb-postgresql) extension
-  - Redis 2.2+
+  - Redis 2.8+
   - Ruby 1.9.3
   - Node.js 0.10.x
   - CartoDB-SQL-API
@@ -521,6 +521,10 @@ $ bundle exec rails s -p 3000
 You should now be able to access
 **`http://<mysubdomain>.localhost.lan:3000`**
 in your browser and login with the password specified above.
+
+## Installation diagnosis
+
+You can check your installation opening **`http://localhost.lan:3000/diagnosis`**. It displays the status of the processes and the installed versions.
 
 ## Note on tiling, SQL API and Redis
 

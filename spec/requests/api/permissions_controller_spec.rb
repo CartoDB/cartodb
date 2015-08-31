@@ -87,6 +87,7 @@ describe Api::Json::PermissionsController do
                   username:   @user2.username,
                   avatar_url: @user2.avatar_url,
                   base_url:   @user2.public_url,
+                  groups: []
               },
               access: Permission::ACCESS_READONLY
           }

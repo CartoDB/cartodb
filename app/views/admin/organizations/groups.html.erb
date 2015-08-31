@@ -14,12 +14,14 @@
 <% end %>
 
 <div class="FormAccount-Section u-inner">
-  <%= render :partial => 'admin/shared/pages_subheader' %>
+  <%= render partial: 'admin/shared/pages_subheader' %>
 
   <div class="FormAccount-Content">
-    <%= render :partial => 'admin/shared/org_subheader' %>
+    <%= render partial: 'admin/shared/org_subheader' %>
 
-    <div class="js-content"></div>
+    <div class="js-content">
+      <%= render partial: 'admin/shared/loading', locals: { title: 'Loading assets' } %>
+    </div>
   </div>
 </div>
 

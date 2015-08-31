@@ -111,18 +111,19 @@ class Admin::PagesController < ApplicationController
     username = CartoDB.extract_subdomain(request).strip.downcase
     @viewed_user = User.where(username: username).first
 
-    @name               = @viewed_user.username
-    @avatar_url         = @viewed_user.avatar
-    @tables_num         = @is_org ? @viewed_user.public_datasets_count : @viewed_user.public_table_count
-    @maps_count         = @viewed_user.public_visualization_count 
-
     if @viewed_user.nil?
       org = Organization.where(name: username).first
       unless org.nil?
         redirect_to CartoDB.url(self, 'public_maps_home')
+        return
       end
       render_404
     else
+      @name               = @viewed_user.username
+      @avatar_url         = @viewed_user.avatar
+      @tables_num         = @viewed_user.public_table_count
+      @maps_count         = @viewed_user.public_visualization_count 
+
       respond_to do |format|
         format.html { render 'user_feed', layout: 'public_user_feed' }
       end
@@ -347,7 +348,7 @@ class Admin::PagesController < ApplicationController
     @user = optional.fetch(:user, nil)
     @is_org             = model.is_a? Organization
     @tables_num         = @is_org ? model.public_datasets_count : model.public_table_count
-    @maps_count         = model.public_visualization_count 
+    @maps_count         = @is_org ? model.public_visualizations_count : model.public_visualization_count
   end
 
   def user_public_vis_list(required)

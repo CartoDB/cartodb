@@ -1,3 +1,5 @@
+require_relative '../../lib/cartodb/stats/explore_api'
+
 namespace :cartodb do
 
   namespace :explore_api do
@@ -54,17 +56,23 @@ namespace :cartodb do
 
     desc "Updates the data at #{VISUALIZATIONS_TABLE}"
     task :update => [:environment] do
-      user = target_user
-      update(user)
-      touch_metadata(user)
+      stats_aggregator.timing('visualizations.update.total') do
+        user = target_user
+        update(user)
+        touch_metadata(user)
+      end
     end
 
     def update(user)
       most_recent_created_date = user.in_database[MOST_RECENT_CREATED_SQL].first[:max]
       most_recent_updated_date = user.in_database[MOST_RECENT_UPDATED_SQL].first[:max]
 
-      update_existing_visualizations_at_user(user)
-      insert_new_visualizations_at_user(user, most_recent_created_date, most_recent_updated_date)
+      stats_aggregator.timing('visualizations.update.update_existing') do
+        update_existing_visualizations_at_user(user)
+      end
+      stats_aggregator.timing('visualizations.update.insert_new') do
+        insert_new_visualizations_at_user(user, most_recent_created_date, most_recent_updated_date)
+      end
     end
 
     def update_existing_visualizations_at_user(user)
@@ -225,6 +233,10 @@ namespace :cartodb do
 
     def touch_metadata(user)
       user.in_database(as: :superuser).run(%Q{SELECT CDB_TableMetadataTouch('#{VISUALIZATIONS_TABLE}')})
+    end
+
+    def stats_aggregator
+      CartoDB::Stats::ExploreAPI.instance
     end
 
   end

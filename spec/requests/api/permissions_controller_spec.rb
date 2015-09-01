@@ -87,6 +87,7 @@ describe Api::Json::PermissionsController do
                   username:   @user2.username,
                   avatar_url: @user2.avatar_url,
                   base_url:   @user2.public_url,
+                  groups:     []
               },
               access: Permission::ACCESS_READONLY
           }
@@ -104,7 +105,7 @@ describe Api::Json::PermissionsController do
       # To force updated_at to change
       sleep(1)
 
-      put "/api/v1/perm/#{permission.id}?api_key=#{@api_key}", {acl: client_acl_modified}.to_json, @headers
+      put "/api/v1/perm/#{permission.id}?api_key=#{@api_key}", { user_domain: @user.username, acl: client_acl_modified}.to_json, @headers
       last_response.status.should == 200
       response = JSON.parse(last_response.body, symbolize_names: true)
       response.fetch(:id).should eq permission.id
@@ -116,8 +117,12 @@ describe Api::Json::PermissionsController do
       entity_fragment[:type].should eq entity_type
       Time.parse(response.fetch(:created_at)).to_i.should eq permission.created_at.to_i
       Time.parse(response.fetch(:updated_at)).to_i.should_not eq permission.updated_at.to_i
-      response.fetch(:acl).should eq client_acl_modified_expected
-      put "/api/v1/perm/#{permission.id}?api_key=#{@api_key}", {acl: client_acl_final}.to_json, @headers
+      acl = response.fetch(:acl)
+      # base_url deletion because during tests subdomains might not match
+      acl[0][:entity].delete(:base_url)
+      client_acl_modified_expected[0][:entity].delete(:base_url)
+      acl.should eq client_acl_modified_expected
+      put "/api/v1/perm/#{permission.id}?api_key=#{@api_key}", { user_domain: @user.username, acl: client_acl_final}.to_json, @headers
       last_response.status.should == 200
       response = JSON.parse(last_response.body, symbolize_names: true)
       response.fetch(:acl).should eq client_acl_final

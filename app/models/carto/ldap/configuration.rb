@@ -62,14 +62,19 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
   # @param String username. No full CN, just the username, e.g. 'administrator1'
   # @param String password
   def authenticate(username, password)
+    @last_authentication_result = nil
+    
     # To be used for domain bases search
-    username_stringified_filter = "cn=#{username}"
+    username_stringified_filter = "#{self.user_id_field}=#{username}"
     # To be used in real search
-    username_filter =  Net::LDAP::Filter.eq('cn', username)
+    username_filter =  Net::LDAP::Filter.eq(self.user_id_field, username)
 
     domain_base = domain_bases_list.find { |domain|
       # This is just checking if provided auth user can connect, connection is not stored
-      connect("#{username_stringified_filter},#{domain}", password).bind
+      ldap_connection = connect("#{username_stringified_filter},#{domain}", password)
+      result = ldap_connection.bind
+      @last_authentication_result = ldap_connection.get_operation_result
+      result
     }
     return false if domain_base.nil?
 
@@ -106,6 +111,12 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
 
   def groups(objectClass = self.group_object_class)
     search_in_domain_bases(Net::LDAP::Filter.eq('objectClass', objectClass))
+  end
+
+  def last_authentication_result
+    @last_authentication_result.nil? ? nil : Carto::Ldap::OperationResult.new(
+      @last_authentication_result.code, @last_authentication_result.error_message, 
+      @last_authentication_result.matched_dn, @last_authentication_result.message)
   end
 
   def last_operation_result

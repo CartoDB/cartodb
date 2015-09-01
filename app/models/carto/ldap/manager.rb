@@ -6,11 +6,13 @@ module Carto
     class Manager
 
       def authenticate(username, password)
+        @last_authentication_result = nil
         user = nil
         ldap_entry = nil
 
         Carto::Ldap::Configuration.all.each { |ldap|
           ldap_entry ||= ldap.authenticate(username, password)
+          @last_authentication_result = ldap.last_authentication_result
         }
 
         if ldap_entry
@@ -25,6 +27,10 @@ module Carto
 
       def configuration_present?
         Carto::Ldap::Configuration.first != nil
+      end
+
+      def last_authentication_result
+        @last_authentication_result
       end
 
       def self.sanitize_for_cartodb(ldap_value)

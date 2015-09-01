@@ -187,6 +187,8 @@ WORKING_SPECS_carto_db_class = \
 CDB_PATH=lib/assets/javascripts/cdb
 
 prepare-test-db:
+	# Else coverage reports add up and hits/line metric is invalid
+	rm -rf coverage
 ifdef JENKINS_URL
 	cp .rspec_ci .rspec
 endif

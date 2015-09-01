@@ -255,14 +255,15 @@ namespace :cartodb do
     end
 
     def get_visualization_tables(visualization)
-      table_names = visualization.related_tables.map{ |table| table.name }
+      # We are using layers instead of related tables because with related tables we are connecting
+      # to the users databases and we are reaching the connections limit
+      table_names = visualization.layers(:carto_and_torque).map{ |layer| layer.options['table_name'] }
       %Q{{#{table_names.join(",")}}}
     end
 
     def update_mapviews_and_likes_query(visualization)
       v = visualization
-      # Only derived visualizations could add or remove tables (layers)
-      update_tables = %Q{, visualization_table_names = '#{get_visualization_tables(v)}'} if v.type == CartoDB::Visualization::Member::TYPE_DERIVED
+      update_tables = %Q{, visualization_table_names = '#{get_visualization_tables(v)}'}
       # Synchronization method from Visualization::Relator uses empty Hash when there is no sync
       %Q{ UPDATE #{VISUALIZATIONS_TABLE} set
             visualization_mapviews = #{v.mapviews},

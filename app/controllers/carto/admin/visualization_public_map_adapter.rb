@@ -22,9 +22,10 @@ module Carto
 
       attr_reader :visualization
 
-      def initialize(visualization, current_viewer)
+      def initialize(visualization, current_viewer, context)
         @visualization = visualization
         @current_viewer = current_viewer
+        @context = context
       end
 
       def to_vizjson(options = {})
@@ -37,7 +38,7 @@ module Carto
 
       def to_hash(options={})
         # TODO: using an Api presenter here smells, refactor
-        presenter = Carto::Api::VisualizationPresenter.new(@visualization, @current_viewer, options.merge(show_stats: false))
+        presenter = Carto::Api::VisualizationPresenter.new(@visualization, @current_viewer, @context, options.merge(show_stats: false))
         options.delete(:public_fields_only) === true ? presenter.to_public_poro : presenter.to_poro
       end
 
@@ -76,7 +77,7 @@ module Carto
 
       def related_visualizations
         @visualization.related_visualizations.map { |rv|
-          Carto::Admin::VisualizationPublicMapAdapter.new(rv, @current_viewer) if rv.is_public?
+          Carto::Admin::VisualizationPublicMapAdapter.new(rv, @current_viewer, @context) if rv.is_public?
         }.compact
       end
 

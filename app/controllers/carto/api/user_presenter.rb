@@ -1,3 +1,5 @@
+require_relative 'group_presenter'
+
 module Carto
   module Api
     class UserPresenter
@@ -17,7 +19,8 @@ module Carto
           quota_in_bytes:   @user.quota_in_bytes,
           db_size_in_bytes: @user.db_size_in_bytes,
           table_count:      @user.table_count,
-          maps_count:       @user.maps_count
+          maps_count:       @user.maps_count,
+          groups:           @user.groups ? @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : []
         }
       end
 
@@ -99,6 +102,10 @@ module Carto
 
         if @user.organization.present?
           data[:organization] = Carto::Api::OrganizationPresenter.new(@user.organization).to_poro
+        end
+
+        if !@user.groups.nil?
+          data[:groups] = @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro }
         end
 
         if options[:extended]

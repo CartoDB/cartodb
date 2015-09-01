@@ -1370,7 +1370,7 @@ describe Carto::Api::VisualizationsController do
         visualization = JSON.parse(last_response.body)
 
         # Update the privacy of the visualization so that the viz_json generates a named_map
-        Carto::Visualization.find(visualization["id"]).update_attribute(:privacy, Carto::Visualization::PRIVACY_PROTECTED)
+        Carto::Api::VisualizationVizJSONAdapter.any_instance.stubs('retrieve_named_map?' => true)
 
         get api_v2_visualizations_vizjson_url(id: visualization.fetch('id'), api_key: @api_key),{}, @headers
 

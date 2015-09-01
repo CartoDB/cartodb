@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+require_relative '../../controllers/carto/api/group_presenter'
 
 module CartoDB
   class PermissionUserPresenter
@@ -14,7 +15,8 @@ module CartoDB
         id:         user.id,
         username:   user.username,
         avatar_url: user.avatar_url,
-        base_url: user.public_url
+        base_url: user.public_url,
+        groups:     user.groups ? user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : []
       }
     end
 

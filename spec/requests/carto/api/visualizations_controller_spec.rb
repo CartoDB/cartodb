@@ -233,7 +233,10 @@ describe Carto::Api::VisualizationsController do
       ).to_json)
       expected_visualization = normalize_hash(expected_visualization)
 
-      response_body(type: CartoDB::Visualization::Member::TYPE_CANONICAL).should == {
+      response = response_body(type: CartoDB::Visualization::Member::TYPE_CANONICAL)
+      # INFO: old API won't support server side generated urls for visualizations. See #5250 and #5279
+      response['visualizations'][0].delete('url')
+      response.should == {
         'visualizations' => [expected_visualization],
         'total_entries' => 1,
         'total_user_entries' => 1,
@@ -1205,7 +1208,7 @@ describe Carto::Api::VisualizationsController do
       it 'returns a visualization' do
         payload = factory($user_1)
         post api_v1_visualizations_create_url(api_key: @api_key),
-          payload.to_json, @headers
+        payload.to_json, @headers
         id = JSON.parse(last_response.body).fetch('id')
 
         get api_v1_visualizations_show_url(id: id, api_key: @api_key), {}, @headers
@@ -1452,6 +1455,53 @@ describe Carto::Api::VisualizationsController do
 
   end
 
+  describe 'visualization url generation' do
+    include_context 'visualization creation helpers'
+    include_context 'users helper'
+    include_context 'organization with users helper'
+
+    it 'generates a user table visualization url' do
+      table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: "table_#{rand(9999)}_1_1", user_id: $user_1.id)
+      vis_id = table.table_visualization.id
+
+      get_json api_v1_visualizations_show_url(user_domain: $user_1.username, id: vis_id, api_key: $user_1.api_key), {}, http_json_headers do |response|
+        response.status.should == 200
+
+        response.body[:url].should == "http://#{$user_1.username}#{Cartodb.config[:session_domain]}:#{Cartodb.config[:http_port]}/tables/#{table.name}"
+      end
+    end
+
+    it 'generates a user map url' do
+      visualization = api_visualization_creation($user_1, http_json_headers, { privacy: Visualization::Member::PRIVACY_PUBLIC, type: Visualization::Member::TYPE_DERIVED })
+      get_json api_v1_visualizations_show_url(user_domain: $user_1.username, id: visualization.id, api_key: $user_1.api_key), {}, http_json_headers do |response|
+        response.status.should == 200
+
+        response.body[:url].should == "http://#{$user_1.username}#{Cartodb.config[:session_domain]}:#{Cartodb.config[:http_port]}/viz/#{visualization.id}/map"
+      end
+    end
+
+    it 'generates a org user table visualization url' do
+      table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: "table_#{rand(9999)}_1_1", user_id: @org_user_1.id)
+      vis_id = table.table_visualization.id
+
+      get_json api_v1_visualizations_show_url(user_domain: @org_user_1.username, id: vis_id, api_key: @org_user_1.api_key), {}, http_json_headers do |response|
+        response.status.should == 200
+
+        response.body[:url].should == "http://#{@org_user_1.organization.name}#{Cartodb.config[:session_domain]}:#{Cartodb.config[:http_port]}/u/#{@org_user_1.username}/tables/#{table.name}"
+      end
+    end
+
+    it 'generates a organization user map url' do
+      visualization = api_visualization_creation(@org_user_1, http_json_headers, { privacy: Visualization::Member::PRIVACY_PUBLIC, type: Visualization::Member::TYPE_DERIVED })
+      get_json api_v1_visualizations_show_url(user_domain: @org_user_1.username, id: visualization.id, api_key: @org_user_1.api_key), {}, http_json_headers do |response|
+        response.status.should == 200
+
+        response.body[:url].should == "http://#{@org_user_1.organization.name}#{Cartodb.config[:session_domain]}:#{Cartodb.config[:http_port]}/u/#{@org_user_1.username}/viz/#{visualization.id}/map"
+      end
+    end
+
+  end
+
   describe 'filter canonical viz by bounding box' do
     include_context 'visualization creation helpers'
 
@@ -1558,6 +1608,7 @@ describe Carto::Api::VisualizationsController do
   def api_visualization_creation(user, headers, additional_fields = {})
     post api_v1_visualizations_create_url(user_domain: user.username, api_key: user.api_key), factory(user).merge(additional_fields).to_json, headers
     id = JSON.parse(last_response.body).fetch('id')
+    id.should_not be_nil
     CartoDB::Visualization::Member.new(id: id).fetch
   end
 

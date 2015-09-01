@@ -15,6 +15,10 @@
   background: transparent;
   z-index: 10;
 }
+// Positionate relative to the content
+.Filters.is-relative {
+  position: relative;
+}
 // Moved with scroll behaviour
 .Filters.is-fixed {
   position: fixed;
@@ -33,12 +37,12 @@
   }
   .Filters-separator { display: none }
 }
-// Positionate relative to the content
-.Filters.is-relative { position: relative }
+.Filters.above-form { position: relative; margin-bottom: 25px; }
+.Filters.above-form .Filters-separator { background-color: $cStructure-darkGrey; }
 .Filters > .u-inner {
   position:relative;
   display:block;
-  height:81px;
+  height: 81px;
   padding: 0;
   overflow:hidden;
 }
@@ -56,6 +60,7 @@
   background-color: $cStructure-softLine;
   z-index:0;
 }
+
 .Filters.is--fixed .Filters-separator { display: none }
 .Filters-row {
   @include display-flex();
@@ -169,6 +174,7 @@ a.Filters-cleanSearch { line-height:32px }
   font-style:italic;
   color:#DDD;
 }
+
 .Filters-typeLink {
   display: inline-block;
   line-height: 80px;
@@ -196,6 +202,7 @@ a.Filters-cleanSearch { line-height:32px }
     height:1px;
     background:$cTypography-linkSelected;
   }
+
   &:hover {
     cursor:default;
     text-decoration: none;
@@ -274,7 +281,8 @@ a.Filters-cleanSearch { line-height:32px }
 }
 .Filters-inner.search--enabled {
 
-  .Filters-typeItem,
+  .Filters-typeItem:not(&.Filters-searchEnabler--underFilter),
+  .Filters-typeItem:not(&.Filters-searchInput--underFilter),
   .Filters-orderItem,
   .Button--positive { display:none }
 
@@ -282,20 +290,8 @@ a.Filters-cleanSearch { line-height:32px }
     display:inline;
     min-width: 65px;
   }
+
   .Filters-searchItem { display:inherit }
-}
-.Filters-progress {
-  @include display-flex();
-  @include align-items(center, center);
-}
-.Filters-progressSize {
-  margin-right: 12px;
-  color: $cTypography-secondary;
-  font-size: $sFontSize-smallUpperCase;
-}
-.Filters-progressBar {
-  @include progress-bar(6px, 9px, true, false);
-  width: 178px;
 }
 .Filters-link:hover {
   text-decoration: none;

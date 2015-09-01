@@ -2,18 +2,30 @@
 @import "../variables/colors";
 @import "../variables/sizes";
 
-// Styles for the new default forms
+// Styles for the new account forms
 // --------------------------------------------------
 
 $sLabel-width: 140px;
 
-.Form--minHeight { min-height: 400px }
-.Form-title {
+.FormAccount-Section {
+  overflow: hidden;
+  @include display-flex();
+  @include flex-direction(row);
+  @include justify-content(space-between);
+}
+
+.FormAccount-Content {
+  width: 65%;
+  position: relative;
   display: block;
-  margin: $sMargin-section 0;
+}
+
+.FormAccount-title {
+  display: inline-block;
+  margin: 30px 0;
   width: 100%;
 }
-.Form-titleHeader {
+.FormAccount-titleHeader {
   display: block;
   padding-bottom: 12px;
   margin-bottom: $sMargin-section;
@@ -22,37 +34,43 @@ $sLabel-width: 140px;
   color: $cTypography-headers;
   font-weight: $sFontWeight-bold;
 }
-.Form-titleText {
-  width: 460px;
+.FormAccount-titleText {
   font-size: $sFontSize-large;
   font-weight: $sFontWeight-lighter;
   color: $cTypography-paragraphs;
-  line-height: $sLineHeight-large;
   font-style: normal;
 }
-.Form-titleText--negative { color: $cHighlight-negative }
-.Form-list {
+.FormAccount-titleText--negative { color: $cHighlight-negative }
+.FormAccount-list {
   padding: 0 0 20px 160px;
   color: $cTypography-paragraphs;
   list-style-type: disc;
 }
-.Form-listItem {
+.FormAccount-listItem {
   font-size: 14px;
   font-weight: $sFontWeight-lighter;
   color: $cTypography-paragraphs;
 }
-.Form-row {
+
+.VerticalAligned--FormRow {
   @include display-flex();
-  @include justify-content(flex-start, start);
-  padding: 10px 0;
+  @include flex-direction(row);
+  @include justify-content(space-between);
 }
-.Form-title + .Form-row {
+
+.FormAccount-row {
+  @include display-flex();
+  @include flex-direction(column);
+  @include justify-content(flex-start, start);
+  margin: 0 0 20px 0;
+}
+.FormAccount-title + .FormAccount-row {
   padding-top: 0;
 }
-.Form-row.Form-row--centered {
+.FormAccount-row.FormAccount-row--centered {
   @include justify-content(center);
 }
-.Form-row.Form-row--step {
+.FormAccount-row.FormAccount-row--step {
   position: relative;
   @include justify-content(space-between, justify);
   @include align-items(center);
@@ -75,62 +93,60 @@ $sLabel-width: 140px;
   &:nth-child(4):before { content: '4' }
   &:nth-child(5):before { content: '5' }
 }
-.Form-row.Form-row--step:first-child { padding-top: 0 }
-.Form-row.Form-row--step.is-done {
+.FormAccount-row.FormAccount-row--step:first-child { padding-top: 0 }
+.FormAccount-row.FormAccount-row--step.is-done {
   &:before {
     color: $cHighlight-stepDone;
     border-color: $cHighlight-stepDone;
   }
 }
-.Form-row.has-label {
+.FormAccount-row.has-label {
   // compensate for label width, to make the rowData appear as centered
+  margin: 0;
   margin-left: -$sLabel-width;
+  @include flex-direction(row);
+  padding: 10px 0;
+
+  .FormAccount-rowLabel {
+    margin-right: 20px;
+    line-height: 40px;
+    width: 140px;
+    text-align: right;
+  }
 }
-.Form-row.Form-row--spaced { padding: $sMargin-element 0 }
-.Form-rowLabel {
-  width: 140px;
-  margin-right: $sMargin-element;
-  text-align: right;
+.FormAccount-row.FormAccount-row--spaced { padding: $sMargin-element 0 }
+.FormAccount-rowLabel {
+  text-align: left;
 }
-.Form-rowLabel.Form-rowLabel--leftAligned {
+.FormAccount-rowLabel.FormAccount-rowLabel--leftAligned {
   width: $sLabel-width;
   margin-right: $sMargin-element;
   text-align: left;
 }
-.Form-label {
-  line-height: 40px;
+.FormAccount-label {
+  line-height: 30px;
   font-size: $sFontSize-normal;
   font-weight: $sFontWeight-normal;
-  color: $cTypography-paragraphs;
+  color: $cTypography-labels;
   text-transform: capitalize;
 }
-.Form-label.Form-label--verticalAlignTop {
+.FormAccount-label.FormAccount-label--verticalAlignTop {
   line-height: inherit;
 }
-.Form-label--multipleLines { line-height: 20px }
-.Form-label.Form-label--large { font-size: $sFontSize-large }
-.Form-label.Form-label--step { @include flex-grow(1) }
-.Form-rowPreview { width: 735px }
-.Form-separator {
+.FormAccount-label--multipleLines { line-height: 20px }
+.FormAccount-label.FormAccount-label--large { font-size: $sFontSize-large }
+.FormAccount-label.FormAccount-label--step { @include flex-grow(1) }
+.FormAccount-rowPreview { width: 735px }
+.FormAccount-separator {
   position: relative;
   display: block;
-  height: 1px;
-  width: 100%;
-  padding: $sMargin-element 0;
-  z-index: 0;
-  background: transparent;
-  &:before {
-    content: '';
-    position: absolute;
-    top: $sMargin-element;
-    left: 0;
-    right: 0;
-    width: 100%;
-    height: 1px;
-    background: $cStructure-mainLine;
-  }
+  width:100%;
+  height:1px;
+  background-color: $cStructure-darkGrey;
+  z-index:0;
+  margin-bottom: 25px;
 }
-.Form-separator.Form-separator--or {
+.FormAccount-separator.FormAccount-separator--or {
   position: relative;
   display: block;
   height: auto;
@@ -152,38 +168,44 @@ $sLabel-width: 140px;
   &:before { left: 0 }
   &:after { right: 0 }
 }
-.Form-rowData {
+.FormAccount-rowData {
   position: relative;
   @include display-flex();
-  @include justify-content(space-between, justify);
   @include align-items(center);
-  width: 380px;
   min-height: 40px; // if there's no input on row (e.g. only radio buttons), to avoid "jumpy" behaviour on re-renders
-  margin-right: $sMargin-element;
 }
 
-.Form-rowData.Form-rowData--alignLeft { @include justify-content(flex-start, start) }
-.Form-rowData--withLabel { margin-bottom: 30px }
-.Form-rowData--noMargin { margin: 0 }
+.FormAccount-planTag {
+  background-color: #00CC32;
+  color: #FFFFFF;
+  font-size: 13px;
+  font-weight: normal;
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+
+.FormAccount-rowData.FormAccount-rowData--alignLeft { @include justify-content(flex-start, start) }
+.FormAccount-rowData--withLabel { margin-bottom: 30px }
+.FormAccount-rowData--noMargin { margin: 0 }
 
 // RowData sizes
-.Form-rowData--full { width: 100% }
-.Form-rowData--longer { width: 460px }
-.Form-rowData--long { width: 380px }
-.Form-rowData--med { width: 300px }
-.Form-rowData--short { width: 170px }
-.Form-rowData--step {
+.FormAccount-rowData--full { width: 100% }
+.FormAccount-rowData--longer { width: 460px }
+.FormAccount-rowData--long { width: 380px }
+.FormAccount-rowData--med { width: 300px }
+.FormAccount-rowData--short { width: 170px }
+.FormAccount-rowData--step {
   width: 260px;
   margin-right: 0;
 }
-.Form-rowDataExtra {
+.FormAccount-rowDataExtra {
   position: absolute;
   right: -52px;
 }
-.Form-rowData ~ .Form-rowDataExtra { top: 10px } // to compensate for its top-padding
-.Form-rowData--step ~ .Form-rowDataExtra { top: 0 }
+.FormAccount-rowData ~ .FormAccount-rowDataExtra { top: 10px } // to compensate for its top-padding
+.FormAccount-rowData--step ~ .FormAccount-rowDataExtra { top: 0 }
 
-.Form-input {
+.FormAccount-input {
   position: relative;
   height: 38px;
   padding: 0 12px;
@@ -192,45 +214,47 @@ $sLabel-width: 140px;
   border-radius: 4px;
   color: #666;
   z-index: 2;
+  font-weight: $sFontWeight-lighter;
 
   &:focus { border-color: #999 }
 }
-.Form-input.Form-input--error { border-color: rgba(#DD3B37,0.6) }
-.Form-input.Form-input--error:focus,
-.Form-input.Form-input--error:hover { border-color: rgba(#DD3B37,1) }
+.FormAccount-input.FormAccount-input--error { border-color: rgba(#DD3B37,0.6) }
+.FormAccount-input.FormAccount-input--error:focus,
+.FormAccount-input.FormAccount-input--error:hover { border-color: rgba(#DD3B37,1) }
 
-.Form-input::-webkit-input-placeholder { font-style: italic; color: #AAA }
-.Form-input:-moz-placeholder           { font-style: italic; color: #AAA }
-.Form-input::-moz-placeholder          { font-style: italic; color: #AAA }
-.Form-input:-ms-input-placeholder      { font-style: italic; color: #AAA }
+.FormAccount-input::-webkit-input-placeholder { font-style: italic; color: #AAA }
+.FormAccount-input:-moz-placeholder           { font-style: italic; color: #AAA }
+.FormAccount-input::-moz-placeholder          { font-style: italic; color: #AAA }
+.FormAccount-input:-ms-input-placeholder      { font-style: italic; color: #AAA }
 // Sizes
-.Form-input--longer { width: 434px }
-.Form-input--long { width: 354px }
-.Form-input--med { width: 274px }
-.Form-input--short { width: 114px }
+.FormAccount-input--totalwidth { width: 100%; }
+.FormAccount-input--longer { width: 434px }
+.FormAccount-input--long { width: 354px }
+.FormAccount-input--med { width: 274px }
+.FormAccount-input--short { width: 114px }
 // Types
-.Form-input.has-icon {
+.FormAccount-input.has-icon {
   padding: 0 42px 0 12px;
 
-  &.Form-input--longer { width: 414px }
-  &.Form-input--long { width: 324px }
-  &.Form-input--med {}
-  &.Form-input--short { width: 92px }
+  &.FormAccount-input--longer { width: 414px }
+  &.FormAccount-input--long { width: 324px }
+  &.FormAccount-input--med {}
+  &.FormAccount-input--short { width: 92px }
 
-  &.Form-input--longerMorePadding {
+  &.FormAccount-input--longerMorePadding {
     width: 356px;
     padding-right: 100px;
   }
 }
-.Form-input.has-submit {
+.FormAccount-input.has-submit {
   padding: 0 95px 0 12px;
 
-  &.Form-input--longer { width: 351px }
-  &.Form-input--long { width: 297px }
-  &.Form-input--med {}
-  &.Form-input--short {}
+  &.FormAccount-input--longer { width: 351px }
+  &.FormAccount-input--long { width: 297px }
+  &.FormAccount-input--med {}
+  &.FormAccount-input--short {}
 }
-.Form-inputSubmit {
+.FormAccount-inputSubmit {
   position: absolute;
   top: 6px;
   right: 5px;
@@ -239,7 +263,7 @@ $sLabel-width: 140px;
   background: none;
   z-index: 2;
 }
-.Form-inputIcon {
+.FormAccount-inputIcon {
   position: absolute;
   right: 14px;
   top: 12px;
@@ -247,8 +271,8 @@ $sLabel-width: 140px;
   font-size: $sFontSize-larger;
   color: $cTypography-help;
 }
-.Form-inputIcon--clock { top: 11px }
-.Form-inputError {
+.FormAccount-inputIcon--clock { top: 11px }
+.FormAccount-inputError {
   position: absolute;
   top: 0;
   left: 0;
@@ -264,35 +288,36 @@ $sLabel-width: 140px;
   border-radius: 4px;
   @include transition(top, 200ms, ease-in-out);
 }
-.Form-inputError.is-visible { top: 36px }
-.Form-input.is-disabled { background: $cStructure-grayBkg }
-.Form-input.is-invalid { border-color: $cHighlight-negative }
+.FormAccount-inputError.is-visible { top: 36px }
+.FormAccount-input.is-disabled { background: $cStructure-grayBkg }
+.FormAccount-input.is-invalid { border-color: $cHighlight-negative }
 // Modifiers
-.Form-input--noBorder { border: none }
-.Form-input--noBkg,
-.Form-input--noBkg.is-disabled { background: transparent }
+.FormAccount-input--noBorder { border: none }
+.FormAccount-input--noBkg,
+.FormAccount-input--noBkg.is-disabled { background: transparent }
 
-.Form-textarea {
+.FormAccount-textarea {
   padding: 9px 12px;
-  min-height: 110px;
+  min-height: 60px;
   max-height: 110px;
 }
-.Form-textarea.is-disabled { color: $cTypography-help }
-.Form-copyIcon {
-  top: 10px;
-  right: 12px;
+.FormAccount-textarea.is-disabled { color: $cTypography-help }
+.FormAccount-copyIcon {
+  top: 0;
+  right: 30px;
+  position: relative;
   font-size: $sFontSize-largest;
 }
-.Form-copyIcon.hover { color: $cTypography-paragraphs }
-.Form-text--preview {
+.FormAccount-copyIcon.hover { color: $cTypography-paragraphs }
+.FormAccount-text--preview {
   font-size: $sFontSize-normal;
   color: $cTypography-secondary;
   line-height: $sLineHeight-large;
 }
-.Form-avatar {
+.FormAccount-avatar {
 
 }
-.Form-avatarPreview {
+.FormAccount-avatarPreview {
   position: relative;
   width: 100px;
   height: 100px;
@@ -301,13 +326,13 @@ $sLabel-width: 140px;
   border-radius: 4px;
   overflow: hidden;
 }
-.Form-avatarPreviewImage {
+.FormAccount-avatarPreviewImage {
   position: relative;
   max-width: 100px;
   border-radius: 4px;
   background: $cStructure-grayBkg;
 }
-.Form-avatarPreviewLoader {
+.FormAccount-avatarPreviewLoader {
   position: absolute;
   top: 0;
   left: 0;
@@ -317,19 +342,19 @@ $sLabel-width: 140px;
   border-radius: 4px;
   z-index: 2;
 }
-.Spinner.Form-avatarPreviewSpinner {
+.Spinner.FormAccount-avatarPreviewSpinner {
   position: absolute;
   top: 50%;
   left: 50%;
   margin: -20px 0 0 -20px;
   z-index: 1;
 }
-.Form-avatar .input-group {
+.FormAccount-avatar .input-group {
   position: absolute;
   top: 10px;
   left: 120px;
 }
-.Form-avatar .form-control {
+.FormAccount-avatar .form-control {
   position: absolute;
   top: 0;
   left: 0;
@@ -338,7 +363,7 @@ $sLabel-width: 140px;
   color: $cTypography-secondary;
   display: none;
 }
-.Form-avatar .btn {
+.FormAccount-avatar .btn {
   position: absolute;
   top: 0;
   left: 0;
@@ -350,7 +375,7 @@ $sLabel-width: 140px;
     color: $cTypography-linkHover;
   }
 }
-.Form-avatar .btn[disabled] {
+.FormAccount-avatar .btn[disabled] {
   color: $cTypography-help;
   &:hover {
     cursor: default;
@@ -358,7 +383,7 @@ $sLabel-width: 140px;
     color: $cTypography-help;
   }
 }
-.Form-link {
+.FormAccount-link {
   color: $cTypography-link;
   text-decoration: underline;
   &:hover {
@@ -366,7 +391,7 @@ $sLabel-width: 140px;
     cursor: pointer;
   }
 }
-.Form-link.is-disabled {
+.FormAccount-link.is-disabled {
   color: $cTypography-help;
   text-decoration: none;
   &:hover {
@@ -374,11 +399,11 @@ $sLabel-width: 140px;
     cursor: default;
   }
 }
-.Form-file {
+.FormAccount-file {
   &:hover .Button--main { background: #007fbd }
   &:hover .Button--negative { background-color: rgba(#B93F37, 1) }
 }
-.Form-file input[type="file"] {
+.FormAccount-file input[type="file"] {
   position: absolute;
   top: 0;
   left: -118px;
@@ -391,18 +416,18 @@ $sLabel-width: 140px;
   direction: ltr;
   cursor: pointer;
 }
-.Form-fileLabel {
+.FormAccount-fileLabel {
   width: 300px;
   color: $cTypography-secondary;
   font-size: $sFontSize-normal;
 }
 
-.Form-fileLabel--error {
+.FormAccount-fileLabel--error {
   display: none;
   color: $cHighlight-negative;
 }
-.Form .dz-preview { display: none }
-.Form-fileDropzone {
+.FormAccount .dz-preview { display: none }
+.FormAccount-fileDropzone {
   position: absolute;
   display: none;
   top: 0;
@@ -418,40 +443,45 @@ $sLabel-width: 140px;
   font-size: $sFontSize-large;
   z-index: 1;
 }
-.Form-rowInfo {
+.FormAccount-rowInfo {
   @include display-flex();
-  line-height: 40px;
-  max-width: 380px;
+
+  &.FormAccount-rowInfo--marginLeft { margin-left: 18px; }
 }
-.Form-rowInfoText {
+.FormAccount-rowInfoText {
   font-size: $sFontSize-normal;
-  color: $cTypography-help;
+  color: $cTypography-secondary;
+  font-weight: $sFontWeight-lighter;
+
+  &.warning { color: #FFB713; }
 }
-.Form-rowInfoText--centered { text-align: center }
-.Form-rowInfoText--smaller { font-size: $sFontSize-smallUpperCase }
-.Form-rowInfoText--block { width: 100% }
-.Form-rowInfoText--multipleLines {
-  line-height: 20px;
+.FormAccount-rowInfoText--centered { text-align: center }
+.FormAccount-rowInfoText--smaller { font-size: $sFontSize-smallUpperCase }
+.FormAccount-rowInfoText--block { width: 100% }
+.FormAccount-rowInfoText--maxWidth {
+  max-width: 480px;
 }
-.Form-rowInfoText--error { color: #DD3B37 }
-.Form-rowInfoText--error .Form-link {
+.FormAccount-rowInfoText--error { color: #DD3B37 }
+.FormAccount-rowInfoText--error .FormAccount-link {
   color: #DD3B37;
   text-decoration: underline;
 }
-.Form-footer {
+.FormAccount-footer {
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
   margin: $sMargin-section 0;
   padding: $sMargin-formRow 0;
   border-top: 1px solid $cStructure-mainLine;
+
+  &.FormAccount-footer--withoutMarginBottom { margin-bottom: 0; }
 }
-.Form-footerText {
+.FormAccount-footerText {
   font-size: $sFontSize-large;
   font-weight: $sFontWeight-lighter;
   color: $cTypography-secondary;
 }
-.Form-footerIcon {
+.FormAccount-footerIcon {
   width: 20px;
   height: 20px;
   margin-right: 8px;
@@ -463,9 +493,9 @@ $sLabel-width: 140px;
   color: white;
   text-align: center;
 }
-.Form-tags {
+.FormAccount-tags {
   position: relative;
-  width: 100%;
+  width: 308px;
   min-height: 38px;
   padding: 0;
   outline: none;
@@ -474,8 +504,8 @@ $sLabel-width: 140px;
   background: white;
   z-index: 2;
 }
-.Form-tagsList.tagit { padding: 0 5px 5px 5px }
-.Form-tagsList.tagit .tagit-choice {
+.FormAccount-tagsList.tagit { padding: 0 5px 5px 5px }
+.FormAccount-tagsList.tagit .tagit-choice {
   padding: 0 30px 0 11px;
   margin: 5px 5px 0 0;
   line-height: 28px;
@@ -483,35 +513,52 @@ $sLabel-width: 140px;
   color: #746E76;
   border-radius: 2px;
 }
-.Form-tagsList.tagit .tagit-choice .tagit-close {
+.FormAccount-tagsList.tagit .tagit-choice .tagit-close {
   line-height: normal;
   right: 10px;
 }
-.Form-tagsList.tagit .tagit-choice .tagit-close .text-icon {
+.FormAccount-tagsList.tagit .tagit-choice .tagit-close .text-icon {
   display: inline-block;
   color: #C5CCD1;
   &:hover { color: #AAA }
 }
-.Form-tagsList.tagit li.tagit-new { padding: 7px 4px 2px 7px }
-.Form-tagsList.tagit .ui-autocomplete-input::-webkit-input-placeholder {
+.FormAccount-tagsList.tagit li.tagit-new { padding: 7px 4px 2px 7px }
+.FormAccount-tagsList.tagit .ui-autocomplete-input::-webkit-input-placeholder {
   font-weight: $sFontWeight-normal;
   font-style: italic;
   color: #AAA
 }
-.Form-tagsList.tagit .ui-autocomplete-input::-moz-placeholder {
+.FormAccount-tagsList.tagit .ui-autocomplete-input::-moz-placeholder {
   font-weight: $sFontWeight-normal;
   font-style: italic;
   color: #AAA
 }
-.Form-tagsList.tagit .ui-autocomplete-input:-ms-placeholder {
+.FormAccount-tagsList.tagit .ui-autocomplete-input:-ms-placeholder {
   font-weight: $sFontWeight-normal;
   font-style: italic;
   color: #AAA
 }
-.Form-tags.is-focus { border-color: #999 }
-.Form-tags.is-disabled {
+.FormAccount-tags.is-focus { border-color: #999 }
+.FormAccount-tags.is-disabled {
   background: $cStructure-grayBkg;
 
   .tagit-choice { padding: 0 11px }
   .tagit-choice .tagit-close { display: none }
+}
+
+.FormAccount-tagsList--placeholder {
+  left: 0;
+  position: absolute;
+  line-height: 38px;
+  padding: 0 0 0 12px;
+  font-style: italic;
+  color: #aaa;
+  font-weight: 300;
+}
+
+.FormAccount-button--deleteAccount {
+  color: rgba(247,24,0,1);
+  cursor: pointer;
+
+  &:hover { text-decoration: underline; }
 }

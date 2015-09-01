@@ -14,6 +14,8 @@ class Admin::UsersController < ApplicationController
 
   layout 'application'
 
+  PASSWORD_DOES_NOT_MATCH_MESSAGE = 'Password does not match'
+
   def profile
     respond_to do |format|
       format.html { render 'profile' }
@@ -93,7 +95,7 @@ class Admin::UsersController < ApplicationController
   def delete
     deletion_password_confirmation = params[:deletion_password_confirmation]
     if !@user.validate_old_password(deletion_password_confirmation)
-      raise 'Password does not match'
+      raise PASSWORD_DOES_NOT_MATCH_MESSAGE
     end
 
     @user.delete_in_central
@@ -110,7 +112,7 @@ class Admin::UsersController < ApplicationController
     flash.now[:error] = "Error deleting user: #{e.user_message}"
     render 'account'
   rescue => e
-    Rollbar.report_message('Error deleting user at CartoDB', 'error', { user: @user.inspect, error: e.inspect })
+    CartoDB.notify_exception(e, { user: @user.inspect }) unless e.message == PASSWORD_DOES_NOT_MATCH_MESSAGE
     flash.now[:error] = "Error deleting user: #{e.message}"
     render 'account'
   end

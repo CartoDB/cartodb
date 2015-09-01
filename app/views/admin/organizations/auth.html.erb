@@ -1,0 +1,56 @@
+<% content_for(:page_title) do %>
+  <%= current_user.organization.name %> auth settings |
+<% end %>
+<%= content_for(:js) do %>
+  <script type="text/javascript">
+    var username = "<%= current_user.username %>";
+    var config = <%= safe_js_object frontend_config %>;
+    var user_data = <%= safe_js_object current_user.data.to_json.html_safe %>;
+  </script>
+  <%= javascript_include_tag 'cdb.js', 'models.js', 'organization_templates.js', 'organization_deps.js', 'organization.js' -%>
+<% end %>
+<%= content_for(:css) do %>
+  <%= stylesheet_link_tag 'organization.css', :media => 'all' %>
+<% end %>
+
+<%= render :partial => 'shared/flash_message' %>
+
+<div class="FormAccount-Section u-inner">
+  <%= render :partial => 'admin/shared/pages_subheader' %>
+
+  <div class="FormAccount-Content">
+    <%= render :partial => 'admin/shared/org_subheader' %>
+
+    <%= form_for @organization, url: CartoDB.url(self, 'organization_auth_update', {}, current_user), multipart: true do |f| %>
+      <%= csrf_meta_tags %>
+
+      <div class="FormAccount-row">
+        <div class="FormAccount-rowLabel">
+          <label class="FormAccount-label FormAccount-label--multipleLines">Whitelisted email domains</label>
+        </div>
+        <div class="FormAccount-rowData">
+          <div class="FormAccount-tags js-domains">
+            <ul class="FormAccount-tagsList js-domainsList">
+              <span class= "FormAccount-tagsList--placeholder js-placeholder">Only valid domains will be added (ex. cartodb.com)</span>
+            </ul>
+          </div>
+          <%= f.hidden_field :whitelisted_email_domains, :value => "#{ @organization[:whitelisted_email_domains].join(',') if !@organization[:whitelisted_email_domains].blank? }", :class => "js-whitelist", :placeholder => "Only valid domains will be added (ex. cartodb.com)" %>
+          <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+            <p class="FormAccount-rowInfoText warning">If empty, login and signup pages will be disabled</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="FormAccount-footer">
+        <p class="FormAccount-footerText"></p>
+        <%= button_tag(type: 'submit', class: 'Button Button--main') do %>
+          <% content_tag(:span, 'Save changes') %>
+        <% end %>
+      </div>
+    <% end %>
+
+  </div>
+
+</div>
+
+<%= render 'admin/shared/footer' %>

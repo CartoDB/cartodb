@@ -58,6 +58,14 @@ defaults: &defaults
     app_keys:
       editor: ''
       embeds: ''
+  common_data:
+    protocol: 'http'
+    username: 'common-data'
+    # base_url: 'https://common-data.cartodb.com'
+    format: 'shp'
+    generate_every: 86400
+  explore_api:
+    username: 'common-data'
   varnish_management:
     critical: false
     host: '127.0.0.1'

@@ -115,7 +115,7 @@ module CartoDB
       end
 
       def synchronization
-        CartoDB::Synchronization::Member.new(id: @id).fetch
+        CartoDB::Synchronization::Member.new(visualization_id: @id).fetch_by_visualization_id
       rescue KeyError
         {}
       end

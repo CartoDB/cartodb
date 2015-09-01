@@ -66,8 +66,7 @@ namespace :cartodb do
       raise "Missing USERNAME_FIELD" if ENV['USERNAME_FIELD'].blank?
       username_field = ENV['USERNAME_FIELD']
 
-      raise "Missing EMAIL_FIELD" if ENV['EMAIL_FIELD'].blank?
-      email_field = ENV['EMAIL_FIELD']
+      email_field = ENV['EMAIL_FIELD'].blank? ? nil : ENV['EMAIL_FIELD']
 
       raise "Missing DOMAIN_BASES" if ENV['DOMAIN_BASES'].blank?
       domain_bases = ENV['DOMAIN_BASES'].split(',')

@@ -44,7 +44,8 @@ describe Carto::Ldap::Configuration do
         email_field: '.',
         user_object_class: '.',
         group_object_class: '.',
-        user_id_field: @user_id_field
+        user_id_field: @user_id_field,
+        username_field: @user_id_field
       })
 
     # This uses ldap_admin credentials
@@ -102,7 +103,8 @@ describe Carto::Ldap::Configuration do
         email_field: '.',
         user_object_class: 'organizationalRole',
         group_object_class: '.',
-        user_id_field: @user_id_field
+        user_id_field: @user_id_field,
+        username_field: @user_id_field
       })
 
     register_ldap_user(user_a_cn, user_a_username, user_a_password)
@@ -137,7 +139,8 @@ describe Carto::Ldap::Configuration do
         email_field: '.',
         user_object_class: 'organizationalRole',
         group_object_class: '.',
-        user_id_field: @user_id_field
+        user_id_field: @user_id_field,
+        username_field: @user_id_field
       })
 
     ldap_configuration.user_id_field = "modified"

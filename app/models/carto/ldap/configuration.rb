@@ -24,13 +24,15 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
   # @param String host LDAP host or ip address
   # @param Int port LDAP port e.g. 389, 636 (LDAPS)
   # @param String encryption (Optional) Encryption type to use. Empty means standard/simple Auth
-  # @param String ca_file UNUSED FOR NOW - Certificate file path for start_tls encryption. Example: "/etc/cafile.pem"
+  # @param String ca_file UNUSED FOR NOW -  (Optional) Certificate file path for start_tls encryption. 
+  #                       Example: "/etc/cafile.pem"
   # @param String ssl_version For start_tls_encryption. Example: "TLSv1_1"
   # @param String connection_user Full CN for "search connections" to LDAP: `CN=admin, DC=cartodb, DC=COM`
   # @param String connection_password Password for "search connections" to LDAP
   # @param String user_id_field Which LDAP entry field represents the user id. e.g. `sAMAccountName`, `uid`
-  # @param String username_field Which LDAP entry field represents the username (Optional)
-  # @param String email_field Which LDAP entry field represents the email
+  # @param String username_field Which LDAP entry field represents the username that will be mapped to cartodb. 
+  #                              For now, same as user_id_field
+  # @param String email_field (Optional) Which LDAP entry field represents the email
   # @param String domain_bases List of DCs conforming the path (serialized)
   # @param String user_object_class Name of the attribute where the sers are maped in LDAP
   # @param String group_object_class Name of the attribute where the groups are maped in LDAP
@@ -39,13 +41,14 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
 
   attr_readonly :user_id_field
 
-  validates :organization, :host, :port, :connection_user, :connection_password, :user_id_field, :email_field,
-              :user_object_class, :group_object_class, :presence => true
-  validates :ca_file, :username_field, :length => { :minimum => 0, :allow_nil => true }
-  # TODO: new validation
-  #validates :domain_bases, :length => { :minimum => 1, :allow_nil => false }
+  validates :organization, :host, :port, :connection_user, :connection_password, :user_id_field, :username_field, 
+  :user_object_class, :group_object_class, :presence => true
+  
+  validates :ca_file, :email_field, :length => { :minimum => 0, :allow_nil => true }
+
   validates :encryption, :inclusion => { :in => [ ENCRYPTION_SIMPLE_TLS, ENCRYPTION_START_TLS ], :allow_nil => true }
   validates :ssl_version, :inclusion => { :in => [ ENCRYPTION_SSL_VERSION_TLSV1_1 ], :allow_nil => true }
+  validate :domain_bases_not_empty
 
   def domain_bases_list
     self.domain_bases.split(',')
@@ -112,6 +115,11 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
   end
 
   private
+
+  def domain_bases_not_empty
+    errors.add(:domain_bases, "No domain bases set") if self.domain_bases.to_s.length == 0
+    errors.add(:domain_bases_list, "Domain bases list empty") if domain_bases_list.length < 1
+  end
 
   def search_in_domain_bases(filter)
     domain_bases_list.map { |domain|

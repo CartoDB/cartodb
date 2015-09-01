@@ -22,6 +22,13 @@
           <% if (!Cartodb.config[:cartodb_com_hosted].present? && (!current_user.organization.present? || current_user.organization_owner?))  %>
             <li class="Filters-typeItem"><a href="<%= current_user.plan_url(request.protocol) %>" class="Filters-typeLink">Billing</a></li>
           <% end %>
+          <% if current_user.has_feature_flag?('groups') %>
+            <li class="Filters-typeItem">
+              <a href="<%= CartoDB.url(self, 'organization_groups') %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_groups" %>">
+                Groups
+              </a>
+            </li>
+          <% end %>
         </ul>
       </div>
     </div>

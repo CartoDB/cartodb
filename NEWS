@@ -1,7 +1,10 @@
 3.X ()
+
+3.15.2 (01//09//2015)
 * Take `visible` attribute into account when determining visibility of layers and serializing maps (#546)
 * Only show legends if the layer is visible (#651)
 * Extracted pecan code to separate module, https://github.com/CartoDB/pecan/ (#649,#654)
+* Search control will show the result of the search with a pin and infowindow (cartodb/#4914).
 
 3.15 (24//06//2015)
 * cartodb.js knows how to work with multiple types of sublayers (#508):
@@ -47,7 +50,7 @@
 * Infowindow in anonymous maps are requested by attributes endpoint in maps api so SQL API is not used anymore
 * Changed the way remote host is set for maps and sql API.
 * Fixed error management when map instanciation fails
-* Instead of showing a single date, Torque's timeslider shows the date range that a single step comprises. 
+* Instead of showing a single date, Torque's timeslider shows the date range that a single step comprises.
 * Fixed enabling or disabling the torque loop property not working from cartodb.js
 * Allows to specify a step when generating a static map of a Torque layer
 * Deprecation warning:

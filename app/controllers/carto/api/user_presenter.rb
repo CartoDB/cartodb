@@ -94,7 +94,8 @@ module Carto
           notification: @user.notification,
           avatar_url: @user.avatar,
           feature_flags: @user.feature_flag_names,
-          base_url: @user.public_url
+          base_url: @user.public_url,
+          needs_password_confirmation: self.needs_password_confirmation?
         }
 
         if @user.organization.present?

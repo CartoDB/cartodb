@@ -24,16 +24,16 @@ This library allows to embed visualizations created with CartoDB in your map or 
     ```
 
 
-  2. Create the map and add the layer 
-  
+  2. Create the map and add the layer
+
     ```javascript
       var map = L.map('map').setView([0, 0], 3);
 
-      // set a base layer 
+      // set a base layer
       L.tileLayer('http://a.tile.stamen.com/toner/{z}/{x}/{y}.png', {
         attribution: 'stamen http://maps.stamen.com/'
       }).addTo(map);
-      
+
       // add the cartodb layer
       var layerUrl = 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json';
       cartodb.createLayer(map, layerUrl).addTo(map);
@@ -63,7 +63,7 @@ You can find the documentation online [here](http://docs.cartodb.com/cartodb-pla
 
 ## How to build
 Build CartoDB.js library:
-    
+
   - Install [node.js](http://nodejs.org/download/), from 0.10 version
   - Install grunt & bower: `npm install -g grunt-cli bower`
   - Install node dependencies: `npm install`

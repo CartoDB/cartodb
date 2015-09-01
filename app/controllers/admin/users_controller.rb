@@ -74,6 +74,7 @@ class Admin::UsersController < ApplicationController
     @user.name = attributes.fetch(:name, nil)
     @user.website = attributes.fetch(:website, nil)
     @user.description = attributes.fetch(:description, nil)
+    @user.location = attributes.fetch(:location, nil)
     @user.twitter_username = attributes.fetch(:twitter_username, nil)
     @user.disqus_shortname = attributes.fetch(:disqus_shortname, nil)
 

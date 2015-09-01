@@ -31,6 +31,7 @@ module Carto
           :geocoding_block_price    => @organization.geocoding_block_price,
           :seats                    => @organization.seats,
           :twitter_username         => @organization.twitter_username,
+          :location                 => @organization.location,
           :updated_at               => @organization.updated_at,
           :website          => @organization.website,
           :admin_email      => @organization.admin_email,

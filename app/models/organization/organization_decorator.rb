@@ -29,6 +29,7 @@ module CartoDB
         },
         seats:             self.seats,
         twitter_username:  self.twitter_username,
+        location:          self.location,
         updated_at:        self.updated_at,
         website:           self.website,
         avatar_url:        self.avatar_url

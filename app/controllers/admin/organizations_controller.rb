@@ -36,6 +36,7 @@ class Admin::OrganizationsController < ApplicationController
     end
     @organization.discus_shortname = attributes[:discus_shortname]
     @organization.twitter_username = attributes[:twitter_username]
+    @organization.location = attributes[:location]
 
     @organization.update_in_central
     @organization.save(raise_on_failure: true)

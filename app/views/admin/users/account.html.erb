@@ -139,7 +139,7 @@
         <div class="js-datasourcesContent"></div>
       <% end %>
 
-      <div class="FormAccount-footer">
+      <div class="FormAccount-footer <%= !current_user.organization_owner? ? 'FormAccount-footer--noMarginBottom' : '' %>">
         <% if current_user.organization_owner? -%>
           <p class="FormAccount-footerText">
             <i class="iconFont iconFont-Info FormAccount-footerIcon"></i>
@@ -148,6 +148,7 @@
         <% else %>
           <p class="FormAccount-footerText"></p>
         <% end %>
+
         <%= button_tag(type: 'submit', class: 'Button Button--main') do %>
           <% content_tag(:span, 'Save changes') %>
         <% end %>
@@ -160,7 +161,7 @@
 
         <span class="FormAccount-separator"></span>
 
-        <div class="FormAccount-row">
+        <div class="FormAccount-row FormAccount-row--wideMarginBottom">
           <div class="FormAccount-rowLabel">
             <label class="FormAccount-label">Are you sure?</label>
           </div>

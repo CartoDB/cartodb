@@ -229,7 +229,7 @@ CartoDB::Application.routes.draw do
 
     # Public dashboard
     # root also goes to 'pages#public', as: public_visualizations_home
-    get '(/user/:user_domain)(/u/:user_domain)/user_feed'                => 'pages#user_feed',                as: :public_user_feed_home
+    get '(/user/:user_domain)(/u/:user_domain)/me'                       => 'pages#user_feed',                as: :public_user_feed_home
     get '(/user/:user_domain)(/u/:user_domain)/page/:page'               => 'pages#public',                   as: :public_page
     get '(/user/:user_domain)(/u/:user_domain)/tag/:tag'                 => 'pages#public',                   as: :public_tag
     get '(/user/:user_domain)(/u/:user_domain)/tag/:tag/:page'           => 'pages#public',                   as: :public_tag_page

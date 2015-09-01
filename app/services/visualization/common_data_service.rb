@@ -14,9 +14,22 @@ module CartoDB
         @datasets = datasets
       end
 
+      def self.build_url(controller)
+        common_data_base_url = Cartodb.config[:common_data]['base_url']
+        common_data_username = Cartodb.config[:common_data]['username']
+        common_data_user = Carto::User.where(username: common_data_username).first
+        if !common_data_base_url.nil?
+          # We set user_domain to nil to avoid duplication in the url for subdomainfull urls. Ie. user.cartodb.com/u/cartodb/...
+          common_data_base_url + CartoDB.path(controller, 'api_v1_visualizations_index', {type: 'table', privacy: 'public', user_domain: nil})
+        elsif !common_data_user.nil?
+          CartoDB.url(controller, 'api_v1_visualizations_index', {type: 'table', privacy: 'public'}, common_data_user)
+        else
+          CartoDB.notify_error('cant create common-data url. User doesnt exists and base_url is nil', { user: common_data_username})
+        end
+      end
+
       def load_common_data_for_user(user, visualizations_api_url)
-        user.last_common_data_update_date = Time.now
-        user.save
+        update_user_date_flag(user)
 
         added = 0
         updated = 0
@@ -73,6 +86,20 @@ module CartoDB
         }
 
         return added, updated, not_modified, deleted, failed
+      end
+
+      def update_user_date_flag(user)
+        begin
+          user.last_common_data_update_date = Time.now
+          if user.valid?
+            user.save(raise_on_failure: true)
+          elsif user.errors[:quota_in_bytes]
+            # This happens for the organization quota validation in the user model so we bypass this
+            user.save(:validate => false, raise_on_failure: true)
+          end
+        rescue => e
+          CartoDB.notify_exception(e, {user: user})
+        end
       end
 
       def delete_common_data_for_user(user)

@@ -10,17 +10,19 @@ class HomeController < ApplicationController
   OS_VERSION = "Description:\tUbuntu 12.04"
   PG_VERSION = 'PostgreSQL 9.3'
   POSTGIS_VERSION = '2.1'
-  CDB_VALID_VERSION = '0.8'
-  CDB_LATEST_VERSION = '0.8.2'
+  CDB_VALID_VERSION = '0.9'
+  CDB_LATEST_VERSION = '0.9.3'
   REDIS_VERSION = '3.0'
   RUBY_BIN_VERSION = 'ruby 1.9.3'
   NODE_VERSION = 'v0.10'
-  GEOS_VERSION = '3.3.4'
-  GDAL_VERSION = '1.10'
+  GEOS_VERSION = '3.4.2'
+  GDAL_VERSION = '1.11'
 
-  WINDSHAFT_VERSION = '2.9.0'
+  WINDSHAFT_VALID_VERSION = '2.12'
+  WINDSHAFT_LATEST_VERSION = '2.12.1'
   RUN_WINDSHAFT_INSTRUCTIONS = 'Run Windshaft: <span class="code">cd /Windshaft-cartodb && node app.js development</span>'
-  SQL_API_VERSION = '1.24.0'
+  SQL_API_VALID_VERSION = '1.24'
+  SQL_API_LATEST_VERSION = '1.24.0'
   RUN_SQL_API_INSTRUCTIONS = 'Run SQL API: <span class="code">cd /CartoDB-SQL-API; node app.js development</span>'
   RUN_RESQUE_INSTRUCTIONS =  'Run Resque: <span class="code">bundle exec script/resque</span>'
 
@@ -43,6 +45,7 @@ class HomeController < ApplicationController
     return head(400) if Cartodb.config[:cartodb_com_hosted] == false
 
     @diagnosis = [
+      diagnosis_output('Configuration') { configuration_diagnosis() },
       diagnosis_output('Operating System') { single_line_command_version_diagnosis('lsb_release -a', OS_VERSION, 1) },
       diagnosis_output('Ruby') { single_line_command_version_diagnosis('ruby --version', RUBY_BIN_VERSION) },
       diagnosis_output('Node') { single_line_command_version_diagnosis('node --version', NODE_VERSION) },
@@ -52,8 +55,8 @@ class HomeController < ApplicationController
       diagnosis_output('Database connection') { db_diagnosis },
       diagnosis_output('Redis') { redis_diagnosis },
       diagnosis_output('Redis connection') { redis_connection_diagnosis },
-      diagnosis_output('Windshaft', RUN_WINDSHAFT_INSTRUCTIONS) { windshaft_diagnosis(WINDSHAFT_VERSION) },
-      diagnosis_output('SQL API', RUN_SQL_API_INSTRUCTIONS) { sql_api_diagnosis(SQL_API_VERSION) },
+      diagnosis_output('Windshaft', RUN_WINDSHAFT_INSTRUCTIONS) { windshaft_diagnosis(WINDSHAFT_VALID_VERSION, WINDSHAFT_LATEST_VERSION) },
+      diagnosis_output('SQL API', RUN_SQL_API_INSTRUCTIONS) { sql_api_diagnosis(SQL_API_VALID_VERSION, SQL_API_LATEST_VERSION) },
       diagnosis_output('Resque') { resque_diagnosis(RUN_RESQUE_INSTRUCTIONS) },
       diagnosis_output('GEOS') { single_line_command_version_diagnosis('geos-config --version', GEOS_VERSION) },
       diagnosis_output('GDAL') { single_line_command_version_diagnosis('gdal-config --version', GDAL_VERSION) },
@@ -61,6 +64,17 @@ class HomeController < ApplicationController
   end
 
   private
+
+  def configuration_diagnosis
+    ['', [
+      "Environment: #{environment}",
+      "Subdomainless URLs: #{Cartodb.config[:subdomainless_urls]}"
+    ]]
+  end
+
+  def environment
+    Rails.env
+  end
 
   def pg_diagnosis
     version_diagnosis(PG_VERSION) {
@@ -84,30 +98,57 @@ class HomeController < ApplicationController
     [STATUS[check_redis], []]
   end
 
-  def windshaft_diagnosis(supported_version)
-    tiler_url = configuration_url(Cartodb.config[:tiler]['internal'])
-    response = http_client.get("#{tiler_url}/version")
-    info = JSON.parse(response.body)
-    version = info['windshaft_cartodb']
-    messages = info.to_a.map {|s, v| "<span class='lib'>#{s}</strong>: <span class='version'>#{v}</span>"}.append("internal url: #{tiler_url}")
-    valid = valid?(supported_version, version) 
-    messages << "Currently we only support #{supported_version}." unless valid
-    [STATUS[response.response_code == 200 && valid], messages]
+  def windshaft_diagnosis(supported_version, latest_version)
+    config = Cartodb.config[:tiler]
+    url_config_key = 'internal'
+    endpoint_prefix = ""
+    version_key = 'windshaft_cartodb'
+
+    api_service_diagnosis(config, url_config_key, supported_version, latest_version, endpoint_prefix, version_key)
   end
 
-  def valid?(supported_version, version)
-    version =~ /\A#{supported_version}/ ? true : false
+  def sql_api_diagnosis(supported_version, latest_version)
+    config = Cartodb.config[:sql_api]
+    url_config_key = 'private'
+    endpoint_prefix = "api/v1/"
+    version_key = 'cartodb_sql_api'
+
+    api_service_diagnosis(config, url_config_key, supported_version, latest_version, endpoint_prefix, version_key)
   end
 
-  def sql_api_diagnosis(supported_version)
-    sql_api_url = configuration_url(Cartodb.config[:sql_api]['private'])
-    response = http_client.get("#{sql_api_url}/api/v1/version")
-    info = JSON.parse(response.body)
-    version = info['cartodb_sql_api']
-    messages = info.to_a.map {|s, v| "<span class='lib'>#{s}</strong>: <span class='version'>#{v}</span>"}.append("private url: #{sql_api_url}")
-    valid = valid?(supported_version, version)
-    messages << "Currently we only support #{supported_version}." unless valid
-    [STATUS[response.response_code == 200 && valid], messages]
+  def api_service_diagnosis(config, url_config_key, supported_version, latest_version, endpoint_prefix, version_key)
+    service_url = configuration_url(config[url_config_key])
+    info = safe_json_get("#{service_url}/#{endpoint_prefix}version")
+
+    version = info[version_key]
+    messages = ["Service url: #{service_url}"]
+    messages << "Full config: #{config}"
+    messages.concat info.to_a.map {|s, v| "<span class='lib'>#{s}</strong>: <span class='version'>#{v}</span>"}
+    valid = valid?(supported_version, latest_version, version)
+
+    if valid != false
+      messages << "Currently we support #{supported_version}. Latest: #{latest_version}" unless valid
+
+      health = safe_json_get("#{service_url}/#{endpoint_prefix}health")
+      unless health['enabled'] == true
+        health['instructions'] = "Enable health checking at config/environments/#{environment}.js"
+      end
+      health_ok = health['ok'] == true
+      messages.concat(health.reject { |k, v| k == 'result' }.to_a.map {|s, v| "<span class='lib'>Health #{s}</strong>: <span class='version'>#{v}</span>"})
+    end
+
+    [STATUS[response.response_code == 200 && valid && health_ok], messages]
+  end
+
+  # true: latest
+  # nil: supported
+  # false: not supported
+  def valid?(supported_version, latest_version, version)
+    if (version =~ /\A#{latest_version}/ ? true : nil)
+      true
+    else
+      version =~ /\A#{supported_version}/ ? nil : false
+    end
   end
 
   def resque_diagnosis(help)
@@ -164,10 +205,10 @@ class HomeController < ApplicationController
   def status_and_messages(version, messages, supported_version, latest_version)
     valid = version =~ /\A#{supported_version}/ ? true : false
     messages = ["Installed version: #{version}"]
-    messages << "Currently we only support #{supported_version}." unless valid
+    messages << "Current supported version: #{supported_version}.#{ latest_version.nil? ? '' : "Latest version: #{latest_version}" }" unless valid
     if latest_version && valid
       latest = version =~ /\A#{latest_version}/ ? true : false
-      messages << "Latest version is #{latest_version}" unless latest
+      messages << "Latest version: #{latest_version}" unless latest
       [STATUS[latest || 'supported'], messages]
     else
       [STATUS[valid], messages]
@@ -186,6 +227,12 @@ class HomeController < ApplicationController
 
   def configuration_url(conf)
     "#{conf['protocol']}://#{conf['domain']}:#{conf['port']}"
+  end
+
+  def safe_json_get(url)
+    JSON.parse(http_client.get(url).body)
+  rescue => e
+    { 'error fetching info' => e.message }
   end
 
 end

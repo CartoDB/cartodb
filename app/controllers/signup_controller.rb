@@ -42,7 +42,8 @@ class SignupController < ApplicationController
     if @user.valid? && @user.validate_credentials_not_taken_in_central
       @user_creation = Carto::UserCreation.new_user_signup(@user)
       @user_creation.save
-      ::Resque.enqueue(::Resque::UserJobs::Signup::NewUser, @user_creation.id)
+      common_data_url = CartoDB::Visualization::CommonDataService.build_url(self)
+      ::Resque.enqueue(::Resque::UserJobs::Signup::NewUser, @user_creation.id, common_data_url)
       flash.now[:success] = 'User creation in progress'
       render action: 'signup_confirmation'
     else

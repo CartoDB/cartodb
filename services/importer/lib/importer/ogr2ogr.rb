@@ -8,11 +8,12 @@ module CartoDB
       ENCODING  = 'UTF-8'
       SCHEMA    = 'cdb_importer'
 
-      OUTPUT_FORMAT_OPTION  = '-f PostgreSQL'
-      PG_COPY_OPTION        = 'PG_USE_COPY=YES'
-      NEW_LAYER_TYPE_OPTION = '-nlt PROMOTE_TO_MULTI'
-      OSM_INDEXING_OPTION   = 'OSM_USE_CUSTOM_INDEXING=NO'
-      APPEND_MODE_OPTION    = '-append'
+      OUTPUT_FORMAT_OPTION     = '-f PostgreSQL'
+      PG_COPY_OPTION           = 'PG_USE_COPY=YES'
+      NEW_LAYER_TYPE_OPTION    = '-nlt PROMOTE_TO_MULTI'
+      OSM_INDEXING_OPTION      = 'OSM_USE_CUSTOM_INDEXING=NO'
+      STATEMENT_TIMEOUT_OPTION = "PGOPTIONS='--statement-timeout=1h'"
+      APPEND_MODE_OPTION       = '-append'
 
       DEFAULT_BINARY = 'which ogr2ogr'
 
@@ -39,14 +40,14 @@ module CartoDB
       end
 
       def command_for_import
-        "#{OSM_INDEXING_OPTION} #{PG_COPY_OPTION} #{client_encoding_option} #{shape_encoding_option} " +
+        "#{STATEMENT_TIMEOUT_OPTION} #{OSM_INDEXING_OPTION} #{PG_COPY_OPTION} #{client_encoding_option} #{shape_encoding_option} " +
         "#{executable_path} #{OUTPUT_FORMAT_OPTION} #{overwrite_option} #{guessing_option} #{postgres_options} #{projection_option} " +
         "#{layer_creation_options} #{filepath} #{layer} #{layer_name_option} #{NEW_LAYER_TYPE_OPTION}" +
         " #{shape_coordinate_option} "
       end
 
       def command_for_append
-        "#{OSM_INDEXING_OPTION} #{PG_COPY_OPTION} #{client_encoding_option} " +
+        "#{STATEMENT_TIMEOUT_OPTION} #{OSM_INDEXING_OPTION} #{PG_COPY_OPTION} #{client_encoding_option} " +
         "#{executable_path} #{APPEND_MODE_OPTION} #{OUTPUT_FORMAT_OPTION} #{postgres_options} " +
         "#{projection_option} #{filepath} #{layer} #{layer_name_option} #{NEW_LAYER_TYPE_OPTION}"
       end

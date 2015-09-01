@@ -106,8 +106,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('release', [
     'prompt:bump',
-    'build',
-    'publish'
+    'build'
   ]);
 
   grunt.registerTask('publish', function (target) {
@@ -116,7 +115,7 @@ module.exports = function(grunt) {
       grunt.fail.fatal('secrets.json file does not exist, copy secrets.example.json and rename it' , 1);
     }
 
-    // Read secrets 
+    // Read secrets
     grunt.config.set('secrets', grunt.file.readJSON('secrets.json'));
 
     if (
@@ -136,16 +135,25 @@ module.exports = function(grunt) {
 
   grunt.registerTask('set_current_version', function() {
     var version = pkg.version;
-    var minor = version.split('.')
+    var minor = version.split('.');
     minor.pop()
     minor = minor.join('.');
-
-    grunt.config.set('bump', {
-      increment: 'build',
+    var options = {
       version: version,
       minor: minor,
-      bugfixing: pkg.version 
-    });
+      increment: 'build',
+      bugfixing: version
+    };
+
+    // Check if version was set via prompt, and
+    // use that version and not the package version
+    var bump = grunt.config.get('bump');
+    if (bump) {
+      options = bump;
+      options.bugfixing = bump.version;
+    }
+
+    grunt.config.set('bump', options);
   });
 
   grunt.registerTask('invalidate', function(){
@@ -153,7 +161,7 @@ module.exports = function(grunt) {
       grunt.fail.fatal('secrets.json file does not exist, copy secrets.example.json and rename it' , 1);
     }
 
-    // Read secrets 
+    // Read secrets
     grunt.config.set('secrets', grunt.file.readJSON('secrets.json'));
 
     if (!grunt.config('secrets') ||

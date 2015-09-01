@@ -107,10 +107,12 @@ describe Carto::Api::DatabaseGroupsController do
       user = group.users.first
       user.id.should_not == @org_user_2.id
       vis_id = @table_user_2['table_visualization']['id']
-      get_json api_v1_visualizations_show_url(user_domain: user.username, id: vis_id, api_key: user.api_key), {}, http_json_headers do |response|
+      host = "#{user.username}.localhost.lan"
+      url = api_v1_visualizations_show_url(user_domain: user.username, id: vis_id, api_key: user.api_key).gsub('www.example.com', host)
+      get_json url, {}, http_json_headers do |response|
         response.status.should == 200
 
-        response.body[:url].should == "http://#{user.organization.name}#{Cartodb.config[:session_domain]}:#{Cartodb.config[:http_port]}/u/#{user.username}/tables/#{@org_user_2.username}.#{@table_user_2['name']}"
+        response.body[:url].should == "http://#{host}:#{Cartodb.config[:http_port]}/user/#{user.username}/tables/#{@org_user_2.username}.#{@table_user_2['name']}"
       end
     end
 

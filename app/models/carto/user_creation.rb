@@ -73,6 +73,11 @@ class Carto::UserCreation < ActiveRecord::Base
     @common_data_url = common_data_url
   end
 
+  # TODO: Shorcut, search for a better solution to detect requirement
+  def requires_validation_email?
+    self.google_sign_in != true && !Carto::Ldap::Manager.new.configuration_present?
+  end
+
   private
 
   def user
@@ -82,10 +87,6 @@ class Carto::UserCreation < ActiveRecord::Base
   # INFO: state_machine needs guard methods to be instance methods
   def sync_data_with_cartodb_central?
     Cartodb::Central.sync_data_with_cartodb_central?
-  end
-
-  def requires_validation_email?
-    self.google_sign_in != true
   end
 
   def log_transition_begin
@@ -109,7 +110,7 @@ class Carto::UserCreation < ActiveRecord::Base
     @user.organization = ::Organization.where(id: self.organization_id).first
     @user.quota_in_bytes = self.quota_in_bytes unless self.quota_in_bytes.nil?
     @user.google_sign_in = self.google_sign_in
-    @user.enable_account_token = User.make_token unless @user.google_sign_in
+    @user.enable_account_token = User.make_token if requires_validation_email?
     @user.organization.owner.copy_account_features(@user)
   rescue => e
     handle_failure(e, mark_as_failure = true)

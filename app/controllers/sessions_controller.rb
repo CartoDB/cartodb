@@ -2,21 +2,24 @@
 require_dependency 'google_plus_config'
 require_dependency 'google_plus_api'
 
+require_relative '../../lib/user_account_creator'
+
 require_relative '../../lib/cartodb/stats/authentication'
 
 class SessionsController < ApplicationController
   include LoginHelper
 
   layout 'frontend'
-  ssl_required :new, :create, :destroy, :show, :unauthenticated, :account_token_authentication_error
+  ssl_required :new, :create, :destroy, :show, :unauthenticated, :account_token_authentication_error,
+               :ldap_user_not_at_cartodb
 
   before_filter :load_organization
   before_filter :initialize_google_plus_config
   before_filter :api_authorization_required, :only => :show
   # Don't force org urls
   skip_before_filter :ensure_org_url_if_org_user
-  skip_before_filter :ensure_account_has_been_activated, :only => :account_token_authentication_error
-
+  skip_before_filter :ensure_account_has_been_activated, :only => [ :account_token_authentication_error,
+                     :ldap_user_not_at_cartodb ]
 
   def new
     if logged_in?(CartoDB.extract_subdomain(request))
@@ -88,6 +91,47 @@ class SessionsController < ApplicationController
     warden.custom_failure!
     user_id = warden.env['warden.options'][:user_id] if warden.env['warden.options']
     @user = User.where(id: user_id).first if user_id
+  end
+
+  # Meant to be called always from warden LDAP authentication
+  def ldap_user_not_at_cartodb
+    warden.custom_failure!
+
+    if !warden.env['warden.options']
+      render :action => 'new' and return
+    end
+
+    cartodb_username = warden.env['warden.options'][:cartodb_username]
+    organization_id = warden.env['warden.options'][:organization_id]
+    ldap_username = warden.env['warden.options'][:ldap_username]
+    ldap_email = warden.env['warden.options'][:ldap_email].blank? ? nil : warden.env['warden.options'][:ldap_email]
+
+    @organization = ::Organization.where(id: organization_id).first
+
+    @account_creator = CartoDB::UserAccountCreator.new
+    @account_creator.with_organization(@organization)
+
+    @account_creator.with_param(:username, cartodb_username)
+    @account_creator.with_param(:email, ldap_email) unless ldap_email.nil?
+
+    if @account_creator.valid?
+      creation_data = @account_creator.enqueue_creation(self)
+
+      flash.now[:success] = 'User creation in progress'
+      @user_creation_id = creation_data[:id]
+      @user_name = creation_data[:id]
+      render 'shared/signup_confirmation'
+    else
+      errors = @account_creator.validation_errors
+      CartoDB.notify_debug('User not valid at signup', { errors: errors } )
+      @signup_source = 'LDAP'
+      @signup_errors = errors
+      render 'shared/signup_issue'
+    end
+  rescue => e
+    CartoDB.notify_exception(e, { new_user: @account_creator.user.inspect })
+    flash.now[:error] = e.message
+    render action: 'new'
   end
 
   protected

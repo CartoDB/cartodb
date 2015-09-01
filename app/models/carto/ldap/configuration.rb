@@ -32,7 +32,7 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
   # @param String user_id_field Which LDAP entry field represents the user id. e.g. `sAMAccountName`, `uid`
   # @param String username_field Which LDAP entry field represents the username that will be mapped to cartodb. 
   #                              For now, same as user_id_field
-  # @param String email_field (Optional) Which LDAP entry field represents the email
+  # @param String email_field Which LDAP entry field represents the email
   # @param String domain_bases List of DCs conforming the path (serialized)
   # @param String user_object_class Name of the attribute where the sers are maped in LDAP
   # @param String group_object_class Name of the attribute where the groups are maped in LDAP
@@ -42,9 +42,9 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
   attr_readonly :user_id_field
 
   validates :organization, :host, :port, :connection_user, :connection_password, :user_id_field, :username_field, 
-  :user_object_class, :group_object_class, :presence => true
+  :email_field, :user_object_class, :group_object_class, :presence => true
   
-  validates :ca_file, :email_field, :length => { :minimum => 0, :allow_nil => true }
+  validates :ca_file, :length => { :minimum => 0, :allow_nil => true }
 
   validates :encryption, :inclusion => { :in => [ ENCRYPTION_SIMPLE_TLS, ENCRYPTION_START_TLS ], :allow_nil => true }
   validates :ssl_version, :inclusion => { :in => [ ENCRYPTION_SSL_VERSION_TLSV1_1 ], :allow_nil => true }

@@ -72,7 +72,8 @@ module CartoDB
         notification: self.notification,
         avatar_url: self.avatar,
         feature_flags: self.feature_flags,
-        base_url: self.public_url
+        base_url: self.public_url,
+        needs_password_confirmation: self.needs_password_confirmation?
       }
 
       data[:organization] = self.organization.to_poro if self.organization.present?

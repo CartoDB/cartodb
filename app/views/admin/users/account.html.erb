@@ -122,7 +122,7 @@
           <div class="FormAccount-rowData">
             <div class="FormAccount-planTag"><%= current_user.account_type %></div>
             <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-              <p class="FormAccount-rowInfoText"><a href="<%= current_user.plan_url(request.protocol) %>">View details</a></p>
+              <p class="FormAccount-rowInfoText"><a href="<%= current_user.plan_url(request.protocol) %>" class="FormAccount-link">View details</a></p>
             </div>
           </div>
         </div>
@@ -139,11 +139,11 @@
         <div class="js-datasourcesContent"></div>
       <% end %>
 
-      <div class="FormAccount-footer FormAccount-footer--withoutMarginBottom">
+      <div class="FormAccount-footer">
         <% if current_user.organization_owner? -%>
           <p class="FormAccount-footerText">
             <i class="iconFont iconFont-Info FormAccount-footerIcon"></i>
-            You can't delete your account because you are admin of an organization
+            <span>You can't delete your account because you are admin of an organization</span>
           </p>
         <% else %>
           <p class="FormAccount-footerText"></p>

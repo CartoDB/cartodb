@@ -114,7 +114,6 @@ $sLabel-width: 140px;
     text-align: right;
   }
 }
-.FormAccount-row.FormAccount-row--spaced { padding: $sMargin-element 0 }
 .FormAccount-rowLabel {
   text-align: left;
 }
@@ -386,6 +385,7 @@ $sLabel-width: 140px;
 .FormAccount-link {
   color: $cTypography-link;
   text-decoration: underline;
+  font-weight: normal;
   &:hover {
     color: $cTypography-linkHover;
     cursor: pointer;
@@ -470,16 +470,18 @@ $sLabel-width: 140px;
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
-  margin: $sMargin-section 0;
+  margin: $sMargin-section 0 100px 0;
   padding: $sMargin-formRow 0;
   border-top: 1px solid $cStructure-mainLine;
-
-  &.FormAccount-footer--withoutMarginBottom { margin-bottom: 0; }
 }
 .FormAccount-footerText {
   font-size: $sFontSize-large;
   font-weight: $sFontWeight-lighter;
   color: $cTypography-secondary;
+
+  @include display-flex();
+  @include flex-direction(row);
+  @include justify-content(flex-start);
 }
 .FormAccount-footerIcon {
   width: 20px;

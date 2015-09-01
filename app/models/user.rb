@@ -2598,6 +2598,21 @@ TRIGGER
     update api_key: User.make_token
   end
 
+  def configure_extension_org_metadata_api_endpoint
+    port = Cartodb.config[:http_port]
+    # INFO: account_host includes port in development
+    host = Cartodb.config[:account_host].split(':')[0]
+    config = Cartodb.config[:org_metadata_api]
+    username = config['username']
+    password = config['password']
+    timeout = config.fetch('timeout', 10)
+
+    in_database(as: :superuser) do |database|
+      result = database.fetch("SELECT cartodb.CDB_Conf_SetConf('groups_api', '{ \"host\": \"#{host}\", \"port\": #{port}, \"timeout\": #{timeout}, \"username\": \"#{username}\", \"password\": \"#{password}\"}'::json);").first
+      result
+    end
+  end
+
   private
 
   def quota_dates(options)

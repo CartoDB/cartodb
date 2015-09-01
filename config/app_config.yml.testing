@@ -74,7 +74,7 @@ defaults: &defaults
       api_credentials:     3
       users_metadata:      5
       redis_migrator_logs: 6
-  sync_db_api:
+  org_metadata_api:
     username: "extension"
     password: "elephant"
   superadmin:

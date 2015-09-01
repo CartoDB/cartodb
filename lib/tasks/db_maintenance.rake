@@ -1114,16 +1114,14 @@ namespace :cartodb do
       }
     end
 
-    desc "Assign organization owner admin role at database. See CartoDB/cartodb-postgresql#104 and #5187"
-    task :assign_org_owner_role, [:organization_name] => :environment do |t, args|
-      organizations = args[:organization_name].present? ? Organization.where(name: args[:organization_name]).all : Organization.all
+    def run_for_organizations_owner(organizations)
       puts "Updating #{organizations.count} organizations"
       organizations.each { |o|
         owner = o.owner
         if owner
-          puts "#{o.name}\t#{o.id}\tOwner: #{owner.username}\t#{owner.id}"
+          puts "#{o.id} Owner: #{owner.id} #{owner.username}\t\tName: #{o.name}"
           begin
-            owner.setup_owner_permissions
+            yield owner
           rescue => e
             puts "Error: #{e.message}"
             CartoDB.notify_exception(e)
@@ -1132,6 +1130,22 @@ namespace :cartodb do
           puts "#{o.name}\t#{o.id}\t Has no owner, skipping"
         end
       }
+    end
+
+    desc "Assign organization owner admin role at database. See CartoDB/cartodb-postgresql#104 and #5187"
+    task :assign_org_owner_role, [:organization_name] => :environment do |t, args|
+      organizations = args[:organization_name].present? ? Organization.where(name: args[:organization_name]).all : Organization.all
+      run_for_organizations_owner(organizations) do |owner|
+        owner.setup_owner_permissions
+      end
+    end
+
+    desc "Configure extension org metadata API endpoint, the one used by the extension to keep groups synched. See CartoDB/cartodb-postgresql#104 and CartoDB/cartodb/issues/5244"
+    task :configure_extension_org_metadata_api_endpoint, [:organization_name] => :environment do |t, args|
+      organizations = args[:organization_name].present? ? Organization.where(name: args[:organization_name]).all : Organization.all
+      run_for_organizations_owner(organizations) do |owner|
+        owner.configure_extension_org_metadata_api_endpoint
+      end
     end
 
   end

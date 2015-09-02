@@ -17,7 +17,7 @@
 
     <%= stylesheet_link_tag 'cartodb', 'common', 'public_dashboard' %>
   </head>
-  <body class="PublicBody">
+  <body class="PublicBody PublicBody--grey PublicBody--marginless">
     <%= render 'admin/shared/public_header' %>
     <div class="FavMap is-pre-loading" id="<%= fav_map_target_id = 'fav-map-container' %>">
       <div class="Spinner FavMap-spinner js-spinner"></div>
@@ -38,6 +38,8 @@
       var base_url = '<%= @base_url %>';
       var login_url = "<%= CartoDB.url(self, 'login') %>";
     </script>
+
+    <%= javascript_include_tag 'cdb.js', 'templates', 'public_dashboard_deps', 'user_feed' %>
     <%= yield :js %>
   </body>
 </html>

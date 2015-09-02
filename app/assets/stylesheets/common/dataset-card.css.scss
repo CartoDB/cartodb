@@ -1,0 +1,170 @@
+@import "compass/css3/images";
+@import "../variables/colors";
+@import "../variables/mixins";
+@import "../variables/sizes";
+
+$sBorderCompensation: 2px;
+$opacityTransition: 250ms;
+$sEditButtonSize: 50px;
+
+.DatasetCard {
+  position: relative;
+  width: $sCard-width - 10px - $sBorderCompensation;
+  border: 1px solid #DBDBDB;
+  background-color: $cStructure-mainBkg;
+  border-radius: $sCard-borderRadius;
+  margin: 0 auto;
+}
+.DatasetCard.DatasetCard--long {
+  width: 540px;
+}
+.DatasetCard-title {
+  width: 100%; // required for child text-overflow to work as expected in FF
+}
+.DatasetCard-desc {
+  flex: 1;
+  height: 2 * $sLineHeight-normal;
+  width: 100%;
+
+  .DefaultDescription {
+    @include line-clamp(2);
+  }
+}
+.DatasetCard-desc--fake {
+  display: block;
+  width: auto;
+  padding: 0 30px;
+  text-align: center;
+  margin-bottom: $sMargin-element;
+}
+.DatasetCard-header {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 170px;
+  @include background(image-url("layout/default-map-bkg.png") no-repeat center 0);
+  border-radius: 2px 2px 0 0;
+  @include opacity(1);
+  @include transition(opacity, $opacityTransition);
+  overflow:hidden;
+  z-index: 1;
+}
+.DatasetCard-header:after {
+  content: ' ';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: block;
+  height: 2px;
+  background: black;
+  @include opacity(.1);
+  z-index:2;
+}
+
+.DatasetCard-header--fake:after {
+  left: $sMargin-element;
+  right: $sMargin-element;
+}
+.DatasetCard-headerFakeIcon {
+  display: block;
+  width: 48px;
+  height: 48px;
+  border-radius: 50px;
+  line-height: 48px!important; // Overwritten by icon font style
+  font-size: 20px;
+  text-align:center;
+  border: 1px solid #EEE;
+  color: #EEE;
+  background: transparent;
+}
+
+.DatasetCard-headerFakeIcon.iconFont-People {
+  line-height: 35px!important;
+  font-size: 30px;
+}
+.DatasetCard-headerFakeIcon.iconFont-Snake {
+  line-height: 33px!important;
+  font-size: 30px;
+}
+.DatasetCard-headerFakeIcon.iconFont-Points {
+  line-height: 38px!important;
+  font-size: 24px;
+}
+.DatasetCard-headerFakeIcon.iconFont-Notes { font-size: 26px }
+.DatasetCard-headerFakeIcon.iconFont-Mountain {
+  font-size: 28px;
+  line-height: 40px!important
+}
+.DatasetCard-headerFakeIcon.iconFont-Rectangles { font-size: 22px }
+.DatasetCard-header .DatasetCard-loader {
+  display: none;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 2px;
+  background: transparent;
+  overflow: hidden;
+}
+.DatasetCard-header .DatasetCard-loader:before {
+  content: '';
+  position: absolute;
+  display: block;
+  width: 600px;
+  right: 0;
+  height: 2px;
+  background: rgba(black, 0.25);
+  @include animation(pulsate 1.5s linear infinite);
+}
+.DatasetCard-content { // To position contentDetail at top of content, and contentFooter at bottom
+  position: relative;
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center);
+  @include flex-direction(column);
+  border-radius: $sCard-borderRadius;
+  padding: $sMargin-element;
+  @include opacity(1);
+  @include transition(opacity, $opacityTransition);
+  z-index: 1;
+}
+.DatasetCard-contentFooter {
+  @include display-flex();
+  @include justify-content(flex-start);
+  @include align-items(center);
+  @include flex-wrap(nowrap);
+}
+.DatasetCard-contentFooter > *:not(:last-child) {
+  margin-right: 10px;
+}
+.DatasetCard-contentBody { width: 100% }
+.DatasetCard-contentBodyRow { margin-bottom: $sMargin-min }
+.DatasetCard-contentBodyRow--flex {
+  @include display-flex();
+  @include justify-content(flex-start);
+  @include align-items(center);
+  @include flex-wrap(nowrap);
+  width: 100%;
+}
+.DatasetCard-contentBodyDetails--left {
+  @include display-flex();
+}
+.DatasetCard-contentBodyDetails--right {
+  @include display-flex();
+  @include flex-direction(column);
+}
+
+// Animation function
+@include keyframes(pulsate) {
+  0% {right:100%;}
+  50% {right:0%}
+  100% {right:-100%}
+}
+
+@media (min-width: $sMedia-tablet) {
+  .DatasetCard {
+    width: $sCard-width - $sBorderCompensation;
+  }
+}

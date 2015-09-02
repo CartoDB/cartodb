@@ -96,7 +96,7 @@ feature "Sessions" do
     end
   end
 
-  xit "shouldn't show error page when trying to connect with supported browser" do
+  scenario "shouldn't show error page when trying to connect with supported browser" do
     @allowed_user_agents.each do |user_agent|
       options = page.driver.instance_variable_get("@options")
       options[:headers] = {"HTTP_USER_AGENT" => user_agent}
@@ -104,35 +104,9 @@ feature "Sessions" do
 
       visit '/login'
 
-      page.should have_content("Login to your CartoDB")
+      page.should have_content("Login to CartoDB")
     end
   end
 
-  def login(page)
-    page.find("button.Sessions-button").click
-  end
-
-  xit "doesn't allow to login from a different domain than user account domain" do
-    user1  = FactoryGirl.create(:user_with_private_tables, :username => 'email1')
-    user2  = FactoryGirl.create(:user_with_private_tables, :username => 'email2')
-
-    visit login_url(:subdomain => user2.username, :port => Capybara.server_port)
-
-    fill_in 'email', :with => user1.email
-    fill_in 'password', :with => user1.email.split('@').first
-
-    login(page)
-    follow_redirect!
-
-    page.should have_css(".Sessions-fieldError.js-Sessions-fieldError")
-    page.should have_css("[@data-content='Your account or your password is not ok']")
-
-    fill_in 'email', :with => user2.email
-    fill_in 'password', :with => user2.email.split('@').first
-
-    login(page)
-
-    page.should_not have_css("[@data-content='Your account or your password is not ok']")
-  end
 end
 

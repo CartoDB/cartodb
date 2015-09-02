@@ -69,7 +69,7 @@ describe Ogr2ogr do
 
   describe '#executable_path' do
     it 'returns the path to the ogr2ogr binary' do
-      (@wrapper.executable_path =~ /ogr2ogr/).should_not be nil
+      (@wrapper.executable_path =~ /ogr2ogr2/).should_not be nil
     end
   end
 

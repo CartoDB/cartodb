@@ -336,4 +336,11 @@ class Carto::User < ActiveRecord::Base
     return false
   end
 
+  # Some operations, such as user deletion, won't ask for password confirmation if password is not set (because of Google sign in, for example)
+  def needs_password_confirmation?
+    google_sign_in.nil? || !google_sign_in || !last_password_change_date.nil?
+  end
+
+  private
+
 end

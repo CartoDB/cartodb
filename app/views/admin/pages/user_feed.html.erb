@@ -1,4 +1,4 @@
-<div class="PublicBody-content PublicBody-content--marginless PublicBody-content--grey">
+<div class="PublicBody-content PublicBody--marginless PublicBody--grey">
   <div class="PublicUserProfile">
     <div class="PublicUserProfile-profile">
 
@@ -8,12 +8,12 @@
         US and then as "Harry Handcuff Houdini".</p>
 
       <ul class="PublicUserProfile-details">
-        <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Twitter DefaultTimeDiff-icon"></i> <a href="#">piensaenpixel</a></li>
-        <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Anchor DefaultTimeDiff-icon"></i> <a href="#">www.piensaenpixel.com</a></li>
-        <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i> CartoDB</li>
-        <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Email DefaultTimeDiff-icon"></i> <a href="#">email@address.com</a></li>
-        <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i> Madrid</li>
-        <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Calendar DefaultTimeDiff-icon"></i> Member since June 1894</li>
+        <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Twitter iconFont--with-label"></i> <a href="#">piensaenpixel</a></li>
+        <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Anchor iconFont--with-label"></i> <a href="#">www.piensaenpixel.com</a></li>
+        <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Clock iconFont--with-label"></i> CartoDB</li>
+        <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Email iconFont--with-label"></i> <a href="#">email@address.com</a></li>
+        <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Clock iconFont--with-label"></i> Madrid</li>
+        <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Calendar iconFont--with-label"></i> Member since June 1894</li>
       </ul>
 
       <%# @name %>
@@ -22,8 +22,14 @@
       <%# @viewed_user.organization.name unless @viewed_user.organization.nil? %>
       <%# @viewed_user.organization.name unless @viewed_user.organization.nil? %>
     </div>
-    <div class="PublicUserProfile-line"></div>
-    <ul class="PublicUserFeed">
+    <div class="PublicUserProfile-line">
+      <div class="PublicUserProfile-ball PublicUserProfile-ball--top"></div>
+      <div class="PublicUserProfile-ball PublicUserProfile-ball--bottom"></div>
+    </div>
+
+    <ul class="PublicUserFeed js-feed"></ul>
+
+    <ul class="PublicUserFeed" style="display:none">
       <li class="PublicUserFeed-item">
         <div class="PublicUserFeed-avatar">
           <% if @avatar_url %>
@@ -33,8 +39,8 @@
           <% end %>
         </div>
 
-        <div class="MapCard MapCard--long" data-zoom="1" data-vizjson-url="http://development.localhost.lan:3000/api/v2/viz/38062724-4662-11e5-a60c-080027880ca6/viz.json">
-          <a href="http://development.localhost.lan:3000/viz/38062724-4662-11e5-a60c-080027880ca6/public_map" class="MapCard-header js-header has-error">
+        <div class="MapCard MapCard--borderless MapCard--long" data-zoom="1" data-vizjson-url="http://development.localhost.lan:3000/api/v2/viz/38062724-4662-11e5-a60c-080027880ca6/viz.json">
+          <a href="#" class="MapCard-header js-header">
             <div class="MapCard-loader"></div>
             <div class="MapCard-error" style="display: block;"></div></a>
 
@@ -47,17 +53,20 @@
               </div>
             </div>
 
-            <div class="MapCard-contentFooter">
-              <div class="MapCard-contentFooterDetails--left">
-                <a href="#/like" class="LikesIndicator is-likeable is-liked" data-vis-id="38062724-4662-11e5-a60c-080027880ca6" data-likes-count="1"><i class="iconFont iconFont-Heart--fill LikesIndicator-icon "></i>
-                </a>
-
+            <div class="MapCard-contentFooter MapCard-contentFooter--lefty">
+              <a href="#/like" class="LikesIndicator is-likeable" data-vis-id="bb7a666a-464e-11e5-af67-080027880ca6" data-show-count="true" data-show-label="true" data-likes-count="0"><i class="iconFont iconFont-Heart--fill LikesIndicator-icon "></i><span class="LikesIndicator-count">0 likes </span>
+              </a>
+              <div class="MapCard-contentFooterTimeDiff DefaultTimeDiff">
+                <i class="iconFont iconFont-Eye DefaultTimeDiff-icon"></i>
+                32 visualizations
               </div>
-              <div class="MapCard-contentFooterDetails--right">
-                <div class="MapCard-contentFooterTimeDiff DefaultTimeDiff">
-                  <i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i>
-                  11 days ago
-                </div>
+              <div class="MapCard-contentFooterTimeDiff DefaultTimeDiff">
+                <i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i>
+                2 public datasets
+              </div>
+              <div class="MapCard-contentFooterTimeDiff DefaultTimeDiff">
+                <i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i>
+                8 minutes ago
               </div>
             </div>
           </div>
@@ -72,8 +81,52 @@
           <% end %>
         </div>
 
-        <div class="MapCard MapCard--long" data-zoom="1" data-vizjson-url="http://development.localhost.lan:3000/api/v2/viz/38062724-4662-11e5-a60c-080027880ca6/viz.json">
-          <a href="http://development.localhost.lan:3000/viz/38062724-4662-11e5-a60c-080027880ca6/public_map" class="MapCard-header js-header has-error">
+        <div class="DatasetCard DatasetCard--long">
+          <div class="DatasetCard-content">
+              <div class="DatasetCard-contentBodyRow DatasetCard-contentBodyRow--flex">
+              <div class="DatasetCard-contentBodyDetails--left">
+                <div class="DatasetsList-itemCategory is--polygonDataset"></div>
+              </div>
+              <div class="DatasetCard-contentBodyDetails--right">
+
+                <h3 class="DatasetCard-title DefaultTitle">
+                  <a href="#" class="DefaultTitle-link u-ellipsLongText" title="title">Title</a>
+                </h3>
+
+                <div class="DatasetCard-contentFooter">
+                  <a href="#/like" class="LikesIndicator is-likeable" data-vis-id="bb7a666a-464e-11e5-af67-080027880ca6" data-show-count="true" data-show-label="true" data-likes-count="0"><i class="iconFont iconFont-Heart--fill LikesIndicator-icon "></i><span class="LikesIndicator-count">0 likes </span>
+                  </a>
+
+                  <div class="MapCard-contentFooterTimeDiff DefaultTimeDiff">
+                    <i class="iconFont iconFont-Eye DefaultTimeDiff-icon"></i>
+                    32 visualizations
+                  </div>
+                  <div class="MapCard-contentFooterTimeDiff DefaultTimeDiff">
+                    <i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i>
+                    2 public datasets
+                  </div>
+                  <div class="MapCard-contentFooterTimeDiff DefaultTimeDiff">
+                    <i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i>
+                    8 minutes ago
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+        </div>
+        </li><li class="PublicUserFeed-item">
+        <div class="PublicUserFeed-avatar">
+          <% if @avatar_url %>
+            <img src="<%= @avatar_url %>" class="UserAvatar-img UserAvatar-img--big" />
+          <% else %>
+            <div class="UserAvatar-img UserAvatar-img--big UserAvatar-img--no-src"></div>
+          <% end %>
+        </div>
+
+        <div class="MapCard MapCard--borderless MapCard--long" data-zoom="1" data-vizjson-url="http://development.localhost.lan:3000/api/v2/viz/38062724-4662-11e5-a60c-080027880ca6/viz.json">
+          <a href="#" class="MapCard-header js-header">
             <div class="MapCard-loader"></div>
             <div class="MapCard-error" style="display: block;"></div></a>
 
@@ -81,7 +134,7 @@
             <div class="MapCard-contentBody">
               <div class="MapCard-contentBodyRow MapCard-contentBodyRow--flex">
                 <h3 class="MapCard-title DefaultTitle">
-                  <a href="http://development.localhost.lan:3000/viz/38062724-4662-11e5-a60c-080027880ca6/public_map" class="DefaultTitle-link u-ellipsLongText" title="fadslf jasdñlfjasdñlfjsdañl fjasdfasdfa+ fas dfasdfadslf jasdñlfjasdñlfjsdañl fjasdfasdfa">fadslf jasdñlfjasdñlfjsdañl fjasdfasdfa+ fas dfasdfadslf jasdñlfjasdñlfjsdañl fjasdfasdfa</a>
+                  <a href="#" class="DefaultTitle-link u-ellipsLongText" title="fadslf jasdñlfjasdñlfjsdañl fjasdfasdfa+ fas dfasdfadslf jasdñlfjasdñlfjsdañl fjasdfasdfa">fadslf jasdñlfjasdñlfjsdañl fjasdfasdfa+ fas dfasdfadslf jasdñlfjasdñlfjsdañl fjasdfasdfa</a>
                 </h3>
               </div>
             </div>
@@ -105,3 +158,4 @@
     </ul>
   </div>
 </div>
+

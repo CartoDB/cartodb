@@ -56,6 +56,7 @@ class SignupController < ApplicationController
       @user_name = creation_data[:id]
       render 'shared/signup_confirmation'
     else
+      @user = @account_creator.user
       errors = @account_creator.validation_errors
       CartoDB.notify_debug('User not valid at signup', { errors: errors } )
       if errors['organization'] && !errors[:organization].empty?

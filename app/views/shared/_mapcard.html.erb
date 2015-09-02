@@ -1,5 +1,5 @@
 <li class="MapsList-item">
-  <div class="MapCard MapCard--squared" data-zoom="<%= vis[:map_zoom] %>" data-vizjson-url="<%= CartoDB.url(self, 'api_v2_visualizations_vizjson', {id: vis[:id]}, vis[:owner]) %>.json">
+  <div class="MapCard MapCard--squared MapCard-borderless" data-zoom="<%= vis[:map_zoom] %>" data-vizjson-url="<%= CartoDB.url(self, 'api_v2_visualizations_vizjson', {id: vis[:id]}, vis[:owner]) %>.json">
     <a href="<%= CartoDB.url(self, 'public_visualizations_public_map', {id: vis[:id]}, vis[:owner]) %>" class="MapCard-header js-header">
       <div class="MapCard-loader"></div>
     </a>

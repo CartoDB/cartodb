@@ -11,6 +11,9 @@
   border-bottom: 1px solid $cStructure-mainLine;
   overflow: hidden;
 }
+.Navmenu.Navmenu--white {
+  background: $cStructure-mainBkg;
+}
 .Navmenu.Navmenu--borderless {
   border-bottom: none;
 }

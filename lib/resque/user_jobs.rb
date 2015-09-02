@@ -10,8 +10,9 @@ module Resque
       module NewUser
         @queue = :users
 
-        def self.perform(user_creation_id)
+        def self.perform(user_creation_id, common_data_url=nil)
           user_creation = Carto::UserCreation.where(id: user_creation_id).first
+          user_creation.set_common_data_url(common_data_url) unless common_data_url.nil?
           user_creation.next_creation_step! until user_creation.finished?
         end
 

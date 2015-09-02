@@ -45,4 +45,15 @@ FactoryGirl.define do
 
   end
 
+  factory :carto_user, :class => Carto::User do
+
+    username               { String.random(5).downcase }
+    email                  { String.random(5).downcase + '@' + String.random(5).downcase + '.com' }
+    password               { email.split('@').first }
+    table_quota            5
+    quota_in_bytes         5000000
+    id                     { UUIDTools::UUID.timestamp_create.to_s }
+
+  end
+
 end

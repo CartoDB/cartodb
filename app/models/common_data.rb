@@ -1,5 +1,6 @@
 require_relative '../../lib/carto/http/client'
 require_relative '../../services/sql-api/sql_api'
+require_relative '../helpers/common_data_redis_cache'
 
 class CommonData
 
@@ -73,15 +74,21 @@ class CommonData
     body = nil
     begin
       http_client = Carto::Http::Client.get('common_data', log_requests: true)
-      response = http_client.request(
+      request = http_client.request(
         @visualizations_api_url,
         method: :get,
         connecttimeout: CONNECT_TIMEOUT,
         timeout: DEFAULT_TIMEOUT,
         params: {per_page: NO_PAGE_LIMIT}
-      ).run
+      )
+      is_https_request = (request.url =~ /^https:\/\//)
+      cached_data = redis_cache.get(is_https_request)
+      return cached_data[:body] unless cached_data.nil?
+      response = request.run
       if response.code == 200
         body = response.response_body
+        redis_cache.set(is_https_request, response.headers, response.response_body)
+        body
       end
     rescue Exception => e
       CartoDB.notify_exception(e)
@@ -110,5 +117,9 @@ class CommonData
     else
       default
     end
+  end
+
+  def redis_cache
+    @redis_cache ||= CommonDataRedisCache.new
   end
 end

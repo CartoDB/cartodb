@@ -12,6 +12,8 @@ include CartoDB
 describe CartoDB::NamedMapsWrapper::NamedMaps do
 
   before(:all) do
+
+
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
     # Hook new backend to Sequel current connection
     Visualization.repository = DataRepository::Backend::Sequel.new(Rails::Sequel.connection, :visualizations)
@@ -317,6 +319,8 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
   describe 'only_torque_layer' do
     it 'checks returned viz.json given a named map with only a torque layer' do
 
+      disable_if_config_has_maps_with_labels
+
       template_data = {
         template: {
           version: '0.0.1',
@@ -391,6 +395,9 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
 
   describe 'only_normal_layer' do
     it 'checks returned viz.json given a default named map which has only a normal layer' do
+
+      disable_if_config_has_maps_with_labels
+
       template_data = {
         template: {
           version: '0.0.1',
@@ -456,6 +463,9 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
 
   describe 'torque_and_normal_layers' do
     it 'checks returned viz.json given a named map with a normal layer and a torque one' do
+
+      disable_if_config_has_maps_with_labels
+
       template_data = {
         template: {
           version: '0.0.1',
@@ -559,6 +569,9 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
 
   describe 'two_normal_layers' do
     it 'checks returned viz.json given a named map with 2 normal ones' do
+
+      disable_if_config_has_maps_with_labels
+
       template_data = {
         template: {
           version: '0.0.1',
@@ -658,6 +671,9 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
 
   describe 'http_layer' do
     it 'checks that a tiled layer appears as http layer on a named map but not on the viz.json' do
+
+      disable_if_config_has_maps_with_labels
+
       template_data = {
         template: {
           version: '0.0.1',
@@ -743,6 +759,9 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
 
   describe 'view data' do
     it 'checks that the named map builds correctly the :view section' do
+
+      disable_if_config_has_maps_with_labels
+
       template_data = {
         template: {
           version: '0.0.1',
@@ -919,6 +938,14 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
             )
 
     return table, derived_vis, template_id
+  end
+
+  # Basemaps with labels on top create an additional topmost layer. This causes issues if running the tests locally 
+  # with such basemaps, so we warn and not run any tests performing layer counting checks
+  def disable_if_config_has_maps_with_labels
+    if Cartodb.config[:basemaps]['CartoDB'].select { |basemap| !basemap['labels'].nil? }.count > 0
+      pending "Your app_config.yml contains at least one CartoDB basemap with labels on top. Please use app_config.yml.testing configuration for running this spec"
+    end
   end
 
 end

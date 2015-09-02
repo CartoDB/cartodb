@@ -79,6 +79,8 @@ gem 'resque',                '1.25.2'
 gem 'resque-metrics',        '0.1.1'
 
 group :test do
+  gem 'simplecov',                       require: false
+
   gem 'db-query-matchers',     '0.4.0'
   gem 'rack-test',             '0.6.2',  require: 'rack/test'
   gem 'factory_girl_rails',    '~> 4.0.0'

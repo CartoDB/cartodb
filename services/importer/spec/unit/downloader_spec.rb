@@ -139,7 +139,7 @@ describe Downloader do
       [
         { url: 'https://raw.githubusercontent.com/CartoDB/cartodb/master/services/importer/spec/fixtures/política_agraria_común.csv', name: 'política_agraria_común'},
         # TODO: move to master branch
-        { url: 'https://raw.githubusercontent.com/CartoDB/cartodb/3315d-Uploading_of_files_with_accents_on_the_filename_dont_work_test_backport/services/importer/spec/fixtures/many_characters_áÁñÑçÇàÀ.csv', name: 'many_characters_áÁñÑçÇàÀ'}
+        { url: 'https://raw.githubusercontent.com/CartoDB/cartodb/master/services/importer/spec/fixtures/many_characters_áÁñÑçÇàÀ.csv', name: 'many_characters_áÁñÑçÇàÀ'}
       ].each { |url_and_name|
         downloader = Downloader.new(url_and_name[:url])
         downloader.run

@@ -74,6 +74,8 @@ class User < Sequel::Model
 
   DEFAULT_GEOCODING_QUOTA = 0
 
+  COMMON_DATA_ACTIVE_DAYS = 31
+
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
 
@@ -189,7 +191,7 @@ class User < Sequel::Model
   end
 
   def should_load_common_data?
-    last_common_data_update_date.nil? || last_common_data_update_date < Time.now - 1.month
+    last_common_data_update_date.nil? || last_common_data_update_date < Time.now - COMMON_DATA_ACTIVE_DAYS.day
   end
 
   def load_common_data(visualizations_api_url)
@@ -512,6 +514,11 @@ class User < Sequel::Model
   end
 
   def should_display_old_password?
+    self.needs_password_confirmation?
+  end
+
+  # Some operations, such as user deletion, won't ask for password confirmation if password is not set (because of Google sign in, for example)
+  def needs_password_confirmation?
     google_sign_in.nil? || !google_sign_in || !last_password_change_date.nil?
   end
 
@@ -1361,6 +1368,10 @@ class User < Sequel::Model
     DataImport.where(user_id: self.id).count
   end
 
+  def maps_count
+    Map.where(user_id: self.id).count
+  end
+
   # Get the count of public visualizations
   def public_visualization_count
     visualization_count({
@@ -2105,7 +2116,7 @@ TRIGGER
   # Upgrade the cartodb postgresql extension
   def upgrade_cartodb_postgres_extension(statement_timeout=nil, cdb_extension_target_version=nil)
     if cdb_extension_target_version.nil?
-      cdb_extension_target_version = '0.8.2'
+      cdb_extension_target_version = '0.9.4'
     end
 
     in_database({

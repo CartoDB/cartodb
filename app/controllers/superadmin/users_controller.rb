@@ -26,6 +26,8 @@ class Superadmin::UsersController < Superadmin::SuperadminController
 
     if @user.save
       @user.reload
+      common_data_url = CartoDB::Visualization::CommonDataService.build_url(self)
+      @user.load_common_data(common_data_url)
       @user.set_relationships_from_central(params[:user])
     end
     respond_with(:superadmin, @user)

@@ -52,6 +52,12 @@
   background-size: $sAvatar-big;
   border-radius: $sAvatar-borderRadius;
 }
+.UserAvatar-img--medium-large {
+  width: $sAvatar-medium;
+  height: $sAvatar-medium;
+  background-size: $sAvatar-medium;
+  border-radius: $sAvatar-borderRadius;
+}
 .UserAvatar-img--medium {
   width: $sAvatar-default;
   height: $sAvatar-default;

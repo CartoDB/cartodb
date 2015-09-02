@@ -16,80 +16,76 @@
 
 <%= render :partial => 'shared/flash_message' %>
 
-<div>
+<div class="FormAccount-Section u-inner">
 
   <%= render :partial => 'admin/shared/pages_subheader' %>
 
-  <div class="CredentialsContent">
-    <div class="u-inner">
+  <div class="FormAccount-Content">
 
-      <div class="Form-title">
-        <p class="Form-titleText">OAuth is an authentication protocol that allows users to approve application to act on their behalf without sharing their password.</p>
-      </div>
-
-      <div class="Form-row">
-        <div class="Form-rowLabel">
-          <label class="Form-label">Consumer key</label>
-        </div>
-        <div class="Form-rowData">
-          <input type="text" class="Form-input Form-input--long has-icon js-input" value="<%= current_user.client_application.key %>" readonly />
-          <i data-title="Copy this" class="iconFont iconFont-Anchor Form-inputIcon Form-copyIcon js-copy-value"></i>
-        </div>
-        <div class="Form-rowInfo">
-          <p class="Form-rowInfoText">Learn more about <%= link_to "using oauth in CartoDB", Cartodb.config[:developers_host] + "/cartodb-platform.html" %>.</p>
-        </div>
-      </div>
-
-      <div class="Form-row">
-        <div class="Form-rowLabel">
-          <label class="Form-label">Consumer secret</label>
-        </div>
-        <div class="Form-rowData">
-          <input type="text" class="Form-input Form-input--long has-icon js-input" value="<%= current_user.client_application.secret %>" readonly />
-          <i data-title="Copy this" class="iconFont iconFont-Anchor Form-inputIcon Form-copyIcon js-copy-value"></i>
-        </div>
-        <div class="Form-rowInfo">
-          <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>" />
-          <a class="js-regenerateOauth" href="#">Request new OAuth key</a>
-        </div>
-      </div>
-
-      <span class="Form-separator"></span>
-
-      <div class="Form-row">
-        <div class="Form-rowLabel">
-          <label class="Form-label">Request token URL</label>
-        </div>
-        <div class="Form-rowData">
-          <input type="text" class="Form-input Form-input--long has-icon js-input" value="<%= CartoDB.url(self, 'request_token', {}, current_user) %>" readonly />
-          <i data-title="Copy this" class="iconFont iconFont-Anchor Form-inputIcon Form-copyIcon js-copy-value"></i>
-        </div>
-      </div>
-
-      <div class="Form-row">
-        <div class="Form-rowLabel">
-          <label class="Form-label">Access token URL</label>
-        </div>
-        <div class="Form-rowData">
-          <input type="text" class="Form-input Form-input--long has-icon js-input" value="<%= CartoDB.url(self, 'access_token', {}, current_user) %>" readonly />
-          <i data-title="Copy this" class="iconFont iconFont-Anchor Form-inputIcon Form-copyIcon js-copy-value"></i>
-        </div>
-      </div>
-
-      <div class="Form-footer">
-        <p class="Form-footerText">
-          <i class="iconFont iconFont-Info Form-footerIcon"></i>
-          Learn more about <%= link_to "using your simple app key", Cartodb.config[:developers_host] + "/documentation/apis-overview.html" %> in CartoDB
-        </p>
-      </div>
-
+    <div class="FormAccount-title">
+      <p class="FormAccount-titleText">Approve applications to act on their behalf without sharing your password</p>
     </div>
+
+    <span class="FormAccount-separator"></span>
+
+    <div class="FormAccount-row">
+      <div class="FormAccount-rowLabel">
+        <label class="FormAccount-label">Consumer key</label>
+      </div>
+      <div class="FormAccount-rowData">
+        <input type="text" class="FormAccount-input FormAccount-input--long has-icon js-input" value="<%= current_user.client_application.key %>" readonly />
+        <i data-title="Copy this" class="iconFont iconFont-Anchor FormAccount-inputIcon FormAccount-copyIcon js-copy-value"></i>
+      </div>
+      <div class="FormAccount-rowInfo">
+        <p class="FormAccount-rowInfoText">Learn more about <%= link_to "using oauth in CartoDB", Cartodb.config[:developers_host] + "/cartodb-platform.html" %>.</p>
+      </div>
+    </div>
+
+    <div class="FormAccount-row">
+      <div class="FormAccount-rowLabel">
+        <label class="FormAccount-label">Consumer secret</label>
+      </div>
+      <div class="FormAccount-rowData">
+        <input type="text" class="FormAccount-input FormAccount-input--long has-icon js-input" value="<%= current_user.client_application.secret %>" readonly />
+        <i data-title="Copy this" class="iconFont iconFont-Anchor FormAccount-inputIcon FormAccount-copyIcon js-copy-value"></i>
+      </div>
+    </div>
+
+    <span class="FormAccount-separator"></span>
+
+    <div class="FormAccount-row">
+      <div class="FormAccount-rowLabel">
+        <label class="FormAccount-label">Request token URL</label>
+      </div>
+      <div class="FormAccount-rowData">
+        <input type="text" class="FormAccount-input FormAccount-input--long has-icon js-input" value="<%= CartoDB.url(self, 'request_token', {}, current_user) %>" readonly />
+        <i data-title="Copy this" class="iconFont iconFont-Anchor FormAccount-inputIcon FormAccount-copyIcon js-copy-value"></i>
+      </div>
+    </div>
+
+    <div class="FormAccount-row">
+      <div class="FormAccount-rowLabel">
+        <label class="FormAccount-label">Access token URL</label>
+      </div>
+      <div class="FormAccount-rowData">
+        <input type="text" class="FormAccount-input FormAccount-input--long has-icon js-input" value="<%= CartoDB.url(self, 'access_token', {}, current_user) %>" readonly />
+        <i data-title="Copy this" class="iconFont iconFont-Anchor FormAccount-inputIcon FormAccount-copyIcon js-copy-value"></i>
+      </div>
+    </div>
+
+    <div class="FormAccount-footer">
+      <p class="FormAccount-footerText">
+        <i class="iconFont iconFont-Info FormAccount-footerIcon"></i>
+        Learn more about <%= link_to "using your simple app key", Cartodb.config[:developers_host] + "/documentation/apis-overview.html" %> in CartoDB
+      </p>
+      <p class="FormAccount-footerText">
+        <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>" />
+        <a class="js-regenerateOauth Button Button--main" href="#"><span>Generate new keys</span></a>
+      </p>
+    </div>
+
   </div>
 
 </div>
-
-<% if !Cartodb.config[:cartodb_com_hosted].present? %>
-  <div class="SupportBanner" id="support-banner"></div>
-<% end %>
 
 <%= render 'admin/shared/footer' %>

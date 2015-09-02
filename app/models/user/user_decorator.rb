@@ -17,6 +17,7 @@ module CartoDB
         account_type: self.account_type,
         table_quota: self.table_quota,
         table_count: self.table_count,
+        maps_count: self.maps_count,
         public_visualization_count: self.public_visualization_count,
         visualization_count: self.visualization_count,
         failed_import_count: self.failed_import_count,
@@ -71,7 +72,8 @@ module CartoDB
         notification: self.notification,
         avatar_url: self.avatar,
         feature_flags: self.feature_flags,
-        base_url: self.public_url
+        base_url: self.public_url,
+        needs_password_confirmation: self.needs_password_confirmation?
       }
 
       data[:organization] = self.organization.to_poro if self.organization.present?

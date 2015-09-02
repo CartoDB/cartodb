@@ -28,7 +28,7 @@ class Carto::User < ActiveRecord::Base
   delegate [ 
       :database_username, :database_password, :in_database, :load_cartodb_functions, :rebuild_quota_trigger,
       :db_size_in_bytes, :get_api_calls, :table_count, :public_visualization_count, :visualization_count,
-      :twitter_imports_count
+      :twitter_imports_count, :maps_count
     ] => :service
 
   # INFO: select filter is done for security and performance reasons. Add new columns if needed.
@@ -335,5 +335,12 @@ class Carto::User < ActiveRecord::Base
     return true if self.private_tables_enabled # Note private_tables_enabled => private_maps_enabled
     return false
   end
+
+  # Some operations, such as user deletion, won't ask for password confirmation if password is not set (because of Google sign in, for example)
+  def needs_password_confirmation?
+    google_sign_in.nil? || !google_sign_in || !last_password_change_date.nil?
+  end
+
+  private
 
 end

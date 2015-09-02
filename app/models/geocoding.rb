@@ -327,7 +327,7 @@ class Geocoding < Sequel::Model
     self.batched = table_geocoder.used_batch_request?
     geocoded_rows = total_geocoded_rows(rows_geocoded_before)
     self.update(state: 'finished', real_rows: geocoded_rows, used_credits: calculate_used_credits)
-    send_report_mail(state, table_geocoder.table_name, nil, self.processable_rows, geocoded_rows)
+    send_report_mail(state, self.table_name, nil, self.processable_rows, geocoded_rows)
     log.append "Geocoding finished"
     # In the import table_service could be nil
     if !table_service.nil?
@@ -346,7 +346,7 @@ class Geocoding < Sequel::Model
     self.update(state: 'failed', processed_rows: 0, cache_hits: 0)
     CartoDB::notify_exception(raised_exception, user: user)
     geocoded_rows = total_geocoded_rows(rows_geocoded_before)
-    send_report_mail(state, table_geocoder.table_name, error_code, self.processable_rows, geocoded_rows)
+    send_report_mail(state, self.table_name, error_code, self.processable_rows, geocoded_rows)
     log.append "Unexpected exception: #{raised_exception.to_s}"
     log.append raised_exception.backtrace
     self.report(raised_exception)

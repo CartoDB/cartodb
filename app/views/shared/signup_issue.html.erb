@@ -20,12 +20,16 @@
                 <% end %>
                 </ul>
               </p>
-              <p class="Sessions-description">Please, contact the administrator of <%= @organization.name %> (<a href="mailto:<%= @organization.owner.email %>"><%= @organization.owner.email %></a>) to begin your signup process.</p>
+              <p class="Sessions-description">Please, contact the administrator of <%= @organization.name %>
+              <% if @organization.owner %> (<a href="mailto:<%= @organization.owner.email %>"><%= @organization.owner.email %></a>)  <% end %>
+              to begin your signup process.</p>
             </div>
           <% else %>
             <div class="js-info">
               <h1 class="Sessions-title u-tspace-m">Service temporarily unavailable</h1>
-              <p class="Sessions-description">Please, contact the administrator of <%= @organization.name %> (<a href="mailto:<%= @organization.owner.email %>"><%= @organization.owner.email %></a>) to begin your signup process.</p>
+              <p class="Sessions-description">Please, contact the administrator of <%= @organization.name %>
+              <% if @organization.owner %> (<a href="mailto:<%= @organization.owner.email %>"><%= @organization.owner.email %></a>) <% end %>
+              to begin your signup process.</p>
             </div>
           <% end %>
         </div>

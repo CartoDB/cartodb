@@ -56,7 +56,7 @@ namespace :cartodb do
     DROP_TABLE_SQL = %Q{ DROP TABLE IF EXISTS #{VISUALIZATIONS_TABLE} CASCADE}
     DROP_PUBLIC_VIEW_SQL = %Q{ DROP TABLE IF EXISTS #{PUBLIC_VISUALIZATIONS_VIEW} }
     MOST_RECENT_CREATED_SQL = %Q{ SELECT MAX(visualization_created_at) FROM #{VISUALIZATIONS_TABLE} }
-    MOST_RECENT_UPDATED_SQL = %Q{ SELECT max(visualization_updated_at) FROM #{VISUALIZATIONS_TABLE} }
+    MOST_RECENT_UPDATED_SQL = %Q{ SELECT MAX(visualization_updated_at) FROM #{VISUALIZATIONS_TABLE} }
     BATCH_SIZE = 1000
     # TODO: "in" searches are limited to 300. To increase batch replace with date ranges
     UPDATE_BATCH_SIZE = 300
@@ -90,6 +90,8 @@ namespace :cartodb do
 
     desc "Updates the data at #{VISUALIZATIONS_TABLE}"
     task :update => [:environment] do
+      require_relative '../../app/helpers/explore_api'
+      @explore_api_helper = Helpers::ExploreAPI.new
       stats_aggregator.timing('visualizations.update.total') do
         user = target_user
         update(user)
@@ -235,7 +237,7 @@ namespace :cartodb do
             visualization_type: v.type,
             # Synchronization method from Visualization::Relator uses empty Hash when there is no sync
             visualization_synced: !v.synchronization.is_a?(Hash),
-            visualization_table_names: get_visualization_tables(v),
+            visualization_table_names: @explore_api_helper.get_visualization_tables(v),
             visualization_tags: v.tags.nil? || v.tags.empty? ? nil : Sequel.pg_array(v.tags),
             visualization_created_at: v.created_at,
             visualization_updated_at: v.updated_at,
@@ -253,31 +255,9 @@ namespace :cartodb do
       }
     end
 
-    def get_visualization_tables(visualization)
-      # We are using layers instead of related tables because with related tables we are connecting
-      # to the users databases and we are reaching the connections limit
-      table_names = visualization.layers(:carto_and_torque).map { |layer| extract_table_name(layer) }
-      %Q{{#{table_names.compact.join(",")}}}
-    end
-
-    def extract_table_name(layer)
-      table_username = layer.options['user_name']
-      table_name = layer.options['table_name'].gsub(/"/,'\"').split('.')
-      # Here we check for:
-      #   a) return as comes, but escaping quotes, if the table_name have a . this means an old format username.tablename
-      #   b) return username.table_name with the username escaped to avoid problems with non-alphanumeric characters like '-'
-      if table_name.length > 1
-        %Q[#{layer.options['table_name'].gsub(/"/,'\"')}]
-      elsif table_name.length == 1 && !table_username.blank?
-        %Q[\\"#{table_username}\\".#{table_name[0]}]
-      else
-        nil
-      end
-    end
-
     def update_mapviews_and_likes_query(visualization)
       v = visualization
-      update_tables = %Q{, visualization_table_names = '#{get_visualization_tables(v)}'}
+      update_tables = %Q{, visualization_table_names = '#{@explore_api_helper.get_visualization_tables(v)}'}
       # Synchronization method from Visualization::Relator uses empty Hash when there is no sync
       %Q{ UPDATE #{VISUALIZATIONS_TABLE} set
             visualization_mapviews = #{v.mapviews},

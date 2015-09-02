@@ -25,6 +25,8 @@ class SignupController < ApplicationController
     params[:google_access_token] = google_access_token
 
     if !user_password_signup? && google_access_token.present? && @google_plus_config.present?
+      raise "Organization doesn't allow Google authentication" if !@organization.auth_google_enabled
+
       # Keep in mind get_user_data can return nil
       user_data = GooglePlusAPI.new.get_user_data(google_access_token)
     end

@@ -58,6 +58,7 @@ describe SignupController do
 
     before(:each) do
       @organization.auth_username_password_enabled = true
+      @organization.auth_google_enabled = true
       @organization.save
     end
 
@@ -74,7 +75,7 @@ describe SignupController do
       last_user_creation.should == nil
     end
 
-    it 'returns 400 error if you attempt username + password authentication and it is not valid' do
+    it 'returns 400 error if you attempt username + password signup and it is not valid' do
       @organization.auth_username_password_enabled = false
       @organization.save
 
@@ -82,6 +83,19 @@ describe SignupController do
       post signup_organization_user_url(user_domain: @organization.name, user: { username: 'anewuser', email: "anewuser@#{@organization.whitelisted_email_domains.first}", password: 'password' })
       response.status.should == 400
       ::Resque.expects(:enqueue).never
+    end
+
+    it 'returns 400 error if you attempt Google signup and it is not valid' do
+      GooglePlusAPI.any_instance.expects(:get_user_data).never
+      @organization.auth_google_enabled = false
+      @organization.save
+
+      host! "#{@organization.name}.localhost.lan"
+      post signup_organization_user_url(user_domain: @organization.name, google_access_token: 'whatever')
+      response.status.should == 400
+
+      post signup_organization_user_url(user_domain: @organization.name, google_signup_access_token: 'whatever')
+      response.status.should == 400
     end
 
     it 'triggers a NewUser job with form parameters and default quota' do

@@ -74,6 +74,8 @@ class User < Sequel::Model
 
   DEFAULT_GEOCODING_QUOTA = 0
 
+  COMMON_DATA_ACTIVE_DAYS = 31
+
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
 
@@ -189,7 +191,7 @@ class User < Sequel::Model
   end
 
   def should_load_common_data?
-    last_common_data_update_date.nil? || last_common_data_update_date < Time.now - 1.month
+    last_common_data_update_date.nil? || last_common_data_update_date < Time.now - COMMON_DATA_ACTIVE_DAYS.day
   end
 
   def load_common_data(visualizations_api_url)

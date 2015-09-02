@@ -25,8 +25,12 @@ module DataRepository
         naive_upsert_exposed_to_race_conditions(data)
       end
 
-      def fetch(key)
-        parse( db[relation].where(id: key).first )
+      def fetch(value, key=nil)
+        if key.nil?
+          parse( db[relation].where(id: value).first )
+        else
+          parse( db[relation].where(key.to_sym => value).first )
+        end
       end
 
       def delete(key)

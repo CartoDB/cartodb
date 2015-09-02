@@ -13,7 +13,7 @@
       <%# at most 3 cards per line, visbility is handled by CSS depending on viewport size %>
       <% ((3 - @visualizations.size + 3) % 3).times.each do %>
         <li class="MapsList-item MapsList-item--fake">
-          <div class="MapCard MapCard--squared">
+          <div class="MapCard MapCard--squared MapCard--borderless">
             <div class="MapCard-header MapCard-header--fake"></div>
             <div class="MapCard-content"></div>
           </div>

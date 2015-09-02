@@ -42,7 +42,7 @@ module CartoDB
       build
 
       if @organization && @organization.owner.nil? && !promote_to_organization_owner?
-        @custom_errors[:organization] = ["owner is not set. Organization administrator must login first before other accounts can be used in the system"]
+        @custom_errors[:organization] = ["owner is not set. In order to activate this organization the administrator must login first"]
       end
 
       @user.valid? && @user.validate_credentials_not_taken_in_central && @custom_errors.keys.length == 0

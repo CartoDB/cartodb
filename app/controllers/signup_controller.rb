@@ -9,9 +9,20 @@ class SignupController < ApplicationController
 
   ssl_required :signup, :create
 
-  before_filter :load_organization
-  before_filter :disable_if_ldap_configured
+  before_filter :load_organization, except: [ :signup_issues_test]
+  before_filter :disable_if_ldap_configured, except: [ :signup_issues_test]
   before_filter :initialize_google_plus_config
+
+  # TODO: Remove after CSS styling the signup issues page
+  def signup_issues_test
+    @organization = ::Organization.first
+    @signup_source = 'Organization'
+    @signup_errors = {
+        email: [ "is already taken" ],
+        username: [ "is too ugly" ]
+      }
+    render 'shared/signup_issue'
+  end
 
   def signup
     @user = ::User.new

@@ -20,7 +20,7 @@
 
               <div class="Sessions-sep"></div>
 
-              <% if @google_plus_config.present? %>
+              <% if @google_plus_config.present? && @organization.auth_google_enabled %>
                 <%= render partial: 'google_plus/google_plus_button',  locals: { config: @google_plus_config } %>
               <% end %>
 
@@ -29,8 +29,11 @@
               <% if @organization.auth_username_password_enabled %>
 
                 <%= form_tag CartoDB.path(self, 'create_session'), class: "js-Loading-form" do %>
-                  <input type="hidden" value="" id="google_access_token" name="google_access_token" />
-                  <input type="hidden" value="0" id="google_access_filled" name="google_access_filled" />
+
+                  <% if @organization.auth_username_password_enabled %>
+                    <input type="hidden" value="" id="google_access_token" name="google_access_token" />
+                    <input type="hidden" value="0" id="google_access_filled" name="google_access_filled" />
+                  <% end %>
 
                   <div class="Sessions-field">
                     <%= text_field_tag :email, CartoDB.extract_subdomain(request), :title => "Email or username", placeholder: "email or username", class: "Sessions-input" %>

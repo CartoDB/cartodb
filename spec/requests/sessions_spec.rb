@@ -127,6 +127,15 @@ feature "Sessions" do
       page.should_not have_css('#password')
     end
 
+    it 'does not allow google login to organization users if auth_google_enabled is false' do
+      @organization.auth_google_enabled = false
+      @organization.save
+
+      visit org_login_url(@org_user_1.organization)
+      page.should_not have_css('#google_signup_access_token')
+      page.should_not have_css('#google_login_button_iframe')
+    end
+
   end
 
   def org_login_url(organization)

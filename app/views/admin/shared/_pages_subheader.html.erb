@@ -27,7 +27,7 @@
       <li class="SideMenu-typeItem"><a href="<%= CartoDB.url(self, 'account_user') %>" class="SideMenu-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/users_account" %>">Account</a></li>
       <li class="SideMenu-typeItem"><a href="<%= CartoDB.url(self, 'api_key_credentials') %>" class="SideMenu-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/client_applications_api_key" %>">API keys</a></li>
       <li class="SideMenu-typeItem"><a href="<%= CartoDB.url(self, 'oauth_credentials')%>" class="SideMenu-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/client_applications_oauth" %>">OAuth credentials</a></li>
-      <% if (!Cartodb.config[:cartodb_com_hosted].present? && (!current_user.organization.present? || current_user.organization_owner?))  %>
+      <% if (!Cartodb.config[:cartodb_com_hosted].present? && (!current_user.organization.present? || !current_user.organization_owner?))  %>
         <li class="SideMenu-typeItem"><a href="<%= current_user.plan_url(request.protocol) %>" class="SideMenu-typeLink">Billing</a></li>
       <% end %>
       <% if current_user.organization_owner? %>

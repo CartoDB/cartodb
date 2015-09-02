@@ -29,8 +29,7 @@ module CartoDB
       end
 
       def load_common_data_for_user(user, visualizations_api_url)
-        user.last_common_data_update_date = Time.now
-        user.save
+        update_user_date_flag(user)
 
         added = 0
         updated = 0
@@ -87,6 +86,20 @@ module CartoDB
         }
 
         return added, updated, not_modified, deleted, failed
+      end
+
+      def update_user_date_flag(user)
+        begin
+          user.last_common_data_update_date = Time.now
+          if user.valid?
+            user.save(raise_on_failure: true)
+          elsif user.errors[:quota_in_bytes]
+            # This happens for the organization quota validation in the user model so we bypass this
+            user.save(:validate => false, raise_on_failure: true)
+          end
+        rescue => e
+          CartoDB.notify_exception(e, {user: user})
+        end
       end
 
       def delete_common_data_for_user(user)

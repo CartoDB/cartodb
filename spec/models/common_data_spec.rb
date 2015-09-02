@@ -11,6 +11,7 @@ describe CommonData do
     @common_data.stubs(:config).with('base_url').returns(nil)
     @common_data.stubs(:config).with('api_key').returns('wadus')
     @common_data.stubs(:config).with('format', 'shp').returns('shp')
+    CommonDataRedisCache.new.invalidate
   end
 
   after(:all) do

@@ -81,34 +81,6 @@ describe Importer2::Georeferencer do
     end
   end #run
 
-  describe '#populate_the_geom_from_latlon' do
-    it 'populates the_geom from lat / lon values' do
-      lat = Importer2::Georeferencer::LATITUDE_POSSIBLE_NAMES.sample
-      lon = Importer2::Georeferencer::LONGITUDE_POSSIBLE_NAMES.sample
-
-      table_name = create_table(
-        @db,
-        latitude_column:  lat,
-        longitude_column: lon
-      )
-
-      georeferencer = georeferencer_instance(@db, table_name)
-      dataset       = @db[table_name.to_sym]
-
-      georeferencer.create_the_geom_in(table_name)
-      dataset.insert(
-        :name         => 'bogus',
-        :description  => 'bogus',
-        :"#{lat}"     => rand(90),
-        :"#{lon}"     => rand(180)
-      )
-
-      dataset.first.fetch(:the_geom).should be_nil
-      georeferencer.populate_the_geom_from_latlon(table_name, lat, lon)
-      dataset.first.fetch(:the_geom).should_not be_nil
-    end
-  end
-
   describe '#create_the_geom_in' do
     before do
       @table_name = create_table(@db)

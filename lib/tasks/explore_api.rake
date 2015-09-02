@@ -116,7 +116,7 @@ namespace :cartodb do
       puts "UPDATING"
       # INFO: we need to check all known visualizations because they might've been deleted
       offset = 0
-      while (explore_visualizations = user.in_database[%Q{ select visualization_id, visualization_updated_at, user_username from #{VISUALIZATIONS_TABLE} order by visualization_created_at asc limit #{UPDATE_BATCH_SIZE} offset #{offset} }].all).length > 0
+      while (explore_visualizations = user.in_database[%Q{ select visualization_id, visualization_updated_at from #{VISUALIZATIONS_TABLE} order by visualization_created_at asc limit #{UPDATE_BATCH_SIZE} offset #{offset} }].all).length > 0
         
         explore_visualizations_by_visualization_id = {}
         explore_visualizations.each { |row|
@@ -142,7 +142,7 @@ namespace :cartodb do
           else
             # INFO: retrieving mapviews makes this much slower
             # TODO: only update when there're new mapviews or likes
-            user.in_database.run update_mapviews_and_likes_query(v, explore_visualization)
+            user.in_database.run update_mapviews_and_likes_query(v)
             mapviews_liked_updated_count += 1
           end
         }
@@ -253,35 +253,31 @@ namespace :cartodb do
       }
     end
 
-    def get_visualization_tables(visualization, explore_visualization)
+    def get_visualization_tables(visualization)
       # We are using layers instead of related tables because with related tables we are connecting
       # to the users databases and we are reaching the connections limit
-      table_names = visualization.layers(:carto_and_torque).map { |layer| extract_table_name(layer, explore_visualization) }
+      table_names = visualization.layers(:carto_and_torque).map { |layer| extract_table_name(layer) }
       %Q{{#{table_names.compact.join(",")}}}
     end
 
-    def extract_table_name(layer, explore_visualization)
+    def extract_table_name(layer)
       table_username = layer.options['user_name']
       table_name = layer.options['table_name'].gsub(/"/,'\"').split('.')
-      #Here we check for:
-      # a) return as comes, but escaping quotes, if the table_name have a . this means an old format username.tablename
-      # b) return table_name only if there is only the tablename and the visualization owner and the layer username is the same
-      # c) return username.table_name if there is only the tablename and the visualization owner and the layer username are not the same
-      #Always escape the username because to avoid problems with non-alfanumeric characters like '-'
+      # Here we check for:
+      #   a) return as comes, but escaping quotes, if the table_name have a . this means an old format username.tablename
+      #   b) return username.table_name with the username escaped to avoid problems with non-alphanumeric characters like '-'
       if table_name.length > 1
         %Q[#{layer.options['table_name'].gsub(/"/,'\"')}]
-      elsif table_name.length == 1 && table_username == explore_visualization[:user_username]
-        %Q[#{table_name[0]}]
-      elsif table_name.length == 1 && table_username != explore_visualization[:user_username]
+      elsif table_name.length == 1 && !table_username.blank?
         %Q[\\"#{table_username}\\".#{table_name[0]}]
       else
         nil
       end
     end
 
-    def update_mapviews_and_likes_query(visualization, explore_visualization)
+    def update_mapviews_and_likes_query(visualization)
       v = visualization
-      update_tables = %Q{, visualization_table_names = '#{get_visualization_tables(v, explore_visualization)}'}
+      update_tables = %Q{, visualization_table_names = '#{get_visualization_tables(v)}'}
       # Synchronization method from Visualization::Relator uses empty Hash when there is no sync
       %Q{ UPDATE #{VISUALIZATIONS_TABLE} set
             visualization_mapviews = #{v.mapviews},

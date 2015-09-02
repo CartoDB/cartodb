@@ -57,6 +57,7 @@ class SignupController < ApplicationController
       # Template variables
       @user_creation_id = creation_data[:id]
       @user_name = creation_data[:id]
+      @redirect_url = CartoDB.url(self, 'dashboard')
       render 'shared/signup_confirmation'
     else
       @user = @account_creator.user

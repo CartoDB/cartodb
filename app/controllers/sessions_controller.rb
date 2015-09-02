@@ -120,6 +120,7 @@ class SessionsController < ApplicationController
       flash.now[:success] = 'User creation in progress'
       @user_creation_id = creation_data[:id]
       @user_name = creation_data[:id]
+      @redirect_url = CartoDB.url(self, 'login')
       render 'shared/signup_confirmation'
     else
       errors = @account_creator.validation_errors

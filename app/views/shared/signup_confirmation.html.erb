@@ -6,7 +6,7 @@
     var user_creation_id = "<%= @user_creation_id %>";
     var user_name = "<%= @user_namee %>";
     var is_custom_install = <%= Cartodb.config[:cartodb_com_hosted].present? %>;
-    var user_url = "<%= CartoDB.url(self, 'dashboard') %>";
+    var user_url = "<%= @redirect_url %>";
   </script>
 <% end %>
 

@@ -213,7 +213,7 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
       if (attribution) {
         // Setting attribution in map model
         // it doesn't persist in the backend, so this is needed.
-        var attributions = this.map.get('attribution') || [];
+        var attributions = _.clone(this.map.get('attribution')) || [];
         if (!_.contains(attributions, attribution)) {
           attributions.push(attribution);
         }

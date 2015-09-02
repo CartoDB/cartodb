@@ -80,10 +80,6 @@ var GMapsCartoDBLayerView = function(layerModel, gmapsMap) {
 
   _.bindAll(this, 'featureOut', 'featureOver', 'featureClick');
 
-  // CartoDB new attribution,
-  // also we have the logo
-  layerModel.attributes.attribution = cdb.config.get('cartodb_attributions');
-
   var opts = _.clone(layerModel.attributes);
 
   opts.map =  gmapsMap;

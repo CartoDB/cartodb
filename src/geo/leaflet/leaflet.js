@@ -58,8 +58,11 @@
         // unset bounds to not change mapbounds
         self.map.unset('view_bounds_sw', { silent: true });
         self.map.unset('view_bounds_ne', { silent: true });
-
       }
+
+      // TODO: Try to add the attribution after the rest of attribution (after all layers)
+      // have been added.
+      this.map_leaflet.attributionControl.addAttribution(this.map.get("attribution"));
 
       this.map.bind('set_view', this._setView, this);
       this.map.layers.bind('add', this._addLayer, this);
@@ -253,18 +256,6 @@
       for(var i in this.layers) {
         var lv = this.layers[i];
         lv.setZIndex(lv.model.get('order'));
-      }
-
-      var attribution = layer.get('attribution');
-
-      if (attribution) {
-        // Setting attribution in map model
-        var attributions = this.map.get('attribution') || [];
-        if (!_.contains(attributions, attribution)) {
-          attributions.push(attribution);
-        }
-
-        this.map.set({ attribution: attributions });
       }
 
       if(opts === undefined || !opts.silent) {

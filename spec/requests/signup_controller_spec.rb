@@ -2,6 +2,10 @@ require_relative '../spec_helper'
 
 describe SignupController do
 
+  before(:each) do
+    User.any_instance.stubs(:load_common_data).returns(true)
+  end
+
   describe 'signup page' do
 
     after(:each) do
@@ -52,6 +56,11 @@ describe SignupController do
       @organization.save
     end
 
+    before(:each) do
+      @organization.auth_username_password_enabled = true
+      @organization.save
+    end
+
     it 'triggers validation error and not a NewUser job if email is not valid' do
       ::Resque.expects(:enqueue).never
 
@@ -63,6 +72,16 @@ describe SignupController do
       response.status.should == 200
       last_user_creation = Carto::UserCreation.order('created_at desc').limit(1).first
       last_user_creation.should == nil
+    end
+
+    it 'returns 400 error if you attempt username + password authentication and it is not valid' do
+      @organization.auth_username_password_enabled = false
+      @organization.save
+
+      host! "#{@organization.name}.localhost.lan"
+      post signup_organization_user_url(user_domain: @organization.name, user: { username: 'anewuser', email: "anewuser@#{@organization.whitelisted_email_domains.first}", password: 'password' })
+      response.status.should == 400
+      ::Resque.expects(:enqueue).never
     end
 
     it 'triggers a NewUser job with form parameters and default quota' do

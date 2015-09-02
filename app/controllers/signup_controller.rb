@@ -18,6 +18,8 @@ class SignupController < ApplicationController
   def create
     @user = ::User.new_with_organization(@organization)
 
+    raise "Organization doesn't allow user + password authentication" if user_password_signup? && !@organization.auth_username_password_enabled
+
     google_access_token = [params.fetch(:google_access_token, nil), params.fetch(:google_signup_access_token, nil)].uniq.compact.first
     # Merge both sources (signup and login) in a single param
     params[:google_access_token] = google_access_token
@@ -58,7 +60,7 @@ class SignupController < ApplicationController
   rescue => e
     CartoDB.notify_exception(e, { new_user: @user.inspect })
     flash.now[:error] = e.message
-    render action: 'signup'
+    render action: 'signup', status: 400
   end
 
   private

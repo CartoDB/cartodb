@@ -173,7 +173,7 @@ module CartoDB
     end #number_to_boolean
 
     def date_to_number
-      straight_cast('double precision', cast: "cartodb.CDB_DateToNumber(#{column_name})")
+      straight_cast('double precision', cast: "extract(epoch from #{column_name})")
     end
 
     def date_to_boolean

@@ -14,8 +14,8 @@ $shadow-color: rgba(black, 0.1);
   @include flex-direction(column);
   min-height: 100vh;
   background:
-    image-url("backgrounds/sessions.png"),
-    linear-gradient(to bottom right, #1F262A, #354046);
+  image-url("backgrounds/sessions.png"),
+  linear-gradient(to bottom right, #1F262A, #354046);
   background-size: cover;
 }
 
@@ -62,6 +62,9 @@ $shadow-color: rgba(black, 0.1);
   font-size: 20px;
   line-height: 30px;
   color: $text-color;
+}
+.Sessions-description.Sessions-description--small {
+  font-size: 17px;
 }
 
 .Sessions-description a {
@@ -180,6 +183,14 @@ $shadow-color: rgba(black, 0.1);
   }
 }
 
+.SessionErrors {
+  margin: 15px 0;
+}
+.SessionErrors-item {
+  color: $cError;
+  font-size: 20px;
+}
+
 .Loading-item {
   display: inline-block;
   width: 8px;
@@ -266,3 +277,4 @@ $shadow-color: rgba(black, 0.1);
     transform: scale3d(1, 1, 1);
   }
 }
+

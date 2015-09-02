@@ -50,7 +50,7 @@ feature "Sessions" do
       fill_in 'email', :with => @user.email
       fill_in 'password', :with => @user.email.split('@').first
       click_link_or_button 'Login'
-      page.should have_css(".ContentController")
+      page.should be_dashboard
     end
 
     scenario "Get the session information via OAuth" do
@@ -113,14 +113,25 @@ feature "Sessions" do
     include_context 'organization with users helper'
 
     it 'allows login to organization users' do
-      visit login_url(:host => "#{@org_user_1.organization.name}.localhost.lan", :port => Capybara.server_port)
-
-      fill_in 'email', :with => @org_user_1.email
-      fill_in 'password', :with => @org_user_1.username
-      click_link_or_button 'Login'
-      page.should have_css(".ContentController")
+      visit org_login_url(@org_user_1.organization)
+      send_login_form(@org_user_1)
+      page.should be_dashboard
     end
 
+  end
+
+  def org_login_url(organization)
+    login_url(:host => "#{organization.name}.localhost.lan", :port => Capybara.server_port)
+  end
+
+  def send_login_form(user)
+    fill_in 'email', :with => user.email
+    fill_in 'password', :with => user.username
+    click_link_or_button 'Login'
+  end
+
+  def be_dashboard
+    have_css(".ContentController")
   end
 
 end

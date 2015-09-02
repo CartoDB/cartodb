@@ -154,7 +154,7 @@ $sLabel-width: 140px;
 }
 
 .FormAccount-planTag {
-  background-color: #00CC32;
+  background-color: $cHighlight-positive;
   color: #FFFFFF;
   font-size: 13px;
   font-weight: normal;
@@ -435,7 +435,7 @@ $sLabel-width: 140px;
   &.warning { color: #FFB713; }
 }
 .FormAccount-rowInfoText--centered { text-align: center }
-.FormAccount-rowInfoText--smaller { font-size: $sFontSize-smallUpperCase }
+.FormAccount-rowInfoText--smaller { width: 180px; }
 .FormAccount-rowInfoText--block { width: 100% }
 .FormAccount-rowInfoText--maxWidth {
   max-width: 480px;

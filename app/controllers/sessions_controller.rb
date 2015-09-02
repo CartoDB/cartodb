@@ -72,7 +72,7 @@ class SessionsController < ApplicationController
   def unauthenticated
     username = extract_username(request, params)
     CartoDB::Stats::Authentication.instance.increment_failed_login_counter(username)
-    
+
     # Use an instance variable to show the error instead of the flash hash. Setting the flash here means setting
     # the flash for the next request and we want to show the message only in the current one
     @login_error = (params[:email].blank? && params[:password].blank?) ? 'Can\'t be blank' : 'Your account or your password is not ok'
@@ -111,8 +111,8 @@ class SessionsController < ApplicationController
     @account_creator = CartoDB::UserAccountCreator.new
     @account_creator.with_organization(@organization)
 
-    @account_creator.with_param(:username, cartodb_username)
-    @account_creator.with_param(:email, ldap_email) unless ldap_email.nil?
+    @account_creator.with_param(CartoDB::UserAccountCreator::PARAM_USERNAME, cartodb_username)
+    @account_creator.with_param(CartoDB::UserAccountCreator::PARAM_EMAIL, ldap_email) unless ldap_email.nil?
 
     if @account_creator.valid?
       creation_data = @account_creator.enqueue_creation(self)

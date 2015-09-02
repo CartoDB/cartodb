@@ -5,6 +5,10 @@ require_dependency 'google_plus_api'
 module CartoDB
   class UserAccountCreator
 
+    PARAM_USERNAME = :username
+    PARAM_EMAIL = :email
+    PARAM_PASSWORD = :password
+
     def initialize
       @built = false
       @organization = nil
@@ -18,6 +22,7 @@ module CartoDB
     end
 
     def with_organization(organization)
+      @organization = organization
       @user = ::User.new_with_organization(organization)
       self
     end
@@ -49,26 +54,31 @@ module CartoDB
       user_creation.save
 
       common_data_url = CartoDB::Visualization::CommonDataService.build_url(current_controller)
-      ::Resque.enqueue(::Resque::UserJobs::Signup::NewUser, user_creation.id, common_data_url)
+      ::Resque.enqueue(::Resque::UserJobs::Signup::NewUser, user_creation.id, common_data_url,
+        promote_to_organization_owner?)
 
       {id: user_creation.id, username: user_creation.username}
     end
 
     private
 
+    def promote_to_organization_owner?
+      !!(@organization && !@organization.owner_id && @user_params[PARAM_USERNAME] &&
+        @user_params[PARAM_USERNAME] == "#{@organization.name}-admin")
+    end
+
     def build
       return if @built
 
-      # TODO: Probably worth to reuse for ldap too
       if @google_user_data
         @google_user_data.set_values(@user)
       else
-        @user.email = @user_params[:email]
-        @user.password = @user_params[:password]
-        @user.password_confirmation = @user_params[:password]
+        @user.email = @user_params[PARAM_EMAIL]
+        @user.password = @user_params[PARAM_PASSWORD]
+        @user.password_confirmation = @user_params[PARAM_PASSWORD]
       end
 
-      @user.username = @user_params[:username] if @user_params[:username]
+      @user.username = @user_params[PARAM_USERNAME] if @user_params[PARAM_USERNAME]
     end
 
   end

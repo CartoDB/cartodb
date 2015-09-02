@@ -42,9 +42,12 @@ class SignupController < ApplicationController
     end
 
     if params[:user]
-      @account_creator.with_param(:username, params[:user][:username]) if params[:user][:username].present?
-      @account_creator.with_param(:email, params[:user][:email]) if params[:user][:email].present?
-      @account_creator.with_param(:password, params[:user][:password]) if params[:user][:password].present?
+      @account_creator.with_param(CartoDB::UserAccountCreator::PARAM_USERNAME,
+                                  params[:user][:username]) if params[:user][:username].present?
+      @account_creator.with_param(CartoDB::UserAccountCreator::PARAM_EMAIL,
+                                  params[:user][:email]) if params[:user][:email].present?
+      @account_creator.with_param(CartoDB::UserAccountCreator::PARAM_PASSWORD,
+                                  params[:user][:password]) if params[:user][:password].present?
     end
 
     if @account_creator.valid?

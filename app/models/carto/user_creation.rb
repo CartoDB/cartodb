@@ -35,6 +35,7 @@ class Carto::UserCreation < ActiveRecord::Base
     after_transition any => :creating_user, :do => :initialize_user
     after_transition any => :validating_user, :do => :validate_user
     after_transition any => :saving_user, :do => :save_user
+    after_transition any => :promoting_user, :do => :promote_user
     after_transition any => :load_common_data, :do => :load_common_data
     after_transition any => :creating_user_in_central, :do => :create_in_central
 
@@ -44,11 +45,12 @@ class Carto::UserCreation < ActiveRecord::Base
     event :next_creation_step do
       transition :enqueuing => :creating_user,
           :creating_user => :validating_user,
-          :validating_user => :saving_user
+          :validating_user => :saving_user,
+          :saving_user => :promoting_user
 
-      transition :saving_user => :creating_user_in_central, :creating_user_in_central => :load_common_data, :load_common_data => :success, :if => :sync_data_with_cartodb_central?
+      transition :promoting_user => :creating_user_in_central, :creating_user_in_central => :load_common_data, :load_common_data => :success, :if => :sync_data_with_cartodb_central?
 
-      transition :saving_user => :load_common_data, :load_common_data => :success, :unless => :sync_data_with_cartodb_central?
+      transition :promoting_user => :load_common_data, :load_common_data => :success, :unless => :sync_data_with_cartodb_central?
     end
 
     event :fail_user_creation do
@@ -66,7 +68,11 @@ class Carto::UserCreation < ActiveRecord::Base
         true
       end
     end
-    
+
+  end
+
+  def set_owner_promotion(promote_to_organization_owner)
+    @promote_to_organization_owner = promote_to_organization_owner
   end
 
   def set_common_data_url(common_data_url)
@@ -107,11 +113,13 @@ class Carto::UserCreation < ActiveRecord::Base
     @user.email = self.email
     @user.crypted_password = self.crypted_password
     @user.salt = self.salt
-    @user.organization = ::Organization.where(id: self.organization_id).first
     @user.quota_in_bytes = self.quota_in_bytes unless self.quota_in_bytes.nil?
     @user.google_sign_in = self.google_sign_in
     @user.enable_account_token = User.make_token if requires_validation_email?
-    @user.organization.owner.copy_account_features(@user)
+    unless @promote_to_organization_owner
+      @user.organization = ::Organization.where(id: self.organization_id).first
+      @user.organization.owner.copy_account_features(@user)
+    end
   rescue => e
     handle_failure(e, mark_as_failure = true)
   end
@@ -130,6 +138,15 @@ class Carto::UserCreation < ActiveRecord::Base
     self.user_id = @user.id
     self.save
   rescue => e
+    handle_failure(e, mark_as_failure = true)
+  end
+
+  def promote_user
+    return unless @promote_to_organization_owner
+    user_organization = CartoDB::UserOrganization.new(self.organization_id, @user.id)
+    user_organization.promote_user_to_admin
+  rescue => e
+    debugger
     handle_failure(e, mark_as_failure = true)
   end
 

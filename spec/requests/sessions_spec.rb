@@ -1,5 +1,6 @@
 # encoding: utf-8
 require_relative '../acceptance_helper'
+require_relative '../factories/visualization_creation_helpers'
 
 feature "Sessions" do
   before do
@@ -106,6 +107,20 @@ feature "Sessions" do
 
       page.should have_content("Login to CartoDB")
     end
+  end
+
+  describe "Organization login" do
+    include_context 'organization with users helper'
+
+    it 'allows login to organization users' do
+      visit login_url(:host => "#{@org_user_1.organization.name}.localhost.lan", :port => Capybara.server_port)
+
+      fill_in 'email', :with => @org_user_1.email
+      fill_in 'password', :with => @org_user_1.username
+      click_link_or_button 'Login'
+      page.should have_css(".ContentController")
+    end
+
   end
 
 end

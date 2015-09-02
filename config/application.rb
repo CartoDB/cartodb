@@ -98,6 +98,8 @@ module CartoDB
       confirmation.js
       new_public_table.js
 
+      user_feed.js
+
       tipsy.js
       modernizr.js
       statsc.js

@@ -15,6 +15,7 @@ module CartoDB
       @google_user_data = nil
       @user = ::User.new
       @user_params = {}
+      @custom_errors = {}
     end
 
     def with_param(key, value)
@@ -40,11 +41,15 @@ module CartoDB
     def valid?
       build
 
-      @user.valid? && @user.validate_credentials_not_taken_in_central
+      if @organization && @organization.owner.nil? && !promote_to_organization_owner?
+        @custom_errors[:organization] = ["owner is not set. Organization administrator must login first before other accounts can be used in the system"]
+      end
+
+      @user.valid? && @user.validate_credentials_not_taken_in_central && @custom_errors.keys.length == 0
     end
 
     def validation_errors
-      @user.errors
+      @user.errors.merge!(@custom_errors)
     end
 
     def enqueue_creation(current_controller)

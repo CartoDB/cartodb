@@ -15,10 +15,14 @@ class Warden::SessionSerializer
 end
 
 Warden::Strategies.add(:password) do
+  def valid_password_strategy_for_user(user)
+    user.organization.nil? || user.organization.auth_username_password_enabled
+  end
+
   def authenticate!
     if params[:email] && params[:password]
       if (user = User.authenticate(params[:email], params[:password]))
-        if user.enabled?
+        if user.enabled? && valid_password_strategy_for_user(user)
           success!(user, :message => "Success")
           request.flash['logged'] = true
         elsif !user.enable_account_token.nil?
@@ -53,10 +57,14 @@ Warden::Strategies.add(:enable_account_token) do
 end
 
 Warden::Strategies.add(:google_access_token) do
+  def valid_google_access_token_strategy_for_user(user)
+    user.organization.nil? || user.organization.auth_google_enabled
+  end
+
   def authenticate!
     if params[:google_access_token]
       user = GooglePlusAPI.new.get_user(params[:google_access_token])
-      if user
+      if user && valid_google_access_token_strategy_for_user(user)
         if user.enable_account_token.nil?
           success!(user)
         else

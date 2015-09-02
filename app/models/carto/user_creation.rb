@@ -145,8 +145,8 @@ class Carto::UserCreation < ActiveRecord::Base
     return unless @promote_to_organization_owner
     user_organization = CartoDB::UserOrganization.new(self.organization_id, @user.id)
     user_organization.promote_user_to_admin
+    @user.reload
   rescue => e
-    debugger
     handle_failure(e, mark_as_failure = true)
   end
 

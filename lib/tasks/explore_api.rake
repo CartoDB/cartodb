@@ -36,7 +36,6 @@ namespace :cartodb do
                 visualization_description,
                 visualization_type,
                 visualization_synced,
-                visualization_table_names,
                 visualization_tags,
                 visualization_created_at,
                 visualization_updated_at,
@@ -255,14 +254,30 @@ namespace :cartodb do
     end
 
     def get_visualization_tables(visualization)
-      table_names = visualization.related_tables.map{ |table| table.name }
-      %Q{{#{table_names.join(",")}}}
+      # We are using layers instead of related tables because with related tables we are connecting
+      # to the users databases and we are reaching the connections limit
+      table_names = visualization.layers(:carto_and_torque).map { |layer| extract_table_name(layer) }
+      %Q{{#{table_names.compact.join(",")}}}
+    end
+
+    def extract_table_name(layer)
+      table_username = layer.options['user_name']
+      table_name = layer.options['table_name'].gsub(/"/,'\"').split('.')
+      # Here we check for:
+      #   a) return as comes, but escaping quotes, if the table_name have a . this means an old format username.tablename
+      #   b) return username.table_name with the username escaped to avoid problems with non-alphanumeric characters like '-'
+      if table_name.length > 1
+        %Q[#{layer.options['table_name'].gsub(/"/,'\"')}]
+      elsif table_name.length == 1 && !table_username.blank?
+        %Q[\\"#{table_username}\\".#{table_name[0]}]
+      else
+        nil
+      end
     end
 
     def update_mapviews_and_likes_query(visualization)
       v = visualization
-      # Only derived visualizations could add or remove tables (layers)
-      update_tables = %Q{, visualization_table_names = '#{get_visualization_tables(v)}'} if v.type == CartoDB::Visualization::Member::TYPE_DERIVED
+      update_tables = %Q{, visualization_table_names = '#{get_visualization_tables(v)}'}
       # Synchronization method from Visualization::Relator uses empty Hash when there is no sync
       %Q{ UPDATE #{VISUALIZATIONS_TABLE} set
             visualization_mapviews = #{v.mapviews},

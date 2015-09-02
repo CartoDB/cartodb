@@ -26,47 +26,53 @@
 
               <div class="Sessions-sep"></div>
 
-              <%= form_tag CartoDB.path(self, 'create_session'), class: "js-Loading-form" do %>
-                <input type="hidden" value="" id="google_access_token" name="google_access_token" />
-                <input type="hidden" value="0" id="google_access_filled" name="google_access_filled" />
+              <% if @organization.auth_username_password_enabled %>
 
-                <div class="Sessions-field">
-                  <%= text_field_tag :email, CartoDB.extract_subdomain(request), :title => "Email or username", placeholder: "email or username", class: "Sessions-input" %>
+                <%= form_tag CartoDB.path(self, 'create_session'), class: "js-Loading-form" do %>
+                  <input type="hidden" value="" id="google_access_token" name="google_access_token" />
+                  <input type="hidden" value="0" id="google_access_filled" name="google_access_filled" />
 
-                  <% if @login_error %>
-                    <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @login_error %>">!</div>
-                  <% end %>
-                </div>
+                  <div class="Sessions-field">
+                    <%= text_field_tag :email, CartoDB.extract_subdomain(request), :title => "Email or username", placeholder: "email or username", class: "Sessions-input" %>
 
-                <div class="Sessions-field">
-                  <%= password_field_tag :password, "", placeholder: "password", class: "Sessions-input" %>
+                    <% if @login_error %>
+                      <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @login_error %>">!</div>
+                    <% end %>
+                  </div>
 
-                  <% if @login_error %>
-                    <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @login_error %>">!</div>
-                  <% end %>
-                </div>
+                  <div class="Sessions-field">
+                    <%= password_field_tag :password, "", placeholder: "password", class: "Sessions-input" %>
 
-                <div class="Sessions-field">
-                  <p>
-                    <button type="submit" class="Btn Btn--green Btn--m is-highlight u-tupper Sessions-button js-Sessions-button js-Loading u-right">
-                      <span class="js-Loading-text">Login</span>
-                      <span class="js-Loading-anim" style="display: none;">
-                        <span class="Loading-item">
-                          <span class="Loading-itemInner Loading-itemInner--01"></span>
+                    <% if @login_error %>
+                      <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @login_error %>">!</div>
+                    <% end %>
+                  </div>
+
+                  <div class="Sessions-field">
+                    <p>
+                      <button type="submit" class="Btn Btn--green Btn--m is-highlight u-tupper Sessions-button js-Sessions-button js-Loading u-right">
+                        <span class="js-Loading-text">Login</span>
+                        <span class="js-Loading-anim" style="display: none;">
+                          <span class="Loading-item">
+                            <span class="Loading-itemInner Loading-itemInner--01"></span>
+                          </span>
+
+                          <span class="Loading-item">
+                            <span class="Loading-itemInner Loading-itemInner--02"></span>
+                          </span>
+
+                          <span class="Loading-item">
+                            <span class="Loading-itemInner Loading-itemInner--03"></span>
+                          </span>
                         </span>
+                      </button>
+                    </p>
+                  </div>
+                <% end %>
 
-                        <span class="Loading-item">
-                          <span class="Loading-itemInner Loading-itemInner--02"></span>
-                        </span>
-
-                        <span class="Loading-item">
-                          <span class="Loading-itemInner Loading-itemInner--03"></span>
-                        </span>
-                      </span>
-                    </button>
-                  </p>
-                </div>
               <% end %>
+
+
             </div>
           </div>
         </div>

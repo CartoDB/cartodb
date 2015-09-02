@@ -118,6 +118,15 @@ feature "Sessions" do
       page.should be_dashboard
     end
 
+    it 'does not allow user+password login to organization users if auth_username_password_enabled is false' do
+      @organization.auth_username_password_enabled = false
+      @organization.save
+
+      visit org_login_url(@org_user_1.organization)
+      page.should_not have_css('#email')
+      page.should_not have_css('#password')
+    end
+
   end
 
   def org_login_url(organization)

@@ -6,8 +6,8 @@ module CartoDB
       class Georeferencer
         def initialize(*args); end
         def run; Object.new; end
-      end # Ogr2ogr
-    end # Doubles
-  end # Importer2
-end # CartoDB
+      end
+    end
+  end
+end
 

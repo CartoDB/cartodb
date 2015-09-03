@@ -40,6 +40,8 @@ class Admin::OrganizationUsersController < ApplicationController
     current_user.copy_account_features(@user)
     @user.save(raise_on_failure: true)
     @user.create_in_central
+    common_data_url = CartoDB::Visualization::CommonDataService.build_url(self)
+    ::Resque.enqueue(::Resque::UserJobs::CommonData::LoadCommonData, @user.id, common_data_url)
     @user.notify_new_organization_user
     redirect_to CartoDB.url(self, 'organization', {}, current_user), flash: { success: "New user created successfully" }
   rescue CartoDB::CentralCommunicationFailure => e

@@ -100,7 +100,7 @@ describe SessionsController do
 
       response.status.should == 200
       
-      response.body =~ /Your account is being created/).to_i.should_not eq 0
+      (response.body =~ /Your account is being created/).to_i.should_not eq 0
     end
 
 

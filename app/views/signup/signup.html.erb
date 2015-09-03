@@ -4,6 +4,14 @@
   <%= javascript_include_tag 'cdb.js', 'signup.js' %>
 <% end %>
 
+<% content_for :css do %>
+  <style>
+  .FlashMessage-info.error {
+    color: white;
+  }
+  </style>
+<% end %>
+
 <div class="Sessions" style="<%= background %>">
   <%= render partial: 'admin/shared/sessions_header', locals: { align: "Navbar--left" } %>
 
@@ -15,6 +23,9 @@
           <div class="Sessions-left">
             <div class="Sessions-leftInner">
               <h1 class="Sessions-title u-vspace-xs">Sign up for CartoDB</h1>
+
+              <%= render :partial => 'shared/flash_message' %>
+
               <p class="Sessions-description">Please, use an email address belonging to this organization.</p>
 
               <% unless @user.google_sign_in %>

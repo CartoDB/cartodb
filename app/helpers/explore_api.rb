@@ -37,11 +37,11 @@ module Helpers
           tables = get_visualization_tables(v)
           geometry_data = get_geometry_data(v)
           organization_id = u.organization_id.nil? ? 'NULL' : "'#{u.organization_id}'"
-          bbox = !bbox_values[v.id].nil? ? "ST_AsText('#{bbox_values[v.id]}')" : 'NULL'
+          bbox = bbox_values[v.id].nil? ? 'NULL' : "ST_AsText('#{bbox_values[v.id]}')"
 
           # Insert values built based in the coulmn order from VISUALIZATIONS_COLUMNS
           visualizations_values.push "('#{v.id}', '#{v.name}', '#{v.description}','#{v.type}',"\
-          "'#{!v.synchronization.is_a?(Hash)}', '#{tables}', '#{tags}', #{bbox}, #{geometry_data[:view_box_polygon]},"\
+          "'#{v.is_synced?}', '#{tables}', '#{tags}', #{bbox}, #{geometry_data[:view_box_polygon]},"\
           "#{geometry_data[:center_geometry]}, #{geometry_data[:zoom]},"\
           "'#{v.created_at}', '#{v.updated_at}', '#{v.map_id}','#{v.title}',#{v.likes_count},"\
           "#{v.mapviews}, '#{u.id}', '#{u.username}', #{organization_id}, '#{u.twitter_username}',"\

@@ -143,6 +143,8 @@ namespace :cartodb do
         mapviews_liked_updated_count = 0
         visualizations.each do |v|
           explore_visualization = explore_visualizations_by_visualization_id[v.id]
+          # We use to_id to remove the miliseconds that could give to erroneous updates
+          # http://railsware.com/blog/2014/04/01/time-comparison-in-ruby/
           if v.updated_at.to_i != explore_visualization[:visualization_updated_at].to_i
             if v.privacy != CartoDB::Visualization::Member::PRIVACY_PUBLIC
               privated_visualization_ids << v.id
@@ -246,11 +248,10 @@ namespace :cartodb do
     end
 
     def update_mapviews_and_likes_query(visualization, bbox_value)
-      # Synchronization method from Visualization::Relator uses empty Hash when there is no sync
       %Q{ UPDATE #{VISUALIZATIONS_TABLE} set
             visualization_mapviews = #{visualization.mapviews},
             visualization_likes = #{visualization.likes_count},
-            visualization_synced = #{!visualization.synchronization.is_a?(Hash)}
+            visualization_synced = #{!visualization.is_synced?}
             #{update_tables(visualization)}
             #{update_geometry(visualization, bbox_value)}
           where visualization_id = '#{visualization.id}' }
@@ -261,8 +262,6 @@ namespace :cartodb do
     end
 
     def update_geometry(visualization, bbox_value)
-      # We are going to take bbox if available for canonicals and view box
-      # for maps
       geometry_data = @explore_api_helper.get_geometry_data(visualization)
       bbox_value = !bbox_value.nil? ? "ST_AsText('#{bbox_value}')" : 'NULL'
       if visualization.type == CartoDB::Visualization::Member::TYPE_DERIVED
@@ -270,6 +269,8 @@ namespace :cartodb do
              visualization_view_box = #{geometry_data[:view_box_polygon]},
              visualization_view_box_center = #{geometry_data[:center_geometry]},
              visualization_zoom = #{geometry_data[:zoom]}}
+      elsif !bbox_value.nil?
+        %Q{, visualization_bbox = #{bbox_value}}
       else
         return
       end

@@ -82,8 +82,8 @@ describe 'Helpers' do
         :map_id => map.id,
         :name => 'vis_name',
         :description => 'vis_description',
-        :created_at => '',
-        :updated_at => '',
+        :created_at => '2015-08-13 06:13:15+00',
+        :updated_at => '2015-09-03 06:12:15+00',
         :title => 'vis_title',
         :tags => ['lala', 'lele']
       }
@@ -97,7 +97,7 @@ describe 'Helpers' do
       visualization.stubs(:layers).with(:carto_and_torque).returns([layer_1])
       bbox_values = {visualization.id => '0103000000010000000500000069B6E1BBD0FD69C17200D8285370474169B6E1BBD0FD69C1E6DDC1415E6B574120FFD8C8C1365FC1E6DDC1415E6B574120FFD8C8C1365FC17200D8285370474169B6E1BBD0FD69C17200D82853704741'}
       insert_values = @explore_api.get_visualizations_values_for_insert([visualization],bbox_values)
-      insert_values[0].should eq "('ffb16d4e-e74a-4764-b509-1b5f682238b5', 'vis_name', 'vis_description','derived','true', '{\\\"user_name_1\\\".table_1}', '{lala,lele}', ST_AsText('0103000000010000000500000069B6E1BBD0FD69C17200D8285370474169B6E1BBD0FD69C1E6DDC1415E6B574120FFD8C8C1365FC1E6DDC1415E6B574120FFD8C8C1365FC17200D8285370474169B6E1BBD0FD69C17200D82853704741'), ST_Transform(ST_Envelope('SRID=4326;POLYGON((-179.0 -85.0511, -179.0 85.0511, 179.0 85.0511, 179.0 -85.0511, -179.0 -85.0511))'::geometry), 3857),ST_GeomFromText('POINT(0 30)',3857), 3,'', '', '','vis_title',1,0, 'dcb16d4e-e74a-4764-b509-1b5f682238b5', 'user_test', NULL, 'twitter_user_test','website_test', 'avatar_url_test', 'true')"
+      insert_values[0].should eq "('ffb16d4e-e74a-4764-b509-1b5f682238b5', 'vis_name', 'vis_description','derived','false', '{\\\"user_name_1\\\".table_1}', '{lala,lele}', ST_AsText('0103000000010000000500000069B6E1BBD0FD69C17200D8285370474169B6E1BBD0FD69C1E6DDC1415E6B574120FFD8C8C1365FC1E6DDC1415E6B574120FFD8C8C1365FC17200D8285370474169B6E1BBD0FD69C17200D82853704741'), ST_Transform(ST_Envelope('SRID=4326;POLYGON((-179.0 -85.0511, -179.0 85.0511, 179.0 85.0511, 179.0 -85.0511, -179.0 -85.0511))'::geometry), 3857),ST_GeomFromText('POINT(0 30)',3857), 3,'2015-08-13 06:13:15 +0000', '2015-09-03 06:12:15 +0000', '','vis_title',1,0, 'dcb16d4e-e74a-4764-b509-1b5f682238b5', 'user_test', NULL, 'twitter_user_test','website_test', 'avatar_url_test', 'true')"
     end
   end
 

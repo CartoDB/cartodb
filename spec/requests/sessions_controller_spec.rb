@@ -9,6 +9,7 @@ describe SessionsController do
     DEFAULT_QUOTA_IN_BYTES = 1000
 
     before(:all) do
+      bypass_named_maps
       @organization = ::Organization.new
       @organization.seats = 5
       @organization.quota_in_bytes =  100.megabytes
@@ -41,6 +42,7 @@ describe SessionsController do
     end
 
     before(:each) do
+      bypass_named_maps
       FakeNetLdap.register_user(:username => @ldap_admin_cn, :password => @ldap_admin_password)
     end
 
@@ -50,7 +52,9 @@ describe SessionsController do
     end
 
     after(:all) do
+      bypass_named_maps
       @ldap_config.delete
+      @organization.destroy_cascade
     end
 
     it "doesn't allows to login until admin does first" do
@@ -79,7 +83,7 @@ describe SessionsController do
       (response.body =~ /Signup issues/).to_i.should_not eq 0
     end
 
-    it "allows to login and triggers creation if using the org admin account" do
+    it "Allows to login and triggers creation if using the org admin account" do
       # @See lib/user_account_creator.rb -> promote_to_organization_owner?
       admin_user_username = "#{@organization.name}-admin"
       admin_user_password = "foobar"
@@ -99,31 +103,96 @@ describe SessionsController do
       post create_session_url(user_domain: nil, email: admin_user_username, password: admin_user_password)
 
       response.status.should == 200
-      
       (response.body =~ /Your account is being created/).to_i.should_not eq 0
     end
 
+    it "Allows to login and triggers creation of normal users if admin already present" do
+      admin_user_username = "#{@organization.name}-admin"
+      admin_user_password = "foobar"
+      admin_user_email = "#{@organization.name}-admin@test.com"
+      @admin_user = create_user(
+        username: admin_user_username,
+        email: admin_user_email,
+        password: admin_user_password,
+        private_tables_enabled: true,
+        quota_in_bytes: 12345,
+        organization: nil
+      )
+      @admin_user.save.reload
 
-    it "triggers a NewUser job with the org owner admin when conditions are met" do
-      pending "TBD"
+      # INFO: Hack to avoid having to destroy and recreate later the organization
+      ::Organization.any_instance.stubs(:owner).returns(@admin_user)
+
+      normal_user_username = "ldap-user"
+      normal_user_password = "foobar"
+      normal_user_email = "ldap-user@test.com"
+      normal_user_cn = "cn=#{normal_user_username},#{@domain_bases.first}"
+      ldap_entry_data = { 
+          @user_id_field => [normal_user_username],
+          @user_email_field => [normal_user_email]
+        }
+      FakeNetLdap.register_user(:username => normal_user_cn, :password => normal_user_password)
+      FakeNetLdap.register_query(Net::LDAP::Filter.eq('cn', normal_user_username), ldap_entry_data)
 
       ::Resque.expects(:enqueue).with(::Resque::UserJobs::Signup::NewUser, 
         instance_of(String), instance_of(String), instance_of(FalseClass)).returns(true)
 
-      email = "testemail@#{@organization.whitelisted_email_domains[0]}"
-      password = 'testpassword' 
       host! "#{@organization.name}.localhost.lan"
-      post signup_organization_user_url(user_domain: @organization.name, user: { username: username, email: email, password: password })
+      post create_session_url(user_domain: nil, email: normal_user_username, password: normal_user_password)
+
       response.status.should == 200
-      last_user_creation = Carto::UserCreation.order('created_at desc').limit(1).first
-      last_user_creation.username.should == username
-      last_user_creation.email.should == email
-      last_user_creation.crypted_password.should_not be_empty
-      last_user_creation.salt.should_not be_empty
-      last_user_creation.organization_id.should == @organization.id
-      last_user_creation.quota_in_bytes.should == @organization.default_quota_in_bytes
+      (response.body =~ /Your account is being created/).to_i.should_not eq 0
+
+      @admin_user.destroy
     end
 
+    it "Just logs in if finds a cartodb username that matches with LDAP credentials " do
+      admin_user_username = "#{@organization.name}-admin"
+      admin_user_password = "foobar"
+      admin_user_email = "#{@organization.name}-admin@test.com"
+      admin_user_cn = "cn=#{admin_user_username},#{@domain_bases.first}"
+      ldap_entry_data = { 
+          @user_id_field => [admin_user_username],
+          @user_email_field => [admin_user_email]
+        }
+      FakeNetLdap.register_user(:username => admin_user_cn, :password => admin_user_password)
+      FakeNetLdap.register_query(Net::LDAP::Filter.eq('cn', admin_user_username), ldap_entry_data)
+
+      @admin_user = create_user(
+        username: admin_user_username,
+        email: admin_user_email,
+        password: admin_user_password,
+        private_tables_enabled: true,
+        quota_in_bytes: 12345,
+        organization: nil
+      )
+      @admin_user.save.reload
+      ::Organization.any_instance.stubs(:owner).returns(@admin_user)
+
+      # INFO: Again, hack to act as if user had organization
+      User.stubs(:where).with({
+              username: admin_user_username,
+              organization_id: @organization.id
+            }).returns([@admin_user])
+
+      host! "#{@organization.name}.localhost.lan"
+      post create_session_url(user_domain: nil, email: admin_user_username, password: admin_user_password)
+
+      response.status.should == 302
+      (response.location =~ /^http\:\/\/#{admin_user_username}(.*)\/dashboard\/$/).to_i.should eq 0
+
+      User.unstub(:where)
+
+      @admin_user.destroy
+    end
+
+  end
+
+  private
+
+  def bypass_named_maps
+    CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
   end
 
 end

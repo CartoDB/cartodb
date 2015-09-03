@@ -17,7 +17,7 @@ module Carto
         }
 
         if ldap_entry
-          user = User.where({
+          user = ::User.where({
               username: ldap_entry.cartodb_user_id,
               organization_id: ldap_entry.configuration.organization_id
             }).first

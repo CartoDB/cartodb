@@ -1184,6 +1184,12 @@ class Table
       end
     end
 
+    # There might be a rewrite during cartodbfy. Get the OID and store it in Table metadata.
+    # This is needed in order to prevent ghost tables from dropping the table and metadata associated (vizs).
+    oid = owner.in_database.fetch(%Q{SELECT '#{qualified_table_name}'::regclass::oid}).first[:oid].to_i
+    self.table_id = oid
+    self.save
+
     elapsed = Time.now - start
     if @data_import
       CartoDB::Importer2::CartodbfyTime::instance(@data_import.id).add(elapsed)

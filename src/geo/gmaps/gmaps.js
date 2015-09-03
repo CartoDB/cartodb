@@ -215,7 +215,7 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
         // it doesn't persist in the backend, so this is needed.
         var attributions = _.clone(this.map.get('attribution')) || [];
         if (!_.contains(attributions, attribution)) {
-          attributions.push(attribution);
+          attributions.unshift(attribution);
         }
 
         this.map.set({ attribution: attributions });

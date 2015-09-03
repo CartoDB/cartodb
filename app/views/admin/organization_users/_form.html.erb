@@ -37,30 +37,32 @@
     </div>
   </div>
 
-  <div class="VerticalAligned--FormRow">
-    <div class="FormAccount-row">
-      <div class="FormAccount-rowLabel">
-        <label class="FormAccount-label">New password</label>
+  <% if current_user.organization.auth_username_password_enabled %>
+    <div class="VerticalAligned--FormRow">
+      <div class="FormAccount-row">
+        <div class="FormAccount-rowLabel">
+          <label class="FormAccount-label">New password</label>
+        </div>
+        <div class="FormAccount-rowData">
+          <%= password_field_tag 'user[password]', nil, :placeholder => "New password", :class => "FormAccount-input FormAccount-input--med #{ 'FormAccount-input--error' if @user.errors[:password].present? }" %>
+        </div>
+        <div class="FormAccount-rowInfo">
+          <% if (@user.errors[:password].present?) %>
+            <p class="FormAccount-rowInfoText FormAccount-rowInfoText--error"><%= @user.errors[:password].first%></p>
+          <% end %>
+        </div>
       </div>
-      <div class="FormAccount-rowData">
-        <%= password_field_tag 'user[password]', nil, :placeholder => "New password", :class => "FormAccount-input FormAccount-input--med #{ 'FormAccount-input--error' if @user.errors[:password].present? }" %>
-      </div>
-      <div class="FormAccount-rowInfo">
-        <% if (@user.errors[:password].present?) %>
-          <p class="FormAccount-rowInfoText FormAccount-rowInfoText--error"><%= @user.errors[:password].first%></p>
-        <% end %>
-      </div>
-    </div>
 
-    <div class="FormAccount-row">
-      <div class="FormAccount-rowLabel">
-        <label class="FormAccount-label">Confirm password</label>
-      </div>
-      <div class="FormAccount-rowData">
-        <%= password_field_tag 'user[password_confirmation]', nil, :placeholder => "Confirm new password", :class => "FormAccount-input FormAccount-input--med #{ 'hello' if @user.errors[:password].present?}" %>
+      <div class="FormAccount-row">
+        <div class="FormAccount-rowLabel">
+          <label class="FormAccount-label">Confirm password</label>
+        </div>
+        <div class="FormAccount-rowData">
+          <%= password_field_tag 'user[password_confirmation]', nil, :placeholder => "Confirm new password", :class => "FormAccount-input FormAccount-input--med #{ 'hello' if @user.errors[:password].present?}" %>
+        </div>
       </div>
     </div>
-  </div>
+  <% end %>
 
   <div class="FormAccount-row">
     <div class="FormAccount-rowLabel">

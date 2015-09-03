@@ -60,10 +60,6 @@
         self.map.unset('view_bounds_ne', { silent: true });
       }
 
-      // TODO: Try to add the attribution after the rest of attribution (after all layers)
-      // have been added.
-      this.map_leaflet.attributionControl.addAttribution(this.map.get("attribution"));
-
       this.map.bind('set_view', this._setView, this);
       this.map.layers.bind('add', this._addLayer, this);
       this.map.layers.bind('remove', this._removeLayer, this);

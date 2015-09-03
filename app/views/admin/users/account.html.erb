@@ -68,46 +68,51 @@
         </div>
       </div>
 
-      <% if @user.should_display_old_password? %>
-        <div class="FormAccount-row">
-          <div class="FormAccount-rowLabel">
-            <label class="FormAccount-label">Old password</label>
+      <% if @user.organization && @user.organization.auth_username_password_enabled %>
+
+        <% if @user.should_display_old_password? %>
+          <div class="FormAccount-row">
+            <div class="FormAccount-rowLabel">
+              <label class="FormAccount-label">Old password</label>
+            </div>
+            <div class="FormAccount-rowData">
+              <%= f.password_field :old_password, :class => "FormAccount-input FormAccount-input--med #{ 'FormAccount-input--error' if @user.errors[:old_password].present? }" %>
+            </div>
+            <div class="FormAccount-rowInfo">
+              <% if (@user.errors[:old_password].present?) %>
+                <p class="FormAccount-rowInfoText FormAccount-rowInfoText--error"><%= @user.errors[:old_password].first%></p>
+              <% end %>
+            </div>
           </div>
-          <div class="FormAccount-rowData">
-            <%= f.password_field :old_password, :class => "FormAccount-input FormAccount-input--med #{ 'FormAccount-input--error' if @user.errors[:old_password].present? }" %>
+        <% end %>
+
+        <div class="VerticalAligned--FormRow">
+          <div class="FormAccount-row">
+            <div class="FormAccount-rowLabel">
+              <label class="FormAccount-label">New password</label>
+            </div>
+            <div class="FormAccount-rowData">
+              <%= f.password_field :new_password, :class => "FormAccount-input FormAccount-input--med #{ 'FormAccount-input--error' if @user.errors[:new_password].present? }" %>
+            </div>
+            <div class="FormAccount-rowInfo">
+              <% if (@user.errors[:new_password].present?) %>
+                <p class="FormAccount-rowInfoText FormAccount-rowInfoText--error"><%= @user.errors[:new_password].first%></p>
+              <% end %>
+            </div>
           </div>
-          <div class="FormAccount-rowInfo">
-            <% if (@user.errors[:old_password].present?) %>
-              <p class="FormAccount-rowInfoText FormAccount-rowInfoText--error"><%= @user.errors[:old_password].first%></p>
-            <% end %>
-          </div>
-        </div>
-      <% end %>
-      
-      <div class="VerticalAligned--FormRow">
-        <div class="FormAccount-row">
-          <div class="FormAccount-rowLabel">
-            <label class="FormAccount-label">New password</label>
-          </div>
-          <div class="FormAccount-rowData">
-            <%= f.password_field :new_password, :class => "FormAccount-input FormAccount-input--med #{ 'FormAccount-input--error' if @user.errors[:new_password].present? }" %>
-          </div>
-          <div class="FormAccount-rowInfo">
-            <% if (@user.errors[:new_password].present?) %>
-              <p class="FormAccount-rowInfoText FormAccount-rowInfoText--error"><%= @user.errors[:new_password].first%></p>
-            <% end %>
+
+          <div class="FormAccount-row js-confirmPassword">
+            <div class="FormAccount-rowLabel">
+              <label class="FormAccount-label">Confirm password</label>
+            </div>
+            <div class="FormAccount-rowData">
+              <%= f.password_field :confirm_password, :class => "FormAccount-input FormAccount-input--med" %>
+            </div>
           </div>
         </div>
 
-        <div class="FormAccount-row js-confirmPassword">
-          <div class="FormAccount-rowLabel">
-            <label class="FormAccount-label">Confirm password</label>
-          </div>
-          <div class="FormAccount-rowData">
-            <%= f.password_field :confirm_password, :class => "FormAccount-input FormAccount-input--med" %>
-          </div>
-        </div>
-      </div>
+      <% end %>
+
       <% if (!Cartodb.config[:cartodb_com_hosted].present? && (!current_user.organization.present? || current_user.organization_owner?))  %>
         <div class="FormAccount-title">
           <p class="FormAccount-titleText">Account type</p>

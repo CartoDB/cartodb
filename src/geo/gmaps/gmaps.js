@@ -210,7 +210,7 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
 
       var attribution = layer.get('attribution');
 
-      if (attribution) {
+      if (attribution && attribution !== '') {
         // Setting attribution in map model
         // it doesn't persist in the backend, so this is needed.
         var attributions = _.clone(this.map.get('attribution')) || [];

@@ -235,23 +235,19 @@
       }, 2000);
     });
 
-/*
+    it("should set the attributions on the map when layers are added", function() {
+      var layer1 = new cdb.geo.CartoDBLayer({ type: 'cartodb', attribution: 'attribution1', table_name: "table1", tile_style: 'test', user_name: 'test' });
+      var layer2 = new cdb.geo.CartoDBLayer({ type: 'cartodb', attribution: 'attribution2', table_name: "table2", tile_style: 'test', user_name: 'test' });
+      var layer3 = new cdb.geo.CartoDBLayer({ type: 'cartodb', attribution: '', table_name: "table2", tile_style: 'test', user_name: 'test' });
 
-    it("should inser layer in specified order", function() {
-      var layer    = new cdb.geo.CartoDBLayer({});
-      map.addLayer(layer);
+      map.layers.reset([layer1, layer2, layer3]);
 
-      spyOn(mapView.map_leaflet,'addLayer');
-      layer    = new cdb.geo.PlainLayer({});
-      map.addLayer(layer, {at: 0});
-
-      expect(mapView.map_leaflet.addLayer.mostRecentCall.args[1]).toEqual(true);
-      //expect(mapView.map_leaflet.addLayer).toHaveBeenCalledWith(mapView.layers[layer.cid].leafletLayer, true);
-
-
+      expect(map.get('attribution')).toEqual([
+        'attribution2',
+        'attribution1',
+        'CartoDB <a href=\'http://cartodb.com/attributions\' target=\'_blank\'>attribution</a>'
+      ]);
     });
-
-*/
 
   });
 

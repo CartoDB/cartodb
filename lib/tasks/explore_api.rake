@@ -88,8 +88,11 @@ namespace :cartodb do
     end
 
     task :setup_public_view => [:environment] do
-      user = target_user
-      user.in_database.run CREATE_PUBLIC_VIEW
+      target_user.in_database.run CREATE_PUBLIC_VIEW
+    end
+
+    task :drop_public_view => [:environment] do
+      target_user.in_database.run DROP_PUBLIC_VIEW_SQL
     end
 
     desc "Deletes the #{VISUALIZATIONS_TABLE} table"

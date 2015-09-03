@@ -352,8 +352,8 @@ class Table
         user_database.run(%Q{ALTER TABLE #{qualified_table_name} DROP COLUMN #{aux_cartodb_id_column}})
       end
 
-      self.schema(reload:true)
       self.cartodbfy
+      self.schema(reload:true)
     end
 
   end
@@ -393,7 +393,6 @@ class Table
       else
         create_table_in_database!
         set_table_id
-        set_the_geom_column!(self.the_geom_type)
       end
     end
   rescue => e
@@ -442,6 +441,7 @@ class Table
     update_table_pg_stats
 
     self.cartodbfy
+    self.schema(reload: true)
 
   rescue => e
     self.handle_creation_error(e)
@@ -1184,17 +1184,11 @@ class Table
       end
     end
 
-    # There might be a rewrite during cartodbfy. Get the OID and store it in Table metadata.
-    # This is needed in order to prevent ghost tables from dropping the table and metadata associated (vizs).
-    oid = owner.in_database.fetch(%Q{SELECT '#{qualified_table_name}'::regclass::oid}).first[:oid].to_i
-    self.table_id = oid
-
     elapsed = Time.now - start
     if @data_import
       CartoDB::Importer2::CartodbfyTime::instance(@data_import.id).add(elapsed)
     end
 
-    self.schema(reload:true)
   end
 
   def update_table_pg_stats

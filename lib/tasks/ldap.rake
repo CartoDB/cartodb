@@ -41,8 +41,15 @@ namespace :cartodb do
     desc "Creates an LDAP Configuration entry"
     task :create_ldap_configuration, [] => :environment do |t, args|
 
-      raise "Missing ORGANIZATION_ID" if ENV['ORGANIZATION_ID'].blank?
-      organization_id = ENV['ORGANIZATION_ID']
+      if ENV['ORGANIZATION_ID'].blank?
+        if ENV['ORGANIZATION_NAME'].blank?
+          raise "Missing ORGANIZATION_ID and ORGANIZATION_NAME. Must provide one of both"
+        else
+          organization_id = ::Organization.where(name: ENV['ORGANIZATION_NAME']).first.id
+        end
+       else
+        organization_id = ENV['ORGANIZATION_ID']
+       end
 
       raise "Missing HOST" if ENV['HOST'].blank?
       host = ENV['HOST']

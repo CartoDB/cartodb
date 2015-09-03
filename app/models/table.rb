@@ -1188,7 +1188,6 @@ class Table
     # This is needed in order to prevent ghost tables from dropping the table and metadata associated (vizs).
     oid = owner.in_database.fetch(%Q{SELECT '#{qualified_table_name}'::regclass::oid}).first[:oid].to_i
     self.table_id = oid
-    self.save
 
     elapsed = Time.now - start
     if @data_import
@@ -1608,6 +1607,7 @@ class Table
         )
       end
     end
+    self.cartodbfy
   end
 
   def update_the_geom!(attributes, primary_key)

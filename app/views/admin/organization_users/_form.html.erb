@@ -1,5 +1,5 @@
 
-<%= form_for @user, url: (@user.new? ? CartoDB.url(self, 'create_organization_user', {id: @organization}, current_user) : CartoDB.url(self, 'update_organization_user', {id: @user.username}, current_user)), :class =>'Form' do |f| %>
+<%= form_for @user, url: (@user.new? ? CartoDB.url(self, 'create_organization_user', {}, current_user) : CartoDB.url(self, 'update_organization_user', {id: @user.username}, current_user)), :class =>'Form' do |f| %>
 
   <%= f.hidden_field :private_tables_enabled %>
   <%= hidden_field_tag :show_account_settings_flash, true %>

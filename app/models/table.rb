@@ -393,6 +393,7 @@ class Table
       else
         create_table_in_database!
         set_table_id
+        set_the_geom_column!(DEFAULT_THE_GEOM_TYPE)
       end
     end
   rescue => e

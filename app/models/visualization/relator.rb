@@ -18,7 +18,7 @@ module CartoDB
                       }
 
       INTERFACE     = %w{ overlays map user table related_templates related_tables related_visualizations layers
-                          stats mapviews total_mapviews single_data_layer? synchronization permission parent
+                          stats mapviews total_mapviews single_data_layer? synchronization is_synced? permission parent
                           children support_tables prev_list_item next_list_item likes likes_count reload_likes
                           estimated_row_count actual_row_count }
 
@@ -118,6 +118,10 @@ module CartoDB
         CartoDB::Synchronization::Member.new(visualization_id: @id).fetch_by_visualization_id
       rescue KeyError
         {}
+      end
+
+      def is_synced?
+        !synchronization.is_a?(Hash)
       end
 
       def stats(user=nil)

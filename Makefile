@@ -42,6 +42,7 @@ WORKING_SPECS_1 = \
 	spec/helpers/uuidhelper_spec.rb \
 	spec/models/carto/template_spec.rb \
 	spec/models/carto/ldap/configuration_spec.rb \
+	spec/requests/sessions_controller_spec.rb \
   $(NULL)
 
 WORKING_SPECS_2 = \

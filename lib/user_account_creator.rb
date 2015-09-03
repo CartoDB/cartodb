@@ -68,6 +68,7 @@ module CartoDB
     private
 
     def promote_to_organization_owner?
+      # INFO: Custom installs convention: org owner always has `<orgname>-admin` format
       !!(@organization && !@organization.owner_id && @user_params[PARAM_USERNAME] &&
         @user_params[PARAM_USERNAME] == "#{@organization.name}-admin")
     end

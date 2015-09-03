@@ -642,7 +642,7 @@ module CartoDB
       end
 
       def attributions_from_derived_visualizations
-        related_visualizations.map(&:attributions).compact
+        related_visualizations.map(&:attributions).reject {|attribution| attribution.blank?}
       end
 
       private

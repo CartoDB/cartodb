@@ -40,12 +40,12 @@ module Helpers
           bbox = !bbox_values[v.id].nil? ? "ST_AsText('#{bbox_values[v.id]}')" : 'NULL'
 
           # Insert values built based in the coulmn order from VISUALIZATIONS_COLUMNS
-          visualizations_values.push %Q[('#{v.id}', '#{v.name}', '#{v.description}','#{v.type}',
-          '#{!v.synchronization.is_a?(Hash)}', '#{tables}', '#{tags}', #{bbox}, #{geometry_data[:view_box_polygon]},
-          #{geometry_data[:center_geometry]}, #{geometry_data[:zoom]},
-          '#{v.created_at}', '#{v.updated_at}', '#{v.map_id}','#{v.title}',#{v.likes_count},
-          #{v.mapviews}, '#{u.id}', '#{u.username}', #{organization_id}, '#{u.twitter_username}',
-          '#{u.website}', '#{u.avatar_url}', '#{u.available_for_hire}')]
+          visualizations_values.push "('#{v.id}', '#{v.name}', '#{v.description}','#{v.type}',"\
+          "'#{!v.synchronization.is_a?(Hash)}', '#{tables}', '#{tags}', #{bbox}, #{geometry_data[:view_box_polygon]},"\
+          "#{geometry_data[:center_geometry]}, #{geometry_data[:zoom]},"\
+          "'#{v.created_at}', '#{v.updated_at}', '#{v.map_id}','#{v.title}',#{v.likes_count},"\
+          "#{v.mapviews}, '#{u.id}', '#{u.username}', #{organization_id}, '#{u.twitter_username}',"\
+          "'#{u.website}', '#{u.avatar_url}', '#{u.available_for_hire}')"
         end
         visualizations_values
       end

@@ -47,6 +47,7 @@ namespace :cartodb do
                 visualization_map_id,
                 visualization_title,
                 visualization_likes,
+                visualization_mapviews::numeric/(1.0 + (now()::date - visualization_created_at::date)::numeric)^2 AS popularity
                 user_id,
                 user_username,
                 user_organization_id,

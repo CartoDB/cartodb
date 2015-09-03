@@ -71,6 +71,8 @@ class Admin::OrganizationsController < ApplicationController
   def auth_update
     attributes = params[:organization]
     @organization.whitelisted_email_domains = attributes[:whitelisted_email_domains].split(",")
+    @organization.auth_username_password_enabled = attributes[:auth_username_password_enabled]
+    @organization.auth_google_enabled = attributes[:auth_google_enabled]
     @organization.update_in_central
     @organization.save(raise_on_failure: true)
 

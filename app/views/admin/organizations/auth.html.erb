@@ -41,6 +41,36 @@
         </div>
       </div>
 
+      <div class="FormAccount-row">
+        <div class="FormAccount-rowLabel">
+          <label class="FormAccount-label">Username / password</label>
+        </div>
+        <div class="FormAccount-rowData">
+          <div class="Toggler">
+            <%= f.check_box :auth_username_password_enabled, :id => "auth_username_password_enabled" %>
+            <%= label_tag(:auth_username_password_enabled, '') %>
+          </div>
+          <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+            <p class="FormAccount-rowInfoText">Allow users to signup with their own username & email submission</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="FormAccount-row">
+        <div class="FormAccount-rowLabel">
+          <label class="FormAccount-label">Google Apps Login</label>
+        </div>
+        <div class="FormAccount-rowData">
+          <div class="Toggler">
+            <%= f.check_box :auth_google_enabled, :id => "auth_google_enabled" %>
+            <%= label_tag(:auth_google_enabled, '') %>
+          </div>
+          <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+            <p class="FormAccount-rowInfoText">Allow users to signup with their own username & email submission</p>
+          </div>
+        </div>
+      </div>
+
       <div class="FormAccount-footer">
         <p class="FormAccount-footerText"></p>
         <%= button_tag(type: 'submit', class: 'Button Button--main') do %>

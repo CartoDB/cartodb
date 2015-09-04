@@ -19,6 +19,7 @@ module Helpers
 
       def get_geometry_data(visualization)
         map = visualization.map
+        return {} if map.nil?
         view_box = map.view_bounds_data
         center_coordinates = map.center_data.reverse
         {
@@ -35,17 +36,20 @@ module Helpers
 
           tags = %Q[{#{v.tags.join(",")}}]
           tables = get_visualization_tables(v)
-          geometry_data = get_geometry_data(v)
           organization_id = u.organization_id.nil? ? 'NULL' : "'#{u.organization_id}'"
           bbox = bbox_values[v.id].nil? ? 'NULL' : "ST_AsText('#{bbox_values[v.id]}')"
+          geometry_data = get_geometry_data(v)
+          view_box_polygon = geometry_data[:view_box_polygon].nil? ? 'NULL' : geometry_data[:view_box_polygon]
+          center_geometry = geometry_data[:center_geometry].nil? ? 'NULL' : geometry_data[:center_geometry]
+          view_zoom = geometry_data[:zoom].nil? ? 'NULL' : geometry_data[:zoom]
 
           # Insert values built based in the coulmn order from VISUALIZATIONS_COLUMNS
-          visualizations_values.push "('#{v.id}', '#{v.name}', '#{v.description}','#{v.type}',"\
-          "'#{v.is_synced?}', '#{tables}', '#{tags}', #{bbox}, #{geometry_data[:view_box_polygon]},"\
-          "#{geometry_data[:center_geometry]}, #{geometry_data[:zoom]},"\
-          "'#{v.created_at}', '#{v.updated_at}', '#{v.map_id}','#{v.title}',#{v.likes_count},"\
-          "#{v.mapviews}, '#{u.id}', '#{u.username}', #{organization_id}, '#{u.twitter_username}',"\
-          "'#{u.website}', '#{u.avatar_url}', '#{u.available_for_hire}')"
+          visualizations_values.push "('#{v.id}','#{v.name}','#{v.description}','#{v.type}',"\
+          "'#{v.is_synced?}','#{tables}','#{tags}',#{bbox},#{view_box_polygon},"\
+          "#{center_geometry},#{view_zoom},'#{v.created_at}','#{v.updated_at}','#{v.map_id}',"\
+          "'#{v.title}',#{v.likes_count},#{v.mapviews},'#{u.id}','#{u.username}',"\
+          "#{organization_id},'#{u.twitter_username}','#{u.website}','#{u.avatar_url}',"\
+          "'#{u.available_for_hire}')"
         end
         visualizations_values
       end

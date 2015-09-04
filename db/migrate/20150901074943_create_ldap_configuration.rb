@@ -13,13 +13,11 @@ Sequel.migration do
       String    :connection_user,   null: false
       String    :connection_password,     null: false
       String    :user_id_field,     null: false
-      String    :username_field
+      String    :username_field,    null: false
       String    :email_field,       null: false
-      String    :domain_bases,      type: 'text[]'
+      String    :domain_bases,      null: false
       String    :user_object_class,  null: false
       String    :group_object_class, null: false
-      # This configuration is not confirmed
-      # String    :user_groups,       type: 'text[]'
       DateTime  :created_at,        default: Sequel::CURRENT_TIMESTAMP
       DateTime  :updated_at,        default: Sequel::CURRENT_TIMESTAMP
     end

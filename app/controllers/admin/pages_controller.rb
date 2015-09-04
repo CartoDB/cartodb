@@ -118,6 +118,9 @@ class Admin::PagesController < ApplicationController
       end
       render_404
     else
+
+      set_layout_vars_for_user(@viewed_user, 'feed')
+
       @name               = @viewed_user.username
       @avatar_url         = @viewed_user.avatar
       @tables_num         = @viewed_user.public_table_count

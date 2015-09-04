@@ -6,28 +6,14 @@ module Carto
 
       CODE_UNKNOWN = -1
 
-      def initialize(code, error_message, matched_dn, message)
-        @code = code
+      def initialize(code = CODE_UNKNOWN, error_message = "", matched_dn = "", message = "")
+        @code = code ||
         @error_message = error_message
         @matched_dn = matched_dn
         @message = message
       end
 
-      def code
-        @code || CODE_UNKNOWN
-      end
-
-      def message
-        @message || ""
-      end
-
-      def error_message
-        @error_message || ""
-      end
-
-      def matched_dn
-        @matched_dn || ""
-      end
+      attr_reader :code, :message, :error_message, :matched_dn
 
       def to_hash
         {

@@ -23,8 +23,8 @@ module Carto
             }).first
 
           if user.nil?
-            raise LDAPUserNotPresentAtCartoDBError.new(ldap_entry.cartodb_user_id, 
-              ldap_entry.configuration.organization_id, username, ldap_entry.email) 
+            raise LDAPUserNotPresentAtCartoDBError.new(ldap_entry.cartodb_user_id,
+              ldap_entry.configuration.organization_id, username, ldap_entry.email)
           end
         end
 
@@ -46,6 +46,7 @@ module Carto
 
 
     class LDAPUserNotPresentAtCartoDBError < StandardError
+
       def initialize(cartodb_username, cartodb_organization_id, ldap_username, ldap_email='')
         @ldap_username = ldap_username
         @ldap_email = ldap_email
@@ -54,21 +55,8 @@ module Carto
         super("'#{ldap_username}' not found at CartoDB (username:'#{cartodb_username}', organization id:'#{cartodb_organization_id}')")
       end
 
-      def ldap_email
-        @ldap_email
-      end
+      attr_reader :ldap_email, :ldap_username, :cartodb_username, :organization_id
 
-      def ldap_username
-        @ldap_username
-      end
-
-      def cartodb_username
-        @cartodb_username
-      end
-
-      def organization_id
-        @organization_id
-      end
     end
 
   end

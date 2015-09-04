@@ -98,6 +98,7 @@ module CartoDB
       confirmation.js
       new_public_table.js
 
+      user_feed_deps.js
       user_feed.js
 
       tipsy.js

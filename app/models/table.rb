@@ -295,6 +295,8 @@ class Table
     end
   end
 
+  # TODO: basically most if not all of what the import_cleanup does is done by cartodbfy.
+  # Consider deletion.
   def import_cleanup
     owner.in_database(:as => :superuser) do |user_database|
       # When tables are created using ogr2ogr they are added a ogc_fid or gid primary key
@@ -352,8 +354,6 @@ class Table
         user_database.run(%Q{ALTER TABLE #{qualified_table_name} DROP COLUMN #{aux_cartodb_id_column}})
       end
 
-      self.schema(reload:true)
-      self.cartodbfy
     end
 
   end
@@ -379,23 +379,22 @@ class Table
 
       self[:name] = importer_result_name
 
-      self.schema(reload: true)
-
       set_the_geom_column!
 
       import_cleanup
+      self.cartodbfy
 
-      set_table_id
       @data_import.save
     else
-      if register_table_only.present?
-        set_table_id
-      else
+      if !register_table_only.present?
         create_table_in_database!
-        set_table_id
         set_the_geom_column!(self.the_geom_type)
+        self.cartodbfy
       end
     end
+
+    self.schema(reload:true)
+    set_table_id
   rescue => e
     self.handle_creation_error(e)
   end
@@ -440,8 +439,6 @@ class Table
     add_table_to_stats
 
     update_table_pg_stats
-
-    self.cartodbfy
 
   rescue => e
     self.handle_creation_error(e)
@@ -1188,8 +1185,6 @@ class Table
     if @data_import
       CartoDB::Importer2::CartodbfyTime::instance(@data_import.id).add(elapsed)
     end
-
-    self.schema(reload:true)
   end
 
   def update_table_pg_stats
@@ -1227,7 +1222,7 @@ class Table
 
   def set_table_id
     @user_table.table_id = self.get_table_id
-  end # set_table_id
+  end
 
   def get_table_id
     record = owner.in_database.select(:pg_class__oid)

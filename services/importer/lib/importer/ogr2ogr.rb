@@ -14,7 +14,7 @@ module CartoDB
       OSM_INDEXING_OPTION   = 'OSM_USE_CUSTOM_INDEXING=NO'
       APPEND_MODE_OPTION    = '-append'
 
-      DEFAULT_BINARY = 'which ogr2ogr'
+      DEFAULT_BINARY = 'which ogr2ogr2'
 
       def initialize(table_name, filepath, pg_options, layer=nil, options={})
         self.filepath   = filepath

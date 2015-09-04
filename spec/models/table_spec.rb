@@ -1886,6 +1886,8 @@ describe Table do
       ::Table.any_instance.stubs(:set_the_geom_column!).returns(true)
       ::Table.any_instance.stubs(:after_create)
       ::Table.any_instance.stubs(:after_save)
+      ::Table.any_instance.stubs(:cartodbfy)
+      ::Table.any_instance.stubs(:schema)
       CartoDB::TablePrivacyManager.any_instance.stubs(:owner).returns(user_mock)
       table = Table.new
 

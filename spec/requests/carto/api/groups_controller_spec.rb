@@ -13,6 +13,7 @@ describe Carto::Api::GroupsController do
     before(:all) do
       @carto_organization = Carto::Organization.find(@organization.id)
       @carto_org_user_1 = Carto::User.find(@org_user_1.id)
+      @carto_org_user_2 = Carto::User.find(@org_user_2.id)
       @org_user_1_json = {"id"=>@org_user_1.id, "username"=>@org_user_1.username, "email"=>@org_user_1.email, "avatar_url"=>@org_user_1.avatar_url, "base_url"=>@org_user_1.public_url, "quota_in_bytes"=>@org_user_1.quota_in_bytes, "db_size_in_bytes"=>@org_user_1.db_size_in_bytes, 'table_count' => 0, 'maps_count' => 0 }
 
       @group_1 = FactoryGirl.create(:random_group, display_name: 'g_1', organization: @carto_organization)
@@ -211,19 +212,19 @@ describe Carto::Api::GroupsController do
       end
     end
 
-    it '#add_member triggers group inclusion' do
+    it '#add_members triggers group inclusion' do
       group = @carto_organization.groups.first
       user = @org_user_1
 
       Carto::Group.expects(:add_member_group_extension_query).with(anything, group.name, user.username)
 
-      post_json api_v1_organization_groups_add_member_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, group_id: group.id, api_key: @org_user_owner.api_key), { user_id: user.id }, @headers do |response|
+      post_json api_v1_organization_groups_add_members_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, group_id: group.id, api_key: @org_user_owner.api_key), { user_id: user.id }, @headers do |response|
         response.status.should == 200
         # INFO: since test doesn't actually trigger the extension we only check expectation on membership call
       end
     end
 
-    it '#remove_member triggers group exclusion' do
+    it '#remove_members triggers group exclusion' do
       group = @carto_organization.groups.first
       user = @carto_org_user_1
       group.users << user
@@ -233,7 +234,40 @@ describe Carto::Api::GroupsController do
 
       Carto::Group.expects(:remove_member_group_extension_query).with(anything, group.name, user.username)
 
-      delete_json api_v1_organization_groups_remove_member_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, group_id: group.id, api_key: @org_user_owner.api_key, user_id: user.id), {}, @headers do |response|
+      delete_json api_v1_organization_groups_remove_members_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, group_id: group.id, api_key: @org_user_owner.api_key, user_id: user.id), {}, @headers do |response|
+        response.status.should == 200
+        # INFO: since test doesn't actually trigger the extension we only check expectation on membership call
+      end
+    end
+
+    it '#add_members allows batches and triggers group inclusion' do
+      group = @carto_organization.groups.first
+      user_1 = @org_user_1
+      user_2 = @org_user_2
+
+      Carto::Group.expects(:add_member_group_extension_query).with(anything, group.name, user_1.username)
+      Carto::Group.expects(:add_member_group_extension_query).with(anything, group.name, user_2.username)
+
+      post_json api_v1_organization_groups_add_members_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, group_id: group.id, api_key: @org_user_owner.api_key), { users: [ user_1.id, user_2.id ] }, @headers do |response|
+        response.status.should == 200
+        # INFO: since test doesn't actually trigger the extension we only check expectation on membership call
+      end
+    end
+
+    it '#remove_members alloes batches and triggers group exclusion' do
+      group = @carto_organization.groups.first
+      user_1 = @carto_org_user_1
+      user_2 = @carto_org_user_2
+      group.users << user_2
+      group.save
+      group.reload
+      group.users.include?(user_1)
+      group.users.include?(user_2)
+
+      Carto::Group.expects(:remove_member_group_extension_query).with(anything, group.name, user_1.username)
+      Carto::Group.expects(:remove_member_group_extension_query).with(anything, group.name, user_2.username)
+
+      delete_json api_v1_organization_groups_remove_members_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, group_id: group.id, api_key: @org_user_owner.api_key), { users: [ user_1.id, user_2.id ] }, @headers do |response|
         response.status.should == 200
         # INFO: since test doesn't actually trigger the extension we only check expectation on membership call
       end

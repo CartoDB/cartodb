@@ -9,16 +9,16 @@ module Carto
     class GroupsController < ::Api::ApplicationController
       include PagedSearcher
 
-      ssl_required :index, :show, :create, :update, :destroy, :add_member, :remove_member unless Rails.env.development? || Rails.env.test?
+      ssl_required :index, :show, :create, :update, :destroy, :add_members, :remove_members unless Rails.env.development? || Rails.env.test?
 
       before_filter :load_fetching_options, :only => [:show, :index]
       before_filter :load_organization
       before_filter :load_user
       before_filter :validate_organization_or_user_loaded
-      before_filter :load_group, :only => [:show, :update, :destroy, :add_member, :remove_member]
-      before_filter :org_owner_only, :only => [:create, :update, :destroy, :add_member, :remove_member]
+      before_filter :load_group, :only => [:show, :update, :destroy, :add_members, :remove_members]
+      before_filter :org_owner_only, :only => [:create, :update, :destroy, :add_members, :remove_members]
       before_filter :org_users_only, :only => [:show, :index]
-      before_filter :load_organization_user, :only => [:add_member, :remove_member]
+      before_filter :load_organization_users, :only => [:add_members, :remove_members]
 
       def index
         page, per_page, order = page_per_page_order_params
@@ -66,16 +66,20 @@ module Carto
         render json: { errors: e.message }, status: 500
       end
 
-      def add_member
-        @group.add_member_with_extension(@user)
+      def add_members
+        @organization_users.map { |user|
+          @group.add_member_with_extension(user)
+        }
         render json: {}, status: 200
       rescue => e
         CartoDB.notify_exception(e, { params: params , group: @group, user: @user })
         render json: { errors: e.message }, status: 500
       end
 
-      def remove_member
-        @group.remove_member_with_extension(@user)
+      def remove_members
+        @organization_users.map { |user|
+          @group.remove_member_with_extension(user)
+        }
         render json: {}, status: 200
       rescue => e
         CartoDB.notify_exception(e, { params: params , group: @group, user: @user })
@@ -127,9 +131,10 @@ module Carto
         render json: { errors: "Group #{params['group_id']} not found" }, status: 404 unless @group
       end
 
-      def load_organization_user
-        @user = @organization.users.where(id: params['user_id']).first
-        render json: { errors: "User #{params['user_id']} not found" }, status: 404 unless @user
+      def load_organization_users
+        ids = params['users'].present? ? params['users'] : [ params['user_id'] ]
+        @organization_users = ids.map { |id| @organization.users.where(id: id).first }
+        render json: { errors: "Users #{ids} not found" }, status: 404 unless @organization_users.length > 0
       end
 
     end

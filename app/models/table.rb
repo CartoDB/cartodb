@@ -352,8 +352,8 @@ class Table
         user_database.run(%Q{ALTER TABLE #{qualified_table_name} DROP COLUMN #{aux_cartodb_id_column}})
       end
 
-      self.schema(reload:true)
       self.cartodbfy
+      self.schema(reload:true)
     end
 
   end
@@ -393,7 +393,7 @@ class Table
       else
         create_table_in_database!
         set_table_id
-        set_the_geom_column!(self.the_geom_type)
+        set_the_geom_column!(DEFAULT_THE_GEOM_TYPE)
       end
     end
   rescue => e
@@ -442,6 +442,7 @@ class Table
     update_table_pg_stats
 
     self.cartodbfy
+    self.schema(reload: true)
 
   rescue => e
     self.handle_creation_error(e)
@@ -1189,7 +1190,6 @@ class Table
       CartoDB::Importer2::CartodbfyTime::instance(@data_import.id).add(elapsed)
     end
 
-    self.schema(reload:true)
   end
 
   def update_table_pg_stats
@@ -1602,6 +1602,7 @@ class Table
         )
       end
     end
+    self.cartodbfy
   end
 
   def update_the_geom!(attributes, primary_key)

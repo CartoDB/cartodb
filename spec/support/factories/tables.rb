@@ -20,6 +20,7 @@ module CartoDB
     end
 
     def create_table(attributes = {})
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
       table = new_table(attributes)
       table.save
       table.reload

@@ -2,29 +2,27 @@
   <div class="PublicUserProfile">
     <div class="PublicUserProfile-profile">
 
-      <h2 class="PublicUserProfile-name">Emilio García</h2>
-      <p class="PublicUserProfile-description">Hungarian-American illusionist and stunt performer, noted for his
-        sensational escape acts. He first attracted notice in vaudeville in the
-        US and then as "Harry Handcuff Houdini".</p>
+      <h2 class="PublicUserProfile-name"><%= @viewed_user.name || @viewed_user.username %></h2>
+
+      <% unless @viewed_user.description.nil? %>
+        <p class="PublicUserProfile-description"><%= @viewed_user.description %></p>
+      <% end %>
 
       <ul class="PublicUserProfile-details">
-        <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Twitter iconFont--with-label"></i> <a href="#">piensaenpixel</a></li>
-        <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Anchor iconFont--with-label"></i> <a href="#">www.piensaenpixel.com</a></li>
-        <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Clock iconFont--with-label"></i> CartoDB</li>
-        <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Email iconFont--with-label"></i> <a href="#">email@address.com</a></li>
-        <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Clock iconFont--with-label"></i> Madrid</li>
-        <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Calendar iconFont--with-label"></i> Member since June 1894</li>
-      </ul>
+        <% unless @viewed_user.twitter_username.nil? %>
+          <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Twitter iconFont--with-label"></i> <a href="http://twitter.com/<%= @viewed_user.twitter_username %>"><%= @viewed_user.twitter_username %></a></li>
+        <% end %>
 
-      <%# @name %>
-      <%# @viewed_user.description %>
-      <%# @viewed_user.twitter_username %>
-      <%# @viewed_user.organization.name unless @viewed_user.organization.nil? %>
-      <%# @viewed_user.organization.name unless @viewed_user.organization.nil? %>
-    </div>
-    <div class="PublicUserProfile-line">
-      <div class="PublicUserProfile-ball PublicUserProfile-ball--top"></div>
-      <div class="PublicUserProfile-ball PublicUserProfile-ball--bottom"></div>
+        <% unless @viewed_user.website.nil? %>
+          <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Anchor iconFont--with-label"></i> <a href="<%= @viewed_user.website %>"><%= @viewed_user.website %></a></li>
+        <% end %>
+
+        <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Clock iconFont--with-label"></i> CartoDB</li>
+
+        <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Email iconFont--with-label"></i> <a href="mailto:<%= @viewed_user.email %>"><%= @viewed_user.email %></a></li>
+        <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Clock iconFont--with-label"></i> Madrid</li>
+        <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Calendar iconFont--with-label"></i> Member since <%= @viewed_user.created_at.strftime("%B %Y") %></li>
+      </ul>
     </div>
 
     <div class="PublicUserFeed js-feed"></div>

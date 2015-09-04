@@ -38,9 +38,23 @@
       var base_url = '<%= @base_url %>';
       var login_url = "<%= CartoDB.url(self, 'login') %>";
       var avatar_url= '<%= @avatar_url %>';
-    </script>
 
-    <%= javascript_include_tag 'cdb.js', 'templates', 'public_dashboard_deps', 'user_feed' %>
+      var favMapViewAttrs = {
+        el: '#<%= fav_map_target_id %>',
+        <% if @most_viewed_vis_map %>
+          createVis: {
+            url: '<%= vis_json_url(@most_viewed_vis_map.id, self, (@most_viewed_vis_map.user)) %>',
+            opts: {
+              no_cdn: <%= Rails.env.production? ? 'false' : 'true' %>
+            }
+          }
+        <% else %>
+          fallbackBaselayer: <%= raw @default_fallback_basemap.to_json %>
+        <% end %>
+      };
+      </script>
+
+    <%= javascript_include_tag 'cdb.js', 'templates', 'user_feed_deps', 'user_feed' %>
     <%= yield :js %>
   </body>
 </html>

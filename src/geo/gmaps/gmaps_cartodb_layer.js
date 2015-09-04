@@ -28,7 +28,7 @@ var CartoDBLayer = function(options) {
   var default_options = {
     query:          "SELECT * FROM {{table_name}}",
     opacity:        0.99,
-    attribution:    "CartoDB",
+    attribution:    cdb.config.get('cartodb_attributions'),
     opacity:        1,
     debug:          false,
     visible:        true,

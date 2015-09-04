@@ -9,7 +9,7 @@ L.CartoDBLayer = L.CartoDBGroupLayer.extend({
   options: {
     query:          "SELECT * FROM {{table_name}}",
     opacity:        0.99,
-    attribution:    "CartoDB",
+    attribution:    cdb.config.get('cartodb_attributions'),
     debug:          false,
     visible:        true,
     added:          false,

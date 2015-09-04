@@ -135,7 +135,7 @@ cdb.geo.TorqueLayer = cdb.geo.MapLayer.extend({
 cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
 
   defaults: {
-    attribution: 'CartoDB',
+    attribution: cdb.config.get('cartodb_attributions'),
     type: 'CartoDB',
     active: true,
     query: null,

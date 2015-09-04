@@ -9,17 +9,22 @@
   @include flex-wrap(wrap);
   position: relative;
   width: $sLayout-width;
-  margin: 60px auto 60px auto;
+  margin: 35px auto 60px auto;
   font-family: "Proxima Nova";
 }
-
 .PublicUserProfile-profile {
- @include flex(0 0 320px);
+  @include flex(0 0 320px);
+  margin: 45px 0 0 0;
 }
 .PublicUserFeed {
- @include flex(1);
- margin: 30px 0;
+  @include flex(1);
+  margin: 0 0 30px 0;
 }
+.PublicUserFeed-content {
+  position: relative;
+  padding: 40px 0;
+}
+
 .PublicUserFeed-item {
   position: relative;
   @include display-flex();
@@ -75,6 +80,7 @@
 }
 .PublicUserProfile-ball.PublicUserProfile-ball--bottom {
   bottom: 0;
+  background: #EEEDEE;
 }
 
 .PublicUserProfile-name {

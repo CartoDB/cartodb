@@ -316,8 +316,19 @@ $sEditButtonSize: 50px;
 .MapCard-contentFooter.MapCard-contentFooter--with-icon .MapCard-contentFooterDetails--right {
   display: inline-block;
 }
+.MapCard-contentFooterIcon {
+  color: #979EA1;
+}
 .MapCard-contentFooterDetails {
   display: inline-block;
+}
+.MapCard-contentFooterDetails-actions {
+  @include display-flex();
+  @include align-items(center);
+  @include justify-content(space-between, justify);
+}
+.MapCard-contentFooterDetails-actions > *:not(:last-child) {
+  margin-right: 14px;
 }
 .MapCard-contentFooterTitle {
   @include display-flex();

@@ -19,6 +19,9 @@
   display: inline-block;
   margin: 0 $sMargin-elementInline;
 }
+.Button--centered {
+  margin: auto;
+}
 .Button,
 .Button span {
   font-size: $sFontSize-smallUpperCase;
@@ -33,6 +36,7 @@
 .Button {
   border: $sButton-border solid $cStructure-mainBkg;
 }
+.Button.is-hidden { display: none }
 .Button:hover,
 .Button span:hover { text-decoration:none }
 .Button.is-disabled {
@@ -138,4 +142,13 @@
     border-color: $cTypography-paragraphs;
     color: $cTypography-paragraphs;
   }
+}
+
+.Button--loadMore {
+  line-height: 24px;
+  background-color: transparent;
+  border: 1px solid #CCC;
+  border-radius: 40px;
+  font-size: $sFontSize-smallUpperCase;
+  color: $cTypography-linkSecondaryHover;
 }

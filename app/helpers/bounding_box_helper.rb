@@ -9,6 +9,13 @@ module BoundingBoxHelper
     maxlat: 85.0511
   }
 
+  LIMIT_BOUNDS = {
+    minlon: -180,
+    maxlon: 180,
+    minlat: -90,
+    maxlat: 90
+  }
+
   def self.update_visualizations_bbox(table)
     begin
       db = table.owner.in_database
@@ -101,10 +108,12 @@ module BoundingBoxHelper
   end
 
   def self.to_polygon(minx, miny, maxx, maxy)
+    return nil unless check_bounds_for(minx, miny) && check_bounds_for(maxx, maxy)
     %Q{ST_Transform(ST_Envelope('SRID=4326;POLYGON((#{minx} #{miny}, #{minx} #{maxy}, #{maxx} #{maxy}, #{maxx} #{miny}, #{minx} #{miny}))'::geometry), 3857)}
   end
 
   def self.to_point(x, y)
+    return nil unless check_bounds_for(x, y)
     %Q[ST_GeomFromText('POINT(#{x} #{y})',3857)]
   end
 
@@ -112,6 +121,16 @@ module BoundingBoxHelper
     bbox_coords = bounding_box.split(',').map { |coord| Float(coord) rescue nil }.compact
     raise CartoDB::BoundingBoxError.new('bounding box must have 4 coordinates: minx, miny, maxx, maxy') if bbox_coords.length != 4
     {:minx => bbox_coords[0], :miny => bbox_coords[1], :maxx => bbox_coords[2], :maxy => bbox_coords[3]}
+  end
+
+  def self.check_bounds_for(x, y)
+    begin
+      return false if x.to_f > LIMIT_BOUNDS[:maxlon].to_f || x.to_f < LIMIT_BOUNDS[:minlon].to_f
+      return false if y.to_f > LIMIT_BOUNDS[:maxlat].to_f || y.to_f < LIMIT_BOUNDS[:minlat].to_f
+      true
+    rescue
+      false
+    end
   end
 
   private

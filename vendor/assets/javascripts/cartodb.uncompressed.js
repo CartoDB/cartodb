@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.2
 // uncompressed version: cartodb.uncompressed.js
-// sha: 68561777c09ffc7e81faa85e70c9401eff175bef
+// sha: 8894d2ba80671ed8f399501067c29bf0e1dc40f5
 (function() {
   var define;  // Undefine define (require.js), see https://github.com/CartoDB/cartodb.js/issues/543
   var root = this;
@@ -27116,7 +27116,7 @@ cdb.geo.TorqueLayer = cdb.geo.MapLayer.extend({
 cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
 
   defaults: {
-    attribution: 'CartoDB',
+    attribution: cdb.config.get('cartodb_attributions'),
     type: 'CartoDB',
     active: true,
     query: null,
@@ -34699,7 +34699,7 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
 
   options: {
     opacity:        0.99,
-    attribution:    "CartoDB",
+    attribution:    cdb.config.get('cartodb_attributions'),
     debug:          false,
     visible:        true,
     added:          false,
@@ -35133,7 +35133,7 @@ L.CartoDBLayer = L.CartoDBGroupLayer.extend({
   options: {
     query:          "SELECT * FROM {{table_name}}",
     opacity:        0.99,
-    attribution:    "CartoDB",
+    attribution:    cdb.config.get('cartodb_attributions'),
     debug:          false,
     visible:        true,
     added:          false,
@@ -36089,7 +36089,7 @@ Projector.prototype.pixelToLatLng = function(point) {
 
 var default_options = {
   opacity:        0.99,
-  attribution:    "CartoDB",
+  attribution:    cdb.config.get('cartodb_attributions'),
   debug:          false,
   visible:        true,
   added:          false,
@@ -36537,7 +36537,7 @@ var CartoDBLayer = function(options) {
   var default_options = {
     query:          "SELECT * FROM {{table_name}}",
     opacity:        0.99,
-    attribution:    "CartoDB",
+    attribution:    cdb.config.get('cartodb_attributions'),
     opacity:        1,
     debug:          false,
     visible:        true,

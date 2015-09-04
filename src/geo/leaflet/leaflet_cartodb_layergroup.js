@@ -317,10 +317,6 @@ function layerView(base) {
       var self = this;
       var hovers = [];
 
-      // CartoDB new attribution,
-      // also we have the logo
-      layerModel.attributes.attribution = cdb.config.get('cartodb_attributions');
-
       var opts = _.clone(layerModel.attributes);
 
       opts.map =  leafletMap;

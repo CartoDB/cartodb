@@ -318,10 +318,6 @@ function LayerGroupView(base) {
 
     _.bindAll(this, 'featureOut', 'featureOver', 'featureClick');
 
-    // CartoDB new attribution,z
-    // also we have the logo
-    layerModel.attributes.attribution = cdb.config.get('cartodb_attributions');
-
     var opts = _.clone(layerModel.attributes);
 
     opts.map =  gmapsMap;

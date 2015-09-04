@@ -58,7 +58,6 @@
         // unset bounds to not change mapbounds
         self.map.unset('view_bounds_sw', { silent: true });
         self.map.unset('view_bounds_ne', { silent: true });
-
       }
 
       this.map.bind('set_view', this._setView, this);
@@ -257,11 +256,12 @@
 
       var attribution = layer.get('attribution');
 
-      if (attribution) {
+      if (attribution && attribution !== '') {
         // Setting attribution in map model
-        var attributions = this.map.get('attribution') || [];
+        // it doesn't persist in the backend, so this is needed.
+        var attributions = _.clone(this.map.get('attribution')) || [];
         if (!_.contains(attributions, attribution)) {
-          attributions.push(attribution);
+          attributions.unshift(attribution);
         }
 
         this.map.set({ attribution: attributions });
@@ -294,8 +294,15 @@
       ];
     },
 
-    setAttribution: function(m) {
-      // Leaflet takes care of attribution by its own.
+    setAttribution: function() {
+
+      // Attributions have already been set but we override them with
+      // the ones in the map object that are in the right order and include
+      // the default CartoDB attribution
+      this.map_leaflet.attributionControl._attributions = {};
+      _.each(this.map.get('attribution'), function(attribution){
+        this.map_leaflet.attributionControl.addAttribution(attribution);
+      }.bind(this));
     },
 
     getSize: function() {

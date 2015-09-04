@@ -18,11 +18,20 @@ module CartoDB
       @custom_errors = {}
     end
 
-    def with_param(key, value)
-      @user_params[key] = value
+    def with_username(value)
+      with_param(PARAM_USERNAME, value)
+    end
+
+    def with_email(value)
+      with_param(PARAM_EMAIL, value)
+    end
+
+    def with_password(value)
+      with_param(PARAM_PASSWORD, value)
     end
 
     def with_organization(organization)
+      @built = false
       @organization = organization
       @user = ::User.new_with_organization(organization)
       self
@@ -33,6 +42,7 @@ module CartoDB
     end
 
     def with_google_token(google_access_token)
+      @built = false
       # get_user_data can return nil
       @google_user_data = GooglePlusAPI.new.get_user_data(google_access_token)
       self
@@ -66,6 +76,12 @@ module CartoDB
     end
 
     private
+
+    def with_param(key, value)
+      @built = false
+      @user_params[key] = value
+      self
+    end
 
     def promote_to_organization_owner?
       # INFO: Custom installs convention: org owner always has `<orgname>-admin` format

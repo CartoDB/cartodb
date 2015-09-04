@@ -18,29 +18,25 @@ class SignupController < ApplicationController
   end
 
   def create
-    @account_creator = CartoDB::UserAccountCreator.new
-
-    @account_creator.with_organization(@organization)
+    account_creator = CartoDB::UserAccountCreator.new
+                                                 .with_organization(@organization)
 
     google_access_token = [params.fetch(:google_access_token, nil), params.fetch(:google_signup_access_token, nil)].uniq.compact.first
     # Merge both sources (signup and login) in a single param
     params[:google_access_token] = google_access_token
 
     if !user_password_signup? && google_access_token.present? && @google_plus_config.present?
-      @account_creator.with_google_token(google_access_token)
+      account_creator.with_google_token(google_access_token)
     end
 
     if params[:user]
-      @account_creator.with_param(CartoDB::UserAccountCreator::PARAM_USERNAME,
-                                  params[:user][:username]) if params[:user][:username].present?
-      @account_creator.with_param(CartoDB::UserAccountCreator::PARAM_EMAIL,
-                                  params[:user][:email]) if params[:user][:email].present?
-      @account_creator.with_param(CartoDB::UserAccountCreator::PARAM_PASSWORD,
-                                  params[:user][:password]) if params[:user][:password].present?
+      account_creator.with_username(params[:user][:username]) if params[:user][:username].present?
+      account_creator.with_email(params[:user][:email]) if params[:user][:email].present?
+      account_creator.with_password(params[:user][:password]) if params[:user][:password].present?
     end
 
-    if @account_creator.valid?
-      creation_data = @account_creator.enqueue_creation(self)
+    if account_creator.valid?
+      creation_data = account_creator.enqueue_creation(self)
 
       flash.now[:success] = 'User creation in progress'
       # Template variables
@@ -49,8 +45,8 @@ class SignupController < ApplicationController
       @redirect_url = CartoDB.url(self, 'dashboard')
       render 'shared/signup_confirmation'
     else
-      @user = @account_creator.user
-      errors = @account_creator.validation_errors
+      @user = account_creator.user
+      errors = account_creator.validation_errors
       CartoDB.notify_debug('User not valid at signup', { errors: errors } )
       if errors['organization'] && !errors[:organization].empty?
         @signup_source = 'Organization'
@@ -62,7 +58,7 @@ class SignupController < ApplicationController
     end
 
   rescue => e
-    CartoDB.notify_exception(e, { new_user: @account_creator.user.inspect })
+    CartoDB.notify_exception(e, { new_user: account_creator.user.inspect })
     flash.now[:error] = e.message
     render action: 'signup'
   end

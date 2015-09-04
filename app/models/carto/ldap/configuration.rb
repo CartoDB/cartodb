@@ -24,16 +24,17 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
   # @param String host LDAP host or ip address
   # @param Int port LDAP port e.g. 389, 636 (LDAPS)
   # @param String encryption (Optional) Encryption type to use. Empty means standard/simple Auth
-  # @param String ca_file UNUSED FOR NOW -  (Optional) Certificate file path for start_tls encryption. 
+  # @param String ca_file UNUSED FOR NOW -  (Optional) Certificate file path for start_tls encryption.
   #                       Example: "/etc/cafile.pem"
   # @param String ssl_version For start_tls_encryption. Example: "TLSv1_1"
   # @param String connection_user Full CN for "search connections" to LDAP: `CN=admin, DC=cartodb, DC=COM`
   # @param String connection_password Password for "search connections" to LDAP
   # @param String user_id_field Which LDAP entry field represents the user id. e.g. `sAMAccountName`, `uid`
-  # @param String username_field Which LDAP entry field represents the username that will be mapped to cartodb. 
+  # @param String username_field Which LDAP entry field represents the username that will be mapped to cartodb.
   #                              For now, same as user_id_field
   # @param String email_field Which LDAP entry field represents the email
-  # @param String domain_bases List of DCs conforming the path (serialized)
+  # @param String domain_bases List of DCs conforming the path.
+  #                            Serialized, e.g. "['a','b']", due to Rails 3 or PG gem issue handling `PG text[]` fields
   # @param String user_object_class Name of the attribute where the sers are maped in LDAP
   # @param String group_object_class Name of the attribute where the groups are maped in LDAP
   # @param DateTime created_at (Self-generated)
@@ -41,9 +42,9 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
 
   attr_readonly :user_id_field
 
-  validates :organization, :host, :port, :connection_user, :connection_password, :user_id_field, :username_field, 
+  validates :organization, :host, :port, :connection_user, :connection_password, :user_id_field, :username_field,
   :email_field, :user_object_class, :group_object_class, :presence => true
-  
+
   validates :ca_file, :length => { :minimum => 0, :allow_nil => true }
 
   validates :encryption, :inclusion => { :in => [ ENCRYPTION_SIMPLE_TLS, ENCRYPTION_START_TLS ], :allow_nil => true }
@@ -63,7 +64,7 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
   # @param String password
   def authenticate(username, password)
     @last_authentication_result = nil
-    
+
     # To be used for domain bases search
     username_stringified_filter = "#{self.user_id_field}=#{username}"
     # To be used in real search
@@ -94,8 +95,7 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
 
   # INFO: Resets connection if already made
   def test_connection
-    @conn = nil
-    result = connection.bind
+    result = connection(reset=true).bind
     if result
       { success: true, connection: result }
     else
@@ -115,7 +115,7 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
 
   def last_authentication_result
     @last_authentication_result.nil? ? nil : Carto::Ldap::OperationResult.new(
-      @last_authentication_result.code, @last_authentication_result.error_message, 
+      @last_authentication_result.code, @last_authentication_result.error_message,
       @last_authentication_result.matched_dn, @last_authentication_result.message)
   end
 
@@ -149,7 +149,8 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
   end
 
   # Performs connection always with the search connection user
-  def connection
+  def connection(reset=false)
+    @conn = nil if reset
     @conn ||= connect
   end
 

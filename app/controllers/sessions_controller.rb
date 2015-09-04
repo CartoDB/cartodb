@@ -29,34 +29,17 @@ class SessionsController < ApplicationController
 
   def create
     if Carto::Ldap::Manager.new.configuration_present?
-      username = params[:user_domain].present? ?  params[:user_domain] : params[:email]
-      # INFO: LDAP allows characters that we don't
-      user = authenticate!(:ldap, scope: Carto::Ldap::Manager.sanitize_for_cartodb(username))
+      user = authenticate_with_ldap
     else
-      user = if !user_password_authentication? && params[:google_access_token].present? && @google_plus_config.present?
-        user = GooglePlusAPI.new.get_user(params[:google_access_token])
-        if user
-          authenticate!(:google_access_token, scope: params[:user_domain].present? ?  params[:user_domain] : user.username)
-        elsif user == false
-          # token not valid
-          nil
-        else
-          # token valid, unknown user
-          @google_plus_config.unauthenticated_valid_access_token = params[:google_access_token]
-          nil
-        end
-      else
-        username = extract_username(request, params)
-        user = authenticate!(:password, scope: username)
-      end
+      user = authenticate_with_credentials_or_google
     end
-
     (render :action => 'new' and return) unless (params[:user_domain].present? || user.present?)
 
     CartoDB::Stats::Authentication.instance.increment_login_counter(user.email)
 
     redirect_to user.public_url << CartoDB.path(self, 'dashboard', {trailing_slash: true})
   end
+
 
   def destroy
     # Make sure sessions are destroyed on both scopes: username and default
@@ -108,14 +91,14 @@ class SessionsController < ApplicationController
 
     @organization = ::Organization.where(id: organization_id).first
 
-    @account_creator = CartoDB::UserAccountCreator.new
-    @account_creator.with_organization(@organization)
+    account_creator = CartoDB::UserAccountCreator.new
 
-    @account_creator.with_param(CartoDB::UserAccountCreator::PARAM_USERNAME, cartodb_username)
-    @account_creator.with_param(CartoDB::UserAccountCreator::PARAM_EMAIL, ldap_email) unless ldap_email.nil?
+    account_creator.with_organization(@organization)
+                   .with_username(cartodb_username)
+    account_creator.with_email(ldap_email) unless ldap_email.nil?
 
-    if @account_creator.valid?
-      creation_data = @account_creator.enqueue_creation(self)
+    if account_creator.valid?
+      creation_data = account_creator.enqueue_creation(self)
 
       flash.now[:success] = 'User creation in progress'
       @user_creation_id = creation_data[:id]
@@ -123,14 +106,14 @@ class SessionsController < ApplicationController
       @redirect_url = CartoDB.url(self, 'login')
       render 'shared/signup_confirmation'
     else
-      errors = @account_creator.validation_errors
+      errors = account_creator.validation_errors
       CartoDB.notify_debug('User not valid at signup', { errors: errors } )
       @signup_source = 'LDAP'
       @signup_errors = errors
       render 'shared/signup_issue'
     end
   rescue => e
-    CartoDB.notify_exception(e, { new_user: @account_creator.user.inspect })
+    CartoDB.notify_exception(e, { new_user: account_creator.user.inspect })
     flash.now[:error] = e.message
     render action: 'new'
   end
@@ -162,6 +145,33 @@ class SessionsController < ApplicationController
   end
 
   private
+
+  def authenticate_with_ldap
+    username = params[:user_domain].present? ?  params[:user_domain] : params[:email]
+      # INFO: LDAP allows characters that we don't
+    authenticate!(:ldap, scope: Carto::Ldap::Manager.sanitize_for_cartodb(username))
+  end
+
+  def authenticate_with_credentials_or_google
+    user = if !user_password_authentication? && params[:google_access_token].present? && @google_plus_config.present?
+        user = GooglePlusAPI.new.get_user(params[:google_access_token])
+        if user
+          authenticate!(:google_access_token, scope: params[:user_domain].present? ?  params[:user_domain] : user.username)
+        elsif user == false
+          # token not valid
+          nil
+        else
+          # token valid, unknown user
+          @google_plus_config.unauthenticated_valid_access_token = params[:google_access_token]
+          nil
+        end
+      else
+        username = extract_username(request, params)
+        user = authenticate!(:password, scope: username)
+      end
+
+    user
+  end
 
   def user_password_authentication?
     params && params['email'].present? && params['password'].present?

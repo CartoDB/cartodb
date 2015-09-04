@@ -1,7 +1,7 @@
 defaults: &defaults
   http_client_logs: true
   ogr2ogr:
-    binary:           'which ogr2ogr'
+    binary:           'which ogr2ogr2'
     csv_guessing:     false
   debug_assets: true
   mandatory_keys:     [layer_opts, sql_api, varnish_management, redis, session_domain]

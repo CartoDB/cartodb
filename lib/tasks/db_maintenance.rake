@@ -326,8 +326,8 @@ namespace :cartodb do
         user = Carto::User.where(id: user_id).first
         # already granted users will raise a NOTICE
         grant_query = "GRANT publicuser to \"#{user.database_username}\""
-        conn = user.in_database(as: :cluster_admin)
         begin
+          conn = user.in_database(as: :cluster_admin)
           conn.execute(grant_query)
         rescue => e
           log("Failed to execute `#{grant_query}`", :grant_publicuser_to_all_users.to_s, user.database_host)

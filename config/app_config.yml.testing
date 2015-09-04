@@ -4,7 +4,7 @@ defaults: &defaults
       port: 0000
   http_client_logs: true
   ogr2ogr:
-    binary:           'which ogr2ogr'
+    binary:           'which ogr2ogr2'
     csv_guessing:     false
   debug_assets: true
   mandatory_keys:     [layer_opts, sql_api, varnish_management, redis, session_domain]
@@ -58,6 +58,14 @@ defaults: &defaults
     app_keys:
       editor: ''
       embeds: ''
+  common_data:
+    protocol: 'http'
+    username: 'common-data'
+    # base_url: 'https://common-data.cartodb.com'
+    format: 'shp'
+    generate_every: 86400
+  explore_api:
+    username: 'common-data'
   varnish_management:
     critical: false
     host: '127.0.0.1'

@@ -12,35 +12,35 @@ module DataRepository
   class Repository
     def initialize(storage=Backend::Memory.new)
       @storage = storage
-    end #initialize
+    end
 
     def backend
       @storage
-    end #backend
+    end
 
     def store(key, data, options={})
       storage.store(key.to_s, data, options)
-    end #store
+    end
 
     def fetch(key)
       storage.fetch(key.to_s)
-    end #fetch
+    end
 
     def delete(key)
       storage.delete(key.to_s)
-    end #delete
+    end
 
     def exists?(key)
       storage.exists?(key)
-    end #exists?
+    end
 
     def keys
       storage.keys
-    end #keys
+    end
 
     def next_id
       UUIDTools::UUID.timestamp_create     
-    end #next_id
+    end
 
     private
 

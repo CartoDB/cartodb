@@ -62,6 +62,18 @@ describe Visualization::Relator do
     Visualization::Relator.any_instance.stubs(:support_tables).returns(support_tables_mock)
   end
 
+  describe '#related_visualizations' do
+
+    it 'should return the canonical visualizations associated to a derived visualization' do
+      table1 = create_table({:name => 'table1', :user_id => @user.id})
+      table2 = create_table({:name => 'table2', :user_id => @user.id})
+      vis_table1 = create_vis_from_table(@user, table1)
+      vis_table2 = create_vis_from_table(@user, table2)
+
+      vis_table1.related_visualizations.map(&:id).should == [table1.table_visualization.id]
+    end
+  end
+
   describe '#children' do
     it 'tests .children and its sorting' do
       Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
@@ -124,6 +136,21 @@ describe Visualization::Relator do
     end
   end
 
+
+  private
+
+  def create_vis_from_table(user, table)
+    blender = Visualization::TableBlender.new(user, [table])
+    map = blender.blend
+    vis = Visualization::Member.new(
+        name:     'wadus_vis',
+        map_id:   map.id,
+        type:     Visualization::Member::TYPE_DERIVED,
+        privacy:  blender.blended_privacy,
+        user_id:  user.id
+    )
+    vis.store
+    vis
+  end
+
 end
-
-

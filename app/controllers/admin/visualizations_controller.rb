@@ -20,8 +20,11 @@ class Admin::VisualizationsController < ApplicationController
   ssl_required :index, :show, :protected_embed_map, :protected_public_map, :show_protected_public_map
   before_filter :login_required, only: [:index]
   before_filter :table_and_schema_from_params, only: [:show, :public_table, :public_map, :show_protected_public_map,
+
                                                       :show_protected_embed_map, :embed_map]
-  before_filter :link_ghost_tables, only: [:index]
+  # Commented out until fixing #5264
+  #before_filter :link_ghost_tables, only: [:index]
+
   before_filter :load_common_data, only: [:index]
 
   before_filter :resolve_visualization_and_table, only: [:show, :public_table, :public_map,
@@ -434,26 +437,12 @@ class Admin::VisualizationsController < ApplicationController
   def load_common_data
     return true unless current_user.present?
     begin
-      visualizations_api_url = build_common_data_url
+      visualizations_api_url = CartoDB::Visualization::CommonDataService.build_url(self)
       ::Resque.enqueue(::Resque::UserJobs::CommonData::LoadCommonData, current_user.id, visualizations_api_url) if current_user.should_load_common_data?
     rescue Exception => e
       # We don't block the load of the dashboard because we aren't able to load common dat
       CartoDB.notify_exception(e, {user:current_user})
       return true
-    end
-  end
-
-  def build_common_data_url
-    common_data_base_url = Cartodb.config[:common_data]['base_url']
-    common_data_username = Cartodb.config[:common_data]['username']
-    common_data_user = Carto::User.where(username: common_data_username).first
-    if !common_data_base_url.nil?
-      # We set user_domain to nil to avoid the user of the user_domain of the current_user (/u/xxxx)
-      common_data_base_url + CartoDB.path(self, 'api_v1_visualizations_index', {type: 'table', privacy: 'public', user_domain: nil})
-    elsif !common_data_user.nil?
-      CartoDB.url(self, 'api_v1_visualizations_index', {type: 'table', privacy: 'public'}, common_data_user)
-    else
-      CartoDB.notify_error('cant create common-data url. User doesnt exists and base_url is nil', { user: common_data_username})
     end
   end
 

@@ -61,7 +61,9 @@ module CartoDB
           import_quota: self.import_quota,
           remove_logo: self.remove_logo?,
           sync_tables: self.sync_tables_enabled,
-          arcgis_datasource: self.arcgis_datasource_enabled?
+          arcgis_datasource: self.arcgis_datasource_enabled?,
+          google_maps_geocoder_enabled: self.google_maps_geocoder_enabled?,
+          google_maps_enabled: self.google_maps_enabled?
         },
         limits: {
           concurrent_syncs: CartoDB::PlatformLimits::Importer::UserConcurrentSyncsAmount::MAX_SYNCS_PER_USER,
@@ -72,7 +74,8 @@ module CartoDB
         notification: self.notification,
         avatar_url: self.avatar,
         feature_flags: self.feature_flags,
-        base_url: self.public_url
+        base_url: self.public_url,
+        needs_password_confirmation: self.needs_password_confirmation?
       }
 
       data[:organization] = self.organization.to_poro if self.organization.present?

@@ -1,4 +1,5 @@
 3.X ()
+* Display custom attribution of layers (#5216).
 
 3.15.2 (01//09//2015)
 * Take `visible` attribute into account when determining visibility of layers and serializing maps (#546)

@@ -16,6 +16,7 @@
   font-weight: $sFontWeight-lighter;
   font-size: 18px;
   outline: none;
+  box-sizing: border-box;
 
   &:hover {
     border-color: $cNavButton-active;

@@ -1,6 +1,6 @@
-// cartodb.js version: 3.15.1
+// cartodb.js version: 3.15.2
 // uncompressed version: cartodb.uncompressed.js
-// sha: da4329157f382ba27bda8cb7aafd39467fafc045
+// sha: 68561777c09ffc7e81faa85e70c9401eff175bef
 (function() {
   var define;  // Undefine define (require.js), see https://github.com/CartoDB/cartodb.js/issues/543
   var root = this;
@@ -25655,7 +25655,7 @@ if (typeof window !== 'undefined') {
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = "3.15.1";
+    cdb.VERSION = "3.15.2";
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -27256,6 +27256,7 @@ cdb.geo.Layers = Backbone.Collection.extend({
 cdb.geo.Map = cdb.core.Model.extend({
 
   defaults: {
+    attribution: [cdb.config.get('cartodb_attributions')],
     center: [0, 0],
     zoom: 3,
     minZoom: 0,
@@ -34998,10 +34999,6 @@ function layerView(base) {
       var self = this;
       var hovers = [];
 
-      // CartoDB new attribution,
-      // also we have the logo
-      layerModel.attributes.attribution = cdb.config.get('cartodb_attributions');
-
       var opts = _.clone(layerModel.attributes);
 
       opts.map =  leafletMap;
@@ -35202,10 +35199,6 @@ var LeafLetLayerCartoDBView = L.CartoDBLayer.extend({
     var self = this;
 
     _.bindAll(this, 'featureOut', 'featureOver', 'featureClick');
-
-    // CartoDB new attribution,
-    // also we have the logo
-    layerModel.attributes.attribution = cdb.config.get('cartodb_attributions');
 
     var opts = _.clone(layerModel.attributes);
 
@@ -35511,7 +35504,6 @@ cdb.geo.leaflet.PathView = PathView;
         // unset bounds to not change mapbounds
         self.map.unset('view_bounds_sw', { silent: true });
         self.map.unset('view_bounds_ne', { silent: true });
-
       }
 
       this.map.bind('set_view', this._setView, this);
@@ -35710,11 +35702,12 @@ cdb.geo.leaflet.PathView = PathView;
 
       var attribution = layer.get('attribution');
 
-      if (attribution) {
+      if (attribution && attribution !== '') {
         // Setting attribution in map model
-        var attributions = this.map.get('attribution') || [];
+        // it doesn't persist in the backend, so this is needed.
+        var attributions = _.clone(this.map.get('attribution')) || [];
         if (!_.contains(attributions, attribution)) {
-          attributions.push(attribution);
+          attributions.unshift(attribution);
         }
 
         this.map.set({ attribution: attributions });
@@ -35747,8 +35740,15 @@ cdb.geo.leaflet.PathView = PathView;
       ];
     },
 
-    setAttribution: function(m) {
-      // Leaflet takes care of attribution by its own.
+    setAttribution: function() {
+
+      // Attributions have already been set but we override them with
+      // the ones in the map object that are in the right order and include
+      // the default CartoDB attribution
+      this.map_leaflet.attributionControl._attributions = {};
+      _.each(this.map.get('attribution'), function(attribution){
+        this.map_leaflet.attributionControl.addAttribution(attribution);
+      }.bind(this));
     },
 
     getSize: function() {
@@ -36381,10 +36381,6 @@ function LayerGroupView(base) {
 
     _.bindAll(this, 'featureOut', 'featureOver', 'featureClick');
 
-    // CartoDB new attribution,z
-    // also we have the logo
-    layerModel.attributes.attribution = cdb.config.get('cartodb_attributions');
-
     var opts = _.clone(layerModel.attributes);
 
     opts.map =  gmapsMap;
@@ -36592,10 +36588,6 @@ var GMapsCartoDBLayerView = function(layerModel, gmapsMap) {
   var self = this;
 
   _.bindAll(this, 'featureOut', 'featureOver', 'featureClick');
-
-  // CartoDB new attribution,
-  // also we have the logo
-  layerModel.attributes.attribution = cdb.config.get('cartodb_attributions');
 
   var opts = _.clone(layerModel.attributes);
 
@@ -37154,12 +37146,12 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
 
       var attribution = layer.get('attribution');
 
-      if (attribution) {
+      if (attribution && attribution !== '') {
         // Setting attribution in map model
         // it doesn't persist in the backend, so this is needed.
-        var attributions = this.map.get('attribution') || [];
+        var attributions = _.clone(this.map.get('attribution')) || [];
         if (!_.contains(attributions, attribution)) {
-          attributions.push(attribution);
+          attributions.unshift(attribution);
         }
 
         this.map.set({ attribution: attributions });

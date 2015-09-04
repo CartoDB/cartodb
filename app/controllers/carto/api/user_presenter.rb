@@ -4,13 +4,17 @@ module Carto
   module Api
     class UserPresenter
 
-      def initialize(user)
+      # fetching_options:
+      # - fetch_groups
+      def initialize(user, fetching_options = {})
         @user = user
+        @fetching_options = fetching_options
       end
 
       def to_poro
         return {} if @user.nil?
-        {
+
+        poro = {
           id:               @user.id,
           username:         @user.username,
           email:            @user.email,
@@ -19,9 +23,13 @@ module Carto
           quota_in_bytes:   @user.quota_in_bytes,
           db_size_in_bytes: @user.db_size_in_bytes,
           table_count:      @user.table_count,
-          maps_count:       @user.maps_count,
-          groups:           @user.groups ? @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : []
+          maps_count:       @user.maps_count
         }
+
+        if @fetching_options[:fetch_groups] == true
+          poro.merge!({ groups: @user.groups ? @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : [] })
+        end
+        poro
       end
 
       def data(options = {})

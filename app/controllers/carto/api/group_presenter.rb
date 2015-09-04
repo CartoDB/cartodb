@@ -49,7 +49,7 @@ module Carto
       end
 
       def members
-        @group.users.map { |u| Carto::Api::UserPresenter.new(u).to_poro }
+        @group.users.map { |u| Carto::Api::UserPresenter.new(u, { fetch_groups: false } ).to_poro }
       end
 
     end

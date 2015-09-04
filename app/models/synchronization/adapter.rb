@@ -77,10 +77,10 @@ module CartoDB
         table.schema(reload: true)
         table.send :set_the_geom_column!
         table.import_cleanup
+        table.send :cartodbfy
         table.schema(reload: true)
         table.reload
         table.send :update_table_pg_stats
-        table.send :cartodbfy
         table.save
         table.send(:invalidate_varnish_cache)
         update_cdb_tablemetadata(table.name)

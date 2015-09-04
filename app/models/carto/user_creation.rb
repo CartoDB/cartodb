@@ -117,7 +117,9 @@ class Carto::UserCreation < ActiveRecord::Base
     @user.google_sign_in = self.google_sign_in
     @user.enable_account_token = User.make_token if requires_validation_email?
     unless @promote_to_organization_owner
-      @user.organization = ::Organization.where(id: self.organization_id).first
+      organization = ::Organization.where(id: self.organization_id).first
+      raise "Trying to copy organization settings from one without owner" if organization.owner.nil?
+      @user.organization = organization
       @user.organization.owner.copy_account_features(@user)
     end
   rescue => e
@@ -143,6 +145,10 @@ class Carto::UserCreation < ActiveRecord::Base
 
   def promote_user
     return unless @promote_to_organization_owner
+
+    organization = ::Organization.where(id: self.organization_id).first
+    raise "Trying to set organization owner when there's already one" unless organization.owner.nil?
+
     user_organization = CartoDB::UserOrganization.new(self.organization_id, @user.id)
     user_organization.promote_user_to_admin
     @user.reload

@@ -4,7 +4,7 @@
   <%= javascript_include_tag 'cdb.js', 'confirmation_templates.js', 'confirmation.js' %>
   <script>
     var user_creation_id = "<%= @user_creation_id %>";
-    var user_name = "<%= @user_namee %>";
+    var user_name = "<%= @user_name %>";
     var is_custom_install = <%= Cartodb.config[:cartodb_com_hosted].present? %>;
     var user_url = "<%= @redirect_url %>";
   </script>

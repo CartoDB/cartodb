@@ -80,7 +80,8 @@ class SignupController < ApplicationController
     render_404 and return false unless @organization && @organization.signup_page_enabled
     check_signup_errors = Sequel::Model::Errors.new
     @organization.validate_for_signup(check_signup_errors, ::User.new_with_organization(@organization).quota_in_bytes)
-    render 'organization_signup_issue' if check_signup_errors.length > 0
+    @signup_source = 'Organization'
+    render 'shared/signup_issue' if check_signup_errors.length > 0
   end
 
   def disable_if_ldap_configured

@@ -267,12 +267,15 @@ namespace :cartodb do
 
     def update_geometry(visualization, bbox_value)
       geometry_data = @explore_api_helper.get_geometry_data(visualization)
+      view_box_polygon = geometry_data[:view_box_polygon].nil? ? 'NULL' : geometry_data[:view_box_polygon]
+      center_geometry = geometry_data[:center_geometry].nil? ? 'NULL' : geometry_data[:center_geometry]
+      view_zoom = geometry_data[:zoom].nil? ? 'NULL' : geometry_data[:zoom]
       bbox_value = !bbox_value.nil? ? "ST_AsText('#{bbox_value}')" : 'NULL'
       if visualization.type == CartoDB::Visualization::Member::TYPE_DERIVED
         %Q{, visualization_bbox = #{bbox_value},
-             visualization_view_box = #{geometry_data[:view_box_polygon]},
-             visualization_view_box_center = #{geometry_data[:center_geometry]},
-             visualization_zoom = #{geometry_data[:zoom]}}
+             visualization_view_box = #{view_box_polygon},
+             visualization_view_box_center = #{center_geometry},
+             visualization_zoom = #{view_zoom}}
       elsif !bbox_value.nil?
         %Q{, visualization_bbox = #{bbox_value}}
       else

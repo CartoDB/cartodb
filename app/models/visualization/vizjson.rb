@@ -175,7 +175,12 @@ module CartoDB
       end
 
       def default_options
-        { full: true, visualization_id: visualization.id, https_request: false }
+        {
+          full: true,
+          visualization_id: visualization.id,
+          https_request: false,
+          attributions: visualization.attributions_from_derived_visualizations
+        }
       end
 
       def auth_tokens_for(visualization)

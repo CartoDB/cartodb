@@ -514,6 +514,11 @@ class User < Sequel::Model
   end
 
   def should_display_old_password?
+    self.needs_password_confirmation?
+  end
+
+  # Some operations, such as user deletion, won't ask for password confirmation if password is not set (because of Google sign in, for example)
+  def needs_password_confirmation?
     google_sign_in.nil? || !google_sign_in || !last_password_change_date.nil?
   end
 
@@ -2542,14 +2547,17 @@ TRIGGER
   # this may have change in the future but in any case this method provides a way to abstract what
   # basemaps are active for the user
   def basemaps
-    google_maps_enabled = !google_maps_api_key.blank?
     basemaps = Cartodb.config[:basemaps]
     if basemaps
       basemaps.select { |group|
         g = group == 'GMaps'
-        google_maps_enabled ? g : !g
+        google_maps_enabled? ? g : !g
       }
     end
+  end
+
+  def google_maps_enabled?
+    google_maps_query_string.present?
   end
 
   # return the default basemap based on the default setting. If default attribute is not set, first basemaps is returned

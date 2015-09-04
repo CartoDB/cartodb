@@ -4,8 +4,9 @@ namespace :cartodb do
 
   namespace :explore_api do
     VISUALIZATIONS_TABLE = 'visualizations'
+
     PUBLIC_VISUALIZATIONS_VIEW = 'explore_api'
-    CREATE_TABLE_SQL = %Q{ 
+    CREATE_TABLE_SQL = %Q{
       CREATE TABLE #{VISUALIZATIONS_TABLE} (
         visualization_id UUID primary key,
         visualization_name text,
@@ -14,6 +15,10 @@ namespace :cartodb do
         visualization_synced boolean,
         visualization_table_names text[],
         visualization_tags text[],
+        visualization_bbox geometry,
+        visualization_view_box geometry,
+        visualization_view_box_center geometry,
+        visualization_zoom integer,
         visualization_created_at timestamp with time zone,
         visualization_updated_at timestamp with time zone,
         visualization_map_id uuid,
@@ -36,13 +41,13 @@ namespace :cartodb do
                 visualization_description,
                 visualization_type,
                 visualization_synced,
-                visualization_table_names,
                 visualization_tags,
                 visualization_created_at,
                 visualization_updated_at,
                 visualization_map_id,
                 visualization_title,
                 visualization_likes,
+                visualization_mapviews::numeric/(1.0 + (now()::date - visualization_created_at::date)::numeric)^2 AS popularity
                 user_id,
                 user_username,
                 user_organization_id,
@@ -54,10 +59,11 @@ namespace :cartodb do
         FROM visualizations
     }
     FULL_TEXT_SEARCHABLE_COLUMNS = %w{ visualization_name visualization_description visualization_title }
+    INDEX_GEOMETRY_COLUMNS = %w{ visualization_bbox, visualization_view_box }
     DROP_TABLE_SQL = %Q{ DROP TABLE IF EXISTS #{VISUALIZATIONS_TABLE} CASCADE}
     DROP_PUBLIC_VIEW_SQL = %Q{ DROP TABLE IF EXISTS #{PUBLIC_VISUALIZATIONS_VIEW} }
     MOST_RECENT_CREATED_SQL = %Q{ SELECT MAX(visualization_created_at) FROM #{VISUALIZATIONS_TABLE} }
-    MOST_RECENT_UPDATED_SQL = %Q{ SELECT max(visualization_updated_at) FROM #{VISUALIZATIONS_TABLE} }
+    MOST_RECENT_UPDATED_SQL = %Q{ SELECT MAX(visualization_updated_at) FROM #{VISUALIZATIONS_TABLE} }
     BATCH_SIZE = 1000
     # TODO: "in" searches are limited to 300. To increase batch replace with date ranges
     UPDATE_BATCH_SIZE = 300
@@ -73,14 +79,20 @@ namespace :cartodb do
       FULL_TEXT_SEARCHABLE_COLUMNS.each { |c|
         user.in_database.run "CREATE INDEX #{VISUALIZATIONS_TABLE}_#{c}_fts_idx ON #{VISUALIZATIONS_TABLE} USING gin(to_tsvector(language, #{c}))"
       }
-      # TODO: needed/useful?
-      # user.in_database.run "select cartodb.CDB_CartodbfyTable('#{user.database_schema}', '#{VISUALIZATIONS_TABLE}')"
+
+      INDEX_GEOMETRY_COLUMNS.each { |c|
+        user.in_database.run "CREATE INDEX #{VISUALIZATIONS_TABLE}_#{c}_geom_idx ON #{VISUALIZATIONS_TABLE} USING GIST(#{c})"
+      }
+
       touch_metadata(user)
     end
 
     task :setup_public_view => [:environment] do
-      user = target_user
-      user.in_database.run CREATE_PUBLIC_VIEW
+      target_user.in_database.run CREATE_PUBLIC_VIEW
+    end
+
+    task :drop_public_view => [:environment] do
+      target_user.in_database.run DROP_PUBLIC_VIEW_SQL
     end
 
     desc "Deletes the #{VISUALIZATIONS_TABLE} table"
@@ -91,6 +103,8 @@ namespace :cartodb do
 
     desc "Updates the data at #{VISUALIZATIONS_TABLE}"
     task :update => [:environment] do
+      require_relative '../../app/helpers/explore_api'
+      @explore_api_helper = Helpers::ExploreAPI.new
       stats_aggregator.timing('visualizations.update.total') do
         user = target_user
         update(user)
@@ -118,7 +132,7 @@ namespace :cartodb do
       # INFO: we need to check all known visualizations because they might've been deleted
       offset = 0
       while (explore_visualizations = user.in_database[%Q{ select visualization_id, visualization_updated_at from #{VISUALIZATIONS_TABLE} order by visualization_created_at asc limit #{UPDATE_BATCH_SIZE} offset #{offset} }].all).length > 0
-        
+
         explore_visualizations_by_visualization_id = {}
         explore_visualizations.each { |row|
           explore_visualizations_by_visualization_id[row[:visualization_id]] = row
@@ -126,12 +140,16 @@ namespace :cartodb do
 
         visualization_ids = explore_visualizations.map { |ev| ev[:visualization_id] }
 
+        bbox_values = get_visualizations_bbox(visualization_ids)
+
         visualizations = CartoDB::Visualization::Collection.new.fetch({ ids: visualization_ids})
         full_updated_count = 0
         mapviews_liked_updated_count = 0
-        visualizations.map { |v|
+        visualizations.each do |v|
           explore_visualization = explore_visualizations_by_visualization_id[v.id]
-          if v.updated_at != explore_visualization[:visualization_updated_at]
+          # We use to_id to remove the miliseconds that could give to erroneous updates
+          # http://railsware.com/blog/2014/04/01/time-comparison-in-ruby/
+          if v.updated_at.to_i != explore_visualization[:visualization_updated_at].to_i
             if v.privacy != CartoDB::Visualization::Member::PRIVACY_PUBLIC
               privated_visualization_ids << v.id
             else
@@ -143,10 +161,10 @@ namespace :cartodb do
           else
             # INFO: retrieving mapviews makes this much slower
             # TODO: only update when there're new mapviews or likes
-            user.in_database.run update_mapviews_and_likes_query(v)
+            user.in_database.run update_mapviews_and_likes_query(v, bbox_values[v.id])
             mapviews_liked_updated_count += 1
           end
-        }
+        end
 
         print "Batch size: #{explore_visualizations.length}.\tMatches: #{visualizations.count}.\tUpdated #{full_updated_count} \tMapviews and liked updates: #{mapviews_liked_updated_count}\n"
 
@@ -219,58 +237,50 @@ namespace :cartodb do
     end
 
     def insert_visualizations(user, visualizations)
-      user.in_database[:visualizations].multi_insert(
-        visualizations.map { |v|
-          insert_visualization_hash(v)
-        }
-      )
+      visualization_ids = visualizations.map{|v| v.id}
+      visualizations_bbox = get_visualizations_bbox(visualization_ids)
+      insert_values = @explore_api_helper.get_visualizations_values_for_insert(visualizations, visualizations_bbox)
+      sql = "INSERT INTO #{VISUALIZATIONS_TABLE} (#{Helpers::ExploreAPI::VISUALIZATIONS_COLUMNS.join(", ")}) VALUES #{insert_values.join(", ")}"
+      user.in_database.run(sql)
     end
 
-    def insert_visualization_hash(visualization)
-      v = visualization
-      u = v.user
-      {
-            visualization_id: v.id,
-            visualization_name: v.name,
-            visualization_description: v.description,
-            visualization_type: v.type,
-            # Synchronization method from Visualization::Relator uses empty Hash when there is no sync
-            visualization_synced: !v.synchronization.is_a?(Hash),
-            visualization_table_names: get_visualization_tables(v),
-            visualization_tags: v.tags.nil? || v.tags.empty? ? nil : Sequel.pg_array(v.tags),
-            visualization_created_at: v.created_at,
-            visualization_updated_at: v.updated_at,
-            visualization_map_id: v.map_id,
-            visualization_title: v.title,
-            visualization_likes: v.likes_count,
-            visualization_mapviews: v.mapviews,
-            user_id: u.id,
-            user_username: u.username,
-            user_organization_id: u.organization_id,
-            user_twitter_username: u.twitter_username,
-            user_website: u.website,
-            user_avatar_url: u.avatar_url,
-            user_available_for_hire: u.available_for_hire
-      }
+    def get_visualizations_bbox(visualization_ids)
+      bbox_dataset = Rails::Sequel.connection.fetch(
+        %Q[SELECT id, bbox FROM visualizations WHERE id in ('#{visualization_ids.join("','")}') AND type = '#{CartoDB::Visualization::Member::TYPE_CANONICAL}']
+      ).all
+      Hash[bbox_dataset.map {|row| [row[:id], row[:bbox]] }]
     end
 
-    def get_visualization_tables(visualization)
-      # We are using layers instead of related tables because with related tables we are connecting
-      # to the users databases and we are reaching the connections limit
-      table_names = visualization.layers(:carto_and_torque).map{ |layer| layer.options['table_name'] }
-      %Q{{#{table_names.join(",")}}}
-    end
-
-    def update_mapviews_and_likes_query(visualization)
-      v = visualization
-      update_tables = %Q{, visualization_table_names = '#{get_visualization_tables(v)}'}
-      # Synchronization method from Visualization::Relator uses empty Hash when there is no sync
+    def update_mapviews_and_likes_query(visualization, bbox_value)
       %Q{ UPDATE #{VISUALIZATIONS_TABLE} set
-            visualization_mapviews = #{v.mapviews},
-            visualization_likes = #{v.likes_count},
-            visualization_synced = #{!v.synchronization.is_a?(Hash)}
-            #{update_tables}
-          where visualization_id = '#{v.id}' }
+            visualization_mapviews = #{visualization.mapviews},
+            visualization_likes = #{visualization.likes_count},
+            visualization_synced = #{!visualization.is_synced?}
+            #{update_tables(visualization)}
+            #{update_geometry(visualization, bbox_value)}
+          where visualization_id = '#{visualization.id}' }
+    end
+
+    def update_tables(visualization)
+      %Q{, visualization_table_names = '#{@explore_api_helper.get_visualization_tables(visualization)}'}
+    end
+
+    def update_geometry(visualization, bbox_value)
+      geometry_data = @explore_api_helper.get_geometry_data(visualization)
+      view_box_polygon = geometry_data[:view_box_polygon].nil? ? 'NULL' : geometry_data[:view_box_polygon]
+      center_geometry = geometry_data[:center_geometry].nil? ? 'NULL' : geometry_data[:center_geometry]
+      view_zoom = geometry_data[:zoom].nil? ? 'NULL' : geometry_data[:zoom]
+      bbox_value = !bbox_value.nil? ? "ST_AsText('#{bbox_value}')" : 'NULL'
+      if visualization.type == CartoDB::Visualization::Member::TYPE_DERIVED
+        %Q{, visualization_bbox = #{bbox_value},
+             visualization_view_box = #{view_box_polygon},
+             visualization_view_box_center = #{center_geometry},
+             visualization_zoom = #{view_zoom}}
+      elsif !bbox_value.nil?
+        %Q{, visualization_bbox = #{bbox_value}}
+      else
+        return
+      end
     end
 
     def common_data_user

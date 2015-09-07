@@ -41,9 +41,6 @@ module CartoDB
         })
       end
 
-      def populate_the_geom_from_latlon(qualified_table_name, latitude_column_name, longitude_column_name)
-        CartoDB::InternalGeocoder::LatitudeLongitude.new(db, job).geocode(schema, table_name, latitude_column_name, longitude_column_name)
-      end
 
       private
 

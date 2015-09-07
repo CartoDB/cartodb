@@ -4,13 +4,18 @@ require_dependency 'google_plus_config'
 require_relative '../../../services/datasources/lib/datasources'
 
 class Admin::UsersController < ApplicationController
+  include LoginHelper
+
   ssl_required  :account, :profile, :account_update, :profile_update, :delete
 
   before_filter :login_required
   before_filter :setup_user
   before_filter :initialize_google_plus_config, only: [:profile, :account]
+  before_filter :load_services, only: [:account, :account_update, :delete]
 
   layout 'application'
+
+  PASSWORD_DOES_NOT_MATCH_MESSAGE = 'Password does not match'
 
   def profile
     respond_to do |format|
@@ -19,15 +24,12 @@ class Admin::UsersController < ApplicationController
   end
 
   def account
-    @services = get_oauth_services
-
     respond_to do |format|
       format.html { render 'account' }
     end
   end
 
   def account_update
-    @services = get_oauth_services
     attributes = params[:user]
 
     password_change = attributes[:new_password].present? || attributes[:confirm_password].present?
@@ -91,11 +93,12 @@ class Admin::UsersController < ApplicationController
   def delete
     deletion_password_confirmation = params[:deletion_password_confirmation]
     if !@user.validate_old_password(deletion_password_confirmation)
-      raise 'Password does not match'
+      raise PASSWORD_DOES_NOT_MATCH_MESSAGE
     end
 
     @user.delete_in_central
     @user.destroy
+    cdb_logout
 
     if Cartodb::Central.sync_data_with_cartodb_central?
       redirect_to "http://www.cartodb.com"
@@ -107,7 +110,7 @@ class Admin::UsersController < ApplicationController
     flash.now[:error] = "Error deleting user: #{e.user_message}"
     render 'account'
   rescue => e
-    Rollbar.report_message('Error deleting user at CartoDB', 'error', { user: @user.inspect, error: e.inspect })
+    CartoDB.notify_exception(e, { user: @user.inspect }) unless e.message == PASSWORD_DOES_NOT_MATCH_MESSAGE
     flash.now[:error] = "Error deleting user: #{e.message}"
     render 'account'
   end
@@ -117,6 +120,10 @@ class Admin::UsersController < ApplicationController
   def initialize_google_plus_config
     signup_action = Cartodb::Central.sync_data_with_cartodb_central? ? Cartodb::Central.new.google_signup_url : '/google/signup'
     @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, signup_action)
+  end
+
+  def load_services
+    @services = get_oauth_services
   end
 
   def get_oauth_services

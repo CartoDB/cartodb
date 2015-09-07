@@ -9,7 +9,7 @@ describe DataImport do
   end
 
   after(:all) do
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+    stub_named_maps_calls
     @user.destroy
   end
 
@@ -171,27 +171,6 @@ describe DataImport do
     table.should_not be_nil
     table.name.should be == 'clubbing'
     table.records[:rows].should have(10).items
-  end
-
-  it "don't touch created_at/updated_at fields if already present in the
-  imported file" do
-    fixture = "#{Rails.root}/db/fake_data/created_at_update_at_fields_present.csv"
-    data_import = DataImport.create(
-      user_id:      @user.id,
-      data_source:  fixture,
-      updated_at:   Time.now
-    )
-    data_import.data_source = fixture
-    data_import.run_import!
-
-    puts data_import.table.inspect
-    #table = Table.all.last
-
-    #table.records[:rows].first[:created_at].to_s.should == Time.at(1351698386234 / 1000).to_s
-    #table.records[:rows].first[:updated_at].to_s.should == Time.at(1351698386234 / 1000).to_s
-    #table.records[:rows].last[:created_at].to_s.should  == Time.at(1351698390354 / 1000).to_s
-    #table.records[:rows].last[:updated_at].to_s.should  == Time.at(1351698390354 / 1000).to_s
-
   end
 
   it "can create a table from a query selecting only the cartodb_id" do

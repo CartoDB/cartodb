@@ -33,8 +33,8 @@ module CartoDB
         CartoDB::Log.new(type: CartoDB::Log::TYPE_DATA_IMPORT)
       end
 
-      def log(message)
-        @logger.append(message)
+      def log(message, truncate = true)
+        @logger.append(message, nil, truncate)
       end
 
       def table_name
@@ -72,7 +72,7 @@ module CartoDB
       end
 
       attr_reader :id, :logger, :pg_options, :schema
-      attr_accessor :success_status, :source_file_rows, :imported_rows
+      attr_accessor :success_status, :source_file_rows, :imported_rows, :fallback_executed
 
     end
   end

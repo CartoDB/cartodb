@@ -61,8 +61,8 @@ describe Carto::VisualizationQueryBuilder do
     table1 = create_random_table(@user1)
 
     expect {
-      @vqb.build.where(id: table1.table_visualization.id).first.table.name
-    }.to make_database_queries(count: 3)
+      @vqb.build.where(id: table1.table_visualization.id).first.table.name 
+    }.to make_database_queries(count: 2..3)
 
     expect {
       @vqb.with_prefetch_table.build.where(id: table1.table_visualization.id).first.table.name
@@ -181,6 +181,126 @@ describe Carto::VisualizationQueryBuilder do
    ids.should == [ table3.table_visualization.id, table1.table_visualization.id, table2.table_visualization.id ]
 
     # NOTE: Not testing with multiple order criteria as currently the editor doesn't supports it so is not needed
+  end
+
+  it 'filters remote tables with syncs' do
+
+    stub_named_maps_calls
+
+    table = create_random_table(@user1)
+
+    remote_vis_1 = CartoDB::Visualization::Member.new({
+          user_id: @user1.id,
+          name:    "remote vis #{rand(9999)}",
+          map_id:  ::Map.create(user_id: @user1.id).id,
+          type:    CartoDB::Visualization::Member::TYPE_REMOTE,
+          privacy: CartoDB::Visualization::Member::PRIVACY_PRIVATE
+        }).store
+
+    remote_vis_2 = CartoDB::Visualization::Member.new({
+          user_id: @user1.id,
+          name:    "remote vis #{rand(9999)}",
+          map_id:  ::Map.create(user_id: @user1.id).id,
+          type:    CartoDB::Visualization::Member::TYPE_REMOTE,
+          privacy: CartoDB::Visualization::Member::PRIVACY_PRIVATE
+        }).store
+
+    remote_vis_3 = CartoDB::Visualization::Member.new({
+          user_id: @user1.id,
+          name:    "remote vis #{rand(9999)}",
+          map_id:  ::Map.create(user_id: @user1.id).id,
+          type:    CartoDB::Visualization::Member::TYPE_REMOTE,
+          privacy: CartoDB::Visualization::Member::PRIVACY_PRIVATE
+        }).store
+
+    external_source_1 = Carto::ExternalSource.new({
+      visualization_id: remote_vis_1.id,
+      import_url: 'http://test.fake',
+      rows_counted: 2,
+      size: 12345,
+      username: @user1.username,
+      })
+    external_source_1.save
+
+    external_source_2 = Carto::ExternalSource.new({
+      visualization_id: remote_vis_2.id,
+      import_url: 'http://test2.fake',
+      rows_counted: 4,
+      size: 123456,
+      username: @user1.username,
+      })
+    external_source_2.save
+
+    external_source_3 = Carto::ExternalSource.new({
+      visualization_id: remote_vis_3.id,
+      import_url: 'http://test3.fake',
+      rows_counted: 6,
+      size: 9999,
+      username: @user1.username,
+      })
+    external_source_3.save
+
+    # Trick: reusing same data import for all 3 external
+    data_import_1 = DataImport.create({
+      user_id:                @user1.id,
+      })
+
+    # Old external data imports don't hide anything
+
+    ExternalDataImport.new(data_import_1.id, external_source_1.id, nil).save
+    ExternalDataImport.new(data_import_1.id, external_source_2.id, nil).save
+    ExternalDataImport.new(data_import_1.id, external_source_3.id, nil).save
+
+    ids = @vqb.with_type(Carto::Visualization::TYPE_REMOTE)
+        .with_order(:updated_at, :desc)
+        .without_synced_external_sources
+        .build
+        .all.map(&:id)
+    ids.should == [ remote_vis_3.id, remote_vis_2.id, remote_vis_1.id ]
+
+    # But new ones that have a sync should hide
+
+    sync_1 = CartoDB::Synchronization::Member.new({
+      }).store
+    ExternalDataImport.new(data_import_1.id, external_source_2.id, sync_1.id).save
+
+    ids = @vqb.with_type(Carto::Visualization::TYPE_REMOTE)
+        .with_order(:updated_at, :desc)
+        .without_synced_external_sources
+        .build
+        .all.map(&:id)
+    ids.should == [ remote_vis_3.id, remote_vis_1.id ]
+
+    sync_2 = CartoDB::Synchronization::Member.new({
+      }).store
+    ExternalDataImport.new(data_import_1.id, external_source_3.id, sync_2.id).save
+
+    ids = @vqb.with_type(Carto::Visualization::TYPE_REMOTE)
+        .with_order(:updated_at, :desc)
+        .without_synced_external_sources
+        .build
+        .all.map(&:id)
+    ids.should == [ remote_vis_1.id ]
+
+    # as there are constraints, deleting the sync should remove the external data import
+    sync_1.delete
+
+    ids = @vqb.with_type(Carto::Visualization::TYPE_REMOTE)
+        .with_order(:updated_at, :desc)
+        .without_synced_external_sources
+        .build
+        .all.map(&:id)
+    ids.should == [ remote_vis_2.id, remote_vis_1.id ]
+
+    # Searching for multiple types should not hide or show more/less remote tables, neither break search
+    ids = @vqb.with_types([ Carto::Visualization::TYPE_CANONICAL, Carto::Visualization::TYPE_REMOTE ])
+        .with_order(:updated_at, :desc)
+        .without_synced_external_sources
+        .build
+        .all.map(&:id)
+    ids.should == [ remote_vis_2.id, remote_vis_1.id, table.table_visualization.id]
+
+
   end
 
 end

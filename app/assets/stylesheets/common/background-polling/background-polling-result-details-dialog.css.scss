@@ -13,14 +13,10 @@ $w: 560px;
   @include align-items(center);
   min-width: initial;
   width: $w;
-}
-.BackgroundPollingDetails-body {
-  min-width: initial;
-  width: $w;
   padding: $sMargin-group 0;
   margin: 0 auto;
   border-top: 1px solid $cStructure-mainLine;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 0;
 }
 .BackgroundPollingDetails-body--noBorderTop { border-top: 0 }
 .BackgroundPollingDetails-icon {

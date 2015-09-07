@@ -5,7 +5,10 @@ class Carto::UserCreation < ActiveRecord::Base
   belongs_to :log, class_name: Carto::Log
 
   def self.new_user_signup(user)
+    # Normal validation breaks state_machine method generation
     raise 'User needs an organization' unless user.organization
+    raise 'User needs username' unless user.username
+    raise 'User needs email' unless user.email
 
     user_creation = Carto::UserCreation.new
     user_creation.username = user.username
@@ -30,7 +33,9 @@ class Carto::UserCreation < ActiveRecord::Base
     end
 
     after_transition any => :creating_user, :do => :initialize_user
+    after_transition any => :validating_user, :do => :validate_user
     after_transition any => :saving_user, :do => :save_user
+    after_transition any => :load_common_data, :do => :load_common_data
     after_transition any => :creating_user_in_central, :do => :create_in_central
 
     before_transition any => :success, :do => :close_creation
@@ -38,11 +43,12 @@ class Carto::UserCreation < ActiveRecord::Base
 
     event :next_creation_step do
       transition :enqueuing => :creating_user,
-          :creating_user => :saving_user
+          :creating_user => :validating_user,
+          :validating_user => :saving_user
 
-      transition :saving_user => :creating_user_in_central, :creating_user_in_central => :success, :if => :sync_data_with_cartodb_central?
+      transition :saving_user => :creating_user_in_central, :creating_user_in_central => :load_common_data, :load_common_data => :success, :if => :sync_data_with_cartodb_central?
 
-      transition :saving_user => :success, :unless => :sync_data_with_cartodb_central?
+      transition :saving_user => :load_common_data, :load_common_data => :success, :unless => :sync_data_with_cartodb_central?
     end
 
     event :fail_user_creation do
@@ -61,6 +67,10 @@ class Carto::UserCreation < ActiveRecord::Base
       end
     end
     
+  end
+
+  def set_common_data_url(common_data_url)
+    @common_data_url = common_data_url
   end
 
   private
@@ -105,6 +115,14 @@ class Carto::UserCreation < ActiveRecord::Base
     handle_failure(e, mark_as_failure = true)
   end
 
+  # Central validation
+  def validate_user
+    @user.validate_credentials_not_taken_in_central
+    raise "Credentials already used" unless @user.errors.empty?
+  rescue => e
+    handle_failure(e, mark_as_failure = true)
+  end
+
   def save_user
     # INFO: until here we haven't user_id, so in-memory @user is needed. After this, self.user is used, which can be either @user or loaded from database. This enables resuming.
     @user.save(raise_on_failure: true)
@@ -112,6 +130,12 @@ class Carto::UserCreation < ActiveRecord::Base
     self.save
   rescue => e
     handle_failure(e, mark_as_failure = true)
+  end
+
+  def load_common_data
+    @user.load_common_data(@common_data_url) unless @common_data_url.nil?
+  rescue => e
+    handle_failure(e, mark_as_failure = false)
   end
 
   def create_in_central

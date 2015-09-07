@@ -3,6 +3,7 @@
 require 'active_record'
 
 require_relative '../../models/carto/shared_entity'
+require_relative '../../helpers/bounding_box_helper'
 require_dependency 'carto/uuidhelper'
 
 # TODO: consider moving some of this to model scopes if convenient
@@ -37,6 +38,7 @@ class Carto::VisualizationQueryBuilder
     @eager_load_nested_associations = {}
     @order = {}
     @off_database_order = {}
+    @exclude_synced_external_sources = false
   end
 
   def with_id_or_name(id_or_name)
@@ -54,6 +56,11 @@ class Carto::VisualizationQueryBuilder
 
   def with_excluded_ids(ids)
     @excluded_ids = ids
+    self
+  end
+
+  def without_synced_external_sources
+    @exclude_synced_external_sources = true
     self
   end
 
@@ -113,11 +120,17 @@ class Carto::VisualizationQueryBuilder
   end
 
   def with_type(type)
+    # Clear always the other "types holder"
+    @types = nil
+
     @type = type == nil || type == '' ? nil : type
     self
   end
 
   def with_types(types)
+    # Clear always the other "types holder"
+    @type = nil
+
     @types = types
     self
   end
@@ -144,6 +157,11 @@ class Carto::VisualizationQueryBuilder
 
   def with_tags(tags)
     @tags = tags
+    self
+  end
+
+  def with_bounding_box(bounding_box)
+    @bounding_box = bounding_box
     self
   end
 
@@ -190,10 +208,23 @@ class Carto::VisualizationQueryBuilder
       # TODO: sql strings are suboptimal and compromise compositability, but
       # I haven't found a better way to do this OR in Rails
       query = query.where(' ("visualizations"."user_id" = (?) or "visualizations"."id" in (?))',
-          @owned_by_or_shared_with_user_id, 
+          @owned_by_or_shared_with_user_id,
           ::Carto::VisualizationQueryBuilder.new.with_shared_with_user_id(@owned_by_or_shared_with_user_id)
                                             .build.uniq.pluck('visualizations.id')
         )
+    end
+
+    if @exclude_synced_external_sources
+      query = query.joins(%Q{
+                            LEFT JOIN external_sources es
+                              ON es.visualization_id = visualizations.id
+                          })
+                   .joins(%Q{
+                            LEFT JOIN external_data_imports edi
+                              ON  edi.external_source_id = es.id
+                              AND edi.synchronization_id IS NOT NULL
+                          })
+                   .where("edi.id IS NULL")
     end
 
     if @type
@@ -213,7 +244,15 @@ class Carto::VisualizationQueryBuilder
     end
 
     if @tags
-      query = query.where("ARRAY[?]::text[] && visualizations.tags", @tags)
+      @tags.each do |t|
+        t.downcase!
+      end
+      query = query.where("array_to_string(visualizations.tags, ', ') ILIKE '%' || array_to_string(ARRAY[?]::text[], ', ') || '%'", @tags)
+    end
+
+    if @bounding_box
+      bbox_sql = BoundingBoxHelper.to_polygon(@bounding_box[:minx], @bounding_box[:miny], @bounding_box[:maxx], @bounding_box[:maxy])
+      query = query.where("visualizations.bbox is not null AND visualizations.bbox && #{bbox_sql}")
     end
 
     @include_associations.each { |association|

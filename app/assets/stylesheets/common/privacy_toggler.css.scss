@@ -1,0 +1,32 @@
+// Privacy toggler
+// --------------------------------------------------
+
+@import "../variables/mixins";
+@import "../variables/colors";
+
+.PrivacyToggler {
+  @include display-flex();
+  @include align-items(center);
+  @include justify-content(center);
+  margin: 0 10px;
+  width: 40px;
+  height: 40px;
+  text-align: center;
+  font-size: 16px;
+  border-radius: 40px;
+  border: 1px solid $cStructure-softLine;
+  &:hover { text-decoration: none }
+}
+.PrivacyToggler--PUBLIC,
+.PrivacyToggler--PUBLIC:hover {
+  border-color: $cHighlight-positive;
+  color: $cHighlight-positive;
+}
+.PrivacyToggler--PRIVATE,
+.PrivacyToggler--PRIVATE:hover {
+  border-color: $cHighlight-negative;
+  color: $cHighlight-negative;
+}
+.PrivacyToggler.is-disabled {
+  @include opacity(0.5);
+}

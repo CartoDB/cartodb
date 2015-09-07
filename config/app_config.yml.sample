@@ -1,7 +1,7 @@
 defaults: &defaults
   http_client_logs: true
   ogr2ogr:
-    binary:           'which ogr2ogr'
+    binary:           'which ogr2ogr2'
     csv_guessing:     false
   debug_assets: true
   mandatory_keys:     [layer_opts, sql_api, varnish_management, redis, session_domain]
@@ -44,7 +44,7 @@ defaults: &defaults
     public:
       protocol:   'http'
       domain:     'localhost.lan'
-      endpoint:   '/api/v1/sql'
+      endpoint:   '/api/v2/sql'
       port:       8080
   api_requests_service_url: ''
   developers_host:    'http://developers.localhost.lan:3000'
@@ -70,6 +70,8 @@ defaults: &defaults
     hubspot:
       events_host: 'http://track.hubspot.com'
       token: 'yourtoken'
+      form_ids:
+        newsletter: ''
       event_ids:
         import_failed: ''
         geocoding_failed: ''
@@ -93,10 +95,10 @@ defaults: &defaults
   common_data:
     protocol: 'https'
     username: 'common-data'
-    host: 'cartodb.com'
+    # base_url: 'https://common-data.cartodb.com'
     format: 'shp'
     generate_every: 86400
-  explore-api:
+  explore_api:
     username: ''
   varnish_management:
     critical: false

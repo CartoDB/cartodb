@@ -8,12 +8,14 @@ require_relative '../doubles/log'
 require_relative '../doubles/user'
 require_relative 'cdb_importer_context'
 require_relative 'acceptance_helpers'
+require_relative 'no_stats_context'
 
 include CartoDB::Importer2
 
 describe 'OSM regression tests' do
   include AcceptanceHelpers
   include_context 'cdb_importer schema'
+  include_context "no stats"
 
   it 'imports OSM files' do
     filepath    = path_to('map2.osm')

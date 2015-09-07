@@ -9,7 +9,7 @@ module CartoDB
 
     include Singleton
 
-    attr_reader :event_ids, :token
+    attr_reader :event_ids, :form_ids, :token
 
     def initialize
       metrics = Cartodb.config[:metrics]
@@ -18,6 +18,7 @@ module CartoDB
         @enabled = true
         @events_host = config.fetch('events_host')
         @event_ids = config.fetch('event_ids')
+        @form_ids = config.fetch('form_ids')
         @token = config.fetch('token')
       else
         @enabled = false

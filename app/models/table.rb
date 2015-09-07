@@ -14,8 +14,12 @@ require_relative './overlay/member'
 require_relative './overlay/collection'
 require_relative './overlay/presenter'
 require_relative '../../services/importer/lib/importer/query_batcher'
+require_relative '../../services/importer/lib/importer/cartodbfy_time'
 require_relative '../../services/datasources/lib/datasources/decorators/factory'
 require_relative '../../services/table-geocoder/lib/internal-geocoder/latitude_longitude'
+
+require_relative '../../lib/cartodb/stats/user_tables'
+require_relative '../../lib/cartodb/stats/importer'
 
 class Table
   extend Forwardable
@@ -23,6 +27,8 @@ class Table
   SYSTEM_TABLE_NAMES = %w( spatial_ref_sys geography_columns geometry_columns raster_columns raster_overviews cdb_tablemetadata geometry raster )
 
    # TODO Part of a service along with schema
+  # INFO: created_at and updated_at cannot be dropped from existing tables without dropping the triggers first
+  CARTODB_REQUIRED_COLUMNS = %W{ cartodb_id the_geom }
   CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at the_geom }
   THE_GEOM_WEBMERCATOR = :the_geom_webmercator
   THE_GEOM = :the_geom
@@ -56,7 +62,6 @@ class Table
   DEFAULT_THE_GEOM_TYPE = 'geometry'
 
   VALID_GEOMETRY_TYPES = %W{ geometry multipolygon point multilinestring }
-
 
   def_delegators :relator, *CartoDB::TableRelator::INTERFACE
   def_delegators :@user_table, *::UserTable::INTERFACE
@@ -155,7 +160,7 @@ class Table
                 # Handy for rakes and custom ghost table registers, won't delete user table in case of error
                 :keep_user_database_table
 
-  # Getter by table uuid or table name using canonical visualizations
+  # Getter by table uuid using canonical visualizations
   # @param table_id String
   # @param viewer_user User
   def self.get_by_id(table_id, viewer_user)
@@ -172,6 +177,13 @@ class Table
       table = vis.table unless vis.nil?
     end
     table
+  end
+
+  # Getter by table uuid using canonical visualizations. No privacy checks
+  # @param table_id String
+  def self.get_by_table_id(table_id)
+    table_temp = UserTable.where(id: table_id).first
+    table_temp.service unless table_temp.nil?
   end
 
   # Get a list of tables given an array with the names
@@ -283,6 +295,8 @@ class Table
     end
   end
 
+  # TODO: basically most if not all of what the import_cleanup does is done by cartodbfy.
+  # Consider deletion.
   def import_cleanup
     owner.in_database(:as => :superuser) do |user_database|
       # When tables are created using ogr2ogr they are added a ogc_fid or gid primary key
@@ -340,8 +354,6 @@ class Table
         user_database.run(%Q{ALTER TABLE #{qualified_table_name} DROP COLUMN #{aux_cartodb_id_column}})
       end
 
-      self.schema(reload:true)
-      self.cartodbfy
     end
 
   end
@@ -367,23 +379,22 @@ class Table
 
       self[:name] = importer_result_name
 
-      self.schema(reload: true)
-
       set_the_geom_column!
 
       import_cleanup
+      self.cartodbfy
 
-      set_table_id
       @data_import.save
     else
-      if register_table_only.present?
-        set_table_id
-      else
+      if !register_table_only.present?
         create_table_in_database!
-        set_table_id
         set_the_geom_column!(self.the_geom_type)
+        self.cartodbfy
       end
     end
+
+    self.schema(reload:true)
+    set_table_id
   rescue => e
     self.handle_creation_error(e)
   end
@@ -405,6 +416,13 @@ class Table
       @data_import.table_name = name
       @data_import.save
 
+      if !@data_import.privacy.nil?
+        if !self.owner.valid_privacy?(@data_import.privacy)
+          raise "Error: User '#{self.owner.username}' doesn't have private tables enabled"
+        end
+        @user_table.privacy = @data_import.privacy
+      end
+
       decorator = CartoDB::Datasources::Decorators::Factory.decorator_for(@data_import.service_name)
       if !decorator.nil? && decorator.decorates_layer?
         self.map.layers.each do |layer|
@@ -421,8 +439,6 @@ class Table
     add_table_to_stats
 
     update_table_pg_stats
-
-    self.cartodbfy
 
   rescue => e
     self.handle_creation_error(e)
@@ -486,7 +502,7 @@ class Table
         kind: 'gmapsbase',
         options: basemap
       }
-    else 
+    else
       {
         kind: 'tiled',
         options: basemap.merge({ 'urlTemplate' => basemap['url'] })
@@ -564,7 +580,7 @@ class Table
         user_id:  self.owner.id
       }
     )
-    CartoDB::Visualization::Overlays.new(vis).create_default_overlays
+    CartoDB::Visualization::Overlays.new(vis).create_default_overlays  
     vis.store
     vis
   end
@@ -591,6 +607,8 @@ class Table
     end
     remove_table_from_user_database unless keep_user_database_table
     synchronization.delete if synchronization
+
+    related_templates.each { |template| template.destroy }
   end
 
   def remove_table_from_user_database
@@ -1151,68 +1169,30 @@ class Table
   end
 
   def cartodbfy
-    if owner.cartodb_extension_version_pre_mu?
-      schema_name = 'public'
-    else
-      schema_name = owner.database_schema
-    end
+    start = Time.now
+    schema_name = owner.database_schema
     table_name = "#{owner.database_schema}.#{self.name}"
 
-    # Following is equivalent to running "SELECT cartodb.CDB_CartodbfyTable('#{schema_name}','#{table_name}')"
-    owner.in_database do |user_database|
-      user_database.run(%Q{
-        SELECT cartodb._CDB_check_prerequisites('#{schema_name}'::TEXT, '#{table_name}'::REGCLASS);
-      })
-
-      user_database.run(%Q{
-        SELECT cartodb._CDB_drop_triggers('#{table_name}'::REGCLASS);
-      })
-
-      user_database.run(%Q{
-        SELECT cartodb._CDB_create_cartodb_id_column('#{table_name}'::REGCLASS);
-      })
-      user_database.run(%Q{
-        SELECT cartodb._CDB_create_timestamp_columns('#{table_name}'::REGCLASS);
-      })
-
-      # Avoid breaking on extension versions < 0.5.0
-      begin
-        is_raster = user_database[%Q{
-          SELECT cartodb._CDB_is_raster_table('#{schema_name}'::TEXT, '#{table_name}'::REGCLASS) AS is_raster;
-        }].first
-      rescue
-        is_raster = nil
-      end
-
-      if !is_raster.nil? && is_raster[:is_raster]
+    importer_stats.timing('cartodbfy') do
+      owner.in_database do |user_database|
         user_database.run(%Q{
-          SELECT cartodb._CDB_create_raster_triggers('#{schema_name}'::TEXT, '#{table_name}'::REGCLASS);
-        })
-      else
-        exists_geom_cols = user_database[%Q{
-          SELECT cartodb._CDB_create_the_geom_columns('#{table_name}'::REGCLASS);
-        }].first
-        exists_geoms = "'{" + exists_geom_cols[:_cdb_create_the_geom_columns].join(',') + "}'::BOOLEAN[]"
-
-        # This are the two hot zones
-        user_database.run(%Q{
-          SELECT cartodb._CDB_populate_the_geom_from_the_geom_webmercator('#{table_name}'::REGCLASS, #{exists_geoms});
-        })
-          user_database.run(%Q{
-          SELECT cartodb._CDB_populate_the_geom_webmercator_from_the_geom('#{table_name}'::REGCLASS, #{exists_geoms});
-        })
-
-        user_database.run(%Q{
-          SELECT cartodb._CDB_create_triggers('#{schema_name}'::TEXT, '#{table_name}'::REGCLASS);
+          SELECT cartodb.CDB_CartodbfyTable('#{schema_name}'::TEXT,'#{table_name}'::REGCLASS);
         })
       end
     end
 
-    self.schema(reload:true)
+    elapsed = Time.now - start
+    if @data_import
+      CartoDB::Importer2::CartodbfyTime::instance(@data_import.id).add(elapsed)
+    end
   end
 
   def update_table_pg_stats
     owner.in_database[%Q{ANALYZE #{qualified_table_name};}]
+  end
+
+  def update_table_geom_pg_stats
+    owner.in_database[%Q{ANALYZE #{qualified_table_name}(the_geom);}]
   end
 
   def owner
@@ -1242,7 +1222,7 @@ class Table
 
   def set_table_id
     @user_table.table_id = self.get_table_id
-  end # set_table_id
+  end
 
   def get_table_id
     record = owner.in_database.select(:pg_class__oid)
@@ -1294,6 +1274,11 @@ class Table
 
   def database_schema
     owner.database_schema
+  end
+
+  # INFO: Qualified but without double quotes
+  def self.is_qualified_name_valid?(name)
+    (name =~ /^[a-z\-_0-9]+\.[a-z\-_0-9]+?$/) == 0
   end
 
   ############################### Sharing tables ##############################
@@ -1362,6 +1347,10 @@ class Table
   end
 
   private
+
+  def importer_stats
+    @importer_stats ||= CartoDB::Stats::Importer.instance
+  end
 
   def beautify_name(name)
     return name unless name
@@ -1437,7 +1426,7 @@ class Table
     database_schema = options[:database_schema].present? ? options[:database_schema] : 'public'
 
     # We don't want to use an existing table name
-    # 
+    #
     existing_names = []
     existing_names = options[:name_candidates] || options[:connection]["select relname from pg_stat_user_tables WHERE schemaname='#{database_schema}'"].map(:relname) if options[:connection]
     existing_names = existing_names + SYSTEM_TABLE_NAMES
@@ -1591,8 +1580,6 @@ class Table
           column :cartodb_id, 'SERIAL PRIMARY KEY'
           String :name
           String :description, :text => true
-          column :created_at, 'timestamp with time zone', :default => Sequel::CURRENT_TIMESTAMP
-          column :updated_at, 'timestamp with time zone', :default => Sequel::CURRENT_TIMESTAMP
         end
       else
         sanitized_force_schema = force_schema.split(',').map do |column|
@@ -1603,13 +1590,9 @@ class Table
             column.gsub(/primary\s+key/i,'UNIQUE')
           end
         end
-        sanitized_force_schema.unshift('cartodb_id SERIAL PRIMARY KEY').
-                               unshift('created_at timestamp with time zone').
-                               unshift('updated_at timestamp with time zone')
+        sanitized_force_schema.unshift('cartodb_id SERIAL PRIMARY KEY')
         user_database.run(<<-SQL
           CREATE TABLE #{qualified_table_name} (#{sanitized_force_schema.join(', ')});
-          ALTER TABLE  #{qualified_table_name} ALTER COLUMN created_at SET DEFAULT now();
-          ALTER TABLE  #{qualified_table_name} ALTER COLUMN updated_at SET DEFAULT now();
         SQL
         )
       end
@@ -1662,17 +1645,17 @@ class Table
   end
 
   def add_table_to_stats
-    CartodbStats.update_tables_counter(1)
-    CartodbStats.update_tables_counter_per_user(1, self.owner.username)
-    CartodbStats.update_tables_counter_per_host(1)
-    CartodbStats.update_tables_counter_per_plan(1, self.owner.account_type)
+    CartoDB::Stats::UserTables.instance.update_tables_counter(1)
+    CartoDB::Stats::UserTables.instance.update_tables_counter_per_user(1, self.owner.username)
+    CartoDB::Stats::UserTables.instance.update_tables_counter_per_host(1)
+    CartoDB::Stats::UserTables.instance.update_tables_counter_per_plan(1, self.owner.account_type)
   end
 
   def remove_table_from_stats
-    CartodbStats.update_tables_counter(-1)
-    CartodbStats.update_tables_counter_per_user(-1, self.owner.username)
-    CartodbStats.update_tables_counter_per_host(-1)
-    CartodbStats.update_tables_counter_per_plan(-1, self.owner.account_type)
+    CartoDB::Stats::UserTables.instance.update_tables_counter(-1)
+    CartoDB::Stats::UserTables.instance.update_tables_counter_per_user(-1, self.owner.username)
+    CartoDB::Stats::UserTables.instance.update_tables_counter_per_host(-1)
+    CartoDB::Stats::UserTables.instance.update_tables_counter_per_plan(-1, self.owner.account_type)
   end
 
   ############################### Sharing tables ##############################

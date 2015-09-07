@@ -8,7 +8,7 @@ module Carto
       include Carto::HtmlSafe
 
       delegate [:id, :map, :qualified_name, :likes, :description, :retrieve_named_map?, :password_protected?, :overlays,
-                :prev_id, :next_id, :transition_options, :has_password?, :parent_id, :get_auth_tokens, :user
+                :prev_id, :next_id, :transition_options, :has_password?, :parent_id, :get_auth_tokens, :user, :related_visualizations
                ] => :visualization
 
       attr_reader :visualization
@@ -26,6 +26,10 @@ module Carto
 
       def layers(kind)
         @layer_cache[kind] ||= get_layers(kind)
+      end
+
+      def attributions_from_derived_visualizations
+        @visualization.related_visualizations.map(&:attributions).reject {|attribution| attribution.blank?}
       end
 
       def children

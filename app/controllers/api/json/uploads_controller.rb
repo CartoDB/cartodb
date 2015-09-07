@@ -6,30 +6,36 @@ class Api::Json::UploadsController < Api::ApplicationController
   before_filter :api_or_user_authorization_required
 
   def create
-    begin
-      temp_file = filename = filedata = nil
+    @stats_aggregator.timing('uploads.create') do
 
-      case
-      when params[:filename].present? && request.body.present?
-        filename = params[:filename]
-        filedata = request.body.read.force_encoding('utf-8')
-      when params[:file].present?
-        filename = params[:file].original_filename
-        filedata = params[:file].read.force_encoding('utf-8')
+      begin
+        temp_file = filename = filedata = nil
+
+        case
+        when params[:filename].present? && request.body.present?
+          filename = params[:filename]
+          filedata = request.body.read.force_encoding('utf-8')
+        when params[:file].present?
+          filename = params[:file].original_filename
+          filedata = params[:file].read.force_encoding('utf-8')
+        end
+
+        random_token = Digest::SHA2.hexdigest("#{Time.now.utc}--#{filename.object_id.to_s}").first(20)
+
+        @stats_aggregator.timing('save') do
+          FileUtils.mkdir_p(Rails.root.join('public/uploads').join(random_token))
+          file = File.new(Rails.root.join('public/uploads').join(random_token).join(File.basename(filename)), 'w')
+          file.write filedata
+          file.close
+        end
+
+        render :json => {:file_uri => file.path[/(\/uploads\/.*)/, 1], :success => true}
+      rescue => e
+        logger.error e
+        logger.error e.backtrace
+        head(400)
       end
 
-      random_token = Digest::SHA2.hexdigest("#{Time.now.utc}--#{filename.object_id.to_s}").first(20)
-
-      FileUtils.mkdir_p(Rails.root.join('public/uploads').join(random_token))
-
-      file = File.new(Rails.root.join('public/uploads').join(random_token).join(File.basename(filename)), 'w')
-      file.write filedata
-      file.close
-      render :json => {:file_uri => file.path[/(\/uploads\/.*)/, 1], :success => true}
-    rescue => e
-      logger.error e
-      logger.error e.backtrace
-      head(400)
     end
   end
 

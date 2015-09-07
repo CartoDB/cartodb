@@ -1,4 +1,3 @@
-
 module Carto
   module Api
     class UserPresenter
@@ -10,19 +9,21 @@ module Carto
       def to_poro
         return {} if @user.nil?
         {
-            id:               @user.id,
-            username:         @user.username,
-            email:            @user.email,
-            avatar_url:       @user.avatar_url,
-            base_url:         @user.public_url,
-            quota_in_bytes:   @user.quota_in_bytes,
-            db_size_in_bytes: @user.db_size_in_bytes
+          id:               @user.id,
+          username:         @user.username,
+          email:            @user.email,
+          avatar_url:       @user.avatar_url,
+          base_url:         @user.public_url,
+          quota_in_bytes:   @user.quota_in_bytes,
+          db_size_in_bytes: @user.db_size_in_bytes,
+          table_count:      @user.table_count,
+          maps_count:       @user.maps_count
         }
       end
 
       def data(options = {})
         return {} if @user.nil?
-        
+
         calls = @user.get_api_calls(from: @user.last_billing_cycle, to: Date.today)
         calls.fill(0, calls.size..29)
 
@@ -36,6 +37,7 @@ module Carto
           account_type: @user.account_type,
           table_quota: @user.table_quota,
           table_count: @user.table_count,
+          maps_count: maps_count,
           public_visualization_count: @user.public_visualization_count,
           visualization_count: @user.visualization_count,
           failed_import_count: failed_import_count,
@@ -81,12 +83,21 @@ module Carto
             import_quota: @user.import_quota,
             remove_logo: @user.remove_logo?,
             sync_tables: @user.sync_tables_enabled,
-            arcgis_datasource: @user.arcgis_datasource_enabled?
+            arcgis_datasource: @user.arcgis_datasource_enabled?,
+            google_maps_geocoder_enabled: @user.google_maps_geocoder_enabled?,
+            google_maps_enabled: @user.google_maps_enabled?
+          },
+          limits: {
+            concurrent_syncs: CartoDB::PlatformLimits::Importer::UserConcurrentSyncsAmount::MAX_SYNCS_PER_USER,
+            concurrent_imports: @user.max_concurrent_import_count,
+            import_file_size: @user.max_import_file_size,
+            import_table_rows: @user.max_import_table_row_count
           },
           notification: @user.notification,
           avatar_url: @user.avatar,
           feature_flags: @user.feature_flag_names,
-          base_url: @user.public_url
+          base_url: @user.public_url,
+          needs_password_confirmation: @user.needs_password_confirmation?
         }
 
         if @user.organization.present?
@@ -125,6 +136,10 @@ module Carto
                                                    .build_paged(1, 1)
                                                    .pluck(:created_at)
         row_data.nil? ? nil : row_data[0]
+      end
+
+      def maps_count
+        Carto::Map.where(user_id: @user.id).count
       end
 
     end

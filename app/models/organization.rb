@@ -54,6 +54,11 @@ class Organization < Sequel::Model
     end
   end
 
+  def validate_for_signup(errors, quota_in_bytes)
+    errors.add(:organization, "not enough seats") if remaining_seats <= 0
+    errors.add(:quota_in_bytes, "not enough disk quota") if unassigned_quota <= 0 || (!quota_in_bytes.nil? && unassigned_quota < quota_in_bytes)
+  end
+
   # Just to make code more uniform with user.database_schema
   def database_schema
     self.name
@@ -142,11 +147,8 @@ class Organization < Sequel::Model
     quota_in_bytes - assigned_quota
   end
 
-  # options:
-  # :show_organization_users: load all organization users under :users key
-  def to_poro(filtered_user = nil, options = {})
-    filtered_user ||= self.owner
-    poro = {
+  def to_poro
+    {
       :created_at       => self.created_at,
       :description      => self.description,
       :discus_shortname => self.discus_shortname,
@@ -172,17 +174,6 @@ class Organization < Sequel::Model
       :admin_email      => self.admin_email,
       :avatar_url       => self.avatar_url
     }
-    if options[:show_organization_users] == true
-      poro[:users] = self.users.reject { |item| filtered_user && item.id == filtered_user.id }
-        .map { |u|
-        {
-          :id         => u.id,
-          :username   => u.username,
-          :avatar_url => u.avatar_url
-        }
-      }
-    end
-    poro
   end
 
   def public_visualizations(page_num = 1, items_per_page = 5, tag = nil)

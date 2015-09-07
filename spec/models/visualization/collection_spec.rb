@@ -768,18 +768,19 @@ describe Visualization::Collection do
   def random_attributes(attributes={})
     random = rand(999)
     {
-      name:         attributes.fetch(:name, "name #{random}"),
-      description:  attributes.fetch(:description, "description #{random}"),
-      privacy:      attributes.fetch(:privacy, 'public'),
-      tags:         attributes.fetch(:tags, ['tag 1']),
-      type:         attributes.fetch(:type, CartoDB::Visualization::Member::TYPE_CANONICAL),
-      user_id:      attributes.fetch(:user_id, UUIDTools::UUID.timestamp_create.to_s),
-      locked:       attributes.fetch(:locked, false),
-      title:        attributes.fetch(:title, ''),
-      source:       attributes.fetch(:source, ''),
-      license:      attributes.fetch(:license, ''),
-      kind:         attributes.fetch(:kind, CartoDB::Visualization::Member::KIND_GEOM),
-      map_id:       attributes.fetch(:map_id, nil)
+      name:           attributes.fetch(:name, "name #{random}"),
+      description:    attributes.fetch(:description, "description #{random}"),
+      privacy:        attributes.fetch(:privacy, 'public'),
+      tags:           attributes.fetch(:tags, ['tag 1']),
+      type:           attributes.fetch(:type, CartoDB::Visualization::Member::TYPE_CANONICAL),
+      user_id:        attributes.fetch(:user_id, UUIDTools::UUID.timestamp_create.to_s),
+      locked:         attributes.fetch(:locked, false),
+      title:          attributes.fetch(:title, ''),
+      source:         attributes.fetch(:source, ''),
+      license:        attributes.fetch(:license, ''),
+      attributions:   attributes.fetch(:attributions, ''),
+      kind:           attributes.fetch(:kind, CartoDB::Visualization::Member::KIND_GEOM),
+      map_id:         attributes.fetch(:map_id, nil)
     }
   end #random_attributes
 end # Visualization::Collection

@@ -1139,4 +1139,98 @@ describe Visualization::Member do
       redis_vizjson_cache.send(:redis).get(redis_key).should be_nil
     end
   end
+
+  describe 'licenses' do
+
+    before(:all) do
+      @user = create_user
+    end
+
+    after(:all) do
+      @user.delete
+    end
+
+    it 'should store correctly a visualization with its license' do
+      table = create_table({:name => 'table1', :user_id => @user.id})
+      vis = table.table_visualization
+      vis.license = "apache"
+      vis.store
+      vis.fetch
+      vis.license_info.id.should eq :apache
+      vis.license_info.name.should eq "Apache license"
+    end
+
+    it 'should return nil if the license is nil, empty or unkown' do
+      table = create_table({:name => 'table1', :user_id => @user.id})
+      vis = table.table_visualization
+      vis.license = nil
+      vis.store
+      vis.fetch
+      vis.license_info.nil?.should eq true
+      vis.license = ""
+      vis.store
+      vis.fetch
+      vis.license_info.nil?.should eq true
+      # I cant save with a wrong value
+      vis.stubs(:license).returns("lololo")
+      vis.license_info.nil?.should eq true
+    end
+
+    it 'should raise exception when try to store a unknown license, empty or nil' do
+      table = create_table({:name => 'table1', :user_id => @user.id})
+      vis = table.table_visualization
+      vis.license = "wadus"
+      expect {
+        vis.store
+      }.to raise_error CartoDB::InvalidMember
+      vis.license = ""
+      expect {
+        vis.store
+      }.to raise_error CartoDB::InvalidMember
+      vis.license = nil
+      expect {
+        vis.store
+      }.to raise_error CartoDB::InvalidMember
+    end
+  end
+  describe 'remote member' do
+
+    before(:all) do
+      @user = create_user
+      @name = "example_name"
+      @display_name = "Example display name"
+      @user_id = @user.id
+      @privacy = "public"
+      @description = "Example description"
+      @tags = ["tag1", "tag2"]
+      @license = "apache"
+      @source = "[source](http://www.example.com)"
+      @attributions = "Attributions example"
+    end
+
+    it 'should create a new remote member' do
+      remote_member = CartoDB::Visualization::Member.remote_member(
+        @name, @user_id, @privacy, @description, @tags, @license, @source, @attributions, @display_name
+      )
+      remote_member.name.should eq @name
+      remote_member.user_id.should eq @user_id
+      remote_member.privacy.should eq @privacy
+      remote_member.description.should eq @description
+      remote_member.tags.should eq @tags
+      remote_member.license.should eq @license
+      remote_member.source.should eq @source
+      remote_member.attributions.should eq @attributions
+      remote_member.display_name.should eq @display_name
+    end
+
+    it 'should update a remote member' do
+      remote_member = CartoDB::Visualization::Member.remote_member(
+        @name, @user_id, @privacy, @description, @tags, @license, @source, @attributions, @display_name
+      )
+      remote_member.update_remote_data(@privacy, "Another description", @tags, @license, @source, @attributions, @display_name)
+      remote_member.store
+      remote_member.description.should eq "Another description"
+    end
+
+  end
 end

@@ -75,10 +75,17 @@ module CartoDB
         get(context)
       end
 
+      # Increments the limit
+      # @param context mixed|nil
+      # @param amount integer
+      def increment!(context=nil, amount=1)
+        increase(context, amount)
+      end
+
       # Decrements the limit
       # @param context mixed|nil
       # @param amount integer
-      def decrement(context=nil, amount=1)
+      def decrement!(context=nil, amount=1)
         decrease(context, amount)
       end
 

@@ -9,12 +9,13 @@ describe "Imports API" do
   end
 
   before(:each) do
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+    stub_named_maps_calls
     delete_user_data $user_1
     host! "#{$user_1.username}.localhost.lan"
   end
 
   after(:all) do
+    stub_named_maps_calls
     delete_user_data $user_1
     $user_1.update table_quota: 500
   end
@@ -89,6 +90,15 @@ describe "Imports API" do
     import_table = UserTable.all.last.service
     import_table.rows_counted.should be == @table_from_import.rows_counted
     import_table.should have_required_indexes_and_triggers
+  end
+
+  it 'detects lat/long columns and produces a the_geom column from them' do
+    post api_v1_imports_create_url,
+      params.merge(:filename => upload_file('spec/support/data/csv_with_lat_lon.csv', 'application/octet-stream'))
+    @table_from_import = UserTable.all.last.service
+
+    @table_from_import.geometry_types.should == ["ST_Point"]
+    @table_from_import.record(1)[:the_geom].should == '{"type":"Point","coordinates":[16.5607329,48.1199611]}'
   end
 
   it 'duplicates a table without geometries' do

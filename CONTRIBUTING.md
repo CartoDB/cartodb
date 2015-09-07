@@ -1,9 +1,14 @@
 The development tracker for cartodb is on github:
-http://github.com/cartodb/cartodb/
+http://github.com/cartodb/cartodb
 
 Bug fixes are best reported as pull requests over there.
 Features are best discussed on the mailing list:
 https://groups.google.com/d/forum/cartodb
+
+## Submitting Contributions
+
+* You will need to sign a Contributor License Agreement (CLA) before making a submission. [Learn more here.](https://cartodb.com/contributing)
+
 
 # General
 

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+	<Document>
+		<Style>
+			<IconStyle>
+				<Icon>
+				</Icon>
+			</IconStyle>
+			<BalloonStyle>
+				<text>$[description]</text>
+				<textColor>ff000000</textColor>
+				<displayMode>default</displayMode>
+			</BalloonStyle>
+		</Style>
+		<Folder>
+			<name>Absolute_and_Relative</name>
+			<Schema name="Absolute_and_Relative" id="Absolute_and_Relative">
+				<SimpleField name="Name" type="string"></SimpleField>
+				<SimpleField name="Description" type="string"></SimpleField>
+				<SimpleField name="description2" type="string"></SimpleField>
+				<SimpleField name="timestamp" type="string"></SimpleField>
+				<SimpleField name="begin" type="string"></SimpleField>
+				<SimpleField name="end" type="string"></SimpleField>
+				<SimpleField name="altitudeMode" type="string"></SimpleField>
+				<SimpleField name="tessellate" type="int"></SimpleField>
+				<SimpleField name="extrude" type="int"></SimpleField>
+				<SimpleField name="visibility" type="int"></SimpleField>
+				<SimpleField name="drawOrder" type="int"></SimpleField>
+				<SimpleField name="icon" type="string"></SimpleField>
+			</Schema>
+			  <Placemark>
+				<name>Absolute</name>
+				<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+				<ExtendedData><SchemaData schemaUrl="#Absolute_and_Relative">
+					<SimpleData name="Name">Absolute</SimpleData>
+					<SimpleData name="altitudeMode">absolute</SimpleData>
+					<SimpleData name="tessellate">1</SimpleData>
+					<SimpleData name="extrude">-1</SimpleData>
+					<SimpleData name="visibility">0</SimpleData>
+				</SchemaData></ExtendedData>
+			      <Polygon><outerBoundaryIs><LinearRing><coordinates>-112.337251073129494,36.148885051053171,1784 -112.3356128688403,36.147815405890192,1784 -112.3368169371048,36.146586777343821,1784 -112.338440845754306,36.147627789140763,1784 -112.337251073129494,36.148885051053171,1784</coordinates></LinearRing></outerBoundaryIs></Polygon>
+			  </Placemark>
+			  <Placemark>
+				<name>Absolute Extruded</name>
+				<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+				<ExtendedData><SchemaData schemaUrl="#Absolute_and_Relative">
+					<SimpleData name="Name">Absolute Extruded</SimpleData>
+					<SimpleData name="altitudeMode">absolute</SimpleData>
+					<SimpleData name="tessellate">1</SimpleData>
+					<SimpleData name="extrude">1</SimpleData>
+					<SimpleData name="visibility">0</SimpleData>
+				</SchemaData></ExtendedData>
+			      <Polygon><outerBoundaryIs><LinearRing><coordinates>-112.339658681884302,36.146376186475052,1784 -112.338059765431495,36.145317518713533,1784 -112.336825423778805,36.146595962446071,1784 -112.338455504320294,36.147626217639818,1784 -112.339658681884302,36.146376186475052,1784</coordinates></LinearRing></outerBoundaryIs></Polygon>
+			  </Placemark>
+			  <Placemark>
+				<name>Relative</name>
+				<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+				<ExtendedData><SchemaData schemaUrl="#Absolute_and_Relative">
+					<SimpleData name="Name">Relative</SimpleData>
+					<SimpleData name="altitudeMode">relativeToGround</SimpleData>
+					<SimpleData name="tessellate">1</SimpleData>
+					<SimpleData name="extrude">-1</SimpleData>
+					<SimpleData name="visibility">0</SimpleData>
+				</SchemaData></ExtendedData>
+			      <Polygon><outerBoundaryIs><LinearRing><coordinates>-112.334946314593196,36.149887057677212,100 -112.335401954067706,36.149411083983722,100 -112.334442828914604,36.14878490381308,100 -112.333128949291293,36.147808401324433,100 -112.331701951694697,36.146807556783571,100 -112.331131440106006,36.147417342622802,100 -112.332616324338005,36.148454533646543,100 -112.333987662052394,36.149265705220692,100 -112.334946314593196,36.149887057677212,100</coordinates></LinearRing></outerBoundaryIs></Polygon>
+			  </Placemark>
+			  <Placemark>
+				<name>Relative Extruded</name>
+				<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+				<ExtendedData><SchemaData schemaUrl="#Absolute_and_Relative">
+					<SimpleData name="Name">Relative Extruded</SimpleData>
+					<SimpleData name="altitudeMode">relativeToGround</SimpleData>
+					<SimpleData name="tessellate">1</SimpleData>
+					<SimpleData name="extrude">1</SimpleData>
+					<SimpleData name="visibility">0</SimpleData>
+				</SchemaData></ExtendedData>
+			      <Polygon><outerBoundaryIs><LinearRing><coordinates>-112.334878398376304,36.151400846873599,100 -112.337253534562905,36.148885175538858,100 -112.335606892795397,36.14781612679284,100 -112.335003480797198,36.148464690241767,100 -112.335835386123193,36.148962416295397,100 -112.334588830137307,36.150262293725071,100 -112.333793785627805,36.149780960264629,100 -112.333179820842403,36.150447278861797,100 -112.334878398376304,36.151400846873599,100</coordinates></LinearRing></outerBoundaryIs></Polygon>
+			  </Placemark>
+			</Folder>
+	</Document>
+</kml>

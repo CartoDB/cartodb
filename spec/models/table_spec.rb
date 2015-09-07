@@ -12,6 +12,10 @@ require_relative '../spec_helper'
 def check_schema(table, expected_schema, options={})
   table_schema = table.schema(:cartodb_types => options[:cartodb_types] || false)
   schema_differences = (expected_schema - table_schema) + (table_schema - expected_schema)
+
+  # Filter out timestamp columns for backwards compatibility with new CDB_CartodbfyTable
+  schema_differences.reject! {|x| [:created_at, :updated_at].include?(x[0]) }
+
   schema_differences.should be_empty, "difference: #{schema_differences.inspect}"
 end
 
@@ -44,7 +48,7 @@ describe Table do
   before(:each) do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
 
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+    stub_named_maps_calls
 
     CartoDB::Overlay::Member.any_instance.stubs(:can_store).returns(true)
   end
@@ -82,9 +86,12 @@ describe Table do
       table.valid?.should == true
     end
 
-    it "should set a table_id value" do
+    it "should set a valid table_id value (OID)" do
       table = create_table(name: 'this_is_a_table', user_id: $user_1.id)
       table.table_id.should be_a(Integer)
+
+      oid = table.owner.in_database.fetch(%Q{SELECT '#{table.qualified_table_name}'::regclass::oid}).first[:oid].to_i
+      table.table_id.should == oid
     end
 
     it "should return nil on get_table_id when the physical table doesn't exist" do
@@ -930,7 +937,7 @@ describe Table do
       table.force_schema = "code char(5) CONSTRAINT firstkey PRIMARY KEY, title  varchar(40) NOT NULL, did  integer NOT NULL, date_prod date, kind varchar(10)"
       table.save
       check_schema(table, [
-        [:updated_at, "timestamp with time zone"], [:created_at, "timestamp with time zone"], [:cartodb_id, "integer"],
+        [:cartodb_id, "integer"],
         [:code, "character(5)"], [:title, "character varying(40)"], [:did, "integer"], [:date_prod, "date"],
         [:kind, "character varying(10)"], [:the_geom, "geometry", "geometry", "geometry"]
       ])
@@ -942,7 +949,7 @@ describe Table do
       table.force_schema = "\"code wadus\" char(5) CONSTRAINT firstkey PRIMARY KEY, title  varchar(40) NOT NULL, did  integer NOT NULL, date_prod date, kind varchar(10)"
       table.save
       check_schema(table, [
-        [:updated_at, "timestamp with time zone"], [:created_at, "timestamp with time zone"], [:cartodb_id, "integer"],
+        [:cartodb_id, "integer"],
         [:code_wadus, "character(5)"], [:title, "character varying(40)"], [:did, "integer"], [:date_prod, "date"],
         [:kind, "character varying(10)"], [:the_geom, "geometry", "geometry", "geometry"]
       ])
@@ -1141,27 +1148,6 @@ describe Table do
   end
 
   context "insert and update rows" do
-    it "should be able to insert a row with correct created_at and updated_at values" do
-      table = create_table(:user_id => $user_1.id)
-      pk1 = table.insert_row!({:name => String.random(10), :description => "bla bla bla"})
-      sleep(0.2)
-      pk2 = table.insert_row!({:name => String.random(10), :description => "bla bla bla"})
-      first_created_at  = table.records[:rows].first[:created_at]
-      second_created_at = table.records[:rows].last[:created_at]
-      first_updated_at  = table.records[:rows].first[:updated_at]
-      second_updated_at = table.records[:rows].last[:updated_at]
-
-      first_created_at.should  == first_updated_at
-      second_created_at.should == second_updated_at
-
-      first_created_at.should_not == second_created_at
-      first_updated_at.should_not == second_updated_at
-
-      table.update_row!(pk1, :description => "Description 123")
-      first_updated_at_2 = table.records[:rows].first[:updated_at]
-      first_updated_at_2.should_not == table.records[:rows].first[:created_at]
-      first_updated_at_2.should_not == first_updated_at
-    end
 
     it "should be able to insert a new row" do
       table = create_table(:user_id => $user_1.id)
@@ -1439,13 +1425,13 @@ describe Table do
       cartodb_id_schema = table_schema.detect {|s| s[0].to_s == "cartodb_id"}
       cartodb_id_schema.should be_present
       cartodb_id_schema = cartodb_id_schema[1]
-      cartodb_id_schema[:db_type].should == "integer"
+      cartodb_id_schema[:db_type].should == "bigint"
       cartodb_id_schema[:default].should == "nextval('#{table.name}_cartodb_id_seq'::regclass)"
       cartodb_id_schema[:primary_key].should == true
       cartodb_id_schema[:allow_null].should == false
     end
 
-    it "should add a '_cartodb_id' column when importing a file with invalid data on the cartodb_id column" do
+    it "should add a 'cartodb_id_' column when importing a file with invalid data on the cartodb_id column" do
       data_import = DataImport.create( :user_id       => $user_1.id,
                                        :data_source   =>  '/../db/fake_data/duplicated_cartodb_id.zip')
       data_import.run_import!
@@ -1457,11 +1443,11 @@ describe Table do
       cartodb_id_schema = table_schema.detect {|s| s[0].to_s == 'cartodb_id'}
       cartodb_id_schema.should be_present
       cartodb_id_schema = cartodb_id_schema[1]
-      cartodb_id_schema[:db_type].should == 'integer'
+      cartodb_id_schema[:db_type].should == 'bigint'
       cartodb_id_schema[:default].should == "nextval('#{table.name}_cartodb_id_seq'::regclass)"
       cartodb_id_schema[:primary_key].should == true
       cartodb_id_schema[:allow_null].should == false
-      invalid_cartodb_id_schema = table_schema.detect {|s| s[0].to_s == '_cartodb_id0'}
+      invalid_cartodb_id_schema = table_schema.detect {|s| s[0].to_s == 'cartodb_id_1'}
       invalid_cartodb_id_schema.should be_present
     end
 
@@ -1502,18 +1488,6 @@ describe Table do
       rows.first[:numbercolumn].should eq 2
     end
 
-    it "should make sure it converts created_at and updated at to date types when importing from CSV" do
-      data_import = DataImport.create( :user_id       => $user_1.id,
-                                       :data_source   => '/../db/fake_data/gadm4_export.csv' )
-      data_import.run_import!
-      table = Table.new(user_table: UserTable[data_import.table_id])
-      table.should_not be_nil, "Import failure: #{data_import.log.inspect}"
-
-      schema = table.schema(:cartodb_types => true)
-      schema.include?([:updated_at, "date"]).should == true
-      schema.include?([:created_at, "date"]).should == true
-    end
-
     it "should normalize strings if there is a non-convertible entry when converting string to number" do
       fixture     = "#{Rails.root}/db/fake_data/short_clubbing.csv"
       data_import = create_import($user_1, fixture)
@@ -1543,7 +1517,7 @@ describe Table do
       table.sequel.insert(:test_id => '12', :f1 => "")
 
       # update datatype
-      table.modify_column! :name=>"f1", :type=>"boolean", :name=>"f1", :new_name=>nil
+      table.modify_column! :type=>"boolean", :name=>"f1", :new_name=>nil
 
       # test
       table.sequel.where(:cartodb_id => '1').first[:f1].should == true
@@ -1658,7 +1632,6 @@ describe Table do
       check_schema(table, [
         [:cartodb_id, "number"], [:name, "string"], [:address, "string"],
         [:the_geom, "geometry", "geometry", "point"],
-        [:created_at, "date"], [:updated_at, "date"],
         [:latitude, "number"], [:longitude, "number"]
       ], :cartodb_types => true)
 
@@ -1684,8 +1657,7 @@ describe Table do
       # Check if the schema stored in memory is fresh and contains latitude and longitude still
       check_schema(table, [
         [:cartodb_id, "number"], [:name, "string"], [:address, "string"],
-        [:the_geom, "geometry", "geometry", "point"], [:created_at, "date"],
-        [:updated_at, "date"],
+        [:the_geom, "geometry", "geometry", "point"],
         [:latitude, "string"], [:longitude, "string"]
       ], :cartodb_types => true)
 
@@ -1790,7 +1762,7 @@ describe Table do
       table.should_not be_nil, "Import failure: #{data_import.log}"
       table.name.should == 'exttable'
       table.rows_counted.should == 2
-      check_schema(table, [[:cartodb_id, "integer"], [:bed, "text"], [:created_at, "timestamp with time zone"], [:updated_at, "timestamp with time zone"], [:the_geom, "geometry", "geometry", "point"]])
+      check_schema(table, [[:cartodb_id, "integer"], [:bed, "text"], [:the_geom, "geometry", "geometry", "point"]])
     end
   end
 
@@ -1914,6 +1886,8 @@ describe Table do
       ::Table.any_instance.stubs(:set_the_geom_column!).returns(true)
       ::Table.any_instance.stubs(:after_create)
       ::Table.any_instance.stubs(:after_save)
+      ::Table.any_instance.stubs(:cartodbfy)
+      ::Table.any_instance.stubs(:schema)
       CartoDB::TablePrivacyManager.any_instance.stubs(:owner).returns(user_mock)
       table = Table.new
 
@@ -1965,7 +1939,7 @@ describe Table do
       table = new_table(:name => 'one', :user_id => $user_1.id)
       table.save
       check_schema(table, [
-          [:updated_at, 'timestamp with time zone'], [:created_at, 'timestamp with time zone'], [:cartodb_id, 'integer'],
+          [:cartodb_id, 'integer'],
           [:description, 'text'], [:name, 'text'],
           [:the_geom, 'geometry', 'geometry', 'geometry']
       ])
@@ -1978,7 +1952,7 @@ describe Table do
       ')
       table.save
       check_schema(table, [
-          [:updated_at, 'timestamp with time zone'], [:created_at, 'timestamp with time zone'], [:cartodb_id, 'integer'],
+          [:cartodb_id, 'bigint'],
           [:the_geom, 'geometry', 'geometry', 'point']
       ])
 
@@ -1990,9 +1964,8 @@ describe Table do
       ')
       table.save
       check_schema(table, [
-          [:updated_at, 'timestamp with time zone'], [:created_at, 'timestamp with time zone'], [:cartodb_id, 'integer'],
+          [:cartodb_id, 'bigint'],
           [:the_geom, 'geometry', 'geometry', 'geometry'],
-          [:invalid_the_geom, 'geometry', 'geometry', 'geometry']
       ])
 
       # same as above (single multipoint), but with a SRID=4326 (latlong)
@@ -2003,7 +1976,7 @@ describe Table do
       ')
       table.save
       check_schema(table, [
-          [:updated_at, 'timestamp with time zone'], [:created_at, 'timestamp with time zone'], [:cartodb_id, 'integer'],
+          [:cartodb_id, 'bigint'],
           [:the_geom, 'geometry', 'geometry', 'point']
       ])
 
@@ -2015,7 +1988,7 @@ describe Table do
       ')
       table.save
       check_schema(table, [
-          [:updated_at, 'timestamp with time zone'], [:created_at, 'timestamp with time zone'], [:cartodb_id, 'integer'],
+          [:cartodb_id, 'bigint'],
           [:the_geom, 'geometry', 'geometry', 'multipolygon']
       ])
 
@@ -2027,7 +2000,7 @@ describe Table do
       ')
       table.save
       check_schema(table, [
-          [:updated_at, 'timestamp with time zone'], [:created_at, 'timestamp with time zone'], [:cartodb_id, 'integer'],
+          [:cartodb_id, 'bigint'],
           [:the_geom, 'geometry', 'geometry', 'multilinestring']
       ])
 
@@ -2039,7 +2012,7 @@ describe Table do
       })
       table.save
       check_schema(table, [
-          [:updated_at, 'timestamp with time zone'], [:created_at, 'timestamp with time zone'], [:cartodb_id, 'integer'],
+          [:cartodb_id, 'bigint'],
           [:the_geom, 'geometry', 'geometry', 'geometry'],
           [:invalid_the_geom, 'unknown']
       ])
@@ -2081,7 +2054,7 @@ describe Table do
       table.save
 
       check_schema(table, [
-          [:updated_at, 'timestamp with time zone'], [:created_at, 'timestamp with time zone'], [:cartodb_id, 'integer'],
+          [:cartodb_id, 'integer'],
           [:the_geom, 'geometry', 'geometry', 'geometry'], [:description, 'text']
       ])
 
@@ -2105,7 +2078,7 @@ describe Table do
       table.save
 
       check_schema(table, [
-          [:updated_at, 'timestamp with time zone'], [:created_at, 'timestamp with time zone'], [:cartodb_id, 'integer'],
+          [:cartodb_id, 'integer'],
           [:the_geom, 'geometry', 'geometry', 'geometry'], [:description, 'text']
       ])
 
@@ -2129,7 +2102,7 @@ describe Table do
       table.save
 
       check_schema(table, [
-          [:updated_at, 'timestamp with time zone'], [:created_at, 'timestamp with time zone'], [:cartodb_id, 'integer'],
+          [:cartodb_id, 'integer'],
           [:the_geom, 'geometry', 'geometry', 'geometry'], [:description, 'text']
       ])
 
@@ -2153,7 +2126,7 @@ describe Table do
       table.save
 
       check_schema(table, [
-          [:updated_at, 'timestamp with time zone'], [:created_at, 'timestamp with time zone'], [:cartodb_id, 'integer'],
+          [:cartodb_id, 'integer'],
           [:the_geom, 'geometry', 'geometry', 'geometry'], [:description, 'text']
       ])
 

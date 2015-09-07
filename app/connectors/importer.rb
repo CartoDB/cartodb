@@ -2,6 +2,7 @@
 require 'uuidtools'
 
 require_relative '../models/visualization/support_tables'
+require_relative '../helpers/bounding_box_helper'
 
 module CartoDB
   module Connector
@@ -55,6 +56,10 @@ module CartoDB
 
       def register(result)
         @support_tables_helper.reset
+        
+        # Sanitizing table name if it corresponds with a PostgreSQL reseved word
+        result.name = "#{result.name}_t" if CartoDB::POSTGRESQL_RESERVED_WORDS.map(&:downcase).include?(result.name.downcase)
+        
         runner.log.append("Before renaming from #{result.table_name} to #{result.name}")
         name = rename(result, result.table_name, result.name)
         result.name = name
@@ -173,6 +178,7 @@ module CartoDB
       def persist_metadata(result, name, data_import_id)
         table_registrar.register(name, data_import_id)
         self.table = table_registrar.table
+        BoundingBoxHelper.update_visualizations_bbox(table)
         self
       end
 

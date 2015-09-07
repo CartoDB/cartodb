@@ -1,7 +1,8 @@
 // cartodb.js version: 3.15.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: 49d1b11bd07a12eb8d58bebc58d85d7d17cdcf65
+// sha: da4329157f382ba27bda8cb7aafd39467fafc045
 (function() {
+  var define;  // Undefine define (require.js), see https://github.com/CartoDB/cartodb.js/issues/543
   var root = this;
 
   if(!true) {
@@ -11707,7 +11708,7 @@ L.Map.include({
 
 
 }(window, document));
-/* wax - 7.0.1 - v6.0.4-178-gc113470 */
+/* wax - 7.0.1 - v6.0.4-181-ga34788e */
 
 
 !function (name, context, definition) {
@@ -14932,7 +14933,7 @@ wax = wax || {};
 wax.g = wax.g || {};
 
 wax.g.interaction = function() {
-    var dirty = false, _grid, map;
+    var dirty = false, _grid, map, interactionEnabled = false;
     var tileloadListener = null,
         idleListener = null;
 
@@ -14940,7 +14941,8 @@ wax.g.interaction = function() {
 
     function grid() {
 
-        if (!dirty && _grid) {
+        // when interaction is enabled there should be grid tiles
+        if (!dirty && _grid && (_grid.length > 0 || !interactionEnabled)) {
             return _grid;
         } else {
             _grid = [];
@@ -14948,6 +14950,7 @@ wax.g.interaction = function() {
             var mapOffset = wax.u.offset(map.getDiv());
             var get = function(mapType) {
                 if (!mapType || !mapType.interactive) return;
+                interactionEnabled = true;
                 for (var key in mapType.cache) {
                     if (key.split('/')[0] != zoom) continue;
                     var tileOffset = wax.u.offset(mapType.cache[key]);
@@ -25740,6 +25743,7 @@ if (typeof window !== 'undefined') {
         'geo/leaflet/leaflet_wmslayer.js',
         'geo/leaflet/leaflet_cartodb_layergroup.js',
         'geo/leaflet/leaflet_cartodb_layer.js',
+        'geo/leaflet/leaflet.geometry.js',
         'geo/leaflet/leaflet.js',
 
         'geo/gmaps/gmaps_base.js',
@@ -25748,6 +25752,7 @@ if (typeof window !== 'undefined') {
         'geo/gmaps/gmaps_tiledlayer.js',
         'geo/gmaps/gmaps_cartodb_layergroup.js',
         'geo/gmaps/gmaps_cartodb_layer.js',
+        'geo/gmaps/gmaps.geometry.js',
         'geo/gmaps/gmaps.js',
 
         'ui/common/dialog.js',
@@ -25764,7 +25769,6 @@ if (typeof window !== 'undefined') {
         // PUBLIC API
         'api/layers.js',
         'api/sql.js',
-        'api/cartocss.js',
         'api/vis.js'
     ];
 
@@ -26784,7 +26788,41 @@ cdb.core.util._makeCRCTable = function() {
     crcTable[n] = c;
   }
   return crcTable;
+};
+
+cdb.core.util._inferBrowser = function(ua){
+  var browser = {};
+  ua = ua || window.navigator.userAgent;
+  function detectIE() {
+    var msie = ua.indexOf('MSIE ');
+    var trident = ua.indexOf('Trident/');
+    if (msie > -1 || trident > -1) return true;
+    return false;
+  };
+
+  function getIEVersion(){
+    if (!document.compatMode) return 5
+    if (!window.XMLHttpRequest) return 6
+    if (!document.querySelector) return 7;
+    if (!document.addEventListener) return 8;
+    if (!window.atob) return 9;
+    if (document.all) return 10;
+    else return 11;
+  };
+
+  if(detectIE()){
+    browser.ie = {version: getIEVersion()}
+  }
+
+  else if(ua.indexOf('Edge/') > -1) browser.edge = ua;
+  else if(ua.indexOf('Chrome') > -1) browser.chrome = ua;
+  else if(ua.indexOf('Firefox') > -1) browser.firefox = ua;
+  else if(ua.indexOf("Opera") > -1) browser.opera = ua;
+  else if(ua.indexOf("Safari") > -1) browser.safari = ua;
+  return browser;
 }
+
+cdb.core.util.browser = cdb.core.util._inferBrowser();
 
 /**
  * geocoders for different services
@@ -26871,7 +26909,7 @@ cdb.geo.geocoder.NOKIA = {
       if(location.protocol.indexOf('http') === -1) {
         protocol = 'http:';
       }
-      
+
       $.getJSON(protocol + '//places.nlp.nokia.com/places/v1/discover/search/?q=' + encodeURIComponent(address) + '&app_id=' + this.keys.app_id + '&app_code=' + this.keys.app_code + '&Accept-Language=en-US&at=0,0&callback=?', function(data) {
 
          var coordinates = [];
@@ -26893,8 +26931,14 @@ cdb.geo.geocoder.NOKIA = {
                 north: r.bbox[3],
                 south: r.bbox[1],
                 east: r.bbox[2],
-                west: r.bbox[0] 
+                west: r.bbox[0]
               }
+            }
+            if (r.category) {
+              position.type = r.category.id;
+            }
+            if (r.title) {
+              position.title = r.title;
             }
             coordinates.push(position);
           }
@@ -26906,8 +26950,6 @@ cdb.geo.geocoder.NOKIA = {
       });
   }
 }
-
-
 
 
 /**
@@ -28546,11 +28588,13 @@ cdb.geo.ui.ZoomInfo = cdb.core.View.extend({
     return this;
   }
 });
+
+// MODELS & COLLECTIONS
+
 /*
  * Model for the legend item
  *
  * */
-
 cdb.geo.ui.LegendItemModel = cdb.core.Model.extend({
 
   defaults: {
@@ -28565,16 +28609,65 @@ cdb.geo.ui.LegendItemModel = cdb.core.Model.extend({
  * Collection of items for a legend
  *
  * */
-
 cdb.geo.ui.LegendItems = Backbone.Collection.extend({
   model: cdb.geo.ui.LegendItemModel
 });
+
+
+/*
+ * Legend Model
+ *
+ **/
+cdb.geo.ui.LegendModel = cdb.core.Model.extend({
+
+  defaults: {
+    type: null,
+    show_title: false,
+    title: "",
+    template: "",
+    visible: true
+  },
+
+  initialize: function() {
+
+    this.items = new cdb.geo.ui.LegendItems(this.get("items"));
+
+    this.items.bind("add remove reset change", function() {
+      this.set({ items: this.items.toJSON() });
+    }, this);
+
+    this.bind("change:items", this._onUpdateItems, this);
+    this.bind("change:title change:show_title", this._onUpdateTitle, this);
+    this.bind("change:template", this._onUpdateTemplate, this);
+
+  },
+
+  _onUpdateTemplate: function() {
+    this.template = this.get("template");
+  },
+
+  _onUpdateTitle: function() {
+    this.title = this.get("title");
+    this.show_title = this.get("show_title");
+  },
+
+  _onUpdateItems: function() {
+    var items = this.get("items");
+    this.items.reset(items);
+  }
+
+});
+
+cdb.geo.ui.Legends = Backbone.Collection.extend({
+  model: cdb.geo.ui.LegendModel
+});
+
+// VIEWS
 
 /*
  * Legend item
  *
  * */
-
 cdb.geo.ui.LegendItem = cdb.core.View.extend({
 
   tagName: "li",
@@ -28602,7 +28695,6 @@ cdb.geo.ui.LegendItem = cdb.core.View.extend({
     this.$el.html(this.template(options));
 
     return this.$el;
-
   }
 
 });
@@ -28611,13 +28703,11 @@ cdb.geo.ui.LegendItem = cdb.core.View.extend({
  * Legend View: wrapper for the different types of lengeds
  *
  * */
-
 cdb.geo.ui.Legend = cdb.core.View.extend({
 
   className: "cartodb-legend",
 
   events: {
-
     "dragstart":            "_stopPropagation",
     "mousedown":            "_stopPropagation",
     "touchstart":           "_stopPropagation",
@@ -28627,11 +28717,9 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
     "DOMMouseScroll":       "_stopPropagation",
     "dbclick":              "_stopPropagation",
     "click":                "_stopPropagation"
-
   },
 
   initialize: function() {
-
     _.bindAll(this, "render", "show", "hide");
 
     _.defaults(this.options, this.default_options);
@@ -28642,17 +28730,13 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
     this._setupItems();
 
     this._updateLegendType();
-
   },
 
   _stopPropagation: function(ev) {
-
     ev.stopPropagation();
-
   },
 
   _setupModel: function() {
-
     if (!this.model) {
 
       this.model = new cdb.geo.ui.LegendModel({
@@ -28661,42 +28745,39 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
         show_title: this.options.show_title || cdb.geo.ui.LegendModel.prototype.defaults.show_title,
         template: this.options.template || cdb.geo.ui.LegendModel.prototype.defaults.template
       });
-
     }
 
     this.add_related_model(this.model);
 
     //this.model.bind("change:template change:type change:items change:title change:show_title",  this._updateLegendType, this);
     this.model.bind("change",  this._updateLegendType, this);
-
   },
 
   _updateLegendType: function() {
-
     var type = this.model.get("type");
-
     this.legend_name = this._capitalize(type) + "Legend";
 
     if (type == 'none' || type == null) {
-
       this.legend_name = null;
       this.model.set({ type: "none" }, { silent: true });
-
     } else if (!cdb.geo.ui[this.legend_name]) {
 
       // set the previous type
       this.legend_name = null;
       this.model.set({ type: this.model.previous("type") }, { silent: true });
       return;
-
     }
 
     this._refresh();
+  },
 
+  _capitalize: function(string) {
+    if (string && _.isString(string)) {
+      return string.charAt(0).toUpperCase() + string.slice(1);
+    }
   },
 
   _refresh: function() {
-
     var self = this;
 
     if (this.view) this.view.clean();
@@ -28707,7 +28788,6 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
     var template = this.model.get("template");
 
     if (type && this.legend_name) {
-
       this.view = new cdb.geo.ui[this.legend_name]({
         model: this.model
       });
@@ -28715,24 +28795,17 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
       // Set the type as the element class for styling
       this.$el.removeClass();
       this.$el.addClass(this.className + " " + this.model.get("type"));
-
-      this.show();
-
     } else {
-
       this.hide();
 
       this.$el.removeClass();
       this.$el.addClass(this.className + " none");
-
     }
 
     this.render();
-
   },
 
   _setupItems: function() {
-
     var self = this;
 
     this.items = this.model.items;
@@ -28742,26 +28815,9 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
     }
 
     this.items.bind("add remove change:value change:name", this.render, this);
-
-  },
-
-  show: function(callback) {
-    var type = this.model.get("type");
-    if (type && type != "none") this.$el.show();
-  },
-
-  hide: function(callback) {
-    if (this.model.get("type")) this.$el.hide();
-  },
-
-  _capitalize: function(string) {
-    if (string && _.isString(string)) {
-      return string.charAt(0).toUpperCase() + string.slice(1);
-    }
   },
 
   render: function() {
-
     if (this.view) {
 
       if (this.model.get("template")) {
@@ -28780,8 +28836,16 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
     }
 
     return this;
-  }
+  },
 
+  show: function(callback) {
+    var type = this.model.get("type");
+    if (type && type != "none") this.$el.show();
+  },
+
+  hide: function(callback) {
+    if (this.model.get("type")) this.$el.hide();
+  }
 });
 
 /*
@@ -29362,7 +29426,6 @@ cdb.geo.ui.Legend.Color = cdb.geo.ui.Legend.Category.extend({ });
 cdb.geo.ui.StackedLegend = cdb.core.View.extend({
 
   events: {
-
     "dragstart":            "_stopPropagation",
     "mousedown":            "_stopPropagation",
     "touchstart":           "_stopPropagation",
@@ -29372,25 +29435,18 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
     "DOMMouseScroll":       "_stopPropagation",
     "dbclick":              "_stopPropagation",
     "click":                "_stopPropagation"
-
   },
 
   className: "cartodb-legend-stack",
 
   initialize: function() {
-
     _.each(this.options.legends, this._setupBinding, this);
-
   },
 
   _stopPropagation: function(ev) {
-
     ev.stopPropagation();
-
   },
 
-  //TODO: change this method to
-  // getLegendByIndex
   getLegendByIndex: function(index) {
     if (!this._layerByIndex) {
       this._layerByIndex = {};
@@ -29404,14 +29460,24 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
   },
 
   _setupBinding: function(legend) {
-
     legend.model.bind("change:type", this._checkVisibility, this);
     this.add_related_model(legend.model);
+  },
 
+  render: function() {
+    this._renderItems();
+    this._checkVisibility();
+
+    return this;
+  },
+
+  _renderItems: function() {
+    _.each(this.options.legends, function(item) {
+      this.$el.append(item.render().$el);
+    }, this);
   },
 
   _checkVisibility: function() {
-
     var visible = _.some(this.options.legends, function(legend) {
       return legend.model.get("type") && (legend.model.get("type") != "none"  || legend.model.get("template"))
     }, this);
@@ -29423,26 +29489,13 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
     }
 
     _.each(this.options.legends, function(item) {
-
-      var type = item.model.get("type");
-
-      if (type && type != "none") {
-        item.show();
-      } else {
+      var legendModel = item.model;
+      if (legendModel.get("type") === "none" || legendModel.get("visible") === false) {
         item.hide();
+      } else {
+        item.show();
       }
-
     }, this);
-
-
-  },
-
-  _renderItems: function() {
-
-    _.each(this.options.legends, function(item) {
-      this.$el.append(item.render().$el);
-    }, this);
-
   },
 
   show: function() {
@@ -29455,22 +29508,9 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
 
   addTo: function(element) {
     $(element).html(this.render().$el);
-  },
-
-  render: function() {
-
-    this._renderItems();
-    this._checkVisibility();
-
-    return this;
-
   }
-
 });
 
-cdb.geo.ui.Legends = Backbone.Collection.extend({
-  model: cdb.geo.ui.LegendModel
-});
 
 /*
  * Stacked Legend public interface
@@ -29560,51 +29600,6 @@ cdb.geo.ui.Legend.Stacked = cdb.geo.ui.StackedLegend.extend({
     var legend = this.legendItems.at(n);
     this.legendItems.remove(legend);
 
-  }
-
-});
-
-
-/*
- * Legend Model
- *
- * */
-cdb.geo.ui.LegendModel = cdb.core.Model.extend({
-
-  defaults: {
-    type: null,
-    show_title: false,
-    title: "",
-    template: "",
-    visible: true
-  },
-
-  initialize: function() {
-
-    this.items = new cdb.geo.ui.LegendItems(this.get("items"));
-
-    this.items.bind("add remove reset change", function() {
-      this.set({ items: this.items.toJSON() });
-    }, this);
-
-    this.bind("change:items", this._onUpdateItems, this);
-    this.bind("change:title change:show_title", this._onUpdateTitle, this);
-    this.bind("change:template", this._onUpdateTemplate, this);
-
-  },
-
-  _onUpdateTemplate: function() {
-    this.template = this.get("template");
-  },
-
-  _onUpdateTitle: function() {
-    this.title = this.get("title");
-    this.show_title = this.get("show_title");
-  },
-
-  _onUpdateItems: function() {
-    var items = this.get("items");
-    this.items.reset(items);
   }
 
 });
@@ -30801,7 +30796,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
    *  Animate infowindow to show up
    */
   _animateIn: function(delay) {
-    if (!$.browser.msie || ($.browser.msie && parseInt($.browser.version) > 8 )) {
+    if (!cdb.core.util.ie || (cdb.core.util.browser.ie && cdb.core.util.browser.ie.version > 8)) {
       this.$el.css({
         'marginBottom':'-10px',
         'display':'block',
@@ -30961,34 +30956,67 @@ cdb.geo.ui.Header = cdb.core.View.extend({
   }
 
 });
+/**
+ *  UI component to place the map in the
+ *  location found by the geocoder.
+ *
+ */
 
 cdb.geo.ui.Search = cdb.core.View.extend({
 
   className: 'cartodb-searchbox',
 
-  events: {
-    "click input[type='text']":   '_focus',
-    "submit form":                '_submit',
-    "click":                      '_stopPropagation',
-    "dblclick":                   '_stopPropagation',
-    "mousedown":                  '_stopPropagation'
+  _ZOOM_BY_CATEGORY: {
+    'building': 18,
+    'postal-area': 15,
+    'default': 12
   },
 
-  initialize: function() {},
+  events: {
+    "click input[type='text']": '_onFocus',
+    "submit form": '_onSubmit',
+    "click": '_stopPropagation',
+    "dblclick": '_stopPropagation',
+    "mousedown": '_stopPropagation'
+  },
+
+  options: {
+    searchPin: true,
+    infowindowTemplate: '<div class="cartodb-infowindow">'+
+    '<div class="cartodb-popup v2 centered">'+
+      '<a href="#close" class="cartodb-popup-close-button close">x</a>'+
+       '<div class="cartodb-popup-content-wrapper">'+
+         '<p>{{ address }}</p>'+
+       '</div>'+
+       '<div class="cartodb-popup-tip-container"></div>'+
+    '</div>',
+    infowindowWidth: 186,
+    infowindowOffset: [93, 90],
+    iconUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAfCAYAAADXwvzvAAACuklEQVR4Ae3PQ+AsNxzA8e8vo/Xus237vVN9qW3b7qW2bdu2caxt29bu/meSmaTpqW63Pfc7wemTZPh9K/Xv3zhzxIgVrho0aMsLGo2N9o+iuYDwV02E5NJpM7d5fMGC515dMP/7l6dNMc+OGJY9Uq99cVMc33I4LOJXCQBQuXPBglNnDRm0Xa1RAWewP3yL/vJLul99Q/pNm0/b+qsnbLHngXAVgAI4b9KkXWc1m9vV58ykst56lKdMptyokdTKRJUIV1MMTGTgbOTknWABgFo2SSbOjuN9wlgIBrSIJ0yiVG9QUgGxUigRRAlpCQYrBs+A/QClliuXV6ppPVibDPPqi5irL8G+/QY2S3FZhityrLNYBWkAI2G5WTA2nGTthKDTJfP/FH1sCb76nNBa7I8/knba6Eyj8wJjLbk4qlCdAFNClWXKiiL72kGRUkSRhwUuTUm7XTqZ3z3KnMM7QhAFUfiKMZ9OQci+ydFFH32BIsDh8hxjDF2T0y0KtHHUczCg34P3wgesfWhZozstW1R/cJpuohA8dI7cWrSfxqM4gwEOnoJnn4HXBVDHwHnriNr2W3G0I8FEkKufMbjcIw1DC+iCuRw2OBduEYAKDD8drlkGlk6BHwAtIEDioD/QBnsnnHAI7A9YAAAGenwEnPuAd8+DewHcS+CeB3szvL0b7ADE/FWzYf5BCxa9dMvqa7oLll7WbTlsxKkDYRi9dPqhRz743L0PuKtOPMXtutHmm/InKf5Y6Co15Upl8qSCqVajXiEeUTRb6GqNIojoGaLEDwEA6B0KIKL8lH8JBeS/3AgK73qAPfc/tCLiAACUCmyvsJHnphwEAYFStNs/NoHgn2ATWPmlF54b/9GHH/Khn88/+9SywJx/+q0SsKTZbB45d/6CO0aNHnutv3kbYDQg9JAAIRDwF/0EjlkjUi3fkAMAAAAASUVORK5CYII=',
+    iconAnchor: [7, 31]
+  },
+
+  initialize: function() {
+    this.mapView = this.options.mapView;
+    this.template = this.options.template;
+  },
 
   render: function() {
-    this.$el.html(this.options.template(this.options));
+    this.$el.html(this.template(this.options));
     return this;
   },
 
   _stopPropagation: function(ev) {
-    ev.stopPropagation();
+    if (ev) {
+      ev.stopPropagation();
+    }
   },
 
-  _focus: function(ev) {
-    ev.preventDefault();
-
-    $(ev.target).focus();
+  _onFocus: function(ev) {
+    if (ev) {
+      ev.preventDefault();
+      $(ev.target).focus();
+    }
   },
 
   _showLoader: function() {
@@ -30999,46 +31027,167 @@ cdb.geo.ui.Search = cdb.core.View.extend({
     this.$('span.loader').hide();
   },
 
-  _submit: function(ev) {
+  _onSubmit: function(ev) {
     ev.preventDefault();
+    var self = this;
+    var address = this.$('input.text').val();
 
-    var self = this
-      , address = this.$('input.text').val();
+    if (!address) {
+      return;
+    }
 
     // Show geocoder loader
     this._showLoader();
-     
-    cdb.geo.geocoder.NOKIA.geocode(address, function(coords) {
-      if (coords.length>0) {
-        var validBBox = true;
-        
-        // check bounding box is valid
-        if(!coords[0].boundingbox || coords[0].boundingbox.south == coords[0].boundingbox.north ||
-          coords[0].boundingbox.east == coords[0].boundingbox.west) {
-          validBBox = false;
-        }
-
-        if (validBBox && coords[0].boundingbox) {
-          self.model.setBounds([
-            [
-              parseFloat(coords[0].boundingbox.south),
-              parseFloat(coords[0].boundingbox.west)
-            ],
-            [
-              parseFloat(coords[0].boundingbox.north),
-              parseFloat(coords[0].boundingbox.east)
-            ]
-          ]);
-        } else if (coords[0].lat && coords[0].lon) {
-          self.model.setCenter([coords[0].lat, coords[0].lon]);
-          self.model.setZoom(10);
-        }
-      }
-
-      // Hide geocoder loader
+    // Remove previous pin
+    this._destroySearchPin();
+    cdb.geo.geocoder.NOKIA.geocode(address, function(places) {
+      self._onResult(places);
+      // Hide loader
       self._hideLoader();
     });
+  },
+
+  _onResult: function(places) {
+    var position = '';
+    var address = this.$('input.text').val();
+
+    if (places && places.length>0) {
+      var location = places[0];
+      var validBBox = this._isBBoxValid(location);
+
+      // Get BBox if possible and set bounds
+      if (validBBox) {
+        var s = parseFloat(location.boundingbox.south);
+        var w = parseFloat(location.boundingbox.west);
+        var n = parseFloat(location.boundingbox.north);
+        var e = parseFloat(location.boundingbox.east);
+
+        var centerLon = (w + e)/2;
+        var centerLat = (s + n)/2;
+        position = [centerLat, centerLon];
+        this.model.setBounds([ [ s, w ], [ n, e ] ]);
+      }
+
+      // If location is defined,
+      // let's store it
+      if (location.lat && location.lon) {
+        position = [location.lat, location.lon];
+      }
+
+      // In the case that BBox is not valid, let's
+      // center the map using the position
+      if (!validBBox) {
+        this.model.setCenter(position);
+        this.model.setZoom(this._getZoomByCategory(location.type));
+      }
+
+      if (this.options.searchPin) {
+        this._createSearchPin(position, address);
+      }
+    }
+  },
+
+  // Getting zoom for each type of location
+  _getZoomByCategory: function(type) {
+    if (type && this._ZOOM_BY_CATEGORY[type]) {
+      return this._ZOOM_BY_CATEGORY[type];
+    }
+    return this._ZOOM_BY_CATEGORY['default'];
+  },
+
+  _isBBoxValid: function(location) {
+    if(!location.boundingbox || location.boundingbox.south == location.boundingbox.north ||
+      location.boundingbox.east == location.boundingbox.west) {
+      return false;
+    }
+    return true;
+  },
+
+  _createSearchPin: function(position, address) {
+    this._destroySearchPin();
+    this._createPin(position, address);
+    this._createInfowindow(position, address);
+    this._bindEvents();
+  },
+
+  _destroySearchPin: function() {
+    this._unbindEvents();
+    this._destroyPin();
+    this._destroyInfowindow()
+  },
+
+  _createInfowindow: function(position, address) {
+    var infowindowModel = new cdb.geo.ui.InfowindowModel({
+      template: this.options.infowindowTemplate,
+      latlng: position,
+      width: this.options.infowindowWidth,
+      offset: this.options.infowindowOffset,
+      content: {
+        fields: [{
+          title: 'address',
+          value: address
+        }]
+      }
+    });
+
+    this._searchInfowindow = new cdb.geo.ui.Infowindow({
+      model: infowindowModel,
+      mapView: this.mapView
+    });
+
+    this.mapView.$el.append(this._searchInfowindow.el);
+    infowindowModel.set('visibility', true);
+  },
+
+  _destroyInfowindow: function() {
+    if (this._searchInfowindow) {
+      // Hide it and then destroy it (when animation ends)
+      this._searchInfowindow.hide(true);
+      var infowindow = this._searchInfowindow;
+      setTimeout(function() {
+        infowindow.clean();
+      }, 1000);
+    }
+  },
+
+  _createPin: function(position, address) {
+    this._searchPin = this.mapView._addGeomToMap(
+      new cdb.geo.Geometry({
+        geojson: { type: "Point", "coordinates": [ position[1], position[0] ] },
+        iconUrl: this.options.iconUrl,
+        iconAnchor: this.options.iconAnchor
+      })
+    );
+  },
+
+  _toggleSearchInfowindow: function() {
+    var infowindowVisibility = this._searchInfowindow.model.get('visibility');
+    this._searchInfowindow.model.set('visibility', !infowindowVisibility);
+  },
+
+  _destroyPin: function() {
+    if (this._searchPin) {
+      this.mapView._removeGeomFromMap(this._searchPin);
+      delete this._searchPin;
+    }
+  },
+
+  _bindEvents: function() {
+    this._searchPin && this._searchPin.bind('click', this._toggleSearchInfowindow, this);
+    this.mapView.bind('click', this._destroySearchPin, this);
+  },
+
+  _unbindEvents: function() {
+    this._searchPin && this._searchPin.unbind('click', this._toggleSearchInfowindow, this);
+    this.mapView.unbind('click', this._destroySearchPin, this);
+  },
+
+  clean: function() {
+    this._unbindEvents();
+    this._destroySearchPin();
+    this.elder('clean');
   }
+
 });
 
 /**
@@ -32024,6 +32173,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     var search = new cdb.geo.ui.Search({
       template: template,
+      mapView: this.mapView,
       model: this.mapView.map
     });
 
@@ -32147,11 +32297,11 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
       show_legends = this.visibility_options.legends;
     }
 
-    var layer = new cdb.geo.ui.MobileLayer({ 
+    var layer = new cdb.geo.ui.MobileLayer({
       model: data,
       show_legends: show_legends,
       show_title: !this.hasLayerSelector ? false : true,
-      hide_toggle: hide_toggle 
+      hide_toggle: hide_toggle
     });
 
     this.$el.find(".aside .layers").append(layer.render().$el);
@@ -32257,7 +32407,7 @@ cdb.geo.ui.TilesLoader = cdb.core.View.extend({
 
   show: function(ev) {
     if(this.isVisible) return;
-    if (!$.browser.msie || ($.browser.msie && $.browser.version.indexOf("9.") != 0)) {
+    if (!cdb.core.util.ie || (cdb.core.util.browser.ie && cdb.core.util.browser.ie.version >= 10)) {
       this.$el.fadeTo(this.options.animationSpeed, 1)
     } else {
       this.$el.show();
@@ -32269,7 +32419,7 @@ cdb.geo.ui.TilesLoader = cdb.core.View.extend({
     this.isVisible--;
     if(this.isVisible > 0) return;
     this.isVisible = 0;
-    if (!$.browser.msie || ($.browser.msie && $.browser.version.indexOf("9.") == 0)) {
+    if (!cdb.core.util.ie || (cdb.core.util.browser.ie && cdb.core.util.browser.ie.version >= 10)) {
       this.$el.stop(true).fadeTo(this.options.animationSpeed, 0)
     } else {
       this.$el.hide();
@@ -35142,6 +35292,165 @@ _.extend(
 cdb.geo.LeafLetLayerCartoDBView = LeafLetLayerCartoDBView;
 
 })();
+(function() {
+
+/**
+ * this module implements all the features related to overlay geometries
+ * in leaflet: markers, polygons, lines and so on
+ */
+
+
+/**
+ * view for markers
+ */
+function PointView(geometryModel) {
+  var self = this;
+  // events to link
+  var events = [
+    'click',
+    'dblclick',
+    'mousedown',
+    'mouseover',
+    'mouseout',
+    'dragstart',
+    'drag',
+    'dragend'
+  ];
+
+  this._eventHandlers = {};
+  this.model = geometryModel;
+  this.points = [];
+
+  var icon = {
+    iconUrl: this.model.get('iconUrl') || cdb.config.get('assets_url') + '/images/layout/default_marker.png',
+    iconAnchor: this.model.get('iconAnchor') || [11, 11]
+  };
+
+  this.geom = L.GeoJSON.geometryToLayer(geometryModel.get('geojson'), function(geojson, latLng) {
+      //TODO: create marker depending on the visualizacion options
+      var p = L.marker(latLng, {
+        icon: L.icon(icon)
+      });
+
+      var i;
+      for(i = 0; i < events.length; ++i) {
+        var e = events[i];
+        p.on(e, self._eventHandler(e));
+      }
+      return p;
+  });
+
+  this.bind('dragend', function(e, pos) {
+    geometryModel.set({
+      geojson: {
+        type: 'Point',
+        //geojson is lng,lat
+        coordinates: [pos[1], pos[0]]
+      }
+    });
+  });
+}
+
+PointView.prototype = new GeometryView();
+
+PointView.prototype.edit = function() {
+  this.geom.dragging.enable();
+};
+
+/**
+ * returns a function to handle events fot evtType
+ */
+PointView.prototype._eventHandler = function(evtType) {
+  var self = this;
+  var h = this._eventHandlers[evtType];
+  if(!h) {
+    h = function(e) {
+      var latlng = e.target.getLatLng();
+      var s = [latlng.lat, latlng.lng];
+      self.trigger(evtType, e.originalEvent, s);
+    };
+    this._eventHandlers[evtType] = h;
+  }
+  return h;
+};
+
+/**
+ * view for other geometries (polygons/lines)
+ */
+function PathView(geometryModel) {
+  var self = this;
+  // events to link
+  var events = [
+    'click',
+    'dblclick',
+    'mousedown',
+    'mouseover',
+    'mouseout',
+  ];
+
+  this._eventHandlers = {};
+  this.model = geometryModel;
+  this.points = [];
+
+
+  this.geom = L.GeoJSON.geometryToLayer(geometryModel.get('geojson'));
+  this.geom.setStyle(geometryModel.get('style'));
+
+
+  /*for(var i = 0; i < events.length; ++i) {
+    var e = events[i];
+    this.geom.on(e, self._eventHandler(e));
+  }*/
+
+}
+
+PathView.prototype = new GeometryView();
+
+PathView.prototype._leafletLayers = function() {
+  // check if this is a multi-feature or single-feature
+  if (this.geom.getLayers) {
+    return this.geom.getLayers();
+  }
+  return [this.geom];
+};
+
+
+PathView.prototype.enableEdit = function() {
+  var self = this;
+  var layers = this._leafletLayers();
+  _.each(layers, function(g) {
+    g.setStyle(self.model.get('style'));
+    g.on('edit', function() {
+      self.model.set('geojson', self.geom.toGeoJSON().geometry);
+    }, self);
+  });
+};
+
+PathView.prototype.disableEdit = function() {
+  var self = this;
+  var layers = this._leafletLayers();
+  _.each(layers, function(g) {
+    g.off('edit', null, self);
+  });
+};
+
+PathView.prototype.edit = function(enable) {
+  var self = this;
+  var fn = enable ? 'enable': 'disable';
+  var layers = this._leafletLayers();
+  _.each(layers, function(g) {
+    g.editing[fn]();
+    enable ? self.enableEdit(): self.disableEdit();
+  });
+};
+
+cdb.geo.leaflet = cdb.geo.leaflet || {};
+
+cdb.geo.leaflet.PointView = PointView;
+cdb.geo.leaflet.PathView = PathView;
+
+
+})();
 /**
 * leaflet implementation of a map
 */
@@ -36374,6 +36683,263 @@ _.extend(
 
 
 });
+
+})();
+(function() {
+/**
+ * view for markers
+ */
+function PointView(geometryModel) {
+  var self = this;
+  // events to link
+  var events = [
+    'click',
+    'dblclick',
+    'mousedown',
+    'mouseover',
+    'mouseout',
+    'dragstart',
+    'drag',
+    'dragend'
+  ];
+
+  this._eventHandlers = {};
+  this.model = geometryModel;
+  this.points = [];
+
+  var style = _.clone(geometryModel.get('style')) || {};
+  var iconAnchor = this.model.get('iconAnchor');
+
+  var icon = {
+    url: this.model.get('iconUrl') || cdb.config.get('assets_url') + '/images/layout/default_marker.png',
+    anchor: {
+      x: iconAnchor && iconAnchor[0] || 10,
+      y: iconAnchor && iconAnchor[1] || 10,
+    }
+  };
+
+  this.geom = new GeoJSON (
+    geometryModel.get('geojson'),
+    {
+      icon: icon,
+      raiseOnDrag: false,
+      crossOnDrag: false
+    }
+  );
+
+  // bind events
+  var i;
+  for(i = 0; i < events.length; ++i) {
+    var e = events[i];
+    google.maps.event.addListener(this.geom, e, self._eventHandler(e));
+  }
+
+  // link dragging
+  this.bind('dragend', function(e, pos) {
+    geometryModel.set({
+      geojson: {
+        type: 'Point',
+        // geojson is lng,lat
+        coordinates: [pos[1], pos[0]]
+      }
+    });
+  });
+}
+
+PointView.prototype = new GeometryView();
+
+PointView.prototype._eventHandler = function(evtType) {
+  var self = this;
+  var h = this._eventHandlers[evtType];
+  if(!h) {
+    h = function(e) {
+      var latlng = e.latLng;
+      var s = [latlng.lat(), latlng.lng()];
+      self.trigger(evtType, e, s);
+    };
+    this._eventHandlers[evtType] = h;
+  }
+  return h;
+};
+
+PointView.prototype.edit = function(enable) {
+  this.geom.setDraggable(enable);
+};
+
+/**
+ * view for other geometries (polygons/lines)
+ */
+function PathView(geometryModel) {
+  var self = this;
+  // events to link
+  var events = [
+    'click',
+    'dblclick',
+    'mousedown',
+    'mouseover',
+    'mouseout',
+  ];
+
+  this._eventHandlers = {};
+  this.model = geometryModel;
+  this.points = [];
+
+
+
+  var style = _.clone(geometryModel.get('style')) || {};
+
+  this.geom = new GeoJSON (
+    geometryModel.get('geojson'),
+    style
+  );
+
+  /*_.each(this.geom._layers, function(g) {
+    g.setStyle(geometryModel.get('style'));
+    g.on('edit', function() {
+      geometryModel.set('geojson', L.GeoJSON.toGeoJSON(self.geom));
+    }, self);
+  });
+  */
+
+  _.bindAll(this, '_updateModel');
+  var self = this;
+
+  function bindPath(p) {
+    google.maps.event.addListener(p, 'insert_at', self._updateModel);
+    /*
+    google.maps.event.addListener(p, 'remove_at', this._updateModel);
+    google.maps.event.addListener(p, 'set_at', this._updateModel);
+    */
+  }
+
+  // TODO: check this conditions
+
+  if(this.geom.getPaths) {
+    var paths = this.geom.getPaths();
+
+    if (paths && paths[0]) {
+      // More than one path
+      for(var i = 0; i < paths.length; ++i) {
+        bindPath(paths[i]);
+      }
+    } else {
+      // One path
+      bindPath(paths);
+      google.maps.event.addListener(this.geom, 'mouseup', this._updateModel);
+    }
+  } else {
+    // More than one path
+    if (this.geom.length) {
+      for(var i = 0; i < this.geom.length; ++i) {
+        bindPath(this.geom[i].getPath());
+        google.maps.event.addListener(this.geom[i], 'mouseup', this._updateModel);
+      }
+    } else {
+      // One path
+      bindPath(this.geom.getPath());
+      google.maps.event.addListener(this.geom, 'mouseup', this._updateModel);
+    }
+  }
+
+  /*for(var i = 0; i < events.length; ++i) {
+    var e = events[i];
+    this.geom.on(e, self._eventHandler(e));
+  }*/
+
+}
+
+PathView.prototype = new GeometryView();
+
+PathView.getGeoJSON = function(geom, gType) {
+
+  var coordFn = {
+    'Polygon': 'getPath',
+    'MultiPolygon': 'getPath',
+    'LineString': 'getPath',
+    'MultiLineString': 'getPath',
+    'Point': 'getPosition',
+    'MultiPoint': 'getPosition'
+  };
+
+  function _coord(latlng) {
+    return [latlng.lng(), latlng.lat()];
+  }
+
+  function _coords(latlngs) {
+    var c = [];
+    for(var i = 0; i < latlngs.length; ++i) {
+      c.push(_coord(latlngs.getAt(i)));
+    }
+    return c;
+  }
+
+  // single
+  if(!geom.length || geom.length == 1) {
+    var g = geom.length ? geom[0]: geom;
+    var coords;
+    if(gType == 'Point') {
+      coords = _coord(g.getPosition());
+    } else if(gType == 'MultiPoint') {
+      coords = [_coord(g.getPosition())]
+    } else if(gType == 'Polygon') {
+      coords = [_coords(g.getPath())];
+      coords[0].push(_coord(g.getPath().getAt(0)));
+    } else if(gType == 'MultiPolygon') {
+      coords = [];
+      for(var p = 0; p < g.getPaths().length; ++p) {
+        var c = _coords(g.getPaths().getAt(p));
+        c.push(_coord(g.getPaths().getAt(p).getAt(0)));
+        coords.push(c);
+      }
+      coords = [coords]
+    } else if(gType == 'LineString') {
+      coords = _coords(g.getPath());
+    } else if(gType == 'MultiLineString') {
+      //TODO: redo
+      coords = [_coords(g.getPath())];
+    }
+    return {
+      type: gType,
+      coordinates: coords
+    }
+  } else {
+    // poly
+    var c = [];
+    for(var i = 0; i < geom.length; ++i) {
+      c.push(PathView.getGeoJSON(geom[i], gType).coordinates[0]);
+    }
+    return  {
+      type: gType,
+      coordinates: c
+    }
+  }
+}
+
+PathView.prototype._updateModel = function(e) {
+  var self = this;
+  setTimeout(function() {
+  self.model.set('geojson', PathView.getGeoJSON(self.geom, self.model.get('geojson').type ));
+  }, 100)
+}
+
+PathView.prototype.edit = function(enable) {
+
+  var fn = enable ? 'enable': 'disable';
+  var g = this.geom.length ? this.geom: [this.geom];
+  for(var i = 0; i < g.length; ++i) {
+    g[i].setEditable(enable);
+  }
+  if(!enable) {
+    this.model.set('geojson', PathView.getGeoJSON(this.geom, this.model.get('geojson').type));
+  }
+};
+
+cdb.geo.gmaps = cdb.geo.gmaps || {};
+
+cdb.geo.gmaps.PointView = PointView;
+cdb.geo.gmaps.PathView = PathView;
+
+
 
 })();
 
@@ -38447,7 +39013,7 @@ var Vis = cdb.core.View.extend({
       if (this.mobile_enabled && (type === "zoom" || type === "header" || type === "loader")) return;
 
       // IE<10 doesn't support the Fullscreen API
-      if (type === 'fullscreen' && $.browser.msie && parseFloat($.browser.version) <= 10) return;
+      if (type === 'fullscreen' && cdb.core.util.browser.ie && cdb.core.util.browser.ie.version <= 10) return;
 
       // Decide to create or not the custom overlays
       if (type === 'image' || type === 'text' || type === 'annotation') {
@@ -38556,9 +39122,7 @@ var Vis = cdb.core.View.extend({
         options: options,
         torqueLayer: this.torqueLayer
       });
-
     }
-
   },
 
   _createLegendView: function(layer, layerView) {
@@ -38567,12 +39131,16 @@ var Vis = cdb.core.View.extend({
       var legend = layer.legend;
 
       if ((legend.items && legend.items.length) || legend.template) {
-        var view = new cdb.geo.ui.Legend(layer.legend);
-        layerView.legend = view.model; // cdb.geo.ui.LegendModel
-        layerView.bind('change:visibility', function(layer, hidden) {
-          view[hidden? 'hide': 'show']();
+        var legendAttrs = _.extend(layer.legend, {
+          visible: layer.visible
         });
-        return view;
+        var legendModel = new cdb.geo.ui.LegendModel(legendAttrs);
+        var legendView = new cdb.geo.ui.Legend({ model: legendModel });
+        layerView.bind('change:visibility', function(layer, hidden) {
+          legendView[hidden ? 'hide': 'show']();
+        });
+        layerView.legend = legendModel;
+        return legendView;
       }
     }
     return null;
@@ -40233,10 +40801,6 @@ cdb.vis.Overlay.register('share', function(data, vis) {
 // search content
 cdb.vis.Overlay.register('search', function(data, vis) {
 
-  var options = data.options;
-
-  //if (!options.display) return;
-
   var template = cdb.core.Template.compile(
     data.template || '\
       <form>\
@@ -40248,10 +40812,13 @@ cdb.vis.Overlay.register('search', function(data, vis) {
     data.templateType || 'mustache'
   );
 
-  var search = new cdb.geo.ui.Search({
-    template: template,
-    model: vis.map
-  });
+  var search = new cdb.geo.ui.Search(
+    _.extend(data, {
+      template: template,
+      mapView: vis.mapView,
+      model: vis.map
+    })
+  );
 
   return search.render();
 
@@ -40526,12 +41093,21 @@ Layers.register('torque', function(vis, data) {
         if(visData.layers.length < 2) {
           promise.trigger('error', "visualization file does not contain layer info");
         }
-        var idx = options.layerIndex === undefined ? 1: options.layerIndex;
-        if(visData.layers.length <= idx) {
-          promise.trigger('error', 'layerIndex out of bounds');
-          return;
+        var index = options.layerIndex;
+        if (index !== undefined) {
+          if(visData.layers.length <= index) {
+            promise.trigger('error', 'layerIndex out of bounds');
+            return;
+          }
+          layerData = visData.layers[index];
+        } else {
+          var DATA_LAYER_TYPES = ['namedmap', 'layergroup'];
+
+          // Select the first data layer (namedmap or layergroup)
+          layerData = _.find(visData.layers, function(layer){
+            return DATA_LAYER_TYPES.indexOf(layer.type) !== -1;
+          });
         }
-        layerData = visData.layers[idx];
       } else {
         layerData = visData;
       }
@@ -41337,412 +41913,6 @@ Layers.register('torque', function(vis, data) {
   }
 
   root.cartodb.SQL = SQL;
-
-})();
-
-;(function() {
-
-var root = this;
-
-root.cartodb = root.cartodb || {};
-
-var ramps = {
-  bool: ['#229A00', '#F84F40', '#DDDDDD'],
-  green:  ['#EDF8FB', '#D7FAF4', '#CCECE6', '#66C2A4', '#41AE76', '#238B45', '#005824'],
-  blue:  ['#FFFFCC', '#C7E9B4', '#7FCDBB', '#41B6C4', '#1D91C0', '#225EA8', '#0C2C84'],
-  pink: ['#F1EEF6', '#D4B9DA', '#C994C7', '#DF65B0', '#E7298A', '#CE1256', '#91003F'],
-  black:  ['#F7F7F7', '#D9D9D9', '#BDBDBD', '#969696', '#737373', '#525252', '#252525'],
-  red:  ['#FFFFB2', '#FED976', '#FEB24C', '#FD8D3C', '#FC4E2A', '#E31A1C', '#B10026'],
-  category: ['#A6CEE3', '#1F78B4', '#B2DF8A', '#33A02C', '#FB9A99', '#E31A1C', '#FDBF6F', '#FF7F00', '#CAB2D6', '#6A3D9A', '#DDDDDD'],
-  divergent: ['#0080FF', '#40A0FF', '#7FBFFF', '#FFF2CC', '#FFA6A6', '#FF7A7A', '#FF4D4D']
-};
-
-function geoAttr(geometryType) {
-  return {
-    "line": 'line-color',
-    'polygon': "polygon-fill",
-    'point': "marker-fill"
-  }[geometryType]
-}
-
-function getDefaultCSSForGeometryType(geometryType) {
-  if (geometryType === "polygon") {
-    return [
-      "polygon-opacity: 0.7;",
-      "line-color: #FFF;",
-      "line-width: 0.5;",
-      "line-opacity: 1;"
-    ];
-  }
-  if (geometryType === "line") {
-    return  [
-      "line-width: 2;",
-      "line-opacity: 0.7;"
-    ];
-  }
-  return [
-    "line-color: #0C2C84;",
-    "line-opacity: 1;",
-    "marker-fill-opacity: 0.9;",
-    "marker-line-color: #FFF;",
-    "marker-line-width: 1;",
-    "marker-line-opacity: 1;",
-    "marker-placement: point;",
-    "marker-type: ellipse;",
-    "marker-width: 10;",
-    "marker-allow-overlap: true;"
-  ];
-}
-
-var CSS = {
-  choropleth: function(quartiles, tableName, prop, geometryType, ramp) {
-    var attr = geoAttr(geometryType);
-    var tableID = "#" + tableName;
-
-    var defaultCSS = getDefaultCSSForGeometryType(geometryType);
-    var css = "/** choropleth visualization */\n\n" + tableID + " {\n  " + attr + ": " + ramp[0] + ";\n" + defaultCSS.join("\n") + "\n}\n";
-
-    for (var i = quartiles.length - 1; i >= 0; --i) {
-      if (quartiles[i] !== undefined && quartiles[i] != null) {
-        css += "\n" + tableID + "[" + prop + " <= " + quartiles[i] + "] {\n";
-        css += "  " + attr  + ":" + ramp[i] + ";\n}"
-      }
-    }
-    return css;
-  },
-
-  categoryMetadata: function(cats, options) {
-    var metadata = [];
-
-    var ramp = (options && options.ramp) ? options.ramp : ramps.category;
-    var type = options && options.type ? options.type : "string";
-
-    for (var i = 0; i < cats.length; i++) {
-      var cat = cats[i];
-      if (i < 10 && cat !== undefined && ((type === 'string' && cat != null) || (type !== 'string'))) {
-        metadata.push({ title: cat, title_type: type, value_type: 'color', color: ramp[i] });
-      }
-    }
-
-    if (cats.length > 10) {
-      metadata.push({ title: "Others", value_type: 'color', default: true, color: ramp[ramp.length - 1] });
-    }
-
-    return metadata;
-  },
-
-  category: function(cats, tableName, prop, geometryType, options) {
-    var attr = geoAttr(geometryType);
-    var tableID = "#" + tableName;
-    var ramp = ramps.category;
-    var name, value;
-
-    var type = options && options.type ? options.type : "string";
-    var ramp = (options && options.ramp) ? options.ramp : ramps.category;
-
-    var defaultCSS = getDefaultCSSForGeometryType(geometryType);
-
-    var css = "/** category visualization */\n\n" + tableID + " {\n  " + attr + ": " + ramp[0] + ";\n" + defaultCSS.join("\n") + "\n}\n";
-
-    for (var i = 0; i < cats.length; i++) {
-
-      var cat = cats[i];
-
-      if (type === 'string') {
-        name = cat.replace(/\n/g,'\\n').replace(/\"/g, "\\\"");
-        value = "\"" + name + "\"";
-      } else {
-        value = cat;
-      }
-
-      if (i < 10 && cat !== undefined && ((type === 'string' && cat != null) || (type !== 'string'))) {
-        css += "\n" + tableID + "[" + prop + "=" + value + "] {\n";
-        css += "  " + attr  + ":" + ramp[i] + ";\n}"
-      }
-    }
-
-    if (cats.length > 10) {
-      css += "\n" + tableID + "{\n";
-      css += "  " + attr  + ": " + ramp[ramp.length - 1]+ ";\n}"
-    }
-
-    return css;
-  },
-
-  torque: function(stats, tableName, options){
-    var tableID = "#" + tableName;
-    var aggFunction = "count(cartodb_id)";
-    var css = [
-        '/** torque visualization */',
-        'Map {',
-        '  -torque-time-attribute: ' + stats.column + ';',
-        '  -torque-aggregation-function: "count(cartodb_id)";',
-        '  -torque-frame-count: ' + stats.steps + ';',
-        '  -torque-animation-duration: 10;',
-        '  -torque-resolution: 2;',
-        '}',
-        tableID + " {",
-        '  marker-width: 3;',
-        '  marker-fill-opacity: 0.8;',
-        '  marker-fill: #0F3B82; ',
-        '  comp-op: "lighten"; ',
-        '  [frame-offset = 1] { marker-width: 10; marker-fill-opacity: 0.05;}',
-        '  [frame-offset = 2] { marker-width: 15; marker-fill-opacity: 0.02;}',
-        '}'
-    ];
-    css = css.join('\n');
-
-    return css;
-
-  },
-
-  bubble: function(quartiles, tableName, prop) {
-    var tableID = "#" + tableName;
-    var css = "/** bubble visualization */\n\n" + tableID + " {\n";
-    css += getDefaultCSSForGeometryType("point").join('\n');
-    css += "\nmarker-fill: #FF5C00;";
-    css += "\n}\n\n";
-
-    var min = 10;
-    var max = 30;
-
-    var values = [];
-
-    var NPOINS = 10;
-    for(var i = 0; i < NPOINS; ++i) {
-      var t = i/(NPOINS-1);
-      values.push(min + t*(max - min));
-    }
-
-    // generate carto
-    for(var i = NPOINS - 1; i >= 0; --i) {
-      if(quartiles[i] !== undefined && quartiles[i] != null) {
-        css += "\n#" + tableName +" [ " + prop + " <= " + quartiles[i] + "] {\n"
-        css += "   marker-width: " + values[i].toFixed(1) + ";\n}"
-      }
-    }
-    return css;
-  },
-
-  heatmap: function(stats, tableName, options){
-    var tableID = "#" + tableName;
-    var css = [
-        '/** heatmap visualization */',
-        'Map {',
-        '  -torque-time-attribute: "cartodb_id";',
-        '  -torque-aggregation-function: "count(cartodb_id)";',
-        '  -torque-frame-count: 1;',
-        '  -torque-animation-duration: 10;',
-        '  -torque-resolution: 2;',
-        '}',
-        tableID + " {",
-        '  marker-width: 10;',
-        '  marker-fill-opacity: 0.4;',
-        '  marker-fill: #0F3B82; ',
-        '  comp-op: "lighten"; ',
-        '  image-filters: colorize-alpha(blue, cyan, lightgreen, yellow , orange, red);',
-        '  marker-file: url(http://s3.amazonaws.com/com.cartodb.assets.static/alphamarker.png);',
-        '}'
-    ];
-    css = css.join('\n');
-    return css;
-  }
-}
-
-function guessCss(sql, geometryType, column, stats) {
-  var css = null
-  if (stats.type === 'number') {
-    css =  CSS.choropleth(stats.quantiles, column, geometryType, ramps.red);
-  } else if(stats.type === 'string') {
-    css = CSS.category(stats.hist.slice(0, ramps.cat.length).map(function(r) { return r[0]; }), column, geometryType)
-  }
-  return css;
-}
-
-function guess(o, callback) {
-  if (!callback) throw new Error("no callback");
-  var s = cartodb.SQL({ user: o.user });
-  s.describe(o.sql, 'the_geom', function(data) {
-    var geometryType = data.simplified_geometry_type;
-    s.describe(o.sql, o.column, function(data) {
-      callback(
-        null, 
-        guessCss(o.sql, geometryType, data.column, data)
-      )
-    });
-  })
-}
-
-function getWeightFromShape(dist_type){
-  return {
-    U: 0.9,
-    A: 0.9,
-    L: 0.7,
-    J: 0.7,
-    S: 0.5,
-    F: 0.3
-  }[dist_type];
-}
-
-function getMethodProperties(stats) { // TODO: only require the necessary params
-
-  var method;
-  var ramp = ramps.pink;
-  var name = "pink";
-
-  if (['A','U'].indexOf(stats.dist_type) != -1) { // apply divergent scheme
-    method = stats.jenks;
-
-    if (stats.min < 0 && stats.max > 0){
-      ramp = ramps.divergent;
-      name = "spectrum2";
-    }
-
-  } else if (stats.dist_type === 'F') {
-    method = stats.equalint;
-    ramp = ramps.red;
-    name = "red";
-  } else {
-    if (stats.dist_type === 'J') {
-      method = stats.headtails;
-      ramp = ramps.blue;
-      name = "blue";
-    } else {
-      //ramp = (_.clone(ramps.red)).reverse();
-      method = stats.headtails;
-      ramp = ramps.red;
-      name = "red";
-    }
-  }
-
-  return { name: name, ramp: ramp, method: method };
-
-}
-
-function guessMap(sql, tableName, column, stats) {
-  var geometryType = column.get("geometry_type");
-  var columnName = column.get("column");
-  var visualizationType = "choropleth";
-  var css = null
-  var type = stats.type;
-  var metadata = []
-  var distinctPercentage = (stats.distinct / stats.count) * 100;
-
-  if (type === 'number') {
-
-    var calc_weight = (stats.weight + getWeightFromShape(stats.dist_type)) / 2;
-
-    if (calc_weight >= 0.5) {
-
-      var visFunction = CSS.choropleth;
-      var properties = getMethodProperties(stats);
-
-      if (stats.count < 200 && geometryType === 'point'){
-        visualizationType = "bubble";
-        visFunction = CSS.bubble;
-      }
-
-      css = visFunction(properties.method, tableName, columnName, geometryType, properties.ramp);
-
-    } else if (stats.weight > 0.5 || distinctPercentage < 25) {
-
-      if (distinctPercentage < 1) {
-        visualizationType   = "category";
-
-        var cats = stats.cat_hist;
-        cats = _.sortBy(cats, function(cat) { return cat[1]; }).reverse().slice(0, ramps.category.length);
-        cats = _.sortBy(cats, function(cat) { return cat[0]; });
-        cats = cats.map(function(r) { return r[0]; });
-
-        css      = CSS.category(cats, tableName, columnName, geometryType, { type: type });
-        metadata = CSS.categoryMetadata(cats, { type: type });
-
-      } else if (distinctPercentage >=1) {
-
-        var visFunction = CSS.choropleth;
-
-        if (geometryType === 'point'){
-          visualizationType = "bubble";
-          visFunction = CSS.bubble;
-        }
-
-        var properties = getMethodProperties(stats);
-        css = visFunction(properties.method, tableName, columnName, geometryType, properties.ramp);
-      }
-    }
-
-  } else if (type === 'string') {
-
-    visualizationType   = "category";
-
-    var cats = stats.hist;
-    cats = _.sortBy(cats, function(cat) { return cat[1]; }).reverse().slice(0, ramps.category.length);
-    cats = _.sortBy(cats, function(cat) { return cat[0]; });
-    cats = cats.map(function(r) { return r[0]; });
-
-    css      = CSS.category(cats, tableName, columnName, geometryType);
-    metadata = CSS.categoryMetadata(cats);
-
-
-  } else if (type === 'date') {
-    visualizationType = "torque";
-    css = CSS.torque(stats, tableName);
-
-  } else if (type === 'boolean') {
-    visualizationType  = "category";
-    var ramp = ramps.bool;
-    var cats = ['true', 'false', null];
-    var options = { type: type, ramp: ramp };
-    css      = CSS.category(cats, tableName, columnName, geometryType, options);
-    metadata = CSS.categoryMetadata(cats, options);
-  } else if (stats.type === 'geom') {
-    visualizationType = "heatmap";
-    css = CSS.heatmap(stats, tableName, options);
-  }
-
-  var properties = {
-    sql: sql,
-    geometryType: geometryType,
-    column: columnName,
-    bbox: column.get("bbox"),
-    type: type,
-    visualizationType: visualizationType
-  };
-
-  if (css) {
-    properties.css = css;
-  } else {
-    properties.css = null;
-    properties.weight = -100;
-  }
-
-  if (stats) {
-    properties.stats = stats;
-  }
-
-  if (metadata) {
-    properties.metadata = metadata;
-  }
-
-  return properties;
-}
-
-/*
-CartoCSS.guess({
-  user: '  '
-  sql: '...'
-  column:
-})
-*/
-
-CSS.guess = guess;
-CSS.guessCss = guessCss;
-CSS.guessMap = guessMap;
-CSS.getWeightFromShape = getWeightFromShape;
-CSS.getMethodProperties = getMethodProperties;
-
-
-root.cartodb.CartoCSS = CSS;
 
 })();
 (function() {
@@ -42669,13 +42839,15 @@ function PointView(geometryModel) {
   this.model = geometryModel;
   this.points = [];
 
+  var icon = {
+    iconUrl: this.model.get('iconUrl') || cdb.config.get('assets_url') + '/images/layout/default_marker.png',
+    iconAnchor: this.model.get('iconAnchor') || [11, 11]
+  };
+
   this.geom = L.GeoJSON.geometryToLayer(geometryModel.get('geojson'), function(geojson, latLng) {
       //TODO: create marker depending on the visualizacion options
-      var p = L.marker(latLng,{
-        icon: L.icon({
-          iconUrl: cdb.config.get('assets_url') + '/images/layout/default_marker.png',
-          iconAnchor: [11, 11]
-        })
+      var p = L.marker(latLng, {
+        icon: L.icon(icon)
       });
 
       var i;
@@ -42686,7 +42858,7 @@ function PointView(geometryModel) {
       return p;
   });
 
-  this.bind('dragend', function(e, pos) { 
+  this.bind('dragend', function(e, pos) {
     geometryModel.set({
       geojson: {
         type: 'Point',
@@ -42738,11 +42910,11 @@ function PathView(geometryModel) {
   this.model = geometryModel;
   this.points = [];
 
-  
+
   this.geom = L.GeoJSON.geometryToLayer(geometryModel.get('geojson'));
   this.geom.setStyle(geometryModel.get('style'));
 
-  
+
   /*for(var i = 0; i < events.length; ++i) {
     var e = events[i];
     this.geom.on(e, self._eventHandler(e));
@@ -42820,21 +42992,20 @@ function PointView(geometryModel) {
   this.points = [];
 
   var style = _.clone(geometryModel.get('style')) || {};
-  //style.path = google.maps.SymbolPath.CIRCLE;
-  //style.scale = style.weight;
-  //style.strokeColor = "ff0000";
-  //style.strokeOpacity = 1;
-  //style.strokeWeight = 1;
-  //style.fillColor = '00000';
-  //style.fillOpacity = 0.5;
+  var iconAnchor = this.model.get('iconAnchor');
+
+  var icon = {
+    url: this.model.get('iconUrl') || cdb.config.get('assets_url') + '/images/layout/default_marker.png',
+    anchor: {
+      x: iconAnchor && iconAnchor[0] || 10,
+      y: iconAnchor && iconAnchor[1] || 10,
+    }
+  };
 
   this.geom = new GeoJSON (
     geometryModel.get('geojson'),
     {
-      icon: {
-          url: cdb.config.get('assets_url') + '/images/layout/default_marker.png',
-          anchor: {x: 10, y: 10}
-      },
+      icon: icon,
       raiseOnDrag: false,
       crossOnDrag: false
     }
@@ -42897,7 +43068,7 @@ function PathView(geometryModel) {
   this.model = geometryModel;
   this.points = [];
 
-  
+
 
   var style = _.clone(geometryModel.get('style')) || {};
 

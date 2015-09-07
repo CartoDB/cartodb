@@ -1,22 +1,28 @@
 require_relative '../../lib/carto/http/client'
+require_relative '../../services/sql-api/sql_api'
+require_relative '../helpers/common_data_redis_cache'
 
 class CommonData
 
-  def initialize
+  # seconds
+  CONNECT_TIMEOUT = 45
+  DEFAULT_TIMEOUT = 60
+  NO_PAGE_LIMIT = 100000
+
+  def initialize(visualizations_api_url)
     @datasets = nil
     @http_client = Carto::Http::Client.get('common_data', log_requests: true)
+    @visualizations_api_url = visualizations_api_url
   end
 
   def datasets
+
     if @datasets.nil?
-
-      _datasets = DATASETS_EMPTY
-
+      datasets = []
       if is_enabled?
-        _datasets = get_datasets(get_datasets_json)
+        datasets = get_datasets(get_datasets_json)
       end
-
-      @datasets = _datasets
+      @datasets = datasets
     end
 
     @datasets
@@ -30,63 +36,79 @@ class CommonData
 
   def get_datasets(json)
     begin
-      rows = JSON.parse(json).fetch('rows', [])
+      rows = JSON.parse(json).fetch('visualizations', [])
     rescue => e
       CartoDB.notify_exception(e)
       rows = []
     end
-    CartoDB.notify_error('common-data empty', { rows: rows }) if rows.nil? || rows.empty?
+    CartoDB.notify_error('common-data empty', { rows: rows, url: @visualizations_api_url}) if rows.nil? || rows.empty?
 
-    _categories = {}
-    _datasets = []
+    datasets = []
+    rows.each do |row|
+      # Common-data's meta tables starts with meta_ and we want to avoid them
+      next if row["name"] =~ /meta_/
+      datasets << get_common_data_from_visualization(row)
+    end
+    datasets
+  end
 
-    rows.each { |row|
-      category = row['category']
-      unless _categories.has_key?(category)
-        _categories[category] = {
-            :name => category,
-            :image_url => row['category_image_url'],
-            :count => 0
-        }
-      end
-      _categories[category][:count] += 1
-
-      row.delete('category_image_url')
-      row['url'] = export_url(row['tabname'])
-      _datasets << row
-    }
-
-    {:datasets => _datasets, :categories => _categories.values}
+  def get_common_data_from_visualization(row)
+      {
+        "name" => row["name"],
+        "display_name" => row["display_name"].nil? ? row["name"] : row["display_name"],
+        "tabname" => row["name"],
+        "description" => row["description"],
+        "source" => row["source"],
+        "license" => row["license"],
+        "tags" => row["tags"],
+        "geometry_types" => %Q[{#{row["table"]["geometry_types"].join(',')}}],
+        "rows" => row["table"]["row_count"],
+        "size" => row["table"]["size"],
+        "url" => export_url(row["name"]),
+        "created_at" => row["created_at"],
+        "updated_at" => row["updated_at"]
+      }
   end
 
   def get_datasets_json
     body = nil
     begin
       http_client = Carto::Http::Client.get('common_data', log_requests: true)
-      response = http_client.get(datasets_url, followlocation:true)
+      request = http_client.request(
+        @visualizations_api_url,
+        method: :get,
+        connecttimeout: CONNECT_TIMEOUT,
+        timeout: DEFAULT_TIMEOUT,
+        params: {per_page: NO_PAGE_LIMIT}
+      )
+      is_https_request = (request.url =~ /^https:\/\//)
+      cached_data = redis_cache.get(is_https_request)
+      return cached_data[:body] unless cached_data.nil?
+      response = request.run
       if response.code == 200
         body = response.response_body
+        redis_cache.set(is_https_request, response.headers, response.response_body)
+        body
       end
-    rescue
+    rescue Exception => e
+      CartoDB.notify_exception(e)
       body = nil
     end
     body
   end
 
-  def datasets_url
-    sql_api_url(DATASETS_QUERY, 'v1')
-  end
-
   def export_url(table_name)
-    "#{sql_api_url export_query(table_name)}&filename=#{table_name}&format=#{config('format', 'shp')}"
+    query = %Q[select * from "#{table_name}"]
+    sql_api_url(query, table_name, config('format', 'shp'))
   end
 
-  def sql_api_url(query, version='v2')
-    "#{config('protocol', 'https')}://#{config('username')}.#{config('host')}/api/#{version}/sql?q=#{URI::encode query}"
-  end
-
-  def export_query(table_name)
-    "select * from #{table_name}"
+  def sql_api_url(query, filename, format)
+    common_data_base_url = config('base_url')
+    CartoDB::SQLApi.new({
+      base_url: common_data_base_url,
+      protocol: 'https',
+      username: config('username'),
+    }).url(query, format, filename)
   end
 
   def config(key, default=nil)
@@ -97,53 +119,7 @@ class CommonData
     end
   end
 
-  DATASETS_EMPTY = {
-      :datasets => [],
-      :categories => []
-  }
-
-  DATASETS_QUERY = <<-query
-SELECT
-  name,
-  tabname,
-  description,
-  source,
-  license,
-  geometry_types,
-  rows,
-  size,
-  created_at,
-  updated_at,
-  category,
-  image_url
-FROM CDB_CommonDataCatalog();
-query
-
-end
-
-
-class CommonDataSingleton
-  include Singleton
-
-  def initialize
-    @common_data = CommonData.new
-    @last_usage = Time.now
-  end
-
-  def datasets
-    now = Time.now
-    if now - @last_usage > (cache_ttl * 60)
-      @common_data = CommonData.new
-      @last_usage = now
-    end
-    @common_data.datasets
-  end
-
-  def cache_ttl
-    ttl = 0
-    if Cartodb.config[:common_data].present?
-      ttl = Cartodb.config[:common_data]['cache_ttl'] || ttl
-    end
-    ttl
+  def redis_cache
+    @redis_cache ||= CommonDataRedisCache.new
   end
 end

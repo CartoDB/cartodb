@@ -2,6 +2,13 @@
   <script>
     document.domain = '<%= config.domain %>'
 
+    function clear_email_and_password(form) {
+      if(typeof form['email'] != 'undefined' && typeof form['password'] != 'undefined') {
+        form['email'].value = '';
+        form['password'].value = '';
+      }
+    }
+
     function signinCallback(authResult) {
       if (typeof authResult.access_token != 'undefined') {
 
@@ -10,6 +17,7 @@
 
           // INFO: user exists and button loaded, let's sign in
           if (access_token_filled.value === "1") {
+            clear_email_and_password(access_token_field.form);
             access_token_field.form.submit();
           } else {
             access_token_filled.value = "1";
@@ -29,6 +37,7 @@
       // INFO: user exists and button clicked, let's sign in
       if (authResult['status']['signed_in'] && access_token_field.value !== '' && google_signup_access_token.value === '' && access_token_filled.value === '1') {
         access_token_field.value = authResult.access_token;
+        clear_email_and_password(access_token_field.form);
         access_token_field.form.submit();
       }
     }
@@ -40,6 +49,7 @@
 
       // INFO: we have a valid access token but no user yet, let's sign up
       if (google_signup_access_token.value != '') {
+        clear_email_and_password(google_signup_access_token.form);
         google_signup_access_token.form.submit();
       }
 

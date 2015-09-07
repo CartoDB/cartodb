@@ -68,6 +68,7 @@ describe Visualization::Member do
       vis_mock = mock
       vis_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
       vis_mock.stubs(:name).returns('vis1')
+      vis_mock.stubs(:display_name).returns('vis1')
       vis_mock.stubs(:map_id).returns(UUIDTools::UUID.timestamp_create.to_s)
       vis_mock.stubs(:active_layer_id).returns(1)
       vis_mock.stubs(:type).returns(Visualization::Member::TYPE_CANONICAL)
@@ -81,6 +82,7 @@ describe Visualization::Member do
       vis_mock.stubs(:locked).returns(true)
       vis_mock.stubs(:source).returns('')
       vis_mock.stubs(:license).returns('')
+      vis_mock.stubs(:attributions).returns('')
       vis_mock.stubs(:title).returns('')
       vis_mock.stubs(:parent_id).returns(nil)
       vis_mock.stubs(:children).returns([])
@@ -99,6 +101,7 @@ describe Visualization::Member do
 
       data[:id].present?.should eq true
       data[:name].present?.should eq true
+      data[:display_name].present?.should eq true
       data[:map_id].present?.should eq true
       data[:active_layer_id].present?.should eq true
       data[:type].present?.should eq true

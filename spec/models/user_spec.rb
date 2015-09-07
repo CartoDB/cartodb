@@ -22,7 +22,7 @@ describe User do
   end
 
   before(:all) do
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+    stub_named_maps_calls
 
     @user_password = 'admin123'
     puts "\n[rspec][user_spec] Creating test user databases..."
@@ -36,12 +36,13 @@ describe User do
   end
 
   before(:each) do
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+    stub_named_maps_calls
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
     User.any_instance.stubs(:enable_remote_db_user).returns(true)
   end
 
   after(:all) do
+    stub_named_maps_calls
     @user.destroy
     @user2.destroy
   end
@@ -759,7 +760,7 @@ describe User do
     query_result[:time].should_not be_blank
     query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
     query_result[:total_rows].should == 2
-    query_result[:rows].first.keys.should == [:id, :name_of_species, :kingdom, :family, :lat, :lon, :views, :the_geom, :cartodb_id, :created_at, :updated_at, :the_geom_webmercator]
+    query_result[:rows].first.keys.sort.should == [:cartodb_id, :the_geom, :the_geom_webmercator, :id, :name_of_species, :kingdom, :family, :lat, :lon, :views].sort
     query_result[:rows][0][:name_of_species].should == "Barrukia cristata"
     query_result[:rows][1][:name_of_species].should == "Eulagisca gigantea"
 
@@ -802,7 +803,7 @@ describe User do
     query_result[:time].should_not be_blank
     query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
     query_result[:total_rows].should == 2
-    query_result[:rows].first.keys.should == [:id, :name_of_species, :kingdom, :family, :lat, :lon, :views, :the_geom, :cartodb_id, :created_at, :updated_at, :the_geom_webmercator]
+    query_result[:rows].first.keys.sort.should == [:cartodb_id, :the_geom, :the_geom_webmercator, :id, :name_of_species, :kingdom, :family, :lat, :lon, :views].sort
     query_result[:rows][0][:name_of_species].should == "Barrukia cristata"
     query_result[:rows][1][:name_of_species].should == "Eulagisca gigantea"
     query_result[:results].should  == true
@@ -1481,8 +1482,12 @@ describe User do
       @user.last_password_change_date = nil
       @user.save
 
+      @user.needs_password_confirmation?.should == false
+
       new_valid_password = '123456'
       @user.change_password("doesn't matter in this case", new_valid_password, new_valid_password)
+
+      @user.needs_password_confirmation?.should == true
     end
 
     it 'should allow updating password w/o a current password' do
@@ -1606,6 +1611,28 @@ describe User do
       User.find(id:user_id).should eq nil
 
     end
+  end
+
+  describe '#needs_password_confirmation?' do
+
+    it 'is true for a normal user' do
+      user = FactoryGirl.build(:carto_user, :google_sign_in => nil)
+      user.needs_password_confirmation?.should == true
+
+      user = FactoryGirl.build(:user, :google_sign_in => false)
+      user.needs_password_confirmation?.should == true
+    end
+
+    it 'is false for users that signed in with Google' do
+      user = FactoryGirl.build(:user, :google_sign_in => true)
+      user.needs_password_confirmation?.should == false
+    end
+
+    it 'is true for users that signed in with Google but changed the password' do
+      user = FactoryGirl.build(:user, :google_sign_in => true, :last_password_change_date => Time.now)
+      user.needs_password_confirmation?.should == true
+    end
+
   end
 
   def create_org(org_name, org_quota, org_seats)

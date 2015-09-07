@@ -8,11 +8,12 @@
 $cLiked: #D93F56;
 
 .LikesIndicator {
-  color:$cTypography-secondary;
-  @include nicer-lato-typography();
+  color:$cTypography-secondary;  
 }
 .LikesIndicator-count {
+  display: inline-block;
   margin: 0 0 0 5px;
+  vertical-align: top;
 }
 .LikesIndicator-icon {
   @include transform(1);

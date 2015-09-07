@@ -32,5 +32,19 @@ module LoginHelper
       "#{request.protocol}#{CartoDB.account_host}/password_resets/new"
     end
   end
+
+  def cdb_logout
+    logout(CartoDB.extract_subdomain(request))
+    logout
+
+    if env['warden']
+      env['warden'].logout
+      request.session.select { |k, v|
+        k.start_with?("warden.user") && !k.end_with?(".session")
+      }.each { |k, v|
+        env['warden'].logout(value) if warden_proxy.authenticated?(value)
+      }
+    end
+  end
   
 end

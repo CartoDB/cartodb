@@ -85,8 +85,7 @@ module Concerns
         :soft_twitter_datasource_limit,
         :google_sign_in, :last_password_change_date,
         :google_maps_key, :google_maps_private_key,
-        :arcgis_datasource_enabled,
-        :private_maps_enabled]
+        :arcgis_datasource_enabled, :private_maps_enabled, :job_role, :industry]
       end
     end
 

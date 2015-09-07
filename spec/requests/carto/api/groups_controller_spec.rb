@@ -254,7 +254,7 @@ describe Carto::Api::GroupsController do
       end
     end
 
-    it '#remove_members alloes batches and triggers group exclusion' do
+    it '#remove_members allows batches and triggers group exclusion' do
       group = @carto_organization.groups.first
       user_1 = @carto_org_user_1
       user_2 = @carto_org_user_2

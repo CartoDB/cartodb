@@ -216,7 +216,7 @@ describe Carto::Api::GroupsController do
       group = @carto_organization.groups.first
       user = @org_user_1
 
-      Carto::Group.expects(:add_user_group_extension_query).with(anything, group.name, user.username)
+      Carto::Group.expects(:add_users_group_extension_query).with(anything, group.name, [user.username])
 
       post_json api_v1_organization_groups_add_users_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, group_id: group.id, api_key: @org_user_owner.api_key), { user_id: user.id }, @headers do |response|
         response.status.should == 200
@@ -232,7 +232,7 @@ describe Carto::Api::GroupsController do
       group.reload
       group.users.include?(user)
 
-      Carto::Group.expects(:remove_user_group_extension_query).with(anything, group.name, user.username)
+      Carto::Group.expects(:remove_users_group_extension_query).with(anything, group.name, [user.username])
 
       delete_json api_v1_organization_groups_remove_users_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, group_id: group.id, api_key: @org_user_owner.api_key, user_id: user.id), {}, @headers do |response|
         response.status.should == 200
@@ -245,8 +245,7 @@ describe Carto::Api::GroupsController do
       user_1 = @org_user_1
       user_2 = @org_user_2
 
-      Carto::Group.expects(:add_user_group_extension_query).with(anything, group.name, user_1.username)
-      Carto::Group.expects(:add_user_group_extension_query).with(anything, group.name, user_2.username)
+      Carto::Group.expects(:add_users_group_extension_query).with(anything, group.name, [user_1.username, user_2.username])
 
       post_json api_v1_organization_groups_add_users_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, group_id: group.id, api_key: @org_user_owner.api_key), { users: [ user_1.id, user_2.id ] }, @headers do |response|
         response.status.should == 200
@@ -264,8 +263,7 @@ describe Carto::Api::GroupsController do
       group.users.include?(user_1)
       group.users.include?(user_2)
 
-      Carto::Group.expects(:remove_user_group_extension_query).with(anything, group.name, user_1.username)
-      Carto::Group.expects(:remove_user_group_extension_query).with(anything, group.name, user_2.username)
+      Carto::Group.expects(:remove_users_group_extension_query).with(anything, group.name, [user_1.username, user_2.username])
 
       delete_json api_v1_organization_groups_remove_users_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, group_id: group.id, api_key: @org_user_owner.api_key), { users: [ user_1.id, user_2.id ] }, @headers do |response|
         response.status.should == 200

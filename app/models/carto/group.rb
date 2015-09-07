@@ -13,8 +13,8 @@ module Carto
   # - create_group_with_extension
   # - rename_group_with_extension
   # - destroy_group_with_extension
-  # - add_user_with_extension
-  # - remove_user_with_extension
+  # - add_users_with_extension
+  # - remove_users_with_extension
   class Group < ActiveRecord::Base
     include PagedModel
 
@@ -70,16 +70,16 @@ module Carto
       end
     end
 
-    def add_user_with_extension(user)
+    def add_users_with_extension(users)
       organization.owner.in_database do |conn|
-        Carto::Group.add_user_group_extension_query(conn, name, user.username)
+        Carto::Group.add_users_group_extension_query(conn, name, users.collect(&:username))
       end
       self.reload
     end
 
-    def remove_user_with_extension(user)
+    def remove_users_with_extension(users)
       organization.owner.in_database do |conn|
-        Carto::Group.remove_user_group_extension_query(conn, name, user.username)
+        Carto::Group.remove_users_group_extension_query(conn, name, users.collect(&:username))
       end
       self.reload
     end
@@ -139,12 +139,12 @@ module Carto
       conn.execute(%Q{ select cartodb.CDB_Group_DropGroup('#{name}') })
     end
 
-    def self.add_user_group_extension_query(conn, name, username)
-      conn.execute(%Q{ select cartodb.CDB_Group_AddMember('#{name}', '#{username}') })
+    def self.add_users_group_extension_query(conn, name, usernames)
+      conn.execute(%Q{ select cartodb.CDB_Group_AddUsers('#{name}', '#{usernames.join(",")}') })
     end
 
-    def self.remove_user_group_extension_query(conn, name, username)
-      conn.execute(%Q{ select cartodb.CDB_Group_RemoveMember('#{name}', '#{username}') })
+    def self.remove_users_group_extension_query(conn, name, usernames)
+      conn.execute(%Q{ select cartodb.CDB_Group_RemoveUsers('#{name}', '#{usernames.join(",")}') })
     end
 
   end

@@ -67,9 +67,7 @@ module Carto
       end
 
       def add_users
-        @organization_users.map { |user|
-          @group.add_user_with_extension(user)
-        }
+        @group.add_users_with_extension(@organization_users)
         render json: {}, status: 200
       rescue => e
         CartoDB.notify_exception(e, { params: params , group: @group, user: @user })
@@ -77,9 +75,7 @@ module Carto
       end
 
       def remove_users
-        @organization_users.map { |user|
-          @group.remove_user_with_extension(user)
-        }
+        @group.remove_users_with_extension(@organization_users)
         render json: {}, status: 200
       rescue => e
         CartoDB.notify_exception(e, { params: params , group: @group, user: @user })

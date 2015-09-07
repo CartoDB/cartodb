@@ -46,6 +46,9 @@ class User < Sequel::Model
 
   one_to_many :feature_flags_user
 
+  plugin :many_through_many
+  many_through_many :groups, [[:users_groups, :user_id, :group_id]]
+
   # Sequel setup & plugins
   plugin :association_dependencies, :client_application => :destroy, :synchronization_oauths => :destroy, :feature_flags_user => :destroy
   plugin :validation_helpers
@@ -1636,7 +1639,21 @@ class User < Sequel::Model
 
     # INFO: organization privileges are set for org_member_role, which is assigned to each org user
     if organization_owner?
-      setup_organization_role_permissions
+      setup_organization_owner
+    end
+  end
+
+  def setup_organization_owner
+    setup_organization_role_permissions
+    setup_owner_permissions
+  end
+
+  def setup_owner_permissions
+    self.in_database(as: :superuser) do |database|
+      # TODO: remvove the check after extension install
+      if !Rails.env.test?
+        database.run(%Q{ SELECT cartodb.CDB_Organization_AddAdmin('#{self.username}') })
+      end
     end
   end
 
@@ -2589,6 +2606,21 @@ TRIGGER
   def regenerate_api_key
     invalidate_varnish_cache
     update api_key: User.make_token
+  end
+
+  def configure_extension_org_metadata_api_endpoint
+    port = Cartodb.config[:http_port]
+    # INFO: account_host includes port in development
+    host = Cartodb.config[:account_host].split(':')[0]
+    config = Cartodb.config[:org_metadata_api]
+    username = config['username']
+    password = config['password']
+    timeout = config.fetch('timeout', 10)
+
+    in_database(as: :superuser) do |database|
+      result = database.fetch("SELECT cartodb.CDB_Conf_SetConf('groups_api', '{ \"host\": \"#{host}\", \"port\": #{port}, \"timeout\": #{timeout}, \"username\": \"#{username}\", \"password\": \"#{password}\"}'::json);").first
+      result
+    end
   end
 
   private

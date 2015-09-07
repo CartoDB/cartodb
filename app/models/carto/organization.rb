@@ -5,6 +5,13 @@ module Carto
 
     has_many :users, inverse_of: :organization, order: :username
     belongs_to :owner, class_name: Carto::User
+    has_many :groups, inverse_of: :organization, order: :display_name
+
+    def self.find_by_database_name(database_name)
+      Carto::Organization
+          .joins('INNER JOIN users ON organizations.owner_id = users.id')
+          .where('users.database_name = ?', database_name).first
+    end
 
     def get_geocoding_calls(options = {})
       date_to = (options[:to] ? options[:to].to_date : Date.today)
@@ -27,6 +34,16 @@ module Carto
     def signup_page_enabled
       !whitelisted_email_domains.nil? && !whitelisted_email_domains.empty?
     end
+
+    def database_name
+      owner ? owner.database_name : nil
+    end
+
+    def create_group(display_name)
+      Carto::Group.create_group_with_extension(self, display_name)
+    end
+
+    private
 
   end
 

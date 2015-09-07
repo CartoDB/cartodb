@@ -33,6 +33,8 @@ module Carto
           user_decoration(entry[:id])
         elsif entry[:type] == Carto::Permission::TYPE_ORGANIZATION
           organization_decoration(entry[:id])
+        elsif entry[:type] == Carto::Permission::TYPE_GROUP
+          group_decoration(entry[:id])
         else
           raise "Unknown entity type: #{entry[:type]}"
         end
@@ -56,6 +58,15 @@ module Carto
             id:         org.id,
             name:       org.name,
             avatar_url: org.avatar_url
+        }
+      end
+
+      def group_decoration(group_id)
+        group = Carto::Group.where(id: group_id).first
+        return {} if group.nil?
+        {
+            id:         group.id,
+            name:       group.name
         }
       end
 

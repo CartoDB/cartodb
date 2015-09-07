@@ -20,7 +20,7 @@ feature "Superadmin's organization API" do
 
   scenario "organization create success" do
     @org_atts = FactoryGirl.build(:organization, name: 'wadus').values
-    post_json superadmin_organizations_path, { :organization => @org_atts }, default_headers do |response|
+    post_json superadmin_organizations_path, { :organization => @org_atts }, superadmin_headers do |response|
       response.status.should == 201
       response.body[:name].should == 'wadus'
 
@@ -37,7 +37,7 @@ feature "Superadmin's organization API" do
   end
 
   scenario "organization update success" do
-    put_json superadmin_organization_path(@organization), { :organization => { :display_name => "Update Test", :map_view_quota => 800000 } }, default_headers do |response|
+    put_json superadmin_organization_path(@organization), { :organization => { :display_name => "Update Test", :map_view_quota => 800000 } }, superadmin_headers do |response|
       response.status.should == 204
     end
     organization = Organization[@organization.id]
@@ -50,7 +50,7 @@ feature "Superadmin's organization API" do
   end
 
   scenario "organization get info success" do
-    get_json superadmin_organization_path(@organization), {}, default_headers do |response|
+    get_json superadmin_organization_path(@organization), {}, superadmin_headers do |response|
       response.status.should == 200
       response.body[:id].should == @organization.id
     end
@@ -59,7 +59,7 @@ feature "Superadmin's organization API" do
   describe "GET /superadmin/organization" do
     it "gets all organizations" do
       @organization2 = FactoryGirl.create(:organization, name: 'wadus')
-      get_json superadmin_organizations_path, {}, default_headers do |response|
+      get_json superadmin_organizations_path, {}, superadmin_headers do |response|
         response.status.should == 200
         response.body.map { |u| u["name"] }.should include(@organization.name, @organization2.name)
         response.body.length.should >= 2
@@ -67,7 +67,7 @@ feature "Superadmin's organization API" do
     end
     it "gets overquota organizations" do
       Organization.stubs(:overquota).returns [@organization]
-      get_json superadmin_organizations_path, { overquota: true }, default_headers do |response|
+      get_json superadmin_organizations_path, { overquota: true }, superadmin_headers do |response|
         response.status.should == 200
         response.body[0]["name"].should == @organization.name
         response.body.length.should == 1
@@ -77,7 +77,7 @@ feature "Superadmin's organization API" do
       Organization.stubs(:overquota).returns [@organization]
       User.any_instance.stubs(:get_geocoding_calls).returns(100)
       User.any_instance.stubs(:get_api_calls).returns (0..30).to_a
-      get_json superadmin_organizations_path, { overquota: true }, default_headers do |response|
+      get_json superadmin_organizations_path, { overquota: true }, superadmin_headers do |response|
         response.status.should == 200
         response.body[0]["name"].should == @organization.name
         response.body[0]["geocoding"]['quota'].should == @organization.geocoding_quota
@@ -110,7 +110,7 @@ feature "Superadmin's organization API" do
 
   private
 
-  def default_headers(user = Cartodb.config[:superadmin]["username"], password = Cartodb.config[:superadmin]["password"])
+  def superadmin_headers(user = Cartodb.config[:superadmin]["username"], password = Cartodb.config[:superadmin]["password"])
     {
       'HTTP_AUTHORIZATION' => ActionController::HttpAuthentication::Basic.encode_credentials(user, password),
       'HTTP_ACCEPT' => "application/json"

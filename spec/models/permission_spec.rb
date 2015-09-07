@@ -205,6 +205,82 @@ describe CartoDB::Permission do
       permission2.destroy
       user2.destroy
     end
+
+    it 'supports groups' do
+      entity_id = UUIDTools::UUID.timestamp_create.to_s
+      entity_type = Permission::ENTITY_TYPE_VISUALIZATION
+
+      # Don't check/handle DB permissions
+      Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
+      Permission.any_instance.stubs(:grant_db_permission).returns(nil)
+      # No need to check for real DB visualizations
+      vis_table_mock = mock
+      vis_table_mock.stubs(:add_read_permission)
+      vis_entity_mock = mock
+      vis_perm_mock = mock
+      vis_perm_mock.stubs(:owner_id).returns(@user.id)
+      vis_perm_mock.stubs(:save)
+
+      vis_entity_mock.stubs(:permission).returns(vis_perm_mock)
+      vis_entity_mock.stubs(:table?).returns(true)
+      vis_entity_mock.stubs(:invalidate_cache).returns(nil)
+      vis_entity_mock.stubs(:table).returns(vis_table_mock)
+      vis_entity_mock.stubs(:related_tables).returns([])
+      vis_entity_mock.stubs(:privacy=)
+      vis_entity_mock.stubs(:store)
+      vis_entity_mock.stubs(:type).returns(CartoDB::Visualization::Member::TYPE_DERIVED)
+      vis_entity_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
+      vis_entity_mock.stubs(:name).returns("foobar_visualization")
+      Permission.any_instance.stubs(:entity).returns(vis_entity_mock)
+
+      acl_initial = []
+      acl_with_data = [
+        {
+          type: Permission::TYPE_GROUP,
+          entity: {
+            id: UUIDTools::UUID.timestamp_create.to_s,
+            username: 'a_group'
+          },
+          access: Permission::ACCESS_READONLY
+        }
+      ]
+      acl_with_data_expected = [
+        {
+          type: acl_with_data[0][:type],
+          id:   acl_with_data[0][:entity][:id],
+          access: acl_with_data[0][:access]
+        }
+      ]
+
+      permission = Permission.new(
+        owner_id:       @user.id,
+        owner_username: @user.username,
+        entity_id:      entity_id,
+        entity_type:    entity_type
+        #check default acl is correct
+      )
+      permission.save
+
+      permission.id.should_not eq nil
+      permission.owner_id.should eq @user.id
+      permission.owner_username.should eq @user.username
+      permission.entity_id.should eq entity_id
+      permission.entity_type.should eq entity_type
+      permission.acl.should eq acl_initial
+
+      permission.acl = acl_with_data
+      permission.save
+      #vis_table_mock.expects(:add_read_permission)
+      #expect(vis_table_mock).to receive(:add_read_permission)
+
+      permission.acl.should eq acl_with_data_expected
+
+      # Nil should reset to default value
+      permission.acl = nil
+      permission.acl.should eq acl_initial
+
+      permission.destroy
+    end
   end
 
   describe '#permissions_methods' do

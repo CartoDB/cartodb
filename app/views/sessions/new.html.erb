@@ -18,7 +18,7 @@
               <h1 class="Sessions-title u-vspace-xs">Login to CartoDB</h1>
               <p class="Sessions-description">Help other people understand the world we live in, with maps.</p>
 
-              <% if @google_plus_config.present? && @organization.auth_google_enabled %>
+              <% if @google_plus_config.present? && (@organization.nil? || @organization.auth_google_enabled) %>
                 <div class="Sessions-sep"></div>
 
                 <%= render partial: 'google_plus/google_plus_button',  locals: { config: @google_plus_config } %>
@@ -26,12 +26,12 @@
 
               <%= form_tag CartoDB.path(self, 'create_session'), class: "js-Loading-form" do %>
 
-                <% if @organization.auth_google_enabled %>
+                <% if @organization.nil? || @organization.auth_google_enabled %>
                   <input type="hidden" value="" id="google_access_token" name="google_access_token" />
                   <input type="hidden" value="0" id="google_access_filled" name="google_access_filled" />
                 <% end %>
 
-                <% if @organization.auth_username_password_enabled %>
+                <% if @organization.nil? || @organization.auth_username_password_enabled %>
 
                   <div class="Sessions-sep"></div>
 

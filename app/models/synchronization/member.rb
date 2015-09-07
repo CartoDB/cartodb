@@ -228,7 +228,7 @@ module CartoDB
         notify
 
       rescue => exception
-        Rollbar.report_exception(exception)
+        CartoDB.notify_exception(exception)
         log.append exception.message, truncate = false
         log.append exception.backtrace.join('\n'), truncate = false
 
@@ -385,7 +385,13 @@ module CartoDB
           self.run_at         = Time.now + interval
         end
       rescue => e
-        Rollbar.report_exception(e)
+        CartoDB.notify_exception(e,
+          {
+            error_code: error_code,
+            error_message: error_message,
+            retried_times: self.retried_times
+          }
+        )
       end
 
       # Tries to run automatic geocoding if present

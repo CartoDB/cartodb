@@ -106,7 +106,12 @@ module Carto
 
       raise "User #{username} not found" unless user
 
-      users.include?(user) ? users.destroy(user) : nil
+      if users.include?(user)
+        users.destroy(user)
+        user
+      else
+        nil
+      end
     end
 
     def database_name

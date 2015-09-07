@@ -185,6 +185,27 @@ describe Carto::Api::DatabaseGroupsController do
       response.status.should == 404
     end
 
+    it '#add_member from username accepts batches' do
+      group = Carto::Group.where(organization_id: @carto_organization.id).first
+      user_information = { users: [ @org_user_1.username, @org_user_2.username ] }
+      post api_v1_databases_group_add_member_url(database_name: group.database_name, name: group.name), user_information.to_json, org_metadata_api_headers
+      response.status.should == 200
+      group.reload
+      group.users.collect(&:username).should include(@org_user_1.username)
+      group.users.collect(&:username).should include(@org_user_2.username)
+    end
+
+    it '#remove_member from username accepts batches' do
+      group = Carto::Group.where(organization_id: @carto_organization.id).first
+      usernames = group.users.collect(&:username)
+      delete_json api_v1_databases_group_remove_member_url(database_name: group.database_name, name: group.name), { users: usernames }, org_metadata_api_headers
+      response.status.should == 200
+      group.reload
+      usernames.map { |username|
+        group.users.collect(&:username).should_not include(username)
+      }
+    end
+
     it '#destroy an existing group' do
       group = Carto::Group.where(organization_id: @carto_organization.id).first
       delete api_v1_databases_group_destroy_url(database_name: group.database_name, name: group.name), nil, org_metadata_api_headers

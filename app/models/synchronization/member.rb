@@ -368,7 +368,7 @@ module CartoDB
           default_message = CartoDB::IMPORTER_ERROR_CODES.fetch(self.error_code, {})
           self.error_message = default_message.fetch(:title, '')
         end
-        self.retried_times  = self.retried_times + 1
+        self.retried_times  += 1 unless self.retried_times >= MAX_RETRIES
         if self.retried_times < MAX_RETRIES
           self.run_at         = Time.now + interval
         end
@@ -380,7 +380,7 @@ module CartoDB
         self.state          = STATE_FAILURE
         self.error_code     = error_code
         self.error_message  = error_message
-        self.retried_times  = self.retried_times + 1
+        self.retried_times  += 1 unless self.retried_times >= MAX_RETRIES
         if self.retried_times < MAX_RETRIES
           self.run_at         = Time.now + interval
         end

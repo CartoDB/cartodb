@@ -368,9 +368,12 @@ module CartoDB
           default_message = CartoDB::IMPORTER_ERROR_CODES.fetch(self.error_code, {})
           self.error_message = default_message.fetch(:title, '')
         end
-        self.retried_times  += 1 unless self.retried_times >= MAX_RETRIES
-        if self.retried_times < MAX_RETRIES
+        if self.retried_times < MAX_RETRIES - 1
+          self.retried_times  += 1
           self.run_at         = Time.now + interval
+        else
+          ::Resque.enqueue(::Resque::UserJobs::Mail::Sync::MaxRetriesReached, self.user_id,
+                           self.visualization_id, self.name, self.error_code, self.error_message)
         end
       end
 
@@ -381,8 +384,12 @@ module CartoDB
         self.error_code     = error_code
         self.error_message  = error_message
         self.retried_times  += 1 unless self.retried_times >= MAX_RETRIES
-        if self.retried_times < MAX_RETRIES
+        if self.retried_times < MAX_RETRIES - 1
+          self.retried_times  += 1
           self.run_at         = Time.now + interval
+        else
+          ::Resque.enqueue(::Resque::UserJobs::Mail::Sync::MaxRetriesReached, self.user_id,
+                           self.visualization_id, self.name, self.error_code, self.error_message)
         end
       rescue => e
         CartoDB.notify_exception(e,

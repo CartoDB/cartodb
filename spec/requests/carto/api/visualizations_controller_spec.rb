@@ -1386,6 +1386,54 @@ describe Carto::Api::VisualizationsController do
         named_map_attributions.should include('attribution1')
         named_map_attributions.should include('attribution2')
       end
+
+      it "Updates viz.json's layergroup when attributions in a related layer change" do
+        table_1_attribution = 'attribution 1'
+        modified_table_2_attribution = 'modified attribution 2'
+
+        table1 = table_factory
+        table2 = table_factory
+
+        payload = {
+          name: 'new visualization',
+          tables: [
+            table1.fetch('name'),
+            table2.fetch('name')
+          ],
+          privacy: 'public'
+        }
+
+        post api_v1_visualizations_create_url(api_key: @api_key), payload.to_json, @headers
+        last_response.status.should == 200
+        visualization = JSON.parse(last_response.body)
+
+        table1_visualization = Carto::Visualization.find(table1["table_visualization"]["id"])
+        table1_visualization.update_attribute(:attributions, table_1_attribution)
+        table2_visualization = Carto::Visualization.find(table2["table_visualization"]["id"])
+        table2_visualization.update_attribute(:attributions, 'attribution 2')
+
+        # Call to cache the vizjson after generating it
+        get api_v2_visualizations_vizjson_url(id: visualization.fetch('id'), api_key: @api_key),{}, @headers
+
+        # Now force a change
+        put api_v1_visualizations_update_url(api_key: @api_key, id: table2_visualization.id),
+          { attributions: modified_table_2_attribution }.to_json, @headers
+        last_response.status.should == 200
+
+        #table2_visualization.update_attribute(:attributions, modified_table_2_attribution)
+
+        get api_v2_visualizations_vizjson_url(id: visualization.fetch('id'), api_key: @api_key),{}, @headers
+        visualization = JSON.parse(last_response.body)
+
+        layer_group_layer = visualization["layers"][1]
+        layer_group_layer["type"].should == 'layergroup'
+        layer_group_attributions = layer_group_layer["options"]["attribution"].split(',').map(&:strip)
+        layer_group_layer.size.should == 2
+
+        layer_group_attributions.should include(table_1_attribution)
+        layer_group_attributions.should include(modified_table_2_attribution)
+      end
+
     end
 
     describe 'tests visualization listing filters' do

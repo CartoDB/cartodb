@@ -319,8 +319,13 @@ module CartoDB
         if description.present?
           renderer = Redcarpet::Render::Safe
           markdown = Redcarpet::Markdown.new(renderer, extensions = {})
-          markdown.render description 
+          markdown.render description
         end
+      end
+
+      def attributions=(value)
+        self.dirty = true if value != @attributions
+        super(value)
       end
 
       def permission_id=(permission_id)
@@ -439,6 +444,7 @@ module CartoDB
       def invalidate_cache
         invalidate_redis_cache
         invalidate_varnish_cache
+
         parent.invalidate_cache unless parent_id.nil?
       end
 
@@ -475,7 +481,7 @@ module CartoDB
       end
 
       def has_password?
-        ( !@password_salt.nil? && !@encrypted_password.nil? ) 
+        ( !@password_salt.nil? && !@encrypted_password.nil? )
       end
 
       def is_password_valid?(password)
@@ -494,7 +500,7 @@ module CartoDB
         10.times do
           digest = secure_digest(digest, TOKEN_DIGEST)
         end
-        digest            
+        digest
       end
 
       def get_auth_tokens
@@ -712,6 +718,12 @@ module CartoDB
         # now we need to purgue everything to avoid cached stale data or public->priv still showing scenarios
         if name_changed || privacy_changed || table_privacy_changed || dirty
           invalidate_cache
+        end
+
+        if dirty
+          related_visualizations.each do |vis|
+            vis.invalidate_cache
+          end
         end
 
         set_timestamps

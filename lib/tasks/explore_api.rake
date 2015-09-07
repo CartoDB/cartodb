@@ -115,8 +115,13 @@ namespace :cartodb do
     end
 
     def update(user)
+      # We add one second because we have time fields with microseconds and this leads to
+      # retrieve processed data crashing due constraint issues.
+      # Ie. 2015-09-03 14:12:38+00 < 2015-09-03 14:12:38.294086+00 is true
       most_recent_created_date = user.in_database[MOST_RECENT_CREATED_SQL].first[:max]
+      most_recent_created_date += 1 unless most_recent_created_date.nil?
       most_recent_updated_date = user.in_database[MOST_RECENT_UPDATED_SQL].first[:max]
+      most_recent_updated_date += 1 unless most_recent_updated_date.nil?
 
       stats_aggregator.timing('visualizations.update.update_existing') do
         update_existing_visualizations_at_user(user)
@@ -142,7 +147,7 @@ namespace :cartodb do
 
         visualization_ids = explore_visualizations.map { |ev| ev[:visualization_id] }
 
-        bbox_values = get_visualizations_bbox(visualization_ids)
+        bbox_values = get_visualizations_bbox(visualization_ids) unless visualization_ids.nil? || visualization_ids.empty?
 
         visualizations = CartoDB::Visualization::Collection.new.fetch({ ids: visualization_ids})
         full_updated_count = 0
@@ -229,8 +234,8 @@ namespace :cartodb do
         privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
       }
       filter['types'] = [CartoDB::Visualization::Member::TYPE_CANONICAL, CartoDB::Visualization::Member::TYPE_DERIVED]
-      filter[:min_created_at] = min_created_at if min_created_at
-      filter[:min_updated_at] = min_updated_at if min_updated_at
+      filter[:min_created_at] = { date: min_created_at, included: true } if min_created_at
+      filter[:min_updated_at] = { date: min_updated_at, included: true } if min_updated_at
       filter
     end
 

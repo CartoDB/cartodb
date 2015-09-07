@@ -11,6 +11,11 @@
 * Upgrade cartodb-postgresql extension to 0.9.4, which includes the new cartodbfy process. As part of this change new user tables won't have the columns `created_at` nor `updated_at`. See the [release notes](https://github.com/CartoDB/cartodb-postgresql/blob/0.9.4/NEWS.md) for more details.
 * Added code coverage generation for tests suite. After a run, results will be stored at `coverage` subfolder
 * Organizations can choose their authentication mechanisms.
+* Fixed street addr tab for georeference modal for google maps/geocoder usage [#5281](https://github.com/CartoDB/cartodb/pull/5281)
+* Privacy toggler within create dataset dialog [#5340](https://github.com/CartoDB/cartodb/pull/5340)
+* Fixed maps disappearing after creation + navigation to dashboard [#5264](https://github.com/CartoDB/cartodb/issues/5264)
+* Log.append now allows to disable truncating (by default active)
+* Detection of lat/long columns now is done in `ogr2ogr2` rather than rails code [#5349](https://github.com/CartoDB/cartodb/pull/5349)
 
 3.10.3 (2015-08-13)
 ---

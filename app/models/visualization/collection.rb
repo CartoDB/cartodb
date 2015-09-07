@@ -357,8 +357,8 @@ module CartoDB
         dataset = filter_by_tags(dataset, tags_from(filters))
         dataset = filter_by_partial_match(dataset, filters.delete(:q))
         dataset = filter_by_kind(dataset, filters.delete(:exclude_raster))
-        dataset = filter_by_min_updated_at(dataset, filters.delete(:min_updated_at))
-        dataset = filter_by_min_created_at(dataset, filters.delete(:min_created_at))
+        dataset = filter_by_min_date('updated_at', dataset, filters.delete(:min_updated_at)) if filters.has_key?(:min_updated_at)
+        dataset = filter_by_min_date('created_at', dataset, filters.delete(:min_created_at)) if filters.has_key?(:min_created_at)
         dataset = filter_by_ids(dataset, filters.delete(:ids))
         order_desc = filters.delete(:order_asc_desc)
         order(dataset, filters.delete(:order), order_desc.nil? || order_desc == :desc)
@@ -461,18 +461,11 @@ module CartoDB
         dataset.where('kind=?', Member::KIND_GEOM)
       end
 
-      def filter_by_min_created_at(dataset, min_created_at, included = false)
-        filter_by_min_date('created_at', dataset, min_created_at, included)
-      end
-
-      def filter_by_min_updated_at(dataset, min_updated_at, included = false)
-        filter_by_min_date('updated_at', dataset, min_updated_at, included)
-      end
-
-      def filter_by_min_date(column, dataset, date, included = false)
-        return dataset if !date
+      def filter_by_min_date(column, dataset, date_filter)
+        return dataset if !date_filter
+        included = date_filter.has_key?(:include) ? date_filter[:include] : false
         comparison = included ? '>=' : '>'
-        dataset.where("#{column} #{comparison} ?", date)
+        dataset.where("#{column} #{comparison} ?", date_filter[:date])
       end
 
       def filter_by_ids(dataset, ids)

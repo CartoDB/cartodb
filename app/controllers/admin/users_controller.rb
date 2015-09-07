@@ -11,6 +11,7 @@ class Admin::UsersController < ApplicationController
   before_filter :login_required
   before_filter :setup_user
   before_filter :initialize_google_plus_config, only: [:profile, :account]
+  before_filter :load_services, only: [:account, :account_update, :delete]
 
   layout 'application'
 
@@ -23,15 +24,12 @@ class Admin::UsersController < ApplicationController
   end
 
   def account
-    @services = get_oauth_services
-
     respond_to do |format|
       format.html { render 'account' }
     end
   end
 
   def account_update
-    @services = get_oauth_services
     attributes = params[:user]
 
     password_change = attributes[:new_password].present? || attributes[:confirm_password].present?
@@ -122,6 +120,10 @@ class Admin::UsersController < ApplicationController
   def initialize_google_plus_config
     signup_action = Cartodb::Central.sync_data_with_cartodb_central? ? Cartodb::Central.new.google_signup_url : '/google/signup'
     @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, signup_action)
+  end
+
+  def load_services
+    @services = get_oauth_services
   end
 
   def get_oauth_services

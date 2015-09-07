@@ -3,7 +3,6 @@ require_relative './column'
 require_relative './job'
 require_relative './query_batcher'
 require_relative './content_guesser'
-require_relative '../../../table-geocoder/lib/internal-geocoder/latitude_longitude'
 
 require_relative '../../../../lib/cartodb/stats/importer'
 
@@ -11,10 +10,6 @@ module CartoDB
   module Importer2
     class Georeferencer
       DEFAULT_BATCH_SIZE = 50000
-      LATITUDE_POSSIBLE_NAMES   = %w{ latitude lat latitudedecimal
-        latitud lati decimallatitude decimallat point_latitude }
-      LONGITUDE_POSSIBLE_NAMES  = %w{ longitude lon lng
-        longitudedecimal longitud long decimallongitude decimallong point_longitude }
       GEOMETRY_POSSIBLE_NAMES   = %w{ geometry the_geom wkb_geometry geom geojson wkt }
       DEFAULT_SCHEMA            = 'cdb_importer'
       THE_GEOM_WEBMERCATOR      = 'the_geom_webmercator'
@@ -46,7 +41,6 @@ module CartoDB
         drop_the_geom_webmercator
 
         the_geom_column_name = create_the_geom_from_geometry_column  ||
-          create_the_geom_from_latlon           ||
           create_the_geom_from_ip_guessing      ||
           create_the_geom_from_country_guessing ||
           create_the_geom_from_namedplaces_guessing ||
@@ -70,20 +64,6 @@ module CartoDB
         db.run(%Q{
          ALTER TABLE #{qualified_table_name} SET (autovacuum_enabled = TRUE, toast.autovacuum_enabled = TRUE);
         })
-      end
-
-      def create_the_geom_from_latlon
-        latitude_column_name  = latitude_column_name_in
-        longitude_column_name = longitude_column_name_in
-
-        return false unless latitude_column_name && longitude_column_name
-
-        job.log 'Creating the_geom from latitude / longitude'
-        create_the_geom_in(table_name)
-        populate_the_geom_from_latlon(
-          qualified_table_name, latitude_column_name, longitude_column_name
-        )
-        'the_geom'
       end
 
       def create_the_geom_from_geometry_column
@@ -281,12 +261,6 @@ module CartoDB
         @job.logger.user_id
       end
 
-      # Note: Performs a really simple ',' to '.' normalization.
-      # TODO: Candidate for moving to a CDB_xxx function that gets the_geom from lat/long if valid or "convertible"
-      def populate_the_geom_from_latlon(qualified_table_name, latitude_column_name, longitude_column_name)
-        CartoDB::InternalGeocoder::LatitudeLongitude.new(db, job).geocode(schema, table_name, latitude_column_name, longitude_column_name)
-      end
-
       def create_the_geom_in(table_name)
         job.log 'Creating the_geom column'
         return false if column_exists_in?(table_name, 'the_geom')
@@ -305,20 +279,6 @@ module CartoDB
 
       def columns_in(table_name)
         db.schema(table_name, reload: true, schema: schema).map(&:first)
-      end
-
-      def latitude_column_name_in
-        names = LATITUDE_POSSIBLE_NAMES.map { |name| "'#{name}'" }.join(',')
-        name  = find_column_in(table_name, names)
-        job.log "Identified #{name} as latitude column" if name
-        name
-      end
-
-      def longitude_column_name_in
-        names = LONGITUDE_POSSIBLE_NAMES.map { |name| "'#{name}'" }.join(',')
-        name = find_column_in(table_name, names)
-        job.log "Identified #{name} as longitude column" if name
-        name
       end
 
       def geometry_column_in

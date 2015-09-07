@@ -80,44 +80,6 @@ module CartoDB
         end
       end
 
-      # if there is no the_geom, and there are latitude and longitude columns, create the_geom
-      unless column_names.include? "the_geom"
-
-        latitude_possible_names = "'latitude','lat','latitudedecimal','latitud','lati'"
-        longitude_possible_names = "'longitude','lon','lng','longitudedecimal','longitud','long'"
-
-        matching_latitude = nil
-        res = @db_connection["select column_name from information_schema.columns where table_name ='#{@suggested_name}'
-          and lower(column_name) in (#{latitude_possible_names}) LIMIT 1"]
-        unless res.first.nil?
-          matching_latitude= res.first[:column_name]
-        end
-        matching_longitude = nil
-        res = @db_connection["select column_name from information_schema.columns where table_name ='#{@suggested_name}'
-          and lower(column_name) in (#{longitude_possible_names}) LIMIT 1"]
-        unless res.first.nil?
-          matching_longitude= res.first[:column_name]
-        end
-
-        if matching_latitude and matching_longitude
-            #we know there is a latitude/longitude columns
-            @db_connection.run("SELECT public.AddGeometryColumn('#{@suggested_name}','the_geom',4326, 'POINT', 2);")
-
-            @db_connection.run(<<-GEOREF
-            UPDATE \"#{@suggested_name}\"
-            SET the_geom =
-              ST_GeomFromText(
-                'POINT(' || trim(CAST(\"#{matching_longitude}\" AS text)) || ' ' || trim(CAST(\"#{matching_latitude}\" AS text)) || ')', 4326
-            )
-            WHERE
-            trim(CAST(\"#{matching_longitude}\" AS text)) ~ '^(([-+]?(([0-9]|[1-9][0-9]|1[0-7][0-9])(\.[0-9]+)?))|[-+]?180)$'
-            AND
-            trim(CAST(\"#{matching_latitude}\" AS text))  ~ '^(([-+]?(([0-9]|[1-8][0-9])(\.[0-9]+)?))|[-+]?90)$'
-            GEOREF
-            )
-        end
-      end
-
       @table_created = true
       rows_imported = @db_connection["SELECT count(*) as count from #{@suggested_name}"].first[:count]
 

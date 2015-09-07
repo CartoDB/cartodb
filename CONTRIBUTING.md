@@ -5,6 +5,11 @@ Bug fixes are best reported as pull requests over there.
 Features are best discussed on the mailing list:
 https://groups.google.com/d/forum/cartodb
 
+## Submitting Contributions
+
+* You will need to sign a Contributor License Agreement (CLA) before making a submission. [Learn more here.](https://cartodb.com/contributing)
+
+
 # General
 
 Every new feature (as well as bugfixes) should come with a test case. Depending on context different guidelines might

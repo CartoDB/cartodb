@@ -189,7 +189,7 @@ class DataImport < Sequel::Model
     self
   rescue => exception
     log.append "Exception: #{exception.to_s}"
-    log.append exception.backtrace
+    log.append exception.backtrace, truncate = false
     stacktrace = exception.to_s + exception.backtrace.join
     Rollbar.report_message('Import error', 'error', error_info: stacktrace)
     handle_failure(exception)
@@ -313,7 +313,7 @@ class DataImport < Sequel::Model
     self
   rescue => exception
     log.append "Exception: #{exception.to_s}"
-    log.append exception.backtrace
+    log.append exception.backtrace, truncate = false
     log.store
     self
   end
@@ -833,7 +833,7 @@ class DataImport < Sequel::Model
       datasource.token = oauth.token unless oauth.nil?
     rescue => ex
       log.append "Exception: #{ex.message}"
-      log.append ex.backtrace
+      log.append ex.backtrace, truncate = false
       Rollbar.report_message('Import error: ', 'error', error_info: ex.message + ex.backtrace.join)
       raise CartoDB::DataSourceError.new("Datasource #{datasource_name} could not be instantiated")
     end

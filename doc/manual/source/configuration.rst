@@ -139,3 +139,40 @@ typing ``whatever.cartodb.com/user/user1`` and ``cartodb.com/user/user1`` is the
 will replicate the sent subdomain fragment to avoid CORS errors but no existing organization
 checks will be performed. You should be able to use them, assign quota to the organization users, etc.
 
+Common Data
+-----------
+This service uses the visualizations API to retrieve all the public datasets from a defined user and
+serve them as importable datasets to all the users of the platform through the data library options.
+
+All can be configured through the ``common_data`` settings section. If the ``base_url``
+option is set, this will be the base url the service is going to use to build the URL to retrieve datasets.
+For example:
+
+.. code-block:: yaml
+
+  common_data:
+    protocol: 'https'
+    username: 'common-data'
+    base_url: 'https://common-data.cartodb.com'
+    format: 'shp'
+
+
+Use ``https://common-data.cartodb.com`` as the base url to retrieve all the public datasets from that user.
+
+This is the default behaviour in CartoDB, but if you want to use your own system and user for this purpose you
+have to define the ``username`` property pointing to the user that will provide the datasets in your own instance.
+The URL in this case is going to be built using your instance base url. For example if your instance base url is
+``http://www.example.com`` and the config is:
+
+.. code-block:: yaml
+
+  common_data:
+    protocol: 'https'
+    username: 'common-data-user'
+    format: 'shp'
+
+the system populates the data library with the public datasets from ``http://common-data-user.example.com...``
+
+The ``format`` option is used to define the format of the file generated when you are importing one datasets from
+the data library. When you import a dataset it uses a stored URL to download that dataset as a file, in the format
+defined in the config, and import as your own dataset.

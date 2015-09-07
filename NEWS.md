@@ -13,6 +13,7 @@
 * Fixed street addr tab for georeference modal for google maps/geocoder usage [#5281](https://github.com/CartoDB/cartodb/pull/5281)
 * Privacy toggler within create dataset dialog [#5340](https://github.com/CartoDB/cartodb/pull/5340)
 * Fixed maps disappearing after creation + navigation to dashboard [#5264](https://github.com/CartoDB/cartodb/issues/5264)
+* Log.append now allows to disable truncating (by default active)
 
 3.10.3 (2015-08-13)
 ---

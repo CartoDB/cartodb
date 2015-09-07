@@ -19,7 +19,9 @@ class Carto::Log < ActiveRecord::Base
     log
   end
 
-  def append(line, timestamp = Time.now.utc)
+  def append(line, truncate = true, timestamp = Time.now.utc)
+    line.slice!(MAX_ENTRY_LENGTH..-1) if truncate
+
     entry = ENTRY_FORMAT % [ timestamp, line.slice(0..MAX_ENTRY_LENGTH) ]
     self.entries = "#{self.entries}#{entry}"
     self.save

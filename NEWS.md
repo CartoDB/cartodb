@@ -12,6 +12,7 @@
 * Added code coverage generation for tests suite. After a run, results will be stored at `coverage` subfolder
 * Fixed street addr tab for georeference modal for google maps/geocoder usage [#5281](https://github.com/CartoDB/cartodb/pull/5281)
 * Fixed maps disappearing after creation + navigation to dashboard [#5264](https://github.com/CartoDB/cartodb/issues/5264)
+* Log.append now allows to disable truncating (by default active)
 
 3.10.3 (2015-08-13)
 ---

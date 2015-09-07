@@ -5,6 +5,10 @@ require_relative '../../../spec_helper'
 require_relative '../../../../app/controllers/carto/api/database_groups_controller'
 require_relative '.././../../factories/visualization_creation_helpers'
 
+# cURL samples:
+# - Add users: curl -v -H "Content-Type: application/json" -X POST -d '{ "users" : ["78ee570a-812d-4cce-928c-e5ebeb4708e8", "7e53c96c-1598-43e0-b23e-290daf633547"] }' "http://central-org-b-admin.localhost.lan:3000/api/v1/organization/95c2c425-5c8c-4b20-8999-d79cd20c2f2c/groups/c662f7ee-aefb-4f49-93ea-1f671a77bb36/users?api_key=665646f527c3006b124c15a308bb98f4ed1f52e4"
+# - Remove users: curl -v -H "Content-Type: application/json" -X DELETE -d '{ "users" : ["78ee570a-812d-4cce-928c-e5ebeb4708e8", "7e53c96c-1598-43e0-b23e-290daf633547"] }' "http://central-org-b-admin.localhost.lan:3000/api/v1/organization/95c2c425-5c8c-4b20-8999-d79cd20c2f2c/groups/c662f7ee-aefb-4f49-93ea-1f671a77bb36/users?api_key=665646f527c3006b124c15a308bb98f4ed1f52e4"
+
 describe Carto::Api::GroupsController do
   include_context 'organization with users helper'
 

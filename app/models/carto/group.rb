@@ -140,11 +140,11 @@ module Carto
     end
 
     def self.add_users_group_extension_query(conn, name, usernames)
-      conn.execute(%Q{ select cartodb.CDB_Group_AddUsers('#{name}', '#{usernames.join(",")}') })
+      conn.execute(%Q{ select cartodb.CDB_Group_AddUsers('#{name}', ARRAY['#{usernames.join("','")}']) })
     end
 
     def self.remove_users_group_extension_query(conn, name, usernames)
-      conn.execute(%Q{ select cartodb.CDB_Group_RemoveUsers('#{name}', '#{usernames.join(",")}') })
+      conn.execute(%Q{ select cartodb.CDB_Group_RemoveUsers('#{name}', ARRAY['#{usernames.join("','")}']) })
     end
 
   end

@@ -134,13 +134,15 @@ describe User do
 
     describe 'validation' do
 
+      before(:each) do
+        @organization = create_org('testorg', 10.megabytes, 1)
+      end
+
       after(:each) do
         @organization.destroy if @organization
       end
 
       it "should not be valid if his organization doesn't have more seats" do
-
-        @organization = create_org('testorg', 10.megabytes, 1)
         user1 = create_user email: 'user1@testorg.com', username: 'user1', password: 'user11'
         user1.organization = @organization
         user1.save
@@ -156,11 +158,10 @@ describe User do
         user2.valid?.should be_false
         user2.errors.keys.should include(:organization)
 
-        user1.destroy
+        user1.delete
       end
 
       it 'should be valid if his organization has enough seats' do
-        @organization = create_org('testorg', 10.megabytes, 1)
         user = User.new
         user.organization = @organization
         user.valid?
@@ -168,7 +169,6 @@ describe User do
       end
 
       it "should not be valid if his organization doesn't have enough disk space" do
-        @organization = create_org('testorg', 10.megabytes, 1)
         @organization.stubs(:assigned_quota).returns(10.megabytes)
         user = User.new
         user.organization = @organization
@@ -178,7 +178,6 @@ describe User do
       end
 
       it 'should be valid if his organization has enough disk space' do
-        @organization = create_org('testorg', 10.megabytes, 1)
         @organization.stubs(:assigned_quota).returns(9.megabytes)
         user = User.new
         user.organization = @organization
@@ -226,8 +225,15 @@ describe User do
 
     describe 'when updating user quota' do
 
-      it 'should be valid if his organization has enough disk space' do
+      before(:each) do
         @organization = create_organization_with_users(quota_in_bytes: 70.megabytes)
+      end
+
+      after(:each) do
+        @organization.destroy
+      end
+
+      it 'should be valid if his organization has enough disk space' do
         @organization.assigned_quota.should == 70.megabytes
         user = @organization.owner
         user.quota_in_bytes = 1.megabyte
@@ -236,60 +242,70 @@ describe User do
       end
 
       it "should not be valid if his organization doesn't have enough disk space" do
-        @organization = create_organization_with_users(quota_in_bytes: 70.megabytes)
         @organization.assigned_quota.should == 70.megabytes
         user = @organization.owner
         user.quota_in_bytes = 71.megabytes
         user.valid?.should be_false
         user.errors.keys.should include(:quota_in_bytes)
       end
+
     end
 
-    it 'should set account_type properly' do
-      @organization = create_organization_with_users
-      @organization.users.reject(&:organization_owner?).each do |u|
-        u.account_type.should == "ORGANIZATION USER"
+    describe 'creation' do
+
+      before(:each) do
+        @organization = create_organization_with_users(twitter_datasource_enabled: true)
+        @organization.save
       end
+
+      after(:each) do
+        @organization.destroy
+      end
+
+      it 'should set account_type properly' do
+        @organization.users.reject(&:organization_owner?).each do |u|
+          u.account_type.should == "ORGANIZATION USER"
+        end
+      end
+
+      it 'should set default settings properly unless overriden' do
+        @organization.users.reject(&:organization_owner?).each do |u|
+          u.max_layers.should == 6
+          u.private_tables_enabled.should eq @organization.owner.private_tables_enabled
+          u.sync_tables_enabled.should eq @organization.owner.sync_tables_enabled
+        end
+        user = FactoryGirl.build(:user, organization: @organization)
+        user.max_layers = 3
+        user.private_tables_enabled = false
+        user.sync_tables_enabled = false
+        user.save
+        user.max_layers.should == 3
+        user.private_tables_enabled.should be_false
+        user.sync_tables_enabled.should be_false
+      end
+
+      it 'should inherit twitter_datasource_enabled from organization on creation' do
+        @organization.twitter_datasource_enabled.should be_true
+        @organization.users.reject(&:organization_owner?).each do |u|
+          u.twitter_datasource_enabled.should be_true
+        end
+        user = create_user(organization: @organization)
+        user.save
+        user.twitter_datasource_enabled.should be_true
+      end
+
+      it "should return proper values for non-persisted settings" do
+        @organization.users.reject(&:organization_owner?).each do |u|
+          u.dedicated_support?.should be_true
+          u.remove_logo?.should be_true
+          u.private_maps_enabled.should == @organization.owner.private_maps_enabled
+          u.import_quota.should == 3
+        end
+
+      end
+
     end
 
-    it 'should set default settings properly unless overriden' do
-      @organization = create_organization_with_users
-      @organization.users.reject(&:organization_owner?).each do |u|
-        u.max_layers.should == 6
-        u.private_tables_enabled.should be_true
-        u.sync_tables_enabled.should be_true
-      end
-      user = FactoryGirl.build(:user, organization: @organization)
-      user.max_layers = 3
-      user.private_tables_enabled = false
-      user.sync_tables_enabled = false
-      user.save
-      user.max_layers.should == 3
-      user.private_tables_enabled.should be_false
-      user.sync_tables_enabled.should be_false
-    end
-
-    it 'should inherit twitter_datasource_enabled from organization on creation' do
-      @organization = create_organization_with_users(twitter_datasource_enabled: true)
-      @organization.save
-      @organization.twitter_datasource_enabled.should be_true
-      @organization.users.reject(&:organization_owner?).each do |u|
-        u.twitter_datasource_enabled.should be_true
-      end
-      user = create_user(organization: @organization)
-      user.save
-      user.twitter_datasource_enabled.should be_true
-    end
-
-    it "should return proper values for non-persisted settings" do
-      @organization = create_organization_with_users
-      @organization.users.reject(&:organization_owner?).each do |u|
-        u.dedicated_support?.should be_true
-        u.remove_logo?.should be_true
-        u.private_maps_enabled.should be_true
-        u.import_quota.should == 3
-      end
-    end
   end
 
   describe 'central synchronization' do

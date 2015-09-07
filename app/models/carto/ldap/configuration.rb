@@ -15,6 +15,8 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
   ENCRYPTION_SSL_VERSION_DEFAULT = nil
   ENCRYPTION_SSL_VERSION_TLSV1_1 = 'TLSv1_1'
 
+  DOMAIN_BASES_SEPARATOR = '||'
+
   self.table_name = 'ldap_configurations'
 
   belongs_to :organization, class_name: Carto::Organization
@@ -52,11 +54,11 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
   validate :domain_bases_not_empty
 
   def domain_bases_list
-    self.domain_bases.split(',')
+    self.domain_bases.split(DOMAIN_BASES_SEPARATOR)
   end
 
   def domain_bases_list=(list)
-    self.domain_bases = list.join(',')
+    self.domain_bases = list.join(DOMAIN_BASES_SEPARATOR)
   end
 
   # Returns matching Carto::Ldap::Entry or false if credentials are wrong

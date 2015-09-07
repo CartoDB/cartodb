@@ -76,7 +76,7 @@ namespace :cartodb do
       email_field = ENV['EMAIL_FIELD'].blank? ? nil : ENV['EMAIL_FIELD']
 
       raise "Missing DOMAIN_BASES" if ENV['DOMAIN_BASES'].blank?
-      domain_bases = ENV['DOMAIN_BASES'].split(',')
+      domain_bases = ENV['DOMAIN_BASES'].split(Carto::Ldap::Configuration::DOMAIN_BASES_SEPARATOR)
 
       raise "Missing USER_OBJECT_CLASS" if ENV['USER_OBJECT_CLASS'].blank?
       user_object_class = ENV['USER_OBJECT_CLASS']

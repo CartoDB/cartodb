@@ -233,8 +233,10 @@ class Organization < Sequel::Model
   def copy_account_features(to_user)
     owner.copy_account_features(to_user)
 
-    to_user.soft_twitter_datasource_limit = self.default_soft_twitter_datasource_limit unless self.default_soft_twitter_datasource_limit.nil?
+    to_user.geocoding_quota = self.default_geocoding_quota unless self.default_geocoding_quota.nil?
     to_user.soft_geocoding_limit = self.default_soft_geocoding_limit unless self.default_soft_geocoding_limit.nil?
+    to_user.twitter_datasource_quota = self.default_twitter_datasource_quota unless self.default_twitter_datasource_quota.nil?
+    to_user.soft_twitter_datasource_limit = self.default_soft_twitter_datasource_limit unless self.default_soft_twitter_datasource_limit.nil?
   end
 
   private

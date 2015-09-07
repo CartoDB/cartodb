@@ -125,9 +125,15 @@
         </div>
       </div>
 
+      <div class="FormAccount-title">
+        <p class="FormAccount-titleText">New member Account defaults</p>
+      </div>
+
+      <span class="FormAccount-separator"></span>
+
       <div class="FormAccount-row">
         <div class="FormAccount-rowLabel">
-          <label class="FormAccount-label">Default new user quota</label>
+          <label class="FormAccount-label">Data quota</label>
         </div>
         <div class="FormAccount-rowData">
           <%= f.text_field :default_quota_in_bytes, :value => "#{ ( @organization[:default_quota_in_bytes].to_i / (1024 * 1024) ) if !@organization[:default_quota_in_bytes].blank? }", :class => "FormAccount-input FormAccount-input--med #{ 'FormAccount-input--error' if @organization.errors[:default_quota_in_bytes].present? } js-userQuota" %>
@@ -141,42 +147,49 @@
         </div>
       </div>
 
-      <div class="Form-row">
-        <div class="Form-rowLabel">
-          <label class="Form-label">Extra geocoding</label>
+      <div class="FormAccount-row">
+        <div class="FormAccount-rowLabel">
+          <label class="FormAccount-label">Geocoding credits</label>
         </div>
-        <div class="Form-rowData">
+        <div class="FormAccount-rowData">
+          <div class="FormAccount-rowInfo">
+            <%= f.text_field :default_geocoding_quota, :class => "FormAccount-input FormAccount-input--short", :placeholder => "Geocoding quota" %>
+          </div>
           <div class="Toggler">
             <%= f.check_box :default_soft_geocoding_limit, :id => "default_soft_geocoding_limit" %>
             <%= label_tag(:default_soft_geocoding_limit, '') %>
           </div>
-        </div>
-        <div class="Form-rowInfo">
-          <% if (@organization.errors[:default_soft_geocoding_limit].present?) %>
-            <p class="Form-rowInfoText Form-rowInfoText--error"><%= @organization.errors[:default_soft_geocoding_limit].first %></p>
-          <% else %>
-            <p class="Form-rowInfoText">User has permission to exceed organization's geocoding quota</p>
-          <% end %>
+          <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+            <% if (@organization.errors[:default_soft_geocoding_limit].present?) %>
+              <p class="FormAccount-rowInfoText Form-rowInfoText--error"><%= @organization.errors[:default_soft_geocoding_limit].first %></p>
+            <% else %>
+              <p class="FormAccount-rowInfoText">Unlimited</p>
+            <% end %>
+          </div>
         </div>
       </div>
 
       <% if @organization.twitter_datasource_enabled %>
-        <div class="Form-row">
-          <div class="Form-rowLabel">
-            <label class="Form-label">Extra tweets</label>
+        <div class="FormAccount-row">
+          <div class="FormAccount-rowLabel">
+            <label class="Form-label">Twitter credits</label>
           </div>
-          <div class="Form-rowData">
+          <div class="FormAccount-rowData">
+            <div class="FormAccount-rowInfo FormAccount-rowInfo--marginRight">
+              <%= f.text_field :default_twitter_datasource_quota, :class => "FormAccount-input FormAccount-input--short", :placeholder => "Twitter quota" %>
+            </div>
             <div class="Toggler">
               <%= f.check_box :default_soft_twitter_datasource_limit, :id => "default_soft_twitter_datasource_limit" %>
               <%= label_tag(:default_soft_twitter_datasource_limit, '') %>
             </div>
-          </div>
-          <div class="Form-rowInfo">
-            <% if (@organization.errors[:default_soft_twitter_datasource_limit].present?) %>
-              <p class="Form-rowInfoText Form-rowInfoText--error"><%= @organization.errors[:default_soft_twitter_datasource_limit].first %></p>
-            <% else %>
-              <p class="Form-rowInfoText">User has permission to exceed organization's twitter quota</p>
-            <% end %>
+            <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+              <p class="FormAccount-rowInfoText">Unlimited</p>
+              <% if (@organization.errors[:default_soft_twitter_datasource_limit].present?) %>
+                <p class="FormAccount-rowInfoText Form-rowInfoText--error"><%= @organization.errors[:default_soft_twitter_datasource_limit].first %></p>
+              <% else %>
+                <p class="FormAccount-rowInfoText">If unlimited extra credits will be $<%= @organization.twitter_datasource_block_price %>/<%= @organization.twitter_datasource_block_size %></p>
+              <% end %>
+            </div>
           </div>
         </div>
       <% end %>

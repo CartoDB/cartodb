@@ -433,8 +433,11 @@ describe Organization do
       @owner.max_layers = 10
       @owner.private_maps_enabled = true
       @owner.private_tables_enabled = true
-      @owner.soft_twitter_datasource_limit = true
+
+      @owner.geocoding_quota = 1666
       @owner.soft_geocoding_limit = true
+      @owner.twitter_datasource_quota = 1777
+      @owner.soft_twitter_datasource_limit = true
     end
 
     it 'copies features from owner' do
@@ -444,24 +447,24 @@ describe Organization do
       @user.private_maps_enabled.should eq @owner.private_maps_enabled
       @user.private_tables_enabled.should eq @owner.private_tables_enabled
       @user.soft_twitter_datasource_limit.should eq @owner.soft_twitter_datasource_limit
+      @user.geocoding_quota.should eq @owner.geocoding_quota
       @user.soft_geocoding_limit.should eq @owner.soft_geocoding_limit
+      @user.twitter_datasource_quota.should eq @owner.twitter_datasource_quota
       @user.sync_tables_enabled.should eq @owner.sync_tables_enabled
     end
 
     it 'overrides features from owner with org defaults if set' do
-      @organization.default_private_tables_enabled = false
-      @organization.default_private_maps_enabled = false
-      @organization.default_soft_twitter_datasource_limit = false
+      @organization.default_geocoding_quota = 666
       @organization.default_soft_geocoding_limit = false
-      @organization.default_sync_tables_enabled = false
+      @organization.default_twitter_datasource_quota = 777
+      @organization.default_soft_twitter_datasource_limit = false
 
       @organization.copy_account_features(@user)
 
-      @user.private_maps_enabled.should eq @organization.default_private_maps_enabled
-      @user.private_tables_enabled.should eq @organization.default_private_tables_enabled
-      @user.soft_twitter_datasource_limit.should eq @organization.default_soft_twitter_datasource_limit
+      @user.geocoding_quota.should eq @organization.default_geocoding_quota
       @user.soft_geocoding_limit.should eq @organization.default_soft_geocoding_limit
-      @user.sync_tables_enabled.should eq @organization.default_sync_tables_enabled
+      @user.twitter_datasource_quota.should eq @organization.default_twitter_datasource_quota
+      @user.soft_twitter_datasource_limit.should eq @organization.default_soft_twitter_datasource_limit
     end
 
   end

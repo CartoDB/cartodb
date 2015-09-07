@@ -1321,7 +1321,7 @@ describe Carto::Api::VisualizationsController do
         table2_visualization = Carto::Visualization.find(table2["table_visualization"]["id"])
         table2_visualization.update_attribute(:attributions, 'attribution2')
         table3_visualization = Carto::Visualization.find(table3["table_visualization"]["id"])
-        table3_visualization.update_attribute(:attributions, 'attribution3')
+        table3_visualization.update_attribute(:attributions, '')
 
         visualization = JSON.parse(last_response.body)
 
@@ -1334,10 +1334,10 @@ describe Carto::Api::VisualizationsController do
         layer_group_layer["type"].should == 'layergroup'
 
         layer_group_attributions = layer_group_layer["options"]["attribution"].split(',').map(&:strip)
+        layer_group_layer.size.should == 2
 
         layer_group_attributions.should include('attribution1')
         layer_group_attributions.should include('attribution2')
-        layer_group_attributions.should include('attribution3')
       end
 
       it 'joins the attributions of the layers in a namedmap in the viz.json' do
@@ -1365,7 +1365,7 @@ describe Carto::Api::VisualizationsController do
         table2_visualization = Carto::Visualization.find(table2["table_visualization"]["id"])
         table2_visualization.update_attribute(:attributions, 'attribution2')
         table3_visualization = Carto::Visualization.find(table3["table_visualization"]["id"])
-        table3_visualization.update_attribute(:attributions, 'attribution3')
+        table3_visualization.update_attribute(:attributions, '')
 
         visualization = JSON.parse(last_response.body)
 
@@ -1382,9 +1382,9 @@ describe Carto::Api::VisualizationsController do
 
         named_map_attributions = named_map_layer["options"]["attribution"].split(',').map(&:strip)
 
+        named_map_attributions.size.should == 2
         named_map_attributions.should include('attribution1')
         named_map_attributions.should include('attribution2')
-        named_map_attributions.should include('attribution3')
       end
     end
 

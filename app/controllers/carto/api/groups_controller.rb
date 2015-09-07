@@ -9,16 +9,16 @@ module Carto
     class GroupsController < ::Api::ApplicationController
       include PagedSearcher
 
-      ssl_required :index, :show, :create, :update, :destroy, :add_members, :remove_members unless Rails.env.development? || Rails.env.test?
+      ssl_required :index, :show, :create, :update, :destroy, :add_users, :remove_users unless Rails.env.development? || Rails.env.test?
 
       before_filter :load_fetching_options, :only => [:show, :index]
       before_filter :load_organization
       before_filter :load_user
       before_filter :validate_organization_or_user_loaded
-      before_filter :load_group, :only => [:show, :update, :destroy, :add_members, :remove_members]
-      before_filter :org_owner_only, :only => [:create, :update, :destroy, :add_members, :remove_members]
+      before_filter :load_group, :only => [:show, :update, :destroy, :add_users, :remove_users]
+      before_filter :org_owner_only, :only => [:create, :update, :destroy, :add_users, :remove_users]
       before_filter :org_users_only, :only => [:show, :index]
-      before_filter :load_organization_users, :only => [:add_members, :remove_members]
+      before_filter :load_organization_users, :only => [:add_users, :remove_users]
 
       def index
         page, per_page, order = page_per_page_order_params
@@ -66,9 +66,9 @@ module Carto
         render json: { errors: e.message }, status: 500
       end
 
-      def add_members
+      def add_users
         @organization_users.map { |user|
-          @group.add_member_with_extension(user)
+          @group.add_user_with_extension(user)
         }
         render json: {}, status: 200
       rescue => e
@@ -76,9 +76,9 @@ module Carto
         render json: { errors: e.message }, status: 500
       end
 
-      def remove_members
+      def remove_users
         @organization_users.map { |user|
-          @group.remove_member_with_extension(user)
+          @group.remove_user_with_extension(user)
         }
         render json: {}, status: 200
       rescue => e
@@ -92,7 +92,7 @@ module Carto
         @fetching_options = {
           fetch_shared_tables_count: params[:fetch_shared_tables_count] == 'true',
           fetch_shared_maps_count: params[:fetch_shared_maps_count] == 'true',
-          fetch_members: params[:fetch_members] == 'true'
+          fetch_users: params[:fetch_users] == 'true'
         }
       end
 

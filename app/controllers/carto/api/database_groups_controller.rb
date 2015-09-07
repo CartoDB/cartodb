@@ -12,13 +12,13 @@ module Carto
 
       respond_to :json
 
-      ssl_required :create, :update, :destroy, :add_member, :remove_member, :update_permission, :destroy_permission unless Rails.env.development? || Rails.env.test?
+      ssl_required :create, :update, :destroy, :add_users, :remove_users, :update_permission, :destroy_permission unless Rails.env.development? || Rails.env.test?
 
       before_filter :authenticate_extension
       before_filter :load_parameters
-      before_filter :load_mandatory_group, :only => [:destroy, :add_member, :remove_member, :update_permission, :destroy_permission]
+      before_filter :load_mandatory_group, :only => [:destroy, :add_users, :remove_users, :update_permission, :destroy_permission]
       before_filter :load_user_from_username, :only => [:load_table, :update_permission, :destroy_permission]
-      before_filter :load_users_from_username, :only => [:add_member, :remove_member]
+      before_filter :load_users_from_username, :only => [:add_users, :remove_users]
       before_filter :load_table, :only => [:update_permission, :destroy_permission]
 
       def create
@@ -68,11 +68,11 @@ module Carto
         render json: { errors: e.message }, status: 500
       end
 
-      def add_member
+      def add_users
         added_usernames = []
         @usernames.map { |username|
           begin
-            added_usernames << @group.add_member(username).user.username
+            added_usernames << @group.add_user(username).user.username
           rescue CartoDB::ModelAlreadyExistsError => e
             # This will provoke 409 response later
           end
@@ -87,10 +87,10 @@ module Carto
         render json: { errors: e.message }, status: 500
       end
 
-      def remove_member
+      def remove_users
         removed_usernames = []
         @usernames.map { |username|
-          removed_user = @group.remove_member(username)
+          removed_user = @group.remove_user(username)
           removed_usernames << removed_user.username if !removed_user.nil?
         }
         if removed_usernames.length == @usernames.length

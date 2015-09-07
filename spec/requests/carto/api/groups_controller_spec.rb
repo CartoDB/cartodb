@@ -79,11 +79,11 @@ describe Carto::Api::GroupsController do
       describe "users groups" do
 
         before(:each) do
-          @group_1.add_member(@org_user_1.username)
+          @group_1.add_user(@org_user_1.username)
         end
 
         after(:each) do
-          @group_1.remove_member(@org_user_1.username)
+          @group_1.remove_user(@org_user_1.username)
         end
 
         it 'returns user groups if user_id is requested' do
@@ -97,16 +97,16 @@ describe Carto::Api::GroupsController do
           end
         end
 
-        it 'can fetch number of shared tables, maps and members' do
+        it 'can fetch number of shared tables, maps and users' do
 
-          get_json api_v1_user_groups_url(user_domain: @org_user_1.username, user_id: @org_user_1.id, api_key: @org_user_1.api_key, fetch_shared_tables_count: true, fetch_shared_maps_count: true, fetch_members: true), {}, @headers do |response|
+          get_json api_v1_user_groups_url(user_domain: @org_user_1.username, user_id: @org_user_1.id, api_key: @org_user_1.api_key, fetch_shared_tables_count: true, fetch_shared_maps_count: true, fetch_users: true), {}, @headers do |response|
             response.status.should == 200
             expected_response = {
               groups: [
                 @group_1_json.merge({
                   'shared_tables_count' => 0,
                   'shared_maps_count' => 0,
-                  'members' => [ @org_user_1_json ]
+                  'users' => [ @org_user_1_json ]
                 })
               ],
               total_entries: 1
@@ -115,21 +115,21 @@ describe Carto::Api::GroupsController do
           end
         end
 
-        it 'can fetch number of shared tables, maps and members when a table is shared' do
+        it 'can fetch number of shared tables, maps and users when a table is shared' do
           bypass_named_maps
           table_user_2 = create_table_with_options(@org_user_2)
           permission = CartoDB::Permission[Carto::Visualization.find(table_user_2['table_visualization']['id']).permission.id]
           permission.set_group_permission(@group_1, Carto::Permission::ACCESS_READONLY)
           permission.save
 
-          get_json api_v1_user_groups_url(user_domain: @org_user_1.username, user_id: @org_user_1.id, api_key: @org_user_1.api_key, fetch_shared_tables_count: true, fetch_shared_maps_count: true, fetch_members: true), {}, @headers do |response|
+          get_json api_v1_user_groups_url(user_domain: @org_user_1.username, user_id: @org_user_1.id, api_key: @org_user_1.api_key, fetch_shared_tables_count: true, fetch_shared_maps_count: true, fetch_users: true), {}, @headers do |response|
             response.status.should == 200
             expected_response = {
               groups: [
                 @group_1_json.merge({
                   'shared_tables_count' => 1,
                   'shared_maps_count' => 0,
-                  'members' => [ @org_user_1_json ]
+                  'users' => [ @org_user_1_json ]
                 })
               ],
               total_entries: 1
@@ -149,12 +149,12 @@ describe Carto::Api::GroupsController do
       end
     end
 
-    it '#show support fetch_shared_maps_count, fetch_shared_tables_count and fetch_members' do
-      get_json api_v1_organization_groups_show_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, group_id: @group_1.id, api_key: @org_user_owner.api_key, fetch_shared_tables_count: true, fetch_shared_maps_count: true, fetch_members: true), { }, @headers do |response|
+    it '#show support fetch_shared_maps_count, fetch_shared_tables_count and fetch_users' do
+      get_json api_v1_organization_groups_show_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, group_id: @group_1.id, api_key: @org_user_owner.api_key, fetch_shared_tables_count: true, fetch_shared_maps_count: true, fetch_users: true), { }, @headers do |response|
         response.status.should == 200
         response.body[:shared_tables_count].should_not be_nil
         response.body[:shared_maps_count].should_not be_nil
-        response.body[:members].should_not be_nil
+        response.body[:users].should_not be_nil
       end
     end
 
@@ -212,19 +212,19 @@ describe Carto::Api::GroupsController do
       end
     end
 
-    it '#add_members triggers group inclusion' do
+    it '#add_users triggers group inclusion' do
       group = @carto_organization.groups.first
       user = @org_user_1
 
-      Carto::Group.expects(:add_member_group_extension_query).with(anything, group.name, user.username)
+      Carto::Group.expects(:add_user_group_extension_query).with(anything, group.name, user.username)
 
-      post_json api_v1_organization_groups_add_members_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, group_id: group.id, api_key: @org_user_owner.api_key), { user_id: user.id }, @headers do |response|
+      post_json api_v1_organization_groups_add_users_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, group_id: group.id, api_key: @org_user_owner.api_key), { user_id: user.id }, @headers do |response|
         response.status.should == 200
         # INFO: since test doesn't actually trigger the extension we only check expectation on membership call
       end
     end
 
-    it '#remove_members triggers group exclusion' do
+    it '#remove_users triggers group exclusion' do
       group = @carto_organization.groups.first
       user = @carto_org_user_1
       group.users << user
@@ -232,29 +232,29 @@ describe Carto::Api::GroupsController do
       group.reload
       group.users.include?(user)
 
-      Carto::Group.expects(:remove_member_group_extension_query).with(anything, group.name, user.username)
+      Carto::Group.expects(:remove_user_group_extension_query).with(anything, group.name, user.username)
 
-      delete_json api_v1_organization_groups_remove_members_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, group_id: group.id, api_key: @org_user_owner.api_key, user_id: user.id), {}, @headers do |response|
+      delete_json api_v1_organization_groups_remove_users_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, group_id: group.id, api_key: @org_user_owner.api_key, user_id: user.id), {}, @headers do |response|
         response.status.should == 200
         # INFO: since test doesn't actually trigger the extension we only check expectation on membership call
       end
     end
 
-    it '#add_members allows batches and triggers group inclusion' do
+    it '#add_users allows batches and triggers group inclusion' do
       group = @carto_organization.groups.first
       user_1 = @org_user_1
       user_2 = @org_user_2
 
-      Carto::Group.expects(:add_member_group_extension_query).with(anything, group.name, user_1.username)
-      Carto::Group.expects(:add_member_group_extension_query).with(anything, group.name, user_2.username)
+      Carto::Group.expects(:add_user_group_extension_query).with(anything, group.name, user_1.username)
+      Carto::Group.expects(:add_user_group_extension_query).with(anything, group.name, user_2.username)
 
-      post_json api_v1_organization_groups_add_members_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, group_id: group.id, api_key: @org_user_owner.api_key), { users: [ user_1.id, user_2.id ] }, @headers do |response|
+      post_json api_v1_organization_groups_add_users_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, group_id: group.id, api_key: @org_user_owner.api_key), { users: [ user_1.id, user_2.id ] }, @headers do |response|
         response.status.should == 200
         # INFO: since test doesn't actually trigger the extension we only check expectation on membership call
       end
     end
 
-    it '#remove_members allows batches and triggers group exclusion' do
+    it '#remove_users allows batches and triggers group exclusion' do
       group = @carto_organization.groups.first
       user_1 = @carto_org_user_1
       user_2 = @carto_org_user_2
@@ -264,10 +264,10 @@ describe Carto::Api::GroupsController do
       group.users.include?(user_1)
       group.users.include?(user_2)
 
-      Carto::Group.expects(:remove_member_group_extension_query).with(anything, group.name, user_1.username)
-      Carto::Group.expects(:remove_member_group_extension_query).with(anything, group.name, user_2.username)
+      Carto::Group.expects(:remove_user_group_extension_query).with(anything, group.name, user_1.username)
+      Carto::Group.expects(:remove_user_group_extension_query).with(anything, group.name, user_2.username)
 
-      delete_json api_v1_organization_groups_remove_members_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, group_id: group.id, api_key: @org_user_owner.api_key), { users: [ user_1.id, user_2.id ] }, @headers do |response|
+      delete_json api_v1_organization_groups_remove_users_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, group_id: group.id, api_key: @org_user_owner.api_key), { users: [ user_1.id, user_2.id ] }, @headers do |response|
         response.status.should == 200
         # INFO: since test doesn't actually trigger the extension we only check expectation on membership call
       end

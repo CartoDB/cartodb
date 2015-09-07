@@ -13,8 +13,8 @@ module Carto
   # - create_group_with_extension
   # - rename_group_with_extension
   # - destroy_group_with_extension
-  # - add_member_with_extension
-  # - remove_member_with_extension
+  # - add_user_with_extension
+  # - remove_user_with_extension
   class Group < ActiveRecord::Base
     include PagedModel
 
@@ -70,16 +70,16 @@ module Carto
       end
     end
 
-    def add_member_with_extension(user)
+    def add_user_with_extension(user)
       organization.owner.in_database do |conn|
-        Carto::Group.add_member_group_extension_query(conn, name, user.username)
+        Carto::Group.add_user_group_extension_query(conn, name, user.username)
       end
       self.reload
     end
 
-    def remove_member_with_extension(user)
+    def remove_user_with_extension(user)
       organization.owner.in_database do |conn|
-        Carto::Group.remove_member_group_extension_query(conn, name, user.username)
+        Carto::Group.remove_user_group_extension_query(conn, name, user.username)
       end
       self.reload
     end
@@ -89,7 +89,7 @@ module Carto
       self.database_role = new_database_role
     end
 
-    def add_member(username)
+    def add_user(username)
       user = Carto::User.find_by_username(username)
 
       raise "User #{username} not found" unless user
@@ -101,7 +101,7 @@ module Carto
       user_group
     end
 
-    def remove_member(username)
+    def remove_user(username)
       user = Carto::User.find_by_username(username)
 
       raise "User #{username} not found" unless user
@@ -139,11 +139,11 @@ module Carto
       conn.execute(%Q{ select cartodb.CDB_Group_DropGroup('#{name}') })
     end
 
-    def self.add_member_group_extension_query(conn, name, username)
+    def self.add_user_group_extension_query(conn, name, username)
       conn.execute(%Q{ select cartodb.CDB_Group_AddMember('#{name}', '#{username}') })
     end
 
-    def self.remove_member_group_extension_query(conn, name, username)
+    def self.remove_user_group_extension_query(conn, name, username)
       conn.execute(%Q{ select cartodb.CDB_Group_RemoveMember('#{name}', '#{username}') })
     end
 

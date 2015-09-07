@@ -13,10 +13,8 @@
   @import "../../../old_common/vars";
   @import "../../../old_common/mixins";
 
-
   // LOCAL VARS
   $corner_radius: 6px;
-
 
   div.wizards_panel {
     display:block;
@@ -322,5 +320,11 @@
         @include border-radius($corner_radius);
         color:#666666;
       }
+    }
+
+    /* Temporary hack for a Chrome v45 bug */
+    /* https://github.com/CartoDB/cartodb/issues/5368 */
+    .select2-result-label td.color { 
+      width: 10%;
     }
   }

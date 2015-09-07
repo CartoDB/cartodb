@@ -72,3 +72,9 @@ Build CartoDB.js library:
   - Install ruby dependencies: `bundle install` (necessary for compass gem)
   - Start the server: `grunt build`
   - Happy mapping!
+  - 
+  
+## Submitting Contributions
+
+You will need to sign a Contributor License Agreement (CLA) before making a submission. [Learn more here.](https://cartodb.com/contributing)
+

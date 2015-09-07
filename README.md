@@ -16,8 +16,8 @@ If you would like to see some live demos, check out our
 [videos](http://www.vimeo.com/channels/cartodb) on Vimeo.
 We hope you like it!
 
-![Map View](http://cartodb.s3.amazonaws.com/github/map_view.png)
-
+![Map View Wizard](http://cartodb.s3.amazonaws.com/github/map_view_wizard.png)
+![Data View](http://cartodb.s3.amazonaws.com/github/data_view.png)
 
 # What can I do with CartoDB? #
 
@@ -35,8 +35,6 @@ powerful geospatial applications! Definitely check out the [CartoDB
 Develop](http://cartodb.com/develop) for interactive examples
 and code.
 
-![Map View Wizard](http://cartodb.s3.amazonaws.com/github/map_view_wizard.png)
-![Data View](http://cartodb.s3.amazonaws.com/github/data_view.png)
 
 # Installing
 

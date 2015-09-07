@@ -254,7 +254,7 @@ module CartoDB
 
         # too verbose in append mode
         unless append_mode
-          job.log "ogr2ogr call:            #{ogr2ogr.command}"
+          job.log "ogr2ogr call:            #{ogr2ogr.command}", truncate = false
           job.log "ogr2ogr output:          #{ogr2ogr.command_output}"
           job.log "ogr2ogr exit code:       #{ogr2ogr.exit_code}"
         end

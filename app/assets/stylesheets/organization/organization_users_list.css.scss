@@ -20,8 +20,12 @@
 }
 .OrganizationList-user {
   width: 100%;
+  box-sizing: border-box;
 
   &:not(:first-child) { border-top: 1px solid $cStructure-softLine; }
+}
+.OrganizationList-user.is-selected {
+  background-color: $cCard-selectedFill;
 }
 .OrganizationList-userAvatar {
   width: 42px;
@@ -39,7 +43,7 @@
   padding: $sMargin-element 0;
   text-decoration: none!important;
 }
-.OrganizationList-userInfo { 
+.OrganizationList-userInfo {
   @include display-flex();
   @include flex-direction(row);
   @include align-items(flex-end);

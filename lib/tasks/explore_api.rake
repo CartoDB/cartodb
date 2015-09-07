@@ -147,7 +147,7 @@ namespace :cartodb do
 
         visualization_ids = explore_visualizations.map { |ev| ev[:visualization_id] }
 
-        bbox_values = get_visualizations_bbox(visualization_ids) unless visualization_ids.nil? || visualization_ids.empty?
+        bbox_values = get_visualizations_bbox(visualization_ids)
 
         visualizations = CartoDB::Visualization::Collection.new.fetch({ ids: visualization_ids})
         full_updated_count = 0
@@ -287,6 +287,7 @@ namespace :cartodb do
     end
 
     def get_visualizations_bbox(visualization_ids)
+      return {} if visualization_ids.nil? || visualization_ids.empty?
       bbox_dataset = Rails::Sequel.connection.fetch(
         %Q[SELECT id, bbox FROM visualizations WHERE id in ('#{visualization_ids.join("','")}') AND type = '#{CartoDB::Visualization::Member::TYPE_CANONICAL}']
       ).all

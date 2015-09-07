@@ -12,7 +12,6 @@ require_relative '../../lib/cartodb/errors'
 require_relative '../../lib/cartodb/import_error_codes'
 require_relative '../../lib/cartodb/metrics'
 require_relative '../../lib/cartodb/stats/importer'
-require_relative '../../lib/cartodb/mixpanel'
 require_relative '../../config/initializers/redis'
 require_relative '../../services/importer/lib/importer'
 require_relative '../connectors/importer'
@@ -772,8 +771,6 @@ class DataImport < Sequel::Model
     dataimport_logger.info(import_log.to_json)
     CartoDB::Importer2::MailNotifier.new(self, results, ::Resque).notify_if_needed
     results.each { |result| CartoDB::Metrics.new.report(:import, payload_for(result)) }
-    # TODO: remove mixpanel
-    results.each { |result| CartoDB::Mixpanel.new.report(:import, payload_for(result)) }
   end
 
   def importer_stats_aggregator

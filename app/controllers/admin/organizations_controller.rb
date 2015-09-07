@@ -34,6 +34,17 @@ class Admin::OrganizationsController < ApplicationController
       default_quota_in_bytes = attributes[:default_quota_in_bytes]
       @organization.default_quota_in_bytes = default_quota_in_bytes.blank? ? nil : default_quota_in_bytes.to_i * 1024 * 1024
     end
+
+    @organization.default_geocoding_quota = attributes[:default_geocoding_quota]
+    @organization.default_soft_geocoding_limit = attributes[:default_soft_geocoding_limit]
+
+    if attributes.include?(:default_twitter_datasource_quota)
+      @organization.default_twitter_datasource_quota = attributes[:default_twitter_datasource_quota]
+    end
+    if attributes.include?(:default_soft_twitter_datasource_limit)
+      @organization.default_soft_twitter_datasource_limit = attributes[:default_soft_twitter_datasource_limit]
+    end
+
     @organization.discus_shortname = attributes[:discus_shortname]
     @organization.twitter_username = attributes[:twitter_username]
 

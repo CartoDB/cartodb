@@ -71,8 +71,6 @@ describe Organization do
     end
   end
 
-
-
   describe '#add_user_to_org' do
     it 'Tests adding a user to an organization (but no owner)' do
       org_quota = 1234567890
@@ -373,12 +371,18 @@ describe Organization do
   end
 
   describe '.overquota', focus: true do
+
     before(:all) do
+      Organization.where(name: 'overquota-org').all.each { |o|
+        o.destroy
+      }
       @organization = create_organization_with_users(name: 'overquota-org')
     end
+
     after(:all) do
       @organization.destroy
     end
+
     it "should return organizations over their map view quota" do
       Organization.overquota.should be_empty
       Organization.any_instance.stubs(:get_api_calls).returns(30)
@@ -416,6 +420,53 @@ describe Organization do
       Organization.overquota(0.20).size.should == Organization.count
       Organization.overquota(0.10).should be_empty
     end
+  end
+
+  describe '#copy_account_features' do
+
+    before(:each) do
+      @owner = FactoryGirl.build(:organization_owner)
+      @organization = @owner.organization
+      @user = FactoryGirl.build(:valid_user)
+
+      @owner.sync_tables_enabled = true
+      @owner.max_layers = 10
+      @owner.private_maps_enabled = true
+      @owner.private_tables_enabled = true
+
+      @owner.geocoding_quota = 1666
+      @owner.soft_geocoding_limit = true
+      @owner.twitter_datasource_quota = 1777
+      @owner.soft_twitter_datasource_limit = true
+    end
+
+    it 'copies features from owner' do
+      @organization.copy_account_features(@user)
+
+      @user.max_layers.should eq @owner.max_layers
+      @user.private_maps_enabled.should eq @owner.private_maps_enabled
+      @user.private_tables_enabled.should eq @owner.private_tables_enabled
+      @user.soft_twitter_datasource_limit.should eq @owner.soft_twitter_datasource_limit
+      @user.geocoding_quota.should eq @owner.geocoding_quota
+      @user.soft_geocoding_limit.should eq @owner.soft_geocoding_limit
+      @user.twitter_datasource_quota.should eq @owner.twitter_datasource_quota
+      @user.sync_tables_enabled.should eq @owner.sync_tables_enabled
+    end
+
+    it 'overrides features from owner with org defaults if set' do
+      @organization.default_geocoding_quota = 666
+      @organization.default_soft_geocoding_limit = false
+      @organization.default_twitter_datasource_quota = 777
+      @organization.default_soft_twitter_datasource_limit = false
+
+      @organization.copy_account_features(@user)
+
+      @user.geocoding_quota.should eq @organization.default_geocoding_quota
+      @user.soft_geocoding_limit.should eq @organization.default_soft_geocoding_limit
+      @user.twitter_datasource_quota.should eq @organization.default_twitter_datasource_quota
+      @user.soft_twitter_datasource_limit.should eq @organization.default_soft_twitter_datasource_limit
+    end
+
   end
 
   def random_attributes(attributes={})

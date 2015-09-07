@@ -131,58 +131,61 @@ describe User do
   end
 
   describe 'organization checks' do
-    it "should not be valid if his organization doesn't have more seats" do
 
-      organization = create_org('testorg', 10.megabytes, 1)
-      user1 = create_user email: 'user1@testorg.com', username: 'user1', password: 'user11'
-      user1.organization = organization
-      user1.save
-      organization.owner_id = user1.id
-      organization.save
-      organization.reload
-      user1.reload
+    describe 'validation' do
 
-      # Don't remove this line or the spec will fail (magic):
-      puts "Organization users: #{organization.users.count}"
+      before(:each) do
+        @organization = create_org('testorg', 10.megabytes, 1)
+      end
 
-      user2 = new_user
-      user2.organization = organization
-      user2.valid?.should be_false
-      user2.errors.keys.should include(:organization)
+      after(:each) do
+        @organization.destroy if @organization
+      end
 
-      organization.destroy
-      user1.destroy
-    end
+      it "should not be valid if his organization doesn't have more seats" do
+        user1 = create_user email: 'user1@testorg.com', username: 'user1', password: 'user11'
+        user1.organization = @organization
+        user1.save
+        @organization.owner_id = user1.id
+        @organization.save
+        @organization.reload
 
-    it 'should be valid if his organization has enough seats' do
-      organization = create_org('testorg', 10.megabytes, 1)
-      user = User.new
-      user.organization = organization
-      user.valid?
-      user.errors.keys.should_not include(:organization)
-      organization.destroy
-    end
+        # Don't remove this line or the spec will fail (magic):
+        puts "Organization users: #{@organization.users.count}"
 
-    it "should not be valid if his organization doesn't have enough disk space" do
-      organization = create_org('testorg', 10.megabytes, 1)
-      organization.stubs(:assigned_quota).returns(10.megabytes)
-      user = User.new
-      user.organization = organization
-      user.quota_in_bytes = 1.megabyte
-      user.valid?.should be_false
-      user.errors.keys.should include(:quota_in_bytes)
-      organization.destroy
-    end
+        user2 = new_user
+        user2.organization = @organization
+        user2.valid?.should be_false
+        user2.errors.keys.should include(:organization)
 
-    it 'should be valid if his organization has enough disk space' do
-      organization = create_org('testorg', 10.megabytes, 1)
-      organization.stubs(:assigned_quota).returns(9.megabytes)
-      user = User.new
-      user.organization = organization
-      user.quota_in_bytes = 1.megabyte
-      user.valid?
-      user.errors.keys.should_not include(:quota_in_bytes)
-      organization.destroy
+        user1.delete
+      end
+
+      it 'should be valid if his organization has enough seats' do
+        user = User.new
+        user.organization = @organization
+        user.valid?
+        user.errors.keys.should_not include(:organization)
+      end
+
+      it "should not be valid if his organization doesn't have enough disk space" do
+        @organization.stubs(:assigned_quota).returns(10.megabytes)
+        user = User.new
+        user.organization = @organization
+        user.quota_in_bytes = 1.megabyte
+        user.valid?.should be_false
+        user.errors.keys.should include(:quota_in_bytes)
+      end
+
+      it 'should be valid if his organization has enough disk space' do
+        @organization.stubs(:assigned_quota).returns(9.megabytes)
+        user = User.new
+        user.organization = @organization
+        user.quota_in_bytes = 1.megabyte
+        user.valid?
+        user.errors.keys.should_not include(:quota_in_bytes)
+      end
+
     end
 
     describe 'organization email whitelisting' do
@@ -192,7 +195,7 @@ describe User do
       end
 
       after(:each) do
-        @organization.destroy
+        @organization.destroy if @organization
       end
 
       it 'valid_user is valid' do
@@ -221,75 +224,88 @@ describe User do
     end
 
     describe 'when updating user quota' do
+
+      before(:each) do
+        @organization = create_organization_with_users(quota_in_bytes: 70.megabytes)
+      end
+
+      after(:each) do
+        @organization.destroy
+      end
+
       it 'should be valid if his organization has enough disk space' do
-        organization = create_organization_with_users(quota_in_bytes: 70.megabytes)
-        organization.assigned_quota.should == 70.megabytes
-        user = organization.owner
+        @organization.assigned_quota.should == 70.megabytes
+        user = @organization.owner
         user.quota_in_bytes = 1.megabyte
         user.valid?
         user.errors.keys.should_not include(:quota_in_bytes)
-        organization.destroy
       end
+
       it "should not be valid if his organization doesn't have enough disk space" do
-        organization = create_organization_with_users(quota_in_bytes: 70.megabytes)
-        organization.assigned_quota.should == 70.megabytes
-        user = organization.owner
+        @organization.assigned_quota.should == 70.megabytes
+        user = @organization.owner
         user.quota_in_bytes = 71.megabytes
         user.valid?.should be_false
         user.errors.keys.should include(:quota_in_bytes)
-        organization.destroy
       end
+
     end
 
-    it 'should set account_type properly' do
-      organization = create_organization_with_users
-      organization.users.reject(&:organization_owner?).each do |u|
-        u.account_type.should == "ORGANIZATION USER"
+    describe 'creation' do
+
+      before(:each) do
+        @organization = create_organization_with_users(twitter_datasource_enabled: true)
+        @organization.save
       end
-      organization.destroy
+
+      after(:each) do
+        @organization.destroy
+      end
+
+      it 'should set account_type properly' do
+        @organization.users.reject(&:organization_owner?).each do |u|
+          u.account_type.should == "ORGANIZATION USER"
+        end
+      end
+
+      it 'should set default settings properly unless overriden' do
+        @organization.users.reject(&:organization_owner?).each do |u|
+          u.max_layers.should == 6
+          u.private_tables_enabled.should eq @organization.owner.private_tables_enabled
+          u.sync_tables_enabled.should eq @organization.owner.sync_tables_enabled
+        end
+        user = FactoryGirl.build(:user, organization: @organization)
+        user.max_layers = 3
+        user.private_tables_enabled = false
+        user.sync_tables_enabled = false
+        user.save
+        user.max_layers.should == 3
+        user.private_tables_enabled.should be_false
+        user.sync_tables_enabled.should be_false
+      end
+
+      it 'should inherit twitter_datasource_enabled from organization on creation' do
+        @organization.twitter_datasource_enabled.should be_true
+        @organization.users.reject(&:organization_owner?).each do |u|
+          u.twitter_datasource_enabled.should be_true
+        end
+        user = create_user(organization: @organization)
+        user.save
+        user.twitter_datasource_enabled.should be_true
+      end
+
+      it "should return proper values for non-persisted settings" do
+        @organization.users.reject(&:organization_owner?).each do |u|
+          u.dedicated_support?.should be_true
+          u.remove_logo?.should be_true
+          u.private_maps_enabled.should == @organization.owner.private_maps_enabled
+          u.import_quota.should == 3
+        end
+
+      end
+
     end
 
-    it 'should set default settings properly unless overriden' do
-      organization = create_organization_with_users
-      organization.users.reject(&:organization_owner?).each do |u|
-        u.max_layers.should == 6
-        u.private_tables_enabled.should be_true
-        u.sync_tables_enabled.should be_true
-      end
-      user = FactoryGirl.build(:user, organization: organization)
-      user.max_layers = 3
-      user.private_tables_enabled = false
-      user.sync_tables_enabled = false
-      user.save
-      user.max_layers.should == 3
-      user.private_tables_enabled.should be_false
-      user.sync_tables_enabled.should be_false
-      organization.destroy
-    end
-
-    it 'should inherit twitter_datasource_enabled from organization on creation' do
-      organization = create_organization_with_users(twitter_datasource_enabled: true)
-      organization.save
-      organization.twitter_datasource_enabled.should be_true
-      organization.users.reject(&:organization_owner?).each do |u|
-        u.twitter_datasource_enabled.should be_true
-      end
-      user = create_user(organization: organization)
-      user.save
-      user.twitter_datasource_enabled.should be_true
-      organization.destroy
-    end
-
-    it "should return proper values for non-persisted settings" do
-      organization = create_organization_with_users
-      organization.users.reject(&:organization_owner?).each do |u|
-        u.dedicated_support?.should be_true
-        u.remove_logo?.should be_true
-        u.private_maps_enabled.should be_true
-        u.import_quota.should == 3
-      end
-      organization.destroy
-    end
   end
 
   describe 'central synchronization' do
@@ -1547,6 +1563,33 @@ describe User do
 
       user.destroy
     end
+  end
+
+  describe '#copy_account_features' do
+
+    before(:each) do
+      @owner = FactoryGirl.build(:organization_owner)
+      @user = FactoryGirl.build(:valid_user)
+    end
+
+    it 'copies features to another user' do
+      @owner.private_tables_enabled = true
+      @owner.sync_tables_enabled = true
+      @owner.max_layers = 10
+      @owner.private_maps_enabled = true
+      @owner.private_tables_enabled = true
+      @owner.soft_twitter_datasource_limit = true
+      @owner.soft_geocoding_limit = true
+
+      @owner.copy_account_features(@user)
+
+      @user.private_tables_enabled.should eq true
+      @user.sync_tables_enabled.should eq true
+      @user.max_layers.should eq 10
+      @user.soft_twitter_datasource_limit.should eq true
+      @user.soft_geocoding_limit.should eq true
+    end
+
   end
 
   describe "#regressions" do

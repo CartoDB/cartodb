@@ -1,7 +1,7 @@
 defaults: &defaults
   http_client_logs: true
   ogr2ogr:
-    binary:           'which ogr2ogr'
+    binary:           'which ogr2ogr2'
     csv_guessing:     false
   debug_assets: true
   mandatory_keys:     [layer_opts, sql_api, varnish_management, redis, session_domain]
@@ -98,7 +98,7 @@ defaults: &defaults
     # base_url: 'https://common-data.cartodb.com'
     format: 'shp'
     generate_every: 86400
-  explore-api:
+  explore_api:
     username: ''
   varnish_management:
     critical: false

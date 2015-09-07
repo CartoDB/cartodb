@@ -89,7 +89,6 @@ WORKING_SPECS_4 = \
   spec/requests/admin/visualizations_spec.rb \
   spec/requests/api/json/visualizations_controller_spec.rb \
   spec/requests/carto/api/visualizations_controller_spec.rb \
-  spec/requests/api/json/tables_controller_spec.rb \
   spec/requests/carto/api/tables_controller_spec.rb \
   spec/queries/carto/visualization_query_builder_spec.rb \
   spec/requests/admin/tables_spec.rb \
@@ -187,6 +186,8 @@ WORKING_SPECS_carto_db_class = \
 CDB_PATH=lib/assets/javascripts/cdb
 
 prepare-test-db:
+	# Else coverage reports add up and hits/line metric is invalid
+	rm -rf coverage
 ifdef JENKINS_URL
 	cp .rspec_ci .rspec
 endif
@@ -211,7 +212,7 @@ check-9:
 check-carto-db-class:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_carto_db_class)
 check-integrations:
-	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_INTEGRATIONS)	
+	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_INTEGRATIONS)
 
 check-external: prepare-test-db check-integrations
 

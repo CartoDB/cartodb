@@ -24,17 +24,14 @@
 
 <%= render :partial => 'shared/flash_message' %>
 
-<div>
-  <%= render :partial => 'admin/shared/org_subheader' %>
-  <div class="OrganizationContent">
-    <div class="u-inner">
-      <div class="Form Form--minHeight js-orgUsersList"></div>
-    </div>
+<div class="FormAccount-Section u-inner">
+  <%= render :partial => 'admin/shared/pages_subheader' %>
+  
+  <div class="FormAccount-Content">
+    <%= render :partial => 'admin/shared/org_subheader' %>
+
+    <div class="FormAccount js-orgUsersList"></div>
   </div>
 </div>
-
-<% if !Cartodb.config[:cartodb_com_hosted].present? %>
-  <div class="SupportBanner" id="support-banner"></div>
-<% end %>
 
 <%= render 'admin/shared/footer' %>

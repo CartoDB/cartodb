@@ -737,7 +737,7 @@ class DataImport < Sequel::Model
     # Calculate total size out of stats
     total_size = 0
     ::JSON.parse(self.stats).each {|stat| total_size += stat['size']}
-    importer_stats_aggregator.gauge('total_size', total_size)
+    importer_stats_aggregator.update_counter('total_size', total_size)
 
     import_time = self.updated_at - self.created_at
 

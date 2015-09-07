@@ -118,6 +118,13 @@ module CartoDB
         self
       end
 
+      def fetch_by_visualization_id
+        data = repository.fetch(visualization_id, "visualization_id")
+        raise KeyError if data.nil?
+        self.attributes = data
+        self
+      end
+
       def delete
         repository.delete(id)
         self.attributes.keys.each { |key| self.send("#{key}=", nil) }

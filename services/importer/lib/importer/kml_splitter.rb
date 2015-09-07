@@ -38,7 +38,7 @@ module CartoDB
       end
 
       def extract(extracted_file_path, source_file, layer_name)
-        `ogr2ogr -f 'KML' #{extracted_file_path} #{source_file.fullpath} "#{layer_name}"`
+        `ogr2ogr2 -f 'KML' #{extracted_file_path} #{source_file.fullpath} "#{layer_name}"`
       end
 
       def multiple_layers?(source_file)

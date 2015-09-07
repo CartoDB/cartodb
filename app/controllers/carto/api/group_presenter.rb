@@ -7,7 +7,7 @@ module Carto
       # Available fetching options:
       # - fetch_shared_tables_count
       # - fetch_shared_maps_count
-      # - fetch_members
+      # - fetch_users
       def initialize(group, fetching_options = {})
         @group = group
         @fetching_options = fetching_options
@@ -27,8 +27,8 @@ module Carto
         if @fetching_options[:fetch_shared_maps_count] == true
           poro.merge!({ shared_maps_count: shared_maps_count })
         end
-        if @fetching_options[:fetch_members] == true
-          poro.merge!({ members: members })
+        if @fetching_options[:fetch_users] == true
+          poro.merge!({ users: users })
         end
 
         poro
@@ -48,8 +48,8 @@ module Carto
         Carto::SharedEntity.where(recipient_id: @group.id).joins(:visualization)
       end
 
-      def members
-        @group.users.map { |u| Carto::Api::UserPresenter.new(u).to_poro }
+      def users
+        @group.users.map { |u| Carto::Api::UserPresenter.new(u, { fetch_groups: false } ).to_poro }
       end
 
     end

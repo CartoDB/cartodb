@@ -9,7 +9,7 @@ module CartoDB
         end
 
         # We wil ignore params in testing
-        def append(message, timestamp = nil, truncate = nil)
+        def append(message, truncate = nil, timestamp = nil)
           @log << message.to_s
         end
 

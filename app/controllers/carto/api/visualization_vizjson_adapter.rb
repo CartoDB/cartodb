@@ -29,7 +29,7 @@ module Carto
       end
 
       def attributions_from_derived_visualizations
-        @visualization.related_visualizations.map(&:attributions).compact
+        @visualization.related_visualizations.map(&:attributions).reject {|attribution| attribution.blank?}
       end
 
       def children

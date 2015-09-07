@@ -6,6 +6,7 @@ module Carto
   class Notification
 
       MAP_LIKE_NOTIFICATION = :map_like
+      TABLE_LIKE_NOTIFICATION = :table_like
       SHARE_TABLE_NOTIFICATION = :share_table
       SHARE_VISUALIZATION_NOTIFICATION = :share_visualization
       DATA_IMPORT_FINISHED_NOTIFICATION = :data_import

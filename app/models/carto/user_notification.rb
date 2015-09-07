@@ -18,7 +18,6 @@ module Carto
         Carto::Notification.types.each do |type|
           if Carto::UserNotification.generate_unsubscribe_hash(user, type) == hash
             return type
-            break
           end
         end
 

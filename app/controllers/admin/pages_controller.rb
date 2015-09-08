@@ -8,6 +8,7 @@ class Admin::PagesController < ApplicationController
 
   include CartoDB
 
+  PUBLIC_DATASETS_PER_PAGE = 20
   DATASETS_PER_PAGE = 20
   MAPS_PER_PAGE = 9
   USER_TAGS_LIMIT = 100
@@ -138,7 +139,7 @@ class Admin::PagesController < ApplicationController
       user_public_vis_list({
         user:  user,
         vis_type: Visualization::Member::TYPE_CANONICAL,
-        per_page: DATASETS_PER_PAGE,
+        per_page: PUBLIC_DATASETS_PER_PAGE
       }), user
     )
   end
@@ -347,7 +348,7 @@ class Admin::PagesController < ApplicationController
     @avatar_url         = required.fetch(:avatar_url)
     @email              = optional.fetch(:email, nil)
     @available_for_hire = optional.fetch(:available_for_hire, false)
-    @user = optional.fetch(:user, nil)
+    @user               = optional.fetch(:user, nil)
     @is_org             = model.is_a? Organization
     @tables_num         = @is_org ? model.public_datasets_count : model.public_table_count
     @maps_count         = @is_org ? model.public_visualizations_count : model.public_visualization_count

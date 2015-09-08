@@ -383,6 +383,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   def setup_new_visualization(vis_data)
     vis = nil
 
+    vis_data = add_default_privacy(vis_data)
+
     if params[:source_visualization_id]
       source,  = @stats_aggregator.timing('locate') do
         locator.get(params.fetch(:source_visualization_id), CartoDB.extract_subdomain(request))
@@ -429,7 +431,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       end
     else
       vis = Visualization::Member.new(
-          add_default_privacy(vis_data).merge(
+          vis_data.merge(
             name: name_candidate,
             user_id:  current_user.id
           )

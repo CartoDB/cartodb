@@ -16,6 +16,12 @@ module CartoDB
 
       DEFAULT_BINARY = 'which ogr2ogr2'
 
+      LATITUDE_POSSIBLE_NAMES   = %w{ latitude lat latitudedecimal
+        latitud lati decimallatitude decimallat point_latitude }
+      LONGITUDE_POSSIBLE_NAMES  = %w{ longitude lon lng
+        longitudedecimal longitud long decimallongitude decimallong point_longitude }
+
+
       def initialize(table_name, filepath, pg_options, layer=nil, options={})
         self.filepath   = filepath
         self.pg_options = pg_options
@@ -40,7 +46,8 @@ module CartoDB
 
       def command_for_import
         "#{OSM_INDEXING_OPTION} #{PG_COPY_OPTION} #{client_encoding_option} #{shape_encoding_option} " +
-        "#{executable_path} #{OUTPUT_FORMAT_OPTION} #{overwrite_option} #{guessing_option} #{postgres_options} #{projection_option} " +
+        "#{executable_path} #{OUTPUT_FORMAT_OPTION} #{overwrite_option} #{guessing_option} #{x_y_possible_names_option} " +
+        "#{postgres_options} #{projection_option} " +
         "#{layer_creation_options} #{filepath} #{layer} #{layer_name_option} #{NEW_LAYER_TYPE_OPTION}" +
         " #{shape_coordinate_option} "
       end
@@ -48,6 +55,7 @@ module CartoDB
       def command_for_append
         "#{OSM_INDEXING_OPTION} #{PG_COPY_OPTION} #{client_encoding_option} " +
         "#{executable_path} #{APPEND_MODE_OPTION} #{OUTPUT_FORMAT_OPTION} #{postgres_options} " +
+        "#{x_y_possible_names_option} " +
         "#{projection_option} #{filepath} #{layer} #{layer_name_option} #{NEW_LAYER_TYPE_OPTION}"
       end
 
@@ -144,6 +152,10 @@ module CartoDB
         else
           ''
         end
+      end
+
+      def x_y_possible_names_option
+        "-oo X_POSSIBLE_NAMES=#{LONGITUDE_POSSIBLE_NAMES.join(',')} -oo Y_POSSIBLE_NAMES=#{LATITUDE_POSSIBLE_NAMES.join(',')}"
       end
 
       def overwrite_option

@@ -325,6 +325,7 @@ module CartoDB
 
       def attributions=(value)
         self.dirty = true if value != @attributions
+        self.attributions_changed = true if value != @attributions
         super(value)
       end
 
@@ -654,7 +655,7 @@ module CartoDB
       private
 
       attr_reader   :repository, :name_checker, :validator
-      attr_accessor :privacy_changed, :name_changed, :old_name, :permission_change_valid, :dirty
+      attr_accessor :privacy_changed, :name_changed, :old_name, :permission_change_valid, :dirty, :attributions_changed
 
       def embed_redis_cache
         @embed_redis_cache ||= EmbedRedisCache.new($tables_metadata)
@@ -733,10 +734,11 @@ module CartoDB
 
         save_named_map
 
+        propagate_attribution_change if table
         if type == TYPE_REMOTE || type == TYPE_CANONICAL
           propagate_privacy_and_name_to(table) if table and propagate_changes
         else
-          propagate_name_to(table) if !table.nil? and propagate_changes
+          propagate_name_to(table) if table and propagate_changes
         end
       end
 
@@ -820,6 +822,20 @@ module CartoDB
           revert_name_change(old_name)
         end
         raise CartoDB::InvalidMember.new(exception.to_s)
+      end
+
+      def propagate_attribution_change
+        return unless attributions_changed
+
+        # This includes both the canonical and derived visualizations
+        table.affected_visualizations.each do |affected_visualization|
+          affected_visualization.layers(:carto_and_torque).each do |layer|
+            if layer.options['table_name'] == table.name
+              layer.options['attribution']  = self.attributions
+              layer.save
+            end
+          end
+        end
       end
 
       def revert_name_change(previous_name)

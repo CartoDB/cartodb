@@ -16,6 +16,7 @@
 * Fixed maps disappearing after creation + navigation to dashboard [#5264](https://github.com/CartoDB/cartodb/issues/5264)
 * Log.append now allows to disable truncating (by default active)
 * Detection of lat/long columns now is done in `ogr2ogr2` rather than rails code [#5349](https://github.com/CartoDB/cartodb/pull/5349). In order to get this feature working (and some related tests), execute this to get the ogr2ogr2 package updated: `sudo apt-get update; sudo apt-get upgrade`
+* Bitly credentials moved to application config.
 
 
 3.10.3 (2015-08-13)

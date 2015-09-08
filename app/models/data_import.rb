@@ -12,7 +12,6 @@ require_relative '../../lib/cartodb/errors'
 require_relative '../../lib/cartodb/import_error_codes'
 require_relative '../../lib/cartodb/metrics'
 require_relative '../../lib/cartodb/stats/importer'
-require_relative '../../lib/cartodb/mixpanel'
 require_relative '../../config/initializers/redis'
 require_relative '../../services/importer/lib/importer'
 require_relative '../connectors/importer'
@@ -189,7 +188,7 @@ class DataImport < Sequel::Model
     self
   rescue => exception
     log.append "Exception: #{exception.to_s}"
-    log.append exception.backtrace
+    log.append exception.backtrace, truncate = false
     stacktrace = exception.to_s + exception.backtrace.join
     Rollbar.report_message('Import error', 'error', error_info: stacktrace)
     handle_failure(exception)
@@ -313,7 +312,7 @@ class DataImport < Sequel::Model
     self
   rescue => exception
     log.append "Exception: #{exception.to_s}"
-    log.append exception.backtrace
+    log.append exception.backtrace, truncate = false
     log.store
     self
   end
@@ -772,8 +771,6 @@ class DataImport < Sequel::Model
     dataimport_logger.info(import_log.to_json)
     CartoDB::Importer2::MailNotifier.new(self, results, ::Resque).notify_if_needed
     results.each { |result| CartoDB::Metrics.new.report(:import, payload_for(result)) }
-    # TODO: remove mixpanel
-    results.each { |result| CartoDB::Mixpanel.new.report(:import, payload_for(result)) }
   end
 
   def importer_stats_aggregator
@@ -833,7 +830,7 @@ class DataImport < Sequel::Model
       datasource.token = oauth.token unless oauth.nil?
     rescue => ex
       log.append "Exception: #{ex.message}"
-      log.append ex.backtrace
+      log.append ex.backtrace, truncate = false
       Rollbar.report_message('Import error: ', 'error', error_info: ex.message + ex.backtrace.join)
       raise CartoDB::DataSourceError.new("Datasource #{datasource_name} could not be instantiated")
     end

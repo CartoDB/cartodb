@@ -47,7 +47,7 @@ namespace :cartodb do
                 visualization_map_id,
                 visualization_title,
                 visualization_likes,
-                visualization_mapviews::numeric/(1.0 + (now()::date - visualization_created_at::date)::numeric)^2 AS popularity
+                visualization_mapviews::numeric/(1.0 + (now()::date - visualization_created_at::date)::numeric)^2 AS popularity,
                 user_id,
                 user_username,
                 user_organization_id,
@@ -59,7 +59,7 @@ namespace :cartodb do
         FROM visualizations
     }
     FULL_TEXT_SEARCHABLE_COLUMNS = %w{ visualization_name visualization_description visualization_title }
-    INDEX_GEOMETRY_COLUMNS = %w{ visualization_bbox, visualization_view_box }
+    INDEX_GEOMETRY_COLUMNS = %w{ visualization_bbox visualization_view_box }
     DROP_TABLE_SQL = %Q{ DROP TABLE IF EXISTS #{VISUALIZATIONS_TABLE} CASCADE}
     DROP_PUBLIC_VIEW_SQL = %Q{ DROP TABLE IF EXISTS #{PUBLIC_VISUALIZATIONS_VIEW} }
     MOST_RECENT_CREATED_SQL = %Q{ SELECT MAX(visualization_created_at) FROM #{VISUALIZATIONS_TABLE} }
@@ -70,6 +70,8 @@ namespace :cartodb do
 
     desc "Creates #{VISUALIZATIONS_TABLE} at common-data user and loads the data for the very first time. This table contains an aggregated, desnormalized view of the public data at visualizations, and it's used by Explore API"
     task :setup => [:environment] do
+      require_relative '../../app/helpers/explore_api'
+      @explore_api_helper = Helpers::ExploreAPI.new
       user = target_user
       user.in_database.run CREATE_TABLE_SQL
       user.in_database.run CREATE_PUBLIC_VIEW
@@ -113,8 +115,13 @@ namespace :cartodb do
     end
 
     def update(user)
+      # We add one second because we have time fields with microseconds and this leads to
+      # retrieve processed data crashing due constraint issues.
+      # Ie. 2015-09-03 14:12:38+00 < 2015-09-03 14:12:38.294086+00 is true
       most_recent_created_date = user.in_database[MOST_RECENT_CREATED_SQL].first[:max]
+      most_recent_created_date += 1 unless most_recent_created_date.nil?
       most_recent_updated_date = user.in_database[MOST_RECENT_UPDATED_SQL].first[:max]
+      most_recent_updated_date += 1 unless most_recent_updated_date.nil?
 
       stats_aggregator.timing('visualizations.update.update_existing') do
         update_existing_visualizations_at_user(user)
@@ -227,8 +234,8 @@ namespace :cartodb do
         privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
       }
       filter['types'] = [CartoDB::Visualization::Member::TYPE_CANONICAL, CartoDB::Visualization::Member::TYPE_DERIVED]
-      filter[:min_created_at] = min_created_at if min_created_at
-      filter[:min_updated_at] = min_updated_at if min_updated_at
+      filter[:min_created_at] = { date: min_created_at, included: true } if min_created_at
+      filter[:min_updated_at] = { date: min_updated_at, included: true } if min_updated_at
       filter
     end
 
@@ -239,12 +246,48 @@ namespace :cartodb do
     def insert_visualizations(user, visualizations)
       visualization_ids = visualizations.map{|v| v.id}
       visualizations_bbox = get_visualizations_bbox(visualization_ids)
-      insert_values = @explore_api_helper.get_visualizations_values_for_insert(visualizations, visualizations_bbox)
-      sql = "INSERT INTO #{VISUALIZATIONS_TABLE} (#{Helpers::ExploreAPI::VISUALIZATIONS_COLUMNS.join(", ")}) VALUES #{insert_values.join(", ")}"
-      user.in_database.run(sql)
+      user.in_database[:visualizations].multi_insert(
+        visualizations.map { |v|
+          insert_visualization_hash(v, visualizations_bbox[v.id])
+        }
+      )
+    end
+
+    def insert_visualization_hash(visualization, bbox_value)
+      v = visualization
+      geometry_data = @explore_api_helper.get_geometry_data(visualization)
+      u = v.user
+      {
+            visualization_id: v.id,
+            visualization_name: v.name,
+            visualization_description: v.description,
+            visualization_type: v.type,
+            # Synchronization method from Visualization::Relator uses empty Hash when there is no sync
+            visualization_synced: !v.synchronization.is_a?(Hash),
+            visualization_table_names: @explore_api_helper.get_visualization_tables(v),
+            visualization_tags: v.tags.nil? || v.tags.empty? ? nil : Sequel.pg_array(v.tags),
+            visualization_created_at: v.created_at,
+            visualization_updated_at: v.updated_at,
+            visualization_map_id: v.map_id,
+            visualization_title: v.title,
+            visualization_likes: v.likes_count,
+            visualization_mapviews: v.mapviews,
+            visualization_bbox: bbox_value.nil? ? nil : Sequel.lit(@explore_api_helper.bbox_from_value(bbox_value)),
+            visualization_view_box: geometry_data[:view_box_polygon].nil? ? nil : Sequel.lit(geometry_data[:view_box_polygon]),
+            visualization_view_box_center: geometry_data[:center_geometry].nil? ? nil : Sequel.lit(geometry_data[:center_geometry]),
+            visualization_zoom: geometry_data[:zoom],
+            user_id: u.id,
+            user_username: u.username,
+            user_organization_id: u.organization_id,
+            user_twitter_username: u.twitter_username,
+            user_website: u.website,
+            user_avatar_url: u.avatar_url,
+            user_available_for_hire: u.available_for_hire
+      }
     end
 
     def get_visualizations_bbox(visualization_ids)
+      return {} if visualization_ids.nil? || visualization_ids.empty?
       bbox_dataset = Rails::Sequel.connection.fetch(
         %Q[SELECT id, bbox FROM visualizations WHERE id in ('#{visualization_ids.join("','")}') AND type = '#{CartoDB::Visualization::Member::TYPE_CANONICAL}']
       ).all

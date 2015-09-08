@@ -1,7 +1,8 @@
 # encoding: utf-8
-require_relative '../../lib/importer/georeferencer.rb'
+require_relative '../../lib/importer/georeferencer'
 require_relative '../factories/pg_connection'
 require_relative '../../../../services/importer/spec/doubles/log'
+require_relative '../../../../spec/rspec_configuration'
 
 include CartoDB
 
@@ -48,18 +49,6 @@ describe Importer2::Georeferencer do
   end #initialize
 
   describe '#run' do
-    it 'generates the_geom from lat / lon columns' do
-      dataset     = @db[@table_name.to_sym]
-
-      10.times { dataset.insert(random_record) }
-
-      georeferencer = georeferencer_instance
-      georeferencer.run
-
-      dataset.first.fetch(:the_geom).should_not be_nil
-      dataset.first.fetch(:the_geom).should_not be_empty
-    end
-
     it 'returns self if no lat / lon columns in the table' do
       table_name  = create_table(@db,
                       latitude_column: 'bogus_1',
@@ -80,34 +69,6 @@ describe Importer2::Georeferencer do
       dataset.to_a.first.keys.include?(:the_geom).should eq false
     end
   end #run
-
-  describe '#populate_the_geom_from_latlon' do
-    it 'populates the_geom from lat / lon values' do
-      lat = Importer2::Georeferencer::LATITUDE_POSSIBLE_NAMES.sample
-      lon = Importer2::Georeferencer::LONGITUDE_POSSIBLE_NAMES.sample
-
-      table_name = create_table(
-        @db,
-        latitude_column:  lat,
-        longitude_column: lon
-      )
-
-      georeferencer = georeferencer_instance(@db, table_name)
-      dataset       = @db[table_name.to_sym]
-
-      georeferencer.create_the_geom_in(table_name)
-      dataset.insert(
-        :name         => 'bogus',
-        :description  => 'bogus',
-        :"#{lat}"     => rand(90),
-        :"#{lon}"     => rand(180)
-      )
-
-      dataset.first.fetch(:the_geom).should be_nil
-      georeferencer.populate_the_geom_from_latlon(table_name, lat, lon)
-      dataset.first.fetch(:the_geom).should_not be_nil
-    end
-  end
 
   describe '#create_the_geom_in' do
     before do
@@ -150,22 +111,6 @@ describe Importer2::Georeferencer do
       georeferencer.columns_in(@table_name).should include :lon
     end
   end #columns_in
-
-  describe '#latitude_column_name_in' do
-    it 'returns the name of a latitude column within a set of candidates, if
-    existing' do
-      georeferencer = georeferencer_instance
-      georeferencer.latitude_column_name_in.should eq 'lat'
-    end
-  end
-
-  describe '#longitude_column_name_in' do
-    it 'returns the name of a longitude column within a set of candidates, if
-    existing' do
-      georeferencer = georeferencer_instance
-      georeferencer.longitude_column_name_in.should eq 'lon'
-    end
-  end
 
   describe '#find_column_in' do
     it 'returns the name of a column in a set of possible names if one of them

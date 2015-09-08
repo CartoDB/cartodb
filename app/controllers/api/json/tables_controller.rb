@@ -6,7 +6,7 @@ require_relative '../../../../services/named-maps-api-wrapper/lib/named-maps-wra
 class Api::Json::TablesController < Api::ApplicationController
   TABLE_QUOTA_REACHED_TEXT = 'You have reached your table quota'
 
-  ssl_required :show, :create, :update, :destroy
+  ssl_required :create, :update, :destroy
 
   before_filter :load_table, except: [:create]
   before_filter :set_start_time
@@ -36,7 +36,7 @@ class Api::Json::TablesController < Api::ApplicationController
         save_status = @stats_aggregator.timing('save') do
           @table.valid? && @table.save
         end
-          
+
         if save_status
           render_jsonp(@table.public_values({request:request}), 200, { location: "/tables/#{@table.id}" })
         else
@@ -50,12 +50,6 @@ class Api::Json::TablesController < Api::ApplicationController
       end
 
     end
-  end
-
-  def show
-    return head(404) if @table == nil
-    return head(403) unless @table.table_visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
-    render_jsonp(@table.public_values({request:request}, current_user).merge(schema: @table.schema(reload: true)))
   end
 
   def update
@@ -140,7 +134,7 @@ class Api::Json::TablesController < Api::ApplicationController
       rescue CartoDB::NamedMapsWrapper::NamedMapsDataError => exception
         render_jsonp({ errors: { named_maps: exception } }, 400)
       end
-      
+
     end
   end
 

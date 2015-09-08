@@ -8,9 +8,16 @@
 * New modals (removing old code & feature flag restricting access to new ones) [#5068](https://github.com/CartoDB/cartodb/pull/5068)
 * Updated (most of) frontend dependencies [#5171](https://github.com/CartoDB/cartodb/pull/5171)
 * Metadata is editable when datasets have a SQL Query is applied [#5195](https://github.com/CartoDB/cartodb/pull/5195)
+* LDAP configuration & authentication system. If active deactivates standard CartoDB & Google authentications. See cartodb:ldap:create_ldap_configuration rake for how to create one, and source code of /app/models/carto/ldap for more details.
 * Upgrade cartodb-postgresql extension to 0.9.4, which includes the new cartodbfy process. As part of this change new user tables won't have the columns `created_at` nor `updated_at`. See the [release notes](https://github.com/CartoDB/cartodb-postgresql/blob/0.9.4/NEWS.md) for more details.
 * Added code coverage generation for tests suite. After a run, results will be stored at `coverage` subfolder
 * Fixed street addr tab for georeference modal for google maps/geocoder usage [#5281](https://github.com/CartoDB/cartodb/pull/5281)
+* Privacy toggler within create dataset dialog [#5340](https://github.com/CartoDB/cartodb/pull/5340)
+* Fixed maps disappearing after creation + navigation to dashboard [#5264](https://github.com/CartoDB/cartodb/issues/5264)
+* Log.append now allows to disable truncating (by default active)
+* Detection of lat/long columns now is done in `ogr2ogr2` rather than rails code [#5349](https://github.com/CartoDB/cartodb/pull/5349). In order to get this feature working (and some related tests), execute this to get the ogr2ogr2 package updated: `sudo apt-get update; sudo apt-get upgrade`. From this version on, the ogr2ogr2 package is mandatory. In order to install it: `sudo apt-get install ogr2ogr2-static-bin`.
+* Removed Mixpanel tracking code [#5410](https://github.com/CartoDB/cartodb/pull/5410)
+* Don't try to short url with bitly if credentials are not present in app_config.yml
 
 3.10.3 (2015-08-13)
 ---
@@ -161,7 +168,7 @@ Bugfixes:
 ------------------
 * New user account & profile management pages, inside CartoDB Editor.
 * Fixed UNIX timestamps converted to a date column loses time [#990](https://github.com/CartoDB/cartodb/issues/990)
-* Fixed Column wkb_geometry appears when importing [#2107](https://github.com/CartoDB/cartodb/issues/2107). Needs updating `ogr2ogr2-static-bin` package
+* Fixed Column wkb_geometry appears when importing [#2107](https://github.com/CartoDB/cartodb/issues/2107). Needs updating `ogr2ogr2-static-bin` package.
 * Added Hubspot for usage statistics [#2575](https://github.com/CartoDB/cartodb/pull/2575)
 * Updates cartodb.js to 3.12.11
 * Fixes update table as statements from the editor #2620

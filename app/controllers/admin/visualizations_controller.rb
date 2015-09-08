@@ -226,7 +226,7 @@ class Admin::VisualizationsController < ApplicationController
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
     @visualization_count    = @visualization.user.public_visualization_count
     @related_tables         = @visualization.related_tables
-    @related_visualizations = @visualization.related_visualizations
+    @related_canonical_visualizations = @visualization.related_canonical_visualizations
     @related_tables_owners = Hash.new
     @related_tables.each { |table|
       unless @related_tables_owners.include?(table.user_id)
@@ -273,7 +273,7 @@ class Admin::VisualizationsController < ApplicationController
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
     @visualization_count    = @visualization.user.public_visualization_count
     @related_tables         = @visualization.related_tables
-    @related_visualizations = @visualization.related_visualizations
+    @related_canonical_visualizations = @visualization.related_canonical_visualizations
     @public_tables_count    = @visualization.user.public_table_count
     @nonpublic_tables_count = @related_tables.select{|p| !p.public? }.count
 
@@ -323,7 +323,7 @@ class Admin::VisualizationsController < ApplicationController
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
     @visualization_count    = @visualization.user.public_visualization_count
     @related_tables         = @visualization.related_tables
-    @related_visualizations = @visualization.related_visualizations
+    @related_canonical_visualizations = @visualization.related_canonical_visualizations
     @public_tables_count    = @visualization.user.public_table_count
     @nonpublic_tables_count = @related_tables.select{|p| !p.public?  }.count
 

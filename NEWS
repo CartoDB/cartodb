@@ -1,5 +1,9 @@
-3.X ()
+3.X.X ()
+
+
+3.15.3 (08//09//2015)
 * Display custom attribution of layers (#5216).
+* Updated grunt-contrib-imagemin package version.
 
 3.15.2 (01//09//2015)
 * Take `visible` attribute into account when determining visibility of layers and serializing maps (#546)

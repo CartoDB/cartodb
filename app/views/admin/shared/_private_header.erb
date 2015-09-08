@@ -12,13 +12,13 @@
         <li>
           <ul class="Header-navigationBreadcrumb">
             <% if current_user.has_organization? %>
-              <li class="Header-navigationBreadcrumbItem"><%= current_user.organization.name %> /</li>
+              <li class="Header-navigationBreadcrumbItem"><p><%= current_user.organization.name %></p> /</li>
             <% end %>
             <li class="Header-navigationBreadcrumbItem">
               <% if params[:controller] != "admin/visualizations" %>
-                <%= link_to current_user.name_or_username, CartoDB.url(self, 'dashboard', {}, current_user), :class => "Header-navigationBreadcrumbLink" %> /
+                <p><%= link_to current_user.name_or_username, CartoDB.url(self, 'dashboard', {}, current_user), :class => "Header-navigationBreadcrumbLink" %></p> /
               <% else %>
-                <%= current_user.name_or_username %> /
+                <p><%= current_user.name_or_username %></p> /
               <% end %>
             </li>
             <li class="Header-navigationBreadcrumbItem js-breadcrumb-dropdown"></li>

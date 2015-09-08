@@ -17,6 +17,7 @@
 * Log.append now allows to disable truncating (by default active)
 * Detection of lat/long columns now is done in `ogr2ogr2` rather than rails code [#5349](https://github.com/CartoDB/cartodb/pull/5349). In order to get this feature working (and some related tests), execute this to get the ogr2ogr2 package updated: `sudo apt-get update; sudo apt-get upgrade`
 * Removed Mixpanel tracking code [#5410](https://github.com/CartoDB/cartodb/pull/5410)
+* Don't try to short url with bitly if credentials are not present in app_config.yml
 
 3.10.3 (2015-08-13)
 ---

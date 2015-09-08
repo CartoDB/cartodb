@@ -330,6 +330,7 @@ class Admin::PagesController < ApplicationController
   # Shared as in shared for both new and old layout
   def set_shared_layout_vars(model, required, optional = {})
     @twitter_username   = model.twitter_username
+    @location           = model.location
     @description        = model.description
     @website            = !model.website.blank? && model.website[/^https?:\/\//].nil? ? "http://#{model.website}" : model.website
     @website_clean      = @website ? @website.gsub(/https?:\/\//, "") : ""

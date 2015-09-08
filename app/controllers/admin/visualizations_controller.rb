@@ -138,6 +138,7 @@ class Admin::VisualizationsController < ApplicationController
     @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)
     @avatar_url             = @visualization.user.avatar
     @twitter_username       = @visualization.user.twitter_username.present? ? @visualization.user.twitter_username : nil
+    @location               = @visualization.user.location.present? ? @visualization.user.location : nil
 
     @user_domain = user_domain_variable(request)
 
@@ -219,6 +220,7 @@ class Admin::VisualizationsController < ApplicationController
     @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)
     @avatar_url             = @visualization.user.avatar
     @twitter_username       = @visualization.user.twitter_username.present? ? @visualization.user.twitter_username : nil
+    @location               = @visualization.user.location.present? ? @visualization.user.location : nil
     @google_maps_query_string = @visualization.user.google_maps_query_string
 
     @mapviews = @visualization.total_mapviews

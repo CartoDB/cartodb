@@ -45,18 +45,6 @@
   width: 172px;
   outline:none;
 }
-.Dialog-body.ChangePrivacy-ShareDialog-body {
-  padding-top: 0px;
-}
-.ChangePrivacy-ShareDialog-body {
-  @include display-flex();
-  @include align-items(center);
-  @include flex-direction(column);
-}
-.ChangePrivacy-ShareDialog-body .u-inner {
-  width: 620px;
-}
-.ChangePrivacy-ShareFilters { border-bottom: 1px solid $cStructure-mainLine }
 .ChangePrivacy-shareListItem {
   @include display-flex();
   @include justify-content(space-between, justify);

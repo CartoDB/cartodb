@@ -104,6 +104,13 @@ body.is-inDialog {
   padding-bottom: 0;
   overflow: auto;
 }
+.Dialog-body.Dialog-body--share {
+  @include display-flex();
+  @include align-items(center);
+  @include flex-direction(column);
+  padding-top: 0px;
+  & .u-inner { width: 620px }
+}
 .Dialog-body.Dialog-body--small { width: $sSmallWidth }
 .Dialog-Stretcher {
   width: $sLayout-width;

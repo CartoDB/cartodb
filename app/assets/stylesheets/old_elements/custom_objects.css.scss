@@ -34,7 +34,7 @@
     height:81px;
 
     // Stop adding tick arrow
-    // Overriding default dropdown before value
+    // Overriding default dropdown before&after values
     &:after,
     &.border:after,
     &:before { display: none!important }

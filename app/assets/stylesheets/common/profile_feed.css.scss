@@ -9,80 +9,13 @@
   @include flex-wrap(wrap);
   position: relative;
   width: $sLayout-width;
-  margin: 35px auto 60px auto;
+  margin: 15px auto 60px auto;
   font-family: "Proxima Nova";
 }
 .PublicUserProfile-profile {
   @include flex(0 0 320px);
   margin: 45px 0 0 0;
 }
-.PublicUserFeed {
-  @include flex(1);
-  margin: 0 0 30px 0;
-}
-.PublicUserFeed-content {
-  position: relative;
-  padding: 40px 0;
-}
-
-.PublicUserFeed-item {
-  position: relative;
-  @include display-flex();
-  @include justify-content(flex-start, start);
-  @include align-items(flex-start);
-  @include flex-wrap(wrap);
-  margin: 0 0 20px 0;
-}
-.PublicUserFeed-item:last-child { margin: 0 }
-
-.PublicUserFeed-avatar {
-  position: absolute;
-  @include flex(1);
-  z-index: 10;
-
-  &:after {
-    content: '';
-    width: 60px;
-    height: 60px;
-    z-index: 1000;
-    position: absolute;
-    top: 0;
-    box-shadow: inset 0 0 1px rgba(0,0,0,.5);
-    border-radius: 6px;
-  }
-}
-.PublicUserFeed-item .MapCard,
-.PublicUserFeed-item .DatasetCard {
-  margin-right: 0;
-  @include flex(0 0 540px);
-}
-
-.PublicUserProfile-line {
-  @include flex(0 0 4px);
-  position: absolute;
-  top: 0;
-  width: 4px;
-  height: 100%;
-  margin-left: 27px;
-  background: #EEEDEE;
-}
-.PublicUserProfile-line .PublicUserProfile-ball {
-  position: absolute;
-  left: -5px;
-  width: 6px;
-  height: 6px;
-  border: 4px solid #EEEDEE;
-  border-radius: 50%;
-  background: #F9F9F9;
-}
-.PublicUserProfile-ball.PublicUserProfile-ball--top {
-  top: 0;
-}
-.PublicUserProfile-ball.PublicUserProfile-ball--bottom {
-  bottom: 0;
-  background: #EEEDEE;
-}
-
 .PublicUserProfile-name {
   margin: 0 0 35px 0;
   font-size: $sFontSize-mega;

@@ -82,7 +82,7 @@ describe Map do
       map.destroy
       map2.destroy
     end
-  end #tables
+  end
 
   describe '#base_layers' do
     it 'returns the associated base layer' do
@@ -94,7 +94,7 @@ describe Map do
       map.reload.base_layers.first.id.should == base_layer.id
       map.destroy
     end
-  end #base_layers
+  end
 
   describe 'data_layers' do
     it 'returns the associated data layers' do
@@ -106,7 +106,7 @@ describe Map do
       map.reload.data_layers.first.id.should == data_layer.id
       map.destroy
     end
-  end #data_layers
+  end
 
   describe '#user_layers' do
     it 'returns all user-defined layers' do
@@ -119,7 +119,7 @@ describe Map do
       map.reload.user_layers.length.should == 5
       map.destroy
     end
-  end #user_layers
+  end
 
   describe '#after_save' do
     it 'invalidates varnish cache' do
@@ -148,7 +148,25 @@ describe Map do
       table.map.view_bounds_ne.should == "[40.428198, -3.699732]"
       table.map.view_bounds_sw.should == "[40.415113, -3.70957]"
     end
-  end #after_save
+
+    it "recenters map using bounds" do
+      table = Table.new :privacy => UserTable::PRIVACY_PRIVATE, :name => 'Madrid Bars', :tags => 'movies, personal'
+      table.user_id = $user_1.id
+      table.force_schema = "name text, latitude float, longitude float"
+      table.save
+      table.insert_row!({:name => "A", :latitude => 40.0, :longitude => -20.0})
+      table.insert_row!({:name => "B", :latitude => 80.0, :longitude => 30.0})
+      table.reload
+      table.georeference_from!(:latitude_column => :latitude, :longitude_column => :longitude)
+      table.optimize
+      table.map.recalculate_bounds!
+
+      table.map.recenter_using_bounds!
+
+      # casting to string :_( but currently only used by frontend
+      table.map.center_data.should == [ 60.0.to_s, 5.0.to_s ]
+    end
+  end
 
   describe '#updated_at' do
     it 'is updated after saving the map' do
@@ -160,7 +178,7 @@ describe Map do
       map.updated_at.should > updated_at
       map.destroy
     end
-  end #updated_at
+  end
 
   describe '#admits?' do
     it 'checks base layer admission rules' do
@@ -206,7 +224,7 @@ describe Map do
         map.admits_layer?(Layer.new(kind: 'carto')).should == false
       end
     end
-  end #admits?
+  end
 
   it "should correcly set vizjson updated_at" do
     map = Map.create(user_id: $user_1.id, table_id: @table.id)
@@ -228,7 +246,7 @@ describe Map do
       map.expects(:invalidate_vizjson_varnish_cache)
       map.destroy
     end
-  end #before_destroy
+  end
 
   describe '#process_privacy_in' do
     it 'sets related visualization private if layer uses private tables' do
@@ -269,6 +287,6 @@ describe Map do
       derived.map.process_privacy_in(layer)
       derived.fetch.private?.should be_true
     end
-  end #process_privacy_in
+  end
 end
 

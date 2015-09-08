@@ -562,8 +562,8 @@ class Table
     )
 
     member.store
-
     member.map.recalculate_bounds!
+    member.map.recenter_using_bounds!
 
     CartoDB::Visualization::Overlays.new(member).create_default_overlays
   end

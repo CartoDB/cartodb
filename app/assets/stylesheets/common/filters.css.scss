@@ -176,16 +176,9 @@ a.Filters-cleanSearch { line-height:32px }
   color:#DDD;
 }
 
-.Filters-typeTitle,
 .Filters-typeLink {
   display: inline-block;
   line-height: 80px;
-}
-.Filters-typeTitle {
-  font-size: $sFontSize-large;
-  font-weight: $sFontWeight-lighter;
-}
-.Filters-typeLink {
   font-size: 14px;
   color: $cTypography-link;
   background: transparent;
@@ -240,7 +233,6 @@ a.Filters-cleanSearch { line-height:32px }
   color: $cTypography-secondary;
   line-height: normal;
 }
-.Filters-orderItem--woRightMargin { margin-right: $sMargin-elementInline; }
 .Filters-orderLink {
   @include inline-block();
   font-size: 19px;

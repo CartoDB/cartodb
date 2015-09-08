@@ -11,7 +11,6 @@ module CartoDB
         @redis = redis_cache
       end
 
-
       def cached(visualization_id, https_flag=false)
         key = key(visualization_id, https_flag)
         value = redis.get(key)

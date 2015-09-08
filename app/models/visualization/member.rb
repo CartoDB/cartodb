@@ -648,7 +648,7 @@ module CartoDB
       end
 
       def attributions_from_derived_visualizations
-        related_visualizations.map(&:attributions).reject {|attribution| attribution.blank?}
+        related_canonical_visualizations.map(&:attributions).reject {|attribution| attribution.blank?}
       end
 
       private
@@ -714,17 +714,7 @@ module CartoDB
           raise CartoDB::InvalidMember
         end
 
-        # previously we used 'invalidate_cache' but due to public_map displaying all the user public visualizations,
-        # now we need to purgue everything to avoid cached stale data or public->priv still showing scenarios
-        if name_changed || privacy_changed || table_privacy_changed || dirty
-          invalidate_cache
-        end
-
-        if dirty
-          related_visualizations.each do |vis|
-            vis.invalidate_cache
-          end
-        end
+        perform_invalidations(table_privacy_changed)
 
         set_timestamps
 
@@ -747,6 +737,21 @@ module CartoDB
           propagate_privacy_and_name_to(table) if table and propagate_changes
         else
           propagate_name_to(table) if !table.nil? and propagate_changes
+        end
+      end
+
+      def perform_invalidations(table_privacy_changed)
+        # previously we used 'invalidate_cache' but due to public_map displaying all the user public visualizations,
+        # now we need to purgue everything to avoid cached stale data or public->priv still showing scenarios
+        if name_changed || privacy_changed || table_privacy_changed || dirty
+          invalidate_cache
+        end
+
+        # When a table's relevant data is changed, propagate to all who use it or relate to it
+        if dirty && table
+          table.affected_visualizations.each do |affected_vis|
+            affected_vis.invalidate_cache
+          end
         end
       end
 

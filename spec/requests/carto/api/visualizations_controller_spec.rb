@@ -1420,8 +1420,6 @@ describe Carto::Api::VisualizationsController do
           { attributions: modified_table_2_attribution }.to_json, @headers
         last_response.status.should == 200
 
-        #table2_visualization.update_attribute(:attributions, modified_table_2_attribution)
-
         get api_v2_visualizations_vizjson_url(id: visualization.fetch('id'), api_key: @api_key),{}, @headers
         visualization = JSON.parse(last_response.body)
 

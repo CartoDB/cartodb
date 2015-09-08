@@ -15,6 +15,12 @@
   background: transparent;
   z-index: 10;
 }
+.Filters.Filters-explore {
+  position: absolute;
+  width: 100%;
+  z-index: 100;
+}
+
 // Positionate relative to the content
 .Filters.is-relative {
   position: relative;

@@ -1,0 +1,25 @@
+@import "../variables/mixins";
+@import "../variables/colors";
+@import "../variables/sizes";
+
+.Explore {
+  position: relative;
+}
+.Explore-inner {
+  @include display-flex();
+  @include justify-content(flex-start, start);
+  @include align-items(flex-start);
+  @include flex-wrap(wrap);
+  position: relative;
+  width: $sLayout-width;
+  margin: 35px auto 60px auto;
+  font-family: "Proxima Nova";
+}
+.Explore-feed {
+  @include flex(1);
+  margin: 0 0 30px 0;
+}
+.Explore-content {
+  position: relative;
+  padding: 40px 0;
+}

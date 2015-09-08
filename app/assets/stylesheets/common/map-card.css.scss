@@ -37,12 +37,36 @@ $sEditButtonSize: 50px;
 .MapCard.MapCard--borderless .MapCard-header:after {
   display: none;
 }
+
+.MapCard.MapCard--explore .MapCard-header {
+  height: 220px;
+}
+.MapCard.MapCard--explore .MapCard-content {
+  height: auto;
+}
+.MapCard.MapCard--explore .MapCard-contentFooter {
+  padding-top: 0;
+  border-top: none;
+}
+.MapCard.MapCard--explore .MapCard-header {
+  height: 220px;
+  @include background(image-url("layout/default-map-bkg.png") no-repeat center 0);
+}
+
 .MapCard.MapCard--long {
   width: 540px;
 }
 .MapCard.MapCard--long .MapCard-content {
   height: auto;
 }
+.MapCard.MapCard--long .MapCard-contentFooter {
+  padding-top: 0;
+  border-top: none;
+}
+.MapCard.MapCard--long .MapCard-header {
+  background: #F1F1F1;
+}
+
 .MapCard.MapCard--squared .MapCard-header {
   height: 220px;
 }
@@ -53,6 +77,11 @@ $sEditButtonSize: 50px;
   padding-top: 0;
   border-top: none;
 }
+.MapCard.MapCard--squared .MapCard-header {
+  height: 220px;
+  @include background(image-url("layout/default-map-squared-bkg.png") no-repeat center 0);
+}
+
 .MapCard-title {
   width: 100%; // required for child text-overflow to work as expected in FF
 }
@@ -113,13 +142,6 @@ $sEditButtonSize: 50px;
   @include transition(opacity, $opacityTransition);
   overflow:hidden;
   z-index: 1;
-}
-.MapCard.MapCard--long .MapCard-header {
-  background: #F1F1F1;
-}
-.MapCard.MapCard--squared .MapCard-header {
-  height: 220px;
-  @include background(image-url("layout/default-map-squared-bkg.png") no-repeat center 0);
 }
 .MapCard-header.is-loading .MapCard-loader {
   display: block;

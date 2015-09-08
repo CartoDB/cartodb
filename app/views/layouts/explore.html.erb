@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%= favicon_link_tag "/favicons/favicon.ico" %>
+    <title><%= yield :title %></title>
+    <meta name="description" content="<%= yield :description %>">
+    <meta name="keywords" content="<%= @name %>, datasets, maps, data visualization, spatial data, geospatial, cartodb">
+    <meta name="author" content="<%= @name %>">
+    <meta charset='utf-8' />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+
+    <meta property="og:title" content="<%= yield :title %>" />
+    <meta property="og:description" content="<%= yield :description %>" />
+    <meta property="og:type" content="visualization" />
+    <meta property="og:url" content="<%= request.original_url %>" />
+    <meta property="og:image" content="<%= @avatar_url %>" />
+
+    <%= stylesheet_link_tag 'cartodb', 'common', 'public_dashboard' %>
+  </head>
+  <body class="PublicBody PublicBody--grey">
+    <%= render 'admin/shared/public_header' %>
+    <div class="FavMap is-pre-loading" id="<%= fav_map_target_id = 'fav-map-container' %>">
+      <div class="Spinner FavMap-spinner js-spinner"></div>
+    </div>
+
+    <% if @is_org %>
+      <%= render "shared/public_dashboard_org_header" %>
+    <% else %>
+      <%= render "shared/public_dashboard_user_header" %>
+    <% end %>
+
+    <%= yield %>
+
+    <%= render 'admin/shared/footer' %>
+    <script type="text/javascript">
+      var config = <%= safe_js_object frontend_config_public({https_apis: request.protocol == 'https://' }) %>;
+      var account_host = '<%= CartoDB.account_host %>';
+      var base_url = '<%= @base_url %>';
+      var login_url = "<%= CartoDB.url(self, 'login') %>";
+      var avatar_url= '<%= @avatar_url %>';
+
+      var favMapViewAttrs = {
+        el: '#<%= fav_map_target_id %>',
+        <% if @most_viewed_vis_map %>
+          createVis: {
+            url: '<%= vis_json_url(@most_viewed_vis_map.id, self, (@most_viewed_vis_map.user)) %>',
+            opts: {
+              no_cdn: <%= Rails.env.production? ? 'false' : 'true' %>
+            }
+          }
+        <% else %>
+          fallbackBaselayer: <%= raw @default_fallback_basemap.to_json %>
+        <% end %>
+      };
+      </script>
+
+    <%= javascript_include_tag 'cdb.js', 'templates', 'explore_deps', 'explore' %>
+    <%= yield :js %>
+  </body>
+</html>

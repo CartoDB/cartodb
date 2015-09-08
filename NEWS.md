@@ -15,7 +15,7 @@
 * Privacy toggler within create dataset dialog [#5340](https://github.com/CartoDB/cartodb/pull/5340)
 * Fixed maps disappearing after creation + navigation to dashboard [#5264](https://github.com/CartoDB/cartodb/issues/5264)
 * Log.append now allows to disable truncating (by default active)
-* Detection of lat/long columns now is done in `ogr2ogr2` rather than rails code [#5349](https://github.com/CartoDB/cartodb/pull/5349). In order to get this feature working (and some related tests), execute this to get the ogr2ogr2 package updated: `sudo apt-get update; sudo apt-get upgrade`
+* Detection of lat/long columns now is done in `ogr2ogr2` rather than rails code [#5349](https://github.com/CartoDB/cartodb/pull/5349). In order to get this feature working (and some related tests), execute this to get the ogr2ogr2 package updated: `sudo apt-get update; sudo apt-get upgrade`. From this version on, the ogr2ogr2 package is mandatory. In order to install it: `sudo apt-get install ogr2ogr2-static-bin`.
 * Removed Mixpanel tracking code [#5410](https://github.com/CartoDB/cartodb/pull/5410)
 * Don't try to short url with bitly if credentials are not present in app_config.yml
 
@@ -168,7 +168,7 @@ Bugfixes:
 ------------------
 * New user account & profile management pages, inside CartoDB Editor.
 * Fixed UNIX timestamps converted to a date column loses time [#990](https://github.com/CartoDB/cartodb/issues/990)
-* Fixed Column wkb_geometry appears when importing [#2107](https://github.com/CartoDB/cartodb/issues/2107). Needs updating `ogr2ogr2-static-bin` package
+* Fixed Column wkb_geometry appears when importing [#2107](https://github.com/CartoDB/cartodb/issues/2107). Needs updating `ogr2ogr2-static-bin` package.
 * Added Hubspot for usage statistics [#2575](https://github.com/CartoDB/cartodb/pull/2575)
 * Updates cartodb.js to 3.12.11
 * Fixes update table as statements from the editor #2620

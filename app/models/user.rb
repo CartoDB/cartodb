@@ -133,7 +133,7 @@ class User < Sequel::Model
   #   | private_tables_enabled  |    T   |    T    |   T  |
   #   | !private_tables_enabled |    T   |    F    |   F  |
   #   +-------------------------+--------+---------+------+
-  # 
+  #
   def valid_privacy?(privacy)
     self.private_tables_enabled || privacy == UserTable::PRIVACY_PUBLIC
   end
@@ -1118,8 +1118,13 @@ class User < Sequel::Model
     conn[:pg_database].filter(:datname => database_name).all.any?
   end
 
-  def can_change_email
-    return !self.google_sign_in || self.last_password_change_date.present?
+  def can_change_email?
+    return (!self.google_sign_in || self.last_password_change_date.present?) &&
+      !Carto::Ldap::Manager.new.configuration_present?
+  end
+
+  def can_change_password?
+    !Carto::Ldap::Manager.new.configuration_present?
   end
 
   private :database_exists?

@@ -1,0 +1,40 @@
+<% content_for :title do %><%= @signup_source %> signup issue<% end %>
+
+<div class="Sessions" style="<%= background %>">
+  <div class="Sessions-content">
+    <div class="Sessions-inner">
+      <div class="u-inner">
+        <div class="Sessions-center Sessions--centered">
+          <div class="Logo js-logo">
+            <span class="Logo--avatar">
+              <i class="iconFont iconFont-CartoFante" style="color: <%= @organization && @organization.color ? darken_color(@organization.color,0.7) : "#292E33" %>"></i>
+            </span>
+          </div>
+          <% if @signup_errors %>
+            <div class="js-info">
+              <h1 class="Sessions-title u-tspace-m">Signup issues</h1>
+              <p class="Sessions-description">
+                <ul class="SessionErrors">
+                <% @signup_errors.keys.each do |key| %>
+                  <li class="SessionErrors-item">
+                    <%= key %> <%= @signup_errors[key].first %></li>
+                <% end %>
+                </ul>
+              </p>
+              <p class="Sessions-description Sessions-description--small">Please, <% if @organization.owner %><a href="mailto:<%= @organization.owner.email %>"><% end %>
+                contact the administrator of <%= @organization.name %><% if @organization.owner %></a><% end %> to begin your signup process.</p>
+            </div>
+          <% else %>
+            <div class="js-info">
+              <h1 class="Sessions-title u-tspace-m">Service temporarily unavailable</h1>
+              <p class="Sessions-description">Please, contact the administrator of <%= @organization.name %>
+              <% if @organization.owner %> (<a href="mailto:<%= @organization.owner.email %>"><%= @organization.owner.email %></a>) <% end %>
+              to begin your signup process.</p>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

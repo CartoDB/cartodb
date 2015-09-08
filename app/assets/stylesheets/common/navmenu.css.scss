@@ -14,6 +14,16 @@
 .Navmenu.Navmenu--white {
   background: $cStructure-mainBkg;
 }
+.Navmenu.Navmenu--top {
+  position: absolute;
+  width: 100%;
+}
+.Navmenu.is-fixed {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 100;
+}
 .Navmenu.Navmenu--borderless {
   border-bottom: none;
 }

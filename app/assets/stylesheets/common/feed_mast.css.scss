@@ -1,0 +1,32 @@
+@import "../variables/mixins";
+@import "../variables/colors";
+@import "../variables/sizes";
+
+.FeedMast {
+  @include flex(0 0 4px);
+  position: absolute;
+  top: 0;
+  width: 4px;
+  height: 100%;
+  margin-left: 27px;
+  background: #EEEDEE;
+}
+.FeedMast.is-hidden {
+  display: none;
+}
+.FeedMast-ball {
+  position: absolute;
+  left: -5px;
+  width: 6px;
+  height: 6px;
+  border: 4px solid #EEEDEE;
+  border-radius: 50%;
+  background: #F9F9F9;
+}
+.FeedMast-ball.FeedMast-ball--top {
+  top: 0;
+}
+.FeedMast-ball.FeedMast-ball--bottom {
+  bottom: 0;
+  background: #EEEDEE;
+}

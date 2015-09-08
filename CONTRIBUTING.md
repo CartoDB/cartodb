@@ -5,6 +5,7 @@
 3. [Filling a ticket](#filling-a-ticket)
 4. [Contributing code](#contributing-code)
 5. [Completing documentation](#completing-documentation)
+6. [Submitting contributions](#submitting-contributions)
 
 
 ### CartoDB.js quick start
@@ -86,3 +87,7 @@ If you want more detailed information, this [GitHub guide](https://guides.github
 
 CartoDB.js documentation is located in ```doc/API.md```. That file is the content that appears in [CartoDB platform documentation](http://docs.cartodb.com/cartodb-platform/cartodb-js.html). 
 Just follow the instructions described in [contributing code](#contributing-code) and after accepting your pull request, we will make it appear online :).
+
+## Submitting contributions
+
+You will need to sign a Contributor License Agreement (CLA) before making a submission. [Learn more here](https://cartodb.com/contributing).

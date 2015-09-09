@@ -352,7 +352,7 @@ Ruby
 
   .. code-block:: bash
 
-    gem install bundler
+    sudo gem install bundler
 
 
 Editor

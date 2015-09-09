@@ -20,6 +20,10 @@
   width: 100%;
   z-index: 100;
 }
+.Filters.Filters-explore.is-fixed {
+  background: white;
+  border-bottom: 1px solid $cStructure-mainLine;
+}
 
 // Positionate relative to the content
 .Filters.is-relative {

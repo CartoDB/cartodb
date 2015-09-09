@@ -374,9 +374,9 @@ Editor
 
 * Install a necessary package for python dependencies
 
-  ..code-block:: bash
-  
-    sudo apt-get install python-all-dev
+  .. code-block:: bash
+
+   sudo apt-get install python-all-dev
 
 
 * Install dependencies
@@ -388,7 +388,7 @@ Editor
     npm install
     sudo pip install --no-use-wheel -r python_requirements.txt
 
- .. warning::
+.. warning::
     If this fails due to the installation of the gdal package not finding Python.h, you'll need to do this:
 
     ::

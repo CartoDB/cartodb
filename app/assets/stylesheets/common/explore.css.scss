@@ -14,6 +14,7 @@
   width: $sLayout-width;
   margin: 35px auto 60px auto;
   font-family: "Proxima Nova";
+  text-align: center;
 }
 .Explore-feed {
   @include flex(1);
@@ -22,4 +23,5 @@
 .Explore-content {
   position: relative;
   padding: 40px 0;
+  text-align: left;
 }

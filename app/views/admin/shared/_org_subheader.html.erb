@@ -26,8 +26,10 @@
               </a>
             </li>
           <% end %>
-          <% if (!Cartodb.config[:cartodb_com_hosted].present? && (!current_user.organization.present? || current_user.organization_owner?))  %>
-            <li class="Filters-typeItem"><a href="<%= current_user.plan_url(request.protocol) %>" class="Filters-typeLink">Billing</a></li>
+          <% if show_billing  %>
+            <li class="Filters-typeItem">
+              <a href="<%= current_user.plan_url(request.protocol) %>" class="Filters-typeLink">Billing</a>
+            </li>
           <% end %>
         </ul>
       </div>

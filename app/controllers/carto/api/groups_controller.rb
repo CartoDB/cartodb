@@ -52,7 +52,7 @@ module Carto
 
       def update
         @group.rename_group_with_extension(params['display_name'])
-        render_jsonp(Carto::Api::GroupPresenter.new(@group).to_poro, 200)
+        render_jsonp(Carto::Api::GroupPresenter.full(@group).to_poro, 200)
       rescue => e
         CartoDB.notify_exception(e, { params: params , group: @group })
         render json: { errors: e.message }, status: 500

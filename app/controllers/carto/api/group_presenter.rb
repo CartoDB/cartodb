@@ -4,6 +4,16 @@ module Carto
   module Api
     class GroupPresenter
 
+      FULL_FETCH_OPTIONS = {
+        fetch_shared_tables_count: true,
+        fetch_shared_maps_count: true,
+        fetch_users: true
+      }
+
+      def self.full(group)
+        Carto::Api::GroupPresenter.new(group, FULL_FETCH_OPTIONS)
+      end
+
       # Available fetching options:
       # - fetch_shared_tables_count
       # - fetch_shared_maps_count

@@ -207,6 +207,9 @@ describe Carto::Api::GroupsController do
         response.body[:organization_id].should == @carto_organization.id
         # INFO: since test doesn't actually trigger the extension we only check expectation on renaming call and display name
         response.body[:display_name].should == new_display_name
+        response.body[:shared_tables_count].should_not be_nil
+        response.body[:shared_maps_count].should_not be_nil
+        response.body[:users].should_not be_nil
 
         # Also check database data because Group changes something after extension interaction
         new_group = Carto::Group.find(response.body[:id])

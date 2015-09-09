@@ -86,7 +86,7 @@ describe SignupController do
     end
 
     it 'returns 400 error if you attempt Google signup and it is not valid' do
-      GooglePlusConfig.any_instance.expects(:present?).returns(true)
+      GooglePlusConfig.any_instance.stubs(:present?).returns(true)
       GooglePlusAPI.any_instance.expects(:get_user_data).never
       @organization.auth_google_enabled = false
       @organization.save

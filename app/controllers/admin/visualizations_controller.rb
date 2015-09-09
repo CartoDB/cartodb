@@ -20,11 +20,8 @@ class Admin::VisualizationsController < ApplicationController
   ssl_required :index, :show, :protected_embed_map, :protected_public_map, :show_protected_public_map
   before_filter :login_required, only: [:index]
   before_filter :table_and_schema_from_params, only: [:show, :public_table, :public_map, :show_protected_public_map,
-
                                                       :show_protected_embed_map, :embed_map]
-  # Commented out until fixing #5264
-  #before_filter :link_ghost_tables, only: [:index]
-
+  before_filter :link_ghost_tables, only: [:index]
   before_filter :load_common_data, only: [:index]
 
   before_filter :resolve_visualization_and_table, only: [:show, :public_table, :public_map,
@@ -425,7 +422,7 @@ class Admin::VisualizationsController < ApplicationController
   def link_ghost_tables
     return true unless current_user.present?
 
-    if current_user.search_for_modified_table_names
+    if current_user.search_for_modified_table_names && current_user.has_feature_flag?('ghost_tables')
       # this should be removed from there once we have the table triggers enabled in cartodb-postgres extension
       # test if there is a job already for this
       if !current_user.link_ghost_tables_working

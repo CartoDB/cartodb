@@ -17,8 +17,8 @@ describe Carto::Api::GroupsController do
     before(:all) do
       @carto_organization = Carto::Organization.find(@organization.id)
       @carto_org_user_1 = Carto::User.find(@org_user_1.id)
+      @org_user_1_json = {"id"=>@org_user_1.id, "username"=>@org_user_1.username, "email"=>@org_user_1.email, "avatar_url"=>@org_user_1.avatar_url, "base_url"=>@org_user_1.public_url, "quota_in_bytes"=>@org_user_1.quota_in_bytes, "db_size_in_bytes"=>@org_user_1.db_size_in_bytes, "table_count"=>0, "maps_count"=>0}
       @carto_org_user_2 = Carto::User.find(@org_user_2.id)
-      @org_user_1_json = {"id"=>@org_user_1.id, "username"=>@org_user_1.username, "email"=>@org_user_1.email, "avatar_url"=>@org_user_1.avatar_url, "base_url"=>@org_user_1.public_url, "quota_in_bytes"=>@org_user_1.quota_in_bytes, "db_size_in_bytes"=>@org_user_1.db_size_in_bytes, 'table_count' => 0, 'maps_count' => 0 }
 
       @group_1 = FactoryGirl.create(:random_group, display_name: 'g_1', organization: @carto_organization)
       @group_1_json = { 'id' => @group_1.id, 'organization_id' => @group_1.organization_id, 'name' => @group_1.name, 'display_name' => @group_1.display_name }
@@ -130,7 +130,7 @@ describe Carto::Api::GroupsController do
             response.status.should == 200
             expected_response = {
               groups: [
-                @group_1_json.merge({
+               @group_1_json.merge({
                   'shared_tables_count' => 1,
                   'shared_maps_count' => 0,
                   'users' => [ @org_user_1_json ]

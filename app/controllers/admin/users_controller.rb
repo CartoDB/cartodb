@@ -32,7 +32,8 @@ class Admin::UsersController < ApplicationController
   def account_update
     attributes = params[:user]
 
-    password_change = attributes[:new_password].present? || attributes[:confirm_password].present?
+    password_change = (attributes[:new_password].present? || attributes[:confirm_password].present?) &&
+      @user.can_change_password?
 
     if password_change
       @user.change_password(
@@ -42,7 +43,7 @@ class Admin::UsersController < ApplicationController
       )
     end
 
-    if @user.can_change_email && attributes[:email].present?
+    if @user.can_change_email? && attributes[:email].present?
       @user.set_fields(attributes, [:email])
     end
 

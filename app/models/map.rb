@@ -145,6 +145,17 @@ class Map < Sequel::Model
     (center.nil? || center == '') ? DEFAULT_OPTIONS[:center] : center.gsub(/\[|\]|\s*/, '').split(',')
   end
 
+  def recenter_using_bounds!
+    bounds = get_map_bounds
+    x = (bounds[:maxx] + bounds[:minx]) / 2
+    y = (bounds[:maxy] + bounds[:miny]) / 2
+    update(center: "[#{y},#{x}]")
+  rescue Sequel::DatabaseError => exception
+    CartoDB::notify_exception(exception, { user: user } )
+  end
+
+  # (bounds[:maxy] + bounds[:miny]) / 2
+
   def view_bounds_data
       if view_bounds_sw.nil? || view_bounds_sw == ''
         bbox_sw = DEFAULT_OPTIONS[:bounding_box_sw]

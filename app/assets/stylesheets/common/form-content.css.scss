@@ -114,43 +114,13 @@ $sLabel-width: 140px;
 .Form-separator {
   position: relative;
   display: block;
-  height: 1px;
-  width: 100%;
-  padding: $sMargin-element 0;
-  z-index: 0;
-  background: transparent;
-  &:before {
-    content: '';
-    position: absolute;
-    top: $sMargin-element;
-    left: 0;
-    right: 0;
-    width: 100%;
-    height: 1px;
-    background: $cStructure-mainLine;
-  }
-}
-.Form-separator.Form-separator--or {
-  position: relative;
-  display: block;
-  height: auto;
-  text-align: center;
-  margin: 0;
+  padding: 0 $sMargin-element;
+  line-height: 50px;
   background: transparent;
   font-size: 14px;
   font-weight: $sFontWeight-lighter;
   color: $cTypography-secondary;
-
-  &:before, &:after {
-    content: '';
-    position: absolute;
-    top: $sMargin-element + 10;
-    height: 1px;
-    background: $cStructure-mainLine;
-    width: 45%;
-  }
-  &:before { left: 0 }
-  &:after { right: 0 }
+  z-index: 0;
 }
 .Form-rowData {
   position: relative;
@@ -227,15 +197,16 @@ $sLabel-width: 140px;
 
   &.Form-input--longer { width: 351px }
   &.Form-input--long { width: 297px }
-  &.Form-input--med {}
+  &.Form-input--med { width: 191px }
   &.Form-input--short {}
 }
 .Form-inputSubmit {
   position: absolute;
-  top: 6px;
+  top: 50%;
   right: 5px;
   height: 28px;
   padding: 0 18px;
+  margin-top: -14px;
   background: none;
   z-index: 2;
 }
@@ -250,11 +221,12 @@ $sLabel-width: 140px;
 .Form-inputIcon--clock { top: 11px }
 .Form-inputError {
   position: absolute;
-  top: 0;
+  top: 50%;
   left: 0;
   right: 0;
   height: 38px;
   padding: 0 12px;
+  margin-top: -20px;
   z-index: 1;
   border: 1px solid #CCC;
   line-height: 38px;
@@ -262,9 +234,9 @@ $sLabel-width: 140px;
   color: $cHighlight-negative;
   font-size: $sFontSize-normal;
   border-radius: 4px;
-  @include transition(top, 200ms, ease-in-out);
+  @include transition(margin, 200ms, ease-in-out);
 }
-.Form-inputError.is-visible { top: 36px }
+.Form-inputError.is-visible { margin-top: 15px }
 .Form-input.is-disabled { background: $cStructure-grayBkg }
 .Form-input.is-invalid { border-color: $cHighlight-negative }
 // Modifiers
@@ -374,6 +346,22 @@ $sLabel-width: 140px;
     cursor: default;
   }
 }
+.Form-upload {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center);
+  width: 213px;
+  height: 50px;
+  padding: 0 10px 0 74px;
+  @include background(image-url('layout/export-files.png') no-repeat 10px 10px #F3F3F3);
+  border: 1px dashed $cStructure-mainLine;
+  border-radius: 2px;
+}
+.Form-upload.is-dropping {
+  border-color: rgba(black, 0.4);
+  .Form-fileButton { display: none; }
+  .Form-fileLabel { color: rgba(black, 0.4); }
+}
 .Form-file {
   &:hover .Button--main { background: #007fbd }
   &:hover .Button--negative { background-color: rgba(#B93F37, 1) }
@@ -381,7 +369,7 @@ $sLabel-width: 140px;
 .Form-file input[type="file"] {
   position: absolute;
   top: 0;
-  left: -118px;
+  right: -164px;
   margin: 0;
   border: solid transparent;
   border-width: 1px 0 24px 0;
@@ -392,14 +380,20 @@ $sLabel-width: 140px;
   cursor: pointer;
 }
 .Form-fileLabel {
-  width: 300px;
+  width: 130px;
+  line-height: 17px;
   color: $cTypography-secondary;
-  font-size: $sFontSize-normal;
+  font-size: $sFontSize-smallUpperCase;
 }
-
 .Form-fileLabel--error {
   display: none;
   color: $cHighlight-negative;
+}
+.Form-fileButton {
+  height: 26px;
+  padding: 0 14px;
+  font-size: $sFontSize-smallUpperCase;
+  font-weight: $sFontWeight-normal;
 }
 .Form .dz-preview { display: none }
 .Form-fileDropzone {

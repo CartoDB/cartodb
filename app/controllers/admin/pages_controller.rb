@@ -177,13 +177,13 @@ class Admin::PagesController < ApplicationController
     }
 
     vis_list.each do |vis|
-      geometry_type = vis.kind
-      if geometry_type != 'raster'
-        table_geometry_types = vis.table.geometry_types
-        geometry_type = table_geometry_types.first.present? ? geometry_mapping.fetch(table_geometry_types.first.downcase, '') : ''
-      end
-
       begin
+        geometry_type = vis.kind
+        if geometry_type != 'raster'
+          table_geometry_types = vis.table.geometry_types
+          geometry_type = table_geometry_types.first.present? ? geometry_mapping.fetch(table_geometry_types.first.downcase, '') : ''
+        end
+
         @datasets << vis_item(vis).merge({
             rows_count:    vis.table.rows_counted,
             size_in_bytes: vis.table.table_size,
@@ -192,7 +192,7 @@ class Admin::PagesController < ApplicationController
       rescue => e
         # A dataset might be invalid. For example, having the table deleted and not yet cleaned.
         # We don't want public page to be broken, but error must be traced.
-        CartoDB.notify_exception(e, { vis: vis })
+        CartoDB.notify_error("Error trying to get vis items for datasets", { vis: vis.inspect, error: e.inspect })
       end
     end
 
@@ -265,7 +265,7 @@ class Admin::PagesController < ApplicationController
       updated_at:  vis.updated_at,
       owner:       vis.user,
       likes_count: vis.likes.count,
-      map_zoom:    vis.map.zoom
+      map_zoom:    vis.map.nil? ? nil : vis.map.zoom
     }
   end
 
@@ -300,7 +300,7 @@ class Admin::PagesController < ApplicationController
     set_layout_vars({
         most_viewed_vis_map: org.public_vis_by_type(Visualization::Member::TYPE_DERIVED, 1, 1, nil, 'mapviews').first,
         content_type:        content_type,
-        default_fallback_basemap: org.owner.default_basemap,
+        default_fallback_basemap: org.owner ? org.owner.default_basemap : nil,
         base_url: ''
       })
     set_shared_layout_vars(org, {

@@ -1,0 +1,564 @@
+@import "../variables/mixins";
+@import "../variables/colors";
+@import "../variables/sizes";
+
+// Styles for the new account forms
+// --------------------------------------------------
+
+$sLabel-width: 140px;
+
+.FormAccount-Section {
+  overflow: hidden;
+  @include display-flex();
+  @include flex-direction(row);
+  @include justify-content(space-between);
+}
+
+.FormAccount-Content {
+  width: 65%;
+  position: relative;
+  display: block;
+}
+
+.FormAccount-title {
+  display: inline-block;
+  margin: 30px 0;
+  width: 100%;
+}
+.FormAccount-titleHeader {
+  display: block;
+  padding-bottom: 12px;
+  margin-bottom: $sMargin-section;
+  border-bottom: 1px solid $cStructure-mainLine;
+  font-size: $sFontSize-normal;
+  color: $cTypography-headers;
+  font-weight: $sFontWeight-bold;
+}
+.FormAccount-titleText {
+  font-size: $sFontSize-large;
+  font-weight: $sFontWeight-lighter;
+  color: $cTypography-paragraphs;
+  font-style: normal;
+}
+.FormAccount-titleText--negative { color: $cHighlight-negative }
+.FormAccount-list {
+  padding: 0 0 20px 160px;
+  color: $cTypography-paragraphs;
+  list-style-type: disc;
+}
+.FormAccount-listItem {
+  font-size: 14px;
+  font-weight: $sFontWeight-lighter;
+  color: $cTypography-paragraphs;
+}
+
+.VerticalAligned--FormRow {
+  @include display-flex();
+  @include flex-direction(row);
+  @include justify-content(space-between);
+}
+
+.FormAccount-row {
+  @include display-flex();
+  @include flex-direction(column);
+  @include justify-content(flex-start, start);
+  margin: 0 0 20px 0;
+}
+.FormAccount-title + .FormAccount-row {
+  padding-top: 0;
+}
+.FormAccount-row.FormAccount-row--centered {
+  @include justify-content(center);
+}
+.FormAccount-row.FormAccount-row--step {
+  position: relative;
+  @include justify-content(space-between, justify);
+  @include align-items(center);
+  padding-top: 0;
+  padding-bottom: $sMargin-group;
+  &:before {
+    content: '';
+    border-radius: 50px;
+    padding: 5px 10px;
+    margin-right: $sMargin-elementInline;
+    border: 1px solid $cStructure-mainLine;
+    font-size: $sFontSize-smallUpperCase;
+    font-weight: $sFontWeight-small;
+    color: $cTypography-paragraphs;
+    line-height: $sLineHeight-small;
+  }
+  &:first-child:before { content: '1' }
+  &:nth-child(2):before { content: '2' }
+  &:nth-child(3):before { content: '3' }
+  &:nth-child(4):before { content: '4' }
+  &:nth-child(5):before { content: '5' }
+}
+.FormAccount-row.FormAccount-row--step:first-child { padding-top: 0 }
+.FormAccount-row.FormAccount-row--step.is-done {
+  &:before {
+    color: $cHighlight-stepDone;
+    border-color: $cHighlight-stepDone;
+  }
+}
+.FormAccount-row.has-label {
+  // compensate for label width, to make the rowData appear as centered
+  margin: 0;
+  margin-left: -$sLabel-width;
+  @include flex-direction(row);
+  padding: 10px 0;
+
+  .FormAccount-rowLabel {
+    margin-right: 20px;
+    line-height: 40px;
+    width: 140px;
+    text-align: right;
+  }
+}
+.FormAccount-row.FormAccount-row--spaced { padding: $sMargin-element 0 }
+.FormAccount-rowLabel {
+  text-align: left;
+}
+.FormAccount-rowLabel.FormAccount-rowLabel--leftAligned {
+  width: $sLabel-width;
+  margin-right: $sMargin-element;
+  text-align: left;
+}
+.FormAccount-label {
+  line-height: 30px;
+  font-size: $sFontSize-normal;
+  font-weight: $sFontWeight-normal;
+  color: $cTypography-labels;
+  text-transform: capitalize;
+}
+.FormAccount-label.FormAccount-label--verticalAlignTop {
+  line-height: inherit;
+}
+.FormAccount-label--multipleLines { line-height: 20px }
+.FormAccount-label.FormAccount-label--large { font-size: $sFontSize-large }
+.FormAccount-label.FormAccount-label--step { @include flex-grow(1) }
+.FormAccount-rowPreview { width: 735px }
+.FormAccount-separator {
+  position: relative;
+  display: block;
+  width:100%;
+  height:1px;
+  background-color: $cStructure-darkGrey;
+  z-index:0;
+  margin-bottom: 25px;
+}
+.FormAccount-separator.FormAccount-separator--or {
+  position: relative;
+  display: block;
+  height: auto;
+  text-align: center;
+  margin: 0;
+  background: transparent;
+  font-size: 14px;
+  font-weight: $sFontWeight-lighter;
+  color: $cTypography-secondary;
+
+  &:before, &:after {
+    content: '';
+    position: absolute;
+    top: $sMargin-element + 10;
+    height: 1px;
+    background: $cStructure-mainLine;
+    width: 45%;
+  }
+  &:before { left: 0 }
+  &:after { right: 0 }
+}
+.FormAccount-rowData {
+  position: relative;
+  @include display-flex();
+  @include align-items(center);
+  min-height: 40px; // if there's no input on row (e.g. only radio buttons), to avoid "jumpy" behaviour on re-renders
+}
+
+.FormAccount-planTag {
+  background-color: #00CC32;
+  color: #FFFFFF;
+  font-size: 13px;
+  font-weight: normal;
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+
+.FormAccount-rowData.FormAccount-rowData--alignLeft { @include justify-content(flex-start, start) }
+.FormAccount-rowData--withLabel { margin-bottom: 30px }
+.FormAccount-rowData--noMargin { margin: 0 }
+
+// RowData sizes
+.FormAccount-rowData--full { width: 100% }
+.FormAccount-rowData--longer { width: 460px }
+.FormAccount-rowData--long { width: 380px }
+.FormAccount-rowData--med { width: 300px }
+.FormAccount-rowData--short { width: 170px }
+.FormAccount-rowData--step {
+  width: 260px;
+  margin-right: 0;
+}
+.FormAccount-rowDataExtra {
+  position: absolute;
+  right: -52px;
+}
+.FormAccount-rowData ~ .FormAccount-rowDataExtra { top: 10px } // to compensate for its top-padding
+.FormAccount-rowData--step ~ .FormAccount-rowDataExtra { top: 0 }
+
+.FormAccount-input {
+  position: relative;
+  height: 38px;
+  padding: 0 12px;
+  outline: none;
+  border: 1px solid #CCC;
+  border-radius: 4px;
+  color: #666;
+  z-index: 2;
+  font-weight: $sFontWeight-lighter;
+
+  &:focus { border-color: #999 }
+}
+.FormAccount-input.FormAccount-input--error { border-color: rgba(#DD3B37,0.6) }
+.FormAccount-input.FormAccount-input--error:focus,
+.FormAccount-input.FormAccount-input--error:hover { border-color: rgba(#DD3B37,1) }
+
+.FormAccount-input::-webkit-input-placeholder { font-style: italic; color: #AAA }
+.FormAccount-input:-moz-placeholder           { font-style: italic; color: #AAA }
+.FormAccount-input::-moz-placeholder          { font-style: italic; color: #AAA }
+.FormAccount-input:-ms-input-placeholder      { font-style: italic; color: #AAA }
+// Sizes
+.FormAccount-input--totalwidth { width: 100%; }
+.FormAccount-input--longer { width: 434px }
+.FormAccount-input--long { width: 354px }
+.FormAccount-input--med { width: 274px }
+.FormAccount-input--short { width: 114px }
+// Types
+.FormAccount-input.has-icon {
+  padding: 0 42px 0 12px;
+
+  &.FormAccount-input--longer { width: 414px }
+  &.FormAccount-input--long { width: 324px }
+  &.FormAccount-input--med {}
+  &.FormAccount-input--short { width: 92px }
+
+  &.FormAccount-input--longerMorePadding {
+    width: 356px;
+    padding-right: 100px;
+  }
+}
+.FormAccount-input.has-submit {
+  padding: 0 95px 0 12px;
+
+  &.FormAccount-input--longer { width: 351px }
+  &.FormAccount-input--long { width: 297px }
+  &.FormAccount-input--med {}
+  &.FormAccount-input--short {}
+}
+.FormAccount-inputSubmit {
+  position: absolute;
+  top: 6px;
+  right: 5px;
+  height: 28px;
+  padding: 0 18px;
+  background: none;
+  z-index: 2;
+}
+.FormAccount-inputIcon {
+  position: absolute;
+  right: 14px;
+  top: 12px;
+  z-index: 3;
+  font-size: $sFontSize-larger;
+  color: $cTypography-help;
+}
+.FormAccount-inputIcon--clock { top: 11px }
+.FormAccount-inputError {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 38px;
+  padding: 0 12px;
+  z-index: 1;
+  border: 1px solid #CCC;
+  line-height: 38px;
+  background: #FFF4F4;
+  color: $cHighlight-negative;
+  font-size: $sFontSize-normal;
+  border-radius: 4px;
+  @include transition(top, 200ms, ease-in-out);
+}
+.FormAccount-inputError.is-visible { top: 36px }
+.FormAccount-input.is-disabled { background: $cStructure-grayBkg }
+.FormAccount-input.is-invalid { border-color: $cHighlight-negative }
+// Modifiers
+.FormAccount-input--noBorder { border: none }
+.FormAccount-input--noBkg,
+.FormAccount-input--noBkg.is-disabled { background: transparent }
+
+.FormAccount-textarea {
+  padding: 9px 12px;
+  min-height: 60px;
+  max-height: 110px;
+}
+.FormAccount-textarea.is-disabled { color: $cTypography-help }
+.FormAccount-copyIcon {
+  top: 0;
+  right: 30px;
+  position: relative;
+  font-size: $sFontSize-largest;
+}
+.FormAccount-copyIcon.hover { color: $cTypography-paragraphs }
+.FormAccount-text--preview {
+  font-size: $sFontSize-normal;
+  color: $cTypography-secondary;
+  line-height: $sLineHeight-large;
+}
+.FormAccount-avatar {
+
+}
+.FormAccount-avatarPreview {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  background: $cStructure-grayBkg;
+  border: 1px solid $cTypography-help;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.FormAccount-avatarPreviewImage {
+  position: relative;
+  max-width: 100px;
+  border-radius: 4px;
+  background: $cStructure-grayBkg;
+}
+.FormAccount-avatarPreviewLoader {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100px;
+  height: 100px;
+  background: rgba(black, 0.4);
+  border-radius: 4px;
+  z-index: 2;
+}
+.Spinner.FormAccount-avatarPreviewSpinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -20px 0 0 -20px;
+  z-index: 1;
+}
+.FormAccount-avatar .input-group {
+  position: absolute;
+  top: 10px;
+  left: 120px;
+}
+.FormAccount-avatar .form-control {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 250px;
+  border: none;
+  color: $cTypography-secondary;
+  display: none;
+}
+.FormAccount-avatar .btn {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 85px;
+  color: $cTypography-link;
+  &:hover {
+    cursor: pointer;
+    text-decoration: underline;
+    color: $cTypography-linkHover;
+  }
+}
+.FormAccount-avatar .btn[disabled] {
+  color: $cTypography-help;
+  &:hover {
+    cursor: default;
+    text-decoration: none;
+    color: $cTypography-help;
+  }
+}
+.FormAccount-link {
+  color: $cTypography-link;
+  text-decoration: underline;
+  &:hover {
+    color: $cTypography-linkHover;
+    cursor: pointer;
+  }
+}
+.FormAccount-link.is-disabled {
+  color: $cTypography-help;
+  text-decoration: none;
+  &:hover {
+    color: $cTypography-help;
+    cursor: default;
+  }
+}
+.FormAccount-file {
+  &:hover .Button--main { background: #007fbd }
+  &:hover .Button--negative { background-color: rgba(#B93F37, 1) }
+}
+.FormAccount-file input[type="file"] {
+  position: absolute;
+  top: 0;
+  left: -118px;
+  margin: 0;
+  border: solid transparent;
+  border-width: 1px 0 24px 0;
+  opacity: 0;
+  filter: alpha(opacity=0);
+  -moz-transform: translate(26px, 0) scale(1);
+  direction: ltr;
+  cursor: pointer;
+}
+.FormAccount-fileLabel {
+  width: 300px;
+  color: $cTypography-secondary;
+  font-size: $sFontSize-normal;
+}
+
+.FormAccount-fileLabel--error {
+  display: none;
+  color: $cHighlight-negative;
+}
+.FormAccount .dz-preview { display: none }
+.FormAccount-fileDropzone {
+  position: absolute;
+  display: none;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  border: 2px dashed $cStructure-mainLine;
+  background: $cStructure-grayBkg;
+  border-radius: 4px;
+  line-height: 38px;
+  text-align: center;
+  color: $cTypography-secondary;
+  font-size: $sFontSize-large;
+  z-index: 1;
+}
+.FormAccount-rowInfo {
+  @include display-flex();
+
+  &.FormAccount-rowInfo--marginLeft { margin-left: 18px; }
+}
+.FormAccount-rowInfoText {
+  font-size: $sFontSize-normal;
+  color: $cTypography-secondary;
+  font-weight: $sFontWeight-lighter;
+
+  &.warning { color: #FFB713; }
+}
+.FormAccount-rowInfoText--centered { text-align: center }
+.FormAccount-rowInfoText--smaller { font-size: $sFontSize-smallUpperCase }
+.FormAccount-rowInfoText--block { width: 100% }
+.FormAccount-rowInfoText--maxWidth {
+  max-width: 480px;
+}
+.FormAccount-rowInfoText--error { color: #DD3B37 }
+.FormAccount-rowInfoText--error .FormAccount-link {
+  color: #DD3B37;
+  text-decoration: underline;
+}
+.FormAccount-footer {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+  margin: $sMargin-section 0;
+  padding: $sMargin-formRow 0;
+  border-top: 1px solid $cStructure-mainLine;
+
+  &.FormAccount-footer--withoutMarginBottom { margin-bottom: 0; }
+}
+.FormAccount-footerText {
+  font-size: $sFontSize-large;
+  font-weight: $sFontWeight-lighter;
+  color: $cTypography-secondary;
+}
+.FormAccount-footerIcon {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  border: 1px solid #F2C000;
+  border-radius: 20px;
+  background: #F6D35C;
+  line-height: $sLineHeight-normal!important;
+  font-size: $sFontSize-normal;
+  color: white;
+  text-align: center;
+}
+.FormAccount-tags {
+  position: relative;
+  width: 308px;
+  min-height: 38px;
+  padding: 0;
+  outline: none;
+  border: 1px solid #CCC;
+  border-radius: 4px;
+  background: white;
+  z-index: 2;
+}
+.FormAccount-tagsList.tagit { padding: 0 5px 5px 5px }
+.FormAccount-tagsList.tagit .tagit-choice {
+  padding: 0 30px 0 11px;
+  margin: 5px 5px 0 0;
+  line-height: 28px;
+  background: #EFF8FF;
+  color: #746E76;
+  border-radius: 2px;
+}
+.FormAccount-tagsList.tagit .tagit-choice .tagit-close {
+  line-height: normal;
+  right: 10px;
+}
+.FormAccount-tagsList.tagit .tagit-choice .tagit-close .text-icon {
+  display: inline-block;
+  color: #C5CCD1;
+  &:hover { color: #AAA }
+}
+.FormAccount-tagsList.tagit li.tagit-new { padding: 7px 4px 2px 7px }
+.FormAccount-tagsList.tagit .ui-autocomplete-input::-webkit-input-placeholder {
+  font-weight: $sFontWeight-normal;
+  font-style: italic;
+  color: #AAA
+}
+.FormAccount-tagsList.tagit .ui-autocomplete-input::-moz-placeholder {
+  font-weight: $sFontWeight-normal;
+  font-style: italic;
+  color: #AAA
+}
+.FormAccount-tagsList.tagit .ui-autocomplete-input:-ms-placeholder {
+  font-weight: $sFontWeight-normal;
+  font-style: italic;
+  color: #AAA
+}
+.FormAccount-tags.is-focus { border-color: #999 }
+.FormAccount-tags.is-disabled {
+  background: $cStructure-grayBkg;
+
+  .tagit-choice { padding: 0 11px }
+  .tagit-choice .tagit-close { display: none }
+}
+
+.FormAccount-tagsList--placeholder {
+  left: 0;
+  position: absolute;
+  line-height: 38px;
+  padding: 0 0 0 12px;
+  font-style: italic;
+  color: #aaa;
+  font-weight: 300;
+}
+
+.FormAccount-button--deleteAccount {
+  color: rgba(247,24,0,1);
+  cursor: pointer;
+
+  &:hover { text-decoration: underline; }
+}

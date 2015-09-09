@@ -1,3 +1,5 @@
+require_relative '../../../helpers/bounding_box_helper'
+
 module Carto
   module Api
     module VisualizationSearcher
@@ -11,6 +13,9 @@ module Carto
       # It doesn't apply ordering or paging, just filtering.
       def query_builder_with_filter_from_hash(params)
         types, total_types = get_types_parameters
+
+        validate_parameters(types, params)
+
         pattern = params[:q]
 
         only_liked = params[:only_liked] == 'true'
@@ -20,6 +25,7 @@ module Carto
         shared = compose_shared(params[:shared], only_shared, exclude_shared)
         tags = params.fetch(:tags, '').split(',')
         tags = nil if tags.empty?
+        bbox_parameter = params.fetch(:bbox,nil)
 
         vqb = VisualizationQueryBuilder.new
             .with_prefetch_user
@@ -28,6 +34,10 @@ module Carto
             .with_prefetch_external_source
             .with_types(types)
             .with_tags(tags)
+
+        if !bbox_parameter.nil?
+          vqb.with_bounding_box(BoundingBoxHelper.parse_bbox_parameters(bbox_parameter))
+        end
 
         if current_user
           if only_liked
@@ -103,6 +113,11 @@ module Carto
         end
       end
 
+      def validate_parameters(types, parameters)
+        if (!params.fetch(:bbox, nil).nil? && (types.length > 1 || !types.include?(Carto::Visualization::TYPE_CANONICAL)))
+          raise CartoDB::BoundingBoxError.new('Filter by bbox is only supported for type table')
+        end
+      end
     end
   end
 end

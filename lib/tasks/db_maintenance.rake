@@ -41,7 +41,7 @@ namespace :cartodb do
 
       Map.all.each_with_index do |map, i|
         begin
-          map.data_layers.each do |layer| 
+          map.data_layers.each do |layer|
             layer.register_table_dependencies
             printf "OK (%-#{4}s/%-#{4}s)\n", i, count
           end
@@ -176,7 +176,7 @@ namespace :cartodb do
                       RAISE NOTICE 'Would run on %: %', current_database(), rec.q;
                     END IF;
 
-                  END LOOP; 
+                  END LOOP;
 
                 END;
                 $$;
@@ -326,8 +326,8 @@ namespace :cartodb do
         user = Carto::User.where(id: user_id).first
         # already granted users will raise a NOTICE
         grant_query = "GRANT publicuser to \"#{user.database_username}\""
-        conn = user.in_database(as: :cluster_admin)
         begin
+          conn = user.in_database(as: :cluster_admin)
           conn.execute(grant_query)
         rescue => e
           log("Failed to execute `#{grant_query}`", :grant_publicuser_to_all_users.to_s, user.database_host)
@@ -347,7 +347,7 @@ namespace :cartodb do
         user.set_user_as_organization_member
       end
     end
-        
+
     ##############
     # SET DB PERMS
     ##############
@@ -406,9 +406,9 @@ namespace :cartodb do
       user  = User.filter(:username => args[:username]).first
       quota = args[:quota_in_mb].to_i * 1024 * 1024
       user.update(:quota_in_bytes => quota)
-      
+
       user.rebuild_quota_trigger
-      
+
       puts "User: #{user.username} quota updated to: #{args[:quota_in_mb]}MB. #{user.tables.count} tables updated."
     end
 
@@ -450,8 +450,8 @@ namespace :cartodb do
     task :set_user_table_quota, [:username, :table_quota] => :environment do |t, args|
       usage = "usage: rake cartodb:db:set_user_table_quota[username,table_quota]"
       raise usage if args[:username].blank? || args[:table_quota].blank?
-      
-      user  = User.filter(:username => args[:username]).first      
+
+      user  = User.filter(:username => args[:username]).first
       user.update(:table_quota => args[:table_quota].to_i)
 
       puts "User: #{user.username} table quota updated to: #{args[:table_quota]}"
@@ -461,10 +461,10 @@ namespace :cartodb do
     task :set_unlimited_table_quota, [:username] => :environment do |t, args|
       usage = "usage: rake cartodb:db:set_unlimited_table_quota[username]"
       raise usage if args[:username].blank?
-      
-      user  = User.filter(:username => args[:username]).first      
+
+      user  = User.filter(:username => args[:username]).first
       user.update(:table_quota => nil)
-                    
+
       puts "User: #{user.username} table quota updated to: unlimited"
     end
 
@@ -476,8 +476,8 @@ namespace :cartodb do
         user.update(:table_quota => 5) if user.table_quota.blank?
       end
     end
-    
-    
+
+
     ##################
     # SET ACCOUNT TYPE
     ##################
@@ -485,10 +485,10 @@ namespace :cartodb do
     task :set_user_account_type, [:username, :account_type] => :environment do |t, args|
       usage = "usage: rake cartodb:db:set_user_account_type[username,account_type]"
       raise usage if args[:username].blank? || args[:account_type].blank?
-      
-      user  = User.filter(:username => args[:username]).first      
+
+      user  = User.filter(:username => args[:username]).first
       user.update(:account_type => args[:account_type])
-                    
+
       puts "User: #{user.username} table account type updated to: #{args[:account_type]}"
     end
 
@@ -508,10 +508,10 @@ namespace :cartodb do
     task :set_user_private_tables_enabled, [:username, :private_tables_enabled] => :environment do |t, args|
       usage = "usage: rake cartodb:db:set_user_private_tables_enabled[username,private_tables_enabled]"
       raise usage if args[:username].blank? || args[:private_tables_enabled].blank?
-      
-      user  = User.filter(:username => args[:username]).first      
+
+      user  = User.filter(:username => args[:username]).first
       user.update(:private_tables_enabled => args[:private_tables_enabled])
-                    
+
       puts "User: #{user.username} private tables enabled: #{args[:private_tables_enabled]}"
     end
 
@@ -526,13 +526,13 @@ namespace :cartodb do
 
     ##########################
     # REBUILD GEOM WEBMERCATOR
-    ##########################    
+    ##########################
     desc "Add the_geom_webmercator column to every table which needs it"
     task :add_the_geom_webmercator => :environment do
       User.all.each do |user|
         tables = Table.filter(:user_id => user.id).all
         next if tables.empty?
-        user.load_cartodb_functions 
+        user.load_cartodb_functions
         puts "Updating tables in db '#{user.database_name}' (#{user.username})"
         tables.each do |table|
           has_the_geom = false
@@ -551,7 +551,7 @@ namespace :cartodb do
               end
               geometry_type ||= "POINT"
               user_database.run("SELECT public.AddGeometryColumn('#{user.database_schema}','#{table.name}','#{Table::THE_GEOM_WEBMERCATOR}',3857,'#{geometry_type}',2)")
-              user_database.run("CREATE INDEX #{table.name}_#{Table::THE_GEOM_WEBMERCATOR}_idx ON #{table.name} USING GIST(#{Table::THE_GEOM_WEBMERCATOR})")                      
+              user_database.run("CREATE INDEX #{table.name}_#{Table::THE_GEOM_WEBMERCATOR}_idx ON #{table.name} USING GIST(#{Table::THE_GEOM_WEBMERCATOR})")
               user_database.run("ANALYZE #{table.name}")
               table.save_changes
             else
@@ -560,7 +560,7 @@ namespace :cartodb do
           end
           if has_the_geom
             table.set_trigger_the_geom_webmercator
-            
+
             user.in_database do |user_database|
               user_database.run("ALTER TABLE #{table.name} DROP CONSTRAINT IF EXISTS enforce_srid_the_geom")
               user_database.run("update #{table.name} set \"#{Table::THE_GEOM_WEBMERCATOR}\" = CDB_TransformToWebmercator(the_geom)")
@@ -612,8 +612,8 @@ namespace :cartodb do
     desc "Update update_the_geom_webmercator_trigger"
     task :update_the_geom_webmercator_trigger => :environment do
       User.all.each do |user|
-        user.load_cartodb_functions 
-        
+        user.load_cartodb_functions
+
         tables = Table.filter(:user_id => user.id).all
         next if tables.empty?
         puts "Updating tables in db '#{user.database_name}' (#{user.username})"
@@ -663,7 +663,7 @@ namespace :cartodb do
               table.set_trigger_cache_timestamp
             rescue => e
               puts "\t=> [ERROR] #{table.name}: #{e.inspect}"
-            end                
+            end
           end
         end
       end
@@ -677,7 +677,7 @@ namespace :cartodb do
 
       CartoDB::GenericMigrator.new(args[:version]).migrate!
     end
-    
+
     desc 'Undo migration changes USE WITH CARE'
     task :rollback_migration, [:version] => :environment do |t, args|
       usage = 'usage: rake cartodb:db:rollback_migration[version]'
@@ -686,7 +686,7 @@ namespace :cartodb do
 
       CartoDB::GenericMigrator.new(args[:version]).rollback!
     end
-    
+
     desc 'Save users metadata in redis'
     task :save_users_metadata => :environment do
       User.all.each do |u|
@@ -853,7 +853,7 @@ namespace :cartodb do
       u.set_api_calls_from_es({:force_update => true})
       puts "New API Calls from ES: #{u.get_es_api_calls_from_redis}"
     end
-    
+
     desc "Create new organization with owner"
     task :create_new_organization_with_owner => :environment do
       raise "You should provide a ORGANIZATION_NAME" if ENV['ORGANIZATION_NAME'].blank?
@@ -874,6 +874,24 @@ namespace :cartodb do
       end
       uo = CartoDB::UserOrganization.new(organization.id, user.id)
       uo.promote_user_to_admin
+    end
+
+    desc "Create new organization without owner"
+    task :create_new_organization_without_owner => :environment do
+      raise "You should provide a ORGANIZATION_NAME" if ENV['ORGANIZATION_NAME'].blank?
+      raise "You should provide a ORGANIZATION_DISPLAY_NAME" if ENV['ORGANIZATION_DISPLAY_NAME'].blank?
+      raise "You should provide a ORGANIZATION_SEATS" if ENV['ORGANIZATION_SEATS'].blank?
+      raise "You should provide a ORGANIZATION_QUOTA (in Bytes)" if ENV['ORGANIZATION_QUOTA'].blank?
+
+      organization = Organization.where(:name => ENV['ORGANIZATION_NAME']).first
+      if organization.nil?
+        organization = Organization.new
+        organization.name = ENV['ORGANIZATION_NAME']
+        organization.display_name = ENV['ORGANIZATION_DISPLAY_NAME']
+        organization.seats = ENV['ORGANIZATION_SEATS']
+        organization.quota_in_bytes = ENV['ORGANIZATION_QUOTA']
+        organization.save
+      end
     end
 
     def create_user(username, organization, quota_in_bytes)
@@ -1040,7 +1058,7 @@ namespace :cartodb do
       else
         redis_client = $users_metadata
       end
-      
+
       stat_tag_keys = [
         "user:*:mapviews:stat_tag:*",
         "user:*:mapviews_es:stat_tag:*"

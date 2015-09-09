@@ -10,7 +10,7 @@ module CartoDB
           self.db = (!db.nil?) ? db : Object.new
         end
         def logger(*args);        @log; end
-        def log(message);         @log << message; end
+        def log(message, truncate = true); @log << message; end
         def filepath;             ''; end
         def name;                 ''; end
         def table_name;           ''; end

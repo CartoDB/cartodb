@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-gem 'rails',                   '3.2.20'
+gem 'rails',                   '3.2.22'
 
 gem 'rake',                    '0.9.2.2'
 gem 'pg',                      '0.13.2'
@@ -33,6 +33,7 @@ gem 'ejs',                     '~> 1.1.1'
 gem 'execjs',                  '~> 0.4' # Required by ejs
 gem 'therubyracer',            '0.12.1' # Required by ejs
 
+gem 'net-ldap',                '0.11'
 
 group :production, :staging do
   gem 'unicorn',               '4.8.2'
@@ -66,19 +67,20 @@ gem 'aequitas',                 '0.0.2'
 gem 'uuidtools',                '2.1.5'
 
 # Markdown
-gem 'redcarpet', '3.2.2'
+gem 'redcarpet', '3.2.3'
 
 # TODO we should be able to remove this using the new
 #      Rails routes DSL
 gem 'bartt-ssl_requirement',   '~>1.4.0', require: 'ssl_requirement'
 
 # TODO Production gems, put them in :production group
-gem 'mixpanel',              '4.0.2'
 gem 'rollbar',               '0.12.14'
 gem 'resque',                '1.25.2'
 gem 'resque-metrics',        '0.1.1'
 
 group :test do
+  gem 'simplecov',                       require: false
+
   gem 'db-query-matchers',     '0.4.0'
   gem 'rack-test',             '0.6.2',  require: 'rack/test'
   gem 'factory_girl_rails',    '~> 4.0.0'
@@ -90,6 +92,8 @@ group :test do
   gem 'ci_reporter',           '1.8.4'
   gem 'poltergeist',           '>= 1.0.0'
   gem 'activerecord-nulldb-adapter', '0.3.1'
+  # Need to use specific branch from this fork as original gem is broken and outdated
+  gem 'fake_net_ldap', git: 'https://github.com/kuldeepaggarwal/fake_net_ldap.git', :branch => 'fix-responder'
 end
 
 group :development, :test do

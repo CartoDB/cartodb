@@ -11,7 +11,8 @@ require_relative './georeferencer'
 require_relative '../importer/post_import_handler'
 require_relative './geometry_fixer'
 require_relative './typecaster'
-require_relative 'importer_stats'
+
+require_relative '../../../../lib/cartodb/stats/importer'
 
 module CartoDB
   module Importer2
@@ -39,7 +40,7 @@ module CartoDB
         self.georeferencer  = georeferencer
         self.options        = {}
         @post_import_handler = nil
-        @importer_stats = ImporterStats.instance
+        @importer_stats = CartoDB::Stats::Importer.instance
       end
 
       def set_importer_stats(importer_stats)
@@ -253,7 +254,7 @@ module CartoDB
 
         # too verbose in append mode
         unless append_mode
-          job.log "ogr2ogr call:            #{ogr2ogr.command}"
+          job.log "ogr2ogr call:            #{ogr2ogr.command}", truncate = false
           job.log "ogr2ogr output:          #{ogr2ogr.command_output}"
           job.log "ogr2ogr exit code:       #{ogr2ogr.exit_code}"
         end

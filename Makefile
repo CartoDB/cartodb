@@ -41,9 +41,12 @@ WORKING_SPECS_1 = \
   spec/lib/carto/http/client_spec.rb \
 	spec/helpers/uuidhelper_spec.rb \
 	spec/models/carto/template_spec.rb \
+	spec/models/carto/ldap/configuration_spec.rb \
+	spec/requests/sessions_controller_spec.rb \
   $(NULL)
 
 WORKING_SPECS_2 = \
+  spec/lib/cartodb/stats/importer_spec.rb \
   services/importer/spec/acceptance/geojson_spec.rb \
   services/importer/spec/acceptance/gpx_spec.rb \
   services/importer/spec/acceptance/kml_spec.rb \
@@ -61,7 +64,6 @@ WORKING_SPECS_2 = \
 	services/importer/spec/unit/shp_helper_spec.rb \
   services/importer/spec/unit/downloader_spec.rb \
   services/importer/spec/unit/georeferencer_spec.rb \
-  services/importer/spec/unit/importer_stats_spec.rb \
   services/importer/spec/unit/json2csv_spec.rb \
   services/importer/spec/unit/kml_splitter_spec.rb \
   services/importer/spec/unit/loader_spec.rb \
@@ -89,7 +91,6 @@ WORKING_SPECS_4 = \
   spec/requests/admin/visualizations_spec.rb \
   spec/requests/api/json/visualizations_controller_spec.rb \
   spec/requests/carto/api/visualizations_controller_spec.rb \
-  spec/requests/api/json/tables_controller_spec.rb \
   spec/requests/carto/api/tables_controller_spec.rb \
   spec/queries/carto/visualization_query_builder_spec.rb \
   spec/requests/admin/tables_spec.rb \
@@ -187,6 +188,8 @@ WORKING_SPECS_carto_db_class = \
 CDB_PATH=lib/assets/javascripts/cdb
 
 prepare-test-db:
+	# Else coverage reports add up and hits/line metric is invalid
+	rm -rf coverage
 ifdef JENKINS_URL
 	cp .rspec_ci .rspec
 endif
@@ -211,7 +214,7 @@ check-9:
 check-carto-db-class:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_carto_db_class)
 check-integrations:
-	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_INTEGRATIONS)	
+	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_INTEGRATIONS)
 
 check-external: prepare-test-db check-integrations
 

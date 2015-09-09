@@ -1,0 +1,35 @@
+<% content_for :title do %><%= @organization.name %> sign up<% end %>
+
+<% content_for :js do %>
+  <%= javascript_include_tag 'cdb.js', 'confirmation_templates.js', 'confirmation.js' %>
+  <script>
+    var user_creation_id = "<%= @user_creation_id %>";
+    var user_name = "<%= @user_name %>";
+    var is_custom_install = <%= Cartodb.config[:cartodb_com_hosted].present? %>;
+    var user_url = "<%= @redirect_url %>";
+  </script>
+<% end %>
+
+<div class="Sessions" style="<%= background %>">
+  <div class="Sessions-content">
+    <div class="Sessions-inner">
+      <div class="u-inner">
+        <div class="Sessions-center Sessions--centered">
+          <div class="Logo js-logo is-loading">
+            <span class="Logo--avatar">
+              <i class="iconFont iconFont-CartoFante" style="color: <%= @organization.color ? darken_color(@organization.color,0.7) : "#292E33" %>"></i>
+            </span>
+            <span class="Logo-sub Sessions-logoNotification js-notification" style="color: <%= @organization.color ? darken_color(@organization.color,0.7) : "#292E33" %>">
+              <i class="iconFont iconFont-Check js-successNotification"></i>
+              <span class="js-errorNotification">!</span>
+            </span>
+          </div>
+          <div class="js-info">
+            <h1 class="Sessions-title u-tspace-m">Your account is being created</h1>
+            <p class="Sessions-description">It will take us some time, just a few seconds.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

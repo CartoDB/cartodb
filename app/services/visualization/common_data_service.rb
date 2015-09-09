@@ -2,7 +2,7 @@ require 'rollbar'
 require_relative '../../models/visualization/member'
 require_relative '../../models/visualization/collection'
 require_relative '../../models/visualization/external_source'
-require_relative '../../models/common_data'
+require_relative '../../models/common_data/singleton'
 
 module CartoDB
 
@@ -14,9 +14,22 @@ module CartoDB
         @datasets = datasets
       end
 
-      def load_common_data_for_user(user)
-        user.last_common_data_update_date = Time.now
-        user.save
+      def self.build_url(controller)
+        common_data_base_url = Cartodb.config[:common_data]['base_url']
+        common_data_username = Cartodb.config[:common_data]['username']
+        common_data_user = Carto::User.where(username: common_data_username).first
+        if !common_data_base_url.nil?
+          # We set user_domain to nil to avoid duplication in the url for subdomainfull urls. Ie. user.cartodb.com/u/cartodb/...
+          common_data_base_url + CartoDB.path(controller, 'api_v1_visualizations_index', {type: 'table', privacy: 'public', user_domain: nil})
+        elsif !common_data_user.nil?
+          CartoDB.url(controller, 'api_v1_visualizations_index', {type: 'table', privacy: 'public'}, common_data_user)
+        else
+          CartoDB.notify_error('cant create common-data url. User doesnt exists and base_url is nil', { user: common_data_username})
+        end
+      end
+
+      def load_common_data_for_user(user, visualizations_api_url)
+        update_user_date_flag(user)
 
         added = 0
         updated = 0
@@ -29,14 +42,14 @@ module CartoDB
         user_remotes.each { |r|
           remotes_by_name[r.name] = r
         }
-        get_datasets.each do |d|
+        get_datasets(visualizations_api_url).each do |dataset|
           begin
-            visualization = remotes_by_name.delete(d['name'])
+            visualization = remotes_by_name.delete(dataset['name'])
             if visualization
               if visualization.update_remote_data(
                   Member::PRIVACY_PUBLIC,
-                  d['description'], [ d['category'] ], d['license'],
-                  d['source'], d['attributions'])
+                  dataset['description'], dataset['tags'], dataset['license'],
+                  dataset['source'], dataset['attributions'], dataset['display_name'])
                 visualization.store
                 updated += 1
               else
@@ -44,25 +57,25 @@ module CartoDB
               end
             else
               visualization = Member.remote_member(
-                d['name'], user.id, Member::PRIVACY_PUBLIC,
-                d['description'], [ d['category'] ], d['license'],
-                d['source'], d['attributions']).store
+                dataset['name'], user.id, Member::PRIVACY_PUBLIC,
+                dataset['description'], dataset['tags'], dataset['license'],
+                dataset['source'], dataset['attributions'], dataset['display_name']).store
               added += 1
             end
 
             external_source = ExternalSource.where(visualization_id: visualization.id).first
             if external_source
-              external_source.save if !(external_source.update_data(d['url'], d['geometry_types'], d['rows'], d['size'], 'common-data').changed_columns.empty?)
+              external_source.save if !(external_source.update_data(dataset['url'], dataset['geometry_types'], dataset['rows'], dataset['size'], 'common-data').changed_columns.empty?)
             else
-              ExternalSource.new(visualization.id, d['url'], d['geometry_types'], d['rows'], d['size'], 'common-data').save
+              ExternalSource.new(visualization.id, dataset['url'], dataset['geometry_types'], dataset['rows'], dataset['size'], 'common-data').save
             end
           rescue => e
             CartoDB.notify_exception(e, {
-              name: d.fetch('name', 'ERR: name'),
-              source: d.fetch('source', 'ERR: source'),
-              rows: d.fetch('rows', 'ERR: rows'),
-              updated_at: d.fetch('updated_at', 'ERR: updated_at'),
-              url: d.fetch('url', 'ERR: url')
+              name: dataset.fetch('name', 'ERR: name'),
+              source: dataset.fetch('source', 'ERR: source'),
+              rows: dataset.fetch('rows', 'ERR: rows'),
+              updated_at: dataset.fetch('updated_at', 'ERR: updated_at'),
+              url: dataset.fetch('url', 'ERR: url')
             })
             failed += 1
           end
@@ -75,16 +88,43 @@ module CartoDB
         return added, updated, not_modified, deleted, failed
       end
 
-      def delete_common_data_for_user(user)
-        Collection.new.fetch({type: 'remote', user_id: user.id}).map do |v|
-          delete_remote_visualization(v)
+      def update_user_date_flag(user)
+        begin
+          user.last_common_data_update_date = Time.now
+          if user.valid?
+            user.save(raise_on_failure: true)
+          elsif user.errors[:quota_in_bytes]
+            # This happens for the organization quota validation in the user model so we bypass this
+            user.save(:validate => false, raise_on_failure: true)
+          end
+        rescue => e
+          CartoDB.notify_exception(e, {user: user})
         end
+      end
+
+      def delete_common_data_for_user(user)
+        #TODO This is ugly, I know, one query per vis but I've tried to use Collection pagination
+        #to do it without result. When the Carto::Visualization model could be used to delete this
+        #should be move to AR and paginate removing the extra query
+        deleted = 0
+        vqb = Carto::VisualizationQueryBuilder.new
+                                              .with_type(Carto::Visualization::TYPE_REMOTE)
+                                              .with_user_id(user.id)
+                                              .build
+
+        vis_ids = vqb.pluck(:id)
+        vis_ids.each do |vis_id|
+          vis = CartoDB::Visualization::Member.new(id: vis_id).fetch
+          delete_remote_visualization(vis)
+          deleted += 1
+        end
+        deleted
       end
 
       private
 
-      def get_datasets
-        @datasets ||= CommonDataSingleton.instance.datasets[:datasets]
+      def get_datasets(visualizations_api_url)
+        @datasets ||= CommonDataSingleton.instance.datasets(visualizations_api_url)
       end
 
       def delete_remote_visualization(visualization)
@@ -99,6 +139,7 @@ module CartoDB
             puts "Couldn't delete #{visualization.id} visualization because it's been imported"
             false
           else
+            CartoDB.notify_exception(e)
             raise e
           end
         end

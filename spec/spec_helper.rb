@@ -1,3 +1,18 @@
+# Must be placed at the beginning
+# @see https://github.com/colszowka/simplecov#getting-started
+if ENV['RAILS_ENV'] == 'test'
+  require 'simplecov'
+  SimpleCov.start 'rails' do
+    # Default is just 10 mins, else will drop "old" coverage data
+    merge_timeout 3600
+    puts ENV['TEST_ENV_NUMBER']
+    command_name "specs_#{Process.pid}"
+    add_filter "/spec/"
+    add_filter "/tmp/"
+    add_filter "/db/"
+  end
+end
+
 require_relative './rspec_configuration'
 
 # This file is copied to spec/ when you run 'rails generate rspec:install'
@@ -30,7 +45,12 @@ RSpec.configure do |config|
     $api_credentials.flushdb
     $users_metadata.flushdb
 
-    Rails::Sequel.connection.tables.each{ |t| next if [:schema_migrations].include?(t); Rails::Sequel.connection.run("TRUNCATE TABLE \"#{t}\" CASCADE") }
+    protected_tables = [:schema_migrations, :spatial_ref_sys]
+    Rails::Sequel.connection.tables.each do |t|
+      if !protected_tables.include?(t)
+        Rails::Sequel.connection.run("TRUNCATE TABLE \"#{t}\" CASCADE")
+      end
+    end
 
     # To avoid Travis and connection leaks
     $pool.close_connections!

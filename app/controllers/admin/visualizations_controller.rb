@@ -422,7 +422,7 @@ class Admin::VisualizationsController < ApplicationController
   def link_ghost_tables
     return true unless current_user.present?
 
-    if current_user.search_for_modified_table_names
+    if current_user.search_for_modified_table_names && current_user.has_feature_flag?('ghost_tables')
       # this should be removed from there once we have the table triggers enabled in cartodb-postgres extension
       # test if there is a job already for this
       if !current_user.link_ghost_tables_working
@@ -433,8 +433,14 @@ class Admin::VisualizationsController < ApplicationController
 
   def load_common_data
     return true unless current_user.present?
-
-    ::Resque.enqueue(::Resque::UserJobs::CommonData::LoadCommonData, current_user.id) if current_user.should_load_common_data?
+    begin
+      visualizations_api_url = CartoDB::Visualization::CommonDataService.build_url(self)
+      ::Resque.enqueue(::Resque::UserJobs::CommonData::LoadCommonData, current_user.id, visualizations_api_url) if current_user.should_load_common_data?
+    rescue Exception => e
+      # We don't block the load of the dashboard because we aren't able to load common dat
+      CartoDB.notify_exception(e, {user:current_user})
+      return true
+    end
   end
 
   def more_visualizations(user, excluded_visualization)

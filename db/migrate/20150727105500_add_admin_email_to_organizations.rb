@@ -1,8 +1,12 @@
 Sequel.migration do
 
   up do
-    alter_table :organizations do
-      add_column :admin_email, :text
+    begin
+      alter_table :organizations do
+        add_column :admin_email, :text
+      end
+    rescue
+      # Weird scenario that column already exists. probably due to a file timestamp change
     end
 
     Rails::Sequel.connection.run(%Q{

@@ -47,6 +47,31 @@ describe User do
     @user2.destroy
   end
 
+  it "Should properly report ability to change (or not) email & password when proceeds" do
+    @user.google_sign_in = false
+    password_change_date = @user.last_password_change_date
+    Carto::Ldap::Manager.any_instance.stubs(:configuration_present?).returns(false)
+
+    @user.can_change_email?.should eq true
+    @user.can_change_password?.should eq true
+
+    @user.google_sign_in = true
+    @user.can_change_email?.should eq false
+
+    @user.last_password_change_date = nil
+    @user.can_change_email?.should eq false
+
+    Carto::Ldap::Manager.any_instance.stubs(:configuration_present?).returns(true)
+    @user.can_change_email?.should eq false
+
+    @user.last_password_change_date = password_change_date
+    @user.google_sign_in = false
+    @user.can_change_email?.should eq false
+
+    @user.can_change_password?.should eq false
+
+  end
+
   it "should set a default database_host" do
     @user.database_host.should eq ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
   end
@@ -760,7 +785,7 @@ describe User do
     query_result[:time].should_not be_blank
     query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
     query_result[:total_rows].should == 2
-    query_result[:rows].first.keys.should == [:id, :name_of_species, :kingdom, :family, :lat, :lon, :views, :the_geom, :cartodb_id, :created_at, :updated_at, :the_geom_webmercator]
+    query_result[:rows].first.keys.sort.should == [:cartodb_id, :the_geom, :the_geom_webmercator, :id, :name_of_species, :kingdom, :family, :lat, :lon, :views].sort
     query_result[:rows][0][:name_of_species].should == "Barrukia cristata"
     query_result[:rows][1][:name_of_species].should == "Eulagisca gigantea"
 
@@ -803,7 +828,7 @@ describe User do
     query_result[:time].should_not be_blank
     query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
     query_result[:total_rows].should == 2
-    query_result[:rows].first.keys.should == [:id, :name_of_species, :kingdom, :family, :lat, :lon, :views, :the_geom, :cartodb_id, :created_at, :updated_at, :the_geom_webmercator]
+    query_result[:rows].first.keys.sort.should == [:cartodb_id, :the_geom, :the_geom_webmercator, :id, :name_of_species, :kingdom, :family, :lat, :lon, :views].sort
     query_result[:rows][0][:name_of_species].should == "Barrukia cristata"
     query_result[:rows][1][:name_of_species].should == "Eulagisca gigantea"
     query_result[:results].should  == true
@@ -1482,8 +1507,12 @@ describe User do
       @user.last_password_change_date = nil
       @user.save
 
+      @user.needs_password_confirmation?.should == false
+
       new_valid_password = '123456'
       @user.change_password("doesn't matter in this case", new_valid_password, new_valid_password)
+
+      @user.needs_password_confirmation?.should == true
     end
 
     it 'should allow updating password w/o a current password' do
@@ -1580,6 +1609,28 @@ describe User do
       User.find(id:user_id).should eq nil
 
     end
+  end
+
+  describe '#needs_password_confirmation?' do
+
+    it 'is true for a normal user' do
+      user = FactoryGirl.build(:carto_user, :google_sign_in => nil)
+      user.needs_password_confirmation?.should == true
+
+      user = FactoryGirl.build(:user, :google_sign_in => false)
+      user.needs_password_confirmation?.should == true
+    end
+
+    it 'is false for users that signed in with Google' do
+      user = FactoryGirl.build(:user, :google_sign_in => true)
+      user.needs_password_confirmation?.should == false
+    end
+
+    it 'is true for users that signed in with Google but changed the password' do
+      user = FactoryGirl.build(:user, :google_sign_in => true, :last_password_change_date => Time.now)
+      user.needs_password_confirmation?.should == true
+    end
+
   end
 
   def create_org(org_name, org_quota, org_seats)

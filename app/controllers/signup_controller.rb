@@ -1,5 +1,6 @@
-require_dependency 'google_plus_api'
 require_dependency 'google_plus_config'
+
+require_relative '../../lib/user_account_creator'
 
 class SignupController < ApplicationController
   include LoginHelper
@@ -9,6 +10,7 @@ class SignupController < ApplicationController
   ssl_required :signup, :create
 
   before_filter :load_organization
+  before_filter :disable_if_ldap_configured
   before_filter :initialize_google_plus_config
 
   def signup
@@ -16,46 +18,47 @@ class SignupController < ApplicationController
   end
 
   def create
-    @user = ::User.new_with_organization(@organization)
+    account_creator = CartoDB::UserAccountCreator.new
+                                                 .with_organization(@organization)
 
     google_access_token = [params.fetch(:google_access_token, nil), params.fetch(:google_signup_access_token, nil)].uniq.compact.first
     # Merge both sources (signup and login) in a single param
     params[:google_access_token] = google_access_token
 
     if !user_password_signup? && google_access_token.present? && @google_plus_config.present?
-      # Keep in mind get_user_data can return nil
-      user_data = GooglePlusAPI.new.get_user_data(google_access_token)
+      account_creator.with_google_token(google_access_token)
     end
 
-    if user_data
-      user_data.set_values(@user)
-      if params[:user] && params[:user][:username].present?
-        @user.username = params[:user][:username]
-      end
-    else
-      @user.username = params[:user][:username]
-      @user.email = params[:user][:email]
-      @user.password = params[:user][:password]
-      @user.password_confirmation = params[:user][:password]
+    if params[:user]
+      account_creator.with_username(params[:user][:username]) if params[:user][:username].present?
+      account_creator.with_email(params[:user][:email]) if params[:user][:email].present?
+      account_creator.with_password(params[:user][:password]) if params[:user][:password].present?
     end
 
-    if @user.valid? && @user.validate_credentials_not_taken_in_central
-      @user_creation = Carto::UserCreation.new_user_signup(@user)
-      @user_creation.save
-      ::Resque.enqueue(::Resque::UserJobs::Signup::NewUser, @user_creation.id)
+    if account_creator.valid?
+      creation_data = account_creator.enqueue_creation(self)
+
       flash.now[:success] = 'User creation in progress'
-      render action: 'signup_confirmation'
+      # Template variables
+      @user_creation_id = creation_data[:id]
+      @user_name = creation_data[:id]
+      @redirect_url = CartoDB.url(self, 'dashboard')
+      render 'shared/signup_confirmation'
     else
-      CartoDB.notify_debug('User not valid at signup', { errors: @user.errors } )
-      if @user.errors['organization'] && !@user.errors[:organization].empty?
-        render 'organization_signup_issue'
+      @user = account_creator.user
+      errors = account_creator.validation_errors
+      CartoDB.notify_debug('User not valid at signup', { errors: errors } )
+      if errors['organization'] && !errors[:organization].empty?
+        @signup_source = 'Organization'
+        render 'shared/signup_issue'
       else
         flash.now[:error] = 'User not valid'
         render action: 'signup'
       end
     end
+
   rescue => e
-    CartoDB.notify_exception(e, { new_user: @user.inspect })
+    CartoDB.notify_exception(e, { new_user: account_creator.user.inspect })
     flash.now[:error] = e.message
     render action: 'signup'
   end
@@ -77,7 +80,12 @@ class SignupController < ApplicationController
     render_404 and return false unless @organization && @organization.signup_page_enabled
     check_signup_errors = Sequel::Model::Errors.new
     @organization.validate_for_signup(check_signup_errors, ::User.new_with_organization(@organization).quota_in_bytes)
-    render 'organization_signup_issue' if check_signup_errors.length > 0
+    @signup_source = 'Organization'
+    render 'shared/signup_issue' if check_signup_errors.length > 0
+  end
+
+  def disable_if_ldap_configured
+    render_404 and return false if Carto::Ldap::Manager.new.configuration_present?
   end
 
 end

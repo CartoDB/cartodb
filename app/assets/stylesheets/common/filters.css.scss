@@ -15,11 +15,16 @@
   background: transparent;
   z-index: 10;
 }
+// Positionate relative to the content
+.Filters.is-relative {
+  position: relative;
+}
 // Moved with scroll behaviour
 .Filters.is-fixed {
   position: fixed;
   background: white;
-
+}
+.Filters.with-long-separator {
   &:before {
     content: '';
     position:absolute;
@@ -30,13 +35,14 @@
     background-color: $cStructure-softLine;
     z-index: 0;
   }
+  .Filters-separator { display: none }
 }
-// Positionate relative to the content
-.Filters.is-relative { position: relative }
+.Filters.above-form { position: relative; margin-bottom: 25px; }
+.Filters.above-form .Filters-separator { background-color: $cStructure-darkGrey; }
 .Filters > .u-inner {
   position:relative;
   display:block;
-  height:81px;
+  height: 81px;
   padding: 0;
   overflow:hidden;
 }
@@ -51,9 +57,10 @@
   top:80px;
   width:100%;
   height:1px;
-  background-color:$cStructure-softLine;
+  background-color: $cStructure-softLine;
   z-index:0;
 }
+
 .Filters.is--fixed .Filters-separator { display: none }
 .Filters-row {
   @include display-flex();
@@ -167,6 +174,7 @@ a.Filters-cleanSearch { line-height:32px }
   font-style:italic;
   color:#DDD;
 }
+
 .Filters-typeLink {
   display: inline-block;
   line-height: 80px;
@@ -194,6 +202,7 @@ a.Filters-cleanSearch { line-height:32px }
     height:1px;
     background:$cTypography-linkSelected;
   }
+
   &:hover {
     cursor:default;
     text-decoration: none;
@@ -280,20 +289,8 @@ a.Filters-cleanSearch { line-height:32px }
     display:inline;
     min-width: 65px;
   }
+
   .Filters-searchItem { display:inherit }
-}
-.Filters-progress {
-  @include display-flex();
-  @include align-items(center, center);
-}
-.Filters-progressSize {
-  margin-right: 12px;
-  color: $cTypography-secondary;
-  font-size: $sFontSize-smallUpperCase;
-}
-.Filters-progressBar {
-  @include progress-bar(6px, 9px, true, false);
-  width: 178px;
 }
 .Filters-link:hover {
   text-decoration: none;
@@ -305,7 +302,7 @@ a.Filters-cleanSearch { line-height:32px }
   }
 }
 
-.Filters.Filters--navListing {
+.Filters--navListing {
   // Avoiding hide scroll bars
   position: fixed;
   top: 157px;
@@ -314,10 +311,10 @@ a.Filters-cleanSearch { line-height:32px }
   margin-left: -500px;
   background: $cStructure-grayBkg;
 }
-.Filters.Filters--navListing.Filters--navListing--withFlashMessage {
+.Filters--navListing.Filters--navListing--withFlashMessage {
   top: 157px + 81px;
 }
-.Filters.Filters--navListing:after {
+.Filters--navListing:after {
   content: '';
   position: absolute;
   bottom: -18px;
@@ -329,8 +326,8 @@ a.Filters-cleanSearch { line-height:32px }
   @include background-gradient(rgba(#F9F9F9,1), rgba(#F9F9F9,0));
   z-index: 2;
 }
-.Filters.Filters--navListing .Filters-separator { background-color: $cStructure-mainLine }
-.Filters.Filters--navListing .Filters-searchInput { margin-top: -2px } /* hacking line-height between search and input */
+.Filters--navListing .Filters-separator { background-color: $cStructure-mainLine }
+.Filters--navListing .Filters-searchInput { margin-top: -2px } /* hacking line-height between search and input */
 .Filters--navListing .Button--create {
   height: 34px;
   margin-top: 48px;
@@ -339,4 +336,14 @@ a.Filters-cleanSearch { line-height:32px }
 .Filters--navListing .Button--create.is-disabled:hover {
   background: none;
   color: $cTypography-link;
+}
+.Filters--navListing.no-shadow:after { display: none }
+.Filters--static {
+  position: relative;
+  width: 100%;
+  height: 81px;
+  min-height: 81px;
+  left: auto;
+  top: auto;
+  margin-left: auto;
 }

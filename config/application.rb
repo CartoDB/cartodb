@@ -163,5 +163,4 @@ require 'cartodb/central'
 #require 'importer/lib/cartodb-importer'
 require 'importer/lib/cartodb-migrator'
 require 'varnish/lib/cartodb-varnish'
-require 'cartodb_stats'
 $pool = CartoDB::ConnectionPool.new

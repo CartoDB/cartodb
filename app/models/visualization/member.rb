@@ -102,7 +102,7 @@ module CartoDB
         @redis_vizjson_cache = RedisVizjsonCache.new()
       end
 
-      def self.remote_member(name, user_id, privacy, description, tags, license, source, attributions)
+      def self.remote_member(name, user_id, privacy, description, tags, license, source, attributions, display_name)
         Member.new({
           name: name,
           user_id: user_id,
@@ -112,14 +112,19 @@ module CartoDB
           license: license,
           source: source,
           attributions: attributions,
+          display_name: display_name,
           type: TYPE_REMOTE})
       end
 
-      def update_remote_data(privacy, description, tags, license, source, attributions)
+      def update_remote_data(privacy, description, tags, license, source, attributions, display_name)
         changed = false
         if self.privacy != privacy
           changed = true
           self.privacy = privacy
+        end
+        if self.display_name != display_name
+          changed = true
+          self.display_name = display_name
         end
         if self.description != description
           changed = true
@@ -634,6 +639,10 @@ module CartoDB
         if !license.nil?
           Carto::License.find(license.to_sym)
         end
+      end
+
+      def attributions_from_derived_visualizations
+        related_visualizations.map(&:attributions).reject {|attribution| attribution.blank?}
       end
 
       private

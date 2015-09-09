@@ -14,8 +14,12 @@ require_relative './overlay/member'
 require_relative './overlay/collection'
 require_relative './overlay/presenter'
 require_relative '../../services/importer/lib/importer/query_batcher'
+require_relative '../../services/importer/lib/importer/cartodbfy_time'
 require_relative '../../services/datasources/lib/datasources/decorators/factory'
 require_relative '../../services/table-geocoder/lib/internal-geocoder/latitude_longitude'
+
+require_relative '../../lib/cartodb/stats/user_tables'
+require_relative '../../lib/cartodb/stats/importer'
 
 class Table
   extend Forwardable
@@ -58,7 +62,6 @@ class Table
   DEFAULT_THE_GEOM_TYPE = 'geometry'
 
   VALID_GEOMETRY_TYPES = %W{ geometry multipolygon point multilinestring }
-
 
   def_delegators :relator, *CartoDB::TableRelator::INTERFACE
   def_delegators :@user_table, *::UserTable::INTERFACE
@@ -292,6 +295,8 @@ class Table
     end
   end
 
+  # TODO: basically most if not all of what the import_cleanup does is done by cartodbfy.
+  # Consider deletion.
   def import_cleanup
     owner.in_database(:as => :superuser) do |user_database|
       # When tables are created using ogr2ogr they are added a ogc_fid or gid primary key
@@ -349,8 +354,6 @@ class Table
         user_database.run(%Q{ALTER TABLE #{qualified_table_name} DROP COLUMN #{aux_cartodb_id_column}})
       end
 
-      self.schema(reload:true)
-      self.cartodbfy
     end
 
   end
@@ -376,23 +379,22 @@ class Table
 
       self[:name] = importer_result_name
 
-      self.schema(reload: true)
-
       set_the_geom_column!
 
       import_cleanup
+      self.cartodbfy
 
-      set_table_id
       @data_import.save
     else
-      if register_table_only.present?
-        set_table_id
-      else
+      if !register_table_only.present?
         create_table_in_database!
-        set_table_id
         set_the_geom_column!(self.the_geom_type)
+        self.cartodbfy
       end
     end
+
+    self.schema(reload:true)
+    set_table_id
   rescue => e
     self.handle_creation_error(e)
   end
@@ -437,8 +439,6 @@ class Table
     add_table_to_stats
 
     update_table_pg_stats
-
-    self.cartodbfy
 
   rescue => e
     self.handle_creation_error(e)
@@ -562,8 +562,8 @@ class Table
     )
 
     member.store
-
     member.map.recalculate_bounds!
+    member.map.recenter_using_bounds!
 
     CartoDB::Visualization::Overlays.new(member).create_default_overlays
   end
@@ -1169,20 +1169,30 @@ class Table
   end
 
   def cartodbfy
+    start = Time.now
     schema_name = owner.database_schema
     table_name = "#{owner.database_schema}.#{self.name}"
 
-    owner.in_database do |user_database|
-      user_database.run(%Q{
-        SELECT cartodb.CDB_CartodbfyTable('#{schema_name}'::TEXT,'#{table_name}'::REGCLASS);
-      })
+    importer_stats.timing('cartodbfy') do
+      owner.in_database do |user_database|
+        user_database.run(%Q{
+          SELECT cartodb.CDB_CartodbfyTable('#{schema_name}'::TEXT,'#{table_name}'::REGCLASS);
+        })
+      end
     end
 
-    self.schema(reload:true)
+    elapsed = Time.now - start
+    if @data_import
+      CartoDB::Importer2::CartodbfyTime::instance(@data_import.id).add(elapsed)
+    end
   end
 
   def update_table_pg_stats
     owner.in_database[%Q{ANALYZE #{qualified_table_name};}]
+  end
+
+  def update_table_geom_pg_stats
+    owner.in_database[%Q{ANALYZE #{qualified_table_name}(the_geom);}]
   end
 
   def owner
@@ -1212,7 +1222,7 @@ class Table
 
   def set_table_id
     @user_table.table_id = self.get_table_id
-  end # set_table_id
+  end
 
   def get_table_id
     record = owner.in_database.select(:pg_class__oid)
@@ -1337,6 +1347,10 @@ class Table
   end
 
   private
+
+  def importer_stats
+    @importer_stats ||= CartoDB::Stats::Importer.instance
+  end
 
   def beautify_name(name)
     return name unless name
@@ -1631,17 +1645,17 @@ class Table
   end
 
   def add_table_to_stats
-    CartodbStats.update_tables_counter(1)
-    CartodbStats.update_tables_counter_per_user(1, self.owner.username)
-    CartodbStats.update_tables_counter_per_host(1)
-    CartodbStats.update_tables_counter_per_plan(1, self.owner.account_type)
+    CartoDB::Stats::UserTables.instance.update_tables_counter(1)
+    CartoDB::Stats::UserTables.instance.update_tables_counter_per_user(1, self.owner.username)
+    CartoDB::Stats::UserTables.instance.update_tables_counter_per_host(1)
+    CartoDB::Stats::UserTables.instance.update_tables_counter_per_plan(1, self.owner.account_type)
   end
 
   def remove_table_from_stats
-    CartodbStats.update_tables_counter(-1)
-    CartodbStats.update_tables_counter_per_user(-1, self.owner.username)
-    CartodbStats.update_tables_counter_per_host(-1)
-    CartodbStats.update_tables_counter_per_plan(-1, self.owner.account_type)
+    CartoDB::Stats::UserTables.instance.update_tables_counter(-1)
+    CartoDB::Stats::UserTables.instance.update_tables_counter_per_user(-1, self.owner.username)
+    CartoDB::Stats::UserTables.instance.update_tables_counter_per_host(-1)
+    CartoDB::Stats::UserTables.instance.update_tables_counter_per_plan(-1, self.owner.account_type)
   end
 
   ############################### Sharing tables ##############################

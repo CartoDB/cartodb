@@ -35,6 +35,8 @@ class Carto::UserCreation < ActiveRecord::Base
     after_transition any => :creating_user, :do => :initialize_user
     after_transition any => :validating_user, :do => :validate_user
     after_transition any => :saving_user, :do => :save_user
+    after_transition any => :promoting_user, :do => :promote_user
+    after_transition any => :load_common_data, :do => :load_common_data
     after_transition any => :creating_user_in_central, :do => :create_in_central
 
     before_transition any => :success, :do => :close_creation
@@ -43,11 +45,12 @@ class Carto::UserCreation < ActiveRecord::Base
     event :next_creation_step do
       transition :enqueuing => :creating_user,
           :creating_user => :validating_user,
-          :validating_user => :saving_user
+          :validating_user => :saving_user,
+          :saving_user => :promoting_user
 
-      transition :saving_user => :creating_user_in_central, :creating_user_in_central => :success, :if => :sync_data_with_cartodb_central?
+      transition :promoting_user => :creating_user_in_central, :creating_user_in_central => :load_common_data, :load_common_data => :success, :if => :sync_data_with_cartodb_central?
 
-      transition :saving_user => :success, :unless => :sync_data_with_cartodb_central?
+      transition :promoting_user => :load_common_data, :load_common_data => :success, :unless => :sync_data_with_cartodb_central?
     end
 
     event :fail_user_creation do
@@ -65,7 +68,20 @@ class Carto::UserCreation < ActiveRecord::Base
         true
       end
     end
-    
+
+  end
+
+  def set_owner_promotion(promote_to_organization_owner)
+    @promote_to_organization_owner = promote_to_organization_owner
+  end
+
+  def set_common_data_url(common_data_url)
+    @common_data_url = common_data_url
+  end
+
+  # TODO: Shorcut, search for a better solution to detect requirement
+  def requires_validation_email?
+    self.google_sign_in != true && !Carto::Ldap::Manager.new.configuration_present?
   end
 
   private
@@ -77,10 +93,6 @@ class Carto::UserCreation < ActiveRecord::Base
   # INFO: state_machine needs guard methods to be instance methods
   def sync_data_with_cartodb_central?
     Cartodb::Central.sync_data_with_cartodb_central?
-  end
-
-  def requires_validation_email?
-    self.google_sign_in != true
   end
 
   def log_transition_begin
@@ -101,11 +113,15 @@ class Carto::UserCreation < ActiveRecord::Base
     @user.email = self.email
     @user.crypted_password = self.crypted_password
     @user.salt = self.salt
-    @user.organization = ::Organization.where(id: self.organization_id).first
     @user.quota_in_bytes = self.quota_in_bytes unless self.quota_in_bytes.nil?
     @user.google_sign_in = self.google_sign_in
-    @user.enable_account_token = User.make_token unless @user.google_sign_in
-    @user.organization.owner.copy_account_features(@user)
+    @user.enable_account_token = User.make_token if requires_validation_email?
+    unless @promote_to_organization_owner
+      organization = ::Organization.where(id: self.organization_id).first
+      raise "Trying to copy organization settings from one without owner" if organization.owner.nil?
+      @user.organization = organization
+      @user.organization.owner.copy_account_features(@user)
+    end
   rescue => e
     handle_failure(e, mark_as_failure = true)
   end
@@ -125,6 +141,25 @@ class Carto::UserCreation < ActiveRecord::Base
     self.save
   rescue => e
     handle_failure(e, mark_as_failure = true)
+  end
+
+  def promote_user
+    return unless @promote_to_organization_owner
+
+    organization = ::Organization.where(id: self.organization_id).first
+    raise "Trying to set organization owner when there's already one" unless organization.owner.nil?
+
+    user_organization = CartoDB::UserOrganization.new(self.organization_id, @user.id)
+    user_organization.promote_user_to_admin
+    @user.reload
+  rescue => e
+    handle_failure(e, mark_as_failure = true)
+  end
+
+  def load_common_data
+    @user.load_common_data(@common_data_url) unless @common_data_url.nil?
+  rescue => e
+    handle_failure(e, mark_as_failure = false)
   end
 
   def create_in_central

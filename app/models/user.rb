@@ -74,6 +74,8 @@ class User < Sequel::Model
 
   DEFAULT_GEOCODING_QUOTA = 0
 
+  COMMON_DATA_ACTIVE_DAYS = 31
+
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
 
@@ -131,7 +133,7 @@ class User < Sequel::Model
   #   | private_tables_enabled  |    T   |    T    |   T  |
   #   | !private_tables_enabled |    T   |    F    |   F  |
   #   +-------------------------+--------+---------+------+
-  # 
+  #
   def valid_privacy?(privacy)
     self.private_tables_enabled || privacy == UserTable::PRIVACY_PUBLIC
   end
@@ -189,11 +191,11 @@ class User < Sequel::Model
   end
 
   def should_load_common_data?
-    last_common_data_update_date.nil? || last_common_data_update_date < Time.now - 1.month
+    last_common_data_update_date.nil? || last_common_data_update_date < Time.now - COMMON_DATA_ACTIVE_DAYS.day
   end
 
-  def load_common_data
-    CartoDB::Visualization::CommonDataService.new.load_common_data_for_user(self)
+  def load_common_data(visualizations_api_url)
+    CartoDB::Visualization::CommonDataService.new.load_common_data_for_user(self, visualizations_api_url)
   end
 
   def delete_common_data
@@ -314,13 +316,13 @@ class User < Sequel::Model
     external_data_imports = ExternalDataImport.by_user_id(self.id)
     external_data_imports.each { |edi| edi.destroy }
   rescue => e
-    Rollbar.report_message('Error deleting external data imports at user deletion', 'error', { user: self.inspect, error: e.inspect })
+    CartoDB.notify_error('Error deleting external data imports at user deletion', { user: self.inspect, error: e.inspect })
   end
 
   def delete_external_sources
     delete_common_data
   rescue => e
-    Rollbar.report_message('Error deleting external data imports at user deletion', 'error', { user: self.inspect, error: e.inspect })
+    CartoDB.notify_error('Error deleting external data imports at user deletion', { user: self.inspect, error: e.inspect })
   end
 
   def after_destroy
@@ -512,6 +514,11 @@ class User < Sequel::Model
   end
 
   def should_display_old_password?
+    self.needs_password_confirmation?
+  end
+
+  # Some operations, such as user deletion, won't ask for password confirmation if password is not set (because of Google sign in, for example)
+  def needs_password_confirmation?
     google_sign_in.nil? || !google_sign_in || !last_password_change_date.nil?
   end
 
@@ -1111,8 +1118,13 @@ class User < Sequel::Model
     conn[:pg_database].filter(:datname => database_name).all.any?
   end
 
-  def can_change_email
-    return !self.google_sign_in || self.last_password_change_date.present?
+  def can_change_email?
+    return (!self.google_sign_in || self.last_password_change_date.present?) &&
+      !Carto::Ldap::Manager.new.configuration_present?
+  end
+
+  def can_change_password?
+    !Carto::Ldap::Manager.new.configuration_present?
   end
 
   private :database_exists?
@@ -1359,6 +1371,10 @@ class User < Sequel::Model
 
   def import_count
     DataImport.where(user_id: self.id).count
+  end
+
+  def maps_count
+    Map.where(user_id: self.id).count
   end
 
   # Get the count of public visualizations
@@ -2105,7 +2121,7 @@ TRIGGER
   # Upgrade the cartodb postgresql extension
   def upgrade_cartodb_postgres_extension(statement_timeout=nil, cdb_extension_target_version=nil)
     if cdb_extension_target_version.nil?
-      cdb_extension_target_version = '0.8.2'
+      cdb_extension_target_version = '0.10.0'
     end
 
     in_database({
@@ -2536,14 +2552,17 @@ TRIGGER
   # this may have change in the future but in any case this method provides a way to abstract what
   # basemaps are active for the user
   def basemaps
-    google_maps_enabled = !google_maps_api_key.blank?
     basemaps = Cartodb.config[:basemaps]
     if basemaps
       basemaps.select { |group|
         g = group == 'GMaps'
-        google_maps_enabled ? g : !g
+        google_maps_enabled? ? g : !g
       }
     end
+  end
+
+  def google_maps_enabled?
+    google_maps_query_string.present?
   end
 
   # return the default basemap based on the default setting. If default attribute is not set, first basemaps is returned

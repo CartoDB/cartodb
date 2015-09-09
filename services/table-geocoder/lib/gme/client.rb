@@ -47,7 +47,7 @@ module Carto
         # starting at 0.5s when retry_counter=0. The first retry will occur
         # at 1, so subtract that first.
         if retry_counter > 0
-          delay_seconds = 0.5 * 1.5 ** (retry_counter - 1)
+          delay_seconds = 0.1 * 1.5 ** (retry_counter - 1)
           sleep delay_seconds
         end
 

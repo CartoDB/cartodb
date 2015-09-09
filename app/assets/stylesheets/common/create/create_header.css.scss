@@ -7,6 +7,7 @@
   max-height: 100px;
   min-height: 100px!important;
 }
+.CreateDialog-header.with-separator { border-bottom: 1px solid $cStructure-mainLine }
 .CreateDialog-headerSteps {
   display: block;
   text-align: center;

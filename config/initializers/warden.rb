@@ -71,6 +71,25 @@ Warden::Strategies.add(:google_access_token) do
   end
 end
 
+Warden::Strategies.add(:ldap) do
+  def authenticate!
+    (fail! and return) unless (params[:email] && params[:password])
+
+    user = nil
+    begin
+      user = Carto::Ldap::Manager.new.authenticate(params[:email], params[:password])
+    rescue Carto::Ldap::LDAPUserNotPresentAtCartoDBError => exception
+      throw(:warden, action: 'ldap_user_not_at_cartodb', 
+        cartodb_username: exception.cartodb_username, organization_id: exception.organization_id, 
+        ldap_username: exception.ldap_username, ldap_email: exception.ldap_email)
+    end
+    (fail! and return) unless user
+
+    success!(user, :message => "Success")
+    request.flash['logged'] = true
+  end
+end
+
 Warden::Strategies.add(:api_authentication) do
   def authenticate!
     # WARNING: The following code is a modified copy of the oauth10_token method from

@@ -275,7 +275,18 @@ describe("geo.map", function() {
 
       map.layers.remove(layer);
 
-      // The attribution has been removed after the layer has been removed
+      expect(map.get('attribution')).toEqual([
+        "attribution1",
+        "wadus",
+        "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>",
+      ]);
+
+      // Addind a layer with the default attribution
+      var layer = new cdb.geo.CartoDBLayer();
+
+      map.layers.add(layer, { at: 0 });
+
+      // Default CartoDB only appears once and it's the last one
       expect(map.get('attribution')).toEqual([
         "attribution1",
         "wadus",

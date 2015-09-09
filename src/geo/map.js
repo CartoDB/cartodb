@@ -303,13 +303,15 @@ cdb.geo.Map = cdb.core.Model.extend({
   },
 
   _updateAttributions: function() {
+    var defaultCartoDBAttribution = this.defaults.attribution[0];
     var attributions = _.chain(this.layers.models)
       .map(function(layer) { return layer.get('attribution'); })
+      .reject(function(attribution) { return attribution == defaultCartoDBAttribution})
       .compact()
       .uniq()
       .value();
 
-    attributions.push(this.defaults.attribution[0]);
+    attributions.push(defaultCartoDBAttribution);
 
     this.set('attribution', attributions);
   },

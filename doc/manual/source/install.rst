@@ -1,6 +1,6 @@
 
 Installation
-============
+============ 
 
 .. warning::
   CartoDB is guaranteed to run without any issue in Ubuntu 12.04 x64. This documentation describes de process to install CartoDB in this specific OS version.
@@ -55,7 +55,7 @@ PostgreSQL
 
   .. code-block:: bash
   
-    sudo add-apt-repository ppa:cartodb/postgresql-9.3
+    sudo add-apt-repository ppa:cartodb/postgresql-9.3 && sudo apt-get update
 
 
 * Install client packages
@@ -81,18 +81,27 @@ PostgreSQL
 
   .. code-block:: bash
   
-    sudo add-apt-repository ppa:cartodb/pg-schema-trigger
+    sudo add-apt-repository ppa:cartodb/pg-schema-trigger && sudo apt-get update
     sudo apt-get install postgresql-9.3-pg-schema-triggers
 
 
-PostgreSQL access authorization is managed through pg_hba.conf configuration file. Here it's defined how the users created in postgresql cluster can access the server. This involves several aspects like type of authentication (md5, no password, etc..) or source IP of the connection. In order to simplify the process of the installation we are going to allow connections with postgres user from localhost without authentication. Of course this can be configured in a different way at any moment but changes here should imply changes in database access configuration of CartoDB apps. 
+PostgreSQL access authorization is managed through pg_hba.conf configuration file, which is normally in /etc/postgresql/9.3/main/pg_hba.conf. Here it's defined how the users created in postgresql cluster can access the server. This involves several aspects like type of authentication (md5, no password, etc..) or source IP of the connection. In order to simplify the process of the installation we are going to allow connections with postgres user from localhost without authentication. Of course this can be configured in a different way at any moment but changes here should imply changes in database access configuration of CartoDB apps. 
 
 This is the pg_hba.conf with the no password access from localhost:
 
   .. code-block:: bash
-    
+  
+    local   all             postgres                                trust
     local   all             all                                     trust
     host    all             all             127.0.0.1/32            trust
+
+For these changes to take effect, you'll need to restart postgres:
+
+  .. code-block:: bash
+  
+    sudo service postgresql restart
+
+  
 
 * Create some users in PostgreSQL. These users are used by some CartoDB apps internally
 
@@ -109,28 +118,7 @@ This is the pg_hba.conf with the no password access from localhost:
     cd cartodb-postgresql
     git checkout cdb
     sudo make all install
-    sudo PGUSER=postgres make installcheck # to run tests
-
-.. warning::
-    if test_ddl_triggers fails it's likely due to an incomplete installation of schema_triggers.
-    You need to add schema_triggers.so to the shared_preload_libraries setting in postgresql.conf :
-
-    ::
-
-        $ sudo vim /etc/postgresql/9.3/main/postgresql.conf
-         shared_preload_libraries = 'schema_triggers.so'
-        $ sudo service postgresql restart # restart postgres
-
-  After this change the 2nd installcheck of cartodb-postresql should be OK.
-  
-  Check https://github.com/cartodb/cartodb-postgresql for further reference
-
-* Restart PostgreSQL after all the process
-
-  .. code-block:: bash
-
-    sudo /etc/init.d/postgresql restart
-
+ 
 GIS dependencies
 ----------------
 
@@ -138,13 +126,13 @@ GIS dependencies
 
   .. code-block:: bash
   
-    sudo add-apt-repository ppa:cartodb/gis
+    sudo add-apt-repository ppa:cartodb/gis && sudo apt-get update
 
 * Install Proj
     
   .. code-block:: bash
   
-    sudo apt-get install proj proj-bin proj-data libproj-dev
+    sudo apt-get install proj proj-bin proj-data libproj-dev 
 
 * Install JSON
 
@@ -184,6 +172,31 @@ PostGIS
     psql -U postgres template_postgis -c 'CREATE EXTENSION postgis;CREATE EXTENSION postgis_topology;'
     sudo ldconfig
 
+* Run an installcheck to verify the database have been installed properly
+
+   sudo PGUSER=postgres make installcheck # to run tests
+
+.. warning::
+    if test_ddl_triggers fails it's likely due to an incomplete installation of schema_triggers.
+    You need to add schema_triggers.so to the shared_preload_libraries setting in postgresql.conf :
+
+    ::
+
+        $ sudo vim /etc/postgresql/9.3/main/postgresql.conf
+         shared_preload_libraries = 'schema_triggers.so'
+        $ sudo service postgresql restart # restart postgres
+
+  After this change the 2nd installcheck of cartodb-postresql should be OK.
+  
+  Check https://github.com/cartodb/cartodb-postgresql for further reference
+
+* Restart PostgreSQL after all the process
+
+  .. code-block:: bash
+
+    sudo service postgresql restart
+  
+
 Redis
 -----
 
@@ -191,7 +204,7 @@ Redis
 
   .. code-block:: bash
    
-    sudo add-apt-repository ppa:cartodb/redis
+    sudo add-apt-repository ppa:cartodb/redis && sudo apt-get update
 
 * Install redis
 
@@ -214,13 +227,21 @@ NodeJS is required by different parts of the stack. The more significant are the
 
   .. code-block:: bash
    
-    sudo add-apt-repository ppa:cartodb/nodejs-010
+    sudo add-apt-repository ppa:cartodb/nodejs-010 && sudo apt-get update
 
-* Install NodeJS
+* Install NodeJS 
 
   .. code-block:: bash
    
-    sudo apt-get install nodejs npm
+    sudo apt-get install nodejs 
+
+  Note this should install both NodeJS 0.10.26 and npm 1.4.3. You can verify the installation went as expected with:
+  
+    .. code-block:: bash
+   
+    nodejs -v
+    npm -v
+
 
 SQL API
 -------
@@ -270,6 +291,17 @@ MAPS API
   
     npm install
 
+ .. warning::
+    If this fails due to package cairo not found in the pkg-config search path, you can install it like this
+
+    ::
+
+        $  sudo apt-get install libpango1.0-dev
+
+  After this change, re-run npm install, and it should be OK.
+  
+
+
 * Create configuration. The name of the filename of the configuration must be the same than the environment you are going to use to start the service. Let's assume it's development.
 
   .. code-block:: bash
@@ -308,11 +340,17 @@ Ruby
 
     sudo ruby-install ruby 1.9.3
 
+* Ruby-install will leave everything in /opt/rubies/ruby-1.9.3-p547/bin. To be able to run ruby and gem later on, you'll need to add this to your PATH variable. It's a good idea to include this line in your bashrc so that it gets loaded on restart
+
+  .. code-block:: bash
+
+    export PATH=$PATH:/opt/rubies/ruby-1.9.3-p547/bin
+
 * Install bundler. Bundler is an app used to manage ruby dependencies. It is needed by the editor
 
   .. code-block:: bash
 
-    sudo gem install bundler
+    gem install bundler
 
 Editor
 ------
@@ -324,6 +362,13 @@ Editor
     git clone --recursive https://github.com/CartoDB/cartodb.git
     cd cartodb
 
+* Install pip
+
+  .. code-block:: bash
+
+    sudo wget  -O /tmp/get-pip.py https://bootstrap.pypa.io/get-pip.py
+    sudo python /tmp/get-pip.py
+
 * Install dependencies
 
   .. code-block:: bash
@@ -333,11 +378,37 @@ Editor
     npm install
     sudo pip install --no-use-wheel -r python_requirements.txt
 
+ .. warning::
+    If this fails due to the installation of the gdal package not finding Python.h, you'll need to do this:
+
+    ::
+
+        export CPLUS_INCLUDE_PATH=/usr/include/gdal
+        export C_INCLUDE_PATH=/usr/include/gdal
+        export PATH=$PATH:/usr/include/gdal
+
+  After this change, re-run the pip install command, and it should work.
+  
+* Add the grunt command to the PATH:
+
+  .. code-block:: bash
+    
+    export PATH=$PATH:$PWD/node_modules/grunt-cli/bin
+
+* Install all necesary gems:
+
+  .. code-block:: bash
+    
+    bundle install
+
+
+
 * Precompile assets. Note that the last parameter is the environment used to run the application. It must be the same used in the Maps and SQL APIs
 
   .. code-block:: bash
     
-    bundle exec ./node_modules/grunt-cli/bin/grunt --environment development
+    bundle exec grunt --environment development
+
 
 * Create configuration files
 

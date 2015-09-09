@@ -150,7 +150,7 @@ GIS dependencies
 
   .. code-block:: bash
       
-    sudo apt-get install gdal-bin libgdal1-dev
+    sudo apt-get install gdal-bin libgdal1-dev libgdal-dev
 
 
 PostGIS
@@ -397,7 +397,7 @@ Editor
         export C_INCLUDE_PATH=/usr/include/gdal
         export PATH=$PATH:/usr/include/gdal
 
-  After this, re-run the pip install command, and it should work.
+  After this, re-run the pip install command, and it should work. If gdal keeps failing, see more information here: http://gis.stackexchange.com/questions/28966/python-gdal-package-missing-header-file-when-installing-via-pip
   
 * Add the grunt command to the PATH
 

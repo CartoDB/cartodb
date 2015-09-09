@@ -38,7 +38,7 @@ $cHeader-dark:  rgba(#3A91D7, 1);
   font-weight: $sFontWeight-lighter;
   color: rgba(white, 0.6);
 }
-.Header-navigationBreadcrumbItem p {
+.Header-navigationBreadcrumbParagraph {
   text-overflow: ellipsis;
   max-width: 150px;
   display: inline-block;

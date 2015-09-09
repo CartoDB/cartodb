@@ -67,6 +67,7 @@ class SignupController < ApplicationController
     end
 
   rescue => e
+    @user ||= ::User.new
     CartoDB.notify_exception(e, { new_user: account_creator.user.inspect })
     flash.now[:error] = e.message
     render action: 'signup', status: 400

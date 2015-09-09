@@ -6,12 +6,15 @@
 @import "../variables/sizes";
 @import "../variables/progress-bar";
 
+$selectedItemPaddingOnSides: $sMargin-element - 1px;
+
 .OrganizationList {
   @include display-flex();
   @include justify-content(flex-start, start);
   @include flex-wrap(wrap);
+  margin-top: 1px; // makes the list not be overlapped by a .Filters block (so selected/hoevered item's border looks OK)
+  padding-bottom: 30px;
   width: 100%;
-  padding: 0 0 30px;
 }
 .OrganizationList--centered {
   min-height: 300px;
@@ -19,13 +22,26 @@
   @include align-items(center, center);
 }
 .OrganizationList-user {
-  width: 100%;
   box-sizing: border-box;
+  position: relative;
+  width: 100%;
 
-  &:not(:first-child) { border-top: 1px solid $cStructure-softLine; }
+  &:not(:last-child) { border-bottom: 1px solid $cStructure-softLine; }
 }
+// TODO: this is duplicated from .DatasetsList-item, can we consolidate these styles somehow?
 .OrganizationList-user.is-selected {
   background-color: $cCard-selectedFill;
+  border: 1px $cCard-selectedBorder solid;
+  border-radius: 4px;
+  margin: -1px -#{$sMargin-element} 0 -#{$sMargin-element};
+  padding: 0 $selectedItemPaddingOnSides;
+}
+.OrganizationList-user.is-selectable:hover {
+  background-color: $cCard-hoverFill;
+  border: 1px $cCard-hoverBorder solid;
+  border-radius: 4px;
+  margin: -1px -#{$sMargin-element} 0 -#{$sMargin-element};
+  padding: 0 $selectedItemPaddingOnSides;
 }
 .OrganizationList-userAvatar {
   width: 42px;

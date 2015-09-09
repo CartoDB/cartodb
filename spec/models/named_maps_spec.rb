@@ -810,8 +810,9 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
 
       CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
 
-      # To align with expected named map data and forgive about internals of centering logic
+      # To align with expected named map data and forgive about internals of centering & zooming logic
       ::Map.any_instance.stubs(:center_data).returns([30.0, 0.0])
+      ::Map.any_instance.stubs(:recalculate_zoom!).returns(nil)
 
       vizjson = get_vizjson(derived_vis)
 

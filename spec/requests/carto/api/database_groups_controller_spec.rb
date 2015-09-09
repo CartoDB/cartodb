@@ -207,7 +207,7 @@ describe Carto::Api::DatabaseGroupsController do
     it '#destroy an existing group' do
       group = Carto::Group.where(organization_id: @carto_organization.id).first
       delete api_v1_databases_group_destroy_url(database_name: group.database_name, name: group.name), nil, org_metadata_api_headers
-      response.status.should == 200
+      response.status.should == 204
       Carto::Group.where(id: group.id).first.should be_nil
     end
 

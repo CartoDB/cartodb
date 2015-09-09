@@ -207,6 +207,9 @@ describe Carto::Api::GroupsController do
         response.body[:organization_id].should == @carto_organization.id
         # INFO: since test doesn't actually trigger the extension we only check expectation on renaming call and display name
         response.body[:display_name].should == new_display_name
+        response.body[:shared_tables_count].should_not be_nil
+        response.body[:shared_maps_count].should_not be_nil
+        response.body[:users].should_not be_nil
 
         # Also check database data because Group changes something after extension interaction
         new_group = Carto::Group.find(response.body[:id])
@@ -281,7 +284,7 @@ describe Carto::Api::GroupsController do
       Carto::Group.expects(:destroy_group_extension_query).with(anything, group.name)
 
       delete_json api_v1_organization_groups_destroy_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, group_id: group.id, api_key: @org_user_owner.api_key), { }, @headers do |response|
-        response.status.should == 200
+        response.status.should == 204
 
         # Extension is simulated, so we delete the group manually
         group.delete

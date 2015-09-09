@@ -1182,16 +1182,16 @@ cartodb.Image(vizjson_url)
 An _Image_ object
 
 
-#### Image.getURL(_callback(err, url)_)
+#### Image.getUrl(_callback(err, url)_)
 
 Gets the URL for the image requested.
 
-<div class="image-geturl">Image.getURL</div>
+<div class="image-geturl">Image.getUrl</div>
 ```javascript
 <script>
 cartodb.Image(vizjson_url)
   .size(600, 400)
-  .getURL(function(err, url) {
+  .getUrl(function(err, url) {
       console.log('image url',url);
   })
 </script>

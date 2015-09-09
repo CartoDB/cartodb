@@ -146,6 +146,19 @@ module Resque
         end
       end
 
+      module Sync
+        module MaxRetriesReached
+          extend ::Resque::Metrics
+          @queue = :users
+
+          def self.perform(user_id, visualization_id, dataset_name, error_code, error_message)
+            user = User.where(id: user_id).first
+            SyncMailer.max_retries_reached(user, visualization_id, dataset_name, error_code, error_message).deliver
+          end
+        end
+      end
+
+
     end
   end
 end

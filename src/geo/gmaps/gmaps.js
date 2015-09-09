@@ -113,6 +113,10 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
       this.map.layers.bind('reset', this._addLayers, this);
       this.map.layers.bind('change:type', this._swicthLayerView, this);
 
+      // When layers are resetted/added/removed attribution is re-calculated and
+      // must updated in the UI
+      this.map.layers.bind('add remove reset', this.setAttribution, this);
+
       this.projector = new cdb.geo.CartoDBLayerGroupGMaps.Projector(this.map_googlemaps);
 
       this.projector.draw = this._ready;
@@ -252,10 +256,10 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
       return [ [0,0], [0,0] ];
     },
 
-  setAttribution: function(m) {
+  setAttribution: function() {
     // Remove old one
     var old = document.getElementById("cartodb-gmaps-attribution")
-      , attribution = m.get("attribution").join(", ");
+      , attribution = this.map.get("attribution").join(", ");
 
       // If div already exists, remove it
       if (old) {

@@ -66,6 +66,10 @@
       this.map.layers.bind('reset', this._addLayers, this);
       this.map.layers.bind('change:type', this._swicthLayerView, this);
 
+      // When layers are resetted/added/removed attribution is re-calculated and
+      // must updated in the UI
+      this.map.layers.bind('add remove reset', this.setAttribution, this);
+
       this.map.geometries.bind('add', this._addGeometry, this);
       this.map.geometries.bind('remove', this._removeGeometry, this);
 

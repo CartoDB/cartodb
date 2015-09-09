@@ -662,7 +662,7 @@ cdb.geo.MapView = cdb.core.View.extend({
     this.map.bind('change:scrollwheel',     this._setScrollWheel, this);
     this.map.bind('change:keyboard',        this._setKeyboard, this);
     this.map.bind('change:center',          this._setCenter, this);
-    this.map.bind('change:attribution',     this._setAttribution, this);
+    this.map.bind('change:attribution',     this.setAttribution, this);
   },
 
   /** unbind model properties */
@@ -685,10 +685,6 @@ cdb.geo.MapView = cdb.core.View.extend({
 
   showBounds: function(bounds) {
     this.map.fitBounds(bounds, this.getSize())
-  },
-
-  _setAttribution: function(m,attr) {
-    this.setAttribution(m);
   },
 
   _addLayers: function() {

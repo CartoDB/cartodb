@@ -437,8 +437,15 @@ Editor
 
   .. code-block:: bash
 
-    RAILS_ENV=development bundle exec rake db:setup
     RAILS_ENV=development bundle exec rake db:migrate
+    RAILS_ENV=development bundle exec rake db:setup
+
+
+* Start the redis-server that allows access to the SQL and Maps APIs:
+
+  .. code-block:: bash
+
+    redis-server &
 
 * Start the editor HTTP server
 

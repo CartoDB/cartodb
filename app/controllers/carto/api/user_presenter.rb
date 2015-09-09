@@ -4,15 +4,11 @@ module Carto
   module Api
     class UserPresenter
 
-      DEFAULT_FETCHING_OPTIONS = {
-        fetch_groups: true
-      }
-
-      # Available fetching options:
-      # - fetch_groups. Default: true.
+      # fetching_options:
+      # - fetch_groups
       def initialize(user, fetching_options = {})
         @user = user
-        @fetching_options = DEFAULT_FETCHING_OPTIONS.merge(fetching_options)
+        @fetching_options = fetching_options
       end
 
       def to_poro

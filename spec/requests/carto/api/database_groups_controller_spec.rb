@@ -10,16 +10,12 @@ describe Carto::Api::DatabaseGroupsController do
 
   describe 'Groups management', :order => :defined do
 
-    before(:all) do
-      @no_auth_headers = {'CONTENT_TYPE'  => 'application/json', :format => "json" }
-    end
-
     before(:each) do
       @carto_organization = Carto::Organization.find(@organization.id)
     end
 
     it "Throws 401 error without http auth" do
-      post api_v1_databases_group_create_url(user_domain: @org_user_owner.username, database_name: @carto_organization.database_name), {}, @no_auth_headers
+      post api_v1_databases_group_create_url(user_domain: @org_user_owner.username, database_name: @carto_organization.database_name), {}, http_json_headers
       response.status.should == 401
     end
 
@@ -63,19 +59,19 @@ describe Carto::Api::DatabaseGroupsController do
       response.status.should == 500
     end
 
-    it '#add_member from username' do
+    it '#add_users from username' do
       group = Carto::Group.where(organization_id: @carto_organization.id).first
       user_information = { username: @org_user_1.username }
-      post api_v1_databases_group_add_member_url(database_name: group.database_name, name: group.name), user_information.to_json, org_metadata_api_headers
+      post api_v1_databases_group_add_users_url(database_name: group.database_name, name: group.name), user_information.to_json, org_metadata_api_headers
       response.status.should == 200
       group.reload
       group.users.collect(&:username).should include(@org_user_1.username)
     end
 
-    it '#add_member returns 409 if username is already added' do
+    it '#add_users returns 409 if username is already added' do
       group = Carto::Group.where(organization_id: @carto_organization.id).first
       user_information = { username: @org_user_1.username }
-      post api_v1_databases_group_add_member_url(database_name: group.database_name, name: group.name), user_information.to_json, org_metadata_api_headers
+      post api_v1_databases_group_add_users_url(database_name: group.database_name, name: group.name), user_information.to_json, org_metadata_api_headers
       response.status.should == 409
     end
 
@@ -171,22 +167,41 @@ describe Carto::Api::DatabaseGroupsController do
       response.status.should == 404
     end
 
-    # TODO: support for tables not yet registered?
-
-    it '#remove_member from username' do
+    it '#remove_users from username' do
       group = Carto::Group.where(organization_id: @carto_organization.id).first
       username = group.users.first.username
-      delete api_v1_databases_group_remove_member_url(database_name: group.database_name, name: group.name, username: username), {}, org_metadata_api_headers
+      delete api_v1_databases_group_remove_users_url(database_name: group.database_name, name: group.name, username: username), {}, org_metadata_api_headers
       response.status.should == 200
       group.reload
       group.users.collect(&:username).should_not include(username)
     end
 
-    it '#remove_member from username throws 404 if member is not found' do
+    it '#remove_users from username throws 404 if user is not found' do
       group = Carto::Group.where(organization_id: @carto_organization.id).first
       username = @org_user_1.username
-      delete api_v1_databases_group_remove_member_url(database_name: group.database_name, name: group.name, username: username), {}, org_metadata_api_headers
+      delete api_v1_databases_group_remove_users_url(database_name: group.database_name, name: group.name, username: username), {}, org_metadata_api_headers
       response.status.should == 404
+    end
+
+    it '#add_users from username accepts batches' do
+      group = Carto::Group.where(organization_id: @carto_organization.id).first
+      user_information = { users: [ @org_user_1.username, @org_user_2.username ] }
+      post api_v1_databases_group_add_users_url(database_name: group.database_name, name: group.name), user_information.to_json, org_metadata_api_headers
+      response.status.should == 200
+      group.reload
+      group.users.collect(&:username).should include(@org_user_1.username)
+      group.users.collect(&:username).should include(@org_user_2.username)
+    end
+
+    it '#remove_users from username accepts batches' do
+      group = Carto::Group.where(organization_id: @carto_organization.id).first
+      usernames = group.users.collect(&:username)
+      delete_json api_v1_databases_group_remove_users_url(database_name: group.database_name, name: group.name), { users: usernames }, org_metadata_api_headers
+      response.status.should == 200
+      group.reload
+      usernames.map { |username|
+        group.users.collect(&:username).should_not include(username)
+      }
     end
 
     it '#destroy an existing group' do

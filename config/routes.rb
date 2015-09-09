@@ -373,16 +373,16 @@ CartoDB::Application.routes.draw do
 
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/users/:user_id/groups' => 'groups#index', as: :api_v1_user_groups, constraints: { user_id: /[^\/]+/ }
 
-    post '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:organization_id/groups/:group_id/users' => 'groups#add_member', as: :api_v1_organization_groups_add_member, constraints: { organization_id: /[^\/]+/, group_id: /[^\/]+/ }
-    delete '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:organization_id/groups/:group_id/users/:user_id' => 'groups#remove_member', as: :api_v1_organization_groups_remove_member, constraints: { organization_id: /[^\/]+/, group_id: /[^\/]+/ , user_id: /[^\/]+/ }
+    post '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:organization_id/groups/:group_id/users' => 'groups#add_users', as: :api_v1_organization_groups_add_users, constraints: { organization_id: /[^\/]+/, group_id: /[^\/]+/ }
+    delete '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:organization_id/groups/:group_id/users(/:user_id)' => 'groups#remove_users', as: :api_v1_organization_groups_remove_users, constraints: { organization_id: /[^\/]+/, group_id: /[^\/]+/ , user_id: /[^\/]+/ }
 
     # Databases (organization) groups
     # Note: url doesn't contain org_id because this needs to be triggered from the SQL API
     post '(/user/:user_domain)(/u/:user_domain)/api/v1/databases/:database_name/groups'                           => 'database_groups#create',  as: :api_v1_databases_group_create
     put '(/user/:user_domain)(/u/:user_domain)/api/v1/databases/:database_name/groups/:old_name'          => 'database_groups#update',  as: :api_v1_databases_group_update
     delete '(/user/:user_domain)(/u/:user_domain)/api/v1/databases/:database_name/groups/:name'          => 'database_groups#destroy',  as: :api_v1_databases_group_destroy
-    post '(/user/:user_domain)(/u/:user_domain)/api/v1/databases/:database_name/groups/:name/users'          => 'database_groups#add_member',  as: :api_v1_databases_group_add_member
-    delete '(/user/:user_domain)(/u/:user_domain)/api/v1/databases/:database_name/groups/:name/users/:username'          => 'database_groups#remove_member',  as: :api_v1_databases_group_remove_member
+    post '(/user/:user_domain)(/u/:user_domain)/api/v1/databases/:database_name/groups/:name/users'          => 'database_groups#add_users',  as: :api_v1_databases_group_add_users
+    delete '(/user/:user_domain)(/u/:user_domain)/api/v1/databases/:database_name/groups/:name/users(/:username)'          => 'database_groups#remove_users',  as: :api_v1_databases_group_remove_users
     put '(/user/:user_domain)(/u/:user_domain)/api/v1/databases/:database_name/groups/:name/permission/:username/tables/:table_name' => 'database_groups#update_permission', as: :api_v1_databases_group_update_permission
     delete '(/user/:user_domain)(/u/:user_domain)/api/v1/databases/:database_name/groups/:name/permission/:username/tables/:table_name' => 'database_groups#destroy_permission', as: :api_v1_databases_group_destroy_permission
 

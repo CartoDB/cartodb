@@ -11,7 +11,7 @@ module Carto
       def to_poro
         {
           id:         @permission.id,
-          owner:      Carto::Api::UserPresenter.new(@permission.owner).to_poro,
+          owner:      Carto::Api::UserPresenter.new(@permission.owner, { fetch_groups: false } ).to_poro,
           entity: {
             id:       @permission.entity_id,
             type:     @permission.entity_type

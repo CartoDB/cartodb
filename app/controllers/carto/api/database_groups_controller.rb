@@ -12,12 +12,13 @@ module Carto
 
       respond_to :json
 
-      ssl_required :create, :update, :destroy, :add_member, :remove_member, :update_permission, :destroy_permission unless Rails.env.development? || Rails.env.test?
+      ssl_required :create, :update, :destroy, :add_users, :remove_users, :update_permission, :destroy_permission unless Rails.env.development? || Rails.env.test?
 
       before_filter :authenticate_extension
       before_filter :load_parameters
-      before_filter :load_mandatory_group, :only => [:destroy, :add_member, :remove_member, :update_permission, :destroy_permission]
-      before_filter :load_user_from_username, :only => [:add_member, :remove_member, :load_table, :update_permission, :destroy_permission]
+      before_filter :load_mandatory_group, :only => [:destroy, :add_users, :remove_users, :update_permission, :destroy_permission]
+      before_filter :load_user_from_username, :only => [:load_table, :update_permission, :destroy_permission]
+      before_filter :load_users_from_username, :only => [:add_users, :remove_users]
       before_filter :load_table, :only => [:update_permission, :destroy_permission]
 
       def create
@@ -67,24 +68,35 @@ module Carto
         render json: { errors: e.message }, status: 500
       end
 
-      def add_member
-        @group.add_member(@username)
-        render json: {}, status: 200
-      rescue CartoDB::ModelAlreadyExistsError => e
-        CartoDB.notify_debug('Group member already exists', { params: params })
-        render json: { errors: "That user is already in the group" }, status: 409
+      def add_users
+        added_usernames = []
+        @usernames.map { |username|
+          begin
+            added_usernames << @group.add_user(username).user.username
+          rescue CartoDB::ModelAlreadyExistsError => e
+            # This will provoke 409 response later
+          end
+        }
+        if added_usernames.length == @usernames.length
+          render json: { users: added_usernames }, status: 200
+        else
+          render json: { errors: "Some users were already in the group: #{@usernames - added_usernames }", users: added_usernames }, status: 409
+        end
       rescue => e
         CartoDB.notify_exception(e, { params: params , group: (@group ? @group : 'not loaded') })
         render json: { errors: e.message }, status: 500
       end
 
-      def remove_member
-        removed = @group.remove_member(@username)
-        if removed
-          render json: {}, status: 200
+      def remove_users
+        removed_usernames = []
+        @usernames.map { |username|
+          removed_user = @group.remove_user(username)
+          removed_usernames << removed_user.username if !removed_user.nil?
+        }
+        if removed_usernames.length == @usernames.length
+          render json: { users: removed_usernames }, status: 200
         else
-        CartoDB.notify_debug('Group member not in the group', { params: params })
-        render json: { errors: "That user is not in the group" }, status: 404
+          render json: { errors: "Some users (#{@usernames - removed_usernames}) were not in the group", users: removed_usernames }, status: 404
         end
       rescue => e
         CartoDB.notify_exception(e, { params: params , group: (@group ? @group : 'not loaded') })
@@ -132,6 +144,7 @@ module Carto
         @name = [params[:old_name], params[:name]].compact.first
         @database_role = params[:database_role]
         @username = params[:username]
+        @usernames = @username.present? ? [ @username ] : params[:users]
         @table_name = params[:table_name]
         case params['access']
             when nil
@@ -158,6 +171,10 @@ module Carto
 
       def load_user_from_username
         @user = Carto::User.where(username: @username).first
+      end
+
+      def load_users_from_username
+        @users = @usernames.map { |username| Carto::User.where(username: username).first }
       end
 
       def load_table

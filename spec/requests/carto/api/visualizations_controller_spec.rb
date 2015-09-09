@@ -224,13 +224,15 @@ describe Carto::Api::VisualizationsController do
 
     it 'returns valid information for a user with one table' do
       table1 = create_random_table($user_1)
-      expected_visualization = JSON.parse(table1.table_visualization.to_hash(
+      table1_visualization_hash = table1.table_visualization.to_hash(
         related: false,
         table_data: true,
         user: $user_1,
         table: table1,
-        synchronization: nil
-      ).to_json)
+        synchronization: nil)
+      table1_visualization_hash[:permission][:owner].delete(:groups)
+      table1_visualization_hash[:table][:permission][:owner].delete(:groups)
+      expected_visualization = JSON.parse(table1_visualization_hash.to_json)
       expected_visualization = normalize_hash(expected_visualization)
 
       response = response_body(type: CartoDB::Visualization::Member::TYPE_CANONICAL)

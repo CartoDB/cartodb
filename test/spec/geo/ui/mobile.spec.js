@@ -61,7 +61,7 @@ describe("cdb.geo.ui.Mobile", function() {
       }
     });
 
-    map.layers = new cdb.geo.Layers([l1, layerGroup]);
+    map.layers.reset([l1, layerGroup]);
 
     template = cdb.core.Template.compile('\<div class="backdrop"></div>\
           <div class="cartodb-header">\
@@ -650,7 +650,7 @@ describe("cdb.geo.ui.Mobile", function() {
       }
     });
 
-    map.layers = new cdb.geo.Layers([l1, layerGroup]);
+    map.layers.reset([l1, layerGroup]);
 
 
     mapView = new cdb.geo.GoogleMapsMapView({

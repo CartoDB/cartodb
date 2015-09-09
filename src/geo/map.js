@@ -294,7 +294,26 @@ cdb.geo.Map = cdb.core.Model.extend({
       }
     }, this);
 
+    this.layers.bind('reset', this._updateAttributions, this);
+    this.layers.bind('add', this._updateAttributions, this);
+    this.layers.bind('remove', this._updateAttributions, this);
+    this.layers.bind('change:attribution', this._updateAttributions, this);
+
     this.geometries = new cdb.geo.Geometries();
+  },
+
+  _updateAttributions: function() {
+    var defaultCartoDBAttribution = this.defaults.attribution[0];
+    var attributions = _.chain(this.layers.models)
+      .map(function(layer) { return layer.get('attribution'); })
+      .reject(function(attribution) { return attribution == defaultCartoDBAttribution})
+      .compact()
+      .uniq()
+      .value();
+
+    attributions.push(defaultCartoDBAttribution);
+
+    this.set('attribution', attributions);
   },
 
   setView: function(latlng, zoom) {
@@ -460,24 +479,6 @@ cdb.geo.Map = cdb.core.Model.extend({
     if(baseLayer && baseLayer.get('options'))  {
       return baseLayer.get('options').urlTemplate;
     }
-  },
-
-  updateAttribution: function(old, new_) {
-    var attributions = this.get("attribution") || [];
-
-    // Remove the old one
-    if (old) {
-      attributions = _.without(attributions, old);
-    }
-
-    // Save the new one
-    if (new_) {
-      if (!_.contains(attributions, new_)) {
-        attributions.push(new_);
-      }
-    }
-
-    this.set({ attribution: attributions });
   },
 
   addGeometry: function(geom) {
@@ -663,7 +664,7 @@ cdb.geo.MapView = cdb.core.View.extend({
     this.map.bind('change:scrollwheel',     this._setScrollWheel, this);
     this.map.bind('change:keyboard',        this._setKeyboard, this);
     this.map.bind('change:center',          this._setCenter, this);
-    this.map.bind('change:attribution',     this._setAttribution, this);
+    this.map.bind('change:attribution',     this.setAttribution, this);
   },
 
   /** unbind model properties */
@@ -686,10 +687,6 @@ cdb.geo.MapView = cdb.core.View.extend({
 
   showBounds: function(bounds) {
     this.map.fitBounds(bounds, this.getSize())
-  },
-
-  _setAttribution: function(m,attr) {
-    this.setAttribution(m);
   },
 
   _addLayers: function() {

@@ -476,6 +476,14 @@ $sLabel-width: 140px;
 
   &.FormAccount-footer--withoutMarginBottom { margin-bottom: 0; }
 }
+// Allow to reorder items using the flex-order property. E.g. to have "positive" action being trigger on an implicit
+// form submit, but for the items to be rendered in a different order.
+.FormAccount-footerItemAsFirst {
+  @include flex-order(1);
+}
+.FormAccount-footerItemAsSecond {
+  @include flex-order(2);
+}
 .FormAccount-footerText {
   font-size: $sFontSize-large;
   font-weight: $sFontWeight-lighter;

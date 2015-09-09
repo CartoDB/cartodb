@@ -653,6 +653,12 @@ class DataImport < Sequel::Model
     end
   end
 
+  def update_visualization_id(importer)
+    if importer.data_import.create_visualization
+      self.visualization_id = importer.data_import.visualization_id
+    end
+  end
+
   def update_synchronization(importer)
     if synchronization_id
       log.type = CartoDB::Log::TYPE_SYNCHRONIZATION

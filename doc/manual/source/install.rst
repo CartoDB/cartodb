@@ -1,6 +1,6 @@
 
 Installation
-============ 
+============
 
 .. warning::
   CartoDB is guaranteed to run without any issue in Ubuntu 12.04 x64. This documentation describes de process to install CartoDB in this specific OS version.
@@ -172,8 +172,10 @@ PostGIS
     psql -U postgres template_postgis -c 'CREATE EXTENSION postgis;CREATE EXTENSION postgis_topology;'
     sudo ldconfig
 
-* Run an installcheck to verify the database have been installed properly
+* Run an installcheck to verify the database has been installed properly
 
+  .. code-block:: bash
+      
    sudo PGUSER=postgres make installcheck # to run tests
 
 .. warning::
@@ -190,10 +192,10 @@ PostGIS
   
   Check https://github.com/cartodb/cartodb-postgresql for further reference
 
-* Restart PostgreSQL after all the process
+* Restart PostgreSQL after all this process
 
   .. code-block:: bash
-
+      
     sudo service postgresql restart
   
 
@@ -291,7 +293,7 @@ MAPS API
   
     npm install
 
- .. warning::
+.. warning::
     If this fails due to package cairo not found in the pkg-config search path, you can install it like this
 
     ::
@@ -309,7 +311,7 @@ MAPS API
     cp config/environments/development.js.example config/environments/development.js
 
   
-* Start the service. The second parameter is always the environment if the service. Remember to use the same you used in the configuration.
+* Start the service. The second parameter is always the environment of the service. Remember to use the same you used in the configuration.
 
   .. code-block:: bash
 
@@ -340,17 +342,18 @@ Ruby
 
     sudo ruby-install ruby 1.9.3
 
-* Ruby-install will leave everything in /opt/rubies/ruby-1.9.3-p547/bin. To be able to run ruby and gem later on, you'll need to add this to your PATH variable. It's a good idea to include this line in your bashrc so that it gets loaded on restart
+* Ruby-install will leave everything in /opt/rubies/ruby-1.9.3-p547/bin. To be able to run ruby and gem later on, you'll need to add the Ruby 1.9.3 bin folder to your PATH variable. It's also a good idea to include this line in your bashrc so that it gets loaded on restart
 
   .. code-block:: bash
 
     export PATH=$PATH:/opt/rubies/ruby-1.9.3-p547/bin
 
-* Install bundler. Bundler is an app used to manage ruby dependencies. It is needed by the editor
+* Install bundler. Bundler is an app used to manage ruby dependencies. It is needed by CartoDB's editor
 
   .. code-block:: bash
 
     gem install bundler
+
 
 Editor
 ------
@@ -387,20 +390,19 @@ Editor
         export C_INCLUDE_PATH=/usr/include/gdal
         export PATH=$PATH:/usr/include/gdal
 
-  After this change, re-run the pip install command, and it should work.
+  After this, re-run the pip install command, and it should work.
   
-* Add the grunt command to the PATH:
+* Add the grunt command to the PATH
 
   .. code-block:: bash
     
     export PATH=$PATH:$PWD/node_modules/grunt-cli/bin
 
-* Install all necesary gems:
+* Install all necesary gems
 
   .. code-block:: bash
     
     bundle install
-
 
 
 * Precompile assets. Note that the last parameter is the environment used to run the application. It must be the same used in the Maps and SQL APIs

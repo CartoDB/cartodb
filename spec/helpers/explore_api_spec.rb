@@ -71,6 +71,47 @@ describe 'Helpers' do
       geometry_data.should eq expected_data
     end
 
+    it 'should return the table data properly setted' do
+      user = FactoryGirl.build(:user)
+      map = FactoryGirl.build(
+        :map, user_id: user.id, zoom: 3, center: [30, 0], view_bounds_ne: [85.0511, 179],
+        view_bounds_sw: [-85.0511, -179]
+      )
+      visualization = FactoryGirl.build(:table_visualization, :user_id => user.id, :map_id => map.id)
+      visualization.stubs(:map).returns(map)
+      table = FactoryGirl.build(:table)
+      table.stubs(:rows_counted => 10, :geometry_types => ["ST_Point"], :table_size => 100)
+      user_table = FactoryGirl.build(:user_table)
+      user_table.stubs(:service).returns(table)
+      user_table.stubs(:first).returns(user_table)
+      UserTable.stubs(:where => user_table)
+      table_data = @explore_api.get_table_data(visualization)
+      expected_data = {
+        rows: 10,
+        size: 100,
+        geometry_types: ["ST_Point"]
+      }
+      table_data.should eq expected_data
+    end
+
+    it 'should return empty if there is no user table' do
+      user = FactoryGirl.build(:user)
+      map = FactoryGirl.build(
+        :map, user_id: user.id, zoom: 3, center: [30, 0], view_bounds_ne: [85.0511, 179],
+        view_bounds_sw: [-85.0511, -179]
+      )
+      visualization = FactoryGirl.build(:table_visualization, :user_id => user.id, :map_id => map.id)
+      visualization.stubs(:map).returns(map)
+      table = FactoryGirl.build(:table)
+      table.stubs(:rows_counted => 10, :geometry_types => ["ST_Point"], :table_size => 100)
+      user_table = FactoryGirl.build(:user_table)
+      user_table.stubs(:service).returns(table)
+      user_table.stubs(:first).returns(nil)
+      UserTable.stubs(:where => user_table)
+      table_data = @explore_api.get_table_data(visualization)
+      table_data.empty?.should eq true
+    end
+
     it 'should return nil if the coordinates are out of the bounds' do
       user = FactoryGirl.build(:user)
       map = FactoryGirl.build(

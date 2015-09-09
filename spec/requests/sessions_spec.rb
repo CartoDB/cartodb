@@ -136,6 +136,24 @@ feature "Sessions" do
       page.should_not have_css('#google_login_button_iframe')
     end
 
+    describe 'ldap login' do
+
+      before(:all) do
+        @ldap_configuration = FactoryGirl.create(:ldap_configuration, { organization_id: @organization.id })
+      end
+
+      after(:all) do
+        @ldap_configuration.destroy
+      end
+
+      it 'does not allow google login to organization users if they have ldap configuration' do
+        visit org_login_url(@org_user_1.organization)
+        page.should_not have_css('#google_signup_access_token')
+        page.should_not have_css('#google_login_button_iframe')
+      end
+
+    end
+
   end
 
   def org_login_url(organization)

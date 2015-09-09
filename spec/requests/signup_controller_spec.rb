@@ -118,6 +118,27 @@ describe SignupController do
       last_user_creation.quota_in_bytes.should == @organization.default_quota_in_bytes
     end
 
+    describe 'ldap signup' do
+
+      before(:all) do
+        @ldap_configuration = FactoryGirl.create(:ldap_configuration, { organization_id: @organization.id })
+      end
+
+      after(:all) do
+        @ldap_configuration.destroy
+      end
+
+      it 'returns 404 if ldap is enabled' do
+
+        get signup_organization_user_url(user_domain: @organization.name)
+        response.status.should == 404
+
+        post signup_organization_user_url(user_domain: @organization.name, user: { username: 'whatever', email: 'whatever@cartodb.com', password: 'whatever' })
+        response.status.should == 404
+      end
+
+    end
+
   end
 
 end

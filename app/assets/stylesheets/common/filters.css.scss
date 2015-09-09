@@ -281,8 +281,7 @@ a.Filters-cleanSearch { line-height:32px }
 }
 .Filters-inner.search--enabled {
 
-  .Filters-typeItem:not(&.Filters-searchEnabler--underFilter),
-  .Filters-typeItem:not(&.Filters-searchInput--underFilter),
+  .Filters-typeItem,
   .Filters-orderItem,
   .Button--positive { display:none }
 

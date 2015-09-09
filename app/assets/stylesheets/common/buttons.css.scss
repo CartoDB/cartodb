@@ -36,7 +36,12 @@
 .Button {
   border: $sButton-border solid $cStructure-mainBkg;
 }
-.Button.is-hidden { display: none }
+.Button.is-hidden {
+  display: none;
+}
+.Button.is-transparent {
+  @include opacity(0);
+}
 .Button:hover,
 .Button span:hover { text-decoration:none }
 .Button.is-disabled {
@@ -145,10 +150,14 @@
 }
 
 .Button--loadMore {
+  display: inline-block;
+  margin: auto;
   line-height: 24px;
   background-color: transparent;
   border: 1px solid #CCC;
   border-radius: 40px;
   font-size: $sFontSize-smallUpperCase;
   color: $cTypography-linkSecondaryHover;
+  @include opacity(1);
+  transition: opacity 150ms ease-in-out;
 }

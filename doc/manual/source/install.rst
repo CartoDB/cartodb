@@ -355,6 +355,13 @@ Ruby
     sudo gem install bundler
 
 
+* Install compass. It will be needed later on by CartoDB's editor
+
+  .. code-block:: bash
+
+    sudo gem install compass
+
+
 Editor
 ------
 

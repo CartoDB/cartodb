@@ -239,7 +239,7 @@ NodeJS is required by different parts of the stack. The more significant are the
 
   Note this should install both NodeJS 0.10.26 and npm 1.4.3. You can verify the installation went as expected with:
   
-    .. code-block:: bash
+  .. code-block:: bash
    
     nodejs -v
     npm -v

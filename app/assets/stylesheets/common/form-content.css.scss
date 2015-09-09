@@ -193,19 +193,19 @@ $sLabel-width: 140px;
   }
 }
 .Form-input.has-submit {
-  padding: 0 95px 0 12px;
+  padding: 0 70px 0 12px;
 
-  &.Form-input--longer { width: 351px }
-  &.Form-input--long { width: 297px }
-  &.Form-input--med { width: 191px }
+  &.Form-input--longer { width: 387px }
+  &.Form-input--long { width: 333px }
+  &.Form-input--med { width: 227px }
   &.Form-input--short {}
 }
 .Form-inputSubmit {
   position: absolute;
   top: 50%;
-  right: 5px;
+  right: 12px;
   height: 28px;
-  padding: 0 18px;
+  padding: 0;
   margin-top: -14px;
   background: none;
   z-index: 2;

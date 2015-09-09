@@ -121,6 +121,16 @@
     text-decoration: underline;
   }
 }
+.Button--link.is-inline {
+  padding-left: 0;
+  padding-right: 0;
+}
+.Button--link.is-destructive {
+  color: $cHighlight-negative;
+  &:hover {
+    color: $cHighlight-negative;
+  }
+}
 // Use this instead of .Button--positive on header background
 .Button--headerPositive {
   border: $sButton-border+1 solid white;

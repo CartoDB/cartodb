@@ -101,7 +101,17 @@ describe Carto::Api::GroupsController do
           end
         end
 
-        it 'can fetch number of shared tables, maps and users' do
+        it 'optionally fetches number of shared tables, maps and users' do
+          get_json api_v1_user_groups_url(user_domain: @org_user_1.username, user_id: @org_user_1.id, api_key: @org_user_1.api_key), {}, @headers do |response|
+            response.status.should == 200
+            expected_response = {
+              groups: [
+                @group_1_json
+              ],
+              total_entries: 1
+            }
+            response.body.should == expected_response
+          end
 
           get_json api_v1_user_groups_url(user_domain: @org_user_1.username, user_id: @org_user_1.id, api_key: @org_user_1.api_key, fetch_shared_tables_count: true, fetch_shared_maps_count: true, fetch_users: true), {}, @headers do |response|
             response.status.should == 200

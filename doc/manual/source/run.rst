@@ -37,7 +37,7 @@ Finally, start the CartoDB development server on port 3000:
 
 ::
 
-   bundle exec rails s -p 3000
+   bundle exec thin start --threaded -p 3000 --threadpool-size 5
 
 Node apps
 

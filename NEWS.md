@@ -5,9 +5,9 @@
 * Code also switches to using syncrhonizations.visualization_id for linking, so in order to have back existing synchronizations, the following rake needs to be run: `bundle exec rake cartodb:populate_synchronization_visualization_ids`
 * Group support for organizations. Usage instructions:
   1. Update CartoDB PostgreSQL extension to the latest version ([instructions](https://github.com/CartoDB/cartodb/blob/master/UPGRADE#L43)).
-  2. Configure metadata api credentials and timeout. Take a look at `org_metadata_api` inside `config/app_config.yml.sample`.
-  3. Trigger configuration: `RAILS_ENV=development bundle exec rake cartodb:db:configure_extension_org_metadata_api_endpoint`.
-  4. Trigger org owner role assignment: `RAILS_ENV=development bundle exec rake cartodb:db:assign_org_owner_role`.
+  2. Configure metadata api credentials and timeout. You can copy `org_metadata_api` config from `config/app_config.yml.sample` into your `config/app_config.yml`.
+  3. Trigger existing orgs configuration: `RAILS_ENV=development bundle exec rake cartodb:db:configure_extension_org_metadata_api_endpoint`.
+  4. Trigger existing org owner role assignment: `RAILS_ENV=development bundle exec rake cartodb:db:assign_org_owner_role`.
   5. Increase your database pool size to 50 (10 x # threads, see next line) at config/database.yml. Sample development configuration: config/database.yml.sample
   6. From now on you must run the server in multithread mode: `bundle exec thin start --threaded -p 3000 --threadpool-size 5`.
 * StatsD data gathering refactored. Check /lib/cartodb/stats for details

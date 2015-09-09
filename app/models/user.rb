@@ -1651,14 +1651,15 @@ class User < Sequel::Model
   def setup_organization_owner
     setup_organization_role_permissions
     setup_owner_permissions
+    configure_extension_org_metadata_api_endpoint
   end
 
   def setup_owner_permissions
+    # TODO: remove the check after extension install
+    return if Rails.env.test?
+
     self.in_database(as: :superuser) do |database|
-      # TODO: remvove the check after extension install
-      if !Rails.env.test?
-        database.run(%Q{ SELECT cartodb.CDB_Organization_AddAdmin('#{self.username}') })
-      end
+      database.run(%Q{ SELECT cartodb.CDB_Organization_AddAdmin('#{self.username}') })
     end
   end
 
@@ -2614,6 +2615,9 @@ TRIGGER
   end
 
   def configure_extension_org_metadata_api_endpoint
+    # TODO: remove the check after extension install
+    return if Rails.env.test?
+
     port = Cartodb.config[:http_port]
     # INFO: account_host includes port in development
     host = Cartodb.config[:account_host].split(':')[0]

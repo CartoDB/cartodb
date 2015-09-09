@@ -6,7 +6,7 @@ module Helpers
       def get_visualization_tables(visualization)
         # We are using layers instead of related tables because with related tables we are connecting
         # to the users databases and we are reaching the connections limit
-        table_names = visualization.layers(:carto_and_torque).map { |layer| extract_table_name(layer) }
+        table_names = visualization.layers(:carto_and_torque).map { |layer| extract_table_name(layer) }.uniq
         %Q{{#{table_names.compact.join(",")}}}
       end
 

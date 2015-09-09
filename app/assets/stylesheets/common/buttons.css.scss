@@ -97,6 +97,10 @@
 .Button--secondaryTransparentBkg {
   background-color: transparent;
 }
+.Button--smaller {
+  padding: 0 15px;
+  height: 30px;
+}
 .Button.is-disabled {
   @include opacity(0.4);
 }

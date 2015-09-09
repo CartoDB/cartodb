@@ -26,6 +26,16 @@ module Helpers
         %Q{ST_AsText('#{bbox_value}')}
       end
 
+      def get_table_data(visualization)
+        user_table = UserTable.where(user_id: visualization.user_id, name: visualization.name).first
+        return {} if user_table.nil?
+        {
+          rows: user_table.service.rows_counted,
+          size: user_table.service.table_size,
+          geometry_types: user_table.service.geometry_types
+        }
+      end
+
       private
 
       def extract_table_name(layer)

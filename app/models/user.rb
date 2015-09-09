@@ -1651,6 +1651,7 @@ class User < Sequel::Model
   def setup_organization_owner
     setup_organization_role_permissions
     setup_owner_permissions
+    configure_extension_org_metadata_api_endpoint
   end
 
   def setup_owner_permissions

@@ -32,3 +32,6 @@ _:-ms-lang(x), .IntermediateInfo { padding-top: 100px }
   color: $cTypography-paragraphs;
 }
 .IntermediateInfo-title--error { color: $cHighlight-negative }
+.IntermediateInfo.IntermediateInfo--padded {
+  padding: 40px 0;
+}

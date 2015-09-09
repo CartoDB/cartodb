@@ -26,7 +26,7 @@
       <label class="FormAccount-label">Email</label>
     </div>
     <div class="FormAccount-rowData">
-      <%= f.text_field :email, :class => "FormAccount-input FormAccount-input--med #{ 'is-disabled' if !@user.can_change_email } #{ 'FormAccount-input--error' if @user.errors[:email].present? }", readonly: !@user.can_change_email %>
+      <%= f.text_field :email, :class => "FormAccount-input FormAccount-input--med #{ 'is-disabled' if !@user.can_change_email? } #{ 'FormAccount-input--error' if @user.errors[:email].present? }", readonly: !@user.can_change_email? %>
       <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
         <% if (@user.errors[:email].present?) %>
           <p class="FormAccount-rowInfoText FormAccount-rowInfoText--error">Email not valid</p>
@@ -43,7 +43,7 @@
         <label class="FormAccount-label">New password</label>
       </div>
       <div class="FormAccount-rowData">
-        <%= password_field_tag 'user[password]', nil, :placeholder => "New password", :class => "FormAccount-input FormAccount-input--med #{ 'FormAccount-input--error' if @user.errors[:password].present? }" %>
+        <%= password_field_tag 'user[password]', nil, :placeholder => "New password", :class => "FormAccount-input FormAccount-input--med #{ 'is-disabled' if !@user.can_change_password? } #{ 'FormAccount-input--error' if @user.errors[:password].present? }", readonly: !@user.can_change_password? %>
       </div>
       <div class="FormAccount-rowInfo">
         <% if (@user.errors[:password].present?) %>
@@ -57,7 +57,7 @@
         <label class="FormAccount-label">Confirm password</label>
       </div>
       <div class="FormAccount-rowData">
-        <%= password_field_tag 'user[password_confirmation]', nil, :placeholder => "Confirm new password", :class => "FormAccount-input FormAccount-input--med #{ 'hello' if @user.errors[:password].present?}" %>
+        <%= password_field_tag 'user[password_confirmation]', nil, :placeholder => "Confirm new password", :class => "FormAccount-input FormAccount-input--med #{ 'is-disabled' if !@user.can_change_password? } #{ 'FormAccount-input--error' if @user.errors[:password].present?}", readonly: !@user.can_change_password? %>
       </div>
     </div>
   </div>
@@ -94,7 +94,7 @@
         </ul>
       </div>
       <div class="FormAccount-rowInfo OrganizationUser-quotaInfo js-quotaInfo">
-        <span class="js-assignedSize"><%= number_to_human_size(@user.quota_in_bytes) %></span> assigned, <button class="OrganizationUser-quotaInfoLink js-changeQuota">change</button> 
+        <span class="js-assignedSize"><%= number_to_human_size(@user.quota_in_bytes) %></span> assigned, <button class="OrganizationUser-quotaInfoLink js-changeQuota">change</button>
         <% unless cartodb_com_hosted? %>
         or <a href="<%= current_user.upgrade_url(request.protocol) %>">upgrade your account</a> if needed
         <% else %>
@@ -181,8 +181,8 @@
   <%
     assigned_quota_in_bytes = 0
     current_user.organization.users.map { |u|
-      if (u.username != @user.username) 
-        assigned_quota_in_bytes = assigned_quota_in_bytes + u.quota_in_bytes 
+      if (u.username != @user.username)
+        assigned_quota_in_bytes = assigned_quota_in_bytes + u.quota_in_bytes
       end
     }
   %>

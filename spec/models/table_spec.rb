@@ -86,9 +86,12 @@ describe Table do
       table.valid?.should == true
     end
 
-    it "should set a table_id value" do
+    it "should set a valid table_id value (OID)" do
       table = create_table(name: 'this_is_a_table', user_id: $user_1.id)
       table.table_id.should be_a(Integer)
+
+      oid = table.owner.in_database.fetch(%Q{SELECT '#{table.qualified_table_name}'::regclass::oid}).first[:oid].to_i
+      table.table_id.should == oid
     end
 
     it "should return nil on get_table_id when the physical table doesn't exist" do
@@ -1883,6 +1886,8 @@ describe Table do
       ::Table.any_instance.stubs(:set_the_geom_column!).returns(true)
       ::Table.any_instance.stubs(:after_create)
       ::Table.any_instance.stubs(:after_save)
+      ::Table.any_instance.stubs(:cartodbfy)
+      ::Table.any_instance.stubs(:schema)
       CartoDB::TablePrivacyManager.any_instance.stubs(:owner).returns(user_mock)
       table = Table.new
 

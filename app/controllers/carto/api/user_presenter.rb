@@ -80,7 +80,6 @@ module Carto
             private_tables: @user.private_tables_enabled,
             private_maps: @user.private_maps_enabled?,
             dedicated_support: @user.dedicated_support?,
-            import_quota: @user.import_quota,
             remove_logo: @user.remove_logo?,
             sync_tables: @user.sync_tables_enabled,
             arcgis_datasource: @user.arcgis_datasource_enabled?,

@@ -83,6 +83,7 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
 
       this._bindModel();
       this._addLayers();
+      this.setAttribution();
 
       google.maps.event.addListener(this.map_googlemaps, 'center_changed', function() {
         var c = self.map_googlemaps.getCenter();
@@ -113,14 +114,9 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
       this.map.layers.bind('reset', this._addLayers, this);
       this.map.layers.bind('change:type', this._swicthLayerView, this);
 
-      // When layers are resetted/added/removed attribution is re-calculated and
-      // must updated in the UI
-      this.map.layers.bind('add remove reset', this.setAttribution, this);
-
       this.projector = new cdb.geo.CartoDBLayerGroupGMaps.Projector(this.map_googlemaps);
 
       this.projector.draw = this._ready;
-
     },
 
     _ready: function() {

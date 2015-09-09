@@ -5,10 +5,12 @@
 .Feed {
   @include flex(1);
   margin: 0 0 30px 0;
+  text-align: center;
 }
 .Feed-content {
   position: relative;
   padding: 40px 0;
+  text-align: left;
 }
 
 .FeedItem {

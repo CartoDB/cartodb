@@ -9,22 +9,10 @@
 # Can be also done at controller source files by using -> skip_before_filter :ensure_org_url_if_org_user
 
 CartoDB::Application.routes.draw do
-  get "bloomberg_sso/index"
-
-  get "bloomberg_sso/sso"
-
-  get "bloomberg_sso/scs"
-
-  get "bloomberg_sso/metadata"
-
-  get "bloomberg_sso/sp_logout_request"
-
-  get "bloomberg_sso/process_logout_response"
-
-  get "bloomberg_sso/idp_logout_request"
 
   # Double use: for user public dashboard AND org dashboard
-  get   '/[(user/:user_domain)(u/:user_domain)]'                 => 'admin/pages#public', as: :root
+  post '/(user/:user_domain)(u/:user_domain)/bloomberg_sso/acs' => 'saml#acs'
+  get   '/(user/:user_domain)(u/:user_domain)'                 => 'admin/pages#public', as: :root
   root :to => 'admin/pages#index'
 
   get   '/signup'           => 'signup#signup',     as: :signup

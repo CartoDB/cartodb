@@ -41,7 +41,7 @@ module Carto
 
       def create
         group = @organization.create_group(params['display_name'])
-        render_jsonp(Carto::Api::GroupPresenter.new(group).to_poro, 200)
+        render_jsonp(Carto::Api::GroupPresenter.full(group).to_poro, 200)
       rescue CartoDB::ModelAlreadyExistsError => e
         CartoDB.notify_debug('Group already exists', { params: params })
         render json: { errors: "A group with that data already exists" }, status: 409
@@ -60,7 +60,7 @@ module Carto
 
       def destroy
         @group.destroy_group_with_extension
-        render json: {}, status: 200
+        render json: {}, status: 204
       rescue => e
         CartoDB.notify_exception(e, { params: params , group: @group })
         render json: { errors: e.message }, status: 500

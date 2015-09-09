@@ -62,7 +62,7 @@ module Carto
 
       def destroy
         @group.destroy
-        render json: {}, status: 200
+        render json: {}, status: 204
       rescue => e
         CartoDB.notify_exception(e, { params: params , group: (@group ? @group : 'not loaded') })
         render json: { errors: e.message }, status: 500

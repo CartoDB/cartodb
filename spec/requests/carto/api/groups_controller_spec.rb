@@ -284,7 +284,7 @@ describe Carto::Api::GroupsController do
       Carto::Group.expects(:destroy_group_extension_query).with(anything, group.name)
 
       delete_json api_v1_organization_groups_destroy_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, group_id: group.id, api_key: @org_user_owner.api_key), { }, @headers do |response|
-        response.status.should == 200
+        response.status.should == 204
 
         # Extension is simulated, so we delete the group manually
         group.delete

@@ -2,14 +2,17 @@
 @import "../variables/colors";
 @import "../variables/sizes";
 
+$cFeedMast: #EEEDEE;
+$sWidth: 4px;
+
 .FeedMast {
-  @include flex(0 0 4px);
   position: absolute;
+  @include flex(0 0 $sWidth);
   top: 0;
-  width: 4px;
+  width: $sWidth;
   height: 100%;
   margin-left: 27px;
-  background: #EEEDEE;
+  background: $cFeedMast;
 }
 .FeedMast.is-hidden {
   display: none;
@@ -19,7 +22,7 @@
   left: -5px;
   width: 6px;
   height: 6px;
-  border: 4px solid #EEEDEE;
+  border: $sWidth solid $cFeedMast;
   border-radius: 50%;
   background: #F9F9F9;
 }
@@ -28,5 +31,5 @@
 }
 .FeedMast-ball.FeedMast-ball--bottom {
   bottom: 0;
-  background: #EEEDEE;
+  background: $cFeedMast;
 }

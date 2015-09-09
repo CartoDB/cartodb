@@ -300,7 +300,7 @@ MAPS API
 
         $  sudo apt-get install libpango1.0-dev
 
-  After this change, re-run npm install, and it should be OK.
+    After this change, re-run npm install, and it should be OK.
   
 
 

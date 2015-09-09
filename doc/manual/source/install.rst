@@ -45,7 +45,7 @@ In order to easily install some packages repositories sources is suggested to in
 
 .. code-block:: bash
 
-  sudo apt-get install python-software-properties
+  sudo apt-get install python-software-properties 
 
 
 PostgreSQL
@@ -371,6 +371,13 @@ Editor
 
     sudo wget  -O /tmp/get-pip.py https://bootstrap.pypa.io/get-pip.py
     sudo python /tmp/get-pip.py
+
+* Install a necessary package for python dependencies
+
+  ..code-block:: bash
+  
+    sudo apt-get install python-all-dev
+
 
 * Install dependencies
 

@@ -639,7 +639,7 @@ class DataImport < Sequel::Model
       self.table_id   = importer.table.id if importer.success? && importer.table
 
       if importer.success?
-        self.visualization_id = importer.data_import.visualization_id if importer.data_import.create_visualization
+        update_visualization_id(importer)
         update_synchronization(importer)
       end
 

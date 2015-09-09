@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.3
 // uncompressed version: cartodb.uncompressed.js
-// sha: 65133f214eb399731d493ffcb380f42cf9283d0b
+// sha: 71ff7e142e2b8cd694e80ef655ff8d532a472f49
 (function() {
   var define;  // Undefine define (require.js), see https://github.com/CartoDB/cartodb.js/issues/543
   var root = this;
@@ -27284,13 +27284,15 @@ cdb.geo.Map = cdb.core.Model.extend({
   },
 
   _updateAttributions: function() {
+    var defaultCartoDBAttribution = this.defaults.attribution[0];
     var attributions = _.chain(this.layers.models)
       .map(function(layer) { return layer.get('attribution'); })
+      .reject(function(attribution) { return attribution == defaultCartoDBAttribution})
       .compact()
       .uniq()
       .value();
 
-    attributions.push(this.defaults.attribution[0]);
+    attributions.push(defaultCartoDBAttribution);
 
     this.set('attribution', attributions);
   },

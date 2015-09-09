@@ -217,6 +217,9 @@ defaults: &defaults
   gdrive:
     api_key: ""
     app_id: ""
+  bitly:
+    login: ""
+    key: ""
   # This enables a support chat within editor
   # Use your Olark api id to enable it. If you remove this entry or don't define an app key, it won't be activated.
   olark:

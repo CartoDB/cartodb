@@ -50,7 +50,11 @@
 .Button--positive {
   background-color: $cHighlight-positive;
   border-color: $cHighlight-positive;
-  &:hover { background-color: rgba(#7FA538, 1) }
+  &:hover {
+    $positive-hover: rgba(#7FA538, 1);
+    background-color: $positive-hover;
+    border-color: $positive-hover;
+  }
   &.is-disabled:hover {
     background-color: $cHighlight-positive;
     border-color: $cHighlight-positive;

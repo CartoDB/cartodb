@@ -30,6 +30,7 @@
 .OrganizationList-userAvatar {
   width: 42px;
   height: 42px;
+  margin-right: 20px;
 }
 .OrganizationList-userAvatar--img {
   border: 0;
@@ -48,7 +49,6 @@
   @include flex-direction(row);
   @include align-items(flex-end);
   @include justify-content(space-between);
-  margin-left: 20px;
   width: 100%;
 }
 .OrganizationList-userInfoName {

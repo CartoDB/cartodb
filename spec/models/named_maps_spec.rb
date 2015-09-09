@@ -806,13 +806,16 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
         }
       }
 
+      # To align with expected named map data and forget about internals of zooming
+      ::Map.any_instance.stubs(:recalculate_zoom!).returns(nil)
+
+
       table, derived_vis, template_id = create_private_table_with_public_visualization(template_data)
 
       CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
 
-      # To align with expected named map data and forget about internals of centering & zooming logic
+      # To align with expected named map data and forget about internals of centering
       ::Map.any_instance.stubs(:center_data).returns([30.0, 0.0])
-      ::Map.any_instance.stubs(:recalculate_zoom!).returns(nil)
 
       vizjson = get_vizjson(derived_vis)
 

@@ -144,48 +144,69 @@ namespace :cartodb do
       puts "UPDATING"
       # INFO: we need to check all known visualizations because they might've been deleted
       offset = 0
-      while (explore_visualizations = user.in_database[%Q{ select visualization_id, visualization_updated_at from #{VISUALIZATIONS_TABLE} order by visualization_created_at asc limit #{UPDATE_BATCH_SIZE} offset #{offset} }].all).length > 0
+      while (explore_visualizations = get_explore_visualizations(user, offset)).length > 0
 
         explore_visualizations_by_visualization_id = {}
         explore_visualizations.each { |row|
           explore_visualizations_by_visualization_id[row[:visualization_id]] = row
         }
+        explore_visualization_ids = explore_visualizations.map { |ev| ev[:visualization_id] }
 
-        visualization_ids = explore_visualizations.map { |ev| ev[:visualization_id] }
+        visualizations = CartoDB::Visualization::Collection.new.fetch({ ids: explore_visualization_ids})
 
-        bbox_values = get_visualizations_bbox(visualization_ids)
+        update_result = update_visualizations(user, visualizations, explore_visualizations_by_visualization_id, explore_visualization_ids)
 
-        visualizations = CartoDB::Visualization::Collection.new.fetch({ ids: visualization_ids})
-        full_updated_count = 0
-        mapviews_liked_updated_count = 0
-        visualizations.each do |v|
-          explore_visualization = explore_visualizations_by_visualization_id[v.id]
-          # We use to_id to remove the miliseconds that could give to erroneous updates
-          # http://railsware.com/blog/2014/04/01/time-comparison-in-ruby/
-          if v.updated_at.to_i != explore_visualization[:visualization_updated_at].to_i
-            if v.privacy != CartoDB::Visualization::Member::PRIVACY_PUBLIC
-              privated_visualization_ids << v.id
-            else
-              # TODO: update instead of delete-insert
-              user.in_database.run delete_query([v.id])
-              insert_visualizations(user, filter_valid_visualizations([v]))
-              full_updated_count += 1
-            end
-          else
-            # INFO: retrieving mapviews makes this much slower
-            # TODO: only update when there're new mapviews or likes
-            user.in_database.run update_mapviews_and_likes_query(v, bbox_values[v.id])
-            mapviews_liked_updated_count += 1
-          end
-        end
+        print "Batch size: #{explore_visualizations.length}.\tMatches: #{visualizations.count}.\tUpdated #{update_result[:full_updated_count]} \tMapviews and liked updates: #{update_result[:mapviews_liked_updated_count]}\n"
 
-        print "Batch size: #{explore_visualizations.length}.\tMatches: #{visualizations.count}.\tUpdated #{full_updated_count} \tMapviews and liked updates: #{mapviews_liked_updated_count}\n"
-
-        deleted_visualization_ids +=  visualization_ids - visualizations.collect(&:id)
+        deleted_visualization_ids +=  explore_visualization_ids - visualizations.collect(&:id)
+        privated_visualization_ids += update_result[:privated_visualization_ids]
 
         offset += explore_visualizations.length
       end
 
+      delete_visualizations(user, deleted_visualization_ids, privated_visualization_ids)
+
+    end
+
+    def get_explore_visualizations(user, offset)
+      user.in_database[%Q{ select visualization_id, visualization_updated_at from #{VISUALIZATIONS_TABLE} order by visualization_created_at asc limit #{UPDATE_BATCH_SIZE} offset #{offset} }].all
+    end
+
+    def update_visualizations(user, visualizations, explore_visualizations_by_visualization_id, explore_visualization_ids)
+      full_updated_count = 0
+      mapviews_liked_updated_count = 0
+      privated_visualization_ids = []
+      bbox_values = get_visualizations_bbox(explore_visualization_ids)
+      tables_data = @explore_api_helper.get_visualizations_table_data(visualizations)
+      visualizations.each do |v|
+        explore_visualization = explore_visualizations_by_visualization_id[v.id]
+        # We use to_id to remove the miliseconds that could give to erroneous updates
+        # http://railsware.com/blog/2014/04/01/time-comparison-in-ruby/
+        if v.updated_at.to_i != explore_visualization[:visualization_updated_at].to_i
+          if v.privacy != CartoDB::Visualization::Member::PRIVACY_PUBLIC
+            privated_visualization_ids << v.id
+          else
+            # TODO: update instead of delete-insert
+            user.in_database.run delete_query([v.id])
+            insert_visualizations(user, filter_valid_visualizations([v]))
+            full_updated_count += 1
+          end
+        else
+          # INFO: retrieving mapviews makes this much slower
+          # TODO: only update when there're new mapviews or likes
+          table_data = tables_data[v.user_id].nil? ? {} : tables_data[v.user_id][v.name]
+          user.in_database.run update_mapviews_and_likes_query(v, bbox_values[v.id], table_data)
+          mapviews_liked_updated_count += 1
+        end
+      end
+      {
+        full_updated_count: full_updated_count,
+        mapviews_liked_updated_count: mapviews_liked_updated_count,
+        privated_visualization_ids: privated_visualization_ids
+      }
+    end
+
+    def delete_visualizations(user, deleted_visualization_ids, privated_visualization_ids)
       puts "DELETING #{deleted_visualization_ids.length} DELETED VISUALIZATIONS"
       if deleted_visualization_ids.length > 0
         user.in_database.run delete_query(deleted_visualization_ids)
@@ -195,7 +216,6 @@ namespace :cartodb do
       if privated_visualization_ids.length > 0
         user.in_database.run delete_query(privated_visualization_ids)
       end
-
     end
 
     def delete_query(ids)
@@ -252,18 +272,19 @@ namespace :cartodb do
     def insert_visualizations(user, visualizations)
       visualization_ids = visualizations.map{|v| v.id}
       visualizations_bbox = get_visualizations_bbox(visualization_ids)
+      tables_data = @explore_api_helper.get_visualizations_table_data(visualizations)
       user.in_database[:visualizations].multi_insert(
         visualizations.map { |v|
-          insert_visualization_hash(v, visualizations_bbox[v.id])
+          table_data = tables_data[v.user_id].nil? ? {} : tables_data[v.user_id][v.name]
+          insert_visualization_hash(v, visualizations_bbox[v.id], table_data)
         }
       )
     end
 
-    def insert_visualization_hash(visualization, bbox_value)
+    def insert_visualization_hash(visualization, bbox_value, table_data)
       v = visualization
-      geometry_data = @explore_api_helper.get_geometry_data(visualization)
-      table_data = @explore_api_helper.get_table_data(visualization)
       u = v.user
+      geometry_data = @explore_api_helper.get_geometry_data(visualization)
       {
             visualization_id: v.id,
             visualization_name: v.name,
@@ -304,14 +325,14 @@ namespace :cartodb do
       Hash[bbox_dataset.map {|row| [row[:id], row[:bbox]] }]
     end
 
-    def update_mapviews_and_likes_query(visualization, bbox_value)
+    def update_mapviews_and_likes_query(visualization, bbox_value, table_data)
       %Q{ UPDATE #{VISUALIZATIONS_TABLE} set
             visualization_mapviews = #{visualization.mapviews},
             visualization_likes = #{visualization.likes_count},
             visualization_synced = #{!visualization.is_synced?}
             #{update_tables(visualization)}
             #{update_geometry(visualization, bbox_value)}
-            #{update_table_data(visualization)}
+            #{update_table_data(visualization.type, table_data)}
           where visualization_id = '#{visualization.id}' }
     end
 
@@ -337,10 +358,9 @@ namespace :cartodb do
       end
     end
 
-    def update_table_data(visualization)
-      if visualization.type == CartoDB::Visualization::Member::TYPE_CANONICAL
-        table_data = @explore_api_helper.get_table_data(visualization)
-        return if table_data.empty?
+    def update_table_data(visualization_type, table_data)
+      return if table_data.blank?
+      if visualization_type == CartoDB::Visualization::Member::TYPE_CANONICAL
         %Q{, visualization_table_rows = #{table_data[:rows]},
              visualization_table_size = #{table_data[:size]},
              visualization_geometry_types = '{#{table_data[:geometry_types].join(',')}}'}

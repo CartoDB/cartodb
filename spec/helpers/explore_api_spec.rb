@@ -83,45 +83,73 @@ describe 'Helpers' do
       geometry_data.should eq expected_data
     end
 
-    it 'should return the table data properly setted' do
-      user = FactoryGirl.build(:user)
-      map = FactoryGirl.build(
-        :map, user_id: user.id, zoom: 3, center: [30, 0], view_bounds_ne: [85.0511, 179],
-        view_bounds_sw: [-85.0511, -179]
-      )
-      visualization = FactoryGirl.build(:table_visualization, :user_id => user.id, :map_id => map.id)
-      visualization.stubs(:map).returns(map)
+    it 'should return the table data properly setted for two vis of the same user' do
+      user = FactoryGirl.build(:user, :database_name => 'cartodb_user_1', :database_host => '127.0.0.1')
+      User.stubs(:find).with(id: user.id).returns(user)
+      visualization = FactoryGirl.build(:table_visualization, :user_id => user.id)
+      visualization_2 = FactoryGirl.build(:table_visualization, :user_id => user.id)
+      result = [
+        {"row_count" => 10, "size" => 100, "table_name" => visualization.name}, 
+        {"row_count" => 20, "size" => 200, "table_name" => visualization_2.name}
+      ]
+      conn = Object.new
+      conn.stubs(:close => true, :exec => result)
+      PG::Connection.stubs(:open => conn)
       table = FactoryGirl.build(:table)
-      table.stubs(:rows_counted => 10, :geometry_types => ["ST_Point"], :table_size => 100)
+      table.stubs(:geometry_types => ["ST_Point"])
       user_table = FactoryGirl.build(:user_table)
       user_table.stubs(:service).returns(table)
       user_table.stubs(:first).returns(user_table)
       UserTable.stubs(:where => user_table)
-      table_data = @explore_api.get_table_data(visualization)
-      expected_data = {
-        rows: 10,
-        size: 100,
-        geometry_types: ["ST_Point"]
+      table_data = @explore_api.get_visualizations_table_data([visualization, visualization_2])
+      expected_data = { 
+        user.id => {
+          visualization.name => {
+            :rows=>10, :size=>100, :geometry_types=>["ST_Point"]
+          },
+          visualization_2.name => {
+            :rows=>20, :size=>200, :geometry_types=>["ST_Point"]
+          }
+        }
       }
       table_data.should eq expected_data
     end
 
-    it 'should return empty if there is no user table' do
-      user = FactoryGirl.build(:user)
-      map = FactoryGirl.build(
-        :map, user_id: user.id, zoom: 3, center: [30, 0], view_bounds_ne: [85.0511, 179],
-        view_bounds_sw: [-85.0511, -179]
-      )
-      visualization = FactoryGirl.build(:table_visualization, :user_id => user.id, :map_id => map.id)
-      visualization.stubs(:map).returns(map)
+    it 'should return the table data properly setted for two vis of the different users' do
+      user = FactoryGirl.build(:user, :database_name => 'cartodb_user_1', :database_host => '127.0.0.1')
+      user_2 = FactoryGirl.build(:user, :database_name => 'cartodb_user_2', :database_host => '127.0.0.1')
+      User.stubs(:find).with(id: user.id).returns(user)
+      User.stubs(:find).with(id: user_2.id).returns(user_2)
+      visualization = FactoryGirl.build(:table_visualization, :user_id => user.id)
+      visualization_2 = FactoryGirl.build(:table_visualization, :user_id => user_2.id)
+      result_1 = [{"row_count" => 10, "size" => 100, "table_name" => visualization.name}]
+      result_2 = [{"row_count" => 20, "size" => 200, "table_name" => visualization_2.name}]
+      conn = Object.new
+      conn.stubs(:close => true, :exec => result_1)
+      conn_2 = Object.new
+      conn_2.stubs(:close => true, :exec => result_2)
+      PG::Connection.stubs(:open).with(:dbname => user.database_name, :host => user.database_host, :user => 'postgres').returns(conn)
+      PG::Connection.stubs(:open).with(:dbname => user_2.database_name, :host => user_2.database_host, :user => 'postgres').returns(conn_2)
       table = FactoryGirl.build(:table)
-      table.stubs(:rows_counted => 10, :geometry_types => ["ST_Point"], :table_size => 100)
+      table.stubs(:geometry_types => ["ST_Point"])
       user_table = FactoryGirl.build(:user_table)
       user_table.stubs(:service).returns(table)
-      user_table.stubs(:first).returns(nil)
+      user_table.stubs(:first).returns(user_table)
       UserTable.stubs(:where => user_table)
-      table_data = @explore_api.get_table_data(visualization)
-      table_data.empty?.should eq true
+      table_data = @explore_api.get_visualizations_table_data([visualization, visualization_2])
+      expected_data = { 
+        user.id => {
+          visualization.name => {
+            :rows=>10, :size=>100, :geometry_types=>["ST_Point"]
+          }
+        },
+        user_2.id => {
+          visualization_2.name => {
+            :rows=>20, :size=>200, :geometry_types=>["ST_Point"]
+          }
+        }
+      }
+      table_data.should eq expected_data
     end
 
     it 'should return nil if the coordinates are out of the bounds' do

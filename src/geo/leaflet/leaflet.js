@@ -254,19 +254,6 @@
         lv.setZIndex(lv.model.get('order'));
       }
 
-      var attribution = layer.get('attribution');
-
-      if (attribution && attribution !== '') {
-        // Setting attribution in map model
-        // it doesn't persist in the backend, so this is needed.
-        var attributions = _.clone(this.map.get('attribution')) || [];
-        if (!_.contains(attributions, attribution)) {
-          attributions.unshift(attribution);
-        }
-
-        this.map.set({ attribution: attributions });
-      }
-
       if(opts === undefined || !opts.silent) {
         this.trigger('newLayerView', layer_view, layer_view.model, this);
       }

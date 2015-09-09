@@ -208,21 +208,7 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
         cdb.log.error("layer type not supported");
       }
 
-      var attribution = layer.get('attribution');
-
-      if (attribution && attribution !== '') {
-        // Setting attribution in map model
-        // it doesn't persist in the backend, so this is needed.
-        var attributions = _.clone(this.map.get('attribution')) || [];
-        if (!_.contains(attributions, attribution)) {
-          attributions.unshift(attribution);
-        }
-
-        this.map.set({ attribution: attributions });
-      }
-
       return layer_view;
-
     },
 
     pixelToLatLon: function(pos) {

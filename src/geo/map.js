@@ -294,7 +294,24 @@ cdb.geo.Map = cdb.core.Model.extend({
       }
     }, this);
 
+    this.layers.bind('reset', this._updateAttributions, this);
+    this.layers.bind('add', this._updateAttributions, this);
+    this.layers.bind('remove', this._updateAttributions, this);
+    this.layers.bind('change:attribution', this._updateAttributions, this);
+
     this.geometries = new cdb.geo.Geometries();
+  },
+
+  _updateAttributions: function() {
+    var attributions = _.chain(this.layers.models)
+      .map(function(layer) { return layer.get('attribution'); })
+      .compact()
+      .uniq()
+      .value();
+
+    attributions.push(this.defaults.attribution[0]);
+
+    this.set('attribution', attributions);
   },
 
   setView: function(latlng, zoom) {
@@ -460,24 +477,6 @@ cdb.geo.Map = cdb.core.Model.extend({
     if(baseLayer && baseLayer.get('options'))  {
       return baseLayer.get('options').urlTemplate;
     }
-  },
-
-  updateAttribution: function(old, new_) {
-    var attributions = this.get("attribution") || [];
-
-    // Remove the old one
-    if (old) {
-      attributions = _.without(attributions, old);
-    }
-
-    // Save the new one
-    if (new_) {
-      if (!_.contains(attributions, new_)) {
-        attributions.push(new_);
-      }
-    }
-
-    this.set({ attribution: attributions });
   },
 
   addGeometry: function(geom) {

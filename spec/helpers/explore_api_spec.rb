@@ -33,6 +33,18 @@ describe 'Helpers' do
       tables.should eq '{\"user_name_1\".table_1,\"user_name_2\".table_2}'
     end
 
+    it 'should return the visualizations tables with multiple layers without duplicates' do
+      user = FactoryGirl.build(:user)
+      map = FactoryGirl.build(:map, :user_id => user.id)
+      visualization = FactoryGirl.build(:derived_visualization, :user_id => user.id, :map_id => map.id)
+      layer_1 = create_layer('table_1', 'user_name_1', 1)
+      layer_2 = create_layer('table_1', 'user_name_1', 2)
+      visualization.stubs(:map).returns(map)
+      visualization.stubs(:layers).with(:carto_and_torque).returns([layer_1, layer_2])
+      tables = @explore_api.get_visualization_tables(visualization)
+      tables.should eq '{\"user_name_1\".table_1}'
+    end
+
     it 'should empty if the is no user name or table name in the layer' do
       user = FactoryGirl.build(:user)
       map = FactoryGirl.build(:map, :user_id => user.id)

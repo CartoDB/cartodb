@@ -5,6 +5,8 @@
 @import "../variables/colors";
 @import "../variables/sizes";
 
+$cHighlight-mainHover: rgba(#007FBD, 1);
+
 .Button {
   @include display-flex();
   @include align-items(center, center);
@@ -42,7 +44,7 @@
 .Button--main {
   background-color: $cHighlight-main;
   border-color: $cHighlight-main;
-  &:hover { background-color: rgba(#007FBD, 1) }
+  &:hover { background-color: $cHighlight-mainHover }
   &.is-disabled:hover {
     background-color: $cHighlight-main;
   }
@@ -96,6 +98,16 @@
 }
 .Button--secondaryTransparentBkg {
   background-color: transparent;
+}
+.Button--secondaryBlue {
+  border-color: transparent;
+  background-color: rgba(white, 1);
+  span {
+    color: $cHighlight-main;
+  }
+  &:hover span {
+    color: $cHighlight-mainHover;
+  }
 }
 .Button.is-disabled {
   @include opacity(0.4);

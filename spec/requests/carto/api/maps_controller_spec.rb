@@ -10,26 +10,53 @@ describe Carto::Api::MapsController do
   it_behaves_like 'maps controllers' do
   end
 
-  before(:all) do
 
-    # Spec the routes so that it uses the new controller. Needed for alternative routes testing
-    Rails.application.routes.draw do
+  describe '#show legacy tests' do
 
-      # new controller
-      scope :module => 'carto/api', :format => :json do
-        get '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:id'  => 'maps#show',    as: :api_v1_maps_show
-      end
+    before(:all) do
+      @user = create_user(
+        username: 'test',
+        email:    'client@example.com',
+        password: 'clientex'
+      )
 
-      # old controller
-      scope :module => 'api/json', :format => :json do
-      end
-
+      host! 'test.localhost.lan'
     end
 
-  end
+    before(:each) do
+      stub_named_maps_calls
+      delete_user_data @user
+      @table = create_table :user_id => @user.id
+    end
 
-  after(:all) do
-    Rails.application.reload_routes!
+    after(:all) do
+      stub_named_maps_calls
+      @user.destroy
+    end
+
+
+    let(:params) { { :api_key => @user.api_key } }
+
+
+    it "Get map information" do
+      map = create_map({ user_id: @user.id, table_id: @table.id })
+
+      get_json api_v1_maps_show_url(params.merge({ id: map.id })) do |response|
+        response.status.should be_success
+        response.body[:id].should == map.id
+        response.body[:user_id].should == map.user_id
+        response.body[:provider].should == map.provider
+        response.body[:bounding_box_sw].should == map.bounding_box_sw
+        response.body[:bounding_box_ne].should == map.bounding_box_ne
+        response.body[:center].should == map.center
+        response.body[:zoom].should == map.zoom
+        response.body[:view_bounds_sw].should == map.view_bounds_sw
+        response.body[:view_bounds_ne].should == map.view_bounds_ne
+        response.body[:legends].should == map.legends
+        response.body[:scrollwheel].should == map.scrollwheel
+      end
+    end
+
   end
 
 end

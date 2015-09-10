@@ -112,7 +112,8 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
 
   _isFullScreenEnabled: function() {
     // If frameElement exists, it means that the map
-    // is embebed as an iframe so we need
+    // is embebed as an iframe so we need to check if
+    // the parent has a secure protocol
     var frameElement = window && window.frameElement;
     if (frameElement) {
       var parentWindow = this._getFramedWindow(frameElement);

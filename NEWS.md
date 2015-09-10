@@ -18,6 +18,7 @@
 * Detection of lat/long columns now is done in `ogr2ogr2` rather than rails code [#5349](https://github.com/CartoDB/cartodb/pull/5349). In order to get this feature working (and some related tests), execute this to get the ogr2ogr2 package updated: `sudo apt-get update; sudo apt-get upgrade`. From this version on, the ogr2ogr2 package is mandatory. In order to install it: `sudo apt-get install ogr2ogr2-static-bin`.
 * Removed Mixpanel tracking code [#5410](https://github.com/CartoDB/cartodb/pull/5410)
 * Don't try to short url with bitly if credentials are not present in app_config.yml
+* Display custom attribution of layers in the editor and embeds [#5388](https://github.com/CartoDB/cartodb/pull/5388)
 
 3.10.3 (2015-08-13)
 ---

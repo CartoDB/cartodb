@@ -74,14 +74,14 @@ module Carto
         @visualization.is_link_privacy?
       end
 
-      def related_visualizations
-        @visualization.related_visualizations.map { |rv|
+      def related_canonical_visualizations
+        @visualization.related_canonical_visualizations.map { |rv|
           Carto::Admin::VisualizationPublicMapAdapter.new(rv, @current_viewer) if rv.is_public?
         }.compact
       end
 
       def related_visualizations_geometry_types
-        related_visualizations.collect(&:geometry_types).flatten.uniq
+        related_canonical_visualizations.collect(&:geometry_types).flatten.uniq
       end
 
       def related_tables_geometry_types

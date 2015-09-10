@@ -77,8 +77,8 @@ class Carto::Visualization < ActiveRecord::Base
     @related_tables ||= get_related_tables
   end
 
-  def related_visualizations
-    @related_visualizations ||= get_related_visualizations
+  def related_canonical_visualizations
+    @related_canonical_visualizations ||= get_related_canonical_visualizations
   end
 
   def stats
@@ -313,8 +313,12 @@ class Carto::Visualization < ActiveRecord::Base
     map.carto_and_torque_layers.flat_map { |layer| layer.affected_tables}.uniq
   end
 
-  def get_related_visualizations
-    Carto::Visualization.where(map_id: related_tables.collect(&:map_id), type: TYPE_CANONICAL).all
+  def get_related_canonical_visualizations
+    get_related_visualizations_by_types([TYPE_CANONICAL])
+  end
+
+  def get_related_visualizations_by_types(types)
+    Carto::Visualization.where(map_id: related_tables.collect(&:map_id), type: types).all
   end
 
   def has_write_permission?(user)

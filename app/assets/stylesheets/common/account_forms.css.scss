@@ -8,7 +8,6 @@
 $sLabel-width: 140px;
 
 .FormAccount-Section {
-  overflow: hidden;
   @include display-flex();
   @include flex-direction(row);
   @include justify-content(space-between);

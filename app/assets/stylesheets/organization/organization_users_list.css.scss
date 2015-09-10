@@ -22,26 +22,33 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   @include align-items(center, center);
 }
 .OrganizationList-user {
-  box-sizing: border-box;
   position: relative;
   width: 100%;
 
   &:not(:last-child) { border-bottom: 1px solid $cStructure-softLine; }
 }
 // TODO: this is duplicated from .DatasetsList-item, can we consolidate these styles somehow?
-.OrganizationList-user.is-selected {
-  background-color: $cCard-selectedFill;
-  border: 1px $cCard-selectedBorder solid;
-  border-radius: 4px;
-  margin: -1px -#{$sMargin-element} 0 -#{$sMargin-element};
-  padding: 0 $selectedItemPaddingOnSides;
-}
 .OrganizationList-user.is-selectable:hover {
   background-color: $cCard-hoverFill;
   border: 1px $cCard-hoverBorder solid;
   border-radius: 4px;
-  margin: -1px -#{$sMargin-element} 0 -#{$sMargin-element};
+  margin-left: -#{$sMargin-element};
+  margin-right: -#{$sMargin-element};
+  margin-top: -1px;
   padding: 0 $selectedItemPaddingOnSides;
+}
+.OrganizationList-user.is-selected {
+  background-color: $cCard-selectedFill;
+  border: 1px $cCard-selectedBorder solid;
+  border-radius: 4px;
+  margin-left: -#{$sMargin-element};
+  margin-right: -#{$sMargin-element};
+  margin-top: -1px; // to overlap border of prev element
+  padding: 0 $selectedItemPaddingOnSides;
+  &:hover {
+    background-color: $cCard-selectedFill;
+    border: 1px $cCard-selectedBorder solid;
+  }
 }
 .OrganizationList-userAvatar {
   width: 42px;

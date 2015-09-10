@@ -99,14 +99,41 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
   },
 
   render: function() {
-
-    var $el = this.$el;
-
-    var options = _.extend(this.options);
-
-    $el.html(this.options.template(options));
+    if (this._isFullScreenEnabled()) {
+      var $el = this.$el;
+      var options = _.extend(this.options);
+      $el.html(this.options.template(options));
+    } else {
+      cdb.log.info('FullScreen is deprecated on insecure origins. See https://goo.gl/rStTGz for more details.');
+    }
 
     return this;
+  },
+
+  _isFullScreenEnabled: function() {
+    // If frameElement exists, it means that the map
+    // is embebed as an iframe so we need
+    var frameElement = window && window.frameElement;
+    if (frameElement) {
+      var parentWindow = this._getFramedWindow(frameElement);
+      var parentProtocol = parentWindow.location.protocol;
+      if (parentProtocol.search('https:') !== 0) {
+        return false;
+      }
+    }
+
+    return true;
+  },
+
+  _getFramedWindow: function(f) {
+    if (f.parentNode == null) {
+      f = document.body.appendChild(f);
+    }
+    var w = (f.contentWindow || f.contentDocument);
+    if (w && w.nodeType && w.nodeType==9) {
+      w = (w.defaultView || w.parentWindow);
+    }
+    return w;
   }
 
 });

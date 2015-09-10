@@ -110,10 +110,11 @@ namespace :cartodb do
     end
 
     desc "Updates the data at #{VISUALIZATIONS_TABLE}"
-    task :update => [:environment] do
+    task :update , [:days_since_to_update] => :environment do |t, args|
+      days_since_to_check = args[:days_since_to_update].nil? ? DAYS_TO_CHECK_LIKES : args[:days_since_to_update].to_i
       @explore_api = ExploreAPI.new
       stats_aggregator.timing('visualizations.update.total') do
-        update
+        update(days_since_to_check)
         touch_metadata
       end
     end
@@ -149,7 +150,7 @@ namespace :cartodb do
       target_user.in_database.run update_mapviews_and_likes_query(visualization, bbox_values[visualization.id], table_data)
     end
 
-    def update
+    def update(days_since_to_check)
       # We add one second because we have time fields with microseconds and this leads to
       # retrieve processed data crashing due constraint issues.
       # Ie. 2015-09-03 14:12:38+00 < 2015-09-03 14:12:38.294086+00 is true
@@ -159,21 +160,21 @@ namespace :cartodb do
       most_recent_updated_date += 1 unless most_recent_updated_date.nil?
 
       stats_aggregator.timing('visualizations.update.update_existing') do
-        update_existing_visualizations_at_user
+        update_existing_visualizations_at_user(days_since_to_check)
       end
       stats_aggregator.timing('visualizations.update.insert_new') do
         insert_new_visualizations_at_user(most_recent_created_date, most_recent_updated_date)
       end
     end
 
-    def update_existing_visualizations_at_user
+    def update_existing_visualizations_at_user(days_since_to_check)
       deleted_visualization_ids = []
       privated_visualization_ids = []
 
       puts "UPDATING"
 
       # Get the last 2 days liked visualizations in order to use it as trigger to update likes, mapviews, etc
-      date_to_check_likes = Time.now.beginning_of_day - DAYS_TO_CHECK_LIKES.days
+      date_to_check_likes = Time.now.beginning_of_day - days_since_to_check.days
       @liked_visualizations = @explore_api.visualization_likes_since(date_to_check_likes)
 
       # INFO: we need to check all known visualizations because they might've been deleted

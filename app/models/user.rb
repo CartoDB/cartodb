@@ -908,14 +908,6 @@ class User < Sequel::Model
     return false
   end
 
-  def import_quota
-    if self.max_concurrent_import_count.nil?
-      self.account_type.downcase == 'free' ? 1 : 3
-    else
-      self.max_concurrent_import_count
-    end
-  end
-
   def view_dashboard
     self.this.update dashboard_viewed_at: Time.now
     set dashboard_viewed_at: Time.now

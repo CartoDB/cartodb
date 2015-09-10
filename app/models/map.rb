@@ -53,6 +53,8 @@ class Map < Sequel::Model
     center:          [30, 0]
   }
 
+  MAXIMUM_ZOOM = 18;
+
   attr_accessor :table_id,
                 # Flag to detect if being destroyed by whom so invalidate_vizjson_varnish_cache skips it
                 :being_destroyed_by_vis_id
@@ -143,6 +145,31 @@ class Map < Sequel::Model
   # (lat,lon) points on all map data
   def center_data
     (center.nil? || center == '') ? DEFAULT_OPTIONS[:center] : center.gsub(/\[|\]|\s*/, '').split(',')
+  end
+
+  def recenter_using_bounds!
+    bounds = get_map_bounds
+    x = (bounds[:maxx] + bounds[:minx]) / 2
+    y = (bounds[:maxy] + bounds[:miny]) / 2
+    update(center: "[#{y},#{x}]")
+  rescue Sequel::DatabaseError => exception
+    CartoDB::notify_exception(exception, { user: user } )
+  end
+
+  def recalculate_zoom!
+    bounds = get_map_bounds
+    latitude_size = bounds[:maxy] - bounds[:miny];
+    longitude_size = bounds[:maxx] - bounds[:minx];
+
+    # Don't touch zoom if the table is empty or has no bounds
+    return if (longitude_size == 0 && latitude_size == 0)
+
+    zoom = -1 * ( (Math.log([longitude_size, latitude_size].max) / Math.log(2)) - (Math.log(360) / Math.log(2)))
+    zoom = [[zoom.round, 1].max, MAXIMUM_ZOOM].min
+
+    update(zoom: zoom)
+  rescue Sequel::DatabaseError => exception
+    CartoDB::notify_exception(exception, { user: user } )
   end
 
   def view_bounds_data

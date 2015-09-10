@@ -33,6 +33,18 @@ describe 'Helpers' do
       tables.should eq '{\"user_name_1\".table_1,\"user_name_2\".table_2}'
     end
 
+    it 'should return the visualizations tables with multiple layers without duplicates' do
+      user = FactoryGirl.build(:user)
+      map = FactoryGirl.build(:map, :user_id => user.id)
+      visualization = FactoryGirl.build(:derived_visualization, :user_id => user.id, :map_id => map.id)
+      layer_1 = create_layer('table_1', 'user_name_1', 1)
+      layer_2 = create_layer('table_1', 'user_name_1', 2)
+      visualization.stubs(:map).returns(map)
+      visualization.stubs(:layers).with(:carto_and_torque).returns([layer_1, layer_2])
+      tables = @explore_api.get_visualization_tables(visualization)
+      tables.should eq '{\"user_name_1\".table_1}'
+    end
+
     it 'should empty if the is no user name or table name in the layer' do
       user = FactoryGirl.build(:user)
       map = FactoryGirl.build(:map, :user_id => user.id)
@@ -69,6 +81,47 @@ describe 'Helpers' do
       geometry_data = @explore_api.get_geometry_data(visualization)
       expected_data = {}
       geometry_data.should eq expected_data
+    end
+
+    it 'should return the table data properly setted' do
+      user = FactoryGirl.build(:user)
+      map = FactoryGirl.build(
+        :map, user_id: user.id, zoom: 3, center: [30, 0], view_bounds_ne: [85.0511, 179],
+        view_bounds_sw: [-85.0511, -179]
+      )
+      visualization = FactoryGirl.build(:table_visualization, :user_id => user.id, :map_id => map.id)
+      visualization.stubs(:map).returns(map)
+      table = FactoryGirl.build(:table)
+      table.stubs(:rows_counted => 10, :geometry_types => ["ST_Point"], :table_size => 100)
+      user_table = FactoryGirl.build(:user_table)
+      user_table.stubs(:service).returns(table)
+      user_table.stubs(:first).returns(user_table)
+      UserTable.stubs(:where => user_table)
+      table_data = @explore_api.get_table_data(visualization)
+      expected_data = {
+        rows: 10,
+        size: 100,
+        geometry_types: ["ST_Point"]
+      }
+      table_data.should eq expected_data
+    end
+
+    it 'should return empty if there is no user table' do
+      user = FactoryGirl.build(:user)
+      map = FactoryGirl.build(
+        :map, user_id: user.id, zoom: 3, center: [30, 0], view_bounds_ne: [85.0511, 179],
+        view_bounds_sw: [-85.0511, -179]
+      )
+      visualization = FactoryGirl.build(:table_visualization, :user_id => user.id, :map_id => map.id)
+      visualization.stubs(:map).returns(map)
+      table = FactoryGirl.build(:table)
+      table.stubs(:rows_counted => 10, :geometry_types => ["ST_Point"], :table_size => 100)
+      user_table = FactoryGirl.build(:user_table)
+      user_table.stubs(:service).returns(table)
+      user_table.stubs(:first).returns(nil)
+      UserTable.stubs(:where => user_table)
+      table_data = @explore_api.get_table_data(visualization)
+      table_data.empty?.should eq true
     end
 
     it 'should return nil if the coordinates are out of the bounds' do

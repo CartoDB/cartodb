@@ -806,9 +806,16 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
         }
       }
 
+      # To align with expected named map data and forget about internals of zooming
+      ::Map.any_instance.stubs(:recalculate_zoom!).returns(nil)
+
+
       table, derived_vis, template_id = create_private_table_with_public_visualization(template_data)
 
       CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+
+      # To align with expected named map data and forget about internals of centering
+      ::Map.any_instance.stubs(:center_data).returns([30.0, 0.0])
 
       vizjson = get_vizjson(derived_vis)
 
@@ -940,7 +947,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
     return table, derived_vis, template_id
   end
 
-  # Basemaps with labels on top create an additional topmost layer. This causes issues if running the tests locally 
+  # Basemaps with labels on top create an additional topmost layer. This causes issues if running the tests locally
   # with such basemaps, so we warn and not run any tests performing layer counting checks
   def disable_if_config_has_maps_with_labels
     if Cartodb.config[:basemaps]['CartoDB'].select { |basemap| !basemap['labels'].nil? }.count > 0

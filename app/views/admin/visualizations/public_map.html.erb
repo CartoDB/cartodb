@@ -171,8 +171,8 @@
       <div class="u-inner">
         <div class="PublicMap-block">
           <ul>
-            <% if @related_visualizations.present? %>
-              <% @related_visualizations.each do |vis| %>
+            <% if @related_canonical_visualizations.present? %>
+              <% @related_canonical_visualizations.each do |vis| %>
                 <% if vis.privacy == "public" %>
                   <li class="DatasetsList-item">
                     <div class="DatasetsList-itemCategory is--<%= vis.related_visualizations_simple_geometry_types[0] if vis.related_visualizations_simple_geometry_types.present? %>Dataset"></div>

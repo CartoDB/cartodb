@@ -20,7 +20,6 @@ module Carto
 
       private
 
-
       def calculate_vizjson(options={})
         vizjson_options = {
           full: false,

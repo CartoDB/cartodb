@@ -10,6 +10,9 @@
   <%= stylesheet_link_tag "sessions" %>
   <%= yield :css %>
   <%= csrf_meta_tag %>
+  <% if Rails.env.staging? %>
+    <meta name="robots" content="noindex, nofollow">
+  <% end %>
 </head>
 <body class="frontend">
   <%= yield %>

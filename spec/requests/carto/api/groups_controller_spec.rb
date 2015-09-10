@@ -6,6 +6,7 @@ require_relative '../../../../app/controllers/carto/api/database_groups_controll
 require_relative '.././../../factories/visualization_creation_helpers'
 
 # cURL samples:
+# - Rename group: curl -v -H "Content-Type: application/json" -X PUT -d '{ "display_name": "Demo Group" }' "http://central-org-b-admin.localhost.lan:3000/api/v1/organization/95c2c425-5c8c-4b20-8999-d79cd20c2f2c/groups/c662f7ee-aefb-4f49-93ea-1f671a77bb36?api_key=665646f527c3006b124c15a308bb98f4ed1f52e4"
 # - Add users: curl -v -H "Content-Type: application/json" -X POST -d '{ "users" : ["78ee570a-812d-4cce-928c-e5ebeb4708e8", "7e53c96c-1598-43e0-b23e-290daf633547"] }' "http://central-org-b-admin.localhost.lan:3000/api/v1/organization/95c2c425-5c8c-4b20-8999-d79cd20c2f2c/groups/c662f7ee-aefb-4f49-93ea-1f671a77bb36/users?api_key=665646f527c3006b124c15a308bb98f4ed1f52e4"
 # - Remove users: curl -v -H "Content-Type: application/json" -X DELETE -d '{ "users" : ["78ee570a-812d-4cce-928c-e5ebeb4708e8", "7e53c96c-1598-43e0-b23e-290daf633547"] }' "http://central-org-b-admin.localhost.lan:3000/api/v1/organization/95c2c425-5c8c-4b20-8999-d79cd20c2f2c/groups/c662f7ee-aefb-4f49-93ea-1f671a77bb36/users?api_key=665646f527c3006b124c15a308bb98f4ed1f52e4"
 
@@ -226,6 +227,18 @@ describe Carto::Api::GroupsController do
         new_group.organization_id.should == @carto_organization.id
         new_group.display_name.should == new_display_name
         new_group.database_role.should_not be_nil
+      end
+    end
+
+    it '#update returns 409 and a meaningful error message if there is a group with the same name within the organization' do
+      group = @carto_organization.groups[0]
+      group_2 = @carto_organization.groups[1]
+
+      Carto::Group.expects(:rename_group_extension_query).with(anything, anything, anything).never
+
+      put_json api_v1_organization_groups_update_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, group_id: group.id, api_key: @org_user_owner.api_key), { display_name: group_2.display_name }, @headers do |response|
+        response.status.should == 409
+        response.body[:errors].should match /A group with that name already exists/
       end
     end
 

@@ -53,6 +53,8 @@ module Carto
     end
 
     def rename_group_with_extension(new_display_name)
+      raise CartoDB::ModelAlreadyExistsError if Group.find_by_organization_id_and_display_name(organization.id, new_display_name)
+
       new_name = Carto::Group.valid_group_name(new_display_name)
       organization.owner.in_database do |conn|
         Carto::Group.rename_group_extension_query(conn, name, new_name)

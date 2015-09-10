@@ -53,6 +53,9 @@ module Carto
       def update
         @group.rename_group_with_extension(params['display_name'])
         render_jsonp(Carto::Api::GroupPresenter.full(@group).to_poro, 200)
+      rescue CartoDB::ModelAlreadyExistsError => e
+        CartoDB.notify_debug('Group display name already exists', { params: params })
+        render json: { errors: "A group with that name already exists" }, status: 409
       rescue => e
         CartoDB.notify_exception(e, { params: params , group: @group })
         render json: { errors: e.message }, status: 500

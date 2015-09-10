@@ -15,6 +15,9 @@
     <%= insert_google_analytics('primary') %>
     <%= yield :js %>
     <noscript><meta http-equiv="refresh" content="0;url=/no_javascript.html"></noscript>
+    <% if Rails.env.staging? %>
+      <meta name="robots" content="noindex, nofollow">
+    <% end %>
   </head>
   <body class="sessions">
     <%= yield %>

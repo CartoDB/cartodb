@@ -7,6 +7,9 @@
     <%= stylesheet_link_tag 'cartodb.css', 'common.css', :media => 'all' %>
     <%= yield :css -%>
     <%= csrf_meta_tag -%>
+    <% if Rails.env.staging? %>
+      <meta name="robots" content="noindex, nofollow">
+    <% end %>
   </head>
   <body>
     <% if ( ( controller_name != "visualizations" && controller_name != "tables" )  || action_name != "show" ) %>

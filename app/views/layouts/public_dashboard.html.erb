@@ -8,7 +8,9 @@
     <meta name="author" content="<%= @name %>">
     <meta charset='utf-8' />
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-    <meta name="robots" content="noindex, nofollow">
+    <% if Rails.env.staging? %>
+      <meta name="robots" content="noindex, nofollow">
+    <% end %>
 
     <meta property="og:title" content="<%= yield :title %>" />
     <meta property="og:description" content="<%= yield :description %>" />

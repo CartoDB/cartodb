@@ -135,7 +135,8 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
   private
 
   def set_external_source
-    @external_source = get_external_source(params[:remote_visualization_id])
+    @external_source = params[:remote_visualization_id].present? ? 
+                                                get_external_source(params[:remote_visualization_id]) : nil
   end
 
   def setup_member_attributes

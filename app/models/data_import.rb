@@ -638,11 +638,11 @@ class DataImport < Sequel::Model
       self.table_name = importer.table.name if importer.success? && importer.table
       self.table_id   = importer.table.id if importer.success? && importer.table
 
-      if importer.success? && importer.data_import.create_visualization
-        self.visualization_id = importer.data_import.visualization_id
+      if importer.success?
+        update_visualization_id(importer)
+        update_synchronization(importer)
       end
 
-      update_synchronization(importer)
       importer.success? ? set_datasource_audit_to_complete(datasource_provider,
                                                          importer.success? && importer.table ? importer.table.id : nil)
       : set_datasource_audit_to_failed(datasource_provider)
@@ -650,6 +650,12 @@ class DataImport < Sequel::Model
 
     unless runner.nil?
       self.stats = ::JSON.dump(runner.stats)
+    end
+  end
+
+  def update_visualization_id(importer)
+    if importer.data_import.create_visualization
+      self.visualization_id = importer.data_import.visualization_id
     end
   end
 

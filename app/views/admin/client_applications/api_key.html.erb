@@ -28,7 +28,7 @@
 
     <span class="FormAccount-separator"></span>
 
-    <div class="FormAccount-row FormAccount-row--spaced">
+    <div class="FormAccount-row">
       <div class="FormAccount-rowLabel">
         <label class="FormAccount-label">Your API Key</label>
       </div>
@@ -42,7 +42,7 @@
       </div>
     </div>
 
-    <div class="FormAccount-row FormAccount-row--spaced">
+    <div class="FormAccount-row">
       <div class="FormAccount-rowLabel">
         <label class="FormAccount-label FormAccount-label--verticalAlignTop">Example write</label>
       </div>
@@ -51,7 +51,7 @@
       </div>
     </div>
 
-    <div class="FormAccount-row FormAccount-row--spaced">
+    <div class="FormAccount-row">
       <div class="FormAccount-rowLabel">
         <label class="FormAccount-label FormAccount-label--verticalAlignTop">Example read private</label>
       </div>
@@ -93,7 +93,7 @@
     <div class="FormAccount-footer">
       <p class="FormAccount-footerText">
         <i class="iconFont iconFont-Info FormAccount-footerIcon"></i>
-        Learn more about <%= link_to "using your simple app key", Cartodb.config[:developers_host] + "/cartodb-platform.html" %> in CartoDB
+        <span>Learn more about <%= link_to "using your simple app key", Cartodb.config[:developers_host] + "/cartodb-platform.html" %> in CartoDB</span>
       </p>
     </div>
 

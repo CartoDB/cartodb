@@ -1224,6 +1224,27 @@ describe User do
       @user.tables.where(name: table.name).first.should be_nil
     end
 
+    it "should link a table that requires quoting, e.g: name with capitals" do
+      initial_count = @user.tables.count
+      @user.in_database.run %Q{CREATE TABLE "MyTableWithCapitals" (cartodb_id integer, the_geom geometry, the_geom_webmercator geometry)}
+      @user.in_database.run(%Q{
+        CREATE OR REPLACE FUNCTION test_quota_per_row()
+          RETURNS trigger
+          AS $$
+          BEGIN
+            RETURN NULL;
+          END;
+          $$
+          LANGUAGE plpgsql;
+      })
+      @user.in_database.run %Q{CREATE TRIGGER test_quota_per_row BEFORE INSERT ON "MyTableWithCapitals" EXECUTE PROCEDURE test_quota_per_row()}
+
+      @user.link_ghost_tables
+
+      # TODO: the table won't be cartodbfy'ed and registered until we support CamelCase identifiers.
+      @user.tables.count.should == initial_count
+    end
+
   end
 
   describe '#shared_tables' do

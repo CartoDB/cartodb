@@ -425,7 +425,7 @@ $sLabel-width: 140px;
 .FormAccount-rowInfo {
   @include display-flex();
 
-  &.FormAccount-rowInfo--marginLeft { margin-left: 18px; }
+  &.FormAccount-rowInfo--marginLeft { margin-left: 20px; }
 }
 .FormAccount-rowInfoText {
   font-size: $sFontSize-normal;

@@ -62,8 +62,9 @@ $sLabel-width: 140px;
   @include display-flex();
   @include flex-direction(column);
   @include justify-content(flex-start, start);
-  margin: 0 0 20px 0;
+  margin: 0 0 30px 0;
 }
+.FormAccount-row--wideMarginBottom { margin-bottom: 100px; }
 .FormAccount-title + .FormAccount-row {
   padding-top: 0;
 }
@@ -114,9 +115,9 @@ $sLabel-width: 140px;
     text-align: right;
   }
 }
-.FormAccount-row.FormAccount-row--spaced { padding: $sMargin-element 0 }
 .FormAccount-rowLabel {
   text-align: left;
+  margin-bottom: 8px;
 }
 .FormAccount-rowLabel.FormAccount-rowLabel--leftAligned {
   width: $sLabel-width;
@@ -124,10 +125,9 @@ $sLabel-width: 140px;
   text-align: left;
 }
 .FormAccount-label {
-  line-height: 30px;
   font-size: $sFontSize-normal;
   font-weight: $sFontWeight-normal;
-  color: $cTypography-labels;
+  color: $cTypography-paragraphs;
   text-transform: capitalize;
 }
 .FormAccount-label.FormAccount-label--verticalAlignTop {
@@ -146,37 +146,15 @@ $sLabel-width: 140px;
   z-index:0;
   margin-bottom: 25px;
 }
-.FormAccount-separator.FormAccount-separator--or {
-  position: relative;
-  display: block;
-  height: auto;
-  text-align: center;
-  margin: 0;
-  background: transparent;
-  font-size: 14px;
-  font-weight: $sFontWeight-lighter;
-  color: $cTypography-secondary;
-
-  &:before, &:after {
-    content: '';
-    position: absolute;
-    top: $sMargin-element + 10;
-    height: 1px;
-    background: $cStructure-mainLine;
-    width: 45%;
-  }
-  &:before { left: 0 }
-  &:after { right: 0 }
-}
+.FormAccount-separator--marginTop { margin-top: 30px; }
 .FormAccount-rowData {
   position: relative;
   @include display-flex();
   @include align-items(center);
-  min-height: 40px; // if there's no input on row (e.g. only radio buttons), to avoid "jumpy" behaviour on re-renders
 }
 
 .FormAccount-planTag {
-  background-color: #00CC32;
+  background-color: $cHighlight-positive;
   color: #FFFFFF;
   font-size: 13px;
   font-weight: normal;
@@ -386,6 +364,7 @@ $sLabel-width: 140px;
 .FormAccount-link {
   color: $cTypography-link;
   text-decoration: underline;
+  font-weight: normal;
   &:hover {
     color: $cTypography-linkHover;
     cursor: pointer;
@@ -456,7 +435,7 @@ $sLabel-width: 140px;
   &.warning { color: #FFB713; }
 }
 .FormAccount-rowInfoText--centered { text-align: center }
-.FormAccount-rowInfoText--smaller { font-size: $sFontSize-smallUpperCase }
+.FormAccount-rowInfoText--smaller { width: 180px; }
 .FormAccount-rowInfoText--block { width: 100% }
 .FormAccount-rowInfoText--maxWidth {
   max-width: 480px;
@@ -470,16 +449,19 @@ $sLabel-width: 140px;
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
-  margin: $sMargin-section 0;
+  margin: $sMargin-section 0 100px 0;
   padding: $sMargin-formRow 0;
   border-top: 1px solid $cStructure-mainLine;
-
-  &.FormAccount-footer--withoutMarginBottom { margin-bottom: 0; }
 }
+.FormAccount-footer--noMarginBottom { margin-bottom: 0; }
 .FormAccount-footerText {
-  font-size: $sFontSize-large;
+  font-size: $sFontSize-normal;
   font-weight: $sFontWeight-lighter;
   color: $cTypography-secondary;
+
+  @include display-flex();
+  @include flex-direction(row);
+  @include justify-content(flex-start);
 }
 .FormAccount-footerIcon {
   width: 20px;

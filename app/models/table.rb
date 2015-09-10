@@ -564,6 +564,7 @@ class Table
     member.store
     member.map.recalculate_bounds!
     member.map.recenter_using_bounds!
+    member.map.recalculate_zoom!
 
     CartoDB::Visualization::Overlays.new(member).create_default_overlays
   end
@@ -580,7 +581,7 @@ class Table
         user_id:  self.owner.id
       }
     )
-    CartoDB::Visualization::Overlays.new(vis).create_default_overlays  
+    CartoDB::Visualization::Overlays.new(vis).create_default_overlays
     vis.store
     vis
   end

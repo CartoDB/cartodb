@@ -16,7 +16,7 @@ $w: 780px;
   @include flex-direction(column);
   @include align-items(center);
   width: 100%;
-  padding: $sMargin-section 0;
+  padding: $sMargin-group 0;
   text-align: center;
 }
 .ImportPanel-headerIcon {

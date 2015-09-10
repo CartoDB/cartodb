@@ -36,8 +36,15 @@ $cHeader-dark:  rgba(#3A91D7, 1);
   padding-left:6px;
   font-size: $sFontSize-largest;
   font-weight: $sFontWeight-lighter;
-  line-height: $sLineHeight-largest;
   color: rgba(white, 0.6);
+}
+.Header-navigationBreadcrumbParagraph {
+  text-overflow: ellipsis;
+  max-width: 150px;
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  vertical-align: bottom;
 }
 .Header-navigationItem {
   margin-left: $sMargin-section;
@@ -59,7 +66,6 @@ $cHeader-dark:  rgba(#3A91D7, 1);
 .Header-navigationBreadcrumbLink {
   font-size: $sFontSize-largest;
   font-weight: $sFontWeight-lighter;
-  line-height: $sLineHeight-largest;
   color: white;
 
   &:hover {

@@ -14,6 +14,9 @@ namespace :cartodb do
         visualization_type text,
         visualization_synced boolean,
         visualization_table_names text[],
+        visualization_table_rows integer,
+        visualization_table_size integer,
+        visualization_geometry_types text[],
         visualization_tags text[],
         visualization_bbox geometry,
         visualization_view_box geometry,
@@ -40,6 +43,9 @@ namespace :cartodb do
                 visualization_name,
                 visualization_description,
                 visualization_type,
+                visualization_table_rows,
+                visualization_table_size,
+                visualization_geometry_types,
                 visualization_synced,
                 visualization_tags,
                 visualization_created_at,
@@ -256,6 +262,7 @@ namespace :cartodb do
     def insert_visualization_hash(visualization, bbox_value)
       v = visualization
       geometry_data = @explore_api_helper.get_geometry_data(visualization)
+      table_data = @explore_api_helper.get_table_data(visualization)
       u = v.user
       {
             visualization_id: v.id,
@@ -265,6 +272,9 @@ namespace :cartodb do
             # Synchronization method from Visualization::Relator uses empty Hash when there is no sync
             visualization_synced: !v.synchronization.is_a?(Hash),
             visualization_table_names: @explore_api_helper.get_visualization_tables(v),
+            visualization_table_rows: table_data[:rows],
+            visualization_table_size: table_data[:size],
+            visualization_geometry_types: table_data[:geometry_types].blank? ? nil : Sequel.pg_array(table_data[:geometry_types]),
             visualization_tags: v.tags.nil? || v.tags.empty? ? nil : Sequel.pg_array(v.tags),
             visualization_created_at: v.created_at,
             visualization_updated_at: v.updated_at,
@@ -301,6 +311,7 @@ namespace :cartodb do
             visualization_synced = #{!visualization.is_synced?}
             #{update_tables(visualization)}
             #{update_geometry(visualization, bbox_value)}
+            #{update_table_data(visualization)}
           where visualization_id = '#{visualization.id}' }
     end
 
@@ -323,6 +334,16 @@ namespace :cartodb do
         %Q{, visualization_bbox = #{bbox_value}}
       else
         return
+      end
+    end
+
+    def update_table_data(visualization)
+      if visualization.type == CartoDB::Visualization::Member::TYPE_CANONICAL
+        table_data = @explore_api_helper.get_table_data(visualization)
+        return if table_data.empty?
+        %Q{, visualization_table_rows = #{table_data[:rows]},
+             visualization_table_size = #{table_data[:size]},
+             visualization_geometry_types = '{#{table_data[:geometry_types].join(',')}}'}
       end
     end
 

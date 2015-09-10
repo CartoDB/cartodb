@@ -1,5 +1,10 @@
+3.11.1 (2015-mm-dd)
+-------------------
+* Now the owner of the dataset is going to receive an email when the synchronization fails hits the max allowed number [#3501](https://github.com/CartoDB/cartodb/issues/3501)
+* If the dataset don't have an associated map we avoid to use the zoom property [#5447](https://github.com/CartoDB/cartodb/issues/5447)
+* Display custom attribution of layers in the editor and embeds [#5388](https://github.com/CartoDB/cartodb/pull/5388)
 
-3.11.0 (2015-mm-dd)
+3.11.0 (2015-09-09)
 -------------------
 * Synchronizations model now has a new field (and FK) to visualizations.id and joins to them using that instead of by matching name to canonical visualization's table name. It also gets deleted if FK dissapears.
 * Code also switches to using syncrhonizations.visualization_id for linking, so in order to have back existing synchronizations, the following rake needs to be run: `bundle exec rake cartodb:populate_synchronization_visualization_ids`
@@ -17,8 +22,8 @@
 * Log.append now allows to disable truncating (by default active)
 * Detection of lat/long columns now is done in `ogr2ogr2` rather than rails code [#5349](https://github.com/CartoDB/cartodb/pull/5349). In order to get this feature working (and some related tests), execute this to get the ogr2ogr2 package updated: `sudo apt-get update; sudo apt-get upgrade`. From this version on, the ogr2ogr2 package is mandatory. In order to install it: `sudo apt-get install ogr2ogr2-static-bin`.
 * Removed Mixpanel tracking code [#5410](https://github.com/CartoDB/cartodb/pull/5410)
+* Newly imported datasets now properly calculate the map bounds and zoom and store them
 * Don't try to short url with bitly if credentials are not present in app_config.yml
-* Display custom attribution of layers in the editor and embeds [#5388](https://github.com/CartoDB/cartodb/pull/5388)
 
 3.10.3 (2015-08-13)
 ---

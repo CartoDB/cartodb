@@ -10,6 +10,8 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
 
   ssl_required :create, :update, :destroy, :sync, :sync_now
 
+  before_filter :set_external_source, only: [ :create ]
+
   # Upon creation, no rate limit checks
   def create
     @stats_aggregator.timing('synchronizations.create') do
@@ -28,9 +30,9 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
           DataImport.create(options)
         end
 
-        if external_source.present?
+        if @external_source
           @stats_aggregator.timing('external-data-import.save') do
-            ExternalDataImport.new(data_import.id, external_source.id, member.id).save
+            ExternalDataImport.new(data_import.id, @external_source.id, member.id).save
           end
         end
 
@@ -132,6 +134,10 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
 
   private
 
+  def set_external_source
+    @external_source = get_external_source(params[:remote_visualization_id])
+  end
+
   def setup_member_attributes
     member_attributes = payload.merge(
             name:                   params[:table_name],
@@ -152,7 +158,7 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
 
     if params[:remote_visualization_id].present?
       member_attributes[:interval] = Carto::ExternalSource::REFRESH_INTERVAL
-      external_source = get_external_source(params[:remote_visualization_id])
+      external_source = @external_source
       member_attributes.merge!( {
         url: external_source.import_url.presence,
         service_item_id: external_source.import_url.presence

@@ -1,6 +1,6 @@
-// cartodb.js version: 3.15.3
+// cartodb.js version: 3.15.4
 // uncompressed version: cartodb.uncompressed.js
-// sha: 71ff7e142e2b8cd694e80ef655ff8d532a472f49
+// sha: 54e5a86ad6e285e1709121b483586adde90b366a
 (function() {
   var define;  // Undefine define (require.js), see https://github.com/CartoDB/cartodb.js/issues/543
   var root = this;
@@ -25655,7 +25655,7 @@ if (typeof window !== 'undefined') {
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = "3.15.3";
+    cdb.VERSION = "3.15.4";
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -32796,14 +32796,42 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
   },
 
   render: function() {
-
-    var $el = this.$el;
-
-    var options = _.extend(this.options);
-
-    $el.html(this.options.template(options));
+    if (this._canFullScreenBeEnabled()) {
+      var $el = this.$el;
+      var options = _.extend(this.options);
+      $el.html(this.options.template(options));
+    } else {
+      cdb.log.info('FullScreen is deprecated on insecure origins. See https://goo.gl/rStTGz for more details.');
+    }
 
     return this;
+  },
+
+  _canFullScreenBeEnabled: function() {
+    // If frameElement exists, it means that the map
+    // is embebed as an iframe so we need to check if
+    // the parent has a secure protocol
+    var frameElement = window && window.frameElement;
+    if (frameElement) {
+      var parentWindow = this._getFramedWindow(frameElement);
+      var parentProtocol = parentWindow.location.protocol;
+      if (parentProtocol.search('https:') !== 0) {
+        return false;
+      }
+    }
+
+    return true;
+  },
+
+  _getFramedWindow: function(f) {
+    if (f.parentNode == null) {
+      f = document.body.appendChild(f);
+    }
+    var w = (f.contentWindow || f.contentDocument);
+    if (w && w.nodeType && w.nodeType==9) {
+      w = (w.defaultView || w.parentWindow);
+    }
+    return w;
   }
 
 });

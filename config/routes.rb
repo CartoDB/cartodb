@@ -297,15 +297,8 @@ CartoDB::Application.routes.draw do
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:table_id/columns'     => 'columns#index',   as: :api_v1_tables_columns_index,   constraints: { table_id: /[^\/]+/ }
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:table_id/columns/:id' => 'columns#show',    as: :api_v1_tables_columns_show,    constraints: { table_id: /[^\/]+/ }
 
-
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:table_id/columns'           => 'columns#index',     as: :api_v1_1_tables_columns_index,   constraints: { table_id: /[^\/]+/ }
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:table_id/columns/:id'       => 'columns#show',      as: :api_v1_1_tables_columns_show,    constraints: { table_id: /[^\/]+/ }
-
     # Table records
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:table_id/records/:id' => 'records#show',    as: :api_v1_tables_records_show,   constraints: { table_id: /[^\/]+/ }
-
-
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/tables/:table_id/records/:id'       => 'records#show',      as: :api_v1_1_tables_records_show,   constraints: { table_id: /[^\/]+/ }
 
     # Imports
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/imports'                          => 'imports#index',                       as: :api_v1_imports_index
@@ -330,7 +323,6 @@ CartoDB::Application.routes.draw do
 
     # Maps
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:id'                          => 'maps#show',    as: :api_v1_maps_show
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/maps/:id'                           => 'maps#show',    as: :api_v1_1_maps_show
 
     # Overlays
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:visualization_id/overlays'     => 'overlays#index',    as: :api_v1_visualizations_overlays_index,  constraints: { visualization_id: /[^\/]+/ }
@@ -347,6 +339,11 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/oembed' => 'oembed#show', as: :api_v1_oembed
 
     # Geocodings
+    get  '(/user/:user_domain)(/u/:user_domain)/api/v1/geocodings/available_geometries'           => 'geocodings#available_geometries', as: :api_v1_geocodings_available_geometries
+    get  '(/user/:user_domain)(/u/:user_domain)/api/v1/geocodings/estimation_for/:table_name'     => 'geocodings#estimation_for',       as: :api_v1_geocodings_estimation, constraints: { table_name: /[^\/]+/ }
+    get  '(/user/:user_domain)(/u/:user_domain)/api/v1/geocodings'                                => 'geocodings#index',                as: :api_v1_geocodings_index
+    get  '(/user/:user_domain)(/u/:user_domain)/api/v1/geocodings/:id'                            => 'geocodings#show',                 as: :api_v1_geocodings_show
+    
     get  '(/user/:user_domain)(/u/:user_domain)/api/v1_1/geocodings/available_geometries'           => 'geocodings#available_geometries', as: :api_v1_1_geocodings_available_geometries
     get  '(/user/:user_domain)(/u/:user_domain)/api/v1_1/geocodings/estimation_for/:table_name'     => 'geocodings#estimation_for',       as: :api_v1_1_geocodings_estimation, constraints: { table_name: /[^\/]+/ }
     get  '(/user/:user_domain)(/u/:user_domain)/api/v1_1/geocodings'                                => 'geocodings#index',                as: :api_v1_1_geocodings_index
@@ -433,10 +430,6 @@ CartoDB::Application.routes.draw do
     delete '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:map_id/layers/:id' => 'layers#destroy', as: :api_v1_maps_layers_destroy
 
     # Geocodings
-    get  '(/user/:user_domain)(/u/:user_domain)/api/v1/geocodings/available_geometries'           => 'geocodings#available_geometries', as: :api_v1_geocodings_available_geometries
-    get  '(/user/:user_domain)(/u/:user_domain)/api/v1/geocodings/estimation_for/:table_name'     => 'geocodings#estimation_for',       as: :api_v1_geocodings_estimation, constraints: { table_name: /[^\/]+/ }
-    get  '(/user/:user_domain)(/u/:user_domain)/api/v1/geocodings'                                => 'geocodings#index',                as: :api_v1_geocodings_index
-    get  '(/user/:user_domain)(/u/:user_domain)/api/v1/geocodings/:id'                            => 'geocodings#show',                 as: :api_v1_geocodings_show
     post '(/user/:user_domain)(/u/:user_domain)/api/v1/geocodings'                                => 'geocodings#create',               as: :api_v1_geocodings_create
     put  '(/user/:user_domain)(/u/:user_domain)/api/v1/geocodings/:id'                            => 'geocodings#update',               as: :api_v1_geocodings_update
 

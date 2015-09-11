@@ -1,0 +1,168 @@
+scss_files: "**/*.css.scss"
+exclude:
+  - "lib/assets/stylesheets/old_common/**/*.css.scss"
+linters:
+  BangFormat:
+    enabled: true
+    space_before_bang: true
+    space_after_bang: false
+  BemDepthf:
+    enabled: true
+    max_elements: 3
+  BorderZero:
+    enabled: false
+    convention: zero
+  ColorKeyword:
+    enabled: true
+    severity: warning
+  ColorVariable:
+    enabled: true
+    severity: warning
+  Comment:
+    enabled: false
+  Compass::PropertyWithMixin:
+    enabled: false
+  DebugStatement:
+    enabled: true
+  DeclarationOrder:
+    enabled: true
+  DisableLinterReason:
+    enabled: false
+  DuplicateProperty:
+    enabled: true
+  ElsePlacement:
+    enabled: true
+    style: same_line
+  EmptyLineBetweenBlocks:
+    enabled: true
+    ignore_single_line_blocks: false
+  EmptyRule:
+    enabled: true
+  FinalNewline:
+    enabled: true
+    present: true
+  HexLength:
+    enabled: false
+    style: long
+  HexNotation:
+    enabled: true
+    style: uppercase
+  HexValidation:
+    enabled: true
+  IdSelector:
+    enabled: true
+  ImportantRule:
+    enabled: true
+  ImportPath:
+    enabled: true
+    leading_underscore: false
+    filename_extension: false
+  Indentation:
+    enabled: true
+    allow_non_nested_indentation: false
+    character: space
+    width: 2
+    severity: error
+  LeadingZero:
+    enabled: true
+    style: include_zero
+  MergeableSelector:
+    enabled: true
+    force_nesting: true
+  NameFormat:
+    enabled: true
+    allow_leading_underscore: false
+    convention: camel_case
+  NestingDepth:
+    enabled: true
+    max_depth: 2
+    severity: warning
+  PlaceholderInExtend:
+    enabled: false
+  PropertyCount:
+    enabled: true
+    include_nested: false
+    max_properties: 10
+    severity: warning
+  PropertySortOrder:
+    enabled: true
+    order: smacss
+    ignore_unspecified: true
+    severity: error
+    separate_groups: false
+  PropertySpelling:
+    enabled: true
+    extra_properties: []
+  PropertyUnits:
+    global: ['em', 'rem', '%', 'px'] # Allow relative units globally
+    properties:
+      border: ['px']
+      line-height: ['px', '']
+      margin: ['em', 'px', '%']
+  QualifyingElement:
+    enabled: true
+    allow_element_with_attribute: false
+    allow_element_with_class: false
+    allow_element_with_id: false
+    severity: warning
+  SelectorDepth:
+    enabled: true
+    max_depth: 2
+    severity: warning
+  SelectorFormat:
+    enabled: true
+    convention: camel_case
+    ignored_types: ['id']
+  Shorthand:
+    enabled: true
+    severity: warning
+  SingleLinePerProperty:
+    enabled: true
+    allow_single_line_rule_sets: false
+  SingleLinePerSelector:
+    enabled: true
+  SpaceAfterComma:
+    enabled: true
+  SpaceAfterPropertyColon:
+    enabled: true
+    style: one_space
+  SpaceAfterPropertyName:
+    enabled: true
+  SpaceAfterVariableName:
+    enabled: true
+  SpaceAroundOperator:
+    enabled: true
+    style: one_space
+  SpaceBeforeBrace:
+    enabled: true
+    style: space
+    allow_single_line_padding: false
+  SpaceBetweenParens:
+    enabled: true
+    spaces: 0
+  StringQuotes:
+    enabled: true
+    style: single_quotes
+  TrailingSemicolon:
+    enabled: true
+  TrailingZero:
+    enabled: false
+  UnnecessaryMantissa:
+    enabled: true
+  UnnecessaryParentReference:
+    enabled: true
+  UrlFormat:
+    enabled: true
+  UrlQuotes:
+    enabled: true
+  VariableForProperty:
+    enabled: false
+    properties: []
+  VendorPrefixes:
+    enabled: true
+    identifier_list: bourbon
+    include: []
+    exclude: []
+  ZeroUnit:
+    enabled: true
+    severity: warning

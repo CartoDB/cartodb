@@ -31,21 +31,7 @@ class ExploreAPI
       data = {}
       tables_by_user = get_tables_by_user(visualizations)
       tables_by_user.each do |user_id, tables|
-        begin
-          user = User.find(id: user_id)
-          # INFO If we use the model connection we hit the max number of connections due the pooler so we create a
-          # direct connection with the user database and close it after use
-          conn = PG::Connection.open(:dbname => user.database_name, :host => user.database_host, :user => 'postgres')
-          geometry_types = tables_geometry_types(user_id, tables)
-          data.merge!(compose_tables_data(conn, user_id, user.database_schema, tables, geometry_types))
-        rescue => e
-          CartoDB.notify_error(
-            "Error generating table data for explorer api",
-            { user: user_id, tables: tables, error: e.inspect }
-          )
-        ensure
-          conn.close unless conn.nil?
-        end
+        data.merge!(table_data_by_user(user_id, tables))
       end
       data
     end
@@ -56,6 +42,26 @@ class ExploreAPI
     end
 
     private
+
+    def table_data_by_user(user_id, tables)
+      data = {}
+      begin
+        user = User.find(id: user_id)
+        # INFO If we use the model connection we hit the max number of connections due the pooler so we create a
+        # direct connection with the user database and close it after use
+        conn = PG::Connection.open(:dbname => user.database_name, :host => user.database_host, :user => 'postgres')
+        geometry_types = tables_geometry_types(user_id, tables)
+        data = compose_tables_data(conn, user_id, user.database_schema, tables, geometry_types)
+      rescue => e
+        CartoDB.notify_error(
+          "Error generating table data for explorer api",
+          { user: user_id, tables: tables, error: e.inspect }
+        )
+      ensure
+        conn.close unless conn.nil?
+      end
+      data
+    end
 
     def get_tables_by_user(visualizations)
       tables_by_user = {}

@@ -55,6 +55,25 @@ describe Carto::Api::UserCreationsController do
         response.body[:enable_account_token].should be_nil
       end
     end
+
+    it 'does not trigger user_creation authentication for normal users' do
+      User.any_instance.stubs(:create_in_central).returns(true)
+      User.any_instance.stubs(:enable_remote_db_user).returns(true)
+      user_data = FactoryGirl.build(:valid_user)
+      user_data.organization = @organization
+      user_data.google_sign_in = false
+
+      Carto::Api::UserCreationsController.any_instance.expects(:authenticate!).with(:user_creation, scope: user_data.organization.name).never
+
+      user_creation = Carto::UserCreation.new_user_signup(user_data)
+      user_creation.next_creation_step until user_creation.finished?
+
+      get_json api_v1_user_creations_show_url(id: user_creation.id), @headers do |response|
+        response.body[:state].should == 'success'
+        response.body[:google_sign_in].should == user_creation.google_sign_in
+        response.body[:requires_validation_email].should == true
+      end
+    end
   end
 
 end

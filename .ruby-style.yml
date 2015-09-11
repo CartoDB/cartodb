@@ -18,6 +18,18 @@ AllCops:
   Exclude:
   - "vendor/**/*"
   - "db/schema.rb"
+  - "bin"
+  - "coverage"
+  - "doc"
+  - "engines"
+  - "lib/assets"
+  - "lib/build"
+  - "log"
+  - "node_modules"
+  - "public"
+  - "script"
+  - "tmp"
+  - "vendor"
   RunRailsCops: false
   DisplayCopNames: false
   StyleGuideCopsOnly: false

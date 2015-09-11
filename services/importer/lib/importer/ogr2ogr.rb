@@ -55,12 +55,11 @@ module CartoDB
       def command_for_append
         "#{OSM_INDEXING_OPTION} #{PG_COPY_OPTION} #{client_encoding_option} " +
         "#{executable_path} #{APPEND_MODE_OPTION} #{OUTPUT_FORMAT_OPTION} #{postgres_options} " +
-        "#{x_y_possible_names_option} " +
         "#{projection_option} #{filepath} #{layer} #{layer_name_option} #{NEW_LAYER_TYPE_OPTION}"
       end
 
       def executable_path
-        (is_csv? || is_geojson?) ? `#{ogr2ogr2_binary}`.strip : `#{DEFAULT_BINARY}`.strip
+        `#{ogr2ogr2_binary}`.strip
       end
 
       def command

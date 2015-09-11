@@ -3,6 +3,22 @@ require_relative '../../../app/models/carto/user_creation'
 
 describe Carto::UserCreation do
 
+  describe 'autologin?' do
+
+    it 'is false for states other than success' do
+      FactoryGirl.build(:autologin_user_creation, state: 'creating_user').autologin?.should == false
+      FactoryGirl.build(:autologin_user_creation, state: 'validating_user').autologin?.should == false
+      FactoryGirl.build(:autologin_user_creation, state: 'saving_user').autologin?.should == false
+      FactoryGirl.build(:autologin_user_creation, state: 'promoting_user').autologin?.should == false
+      FactoryGirl.build(:autologin_user_creation, state: 'creating_user_in_central').autologin?.should == false
+      FactoryGirl.build(:autologin_user_creation, state: 'load_common_data').autologin?.should == false
+      FactoryGirl.build(:autologin_user_creation, state: 'failure').autologin?.should == false
+
+      FactoryGirl.build(:autologin_user_creation, state: 'success').autologin?.should == true
+    end
+
+  end
+
   describe 'validation token' do
     include_context 'organization with users helper'
 

@@ -84,6 +84,14 @@ class Carto::UserCreation < ActiveRecord::Base
     self.google_sign_in != true && !Carto::Ldap::Manager.new.configuration_present?
   end
 
+  def autologin?
+    state == 'success' && created_at > Time.now - 1.minute && user.enable_account_token.nil? && user.enabled && user.dashboard_viewed_at.nil?
+  end
+
+  def subdomain
+    user.subdomain
+  end
+
   private
 
   def user

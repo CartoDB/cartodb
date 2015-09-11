@@ -167,3 +167,21 @@ Warden::Manager.after_set_user except: :fetch do |user, auth, opts|
   end
 end
 
+Warden::Strategies.add(:user_creation) do
+
+  def authenticate!
+    username = params[:username]
+    user = User.where(username: username).first
+    return fail! unless user
+
+    user_creation = Carto::UserCreation.where(user_id: user.id).first
+    return fail! unless user_creation
+
+    if user_creation.autologin?
+      success!(user, :message => "Success")
+    else
+      fail!
+    end
+  end
+
+end

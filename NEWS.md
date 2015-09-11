@@ -1,3 +1,6 @@
+3.11.1 (2015-09-11)
+-------------------
+* Fix crash in ghost tables linking when user has table names with capitals or characters needing quoting [#5474](https://github.com/CartoDB/cartodb/pull/5474)
 
 3.11.0 (2015-09-09)
 -------------------

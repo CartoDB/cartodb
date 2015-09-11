@@ -41,6 +41,13 @@ describe Carto::UserCreation do
       user_creation.autologin?.should == false
     end
 
+    it 'is false for users that have seen their dashboard' do
+      user_creation = FactoryGirl.build(:autologin_user_creation)
+      user = user_creation.instance_variable_get(:@user)
+      user.dashboard_viewed_at = Time.now
+      user_creation.autologin?.should == false
+    end
+
   end
 
   describe 'validation token' do

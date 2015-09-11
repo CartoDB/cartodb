@@ -34,6 +34,13 @@ describe Carto::UserCreation do
       user_creation.autologin?.should == false
     end
 
+    it 'is false for disabled users' do
+      user_creation = FactoryGirl.build(:autologin_user_creation)
+      user = user_creation.instance_variable_get(:@user)
+      user.enabled = false
+      user_creation.autologin?.should == false
+    end
+
   end
 
   describe 'validation token' do

@@ -5,6 +5,10 @@ describe Carto::UserCreation do
 
   describe 'autologin?' do
 
+    it 'is true for autologin_user_creation factory' do
+      FactoryGirl.build(:autologin_user_creation).autologin?.should == true
+    end
+
     it 'is false for states other than success' do
       FactoryGirl.build(:autologin_user_creation, state: 'creating_user').autologin?.should == false
       FactoryGirl.build(:autologin_user_creation, state: 'validating_user').autologin?.should == false
@@ -15,6 +19,12 @@ describe Carto::UserCreation do
       FactoryGirl.build(:autologin_user_creation, state: 'failure').autologin?.should == false
 
       FactoryGirl.build(:autologin_user_creation, state: 'success').autologin?.should == true
+    end
+
+    it 'is stops working after one minute' do
+      FactoryGirl.build(:autologin_user_creation, created_at: Time.now - 61.seconds).autologin?.should == false
+      FactoryGirl.build(:autologin_user_creation, created_at: Time.now - 60.seconds).autologin?.should == false
+      FactoryGirl.build(:autologin_user_creation, created_at: Time.now - 59.seconds).autologin?.should == true
     end
 
   end

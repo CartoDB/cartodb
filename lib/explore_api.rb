@@ -31,21 +31,8 @@ class ExploreAPI
       data = {}
       tables_by_user = get_tables_by_user(visualizations)
       tables_by_user.each do |user_id, tables|
-        begin
-          user = User.find(id: user_id)
-          # INFO If we use the model connection we hit the max number of connections due the pooler so we create a
-          # direct connection with the user database and close it after use
-          conn = PG::Connection.open(:dbname => user.database_name, :host => user.database_host, :user => 'postgres')
-          geometry_types = tables_geometry_types(user_id, tables)
-          data.merge!(compose_tables_data(conn, user_id, user.database_schema, tables, geometry_types))
-        rescue => e
-          CartoDB.notify_error(
-            "Error generating table data for explorer api",
-            { user: user_id, tables: tables, error: e.inspect }
-          )
-        ensure
-          conn.close unless conn.nil?
-        end
+        user = User.find(id: user_id)
+        data.merge!(table_data_by_user(user, tables)) unless user.nil?
       end
       data
     end
@@ -55,7 +42,34 @@ class ExploreAPI
       liked_visualizations.map { |liked_vis| liked_vis.subject }
     end
 
+    def get_visualizations_bbox(visualization_ids)
+      return {} if visualization_ids.nil? || visualization_ids.empty?
+      bbox_dataset = Rails::Sequel.connection.fetch(
+        %Q[SELECT id, bbox FROM visualizations WHERE id in ('#{visualization_ids.join("','")}') AND type = '#{CartoDB::Visualization::Member::TYPE_CANONICAL}']
+      ).all
+      Hash[bbox_dataset.map {|row| [row[:id], row[:bbox]] }]
+    end
+
     private
+
+    def table_data_by_user(user, tables)
+      data = {}
+      begin
+        # INFO If we use the model connection we hit the max number of connections due the pooler so we create a
+        # direct connection with the user database and close it after use
+        conn = PG::Connection.open(:dbname => user.database_name, :host => user.database_host, :user => 'postgres')
+        geometry_types = tables_geometry_types(user.id, tables)
+        data = compose_tables_data(conn, user.id, user.database_schema, tables, geometry_types)
+      rescue => e
+        CartoDB.notify_error(
+          "Error generating table data for explorer api",
+          { user: user.id, tables: tables, error: e.inspect }
+        )
+      ensure
+        conn.close unless conn.nil?
+      end
+      data
+    end
 
     def get_tables_by_user(visualizations)
       tables_by_user = {}

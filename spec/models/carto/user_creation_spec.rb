@@ -27,6 +27,13 @@ describe Carto::UserCreation do
       FactoryGirl.build(:autologin_user_creation, created_at: Time.now - 59.seconds).autologin?.should == true
     end
 
+    it 'is false for users with enable_account_token' do
+      user_creation = FactoryGirl.build(:autologin_user_creation)
+      user = user_creation.instance_variable_get(:@user)
+      user.enable_account_token = 'whatever'
+      user_creation.autologin?.should == false
+    end
+
   end
 
   describe 'validation token' do

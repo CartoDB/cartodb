@@ -147,7 +147,8 @@ module CartoDB
       def guessing_option
         if csv_guessing && is_csv?
           # Inverse of the selection: if I want guessing I must NOT leave quoted fields as string
-          "-oo AUTODETECT_TYPE=YES -oo QUOTED_FIELDS_AS_STRING=#{quoted_fields_guessing ? 'NO' : 'YES' }"
+          "-oo AUTODETECT_TYPE=YES -oo QUOTED_FIELDS_AS_STRING=#{quoted_fields_guessing ? 'NO' : 'YES' } " +
+          "#{x_y_possible_names_option} -s_srs EPSG:4326 -t_srs EPSG:4326"
         else
           ''
         end

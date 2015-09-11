@@ -2,6 +2,7 @@ scss:
   enabled: true
   config_file: .scss-lint.yml
 ruby:
-  enabled: false
+  enabled: true
+  config_file: .ruby-style.yml
 javascript:
   enabled: false

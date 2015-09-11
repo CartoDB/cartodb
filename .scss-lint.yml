@@ -1,6 +1,5 @@
-scss_files: "**/*.css.scss"
-exclude:
-  - "lib/assets/stylesheets/old_common/**/*.css.scss"
+scss_files: "app/assets/stylesheets/**/*.css.scss"
+exclude: "lib/assets/stylesheets/old_common/**/*.css.scss"
 linters:
   BangFormat:
     enabled: true
@@ -34,8 +33,7 @@ linters:
     enabled: true
     style: same_line
   EmptyLineBetweenBlocks:
-    enabled: true
-    ignore_single_line_blocks: false
+    enabled: false
   EmptyRule:
     enabled: true
   FinalNewline:
@@ -68,21 +66,20 @@ linters:
     style: include_zero
   MergeableSelector:
     enabled: true
-    force_nesting: true
+    force_nesting: false
   NameFormat:
     enabled: true
-    allow_leading_underscore: false
-    convention: camel_case
+    allow_leading_underscore: true
   NestingDepth:
     enabled: true
-    max_depth: 2
+    max_depth: 3
     severity: warning
   PlaceholderInExtend:
     enabled: false
   PropertyCount:
     enabled: true
     include_nested: false
-    max_properties: 10
+    max_properties: 15
     severity: warning
   PropertySortOrder:
     enabled: true
@@ -111,7 +108,20 @@ linters:
     severity: warning
   SelectorFormat:
     enabled: true
-    convention: camel_case
+    # Valid cases
+    #  - 0..100%
+    #  - i | em | strong | div | span
+    #  - Logo
+    #  - LogoPaco
+    #  - Logo--cartofante
+    #  - LogoPaco--cartofante
+    #  - Logo--cartofantePleased
+    #  - Logo--cartofanteURL
+    #  - Logo-oh
+    #  - Logo-oh:hover
+    #  - Logo:after
+    #  - Logo.is-state
+    convention: '([0-9]+%)|([a-z]+(:.*)*)|([A-Z]+[a-z]*)([A-Z]+[a-z]*)*-{0,2}([a-z]([a-z]*[A-Z]*[a-z]*))(\.[a-z]+-[a-z]*[A-Z]*[a-z]*)?(:.*)*'
     ignored_types: ['id']
   Shorthand:
     enabled: true
@@ -145,6 +155,7 @@ linters:
     style: single_quotes
   TrailingSemicolon:
     enabled: true
+    severity: error
   TrailingZero:
     enabled: false
   UnnecessaryMantissa:

@@ -1209,7 +1209,7 @@ class User < Sequel::Model
     sql += %Q{
           column_name IN (#{cartodb_columns}) AND
 
-          tg.tgrelid = (t.schemaname || '.' || t.tablename)::regclass::oid AND
+          tg.tgrelid = (quote_ident(t.schemaname) || '.' || quote_ident(t.tablename))::regclass::oid AND
           tg.tgname = 'test_quota_per_row'
 
           GROUP BY 1

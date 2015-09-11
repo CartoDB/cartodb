@@ -131,7 +131,7 @@ namespace :cartodb do
         updates = 0
         explore_visualization_ids = explore_visualizations.map { |ev| ev[:visualization_id] }
         visualizations = CartoDB::Visualization::Collection.new.fetch({ ids: explore_visualization_ids})
-        bbox_values = get_visualizations_bbox(explore_visualization_ids)
+        bbox_values = explore_api.get_visualizations_bbox(explore_visualization_ids)
         tables_data = explore_api.get_visualizations_table_data(visualizations)
         visualizations.each do |v|
           update_visualization_metadata(v, tables_data, bbox_values)
@@ -208,8 +208,7 @@ namespace :cartodb do
       full_updated_count = 0
       mapviews_liked_updated_count = 0
       privated_visualization_ids = []
-      bbox_values = get_visualizations_bbox(explore_visualization_ids)
-      tables_data = explore_api.get_visualizations_table_data(visualizations)
+      bbox_values = explore_api.get_visualizations_bbox(explore_visualization_ids)
       visualizations.each do |v|
         explore_visualization = explore_visualizations_by_visualization_id[v.id]
         # We use to_id to remove the miliseconds that could give to erroneous updates
@@ -227,7 +226,8 @@ namespace :cartodb do
           # INFO: retrieving mapviews makes this much slower
           # We are only updating the visualizations that have received a liked since the DAYS_TO_CHECK_LIKES in the last days
           if (@liked_visualizations.include?(v.id))
-            update_visualization_metadata(v, tables_data, bbox_values)
+            table_data = explore_api.get_visualizations_table_data([v])
+            update_visualization_metadata(v, table_data, bbox_values)
             mapviews_liked_updated_count += 1
           end
         end
@@ -304,7 +304,7 @@ namespace :cartodb do
 
     def insert_visualizations(visualizations)
       visualization_ids = visualizations.map{|v| v.id}
-      visualizations_bbox = get_visualizations_bbox(visualization_ids)
+      visualizations_bbox = explore_api.get_visualizations_bbox(visualization_ids)
       tables_data = explore_api.get_visualizations_table_data(visualizations)
       db_conn[:visualizations].multi_insert(
         visualizations.map { |v|
@@ -348,14 +348,6 @@ namespace :cartodb do
         user_avatar_url: u.avatar_url,
         user_available_for_hire: u.available_for_hire
       }
-    end
-
-    def get_visualizations_bbox(visualization_ids)
-      return {} if visualization_ids.nil? || visualization_ids.empty?
-      bbox_dataset = Rails::Sequel.connection.fetch(
-        %Q[SELECT id, bbox FROM visualizations WHERE id in ('#{visualization_ids.join("','")}') AND type = '#{CartoDB::Visualization::Member::TYPE_CANONICAL}']
-      ).all
-      Hash[bbox_dataset.map {|row| [row[:id], row[:bbox]] }]
     end
 
     def update_mapviews_and_likes_query(visualization, bbox_value, table_data)

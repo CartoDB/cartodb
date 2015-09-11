@@ -1,7 +1,7 @@
 # coding: utf-8
 class Admin::OrganizationsController < ApplicationController
   ssl_required :show, :settings, :settings_update, :auth, :auth_update, :regenerate_all_api_keys
-  before_filter :login_required, :load_organization_and_members
+  before_filter :login_required, :load_organization_and_members, :load_ldap_configuration
 
   layout 'application'
 
@@ -95,6 +95,10 @@ class Admin::OrganizationsController < ApplicationController
     # INFO: Special scenario of handcrafted URL to go to organization-based signup page
     @organization_signup_url = 
       "#{CartoDB.protocol}://#{@organization.name}.#{CartoDB.account_host}#{CartoDB.path(self, 'signup_organization_user')}"
+  end
+
+  def load_ldap_configuration
+    @ldap_configuration = Carto::Ldap::Configuration.where(organization_id: @organization.id).first
   end
 
 end

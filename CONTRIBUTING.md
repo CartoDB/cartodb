@@ -44,7 +44,7 @@ which in turns depends on some common libraries, in particular worth mentioning:
 
 Source code is located at `lib/assets/javascripts`, dependencies at `vendor/assets/javascripts`.
 
-See [doc/frontend.md](doc/frontend.md) for more in-depth documentation.
+See [doc/frontend/README.md](doc/frontend/README.md) for more in-depth documentation.
 
 Until our guidelines are publically available follow the existing file/directory and style structure.
 
@@ -86,7 +86,7 @@ We use [SASS](http://sass-lang.com/),
 Source files are located at `app/assets/stylesheets`. We used to use Rails sprockets pipeline,
  but nowadays migrated to [Grunt](#grunt) (see that section for details).
 
-See [doc/frontend.md](doc/frontend.md) for more in-depth documentation.
+See [doc/frontend/README.md](doc/frontend/README.md) for more in-depth documentation.
 
 Until our guidelines are publicly available follow the existing file/directory and style structure.
 

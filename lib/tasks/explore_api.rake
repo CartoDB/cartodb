@@ -126,19 +126,18 @@ namespace :cartodb do
     end
 
     def update_visualizations_metadata
-      offset = 0
-      while (explore_visualizations = get_explore_visualizations(offset)).length > 0
+      page = 1
+      while (visualizations = CartoDB::Visualization::Collection.new.fetch(filter_metadata(page))).count > 0 do
         updates = 0
-        explore_visualization_ids = explore_visualizations.map { |ev| ev[:visualization_id] }
-        visualizations = CartoDB::Visualization::Collection.new.fetch({ ids: explore_visualization_ids})
-        bbox_values = explore_api.get_visualizations_bbox(explore_visualization_ids)
+        visualization_ids = visualizations.map(&:id)
+        bbox_values = explore_api.get_visualizations_bbox(visualization_ids)
         tables_data = explore_api.get_visualizations_table_data(visualizations)
         visualizations.each do |v|
           update_visualization_metadata(v, tables_data, bbox_values)
           updates += 1
         end
-        print "Batch size: #{explore_visualizations.length}.\tUpdated #{updates}\n"
-        offset += explore_visualizations.length
+        print "Batch size: #{visualizations.count}.\tUpdated #{updates}\n"
+        page += 1
       end
     end
 
@@ -295,6 +294,18 @@ namespace :cartodb do
       filter['types'] = [CartoDB::Visualization::Member::TYPE_CANONICAL, CartoDB::Visualization::Member::TYPE_DERIVED]
       filter[:min_created_at] = { date: min_created_at, included: true } if min_created_at
       filter[:min_updated_at] = { date: min_updated_at, included: true } if min_updated_at
+      filter
+    end
+
+    def filter_metadata(page)
+      filter = {
+        page: page,
+        per_page: UPDATE_BATCH_SIZE,
+        order: :user_id,
+        order_asc_desc: :asc,
+        privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
+      }
+      filter['types'] = [CartoDB::Visualization::Member::TYPE_CANONICAL, CartoDB::Visualization::Member::TYPE_DERIVED]
       filter
     end
 

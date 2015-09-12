@@ -129,11 +129,9 @@ namespace :cartodb do
       page = 1
       while (visualizations = CartoDB::Visualization::Collection.new.fetch(filter_metadata(page))).count > 0 do
         updates = 0
-        visualization_ids = visualizations.map(&:id)
-        bbox_values = explore_api.get_visualizations_bbox(visualization_ids)
         tables_data = explore_api.get_visualizations_table_data(visualizations)
         visualizations.each do |v|
-          update_visualization_metadata(v, tables_data, bbox_values)
+          update_visualization_metadata(v, tables_data)
           updates += 1
         end
         print "Batch size: #{visualizations.count}.\tUpdated #{updates}\n"
@@ -141,9 +139,9 @@ namespace :cartodb do
       end
     end
 
-    def update_visualization_metadata(visualization, tables_data, bbox_values)
+    def update_visualization_metadata(visualization, tables_data)
       table_data = tables_data[visualization.user_id].nil? ? {} : tables_data[visualization.user_id][visualization.name]
-      db_conn.run update_mapviews_and_likes_query(visualization, bbox_values[visualization.id], table_data)
+      db_conn.run update_mapviews_and_likes_query(visualization, table_data)
     end
 
     def update(days_back_to_check)
@@ -207,7 +205,6 @@ namespace :cartodb do
       full_updated_count = 0
       mapviews_liked_updated_count = 0
       privated_visualization_ids = []
-      bbox_values = explore_api.get_visualizations_bbox(explore_visualization_ids)
       visualizations.each do |v|
         explore_visualization = explore_visualizations_by_visualization_id[v.id]
         # We use to_id to remove the miliseconds that could give to erroneous updates
@@ -226,7 +223,7 @@ namespace :cartodb do
           # We are only updating the visualizations that have received a liked since the DAYS_TO_CHECK_LIKES in the last days
           if (@liked_visualizations.include?(v.id))
             table_data = explore_api.get_visualizations_table_data([v])
-            update_visualization_metadata(v, table_data, bbox_values)
+            update_visualization_metadata(v, table_data)
             mapviews_liked_updated_count += 1
           end
         end
@@ -300,7 +297,7 @@ namespace :cartodb do
     def filter_metadata(page)
       filter = {
         page: page,
-        per_page: UPDATE_BATCH_SIZE,
+        per_page: BATCH_SIZE,
         order: :user_id,
         order_asc_desc: :asc,
         privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
@@ -314,18 +311,16 @@ namespace :cartodb do
     end
 
     def insert_visualizations(visualizations)
-      visualization_ids = visualizations.map{|v| v.id}
-      visualizations_bbox = explore_api.get_visualizations_bbox(visualization_ids)
       tables_data = explore_api.get_visualizations_table_data(visualizations)
       db_conn[:visualizations].multi_insert(
         visualizations.map { |v|
           table_data = tables_data[v.user_id].blank? || tables_data[v.user_id][v.name].blank? ? {} : tables_data[v.user_id][v.name]
-          insert_visualization_hash(v, visualizations_bbox[v.id], table_data)
+          insert_visualization_hash(v, table_data)
         }
       )
     end
 
-    def insert_visualization_hash(visualization, bbox_value, table_data)
+    def insert_visualization_hash(visualization, table_data)
       v = visualization
       u = v.user
       geometry_data = explore_api.get_geometry_data(visualization)
@@ -347,7 +342,7 @@ namespace :cartodb do
         visualization_title: v.title,
         visualization_likes: v.likes_count,
         visualization_mapviews: v.mapviews,
-        visualization_bbox: bbox_value.nil? ? nil : Sequel.lit(explore_api.bbox_from_value(bbox_value)),
+        visualization_bbox: v.bbox.nil? ? nil : Sequel.lit(explore_api.bbox_from_value(v.bbox)),
         visualization_view_box: geometry_data[:view_box_polygon].nil? ? nil : Sequel.lit(geometry_data[:view_box_polygon]),
         visualization_view_box_center: geometry_data[:center_geometry].nil? ? nil : Sequel.lit(geometry_data[:center_geometry]),
         visualization_zoom: geometry_data[:zoom],
@@ -361,13 +356,13 @@ namespace :cartodb do
       }
     end
 
-    def update_mapviews_and_likes_query(visualization, bbox_value, table_data)
+    def update_mapviews_and_likes_query(visualization, table_data)
       %Q{ UPDATE #{VISUALIZATIONS_TABLE} set
             visualization_mapviews = #{visualization.mapviews},
             visualization_likes = #{visualization.likes_count},
             visualization_synced = #{!visualization.is_synced?}
             #{update_tables(visualization)}
-            #{update_geometry(visualization, bbox_value)}
+            #{update_geometry(visualization)}
             #{update_table_data(visualization.type, table_data)}
           where visualization_id = '#{visualization.id}' }
     end
@@ -376,12 +371,12 @@ namespace :cartodb do
       %Q{, visualization_table_names = '#{explore_api.get_visualization_tables(visualization)}'}
     end
 
-    def update_geometry(visualization, bbox_value)
+    def update_geometry(visualization)
       geometry_data = explore_api.get_geometry_data(visualization)
       view_box_polygon = geometry_data[:view_box_polygon].nil? ? 'NULL' : geometry_data[:view_box_polygon]
       center_geometry = geometry_data[:center_geometry].nil? ? 'NULL' : geometry_data[:center_geometry]
       view_zoom = geometry_data[:zoom].nil? ? 'NULL' : geometry_data[:zoom]
-      bbox_value = !bbox_value.nil? ? "ST_AsText('#{bbox_value}')" : 'NULL'
+      bbox_value = !visualization.bbox.nil? ? "ST_AsText('#{visualization.bbox}')" : 'NULL'
       if visualization.type == CartoDB::Visualization::Member::TYPE_DERIVED
         %Q{, visualization_bbox = #{bbox_value},
              visualization_view_box = #{view_box_polygon},

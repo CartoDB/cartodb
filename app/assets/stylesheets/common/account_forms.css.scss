@@ -314,9 +314,6 @@ $sLabel-width: 140px;
   color: $cTypography-secondary;
   line-height: $sLineHeight-large;
 }
-.FormAccount-avatar {
-
-}
 .FormAccount-avatarPreview {
   position: relative;
   width: 100px;
@@ -327,7 +324,7 @@ $sLabel-width: 140px;
 }
 .FormAccount-avatarPreviewImage {
   position: relative;
-  max-width: 100px;
+  width: 100px;
   border-radius: 4px;
   background: $cStructure-grayBkg;
 }

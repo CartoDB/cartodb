@@ -19,7 +19,13 @@
   </head>
   <body class="PublicBody PublicBody--grey">
     <%= render 'admin/shared/public_header' %>
-    <div class="FavMap is-pre-loading" id="<%= fav_map_target_id = 'fav-map-container' %>">
+    <div class="FavMap FavMap--tall is-pre-loading" id="<%= fav_map_target_id = 'fav-map-container' %>">
+      <div class="FavMapTitle is-hidden js-favMapTitle">
+        <div class="FavMapTitle-inner">
+          <h3 class="FavMapTitle-sectionTitle js-sectionTitle">Map of the moment</h3>
+          <h2 class="FavMapTitle-mapTitle js-mapTitle"></h2>
+        </div>
+      </div>
       <div class="Spinner FavMap-spinner js-spinner"></div>
     </div>
 
@@ -38,21 +44,7 @@
       var base_url = '<%= @base_url %>';
       var login_url = "<%= CartoDB.url(self, 'login') %>";
       var avatar_url= '<%= @avatar_url %>';
-
-      var favMapViewAttrs = {
-        el: '#<%= fav_map_target_id %>',
-        <% if @most_viewed_vis_map %>
-          createVis: {
-            url: '<%= vis_json_url(@most_viewed_vis_map.id, self, (@most_viewed_vis_map.user)) %>',
-            opts: {
-              no_cdn: <%= Rails.env.production? ? 'false' : 'true' %>
-            }
-          }
-        <% else %>
-          fallbackBaselayer: <%= raw @default_fallback_basemap.to_json %>
-        <% end %>
-      };
-      </script>
+    </script>
 
     <%= javascript_include_tag 'cdb.js', 'templates', 'explore_deps', 'explore' %>
     <%= yield :js %>

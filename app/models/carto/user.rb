@@ -25,14 +25,14 @@ class Carto::User < ActiveRecord::Base
   has_many :search_tweets, inverse_of: :user
   has_many :synchronizations, inverse_of: :user
 
-  delegate [ 
+  delegate [
       :database_username, :database_password, :in_database, :load_cartodb_functions, :rebuild_quota_trigger,
       :db_size_in_bytes, :get_api_calls, :table_count, :public_visualization_count, :visualization_count,
       :twitter_imports_count, :maps_count
     ] => :service
 
   # INFO: select filter is done for security and performance reasons. Add new columns if needed.
-  DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," + 
+  DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," +
                    "users.api_key, users.database_schema, users.database_name, users.name," +
                    "users.disqus_shortname, users.account_type, users.twitter_username, users.google_maps_key"
 
@@ -68,11 +68,11 @@ class Carto::User < ActiveRecord::Base
   end
 
   def feature_flag_names
-    @feature_flag_names ||= (self.feature_flags_user.map { |ff| 
-                                                            ff.feature_flag.name 
-                                                          } + 
-                            FeatureFlag.where(restricted: false).map { |ff| 
-                                                                        ff.name 
+    @feature_flag_names ||= (self.feature_flags_user.map { |ff|
+                                                            ff.feature_flag.name
+                                                          } +
+                            FeatureFlag.where(restricted: false).map { |ff|
+                                                                        ff.name
                                                                       }).uniq.sort
   end
 
@@ -88,7 +88,7 @@ class Carto::User < ActiveRecord::Base
   #   | private_tables_enabled  |    T   |    T    |   T  |
   #   | !private_tables_enabled |    T   |    F    |   F  |
   #   +-------------------------+--------+---------+------+
-  # 
+  #
   def valid_privacy?(privacy)
     self.private_tables_enabled || privacy == UserTable::PRIVACY_PUBLIC
   end
@@ -136,7 +136,7 @@ class Carto::User < ActiveRecord::Base
     self.database_schema.include?('-') ? "\"#{self.database_schema}\"" : self.database_schema
   end
 
-  # returns google maps api key. If the user is in an organization and 
+  # returns google maps api key. If the user is in an organization and
   # that organization has api key it's used
   def google_maps_api_key
     if has_organization?
@@ -181,14 +181,17 @@ class Carto::User < ActiveRecord::Base
   # this may have change in the future but in any case this method provides a way to abstract what
   # basemaps are active for the user
   def basemaps
-    google_maps_enabled = !google_maps_api_key.blank?
     basemaps = Cartodb.config[:basemaps]
     if basemaps
-      basemaps.select { |group| 
+      basemaps.select { |group|
         g = group == 'GMaps'
-        google_maps_enabled ? g : !g
+        google_maps_enabled? ? g : !g
       }
     end
+  end
+
+  def google_maps_enabled?
+    google_maps_query_string.present?
   end
 
   # return the default basemap based on the default setting. If default attribute is not set, first basemaps is returned
@@ -313,14 +316,6 @@ class Carto::User < ActiveRecord::Base
     /(FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD)/i.match(self.account_type) ? false : true
   end
 
-  def import_quota
-    if self.max_concurrent_import_count.nil?
-      self.account_type.downcase == 'free' ? 1 : 3
-    else
-      self.max_concurrent_import_count
-    end
-  end
-
   def arcgis_datasource_enabled?
     self.arcgis_datasource_enabled == true
   end
@@ -335,5 +330,12 @@ class Carto::User < ActiveRecord::Base
     return true if self.private_tables_enabled # Note private_tables_enabled => private_maps_enabled
     return false
   end
+
+  # Some operations, such as user deletion, won't ask for password confirmation if password is not set (because of Google sign in, for example)
+  def needs_password_confirmation?
+    google_sign_in.nil? || !google_sign_in || !last_password_change_date.nil?
+  end
+
+  private
 
 end

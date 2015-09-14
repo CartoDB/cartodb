@@ -34,6 +34,7 @@
         position:absolute;
         top:0;
         bottom:0;
+        min-width: 3px;
         @if $min {
           min-width:$min;
         }

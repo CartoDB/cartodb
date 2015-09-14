@@ -41,6 +41,8 @@ WORKING_SPECS_1 = \
   spec/lib/carto/http/client_spec.rb \
 	spec/helpers/uuidhelper_spec.rb \
 	spec/models/carto/template_spec.rb \
+	spec/models/carto/ldap/configuration_spec.rb \
+	spec/requests/sessions_controller_spec.rb \
   $(NULL)
 
 WORKING_SPECS_2 = \
@@ -89,7 +91,6 @@ WORKING_SPECS_4 = \
   spec/requests/admin/visualizations_spec.rb \
   spec/requests/api/json/visualizations_controller_spec.rb \
   spec/requests/carto/api/visualizations_controller_spec.rb \
-  spec/requests/api/json/tables_controller_spec.rb \
   spec/requests/carto/api/tables_controller_spec.rb \
   spec/queries/carto/visualization_query_builder_spec.rb \
   spec/requests/admin/tables_spec.rb \
@@ -108,6 +109,7 @@ WORKING_SPECS_4 = \
 WORKING_SPECS_5 = \
   spec/rspec_configuration.rb \
   spec/requests/api/assets_spec.rb \
+  spec/requests/carto/api/assets_controller_spec.rb \
   spec/requests/api/user_layers_spec.rb \
   spec/requests/api/json/layers_controller_spec.rb \
   spec/requests/carto/api/layers_controller_spec.rb \
@@ -213,7 +215,7 @@ check-9:
 check-carto-db-class:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_carto_db_class)
 check-integrations:
-	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_INTEGRATIONS)	
+	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_INTEGRATIONS)
 
 check-external: prepare-test-db check-integrations
 

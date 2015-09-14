@@ -67,7 +67,6 @@ module Carto
             hard_limit:  @user.hard_twitter_datasource_limit
           },
           billing_period: @user.last_billing_cycle,
-          max_layers: @user.max_layers,
           api_key: @user.api_key,
           layers: @user.layers.map { |layer|
               Carto::Api::LayerPresenter.new(layer).to_poro
@@ -80,21 +79,24 @@ module Carto
             private_tables: @user.private_tables_enabled,
             private_maps: @user.private_maps_enabled?,
             dedicated_support: @user.dedicated_support?,
-            import_quota: @user.import_quota,
             remove_logo: @user.remove_logo?,
             sync_tables: @user.sync_tables_enabled,
-            arcgis_datasource: @user.arcgis_datasource_enabled?
+            arcgis_datasource: @user.arcgis_datasource_enabled?,
+            google_maps_geocoder_enabled: @user.google_maps_geocoder_enabled?,
+            google_maps_enabled: @user.google_maps_enabled?
           },
           limits: {
             concurrent_syncs: CartoDB::PlatformLimits::Importer::UserConcurrentSyncsAmount::MAX_SYNCS_PER_USER,
             concurrent_imports: @user.max_concurrent_import_count,
             import_file_size: @user.max_import_file_size,
-            import_table_rows: @user.max_import_table_row_count
+            import_table_rows: @user.max_import_table_row_count,
+            max_layers: @user.max_layers
           },
           notification: @user.notification,
           avatar_url: @user.avatar,
           feature_flags: @user.feature_flag_names,
-          base_url: @user.public_url
+          base_url: @user.public_url,
+          needs_password_confirmation: @user.needs_password_confirmation?
         }
 
         if @user.organization.present?

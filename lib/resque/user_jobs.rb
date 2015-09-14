@@ -1,6 +1,7 @@
 # encoding: utf-8
 require_relative './base_job'
 require 'resque-metrics'
+require_relative '../cartodb/metrics'
 
 module Resque
   module UserJobs
@@ -10,9 +11,10 @@ module Resque
       module NewUser
         @queue = :users
 
-        def self.perform(user_creation_id, common_data_url=nil)
+        def self.perform(user_creation_id, common_data_url=nil, organization_owner_promotion=false)
           user_creation = Carto::UserCreation.where(id: user_creation_id).first
           user_creation.set_common_data_url(common_data_url) unless common_data_url.nil?
+          user_creation.set_owner_promotion(organization_owner_promotion)
           user_creation.next_creation_step! until user_creation.finished?
         end
 
@@ -22,13 +24,16 @@ module Resque
 
     module SyncTables
 
-      module LinkGhostTables 
+      module LinkGhostTables
         extend ::Resque::Metrics
         @queue = :users
 
         def self.perform(user_id)
           u = User.where(id: user_id).first
           u.link_ghost_tables
+        rescue => e
+          CartoDB.notify_exception(e)
+          raise e
         end
 
       end
@@ -70,7 +75,7 @@ module Resque
           UserMailer.share_visualization(v, u).deliver
         end
       end
-      
+
       module ShareTable
         extend ::Resque::Metrics
         @queue = :users
@@ -81,7 +86,7 @@ module Resque
           UserMailer.share_table(t, u).deliver
         end
       end
-    
+
       module UnshareVisualization
         extend ::Resque::Metrics
         @queue = :users
@@ -92,7 +97,7 @@ module Resque
           UserMailer.unshare_visualization(visualization_name, visualization_owner_name, u).deliver
         end
       end
-      
+
       module UnshareTable
         extend ::Resque::Metrics
         @queue = :users
@@ -144,6 +149,19 @@ module Resque
           GeocoderMailer.geocoding_finished(user, state, table_name, error_code, processable_rows, number_geocoded_rows).deliver
         end
       end
+
+      module Sync
+        module MaxRetriesReached
+          extend ::Resque::Metrics
+          @queue = :users
+
+          def self.perform(user_id, visualization_id, dataset_name, error_code, error_message)
+            user = User.where(id: user_id).first
+            SyncMailer.max_retries_reached(user, visualization_id, dataset_name, error_code, error_message).deliver
+          end
+        end
+      end
+
 
     end
   end

@@ -1,7 +1,7 @@
 defaults: &defaults
   http_client_logs: true
   ogr2ogr:
-    binary:           'which ogr2ogr'
+    binary:           'which ogr2ogr2'
     csv_guessing:     false
   debug_assets: true
   mandatory_keys:     [layer_opts, sql_api, varnish_management, redis, session_domain]
@@ -217,6 +217,9 @@ defaults: &defaults
   gdrive:
     api_key: ""
     app_id: ""
+  bitly:
+    login: ""
+    key: ""
   # This enables a support chat within editor
   # Use your Olark api id to enable it. If you remove this entry or don't define an app key, it won't be activated.
   olark:

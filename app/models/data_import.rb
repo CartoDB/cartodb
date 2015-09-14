@@ -12,7 +12,6 @@ require_relative '../../lib/cartodb/errors'
 require_relative '../../lib/cartodb/import_error_codes'
 require_relative '../../lib/cartodb/metrics'
 require_relative '../../lib/cartodb/stats/importer'
-require_relative '../../lib/cartodb/mixpanel'
 require_relative '../../config/initializers/redis'
 require_relative '../../services/importer/lib/importer'
 require_relative '../connectors/importer'
@@ -189,7 +188,7 @@ class DataImport < Sequel::Model
     self
   rescue => exception
     log.append "Exception: #{exception.to_s}"
-    log.append exception.backtrace
+    log.append exception.backtrace, truncate = false
     stacktrace = exception.to_s + exception.backtrace.join
     Rollbar.report_message('Import error', 'error', error_info: stacktrace)
     handle_failure(exception)
@@ -313,7 +312,7 @@ class DataImport < Sequel::Model
     self
   rescue => exception
     log.append "Exception: #{exception.to_s}"
-    log.append exception.backtrace
+    log.append exception.backtrace, truncate = false
     log.store
     self
   end
@@ -639,11 +638,11 @@ class DataImport < Sequel::Model
       self.table_name = importer.table.name if importer.success? && importer.table
       self.table_id   = importer.table.id if importer.success? && importer.table
 
-      if importer.success? && importer.data_import.create_visualization
-        self.visualization_id = importer.data_import.visualization_id
+      if importer.success?
+        update_visualization_id(importer)
+        update_synchronization(importer)
       end
 
-      update_synchronization(importer)
       importer.success? ? set_datasource_audit_to_complete(datasource_provider,
                                                          importer.success? && importer.table ? importer.table.id : nil)
       : set_datasource_audit_to_failed(datasource_provider)
@@ -651,6 +650,12 @@ class DataImport < Sequel::Model
 
     unless runner.nil?
       self.stats = ::JSON.dump(runner.stats)
+    end
+  end
+
+  def update_visualization_id(importer)
+    if importer.data_import.create_visualization
+      self.visualization_id = importer.data_import.visualization_id
     end
   end
 
@@ -772,8 +777,6 @@ class DataImport < Sequel::Model
     dataimport_logger.info(import_log.to_json)
     CartoDB::Importer2::MailNotifier.new(self, results, ::Resque).notify_if_needed
     results.each { |result| CartoDB::Metrics.new.report(:import, payload_for(result)) }
-    # TODO: remove mixpanel
-    results.each { |result| CartoDB::Mixpanel.new.report(:import, payload_for(result)) }
   end
 
   def importer_stats_aggregator
@@ -833,7 +836,7 @@ class DataImport < Sequel::Model
       datasource.token = oauth.token unless oauth.nil?
     rescue => ex
       log.append "Exception: #{ex.message}"
-      log.append ex.backtrace
+      log.append ex.backtrace, truncate = false
       Rollbar.report_message('Import error: ', 'error', error_info: ex.message + ex.backtrace.join)
       raise CartoDB::DataSourceError.new("Datasource #{datasource_name} could not be instantiated")
     end

@@ -9,7 +9,7 @@
 }
 .Feed-content {
   position: relative;
-  padding: 40px 0;
+  padding: 20px 0;
   text-align: left;
 }
 
@@ -25,6 +25,9 @@
 
 .FeedItem-avatar {
   position: absolute;
+  width: 60px;
+  height: 60px;
+
   @include flex(1);
   z-index: 10;
 
@@ -45,8 +48,33 @@
   @include flex(0 0 540px);
 }
 
-.FeedItem.FeedItem--long .MapCard,
-.FeedItem.FeedItem--long .DatasetCard {
-  margin-right: 0;
-  @include flex(0 0 860px);
+@media (min-width: $sMedia-tablet) {
+  .Feed-content .FeedItem {
+    margin-bottom: 40px;
+  }
+}
+@media only screen and (max-width: 320px) {
+  .Feed-content .FeedItem {
+    margin-bottom: 40px;
+  }
+  .FeedItem .FeedItem-avatar {
+    margin: 20px;
+    border-radius: 8px;
+    &:after {
+      box-shadow: 1px 1px 1px rgba(#000, .2);
+    }
+  }
+}
+@media only screen and (min-width: 321px) and (max-width: 965px)  {
+  .Feed-content .FeedItem {
+    margin-bottom: 40px;
+  }
+  .FeedItem .FeedItem-avatar {
+    margin: 20px;
+    border-radius: 8px;
+    box-shadow: 1px 1px 1px rgba(#000, .2);
+    &:after {
+      box-shadow: 1px 1px 1px rgba(#000, .2);
+    }
+  }
 }

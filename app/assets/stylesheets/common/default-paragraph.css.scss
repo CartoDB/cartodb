@@ -32,3 +32,10 @@
   font-size: $sFontSize-normal;
   line-height: $sLineHeight-normal;
 }
+
+@media (min-width: $sMedia-mobile) {
+.DefaultParagraph--short { width: 200px;}
+}
+@media (min-width: $sMedia-tablet) {
+.DefaultParagraph--short { width: 500px;}
+}

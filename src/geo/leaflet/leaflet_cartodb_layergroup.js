@@ -264,8 +264,9 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
    * @params {Object} Map object
    * @params {Object} Wax event object
    */
-  _findPos: function (map,o) {
-    var curleft = 0, curtop = 0;
+  _findPos: function (map, o) {
+    var curleft = 0;
+    var curtop = 0;
     var obj = map.getContainer();
 
     var x, y;
@@ -284,20 +285,25 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
         curleft += obj.offsetLeft;
         curtop += obj.offsetTop;
       } while (obj = obj.offsetParent);
-      var p = new L.Point(
+      var point = this._newPoint(
         x - curleft, y - curtop);
-      return map.containerPointToLayerPoint(p);
     } else {
       var rect = obj.getBoundingClientRect();
       var scrollX = (window.scrollX || window.pageXOffset);
       var scrollY = (window.scrollY || window.pageYOffset);
-      var p = new L.Point(
+      var point = this._newPoint(
         (o.e.clientX? o.e.clientX: x) - rect.left - obj.clientLeft - scrollX,
         (o.e.clientY? o.e.clientY: y) - rect.top - obj.clientTop - scrollY);
-      return map.containerPointToLayerPoint(p);
     }
-  }
+    return map.containerPointToLayerPoint(point);
+  },
 
+  /**
+   * Creates an instance of a Leaflet Point
+   */
+  _newPoint: function(x, y) {
+    return new L.Point(x, y);
+  }
 });
 
 L.CartoDBGroupLayer = L.CartoDBGroupLayerBase.extend({

@@ -175,7 +175,7 @@ feature "Superadmin's users API" do
     user.available_for_hire.should == true
 
     # then test back to false
-    put_json superadmin_user_path(user), { :user => {:private_tables_enabled => false} }, superadmin_headers do |response|
+    put_json superadmin_user_path(user), { user: { private_tables_enabled: false } }, superadmin_headers do |response|
       response.status.should == 204
     end
     user = User[user.id]
@@ -191,7 +191,7 @@ feature "Superadmin's users API" do
   scenario "user update fail" do
     user = create_user
 
-    put_json superadmin_user_path(user), { :user => { :email => "" } }, superadmin_headers do |response|
+    put_json superadmin_user_path(user), { user: { email: "" } }, superadmin_headers do |response|
       response.status.should == 422
     end
 
@@ -200,7 +200,7 @@ feature "Superadmin's users API" do
 
   scenario "user update success" do
     user = create_user
-    put_json superadmin_user_path(user), { :user => { :email => "newmail@test.com", :map_view_quota => 80 } }, superadmin_headers do |response|
+    put_json superadmin_user_path(user), { user: { email: "newmail@test.com", map_view_quota: 80 } }, superadmin_headers do |response|
       response.status.should == 204
     end
     user = User[user.id]

@@ -277,18 +277,21 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
       y = o.e.clientY;
     }
 
-    if (obj.offsetParent) {
-      // Modern browsers
+    // If the map is fixed at the top of the window, we can't use offsetParent
+    // cause there might be some scrolling that we need to take into account.
+    if (obj.offsetParent && obj.offsetTop > 0) {
       do {
         curleft += obj.offsetLeft;
         curtop += obj.offsetTop;
       } while (obj = obj.offsetParent);
-      return map.containerPointToLayerPoint(new L.Point(x - curleft, y - curtop));
+      var p = new L.Point(
+        x - curleft, y - curtop);
+      return map.containerPointToLayerPoint(p);
     } else {
       var rect = obj.getBoundingClientRect();
       var p = new L.Point(
-            (o.e.clientX? o.e.clientX: x) - rect.left - obj.clientLeft - window.scrollX,
-            (o.e.clientY? o.e.clientY: y) - rect.top - obj.clientTop - window.scrollY);
+        (o.e.clientX? o.e.clientX: x) - rect.left - obj.clientLeft - window.scrollX,
+        (o.e.clientY? o.e.clientY: y) - rect.top - obj.clientTop - window.scrollY);
       return map.containerPointToLayerPoint(p);
     }
   }

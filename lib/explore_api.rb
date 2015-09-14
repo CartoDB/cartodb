@@ -42,14 +42,6 @@ class ExploreAPI
       liked_visualizations.map { |liked_vis| liked_vis.subject }
     end
 
-    def get_visualizations_bbox(visualization_ids)
-      return {} if visualization_ids.nil? || visualization_ids.empty?
-      bbox_dataset = Rails::Sequel.connection.fetch(
-        %Q[SELECT id, bbox FROM visualizations WHERE id in ('#{visualization_ids.join("','")}') AND type = '#{CartoDB::Visualization::Member::TYPE_CANONICAL}']
-      ).all
-      Hash[bbox_dataset.map {|row| [row[:id], row[:bbox]] }]
-    end
-
     private
 
     def table_data_by_user(user, tables)

@@ -98,7 +98,7 @@ module CartoDB
           return "#{redis_base_key}:stat_tag:#{visualization_id}"
         end
       end
-     
+
       # Returns api calls from a redis key in a hash with dates
       def get_api_calls_from_redis_source(username, api_call_type, options = {})
         redis_key = redis_api_call_key(username, api_call_type, options[:stat_tag])

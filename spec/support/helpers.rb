@@ -65,7 +65,7 @@ module HelperMethods
   end
 
   def put_json(path, params = {}, headers ={}, &block)
-    headers = headers.merge({"CONTENT_TYPE" => 'application/json'})
+    headers = headers.merge("CONTENT_TYPE" => "application/json")
     put path, JSON.dump(params), headers
     the_response = response || get_last_response
     response_parsed = the_response.body.blank? ? {} : ::JSON.parse(the_response.body)
@@ -73,7 +73,7 @@ module HelperMethods
   end
 
   def post_json(path, params = {}, headers ={}, &block)
-    headers = headers.merge({"CONTENT_TYPE" => 'application/json'})
+    headers = headers.merge("CONTENT_TYPE" => "application/json")
     post path, JSON.dump(params), headers
     the_response = response || get_last_response
     response_parsed = the_response.body.blank? ? {} : ::JSON.parse(the_response.body)
@@ -81,7 +81,7 @@ module HelperMethods
   end
 
   def delete_json(path, params = {}, headers ={}, &block)
-    headers = headers.merge({"CONTENT_TYPE" => 'application/json'})
+    headers = headers.merge("CONTENT_TYPE" => "application/json")
     delete path, JSON.dump(params), headers
     the_response = response || get_last_response
     response_parsed = (the_response.body.blank? || the_response.body.to_s.length < 2) ? {} : ::JSON.parse(the_response.body)

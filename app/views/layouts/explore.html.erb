@@ -29,15 +29,9 @@
       <div class="Spinner FavMap-spinner js-spinner"></div>
     </div>
 
-    <% if @is_org %>
-      <%= render "shared/public_dashboard_org_header" %>
-    <% else %>
-      <%= render "shared/public_dashboard_user_header" %>
-    <% end %>
-
     <%= yield %>
-
     <%= render 'admin/shared/footer' %>
+
     <script type="text/javascript">
       var config = <%= safe_js_object frontend_config_public({https_apis: request.protocol == 'https://' }) %>;
       var account_host = '<%= CartoDB.account_host %>';

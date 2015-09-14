@@ -33,6 +33,13 @@ Documentation that don't fit well inline (e.g. high-level stuff) should be place
 
 The frontend is really standalone code, but is integrated with/served by the Rails application.
 
+## CSS
+
+CartoDB uses [Compass](http://compass-style.org/) library in order to generate the stylesheets.
+Also CartoDB makes use of a linter machine for checking possible errors in those stylesheets.
+Rules are specified in the [scss-style.yml](scss-style.yml) file. Once a new Pull Request is started,
+[Hound](https://houndci.com/) application will check those SCSS changes for warnings.
+
 ## JS
 
 CartoDB is built on top of [CartoDB.js](https://github.com/CartoDB/cartodb.js),

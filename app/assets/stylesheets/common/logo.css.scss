@@ -2,50 +2,49 @@
 // - Different ways to show CartoDB logo
 // --------------------------------------------------
 
-@import "../variables/mixins";
+@import '../variables/mixins';
 
 $size: 36px;
 
 .Logo {
-  position: relative;
   display: inline-block;
+  position: relative;
 }
 .Logo:after {
-  content: '';
+  @include opacity(0);
+  @include transition(all, 0.4s, ease-in);
   position: absolute;
   top: -4px;
   left: -4px;
   width: $size + 4;
   height: $size + 4;
+  border: 2px solid rgba(#FFFFFF, 0.7);
   border-radius: $size;
-  background-color: #fff;
-  @include opacity(0);
-  border: 2px solid rgba(#fff,.7);
   border-bottom-color: transparent;
   background: transparent;
-  @include transition(all, .4s, ease-in);
+  content: '';
 }
 .Logo--text {
   i {
-    line-height: $size;
+    color: #FFFFFF;
     font-size: 17px;
-    color: white;
+    line-height: $size;
   }
 }
 .Logo--avatar {
+  @include transition(border-radius, 0.2s, linear);
   display: inline-block;
-  vertical-align: top;
   width: $size;
   height: $size;
-  line-height: $size + 10;
-  background: white;
   border-radius: 4px;
+  background: #FFFFFF;
+  line-height: $size + 10;
   text-align: center;
-  @include transition(border-radius, .2s, linear);
+  vertical-align: top;
 
   i {
-    font-size: $size - 14;
     color: #3C93D8;
+    font-size: $size - 14;
 
     &.Logo-icon--dark {
       color: #2E3C43;
@@ -56,51 +55,51 @@ $size: 36px;
   background: #2E3C43;
 
   i {
-    color: #fff;
+    color: #FFFFFF;
   }
 }
 .Logo--grey {
-  min-width: $size;
   width: $size;
+  min-width: $size;
   height: $size;
-  background-color:#CCCCCC;
   border-radius: 3px;
+  background-color: #CCCCCC;
   line-height: 53px;
   text-align: center;
   i {
+    color: #FFFFFF;
     font-size: 24px;
-    color: white;
   }
 }
 .Logo-sub {
+  @include animation(fade-and-bounce-up 0.6s 350ms ease-in-out backwards);
   position: absolute;
-  right: -8px;
   top: -8px;
+  right: -8px;
   width: 24px;
   height: 24px;
   border-radius: 24px;
   z-index: 1;
-  @include animation(fade-and-bounce-up 0.6s 350ms ease-in-out backwards);
 }
-.Logo-sub--google { @include background(image-url('layout/google-platform-logo.png') no-repeat center center white) }
+.Logo-sub--google { @include background(image-url('layout/google-platform-logo.png') no-repeat center center #FFFFFF) }
 .Logo.is-loading {
-  .Logo--avatar { border-radius: $size+1 }
-  
+  .Logo--avatar { border-radius: $size + 1; }
+
   &:after {
     @include animation(spin 0.7s linear infinite);
     @include opacity(1);
   }
 }
 
-@include keyframes(spin){
-  100%{
+@include keyframes(spin) {
+  100% {
     @include transform(rotate(360deg));
   }
 }
 
 @include keyframes(fade-and-bounce-up) {
   0% {
-    @include opacity(0.0);
+    @include opacity(0);
     @include transform(translateY(6px));
   }
   15% {
@@ -108,14 +107,14 @@ $size: 36px;
     @include transform(translateY(-3px));
   }
   45% {
-    @include opacity(1.0);
+    @include opacity(1);
     @include transform(translateY(2px));
   }
   70% {
     @include transform(translateY(-1px));
   }
   100% {
-    @include opacity(1.0);
+    @include opacity(1);
     @include transform(translateY(0));
   }
 }

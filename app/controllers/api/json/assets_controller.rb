@@ -1,15 +1,8 @@
 #encoding: UTF-8
 
 class Api::Json::AssetsController < Api::ApplicationController
-  
-  ssl_required :index, :create, :destroy
 
-  def index
-    @assets = current_user.assets
-    render_jsonp({ :total_entries => @assets.size,
-                   :assets => @assets.map(&:public_values)
-                })
-  end
+  ssl_required :create, :destroy
 
   def create
     @stats_aggregator.timing('assets.create') do
@@ -38,7 +31,7 @@ class Api::Json::AssetsController < Api::ApplicationController
 
   def destroy
     @stats_aggregator.timing('assets.destroy.delete') do
-      
+
       begin
         Asset[params[:id]].destroy
         head :ok

@@ -1,34 +1,34 @@
-@import "../variables/mixins";
-@import "../variables/colors";
-@import "../variables/sizes";
+@import '../variables/mixins';
+@import '../variables/colors';
+@import '../variables/sizes';
 
 .PublicUserProfile {
+  position: relative;
+  width: $sLayout-width;
+  margin: 15px auto 60px;
+  font-family: 'Proxima Nova';
   @include display-flex();
   @include justify-content(flex-start, start);
   @include align-items(flex-start);
   @include flex-wrap(wrap);
-  position: relative;
-  width: $sLayout-width;
-  margin: 15px auto 60px auto;
-  font-family: "Proxima Nova";
 }
 .PublicUserProfile-profile {
-  @include flex(0 0 320px);
   margin: 45px 0 0 0;
+  @include flex(0 0 320px);
 }
 .PublicUserProfile-name {
-  margin: 0 0 35px 0;
+  margin: 0 0 35px;
+  color: $cTypography-linkSecondaryHover;
   font-size: $sFontSize-mega;
   font-weight: $sFontWeight-normal;
-  color: $cTypography-linkSecondaryHover;
 }
 .PublicUserProfile-description {
-  margin: 0 0 30px 0;
   width: 290px;
-  font-size: 20px;
-  line-height: 32px;
+  margin: 0 0 30px;
   color: $cTypography-linkSecondaryHover;
+  font-size: 20px;
   font-weight: $sFontWeight-lighter;
+  line-height: 32px;
 }
 
 .PublicUserProfile-details {
@@ -36,9 +36,9 @@
 }
 .PublicUserProfile-detail {
   margin: 0 0 15px 0;
-  line-height: normal;
   color: $cTypography-linkSecondary;
   font-size: $sFontSize-large;
+  line-height: normal;
 }
 .PublicUserProfile-detail .iconFont {
   color: #CBCED0;
@@ -47,25 +47,131 @@
 
 @media (max-width: 980px) {
   .PublicUserProfile {
-    /*background:red;*/
+    display: block;
+  }
+
+  .PublicUserProfile-profile {
+    margin-top: 0;
+    @include display-flex();
+    @include justify-content(center);
+    @include align-items(flex-start);
+    @include flex-wrap(wrap);
+  }
+  .PublicUserProfile-description {
+    margin: 0;
+  }
+  .PublicUserProfile-bio {
+  }
+  .PublicUserProfile-details {
+    margin: 55px 0 0 0;
+  }
+}
+@media (max-width: 980px) {
+  .PublicUserProfile {
+    /*background: red;*/
   }
 }
 @media only screen and (max-width: 320px) {
   .PublicUserProfile {
-    /*background:yellow;*/
+    /*background: yellow;*/
   }
 }
-@media only screen and (min-width: 321px) and (max-width: 760px)  {
+@media only screen and (min-width: 321px) and (max-width: 760px) {
   .PublicUserProfile {
-    /*background:orange;*/
-    /*display: block;*/
+    /*background: orange;*/
   }
 }
-@media only screen 
-and (min-device-width: 320px) 
+@media only screen
+and (min-device-width: 320px)
 and (max-device-width: 480px)
 and (-webkit-min-device-pixel-ratio: 2) {
   .PublicUserProfile {
-    /*background:blue;*/
+    /*background: blue;*/
   }
 }
+
+@media (min-width: $sMedia-tablet) {
+  .PublicUserProfile-details {
+    margin: 15px 0 0 0;
+  }
+  .Feed-content .FeedItem .MapCard,
+  .Feed-content .FeedItem .DatasetCard {
+    /*@include flex(0 0 860px);*/
+    margin-right: 0;
+  }
+
+  .Feed-content .MapCard-preview.is-big {
+    display: block !Important;
+  }
+  .Feed-content .MapCard-preview.is-small {
+    display: none !Important;
+  }
+}
+
+@media only screen and (min-width: 321px) and (max-width: 980px)  {
+  .Explore-inner {
+    width: 100%;
+  }
+  .Feed-content .FeedItem {
+    @include justify-content(space-around, stretch);
+    @include align-items(stretch, stretch);
+  }
+
+  .Feed-content .FeedItem .MapCard,
+  .Feed-content .FeedItem .DatasetCard {
+    /*@include flex(0 0 488px);*/
+    margin-right: 0;
+  }
+
+  .Feed-content {
+    margin: 0 0 30px 0;
+    @include display-flex();
+    @include justify-content(center);
+    @include align-items(flex-start);
+    @include flex-wrap(wrap);
+    @include flex-direction(row);
+  }
+  .Feed-content .MapCard-preview.is-big {
+    display: block !Important;
+  }
+  .Feed-content .MapCard-preview.is-small {
+    display: none !Important;
+  }
+}
+
+@media only screen and (max-width: 520px) {
+  .Explore-inner {
+    width: 100%;
+  }
+  .Feed-content .FeedItem {
+    @include justify-content(space-around, stretch);
+    @include align-items(stretch, stretch);
+  }
+  .Feed-content .FeedItem .MapCard,
+  .Feed-content .FeedItem .DatasetCard {
+    @include flex(0 0 288px);
+    margin-right: 0;
+  }
+  .Feed-content {
+    @include display-flex();
+    @include justify-content(center);
+    @include align-items(flex-start);
+    @include flex-wrap(wrap);
+    @include flex-direction(row);
+  }
+  .Feed-content .MapCard-preview.is-big {
+    display: none !Important;
+  }
+  .Feed-content .MapCard-preview.is-small {
+    display: block !Important;
+  }
+}
+
+@media only screen
+and (min-device-width: 320px)
+and (max-device-width: 480px)
+and (-webkit-min-device-pixel-ratio: 2) {
+  .Feed-content {
+  }
+}
+

@@ -108,6 +108,8 @@ class Admin::PagesController < ApplicationController
   end
 
   def user_feed
+    # The template of this endpoint get the user_feed data calling
+    # to another endpoint in the front-end part
     username = CartoDB.extract_subdomain(request).strip.downcase
 
     if @viewed_user.nil?

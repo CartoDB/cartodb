@@ -135,7 +135,6 @@ end
 def http_json_authorization_headers(user, password)
   http_json_headers.merge("HTTP_AUTHORIZATION" => ActionController::HttpAuthentication::Basic.encode_credentials(user, password),
                           "HTTP_ACCEPT" => "application/json")
-  )
 end
 
 def http_json_headers

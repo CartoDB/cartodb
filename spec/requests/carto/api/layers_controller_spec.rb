@@ -10,6 +10,84 @@ describe Carto::Api::LayersController do
   it_behaves_like 'layers controllers' do
   end
 
+  describe 'attribution changes' do
+    include Rack::Test::Methods
+    include Warden::Test::Helpers
+
+    before(:all) do
+      @headers = {'CONTENT_TYPE'  => 'application/json'}
+    end
+
+    before(:each) do
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+      CartoDB::Visualization::Member.any_instance.stubs(:invalidate_cache).returns(nil)
+    end
+
+    after(:each) do
+      delete_user_data($user_1)
+    end
+
+    it 'attribution chanes in a visualization propagate to associated layers' do
+        table_1_attribution = 'attribution 1'
+        table_2_attribution = 'attribution 2'
+        modified_table_2_attribution = 'modified attribution 2'
+
+        table1 = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: "table#{rand(9999)}_1", user_id: $user_1.id)
+        table2 = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: "table#{rand(9999)}_2", user_id: $user_1.id)
+
+        payload = {
+          name: 'new visualization',
+          tables: [
+            table1.name,
+            table2.name
+          ],
+          privacy: 'public'
+        }
+
+        login_as($user_1, scope: $user_1.username)
+        host! "#{$user_1.username}.localhost.lan"
+        post api_v1_visualizations_create_url(api_key: @api_key), payload.to_json, @headers do |response|
+          response.status.should == 200
+          @visualization_data = JSON.parse(response.body)
+        end
+
+        visualization = Carto::Visualization.find(@visualization_data.fetch('id'))
+
+        table1_visualization = CartoDB::Visualization::Member.new(id: table1.table_visualization.id).fetch
+        table1_visualization.attributions = table_1_attribution
+        table1_visualization.store
+        table2_visualization = CartoDB::Visualization::Member.new(id: table2.table_visualization.id).fetch
+        table2_visualization.attributions = table_2_attribution
+        table2_visualization.store
+
+        get api_v1_maps_layers_index_url(map_id: visualization.map.id, api_key: @api_key) do |response|
+          response.status.should be_success
+          @layers_data = JSON.parse(response.body)
+        end
+        data_layers = @layers_data['layers'].select { |layer| layer['kind'] == 'carto' }
+        data_layers.count.should eq 2
+
+        # Rembember, layers by default added at top 
+        data_layers[0]['options']['attribution'].should eq table_2_attribution
+        data_layers[1]['options']['attribution'].should eq table_1_attribution
+
+        
+        table2_visualization.attributions = modified_table_2_attribution
+        table2_visualization.store
+
+        get api_v1_maps_layers_index_url(map_id: visualization.map.id, api_key: @api_key) do |response|
+          response.status.should be_success
+          @layers_data = JSON.parse(response.body)
+        end
+        data_layers = @layers_data['layers'].select { |layer| layer['kind'] == 'carto' }
+        data_layers.count.should eq 2
+
+        # Rembember, layers by default added at top 
+        data_layers[0]['options']['attribution'].should eq modified_table_2_attribution
+        data_layers[1]['options']['attribution'].should eq table_1_attribution
+    end
+
+  end
 
   describe 'index' do
     include Rack::Test::Methods

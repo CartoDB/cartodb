@@ -228,7 +228,7 @@ module CartoDB
         notify
 
       rescue => exception
-        Rollbar.report_exception(exception)
+        CartoDB.notify_exception(exception)
         log.append exception.message, truncate = false
         log.append exception.backtrace.join('\n'), truncate = false
 
@@ -368,9 +368,12 @@ module CartoDB
           default_message = CartoDB::IMPORTER_ERROR_CODES.fetch(self.error_code, {})
           self.error_message = default_message.fetch(:title, '')
         end
-        self.retried_times  = self.retried_times + 1
-        if self.retried_times < MAX_RETRIES
+        if self.retried_times < MAX_RETRIES - 1
+          self.retried_times  += 1
           self.run_at         = Time.now + interval
+        else
+          ::Resque.enqueue(::Resque::UserJobs::Mail::Sync::MaxRetriesReached, self.user_id,
+                           self.visualization_id, self.name, self.error_code, self.error_message)
         end
       end
 
@@ -380,12 +383,22 @@ module CartoDB
         self.state          = STATE_FAILURE
         self.error_code     = error_code
         self.error_message  = error_message
-        self.retried_times  = self.retried_times + 1
-        if self.retried_times < MAX_RETRIES
+        self.retried_times  += 1 unless self.retried_times >= MAX_RETRIES
+        if self.retried_times < MAX_RETRIES - 1
+          self.retried_times  += 1
           self.run_at         = Time.now + interval
+        else
+          ::Resque.enqueue(::Resque::UserJobs::Mail::Sync::MaxRetriesReached, self.user_id,
+                           self.visualization_id, self.name, self.error_code, self.error_message)
         end
       rescue => e
-        Rollbar.report_exception(e)
+        CartoDB.notify_exception(e,
+          {
+            error_code: error_code,
+            error_message: error_message,
+            retried_times: self.retried_times
+          }
+        )
       end
 
       # Tries to run automatic geocoding if present

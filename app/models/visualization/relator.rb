@@ -17,9 +17,9 @@ module CartoDB
                         named_map:        :named_maps_layers
                       }
 
-      INTERFACE     = %w{ overlays map user table related_templates related_tables related_visualizations layers
-                          stats mapviews total_mapviews single_data_layer? synchronization is_synced? permission parent
-                          children support_tables prev_list_item next_list_item likes likes_count reload_likes
+      INTERFACE     = %w{ overlays map user table related_templates related_tables related_canonical_visualizations 
+                          layers stats mapviews total_mapviews single_data_layer? synchronization is_synced? permission 
+                          parent children support_tables prev_list_item next_list_item likes likes_count reload_likes 
                           estimated_row_count actual_row_count }
 
       def initialize(attributes={})
@@ -105,8 +105,8 @@ module CartoDB
           .flat_map{|layer| layer.affected_tables.map{|t| t.service}}.uniq
       end
 
-      def related_visualizations
-        @related_visualizations ||= get_related_visualizations
+      def related_canonical_visualizations
+        @related_canonical_visualizations ||= get_related_canonical_visualizations
       end
 
       def layers(kind)
@@ -165,10 +165,15 @@ module CartoDB
         Like.where(subject: @id)
       end
 
-      def get_related_visualizations
-        related_map_ids = related_tables.map(&:map_id)
-        CartoDB::Visualization::Collection.new.fetch(map_id: related_map_ids, type: CartoDB::Visualization::Member::TYPE_CANONICAL)
+      def get_related_canonical_visualizations
+        get_related_visualizations_by_types([CartoDB::Visualization::Member::TYPE_CANONICAL])
       end
+
+      def get_related_visualizations_by_types(types)
+        related_map_ids = related_tables.map(&:map_id)
+        CartoDB::Visualization::Collection.new.fetch(map_id: related_map_ids, type: types)
+      end
+
     end
   end
 end

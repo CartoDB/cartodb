@@ -311,7 +311,6 @@ describe User do
         u.dedicated_support?.should be_true
         u.remove_logo?.should be_true
         u.private_maps_enabled.should be_true
-        u.import_quota.should == 3
       end
       organization.destroy
     end
@@ -1223,6 +1222,27 @@ describe User do
       @user.tables.where(name: table.name).first.should_not be_nil
       @user.link_ghost_tables
       @user.tables.where(name: table.name).first.should be_nil
+    end
+
+    it "should link a table that requires quoting, e.g: name with capitals" do
+      initial_count = @user.tables.count
+      @user.in_database.run %Q{CREATE TABLE "MyTableWithCapitals" (cartodb_id integer, the_geom geometry, the_geom_webmercator geometry)}
+      @user.in_database.run(%Q{
+        CREATE OR REPLACE FUNCTION test_quota_per_row()
+          RETURNS trigger
+          AS $$
+          BEGIN
+            RETURN NULL;
+          END;
+          $$
+          LANGUAGE plpgsql;
+      })
+      @user.in_database.run %Q{CREATE TRIGGER test_quota_per_row BEFORE INSERT ON "MyTableWithCapitals" EXECUTE PROCEDURE test_quota_per_row()}
+
+      @user.link_ghost_tables
+
+      # TODO: the table won't be cartodbfy'ed and registered until we support CamelCase identifiers.
+      @user.tables.count.should == initial_count
     end
 
   end

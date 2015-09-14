@@ -110,6 +110,7 @@ WORKING_SPECS_4 = \
 WORKING_SPECS_5 = \
   spec/rspec_configuration.rb \
   spec/requests/api/assets_spec.rb \
+  spec/requests/carto/api/assets_controller_spec.rb \
   spec/requests/api/user_layers_spec.rb \
   spec/requests/api/json/layers_controller_spec.rb \
   spec/requests/carto/api/layers_controller_spec.rb \

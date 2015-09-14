@@ -1,6 +1,7 @@
 # encoding: utf-8
 require_relative './base_job'
 require 'resque-metrics'
+require_relative '../cartodb/metrics'
 
 module Resque
   module UserJobs
@@ -30,6 +31,9 @@ module Resque
         def self.perform(user_id)
           u = User.where(id: user_id).first
           u.link_ghost_tables
+        rescue => e
+          CartoDB.notify_exception(e)
+          raise e
         end
 
       end
@@ -145,6 +149,19 @@ module Resque
           GeocoderMailer.geocoding_finished(user, state, table_name, error_code, processable_rows, number_geocoded_rows).deliver
         end
       end
+
+      module Sync
+        module MaxRetriesReached
+          extend ::Resque::Metrics
+          @queue = :users
+
+          def self.perform(user_id, visualization_id, dataset_name, error_code, error_message)
+            user = User.where(id: user_id).first
+            SyncMailer.max_retries_reached(user, visualization_id, dataset_name, error_code, error_message).deliver
+          end
+        end
+      end
+
 
     end
   end

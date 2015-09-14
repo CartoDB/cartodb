@@ -4,13 +4,9 @@ require_relative '../../../models/visualization/collection'
 
 class Api::Json::MapsController < Api::ApplicationController
 
-  ssl_required :show, :update
+  ssl_required :update
 
   before_filter :load_map
-
-  def show
-    render_jsonp(@map.public_values)
-  end
 
   def update
     @stats_aggregator.timing('maps.update') do

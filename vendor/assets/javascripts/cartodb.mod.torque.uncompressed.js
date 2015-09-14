@@ -5327,7 +5327,6 @@ if(typeof(google) == "undefined" || typeof(google.maps) == "undefined")
 var GMapsTorqueLayerView = function(layerModel, gmapsMap) {
 
   var extra = layerModel.get('extra_params');
-  layerModel.attributes.attribution = cdb.config.get('cartodb_attributions');
   cdb.geo.GMapsLayerView.call(this, layerModel, this, gmapsMap);
 
   var query = this._getQuery(layerModel);
@@ -5437,7 +5436,6 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
 
   initialize: function(layerModel, leafletMap) {
     var extra = layerModel.get('extra_params');
-    layerModel.attributes.attribution = cdb.config.get('cartodb_attributions');
 
     var query = this._getQuery(layerModel);
 

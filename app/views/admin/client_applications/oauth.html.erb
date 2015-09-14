@@ -51,7 +51,7 @@
       </div>
     </div>
 
-    <span class="FormAccount-separator"></span>
+    <span class="FormAccount-separator FormAccount-separator--marginTop"></span>
 
     <div class="FormAccount-row">
       <div class="FormAccount-rowLabel">
@@ -76,7 +76,7 @@
     <div class="FormAccount-footer">
       <p class="FormAccount-footerText">
         <i class="iconFont iconFont-Info FormAccount-footerIcon"></i>
-        Learn more about <%= link_to "using your simple app key", Cartodb.config[:developers_host] + "/documentation/apis-overview.html" %> in CartoDB
+        <span>Learn more about <%= link_to "using your simple app key", Cartodb.config[:developers_host] + "/documentation/apis-overview.html" %> in CartoDB</span>
       </p>
       <p class="FormAccount-footerText">
         <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>" />

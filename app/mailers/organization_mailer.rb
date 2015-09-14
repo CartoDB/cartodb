@@ -4,7 +4,7 @@ class OrganizationMailer < ActionMailer::Base
 
   def quota_limit(organization)
     @organization = organization
-    @subject = "Your organization #{@organization.name} is over its quota"
+    @subject = "Your organization #{@organization.name} has reached its quota"
     @link = "mailto:support@cartodb.com"
 
     mail :to => @organization.owner.email, 

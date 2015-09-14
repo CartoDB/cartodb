@@ -289,9 +289,11 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
       return map.containerPointToLayerPoint(p);
     } else {
       var rect = obj.getBoundingClientRect();
+      var scrollX = (window.scrollX || window.pageXOffset);
+      var scrollY = (window.scrollY || window.pageYOffset);
       var p = new L.Point(
-        (o.e.clientX? o.e.clientX: x) - rect.left - obj.clientLeft - window.scrollX,
-        (o.e.clientY? o.e.clientY: y) - rect.top - obj.clientTop - window.scrollY);
+        (o.e.clientX? o.e.clientX: x) - rect.left - obj.clientLeft - scrollX,
+        (o.e.clientY? o.e.clientY: y) - rect.top - obj.clientTop - scrollY);
       return map.containerPointToLayerPoint(p);
     }
   }

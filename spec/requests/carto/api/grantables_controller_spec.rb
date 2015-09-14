@@ -37,7 +37,6 @@ describe Carto::Api::GrantablesController do
           grantables.map { |g| g['id'] }.should include(@org_user_1.id)
           grantables.map { |g| g['avatar_url'] }.should include(@org_user_1.avatar_url)
           response.body[:total_entries].should == @carto_organization.users.length
-          response.body[:total_org_entries].should == @carto_organization.users.length
         end
       end
 
@@ -50,7 +49,6 @@ describe Carto::Api::GrantablesController do
           response.status.should == 200
           response.body[:grantables].length.should == count_grantables(@carto_organization)
           response.body[:total_entries].should == count_grantables(@carto_organization)
-          response.body[:total_org_entries].should == count_grantables(@carto_organization)
 
           response.body[:grantables].each { |g|
             g['id'].should == g['model']['id']
@@ -83,7 +81,6 @@ describe Carto::Api::GrantablesController do
             response.body[:grantables][0]['id'].should eq(expected_id), "#{response.body[:grantables][0]['id']} != #{expected_id}. Failing page: #{page}"
             response.body[:grantables].length.should == per_page
             response.body[:total_entries].should == count_grantables(@carto_organization)
-            response.body[:total_org_entries].should == count_grantables(@carto_organization)
           end
         }
       end
@@ -104,16 +101,6 @@ describe Carto::Api::GrantablesController do
           response.body[:grantables].length.should == 1
           response.body[:total_entries].should == 1
           response.body[:grantables][0]['id'].should == group.id
-          response.body[:total_org_entries].should == count_grantables(@carto_organization)
-        end
-      end
-
-      it 'counts total_org_entries when filter returns nothing' do
-        get_json api_v1_grantables_index_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, api_key: @org_user_owner.api_key), {q: 'nothing-at-all'}, @headers do |response|
-          response.status.should == 200
-          response.body[:grantables].length.should == 0
-          response.body[:total_entries].should == 0
-          response.body[:total_org_entries].should == count_grantables(@carto_organization)
         end
       end
 

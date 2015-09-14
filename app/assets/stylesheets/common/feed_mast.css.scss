@@ -27,9 +27,28 @@ $sWidth: 4px;
   background: #F9F9F9;
 }
 .FeedMast-ball.FeedMast-ball--top {
-  top: 0;
+  top: -12px;
+  background: none;
 }
 .FeedMast-ball.FeedMast-ball--bottom {
   bottom: 0;
   background: $cFeedMast;
+}
+
+@media only screen and (min-width: 521px) and (max-width: 965px)  {
+.FeedMast {
+    top: 0;
+    margin-left: -2px;
+    left: 50%;
+    z-index: 0;
+  }
+}
+
+@media only screen and (max-width: 520px) {
+.FeedMast {
+    top: 0;
+    margin-left: -2px;
+    left: 50%;
+    z-index: 0;
+  }
 }

@@ -99,6 +99,12 @@ $heightTall: 450px;
     top: ($heightTall / 2) - $sSpinner-default;
   }
 }
+@media only screen and (min-width: 321px) and (max-width: 955px)  {
+  .FavMap .FavMapTitle-inner {
+    width: 100%;
+    padding: 0 20px;
+  }
+}
 @media only screen and (min-width: 321px) and (max-width: 760px)  {
   $height: 320px;
   .FavMap { height: $height; }
@@ -108,10 +114,6 @@ $heightTall: 450px;
   .FavMap.FavMap--tall { height: $height; }
   .FavMap--tall .FavMap-spinner {
     top: ($height / 2) - $sSpinner-default;
-  }
-  .FavMap .FavMapTitle-inner {
-    padding: 0 20px;
-    width: 100%;
   }
 }
 @media only screen 

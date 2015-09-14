@@ -7,7 +7,7 @@ class OrganizationMailer < ActionMailer::Base
     @subject = "Your organization #{@organization.name} has reached its quota"
     @link = "mailto:support@cartodb.com"
 
-    mail to: @organization.owner.email, 
+    mail to: @organization.owner.email,
          subject: @subject
   end
 

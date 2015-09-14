@@ -15,4 +15,3 @@ module Carto
 
   end
 end
-

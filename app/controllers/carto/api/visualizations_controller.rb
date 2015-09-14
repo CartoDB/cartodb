@@ -38,7 +38,9 @@ module Carto
         # TODO: undesirable table hardcoding, needed for disambiguation. Look for
         # a better approach and/or move it to the query builder
         response = {
-          visualizations: vqb.with_order("visualizations.#{order}", :desc).build_paged(page, per_page).map { |v| VisualizationPresenter.new(v, current_viewer, self, { related: false }).to_poro },
+          visualizations: vqb.with_order("visualizations.#{order}", :desc).build_paged(page, per_page).map { |v|
+              VisualizationPresenter.new(v, current_viewer, self, { related: false }).to_poro
+          },
           total_entries: vqb.build.count
         }
         if current_user

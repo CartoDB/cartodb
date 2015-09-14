@@ -227,7 +227,7 @@ module CartoDB
       source: ERROR_SOURCE_USER
     },
     8005 => {
-      title: 'Max layers per map reached',
+      title: "Max layers per map reached",
       what_about: "You can't add more layers to your map. Please upgrade your account.",
       source: ERROR_SOURCE_USER
     },

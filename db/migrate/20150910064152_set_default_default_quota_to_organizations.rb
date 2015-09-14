@@ -7,7 +7,7 @@ Sequel.migration do
       set_column_not_null(:default_quota_in_bytes)
     end
   end
-  
+
   down do
     alter_table :organizations do
       set_column_allow_null(:default_quota_in_bytes)

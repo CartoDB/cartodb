@@ -16,7 +16,7 @@ module CartoDB
     ENTRY_FORMAT = "%s: %s#{ENTRY_POSTFIX}"
     ENTRY_REHYDRATED_FORMAT = "%s#{ENTRY_POSTFIX}"
 
-    HALF_OF_LOG_MARK = '----------\n'
+    HALF_OF_LOG_MARK = '===LOG HALF===\n'
     END_OF_LOG_MARK = '===LOG END==='
 
     TYPE_DATA_IMPORT     = 'import'
@@ -104,9 +104,12 @@ module CartoDB
     end
 
     # INFO: Does not store log, only appens in-memory
-    def append(content, timestamp = Time.now.utc)
+    def append(content, truncate = true, timestamp = Time.now.utc)
       @dirty = true
-      add_to_entries(ENTRY_FORMAT % [ timestamp, content.slice(0..MAX_ENTRY_LENGTH) ])
+
+      content.slice!(MAX_ENTRY_LENGTH..-1) if truncate
+
+      add_to_entries(ENTRY_FORMAT % [ timestamp, content ])
     end
 
     private

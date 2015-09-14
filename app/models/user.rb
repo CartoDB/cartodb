@@ -133,7 +133,7 @@ class User < Sequel::Model
   #   | private_tables_enabled  |    T   |    T    |   T  |
   #   | !private_tables_enabled |    T   |    F    |   F  |
   #   +-------------------------+--------+---------+------+
-  # 
+  #
   def valid_privacy?(privacy)
     self.private_tables_enabled || privacy == UserTable::PRIVACY_PUBLIC
   end
@@ -908,14 +908,6 @@ class User < Sequel::Model
     return false
   end
 
-  def import_quota
-    if self.max_concurrent_import_count.nil?
-      self.account_type.downcase == 'free' ? 1 : 3
-    else
-      self.max_concurrent_import_count
-    end
-  end
-
   def view_dashboard
     self.this.update dashboard_viewed_at: Time.now
     set dashboard_viewed_at: Time.now
@@ -1118,8 +1110,13 @@ class User < Sequel::Model
     conn[:pg_database].filter(:datname => database_name).all.any?
   end
 
-  def can_change_email
-    return !self.google_sign_in || self.last_password_change_date.present?
+  def can_change_email?
+    return (!self.google_sign_in || self.last_password_change_date.present?) &&
+      !Carto::Ldap::Manager.new.configuration_present?
+  end
+
+  def can_change_password?
+    !Carto::Ldap::Manager.new.configuration_present?
   end
 
   private :database_exists?
@@ -1212,7 +1209,7 @@ class User < Sequel::Model
     sql += %Q{
           column_name IN (#{cartodb_columns}) AND
 
-          tg.tgrelid = (t.schemaname || '.' || t.tablename)::regclass::oid AND
+          tg.tgrelid = (quote_ident(t.schemaname) || '.' || quote_ident(t.tablename))::regclass::oid AND
           tg.tgname = 'test_quota_per_row'
 
           GROUP BY 1
@@ -2116,7 +2113,7 @@ TRIGGER
   # Upgrade the cartodb postgresql extension
   def upgrade_cartodb_postgres_extension(statement_timeout=nil, cdb_extension_target_version=nil)
     if cdb_extension_target_version.nil?
-      cdb_extension_target_version = '0.9.4'
+      cdb_extension_target_version = '0.10.0'
     end
 
     in_database({

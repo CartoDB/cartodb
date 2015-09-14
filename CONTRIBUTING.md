@@ -5,6 +5,11 @@ Bug fixes are best reported as pull requests over there.
 Features are best discussed on the mailing list:
 https://groups.google.com/d/forum/cartodb
 
+## Submitting Contributions
+
+* You will need to sign a Contributor License Agreement (CLA) before making a submission. [Learn more here.](https://cartodb.com/contributing)
+
+
 # General
 
 Every new feature (as well as bugfixes) should come with a test case. Depending on context different guidelines might
@@ -28,6 +33,13 @@ Documentation that don't fit well inline (e.g. high-level stuff) should be place
 
 The frontend is really standalone code, but is integrated with/served by the Rails application.
 
+## CSS
+
+CartoDB uses [Compass](http://compass-style.org/) library in order to generate the stylesheets.
+Also CartoDB makes use of a linter machine for checking possible errors in those stylesheets.
+Rules are specified in the [scss-style.yml](scss-style.yml) file. Once a new Pull Request is started,
+[Hound](https://houndci.com/) application will check those SCSS changes for warnings.
+
 ## JS
 
 CartoDB is built on top of [CartoDB.js](https://github.com/CartoDB/cartodb.js),
@@ -39,7 +51,7 @@ which in turns depends on some common libraries, in particular worth mentioning:
 
 Source code is located at `lib/assets/javascripts`, dependencies at `vendor/assets/javascripts`.
 
-See [doc/frontend.md](doc/frontend.md) for more in-depth documentation.
+See [doc/frontend/README.md](doc/frontend/README.md) for more in-depth documentation.
 
 Until our guidelines are publically available follow the existing file/directory and style structure.
 
@@ -81,7 +93,7 @@ We use [SASS](http://sass-lang.com/),
 Source files are located at `app/assets/stylesheets`. We used to use Rails sprockets pipeline,
  but nowadays migrated to [Grunt](#grunt) (see that section for details).
 
-See [doc/frontend.md](doc/frontend.md) for more in-depth documentation.
+See [doc/frontend/README.md](doc/frontend/README.md) for more in-depth documentation.
 
 Until our guidelines are publicly available follow the existing file/directory and style structure.
 

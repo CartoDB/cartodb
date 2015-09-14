@@ -41,6 +41,8 @@ WORKING_SPECS_1 = \
   spec/lib/carto/http/client_spec.rb \
 	spec/helpers/uuidhelper_spec.rb \
 	spec/models/carto/template_spec.rb \
+	spec/models/carto/ldap/configuration_spec.rb \
+	spec/requests/sessions_controller_spec.rb \
   $(NULL)
 
 WORKING_SPECS_2 = \
@@ -107,6 +109,7 @@ WORKING_SPECS_4 = \
 WORKING_SPECS_5 = \
   spec/rspec_configuration.rb \
   spec/requests/api/assets_spec.rb \
+  spec/requests/carto/api/assets_controller_spec.rb \
   spec/requests/api/user_layers_spec.rb \
   spec/requests/api/json/layers_controller_spec.rb \
   spec/requests/carto/api/layers_controller_spec.rb \

@@ -89,7 +89,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         # Don't allow to modify next_id/prev_id, force to use set_next_id()
         vis_data.delete(:prev_id) || vis_data.delete('prev_id')
         vis_data.delete(:next_id) || vis_data.delete('next_id')
-
         # when a table gets renamed, first it's canonical visualization is renamed, so we must revert renaming if that failed
         # This is far from perfect, but works without messing with table-vis sync and their two backends
         if vis.table?
@@ -384,6 +383,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   def setup_new_visualization(vis_data)
     vis = nil
 
+    vis_data = add_default_privacy(vis_data)
+
     if params[:source_visualization_id]
       source,  = @stats_aggregator.timing('locate') do
         locator.get(params.fetch(:source_visualization_id), CartoDB.extract_subdomain(request))
@@ -430,7 +431,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       end
     else
       vis = Visualization::Member.new(
-          add_default_privacy(vis_data).merge(
+          vis_data.merge(
             name: name_candidate,
             user_id:  current_user.id
           )

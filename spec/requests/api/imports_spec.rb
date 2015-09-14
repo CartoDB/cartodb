@@ -92,6 +92,15 @@ describe "Imports API" do
     import_table.should have_required_indexes_and_triggers
   end
 
+  it 'detects lat/long columns and produces a the_geom column from them' do
+    post api_v1_imports_create_url,
+      params.merge(:filename => upload_file('spec/support/data/csv_with_lat_lon.csv', 'application/octet-stream'))
+    @table_from_import = UserTable.all.last.service
+
+    @table_from_import.geometry_types.should == ["ST_Point"]
+    @table_from_import.record(1)[:the_geom].should == '{"type":"Point","coordinates":[16.5607329,48.1199611]}'
+  end
+
   it 'duplicates a table without geometries' do
     post api_v1_imports_create_url,
       params.merge(:filename => upload_file('spec/support/data/csv_with_number_columns.csv', 'application/octet-stream'))

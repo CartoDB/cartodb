@@ -85,4 +85,17 @@ class UserMailer < ActionMailer::Base
          :subject => @subject
   end
 
+  def trending_map(visualization, mapviews)
+    @user = visualization.user
+    @map_name = visualization.name
+    @viewer_name = (!viewer_user.name.nil? && !viewer_user.name.empty?) ? viewer_user.name : viewer_user.username
+    @preview_image = visualization_preview_image
+    @subject = "Recent activity on one of your maps!"
+    @greetings = ["congrats", "congratulations", "cool", "awesome", "hooray", "nice", "wow", "rad", "bravo", "yay", "boom"]
+    @link = "#{@user.public_url}#{CartoDB.path(self, 'public_visualizations_show_map', { id: visualization.id })}"
+    @viewer_maps_link = "#{viewer_user.public_url}#{CartoDB.path(self, 'public_maps_home')}"
+    mail :to => @user.email,
+         :subject => @subject
+  end
+
 end

@@ -2,25 +2,43 @@
 
 require_relative '../../../spec_helper'
 require_relative '../../../../app/controllers/carto/api/assets_controller'
-require_relative '../../../../spec/requests/api/json/assets_controller_shared_examples'
 
 describe Carto::Api::AssetsController do
 
-  it_behaves_like 'assets controllers' do
-  end
+describe '#show legacy tests' do
 
-  before(:all) do
-    # Spec the routes so that it uses the new controller. Needed for alternative routes testing
-    Rails.application.routes.draw do
-      # new controller
-      scope :module => 'carto/api', :format => :json do
-        get '(/user/:user_domain)(/u/:user_domain)/api/v1_1/users/:user_id/assets'     => 'assets#index',   as: :api_v1_users_assets_index
+    before(:all) do
+      @user = create_user(:username => 'test', :email => "client@example.com", :password => "clientex")
+      AWS.stub!
+    end
+
+    before(:each) do
+      stub_named_maps_calls
+      delete_user_data @user
+      host! 'test.localhost.lan'
+    end
+
+    after(:all) do
+      stub_named_maps_calls
+      @user.destroy
+    end
+
+    let(:params) { { :api_key => @user.api_key } }
+
+    it "gets all assets" do
+      get_json(api_v1_users_assets_index_url(user_id: @user), params) do |response|
+        response.status.should be_success
+        response.body[:assets].size.should == 0
+      end
+
+      3.times { FactoryGirl.create(:asset, user_id: @user.id) }
+
+      get_json(api_v1_users_assets_index_url(user_id: @user), params) do |response|
+        response.status.should be_success
+        response.body[:assets].size.should == 3
       end
     end
-  end
 
-  after(:all) do
-    Rails.application.reload_routes!
   end
 
 end

@@ -12,6 +12,11 @@ end
 # Redis interfaces definition:
 conf = Cartodb.config[:redis].symbolize_keys
 redis_conf = conf.select { |k, v| [:host, :port, :timeout, :driver, :tcp_keepalive].include?(k) }
+
+if ENV['REDIS_PORT']
+  redis_conf[:port] = ENV['REDIS_PORT']
+end
+
 if redis_conf[:tcp_keepalive] and redis_conf[:tcp_keepalive].is_a? Hash
   redis_conf[:tcp_keepalive] = redis_conf[:tcp_keepalive].symbolize_keys
 end
@@ -40,7 +45,7 @@ $redis_migrator_logs = Redis.new(redis_conf.merge(db: databases[:redis_migrator_
 # When in the "test" environment we don't expect a Redis
 # server to be up and running at this point. Later code
 # will take care of starting one (see spec/spec_helper.rb)
-unless Rails.env.test?
+unless Rails.env.test? || Rails.env.test_1? || Rails.env.test_2? || Rails.env.test_4?
   begin
     $tables_metadata.ping
     $api_credentials.ping

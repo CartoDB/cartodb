@@ -15,9 +15,6 @@ $sEditButtonSize: 50px;
   border-radius: $sCard-borderRadius;
   margin: 0 auto;
 }
-.DatasetCard.DatasetCard--long {
-  width: 540px;
-}
 .DatasetCard-title {
   width: 100%; // required for child text-overflow to work as expected in FF
 }

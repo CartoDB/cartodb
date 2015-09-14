@@ -122,7 +122,7 @@ class Admin::PagesController < ApplicationController
 
       set_layout_vars_for_user(@viewed_user, 'feed')
 
-      @name               = @viewed_user.username
+      @name               = @viewed_user.name
       @avatar_url         = @viewed_user.avatar
       @tables_num         = @viewed_user.public_table_count
       @maps_count         = @viewed_user.public_visualization_count 

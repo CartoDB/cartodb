@@ -69,7 +69,12 @@ linters:
     force_nesting: false
   NameFormat:
     enabled: true
-    allow_leading_underscore: true
+    # Valid cases
+    #  - hello
+    #  - helloMates
+    #  - hello-buddy
+    #  - hello-buddyOne
+    convention: '([a-z]*)([A-Z]+[a-z]*)*-{0,2}([a-z]([a-z]*[A-Z]*[a-z]*))(\.[a-z]+-[a-z]*[A-Z]*[a-z]*)?(:.*)*'
   NestingDepth:
     enabled: true
     max_depth: 3
@@ -104,7 +109,7 @@ linters:
     severity: warning
   SelectorDepth:
     enabled: true
-    max_depth: 2
+    max_depth: 3
     severity: warning
   SelectorFormat:
     enabled: true

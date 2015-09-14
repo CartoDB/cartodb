@@ -31,7 +31,7 @@ end
 
 def bypass_named_maps
   CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
-  CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+  CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true, delete: true)
 end
 
 # Inline Resque for queue handling
@@ -123,21 +123,21 @@ RSpec.configure do |config|
 end
 
 def superadmin_headers
-  http_json_authorization_headers(Cartodb.config[:superadmin]["username"], Cartodb.config[:superadmin]["password"])
+  http_json_authorization_headers(Cartodb.config[:superadmin]["username"],
+                                  Cartodb.config[:superadmin]["password"])
 end
 
 def org_metadata_api_headers
-  http_json_authorization_headers(Cartodb.config[:org_metadata_api]["username"], Cartodb.config[:org_metadata_api]["password"])
+  http_json_authorization_headers(Cartodb.config[:org_metadata_api]["username"],
+                                  Cartodb.config[:org_metadata_api]["password"])
 end
 
-
 def http_json_authorization_headers(user, password)
-  http_json_headers.merge({
-    'HTTP_AUTHORIZATION' => ActionController::HttpAuthentication::Basic.encode_credentials(user, password),
-    'HTTP_ACCEPT' => "application/json"
-  })
+  http_json_headers.merge("HTTP_AUTHORIZATION" => ActionController::HttpAuthentication::Basic.encode_credentials(user, password),
+                          "HTTP_ACCEPT" => "application/json")
+  )
 end
 
 def http_json_headers
-  {'CONTENT_TYPE'  => 'application/json', :format => "json" }
+  { "CONTENT_TYPE" => "application/json", :format => "json" }
 end

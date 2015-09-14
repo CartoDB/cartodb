@@ -104,7 +104,7 @@
           }
           layerData = visData.layers[index];
         } else {
-          var DATA_LAYER_TYPES = ['namedmap', 'layergroup'];
+          var DATA_LAYER_TYPES = ['namedmap', 'layergroup', 'torque'];
 
           // Select the first data layer (namedmap or layergroup)
           layerData = _.find(visData.layers, function(layer){

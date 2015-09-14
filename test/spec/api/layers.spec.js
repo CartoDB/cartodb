@@ -254,12 +254,13 @@ describe('api.layers', function() {
         });
 
         setTimeout(function() {
+          expect(layer).toBeDefined();
           expect(layer.options.type).toEqual('namedmap');
           done();
-        }, 100);
+        }, 0);
       });
 
-      it("should load the `layergroup` by default", function(done) {
+      it("should load the `layergroup` layer by default", function(done) {
         var layer;
 
         cartodb.createLayer(map, {
@@ -281,9 +282,36 @@ describe('api.layers', function() {
         });
 
         setTimeout(function() {
+          expect(layer).toBeDefined();
           expect(layer.options.type).toEqual('layergroup');
           done();
-        }, 100);
+        }, 0);
+      });
+
+      it("should load the `torque` layer by default", function(done) {
+        var layer;
+
+        cartodb.createLayer(map, {
+          updated_at: 'jaja',
+          layers: [
+            { type: 'tiled', options: {} },
+            { type: 'tiled', options: {} },
+            {
+              type: 'torque',
+              options: {
+                'torque-steps': 3
+              }
+            }
+          ]
+        }).done(function(lyr) {
+          layer = lyr;
+        });
+
+        setTimeout(function() {
+          expect(layer).toBeDefined();
+          expect(layer.type).toEqual('torque');
+          done();
+        }, 0);
       });
 
       it("should add a torque layer", function(done) {

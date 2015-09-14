@@ -3,7 +3,7 @@
     <div class="PublicUserProfile-profile">
 
       <div class="PublicUserProfile-bio">
-        <h2 class="PublicUserProfile-name"><%= @viewed_user.name || @viewed_user.username %></h2>
+        <h2 class="PublicUserProfile-name"><%= @name %></h2>
 
         <% unless @viewed_user.description.nil? %>
           <p class="PublicUserProfile-description"><%= @viewed_user.description %></p>

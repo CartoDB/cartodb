@@ -60,7 +60,7 @@ linters:
     allow_non_nested_indentation: false
     character: space
     width: 2
-    severity: error
+    severity: warning
   LeadingZero:
     enabled: true
     style: include_zero
@@ -85,7 +85,7 @@ linters:
     enabled: true
     order: smacss
     ignore_unspecified: true
-    severity: error
+    severity: warning
     separate_groups: false
   PropertySpelling:
     enabled: true
@@ -110,11 +110,11 @@ linters:
     enabled: true
     # Valid cases
     #  - 0..100%
-    #  - i | em | strong | div | span
+    #  - i | em | strong | div | span | ...
     #  - Logo
-    #  - LogoPaco
+    #  - LogoWadus
     #  - Logo--cartofante
-    #  - LogoPaco--cartofante
+    #  - LogoWadus--cartofante
     #  - Logo--cartofantePleased
     #  - Logo--cartofanteURL
     #  - Logo-oh
@@ -155,7 +155,7 @@ linters:
     style: single_quotes
   TrailingSemicolon:
     enabled: true
-    severity: error
+    severity: warning
   TrailingZero:
     enabled: false
   UnnecessaryMantissa:

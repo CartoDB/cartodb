@@ -69,7 +69,26 @@ module Carto
           email: user.email,
           organization: Carto::Api::OrganizationPresenter.new(user.organization).to_poro,
           base_url: user.public_url,
+          id: user.id,
+          upgrade_url: upgrade_url(request.protocol, user.username),
+          db_size_in_bytes: user.db_size_in_bytes,
+          quota_in_bytes: user.quota_in_bytes,
+          account_type: user.account_type
         }
+      end
+
+      def account_url(request_protocol, username)
+        if CartoDB.account_host
+          request_protocol + CartoDB.account_host + CartoDB.account_path + '/' + username
+        end
+      end
+
+      def upgrade_url(request_protocol, username)
+        cartodb_com_hosted? ? '' : (account_url(request_protocol, username) + '/upgrade')
+      end
+
+      def cartodb_com_hosted?
+        Cartodb.config[:cartodb_com_hosted].nil? || Cartodb.config[:cartodb_com_hosted]
       end
 
       # TODO: this should be moved upwards in the controller hierarchy, and make it a replacement for current_user

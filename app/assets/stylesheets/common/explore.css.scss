@@ -4,6 +4,7 @@
 
 .Explore {
   position: relative;
+  min-height: 500px;
 }
 .Explore-inner {
   @include display-flex();
@@ -18,10 +19,118 @@
 }
 .Explore-feed {
   @include flex(1);
-  margin: 0 0 30px 0;
+  margin: 50px 0 30px 0;
 }
 .Explore-content {
-  position: relative;
-  padding: 40px 0;
-  text-align: left;
+  padding: 15px 0;
 }
+
+@media (min-width: $sMedia-tablet) {
+  .Explore-content {
+    .FeedItem .MapCard,
+    .FeedItem .DatasetCard {
+      margin-right: 0;
+      @include flex(0 0 860px);
+    }
+  }
+
+  .Explore-content {
+    /*background: red;*/
+  }
+  .Explore-content .MapCard-preview.big {
+    display: block!Important;
+  }
+  .Explore-content .MapCard-preview.medium,
+  .Explore-content .MapCard-preview.small {
+    display: none!Important;
+  }
+}
+
+@media only screen and (min-width: 321px) and (max-width: 965px)  {
+  .Explore-inner {
+    width: 100%;
+  }
+  .Explore-content .FeedItem {
+    @include justify-content(space-around, stretch);
+    @include align-items(stretch, stretch);
+  }
+
+  .Explore-content {
+    .FeedItem .MapCard,
+    .FeedItem .DatasetCard {
+      margin-right: 0;
+      @include flex(0 0 488px);
+    }
+  }
+
+  .Explore-content {
+    /*background: blue;*/
+    @include display-flex();
+    @include justify-content(center);
+    @include align-items(flex-start);
+    @include flex-wrap(wrap);
+    @include flex-direction(row);
+  }
+  .Explore-content .MapCard-preview.big,
+  .Explore-content .MapCard-preview.small {
+    display: none!Important;
+  }
+  .Explore-content .MapCard-preview.medium {
+    display: block!Important;
+  }
+}
+
+@media only screen and (max-width: 520px) {
+  .Explore-inner {
+    width: 100%;
+  }
+  .Explore-content .FeedItem {
+    @include justify-content(space-around, stretch);
+    @include align-items(stretch, stretch);
+  }
+  .Explore-content {
+    .FeedItem .MapCard,
+    .FeedItem .DatasetCard {
+      margin-right: 0;
+      @include flex(0 0 288px);
+    }
+  }
+  .Explore-content {
+    /*background: yellow;*/
+    @include display-flex();
+    @include justify-content(center);
+    @include align-items(flex-start);
+    @include flex-wrap(wrap);
+    @include flex-direction(row);
+  }
+  .Explore-content .MapCard-preview.big,
+  .Explore-content .MapCard-preview.medium {
+    display: none!Important;
+  }
+  .Explore-content .MapCard-preview.small {
+    display: block!Important;
+  }
+}
+
+@media only screen and (max-width: 520px) {
+  .Explore-content {
+    background: orange;
+  }
+  .Explore-content .MapCard-preview.big,
+  .Explore-content .MapCard-preview.medium {
+    display: none!Important;
+  }
+  .Explore-content .MapCard-preview.small {
+    display: block!Important;
+  }
+}
+
+@media only screen 
+and (min-device-width: 320px) 
+and (max-device-width: 480px)
+and (-webkit-min-device-pixel-ratio: 2) {
+  .Explore-content {
+    /*background: green;*/
+  }
+}
+

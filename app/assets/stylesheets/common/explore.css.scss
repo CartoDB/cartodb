@@ -1,6 +1,6 @@
-@import "../variables/mixins";
-@import "../variables/colors";
-@import "../variables/sizes";
+@import '../variables/mixins';
+@import '../variables/colors';
+@import '../variables/sizes';
 
 .Explore {
   position: relative;
@@ -13,36 +13,32 @@
   @include flex-wrap(wrap);
   position: relative;
   width: $sLayout-width;
-  margin: 35px auto 60px auto;
-  font-family: "Proxima Nova";
+  margin: 35px auto 60px;
+  font-family: 'Proxima Nova';
   text-align: center;
 }
 .Explore-feed {
   @include flex(1);
-  margin: 50px 0 30px 0;
+  margin: 50px 0 30px;
 }
 .Explore-content {
   padding: 15px 0;
+  margin: 0 0 30px;
 }
 
 @media (min-width: $sMedia-tablet) {
-  .Explore-content {
-    .FeedItem .MapCard,
-    .FeedItem .DatasetCard {
-      margin-right: 0;
-      @include flex(0 0 860px);
-    }
+  .Explore-content .FeedItem .MapCard,
+  .Explore-content .FeedItem .DatasetCard {
+    @include flex(0 0 860px);
+    margin-right: 0;
   }
 
-  .Explore-content {
-    /*background: red;*/
+  .Explore-content .MapCard-preview.is-big {
+    display: block !Important;
   }
-  .Explore-content .MapCard-preview.big {
-    display: block!Important;
-  }
-  .Explore-content .MapCard-preview.medium,
-  .Explore-content .MapCard-preview.small {
-    display: none!Important;
+  .Explore-content .MapCard-preview.is-medium,
+  .Explore-content .MapCard-preview.is-small {
+    display: none !Important;
   }
 }
 
@@ -55,28 +51,25 @@
     @include align-items(stretch, stretch);
   }
 
-  .Explore-content {
-    .FeedItem .MapCard,
-    .FeedItem .DatasetCard {
-      margin-right: 0;
-      @include flex(0 0 488px);
-    }
+  .Explore-content .FeedItem .MapCard,
+  .Explore-content .FeedItem .DatasetCard {
+    @include flex(0 0 488px);
+    margin-right: 0;
   }
 
   .Explore-content {
-    /*background: blue;*/
     @include display-flex();
     @include justify-content(center);
     @include align-items(flex-start);
     @include flex-wrap(wrap);
     @include flex-direction(row);
   }
-  .Explore-content .MapCard-preview.big,
-  .Explore-content .MapCard-preview.small {
-    display: none!Important;
+  .Explore-content .MapCard-preview.is-big,
+  .Explore-content .MapCard-preview.is-small {
+    display: none !Important;
   }
-  .Explore-content .MapCard-preview.medium {
-    display: block!Important;
+  .Explore-content .MapCard-preview.is-medium {
+    display: block !Important;
   }
 }
 
@@ -88,49 +81,42 @@
     @include justify-content(space-around, stretch);
     @include align-items(stretch, stretch);
   }
-  .Explore-content {
-    .FeedItem .MapCard,
-    .FeedItem .DatasetCard {
-      margin-right: 0;
-      @include flex(0 0 288px);
-    }
+  .Explore-content .FeedItem .MapCard,
+  .Explore-content .FeedItem .DatasetCard {
+    @include flex(0 0 288px);
+    margin-right: 0;
   }
   .Explore-content {
-    /*background: yellow;*/
     @include display-flex();
     @include justify-content(center);
     @include align-items(flex-start);
     @include flex-wrap(wrap);
     @include flex-direction(row);
   }
-  .Explore-content .MapCard-preview.big,
-  .Explore-content .MapCard-preview.medium {
-    display: none!Important;
+  .Explore-content .MapCard-preview.is-big,
+  .Explore-content .MapCard-preview.is-medium {
+    display: none !Important;
   }
-  .Explore-content .MapCard-preview.small {
-    display: block!Important;
+  .Explore-content .MapCard-preview.is-small {
+    display: block !Important;
   }
 }
 
 @media only screen and (max-width: 520px) {
-  .Explore-content {
-    background: orange;
+  .Explore-content .MapCard-preview.is-big,
+  .Explore-content .MapCard-preview.is-medium {
+    display: none !Important;
   }
-  .Explore-content .MapCard-preview.big,
-  .Explore-content .MapCard-preview.medium {
-    display: none!Important;
-  }
-  .Explore-content .MapCard-preview.small {
-    display: block!Important;
+  .Explore-content .MapCard-preview.is-small {
+    display: block !Important;
   }
 }
 
-@media only screen 
-and (min-device-width: 320px) 
+@media only screen
+and (min-device-width: 320px)
 and (max-device-width: 480px)
 and (-webkit-min-device-pixel-ratio: 2) {
   .Explore-content {
-    /*background: green;*/
   }
 }
 

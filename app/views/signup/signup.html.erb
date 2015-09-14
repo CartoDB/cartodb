@@ -4,14 +4,6 @@
   <%= javascript_include_tag 'cdb.js', 'signup.js' %>
 <% end %>
 
-<% content_for :css do %>
-  <style>
-  .FlashMessage-info.error {
-    color: white;
-  }
-  </style>
-<% end %>
-
 <div class="Sessions" style="<%= background %>">
   <%= render partial: 'admin/shared/sessions_header', locals: { align: "Navbar--left" } %>
 

@@ -341,9 +341,6 @@ $sEditButtonSize: 50px;
 .MapCard-contentFooter.MapCard-contentFooter--lefty > *:not(:last-child) {
   margin-right: 10px;
 }
-.MapCard-contentFooter.MapCard-contentFooter--with-icon {
-  display: block;
-}
 .MapCard-contentFooter.MapCard-contentFooter--with-icon .MapCard-contentFooterIcon {
   display: inline-block;
   vertical-align: top;
@@ -360,7 +357,7 @@ $sEditButtonSize: 50px;
 .MapCard-contentFooterDetails-actions {
   @include display-flex();
   @include align-items(center);
-  @include justify-content(space-between, justify);
+  @include justify-content(flex-start);
 }
 .MapCard-contentFooterDetails-actions > *:not(:last-child) {
   margin-right: 14px;

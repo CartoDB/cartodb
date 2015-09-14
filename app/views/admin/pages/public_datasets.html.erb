@@ -17,9 +17,9 @@
                 <div class="MapCard-contentFooterIcon">
                   <div class="DatasetsList-itemCategory is--<%= vis[:geometry_type] %>Dataset"></div>
                 </div>
-                <div class="MapCard-contentFooterDetails">
-                  <div class="MapCard-contentFooterTitle u-ellipsLongText">
-                    <h3 class="MapCard-title DefaultTitle u-ellipsLongText">
+                <div class="MapCard-contentFooterDetails u-ellipsLongText">
+                  <div class="MapCard-contentFooterTitle">
+                    <h3 class="MapCard-title DefaultTitle">
                       <a href="<%= CartoDB.url(self, 'public_table', {id: vis[:title]}, vis[:owner]) %>" class="DefaultTitle-link u-ellipsLongText" title="<%= vis[:title] %>"><%= vis[:title] %></a>
                     </h3>
                   </div>

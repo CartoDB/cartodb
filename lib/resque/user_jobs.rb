@@ -4,6 +4,24 @@ require 'resque-metrics'
 require_relative '../cartodb/metrics'
 
 module Resque
+
+  module OrganizationJobs
+
+    module Mail
+
+      module QuotaLimit
+        extend ::Resque::Metrics
+        @queue = :users
+
+        def self.perform(organization_id)
+          OrganizationMailer.quota_limit(Organization.where(id: organization_id).first).deliver
+        end
+      end
+
+    end
+
+  end
+
   module UserJobs
 
     module Signup

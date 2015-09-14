@@ -34,7 +34,7 @@ describe CartoDB::TrendingMaps do
       @trending_maps.is_trending_map?(9, 8010).should eq false
     end
 
-    it "should return 4 trending maps" do
+    it "should return 3 trending maps" do
       date = Date.today - 1.days
       date_key = date.strftime("%Y%m%d")
       user = FactoryGirl.build(:user)
@@ -51,24 +51,14 @@ describe CartoDB::TrendingMaps do
       add_total_data(visualization_4.id, user.username, 8300)
       add_date_data(visualization_4.id, user.username, date_key, 20)
       visualization_5 = FactoryGirl.build(:derived_visualization, :user_id => user.id)
-      add_total_data(visualization_5.id, user.username, 15990)
+      add_total_data(visualization_5.id, user.username, 7900)
       add_date_data(visualization_5.id, user.username, date_key, 200)
-      visualization_6 = FactoryGirl.build(:derived_visualization, :user_id => user.id)
-      add_total_data(visualization_6.id, user.username, 7900)
-      add_date_data(visualization_6.id, user.username, date_key, 15000)
-      visualization_7 = FactoryGirl.build(:derived_visualization, :user_id => user.id)
-      add_total_data(visualization_7.id, user.username, 0)
-      add_date_data(visualization_7.id, user.username, date_key, 0)
-      visualization_8 = FactoryGirl.build(:derived_visualization, :user_id => user.id)
-      add_total_data(visualization_8.id, user.username, 10)
-      add_date_data(visualization_8.id, user.username, date_key, 1)
 
       trending_maps = @trending_maps.get_trending_maps
-      trending_maps.length.should eq 4
+      trending_maps.length.should eq 3
       trending_maps.keys.include?(visualization_1.id).should eq true
       trending_maps.keys.include?(visualization_3.id).should eq true
       trending_maps.keys.include?(visualization_5.id).should eq true
-      trending_maps.keys.include?(visualization_6.id).should eq true
     end
 
     def add_date_data(visualization_id, username, date, value)

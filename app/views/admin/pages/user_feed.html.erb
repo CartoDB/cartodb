@@ -11,17 +11,21 @@
 
       </div>
       <ul class="PublicUserProfile-details">
-        <% unless @viewed_user.twitter_username.nil? %>
+        <% unless @viewed_user.twitter_username.blank? %>
           <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Twitter iconFont--with-label"></i> <a href="http://twitter.com/<%= @viewed_user.twitter_username %>"><%= @viewed_user.twitter_username %></a></li>
         <% end %>
 
-        <% unless @viewed_user.website.nil? %>
+        <% unless @viewed_user.website.blank? %>
           <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Anchor iconFont--with-label"></i> <a href="<%= @viewed_user.website %>"><%= @viewed_user.website %></a></li>
         <% end %>
 
-        <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Clock iconFont--with-label"></i> CartoDB</li>
+        <% if @viewed_user.has_organization? %>
+          <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Clock iconFont--with-label"></i> <%= @viewed_user.organization.name %></li>
+      <% end %>
 
+        <% if @viewed_user.available_for_hire %>
         <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Email iconFont--with-label"></i> <a href="mailto:<%= @viewed_user.email %>"><%= @viewed_user.email %></a></li>
+        <% end %>
         <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Clock iconFont--with-label"></i> Madrid</li>
         <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Calendar iconFont--with-label"></i> Member since <%= @viewed_user.created_at.strftime("%B %Y") %></li>
       </ul>

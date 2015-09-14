@@ -109,8 +109,8 @@ and (-webkit-min-device-pixel-ratio: 2) {
 }
 
 @media only screen and (min-width: 321px) and (max-width: 980px)  {
-  .Explore-inner {
-    width: 100%;
+  .PublicUserProfile-details {
+    margin: 15px 0 0 0;
   }
   .Feed-content .FeedItem {
     @include justify-content(space-around, stretch);
@@ -140,9 +140,6 @@ and (-webkit-min-device-pixel-ratio: 2) {
 }
 
 @media only screen and (max-width: 520px) {
-  .Explore-inner {
-    width: 100%;
-  }
   .Feed-content .FeedItem {
     @include justify-content(space-around, stretch);
     @include align-items(stretch, stretch);

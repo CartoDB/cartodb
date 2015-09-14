@@ -10,7 +10,7 @@ CartoDB::Application.load_tasks
 
 Rake.application.instance_variable_get('@tasks').delete('default')
 
-if Rails.env.test?
+if CartoDB::Env.test?
   namespace :spec do
     desc "Run the code examples in spec/lib"
     RSpec::Core::RakeTask.new(:cartodb_lib) do |t|

@@ -6,4 +6,13 @@ module CartoDB
     end
 
   end
+
+  module Env 
+
+    def self.test?
+       (Rails.env =~ /^test.*/) != nil 
+    end 
+
+  end 
+
 end

@@ -655,7 +655,7 @@ class User < Sequel::Model
   end
 
   def get_db_configuration_for(user = nil)
-    logger = (Rails.env.development? || Rails.env.test? ? ::Rails.logger : nil)
+    logger = (Rails.env.development? || CartoDB::Env.test? ? ::Rails.logger : nil)
     if user == :superuser
       ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
         'database' => self.database_name,

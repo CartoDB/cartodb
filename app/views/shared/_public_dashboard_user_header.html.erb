@@ -7,21 +7,21 @@
       <% if @name %>
         <div class="PublicMap-leftBlock PublicMap-leftBlock--owner">
           <ul class="Navmenu-list Navmenu-list--owner Navmenu-list--avatar">
-            <li class="Navmenu-item">
-              <a href="<%= CartoDB.url(self, 'public_user_feed_home') %>" target="_blank" class="UserAvatar">
+            <li class="Navmenu-item u-hideOnMobile">
+              <a href="<%= CartoDB.url(self, 'public_user_feed_home') %>" class="UserAvatar">
                 <img class="UserAvatar-img--medium" src="<%= @avatar_url %>" alt="development" title="development" />
               </a>
             </li>
           </ul>
 
           <ul class="Navmenu-list Navmenu-list--owner">
-            <li class="Navmenu-item last-child">
+            <li class="Navmenu-item u-hideOnMobile">
               <a href="<%= CartoDB.url(self, 'public_user_feed_home') %>" class="Navmenu-link <%= "#{@content_type != 'maps' and @content_type != 'datasets' ? 'is-selected' : '' }" %>"><%= @name %></a>
             </li>
-            <li class="Navmenu-item last-child">
+            <li class="Navmenu-item">
               <a href="<%= CartoDB.url(self, 'public_maps_home') %>" class="Navmenu-link <%= "#{@content_type == 'maps' ? 'is-selected' : '' }" %>"><%= pluralize(@maps_count, "Map") %></a>
             </li>
-            <li class="Navmenu-item u-hideOnTablet">
+            <li class="Navmenu-item last-child">
               <a href="<%= CartoDB.url(self, 'public_datasets_home') %>" class="Navmenu-link <%= "#{@content_type == 'datasets' ? 'is-selected' : '' }" %>"><%= pluralize(@tables_num, "Dataset") %></a>
             </li>
           </ul>

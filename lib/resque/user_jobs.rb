@@ -9,7 +9,7 @@ module Resque
 
     module Mail
 
-      module QuotaLimit
+      module DiskQuotaLimitReached
         extend ::Resque::Metrics
         @queue = :users
 

@@ -230,7 +230,7 @@ class Organization < Sequel::Model
   end
 
   def notify_if_disk_quota_limit_reached
-    ::Resque.enqueue(::Resque::OrganizationJobs::Mail::QuotaLimit, self.id) if disk_quota_limit_reached?
+    ::Resque.enqueue(::Resque::OrganizationJobs::Mail::DiskQuotaLimitReached, self.id) if disk_quota_limit_reached?
   end
 
   private

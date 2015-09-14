@@ -44,3 +44,28 @@
   color: #CBCED0;
   font-size: 17px;
 }
+
+@media (max-width: 980px) {
+  .PublicUserProfile {
+    /*background:red;*/
+  }
+}
+@media only screen and (max-width: 320px) {
+  .PublicUserProfile {
+    /*background:yellow;*/
+  }
+}
+@media only screen and (min-width: 321px) and (max-width: 760px)  {
+  .PublicUserProfile {
+    /*background:orange;*/
+    /*display: block;*/
+  }
+}
+@media only screen 
+and (min-device-width: 320px) 
+and (max-device-width: 480px)
+and (-webkit-min-device-pixel-ratio: 2) {
+  .PublicUserProfile {
+    /*background:blue;*/
+  }
+}

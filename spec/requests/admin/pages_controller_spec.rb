@@ -185,6 +185,7 @@ describe Admin::PagesController do
     if org_user
       org = mock
       Organization.stubs(:where).with(name: @org_name).returns([org])
+      Organization.stubs(:where).with(name: @org_user_name).returns([org])
       User.any_instance.stubs(:belongs_to_organization?).with(org).returns(belongs_to_org)
     end
 

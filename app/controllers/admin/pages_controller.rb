@@ -29,7 +29,7 @@ class Admin::PagesController < ApplicationController
               :render_not_found
 
   before_filter :login_required, :except => [:public, :datasets, :maps, :sitemap, :index, :user_feed]
-  before_filter :get_viewed_user, only: [:user_feed, :sitemap]
+  before_filter :get_viewed_user
   before_filter :ensure_organization_correct
   skip_before_filter :browser_is_html5_compliant?, only: [:public, :datasets, :maps, :user_feed]
   skip_before_filter :ensure_user_organization_valid, only: [:public]
@@ -45,9 +45,8 @@ class Admin::PagesController < ApplicationController
   end
 
   def sitemap
-    username = CartoDB.extract_subdomain(request)
-
     if @viewed_user.nil?
+      username = CartoDB.extract_subdomain(request)
       org = get_organization_if_exists(username)
       return if org.nil?
       visualizations = (org.public_visualizations.to_a || [])
@@ -110,10 +109,9 @@ class Admin::PagesController < ApplicationController
   def user_feed
     # The template of this endpoint get the user_feed data calling
     # to another endpoint in the front-end part
-    username = CartoDB.extract_subdomain(request).strip.downcase
-
     if @viewed_user.nil?
-      org = Organization.where(name: username).first
+      username = CartoDB.extract_subdomain(request).strip.downcase
+      org = get_organization_if_exists(username)
       unless org.nil?
         redirect_to CartoDB.url(self, 'public_maps_home') and return
       end
@@ -424,6 +422,7 @@ class Admin::PagesController < ApplicationController
   end
 
   def get_viewed_user
+    username = CartoDB.extract_subdomain(request)
     @viewed_user = User.where(username: username).first
   end
 

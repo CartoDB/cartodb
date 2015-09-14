@@ -51,11 +51,9 @@ $sEditButtonSize: 50px;
 .MapCard.MapCard--explore .MapCard-header {
   height: 220px;
   @include background(image-url("layout/default-map-big-bkg.png") no-repeat center 0);
+  background-color: #ddd;
 }
 
-.MapCard.MapCard--long {
-  width: 540px;
-}
 .MapCard.MapCard--long .MapCard-content {
   height: auto;
 }
@@ -64,7 +62,8 @@ $sEditButtonSize: 50px;
   border-top: none;
 }
 .MapCard.MapCard--long .MapCard-header {
-  background: #F1F1F1;
+  @include background(image-url("layout/default-map-big-bkg.png") no-repeat center 0);
+  background-color: #ddd;
 }
 
 .MapCard.MapCard--squared .MapCard-header {
@@ -425,7 +424,6 @@ $sEditButtonSize: 50px;
 }
 
 @media only screen and (max-width: 320px) {
-  .MapCard-contentFooterIcon--datasets,
   .MapCardIcon-label {
     display: none;
   }
@@ -434,7 +432,6 @@ $sEditButtonSize: 50px;
   }
 }
 @media only screen and (min-width: 321px) and (max-width: 760px)  {
-  .MapCard-contentFooterIcon--datasets,
   .MapCardIcon-label {
     display: none;
   }

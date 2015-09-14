@@ -2,12 +2,14 @@
   <div class="PublicUserProfile">
     <div class="PublicUserProfile-profile">
 
-      <h2 class="PublicUserProfile-name"><%= @viewed_user.name || @viewed_user.username %></h2>
+      <div class="PublicUserProfile-bio">
+        <h2 class="PublicUserProfile-name"><%= @viewed_user.name || @viewed_user.username %></h2>
 
-      <% unless @viewed_user.description.nil? %>
-        <p class="PublicUserProfile-description"><%= @viewed_user.description %></p>
-      <% end %>
+        <% unless @viewed_user.description.nil? %>
+          <p class="PublicUserProfile-description"><%= @viewed_user.description %></p>
+        <% end %>
 
+      </div>
       <ul class="PublicUserProfile-details">
         <% unless @viewed_user.twitter_username.nil? %>
           <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Twitter iconFont--with-label"></i> <a href="http://twitter.com/<%= @viewed_user.twitter_username %>"><%= @viewed_user.twitter_username %></a></li>

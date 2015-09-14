@@ -179,7 +179,7 @@ class Carto::UserCreation < ActiveRecord::Base
   def close_creation
     clean_password
     user.notify_new_organization_user
-    user.organization.notify_if_disk_quota_limit if user.organization
+    user.organization.notify_if_disk_quota_limit_reached if user.organization
   rescue => e
     handle_failure(e, mark_as_failure = false)
   end

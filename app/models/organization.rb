@@ -229,14 +229,14 @@ class Organization < Sequel::Model
     users.nil? ? 0 : users.count
   end
 
-  def notify_if_disk_quota_limit
-    ::Resque.enqueue(::Resque::OrganizationJobs::Mail::QuotaLimit, self.id) if disk_quota_limit
+  def notify_if_disk_quota_limit_reached
+    ::Resque.enqueue(::Resque::OrganizationJobs::Mail::QuotaLimit, self.id) if disk_quota_limit_reached?
   end
 
   private
 
   # Returns true if disk quota won't allow new signups with existing defaults
-  def disk_quota_limit
+  def disk_quota_limit_reached?
     unassigned_quota < default_quota_in_bytes
   end
 

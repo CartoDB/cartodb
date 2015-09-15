@@ -42,12 +42,12 @@ feature "Superadmin's users API" do
       response.body.should_not have_key(:salt)
 
       # Double check that the user has been created properly
-      user = User.filter(:email => @user_atts[:email]).first
+      user = User.filter(email: @user_atts[:email]).first
       user.should be_present
       user.id.should == response.body[:id]
       User.authenticate(user.username, "this_is_a_password").should == user
     end
-    user = User.where(:username => @user_atts[:username]).first
+    user = User.where(username: @user_atts[:username]).first
     user.user_notifications.length.should be 1
     user.destroy
   end
@@ -61,12 +61,12 @@ feature "Superadmin's users API" do
       response.body.should_not have_key(:salt)
 
       # Double check that the user has been created properly
-      user = User.filter(:email => @user_atts[:email]).first
+      user = User.filter(email: @user_atts[:email]).first
       user.should be_present
       user.id.should == response.body[:id]
       User.authenticate(user.username, "this_is_a_password").should == user
     end
-    user = User.where(:username => @user_atts[:username]).first
+    user = User.where(username: @user_atts[:username]).first
     user.user_notifications.length.should be 1
     user.destroy
   end
@@ -87,14 +87,14 @@ feature "Superadmin's users API" do
       response.body[:map_view_quota].should == 80
 
       # Double check that the user has been created properly
-      user = User.filter(:email => @user_atts[:email]).first
+      user = User.filter(email: @user_atts[:email]).first
       user.quota_in_bytes.should == 104857600
       user.table_quota.should == 5
       user.account_type.should == 'FREE'
       user.private_tables_enabled.should == false
       user.upgraded_at.should.to_s == t.to_s
     end
-    user = User.where(:username => @user_atts[:username]).first
+    user = User.where(username: @user_atts[:username]).first
     user.user_notifications.length.should be 1
     user.destroy
   end
@@ -125,7 +125,7 @@ feature "Superadmin's users API" do
       response.body[:notification].should == 'Test'
 
       # Double check that the user has been created properly
-      user = User.filter(:email => @user_atts[:email]).first
+      user = User.filter(email: @user_atts[:email]).first
       user.quota_in_bytes.should == 2000
       user.table_quota.should == 20
       user.account_type.should == 'Juliet'
@@ -136,7 +136,7 @@ feature "Superadmin's users API" do
       user.geocoding_block_price.should == 2
       user.notification.should == 'Test'
     end
-    User.where(:username => @user_atts[:username]).first.destroy
+    User.where(username: @user_atts[:username]).first.destroy
   end
 
 

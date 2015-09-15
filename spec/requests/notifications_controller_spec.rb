@@ -6,7 +6,7 @@ require_relative '../../app/models/carto/notification'
 feature "Notifications controller" do
   background do
     Capybara.current_driver = :rack_test
-    @new_user = create_user(:password => "this_is_a_password")
+    @new_user = create_user(password: "this_is_a_password")
   end
 
   scenario "Should be able to unsubscribe using the link" do

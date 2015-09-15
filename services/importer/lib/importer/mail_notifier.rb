@@ -37,7 +37,10 @@ module CartoDB
         first_table = @results.first
         errors = imported_tables == total_tables ? nil : @data_import.get_error_text
         if @user.is_subscribed_to?(Carto::Notification::DATA_IMPORT_FINISHED_NOTIFICATION)
-          @mail_sent = @resque.enqueue(::Resque::UserJobs::Mail::DataImportFinished, @user.id, imported_tables, total_tables, first_imported_table, first_table, errors)
+          @mail_sent = @resque.enqueue(
+            ::Resque::UserJobs::Mail::DataImportFinished,
+            @user.id, imported_tables, total_tables, first_imported_table, first_table, errors
+          )
         end
       end
 

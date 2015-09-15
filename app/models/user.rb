@@ -1655,9 +1655,12 @@ class User < Sequel::Model
       self.in_database(as: :superuser) do |database|
         old_name = "#{old_schema}.#{t[:relname]}"
         new_name = "#{new_schema}.#{t[:relname]}"
-        database.run(%Q{ SELECT cartodb._CDB_drop_triggers('#{old_name}'::REGCLASS) })
+
+        has_the_geom = Table.has_column?(self.in_database, old_schema, t[:relname], 'the_geom')
+
+        database.run(%Q{ SELECT cartodb._CDB_drop_triggers('#{old_name}'::REGCLASS) }) if has_the_geom
         database.run(%Q{ ALTER TABLE #{old_name} SET SCHEMA "#{new_schema}" })
-        database.run(%Q{ SELECT cartodb._CDB_create_triggers('#{new_schema}'::TEXT, '#{new_name}'::REGCLASS) })
+        database.run(%Q{ SELECT cartodb._CDB_create_triggers('#{new_schema}'::TEXT, '#{new_name}'::REGCLASS) }) if has_the_geom
       end
     end
   end

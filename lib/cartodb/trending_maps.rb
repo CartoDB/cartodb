@@ -26,9 +26,10 @@ module CartoDB
 
     def is_trending_map?(mapviews_number_before, total_mapviews_today)
       total_mapviews_yesterday = total_mapviews_today - mapviews_number_before
-      geometric_sequence_position_yesterday = Math.sqrt(total_mapviews_yesterday/GEOMETRIC_SEQUENCE_BASE)
-      geometric_sequence_position_today = Math.sqrt(total_mapviews_today/GEOMETRIC_SEQUENCE_BASE)
-
+      geometric_sequence_position_yesterday = Math.log2(total_mapviews_yesterday/GEOMETRIC_SEQUENCE_BASE)
+      geometric_sequence_position_today = Math.log2(total_mapviews_today/GEOMETRIC_SEQUENCE_BASE)
+      # Base case where yesterday was minor than 500 and now is 500 or more
+      return true if geometric_sequence_position_yesterday < 0 && geometric_sequence_position_today >= 0
       geometric_sequence_position_today.to_i > geometric_sequence_position_yesterday.to_i
     end
 

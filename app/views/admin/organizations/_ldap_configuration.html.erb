@@ -1,0 +1,70 @@
+<div class="FormAccount-title">
+  <p class="FormAccount-titleText">LDAP Configuration</p>
+</div>
+
+<span class="FormAccount-separator"></span>
+
+<div class="FormAccount-row">
+  <div class="FormAccount-rowLabel"><label class="FormAccount-label">Host</label></div>
+  <div class="FormAccount-rowData"><%= @ldap_configuration.host %></div>
+</div>
+
+<div class="FormAccount-row">
+  <div class="FormAccount-rowLabel"><label class="FormAccount-label">Port</label></div>
+  <div class="FormAccount-rowData"><%= @ldap_configuration.port %></div>
+</div>
+
+<div class="FormAccount-row">
+  <div class="FormAccount-rowLabel"><label class="FormAccount-label">Encryption</label></div>
+  <div class="FormAccount-rowData"><%= @ldap_configuration.encryption %></div>
+</div>
+
+<div class="FormAccount-row">
+  <div class="FormAccount-rowLabel"><label class="FormAccount-label">Certificate file (if any)</label></div>
+  <div class="FormAccount-rowData"><%= @ldap_configuration.ca_file %></div>
+</div>
+
+<div class="FormAccount-row">
+  <div class="FormAccount-rowLabel"><label class="FormAccount-label">SSL Version</label></div>
+  <div class="FormAccount-rowData"><%= @ldap_configuration.ssl_version %></div>
+</div>
+
+<div class="FormAccount-row">
+  <div class="FormAccount-rowLabel"><label class="FormAccount-label">Connection user</label></div>
+  <div class="FormAccount-rowData"><%= @ldap_configuration.connection_user %></div>
+</div>
+
+<div class="FormAccount-row">
+  <div class="FormAccount-rowLabel"><label class="FormAccount-label">Connection password</label></div>
+  <div class="FormAccount-rowData"><%= @ldap_configuration.connection_password %></div>
+</div>
+
+<div class="FormAccount-row">
+  <div class="FormAccount-rowLabel"><label class="FormAccount-label">User Id. field</label></div>
+  <div class="FormAccount-rowData"><%= @ldap_configuration.user_id_field %></div>
+</div>
+
+<div class="FormAccount-row">
+  <div class="FormAccount-rowLabel"><label class="FormAccount-label">Username field</label></div>
+  <div class="FormAccount-rowData"><%= @ldap_configuration.username_field %></div>
+</div>
+
+<div class="FormAccount-row">
+  <div class="FormAccount-rowLabel"><label class="FormAccount-label">User email field</label></div>
+  <div class="FormAccount-rowData"><%= @ldap_configuration.email_field %></div>
+</div>
+
+<div class="FormAccount-row">
+  <div class="FormAccount-rowLabel"><label class="FormAccount-label">Domain bases</label></div>
+  <div class="FormAccount-rowData"><%= @ldap_configuration.domain_bases %></div>
+</div>
+
+<div class="FormAccount-row">
+  <div class="FormAccount-rowLabel"><label class="FormAccount-label">User object class</label></div>
+  <div class="FormAccount-rowData"><%= @ldap_configuration.user_object_class %></div>
+</div>
+
+<div class="FormAccount-row">
+  <div class="FormAccount-rowLabel"><label class="FormAccount-label">Group object class</label></div>
+  <div class="FormAccount-rowData"><%= @ldap_configuration.group_object_class %></div>
+</div>

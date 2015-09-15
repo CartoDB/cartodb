@@ -24,6 +24,7 @@ WORKING_SPECS_1 = \
 	spec/models/user_table_spec.rb \
   spec/models/layer_spec.rb \
   spec/models/layer/presenter_spec.rb \
+	spec/requests/sessions_spec.rb \
   spec/requests/api/json/layer_presenter_spec.rb \
   spec/requests/carto/api/layer_presenter_spec.rb \
 	spec/requests/carto/api/data_import_presenter_spec.rb \
@@ -109,6 +110,7 @@ WORKING_SPECS_4 = \
 WORKING_SPECS_5 = \
   spec/rspec_configuration.rb \
   spec/requests/api/assets_spec.rb \
+  spec/requests/carto/api/assets_controller_spec.rb \
   spec/requests/api/user_layers_spec.rb \
   spec/requests/api/json/layers_controller_spec.rb \
   spec/requests/carto/api/layers_controller_spec.rb \

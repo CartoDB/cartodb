@@ -14,11 +14,10 @@
 }
 
 .FeedItem {
-  position: relative;
   @include display-flex();
   @include justify-content(flex-start, start);
   @include align-items(flex-start);
-  /*@include flex-wrap(wrap);*/
+  position: relative;
   margin: 0 0 20px;
 }
 .FeedItem:last-child {

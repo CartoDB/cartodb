@@ -16,9 +16,6 @@ $heightTall: 450px;
   height: $height / 2;
   background: #333 image-url('layout/noise.png') repeat 0 0;;
 }
-.FavMap.FavMap--tall {
-  height: $heightTall / 2;
-}
 .FavMap:before {
   content: '';
   position: absolute;
@@ -44,15 +41,27 @@ $heightTall: 450px;
 .FavMap.is-loading .FavMap-spinner {
   display: block;
 }
-
+.FavMap.FavMap--tall {
+  height: $heightTall / 2;
+}
+.FavMap.FavMap--tall:before {
+  @include background-gradient(rgba(black, 0), rgba(black, 0.5));
+  height: 150px;
+  pointer-events: none;
+}
+.FavMap.FavMap--tall:not(.is-pre-loading):not(.is-loading):before {
+  height: 150px;
+}
 .FavMapTitle {
   position: absolute;
-  bottom: 54px;
+  bottom: 0;
+  bottom: 45px;
   width: 100%;
-  z-index: 100;
   @include opacity(1);
+  line-height: normal;
   transition: opacity 150ms ease-in-out;
   pointer-events: none;
+  z-index: 10000;
 }
 .FavMapTitle.is-hidden {
   opacity: 0;
@@ -65,13 +74,13 @@ $heightTall: 450px;
 .FavMapTitle-sectionTitle,
 .FavMapTitle-mapTitle {
   color: #fff;
+  text-shadow: 1px 1px 1px rgba(0,0,0,.5);
 }
 .FavMapTitle-sectionTitle {
-  margin: 0 0 25px 0;
+  margin: 0 0 15px 0;
   font-size: 16px;
   font-weight: lighter;
   text-transform: uppercase;
-  opacity: .5;
 }
 .FavMapTitle-mapTitle {
   font-size: 48px;

@@ -20,6 +20,13 @@
   width: 100%;
   z-index: 100;
 }
+.Filters.Filters-explore .Filters-type {
+  font-size: 14px;
+  color: $cTypography-linkSecondary;
+}
+.Filters.Filters-explore .Filters-dropdown {
+  text-align: left;
+}
 .Filters.Filters-explore .Filters-orderItem {
   margin-right: 14px;
 }

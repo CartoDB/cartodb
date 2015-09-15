@@ -19,104 +19,87 @@
 }
 .Explore-feed {
   @include flex(1);
-  margin: 50px 0 30px;
+  margin: 50px 0 0;
 }
 .Explore-content {
   padding: 15px 0;
   margin: 0 0 30px;
 }
 
-@media (min-width: $sMedia-tablet) {
-  .Explore-content .FeedItem .MapCard,
-  .Explore-content .FeedItem .DatasetCard {
+@media only screen and (min-width: 900px)  {
+  .Explore-content.Feed-content .FeedItem .MapCard,
+  .Explore-content.Feed-content .FeedItem .DatasetCard {
     @include flex(0 0 860px);
     margin-right: 0;
   }
 
-  .Explore-content .MapCard-preview.is-big {
+  .Explore-content.Feed-content .MapCard-preview.is-big {
     display: block !Important;
   }
-  .Explore-content .MapCard-preview.is-medium,
-  .Explore-content .MapCard-preview.is-small {
+  .Explore-content.Feed-content .MapCard-preview.is-medium,
+  .Explore-content.Feed-content .MapCard-preview.is-small {
     display: none !Important;
   }
 }
 
-@media only screen and (min-width: 321px) and (max-width: 965px)  {
+@media only screen and (min-width: 545px) and (max-width: 899px)  {
   .Explore-inner {
     width: 100%;
   }
-  .Explore-content .FeedItem {
+  .Explore-content.Feed-content .FeedItem {
     @include justify-content(space-around, stretch);
     @include align-items(stretch, stretch);
   }
 
-  .Explore-content .FeedItem .MapCard,
-  .Explore-content .FeedItem .DatasetCard {
-    @include flex(0 0 488px);
+  .Explore-content.Feed-content .FeedItem .MapCard,
+  .Explore-content.Feed-content .FeedItem .DatasetCard {
+    @include flex(0 0 540px);
     margin-right: 0;
   }
 
-  .Explore-content {
+  .Explore-content.Feed-content {
     @include display-flex();
     @include justify-content(center);
     @include align-items(flex-start);
     @include flex-wrap(wrap);
     @include flex-direction(row);
   }
-  .Explore-content .MapCard-preview.is-big,
-  .Explore-content .MapCard-preview.is-small {
+  .Explore-content.Feed-content .MapCard-preview.is-big,
+  .Explore-content.Feed-content .MapCard-preview.is-small {
     display: none !Important;
   }
-  .Explore-content .MapCard-preview.is-medium {
+  .Explore-content.Feed-content .MapCard-preview.is-medium {
     display: block !Important;
   }
 }
 
-@media only screen and (max-width: 520px) {
+
+@media only screen and (max-width: 544px) {
   .Explore-inner {
     width: 100%;
   }
-  .Explore-content .FeedItem {
+  .Explore-content.Feed-content .FeedItem {
     @include justify-content(space-around, stretch);
     @include align-items(stretch, stretch);
   }
-  .Explore-content .FeedItem .MapCard,
-  .Explore-content .FeedItem .DatasetCard {
+  .Explore-content.Feed-content .FeedItem .MapCard,
+  .Explore-content.Feed-content .FeedItem .DatasetCard {
     @include flex(0 0 288px);
     margin-right: 0;
   }
-  .Explore-content {
+  .Explore-content.Feed-content {
     @include display-flex();
     @include justify-content(center);
     @include align-items(flex-start);
     @include flex-wrap(wrap);
     @include flex-direction(row);
   }
-  .Explore-content .MapCard-preview.is-big,
-  .Explore-content .MapCard-preview.is-medium {
+  .Explore-content.Feed-content .MapCard-preview.is-big,
+  .Explore-content.Feed-content .MapCard-preview.is-medium {
     display: none !Important;
   }
-  .Explore-content .MapCard-preview.is-small {
+  .Explore-content.Feed-content .MapCard-preview.is-small {
     display: block !Important;
-  }
-}
-
-@media only screen and (max-width: 520px) {
-  .Explore-content .MapCard-preview.is-big,
-  .Explore-content .MapCard-preview.is-medium {
-    display: none !Important;
-  }
-  .Explore-content .MapCard-preview.is-small {
-    display: block !Important;
-  }
-}
-
-@media only screen
-and (min-device-width: 320px)
-and (max-device-width: 480px)
-and (-webkit-min-device-pixel-ratio: 2) {
-  .Explore-content {
   }
 }
 

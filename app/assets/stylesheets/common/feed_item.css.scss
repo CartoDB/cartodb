@@ -18,42 +18,34 @@
   @include display-flex();
   @include justify-content(flex-start, start);
   @include align-items(flex-start);
-  @include flex-wrap(wrap);
-  margin: 0 0 20px 0;
+  /*@include flex-wrap(wrap);*/
+  margin: 0 0 20px;
 }
-.FeedItem:last-child { margin: 0 }
-
+.FeedItem:last-child {
+  margin: 0;
+}
 .FeedItem-avatar {
+  @include flex(1);
   position: absolute;
   width: 60px;
   height: 60px;
 
-  @include flex(1);
   z-index: 10;
 
   &:after {
-    content: '';
-    width: 60px;
-    height: 60px;
-    z-index: 1000;
     position: absolute;
     top: 0;
-    box-shadow: inset 0 0 1px rgba(0,0,0,.5);
+    left: 0;
+    width: 60px;
+    height: 60px;
     border-radius: 6px;
+    box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.5);
+    content: '';
+    z-index: 1000;
   }
-}
-.FeedItem .MapCard,
-.FeedItem .DatasetCard {
-  margin-right: 0;
-  @include flex(0 0 540px);
 }
 
-@media (min-width: $sMedia-tablet) {
-  .Feed-content .FeedItem {
-    margin-bottom: 40px;
-  }
-}
-@media only screen and (max-width: 320px) {
+@media only screen and (max-width: 544px) {
   .Feed-content .FeedItem {
     margin-bottom: 40px;
   }
@@ -65,9 +57,10 @@
     }
   }
 }
-@media only screen and (min-width: 321px) and (max-width: 965px)  {
+@media only screen and (min-width: 545px) and (max-width: 899px)  {
   .Feed-content .FeedItem {
     margin-bottom: 40px;
+    @include justify-content(center);
   }
   .FeedItem .FeedItem-avatar {
     margin: 20px;

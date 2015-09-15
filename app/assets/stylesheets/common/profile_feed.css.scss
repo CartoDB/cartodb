@@ -22,8 +22,10 @@
   font-size: $sFontSize-mega;
   font-weight: $sFontWeight-normal;
 }
-.PublicUserProfile-description {
+.PublicUserProfile-bio {
   width: 290px;
+}
+.PublicUserProfile-description {
   margin: 0 0 30px;
   color: $cTypography-linkSecondaryHover;
   font-size: 20px;
@@ -45,7 +47,78 @@
   font-size: 17px;
 }
 
-@media (max-width: 980px) {
+@media only screen and (min-width: 900px)  {
+  .PublicUserProfile-details {
+    margin: 15px 0 0 0;
+  }
+  .Profile-content.Feed-content .FeedItem .MapCard,
+  .Profile-content.Feed-content .FeedItem .DatasetCard {
+    @include flex(0 0 488px);
+    margin-right: 0;
+  }
+
+  .Profile-content.Feed-content {
+    margin: 0 0 30px;
+  }
+  .Profile-content.Feed-content .FeedItem .MapCard-preview.is-big {
+    display: block !Important;
+  }
+  .Profile-content.Feed-content .FeedItem .MapCard-preview.is-small {
+    display: none !Important;
+  }
+}
+
+@media only screen and (min-width: 545px) and (max-width: 899px)  {
+  .PublicUserProfile {
+    display: block;
+  }
+  .PublicUserProfile-description {
+    width: 250px;
+  }
+  .PublicUserProfile-profile {
+    @include display-flex();
+    @include justify-content(space-between);
+    @include align-items(flex-start);
+    @include flex-wrap(wrap);
+    width: 495px;
+    margin: 0 auto;
+  }
+
+  .PublicUserProfile-details {
+    margin: 60px 0 0;
+  }
+  .Profile-content.Feed-content .FeedItem {
+    @include justify-content(upaue-around, stretch);
+    @include align-items(stretch, stretch);
+  }
+
+  .Profile-content.Feed-content .FeedItem .MapCard,
+  .Profile-content.Feed-content .FeedItem .DatasetCard {
+    @include flex(0 0 488px);
+    margin-right: 0;
+  }
+
+  .Profile-content.Feed-content {
+    @include display-flex();
+    @include justify-content(center);
+    @include align-items(center);
+    @include flex-wrap(wrap);
+    @include flex-direction(row);
+    margin: 0 0 30px;
+  }
+  .Profile-content.Feed-content .FeedItem .MapCard-preview.is-big {
+    display: block !Important;
+  }
+  .Profile-content.Feed-content .FeedItem .MapCard-preview.is-small {
+    display: none !Important;
+  }
+
+  .Profile-content.Feed-content .FeedItem .FeedItem-avatar {
+    display: none;
+  }
+}
+
+@media only screen and (max-width: 544px) {
   .PublicUserProfile {
     display: block;
   }
@@ -53,122 +126,36 @@
   .PublicUserProfile-profile {
     margin-top: 0;
     @include display-flex();
-    @include justify-content(center);
+    @include justify-content(space-between);
     @include align-items(flex-start);
     @include flex-wrap(wrap);
+    width: 288px;
+    margin: auto;
   }
-  .PublicUserProfile-description {
-    margin: 0;
-  }
-  .PublicUserProfile-bio {
-  }
-  .PublicUserProfile-details {
-    margin: 55px 0 0 0;
-  }
-}
-@media (max-width: 980px) {
-  .PublicUserProfile {
-    /*background: red;*/
-  }
-}
-@media only screen and (max-width: 320px) {
-  .PublicUserProfile {
-    /*background: yellow;*/
-  }
-}
-@media only screen and (min-width: 321px) and (max-width: 760px) {
-  .PublicUserProfile {
-    /*background: orange;*/
-  }
-}
-@media only screen
-and (min-device-width: 320px)
-and (max-device-width: 480px)
-and (-webkit-min-device-pixel-ratio: 2) {
-  .PublicUserProfile {
-    /*background: blue;*/
-  }
-}
-
-@media (min-width: $sMedia-tablet) {
-  .PublicUserProfile-details {
-    margin: 15px 0 0 0;
-  }
-  .Feed-content .FeedItem .MapCard,
-  .Feed-content .FeedItem .DatasetCard {
-    /*@include flex(0 0 860px);*/
-    margin-right: 0;
-  }
-
-  .Feed-content .MapCard-preview.is-big {
-    display: block !Important;
-  }
-  .Feed-content .MapCard-preview.is-small {
-    display: none !Important;
-  }
-}
-
-@media only screen and (min-width: 321px) and (max-width: 980px)  {
-  .PublicUserProfile-details {
-    margin: 15px 0 0 0;
-  }
-  .Feed-content .FeedItem {
+  .Profile-content.Feed-content .FeedItem {
     @include justify-content(space-around, stretch);
     @include align-items(stretch, stretch);
   }
-
-  .Feed-content .FeedItem .MapCard,
-  .Feed-content .FeedItem .DatasetCard {
-    /*@include flex(0 0 488px);*/
-    margin-right: 0;
-  }
-
-  .Feed-content {
-    margin: 0 0 30px 0;
-    @include display-flex();
-    @include justify-content(center);
-    @include align-items(flex-start);
-    @include flex-wrap(wrap);
-    @include flex-direction(row);
-  }
-  .Feed-content .MapCard-preview.is-big {
-    display: block !Important;
-  }
-  .Feed-content .MapCard-preview.is-small {
-    display: none !Important;
-  }
-}
-
-@media only screen and (max-width: 520px) {
-  .Feed-content .FeedItem {
-    @include justify-content(space-around, stretch);
-    @include align-items(stretch, stretch);
-  }
-  .Feed-content .FeedItem .MapCard,
-  .Feed-content .FeedItem .DatasetCard {
+  .Profile-content.Feed-content .FeedItem .MapCard,
+  .Profile-content.Feed-content .FeedItem .DatasetCard {
     @include flex(0 0 288px);
     margin-right: 0;
   }
-  .Feed-content {
+  .Profile-content.Feed-content {
     @include display-flex();
     @include justify-content(center);
     @include align-items(flex-start);
     @include flex-wrap(wrap);
     @include flex-direction(row);
+    margin: 0 0 30px;
   }
-  .Feed-content .MapCard-preview.is-big {
+  .Profile-content.Feed-content .FeedItem .MapCard-preview.is-big {
     display: none !Important;
   }
-  .Feed-content .MapCard-preview.is-small {
+  .Profile-content.Feed-content .FeedItem .MapCard-preview.is-small {
     display: block !Important;
   }
-}
-
-@media only screen
-and (min-device-width: 320px)
-and (max-device-width: 480px)
-and (-webkit-min-device-pixel-ratio: 2) {
-  .Feed-content {
+  .Profile-content.Feed-content .FeedItem .FeedItem-avatar {
+    display: none;
   }
 }
-

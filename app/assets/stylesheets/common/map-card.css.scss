@@ -77,9 +77,6 @@ $sEditButtonSize: 50px;
   padding-top: 0;
   border-top: none;
 }
-.MapCard.MapCard--squared .MapCard-contentFooter > *:not(:last-child) {
-  margin-right: 14px;
-}
 
 .MapCard-contentFooterDetails--left {
   @include display-flex();

@@ -86,6 +86,7 @@ class UserMailer < ActionMailer::Base
     @greetings = ["congrats", "congratulations", "cool", "awesome", "hooray", "nice", "wow", "rad", "bravo", "yay", "boom"]
     @link = "#{@user.public_url}#{CartoDB.path(self, 'public_visualizations_show', { id: canonical_visualization.id })}"
     @viewer_datasets_link = "#{viewer_user.public_url}#{CartoDB.path(self, 'public_datasets_home')}"
+    @unsubscribe_link = generate_unsubscribe_link(user, Carto::Notification::TABLE_LIKE_NOTIFICATION)
     mail :to => @user.email,
          :subject => @subject
   end

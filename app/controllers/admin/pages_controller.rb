@@ -126,6 +126,12 @@ class Admin::PagesController < ApplicationController
       @tables_num         = @viewed_user.public_table_count
       @maps_count         = @viewed_user.public_visualization_count 
 
+      if eligible_for_redirect?(@viewed_user)
+        # redirect username.host.ext => org-name.host.ext/u/username
+        redirect_to CartoDB.base_url(@viewed_user.organization.name, @viewed_user.username) <<
+                            CartoDB.path(self, 'public_user_feed_home') and return
+      end
+
       respond_to do |format|
         format.html { render 'user_feed', layout: 'public_user_feed' }
       end

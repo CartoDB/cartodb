@@ -32,8 +32,7 @@ module Carto
       end
 
       def configuration_present?
-        #Carto::Ldap::Configuration.first != nil
-        return false
+        Carto::Ldap::Configuration.first != nil
       end
 
       def last_authentication_result

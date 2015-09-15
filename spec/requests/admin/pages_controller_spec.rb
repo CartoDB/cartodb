@@ -75,7 +75,7 @@ describe Admin::PagesController do
       last_response.status.should == 404
     end
 
-    it 'redirects to public maps home if current user and current viewer are different' do
+    it 'redirects to user feed home if current user and current viewer are different' do
       anyuser = prepare_user('anyuser')
       anyviewer = prepare_user('anyviewer')
       login_as(anyviewer, scope: anyviewer.username)
@@ -91,7 +91,7 @@ describe Admin::PagesController do
       uri.path.should == '/me'
     end
 
-    it 'redirects to public maps home if not logged in' do
+    it 'redirects to user feed if not logged in' do
       prepare_user('anyuser')
       host! 'anyuser.localhost.lan'
 
@@ -137,6 +137,41 @@ describe Admin::PagesController do
 
   end
 
+  describe '#explore' do
+    it 'should go to explore page' do
+      host! 'localhost.lan'
+
+      get '/explore', {}, JSON_HEADER
+
+      last_response.status.should == 200
+      uri = URI.parse(last_request.url)
+      uri.host.should == 'localhost.lan'
+      uri.path.should == '/explore'
+    end
+
+    it 'should go to explore search page' do
+      host! 'localhost.lan'
+
+      get '/search', {}, JSON_HEADER
+
+      last_response.status.should == 200
+      uri = URI.parse(last_request.url)
+      uri.host.should == 'localhost.lan'
+      uri.path.should == '/search'
+    end
+
+    it 'should go to explore search page with a query variable' do
+      host! 'localhost.lan'
+
+      get '/search/lala', {}, JSON_HEADER
+
+      last_response.status.should == 200
+      uri = URI.parse(last_request.url)
+      uri.host.should == 'localhost.lan'
+      uri.path.should == '/search/lala'
+    end
+  end
+
   def prepare_user(user_name, org_user=false, belongs_to_org=false)
     user = create_user(
       username: user_name,
@@ -150,6 +185,7 @@ describe Admin::PagesController do
     if org_user
       org = mock
       Organization.stubs(:where).with(name: @org_name).returns([org])
+      Organization.stubs(:where).with(name: @org_user_name).returns([org])
       User.any_instance.stubs(:belongs_to_organization?).with(org).returns(belongs_to_org)
     end
 

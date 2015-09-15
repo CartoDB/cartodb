@@ -14,7 +14,7 @@ class ExploreController < ApplicationController
   end
 
   def search
-    query_param = params[:q]
+    @query_param = params[:q]
     respond_to do |format|
       format.html { render 'search' }
     end

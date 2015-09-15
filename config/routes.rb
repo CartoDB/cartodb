@@ -28,7 +28,7 @@ CartoDB::Application.routes.draw do
   # Explore
   get   '/explore'         => 'explore#index',     as: :explore_index
   get   '/search'          => 'explore#search',    as: :explore_search
-  get   '/search/:q'       => 'explore#search',    as: :explore_search
+  get   '/search/:q'       => 'explore#search',    as: :explore_search_query
 
   # OAuth
   match '(/user/:user_domain)(/u/:user_domain)/oauth/authorize'      => 'oauth#authorize',     as: :authorize
@@ -238,10 +238,10 @@ CartoDB::Application.routes.draw do
 
     # Public dashboard
     # root also goes to 'pages#public', as: public_visualizations_home
-    get '(/user/:user_domain)(/u/:user_domain)/me'                       => 'pages#user_feed',                as: :public_user_feed_home
-    get '(/user/:user_domain)(/u/:user_domain)/page/:page'               => 'pages#public',                   as: :public_page
-    get '(/user/:user_domain)(/u/:user_domain)/tag/:tag'                 => 'pages#public',                   as: :public_tag
-    get '(/user/:user_domain)(/u/:user_domain)/tag/:tag/:page'           => 'pages#public',                   as: :public_tag_page
+    get '(/user/:user_domain)(/u/:user_domain)/me'                       => 'pages#user_feed',  as: :public_user_feed_home
+    get '(/user/:user_domain)(/u/:user_domain)/page/:page'               => 'pages#public',     as: :public_page
+    get '(/user/:user_domain)(/u/:user_domain)/tag/:tag'                 => 'pages#public',     as: :public_tag
+    get '(/user/:user_domain)(/u/:user_domain)/tag/:tag/:page'           => 'pages#public',     as: :public_tag_page
     # Public maps
     get '(/user/:user_domain)(/u/:user_domain)/maps'                     => 'pages#maps', as: :public_maps_home
     # Public dataset

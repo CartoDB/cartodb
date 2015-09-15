@@ -30,6 +30,7 @@ class Admin::PagesController < ApplicationController
               :render_not_found
 
   before_filter :login_required, :except => [:public, :datasets, :maps, :sitemap, :index, :user_feed]
+  before_filter :get_viewed_user
   before_filter :ensure_organization_correct
   skip_before_filter :browser_is_html5_compliant?, only: [:public, :datasets, :maps, :user_feed]
   skip_before_filter :ensure_user_organization_valid, only: [:public]
@@ -45,22 +46,20 @@ class Admin::PagesController < ApplicationController
   end
 
   def sitemap
-    username = CartoDB.extract_subdomain(request)
-    viewed_user = User.where(username: username.strip.downcase).first
-
-    if viewed_user.nil?
+    if @viewed_user.nil?
+      username = CartoDB.extract_subdomain(request)
       org = get_organization_if_exists(username)
       return if org.nil?
       visualizations = (org.public_visualizations.to_a || [])
       visualizations += (org.public_datasets.to_a || [])
     else
       # Redirect to org url if has only user
-      if eligible_for_redirect?(viewed_user)
-        redirect_to CartoDB.base_url(viewed_user.organization.name) << CartoDB.path(self, 'public_sitemap') and return
+      if eligible_for_redirect?(@viewed_user)
+        redirect_to CartoDB.base_url(@viewed_user.organization.name) << CartoDB.path(self, 'public_sitemap') and return
       end
 
       visualizations = Visualization::Collection.new.fetch({
-        user_id:  viewed_user.id,
+        user_id:  @viewed_user.id,
         privacy:  Visualization::Member::PRIVACY_PUBLIC,
         order:    'updated_at',
         o:        {updated_at: :desc},
@@ -109,11 +108,11 @@ class Admin::PagesController < ApplicationController
   end
 
   def user_feed
-    username = CartoDB.extract_subdomain(request).strip.downcase
-    @viewed_user = User.where(username: username).first
-
+    # The template of this endpoint get the user_feed data calling
+    # to another endpoint in the front-end part
     if @viewed_user.nil?
-      org = Organization.where(name: username).first
+      username = CartoDB.extract_subdomain(request).strip.downcase
+      org = get_organization_if_exists(username)
       unless org.nil?
         redirect_to CartoDB.url(self, 'public_maps_home') and return
       end
@@ -434,5 +433,9 @@ class Admin::PagesController < ApplicationController
     }
   end
 
+  def get_viewed_user
+    username = CartoDB.extract_subdomain(request)
+    @viewed_user = User.where(username: username).first
+  end
 
 end

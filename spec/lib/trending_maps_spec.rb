@@ -56,6 +56,12 @@ describe CartoDB::TrendingMaps do
       visualization_6 = FactoryGirl.build(:derived_visualization, :user_id => user.id)
       add_total_data(visualization_6.id, user.username, 7900)
       add_date_data(visualization_6.id, user.username, date_key, 15000)
+      visualization_7 = FactoryGirl.build(:derived_visualization, :user_id => user.id)
+      add_total_data(visualization_7.id, user.username, 0)
+      add_date_data(visualization_7.id, user.username, date_key, 0)
+      visualization_8 = FactoryGirl.build(:derived_visualization, :user_id => user.id)
+      add_total_data(visualization_8.id, user.username, 10)
+      add_date_data(visualization_8.id, user.username, date_key, 1)
 
       trending_maps = @trending_maps.get_trending_maps
       trending_maps.length.should eq 4

@@ -103,7 +103,7 @@ linters:
       margin: ['em', 'px', '%']
   QualifyingElement:
     enabled: true
-    allow_element_with_attribute: false
+    allow_element_with_attribute: true
     allow_element_with_class: false
     allow_element_with_id: false
     severity: warning
@@ -115,7 +115,7 @@ linters:
     enabled: true
     # Valid cases
     #  - 0..100%
-    #  - i | em | strong | div | span | ...
+    #  - i | em | strong | div | span | ...
     #  - Logo
     #  - LogoWadus
     #  - Logo--cartofante
@@ -175,10 +175,7 @@ linters:
     enabled: false
     properties: []
   VendorPrefixes:
-    enabled: true
-    identifier_list: bourbon
-    include: []
-    exclude: []
+    enabled: false
   ZeroUnit:
     enabled: true
     severity: warning

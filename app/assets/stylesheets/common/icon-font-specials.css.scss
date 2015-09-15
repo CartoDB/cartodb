@@ -10,4 +10,6 @@
   @include display-flex();
   @include align-items(center, center);
 }
-
+.iconFont.iconFont--small:before {
+  font-size: 9px;
+}

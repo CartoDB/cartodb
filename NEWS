@@ -1,5 +1,12 @@
-3.X.X ()
+3.15.X (XX//YY//ZZZZ)
+* 
 
+3.15.5 (15//09//2015)
+* Fixed infowindows in maps with fixed position [#639](https://github.com/CartoDB/cartodb.js/issues/639)
+* Automatically select "torque" layers when no index is specified in cartodb.createLayer [#678](https://github.com/CartoDB/cartodb.js/issues/678)
+
+3.15.4 (11//09//2015)
+* Add checker to fullscreen button when it is rendered in an iframe [#674](https://github.com/CartoDB/cartodb.js/pull/674)
 
 3.15.3 (08//09//2015)
 * Display custom attribution of layers (#5216).

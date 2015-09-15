@@ -18,10 +18,14 @@ module CartoDB
         yesterday_mapviews = stats_manager.get_api_calls_from_redis(username, {from: date, to: date, stat_tag: visualization_id})
         total_mapviews = stats_manager.get_total_api_calls_from_redis(username, visualization_id)
         if is_trending_map?(yesterday_mapviews[date_key], total_mapviews)
-          trending_maps[visualization_id] = total_mapviews 
+          trending_maps[visualization_id] = { user: username, mapviews: total_mapviews }
         end
       end
       trending_maps
+    end
+
+    def notify_trending_map(visualization_id, mapviews, preview_image = nil)
+      ::Resque.enqueue(::Resque::UserJobs::Mail::TrendingMap, visualization_id, mapviews, preview_image)
     end
 
     def is_trending_map?(mapviews_number_before, total_mapviews_today)

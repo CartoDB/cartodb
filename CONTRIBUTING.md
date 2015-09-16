@@ -39,11 +39,7 @@ The frontend is really standalone code, but is integrated with/served by the Rai
 
 ## CSS
 
-We use [SASS](http://sass-lang.com/),
- with [`.scss`](http://www.thesassway.com/editorial/sass-vs-scss-which-syntax-is-better) format.
-
-Source files are located at `app/assets/stylesheets`. We used to use Rails sprockets pipeline,
-but nowadays migrated to [Grunt](#grunt) (see that section for details).
+We use [SASS](http://sass-lang.com/), with [.scss](http://www.thesassway.com/editorial/sass-vs-scss-which-syntax-is-better) format, which are located at ```app/assets/stylesheets```. [Grunt](http://gruntjs.com/) is used to compile the files into ```.css``` files, instead of the default Sprockets pipeline that Rails provide.
 
 See [doc/frontend/README.md](doc/frontend/README.md) for more in-depth documentation.
 

@@ -1,6 +1,6 @@
-@import "../variables/mixins";
-@import "../variables/colors";
-@import "../variables/sizes";
+@import '../variables/mixins';
+@import '../variables/colors';
+@import '../variables/sizes';
 
 // Favourite map displayed in subheader on user's profile page.
 // Initially expected to have the .is-pre-loading, transition to .is-loading (thus remove the .is-pre-loading), and
@@ -14,28 +14,28 @@ $heightTall: 450px;
 .FavMap {
   position: relative;
   height: $height / 2;
-  background: #333 image-url('layout/noise.png') repeat 0 0;;
+  background: #333 image-url('layout/noise.png') repeat 0 0;
 }
 .FavMap:before {
-  content: '';
+  @include background-gradient(rgba(#000000, 0), rgba(#000000, 0.1));
+  @include transition(all, 100ms, ease-in-out);
   position: absolute;
-  z-index: 9995;
   bottom: 0;
-  left:0;
+  left: 0;
   width: 100%;
   height: 0;
-  @include background-gradient(rgba(black, 0), rgba(black, 0.1));
-  @include transition(all, 100ms, ease-in-out);
+  content: '';
+  z-index: 9995;
 }
 .FavMap:not(.is-pre-loading):not(.is-loading):before {
   height: 20px;
 }
 .FavMap-spinner {
+  display: none;
   position: absolute;
   top: ($height / 4) - $sSpinner-default;
   left: 50%;
   margin-left: -#{$sSpinner-default / 2};
-  display: none;
 }
 .FavMap.is-pre-loading .FavMap-spinner,
 .FavMap.is-loading .FavMap-spinner {
@@ -45,7 +45,7 @@ $heightTall: 450px;
   height: $heightTall / 2;
 }
 .FavMap.FavMap--tall:before {
-  @include background-gradient(rgba(black, 0), rgba(black, 0.5));
+  @include background-gradient(rgba(#000000, 0), rgba(#000000, 0.5));
   height: 150px;
   pointer-events: none;
 }
@@ -53,14 +53,13 @@ $heightTall: 450px;
   height: 150px;
 }
 .FavMapTitle {
+  @include opacity(1);
   position: absolute;
-  bottom: 0;
   bottom: 45px;
   width: 100%;
-  @include opacity(1);
-  line-height: normal;
   transition: opacity 150ms ease-in-out;
   pointer-events: none;
+  line-height: normal;
   z-index: 10000;
 }
 .FavMapTitle.is-hidden {
@@ -73,11 +72,11 @@ $heightTall: 450px;
 }
 .FavMapTitle-sectionTitle,
 .FavMapTitle-mapTitle {
-  color: #fff;
-  text-shadow: 1px 1px 1px rgba(0,0,0,.5);
+  color: #FFFFFF;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
 }
 .FavMapTitle-sectionTitle {
-  margin: 0 0 15px 0;
+  margin: 0 0 10px;
   font-size: 16px;
   font-weight: lighter;
   text-transform: uppercase;
@@ -88,22 +87,30 @@ $heightTall: 450px;
 }
 
 @media (min-width: $sMedia-tablet) {
-  .FavMap { height: $height; }
+  .FavMap {
+    height: $height;
+  }
   .FavMap-spinner {
     top: ($height / 2) - $sSpinner-default;
   }
-  .FavMap.FavMap--tall { height: $heightTall; }
+  .FavMap.FavMap--tall {
+    height: $heightTall;
+  }
   .FavMap--tall .FavMap-spinner {
     top: ($heightTall / 2) - $sSpinner-default;
   }
 }
 @media only screen and (max-width: 320px) {
   $height: 280px;
-  .FavMap { height: $height; }
+  .FavMap {
+    height: $height;
+  }
   .FavMap-spinner {
     top: ($height / 2) - $sSpinner-default;
   }
-  .FavMap.FavMap--tall { height: $heightTall; }
+  .FavMap.FavMap--tall {
+    height: $heightTall;
+  }
   .FavMap--tall .FavMap-spinner {
     top: ($heightTall / 2) - $sSpinner-default;
   }
@@ -116,11 +123,15 @@ $heightTall: 450px;
 }
 @media only screen and (min-width: 321px) and (max-width: 760px)  {
   $height: 320px;
-  .FavMap { height: $height; }
+  .FavMap {
+    height: $height;
+  }
   .FavMap-spinner {
     top: ($height / 2) - $sSpinner-default;
   }
-  .FavMap.FavMap--tall { height: $height; }
+  .FavMap.FavMap--tall {
+    height: $height;
+  }
   .FavMap--tall .FavMap-spinner {
     top: ($height / 2) - $sSpinner-default;
   }
@@ -130,7 +141,9 @@ and (min-device-width: 320px)
 and (max-device-width: 480px)
 and (-webkit-min-device-pixel-ratio: 2) {
   $height: 300px;
-  .FavMap { height: $height; }
+  .FavMap {
+    height: $height;
+  }
   .FavMap-spinner {
     top: ($height / 2) - $sSpinner-default;
   }

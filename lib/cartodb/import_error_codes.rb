@@ -226,6 +226,11 @@ module CartoDB
       what_about: "The columns you have chosen don't have the same column type in both tables. Please change the types so the columns will have the same type and try again.",
       source: ERROR_SOURCE_USER
     },
+    8005 => {
+      title: "Max layers per map reached",
+      what_about: "You can't add more layers to your map. Please upgrade your account.",
+      source: ERROR_SOURCE_USER
+    },
     6666 => {
       title: 'Dataset too big',
       what_about: "The dataset you tried to import is too big and cannot be processed. If the dataset allows it, you can try splitting it into smaller files and then append them once imported, or contact our support team at <a href='mailto:support@cartodb.com?subject=Dataset%20too%20big%20import%20error'>support@cartodb.com</a>.",

@@ -28,7 +28,10 @@
   text-align: left;
 }
 .Filters.Filters-explore .Filters-orderItem {
-  margin-right: 14px;
+  margin-right: 20px;
+}
+.Filters.Filters-explore .Filters-orderItem:last-child {
+  margin-right: 0;
 }
 .Filters.Filters-explore .Filters-orderLink {
   font-size: 15px;
@@ -40,7 +43,7 @@
 .Filters-label {
   color: $cTypography-linkSecondary;
   font-size: 14px;
-  margin-right: 15px;
+  margin-right: 20px;
 }
 
 // Positionate relative to the content

@@ -137,7 +137,7 @@ Before opening a pull request (or submitting a contribution) you will need to si
 After that, there are several rules you should follow when a new pull request is created:
 
 - Title has to be descriptive. If you are fixing a bug don't use the ticket title or number.
-- Explain what you have achieved in the description and choose a **REVIEWER** of your code. If you have doubts, just ask for one.
+- Explain what you have achieved in the description and choose a reviewer (it has to be a CartoDB team member) of your code. If you have doubts, just ask for one.
 - If you change something related with the UI of the application:
   - Add an image or an animation ([LiceCap](https://github.com/lepht/licecap) is your friend) about the feature you have just implemented. Or show the change against what it is already done.
   - Change UI assets version, present in [package.json](package.json) file. Minor if it is a bugfixing or a small feature, major when it is a big change.

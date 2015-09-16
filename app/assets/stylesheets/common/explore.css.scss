@@ -71,6 +71,10 @@
   .Explore-content.Feed-content .MapCard-preview.is-medium {
     display: block !Important;
   }
+
+  .FeedItem--card .FeedItem-avatar {
+    display: none;
+  }
 }
 
 
@@ -101,7 +105,7 @@
   .Explore-content.Feed-content .MapCard-preview.is-small {
     display: block !Important;
   }
-
+  .FeedItem--card .FeedItem-avatar,
   .LikesIndicator-label {
     display: none;
   }

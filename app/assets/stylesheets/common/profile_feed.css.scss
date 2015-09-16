@@ -3,14 +3,14 @@
 @import '../variables/sizes';
 
 .PublicUserProfile {
-  position: relative;
-  width: $sLayout-width;
-  margin: 15px auto 60px;
-  font-family: 'Proxima Nova';
   @include display-flex();
   @include justify-content(flex-start, start);
   @include align-items(flex-start);
   @include flex-wrap(wrap);
+  position: relative;
+  width: $sLayout-width;
+  margin: 15px auto 60px;
+  font-family: 'Proxima Nova';
 }
 .PublicUserProfile-profile {
   @include flex(0 0 320px);

@@ -600,13 +600,13 @@ class Table
     @table_visualization.delete(from_table_deletion=true) if @table_visualization
     Tag.filter(:user_id => user_id, :table_id => id).delete
     remove_table_from_stats
+    remove_table_from_user_database unless keep_user_database_table
     invalidate_varnish_cache
     cache.del geometry_types_key
     @dependent_visualizations_cache.each(&:delete)
     @non_dependent_visualizations_cache.each do |visualization|
       visualization.unlink_from(self)
     end
-    remove_table_from_user_database unless keep_user_database_table
     synchronization.delete if synchronization
 
     related_templates.each { |template| template.destroy }

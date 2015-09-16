@@ -1325,21 +1325,21 @@ cartodb.createVis('map', 'http://examples.cartodb.com/api/v2/viz/ne_10m_populate
 ```
 
 ### How to set a different host than cartodb.com
-cartodb.js by default send all requests to cartodb.com domain but it you are running your own
-instance of cartodb you can change the urls.
+CartoDB.js sends all requests to the cartodb.com domain by default. If you are running your own
+instance of CartoDB you can change the URLs to specify a different host.
 
-The way to do it is using ``sql_api_template`` and ``maps_api_template`` in ``options`` paramater
+A different host can be configured by using ``sql_api_template`` and ``maps_api_template`` in the ``options`` parameter
 for any ``cartodb`` function call.
 
-The format of those templates is like:
+The format of these templates is as follows:
 
 ```javascript
 sql_api_template: 'https://{user}.test.com'
 ```
 
-cartodb.js will replace ``{user}``.
+CartoDB.js will replace ``{user}``.
 
-Notice you don't need to set the path to the endpoint, cartodb.js sets it
+Notice that you don't need to set the path to the endpoint, CartoDB.js will set it automatically.
 
 ### Bounds wrapper
 

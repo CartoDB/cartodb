@@ -10,7 +10,7 @@ https://groups.google.com/d/forum/cartodb
 1. [General](#general)
 2. [Documentation](#documentation)
 3. [Frontend](#frontend)
-6. [Submitting contributions](#submitting-contributions)
+4. [Submitting contributions](#submitting-contributions)
 
 ---
 

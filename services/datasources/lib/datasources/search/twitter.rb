@@ -87,8 +87,6 @@ module CartoDB
           }
           @redis_storage = redis_storage
 
-          @json2csv_conversor = TwitterSearch::JSONToCSVConverter.new
-
           @csv_dumper = CSVFileDumper.new(TwitterSearch::JSONToCSVConverter.new, DEBUG_FLAG)
 
           @user = user
@@ -184,7 +182,7 @@ module CartoDB
 
         # Hide sensitive fields
         def to_s
-          config_public_values = 
+          config_public_values =
 
           "<CartoDB::Datasources::Search::Twitter @user=#{@user.username} @filters=#{@filters} @search_api_config=#{search_api_config_public_values}>"
         end
@@ -247,11 +245,11 @@ module CartoDB
 
         def search_api_config_public_values
           {
-            TwitterSearch::SearchAPI::CONFIG_AUTH_REQUIRED            => 
+            TwitterSearch::SearchAPI::CONFIG_AUTH_REQUIRED            =>
               @search_api_config[TwitterSearch::SearchAPI::CONFIG_AUTH_REQUIRED],
-            TwitterSearch::SearchAPI::CONFIG_AUTH_USERNAME            => 
+            TwitterSearch::SearchAPI::CONFIG_AUTH_USERNAME            =>
               @search_api_config[TwitterSearch::SearchAPI::CONFIG_AUTH_USERNAME],
-            TwitterSearch::SearchAPI::CONFIG_SEARCH_URL               => 
+            TwitterSearch::SearchAPI::CONFIG_SEARCH_URL               =>
               @search_api_config[TwitterSearch::SearchAPI::CONFIG_SEARCH_URL]
           }
         end
@@ -346,7 +344,7 @@ module CartoDB
             thread.join
           }
 
-          # INFO: For now we don't treat as error a no results scenario, else use: 
+          # INFO: For now we don't treat as error a no results scenario, else use:
           # raise NoResultsError.new if category_totals.values.inject(:+) == 0
 
           filters[FILTER_CATEGORIES].each { |category|

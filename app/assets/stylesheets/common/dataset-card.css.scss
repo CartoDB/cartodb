@@ -1,7 +1,7 @@
-@import "compass/css3/images";
-@import "../variables/colors";
-@import "../variables/mixins";
-@import "../variables/sizes";
+@import 'compass/css3/images';
+@import '../variables/colors';
+@import '../variables/mixins';
+@import '../variables/sizes';
 
 $sBorderCompensation: 2px;
 $opacityTransition: 250ms;
@@ -10,19 +10,19 @@ $sEditButtonSize: 50px;
 .DatasetCard {
   position: relative;
   width: $sCard-width - 10px - $sBorderCompensation;
-  border: 1px solid #DBDBDB;
-  background-color: $cStructure-mainBkg;
-  border-radius: $sCard-borderRadius;
   margin: 0 auto;
+  border: 1px solid #DBDBDB;
+  border-radius: $sCard-borderRadius;
+  background-color: $cStructure-mainBkg;
 }
 .DatasetCard-title {
   width: 100%; // required for child text-overflow to work as expected in FF
-  margin: 0 0 3px 0;
+  margin: 0 0 3px;
 }
 .DatasetCard-desc {
   flex: 1;
-  height: 2 * $sLineHeight-normal;
   width: 100%;
+  height: 2 * $sLineHeight-normal;
 
   .DefaultDescription {
     @include line-clamp(2);
@@ -31,101 +31,105 @@ $sEditButtonSize: 50px;
 .DatasetCard-desc--fake {
   display: block;
   width: auto;
+  margin-bottom: $sMargin-element;
   padding: 0 30px;
   text-align: center;
-  margin-bottom: $sMargin-element;
 }
 .DatasetCard-header {
-  position: relative;
-  display: block;
-  width: 100%;
-  height: 170px;
-  @include background(image-url("layout/default-map-bkg.png") no-repeat center 0);
-  border-radius: 2px 2px 0 0;
+  @include background(image-url('layout/default-map-bkg.png') no-repeat center 0);
   @include opacity(1);
   @include transition(opacity, $opacityTransition);
-  overflow:hidden;
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 170px;
+  border-radius: 2px 2px 0 0;
+  overflow: hidden;
   z-index: 1;
 }
 .DatasetCard-header:after {
-  content: ' ';
+  @include opacity(0.1);
+  display: block;
   position: absolute;
-  left: 0;
   right: 0;
   bottom: 0;
-  display: block;
+  left: 0;
   height: 2px;
-  background: black;
-  @include opacity(.1);
-  z-index:2;
+  background: #000000;
+  content: ' ';
+  z-index: 2;
 }
 
 .DatasetCard-header--fake:after {
-  left: $sMargin-element;
   right: $sMargin-element;
+  left: $sMargin-element;
 }
 .DatasetCard-headerFakeIcon {
   display: block;
   width: 48px;
   height: 48px;
+  border: 1px solid #EEEEEE;
   border-radius: 50px;
-  line-height: 48px!important; // Overwritten by icon font style
-  font-size: 20px;
-  text-align:center;
-  border: 1px solid #EEE;
-  color: #EEE;
   background: transparent;
+  color: #EEEEEE;
+  font-size: 20px;
+  line-height: 48px !important; // Overwritten by icon font style
+  text-align: center;
 }
 
 .DatasetCard-headerFakeIcon.iconFont-People {
-  line-height: 35px!important;
   font-size: 30px;
+  line-height: 35px !important;
 }
 .DatasetCard-headerFakeIcon.iconFont-Snake {
-  line-height: 33px!important;
   font-size: 30px;
+  line-height: 33px !important;
 }
 .DatasetCard-headerFakeIcon.iconFont-Points {
-  line-height: 38px!important;
   font-size: 24px;
+  line-height: 38px !important;
 }
-.DatasetCard-headerFakeIcon.iconFont-Notes { font-size: 26px }
+.DatasetCard-headerFakeIcon.iconFont-Notes {
+  font-size: 26px;
+}
 .DatasetCard-headerFakeIcon.iconFont-Mountain {
   font-size: 28px;
-  line-height: 40px!important
+  line-height: 40px !important;
 }
-.DatasetCard-headerFakeIcon.iconFont-Rectangles { font-size: 22px }
+.DatasetCard-headerFakeIcon.iconFont-Rectangles {
+  font-size: 22px;
+}
 .DatasetCard-header .DatasetCard-loader {
   display: none;
   position: absolute;
+  right: 0;
   bottom: 0;
   left: 0;
-  right: 0;
   width: 100%;
   height: 2px;
   background: transparent;
   overflow: hidden;
 }
 .DatasetCard-header .DatasetCard-loader:before {
-  content: '';
-  position: absolute;
-  display: block;
-  width: 600px;
-  right: 0;
-  height: 2px;
-  background: rgba(black, 0.25);
   @include animation(pulsate 1.5s linear infinite);
+  display: block;
+  position: absolute;
+  right: 0;
+  width: 600px;
+  height: 2px;
+  background: rgba(#000000, 0.25);
+  content: '';
 }
 .DatasetCard-content { // To position contentDetail at top of content, and contentFooter at bottom
-  position: relative;
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center);
   @include flex-direction(column);
-  border-radius: $sCard-borderRadius;
-  padding: 17px $sMargin-element 16px $sMargin-element;
   @include opacity(1);
   @include transition(opacity, $opacityTransition);
+  position: relative;
+  padding: 17px $sMargin-element 16px;
+  border-radius: $sCard-borderRadius;
   z-index: 1;
 }
 .DatasetCard-contentFooter {
@@ -137,8 +141,12 @@ $sEditButtonSize: 50px;
 .DatasetCard-contentFooter > *:not(:last-child) {
   margin-right: 20px;
 }
-.DatasetCard-contentBody { width: 100% }
-.DatasetCard-contentBodyRow { margin-bottom: $sMargin-min }
+.DatasetCard-contentBody {
+  width: 100%;
+}
+.DatasetCard-contentBodyRow {
+  margin-bottom: $sMargin-min;
+}
 .DatasetCard-contentBodyRow--flex {
   @include display-flex();
   @include justify-content(flex-start);
@@ -156,9 +164,15 @@ $sEditButtonSize: 50px;
 
 // Animation function
 @include keyframes(pulsate) {
-  0% {right:100%;}
-  50% {right:0%}
-  100% {right:-100%}
+  0% {
+    right: 100%;
+  }
+  50% {
+    right: 0%;
+  }
+  100% {
+    right: -100%;
+  }
 }
 
 @media (min-width: $sMedia-tablet) {

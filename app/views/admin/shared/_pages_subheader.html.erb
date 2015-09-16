@@ -16,7 +16,7 @@
         <span class="bar-2 <%= className %>" style="width:<%= per %>%"></span>
       </div>
     </div>
-    <span class="SideMenu-progressSize"><%= number_to_human_size(current_user.db_size_in_bytes, precision: 2, significant: false) %> of <%= number_to_human_size(current_user.quota_in_bytes) %></span>
+    <span class="SideMenu-progressSize"><%= number_to_human_size(current_user.db_size_in_bytes, precision: 2, significant: false).gsub(/ |Bytes/, {" "=>"", "Bytes"=>"B"}) %> of <%= number_to_human_size(current_user.quota_in_bytes).gsub(/ |Bytes/, {" "=>"", "Bytes"=>"B"}) %></span>
   </div>
 
   <span class="SideMenu-separator"></span>

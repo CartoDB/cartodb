@@ -123,7 +123,7 @@ $sEditButtonSize: 50px;
   @include align-items(center);
   @include flex-direction(column);
   border-radius: $sCard-borderRadius;
-  padding: $sMargin-element;
+  padding: 17px $sMargin-element 16px $sMargin-element;
   @include opacity(1);
   @include transition(opacity, $opacityTransition);
   z-index: 1;
@@ -135,7 +135,7 @@ $sEditButtonSize: 50px;
   @include flex-wrap(nowrap);
 }
 .DatasetCard-contentFooter > *:not(:last-child) {
-  margin-right: 10px;
+  margin-right: 20px;
 }
 .DatasetCard-contentBody { width: 100% }
 .DatasetCard-contentBodyRow { margin-bottom: $sMargin-min }

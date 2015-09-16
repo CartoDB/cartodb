@@ -10,6 +10,9 @@
 .u-capitalize {
   text-transform: capitalize;
  }
+ .u-breakLongWords {
+   word-break: break-word
+ }
 .u-ellipsLongText {
   white-space: nowrap;
   overflow: hidden;

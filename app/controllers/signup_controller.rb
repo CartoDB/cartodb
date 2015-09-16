@@ -21,12 +21,16 @@ class SignupController < ApplicationController
     account_creator = CartoDB::UserAccountCreator.new
                                                  .with_organization(@organization)
 
-    google_access_token = [params.fetch(:google_access_token, nil), params.fetch(:google_signup_access_token, nil)].uniq.compact.first
+    raise "Organization doesn't allow user + password authentication" if user_password_signup? && !@organization.auth_username_password_enabled
+
+    google_access_token = google_access_token_from_params
     # Merge both sources (signup and login) in a single param
     params[:google_access_token] = google_access_token
 
-    if !user_password_signup? && google_access_token.present? && @google_plus_config.present?
+    if !user_password_signup? && google_signup? && @google_plus_config.present?
+      raise "Organization doesn't allow Google authentication" if !@organization.auth_google_enabled
       account_creator.with_google_token(google_access_token)
+
     end
 
     if params[:user]
@@ -52,18 +56,36 @@ class SignupController < ApplicationController
         @signup_source = 'Organization'
         render 'shared/signup_issue'
       else
-        flash.now[:error] = 'User not valid'
+        if google_signup? && existing_user(@user)
+          flash.now[:error] = "User already registered, go to login"
+        elsif @user.errors.empty?
+          # No need for additional errors if there're field errors
+          flash.now[:error] = 'User not valid'
+        end
         render action: 'signup'
       end
     end
 
   rescue => e
+    @user ||= ::User.new
     CartoDB.notify_exception(e, { new_user: account_creator.user.inspect })
     flash.now[:error] = e.message
-    render action: 'signup'
+    render action: 'signup', status: 400
   end
 
   private
+
+  def existing_user(user)
+    !Carto::User.find_by_username_and_email(user.username, user.email).nil?
+  end
+
+  def google_access_token_from_params
+    [params.fetch(:google_access_token, nil), params.fetch(:google_signup_access_token, nil)].uniq.compact.first
+  end
+
+  def google_signup?
+    google_access_token_from_params.present?
+  end
 
   def user_password_signup?
     params && params['user'] && params['user']['username'].present? && params['user']['email'].present? && params['user']['password'].present?

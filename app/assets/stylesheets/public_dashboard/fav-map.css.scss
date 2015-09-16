@@ -147,7 +147,9 @@ and (-webkit-min-device-pixel-ratio: 2) {
   .FavMap-spinner {
     top: ($height / 2) - $sSpinner-default;
   }
-  .FavMap.FavMap--tall { height: $height; }
+  .FavMap.FavMap--tall {
+    height: $height;
+  }
   .FavMap--tall .FavMap-spinner {
     top: ($height / 2) - $sSpinner-default;
   }

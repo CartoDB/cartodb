@@ -1,6 +1,6 @@
-@import "../variables/mixins";
-@import "../variables/colors";
-@import "../variables/sizes";
+@import '../variables/mixins';
+@import '../variables/colors';
+@import '../variables/sizes';
 
 // Center the content within the defined layout width
 .u-inner {
@@ -9,10 +9,10 @@
 }
 .u-capitalize {
   text-transform: capitalize;
- }
- .u-breakLongWords {
-   word-break: break-word;
- }
+}
+.u-breakLongWords {
+  word-break: break-word;
+}
 .u-ellipsLongText {
   white-space: nowrap;
   overflow: hidden;

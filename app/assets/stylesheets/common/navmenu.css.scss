@@ -1,7 +1,7 @@
 
-@import "../variables/mixins";
-@import "../variables/colors";
-@import "../variables/sizes";
+@import '../variables/mixins';
+@import '../variables/colors';
+@import '../variables/sizes';
 
 // Navmenu
 // --------------------------------------------------
@@ -60,12 +60,12 @@
 }
 .Navmenu-list:before {
   display: inline-block;
-  vertical-align: middle;
-  content: "";
   height: 100%;
+  content: '';
+  vertical-align: middle;
 }
-.Navmenu-list.Navmenu-list--owner { float: left }
-.Navmenu-list.Navmenu-list--avatar { margin-right: $sMargin-element }
+.Navmenu-list.Navmenu-list--owner { float: left; }
+.Navmenu-list.Navmenu-list--avatar { margin-right: $sMargin-section; }
 .Navmenu-item { margin-right: $sMargin-section }
 .Navmenu-subItem { margin-left: $sMargin-group }
 .Navmenu-item.Navmenu-item:last-child { margin-right: 0 }

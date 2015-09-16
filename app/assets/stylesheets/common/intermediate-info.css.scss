@@ -1,6 +1,6 @@
-@import "../variables/colors";
-@import "../variables/mixins";
-@import "../variables/sizes";
+@import '../variables/colors';
+@import '../variables/mixins';
+@import '../variables/sizes';
 
 // Intermediate info for a view with minimal information on intermediate states.
 // E.g. loading view, error screen, empty results etc.
@@ -33,6 +33,6 @@ _:-ms-lang(x), .IntermediateInfo { padding-top: 100px }
 }
 .IntermediateInfo-title--error { color: $cHighlight-negative }
 .IntermediateInfo.IntermediateInfo--pullUp {
-  padding: 0 0 50px 0;
+  padding: 0 0 50px;
   margin-top: -100px;
 }

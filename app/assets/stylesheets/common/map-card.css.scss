@@ -1,7 +1,7 @@
-@import "compass/css3/images";
-@import "../variables/colors";
-@import "../variables/mixins";
-@import "../variables/sizes";
+@import 'compass/css3/images';
+@import '../variables/colors';
+@import '../variables/mixins';
+@import '../variables/sizes';
 
 // Map card item
 //
@@ -29,18 +29,15 @@ $sEditButtonSize: 50px;
 .MapCard {
   position: relative;
   width: $sCard-width - 10px - $sBorderCompensation;
-  border: 1px solid #DBDBDB;
-  background-color: $cStructure-mainBkg;
-  border-radius: $sCard-borderRadius;
   margin: 0 auto;
+  border: 1px solid #DBDBDB;
+  border-radius: $sCard-borderRadius;
+  background-color: $cStructure-mainBkg;
 }
 .MapCard.MapCard--borderless .MapCard-header:after {
   display: none;
 }
 
-.MapCard.MapCard--explore .MapCard-header {
-  height: 220px;
-}
 .MapCard.MapCard--explore .MapCard-content {
   height: auto;
 }
@@ -49,11 +46,10 @@ $sEditButtonSize: 50px;
   border-top: none;
 }
 .MapCard.MapCard--explore .MapCard-header {
+  @include background(image-url('layout/default-map-big-bkg.png') no-repeat center 0);
   height: 220px;
-  @include background(image-url("layout/default-map-big-bkg.png") no-repeat center 0);
-  background-color: #ddd;
+  background-color: #DDDDDD;
 }
-
 .MapCard.MapCard--long .MapCard-content {
   height: auto;
 }
@@ -62,13 +58,10 @@ $sEditButtonSize: 50px;
   border-top: none;
 }
 .MapCard.MapCard--long .MapCard-header {
-  @include background(image-url("layout/default-map-big-bkg.png") no-repeat center 0);
-  background-color: #ddd;
+  @include background(image-url('layout/default-map-big-bkg.png') no-repeat center 0);
+  background-color: #DDDDDD;
 }
 
-.MapCard.MapCard--squared .MapCard-header {
-  height: 220px;
-}
 .MapCard.MapCard--squared .MapCard-content {
   height: 38px;
 }
@@ -90,8 +83,8 @@ $sEditButtonSize: 50px;
   margin-right: 14px;
 }
 .MapCard.MapCard--squared .MapCard-header {
+  @include background(image-url('layout/default-map-squared-bkg.png') no-repeat center 0);
   height: 220px;
-  @include background(image-url("layout/default-map-squared-bkg.png") no-repeat center 0);
 }
 
 .MapCard-title {
@@ -114,8 +107,8 @@ $sEditButtonSize: 50px;
   margin-bottom: $sMargin-element;
 }
 .MapCard-tags {
-  position: relative;
   @include line-clamp(1);
+  position: relative;
 }
 .MapCard--selectable{
   &:hover {
@@ -144,15 +137,15 @@ $sEditButtonSize: 50px;
   }
 }
 .MapCard-header {
-  position: relative;
-  display: block;
-  width: 100%;
-  height: 170px;
-  @include background(image-url("layout/default-map-bkg.png") no-repeat center 0);
-  border-radius: 2px 2px 0 0;
+  @include background(image-url('layout/default-map-bkg.png') no-repeat center 0);
   @include opacity(1);
   @include transition(opacity, $opacityTransition);
-  overflow:hidden;
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 170px;
+  border-radius: 2px 2px 0 0;
+  overflow: hidden;
   z-index: 1;
 }
 .MapCard-header.is-loading .MapCard-loader {
@@ -163,6 +156,7 @@ $sEditButtonSize: 50px;
 }
 .MapCard-header:after,
 .MapCard.MapCard--squared .MapCard-header.MapCard-header--fake:after {
+  @include opacity(.1);
   content: ' ';
   position: absolute;
   left: 0;
@@ -171,7 +165,6 @@ $sEditButtonSize: 50px;
   display: block;
   height: 2px;
   background: black;
-  @include opacity(.1);
   z-index:2;
 }
 
@@ -180,8 +173,8 @@ $sEditButtonSize: 50px;
   @include display-flex();
   @include justify-content(center);
   @include align-items(center);
-  background: $cStructure-mainBkg;
   border-radius: $sCard-borderRadius;
+  background: $cStructure-mainBkg;
 }
 .MapCard-header--fake:after,
 .MapCard.MapCard--squared .MapCard-header.MapCard-header--fake:after {
@@ -262,7 +255,7 @@ $sEditButtonSize: 50px;
   width: 60px;
   height: 59px;
   border-radius: $sCard-borderRadius $sCard-borderRadius 0 0;
-  @include background(image-url("layout/map-card-error.png") no-repeat center 0);
+  @include background(image-url('layout/map-card-error.png') no-repeat center 0);
 }
 .MapCard-content { // To position contentDetail at top of content, and contentFooter at bottom
   position: relative;

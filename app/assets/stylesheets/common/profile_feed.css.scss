@@ -13,8 +13,8 @@
   @include flex-wrap(wrap);
 }
 .PublicUserProfile-profile {
-  margin: 45px 0 0 0;
   @include flex(0 0 320px);
+  margin: 45px 0 0;
 }
 .PublicUserProfile-name {
   margin: 0 0 35px;
@@ -35,10 +35,10 @@
 }
 
 .PublicUserProfile-details {
-  margin: 0 0 15px 0;
+  margin: 0 0 15px;
 }
 .PublicUserProfile-detail {
-  margin: 0 0 15px 0;
+  margin: 0 0 15px;
   color: $cTypography-linkSecondary;
   font-size: $sFontSize-large;
   line-height: normal;
@@ -50,7 +50,7 @@
 
 @media only screen and (min-width: 900px)  {
   .PublicUserProfile-details {
-    margin: 15px 0 0 0;
+    margin: 15px 0 0;
   }
   .Profile-content.Feed-content .FeedItem .MapCard,
   .Profile-content.Feed-content .FeedItem .DatasetCard {
@@ -125,7 +125,6 @@
   }
 
   .PublicUserProfile-profile {
-    margin-top: 0;
     @include display-flex();
     @include justify-content(space-between);
     @include align-items(flex-start);

@@ -71,7 +71,7 @@ class HomeController < ApplicationController
   def configuration_diagnosis
     # favor displaying an organization user if any present
     organization = Carto::Organization.first
-    user = organization.nil? ? Carto::User.first : Carto::User.where(organization_id: organization.id).first
+    user = organization ? organization.owner : Carto::User.first
 
     ['', [
       "Environment: #{environment}",

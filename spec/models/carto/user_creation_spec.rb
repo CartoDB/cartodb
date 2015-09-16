@@ -237,4 +237,24 @@ describe Carto::UserCreation do
 
   end
 
+  describe 'organization overquota email' do
+    include_context 'organization with users helper'
+
+    it 'triggers a DiskQuotaLimitReached mail if organization has run out of quota for new users' do
+      User.any_instance.stubs(:create_in_central).returns(true)
+      User.any_instance.stubs(:enable_remote_db_user).returns(true)
+      ::Resque.expects(:enqueue).with(Resque::UserJobs::Mail::NewOrganizationUser, instance_of(String)).once
+      ::Resque.expects(:enqueue).with(Resque::OrganizationJobs::Mail::DiskQuotaLimitReached, instance_of(String)).once
+
+      user_data = FactoryGirl.build(:valid_user)
+      user_data.organization = @organization
+      @organization.quota_in_bytes = @organization.assigned_quota + @organization.default_quota_in_bytes + 1
+      @organization.save
+
+      user_creation = Carto::UserCreation.new_user_signup(user_data)
+      user_creation.next_creation_step until user_creation.finished?
+    end
+
+  end
+
 end

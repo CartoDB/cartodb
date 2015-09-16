@@ -17,6 +17,7 @@ $sEditButtonSize: 50px;
 }
 .DatasetCard-title {
   width: 100%; // required for child text-overflow to work as expected in FF
+  margin: 0 0 3px 0;
 }
 .DatasetCard-desc {
   flex: 1;

@@ -44,12 +44,12 @@ $heightTall: 450px;
 .FavMap.FavMap--tall {
   height: $heightTall / 2;
 }
-.FavMap.FavMap--tall:before {
+.FavMap.FavMap--highShadow:before {
   @include background-gradient(rgba(#000000, 0), rgba(#000000, 0.5));
   height: 150px;
   pointer-events: none;
 }
-.FavMap.FavMap--tall:not(.is-pre-loading):not(.is-loading):before {
+.FavMap.FavMap--highShadow:not(.is-pre-loading):not(.is-loading):before {
   height: 150px;
 }
 .FavMapTitle {

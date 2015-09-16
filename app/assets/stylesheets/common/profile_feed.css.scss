@@ -54,7 +54,7 @@
   }
   .Profile-content.Feed-content .FeedItem .MapCard,
   .Profile-content.Feed-content .FeedItem .DatasetCard {
-    @include flex(0 0 488px);
+    @include flex(0 0 540px);
     margin-right: 0;
   }
 
@@ -95,7 +95,7 @@
 
   .Profile-content.Feed-content .FeedItem .MapCard,
   .Profile-content.Feed-content .FeedItem .DatasetCard {
-    @include flex(0 0 488px);
+    @include flex(0 0 540px);
     margin-right: 0;
   }
 

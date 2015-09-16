@@ -1,7 +1,12 @@
 # encoding: utf-8
 require 'pg'
+require 'cartodb/stats/api_calls'
 
 class ExploreAPI
+
+    def initialize
+      @stats_manager = CartoDB::Stats::APICalls.new
+    end
 
     def get_visualization_tables(visualization)
       # We are using layers instead of related tables because with related tables we are connecting
@@ -38,8 +43,26 @@ class ExploreAPI
     end
 
     def visualization_likes_since(date_since)
+      data = {}
       liked_visualizations = CartoDB::Like.where('created_at >= ?', date_since).group_and_count(:subject).all
-      liked_visualizations.map { |liked_vis| liked_vis.subject }
+      liked_visualizations.each do |liked_vis|
+        data[liked_vis[:subject]] = CartoDB::Like.where(subject: liked_vis[:subject]).count
+      end
+      data
+    end
+
+    def visualization_mapviews_since(date_since)
+      data = {}
+      $users_metadata.scan_each(:match => "user:*") do |key|
+        next if key =~/global/
+        date_formatted = date_since.strftime("%Y%m%d")
+        key_splitted = key.split(':')
+        username = key_splitted[1]
+        visualization_id = key_splitted[4]
+        vis_mapviews = @stats_manager.get_api_calls_from_redis(username, { from: date_formatted, to: date_formatted, stat_tag: visualization_id })[date_formatted]
+        data[visualization_id] = @stats_manager.get_total_api_calls(username, visualization_id) unless vis_mapviews == 0
+      end
+      data
     end
 
     private

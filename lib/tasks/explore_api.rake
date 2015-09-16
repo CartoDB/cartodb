@@ -74,7 +74,7 @@ namespace :cartodb do
     BATCH_SIZE = 1000
     # TODO: "in" searches are limited to 300. To increase batch replace with date ranges
     UPDATE_BATCH_SIZE = 300
-    DAYS_TO_CHECK_LIKES = 2
+    DAYS_TO_CHECK_LIKES = 1
 
     desc "Creates #{VISUALIZATIONS_TABLE} at common-data user and loads the data for the very first time. This table contains an aggregated, desnormalized view of the public data at visualizations, and it's used by Explore API"
     task :setup => [:environment] do
@@ -117,33 +117,9 @@ namespace :cartodb do
       end
     end
 
-    desc "Updates the all visualizations meta data at #{VISUALIZATIONS_TABLE}"
-    task :update_metadata => [:environment] do
-      stats_aggregator.timing('visualizations.update_metadata.total') do
-        update_visualizations_metadata
-        touch_metadata
-      end
-    end
-
-    def update_visualizations_metadata
-      page = 1
-      while (visualizations = CartoDB::Visualization::Collection.new.fetch(filter_metadata(page))).count > 0 do
-        updates = 0
-        # INFO Disable temporary becuase is really inefficient
-        # tables_data = explore_api.get_visualizations_table_data(visualizations)
-        tables_data = {}
-        visualizations.each do |v|
-          update_visualization_metadata(v, tables_data)
-          updates += 1
-        end
-        print "Batch size: #{visualizations.count}.\tUpdated #{updates}\n"
-        page += 1
-      end
-    end
-
-    def update_visualization_metadata(visualization, tables_data)
+    def update_visualization_metadata(visualization, tables_data, likes, mapviews)
       table_data = tables_data[visualization.user_id].nil? ? {} : tables_data[visualization.user_id][visualization.name]
-      db_conn.run update_mapviews_and_likes_query(visualization, table_data)
+      db_conn.run update_metadata_query(visualization, table_data, likes, mapviews)
     end
 
     def update(days_back_to_check)
@@ -170,8 +146,9 @@ namespace :cartodb do
       puts "UPDATING"
 
       # Get the last 2 days liked visualizations in order to use it as trigger to update likes, mapviews, etc
-      date_to_check_likes = Time.now.beginning_of_day - days_back_to_check.days
-      @liked_visualizations = explore_api.visualization_likes_since(date_to_check_likes)
+      date_to_check = Time.now.beginning_of_day - days_back_to_check.days
+      @liked_visualizations = explore_api.visualization_likes_since(date_to_check)
+      @mapviews_visualizations = explore_api.visualization_mapviews_since(date_to_check)
 
       # INFO: we need to check all known visualizations because they might've been deleted
       offset = 0
@@ -187,7 +164,10 @@ namespace :cartodb do
 
         update_result = update_visualizations(visualizations, explore_visualizations_by_visualization_id, explore_visualization_ids)
 
-        print "Batch size: #{explore_visualizations.length}.\tMatches: #{visualizations.count}.\tUpdated #{update_result[:full_updated_count]} \tMapviews and liked updates: #{update_result[:mapviews_liked_updated_count]}\n"
+        print "Batch size: #{explore_visualizations.length}." \
+              "\tMatches: #{visualizations.count}." \
+              "\tUpdated #{update_result[:full_updated_count]}" \
+              "\tMetadata updated: #{update_result[:metadata_updated_count]}\n"
 
         deleted_visualization_ids +=  explore_visualization_ids - visualizations.collect(&:id)
         privated_visualization_ids += update_result[:privated_visualization_ids]
@@ -205,11 +185,11 @@ namespace :cartodb do
 
     def update_visualizations(visualizations, explore_visualizations_by_visualization_id, explore_visualization_ids)
       full_updated_count = 0
-      mapviews_liked_updated_count = 0
+      metadata_updated_count = 0
       privated_visualization_ids = []
       visualizations.each do |v|
         explore_visualization = explore_visualizations_by_visualization_id[v.id]
-        # We use to_id to remove the miliseconds that could give to erroneous updates
+        # We use to_i to remove the miliseconds that could give to erroneous updates
         # http://railsware.com/blog/2014/04/01/time-comparison-in-ruby/
         if v.updated_at.to_i != explore_visualization[:visualization_updated_at].to_i
           if v.privacy != CartoDB::Visualization::Member::PRIVACY_PUBLIC
@@ -223,16 +203,16 @@ namespace :cartodb do
         else
           # INFO: retrieving mapviews makes this much slower
           # We are only updating the visualizations that have received a liked since the DAYS_TO_CHECK_LIKES in the last days
-          if (@liked_visualizations.include?(v.id))
+          if (@liked_visualizations.has_key?(v.id) || @mapviews_visualizations.has_key?(v.id))
             table_data = explore_api.get_visualizations_table_data([v])
-            update_visualization_metadata(v, table_data)
-            mapviews_liked_updated_count += 1
+            update_visualization_metadata(v, table_data, @liked_visualizations[v.id], @mapviews_visualizations[v.id])
+            metadata_updated_count += 1
           end
         end
       end
       {
         full_updated_count: full_updated_count,
-        mapviews_liked_updated_count: mapviews_liked_updated_count,
+        metadata_updated_count: metadata_updated_count,
         privated_visualization_ids: privated_visualization_ids
       }
     end
@@ -358,18 +338,26 @@ namespace :cartodb do
       }
     end
 
-    def update_mapviews_and_likes_query(visualization, table_data)
+    def update_metadata_query(visualization, table_data, likes, mapviews)
       %Q{ UPDATE #{VISUALIZATIONS_TABLE} set
-            visualization_mapviews = #{visualization.mapviews},
-            visualization_likes = #{visualization.likes_count},
             visualization_synced = #{!visualization.is_synced?}
+            #{update_mapviews(mapviews)}
+            #{update_likes(likes)}
             #{update_tables(visualization)}
             #{update_geometry(visualization)}
           where visualization_id = '#{visualization.id}' }
     end
 
+    def update_mapviews(mapviews)
+      %Q[, visualization_mapviews = #{mapviews}] unless mapviews.nil? || mapviews == 0
+    end
+
+    def update_likes(likes)
+      %Q[, visualization_likes = #{likes}] unless likes.nil? || likes == 0
+    end
+
     def update_tables(visualization)
-      %Q{, visualization_table_names = '#{explore_api.get_visualization_tables(visualization)}'}
+      %Q[, visualization_table_names = '#{explore_api.get_visualization_tables(visualization)}']
     end
 
     def update_geometry(visualization)
@@ -379,12 +367,12 @@ namespace :cartodb do
       view_zoom = geometry_data[:zoom].nil? ? 'NULL' : geometry_data[:zoom]
       bbox_value = !visualization.bbox.nil? ? "ST_AsText('#{visualization.bbox}')" : 'NULL'
       if visualization.type == CartoDB::Visualization::Member::TYPE_DERIVED
-        %Q{, visualization_bbox = #{bbox_value},
+        %Q[, visualization_bbox = #{bbox_value},
              visualization_view_box = #{view_box_polygon},
              visualization_view_box_center = #{center_geometry},
-             visualization_zoom = #{view_zoom}}
+             visualization_zoom = #{view_zoom}]
       elsif !bbox_value.nil?
-        %Q{, visualization_bbox = #{bbox_value}}
+        %Q[, visualization_bbox = #{bbox_value}]
       else
         return
       end
@@ -394,9 +382,9 @@ namespace :cartodb do
     def update_table_data(visualization_type, table_data)
       return if table_data.blank?
       if visualization_type == CartoDB::Visualization::Member::TYPE_CANONICAL
-        %Q{, visualization_table_rows = #{table_data[:rows]},
+        %Q[ , visualization_table_rows = #{table_data[:rows]},
              visualization_table_size = #{table_data[:size]},
-             visualization_geometry_types = '{#{table_data[:geometry_types].join(',')}}'}
+             visualization_geometry_types = '{#{table_data[:geometry_types].join(',')}}' ]
       end
     end
 

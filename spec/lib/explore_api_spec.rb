@@ -169,6 +169,70 @@ describe 'ExploreAPI' do
     geometry_data.should eq expected_data
   end
 
+  describe 'likes' do
+    it 'should return 0 elements if dont have likes' do
+      date = Date.today - 1.days
+      user = FactoryGirl.build(:user)
+      FactoryGirl.build(:derived_visualization, :user_id => user.id)
+
+      likes = @explore_api.visualization_likes_since(date)
+      likes.length.should eq 0
+    end
+
+    it 'should return 10 likes the visualization' do
+      date = Date.today - 1.days
+      user = FactoryGirl.build(:user)
+      visualization_1 = FactoryGirl.build(:derived_visualization, :user_id => user.id)
+      like = { subject: visualization_1.id, count: 1 }
+      like.stubs(:group_and_count).returns(like)
+      like.stubs(:all).returns([like])
+      CartoDB::Like.stubs(:where).with(regexp_matches(/created_at >=/), optionally(date)).returns(like)
+      dataset = Object.new
+      dataset.stubs(:count).returns(10)
+      CartoDB::Like.stubs(:where).with(subject: visualization_1.id).returns(dataset)
+
+      likes = @explore_api.visualization_likes_since(date)
+      likes[visualization_1.id].should eq 10
+    end
+  end
+
+  describe 'mapviews' do
+    it 'should return 0 elements if not mapviews in the checked date' do
+      date = Date.today - 1.days
+      date_key = date.strftime("%Y%m%d")
+      user = FactoryGirl.build(:user)
+      visualization_1 = FactoryGirl.build(:derived_visualization, :user_id => user.id)
+      add_total_data(visualization_1.id, user.username, 490)
+      add_date_data(visualization_1.id, user.username, date_key, 0)
+
+      mapviews = @explore_api.visualization_mapviews_since(Date.today - 1.days)
+      mapviews.length.should eq 0
+    end
+
+    it 'should return 1 of 4 elements if not mapviews in the checked date' do
+      date = Date.today - 1.days
+      date_key = date.strftime("%Y%m%d")
+      user = FactoryGirl.build(:user)
+      visualization_1 = FactoryGirl.build(:derived_visualization, :user_id => user.id)
+      add_total_data(visualization_1.id, user.username, 490)
+      add_date_data(visualization_1.id, user.username, date_key, 1)
+      visualization_2 = FactoryGirl.build(:derived_visualization, :user_id => user.id)
+      add_total_data(visualization_2.id, user.username, 0)
+      add_date_data(visualization_2.id, user.username, date_key, 0)
+      visualization_3 = FactoryGirl.build(:derived_visualization, :user_id => user.id)
+      add_total_data(visualization_3.id, user.username, 0)
+      add_date_data(visualization_3.id, user.username, date_key, 0)
+      visualization_4 = FactoryGirl.build(:derived_visualization, :user_id => user.id)
+      add_total_data(visualization_4.id, user.username, 490)
+      add_date_data(visualization_4.id, user.username, (Date.today - 10.days).strftime("%Y%m%d"), 10)
+
+      mapviews = @explore_api.visualization_mapviews_since(Date.today - 1.days)
+      mapviews.length.should eq 1
+      mapviews.has_key?(visualization_1.id).should eq true
+      mapviews[visualization_1.id].should eq 491
+    end
+  end
+
 end
 
 def create_layer(table_name, user_name, order = 1)
@@ -176,4 +240,21 @@ def create_layer(table_name, user_name, order = 1)
   options["table_name"] = table_name
   options["user_name"] = user_name
   FactoryGirl.build(:carto_layer, :options => options, :order => order)
+end
+
+def add_date_data(visualization_id, username, date, value)
+  key = build_key(username, visualization_id)
+  $users_metadata.ZADD(key, value, date).to_i
+  updated_total = $users_metadata.ZSCORE(key, "total").to_f + value.to_f
+  $users_metadata.ZADD(key, updated_total, "total").to_i
+end
+
+def add_total_data(visualization_id, username, value)
+  key = build_key(username, visualization_id)
+  $users_metadata.ZADD(key, value, "total").to_i
+end
+
+def build_key(username, visualization_id)
+  api_calls = CartoDB::Stats::APICalls.new
+  api_calls.redis_api_call_key(username, "mapviews", visualization_id)
 end

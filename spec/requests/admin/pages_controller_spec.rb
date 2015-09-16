@@ -139,6 +139,7 @@ describe Admin::PagesController do
 
   describe '#explore' do
     it 'should go to explore page' do
+      mock_explore_feature_flag
       host! 'localhost.lan'
 
       get '/explore', {}, JSON_HEADER
@@ -150,6 +151,7 @@ describe Admin::PagesController do
     end
 
     it 'should go to explore search page' do
+      mock_explore_feature_flag
       host! 'localhost.lan'
 
       get '/search', {}, JSON_HEADER
@@ -161,6 +163,7 @@ describe Admin::PagesController do
     end
 
     it 'should go to explore search page with a query variable' do
+      mock_explore_feature_flag
       host! 'localhost.lan'
 
       get '/search/lala', {}, JSON_HEADER
@@ -170,6 +173,15 @@ describe Admin::PagesController do
       uri.host.should == 'localhost.lan'
       uri.path.should == '/search/lala'
     end
+  end
+
+  def mock_explore_feature_flag
+    anyuser = prepare_user('anyuser')
+    User.any_instance.stubs(:has_feature_flag?)
+                          .with('explore_site')
+                          .returns(true)
+    User.stubs(:where).returns(anyuser)
+    anyuser.stubs(:first).returns(anyuser)
   end
 
   def prepare_user(user_name, org_user=false, belongs_to_org=false)

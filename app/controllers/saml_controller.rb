@@ -19,6 +19,7 @@ class SamlController < ApplicationController
        @signup_errors[:saml_error] = ["You are not authorized to run the functionality"]
        logger.error @signup_errors[:saml_error].first
        render 'shared/signup_issue'
+       return
     end
 
     scope = user_info.username

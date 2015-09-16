@@ -1,14 +1,16 @@
-@import "../variables/colors";
-@import "../variables/sizes";
-@import "../variables/mixins";
+@import '../variables/colors';
+@import '../variables/sizes';
+@import '../variables/mixins';
 
 .DefaultParagraph {
-  font-size: $sFontSize-large;
-  line-height: $sLineHeight-large;
-  font-weight: $sFontWeight-lighter;
   color: $cTypography-paragraphs;
+  font-size: $sFontSize-large;
+  font-weight: $sFontWeight-lighter;
+  line-height: $sLineHeight-large;
 }
-.DefaultParagraph--secondary { color: $cTypography-secondary }
+.DefaultParagraph--secondary {
+  color: $cTypography-secondary;
+}
 .DefaultParagraph--error {
   color: $cHighlight-negative;
   .Button--link {
@@ -17,13 +19,17 @@
   }
 }
 .DefaultParagraph--tertiary {
-  font-size: $sFontSize-normal;
-  line-height: $sLineHeight-normal;
-  font-weight: $sFontWeight-lighter;
   color: $cTypography-secondary;
+  font-size: $sFontSize-normal;
+  font-weight: $sFontWeight-lighter;
+  line-height: $sLineHeight-normal;
 }
-.DefaultParagraph--short { width: 500px }
-.DefaultParagraph--centered { margin: 0 auto }
+.DefaultParagraph--short {
+  width: 500px;
+}
+.DefaultParagraph--centered {
+  margin: 0 auto;
+}
 .DefaultParagraph--spaced {
   margin-top: 10px;
   margin-bottom: 10px;
@@ -34,8 +40,12 @@
 }
 
 @media (min-width: $sMedia-mobile) {
-.DefaultParagraph--short { width: 200px;}
+  .DefaultParagraph--short {
+    width: 200px;
+  }
 }
 @media (min-width: $sMedia-tablet) {
-.DefaultParagraph--short { width: 500px;}
+  .DefaultParagraph--short {
+    width: 500px;
+  }
 }

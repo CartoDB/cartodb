@@ -22,6 +22,7 @@ class Admin::VisualizationsController < ApplicationController
   before_filter :table_and_schema_from_params, only: [:show, :public_table, :public_map, :show_protected_public_map,
                                                       :show_protected_embed_map, :embed_map]
   before_filter :link_ghost_tables, only: [:index]
+  before_filter :get_viewed_user, only: [:public_map, :public_table]
   before_filter :load_common_data, only: [:index]
 
   before_filter :resolve_visualization_and_table, only: [:show, :public_table, :public_map,
@@ -654,6 +655,11 @@ class Admin::VisualizationsController < ApplicationController
 
   def embed_redis_cache
     @embed_redis_cache ||= EmbedRedisCache.new($tables_metadata)
+  end
+
+  def get_viewed_user
+    username = CartoDB.extract_subdomain(request).strip.downcase
+    @viewed_user = User.where(username: username).first
   end
 
 end

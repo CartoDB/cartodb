@@ -232,7 +232,16 @@ class Organization < Sequel::Model
     users.nil? ? 0 : users.count
   end
 
+  def notify_if_disk_quota_limit_reached
+    ::Resque.enqueue(::Resque::OrganizationJobs::Mail::DiskQuotaLimitReached, id) if disk_quota_limit_reached?
+  end
+
   private
+
+  # Returns true if disk quota won't allow new signups with existing defaults
+  def disk_quota_limit_reached?
+    unassigned_quota < default_quota_in_bytes
+  end
 
   def quota_dates(options)
     date_to = (options[:to] ? options[:to].to_date : Date.today)

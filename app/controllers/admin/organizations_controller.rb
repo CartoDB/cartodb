@@ -1,7 +1,7 @@
 # coding: utf-8
 class Admin::OrganizationsController < ApplicationController
   ssl_required :show, :settings, :settings_update, :regenerate_all_api_keys, :groups, :auth, :auth_update
-  before_filter :login_required, :load_organization_and_members
+  before_filter :login_required, :load_organization_and_members, :load_ldap_configuration
   helper_method :show_billing
 
   layout 'application'
@@ -78,6 +78,8 @@ class Admin::OrganizationsController < ApplicationController
   def auth_update
     attributes = params[:organization]
     @organization.whitelisted_email_domains = attributes[:whitelisted_email_domains].split(",")
+    @organization.auth_username_password_enabled = attributes[:auth_username_password_enabled]
+    @organization.auth_google_enabled = attributes[:auth_google_enabled]
     @organization.update_in_central
     @organization.save(raise_on_failure: true)
 
@@ -104,6 +106,10 @@ class Admin::OrganizationsController < ApplicationController
 
   def show_billing
     !Cartodb.config[:cartodb_com_hosted].present? && (!current_user.organization.present? || current_user.organization_owner?)
+  end
+
+  def load_ldap_configuration
+    @ldap_configuration = Carto::Ldap::Configuration.where(organization_id: @organization.id).first
   end
 
 end

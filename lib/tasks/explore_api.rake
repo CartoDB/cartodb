@@ -129,7 +129,9 @@ namespace :cartodb do
       page = 1
       while (visualizations = CartoDB::Visualization::Collection.new.fetch(filter_metadata(page))).count > 0 do
         updates = 0
-        tables_data = explore_api.get_visualizations_table_data(visualizations)
+        # INFO Disable temporary becuase is really inefficient
+        # tables_data = explore_api.get_visualizations_table_data(visualizations)
+        tables_data = {}
         visualizations.each do |v|
           update_visualization_metadata(v, tables_data)
           updates += 1
@@ -363,7 +365,6 @@ namespace :cartodb do
             visualization_synced = #{!visualization.is_synced?}
             #{update_tables(visualization)}
             #{update_geometry(visualization)}
-            #{update_table_data(visualization.type, table_data)}
           where visualization_id = '#{visualization.id}' }
     end
 
@@ -389,6 +390,7 @@ namespace :cartodb do
       end
     end
 
+    # INFO Disable temporary becuase is really inefficient
     def update_table_data(visualization_type, table_data)
       return if table_data.blank?
       if visualization_type == CartoDB::Visualization::Member::TYPE_CANONICAL

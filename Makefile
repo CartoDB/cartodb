@@ -24,6 +24,7 @@ WORKING_SPECS_1 = \
 	spec/models/user_table_spec.rb \
   spec/models/layer_spec.rb \
   spec/models/layer/presenter_spec.rb \
+	spec/requests/sessions_spec.rb \
   spec/requests/api/json/layer_presenter_spec.rb \
   spec/requests/carto/api/layer_presenter_spec.rb \
 	spec/requests/carto/api/data_import_presenter_spec.rb \

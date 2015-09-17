@@ -72,8 +72,8 @@ shared_context 'organization with users helper' do
   end
 
   before(:all) do
-    @organization = test_organization.save
-    @organization_2 = test_organization.save
+    @organization = test_organization.save.reload
+    @organization_2 = test_organization.save.reload
 
     @org_user_owner = create_test_user("o#{random_username}")
     user_org = CartoDB::UserOrganization.new(@organization.id, @org_user_owner.id)

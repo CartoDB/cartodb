@@ -62,14 +62,14 @@ module Concerns
           :geocoding_block_price, :map_view_block_price,
           :twitter_datasource_enabled, :twitter_datasource_block_size,
           :twitter_datasource_block_price, :twitter_datasource_quota,
-          :google_maps_key, :google_maps_private_key]
+          :google_maps_key, :google_maps_private_key, :auth_username_password_enabled, :auth_google_enabled]
         when :update
           [:seats, :quota_in_bytes, :display_name, :description, :website,
           :discus_shortname, :twitter_username, :geocoding_quota, :map_view_quota,
           :geocoding_block_price, :map_view_block_price,
           :twitter_datasource_enabled, :twitter_datasource_block_size,
           :twitter_datasource_block_price, :twitter_datasource_quota,
-          :google_maps_key, :google_maps_private_key]
+          :google_maps_key, :google_maps_private_key, :auth_username_password_enabled, :auth_google_enabled]
         end
       elsif self.is_a?(User)
         [:account_type, :admin, :crypted_password, :database_host,
@@ -97,7 +97,7 @@ module Concerns
           raise "Can't create organizations from editor"
         when :update
           self.values.slice(:seats, :display_name, :description, :website,
-          :discus_shortname, :twitter_username)
+          :discus_shortname, :twitter_username, :auth_username_password_enabled, :auth_google_enabled)
         end
       elsif self.is_a?(User)
         attrs = self.values.slice(:account_type, :admin, :crypted_password,

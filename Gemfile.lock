@@ -227,7 +227,7 @@ GEM
     redcarpet (3.2.3)
     redis (3.2.1)
     redis-namespace (1.5.2)
-      redis (>= 3.0.4, ~> 3.0)
+      redis (~> 3.0, >= 3.0.4)
     ref (2.0.0)
     request_store (1.1.0)
     resque (1.25.2)

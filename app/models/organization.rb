@@ -1,4 +1,6 @@
 # encoding: utf-8
+
+require_relative '../controllers/carto/api/group_presenter'
 require_relative './organization/organization_decorator'
 require_relative './permission'
 
@@ -159,7 +161,8 @@ class Organization < Sequel::Model
         :id         => self.owner ? self.owner.id : nil,
         :username   => self.owner ? self.owner.username : nil,
         :avatar_url => self.owner ? self.owner.avatar_url : nil,
-        :email      => self.owner ? self.owner.email : nil
+        :email      => self.owner ? self.owner.email : nil,
+        :groups     => self.owner && self.owner.groups ? self.owner.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : []
       },
       :quota_in_bytes           => self.quota_in_bytes,
       :geocoding_quota          => self.geocoding_quota,

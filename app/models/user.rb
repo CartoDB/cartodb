@@ -2607,13 +2607,12 @@ TRIGGER
   end
 
   def configure_extension_org_metadata_api_endpoint
-    # TODO: remove the check after extension install
+    # TODO: remove the check after extension install (#4924 merge)
     return if Rails.env.test?
 
-    port = Cartodb.config[:http_port]
-    # INFO: account_host includes port in development
-    host = Cartodb.config[:account_host].split(':')[0]
     config = Cartodb.config[:org_metadata_api]
+    host = config['host']
+    port = config['port']
     username = config['username']
     password = config['password']
     timeout = config.fetch('timeout', 10)

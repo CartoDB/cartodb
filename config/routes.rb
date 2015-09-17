@@ -26,9 +26,9 @@ CartoDB::Application.routes.draw do
   match '(/user/:user_domain)(/u/:user_domain)/diagnosis'       => 'home#app_diagnosis'
 
   # Explore
-  get   '/explore'         => 'explore#index',     as: :explore_index
-  get   '/search'          => 'explore#search',    as: :explore_search
-  get   '/search/:q'       => 'explore#search',    as: :explore_search_query
+  get   '(/user/:user_domain)(/u/:user_domain)/explore'         => 'explore#index',     as: :explore_index
+  get   '(/user/:user_domain)(/u/:user_domain)/search'          => 'explore#search',    as: :explore_search
+  get   '(/user/:user_domain)(/u/:user_domain)/search/:q'       => 'explore#search',    as: :explore_search_query
 
   # OAuth
   match '(/user/:user_domain)(/u/:user_domain)/oauth/authorize'      => 'oauth#authorize',     as: :authorize

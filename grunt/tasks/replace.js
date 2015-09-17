@@ -110,28 +110,23 @@ module.exports = {
           src: ['RELEASING.md'],
           dest: ''
         }]
-      }
+      },
+
+      bower: {
+        options: {
+          patterns: [{
+            match: '/"version": "<%= config.version.bugfixing %>"/g',
+            replacement: '"version": "<%= grunt.config(\'bump.version\') %>"',
+            expression: true
+          }]
+        },
+        files: [{
+          expand: true,
+          flatten: true,
+          src: ['bower.json'],
+          dest: ''
+        }]
+      },
     }
   }
 }
-
-          // {
-          //   expand: true,
-          //   cwd: '.',
-          //   src: 'package.json',
-          //   dest: '.'
-          // },
-          // {
-          //   expand: true,
-          //   cwd: 'src/',
-          //   src: 'cartodb.js',
-          //   dest: 'src/'
-          // },
-
-          // {
-          //   match: '"version": "<%= config.version.bugfixing %>",',
-          //   replacement: '"version": "<%= grunt.config(\'bump.version\') %>",'
-          // }, {
-          //   match: "cdb.VERSION = '<%= config.version.bugfixing %>'",
-          //   replacement: "cdb.VERSION = '<%= grunt.config(\'bump.version\') %>'",
-          // },

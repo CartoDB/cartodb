@@ -7,7 +7,7 @@ namespace :cartodb do
     VISUALIZATIONS_TABLE = 'visualizations'
 
     PUBLIC_VISUALIZATIONS_VIEW = 'explore_api'
-    CREATE_TABLE_SQL = %Q{
+    CREATE_TABLE_SQL = %{
       CREATE TABLE #{VISUALIZATIONS_TABLE} (
         visualization_id UUID primary key,
         visualization_name text,
@@ -38,7 +38,7 @@ namespace :cartodb do
         user_available_for_hire boolean,
         language regconfig default 'english'
       ) }
-    CREATE_PUBLIC_VIEW = %Q{
+    CREATE_PUBLIC_VIEW = %{
       CREATE OR REPLACE VIEW #{PUBLIC_VISUALIZATIONS_VIEW} AS
         SELECT  visualization_id,
                 visualization_name,
@@ -67,10 +67,10 @@ namespace :cartodb do
     }
     FULL_TEXT_SEARCHABLE_COLUMNS = %w{ visualization_name visualization_description visualization_title }
     INDEX_GEOMETRY_COLUMNS = %w{ visualization_bbox visualization_view_box }
-    DROP_TABLE_SQL = %Q{ DROP TABLE IF EXISTS #{VISUALIZATIONS_TABLE} CASCADE}
-    DROP_PUBLIC_VIEW_SQL = %Q{ DROP TABLE IF EXISTS #{PUBLIC_VISUALIZATIONS_VIEW} }
-    MOST_RECENT_CREATED_SQL = %Q{ SELECT MAX(visualization_created_at) FROM #{VISUALIZATIONS_TABLE} }
-    MOST_RECENT_UPDATED_SQL = %Q{ SELECT MAX(visualization_updated_at) FROM #{VISUALIZATIONS_TABLE} }
+    DROP_TABLE_SQL = %{ DROP TABLE IF EXISTS #{VISUALIZATIONS_TABLE} CASCADE}
+    DROP_PUBLIC_VIEW_SQL = %{ DROP TABLE IF EXISTS #{PUBLIC_VISUALIZATIONS_VIEW} }
+    MOST_RECENT_CREATED_SQL = %{ SELECT MAX(visualization_created_at) FROM #{VISUALIZATIONS_TABLE} }
+    MOST_RECENT_UPDATED_SQL = %{ SELECT MAX(visualization_updated_at) FROM #{VISUALIZATIONS_TABLE} }
     BATCH_SIZE = 1000
     # TODO: "in" searches are limited to 300. To increase batch replace with date ranges
     UPDATE_BATCH_SIZE = 300
@@ -180,7 +180,7 @@ namespace :cartodb do
     end
 
     def get_explore_visualizations(offset)
-      db_conn[%Q{ select visualization_id, visualization_updated_at from #{VISUALIZATIONS_TABLE} order by visualization_created_at asc limit #{UPDATE_BATCH_SIZE} offset #{offset} }].all
+      db_conn[%{ select visualization_id, visualization_updated_at from #{VISUALIZATIONS_TABLE} order by visualization_created_at asc limit #{UPDATE_BATCH_SIZE} offset #{offset} }].all
     end
 
     def update_visualizations(visualizations, explore_visualizations_by_visualization_id, explore_visualization_ids)
@@ -202,7 +202,8 @@ namespace :cartodb do
           end
         else
           # INFO: retrieving mapviews makes this much slower
-          # We are only updating the visualizations that have received a liked since the DAYS_TO_CHECK_LIKES in the last days
+          # We are only updating the visualizations that have received a liked since the DAYS_TO_CHECK_LIKES 
+          # in the last days
           if (@liked_visualizations.has_key?(v.id) || @mapviews_visualizations.has_key?(v.id))
             table_data = explore_api.get_visualizations_table_data([v])
             update_visualization_metadata(v, table_data, @liked_visualizations[v.id], @mapviews_visualizations[v.id])
@@ -230,7 +231,7 @@ namespace :cartodb do
     end
 
     def delete_query(ids)
-      %Q{ delete from #{VISUALIZATIONS_TABLE} where visualization_id in ('#{ids.join("', '")}') }
+      %{ delete from #{VISUALIZATIONS_TABLE} where visualization_id in ('#{ids.join("', '")}') }
     end
 
     def insert_new_visualizations_at_user(most_recent_created_date, most_recent_updated_date)
@@ -248,7 +249,7 @@ namespace :cartodb do
       while (visualizations = CartoDB::Visualization::Collection.new.fetch(filter(page, nil, most_recent_created_date))).count > 0 do
         updated_ids = visualizations.collect(&:id)
 
-        existing_ids = db_conn[%Q{ select visualization_id from #{VISUALIZATIONS_TABLE} where visualization_id in ('#{updated_ids.join("','")}')}].all.map { |row| row[:visualization_id] }
+        existing_ids = db_conn[%{ select visualization_id from #{VISUALIZATIONS_TABLE} where visualization_id in ('#{updated_ids.join("','")}')}].all.map { |row| row[:visualization_id] }
 
         missing_ids = updated_ids - existing_ids
 
@@ -295,10 +296,10 @@ namespace :cartodb do
     def insert_visualizations(visualizations)
       tables_data = explore_api.get_visualizations_table_data(visualizations)
       db_conn[:visualizations].multi_insert(
-        visualizations.map { |v|
+        visualizations.map do |v|
           table_data = tables_data[v.user_id].blank? || tables_data[v.user_id][v.name].blank? ? {} : tables_data[v.user_id][v.name]
           insert_visualization_hash(v, table_data)
-        }
+        end
       )
     end
 
@@ -339,25 +340,25 @@ namespace :cartodb do
     end
 
     def update_metadata_query(visualization, table_data, likes, mapviews)
-      %Q{ UPDATE #{VISUALIZATIONS_TABLE} set
+      %[ UPDATE #{VISUALIZATIONS_TABLE} set
             visualization_synced = #{!visualization.is_synced?}
             #{update_mapviews(mapviews)}
             #{update_likes(likes)}
             #{update_tables(visualization)}
             #{update_geometry(visualization)}
-          where visualization_id = '#{visualization.id}' }
+          where visualization_id = '#{visualization.id}' ]
     end
 
     def update_mapviews(mapviews)
-      %Q[, visualization_mapviews = #{mapviews}] unless mapviews.nil? || mapviews == 0
+      %[, visualization_mapviews = #{mapviews}] unless mapviews.nil? || mapviews == 0
     end
 
     def update_likes(likes)
-      %Q[, visualization_likes = #{likes}] unless likes.nil? || likes == 0
+      %[, visualization_likes = #{likes}] unless likes.nil? || likes == 0
     end
 
     def update_tables(visualization)
-      %Q[, visualization_table_names = '#{explore_api.get_visualization_tables(visualization)}']
+      %[, visualization_table_names = '#{explore_api.get_visualization_tables(visualization)}']
     end
 
     def update_geometry(visualization)
@@ -367,12 +368,12 @@ namespace :cartodb do
       view_zoom = geometry_data[:zoom].nil? ? 'NULL' : geometry_data[:zoom]
       bbox_value = !visualization.bbox.nil? ? "ST_AsText('#{visualization.bbox}')" : 'NULL'
       if visualization.type == CartoDB::Visualization::Member::TYPE_DERIVED
-        %Q[, visualization_bbox = #{bbox_value},
+        %[, visualization_bbox = #{bbox_value},
              visualization_view_box = #{view_box_polygon},
              visualization_view_box_center = #{center_geometry},
              visualization_zoom = #{view_zoom}]
       elsif !bbox_value.nil?
-        %Q[, visualization_bbox = #{bbox_value}]
+        %[, visualization_bbox = #{bbox_value}]
       else
         return
       end
@@ -382,7 +383,7 @@ namespace :cartodb do
     def update_table_data(visualization_type, table_data)
       return if table_data.blank?
       if visualization_type == CartoDB::Visualization::Member::TYPE_CANONICAL
-        %Q[ , visualization_table_rows = #{table_data[:rows]},
+        %[ , visualization_table_rows = #{table_data[:rows]},
              visualization_table_size = #{table_data[:size]},
              visualization_geometry_types = '{#{table_data[:geometry_types].join(',')}}' ]
       end
@@ -402,7 +403,7 @@ namespace :cartodb do
     end
 
     def touch_metadata
-      db_conn(as: :superuser).run(%Q{SELECT CDB_TableMetadataTouch('#{VISUALIZATIONS_TABLE}')})
+      db_conn(as: :superuser).run(%{SELECT CDB_TableMetadataTouch('#{VISUALIZATIONS_TABLE}')})
     end
 
     def stats_aggregator

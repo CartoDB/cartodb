@@ -1617,6 +1617,7 @@ class User < Sequel::Model
       self.database_schema = new_schema_name
       self.this.update database_schema: self.database_schema
       self.create_user_schema
+      self.rebuild_quota_trigger
       self.move_tables_to_schema(old_database_schema_name, self.database_schema)
       self.create_public_db_user
       self.set_database_search_path
@@ -1651,16 +1652,18 @@ class User < Sequel::Model
   end
 
   def move_tables_to_schema(old_schema, new_schema)
-    self.real_tables(old_schema).each do |t|
-      self.in_database(as: :superuser) do |database|
-        old_name = "#{old_schema}.#{t[:relname]}"
-        new_name = "#{new_schema}.#{t[:relname]}"
+    self.in_database(as: :superuser) do |database|
+      database.transaction do
+        self.real_tables(old_schema).each do |t|
+          old_name = "#{old_schema}.#{t[:relname]}"
+          new_name = "#{new_schema}.#{t[:relname]}"
 
-        has_the_geom = Table.has_column?(in_database, old_schema, t[:relname], 'the_geom')
+          was_cartodbfied = Carto::UserTable.find_by_user_id_and_name(id, t[:relname]).present?
 
-        database.run(%{ SELECT cartodb._CDB_drop_triggers('#{old_name}'::REGCLASS) }) if has_the_geom
-        database.run(%Q{ ALTER TABLE #{old_name} SET SCHEMA "#{new_schema}" })
-        database.run(%{ SELECT cartodb._CDB_create_triggers('#{new_schema}'::TEXT, '#{new_name}'::REGCLASS) }) if has_the_geom
+          database.run(%{ SELECT cartodb._CDB_drop_triggers('#{old_name}'::REGCLASS) }) if was_cartodbfied
+          database.run(%Q{ ALTER TABLE #{old_name} SET SCHEMA "#{new_schema}" })
+          database.run(%{ SELECT cartodb.CDB_CartodbfyTable('#{new_schema}'::TEXT, '#{new_name}'::REGCLASS) }) if was_cartodbfied
+        end
       end
     end
   end
@@ -2264,7 +2267,7 @@ TRIGGER
   end
 
   def drop_users_privileges_in_schema(schema, accounts)
-    in_database(:as => :superuser) do |user_database|
+    in_database(as: :superuser, statement_timeout: 600000) do |user_database|
       return if user_database.fetch("SELECT 1 as schema_exist FROM information_schema.schemata WHERE schema_name = '#{schema}'").first.nil?
       user_database.transaction do
         accounts

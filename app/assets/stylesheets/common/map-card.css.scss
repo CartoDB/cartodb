@@ -92,8 +92,8 @@ $sEditButtonSize: 50px;
 }
 .MapCard-desc {
   flex: 1;
-  height: 2 * $sLineHeight-normal;
   width: 100%;
+  height: 2 * $sLineHeight-normal;
 
   .DefaultDescription {
     @include line-clamp(2);
@@ -110,10 +110,10 @@ $sEditButtonSize: 50px;
   @include line-clamp(1);
   position: relative;
 }
-.MapCard--selectable{
+.MapCard--selectable {
   &:hover {
-    background-color: $cCard-hoverFill;
     border-color: $cCard-hoverBorder;
+    background-color: $cCard-hoverFill;
     .MapCard-desc .DefaultDescription:after,
     .MapCard-tags:after {
       @include background-horizontal(rgba(255, 255, 255, 0), $cCard-hoverFill);
@@ -279,8 +279,7 @@ $sEditButtonSize: 50px;
 .MapCard-itemTitlePermission { background-color: $cStructure-mainBkg }
 .MapCard-editButton {
   position: absolute;
-  top: -$sEditButtonSize/2; 
-  top:0;
+  top: 0;
   right: 18px;
   width: $sEditButtonSize;
   height: $sEditButtonSize;
@@ -331,7 +330,7 @@ $sEditButtonSize: 50px;
   @include justify-content(flex-start);
 }
 .MapCard-contentFooter.MapCard-contentFooter--lefty > *:not(:last-child) {
-  margin-right: 10px;
+  margin-right: 20px;
 }
 .MapCard-contentFooter.MapCard-contentFooter--with-icon .MapCard-contentFooterIcon {
   display: inline-block;
@@ -340,8 +339,10 @@ $sEditButtonSize: 50px;
 .MapCard-contentFooter.MapCard-contentFooter--with-icon .MapCard-contentFooterDetails--right {
   display: inline-block;
 }
-.MapCard-contentFooterIcon {
+.MapCard-contentFooterIcon,
+.MapCard-contentFooterIcon .iconFont {
   color: #979EA1;
+  &:before { color: #CBCED0; }
 }
 .MapCard-contentFooterDetails {
   display: inline-block;
@@ -405,9 +406,9 @@ $sEditButtonSize: 50px;
 
 // Animation function
 @include keyframes(pulsate) {
-  0% {right:100%;}
-  50% {right:0%}
-  100% {right:-100%}
+  0% {right: 100%;}
+  50% {right: 0%}
+  100% {right: -100%}
 }
 
 @media (min-width: $sMedia-tablet) {

@@ -1626,11 +1626,11 @@ class User < Sequel::Model
 
   # INFO: This method is used both when creating a new user and by the relocator when user is relocated to an org database.
   def setup_schema
-    self.reset_user_schema_permissions
-    self.reset_schema_owner
-    self.set_user_privileges
-    self.set_user_as_organization_member
-    self.rebuild_quota_trigger
+    reset_user_schema_permissions
+    reset_schema_owner
+    set_user_privileges
+    set_user_as_organization_member
+    rebuild_quota_trigger
 
     # INFO: organization privileges are set for org_member_role, which is assigned to each org user
     if organization_owner?
@@ -1641,27 +1641,27 @@ class User < Sequel::Model
   def setup_organization_role_permissions
     org_member_role = in_database.fetch("SELECT cartodb.CDB_Organization_Member_Group_Role_Member_Name() as org_member_role;")[:org_member_role][:org_member_role]
     set_user_privileges_in_public_schema(org_member_role)
-    self.run_queries_in_transaction(
+    run_queries_in_transaction(
       grant_connect_on_database_queries(org_member_role), true
     )
-    self.set_geo_columns_privileges(org_member_role)
-    self.set_raster_privileges(org_member_role)
-    self.set_user_privileges_in_cartodb_schema(org_member_role)
-    self.set_user_privileges_in_importer_schema(org_member_role)
-    self.set_user_privileges_in_geocoding_schema(org_member_role)
+    set_geo_columns_privileges(org_member_role)
+    set_raster_privileges(org_member_role)
+    set_user_privileges_in_cartodb_schema(org_member_role)
+    set_user_privileges_in_importer_schema(org_member_role)
+    set_user_privileges_in_geocoding_schema(org_member_role)
   end
 
   def move_tables_to_schema(old_schema, new_schema)
-    self.in_database(as: :superuser) do |database|
+    in_database(as: :superuser) do |database|
       database.transaction do
-        self.real_tables(old_schema).each do |t|
+        real_tables(old_schema).each do |t|
           old_name = "#{old_schema}.#{t[:relname]}"
           new_name = "#{new_schema}.#{t[:relname]}"
 
           was_cartodbfied = Carto::UserTable.find_by_user_id_and_name(id, t[:relname]).present?
 
           database.run(%{ SELECT cartodb._CDB_drop_triggers('#{old_name}'::REGCLASS) }) if was_cartodbfied
-          database.run(%Q{ ALTER TABLE #{old_name} SET SCHEMA "#{new_schema}" })
+          database.run(%{ ALTER TABLE #{old_name} SET SCHEMA "#{new_schema}" })
           database.run(%{ SELECT cartodb.CDB_CartodbfyTable('#{new_schema}'::TEXT, '#{new_name}'::REGCLASS) }) if was_cartodbfied
         end
       end

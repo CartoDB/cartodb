@@ -282,14 +282,35 @@
     },
 
     setAttribution: function() {
+      var attributionControl = this._getAttributionControl();
 
-      // Attributions have already been set but we override them with
-      // the ones in the map object that are in the right order and include
-      // the default CartoDB attribution
-      this.map_leaflet.attributionControl._attributions = {};
-      _.each(this.map.get('attribution'), function(attribution){
-        this.map_leaflet.attributionControl.addAttribution(attribution);
-      }.bind(this));
+      // Save the attributions that were in the map the first time a new layer
+      // is added and the attributions of the map have changed
+      if (!this._originalAttributions) {
+        this._originalAttributions = Object.keys(attributionControl._attributions);
+      }
+
+      // Clear the attributions and re-add the original and custom attributions in
+      // the order we want
+      attributionControl._attributions = {};
+      var newAttributions = this._originalAttributions.concat(this.map.get('attribution'));
+      _.each(newAttributions, function(attribution) {
+        attributionControl.addAttribution(attribution);
+      });
+    },
+
+    _getAttributionControl: function() {
+      if (this._attributionControl) {
+        return this._attributionControl;
+      }
+
+      this._attributionControl = this.map_leaflet.attributionControl;
+      if (!this._attributionControl) {
+        this._attributionControl = L.control.attribution({ prefix: '' });
+        this.map_leaflet.addControl(this._attributionControl);
+      }
+
+      return this._attributionControl;
     },
 
     getSize: function() {

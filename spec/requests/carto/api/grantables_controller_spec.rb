@@ -57,6 +57,9 @@ describe Carto::Api::GrantablesController do
               g['name'].should == g['model']['username']
             when 'group'
               g['name'].should == g['model']['display_name']
+              users = g['model']['users']
+              group = @carto_organization.groups.find_by_display_name(g['name'])
+              users.should == group.users.map { |u| Carto::UserPresenter.new(u).to_poro }
             else
               raise "Unknown type #{g['type']}"
             end

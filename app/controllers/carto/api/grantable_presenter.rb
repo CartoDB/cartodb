@@ -25,7 +25,7 @@ module Carto
         when 'user'
           Carto::Api::UserPresenter.new(Carto::User.find(@grantable.id))
         when 'group'
-          Carto::Api::GroupPresenter.new(Carto::Group.find(@grantable.id))
+          Carto::Api::GroupPresenter.new(Carto::Group.find(@grantable.id), fetch_users: true)
         else
           raise "Unknown grantable type #{@grantable.type}"
         end

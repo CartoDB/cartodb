@@ -303,7 +303,6 @@ describe Admin::VisualizationsController do
 
   describe 'GET /viz/:name/track_embed' do
     it 'renders the view by passing a visualization name' do
-      name = URI::encode(factory.fetch('name'))
       login_as($user_1, scope: $user_1.username)
 
       get "/viz/track_embed", {}, @headers
@@ -311,7 +310,6 @@ describe Admin::VisualizationsController do
     end
 
     it 'doesnt serve X-Frame-Options: DENY for track_embed' do
-      name = URI::encode(factory.fetch('name'))
       login_as($user_1, scope: $user_1.username)
 
       get "/viz/track_embed", {}, @headers

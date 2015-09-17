@@ -38,8 +38,8 @@ grunt publish
 ```
 http://libs.cartocdn.com.s3.amazonaws.com/cartodb.js/v3/3.15.6/cartodb.js
 http://libs.cartocdn.com/cartodb.js/v3/3.15.6/cartodb.js
-http://libs.cartocdn.com.s3.amazonaws.com/cartodb.js/v3/3.13/cartodb.js
-http://libs.cartocdn.com/cartodb.js/v3/3.13/cartodb.js
+http://libs.cartocdn.com.s3.amazonaws.com/cartodb.js/v3/3.15/cartodb.js
+http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js
 ```
 - Sometimes It takes more than 10 minutes, if it is not updated, execute ```grunt invalidate```.
 

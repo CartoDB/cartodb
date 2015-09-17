@@ -131,6 +131,8 @@ module CartoDB
       public_data_dashboard.css
       public_table.css
       sessions.css
+      user_feed.css
+      explore.css
 
       plugins/tipsy.css
 

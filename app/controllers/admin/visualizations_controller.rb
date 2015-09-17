@@ -34,9 +34,9 @@ class Admin::VisualizationsController < Admin::AdminController
                                                           :show_protected_embed_map, :show_protected_public_map]
   skip_before_filter :verify_authenticity_token, only: [:show_protected_public_map, :show_protected_embed_map]
 
-  skip_before_filter :x_frame_options_deny, only: [:embed_forbidden, :embed_map, :embed_protected, 
-                                                    :show_organization_embed_map, :show_protected_embed_map, 
-                                                    :track_embed]
+  skip_before_filter :x_frame_options_deny, only: [:embed_forbidden, :embed_map, :embed_protected,
+                                                   :show_organization_embed_map, :show_protected_embed_map,
+                                                   :track_embed]
 
   def index
     @first_time    = !current_user.dashboard_viewed?

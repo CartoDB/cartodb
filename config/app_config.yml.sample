@@ -127,6 +127,8 @@ defaults: &defaults
       users_metadata:      5
       redis_migrator_logs: 6
   org_metadata_api:
+    host: 'localhost.lan'
+    port: '3000'
     username: "extension"
     password: "elephant"
     timeout: 10

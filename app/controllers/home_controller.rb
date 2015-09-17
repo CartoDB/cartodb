@@ -20,13 +20,14 @@ class HomeController < ApplicationController
 
   WINDSHAFT_VALID_VERSION = '2.12'
   WINDSHAFT_LATEST_VERSION = '2.12.1'
-  RUN_WINDSHAFT_INSTRUCTIONS = 'Run Windshaft: <span class="code">cd /Windshaft-cartodb && node app.js development</span>'
+  RUN_WINDSHAFT_INSTRUCTIONS = 'Run Windshaft: <span class="code">cd /Windshaft-cartodb && node app.js development'\
+    '</span>'
   SQL_API_VALID_VERSION = '1.24'
   SQL_API_LATEST_VERSION = '1.24.0'
   RUN_SQL_API_INSTRUCTIONS = 'Run SQL API: <span class="code">cd /CartoDB-SQL-API; node app.js development</span>'
   RUN_RESQUE_INSTRUCTIONS =  'Run Resque: <span class="code">bundle exec script/resque</span>'
 
-  skip_before_filter :browser_is_html5_compliant?, :only => :app_status
+  skip_before_filter :browser_is_html5_compliant?, only: :app_status
   # Don't force org urls
   skip_before_filter :ensure_org_url_if_org_user
 
@@ -45,7 +46,7 @@ class HomeController < ApplicationController
     return head(400) if Cartodb.config[:cartodb_com_hosted] == false
 
     @diagnosis = [
-      diagnosis_output('Configuration') { configuration_diagnosis() },
+      diagnosis_output('Configuration') { configuration_diagnosis },
       diagnosis_output('Operating System') { single_line_command_version_diagnosis('lsb_release -a', OS_VERSION, 1) },
       diagnosis_output('Ruby') { single_line_command_version_diagnosis('ruby --version', RUBY_BIN_VERSION) },
       diagnosis_output('Node') { single_line_command_version_diagnosis('node --version', NODE_VERSION) },
@@ -55,8 +56,10 @@ class HomeController < ApplicationController
       diagnosis_output('Database connection') { db_diagnosis },
       diagnosis_output('Redis') { redis_diagnosis },
       diagnosis_output('Redis connection') { redis_connection_diagnosis },
-      diagnosis_output('Windshaft', RUN_WINDSHAFT_INSTRUCTIONS) { windshaft_diagnosis(WINDSHAFT_VALID_VERSION, WINDSHAFT_LATEST_VERSION) },
-      diagnosis_output('SQL API', RUN_SQL_API_INSTRUCTIONS) { sql_api_diagnosis(SQL_API_VALID_VERSION, SQL_API_LATEST_VERSION) },
+      diagnosis_output('Windshaft', RUN_WINDSHAFT_INSTRUCTIONS) {
+        windshaft_diagnosis(WINDSHAFT_VALID_VERSION, WINDSHAFT_LATEST_VERSION) },
+      diagnosis_output('SQL API', RUN_SQL_API_INSTRUCTIONS) {
+        sql_api_diagnosis(SQL_API_VALID_VERSION, SQL_API_LATEST_VERSION) },
       diagnosis_output('Resque') { resque_diagnosis(RUN_RESQUE_INSTRUCTIONS) },
       diagnosis_output('GEOS') { single_line_command_version_diagnosis('geos-config --version', GEOS_VERSION) },
       diagnosis_output('GDAL') { single_line_command_version_diagnosis('gdal-config --version', GDAL_VERSION) },
@@ -66,9 +69,15 @@ class HomeController < ApplicationController
   private
 
   def configuration_diagnosis
+    # favor displaying an organization user if any present
+    organization = Carto::Organization.first
+    user = organization ? organization.owner : Carto::User.first
+
     ['', [
       "Environment: #{environment}",
-      "Subdomainless URLs: #{Cartodb.config[:subdomainless_urls]}"
+      "Subdomainless URLs: #{Cartodb.config[:subdomainless_urls]}",
+      "Sample Editor URL: #{CartoDB.url(self, 'datasets_index', {}, user)}",
+      "Sample Editor APIs URL: #{CartoDB.url(self, 'api_v1_visualizations_index', {}, user)}"
     ]]
   end
 
@@ -123,7 +132,7 @@ class HomeController < ApplicationController
     version = info[version_key]
     messages = ["Service url: #{service_url}"]
     messages << "Full config: #{config}"
-    messages.concat info.to_a.map {|s, v| "<span class='lib'>#{s}</strong>: <span class='version'>#{v}</span>"}
+    messages.concat info.to_a.map { |s, v| "<span class='lib'>#{s}</strong>: <span class='version'>#{v}</span>" }
     valid = valid?(supported_version, latest_version, version)
 
     if valid != false
@@ -134,7 +143,9 @@ class HomeController < ApplicationController
         health['instructions'] = "Enable health checking at config/environments/#{environment}.js"
       end
       health_ok = health['ok'] == true
-      messages.concat(health.reject { |k, v| k == 'result' }.to_a.map {|s, v| "<span class='lib'>Health #{s}</strong>: <span class='version'>#{v}</span>"})
+      messages.concat(health.reject { |k, v| k == 'result' }
+                            .to_a
+                            .map { |s, v| "<span class='lib'>Health #{s}</strong>: <span class='version'>#{v}</span>" })
     end
 
     [STATUS[response.response_code == 200 && valid && health_ok], messages]

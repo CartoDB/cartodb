@@ -1,6 +1,6 @@
-// cartodb.js version: 3.15.4
+// cartodb.js version: 3.15.6
 // uncompressed version: cartodb.uncompressed.js
-// sha: 54e5a86ad6e285e1709121b483586adde90b366a
+// sha: cb6d859189acaf67736177da3da5981ba5c9c8f3
 (function() {
   var define;  // Undefine define (require.js), see https://github.com/CartoDB/cartodb.js/issues/543
   var root = this;
@@ -25655,7 +25655,7 @@ if (typeof window !== 'undefined') {
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = "3.15.4";
+    cdb.VERSION = "3.15.6";
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -34971,8 +34971,9 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
    * @params {Object} Map object
    * @params {Object} Wax event object
    */
-  _findPos: function (map,o) {
-    var curleft = 0, curtop = 0;
+  _findPos: function (map, o) {
+    var curleft = 0;
+    var curtop = 0;
     var obj = map.getContainer();
 
     var x, y;
@@ -34984,22 +34985,32 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
       y = o.e.clientY;
     }
 
-    if (obj.offsetParent) {
-      // Modern browsers
+    // If the map is fixed at the top of the window, we can't use offsetParent
+    // cause there might be some scrolling that we need to take into account.
+    if (obj.offsetParent && obj.offsetTop > 0) {
       do {
         curleft += obj.offsetLeft;
         curtop += obj.offsetTop;
       } while (obj = obj.offsetParent);
-      return map.containerPointToLayerPoint(new L.Point(x - curleft, y - curtop));
+      var point = this._newPoint(
+        x - curleft, y - curtop);
     } else {
       var rect = obj.getBoundingClientRect();
-      var p = new L.Point(
-            (o.e.clientX? o.e.clientX: x) - rect.left - obj.clientLeft - window.scrollX,
-            (o.e.clientY? o.e.clientY: y) - rect.top - obj.clientTop - window.scrollY);
-      return map.containerPointToLayerPoint(p);
+      var scrollX = (window.scrollX || window.pageXOffset);
+      var scrollY = (window.scrollY || window.pageYOffset);
+      var point = this._newPoint(
+        (o.e.clientX? o.e.clientX: x) - rect.left - obj.clientLeft - scrollX,
+        (o.e.clientY? o.e.clientY: y) - rect.top - obj.clientTop - scrollY);
     }
-  }
+    return map.containerPointToLayerPoint(point);
+  },
 
+  /**
+   * Creates an instance of a Leaflet Point
+   */
+  _newPoint: function(x, y) {
+    return new L.Point(x, y);
+  }
 });
 
 L.CartoDBGroupLayer = L.CartoDBGroupLayerBase.extend({
@@ -35753,14 +35764,35 @@ cdb.geo.leaflet.PathView = PathView;
     },
 
     setAttribution: function() {
+      var attributionControl = this._getAttributionControl();
 
-      // Attributions have already been set but we override them with
-      // the ones in the map object that are in the right order and include
-      // the default CartoDB attribution
-      this.map_leaflet.attributionControl._attributions = {};
-      _.each(this.map.get('attribution'), function(attribution){
-        this.map_leaflet.attributionControl.addAttribution(attribution);
-      }.bind(this));
+      // Save the attributions that were in the map the first time a new layer
+      // is added and the attributions of the map have changed
+      if (!this._originalAttributions) {
+        this._originalAttributions = Object.keys(attributionControl._attributions);
+      }
+
+      // Clear the attributions and re-add the original and custom attributions in
+      // the order we want
+      attributionControl._attributions = {};
+      var newAttributions = this._originalAttributions.concat(this.map.get('attribution'));
+      _.each(newAttributions, function(attribution) {
+        attributionControl.addAttribution(attribution);
+      });
+    },
+
+    _getAttributionControl: function() {
+      if (this._attributionControl) {
+        return this._attributionControl;
+      }
+
+      this._attributionControl = this.map_leaflet.attributionControl;
+      if (!this._attributionControl) {
+        this._attributionControl = L.control.attribution({ prefix: '' });
+        this.map_leaflet.addControl(this._attributionControl);
+      }
+
+      return this._attributionControl;
     },
 
     getSize: function() {
@@ -36305,12 +36337,12 @@ CartoDBLayerGroupBase.prototype._checkLayer = function() {
 }
 
 CartoDBLayerGroupBase.prototype._findPos = function (map,o) {
-  var curleft, cartop;
-  curleft = curtop = 0;
+  var curleft = 0;
+  var curtop = 0;
   var obj = map.getDiv();
 
   var x, y;
-  if (o.e.changedTouches && o.e.changedTouches.length > 0 && (o.e.changedTouches[0] !== undefined) ) {
+  if (o.e.changedTouches && o.e.changedTouches.length > 0) {
     x = o.e.changedTouches[0].clientX + window.scrollX;
     y = o.e.changedTouches[0].clientY + window.scrollY;
   } else {
@@ -36318,14 +36350,31 @@ CartoDBLayerGroupBase.prototype._findPos = function (map,o) {
     y = o.e.clientY;
   }
 
-  do {
-    curleft += obj.offsetLeft;
-    curtop += obj.offsetTop;
-  } while (obj = obj.offsetParent);
-  return new google.maps.Point(
-      x - curleft,
-      y - curtop
-  );
+  // If the map is fixed at the top of the window, we can't use offsetParent
+  // cause there might be some scrolling that we need to take into account.
+  if (obj.offsetParent && obj.offsetTop > 0) {
+    do {
+      curleft += obj.offsetLeft;
+      curtop += obj.offsetTop;
+    } while (obj = obj.offsetParent);
+    var point = this._newPoint(
+      x - curleft, y - curtop);
+  } else {
+    var rect = obj.getBoundingClientRect();
+    var scrollX = (window.scrollX || window.pageXOffset);
+    var scrollY = (window.scrollY || window.pageYOffset);
+    var point = this._newPoint(
+      (o.e.clientX? o.e.clientX: x) - rect.left - obj.clientLeft - scrollX,
+      (o.e.clientY? o.e.clientY: y) - rect.top - obj.clientTop - scrollY);
+  }
+  return point;
+};
+
+/**
+ * Creates an instance of a google.maps Point
+ */
+CartoDBLayerGroupBase.prototype._newPoint = function(x, y) {
+  return new google.maps.Point(x, y);
 };
 
 CartoDBLayerGroupBase.prototype._manageOffEvents = function(map, o){
@@ -41091,7 +41140,7 @@ Layers.register('torque', function(vis, data) {
           }
           layerData = visData.layers[index];
         } else {
-          var DATA_LAYER_TYPES = ['namedmap', 'layergroup'];
+          var DATA_LAYER_TYPES = ['namedmap', 'layergroup', 'torque'];
 
           // Select the first data layer (namedmap or layergroup)
           layerData = _.find(visData.layers, function(layer){

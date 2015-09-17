@@ -55,6 +55,8 @@ describe Carto::Api::GrantablesController do
             case g['type']
             when 'user'
               g['name'].should == g['model']['username']
+              user = Carto::User.find_by_username(g['model']['username'])
+              g['model']['groups'].should == user.groups.map { |group| Carto::Api::GroupPresenter.new(group).to_poro }
             when 'group'
               g['name'].should == g['model']['display_name']
               users = g['model']['users']

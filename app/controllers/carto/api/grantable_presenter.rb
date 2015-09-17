@@ -23,7 +23,7 @@ module Carto
       def model_presenter
         case @grantable.type
         when 'user'
-          Carto::Api::UserPresenter.new(Carto::User.find(@grantable.id))
+          Carto::Api::UserPresenter.new(Carto::User.find(@grantable.id), fetch_groups: true)
         when 'group'
           Carto::Api::GroupPresenter.new(Carto::Group.find(@grantable.id), fetch_users: true)
         else

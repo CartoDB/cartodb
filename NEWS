@@ -1,6 +1,9 @@
 3.15.X (XX//YY//ZZZZ)
 * 
 
+3.15.6 (17//09//2015)
+* Fixed a couple of bugs related with Leaflet attributions [#681](https://github.com/CartoDB/cartodb.js/issues/681) 
+
 3.15.5 (15//09//2015)
 * Fixed infowindows in maps with fixed position [#639](https://github.com/CartoDB/cartodb.js/issues/639)
 * Automatically select "torque" layers when no index is specified in cartodb.createLayer [#678](https://github.com/CartoDB/cartodb.js/issues/678)

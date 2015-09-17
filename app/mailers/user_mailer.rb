@@ -87,6 +87,7 @@ class UserMailer < ActionMailer::Base
 
   def trending_map(visualization, mapviews, visualization_preview_image)
     @user = visualization.user
+    @mapviews = mapviews
     @map_name = visualization.name
     @preview_image = visualization_preview_image
     @subject = "Recent activity on one of your maps!"

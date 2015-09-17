@@ -3,7 +3,7 @@
 
 <div class="PublicBody-content">
   <% if @datasets.size == 0 %>
-    <%= render 'admin/shared/no_results', is_maps: false, alt_url: CartoDB.url(self, 'public_visualizations_home') %>
+    <%= render 'admin/shared/no_results', is_maps: false, alt_url: CartoDB.url(self, 'public_maps_home') %>
   <% else %>
     <ul class="MapsList">
       <% @datasets.each do |vis| %>

@@ -2618,12 +2618,16 @@ TRIGGER
     timeout = config.fetch('timeout', 10)
 
     if host.present? && port.present? && username.present? && password.present?
+      conf_sql = %{
+        SELECT cartodb.CDB_Conf_SetConf('groups_api',
+          '{ \"host\": \"#{host}\", \"port\": #{port}, \"timeout\": #{timeout}, \"username\": \"#{username}\", \"password\": \"#{password}\"}'::json
+        )
+      }
       in_database(as: :superuser) do |database|
-        result = database.fetch("SELECT cartodb.CDB_Conf_SetConf('groups_api', '{ \"host\": \"#{host}\", \"port\": #{port}, \"timeout\": #{timeout}, \"username\": \"#{username}\", \"password\": \"#{password}\"}'::json);").first
-        result
+        database.fetch(conf_sql).first
       end
     else
-      CartoDB.notify_debug("org_metadata_api configuration missing", { user_id: id, config: config })
+      CartoDB.notify_debug("org_metadata_api configuration missing", user_id: id, config: config)
     end
   end
 

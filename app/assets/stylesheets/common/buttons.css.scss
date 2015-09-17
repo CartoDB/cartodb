@@ -175,7 +175,7 @@ $cHighlight-mainHover: rgba(#007FBD, 1);
     color: $cTypography-paragraphs;
   }
 }
-.Button-loadMore {
+.Button--opacityTransition {
   @include opacity(1);
   display: inline-block;
   margin: auto;

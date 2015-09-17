@@ -56,7 +56,7 @@ describe Carto::Api::GrantablesController do
             when 'user'
               g['name'].should == g['model']['username']
               user = Carto::User.find_by_username(g['model']['username'])
-              groups = g['model']['groups'].should == user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro }
+              g['model']['groups'].should == user.groups.map { |group| Carto::Api::GroupPresenter.new(group).to_poro }
             when 'group'
               g['name'].should == g['model']['display_name']
             else

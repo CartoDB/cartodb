@@ -148,6 +148,14 @@ describe Admin::VisualizationsController do
       get public_visualizations_public_map_url(id: id), {}, @headers
       last_response.status.should == 200
     end
+
+    it 'serves X-Frame-Options: DENY' do
+      id = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC).table_visualization.id
+
+      get "/viz/#{id}/public_map", {}, @headers
+      last_response.status.should == 200
+      last_response.headers['X-Frame-Options'].should == 'DENY'
+    end
   end
 
   describe 'public_visualizations_show_map' do
@@ -248,7 +256,16 @@ describe Admin::VisualizationsController do
       last_response.status.should == 404
       last_response.body.should =~ /404/
     end
-  end # GET /viz/:name/embed_map
+
+    it 'doesnt serve X-Frame-Options: DENY on embedded with name' do
+      table = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC)
+      name = table.table_visualization.name
+
+      get "/viz/#{URI::encode(name)}/embed_map", {}, @headers
+      last_response.status.should == 200
+      last_response.headers.include?('X-Frame-Options').should_not == true
+    end
+  end
 
   describe 'GET /viz/:id/embed_map' do
     it 'caches and serves public embed map successful responses' do
@@ -274,6 +291,14 @@ describe Admin::VisualizationsController do
       remove_changing.call(first_response.headers).should == remove_changing.call(last_response.headers)
       first_response.body.should == last_response.body
     end
+
+    it 'doesnt serve X-Frame-Options: DENY on embedded' do
+      id = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC).table_visualization.id
+
+      get "/viz/#{id}/embed_map", {}, @headers
+      last_response.status.should == 200
+      last_response.headers.include?('X-Frame-Options').should_not == true
+    end
   end
 
   describe 'GET /viz/:name/track_embed' do
@@ -284,7 +309,16 @@ describe Admin::VisualizationsController do
       get "/viz/track_embed", {}, @headers
       last_response.status.should == 200
     end
-  end # GET /viz/:name/track_embed
+
+    it 'doesnt serve X-Frame-Options: DENY for track_embed' do
+      name = URI::encode(factory.fetch('name'))
+      login_as($user_1, scope: $user_1.username)
+
+      get "/viz/track_embed", {}, @headers
+      last_response.status.should == 200
+      last_response.headers.include?('X-Frame-Options').should_not == true
+    end
+  end
 
   describe 'non existent visualization' do
     it 'returns 404' do

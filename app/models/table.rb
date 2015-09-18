@@ -456,6 +456,7 @@ class Table
 
     privacy_manager = CartoDB::TablePrivacyManager.new(@user_table)
     privacy_manager.set_from_table_privacy(@user_table.privacy)
+    # Propagation: Table -> Table PrivacyManager -> Visualization -> Visualization NamedMap
     privacy_manager.propagate_to([table_visualization])
 
     notify_privacy_affected_entities(privacy_manager) if privacy_changed?

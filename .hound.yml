@@ -5,4 +5,5 @@ ruby:
   enabled: true
   config_file: .rubocop.yml
 javascript:
-  enabled: false
+  enabled: true
+  config_file: .javascript-style.json

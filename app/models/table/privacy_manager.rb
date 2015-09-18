@@ -6,7 +6,7 @@ require_relative 'user_table'
 module CartoDB
   class TablePrivacyManager
     def initialize(table)
-      @table  = table
+      @table = table
     end
 
     def set_public
@@ -23,16 +23,16 @@ module CartoDB
 
     def set_from_table_privacy(table_privacy)
       case table_privacy
-        when ::UserTable::PRIVACY_PUBLIC
-          set_public
-        when ::UserTable::PRIVACY_LINK
-          set_public_with_link_only
-        else
-          set_private
+      when ::UserTable::PRIVACY_PUBLIC
+        set_public
+      when ::UserTable::PRIVACY_LINK
+        set_public_with_link_only
+      else
+        set_private
       end
     end
 
-    def set_from(visualization)
+    def set_from_visualization(visualization)
       set_public                if visualization.public?
       set_public_with_link_only if visualization.public_with_link?
       set_private               if visualization.private? or visualization.organization?
@@ -40,11 +40,14 @@ module CartoDB
       self
     end
 
-    def propagate_to(visualization, table_privacy_changed=false)
-      visualization.store_using_table({
-                                        privacy_text: ::UserTable::PRIVACY_VALUES_TO_TEXTS[privacy],
-                                        map_id: visualization.map_id
-                                      }, table_privacy_changed)
+    def propagate_to(visualizations, table_privacy_changed = false)
+      visualizations.each do |visualization|
+        visualization.store_using_table({
+                                          privacy_text: ::UserTable::PRIVACY_VALUES_TO_TEXTS[privacy],
+                                          map_id: visualization.map_id
+                                        }, table_privacy_changed)
+      end
+
       self
     end
 
@@ -57,7 +60,7 @@ module CartoDB
 
     private
 
-    attr_reader   :table
+    attr_reader :table
     attr_accessor :privacy
 
     def set_public_with_link_only
@@ -93,4 +96,3 @@ module CartoDB
 
   end
 end
-

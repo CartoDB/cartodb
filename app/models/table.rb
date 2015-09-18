@@ -441,35 +441,30 @@ class Table
     update_table_pg_stats
 
   rescue => e
-    self.handle_creation_error(e)
+    handle_creation_error(e)
   end
 
   def before_save
     @user_table.updated_at = table_visualization.updated_at if table_visualization
-  end #before_save
+  end
 
   def after_save
     manage_tags
     update_name_changes
 
     @user_table.map.save
-    manager = CartoDB::TablePrivacyManager.new(@user_table)
-    manager.set_from_table_privacy(@user_table.privacy)
-    manager.propagate_to(table_visualization)
-    if privacy_changed?
-      manager.propagate_to_varnish
-      update_cdb_tablemetadata
-    end
 
-    affected_visualizations.each { |visualization|
-      manager.propagate_to(visualization, privacy_changed?)
-    }
+    privacy_manager = CartoDB::TablePrivacyManager.new(@user_table)
+    privacy_manager.set_from_table_privacy(@user_table.privacy)
+    privacy_manager.propagate_to([table_visualization])
+
+    notify_privacy_affected_entities(privacy_manager) if privacy_changed?
   end
 
   def propagate_namechange_to_table_vis
     table_visualization.name = name
     table_visualization.store
-  end #propagate_namechange_to_table_vis
+  end
 
   def grant_select_to_tiler_user
     owner.in_database(:as => :superuser).run(%Q{GRANT SELECT ON #{qualified_table_name} TO #{CartoDB::TILE_DB_USER};})
@@ -1348,6 +1343,12 @@ class Table
   end
 
   private
+
+  def notify_privacy_affected_entities(privacy_manager)
+    privacy_manager.propagate_to_varnish
+    update_cdb_tablemetadata
+    privacy_manager.propagate_to(affected_visualizations, true)
+  end
 
   def importer_stats
     @importer_stats ||= CartoDB::Stats::Importer.instance

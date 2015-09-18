@@ -803,7 +803,7 @@ module CartoDB
       def propagate_privacy_to(table)
         if type == TYPE_CANONICAL
           CartoDB::TablePrivacyManager.new(table)
-                                      .set_from(self)
+                                      .set_from_visualization(self)
                                       .propagate_to_varnish
         end
         self

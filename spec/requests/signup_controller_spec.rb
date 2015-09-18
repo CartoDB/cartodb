@@ -70,7 +70,7 @@ describe SignupController do
       password = 'testpassword'
       host! "#{@organization.name}.localhost.lan"
       post signup_organization_user_url(user_domain: @organization.name, user: { username: username, email: email, password: password })
-      response.status.should == 200
+      response.status.should == 422
       last_user_creation = Carto::UserCreation.order('created_at desc').limit(1).first
       last_user_creation.should == nil
     end
@@ -99,7 +99,7 @@ describe SignupController do
       response.status.should == 400
     end
 
-    it 'triggers a NewUser job with form parameters and default quota' do
+    it 'triggers a NewUser job with form parameters and default quota and requiring validation email' do
       ::Resque.expects(:enqueue).with(::Resque::UserJobs::Signup::NewUser, 
         instance_of(String), instance_of(String), instance_of(FalseClass)).returns(true)
 
@@ -116,6 +116,15 @@ describe SignupController do
       last_user_creation.salt.should_not be_empty
       last_user_creation.organization_id.should == @organization.id
       last_user_creation.quota_in_bytes.should == @organization.default_quota_in_bytes
+      last_user_creation.requires_validation_email?.should == true
+    end
+
+    it 'Returns 422 for not whitelisted domains' do
+      ::Resque.expects(:enqueue).never
+
+      host! "#{@organization.name}.localhost.lan"
+      post signup_organization_user_url(user_domain: @organization.name, user: { username: 'evil-user', email: 'evil.user@whatever.com', password: 'xxxxxx' })
+      response.status.should == 422
     end
 
     describe 'ldap signup' do

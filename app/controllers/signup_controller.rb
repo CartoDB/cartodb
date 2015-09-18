@@ -62,7 +62,7 @@ class SignupController < ApplicationController
           # No need for additional errors if there're field errors
           flash.now[:error] = 'User not valid'
         end
-        render action: 'signup'
+        render action: 'signup', status: @user.errors.empty? ? 200 : 422
       end
     end
 

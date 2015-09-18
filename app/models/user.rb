@@ -2601,7 +2601,7 @@ TRIGGER
   private
 
   def get_invitation_token_from_user_creation
-    user_creation = Carto::UserCreation.find_by_user_id(user.id)
+    user_creation = Carto::UserCreation.find_by_user_id(id)
     if !user_creation.nil? && user_creation.has_valid_invitation?
       user_creation.invitation_token
     else

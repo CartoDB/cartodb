@@ -135,6 +135,7 @@ class Carto::UserCreation < ActiveRecord::Base
     @user.salt = self.salt
     @user.quota_in_bytes = self.quota_in_bytes unless self.quota_in_bytes.nil?
     @user.google_sign_in = self.google_sign_in
+    @user.invitation_token = self.invitation_token
     @user.enable_account_token = User.make_token if requires_validation_email?
     unless @promote_to_organization_owner
       organization = ::Organization.where(id: self.organization_id).first

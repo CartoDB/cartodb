@@ -35,6 +35,8 @@
                   <input type="hidden" value="0" id="google_access_filled" name="google_access_filled" />
                 <% end %>
 
+                  <input type="hidden" value="<%= params[:invitation_token] %>" id="invitation_token" name="invitation_token" />
+
                 <% if @organization.auth_username_password_enabled %>
                   <div class="Sessions-sep"></div>
 

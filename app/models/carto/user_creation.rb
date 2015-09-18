@@ -97,14 +97,14 @@ class Carto::UserCreation < ActiveRecord::Base
     self
   end
 
-  private
-
   def has_valid_invitation?
     return false unless invitation_token
 
     invitations = Carto::Invitation.query_with_email(email).all
     !invitations.select { |i| i.token(email) == invitation_token }.empty?
   end
+
+  private
 
   def user
     @user ||= ::User.where(id: user_id).first

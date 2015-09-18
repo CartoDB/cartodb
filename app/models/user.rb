@@ -2588,7 +2588,26 @@ TRIGGER
     update api_key: User.make_token
   end
 
+  # This is set temporary on user creation with invitation,
+  # or retrieved from database afterwards
+  def invitation_token
+    @invitation_token ||= get_invitation_token_from_user_creation
+  end
+
+  def invitation_token=(invitation_token)
+    @invitation_token = invitation_token
+  end
+
   private
+
+  def get_invitation_token_from_user_creation
+    user_creation = Carto::UserCreation.find_by_user_id(user.id)
+    if !user_creation.nil? && user_creation.has_valid_invitation?
+      user_creation.invitation_token
+    else
+      nil
+    end
+  end
 
   def quota_dates(options)
     date_to = (options[:to] ? options[:to].to_date : Date.today)

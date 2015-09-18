@@ -189,7 +189,7 @@ module Carto
   end
 
     def get_db_configuration_for(user_type = nil)
-      logger = (Rails.env.development? || CartoDB::Env.test? ? ::Rails.logger : nil)
+      logger = (Rails.env.development? || Rails.env.test? ? ::Rails.logger : nil)
 
       # TODO: proper AR config when migration is complete
       base_config = ::Rails::Sequel.configuration.environment_for(Rails.env)

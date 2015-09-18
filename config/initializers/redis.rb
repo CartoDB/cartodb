@@ -45,7 +45,7 @@ $redis_migrator_logs = Redis.new(redis_conf.merge(db: databases[:redis_migrator_
 # When in the "test" environment we don't expect a Redis
 # server to be up and running at this point. Later code
 # will take care of starting one (see spec/spec_helper.rb)
-unless CartoDB::Env.test?
+unless Rails.env.test?
   begin
     $tables_metadata.ping
     $api_credentials.ping

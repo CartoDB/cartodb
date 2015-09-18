@@ -16,7 +16,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   include CartoDB
 
   ssl_allowed  :notify_watching, :list_watching, :add_like, :remove_like
-  ssl_required :create, :update, :destroy, :set_next_id unless Rails.env.development? || CartoDB::Env.test?
+  ssl_required :create, :update, :destroy, :set_next_id unless Rails.env.development? || Rails.env.test?
   skip_before_filter :api_authorization_required, only: [:add_like, :remove_like]
   before_filter :optional_api_authorization, only: [:add_like, :remove_like]
   before_filter :table_and_schema_from_params, only: [:update, :destroy, :stats,

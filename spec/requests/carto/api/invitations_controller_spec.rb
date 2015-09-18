@@ -28,7 +28,7 @@ describe Carto::Api::InvitationsController do
       end
     end
 
-    it 'registers invitations returning its json' do
+    it 'registers invitations with a token seed returning its json' do
       invitation = {
         users_emails: [ 'email_a@cartodb.com', 'email_b@cartodb.com' ],
         welcome_text: 'Please join my organization!'
@@ -38,6 +38,8 @@ describe Carto::Api::InvitationsController do
         response.body[:id].should_not be_nil
         response.body[:users_emails].should == invitation[:users_emails]
         response.body[:welcome_text].should == invitation[:welcome_text]
+
+        invitation = Carto::Invitation.find(response.body[:id]).seed.should_not be_nil
       end
     end
 

@@ -82,6 +82,24 @@ describe Carto::UserCreation do
       saved_user.enable_account_token.should be_nil
     end
 
+    it 'does not assign an enable_account_token if user had an invitation and the right token is set' do
+      User.any_instance.stubs(:create_in_central).returns(true)
+      User.any_instance.stubs(:enable_remote_db_user).returns(true)
+      user_data = FactoryGirl.build(:valid_user)
+      user_data.organization = @organization
+      user_data.google_sign_in = false
+
+      invitation = Carto::Invitation.create_new([ user_data.email ], 'Welcome!')
+      invitation.save
+
+      user_creation = Carto::UserCreation.new_user_signup(user_data).with_invitation_token(invitation.token(user_data.email))
+      user_creation.next_creation_step until user_creation.finished?
+
+      saved_user = Carto::User.order("created_at desc").limit(1).first
+      saved_user.username.should == user_data.username
+      saved_user.enable_account_token.should be_nil
+    end
+
     it 'neither creates a new User nor sends the mail and marks creation as failure if saving fails' do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
       User.any_instance.stubs(:save).raises('saving error')

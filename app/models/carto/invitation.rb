@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require 'active_record'
+
 module Carto
   class Invitation < ActiveRecord::Base
     # Because of an activerecord-postgresql-array bug that makes array
@@ -13,11 +15,21 @@ module Carto
 
     def self.create_new(users_emails, welcome_text)
       invitation = new(welcome_text: welcome_text)
-      invitation.save
-      invitation.reload
-      invitation.users_emails = users_emails
-      invitation.save
+      invitation.seed = Carto::UserService.make_token
+      if invitation.save
+        invitation.reload
+        invitation.users_emails = users_emails
+        invitation.save
+      end
       invitation
+    end
+
+    def self.query_with_email(email)
+      Carto::Invitation.where('? = ANY(users_emails)', email)
+    end
+
+    def token(email)
+      ::User.secure_digest(email, seed)
     end
 
   end

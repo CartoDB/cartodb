@@ -81,7 +81,7 @@ class Carto::UserCreation < ActiveRecord::Base
 
   # TODO: Shorcut, search for a better solution to detect requirement
   def requires_validation_email?
-    self.google_sign_in != true && !Carto::Ldap::Manager.new.configuration_present?
+    self.google_sign_in != true && !has_valid_invitation? && !Carto::Ldap::Manager.new.configuration_present?
   end
 
   def autologin?
@@ -92,7 +92,19 @@ class Carto::UserCreation < ActiveRecord::Base
     user.subdomain
   end
 
+  def with_invitation_token(invitation_token)
+    self.invitation_token = invitation_token
+    self
+  end
+
   private
+
+  def has_valid_invitation?
+    return false unless invitation_token
+
+    invitations = Carto::Invitation.query_with_email(email).all
+    !invitations.select { |i| i.token(email) == invitation_token }.empty?
+  end
 
   def user
     @user ||= ::User.where(id: user_id).first

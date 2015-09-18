@@ -13,6 +13,7 @@ module Carto
           params[:users_emails],
           params[:welcome_text]
         )
+        # TODO: error handling, returning 500 and `{ errors: [ “error 1”, “error 2”] }`
         render_jsonp(Carto::Api::InvitationPresenter.new(invitation).to_poro)
       end
 

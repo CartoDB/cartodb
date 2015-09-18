@@ -2249,20 +2249,47 @@ describe Table do
       table.save
       table.should be_private
 
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
       source  = table.table_visualization
       derived = CartoDB::Visualization::Copier.new($user_1, source).copy
       derived.store
       derived.type.should eq(CartoDB::Visualization::Member::TYPE_DERIVED)
 
       # Do not create all member objects anew to be able to set expectations
-      CartoDB::Visualization::Member.stubs(:new).with(has_entry(:id => derived.id)).returns(derived)
-      CartoDB::Visualization::Member.stubs(:new).with(has_entry(:type => 'table')).returns(table.table_visualization)
+      CartoDB::Visualization::Member.stubs(:new).with(has_entry(id: derived.id)).returns(derived)
+      CartoDB::Visualization::Member.stubs(:new).with(has_entry(type: 'table')).returns(table.table_visualization)
 
-      derived.expects(:invalidate_cache).once()
+      derived.expects(:invalidate_cache).once
 
       table.privacy = UserTable::PRIVACY_PUBLIC
       table.save
+
+      $user_1.private_tables_enabled = false
+      $user_1.save
+    end
+
+    it 'privacy reverts if named map update fails' do
+      $user_1.private_tables_enabled = true
+      $user_1.save
+      table = create_table(user_id: $user_1.id)
+      table.save
+
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, update: true)
+      source  = table.table_visualization
+      derived = CartoDB::Visualization::Copier.new($user_1, source).copy
+      derived.store
+      derived.type.should eq(CartoDB::Visualization::Member::TYPE_DERIVED)
+
+      table.privacy = UserTable::PRIVACY_PRIVATE
+      expect {
+        table.save
+      }.to raise_exception CartoDB::NamedMapsWrapper::HTTPResponseError
+
+      table.reload
+      table.privacy.should eq UserTable::PRIVACY_PUBLIC
+
+      $user_1.private_tables_enabled = false
+      $user_1.save
     end
   end
 

@@ -11,6 +11,7 @@
   background: transparent;
   z-index: 10;
   min-height: 600px;
+  width: 260px;
 }
 .SideMenu-progress {
   @include display-flex();

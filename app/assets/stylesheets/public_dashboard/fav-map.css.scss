@@ -58,7 +58,6 @@ $heightTall: 450px;
   bottom: 45px;
   width: 100%;
   transition: opacity 150ms ease-in-out;
-  pointer-events: none;
   line-height: normal;
   z-index: 10000;
 }
@@ -73,8 +72,14 @@ $heightTall: 450px;
 .FavMapTitle-sectionTitle,
 .FavMapTitle-mapTitle {
   color: #FFFFFF;
+  text-decoration: none;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
 }
+.FavMapTitle-mapTitle:hover {
+  color: #FFFFFF;
+  text-decoration: none;
+}
+
 .FavMapTitle-sectionTitle {
   margin: 0 0 10px;
   font-size: 16px;

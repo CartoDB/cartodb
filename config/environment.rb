@@ -7,16 +7,15 @@ module Rails
 
      def database_configuration
        require 'erb'
-       db_config = YAML::load(ERB.new(IO.read(paths["config/database"].first)).result)
-       if ENV['RAILS_DATABASE_NAME']
-         @overriden_database_name = ENV['RAILS_DATABASE_NAME']
-         db_config[Rails.env]['database'] = @overriden_database_name
-#         puts db_config;
+       if ENV['RAILS_DATABASE_FILE']
+         db_config = YAML.load(File.read(File.join(Rails.root, 'config/' + ENV['RAILS_DATABASE_FILE'])))
+       else
+         db_config = YAML.load(File.read(File.join(Rails.root, 'config/database.yml')))
        end
        db_config
-     end 
-   end 
- end 
+     end
+   end
+ end
 end
 
 

@@ -5,12 +5,12 @@ module CartoDB
     REDIS_DB_NAME    = "redis_test.rdb"
 
     def self.down
-      if Cartodb.config[:parallel_tests]
-        if File.file?(Cartodb.config[:redis]["pid"])
+      if ENV['REDIS_PORT']
+        if File.file?("/tmp/redis-test-#{ENV['REDIS_PORT']}.tmp")
           puts "\n[redis] Shutting down test server..."
-          pid = File.read(Cartodb.config[:redis]["pid"]).to_i
+          pid = File.read("/tmp/redis-test-#{ENV['REDIS_PORT']}.tmp").to_i
           system("kill -9 #{pid}")
-          File.delete(Cartodb.config[:redis]["pid"])
+          File.delete("/tmp/redis-test-#{ENV['REDIS_PORT']}.tmp")
         end
       else
         if File.file?(REDIS_PID)
@@ -25,13 +25,15 @@ module CartoDB
 
     def self.up
       down
-      port = Cartodb.config[:redis]["port"] 
-      if Cartodb.config[:parallel_tests]
-        print "Setting up redis config for parallel tests..."
-        new_redis_pid = Cartodb.config[:redis]["pid"]
-        new_cache_path = Cartodb.config[:redis]["dir"]
-        new_logfile = Cartodb.config[:redis]["log"]
-        Dir.mkdir Cartodb.config[:redis]["dir"] unless File.exists?(Cartodb.config[:redis]["dir"])
+      if ENV['REDIS_PORT']
+        print "Setting up redis config..."
+        port = ENV['REDIS_PORT']
+        new_redis_pid = "/tmp/redis-test-#{ENV['REDIS_PORT']}.tmp"
+        new_cache_path = "/tmp/redis-#{ENV['REDIS_PORT']}"
+        new_logfile = "/tmp/redis-#{ENV['REDIS_PORT']}/stdout"
+        Dir.mkdir "/tmp/redis-#{ENV['REDIS_PORT']}" unless File.exists?("/tmp/redis-#{ENV['REDIS_PORT']}")
+      else
+        port = Cartodb.config[:redis]["port"] 
       end
       print "[redis] Starting test server on port #{port}... "
       redis_options = {

@@ -4,7 +4,7 @@ require_relative '../../models/table'
 require_relative '../../models/visualization/member'
 require_relative '../../models/visualization/collection'
 
-class Admin::PagesController < ApplicationController
+class Admin::PagesController < Admin::AdminController
 
   include CartoDB
 

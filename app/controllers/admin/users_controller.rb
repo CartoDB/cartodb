@@ -3,7 +3,7 @@ require_dependency 'google_plus_api'
 require_dependency 'google_plus_config'
 require_relative '../../../services/datasources/lib/datasources'
 
-class Admin::UsersController < ApplicationController
+class Admin::UsersController < Admin::AdminController
   include LoginHelper
 
   ssl_required  :account, :profile, :account_update, :profile_update, :delete

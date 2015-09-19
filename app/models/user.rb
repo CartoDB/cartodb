@@ -45,6 +45,7 @@ class User < Sequel::Model
   }
 
   one_to_many :feature_flags_user
+  one_to_many :user_notifications, class: ::UserNotification
 
   # Sequel setup & plugins
   plugin :association_dependencies, :client_application => :destroy, :synchronization_oauths => :destroy, :feature_flags_user => :destroy
@@ -181,6 +182,7 @@ class User < Sequel::Model
     setup_user
     save_metadata
     self.load_avatar
+    self.subscribe_to_notifications
     monitor_user_notification
     sleep 1
     set_statement_timeouts
@@ -310,6 +312,7 @@ class User < Sequel::Model
     end
 
     self.feature_flags_user.each { |ffu| ffu.delete }
+    self.user_notifications.each { |user_notification| user_notification.delete }
   end
 
   def delete_external_data_imports
@@ -819,6 +822,18 @@ class User < Sequel::Model
   def gravatar_user_url(size = 128)
     digest = Digest::MD5.hexdigest(email.downcase)
     return "gravatar.com/avatar/#{digest}?s=#{size}"
+  end
+
+  def subscribe_to_notifications
+    self.add_user_notification(:user_id => self.id)
+  end
+
+  def is_subscribed_to?(notification_type)
+    if !self.has_feature_flag?("notifications_management")
+      return true
+    else
+      return self.user_notifications.first.send(notification_type)
+    end
   end
 
   # Retrive list of user tables from database catalogue

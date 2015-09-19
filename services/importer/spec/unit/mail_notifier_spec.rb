@@ -1,6 +1,7 @@
 # encoding: UTF-8
 
 require_relative '../../lib/importer/mail_notifier'
+require_relative '../../../../app/models/carto/notification'
 require_relative '../../../../spec/rspec_configuration.rb'
 
 describe CartoDB::Importer2::MailNotifier do
@@ -9,10 +10,14 @@ describe CartoDB::Importer2::MailNotifier do
 
   before(:each) do
     @data_import = mock
+    @user = mock
+    @user.stubs(:id).returns(:any_user_id)
+    @user.stubs(:is_subscribed_to?).returns(true)
+    @user.stubs(:has_feature_flag?).returns(true)
     @resque = mock
     @result = mock
     results = [@result]
-    @mail_notifier = CartoDB::Importer2::MailNotifier.new(@data_import, results, @resque)
+    @mail_notifier = CartoDB::Importer2::MailNotifier.new(@data_import, @user, results, @resque)
   end
 
   def set_import_duration duration
@@ -24,13 +29,11 @@ describe CartoDB::Importer2::MailNotifier do
 
     it 'should send a mail if the import took more than MIN_IMPORT_TIME_TO_NOTIFY' do
       @data_import.stubs(:synchronization_id).once.returns(nil)
-      set_import_duration(CartoDB::Importer2::MailNotifier::MIN_IMPORT_TIME_TO_NOTIFY + 1)
-      @data_import.stubs(:user_id).once.returns(:any_user_id)
+      set_import_duration(::CartoDB::Importer2::MailNotifier::MIN_IMPORT_TIME_TO_NOTIFY + 1)
       @result.stubs(:success).returns(true)
       @resque.expects(:enqueue).with(::Resque::UserJobs::Mail::DataImportFinished, :any_user_id, 1, 1, @result, @result, nil).returns(true)
 
       @mail_notifier.notify_if_needed
-
       @mail_notifier.mail_sent?.should == true
     end
   end
@@ -60,7 +63,6 @@ describe CartoDB::Importer2::MailNotifier do
 
   describe '#send!' do
     it 'should inconditionally send a mail to the user who triggered the import' do
-      @data_import.stubs(:user_id).once.returns(:any_user_id)
       @resque.expects(:enqueue).with(::Resque::UserJobs::Mail::DataImportFinished, :any_user_id, 1, 1, @result, @result, nil).returns(true)
       @result.stubs(:success).returns(true)
       @mail_notifier.send!

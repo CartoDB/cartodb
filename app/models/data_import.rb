@@ -775,7 +775,7 @@ class DataImport < Sequel::Model
     end
     import_log.merge!(decorate_log(self))
     dataimport_logger.info(import_log.to_json)
-    CartoDB::Importer2::MailNotifier.new(self, results, ::Resque).notify_if_needed
+    CartoDB::Importer2::MailNotifier.new(self, current_user, results, ::Resque).notify_if_needed
     results.each { |result| CartoDB::Metrics.new.report(:import, payload_for(result)) }
   end
 

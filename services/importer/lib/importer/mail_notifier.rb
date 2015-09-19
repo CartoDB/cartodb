@@ -1,6 +1,7 @@
 # encoding: UTF-8
 
 require_relative '../../../../lib/resque/user_jobs'
+require_relative '../../../../app/models/carto/notification'
 
 module CartoDB
   module Importer2
@@ -9,8 +10,9 @@ module CartoDB
 
       MIN_IMPORT_TIME_TO_NOTIFY = 3 * 60 # seconds
 
-      def initialize(data_import, results, resque)
+      def initialize(data_import, user, results, resque)
         @data_import = data_import
+        @user = user
         @results = results
         @resque = resque
         @mail_sent = false
@@ -29,13 +31,17 @@ module CartoDB
       end
 
       def send!
-        user_id = @data_import.user_id
         imported_tables = @results.select {|r| r.success }.length
         total_tables = @results.length
         first_imported_table = imported_tables == 0 ? nil : @results.select {|r| r.success }.first
         first_table = @results.first
         errors = imported_tables == total_tables ? nil : @data_import.get_error_text
-        @mail_sent = @resque.enqueue(::Resque::UserJobs::Mail::DataImportFinished, user_id, imported_tables, total_tables, first_imported_table, first_table, errors)
+        if @user.is_subscribed_to?(Carto::Notification::DATA_IMPORT_FINISHED_NOTIFICATION)
+          @mail_sent = @resque.enqueue(
+            ::Resque::UserJobs::Mail::DataImportFinished,
+            @user.id, imported_tables, total_tables, first_imported_table, first_table, errors
+          )
+        end
       end
 
       def mail_sent?
@@ -44,6 +50,6 @@ module CartoDB
 
     end
 
-  end #Importer2
-end #CartoDB
+  end
+end
 

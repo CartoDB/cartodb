@@ -8,8 +8,8 @@ module CartoDB
 
       MIN_GEOCODER_TIME_TO_NOTIFY = 3 * 60 # seconds
 
-      def initialize(user_id, state, table_name, error_code, processable_rows, number_geocoded_rows, geocoding_time)
-        @user_id = user_id
+      def initialize(user, state, table_name, error_code, processable_rows, number_geocoded_rows, geocoding_time)
+        @user = user
         @state = state
         @table_name = table_name
         @error_code = error_code
@@ -25,13 +25,13 @@ module CartoDB
       end
 
       def should_notify?
-        @geocoding_time >= MIN_GEOCODER_TIME_TO_NOTIFY
+        @user.is_subscribed_to?(Carto::UserNotification::GEOCODING_NOTIFICATION) && @geocoding_time >= MIN_GEOCODER_TIME_TO_NOTIFY
       end
 
       def send!
         @mail_sent = @resque.enqueue(
           ::Resque::UserJobs::Mail::GeocoderFinished,
-          @user_id,
+          @user.id,
           @state,
           @table_name,
           @error_code,

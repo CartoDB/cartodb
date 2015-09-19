@@ -9,7 +9,7 @@ describe CartoDB::Permission do
   before(:all) do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
     User.any_instance.stubs(:gravatar).returns(nil)
-    @user = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
+    @user = create_user(quota_in_bytes: 524288000, table_quota: 500)
   end
 
   after(:each) do
@@ -174,7 +174,7 @@ describe CartoDB::Permission do
         ]
       }.to raise_exception CartoDB::PermissionError
 
-      user2 = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
+      user2 = create_user(quota_in_bytes: 524288000, table_quota: 500)
       permission2.acl = [
         {
           type: Permission::TYPE_USER,
@@ -550,8 +550,16 @@ describe CartoDB::Permission do
 
       permission.save
      
+      user2_mock = mock
       user2_id = "17d5b1e6-0d14-11e4-a3ef-0800274a1928"
+      user2_mock.stubs(:id).returns(user2_id)
+      user2_mock.stubs(:is_subscribed_to?).returns(true)
+      User.stubs(:find).with(id: user2_id).returns(user2_mock)
+      user3_mock = mock
       user3_id = "28d09bc0-0d14-11e4-a3ef-0800274a1928"
+      user3_mock.stubs(:id).returns(user3_id)
+      user3_mock.stubs(:is_subscribed_to?).returns(true)
+      User.stubs(:find).with(id: user3_id).returns(user3_mock)
       permissions_changes = {
         "user" => {
           user2_id => [{ "action"=>"grant", "type"=>"r" }],
@@ -638,8 +646,8 @@ describe CartoDB::Permission do
     end
 
     it "permission comparisson function should return right diff hash" do
-      acl1 = [{:type=>"user", :id=>"17d09bc0-0d14-11e4-a3ef-0800274a1928", :access=>"r"}, {:type=>"user", :id=>"28d09bc0-0d14-11e4-a3ef-0800274a1928", :access=>"r"}]
-      acl2 = [{:type=>"user", :id=>"17d09bc0-0d14-11e4-a3ef-0800274a1928", :access=>"r"}, {:type=>"user", :id=>"17d5b1e6-0d14-11e4-a3ef-0800274a1928", :access=>"r"}]
+      acl1 = [{type: "user", id: "17d09bc0-0d14-11e4-a3ef-0800274a1928", access: "r"}, {type: "user", id: "28d09bc0-0d14-11e4-a3ef-0800274a1928", access: "r"}]
+      acl2 = [{type: "user", id: "17d09bc0-0d14-11e4-a3ef-0800274a1928", access: "r"}, {type: "user", id: "17d5b1e6-0d14-11e4-a3ef-0800274a1928", access: "r"}]
      
       expected_diff = {
         "user" => {

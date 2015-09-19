@@ -357,7 +357,7 @@ class Geocoding < Sequel::Model
   # Used in the run! method
   def send_report_mail(state, table_name, error_code=nil, processable_rows, number_geocoded_rows)
     geocoding_time = @finished_at - @started_at
-    CartoDB::Geocoder::MailNotifier.new(user.id, state, table_name, error_code, processable_rows, number_geocoded_rows, geocoding_time).notify_if_needed
+    CartoDB::Geocoder::MailNotifier.new(user, state, table_name, error_code, processable_rows, number_geocoded_rows, geocoding_time).notify_if_needed
   end
 
 end

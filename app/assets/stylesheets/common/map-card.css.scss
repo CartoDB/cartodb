@@ -63,17 +63,22 @@ $sEditButtonSize: 50px;
 }
 
 .MapCard.MapCard--squared .MapCard-content {
-  height: 38px;
+  height: 43px;
+  padding: 17px 20px 20px;
 }
 .MapCard.MapCard--squared .MapCard-contentFooter {
   @include justify-content(flex-start);
   padding-top: 0;
   border-top: none;
 }
+
 .MapCard.MapCard--squared .MapCard-contentFooter > *:not(:last-child) {
-  margin-right: 10px;
+  margin-right: 20px;
 }
 
+.MapCard.MapCard--squared .MapCard-contentFooter .MapCard-contentFooterIcon {
+  margin-right: 0;
+}
 .MapCard-contentFooterDetails--left {
   @include display-flex();
   @include align-items(center);
@@ -418,18 +423,29 @@ $sEditButtonSize: 50px;
 }
 
 @media only screen and (max-width: 320px) {
-  .MapCardIcon-label {
-    display: none;
-  }
   .MapCard-contentFooter.MapCard-contentFooter--lefty {
     @include justify-content(flex-start);
   }
 }
+
 @media only screen and (min-width: 321px) and (max-width: 760px)  {
-  .MapCardIcon-label {
-    display: none;
-  }
   .MapCard-contentFooter.MapCard-contentFooter--lefty {
     @include justify-content(flex-start);
+  }
+}
+
+@media only screen and (max-width: 544px) {
+
+  .MapCard.MapCard--squared .MapCard-contentFooter > *:not(:last-child) {
+    margin-right: 10px;
+  }
+  .MapCard-contentFooter.MapCard-contentFooter--lefty > *:not(:last-child) {
+    margin-right: 10px !Important;
+  }
+  .MapCard-contentFooter .LikesIndicator-label {
+    display: none !Important;
+  }
+  .MapCardIcon-label {
+    display: none;
   }
 }

@@ -79,3 +79,13 @@ $sEditButtonSize: 50px;
     width: $sCard-width - $sBorderCompensation;
   }
 }
+
+@media only screen and (max-width: 544px) {
+  .DatasetCard-contentFooter > *:not(:last-child) {
+    margin-right: 10px;
+  }
+
+  .DatasetCard-contentFooter .LikesIndicator-label {
+    display: none;
+  }
+}

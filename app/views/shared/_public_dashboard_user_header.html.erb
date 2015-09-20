@@ -6,7 +6,7 @@
 
         <div class="PublicMap-leftBlock PublicMap-leftBlock--owner">
           <ul class="Navmenu-list Navmenu-list--owner Navmenu-list--avatar">
-            <li class="Navmenu-item u-hideOnMobile">
+            <li class="Navmenu-item">
               <a href="<%= CartoDB.url(self, 'public_user_feed_home') %>" class="UserAvatar">
                 <img class="UserAvatar-img--medium" src="<%= @avatar_url %>" alt="development" title="development" />
               </a>
@@ -41,7 +41,7 @@
         </div>
 
       <% if @available_for_hire %>
-        <div class="PublicMap-rightBlock PublicMap-rightBlock--owner u-txt-right">
+        <div class="PublicMap-rightBlock PublicMap-rightBlock--owner u-txt-right u-hideOnMobile">
           <ul class="Navmenu-list">
             <li class="Navmenu-item">
               <a class="Button Button--main is-active Navmenu-hireLink" href="mailto:<%= @email %>">Hire me</a>

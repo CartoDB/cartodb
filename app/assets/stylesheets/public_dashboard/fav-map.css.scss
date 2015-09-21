@@ -46,7 +46,7 @@ $heightTall: 450px;
 }
 .FavMap.FavMap--highShadow:before {
   @include background-gradient(rgba(#000000, 0), rgba(#000000, 0.5));
-  height: 150px;
+  height: 180px;
   pointer-events: none;
 }
 .FavMap.FavMap--highShadow:not(.is-pre-loading):not(.is-loading):before {

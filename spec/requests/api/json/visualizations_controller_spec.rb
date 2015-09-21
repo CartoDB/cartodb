@@ -33,40 +33,6 @@ describe Api::Json::VisualizationsController do
     delete_user_data @user
   end
 
-  describe "#update" do
-    before(:each) do
-      login(@user)
-    end
-
-    it "Reverts privacy changes if named maps communitacion fails" do
-
-      @user.private_tables_enabled = true
-      @user.save
-
-      table = new_table(user_id: @user.id, privacy: ::UserTable::PRIVACY_PUBLIC).save.reload
-
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance
-                                          .stubs(:create)
-                                          .raises(CartoDB::NamedMapsWrapper::HTTPResponseError)
-
-      put_json api_v1_visualizations_update_url(id: table.table_visualization.id),
-      {
-        visualization_id: table.table_visualization.id,
-        privacy: Carto::Visualization::PRIVACY_PRIVATE
-      }.to_json do |response|
-        response.status.should_not be_success
-        response.status.should eq 400
-      end
-
-      table.reload
-      table.privacy.should eq ::UserTable::PRIVACY_PUBLIC
-
-      @user.private_tables_enabled = false
-      @user.save
-    end
-
-  end
-
   describe '#likes' do
 
     before(:each) do

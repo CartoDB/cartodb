@@ -502,7 +502,7 @@ Metrics/AbcSize:
   Description: A calculated magnitude based on number of assignments, branches, and
     conditions.
   Enabled: true
-  Max: 25
+  Max: 15
 Metrics/BlockNesting:
   Description: Avoid excessive block nesting
   StyleGuide: https://github.com/bbatsov/ruby-style-guide#three-is-the-number-thou-shalt-count

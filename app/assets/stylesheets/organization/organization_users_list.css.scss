@@ -58,8 +58,6 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
 .OrganizationList-userAvatar--img {
   border: 0;
 }
-.OrganizationList-user:nth-child(3n),
-.OrganizationList > div:nth-child(3n) .OrganizationList-user { margin-right: 0 }
 .OrganizationList-userLink {
   @include display-flex();
   @include flex-direction(row);

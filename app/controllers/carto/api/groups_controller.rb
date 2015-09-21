@@ -46,7 +46,7 @@ module Carto
         CartoDB.notify_debug('Group already exists', { params: params })
         render json: { errors: "A group with that data already exists" }, status: 409
       rescue => e
-        CartoDB.notify_exception(e, { params: params , group: (group ? group : 'not created') }, organization: @organization)
+        CartoDB.notify_exception(e, { params: params , group: (group ? group : 'not created'), organization: @organization })
         render json: { errors: e.message }, status: 500
       end
 

@@ -600,13 +600,13 @@ class Table
     @table_visualization.delete(from_table_deletion=true) if @table_visualization
     Tag.filter(:user_id => user_id, :table_id => id).delete
     remove_table_from_stats
+    remove_table_from_user_database unless keep_user_database_table
     invalidate_varnish_cache
     cache.del geometry_types_key
     @dependent_visualizations_cache.each(&:delete)
     @non_dependent_visualizations_cache.each do |visualization|
       visualization.unlink_from(self)
     end
-    remove_table_from_user_database unless keep_user_database_table
     synchronization.delete if synchronization
 
     related_templates.each { |template| template.destroy }
@@ -772,6 +772,15 @@ class Table
     options[:connection]['SELECT pg_total_relation_size(?) AS size', name].first[:size] / 2
   rescue Sequel::DatabaseError
     nil
+  end
+
+  def self.has_column?(user_database, table_schema, table_name, column_name)
+    has_column_sql = <<-SQL
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_schema='#{table_schema}' and table_name='#{table_name}' and column_name='#{column_name}';
+    SQL
+    user_database[has_column_sql].first.present?
   end
 
   def schema(options = {})

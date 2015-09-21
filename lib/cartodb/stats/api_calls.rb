@@ -98,7 +98,7 @@ module CartoDB
           return "#{redis_base_key}:stat_tag:#{visualization_id}"
         end
       end
-
+     
       # Returns api calls from a redis key in a hash with dates
       def get_api_calls_from_redis_source(username, api_call_type, options = {})
         redis_key = redis_api_call_key(username, api_call_type, options[:stat_tag])
@@ -120,18 +120,14 @@ module CartoDB
         # Crop requested window
         last_requested_day = date_to.strftime("%Y%m%d")
         first_requested_day = date_from.strftime("%Y%m%d")
-        if check_available_values(calls_in_reverse_order, first_requested_day, last_requested_day)
-          first_requested_index = calls_in_reverse_order.index { |day_and_count|
-            day_and_count[0] <= last_requested_day
-          }
-          calls_in_reverse_order = calls_in_reverse_order.drop(first_requested_index) if first_requested_index
-          last_requested_index = calls_in_reverse_order.index { |day_and_count|
-            day_and_count[0] <= first_requested_day
-          }
-          calls_in_reverse_order = calls_in_reverse_order.take(last_requested_index + 1) if last_requested_index
-        else
-          calls_in_reverse_order = {}
-        end
+        first_requested_index = calls_in_reverse_order.index { |day_and_count|
+          day_and_count[0] <= last_requested_day
+        }
+        calls_in_reverse_order = calls_in_reverse_order.drop(first_requested_index) if first_requested_index
+        last_requested_index = calls_in_reverse_order.index { |day_and_count|
+          day_and_count[0] <= first_requested_day
+        }
+        calls_in_reverse_order = calls_in_reverse_order.take(last_requested_index + 1) if last_requested_index
 
         # Fill gaps
         whole_range_zero = {}
@@ -141,10 +137,6 @@ module CartoDB
         end
 
         whole_range_zero.merge(Hash[*calls_in_reverse_order.flatten])
-      end
-
-      def check_available_values(values, date_from, date_to)
-        values.select { |value| value[0] >= date_from && value[0] <= date_to }.length > 0
       end
 
       # Returns total api calls from a redis key

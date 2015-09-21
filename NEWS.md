@@ -5,7 +5,6 @@
 * Display custom attribution of layers in the editor and embeds [#5388](https://github.com/CartoDB/cartodb/pull/5388)
 * Adapted Hound configuration to use default .rubocop.yml file so we can have [Rubocop](https://github.com/bbatsov/rubocop) style checks integrated at Sublime Text via [SublimeLinter](http://sublimelinter.readthedocs.org/en/latest/) + [SublimeLinter-rubocop](https://github.com/SublimeLinter/SublimeLinter-rubocop)
 * Migrated `Synchronization` id field to `uuid`
-* Fix for #5477 bug moving users with non-cartodbfied tables
 
 3.11.0 (2015-09-09)
 -------------------

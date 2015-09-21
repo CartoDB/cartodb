@@ -68,7 +68,7 @@
         </div>
       </div>
 
-      <% if @user.organization && @user.organization.auth_username_password_enabled %>
+      <% unless @user.organization && !@user.organization.auth_username_password_enabled %>
 
         <% if @user.should_display_old_password? %>
           <div class="FormAccount-row">

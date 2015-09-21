@@ -738,7 +738,7 @@ module CartoDB
         begin
           save_named_map
         rescue => exception
-          CartoDB.notify_exception(exception, "Error saving visualization named map")
+          CartoDB.notify_exception(exception, user: user, message: "Error saving visualization named map")
           restore_previous_privacy
           raise exception
         end
@@ -758,7 +758,7 @@ module CartoDB
           repository.store(id, attributes.to_hash)
         end
       rescue => exception
-        CartoDB.notify_exception(exception, "Error restoring previous visualization privacy")
+        CartoDB.notify_exception(exception, user: user, message: "Error restoring previous visualization privacy")
         raise exception
       end
 

@@ -40,6 +40,7 @@ module CartoDB
       self
     end
 
+    # Propagation flow: Table -> Table PrivacyManager -> Visualization -> Visualization NamedMap
     def propagate_to(visualizations, table_privacy_changed = false)
       visualizations.each do |visualization|
         visualization.store_using_table({

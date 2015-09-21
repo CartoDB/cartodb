@@ -44,8 +44,8 @@
   @include display-flex();
   @include justify-content(center);
   @include align-items(center);
-  font-size: $sFontSize-small;
   border: 1px solid $cTypography-link;
+  font-size: $sFontSize-small;
   &:hover {
     border-color: $cTypography-link;
   }

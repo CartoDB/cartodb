@@ -23,9 +23,9 @@ $sHeight: 20px;
 }
 .Toggler.is-disabled {
   @include opacity(0.4);
-   & label {
-     cursor: default;
-   }
+  label {
+    cursor: default;
+  }
 }
 .Toggler input {
   visibility: hidden;

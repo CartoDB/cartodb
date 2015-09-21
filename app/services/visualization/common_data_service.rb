@@ -24,7 +24,10 @@ module CartoDB
         elsif !common_data_user.nil?
           CartoDB.url(controller, 'api_v1_visualizations_index', {type: 'table', privacy: 'public'}, common_data_user)
         else
-          CartoDB.notify_error('cant create common-data url. User doesnt exists and base_url is nil', { user: common_data_username})
+          CartoDB.notify_error(
+            'cant create common-data url. User doesn\'t exist and base_url is nil',
+            user: common_data_username
+          )
         end
       end
 

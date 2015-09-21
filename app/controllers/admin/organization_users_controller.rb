@@ -74,6 +74,7 @@ class Admin::OrganizationUsersController < ApplicationController
     @user.set_fields(attributes, [:website]) if attributes[:website].present?
     @user.set_fields(attributes, [:description]) if attributes[:description].present?
     @user.set_fields(attributes, [:twitter_username]) if attributes[:twitter_username].present?
+    @user.set_fields(attributes, [:location]) if attributes[:location].present?
 
     @user.password = attributes[:password] if attributes[:password].present?
     @user.password_confirmation = attributes[:password_confirmation] if attributes[:password_confirmation].present?

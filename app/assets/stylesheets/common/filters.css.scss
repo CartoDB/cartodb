@@ -16,6 +16,37 @@
   z-index: 10;
 }
 .Filters--share { border-bottom: 1px solid $cStructure-mainLine }
+.Filters.Filters-explore {
+  position: absolute;
+  width: 100%;
+  z-index: 100;
+}
+.Filters.Filters-explore .Filters-type {
+  font-size: 14px;
+  color: $cTypography-linkSecondary;
+}
+.Filters.Filters-explore .Filters-dropdown {
+  text-align: left;
+}
+.Filters.Filters-explore .Filters-orderItem {
+  margin-right: 20px;
+}
+.Filters.Filters-explore .Filters-orderItem:last-child {
+  margin-right: 0;
+}
+.Filters.Filters-explore .Filters-orderLink {
+  font-size: 15px;
+}
+.Filters.Filters-explore.is-fixed {
+  background: white;
+  border-bottom: 1px solid $cStructure-mainLine;
+}
+.Filters-label {
+  color: $cTypography-linkSecondary;
+  font-size: 14px;
+  margin-right: 20px;
+}
+
 // Positionate relative to the content
 .Filters.is-relative {
   position: relative;
@@ -222,6 +253,9 @@ a.Filters-cleanSearch { line-height:32px }
   @include justify-content(space-between, justify);
   @include align-items(center, center);
 }
+.Filters-order.is-hidden {
+  display: none;
+}
 .Filters-orderList {
   @include display-flex();
   @include justify-content(space-between, justify);
@@ -347,4 +381,12 @@ a.Filters-cleanSearch { line-height:32px }
   left: auto;
   top: auto;
   margin-left: auto;
+}
+.Filters-darrow {
+  font-size: 7px;
+  margin-left: 6px;
+  position: relative;
+  top: -1px;
+  -webkit-font-smoothing: auto;
+  -moz-osx-font-smoothing: auto;
 }

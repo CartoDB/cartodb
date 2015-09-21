@@ -1,0 +1,91 @@
+@import 'compass/css3/images';
+@import '../variables/colors';
+@import '../variables/mixins';
+@import '../variables/sizes';
+
+$sBorderCompensation: 2px;
+$opacityTransition: 250ms;
+$sEditButtonSize: 50px;
+
+.DatasetCard {
+  position: relative;
+  width: $sCard-width - 10px - $sBorderCompensation;
+  margin: 0 auto;
+  border: 1px solid #DBDBDB;
+  border-radius: $sCard-borderRadius;
+  background-color: $cStructure-mainBkg;
+}
+.DatasetCard-title {
+  width: 100%; // required for child text-overflow to work as expected in FF
+  margin: 0 0 3px;
+}
+.DatasetCard-content { // To position contentDetail at top of content, and contentFooter at bottom
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center);
+  @include flex-direction(column);
+  @include opacity(1);
+  @include transition(opacity, $opacityTransition);
+  position: relative;
+  padding: 17px $sMargin-element 16px;
+  border-radius: $sCard-borderRadius;
+  z-index: 1;
+}
+.DatasetCard-contentFooter {
+  @include display-flex();
+  @include justify-content(flex-start);
+  @include align-items(center);
+  @include flex-wrap(nowrap);
+}
+.DatasetCard-contentFooter > *:not(:last-child) {
+  margin-right: 20px;
+}
+.DatasetCard-contentBody {
+  width: 100%;
+}
+.DatasetCard-contentBodyRow {
+  margin-bottom: $sMargin-min;
+}
+.DatasetCard-contentBodyRow--flex {
+  @include display-flex();
+  @include justify-content(flex-start);
+  @include align-items(center);
+  @include flex-wrap(nowrap);
+  width: 100%;
+}
+.DatasetCard-contentBodyDetails--left {
+  @include display-flex();
+}
+.DatasetCard-contentBodyDetails--right {
+  @include display-flex();
+  @include flex-direction(column);
+}
+
+// Animation function
+@include keyframes(pulsate) {
+  0% {
+    right: 100%;
+  }
+  50% {
+    right: 0%;
+  }
+  100% {
+    right: -100%;
+  }
+}
+
+@media (min-width: $sMedia-tablet) {
+  .DatasetCard {
+    width: $sCard-width - $sBorderCompensation;
+  }
+}
+
+@media only screen and (max-width: 544px) {
+  .DatasetCard-contentFooter > *:not(:last-child) {
+    margin-right: 10px;
+  }
+
+  .DatasetCard-contentFooter .LikesIndicator-label {
+    display: none;
+  }
+}

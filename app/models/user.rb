@@ -199,10 +199,19 @@ class User < Sequel::Model
 
   def load_common_data(visualizations_api_url)
     CartoDB::Visualization::CommonDataService.new.load_common_data_for_user(self, visualizations_api_url)
+  rescue => e
+    CartoDB.notify_error(
+      "Error loading common data for user",
+      user: inspect,
+      url: visualizations_api_url,
+      error: e.inspect
+    )
   end
 
   def delete_common_data
     CartoDB::Visualization::CommonDataService.new.delete_common_data_for_user(self)
+  rescue => e
+    CartoDB.notify_error("Error deleting common data for user", user: inspect, error: e.inspect)
   end
 
   def after_save
@@ -213,7 +222,7 @@ class User < Sequel::Model
     rebuild_quota_trigger    if changes.include?(:quota_in_bytes)
     if changes.include?(:account_type) || changes.include?(:available_for_hire) || changes.include?(:disqus_shortname) || changes.include?(:email) || \
        changes.include?(:website) || changes.include?(:name) || changes.include?(:description) || \
-       changes.include?(:twitter_username)
+       changes.include?(:twitter_username) || changes.include?(:location)
       invalidate_varnish_cache(regex: '.*:vizjson')
     end
     if changes.include?(:database_host)

@@ -2275,7 +2275,7 @@ describe Table do
       table.save
 
       CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
-      source  = table.table_visualization
+      source = table.table_visualization
       derived = CartoDB::Visualization::Copier.new($user_1, source).copy
       derived.store
       derived.type.should eq(CartoDB::Visualization::Member::TYPE_DERIVED)

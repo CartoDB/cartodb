@@ -774,6 +774,15 @@ class Table
     nil
   end
 
+  def self.has_column?(user_database, table_schema, table_name, column_name)
+    has_column_sql = <<-SQL
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_schema='#{table_schema}' and table_name='#{table_name}' and column_name='#{column_name}';
+    SQL
+    user_database[has_column_sql].first.present?
+  end
+
   def schema(options = {})
     first_columns     = []
     middle_columns    = []

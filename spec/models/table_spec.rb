@@ -1454,9 +1454,10 @@ describe Table do
       invalid_cartodb_id_schema.should be_present
     end
 
-    it "should return geometry types" do
+    it "should return geometry types when guessing is enabled" do
       data_import = DataImport.create( :user_id       => $user_1.id,
-                                       :data_source   => '/../db/fake_data/gadm4_export.csv' )
+                                       :data_source   => '/../db/fake_data/gadm4_export.csv',
+                                       :type_guessing  => true )
       data_import.run_import!
 
       table = Table.new(user_table: UserTable[data_import.table_id])

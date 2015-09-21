@@ -683,7 +683,7 @@ describe Table do
   end
 
   it "should remove varnish cache when updating the table privacy" do
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
 
     $user_1.private_tables_enabled = true
     $user_1.save
@@ -691,12 +691,11 @@ describe Table do
 
     id = table.table_visualization.id
     CartoDB::Varnish.any_instance.expects(:purge)
-      .times(3)
-      .with(".*#{id}:vizjson")
-      .returns(true)
+                                 .times(4)
+                                 .with(".*#{id}:vizjson")
+                                 .returns(true)
 
-    CartoDB::TablePrivacyManager.any_instance
-      .expects(:propagate_to_varnish)
+    CartoDB::TablePrivacyManager.any_instance.expects(:propagate_to_varnish)
     table.privacy = UserTable::PRIVACY_PUBLIC
     table.save
   end

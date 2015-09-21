@@ -370,13 +370,11 @@ feature "Superadmin's users API" do
       first_feature_flag  = FactoryGirl.create(:feature_flag)
       second_feature_flag = FactoryGirl.create(:feature_flag)
 
-      first_feature_flag_user  = FactoryGirl.create(:feature_flags_user,
-                                                    feature_flag_id: first_feature_flag.id, user_id: user.id)
-      second_feature_flag_user = FactoryGirl.create(:feature_flags_user,
-                                                    feature_flag_id: second_feature_flag.id, user_id: user.id)
+      FactoryGirl.create(:feature_flags_user, feature_flag_id: first_feature_flag.id, user_id: user.id)
+      FactoryGirl.create(:feature_flags_user, feature_flag_id: second_feature_flag.id, user_id: user.id)
 
       expect {
-        put superadmin_user_url(user.id), { 
+        put superadmin_user_url(user.id), {
             user: { feature_flags: [ "#{second_feature_flag.id}" ] }, id: user.id
         }.to_json, superadmin_headers
       }.to change(FeatureFlagsUser, :count).by(-1)

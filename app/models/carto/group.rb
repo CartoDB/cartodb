@@ -111,8 +111,6 @@ module Carto
       if users.include?(user)
         users.destroy(user)
         user
-      else
-        nil
       end
     end
 
@@ -130,23 +128,23 @@ module Carto
     end
 
     def self.create_group_extension_query(conn, name)
-      conn.execute(%Q{ select cartodb.CDB_Group_CreateGroup('#{name}') })
+      conn.execute(%{ select cartodb.CDB_Group_CreateGroup('#{name}') })
     end
 
     def self.rename_group_extension_query(conn, name, new_name)
-      conn.execute(%Q{ select cartodb.CDB_Group_RenameGroup('#{name}', '#{new_name}') })
+      conn.execute(%{ select cartodb.CDB_Group_RenameGroup('#{name}', '#{new_name}') })
     end
 
     def self.destroy_group_extension_query(conn, name)
-      conn.execute(%Q{ select cartodb.CDB_Group_DropGroup('#{name}') })
+      conn.execute(%{ select cartodb.CDB_Group_DropGroup('#{name}') })
     end
 
     def self.add_users_group_extension_query(conn, name, usernames)
-      conn.execute(%Q{ select cartodb.CDB_Group_AddUsers('#{name}', ARRAY['#{usernames.join("','")}']) })
+      conn.execute(%{ select cartodb.CDB_Group_AddUsers('#{name}', ARRAY['#{usernames.join("','")}']) })
     end
 
     def self.remove_users_group_extension_query(conn, name, usernames)
-      conn.execute(%Q{ select cartodb.CDB_Group_RemoveUsers('#{name}', ARRAY['#{usernames.join("','")}']) })
+      conn.execute(%{ select cartodb.CDB_Group_RemoveUsers('#{name}', ARRAY['#{usernames.join("','")}']) })
     end
 
   end

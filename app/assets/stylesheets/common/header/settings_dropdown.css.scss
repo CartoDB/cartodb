@@ -23,6 +23,7 @@
 }
 .SettingsDropdown-itemLink:hover {
   text-decoration: none;
+  color: $cTypography-linkHover;
   .SettingsDropdown-itemLinkText { text-decoration: underline }
 }
 .SettingsDropdown-itemLinkText { font-size: $sFontSize-normal }

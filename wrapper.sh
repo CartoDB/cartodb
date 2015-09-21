@@ -2,6 +2,7 @@
 
 rm config/database_*
 sudo killall redis-server
+truncate -s 0 specfailed.log
 
 port=6001
 for i in $(seq 1 $1);
@@ -23,9 +24,22 @@ do
                 loglevel debug\n
                 logfile /tmp/redis-$port/stdout"
         echo $config | redis-server  - 2>&1
+        sleep 0.5; # Let redis server start
 
         # Increase port
         port=$((port+1))
 done;
+if [ ! -d "/tmp/redis-6335" ]; then
+        mkdir /tmp/redis-6335
+fi
+config="port 6335 \n
+        daemonize yes \n
+        pidfile /tmp/redis-test-6335.tmp\n
+        timeout 300\n
+        dbfilename redis_test.rdb\n
+        dir /tmp/redis-6335\n
+        loglevel debug\n
+        logfile /tmp/redis-6335/stdout"
+echo $config | redis-server  - 2>&1
 ps -eaf | grep -v "grep" | grep redis-server
 

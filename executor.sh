@@ -35,10 +35,21 @@ main() {
     port=$(cat config/$databaseyml |  grep "carto_db_test_*" | sed 's/[^0-9]*//g')
 
     # Run the rspec
-  #  echo "RAILS_ENV=test RAILS_DATABASE_FILE=$databaseyml REDIS_PORT=$port bundle exec rspec spec/rspec_configuration.rb $1" 2>&1;
-    RAILS_ENV=test RAILS_DATABASE_FILE=$databaseyml REDIS_PORT=$port bundle exec rspec spec/rspec_configuration.rb $1 >> $port.log 2>&1;
-    # Missing something? 
-    echo "Finished: $1 Port: $port";
+    # Some dirty logic here
+    if [[ $1 == *"services/importer"* ]] || [[ $1 == *"services/platform-limits/spec/unit/"* ]] || [[ $1 == *"services/wms/spec/unit/wms_spec.rb"* ]] || [[ $1 == *"services/datasources"* ]] || [[ $1 == *"spec/models/overlay/collection_spec.rb"* ]]; then
+      RAILS_ENV=test PARALLEL=true RAILS_DATABASE_FILE=$databaseyml REDIS_PORT=$port bundle exec rspec $1 >> $port.log 2>&1;
+    else
+      RAILS_ENV=test PARALLEL=true RAILS_DATABASE_FILE=$databaseyml REDIS_PORT=$port bundle exec rspec spec/rspec_configuration.rb $1 >> $port.log 2>&1;
+    fi
+    
+    # Give some feedback
+    if [ $? -eq 0 ]; then
+      echo "Finished: $1 Port: $port";
+      echo "$1 $port" >> specsuccess.log;
+    else
+      echo "Finished (FAILED): $1 Port: $port";
+      echo "$1 $port" >> specfailed.log;
+    fi
     # Unlock file
     unlock $databaseyml.lock;
 }

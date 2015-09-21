@@ -79,7 +79,7 @@ gem 'rollbar',               '0.12.14'
 gem 'resque',                '1.25.2'
 gem 'resque-metrics',        '0.1.1'
 
-group :test, :test_1, :test_2, :test_4 do
+group :test do
   gem 'simplecov',                       require: false
 
   gem 'db-query-matchers',     '0.4.0'
@@ -97,7 +97,7 @@ group :test, :test_1, :test_2, :test_4 do
   gem 'fake_net_ldap', git: 'https://github.com/kuldeepaggarwal/fake_net_ldap.git', :branch => 'fix-responder'
 end
 
-group :development, :test, :test_1, :test_2, :test_4 do
+group :development, :test do
   gem 'rspec-rails',           '2.12.0'
   gem 'rb-readline'
   gem 'debugger',              '1.6.8'

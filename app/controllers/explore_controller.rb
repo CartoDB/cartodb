@@ -3,6 +3,7 @@
 class ExploreController < ApplicationController
   layout 'explore'
 
+  ssl_allowed :index, :search
   before_filter :get_viewed_user
 
   def index

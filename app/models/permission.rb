@@ -454,14 +454,12 @@ module CartoDB
 
       group = relevant_group_acl_entry(acl)
       if group
-        shared_entity = CartoDB::SharedEntity.new(
+        CartoDB::SharedEntity.new(
             recipient_id:   group[:id],
             recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_GROUP,
             entity_id:      entity_id,
             entity_type:    type_for_shared_entity(entity_type)
         ).save
-
-        # TODO: handle group permission or delegate to DB?
       end
 
       if e.table? and (org or users.any?)

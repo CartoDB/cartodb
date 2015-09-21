@@ -449,23 +449,12 @@ class Table
   end
 
   def after_save
-    store_previous_privacy
     manage_tags
     update_name_changes
 
-    privacy_manager = CartoDB::TablePrivacyManager.new(@user_table)
+    CartoDB::TablePrivacyManager.new(@user_table).apply_privacy_change(self, previous_privacy, privacy_changed?)
 
-    # Separate on purpose as if fails here no need to revert visualizations' privacy
-    revertable_block(privacy_manager) do
-      # Map saving actually doesn't changes privacy, but to keep on same reverting logic
-      @user_table.map.save
-      privacy_manager.set_from_table_privacy(@user_table.privacy)
-    end
-
-    revertable_block(privacy_manager, [table_visualization] + affected_visualizations) do
-      privacy_manager.propagate_to([table_visualization])
-      notify_privacy_affected_entities(privacy_manager) if privacy_changed?
-    end
+    update_cdb_tablemetadata if privacy_changed?
   end
 
   def propagate_namechange_to_table_vis
@@ -1351,43 +1340,9 @@ class Table
 
   private
 
-  def revertable_block(privacy_manager, entities = [])
-    yield
-  rescue => exception
-    CartoDB.notify_exception(exception, user_id: user_id, table_id: id)
-    revert_to_previous_privacy(privacy_manager, entities)
-    raise exception
-  end
-
-  def store_previous_privacy
+  def previous_privacy
     # INFO: @user_table.initial_value(:privacy) weirdly returns incorrect value so using changes index instead
-    @old_privacy = privacy_changed? ? @user_table.previous_changes[:privacy].first : nil
-  end
-
-  def revert_to_previous_privacy(privacy_manager, additional_revert_targets)
-    return unless @old_privacy
-
-    privacy_manager.set_from_table_privacy(@old_privacy)
-
-    errors = []
-    additional_revert_targets.each do |visualization|
-      begin
-        privacy_manager.propagate_to([visualization])
-      rescue => exception
-        # Can't do much more, just let remaining ones finish
-        errors << exception
-      end
-    end
-
-    if errors.length > 0
-      CartoDB.notify_error("Errors reverting Table privacy", user_id: user_id, table_id: id, errors: errors)
-    end
-  end
-
-  def notify_privacy_affected_entities(privacy_manager)
-    privacy_manager.propagate_to_varnish
-    update_cdb_tablemetadata
-    privacy_manager.propagate_to(affected_visualizations, true)
+    privacy_changed? ? @user_table.previous_changes[:privacy].first : nil
   end
 
   def importer_stats

@@ -20,7 +20,7 @@ feature "Superadmin's organization API" do
 
   scenario "organization create success" do
     @org_atts = FactoryGirl.build(:organization, name: 'wadus').values
-    post_json superadmin_organizations_path, { :organization => @org_atts }, superadmin_headers do |response|
+    post_json superadmin_organizations_path, { organization: @org_atts }, superadmin_headers do |response|
       response.status.should == 201
       response.body[:name].should == 'wadus'
 

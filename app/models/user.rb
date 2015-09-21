@@ -1651,7 +1651,7 @@ class User < Sequel::Model
     # TODO: remove the check after extension install
     return if Rails.env.test?
 
-    self.in_database(as: :superuser) do |database|
+    in_database(as: :superuser) do |database|
       database.run(%{ SELECT cartodb.CDB_Organization_AddAdmin('#{username}') })
     end
   end

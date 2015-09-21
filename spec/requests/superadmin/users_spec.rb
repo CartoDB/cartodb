@@ -22,7 +22,7 @@ feature "Superadmin's users API" do
   scenario "user create fail" do
     @user_atts[:email] = nil
 
-    post_json superadmin_users_path, { :user => @user_atts }, superadmin_headers do |response|
+    post_json superadmin_users_path, { user: @user_atts }, superadmin_headers do |response|
       response.status.should == 422
       response.body[:errors]['email'].should be_present
       response.body[:errors]['email'].should include("is not present")
@@ -34,7 +34,7 @@ feature "Superadmin's users API" do
     @user_atts.delete(:salt)
     @user_atts.merge!(:password => "this_is_a_password")
 
-    post_json superadmin_users_path, { :user => @user_atts }, superadmin_headers do |response|
+    post_json superadmin_users_path, { user: @user_atts }, superadmin_headers do |response|
       response.status.should == 201
       response.body[:email].should == @user_atts[:email]
       response.body[:username].should == @user_atts[:username]
@@ -51,7 +51,7 @@ feature "Superadmin's users API" do
   end
 
   scenario "user create with crypted_password and salt success" do
-    post_json superadmin_users_path, { :user => @user_atts }, superadmin_headers do |response|
+    post_json superadmin_users_path, { user: @user_atts }, superadmin_headers do |response|
       response.status.should == 201
       response.body[:email].should == @user_atts[:email]
       response.body[:username].should == @user_atts[:username]
@@ -73,7 +73,7 @@ feature "Superadmin's users API" do
     @user_atts[:map_view_quota] = 80
     t = Time.now
     @user_atts[:upgraded_at] = t
-    post_json superadmin_users_path, { :user => @user_atts }, superadmin_headers do |response|
+    post_json superadmin_users_path, { user: @user_atts }, superadmin_headers do |response|
       response.status.should == 201
       response.body[:quota_in_bytes].should == 104857600
       response.body[:table_quota].should == 5
@@ -154,7 +154,7 @@ feature "Superadmin's users API" do
                     :disqus_shortname => 'abc' }
 
     # test to true
-    put_json superadmin_user_path(user), { :user => @update_atts }, superadmin_headers do |response|
+    put_json superadmin_user_path(user), { user: @update_atts }, superadmin_headers do |response|
       response.status.should == 204
     end
     user = User[user.id]
@@ -200,7 +200,9 @@ feature "Superadmin's users API" do
 
   scenario "user update success" do
     user = create_user
-    put_json superadmin_user_path(user), { user: { email: "newmail@test.com", map_view_quota: 80 } }, superadmin_headers do |response|
+    put_json superadmin_user_path(user),
+        { user: { email: "newmail@test.com", map_view_quota: 80 } },
+        superadmin_headers do |response|
       response.status.should == 204
     end
     user = User[user.id]
@@ -368,11 +370,15 @@ feature "Superadmin's users API" do
       first_feature_flag  = FactoryGirl.create(:feature_flag)
       second_feature_flag = FactoryGirl.create(:feature_flag)
 
-      first_feature_flag_user  = FactoryGirl.create(:feature_flags_user, feature_flag_id: first_feature_flag.id, user_id: user.id)
-      second_feature_flag_user = FactoryGirl.create(:feature_flags_user, feature_flag_id: second_feature_flag.id, user_id: user.id)
+      first_feature_flag_user  = FactoryGirl.create(:feature_flags_user,
+                                                    feature_flag_id: first_feature_flag.id, user_id: user.id)
+      second_feature_flag_user = FactoryGirl.create(:feature_flags_user,
+                                                    feature_flag_id: second_feature_flag.id, user_id: user.id)
 
       expect {
-        put superadmin_user_url(user.id), { :user => { :feature_flags => [ "#{second_feature_flag.id}" ] }, id: user.id }.to_json, superadmin_headers
+        put superadmin_user_url(user.id), { 
+            user: { feature_flags: [ "#{second_feature_flag.id}" ] }, id: user.id
+        }.to_json, superadmin_headers
       }.to change(FeatureFlagsUser, :count).by(-1)
     end
 
@@ -384,7 +390,9 @@ feature "Superadmin's users API" do
       second_feature_flag_user = FactoryGirl.create(:feature_flags_user, feature_flag_id: second_feature_flag.id, user_id: user.id)
 
       expect {
-        put superadmin_user_url(user.id), { :user => { :feature_flags => [first_feature_flag.id.to_s, second_feature_flag.id.to_s] }, id: user.id }.to_json, superadmin_headers
+        put superadmin_user_url(user.id), {
+            user: { feature_flags: [first_feature_flag.id.to_s, second_feature_flag.id.to_s] }, id: user.id
+        }.to_json, superadmin_headers
       }.to change(FeatureFlagsUser, :count).by(1)
     end
   end

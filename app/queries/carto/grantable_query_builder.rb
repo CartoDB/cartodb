@@ -2,7 +2,8 @@
 
 # Class that allows "Grantable" searches.
 # Note a Grantable is not an actual ActiveRecord model but an aggregation of User and Group.
-# Since ActiveRecord doesn't support polymorphic queries or has_many associations with table per class inheritance, we do it manually here
+# Since ActiveRecord doesn't support polymorphic queries or has_many associations
+# with table per class inheritance, we do it manually here
 class Carto::GrantableQueryBuilder
 
   def initialize(organization)

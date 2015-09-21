@@ -27,9 +27,7 @@ module Carto
         }
 
         if @fetching_options[:fetch_groups] == true
-          poro.merge!({
-            groups: @user.groups ? @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : []
-          })
+          poro.merge!(groups: @user.groups ? @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : [])
         end
 
         poro

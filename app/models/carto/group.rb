@@ -20,11 +20,11 @@ module Carto
 
     belongs_to :organization, class_name: Carto::Organization
     has_many :users_group, dependent: :destroy, class_name: Carto::UsersGroup
-    has_many :users, :through => :users_group
+    has_many :users, through: :users_group
 
     private_class_method :new
 
-    validates :name, :database_role, :organization_id, :presence => true
+    validates :name, :database_role, :organization_id, presence: true
 
     # Constructor for groups already existing in the database
     def self.new_instance(database_name, name, database_role, display_name = name)
@@ -59,9 +59,9 @@ module Carto
       organization.owner.in_database do |conn|
         Carto::Group.rename_group_extension_query(conn, name, new_name)
       end
-      self.reload
-      self.display_name = new_display_name
-      self.save
+      reload
+      display_name = new_display_name
+      save
     end
 
     # INFO: public because it's called by Organization.
@@ -76,14 +76,14 @@ module Carto
       organization.owner.in_database do |conn|
         Carto::Group.add_users_group_extension_query(conn, name, users.collect(&:username))
       end
-      self.reload
+      reload
     end
 
     def remove_users_with_extension(users)
       organization.owner.in_database do |conn|
         Carto::Group.remove_users_group_extension_query(conn, name, users.collect(&:username))
       end
-      self.reload
+      reload
     end
 
     def rename(new_name, new_database_role)
@@ -96,7 +96,7 @@ module Carto
 
       raise "User #{username} not found" unless user
 
-      raise CartoDB::ModelAlreadyExistsError unless users_group.where(user_id: user.id, group_id: self.id).first.nil?
+      raise CartoDB::ModelAlreadyExistsError unless users_group.where(user_id: user.id, group_id: id).first.nil?
 
       user_group = Carto::UsersGroup.new(user: user, group: self)
       users_group << user_group
@@ -126,7 +126,7 @@ module Carto
     def self.valid_group_name(display_name)
       name = display_name.squish
       name = "g_#{name}" unless name[/^[a-zA-Z_]{1}/]
-      name.gsub(/[^a-zA-Z0-9_]/,'_').gsub(/_{2,}/, '_')
+      name.gsub(/[^a-zA-Z0-9_]/, '_').gsub(/_{2,}/, '_')
     end
 
     def self.create_group_extension_query(conn, name)

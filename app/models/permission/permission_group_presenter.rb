@@ -1,6 +1,5 @@
 # encoding: utf-8
 
-
 module CartoDB
   class PermissionGroupPresenter
 
@@ -8,8 +7,8 @@ module CartoDB
       group = Carto::Group.where(id: group_id).first
       return {} if group.nil?
       {
-          id:         group.id,
-          name:       group.name
+        id:         group.id,
+        name:       group.name
       }
     end
 

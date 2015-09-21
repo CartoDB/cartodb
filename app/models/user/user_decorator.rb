@@ -79,7 +79,7 @@ module CartoDB
 
       data[:organization] = self.organization.to_poro if self.organization.present?
 
-      if !self.groups.nil?
+      if !groups.nil?
         data[:groups] = self.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro }
       end
 

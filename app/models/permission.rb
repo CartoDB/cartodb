@@ -382,11 +382,11 @@ module CartoDB
     def granted_access_for_group(group)
       permission = nil
 
-      acl.map { |entry|
+      acl.map do |entry|
         if entry[:type] == TYPE_GROUP && entry[:id] == group.id
           permission = entry[:access]
         end
-      }
+      end
       permission = ACCESS_NONE if permission.nil?
       permission
     end
@@ -457,8 +457,8 @@ module CartoDB
         shared_entity = CartoDB::SharedEntity.new(
             recipient_id:   group[:id],
             recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_GROUP,
-            entity_id:      self.entity_id,
-            entity_type:    type_for_shared_entity(self.entity_type)
+            entity_id:      entity_id,
+            entity_type:    type_for_shared_entity(entity_type)
         ).save
 
         # TODO: handle group permission or delegate to DB?

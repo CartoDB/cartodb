@@ -67,7 +67,7 @@ shared_context 'organization with users helper' do
     perm_id = table.table_visualization.permission.id
 
     put api_v1_permissions_update_url(user_domain: owner.username, api_key: owner.api_key, id: perm_id),
-        {acl: [{
+        { acl: [{
                  type: CartoDB::Permission::TYPE_USER,
                  entity: {
                    id:   user.id,
@@ -83,7 +83,7 @@ shared_context 'organization with users helper' do
     perm_id = table.table_visualization.permission.id
 
     put api_v1_permissions_update_url(user_domain: owner.username, api_key: owner.api_key, id: perm_id),
-        {acl: [{
+        { acl: [{
                  type: CartoDB::Permission::TYPE_ORGANIZATION,
                  entity: {
                    id:   organization.id,
@@ -94,4 +94,3 @@ shared_context 'organization with users helper' do
   end
 
 end
-

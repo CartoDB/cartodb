@@ -8,17 +8,20 @@ module Carto
     has_many :groups, inverse_of: :organization, order: :display_name
 
     def self.find_by_database_name(database_name)
-      Carto::Organization
-          .joins('INNER JOIN users ON organizations.owner_id = users.id')
-          .where('users.database_name = ?', database_name).first
+      Carto::Organization.
+        joins('INNER JOIN users ON organizations.owner_id = users.id').
+        where('users.database_name = ?', database_name).first
     end
 
     def get_geocoding_calls(options = {})
       date_to = (options[:to] ? options[:to].to_date : Date.today)
       date_from = (options[:from] ? options[:from].to_date : owner.last_billing_cycle)
 
-      users.joins(:geocodings).where('geocodings.kind' => 'high-resolution').where('geocodings.created_at >= ? and geocodings.created_at <= ?', date_from, date_to + 1.days)
-      .sum("processed_rows + cache_hits".lit).to_i
+      users.
+        joins(:geocodings).
+        where('geocodings.kind' => 'high-resolution').
+        where('geocodings.created_at >= ? and geocodings.created_at <= ?', date_from, date_to + 1.days).
+        sum("processed_rows + cache_hits".lit).to_i
     end
 
     def twitter_imports_count(options = {})
@@ -42,8 +45,6 @@ module Carto
     def create_group(display_name)
       Carto::Group.create_group_with_extension(self, display_name)
     end
-
-    private
 
   end
 

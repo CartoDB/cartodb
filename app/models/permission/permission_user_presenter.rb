@@ -22,4 +22,3 @@ module CartoDB
 
   end
 end
-

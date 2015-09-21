@@ -45,6 +45,7 @@ $sEditButtonSize: 50px;
   padding-top: 0;
   border-top: none;
 }
+
 .MapCard.MapCard--explore .MapCard-header {
   @include background(image-url('layout/default-map-big-bkg.png') no-repeat center 0);
   height: 220px;
@@ -336,6 +337,10 @@ $sEditButtonSize: 50px;
 }
 .MapCard-contentFooter.MapCard-contentFooter--lefty > *:not(:last-child) {
   margin-right: 20px;
+}
+
+.MapCard-contentFooter.MapCard-contentFooter--lefty .iconFont {
+  margin-right: 3px;
 }
 .MapCard-contentFooter.MapCard-contentFooter--with-icon .MapCard-contentFooterIcon {
   display: inline-block;

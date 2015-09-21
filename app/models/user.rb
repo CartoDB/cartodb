@@ -1645,22 +1645,26 @@ class User < Sequel::Model
     rebuild_quota_trigger
 
     # INFO: organization privileges are set for org_member_role, which is assigned to each org user
+    CartoDB.notify_debug('setup_schema', {})
     if organization_owner?
       setup_organization_owner
     end
   end
 
   def setup_organization_owner
+    CartoDB.notify_debug('setup_organization_owner', {})
     setup_organization_role_permissions
     setup_owner_permissions
     configure_extension_org_metadata_api_endpoint
   end
 
   def setup_owner_permissions
+    CartoDB.notify_debug('setup_owner_permissions', {})
     # TODO: remove the check after extension install
     return if Rails.env.test?
 
     in_database(as: :superuser) do |database|
+      CartoDB.notify_debug('adding admin', {})
       database.run(%{ SELECT cartodb.CDB_Organization_AddAdmin('#{username}') })
     end
   end

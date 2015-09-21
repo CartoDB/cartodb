@@ -1428,7 +1428,7 @@ describe Table do
       cartodb_id_schema = table_schema.detect {|s| s[0].to_s == "cartodb_id"}
       cartodb_id_schema.should be_present
       cartodb_id_schema = cartodb_id_schema[1]
-      cartodb_id_schema[:db_type].should == "bigint"
+      cartodb_id_schema[:db_type].should == "integer"
       cartodb_id_schema[:default].should == "nextval('#{table.name}_cartodb_id_seq'::regclass)"
       cartodb_id_schema[:primary_key].should == true
       cartodb_id_schema[:allow_null].should == false

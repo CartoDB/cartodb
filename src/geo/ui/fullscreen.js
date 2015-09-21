@@ -78,14 +78,13 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
   },
 
   render: function() {
-    var $el = this.$el;
     var options = _.extend(
       this.options,
       {
         mapUrl: location.href || ''
       }
     );
-    $el.html(this.options.template(options));
+    this.$el.html(this.options.template(options));
 
     if (!this._canFullScreenBeEnabled()) {
       this.undelegateEvents();

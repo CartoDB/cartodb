@@ -1,371 +1,379 @@
 // New dashboard icon font :)
 // --------------------------------------------------
 
-@import "compass/css3/font-face";
-
-
-@include font-face("CartoIcon", font-files("cartoIcon.woff", "cartoIcon.ttf", "cartoIcon.svg"), "cartoIcon.eot", normal, normal);
-
+@import 'compass/css3/font-face';
+@include font-face('CartoIcon', font-files('cartoIcon.woff', 'cartoIcon.ttf', 'cartoIcon.svg'), 'cartoIcon.eot', normal, normal);
 
 .iconFont {
-  font-family:'CartoIcon';
   display: inline-block;
+  font-family: 'CartoIcon';
   font-style: normal;
   font-weight: normal;
-  line-height: 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  line-height: 1;
 }
 
-
 .iconFont-Clock:before {
-  content: "\E001";
+  content: '\E001';
 }
 
 .iconFont-Stats:before {
-  content: "\E002";
+  content: '\E002';
 }
 
 .iconFont-Heart--empty:before {
-  content: "\E003";
+  content: '\E003';
 }
 
 .iconFont-Heart--fill:before {
-  content: "\E004";
+  content: '\E004';
 }
 
 .iconFont-Alert:before {
-  content: "\E005";
+  content: '\E005';
 }
 
 .iconFont-Rows:before {
-  content: "\E006";
+  content: '\E006';
 }
 
 .iconFont-Check:before {
-  content: "\E007";
+  content: '\E007';
 }
 
 .iconFont-Dribbble:before {
-  content: "\E008";
+  content: '\E008';
 }
 
 .iconFont-Twitter:before {
-  content: "\E009";
+  content: '\E009';
 }
 
 .iconFont-Wizard:before {
-  content: "\E00A";
+  content: '\E00A';
 }
 
 .iconFont-Info:before {
-  content: "\E00B";
+  content: '\E00B';
 }
 
 .iconFont-Fork:before {
-  content: "\E00C";
+  content: '\E00C';
 }
 
 .iconFont-Facebook:before {
-  content: "\E00D";
+  content: '\E00D';
 }
 
 .iconFont-Folder:before {
-  content: "\E00E";
+  content: '\E00E';
 }
 
 .iconFont-Dropbox:before {
-  content: "\E00F";
+  content: '\E00F';
 }
 
 .iconFont-Cloud:before {
-  content: "\E010";
+  content: '\E010';
 }
 
 .iconFont-Step:before {
-  content: "\E011";
+  content: '\E011';
 }
 
 .iconFont-AddDocument:before {
-  content: "\E012";
+  content: '\E012';
 }
 
 .iconFont-ArrowNext:before {
-  content: "\E013";
+  content: '\E013';
 }
 
 .iconFont-ArrowPrev:before {
-  content: "\E014";
+  content: '\E014';
 }
 
 .iconFont-Close:before {
-  content: "\E015";
+  content: '\E015';
 }
 
 .iconFont-CartoFante:before {
-  content: "\E016";
+  content: '\E016';
 }
 
 .iconFont-Lock:before {
-  content: "\E017";
+  content: '\E017';
 }
 
 .iconFont-CartoDB:before {
-  content: "\E018";
+  content: '\E018';
 }
 
 .iconFont-Lens:before {
-  content: "\E019";
+  content: '\E019';
 }
 
 .iconFont-CloseLimits:before {
-  content: "\E01A";
+  content: '\E01A';
 }
 
 .iconFont-DefaultUser:before {
-  content: "\E01B";
+  content: '\E01B';
 }
 
 .iconFont-Cockroach:before {
-  content: "\E01C";
+  content: '\E01C';
 }
 
 .iconFont-Floppy:before {
-  content: "\E01D";
+  content: '\E01D';
 }
 
 .iconFont-Trash:before {
-  content: "\E01E";
+  content: '\E01E';
 }
 
 .iconFont-Wifi:before {
-  content: "\E01F";
+  content: '\E01F';
 }
 
 .iconFont-Unlock:before {
-  content: "\E020";
+  content: '\E020';
 }
 
 .iconFont-Unlock--withEllipsis:before {
-  content: "\E021";
+  content: '\E021';
 }
 
 .iconFont-Gift:before {
-  content: "\E022";
+  content: '\E022';
 }
 
 .iconFont-People:before {
-  content: "\E023";
+  content: '\E023';
 }
 
 .iconFont-Play:before {
-  content: "\E024";
+  content: '\E024';
 }
 
 .iconFont-Add:before {
-  content: "\E025";
+  content: '\E025';
 }
 
 .iconFont-Map:before {
-  content: "\E026";
+  content: '\E026';
 }
 
 .iconFont-Anchor:before {
-  content: "\E027";
+  content: '\E027';
 }
 
 .iconFont-Key:before {
-  content: "\E028";
+  content: '\E028';
 }
 
 .iconFont-Calendar:before {
-  content: "\E029";
+  content: '\E029';
 }
 
 .iconFont-Document:before {
-  content: "\E02A";
+  content: '\E02A';
 }
 
 .iconFont-Eye:before {
-  content: "\E02B";
+  content: '\E02B';
 }
 
 .iconFont-Marker:before {
-  content: "\E02C";
+  content: '\E02C';
 }
 
 .iconFont-ProgressBar:before {
-  content: "\E02D";
+  content: '\E02D';
 }
 
 .iconFont-Book:before {
-  content: "\E02E";
+  content: '\E02E';
 }
 
 .iconFont-Notes:before {
-  content: "\E02F";
+  content: '\E02F';
 }
 
 .iconFont-Rectangles:before {
-  content: "\E030";
+  content: '\E030';
 }
 
 .iconFont-Mountain:before {
-  content: "\E031";
+  content: '\E031';
 }
 
 .iconFont-Points:before {
-  content: "\E032";
+  content: '\E032';
 }
 
 .iconFont-Snake:before {
-  content: "\E033";
+  content: '\E033';
 }
 
 .iconFont-Boss:before {
-  content: "\E034";
+  content: '\E034';
 }
 
 .iconFont-Rocket:before {
-  content: "\E035";
+  content: '\E035';
 }
 
 .iconFont-Barometer:before {
-  content: "\E036";
+  content: '\E036';
 }
 
 .iconFont-Dollar:before {
-  content: "\E037";
+  content: '\E037';
 }
 
 .iconFont-Email:before {
-  content: "\E038";
+  content: '\E038';
 }
 
 .iconFont-Label:before {
-  content: "\E039";
+  content: '\E039';
 }
 
 .iconFont-Outside:before {
-  content: "\E03A";
+  content: '\E03A';
 }
 
 .iconFont-Jigsaw:before {
-  content: "\E03B";
+  content: '\E03B';
 }
 
 .iconFont-Tools:before {
-  content: "\E03C";
+  content: '\E03C';
 }
 
 .iconFont-Question:before {
-  content: "\E03D";
+  content: '\E03D';
 }
 
 .iconFont-LayerStack:before {
-  content: "\E03E";
+  content: '\E03E';
 }
 
 .iconFont-Alarm:before {
-  content: "\E03F";
+  content: '\E03F';
 }
 
 .iconFont-CloudDownArrow:before {
-  content: "\E040";
+  content: '\E040';
 }
 
 .iconFont-Pencil:before {
-  content: "\E041";
+  content: '\E041';
 }
 
 .iconFont-FountainPen:before {
-  content: "\E042";
+  content: '\E042';
 }
 
 .iconFont-EmptyDoc:before {
-  content: "\E043";
+  content: '\E043';
 }
 
 .iconFont-MergeArrow:before {
-  content: "\E044";
+  content: '\E044';
 }
 
 .iconFont-MergeColumns:before {
-  content: "\E045";
+  content: '\E045';
 }
 
 .iconFont-MergeSpatial:before {
-  content: "\E046";
+  content: '\E046';
 }
 
 .iconFont-Globe:before {
-  content: "\E047";
+  content: '\E047';
 }
 
 .iconFont-ChevronDown:before {
-  content: "\E048";
+  content: '\E048';
 }
 
 .iconFont-Streets:before {
-  content: "\E049";
+  content: '\E049';
 }
 
 .iconFont-Keys:before {
-  content: "\E04A";
+  content: '\E04A';
 }
 
 .iconFont-FacebookSquare:before {
-  content: "\E04B";
+  content: '\E04B';
 }
 
 .iconFont-Fullscreen:before {
-  content: "\E04C";
+  content: '\E04C';
 }
 
 .iconFont-Rarrow:before {
-  content: "\E04D";
+  content: '\E04D';
 }
 
 .iconFont-Share:before {
-  content: "\E04E";
+  content: '\E04E';
 }
 
 .iconFont-Linkedin:before {
-  content: "\E04F";
+  content: '\E04F';
 }
 
-.iconFont-Calendar:before {
-  content: "\E050";
+.iconFont-CalendarBlank:before {
+  content: '\E050';
 }
 
 .iconFont-CreativeCommons:before {
-  content: "\E051";
+  content: '\E051';
 }
 
 .iconFont-Bubble:before {
-  content: "\E052";
+  content: '\E052';
 }
 
-.iconFont-Stats:before {
-  content: "\E053";
+.iconFont-Bars:before {
+  content: '\E053';
 }
 
 .iconFont-ArrowMenu:before {
-  content: "\E054";
+  content: '\E054';
 }
 
 .iconFont-TieFighter:before {
-  content: "\E055";
+  content: '\E055';
 }
 
 .iconFont-Ray:before {
-  content: "\E056";
+  content: '\E056';
 }
 
 .iconFont-Markup:before {
-  content: "\E057";
+  content: '\E057';
 }
 
 .iconFont-Table:before {
-  content: "\E058";
+  content: '\E058';
+}
+
+.iconFont-Airlock:before {
+  content: '\E059';
+}
+
+.iconFont-Pin:before {
+  content: '\E05A';
+}
+
+.iconFont-Attache:before {
+  content: '\E05B';
 }

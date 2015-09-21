@@ -1,24 +1,20 @@
 // New dashboard icon font :)
 // --------------------------------------------------
 
-@import "compass/css3/font-face";
-
-
-@include font-face("CartoIcon", font-files("cartoIcon.woff", "cartoIcon.ttf", "cartoIcon.svg"), "cartoIcon.eot", normal, normal);
-
+@import 'compass/css3/font-face';
+@include font-face('CartoIcon', font-files('cartoIcon.woff', 'cartoIcon.ttf', 'cartoIcon.svg'), 'cartoIcon.eot', normal, normal);
 
 .iconFont {
-  font-family:'CartoIcon';
   display: inline-block;
+  font-family: 'CartoIcon';
   font-style: normal;
   font-weight: normal;
-  line-height: 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  line-height: 1;
 }
-
 <% _.each(glyphs, function(glyph) { %>
 .iconFont-<%= glyph.fileName.split("_")[2] %>:before {
-  content: "\<%= glyph.codePoint %>";
+  content: '\<%= glyph.codePoint %>';
 }
 <% }); %>

@@ -8,18 +8,31 @@ class Admin::PagesController < ApplicationController
 
   include CartoDB
 
+  PUBLIC_DATASETS_PER_PAGE = 20
   DATASETS_PER_PAGE = 20
   MAPS_PER_PAGE = 9
   USER_TAGS_LIMIT = 100
   PAGE_NUMBER_PLACEHOLDER = 'PAGENUMBERPLACEHOLDER'
 
-  ssl_required :common_data, :public, :datasets
+  # TODO logic as done client-side, how and where to encapsulate this better?
+  GEOMETRY_MAPPING = {
+    'st_multipolygon'    => 'polygon',
+    'st_polygon'         => 'polygon',
+    'st_multilinestring' => 'line',
+    'st_linestring'      => 'line',
+    'st_multipoint'      => 'point',
+    'st_point'           => 'point'
+  }
+
+
+  ssl_required :common_data, :public, :datasets, :maps, :user_feed
   ssl_allowed :index, :sitemap, :datasets_for_user, :datasets_for_organization, :maps_for_user, :maps_for_organization,
               :render_not_found
 
-  before_filter :login_required, :except => [:public, :datasets, :sitemap, :index]
+  before_filter :login_required, :except => [:public, :datasets, :maps, :sitemap, :index, :user_feed]
+  before_filter :get_viewed_user
   before_filter :ensure_organization_correct
-  skip_before_filter :browser_is_html5_compliant?, only: [:public, :datasets]
+  skip_before_filter :browser_is_html5_compliant?, only: [:public, :datasets, :maps, :user_feed]
   skip_before_filter :ensure_user_organization_valid, only: [:public]
 
 
@@ -33,22 +46,20 @@ class Admin::PagesController < ApplicationController
   end
 
   def sitemap
-    username = CartoDB.extract_subdomain(request)
-    viewed_user = User.where(username: username.strip.downcase).first
-
-    if viewed_user.nil?
+    if @viewed_user.nil?
+      username = CartoDB.extract_subdomain(request)
       org = get_organization_if_exists(username)
       return if org.nil?
       visualizations = (org.public_visualizations.to_a || [])
       visualizations += (org.public_datasets.to_a || [])
     else
       # Redirect to org url if has only user
-      if eligible_for_redirect?(viewed_user)
-        redirect_to CartoDB.base_url(viewed_user.organization.name) << CartoDB.path(self, 'public_sitemap') and return
+      if eligible_for_redirect?(@viewed_user)
+        redirect_to CartoDB.base_url(@viewed_user.organization.name) << CartoDB.path(self, 'public_sitemap') and return
       end
 
       visualizations = Visualization::Collection.new.fetch({
-        user_id:  viewed_user.id,
+        user_id:  @viewed_user.id,
         privacy:  Visualization::Member::PRIVACY_PUBLIC,
         order:    'updated_at',
         o:        {updated_at: :desc},
@@ -82,10 +93,49 @@ class Admin::PagesController < ApplicationController
     content.render()
   end
 
-  def public
+  def maps
     maps = CartoDB::ControllerFlows::Public::Maps.new(self)
     content = CartoDB::ControllerFlows::Public::Content.new(self, request, maps)
     content.render()
+  end
+
+  def public
+    if current_user
+      index
+    else
+      user_feed
+    end
+  end
+
+  def user_feed
+    # The template of this endpoint get the user_feed data calling
+    # to another endpoint in the front-end part
+    if @viewed_user.nil?
+      username = CartoDB.extract_subdomain(request).strip.downcase
+      org = get_organization_if_exists(username)
+      unless org.nil?
+        redirect_to CartoDB.url(self, 'public_maps_home') and return
+      end
+      render_404
+    else
+
+      set_layout_vars_for_user(@viewed_user, 'feed')
+
+      @name               = @viewed_user.name.blank? ? @viewed_user.username : @viewed_user.name
+      @avatar_url         = @viewed_user.avatar
+      @tables_num         = @viewed_user.public_table_count
+      @maps_count         = @viewed_user.public_visualization_count 
+
+      if eligible_for_redirect?(@viewed_user)
+        # redirect username.host.ext => org-name.host.ext/u/username
+        redirect_to CartoDB.base_url(@viewed_user.organization.name, @viewed_user.username) <<
+                            CartoDB.path(self, 'public_user_feed_home') and return
+      end
+
+      respond_to do |format|
+        format.html { render 'user_feed', layout: 'public_user_feed' }
+      end
+    end
   end
 
   def datasets_for_user(user)
@@ -94,7 +144,7 @@ class Admin::PagesController < ApplicationController
       user_public_vis_list({
         user:  user,
         vis_type: Visualization::Member::TYPE_CANONICAL,
-        per_page: DATASETS_PER_PAGE,
+        per_page: PUBLIC_DATASETS_PER_PAGE
       }), user
     )
   end
@@ -137,9 +187,9 @@ class Admin::PagesController < ApplicationController
       redirect_to CartoDB.url(self, 'dashboard')
     else
       # Asummes either current_user nil or at least different from current_viewer
-      # username.cartodb.com should redirect to the public user dashboard in the maps view if the username is not the user's username
-      # username.cartodb.com should redirect to the public user dashboard in the maps view if the user is not logged in
-      redirect_to CartoDB.url(self, 'public_maps_home')
+      # username.cartodb.com should redirect to the public user feeds view if the username is not the user's username
+      # username.cartodb.com should redirect to the public user feeds view if the user is not logged in
+      redirect_to CartoDB.url(self, 'public_user_feed_home')
     end
   end
 
@@ -150,7 +200,7 @@ class Admin::PagesController < ApplicationController
       # current_viewer always returns a user with a session
       redirect_to CartoDB.url(self, 'dashboard', {}, current_viewer)
     elsif CartoDB.username_from_request(request)
-      redirect_to CartoDB.url(self, 'public_maps_home')
+      redirect_to CartoDB.url(self, 'public_user_feed_home')
     else
       # We cannot get any user information from domain, path or session
       redirect_to login_url
@@ -166,35 +216,12 @@ class Admin::PagesController < ApplicationController
       })
 
     @datasets = []
-    # TODO logic as done client-side, how and where to encapsulate this better?
-    geometry_mapping = {
-      'st_multipolygon'    => 'polygon',
-      'st_polygon'         => 'polygon',
-      'st_multilinestring' => 'line',
-      'st_linestring'      => 'line',
-      'st_multipoint'      => 'point',
-      'st_point'           => 'point'
-    }
 
     vis_list.each do |vis|
-      begin
-        geometry_type = vis.kind
-        if geometry_type != 'raster'
-          table_geometry_types = vis.table.geometry_types
-          geometry_type = table_geometry_types.first.present? ? geometry_mapping.fetch(table_geometry_types.first.downcase, '') : ''
-        end
-
-        @datasets << vis_item(vis).merge({
-            rows_count:    vis.table.rows_counted,
-            size_in_bytes: vis.table.table_size,
-            geometry_type: geometry_type,
-          })
-      rescue => e
-        # A dataset might be invalid. For example, having the table deleted and not yet cleaned.
-        # We don't want public page to be broken, but error must be traced.
-        CartoDB.notify_error("Error trying to get vis items for datasets", { vis: vis.inspect, error: e.inspect })
-      end
+      @datasets << process_dataset_render(vis)
     end
+
+    @datasets.compact
 
     description = "#{@name} has"
 
@@ -225,8 +252,10 @@ class Admin::PagesController < ApplicationController
 
     @visualizations = []
     vis_list.each do |vis|
-      @visualizations << vis_item(vis)
+      @visualizations << process_map_render(vis)
     end
+
+    @visualizations.compact
 
     description = "#{@name} has"
 
@@ -254,19 +283,6 @@ class Admin::PagesController < ApplicationController
     respond_to do |format|
       format.html { render 'public_maps', layout: 'public_dashboard' }
     end
-  end
-
-  def vis_item(vis)
-    return {
-      id:          vis.id,
-      title:       vis.name,
-      description_html_safe: vis.description_html_safe,
-      tags:        vis.tags,
-      updated_at:  vis.updated_at,
-      owner:       vis.user,
-      likes_count: vis.likes.count,
-      map_zoom:    vis.map.nil? ? nil : vis.map.zoom
-    }
   end
 
   def set_layout_vars_for_user(user, content_type)
@@ -312,7 +328,7 @@ class Admin::PagesController < ApplicationController
   def set_layout_vars(required)
     @most_viewed_vis_map = required.fetch(:most_viewed_vis_map)
     @content_type        = required.fetch(:content_type)
-    @maps_url            = CartoDB.url(view_context, 'public_visualizations_home', {}, required.fetch(:user, nil))
+    @maps_url            = CartoDB.url(view_context, 'public_maps_home', {}, required.fetch(:user, nil))
     @datasets_url        = CartoDB.url(view_context, 'public_datasets_home', {}, required.fetch(:user, nil))
     @default_fallback_basemap = required.fetch(:default_fallback_basemap, {})
     @base_url            = required.fetch(:base_url, {})
@@ -330,6 +346,7 @@ class Admin::PagesController < ApplicationController
   # Shared as in shared for both new and old layout
   def set_shared_layout_vars(model, required, optional = {})
     @twitter_username   = model.twitter_username
+    @location           = model.location
     @description        = model.description
     @website            = !model.website.blank? && model.website[/^https?:\/\//].nil? ? "http://#{model.website}" : model.website
     @website_clean      = @website ? @website.gsub(/https?:\/\//, "") : ""
@@ -337,8 +354,10 @@ class Admin::PagesController < ApplicationController
     @avatar_url         = required.fetch(:avatar_url)
     @email              = optional.fetch(:email, nil)
     @available_for_hire = optional.fetch(:available_for_hire, false)
-    @user = optional.fetch(:user, nil)
-    @tables_num         = (model.is_a? Organization) ? model.public_datasets_count : model.public_table_count
+    @user               = optional.fetch(:user, nil)
+    @is_org             = model.is_a? Organization
+    @tables_num         = @is_org ? model.public_datasets_count : model.public_table_count
+    @maps_count         = @is_org ? model.public_visualizations_count : model.public_visualization_count
   end
 
   def user_public_vis_list(required)
@@ -380,6 +399,49 @@ class Admin::PagesController < ApplicationController
         render_404
       end
     end
+  end
+
+  def process_dataset_render(dataset)
+    geometry_type = dataset.kind
+    if geometry_type != 'raster'
+      table_geometry_types = dataset.table.geometry_types
+      geometry_type = table_geometry_types.first.present? ? GEOMETRY_MAPPING.fetch(table_geometry_types.first.downcase, '') : ''
+    end
+
+    begin
+      vis_item(dataset).merge({
+          rows_count:    dataset.table.rows_counted,
+          size_in_bytes: dataset.table.table_size,
+          geometry_type: geometry_type,
+        })
+    rescue => e
+      # A dataset might be invalid. For example, having the table deleted and not yet cleaned.
+      # We don't want public page to be broken, but error must be traced.
+      CartoDB.notify_exception(e, { vis: dataset })
+      nil
+    end
+  end
+
+  def process_map_render(map)
+    vis_item(map)
+  end
+
+  def vis_item(vis)
+    return {
+      id:          vis.id,
+      title:       vis.name,
+      description_html_safe: vis.description_html_safe,
+      tags:        vis.tags,
+      updated_at:  vis.updated_at,
+      owner:       vis.user,
+      likes_count: vis.likes.count,
+      map_zoom:    vis.map.zoom
+    }
+  end
+
+  def get_viewed_user
+    username = CartoDB.extract_subdomain(request)
+    @viewed_user = User.where(username: username).first
   end
 
 end

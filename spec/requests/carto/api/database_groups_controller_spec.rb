@@ -5,6 +5,13 @@ require_relative '.././../../factories/organizations_contexts'
 require_relative '.././../../factories/visualization_creation_helpers'
 require_relative '../../../../app/controllers/carto/api/database_groups_controller'
 
+# cURL samples:
+# - Create group: curl -v --user extension:elephant -H "Content-Type: application/json" -X POST -d '{ "name": "Group 2", "database_role": "DELETEME_FAKE_ROLE" }' http://localhost.lan:3000/api/v1/databases/cartodb_dev_user_3a03e626-c26c-4469-afea-a800fd813e1c_db/groups
+# - Delete group: curl -v --user extension:elephant -H "Content-Type: application/json" -X DELETE http://localhost.lan:3000/api/v1/databases/cartodb_dev_user_3a03e626-c26c-4469-afea-a800fd813e1c_db/groups/Group%202
+#
+# Examples for staging: curl -v --user USER:PASS -H "Content-Type: application/json" -H "X-Forwarded-Proto: https" -X POST -d '{ "name": "MyGroup", "database_role": "DELETEME_FAKE_ROLE" }' http://haproxy.service.consul:8888/api/v1/databases/cartodb_staging_user_21a66689-0d8a-4512-b8e9-1fb8a93f2785_db/groups
+# Delete: curl -v --user USER:PASS -H "Content-Type: application/json" -H "X-Forwarded-Proto: https" -X DELETE http://haproxy.service.consul:8888/api/v1/databases/cartodb_staging_user_21a66689-0d8a-4512-b8e9-1fb8a93f2785_db/groups/MyGroup
+
 describe Carto::Api::DatabaseGroupsController do
   include_context 'organization with users helper'
 

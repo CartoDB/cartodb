@@ -2032,14 +2032,16 @@ TRIGGER
       retry = #{invalidation_retry}
       trigger_verbose = #{invalidation_trigger_verbose}
 
-      client = GD.get('invalidation', None)
+      invalidation_client_key = 'invalidation:%s:%d' % ('#{invalidation_host}', #{invalidation_port})
+
+      client = GD.get(invalidation_client_key, None)
 
       while True:
 
         if not client:
             try:
               import redis
-              client = GD['invalidation'] = redis.Redis(host='#{invalidation_host}', port=#{invalidation_port}, socket_timeout=timeout)
+              client = GD[invalidation_client_key] = redis.Redis(host='#{invalidation_host}', port=#{invalidation_port}, socket_timeout=timeout)
             except Exception as err:
               # NOTE: we won't retry on connection error
               if critical:

@@ -8,7 +8,7 @@ module Carto
     PRIVACY_PUBLIC = 1
     PRIVACY_LINK = 2
 
-    belongs_to :visualization, primary_key: :map_id, foreign_key: :map_id,
+    belongs_to :visualization, primary_key: :map_id, foreign_key: :map_id, 
                 conditions: { type: Carto::Visualization::TYPE_CANONICAL }, inverse_of: :user_table
 
     belongs_to :user
@@ -91,7 +91,8 @@ module Carto
     end
 
     def affected_visualizations
-      @affected_visualizations ||= affected_visualization_ids.map { |id| Carto::Visualization.find(id) }
+      affected_visualizations ||= affected_visualization_ids
+        .map  { |id| Carto::Visualization.find(id) }
     end
 
     # TODO: use associations?

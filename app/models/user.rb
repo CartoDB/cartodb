@@ -195,24 +195,20 @@ class User < Sequel::Model
   end
 
   def load_common_data(visualizations_api_url)
-    begin
-      CartoDB::Visualization::CommonDataService.new.load_common_data_for_user(self, visualizations_api_url)
-    rescue => e
-      CartoDB.notify_error(
-        "Error loading common data for user",
-        user: self.inspect,
-        url: visualizations_api_url,
-        error: e.inspect
-      )
-    end
+    CartoDB::Visualization::CommonDataService.new.load_common_data_for_user(self, visualizations_api_url)
+  rescue => e
+    CartoDB.notify_error(
+      "Error loading common data for user",
+      user: inspect,
+      url: visualizations_api_url,
+      error: e.inspect
+    )
   end
 
   def delete_common_data
-    begin
-      CartoDB::Visualization::CommonDataService.new.delete_common_data_for_user(self)
-    rescue => e
-      CartoDB.notify_error("Error deleting common data for user", user: self.inspect, error: e.inspect)
-    end
+    CartoDB::Visualization::CommonDataService.new.delete_common_data_for_user(self)
+  rescue => e
+    CartoDB.notify_error("Error deleting common data for user", user: inspect, error: e.inspect)
   end
 
   def after_save

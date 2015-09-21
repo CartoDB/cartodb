@@ -4,6 +4,8 @@
   <%= javascript_include_tag 'cdb.js', 'signup.js' %>
 <% end %>
 
+<%= render :partial => 'shared/flash_message' %>
+
 <div class="Sessions" style="<%= background %>">
   <%= render partial: 'admin/shared/sessions_header', locals: { align: "Navbar--left" } %>
 
@@ -15,9 +17,6 @@
           <div class="Sessions-left">
             <div class="Sessions-leftInner">
               <h1 class="Sessions-title u-vspace-xs">Sign up for CartoDB</h1>
-
-              <%= render :partial => 'shared/flash_message' %>
-
               <p class="Sessions-description">Please, use an email address belonging to this organization.</p>
 
               <% unless @user.google_sign_in %>
@@ -97,7 +96,7 @@
             </div>
           </div>
 
-        
+
           <div class="Sessions-right">
             <div class="Browser">
               <ul class="Browser-actions u-ilist">
@@ -204,7 +203,7 @@
               </li>
             </ul>
           </div>
-          
+
         </div>
       </div>
     </div>

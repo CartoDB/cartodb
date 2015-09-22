@@ -55,7 +55,7 @@ shared_context 'organization with users helper' do
     organization = Organization.new
     organization.name = org_name = "org#{rand(9999)}"
     organization.quota_in_bytes = 1234567890
-    organization.seats = 5
+    organization.seats = 50
     organization
   end
 
@@ -73,8 +73,8 @@ shared_context 'organization with users helper' do
   end
 
   before(:all) do
-    @organization = test_organization.save
-    @organization_2 = test_organization.save
+    @organization = test_organization.save.reload
+    @organization_2 = test_organization.save.reload
 
     @org_user_owner = create_test_user("o#{random_username}")
     user_org = CartoDB::UserOrganization.new(@organization.id, @org_user_owner.id)

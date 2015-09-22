@@ -38,7 +38,7 @@
           <div class="PublicMap-leftBlock PublicMap-leftBlock--owner">
             <ul class="Navmenu-list Navmenu-list--owner Navmenu-list--avatar">
               <li class="Navmenu-item">
-                <a href="<%= CartoDB.url(self, 'public_maps_home', {}, @visualization.user) %>" target="_blank" class="UserAvatar">
+                <a href="<%= CartoDB.url(self, 'public_user_feed_home', {}, @visualization.user) %>" target="_blank" class="UserAvatar">
                   <img class="UserAvatar-img--medium" src="<%= @visualization.user.avatar %>" alt="<%= @name %>" title="<%= @name %>" />
                 </a>
               </li>
@@ -46,7 +46,7 @@
 
             <ul class="Navmenu-list Navmenu-list--owner">
               <li class="Navmenu-item last-child">
-                <a href="<%= CartoDB.url(self, 'public_maps_home', {}, @visualization.user) %>" class="Navmenu-link Navmenu-link--owner"><%= @name %></a>
+                <a href="<%= CartoDB.url(self, 'public_user_feed_home', {}, @visualization.user) %>" class="Navmenu-link Navmenu-link--owner"><%= @name %></a>
               </li>
 
               <li class="Navmenu-item u-hideOnTablet">
@@ -171,8 +171,8 @@
       <div class="u-inner">
         <div class="PublicMap-block">
           <ul>
-            <% if @related_visualizations.present? %>
-              <% @related_visualizations.each do |vis| %>
+            <% if @related_canonical_visualizations.present? %>
+              <% @related_canonical_visualizations.each do |vis| %>
                 <% if vis.privacy == "public" %>
                   <li class="DatasetsList-item">
                     <div class="DatasetsList-itemCategory is--<%= vis.related_visualizations_simple_geometry_types[0] if vis.related_visualizations_simple_geometry_types.present? %>Dataset"></div>

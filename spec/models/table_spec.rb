@@ -189,6 +189,9 @@ describe Table do
         }
       }
 
+      # To forget about internals of zooming
+      ::Map.any_instance.stubs(:recalculate_zoom!).returns(nil)
+
       visualizations = CartoDB::Visualization::Collection.new.fetch.to_a.length
       table = create_table(name: "epaminondas_pantulis", user_id: $user_1.id)
       CartoDB::Visualization::Collection.new.fetch.to_a.length.should == visualizations + 1
@@ -680,7 +683,7 @@ describe Table do
   end
 
   it "should remove varnish cache when updating the table privacy" do
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
 
     $user_1.private_tables_enabled = true
     $user_1.save
@@ -688,12 +691,11 @@ describe Table do
 
     id = table.table_visualization.id
     CartoDB::Varnish.any_instance.expects(:purge)
-      .times(3)
-      .with(".*#{id}:vizjson")
-      .returns(true)
+                                 .times(4)
+                                 .with(".*#{id}:vizjson")
+                                 .returns(true)
 
-    CartoDB::TablePrivacyManager.any_instance
-      .expects(:propagate_to_varnish)
+    CartoDB::TablePrivacyManager.any_instance.expects(:propagate_to_varnish)
     table.privacy = UserTable::PRIVACY_PUBLIC
     table.save
   end
@@ -2246,20 +2248,131 @@ describe Table do
       table.save
       table.should be_private
 
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
       source  = table.table_visualization
       derived = CartoDB::Visualization::Copier.new($user_1, source).copy
       derived.store
       derived.type.should eq(CartoDB::Visualization::Member::TYPE_DERIVED)
 
       # Do not create all member objects anew to be able to set expectations
-      CartoDB::Visualization::Member.stubs(:new).with(has_entry(:id => derived.id)).returns(derived)
-      CartoDB::Visualization::Member.stubs(:new).with(has_entry(:type => 'table')).returns(table.table_visualization)
+      CartoDB::Visualization::Member.stubs(:new).with(has_entry(id: derived.id)).returns(derived)
+      CartoDB::Visualization::Member.stubs(:new).with(has_entry(type: 'table')).returns(table.table_visualization)
 
-      derived.expects(:invalidate_cache).once()
+      derived.expects(:invalidate_cache).once
 
       table.privacy = UserTable::PRIVACY_PUBLIC
       table.save
+
+      $user_1.private_tables_enabled = false
+      $user_1.save
+    end
+
+    it 'privacy reverts if named map update fails' do
+      $user_1.private_tables_enabled = true
+      $user_1.save
+      table = create_table(user_id: $user_1.id, privacy: UserTable::PRIVACY_PUBLIC)
+      table.save
+
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
+      source = table.table_visualization
+      derived = CartoDB::Visualization::Copier.new($user_1, source).copy
+      derived.store
+      derived.type.should eq(CartoDB::Visualization::Member::TYPE_DERIVED)
+
+      # Scenario 1: Fail at map saving (can happen due to Map handlers)
+
+      table.privacy = UserTable::PRIVACY_PRIVATE
+
+      ::Map.any_instance.stubs(:save).once.raises(StandardError)
+
+      expect do
+        table.save
+      end.to raise_exception StandardError
+
+      table.reload.privacy.should eq UserTable::PRIVACY_PUBLIC
+
+      ::Map.any_instance.stubs(:save).returns(true)
+
+      # Scenario 2: Fail setting user table privacy (unlikely, but just in case)
+
+      @stub_calls = 0
+      CartoDB::TablePrivacyManager.any_instance.stubs(:set_from_table_privacy) do
+        @stub_calls += 1
+        if @stub_calls > 1
+          true
+        else
+          raise StandardError
+        end
+      end
+
+      table.privacy = UserTable::PRIVACY_PRIVATE
+      expect do
+        table.save
+      end.to raise_exception StandardError
+
+      table.reload.privacy.should eq UserTable::PRIVACY_PUBLIC
+
+      CartoDB::TablePrivacyManager.any_instance.unstub(:set_from_table_privacy)
+
+      # Scenario 3: Fail saving canonical visualization named map
+
+      @stub_calls = 0
+      @restore_called = false
+      CartoDB::Visualization::Member.any_instance.stubs(:store_using_table).with(table.table_visualization) do
+        @stub_calls += 1
+        if @stub_calls > 1
+          @restore_called = true
+          true
+        else
+          raise CartoDB::NamedMapsWrapper::HTTPResponseError.new("Failing canonical visualization named map update")
+        end
+      end
+
+      table.privacy = UserTable::PRIVACY_PRIVATE
+      expect do
+        table.save
+      end.to raise_exception CartoDB::NamedMapsWrapper::HTTPResponseError
+
+      @restore_called.should eq true
+
+      table.reload.privacy.should eq UserTable::PRIVACY_PUBLIC
+
+      CartoDB::Visualization::Member.any_instance.unstub(:store_using_table)
+
+      # Scenario 4: Fail saving affected visualizations named map
+
+      @stub_calls = 0
+      @restore_called = false
+      CartoDB::Visualization::Member.any_instance.stubs(:store_using_table).with(derived) do
+        @stub_calls += 1
+        if @stub_calls > 1
+          @restore_called = true
+          true
+        else
+          raise CartoDB::NamedMapsWrapper::HTTPResponseError.new("Failing affected visualization named map update")
+        end
+      end
+
+      table.privacy = UserTable::PRIVACY_PRIVATE
+      expect do
+        table.save
+      end.to raise_exception CartoDB::NamedMapsWrapper::HTTPResponseError
+
+      table.reload.privacy.should eq UserTable::PRIVACY_PUBLIC
+
+      CartoDB::Visualization::Member.any_instance.unstub(:store_using_table)
+
+      # Scenario 5: All went fine
+
+      table.privacy = UserTable::PRIVACY_PRIVATE
+      table.save
+      table.reload.privacy.should eq UserTable::PRIVACY_PRIVATE
+      table.privacy = UserTable::PRIVACY_PUBLIC
+      table.save
+      table.reload.privacy.should eq UserTable::PRIVACY_PUBLIC
+
+      $user_1.private_tables_enabled = false
+      $user_1.save
     end
   end
 

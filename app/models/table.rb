@@ -441,35 +441,26 @@ class Table
     update_table_pg_stats
 
   rescue => e
-    self.handle_creation_error(e)
+    handle_creation_error(e)
   end
 
   def before_save
     @user_table.updated_at = table_visualization.updated_at if table_visualization
-  end #before_save
+  end
 
   def after_save
     manage_tags
     update_name_changes
 
-    @user_table.map.save
-    manager = CartoDB::TablePrivacyManager.new(@user_table)
-    manager.set_from_table_privacy(@user_table.privacy)
-    manager.propagate_to(table_visualization)
-    if privacy_changed?
-      manager.propagate_to_varnish
-      update_cdb_tablemetadata
-    end
+    CartoDB::TablePrivacyManager.new(@user_table).apply_privacy_change(self, previous_privacy, privacy_changed?)
 
-    affected_visualizations.each { |visualization|
-      manager.propagate_to(visualization, privacy_changed?)
-    }
+    update_cdb_tablemetadata if privacy_changed?
   end
 
   def propagate_namechange_to_table_vis
     table_visualization.name = name
     table_visualization.store
-  end #propagate_namechange_to_table_vis
+  end
 
   def grant_select_to_tiler_user
     owner.in_database(:as => :superuser).run(%Q{GRANT SELECT ON #{qualified_table_name} TO #{CartoDB::TILE_DB_USER};})
@@ -564,6 +555,7 @@ class Table
     member.store
     member.map.recalculate_bounds!
     member.map.recenter_using_bounds!
+    member.map.recalculate_zoom!
 
     CartoDB::Visualization::Overlays.new(member).create_default_overlays
   end
@@ -580,7 +572,7 @@ class Table
         user_id:  self.owner.id
       }
     )
-    CartoDB::Visualization::Overlays.new(vis).create_default_overlays  
+    CartoDB::Visualization::Overlays.new(vis).create_default_overlays
     vis.store
     vis
   end
@@ -641,7 +633,7 @@ class Table
     if owner.cartodb_extension_version_pre_mu?
       "^#{self.owner.database_name}:(.*#{self.name}.*)|(table)$"
     else
-      "^#{self.owner.database_name}:(.*#{owner.database_schema}\\.#{self.name}.*)|(table)$"
+      "^#{self.owner.database_name}:(.*#{owner.database_schema}(\\\\\")?\\.#{self.name}.*)|(table)$"
     end
   end
 
@@ -731,7 +723,7 @@ class Table
   end
 
   def privacy_changed?
-    @user_table.previous_changes.keys.include?(:privacy)
+     @user_table.previous_changes && @user_table.previous_changes.keys.include?(:privacy)
   end
 
   def redis_key
@@ -1347,6 +1339,11 @@ class Table
   end
 
   private
+
+  def previous_privacy
+    # INFO: @user_table.initial_value(:privacy) weirdly returns incorrect value so using changes index instead
+    privacy_changed? ? @user_table.previous_changes[:privacy].first : nil
+  end
 
   def importer_stats
     @importer_stats ||= CartoDB::Stats::Importer.instance

@@ -2,6 +2,9 @@
 -------------------
 * Now the owner of the dataset is going to receive an email when the synchronization fails hits the max allowed number [#3501](https://github.com/CartoDB/cartodb/issues/3501)
 * If the dataset don't have an associated map we avoid to use the zoom property [#5447](https://github.com/CartoDB/cartodb/issues/5447)
+* Display custom attribution of layers in the editor and embeds [#5388](https://github.com/CartoDB/cartodb/pull/5388)
+* Adapted Hound configuration to use default .rubocop.yml file so we can have [Rubocop](https://github.com/bbatsov/rubocop) style checks integrated at Sublime Text via [SublimeLinter](http://sublimelinter.readthedocs.org/en/latest/) + [SublimeLinter-rubocop](https://github.com/SublimeLinter/SublimeLinter-rubocop)
+* Migrated `Synchronization` id field to `uuid`
 
 3.11.0 (2015-09-09)
 -------------------
@@ -15,12 +18,14 @@
 * LDAP configuration & authentication system. If active deactivates standard CartoDB & Google authentications. See cartodb:ldap:create_ldap_configuration rake for how to create one, and source code of /app/models/carto/ldap for more details.
 * Upgrade cartodb-postgresql extension to 0.9.4, which includes the new cartodbfy process. As part of this change new user tables won't have the columns `created_at` nor `updated_at`. See the [release notes](https://github.com/CartoDB/cartodb-postgresql/blob/0.9.4/NEWS.md) for more details.
 * Added code coverage generation for tests suite. After a run, results will be stored at `coverage` subfolder
+* Organizations can choose their authentication mechanisms.
 * Fixed street addr tab for georeference modal for google maps/geocoder usage [#5281](https://github.com/CartoDB/cartodb/pull/5281)
 * Privacy toggler within create dataset dialog [#5340](https://github.com/CartoDB/cartodb/pull/5340)
 * Fixed maps disappearing after creation + navigation to dashboard [#5264](https://github.com/CartoDB/cartodb/issues/5264)
 * Log.append now allows to disable truncating (by default active)
 * Detection of lat/long columns now is done in `ogr2ogr2` rather than rails code [#5349](https://github.com/CartoDB/cartodb/pull/5349). In order to get this feature working (and some related tests), execute this to get the ogr2ogr2 package updated: `sudo apt-get update; sudo apt-get upgrade`. From this version on, the ogr2ogr2 package is mandatory. In order to install it: `sudo apt-get install ogr2ogr2-static-bin`.
 * Removed Mixpanel tracking code [#5410](https://github.com/CartoDB/cartodb/pull/5410)
+* Newly imported datasets now properly calculate the map bounds and zoom and store them
 * Don't try to short url with bitly if credentials are not present in app_config.yml
 
 3.10.3 (2015-08-13)

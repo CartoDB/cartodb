@@ -210,7 +210,7 @@ class User < Sequel::Model
     rebuild_quota_trigger    if changes.include?(:quota_in_bytes)
     if changes.include?(:account_type) || changes.include?(:available_for_hire) || changes.include?(:disqus_shortname) || changes.include?(:email) || \
        changes.include?(:website) || changes.include?(:name) || changes.include?(:description) || \
-       changes.include?(:twitter_username)
+       changes.include?(:twitter_username) || changes.include?(:location)
       invalidate_varnish_cache(regex: '.*:vizjson')
     end
     if changes.include?(:database_host)
@@ -908,14 +908,6 @@ class User < Sequel::Model
     return false
   end
 
-  def import_quota
-    if self.max_concurrent_import_count.nil?
-      self.account_type.downcase == 'free' ? 1 : 3
-    else
-      self.max_concurrent_import_count
-    end
-  end
-
   def view_dashboard
     self.this.update dashboard_viewed_at: Time.now
     set dashboard_viewed_at: Time.now
@@ -1217,7 +1209,7 @@ class User < Sequel::Model
     sql += %Q{
           column_name IN (#{cartodb_columns}) AND
 
-          tg.tgrelid = (t.schemaname || '.' || t.tablename)::regclass::oid AND
+          tg.tgrelid = (quote_ident(t.schemaname) || '.' || quote_ident(t.tablename))::regclass::oid AND
           tg.tgname = 'test_quota_per_row'
 
           GROUP BY 1
@@ -2121,7 +2113,7 @@ TRIGGER
   # Upgrade the cartodb postgresql extension
   def upgrade_cartodb_postgres_extension(statement_timeout=nil, cdb_extension_target_version=nil)
     if cdb_extension_target_version.nil?
-      cdb_extension_target_version = '0.10.0'
+      cdb_extension_target_version = '0.10.1'
     end
 
     in_database({

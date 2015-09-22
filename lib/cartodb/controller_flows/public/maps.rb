@@ -13,7 +13,7 @@ module CartoDB
         end
 
         def organization_path
-          CartoDB.path(@ctrl, 'public_visualizations_home')
+          CartoDB.path(@ctrl, 'public_maps_home')
         end
 
         def render_404

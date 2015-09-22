@@ -25,6 +25,7 @@ class Organization < Sequel::Model
   # @param display_name String
   # @param discus_shortname String
   # @param twitter_username String
+  # @param location String
   # @param geocoding_quota Integer
   # @param map_view_quota Integer
   # @param geocoding_block_price Integer
@@ -169,6 +170,7 @@ class Organization < Sequel::Model
       :geocoding_block_price    => self.geocoding_block_price,
       :seats                    => self.seats,
       :twitter_username         => self.twitter_username,
+      :location                 => self.twitter_username,
       :updated_at               => self.updated_at,
       :website          => self.website,
       :admin_email      => self.admin_email,
@@ -229,7 +231,16 @@ class Organization < Sequel::Model
     users.nil? ? 0 : users.count
   end
 
+  def notify_if_disk_quota_limit_reached
+    ::Resque.enqueue(::Resque::OrganizationJobs::Mail::DiskQuotaLimitReached, id) if disk_quota_limit_reached?
+  end
+
   private
+
+  # Returns true if disk quota won't allow new signups with existing defaults
+  def disk_quota_limit_reached?
+    unassigned_quota < default_quota_in_bytes
+  end
 
   def quota_dates(options)
     date_to = (options[:to] ? options[:to].to_date : Date.today)

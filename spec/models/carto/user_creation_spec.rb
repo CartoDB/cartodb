@@ -3,6 +3,53 @@ require_relative '../../../app/models/carto/user_creation'
 
 describe Carto::UserCreation do
 
+  describe 'autologin?' do
+
+    it 'is true for autologin_user_creation factory' do
+      FactoryGirl.build(:autologin_user_creation).autologin?.should == true
+    end
+
+    it 'is false for states other than success' do
+      FactoryGirl.build(:autologin_user_creation, state: 'creating_user').autologin?.should == false
+      FactoryGirl.build(:autologin_user_creation, state: 'validating_user').autologin?.should == false
+      FactoryGirl.build(:autologin_user_creation, state: 'saving_user').autologin?.should == false
+      FactoryGirl.build(:autologin_user_creation, state: 'promoting_user').autologin?.should == false
+      FactoryGirl.build(:autologin_user_creation, state: 'creating_user_in_central').autologin?.should == false
+      FactoryGirl.build(:autologin_user_creation, state: 'load_common_data').autologin?.should == false
+      FactoryGirl.build(:autologin_user_creation, state: 'failure').autologin?.should == false
+
+      FactoryGirl.build(:autologin_user_creation, state: 'success').autologin?.should == true
+    end
+
+    it 'is stops working after one minute' do
+      FactoryGirl.build(:autologin_user_creation, created_at: Time.now - 61.seconds).autologin?.should == false
+      FactoryGirl.build(:autologin_user_creation, created_at: Time.now - 60.seconds).autologin?.should == false
+      FactoryGirl.build(:autologin_user_creation, created_at: Time.now - 59.seconds).autologin?.should == true
+    end
+
+    it 'is false for users with enable_account_token' do
+      user_creation = FactoryGirl.build(:autologin_user_creation)
+      user = user_creation.instance_variable_get(:@user)
+      user.enable_account_token = 'whatever'
+      user_creation.autologin?.should == false
+    end
+
+    it 'is false for disabled users' do
+      user_creation = FactoryGirl.build(:autologin_user_creation)
+      user = user_creation.instance_variable_get(:@user)
+      user.enabled = false
+      user_creation.autologin?.should == false
+    end
+
+    it 'is false for users that have seen their dashboard' do
+      user_creation = FactoryGirl.build(:autologin_user_creation)
+      user = user_creation.instance_variable_get(:@user)
+      user.dashboard_viewed_at = Time.now
+      user_creation.autologin?.should == false
+    end
+
+  end
+
   describe 'validation token' do
     include_context 'organization with users helper'
 
@@ -183,6 +230,26 @@ describe Carto::UserCreation do
       user_data = FactoryGirl.build(:valid_user)
       user_data.organization = @organization
       user_data.google_sign_in = false
+
+      user_creation = Carto::UserCreation.new_user_signup(user_data)
+      user_creation.next_creation_step until user_creation.finished?
+    end
+
+  end
+
+  describe 'organization overquota email' do
+    include_context 'organization with users helper'
+
+    it 'triggers a DiskQuotaLimitReached mail if organization has run out of quota for new users' do
+      User.any_instance.stubs(:create_in_central).returns(true)
+      User.any_instance.stubs(:enable_remote_db_user).returns(true)
+      ::Resque.expects(:enqueue).with(Resque::UserJobs::Mail::NewOrganizationUser, instance_of(String)).once
+      ::Resque.expects(:enqueue).with(Resque::OrganizationJobs::Mail::DiskQuotaLimitReached, instance_of(String)).once
+
+      user_data = FactoryGirl.build(:valid_user)
+      user_data.organization = @organization
+      @organization.quota_in_bytes = @organization.assigned_quota + @organization.default_quota_in_bytes + 1
+      @organization.save
 
       user_creation = Carto::UserCreation.new_user_signup(user_data)
       user_creation.next_creation_step until user_creation.finished?

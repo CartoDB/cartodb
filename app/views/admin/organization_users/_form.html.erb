@@ -1,5 +1,5 @@
 
-<%= form_for @user, url: (@user.new? ? CartoDB.url(self, 'create_organization_user', {id: @organization}, current_user) : CartoDB.url(self, 'update_organization_user', {id: @user.username}, current_user)), :class =>'Form' do |f| %>
+<%= form_for @user, url: (@user.new? ? CartoDB.url(self, 'create_organization_user', {}, current_user) : CartoDB.url(self, 'update_organization_user', {id: @user.username}, current_user)), :class =>'Form' do |f| %>
 
   <%= f.hidden_field :private_tables_enabled %>
   <%= hidden_field_tag :show_account_settings_flash, true %>
@@ -37,30 +37,34 @@
     </div>
   </div>
 
-  <div class="VerticalAligned--FormRow">
-    <div class="FormAccount-row">
-      <div class="FormAccount-rowLabel">
-        <label class="FormAccount-label">New password</label>
+  <% if current_user.organization.auth_username_password_enabled %>
+
+    <div class="VerticalAligned--FormRow">
+      <div class="FormAccount-row">
+        <div class="FormAccount-rowLabel">
+          <label class="FormAccount-label">New password</label>
+        </div>
+        <div class="FormAccount-rowData">
+          <%= password_field_tag 'user[password]', nil, :placeholder => "New password", :class => "FormAccount-input FormAccount-input--med #{ 'is-disabled' if !@user.can_change_password? } #{ 'FormAccount-input--error' if @user.errors[:password].present? }", readonly: !@user.can_change_password? %>
+        </div>
+        <div class="FormAccount-rowInfo">
+          <% if (@user.errors[:password].present?) %>
+            <p class="FormAccount-rowInfoText FormAccount-rowInfoText--error"><%= @user.errors[:password].first%></p>
+          <% end %>
+        </div>
       </div>
-      <div class="FormAccount-rowData">
-        <%= password_field_tag 'user[password]', nil, :placeholder => "New password", :class => "FormAccount-input FormAccount-input--med #{ 'is-disabled' if !@user.can_change_password? } #{ 'FormAccount-input--error' if @user.errors[:password].present? }", readonly: !@user.can_change_password? %>
-      </div>
-      <div class="FormAccount-rowInfo">
-        <% if (@user.errors[:password].present?) %>
-          <p class="FormAccount-rowInfoText FormAccount-rowInfoText--error"><%= @user.errors[:password].first%></p>
-        <% end %>
+
+      <div class="FormAccount-row">
+        <div class="FormAccount-rowLabel">
+          <label class="FormAccount-label">Confirm password</label>
+        </div>
+        <div class="FormAccount-rowData">
+          <%= password_field_tag 'user[password_confirmation]', nil, :placeholder => "Confirm new password", :class => "FormAccount-input FormAccount-input--med #{ 'is-disabled' if !@user.can_change_password? } #{ 'FormAccount-input--error' if @user.errors[:password].present?}", readonly: !@user.can_change_password? %>
+        </div>
       </div>
     </div>
 
-    <div class="FormAccount-row">
-      <div class="FormAccount-rowLabel">
-        <label class="FormAccount-label">Confirm password</label>
-      </div>
-      <div class="FormAccount-rowData">
-        <%= password_field_tag 'user[password_confirmation]', nil, :placeholder => "Confirm new password", :class => "FormAccount-input FormAccount-input--med #{ 'is-disabled' if !@user.can_change_password? } #{ 'FormAccount-input--error' if @user.errors[:password].present?}", readonly: !@user.can_change_password? %>
-      </div>
-    </div>
-  </div>
+  <% end %>
 
   <div class="FormAccount-row">
     <div class="FormAccount-rowLabel">

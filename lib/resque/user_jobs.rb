@@ -1,8 +1,27 @@
 # encoding: utf-8
 require_relative './base_job'
 require 'resque-metrics'
+require_relative '../cartodb/metrics'
 
 module Resque
+
+  module OrganizationJobs
+
+    module Mail
+
+      module DiskQuotaLimitReached
+        extend ::Resque::Metrics
+        @queue = :users
+
+        def self.perform(organization_id)
+          OrganizationMailer.quota_limit_reached(Organization.where(id: organization_id).first).deliver
+        end
+      end
+
+    end
+
+  end
+
   module UserJobs
 
     module Signup
@@ -30,6 +49,9 @@ module Resque
         def self.perform(user_id)
           u = User.where(id: user_id).first
           u.link_ghost_tables
+        rescue => e
+          CartoDB.notify_exception(e)
+          raise e
         end
 
       end

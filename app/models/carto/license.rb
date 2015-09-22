@@ -24,12 +24,12 @@ module Carto
       GPLV2_LICENSE => { :id => GPLV2_LICENSE, :name => 'GPLv2 license'},
       PDDL_LICENSE => { :id => PDDL_LICENSE, :name => 'Public Domain Dedication and License'},
       CC_0 => { :id => CC_0, :name => 'CC0: CC Public domain'},
-      CC_BY_LICENSE => { :id => CC_BY_LICENSE, :name => 'CC BY: CC Attribution alone'},
-      CC_BY_NC_LICENSE => { :id => CC_BY_NC_LICENSE, :name => 'CC BY-NC: CC Attribution + Noncommercial'},
-      CC_BY_SA_LICENSE => { :id => CC_BY_SA_LICENSE, :name => 'CC BY-SA: CC Attribution + ShareAlike'},
-      CC_BY_ND_LICENSE => { :id => CC_BY_ND_LICENSE, :name => 'CC BY-ND: CC Attribution + NoDerivatives'},
-      CC_BY_NC_SA_LICENSE => { :id => CC_BY_NC_SA_LICENSE, :name => 'CC BY-NC-SA: CC Attribution + Noncommercial + ShareAlike'},
-      CC_BY_NC_ND_LICENSE => { :id => CC_BY_NC_ND_LICENSE, :name => 'CC BY-NC-ND: CC Attribution + Noncommercial + NoDerivatives'},
+      CC_BY_LICENSE => { :id => CC_BY_LICENSE, :name => 'CC BY: Attribution alone'},
+      CC_BY_NC_LICENSE => { :id => CC_BY_NC_LICENSE, :name => 'CC BY-NC: Attribution + Noncommercial'},
+      CC_BY_SA_LICENSE => { :id => CC_BY_SA_LICENSE, :name => 'CC BY-SA: Attribution + ShareAlike'},
+      CC_BY_ND_LICENSE => { :id => CC_BY_ND_LICENSE, :name => 'CC BY-ND: Attribution + NoDerivatives'},
+      CC_BY_NC_SA_LICENSE => { :id => CC_BY_NC_SA_LICENSE, :name => 'CC BY-NC-SA: Attribution + Noncommercial + ShareAlike'},
+      CC_BY_NC_ND_LICENSE => { :id => CC_BY_NC_ND_LICENSE, :name => 'CC BY-NC-ND: Attribution + Noncommercial + NoDerivatives'},
       PUBLIC_DOMAIN_LICENSE => { :id => PUBLIC_DOMAIN_LICENSE, :name => 'Public domain'},
       OPEN_GOVERNMENT_LICENSE => { :id => OPEN_GOVERNMENT_LICENSE, :name => 'Open Government License'}
     }

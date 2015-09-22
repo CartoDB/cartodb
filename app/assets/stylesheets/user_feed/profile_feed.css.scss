@@ -13,7 +13,7 @@
 }
 .PublicUserProfile-profile {
   @include flex(0 0 320px);
-  margin: 45px 0 0;
+  margin: 12px 0 0;
 }
 .PublicUserProfile-name {
   margin: 0 0 35px;
@@ -45,6 +45,7 @@
 .PublicUserProfile-detail .iconFont {
   color: #CBCED0;
   font-size: 17px;
+  vertical-align: top;
 }
 .PublicUserProfile-detail .iconFont-Pin {
   padding: 0 3px;
@@ -88,7 +89,7 @@
   }
 
   .PublicUserProfile-details {
-    margin: 60px 0 0;
+    margin: 20px 0 0;
   }
   .Profile-content.Feed-content .FeedItem {
     @include justify-content(upaue-around, stretch);

@@ -764,7 +764,7 @@ describe CommonData do
             "children": [],
             "liked": false
         },
-        {  
+        {
            "id":"31636cc4-4fb8-11e5-98ec-0e8dde98a187",
            "name":"nycpluto_all",
            "display_name":"NYC MapPLUTO - All NY",
@@ -813,7 +813,7 @@ describe CommonData do
            "permission":{  
               "id":"2f2d73c9-d60e-4eb5-8031-be7059878d4b",
               "owner":{  
-                	"id": "beacfd17-418e-4e71-b307 -95b5c96105dc",
+                    "id": "beacfd17-418e-4e71-b307 -95b5c96105dc",
                     "username": "common-data",
                     "email": "mario.defrutos+30@cartodb.com",
                     "avatar_url": "//example.com/avatars/avatar_mountains_blue.png",
@@ -844,7 +844,7 @@ describe CommonData do
            },
            "active_child":null,
            "table":{  
-              	"id": "36612fa1-1eb1-4935-a181-5edbbafe3ce7",
+                "id": "36612fa1-1eb1-4935-a181-5edbbafe3ce7",
                 "name": "public.nycpluto_all",
                  "permission": {
                     "id": "9bc70a85-029f-4e57-8f11-8bae254ef1cc",

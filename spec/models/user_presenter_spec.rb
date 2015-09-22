@@ -177,6 +177,7 @@ describe Carto::Api::UserPresenter do
       new_data[:organization][:geocoding_block_price].should == old_data[:organization][:geocoding_block_price]
       new_data[:organization][:seats].should == old_data[:organization][:seats]
       new_data[:organization][:twitter_username].should == old_data[:organization][:twitter_username]
+      new_data[:organization][:location].should == old_data[:organization][:location]
       # Same as [:organization][:created_at] issue above
       new_data[:organization][:updated_at].to_s.should == old_data[:organization][:updated_at].to_s
       #owner is excluded from the users list

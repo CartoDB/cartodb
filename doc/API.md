@@ -1461,5 +1461,5 @@ Once you know which version of CartoDB.js you're using, you can point your site 
 You can do the same for the CSS documents we provide:
 
 ```html
-<link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.12.3/themes/css/cartodb.css" />
+<link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15.6/themes/css/cartodb.css" />
 ```

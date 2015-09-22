@@ -8,8 +8,7 @@ class Admin::PagesController < ApplicationController
 
   include CartoDB
 
-  PUBLIC_DATASETS_PER_PAGE = 20
-  DATASETS_PER_PAGE = 20
+  DATASETS_PER_PAGE = 9
   MAPS_PER_PAGE = 9
   USER_TAGS_LIMIT = 100
   PAGE_NUMBER_PLACEHOLDER = 'PAGENUMBERPLACEHOLDER'
@@ -144,7 +143,7 @@ class Admin::PagesController < ApplicationController
       user_public_vis_list({
         user:  user,
         vis_type: Visualization::Member::TYPE_CANONICAL,
-        per_page: PUBLIC_DATASETS_PER_PAGE
+        per_page: DATASETS_PER_PAGE
       }), user
     )
   end

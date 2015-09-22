@@ -180,15 +180,6 @@ module Resque
         end
       end
 
-      module TrendingMap
-        extend ::Resque::Metrics
-        @queue = :users
-
-        def self.perform(visualization_id, mapviews, vis_preview_image)
-          visualization = Carto::Visualization.find(visualization_id)
-          UserMailer.trending_map(visualization, mapviews, vis_preview_image).deliver
-        end
-      end
 
     end
   end

@@ -64,9 +64,7 @@ describe Carto::Api::LayersController do
           response.status.should be_success
           @layers_data = JSON.parse(response.body)
         end
-        # Done this way to preserve the order
-        data_layers = @layers_data['layers']
-        data_layers.delete_if { |layer| layer['kind'] != 'carto' }
+        data_layers = @layers_data['layers'].select { |layer| layer['kind'] == 'carto' }
         data_layers.count.should eq 2
 
         # Rembember, layers by default added at top 

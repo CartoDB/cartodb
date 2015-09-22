@@ -16,6 +16,7 @@ namespace :cartodb do
         visualization_table_names text[],
         visualization_table_rows integer,
         visualization_table_size integer,
+        visualization_map_datasets integer,
         visualization_geometry_types text[],
         visualization_tags text[],
         visualization_bbox geometry,
@@ -45,6 +46,7 @@ namespace :cartodb do
                 visualization_type,
                 visualization_table_rows,
                 visualization_table_size,
+                visualization_map_datasets,
                 visualization_geometry_types,
                 visualization_synced,
                 visualization_tags,
@@ -339,6 +341,7 @@ namespace :cartodb do
         visualization_table_names: explore_api.get_visualization_tables(v),
         visualization_table_rows: table_data[:rows],
         visualization_table_size: table_data[:size],
+        visualization_map_datasets: explore_api.get_map_layers_count(v),
         visualization_geometry_types: table_data[:geometry_types].blank? ? nil : Sequel.pg_array(table_data[:geometry_types]),
         visualization_tags: v.tags.nil? || v.tags.empty? ? nil : Sequel.pg_array(v.tags),
         visualization_created_at: v.created_at,
@@ -380,7 +383,12 @@ namespace :cartodb do
     end
 
     def update_tables(visualization)
-      %[, visualization_table_names = '#{explore_api.get_visualization_tables(visualization)}']
+      if visualization.type == CartoDB::Visualization::Member::TYPE_DERIVED
+        %[, visualization_table_names = '#{explore_api.get_visualization_tables(visualization)}',
+            visualization_map_datasets = #{explore_api.get_map_layers_count(visualization)}]
+      elsif visualization.type == CartoDB::Visualization::Member::TYPE_CANONICAL
+        %[, visualization_table_names = '#{explore_api.get_visualization_tables(visualization)}']
+      end
     end
 
     def update_geometry(visualization)

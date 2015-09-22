@@ -90,19 +90,19 @@ $sLabel-width: 140px;
     content: '';
   }
   &:first-child:before {
-    content: '1';
+    content: "1";
   }
   &:nth-child(2):before {
-    content: '2';
+    content: "2";
   }
   &:nth-child(3):before {
-    content: '3';
+    content: "3";
   }
   &:nth-child(4):before {
-    content: '4';
+    content: "4";
   }
   &:nth-child(5):before {
-    content: '5';
+    content: "5";
   }
 }
 .FormAccount-row.FormAccount-row--step:first-child {
@@ -230,7 +230,7 @@ $sLabel-width: 140px;
   position: relative;
   height: 38px;
   padding: 0 12px;
-  border: 1px solid #CCCCCC;
+  border: 1px solid #cccccc;
   border-radius: 4px;
   outline: none;
   color: #666666;
@@ -242,27 +242,27 @@ $sLabel-width: 140px;
   }
 }
 .FormAccount-input.FormAccount-input--error {
-  border-color: rgba(#DD3B37, 0.6);
+  border-color: rgba(#dd3B37, 0.6);
 }
 .FormAccount-input.FormAccount-input--error:focus,
 .FormAccount-input.FormAccount-input--error:hover {
-  border-color: rgba(#DD3B37, 1);
+  border-color: rgba(#dd3B37, 1);
 }
 
 .FormAccount-input::-webkit-input-placeholder {
-  color: #AAAAAA;
+  color: #aaaaaa;
   font-style: italic;
 }
 .FormAccount-input:-moz-placeholder {
-  color: #AAAAAA;
+  color: #aaaaaa;
   font-style: italic;
 }
 .FormAccount-input::-moz-placeholder {
-  color: #AAAAAA;
+  color: #aaaaaa;
   font-style: italic;
 }
 .FormAccount-input:-ms-input-placeholder {
-  color: #AAAAAA;
+  color: #aaaaaa;
   font-style: italic;
 }
 // Sizes
@@ -319,11 +319,12 @@ $sLabel-width: 140px;
   z-index: 2;
 }
 .FormAccount-inputIcon {
+  color: $cTypography-help;
+  font-size: $sFontSize-larger;
+  
   position: absolute;
   top: 12px;
   right: 14px;
-  color: $cTypography-help;
-  font-size: $sFontSize-larger;
   z-index: 3;
 }
 .FormAccount-inputIcon--clock {
@@ -337,7 +338,7 @@ $sLabel-width: 140px;
   left: 0;
   height: 38px;
   padding: 0 12px;
-  border: 1px solid #CCCCCC;
+  border: 1px solid #cccccc;
   border-radius: 4px;
   background: #FFF4F4;
   color: $cHighlight-negative;
@@ -391,14 +392,14 @@ $sLabel-width: 140px;
   height: 100px;
   border: 1px solid $cTypography-help;
   border-radius: 4px;
-  background: #FFFFFF;
+  background: #ffffff;
   overflow: hidden;
 }
 .FormAccount-avatarPreviewImage {
   position: relative;
   max-width: 100px;
   border-radius: 4px;
-  background: #FFFFFF;
+  background: #ffffff;
 }
 .FormAccount-avatarPreviewLoader {
   position: absolute;
@@ -478,10 +479,10 @@ $sLabel-width: 140px;
 }
 .FormAccount-file {
   &:hover .Button--main {
-    background: #007FBD;
+    background: #007fbd;
   }
   &:hover .Button--negative {
-    background-color: rgba(#B93F37, 1);
+    background-color: rgba(#b93f37, 1);
   }
 }
 .FormAccount-file input[type='file'] {

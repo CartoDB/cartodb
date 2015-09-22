@@ -54,7 +54,7 @@ module CartoDB
       # @return Integer number of items dumped
       def dump(name, data = [])
         processed_data = @json2csv_conversor.process(data, false, @additional_fields[name]) + "\n"
-        processed_data.encode!(OUTPUT_ENCODING, :replace => '')
+        processed_data.encode!(OUTPUT_ENCODING, replace: '')
         @files[name].write(processed_data)
         @original_files[name].write(::JSON.dump(data) + "\n") if @debug_mode
         data.count
@@ -72,14 +72,14 @@ module CartoDB
 
       # @param names_list Array
       # @param stream IO
-      def merge_dumps_into_stream(names_list = [], stream)
+      def merge_dumps_into_stream(names_list, stream)
         headers = @json2csv_conversor.generate_headers(@additional_fields[names_list.first]) + "\n"
 
         streamed_size = headers.length
 
         stream.write(headers)
 
-        names_list.each { |name|
+        names_list.each do |name|
           input_stream = File.open(@files[name].path)
 
           begin
@@ -93,7 +93,7 @@ module CartoDB
           input_stream.close
 
           @files[name].unlink unless @debug_mode
-        }
+        end
 
         if @debug_mode && !@headers_file.nil?
           @headers_file.write(headers)
@@ -109,17 +109,17 @@ module CartoDB
         headers = @json2csv_conversor.generate_headers(@additional_fields[names_list.first]) + "\n"
         return_data = headers
 
-        return_data.encode!(OUTPUT_ENCODING, :replace => '')
+        return_data.encode!(OUTPUT_ENCODING, replace: '')
 
         if @debug_mode && !@headers_file.nil?
           @headers_file.write(headers)
           @headers_file.close
         end
 
-        names_list.each { |name|
+        names_list.each do |name|
           return_data << File.read(@files[name].path)
           @files[name].unlink unless @debug_mode
-        }
+        end
 
         # Remove final trailing newline before returning
         return_data.sub(/\n$/, '')
@@ -135,22 +135,18 @@ module CartoDB
 
         # For the default scenario force encoding, for original files don't touch anything
         if extension == CONVERTED_FILE_EXTENSION
-          Tempfile.new([base_name.gsub(' ','_'), extension], temps_full_path, :encoding => OUTPUT_ENCODING)
+          Tempfile.new([base_name.gsub(' ', '_'), extension], temps_full_path, encoding: OUTPUT_ENCODING)
         else
-          Tempfile.new([base_name.gsub(' ','_'), extension], temps_full_path)
+          Tempfile.new([base_name.gsub(' ', '_'), extension], temps_full_path)
         end
       end
 
       def file_paths
-        @files.values.map { |file|
-          file.path
-        }
+        @files.values.map(&:path)
       end
 
       def original_file_paths
-        @original_files.values.map { |file|
-          file.path
-        }
+        @original_files.values.map(&:path)
       end
 
       def headers_path
@@ -165,15 +161,9 @@ module CartoDB
 
       # Intended for tests
       def destroy_files
-        @files.keys.each { |key|
-          @files[key].close!
-        }
-        @original_files.keys.each { |key|
-          @original_files[key].close!
-        }
-        unless @headers_file.nil?
-          @headers_file.close!
-        end
+        @files.keys.each { |key| @files[key].close! }
+        @original_files.keys.each { |key| @original_files[key].close! }
+        @headers_file.close! unless @headers_file.nil?
       end
 
     end

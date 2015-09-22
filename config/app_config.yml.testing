@@ -198,6 +198,9 @@ defaults: &defaults
       client_id: ''
       client_secret: ''
       callback_url: 'http://cartodb.com'
+    google_plus:
+      client_id: ''
+      cookie_policy: 'single_host_origin'
     dropbox:
       app_key:  ''
       app_secret: ''

@@ -1,7 +1,7 @@
 # coding: utf-8
 class Admin::OrganizationsController < ApplicationController
   ssl_required :show, :settings, :settings_update, :auth, :auth_update, :regenerate_all_api_keys
-  before_filter :login_required, :load_organization_and_members
+  before_filter :login_required, :load_organization_and_members, :load_ldap_configuration
 
   layout 'application'
 
@@ -36,6 +36,7 @@ class Admin::OrganizationsController < ApplicationController
     end
     @organization.discus_shortname = attributes[:discus_shortname]
     @organization.twitter_username = attributes[:twitter_username]
+    @organization.location = attributes[:location]
 
     @organization.update_in_central
     @organization.save(raise_on_failure: true)
@@ -71,6 +72,8 @@ class Admin::OrganizationsController < ApplicationController
   def auth_update
     attributes = params[:organization]
     @organization.whitelisted_email_domains = attributes[:whitelisted_email_domains].split(",")
+    @organization.auth_username_password_enabled = attributes[:auth_username_password_enabled]
+    @organization.auth_google_enabled = attributes[:auth_google_enabled]
     @organization.update_in_central
     @organization.save(raise_on_failure: true)
 
@@ -93,6 +96,10 @@ class Admin::OrganizationsController < ApplicationController
     # INFO: Special scenario of handcrafted URL to go to organization-based signup page
     @organization_signup_url = 
       "#{CartoDB.protocol}://#{@organization.name}.#{CartoDB.account_host}#{CartoDB.path(self, 'signup_organization_user')}"
+  end
+
+  def load_ldap_configuration
+    @ldap_configuration = Carto::Ldap::Configuration.where(organization_id: @organization.id).first
   end
 
 end

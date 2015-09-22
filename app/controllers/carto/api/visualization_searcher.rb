@@ -26,6 +26,7 @@ module Carto
         tags = params.fetch(:tags, '').split(',')
         tags = nil if tags.empty?
         bbox_parameter = params.fetch(:bbox,nil)
+        privacy = params.fetch(:privacy,nil)
 
         vqb = VisualizationQueryBuilder.new
             .with_prefetch_user
@@ -62,6 +63,10 @@ module Carto
 
           if types.include? Carto::Visualization::TYPE_REMOTE
             vqb.without_synced_external_sources
+          end
+
+          if !privacy.nil?
+            vqb.with_privacy(privacy)
           end
 
         else

@@ -20,29 +20,30 @@ WORKING_SPECS_1 = \
   spec/models/table/relator_spec.rb \
   spec/models/table/column_typecaster_spec.rb \
   spec/models/user_spec.rb \
-#  spec/models/user_presenter_spec.rb \
-#	spec/models/user_table_spec.rb \
-#  spec/models/layer_spec.rb \
-#  spec/models/layer/presenter_spec.rb \
-#  spec/requests/api/json/layer_presenter_spec.rb \
-#  spec/requests/carto/api/layer_presenter_spec.rb \
-#	spec/requests/carto/api/data_import_presenter_spec.rb \
-#  spec/models/map_spec.rb \
-#  spec/models/map/copier_spec.rb \
-#  spec/models/visualization/*.rb \
-#  spec/models/named_maps_spec.rb \
-#  spec/models/geocoding_spec.rb \
-#  spec/models/common_data_spec.rb \
-#  spec/lib/sql_parser_spec.rb \
-#  spec/lib/url_signer_spec.rb \
-#  spec/lib/string_spec.rb \
-#  spec/lib/image_metadata_spec.rb \
-#  spec/lib/central_spec.rb \
-#  spec/lib/carto/http/client_spec.rb \
-#	spec/helpers/uuidhelper_spec.rb \
-#	spec/models/carto/template_spec.rb \
-#	spec/models/carto/ldap/configuration_spec.rb \
-#	spec/requests/sessions_controller_spec.rb \
+  spec/models/user_presenter_spec.rb \
+	spec/models/user_table_spec.rb \
+  spec/models/layer_spec.rb \
+  spec/models/layer/presenter_spec.rb \
+	spec/requests/sessions_spec.rb \
+  spec/requests/api/json/layer_presenter_spec.rb \
+  spec/requests/carto/api/layer_presenter_spec.rb \
+	spec/requests/carto/api/data_import_presenter_spec.rb \
+  spec/models/map_spec.rb \
+  spec/models/map/copier_spec.rb \
+  spec/models/visualization/*.rb \
+  spec/models/named_maps_spec.rb \
+  spec/models/geocoding_spec.rb \
+  spec/models/common_data_spec.rb \
+  spec/lib/sql_parser_spec.rb \
+  spec/lib/url_signer_spec.rb \
+  spec/lib/string_spec.rb \
+  spec/lib/image_metadata_spec.rb \
+  spec/lib/central_spec.rb \
+  spec/lib/carto/http/client_spec.rb \
+	spec/helpers/uuidhelper_spec.rb \
+	spec/models/carto/template_spec.rb \
+	spec/models/carto/ldap/configuration_spec.rb \
+	spec/requests/sessions_controller_spec.rb \
   $(NULL)
 
 WORKING_SPECS_2 = \
@@ -100,15 +101,16 @@ WORKING_SPECS_4 = \
   spec/requests/api/json/imports_controller_spec.rb \
 	spec/requests/carto/api/imports_controller_spec.rb \
   spec/connectors/importer_spec.rb \
-#  spec/requests/api/geocodings_spec.rb \
-#  services/importer/spec/unit/url_translator/osm_spec.rb \
-#  services/importer/spec/unit/url_translator/osm2_spec.rb \
-#  services/importer/spec/unit/mail_notifier_spec.rb \
-#  services/relocator/spec/relocator_spec.rb \
+  spec/requests/api/geocodings_spec.rb \
+  services/importer/spec/unit/url_translator/osm_spec.rb \
+  services/importer/spec/unit/url_translator/osm2_spec.rb \
+  services/importer/spec/unit/mail_notifier_spec.rb \
+  services/relocator/spec/relocator_spec.rb \
 
 WORKING_SPECS_5 = \
   spec/rspec_configuration.rb \
   spec/requests/api/assets_spec.rb \
+  spec/requests/carto/api/assets_controller_spec.rb \
   spec/requests/api/user_layers_spec.rb \
   spec/requests/api/json/layers_controller_spec.rb \
   spec/requests/carto/api/layers_controller_spec.rb \
@@ -200,20 +202,13 @@ endif
 
 # TODO: Ongoing removal of groups, that's the reason of holes in numbering
 check-1:
-	# RAILS_DATABASE_NAME=carto_db_test_6336 REDIS_PORT=6336 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_1)
-	RAILS_ENV=test_1 bundle exec rspec $(WORKING_SPECS_1)  > check1.log 2>&1
-	# RAILS_ENV=test_1 bundle exec rspec $(WORKING_SPECS_1) 
+	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_1)
 check-2:
-	# RAILS_DATABASE_NAME=carto_db_test_6337 REDIS_PORT=6337 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_2) --fail-fast > check2.log 2>&1
-	RAILS_ENV=test_2 bundle exec rspec $(WORKING_SPECS_2)  > check2.log 2>&1
+	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_2)
 check-4:
-	# RAILS_DATABASE_NAME=carto_db_test_6338 REDIS_PORT=6338 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_4) --fail-fast > check4.log 2>&1
-	# RAILS_ENV=test_4 bundle exec rspec $(WORKING_SPECS_4) --fail-fast -d > check4.log 2>&1
-	RAILS_ENV=test_4 bundle exec rspec $(WORKING_SPECS_4)  -d
-	# RAILS_DATABASE_NAME=carto_db_test_6338 REDIS_PORT=6338 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_4) --fail-fast
-	# REDIS_PORT=6338 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_4) 
+	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_4)
 check-5:
-	RAILS_ENV=test_1 bundle exec rspec $(WORKING_SPECS_5)
+	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_5)
 check-7:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_7)
 check-9:
@@ -225,7 +220,7 @@ check-integrations:
 
 check-external: prepare-test-db check-integrations
 
-check-prepared: check-1
+check-prepared: check-1 check-2 check-4 check-5 check-7 check-9 check-carto-db-class
 
 check: prepare-test-db check-prepared
 check-frontend:

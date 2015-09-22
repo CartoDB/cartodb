@@ -90,19 +90,19 @@ $sLabel-width: 140px;
     content: '';
   }
   &:first-child:before {
-    content: "1";
+    content: '1';
   }
   &:nth-child(2):before {
-    content: "2";
+    content: '2';
   }
   &:nth-child(3):before {
-    content: "3";
+    content: '3';
   }
   &:nth-child(4):before {
-    content: "4";
+    content: '4';
   }
   &:nth-child(5):before {
-    content: "5";
+    content: '5';
   }
 }
 .FormAccount-row.FormAccount-row--step:first-child {
@@ -321,7 +321,7 @@ $sLabel-width: 140px;
 .FormAccount-inputIcon {
   color: $cTypography-help;
   font-size: $sFontSize-larger;
-  
+
   position: absolute;
   top: 12px;
   right: 14px;

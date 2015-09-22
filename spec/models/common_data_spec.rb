@@ -764,120 +764,120 @@ describe CommonData do
             "children": [],
             "liked": false
         },
-					{  
-					   "id":"31636cc4-4fb8-11e5-98ec-0e8dde98a187",
-					   "name":"nycpluto_all",
-					   "display_name":"NYC MapPLUTO - All NY",
-					   "map_id":null,
-					   "active_layer_id":null,
-					   "type":"remote",
-					   "tags":[  
-					      "Building footprints"
-					   ],
-					   "description":"MapPLUTO tax lot data for New York.",
-					   "privacy":"PUBLIC",
-					   "stats":{  
-					      "2015-08-24":0,
-					      "2015-08-25":0,
-					      "2015-08-26":0,
-					      "2015-08-27":0,
-					      "2015-08-28":0,
-					      "2015-08-29":0,
-					      "2015-08-30":0,
-					      "2015-08-31":0,
-					      "2015-09-01":0,
-					      "2015-09-02":0,
-					      "2015-09-03":0,
-					      "2015-09-04":0,
-					      "2015-09-05":0,
-					      "2015-09-06":0,
-					      "2015-09-07":0,
-					      "2015-09-08":0,
-					      "2015-09-09":0,
-					      "2015-09-10":0,
-					      "2015-09-11":0,
-					      "2015-09-12":0,
-					      "2015-09-13":0,
-					      "2015-09-14":0,
-					      "2015-09-15":0,
-					      "2015-09-16":0,
-					      "2015-09-17":0,
-					      "2015-09-18":0,
-					      "2015-09-19":0,
-					      "2015-09-20":0,
-					      "2015-09-21":0,
-					      "2015-09-22":0
-					   },
-					   "created_at":"2015-08-31T08:13:42+00:00",
-					   "updated_at":"2015-08-31T08:13:42+00:00",
-					   "permission":{  
-					      "id":"2f2d73c9-d60e-4eb5-8031-be7059878d4b",
-					      "owner":{  
-								"id": "beacfd17-418e-4e71-b307 -95b5c96105dc",
-					            "username": "common-data",
-					            "email": "mario.defrutos+30@cartodb.com",
-					            "avatar_url": "//example.com/avatars/avatar_mountains_blue.png",
-					            "base_url": "http://common-data.localhost.lan:3000",
-					            "quota_in_bytes": 262144000,
-					            "db_si ze_in_bytes": 2387968
-					      },
-					      "entity":{  
-					         "id":"31636cc4-4fb8-11e5-98ec-0e8dde98a187",
-					         "type":"vis"
-					      },
-					      "acl":[],
-					      "created_at":"2015-08-31T08:13:42+00:00",
-					      "updated_at":"2015-08-31T08:13:42+00:00"
-					   },
-					   "locked":false,
-					   "source":"[NYC Planning](http://www.nyc.gov/html/dcp/home.html)",
-					   "title":null,
-					   "parent_id":null,
-					   "license": "public_domain",
-					   "attributions":null,
-					   "kind":"geom",
-					   "likes":0,
-					   "prev_id":null,
-					   "next_id":null,
-					   "transition_options":{  
-					        "time": 0
-					   },
-					   "active_child":null,
-					   "table":{  
-					      	"id": "36612fa1-1eb1-4935-a181-5edbbafe3ce7",
-					        "name": "public.nycpluto_all",
-					         "permission": {
-					            "id": "9bc70a85-029f-4e57-8f11-8bae254ef1cc",
-					            "owner": {
-					                "id": "beacfd17-418e-4e71-b307-95b5c96105dc",
-					                "username": "common-data",
-					                "email": "mario.defrutos+30@cartodb.com",
-					                "avatar_url": "//example.com/avatars/avatar_mountains_blue.png",
-					                "base_url": "http://common-data.localhost.lan:3000",
-					                "quota_in_bytes": 262144000,
-					                "db_size_in_bytes": 2387968
-					            },
-					            "entity": {
-					                "id": "6cc2d01a-41ea-11e5-9eef-080027880ca6",
-					                "type": "vis"
-					            },
-					            "acl": [],
-					            "created_at": "2015-08-13T18:38:00+00:00",
-					            "updated_at": "2015-08-13T18:38:00+00:00"
-					        },
-					        "geometry_types": [
-					            "ST_MultiPolygon"
-					        ],
-					        "privacy": "PUBLIC",
-					        "updated_at": "2015-08-21T18:38:14+00:00",
-					        "size": 397012,
-					        "row_count": 70
-					    },
-					   "external_source":{},
-					   "synchronization":null,
-					   "children":[],
-					   "liked":false
-					}
+		{  
+		   "id":"31636cc4-4fb8-11e5-98ec-0e8dde98a187",
+		   "name":"nycpluto_all",
+		   "display_name":"NYC MapPLUTO - All NY",
+		   "map_id":null,
+		   "active_layer_id":null,
+		   "type":"remote",
+		   "tags":[  
+		      "Building footprints"
+		   ],
+		   "description":"MapPLUTO tax lot data for New York.",
+		   "privacy":"PUBLIC",
+		   "stats":{  
+		      "2015-08-24":0,
+		      "2015-08-25":0,
+		      "2015-08-26":0,
+		      "2015-08-27":0,
+		      "2015-08-28":0,
+		      "2015-08-29":0,
+		      "2015-08-30":0,
+		      "2015-08-31":0,
+		      "2015-09-01":0,
+		      "2015-09-02":0,
+		      "2015-09-03":0,
+		      "2015-09-04":0,
+		      "2015-09-05":0,
+		      "2015-09-06":0,
+		      "2015-09-07":0,
+		      "2015-09-08":0,
+		      "2015-09-09":0,
+		      "2015-09-10":0,
+		      "2015-09-11":0,
+		      "2015-09-12":0,
+		      "2015-09-13":0,
+		      "2015-09-14":0,
+		      "2015-09-15":0,
+		      "2015-09-16":0,
+		      "2015-09-17":0,
+		      "2015-09-18":0,
+		      "2015-09-19":0,
+		      "2015-09-20":0,
+		      "2015-09-21":0,
+		      "2015-09-22":0
+		   },
+		   "created_at":"2015-08-31T08:13:42+00:00",
+		   "updated_at":"2015-08-31T08:13:42+00:00",
+		   "permission":{  
+		      "id":"2f2d73c9-d60e-4eb5-8031-be7059878d4b",
+		      "owner":{  
+					"id": "beacfd17-418e-4e71-b307 -95b5c96105dc",
+		            "username": "common-data",
+		            "email": "mario.defrutos+30@cartodb.com",
+		            "avatar_url": "//example.com/avatars/avatar_mountains_blue.png",
+		            "base_url": "http://common-data.localhost.lan:3000",
+		            "quota_in_bytes": 262144000,
+		            "db_si ze_in_bytes": 2387968
+		      },
+		      "entity":{  
+		         "id":"31636cc4-4fb8-11e5-98ec-0e8dde98a187",
+		         "type":"vis"
+		      },
+		      "acl":[],
+		      "created_at":"2015-08-31T08:13:42+00:00",
+		      "updated_at":"2015-08-31T08:13:42+00:00"
+		   },
+		   "locked":false,
+		   "source":"[NYC Planning](http://www.nyc.gov/html/dcp/home.html)",
+		   "title":null,
+		   "parent_id":null,
+		   "license": "public_domain",
+		   "attributions":null,
+		   "kind":"geom",
+		   "likes":0,
+		   "prev_id":null,
+		   "next_id":null,
+		   "transition_options":{  
+		        "time": 0
+		   },
+		   "active_child":null,
+		   "table":{  
+		      	"id": "36612fa1-1eb1-4935-a181-5edbbafe3ce7",
+		        "name": "public.nycpluto_all",
+		         "permission": {
+		            "id": "9bc70a85-029f-4e57-8f11-8bae254ef1cc",
+		            "owner": {
+		                "id": "beacfd17-418e-4e71-b307-95b5c96105dc",
+		                "username": "common-data",
+		                "email": "mario.defrutos+30@cartodb.com",
+		                "avatar_url": "//example.com/avatars/avatar_mountains_blue.png",
+		                "base_url": "http://common-data.localhost.lan:3000",
+		                "quota_in_bytes": 262144000,
+		                "db_size_in_bytes": 2387968
+		            },
+		            "entity": {
+		                "id": "6cc2d01a-41ea-11e5-9eef-080027880ca6",
+		                "type": "vis"
+		            },
+		            "acl": [],
+		            "created_at": "2015-08-13T18:38:00+00:00",
+		            "updated_at": "2015-08-13T18:38:00+00:00"
+		        },
+		        "geometry_types": [
+		            "ST_MultiPolygon"
+		        ],
+		        "privacy": "PUBLIC",
+		        "updated_at": "2015-08-21T18:38:14+00:00",
+		        "size": 397012,
+		        "row_count": 70
+		    },
+		   "external_source":{},
+		   "synchronization":null,
+		   "children":[],
+		   "liked":false
+		}
     ],
     "total_entries": 6
 }

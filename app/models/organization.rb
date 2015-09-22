@@ -34,6 +34,7 @@ class Organization < Sequel::Model
   # @param map_view_block_price Integer
 
   one_to_many :users
+  one_to_many :groups
   many_to_one :owner, class_name: 'User', key: 'owner_id'
 
   plugin :validation_helpers
@@ -71,6 +72,14 @@ class Organization < Sequel::Model
     super
     self.updated_at = Time.now
     raise errors.join('; ') unless valid?
+  end
+
+  def before_destroy
+    return unless groups
+
+    groups.map { |g| Carto::Group.find(g.id).destroy_group_with_extension }
+
+    reload
   end
 
   # INFO: replacement for destroy because destroying owner triggers

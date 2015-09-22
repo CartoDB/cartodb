@@ -41,9 +41,6 @@ $cHighlight-mainHover: rgba(#007FBD, 1);
 .Button.is-hidden {
   display: none;
 }
-.Button.is-transparent {
-  @include opacity(0);
-}
 .Button:hover,
 .Button span:hover {
   text-decoration: none;

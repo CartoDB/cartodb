@@ -172,3 +172,17 @@ $cHighlight-mainHover: rgba(#007FBD, 1);
     color: $cTypography-paragraphs;
   }
 }
+.Button--gray {
+  display: inline-block;
+  margin: auto;
+  transition: opacity 150ms ease-in-out;
+  border: 1px solid #CCCCCC;
+  border-radius: 40px;
+  background-color: transparent;
+  color: $cTypography-linkSecondaryHover;
+  font-size: $sFontSize-smallUpperCase;
+  line-height: 24px;
+  &:hover {
+    border-color: #888888;
+  }
+}

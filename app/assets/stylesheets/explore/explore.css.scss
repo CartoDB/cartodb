@@ -1,0 +1,115 @@
+@import '../variables/mixins';
+@import '../variables/colors';
+@import '../variables/sizes';
+
+.Explore {
+  position: relative;
+  min-height: 500px;
+}
+.Explore-inner {
+  @include display-flex();
+  @include justify-content(flex-start, start);
+  @include align-items(flex-start);
+  @include flex-wrap(wrap);
+  position: relative;
+  width: $sLayout-width;
+  margin: 35px auto 60px;
+  text-align: center;
+}
+.Explore-feed {
+  @include flex(1);
+  margin: 50px 0 0;
+}
+.Explore-content {
+  margin: 0 0 30px;
+  padding: 15px 0;
+}
+
+@media only screen and (min-width: 900px)  {
+  .Explore-content.Feed-content .FeedItem .MapCard,
+  .Explore-content.Feed-content .FeedItem .DatasetCard {
+    @include flex(0 0 860px);
+    margin-right: 0;
+  }
+
+  .Explore-content.Feed-content .MapCard-preview.is-big {
+    display: block !Important;
+  }
+  .Explore-content.Feed-content .MapCard-preview.is-medium,
+  .Explore-content.Feed-content .MapCard-preview.is-small {
+    display: none !Important;
+  }
+}
+
+@media only screen and (min-width: 545px) and (max-width: 899px)  {
+  .Explore-inner {
+    width: 100%;
+  }
+  .Explore-content.Feed-content .FeedItem {
+    @include justify-content(space-around, stretch);
+    @include align-items(stretch, stretch);
+  }
+
+  .Explore-content.Feed-content .FeedItem .MapCard,
+  .Explore-content.Feed-content .FeedItem .DatasetCard {
+    @include flex(0 0 540px);
+    margin-right: 0;
+  }
+
+  .Explore-content.Feed-content {
+    @include display-flex();
+    @include justify-content(center);
+    @include align-items(flex-start);
+    @include flex-wrap(wrap);
+    @include flex-direction(row);
+  }
+  .Explore-content.Feed-content .MapCard-preview.is-big,
+  .Explore-content.Feed-content .MapCard-preview.is-small {
+    display: none !Important;
+  }
+  .Explore-content.Feed-content .MapCard-preview.is-medium {
+    display: block !Important;
+  }
+
+  .FeedItem--card .FeedItem-avatar {
+    display: none;
+  }
+  .LikesIndicator-label {
+    display: none;
+  }
+}
+
+
+@media only screen and (max-width: 544px) {
+  .Explore-inner {
+    width: 100%;
+  }
+  .Explore-content.Feed-content .FeedItem {
+    @include justify-content(space-around, stretch);
+    @include align-items(stretch, stretch);
+  }
+  .Explore-content.Feed-content .FeedItem .MapCard,
+  .Explore-content.Feed-content .FeedItem .DatasetCard {
+    @include flex(0 0 288px);
+    margin-right: 0;
+  }
+  .Explore-content.Feed-content {
+    @include display-flex();
+    @include justify-content(center);
+    @include align-items(flex-start);
+    @include flex-wrap(wrap);
+    @include flex-direction(row);
+  }
+  .Explore-content.Feed-content .MapCard-preview.is-big,
+  .Explore-content.Feed-content .MapCard-preview.is-medium {
+    display: none !Important;
+  }
+  .Explore-content.Feed-content .MapCard-preview.is-small {
+    display: block !Important;
+  }
+  .FeedItem--card .FeedItem-avatar,
+  .LikesIndicator-label {
+    display: none;
+  }
+}
+

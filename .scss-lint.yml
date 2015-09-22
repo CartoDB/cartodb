@@ -96,7 +96,7 @@ linters:
     enabled: true
     extra_properties: []
   PropertyUnits:
-    global: ['em', 'rem', '%', 'px'] # Allow relative units globally
+    global: ['em', 'rem', '%', 'px', 's', 'ms'] # Allow relative units globally
     properties:
       border: ['px']
       line-height: ['px', '']

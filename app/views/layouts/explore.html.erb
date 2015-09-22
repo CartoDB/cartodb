@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%= favicon_link_tag "/favicons/favicon.ico" %>
+    <title><%= yield :title %></title>
+    <meta name="description" content="<%= yield :description %>">
+    <meta name="keywords" content="<%= @name %>, datasets, maps, data visualization, spatial data, geospatial, cartodb">
+    <meta name="author" content="<%= @name %>">
+    <meta charset='utf-8' />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+
+    <meta property="og:title" content="<%= yield :title %>" />
+    <meta property="og:description" content="<%= yield :description %>" />
+    <meta property="og:type" content="visualization" />
+    <meta property="og:url" content="<%= request.original_url %>" />
+    <meta property="og:image" content="<%= @avatar_url %>" />
+    <%= stylesheet_link_tag 'cartodb', 'common', 'public_dashboard', 'user_feed', 'explore' %>
+  </head>
+  <body class="PublicBody PublicBody--grey">
+    <%= render 'admin/shared/public_header' %>
+    <div class="FavMap FavMap--tall FavMap--highShadow is-pre-loading" id="<%= fav_map_target_id = 'fav-map-container' %>">
+      <div class="FavMapTitle is-hidden js-favMapTitle">
+        <div class="FavMapTitle-inner">
+          <h3 class="FavMapTitle-sectionTitle js-sectionTitle">Map of the moment</h3>
+          <a href="#" class="FavMapTitle-mapTitle js-mapTitle"></a>
+        </div>
+      </div>
+      <div class="Spinner FavMap-spinner js-spinner"></div>
+    </div>
+
+    <%= yield %>
+    <%= render 'admin/shared/footer', { light: true } %>
+
+    <script type="text/javascript">
+      var config = <%= safe_js_object frontend_config_public({https_apis: request.protocol == 'https://' }) %>;
+      var account_host = '<%= CartoDB.account_host %>';
+      var base_url = '<%= @base_url %>';
+      var login_url = "<%= CartoDB.url(self, 'login') %>";
+      var avatar_url= '<%= @avatar_url %>';
+    </script>
+
+    <%= javascript_include_tag 'cdb.js', 'templates', 'explore_deps', 'explore' %>
+    <%= yield :js %>
+  </body>
+</html>

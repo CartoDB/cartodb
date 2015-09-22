@@ -13,6 +13,9 @@
   @include display-flex();
   @include align-items(center);
 }
+.UserAvatar.is-in-list {
+  margin-left: $sMargin-min;
+}
 .UserAvatar.is-error:before {
   @include display-flex();
   @include justify-content(center);
@@ -36,6 +39,16 @@
 }
 .UserAvatar-img--no-src {
   background-image: image-url('avatars/avatar_ghost_red.png');
+}
+.UserAvatar-img--textReplacement {
+  @include display-flex();
+  @include justify-content(center);
+  @include align-items(center);
+  border: 1px solid $cTypography-link;
+  font-size: $sFontSize-small;
+  &:hover {
+    border-color: $cTypography-link;
+  }
 }
 .UserAvatar-img.is-error {
   border-radius: $sAvatar-borderRadius;

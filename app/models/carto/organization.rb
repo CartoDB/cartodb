@@ -7,6 +7,8 @@ module Carto
     belongs_to :owner, class_name: Carto::User
     has_many :groups, inverse_of: :organization, order: :display_name
 
+    before_destroy :destroy_groups_with_extension
+
     def self.find_by_database_name(database_name)
       Carto::Organization.
         joins('INNER JOIN users ON organizations.owner_id = users.id').
@@ -44,6 +46,16 @@ module Carto
 
     def create_group(display_name)
       Carto::Group.create_group_with_extension(self, display_name)
+    end
+
+    private
+
+    def destroy_groups_with_extension
+      return unless groups
+
+      groups.map { |g| g.destroy_group_with_extension }
+
+      reload
     end
 
   end

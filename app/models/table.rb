@@ -441,35 +441,26 @@ class Table
     update_table_pg_stats
 
   rescue => e
-    self.handle_creation_error(e)
+    handle_creation_error(e)
   end
 
   def before_save
     @user_table.updated_at = table_visualization.updated_at if table_visualization
-  end #before_save
+  end
 
   def after_save
     manage_tags
     update_name_changes
 
-    @user_table.map.save
-    manager = CartoDB::TablePrivacyManager.new(@user_table)
-    manager.set_from_table_privacy(@user_table.privacy)
-    manager.propagate_to(table_visualization)
-    if privacy_changed?
-      manager.propagate_to_varnish
-      update_cdb_tablemetadata
-    end
+    CartoDB::TablePrivacyManager.new(@user_table).apply_privacy_change(self, previous_privacy, privacy_changed?)
 
-    affected_visualizations.each { |visualization|
-      manager.propagate_to(visualization, privacy_changed?)
-    }
+    update_cdb_tablemetadata if privacy_changed?
   end
 
   def propagate_namechange_to_table_vis
     table_visualization.name = name
     table_visualization.store
-  end #propagate_namechange_to_table_vis
+  end
 
   def grant_select_to_tiler_user
     owner.in_database(:as => :superuser).run(%Q{GRANT SELECT ON #{qualified_table_name} TO #{CartoDB::TILE_DB_USER};})
@@ -600,13 +591,13 @@ class Table
     @table_visualization.delete(from_table_deletion=true) if @table_visualization
     Tag.filter(:user_id => user_id, :table_id => id).delete
     remove_table_from_stats
-    remove_table_from_user_database unless keep_user_database_table
     invalidate_varnish_cache
     cache.del geometry_types_key
     @dependent_visualizations_cache.each(&:delete)
     @non_dependent_visualizations_cache.each do |visualization|
       visualization.unlink_from(self)
     end
+    remove_table_from_user_database unless keep_user_database_table
     synchronization.delete if synchronization
 
     related_templates.each { |template| template.destroy }
@@ -732,7 +723,7 @@ class Table
   end
 
   def privacy_changed?
-    @user_table.previous_changes.keys.include?(:privacy)
+     @user_table.previous_changes && @user_table.previous_changes.keys.include?(:privacy)
   end
 
   def redis_key
@@ -772,15 +763,6 @@ class Table
     options[:connection]['SELECT pg_total_relation_size(?) AS size', name].first[:size] / 2
   rescue Sequel::DatabaseError
     nil
-  end
-
-  def self.has_column?(user_database, table_schema, table_name, column_name)
-    has_column_sql = <<-SQL
-        SELECT column_name
-        FROM information_schema.columns
-        WHERE table_schema='#{table_schema}' and table_name='#{table_name}' and column_name='#{column_name}';
-    SQL
-    user_database[has_column_sql].first.present?
   end
 
   def schema(options = {})
@@ -1357,6 +1339,11 @@ class Table
   end
 
   private
+
+  def previous_privacy
+    # INFO: @user_table.initial_value(:privacy) weirdly returns incorrect value so using changes index instead
+    privacy_changed? ? @user_table.previous_changes[:privacy].first : nil
+  end
 
   def importer_stats
     @importer_stats ||= CartoDB::Stats::Importer.instance

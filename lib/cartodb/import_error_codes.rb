@@ -243,9 +243,7 @@ module CartoDB
     },
     6668 => {
       title: 'Too many table rows',
-      what_about: "You cannot import this dataset. The number of rows exceeds the maximum dataset quota permitted " \
-                  "for your account. Please contact <a href='mailto:sales@cartodb.com?subject=Dataset%20too%20many" \
-                  "%20table%20rows%20import%20error'>Sales</a> if you have questions about importing this dataset.",
+      what_about: "The resulting table would contain too many rows. Contact our support team at <a href='mailto:support@cartodb.com?subject=Dataset%20too%20many%20table%20rows%20import%20error'>support@cartodb.com</a>.",
       source: ERROR_SOURCE_USER
     },
     6669 => {

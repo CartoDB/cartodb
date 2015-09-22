@@ -116,6 +116,35 @@ namespace :cartodb do
       end
     end
 
+    desc "Updates data visualization_map_datasets for all the visualizations in #{VISUALIZATIONS_TABLE}"
+    task :update_map_dataset_count => :environment do |t, args|
+      stats_aggregator.timing('visualizations.update.total') do
+        update_map_dataset_count
+        touch_metadata
+      end
+    end
+
+    # INFO: Do something like this to make a full update every time we add a new field
+    def update_map_dataset_count
+      offset = 0
+      total_number_of_updates = 0
+      types_filter = [CartoDB::Visualization::Member::TYPE_DERIVED]
+      while (explore_visualizations = get_explore_visualizations(offset, types_filter)).length > 0
+        explore_visualization_ids = explore_visualizations.map { |ev| ev[:visualization_id] }
+
+        visualizations = CartoDB::Visualization::Collection.new.fetch({ ids: explore_visualization_ids})
+        visualizations.each do |vis|
+          dataset_count = explore_api.get_map_layers_count(vis)
+          update_query = %[ UPDATE #{VISUALIZATIONS_TABLE} SET visualization_map_datasets = #{dataset_count} WHERE visualization_id = '#{vis.id}']
+          db_conn.run(update_query)
+          total_number_of_updates += 1
+        end
+        offset += explore_visualizations.length
+      end
+
+      puts "Updated visualizations: #{total_number_of_updates}"
+    end
+
     def update_visualization_metadata(visualization, tables_data, likes, mapviews)
       table_data = tables_data[visualization.user_id].nil? ? {} : tables_data[visualization.user_id][visualization.name]
       db_conn.run update_metadata_query(visualization, table_data, likes, mapviews)
@@ -184,10 +213,13 @@ namespace :cartodb do
 
     end
 
-    def get_explore_visualizations(offset)
-      db_conn[%{ SELECT visualization_id, visualization_updated_at
+    def get_explore_visualizations(offset, types = [])
+      where = %{WHERE visualization_type IN ('#{types.join("','")}')} unless types.blank?
+      query = %{ SELECT visualization_id, visualization_updated_at
                  FROM #{VISUALIZATIONS_TABLE}
-                 ORDER BY visualization_created_at asc limit #{UPDATE_BATCH_SIZE} offset #{offset} }].all
+                 #{where}
+                 ORDER BY visualization_created_at asc limit #{UPDATE_BATCH_SIZE} offset #{offset} }
+      db_conn[query].all
     end
 
     def update_visualizations(visualizations, explore_visualizations_by_visualization_id, explore_visualization_ids)

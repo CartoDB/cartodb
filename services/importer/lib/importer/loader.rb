@@ -316,6 +316,10 @@ module CartoDB
 
         # Some kind of error in ogr2ogr could lead to a partial import and we don't want it
         if ogr2ogr.generic_error? || ogr2ogr.exit_code != 0
+          job.logger.append "Ogr2ogr FAILED!"
+          job.logger.append "ogr2ogr.exit_code = " + ogr2ogr.exit_code.to_s
+          job.logger.append "ogr2ogr.command = " + ogr2ogr.command, truncate=false
+          job.logger.append "ogr2ogr.command_output = " + ogr2ogr.command_output, truncate=false
           raise LoadError.new(job.logger)
         end
       end

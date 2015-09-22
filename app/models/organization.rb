@@ -34,6 +34,7 @@ class Organization < Sequel::Model
   # @param map_view_block_price Integer
 
   one_to_many :users
+  one_to_many :groups
   many_to_one :owner, class_name: 'User', key: 'owner_id'
 
   plugin :validation_helpers
@@ -73,9 +74,14 @@ class Organization < Sequel::Model
     raise errors.join('; ') unless valid?
   end
 
+  def before_destroy
+    destroy_groups
+  end
+
   # INFO: replacement for destroy because destroying owner triggers
   # organization destroy
   def destroy_cascade
+    destroy_groups
     destroy_permissions
     destroy_non_owner_users
     if self.owner
@@ -239,6 +245,14 @@ class Organization < Sequel::Model
   end
 
   private
+
+  def destroy_groups
+    return unless groups
+
+    groups.map { |g| Carto::Group.find(g.id).destroy_group_with_extension }
+
+    reload
+  end
 
   # Returns true if disk quota won't allow new signups with existing defaults
   def disk_quota_limit_reached?

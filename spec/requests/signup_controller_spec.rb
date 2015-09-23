@@ -75,6 +75,18 @@ describe SignupController do
       last_user_creation.should == nil
     end
 
+    it 'triggers validation error is password is too short' do
+      user = User.new
+
+      user.username = 'testusername'
+      user.email = 'manolo@escobar.es'
+      user.password = 'short'
+      user.password_confirmation = user.password
+      user.database_host = ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
+
+      user.errors[:password].blank?.should == false
+    end
+
     it 'returns 400 error if you attempt username + password signup and it is not valid' do
       @organization.auth_username_password_enabled = false
       @organization.save

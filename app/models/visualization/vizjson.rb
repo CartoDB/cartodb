@@ -18,7 +18,26 @@ module CartoDB
         @options          = default_options.merge(options)
         @configuration    = configuration
         @user             = options.fetch(:user, nil)
+        @export_mode      = options.fetch(:export, false)
         logger.info(map.inspect) if logger
+      end
+
+      def to_export_poro
+        {
+          id:             visualization.id,
+          version:        VIZJSON_VERSION,
+          title:          visualization.qualified_name(@user),
+          description:    visualization.description_html_safe,
+          scrollwheel:    map.scrollwheel,
+          legends:        map.legends,
+          url:            options.delete(:url),
+          map_provider:   map.provider,
+          bounds:         bounds_from(map),
+          center:         map.center,
+          zoom:           map.zoom,
+          layers:         layers_for(visualization),
+          overlays:       overlays_for(visualization),
+        }
       end
 
       # Return a PORO (Hash object) for easy JSONification
@@ -84,6 +103,10 @@ module CartoDB
 
       attr_reader :visualization, :map, :options, :configuration
 
+      def retrieve_named_map?
+        visualization.retrieve_named_map? && !@export_mode
+      end
+
       def bounds_from(map)
         ::JSON.parse("[#{map.view_bounds_sw}, #{map.view_bounds_ne}]")
       rescue
@@ -95,7 +118,7 @@ module CartoDB
         layers_data = []
         layers_data.push(basemap_layer) if basemap_layer
 
-        if visualization.retrieve_named_map?
+        if retrieve_named_map?
           presenter_options = {
             user_name: options.fetch(:user_name),
             api_key: options.delete(:user_api_key),

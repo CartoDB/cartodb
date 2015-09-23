@@ -24,7 +24,7 @@ namespace :cartodb do
 
       vqb = Carto::VisualizationQueryBuilder.new
                                             .with_types([
-                                                Carto::Visualization::TYPE_CANONICAL, 
+                                                Carto::Visualization::TYPE_CANONICAL,
                                                 Carto::Visualization::TYPE_DERIVED
                                               ])
                                             .with_order(:created_at, sort_order)
@@ -59,6 +59,31 @@ namespace :cartodb do
       puts "\n> #{Time.now}\nFinished ##{count} items"
     end
 
+    desc "Exports visualization metadata to the screen"
+    task :export_user_visualization, [:vis_id] => :environment do |_, args|
+      require_relative "../../app/controllers/carto/api/visualization_vizjson_adapter"
+
+      vis_id = args[:vis_id]
+
+      visualization = Carto::Visualization.where(id: vis_id).first
+      raise "Visualization with id: #{vis_id} not found" unless visualization
+
+      vizjson_options = {
+        full: true,
+        user_name: visualization.user.username,
+        user_api_key: visualization.user.api_key,
+        user: visualization.user,
+        viewer_user: visualization.user,
+        export: true
+      }
+
+      data = CartoDB::Visualization::VizJSON.new(
+          Carto::Api::VisualizationVizJSONAdapter.new(visualization, $tables_metadata), vizjson_options, Cartodb.config)
+        .to_export_poro
+
+      puts data
+    end
+
     private
 
     def is_inconsistent?(viz)
@@ -85,6 +110,6 @@ namespace :cartodb do
       input = STDIN.gets.strip
       return input == 'y'
     end
-    
+
   end
 end

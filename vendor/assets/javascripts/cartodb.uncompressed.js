@@ -1,6 +1,6 @@
-// cartodb.js version: 3.15.6
+// cartodb.js version: 3.15.7
 // uncompressed version: cartodb.uncompressed.js
-// sha: cb6d859189acaf67736177da3da5981ba5c9c8f3
+// sha: 2983b2fdcef914afdb1f4fdae173471143930452
 (function() {
   var define;  // Undefine define (require.js), see https://github.com/CartoDB/cartodb.js/issues/543
   var root = this;
@@ -25655,7 +25655,7 @@ if (typeof window !== 'undefined') {
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = "3.15.6";
+    cdb.VERSION = "3.15.7";
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -32711,47 +32711,33 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
   className: 'cartodb-fullscreen',
 
   events: {
-
     "click a": "_toggleFullScreen"
-
   },
 
   initialize: function() {
-
     _.bindAll(this, 'render');
     _.defaults(this.options, this.default_options);
-
-    //this.model = new cdb.core.Model({
-      //allowWheelOnFullscreen: false
-    //});
-
     this._addWheelEvent();
-
   },
 
   _addWheelEvent: function() {
+    var self    = this;
+    var mapView = this.options.mapView;
 
-      var self    = this;
-      var mapView = this.options.mapView;
-
-      $(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange', function() {
-
-        if ( !document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
-          if (self.model.get("allowWheelOnFullscreen")) {
-            mapView.options.map.set("scrollwheel", false);
-          }
+    $(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange', function() {
+      if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
+        if (self.model.get("allowWheelOnFullscreen")) {
+          mapView.options.map.set("scrollwheel", false);
         }
-
-        mapView.invalidateSize();
-
-      });
-
+      }
+      mapView.invalidateSize();
+    });
   },
 
   _toggleFullScreen: function(ev) {
-
-    ev.stopPropagation();
-    ev.preventDefault();
+    if (ev) {
+      this.killEvent(ev);
+    }
 
     var doc   = window.document;
     var docEl = doc.documentElement;
@@ -32762,11 +32748,9 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
 
     var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
     var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
-
     var mapView = this.options.mapView;
 
     if (!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
-
       if (docEl.webkitRequestFullScreen) {
         // Cartodb.js #361 :: Full screen button not working on Safari 8.0.3 #361
         // Safari has a bug that fullScreen doestn't work with Element.ALLOW_KEYBOARD_INPUT);
@@ -32780,58 +32764,47 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
         }
       }
 
-      if (mapView) {
-
-        if (this.model.get("allowWheelOnFullscreen")) {
-          mapView.options.map.set("scrollwheel", true);
-        }
-
+      if (mapView && this.model.get("allowWheelOnFullscreen")) {
+        mapView.map.set("scrollwheel", true);
       }
-
     } else {
-
       cancelFullScreen.call(doc);
-
     }
   },
 
   render: function() {
-    if (this._canFullScreenBeEnabled()) {
-      var $el = this.$el;
-      var options = _.extend(this.options);
-      $el.html(this.options.template(options));
-    } else {
-      cdb.log.info('FullScreen is deprecated on insecure origins. See https://goo.gl/rStTGz for more details.');
+    var options = _.extend(
+      this.options,
+      {
+        mapUrl: location.href || ''
+      }
+    );
+    this.$el.html(this.options.template(options));
+
+    if (!this._canFullScreenBeEnabled()) {
+      this.undelegateEvents();
+      cdb.log.info('FullScreen API is deprecated on insecure origins. See https://goo.gl/rStTGz for more details.');
     }
 
     return this;
   },
 
   _canFullScreenBeEnabled: function() {
-    // If frameElement exists, it means that the map
-    // is embebed as an iframe so we need to check if
-    // the parent has a secure protocol
-    var frameElement = window && window.frameElement;
-    if (frameElement) {
-      var parentWindow = this._getFramedWindow(frameElement);
-      var parentProtocol = parentWindow.location.protocol;
-      if (parentProtocol.search('https:') !== 0) {
+    if (this._isInIframe()) {
+      var parentUrl = document.referrer;
+      if (parentUrl.search('https:') !== 0) {
         return false;
       }
     }
-
     return true;
   },
 
-  _getFramedWindow: function(f) {
-    if (f.parentNode == null) {
-      f = document.body.appendChild(f);
+  _isInIframe: function() {
+    try {
+      return window.self !== window.top;
+    } catch (e) {
+      return true;
     }
-    var w = (f.contentWindow || f.contentDocument);
-    if (w && w.nodeType && w.nodeType==9) {
-      w = (w.defaultView || w.parentWindow);
-    }
-    return w;
   }
 
 });
@@ -40799,7 +40772,7 @@ cdb.vis.Overlay.register('fullscreen', function(data, vis) {
   options.allowWheelOnFullscreen = false;
 
   var template = cdb.core.Template.compile(
-    data.template || '<a href="#"></a>',
+    data.template || '<a href="{{ mapUrl }}" target="_blank"></a>',
     data.templateType || 'mustache'
   );
 

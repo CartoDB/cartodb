@@ -37,7 +37,7 @@ describe CommonData do
     CartoDB.expects(:notify_error).times(0)
 
     @common_data.datasets.select{ |d| d["name"] =~ /meta_/}.length.should eq 0
-    @common_data.datasets.length.should eq 5
+    @common_data.datasets.length.should eq 6
   end
 
   it 'should use name if the display_name is null' do

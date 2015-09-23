@@ -75,7 +75,7 @@ describe Admin::PagesController do
       last_response.status.should == 404
     end
 
-    it 'redirects to public maps home if current user and current viewer are different' do
+    it 'redirects to user feed home if current user and current viewer are different' do
       anyuser = prepare_user('anyuser')
       anyviewer = prepare_user('anyviewer')
       login_as(anyviewer, scope: anyviewer.username)
@@ -88,11 +88,11 @@ describe Admin::PagesController do
       last_response.status.should == 200
       uri = URI.parse(last_request.url)
       uri.host.should == 'anyuser.localhost.lan'
-      uri.path.should == '/maps'
+      uri.path.should == '/me'
     end
 
-    it 'redirects to public maps home if not logged in' do
-      anyuser = prepare_user('anyuser')
+    it 'redirects to user feed if not logged in' do
+      prepare_user('anyuser')
       host! 'anyuser.localhost.lan'
 
       get '', {}, JSON_HEADER
@@ -100,7 +100,7 @@ describe Admin::PagesController do
       last_response.status.should == 302
       uri = URI.parse(last_response.location)
       uri.host.should == 'anyuser.localhost.lan'
-      uri.path.should == '/maps'
+      uri.path.should == '/me'
       follow_redirect!
       last_response.status.should == 200
     end
@@ -137,6 +137,53 @@ describe Admin::PagesController do
 
   end
 
+  describe '#explore' do
+    it 'should go to explore page' do
+      mock_explore_feature_flag
+      host! 'localhost.lan'
+
+      get '/explore', {}, JSON_HEADER
+
+      last_response.status.should == 200
+      uri = URI.parse(last_request.url)
+      uri.host.should == 'localhost.lan'
+      uri.path.should == '/explore'
+    end
+
+    it 'should go to explore search page' do
+      mock_explore_feature_flag
+      host! 'localhost.lan'
+
+      get '/search', {}, JSON_HEADER
+
+      last_response.status.should == 200
+      uri = URI.parse(last_request.url)
+      uri.host.should == 'localhost.lan'
+      uri.path.should == '/search'
+    end
+
+    it 'should go to explore search page with a query variable' do
+      mock_explore_feature_flag
+      host! 'localhost.lan'
+
+      get '/search/lala', {}, JSON_HEADER
+
+      last_response.status.should == 200
+      uri = URI.parse(last_request.url)
+      uri.host.should == 'localhost.lan'
+      uri.path.should == '/search/lala'
+    end
+  end
+
+  def mock_explore_feature_flag
+    anyuser = prepare_user('anyuser')
+    User.any_instance.stubs(:has_feature_flag?)
+                          .with('explore_site')
+                          .returns(true)
+    User.stubs(:where).returns(anyuser)
+    anyuser.stubs(:first).returns(anyuser)
+  end
+
   def prepare_user(user_name, org_user=false, belongs_to_org=false)
     user = create_user(
       username: user_name,
@@ -150,6 +197,7 @@ describe Admin::PagesController do
     if org_user
       org = mock
       Organization.stubs(:where).with(name: @org_name).returns([org])
+      Organization.stubs(:where).with(name: @org_user_name).returns([org])
       User.any_instance.stubs(:belongs_to_organization?).with(org).returns(belongs_to_org)
     end
 

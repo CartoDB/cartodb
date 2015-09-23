@@ -33,22 +33,22 @@ describe UserOrganization do
       table.rows_counted.should == 2
     end
 
-    # See #5477 Error assigning as owner a user with non-cartodbfied tables
-    it 'can assign an owner user having non-cartodbfied tables' do
-      User.any_instance.stubs(:create_in_central).returns(true)
-      User.any_instance.stubs(:update_in_central).returns(true)
-      @organization = Organization.new(quota_in_bytes: 1234567890, name: 'non-cartodbfied-org', seats: 5).save
+  end
 
-      @owner = create_user(quota_in_bytes: 524288000, table_quota: 500)
-      @owner.in_database.run('create table no_cartodbfied_table (test integer)')
+  # See #5477 Error assigning as owner a user with non-cartodbfied tables
+  it 'can assign an owner user having non-cartodbfied tables' do
+    User.any_instance.stubs(:create_in_central).returns(true)
+    User.any_instance.stubs(:update_in_central).returns(true)
+    @organization = Organization.new(quota_in_bytes: 1234567890, name: 'non-cartodbfied-org', seats: 5).save
+    @owner = create_user(quota_in_bytes: 524288000, table_quota: 500)
+    @owner.in_database.run('create table no_cartodbfied_table (test integer)')
 
-      @owner.real_tables.count.should == 1
+    @owner.real_tables.count.should == 1
 
-      owner_org = CartoDB::UserOrganization.new(@organization.id, @owner.id)
-      owner_org.promote_user_to_admin
-      @owner.reload
+    owner_org = CartoDB::UserOrganization.new(@organization.id, @owner.id)
+    owner_org.promote_user_to_admin
+    @owner.reload
 
-      @owner.real_tables.count.should == 1
-    end
+    @owner.real_tables.count.should == 1
   end
 end

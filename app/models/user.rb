@@ -210,7 +210,7 @@ class User < Sequel::Model
     rebuild_quota_trigger    if changes.include?(:quota_in_bytes)
     if changes.include?(:account_type) || changes.include?(:available_for_hire) || changes.include?(:disqus_shortname) || changes.include?(:email) || \
        changes.include?(:website) || changes.include?(:name) || changes.include?(:description) || \
-       changes.include?(:twitter_username)
+       changes.include?(:twitter_username) || changes.include?(:location)
       invalidate_varnish_cache(regex: '.*:vizjson')
     end
     if changes.include?(:database_host)
@@ -1660,9 +1660,9 @@ class User < Sequel::Model
 
           was_cartodbfied = Carto::UserTable.find_by_user_id_and_name(id, t[:relname]).present?
 
-          database.run(%{ SELECT cartodb._CDB_drop_triggers('#{old_name}'::REGCLASS) }) if was_cartodbfied
-          database.run(%{ ALTER TABLE #{old_name} SET SCHEMA "#{new_schema}" })
-          database.run(%{ SELECT cartodb.CDB_CartodbfyTable('#{new_schema}'::TEXT, '#{new_name}'::REGCLASS) }) if was_cartodbfied
+          database.run(%Q{ SELECT cartodb._CDB_drop_triggers('#{old_name}'::REGCLASS) }) if was_cartodbfied
+          database.run(%Q{ ALTER TABLE #{old_name} SET SCHEMA "#{new_schema}" })
+          database.run(%Q{ SELECT cartodb.CDB_CartodbfyTable('#{new_schema}'::TEXT, '#{new_name}'::REGCLASS) }) if was_cartodbfied
         end
       end
     end
@@ -2267,7 +2267,7 @@ TRIGGER
   end
 
   def drop_users_privileges_in_schema(schema, accounts)
-    in_database(as: :superuser, statement_timeout: 600000) do |user_database|
+    in_database(:as => :superuser, statement_timeout: 600000) do |user_database|
       return if user_database.fetch("SELECT 1 as schema_exist FROM information_schema.schemata WHERE schema_name = '#{schema}'").first.nil?
       user_database.transaction do
         accounts

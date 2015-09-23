@@ -15,6 +15,10 @@ class ExploreAPI
     %[{#{table_names.compact.join(',')}}]
   end
 
+  def get_map_layers(visualization)
+    visualization.layers(:carto_and_torque)
+  end
+
   def get_geometry_data(visualization)
     map = visualization.map
     return {} if map.nil?

@@ -42,11 +42,11 @@ linters:
     enabled: true
     present: true
   HexLength:
-    enabled: false
-    style: long
+    enabled: true
+    style: short
   HexNotation:
     enabled: true
-    style: uppercase
+    style: lowercase
   HexValidation:
     enabled: true
   IdSelector:

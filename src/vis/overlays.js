@@ -358,7 +358,7 @@ cdb.vis.Overlay.register('fullscreen', function(data, vis) {
   options.allowWheelOnFullscreen = false;
 
   var template = cdb.core.Template.compile(
-    data.template || '<a href="#"></a>',
+    data.template || '<a href="{{ mapUrl }}" target="_blank"></a>',
     data.templateType || 'mustache'
   );
 

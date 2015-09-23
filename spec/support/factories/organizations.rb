@@ -13,6 +13,7 @@ module CartoDB
       organization.description =      attributes[:description] || 'Lorem ipsum dolor sit amet'
       organization.display_name =     attributes[:display_name] || 'Vizzuality Inc'
       organization.discus_shortname = attributes[:discus_shortname] || 'cartodb'
+      organization.location = attributes[:location] || 'Madrid'
       organization.twitter_username = attributes[:twitter_username] || 'cartodb'
       organization.twitter_datasource_enabled = attributes[:twitter_datasource_enabled] || false
 

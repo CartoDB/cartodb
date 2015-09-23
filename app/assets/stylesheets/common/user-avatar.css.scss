@@ -47,6 +47,12 @@
   border-radius: $sAvatar-borderRadius;
   background-size: $sAvatar-public;
 }
+.UserAvatar-img--big {
+  width: $sAvatar-big;
+  height: $sAvatar-big;
+  border-radius: $sAvatar-borderRadius;
+  background-size: $sAvatar-big;
+}
 .UserAvatar-img--medium-large {
   width: $sAvatar-medium;
   height: $sAvatar-medium;

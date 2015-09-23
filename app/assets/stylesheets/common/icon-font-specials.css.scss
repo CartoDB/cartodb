@@ -1,4 +1,22 @@
+@import "../variables/mixins";
 // Make iconFont to behave like a superscript text, necessary for icons that are not square-sized to center vertically
 // in a container
-.iconFont--super:before { vertical-align: super }
-.iconFont-Play:before { vertical-align: 6px } // center it, super pushes it too high
+.iconFont--super:before {
+  vertical-align: super;
+}
+.iconFont-Play:before {
+  vertical-align: 6px; // center it, super pushes it too high
+} 
+.iconFont.iconFont--with-label {
+  margin-right: 5px;
+}
+.iconFont.iconFont--with-label:before {
+  @include display-flex();
+  @include align-items(center, center);
+}
+.iconFont.iconFont--small:before {
+  font-size: 9px;
+}
+.iconFont.iconFont--big:before {
+  font-size: 19px;
+}

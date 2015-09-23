@@ -98,6 +98,12 @@ module CartoDB
       confirmation.js
       new_public_table.js
 
+      explore_deps.js
+      explore.js
+
+      user_feed_deps.js
+      user_feed.js
+
       tipsy.js
       modernizr.js
       statsc.js
@@ -125,6 +131,8 @@ module CartoDB
       public_data_dashboard.css
       public_table.css
       sessions.css
+      user_feed.css
+      explore.css
 
       plugins/tipsy.css
 

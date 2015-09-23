@@ -577,7 +577,10 @@ class User < Sequel::Model
   end
 
   def password=(value)
-    return if !value.nil? && value.length < MIN_PASSWORD_LENGTH
+    if !value.nil? && value.length < MIN_PASSWORD_LENGTH
+      errors.add(:password, "must be at least #{MIN_PASSWORD_LENGTH} characters long")
+      return
+    end
 
     @password = value
     self.salt = new?? self.class.make_token : User.filter(:id => self.id).select(:salt).first.salt

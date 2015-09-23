@@ -27,6 +27,7 @@ describe 'csv regression tests' do
                                log: CartoDB::Importer2::Doubles::Log.new,
                                user: CartoDB::Importer2::Doubles::User.new
                              })
+    runner.loader_options = ogr2ogr2_options
     runner.run
 
     result = runner.results.first

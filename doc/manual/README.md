@@ -6,6 +6,7 @@ platform docs
 
 ```bash
 pip install Sphinx
+pip install sphinx_rtd_theme
 ```
 
 ```bash

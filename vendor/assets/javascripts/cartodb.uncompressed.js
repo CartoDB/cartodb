@@ -1,6 +1,6 @@
-// cartodb.js version: 3.15.6
+// cartodb.js version: 3.15.7
 // uncompressed version: cartodb.uncompressed.js
-// sha: fbf3f58d85c12cd1422e4aacc20957fd866493a8
+// sha: 2983b2fdcef914afdb1f4fdae173471143930452
 (function() {
   var define;  // Undefine define (require.js), see https://github.com/CartoDB/cartodb.js/issues/543
   var root = this;
@@ -25655,7 +25655,7 @@ if (typeof window !== 'undefined') {
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = "3.15.6";
+    cdb.VERSION = "3.15.7";
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -32764,10 +32764,8 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
         }
       }
 
-      if (mapView) {
-        if (this.model.get("allowWheelOnFullscreen")) {
-          mapView.options.map.set("scrollwheel", true);
-        }
+      if (mapView && this.model.get("allowWheelOnFullscreen")) {
+        mapView.map.set("scrollwheel", true);
       }
     } else {
       cancelFullScreen.call(doc);

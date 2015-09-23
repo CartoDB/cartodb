@@ -1617,6 +1617,7 @@ class User < Sequel::Model
       self.database_schema = new_schema_name
       self.this.update database_schema: self.database_schema
       self.create_user_schema
+      self.rebuild_quota_trigger
       self.move_tables_to_schema(old_database_schema_name, self.database_schema)
       self.create_public_db_user
       self.set_database_search_path
@@ -1625,11 +1626,11 @@ class User < Sequel::Model
 
   # INFO: This method is used both when creating a new user and by the relocator when user is relocated to an org database.
   def setup_schema
-    self.reset_user_schema_permissions
-    self.reset_schema_owner
-    self.set_user_privileges
-    self.set_user_as_organization_member
-    self.rebuild_quota_trigger
+    reset_user_schema_permissions
+    reset_schema_owner
+    set_user_privileges
+    set_user_as_organization_member
+    rebuild_quota_trigger
 
     # INFO: organization privileges are set for org_member_role, which is assigned to each org user
     if organization_owner?
@@ -1640,24 +1641,29 @@ class User < Sequel::Model
   def setup_organization_role_permissions
     org_member_role = in_database.fetch("SELECT cartodb.CDB_Organization_Member_Group_Role_Member_Name() as org_member_role;")[:org_member_role][:org_member_role]
     set_user_privileges_in_public_schema(org_member_role)
-    self.run_queries_in_transaction(
+    run_queries_in_transaction(
       grant_connect_on_database_queries(org_member_role), true
     )
-    self.set_geo_columns_privileges(org_member_role)
-    self.set_raster_privileges(org_member_role)
-    self.set_user_privileges_in_cartodb_schema(org_member_role)
-    self.set_user_privileges_in_importer_schema(org_member_role)
-    self.set_user_privileges_in_geocoding_schema(org_member_role)
+    set_geo_columns_privileges(org_member_role)
+    set_raster_privileges(org_member_role)
+    set_user_privileges_in_cartodb_schema(org_member_role)
+    set_user_privileges_in_importer_schema(org_member_role)
+    set_user_privileges_in_geocoding_schema(org_member_role)
   end
 
   def move_tables_to_schema(old_schema, new_schema)
-    self.real_tables(old_schema).each do |t|
-      self.in_database(as: :superuser) do |database|
-        old_name = "#{old_schema}.#{t[:relname]}"
-        new_name = "#{new_schema}.#{t[:relname]}"
-        database.run(%Q{ SELECT cartodb._CDB_drop_triggers('#{old_name}'::REGCLASS) })
-        database.run(%Q{ ALTER TABLE #{old_name} SET SCHEMA "#{new_schema}" })
-        database.run(%Q{ SELECT cartodb._CDB_create_triggers('#{new_schema}'::TEXT, '#{new_name}'::REGCLASS) })
+    in_database(as: :superuser) do |database|
+      database.transaction do
+        real_tables(old_schema).each do |t|
+          old_name = "#{old_schema}.#{t[:relname]}"
+          new_name = "#{new_schema}.#{t[:relname]}"
+
+          was_cartodbfied = Carto::UserTable.find_by_user_id_and_name(id, t[:relname]).present?
+
+          database.run(%Q{ SELECT cartodb._CDB_drop_triggers('#{old_name}'::REGCLASS) }) if was_cartodbfied
+          database.run(%Q{ ALTER TABLE #{old_name} SET SCHEMA "#{new_schema}" })
+          database.run(%Q{ SELECT cartodb.CDB_CartodbfyTable('#{new_schema}'::TEXT, '#{new_name}'::REGCLASS) }) if was_cartodbfied
+        end
       end
     end
   end
@@ -2261,7 +2267,7 @@ TRIGGER
   end
 
   def drop_users_privileges_in_schema(schema, accounts)
-    in_database(:as => :superuser) do |user_database|
+    in_database(:as => :superuser, statement_timeout: 600000) do |user_database|
       return if user_database.fetch("SELECT 1 as schema_exist FROM information_schema.schemata WHERE schema_name = '#{schema}'").first.nil?
       user_database.transaction do
         accounts

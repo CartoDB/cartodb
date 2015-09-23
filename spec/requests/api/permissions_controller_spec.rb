@@ -157,6 +157,8 @@ describe 'group permission support' do
 
   before(:all) do
     @group = FactoryGirl.create(:carto_group, organization_id: @organization.id)
+    @group_2 = FactoryGirl.create(:random_group, organization_id: @organization.id)
+
     @headers = {
       'CONTENT_TYPE'  => 'application/json',
       'HTTP_ACCEPT' => 'application/json'
@@ -165,6 +167,7 @@ describe 'group permission support' do
 
   after(:all) do
     @group.destroy
+    @group_2.destroy
   end
 
   it 'adds group read permission' do
@@ -217,6 +220,47 @@ describe 'group permission support' do
       entity_fragment[:id].should eq entity_id
       entity_fragment[:type].should eq entity_type
       response_body.fetch(:acl).map { |acl| acl.deep_symbolize_keys }.should eq client_acl_modified_expected
+    end
+  end
+
+  it 'creates a shared entity per shared group' do
+    vis_entity_mock = mock
+    vis_entity_mock.stubs(:table?).returns(false)
+    Permission.any_instance.stubs(:entity).returns(vis_entity_mock)
+    Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
+
+    entity_id = UUIDTools::UUID.timestamp_create.to_s
+    entity_type = Permission::ENTITY_TYPE_VISUALIZATION
+
+    acl_initial = [ ]
+
+    permission = CartoDB::Permission.new(
+        owner_id: @org_user_1.id,
+        owner_username: @org_user_1.username,
+        entity_id:      entity_id,
+        entity_type:    entity_type
+    )
+    permission.acl = acl_initial
+    permission.save
+
+    client_acl = [
+      {
+        type: Permission::TYPE_GROUP,
+        entity: {
+          id:   @group.id,
+        },
+        access: Permission::ACCESS_READONLY
+      }, {
+        type: Permission::TYPE_GROUP,
+        entity: {
+          id:   @group_2.id,
+        },
+        access: Permission::ACCESS_READONLY
+      }
+    ]
+    put_json(api_v1_permissions_update_url(user_domain: @org_user_1.username, id: permission.id, api_key: @org_user_1.api_key), { acl: client_acl }, @headers) do |response|
+      response.status.should == 200
+      Carto::SharedEntity.where(entity_id: entity_id).count.should == 2
     end
   end
 

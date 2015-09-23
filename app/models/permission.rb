@@ -452,8 +452,8 @@ module CartoDB
         end
       end
 
-      group = relevant_group_acl_entry(acl)
-      if group
+      groups = relevant_groups_acl_entries(acl)
+      groups.each do |group|
         CartoDB::SharedEntity.new(
             recipient_id:   group[:id],
             recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_GROUP,
@@ -576,8 +576,8 @@ module CartoDB
       relevant_acl_entries(acl_list, TYPE_ORGANIZATION).first
     end
 
-    def relevant_group_acl_entry(acl_list)
-      relevant_acl_entries(acl_list, TYPE_GROUP).first
+    def relevant_groups_acl_entries(acl_list)
+      relevant_acl_entries(acl_list, TYPE_GROUP)
     end
 
     def relevant_acl_entries(acl_list, type)

@@ -68,7 +68,7 @@ $sEditButtonSize: 50px;
   padding: 17px 20px 20px;
 }
 .MapCard.MapCard--squared .MapCard-contentFooter {
-  @include justify-content(flex-start);
+  @include justify-content(space-between, justify);
   padding-top: 0;
   border-top: none;
 }
@@ -342,12 +342,11 @@ $sEditButtonSize: 50px;
 .MapCard-contentFooter.MapCard-contentFooter--lefty .iconFont {
   margin-right: 3px;
 }
-.MapCard-contentFooter.MapCard-contentFooter--with-icon .MapCard-contentFooterIcon {
-  display: inline-block;
-  vertical-align: top;
-}
-.MapCard-contentFooter.MapCard-contentFooter--with-icon .MapCard-contentFooterDetails--right {
-  display: inline-block;
+.MapCard--squared .MapCard-contentFooterIcons {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center);
+  @include flex-wrap(nowrap);
 }
 .MapCard-contentFooterIcon,
 .MapCard-contentFooterIcon .iconFont {
@@ -356,6 +355,7 @@ $sEditButtonSize: 50px;
 }
 .MapCard-contentFooterDetails {
   display: inline-block;
+  width: 100%;
 }
 .MapCard-contentFooterDetails-actions {
   @include display-flex();

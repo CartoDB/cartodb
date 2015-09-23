@@ -24,8 +24,8 @@
   @include align-items(center);
 }
 .Header-innerTitle {
-  max-width: 760px;
   width: 100%;
+  max-width: 760px;
 }
 .Header-inner {
   @include css3-prefix(box-sizing, border-box);

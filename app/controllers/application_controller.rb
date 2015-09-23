@@ -14,8 +14,8 @@ class ApplicationController < ActionController::Base
   before_filter :ensure_org_url_if_org_user
   before_filter :ensure_account_has_been_activated
   before_filter :browser_is_html5_compliant?
-  before_filter :allow_cross_domain_access
   before_filter :set_asset_debugging
+  before_filter :allow_cross_domain_access
   after_filter  :remove_flash_cookie
   after_filter  :add_revision_header
 

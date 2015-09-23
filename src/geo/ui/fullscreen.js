@@ -67,10 +67,8 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
         }
       }
 
-      if (mapView) {
-        if (this.model.get("allowWheelOnFullscreen")) {
-          mapView.options.map.set("scrollwheel", true);
-        }
+      if (mapView && this.model.get("allowWheelOnFullscreen")) {
+        mapView.map.set("scrollwheel", true);
       }
     } else {
       cancelFullScreen.call(doc);

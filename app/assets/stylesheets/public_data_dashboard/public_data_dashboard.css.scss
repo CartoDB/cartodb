@@ -1,0 +1,10 @@
+@import "../old_common/mixins";
+@import "../variables/mixins";
+
+// Public data dashboard content
+// --------------------------------------------------
+
+.DataLibrary {
+  position: relative;
+  min-height: 500px;
+}

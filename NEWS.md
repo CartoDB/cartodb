@@ -1,6 +1,7 @@
 3.15.X (dd/mm/yyyy)
 ------
-* 
+* Undefine `define` so that dependencies aren't loaded via AMD [#543](https://github.com/CartoDB/cartodb.js/issues/543)
+*
 
 3.15.6 (17/09/2015)
 ------

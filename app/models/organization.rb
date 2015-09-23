@@ -244,6 +244,10 @@ class Organization < Sequel::Model
     ::Resque.enqueue(::Resque::OrganizationJobs::Mail::DiskQuotaLimitReached, id) if disk_quota_limit_reached?
   end
 
+  def database_name
+    owner ? owner.database_name : nil
+  end
+
   private
 
   def destroy_groups

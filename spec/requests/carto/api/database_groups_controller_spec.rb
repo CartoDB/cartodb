@@ -174,6 +174,36 @@ describe Carto::Api::DatabaseGroupsController do
       response.status.should == 404
     end
 
+    it '#update_permission granting read on a table to organization, group and user do not duplicate count' do
+      bypass_named_maps
+      @table_user_2 = create_table_with_options(@org_user_2)
+
+      put api_v1_permissions_update_url(user_domain: @org_user_2.username, api_key: @org_user_2.api_key, id: @table_user_2['table_visualization']['permission']['id']),
+          { acl: [ {
+              type: CartoDB::Permission::TYPE_USER,
+              entity: { id:   @org_user_1.id },
+              access: CartoDB::Permission::ACCESS_READONLY
+            }, {
+              type: CartoDB::Permission::TYPE_ORGANIZATION,
+              entity: { id:   @organization.id },
+              access: CartoDB::Permission::ACCESS_READONLY
+            } ]
+          }.to_json, http_json_headers
+      response.status.should == 200
+
+      group = Carto::Group.where(organization_id: @carto_organization.id).first
+      permission = { 'access' => 'r' }
+      put api_v1_databases_group_update_permission_url(database_name: group.database_name, name: group.name, username: @org_user_2.username, table_name: @table_user_2['name']), permission.to_json, org_metadata_api_headers
+      response.status.should == 200
+
+      get api_v1_visualizations_index_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key,
+          type: CartoDB::Visualization::Member::TYPE_CANONICAL, order: 'updated_at', exclude_shared: false, shared: 'only'), http_json_headers
+      body = JSON.parse(response.body)
+      body['total_entries'].should eq 1
+      body['visualizations'].count.should eq 1
+      body['total_shared'].should eq 1
+    end
+
     it '#remove_users from username' do
       group = Carto::Group.where(organization_id: @carto_organization.id).first
       username = group.users.first.username

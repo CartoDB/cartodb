@@ -7,6 +7,7 @@ namespace :cartodb do
     desc "Search for yesterday's trending maps to notify"
     task :notify, [:simulation] => :environment do |t,args|
       simulation = (args[:simulation] == 'true') ? true : false
+      puts "SIMULATION MODE!" if simulation
       trending_maps_lib = CartoDB::TrendingMaps.new
       trending_maps = trending_maps_lib.get_trending_maps
 

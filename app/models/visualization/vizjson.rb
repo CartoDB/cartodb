@@ -7,13 +7,12 @@ require_relative '../layer_group/presenter'
 require_relative '../named_map/presenter'
 require_relative '../../../services/named-maps-api-wrapper/lib/named_maps_wrapper'
 
-
 module CartoDB
   module Visualization
     class VizJSON
-      VIZJSON_VERSION     = '0.1.0'
+      VIZJSON_VERSION = '0.1.0'
 
-      def initialize(visualization, options={}, configuration={}, logger=nil)
+      def initialize(visualization, options = {}, configuration = {}, logger = nil)
         @visualization    = visualization
         @map              = visualization.map
         @options          = default_options.merge(options)
@@ -47,10 +46,10 @@ module CartoDB
         }
 
         auth_tokens = auth_tokens_for(visualization)
-        poro_data.merge!({auth_tokens: auth_tokens}) if auth_tokens.length > 0
+        poro_data.merge!(auth_tokens: auth_tokens) if auth_tokens.length > 0
 
         children = children_for(visualization)
-        poro_data.merge!({slides: children}) if children.length > 0
+        poro_data.merge!(slides: children) if children.length > 0
         unless visualization.parent_id.nil?
           poro_data[:title] = visualization.parent.qualified_name(@user)
           poro_data[:description] = visualization.parent.description_html_safe
@@ -126,15 +125,14 @@ module CartoDB
 
         layers_data = Array.new
         layer_num = 0
-        layer_group_poro[:options][:layer_definition][:layers].each { |layer|
-          layers_data.push( {
-                              type:       layer[:type],
-                              options:    layer[:options],
-                              visible:    layer[:visible],
-                              index:      layer_num
-                            } )
+        layer_group_poro[:options][:layer_definition][:layers].each do |layer|
+          layers_data.push(type:       layer[:type],
+                           options:    layer[:options],
+                           visible:    layer[:visible],
+                           index:      layer_num
+                          )
           layer_num += 1
-        }
+        end
         layers_data
       end
 
@@ -165,9 +163,7 @@ module CartoDB
       end
 
       def children_for(visualization)
-        visualization.children.map do |vis|
-          vis.to_vizjson
-        end
+        visualization.children.map(&:to_vizjson)
       end
 
       def ordered_overlays_for(visualization)

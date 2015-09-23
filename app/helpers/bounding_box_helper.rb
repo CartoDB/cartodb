@@ -44,7 +44,7 @@ module BoundingBoxHelper
       miny: bound_for(result[:min][1].to_f, :minlat, :maxlat)
     }
   end
-  
+
   # Postgis stats-based calculation of bounds. Much faster but not always present, so needs a fallback
   def self.current_bbox_using_stats(db,table_name)
     # (lon,lat) as comes from postgis

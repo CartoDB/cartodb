@@ -1,6 +1,7 @@
 # encoding: utf-8
 require_relative '../models/visualization/collection'
 require_relative '../models/table/user_table'
+require_relative '../helpers/bounding_box_helper'
 
 class Map < Sequel::Model
   self.raise_on_save_failure = false
@@ -37,18 +38,12 @@ class Map < Sequel::Model
   PUBLIC_ATTRIBUTES = %W{ id user_id provider bounding_box_sw
     bounding_box_ne center zoom view_bounds_sw view_bounds_ne legends scrollwheel }
 
-  DEFAULT_BOUNDS = {
-    minlon: -179,
-    maxlon: 179,
-    minlat: -85.0511,
-    maxlat: 85.0511
-  }
 
   # FE code, so (lat,lon)
   DEFAULT_OPTIONS = {
     zoom:            3,
-    bounding_box_sw: [ DEFAULT_BOUNDS[:minlat], DEFAULT_BOUNDS[:minlon] ],
-    bounding_box_ne: [ DEFAULT_BOUNDS[:maxlat], DEFAULT_BOUNDS[:maxlon] ],
+    bounding_box_sw: [BoundingBoxHelper::DEFAULT_BOUNDS[:minlat], BoundingBoxHelper::DEFAULT_BOUNDS[:minlon]],
+    bounding_box_ne: [BoundingBoxHelper::DEFAULT_BOUNDS[:maxlat], BoundingBoxHelper::DEFAULT_BOUNDS[:maxlon]],
     provider:        'leaflet',
     center:          [30, 0]
   }
@@ -201,8 +196,8 @@ class Map < Sequel::Model
   def default_map_bounds
     # (lon, lat) to be consistent with postgis queries
     {
-      max: [ DEFAULT_BOUNDS[:maxlon], DEFAULT_BOUNDS[:maxlat] ],
-      min: [ DEFAULT_BOUNDS[:minlon], DEFAULT_BOUNDS[:minlat] ]
+      max: [BoundingBoxHelper::DEFAULT_BOUNDS[:maxlon], BoundingBoxHelper::DEFAULT_BOUNDS[:maxlat]],
+      min: [BoundingBoxHelper::DEFAULT_BOUNDS[:minlon], BoundingBoxHelper::DEFAULT_BOUNDS[:minlat]]
     }
   end
 
@@ -256,7 +251,8 @@ class Map < Sequel::Model
   end
 
   def bound_for(value, minimum, maximum)
-    [[value, DEFAULT_BOUNDS.fetch(minimum)].max, DEFAULT_BOUNDS.fetch(maximum)].min
+    [[value, BoundingBoxHelper::DEFAULT_BOUNDS.fetch(minimum)].max,
+     BoundingBoxHelper::DEFAULT_BOUNDS.fetch(maximum)].min
   end
 
   def get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons

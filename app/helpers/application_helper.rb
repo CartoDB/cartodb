@@ -133,6 +133,10 @@ module ApplicationHelper
       config[:error_track_percent_users] = Cartodb.config[:error_track]["percent_users"]
     end
 
+    if Cartodb.config[:cdn_url].present?
+      config[:cdn_url] = Cartodb.config[:cdn_url]
+    end
+
     config.to_json
   end
 

@@ -1,4 +1,4 @@
-@import "../variables/mixins";
+@import '../variables/mixins';
 
 /**
  *  Export Image dialog styles
@@ -52,13 +52,14 @@
 .ExportImageView-Footer--inner {
   position:absolute;
   left: 50%;
-  margin-left: -84px;
-  width: 168px;
+  margin-left: -138px;
+  width: 277px;
+  color: #ffffff;
 }
 .ExportImageView--dimensions  {
   display: inline-block;
   padding: 3px 5px;
-  background: rgba(#000, .7);
+  background: rgba(#000000, .7);
   border-radius: 3px;
   font-size: 12px;
   color: #9B9B9B;
@@ -67,7 +68,7 @@
   width: 20px;
   border: none;
   background: transparent;
-  color: #fff;
+  color: #FFFFFF;
   font-weight: normal;
   outline: none;
 }
@@ -89,7 +90,7 @@
   .ExportHelper--south,
   .ExportHelper--west,
   .ExportHelper--east {
-    display:none!important;
+    display: none !important;
   }
 }
 
@@ -97,73 +98,73 @@
   position: absolute;
   top: 0;
   left: 0;
-  background:rgba(#000, 0.6);
+  background: rgba(#000000, 0.6);
 }
 
 .ExportHelper.ExportHelper--header {
+  @include transition(opacity, 500ms, ease-in-out);
   position: absolute;
   top: 0;
   left: 0;
   padding: 10px;
   width: 100%;
   box-sizing: border-box;
-  background:rgba(#000, 0.75);
-  @include transition(opacity, 500ms, ease-in-out);
+  background: rgba(#000000, 0.75);
 }
 .ExportHelper.ExportHelper--attribution {
+  @include transition(opacity, 500ms, ease-in-out);
   position: absolute;
+  bottom: 0;
   top: auto;
   left: auto;
-  bottom: 0;
   right: 0;
   width: auto;
   padding: 0 5px;
   box-sizing: border-box;
   font-size: 11px;
-  background:rgba(#fff, 0.75);
-  @include transition(opacity, 500ms, ease-in-out);
+  background: rgba(#FFFFFF, 0.75);
 }
 
 .ExportHelperTitle {
   font-size: 15px;
-  font-weight:bold;
-  color: #fff;
+  font-weight: bold;
+  color: #FFFFFF;
 }
 .ExportHelperDescription {
-  color: #fff;
+  color: #FFFFFF;
   font-size: 13px;
   line-height: 19px;
 }
 
 .Button--micro {
   display: inline-block;
-  background: #fff;
-  padding: 4px 5px;
-  border-radius: 3px;
   height: auto;
-  border:none;
+  padding: 3px 5px;
+  border: none;
+  border-radius: 3px;
+  background: #FFFFFF;
 
   &:hover {
-    background:#ddd;
+    background: #DDDDDD;
   }
 
   span {
-    color: #666;
+    color: #666666;
     font-weight:normal;
     font-size: 12px;
     text-transform: none;
   }
 }
 .Button--micro.Button--negative {
-  border: 1px solid #fff;
-  background: #000;
   padding: 2px 5px 2px 6px;
+  border: 1px solid #FFFFFF;
+  background: #000000;
   border-radius: 5px;
   span {
-    color:#fff;
+    color: #FFFFFF;
   }
   &:before {
-    content: "\d7";
+    content: '\d7';
     position: relative;
     left: -1px;
   }
@@ -173,7 +174,7 @@ $resizeHandlerSize: 8px;
 
 .CanvasExport {
   position:absolute;
-  border: 1px dashed #fff;
+  border: 1px dashed #FFFFFF;
   &.draggable {
     z-index: 1000000000;
     cursor:move;
@@ -181,7 +182,7 @@ $resizeHandlerSize: 8px;
 }
 .CanvasExport.draggable .ExportHelper.ExportHelper--header,
 .CanvasExport.draggable .ExportHelper.ExportHelper--attribution {
- opacity: 1;
+  opacity: 1;
   opacity: 0.2;
 }
 .CanvasExport {
@@ -191,7 +192,7 @@ $resizeHandlerSize: 8px;
     width: $resizeHandlerSize;
     height: $resizeHandlerSize;
     display: block;
-    box-shadow: 1px 1px 2px rgba(#000, .5);
+    box-shadow: 1px 1px 2px rgba(#000000, 0.5);
     background: rgb(254,254,254); /* Old browsers */
     background: -moz-linear-gradient(top, rgba(254,254,254,1) 0%, rgba(229,229,229,1) 100%); /* FF3.6+ */
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(254,254,254,1)), color-stop(100%,rgba(229,229,229,1))); /* Chrome,Safari4+ */
@@ -202,16 +203,52 @@ $resizeHandlerSize: 8px;
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fefefe', endColorstr='#e5e5e5',GradientType=0 ); /* IE6-9 */
     z-index: 104;
   }
-  .ui-resizable-disabled .ui-resizable-handle, 
-  .ui-resizable-autohide .ui-resizable-handle { 
+  .ui-resizable-disabled .ui-resizable-handle,
+  .ui-resizable-autohide .ui-resizable-handle {
     display: none;
   }
-  .ui-resizable-n  { cursor: ns-resize; top: -5px; left: 50%; margin-left: -4px; }
-  .ui-resizable-s  { cursor: ns-resize; bottom: -5px; left: 50%; margin-left: -4px; }
-  .ui-resizable-e  { cursor: ew-resize; right: -5px; top: 50%; margin-top: -4px; }
-  .ui-resizable-w  { cursor: ew-resize; left: -5px; top: 50%; margin-top: -4px; }
-  .ui-resizable-se { cursor: nwse-resize; right: -4px; bottom: -4px; }
-  .ui-resizable-sw { cursor: nesw-resize; left: -4px;  bottom: -4px; }
-  .ui-resizable-nw { cursor: nwse-resize; left: -4px;  top: -4px;  }
-  .ui-resizable-ne { cursor: nesw-resize; right: -4px; top: -4px; }
+  .ui-resizable-n {
+    top: -5px;
+    left: 50%;
+    margin-left: -4px;
+    cursor: ns-resize;
+  }
+  .ui-resizable-s {
+    bottom: -5px;
+    left: 50%;
+    margin-left: -4px;
+    cursor: ns-resize;
+  }
+  .ui-resizable-e {
+    top: 50%;
+    right: -5px;
+    margin-top: -4px;
+    cursor: ew-resize;
+  }
+  .ui-resizable-w {
+    top: 50%;
+    left: -5px;
+    margin-top: -4px;
+    cursor: ew-resize;
+  }
+  .ui-resizable-se {
+    right: -4px;
+    bottom: -4px;
+    cursor: nwse-resize;
+  }
+  .ui-resizable-sw {
+    left: -4px;
+    bottom: -4px;
+    cursor: nesw-resize;
+  }
+  .ui-resizable-nw {
+    left: -4px;
+    top: -4px;
+    cursor: nwse-resize;
+  }
+  .ui-resizable-ne {
+    right: -4px;
+    top: -4px;
+    cursor: nesw-resize;
+  }
 }

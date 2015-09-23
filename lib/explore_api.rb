@@ -15,8 +15,8 @@ class ExploreAPI
     %[{#{table_names.compact.join(',')}}]
   end
 
-  def get_map_layers_count(visualization)
-    visualization.layers(:carto_and_torque).length
+  def get_map_layers(visualization)
+    visualization.layers(:carto_and_torque)
   end
 
   def get_geometry_data(visualization)

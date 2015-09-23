@@ -132,9 +132,9 @@ namespace :cartodb do
       while (explore_visualizations = get_explore_visualizations(offset, types_filter)).length > 0
         explore_visualization_ids = explore_visualizations.map { |ev| ev[:visualization_id] }
 
-        visualizations = CartoDB::Visualization::Collection.new.fetch({ ids: explore_visualization_ids})
+        visualizations = CartoDB::Visualization::Collection.new.fetch(ids: explore_visualization_ids)
         visualizations.each do |vis|
-          dataset_count = explore_api.get_map_layers_count(vis)
+          dataset_count = explore_api.get_map_layers(vis).length
           update_query = %[ UPDATE #{VISUALIZATIONS_TABLE} SET visualization_map_datasets = #{dataset_count} WHERE visualization_id = '#{vis.id}']
           db_conn.run(update_query)
           total_number_of_updates += 1
@@ -373,7 +373,7 @@ namespace :cartodb do
         visualization_table_names: explore_api.get_visualization_tables(v),
         visualization_table_rows: table_data[:rows],
         visualization_table_size: table_data[:size],
-        visualization_map_datasets: explore_api.get_map_layers_count(v),
+        visualization_map_datasets: explore_api.get_map_layers(v).length,
         visualization_geometry_types: table_data[:geometry_types].blank? ? nil : Sequel.pg_array(table_data[:geometry_types]),
         visualization_tags: v.tags.nil? || v.tags.empty? ? nil : Sequel.pg_array(v.tags),
         visualization_created_at: v.created_at,
@@ -417,7 +417,7 @@ namespace :cartodb do
     def update_tables(visualization)
       if visualization.type == CartoDB::Visualization::Member::TYPE_DERIVED
         %[, visualization_table_names = '#{explore_api.get_visualization_tables(visualization)}',
-            visualization_map_datasets = #{explore_api.get_map_layers_count(visualization)}]
+            visualization_map_datasets = #{explore_api.get_map_layers(visualization).length}]
       elsif visualization.type == CartoDB::Visualization::Member::TYPE_CANONICAL
         %[, visualization_table_names = '#{explore_api.get_visualization_tables(visualization)}']
       end

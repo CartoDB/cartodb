@@ -5,13 +5,13 @@ module Carto
       ssl_required :get_authenticated_users, :show
 
       skip_before_filter :api_authorization_required, only: [:get_authenticated_users]
-      
+
       def show
         render json: Carto::Api::UserPresenter.new(uri_user).data
       end
 
       def get_authenticated_users
-        referer = request.env["HTTP_REFERER"]
+        referer = request.env["HTTP_ORIGIN"].blank? ? request.env["HTTP_REFERER"] : %[#{request.env['HTTP_X_FORWARDED_PROTO']}://#{request.env["HTTP_HOST"]}]
         referer_match = /https?:\/\/([\w\-\.]+)(:[\d]+)?(\/((u|user)\/([\w\-\.]+)))?/.match(referer)
         if referer_match.nil?
           render json: { error: "Referer #{referer} does not match" }, status: 400 and return
@@ -32,6 +32,17 @@ module Carto
       end
 
       private
+
+      def add_cors_headers
+        referer = request.env["HTTP_REFERER"]
+        origin = request.headers['origin']
+        whitelist_referer = %w{http https}.map {|proto| "#{proto}://#{Cartodb.config[:account_host]}/explore" }
+        whitelist_origin = %w{http https}.map {|proto| "#{proto}://#{Cartodb.config[:account_host]}" }
+        if whitelist_referer.include?(referer) && whitelist_origin.include?(origin)
+          response.headers['Access-Control-Allow-Origin'] = origin
+          response.headers['Access-Control-Allow-Methods'] = 'GET'
+        end
+      end
 
       def render_auth_users_data(user, referrer, subdomain, referrer_organization_username=nil)
         organization_name = nil
@@ -61,6 +72,7 @@ module Carto
           end
         end
 
+        add_cors_headers
         render json: {
           urls: ["#{CartoDB.base_url(user.username, organization_name)}#{CartoDB.path(self, 'dashboard_bis')}"],
           username: user.username,
@@ -83,7 +95,6 @@ module Carto
       def session_user
         @session_user ||= (current_viewer.nil? ? nil : Carto::User.where(id: current_viewer.id).first)
       end
-
     end
   end
 end

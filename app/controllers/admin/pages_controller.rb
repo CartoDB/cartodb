@@ -4,7 +4,7 @@ require_relative '../../models/table'
 require_relative '../../models/visualization/member'
 require_relative '../../models/visualization/collection'
 
-class Admin::PagesController < ApplicationController
+class Admin::PagesController < Admin::AdminController
 
   include CartoDB
 
@@ -220,7 +220,7 @@ class Admin::PagesController < ApplicationController
       @datasets << process_dataset_render(vis)
     end
 
-    @datasets.compact
+    @datasets.compact!
 
     description = "#{@name} has"
 
@@ -254,7 +254,7 @@ class Admin::PagesController < ApplicationController
       @visualizations << process_map_render(vis)
     end
 
-    @visualizations.compact
+    @visualizations.compact!
 
     description = "#{@name} has"
 

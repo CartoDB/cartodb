@@ -229,6 +229,7 @@ module CartoDB
 
       attr_accessor   :source_file, :options
 
+
       private
 
       attr_writer     :ogr2ogr, :georeferencer
@@ -242,6 +243,11 @@ module CartoDB
       # @throws LoadError
       # @throws UnsupportedFormatError
       def run_ogr2ogr(append_mode=false)
+        # INFO: This is a workaround for the append mode
+        # Currently it is only used for arcgis importer. In order for this to work
+        # properly, it must always be executed before cartodbfy.
+        remove_primary_key if append_mode
+
         ogr2ogr.run(append_mode)
 
         #In case there are not an specific error we try to fix it
@@ -260,6 +266,12 @@ module CartoDB
         end
 
         check_for_import_errors
+      end
+
+      def remove_primary_key
+        primary_key = "#{job.table_name}_pkey"
+        query = "ALTER TABLE #{SCHEMA}.#{job.table_name} DROP CONSTRAINT IF EXISTS #{primary_key}"
+        job.db.run query
       end
 
       # Sometimes we could try to recover from a known failure

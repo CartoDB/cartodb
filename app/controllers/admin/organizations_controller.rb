@@ -1,5 +1,5 @@
 # coding: utf-8
-class Admin::OrganizationsController < ApplicationController
+class Admin::OrganizationsController < Admin::AdminController
   ssl_required :show, :settings, :settings_update, :regenerate_all_api_keys, :groups, :auth, :auth_update
   before_filter :login_required, :load_organization_and_members, :load_ldap_configuration
   helper_method :show_billing

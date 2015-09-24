@@ -1,0 +1,25 @@
+// Icons
+// --------------------------------------------------
+
+.Icon {
+  display: inline-block;
+  width: 60px;
+  height: 60px;
+  border: 2px solid rgba(#9b9b9b, .4);
+  text-align: center;
+}
+.Icon--round {
+  border-radius: 50%;
+}
+.Icon--blue {
+  border-color: #2CA8E1;
+  color: #2CA8E1;
+
+  &.is-highlight {
+    background: #2CA8E1;
+    color: #fff;
+  }
+}
+.IconFont--size24 {
+  font-size: 24px;
+}

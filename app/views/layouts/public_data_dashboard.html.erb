@@ -34,7 +34,7 @@
 
     <%= yield %>
 
-    <%= render 'admin/shared/public_footer' %>
+    <%= render 'admin/shared/public_footer', :light => true %>
 
     <%= javascript_include_tag 'cdb.js', 'templates', 'public_dashboard_deps', 'public_data_dashboard' %>
     <%= yield :js %>

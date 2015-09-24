@@ -120,6 +120,8 @@
 .Filters-typeItem.Filters-typeItem--longMargins {
   margin-right: 20px;
   margin-left: 20px;
+
+  &:first-child { margin-left: 0 }
 }
 
 .Filters-searchLink {

@@ -8,3 +8,24 @@
   position: relative;
   min-height: 500px;
 }
+.DataLibrary-inner {
+  margin-top: 65px;
+}
+.DataLibrary-columns * {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.DataLibrary-text {
+  color: #333;
+  font-weight: 200;
+  font-size: 20px;
+  line-height: 1.4;
+}
+.DataLibrary-text--column {
+  color: #797F8A;
+  font-size: 18px;
+}
+.Filters.Filters-datalibrary .Filters-orderItem:last-child {
+  margin-right: 0;
+}

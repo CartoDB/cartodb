@@ -14,6 +14,9 @@ module CartoDB
       DEFAULT_SCHEMA            = 'cdb_importer'
       THE_GEOM_WEBMERCATOR      = 'the_geom_webmercator'
 
+      # TODO: from now on, geometry_columns is ignored. remove it
+      # TODO: shouldn't be options called `config`?
+      # TODO: consolidate optional params in `options`
       def initialize(db, table_name, options, schema=DEFAULT_SCHEMA, job=nil, geometry_columns=nil, logger=nil)
         @db         = db
         @job        = job || Job.new({  logger: logger } )
@@ -34,6 +37,7 @@ module CartoDB
         @from_geojson_with_transform = true
       end
 
+      # TODO those this happens before or after cartodbfy?
       def run
         disable_autovacuum
 

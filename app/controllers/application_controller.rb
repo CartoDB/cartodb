@@ -87,6 +87,21 @@ class ApplicationController < ActionController::Base
       response.headers['Access-Control-Allow-Origin'] = '*'
       response.headers['Access-Control-Allow-Methods'] = '*'
     end
+    add_cors_headers_for_whitelisted_referer unless request.headers['origin'].blank?
+  end
+
+  def add_cors_headers_for_whitelisted_referer
+    referer = request.env["HTTP_REFERER"]
+    origin = request.headers['origin']
+    whitelist_referer = %w{http https}.map {|proto| "#{proto}://#{Cartodb.config[:account_host]}/explore" }
+    whitelist_origin = %w{http https}.map {|proto| "#{proto}://#{Cartodb.config[:account_host]}" }
+    if whitelist_referer.include?(referer) && whitelist_origin.include?(origin)
+      # INFO We only allow CORS for a white listed origin and referer with
+      # and permit session cookies
+      response.headers['Access-Control-Allow-Origin'] = origin
+      response.headers['Access-Control-Allow-Methods'] = 'GET'
+      response.headers['Access-Control-Allow-Credentials'] = 'true'
+    end
   end
 
   def render_403

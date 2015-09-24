@@ -82,7 +82,6 @@ describe SignupController do
       user.email = 'manolo@escobar.es'
       user.password = 'short'
       user.password_confirmation = user.password
-      user.database_host = ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
 
       user.errors[:password].blank?.should == false
     end

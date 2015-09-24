@@ -9,7 +9,6 @@ require_relative '../../../../lib/cartodb/stats/importer'
 module CartoDB
   module Importer2
     class Georeferencer
-      DEFAULT_BATCH_SIZE = 50000
 
       DEFAULT_SCHEMA            = 'cdb_importer'
       THE_GEOM_WEBMERCATOR      = 'the_geom_webmercator'

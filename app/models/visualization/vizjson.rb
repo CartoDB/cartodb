@@ -22,9 +22,11 @@ module CartoDB
         logger.info(map.inspect) if logger
       end
 
+      # TODO: move to exporter class
       def to_export_poro
         {
           id:             visualization.id,
+          owner:          { id: @user.id },
           version:        VIZJSON_VERSION,
           title:          visualization.qualified_name(@user),
           description:    visualization.description_html_safe,
@@ -36,7 +38,7 @@ module CartoDB
           center:         map.center,
           zoom:           map.zoom,
           layers:         layers_for(visualization),
-          overlays:       overlays_for(visualization),
+          overlays:       overlays_for(visualization)
         }
       end
 

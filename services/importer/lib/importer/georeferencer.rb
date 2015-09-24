@@ -10,7 +10,7 @@ module CartoDB
   module Importer2
     class Georeferencer
       DEFAULT_BATCH_SIZE = 50000
-      GEOMETRY_POSSIBLE_NAMES   = %w{ geometry the_geom wkb_geometry geom geojson wkt }
+
       DEFAULT_SCHEMA            = 'cdb_importer'
       THE_GEOM_WEBMERCATOR      = 'the_geom_webmercator'
 
@@ -19,7 +19,6 @@ module CartoDB
         @job        = job || Job.new({  logger: logger } )
         @table_name = table_name
         @schema     = schema
-        @geometry_columns = geometry_columns || GEOMETRY_POSSIBLE_NAMES
         @from_geojson_with_transform = false
         @options = options
         @tracker = @options[:tracker] || lambda { |state| state }
@@ -40,7 +39,7 @@ module CartoDB
 
         drop_the_geom_webmercator
 
-        the_geom_column_name = create_the_geom_from_geometry_column  ||
+        the_geom_column_name =
           create_the_geom_from_ip_guessing      ||
           create_the_geom_from_country_guessing ||
           create_the_geom_from_namedplaces_guessing ||
@@ -66,48 +65,7 @@ module CartoDB
         })
       end
 
-      def create_the_geom_from_geometry_column
-        column = nil
-        geometry_column_name = geometry_column_in
-        return false unless geometry_column_name
-        job.log "Creating the_geom from #{geometry_column_name} column"
-        column = Column.new(db, table_name, geometry_column_name, schema, job)
-        column.mark_as_from_geojson_with_transform if @from_geojson_with_transform
-        column.empty_lines_to_nulls
-        column.geometrify
-
-        column_name = geometry_column_name
-        if column_exists_in?(table_name, 'the_geom')
-          geometry_type = get_geometry_type('the_geom') rescue nil
-          if geometry_type.nil? || geometry_type == 'GEOMETRYCOLLECTION'
-            invalid_the_geom = get_column('the_geom')
-            if !column_exists_in?(table_name, 'invalid_the_geom')
-              invalid_the_geom.rename_to('invalid_the_geom')
-            end
-          end
-        end
-
-        unless column_exists_in?(table_name, 'the_geom')
-          column_name = 'the_geom'
-          column.rename_to(column_name)
-        end
-
-        handle_multipoint(qualified_table_name) if multipoint?
-        column_name
-      rescue => exception
-        job.log "Error creating the_geom: #{exception}. Trace: #{exception.backtrace}"
-        if /statement timeout/.match(exception.message).nil?
-          if column.empty?
-            job.log "Dropping empty #{geometry_column_name}"
-            column.drop
-          else
-            # probably this one needs to be kept doing... but how if times out?
-            job.log "Renaming #{geometry_column_name} to invalid_the_geom"
-            column.rename_to(:invalid_the_geom)
-          end
-        end
-        false
-      end
+      # TODO any other thing to cleanup here?
 
       def create_the_geom_from_country_guessing
         return false if not @content_guesser.enabled?
@@ -281,11 +239,6 @@ module CartoDB
         db.schema(table_name, reload: true, schema: schema).map(&:first)
       end
 
-      def geometry_column_in
-        names = geometry_columns.map { |name| "'#{name}'" }.join(',')
-        find_column_in(table_name, names)
-      end
-
       def drop_the_geom_webmercator
         return self unless column_exists_in?(table_name, THE_GEOM_WEBMERCATOR)
 
@@ -347,7 +300,7 @@ module CartoDB
 
       private
 
-      attr_reader :db, :table_name, :schema, :job, :geometry_columns
+      attr_reader :db, :table_name, :schema, :job
 
       def qualified_table_name
         %Q("#{schema}"."#{table_name}")

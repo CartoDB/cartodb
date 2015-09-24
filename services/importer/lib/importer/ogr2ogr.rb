@@ -16,12 +16,12 @@ module CartoDB
 
       DEFAULT_BINARY = 'which ogr2ogr2'
 
-      LATITUDE_POSSIBLE_NAMES   = %w{ latitude lat latitudedecimal
+      LATITUDE_POSSIBLE_NAMES = %w{ latitude lat latitudedecimal
         latitud lati decimallatitude decimallat point_latitude }
-      LONGITUDE_POSSIBLE_NAMES  = %w{ longitude lon lng
+      LONGITUDE_POSSIBLE_NAMES = %w{ longitude lon lng
         longitudedecimal longitud long decimallongitude decimallong point_longitude }
 
-      GEOMETRY_POSSIBLE_NAMES   = %w{ geometry the_geom wkb_geometry geom geojson wkt }
+      GEOMETRY_POSSIBLE_NAMES = %w{ geometry the_geom wkb_geometry geom geojson wkt }
 
       def initialize(table_name, filepath, pg_options, layer=nil, options={})
         self.filepath   = filepath
@@ -47,16 +47,16 @@ module CartoDB
 
       def command_for_import
         "#{OSM_INDEXING_OPTION} #{PG_COPY_OPTION} #{client_encoding_option} #{shape_encoding_option} " +
-        "#{executable_path} #{OUTPUT_FORMAT_OPTION} #{overwrite_option} #{guessing_options} " +
-        "#{postgres_options} #{projection_option} " +
-        "#{layer_creation_options} #{filepath} #{layer} #{layer_name_option} #{NEW_LAYER_TYPE_OPTION}" +
-        " #{shape_coordinate_option} "
+          "#{executable_path} #{OUTPUT_FORMAT_OPTION} #{overwrite_option} #{guessing_options} " +
+          "#{postgres_options} #{projection_option} " +
+          "#{layer_creation_options} #{filepath} #{layer} #{layer_name_option} #{NEW_LAYER_TYPE_OPTION}" +
+          " #{shape_coordinate_option} "
       end
 
       def command_for_append
         "#{OSM_INDEXING_OPTION} #{PG_COPY_OPTION} #{client_encoding_option} " +
-        "#{executable_path} #{APPEND_MODE_OPTION} #{OUTPUT_FORMAT_OPTION} #{postgres_options} " +
-        "#{projection_option} #{filepath} #{layer} #{layer_name_option} #{NEW_LAYER_TYPE_OPTION}"
+          "#{executable_path} #{APPEND_MODE_OPTION} #{OUTPUT_FORMAT_OPTION} #{postgres_options} " +
+          "#{projection_option} #{filepath} #{layer} #{layer_name_option} #{NEW_LAYER_TYPE_OPTION}"
       end
 
       def executable_path
@@ -149,9 +149,9 @@ module CartoDB
         if csv_guessing && is_csv?
           # Inverse of the selection: if I want guessing I must NOT leave quoted fields as string
           "-oo AUTODETECT_TYPE=YES -oo QUOTED_FIELDS_AS_STRING=#{quoted_fields_guessing ? 'NO' : 'YES' } " +
-          "#{x_y_possible_names_option} -s_srs EPSG:4326 -t_srs EPSG:4326 " +
-          "-skipfailure" +
-          "-oo GEOM_POSSIBLE_NAMES=#{GEOMETRY_POSSIBLE_NAMES.join(',')}"
+            "#{x_y_possible_names_option} -s_srs EPSG:4326 -t_srs EPSG:4326 " +
+            "-skipfailure" +
+            "-oo GEOM_POSSIBLE_NAMES=#{GEOMETRY_POSSIBLE_NAMES.join(',')}"
         else
           ''
         end

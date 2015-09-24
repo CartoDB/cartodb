@@ -1,7 +1,7 @@
 # coding: utf-8
 require_relative '../../models/map/presenter'
 
-class Admin::TablesController < ApplicationController
+class Admin::TablesController < Admin::AdminController
   ssl_required :index, :show, :public
 
   skip_before_filter :browser_is_html5_compliant?, :only => [:embed_map]

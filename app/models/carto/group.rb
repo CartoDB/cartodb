@@ -124,7 +124,7 @@ module Carto
     def self.valid_group_name(display_name)
       name = display_name.squish
       name = "g_#{name}" unless name[/^[a-zA-Z_]{1}/]
-      name.gsub(/[^a-zA-Z0-9_]/, '_').gsub(/_{2,}/, '_')
+      name.gsub(/[^a-zA-Z0-9_ ]/, '_').gsub(/_{2,}/, '_')
     end
 
     def self.create_group_extension_query(conn, name)

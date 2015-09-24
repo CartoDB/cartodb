@@ -21,6 +21,7 @@ module CartoDB
       LONGITUDE_POSSIBLE_NAMES  = %w{ longitude lon lng
         longitudedecimal longitud long decimallongitude decimallong point_longitude }
 
+      GEOMETRY_POSSIBLE_NAMES   = %w{ geometry the_geom wkb_geometry geom geojson wkt }
 
       def initialize(table_name, filepath, pg_options, layer=nil, options={})
         self.filepath   = filepath
@@ -46,7 +47,7 @@ module CartoDB
 
       def command_for_import
         "#{OSM_INDEXING_OPTION} #{PG_COPY_OPTION} #{client_encoding_option} #{shape_encoding_option} " +
-        "#{executable_path} #{OUTPUT_FORMAT_OPTION} #{overwrite_option} #{guessing_option} " +
+        "#{executable_path} #{OUTPUT_FORMAT_OPTION} #{overwrite_option} #{guessing_options} " +
         "#{postgres_options} #{projection_option} " +
         "#{layer_creation_options} #{filepath} #{layer} #{layer_name_option} #{NEW_LAYER_TYPE_OPTION}" +
         " #{shape_coordinate_option} "
@@ -144,12 +145,13 @@ module CartoDB
         !(filepath =~ /\.shp$/i).nil?
       end
 
-      def guessing_option
+      def guessing_options
         if csv_guessing && is_csv?
           # Inverse of the selection: if I want guessing I must NOT leave quoted fields as string
           "-oo AUTODETECT_TYPE=YES -oo QUOTED_FIELDS_AS_STRING=#{quoted_fields_guessing ? 'NO' : 'YES' } " +
           "#{x_y_possible_names_option} -s_srs EPSG:4326 -t_srs EPSG:4326 " +
-          "-skipfailure"
+          "-skipfailure" +
+          "-oo GEOM_POSSIBLE_NAMES=#{GEOMETRY_POSSIBLE_NAMES.join(',')}"
         else
           ''
         end

@@ -65,7 +65,7 @@ linters:
     severity: warning
   LeadingZero:
     enabled: true
-    style: include_zero
+    style: exclude_zero
   MergeableSelector:
     enabled: true
     force_nesting: false
@@ -164,7 +164,7 @@ linters:
     enabled: true
     severity: warning
   TrailingZero:
-    enabled: false
+    enabled: true
   UnnecessaryMantissa:
     enabled: true
   UnnecessaryParentReference:

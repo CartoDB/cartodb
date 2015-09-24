@@ -186,7 +186,7 @@ module CartoDB
 
       def georeferencer
         if @georeferencer.nil?
-          @georeferencer = Georeferencer.new(job.db, job.table_name, georeferencer_options, SCHEMA, job, geometry_columns)
+          @georeferencer = Georeferencer.new(job.db, job.table_name, georeferencer_options, SCHEMA, job)
           @georeferencer.set_importer_stats(@importer_stats)
         end
         @georeferencer
@@ -202,10 +202,6 @@ module CartoDB
 
       def typecaster
         @typecaster ||= Typecaster.new(job.db, job.table_name, SCHEMA, job, ['postedtime'])
-      end
-
-      def geometry_columns
-        ['wkb_geometry'] if @source_file.extension == '.shp'
       end
 
       def valid_table_names

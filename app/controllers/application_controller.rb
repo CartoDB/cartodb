@@ -15,7 +15,8 @@ class ApplicationController < ActionController::Base
   before_filter :ensure_account_has_been_activated
   before_filter :browser_is_html5_compliant?
   before_filter :set_asset_debugging
-  before_filter :allow_cross_domain_access
+  before_filter :cors_preflight_check
+  after_filter  :allow_cross_domain_access
   after_filter  :remove_flash_cookie
   after_filter  :add_revision_header
 
@@ -82,26 +83,32 @@ class ApplicationController < ActionController::Base
       (Cartodb.config[:debug_assets].nil? ? true : Cartodb.config[:debug_assets]) if Rails.env.development?
   end
 
+  def cors_preflight_check
+    if request.method == :options && check_cors_headers_for_whitelisted_referer
+      response.headers['Access-Control-Allow-Origin'] = request.headers['origin']
+      response.headers['Access-Control-Allow-Methods'] = 'GET, POST'
+      response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+      response.headers['Access-Control-Max-Age'] = '172800'
+    end
+  end
+
   def allow_cross_domain_access
-    unless Rails.env.production? || Rails.env.staging?
+    if !request.headers['origin'].blank? && check_cors_headers_for_whitelisted_referer
+      response.headers['Access-Control-Allow-Origin'] = request.headers['origin']
+      response.headers['Access-Control-Allow-Methods'] = 'GET, POST'
+      response.headers['Access-Control-Allow-Credentials'] = 'true'
+    elsif !Rails.env.production? && !Rails.env.staging?
       response.headers['Access-Control-Allow-Origin'] = '*'
       response.headers['Access-Control-Allow-Methods'] = '*'
     end
-    add_cors_headers_for_whitelisted_referer unless request.headers['origin'].blank?
   end
 
-  def add_cors_headers_for_whitelisted_referer
+  def check_cors_headers_for_whitelisted_referer
     referer = request.env["HTTP_REFERER"]
     origin = request.headers['origin']
     whitelist_referer = %w{http https}.map {|proto| "#{proto}://#{Cartodb.config[:account_host]}/explore" }
     whitelist_origin = %w{http https}.map {|proto| "#{proto}://#{Cartodb.config[:account_host]}" }
-    if whitelist_referer.include?(referer) && whitelist_origin.include?(origin)
-      # INFO We only allow CORS for a white listed origin and referer with
-      # and permit session cookies
-      response.headers['Access-Control-Allow-Origin'] = origin
-      response.headers['Access-Control-Allow-Methods'] = 'GET'
-      response.headers['Access-Control-Allow-Credentials'] = 'true'
-    end
+    whitelist_referer.include?(referer) && whitelist_origin.include?(origin)
   end
 
   def render_403

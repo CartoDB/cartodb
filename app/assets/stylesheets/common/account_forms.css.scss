@@ -387,6 +387,8 @@ $sLabel-width: 140px;
   line-height: $sLineHeight-large;
 }
 .FormAccount-avatarPreview {
+  @include display-flex();
+  @include flex-direction(row);
   position: relative;
   width: 100px;
   height: 100px;
@@ -417,10 +419,6 @@ $sLabel-width: 140px;
   left: 50%;
   margin: -20px 0 0 -20px;
   z-index: 1;
-}
-.FormAccount-avatarPreview {
-  @include display-flex();
-  @include flex-direction(row);
 }
 .FormAccount-fileAvatar {
   margin-left: 20px;

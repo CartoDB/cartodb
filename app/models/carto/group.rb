@@ -39,7 +39,7 @@ module Carto
 
     # Creation of brand-new group with the extension
     def self.create_group_with_extension(organization, display_name)
-      self.name = valid_group_name(display_name)
+      name = valid_group_name(display_name)
       organization.owner.in_database do |conn|
         create_group_extension_query(conn, name)
       end

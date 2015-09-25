@@ -39,7 +39,7 @@ module Carto
 
     # Creation of brand-new group with the extension
     def self.create_group_with_extension(organization, display_name)
-      name = valid_group_name(display_name)
+      self.name = valid_group_name(display_name)
       organization.owner.in_database do |conn|
         create_group_extension_query(conn, name)
       end
@@ -60,7 +60,7 @@ module Carto
         Carto::Group.rename_group_extension_query(conn, name, new_name)
       end
       reload
-      display_name = new_display_name
+      self.display_name = new_display_name
       save
     end
 
@@ -84,6 +84,21 @@ module Carto
         Carto::Group.remove_users_group_extension_query(conn, name, users.collect(&:username))
       end
       reload
+    end
+
+    def grant_db_permission(table, access)
+      table.owner.in_database do |conn|
+        case access
+        when CartoDB::Permission::ACCESS_NONE
+          Carto::Group.revoke_all(conn, name, table.database_schema, table.name)
+        when CartoDB::Permission::ACCESS_READONLY
+          Carto::Group.grant_read(conn, name, table.database_schema, table.name)
+        when CartoDB::Permission::ACCESS_READWRITE
+          Carto::Group.grant_write(conn, name, table.database_schema, table.name)
+        else
+          raise "Unknown access: #{access}"
+        end
+      end
     end
 
     def rename(new_name, new_database_role)
@@ -145,6 +160,18 @@ module Carto
 
     def self.remove_users_group_extension_query(conn, name, usernames)
       conn.execute(%{ select cartodb.CDB_Group_RemoveUsers('#{name}', ARRAY['#{usernames.join("','")}']) })
+    end
+
+    def self.revoke_all(conn, group_name, table_database_schema, table_name)
+      conn.execute(%{ select cartodb.CDB_Group_Table_RevokeAll('#{group_name}', '#{table_database_schema}', '#{table_name}') })
+    end
+
+    def self.grant_read(conn, group_name, table_database_schema, table_name)
+      conn.execute(%{ select cartodb.CDB_Group_Table_GrantRead('#{group_name}', '#{table_database_schema}', '#{table_name}') })
+    end
+
+    def self.grant_write(conn, group_name, table_database_schema, table_name)
+      conn.execute(%{ select cartodb.CDB_Group_Table_GrantReadWrite('#{group_name}', '#{table_database_schema}', '#{table_name}') })
     end
 
   end

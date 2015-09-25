@@ -541,7 +541,7 @@ module CartoDB
               entity.table.remove_access(User.where(id: user[:id]).first)
             }
             # update_db_group_permission check is needed to avoid updating db requests
-            if @update_db_group_permission
+            if @update_db_group_permission != false
               groups.each { |group|
                 Carto::Group.find(group[:id]).grant_db_permission(entity.table, ACCESS_NONE)
               }

@@ -163,15 +163,15 @@ module Carto
     end
 
     def self.revoke_all(conn, group_name, table_database_schema, table_name)
-      conn.execute(%{ select cartodb.CDB_Group_Table_RevokeAll('#{group_name}', '#{table_database_schema}', '#{table_name}') })
+      conn.execute(%{ select cartodb.CDB_Group_Table_RevokeAll('#{group_name}', '#{table_database_schema}', '#{table_name}', false) })
     end
 
     def self.grant_read(conn, group_name, table_database_schema, table_name)
-      conn.execute(%{ select cartodb.CDB_Group_Table_GrantRead('#{group_name}', '#{table_database_schema}', '#{table_name}') })
+      conn.execute(%{ select cartodb.CDB_Group_Table_GrantRead('#{group_name}', '#{table_database_schema}', '#{table_name}', false) })
     end
 
     def self.grant_write(conn, group_name, table_database_schema, table_name)
-      conn.execute(%{ select cartodb.CDB_Group_Table_GrantReadWrite('#{group_name}', '#{table_database_schema}', '#{table_name}') })
+      conn.execute(%{ select cartodb.CDB_Group_Table_GrantReadWrite('#{group_name}', '#{table_database_schema}', '#{table_name}', false) })
     end
 
   end

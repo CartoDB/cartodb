@@ -253,7 +253,7 @@ class Organization < Sequel::Model
 
     errors = []
 
-    roles = users.collect(&:database_username)
+    roles = users.map(&:database_username)
     begin
       roles << owner.organization_member_group_role_member_name
     rescue => e

@@ -2262,19 +2262,6 @@ TRIGGER
     ]
   end
 
-  def grant_read_on_schema_queries(schema, db_user = nil)
-    granted_user = db_user.nil? ? self.database_username : db_user
-
-    queries = [
-      "GRANT USAGE ON SCHEMA \"#{schema}\" TO \"#{granted_user}\"",
-      "GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" TO \"#{granted_user}\"",
-      "GRANT SELECT ON ALL TABLES IN SCHEMA \"#{schema}\" TO \"#{granted_user}\""
-    ]
-    queries.concat(revoke_permissions_on_cartodb_conf_queries(granted_user)) if schema == 'cartodb'
-
-    queries
-  end
-
   def revoke_permissions_on_cartodb_conf_queries(db_user)
     # TODO: remove the check after extension install (#4924 merge)
     return [] if Rails.env.test?
@@ -2665,6 +2652,19 @@ TRIGGER
   end
 
   private
+
+  def grant_read_on_schema_queries(schema, db_user = nil)
+    granted_user = db_user.nil? ? self.database_username : db_user
+
+    queries = [
+      "GRANT USAGE ON SCHEMA \"#{schema}\" TO \"#{granted_user}\"",
+      "GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" TO \"#{granted_user}\"",
+      "GRANT SELECT ON ALL TABLES IN SCHEMA \"#{schema}\" TO \"#{granted_user}\""
+    ]
+    queries.concat(revoke_permissions_on_cartodb_conf_queries(granted_user)) if schema == 'cartodb'
+
+    queries
+  end
 
   def quota_dates(options)
     date_to = (options[:to] ? options[:to].to_date : Date.today)

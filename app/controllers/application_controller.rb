@@ -14,8 +14,9 @@ class ApplicationController < ActionController::Base
   before_filter :ensure_org_url_if_org_user
   before_filter :ensure_account_has_been_activated
   before_filter :browser_is_html5_compliant?
-  before_filter :allow_cross_domain_access
   before_filter :set_asset_debugging
+  before_filter :cors_preflight_check
+  after_filter  :allow_cross_domain_access
   after_filter  :remove_flash_cookie
   after_filter  :add_revision_header
 
@@ -82,11 +83,38 @@ class ApplicationController < ActionController::Base
       (Cartodb.config[:debug_assets].nil? ? true : Cartodb.config[:debug_assets]) if Rails.env.development?
   end
 
+  def cors_preflight_check
+    if request.method == :options && check_cors_headers_for_whitelisted_referer
+      common_cors_headers
+      response.headers['Access-Control-Max-Age'] = '3600'
+    end
+  end
+
   def allow_cross_domain_access
-    unless Rails.env.production? || Rails.env.staging?
+    if !request.headers['origin'].blank? && check_cors_headers_for_whitelisted_referer
+      common_cors_headers
+      response.headers['Access-Control-Allow-Credentials'] = 'true'
+    elsif !Rails.env.production? && !Rails.env.staging?
       response.headers['Access-Control-Allow-Origin'] = '*'
       response.headers['Access-Control-Allow-Methods'] = '*'
     end
+  end
+
+  def common_cors_headers
+    response.headers['Access-Control-Allow-Origin'] = request.headers['origin']
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, DELETE'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+  end
+
+  def check_cors_headers_for_whitelisted_referer
+    referer = request.env["HTTP_REFERER"]
+    origin = request.headers['origin']
+    whitelist_referer = %w{http https}.map {|proto| "#{proto}://#{Cartodb.config[:account_host]}/explore" }
+    whitelist_origin = %w{http https}.map {|proto| "#{proto}://#{Cartodb.config[:account_host]}" }
+    # It seems that Firefox and IExplore don't send the Referer header in the preflight request
+    right_referer = request.method == "OPTIONS" ? true : whitelist_referer.include?(referer)
+    right_origin = whitelist_origin.include?(origin)
+    right_referer && right_origin
   end
 
   def render_403

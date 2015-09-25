@@ -33,7 +33,7 @@ $sEditButtonSize: 50px;
 }
 .DatasetCard-contentFooter {
   @include display-flex();
-  @include justify-content(flex-start);
+  @include justify-content(space-between, justify);
   @include align-items(center);
   @include flex-wrap(nowrap);
 }
@@ -59,6 +59,8 @@ $sEditButtonSize: 50px;
 .DatasetCard-contentBodyDetails--right {
   @include display-flex();
   @include flex-direction(column);
+  @include justify-content(space-between, justify);
+  width: 100%;
 }
 
 // Animation function

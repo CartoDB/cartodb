@@ -17,6 +17,8 @@ namespace :cartodb do
         preview_image = Carto::StaticMapsURLHelper.new.url_for_static_map_without_request(data[:user], 'http' , visualization, 600, 300)
         trending_maps_lib.notify_trending_map(visualization_id, data[:mapviews], preview_image) unless simulation
       end
+
+      trending_maps_lib.send_trending_map_report(trending_maps)
     end
 
   end

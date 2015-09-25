@@ -100,6 +100,8 @@ defaults: &defaults
     generate_every: 86400
   explore_api:
     username: ''
+  reports:
+    mail_to: ''
   varnish_management:
     critical: false
     host: '127.0.0.1'

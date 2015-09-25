@@ -1,5 +1,5 @@
 class ReporterMailer < ActionMailer::Base
-  default from: "cartodb.com <support@cartodb.com>"
+  default from: Cartodb.get_config(:mailer, 'from')
   layout 'mail'
 
   def trending_maps_report(mail_to, trending_visualizations)

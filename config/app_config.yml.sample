@@ -102,6 +102,8 @@ defaults: &defaults
     username: ''
   reports:
     mail_to: ''
+  mailer:
+    from: 'cartodb.com <support@cartodb.com>'
   varnish_management:
     critical: false
     host: '127.0.0.1'

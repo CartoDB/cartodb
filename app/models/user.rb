@@ -1728,7 +1728,7 @@ class User < Sequel::Model
       true
     )
     self.run_queries_in_transaction(
-      self.grant_read_on_schema_queries('cartodb', CartoDB::PUBLIC_DB_USER),
+      grant_read_on_schema_queries('cartodb', CartoDB::PUBLIC_DB_USER),
       true
     )
     self.run_queries_in_transaction(
@@ -1750,7 +1750,7 @@ class User < Sequel::Model
   def set_user_privileges_in_cartodb_schema(db_user = nil)
     self.run_queries_in_transaction(
       (
-        self.grant_read_on_schema_queries('cartodb', db_user) +
+        grant_read_on_schema_queries('cartodb', db_user) +
         self.grant_write_on_cdb_tablemetadata_queries(db_user)
       ),
       true
@@ -1759,7 +1759,7 @@ class User < Sequel::Model
 
   def set_user_privileges_in_public_schema(db_user = nil)
     self.run_queries_in_transaction(
-      self.grant_read_on_schema_queries('public', db_user),
+      grant_read_on_schema_queries('public', db_user),
       true
     )
   end

@@ -121,13 +121,13 @@ $heightTall: 450px;
     top: ($heightTall / 2) - $sSpinner-default;
   }
 }
-@media only screen and (min-width: 321px) and (max-width: 955px)  {
+@media only screen and (min-width: 320px) and (max-width: 955px)  {
   .FavMap .FavMapTitle-inner {
     width: 100%;
     padding: 0 20px;
   }
 }
-@media only screen and (min-width: 321px) and (max-width: 760px)  {
+@media only screen and (min-width: 320px) and (max-width: 760px)  {
   $height: 320px;
   .FavMap {
     height: $height;

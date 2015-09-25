@@ -18,7 +18,7 @@ namespace :cartodb do
         trending_maps_lib.notify_trending_map(visualization_id, data[:mapviews], preview_image) unless simulation
       end
 
-      trending_maps_lib.send_trending_map_report(trending_maps)
+      trending_maps_lib.send_trending_map_report(trending_maps) unless simulation
     end
 
   end

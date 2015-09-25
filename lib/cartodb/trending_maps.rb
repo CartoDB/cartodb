@@ -15,11 +15,22 @@ module CartoDB
         key_parts = key.split(':')
         username = key_parts[1]
         visualization_id = key_parts[4]
-        yesterday_mapviews = stats_manager.get_api_calls_from_redis(username, {from: date, to: date, stat_tag: visualization_id})
+        yesterday_mapviews = stats_manager.get_api_calls_from_redis(
+          username,
+          from: date,
+          to: date,
+          stat_tag: visualization_id
+        )
         total_mapviews = stats_manager.get_total_api_calls_from_redis(username, visualization_id)
         if is_trending_map?(yesterday_mapviews[date_key], total_mapviews)
           visualization = Carto::Visualization.find(visualization_id)
-          trending_maps[visualization_id] = { user: username, user_mail: visualization.user.email, user_public_url: visualization.user.public_url, mapviews: total_mapviews, visualization_name: visualization.name }
+          trending_maps[visualization_id] = {
+            user: username,
+            user_mail: visualization.user.email,
+            user_public_url: visualization.user.public_url,
+            mapviews: total_mapviews,
+            visualization_name: visualization.name
+          }
         end
       end
       trending_maps

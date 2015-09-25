@@ -1668,8 +1668,12 @@ class User < Sequel::Model
     end
   end
 
+  def organization_member_group_role_member_name
+    in_database.fetch("SELECT cartodb.CDB_Organization_Member_Group_Role_Member_Name() as org_member_role;")[:org_member_role][:org_member_role]
+  end
+
   def setup_organization_role_permissions
-    org_member_role = in_database.fetch("SELECT cartodb.CDB_Organization_Member_Group_Role_Member_Name() as org_member_role;")[:org_member_role][:org_member_role]
+    org_member_role = organization_member_group_role_member_name
     set_user_privileges_in_public_schema(org_member_role)
     run_queries_in_transaction(
       grant_connect_on_database_queries(org_member_role), true
@@ -2273,7 +2277,7 @@ TRIGGER
 
   def revoke_permissions_on_cartodb_conf_queries(db_user)
     # TODO: remove the check after extension install (#4924 merge)
-    return if Rails.env.test?
+    return [] if Rails.env.test?
 
     [ "REVOKE ALL ON TABLE cartodb.CDB_CONF FROM \"#{db_user}\"" ]
   end

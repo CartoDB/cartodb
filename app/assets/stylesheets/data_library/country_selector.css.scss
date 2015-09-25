@@ -6,8 +6,8 @@
 // --------------------------------------------------
 
 @mixin country-selector-button($x-pos: center, $y-pos: center) {
-  @include background(image-url('layout/public_data_datasets/country_selector.png') no-repeat $x-pos $y-pos);
-  @include image-2x("layout/public_data_datasets/country_selector@2x.png", 40px, 40px, ($x-pos), ($y-pos));
+  @include background(image-url('layout/data_library/country_selector.png') no-repeat $x-pos $y-pos);
+  @include image-2x("layout/data_library/country_selector@2x.png", 40px, 40px, ($x-pos), ($y-pos));
 }
 
 .CountrySelector {

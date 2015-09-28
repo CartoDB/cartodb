@@ -5,6 +5,7 @@
 * Display custom attribution of layers in the editor and embeds [#5388](https://github.com/CartoDB/cartodb/pull/5388)
 * Adapted Hound configuration to use default .rubocop.yml file so we can have [Rubocop](https://github.com/bbatsov/rubocop) style checks integrated at Sublime Text via [SublimeLinter](http://sublimelinter.readthedocs.org/en/latest/) + [SublimeLinter-rubocop](https://github.com/SublimeLinter/SublimeLinter-rubocop)
 * Migrated `Synchronization` id field to `uuid`
+* Added a rake task to notify trendy maps to the map owner when reach a certain mapviews amount (500, 1000, 2000 and so on). This task takes into account the day before so it should be exectuded daily
 * Fixed negative geocoding quota in georeference modal [#5622](https://github.com/CartoDB/cartodb/pull/5622)
 * Fix for #5477 bug moving users with non-cartodbfied tables.
 

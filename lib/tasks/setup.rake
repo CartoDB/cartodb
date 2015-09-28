@@ -56,9 +56,19 @@ DESC
       user.password_confirmation = ENV['PASSWORD']
       user.username = ENV['SUBDOMAIN']
       user.database_host = ENV['DATABASE_HOST'] || ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
-      user.save
 
-      raise user.errors.inspect if user.new?
+      if !user.errors.empty?
+        puts
+        puts 'There are some problems with the info that you provided to create the new user:'
+        user.errors.full_messages.each do |error|
+          puts "\t> #{error}"
+        end
+        puts
+
+        exit
+      end
+
+      user.save
       puts "User #{user.username} created successfully"
       
       # 10 Gb of quota

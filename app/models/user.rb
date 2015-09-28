@@ -196,10 +196,19 @@ class User < Sequel::Model
 
   def load_common_data(visualizations_api_url)
     CartoDB::Visualization::CommonDataService.new.load_common_data_for_user(self, visualizations_api_url)
+  rescue => e
+    CartoDB.notify_error(
+      "Error loading common data for user",
+      user: inspect,
+      url: visualizations_api_url,
+      error: e.inspect
+    )
   end
 
   def delete_common_data
     CartoDB::Visualization::CommonDataService.new.delete_common_data_for_user(self)
+  rescue => e
+    CartoDB.notify_error("Error deleting common data for user", user: inspect, error: e.inspect)
   end
 
   def after_save
@@ -568,7 +577,10 @@ class User < Sequel::Model
   end
 
   def password=(value)
-    return if !value.nil? && value.length < MIN_PASSWORD_LENGTH
+    if !value.nil? && value.length < MIN_PASSWORD_LENGTH
+      errors.add(:password, "must be at least #{MIN_PASSWORD_LENGTH} characters long")
+      return
+    end
 
     @password = value
     self.salt = new?? self.class.make_token : User.filter(:id => self.id).select(:salt).first.salt

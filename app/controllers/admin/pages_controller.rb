@@ -236,11 +236,7 @@ class Admin::PagesController < Admin::AdminController
     @page_description = description
 
     respond_to do |format|
-      if @user.has_feature_flag?('data_library')
-        format.html { render 'public_data_datasets', layout: 'public_data_dashboard' }
-      else
-        format.html { render 'public_datasets', layout: 'public_dashboard' }
-      end
+      format.html { render 'public_datasets', layout: 'public_dashboard' }
     end
   end
 

@@ -86,7 +86,7 @@ namespace :cartodb do
 
       data = CartoDB::Visualization::VizJSON.new(
         Carto::Api::VisualizationVizJSONAdapter.new(visualization, $tables_metadata), vizjson_options, Cartodb.config)
-                                            .to_export_poro
+                                            .to_export_poro(1)
                                             .to_json
 
       file = File.open(args[:export_file], "w")
@@ -106,7 +106,7 @@ namespace :cartodb do
 
       # TODO: support partial restores
       unless Carto::Visualization.where(id: dump_data["id"]).first.nil?
-        raise "Visualization #{dump_data["id"]} already exists"
+        raise "Visualization #{dump_data['id']} already exists"
       end
 
       user = ::User.where(id: dump_data["owner"]["id"]).first

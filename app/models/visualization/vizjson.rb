@@ -23,10 +23,9 @@ module CartoDB
       end
 
       # TODO: move to exporter class
-      def to_export_poro
+      def to_export_poro(version = 1)
         {
           id:             visualization.id,
-          owner:          { id: @user.id },
           version:        VIZJSON_VERSION,
           title:          visualization.qualified_name(@user),
           description:    visualization.description_html_safe,
@@ -38,7 +37,10 @@ module CartoDB
           center:         map.center,
           zoom:           map.zoom,
           layers:         layers_for(visualization),
-          overlays:       overlays_for(visualization)
+          overlays:       overlays_for(visualization),
+          # Fields specific for this export
+          export_version: version,
+          owner:          { id: @user.id }
         }
       end
 

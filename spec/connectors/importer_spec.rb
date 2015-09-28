@@ -201,14 +201,14 @@ describe CartoDB::Connector::Importer do
     data_import.success.should_not eq true
   end
 
-  it 'should be able to handle wrong type guessing' do 
+  it 'should be able to handle wrong type guessing' do
     filepath = "#{Rails.root}/spec/support/data/wrong_the_geom_guessing.csv"
   
     data_import = DataImport.create(
-      :user_id       => @user.id,
-      :data_source   => filepath,
-      :updated_at    => Time.now,
-      :append        => false
+      user_id:      @user.id,
+      data_source:  filepath,
+      updated_at:   Time.now,
+      append:       false
     )
     data_import.values[:data_source] = filepath
 

@@ -45,15 +45,15 @@ module CartoDB
 
       CONTENT_TYPES_MAPPING = [
         {
-          content_types: ['text/plain', 'text/plain;charset=utf-8'],
+          content_types: ['text/plain'],
           extensions: ['txt']
         },
         {
-          content_types: ['text/csv', 'text/csv;charset=utf-8'],
+          content_types: ['text/csv'],
           extensions: ['csv']
         },
         {
-          content_types: ['application/vnd.ms-excel', 'application/vnd.ms-excel;charset=utf-8'],
+          content_types: ['application/vnd.ms-excel'],
           extensions: ['xls']
         },
         {
@@ -286,7 +286,7 @@ module CartoDB
       end
 
       def extensions_by_content_type(content_type)
-        downcased_content_type = content_type.downcase.gsub('; ', ';')
+        downcased_content_type = content_type.downcase.gsub('charset=utf-8', '')
         CONTENT_TYPES_MAPPING.each do |item|
           if item[:content_types].include?(downcased_content_type)
             return item[:extensions]

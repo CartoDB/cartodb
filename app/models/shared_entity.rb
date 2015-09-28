@@ -15,6 +15,7 @@ module CartoDB
 
     RECIPIENT_TYPE_USER         = 'user'
     RECIPIENT_TYPE_ORGANIZATION = 'org'
+    RECIPIENT_TYPE_GROUP = 'group'
 
     def validate
       super

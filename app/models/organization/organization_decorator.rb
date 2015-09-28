@@ -1,3 +1,5 @@
+require_relative '../../controllers/carto/api/group_presenter'
+
 module CartoDB
   module OrganizationDecorator
     def data(options = {})
@@ -11,7 +13,8 @@ module CartoDB
         owner: {
           id:         self.owner ? self.owner.id : nil,
           username:   self.owner ? self.owner.username : nil,
-          avatar_url: self.owner ? self.owner.avatar : nil
+          avatar_url: self.owner ? self.owner.avatar : nil,
+          groups:     self.owner && self.owner.groups ? self.owner.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : []
         },
         quota_in_bytes:  self.quota_in_bytes,
         api_calls:       self.get_api_calls(from: self.owner.present? ? self.owner.last_billing_cycle : nil, to: Date.today),

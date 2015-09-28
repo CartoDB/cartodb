@@ -2,6 +2,8 @@
 
 require_relative '../spec_helper'
 require_relative '../support/factories/tables'
+require_relative './database_configuration_contexts'
+require_relative './organizations_contexts'
 
 include CartoDB
 
@@ -9,15 +11,11 @@ def app
   CartoDB::Application.new
 end
 
-def bypass_named_maps
-  CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
-  CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
-end
-
 def random_username
   "user#{rand(10000)}"
 end
 
+# requires include Warden::Test::Helpers
 def login(user)
   login_as(user, scope: user.username)
   host! "#{user.username}.localhost.lan"
@@ -27,29 +25,30 @@ def create_random_table(user, name = "viz#{rand(999)}")
   create_table( { user_id: user.id, name: name } )
 end
 
-shared_context 'database configuration' do
+def create_table_with_options(user, headers = { 'CONTENT_TYPE'  => 'application/json' }, options = {})
+  privacy = options.fetch(:privacy, 1)
 
-  before(:each) do
-    db_config   = Rails.configuration.database_configuration[Rails.env]
-    @db         = Sequel.postgres(
-                    host:     db_config.fetch('host'),
-                    port:     db_config.fetch('port'),
-                    database: db_config.fetch('database'),
-                    username: db_config.fetch('username')
-                  )
-    @repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
-    CartoDB::Visualization.repository = @repository
+  seed    = rand(9999)
+  payload = {
+    name:         "table #{seed}",
+    description:  "table #{seed} description"
+  }
+
+  table_attributes = nil
+  post_json api_v1_tables_create_url(user_domain: user.username, api_key: user.api_key), payload.to_json, headers do |r|
+    table_attributes  = r.body.stringify_keys
+    table_id          = table_attributes.fetch('id')
+
+    put api_v1_tables_update_url(id: table_id, user_domain: user.username, api_key: user.api_key),
+        { privacy: privacy }.to_json, headers
   end
 
+  table_attributes
 end
 
 shared_context 'organization with users helper' do
   include CacheHelper
   include_context 'database configuration'
-
-  before(:each) do
-    bypass_named_maps
-  end
 
   def test_organization
     organization = Organization.new

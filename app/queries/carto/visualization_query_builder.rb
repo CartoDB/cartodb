@@ -306,7 +306,11 @@ class Carto::VisualizationQueryBuilder
   end
 
   def recipient_ids(user)
-    [ user.id, user.organization_id ].compact
+    [ user.id, user.organization_id ].compact + groups_ids(user)
+  end
+
+  def groups_ids(user)
+    user.groups.nil? ? [] : user.groups.collect(&:id)
   end
 
 end

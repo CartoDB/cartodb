@@ -1463,7 +1463,9 @@ describe Table do
       table = Table.new(user_table: UserTable[data_import.table_id])
       table.should_not be_nil, "Import failure: #{data_import.log.inspect}"
 
-      table.geometry_types.should == ['ST_Point']
+      # NOTE: since we use ogr2ogr PROMOTE_TO_MULTI, this will remain this way until we
+      # add a smarter usage of that option.
+      table.geometry_types.should == ['ST_MultiPoint']
 
       # Now remove the_geom and should not break
       $user_1.in_database.run(%Q{

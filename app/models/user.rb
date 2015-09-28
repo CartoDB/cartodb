@@ -46,6 +46,9 @@ class User < Sequel::Model
 
   one_to_many :feature_flags_user
 
+  plugin :many_through_many
+  many_through_many :groups, [[:users_groups, :user_id, :group_id]]
+
   # Sequel setup & plugins
   plugin :association_dependencies, :client_application => :destroy, :synchronization_oauths => :destroy, :feature_flags_user => :destroy
   plugin :validation_helpers
@@ -577,7 +580,10 @@ class User < Sequel::Model
   end
 
   def password=(value)
-    return if !value.nil? && value.length < MIN_PASSWORD_LENGTH
+    if !value.nil? && value.length < MIN_PASSWORD_LENGTH
+      errors.add(:password, "must be at least #{MIN_PASSWORD_LENGTH} characters long")
+      return
+    end
 
     @password = value
     self.salt = new?? self.class.make_token : User.filter(:id => self.id).select(:salt).first.salt
@@ -1643,12 +1649,31 @@ class User < Sequel::Model
 
     # INFO: organization privileges are set for org_member_role, which is assigned to each org user
     if organization_owner?
-      setup_organization_role_permissions
+      setup_organization_owner
     end
   end
 
+  def setup_organization_owner
+    setup_organization_role_permissions
+    setup_owner_permissions
+    configure_extension_org_metadata_api_endpoint
+  end
+
+  def setup_owner_permissions
+    # TODO: remove the check after extension install
+    return if Rails.env.test?
+
+    in_database(as: :superuser) do |database|
+      database.run(%{ SELECT cartodb.CDB_Organization_AddAdmin('#{username}') })
+    end
+  end
+
+  def organization_member_group_role_member_name
+    in_database.fetch("SELECT cartodb.CDB_Organization_Member_Group_Role_Member_Name() as org_member_role;")[:org_member_role][:org_member_role]
+  end
+
   def setup_organization_role_permissions
-    org_member_role = in_database.fetch("SELECT cartodb.CDB_Organization_Member_Group_Role_Member_Name() as org_member_role;")[:org_member_role][:org_member_role]
+    org_member_role = organization_member_group_role_member_name
     set_user_privileges_in_public_schema(org_member_role)
     run_queries_in_transaction(
       grant_connect_on_database_queries(org_member_role), true
@@ -1703,7 +1728,7 @@ class User < Sequel::Model
       true
     )
     self.run_queries_in_transaction(
-      self.grant_read_on_schema_queries('cartodb', CartoDB::PUBLIC_DB_USER),
+      grant_read_on_schema_queries('cartodb', CartoDB::PUBLIC_DB_USER),
       true
     )
     self.run_queries_in_transaction(
@@ -1725,7 +1750,7 @@ class User < Sequel::Model
   def set_user_privileges_in_cartodb_schema(db_user = nil)
     self.run_queries_in_transaction(
       (
-        self.grant_read_on_schema_queries('cartodb', db_user) +
+        grant_read_on_schema_queries('cartodb', db_user) +
         self.grant_write_on_cdb_tablemetadata_queries(db_user)
       ),
       true
@@ -1734,7 +1759,7 @@ class User < Sequel::Model
 
   def set_user_privileges_in_public_schema(db_user = nil)
     self.run_queries_in_transaction(
-      self.grant_read_on_schema_queries('public', db_user),
+      grant_read_on_schema_queries('public', db_user),
       true
     )
   end
@@ -2128,7 +2153,7 @@ TRIGGER
   # Upgrade the cartodb postgresql extension
   def upgrade_cartodb_postgres_extension(statement_timeout=nil, cdb_extension_target_version=nil)
     if cdb_extension_target_version.nil?
-      cdb_extension_target_version = '0.10.1'
+      cdb_extension_target_version = '0.11.0'
     end
 
     in_database({
@@ -2237,13 +2262,11 @@ TRIGGER
     ]
   end
 
-  def grant_read_on_schema_queries(schema, db_user = nil)
-    granted_user = db_user.nil? ? self.database_username : db_user
-    [
-      "GRANT USAGE ON SCHEMA \"#{schema}\" TO \"#{granted_user}\"",
-      "GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" TO \"#{granted_user}\"",
-      "GRANT SELECT ON ALL TABLES IN SCHEMA \"#{schema}\" TO \"#{granted_user}\""
-    ]
+  def revoke_permissions_on_cartodb_conf_queries(db_user)
+    # TODO: remove the check after extension install (#4924 merge)
+    return [] if Rails.env.test?
+
+    [ "REVOKE ALL ON TABLE cartodb.CDB_CONF FROM \"#{db_user}\"" ]
   end
 
   def grant_write_on_cdb_tablemetadata_queries(db_user = nil)
@@ -2603,7 +2626,45 @@ TRIGGER
     update api_key: User.make_token
   end
 
+  def configure_extension_org_metadata_api_endpoint
+    # TODO: remove the check after extension install (#4924 merge)
+    return if Rails.env.test?
+
+    config = Cartodb.config[:org_metadata_api]
+    host = config['host']
+    port = config['port']
+    username = config['username']
+    password = config['password']
+    timeout = config.fetch('timeout', 10)
+
+    if host.present? && port.present? && username.present? && password.present?
+      conf_sql = %{
+        SELECT cartodb.CDB_Conf_SetConf('groups_api',
+          '{ \"host\": \"#{host}\", \"port\": #{port}, \"timeout\": #{timeout}, \"username\": \"#{username}\", \"password\": \"#{password}\"}'::json
+        )
+      }
+      in_database(as: :superuser) do |database|
+        database.fetch(conf_sql).first
+      end
+    else
+      CartoDB.notify_debug("org_metadata_api configuration missing", user_id: id, config: config)
+    end
+  end
+
   private
+
+  def grant_read_on_schema_queries(schema, db_user = nil)
+    granted_user = db_user.nil? ? self.database_username : db_user
+
+    queries = [
+      "GRANT USAGE ON SCHEMA \"#{schema}\" TO \"#{granted_user}\"",
+      "GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" TO \"#{granted_user}\"",
+      "GRANT SELECT ON ALL TABLES IN SCHEMA \"#{schema}\" TO \"#{granted_user}\""
+    ]
+    queries.concat(revoke_permissions_on_cartodb_conf_queries(granted_user)) if schema == 'cartodb'
+
+    queries
+  end
 
   def quota_dates(options)
     date_to = (options[:to] ? options[:to].to_date : Date.today)

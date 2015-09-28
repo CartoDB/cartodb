@@ -1,4 +1,6 @@
 # encoding: utf-8
+
+require_relative '../controllers/carto/api/group_presenter'
 require_relative './organization/organization_decorator'
 require_relative './permission'
 
@@ -32,6 +34,7 @@ class Organization < Sequel::Model
   # @param map_view_block_price Integer
 
   one_to_many :users
+  one_to_many :groups
   many_to_one :owner, class_name: 'User', key: 'owner_id'
 
   plugin :validation_helpers
@@ -71,9 +74,14 @@ class Organization < Sequel::Model
     raise errors.join('; ') unless valid?
   end
 
+  def before_destroy
+    destroy_groups
+  end
+
   # INFO: replacement for destroy because destroying owner triggers
   # organization destroy
   def destroy_cascade
+    destroy_groups
     destroy_permissions
     destroy_non_owner_users
     if self.owner
@@ -160,7 +168,8 @@ class Organization < Sequel::Model
         :id         => self.owner ? self.owner.id : nil,
         :username   => self.owner ? self.owner.username : nil,
         :avatar_url => self.owner ? self.owner.avatar_url : nil,
-        :email      => self.owner ? self.owner.email : nil
+        :email      => self.owner ? self.owner.email : nil,
+        :groups     => self.owner && self.owner.groups ? self.owner.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : []
       },
       :quota_in_bytes           => self.quota_in_bytes,
       :geocoding_quota          => self.geocoding_quota,
@@ -235,7 +244,54 @@ class Organization < Sequel::Model
     ::Resque.enqueue(::Resque::OrganizationJobs::Mail::DiskQuotaLimitReached, id) if disk_quota_limit_reached?
   end
 
+  def database_name
+    owner ? owner.database_name : nil
+  end
+
+  def revoke_cdb_conf_access
+    return unless owner
+
+    errors = []
+
+    roles = users.map(&:database_username)
+    begin
+      roles << owner.organization_member_group_role_member_name
+    rescue => e
+      errors << "WARN: Error fetching org member role (does #{name} has that role?)"
+    end
+    roles << CartoDB::PUBLIC_DB_USER
+
+    queries = []
+    roles.map do |db_role|
+      queries.concat(owner.revoke_permissions_on_cartodb_conf_queries(db_role))
+    end
+
+    queries.map do |query|
+      owner.in_database(as: :superuser) do |database|
+        begin
+          database.run(query)
+        rescue => e
+          # We can find organizations not yet upgraded for any reason or missing roles
+          errors << e.message
+        end
+      end
+    end
+
+    errors
+  rescue => e
+    # For broken organizations
+    [ "FATAL ERROR for #{name}: #{e.message}" ]
+  end
+
   private
+
+  def destroy_groups
+    return unless groups
+
+    groups.map { |g| Carto::Group.find(g.id).destroy_group_with_extension }
+
+    reload
+  end
 
   # Returns true if disk quota won't allow new signups with existing defaults
   def disk_quota_limit_reached?

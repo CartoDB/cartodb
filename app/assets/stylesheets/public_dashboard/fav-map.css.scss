@@ -15,6 +15,7 @@ $heightTall: 450px;
   position: relative;
   height: $height / 2;
   background: #333 image-url('layout/noise.png') repeat 0 0;
+  overflow: hidden;
 }
 .FavMap:before {
   @include background-gradient(rgba(#000000, 0), rgba(#000000, 0.1));
@@ -120,13 +121,13 @@ $heightTall: 450px;
     top: ($heightTall / 2) - $sSpinner-default;
   }
 }
-@media only screen and (min-width: 321px) and (max-width: 955px)  {
+@media only screen and (min-width: 320px) and (max-width: 955px)  {
   .FavMap .FavMapTitle-inner {
     width: 100%;
     padding: 0 20px;
   }
 }
-@media only screen and (min-width: 321px) and (max-width: 760px)  {
+@media only screen and (min-width: 320px) and (max-width: 760px)  {
   $height: 320px;
   .FavMap {
     height: $height;
@@ -141,8 +142,8 @@ $heightTall: 450px;
     top: ($height / 2) - $sSpinner-default;
   }
 }
-@media only screen 
-and (min-device-width: 320px) 
+@media only screen
+and (min-device-width: 320px)
 and (max-device-width: 480px)
 and (-webkit-min-device-pixel-ratio: 2) {
   $height: 300px;

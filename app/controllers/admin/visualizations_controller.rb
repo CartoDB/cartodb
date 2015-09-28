@@ -7,7 +7,7 @@ require_relative '../carto/admin/visualization_public_map_adapter'
 require_relative '../../helpers/embed_redis_cache'
 require_dependency 'static_maps_url_helper'
 
-class Admin::VisualizationsController < ApplicationController
+class Admin::VisualizationsController < Admin::AdminController
 
   include CartoDB
 
@@ -17,7 +17,7 @@ class Admin::VisualizationsController < ApplicationController
   ssl_allowed :embed_map, :public_map, :show_protected_embed_map, :public_table,
               :show_organization_public_map, :show_organization_embed_map,
               :embed_protected, :public_map_protected, :embed_forbidden, :track_embed
-  ssl_required :index, :show, :protected_embed_map, :protected_public_map, :show_protected_public_map
+  ssl_required :index, :show, :protected_public_map, :show_protected_public_map
   before_filter :login_required, only: [:index]
   before_filter :table_and_schema_from_params, only: [:show, :public_table, :public_map, :show_protected_public_map,
                                                       :show_protected_embed_map, :embed_map]
@@ -34,6 +34,10 @@ class Admin::VisualizationsController < ApplicationController
   skip_before_filter :browser_is_html5_compliant?, only: [:public_map, :embed_map, :track_embed,
                                                           :show_protected_embed_map, :show_protected_public_map]
   skip_before_filter :verify_authenticity_token, only: [:show_protected_public_map, :show_protected_embed_map]
+
+  skip_before_filter :x_frame_options_deny, only: [:embed_forbidden, :embed_map, :embed_protected,
+                                                   :show_organization_embed_map, :show_protected_embed_map,
+                                                   :track_embed]
 
   def index
     @first_time    = !current_user.dashboard_viewed?
@@ -284,7 +288,7 @@ class Admin::VisualizationsController < ApplicationController
     @hide_logo = is_logo_hidden(@visualization, params)
 
     respond_to do |format|
-      format.html { render 'public_map' }
+      format.html { render 'public_map', layout: 'application_public_visualization_layout' }
     end
   end
 

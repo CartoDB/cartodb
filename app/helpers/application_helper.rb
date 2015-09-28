@@ -137,6 +137,10 @@ module ApplicationHelper
       config[:cdn_url] = Cartodb.config[:cdn_url]
     end
 
+    if Cartodb.config[:explore_api].present?
+      config[:explore_user] = Cartodb.config[:explore_api]['username']
+    end
+
     config.to_json
   end
 

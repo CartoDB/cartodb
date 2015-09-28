@@ -262,8 +262,8 @@ class Organization < Sequel::Model
     roles << CartoDB::PUBLIC_DB_USER
 
     queries = []
-    roles.map do |db_user|
-      queries.concat(owner.revoke_permissions_on_cartodb_conf_queries(db_user))
+    roles.map do |db_role|
+      queries.concat(owner.revoke_permissions_on_cartodb_conf_queries(db_role))
     end
 
     queries.map do |query|

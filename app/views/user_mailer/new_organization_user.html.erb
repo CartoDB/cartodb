@@ -11,7 +11,7 @@
           </tr>
 
           <tr>
-            <td align="left" style="padding: 20px 50px 40px 50px; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;">If you have not received your password yet, contact with your administrator at <strong><%= @owner.username %></strong>.</td>
+            <td align="left" style="padding: 20px 50px 40px 50px; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;">If you have not received your password, contact your administrator at <strong><%= @owner.username %></strong>.</td>
           </tr>
         <% else %>
           <tr>
@@ -31,7 +31,7 @@
             <table cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #F2FAE8; border-bottom: 1px solid #dddddd; width: 100% !important;">
               <tr>
                 <td align="left" style="padding: 40px 50px 40px 50px; font-family: Helvetica, Arial, sans-serif;">
-                  <p style="margin: 0; font-size: 16px; line-height: 25px; color: #666666;">You have been invited to CartoDB as part of the <strong><%= @organization.name %></strong> organization. From now on you will be able to enter to your CartoDB dashboard by login in with your username (<%= @user.username %>) and the password <%= @user_needs_password ? 'provided by your administrator' : 'you typed' %><%= ' as soon as you activate your account' unless @enable_account_link.nil? %>.</p>
+                  <p style="margin: 0; font-size: 16px; line-height: 25px; color: #666666;">You have been invited to CartoDB as part of the <strong><%= @organization.name %></strong> organization. F Please login to your dashboard with your organization username (<%= @user.username %>) and the password <%= @user_needs_password ? 'provided by your administrator' : 'you entered' %><%= ' as soon as you activate your account' unless @enable_account_link.nil? %>.</p>
                 </td>
               </tr>
             </table>

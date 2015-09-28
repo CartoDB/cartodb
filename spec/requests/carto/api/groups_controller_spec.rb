@@ -181,7 +181,7 @@ describe Carto::Api::GroupsController do
 
     it '#create triggers group creation' do
       display_name = 'a new group'
-      name = 'a_new_group'
+      name = 'a new group'
 
       # Replacement for extension interaction
       fake_database_role = 'fake_database_role'
@@ -207,8 +207,8 @@ describe Carto::Api::GroupsController do
 
     it '#update triggers group renaming' do
       group = @carto_organization.groups.first
-      new_display_name = 'A Group Renamed'
-      expected_new_name = 'A_Group_Renamed'
+      new_display_name = 'A Group %Renamed'
+      expected_new_name = 'A Group _Renamed'
 
       Carto::Group.expects(:rename_group_extension_query).with(anything, group.name, expected_new_name)
 

@@ -213,6 +213,7 @@ describe CartoDB::Permission do
       # Don't check/handle DB permissions
       Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
       Permission.any_instance.stubs(:grant_db_permission).returns(nil)
+      Carto::Group.any_instance.stubs(:grant_db_permission).returns(nil)
       # No need to check for real DB visualizations
       vis_table_mock = mock
       vis_table_mock.stubs(:add_read_permission)
@@ -233,12 +234,15 @@ describe CartoDB::Permission do
       vis_entity_mock.stubs(:name).returns("foobar_visualization")
       Permission.any_instance.stubs(:entity).returns(vis_entity_mock)
 
+      organization = Carto::Organization.find(FactoryGirl.create(:organization).id)
+      group = FactoryGirl.create(:random_group, organization: organization)
+
       acl_initial = []
       acl_with_data = [
         {
           type: Permission::TYPE_GROUP,
           entity: {
-            id: UUIDTools::UUID.timestamp_create.to_s,
+            id: group.id,
             username: 'a_group'
           },
           access: Permission::ACCESS_READONLY

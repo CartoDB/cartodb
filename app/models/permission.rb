@@ -200,6 +200,9 @@ module CartoDB
     end
 
     def set_group_permission(group, access)
+      # Don't update group for explicit handling, since it already comes from db
+      @update_db_group_permission = false
+
       granted_access = granted_access_for_group(group)
       if granted_access == access
         raise ModelAlreadyExistsError.new("Group #{group.name} already has #{access} access")
@@ -226,6 +229,9 @@ module CartoDB
     end
 
     def remove_group_permission(group)
+      # Don't update group for explicit handling, since it already comes from db
+      @update_db_group_permission = false
+
       set_group_permission(group, ACCESS_NONE)
     end
 
@@ -460,6 +466,11 @@ module CartoDB
             entity_id:      entity_id,
             entity_type:    type_for_shared_entity(entity_type)
         ).save
+
+        # update_db_group_permission check is needed to avoid updating db requests
+        if e.table? && @update_db_group_permission != false
+          Carto::Group.find(group[:id]).grant_db_permission(e.table, group[:access])
+        end
       end
 
       if e.table? and (org or users.any?)
@@ -519,6 +530,7 @@ module CartoDB
     def revoke_previous_permissions(entity)
       users = relevant_user_acl_entries(@old_acl.nil? ? [] : @old_acl)
       org = relevant_org_acl_entry(@old_acl.nil? ? [] : @old_acl)
+      groups = relevant_groups_acl_entries(@old_acl.nil? ? [] : @old_acl)
       case entity.class.name
         when CartoDB::Visualization::Member.to_s
           if entity.table
@@ -528,6 +540,12 @@ module CartoDB
             users.each { |user|
               entity.table.remove_access(User.where(id: user[:id]).first)
             }
+            # update_db_group_permission check is needed to avoid updating db requests
+            if @update_db_group_permission != false
+              groups.each { |group|
+                Carto::Group.find(group[:id]).grant_db_permission(entity.table, ACCESS_NONE)
+              }
+            end
             check_related_visualizations(entity.table)
           end
         else

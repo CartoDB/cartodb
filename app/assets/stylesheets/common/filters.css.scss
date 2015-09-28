@@ -82,6 +82,9 @@
     margin-left: 10px;
   }
 }
+.Filters-group.is-hidden {
+  display: none;
+}
 .Filters-typeItem {
   position:relative;
   height:80px;

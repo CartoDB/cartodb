@@ -7,7 +7,6 @@ module Carto
 
     SERVICE_VERSION = 1
 
-
     def export(visualization_id)
       visualization = Carto::Visualization.where(id: visualization_id).first
       raise "Visualization with id #{visualization_id} not found" unless visualization
@@ -50,31 +49,14 @@ module Carto
       user = ::User.where(id: dump_data["owner"]["id"]).first
 
       # TODO: Import base layer instead of using default one if present
-      base_layer = CartoDB::Factories::LayerFactory.get_default_base_layer(user)
-      map = CartoDB::Factories::MapFactory.get_map(base_layer, user.id)
-      map.add_layer(base_layer)
+      map, base_layer = create_map_and_base_layer(user)
 
-      dump_data["layers"].select { |layer| layer["type"] == "layergroup" }.each do |layergroup|
-        layergroup["options"]["layer_definition"]["layers"].each do |layer|
-          # TODO: new factory method to "get_data_layer"
-          data_layer = CartoDB::Factories::LayerFactory.get_default_data_layer(layer["options"]["table_name"], user)
-          map.add_layer(data_layer)
-        end
-      end
-
-      dump_data["layers"].select { |layer| ::Layer::DATA_LAYER_KINDS.include?(layer["type"]) }.each do |layer|
-        # TODO: new factory method to "get_data_layer"
-        data_layer = CartoDB::Factories::LayerFactory.get_default_data_layer(layer["options"]["table_name"], user)
-        map.add_layer(data_layer)
-      end
+      create_data_layers(user, map, dump_data)
 
       # TODO: Import labels layer instead of using default one if present
-      if base_layer.supports_labels_layer?
-        labels_layer = CartoDB::Factories::LayerFactory.get_default_labels_layer(base_layer)
-        map.add_layer(labels_layer)
-      end
+      create_labels_layer(map, base_layer) if base_layer.supports_labels_layer?
 
-      visualization = CartoDB::Visualization::Member.new(
+      create_visualization(
         id: dump_data["id"],
         name: dump_data["title"],
         description: dump_data["description"],
@@ -85,9 +67,47 @@ module Carto
         kind: CartoDB::Visualization::Member::KIND_GEOM
       )
 
-      visualization.store
-
       true
     end
+
+    private
+
+    def create_map_and_base_layer(user)
+      base_layer = CartoDB::Factories::LayerFactory.get_default_base_layer(user)
+      map = CartoDB::Factories::MapFactory.get_map(base_layer, user.id)
+      map.add_layer(base_layer)
+      [map, base_layer]
+    end
+
+    def create_labels_layer(map, base_layer)
+      labels_layer = CartoDB::Factories::LayerFactory.get_default_labels_layer(base_layer)
+      map.add_layer(labels_layer)
+      labels_layer
+    end
+
+    def create_data_layer(user, map, layer_data)
+      data_layer = CartoDB::Factories::LayerFactory.get_default_data_layer(layer_data["options"]["table_name"], user)
+      map.add_layer(data_layer)
+      data_layer
+    end
+
+    def create_data_layers(user, map, exported_data)
+      exported_data["layers"].select { |layer| layer["type"] == "layergroup" }.each do |layergroup|
+        layergroup["options"]["layer_definition"]["layers"].each do |layer|
+          # TODO: new factory method to "get_data_layer"
+          create_data_layer(user, map, layer)
+        end
+      end
+      exported_data["layers"].select { |layer| ::Layer::DATA_LAYER_KINDS.include?(layer["type"]) }.each do |layer|
+        # TODO: new factory method to "get_data_layer"
+        create_data_layer(user, map, layer)
+      end
+    end
+
+    def create_visualization(attributes)
+      visualization = CartoDB::Visualization::Member.new(attributes)
+      visualization.store
+    end
+
   end
 end

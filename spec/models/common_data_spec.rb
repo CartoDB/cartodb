@@ -771,12 +771,12 @@ describe CommonData do
            "map_id":null,
            "active_layer_id":null,
            "type":"remote",
-           "tags":[  
-              "Building footprints"
+           "tags":[
+              "Building footprints" 
            ],
            "description":"MapPLUTO tax lot data for New York.",
            "privacy":"PUBLIC",
-           "stats":{  
+           "stats":{
               "2015-08-24":0,
               "2015-08-25":0,
               "2015-08-26":0,
@@ -810,9 +810,9 @@ describe CommonData do
            },
            "created_at":"2015-08-31T08:13:42+00:00",
            "updated_at":"2015-08-31T08:13:42+00:00",
-           "permission":{  
+           "permission":{
               "id":"2f2d73c9-d60e-4eb5-8031-be7059878d4b",
-              "owner":{  
+              "owner":{
                     "id": "beacfd17-418e-4e71-b307 -95b5c96105dc",
                     "username": "common-data",
                     "email": "mario.defrutos+30@cartodb.com",
@@ -821,7 +821,7 @@ describe CommonData do
                     "quota_in_bytes": 262144000,
                     "db_si ze_in_bytes": 2387968
               },
-              "entity":{  
+              "entity":{
                  "id":"31636cc4-4fb8-11e5-98ec-0e8dde98a187",
                  "type":"vis"
               },
@@ -839,11 +839,11 @@ describe CommonData do
            "likes":0,
            "prev_id":null,
            "next_id":null,
-           "transition_options":{  
+           "transition_options":{
                 "time": 0
            },
            "active_child":null,
-           "table":{  
+           "table":{
                 "id": "36612fa1-1eb1-4935-a181-5edbbafe3ce7",
                 "name": "public.nycpluto_all",
                  "permission": {

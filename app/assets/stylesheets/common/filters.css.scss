@@ -13,6 +13,14 @@
   background: transparent;
   z-index: 10;
 }
+.Filters--thin {
+  .Filters-row {
+    height: 60px;
+  }
+  .Filters-separator {
+    top: 60px;
+  }
+}
 .Filters.is-relative {
   position: relative;
 }

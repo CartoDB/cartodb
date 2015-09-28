@@ -288,7 +288,7 @@ class Admin::VisualizationsController < Admin::AdminController
     @hide_logo = is_logo_hidden(@visualization, params)
 
     respond_to do |format|
-      format.html { render 'public_map' }
+      format.html { render 'public_map', layout: 'application_public_visualization_layout' }
     end
   end
 

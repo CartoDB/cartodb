@@ -200,7 +200,7 @@ module CartoDB
     end
 
     def set_group_permission(group, access)
-      # Don't update group for explicit handling, since it already comes from db
+      # You only want to switch it off when request is a permission request coming from database
       @update_db_group_permission = false
 
       granted_access = granted_access_for_group(group)
@@ -229,7 +229,7 @@ module CartoDB
     end
 
     def remove_group_permission(group)
-      # Don't update group for explicit handling, since it already comes from db
+      # You only want to switch it off when request is a permission request coming from database
       @update_db_group_permission = false
 
       set_group_permission(group, ACCESS_NONE)
@@ -467,7 +467,7 @@ module CartoDB
             entity_type:    type_for_shared_entity(entity_type)
         ).save
 
-        # update_db_group_permission check is needed to avoid updating db requests
+        # You only want to switch it off when request is a permission request coming from database
         if e.table? && @update_db_group_permission != false
           Carto::Group.find(group[:id]).grant_db_permission(e.table, group[:access])
         end

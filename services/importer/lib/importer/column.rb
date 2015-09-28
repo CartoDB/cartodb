@@ -222,7 +222,7 @@ module CartoDB
         @records_with_data ||= db[%Q{
           SELECT #{column_name} FROM "#{schema}"."#{table_name}"
           WHERE #{column_name} IS NOT NULL
-          AND #{column_name} != ''
+          AND #{column_name}::text != ''
           LIMIT 1
         }]
       end

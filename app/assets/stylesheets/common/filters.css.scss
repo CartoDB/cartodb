@@ -97,12 +97,12 @@
   min-width: 65px;
 }
 .Filters-typeItem--searchField {
-  margin-right: 0;
   @include flex-grow(1);
+  margin-right: 0;
 }
 .Filters-typeItem--moreMargins {
-  margin-left: 15px;
   margin-right: 15px;
+  margin-left: 15px;
 }
 
 .Filters-searchLink {

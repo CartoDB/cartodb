@@ -3,8 +3,7 @@
 require 'active_record'
 
 module Carto
-  module Visualization
-    class Backup < ActiveRecord::Base
+  class VisualizationBackup < ActiveRecord::Base
 
       # @param String username
       # @param Uuid visualization
@@ -13,6 +12,5 @@ module Carto
 
       validates :username, :visualization, :export_vizjson, presence: true
 
-    end
   end
 end

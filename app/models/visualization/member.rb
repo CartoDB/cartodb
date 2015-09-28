@@ -249,7 +249,14 @@ module CartoDB
         self
       end
 
-      def delete(from_table_deletion=false)
+      def delete(from_table_deletion = false)
+        begin
+          Carto::VisualizationsExportService.new.export(id)
+        rescue => exception
+          # Don't break deletion flow
+          CartoDB.notify_exception(exception, user: user, visualization_id: id)
+        end
+
           # Named map must be deleted before the map, or we lose the reference to it
         begin
           named_map = get_named_map

@@ -66,91 +66,24 @@ namespace :cartodb do
 
     desc "Exports/Backups a visualization"
     task :export_user_visualization, [:vis_id] => :environment do |_, args|
-      require_relative "../../app/controllers/carto/api/visualization_vizjson_adapter"
-
-      visualization = Carto::Visualization.where(id: args[:vis_id]).first
-      raise "Visualization with id #{args[:vis_id]} not found" unless visualization
-
-      vizjson_options = {
-        full: true,
-        user_name: visualization.user.username,
-        user_api_key: visualization.user.api_key,
-        user: visualization.user,
-        viewer_user: visualization.user,
-        export: true
-      }
+      vis_export_service = Carto::VisualizationsExportService.new
 
       puts "Exporting visualization #{args[:vis_id]}..."
 
-      data = CartoDB::Visualization::VizJSON.new(
-        Carto::Api::VisualizationVizJSONAdapter.new(visualization, $tables_metadata), vizjson_options, Cartodb.config)
-                                            .to_export_poro(1)
-                                            .to_json
-
-      backup_entry = Carto::Visualization::Backup.new(
-        username: visualization.user.username,
-        visualization: visualization.id,
-        export_vizjson: ::JSON.dump(data)
-      )
-
-      backup_entry.save
+      vis_export_service.export(args[:vis_id])
 
       puts "Export complete"
     end
 
-    desc "Imports a visualization using a metadata file"
-    task :import_user_visualization, [:export_file] => :environment do |_, args|
-      raise "Export '#{args[:export_file]}' not found" unless File.file?(args[:export_file])
+    desc "Imports/Restores a visualization"
+    task :import_user_visualization, [:vis_id] => :environment do |_, args|
+      vis_export_service = Carto::VisualizationsExportService.new
 
-      puts "Importing visualization data from #{args[:export_file]}"
+      puts "Importing visualization data for uuid #{args[:vis_id]}"
 
-      dump_data = ::JSON.parse(IO.read(args[:export_file]))
+      vis_export_service.import(args[:vis_id])
 
-      # TODO: support partial restores
-      unless Carto::Visualization.where(id: dump_data["id"]).first.nil?
-        raise "Visualization #{dump_data['id']} already exists"
-      end
-
-      user = ::User.where(id: dump_data["owner"]["id"]).first
-
-      # TODO: Import base layer instead of using default one if present
-      base_layer = CartoDB::Factories::LayerFactory.get_default_base_layer(user)
-      map = CartoDB::Factories::MapFactory.get_map(base_layer, user.id)
-      map.add_layer(base_layer)
-
-      dump_data["layers"].select { |layer| layer["type"] == "layergroup" }.each do |layergroup|
-        layergroup["options"]["layer_definition"]["layers"].each do |layer|
-          # TODO: new factory method to "get_data_layer"
-          data_layer = CartoDB::Factories::LayerFactory.get_default_data_layer(layer["options"]["table_name"], user)
-          map.add_layer(data_layer)
-        end
-      end
-
-      dump_data["layers"].select { |layer| ::Layer::DATA_LAYER_KINDS.include?(layer["type"]) }.each do |layer|
-        # TODO: new factory method to "get_data_layer"
-        data_layer = CartoDB::Factories::LayerFactory.get_default_data_layer(layer["options"]["table_name"], user)
-        map.add_layer(data_layer)
-      end
-
-      # TODO: Import labels layer instead of using default one if present
-      if base_layer.supports_labels_layer?
-        labels_layer = CartoDB::Factories::LayerFactory.get_default_labels_layer(base_layer)
-        map.add_layer(labels_layer)
-      end
-
-      visualization = CartoDB::Visualization::Member.new(
-        id: dump_data["id"],
-        name: dump_data["title"],
-        description: dump_data["description"],
-        type: CartoDB::Visualization::Member::TYPE_DERIVED,
-        privacy: CartoDB::Visualization::Member::PRIVACY_LINK,
-        user_id: dump_data["owner"]["id"],
-        map_id: map.id,
-        kind: CartoDB::Visualization::Member::KIND_GEOM)
-
-      visualization.store
-
-      puts "Visualization #{visualization.id} imported"
+      puts "Visualization #{args[:vis_id]} imported"
     end
 
     private

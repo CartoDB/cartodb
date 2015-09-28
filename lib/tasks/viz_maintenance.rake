@@ -64,11 +64,9 @@ namespace :cartodb do
 
     # TODO: this and following task should go in a separate class, but as for initial tests leave here
 
-    desc "Exports visualization metadata to the output"
-    task :export_user_visualization, [:vis_id, :export_file] => :environment do |_, args|
+    desc "Exports/Backups a visualization"
+    task :export_user_visualization, [:vis_id] => :environment do |_, args|
       require_relative "../../app/controllers/carto/api/visualization_vizjson_adapter"
-
-      raise "Export destination file '#{args[:export_file]}' already exists" if File.file?(args[:export_file])
 
       visualization = Carto::Visualization.where(id: args[:vis_id]).first
       raise "Visualization with id #{args[:vis_id]} not found" unless visualization
@@ -89,9 +87,13 @@ namespace :cartodb do
                                             .to_export_poro(1)
                                             .to_json
 
-      file = File.open(args[:export_file], "w")
-      file.write(data)
-      file.close
+      backup_entry = Carto::Visualization::Backup.new(
+        username: visualization.user.username,
+        visualization: visualization.id,
+        export_vizjson: ::JSON.dump(data)
+      )
+
+      backup_entry.save
 
       puts "Export complete"
     end

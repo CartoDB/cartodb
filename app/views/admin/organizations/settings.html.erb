@@ -20,6 +20,7 @@
 
   <div class="FormAccount-Content">
     <%= render :partial => 'admin/shared/org_subheader' %>
+    <div class="FormAccount-separator"></div>
 
     <%= form_for @organization, url: CartoDB.url(self, 'organization_settings_update', {}, current_user), multipart: true do |f| %>
       <%= csrf_meta_tags %>
@@ -157,7 +158,7 @@
       </div>
 
       <% if current_user.has_feature_flag?('google_maps') && current_user.organization_owner? %>
-      
+
         <div class="FormAccount-title">
           <p class="FormAccount-titleText">Configure API keys from external providers</p>
         </div>
@@ -173,7 +174,7 @@
           </div>
           <div class="FormAccount-rowInfo">
             <p class="FormAccount-rowInfoText">
-              This is the <%= @organization.name %> Google Maps query string. 
+              This is the <%= @organization.name %> Google Maps query string.
               Contact with <a href="mailto:support@cartodb.com">support@cartodb.com</a> to change it.
             </p>
           </div>

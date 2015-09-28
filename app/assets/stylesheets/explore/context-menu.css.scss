@@ -55,20 +55,15 @@
   padding: 0;
   overflow: hidden;
 }
-.ContextMenu-order {
+.ContextMenu-group {
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
 }
-.ContextMenu-order.is-hidden {
+.ContextMenu-group.is-hidden {
   display: none;
 }
-.ContextMenu-orderList {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center, center);
-}
-.ContextMenu-orderListItem {
+.ContextMenu-groupItem {
   @include inline-block();
   margin-right: 20px;
   color: $cTypography-secondary;

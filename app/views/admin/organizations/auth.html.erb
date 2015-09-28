@@ -20,13 +20,11 @@
 
   <div class="FormAccount-Content">
     <%= render :partial => 'admin/shared/org_subheader' %>
-    <div class="FormAccount-separator"></div>
 
     <% if @ldap_configuration %>
-
       <%= render :partial => 'admin/organizations/ldap_configuration' %>
-
     <% else %>
+      <div class="FormAccount-separator"></div>
 
       <%= form_for @organization, url: CartoDB.url(self, 'organization_auth_update', {}, current_user), multipart: true do |f| %>
         <%= csrf_meta_tags %>

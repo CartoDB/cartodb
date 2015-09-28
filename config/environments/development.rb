@@ -44,7 +44,12 @@ CartoDB::Application.configure do
   # config.action_mailer.delivery_method = :smtp
 
   # Enable threaded mode (https://github.com/resque/resque/issues/611)
-  # config.threadsafe! unless $rails_rake_task
+  # config.threadsafe!
+  # In order to run supporting concurrent requests, uncomment next line and run with
+  # `bundle exec thin start --threaded -p 3000 --threadpool-size 5`.
+  # Check your `config/database.yml` has `pool: 50` or higher for `development`.
+  # The condition excludes this from resque, since it won't work with it and it doesn't need it.
+  config.threadsafe! unless $rails_rake_task
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation can not be found)
@@ -69,4 +74,5 @@ CartoDB::Application.configure do
     Cartodb.asset_path
   end
 
+  SslRequirement.disable_ssl_check = true
 end

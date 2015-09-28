@@ -1,7 +1,8 @@
 # coding: utf-8
 class Admin::OrganizationsController < Admin::AdminController
-  ssl_required :show, :settings, :settings_update, :auth, :auth_update, :regenerate_all_api_keys
+  ssl_required :show, :settings, :settings_update, :regenerate_all_api_keys, :groups, :auth, :auth_update
   before_filter :login_required, :load_organization_and_members, :load_ldap_configuration
+  helper_method :show_billing
 
   layout 'application'
 
@@ -17,6 +18,12 @@ class Admin::OrganizationsController < Admin::AdminController
     end
   end
 
+  def groups
+    respond_to do |format|
+      format.html { render 'groups' }
+    end
+  end
+
   def settings_update
     attributes = params[:organization]
 
@@ -29,7 +36,7 @@ class Admin::OrganizationsController < Admin::AdminController
     @organization.description = attributes[:description]
     @organization.display_name = attributes[:display_name]
     @organization.color = attributes[:color]
-    
+
     if attributes.include?(:default_quota_in_bytes)
       default_quota_in_bytes = attributes[:default_quota_in_bytes]
       @organization.default_quota_in_bytes = default_quota_in_bytes.blank? ? nil : default_quota_in_bytes.to_i * 1024 * 1024
@@ -94,8 +101,12 @@ class Admin::OrganizationsController < Admin::AdminController
     raise RecordNotFound unless @organization.present? && current_user.organization_owner?
 
     # INFO: Special scenario of handcrafted URL to go to organization-based signup page
-    @organization_signup_url = 
+    @organization_signup_url =
       "#{CartoDB.protocol}://#{@organization.name}.#{CartoDB.account_host}#{CartoDB.path(self, 'signup_organization_user')}"
+  end
+
+  def show_billing
+    !Cartodb.config[:cartodb_com_hosted].present? && (!current_user.organization.present? || current_user.organization_owner?)
   end
 
   def load_ldap_configuration

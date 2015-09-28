@@ -65,11 +65,14 @@
   @include align-items(center, center);
   height:80px;
 }
-.Filters-row.Filters-row--centered { @include justify-content(center) }
-.Filters-list {
+.Filters-row--centered { @include justify-content(center) }
+.Filters-group {
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
+  &:not(:first-child) {
+    margin-left: 10px;
+  }
 }
 .Filters-typeItem {
   position:relative;
@@ -84,6 +87,7 @@
 }
 .Filters-typeItem--searchField {
   margin-right: 0;
+  @include flex-grow(1);
 }
 .Filters-typeItem--moreMargins {
   margin-left: 15px;
@@ -124,11 +128,11 @@
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
-  height:80px;
-  width:841px;
+  width: 100%;
+  height: 80px;
 }
 .Filters-searchInput {
-  width:790px;
+  width: 100%;
   padding-left:5px;
   outline:none;
   border:none;
@@ -213,16 +217,6 @@ a.Filters-cleanSearch { line-height:32px }
     text-decoration: none;
     color: rgba(black, 0.3);
   }
-}
-.Filters-order {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center, center);
-}
-.Filters-orderList {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center, center);
 }
 .Filters-orderItem {
   @include inline-block();

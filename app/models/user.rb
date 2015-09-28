@@ -1668,8 +1668,12 @@ class User < Sequel::Model
     end
   end
 
+  def organization_member_group_role_member_name
+    in_database.fetch("SELECT cartodb.CDB_Organization_Member_Group_Role_Member_Name() as org_member_role;")[:org_member_role][:org_member_role]
+  end
+
   def setup_organization_role_permissions
-    org_member_role = in_database.fetch("SELECT cartodb.CDB_Organization_Member_Group_Role_Member_Name() as org_member_role;")[:org_member_role][:org_member_role]
+    org_member_role = organization_member_group_role_member_name
     set_user_privileges_in_public_schema(org_member_role)
     run_queries_in_transaction(
       grant_connect_on_database_queries(org_member_role), true
@@ -1724,7 +1728,7 @@ class User < Sequel::Model
       true
     )
     self.run_queries_in_transaction(
-      self.grant_read_on_schema_queries('cartodb', CartoDB::PUBLIC_DB_USER),
+      grant_read_on_schema_queries('cartodb', CartoDB::PUBLIC_DB_USER),
       true
     )
     self.run_queries_in_transaction(
@@ -1746,7 +1750,7 @@ class User < Sequel::Model
   def set_user_privileges_in_cartodb_schema(db_user = nil)
     self.run_queries_in_transaction(
       (
-        self.grant_read_on_schema_queries('cartodb', db_user) +
+        grant_read_on_schema_queries('cartodb', db_user) +
         self.grant_write_on_cdb_tablemetadata_queries(db_user)
       ),
       true
@@ -1755,7 +1759,7 @@ class User < Sequel::Model
 
   def set_user_privileges_in_public_schema(db_user = nil)
     self.run_queries_in_transaction(
-      self.grant_read_on_schema_queries('public', db_user),
+      grant_read_on_schema_queries('public', db_user),
       true
     )
   end
@@ -2258,13 +2262,11 @@ TRIGGER
     ]
   end
 
-  def grant_read_on_schema_queries(schema, db_user = nil)
-    granted_user = db_user.nil? ? self.database_username : db_user
-    [
-      "GRANT USAGE ON SCHEMA \"#{schema}\" TO \"#{granted_user}\"",
-      "GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" TO \"#{granted_user}\"",
-      "GRANT SELECT ON ALL TABLES IN SCHEMA \"#{schema}\" TO \"#{granted_user}\""
-    ]
+  def revoke_permissions_on_cartodb_conf_queries(db_user)
+    # TODO: remove the check after extension install (#4924 merge)
+    return [] if Rails.env.test?
+
+    [ "REVOKE ALL ON TABLE cartodb.CDB_CONF FROM \"#{db_user}\"" ]
   end
 
   def grant_write_on_cdb_tablemetadata_queries(db_user = nil)
@@ -2650,6 +2652,19 @@ TRIGGER
   end
 
   private
+
+  def grant_read_on_schema_queries(schema, db_user = nil)
+    granted_user = db_user.nil? ? self.database_username : db_user
+
+    queries = [
+      "GRANT USAGE ON SCHEMA \"#{schema}\" TO \"#{granted_user}\"",
+      "GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" TO \"#{granted_user}\"",
+      "GRANT SELECT ON ALL TABLES IN SCHEMA \"#{schema}\" TO \"#{granted_user}\""
+    ]
+    queries.concat(revoke_permissions_on_cartodb_conf_queries(granted_user)) if schema == 'cartodb'
+
+    queries
+  end
 
   def quota_dates(options)
     date_to = (options[:to] ? options[:to].to_date : Date.today)

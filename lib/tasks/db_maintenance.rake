@@ -1150,11 +1150,27 @@ namespace :cartodb do
       }
     end
 
+    desc "Revokes access to cdb_conf"
+    task :revoke_cdb_conf_access => :environment do |t, args|
+      organizations = args[:organization_name].present? ? Organization.where(name: args[:organization_name]).all : Organization.all
+      run_for_organizations_owner(organizations) do |owner|
+        errors = owner.organization.revoke_cdb_conf_access
+        unless errors.empty?
+          puts "ERRORS for organization #{owner.organization.name}"
+          errors.map { |error| puts error }
+        end
+      end
+    end
+
     desc "Assign organization owner admin role at database. See CartoDB/cartodb-postgresql#104 and #5187"
     task :assign_org_owner_role, [:organization_name] => :environment do |t, args|
       organizations = args[:organization_name].present? ? Organization.where(name: args[:organization_name]).all : Organization.all
       run_for_organizations_owner(organizations) do |owner|
-        owner.setup_owner_permissions
+        begin
+          owner.setup_owner_permissions
+        rescue => e
+          puts "ERROR for #{owner.organization.name}: #{e.message}"
+        end
       end
     end
 
@@ -1162,7 +1178,11 @@ namespace :cartodb do
     task :configure_extension_org_metadata_api_endpoint, [:organization_name] => :environment do |t, args|
       organizations = args[:organization_name].present? ? Organization.where(name: args[:organization_name]).all : Organization.all
       run_for_organizations_owner(organizations) do |owner|
-        owner.configure_extension_org_metadata_api_endpoint
+        begin
+          owner.configure_extension_org_metadata_api_endpoint
+        rescue => e
+          puts "ERROR for #{owner.organization.name}: #{e.message}"
+        end
       end
     end
 

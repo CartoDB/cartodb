@@ -36,7 +36,7 @@ module CartoDB
         @from_geojson_with_transform = true
       end
 
-      # TODO those this happens before or after cartodbfy?
+      # INFO: this happens before cartodbfy and after running ogr2ogr
       def run
         disable_autovacuum
 

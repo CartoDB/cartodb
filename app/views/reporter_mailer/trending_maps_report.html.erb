@@ -18,13 +18,21 @@
         <tr>
           <td valign="top" style="padding: 0;">
             <table cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #F2FAE8 border-bottom: 1px solid #dddddd; width: 100% !important;">
-             <% @trending_visualizations.each do |vis_id, map_data| %>
-              <tr>
-                <td align="left" style="padding: 10px 50px 10px 50px; font-family: Helvetica, Arial, sans-serif;">
-                  <p style="margin: 0; font-size: 16px; line-height: 25px; color: #666666;">Trending map <a href="<%= "#{map_data['user_public_url']}#{CartoDB.path(self, 'public_visualizations_public_map', { id: vis_id })}" %>" ><%= map_data["visualization_name"] %></a> by <a href="mailto:<%= map_data["user_mail"] %>"><%= map_data["user"] %></a> with <strong><%= map_data["mapviews"] %> mapviews</strong></p>
-                </td>
-              </tr>
-            <% end %>
+              <% if @trending_visualizations.length > 0 %>
+                <% @trending_visualizations.each do |vis_id, map_data| %>
+                  <tr>
+                    <td align="left" style="padding: 10px 50px 10px 50px; font-family: Helvetica, Arial, sans-serif;">
+                      <p style="margin: 0; font-size: 16px; line-height: 25px; color: #666666;">Trending map <a href="<%= "#{map_data['user_public_url']}#{CartoDB.path(self, 'public_visualizations_public_map', { id: vis_id })}" %>" ><%= map_data["visualization_name"] %></a> by <a href="mailto:<%= map_data["user_mail"] %>"><%= map_data["user"] %></a> with <strong><%= map_data["mapviews"] %> mapviews</strong></p>
+                    </td>
+                  </tr>
+                <% end %>
+              <% else %>
+                <tr>
+                  <td align="left" style="padding: 10px 50px 10px 50px; font-family: Helvetica, Arial, sans-serif;">
+                    <p style="margin: 0; font-size: 16px; line-height: 25px; color: #666666;">No trending maps for today</p>
+                  </td>
+                </tr>
+              <% end %>
             </table>
           </td>
         </tr>

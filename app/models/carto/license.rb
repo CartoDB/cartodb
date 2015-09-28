@@ -16,7 +16,7 @@ module Carto
     CC_BY_NC_ND_LICENSE = :cc_by_nc_nd
     PUBLIC_DOMAIN_LICENSE = :public_domain
     OPEN_GOVERNMENT_LICENSE = :open_government
-    
+
     LICENSE_VALUES = {
       MIT_LICENSE => { id: MIT_LICENSE, name: 'MIT' },
       APACHE_LICENSE => { id: APACHE_LICENSE, name: 'Apache license' },

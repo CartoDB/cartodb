@@ -772,7 +772,7 @@ describe CommonData do
            "active_layer_id":null,
            "type":"remote",
            "tags":[
-              "Building footprints" 
+              "Building footprints"
            ],
            "description":"MapPLUTO tax lot data for New York.",
            "privacy":"PUBLIC",

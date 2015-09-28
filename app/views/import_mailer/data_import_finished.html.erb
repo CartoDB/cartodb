@@ -14,9 +14,8 @@
             <tr>
               <td align="left" style="padding: 40px 50px 0 50px; font-weight: bold; font-size: 25px; font-family: Helvetica, Arial, sans-serif; color: #333333;">Your dataset import just finished</td>
             </tr>
-
             <tr>
-              <td align="left" style="padding: 20px 50px 40px 50px; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;">There was some error while importing your dataset <strong><%= @first_table['name'] %></strong>:</td>
+              <td align="left" style="padding: 20px 50px 40px 50px; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;"><strong><%= @username %></strong>, there was some error while importing your dataset <strong><%= @first_table['name'] %></strong>:</td>
             </tr>
           <% end %>
         <% else %>
@@ -32,9 +31,8 @@
             <tr>
               <td align="left" style="padding: 20px 50px 0 50px; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;"><strong><%= @imported_tables %></strong> out of <strong><%= @total_tables %></strong> were successfully imported.</td>
             </tr>
-
             <tr>
-              <td align="left" style="padding: 20px 50px 40px 50px; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;">There was some error while importing your datasets:</td>
+              <td align="left" style="padding: 20px 50px 40px 50px; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;"><strong><%= @username %></strong>, there was some error while importing your datasets:</td>
             </tr>
           <% end %>
         <% end %>
@@ -63,13 +61,26 @@
                       <tr>
                         <td align="left" style="font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;"><strong><%= @errors['title'] %></strong></td>
                       </tr>
-
                       <tr>
                         <td align="left" style="padding: 20px 0 0 0; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;"><%= @errors['what_about'].html_safe %></td>
                       </tr>
                     </table>
                   </td>
                 </tr>
+                <tr>
+                  <td align="left" style="padding: 5px 50px 10px 50px; font-family: Helvetica, Arial, sans-serif; font-size: 16px; color: #666666;">Dataset files</td>
+                </tr>
+                <% @files_stats.each do |file_data| %>
+                  <tr>
+                    <td align="left" style="padding: 5px 50px 0px 50px; font-family: Helvetica, Arial, sans-serif;">
+                      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                          <td align="left" style="font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;"><strong>File name:</strong> <%= file_data["filename"] %></td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                <% end %>
               </table>
             <% end %>
           </td>

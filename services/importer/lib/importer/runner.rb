@@ -325,6 +325,7 @@ module CartoDB
       def execute_import(source_file, downloader)
         import_stats = {}
         begin
+          import_stats[:filename] = source_file.path
           import_stats[:type] = source_file.extension
           import_stats[:size] = source_file.size
 

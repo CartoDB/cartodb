@@ -38,8 +38,7 @@ describe Carto::Api::LayersController do
         payload = {
           name: 'new visualization',
           tables: [
-            table1.name,
-            table2.name
+            table1.name
           ],
           privacy: 'public'
         }
@@ -51,8 +50,17 @@ describe Carto::Api::LayersController do
           @visualization_data = JSON.parse(response.body)
         end
 
-        visualization = Carto::Visualization.find(@visualization_data.fetch('id'))
+        login_as($user_1, scope: $user_1.username)
+        host! "#{$user_1.username}.localhost.lan"
+        put api_v1_visualizations_update_url(api_key: @api_key, id: @visualization_data.fetch('id')), {tables: [
+            table2.name
+          ]}.to_json, @headers do |response|
+          response.status.should == 200
+          @visualization_data = JSON.parse(response.body)
+        end
+        debugger
 
+        visualization = Carto::Visualization.find(@visualization_data.fetch('id'))
         table1_visualization = CartoDB::Visualization::Member.new(id: table1.table_visualization.id).fetch
         table1_visualization.attributions = table_1_attribution
         table1_visualization.store

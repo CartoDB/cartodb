@@ -107,6 +107,7 @@ class Organization < Sequel::Model
   #        example: 0.20 will get all organizations at 80% of their map view limit
   #
   def self.overquota(delta = 0)
+    
     Organization.all.select do |o|
         limit = o.map_view_quota.to_i - (o.map_view_quota.to_i * delta)
         over_map_views = o.get_api_calls(from: o.owner.last_billing_cycle, to: Date.today) > limit

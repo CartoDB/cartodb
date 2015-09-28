@@ -90,7 +90,6 @@ describe SignupController do
       GooglePlusAPI.any_instance.expects(:get_user_data).never
       @organization.auth_google_enabled = false
       @organization.save
-
       host! "#{@organization.name}.localhost.lan"
       post signup_organization_user_url(user_domain: @organization.name, google_access_token: 'whatever')
       response.status.should == 400

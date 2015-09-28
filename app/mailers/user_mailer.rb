@@ -1,5 +1,5 @@
 class UserMailer < ActionMailer::Base
-  default from: "cartodb.com <support@cartodb.com>"
+  default from: Cartodb.get_config(:mailer, 'from')
   layout 'mail'
 
   def new_organization_user(user)

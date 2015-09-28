@@ -68,8 +68,6 @@ module CartoDB
         })
       end
 
-      # TODO any other thing to cleanup here?
-
       def create_the_geom_from_country_guessing
         return false if not @content_guesser.enabled?
         return false if @content_guesser.sample.count == 0
@@ -271,35 +269,6 @@ module CartoDB
         !!sample && sample.fetch(:column_name, false)
       end
 
-      def handle_multipoint(qualified_table_name)
-        # TODO: capture_exceptions=true
-        job.log 'Converting detected multipoint to point'
-        QueryBatcher.new(
-            db, 
-            job, 
-            create_seq_field = true
-          ).execute_update(
-              %Q{
-                UPDATE #{qualified_table_name}
-                SET the_geom = ST_GeometryN(the_geom, 1)
-              },
-              schema, table_name
-          )
-      end
-
-      def multipoint?
-        is_multipoint = db[%Q{
-          SELECT public.GeometryType(the_geom)
-          FROM #{qualified_table_name}
-          AS geometrytype
-        }].first.fetch(:geometrytype) == 'MULTIPOINT'
-
-        job.log 'found MULTIPOING geometry' if is_multipoint
-
-        is_multipoint
-      rescue
-        false
-      end
 
       private
 

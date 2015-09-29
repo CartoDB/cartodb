@@ -32,10 +32,12 @@
           <div class="FormAccount-avatarPreview">
             <img src="<%= @organization.avatar_url %>" title="" alt="" class="FormAccount-avatarPreviewImage" />
           </div>
-          <%= f.file_field :avatar_url, :class => "js-fileAvatar", :value => "Choose image" %>
-        </div>
-        <div class="FormAccount-rowInfo">
-          <p class="FormAccount-rowInfoText FormAccount-rowInfoText--smaller">Recommended images should be 128x128 pixels of size</p>
+          <div class="FormAccount-avatar--input">
+            <%= f.file_field :avatar_url, :class => "FormAccount-fileAvatar js-fileAvatar", :value => "Change image" %>
+            <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+              <p class="FormAccount-rowInfoText FormAccount-rowInfoText--smaller">Recommended images should be 128x128 pixels of size</p>
+            </div>
+          </div>
         </div>
       </div>
 

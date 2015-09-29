@@ -117,6 +117,10 @@ class Carto::Visualization < ActiveRecord::Base
     is_publically_accesible? || has_read_permission?(user)
   end
 
+  def is_accesible_by_user?(user)
+    is_viewable_by_user?(user) || password_protected?
+  end
+
   def is_publically_accesible?
     is_public? || is_link_privacy?
   end

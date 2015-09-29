@@ -10,7 +10,8 @@ module Carto
     # @param String export_vizjson
     # @param DateTime created_at (Self-generated)
 
-    set_primary_key "visualization"
+    # Allow mass-setting upon .new
+    attr_accessible :username, :visualization, :export_vizjson
 
     validates :username, :visualization, :export_vizjson, presence: true
 

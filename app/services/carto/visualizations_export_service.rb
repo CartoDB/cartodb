@@ -36,7 +36,7 @@ module Carto
     end
 
     def import(visualization_id)
-      restore_result = restore(visualization_id)
+      restore_result = restore_backup(visualization_id)
       remove_backup(visualization_id) if restore_result
       true
     end
@@ -53,7 +53,7 @@ module Carto
       end
     end
 
-    def restore(visualization_id)
+    def restore_backup(visualization_id)
       # TODO: support partial restores
       visualization = Carto::Visualization.where(id: visualization_id).first
       raise "Visualization with id #{visualization_id} already exists!" if visualization

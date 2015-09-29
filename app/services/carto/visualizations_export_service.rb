@@ -99,13 +99,16 @@ module Carto
     end
 
     def set_map_data(map, exported_data)
+      map.recalculate_bounds!
+
       map.scrollwheel = exported_data["scrollwheel"]
       map.legends = exported_data["legends"]
-      map.save.reload
+      map.view_bounds_sw = exported_data["bounds"][0].to_s
+      map.view_bounds_ne = exported_data["bounds"][1].to_s
+      map.center = exported_data["center"]
+      map.zoom = exported_data["zoom"]
 
-      map.recalculate_bounds!
-      map.recenter_using_bounds!
-      map.recalculate_zoom!
+      map.save.reload
     end
 
     def prepare_layer_data(exported_layer)

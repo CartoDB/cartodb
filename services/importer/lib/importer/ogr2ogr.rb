@@ -151,7 +151,8 @@ module CartoDB
           "-oo AUTODETECT_TYPE=YES -oo QUOTED_FIELDS_AS_STRING=#{quoted_fields_guessing ? 'NO' : 'YES' } " +
             "#{x_y_possible_names_option} -s_srs EPSG:4326 -t_srs EPSG:4326 " +
             "-skipfailure " +
-            "-oo GEOM_POSSIBLE_NAMES=#{GEOMETRY_POSSIBLE_NAMES.join(',')}"
+            "-oo GEOM_POSSIBLE_NAMES=#{GEOMETRY_POSSIBLE_NAMES.join(',')} " +
+            "-oo KEEP_GEOM_COLUMNS=NO" # INFO: Avoid "ERROR:  column "the_geom" specified more than once"
         else
           ''
         end
@@ -194,7 +195,7 @@ module CartoDB
 
       def layer_creation_options
         # Dimension option, precision option
-        "-lco DIM=2 -lco PRECISION=NO"
+        "-lco DIM=2 -lco PRECISION=NO -lco GEOMETRY_NAME=the_geom"
       end
 
       def projection_option

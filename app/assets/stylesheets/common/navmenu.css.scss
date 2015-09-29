@@ -136,7 +136,11 @@
 }
 .Navmenu-link.Navmenu-link--owner {
   float: left;
+  text-overflow: ellipsis;
+  max-width: 150px;
+  display: inline-block;
   white-space: nowrap;
+  overflow: hidden;
 }
 .Navmenu-link--action,
 .Navmenu-item--action {

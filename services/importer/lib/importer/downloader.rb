@@ -26,7 +26,7 @@ module CartoDB
 
       SUPPORTED_EXTENSIONS = CartoDB::Importer2::Unp::SUPPORTED_FORMATS
                               .concat(CartoDB::Importer2::Unp::COMPRESSED_EXTENSIONS)
-      URL_FILENAME_REGEX = Regexp.new("\\w+(#{SUPPORTED_EXTENSIONS.join('|')})+", true)
+      URL_FILENAME_REGEX = Regexp.new("\\w+(#{SUPPORTED_EXTENSIONS.map{|s| s.sub(/\./, "\\.")}.join('|')})+", true)
       
       DEFAULT_FILENAME        = 'importer'
       CONTENT_DISPOSITION_RE  = %r{;\s*filename=(.*;|.*)}

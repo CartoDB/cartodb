@@ -18,7 +18,6 @@ module CartoDB
         @options          = default_options.merge(options)
         @configuration    = configuration
         @user             = options.fetch(:user, nil)
-        @export_mode      = options.fetch(:export, false)
         logger.info(map.inspect) if logger
       end
 
@@ -36,7 +35,7 @@ module CartoDB
           bounds:         bounds_from(map),
           center:         map.center,
           zoom:           map.zoom,
-          layers:         layers_for(visualization),
+          layers:         all_layers_for(visualization),
           overlays:       overlays_for(visualization),
           # Fields specific for this export
           export_version: version,
@@ -107,14 +106,28 @@ module CartoDB
 
       attr_reader :visualization, :map, :options, :configuration
 
-      def retrieve_named_map?
-        visualization.retrieve_named_map? && !@export_mode
-      end
-
       def bounds_from(map)
         ::JSON.parse("[#{map.view_bounds_sw}, #{map.view_bounds_ne}]")
       rescue
         # Do nothing
+      end
+
+      def all_layers_for(visualization)
+        layers_data = []
+
+        basemap_layer = basemap_layer_for(visualization)
+        layers_data.push(basemap_layer) if basemap_layer
+
+        data_layers = visualization.layers(:cartodb).map do |layer|
+          CartoDB::Layer::Presenter.new(layer, options, configuration).to_vizjson_v2
+        end
+        layers_data.push(data_layers)
+
+        layers_data.push(other_layers_for(visualization))
+
+        layers_data += non_basemap_base_layers_for(visualization)
+
+        layers_data.compact.flatten
       end
 
       def layers_for(visualization)
@@ -122,7 +135,7 @@ module CartoDB
         layers_data = []
         layers_data.push(basemap_layer) if basemap_layer
 
-        if retrieve_named_map?
+        if visualization.retrieve_named_map?
           presenter_options = {
             user_name: options.fetch(:user_name),
             api_key: options.delete(:user_api_key),

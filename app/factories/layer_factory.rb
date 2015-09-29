@@ -4,6 +4,10 @@ module CartoDB
   module Factories
     class LayerFactory
 
+      def self.get_new(options)
+        ::Layer.new(options)
+      end
+
       def self.get_default_base_layer(user)
         basemap = user.default_basemap
         if basemap['className'] === 'googlemaps'

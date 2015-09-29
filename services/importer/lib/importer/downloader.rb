@@ -25,7 +25,7 @@ module CartoDB
       URL_ESCAPED_CHARACTERS = 'áéíóúÁÉÍÓÚñÑçÇàèìòùÀÈÌÒÙ'
 
       SUPPORTED_EXTENSIONS = CartoDB::Importer2::Unp::SUPPORTED_FORMATS
-                            .concat(CartoDB::Importer2::Unp::COMPRESSED_EXTENSIONS)
+                              .concat(CartoDB::Importer2::Unp::COMPRESSED_EXTENSIONS)
       URL_FILENAME_REGEX = Regexp.new("\\w+(#{SUPPORTED_EXTENSIONS.join('|')})+", true)
       
       DEFAULT_FILENAME        = 'importer'

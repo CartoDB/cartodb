@@ -24,6 +24,7 @@ module CartoDB
       DEFAULT_HTTP_REQUEST_TIMEOUT = 600
       URL_ESCAPED_CHARACTERS = 'áéíóúÁÉÍÓÚñÑçÇàèìòùÀÈÌÒÙ'
 
+      URL_FILENAME_REGEX      = Regexp.new("\\w+(#{CartoDB::Importer2::Unp::SUPPORTED_FORMATS.concat(CartoDB::Importer2::Unp::COMPRESSED_EXTENSIONS).join('|')})+",true)
       DEFAULT_FILENAME        = 'importer'
       CONTENT_DISPOSITION_RE  = %r{;\s*filename=(.*;|.*)}
       URL_RE                  = %r{://}
@@ -378,7 +379,13 @@ module CartoDB
       end
 
       def name_in(url)
-        url.split('/').last.split('?').first
+        url_name = URL_FILENAME_REGEX.match(url).to_s
+
+        if !url_name.empty?
+          url_name
+        else
+          nil
+        end
       end
 
       def random_name

@@ -133,7 +133,7 @@ describe Geocoding do
       CartoDB::InternalGeocoder::Geocoder.any_instance.stubs(:update_geocoding_status).returns(processed_rows: 10, state: 'completed')
 
       # metrics_payload is sent to the log in json
-      Logger.any_instance.expects(:info).once.with() {|str|
+      Logger.any_instance.expects(:info).once {|str|
         payload = JSON.parse(str)
         payload.has_key?('queue_time') && payload.has_key?('processing_time') && payload['queue_time'] > 0 && payload['processing_time'] > 0
       }

@@ -231,7 +231,7 @@ describe Downloader do
     it 'gets the file name from the URL if no Content-Disposition header and custom params schema is used' do
       headers = {}
       hard_url = "https://manolo.escobar.es/param&myfilenameparam&zip_file.csv.zip&otherinfo"
-      
+
       downloader = Downloader.new(hard_url)
       downloader.send(:name_from, headers, hard_url).should eq 'zip_file.csv.zip'
     end

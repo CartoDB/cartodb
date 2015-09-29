@@ -65,13 +65,12 @@ module Carto
       user = ::User.where(id: dump_data["owner"]["id"]).first
 
       base_layer = create_base_layer(dump_data)
+
       map = create_map(user, base_layer)
 
-      create_data_layers(user, map, dump_data)
+      add_data_layers(map, dump_data)
 
-      # TODO: Import labels layer instead of using default one if present.
-      # but leave this for scenario of needing and not having them
-      create_default_labels_layer(map, base_layer) if base_layer.supports_labels_layer?
+      add_labels_layer(map, base_layer, dump_data)
 
       create_visualization(
         id: dump_data["id"],
@@ -79,7 +78,7 @@ module Carto
         description: dump_data["description"],
         type: CartoDB::Visualization::Member::TYPE_DERIVED,
         privacy: CartoDB::Visualization::Member::PRIVACY_LINK,
-        user_id: dump_data["owner"]["id"],
+        user_id: user.id,
         map_id: map.id,
         kind: CartoDB::Visualization::Member::KIND_GEOM
       )
@@ -88,7 +87,7 @@ module Carto
     end
 
     def prepare_layer_data(exported_layer)
-      data = exported_layer.except('id', 'children', 'type')
+      data = exported_layer.except('id', 'children', 'type', 'legend', 'visible')
 
       data['kind'] = layer_kind_from_type(exported_layer['type'])
 
@@ -108,41 +107,52 @@ module Carto
       CartoDB::Factories::LayerFactory.get_new(prepare_layer_data(layer_data))
     end
 
+    def add_data_layer(map, layer_data)
+      data_layer = CartoDB::Factories::LayerFactory.get_new(prepare_layer_data(layer_data))
+      map.add_layer(data_layer)
+      data_layer
+    end
+
+    def add_labels_layer(map, base_layer, exported_data)
+      return unless base_layer.supports_labels_layer?
+
+      base_layers = exported_data["layers"].select { |layer| ::Layer::BASE_LAYER_KINDS.include?(layer["type"]) }
+
+      if base_layers.count == 1
+        # Missing labels layer, regenerate it
+        add_default_labels_layer(map, base_layer)
+      else
+        labels_layer = CartoDB::Factories::LayerFactory.get_new(prepare_layer_data(base_layers.last))
+        map.add_layer(labels_layer)
+        labels_layer
+      end
+    end
+
     def create_map(user, base_layer)
       map = CartoDB::Factories::MapFactory.get_map(base_layer, user.id)
       map.add_layer(base_layer)
       map
     end
 
-    # ---- OLD:
-
-    def create_default_labels_layer(map, base_layer)
-      labels_layer = CartoDB::Factories::LayerFactory.get_default_labels_layer(base_layer)
-      map.add_layer(labels_layer)
-      labels_layer
-    end
-
-    def create_data_layer(user, map, layer_data)
-      # TODO: new factory method to "get_data_layer" and set proper data
-      data_layer = CartoDB::Factories::LayerFactory.get_default_data_layer(layer_data["options"]["table_name"], user)
-      map.add_layer(data_layer)
-      data_layer
-    end
-
-    def create_data_layers(user, map, exported_data)
-      # .reverse needed because layers come in increasing order but upon creation insertion is always at top
+    def add_data_layers(map, exported_data)
       exported_data["layers"].select { |layer|
                                        kind = layer_kind_from_type(layer["type"])
                                        ::Layer::DATA_LAYER_KINDS.include?(kind)
                                      }
                              .each { |layer|
-                                     create_data_layer(user, map, layer)
+                                     add_data_layer(map, layer)
                                    }
     end
 
     def create_visualization(attributes)
       visualization = CartoDB::Visualization::Member.new(attributes)
       visualization.store
+    end
+
+    def add_default_labels_layer(map, base_layer)
+      labels_layer = CartoDB::Factories::LayerFactory.get_default_labels_layer(base_layer)
+      map.add_layer(labels_layer)
+      labels_layer
     end
 
   end

@@ -187,7 +187,7 @@ class Admin::VisualizationsController < Admin::AdminController
       end
     end
 
-    return(embed_forbidden) if @visualization.private?
+    return(embed_forbidden) unless @visualization.is_viewable_by_user?(current_user)
     return(public_map_protected) if @visualization.password_protected?
     if current_user && @visualization.organization? &&
         @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)

@@ -5,11 +5,10 @@ include CartoDB::Importer2
 
 describe Downloader do
   before do
-    @file_url =
-      "http://www.naturalearthdata.com/http//www.naturalearthdata.com/download/110m/physical/ne_110m_lakes.zip" 
-    @hard_url =
-      "https://manolo.escobar.es/param&myfilenameparam&zip_file.csv.zip&otherinfo"
-    @file_filepath  = path_to('ne_110m_lakes.zip')
+    @file_url = 
+      "http://www.naturalearthdata.com/http//www.naturalearthdata.com/download/110m/physical/ne_110m_lakes.zip"
+    @hard_url = "https://manolo.escobar.es/param&myfilenameparam&zip_file.csv.zip&otherinfo"
+    @file_filepath = path_to('ne_110m_lakes.zip')
     @file_url_without_extension = "http://www.example.com/foowithoutextension"
     @file_filepath_without_extension  = path_to('foowithoutextension')
     @file_url_with_wrong_extension = "http://www.example.com/csvwithwrongextension.xml"

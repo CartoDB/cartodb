@@ -50,13 +50,14 @@
   z-index: 105;
 }
 .ExportImageView-Footer--inner {
+  $width: 360px;
   position:absolute;
   left: 50%;
-  margin-left: -138px;
-  width: 277px;
-  color: #ffffff;
+  margin-left: -$width/2;
+  width: $width;
+  color: #9B9B9B;
 }
-.ExportImageView--dimensions  {
+.ExportFormatPicker {
   display: inline-block;
   padding: 3px 5px;
   background: rgba(#000000, .7);
@@ -64,13 +65,34 @@
   font-size: 12px;
   color: #9B9B9B;
 }
-.ExportImageView--dimensions input {
+.ExportFormatPicker-format {
+  color: #FFFFFF;
+}
+.ExportImageView-dimensions  {
+  display: inline-block;
+  padding: 3px 5px;
+  background: rgba(#000000, .7);
+  border-radius: 3px;
+  font-size: 12px;
+  color: #9B9B9B;
+}
+.ExportImageView-dimensions input {
   width: 20px;
   border: none;
   background: transparent;
   color: #FFFFFF;
   font-weight: normal;
   outline: none;
+}
+
+.ExportImage-formatList {
+  @include display-flex();
+  @include justify-content(center);
+  @include align-items(center, center);
+}
+
+.ExportImage-formatItem {
+  margin: 0 10px;
 }
 
 .ExportImageView.is-exportable {
@@ -134,6 +156,15 @@
   color: #FFFFFF;
   font-size: 13px;
   line-height: 19px;
+}
+
+.Button--advancedExport {
+  color: #FFFFFF;
+  text-decoration: underline;
+  &:hover {
+    color: #FFFFFF;
+    text-decoration: underline;
+  }
 }
 
 .Button--micro {

@@ -381,11 +381,7 @@ module CartoDB
       def name_in(url)
         url_name = URL_FILENAME_REGEX.match(url).to_s
 
-        if !url_name.empty?
-          url_name
-        else
-          nil
-        end
+        url_name if !url_name.empty?
       end
 
       def random_name

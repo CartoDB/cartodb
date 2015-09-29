@@ -38,7 +38,8 @@ describe Carto::Api::LayersController do
         payload = {
           name: 'new visualization',
           tables: [
-            table1.name
+            table1.name,
+            table2.name
           ],
           privacy: 'public'
         }
@@ -49,16 +50,6 @@ describe Carto::Api::LayersController do
           response.status.should == 200
           @visualization_data = JSON.parse(response.body)
         end
-
-        login_as($user_1, scope: $user_1.username)
-        host! "#{$user_1.username}.localhost.lan"
-        put api_v1_visualizations_update_url(api_key: @api_key, id: @visualization_data.fetch('id')), {tables: [
-            table2.name
-          ]}.to_json, @headers do |response|
-          response.status.should == 200
-          @visualization_data = JSON.parse(response.body)
-        end
-        debugger
 
         visualization = Carto::Visualization.find(@visualization_data.fetch('id'))
         table1_visualization = CartoDB::Visualization::Member.new(id: table1.table_visualization.id).fetch
@@ -75,11 +66,11 @@ describe Carto::Api::LayersController do
         data_layers = @layers_data['layers'].select { |layer| layer['kind'] == 'carto' }
         data_layers.count.should eq 2
 
-        # Rembember, layers by default added at top 
+        # Rembember, layers by default added at top
         data_layers[0]['options']['attribution'].should eq table_2_attribution
         data_layers[1]['options']['attribution'].should eq table_1_attribution
 
-        
+
         table2_visualization.attributions = modified_table_2_attribution
         table2_visualization.store
 
@@ -90,7 +81,7 @@ describe Carto::Api::LayersController do
         data_layers = @layers_data['layers'].select { |layer| layer['kind'] == 'carto' }
         data_layers.count.should eq 2
 
-        # Rembember, layers by default added at top 
+        # Rembember, layers by default added at top
         data_layers[0]['options']['attribution'].should eq modified_table_2_attribution
         data_layers[1]['options']['attribution'].should eq table_1_attribution
     end

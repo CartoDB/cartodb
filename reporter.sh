@@ -19,8 +19,8 @@ else
                 cat $logfile;
                 # Give feedback to github
                 spec=$(echo $line | sed 's/\s.*$//')
-                echo "GSU with spec $spec"
-                gsu "$spec failed" "$spec" failure
+                # echo "GSU with spec $spec"
+                # gsu "$spec failed" "$spec" failure
                 
         done < $filename
         gsu "Backend tests failed" "Backend" failure 

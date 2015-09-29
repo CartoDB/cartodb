@@ -30,13 +30,30 @@ module Carto
         visualization: visualization.id,
         export_vizjson: data
       )
-
       backup_entry.save
 
       true
     end
 
     def import(visualization_id)
+      restore_result = restore(visualization_id)
+      remove_backup(visualization_id) if restore_result
+      true
+    end
+
+    private
+
+    def remove_backup(visualization_id)
+      backup_item = Carto::VisualizationBackup.where(visualization: visualization_id).first
+      if backup_item
+        backup_item.destroy
+        true
+      else
+        false
+      end
+    end
+
+    def restore(visualization_id)
       # TODO: support partial restores
       visualization = Carto::Visualization.where(id: visualization_id).first
       raise "Visualization with id #{visualization_id} already exists!" if visualization
@@ -69,8 +86,6 @@ module Carto
 
       true
     end
-
-    private
 
     def create_map_and_base_layer(user)
       base_layer = CartoDB::Factories::LayerFactory.get_default_base_layer(user)

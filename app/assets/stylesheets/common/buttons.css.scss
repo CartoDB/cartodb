@@ -41,9 +41,6 @@ $cHighlight-mainHover: rgba(#007FBD, 1);
 .Button.is-hidden {
   display: none;
 }
-.Button.is-transparent {
-  @include opacity(0);
-}
 .Button:hover,
 .Button span:hover {
   text-decoration: none;
@@ -122,6 +119,10 @@ $cHighlight-mainHover: rgba(#007FBD, 1);
 .Button--secondaryTransparentBkg {
   background-color: transparent;
 }
+.Button.is-smaller {
+  height: 30px;
+  padding: 0 15px;
+}
 .Button--secondaryBlue {
   border-color: transparent;
   background-color: rgba(#FFFFFF, 1);
@@ -147,6 +148,16 @@ $cHighlight-mainHover: rgba(#007FBD, 1);
   &:hover {
     color: $cTypography-linkSelected;
     text-decoration: underline;
+  }
+}
+.Button--link.is-inline {
+  padding-left: 0;
+  padding-right: 0;
+}
+.Button--link.is-destructive {
+  color: $cHighlight-negative;
+  &:hover {
+    color: $cHighlight-negative;
   }
 }
 // Use this instead of .Button--positive on header background
@@ -175,8 +186,7 @@ $cHighlight-mainHover: rgba(#007FBD, 1);
     color: $cTypography-paragraphs;
   }
 }
-.Button--opacityTransition {
-  @include opacity(1);
+.Button--gray {
   display: inline-block;
   margin: auto;
   transition: opacity 150ms ease-in-out;
@@ -186,4 +196,7 @@ $cHighlight-mainHover: rgba(#007FBD, 1);
   color: $cTypography-linkSecondaryHover;
   font-size: $sFontSize-smallUpperCase;
   line-height: 24px;
+  &:hover {
+    border-color: #888888;
+  }
 }

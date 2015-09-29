@@ -27,6 +27,7 @@ development:
   username: postgres
   password:
   conn_validator_timeout: 900
+  pool: 50
 
 test:
   adapter: postgres

@@ -11,6 +11,7 @@ class Carto::Permission < ActiveRecord::Base
 
   TYPE_USER         = 'user'
   TYPE_ORGANIZATION = 'org'
+  TYPE_GROUP = 'group'
 
   belongs_to :owner, class_name: User, select: Carto::User::SELECT_WITH_DATABASE
 
@@ -59,7 +60,7 @@ class Carto::Permission < ActiveRecord::Base
 
   def acl_entries_for_user(user)
     acl.select { |entry|
-      acl_entry_is_for_user_id?(entry, user.id) || acl_entry_is_for_organization_id(entry, user.organization_id)
+      acl_entry_is_for_user_id?(entry, user.id) || acl_entry_is_for_organization_id(entry, user.organization_id) || (!user.groups.nil? && acl_entry_is_for_a_user_group(entry, user.groups.collect(&:id)))
     }
   end
 
@@ -69,6 +70,10 @@ class Carto::Permission < ActiveRecord::Base
 
   def acl_entry_is_for_organization_id(entry, organization_id)
     entry[:type] == TYPE_ORGANIZATION && entry[:id] == organization_id
+  end
+
+  def acl_entry_is_for_a_user_group(entry, group_ids)
+    entry[:type] == TYPE_GROUP && group_ids.include?(entry[:id])
   end
 
 end

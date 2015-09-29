@@ -1,5 +1,7 @@
 scss_files: "app/assets/stylesheets/**/*.css.scss"
-exclude: "lib/assets/stylesheets/old_common/**/*.css.scss"
+exclude:
+  - 'lib/assets/stylesheets/old_common/**/*.css.scss'
+  - 'app/assets/stylesheets/table/table_panel/layer-views-panels/filters_panel.css.scss'
 linters:
   BangFormat:
     enabled: true
@@ -40,8 +42,8 @@ linters:
     enabled: true
     present: true
   HexLength:
-    enabled: false
-    style: long
+    enabled: true
+    style: short
   HexNotation:
     enabled: true
     style: uppercase
@@ -162,7 +164,7 @@ linters:
     enabled: true
     severity: warning
   TrailingZero:
-    enabled: false
+    enabled: true
   UnnecessaryMantissa:
     enabled: true
   UnnecessaryParentReference:

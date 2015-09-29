@@ -1427,7 +1427,7 @@ describe Table do
       cartodb_id_schema = table_schema.detect {|s| s[0].to_s == "cartodb_id"}
       cartodb_id_schema.should be_present
       cartodb_id_schema = cartodb_id_schema[1]
-      cartodb_id_schema[:db_type].should == "bigint"
+      cartodb_id_schema[:db_type].should == "integer"
       cartodb_id_schema[:default].should == "nextval('#{table.name}_cartodb_id_seq'::regclass)"
       cartodb_id_schema[:primary_key].should == true
       cartodb_id_schema[:allow_null].should == false
@@ -1453,9 +1453,10 @@ describe Table do
       invalid_cartodb_id_schema.should be_present
     end
 
-    it "should return geometry types" do
+    it "should return geometry types when guessing is enabled" do
       data_import = DataImport.create( :user_id       => $user_1.id,
-                                       :data_source   => '/../db/fake_data/gadm4_export.csv' )
+                                       :data_source   => '/../db/fake_data/gadm4_export.csv',
+                                       :type_guessing  => true )
       data_import.run_import!
 
       table = Table.new(user_table: UserTable[data_import.table_id])

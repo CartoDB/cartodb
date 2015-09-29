@@ -47,6 +47,11 @@ describe Organization do
   end
 
   describe '#destroy_cascade' do
+
+    after(:each) do
+      @organization.delete if @organization
+    end
+
     it 'Destroys users and owner as well' do
       User.any_instance.stubs(:create_in_central).returns(true)
       User.any_instance.stubs(:update_in_central).returns(true)
@@ -70,6 +75,15 @@ describe Organization do
       User.where(id: user.id).first.should be nil
       User.where(id: owner.id).first.should be nil
     end
+
+    it 'destroys its groups through the extension' do
+      Carto::Group.any_instance.expects(:destroy_group_with_extension).once
+      @organization = FactoryGirl.create(:organization)
+      group = FactoryGirl.create(:carto_group, organization: Carto::Organization.find(@organization.id))
+      @organization.destroy
+      @organization = nil
+    end
+
   end
 
 

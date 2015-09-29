@@ -72,7 +72,9 @@ module Carto
 
       add_labels_layer(map, base_layer, dump_data)
 
-      create_visualization(
+      set_map_data(map, dump_data)
+
+      visualization = create_visualization(
         id: dump_data["id"],
         name: dump_data["title"],
         description: dump_data["description"],
@@ -83,7 +85,27 @@ module Carto
         kind: CartoDB::Visualization::Member::KIND_GEOM
       )
 
+      add_overlays(visualization, dump_data)
+
       true
+    end
+
+    def add_overlays(visualization, exported_data)
+      exported_data["overlays"].each do |exported_overlay|
+        CartoDB::Overlay::Member.new(exported_overlay.merge('visualization_id' => visualization.id)).store
+      end
+
+      true
+    end
+
+    def set_map_data(map, exported_data)
+      map.scrollwheel = exported_data["scrollwheel"]
+      map.legends = exported_data["legends"]
+      map.save.reload
+
+      map.recalculate_bounds!
+      map.recenter_using_bounds!
+      map.recalculate_zoom!
     end
 
     def prepare_layer_data(exported_layer)
@@ -147,6 +169,7 @@ module Carto
     def create_visualization(attributes)
       visualization = CartoDB::Visualization::Member.new(attributes)
       visualization.store
+      visualization
     end
 
     def add_default_labels_layer(map, base_layer)

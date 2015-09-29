@@ -1,4 +1,5 @@
 @import '../variables/mixins';
+@import '../variables/colors';
 
 /**
  *  Export Image dialog styles
@@ -68,6 +69,10 @@
 .ExportFormatPicker-format {
   color: #FFFFFF;
 }
+
+.ExportFormatPicker-format {
+  color: #FFFFFF;
+}
 .ExportImageView-dimensions  {
   display: inline-block;
   padding: 3px 5px;
@@ -85,14 +90,30 @@
   outline: none;
 }
 
-.ExportImage-formatList {
-  @include display-flex();
-  @include justify-content(center);
-  @include align-items(center, center);
+.Form-rowData--export {
+  width: 245px;
+  color: #666666;
 }
 
-.ExportImage-formatItem {
-  margin: 0 10px;
+.Form-rowLabel {
+  width: 45px;
+}
+
+.FormatChooser-format.is-selected {
+  color: #CCCCCC;
+  cursor: normal;
+  &:hover {
+    cursor: default;
+    color: #CCCCCC;
+    background: #FFFFFF;
+  }
+}
+
+.ExportImage-formatList {
+  @include display-flex();
+  @include justify-content(space-between);
+  @include align-items(center, center);
+  width: 100%;
 }
 
 .ExportImageView.is-exportable {
@@ -162,7 +183,7 @@
   color: #FFFFFF;
   text-decoration: underline;
   &:hover {
-    color: #FFFFFF;
+    color: $cTypography-linkHover;
     text-decoration: underline;
   }
 }
@@ -282,4 +303,8 @@ $resizeHandlerSize: 8px;
     top: -4px;
     cursor: nesw-resize;
   }
+}
+
+.RadioButton--export {
+  cursor: pointer;
 }

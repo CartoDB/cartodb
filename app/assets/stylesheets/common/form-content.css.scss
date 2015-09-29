@@ -179,6 +179,10 @@ $sLabel-width: 140px;
 }
 .Form-inputField--withLabel {
   padding: 0 12px 0 0;
+  background: #FFFFFF;
+  &:hover {
+    border-color: #999999;
+  }
 }
 
 .Form-inputField .Form-input {
@@ -265,6 +269,8 @@ $sLabel-width: 140px;
 .Form-inputError.is-visible { margin-top: 15px }
 .Form-input.is-disabled { background: $cStructure-grayBkg }
 .Form-input.is-invalid { border-color: $cHighlight-negative }
+.Form-inputField.is-focused { border-color: $cTypography-secondary; }
+
 // Modifiers
 .Form-input--noBorder { border: none }
 .Form-input--noBkg,
@@ -535,3 +541,4 @@ $sLabel-width: 140px;
   .tagit-choice { padding: 0 11px }
   .tagit-choice .tagit-close { display: none }
 }
+

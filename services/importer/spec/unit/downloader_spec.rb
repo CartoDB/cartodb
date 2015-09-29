@@ -7,7 +7,6 @@ describe Downloader do
   before do
     @file_url =
       "http://www.naturalearthdata.com/http//www.naturalearthdata.com/download/110m/physical/ne_110m_lakes.zip"
-    @hard_url = "https://manolo.escobar.es/param&myfilenameparam&zip_file.csv.zip&otherinfo"
     @file_filepath = path_to('ne_110m_lakes.zip')
     @file_url_without_extension = "http://www.example.com/foowithoutextension"
     @file_filepath_without_extension  = path_to('foowithoutextension')
@@ -231,8 +230,10 @@ describe Downloader do
 
     it 'gets the file name from the URL if no Content-Disposition header and custom params schema is used' do
       headers = {}
-      downloader = Downloader.new(@hard_url)
-      downloader.send(:name_from, headers, @hard_url).should eq 'zip_file.csv.zip'
+      hard_url = "https://manolo.escobar.es/param&myfilenameparam&zip_file.csv.zip&otherinfo"
+      
+      downloader = Downloader.new(hard_url)
+      downloader.send(:name_from, headers, hard_url).should eq 'zip_file.csv.zip'
     end
 
     it 'discards url query params' do

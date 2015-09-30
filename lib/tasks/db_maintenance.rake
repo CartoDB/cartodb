@@ -1159,7 +1159,7 @@ namespace :cartodb do
         else
           puts "ERROR #{user.username}: #{errors.join(';')}"
         end
-      })
+      }, 1, 0.3)
     end
 
     desc "Assign organization owner admin role at database. See CartoDB/cartodb-postgresql#104 and #5187"

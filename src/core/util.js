@@ -12,12 +12,12 @@ cdb.core.util.array2hex = function(byteArr) {
   return cdb.core.util.btoa(encoded.join(''));
 };
 
-cdb.core.util.btoa = function() {
+cdb.core.util.btoa = function(data) {
   if (typeof window['btoa'] == 'function') {
-    return cdb.core.util.encodeBase64Native;
+    return cdb.core.util.encodeBase64Native(data);
   };
 
-  return cdb.core.util.encodeBase64;
+  return cdb.core.util.encodeBase64(data);
 };
 
 cdb.core.util.encodeBase64Native = function (input) {

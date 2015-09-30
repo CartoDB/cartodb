@@ -84,6 +84,17 @@ namespace :cartodb do
       puts "Visualization #{args[:vis_id]} imported"
     end
 
+    desc "Purges old visualization backups"
+    task :purge_old_visualization_backups => :environment do |_|
+      vis_export_service = Carto::VisualizationsExportService.new
+
+      puts "Purging visualization backups older tan #{Carto::VisualizationsExportService::DAYS_TO_KEEP_BACKUP} days"
+
+      purged_count = vis_export_service.purge_old
+
+      puts "Purge complete. Removed #{purged_count} items"
+    end
+
     private
 
     def inconsistent?(viz)

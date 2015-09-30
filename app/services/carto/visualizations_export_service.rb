@@ -1,13 +1,26 @@
 # encoding: utf-8
 
 require 'cgi'
+require 'date'
 
 require_relative "../../controllers/carto/api/visualization_vizjson_adapter"
 
 module Carto
   class VisualizationsExportService
 
-    SERVICE_VERSION = 2
+    FEATURE_FLAG_NAME = "visualizations_backup"
+
+    DAYS_TO_KEEP_BACKUP = 15
+
+    SERVICE_VERSION = 1
+
+    def purge_old
+      items = retrieve_old_backups
+      items.each do |item|
+        remove_backup(item)
+      end
+      items.length
+    end
 
     def export(visualization_id)
       visualization = Carto::Visualization.where(id: visualization_id).first
@@ -47,6 +60,11 @@ module Carto
     end
 
     private
+
+    def retrieve_old_backups
+      max_date = Date.today - DAYS_TO_KEEP_BACKUP
+      Carto::VisualizationBackup.where("created_at < ?", max_date).pluck(:visualization)
+    end
 
     def remove_backup(visualization_id)
       backup_item = Carto::VisualizationBackup.where(visualization: visualization_id).first

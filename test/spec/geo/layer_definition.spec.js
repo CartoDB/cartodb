@@ -708,7 +708,7 @@ describe("LayerDefinition", function() {
         });
 
         expect(cdb.core.util.encodeBase64.calls.count()).toEqual(2);
-        expect(cdb.core.util.encodeBase64
+        expect(cdb.core.util.encodeBase64.calls.mostRecent().args.length).toEqual(1);
         expect(ajaxParams.url.indexOf('lzma=' + lzma)).not.toEqual(-1);
 
         window.btoa = _btoa;

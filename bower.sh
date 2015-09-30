@@ -31,8 +31,6 @@ cp -R bower.json $REPO/bower.json
 
 cp -R LICENSE $REPO/LICENSE.md
 
-# commit and tag repo
-echo "-- Committing and tagging $REPO"
 cd $REPO
 git add -A
 

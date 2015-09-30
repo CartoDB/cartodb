@@ -249,38 +249,9 @@ class Organization < Sequel::Model
   end
 
   def revoke_cdb_conf_access
-    return unless owner
+    return unless users
 
-    errors = []
-
-    roles = users.map(&:database_username)
-    begin
-      roles << owner.organization_member_group_role_member_name
-    rescue => e
-      errors << "WARN: Error fetching org member role (does #{name} has that role?)"
-    end
-    roles << CartoDB::PUBLIC_DB_USER
-
-    queries = []
-    roles.map do |db_role|
-      queries.concat(owner.revoke_permissions_on_cartodb_conf_queries(db_role))
-    end
-
-    queries.map do |query|
-      owner.in_database(as: :superuser) do |database|
-        begin
-          database.run(query)
-        rescue => e
-          # We can find organizations not yet upgraded for any reason or missing roles
-          errors << e.message
-        end
-      end
-    end
-
-    errors
-  rescue => e
-    # For broken organizations
-    [ "FATAL ERROR for #{name}: #{e.message}" ]
+    users.map(&:revoke_cdb_conf_access)
   end
 
   private

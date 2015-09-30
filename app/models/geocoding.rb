@@ -114,6 +114,7 @@ class Geocoding < Sequel::Model
 
   # INFO: this method shall always be called from a queue processor
   def run!
+    @started_at = Time.now
     log.append "Running geocoding job on server #{Socket.gethostname} with PID: #{Process.pid}"
     if self.force_all_rows == true
       table_geocoder.reset_cartodb_georef_status
@@ -132,6 +133,8 @@ class Geocoding < Sequel::Model
 
     self.run_geocoding!(processable_rows, rows_geocoded_before)
   rescue => e
+    # state == nil probably means it has failed even before run_geocoding begun
+    handle_geocoding_failure(e, rows_geocoded_before || 0) if state == nil
     log.append "Unexpected exception: #{e.to_s}"
     log.append e.backtrace
     CartoDB.notify_exception(e)
@@ -144,7 +147,7 @@ class Geocoding < Sequel::Model
   def run_geocoding!(processable_rows, rows_geocoded_before = 0)
     log.append "run_geocoding!()"
     self.update state: 'started', processable_rows: processable_rows
-    @started_at = Time.now
+    @started_at ||= Time.now
 
     # INFO: this is where the real stuff is done
     table_geocoder.run

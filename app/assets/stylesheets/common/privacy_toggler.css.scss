@@ -1,21 +1,26 @@
 // Privacy toggler
 // --------------------------------------------------
 
-@import "../variables/mixins";
-@import "../variables/colors";
+@import '../variables/mixins';
+@import '../variables/colors';
 
 .PrivacyToggler {
-  @include display-flex();
-  @include align-items(center);
-  @include justify-content(center);
-  margin: 0 10px;
+  display: inline-block;
   width: 40px;
   height: 40px;
-  text-align: center;
-  font-size: 16px;
-  border-radius: 40px;
+  margin: 0 10px;
   border: 1px solid $cStructure-softLine;
-  &:hover { text-decoration: none }
+  border-radius: 40px;
+  font-size: 16px;
+  text-align: center;
+  vertical-align: middle;
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+.PrivacyToggler .iconFont {
+  line-height: 20px;
 }
 .PrivacyToggler--PUBLIC,
 .PrivacyToggler--PUBLIC:hover {

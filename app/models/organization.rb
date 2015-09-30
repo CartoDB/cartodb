@@ -1,4 +1,6 @@
 # encoding: utf-8
+
+require_relative '../controllers/carto/api/group_presenter'
 require_relative './organization/organization_decorator'
 require_relative './permission'
 
@@ -25,12 +27,14 @@ class Organization < Sequel::Model
   # @param display_name String
   # @param discus_shortname String
   # @param twitter_username String
+  # @param location String
   # @param geocoding_quota Integer
   # @param map_view_quota Integer
   # @param geocoding_block_price Integer
   # @param map_view_block_price Integer
 
   one_to_many :users
+  one_to_many :groups
   many_to_one :owner, class_name: 'User', key: 'owner_id'
 
   plugin :validation_helpers
@@ -70,9 +74,14 @@ class Organization < Sequel::Model
     raise errors.join('; ') unless valid?
   end
 
+  def before_destroy
+    destroy_groups
+  end
+
   # INFO: replacement for destroy because destroying owner triggers
   # organization destroy
   def destroy_cascade
+    destroy_groups
     destroy_permissions
     destroy_non_owner_users
     if self.owner
@@ -159,7 +168,8 @@ class Organization < Sequel::Model
         :id         => self.owner ? self.owner.id : nil,
         :username   => self.owner ? self.owner.username : nil,
         :avatar_url => self.owner ? self.owner.avatar_url : nil,
-        :email      => self.owner ? self.owner.email : nil
+        :email      => self.owner ? self.owner.email : nil,
+        :groups     => self.owner && self.owner.groups ? self.owner.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : []
       },
       :quota_in_bytes           => self.quota_in_bytes,
       :geocoding_quota          => self.geocoding_quota,
@@ -169,6 +179,7 @@ class Organization < Sequel::Model
       :geocoding_block_price    => self.geocoding_block_price,
       :seats                    => self.seats,
       :twitter_username         => self.twitter_username,
+      :location                 => self.twitter_username,
       :updated_at               => self.updated_at,
       :website          => self.website,
       :admin_email      => self.admin_email,
@@ -233,7 +244,25 @@ class Organization < Sequel::Model
     ::Resque.enqueue(::Resque::OrganizationJobs::Mail::DiskQuotaLimitReached, id) if disk_quota_limit_reached?
   end
 
+  def database_name
+    owner ? owner.database_name : nil
+  end
+
+  def revoke_cdb_conf_access
+    return unless users
+
+    users.map(&:revoke_cdb_conf_access)
+  end
+
   private
+
+  def destroy_groups
+    return unless groups
+
+    groups.map { |g| Carto::Group.find(g.id).destroy_group_with_extension }
+
+    reload
+  end
 
   # Returns true if disk quota won't allow new signups with existing defaults
   def disk_quota_limit_reached?

@@ -24,6 +24,7 @@ module CartoDB
 
     TYPE_USER         = 'user'
     TYPE_ORGANIZATION = 'org'
+    TYPE_GROUP = 'group'
 
     ENTITY_TYPE_VISUALIZATION = 'vis'
 
@@ -198,12 +199,51 @@ module CartoDB
       self.access_control_list = ::JSON.dump(cleaned_acl)
     end
 
+    def set_group_permission(group, access)
+      # You only want to switch it off when request is a permission request coming from database
+      @update_db_group_permission = false
+
+      granted_access = granted_access_for_group(group)
+      if granted_access == access
+        raise ModelAlreadyExistsError.new("Group #{group.name} already has #{access} access")
+      elsif granted_access == ACCESS_NONE
+        set_subject_permission(group.id, access, TYPE_GROUP)
+      else
+        # Remove group entry from acl in order to add new (or none if ACCESS_NONE)
+        new_acl = self.inputable_acl.select { |entry| entry[:entity][:id] != group.id }
+
+        unless access == ACCESS_NONE
+          acl_entry = {
+            type: TYPE_GROUP,
+            entity: {
+              id: group.id,
+              name: group.name
+            },
+            access: access
+          }
+          new_acl << acl_entry
+        end
+
+        self.acl = new_acl
+      end
+    end
+
+    def remove_group_permission(group)
+      # You only want to switch it off when request is a permission request coming from database
+      @update_db_group_permission = false
+
+      set_group_permission(group, ACCESS_NONE)
+    end
+
     def set_user_permission(subject, access)
       set_subject_permission(subject.id, access, TYPE_USER)
     end
 
-    def set_subject_permission(subject_id, access, type)
-      new_acl = self.acl.map { |entry|
+    # acl write method expects entries to have entity, although they're not
+    # stored.
+    # TODO: fix this, since this is coupled to representation.
+    def inputable_acl
+      self.acl.map { |entry|
         {
           type: entry[:type],
           entity: {
@@ -215,6 +255,10 @@ module CartoDB
           access: entry[:access]
         }
       }
+    end
+
+    def set_subject_permission(subject_id, access, type)
+      new_acl = inputable_acl
 
       new_acl << {
           type: type,
@@ -313,6 +357,13 @@ module CartoDB
         if entry[:type] == TYPE_USER && entry[:id] == subject.id
           permission = entry[:access]
         end
+
+        if entry[:type] == TYPE_GROUP && permission == nil
+          if !subject.groups.nil? && subject.groups.collect(&:id).include?(entry[:id])
+            permission = entry[:access]
+          end
+        end
+
         # Organization has lower precedence than user, if set leave as it is
         if entry[:type] == TYPE_ORGANIZATION && permission == nil
           if !subject.organization.nil? && subject.organization.id == entry[:id]
@@ -332,6 +383,18 @@ module CartoDB
         end
       }
       ACCESS_NONE if permission.nil?
+    end
+
+    def granted_access_for_group(group)
+      permission = nil
+
+      acl.map do |entry|
+        if entry[:type] == TYPE_GROUP && entry[:id] == group.id
+          permission = entry[:access]
+        end
+      end
+      permission = ACCESS_NONE if permission.nil?
+      permission
     end
 
     # Note: Does not check ownership
@@ -395,6 +458,21 @@ module CartoDB
         end
       end
 
+      groups = relevant_groups_acl_entries(acl)
+      groups.each do |group|
+        CartoDB::SharedEntity.new(
+            recipient_id:   group[:id],
+            recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_GROUP,
+            entity_id:      entity_id,
+            entity_type:    type_for_shared_entity(entity_type)
+        ).save
+
+        # You only want to switch it off when request is a permission request coming from database
+        if e.table? && @update_db_group_permission != false
+          Carto::Group.find(group[:id]).grant_db_permission(e.table, group[:access])
+        end
+      end
+
       if e.table? and (org or users.any?)
         e.invalidate_cache
       end
@@ -452,6 +530,7 @@ module CartoDB
     def revoke_previous_permissions(entity)
       users = relevant_user_acl_entries(@old_acl.nil? ? [] : @old_acl)
       org = relevant_org_acl_entry(@old_acl.nil? ? [] : @old_acl)
+      groups = relevant_groups_acl_entries(@old_acl.nil? ? [] : @old_acl)
       case entity.class.name
         when CartoDB::Visualization::Member.to_s
           if entity.table
@@ -461,6 +540,12 @@ module CartoDB
             users.each { |user|
               entity.table.remove_access(User.where(id: user[:id]).first)
             }
+            # update_db_group_permission check is needed to avoid updating db requests
+            if @update_db_group_permission != false
+              groups.each { |group|
+                Carto::Group.find(group[:id]).grant_db_permission(entity.table, ACCESS_NONE)
+              }
+            end
             check_related_visualizations(entity.table)
           end
         else
@@ -507,6 +592,10 @@ module CartoDB
 
     def relevant_org_acl_entry(acl_list)
       relevant_acl_entries(acl_list, TYPE_ORGANIZATION).first
+    end
+
+    def relevant_groups_acl_entries(acl_list)
+      relevant_acl_entries(acl_list, TYPE_GROUP)
     end
 
     def relevant_acl_entries(acl_list, type)

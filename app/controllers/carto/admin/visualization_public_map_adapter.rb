@@ -15,16 +15,20 @@ module Carto
             'st_point'           => 'point'
           }
 
-      delegate [ :type_slide?, :has_permission?, :derived?, :organization, :organization?, :id, :likes,
-                :password_protected?, :varnish_key, :related_tables, :is_password_valid?, :get_auth_tokens, :table, :name,
-                :overlays, :created_at, :updated_at, :description, :mapviews, :geometry_types, :privacy, :tags,
-                :surrogate_key, :has_password?, :total_mapviews ] => :visualization
+      delegate [
+        :type_slide?, :has_permission?, :derived?, :organization, :organization?, :id, :likes,
+        :password_protected?, :varnish_key, :related_tables, :is_password_valid?, :get_auth_tokens, :table, :name,
+        :overlays, :created_at, :updated_at, :description, :mapviews, :geometry_types, :privacy, :tags,
+        :surrogate_key, :has_password?, :total_mapviews, :is_viewable_by_user?, :is_accesible_by_user?,
+        :can_be_cached?
+      ] => :visualization
 
       attr_reader :visualization
 
-      def initialize(visualization, current_viewer)
+      def initialize(visualization, current_viewer, context)
         @visualization = visualization
         @current_viewer = current_viewer
+        @context = context
       end
 
       def to_vizjson(options = {})
@@ -37,7 +41,7 @@ module Carto
 
       def to_hash(options={})
         # TODO: using an Api presenter here smells, refactor
-        presenter = Carto::Api::VisualizationPresenter.new(@visualization, @current_viewer, options.merge(show_stats: false))
+        presenter = Carto::Api::VisualizationPresenter.new(@visualization, @current_viewer, @context, options.merge(show_stats: false))
         options.delete(:public_fields_only) === true ? presenter.to_public_poro : presenter.to_poro
       end
 
@@ -76,7 +80,7 @@ module Carto
 
       def related_canonical_visualizations
         @visualization.related_canonical_visualizations.map { |rv|
-          Carto::Admin::VisualizationPublicMapAdapter.new(rv, @current_viewer) if rv.is_public?
+          Carto::Admin::VisualizationPublicMapAdapter.new(rv, @current_viewer, @context) if rv.is_public?
         }.compact
       end
 

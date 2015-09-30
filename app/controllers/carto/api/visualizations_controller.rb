@@ -38,14 +38,17 @@ module Carto
         # TODO: undesirable table hardcoding, needed for disambiguation. Look for
         # a better approach and/or move it to the query builder
         response = {
-          visualizations: vqb.with_order("visualizations.#{order}", :desc).build_paged(page, per_page).map { |v| VisualizationPresenter.new(v, current_viewer, { related: false }).to_poro },
+          visualizations: vqb.with_order("visualizations.#{order}", :desc).build_paged(page, per_page).map { |v|
+              VisualizationPresenter.new(v, current_viewer, self, { related: false }).to_poro
+          },
           total_entries: vqb.build.count
         }
         if current_user
+          # Prefetching at counts removes duplicates
           response.merge!({
             total_user_entries: VisualizationQueryBuilder.new.with_types(total_types).with_user_id(current_user.id).build.count,
             total_likes: VisualizationQueryBuilder.new.with_types(total_types).with_liked_by_user_id(current_user.id).build.count,
-            total_shared: VisualizationQueryBuilder.new.with_types(total_types).with_shared_with_user_id(current_user.id).with_user_id_not(current_user.id).build.count
+            total_shared: VisualizationQueryBuilder.new.with_types(total_types).with_shared_with_user_id(current_user.id).with_user_id_not(current_user.id).with_prefetch_table.build.count
           })
         end
         render_jsonp(response)
@@ -172,7 +175,7 @@ module Carto
 
       def to_hash(visualization)
         # TODO: previous controller uses public_fields_only option which I don't know if is still used
-        VisualizationPresenter.new(visualization, current_viewer).to_poro
+        VisualizationPresenter.new(visualization, current_viewer, self).to_poro
       end
 
     end

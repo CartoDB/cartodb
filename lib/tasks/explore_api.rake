@@ -2,12 +2,11 @@ require_relative '../../lib/cartodb/stats/explore_api'
 require_relative '../../lib/explore_api'
 
 namespace :cartodb do
-
   namespace :explore_api do
     VISUALIZATIONS_TABLE = 'visualizations'
 
     PUBLIC_VISUALIZATIONS_VIEW = 'explore_api'
-    CREATE_TABLE_SQL = %Q{
+    CREATE_TABLE_SQL = %{
       CREATE TABLE #{VISUALIZATIONS_TABLE} (
         visualization_id UUID primary key,
         visualization_name text,
@@ -17,6 +16,7 @@ namespace :cartodb do
         visualization_table_names text[],
         visualization_table_rows integer,
         visualization_table_size integer,
+        visualization_map_datasets integer,
         visualization_geometry_types text[],
         visualization_tags text[],
         visualization_bbox geometry,
@@ -38,7 +38,7 @@ namespace :cartodb do
         user_available_for_hire boolean,
         language regconfig default 'english'
       ) }
-    CREATE_PUBLIC_VIEW = %Q{
+    CREATE_PUBLIC_VIEW = %{
       CREATE OR REPLACE VIEW #{PUBLIC_VISUALIZATIONS_VIEW} AS
         SELECT  visualization_id,
                 visualization_name,
@@ -46,6 +46,7 @@ namespace :cartodb do
                 visualization_type,
                 visualization_table_rows,
                 visualization_table_size,
+                visualization_map_datasets,
                 visualization_geometry_types,
                 visualization_synced,
                 visualization_tags,
@@ -67,21 +68,20 @@ namespace :cartodb do
     }
     FULL_TEXT_SEARCHABLE_COLUMNS = %w{ visualization_name visualization_description visualization_title }
     INDEX_GEOMETRY_COLUMNS = %w{ visualization_bbox visualization_view_box }
-    DROP_TABLE_SQL = %Q{ DROP TABLE IF EXISTS #{VISUALIZATIONS_TABLE} CASCADE}
-    DROP_PUBLIC_VIEW_SQL = %Q{ DROP TABLE IF EXISTS #{PUBLIC_VISUALIZATIONS_VIEW} }
-    MOST_RECENT_CREATED_SQL = %Q{ SELECT MAX(visualization_created_at) FROM #{VISUALIZATIONS_TABLE} }
-    MOST_RECENT_UPDATED_SQL = %Q{ SELECT MAX(visualization_updated_at) FROM #{VISUALIZATIONS_TABLE} }
+    DROP_TABLE_SQL = %{ DROP TABLE IF EXISTS #{VISUALIZATIONS_TABLE} CASCADE}
+    DROP_PUBLIC_VIEW_SQL = %{ DROP TABLE IF EXISTS #{PUBLIC_VISUALIZATIONS_VIEW} }
+    MOST_RECENT_CREATED_SQL = %{ SELECT MAX(visualization_created_at) FROM #{VISUALIZATIONS_TABLE} }
+    MOST_RECENT_UPDATED_SQL = %{ SELECT MAX(visualization_updated_at) FROM #{VISUALIZATIONS_TABLE} }
     BATCH_SIZE = 1000
     # TODO: "in" searches are limited to 300. To increase batch replace with date ranges
     UPDATE_BATCH_SIZE = 300
-    DAYS_TO_CHECK_LIKES = 2
 
     desc "Creates #{VISUALIZATIONS_TABLE} at common-data user and loads the data for the very first time. This table contains an aggregated, desnormalized view of the public data at visualizations, and it's used by Explore API"
     task :setup => [:environment] do
       db_conn.run CREATE_TABLE_SQL
       db_conn.run CREATE_PUBLIC_VIEW
 
-      update(DAYS_TO_CHECK_LIKES)
+      update
 
       FULL_TEXT_SEARCHABLE_COLUMNS.each { |c|
         db_conn.run "CREATE INDEX #{VISUALIZATIONS_TABLE}_#{c}_fts_idx ON #{VISUALIZATIONS_TABLE} USING gin(to_tsvector(language, #{c}))"
@@ -109,44 +109,48 @@ namespace :cartodb do
     end
 
     desc "Updates the data at #{VISUALIZATIONS_TABLE}"
-    task :update , [:days_back_to_update] => :environment do |t, args|
-      days_back_to_check = args[:days_back_to_update].nil? ? DAYS_TO_CHECK_LIKES : args[:days_back_to_update].to_i
+    task :update => :environment do |t, args|
       stats_aggregator.timing('visualizations.update.total') do
-        update(days_back_to_check)
+        update
         touch_metadata
       end
     end
 
-    desc "Updates the all visualizations meta data at #{VISUALIZATIONS_TABLE}"
-    task :update_metadata => [:environment] do
-      stats_aggregator.timing('visualizations.update_metadata.total') do
-        update_visualizations_metadata
+    desc "Updates data visualization_map_datasets for all the visualizations in #{VISUALIZATIONS_TABLE}"
+    task :update_map_dataset_count => :environment do |t, args|
+      stats_aggregator.timing('visualizations.update.total') do
+        update_map_dataset_count
         touch_metadata
       end
     end
 
-    def update_visualizations_metadata
-      page = 1
-      while (visualizations = CartoDB::Visualization::Collection.new.fetch(filter_metadata(page))).count > 0 do
-        updates = 0
-        # INFO Disable temporary becuase is really inefficient
-        # tables_data = explore_api.get_visualizations_table_data(visualizations)
-        tables_data = {}
-        visualizations.each do |v|
-          update_visualization_metadata(v, tables_data)
-          updates += 1
+    # INFO: Do something like this to make a full update every time we add a new field
+    def update_map_dataset_count
+      offset = 0
+      total_number_of_updates = 0
+      types_filter = [CartoDB::Visualization::Member::TYPE_DERIVED]
+      while (explore_visualizations = get_explore_visualizations(offset, types_filter)).length > 0
+        explore_visualization_ids = explore_visualizations.map { |ev| ev[:visualization_id] }
+
+        visualizations = CartoDB::Visualization::Collection.new.fetch(ids: explore_visualization_ids)
+        visualizations.each do |vis|
+          dataset_count = explore_api.get_map_layers(vis).length
+          update_query = %[ UPDATE #{VISUALIZATIONS_TABLE} SET visualization_map_datasets = #{dataset_count} WHERE visualization_id = '#{vis.id}']
+          db_conn.run(update_query)
+          total_number_of_updates += 1
         end
-        print "Batch size: #{visualizations.count}.\tUpdated #{updates}\n"
-        page += 1
+        offset += explore_visualizations.length
       end
+
+      puts "Updated visualizations: #{total_number_of_updates}"
     end
 
-    def update_visualization_metadata(visualization, tables_data)
+    def update_visualization_metadata(visualization, tables_data, likes, mapviews)
       table_data = tables_data[visualization.user_id].nil? ? {} : tables_data[visualization.user_id][visualization.name]
-      db_conn.run update_mapviews_and_likes_query(visualization, table_data)
+      db_conn.run update_metadata_query(visualization, table_data, likes, mapviews)
     end
 
-    def update(days_back_to_check)
+    def update
       # We add one second because we have time fields with microseconds and this leads to
       # retrieve processed data crashing due constraint issues.
       # Ie. 2015-09-03 14:12:38+00 < 2015-09-03 14:12:38.294086+00 is true
@@ -156,38 +160,45 @@ namespace :cartodb do
       most_recent_updated_date += 1 unless most_recent_updated_date.nil?
 
       stats_aggregator.timing('visualizations.update.update_existing') do
-        update_existing_visualizations_at_user(days_back_to_check)
+        update_existing_visualizations_at_user
       end
       stats_aggregator.timing('visualizations.update.insert_new') do
         insert_new_visualizations_at_user(most_recent_created_date, most_recent_updated_date)
       end
     end
 
-    def update_existing_visualizations_at_user(days_back_to_check)
+    def update_existing_visualizations_at_user
       deleted_visualization_ids = []
       privated_visualization_ids = []
+      total_metadata_updated = 0
+      total_full_updated = 0
 
       puts "UPDATING"
 
-      # Get the last 2 days liked visualizations in order to use it as trigger to update likes, mapviews, etc
-      date_to_check_likes = Time.now.beginning_of_day - days_back_to_check.days
-      @liked_visualizations = explore_api.visualization_likes_since(date_to_check_likes)
+      date_to_check = Time.now.beginning_of_day
+      @liked_visualizations = explore_api.visualization_likes_since(date_to_check)
+      @mapviews_visualizations = explore_api.visualization_mapviews_since(date_to_check)
 
       # INFO: we need to check all known visualizations because they might've been deleted
       offset = 0
       while (explore_visualizations = get_explore_visualizations(offset)).length > 0
 
         explore_visualizations_by_visualization_id = {}
-        explore_visualizations.each { |row|
+        explore_visualizations.each do |row|
           explore_visualizations_by_visualization_id[row[:visualization_id]] = row
-        }
+        end
         explore_visualization_ids = explore_visualizations.map { |ev| ev[:visualization_id] }
 
         visualizations = CartoDB::Visualization::Collection.new.fetch({ ids: explore_visualization_ids})
 
         update_result = update_visualizations(visualizations, explore_visualizations_by_visualization_id, explore_visualization_ids)
+        total_metadata_updated += update_result[:metadata_updated_count]
+        total_full_updated += update_result[:full_updated_count]
 
-        print "Batch size: #{explore_visualizations.length}.\tMatches: #{visualizations.count}.\tUpdated #{update_result[:full_updated_count]} \tMapviews and liked updates: #{update_result[:mapviews_liked_updated_count]}\n"
+        print "Batch size: #{explore_visualizations.length}." \
+              "\tMatches: #{visualizations.count}." \
+              "\tUpdated #{update_result[:full_updated_count]}" \
+              "\tMetadata updated: #{update_result[:metadata_updated_count]}\n"
 
         deleted_visualization_ids +=  explore_visualization_ids - visualizations.collect(&:id)
         privated_visualization_ids += update_result[:privated_visualization_ids]
@@ -195,44 +206,54 @@ namespace :cartodb do
         offset += explore_visualizations.length
       end
 
+      print "\nTotal full updated: #{total_full_updated}." \
+            "\tTotal metadata updated: #{total_metadata_updated}\n\n"
+
       delete_visualizations(deleted_visualization_ids, privated_visualization_ids)
 
     end
 
-    def get_explore_visualizations(offset)
-      db_conn[%Q{ select visualization_id, visualization_updated_at from #{VISUALIZATIONS_TABLE} order by visualization_created_at asc limit #{UPDATE_BATCH_SIZE} offset #{offset} }].all
+    def get_explore_visualizations(offset, types = [])
+      where = %{WHERE visualization_type IN ('#{types.join("','")}')} unless types.blank?
+      query = %{ SELECT visualization_id, visualization_updated_at
+                 FROM #{VISUALIZATIONS_TABLE}
+                 #{where}
+                 ORDER BY visualization_created_at asc limit #{UPDATE_BATCH_SIZE} offset #{offset} }
+      db_conn[query].all
     end
 
     def update_visualizations(visualizations, explore_visualizations_by_visualization_id, explore_visualization_ids)
       full_updated_count = 0
-      mapviews_liked_updated_count = 0
+      metadata_updated_count = 0
       privated_visualization_ids = []
       visualizations.each do |v|
         explore_visualization = explore_visualizations_by_visualization_id[v.id]
-        # We use to_id to remove the miliseconds that could give to erroneous updates
+        # We use to_i to remove the miliseconds that could give to erroneous updates
         # http://railsware.com/blog/2014/04/01/time-comparison-in-ruby/
         if v.updated_at.to_i != explore_visualization[:visualization_updated_at].to_i
           if v.privacy != CartoDB::Visualization::Member::PRIVACY_PUBLIC
             privated_visualization_ids << v.id
           else
             # TODO: update instead of delete-insert
-            db_conn.run delete_query([v.id])
-            insert_visualizations(filter_valid_visualizations([v]))
+            # db_conn.run delete_query([v.id])
+            # insert_visualizations(filter_valid_visualizations([v]))
+            update_visualization(explore_visualization[:visualization_id], v)
             full_updated_count += 1
           end
         else
           # INFO: retrieving mapviews makes this much slower
-          # We are only updating the visualizations that have received a liked since the DAYS_TO_CHECK_LIKES in the last days
-          if (@liked_visualizations.include?(v.id))
+          # We are only updating the visualizations that have received a liked since the DAYS_TO_CHECK_LIKES
+          # in the last days
+          if (@liked_visualizations.has_key?(v.id) || @mapviews_visualizations.has_key?(v.id))
             table_data = explore_api.get_visualizations_table_data([v])
-            update_visualization_metadata(v, table_data)
-            mapviews_liked_updated_count += 1
+            update_visualization_metadata(v, table_data, @liked_visualizations[v.id], @mapviews_visualizations[v.id])
+            metadata_updated_count += 1
           end
         end
       end
       {
         full_updated_count: full_updated_count,
-        mapviews_liked_updated_count: mapviews_liked_updated_count,
+        metadata_updated_count: metadata_updated_count,
         privated_visualization_ids: privated_visualization_ids
       }
     end
@@ -250,7 +271,7 @@ namespace :cartodb do
     end
 
     def delete_query(ids)
-      %Q{ delete from #{VISUALIZATIONS_TABLE} where visualization_id in ('#{ids.join("', '")}') }
+      %{ delete from #{VISUALIZATIONS_TABLE} where visualization_id in ('#{ids.join("', '")}') }
     end
 
     def insert_new_visualizations_at_user(most_recent_created_date, most_recent_updated_date)
@@ -268,14 +289,17 @@ namespace :cartodb do
       while (visualizations = CartoDB::Visualization::Collection.new.fetch(filter(page, nil, most_recent_created_date))).count > 0 do
         updated_ids = visualizations.collect(&:id)
 
-        existing_ids = db_conn[%Q{ select visualization_id from #{VISUALIZATIONS_TABLE} where visualization_id in ('#{updated_ids.join("','")}')}].all.map { |row| row[:visualization_id] }
+        existing_ids = db_conn[%{ SELECT visualization_id
+                               FROM #{VISUALIZATIONS_TABLE}
+                               WHERE visualization_id
+                               IN ('#{updated_ids.join("','")}')}].all.map { |row| row[:visualization_id] }
 
         missing_ids = updated_ids - existing_ids
 
         if missing_ids.length > 0
           missing_visualizations = visualizations.select { |v| missing_ids.include?(v.id) }
           insert_visualizations(filter_valid_visualizations(missing_visualizations))
-          print "Batch ##{page}. \t Insertions: #{missing_visualizations.length}\n"
+          print "Batch ##{page}.\tInsertions: #{missing_visualizations.length}\n"
         end
         page += 1
       end
@@ -315,14 +339,27 @@ namespace :cartodb do
     def insert_visualizations(visualizations)
       tables_data = explore_api.get_visualizations_table_data(visualizations)
       db_conn[:visualizations].multi_insert(
-        visualizations.map { |v|
-          table_data = tables_data[v.user_id].blank? || tables_data[v.user_id][v.name].blank? ? {} : tables_data[v.user_id][v.name]
-          insert_visualization_hash(v, table_data)
-        }
+        visualizations.map do |visualization|
+          table_data = get_table_data(tables_data, visualization)
+          insert_or_update_visualization_hash(visualization, table_data)
+        end
       )
     end
 
-    def insert_visualization_hash(visualization, table_data)
+    def update_visualization(explore_visualization_id, visualization)
+      table_data = get_table_data(explore_api.get_visualizations_table_data([visualization]), visualization)
+      update_hash = insert_or_update_visualization_hash(visualization, table_data)
+      update_hash.delete(:visualization_id)
+      visualization_dataset = db_conn[:visualizations].where("visualization_id = '#{explore_visualization_id}'")
+      visualization_dataset.update(update_hash)
+    end
+
+    def get_table_data(tables_data, vis)
+      return {} if tables_data[vis.user_id].blank? || tables_data[vis.user_id][vis.name].blank?
+      tables_data[vis.user_id][vis.name]
+    end
+
+    def insert_or_update_visualization_hash(visualization, table_data)
       v = visualization
       u = v.user
       geometry_data = explore_api.get_geometry_data(visualization)
@@ -336,6 +373,7 @@ namespace :cartodb do
         visualization_table_names: explore_api.get_visualization_tables(v),
         visualization_table_rows: table_data[:rows],
         visualization_table_size: table_data[:size],
+        visualization_map_datasets: explore_api.get_map_layers(v).length,
         visualization_geometry_types: table_data[:geometry_types].blank? ? nil : Sequel.pg_array(table_data[:geometry_types]),
         visualization_tags: v.tags.nil? || v.tags.empty? ? nil : Sequel.pg_array(v.tags),
         visualization_created_at: v.created_at,
@@ -343,7 +381,7 @@ namespace :cartodb do
         visualization_map_id: v.map_id,
         visualization_title: v.title,
         visualization_likes: v.likes_count,
-        visualization_mapviews: v.mapviews,
+        visualization_mapviews: v.total_mapviews,
         visualization_bbox: v.bbox.nil? ? nil : Sequel.lit(explore_api.bbox_from_value(v.bbox)),
         visualization_view_box: geometry_data[:view_box_polygon].nil? ? nil : Sequel.lit(geometry_data[:view_box_polygon]),
         visualization_view_box_center: geometry_data[:center_geometry].nil? ? nil : Sequel.lit(geometry_data[:center_geometry]),
@@ -358,18 +396,31 @@ namespace :cartodb do
       }
     end
 
-    def update_mapviews_and_likes_query(visualization, table_data)
-      %Q{ UPDATE #{VISUALIZATIONS_TABLE} set
-            visualization_mapviews = #{visualization.mapviews},
-            visualization_likes = #{visualization.likes_count},
+    def update_metadata_query(visualization, table_data, likes, mapviews)
+      %[ UPDATE #{VISUALIZATIONS_TABLE} set
             visualization_synced = #{!visualization.is_synced?}
+            #{update_mapviews(mapviews)}
+            #{update_likes(likes)}
             #{update_tables(visualization)}
             #{update_geometry(visualization)}
-          where visualization_id = '#{visualization.id}' }
+          where visualization_id = '#{visualization.id}' ]
+    end
+
+    def update_mapviews(mapviews)
+      %[, visualization_mapviews = #{mapviews}] unless mapviews.nil? || mapviews == 0
+    end
+
+    def update_likes(likes)
+      %[, visualization_likes = #{likes}] unless likes.nil? || likes == 0
     end
 
     def update_tables(visualization)
-      %Q{, visualization_table_names = '#{explore_api.get_visualization_tables(visualization)}'}
+      if visualization.type == CartoDB::Visualization::Member::TYPE_DERIVED
+        %[, visualization_table_names = '#{explore_api.get_visualization_tables(visualization)}',
+            visualization_map_datasets = #{explore_api.get_map_layers(visualization).length}]
+      elsif visualization.type == CartoDB::Visualization::Member::TYPE_CANONICAL
+        %[, visualization_table_names = '#{explore_api.get_visualization_tables(visualization)}']
+      end
     end
 
     def update_geometry(visualization)
@@ -379,12 +430,12 @@ namespace :cartodb do
       view_zoom = geometry_data[:zoom].nil? ? 'NULL' : geometry_data[:zoom]
       bbox_value = !visualization.bbox.nil? ? "ST_AsText('#{visualization.bbox}')" : 'NULL'
       if visualization.type == CartoDB::Visualization::Member::TYPE_DERIVED
-        %Q{, visualization_bbox = #{bbox_value},
+        %[, visualization_bbox = #{bbox_value},
              visualization_view_box = #{view_box_polygon},
              visualization_view_box_center = #{center_geometry},
-             visualization_zoom = #{view_zoom}}
+             visualization_zoom = #{view_zoom}]
       elsif !bbox_value.nil?
-        %Q{, visualization_bbox = #{bbox_value}}
+        %[, visualization_bbox = #{bbox_value}]
       else
         return
       end
@@ -394,9 +445,9 @@ namespace :cartodb do
     def update_table_data(visualization_type, table_data)
       return if table_data.blank?
       if visualization_type == CartoDB::Visualization::Member::TYPE_CANONICAL
-        %Q{, visualization_table_rows = #{table_data[:rows]},
+        %[ , visualization_table_rows = #{table_data[:rows]},
              visualization_table_size = #{table_data[:size]},
-             visualization_geometry_types = '{#{table_data[:geometry_types].join(',')}}'}
+             visualization_geometry_types = '{#{table_data[:geometry_types].join(',')}}' ]
       end
     end
 
@@ -414,7 +465,7 @@ namespace :cartodb do
     end
 
     def touch_metadata
-      db_conn(as: :superuser).run(%Q{SELECT CDB_TableMetadataTouch('#{VISUALIZATIONS_TABLE}')})
+      db_conn(as: :superuser).run(%{SELECT CDB_TableMetadataTouch('#{VISUALIZATIONS_TABLE}')})
     end
 
     def stats_aggregator

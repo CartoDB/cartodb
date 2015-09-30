@@ -102,18 +102,18 @@
         <div class="PublicMap-leftBlock PublicMap-leftBlock--owner">
           <ul class="Navmenu-list Navmenu-list--owner Navmenu-list--avatar">
             <li class="Navmenu-item">
-              <a href="<%= CartoDB.url(self, 'root', {}, @visualization.user) %>" target="_blank" class="UserAvatar">
+              <a href="<%= CartoDB.url(self, 'public_user_feed_home', {}, @visualization.user) %>" target="_blank" class="UserAvatar">
                 <img class="UserAvatar-img--medium" src="<%= @visualization.user.avatar %>" alt="<%= @name %>" title="<%= @name %>" />
               </a>
             </li>
           </ul>
 
           <ul class="Navmenu-list Navmenu-list--owner">
-            <li class="Navmenu-item last-child">
-              <a href="<%= CartoDB.url(self, 'root', {}, @visualization.user) %>" class="Navmenu-link Navmenu-link--owner"><%= @name %></a>
+            <li class="Navmenu-item u-hideOnTablet last-child">
+              <a href="<%= CartoDB.url(self, 'public_user_feed_home', {}, @visualization.user) %>" class="Navmenu-link Navmenu-link--owner"><%= @name %></a>
             </li>
 
-            <li class="Navmenu-item u-hideOnTablet">
+            <li class="Navmenu-item">
               <i class="Navmenu-rarrow iconFont iconFont-Rarrow"></i>
               <a href="<%= CartoDB.url(self, 'public_datasets_home', {}, @visualization.user) %>" class="Navmenu-link">Datasets</a>
             </li>
@@ -241,7 +241,7 @@
             </div>
           </li>
         <% end %>
-        
+
         <%# at most 3 cards per line, visbility is handled by CSS depending on viewport size %>
         <% if @total_visualizations.count < 3 %>
           <% ((3 - @total_visualizations.count + 3) % 3).times.each do %>

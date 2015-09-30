@@ -1,4 +1,4 @@
-# What is CartoDB? #
+# What is CartoDB?
 
 [![Code Climate](https://codeclimate.com/github/CartoDB/cartodb20.png)](https://codeclimate.com/github/CartoDB/cartodb20)
 
@@ -17,7 +17,7 @@ We hope you like it!
 ![Map View Wizard](http://cartodb.s3.amazonaws.com/github/map_view_wizard.png)
 ![Data View](http://cartodb.s3.amazonaws.com/github/data_view.png)
 
-# What can I do with CartoDB? #
+## What can I do with CartoDB?
 
 With CartoDB, you can upload your geospatial data (Shapefiles, GeoJSON,
 etc) using a web form and then make it public or private.
@@ -34,26 +34,31 @@ Develop](http://cartodb.com/develop) for interactive examples
 and code.
 
 
-# Installing
+## Installing
 
 Read the [installation guide in CartoDB developers documentation](http://cartodb.readthedocs.org/en/latest/install.html)
 
-# How do I upgrade CartoDB? #
+## How do I upgrade CartoDB?
 
 See [UPGRADE](UPGRADE) for instructions about upgrading CartoDB.
 
 For upgrade of Windshaft-CartoDB and CartoDB-SQL-API see the relative
 documentation.
 
-# Developing & Contributing to CartoDB
+## Developing & Contributing to CartoDB
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for how you can improve CartoDB. :)
+See [our contributing doc](CONTRIBUTING.md) for how you can improve CartoDB, but you will need to sign a Contributor License Agreement (CLA) before making a submission, [learn more here](https://cartodb.com/contributing).
 
-## Submitting Contributions
+## Testing
 
-* You will need to sign a Contributor License Agreement (CLA) before making a submission. [Learn more here.](https://cartodb.com/contributing)
+Check the [testing doc](TESTING.md) section.
 
+## Requirements
 
-# Testing
+CartoDB works in any modern browser, but if you want more info:
 
-See [TESTING.md](TESTING.md)
+- [Internet Explorer](http://windows.microsoft.com/en-us/internet-explorer/download-ie) from v10.
+- [Opera](http://www.opera.com/) from v31.
+- [Firefox](https://www.mozilla.org/en-US/firefox/new/) from v38.
+- [Safari](http://www.apple.com/safari/) from v8.
+- [Chrome](https://www.google.com/chrome/browser/desktop/) from v31.

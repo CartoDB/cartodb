@@ -7,7 +7,7 @@ require_relative '../carto/admin/visualization_public_map_adapter'
 require_relative '../../helpers/embed_redis_cache'
 require_dependency 'static_maps_url_helper'
 
-class Admin::VisualizationsController < ApplicationController
+class Admin::VisualizationsController < Admin::AdminController
 
   include CartoDB
 
@@ -17,11 +17,12 @@ class Admin::VisualizationsController < ApplicationController
   ssl_allowed :embed_map, :public_map, :show_protected_embed_map, :public_table,
               :show_organization_public_map, :show_organization_embed_map,
               :embed_protected, :public_map_protected, :embed_forbidden, :track_embed
-  ssl_required :index, :show, :protected_embed_map, :protected_public_map, :show_protected_public_map
+  ssl_required :index, :show, :protected_public_map, :show_protected_public_map
   before_filter :login_required, only: [:index]
   before_filter :table_and_schema_from_params, only: [:show, :public_table, :public_map, :show_protected_public_map,
                                                       :show_protected_embed_map, :embed_map]
   before_filter :link_ghost_tables, only: [:index]
+  before_filter :get_viewed_user, only: [:public_map, :public_table]
   before_filter :load_common_data, only: [:index]
 
   before_filter :resolve_visualization_and_table, only: [:show, :public_table, :public_map,
@@ -33,6 +34,10 @@ class Admin::VisualizationsController < ApplicationController
   skip_before_filter :browser_is_html5_compliant?, only: [:public_map, :embed_map, :track_embed,
                                                           :show_protected_embed_map, :show_protected_public_map]
   skip_before_filter :verify_authenticity_token, only: [:show_protected_public_map, :show_protected_embed_map]
+
+  skip_before_filter :x_frame_options_deny, only: [:embed_forbidden, :embed_map, :embed_protected,
+                                                   :show_organization_embed_map, :show_protected_embed_map,
+                                                   :track_embed]
 
   def index
     @first_time    = !current_user.dashboard_viewed?
@@ -138,6 +143,7 @@ class Admin::VisualizationsController < ApplicationController
     @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)
     @avatar_url             = @visualization.user.avatar
     @twitter_username       = @visualization.user.twitter_username.present? ? @visualization.user.twitter_username : nil
+    @location               = @visualization.user.location.present? ? @visualization.user.location : nil
 
     @user_domain = user_domain_variable(request)
 
@@ -181,7 +187,7 @@ class Admin::VisualizationsController < ApplicationController
       end
     end
 
-    return(embed_forbidden) if @visualization.private?
+    return(embed_forbidden) unless @visualization.is_accesible_by_user?(current_user)
     return(public_map_protected) if @visualization.password_protected?
     if current_user && @visualization.organization? &&
         @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
@@ -199,7 +205,9 @@ class Admin::VisualizationsController < ApplicationController
                               ) and return
     end
 
-    response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
+    if @visualization.can_be_cached?
+      response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
+    end
 
     if @more_visualizations && @more_visualizations.length > 0
       additional_keys = []
@@ -211,14 +219,17 @@ class Admin::VisualizationsController < ApplicationController
        additional_keys = ''
     end
 
-    response.headers['Surrogate-Key'] =
-      "#{CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES} #{@visualization.surrogate_key}#{additional_keys}"
+    if @visualization.can_be_cached?
+      response.headers['Surrogate-Key'] =
+        "#{CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES} #{@visualization.surrogate_key}#{additional_keys}"
 
-    response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
+      response.headers['Cache-Control'] = "no-cache,max-age=86400,must-revalidate, public"
+    end
 
     @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)
     @avatar_url             = @visualization.user.avatar
     @twitter_username       = @visualization.user.twitter_username.present? ? @visualization.user.twitter_username : nil
+    @location               = @visualization.user.location.present? ? @visualization.user.location : nil
     @google_maps_query_string = @visualization.user.google_maps_query_string
 
     @mapviews = @visualization.total_mapviews
@@ -281,7 +292,7 @@ class Admin::VisualizationsController < ApplicationController
     @hide_logo = is_logo_hidden(@visualization, params)
 
     respond_to do |format|
-      format.html { render 'public_map' }
+      format.html { render 'public_map', layout: 'application_public_visualization_layout' }
     end
   end
 
@@ -448,7 +459,7 @@ class Admin::VisualizationsController < ApplicationController
     vqb.with_excluded_ids([excluded_visualization.id]) if excluded_visualization
     visualizations = vqb.build_paged(1, MAX_MORE_VISUALIZATIONS)
     visualizations.map { |v|
-      Carto::Admin::VisualizationPublicMapAdapter.new(v, current_user)
+      Carto::Admin::VisualizationPublicMapAdapter.new(v, current_user, self)
     }
   end
 
@@ -610,7 +621,7 @@ class Admin::VisualizationsController < ApplicationController
                                                     .first
 
     return get_visualization_and_table_from_table_id(table_id) if visualization.nil?
-    return Carto::Admin::VisualizationPublicMapAdapter.new(visualization, current_user), visualization.table_service
+    return Carto::Admin::VisualizationPublicMapAdapter.new(visualization, current_user, self), visualization.table_service
   end
 
   def get_visualization_and_table_from_table_id(table_id)
@@ -618,7 +629,7 @@ class Admin::VisualizationsController < ApplicationController
     user_table = Carto::UserTable.where({ id: table_id }).first
     return nil, nil if user_table.nil?
     visualization = user_table.visualization
-    return Carto::Admin::VisualizationPublicMapAdapter.new(visualization, current_user), visualization.table_service
+    return Carto::Admin::VisualizationPublicMapAdapter.new(visualization, current_user, self), visualization.table_service
   end
 
   # TODO: remove this method and use  app/helpers/carto/uuidhelper.rb. Not used yet because this changed was pushed before
@@ -652,6 +663,11 @@ class Admin::VisualizationsController < ApplicationController
 
   def embed_redis_cache
     @embed_redis_cache ||= EmbedRedisCache.new($tables_metadata)
+  end
+
+  def get_viewed_user
+    username = CartoDB.extract_subdomain(request).strip.downcase
+    @viewed_user = User.where(username: username).first
   end
 
 end

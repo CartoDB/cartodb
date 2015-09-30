@@ -1,6 +1,6 @@
-// cartodb.js version: 3.15.4
+// cartodb.js version: 3.15.7
 // uncompressed version: cartodb.uncompressed.js
-// sha: 54e5a86ad6e285e1709121b483586adde90b366a
+// sha: 2983b2fdcef914afdb1f4fdae173471143930452
 (function() {
   var define;  // Undefine define (require.js), see https://github.com/CartoDB/cartodb.js/issues/543
   var root = this;
@@ -25655,7 +25655,7 @@ if (typeof window !== 'undefined') {
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = "3.15.4";
+    cdb.VERSION = "3.15.7";
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -32711,47 +32711,33 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
   className: 'cartodb-fullscreen',
 
   events: {
-
     "click a": "_toggleFullScreen"
-
   },
 
   initialize: function() {
-
     _.bindAll(this, 'render');
     _.defaults(this.options, this.default_options);
-
-    //this.model = new cdb.core.Model({
-      //allowWheelOnFullscreen: false
-    //});
-
     this._addWheelEvent();
-
   },
 
   _addWheelEvent: function() {
+    var self    = this;
+    var mapView = this.options.mapView;
 
-      var self    = this;
-      var mapView = this.options.mapView;
-
-      $(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange', function() {
-
-        if ( !document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
-          if (self.model.get("allowWheelOnFullscreen")) {
-            mapView.options.map.set("scrollwheel", false);
-          }
+    $(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange', function() {
+      if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
+        if (self.model.get("allowWheelOnFullscreen")) {
+          mapView.options.map.set("scrollwheel", false);
         }
-
-        mapView.invalidateSize();
-
-      });
-
+      }
+      mapView.invalidateSize();
+    });
   },
 
   _toggleFullScreen: function(ev) {
-
-    ev.stopPropagation();
-    ev.preventDefault();
+    if (ev) {
+      this.killEvent(ev);
+    }
 
     var doc   = window.document;
     var docEl = doc.documentElement;
@@ -32762,11 +32748,9 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
 
     var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
     var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
-
     var mapView = this.options.mapView;
 
     if (!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
-
       if (docEl.webkitRequestFullScreen) {
         // Cartodb.js #361 :: Full screen button not working on Safari 8.0.3 #361
         // Safari has a bug that fullScreen doestn't work with Element.ALLOW_KEYBOARD_INPUT);
@@ -32780,58 +32764,47 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
         }
       }
 
-      if (mapView) {
-
-        if (this.model.get("allowWheelOnFullscreen")) {
-          mapView.options.map.set("scrollwheel", true);
-        }
-
+      if (mapView && this.model.get("allowWheelOnFullscreen")) {
+        mapView.map.set("scrollwheel", true);
       }
-
     } else {
-
       cancelFullScreen.call(doc);
-
     }
   },
 
   render: function() {
-    if (this._canFullScreenBeEnabled()) {
-      var $el = this.$el;
-      var options = _.extend(this.options);
-      $el.html(this.options.template(options));
-    } else {
-      cdb.log.info('FullScreen is deprecated on insecure origins. See https://goo.gl/rStTGz for more details.');
+    var options = _.extend(
+      this.options,
+      {
+        mapUrl: location.href || ''
+      }
+    );
+    this.$el.html(this.options.template(options));
+
+    if (!this._canFullScreenBeEnabled()) {
+      this.undelegateEvents();
+      cdb.log.info('FullScreen API is deprecated on insecure origins. See https://goo.gl/rStTGz for more details.');
     }
 
     return this;
   },
 
   _canFullScreenBeEnabled: function() {
-    // If frameElement exists, it means that the map
-    // is embebed as an iframe so we need to check if
-    // the parent has a secure protocol
-    var frameElement = window && window.frameElement;
-    if (frameElement) {
-      var parentWindow = this._getFramedWindow(frameElement);
-      var parentProtocol = parentWindow.location.protocol;
-      if (parentProtocol.search('https:') !== 0) {
+    if (this._isInIframe()) {
+      var parentUrl = document.referrer;
+      if (parentUrl.search('https:') !== 0) {
         return false;
       }
     }
-
     return true;
   },
 
-  _getFramedWindow: function(f) {
-    if (f.parentNode == null) {
-      f = document.body.appendChild(f);
+  _isInIframe: function() {
+    try {
+      return window.self !== window.top;
+    } catch (e) {
+      return true;
     }
-    var w = (f.contentWindow || f.contentDocument);
-    if (w && w.nodeType && w.nodeType==9) {
-      w = (w.defaultView || w.parentWindow);
-    }
-    return w;
   }
 
 });
@@ -34971,8 +34944,9 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
    * @params {Object} Map object
    * @params {Object} Wax event object
    */
-  _findPos: function (map,o) {
-    var curleft = 0, curtop = 0;
+  _findPos: function (map, o) {
+    var curleft = 0;
+    var curtop = 0;
     var obj = map.getContainer();
 
     var x, y;
@@ -34984,22 +34958,32 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
       y = o.e.clientY;
     }
 
-    if (obj.offsetParent) {
-      // Modern browsers
+    // If the map is fixed at the top of the window, we can't use offsetParent
+    // cause there might be some scrolling that we need to take into account.
+    if (obj.offsetParent && obj.offsetTop > 0) {
       do {
         curleft += obj.offsetLeft;
         curtop += obj.offsetTop;
       } while (obj = obj.offsetParent);
-      return map.containerPointToLayerPoint(new L.Point(x - curleft, y - curtop));
+      var point = this._newPoint(
+        x - curleft, y - curtop);
     } else {
       var rect = obj.getBoundingClientRect();
-      var p = new L.Point(
-            (o.e.clientX? o.e.clientX: x) - rect.left - obj.clientLeft - window.scrollX,
-            (o.e.clientY? o.e.clientY: y) - rect.top - obj.clientTop - window.scrollY);
-      return map.containerPointToLayerPoint(p);
+      var scrollX = (window.scrollX || window.pageXOffset);
+      var scrollY = (window.scrollY || window.pageYOffset);
+      var point = this._newPoint(
+        (o.e.clientX? o.e.clientX: x) - rect.left - obj.clientLeft - scrollX,
+        (o.e.clientY? o.e.clientY: y) - rect.top - obj.clientTop - scrollY);
     }
-  }
+    return map.containerPointToLayerPoint(point);
+  },
 
+  /**
+   * Creates an instance of a Leaflet Point
+   */
+  _newPoint: function(x, y) {
+    return new L.Point(x, y);
+  }
 });
 
 L.CartoDBGroupLayer = L.CartoDBGroupLayerBase.extend({
@@ -35753,14 +35737,35 @@ cdb.geo.leaflet.PathView = PathView;
     },
 
     setAttribution: function() {
+      var attributionControl = this._getAttributionControl();
 
-      // Attributions have already been set but we override them with
-      // the ones in the map object that are in the right order and include
-      // the default CartoDB attribution
-      this.map_leaflet.attributionControl._attributions = {};
-      _.each(this.map.get('attribution'), function(attribution){
-        this.map_leaflet.attributionControl.addAttribution(attribution);
-      }.bind(this));
+      // Save the attributions that were in the map the first time a new layer
+      // is added and the attributions of the map have changed
+      if (!this._originalAttributions) {
+        this._originalAttributions = Object.keys(attributionControl._attributions);
+      }
+
+      // Clear the attributions and re-add the original and custom attributions in
+      // the order we want
+      attributionControl._attributions = {};
+      var newAttributions = this._originalAttributions.concat(this.map.get('attribution'));
+      _.each(newAttributions, function(attribution) {
+        attributionControl.addAttribution(attribution);
+      });
+    },
+
+    _getAttributionControl: function() {
+      if (this._attributionControl) {
+        return this._attributionControl;
+      }
+
+      this._attributionControl = this.map_leaflet.attributionControl;
+      if (!this._attributionControl) {
+        this._attributionControl = L.control.attribution({ prefix: '' });
+        this.map_leaflet.addControl(this._attributionControl);
+      }
+
+      return this._attributionControl;
     },
 
     getSize: function() {
@@ -36305,12 +36310,12 @@ CartoDBLayerGroupBase.prototype._checkLayer = function() {
 }
 
 CartoDBLayerGroupBase.prototype._findPos = function (map,o) {
-  var curleft, cartop;
-  curleft = curtop = 0;
+  var curleft = 0;
+  var curtop = 0;
   var obj = map.getDiv();
 
   var x, y;
-  if (o.e.changedTouches && o.e.changedTouches.length > 0 && (o.e.changedTouches[0] !== undefined) ) {
+  if (o.e.changedTouches && o.e.changedTouches.length > 0) {
     x = o.e.changedTouches[0].clientX + window.scrollX;
     y = o.e.changedTouches[0].clientY + window.scrollY;
   } else {
@@ -36318,14 +36323,31 @@ CartoDBLayerGroupBase.prototype._findPos = function (map,o) {
     y = o.e.clientY;
   }
 
-  do {
-    curleft += obj.offsetLeft;
-    curtop += obj.offsetTop;
-  } while (obj = obj.offsetParent);
-  return new google.maps.Point(
-      x - curleft,
-      y - curtop
-  );
+  // If the map is fixed at the top of the window, we can't use offsetParent
+  // cause there might be some scrolling that we need to take into account.
+  if (obj.offsetParent && obj.offsetTop > 0) {
+    do {
+      curleft += obj.offsetLeft;
+      curtop += obj.offsetTop;
+    } while (obj = obj.offsetParent);
+    var point = this._newPoint(
+      x - curleft, y - curtop);
+  } else {
+    var rect = obj.getBoundingClientRect();
+    var scrollX = (window.scrollX || window.pageXOffset);
+    var scrollY = (window.scrollY || window.pageYOffset);
+    var point = this._newPoint(
+      (o.e.clientX? o.e.clientX: x) - rect.left - obj.clientLeft - scrollX,
+      (o.e.clientY? o.e.clientY: y) - rect.top - obj.clientTop - scrollY);
+  }
+  return point;
+};
+
+/**
+ * Creates an instance of a google.maps Point
+ */
+CartoDBLayerGroupBase.prototype._newPoint = function(x, y) {
+  return new google.maps.Point(x, y);
 };
 
 CartoDBLayerGroupBase.prototype._manageOffEvents = function(map, o){
@@ -40750,7 +40772,7 @@ cdb.vis.Overlay.register('fullscreen', function(data, vis) {
   options.allowWheelOnFullscreen = false;
 
   var template = cdb.core.Template.compile(
-    data.template || '<a href="#"></a>',
+    data.template || '<a href="{{ mapUrl }}" target="_blank"></a>',
     data.templateType || 'mustache'
   );
 
@@ -41091,7 +41113,7 @@ Layers.register('torque', function(vis, data) {
           }
           layerData = visData.layers[index];
         } else {
-          var DATA_LAYER_TYPES = ['namedmap', 'layergroup'];
+          var DATA_LAYER_TYPES = ['namedmap', 'layergroup', 'torque'];
 
           // Select the first data layer (namedmap or layergroup)
           layerData = _.find(visData.layers, function(layer){

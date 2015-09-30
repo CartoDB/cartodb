@@ -25,6 +25,9 @@ class Carto::User < ActiveRecord::Base
   has_many :search_tweets, inverse_of: :user
   has_many :synchronizations, inverse_of: :user
 
+  has_many :users_group, dependent: :destroy, class_name: Carto::UsersGroup
+  has_many :groups, :through => :users_group
+
   delegate [
       :database_username, :database_password, :in_database, :load_cartodb_functions, :rebuild_quota_trigger,
       :db_size_in_bytes, :get_api_calls, :table_count, :public_visualization_count, :visualization_count,
@@ -32,8 +35,8 @@ class Carto::User < ActiveRecord::Base
     ] => :service
 
   # INFO: select filter is done for security and performance reasons. Add new columns if needed.
-  DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," +
-                   "users.api_key, users.database_schema, users.database_name, users.name," +
+  DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," + 
+                   "users.api_key, users.database_schema, users.database_name, users.name, users.location," +
                    "users.disqus_shortname, users.account_type, users.twitter_username, users.google_maps_key"
 
   SELECT_WITH_DATABASE = DEFAULT_SELECT + ", users.quota_in_bytes, users.database_host"

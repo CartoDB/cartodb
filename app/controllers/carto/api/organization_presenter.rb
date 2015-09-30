@@ -1,3 +1,6 @@
+# encoding: utf-8
+
+require_relative 'group_presenter'
 
 module Carto
   module Api
@@ -21,7 +24,8 @@ module Carto
             :id         => @organization.owner ? @organization.owner.id : nil,
             :username   => @organization.owner ? @organization.owner.username : nil,
             :avatar_url => @organization.owner ? @organization.owner.avatar_url : nil,
-            :email      => @organization.owner ? @organization.owner.email : nil
+            :email      => @organization.owner ? @organization.owner.email : nil,
+            :groups     => @organization.owner && @organization.owner.groups ? @organization.owner.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : []
           },
           :quota_in_bytes           => @organization.quota_in_bytes,
           :geocoding_quota          => @organization.geocoding_quota,
@@ -31,6 +35,7 @@ module Carto
           :geocoding_block_price    => @organization.geocoding_block_price,
           :seats                    => @organization.seats,
           :twitter_username         => @organization.twitter_username,
+          :location                 => @organization.location,
           :updated_at               => @organization.updated_at,
           :website          => @organization.website,
           :admin_email      => @organization.admin_email,

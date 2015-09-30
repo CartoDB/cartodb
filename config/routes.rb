@@ -23,7 +23,12 @@ CartoDB::Application.routes.draw do
   match '(/user/:user_domain)(/u/:user_domain)/sessions/create' => 'sessions#create',  as: :create_session
 
   match '(/user/:user_domain)(/u/:user_domain)/status'          => 'home#app_status'
-  match '(/user/:user_domain)(/u/:user_domain)/diagnosis'          => 'home#app_diagnosis'
+  match '(/user/:user_domain)(/u/:user_domain)/diagnosis'       => 'home#app_diagnosis'
+
+  # Explore
+  get   '(/user/:user_domain)(/u/:user_domain)/explore'         => 'explore#index',     as: :explore_index
+  get   '(/user/:user_domain)(/u/:user_domain)/search'          => 'explore#search',    as: :explore_search
+  get   '(/user/:user_domain)(/u/:user_domain)/search/:q'       => 'explore#search',    as: :explore_search_query
 
   # OAuth
   match '(/user/:user_domain)(/u/:user_domain)/oauth/authorize'      => 'oauth#authorize',     as: :authorize
@@ -42,6 +47,8 @@ CartoDB::Application.routes.draw do
     get    '(/user/:user_domain)(/u/:user_domain)/organization/settings'        => 'organizations#settings',        as: :organization_settings
     put    '(/user/:user_domain)(/u/:user_domain)/organization/settings'        => 'organizations#settings_update', as: :organization_settings_update
     post '(/user/:user_domain)(/u/:user_domain)/organization/regenerate_api_keys'       => 'organizations#regenerate_all_api_keys', as: :regenerate_organization_users_api_key
+
+    get    '(/user/:user_domain)(/u/:user_domain)/organization/groups(/*other)' => 'organizations#groups',          as: :organization_groups
 
     get    '(/user/:user_domain)(/u/:user_domain)/organization/auth'        => 'organizations#auth',        as: :organization_auth
     put    '(/user/:user_domain)(/u/:user_domain)/organization/auth'        => 'organizations#auth_update', as: :organization_auth_update
@@ -233,10 +240,12 @@ CartoDB::Application.routes.draw do
 
     # Public dashboard
     # root also goes to 'pages#public', as: public_visualizations_home
-    get '(/user/:user_domain)(/u/:user_domain)/maps'                     => 'pages#public', as: :public_maps_home
-    get '(/user/:user_domain)(/u/:user_domain)/page/:page'               => 'pages#public', as: :public_page
-    get '(/user/:user_domain)(/u/:user_domain)/tag/:tag'                 => 'pages#public', as: :public_tag
-    get '(/user/:user_domain)(/u/:user_domain)/tag/:tag/:page'           => 'pages#public', as: :public_tag_page
+    get '(/user/:user_domain)(/u/:user_domain)/me'                       => 'pages#user_feed',  as: :public_user_feed_home
+    get '(/user/:user_domain)(/u/:user_domain)/page/:page'               => 'pages#public',     as: :public_page
+    get '(/user/:user_domain)(/u/:user_domain)/tag/:tag'                 => 'pages#public',     as: :public_tag
+    get '(/user/:user_domain)(/u/:user_domain)/tag/:tag/:page'           => 'pages#public',     as: :public_tag_page
+    # Public maps
+    get '(/user/:user_domain)(/u/:user_domain)/maps'                     => 'pages#maps', as: :public_maps_home
     # Public dataset
     get '(/user/:user_domain)(/u/:user_domain)/datasets'                 => 'pages#datasets', as: :public_datasets_home
     get '(/user/:user_domain)(/u/:user_domain)/datasets/page/:page'      => 'pages#datasets', as: :public_datasets_page
@@ -287,6 +296,7 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/likes'                      => 'visualizations#likes_count',     as: :api_v1_visualizations_likes_count,     constraints: { id: /[^\/]+/ }
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/likes/detailed'             => 'visualizations#likes_list',      as: :api_v1_visualizations_likes_list,      constraints: { id: /[^\/]+/ }
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/like'                       => 'visualizations#is_liked',        as: :api_v1_visualizations_is_liked,        constraints: { id: /[^\/]+/ }
+    match '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/like' => 'visualizations#is_liked', as: :api_v1_visualizations_is_liked, constraints: {method: 'OPTIONS'}
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/related_templates'          => 'templates#related_templates_by_visualization', as: :api_v1_visualizations_related_templates, constraints: { id: /[^\/]+/ }
 
     # Tables
@@ -353,6 +363,31 @@ CartoDB::Application.routes.draw do
 
     # Organization (new endpoint that deprecates old, unused one, so v1)
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:id/users' => 'organizations#users', as: :api_v1_organization_users, constraints: { id: /[^\/]+/ }
+
+    # Groups
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:organization_id/groups' => 'groups#index', as: :api_v1_organization_groups, constraints: { organization_id: /[^\/]+/ }
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:organization_id/groups/:group_id' => 'groups#show', as: :api_v1_organization_groups_show, constraints: { organization_id: /[^\/]+/, group_id: /[^\/]+/ }
+    post '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:organization_id/groups' => 'groups#create', as: :api_v1_organization_groups_create, constraints: { organization_id: /[^\/]+/ }
+    put '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:organization_id/groups/:group_id' => 'groups#update', as: :api_v1_organization_groups_update, constraints: { organization_id: /[^\/]+/, group_id: /[^\/]+/ }
+    delete '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:organization_id/groups/:group_id' => 'groups#destroy', as: :api_v1_organization_groups_destroy, constraints: { organization_id: /[^\/]+/, group_id: /[^\/]+/ }
+
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1/users/:user_id/groups' => 'groups#index', as: :api_v1_user_groups, constraints: { user_id: /[^\/]+/ }
+
+    post '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:organization_id/groups/:group_id/users' => 'groups#add_users', as: :api_v1_organization_groups_add_users, constraints: { organization_id: /[^\/]+/, group_id: /[^\/]+/ }
+    delete '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:organization_id/groups/:group_id/users(/:user_id)' => 'groups#remove_users', as: :api_v1_organization_groups_remove_users, constraints: { organization_id: /[^\/]+/, group_id: /[^\/]+/ , user_id: /[^\/]+/ }
+
+    # Databases (organization) groups
+    # Note: url doesn't contain org_id because this needs to be triggered from the SQL API
+    post '(/user/:user_domain)(/u/:user_domain)/api/v1/databases/:database_name/groups'                           => 'database_groups#create',  as: :api_v1_databases_group_create
+    put '(/user/:user_domain)(/u/:user_domain)/api/v1/databases/:database_name/groups/:old_name'          => 'database_groups#update',  as: :api_v1_databases_group_update
+    delete '(/user/:user_domain)(/u/:user_domain)/api/v1/databases/:database_name/groups/:name'          => 'database_groups#destroy',  as: :api_v1_databases_group_destroy
+    post '(/user/:user_domain)(/u/:user_domain)/api/v1/databases/:database_name/groups/:name/users'          => 'database_groups#add_users',  as: :api_v1_databases_group_add_users
+    delete '(/user/:user_domain)(/u/:user_domain)/api/v1/databases/:database_name/groups/:name/users(/:username)'          => 'database_groups#remove_users',  as: :api_v1_databases_group_remove_users
+    put '(/user/:user_domain)(/u/:user_domain)/api/v1/databases/:database_name/groups/:name/permission/:username/tables/:table_name' => 'database_groups#update_permission', as: :api_v1_databases_group_update_permission
+    delete '(/user/:user_domain)(/u/:user_domain)/api/v1/databases/:database_name/groups/:name/permission/:username/tables/:table_name' => 'database_groups#destroy_permission', as: :api_v1_databases_group_destroy_permission
+
+    # Grantables (entities you can share maps or datasets with)
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:organization_id/grantables' => 'grantables#index', as: :api_v1_grantables_index, constraints: { id: /[^\/]+/ }
 
     # User creations
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/user_creations/:id' => 'user_creations#show', as: :api_v1_user_creations_show, constraints: { id: /[^\/]+/ }
@@ -454,7 +489,6 @@ CartoDB::Application.routes.draw do
 
     # Organizations
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/org/'      => 'organizations#show',  as: :api_v1_organization_show
-
 
     # V2
     # --

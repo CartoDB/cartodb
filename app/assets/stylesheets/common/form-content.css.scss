@@ -142,7 +142,9 @@ $sLabel-width: 140px;
 .Form-rowData--long { width: 380px }
 .Form-rowData--med { width: 300px }
 .Form-rowData--short { width: 170px }
-.Form-rowData--shorter { width: 130px }
+.Form-rowData--shorter {
+  width: 130px;
+}
 .Form-rowData--step {
   width: 260px;
   margin-right: 0;
@@ -207,7 +209,9 @@ $sLabel-width: 140px;
 .Form-input--long { width: 354px }
 .Form-input--med { width: 274px }
 .Form-input--short { width: 114px }
-.Form-input--shorter { width: 30px }
+.Form-input--shorter {
+  width: 30px;
+}
 // Types
 .Form-input.has-icon {
   padding: 0 42px 0 12px;

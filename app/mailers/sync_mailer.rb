@@ -1,5 +1,5 @@
 class SyncMailer < ActionMailer::Base
-  default from: "cartodb.com <support@cartodb.com>"
+  default from: Cartodb.get_config(:mailer, 'from')
   layout 'mail'
 
   def max_retries_reached(user, visualization_id, dataset_name, error_code, error_message)

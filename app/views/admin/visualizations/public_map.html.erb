@@ -12,7 +12,7 @@
 <% end %>
 
 <%= content_for(:content) do %>
-  <% if @visualization.public? || @visualization.public_with_link? || @visualization.password_protected? || @visualization.organization? %>
+  <% if @visualization.is_accesible_by_user?(current_user) %>
     <%= render 'admin/shared/public_header' %>
 
     <div class="PublicMap-map js-map" id="map">
@@ -45,11 +45,11 @@
             </ul>
 
             <ul class="Navmenu-list Navmenu-list--owner">
-              <li class="Navmenu-item last-child">
+              <li class="Navmenu-item u-hideOnTablet last-child">
                 <a href="<%= CartoDB.url(self, 'public_user_feed_home', {}, @visualization.user) %>" class="Navmenu-link Navmenu-link--owner"><%= @name %></a>
               </li>
 
-              <li class="Navmenu-item u-hideOnTablet">
+              <li class="Navmenu-item">
                 <i class="Navmenu-rarrow iconFont iconFont-Rarrow"></i>
                 <a href="<%= CartoDB.url(self, 'public_maps_home', {}, @visualization.user) %>" class="Navmenu-link">Maps</a>
               </li>

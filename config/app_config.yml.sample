@@ -100,6 +100,16 @@ defaults: &defaults
     generate_every: 86400
   explore_api:
     username: ''
+  reports:
+    mail_to: ''
+  mailer:
+    from: 'cartodb.com <support@cartodb.com>'
+    address: ''
+    port: ''
+    user_name: ''
+    password: ''
+    authentication: ''
+    enable_starttls_auto: ''
   varnish_management:
     critical: false
     host: '127.0.0.1'

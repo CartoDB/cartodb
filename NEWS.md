@@ -40,6 +40,12 @@
 * Newly imported datasets now properly calculate the map bounds and zoom and store them
 * Don't try to short url with bitly if credentials are not present in app_config.yml
 
+### components versions
+- [CartoDB v3.11.0](https://github.com/CartoDB/cartodb/tree/v3.11.0)
+- [Windshaft-cartodb 2.12.0](https://github.com/CartoDB/Windshaft-cartodb/tree/2.12.0)
+- [CartoDB-SQL-API 1.24.0](https://github.com/CartoDB/CartoDB-SQL-API/tree/1.24.1)
+- [CartoDB.js 3.15.3](https://github.com/CartoDB/cartodb.js/tree/3.15.3)
+
 3.10.3 (2015-08-13)
 ---
 * Mailchimp decorator enables category wizard and legends [#3874](https://github.com/CartoDB/cartodb/pull/3874)

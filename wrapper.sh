@@ -8,7 +8,7 @@ port=6001
 for i in $(seq 1 $1);
 do
         # Create database_i.yml
-        echo "# Creating database_$i.yml file"
+        echo "# Creating database_$i.yml file" >> wrapper.log 2>&1
         sed -e s/carto_db_test/carto_db_test_$port/g config/database.yml.sample > config/database_$i.yml
 
         # Start redis server
@@ -41,5 +41,5 @@ config="port 6335 \n
         loglevel debug\n
         logfile /tmp/redis-6335/stdout"
 echo $config | redis-server  - 2>&1
-ps -eaf | grep -v "grep" | grep redis-server
+ps -eaf | grep -v "grep" | grep redis-server >> wrapper.log 2>&1
 

@@ -1,5 +1,7 @@
 #!/bin/bash
-
+# Jesus Vazquez
+# wrapper.sh: This script creates as much database.yml configuration files as we specify by param. It also
+# starts redis server on database.yml specified port.
 rm config/database_*
 #sudo killall redis-server
 truncate -s 0 *.log

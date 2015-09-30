@@ -1,6 +1,7 @@
 #!/bin/bash
 # Jesus Vazquez
-# executor.sh
+# executor.sh: This scripts executes the rspec recieved by param and stores it in specsuccess.log or specfailed.log
+# depending on the execution result.
 
 lock() {
   touch config/$1.lock;
@@ -36,10 +37,10 @@ main() {
     # Run the rspec
     # Some dirty logic here
     if [[ $1 == *"services/importer"* ]] || [[ $1 == *"services/platform-limits/spec/unit/"* ]] || [[ $1 == *"services/wms/spec/unit/wms_spec.rb"* ]] || [[ $1 == *"services/datasources"* ]] || [[ $1 == *"spec/models/overlay/collection_spec.rb"* ]]; then
-#      MOCHA_OPTIONS=skip_integration PARALLEL=true RAILS_ENV=test RAILS_DATABASE_FILE=$databaseyml bundle exec rake cartodb:test:prepare >> $port.log 2>&1;
+      #MOCHA_OPTIONS=skip_integration PARALLEL=true RAILS_ENV=test RAILS_DATABASE_FILE=$databaseyml bundle exec rake cartodb:test:prepare >> $port.log 2>&1;
       RAILS_ENV=test PARALLEL=true RAILS_DATABASE_FILE=$databaseyml REDIS_PORT=$port bundle exec rspec $1 >> $port.log 2>&1;
     else
-#      MOCHA_OPTIONS=skip_integration PARALLEL=true RAILS_ENV=test RAILS_DATABASE_FILE=$databaseyml bundle exec rake cartodb:test:prepare >> $port.log 2>&1;
+      #MOCHA_OPTIONS=skip_integration PARALLEL=true RAILS_ENV=test RAILS_DATABASE_FILE=$databaseyml bundle exec rake cartodb:test:prepare >> $port.log 2>&1;
       RAILS_ENV=test PARALLEL=true RAILS_DATABASE_FILE=$databaseyml REDIS_PORT=$port bundle exec rspec spec/rspec_configuration.rb $1 >> $port.log 2>&1;
     fi
     

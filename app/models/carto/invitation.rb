@@ -19,6 +19,7 @@ module Carto
       if invitation.save
         invitation.reload
         invitation.users_emails = users_emails
+        invitation.used_emails = []
         invitation.save
       end
       invitation
@@ -32,5 +33,24 @@ module Carto
       ::User.secure_digest(email, seed)
     end
 
+    def use(email, token)
+      # reload and used_emails assignment is needed because otherwise
+      # activerecord-postgresql-array won't update the invitations
+      reload
+      if users_emails.include?(email) && self.token(email) == token
+        if used_emails.include?(email)
+          raise AlreadyUsedInvitationError.new("#{email} has already used the invitation")
+        else
+          self.used_emails = self.used_emails.push(email)
+          save
+          true
+        end
+      else
+        false
+      end
+    end
+
   end
 end
+
+class AlreadyUsedInvitationError < StandardError; end

@@ -20,8 +20,8 @@ describe Carto::Invitation do
     end
 
     it 'returns different tokens for different emails' do
-      t1 = @invitation.token('email1@gmail.com')
-      t2 = @invitation.token('email2@gmail.com')
+      t1 = @invitation.token('email1@cartodb.com')
+      t2 = @invitation.token('email2@cartodb.com')
       t1.should_not == t2
     end
 
@@ -33,7 +33,39 @@ describe Carto::Invitation do
     end
 
     it 'has a length > 10' do
-      @invitation.token('email1@gmail.com').length.should > 10
+      @invitation.token('email1@cartodb.com').length.should > 10
+    end
+
+  end
+
+  describe '#use' do
+
+    before(:each) do
+      @valid_email = 'email1@cartodb.com'
+      @valid_email_2 = 'email2@cartodb.com'
+      @invitation = Carto::Invitation.create_new([@valid_email, @valid_email_2], 'Welcome!')
+      @token = @invitation.token(@valid_email)
+      @token_2 = @invitation.token(@valid_email_2)
+    end
+
+    it 'return true for valid emails + token' do
+      @invitation.use(@valid_email, @token).should == true
+    end
+
+    it 'return false for non valid emails' do
+      @invitation.use('fake@cartodb.com', @token).should == false
+    end
+
+    it 'return false for non valid tokens' do
+      @invitation.use(@valid_email, 'fake_token').should == false
+    end
+
+    it 'triggers an AlreadyUsedInvitationError if a user uses it twice' do
+      @invitation.use(@valid_email, @token)
+      @invitation.use(@valid_email_2, @token_2)
+      @invitation.reload
+      expect { @invitation.use(@valid_email, @token) }.to raise_error AlreadyUsedInvitationError
+      expect { @invitation.use(@valid_email_2, @token_2) }.to raise_error AlreadyUsedInvitationError
     end
 
   end

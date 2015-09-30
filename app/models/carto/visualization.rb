@@ -198,7 +198,12 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def is_private?
-    privacy == PRIVACY_PRIVATE and not organization?
+    # This `organization?` check is kept for backwards compatibility
+    is_privacy_private? and not organization?
+  end
+
+  def is_privacy_private?
+    privacy == PRIVACY_PRIVATE
   end
 
   def is_public?
@@ -258,6 +263,10 @@ class Carto::Visualization < ActiveRecord::Base
     if !license.nil?
       Carto::License.find(license.to_sym)
     end
+  end
+
+  def can_be_cached?
+    !is_privacy_private?
   end
 
   private

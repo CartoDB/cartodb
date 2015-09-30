@@ -205,7 +205,9 @@ class Admin::VisualizationsController < Admin::AdminController
                               ) and return
     end
 
-    response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
+    if @visualization.can_be_cached?
+      response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
+    end
 
     if @more_visualizations && @more_visualizations.length > 0
       additional_keys = []
@@ -217,10 +219,12 @@ class Admin::VisualizationsController < Admin::AdminController
        additional_keys = ''
     end
 
-    response.headers['Surrogate-Key'] =
-      "#{CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES} #{@visualization.surrogate_key}#{additional_keys}"
+    if @visualization.can_be_cached?
+      response.headers['Surrogate-Key'] =
+        "#{CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES} #{@visualization.surrogate_key}#{additional_keys}"
 
-    response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
+      response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
+    end
 
     @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)
     @avatar_url             = @visualization.user.avatar

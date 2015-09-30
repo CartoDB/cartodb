@@ -87,7 +87,7 @@ module Carto
 
       user = ::User.where(id: dump_data["owner"]["id"]).first
 
-      base_layer = create_base_layer(dump_data)
+      base_layer = create_base_layer(user, dump_data)
 
       map = create_map(user, base_layer)
 
@@ -140,13 +140,15 @@ module Carto
     def set_map_data(map, exported_data)
       map.recalculate_bounds!
 
-      map.scrollwheel = exported_data["scrollwheel"]
-      map.legends = exported_data["legends"]
-      map.view_bounds_sw = exported_data["bounds"][0].to_s
-      map.view_bounds_ne = exported_data["bounds"][1].to_s
-      map.center = exported_data["center"]
-      map.zoom = exported_data["zoom"]
-      map.provider = exported_data["map_provider"]
+      map.scrollwheel = exported_data["scrollwheel"] if exported_data["scrollwheel"]
+      map.legends = exported_data["legends"] if exported_data["legends"]
+      if exported_data["bounds"]
+        map.view_bounds_sw = exported_data["bounds"][0].to_s
+        map.view_bounds_ne = exported_data["bounds"][1].to_s
+      end
+      map.center = exported_data["center"] if exported_data["center"]
+      map.zoom = exported_data["zoom"] if exported_data["zoom"]
+      map.provider = exported_data["map_provider"] if exported_data["map_provider"]
 
       map.save.reload
     end
@@ -165,9 +167,13 @@ module Carto
       end
     end
 
-    def create_base_layer(exported_data)
+    def create_base_layer(user, exported_data)
       layer_data = exported_data["layers"].select { |layer| ::Layer::BASE_LAYER_KINDS.include?(layer["type"]) }.first
-      CartoDB::Factories::LayerFactory.get_new(prepare_layer_data(layer_data))
+      if layer_data.nil?
+        CartoDB::Factories::LayerFactory.get_default_base_layer(user)
+      else
+        CartoDB::Factories::LayerFactory.get_new(prepare_layer_data(layer_data))
+      end
     end
 
     def add_data_layer(map, layer_data)
@@ -181,7 +187,7 @@ module Carto
 
       base_layers = exported_data["layers"].select { |layer| ::Layer::BASE_LAYER_KINDS.include?(layer["type"]) }
 
-      if base_layers.count == 1
+      if base_layers.count < 2
         # Missing labels layer, regenerate it
         add_default_labels_layer(map, base_layer)
       else

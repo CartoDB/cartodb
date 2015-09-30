@@ -58,6 +58,23 @@ describe Carto::VisualizationsExportService do
     Carto::VisualizationBackup.where(username: $user_1.username).count.should eq 0
   end
 
+  it "Deletes backup after successfully restoring" do
+    visualization = create_vis($user_1)
+
+    visualization_clone = visualization.dup
+
+    visualization.delete
+
+    result = Carto::VisualizationsExportService.new.import(visualization_clone.id)
+    result.should eq true
+
+    expect {
+      Carto::VisualizationsExportService.new.import(visualization_clone.id)
+    }.to raise_error Carto::VisualizationsExportServiceError
+
+    Carto::VisualizationBackup.where(visualization: visualization_clone.id).count.should eq 0
+  end
+
   private
 
   def create_vis(user, attributes = {})

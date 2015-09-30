@@ -181,10 +181,10 @@ $resizeHandlerSize: 8px;
     cursor:move;
   }
 }
-.CanvasExport.is-up .ExportImageView-Header {
+.CanvasExport.is-top .ExportImageView-Header {
   margin-top: 50px;
 }
-.CanvasExport.is-down .ExportImageView-Footer--inner {
+.CanvasExport.is-bottom .ExportImageView-Footer--inner {
   margin-top: -72px;
 }
 .CanvasExport.draggable .ExportHelper.ExportHelper--header,

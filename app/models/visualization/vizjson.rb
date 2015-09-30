@@ -23,11 +23,13 @@ module CartoDB
 
       # TODO: move to exporter class
       def to_export_poro(version = 1)
+        # Redcarpet markdown renderer adds stuff
+        description = visualization.description_html_safe.sub(/^<p>/, "").sub(/<\/p> ?$/, "")
         {
           id:             visualization.id,
           version:        VIZJSON_VERSION,
           title:          visualization.qualified_name(@user),
-          description:    visualization.description_html_safe,
+          description:    description,
           scrollwheel:    map.scrollwheel,
           legends:        map.legends,
           url:            options.delete(:url),

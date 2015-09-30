@@ -97,10 +97,11 @@ module Carto
 
       set_map_data(map, dump_data)
 
+      description = dump_data["description"]
       visualization = create_visualization(
         id: dump_data["id"],
         name: dump_data["title"],
-        description: CGI.unescapeHTML(dump_data["description"]),
+        description: (description.nil? || description.empty?) ? "" : CGI.unescapeHTML(description),
         type: CartoDB::Visualization::Member::TYPE_DERIVED,
         privacy: CartoDB::Visualization::Member::PRIVACY_LINK,
         user_id: user.id,
@@ -145,6 +146,7 @@ module Carto
       map.view_bounds_ne = exported_data["bounds"][1].to_s
       map.center = exported_data["center"]
       map.zoom = exported_data["zoom"]
+      map.provider = exported_data["map_provider"]
 
       map.save.reload
     end

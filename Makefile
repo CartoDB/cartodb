@@ -28,6 +28,7 @@ WORKING_SPECS_1 = \
   spec/requests/api/json/layer_presenter_spec.rb \
   spec/requests/carto/api/layer_presenter_spec.rb \
 	spec/requests/carto/api/data_import_presenter_spec.rb \
+	spec/requests/carto/api/database_groups_controller_spec.rb \
   spec/models/map_spec.rb \
   spec/models/map/copier_spec.rb \
   spec/models/visualization/*.rb \
@@ -42,6 +43,7 @@ WORKING_SPECS_1 = \
   spec/lib/carto/http/client_spec.rb \
 	spec/helpers/uuidhelper_spec.rb \
 	spec/models/carto/template_spec.rb \
+	spec/models/carto/group_spec.rb \
 	spec/models/carto/ldap/configuration_spec.rb \
 	spec/requests/sessions_controller_spec.rb \
   $(NULL)

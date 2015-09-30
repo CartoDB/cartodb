@@ -11,7 +11,6 @@ $sLabel-width: 140px;
   @include display-flex();
   @include flex-direction(row);
   @include justify-content(space-between);
-  overflow: hidden;
 }
 .FormAccount-Content {
   display: block;
@@ -230,7 +229,7 @@ $sLabel-width: 140px;
   position: relative;
   height: 38px;
   padding: 0 12px;
-  border: 1px solid #CCCCCC;
+  border: 1px solid #cccccc;
   border-radius: 4px;
   outline: none;
   color: #666666;
@@ -242,27 +241,27 @@ $sLabel-width: 140px;
   }
 }
 .FormAccount-input.FormAccount-input--error {
-  border-color: rgba(#DD3B37, 0.6);
+  border-color: rgba(#dd3B37, 0.6);
 }
 .FormAccount-input.FormAccount-input--error:focus,
 .FormAccount-input.FormAccount-input--error:hover {
-  border-color: rgba(#DD3B37, 1);
+  border-color: rgba(#dd3B37, 1);
 }
 
 .FormAccount-input::-webkit-input-placeholder {
-  color: #AAAAAA;
+  color: #aaaaaa;
   font-style: italic;
 }
 .FormAccount-input:-moz-placeholder {
-  color: #AAAAAA;
+  color: #aaaaaa;
   font-style: italic;
 }
 .FormAccount-input::-moz-placeholder {
-  color: #AAAAAA;
+  color: #aaaaaa;
   font-style: italic;
 }
 .FormAccount-input:-ms-input-placeholder {
-  color: #AAAAAA;
+  color: #aaaaaa;
   font-style: italic;
 }
 // Sizes
@@ -319,11 +318,12 @@ $sLabel-width: 140px;
   z-index: 2;
 }
 .FormAccount-inputIcon {
+  color: $cTypography-help;
+  font-size: $sFontSize-larger;
+
   position: absolute;
   top: 12px;
   right: 14px;
-  color: $cTypography-help;
-  font-size: $sFontSize-larger;
   z-index: 3;
 }
 .FormAccount-inputIcon--clock {
@@ -337,7 +337,7 @@ $sLabel-width: 140px;
   left: 0;
   height: 38px;
   padding: 0 12px;
-  border: 1px solid #CCCCCC;
+  border: 1px solid #cccccc;
   border-radius: 4px;
   background: #FFF4F4;
   color: $cHighlight-negative;
@@ -386,19 +386,21 @@ $sLabel-width: 140px;
   line-height: $sLineHeight-large;
 }
 .FormAccount-avatarPreview {
+  @include display-flex();
+  @include flex-direction(row);
   position: relative;
   width: 100px;
   height: 100px;
   border: 1px solid $cTypography-help;
   border-radius: 4px;
-  background: #FFFFFF;
+  background: #ffffff;
   overflow: hidden;
 }
 .FormAccount-avatarPreviewImage {
   position: relative;
   max-width: 100px;
   border-radius: 4px;
-  background: #FFFFFF;
+  background: #ffffff;
 }
 .FormAccount-avatarPreviewLoader {
   position: absolute;
@@ -416,6 +418,9 @@ $sLabel-width: 140px;
   left: 50%;
   margin: -20px 0 0 -20px;
   z-index: 1;
+}
+.FormAccount-fileAvatar {
+  margin-left: 20px;
 }
 .FormAccount-avatar .input-group {
   position: absolute;
@@ -436,6 +441,7 @@ $sLabel-width: 140px;
   top: 0;
   left: 0;
   width: 85px;
+  margin-left: 2px;
   color: $cTypography-link;
   &:hover {
     color: $cTypography-linkHover;
@@ -470,10 +476,10 @@ $sLabel-width: 140px;
 }
 .FormAccount-file {
   &:hover .Button--main {
-    background: #007FBD;
+    background: #007fbd;
   }
   &:hover .Button--negative {
-    background-color: rgba(#B93F37, 1);
+    background-color: rgba(#b93f37, 1);
   }
 }
 .FormAccount-file input[type='file'] {
@@ -563,6 +569,14 @@ $sLabel-width: 140px;
   margin: $sMargin-section 0 100px;
   padding: $sMargin-formRow 0;
   border-top: 1px solid $cStructure-mainLine;
+}
+// Allow to reorder items using the flex-order property. E.g. to have "positive" action being trigger on an implicit
+// form submit, but for the items to be rendered in a different order.
+.FormAccount-footerItemAsFirst {
+  @include flex-order(1);
+}
+.FormAccount-footerItemAsSecond {
+  @include flex-order(2);
 }
 .FormAccount-footer--noMarginBottom {
   margin-bottom: 0;
@@ -669,4 +683,8 @@ $sLabel-width: 140px;
   &:hover {
     text-decoration: underline;
   }
+}
+
+.FormAccount-GooglePlus-iframe {
+  display: none;
 }

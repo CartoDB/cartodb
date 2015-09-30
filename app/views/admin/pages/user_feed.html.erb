@@ -17,7 +17,7 @@
         <% end %>
 
         <% unless @viewed_user.website.blank? %>
-          <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Anchor iconFont--with-label"></i> <a href="<%= @viewed_user.website %>"><%= @viewed_user.website %></a></li>
+          <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Anchor iconFont--with-label"></i> <a href="<%= @website %>"><%= @website_clean %></a></li>
         <% end %>
 
         <% if @viewed_user.has_organization? %>
@@ -39,4 +39,3 @@
     <div class="Feed js-feed"></div>
   </div>
 </div>
-

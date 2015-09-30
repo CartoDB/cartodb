@@ -45,33 +45,18 @@
 }
 .ExportImageView-Footer {
   position: absolute;
-  width: 100%;
   bottom: -20px;
+  width: 100%;
   text-align: center;
   z-index: 105;
 }
 .ExportImageView-Footer--inner {
   $width: 360px;
-  position:absolute;
+  position: absolute;
   left: 50%;
-  margin-left: -$width/2;
   width: $width;
+  margin-left: -$width/2;
   color: #9B9B9B;
-}
-.ExportFormatPicker {
-  display: inline-block;
-  padding: 3px 5px;
-  background: rgba(#000000, .7);
-  border-radius: 3px;
-  font-size: 12px;
-  color: #9B9B9B;
-}
-.ExportFormatPicker-format {
-  color: #FFFFFF;
-}
-
-.ExportFormatPicker-format {
-  color: #FFFFFF;
 }
 .ExportImageView-dimensions  {
   display: inline-block;
@@ -89,33 +74,12 @@
   font-weight: normal;
   outline: none;
 }
-
-.Form-rowData--export {
-  width: 245px;
-  color: #666666;
-}
-
-.Form-rowLabel {
-  width: 45px;
-}
-
-.FormatChooser-format.is-selected {
-  color: #CCCCCC;
-  cursor: normal;
-  &:hover {
-    cursor: default;
-    color: #CCCCCC;
-    background: #FFFFFF;
-  }
-}
-
 .ExportImage-formatList {
   @include display-flex();
   @include justify-content(space-between);
   @include align-items(center, center);
   width: 100%;
 }
-
 .ExportImageView.is-exportable {
   .CanvasExport {
     border: none;
@@ -305,6 +269,22 @@ $resizeHandlerSize: 8px;
   }
 }
 
-.RadioButton--export {
+.Form-rowData.Form-rowData--export {
+  width: 245px;
+  color: #666666;
+}
+.Form-rowLabel.Form-rowLabel--export {
+  width: 45px;
+}
+.RadioButton.RadioButton--export {
   cursor: pointer;
+}
+.FormatChooser-format.is-selected {
+  color: #CCCCCC;
+  cursor: normal;
+  &:hover {
+    cursor: default;
+    color: #CCCCCC;
+    background: #FFFFFF;
+  }
 }

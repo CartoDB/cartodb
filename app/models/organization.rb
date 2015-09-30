@@ -251,7 +251,7 @@ class Organization < Sequel::Model
   def revoke_cdb_conf_access
     return unless users
 
-    users.map { |user| user.revoke_cdb_conf_access }
+    users.map(&:revoke_cdb_conf_access)
   end
 
   private

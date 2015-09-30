@@ -1618,7 +1618,7 @@ class User < Sequel::Model
   def create_own_schema
     load_cartodb_functions
     self.database_schema = self.username
-    self.this.update database_schema: database_schema
+    this.update database_schema: database_schema
     create_user_schema
     set_database_search_path
     create_public_db_user
@@ -2656,7 +2656,7 @@ TRIGGER
   def revoke_cdb_conf_access
     errors = []
 
-    roles = [ database_username ]
+    roles = [database_username]
     if organization_owner?
       begin
         roles << organization_member_group_role_member_name
@@ -2685,7 +2685,7 @@ TRIGGER
     errors
   rescue => e
     # For broken organizations
-    [ "FATAL ERROR for #{name}: #{e.message}" ]
+    ["FATAL ERROR for #{name}: #{e.message}"]
   end
 
   private

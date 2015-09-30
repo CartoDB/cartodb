@@ -379,6 +379,9 @@ $sEditButtonSize: 50px;
 .MapCard-contentFooterDetails--left > *:not(:last-child) {
   margin-right: 14px;
 }
+.MapCard-contentFooterDetails--noright {
+  @include justify-content(initial, initial);
+}
 .MapCard-contentBodyTimeDiff .UserAvatar,
 .MapCard-contentFooterTimeDiff .UserAvatar {
   height: $sAvatar-meta + 2;

@@ -223,7 +223,7 @@ class Admin::VisualizationsController < Admin::AdminController
       response.headers['Surrogate-Key'] =
         "#{CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES} #{@visualization.surrogate_key}#{additional_keys}"
 
-      response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
+      response.headers['Cache-Control'] = "no-cache,max-age=86400,must-revalidate, public"
     end
 
     @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)

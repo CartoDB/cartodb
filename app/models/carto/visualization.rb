@@ -199,7 +199,7 @@ class Carto::Visualization < ActiveRecord::Base
 
   def is_private?
     # This `organization?` check is kept for backwards compatibility
-    is_privacy_private? and not organization?
+    is_privacy_private? && not organization?
   end
 
   def is_privacy_private?

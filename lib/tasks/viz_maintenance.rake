@@ -62,26 +62,24 @@ namespace :cartodb do
       puts "\n> #{Time.now}\nFinished ##{count} items"
     end
 
-    # TODO: this and following task should go in a separate class, but as for initial tests leave here
-
     desc "Exports/Backups a visualization"
     task :export_user_visualization, [:vis_id] => :environment do |_, args|
       vis_export_service = Carto::VisualizationsExportService.new
 
       puts "Exporting visualization #{args[:vis_id]}..."
-
       vis_export_service.export(args[:vis_id])
 
       puts "Export complete"
     end
 
     desc "Imports/Restores a visualization"
-    task :import_user_visualization, [:vis_id] => :environment do |_, args|
+    task :import_user_visualization, [:vis_id, :skip_version_check] => :environment do |_, args|
       vis_export_service = Carto::VisualizationsExportService.new
 
-      puts "Importing visualization data for uuid #{args[:vis_id]}"
+      skip_version_check = (args[:skip_version_check] == "true")
 
-      vis_export_service.import(args[:vis_id])
+      puts "Importing visualization data for uuid #{args[:vis_id]}"
+      vis_export_service.import(args[:vis_id], skip_version_check)
 
       puts "Visualization #{args[:vis_id]} imported"
     end

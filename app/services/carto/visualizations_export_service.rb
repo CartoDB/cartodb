@@ -1,11 +1,13 @@
 # encoding: utf-8
 
+require 'cgi'
+
 require_relative "../../controllers/carto/api/visualization_vizjson_adapter"
 
 module Carto
   class VisualizationsExportService
 
-    SERVICE_VERSION = 1
+    SERVICE_VERSION = 2
 
     def export(visualization_id)
       visualization = Carto::Visualization.where(id: visualization_id).first
@@ -32,12 +34,16 @@ module Carto
       backup_entry.save
 
       true
+    rescue => exception
+      raise VisualizationsExportServiceError.new("Export error: #{exception.message} #{exception.backtrace}")
     end
 
-    def import(visualization_id)
-      restore_result = restore_backup(visualization_id)
+    def import(visualization_id, skip_version_check = false)
+      restore_result = restore_backup(visualization_id, skip_version_check)
       remove_backup(visualization_id) if restore_result
       true
+    rescue => exception
+      raise VisualizationsExportServiceError.new("Import error: #{exception.message} #{exception.backtrace}")
     end
 
     private
@@ -52,15 +58,14 @@ module Carto
       end
     end
 
-    def restore_backup(visualization_id)
+    def restore_backup(visualization_id, skip_version_check)
       # TODO: support partial restores
       visualization = Carto::Visualization.where(id: visualization_id).first
-      raise "Visualization with id #{visualization_id} already exists!" if visualization
+      if visualization
+        raise VisualizationsExportServiceError.new("Visualization with id #{visualization_id} already exists!")
+      end
 
-      restore_data = Carto::VisualizationBackup.where(visualization: visualization_id).first
-      raise "Restore data not found for visualization id #{visualization_id}" unless restore_data
-
-      dump_data = ::JSON.parse(restore_data.export_vizjson)
+      dump_data = get_restore_data(visualization_id, skip_version_check)
 
       user = ::User.where(id: dump_data["owner"]["id"]).first
 
@@ -77,7 +82,7 @@ module Carto
       visualization = create_visualization(
         id: dump_data["id"],
         name: dump_data["title"],
-        description: dump_data["description"],
+        description: CGI.unescapeHTML(dump_data["description"]),
         type: CartoDB::Visualization::Member::TYPE_DERIVED,
         privacy: CartoDB::Visualization::Member::PRIVACY_LINK,
         user_id: user.id,
@@ -88,6 +93,21 @@ module Carto
       add_overlays(visualization, dump_data)
 
       true
+    end
+
+    def get_restore_data(visualization_id, skip_version_check)
+      restore_data = Carto::VisualizationBackup.where(visualization: visualization_id).first
+      unless restore_data
+        raise VisualizationsExportServiceError.new("Restore data not found for visualization id #{visualization_id}")
+      end
+      data = ::JSON.parse(restore_data.export_vizjson)
+
+      if data["export_version"] != SERVICE_VERSION && !skip_version_check
+        raise VisualizationsExportServiceError.new(
+          "Stored data has different version (#{data['export_version']}) than Service (#{SERVICE_VERSION})")
+      end
+
+      data
     end
 
     def add_overlays(visualization, exported_data)
@@ -113,9 +133,7 @@ module Carto
 
     def prepare_layer_data(exported_layer)
       data = exported_layer.except('id', 'children', 'type', 'legend', 'visible')
-
       data['kind'] = layer_kind_from_type(exported_layer['type'])
-
       data
     end
 
@@ -182,4 +200,6 @@ module Carto
     end
 
   end
+
+  class VisualizationsExportServiceError < StandardError; end
 end

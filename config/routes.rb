@@ -31,9 +31,9 @@ CartoDB::Application.routes.draw do
   get   '(/user/:user_domain)(/u/:user_domain)/search/:q'       => 'explore#search',    as: :explore_search_query
 
   # Data library
-  get   '(/user/:user_domain)(/u/:user_domain)/data-library'    => 'data_library#index',     as: :data_library_index
-  get   '(/user/:user_domain)(/u/:user_domain)/search'          => 'data_library#search',    as: :data_library_search
-  get   '(/user/:user_domain)(/u/:user_domain)/search/:q'       => 'data_library#search',    as: :data_library_search_query
+  get   '(/user/:user_domain)(/u/:user_domain)/data-library'           => 'data_library#index',     as: :data_library_index
+  get   '(/user/:user_domain)(/u/:user_domain)/data-library/search'    => 'data_library#search',    as: :data_library_search
+  get   '(/user/:user_domain)(/u/:user_domain)/data-library/search/:q' => 'data_library#search',    as: :data_library_search_query
 
   # OAuth
   match '(/user/:user_domain)(/u/:user_domain)/oauth/authorize'      => 'oauth#authorize',     as: :authorize

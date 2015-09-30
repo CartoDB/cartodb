@@ -26,8 +26,7 @@ class SignupController < ApplicationController
     google_access_token = google_access_token_from_params
     # Merge both sources (signup and login) in a single param
     params[:google_access_token] = google_access_token
-
-    if !user_password_signup? && google_signup? && @google_plus_config.present?
+    if !user_password_signup? && google_signup? && !@google_plus_config.nil?
       raise "Organization doesn't allow Google authentication" if !@organization.auth_google_enabled
       account_creator.with_google_token(google_access_token)
 

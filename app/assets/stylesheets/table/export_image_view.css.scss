@@ -76,10 +76,14 @@
 }
 .ExportImage-formatList {
   @include display-flex();
-  @include justify-content(space-between);
+  @include justify-content(flex-start, start);
   @include align-items(center, center);
   width: 100%;
 }
+.ExportImage-formatItem {
+  margin: 0 20px 0 0;
+}
+
 .ExportImageView.is-exportable {
   .CanvasExport {
     border: none;
@@ -269,9 +273,10 @@ $resizeHandlerSize: 8px;
 }
 
 .Form-rowData.Form-rowData--export {
-  width: 245px;
+  width: 230px;
   color: #666;
 }
+
 .Form-rowLabel.Form-rowLabel--export {
   width: 45px;
 }

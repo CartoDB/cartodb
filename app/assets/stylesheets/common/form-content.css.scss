@@ -104,6 +104,9 @@ $sLabel-width: 140px;
   color: $cTypography-paragraphs;
   text-transform: capitalize;
 }
+.Form-label.has-error {
+  color: $cHighlight-negative;
+}
 .Form-label.Form-label--verticalAlignTop {
   line-height: inherit;
 }
@@ -187,7 +190,23 @@ $sLabel-width: 140px;
   }
 }
 
+.Form-inputField--withLabel.has-error {
+  color: $cHighlight-negative;
+  border-color: rgba(#DD3B37,0.6);
+}
+.Form-inputField--withLabel.has-error .Form-inputLabel {
+  color: rgba($cHighlight-negative, 0.6);
+}
+.Form-inputField--withLabel.has-error .Form-input {
+  color: $cHighlight-negative;
+}
+
+.Form-inputField--withLabel.has-error.is-focused {
+  border-color: rgba(#DD3B37,0.6);
+}
+
 .Form-inputField .Form-input {
+  padding: 0;
   border: none;
   border-radius: 0;
   background: none;

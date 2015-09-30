@@ -1,8 +1,8 @@
 #!/bin/bash
 
 rm config/database_*
-sudo killall redis-server
-truncate -s 0 specfailed.log
+#sudo killall redis-server
+truncate -s 0 *.log
 
 port=6001
 for i in $(seq 1 $1);

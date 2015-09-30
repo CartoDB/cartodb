@@ -25,7 +25,6 @@ database_file() {
 
 main() {
     fecha=$(date)
- #   echo "Starting at $fecha"
     # Find a valid databaseyml for the execution
     database_file
     # Lock the database.yml
@@ -37,8 +36,10 @@ main() {
     # Run the rspec
     # Some dirty logic here
     if [[ $1 == *"services/importer"* ]] || [[ $1 == *"services/platform-limits/spec/unit/"* ]] || [[ $1 == *"services/wms/spec/unit/wms_spec.rb"* ]] || [[ $1 == *"services/datasources"* ]] || [[ $1 == *"spec/models/overlay/collection_spec.rb"* ]]; then
+#      MOCHA_OPTIONS=skip_integration PARALLEL=true RAILS_ENV=test RAILS_DATABASE_FILE=$databaseyml bundle exec rake cartodb:test:prepare >> $port.log 2>&1;
       RAILS_ENV=test PARALLEL=true RAILS_DATABASE_FILE=$databaseyml REDIS_PORT=$port bundle exec rspec $1 >> $port.log 2>&1;
     else
+#      MOCHA_OPTIONS=skip_integration PARALLEL=true RAILS_ENV=test RAILS_DATABASE_FILE=$databaseyml bundle exec rake cartodb:test:prepare >> $port.log 2>&1;
       RAILS_ENV=test PARALLEL=true RAILS_DATABASE_FILE=$databaseyml REDIS_PORT=$port bundle exec rspec spec/rspec_configuration.rb $1 >> $port.log 2>&1;
     fi
     

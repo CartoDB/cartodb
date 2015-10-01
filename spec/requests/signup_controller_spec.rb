@@ -54,6 +54,8 @@ describe SignupController do
       @organization.whitelisted_email_domains = ['cartodb.com']
       @organization.default_quota_in_bytes = DEFAULT_QUOTA_IN_BYTES
       @organization.save
+
+      @org_2_user_owner = TestUserFactory.new.create_owner(@organization_2)
     end
 
     before(:each) do
@@ -153,6 +155,21 @@ describe SignupController do
         user: { username: 'invited-user', email: invited_email, password: 'xxxxxx' },
         invitation_token: 'wrong'
       )
+      response.status.should == 400
+      invitation.reload
+      invitation.used_emails.should_not include(invited_email)
+    end
+
+    it 'returns 400 if invitation token is for a different organization' do
+      invited_email = 'invited_user@whatever.com'
+      invitation = Carto::Invitation.create_new(Carto::User.find(@org_2_user_owner.id), [invited_email], 'Welcome!')
+      invitation.save
+
+      ::Resque.expects(:enqueue).
+        with(::Resque::UserJobs::Signup::NewUser, instance_of(String), instance_of(String), instance_of(FalseClass)).
+        never
+      host! "#{@organization.name}.localhost.lan"
+      post signup_organization_user_url(user_domain: @organization.name, user: { username: 'invited-user', email: invited_email, password: 'xxxxxx' }, invitation_token: invitation.token(invited_email))
       response.status.should == 400
       invitation.reload
       invitation.used_emails.should_not include(invited_email)

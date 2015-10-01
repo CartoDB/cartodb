@@ -119,7 +119,10 @@ class Carto::UserCreation < ActiveRecord::Base
   def select_valid_invitation_token(invitations)
     return nil if invitations.empty?
 
-    invitation = invitations.select { |i| i.token(email) == invitation_token }.first
+    invitation = invitations.select { |i|
+      i.token(email) == invitation_token &&
+        organization_id == i.organization_id
+    }.first
 
     raise "Fake token sent for email #{email}, #{invitation_token}" if invitation_token && invitation.nil?
 

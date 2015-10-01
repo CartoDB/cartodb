@@ -12,8 +12,8 @@ module CartoDB
       end
       user
     end
-    def new_user(attributes = {})
 
+    def new_user(attributes = {})
       # To allow transitional classes without breaking any existing test
       user_class = attributes.fetch(:class, ::User)
 
@@ -68,7 +68,7 @@ module CartoDB
 
     def create_user(attributes = {})
       user = new_user(attributes)
-      user.valid?.should eq true
+      user.valid?.should == true
       # INFO: avoiding enable_remote_db_user
       Cartodb.config[:signups] = nil
       user.save
@@ -92,6 +92,28 @@ module CartoDB
       attributes[:admin]    = true
       user = new_user(attributes)
       user.save
+    end
+
+    def create_owner(organization)
+      org_user_owner = create_test_user("o#{random_username}")
+      user_org = CartoDB::UserOrganization.new(organization.id, org_user_owner.id)
+      user_org.promote_user_to_admin
+      organization.reload
+      org_user_owner.reload
+      org_user_owner
+    end
+
+    def create_test_user(username, organization = nil)
+      user = create_user(
+        username: username,
+        email: "#{username}@example.com",
+        password: username,
+        private_tables_enabled: true,
+        organization: organization
+      )
+      user.save.reload
+      organization.reload if organization
+      user
     end
 
     def reload_user_data(user)

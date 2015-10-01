@@ -75,6 +75,98 @@ describe Carto::VisualizationsExportService do
     Carto::VisualizationBackup.where(visualization: visualization_clone.id).count.should eq 0
   end
 
+  it "Imports data from DB" do
+    table_1 = create_table(user_id: $user_1.id)
+    table_2 = create_table(user_id: $user_1.id)
+
+    blender = Visualization::TableBlender.new($user_1, [table_1, table_2])
+    map = blender.blend
+
+    visualization = create_vis($user_1, map_id: map.id, description: 'description <strong>with tags</strong>')
+
+    # Keep data for later comparisons
+    base_layer = visualization.layers(:base).first
+    visualization_clone = visualization.dup
+
+    original_data_layer_names = visualization.layers(:carto_and_torque).map { |layer| layer.options["table_name"] }
+
+    # As duplicating the vis only works fine with parent object, store also the vizjson for comparisons
+    vizjson_options = {
+      full: true,
+      user_name: visualization.user.username,
+      user_api_key: visualization.user.api_key,
+      user: visualization.user,
+      viewer_user: visualization.user
+    }
+    original_vizjson = CartoDB::Visualization::VizJSON.new(
+      Carto::Api::VisualizationVizJSONAdapter.new(visualization, $tables_metadata), vizjson_options, Cartodb.config)
+                                                      .to_poro
+                                                      .to_json
+    original_vizjson = ::JSON.parse(original_vizjson)
+
+    visualization.delete
+
+    Carto::VisualizationsExportService.new.import(visualization_clone.id)
+
+    # Restore maintains same visualization UUID
+    restored_visualization = CartoDB::Visualization::Member.new(id: visualization_clone.id).fetch
+    restored_visualization.nil?.should eq false
+
+    # Can reuse same vizjson options
+    restored_vizjson = CartoDB::Visualization::VizJSON.new(
+      Carto::Api::VisualizationVizJSONAdapter.new(restored_visualization, $tables_metadata),
+      vizjson_options, Cartodb.config)
+                                                      .to_poro
+                                                      .to_json
+    restored_vizjson = ::JSON.parse(restored_vizjson)
+
+    restored_data_layer_names = visualization.layers(:carto_and_torque).map { |layer| layer.options["table_name"] }
+
+    # Base attributes checks
+    restored_visualization.name.should eq visualization_clone.name
+    restored_visualization.description.should eq visualization_clone.description
+    restored_visualization.privacy.should eq CartoDB::Visualization::Member::PRIVACY_LINK
+    # Vizjson checks
+    restored_vizjson['map_provider'].should eq original_vizjson['map_provider']
+    restored_vizjson['bounds'].should eq original_vizjson['bounds']
+    restored_vizjson['center'].should eq original_vizjson['center']
+    restored_vizjson['zoom'].should eq original_vizjson['zoom']
+    restored_vizjson['overlays'].should eq original_vizjson['overlays']
+
+    (restored_vizjson["layers"][1]["options"]["named_map"]["layers"] -
+     original_vizjson["layers"][1]["options"]["named_map"]["layers"]).should eq []
+
+    # Layer checks
+    (restored_visualization.layers(:base).count > 0).should eq true
+    restored_visualization.layers(:base).first["options"].should eq base_layer["options"]
+    restored_visualization.layers(:carto_and_torque).count.should eq 2
+    (restored_data_layer_names - original_data_layer_names).should eq []
+
+  end
+
+  it "Doesn't imports when versioning changes except if forced" do
+    stubbed_version = -1
+    Carto::VisualizationsExportService.any_instance.stubs(:export_version).returns(stubbed_version)
+
+    visualization = create_vis($user_1)
+    visualization_id = visualization.id
+    visualization.delete
+
+    Carto::VisualizationsExportService.any_instance.unstub(:export_version)
+
+    export_service = Carto::VisualizationsExportService.new
+
+    version = export_service.send (:export_version)
+
+    expect {
+      export_service.import(visualization_id)
+    }.to raise_exception Carto::VisualizationsExportServiceError,
+                         "Stored data has different version (#{stubbed_version}) than Service (#{version})"
+
+    result = export_service.import(visualization_id, true)
+    result.should eq true
+  end
+
   private
 
   def create_vis(user, attributes = {})

@@ -36,9 +36,8 @@ module Carto
 
       data = CartoDB::Visualization::VizJSON.new(
         Carto::Api::VisualizationVizJSONAdapter.new(visualization, $tables_metadata), vizjson_options, Cartodb.config)
-                                            .to_export_poro(SERVICE_VERSION)
+                                            .to_export_poro(export_version)
                                             .to_json
-
       backup_entry = Carto::VisualizationBackup.new(
         username: visualization.user.username,
         visualization: visualization.id,
@@ -48,7 +47,11 @@ module Carto
 
       true
     rescue => exception
-      raise VisualizationsExportServiceError.new("Export error: #{exception.message} #{exception.backtrace}")
+      if exception.is_a? VisualizationsExportServiceError
+        raise exception
+      else
+        raise VisualizationsExportServiceError.new("Export error: #{exception.message} #{exception.backtrace}")
+      end
     end
 
     def import(visualization_id, skip_version_check = false)
@@ -56,10 +59,19 @@ module Carto
       remove_backup(visualization_id) if restore_result
       true
     rescue => exception
-      raise VisualizationsExportServiceError.new("Import error: #{exception.message} #{exception.backtrace}")
+      if exception.is_a? VisualizationsExportServiceError
+        raise exception
+      else
+        raise VisualizationsExportServiceError.new("Import error: #{exception.message} #{exception.backtrace}")
+      end
     end
 
     private
+
+    # Mainly intended for testing
+    def export_version
+      SERVICE_VERSION
+    end
 
     def retrieve_old_backups
       max_date = Date.today - DAYS_TO_KEEP_BACKUP
@@ -121,9 +133,9 @@ module Carto
       end
       data = ::JSON.parse(restore_data.export_vizjson)
 
-      if data["export_version"] != SERVICE_VERSION && !skip_version_check
+      if data["export_version"] != export_version && !skip_version_check
         raise VisualizationsExportServiceError.new(
-          "Stored data has different version (#{data['export_version']}) than Service (#{SERVICE_VERSION})")
+          "Stored data has different version (#{data['export_version']}) than Service (#{export_version})")
       end
 
       data

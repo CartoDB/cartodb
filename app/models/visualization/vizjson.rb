@@ -21,11 +21,9 @@ module CartoDB
         logger.info(map.inspect) if logger
       end
 
-      # TODO: move to exporter class
       def to_export_poro(version = 1)
-        # Redcarpet markdown renderer adds "garbage" that would otherwise get reimported
-        description = visualization.description_html_safe.nil? ? "" :
-          visualization.description_html_safe.sub(/^<p>/, "").sub(/<\/p> ?(\n)?$/, "")
+        description = visualization.description_html_safe.nil? ? "" : clean_description(
+          visualization.description_html_safe)
         {
           id:             visualization.id,
           version:        VIZJSON_VERSION,
@@ -108,6 +106,11 @@ module CartoDB
       private
 
       attr_reader :visualization, :map, :options, :configuration
+
+      # Redcarpet markdown renderer adds "garbage" that would otherwise get reimported
+      def clean_description(description)
+        description.sub(/^<p>/, "").sub(/<\/p> ?(\n)?$/, "")
+      end
 
       def bounds_from(map)
         ::JSON.parse("[#{map.view_bounds_sw}, #{map.view_bounds_ne}]")

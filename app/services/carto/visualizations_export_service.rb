@@ -46,24 +46,20 @@ module Carto
       backup_entry.save
 
       true
+    rescue VisualizationsExportServiceError => exportError
+      raise exportError
     rescue => exception
-      if exception.is_a? VisualizationsExportServiceError
-        raise exception
-      else
-        raise VisualizationsExportServiceError.new("Export error: #{exception.message} #{exception.backtrace}")
-      end
+      raise VisualizationsExportServiceError.new("Export error: #{exception.message} #{exception.backtrace}")
     end
 
     def import(visualization_id, skip_version_check = false)
       restore_result = restore_backup(visualization_id, skip_version_check)
       remove_backup(visualization_id) if restore_result
       true
+    rescue VisualizationsExportServiceError => exportError
+      raise exportError
     rescue => exception
-      if exception.is_a? VisualizationsExportServiceError
-        raise exception
-      else
-        raise VisualizationsExportServiceError.new("Import error: #{exception.message} #{exception.backtrace}")
-      end
+      raise VisualizationsExportServiceError.new("Import error: #{exception.message} #{exception.backtrace}")
     end
 
     private
@@ -75,7 +71,7 @@ module Carto
 
     def retrieve_old_backups
       max_date = Date.today - DAYS_TO_KEEP_BACKUP
-      Carto::VisualizationBackup.where("created_at < ?", max_date).pluck(:visualization)
+      Carto::VisualizationBackup.where("created_at <= ?", max_date).pluck(:visualization)
     end
 
     def remove_backup(visualization_id)
@@ -154,7 +150,7 @@ module Carto
 
       map.scrollwheel = exported_data["scrollwheel"] if exported_data["scrollwheel"]
       map.legends = exported_data["legends"] if exported_data["legends"]
-      if exported_data["bounds"]
+      if exported_data["bounds"] && exported_data["bounds"].length == 2
         map.view_bounds_sw = exported_data["bounds"][0].to_s
         map.view_bounds_ne = exported_data["bounds"][1].to_s
       end
@@ -162,7 +158,8 @@ module Carto
       map.zoom = exported_data["zoom"] if exported_data["zoom"]
       map.provider = exported_data["map_provider"] if exported_data["map_provider"]
 
-      map.save.reload
+      map.save
+         .reload
     end
 
     def prepare_layer_data(exported_layer)
@@ -180,6 +177,7 @@ module Carto
     end
 
     def create_base_layer(user, exported_data)
+      # Basemap/base layer is always the first layer
       layer_data = exported_data["layers"].select { |layer| ::Layer::BASE_LAYER_KINDS.include?(layer["type"]) }.first
       if layer_data.nil?
         CartoDB::Factories::LayerFactory.get_default_base_layer(user)
@@ -199,10 +197,12 @@ module Carto
 
       base_layers = exported_data["layers"].select { |layer| ::Layer::BASE_LAYER_KINDS.include?(layer["type"]) }
 
+      # Remember, basemap layer is 1st one...
       if base_layers.count < 2
         # Missing labels layer, regenerate it
         add_default_labels_layer(map, base_layer)
       else
+        # ...And labels layer is always last one
         labels_layer = CartoDB::Factories::LayerFactory.get_new(prepare_layer_data(base_layers.last))
         map.add_layer(labels_layer)
         labels_layer
@@ -216,13 +216,13 @@ module Carto
     end
 
     def add_data_layers(map, exported_data)
-      exported_data["layers"].select { |layer|
-                                       kind = layer_kind_from_type(layer["type"])
-                                       ::Layer::DATA_LAYER_KINDS.include?(kind)
-                                     }
-                             .each { |layer|
-                                     add_data_layer(map, layer)
-                                   }
+      data_layers = exported_data["layers"].select do |layer|
+        kind = layer_kind_from_type(layer["type"])
+        ::Layer::DATA_LAYER_KINDS.include?(kind)
+      end
+      data_layers.each do |layer|
+        add_data_layer(map, layer)
+      end
     end
 
     def create_visualization(attributes)

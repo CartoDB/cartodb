@@ -505,17 +505,17 @@ class Table
   def create_default_map_and_layers
     base_layer = CartoDB::Factories::LayerFactory.get_default_base_layer(owner)
 
-    m = CartoDB::Factories::MapFactory.get_map(base_layer, user_id, id)
-    @user_table.map_id = m.id
+    map = CartoDB::Factories::MapFactory.get_map(base_layer, user_id, id)
+    @user_table.map_id = map.id
 
-    m.add_layer(base_layer)
+    map.add_layer(base_layer)
 
     data_layer = CartoDB::Factories::LayerFactory.get_default_data_layer(name, owner, the_geom_type)
-    m.add_layer(data_layer)
+    map.add_layer(data_layer)
 
     if base_layer.supports_labels_layer?
       labels_layer = CartoDB::Factories::LayerFactory.get_default_labels_layer(base_layer)
-      m.add_layer(labels_layer)
+      map.add_layer(labels_layer)
     end
   end
 

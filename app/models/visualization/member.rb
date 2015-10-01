@@ -255,7 +255,7 @@ module CartoDB
             Carto::VisualizationsExportService.new.export(id)
           rescue => exception
             # Don't break deletion flow
-            CartoDB.notify_exception(exception, user: user, visualization_id: id)
+            CartoDB.notify_error(exception.message, error: exception.inspect, user: user, visualization_id: id)
           end
         end
 

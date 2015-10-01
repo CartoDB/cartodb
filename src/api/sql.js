@@ -50,7 +50,7 @@
 
   /**
    * var sql = new SQL('cartodb_username');
-   * sql.execute("select * form {table} where id = {id}", {
+   * sql.execute("select * from {{ table }} where id = {{ id }}", {
    *    table: 'test',
    *    id: '1'
    * })

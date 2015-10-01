@@ -6,8 +6,8 @@ include CartoDB::Importer2
 describe Downloader do
   before do
     @file_url =
-      "https://developer.mozilla.org/samples/video/chroma-key/foo.png" 
-    @file_filepath  = path_to('foo.png')
+      "http://www.naturalearthdata.com/http//www.naturalearthdata.com/download/110m/physical/ne_110m_lakes.zip"
+    @file_filepath = path_to('ne_110m_lakes.zip')
     @file_url_without_extension = "http://www.example.com/foowithoutextension"
     @file_filepath_without_extension  = path_to('foowithoutextension')
     @file_url_with_wrong_extension = "http://www.example.com/csvwithwrongextension.xml"
@@ -45,7 +45,7 @@ describe Downloader do
 
       downloader = Downloader.new(@file_url)
       downloader.run
-      downloader.source_file.name.should eq 'foo'
+      downloader.source_file.name.should eq 'ne_110m_lakes'
     end
 
     it 'uses Content-Type header for files without extension' do
@@ -195,7 +195,7 @@ describe Downloader do
     it 'returns a source_file name' do
       downloader = Downloader.new(@file_url)
       downloader.run
-      downloader.source_file.name.should eq 'foo'
+      downloader.source_file.name.should eq 'ne_110m_lakes'
     end
 
     it 'returns a local filepath' do
@@ -225,14 +225,22 @@ describe Downloader do
     it 'gets the file name from the URL if no Content-Disposition header' do
       headers = {}
       downloader = Downloader.new(@file_url)
-      downloader.send(:name_from, headers, @file_url).should eq 'foo.png'
+      downloader.send(:name_from, headers, @file_url).should eq 'ne_110m_lakes.zip'
+    end
+
+    it 'gets the file name from the URL if no Content-Disposition header and custom params schema is used' do
+      headers = {}
+      hard_url = "https://manolo.escobar.es/param&myfilenameparam&zip_file.csv.zip&otherinfo"
+
+      downloader = Downloader.new(hard_url)
+      downloader.send(:name_from, headers, hard_url).should eq 'zip_file.csv.zip'
     end
 
     it 'discards url query params' do
       headers = {}
       downloader = Downloader.new(@file_url)
       downloader.send(:name_from, headers, "#{@file_url}?foo=bar&woo=wee")
-        .should eq 'foo.png'
+        .should eq 'ne_110m_lakes.zip'
     end
   end #name_from
 

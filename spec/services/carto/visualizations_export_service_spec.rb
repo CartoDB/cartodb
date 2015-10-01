@@ -141,7 +141,6 @@ describe Carto::VisualizationsExportService do
     restored_visualization.layers(:base).first["options"].should eq base_layer["options"]
     restored_visualization.layers(:carto_and_torque).count.should eq 2
     (restored_data_layer_names - original_data_layer_names).should eq []
-
   end
 
   it "Doesn't imports when versioning changes except if forced" do

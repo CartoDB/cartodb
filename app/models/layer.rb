@@ -208,8 +208,19 @@ class Layer < Sequel::Model
     ::Table.get_all_by_names([options.symbolize_keys[:table_name]], user)
   end
 
+  # replaces special mapnik tokens in a query like !bbox! !pixel_width! !pixel_height! with dummy values
+  def replace_mapnik_tokens(query)
+    # zoom 0 resolution
+    res = '156543.03515625';
+    # full webmercator extent
+    ext = 'ST_MakeEnvelope(-20037508.5,-20037508.5,20037508.5,20037508.5,3857)';
+    query.sub('!bbox!', ext)
+       .sub('!pixel_width!', res)
+       .sub('!pixel_height!', res);
+  end
+
   def affected_table_names
-    CartoDB::SqlParser.new(query, connection: user.in_database).affected_tables
+    CartoDB::SqlParser.new(replace_mapnik_tokens(query), connection: user.in_database).affected_tables
   end
 
   def user

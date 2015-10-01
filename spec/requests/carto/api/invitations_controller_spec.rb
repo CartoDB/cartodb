@@ -43,6 +43,20 @@ describe Carto::Api::InvitationsController do
       end
     end
 
+    it 'fails if a user with any of the emails already exists' do
+      welcome_text = 'invitation creation should fail'
+      invitation = {
+        users_emails: [ @org_user_1.email, 'whatever@cartodb.com' ],
+        welcome_text: welcome_text
+      }
+      post_api_v1_organization_invitations(@org_user_owner, invitation) do |response|
+        response.status.should == 400
+        response.body[:errors]['users_emails'].length.should == 1
+
+        invitation = Carto::Invitation.find_by_welcome_text(welcome_text).should == nil
+      end
+    end
+
   end
 end
 

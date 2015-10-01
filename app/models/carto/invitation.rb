@@ -10,11 +10,18 @@ module Carto
     # This will be fixed when we upgrade Ruby and Rails
     # validates :users_emails, :welcome_text, presence: true
     validates :welcome_text, presence: true
+    validate :users_emails_not_taken
 
     private_class_method :new
 
     def self.create_new(users_emails, welcome_text)
+      # ActiveRecord validation for all values
+      invitation = new(users_emails: users_emails, welcome_text: welcome_text)
+      return invitation unless invitation.valid?
+
+      # Two-step creation workarounding array bug
       invitation = new(welcome_text: welcome_text)
+
       invitation.seed = Carto::UserService.make_token
       if invitation.save
         invitation.reload
@@ -25,8 +32,12 @@ module Carto
       invitation
     end
 
-    def self.query_with_email(email)
+    def self.query_with_valid_email(email)
       Carto::Invitation.where('? = ANY(users_emails)', email)
+    end
+
+    def self.query_with_unused_email(email)
+      query_with_valid_email(email).where('? != ALL(used_emails)', email)
     end
 
     def token(email)
@@ -48,6 +59,17 @@ module Carto
       else
         false
       end
+    end
+
+    private
+
+    def users_emails_not_taken
+      return unless users_emails
+
+      users_emails.each do |email|
+        errors[:users_emails] << "Existing user for #{email}" if Carto::User.find_by_email(email)
+      end
+
     end
 
   end

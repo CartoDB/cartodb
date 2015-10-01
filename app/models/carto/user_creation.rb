@@ -4,6 +4,8 @@ class Carto::UserCreation < ActiveRecord::Base
 
   belongs_to :log, class_name: Carto::Log
 
+  after_create :use_invitation
+
   def self.new_user_signup(user)
     # Normal validation breaks state_machine method generation
     raise 'User needs an organization' unless user.organization
@@ -99,12 +101,30 @@ class Carto::UserCreation < ActiveRecord::Base
 
   def has_valid_invitation?
     return false unless invitation_token
-
-    invitations = Carto::Invitation.query_with_email(email).all
-    !invitations.select { |i| i.token(email) == invitation_token }.empty?
+    !valid_invitation.nil?
   end
 
   private
+
+  def unused_invitation
+    select_valid_invitation_token(Carto::Invitation.query_with_unused_email(email).all)
+  end
+
+  def valid_invitation
+    select_valid_invitation_token(Carto::Invitation.query_with_valid_email(email).all)
+  end
+
+  # Returns the first matching token invitation, and raises error if none is found
+  # but a token is set, since it might be fake
+  def select_valid_invitation_token(invitations)
+    return nil if invitations.empty?
+
+    invitation = invitations.select { |i| i.token(email) == invitation_token }.first
+
+    raise "Fake token sent for email #{email}, #{invitation_token}" if invitation_token && invitation.nil?
+
+    invitation
+  end
 
   def user
     @user ||= ::User.where(id: user_id).first
@@ -162,6 +182,14 @@ class Carto::UserCreation < ActiveRecord::Base
     self.save
   rescue => e
     handle_failure(e, mark_as_failure = true)
+  end
+
+  def use_invitation
+    return unless invitation_token
+    invitation = unused_invitation
+    return unless invitation
+
+    invitation.use(email, invitation_token)
   end
 
   def promote_user

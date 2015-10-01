@@ -13,8 +13,14 @@ module Carto
           params[:users_emails],
           params[:welcome_text]
         )
-        # TODO: error handling, returning 500 and `{ errors: [ “error 1”, “error 2”] }`
-        render_jsonp(Carto::Api::InvitationPresenter.new(invitation).to_poro)
+        if invitation.valid?
+          render_jsonp(Carto::Api::InvitationPresenter.new(invitation).to_poro)
+        else
+          render json: { errors: invitation.errors }, status: 400
+        end
+      rescue => e
+        CartoDB.notify_exception(e, { params: params , invitation: (invitation ? invitation : 'not created') })
+        render json: { errors: e.message }, status: 500
       end
 
       private

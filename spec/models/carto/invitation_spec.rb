@@ -5,6 +5,15 @@ require_relative '../../../app/models/carto/invitation'
 
 describe Carto::Invitation do
 
+  describe 'creation' do
+
+    it 'fails for existing users' do
+      invitation = Carto::Invitation.create_new([$user_1.email], 'hi')
+      invitation.valid?.should == false
+    end
+
+  end
+
   describe 'token' do
 
     before(:each) do

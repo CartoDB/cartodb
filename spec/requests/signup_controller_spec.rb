@@ -138,7 +138,20 @@ describe SignupController do
       response.status.should == 422
     end
 
-    it 'triggers a user creation not requiring validation email if there was an invitation for that email even if mail domain is not whitelisted' do
+    it 'does not trigger creation without validation email spending an invitation if mail domain is not whitelisted and invitation token is wrong' do
+      ::Resque.expects(:enqueue).never
+      invited_email = 'invited_user@whatever.com'
+      invitation = Carto::Invitation.create_new([invited_email], 'Welcome!')
+      invitation.save
+
+      host! "#{@organization.name}.localhost.lan"
+      post signup_organization_user_url(user_domain: @organization.name, user: { username: 'invited-user', email: invited_email, password: 'xxxxxx' }, invitation_token: 'wrong')
+      response.status.should == 400
+      invitation.reload
+      invitation.used_emails.should_not include(invited_email)
+    end
+
+    it 'triggers creation without validation email spending an invitation even if mail domain is not whitelisted' do
       ::Resque.expects(:enqueue).with(::Resque::UserJobs::Signup::NewUser,
         instance_of(String), instance_of(String), instance_of(FalseClass)).returns(true)
       invited_email = 'invited_user@whatever.com'
@@ -151,6 +164,8 @@ describe SignupController do
       last_user_creation = Carto::UserCreation.order('created_at desc').limit(1).first
       @organization.whitelisted_email_domains.should_not include(last_user_creation.email)
       last_user_creation.requires_validation_email?.should == false
+      invitation.reload
+      invitation.used_emails.should include(invited_email)
     end
 
     describe 'ldap signup' do

@@ -12,7 +12,7 @@
 <% end %>
 
 <%= content_for(:content) do %>
-  <% if @visualization.public? || @visualization.public_with_link? || @visualization.password_protected? || @visualization.organization? %>
+  <% if @visualization.is_accesible_by_user?(current_user) %>
     <%= render 'admin/shared/public_header' %>
 
     <div class="PublicMap-map js-map" id="map">

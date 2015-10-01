@@ -1152,14 +1152,14 @@ namespace :cartodb do
 
     desc "Revokes access to cdb_conf"
     task :revoke_cdb_conf_access => :environment do |t, args|
-      organizations = args[:organization_name].present? ? Organization.where(name: args[:organization_name]).all : Organization.all
-      run_for_organizations_owner(organizations) do |owner|
-        errors = owner.organization.revoke_cdb_conf_access
-        unless errors.empty?
-          puts "ERRORS for organization #{owner.organization.name}"
-          errors.map { |error| puts error }
+      execute_on_users_with_index(:revoke_cdb_conf_access.to_s, Proc.new { |user, i|
+        errors = user.revoke_cdb_conf_access
+        if errors.empty?
+          puts "OK #{user.username}"
+        else
+          puts "ERROR #{user.username}: #{errors.join(';')}"
         end
-      end
+      }, 1, 0.3)
     end
 
     desc "Assign organization owner admin role at database. See CartoDB/cartodb-postgresql#104 and #5187"

@@ -10,6 +10,7 @@ module Carto
 
       def create
         invitation = Carto::Invitation.create_new(
+          Carto::User.find(current_user.id),
           params[:users_emails],
           params[:welcome_text]
         )

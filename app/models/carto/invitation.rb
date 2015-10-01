@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require 'active_record'
+require_dependency 'cartodb/errors'
 
 module Carto
   class Invitation < ActiveRecord::Base
@@ -9,18 +10,23 @@ module Carto
     # so we create a creator enforcing desired behaviour.
     # This will be fixed when we upgrade Ruby and Rails
     # validates :users_emails, :welcome_text, presence: true
-    validates :welcome_text, presence: true
+    validates :user, :organization, :welcome_text, presence: true
     validate :users_emails_not_taken
+
+    belongs_to :user
+    belongs_to :organization
 
     private_class_method :new
 
-    def self.create_new(users_emails, welcome_text)
+    def self.create_new(creator_user, users_emails, welcome_text)
+      raise CartoDB::InvalidUser.new("Only owners can create invitations") unless creator_user.organization_owner?
+
       # ActiveRecord validation for all values
-      invitation = new(users_emails: users_emails, welcome_text: welcome_text)
+      invitation = new(user: creator_user, organization: creator_user.organization, users_emails: users_emails, welcome_text: welcome_text)
       return invitation unless invitation.valid?
 
       # Two-step creation workarounding array bug
-      invitation = new(welcome_text: welcome_text)
+      invitation = new(user: creator_user, organization: creator_user.organization, welcome_text: welcome_text)
 
       invitation.seed = Carto::UserService.make_token
       if invitation.save

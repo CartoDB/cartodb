@@ -46,6 +46,10 @@ shared_context 'organization with users helper' do
     @org_user_2 = create_test_user("b#{random_username}", @organization)
 
     @organization.reload
+
+    @carto_org_user_owner = Carto::User.find(@org_user_owner.id)
+    @carto_org_user_1 = Carto::User.find(@org_user_1.id)
+    @carto_org_user_2 = Carto::User.find(@org_user_2.id)
   end
 
   before(:each) do

@@ -4,6 +4,8 @@ Sequel.migration do
 
     create_table :invitations do
       Uuid :id, primary_key: true, default: 'uuid_generate_v4()'.lit
+      Uuid :organization_id, null: false
+      Uuid :user_id, null: false
       # users_emails shouldn't allow null. See Carto::Invitation.
       column :users_emails, 'text[]', null: true
       column :used_emails, 'text[]', null: true
@@ -12,6 +14,22 @@ Sequel.migration do
       DateTime  :created_at, default: Sequel::CURRENT_TIMESTAMP
       DateTime  :updated_at, default: Sequel::CURRENT_TIMESTAMP
     end
+
+    Rails::Sequel.connection.run(%Q{
+      ALTER TABLE "invitations"
+        ADD CONSTRAINT invitations_organization_id_fk
+        FOREIGN KEY (organization_id)
+        REFERENCES organizations(id)
+        ON DELETE CASCADE
+      })
+
+    Rails::Sequel.connection.run(%Q{
+      ALTER TABLE "invitations"
+        ADD CONSTRAINT invitations_user_id_fk
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE
+      })
 
     alter_table :user_creations do
       add_column :invitation_token, :text, null: true

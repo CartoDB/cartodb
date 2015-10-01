@@ -1,4 +1,3 @@
-@import '../old_common/mixins';
 @import '../variables/mixins';
 
 // Public data dashboard content
@@ -9,18 +8,17 @@
   min-height: 500px;
 }
 .DataLibrary-inner {
+  display: block;
   margin-top: 60px;
   margin-bottom: 120px;
 }
 .DataLibrary-columns * {
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
+  @include css3-prefix(box-sizing, border-box);
 }
 .DataLibrary-text {
   color: #333;
-  font-weight: 200;
   font-size: 20px;
+  font-weight: 200;
   line-height: 1.4;
 }
 .DataLibrary-text--column {

@@ -62,6 +62,16 @@ module Carto
         values.merge!('display_name' => display_name)
         values.merge!('queue_id' => @data_import.id)
         values.merge!(success: @data_import.success) if @data_import.final_state?
+        values.merge!(original_url: @data_import.original_url)
+        values.merge!(state: @data_import.state)
+        values.merge!(content_guessing: @data_import.content_guessing)
+        values.merge!(type_guessing: @data_import.type_guessing)
+        values.merge!(server: @data_import.server)
+        values.merge!(service_name: @data_import.service_name)
+        values.merge!(host: @data_import.host)
+        values.merge!(upload_host: @data_import.upload_host)
+        values.merge!(resque_ppid: @data_import.resque_ppid)
+        values.merge!(data_type: @data_import.data_type)
         values
       end
 

@@ -11,7 +11,7 @@
   height: 100%;
 }
 .ExportImageView-Header {
-  @include transition(margin, 200ms, ease-in-out);
+  @include transition(all, 200ms, ease-in-out);
   position: absolute;
   width: 100%;
   top: -35px;
@@ -201,6 +201,9 @@ $resizeHandlerSize: 8px;
     cursor: move;
     z-index: 1000000000;
   }
+}
+.CanvasExport.is-small .ExportImageView-Header {
+  opacity: 0;
 }
 .CanvasExport.is-top .ExportImageView-Header {
   margin-top: 50px;

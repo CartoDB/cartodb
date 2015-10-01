@@ -1,7 +1,14 @@
 3.15.X (dd/mm/yyyy)
 ------
-* Undefine `define` so that dependencies aren't loaded via AMD [#543](https://github.com/CartoDB/cartodb.js/issues/543)
 *
+
+3.15.8 (01/10/2015)
+------
+* Fixed btoa methods in cdb.core.util [#692](https://github.com/CartoDB/cartodb.js/issues/692)
+
+3.15.7 (23/09/2015)
+------
+* Undefine `define` so that dependencies aren't loaded via AMD [#543](https://github.com/CartoDB/cartodb.js/issues/543)
 
 3.15.6 (17/09/2015)
 ------

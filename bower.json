@@ -4,7 +4,7 @@
     "cartodb.js",
     "themes/css/cartodb.css"
   ],
-  "version": "3.15.7",
+  "version": "3.15.8",
   "homepage": "https://github.com/CartoDB/cartodb.js",
   "authors": [
     "CartoDB <support@cartodb.com>"

@@ -1452,14 +1452,14 @@ Anytime you wish to push a stable version of your site to the web though, you ca
 alert(cartodb.VERSION)
 ```
 
-Once you know which version of CartoDB.js you're using, you can point your site to that release. If the current version of CartoDB.js is 3.15.7, the URL would be:
+Once you know which version of CartoDB.js you're using, you can point your site to that release. If the current version of CartoDB.js is 3.15.8, the URL would be:
 
 ```html
-<script src="http://libs.cartocdn.com/cartodb.js/v3/3.15.7/cartodb.js"></script>
+<script src="http://libs.cartocdn.com/cartodb.js/v3/3.15.8/cartodb.js"></script>
 ```
 
 You can do the same for the CSS documents we provide:
 
 ```html
-<link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15.7/themes/css/cartodb.css" />
+<link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15.8/themes/css/cartodb.css" />
 ```

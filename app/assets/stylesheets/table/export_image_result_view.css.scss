@@ -15,7 +15,8 @@
 }
 .ExportImageResult--url {
   @include inline-block();
-  width: 400px;
+  width: auto;
+  max-width: 400px;
   vertical-align: top;
   text-overflow: ellipsis;
   text-align: left;

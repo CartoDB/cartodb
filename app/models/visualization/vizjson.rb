@@ -24,7 +24,8 @@ module CartoDB
       # TODO: move to exporter class
       def to_export_poro(version = 1)
         # Redcarpet markdown renderer adds "garbage" that would otherwise get reimported
-        description = visualization.description_html_safe.sub(/^<p>/, "").sub(/<\/p> ?(\n)?$/, "")
+        description = visualization.description_html_safe.nil? ? "" :
+          visualization.description_html_safe.sub(/^<p>/, "").sub(/<\/p> ?(\n)?$/, "")
         {
           id:             visualization.id,
           version:        VIZJSON_VERSION,

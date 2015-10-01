@@ -3,6 +3,9 @@
 // Public data dashboard header
 // --------------------------------------------------
 
+.Header {
+  position: relative;
+}
 .Header--dark {
   background: #2E3C43;
 }
@@ -29,4 +32,5 @@
   @include css3-prefix(box-sizing, border-box);
   width: 100%;
   max-width: 940px;
+  z-index: 10;
 }

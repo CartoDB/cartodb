@@ -2,6 +2,7 @@
 
 require_relative '../../spec_helper'
 require_relative '../../../app/models/carto/invitation'
+require_relative '../../../lib/resque/user_jobs'
 
 describe Carto::Invitation do
 
@@ -10,6 +11,11 @@ describe Carto::Invitation do
     it 'fails for existing users' do
       invitation = Carto::Invitation.create_new([$user_1.email], 'hi')
       invitation.valid?.should == false
+    end
+
+    it 'sends invitations' do
+      ::Resque.expects(:enqueue).with(Resque::OrganizationJobs::Mail::Invitation, instance_of(String)).once
+      invitation = Carto::Invitation.create_new(['whatever_1@cartodb.com', 'whatever_2@cartodb.com'], 'hi')
     end
 
   end

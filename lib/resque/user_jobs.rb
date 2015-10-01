@@ -18,6 +18,15 @@ module Resque
         end
       end
 
+      module Invitation
+
+        @queue = :users
+
+        def self.perform(invitation_id)
+        end
+
+      end
+
     end
 
   end

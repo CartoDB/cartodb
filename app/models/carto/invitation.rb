@@ -28,6 +28,8 @@ module Carto
         invitation.users_emails = users_emails
         invitation.used_emails = []
         invitation.save
+
+        ::Resque.enqueue(::Resque::OrganizationJobs::Mail::Invitation, invitation.id)
       end
       invitation
     end

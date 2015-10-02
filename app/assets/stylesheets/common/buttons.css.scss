@@ -27,7 +27,7 @@ $cHighlight-mainHover: rgba(#007FBD, 1);
 }
 .Button,
 .Button span {
-  color: #FFFFFF;
+  color: #FFF;
   font-size: $sFontSize-smallUpperCase;
   font-weight: $sFontWeight-bold;
   line-height: $sLineHeight-button;
@@ -37,6 +37,12 @@ $cHighlight-mainHover: rgba(#007FBD, 1);
 }
 .Button-inner {
   line-height: $sButton-height;
+}
+.Button-arrowMenu {
+  margin-top: 2px;
+  margin-left: 3px;
+  font-size: 8px;
+  vertical-align: top;
 }
 .Button.is-hidden {
   display: none;
@@ -83,9 +89,9 @@ $cHighlight-mainHover: rgba(#007FBD, 1);
   }
   &:hover {
     background-color: $cTypography-link;
-    color: #FFFFFF;
+    color: #FFF;
     span {
-      color: #FFFFFF;
+      color: #FFF;
     }
   }
 }
@@ -105,14 +111,20 @@ $cHighlight-mainHover: rgba(#007FBD, 1);
 }
 .Button--secondary {
   border: 1px solid $cNavButton-default;
-  background-color: rgba(#FFFFFF, 1);
+  background-color: rgba(#FFF, 1);
   span {
     color: $cNavButton-default;
+  }
+  .Button-arrowMenu {
+    color: #777;
   }
   &:hover {
     border-color: $cNavButton-active;
     span {
       color: $cNavButton-active;
+    }
+    .Button-arrowMenu {
+      color: #444;
     }
   }
 }
@@ -125,7 +137,7 @@ $cHighlight-mainHover: rgba(#007FBD, 1);
 }
 .Button--secondaryBlue {
   border-color: transparent;
-  background-color: rgba(#FFFFFF, 1);
+  background-color: rgba(#FFF, 1);
   span {
     color: $cHighlight-main;
   }
@@ -134,12 +146,12 @@ $cHighlight-mainHover: rgba(#007FBD, 1);
   }
 }
 .Button--light {
-  border: $sButton-border solid #FFFFFF;
-  background-color: rgba(#FFFFFF, 1);
+  border: $sButton-border solid #FFF;
+  background-color: rgba(#FFF, 1);
   color: #384047;
   &:hover {
     background-color: rgba(#384047, 1);
-    color: #FFFFFF;
+    color: #FFF;
   }
 }
 .Button--link {
@@ -151,8 +163,8 @@ $cHighlight-mainHover: rgba(#007FBD, 1);
   }
 }
 .Button--link.is-inline {
-  padding-left: 0;
   padding-right: 0;
+  padding-left: 0;
 }
 .Button--link.is-destructive {
   color: $cHighlight-negative;
@@ -162,10 +174,10 @@ $cHighlight-mainHover: rgba(#007FBD, 1);
 }
 // Use this instead of .Button--positive on header background
 .Button--headerPositive {
-  border: $sButton-border + 1 solid #FFFFFF;
-  color: #FFFFFF;
+  border: $sButton-border + 1 solid #FFF;
+  color: #FFF;
   &:hover {
-    background-color: #FFFFFF;
+    background-color: #FFF;
     span {
       color: $cTypography-linkHover;
     }
@@ -174,7 +186,7 @@ $cHighlight-mainHover: rgba(#007FBD, 1);
 .Button-importShowDetails {
   height: 24px;
   padding: 0 11px;
-  border: 1px solid #CCCCCC;
+  border: 1px solid #CCC;
   border-radius: 40px;
   background: transparent;
   color: $cTypography-paragraphs;
@@ -190,13 +202,13 @@ $cHighlight-mainHover: rgba(#007FBD, 1);
   display: inline-block;
   margin: auto;
   transition: opacity 150ms ease-in-out;
-  border: 1px solid #CCCCCC;
+  border: 1px solid #CCC;
   border-radius: 40px;
   background-color: transparent;
   color: $cTypography-linkSecondaryHover;
   font-size: $sFontSize-smallUpperCase;
   line-height: 24px;
   &:hover {
-    border-color: #888888;
+    border-color: #888;
   }
 }

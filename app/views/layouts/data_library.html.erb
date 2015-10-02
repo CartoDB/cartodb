@@ -34,7 +34,7 @@
     <%= render 'admin/shared/public_footer', :light => true %>
 
     <script type="text/javascript">
-      var config = <%= safe_js_object frontend_config_public({https_apis: request.protocol == 'https://' }) %>;
+      var config = <%= safe_js_object frontend_config_public({ https_apis: request.protocol == 'https://' }) %>;
       var account_host = '<%= CartoDB.account_host %>';
     </script>
 

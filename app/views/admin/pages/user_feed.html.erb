@@ -6,17 +6,16 @@
       <div class="PublicUserProfile-bio">
         <h2 class="PublicUserProfile-name u-breakLongWords"><%= @name %></h2>
 
-        <% unless @viewed_user.description.nil? %>
+        <% unless @viewed_user.description.nil? || @tables_num == 0 %>
           <p class="PublicUserProfile-description"><%= @viewed_user.description %></p>
         <% end %>
-
       </div>
       <ul class="PublicUserProfile-details">
-        <% unless @viewed_user.twitter_username.blank? %>
+        <% unless @viewed_user.twitter_username.blank? || @tables_num == 0 %>
           <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Twitter iconFont--with-label"></i> <a href="http://twitter.com/<%= @viewed_user.twitter_username %>"><%= @viewed_user.twitter_username %></a></li>
         <% end %>
 
-        <% unless @viewed_user.website.blank? %>
+        <% unless @viewed_user.website.blank? || @tables_num == 0 %>
           <li class="PublicUserProfile-detail"><i class="iconFont iconFont-Anchor iconFont--with-label"></i> <a href="<%= @website %>"><%= @website_clean %></a></li>
         <% end %>
 

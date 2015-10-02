@@ -11,8 +11,6 @@ module Carto
     has_many :layers_user
     has_many :users, :through => :layers_user
 
-    has_many :children, class_name: Carto::Layer, foreign_key: :parent_id
-
     TEMPLATES_MAP = {
       'table/views/infowindow_light' =>               'infowindow_light',
       'table/views/infowindow_dark' =>                'infowindow_dark',

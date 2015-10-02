@@ -94,7 +94,6 @@ module CartoDB
         }
       ]
 
-        @http_response_code = nil
       def initialize(url, http_options={}, seed=nil, repository=nil)
         @url          = url
         raise UploadError if url.nil?
@@ -104,6 +103,7 @@ module CartoDB
         @repository   = repository || DataRepository::Filesystem::Local.new(temporary_directory)
         @datasource = nil
         @source_file = nil
+        @http_response_code = nil
 
         translators = URL_TRANSLATORS.map(&:new)
         translator = translators.find { |translator| translator.supported?(url) }
@@ -160,7 +160,7 @@ module CartoDB
         # not supported
       end
 
-      attr_reader   :source_file, :datasource, :etag, :last_modified, :http_response_code
+      attr_reader :source_file, :datasource, :etag, :last_modified, :http_response_code
       attr_accessor :url
 
       private

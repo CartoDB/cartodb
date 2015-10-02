@@ -148,13 +148,13 @@ module Carto
 
         if message.nil?
           message = case http_response_code
-          when /^1/ then "This usually means more actions are required to download this file."
-          when /^2/ then "This usually means everything went fine while fetching the file."
-          when /^3/ then "This usually means an unknown redirection error has occured."
-          when /^4/ then "This usually means an unknown client error has occured."
-          when /^5/ then "This usually means an unknown server error has occured."
-          else "This is an unkown type of HTTP status code."
-          end
+                    when /^1/ then "This usually means more actions are required to download this file."
+                    when /^2/ then "This usually means everything went fine while fetching the file."
+                    when /^3/ then "This usually means an unknown redirection error has occured."
+                    when /^4/ then "This usually means an unknown client error has occured."
+                    when /^5/ then "This usually means an unknown server error has occured."
+                    else "This is an unkown type of HTTP status code."
+                    end
         end
 
         message

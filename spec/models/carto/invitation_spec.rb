@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require_relative '../../spec_helper'
+require_relative '../../factories/organizations_contexts'
 require_relative '../../../app/models/carto/invitation'
 require_relative '../../../app/controllers/carto/api/user_creations_controller'
 require_relative '../../../lib/resque/user_jobs'
@@ -22,7 +23,7 @@ describe Carto::Invitation do
     it 'sends invitations' do
       ::Resque.expects(:enqueue).with(Resque::OrganizationJobs::Mail::Invitation, instance_of(String)).once
       invitation = Carto::Invitation.create_new(@carto_org_user_owner, ['whatever_1@cartodb.com', 'whatever_2@cartodb.com'], 'hi')
-      invitation.user_id.should == @carto_org_user_owner.id
+      invitation.inviter_user_id.should == @carto_org_user_owner.id
       invitation.organization_id.should == @carto_org_user_owner.organization_id
     end
 

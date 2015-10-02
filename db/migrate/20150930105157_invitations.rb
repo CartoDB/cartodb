@@ -5,7 +5,7 @@ Sequel.migration do
     create_table :invitations do
       Uuid :id, primary_key: true, default: 'uuid_generate_v4()'.lit
       Uuid :organization_id, null: false
-      Uuid :user_id, null: false
+      Uuid :inviter_user_id, null: false
       # users_emails shouldn't allow null. See Carto::Invitation.
       column :users_emails, 'text[]', null: true
       column :used_emails, 'text[]', null: true
@@ -25,8 +25,8 @@ Sequel.migration do
 
     Rails::Sequel.connection.run(%Q{
       ALTER TABLE "invitations"
-        ADD CONSTRAINT invitations_user_id_fk
-        FOREIGN KEY (user_id)
+        ADD CONSTRAINT invitations_inviter_user_id_fk
+        FOREIGN KEY (inviter_user_id)
         REFERENCES users(id)
         ON DELETE CASCADE
       })

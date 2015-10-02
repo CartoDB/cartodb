@@ -136,6 +136,14 @@ class Layer < Sequel::Model
     BASE_LAYER_KINDS.include?(kind)
   end
 
+  def basemap?
+    ["gmapsbase", "tiled"].include?(kind)
+  end
+
+  def supports_labels_layer?
+    basemap? && options["labels"] && options["labels"]["url"]
+  end
+
   def register_table_dependencies(db=Rails::Sequel.connection)
     db.transaction do
       delete_table_dependencies

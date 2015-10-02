@@ -23,6 +23,10 @@ module Resque
         @queue = :users
 
         def self.perform(invitation_id)
+          invitation = Carto::Invitation.find(invitation_id)
+          invitation.users_emails.each do |email|
+            OrganizationMailer.invitation(invitation, email).deliver
+          end
         end
 
       end

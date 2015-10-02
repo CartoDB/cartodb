@@ -46,7 +46,6 @@ module Carto
         "511" => "CartoDB is not authorized to retrieve this file. If you have authorization, download the file " \
                   "manually and upload it from your computer." }
 
-
       def initialize(data_import)
         @data_import = data_import
       end
@@ -150,10 +149,10 @@ module Carto
 
         if message.nil?
           message = case http_response_code
-            when /^3/ then "An unknown redirection message was produced."
-            when /^4/ then "An unknown client error message was produced."
-            when /^5/ then "An unknown server error message was produced."
-            else "An unkown type of HTTP status code (#{http_response_code}) was returned."
+          when /^3/ then "An unknown redirection message was produced."
+          when /^4/ then "An unknown client error message was produced."
+          when /^5/ then "An unknown server error message was produced."
+          else "An unkown type of HTTP status code (#{http_response_code}) was returned."
           end
         end
 

@@ -254,6 +254,10 @@ class Organization < Sequel::Model
     users.map(&:revoke_cdb_conf_access)
   end
 
+  def name_to_display
+    display_name.nil? ? name : display_name
+  end
+
   private
 
   def destroy_groups

@@ -150,7 +150,8 @@ module Carto
         subdomain = CartoDB.extract_subdomain(request)
         # INFO: subdomain checking is not part of previous permission checking (and should not be), so we add an additional check here: subdomain must match visualization username.
         Rollbar.report_message('vizjson check', 'debug', { subdomain: subdomain, username: @visualization.user.username, permission: @visualization.has_read_permission?(current_viewer) })
-        return render(text: 'Visualization of that user does not exist', status: 404) if subdomain && !subdomain.empty? && subdomain != @visualization.user.username && !@visualization.has_read_permission?(current_viewer)
+        # Don't check has_read_permission?, see #5592
+        return render(text: 'Visualization of that user does not exist', status: 404) if subdomain && !subdomain.empty? && subdomain != @visualization.user.username # && !@visualization.has_read_permission?(current_viewer)
       end
 
       def id_and_schema_from_params

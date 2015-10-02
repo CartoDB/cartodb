@@ -16,7 +16,7 @@ class OrganizationMailer < ActionMailer::Base
 
     @title = "You have been invited to the #{@invitation.organization.name} organization in CartoDB"
 
-    @invitation_signup_link = "#{CartoDB.base_url(@invitation.organization.name)}#{CartoDB.path(self, 'signup', { invitation_token: invitation.token(email) })}"
+    @invitation_signup_link = "#{CartoDB.base_url(@invitation.organization.name)}#{CartoDB.path(self, 'signup', { invitation_token: invitation.token(email), email: email })}"
 
     mail to: email, subject: @title
   end

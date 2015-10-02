@@ -14,7 +14,8 @@ class SignupController < ApplicationController
   before_filter :initialize_google_plus_config
 
   def signup
-    @user = ::User.new
+    email = params[:email].present? ? params[:email] : nil
+    @user = ::User.new(email: email)
   end
 
   def create

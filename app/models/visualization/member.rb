@@ -250,7 +250,7 @@ module CartoDB
       end
 
       def delete(from_table_deletion = false)
-        if user.has_feature_flag?(Carto::VisualizationsExportService::FEATURE_FLAG_NAME)
+        if user.has_feature_flag?(Carto::VisualizationsExportService::FEATURE_FLAG_NAME) && !from_table_deletion
           begin
             Carto::VisualizationsExportService.new.export(id)
           rescue => exception

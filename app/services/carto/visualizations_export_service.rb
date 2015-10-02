@@ -46,8 +46,8 @@ module Carto
       backup_entry.save
 
       true
-    rescue VisualizationsExportServiceError => exportError
-      raise exportError
+    rescue VisualizationsExportServiceError => export_error
+      raise export_error
     rescue => exception
       raise VisualizationsExportServiceError.new("Export error: #{exception.message} #{exception.backtrace}")
     end
@@ -56,8 +56,8 @@ module Carto
       restore_result = restore_backup(visualization_id, skip_version_check)
       remove_backup(visualization_id) if restore_result
       true
-    rescue VisualizationsExportServiceError => exportError
-      raise exportError
+    rescue VisualizationsExportServiceError => export_error
+      raise export_error
     rescue => exception
       raise VisualizationsExportServiceError.new("Import error: #{exception.message} #{exception.backtrace}")
     end

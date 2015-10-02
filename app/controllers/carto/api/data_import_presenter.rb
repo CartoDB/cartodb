@@ -18,7 +18,7 @@ module Carto
                   "download the file manually and upload it from your computer.",
         "403" => "CartoDB is not authorized to retrieve this file. If you have authorization, " \
                   "download the file manually and upload it from your computer.",
-        "404" => "No file was found at the specified URL. Please review the URL provided.",
+        "404" => "No file was found at the specified URL.",
         "405" => "CartoDB could not negotiate the download with the file's provider. The provider is probably " \
         "using a non standard method to serve this file.",
         "407" => "CartoDB is not authorized to retrieve this file as proxy authentication is required. If you " \

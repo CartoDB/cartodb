@@ -2698,15 +2698,24 @@ TRIGGER
     ["FATAL ERROR for #{name}: #{e.message}"]
   end
 
+  def created_with_invitation?
+    user_creation = get_user_creation
+    user_creation && user_creation.invitation_token
+  end
+
   private
 
   def get_invitation_token_from_user_creation
-    user_creation = Carto::UserCreation.find_by_user_id(id)
+    user_creation = get_user_creation
     if !user_creation.nil? && user_creation.has_valid_invitation?
       user_creation.invitation_token
     else
       nil
     end
+  end
+
+  def get_user_creation
+    Carto::UserCreation.find_by_user_id(id)
   end
 
   def grant_read_on_schema_queries(schema, db_user = nil)

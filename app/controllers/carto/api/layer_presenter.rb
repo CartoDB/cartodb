@@ -122,7 +122,8 @@ module Carto
       end
 
       def base_poro(layer)
-        public_values(layer).merge('options' => layer_options)
+        # .merge left for backwards compatibility
+        public_values(layer).merge('options' => layer_options).merge('parent_id' => nil, 'children' => [])
       end
 
       def public_values(layer)

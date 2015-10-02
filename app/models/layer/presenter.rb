@@ -79,7 +79,8 @@ module CartoDB
       end
 
       def to_poro
-        poro = layer.public_values
+        # .merge left for backwards compatibility
+        poro = layer.public_values.merge('parent_id' => nil, 'children' => [])
 
         return poro unless poro['options']
 

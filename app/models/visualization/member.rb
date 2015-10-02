@@ -250,15 +250,6 @@ module CartoDB
       end
 
       def delete(from_table_deletion = false)
-        if user.has_feature_flag?(Carto::VisualizationsExportService::FEATURE_FLAG_NAME)
-          begin
-            Carto::VisualizationsExportService.new.export(id)
-          rescue => exception
-            # Don't break deletion flow
-            CartoDB.notify_error(exception.message, error: exception.inspect, user: user, visualization_id: id)
-          end
-        end
-
         # Named map must be deleted before the map, or we lose the reference to it
         begin
           named_map = get_named_map
@@ -268,6 +259,16 @@ module CartoDB
           # CDB-1964: Silence named maps API exception if deleting data to avoid interrupting whole flow
           unless from_table_deletion
             CartoDB.notify_exception(exception, user: user)
+          end
+        end
+
+        # Perform after named map operations so if they fail we don't actually export
+        if user.has_feature_flag?(Carto::VisualizationsExportService::FEATURE_FLAG_NAME)
+          begin
+            Carto::VisualizationsExportService.new.export(id)
+          rescue => exception
+            # Don't break deletion flow
+            CartoDB.notify_error(exception.message, error: exception.inspect, user: user, visualization_id: id)
           end
         end
 

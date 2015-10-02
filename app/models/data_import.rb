@@ -63,7 +63,8 @@ class DataImport < Sequel::Model
     # No automatic conversion coded
     'user_defined_limits',
     'original_url',
-    'privacy'
+    'privacy',
+    'http_response_code'
   ]
 
   # This attributes will get removed from public_values upon calling api_call_public_values
@@ -634,6 +635,7 @@ class DataImport < Sequel::Model
     else
       self.results    = importer.results
       self.error_code = importer.error_code
+      self.http_response_code = runner.downloader.http_response_code if !runner.nil?
       # Table.after_create() setted fields that won't be saved to "final" data import unless specified here
       self.table_name = importer.table.name if importer.success? && importer.table
       self.table_id   = importer.table.id if importer.success? && importer.table

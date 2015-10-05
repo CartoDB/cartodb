@@ -14,7 +14,7 @@ class OrganizationMailer < ActionMailer::Base
   def invitation(invitation, email)
     @invitation = invitation
 
-    @title = "You have been invited to the #{@invitation.organization.name} organization in CartoDB"
+    @title = "You are invited to join the #{@invitation.organization.name} organization at CartoDB"
 
     base_url = CartoDB.base_url(@invitation.organization.name)
     token = invitation.token(email)

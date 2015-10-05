@@ -35,7 +35,7 @@ describe Carto::Invitation do
       @invitation = Carto::Invitation.create_new(@carto_org_user_owner, [], 'Welcome!')
       @invitation_2 = Carto::Invitation.create_new(@carto_org_user_owner, [], 'Welcome!')
     end
-    
+
     it 'returns the same token for the same email' do
       email = 'myemail@cartodb.com'
       t1 = @invitation.token(email)
@@ -63,7 +63,6 @@ describe Carto::Invitation do
   end
 
   describe '#use' do
-
     before(:each) do
       @valid_email = 'email1@cartodb.com'
       @valid_email_2 = 'email2@cartodb.com'
@@ -91,7 +90,6 @@ describe Carto::Invitation do
       expect { @invitation.use(@valid_email, @token) }.to raise_error AlreadyUsedInvitationError
       expect { @invitation.use(@valid_email_2, @token_2) }.to raise_error AlreadyUsedInvitationError
     end
-
   end
 
 end

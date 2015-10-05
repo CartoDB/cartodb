@@ -7,10 +7,11 @@ describe Carto::Api::InvitationsController do
   include_context 'organization with users helper'
 
   describe 'create' do
-
     def post_api_v1_organization_invitations(user, invitation, organization_id = user.organization.id)
       invitation ||= {}
-      post_json api_v1_organization_invitations_create_url(user_domain: user.username, organization_id: organization_id, api_key: user.api_key), invitation do |response|
+      post_json api_v1_organization_invitations_create_url(user_domain: user.username,
+                                                           organization_id: organization_id,
+                                                           api_key: user.api_key), invitation do |response|
         yield response
       end
     end
@@ -30,7 +31,7 @@ describe Carto::Api::InvitationsController do
 
     it 'registers invitations with a token seed returning its json' do
       invitation = {
-        users_emails: [ 'email_a@cartodb.com', 'email_b@cartodb.com' ],
+        users_emails: ['email_a@cartodb.com', 'email_b@cartodb.com'],
         welcome_text: 'Please join my organization!'
       }
       post_api_v1_organization_invitations(@org_user_owner, invitation) do |response|
@@ -46,7 +47,7 @@ describe Carto::Api::InvitationsController do
     it 'fails if a user with any of the emails already exists' do
       welcome_text = 'invitation creation should fail'
       invitation = {
-        users_emails: [ @org_user_1.email, 'whatever@cartodb.com' ],
+        users_emails: [@org_user_1.email, 'whatever@cartodb.com'],
         welcome_text: welcome_text
       }
       post_api_v1_organization_invitations(@org_user_owner, invitation) do |response|
@@ -56,7 +57,5 @@ describe Carto::Api::InvitationsController do
         invitation = Carto::Invitation.find_by_welcome_text(welcome_text).should == nil
       end
     end
-
   end
 end
-

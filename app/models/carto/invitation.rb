@@ -22,7 +22,10 @@ module Carto
       raise CartoDB::InvalidUser.new("Only owners can create invitations") unless inviter_user.organization_owner?
 
       # ActiveRecord validation for all values
-      invitation = new(inviter_user: inviter_user, organization: inviter_user.organization, users_emails: users_emails, welcome_text: welcome_text)
+      invitation = new(inviter_user: inviter_user,
+                       organization: inviter_user.organization,
+                       users_emails: users_emails,
+                       welcome_text: welcome_text)
       return invitation unless invitation.valid?
 
       # Two-step creation workarounding array bug
@@ -60,7 +63,7 @@ module Carto
         if used_emails.include?(email)
           raise AlreadyUsedInvitationError.new("#{email} has already used the invitation")
         else
-          self.used_emails = self.used_emails.push(email)
+          self.used_emails = used_emails.push(email)
           save
           true
         end
@@ -77,7 +80,6 @@ module Carto
       users_emails.each do |email|
         errors[:users_emails] << "Existing user for #{email}" if Carto::User.find_by_email(email)
       end
-
     end
 
   end

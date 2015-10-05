@@ -20,7 +20,7 @@ module Carto
           render json: { errors: invitation.errors }, status: 400
         end
       rescue => e
-        CartoDB.notify_exception(e, { params: params , invitation: (invitation ? invitation : 'not created') })
+        CartoDB.notify_exception(e, params: params , invitation: (invitation ? invitation : 'not created'))
         render json: { errors: e.message }, status: 500
       end
 
@@ -28,9 +28,9 @@ module Carto
 
       def load_organization
         @organization = Carto::Organization.where(id: params[:organization_id]).first
-        render_404 and return unless @organization
+        render_404 && return unless @organization
         unless @organization.owner.id == current_user.id
-          render_jsonp({ errors: { organization: 'not owner' } }, 401) and return
+          render_jsonp({ errors: { organization: 'not owner' } }, 401) && return
         end
       end
 

@@ -83,7 +83,7 @@ class Carto::UserCreation < ActiveRecord::Base
 
   # TODO: Shorcut, search for a better solution to detect requirement
   def requires_validation_email?
-    self.google_sign_in != true && !has_valid_invitation? && !Carto::Ldap::Manager.new.configuration_present?
+    google_sign_in != true && !has_valid_invitation? && !Carto::Ldap::Manager.new.configuration_present?
   end
 
   def autologin?
@@ -119,10 +119,10 @@ class Carto::UserCreation < ActiveRecord::Base
   def select_valid_invitation_token(invitations)
     return nil if invitations.empty?
 
-    invitation = invitations.select { |i|
+    invitation = invitations.select do |i|
       i.token(email) == invitation_token &&
-        organization_id == i.organization_id
-    }.first
+      organization_id == i.organization_id
+    end.first
 
     raise "Fake token sent for email #{email}, #{invitation_token}" if invitation_token && invitation.nil?
 
@@ -152,16 +152,16 @@ class Carto::UserCreation < ActiveRecord::Base
 
   def initialize_user
     @user = ::User.new
-    @user.username = self.username
-    @user.email = self.email
-    @user.crypted_password = self.crypted_password
-    @user.salt = self.salt
-    @user.quota_in_bytes = self.quota_in_bytes unless self.quota_in_bytes.nil?
-    @user.google_sign_in = self.google_sign_in
-    @user.invitation_token = self.invitation_token
+    @user.username = username
+    @user.email = email
+    @user.crypted_password = crypted_password
+    @user.salt = salt
+    @user.quota_in_bytes = quota_in_bytes unless quota_in_bytes.nil?
+    @user.google_sign_in = google_sign_in
+    @user.invitation_token = invitation_token
     @user.enable_account_token = User.make_token if requires_validation_email?
     unless @promote_to_organization_owner
-      organization = ::Organization.where(id: self.organization_id).first
+      organization = ::Organization.where(id: organization_id).first
       raise "Trying to copy organization settings from one without owner" if organization.owner.nil?
       @user.organization = organization
       @user.organization.owner.copy_account_features(@user)

@@ -2,7 +2,7 @@
 require_dependency 'google_plus_api'
 require_dependency 'google_plus_config'
 
-class Admin::OrganizationUsersController < ApplicationController
+class Admin::OrganizationUsersController < Admin::AdminController
   # Organization actions
   ssl_required  :new, :create, :edit, :update, :destroy
   # Data of single users

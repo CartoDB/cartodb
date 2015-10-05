@@ -12,7 +12,7 @@ class Layer < Sequel::Model
   BASE_LAYER_KINDS  = %w(tiled background gmapsbase wms)
   DATA_LAYER_KINDS = ALLOWED_KINDS - BASE_LAYER_KINDS
 
-  PUBLIC_ATTRIBUTES = %W{ options kind infowindow tooltip id order parent_id }
+  PUBLIC_ATTRIBUTES = %W{ options kind infowindow tooltip id order }
 
   TEMPLATES_MAP = {
     'table/views/infowindow_light' =>               'infowindow_light',
@@ -37,9 +37,6 @@ class Layer < Sequel::Model
                 join_table: :layers_user_tables,
                 left_key: :layer_id, right_key: :user_table_id,
                 reciprocal: :layers, class: ::UserTable
-
-  many_to_one :parent, :class => self
-  one_to_many :children, :key=>:parent_id, :class => self
 
   plugin  :association_dependencies, :maps => :nullify, :users => :nullify, :user_tables => :nullify
 
@@ -72,7 +69,8 @@ class Layer < Sequel::Model
       infowindow: self.values[:infowindow].nil? ? {} : JSON.parse(self.values[:infowindow]),
       tooltip: JSON.parse(self.values[:tooltip]),
       options: self.values[:options].nil? ? {} : JSON.parse(self.values[:options]),
-      children: children.nil? ? [] : children,
+      # Left for backwards compatibility
+      children: [],
     ).to_json(*args)
   end
 
@@ -87,7 +85,6 @@ class Layer < Sequel::Model
   def before_destroy
     maps.each(&:update_related_named_maps)
     maps.each(&:invalidate_vizjson_varnish_cache)
-    children.each(&:destroy) unless children.nil?
     super
   end
 
@@ -134,6 +131,14 @@ class Layer < Sequel::Model
 
   def base_layer?
     BASE_LAYER_KINDS.include?(kind)
+  end
+
+  def basemap?
+    ["gmapsbase", "tiled"].include?(kind)
+  end
+
+  def supports_labels_layer?
+    basemap? && options["labels"] && options["labels"]["url"]
   end
 
   def register_table_dependencies(db=Rails::Sequel.connection)

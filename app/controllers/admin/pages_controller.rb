@@ -4,7 +4,7 @@ require_relative '../../models/table'
 require_relative '../../models/visualization/member'
 require_relative '../../models/visualization/collection'
 
-class Admin::PagesController < ApplicationController
+class Admin::PagesController < Admin::AdminController
 
   include CartoDB
 
@@ -123,7 +123,9 @@ class Admin::PagesController < ApplicationController
       @name               = @viewed_user.name.blank? ? @viewed_user.username : @viewed_user.name
       @avatar_url         = @viewed_user.avatar
       @tables_num         = @viewed_user.public_table_count
-      @maps_count         = @viewed_user.public_visualization_count 
+      @maps_count         = @viewed_user.public_visualization_count
+      @website            = website_url(@viewed_user.website)
+      @website_clean      = @website ? @website.gsub(/https?:\/\//, "") : ""
 
       if eligible_for_redirect?(@viewed_user)
         # redirect username.host.ext => org-name.host.ext/u/username
@@ -347,7 +349,7 @@ class Admin::PagesController < ApplicationController
     @twitter_username   = model.twitter_username
     @location           = model.location
     @description        = model.description
-    @website            = !model.website.blank? && model.website[/^https?:\/\//].nil? ? "http://#{model.website}" : model.website
+    @website            = website_url(model.website)
     @website_clean      = @website ? @website.gsub(/https?:\/\//, "") : ""
     @name               = required.fetch(:name)
     @avatar_url         = required.fetch(:avatar_url)
@@ -441,6 +443,15 @@ class Admin::PagesController < ApplicationController
   def get_viewed_user
     username = CartoDB.extract_subdomain(request)
     @viewed_user = User.where(username: username).first
+  end
+
+
+  def website_url(url)
+    if url.blank?
+      ""
+    else
+      !url.blank? && url[/^https?:\/\//].nil? ? "http://#{url}" : url
+    end
   end
 
 end

@@ -7,6 +7,7 @@ namespace :cartodb do
     desc "Search for yesterday's trending maps to notify"
     task :notify, [:simulation] => :environment do |t,args|
       simulation = (args[:simulation] == 'true') ? true : false
+      puts "SIMULATION MODE!" if simulation
       trending_maps_lib = CartoDB::TrendingMaps.new
       trending_maps = trending_maps_lib.get_trending_maps
 
@@ -16,6 +17,8 @@ namespace :cartodb do
         preview_image = Carto::StaticMapsURLHelper.new.url_for_static_map_without_request(data[:user], 'http' , visualization, 600, 300)
         trending_maps_lib.notify_trending_map(visualization_id, data[:mapviews], preview_image) unless simulation
       end
+
+      trending_maps_lib.send_trending_map_report(trending_maps) unless simulation
     end
 
   end

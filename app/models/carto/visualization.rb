@@ -117,6 +117,10 @@ class Carto::Visualization < ActiveRecord::Base
     is_publically_accesible? || has_read_permission?(user)
   end
 
+  def is_accesible_by_user?(user)
+    is_viewable_by_user?(user) || password_protected?
+  end
+
   def is_publically_accesible?
     is_public? || is_link_privacy?
   end
@@ -152,6 +156,10 @@ class Carto::Visualization < ActiveRecord::Base
 
   def type_slide?
     type == TYPE_SLIDE
+  end
+
+  def canonical?
+    type == TYPE_CANONICAL
   end
 
   def derived?
@@ -190,7 +198,12 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def is_private?
-    privacy == PRIVACY_PRIVATE and not organization?
+    # This organization? check is kept for backwards compatibility
+    is_privacy_private? and not organization?
+  end
+
+  def is_privacy_private?
+    privacy == PRIVACY_PRIVATE
   end
 
   def is_public?
@@ -250,6 +263,10 @@ class Carto::Visualization < ActiveRecord::Base
     if !license.nil?
       Carto::License.find(license.to_sym)
     end
+  end
+
+  def can_be_cached?
+    !is_privacy_private?
   end
 
   private

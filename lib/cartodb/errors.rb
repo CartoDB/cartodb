@@ -68,6 +68,7 @@ module CartoDB
 
   class DataSourceError < BaseCartoDBError; end
 
+  class ModelAlreadyExistsError < StandardError; end
 
   # database errors
   class DbError < StandardError

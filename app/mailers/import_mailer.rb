@@ -1,5 +1,5 @@
 class ImportMailer < ActionMailer::Base
-  default from: "cartodb.com <support@cartodb.com>"
+  default from: Cartodb.get_config(:mailer, 'from')
   layout 'mail'
 
   def data_import_finished(user, imported_tables, total_tables, first_imported_table, first_table, errors)

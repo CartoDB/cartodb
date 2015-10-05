@@ -1,3 +1,6 @@
+require_relative "../../app/factories/layer_factory"
+require_relative "../../app/factories/map_factory"
+
 namespace :cartodb do
   namespace :vizs do
 
@@ -9,7 +12,7 @@ namespace :cartodb do
       collection = CartoDB::Visualization::Collection.new.fetch(user_id: user.id)
 
       collection.each do |viz|
-        if is_inconsistent?(viz)
+        if inconsistent?(viz)
           delete_with_confirmation(viz)
         end
       end
@@ -24,7 +27,7 @@ namespace :cartodb do
 
       vqb = Carto::VisualizationQueryBuilder.new
                                             .with_types([
-                                                Carto::Visualization::TYPE_CANONICAL, 
+                                                Carto::Visualization::TYPE_CANONICAL,
                                                 Carto::Visualization::TYPE_DERIVED
                                               ])
                                             .with_order(:created_at, sort_order)
@@ -59,9 +62,42 @@ namespace :cartodb do
       puts "\n> #{Time.now}\nFinished ##{count} items"
     end
 
+    desc "Exports/Backups a visualization"
+    task :export_user_visualization, [:vis_id] => :environment do |_, args|
+      vis_export_service = Carto::VisualizationsExportService.new
+
+      puts "Exporting visualization #{args[:vis_id]}..."
+      vis_export_service.export(args[:vis_id])
+
+      puts "Export complete"
+    end
+
+    desc "Imports/Restores a visualization"
+    task :import_user_visualization, [:vis_id, :skip_version_check] => :environment do |_, args|
+      vis_export_service = Carto::VisualizationsExportService.new
+
+      skip_version_check = (args[:skip_version_check] == "true")
+
+      puts "Importing visualization data for uuid #{args[:vis_id]}"
+      vis_export_service.import(args[:vis_id], skip_version_check)
+
+      puts "Visualization #{args[:vis_id]} imported"
+    end
+
+    desc "Purges old visualization backups"
+    task :purge_old_visualization_backups => :environment do |_|
+      vis_export_service = Carto::VisualizationsExportService.new
+
+      puts "Purging visualization backups older tan #{Carto::VisualizationsExportService::DAYS_TO_KEEP_BACKUP} days"
+
+      purged_count = vis_export_service.purge_old
+
+      puts "Purge complete. Removed #{purged_count} items"
+    end
+
     private
 
-    def is_inconsistent?(viz)
+    def inconsistent?(viz)
       (viz.table? && viz.related_tables.empty?) || (viz.derived? && viz.map.nil?)
     end
 
@@ -85,6 +121,6 @@ namespace :cartodb do
       input = STDIN.gets.strip
       return input == 'y'
     end
-    
+
   end
 end

@@ -1,5 +1,5 @@
 class OrganizationMailer < ActionMailer::Base
-  default from: "cartodb.com <support@cartodb.com>"
+  default from: Cartodb.get_config(:mailer, 'from')
   layout 'mail'
 
   def quota_limit_reached(organization)

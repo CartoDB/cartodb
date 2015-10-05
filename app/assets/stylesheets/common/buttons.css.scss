@@ -119,6 +119,10 @@ $cHighlight-mainHover: rgba(#007FBD, 1);
 .Button--secondaryTransparentBkg {
   background-color: transparent;
 }
+.Button.is-smaller {
+  height: 30px;
+  padding: 0 15px;
+}
 .Button--secondaryBlue {
   border-color: transparent;
   background-color: rgba(#FFFFFF, 1);
@@ -144,6 +148,16 @@ $cHighlight-mainHover: rgba(#007FBD, 1);
   &:hover {
     color: $cTypography-linkSelected;
     text-decoration: underline;
+  }
+}
+.Button--link.is-inline {
+  padding-left: 0;
+  padding-right: 0;
+}
+.Button--link.is-destructive {
+  color: $cHighlight-negative;
+  &:hover {
+    color: $cHighlight-negative;
   }
 }
 // Use this instead of .Button--positive on header background

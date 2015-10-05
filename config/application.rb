@@ -69,7 +69,6 @@ module CartoDB
       dashboard_templates.js
       public_dashboard_deps.js
       public_dashboard.js
-      public_data_dashboard.js
       public_map.js
       public_map_deps.js
       editor.js
@@ -128,7 +127,6 @@ module CartoDB
       password_protected.css
       public_dashboard.css
       public_map.css
-      public_data_dashboard.css
       public_table.css
       sessions.css
       user_feed.css

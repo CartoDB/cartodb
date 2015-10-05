@@ -1,5 +1,5 @@
 class UserMailer < ActionMailer::Base
-  default from: "cartodb.com <support@cartodb.com>"
+  default from: Cartodb.get_config(:mailer, 'from')
   layout 'mail'
 
   def new_organization_user(user)
@@ -81,6 +81,18 @@ class UserMailer < ActionMailer::Base
     @greetings = ["congrats", "congratulations", "cool", "awesome", "hooray", "nice", "wow", "rad", "bravo", "yay", "boom"]
     @link = "#{@user.public_url}#{CartoDB.path(self, 'public_visualizations_show', { id: canonical_visualization.id })}"
     @viewer_datasets_link = "#{viewer_user.public_url}#{CartoDB.path(self, 'public_datasets_home')}"
+    mail :to => @user.email,
+         :subject => @subject
+  end
+
+  def trending_map(visualization, mapviews, visualization_preview_image)
+    @user = visualization.user
+    @mapviews = mapviews
+    @map_name = visualization.name
+    @preview_image = visualization_preview_image
+    @subject = "Recent activity on one of your maps!"
+    @greetings = ["congrats", "congratulations", "cool", "awesome", "hooray", "nice", "wow", "rad", "bravo", "yay", "boom"]
+    @link = "#{@user.public_url}#{CartoDB.path(self, 'public_visualizations_show_map', { id: visualization.id })}"
     mail :to => @user.email,
          :subject => @subject
   end

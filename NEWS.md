@@ -5,8 +5,18 @@
 * Display custom attribution of layers in the editor and embeds [#5388](https://github.com/CartoDB/cartodb/pull/5388)
 * Adapted Hound configuration to use default .rubocop.yml file so we can have [Rubocop](https://github.com/bbatsov/rubocop) style checks integrated at Sublime Text via [SublimeLinter](http://sublimelinter.readthedocs.org/en/latest/) + [SublimeLinter-rubocop](https://github.com/SublimeLinter/SublimeLinter-rubocop)
 * Migrated `Synchronization` id field to `uuid`
+* Fix for #5477 bug moving users with non-cartodbfied tables
+* Added a rake task to notify trendy maps to the map owner when reach a certain mapviews amount (500, 1000, 2000 and so on). This task takes into account the day before so it should be exectuded daily
 * Fixed negative geocoding quota in georeference modal [#5622](https://github.com/CartoDB/cartodb/pull/5622)
-* Fix for #5477 bug moving users with non-cartodbfied tables.
+* Group support for organizations. Usage instructions:
+  1. Update CartoDB PostgreSQL extension to the latest version ([instructions](https://github.com/CartoDB/cartodb/blob/master/UPGRADE#L43)).
+  2. Configure metadata api credentials and timeout. You can copy `org_metadata_api` config from `config/app_config.yml.sample` into your `config/app_config.yml`.
+  3. Trigger existing orgs configuration: `RAILS_ENV=development bundle exec rake cartodb:db:configure_extension_org_metadata_api_endpoint`.
+  4. Trigger existing org owner role assignment: `RAILS_ENV=development bundle exec rake cartodb:db:assign_org_owner_role`.
+  5. Increase your database pool size to 50 (10 x # threads, see next line) at config/database.yml. Sample development configuration: config/database.yml.sample
+  6. From now on you must run the server in multithread mode: `bundle exec thin start --threaded -p 3000 --threadpool-size 5`.
+* New visualization backups feature. Upon viz deletion a special vizjson will be stored in a new DB table. Backups live for Carto::VisualizationsExportService::DAYS_TO_KEEP_BACKUP days and can be recovered with `cartodb:vizs:import_user_visualization` rake by visualization id. Needs new feature flag `visualizations_backup`. Check https://github.com/CartoDB/cartodb/issues/5710 for additional details
+
 
 3.11.0 (2015-09-09)
 -------------------
@@ -29,6 +39,12 @@
 * Removed Mixpanel tracking code [#5410](https://github.com/CartoDB/cartodb/pull/5410)
 * Newly imported datasets now properly calculate the map bounds and zoom and store them
 * Don't try to short url with bitly if credentials are not present in app_config.yml
+
+### components versions
+- [CartoDB v3.11.0](https://github.com/CartoDB/cartodb/tree/v3.11.0)
+- [Windshaft-cartodb 2.12.0](https://github.com/CartoDB/Windshaft-cartodb/tree/2.12.0)
+- [CartoDB-SQL-API 1.24.0](https://github.com/CartoDB/CartoDB-SQL-API/tree/1.24.1)
+- [CartoDB.js 3.15.3](https://github.com/CartoDB/cartodb.js/tree/3.15.3)
 
 3.10.3 (2015-08-13)
 ---

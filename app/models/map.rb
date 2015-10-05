@@ -133,8 +133,8 @@ class Map < Sequel::Model
     end
   end
 
-  def self.provider_for_baselayer(layer)
-    layer[:kind] == 'tiled' ? 'leaflet': 'googlemaps'
+  def self.provider_for_baselayer_kind(kind)
+    kind == 'tiled' ? 'leaflet' : 'googlemaps'
   end
 
   # (lat,lon) points on all map data

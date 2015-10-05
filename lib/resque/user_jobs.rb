@@ -19,7 +19,6 @@ module Resque
       end
 
       module Invitation
-
         @queue = :users
 
         def self.perform(invitation_id)
@@ -28,7 +27,6 @@ module Resque
             OrganizationMailer.invitation(invitation, email).deliver
           end
         end
-
       end
 
     end

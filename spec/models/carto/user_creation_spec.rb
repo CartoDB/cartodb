@@ -93,8 +93,8 @@ describe Carto::UserCreation do
       invitation.save
 
       user_creation = Carto::UserCreation.
-        new_user_signup(user_data).
-        with_invitation_token(invitation.token(user_data.email))
+                      new_user_signup(user_data).
+                      with_invitation_token(invitation.token(user_data.email))
       user_creation.next_creation_step until user_creation.finished?
 
       saved_user = Carto::User.order("created_at desc").limit(1).first

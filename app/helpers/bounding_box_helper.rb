@@ -28,7 +28,7 @@ module BoundingBoxHelper
   def self.calculate_bounding_box(db, table_name)
     get_table_bounds(db, table_name)
   rescue Sequel::DatabaseError => exception
-    CartoDB.notify_exception(exception, table: table_name)
+    CartoDB.notify_error("#{exception.message} #{exception.backtrace}", table: table_name)
     raise BoundingBoxError.new("Can't calculate the bounding box for table #{table_name}. ERROR: #{exception}")
   end
 

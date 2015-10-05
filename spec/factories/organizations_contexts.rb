@@ -21,7 +21,7 @@ shared_context 'organization with users helper' do
     organization = Organization.new
     organization.name = org_name = "org#{rand(9999)}"
     organization.quota_in_bytes = 1234567890
-    organization.seats = 5
+    organization.seats = 15
     organization
   end
 

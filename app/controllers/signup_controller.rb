@@ -19,9 +19,9 @@ class SignupController < ApplicationController
   end
 
   def create
-    account_creator = CartoDB::UserAccountCreator.new
-        .with_organization(@organization)
-        .with_invitation_token(params[:invitation_token])
+    account_creator = CartoDB::UserAccountCreator.new.
+                      with_organization(@organization).
+                      with_invitation_token(params[:invitation_token])
 
     raise "Organization doesn't allow user + password authentication" if user_password_signup? && !@organization.auth_username_password_enabled
 

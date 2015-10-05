@@ -2709,8 +2709,6 @@ TRIGGER
     user_creation = get_user_creation
     if !user_creation.nil? && user_creation.has_valid_invitation?
       user_creation.invitation_token
-    else
-      nil
     end
   end
 

@@ -10,32 +10,31 @@ describe Carto::Invitation do
   include_context 'organization with users helper'
 
   describe 'creation' do
-
     it 'fails for existing users' do
       invitation = Carto::Invitation.create_new(@carto_org_user_owner, [@carto_org_user_1.email], 'hi')
       invitation.valid?.should == false
     end
 
     it 'fails for non-owner users' do
-      expect { Carto::Invitation.create_new(@carto_org_user_1, ['no@cartodb.com'], 'hi') }.to raise_error CartoDB::InvalidUser
+      expect do
+        Carto::Invitation.create_new(@carto_org_user_1, ['no@cartodb.com'], 'hi')
+      end.to raise_error CartoDB::InvalidUser
     end
 
     it 'sends invitations' do
       ::Resque.expects(:enqueue).with(Resque::OrganizationJobs::Mail::Invitation, instance_of(String)).once
-      invitation = Carto::Invitation.create_new(@carto_org_user_owner, ['whatever_1@cartodb.com', 'whatever_2@cartodb.com'], 'hi')
+      invitation = Carto::Invitation.create_new(@carto_org_user_owner, ['w_1@cartodb.com', 'w_2@cartodb.com'], 'hi')
       invitation.inviter_user_id.should == @carto_org_user_owner.id
       invitation.organization_id.should == @carto_org_user_owner.organization_id
     end
-
   end
 
   describe 'token' do
-
     before(:each) do
       @invitation = Carto::Invitation.create_new(@carto_org_user_owner, [], 'Welcome!')
       @invitation_2 = Carto::Invitation.create_new(@carto_org_user_owner, [], 'Welcome!')
     end
-    
+
     it 'returns the same token for the same email' do
       email = 'myemail@cartodb.com'
       t1 = @invitation.token(email)
@@ -59,11 +58,9 @@ describe Carto::Invitation do
     it 'has a length > 10' do
       @invitation.token('email1@cartodb.com').length.should > 10
     end
-
   end
 
   describe '#use' do
-
     before(:each) do
       @valid_email = 'email1@cartodb.com'
       @valid_email_2 = 'email2@cartodb.com'
@@ -91,7 +88,5 @@ describe Carto::Invitation do
       expect { @invitation.use(@valid_email, @token) }.to raise_error AlreadyUsedInvitationError
       expect { @invitation.use(@valid_email_2, @token_2) }.to raise_error AlreadyUsedInvitationError
     end
-
   end
-
 end

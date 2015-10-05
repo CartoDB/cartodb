@@ -136,11 +136,12 @@ describe SignupController do
       ::Resque.expects(:enqueue).never
 
       host! "#{@organization.name}.localhost.lan"
-      post signup_organization_user_url(user_domain: @organization.name, user: { username: 'evil-user', email: 'evil.user@whatever.com', password: 'xxxxxx' })
+      post signup_organization_user_url(user_domain: @organization.name,
+                                        user: { username: 'evil', email: 'evil@whatever.com', password: 'xxxxxx' })
       response.status.should == 422
     end
 
-    it 'does not trigger creation without validation email spending an invitation if mail domain is not whitelisted and invitation token is wrong' do
+    it "doesn't trigger creation if mail domain is not whitelisted and invitation token is wrong" do
       ::Resque.stubs(:enqueue)
       ::Resque.expects(:enqueue).
         with(::Resque::UserJobs::Signup::NewUser, anything, anything, anything).
@@ -169,7 +170,9 @@ describe SignupController do
         with(::Resque::UserJobs::Signup::NewUser, instance_of(String), instance_of(String), instance_of(FalseClass)).
         never
       host! "#{@organization.name}.localhost.lan"
-      post signup_organization_user_url(user_domain: @organization.name, user: { username: 'invited-user', email: invited_email, password: 'xxxxxx' }, invitation_token: invitation.token(invited_email))
+      post signup_organization_user_url(user_domain: @organization.name,
+                                        user: { username: 'invited-user', email: invited_email, password: 'xxxxxx' },
+                                        invitation_token: invitation.token(invited_email))
       response.status.should == 400
       invitation.reload
       invitation.used_emails.should_not include(invited_email)
@@ -184,7 +187,9 @@ describe SignupController do
         with(::Resque::UserJobs::Signup::NewUser, instance_of(String), instance_of(String), instance_of(FalseClass)).
         returns(true)
       host! "#{@organization.name}.localhost.lan"
-      post signup_organization_user_url(user_domain: @organization.name, user: { username: 'invited-user', email: invited_email, password: 'xxxxxx' }, invitation_token: invitation.token(invited_email))
+      post signup_organization_user_url(user_domain: @organization.name,
+                                        user: { username: 'invited-user', email: invited_email, password: 'xxxxxx' },
+                                        invitation_token: invitation.token(invited_email))
       response.status.should == 200
       last_user_creation = Carto::UserCreation.order('created_at desc').limit(1).first
       @organization.whitelisted_email_domains.should_not include(last_user_creation.email)

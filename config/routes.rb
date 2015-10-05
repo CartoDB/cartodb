@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+# rubocop:disable Metrics/LineLength, Style/ExtraSpacing
+
 # NOTES:
 # (/u/:user_domain)     -> This allows support of org-urls (support != enforcement)
 # (/user/:user_domain)  -> This allows support for domainless urls (in fact directly ignores subdomains)
@@ -54,13 +56,13 @@ CartoDB::Application.routes.draw do
     put    '(/user/:user_domain)(/u/:user_domain)/organization/auth'        => 'organizations#auth_update', as: :organization_auth_update
 
     # Organization users management
-    get    '(/user/:user_domain)(/u/:user_domain)/organization/users/:id/edit'  => 'organization_users#edit',    as: :edit_organization_user,   constraints: { id: /[0-z\.\-]+/ }
-    put    '(/user/:user_domain)(/u/:user_domain)/organization/users/:id'       => 'organization_users#update',  as: :update_organization_user, constraints: { id: /[0-z\.\-]+/ }
-    get    '(/user/:user_domain)(/u/:user_domain)/organization/users'                 => 'organizations#show',            as: :organization_users
-    post   '(/user/:user_domain)(/u/:user_domain)/organization/users'           => 'organization_users#create',  as: :create_organization_user
+    get '(/user/:user_domain)(/u/:user_domain)/organization/users/:id/edit'  => 'organization_users#edit',    as: :edit_organization_user,   constraints: { id: /[0-z\.\-]+/ }
+    put '(/user/:user_domain)(/u/:user_domain)/organization/users/:id'       => 'organization_users#update',  as: :update_organization_user, constraints: { id: /[0-z\.\-]+/ }
+    get '(/user/:user_domain)(/u/:user_domain)/organization/users'                 => 'organizations#show',            as: :organization_users
+    post '(/user/:user_domain)(/u/:user_domain)/organization/users'           => 'organization_users#create',  as: :create_organization_user
     delete '(/user/:user_domain)(/u/:user_domain)/organization/users/:id'       => 'organization_users#destroy', as: :delete_organization_user, constraints: { id: /[0-z\.\-]+/ }
     post '(/user/:user_domain)(/u/:user_domain)/organization/users/:id/regenerate_api_key'       => 'organization_users#regenerate_api_key', as: :regenerate_organization_user_api_key, constraints: { id: /[^\/]+/ }
-    get    '(/user/:user_domain)(/u/:user_domain)/organization/users/new'       => 'organization_users#new',     as: :new_organization_user
+    get '(/user/:user_domain)(/u/:user_domain)/organization/users/new'       => 'organization_users#new',     as: :new_organization_user
 
     # User profile and account pages
     get    '(/user/:user_domain)(/u/:user_domain)/profile' => 'users#profile',        as: :profile_user
@@ -528,3 +530,5 @@ CartoDB::Application.routes.draw do
   end
 
 end
+
+# rubocop:enable Metrics/LineLength, Style/ExtraSpacing

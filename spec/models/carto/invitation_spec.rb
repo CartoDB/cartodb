@@ -89,5 +89,4 @@ describe Carto::Invitation do
       expect { @invitation.use(@valid_email_2, @token_2) }.to raise_error AlreadyUsedInvitationError
     end
   end
-
 end

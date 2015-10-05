@@ -29,7 +29,9 @@ module Carto
       return invitation unless invitation.valid?
 
       # Two-step creation workarounding array bug
-      invitation = new(inviter_user: inviter_user, organization: inviter_user.organization, welcome_text: welcome_text)
+      invitation = new(inviter_user: inviter_user,
+                       organization: inviter_user.organization,
+                       welcome_text: welcome_text)
 
       invitation.seed = Carto::UserService.make_token
       if invitation.save

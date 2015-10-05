@@ -56,8 +56,7 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
             'table_name' => 'test_table'
             },
           infowindow: { 'fake2' => 'val2' },
-          tooltip: { 'fake3' => 'val3' },
-          parent_id: nil
+          tooltip: { 'fake3' => 'val3' }
         })
 
       layer_2 = instance_of_tested_model(layer_2)
@@ -98,8 +97,7 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
             'table_name' => table_name
             },
           infowindow: { 'fake2' => 'val2' },
-          tooltip: { 'fake3' => 'val3' },
-          parent_id: nil
+          tooltip: { 'fake3' => 'val3' }
         })
       layer_2 = instance_of_tested_model(layer_2)
 
@@ -116,9 +114,7 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
           },
         'tooltip' => {
             'fake3' => 'val3'
-          },
-        'parent_id' => nil,
-        'children' => []
+          }
       }
 
       poro = instance_of_tested_class(layer_2).to_poro
@@ -163,9 +159,7 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
           },
         'tooltip' => {
             'fake3' => 'val3'
-          },
-        'parent_id' => nil,
-        'children' => []
+          }
       }
 
       presenter_options =  {
@@ -212,15 +206,12 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
               'template' => nil,
               'fake2' => 'val2'
             },
-          tooltip: { 'fake3' => 'val3' },
-          parent_id: nil
+          tooltip: { 'fake3' => 'val3' }
         })
       layer = instance_of_tested_model(layer)
 
       expected_vizjson = {
         id: layer.id,
-        parent_id: nil,
-        children: [],
         kind: 'CartoDB',
         order: layer.order,
         infowindow: {
@@ -308,8 +299,6 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
 
       expected_vizjson = {
         id: layer.id,
-        parent_id: nil,
-        children: [],
         type: layer.kind,
         order: layer.order,
         legend: nil,
@@ -421,8 +410,6 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
 
       expected_vizjson = {
         id: layer.id,
-        parent_id: nil,
-        children: [],
         type: 'CartoDB',
         order: layer.order,
         infowindow: nil,
@@ -487,8 +474,6 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
 
       expected_vizjson = {
         id: layer.id,
-        parent_id: nil,
-        children: [],
         type: 'CartoDB',
         order: layer.order,
         infowindow: layer.infowindow,
@@ -526,8 +511,6 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
 
       expected_vizjson = {
         id: layer.id,
-        parent_id: nil,
-        children: [],
         type: 'CartoDB',
         order: layer.order,
         infowindow: nil,

@@ -163,7 +163,7 @@ module Carto
     end
 
     def prepare_layer_data(exported_layer)
-      data = exported_layer.except('id', 'children', 'type', 'legend', 'visible')
+      data = exported_layer.except('id', 'type', 'legend', 'visible')
       data['kind'] = layer_kind_from_type(exported_layer['type'])
       data
     end

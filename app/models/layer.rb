@@ -68,9 +68,7 @@ class Layer < Sequel::Model
     public_values.merge(
       infowindow: self.values[:infowindow].nil? ? {} : JSON.parse(self.values[:infowindow]),
       tooltip: JSON.parse(self.values[:tooltip]),
-      options: self.values[:options].nil? ? {} : JSON.parse(self.values[:options]),
-      # Left for backwards compatibility
-      children: [],
+      options: self.values[:options].nil? ? {} : JSON.parse(self.values[:options])
     ).to_json(*args)
   end
 

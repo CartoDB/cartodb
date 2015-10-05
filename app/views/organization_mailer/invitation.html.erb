@@ -10,7 +10,7 @@
         </tr>
 
         <tr>
-          <td align="left" style="padding: 20px 50px 40px 50px; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;">Please join the <%= @organization.name_to_display %> organization account at CartoDB:</td>
+          <td align="left" style="padding: 20px 50px 40px 50px; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;">Please join the <%= @invitation.organization.name_to_display %> organization account at CartoDB:</td>
         </tr>
 
         <tr>
@@ -19,7 +19,7 @@
 
         <tr>
           <td align="left" style="padding: 20px 50px 40px 50px; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;">
-            <p>Welcome to <%= @organization.name_to_display %>! Please click on the button below to create your account.</p>
+            <p>Welcome to <%= @invitation.organization.name_to_display %>! Please click on the button below to create your account.</p>
             <p>Happy mapping!</p>
           </td>
         </tr>

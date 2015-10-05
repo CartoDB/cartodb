@@ -21,12 +21,6 @@ module Carto
       'table/views/infowindow_header_with_image' =>   'infowindow_header_with_image'
     }
 
-    # TODO: Remove when migration is live
-    # Removal of AR column, this code avoids caching errors
-    def self.columns
-      super.reject { |c| c.name == "parent_id" }
-    end
-
     def affected_tables
       (tables_from_query_option + tables_from_table_name_option).compact.uniq
     end

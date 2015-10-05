@@ -34,11 +34,7 @@ module Carto
           'infowindow' => infowindow,
           'tooltip' => tooltip,
           'id' => id,
-          'order' => order,
-          # Left for backwards compatibility
-          'parent_id' => nil,
-          # Left for backwards compatibility
-          'children' => []
+          'order' => order
         }
       end
 

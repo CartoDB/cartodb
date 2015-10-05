@@ -3,6 +3,7 @@
 class Carto::UserCreation < ActiveRecord::Base
 
   belongs_to :log, class_name: Carto::Log
+  belongs_to :user, class_name: Carto::User
 
   after_create :use_invitation
 
@@ -87,11 +88,11 @@ class Carto::UserCreation < ActiveRecord::Base
   end
 
   def autologin?
-    state == 'success' && created_at > Time.now - 1.minute && user.enable_account_token.nil? && user.enabled && user.dashboard_viewed_at.nil?
+    state == 'success' && created_at > Time.now - 1.minute && cartodb_user.enable_account_token.nil? && cartodb_user.enabled && cartodb_user.dashboard_viewed_at.nil?
   end
 
   def subdomain
-    user.subdomain
+    cartodb_user.subdomain
   end
 
   def with_invitation_token(invitation_token)
@@ -129,8 +130,8 @@ class Carto::UserCreation < ActiveRecord::Base
     invitation
   end
 
-  def user
-    @user ||= ::User.where(id: user_id).first
+  def cartodb_user
+    @cartodb_user ||= ::User.where(id: user_id).first
   end
 
   # INFO: state_machine needs guard methods to be instance methods
@@ -151,20 +152,20 @@ class Carto::UserCreation < ActiveRecord::Base
   end
 
   def initialize_user
-    @user = ::User.new
-    @user.username = username
-    @user.email = email
-    @user.crypted_password = crypted_password
-    @user.salt = salt
-    @user.quota_in_bytes = quota_in_bytes unless quota_in_bytes.nil?
-    @user.google_sign_in = google_sign_in
-    @user.invitation_token = invitation_token
-    @user.enable_account_token = User.make_token if requires_validation_email?
+    @cartodb_user = ::User.new
+    @cartodb_user.username = username
+    @cartodb_user.email = email
+    @cartodb_user.crypted_password = crypted_password
+    @cartodb_user.salt = salt
+    @cartodb_user.quota_in_bytes = quota_in_bytes unless quota_in_bytes.nil?
+    @cartodb_user.google_sign_in = google_sign_in
+    @cartodb_user.invitation_token = invitation_token
+    @cartodb_user.enable_account_token = ::User.make_token if requires_validation_email?
     unless @promote_to_organization_owner
       organization = ::Organization.where(id: organization_id).first
       raise "Trying to copy organization settings from one without owner" if organization.owner.nil?
-      @user.organization = organization
-      @user.organization.owner.copy_account_features(@user)
+      @cartodb_user.organization = organization
+      @cartodb_user.organization.owner.copy_account_features(@cartodb_user)
     end
   rescue => e
     handle_failure(e, mark_as_failure = true)
@@ -172,16 +173,16 @@ class Carto::UserCreation < ActiveRecord::Base
 
   # Central validation
   def validate_user
-    @user.validate_credentials_not_taken_in_central
-    raise "Credentials already used" unless @user.errors.empty?
+    @cartodb_user.validate_credentials_not_taken_in_central
+    raise "Credentials already used" unless @cartodb_user.errors.empty?
   rescue => e
     handle_failure(e, mark_as_failure = true)
   end
 
   def save_user
-    # INFO: until here we haven't user_id, so in-memory @user is needed. After this, self.user is used, which can be either @user or loaded from database. This enables resuming.
-    @user.save(raise_on_failure: true)
-    self.user_id = @user.id
+    # INFO: until here we haven't user_id, so in-memory @cartodb_user is needed. After this, self.cartodb_user is used, which can be either @cartodb_user or loaded from database. This enables resuming.
+    @cartodb_user.save(raise_on_failure: true)
+    self.user_id = @cartodb_user.id
     self.save
   rescue => e
     handle_failure(e, mark_as_failure = true)
@@ -201,29 +202,29 @@ class Carto::UserCreation < ActiveRecord::Base
     organization = ::Organization.where(id: self.organization_id).first
     raise "Trying to set organization owner when there's already one" unless organization.owner.nil?
 
-    user_organization = CartoDB::UserOrganization.new(self.organization_id, @user.id)
+    user_organization = CartoDB::UserOrganization.new(self.organization_id, @cartodb_user.id)
     user_organization.promote_user_to_admin
-    @user.reload
+    @cartodb_user.reload
   rescue => e
     handle_failure(e, mark_as_failure = true)
   end
 
   def load_common_data
-    @user.load_common_data(@common_data_url) unless @common_data_url.nil?
+    @cartodb_user.load_common_data(@common_data_url) unless @common_data_url.nil?
   rescue => e
     handle_failure(e, mark_as_failure = false)
   end
 
   def create_in_central
-    user.create_in_central
+    cartodb_user.create_in_central
   rescue => e
     handle_failure(e, mark_as_failure = true)
   end
 
   def close_creation
     clean_password
-    user.notify_new_organization_user unless has_valid_invitation?
-    user.organization.notify_if_disk_quota_limit_reached if user.organization
+    cartodb_user.notify_new_organization_user unless has_valid_invitation?
+    cartodb_user.organization.notify_if_disk_quota_limit_reached if cartodb_user.organization
   rescue => e
     handle_failure(e, mark_as_failure = false)
   end
@@ -243,16 +244,16 @@ class Carto::UserCreation < ActiveRecord::Base
   end
 
   def clean_user
-    return unless user && user.id != nil
+    return unless cartodb_user && cartodb_user.id != nil
 
     begin
-      user.destroy
+      cartodb_user.destroy
     rescue => e
-      CartoDB.notify_exception(e, { action: 'safe user destruction', user: user } )
+      CartoDB.notify_exception(e, { action: 'safe user destruction', user: cartodb_user } )
       begin
-        user.delete
+        cartodb_user.delete
       rescue => ee
-        CartoDB.notify_exception(ee, { action: 'safe user deletion', user: user } )
+        CartoDB.notify_exception(ee, { action: 'safe user deletion', user: cartodb_user } )
       end
 
     end

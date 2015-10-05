@@ -29,21 +29,21 @@ describe Carto::UserCreation do
 
     it 'is false for users with enable_account_token' do
       user_creation = FactoryGirl.build(:autologin_user_creation)
-      user = user_creation.instance_variable_get(:@user)
+      user = user_creation.instance_variable_get(:@cartodb_user)
       user.enable_account_token = 'whatever'
       user_creation.autologin?.should == false
     end
 
     it 'is false for disabled users' do
       user_creation = FactoryGirl.build(:autologin_user_creation)
-      user = user_creation.instance_variable_get(:@user)
+      user = user_creation.instance_variable_get(:@cartodb_user)
       user.enabled = false
       user_creation.autologin?.should == false
     end
 
     it 'is false for users that have seen their dashboard' do
       user_creation = FactoryGirl.build(:autologin_user_creation)
-      user = user_creation.instance_variable_get(:@user)
+      user = user_creation.instance_variable_get(:@cartodb_user)
       user.dashboard_viewed_at = Time.now
       user_creation.autologin?.should == false
     end
@@ -98,8 +98,9 @@ describe Carto::UserCreation do
                       new_user_signup(user_data).
                       with_invitation_token(invitation.token(user_data.email))
       user_creation.next_creation_step until user_creation.finished?
+      user_creation.reload
 
-      saved_user = Carto::User.order("created_at desc").limit(1).first
+      saved_user = user_creation.user
       saved_user.username.should == user_data.username
       saved_user.enable_account_token.should be_nil
     end

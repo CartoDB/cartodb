@@ -17,7 +17,8 @@ module Carto
         "402" => "This usually means CartoDB is not authorized to retrieve this file. If you have authorization, " \
                   "download the file manually and upload it from your computer.",
         "403" => "This usually means CartoDB is not authorized to retrieve this file. If you have authorization, " \
-                  "download the file manually and upload it from your computer.",
+                  "download the file manually and upload it from your computer. Tip: Try exchanging 'http' for " \
+                  "'https' in the URL.",
         "404" => "This usually means no file was found at the specified URL.",
         "405" => "This usually means CartoDB could not negotiate the download with the file's provider. The " \
                   "provider is probably using a non standard method to serve this file.",

@@ -23,7 +23,7 @@
     <meta name="twitter:image" content="<%= @avatar_url %>">
     <meta name="twitter:url" content="<%= request.original_url %>" />
 
-    <%= stylesheet_link_tag 'cartodb', 'common', 'public_dashboard', 'data_library' %>
+    <%= stylesheet_link_tag 'cartodb', 'common', 'data_library' %>
   </head>
 
   <body class="PublicBody PublicBody--grey">
@@ -38,7 +38,7 @@
       var account_host = '<%= CartoDB.account_host %>';
     </script>
 
-    <%= javascript_include_tag 'cdb.js', 'templates', 'public_dashboard_deps', 'data_library' %>
+    <%= javascript_include_tag 'cdb.js', 'templates', 'data_library_deps', 'data_library' %>
     <%= yield :js %>
 
     <%= insert_trackjs() -%>

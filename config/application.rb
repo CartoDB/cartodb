@@ -69,6 +69,7 @@ module CartoDB
       dashboard_templates.js
       public_dashboard_deps.js
       public_dashboard.js
+      data_library_deps.js
       data_library.js
       public_map.js
       public_map_deps.js

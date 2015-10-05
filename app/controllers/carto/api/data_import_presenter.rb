@@ -104,8 +104,12 @@ module Carto
         values.merge!(success: @data_import.success) if @data_import.final_state?
         values.merge!(original_url: @data_import.original_url)
         values.merge!(data_type: @data_import.data_type)
-        values.merge!(http_response_code: @data_import.http_response_code)
-        values.merge!(http_response_code_message: get_http_response_code_message(@data_import.http_response_code))
+
+        if !@data_import.http_response_code.start_with?('2')
+          values.merge!(http_response_code: @data_import.http_response_code)
+          values.merge!(http_response_code_message: get_http_response_code_message(@data_import.http_response_code))
+        end
+
         values
       end
 
@@ -159,7 +163,6 @@ module Carto
 
         message
       end
-
     end
   end
 end

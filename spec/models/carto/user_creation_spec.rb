@@ -82,14 +82,16 @@ describe Carto::UserCreation do
       saved_user.enable_account_token.should be_nil
     end
 
-    it 'does not assign an enable_account_token if user had an invitation and the right token is set' do
+    it 'does not assign an enable_account_token nor sends email if user had an invitation and the right token is set' do
+      ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::NewOrganizationUser).never
+      ::Resque.expects(:enqueue).with(Resque::OrganizationJobs::Mail::Invitation, instance_of(String)).once
       User.any_instance.stubs(:create_in_central).returns(true)
       User.any_instance.stubs(:enable_remote_db_user).returns(true)
       user_data = FactoryGirl.build(:valid_user)
       user_data.organization = @organization
       user_data.google_sign_in = false
 
-      invitation = Carto::Invitation.create_new([user_data.email], 'Welcome!')
+      invitation = Carto::Invitation.create_new(@carto_org_user_owner, [user_data.email], 'Welcome!')
       invitation.save
 
       user_creation = Carto::UserCreation.

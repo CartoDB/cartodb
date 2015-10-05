@@ -6,11 +6,11 @@
       <!-- HEADER -->
       <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; border: 1px solid #dddddd; border-bottom: 0; border-collapse: separate !important; border-top-left-radius: 4px; border-top-right-radius: 4px; width: 100% !important;">
         <tr>
-          <td align="left" style="padding: 40px 50px 0 50px; font-weight: bold; font-size: 25px; font-family: Helvetica, Arial, sans-serif; color: #333333;">You have been invited to the <%= @invitation.organization.name_to_display %> organization in CartoDB</td>
+          <td align="left" style="padding: 40px 50px 0 50px; font-weight: bold; font-size: 25px; font-family: Helvetica, Arial, sans-serif; color: #333333;">You are invited to join the <%= @invitation.organization.name_to_display %> organization at CartoDB</td>
         </tr>
 
         <tr>
-          <td align="left" style="padding: 20px 50px 40px 50px; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;"><%= @invitation.inviter_user.username %> in <%= @invitation.organization.name_to_display %> wants to invite you to join the organization account in CartoDB:</td>
+          <td align="left" style="padding: 20px 50px 40px 50px; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;">Please join the <%= @organization.name_to_display %> organization account at CartoDB:</td>
         </tr>
 
         <tr>
@@ -19,7 +19,7 @@
 
         <tr>
           <td align="left" style="padding: 20px 50px 40px 50px; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;">
-            <p>Click on the button below to create your account.</p>
+            <p>Welcome to <%= @organization.name_to_display %>! Please click on the button below to create your account.</p>
             <p>Happy mapping!</p>
           </td>
         </tr>

@@ -9,7 +9,7 @@ module Carto
     has_and_belongs_to_many :maps, class_name: Carto::Map
 
     has_many :layers_user
-    has_many :users, :through => :layers_user
+    has_many :users, through: :layers_user
 
     TEMPLATES_MAP = {
       'table/views/infowindow_light' =>               'infowindow_light',
@@ -20,6 +20,12 @@ module Carto
       'table/views/infowindow_light_header_green' =>  'infowindow_light_header_green',
       'table/views/infowindow_header_with_image' =>   'infowindow_header_with_image'
     }
+
+    # TODO: Remove when migration is live
+    # Removal of AR column, this code avoids caching errors
+    def self.columns
+      super.reject { |c| c.name == "parent_id" }
+    end
 
     def affected_tables
       (tables_from_query_option + tables_from_table_name_option).compact.uniq

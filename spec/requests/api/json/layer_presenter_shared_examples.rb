@@ -57,7 +57,7 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
             },
           infowindow: { 'fake2' => 'val2' },
           tooltip: { 'fake3' => 'val3' },
-          parent_id: layer_1.id
+          parent_id: nil
         })
 
       layer_2 = instance_of_tested_model(layer_2)
@@ -70,8 +70,6 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
       json_data['options'].should == layer_2.options
       json_data['infowindow'].should == layer_2.infowindow
       json_data['tooltip'].should == layer_2.tooltip
-      json_data['parent_id'].should == layer_2.parent_id
-      json_data['children'].should == layer_2.children
 
       presenter_options =  {
           viewer_user: $user_2,
@@ -101,7 +99,7 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
             },
           infowindow: { 'fake2' => 'val2' },
           tooltip: { 'fake3' => 'val3' },
-          parent_id: layer_1.id
+          parent_id: nil
         })
       layer_2 = instance_of_tested_model(layer_2)
 
@@ -119,7 +117,7 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
         'tooltip' => {
             'fake3' => 'val3'
           },
-        'parent_id' => layer_1.id,
+        'parent_id' => nil,
         'children' => []
       }
 
@@ -166,7 +164,7 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
         'tooltip' => {
             'fake3' => 'val3'
           },
-        'parent_id' => layer_1.id,
+        'parent_id' => nil,
         'children' => []
       }
 
@@ -215,13 +213,13 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
               'fake2' => 'val2'
             },
           tooltip: { 'fake3' => 'val3' },
-          parent_id: layer_parent.id
+          parent_id: nil
         })
       layer = instance_of_tested_model(layer)
 
       expected_vizjson = {
         id: layer.id,
-        parent_id: layer.parent_id,
+        parent_id: nil,
         children: [],
         kind: 'CartoDB',
         order: layer.order,

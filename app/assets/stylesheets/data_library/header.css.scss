@@ -16,6 +16,12 @@
   height: 100%;
   min-height: 450px;
 }
+.Header-title,
+.Header-footer {
+  &.is-hidden {
+    display: none;
+  }
+}
 .Header-title {
   @include display-flex();
   @include flex-grow(1);

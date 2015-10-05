@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-# rubocop:disable Metrics/LineLength
+# rubocop:disable Metrics/LineLength, Style/ExtraSpacing
 
 # NOTES:
 # (/u/:user_domain)     -> This allows support of org-urls (support != enforcement)
@@ -531,4 +531,4 @@ CartoDB::Application.routes.draw do
 
 end
 
-# rubocop:enable Metrics/LineLength
+# rubocop:enable Metrics/LineLength, Style/ExtraSpacing

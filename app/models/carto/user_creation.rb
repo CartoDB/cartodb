@@ -88,7 +88,7 @@ class Carto::UserCreation < ActiveRecord::Base
   end
 
   def autologin?
-    state == 'success' && created_at > Time.now - 1.minute && cartodb_user.enable_account_token.nil? && cartodb_user.enabled && cartodb_user.dashboard_viewed_at.nil?
+    state == 'success' && created_at > Time.now - 1.minute && enabled? && cartodb_user.dashboard_viewed_at.nil?
   end
 
   def subdomain
@@ -106,6 +106,10 @@ class Carto::UserCreation < ActiveRecord::Base
   end
 
   private
+
+  def enabled?
+    cartodb_user.enable_account_token.nil? && cartodb_user.enabled
+  end
 
   def unused_invitation
     select_valid_invitation_token(Carto::Invitation.query_with_unused_email(email).all)
@@ -180,7 +184,9 @@ class Carto::UserCreation < ActiveRecord::Base
   end
 
   def save_user
-    # INFO: until here we haven't user_id, so in-memory @cartodb_user is needed. After this, self.cartodb_user is used, which can be either @cartodb_user or loaded from database. This enables resuming.
+    # INFO: until here we haven't user_id, so in-memory @cartodb_user is needed.
+    # After this, self.cartodb_user is used, which can be either @cartodb_user or loaded from database.
+    # This enables resuming.
     @cartodb_user.save(raise_on_failure: true)
     self.user_id = @cartodb_user.id
     self.save
@@ -202,7 +208,7 @@ class Carto::UserCreation < ActiveRecord::Base
     organization = ::Organization.where(id: self.organization_id).first
     raise "Trying to set organization owner when there's already one" unless organization.owner.nil?
 
-    user_organization = CartoDB::UserOrganization.new(self.organization_id, @cartodb_user.id)
+    user_organization = CartoDB::UserOrganization.new(organization_id, @cartodb_user.id)
     user_organization.promote_user_to_admin
     @cartodb_user.reload
   rescue => e
@@ -244,16 +250,16 @@ class Carto::UserCreation < ActiveRecord::Base
   end
 
   def clean_user
-    return unless cartodb_user && cartodb_user.id != nil
+    return unless cartodb_user && !cartodb_user.id.nil?
 
     begin
       cartodb_user.destroy
     rescue => e
-      CartoDB.notify_exception(e, { action: 'safe user destruction', user: cartodb_user } )
+      CartoDB.notify_exception(e, action: 'safe user destruction', user: cartodb_user)
       begin
         cartodb_user.delete
       rescue => ee
-        CartoDB.notify_exception(ee, { action: 'safe user deletion', user: cartodb_user } )
+        CartoDB.notify_exception(ee, action: 'safe user deletion', user: cartodb_user)
       end
 
     end

@@ -8,23 +8,35 @@ class Carto::Map < ActiveRecord::Base
 
   has_and_belongs_to_many :base_layers, class_name: 'Carto::Layer', order: '"order"'
 
-  has_and_belongs_to_many :data_layers, class_name: 'Carto::Layer',
-    conditions: { kind: 'carto' }, order: '"order"'
+  has_and_belongs_to_many :data_layers,
+                          class_name: 'Carto::Layer',
+                          conditions: { kind: 'carto' },
+                          order: '"order"'
 
-  has_and_belongs_to_many :user_layers, class_name: 'Carto::Layer',
-    conditions: { kind: ['tiled', 'background', 'gmapsbase', 'wms'] }, order: '"order"'
+  has_and_belongs_to_many :user_layers,
+                          class_name: 'Carto::Layer',
+                          conditions: { kind: ['tiled', 'background', 'gmapsbase', 'wms'] },
+                          order: '"order"'
 
-  has_and_belongs_to_many :carto_and_torque_layers, class_name: 'Carto::Layer',
-    conditions: { kind: ['carto', 'torque'] }, order: '"order"'
+  has_and_belongs_to_many :carto_and_torque_layers,
+                          class_name: 'Carto::Layer',
+                          conditions: { kind: ['carto', 'torque'] },
+                          order: '"order"'
 
-  has_and_belongs_to_many :torque_layers, class_name: 'Carto::Layer',
-    conditions: { kind: 'torque' }, order: '"order"'
+  has_and_belongs_to_many :torque_layers,
+                          class_name: 'Carto::Layer',
+                          conditions: { kind: 'torque' },
+                          order: '"order"'
 
-  has_and_belongs_to_many :other_layers, class_name: 'Carto::Layer',
-    conditions: "kind not in ('carto', 'tiled', 'background', 'gmapsbase', 'wms')", order: '"order"'
+  has_and_belongs_to_many :other_layers,
+                          class_name: 'Carto::Layer',
+                          conditions: "kind not in ('carto', 'tiled', 'background', 'gmapsbase', 'wms')",
+                          order: '"order"'
 
-  has_and_belongs_to_many :named_maps_layers, class_name: 'Carto::Layer',
-    conditions: { kind: ['carto', 'tiled', 'background', 'gmapsbase', 'wms'] }, order: '"order"'
+  has_and_belongs_to_many :named_maps_layers,
+                          class_name: 'Carto::Layer',
+                          conditions: { kind: ['carto', 'tiled', 'background', 'gmapsbase', 'wms'] },
+                          order: '"order"'
 
   belongs_to :user
 
@@ -52,27 +64,27 @@ class Carto::Map < ActiveRecord::Base
   end
 
   def view_bounds_data
-      if view_bounds_sw.nil? || view_bounds_sw == ''
-        bbox_sw = DEFAULT_OPTIONS[:bounding_box_sw]
-      else
-        bbox_sw = view_bounds_sw.gsub(/\[|\]|\s*/, '').split(',').map(&:to_f)
-      end
-      if view_bounds_ne.nil? || view_bounds_ne == ''
-        bbox_ne = DEFAULT_OPTIONS[:bounding_box_ne]
-      else
-        bbox_ne = view_bounds_ne.gsub(/\[|\]|\s*/, '').split(',').map(&:to_f)
-      end
+    if view_bounds_sw.nil? || view_bounds_sw == ''
+      bbox_sw = DEFAULT_OPTIONS[:bounding_box_sw]
+    else
+      bbox_sw = view_bounds_sw.gsub(/\[|\]|\s*/, '').split(',').map(&:to_f)
+    end
+    if view_bounds_ne.nil? || view_bounds_ne == ''
+      bbox_ne = DEFAULT_OPTIONS[:bounding_box_ne]
+    else
+      bbox_ne = view_bounds_ne.gsub(/\[|\]|\s*/, '').split(',').map(&:to_f)
+    end
 
-      {
-        # LowerCorner longitude, in decimal degrees
-        west:  bbox_sw[1],
-        # LowerCorner latitude, in decimal degrees
-        south: bbox_sw[0],
-        # UpperCorner longitude, in decimal degrees
-        east:  bbox_ne[1],
-        # UpperCorner latitude, in decimal degrees
-        north: bbox_ne[0]
-      }
+    {
+      # LowerCorner longitude, in decimal degrees
+      west:  bbox_sw[1],
+      # LowerCorner latitude, in decimal degrees
+      south: bbox_sw[0],
+      # UpperCorner longitude, in decimal degrees
+      east:  bbox_ne[1],
+      # UpperCorner latitude, in decimal degrees
+      north: bbox_ne[0]
+    }
   end
 
   private

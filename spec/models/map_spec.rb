@@ -38,7 +38,7 @@ describe Map do
 
       # As map has no geometries, bounds should still be default ones instead of zeros
       map_bounds = new_map.send(:get_map_bounds)
-      default_bounds = new_map.send(:default_map_bounds)
+      default_bounds = BoundingBoxHelper.default_bbox
 
       map_bounds[:maxx].should eq default_bounds[:max][0]
       map_bounds[:maxy].should eq default_bounds[:max][1]

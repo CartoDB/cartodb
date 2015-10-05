@@ -11,11 +11,11 @@ Sequel.migration do
       column :used_emails, 'text[]', null: true
       String :welcome_text, type: 'text', null: false
       String :seed, type: 'text', null: false
-      DateTime  :created_at, default: Sequel::CURRENT_TIMESTAMP
-      DateTime  :updated_at, default: Sequel::CURRENT_TIMESTAMP
+      DateTime :created_at, default: Sequel::CURRENT_TIMESTAMP
+      DateTime :updated_at, default: Sequel::CURRENT_TIMESTAMP
     end
 
-    Rails::Sequel.connection.run(%Q{
+    Rails::Sequel.connection.run(%{
       ALTER TABLE "invitations"
         ADD CONSTRAINT invitations_organization_id_fk
         FOREIGN KEY (organization_id)
@@ -23,7 +23,7 @@ Sequel.migration do
         ON DELETE CASCADE
       })
 
-    Rails::Sequel.connection.run(%Q{
+    Rails::Sequel.connection.run(%{
       ALTER TABLE "invitations"
         ADD CONSTRAINT invitations_inviter_user_id_fk
         FOREIGN KEY (inviter_user_id)
@@ -35,7 +35,7 @@ Sequel.migration do
       add_column :invitation_token, :text, null: true
     end
   end
-  
+
   down do
     drop_table :invitations
 

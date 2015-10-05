@@ -11,6 +11,7 @@ module Carto
     # This will be fixed when we upgrade Ruby and Rails
     # validates :users_emails, :welcome_text, presence: true
     validates :inviter_user, :organization, :welcome_text, presence: true
+    validates :users_emails, email: true
     validate :users_emails_not_taken
 
     belongs_to :inviter_user, class_name: Carto::User

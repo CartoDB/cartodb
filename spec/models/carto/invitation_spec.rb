@@ -21,6 +21,12 @@ describe Carto::Invitation do
       end.to raise_error CartoDB::InvalidUser
     end
 
+    it 'fails for wrong emails' do
+      invitation = Carto::Invitation.create_new(@carto_org_user_owner, ['no', 'neither@'], 'hi')
+      invitation.valid?.should == false
+      invitation.errors[:users_emails].count.should == 2
+    end
+
     it 'sends invitations' do
       ::Resque.expects(:enqueue).with(Resque::OrganizationJobs::Mail::Invitation, instance_of(String)).once
       invitation = Carto::Invitation.create_new(@carto_org_user_owner, ['w_1@cartodb.com', 'w_2@cartodb.com'], 'hi')

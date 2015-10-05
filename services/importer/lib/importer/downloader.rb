@@ -279,11 +279,11 @@ module CartoDB
 
       def name_from(headers, url, custom=nil)
         name =  custom || name_from_http(headers) || name_in(url)
+
         if name == nil || name == ''
-          random_name
-        else
-          name
+          name = random_name
         end
+
         name_with_extension(name, headers)
       end
 

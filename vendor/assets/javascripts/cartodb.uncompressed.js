@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.7
 // uncompressed version: cartodb.uncompressed.js
-// sha: 2983b2fdcef914afdb1f4fdae173471143930452
+// sha: 7c495aa2082090452a54cf492e4f70a588abcb68
 (function() {
   var define;  // Undefine define (require.js), see https://github.com/CartoDB/cartodb.js/issues/543
   var root = this;
@@ -25973,8 +25973,21 @@ if(!window.JSON) {
         getSqlApiUrl: function(version) {
           version = version || 'v2';
           return this.getSqlApiBaseUrl() + "/api/" + version + "/sql";
-        }
+        },
 
+        /**
+         *  returns the maps api host, removing user template
+         *  and the protocol.
+         *  cartodb.com:3333
+         */
+        getMapsApiHost: function() {
+          var url;
+          var mapsApiTemplate = this.get('maps_api_template');
+          if (mapsApiTemplate) {
+            url = mapsApiTemplate.replace(/https?:\/\/{user}\./, '');
+          }
+          return url;
+        }
 
     });
 
@@ -26713,12 +26726,12 @@ cdb.core.util.array2hex = function(byteArr) {
   return cdb.core.util.btoa(encoded.join(''));
 };
 
-cdb.core.util.btoa = function() {
+cdb.core.util.btoa = function(data) {
   if (typeof window['btoa'] == 'function') {
-    return cdb.core.util.encodeBase64Native;
+    return cdb.core.util.encodeBase64Native(data);
   };
 
-  return cdb.core.util.encodeBase64;
+  return cdb.core.util.encodeBase64(data);
 };
 
 cdb.core.util.encodeBase64Native = function (input) {
@@ -26823,6 +26836,7 @@ cdb.core.util._inferBrowser = function(ua){
 }
 
 cdb.core.util.browser = cdb.core.util._inferBrowser();
+
 
 /**
  * geocoders for different services

@@ -39,27 +39,35 @@ describe CartoDB::TrendingMaps do
       date_key = date.strftime("%Y%m%d")
       user = FactoryGirl.build(:user)
       visualization_1 = FactoryGirl.build(:derived_visualization, :user_id => user.id)
+      stub_find_visualization(visualization_1, user)
       add_total_data(visualization_1.id, user.username, 490)
       add_date_data(visualization_1.id, user.username, date_key, 10)
       visualization_2 = FactoryGirl.build(:derived_visualization, :user_id => user.id)
+      stub_find_visualization(visualization_2, user)
       add_total_data(visualization_2.id, user.username, 500)
       add_date_data(visualization_2.id, user.username, date_key, 10)
       visualization_3 = FactoryGirl.build(:derived_visualization, :user_id => user.id)
+      stub_find_visualization(visualization_3, user)
       add_total_data(visualization_3.id, user.username, 1990)
       add_date_data(visualization_3.id, user.username, date_key, 10)
       visualization_4 = FactoryGirl.build(:derived_visualization, :user_id => user.id)
+      stub_find_visualization(visualization_4, user)
       add_total_data(visualization_4.id, user.username, 8300)
       add_date_data(visualization_4.id, user.username, date_key, 20)
       visualization_5 = FactoryGirl.build(:derived_visualization, :user_id => user.id)
+      stub_find_visualization(visualization_5, user)
       add_total_data(visualization_5.id, user.username, 15990)
       add_date_data(visualization_5.id, user.username, date_key, 200)
       visualization_6 = FactoryGirl.build(:derived_visualization, :user_id => user.id)
+      stub_find_visualization(visualization_6, user)
       add_total_data(visualization_6.id, user.username, 7900)
       add_date_data(visualization_6.id, user.username, date_key, 15000)
       visualization_7 = FactoryGirl.build(:derived_visualization, :user_id => user.id)
+      stub_find_visualization(visualization_7, user)
       add_total_data(visualization_7.id, user.username, 0)
       add_date_data(visualization_7.id, user.username, date_key, 0)
       visualization_8 = FactoryGirl.build(:derived_visualization, :user_id => user.id)
+      stub_find_visualization(visualization_8, user)
       add_total_data(visualization_8.id, user.username, 10)
       add_date_data(visualization_8.id, user.username, date_key, 1)
 
@@ -85,6 +93,11 @@ describe CartoDB::TrendingMaps do
 
     def build_key(username, visualization_id)
       @api_calls.redis_api_call_key(username, "mapviews", visualization_id)
+    end
+
+    def stub_find_visualization(visualization, user)
+      Carto::Visualization.stubs("find").with(visualization.id).returns(visualization)
+      visualization.stubs("user").returns(user)
     end
 
   end

@@ -262,6 +262,6 @@ class Map < Sequel::Model
   end
 
   def table_name
-    tables.first.name
+    tables.first.nil? ? nil : tables.first.name
   end
 end

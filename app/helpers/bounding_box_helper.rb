@@ -45,6 +45,9 @@ module BoundingBoxHelper
 
   # Postgis stats-based calculation of bounds. Much faster but not always present, so needs a fallback
   def self.current_bbox_using_stats(db, table_name)
+    # Less ugly (for tests at least) than letting an exception generate not having any table name
+    return default_bbox if table_name.nil?
+
     # (lon,lat) as comes from postgis
     ::JSON.parse(db.fetch(%{
       SELECT _postgis_stats ('#{table_name}', 'the_geom');

@@ -1,0 +1,32 @@
+// Margins
+$sMargin-section:            40px; // To separate main section
+$sMargin-group:              28px; // To separate groups inside a section
+$sMargin-element:            20px; // To separate elements inside a group
+$sMargin-elementInline:      12px; // To separate inline elements
+$sMargin-min:                4px;  // Minimum margin, special cases only
+$sMargin-formRow:            20px; // Each row in a form should have a margin-bottom of this value.
+
+// Font sizes
+$sFontSize-smaller:        10px;
+$sFontSize-small:          11px;
+$sFontSize-smallUpperCase: 12px;
+$sFontSize-normal:         13px;
+$sFontSize-large:          15px;
+$sFontSize-larger:         16px;
+$sFontSize-largest:        18px;
+$sFontSize-mega:           34px;
+
+// Font weights
+$sFontWeight-small:   300;
+$sFontWeight-lighter: 300;
+$sFontWeight-normal:  500;
+$sFontWeight-bold:    700;
+
+// Line heights
+$sLineHeight-smaller: 15px;
+$sLineHeight-small:   16px;
+$sLineHeight-normal:  20px;
+$sLineHeight-large:   22px;
+$sLineHeight-larger:  24px;
+$sLineHeight-largest: 27px;
+$sLineHeight-button:  15px;

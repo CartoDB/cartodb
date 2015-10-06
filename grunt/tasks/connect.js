@@ -45,7 +45,7 @@ module.exports = {
         options: {
           port: 9001,
           open: {
-            target: 'http://localhost:9001/themes/styleguide.html'
+            target: 'http://localhost:9001/themes/styleguide'
           },
           base: [
             '.'

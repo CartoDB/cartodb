@@ -339,6 +339,10 @@ class Carto::User < ActiveRecord::Base
     google_sign_in.nil? || !google_sign_in || !last_password_change_date.nil?
   end
 
+  def organization_owner?
+    organization && organization.owner_id == id
+  end
+
   private
 
 end

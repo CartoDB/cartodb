@@ -3,7 +3,7 @@
 class Superadmin::FeatureFlagsController < Superadmin::SuperadminController
   respond_to :json
 
-  ssl_required :create, :update, :destroy if Rails.env.production? || Rails.env.staging?
+  ssl_required :create, :update, :destroy
 
   before_filter :get_feature_flag, only: [:create, :update, :destroy]
 
@@ -35,6 +35,6 @@ class Superadmin::FeatureFlagsController < Superadmin::SuperadminController
     end
     @feature_flag.name = feature_flag_params[:name]
     @feature_flag.restricted = feature_flag_params[:restricted]
-  end 
+  end
 
 end

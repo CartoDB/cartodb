@@ -635,7 +635,12 @@ class DataImport < Sequel::Model
     else
       self.results    = importer.results
       self.error_code = importer.error_code
-      self.http_response_code = runner.downloader.http_response_code if !runner.nil?
+
+      # http_response_code is only relevant if a direct download is performed
+      if !runner.nil? && !datasource_provider.providers_download_url?
+        self.http_response_code = runner.downloader.http_response_code
+      end
+
       # Table.after_create() setted fields that won't be saved to "final" data import unless specified here
       self.table_name = importer.table.name if importer.success? && importer.table
       self.table_id   = importer.table.id if importer.success? && importer.table

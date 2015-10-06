@@ -40,6 +40,17 @@ module.exports = {
             '<%= config.app %>'
           ]
         }
+      },
+      styleguide: {
+        options: {
+          port: 9001,
+          open: {
+            target: 'http://localhost:9001/themes/styleguide.html'
+          },
+          base: [
+            '.'
+          ]
+        }
       }
     }
   }

@@ -1,7 +1,7 @@
 class Superadmin::OrganizationsController < Superadmin::SuperadminController
   respond_to :json
 
-  ssl_required :show, :create, :update, :destroy, :index if Rails.env.production? || Rails.env.staging?
+  ssl_required :show, :create, :update, :destroy, :index
   before_filter :get_organization, only: [:update, :destroy, :show]
 
   layout 'application'

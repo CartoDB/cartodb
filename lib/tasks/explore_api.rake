@@ -234,11 +234,8 @@ namespace :cartodb do
           if v.privacy != CartoDB::Visualization::Member::PRIVACY_PUBLIC
             privated_visualization_ids << v.id
           else
-            # TODO: update instead of delete-insert
-            # db_conn.run delete_query([v.id])
-            # insert_visualizations(filter_valid_visualizations([v]))
-            update_visualization(explore_visualization[:visualization_id], v)
-            full_updated_count += 1
+            updated = update_visualization(explore_visualization[:visualization_id], v)
+            full_updated_count += updated
           end
         else
           # INFO: retrieving mapviews makes this much slower
@@ -349,9 +346,11 @@ namespace :cartodb do
     def update_visualization(explore_visualization_id, visualization)
       table_data = get_table_data(explore_api.get_visualizations_table_data([visualization]), visualization)
       update_hash = insert_or_update_visualization_hash(visualization, table_data)
+      return 0 if update_hash.blank?
       update_hash.delete(:visualization_id)
       visualization_dataset = db_conn[:visualizations].where("visualization_id = '#{explore_visualization_id}'")
       visualization_dataset.update(update_hash)
+      return 1
     end
 
     def get_table_data(tables_data, vis)
@@ -365,7 +364,7 @@ namespace :cartodb do
       # We get strange errors from visualization without user so we need to check
       if user.nil?
         CartoDB.notify_debug("Explore API: Visualization without user", visualization: visualization.id)
-        return
+        return {}
       end
 
       geometry_data = explore_api.get_geometry_data(visualization)

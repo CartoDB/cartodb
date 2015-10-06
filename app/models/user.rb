@@ -2628,6 +2628,16 @@ TRIGGER
     update api_key: User.make_token
   end
 
+  # This is set temporary on user creation with invitation,
+  # or retrieved from database afterwards
+  def invitation_token
+    @invitation_token ||= get_invitation_token_from_user_creation
+  end
+
+  def invitation_token=(invitation_token)
+    @invitation_token = invitation_token
+  end
+
   def configure_extension_org_metadata_api_endpoint
     # TODO: remove the check after extension install (#4924 merge)
     return if Rails.env.test?
@@ -2688,7 +2698,23 @@ TRIGGER
     ["FATAL ERROR for #{name}: #{e.message}"]
   end
 
+  def created_with_invitation?
+    user_creation = get_user_creation
+    user_creation && user_creation.invitation_token
+  end
+
   private
+
+  def get_invitation_token_from_user_creation
+    user_creation = get_user_creation
+    if !user_creation.nil? && user_creation.has_valid_invitation?
+      user_creation.invitation_token
+    end
+  end
+
+  def get_user_creation
+    Carto::UserCreation.find_by_user_id(id)
+  end
 
   def grant_read_on_schema_queries(schema, db_user = nil)
     granted_user = db_user.nil? ? self.database_username : db_user

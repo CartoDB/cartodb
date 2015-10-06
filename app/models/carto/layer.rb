@@ -9,9 +9,7 @@ module Carto
     has_and_belongs_to_many :maps, class_name: Carto::Map
 
     has_many :layers_user
-    has_many :users, :through => :layers_user
-
-    has_many :children, class_name: Carto::Layer, foreign_key: :parent_id
+    has_many :users, through: :layers_user
 
     TEMPLATES_MAP = {
       'table/views/infowindow_light' =>               'infowindow_light',

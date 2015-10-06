@@ -142,7 +142,11 @@ module CartoDB
             puts "Couldn't delete #{visualization.id} visualization because it's been imported"
             false
           else
-            CartoDB.notify_exception(e)
+            CartoDB.notify_error(
+              "Couldn't delete remote visualization",
+              visualization: visualization.id,
+              error: e.inspect
+            )
             raise e
           end
         end

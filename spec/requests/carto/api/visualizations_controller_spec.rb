@@ -1549,17 +1549,31 @@ describe Carto::Api::VisualizationsController do
     end
 
     it 'orders remotes by size with external sources size' do
-      post api_v1_visualizations_create_url(api_key: $user_1.api_key), factory($user_1, locked: true, type: 'remote').to_json, @headers
+      post api_v1_visualizations_create_url(api_key: $user_1.api_key),
+           factory($user_1, locked: true, type: 'remote', display_name: 'visu1').to_json, @headers
       vis_1_id = JSON.parse(last_response.body).fetch('id')
-      external_source_2 = Carto::ExternalSource.new({visualization_id: vis_1_id, import_url: 'http://www.fake.com', rows_counted: 1, size: 100 }).save
+      Carto::ExternalSource.new(
+        visualization_id: vis_1_id,
+        import_url: 'http://www.fake.com',
+        rows_counted: 1,
+        size: 100).save
 
-      post api_v1_visualizations_create_url(api_key: $user_1.api_key), factory($user_1, locked: true, type: 'remote').to_json, @headers
+      post api_v1_visualizations_create_url(api_key: $user_1.api_key),
+           factory($user_1, locked: true, type: 'remote', display_name: 'visu2').to_json, @headers
       vis_2_id = JSON.parse(last_response.body).fetch('id')
-      external_source_2 = Carto::ExternalSource.new({visualization_id: vis_2_id, import_url: 'http://www.fake.com', rows_counted: 1, size: 200 }).save
+      Carto::ExternalSource.new(
+        visualization_id: vis_2_id,
+        import_url: 'http://www.fake.com',
+        rows_counted: 1,
+        size: 200).save
 
-      post api_v1_visualizations_create_url(api_key: $user_1.api_key), factory($user_1, locked: true, type: 'remote').to_json, @headers
+      post api_v1_visualizations_create_url(api_key: $user_1.api_key),
+           factory($user_1, locked: true, type: 'remote', display_name: 'visu3').to_json, @headers
       vis_3_id = JSON.parse(last_response.body).fetch('id')
-      external_source_3 = Carto::ExternalSource.new({visualization_id: vis_3_id, import_url: 'http://www.fake.com', rows_counted: 1, size: 10 }).save
+      Carto::ExternalSource.new(
+        visualization_id: vis_3_id,
+        import_url: 'http://www.fake.com',
+        rows_counted: 1, size: 10).save
 
       get api_v1_visualizations_index_url(api_key: $user_1.api_key, types: 'remote', order: 'size'), {}, @headers
       last_response.status.should == 200

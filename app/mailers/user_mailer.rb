@@ -14,8 +14,7 @@ class UserMailer < ActionMailer::Base
       @enable_account_link = "#{CartoDB.base_url(@organization.name, @user.username)}#{CartoDB.path(self, 'enable_account_token_show', {id: @user.enable_account_token})}"
     end
 
-    # INFO: if user has been created by the admin he needs to tell him the password. If he has signed in through the page
-    @user_needs_password = !@user.google_sign_in && @user.enable_account_token.nil?
+    @user_needs_password = user_needs_password(user)
 
     mail :to => @user.email, 
          :subject => @subject
@@ -95,6 +94,14 @@ class UserMailer < ActionMailer::Base
     @link = "#{@user.public_url}#{CartoDB.path(self, 'public_visualizations_show_map', { id: visualization.id })}"
     mail :to => @user.email,
          :subject => @subject
+  end
+
+  private
+
+  # If user has been created by the admin he needs to tell him the password.
+  # If he has signed in through the page he doesn't.
+  def user_needs_password(user)
+    !user.google_sign_in && user.enable_account_token.nil? && !user.created_with_invitation?
   end
 
 end

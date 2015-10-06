@@ -14,12 +14,14 @@ class SignupController < ApplicationController
   before_filter :initialize_google_plus_config
 
   def signup
-    @user = ::User.new
+    email = params[:email].present? ? params[:email] : nil
+    @user = ::User.new(email: email)
   end
 
   def create
-    account_creator = CartoDB::UserAccountCreator.new
-                                                 .with_organization(@organization)
+    account_creator = CartoDB::UserAccountCreator.new.
+                      with_organization(@organization).
+                      with_invitation_token(params[:invitation_token])
 
     raise "Organization doesn't allow user + password authentication" if user_password_signup? && !@organization.auth_username_password_enabled
 
@@ -62,7 +64,7 @@ class SignupController < ApplicationController
           # No need for additional errors if there're field errors
           flash.now[:error] = 'User not valid'
         end
-        render action: 'signup'
+        render action: 'signup', status: @user.errors.empty? ? 200 : 422
       end
     end
 

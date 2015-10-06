@@ -1688,6 +1688,173 @@ describe Carto::Api::VisualizationsController do
 
   end
 
+  # See #5591
+  describe 'error with wrong visualization url' do
+    def url(user_domain, visualization_id, api_key, host = @host)
+      url = api_v1_visualizations_show_url(user_domain: user_domain, id: visualization_id, api_key: api_key).
+        gsub('www.example.com', host)
+    end
+
+    describe 'normal user urls' do
+      include_context 'users helper'
+
+      before(:each) do
+        stub_named_maps_calls
+
+        @vis_owner = @user1
+        @other_user = @user2
+        @table = create_random_table(@vis_owner)
+        @vis = @table.table_visualization
+        @vis.private?.should == true
+
+        @host = "#{@vis_owner.username}.localhost.lan"
+
+        @headers = http_json_headers
+      end
+
+      after(:each) do
+        @table.destroy
+      end
+
+      it 'returns 200 with owner user_domain' do
+        get_json url(@vis_owner.username, @vis.id, @vis_owner.api_key), {}, @headers do |response|
+          response.status.should == 200
+        end
+      end
+
+      it 'returns 404 if visualization does not exist' do
+        random_uuid = UUIDTools::UUID.timestamp_create.to_s
+        get_json url(@vis_owner.username, random_uuid, @vis_owner.api_key), {}, @headers do |response|
+          response.status.should == 404
+          response.body[:errors].should == 'Visualization does not exist'
+        end
+      end
+
+      it 'returns 403 under other user domain if visualization is private' do
+        get_json url(@other_user.username, @vis.id, @other_user.api_key), {}, @headers do |response|
+          response.status.should == 403
+          response.body[:errors].should == 'Visualization not viewable'
+        end
+      end
+
+      it 'returns 401 if visualization is private' do
+        get_json url(@vis_owner.username, @vis.id, @other_user.api_key), {}, @headers do |response|
+          response.status.should == 401
+        end
+      end
+
+      it 'returns 200 if user at url is empty' do
+        ApplicationController.any_instance.stubs(:current_viewer).returns(@vis_owner)
+        login_as(@vis_owner, scope: @vis_owner.username)
+        get_json url(nil, @vis.id, @vis_owner.api_key), {}, @headers do |response|
+          response.status.should == 200
+        end
+      end
+
+      it 'returns 404 if user at url does not match visualization owner' do
+        app = ApplicationController.any_instance
+        app.stubs(:current_user).returns(@vis_owner)
+        app.stubs(:current_viewer).returns(@vis_owner)
+        app.stubs(:api_authorization_required).returns(true)
+
+        get_json url(@other_user.username, @vis.id, @vis_owner.api_key), {}, @headers do |response|
+          response.status.should == 404
+        end
+      end
+
+      it 'returns 404 if user subdomain does not match visualization owner' do
+        app = ApplicationController.any_instance
+        app.stubs(:current_user).returns(@vis_owner)
+        app.stubs(:current_viewer).returns(@vis_owner)
+        app.stubs(:api_authorization_required).returns(true)
+
+        host = "#{@other_user.username}.localhost.lan"
+        get_json url(nil, @vis.id, @vis_owner.api_key, host), {}, @headers do |response|
+          response.status.should == 404
+          response.body[:errors].should == 'Visualization of that user does not exist'
+        end
+      end
+    end
+
+    describe 'organization urls' do
+      include_context 'organization with users helper'
+
+      before(:each) do
+        stub_named_maps_calls
+
+        @vis_owner = @org_user_1
+        @table = create_random_table(@vis_owner)
+        @shared_vis = @table.table_visualization
+        @shared_user = @org_user_2
+        @not_shared_user = @org_user_owner
+        share_visualization(@shared_vis, @shared_user)
+
+        @host = "#{@vis_owner.organization.name}.localhost.lan"
+
+        @headers = http_json_headers
+      end
+
+      after(:each) do
+        @table.destroy
+      end
+
+      it 'returns 200 with owner user_domain' do
+        get_json url(@vis_owner.username, @shared_vis.id, @vis_owner.api_key), {}, @headers do |response|
+          response.status.should == 200
+        end
+      end
+
+      it 'returns 200 with valid (shared user) user_domain' do
+        get_json url(@shared_user.username, @shared_vis.id, @shared_user.api_key), {}, @headers do |response|
+          response.status.should == 200
+        end
+      end
+
+      it 'returns 404 if visualization does not exist' do
+        random_uuid = UUIDTools::UUID.timestamp_create.to_s
+        get_json url(@vis_owner.username, random_uuid, @vis_owner.api_key), {}, @headers do |response|
+          response.status.should == 404
+          response.body[:errors].should == 'Visualization does not exist'
+        end
+      end
+
+      it 'returns 403 if visualization is not shared with the domain user' do
+        get_json url(@not_shared_user.username, @shared_vis.id, @not_shared_user.api_key), {}, @headers do |response|
+          response.status.should == 403
+          response.body[:errors].should == 'Visualization not viewable'
+        end
+      end
+
+      it 'returns 401 if visualization is not shared with the apikey user' do
+        get_json url(@shared_user.username, @shared_vis.id, @not_shared_user.api_key), {}, @headers do |response|
+          response.status.should == 401
+        end
+      end
+
+      it 'returns 404 if user at url is empty' do
+        ApplicationController.any_instance.stubs(:current_viewer).returns(@shared_user)
+        login_as(@shared_user, scope: @shared_user.organization.name)
+        get_json url(nil, @shared_vis.id, @shared_user.api_key), {}, @headers do |response|
+          response.status.should == 404
+          response.body[:errors].should == 'Visualization of that user does not exist'
+        end
+      end
+
+      it 'returns 404 if user at url does not match visualization owner' do
+        app = ApplicationController.any_instance
+        app.stubs(:current_user).returns(@shared_user)
+        app.stubs(:current_viewer).returns(@shared_user)
+        app.stubs(:api_authorization_required).returns(true)
+
+        login_as(@shared_user, scope: @shared_user.organization.name)
+        get_json url(@not_shared_user.username, @shared_vis.id, @shared_user.api_key), {}, @headers do |response|
+          response.status.should == 404
+          response.body[:errors].should == 'Visualization of that user does not exist'
+        end
+      end
+    end
+  end
+
   include Rack::Test::Methods
   include Warden::Test::Helpers
   include CacheHelper

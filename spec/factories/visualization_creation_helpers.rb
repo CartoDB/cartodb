@@ -21,8 +21,10 @@ def login(user)
   host! "#{user.username}.localhost.lan"
 end
 
-def create_random_table(user, name = "viz#{rand(999)}", privacy = UserTable::PRIVACY_PUBLIC)
-  create_table( { user_id: user.id, name: name, privacy: privacy } )
+def create_random_table(user, name = "viz#{rand(999)}", privacy = nil)
+  options = { user_id: user.id, name: name }
+  options.merge!(privacy: privacy) if privacy
+  create_table(options)
 end
 
 def create_table_with_options(user, headers = { 'CONTENT_TYPE'  => 'application/json' }, options = {})

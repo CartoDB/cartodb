@@ -7,7 +7,7 @@ all:
 	npm install
 
 PENDING_SPECS = \
-  spec/lib/varnish_spec.rb (#321) \
+  spec/lib/varnish_spec.rb (#321) \ # Pending
   $(NULL)
 
 WORKING_SPECS_INTEGRATIONS = \

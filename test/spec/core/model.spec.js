@@ -21,26 +21,11 @@ describe("core.Model", function() {
   var model;
 
   beforeEach(function() {
-    this.server = sinon.fakeServer.create();
-    this.server.respondWith("GET", "irrelevant.json",
-                                [200, { "Content-Type": "application/json" },
-                                 '{ "response": true }']);
-    this.server.respondWith("GET", "irrelevantError.json",
-                                [500, { "Content-Type": "application/json" },
-                                 '{ "response": false }']);
-    this.server.respondWith("POST", "irrelevant.json",
-                                [200, { "Content-Type": "application/json" },
-                                 '{ "response": true }']);
-    this.server.respondWith("POST", "irrelevantError.json",
-                                [500, { "Content-Type": "application/json" },
-                                 '{ "response": false }']);
-    var requests = this.requests = [];
     sinon.spy(cdb.core.Model.prototype, "initialize");
     model = new TestModel();
   });
 
   afterEach(function() {
-    this.server.restore();
     cdb.core.Model.prototype.initialize.restore();
   })
 
@@ -69,7 +54,6 @@ describe("core.Model", function() {
       options.success({ "response": true });
     }
     model.fetch();
-    this.server.respond();
     expect(model.get('response')).toBeTruthy();
   })
 
@@ -94,18 +78,24 @@ describe("core.Model", function() {
       triggered = true;
     })
     model.fetch();
-    this.server.respond();
     expect(triggered).toBeTruthy();
   })
 
   it("should trigger 'loadModelFailed' event when fetch fails", function() {
     var triggered = false;
-    model.url = 'irrelevantError.json'
+    model.url = 'irrelevantError.json';
+
+    model.sync = function(method, model, options) {
+      var dfd = $.Deferred();
+      options.error({ "response": true });
+      return dfd.reject();
+    };
+
     model.bind('loadModelFailed', function() {
       triggered = true;
-    })
+    });
+
     model.fetch();
-    this.server.respond();
     expect(triggered).toBeTruthy();
   });
 
@@ -144,18 +134,24 @@ describe("core.Model", function() {
       triggered = true;
     })
     model.save();
-    this.server.respond();
     expect(triggered).toBeTruthy();
   })
 
   it("should trigger 'errorSaving' event when save fails", function() {
     var triggered = false;
     model.url = 'irrelevantError.json'
+
+    model.sync = function(method, model, options) {
+      var dfd = $.Deferred();
+      options.error({ "response": true });
+      return dfd.reject();
+    };
+
     model.bind('errorSaving', function() {
       triggered = true;
-    })
+    });
+
     model.save();
-    this.server.respond();
     expect(triggered).toBeTruthy();
   });
 

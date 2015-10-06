@@ -234,11 +234,8 @@ namespace :cartodb do
           if v.privacy != CartoDB::Visualization::Member::PRIVACY_PUBLIC
             privated_visualization_ids << v.id
           else
-            # TODO: update instead of delete-insert
-            # db_conn.run delete_query([v.id])
-            # insert_visualizations(filter_valid_visualizations([v]))
-            update_visualization(explore_visualization[:visualization_id], v)
-            full_updated_count += 1
+            updated = update_visualization(explore_visualization[:visualization_id], v)
+            full_updated_count += updated
           end
         else
           # INFO: retrieving mapviews makes this much slower
@@ -349,9 +346,11 @@ namespace :cartodb do
     def update_visualization(explore_visualization_id, visualization)
       table_data = get_table_data(explore_api.get_visualizations_table_data([visualization]), visualization)
       update_hash = insert_or_update_visualization_hash(visualization, table_data)
+      return 0 if update_hash.blank?
       update_hash.delete(:visualization_id)
       visualization_dataset = db_conn[:visualizations].where("visualization_id = '#{explore_visualization_id}'")
       visualization_dataset.update(update_hash)
+      return 1
     end
 
     def get_table_data(tables_data, vis)
@@ -360,39 +359,45 @@ namespace :cartodb do
     end
 
     def insert_or_update_visualization_hash(visualization, table_data)
-      v = visualization
-      u = v.user
+      user = visualization.user
+
+      # We get strange errors from visualization without user so we need to check
+      if user.nil?
+        CartoDB.notify_debug("Explore API: Visualization without user", visualization: visualization.id)
+        return {}
+      end
+
       geometry_data = explore_api.get_geometry_data(visualization)
       {
-        visualization_id: v.id,
-        visualization_name: v.name,
-        visualization_description: v.description,
-        visualization_type: v.type,
+        visualization_id: visualization.id,
+        visualization_name: visualization.name,
+        visualization_description: visualization.description,
+        visualization_type: visualization.type,
         # Synchronization method from Visualization::Relator uses empty Hash when there is no sync
-        visualization_synced: !v.synchronization.is_a?(Hash),
-        visualization_table_names: explore_api.get_visualization_tables(v),
+        visualization_synced: !visualization.synchronization.is_a?(Hash),
+        visualization_table_names: explore_api.get_visualization_tables(visualization),
         visualization_table_rows: table_data[:rows],
         visualization_table_size: table_data[:size],
-        visualization_map_datasets: explore_api.get_map_layers(v).length,
+        visualization_map_datasets: explore_api.get_map_layers(visualization).length,
         visualization_geometry_types: table_data[:geometry_types].blank? ? nil : Sequel.pg_array(table_data[:geometry_types]),
-        visualization_tags: v.tags.nil? || v.tags.empty? ? nil : Sequel.pg_array(v.tags),
-        visualization_created_at: v.created_at,
-        visualization_updated_at: v.updated_at,
-        visualization_map_id: v.map_id,
-        visualization_title: v.title,
-        visualization_likes: v.likes_count,
-        visualization_mapviews: v.total_mapviews,
-        visualization_bbox: v.bbox.nil? ? nil : Sequel.lit(explore_api.bbox_from_value(v.bbox)),
+        visualization_tags: visualization.tags.nil? || visualization.tags.empty? ? nil : Sequel.pg_array(visualization.tags),
+        visualization_created_at: visualization.created_at,
+        visualization_updated_at: visualization.updated_at,
+        visualization_map_id: visualization.map_id,
+        visualization_title: visualization.title,
+        visualization_likes: visualization.likes_count,
+        visualization_mapviews: visualization.total_mapviews,
+        visualization_bbox: visualization.bbox.nil? ? nil : Sequel.lit(explore_api.bbox_from_value(visualization.bbox)),
         visualization_view_box: geometry_data[:view_box_polygon].nil? ? nil : Sequel.lit(geometry_data[:view_box_polygon]),
         visualization_view_box_center: geometry_data[:center_geometry].nil? ? nil : Sequel.lit(geometry_data[:center_geometry]),
         visualization_zoom: geometry_data[:zoom],
-        user_id: u.id,
-        user_username: u.username,
-        user_organization_id: u.organization_id,
-        user_twitter_username: u.twitter_username,
-        user_website: u.website,
-        user_avatar_url: u.avatar_url,
-        user_available_for_hire: u.available_for_hire
+        user_id: user.id,
+        user_username: user.username,
+        user_organization_id: user.organization_id,
+        user_twitter_username: user.twitter_username,
+        user_website: user.website,
+        user_avatar_url: user.avatar_url,
+        user_available_for_hire: user.available_for_hire
       }
     end
 

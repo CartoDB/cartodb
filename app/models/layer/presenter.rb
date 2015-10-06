@@ -42,10 +42,6 @@ module CartoDB
         else
           {
             id:         layer.id,
-            # Left for backwards compatibility
-            parent_id:  nil,
-            # Left for backwards compatibility
-            children:   [],
             type:       'CartoDB',
             infowindow: infowindow_data_v2,
             tooltip:    tooltip_data_v2,
@@ -67,10 +63,6 @@ module CartoDB
         return layer.public_values.symbolize_keys if base?(layer)
         {
           id:         layer.id,
-          # Left for backwards compatibility
-          parent_id:  nil,
-          # Left for backwards compatibility
-          children:   [],
           kind:       'CartoDB',
           infowindow: infowindow_data_v1,
           order:      layer.order,
@@ -80,7 +72,7 @@ module CartoDB
 
       def to_poro
         # .merge left for backwards compatibility
-        poro = layer.public_values.merge('parent_id' => nil, 'children' => [])
+        poro = layer.public_values
 
         return poro unless poro['options']
 
@@ -142,10 +134,6 @@ module CartoDB
 
         {
           id:         layer.id,
-          # Left for backwards compatibility
-          parent_id:  nil,
-          # Left for backwards compatibility
-          children:   [],
           type:       'torque',
           order:      layer.order,
           legend:     layer.legend,

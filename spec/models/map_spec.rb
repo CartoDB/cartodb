@@ -27,14 +27,14 @@ describe Map do
       value5 = -180
       value6 = 0
 
-      new_map.send(:bound_for, value1, min_value, max_value).should eq value1
-      new_map.send(:bound_for, value2, min_value, max_value).should eq value2
-      new_map.send(:bound_for, value2, min_value, max_value).should eq BoundingBoxHelper::DEFAULT_BOUNDS[max_value]
-      new_map.send(:bound_for, value3, min_value, max_value).should eq value3
-      new_map.send(:bound_for, value3, min_value, max_value).should eq BoundingBoxHelper::DEFAULT_BOUNDS[min_value]
-      new_map.send(:bound_for, value4, min_value, max_value).should eq BoundingBoxHelper::DEFAULT_BOUNDS[max_value]
-      new_map.send(:bound_for, value5, min_value, max_value).should eq BoundingBoxHelper::DEFAULT_BOUNDS[min_value]
-      new_map.send(:bound_for, value6, min_value, max_value).should eq value6
+      BoundingBoxHelper.bound_for(value1, min_value, max_value).should eq value1
+      BoundingBoxHelper.bound_for(value2, min_value, max_value).should eq value2
+      BoundingBoxHelper.bound_for(value2, min_value, max_value).should eq BoundingBoxHelper::DEFAULT_BOUNDS[max_value]
+      BoundingBoxHelper.bound_for(value3, min_value, max_value).should eq value3
+      BoundingBoxHelper.bound_for(value3, min_value, max_value).should eq BoundingBoxHelper::DEFAULT_BOUNDS[min_value]
+      BoundingBoxHelper.bound_for(value4, min_value, max_value).should eq BoundingBoxHelper::DEFAULT_BOUNDS[max_value]
+      BoundingBoxHelper.bound_for(value5, min_value, max_value).should eq BoundingBoxHelper::DEFAULT_BOUNDS[min_value]
+      BoundingBoxHelper.bound_for(value6, min_value, max_value).should eq value6
 
       # As map has no geometries, bounds should still be default ones instead of zeros
       map_bounds = new_map.send(:get_map_bounds)

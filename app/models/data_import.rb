@@ -637,7 +637,7 @@ class DataImport < Sequel::Model
       self.error_code = importer.error_code
 
       # http_response_code is only relevant if a direct download is performed
-      if !runner.nil? && !datasource_provider.providers_download_url?
+      if !runner.nil? && datasource_provider.providers_download_url?
         self.http_response_code = runner.downloader.http_response_code
       end
 

@@ -1705,7 +1705,7 @@ describe Carto::Api::VisualizationsController do
   # See #5591
   describe 'error with wrong visualization url' do
     def url(user_domain, visualization_id, api_key, host = @host)
-      url = api_v1_visualizations_show_url(user_domain: user_domain, id: visualization_id, api_key: api_key).
+      api_v1_visualizations_show_url(user_domain: user_domain, id: visualization_id, api_key: api_key).
         gsub('www.example.com', host)
     end
 

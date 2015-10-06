@@ -33,7 +33,7 @@ module Carto
       before_filter :load_visualization, only: [:likes_count, :likes_list, :is_liked, :show, :stats, :list_watching,
                                                 :static_map]
 
-      rescue_from Carto::Api::VisualizationLoadError, :with => :visualization_load_error
+      rescue_from Carto::Api::VisualizationLoadError, with: :visualization_load_error
 
       def show
         render_jsonp(to_json(@visualization))
@@ -161,7 +161,8 @@ module Carto
         raise Carto::Api::VisualizationLoadError.new('Visualization of that user does not exist', 404) unless request_username_matches_visualization_owner
         # Check for previous line before #5591 (in case fix doesn't cover every url)
         # subdomain = CartoDB.extract_subdomain(request) # needed for check
-        # if subdomain && !subdomain.empty? && subdomain != @visualization.user.username # && !@visualization.has_read_permission?(current_viewer)
+        # if subdomain && !subdomain.empty? && subdomain != @visualization.user.username
+        # && !@visualization.has_read_permission?(current_viewer)
       end
 
       # This avoids crossing usernames and visualizations.
@@ -175,7 +176,8 @@ module Carto
 
         # Either user is owner or is current and has permission
         # R permission check is based on current_viewer because current_user assumes you're viewing your subdomain
-        username == @visualization.user.username || (current_user && username == current_user.username && @visualization.has_read_permission?(current_viewer))
+        username == @visualization.user.username ||
+          (current_user && username == current_user.username && @visualization.has_read_permission?(current_viewer))
       end
 
       def id_and_schema_from_params

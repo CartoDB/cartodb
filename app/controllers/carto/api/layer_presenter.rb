@@ -4,9 +4,9 @@ module Carto
   module Api
     class LayerPresenter
 
-      PUBLIC_VALUES = %W{ options kind infowindow tooltip id order parent_id }
+      PUBLIC_VALUES = %W{ options kind infowindow tooltip id order }
 
-      # CSS is not stored by default, only when sent by frontend, 
+      # CSS is not stored by default, only when sent by frontend,
       # so this is returned whenever a layer that needs CSS but has none is requestesd
       EMPTY_CSS = '#dummy{}'
 
@@ -45,7 +45,7 @@ module Carto
       end
 
       def to_json
-        public_values(@layer).merge(children_for(@layer)).to_json
+        public_values(@layer).to_json
       end
 
       def to_vizjson_v2
@@ -56,8 +56,6 @@ module Carto
         else
           {
             id:         @layer.id,
-            parent_id:  @layer.parent_id,
-            children:   children_for(@layer, false),
             type:       'CartoDB',
             infowindow: infowindow_data_v2,
             tooltip:    tooltip_data_v2,
@@ -73,8 +71,6 @@ module Carto
         return base_poro(@layer).symbolize_keys if base?(@layer)
         {
           id:         @layer.id,
-          parent_id:  @layer.parent_id,
-          children:   children_for(@layer, false),
           kind:       'CartoDB',
           infowindow: infowindow_data_v1,
           order:      @layer.order,
@@ -118,24 +114,20 @@ module Carto
       end
 
       def base_poro(layer)
-        public_values(layer).merge('options' => layer_options).merge(children_for(layer))
+        # .merge left for backwards compatibility
+        public_values(layer).merge('options' => layer_options)
       end
 
       def public_values(layer)
         Hash[ PUBLIC_VALUES.map { |attribute| [attribute, layer.send(attribute)] } ]
       end
 
-      def children_for(layer, as_hash=true)
-        items = layer.children.nil? ? [] : layer.children.map { |child_layer| { id: child_layer.id } }
-        as_hash ? { 'children' => items } : items
-      end
-
       # Decorates the layer presentation with data if needed. nils on the decoration act as removing the field
       def decorate_with_data(source_hash, decoration_data)
-        decoration_data.each { |key, value| 
+        decoration_data.each { |key, value|
           source_hash[key] = value
-          source_hash.delete_if { |k, v| 
-            v.nil? 
+          source_hash.delete_if { |k, v|
+            v.nil?
           }
         }
         source_hash
@@ -208,14 +200,12 @@ module Carto
         api_templates_type = @options.fetch(:https_request, false) ? 'private' : 'public'
         layer_options = decorate_with_data(
             # Make torque always have a SQL query too (as vizjson v2)
-            @layer.options.merge({ 'query' => wrap(sql_from(@layer.options), @layer.options) }), 
+            @layer.options.merge({ 'query' => wrap(sql_from(@layer.options), @layer.options) }),
             @decoration_data
           )
 
         {
           id:         @layer.id,
-          parent_id:  @layer.parent_id,
-          children:   children_for(@layer, false),
           type:       'torque',
           order:      @layer.order,
           legend:     @layer.legend,
@@ -252,7 +242,7 @@ module Carto
         throw e
       end
 
-      def tooltip_data_v2 
+      def tooltip_data_v2
         whitelisted_infowindow(with_template(@layer.tooltip, @layer.tooltip_template_path))
       rescue => e
         Rollbar.report_exception(e)
@@ -298,7 +288,7 @@ module Carto
       end
 
       def whitelisted_infowindow(infowindow)
-        infowindow.nil? ? nil : infowindow.select { |key, value| 
+        infowindow.nil? ? nil : infowindow.select { |key, value|
                                                     INFOWINDOW_KEYS.include?(key) || INFOWINDOW_KEYS.include?(key.to_s)
                                                   }
       end

@@ -15,8 +15,9 @@ FactoryGirl.define do
       created_at { Time.now }
 
       after(:build) do |model, evaluator|
+        # This is useful to test user creation logic without persistence
         fake_user = OpenStruct.new(enable_account_token: nil, enabled: true, dashboard_viewed_at: nil)
-        model.instance_variable_set(:@user, fake_user)
+        model.instance_variable_set(:@cartodb_user, fake_user)
       end
     end
   end

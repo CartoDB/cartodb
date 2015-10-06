@@ -163,11 +163,6 @@ module CartoDB
             layer_group[:options][:layer_definition][:layers].each { |layer|
               layer_type = layer[:type].downcase
 
-              # INFO: Bypass image-bg layers for now
-              if layer_type == 'background' && (layer[:options]['image'].length > 0)
-                next
-              end
-
               if layer_type == 'cartodb'
                 data = self.options_for_cartodb_layer(layer, layer_num, template_data)
               else
@@ -283,9 +278,13 @@ module CartoDB
       #              }
       def self.options_for_basemap_layer(layer, layer_num, template_data)
         if layer[:options]['type'] == 'Plain'
-          self.plain_color_basemap_layer(layer, layer_num, template_data)
+          if layer[:options]['image'].length > 0
+            background_image_basemap_layer(layer, layer_num, template_data)
+          else
+            plain_color_basemap_layer(layer, layer_num, template_data)
+          end
         else
-          self.http_basemap_layer(layer, layer_num, template_data)
+          http_basemap_layer(layer, layer_num, template_data)
         end
       end
 
@@ -306,11 +305,21 @@ module CartoDB
         }
       end
 
+      def self.background_image_basemap_layer(layer, layer_num, template_data)
+        layer_options = {
+          imageUrl: layer[:options]['image']
+        }
+        plain_layer(layer_options, layer_num, template_data)
+      end
+
       def self.plain_color_basemap_layer(layer, layer_num, template_data)
         layer_options = {
           color: layer[:options]['color']
         }
+        plain_layer(layer_options, layer_num, template_data)
+      end
 
+      def self.plain_layer(layer_options, layer_num, template_data)
         {
           layer_name: 'plain',
           layer_options: layer_options,

@@ -21,12 +21,12 @@ def login(user)
   host! "#{user.username}.localhost.lan"
 end
 
-def create_random_table(user, name = "viz#{rand(999)}")
-  create_table( { user_id: user.id, name: name } )
+def create_random_table(user, name = "viz#{rand(999)}", privacy = UserTable::PRIVACY_PUBLIC)
+  create_table( { user_id: user.id, name: name, privacy: privacy } )
 end
 
 def create_table_with_options(user, headers = { 'CONTENT_TYPE'  => 'application/json' }, options = {})
-  privacy = options.fetch(:privacy, 1)
+  privacy = options.fetch(:privacy, UserTable::PRIVACY_PUBLIC)
 
   seed    = rand(9999)
   payload = {

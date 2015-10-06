@@ -1716,8 +1716,10 @@ describe Carto::Api::VisualizationsController do
         stub_named_maps_calls
 
         @vis_owner = @user1
+        @vis_owner.private_tables_enabled = true
+        @vis_owner.save
         @other_user = @user2
-        @table = create_random_table(@vis_owner)
+        @table = create_random_table(@vis_owner, "viz#{rand(999)}", UserTable::PRIVACY_PRIVATE)
         @vis = @table.table_visualization
         @vis.private?.should == true
 
@@ -1797,7 +1799,7 @@ describe Carto::Api::VisualizationsController do
         stub_named_maps_calls
 
         @vis_owner = @org_user_1
-        @table = create_random_table(@vis_owner)
+        @table = create_random_table(@vis_owner, "viz#{rand(999)}", UserTable::PRIVACY_PRIVATE)
         @shared_vis = @table.table_visualization
         @shared_user = @org_user_2
         @not_shared_user = @org_user_owner

@@ -916,9 +916,6 @@ class User < Sequel::Model
     flag_enabled = self.private_maps_enabled
     return true if flag_enabled.present? && flag_enabled == true
 
-    #TODO: remove this after making sure we have flags inline with account types
-    return true if not self.account_type.match(/FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD/i)
-
     return true if self.private_tables_enabled # Note private_tables_enabled => private_maps_enabled
     return false
   end
@@ -1585,41 +1582,43 @@ class User < Sequel::Model
 
   # INFO: main setup for non-org users
   def setup_new_user
-    self.create_client_application
+    create_client_application
     Thread.new do
-      self.create_db_user
-      self.create_user_db
-      self.grant_owner_in_database
+      create_db_user
+      create_user_db
+      grant_owner_in_database
     end.join
-    self.create_importer_schema
-    self.create_geocoding_schema
-    self.load_cartodb_functions
-    self.set_database_search_path
-    self.reset_database_permissions # Reset privileges
-    self.grant_publicuser_in_database
-    self.set_user_privileges # Set privileges
-    self.set_user_as_organization_member
-    self.rebuild_quota_trigger
-    self.create_function_invalidate_varnish
+    create_importer_schema
+    create_geocoding_schema
+    load_cartodb_functions
+    set_database_search_path
+    reset_database_permissions # Reset privileges
+    grant_publicuser_in_database
+    set_user_privileges # Set privileges
+    set_user_as_organization_member
+    rebuild_quota_trigger
+    create_function_invalidate_varnish
+    revoke_cdb_conf_access
   end
 
   # INFO: main setup for org users
   def setup_organization_user
-    self.create_client_application
+    create_client_application
     Thread.new do
-      self.create_db_user
+      create_db_user
     end.join
-    self.create_own_schema
-    self.setup_schema
+    create_own_schema
+    setup_schema
+    revoke_cdb_conf_access
   end
 
   def create_own_schema
-    self.load_cartodb_functions
+    load_cartodb_functions
     self.database_schema = self.username
-    self.this.update database_schema: self.database_schema
-    self.create_user_schema
-    self.set_database_search_path
-    self.create_public_db_user
+    this.update database_schema: database_schema
+    create_user_schema
+    set_database_search_path
+    create_public_db_user
   end
 
   def move_to_own_schema
@@ -2626,6 +2625,16 @@ TRIGGER
     update api_key: User.make_token
   end
 
+  # This is set temporary on user creation with invitation,
+  # or retrieved from database afterwards
+  def invitation_token
+    @invitation_token ||= get_invitation_token_from_user_creation
+  end
+
+  def invitation_token=(invitation_token)
+    @invitation_token = invitation_token
+  end
+
   def configure_extension_org_metadata_api_endpoint
     # TODO: remove the check after extension install (#4924 merge)
     return if Rails.env.test?
@@ -2651,7 +2660,58 @@ TRIGGER
     end
   end
 
+  def revoke_cdb_conf_access
+    errors = []
+
+    roles = [database_username]
+    if organization_owner?
+      begin
+        roles << organization_member_group_role_member_name
+      rescue => e
+        errors << "WARN: Error fetching org member role (does #{organization.name} has that role?)"
+      end
+    end
+    roles << CartoDB::PUBLIC_DB_USER
+
+    queries = []
+    roles.map do |db_role|
+      queries.concat(revoke_permissions_on_cartodb_conf_queries(db_role))
+    end
+
+    queries.map do |query|
+      in_database(as: :superuser) do |database|
+        begin
+          database.run(query)
+        rescue => e
+          # We can find organizations not yet upgraded for any reason or missing roles
+          errors << e.message
+        end
+      end
+    end
+
+    errors
+  rescue => e
+    # For broken organizations
+    ["FATAL ERROR for #{name}: #{e.message}"]
+  end
+
+  def created_with_invitation?
+    user_creation = get_user_creation
+    user_creation && user_creation.invitation_token
+  end
+
   private
+
+  def get_invitation_token_from_user_creation
+    user_creation = get_user_creation
+    if !user_creation.nil? && user_creation.has_valid_invitation?
+      user_creation.invitation_token
+    end
+  end
+
+  def get_user_creation
+    Carto::UserCreation.find_by_user_id(id)
+  end
 
   def grant_read_on_schema_queries(schema, db_user = nil)
     granted_user = db_user.nil? ? self.database_username : db_user

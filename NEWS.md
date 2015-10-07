@@ -15,6 +15,9 @@
   4. Trigger existing org owner role assignment: `RAILS_ENV=development bundle exec rake cartodb:db:assign_org_owner_role`.
   5. Increase your database pool size to 50 (10 x # threads, see next line) at config/database.yml. Sample development configuration: config/database.yml.sample
   6. From now on you must run the server in multithread mode: `bundle exec thin start --threaded -p 3000 --threadpool-size 5`.
+* New visualization backups feature. Upon viz deletion a special vizjson will be stored in a new DB table. Backups live for Carto::VisualizationsExportService::DAYS_TO_KEEP_BACKUP days and can be recovered with `cartodb:vizs:import_user_visualization` rake by visualization id. Needs new feature flag `visualizations_backup`. Check https://github.com/CartoDB/cartodb/issues/5710 for additional details
+* Fully removed Layer parent_id from backend and frontend as wasn't used.
+
 
 3.11.0 (2015-09-09)
 -------------------
@@ -37,6 +40,12 @@
 * Removed Mixpanel tracking code [#5410](https://github.com/CartoDB/cartodb/pull/5410)
 * Newly imported datasets now properly calculate the map bounds and zoom and store them
 * Don't try to short url with bitly if credentials are not present in app_config.yml
+
+### components versions
+- [CartoDB v3.11.0](https://github.com/CartoDB/cartodb/tree/v3.11.0)
+- [Windshaft-cartodb 2.12.0](https://github.com/CartoDB/Windshaft-cartodb/tree/2.12.0)
+- [CartoDB-SQL-API 1.24.0](https://github.com/CartoDB/CartoDB-SQL-API/tree/1.24.1)
+- [CartoDB.js 3.15.3](https://github.com/CartoDB/cartodb.js/tree/3.15.3)
 
 3.10.3 (2015-08-13)
 ---

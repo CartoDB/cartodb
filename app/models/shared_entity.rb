@@ -11,6 +11,9 @@ module CartoDB
     # @param entity_id String (uuid)
     # @param entity_type String From ENTITY_TYPE_xxxx constants
 
+    # Allow mass-assignment of fields that compose the PK when using .new()
+    unrestrict_primary_key
+
     ENTITY_TYPE_VISUALIZATION = 'vis'
 
     RECIPIENT_TYPE_USER         = 'user'

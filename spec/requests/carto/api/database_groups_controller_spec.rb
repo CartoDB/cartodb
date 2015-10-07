@@ -17,10 +17,6 @@ describe Carto::Api::DatabaseGroupsController do
 
   describe 'Groups management', :order => :defined do
 
-    before(:each) do
-      @carto_organization = Carto::Organization.find(@organization.id)
-    end
-
     it "Throws 401 error without http auth" do
       post api_v1_databases_group_create_url(user_domain: @org_user_owner.username, database_name: @carto_organization.database_name), {}, http_json_headers
       response.status.should == 401

@@ -376,6 +376,7 @@ CartoDB::Application.routes.draw do
 
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/users/:user_id/groups' => 'groups#index', as: :api_v1_user_groups, constraints: { user_id: /[^\/]+/ }
 
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:id/groups/:group_id/users' => 'organizations#users', as: :api_v1_organization_groups_users, constraints: { organization_id: /[^\/]+/, group_id: /[^\/]+/ }
     post '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:organization_id/groups/:group_id/users' => 'groups#add_users', as: :api_v1_organization_groups_add_users, constraints: { organization_id: /[^\/]+/, group_id: /[^\/]+/ }
     delete '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:organization_id/groups/:group_id/users(/:user_id)' => 'groups#remove_users', as: :api_v1_organization_groups_remove_users, constraints: { organization_id: /[^\/]+/, group_id: /[^\/]+/ , user_id: /[^\/]+/ }
 

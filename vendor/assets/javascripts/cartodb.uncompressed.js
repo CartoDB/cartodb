@@ -1,6 +1,6 @@
-// cartodb.js version: 3.15.7
+// cartodb.js version: 3.15.8
 // uncompressed version: cartodb.uncompressed.js
-// sha: 7c495aa2082090452a54cf492e4f70a588abcb68
+// sha: 98c9e39e6324a501b7d8c04ffcc4942227c8db61
 (function() {
   var define;  // Undefine define (require.js), see https://github.com/CartoDB/cartodb.js/issues/543
   var root = this;
@@ -25655,7 +25655,7 @@ if (typeof window !== 'undefined') {
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = "3.15.7";
+    cdb.VERSION = "3.15.8";
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -41302,7 +41302,7 @@ Layers.register('torque', function(vis, data) {
 
   /**
    * var sql = new SQL('cartodb_username');
-   * sql.execute("select * form {table} where id = {id}", {
+   * sql.execute("select * from {{ table }} where id = {{ id }}", {
    *    table: 'test',
    *    id: '1'
    * })

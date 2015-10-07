@@ -8,15 +8,15 @@ class SynchronizationOauth < Sequel::Model
   many_to_one :user
 
   PUBLIC_ATTRIBUTES = [
-      :id,
-      :user_id,
-      :service,
-      :token
+    :id,
+    :user_id,
+    :service,
+    :token
   ]
 
   def public_values
     Hash[PUBLIC_ATTRIBUTES.map{ |k| [k, (self.send(k) rescue self[k].to_s)] }]
-  end #public_values
+  end
 
   def validate
     super
@@ -25,36 +25,38 @@ class SynchronizationOauth < Sequel::Model
 
     if new?
       existing_oauth = SynchronizationOauth.filter(
-          user_id:  user_id,
-          service:  service
+        user_id:  user_id,
+        service:  service
       ).first
       errors.add(:user_id, " already has an oauth token created for service #{:service}") unless existing_oauth.nil?
     else
       existing_oauth = SynchronizationOauth.filter(
-          id:  id
+        id: id
       ).first
-      errors.add(:id, ' cannot change user or service, only token') unless (existing_oauth.service == service && existing_oauth.user_id == user_id)
+      unless (existing_oauth.service == service && existing_oauth.user_id == user_id)
+        errors.add(:id, ' cannot change user or service, only token')
+      end
     end
-  end #validate
+  end
 
   def before_save
-    super  
+    super
     self.updated_at = Time.now
-  end #before_save
+  end
 
   def ==(oauth_object)
     return false unless oauth_object
-    self.id == oauth_object.id
-  end #==
-
+    id == oauth_object.id
+  end
 
   def get_service_datasource
     user = User.where(id: user_id).first
-    datasource = CartoDB::Datasources::DatasourcesFactory.get_datasource(service, user, {
-      http_timeout: ::DataImport.http_timeout_for(user)
-    })
+    datasource =
+    CartoDB::Datasources::DatasourcesFactory.get_datasource(service, user,
+                                                            http_timeout: ::DataImport.http_timeout_for(user)
+                                                           )
     datasource.token = token unless datasource.nil?
     datasource
-  end #get_service_datasource
+  end
 
 end

@@ -36,10 +36,15 @@ module CartoDB
             begin
               import_metadata("org_#{organization_id}_metadata.sql") unless @options[:data_only]
               create_org_role(@pack_config['users'][0]['database_name']) # Create org role for the original org
+              @pack_config['groups'].each do |group|
+                create_role(group['database_role'])
+              end
               @pack_config['users'].each do |user|
                 create_user(database_username(user['id']))
+                create_public_db_user(user['id'], user['database_schema'])
                 grant_user_org_role(database_username(user['id']), user['database_name'])
               end
+
               # We first import the owner
               owner_id = @pack_config['organization']['owner_id']
               @logger.info("Importing org owner #{owner_id}..")
@@ -59,7 +64,7 @@ module CartoDB
             rescue => e
               rollback_metadata("org_#{organization_id}_metadata_undo.sql") unless @options[:data_only]
               @logger.error e
-              exit 1
+              raise
             end
           elsif @options[:mode] == :rollback
             db = @pack_config['users'][0]['database_name']
@@ -135,6 +140,10 @@ module CartoDB
             if @target_schema != 'public'
               set_user_search_path(@target_dbuser, @pack_config['user']['database_schema'])
               create_public_db_user(@target_userid, @pack_config['user']['database_schema'])
+            end
+
+            @pack_config['roles'].each do |user, roles|
+              roles.each {|role| grant_user_role(user, role)}
             end
 
             if File.exists? "#{@path}user_#{@target_userid}.dump"
@@ -317,18 +326,25 @@ module CartoDB
         "cdb_org_member_#{Digest::MD5.hexdigest(database_name)}"
       end
 
-      def grant_user_org_role(user, database_name)
-        superuser_pg_conn.query("GRANT \"#{org_role_name(database_name)}\" TO \"#{user}\"")
+      def grant_user_role(user, role)
+        superuser_pg_conn.query("GRANT \"#{role}\" TO \"#{user}\"")
       end
 
-      def create_org_role(database_name)
-        username = org_role_name(database_name)
-        @logger.info "Creating role #{username} on target db.."
+      def grant_user_org_role(user, database_name)
+        grant_user_role(user, org_role_name(database_name))
+      end
+
+      def create_role(role)
+        @logger.info "Creating role #{role} on target db.."
         begin
-          superuser_pg_conn.query("CREATE ROLE \"#{username}\" NOLOGIN;")
+          superuser_pg_conn.query("CREATE ROLE \"#{role}\" NOLOGIN;")
         rescue PG::Error => e
           @logger.info "Target org role already exists: #{e.inspect}"
         end
+      end
+
+      def create_org_role(database_name)
+        create_role(org_role_name(database_name))
       end
 
       def create_public_db_user(user_id, schema)

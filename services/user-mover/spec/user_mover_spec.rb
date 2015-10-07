@@ -104,6 +104,10 @@ describe CartoDB::DataMover::ExportJob do
   end
 
   it "should move a whole organization" do
+    port = find_available_port
+    run_test_server(port)
+    Cartodb.config[:org_metadata_api]['port'] = port
+
     org = create_organization_with_users
     user = create_user(
       :quota_in_bytes => 100.megabyte, :table_quota => 400, :organization => org
@@ -117,7 +121,6 @@ describe CartoDB::DataMover::ExportJob do
     create_tables(user)
 
     carto_org = Carto::Organization.find(org.id)
-
     group_1 = carto_org.create_group(String.random(5))
     group_2 = carto_org.create_group(String.random(5))
 
@@ -138,6 +141,8 @@ describe CartoDB::DataMover::ExportJob do
     moved_user.link_ghost_tables
     check_tables(moved_user)
     moved_user.organization_id.should_not eq nil
+
+    @server_thread.terminate
   end
 
 end
@@ -163,11 +168,12 @@ module Helpers
     table_rw = create_table(user_id: user1.id, name: "shared_rw_by_#{user1.username}_to_#{user2.id}", privacy: UserTable::PRIVACY_PRIVATE)
     give_permission(table_rw.table_visualization, user2, CartoDB::Permission::ACCESS_READWRITE)
   end
+
   def share_group_tables(user, group)
     table_ro = create_table(user_id: user.id, name: "shared_ro_by_#{user.username}_to_#{group.name}", privacy: UserTable::PRIVACY_PRIVATE)
-    give_group_permission(table_ro.table_visualization, group, CartoDB::Permission::ACCESS_READONLY)
+    group.grant_db_permission(table_ro, CartoDB::Permission::ACCESS_READONLY)
     table_rw = create_table(user_id: user.id, name: "shared_rw_by_#{user.username}_to_#{group.name}", privacy: UserTable::PRIVACY_PRIVATE)
-    give_group_permission(table_rw.table_visualization, group, CartoDB::Permission::ACCESS_READWRITE)
+    group.grant_db_permission(table_rw, CartoDB::Permission::ACCESS_READWRITE)
   end
 
   def check_tables(moved_user)
@@ -183,6 +189,7 @@ module Helpers
                         :private_tables_enabled => true)
     uo = CartoDB::UserOrganization.new(org.id, owner.id)
     uo.promote_user_to_admin
+    owner.setup_organization_owner
     org.reload
     return org
   end
@@ -195,11 +202,16 @@ module Helpers
     per.reload
   end
 
-  def give_group_permission(vis, user, access)
-    per = vis.permission
-    per.set_group_permission(user, access)
-    per.update_db_group_permission = true
-    per.save
-    per.reload
+  def run_test_server(port)
+     @server_thread = Thread.new do
+       Rack::Handler::Thin.run Rails.application, :Port => port
+     end
+  end
+
+  def find_available_port
+      server = TCPServer.new('127.0.0.1', 0)
+      server.addr[1]
+    ensure
+      server.close if server
   end
 end

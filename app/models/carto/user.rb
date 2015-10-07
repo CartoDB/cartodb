@@ -327,9 +327,6 @@ class Carto::User < ActiveRecord::Base
     flag_enabled = self.private_maps_enabled
     return true if flag_enabled.present? && flag_enabled == true
 
-    #TODO: remove this after making sure we have flags inline with account types
-    return true if not self.account_type.match(/FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD/i)
-
     return true if self.private_tables_enabled # Note private_tables_enabled => private_maps_enabled
     return false
   end
@@ -337,6 +334,10 @@ class Carto::User < ActiveRecord::Base
   # Some operations, such as user deletion, won't ask for password confirmation if password is not set (because of Google sign in, for example)
   def needs_password_confirmation?
     google_sign_in.nil? || !google_sign_in || !last_password_change_date.nil?
+  end
+
+  def organization_owner?
+    organization && organization.owner_id == id
   end
 
   private

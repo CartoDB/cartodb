@@ -13,8 +13,8 @@ module Carto
         'table/views/infowindow_light_header_green' =>  'infowindow_light_header_green',
         'table/views/infowindow_header_with_image' =>   'infowindow_header_with_image'
       }
-      
-      delegate [:options, :kind, :id, :order, :parent_id, :children, :legend] => :layer
+
+      delegate [:options, :kind, :id, :order, :legend] => :layer
 
       attr_reader :layer
 
@@ -34,9 +34,7 @@ module Carto
           'infowindow' => infowindow,
           'tooltip' => tooltip,
           'id' => id,
-          'order' => order,
-          'parent_id' => parent_id,
-          'children' => children.map { |child| { id: child.id } }
+          'order' => order
         }
       end
 
@@ -52,7 +50,7 @@ module Carto
         @layer.tooltip
       end
 
-      def infowindow_template_path 
+      def infowindow_template_path
         if infowindow.present? && infowindow['template_name'].present?
           template_name = TEMPLATES_MAP.fetch(infowindow['template_name'], self.infowindow['template_name'])
           Rails.root.join("lib/assets/javascripts/cartodb/table/views/infowindow/templates/#{template_name}.jst.mustache")

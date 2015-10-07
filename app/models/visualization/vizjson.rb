@@ -7,19 +7,41 @@ require_relative '../layer_group/presenter'
 require_relative '../named_map/presenter'
 require_relative '../../../services/named-maps-api-wrapper/lib/named_maps_wrapper'
 
-
 module CartoDB
   module Visualization
     class VizJSON
-      VIZJSON_VERSION     = '0.1.0'
+      VIZJSON_VERSION = '0.1.0'
 
-      def initialize(visualization, options={}, configuration={}, logger=nil)
+      def initialize(visualization, options = {}, configuration = {}, logger = nil)
         @visualization    = visualization
         @map              = visualization.map
         @options          = default_options.merge(options)
         @configuration    = configuration
         @user             = options.fetch(:user, nil)
         logger.info(map.inspect) if logger
+      end
+
+      def to_export_poro(version = 1)
+        description = visualization.description_html_safe.nil? ? "" : clean_description(
+          visualization.description_html_safe)
+        {
+          id:             visualization.id,
+          version:        VIZJSON_VERSION,
+          title:          visualization.qualified_name(@user),
+          description:    description,
+          scrollwheel:    map.scrollwheel,
+          legends:        map.legends,
+          url:            options.delete(:url),
+          map_provider:   map.provider,
+          bounds:         bounds_from(map),
+          center:         map.center,
+          zoom:           map.zoom,
+          layers:         all_layers_for(visualization),
+          overlays:       overlays_for(visualization),
+          # Fields specific for this export
+          export_version: version,
+          owner:          { id: @user.id }
+        }
       end
 
       # Return a PORO (Hash object) for easy JSONification
@@ -47,10 +69,10 @@ module CartoDB
         }
 
         auth_tokens = auth_tokens_for(visualization)
-        poro_data.merge!({auth_tokens: auth_tokens}) if auth_tokens.length > 0
+        poro_data.merge!(auth_tokens: auth_tokens) if auth_tokens.length > 0
 
         children = children_for(visualization)
-        poro_data.merge!({slides: children}) if children.length > 0
+        poro_data.merge!(slides: children) if children.length > 0
         unless visualization.parent_id.nil?
           poro_data[:title] = visualization.parent.qualified_name(@user)
           poro_data[:description] = visualization.parent.description_html_safe
@@ -85,10 +107,33 @@ module CartoDB
 
       attr_reader :visualization, :map, :options, :configuration
 
+      # Redcarpet markdown renderer adds "garbage" that would otherwise get reimported
+      def clean_description(description)
+        description.sub(/^<p>/, "").sub(/<\/p> ?(\n)?$/, "")
+      end
+
       def bounds_from(map)
         ::JSON.parse("[#{map.view_bounds_sw}, #{map.view_bounds_ne}]")
       rescue
         # Do nothing
+      end
+
+      def all_layers_for(visualization)
+        layers_data = []
+
+        basemap_layer = basemap_layer_for(visualization)
+        layers_data.push(basemap_layer) if basemap_layer
+
+        data_layers = visualization.layers(:cartodb).map do |layer|
+          CartoDB::Layer::Presenter.new(layer, options, configuration).to_vizjson_v2
+        end
+        layers_data.push(data_layers)
+
+        layers_data.push(other_layers_for(visualization))
+
+        layers_data += non_basemap_base_layers_for(visualization)
+
+        layers_data.compact.flatten
       end
 
       def layers_for(visualization)
@@ -126,15 +171,14 @@ module CartoDB
 
         layers_data = Array.new
         layer_num = 0
-        layer_group_poro[:options][:layer_definition][:layers].each { |layer|
-          layers_data.push( {
-                              type:       layer[:type],
-                              options:    layer[:options],
-                              visible:    layer[:visible],
-                              index:      layer_num
-                            } )
+        layer_group_poro[:options][:layer_definition][:layers].each do |layer|
+          layers_data.push(type:       layer[:type],
+                           options:    layer[:options],
+                           visible:    layer[:visible],
+                           index:      layer_num
+                          )
           layer_num += 1
-        }
+        end
         layers_data
       end
 
@@ -165,9 +209,7 @@ module CartoDB
       end
 
       def children_for(visualization)
-        visualization.children.map do |vis|
-          vis.to_vizjson
-        end
+        visualization.children.map(&:to_vizjson)
       end
 
       def ordered_overlays_for(visualization)

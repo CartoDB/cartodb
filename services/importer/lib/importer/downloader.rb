@@ -103,6 +103,7 @@ module CartoDB
         @repository   = repository || DataRepository::Filesystem::Local.new(temporary_directory)
         @datasource = nil
         @source_file = nil
+        @http_response_code = nil
 
         translators = URL_TRANSLATORS.map(&:new)
         translator = translators.find { |translator| translator.supported?(url) }
@@ -159,7 +160,7 @@ module CartoDB
         # not supported
       end
 
-      attr_reader   :source_file, :datasource, :etag, :last_modified
+      attr_reader :source_file, :datasource, :etag, :last_modified, :http_response_code
       attr_accessor :url
 
       private
@@ -231,6 +232,7 @@ module CartoDB
         downloaded_file = File.open(temp_name, 'wb')
         request = http_client.request(@translated_url, typhoeus_options)
         request.on_headers do |response|
+          @http_response_code = response.code if !response.code.nil?
           unless response.success?
             download_error = true
             error_response = response
@@ -277,11 +279,11 @@ module CartoDB
 
       def name_from(headers, url, custom=nil)
         name =  custom || name_from_http(headers) || name_in(url)
+
         if name == nil || name == ''
-          random_name
-        else
-          name
+          name = random_name
         end
+
         name_with_extension(name, headers)
       end
 

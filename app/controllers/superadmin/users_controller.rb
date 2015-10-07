@@ -3,7 +3,7 @@ require_relative '../../../lib/carto/http/client'
 class Superadmin::UsersController < Superadmin::SuperadminController
   respond_to :json
 
-  ssl_required :show, :create, :update, :destroy, :index if Rails.env.production? || Rails.env.staging?
+  ssl_required :show, :create, :update, :destroy, :index
   before_filter :get_user, only: [ :update, :destroy, :show, :dump, :data_imports, :data_import ]
   before_filter :get_carto_user, only: [ :synchronizations, :synchronization ]
 

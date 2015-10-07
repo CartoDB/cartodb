@@ -17,6 +17,7 @@ require_relative '../../services/importer/lib/importer/query_batcher'
 require_relative '../../services/importer/lib/importer/cartodbfy_time'
 require_relative '../../services/datasources/lib/datasources/decorators/factory'
 require_relative '../../services/table-geocoder/lib/internal-geocoder/latitude_longitude'
+require_relative '../factories/layer_factory'
 
 require_relative '../../lib/cartodb/stats/user_tables'
 require_relative '../../lib/cartodb/stats/importer'
@@ -502,39 +503,19 @@ class Table
   end
 
   def create_default_map_and_layers
+    base_layer = CartoDB::Factories::LayerFactory.get_default_base_layer(owner)
 
-    # Adds the default baselayer
-    baselayer = default_baselayer_for_user
-    provider = ::Map.provider_for_baselayer(baselayer)
-    m = ::Map.create(::Map::DEFAULT_OPTIONS.merge(table_id: self.id, user_id: self.user_id, provider: provider))
-    @user_table.map_id = m.id
-    base_layer = ::Layer.new(baselayer)
-    m.add_layer(base_layer)
+    map = CartoDB::Factories::MapFactory.get_map(base_layer, user_id, id)
+    @user_table.map_id = map.id
 
-    # Adds the default data layer
-    data_layer = ::Layer.new(Cartodb.config[:layer_opts]['data'])
-    data_layer.options['table_name'] = self.name
-    data_layer.options['user_name'] = self.owner.username
-    data_layer.options['tile_style'] = "##{self.name} #{Cartodb.config[:layer_opts]['default_tile_styles'][self.the_geom_type]}"
-    data_layer.infowindow ||= {}
-    data_layer.infowindow['fields'] = []
-    data_layer.tooltip ||= {}
-    data_layer.tooltip['fields'] = []
-    m.add_layer(data_layer)
+    map.add_layer(base_layer)
 
-    # Adds a layer with labels at top if the baselayer has that option
-    labels_layer_url = base_layer.options['labels'] && base_layer.options['labels']['url']
-    if labels_layer_url
-      labels_layer = ::Layer.new({
-        kind: 'tiled',
-        options: base_layer.options.except('name', 'className', 'labels').merge({
-          'urlTemplate' => labels_layer_url,
-          'url' => labels_layer_url,
-          'type' => 'Tiled',
-          'name' => "#{base_layer.options['name']} Labels"
-        })
-      })
-      m.add_layer(labels_layer)
+    data_layer = CartoDB::Factories::LayerFactory.get_default_data_layer(name, owner, the_geom_type)
+    map.add_layer(data_layer)
+
+    if base_layer.supports_labels_layer?
+      labels_layer = CartoDB::Factories::LayerFactory.get_default_labels_layer(base_layer)
+      map.add_layer(labels_layer)
     end
   end
 

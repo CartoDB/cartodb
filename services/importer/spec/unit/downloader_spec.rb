@@ -236,6 +236,14 @@ describe Downloader do
       downloader.send(:name_from, headers, hard_url).should eq 'zip_file.csv.zip'
     end
 
+    it 'uses random name in no name can be found in url or http headers' do
+      headers = {}
+      empty_url = "https://manolo.escobar.es/param&myfilenameparam&nothing&otherinfo"
+
+      downloader = Downloader.new(empty_url)
+      downloader.send(:name_from, headers, empty_url).should_not eq nil
+    end
+
     it 'discards url query params' do
       headers = {}
       downloader = Downloader.new(@file_url)

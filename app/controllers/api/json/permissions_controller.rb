@@ -1,6 +1,6 @@
 class Api::Json::PermissionsController < Api::ApplicationController
 
-  ssl_required :update if Rails.env.production? || Rails.env.staging?
+  ssl_required :update
 
   def update
     @stats_aggregator.timing('overlays.update') do

@@ -156,13 +156,15 @@ module Carto
                                                             }
                                                          .first
 
-        raise Carto::Api::VisualizationLoadError.new('Visualization does not exist', 404) if @visualization.nil?
-        raise Carto::Api::VisualizationLoadError.new('Visualization not viewable', 403) if !@visualization.is_viewable_by_user?(current_viewer)
-        raise Carto::Api::VisualizationLoadError.new('Visualization of that user does not exist', 404) unless request_username_matches_visualization_owner
-        # Check for previous line before #5591 (in case fix doesn't cover every url)
-        # subdomain = CartoDB.extract_subdomain(request) # needed for check
-        # if subdomain && !subdomain.empty? && subdomain != @visualization.user.username
-        # && !@visualization.has_read_permission?(current_viewer)
+        if @visualization.nil?
+          raise Carto::Api::VisualizationLoadError.new('Visualization does not exist', 404)
+        end
+        if !@visualization.is_viewable_by_user?(current_viewer)
+          raise Carto::Api::VisualizationLoadError.new('Visualization not viewable', 403)
+        end
+        unless request_username_matches_visualization_owner
+          raise Carto::Api::VisualizationLoadError.new('Visualization of that user does not exist', 404)
+        end
       end
 
       # This avoids crossing usernames and visualizations.

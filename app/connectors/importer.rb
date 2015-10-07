@@ -11,7 +11,7 @@ module CartoDB
       DESTINATION_SCHEMA  = 'public'
       MAX_RENAME_RETRIES  = 20
 
-      attr_reader :data_import
+      attr_reader :data_import, :imported_table_ids
       attr_accessor :table
 
       # @param runner CartoDB::Importer2::Runner
@@ -19,6 +19,7 @@ module CartoDB
       # @param quota_checker CartoDB::QuotaChecker
       # @param database
       # @param data_import_id String UUID
+      # @param imported_table_ids Array UUID
       # @param destination_schema String|nil
       # @param public_user_roles Array|nil
       def initialize(runner, table_registrar, quota_checker, database, data_import_id,
@@ -33,6 +34,7 @@ module CartoDB
         @support_tables_helper  = CartoDB::Visualization::SupportTables.new(database,
                                                                             {public_user_roles: public_user_roles})
         @data_import            = nil
+        @imported_table_ids = []
       end
 
       def run(tracker)
@@ -178,6 +180,7 @@ module CartoDB
       def persist_metadata(result, name, data_import_id)
         table_registrar.register(name, data_import_id)
         self.table = table_registrar.table
+        self.imported_table_ids << self.table.table_visualization.id
         BoundingBoxHelper.update_visualizations_bbox(table)
         self
       end

@@ -4,13 +4,13 @@
 // --------------------------------------------------
 
 .DataLibrary {
-  position: relative;
-  min-height: 600px;
   margin: 0 auto;
-  padding-top: 81px;
+  background: #f9f9f9;
 }
 .DataLibrary-inner {
-  margin-bottom: 120px;
+  position: relative;
+  min-height: 500px;
+  padding-top: 81px;
 }
 .DataLibrary-columns * {
   @include css3-prefix(box-sizing, border-box);
@@ -27,4 +27,11 @@
 }
 .Filters.Filters-datalibrary .Filters-orderItem:last-child {
   margin-right: 0;
+}
+.DataLibrary-more {
+  margin-top: 40px;
+  margin-bottom: 120px;
+}
+.DataLibrary-footer {
+  padding-bottom: 120px;
 }

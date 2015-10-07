@@ -5,11 +5,11 @@
 
 .DataLibrary {
   position: relative;
-  min-height: 500px;
+  min-height: 600px;
+  margin: 0 auto;
+  padding-top: 81px;
 }
 .DataLibrary-inner {
-  display: block;
-  margin-top: 60px;
   margin-bottom: 120px;
 }
 .DataLibrary-columns * {

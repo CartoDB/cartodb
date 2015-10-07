@@ -3,7 +3,20 @@
 <%# TODO: Description for data library %>
 <%= content_for(:description) do %><% end %>
 
-<div class="DataLibrary js-data_library"></div>
+<div class="DataLibrary js-data_library">
+  <div class="Filters"></div>
+  <div class="NoDatasets"></div>
+  <div class="DataLibrary-inner">
+    <div class="DataLibrary-cards u-vspace-l">
+      <div class="DataLibrary-content js-DataLibrary-content"></div>
+    </div>
+
+    <div class="u-inner u-txt-center">
+      <button class="Button Button--gray Button--centered is-hidden js-more">View more</button>
+    </div>
+  </div>
+
+</div>
 
 <div class="u-inner u-vspace-xxl u-txt-center">
   <div class="Grid">

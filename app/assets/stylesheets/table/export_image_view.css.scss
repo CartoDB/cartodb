@@ -206,10 +206,10 @@ $resizeHandlerSize: 8px;
   opacity: 0;
 }
 .CanvasExport.is-top .ExportImageView-Header {
-  margin-top: 50px;
+  margin-top: 50px; //compensate for header
 }
 .CanvasExport.is-bottom .ExportImageView-Footer--inner {
-  margin-top: -72px;
+  margin-top: -72px; //compensate for footer
 }
 .CanvasExport.draggable .ExportHelper.ExportHelper--header,
 .CanvasExport.draggable .ExportHelper.ExportHelper--attribution {

@@ -51,6 +51,9 @@ module CartoDB
           results.select(&:success?).each { |result|
             register(result)
           }
+          if self.data_import.create_visualization
+            create_visualization
+          end
         end
 
         self
@@ -79,6 +82,21 @@ module CartoDB
         else
           raise exception
         end
+      end
+
+      def create_visualization
+        tables = get_imported_tables
+        user = ::User.where(id: self.data_import.user_id).first
+        CartoDB::Visualization::DerivedCreator.new(user, tables).create
+      end
+
+      def get_imported_tables
+        tables = []
+        @imported_table_ids.each do |table_id|
+          vis = CartoDB::Visualization::Member.new(id: table_id).fetch
+          tables << vis.table
+        end
+        tables
       end
 
       def success?

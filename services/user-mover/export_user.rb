@@ -115,7 +115,7 @@ module CartoDB
 
       def dump_role_grants(role)
         roles = pg_conn.exec("SELECT oid, rolname FROM pg_roles WHERE pg_has_role( '#{role}', oid, 'member');")
-        roles.collect{|q| q['rolname']}
+        roles.collect{|q| q['rolname']}.reject{|r| r == role}
       end
 
       def dump_org_data(tables)

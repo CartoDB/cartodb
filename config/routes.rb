@@ -10,7 +10,7 @@
 
 CartoDB::Application.routes.draw do
   # Double use: for user public dashboard AND org dashboard
-  get   '/(user/:user_domain)(u/:user_domain)'                 => 'admin/pages#public', as: :root
+  get   '(/)(/user/:user_domain)(/u/:user_domain)'                 => 'admin/pages#public', as: :root
   root :to => 'admin/pages#index'
 
   get   '/signup'           => 'signup#signup',     as: :signup

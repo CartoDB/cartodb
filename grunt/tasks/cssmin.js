@@ -19,11 +19,10 @@ module.exports = {
           check: 'gzip'
         },
         files: {
-          '<%= config.dist %>/themes/css/cartodb.css': ['<%= config.dist %>/themes/css/cartodb.css'],
-          '<%= config.dist %>/themes/css/cartodb.ie.css': ['<%= config.dist %>/themes/css/cartodb.ie.css']
+          '<%= config.dist %>/themes/css/cartodb.css': ['<%= config.dist %>/themes/css/cartodb.css']
         }
       }
-      
+
     }
   }
 }

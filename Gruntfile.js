@@ -50,6 +50,7 @@ module.exports = function(grunt) {
     prompt: require('./grunt/tasks/prompt').task(grunt, config),
     replace: require('./grunt/tasks/replace').task(grunt, config),
     fastly: require('./grunt/tasks/fastly').task(grunt, config),
+    sass: require('./grunt/tasks/scss').task(grunt, config),
     watch: require('./grunt/tasks/watch').task(),
     connect: require('./grunt/tasks/connect').task(config),
     clean: require('./grunt/tasks/clean').task(),
@@ -67,7 +68,6 @@ module.exports = function(grunt) {
     filerev: require('./grunt/tasks/filerev').task(),
     buildcontrol: require('./grunt/tasks/buildcontrol').task(),
     jshint: require('./grunt/tasks/jshint').task(),
-    csslint: require('./grunt/tasks/csslint').task(),
     concurrent: require('./grunt/tasks/concurrent').task(),
     jasmine: require('./grunt/tasks/jasmine').task()
   });
@@ -98,8 +98,7 @@ module.exports = function(grunt) {
   grunt.registerTask('check', [
     'clean:server',
     'compass:server',
-    'jshint:all',
-    'csslint:check'
+    'jshint:all'
   ]);
 
   grunt.registerTask('test', [ 'jasmine' ]);
@@ -179,6 +178,8 @@ module.exports = function(grunt) {
   grunt.registerTask('pages', [ 'buildcontrol:pages' ]);
 
   grunt.registerTask('build', [
+    'clean:dist',
+    'css',
     'dist_js',
     'useminPrepare',
     'cssmin',
@@ -198,11 +199,12 @@ module.exports = function(grunt) {
   grunt.registerTask('js', [
     'replace',
     'gitinfo',
-    'clean:dist',
     'concurrent:dist',
     'concat',
     'autoprefixer:dist'
   ]);
+
+  grunt.registerTask('css', [ 'sass' ]);
 
   grunt.registerTask('dist', [
     'set_current_version',
@@ -211,5 +213,11 @@ module.exports = function(grunt) {
 
   grunt.registerTask('default', [
     'dist'
+  ]);
+
+  grunt.registerTask('dev', [
+    'build',
+    'connect:styleguide',
+    'watch'
   ]);
 }

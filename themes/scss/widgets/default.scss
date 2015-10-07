@@ -1,0 +1,17 @@
+// Default styles for widgets
+// --------------------------------------------------
+
+@import '../variables/mixins';
+@import '../variables/colors';
+@import '../variables/sizes';
+
+.Widget {
+  display: block;
+}
+.Widget-title {
+  color: #FABADA;
+  font-size: $sFontSize-large;
+}
+.Widget-description {
+  font-size: $sFontSize-normal;
+}

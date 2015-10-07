@@ -155,7 +155,7 @@ module.exports = {
             'vendor/mod/jquery-ui/jquery.ui.mouse.js',
             'vendor/mod/jquery-ui/jquery.ui.slider.js'
           ]
-        }  
+        }
       },
 
       odyssey: {
@@ -168,7 +168,7 @@ module.exports = {
           '<%= config.dist %>/cartodb.mod.odyssey.uncompressed.js': [
             'vendor/mod/odyssey.js'
           ]
-        }  
+        }
       },
 
       themes: {
@@ -176,16 +176,9 @@ module.exports = {
         files: {
           // CartoDB.js CSSs (themes?)
           '<%= config.dist %>/themes/css/cartodb.css': [
-            'themes/css/infowindow/*.css',
-            'themes/css/map/*.css',
-            'themes/css/tooltip/*.css',
-            '!themes/css/cartodb.css'
-          ],
-          '<%= config.dist %>/themes/css/cartodb.ie.css': [
-            'themes/css/ie/*.css',
-            '!themes/css/cartodb.ie.css'
+            '.tmp/scss/**/*.css'
           ]
-        }  
+        }
       }
     }
   }

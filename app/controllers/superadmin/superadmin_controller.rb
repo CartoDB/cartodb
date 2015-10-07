@@ -2,6 +2,16 @@ class Superadmin::SuperadminController < ActionController::Base
   include SslRequirement
   before_filter :authenticate
 
+  # this disables SSL requirement in non-production environments (add "|| Rails.env.development?" for local https)
+  unless Rails.env.production? || Rails.env.staging?
+    def self.ssl_required(*splat)
+      false
+    end
+    def self.ssl_allowed(*splat)
+      true
+    end
+  end
+
   protected
 
   def authenticate

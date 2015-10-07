@@ -249,8 +249,19 @@ module CartoDB
         self
       end
 
-      def delete(from_table_deletion=false)
-          # Named map must be deleted before the map, or we lose the reference to it
+      def delete(from_table_deletion = false)
+        # from_table_deletion would be enough for canonical viz-based deletes,
+        # but common data loading also calls this delete without the flag to true, causing a call without a Map
+        if user.has_feature_flag?(Carto::VisualizationsExportService::FEATURE_FLAG_NAME) && map
+          begin
+            Carto::VisualizationsExportService.new.export(id)
+          rescue => exception
+            # Don't break deletion flow
+            CartoDB.notify_error(exception.message, error: exception.inspect, user: user, visualization_id: id)
+          end
+        end
+
+        # Named map must be deleted before the map, or we lose the reference to it
         begin
           named_map = get_named_map
           # non-existing named map is not a critical failure, keep deleting even if not found
@@ -258,7 +269,7 @@ module CartoDB
         rescue NamedMapsWrapper::HTTPResponseError => exception
           # CDB-1964: Silence named maps API exception if deleting data to avoid interrupting whole flow
           unless from_table_deletion
-            CartoDB.notify_exception(exception, { user: user })
+            CartoDB.notify_exception(exception, user: user)
           end
         end
 

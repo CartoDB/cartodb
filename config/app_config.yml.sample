@@ -92,6 +92,9 @@ defaults: &defaults
         wizard: ''
         filter: ''
         query: ''
+      mailing_track:
+        like_map: ''
+        trending_map: ''
   common_data:
     protocol: 'https'
     username: 'common-data'

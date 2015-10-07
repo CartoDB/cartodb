@@ -12,7 +12,7 @@ module Carto
 
       respond_to :json
 
-      ssl_required :create, :update, :destroy, :add_users, :remove_users, :update_permission, :destroy_permission unless Rails.env.development? || Rails.env.test?
+      ssl_required :create, :update, :destroy, :add_users, :remove_users, :update_permission, :destroy_permission
 
       before_filter :authenticate_extension
       before_filter :load_parameters

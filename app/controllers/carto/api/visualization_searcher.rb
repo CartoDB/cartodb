@@ -69,6 +69,7 @@ module Carto
 
           if types.include? Carto::Visualization::TYPE_REMOTE
             vqb.without_synced_external_sources
+            vqb.without_imported_remote_visualizations
           end
 
           if !privacy.nil?

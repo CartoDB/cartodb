@@ -353,22 +353,25 @@ describe Admin::VisualizationsController do
       )
 
       User.any_instance.stubs(
-          :enable_remote_db_user => nil,
-          :after_create => nil,
-          :create_schema => nil,
-          :move_tables_to_schema => nil,
-          :setup_schema => nil,
-          :create_public_db_user => nil,
-          :set_database_search_path => nil,
-          :load_cartodb_functions => nil,
-          :set_user_privileges => nil,
-          :monitor_user_notification => nil,
-          :grant_user_in_database => nil,
-          :set_statement_timeouts => nil,
-          :set_user_as_organization_member => nil,
-          :cartodb_extension_version_pre_mu? => false,
-          :rebuild_quota_trigger => nil,
-          :grant_publicuser_in_database => nil
+        :enable_remote_db_user => nil,
+        :after_create => nil,
+        :create_schema => nil,
+        :move_tables_to_schema => nil,
+        :setup_schema => nil,
+        :create_public_db_user => nil,
+        :set_database_search_path => nil,
+        :load_cartodb_functions => nil,
+        :set_user_privileges => nil,
+        :monitor_user_notification => nil,
+        :set_statement_timeouts => nil,
+        :set_user_as_organization_member => nil,
+        :cartodb_extension_version_pre_mu? => false,
+        :rebuild_quota_trigger => nil
+      )
+
+      User::DB::Manager.any_instance.stubs(
+        grant_user_in_database: nil,
+        grant_publicuser_in_database: nil
       )
 
       CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)

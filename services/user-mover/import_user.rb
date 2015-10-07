@@ -136,7 +136,6 @@ module CartoDB
               exit 1
             end
 
-
             create_user(@target_dbuser)
             if @options[:target_org] != nil
               create_org_role(@target_dbname) # Create org role for the original org
@@ -181,12 +180,7 @@ module CartoDB
             end
 
             user_model = User.find(username: @target_username)
-            user_model.grant_user_in_database
-            user_model.set_user_privileges
-            user_model.set_statement_timeouts
-            user_model.setup_schema if user_model.database_schema != 'public'
-            user_model.create_function_invalidate_varnish
-
+            user_model.db_manager.configure_database
 
           elsif @options[:mode] == :rollback
             rollback_metadata("user_#{@target_userid}_metadata_undo.sql")

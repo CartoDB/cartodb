@@ -82,6 +82,10 @@ class User < Sequel::Model
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
 
+  def db_manager
+    @db_manager ||= User::DB::Manager.new(self)
+  end
+
   def self.new_with_organization(organization)
     user = ::User.new
     user.organization = organization
@@ -633,7 +637,7 @@ class User < Sequel::Model
       in_database.run("SET statement_timeout TO #{options[:statement_timeout]}")
     end
 
-    configuration = get_db_configuration_for(options[:as])
+    configuration = db_manager.db_configuration_for(options[:as])
     configuration['database'] = options['database'] unless options['database'].nil?
 
     connection = $pool.fetch(configuration) do
@@ -656,7 +660,7 @@ class User < Sequel::Model
   end
 
   def connection(options = {})
-    configuration = get_db_configuration_for(options[:as])
+    configuration = manager.db_configuration_for(options[:as])
 
     $pool.fetch(configuration) do
       get_database(options, configuration)
@@ -668,46 +672,6 @@ class User < Sequel::Model
         conn.execute(%Q{ SET search_path TO "#{self.database_schema}", cartodb, public }) unless options[:as] == :cluster_admin
       end)))
   end
-
-  def get_db_configuration_for(user = nil)
-    logger = (Rails.env.development? || Rails.env.test? ? ::Rails.logger : nil)
-    if user == :superuser
-      ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        'database' => self.database_name,
-        :logger => logger,
-        'host' => self.database_host
-      ) {|key, o, n| n.nil? ? o : n}
-    elsif user == :cluster_admin
-      ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        'database' => 'postgres',
-        :logger => logger,
-        'host' => self.database_host
-      ) {|key, o, n| n.nil? ? o : n}
-    elsif user == :public_user
-      ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        'database' => self.database_name,
-        :logger => logger,
-        'username' => CartoDB::PUBLIC_DB_USER, 'password' => CartoDB::PUBLIC_DB_USER_PASSWORD,
-        'host' => self.database_host
-      ) {|key, o, n| n.nil? ? o : n}
-    elsif user == :public_db_user
-      ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        'database' => self.database_name,
-        :logger => logger,
-        'username' => database_public_username, 'password' => CartoDB::PUBLIC_DB_USER_PASSWORD,
-        'host' => self.database_host
-      ) {|key, o, n| n.nil? ? o : n}
-    else
-      ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        'database' => self.database_name,
-        :logger => logger,
-        'username' => database_username,
-        'password' => database_password,
-        'host' => self.database_host
-      ) {|key, o, n| n.nil? ? o : n}
-    end
-  end
-
 
   def run_pg_query(query)
     time = nil
@@ -1714,13 +1678,6 @@ class User < Sequel::Model
     )
   end
 
-  def grant_user_in_database
-    self.run_queries_in_transaction(
-      self.grant_connect_on_database_queries,
-      true
-    )
-  end
-
   def grant_publicuser_in_database
     self.run_queries_in_transaction(
       self.grant_connect_on_database_queries(CartoDB::PUBLIC_DB_USER),
@@ -2214,9 +2171,9 @@ TRIGGER
       user_database["ALTER DATABASE \"?\" SET statement_timeout to ?", database_name.lit, database_timeout].all
     end
     in_database.disconnect
-    in_database.connect(get_db_configuration_for)
+    in_database.connect(manager.db_configuration_for)
     in_database(as: :public_user).disconnect
-    in_database(as: :public_user).connect(get_db_configuration_for(:public_user))
+    in_database(as: :public_user).connect(manager.db_configuration_for(:public_user))
   rescue Sequel::DatabaseConnectionError => e
   end
 

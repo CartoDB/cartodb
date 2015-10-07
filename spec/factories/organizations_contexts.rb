@@ -90,7 +90,7 @@ shared_context 'organization with users helper' do
     last_response.status.should == 200
   end
 
-  def share_visualization(visualization, user)
+  def share_visualization(visualization, user, access = CartoDB::Permission::ACCESS_READONLY)
     shared_entity = CartoDB::SharedEntity.new(
       recipient_id: user.id,
       recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
@@ -103,7 +103,7 @@ shared_context 'organization with users helper' do
     perm_id = visualization.permission.id
     params = { acl: [{ type: CartoDB::Permission::TYPE_USER,
                        entity: { id: user.id },
-                       access: CartoDB::Permission::ACCESS_READONLY
+                       access: access
                      }]
              }
     url = api_v1_permissions_update_url(user_domain: owner.username, api_key: owner.api_key, id: perm_id)

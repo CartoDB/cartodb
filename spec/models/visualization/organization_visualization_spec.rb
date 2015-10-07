@@ -49,7 +49,7 @@ describe Visualization::Member do
       :move_tables_to_schema => nil
     )
 
-    User::DB::Manager.any_instance.stubs(
+    CartoDB::User::DB::Manager.any_instance.stubs(
       grant_user_in_database: nil,
       grant_publicuser_in_database: nil
     )

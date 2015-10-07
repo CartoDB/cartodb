@@ -369,7 +369,7 @@ describe Admin::VisualizationsController do
         :rebuild_quota_trigger => nil
       )
 
-      User::DB::Manager.any_instance.stubs(
+      CartoDB::User::DB::Manager.any_instance.stubs(
         grant_user_in_database: nil,
         grant_publicuser_in_database: nil
       )

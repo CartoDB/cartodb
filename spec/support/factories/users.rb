@@ -33,7 +33,7 @@ module CartoDB
           :rebuild_quota_trigger => nil
         )
 
-        User::DB::Manager.any_instance.stubs(
+        CartoDB::User::DB::Manager.any_instance.stubs(
           grant_user_in_database: nil,
         )
       end

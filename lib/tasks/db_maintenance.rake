@@ -368,8 +368,7 @@ namespace :cartodb do
     desc 'Set all user privileges'
     task :set_all_user_privileges, [:username] => :environment do |t, args|
       user = User.find(username: args[:username])
-      user_db_manager = User::DB::Manager.new(user)
-      user_db_manager.grant_user_in_database
+      user.db_manager.grant_user_in_database
       user.set_user_privileges
     end
 

@@ -14,6 +14,8 @@ require_relative './feature_flag'
 require_relative '../../lib/cartodb/stats/api_calls'
 require_relative '../../lib/carto/http/client'
 require_dependency 'cartodb_config_utils'
+require_relative './user/db/manager'
+
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -83,7 +85,7 @@ class User < Sequel::Model
   self.raise_on_save_failure = false
 
   def db_manager
-    @db_manager ||= User::DB::Manager.new(self)
+    @db_manager ||= CartoDB::User::DB::Manager.new(self)
   end
 
   def self.new_with_organization(organization)
@@ -2288,20 +2290,6 @@ TRIGGER
     end
   end
 
-  def fix_table_permissions
-    tables_queries = []
-    tables.each do |table|
-      if table.public? || table.public_with_link_only?
-        tables_queries << "GRANT SELECT ON \"#{self.database_schema}\".\"#{table.name}\" TO #{CartoDB::PUBLIC_DB_USER}"
-      end
-      tables_queries << "ALTER TABLE \"#{self.database_schema}\".\"#{table.name}\" OWNER TO \"#{database_username}\""
-    end
-    self.run_queries_in_transaction(
-      tables_queries,
-      true
-    )
-  end
-
   # Utility methods
   def fix_permissions
     # /!\ WARNING
@@ -2311,7 +2299,7 @@ TRIGGER
     self.reset_user_schema_permissions
     db_manager.grant_publicuser_in_database
     self.set_user_privileges
-    self.fix_table_permissions
+    db_manager.fix_table_permissions
   end
 
   def monitor_user_notification

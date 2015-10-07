@@ -11,6 +11,7 @@
   height: 100%;
 }
 .ExportImageView-Header {
+  @include transition(all, 200ms, ease-in-out);
   position: absolute;
   width: 100%;
   top: -35px;
@@ -51,6 +52,7 @@
   z-index: 105;
 }
 .ExportImageView-Footer--inner {
+  @include transition(margin, 200ms, ease-in-out);
   $width: 360px;
   position: absolute;
   left: 50%;
@@ -199,6 +201,15 @@ $resizeHandlerSize: 8px;
     cursor: move;
     z-index: 1000000000;
   }
+}
+.CanvasExport.is-small .ExportImageView-Header {
+  opacity: 0;
+}
+.CanvasExport.is-top .ExportImageView-Header {
+  margin-top: 50px; //compensate for header
+}
+.CanvasExport.is-bottom .ExportImageView-Footer--inner {
+  margin-top: -72px; //compensate for footer
 }
 .CanvasExport.draggable .ExportHelper.ExportHelper--header,
 .CanvasExport.draggable .ExportHelper.ExportHelper--attribution {

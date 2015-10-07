@@ -53,6 +53,12 @@ module CartoDB
                   host: @target_dbhost,
                   target_org: @pack_config['organization']['name'],
                   logger: @logger, data_only: @options[:data_only]).run!
+
+              #Fix permissions and metadata settings for owner
+              owner_user = User.find(id: owner_id)
+              owner_user.database_host = @target_dbhost
+              owner_user.setup_organization_owner
+
               @pack_config['users'].reject{|u| u['id'] == owner_id}.each do |user|
                 @logger.info("Importing org user #{user['id']}..")
                 ImportJob.new(file: @path + "user_#{user['id']}.json",
@@ -173,8 +179,14 @@ module CartoDB
             else
               update_postgres_organization(@target_userid, nil)
             end
-            set_user_statement_timeout(@target_dbuser, @pack_config['user']['user_timeout'])
-            set_db_statement_timeout(@target_dbname, @pack_config['user']['database_timeout'])
+
+            user_model = User.find(username: @target_username)
+            user_model.grant_user_in_database
+            user_model.set_user_privileges
+            user_model.set_statement_timeouts
+            user_model.setup_schema if user_model.database_schema != 'public'
+            user_model.create_function_invalidate_varnish
+
 
           elsif @options[:mode] == :rollback
             rollback_metadata("user_#{@target_userid}_metadata_undo.sql")

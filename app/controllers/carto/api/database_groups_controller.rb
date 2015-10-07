@@ -14,6 +14,10 @@ module Carto
 
       ssl_required :create, :update, :destroy, :add_users, :remove_users, :update_permission, :destroy_permission
 
+      def ssl_allowed?
+        Rails.env.development? || Rails.env.test?
+      end
+
       before_filter :authenticate_extension
       before_filter :load_parameters
       before_filter :load_mandatory_group, :only => [:destroy, :add_users, :remove_users, :update_permission, :destroy_permission]

@@ -37,7 +37,7 @@ module Carto
             .with_types(types)
             .with_tags(tags)
 
-        if !bbox_parameter.nil?
+        if !bbox_parameter.blank?
           vqb.with_bounding_box(BoundingBoxHelper.parse_bbox_parameters(bbox_parameter))
         end
 

@@ -23,15 +23,11 @@ describe("Image", function() {
   });
 
   it("should use the basemap defined in the vizjson", function(done) {
-
     var vizjson = "http://documentation.cartodb.com/api/v2/viz/318ab654-c989-11e4-97c6-0e9d821ea90d/viz.json"
-
     var image = cartodb.Image(vizjson).size(640, 480);
-
-    var basemap = { options: { visible: true, type: 'Tiled', urlTemplate: 'https://{s}.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day/{z}/{x}/{y}/256/png8?lg=eng&token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24', subdomains: '1234', name: 'Nokia Day', className: 'nokia_day', attribution: "©2012 Nokia <a href='http://here.net/services/terms' target='_blank'>Terms of use</a>" }, infowindow: null, tooltip: null, id: '2c4a8c5e-2ba5-4068-8807-d916a01b48d5', order: 0, parent_id: null, children: [  ], type: 'tiled' }
-
+    var basemapURLTemplate = 'https://{s}.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day/{z}/{x}/{y}/256/png8?lg=eng&token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24';
     image.getUrl(function() {
-      expect(image.imageOptions.basemap).toEqual(basemap);
+      expect(image.imageOptions.basemap.options.urlTemplate).toEqual(basemapURLTemplate);
       done();
     });
 
@@ -154,7 +150,7 @@ describe("Image", function() {
 
   });
 
-  it("shouldn't use hidden layers to generate the image", function(done) { 
+  it("shouldn't use hidden layers to generate the image", function(done) {
 
     var vizjson = "http://documentation.cartodb.com/api/v2/viz/42e98b9a-bcce-11e4-9d68-0e9d821ea90d/viz.json";
 

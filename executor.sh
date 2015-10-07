@@ -12,11 +12,11 @@ unlock() {
 }
 
 # Return first database.yml free
-database_file() {
-  for databaseyml in $(ls config -1| grep -v 'lock' | grep database)
+redis_file() {
+  for redisfile in $(ls config -1| grep -v 'lock' | grep redis)
   do
-    if [ ! -f config/$databaseyml.lock ]; then
- #     echo $databaseyml;
+    if [ ! -f config/$redisfile.lock ]; then
+ #     echo $redisfile;
       break
     fi
   done
@@ -24,34 +24,36 @@ database_file() {
 
 main() {
     fecha=$(date)
-    # Find a valid databaseyml for the execution
-    database_file
-    # Lock the database.yml
-    lock $databaseyml;
+    # (hack) Choose a redis port for the execution
+    redis_file
+    # Lock the redis file
+    lock $redisfile;
     
     # Choose redis-server port 
-    port=$(cat config/$databaseyml |  grep "carto_db_test_*" | sed 's/[^0-9]*//g')
+    port=$(cat config/$redisfile)
 
+    # Choose database file
+    databaseyml=$(($2+6000))
+    
+    
     # Run the rspec
     # Some dirty logic here
     if [[ $1 == *"services/importer"* ]] || [[ $1 == *"services/platform-limits/spec/unit/"* ]] || [[ $1 == *"services/wms/spec/unit/wms_spec.rb"* ]] || [[ $1 == *"services/datasources"* ]] || [[ $1 == *"spec/models/overlay/collection_spec.rb"* ]]; then
-      MOCHA_OPTIONS=skip_integration PARALLEL=true RAILS_ENV=test RAILS_DATABASE_FILE=$databaseyml bundle exec rake cartodb:test:prepare >> $port.log 2>&1;
-      RAILS_ENV=test PARALLEL=true RAILS_DATABASE_FILE=$databaseyml REDIS_PORT=$port bundle exec rspec $1 >> $port.log 2>&1;
+      RAILS_ENV=test PARALLEL=true RAILS_DATABASE_FILE=database_${databaseyml}.yml REDIS_PORT=$port bundle exec rspec $1 >> $port.log 2>&1;
     else
-      MOCHA_OPTIONS=skip_integration PARALLEL=true RAILS_ENV=test RAILS_DATABASE_FILE=$databaseyml bundle exec rake cartodb:test:prepare >> $port.log 2>&1;
-      RAILS_ENV=test PARALLEL=true RAILS_DATABASE_FILE=$databaseyml REDIS_PORT=$port bundle exec rspec spec/rspec_configuration.rb $1 >> $port.log 2>&1;
+      RAILS_ENV=test PARALLEL=true RAILS_DATABASE_FILE=database_${databaseyml}.yml REDIS_PORT=$port bundle exec rspec spec/rspec_configuration.rb $1 >> $port.log 2>&1;
     fi
     
     # Give some feedback
     if [ $? -eq 0 ]; then
-      echo "Finished: $1 Port: $port";
+      echo "Finished: $1 Port: $port DB: $2";
       echo "$1 $port.log" >> specsuccess.log;
     else
-      echo "Finished (FAILED): $1 Port: $port";
+      echo "Finished (FAILED): $1 Port: $port DB: $2";
       echo "$1 $port.log" >> specfailed.log;
     fi
     # Unlock file
-    unlock $databaseyml.lock;
+    unlock $redisfile.lock;
 }
 
 # Init

@@ -113,6 +113,12 @@ defaults: &defaults
     percent_users: 10
   mailer: 
     from: 'cartodb.com <support@cartodb.com>' 
+    address: ''
+    port: ''
+    user_name: ''
+    password: ''
+    authentication: ''
+    enable_starttls_auto: '’
 
   # graphite endpoint used to post frontend stats
   #graphite_public:

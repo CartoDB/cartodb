@@ -410,7 +410,7 @@ class User < Sequel::Model
           raise e
         else
           database_with_conflicts = $1
-          revoke_all_on_database_from(conn, database_with_conflicts, username)
+          db_manager.revoke_all_on_database_from(conn, database_with_conflicts, username)
           revoke_all_memberships_on_database_to_role(conn, database_with_conflicts, username)
           drop_owned_by_user(conn, username)
           conflict_database_conn = self.in_database({
@@ -660,7 +660,7 @@ class User < Sequel::Model
   end
 
   def connection(options = {})
-    configuration = manager.db_configuration_for(options[:as])
+    configuration = db_manager.db_configuration_for(options[:as])
 
     $pool.fetch(configuration) do
       get_database(options, configuration)
@@ -1553,14 +1553,14 @@ class User < Sequel::Model
     Thread.new do
       create_db_user
       create_user_db
-      grant_owner_in_database
+      db_manager.grant_owner_in_database
     end.join
     create_importer_schema
     create_geocoding_schema
     load_cartodb_functions
     set_database_search_path
     reset_database_permissions # Reset privileges
-    grant_publicuser_in_database
+    db_manager.grant_publicuser_in_database
     set_user_privileges # Set privileges
     set_user_as_organization_member
     rebuild_quota_trigger
@@ -1637,14 +1637,14 @@ class User < Sequel::Model
 
   def setup_organization_role_permissions
     org_member_role = organization_member_group_role_member_name
-    set_user_privileges_in_public_schema(org_member_role)
+    db_manager.set_user_privileges_in_public_schema(org_member_role)
     run_queries_in_transaction(
       grant_connect_on_database_queries(org_member_role), true
     )
     set_geo_columns_privileges(org_member_role)
     set_raster_privileges(org_member_role)
-    set_user_privileges_in_cartodb_schema(org_member_role)
-    set_user_privileges_in_importer_schema(org_member_role)
+    db_manager.set_user_privileges_in_cartodb_schema(org_member_role)
+    db_manager.set_user_privileges_in_importer_schema(org_member_role)
     set_user_privileges_in_geocoding_schema(org_member_role)
   end
 
@@ -1671,81 +1671,10 @@ class User < Sequel::Model
     end
   end
 
-  def grant_owner_in_database
-    self.run_queries_in_transaction(
-      self.grant_all_on_database_queries,
-      true
-    )
-  end
-
-  def grant_publicuser_in_database
-    self.run_queries_in_transaction(
-      self.grant_connect_on_database_queries(CartoDB::PUBLIC_DB_USER),
-      true
-    )
-    self.run_queries_in_transaction(
-      grant_read_on_schema_queries('cartodb', CartoDB::PUBLIC_DB_USER),
-      true
-    )
-    self.run_queries_in_transaction(
-      [
-        "REVOKE SELECT ON cartodb.cdb_tablemetadata FROM #{CartoDB::PUBLIC_DB_USER} CASCADE"
-      ],
-      true
-    )
-    self.run_queries_in_transaction(
-      [
-        "GRANT USAGE ON SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}",
-        "GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}",
-        "GRANT SELECT ON spatial_ref_sys TO #{CartoDB::PUBLIC_DB_USER}"
-      ],
-      true
-    )
-  end
-
-  def set_user_privileges_in_cartodb_schema(db_user = nil)
-    self.run_queries_in_transaction(
-      (
-        grant_read_on_schema_queries('cartodb', db_user) +
-        self.grant_write_on_cdb_tablemetadata_queries(db_user)
-      ),
-      true
-    )
-  end
-
-  def set_user_privileges_in_public_schema(db_user = nil)
-    self.run_queries_in_transaction(
-      grant_read_on_schema_queries('public', db_user),
-      true
-    )
-  end
-
-  def set_user_privileges_in_own_schema # MU
-    self.run_queries_in_transaction(
-      self.grant_all_on_user_schema_queries,
-      true
-    )
-  end
-
-  def set_user_privileges_in_importer_schema(db_user = nil) # MU
-    self.run_queries_in_transaction(
-      self.grant_all_on_schema_queries('cdb_importer', db_user),
-      true
-    )
-  end
-
   def set_user_privileges_in_geocoding_schema(db_user = nil)
     self.run_queries_in_transaction(
         self.grant_all_on_schema_queries('cdb', db_user),
         true
-    )
-  end
-
-  def set_privileges_to_publicuser_in_own_schema # MU
-    # Privileges in user schema for publicuser
-    self.run_queries_in_transaction(
-      self.grant_usage_on_user_schema_to_other(CartoDB::PUBLIC_DB_USER),
-      true
     )
   end
 
@@ -1778,15 +1707,15 @@ class User < Sequel::Model
   def set_user_privileges # MU
     # INFO: organization permission on public schema is handled through role assignment
     unless organization_user?
-      self.set_user_privileges_in_cartodb_schema
-      self.set_user_privileges_in_public_schema
+      db_manager.set_user_privileges_in_cartodb_schema
+      db_manager.set_user_privileges_in_public_schema
     end
 
-    self.set_user_privileges_in_own_schema
-    self.set_privileges_to_publicuser_in_own_schema
+    db_manager.set_user_privileges_in_own_schema
+    db_manager.set_privileges_to_publicuser_in_own_schema
 
     unless organization_user?
-      self.set_user_privileges_in_importer_schema
+      db_manager.set_user_privileges_in_importer_schema
       self.set_user_privileges_in_geocoding_schema
       self.set_geo_columns_privileges
       self.set_raster_privileges
@@ -2171,9 +2100,9 @@ TRIGGER
       user_database["ALTER DATABASE \"?\" SET statement_timeout to ?", database_name.lit, database_timeout].all
     end
     in_database.disconnect
-    in_database.connect(manager.db_configuration_for)
+    in_database.connect(db_manager.db_configuration_for)
     in_database(as: :public_user).disconnect
-    in_database(as: :public_user).connect(manager.db_configuration_for(:public_user))
+    in_database(as: :public_user).connect(db_manager.db_configuration_for(:public_user))
   rescue Sequel::DatabaseConnectionError => e
   end
 
@@ -2209,35 +2138,6 @@ TRIGGER
     granted_user = db_user.nil? ? self.database_username : db_user
     [
       "GRANT CONNECT ON DATABASE \"#{self.database_name}\" TO \"#{granted_user}\""
-    ]
-  end
-
-  def grant_all_on_database_queries
-    [
-      "GRANT ALL ON DATABASE \"#{self.database_name}\" TO \"#{self.database_username}\""
-    ]
-  end
-
-  def revoke_permissions_on_cartodb_conf_queries(db_user)
-    # TODO: remove the check after extension install (#4924 merge)
-    return [] if Rails.env.test?
-
-    [ "REVOKE ALL ON TABLE cartodb.CDB_CONF FROM \"#{db_user}\"" ]
-  end
-
-  def grant_write_on_cdb_tablemetadata_queries(db_user = nil)
-    granted_user = db_user.nil? ? self.database_username : db_user
-    [
-      "GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE cartodb.cdb_tablemetadata TO \"#{granted_user}\""
-    ]
-  end
-
-  def grant_all_on_user_schema_queries
-    [
-      "GRANT ALL ON SCHEMA \"#{self.database_schema}\" TO \"#{database_username}\"",
-      "GRANT ALL ON ALL SEQUENCES IN SCHEMA  \"#{self.database_schema}\" TO \"#{database_username}\"",
-      "GRANT ALL ON ALL FUNCTIONS IN SCHEMA  \"#{self.database_schema}\" TO \"#{database_username}\"",
-      "GRANT ALL ON ALL TABLES IN SCHEMA  \"#{self.database_schema}\" TO \"#{database_username}\""
     ]
   end
 
@@ -2292,7 +2192,7 @@ TRIGGER
         schemas = %w(public cdb_importer cdb cartodb)
 
         ['PUBLIC', CartoDB::PUBLIC_DB_USER].each do |u|
-          revoke_all_on_database_from(user_database, database_name, u)
+          db_manager.revoke_all_on_database_from(user_database, database_name, u)
           schemas.each do |schema|
             revoke_privileges(user_database, schema, u)
           end
@@ -2300,10 +2200,6 @@ TRIGGER
         yield(user_database) if block_given?
       end
     end
-  end
-
-  def revoke_all_on_database_from(conn, database, role)
-    conn.run("REVOKE ALL ON DATABASE \"#{database}\" FROM \"#{role}\" CASCADE") if role_exists?(conn, role)
   end
 
   def revoke_privileges(db, schema, u)
@@ -2413,7 +2309,7 @@ TRIGGER
     # Use only if you know what you're doing. (or, better, don't use it)
     self.reset_database_permissions
     self.reset_user_schema_permissions
-    self.grant_publicuser_in_database
+    db_manager.grant_publicuser_in_database
     self.set_user_privileges
     self.fix_table_permissions
   end
@@ -2630,7 +2526,7 @@ TRIGGER
 
     queries = []
     roles.map do |db_role|
-      queries.concat(revoke_permissions_on_cartodb_conf_queries(db_role))
+      queries.concat(db_manager.queries.revoke_permissions_on_cartodb_conf_queries(db_role))
     end
 
     queries.map do |query|
@@ -2666,19 +2562,6 @@ TRIGGER
 
   def get_user_creation
     Carto::UserCreation.find_by_user_id(id)
-  end
-
-  def grant_read_on_schema_queries(schema, db_user = nil)
-    granted_user = db_user.nil? ? self.database_username : db_user
-
-    queries = [
-      "GRANT USAGE ON SCHEMA \"#{schema}\" TO \"#{granted_user}\"",
-      "GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" TO \"#{granted_user}\"",
-      "GRANT SELECT ON ALL TABLES IN SCHEMA \"#{schema}\" TO \"#{granted_user}\""
-    ]
-    queries.concat(revoke_permissions_on_cartodb_conf_queries(granted_user)) if schema == 'cartodb'
-
-    queries
   end
 
   def quota_dates(options)

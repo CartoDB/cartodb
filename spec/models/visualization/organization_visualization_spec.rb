@@ -58,22 +58,6 @@ describe Visualization::Member do
       org.destroy
     }
 
-    # @owner.create_schema(@owner.username, @owner.database_username)
-    # @owner.grant_all_on_user_schema_queries
-    # move_user_tables_to_schema(@owner.id)
-    # @owner.organization_id = @organization.id
-    # @owner.database_schema = @owner.username
-    # @organization.owner_id = @owner.id
-    # @organization.save
-    # @owner.create_public_db_user
-    # @owner.set_database_search_path
-    # @owner.load_cartodb_functions
-    # @owner.set_user_privileges
-    # @owner.rebuild_quota_trigger
-    # @owner.save
-    # @owner.monitor_user_notification
-    # @active = true
-
     @org, @owner_user, @other_user = prepare_organization
   end
 

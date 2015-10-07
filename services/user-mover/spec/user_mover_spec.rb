@@ -42,7 +42,7 @@ describe CartoDB::DataMover::ExportJob do
 
     it_behaves_like "a migrated user"
     it "matches old and new user" do
-      expect((first_user.as_json.reject{|x| x == :updated_at})).to eq((subject.as_json.reject{|x| x == :updated_at}))
+      expect((first_user.as_json.reject{|x| x == :updated_at || x == :database_host })).to eq((subject.as_json.reject{|x| x == :updated_at || x == :database_host }))
     end
   end
 
@@ -58,7 +58,7 @@ describe CartoDB::DataMover::ExportJob do
       CartoDB::DataMover::ExportJob.new(id: first_user.username, path: @tmp_path, schema_mode: true)
       User.terminate_database_connections(first_user.database_name, first_user.database_host)
       CartoDB::DataMover::ImportJob.new(file: @tmp_path + "user_#{first_user.id}.json", mode: :rollback, drop_database: true, drop_roles: true).run!
-      CartoDB::DataMover::ImportJob.new(file: @tmp_path + "user_#{first_user.id}.json", mode: :import, target_org: @org.name).run!
+      CartoDB::DataMover::ImportJob.new(file: @tmp_path + "user_#{first_user.id}.json", mode: :import, host: '127.0.0.2', target_org: @org.name).run!
 
       moved_user = User.find(username: first_user.username)
       moved_user.link_ghost_tables
@@ -77,8 +77,7 @@ describe CartoDB::DataMover::ExportJob do
 
     it "has granted the org role" do
       authed_roles = subject.in_database["select s.rolname from pg_roles r join pg_catalog.pg_auth_members m on r.oid=m.member join pg_catalog.pg_roles s on m.roleid=s.oid where r.rolname='#{subject.database_username}'"].to_a
-      authed_roles.should have(2).items
-      authed_roles.should be_any{|m| m[:rolname] =~ /cdb_org_member_(.*)/ }
+      authed_roles.should be_any{|m| m[:rolname] == subject.organization_member_group_role_member_name }
     end
 
   end
@@ -135,11 +134,13 @@ describe CartoDB::DataMover::ExportJob do
     CartoDB::DataMover::ExportJob.new(organization_name: org.name, path: @tmp_path)
     User.terminate_database_connections(org.owner.database_name, org.owner.database_host)
     CartoDB::DataMover::ImportJob.new(file: @tmp_path + "org_#{org.id}.json", mode: :rollback, drop_database: true, drop_roles: true).run!
-    CartoDB::DataMover::ImportJob.new(file: @tmp_path + "org_#{org.id}.json", mode: :import).run!
+    CartoDB::DataMover::ImportJob.new(file: @tmp_path + "org_#{org.id}.json", mode: :import, host: '127.0.0.2').run!
 
     moved_user = User.find(username: user.username)
+    moved_user.database_host.should eq '127.0.0.2'
     moved_user.link_ghost_tables
     check_tables(moved_user)
+    moved_user.in_database['SELECT * FROM cdb_tablemetadata']
     moved_user.organization_id.should_not eq nil
 
     @server_thread.terminate
@@ -151,7 +152,7 @@ module Helpers
   def move_user(user)
     CartoDB::DataMover::ExportJob.new(id: user.username, path: @tmp_path)
     User.terminate_database_connections(user.database_name, user.database_host)
-    CartoDB::DataMover::ImportJob.new(file: @tmp_path + "user_#{user.id}.json", mode: :rollback, drop_database: true).run!
+    CartoDB::DataMover::ImportJob.new(file: @tmp_path + "user_#{user.id}.json", mode: :rollback, host: '127.0.0.2', drop_database: true, drop_roles: true).run!
     CartoDB::DataMover::ImportJob.new(file: @tmp_path + "user_#{user.id}.json", mode: :import).run!
     return User.find(username: user.username)
   end

@@ -11,9 +11,9 @@ module.exports = {
         files: ['themes/scss/**/*.scss'],
         tasks: ['css', 'concat:themes', 'cssmin:themes'],
         options: {
-					spawn: false,
-					livereload: true
-				}
+	  spawn: false,
+	  livereload: true
+	}
       },
       compass: {
         files: ['<%= config.app %>/_scss/**/*.{scss,sass}'],

@@ -56,10 +56,10 @@ module CartoDB
 
       def register(result)
         @support_tables_helper.reset
-        
+
         # Sanitizing table name if it corresponds with a PostgreSQL reseved word
         result.name = "#{result.name}_t" if CartoDB::POSTGRESQL_RESERVED_WORDS.map(&:downcase).include?(result.name.downcase)
-        
+
         runner.log.append("Before renaming from #{result.table_name} to #{result.name}")
         name = rename(result, result.table_name, result.name)
         result.name = name
@@ -122,7 +122,7 @@ module CartoDB
             # this is likely caused by a table deletion, so we run ghost tables to cleanup and retry
             if rename_attempts == 1
               runner.log.append("Triggering ghost tables for #{user_id} because collision on #{new_name}")
-              User.where(id: user_id).first.link_ghost_tables
+              ::User.where(id: user_id).first.link_ghost_tables
 
               if exists_user_table_for_user_id(new_name, user_id)
                 runner.log.append("Ghost tables didn't fix the collision.")
@@ -184,7 +184,7 @@ module CartoDB
 
       def results
         runner.results
-      end 
+      end
 
       def over_table_quota?
         @aborted || quota_checker.over_table_quota?

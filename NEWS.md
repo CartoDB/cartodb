@@ -505,7 +505,7 @@ Bugfixes:
 ------------------
 * New Features
   * Multiuser support
-  * Added avatar_url to User model
+  * Added avatar_url to ::User model
   * Added custom avatars
   * Added Permission model and permission attribute for Visualizations
   * Activated Sequel extension connection_validator.
@@ -548,7 +548,7 @@ Bugfixes:
   * Added a log method for db_maintenance rakes
       (logs to log/rake_db_maintenance.log).
       For now used on load_functions.
-  * Added avatar_url to User model
+  * Added avatar_url to ::User model
 
 * Migration Type (see UPGRADE): Mandatory migration
   * Check also [installtion steps](https://github.com/CartoDB/cartodb-postgresql#install) for cartodb postgres extension
@@ -616,7 +616,7 @@ Bugfixes:
   * Change error when importing a file and there is not enough quota left
   * When a custom tooltip is applied in a layer, if you reload the browser, it doesn't appear anymore
   * If you select fields with null values, it displays neither title nor value on the new tooltip (infowindow on hover)
-  * User name is not appearing in that user profile (link in description)
+  * Username is not appearing in that user profile (link in description)
 
 
 2.13.5 (2014-05-13)
@@ -635,7 +635,7 @@ Bugfixes:
   * Change error when importing a file and there is not enough quota left
   * When a custom tooltip is applied in a layer, if you reload the browser, it doesn't appear anymore
   * If you select fields with null values, it displays neither title nor value on the new tooltip (infowindow on hover)
-  * User name is not appearing in that user profile (link in description)
+  * Username is not appearing in that user profile (link in description)
 
 2.13.4 (2014-05-08)
 -------------------

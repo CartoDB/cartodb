@@ -26,7 +26,7 @@ require 'rspec/rails'
 Dir[Rails.root.join('spec/support/**/*.rb')].each {|f| require f}
 
 # TODO: deprecate and use bypass_named_maps (or viceversa)
-def stub_named_maps_calls 
+def stub_named_maps_calls
   CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
 end
 
@@ -69,7 +69,7 @@ RSpec.configure do |config|
         "SELECT datname FROM pg_database WHERE datistemplate IS FALSE AND datallowconn IS TRUE AND datname like 'cartodb_test_user_%'"
     ].map(:datname).each { |user_database_name|
       puts "Dropping leaked test database #{user_database_name}"
-      User::terminate_database_connections(
+      ::User::terminate_database_connections(
           user_database_name, ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
       )
       Rails::Sequel.connection.run("drop database \"#{user_database_name}\"")
@@ -93,7 +93,7 @@ RSpec.configure do |config|
         "SELECT datname FROM pg_database WHERE datistemplate IS FALSE AND datallowconn IS TRUE AND datname like 'cartodb_test_user_%'"
       ].map(:datname).each { |user_database_name|
         puts "Dropping leaked test database #{user_database_name}"
-        User::terminate_database_connections(
+        ::User::terminate_database_connections(
           user_database_name, ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
         )
         Rails::Sequel.connection.run("drop database \"#{user_database_name}\"")

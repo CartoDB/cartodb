@@ -4,7 +4,7 @@ module CartoDB
     def default_user(attributes={})
       user = nil
       unless @default_test_username.nil?
-        user = User.find(:username => @default_test_username)
+        user = ::User.find(:username => @default_test_username)
       end
       if user.nil?
         user = new_user(attributes)

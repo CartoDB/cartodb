@@ -73,7 +73,7 @@ class SessionsController < ApplicationController
   def account_token_authentication_error
     warden.custom_failure!
     user_id = warden.env['warden.options'][:user_id] if warden.env['warden.options']
-    @user = User.where(id: user_id).first if user_id
+    @user = ::User.where(id: user_id).first if user_id
   end
 
   # Meant to be called always from warden LDAP authentication
@@ -140,7 +140,7 @@ class SessionsController < ApplicationController
   end
 
   def username_from_email(email)
-    user = User.where(email: email).first
+    user = ::User.where(email: email).first
     user.present? ? user.username : email
   end
 

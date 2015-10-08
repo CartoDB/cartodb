@@ -42,12 +42,12 @@ feature "Superadmin's users API" do
       response.body.should_not have_key(:salt)
 
       # Double check that the user has been created properly
-      user = User.filter(:email => @user_atts[:email]).first
+      user = ::User.filter(:email => @user_atts[:email]).first
       user.should be_present
       user.id.should == response.body[:id]
-      User.authenticate(user.username, "this_is_a_password").should == user
+      ::User.authenticate(user.username, "this_is_a_password").should == user
     end
-    User.where(:username => @user_atts[:username]).first.destroy
+    ::User.where(:username => @user_atts[:username]).first.destroy
   end
 
   scenario "user create with crypted_password and salt success" do
@@ -59,12 +59,12 @@ feature "Superadmin's users API" do
       response.body.should_not have_key(:salt)
 
       # Double check that the user has been created properly
-      user = User.filter(:email => @user_atts[:email]).first
+      user = ::User.filter(:email => @user_atts[:email]).first
       user.should be_present
       user.id.should == response.body[:id]
-      User.authenticate(user.username, "this_is_a_password").should == user
+      ::User.authenticate(user.username, "this_is_a_password").should == user
     end
-    User.where(:username => @user_atts[:username]).first.destroy
+    ::User.where(:username => @user_atts[:username]).first.destroy
   end
 
   scenario "user create default account settings" do
@@ -83,14 +83,14 @@ feature "Superadmin's users API" do
       response.body[:map_view_quota].should == 80
 
       # Double check that the user has been created properly
-      user = User.filter(:email => @user_atts[:email]).first
+      user = ::User.filter(:email => @user_atts[:email]).first
       user.quota_in_bytes.should == 104857600
       user.table_quota.should == 5
       user.account_type.should == 'FREE'
       user.private_tables_enabled.should == false
       user.upgraded_at.should.to_s == t.to_s
     end
-    User.where(:username => @user_atts[:username]).first.destroy
+    ::User.where(:username => @user_atts[:username]).first.destroy
   end
 
 
@@ -119,7 +119,7 @@ feature "Superadmin's users API" do
       response.body[:notification].should == 'Test'
 
       # Double check that the user has been created properly
-      user = User.filter(:email => @user_atts[:email]).first
+      user = ::User.filter(:email => @user_atts[:email]).first
       user.quota_in_bytes.should == 2000
       user.table_quota.should == 20
       user.account_type.should == 'Juliet'
@@ -130,7 +130,7 @@ feature "Superadmin's users API" do
       user.geocoding_block_price.should == 2
       user.notification.should == 'Test'
     end
-    User.where(:username => @user_atts[:username]).first.destroy
+    ::User.where(:username => @user_atts[:username]).first.destroy
   end
 
 
@@ -157,7 +157,7 @@ feature "Superadmin's users API" do
     put_json superadmin_user_path(user), { user: @update_atts }, superadmin_headers do |response|
       response.status.should == 204
     end
-    user = User[user.id]
+    user = ::User[user.id]
     user.quota_in_bytes.should == 2000
     user.table_quota.should == 20
     user.account_type.should == 'Juliet'
@@ -178,7 +178,7 @@ feature "Superadmin's users API" do
     put_json superadmin_user_path(user), { user: { private_tables_enabled: false } }, superadmin_headers do |response|
       response.status.should == 204
     end
-    user = User[user.id]
+    user = ::User[user.id]
     user.private_tables_enabled.should == false
     user.map_view_block_price.should == 200
     user.geocoding_quota.should == 230
@@ -205,7 +205,7 @@ feature "Superadmin's users API" do
         superadmin_headers do |response|
       response.status.should == 204
     end
-    user = User[user.id]
+    user = ::User[user.id]
     user.email.should == "newmail@test.com"
     user.map_view_quota.should == 80
 
@@ -223,7 +223,7 @@ feature "Superadmin's users API" do
     put_json superadmin_user_path(user), { user: @update_atts }, superadmin_headers do |response|
       response.status.should eq 204
     end
-    user = User[user.id]
+    user = ::User[user.id]
     user.quota_in_bytes.should eq 2000
     user.organization.name.should eq 'wadus'
     user.organization.seats.should eq 25
@@ -236,7 +236,7 @@ feature "Superadmin's users API" do
     put_json superadmin_user_path(user), { user: @update_atts }, superadmin_headers do |response|
       response.status.should eq 204
     end
-    user = User[user.id]
+    user = ::User[user.id]
     user.quota_in_bytes.should eq 2001
     user.organization.name.should eq 'wadus'
     user.organization.seats.should eq 26
@@ -251,7 +251,7 @@ feature "Superadmin's users API" do
     delete_json superadmin_user_path(user), superadmin_headers do |response|
       response.status.should == 204
     end
-    User[user.id].should be_nil
+    ::User[user.id].should be_nil
 
     user.destroy
   end
@@ -259,7 +259,7 @@ feature "Superadmin's users API" do
   scenario "user dump success" do
     user = create_user
     dump_url = %r{#{user.database_host}:[0-9]+/scripts/db_dump}
-    json_data = {database: user.database_name, username: user.username} 
+    json_data = {database: user.database_name, username: user.username}
     response_body = {
       retcode: 0,
       return_values: {
@@ -271,7 +271,7 @@ feature "Superadmin's users API" do
                   { method: :post }
                  )
                   .and_return(
-                    Typhoeus::Response.new(code: 200, body: response_body.to_json) 
+                    Typhoeus::Response.new(code: 200, body: response_body.to_json)
                   )
 
     get_json "/superadmin/users/#{user.id}/dump", {}, superadmin_headers do |response|
@@ -280,16 +280,16 @@ feature "Superadmin's users API" do
     end
     user.destroy
   end
-  
+
   scenario "user dump fail" do
     user = create_user
     dump_url = %r{#{user.database_host}:[0-9]+/scripts/db_dump}
-    json_data = {database: user.database_name, username: user.username} 
+    json_data = {database: user.database_name, username: user.username}
     Typhoeus.stub(dump_url,
                   { method: :post }
                  )
                   .and_return(
-                    Typhoeus::Response.new(code: 200, body: '{"retcode": 111}') 
+                    Typhoeus::Response.new(code: 200, body: '{"retcode": 111}')
                   )
 
     get_json "/superadmin/users/#{user.id}/dump", {}, superadmin_headers do |response|
@@ -302,12 +302,12 @@ feature "Superadmin's users API" do
   scenario "user dump fail retcode" do
     user = create_user
     dump_url = %r{#{user.database_host}:[0-9]+/scripts/db_dump}
-    json_data = {database: user.database_name, username: user.username} 
+    json_data = {database: user.database_name, username: user.username}
     Typhoeus.stub(dump_url,
                   { method: :post }
                  )
                   .and_return(
-                    Typhoeus::Response.new(code: 500, body: '{"retcode": 0}') 
+                    Typhoeus::Response.new(code: 500, body: '{"retcode": 0}')
                   )
 
     get_json "/superadmin/users/#{user.id}/dump", {}, superadmin_headers do |response|
@@ -346,7 +346,7 @@ feature "Superadmin's users API" do
     end
 
     it "gets overquota users" do
-      User.stubs(:overquota).returns [@user]
+      ::User.stubs(:overquota).returns [@user]
       get_json superadmin_users_path, { overquota: true }, superadmin_headers do |response|
         response.status.should == 200
         response.body[0]["username"].should == @user.username
@@ -355,8 +355,8 @@ feature "Superadmin's users API" do
     end
 
     it "doesn't get organization users" do
-      User.stubs(:organization).returns(Organization.new)
-      User.stubs(:organization_id).returns("organization-id")
+      ::User.stubs(:organization).returns(Organization.new)
+      ::User.stubs(:organization_id).returns("organization-id")
       get_json superadmin_users_path, { overquota: true }, superadmin_headers do |response|
         response.status.should == 200
         response.body.length.should == 0
@@ -401,7 +401,7 @@ feature "Superadmin's users API" do
 
       expect {
         delete superadmin_user_url(user.id), { user: user }.to_json, superadmin_headers
-      }.to change(User, :count).by(-1)
+      }.to change(::User, :count).by(-1)
     end
 
     it 'should destroy user feature flag relations' do

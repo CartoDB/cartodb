@@ -65,7 +65,7 @@ class Api::Json::TablesController < Api::ApplicationController
         # TODO consider removing this code. The entry point is only used to set lat/long columns
         unless params[:name].nil?
           if params[:name].downcase != @table.name
-            owner = User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota).filter(:id => current_user.id).first
+            owner = ::User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota).filter(:id => current_user.id).first
             # TODO reverse this logic: make explicit if this needs to start with a letter
             if params[:name] =~ /\A[0-9_]/
               raise "Table names can't start with numbers or dashes."

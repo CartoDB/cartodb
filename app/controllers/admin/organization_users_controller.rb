@@ -16,7 +16,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
   layout 'application'
 
   def new
-    @user = User.new
+    @user = ::User.new
     @user.quota_in_bytes = (current_user.organization.unassigned_quota < 100.megabytes ? current_user.organization.unassigned_quota : 100.megabytes)
 
     respond_to do |format|
@@ -33,7 +33,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
   end
 
   def create
-    @user = User.new
+    @user = ::User.new
     @user.set_fields(params[:user], [:username, :email, :password, :quota_in_bytes, :password_confirmation, :twitter_datasource_enabled])
     @user.organization = current_user.organization
     @user.username = "#{@user.username}"
@@ -53,7 +53,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
     end
     set_flash_flags
     flash.now[:error] = e.user_message
-    @user = User.new(username: @user.username, email: @user.email, quota_in_bytes: @user.quota_in_bytes, twitter_datasource_enabled: @user.twitter_datasource_enabled)
+    @user = ::User.new(username: @user.username, email: @user.email, quota_in_bytes: @user.quota_in_bytes, twitter_datasource_enabled: @user.twitter_datasource_enabled)
     render 'new'
   rescue Sequel::ValidationFailed => e
     flash.now[:error] = e.message

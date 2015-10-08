@@ -10,3 +10,5 @@ do
   echo "$line $i" >> specfull.txt;
   i=$((i+1))
 done < temp.txt
+
+echo "# Speclist has been created"

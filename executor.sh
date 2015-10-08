@@ -32,16 +32,12 @@ main() {
     # Choose redis-server port 
     port=$(cat config/$redisfile)
 
-    # Choose database file
-    databaseyml=$(($2+6000))
-    
-    
     # Run the rspec
     # Some dirty logic here
     if [[ $1 == *"services/importer"* ]] || [[ $1 == *"services/platform-limits/spec/unit/"* ]] || [[ $1 == *"services/wms/spec/unit/wms_spec.rb"* ]] || [[ $1 == *"services/datasources"* ]] || [[ $1 == *"spec/models/overlay/collection_spec.rb"* ]]; then
-      RAILS_ENV=test PARALLEL=true RAILS_DATABASE_FILE=database_${databaseyml}.yml REDIS_PORT=$port bundle exec rspec $1 >> $port.log 2>&1;
+      RAILS_ENV=test PARALLEL=true RAILS_DATABASE_FILE=database_${2}.yml REDIS_PORT=$port bundle exec rspec $1 >> $port.log 2>&1;
     else
-      RAILS_ENV=test PARALLEL=true RAILS_DATABASE_FILE=database_${databaseyml}.yml REDIS_PORT=$port bundle exec rspec spec/rspec_configuration.rb $1 >> $port.log 2>&1;
+      RAILS_ENV=test PARALLEL=true RAILS_DATABASE_FILE=database_${2}.yml REDIS_PORT=$port bundle exec rspec spec/rspec_configuration.rb $1 >> $port.log 2>&1;
     fi
     
     # Give some feedback

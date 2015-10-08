@@ -11,10 +11,11 @@ sed -e 's/\s\+/\n/g' databases.log > databases_new.log
 
 while read -r line
 do
-  psql -U postgres -t -c "drop database $line"
+  psql -U postgres -t -c "drop database $line" >> cleaner.log
 done < databases_new.log 
 
 # Cleanup
 rm databases.log
 rm databases_new.log
-echo $databases;
+
+echo "# Cleaner finished" 

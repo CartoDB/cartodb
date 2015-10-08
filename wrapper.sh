@@ -60,7 +60,6 @@ startPort=6001
 # Iterate and create one database per spec
 for j in $(seq $startPort $specCount)
 do
-    echo $j;
     # Get database owner
     owner=$(psql -U $dbAdmin -t -c "select r.rolname from pg_database d, pg_roles r where d.datname='carto_db_test' and d.datdba = r.oid")
     newDatabase="${databaseName}_${j}";
@@ -70,4 +69,6 @@ do
     echo "# Creating database_$j.yml file" >> wrapper.log 2>&1
     sed -e s/carto_db_test/carto_db_test_$j/g config/database.yml.sample > config/database_$j.yml
 done
+
+echo "# Wrapper finished"
 

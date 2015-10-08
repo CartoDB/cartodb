@@ -44,8 +44,21 @@
         getSqlApiUrl: function(version) {
           version = version || 'v2';
           return this.getSqlApiBaseUrl() + "/api/" + version + "/sql";
-        }
+        },
 
+        /**
+         *  returns the maps api host, removing user template
+         *  and the protocol.
+         *  cartodb.com:3333
+         */
+        getMapsApiHost: function() {
+          var url;
+          var mapsApiTemplate = this.get('maps_api_template');
+          if (mapsApiTemplate) {
+            url = mapsApiTemplate.replace(/https?:\/\/{user}\./, '');
+          }
+          return url;
+        }
 
     });
 

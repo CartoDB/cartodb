@@ -36,7 +36,7 @@ describe('Geocoder', function() {
 
     it("we shouldn't get a direction that doesn't exist using NOKIA", function(done) {
       var data;
-      cdb.geo.geocoder.NOKIA.geocode('InternationalWadusworldIncorporated', function(d) {
+      cdb.geo.geocoder.NOKIA.geocode('ASDF1234567890', function(d) {
         data = d;
         expect(data.length).toEqual(0);
         done();

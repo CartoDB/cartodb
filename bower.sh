@@ -10,9 +10,8 @@ ORG=CartoDB
 REPO=cartodb.js-bower
 
 # prepare repo folder
-if [ -d $REPO ]
-  then
-    rm -rf $REPO
+if [ -d $REPO ]; then
+  rm -rf $REPO
 fi
 
 # clone repo
@@ -32,17 +31,21 @@ cp -R bower.json $REPO/bower.json
 
 cp -R LICENSE $REPO/LICENSE.md
 
-# commit and tag repo
-echo "-- Committing and tagging $REPO"
 cd $REPO
 git add -A
-CARTODBJS_VER=$(git diff bower.json | grep version | cut -d':' -f2 | cut -d'"' -f2 | sort -g -r | head -1) && if [ $(echo $CARTODBJS_VER | wc -m | tr -d ' ') = '1' ]; then echo 'VERSION DID NOT CHANGE'; else git tag -a $CARTODBJS_VER -m "Version $CARTODBJS_VER"; fi
-git tag -a $CARTODBJS_VER -m "Version $CARTODBJS_VER"
-git commit -m "v$CARTODBJS_VER"
 
-echo "-- Pushing $REPO"
-git push -fq origin master
-git push -fq origin --tags
+NEW_VERSION=$(git diff origin/master bower.json | grep version | cut -d':' -f2 | cut -d'"' -f2 | sort -g -r | head -1)
+if [ -z "$NEW_VERSION" ]; then
+  echo 'VERSION DID NOT CHANGE'
+else
+  echo "-- Tagging $NEW_VERSION"
+  git tag -a $NEW_VERSION -m "Version $NEW_VERSION";
+  git commit -m "v$NEW_VERSION"
+
+  echo "-- Pushing $REPO"
+  git push -fq origin master
+  git push -fq origin --tags
+fi
 
 cd ..
 

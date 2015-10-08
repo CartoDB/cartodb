@@ -83,6 +83,7 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
 
       this._bindModel();
       this._addLayers();
+      this.setAttribution();
 
       google.maps.event.addListener(this.map_googlemaps, 'center_changed', function() {
         var c = self.map_googlemaps.getCenter();
@@ -116,7 +117,6 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
       this.projector = new cdb.geo.CartoDBLayerGroupGMaps.Projector(this.map_googlemaps);
 
       this.projector.draw = this._ready;
-
     },
 
     _ready: function() {
@@ -208,21 +208,7 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
         cdb.log.error("layer type not supported");
       }
 
-      var attribution = layer.get('attribution');
-
-      if (attribution && attribution !== '') {
-        // Setting attribution in map model
-        // it doesn't persist in the backend, so this is needed.
-        var attributions = _.clone(this.map.get('attribution')) || [];
-        if (!_.contains(attributions, attribution)) {
-          attributions.unshift(attribution);
-        }
-
-        this.map.set({ attribution: attributions });
-      }
-
       return layer_view;
-
     },
 
     pixelToLatLon: function(pos) {
@@ -266,10 +252,10 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
       return [ [0,0], [0,0] ];
     },
 
-  setAttribution: function(m) {
+  setAttribution: function() {
     // Remove old one
     var old = document.getElementById("cartodb-gmaps-attribution")
-      , attribution = m.get("attribution").join(", ");
+      , attribution = this.map.get("attribution").join(", ");
 
       // If div already exists, remove it
       if (old) {

@@ -8,7 +8,6 @@ describe('LeafletMapView', function() {
         'height': '200px',
         'width': '200px'
     });
-    //$('body').append(container);
     map = new cdb.geo.Map();
     mapView = new cdb.geo.LeafletMapView({
       el: container,
@@ -188,7 +187,6 @@ describe('LeafletMapView', function() {
     spyOn(mapView.map_leaflet,'addLayer');
     var b = new cdb.geo.TileLayer({urlTemplate: 'test' });
     map.addLayer(b, {at: 0});
-    
 
     expect(mapView.getLayerByCid(layer.cid).options.zIndex).toEqual(1);
     expect(mapView.getLayerByCid(b.cid).options.zIndex).toEqual(0);
@@ -291,20 +289,6 @@ describe('LeafletMapView', function() {
     expect(mapView.layers[newLayer.cid] instanceof L.TorqueLayer).toEqual(true);
     expect(mapView.layers[newLayer.cid].model).toEqual(newLayer)
     expect(mapView.layers[newLayer.cid].check).toEqual('testing');
-  });
-
-  it("should set the attributions on the map when layers are added", function() {
-    var layer1 = new cdb.geo.CartoDBLayer({ type: 'cartodb', attribution: 'attribution1', table_name: "table1", tile_style: 'test', user_name: 'test' });
-    var layer2 = new cdb.geo.CartoDBLayer({ type: 'cartodb', attribution: 'attribution2', table_name: "table2", tile_style: 'test', user_name: 'test' });
-    var layer3 = new cdb.geo.CartoDBLayer({ type: 'cartodb', attribution: '', table_name: "table2", tile_style: 'test', user_name: 'test' });
-
-    map.layers.reset([layer1, layer2, layer3]);
-
-    expect(map.get('attribution')).toEqual([
-      'attribution2',
-      'attribution1',
-      'CartoDB <a href=\'http://cartodb.com/attributions\' target=\'_blank\'>attribution</a>'
-    ]);
   });
 
   // Test cases for gmaps substitutes since the support is deprecated.
@@ -432,5 +416,84 @@ describe('LeafletMapView', function() {
     });
   });
 
+  describe('attributions', function() {
+
+    var container;
+
+    beforeEach(function() {
+      container = $('<div>').css({
+        'height': '200px',
+        'width': '200px'
+      });
+    });
+
+    it('should render the right attributions', function() {
+      var attributions = mapView.$el.find('.leaflet-control-attribution').text();
+      expect(attributions).toEqual('CartoDB attribution');
+
+      layer = new cdb.geo.CartoDBLayer({
+        attribution: 'custom attribution'
+      });
+      map.addLayer(layer);
+
+      var attributions = mapView.$el.find('.leaflet-control-attribution').text();
+      expect(attributions).toEqual('custom attribution, CartoDB attribution');
+    });
+
+    it('should respect the attribution of existing Leaflet layers', function() {
+      var leafletMap = new L.Map(container[0], {
+        center: [43, 0],
+        zoom: 3
+      });
+
+      // Add a tile layer with some attribution
+      L.tileLayer('http://tile.stamen.com/toner/{z}/{x}/{y}.png', {
+        attribution: 'Stamen'
+      }).addTo(leafletMap);
+
+      mapView = new cdb.geo.LeafletMapView({
+        el: container,
+        map: map,
+        map_object: leafletMap
+      });
+
+      // Add a CartoDB layer with some custom attribution
+      layer = new cdb.geo.CartoDBLayer({
+        attribution: 'custom attribution'
+      });
+      map.addLayer(layer);
+
+      var attributions = mapView.$el.find('.leaflet-control-attribution').text();
+      expect(attributions).toEqual('Leaflet | Stamen, custom attribution, CartoDB attribution');
+    });
+
+    it('should render attributions when the Leaflet map has attributionControl disabled', function() {
+      var leafletMap = new L.Map(container[0], {
+        center: [43, 0],
+        zoom: 3,
+        attributionControl: false
+      });
+
+      // Add a tile layer with some attribution
+      L.tileLayer('http://tile.stamen.com/toner/{z}/{x}/{y}.png', {
+        attribution: 'Stamen'
+      }).addTo(leafletMap);
+
+      mapView = new cdb.geo.LeafletMapView({
+        el: container,
+        map: map,
+        map_object: leafletMap
+      });
+
+      // Add a CartoDB layer with some custom attribution
+      layer = new cdb.geo.CartoDBLayer({
+        attribution: 'custom attribution'
+      });
+      map.addLayer(layer);
+
+      var attributions = mapView.$el.find('.leaflet-control-attribution').text();
+      expect(attributions).toEqual('Stamen, custom attribution, CartoDB attribution');
+    });
+  });
 });
 

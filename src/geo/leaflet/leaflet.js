@@ -70,8 +70,8 @@
       this.map.geometries.bind('remove', this._removeGeometry, this);
 
       this._bindModel();
-
       this._addLayers();
+      this.setAttribution();
 
       this.map_leaflet.on('layeradd', function(lyr) {
         this.trigger('layeradd', lyr, self);
@@ -254,19 +254,6 @@
         lv.setZIndex(lv.model.get('order'));
       }
 
-      var attribution = layer.get('attribution');
-
-      if (attribution && attribution !== '') {
-        // Setting attribution in map model
-        // it doesn't persist in the backend, so this is needed.
-        var attributions = _.clone(this.map.get('attribution')) || [];
-        if (!_.contains(attributions, attribution)) {
-          attributions.unshift(attribution);
-        }
-
-        this.map.set({ attribution: attributions });
-      }
-
       if(opts === undefined || !opts.silent) {
         this.trigger('newLayerView', layer_view, layer_view.model, this);
       }
@@ -295,14 +282,35 @@
     },
 
     setAttribution: function() {
+      var attributionControl = this._getAttributionControl();
 
-      // Attributions have already been set but we override them with
-      // the ones in the map object that are in the right order and include
-      // the default CartoDB attribution
-      this.map_leaflet.attributionControl._attributions = {};
-      _.each(this.map.get('attribution'), function(attribution){
-        this.map_leaflet.attributionControl.addAttribution(attribution);
-      }.bind(this));
+      // Save the attributions that were in the map the first time a new layer
+      // is added and the attributions of the map have changed
+      if (!this._originalAttributions) {
+        this._originalAttributions = Object.keys(attributionControl._attributions);
+      }
+
+      // Clear the attributions and re-add the original and custom attributions in
+      // the order we want
+      attributionControl._attributions = {};
+      var newAttributions = this._originalAttributions.concat(this.map.get('attribution'));
+      _.each(newAttributions, function(attribution) {
+        attributionControl.addAttribution(attribution);
+      });
+    },
+
+    _getAttributionControl: function() {
+      if (this._attributionControl) {
+        return this._attributionControl;
+      }
+
+      this._attributionControl = this.map_leaflet.attributionControl;
+      if (!this._attributionControl) {
+        this._attributionControl = L.control.attribution({ prefix: '' });
+        this.map_leaflet.addControl(this._attributionControl);
+      }
+
+      return this._attributionControl;
     },
 
     getSize: function() {

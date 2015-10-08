@@ -234,20 +234,4 @@
         done();
       }, 2000);
     });
-
-    it("should set the attributions on the map when layers are added", function() {
-      var layer1 = new cdb.geo.CartoDBLayer({ type: 'cartodb', attribution: 'attribution1', table_name: "table1", tile_style: 'test', user_name: 'test' });
-      var layer2 = new cdb.geo.CartoDBLayer({ type: 'cartodb', attribution: 'attribution2', table_name: "table2", tile_style: 'test', user_name: 'test' });
-      var layer3 = new cdb.geo.CartoDBLayer({ type: 'cartodb', attribution: '', table_name: "table2", tile_style: 'test', user_name: 'test' });
-
-      map.layers.reset([layer1, layer2, layer3]);
-
-      expect(map.get('attribution')).toEqual([
-        'attribution2',
-        'attribution1',
-        'CartoDB <a href=\'http://cartodb.com/attributions\' target=\'_blank\'>attribution</a>'
-      ]);
-    });
-
   });
-

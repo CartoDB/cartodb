@@ -674,17 +674,44 @@ describe("LayerDefinition", function() {
         expect(ajaxParams.url.indexOf('http://cdn.test.com/api/v1/map?')).toEqual(0);
       });
 
-      it('should compress the map definition using LZMA', function() {
+      it("should compress the map definition using LZMA and the browser's btoa function", function() {
         layerDefinition.options.force_compress = true;
+
+        spyOn(window, "btoa");
 
         var json = layerDefinition.toJSON();
         json = JSON.stringify({ config: JSON.stringify(json) });
         LZMA.compress(json, 3, function(encoded) {
           lzma = cdb.core.util.array2hex(encoded);
+
           layerDefinition.createMap(callback);
         });
 
-        expect(ajaxParams.url.indexOf('lzma=' + encodeURIComponent(lzma))).not.toEqual(-1);
+        expect(window.btoa.calls.count()).toEqual(2);
+        expect(window.btoa.calls.mostRecent().args.length).toEqual(1);
+        expect(ajaxParams.url.indexOf('lzma=' + lzma)).not.toEqual(-1);
+      });
+
+      it("should compress the map definition using LZMA and cdb.core.util.encodeBase64", function() {
+        layerDefinition.options.force_compress = true;
+
+        var _btoa = window.btoa;
+        window.btoa = undefined;
+        spyOn(cdb.core.util, "encodeBase64");
+
+        var json = layerDefinition.toJSON();
+        json = JSON.stringify({ config: JSON.stringify(json) });
+        LZMA.compress(json, 3, function(encoded) {
+          lzma = cdb.core.util.array2hex(encoded);
+
+          layerDefinition.createMap(callback);
+        });
+
+        expect(cdb.core.util.encodeBase64.calls.count()).toEqual(2);
+        expect(cdb.core.util.encodeBase64.calls.mostRecent().args.length).toEqual(1);
+        expect(ajaxParams.url.indexOf('lzma=' + lzma)).not.toEqual(-1);
+
+        window.btoa = _btoa;
       });
 
       it('should handle errors returned by the tiler', function() {

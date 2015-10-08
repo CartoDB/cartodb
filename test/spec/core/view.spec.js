@@ -42,9 +42,9 @@ describe("core.view", function() {
 
   it("clean should unbind all events", function() {
       view.bind('meh', function(){});
-      expect(_.size(view._callbacks)).toEqual(1);
+      expect(_.size(view._events)).toEqual(1);
       view.clean();
-      expect(view._callbacks).toEqual(undefined);
+      expect(view._events).toEqual(undefined);
   });
 
   it("should unlink the view model", function() {

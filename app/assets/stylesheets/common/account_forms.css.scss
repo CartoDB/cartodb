@@ -60,7 +60,7 @@ $sLabel-width: 140px;
   @include display-flex();
   @include flex-direction(column);
   @include justify-content(flex-start, start);
-  margin: 0 0 30px;
+  margin: 0 0 20px;
 }
 .FormAccount-row--wideMarginBottom {
   margin-bottom: 100px;

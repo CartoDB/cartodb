@@ -409,7 +409,7 @@ MapBase.prototype = {
             grids: []
           });
           return;
-        } 
+        }
       }
     });
     return this;
@@ -575,7 +575,7 @@ MapBase.prototype = {
     return this.layers ? this.layers.length: 0;
   },
 
-  // given number inside layergroup 
+  // given number inside layergroup
   // returns the real index in tiler layergroup`
   getLayerIndexByNumber: function(number) {
     var layers = {}
@@ -1033,4 +1033,3 @@ NamedMap.prototype = _.extend({}, MapBase.prototype, {
     return +number;
   }
 });
-

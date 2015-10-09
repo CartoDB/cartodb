@@ -104,7 +104,7 @@ var Vis = cdb.core.View.extend({
     this.https = false;
     this.overlays = [];
     this.moduleChecked = false;
-    this.layersLoading = 0;
+    this.layersing = 0;
 
     if (this.options.mapView) {
       this.mapView = this.options.mapView;
@@ -468,6 +468,32 @@ var Vis = cdb.core.View.extend({
 
     if (this.tooltip) {
       this.mapView.bind('newLayerView', this.addTooltip, this);
+    }
+
+    if (data.datasources && data.datasources.length) {
+      var datasource = data.datasources[0];
+      var datasourceLayer = _.find(data.layers, function(l) {
+        return l.datasource === datasource.id
+      });
+      this.datasource = new cdb.core.Datasource(datasource, { layerDef: datasourceLayer });
+
+      _.each(data.widgets, function(d) {
+        var mdl = self.datasource.addWidget({ name: d.name, type: d.type });
+        var v = new cdb.Widget.ListView({
+          datasource: mdl,
+          model: new cdb.core.Model({
+            title: d.title,
+            template: d.template,
+            sync: d.sync
+          })
+        });
+
+        $('body').append(v.render().el);
+      });
+
+      this.datasource.instantiate(function(data) {
+        console.log(data);
+      })
     }
 
     this.map.layers.reset(_.map(data.layers, function(layerData) {

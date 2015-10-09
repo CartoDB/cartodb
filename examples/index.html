@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>CartoDB.js load example</title>
     <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
-    <script src="/src/cartodb.js?2"></script>
+    <script src="/src/cartodb.js?4"></script>
     <style type="text/css">
       html, body {
         position:relative;
@@ -30,21 +30,344 @@
     <script>
       window.onload = function() {
         cartodb.load('/src/', function() {
-          cartodb.createVis('map', 'https://team.cartodb.com/u/xavijam/api/v2/viz/7f06299e-6d9a-11e5-ad52-0ecd1babdde5/viz.json', {
+          cartodb.createVis('map', {
+id: "bc4e200e-5d4b-11e5-8273-0ec6f7c8b2b9",
+version: "0.1.0",
+title: "First Chile earthquake - 2015-09-16 22:54:33 (UTC) - M8.3 - 46km W of Illapel, Chile",
+likes: 0,
+description: "",
+scrollwheel: false,
+legends: true,
+url: null,
+map_provider: "leaflet",
+bounds: [
+[
+-34.20725938207231,
+-79.046630859375
+],
+[
+-28.92163128242129,
+-64.259033203125
+]
+],
+center: "[-31.60456808959367, -71.6543]",
+zoom: 7,
+updated_at: "2015-09-17T14:58:22+00:00",
+layers: [
+{
+options: {
+visible: true,
+type: "Tiled",
+default: "true",
+url: "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
+subdomains: "abcd",
+minZoom: "0",
+maxZoom: "18",
+name: "Positron",
+className: "httpsbasemapscartocdncomlight_nolabelszxypng",
+attribution: "",
+labels: {
+url: "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png"
+},
+urlTemplate: "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
+id: "73a5b261-bc46-40fe-9553-f880cdd6449c",
+order: 0,
+parent_id: null
+},
+infowindow: null,
+tooltip: null,
+id: "73a5b261-bc46-40fe-9553-f880cdd6449c",
+order: 0,
+type: "tiled"
+},
+{
+type: "layergroup",
+datasource: "datasource1",
+options: {
+user_name: "xavijam",
+maps_api_template: "https://{user}.cartodb.com:443",
+sql_api_template: "https://{user}.cartodb.com:443",
+tiler_protocol: "http",
+tiler_domain: "cartodb.com",
+tiler_port: "80",
+sql_api_protocol: "http",
+sql_api_domain: "cartodb.com",
+sql_api_endpoint: "/api/v2/sql",
+sql_api_port: 80,
+filter: "mapnik",
+layer_definition: {
+stat_tag: "bc4e200e-5d4b-11e5-8273-0ec6f7c8b2b9",
+version: "1.0.1",
+layers: [
+{
+id: "dd0f16b8-cdc5-4e28-bbdd-f3ed133fd146",
+type: "CartoDB",
+infowindow: {
+fields: [ ],
+template_name: "table/views/infowindow_light",
+template: '<div class="cartodb-popup v2"> <a href="#close" class="cartodb-popup-close-button close">x</a> <div class="cartodb-popup-content-wrapper"> <div class="cartodb-popup-content"> {{#content.fields}} {{#title}}<h4>{{title}}</h4>{{/title}} {{#value}} <p {{#type}}class="{{ type }}"{{/type}}>{{{ value }}}</p> {{/value}} {{^value}} <p class="empty">null</p> {{/value}} {{/content.fields}} </div> </div> <div class="cartodb-popup-tip-container"></div> </div> ',
+alternative_names: { },
+width: 226,
+maxHeight: 180
+},
+tooltip: {
+fields: [ ],
+template_name: "tooltip_light",
+template: '<div class="cartodb-tooltip-content-wrapper"> <div class="cartodb-tooltip-content"> {{#fields}} {{#title}} <h4>{{title}}</h4> {{/title}} <p>{{{ value }}}</p> {{/fields}} </div> </div>',
+alternative_names: { },
+maxHeight: 180
+},
+legend: {
+type: "choropleth",
+show_title: false,
+title: "",
+template: "",
+visible: true,
+items: [
+{
+name: "Left label",
+visible: true,
+value: "4.50",
+type: "text"
+},
+{
+name: "Right label",
+visible: true,
+value: "8.50",
+type: "text"
+},
+{
+name: "Color",
+visible: true,
+value: "#FFFFCC",
+type: "color"
+},
+{
+name: "Color",
+visible: true,
+value: "#C7E9B4",
+type: "color"
+},
+{
+name: "Color",
+visible: true,
+value: "#7FCDBB",
+type: "color"
+},
+{
+name: "Color",
+visible: true,
+value: "#41B6C4",
+type: "color"
+},
+{
+name: "Color",
+visible: true,
+value: "#1D91C0",
+type: "color"
+},
+{
+name: "Color",
+visible: true,
+value: "#225EA8",
+type: "color"
+},
+{
+name: "Color",
+visible: true,
+value: "#0C2C84",
+type: "color"
+}
+]
+},
+order: 1,
+visible: true,
+options: {
+sql: "select * from cont_mi",
+layer_name: "cont_mi",
+cartocss: "/** choropleth visualization */ #cont_mi{ polygon-opacity: 0; line-color: #FFFFCC; line-width: 1; line-opacity: 1; } #cont_mi [ value <= 8.5] { line-color: #0C2C84; } #cont_mi [ value <= 8] { line-color: #225EA8; } #cont_mi [ value <= 7.5] { line-color: #1D91C0; } #cont_mi [ value <= 6.5] { line-color: #41B6C4; } #cont_mi [ value <= 6] { line-color: #7FCDBB; } #cont_mi [ value <= 5] { line-color: #C7E9B4; } #cont_mi [ value <= 4.5] { line-color: #FFFFCC; }",
+cartocss_version: "2.1.1",
+interactivity: "cartodb_id",
+table_name: "."
+}
+},
+{
+id: "ee5a93b4-c8d2-443d-83aa-b40f20ec83e7",
+type: "CartoDB",
+infowindow: {
+fields: [ ],
+template_name: "table/views/infowindow_light",
+template: '<div class="cartodb-popup v2"> <a href="#close" class="cartodb-popup-close-button close">x</a> <div class="cartodb-popup-content-wrapper"> <div class="cartodb-popup-content"> {{#content.fields}} {{#title}}<h4>{{title}}</h4>{{/title}} {{#value}} <p {{#type}}class="{{ type }}"{{/type}}>{{{ value }}}</p> {{/value}} {{^value}} <p class="empty">null</p> {{/value}} {{/content.fields}} </div> </div> <div class="cartodb-popup-tip-container"></div> </div> ',
+alternative_names: { },
+width: 226,
+maxHeight: 180
+},
+tooltip: {
+fields: [ ],
+template_name: "tooltip_light",
+template: '<div class="cartodb-tooltip-content-wrapper"> <div class="cartodb-tooltip-content"> {{#fields}} {{#title}} <h4>{{title}}</h4> {{/title}} <p>{{{ value }}}</p> {{/fields}} </div> </div>',
+alternative_names: { },
+maxHeight: 180
+},
+legend: {
+type: "custom",
+show_title: false,
+title: "",
+template: "",
+visible: true,
+items: [
+{
+name: "Epicenter M8.3",
+visible: true,
+value: "#FF9900",
+sync: true
+}
+]
+},
+order: 2,
+visible: true,
+options: {
+sql: "select * from last_chile_earthquake_epicenter",
+layer_name: "last_chile_earthquake_epicenter",
+cartocss: "/** simple visualization */ #last_chile_earthquake_epicenter{ marker-fill-opacity: 0.9; marker-line-color: #FFF; marker-line-width: 1; marker-line-opacity: 1; marker-placement: point; marker-type: ellipse; marker-width: 10; marker-fill: #FF9900; marker-allow-overlap: true; }",
+cartocss_version: "2.1.1",
+interactivity: "cartodb_id",
+table_name: "."
+}
+}
+]
+},
+attribution: ""
+}
+},
+{
+options: {
+visible: true,
+type: "Tiled",
+default: "true",
+url: "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png",
+subdomains: "abcd",
+minZoom: "0",
+maxZoom: "18",
+attribution: "",
+urlTemplate: "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png",
+name: "Positron Labels",
+id: "8437c765-2abc-4ee9-b0a7-c470026f69c8",
+className: "httpsbasemapscartocdncomlight_only_labelszxypng",
+order: 3,
+parent_id: null
+},
+infowindow: null,
+tooltip: null,
+id: "8437c765-2abc-4ee9-b0a7-c470026f69c8",
+order: 3,
+type: "tiled"
+}
+],
+overlays: [
+{
+type: "fullscreen",
+order: 7,
+options: {
+x: 20,
+y: 140,
+display: true
+},
+template: null
+},
+{
+type: "share",
+order: 2,
+options: {
+display: true,
+x: 20,
+y: 20
+},
+template: ""
+},
+{
+type: "search",
+order: 3,
+options: {
+display: true,
+x: 60,
+y: 20
+},
+template: ""
+},
+{
+type: "zoom",
+order: 6,
+options: {
+display: true,
+x: 20,
+y: 20
+},
+template: '<a href="#zoom_in" class="zoom_in">+</a> <a href="#zoom_out" class="zoom_out">-</a>'
+},
+{
+type: "loader",
+order: 8,
+options: {
+display: true,
+x: 20,
+y: 150
+},
+template: '<div class="loader" original-title=""></div>'
+},
+{
+type: "logo",
+order: 9,
+options: {
+display: true,
+x: 10,
+y: 40
+},
+template: ""
+}
+],
+prev: null,
+next: null,
+transition_options: {
+time: 0
+},
+datasources: [
+  {
+    id: 'datasource1',
+    type: "publicmap"
+  }
+],
+widgets: [
+  {
+    type: 'list',
+    options: {
+      datasource: 'datasource1',
+      title: 'Widget 1'
+    }
+  },
+  // {
+  //   type: 'histogram',
+  //   options: {
+  //     datasource: 'datasource1',
+  //     title: 'Widget 2'
+  //   }
+  // }
+]
+}, {
             no_cdn: true
           })
           .done(function(vis, layers) {
-            var stadiums = layers[2];
-            var counties = layers[1];
-
-            var widget = new cdb.Widget.ListView({
-              datasource: stadiums,
-              title: 'List',
-              template: '<div class="Widget-title"><%= title %></div><div class="Widget-content js-content"></div>',
-              sync: true
-            });
-
-            vis.$el.append(widget.render().el);
+            // var stadiums = layers[2];
+            // var counties = layers[1];
+            //
+            // var widget = new cdb.Widget.ListView({
+            //   datasource: stadiums.getDatasource(),
+            //   title: 'List',
+            //   template: '<div class="Widget-title"><%= title %></div><div class="Widget-content js-content"></div>',
+            //   sync: true
+            // });
+            //
+            // vis.$el.append(widget.render().el);
           })
           .error(function(err) {
             console.log(err);

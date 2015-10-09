@@ -19,7 +19,7 @@ cdb.Widget.View = cdb.core.View.extend({
       state: 'idle',
       sync: this.options.sync
     });
-    this._datasourceInstance = this.options.datasource && this.options.datasource.getInstance();
+    this.datasource = this.options.datasource;//  && this.options.datasource.getInstance();
     this.template = _.template(this.options.template);
     this._initBinds();
   },

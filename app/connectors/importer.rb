@@ -89,7 +89,6 @@ module CartoDB
         if tables.length > 0
           user = ::User.where(id: self.data_import.user_id).first
           vis = CartoDB::Visualization::DerivedCreator.new(user, tables).create
-          debugger
           self.data_import.visualization_id = vis.id
           self.data_import.save
           self.data_import.reload
@@ -223,7 +222,7 @@ module CartoDB
       end
 
       def data_import
-        DataImport[@data_import_id]
+        @data_import ||= DataImport[@data_import_id]
       end
 
       private

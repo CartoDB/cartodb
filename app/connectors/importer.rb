@@ -86,8 +86,14 @@ module CartoDB
 
       def create_visualization
         tables = get_imported_tables
-        user = ::User.where(id: self.data_import.user_id).first
-        CartoDB::Visualization::DerivedCreator.new(user, tables).create
+        if tables.length > 0
+          user = ::User.where(id: self.data_import.user_id).first
+          vis = CartoDB::Visualization::DerivedCreator.new(user, tables).create
+          debugger
+          self.data_import.visualization_id = vis.id
+          self.data_import.save
+          self.data_import.reload
+        end
       end
 
       def get_imported_tables

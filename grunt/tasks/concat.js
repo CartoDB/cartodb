@@ -61,7 +61,7 @@ module.exports = {
         files: {
           // Core library
           '<%= config.dist %>/cartodb.core.uncompressed.js': [
-            'vendor/underscore-min.js',
+            'vendor/underscore.js',
             'grunt/templates/underscore_no_conflict.js',
             'vendor/mustache.js',
             'vendor/reqwest.min.js',

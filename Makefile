@@ -110,7 +110,6 @@ WORKING_SPECS_4 = \
   services/importer/spec/unit/url_translator/osm_spec.rb \
   services/importer/spec/unit/url_translator/osm2_spec.rb \
   services/importer/spec/unit/mail_notifier_spec.rb \
-  services/relocator/spec/relocator_spec.rb \
 
 WORKING_SPECS_5 = \
   spec/rspec_configuration.rb \

@@ -81,6 +81,7 @@
         'geo/ui/infobox.js',
         'geo/ui/tooltip.js',
         'geo/ui/fullscreen.js',
+        'geo/ui/widgets.js',
 
         'geo/sublayer.js',
         'geo/layer_definition.js',

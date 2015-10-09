@@ -530,7 +530,7 @@ Adds a new data to the current layer. With this method, data from multiple table
 }
 ```
 
-`sql` and `cartocss` are mandatory. An exception is raised if either of them are not present. If the interactivity is not set, there is no interactivity enabled for that layer (better performance). SQL and CartoCSS syntax should be correct. Look at the documentation for  [PostgreSQL](http://www.postgresql.org/docs/9.3/interactive/sql-syntax.html) and [CartoCSS](https://github.com/mapbox/carto/blob/master/docs/latest.md) for more information. There are some restrictions in the SQL queries:
+`sql` and `cartocss` are mandatory. An exception is raised if either of them are not present. If the interactivity is not set, there is no interactivity enabled for that layer (better performance). SQL and CartoCSS syntax should be correct. Look at the documentation for  [PostgreSQL](http://www.postgresql.org/docs/9.3/interactive/sql-syntax.html) and [CartoCSS](http://docs.cartodb.com/cartodb-editor.html#customizing-maps-with-cartocss) for more information. There are some restrictions in the SQL queries:
 
 - Must not write. INSERT, DELETE, UPDATE, ALTER and so on are not allowed (the query will fail)
 - Must not contain trialing semicolon
@@ -1186,7 +1186,7 @@ An _Image_ object
 
 Gets the URL for the image requested.
 
-<div class="image-geturl">Image.getUrl</div>
+<div class="image-getUrl">Image.getUrl</div>
 ```javascript
 <script>
 cartodb.Image(vizjson_url)

@@ -429,7 +429,7 @@ module CartoDB
       end
 
       def user
-        @user ||= User.where(id: user_id).first
+        @user ||= ::User.where(id: user_id).first
       end
 
       def table

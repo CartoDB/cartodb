@@ -62,7 +62,7 @@ describe SessionsController do
       normal_user_password = "foobar"
       normal_user_email = "ldap-user@test.com"
       normal_user_cn = "cn=#{normal_user_username},#{@domain_bases.first}"
-      ldap_entry_data = { 
+      ldap_entry_data = {
           @user_id_field => [normal_user_username],
           @user_email_field => [normal_user_email]
         }
@@ -89,14 +89,14 @@ describe SessionsController do
       admin_user_password = "foobar"
       admin_user_email = "#{@organization.name}-admin@test.com"
       admin_user_cn = "cn=#{admin_user_username},#{@domain_bases.first}"
-      ldap_entry_data = { 
+      ldap_entry_data = {
           @user_id_field => [admin_user_username],
           @user_email_field => [admin_user_email]
         }
       FakeNetLdap.register_user(:username => admin_user_cn, :password => admin_user_password)
       FakeNetLdap.register_query(Net::LDAP::Filter.eq('cn', admin_user_username), ldap_entry_data)
 
-      ::Resque.expects(:enqueue).with(::Resque::UserJobs::Signup::NewUser, 
+      ::Resque.expects(:enqueue).with(::Resque::UserJobs::Signup::NewUser,
         instance_of(String), instance_of(String), instance_of(TrueClass)).returns(true)
 
       host! "#{@organization.name}.localhost.lan"
@@ -127,14 +127,14 @@ describe SessionsController do
       normal_user_password = "foobar"
       normal_user_email = "ldap-user@test.com"
       normal_user_cn = "cn=#{normal_user_username},#{@domain_bases.first}"
-      ldap_entry_data = { 
+      ldap_entry_data = {
           @user_id_field => [normal_user_username],
           @user_email_field => [normal_user_email]
         }
       FakeNetLdap.register_user(:username => normal_user_cn, :password => normal_user_password)
       FakeNetLdap.register_query(Net::LDAP::Filter.eq('cn', normal_user_username), ldap_entry_data)
 
-      ::Resque.expects(:enqueue).with(::Resque::UserJobs::Signup::NewUser, 
+      ::Resque.expects(:enqueue).with(::Resque::UserJobs::Signup::NewUser,
         instance_of(String), instance_of(String), instance_of(FalseClass)).returns(true)
 
       host! "#{@organization.name}.localhost.lan"
@@ -151,7 +151,7 @@ describe SessionsController do
       admin_user_password = "foobar"
       admin_user_email = "#{@organization.name}-admin@test.com"
       admin_user_cn = "cn=#{admin_user_username},#{@domain_bases.first}"
-      ldap_entry_data = { 
+      ldap_entry_data = {
           @user_id_field => [admin_user_username],
           @user_email_field => [admin_user_email]
         }
@@ -170,7 +170,7 @@ describe SessionsController do
       ::Organization.any_instance.stubs(:owner).returns(@admin_user)
 
       # INFO: Again, hack to act as if user had organization
-      User.stubs(:where).with({
+      ::User.stubs(:where).with({
               username: admin_user_username,
               organization_id: @organization.id
             }).returns([@admin_user])
@@ -181,7 +181,7 @@ describe SessionsController do
       response.status.should == 302
       (response.location =~ /^http\:\/\/#{admin_user_username}(.*)\/dashboard\/$/).to_i.should eq 0
 
-      User.unstub(:where)
+      ::User.unstub(:where)
 
       @admin_user.destroy
     end

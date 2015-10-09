@@ -458,7 +458,7 @@ namespace :cartodb do
 
     def common_data_user
       username = Cartodb.config[:explore_api]['username']
-      @user ||= User.where(username: username).first
+      @user ||= ::User.where(username: username).first
     end
 
     def db_conn(*args)

@@ -32,7 +32,7 @@ module CartoDB
       #   :downloader CartoDB::Importer2::DatasourceDownloader|CartoDB::Importer2::Downloader
       #   :log CartoDB::Log|nil
       #   :job CartoDB::Importer2::Job|nil
-      #   :user User|nil
+      #   :user ::User|nil
       #   :unpacker Unp|nil
       #   :post_import_handler CartoDB::Importer2::PostImportHandler|nil
       #   :limits Hash|nil {

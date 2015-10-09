@@ -163,7 +163,7 @@ class Table
 
   # Getter by table uuid using canonical visualizations
   # @param table_id String
-  # @param viewer_user User
+  # @param viewer_user ::User
   def self.get_by_id(table_id, viewer_user)
     table = nil
     return table unless viewer_user
@@ -196,7 +196,7 @@ class Table
       user_id = viewer_user.id
       table_name, table_schema = Table.table_and_schema(t)
       unless table_schema.nil?
-        owner = User.where(username:table_schema).first
+        owner = ::User.where(username:table_schema).first
         unless owner.nil?
           user_id = owner.id
         end
@@ -211,7 +211,7 @@ class Table
       user_id = viewer_user.id
       table_name, table_schema = Table.table_and_schema(t)
       unless table_schema.nil?
-        owner = User.where(username:table_schema).first
+        owner = ::User.where(username:table_schema).first
         unless owner.nil?
           user_id = owner.id
         end
@@ -1169,7 +1169,7 @@ class Table
   end
 
   def owner
-    @owner ||= User[self.user_id]
+    @owner ||= ::User[self.user_id]
   end
 
   def table_style
@@ -1256,17 +1256,17 @@ class Table
 
   ############################### Sharing tables ##############################
 
-  # @param [User] organization_user Gives read permission to this user
+  # @param [::User] organization_user Gives read permission to this user
   def add_read_permission(organization_user)
     perform_table_permission_change('CDB_Organization_Add_Table_Read_Permission', organization_user)
   end
 
-  # @param [User] organization_user Gives read and write permission to this user
+  # @param [::User] organization_user Gives read and write permission to this user
   def add_read_write_permission(organization_user)
     perform_table_permission_change('CDB_Organization_Add_Table_Read_Write_Permission', organization_user)
   end
 
-  # @param [User] organization_user Removes all permissions to this user
+  # @param [::User] organization_user Removes all permissions to this user
   def remove_access(organization_user)
     perform_table_permission_change('CDB_Organization_Remove_Access_Permission', organization_user)
   end
@@ -1639,7 +1639,7 @@ class Table
   ############################### Sharing tables ##############################
 
   # @param [String] cartodb_pg_func
-  # @param [User] organization_user
+  # @param [::User] organization_user
   def perform_table_permission_change(cartodb_pg_func, organization_user)
     from_schema = self.owner.database_schema
     table_name = self.name

@@ -3,7 +3,7 @@ require_relative '../spec_helper'
 describe SignupController do
 
   before(:each) do
-    User.any_instance.stubs(:load_common_data).returns(true)
+    ::User.any_instance.stubs(:load_common_data).returns(true)
   end
 
   describe 'signup page' do
@@ -78,7 +78,7 @@ describe SignupController do
     end
 
     it 'triggers validation error is password is too short' do
-      user = User.new
+      user = ::User.new
 
       user.username = 'testusername'
       user.email = 'manolo@escobar.es'
@@ -113,12 +113,12 @@ describe SignupController do
     end
 
     it 'triggers a NewUser job with form parameters and default quota and requiring validation email' do
-      ::Resque.expects(:enqueue).with(::Resque::UserJobs::Signup::NewUser, 
+      ::Resque.expects(:enqueue).with(::Resque::UserJobs::Signup::NewUser,
         instance_of(String), instance_of(String), instance_of(FalseClass)).returns(true)
 
       username = 'testusername'
       email = "testemail@#{@organization.whitelisted_email_domains[0]}"
-      password = 'testpassword' 
+      password = 'testpassword'
       host! "#{@organization.name}.localhost.lan"
       post signup_organization_user_url(user_domain: @organization.name, user: { username: username, email: email, password: password })
       response.status.should == 200

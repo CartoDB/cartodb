@@ -35,7 +35,7 @@ class Carto::User < ActiveRecord::Base
     ] => :service
 
   # INFO: select filter is done for security and performance reasons. Add new columns if needed.
-  DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," + 
+  DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," +
                    "users.api_key, users.database_schema, users.database_name, users.name, users.location," +
                    "users.disqus_shortname, users.account_type, users.twitter_username, users.google_maps_key"
 
@@ -58,7 +58,7 @@ class Carto::User < ActiveRecord::Base
     return if !value.nil? && value.length < MIN_PASSWORD_LENGTH
 
     @password = value
-    self.salt = new_record? ? service.class.make_token : User.filter(:id => self.id).select(:salt).first.salt
+    self.salt = new_record? ? service.class.make_token : ::User.filter(:id => self.id).select(:salt).first.salt
     self.crypted_password = service.class.password_digest(value, salt)
   end
 

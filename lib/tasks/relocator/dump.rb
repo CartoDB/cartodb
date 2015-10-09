@@ -33,7 +33,7 @@ module CartoDB
         to_stdout("Renaming database user")
         rdbms.rename_user(database_username_for(user_id), token)
 
-        to_stdout("Dumping data from #{user_database_for(user_id)} 
+        to_stdout("Dumping data from #{user_database_for(user_id)}
                   to local filesytem")
         dump_database
 
@@ -54,20 +54,20 @@ module CartoDB
       private
 
       attr_reader :local_filesystem, :remote_filesystem, :relocation_id,
-                  :pg_dump_command, :dump_path, :rdbms, :user_id, 
+                  :pg_dump_command, :dump_path, :rdbms, :user_id,
                   :user_attributes_path, :environment
 
       def dump_database
         command = "#{pg_dump_command} #{user_database_for(user_id)}"
 
-        Open3.popen3(command) do |stdin, stdout, stderr, process| 
+        Open3.popen3(command) do |stdin, stdout, stderr, process|
           local_filesystem.store(dump_path, stdout)
           print_and_raise(stderr) unless process.value.to_s =~ /exit 0/
         end
       end #dump_database
 
       def dump_user_attributes
-        user_attributes = User[user_id].to_hash
+        user_attributes = ::User[user_id].to_hash
         user_attributes.delete(:id)
         data = StringIO.new(user_attributes.to_json)
         local_filesystem.store(user_attributes_path, data)

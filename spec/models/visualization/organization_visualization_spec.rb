@@ -32,7 +32,7 @@ describe Visualization::Member do
         :propagate_to_varnish => nil
     )
 
-    User.any_instance.stubs(
+    ::User.any_instance.stubs(
       :enable_remote_db_user => nil,
       :after_create => nil,
       :create_schema => nil,

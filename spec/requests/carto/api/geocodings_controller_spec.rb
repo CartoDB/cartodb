@@ -103,14 +103,14 @@ describe 'legacy behaviour tests' do
         table.insert_row!(cartodb_georef_status: false)
 
         expected_rows = 2
-        expected_estimation = expected_rows * @user.geocoding_block_price / User::GEOCODING_BLOCK_SIZE.to_f
+        expected_estimation = expected_rows * @user.geocoding_block_price / ::User::GEOCODING_BLOCK_SIZE.to_f
         get_json api_v1_geocodings_estimation_url(params.merge(table_name: table.name, force_all_rows: false)) do |response|
           response.status.should be_success
           response.body.should == {rows: expected_rows, estimation: expected_estimation}
         end
 
         expected_rows = 3
-        expected_estimation = expected_rows * @user.geocoding_block_price / User::GEOCODING_BLOCK_SIZE.to_f
+        expected_estimation = expected_rows * @user.geocoding_block_price / ::User::GEOCODING_BLOCK_SIZE.to_f
         get_json api_v1_geocodings_estimation_url(params.merge(table_name: table.name, force_all_rows: true)) do |response|
           response.status.should be_success
           response.body.should == {rows: expected_rows, estimation: expected_estimation}

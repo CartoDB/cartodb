@@ -19,7 +19,7 @@ module CartoDB
 
         # Retrieve a datasource instance
         # @param datasource_name string
-        # @param user User
+        # @param user ::User
         # @param additional_config Hash
         # {
         #   :redis_storage => Redis|nil
@@ -71,7 +71,7 @@ module CartoDB
 
         # Gets the config of a certain datasource
         # @param datasource_name string
-        # @param user User
+        # @param user ::User
         # @return string
         # @throws MissingConfigurationError
         def self.config_for(datasource_name, user)

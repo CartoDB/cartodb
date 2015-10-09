@@ -10,7 +10,7 @@ describe 'refactored behaviour' do
     end
 
     def get_user_by_id(user_id)
-      User.where(id: user_id).first
+      ::User.where(id: user_id).first
     end
   end
 
@@ -18,7 +18,7 @@ end
 
 describe User do
   before(:each) do
-    User.any_instance.stubs(:enable_remote_db_user).returns(true)
+    ::User.any_instance.stubs(:enable_remote_db_user).returns(true)
   end
 
   before(:all) do
@@ -38,7 +38,7 @@ describe User do
   before(:each) do
     stub_named_maps_calls
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-    User.any_instance.stubs(:enable_remote_db_user).returns(true)
+    ::User.any_instance.stubs(:enable_remote_db_user).returns(true)
   end
 
   after(:all) do
@@ -104,28 +104,28 @@ describe User do
   end
 
   it "should authenticate if given email and password are correct" do
-    response_user = User.authenticate('admin@example.com', 'admin123')
+    response_user = ::User.authenticate('admin@example.com', 'admin123')
     response_user.id.should eq @user.id
     response_user.email.should eq @user.email
 
-    User.authenticate('admin@example.com', 'admin321').should be_nil
-    User.authenticate('', '').should be_nil
+    ::User.authenticate('admin@example.com', 'admin321').should be_nil
+    ::User.authenticate('', '').should be_nil
   end
 
   it "should authenticate with case-insensitive email and username" do
-    response_user = User.authenticate('admin@example.com', 'admin123')
+    response_user = ::User.authenticate('admin@example.com', 'admin123')
     response_user.id.should eq @user.id
     response_user.email.should eq @user.email
 
-    response_user_2 = User.authenticate('aDMin@eXaMpLe.Com', 'admin123')
+    response_user_2 = ::User.authenticate('aDMin@eXaMpLe.Com', 'admin123')
     response_user_2.id.should eq @user.id
     response_user_2.email.should eq @user.email
 
-    response_user_3 = User.authenticate('admin', 'admin123')
+    response_user_3 = ::User.authenticate('admin', 'admin123')
     response_user_3.id.should eq @user.id
     response_user_3.email.should eq @user.email
 
-    response_user_4 = User.authenticate('ADMIN', 'admin123')
+    response_user_4 = ::User.authenticate('ADMIN', 'admin123')
     response_user_4.id.should eq @user.id
     response_user_4.email.should eq @user.email
   end
@@ -181,7 +181,7 @@ describe User do
 
     it 'should be valid if his organization has enough seats' do
       organization = create_org('testorg', 10.megabytes, 1)
-      user = User.new
+      user = ::User.new
       user.organization = organization
       user.valid?
       user.errors.keys.should_not include(:organization)
@@ -191,7 +191,7 @@ describe User do
     it "should not be valid if his organization doesn't have enough disk space" do
       organization = create_org('testorg', 10.megabytes, 1)
       organization.stubs(:assigned_quota).returns(10.megabytes)
-      user = User.new
+      user = ::User.new
       user.organization = organization
       user.quota_in_bytes = 1.megabyte
       user.valid?.should be_false
@@ -202,7 +202,7 @@ describe User do
     it 'should be valid if his organization has enough disk space' do
       organization = create_org('testorg', 10.megabytes, 1)
       organization.stubs(:assigned_quota).returns(9.megabytes)
-      user = User.new
+      user = ::User.new
       user.organization = organization
       user.quota_in_bytes = 1.megabyte
       user.valid?
@@ -318,7 +318,7 @@ describe User do
 
   describe 'central synchronization' do
     it 'should create remote user in central if needed' do
-      pending "Central API credentials not provided" unless User.new.sync_data_with_cartodb_central?
+      pending "Central API credentials not provided" unless ::User.new.sync_data_with_cartodb_central?
       organization = create_org('testorg', 500.megabytes, 1)
       user = create_user email: 'user1@testorg.com', username: 'user1', password: 'user11'
       user.organization = organization
@@ -352,18 +352,18 @@ describe User do
   end
 
   it "should have a default dashboard_viewed? false" do
-    user = User.new
+    user = ::User.new
     user.dashboard_viewed?.should be_false
   end
 
   it "should reset dashboard_viewed when dashboard gets viewed" do
-    user = User.new
+    user = ::User.new
     user.view_dashboard
     user.dashboard_viewed?.should be_true
   end
 
   it "should validate that password is present if record is new and crypted_password or salt are blank" do
-    user = User.new
+    user = ::User.new
     user.username = "adminipop"
     user.email = "adminipop@example.com"
 
@@ -377,7 +377,7 @@ describe User do
     user.save
 
     # Let's ensure that crypted_password and salt does not change
-    user_check = User[user.id]
+    user_check = ::User[user.id]
     user_check.crypted_password.should == another_user.crypted_password
     user_check.salt.should == another_user.salt
 
@@ -509,50 +509,50 @@ describe User do
 
   describe '#overquota' do
     it "should return users over their map view quota, excluding organization users" do
-      User.overquota.should be_empty
-      User.any_instance.stubs(:get_api_calls).returns (0..30).to_a
-      User.any_instance.stubs(:map_view_quota).returns 10
-      User.overquota.map(&:id).should include(@user.id)
-      User.overquota.size.should == User.reject{|u| u.organization_id.present? }.count
+      ::User.overquota.should be_empty
+      ::User.any_instance.stubs(:get_api_calls).returns (0..30).to_a
+      ::User.any_instance.stubs(:map_view_quota).returns 10
+      ::User.overquota.map(&:id).should include(@user.id)
+      ::User.overquota.size.should == ::User.reject{|u| u.organization_id.present? }.count
     end
 
     it "should return users near their map view quota" do
-      User.any_instance.stubs(:get_api_calls).returns([81])
-      User.any_instance.stubs(:map_view_quota).returns(100)
-      User.overquota.should be_empty
-      User.overquota(0.20).map(&:id).should include(@user.id)
-      User.overquota(0.20).size.should == User.reject{|u| u.organization_id.present? }.count
-      User.overquota(0.10).should be_empty
+      ::User.any_instance.stubs(:get_api_calls).returns([81])
+      ::User.any_instance.stubs(:map_view_quota).returns(100)
+      ::User.overquota.should be_empty
+      ::User.overquota(0.20).map(&:id).should include(@user.id)
+      ::User.overquota(0.20).size.should == ::User.reject{|u| u.organization_id.present? }.count
+      ::User.overquota(0.10).should be_empty
     end
 
     it "should return users near their geocoding quota" do
-      User.any_instance.stubs(:get_api_calls).returns([0])
-      User.any_instance.stubs(:map_view_quota).returns(120)
-      User.any_instance.stubs(:get_geocoding_calls).returns(81)
-      User.any_instance.stubs(:geocoding_quota).returns(100)
-      User.overquota.should be_empty
-      User.overquota(0.20).map(&:id).should include(@user.id)
-      User.overquota(0.20).size.should == User.reject{|u| u.organization_id.present? }.count
-      User.overquota(0.10).should be_empty
+      ::User.any_instance.stubs(:get_api_calls).returns([0])
+      ::User.any_instance.stubs(:map_view_quota).returns(120)
+      ::User.any_instance.stubs(:get_geocoding_calls).returns(81)
+      ::User.any_instance.stubs(:geocoding_quota).returns(100)
+      ::User.overquota.should be_empty
+      ::User.overquota(0.20).map(&:id).should include(@user.id)
+      ::User.overquota(0.20).size.should == ::User.reject{|u| u.organization_id.present? }.count
+      ::User.overquota(0.10).should be_empty
     end
 
     it "should return users near their twitter quota" do
-      User.any_instance.stubs(:get_api_calls).returns([0])
-      User.any_instance.stubs(:map_view_quota).returns(120)
-      User.any_instance.stubs(:get_geocoding_calls).returns(0)
-      User.any_instance.stubs(:geocoding_quota).returns(100)
-      User.any_instance.stubs(:get_twitter_imports_count).returns(81)
-      User.any_instance.stubs(:twitter_datasource_quota).returns(100)
-      User.overquota.should be_empty
-      User.overquota(0.20).map(&:id).should include(@user.id)
-      User.overquota(0.20).size.should == User.reject{|u| u.organization_id.present? }.count
-      User.overquota(0.10).should be_empty
+      ::User.any_instance.stubs(:get_api_calls).returns([0])
+      ::User.any_instance.stubs(:map_view_quota).returns(120)
+      ::User.any_instance.stubs(:get_geocoding_calls).returns(0)
+      ::User.any_instance.stubs(:geocoding_quota).returns(100)
+      ::User.any_instance.stubs(:get_twitter_imports_count).returns(81)
+      ::User.any_instance.stubs(:twitter_datasource_quota).returns(100)
+      ::User.overquota.should be_empty
+      ::User.overquota(0.20).map(&:id).should include(@user.id)
+      ::User.overquota(0.20).size.should == ::User.reject{|u| u.organization_id.present? }.count
+      ::User.overquota(0.10).should be_empty
     end
 
     it "should not return organization users" do
-      User.any_instance.stubs(:organization_id).returns("organization-id")
-      User.any_instance.stubs(:organization).returns(Organization.new)
-      User.overquota.should be_empty
+      ::User.any_instance.stubs(:organization_id).returns("organization-id")
+      ::User.any_instance.stubs(:organization).returns(Organization.new)
+      ::User.overquota.should be_empty
     end
   end
 
@@ -1036,7 +1036,7 @@ describe User do
     @user.trial_ends_at.should_not be_nil
     @user.stubs(:upgraded_at).returns(nil)
     @user.trial_ends_at.should be_nil
-    @user.stubs(:upgraded_at).returns(Time.now - (User::TRIAL_DURATION_DAYS - 1).days)
+    @user.stubs(:upgraded_at).returns(Time.now - (::User::TRIAL_DURATION_DAYS - 1).days)
     @user.trial_ends_at.should_not be_nil
   end
 
@@ -1626,7 +1626,7 @@ describe User do
 
       user.destroy
 
-      User.find(id:user_id).should eq nil
+      ::User.find(id:user_id).should eq nil
 
     end
   end

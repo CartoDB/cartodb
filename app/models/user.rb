@@ -232,9 +232,9 @@ class User < Sequel::Model
       invalidate_varnish_cache(regex: '.*:vizjson')
     end
     if changes.include?(:database_host)
-      User.terminate_database_connections(database_name, previous_changes[:database_host][0])
+      ::User.terminate_database_connections(database_name, previous_changes[:database_host][0])
     elsif changes.include?(:database_schema)
-      User.terminate_database_connections(database_name, database_host)
+      ::User.terminate_database_connections(database_name, database_host)
     end
 
   end
@@ -313,7 +313,7 @@ class User < Sequel::Model
     if has_organization
       drop_organization_user(org_id, is_owner = !@org_id_for_org_wipe.nil?) unless error_happened
     else
-      if User.where(:database_name => self.database_name).count > 1
+      if ::User.where(:database_name => self.database_name).count > 1
         raise CartoDB::BaseCartoDBError.new('The user is not supposed to be in a organization but another user has the same database_name. Not dropping it')
       else
         if !error_happened
@@ -358,7 +358,7 @@ class User < Sequel::Model
       in_database(as: :superuser) do |database|
         if is_owner
           schemas = ['cdb', 'cdb_importer', 'cartodb', 'public', self.database_schema] +
-              User.select(:database_schema).where(:organization_id => org_id).all.collect(&:database_schema)
+              ::User.select(:database_schema).where(:organization_id => org_id).all.collect(&:database_schema)
           schemas.uniq.each do |s|
             drop_users_privileges_in_schema(s, [self.database_username, self.database_public_username, CartoDB::PUBLIC_DB_USER])
           end
@@ -374,7 +374,7 @@ class User < Sequel::Model
       end
 
       conn = self.in_database(as: :cluster_admin)
-      User.terminate_database_connections(database_name, database_host)
+      ::User.terminate_database_connections(database_name, database_host)
       drop_user(conn, database_public_username)
       if is_owner
         conn.run("DROP DATABASE \"#{database_name}\"")
@@ -390,7 +390,7 @@ class User < Sequel::Model
 
     if !database_name.nil? && !database_name.empty?
       conn.run("UPDATE pg_database SET datallowconn = 'false' WHERE datname = '#{database_name}'")
-      User.terminate_database_connections(database_name, database_host)
+      ::User.terminate_database_connections(database_name, database_host)
       conn.run("DROP DATABASE \"#{database_name}\"")
     end
 
@@ -555,7 +555,7 @@ class User < Sequel::Model
   #        example: 0.20 will get all users at 80% of their map view limit
   #
   def self.overquota(delta = 0)
-    User.where(enabled: true).all.reject{ |u| u.organization_id.present? }.select do |u|
+    ::User.where(enabled: true).all.reject{ |u| u.organization_id.present? }.select do |u|
         limit = u.map_view_quota.to_i - (u.map_view_quota.to_i * delta)
         over_map_views = u.get_api_calls(from: u.last_billing_cycle, to: Date.today).sum > limit
 
@@ -592,13 +592,13 @@ class User < Sequel::Model
     end
 
     @password = value
-    self.salt = new?? self.class.make_token : User.filter(:id => self.id).select(:salt).first.salt
+    self.salt = new?? self.class.make_token : ::User.filter(:id => self.id).select(:salt).first.salt
     self.crypted_password = self.class.password_digest(value, salt)
   end
 
   def self.authenticate(email, password)
     sanitized_input = email.strip.downcase
-    if candidate = User.filter("email = ? OR username = ?", sanitized_input, sanitized_input).first
+    if candidate = ::User.filter("email = ? OR username = ?", sanitized_input, sanitized_input).first
       candidate.crypted_password == password_digest(password, candidate.salt) ? candidate : nil
     else
       nil
@@ -1073,7 +1073,7 @@ class User < Sequel::Model
   end
 
   def self.find_with_custom_fields(user_id)
-    User.filter(:id => user_id).select(:id,:email,:username,:crypted_password,:database_name,:admin).first
+    ::User.filter(:id => user_id).select(:id,:email,:username,:crypted_password,:database_name,:admin).first
   end
 
 
@@ -2458,12 +2458,12 @@ TRIGGER
       :twitter_datasource_enabled, :soft_twitter_datasource_limit, :twitter_datasource_quota,
       :twitter_datasource_block_price, :twitter_datasource_block_size
     ])
-    to.invite_token = User.make_token
+    to.invite_token = ::User.make_token
   end
 
   def regenerate_api_key
     invalidate_varnish_cache
-    update api_key: User.make_token
+    update api_key: ::User.make_token
   end
 
   # This is set temporary on user creation with invitation,

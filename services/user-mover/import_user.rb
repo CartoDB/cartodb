@@ -55,7 +55,7 @@ module CartoDB
                   logger: @logger, data_only: @options[:data_only]).run!
 
               #Fix permissions and metadata settings for owner
-              owner_user = User.find(id: owner_id)
+              owner_user = ::User.find(id: owner_id)
               owner_user.database_host = @target_dbhost
               owner_user.setup_organization_owner
 
@@ -179,7 +179,7 @@ module CartoDB
               update_postgres_organization(@target_userid, nil)
             end
 
-            user_model = User.find(username: @target_username)
+            user_model = ::User.find(username: @target_username)
             user_model.db_manager.configure_database
 
           elsif @options[:mode] == :rollback

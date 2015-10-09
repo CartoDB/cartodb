@@ -3,8 +3,8 @@ namespace :cartodb do
   namespace :db do
     desc 'Create importer schema and assign privileges to owner'
     task :create_importer_schema => :environment do
-      count = User.count
-      User.all.each_with_index do |user, index|
+      count = ::User.count
+      ::User.all.each_with_index do |user, index|
         begin
           puts "Creating importer schema for #{user.username}"
           user.create_importer_schema

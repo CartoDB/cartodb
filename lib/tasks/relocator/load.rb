@@ -58,11 +58,11 @@ module CartoDB
       private
 
       attr_reader :local_filesystem, :remote_filesystem, :relocation_id,
-                  :dump_path, :user, :user_attributes_path, :psql_command, 
+                  :dump_path, :user, :user_attributes_path, :psql_command,
                   :environment, :database_owner, :rdbms
 
       def create_user
-        @user = User.new
+        @user = ::User.new
         def user.after_create; end
 
         json_attributes = local_filesystem.fetch(user_attributes_path)
@@ -81,7 +81,7 @@ module CartoDB
 
         `#{command}`
         puts $?
-        #Open3.popen3(command) do |stdin, stdout, stderr, process| 
+        #Open3.popen3(command) do |stdin, stdout, stderr, process|
         #  print_and_raise(stderr) unless process.value.to_s =~ /exit 0/
         #end
       end #load_database

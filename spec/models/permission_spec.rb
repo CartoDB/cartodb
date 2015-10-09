@@ -8,7 +8,7 @@ describe CartoDB::Permission do
 
   before(:all) do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-    User.any_instance.stubs(:gravatar).returns(nil)
+    ::User.any_instance.stubs(:gravatar).returns(nil)
     @user = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
   end
 
@@ -629,7 +629,7 @@ describe CartoDB::Permission do
       permission.entity_id = permission.entity.id
 
       permission.save
-     
+
       user2_id = "17d5b1e6-0d14-11e4-a3ef-0800274a1928"
       user3_id = "28d09bc0-0d14-11e4-a3ef-0800274a1928"
       permissions_changes = {
@@ -643,7 +643,7 @@ describe CartoDB::Permission do
 
       ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::ShareVisualization, permission.entity.id, user2_id).once
       ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::UnshareVisualization, permission.entity.name, permission.owner_username, user3_id).once
-      
+
       permission.notify_permissions_change(permissions_changes)
       permission.destroy
     end
@@ -670,9 +670,9 @@ describe CartoDB::Permission do
         entity_type: Permission::ENTITY_TYPE_VISUALIZATION
       )
       permission.entity_id = permission.entity.id
-    
+
       Resque.stubs(:enqueue).returns(nil)
-      
+
       permission.acl = [
         {
           type: Permission::TYPE_USER,
@@ -688,7 +688,7 @@ describe CartoDB::Permission do
       permission.save
       # Here try full reload of model
       permission = Permission.where(id: permission.id).first
-    
+
       permission.acl = [
         {
           type: Permission::TYPE_USER,
@@ -708,11 +708,11 @@ describe CartoDB::Permission do
         }
       ]
       acl2 = permission.acl
-      
+
 
       CartoDB::Permission.expects(:compare_new_acl).with(acl1, acl2).once
       CartoDB::Permission.expects(:compare_new_acl).with(acl2, []).once
-      
+
       permission.save
       permission.destroy
     end
@@ -720,7 +720,7 @@ describe CartoDB::Permission do
     it "permission comparisson function should return right diff hash" do
       acl1 = [{:type=>"user", :id=>"17d09bc0-0d14-11e4-a3ef-0800274a1928", :access=>"r"}, {:type=>"user", :id=>"28d09bc0-0d14-11e4-a3ef-0800274a1928", :access=>"r"}]
       acl2 = [{:type=>"user", :id=>"17d09bc0-0d14-11e4-a3ef-0800274a1928", :access=>"r"}, {:type=>"user", :id=>"17d5b1e6-0d14-11e4-a3ef-0800274a1928", :access=>"r"}]
-     
+
       expected_diff = {
         "user" => {
           "17d5b1e6-0d14-11e4-a3ef-0800274a1928" => [{ "action"=>"grant", "type"=>"r" }],

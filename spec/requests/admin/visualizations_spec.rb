@@ -352,7 +352,7 @@ describe Admin::VisualizationsController do
           :propagate_to_varnish => nil
       )
 
-      User.any_instance.stubs(
+      ::User.any_instance.stubs(
         :enable_remote_db_user => nil,
         :after_create => nil,
         :create_schema => nil,
@@ -394,7 +394,7 @@ describe Admin::VisualizationsController do
       org.seats = 10
       org.save
 
-      User.any_instance.stubs(:remaining_quota).returns(1000)
+      ::User.any_instance.stubs(:remaining_quota).returns(1000)
       user_a = create_user({username: 'user-a', quota_in_bytes: 123456789, table_quota: 400})
       user_org = CartoDB::UserOrganization.new(org.id, user_a.id)
       user_org.promote_user_to_admin

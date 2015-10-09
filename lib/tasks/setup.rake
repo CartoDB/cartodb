@@ -1,6 +1,6 @@
 namespace :cartodb do
   namespace :test do
-    task :prepare do 
+    task :prepare do
       if (ENV['RAILS_ENV'] == "test")
         Rake::Task['db:drop'].invoke &&
         Rake::Task['db:create'].invoke &&
@@ -25,22 +25,22 @@ DESC
 
       # Reload User model schema to avoid errors
       # when running this task along with db:migrate
-      User.set_dataset :users
-      
-      u = User.new
+      ::User.set_dataset :users
+
+      u = ::User.new
       u.email = ENV['EMAIL']
       u.password = ENV['PASSWORD']
       u.password_confirmation = ENV['PASSWORD']
       u.username = ENV['SUBDOMAIN']
       u.database_host = ENV['DATABASE_HOST'] || ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
-      
+
       u.save
 
       raise u.errors.inspect if u.new?
       puts "User #{u.username} created successfully"
     end
 
-    task :create_dev_user => 
+    task :create_dev_user =>
       ["rake:db:create", "rake:db:migrate", "cartodb:db:create_publicuser"] do
       raise "You should provide a valid e-mail"    if ENV['EMAIL'].blank?
       raise "You should provide a valid password"  if ENV['PASSWORD'].blank?
@@ -48,9 +48,9 @@ DESC
 
       # Reload User model schema to avoid errors
       # when running this task along with db:migrate
-      User.set_dataset :users
-      
-      user = User.new
+      ::User.set_dataset :users
+
+      user = ::User.new
       user.email = ENV['EMAIL']
       user.password = ENV['PASSWORD']
       user.password_confirmation = ENV['PASSWORD']
@@ -70,21 +70,21 @@ DESC
 
       user.save
       puts "User #{user.username} created successfully"
-      
+
       # 10 Gb of quota
       quota = 1073741824
       user.update(:quota_in_bytes => quota)
-      
+
       user.rebuild_quota_trigger
       puts "User: #{user.username} quota updated to: 10 GB. #{user.tables.count} tables updated."
 
-      user.update(:table_quota => nil)             
+      user.update(:table_quota => nil)
       puts "User: #{user.username} table quota updated to: unlimited"
-      
-      user.update(:private_tables_enabled => true)      
+
+      user.update(:private_tables_enabled => true)
       puts "User: #{user.username} private tables enabled: true"
-     
-      user.update(:account_type => '[DEDICATED]')       
+
+      user.update(:account_type => '[DEDICATED]')
       puts "User: #{user.username} table account type updated to: [DEDICATED]"
 
       user.update(:sync_tables_enabled => true)
@@ -92,7 +92,7 @@ DESC
 
       file_size_quota = 1500*1024*1024
       row_count_quota = 5000000
-      
+
       user.update(:max_import_file_size => file_size_quota) if file_size_quota > user.max_import_file_size
       puts "Twitter import user: #{user.username} max_import_file_size is now #{user.max_import_file_size}"
 
@@ -106,7 +106,7 @@ DESC
         puts "Creating user #{u}"
         ::Rails::Sequel.connection.run("DO $$
         BEGIN
-          IF NOT EXISTS ( SELECT * FROM pg_user WHERE usename = '#{u}') THEN 
+          IF NOT EXISTS ( SELECT * FROM pg_user WHERE usename = '#{u}') THEN
             CREATE USER #{u}; -- TODO: with password '...'
           ELSE
             RAISE NOTICE 'User #{u} already exists';
@@ -125,7 +125,7 @@ DESC
         raise "You should provide a valid password"  if ENV['PASSWORD'].blank?
         raise "You should provide a valid subdomain" if ENV['SUBDOMAIN'].blank?
 
-        u = User.new
+        u = ::User.new
         u.email = ENV['EMAIL']
         u.password = ENV['PASSWORD']
         u.password_confirmation = ENV['PASSWORD']
@@ -151,7 +151,7 @@ DESC
       raise "Set USER_PASSWORD environment variable" if ENV['USER_PASSWORD'].blank?
       password = ENV['USER_PASSWORD']
 
-      users = User.filter(:username => ENV['USER_NAME']).all
+      users = ::User.filter(:username => ENV['USER_NAME']).all
       if users.empty?
         raise "User doesn't exist"
       else

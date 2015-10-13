@@ -1,3 +1,12 @@
+// TODO:
+//  - Make sure all params are sent (stat_tag, auth_token)
+//  - Stack requests to instantiateMap
+//  - Add profiling (cartodb.core.Profiler.metric)
+//  - Accept reqwest as an ajax client
+//  - Accept an instantiateCallback
+//  - caching of get requests (cache option to $.ajax)
+//  - client.instantiateMap returns an instance of cdb.windshaft.PublicMap or
+//    cdb.windshaft.PrivateMap
 describe('cdb.windshaft.Client', function() {
 
   describe('.instantiateMap', function() {
@@ -24,7 +33,8 @@ describe('cdb.windshaft.Client', function() {
       it('should use a GET request', function(done) {
         var client = new cdb.windshaft.Client({
           ajax: ajax,
-          maps_api_template: 'http://wadus.cartodb.com:80',
+          user_name: 'wadus',
+          maps_api_template: 'http://{user}.cartodb.com:80',
           stat_tag: '123456789'
         });
 
@@ -45,7 +55,8 @@ describe('cdb.windshaft.Client', function() {
         it("should compress the map definition using LZMA and the browser's btoa function", function(done) {
           var client = new cdb.windshaft.Client({
             ajax: ajax,
-            maps_api_template: 'http://wadus.cartodb.com:80',
+            user_name: 'wadus',
+            maps_api_template: 'http://{user}.cartodb.com:80',
             stat_tag: '123456789',
             force_compress: true
           });
@@ -67,7 +78,8 @@ describe('cdb.windshaft.Client', function() {
         it("should compress the map definition using LZMA and cdb.core.util.encodeBase64", function(done) {
           var client = new cdb.windshaft.Client({
             ajax: ajax,
-            maps_api_template: 'http://wadus.cartodb.com:80',
+            user_name: 'wadus',
+            maps_api_template: 'http://{user}.cartodb.com:80',
             stat_tag: '123456789',
             force_compress: true
           });
@@ -101,7 +113,8 @@ describe('cdb.windshaft.Client', function() {
 
         var client = new cdb.windshaft.Client({
           ajax: ajax,
-          maps_api_template: 'http://wadus.cartodb.com:80',
+          user_name: 'wadus',
+          maps_api_template: 'http://{user}.cartodb.com:80',
           stat_tag: '123456789'
         });
 
@@ -121,7 +134,8 @@ describe('cdb.windshaft.Client', function() {
 
         var client = new cdb.windshaft.Client({
           ajax: ajax,
-          maps_api_template: 'http://wadus.cartodb.com:80',
+          user_name: 'wadus',
+          maps_api_template: 'http://{user}.cartodb.com:80',
           stat_tag: '123456789'
         });
 
@@ -148,7 +162,8 @@ describe('cdb.windshaft.Client', function() {
       it('should use a POST request when serialized mapDefinition is longer than max GET size', function(done) {
         var client = new cdb.windshaft.Client({
           ajax: ajax,
-          maps_api_template: 'http://wadus.cartodb.com:80',
+          user_name: 'wadus',
+          maps_api_template: 'http://{user}.cartodb.com:80',
           stat_tag: '123456789'
         });
 
@@ -179,7 +194,8 @@ describe('cdb.windshaft.Client', function() {
 
         var client = new cdb.windshaft.Client({
           ajax: ajax,
-          maps_api_template: 'http://wadus.cartodb.com:80',
+          user_name: 'wadus',
+          maps_api_template: 'http://{user}.cartodb.com:80',
           stat_tag: '123456789',
           force_cors: true
         });
@@ -206,7 +222,8 @@ describe('cdb.windshaft.Client', function() {
 
         var client = new cdb.windshaft.Client({
           ajax: ajax,
-          maps_api_template: 'http://wadus.cartodb.com:80',
+          user_name: 'wadus',
+          maps_api_template: 'http://{user}.cartodb.com:80',
           stat_tag: '123456789'
         });
 
@@ -226,7 +243,8 @@ describe('cdb.windshaft.Client', function() {
 
         var client = new cdb.windshaft.Client({
           ajax: ajax,
-          maps_api_template: 'http://wadus.cartodb.com:80',
+          user_name: 'wadus',
+          maps_api_template: 'http://{user}.cartodb.com:80',
           stat_tag: '123456789'
         });
 
@@ -237,11 +255,5 @@ describe('cdb.windshaft.Client', function() {
         });
       })
     })
-    // it uses reqwest to make the request
-    // it returns a Public or Private Map
-    // it params (stat_tag, auth_token)
-    // it accepts an instantiateCallback
-    // caching?
-    // profiling (cartodb.core.Profiler.metric)
   })
 })

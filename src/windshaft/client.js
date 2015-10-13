@@ -6,7 +6,8 @@
 cdb.windshaft.Client = function(options) {
   this.COMPRESSION_LEVEL = 3;
   this.ajax = options.ajax;
-  this.baseUrl = options.maps_api_template;
+  this.baseURL = options.maps_api_template;
+  this.userName = options.user_name;
   this.statTag = options.stat_tag;
   this.forceCompress = options.force_compress;
   this.isCorsSupported = cdb.core.util.isCORSSupported();
@@ -124,7 +125,8 @@ cdb.windshaft.Client.prototype._getURL = function(dataParameter) {
   if (dataParameter) {
     params.push(dataParameter);  
   }
-  return this.baseUrl + this.endpoint + '?' + params.join('&');
+  var baseURL =  this.baseURL.replace('{user}', this.userName);
+  return baseURL + this.endpoint + '?' + params.join('&');
 }
 
 cdb.windshaft.Client.prototype._jsonpCallbackName = function(payload) {

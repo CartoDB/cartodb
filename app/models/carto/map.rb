@@ -7,22 +7,22 @@ class Carto::Map < ActiveRecord::Base
 
   has_many :base_layers, class_name: 'Carto::Layer', order: '"order"', through: :layers_maps
 
-  has_and_belongs_to_many :data_layers, class_name: 'Carto::Layer', 
+  has_many :data_layers, class_name: 'Carto::Layer', 
     conditions: { kind: 'carto' }, order: '"order"', through: 'layers_maps'
     
-  has_and_belongs_to_many :user_layers, class_name: 'Carto::Layer', 
+  has_many :user_layers, class_name: 'Carto::Layer', 
     conditions: { kind: ['tiled', 'background', 'gmapsbase', 'wms'] }, order: '"order"', through: 'layers_maps'
 
-  has_and_belongs_to_many :carto_and_torque_layers, class_name: 'Carto::Layer', 
+  has_many :carto_and_torque_layers, class_name: 'Carto::Layer', 
     conditions: { kind: ['carto', 'torque'] }, order: '"order"', through: 'layers_maps'
 
-  has_and_belongs_to_many :torque_layers, class_name: 'Carto::Layer',
+  has_many :torque_layers, class_name: 'Carto::Layer',
     conditions: { kind: 'torque' }, order: '"order"', through: 'layers_maps'
 
-  has_and_belongs_to_many :other_layers, class_name: 'Carto::Layer', 
+  has_many :other_layers, class_name: 'Carto::Layer', 
     conditions: "kind not in ('carto', 'tiled', 'background', 'gmapsbase', 'wms')", order: '"order"', through: 'layers_maps'
 
-  has_and_belongs_to_many :named_maps_layers, class_name: 'Carto::Layer', 
+  has_many :named_maps_layers, class_name: 'Carto::Layer', 
     conditions: { kind: ['carto', 'tiled', 'background', 'gmapsbase', 'wms'] }, order: '"order"', through: 'layers_maps'
 
   has_one :user_table

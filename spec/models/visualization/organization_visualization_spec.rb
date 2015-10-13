@@ -1,9 +1,6 @@
 # encoding: utf-8
 require_relative '../../spec_helper'
 require_relative '../../../services/data-repository/backend/sequel'
-require_relative '../../../services/relocator/relocator'
-require_relative '../../../services/relocator/worker'
-require_relative '../../../services/relocator/relocator/table_dumper'
 require_relative '../../../app/models/visualization/member'
 require_relative '../../../services/data-repository/repository'
 
@@ -21,10 +18,6 @@ describe Visualization::Member do
         username: db_config.fetch('username')
     )
     Visualization.repository  = DataRepository::Backend::Sequel.new(db, :visualizations)
-
-    CartoDB::Relocator::TableDumper.any_instance.stubs(:migrate).returns(nil)
-    CartoDB::Relocator::SchemaDumper.any_instance.stubs(:migrate).returns(nil)
-    CartoDB::Relocator::Relocation.any_instance.stubs(:compare).returns(nil)
 
     UserOrganization.any_instance.stubs(:move_user_tables_to_schema).returns(nil)
     CartoDB::TablePrivacyManager.any_instance.stubs(
@@ -192,8 +185,6 @@ describe Visualization::Member do
       :organization => org
     )
     org.reload
-
-    #CartoDB::Relocator::Worker.organize(user_b, org)
 
     user_a.database_name.should eq user_b.database_name
 

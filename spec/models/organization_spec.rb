@@ -1,7 +1,6 @@
 require_relative '../spec_helper'
 
 require_relative '../../app/models/visualization/collection'
-require_relative '../../services/relocator/worker'
 require_relative 'organization_shared_examples'
 
 include CartoDB
@@ -52,6 +51,7 @@ describe Organization do
     end
 
     it 'Destroys users and owner as well' do
+      pending "Adapt to User-Mover when ready"
       ::User.any_instance.stubs(:create_in_central).returns(true)
       ::User.any_instance.stubs(:update_in_central).returns(true)
 
@@ -63,8 +63,7 @@ describe Organization do
       owner.reload
       organization.reload
 
-      user = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
-      CartoDB::Relocator::Worker.organize(user, organization)
+      user = create_user(quota_in_bytes: 524288000, table_quota: 500, organization_id: organization.id)
       user.save
       user.reload
       organization.reload
@@ -153,6 +152,7 @@ describe Organization do
   describe '#org_members_and_owner_removal' do
 
     it 'Tests removing a normal member from the organization' do
+      pending "Adapt to User-Mover when ready"
       ::User.any_instance.stubs(:create_in_central).returns(true)
       ::User.any_instance.stubs(:update_in_central).returns(true)
 
@@ -168,12 +168,10 @@ describe Organization do
       owner.reload
 
       member1 = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
-      CartoDB::Relocator::Worker.organize(member1, organization)
       member1.reload
       organization.reload
 
       member2 = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
-      CartoDB::Relocator::Worker.organize(member2, organization)
       member2.reload
 
       organization.users.count.should eq 3

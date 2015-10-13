@@ -6,9 +6,6 @@ require_relative '../../spec_helper'
 require_relative '../../support/factories/organizations'
 require_relative '../../../app/models/visualization/migrator'
 require_relative '../../../app/controllers/admin/visualizations_controller'
-require_relative '../../../services/relocator/relocator'
-require_relative '../../../services/relocator/worker'
-require_relative '../../../services/relocator/relocator/table_dumper'
 
 def app
   CartoDB::Application.new

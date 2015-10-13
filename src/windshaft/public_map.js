@@ -5,7 +5,10 @@
 cdb.windshaft.PublicMap = function(attributes, options) {
   this.attributes = attributes;
   this.baseURL = options.baseURL;
+  this.ajax = options.ajax;
 
+  // TODO: Pass something to this method
+  this.jsonpCallbackName = cdb.core.util.uniqueCallbackName(this);
   this.pngParams = ['map_key', 'api_key', 'cache_policy', 'updated_at'];
   this.gridParams = ['map_key', 'api_key', 'cache_policy', 'updated_at'];
 }
@@ -88,7 +91,7 @@ cdb.windshaft.PublicMap.prototype.getTiles = function() {
   //   subdomains = [null]; // no subdomain
   // }
 
-  // TODO: Pass the filter that comes in the viz.json instead of "mapnik"
+  // TODO: Pass the filter that comes in the viz.json instead of harcoded "mapnik"
   var layerIndexes = this.getLayerIndexesByType("mapnik");
   if (layerIndexes.length) {
     var tileTemplate = '/' +  layerIndexes.join(',') +'/{z}/{x}/{y}';
@@ -109,10 +112,11 @@ cdb.windshaft.PublicMap.prototype.getTiles = function() {
     tiles = [MapBase.EMPTY_GIF];
   }
 
-  return {
+  this.urls = {
     tiles: tiles,
     grids: grids
   }
+  return this.urls;
 }
 
 cdb.windshaft.PublicMap.prototype._encodeParams= function(params, included) {
@@ -138,7 +142,7 @@ cdb.windshaft.PublicMap.prototype._encodeParams= function(params, included) {
 }
 
 cdb.windshaft.PublicMap.prototype._host = function(subhost) {
-  // TODO: MAke this work with a CDN
+  // TODO: Make this work with a CDN
 
   // var cdn_host = opts.cdn_url;
   // var has_empty_cdn = !cdn_host || (cdn_host && (!cdn_host.http && !cdn_host.https));
@@ -164,4 +168,72 @@ cdb.windshaft.PublicMap.prototype._host = function(subhost) {
   //   return h;
   // }
   return this.baseURL;
+}
+
+cdb.windshaft.PublicMap.prototype.fetchAttributes = function(layer_index, feature_id, columnNames, callback) {
+  // var loadingTime = cartodb.core.Profiler.metric('cartodb-js.named_map.attributes.time').start();
+  this.ajax({
+    dataType: 'jsonp',
+    url: this._attributesURL(layer_index, feature_id),
+    jsonpCallback: '_cdbi_layer_attributes_' + this.jsonpCallbackName,
+    cache: true,
+    success: function(data) {
+      // loadingTime.end();
+      callback(data);
+    },
+    error: function(data) {
+      // loadingTime.end();
+      // cartodb.core.Profiler.metric('cartodb-js.named_map.attributes.error').inc();
+      callback(null);
+    }
+  });
+}
+
+cdb.windshaft.PublicMap.prototype._attributesURL = function(layer, feature_id) {
+  var host = this._host();
+  var url = [
+    host,
+    MapBase.BASE_URL.slice(1),
+    this.getMapId(),
+    this.getLayerIndexByType(layer, "mapnik"),
+    'attributes',
+    feature_id].join('/');
+
+    // TODO: Make it work for Named Maps (passing auth_tokens)
+    // var extra_params = this.options.extra_params || {};
+    // var token = extra_params.auth_token;
+    // if (token) {
+    //   if (_.isArray(token)) {
+    //     var tokenParams = [];
+    //     for (var i = 0, len = token.length; i < len; i++) {
+    //       tokenParams.push("auth_token[]=" + token[i]);
+    //     }
+    //     url += "?" + tokenParams.join('&')
+    //   } else {
+    //     url += "?auth_token=" + token
+    //   }
+    // }
+  return url;
+}
+
+cdb.windshaft.PublicMap.prototype.getTileJSONFromTiles = function(layer) {
+  var subdomains = ['0', '1', '2', '3'];
+
+  function replaceSubdomain(t) {
+    var tiles = [];
+    for (var i = 0; i < t.length; ++i) {
+      tiles.push(t[i].replace('{s}', subdomains[i % subdomains.length]));
+    }
+    return tiles;
+  }
+
+  var urls = this.urls || this.getTiles();
+
+  return {
+    tilejson: '2.0.0',
+    scheme: 'xyz',
+    grids: replaceSubdomain(urls.grids[layer]),
+    tiles: replaceSubdomain(urls.tiles),
+    formatter: function(options, data) { return data; }
+  };
 }

@@ -60,7 +60,8 @@ cdb.windshaft.Client.prototype._post = function(payload, callback) {
       } else {
         var baseURL =  this.baseURL.replace('{user}', this.userName);
         var options = {
-          baseURL: baseURL
+          baseURL: baseURL,
+          ajax: this.ajax
         }
         callback(new cdb.windshaft.PublicMap(data, options));
       }
@@ -93,7 +94,8 @@ cdb.windshaft.Client.prototype._get = function(payload, callback) {
         } else {
           var baseURL =  this.baseURL.replace('{user}', this.userName);
           var options = {
-            baseURL: baseURL
+            baseURL: baseURL,
+            ajax: this.ajax
           }
           callback(new cdb.windshaft.PublicMap(data, options));
         }

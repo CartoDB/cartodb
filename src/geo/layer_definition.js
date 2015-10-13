@@ -15,7 +15,6 @@ function MapBase(options) {
   });
 
   this.windshaftMap = null;
-  this.urls = null;
   this.silent = false;
   this.interactionEnabled = []; //TODO: refactor, include inside layer
   this._refreshTimer = -1;
@@ -57,59 +56,15 @@ MapBase.prototype = {
   },
 
   fetchAttributes: function(layer_index, feature_id, columnNames, callback) {
-    this._attrCallbackName = this._attrCallbackName || this._callbackName();
-    var ajax = this.options.ajax;
-    var loadingTime = cartodb.core.Profiler.metric('cartodb-js.named_map.attributes.time').start();
-    ajax({
-      dataType: 'jsonp',
-      url: this._attributesUrl(layer_index, feature_id),
-      jsonpCallback: '_cdbi_layer_attributes_' + this._attrCallbackName,
-      cache: true,
-      success: function(data) {
-        loadingTime.end();
-        callback(data);
-      },
-      error: function(data) {
-        loadingTime.end();
-        cartodb.core.Profiler.metric('cartodb-js.named_map.attributes.error').inc();
-        callback(null);
-      }
-    });
+    this.windshaftMap.fetchAttributes(layer_index, feature_id, columnNames, callback);
   },
 
   _callbackName: function() {
     return cdb.core.util.uniqueCallbackName(JSON.stringify(this.toJSON()));
   },
 
-  _attributesUrl: function(layer, feature_id) {
-    var host = this._host();
-    var url = [
-      host,
-      MapBase.BASE_URL.slice(1),
-      this.windshaftMap.getMapId(),
-      this.windshaftMap.getLayerIndexByType(this.getLayerIndexByNumber(layer), "mapnik"),
-      'attributes',
-      feature_id].join('/');
-
-    var extra_params = this.options.extra_params || {};
-    var token = extra_params.auth_token;
-    if (token) {
-      if (_.isArray(token)) {
-        var tokenParams = [];
-        for (var i = 0, len = token.length; i < len; i++) {
-          tokenParams.push("auth_token[]=" + token[i]);
-        }
-        url += "?" + tokenParams.join('&')
-      } else {
-        url += "?auth_token=" + token
-      }
-    }
-    return url;
-  },
-
   invalidate: function() {
     this.windshaftMap = null;
-    this.urls = null;
     this.onLayerDefinitionUpdated();
   },
 
@@ -147,10 +102,6 @@ MapBase.prototype = {
     return this;
   },
 
-  isHttps: function() {
-    return this.options.maps_api_template.indexOf('https') === 0;
-  },
-
   onLayerDefinitionUpdated: function() {},
 
   setSilent: function(b) {
@@ -160,80 +111,6 @@ MapBase.prototype = {
   _definitionUpdated: function() {
     if(this.silent) return;
     this.invalidate();
-  },
-
-  // /**
-  //  * get tile json for layer
-  //  */
-  // getTileJSON: function(layer, callback) {
-  //   layer = layer == undefined ? 0: layer;
-  //   var self = this;
-  //   this.getTiles(function(urls) {
-  //     if(!urls) {
-  //       callback(null);
-  //       return;
-  //     }
-  //     if(callback) {
-  //       callback(self._tileJSONfromTiles(layer, urls));
-  //     }
-  //   });
-  // },
-
-  // _tileJSONfromTiles: function(layer, urls, options) {
-  //   options = options || {};
-  //   var subdomains = options.subdomains || ['0', '1', '2', '3'];
-
-  //   function replaceSubdomain(t) {
-  //     var tiles = [];
-  //     for (var i = 0; i < t.length; ++i) {
-  //       tiles.push(t[i].replace('{s}', subdomains[i % subdomains.length]));
-  //     }
-  //     return tiles;
-  //   }
-
-  //   return {
-  //     tilejson: '2.0.0',
-  //     scheme: 'xyz',
-  //     grids: replaceSubdomain(urls.grids[layer]),
-  //     tiles: replaceSubdomain(urls.tiles),
-  //     formatter: function(options, data) { return data; }
-  //    };
-  // },
-
-  _tilerHost: function() {
-    var opts = this.options;
-    return opts.maps_api_template.replace('{user}', opts.user_name);
-  },
-
-  _host: function(subhost) {
-    var opts = this.options;
-    var cdn_host = opts.cdn_url;
-    var has_empty_cdn = !cdn_host || (cdn_host && (!cdn_host.http && !cdn_host.https));
-
-    if (opts.no_cdn || has_empty_cdn) {
-      return this._tilerHost();
-    } else {
-      var protocol = this.isHttps() ? 'https': 'http';
-      var h = protocol + "://";
-      if (subhost) {
-        h += subhost + ".";
-      }
-
-      var cdn_url = cdn_host[protocol];
-      // build default template url if the cdn url is not templatized
-      // this is for backwards compatiblity, ideally we should use the url
-      // that tiler sends to us right away
-      if (!this._isUserTemplateUrl(cdn_url)) {
-        cdn_url = cdn_url  + "/{user}";
-      }
-      h += cdn_url.replace('{user}', opts.user_name)
-
-      return h;
-    }
-  },
-
-  _isUserTemplateUrl: function(t) {
-    return t && t.indexOf('{user}') !== -1;
   },
 
   // Methods to operate with layers
@@ -617,9 +494,9 @@ NamedMap.prototype = _.extend({}, MapBase.prototype, {
   },
 
   setAuthToken: function(token) {
-    if(!this.isHttps()) {
-      throw new Error("https must be used when map has token authentication");
-    }
+    // if(!this.isHttps()) {
+    //   throw new Error("https must be used when map has token authentication");
+    // }
     this.options.extra_params = this.options.extra_params || {};
     this.options.extra_params.auth_token = token;
     this.invalidate();

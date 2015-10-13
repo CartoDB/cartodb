@@ -1,6 +1,6 @@
 # encoding: utf-8
 require 'open3'
-require_relative './shp_helper'
+require_relative 'ogr2ogr_guessing_params'
 
 module CartoDB
   module Importer2
@@ -15,13 +15,6 @@ module CartoDB
       APPEND_MODE_OPTION    = '-append'
 
       DEFAULT_BINARY = 'which ogr2ogr2'
-
-      LATITUDE_POSSIBLE_NAMES = %w{ latitude lat latitudedecimal
-        latitud lati decimallatitude decimallat point_latitude }
-      LONGITUDE_POSSIBLE_NAMES = %w{ longitude lon lng
-        longitudedecimal longitud long decimallongitude decimallong point_longitude }
-
-      GEOMETRY_POSSIBLE_NAMES = %w{ geometry the_geom wkb_geometry geom geojson wkt }
 
       def initialize(table_name, filepath, pg_options, layer=nil, options={})
         self.filepath   = filepath
@@ -147,19 +140,10 @@ module CartoDB
 
       def guessing_options
         if csv_guessing && is_csv?
-          # Inverse of the selection: if I want guessing I must NOT leave quoted fields as string
-          "-oo AUTODETECT_TYPE=YES -oo QUOTED_FIELDS_AS_STRING=#{quoted_fields_guessing ? 'NO' : 'YES' } " +
-            "#{x_y_possible_names_option} -s_srs EPSG:4326 -t_srs EPSG:4326 " +
-            "-skipfailure " +
-            "-oo GEOM_POSSIBLE_NAMES=#{GEOMETRY_POSSIBLE_NAMES.join(',')} " +
-            "-oo KEEP_GEOM_COLUMNS=NO" # INFO: Avoid "ERROR:  column "the_geom" specified more than once"
+          Ogr2ogrGuessingParams.new(filepath, quoted_fields_guessing).params
         else
           ''
         end
-      end
-
-      def x_y_possible_names_option
-        "-oo X_POSSIBLE_NAMES=#{LONGITUDE_POSSIBLE_NAMES.join(',')} -oo Y_POSSIBLE_NAMES=#{LATITUDE_POSSIBLE_NAMES.join(',')}"
       end
 
       def overwrite_option

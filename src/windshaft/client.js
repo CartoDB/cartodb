@@ -58,9 +58,13 @@ cdb.windshaft.Client.prototype._post = function(payload, callback) {
       if (data.errors) {
         callback(null, data);
       } else {
-        callback(new cdb.windshaft.PublicMap(data));
+        var baseURL =  this.baseURL.replace('{user}', this.userName);
+        var options = {
+          baseURL: baseURL
+        }
+        callback(new cdb.windshaft.PublicMap(data, options));
       }
-    },
+    }.bind(this),
     error: function() {
       var err = { errors: ['Unknown error'] };
       try {
@@ -87,9 +91,13 @@ cdb.windshaft.Client.prototype._get = function(payload, callback) {
         if (data.errors) {
           callback(null, data);
         } else {
-          callback(new cdb.windshaft.PublicMap(data));
+          var baseURL =  this.baseURL.replace('{user}', this.userName);
+          var options = {
+            baseURL: baseURL
+          }
+          callback(new cdb.windshaft.PublicMap(data, options));
         }
-      },
+      }.bind(this),
       error: function() {
         var err = { errors: ['Unknown error'] };
         try {

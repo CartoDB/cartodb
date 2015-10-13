@@ -115,23 +115,23 @@ MapBase.prototype = {
 
   getTiles: function(callback) {
     var self = this;
-    if(self.windshaftMap) {
-      callback && callback(self._layerGroupTiles(self.windshaftMap, self.options.extra_params));
+    if(this.windshaftMap) {
+      callback && callback(this.windshaftMap.getTiles());
       return this;
     }
     this.createMap(function(map, err) {
-      if(data) {
-        self.windshaftMap = new map;
+      if(map) {
+        self.windshaftMap = map;
         // if cdn_url is present, use it
-        if (map.cdn_url) {
-          self.options.cdn_url = self.options.cdn_url || {}
-          self.options.cdn_url = {
-            http: map.cdn_url.http || self.options.cdn_url.http,
-            https: map.cdn_url.https || self.options.cdn_url.https
-          }
-        }
-        self.urls = self._layerGroupTiles(self.windshaftMap, self.options.extra_params);
-        callback && callback(self.urls);
+        // if (map.cdn_url) {
+        //   self.options.cdn_url = self.options.cdn_url || {}
+        //   self.options.cdn_url = {
+        //     http: map.cdn_url.http || self.options.cdn_url.http,
+        //     https: map.cdn_url.https || self.options.cdn_url.https
+        //   }
+        // }
+        // self.urls = self._layerGroupTiles(self.windshaftMap, self.options.extra_params);
+        callback && callback(map.getTiles());
       } else {
         if ((self.named_map !== null) && (err) ){
           callback && callback(null, err);
@@ -151,68 +151,6 @@ MapBase.prototype = {
     return this.options.maps_api_template.indexOf('https') === 0;
   },
 
-  _layerGroupTiles: function(windshaftMap, params) {
-    var grids = [];
-    var tiles = [];
-    var pngParams = this._encodeParams(params, this.options.pngParams);
-    var gridParams = this._encodeParams(params, this.options.gridParams);
-    var subdomains = this.options.subdomains || ['0', '1', '2', '3'];
-    if(this.isHttps()) {
-      subdomains = [null]; // no subdomain
-    }
-
-    var layerIndexes = windshaftMap.getLayerIndexesByType(this.options.filter);
-    if (layerIndexes.length) {
-      var tileTemplate = '/' +  layerIndexes.join(',') +'/{z}/{x}/{y}';
-      var gridTemplate = '/{z}/{x}/{y}';
-
-      for(var i = 0; i < subdomains.length; ++i) {
-        var s = subdomains[i];
-        var cartodb_url = this._host(s) + MapBase.BASE_URL + '/' + windshaftMap.getMapId();
-        tiles.push(cartodb_url + tileTemplate + ".png" + (pngParams ? "?" + pngParams: '') );
-
-        for(var layer = 0; layer < this.layers.length; ++layer) {
-          var index = windshaftMap.getLayerIndexByType(layer, "mapnik");
-          grids[layer] = grids[layer] || [];
-          grids[layer].push(cartodb_url + "/" + index +  gridTemplate + ".grid.json" + (gridParams ? "?" + gridParams: ''));
-        }
-      }
-    } else {
-      tiles = [MapBase.EMPTY_GIF];
-    }
-
-    return {
-      tiles: tiles,
-      grids: grids
-    }
-  },
-
-  /**
-   * Change query of the tiles
-   * @params {str} New sql for the tiles
-   */
-  _encodeParams: function(params, included) {
-    if(!params) return '';
-    var url_params = [];
-    included = included || _.keys(params);
-    for(var i in included) {
-      var k = included[i]
-      var p = params[k];
-      if(p) {
-        if (_.isArray(p)) {
-          for (var j = 0, len = p.length; j < len; j++) {
-            url_params.push(k + "[]=" + encodeURIComponent(p[j]));
-          }
-        } else {
-          var q = encodeURIComponent(p);
-          q = q.replace(/%7Bx%7D/g,"{x}").replace(/%7By%7D/g,"{y}").replace(/%7Bz%7D/g,"{z}");
-          url_params.push(k + "=" + q);
-        }
-      }
-    }
-    return url_params.join('&')
-  },
-
   onLayerDefinitionUpdated: function() {},
 
   setSilent: function(b) {
@@ -224,43 +162,43 @@ MapBase.prototype = {
     this.invalidate();
   },
 
-  /**
-   * get tile json for layer
-   */
-  getTileJSON: function(layer, callback) {
-    layer = layer == undefined ? 0: layer;
-    var self = this;
-    this.getTiles(function(urls) {
-      if(!urls) {
-        callback(null);
-        return;
-      }
-      if(callback) {
-        callback(self._tileJSONfromTiles(layer, urls));
-      }
-    });
-  },
+  // /**
+  //  * get tile json for layer
+  //  */
+  // getTileJSON: function(layer, callback) {
+  //   layer = layer == undefined ? 0: layer;
+  //   var self = this;
+  //   this.getTiles(function(urls) {
+  //     if(!urls) {
+  //       callback(null);
+  //       return;
+  //     }
+  //     if(callback) {
+  //       callback(self._tileJSONfromTiles(layer, urls));
+  //     }
+  //   });
+  // },
 
-  _tileJSONfromTiles: function(layer, urls, options) {
-    options = options || {};
-    var subdomains = options.subdomains || ['0', '1', '2', '3'];
+  // _tileJSONfromTiles: function(layer, urls, options) {
+  //   options = options || {};
+  //   var subdomains = options.subdomains || ['0', '1', '2', '3'];
 
-    function replaceSubdomain(t) {
-      var tiles = [];
-      for (var i = 0; i < t.length; ++i) {
-        tiles.push(t[i].replace('{s}', subdomains[i % subdomains.length]));
-      }
-      return tiles;
-    }
+  //   function replaceSubdomain(t) {
+  //     var tiles = [];
+  //     for (var i = 0; i < t.length; ++i) {
+  //       tiles.push(t[i].replace('{s}', subdomains[i % subdomains.length]));
+  //     }
+  //     return tiles;
+  //   }
 
-    return {
-      tilejson: '2.0.0',
-      scheme: 'xyz',
-      grids: replaceSubdomain(urls.grids[layer]),
-      tiles: replaceSubdomain(urls.tiles),
-      formatter: function(options, data) { return data; }
-     };
-  },
+  //   return {
+  //     tilejson: '2.0.0',
+  //     scheme: 'xyz',
+  //     grids: replaceSubdomain(urls.grids[layer]),
+  //     tiles: replaceSubdomain(urls.tiles),
+  //     formatter: function(options, data) { return data; }
+  //    };
+  // },
 
   _tilerHost: function() {
     var opts = this.options;

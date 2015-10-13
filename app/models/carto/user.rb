@@ -10,6 +10,12 @@ class Carto::User < ActiveRecord::Base
 
   MIN_PASSWORD_LENGTH = 6
   GEOCODING_BLOCK_SIZE = 1000
+  # INFO: select filter is done for security and performance reasons. Add new columns if needed.
+  DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," + 
+                   "users.api_key, users.database_schema, users.database_name, users.name, users.location," +
+                   "users.disqus_shortname, users.account_type, users.twitter_username, users.google_maps_key"
+
+  SELECT_WITH_DATABASE = DEFAULT_SELECT + ", users.quota_in_bytes, users.database_host"
 
   has_many :tables, class_name: Carto::UserTable, inverse_of: :user
   has_many :visualizations, inverse_of: :user
@@ -43,12 +49,6 @@ class Carto::User < ActiveRecord::Base
       :twitter_imports_count, :maps_count
     ] => :service
 
-  # INFO: select filter is done for security and performance reasons. Add new columns if needed.
-  DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," + 
-                   "users.api_key, users.database_schema, users.database_name, users.name, users.location," +
-                   "users.disqus_shortname, users.account_type, users.twitter_username, users.google_maps_key"
-
-  SELECT_WITH_DATABASE = DEFAULT_SELECT + ", users.quota_in_bytes, users.database_host"
 
   attr_reader :password
 

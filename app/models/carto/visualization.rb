@@ -1,6 +1,5 @@
 require 'active_record'
 require_relative '../visualization/stats'
-require_relative './user' # to load Carto::User::DEFAULT_SELECT
 
 class Carto::Visualization < ActiveRecord::Base
   include CacheHelper

@@ -5,7 +5,7 @@
 
   var deps = [
     [window.jQuery, 'jquery.min.js'],
-    [window._, 'underscore-min.js'],
+    [window._, 'underscore.js'],
     [window.Backbone, 'backbone.js'],
     [window.Mustache, 'mustache.js'],
     [window.L, 'leaflet.js']

@@ -179,7 +179,7 @@ module CartoDB
 
       def layer_creation_options
         # Dimension option, precision option
-        "-lco DIM=2 -lco PRECISION=NO -lco GEOMETRY_NAME=the_geom"
+        "-lco DIM=2 -lco PRECISION=NO"
       end
 
       def projection_option

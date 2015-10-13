@@ -42,10 +42,10 @@ main() {
     
     # Give some feedback
     if [ $? -eq 0 ]; then
-      echo "Finished: $1 Port: $port DB: $2";
+      echo "Finished: $1 Port: $port";
       echo "$1 $port.log" >> specsuccess.log;
     else
-      echo "Finished (FAILED): $1 Port: $port DB: $2";
+      echo "Finished (FAILED): $1 Port: $port";
       echo "$1 $port.log" >> specfailed.log;
     fi
     # Unlock file

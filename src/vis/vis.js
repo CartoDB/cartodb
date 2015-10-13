@@ -471,29 +471,31 @@ var Vis = cdb.core.View.extend({
     }
 
     if (data.datasources && data.datasources.length) {
-      var datasource = data.datasources[0];
+      // Only one datasource?
+      var datasource = _.first(data.datasources);
       var datasourceLayer = _.find(data.layers, function(l) {
         return l.datasource === datasource.id
       });
       this.datasource = new cdb.core.Datasource(datasource, { layerDef: datasourceLayer });
 
       _.each(data.widgets, function(d) {
-        var mdl = self.datasource.addWidget({ name: d.name, type: d.type });
-        var v = new cdb.Widget.ListView({
-          datasource: mdl,
-          model: new cdb.core.Model({
-            title: d.title,
-            template: d.template,
-            sync: d.sync
-          })
-        });
+        var opts = d.options;
+        var type = d.type;
+
+        var v = self.addWidget(
+          d.type,
+          _.extend(
+            opts,
+            {
+              datasource: self.datasource
+            }
+          )
+        );
 
         $('body').append(v.render().el);
       });
 
-      this.datasource.instantiate(function(data) {
-        console.log(data);
-      })
+      this.datasource.instantiate();
     }
 
     this.map.layers.reset(_.map(data.layers, function(layerData) {
@@ -886,6 +888,30 @@ var Vis = cdb.core.View.extend({
       legends.push(this._createLegendView(layer, layerView))
     }
     return _.compact(legends).reverse();
+  },
+
+  addWidget: function(type, opts) {
+    var _widgetTypes = {
+      'list': 'ListView'
+    };
+    var datasource = opts.datasource;
+
+    if (!_widgetTypes[type]) {
+      throw new Error('Widget ' + type + ' not defined');
+    }
+
+    if (!datasource && opts.layer) {
+      datasource = ""; // ?
+    }
+
+    return new cdb.Widget[_widgetTypes[type]]({
+      datasource: datasource,
+      type: type,
+      title: opts.title,
+      template: opts.template,
+      columns: opts.columns,
+      sync: opts.sync
+    });
   },
 
   addOverlay: function(overlay) {

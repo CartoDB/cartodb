@@ -1,32 +1,36 @@
 
 cdb.Widget = {};
 
-cdb.Widget.Model = cdb.core.Model.extend({
-
-});
-
 cdb.Widget.View = cdb.core.View.extend({
 
   className: 'Widget',
 
   options: {
-    template: '',
+    template: '<div></div>',
     sync: true
   },
 
   initialize: function() {
-    this.model = new cdb.core.Model({
-      state: 'idle',
-      sync: this.options.sync
+    this.viewModel = new cdb.core.Model({
+      type: this.options.type,
+      title: this.options.title,
+      template: this.options.template || '<div>',
+      sync: this.options.sync,
+      state: 'idle'
     });
-    this.datasource = this.options.datasource;//  && this.options.datasource.getInstance();
-    this.template = _.template(this.options.template);
+    this.datasource = this.options.datasource;
+    this.dataModel = this.datasource.addWidgetModel({
+      name: this.options.name,
+      type: this.options.type,
+      columns: this.options.columns
+    });
+    this.template = _.template(this.viewModel.get('template'));
     this._initBinds();
   },
 
   render: function() {
     this.$el.html(
-      this.template(this.options) // + data!
+      this.template()
     )
 
     return this;
@@ -35,58 +39,69 @@ cdb.Widget.View = cdb.core.View.extend({
   _initBinds: function() {
     var self = this;
 
-    this.datasource.bind('loading', function(){
-      this.model.set('state', 'loading');
-      this.datasource.unbind('loading', null, this);
+    this.dataModel.bind('loading', function(){
+      this.viewModel.set('state', 'loading');
+      this.dataModel.unbind('loading', null, this);
 
       var onDone = function() {
-        this.datasource.unbind('error reset', null, this);
-        this[ this.model.get('sync') ? '_bindDatasource' : '_unbindDatasource' ]();
-      }
+        self.dataModel.unbind('error reset', null, self);
+        self[ self.viewModel.get('sync') ? '_bindDatasource' : '_unbindDatasource' ]();
+      };
 
-      this.datasource.bind('reset', function() {
+      this.dataModel.bind('reset', function() {
         this.render();
         onDone();
       }, this);
 
-      this.datasource.bind('error', function() {
-        this._disable();
+      this.dataModel.bind('error', function() {
+        this.render();
         onDone();
       }, this);
+
+      // When first request is done, add listener when sync or state
+      // attributes change
+      this.viewModel.bind('change:sync', function() {
+        this[ this.viewModel.get('sync') ? '_bindDatasource' : '_unbindDatasource' ]();
+      }, this);
+
+      this.viewModel.bind('change:state', this.render, this);
     }, this);
   },
 
   _bindDatasource: function() {
-    this.datasource.bind('loading', function() {
-      this.model.set('state', 'loading');
-      this.render();
+    this.dataModel.bind('loading', function() {
+      this._changeState('loading');
     }, this);
-    this.datasource.bind('reset', function() {
-      this.model.set('state', 'reset');
-      this.render();
+    this.dataModel.bind('reset', function() {
+      this._changeState('reset');
     }, this);
-    this.datasource.bind('error', function() {
-      this.model.set('state', 'error');
-      this.render();
+    this.dataModel.bind('error', function() {
+      this._changeState('error');
     }, this);
+  },
+
+  _changeState: function(state) {
+    this.viewModel.set('state', state);
   },
 
   _unbindDatasource: function() {
-    this.datasource.unbind('loading reset error', null, this);
+    this.dataModel.unbind('loading reset error', null, this);
   },
 
   sync: function() {
-    this.model.set('sync', true);
+    this.viewModel.set('sync', true);
   },
 
   unsync: function() {
-    this.model.set('sync', false);
+    this.viewModel.set('sync', false);
   },
 
-  _disable: function() {
+  getDataModel: function() {
+    return this.dataModel;
+  },
 
+  filter: function() {
+    this.datasource.filter(arguments);
   }
 
 });
-
-cdb.Widget.ListView = cdb.Widget.View.extend();

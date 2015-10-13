@@ -57,7 +57,7 @@ Layers.register('tiled', function(vis, data) {
   else if(vis.https === false) { // Checking for an explicit false value. If it's undefined the url is left as is.
     url = transformToHTTP(url);
   }
-  
+
   data.urlTemplate = url;
   return new cdb.geo.TileLayer(data);
 });

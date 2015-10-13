@@ -30,7 +30,7 @@ cdb.Widget.View = cdb.core.View.extend({
 
   render: function() {
     this.$el.html(
-      this.template()
+      this.template(this.viewModel.toJSON())
     )
 
     return this;

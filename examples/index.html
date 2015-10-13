@@ -358,17 +358,18 @@ widgets: [
             no_cdn: true
           })
           .done(function(vis, layers) {
-            // var stadiums = layers[2];
-            // var counties = layers[1];
-            //
-            // var widget = new cdb.Widget.ListView({
-            //   datasource: stadiums.getDatasource(),
-            //   title: 'List',
-            //   template: '<div class="Widget-title"><%= title %></div><div class="Widget-content js-content"></div>',
-            //   sync: true
-            // });
-            //
-            // vis.$el.append(widget.render().el);
+            var stadiums = layers[2];
+            var counties = layers[1];
+
+            var widget = vis.addWidget('list', {
+              layer: stadiums,
+              title: 'List',
+              template: '<div class="Widget-title"><%= title %></div><div class="Widget-content js-content"></div>',
+              columns: ['cartodb_id', 'description'],
+              sync: true
+            });
+
+            $('body').append(widget.render().el);
           })
           .error(function(err) {
             console.log(err);

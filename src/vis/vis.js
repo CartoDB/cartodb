@@ -260,6 +260,7 @@ var Vis = cdb.core.View.extend({
 
   load: function(data, options) {
     var self = this;
+    this._data = data;
 
     if (typeof(data) === 'string') {
 
@@ -901,7 +902,7 @@ var Vis = cdb.core.View.extend({
     }
 
     if (!datasource && opts.layer) {
-      datasource = ""; // ?
+      datasource = this.datasource;
     }
 
     return new cdb.Widget[_widgetTypes[type]]({

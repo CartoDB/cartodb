@@ -64,7 +64,7 @@ describe('cdb.windshaft.Client', function() {
           })
         });
 
-        it("should compress the map definition using LZMA and cdb.core.util.encodeBase64", function() {
+        it("should compress the map definition using LZMA and cdb.core.util.encodeBase64", function(done) {
           var client = new cdb.windshaft.Client({
             ajax: ajax,
             maps_api_template: 'http://wadus.cartodb.com:80',
@@ -74,6 +74,7 @@ describe('cdb.windshaft.Client', function() {
 
           var _btoa = window.btoa;
           window.btoa = undefined;
+
           spyOn(cdb.core.util, "encodeBase64");
 
           var payload = JSON.stringify({ config: JSON.stringify(mapDefinition.toJSON()) });
@@ -83,11 +84,12 @@ describe('cdb.windshaft.Client', function() {
               expect(cdb.core.util.encodeBase64.calls.count()).toEqual(2);
               expect(cdb.core.util.encodeBase64.calls.mostRecent().args.length).toEqual(1);
               expect(ajaxParams.url.indexOf('lzma=' + lzma)).not.toEqual(-1);
+
+              window.btoa = _btoa;
+
               done();
             })
           });
-
-          window.btoa = _btoa;
         });
       });
 

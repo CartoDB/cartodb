@@ -58,10 +58,10 @@
 
       <div class="FormAccount-row">
         <div class="FormAccount-rowLabel">
-          <label class="FormAccount-label">Name</label>
+          <label class="FormAccount-label">Display name</label>
         </div>
         <div class="FormAccount-rowData">
-          <%= f.text_field :name, :class => "FormAccount-input FormAccount-input--med" %>
+          <%= f.text_field :display_name, :class => "FormAccount-input FormAccount-input--med" %>
           <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
             <p class="FormAccount-rowInfoText">Check your <a href="<%= CartoDB.base_url(@organization.name) %>">public page</a></p>
           </div>

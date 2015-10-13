@@ -149,7 +149,7 @@ module CartoDB
       attr_reader :pg_options, :unpacker, :available_quota, :job
       attr_writer :results, :tracker
 
-      def import(source_file, downloader, loader_object=nil)
+      def import(source_file, downloader, loader_object = nil)
         loader = loader_object || loader_for(source_file).new(@job, source_file)
 
         raise EmptyFileError if source_file.empty?

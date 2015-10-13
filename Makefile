@@ -41,7 +41,7 @@ WORKING_SPECS_1 = \
 	spec/models/visualization/overlays_spec.rb \
 	spec/models/visualization/presenter_spec.rb \
 	spec/models/visualization/relator_spec.rb \
-	spec/models/visualization/table_blender_spec.rb \
+	spec/models/visualization/table_blender_spec.rb \ # Pending
 	spec/models/visualization/tags_spec.rb \
 	spec/models/visualization/watcher_spec.rb \
   spec/models/named_maps_spec.rb \
@@ -60,7 +60,7 @@ WORKING_SPECS_1 = \
 	spec/models/carto/group_spec.rb \
 	spec/models/carto/ldap/configuration_spec.rb \
 	spec/requests/sessions_controller_spec.rb \
-	spec/services/carto/visualizations_export_service_spec.rb \
+	spec/services/carto/visualizations_export_service_spec.rb \ # Pending
   $(NULL)
 
 WORKING_SPECS_2 = \
@@ -187,8 +187,8 @@ WORKING_SPECS_9 = \
   spec/requests/api/json/overlays_controller_spec.rb \
   spec/requests/carto/api/overlays_controller_spec.rb \
 	spec/models/carto/user_creation_spec.rb \
-	spec/requests/carto/api/invitations_controller_spec.rb \
-	spec/models/carto/invitation_spec.rb \
+	spec/requests/carto/api/invitations_controller_spec.rb \ # Pending
+	spec/models/carto/invitation_spec.rb \ # Pending
 	spec/models/carto/user_service_spec.rb \
 	spec/models/carto/user_spec.rb \
 	spec/models/carto/user_table_spec.rb \

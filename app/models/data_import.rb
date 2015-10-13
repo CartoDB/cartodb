@@ -259,7 +259,8 @@ class DataImport < Sequel::Model
   def remove_uploaded_resources
     return nil unless uploaded_file
 
-    path = Rails.root.join('public', 'uploads', uploaded_file[1])
+    file_upload_helper = CartoDB::FileUpload.new(Cartodb.config[:importer].fetch("uploads_path", nil))
+    path = file_upload_helper.get_uploads_path.join(uploaded_file[1])
     FileUtils.rm_rf(path) if Dir.exists?(path)
   end
 

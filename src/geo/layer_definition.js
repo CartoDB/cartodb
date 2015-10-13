@@ -1,65 +1,3 @@
-/**
- * Wrapper for map properties returned by the tiler
- */
-function MapProperties(mapProperties) {
-  this.mapProperties = mapProperties;
-}
-
-MapProperties.prototype.getMapId = function() {
-  return this.mapProperties.layergroupid;
-}
-
-/**
- * Returns the index of a layer of a given type, as the tiler kwows it.
- *
- * @param {integer} index - number of layer of the specified type
- * @param {string} layerType - type of the layers
- */
-MapProperties.prototype.getLayerIndexByType = function(index, layerType) {
-  var layers = this.mapProperties.metadata && this.mapProperties.metadata.layers;
-
-  if (!layers) {
-    return index;
-  }
-
-  var tilerLayerIndex = {}
-  var j = 0;
-  for (var i = 0; i < layers.length; i++) {
-    if (layers[i].type == layerType) {
-      tilerLayerIndex[j] = i;
-      j++;
-    }
-  }
-  if (tilerLayerIndex[index] == undefined) {
-    return -1;
-  }
-  return tilerLayerIndex[index];
-}
-
-/**
- * Returns the index of a layer of a given type, as the tiler kwows it.
- *
- * @param {string|array} types - Type or types of layers
- */
-MapProperties.prototype.getLayerIndexesByType = function(types) {
-  var layers = this.mapProperties.metadata && this.mapProperties.metadata.layers;
-
-  if (!layers) {
-    return;
-  }
-  var layerIndexes = [];
-  for (var i = 0; i < layers.length; i++) {
-    var layer = layers[i];
-    var isValidType = layer.type !== 'torque';
-    if (types && types.length > 0) {
-      isValidType = isValidType && types.indexOf(layer.type) != -1
-    }
-    if (isValidType) {
-      layerIndexes.push(i);
-    }
-  }
-  return layerIndexes;
-}
 
 function MapBase(options) {
   var self = this;
@@ -76,7 +14,7 @@ function MapBase(options) {
     }
   });
 
-  this.mapProperties = null;
+  this.windshaftMap = null;
   this.urls = null;
   this.silent = false;
   this.interactionEnabled = []; //TODO: refactor, include inside layer
@@ -148,8 +86,8 @@ MapBase.prototype = {
     var url = [
       host,
       MapBase.BASE_URL.slice(1),
-      this.mapProperties.getMapId(),
-      this.mapProperties.getLayerIndexByType(this.getLayerIndexByNumber(layer), "mapnik"),
+      this.windshaftMap.getMapId(),
+      this.windshaftMap.getLayerIndexByType(this.getLayerIndexByNumber(layer), "mapnik"),
       'attributes',
       feature_id].join('/');
 
@@ -170,29 +108,29 @@ MapBase.prototype = {
   },
 
   invalidate: function() {
-    this.mapProperties = null;
+    this.windshaftMap = null;
     this.urls = null;
     this.onLayerDefinitionUpdated();
   },
 
   getTiles: function(callback) {
     var self = this;
-    if(self.mapProperties) {
-      callback && callback(self._layerGroupTiles(self.mapProperties, self.options.extra_params));
+    if(self.windshaftMap) {
+      callback && callback(self._layerGroupTiles(self.windshaftMap, self.options.extra_params));
       return this;
     }
-    this.createMap(function(data, err) {
+    this.createMap(function(map, err) {
       if(data) {
-        self.mapProperties = new MapProperties(data);
+        self.windshaftMap = new map;
         // if cdn_url is present, use it
-        if (data.cdn_url) {
+        if (map.cdn_url) {
           self.options.cdn_url = self.options.cdn_url || {}
           self.options.cdn_url = {
-            http: data.cdn_url.http || self.options.cdn_url.http,
-            https: data.cdn_url.https || self.options.cdn_url.https
+            http: map.cdn_url.http || self.options.cdn_url.http,
+            https: map.cdn_url.https || self.options.cdn_url.https
           }
         }
-        self.urls = self._layerGroupTiles(self.mapProperties, self.options.extra_params);
+        self.urls = self._layerGroupTiles(self.windshaftMap, self.options.extra_params);
         callback && callback(self.urls);
       } else {
         if ((self.named_map !== null) && (err) ){
@@ -213,7 +151,7 @@ MapBase.prototype = {
     return this.options.maps_api_template.indexOf('https') === 0;
   },
 
-  _layerGroupTiles: function(mapProperties, params) {
+  _layerGroupTiles: function(windshaftMap, params) {
     var grids = [];
     var tiles = [];
     var pngParams = this._encodeParams(params, this.options.pngParams);
@@ -223,18 +161,18 @@ MapBase.prototype = {
       subdomains = [null]; // no subdomain
     }
 
-    var layerIndexes = mapProperties.getLayerIndexesByType(this.options.filter);
+    var layerIndexes = windshaftMap.getLayerIndexesByType(this.options.filter);
     if (layerIndexes.length) {
       var tileTemplate = '/' +  layerIndexes.join(',') +'/{z}/{x}/{y}';
       var gridTemplate = '/{z}/{x}/{y}';
 
       for(var i = 0; i < subdomains.length; ++i) {
         var s = subdomains[i];
-        var cartodb_url = this._host(s) + MapBase.BASE_URL + '/' + mapProperties.getMapId();
+        var cartodb_url = this._host(s) + MapBase.BASE_URL + '/' + windshaftMap.getMapId();
         tiles.push(cartodb_url + tileTemplate + ".png" + (pngParams ? "?" + pngParams: '') );
 
         for(var layer = 0; layer < this.layers.length; ++layer) {
-          var index = mapProperties.getLayerIndexByType(layer, "mapnik");
+          var index = windshaftMap.getLayerIndexByType(layer, "mapnik");
           grids[layer] = grids[layer] || [];
           grids[layer].push(cartodb_url + "/" + index +  gridTemplate + ".grid.json" + (gridParams ? "?" + gridParams: ''));
         }

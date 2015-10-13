@@ -58,7 +58,7 @@ cdb.windshaft.Client.prototype._post = function(payload, callback) {
       if (data.errors) {
         callback(null, data);
       } else {
-        callback(data);
+        callback(new cdb.windshaft.PublicMap(data));
       }
     },
     error: function() {
@@ -87,7 +87,7 @@ cdb.windshaft.Client.prototype._get = function(payload, callback) {
         if (data.errors) {
           callback(null, data);
         } else {
-          callback(data);
+          callback(new cdb.windshaft.PublicMap(data));
         }
       },
       error: function() {

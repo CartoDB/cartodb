@@ -23,6 +23,9 @@ module Carto
     STATE_STUCK     = 'stuck'
 
     belongs_to :user
+    belongs_to :log
+    has_many :external_data_imports, inverse_of: :data_import
+    has_many :user_tables
 
     def is_raster?
       ::JSON.parse(self.stats).select{ |item| item['type'] == '.tif' }.length > 0

@@ -6,12 +6,16 @@ module Carto
     serialize :infowindow, JSON
     serialize :tooltip, JSON
 
-    has_and_belongs_to_many :maps, class_name: Carto::Map
+    has_many :layers_maps
+    has_many :layers, through: :layers_maps
 
     has_many :layers_user
     has_many :users, :through => :layers_user
 
     has_many :children, class_name: Carto::Layer, foreign_key: :parent_id
+
+    has_many :layers_user_table, foreign_key: :layer_id
+    has_many :user_tables, through: :layers_user_table, class_name: Carto::UserTable
 
     TEMPLATES_MAP = {
       'table/views/infowindow_light' =>               'infowindow_light',

@@ -11,19 +11,28 @@ class Carto::User < ActiveRecord::Base
   MIN_PASSWORD_LENGTH = 6
   GEOCODING_BLOCK_SIZE = 1000
 
-  has_many :tables, class_name: 'Carto::UserTable', inverse_of: :user
+  has_many :tables, class_name: Carto::UserTable, inverse_of: :user
   has_many :visualizations, inverse_of: :user
   has_many :maps, inverse_of: :user
   has_many :layers_user
   has_many :layers, :through => :layers_user
+
   belongs_to :organization, inverse_of: :users
-  has_many :feature_flags_user, dependent: :destroy
+  has_one :owned_organization, class_name: Carto::Organization, inverse_of: :owner, foreign_key: :owner_id
+
+  has_many :feature_flags_user, dependent: :destroy, foreign_key: :user_id, inverse_of: :user
+  has_many :feature_flags, through: :feature_flags_user
   has_many :assets, inverse_of: :user
   has_many :data_imports, inverse_of: :user
   has_many :geocodings, inverse_of: :user
   has_many :synchronization_oauths, class_name: Carto::SynchronizationOauth, inverse_of: :user, dependent: :destroy
   has_many :search_tweets, inverse_of: :user
   has_many :synchronizations, inverse_of: :user
+  has_many :tags, inverse_of: :user
+  has_many :permissions, inverse_of: :owner, foreign_key: :owner_id
+
+  has_many :client_applications, class_name: Carto::ClientApplication
+  has_many :oauth_tokens, class_name: Carto::OauthToken
 
   has_many :users_group, dependent: :destroy, class_name: Carto::UsersGroup
   has_many :groups, :through => :users_group

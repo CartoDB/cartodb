@@ -6,7 +6,8 @@ cdb.Widget.ListModel = cdb.core.Model.extend({
   },
 
   defaults: {
-    columns: ['cartodb_id']
+    data: [{ name: 'Paco', description: 'Jodo' }],
+    columns: []
   },
 
   url: function() {
@@ -14,13 +15,18 @@ cdb.Widget.ListModel = cdb.core.Model.extend({
   },
 
   initialize: function() {
-    this._data = new Backbone.Collection();
+    this._data = new Backbone.Collection(this.get('data'));
     this._initBinds();
   },
 
   _initBinds: function() {
     this.bind('change:id', function(){
-      this.fetch();
+      var self = this;
+      this.fetch({
+        error: function() {
+          self.trigger('error');
+        }
+      });
     }, this);
   },
 

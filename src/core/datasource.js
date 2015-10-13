@@ -31,7 +31,6 @@ cdb.core.Datasource = cdb.core.Model.extend({
   _initBinds: function() {},
 
   addWidgetModel: function(d) {
-    console.log(d);
     if (!this._WIDGETS[d.type]) {
       throw new Error("Widget model " + d.type + " not defined.");
     }

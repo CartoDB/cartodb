@@ -905,14 +905,15 @@ var Vis = cdb.core.View.extend({
       datasource = this.datasource;
     }
 
-    return new cdb.Widget[_widgetTypes[type]]({
-      datasource: datasource,
-      type: type,
-      title: opts.title,
-      template: opts.template,
-      columns: opts.columns,
-      sync: opts.sync
-    });
+    return new cdb.Widget[_widgetTypes[type]](
+      _.extend(
+        opts,
+        {
+          datasource: datasource,
+          type: type
+        }
+      )
+    );
   },
 
   addOverlay: function(overlay) {

@@ -11,26 +11,36 @@ cdb.Widget.View = cdb.core.View.extend({
   },
 
   initialize: function() {
-    this.viewModel = new cdb.core.Model({
-      type: this.options.type,
-      title: this.options.title,
-      template: this.options.template || '<div>',
-      sync: this.options.sync,
-      state: 'idle'
-    });
+    this.viewModel = new cdb.core.Model(
+      _.extend(
+        this.options,
+        {
+          type: this.options.type,
+          state: 'loading'
+        }
+      )
+    );
     this.datasource = this.options.datasource;
     this.dataModel = this.datasource.addWidgetModel({
       name: this.options.name,
       type: this.options.type,
       columns: this.options.columns
     });
-    this.template = _.template(this.viewModel.get('template'));
+
     this._initBinds();
   },
 
   render: function() {
+    var template = _.template(this.viewModel.get('template'));
     this.$el.html(
-      this.template(this.viewModel.toJSON())
+      template(
+        _.extend(
+          this.viewModel.toJSON(),
+          {
+            data: this.dataModel.get('data')
+          }
+        )
+      )
     )
 
     return this;
@@ -40,7 +50,7 @@ cdb.Widget.View = cdb.core.View.extend({
     var self = this;
 
     this.dataModel.bind('loading', function(){
-      this.viewModel.set('state', 'loading');
+      this._changeState('loading');
       this.dataModel.unbind('loading', null, this);
 
       var onDone = function() {
@@ -49,12 +59,12 @@ cdb.Widget.View = cdb.core.View.extend({
       };
 
       this.dataModel.bind('reset', function() {
-        this.render();
+        this._changeState('reset');
         onDone();
       }, this);
 
       this.dataModel.bind('error', function() {
-        this.render();
+        this._changeState('error');
         onDone();
       }, this);
 
@@ -68,6 +78,10 @@ cdb.Widget.View = cdb.core.View.extend({
     }, this);
   },
 
+  _changeState: function(state) {
+    this.viewModel.set('state', state);
+  },
+
   _bindDatasource: function() {
     this.dataModel.bind('loading', function() {
       this._changeState('loading');
@@ -78,10 +92,6 @@ cdb.Widget.View = cdb.core.View.extend({
     this.dataModel.bind('error', function() {
       this._changeState('error');
     }, this);
-  },
-
-  _changeState: function(state) {
-    this.viewModel.set('state', state);
   },
 
   _unbindDatasource: function() {

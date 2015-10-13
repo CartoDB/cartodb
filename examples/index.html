@@ -27,6 +27,16 @@
   <body>
     <div id="map"></div>
 
+    <script type="text/template" id="list_template">
+      <div class="Widget-title"><%= title %>, state: <%= state %></div>
+      <div class="Widget-content js-content"></div>
+    </script>
+
+    <script type="text/template" id="list_item_template">
+      <h3><%= name %></h3>
+      <p><%= description %></p>
+    </script>
+
     <script>
       window.onload = function() {
         cartodb.load('/src/', function() {
@@ -355,7 +365,7 @@ widgets: [
   // }
 ]
 }, {
-            no_cdn: true
+            no_cdn: false
           })
           .done(function(vis, layers) {
             var stadiums = layers[2];
@@ -364,7 +374,8 @@ widgets: [
             var widget = vis.addWidget('list', {
               layer: stadiums,
               title: 'List',
-              template: '<div class="Widget-title"><%= title %></div><div class="Widget-content js-content"></div>',
+              listTemplate: $("#list_template").html(),
+              listItemTemplate: $("#list_item_template").html(),
               columns: ['cartodb_id', 'description'],
               sync: true
             });

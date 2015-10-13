@@ -282,7 +282,7 @@ namespace :cartodb do
     desc 'Install/upgrade Varnish trigger for a single user'
     task :load_varnish_trigger_user, [:username] => :environment do |t, args|
       user = ::User.find(username: args[:username])
-      user.create_function_invalidate_varnish
+      user.db_manager.create_function_invalidate_varnish
     end
 
     desc 'Move user to its own schema'
@@ -307,7 +307,7 @@ namespace :cartodb do
       end
       execute_on_users_with_index(:load_varnish_trigger.to_s, Proc.new { |user, i|
           begin
-            user.create_function_invalidate_varnish
+            user.db_manager.create_function_invalidate_varnish
             log(sprintf("OK %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, user.database_name, i+1, count), :load_varnish_trigger.to_s, database_host)
             sleep(sleep)
           rescue => e
@@ -369,7 +369,7 @@ namespace :cartodb do
     task :set_all_user_privileges, [:username] => :environment do |t, args|
       user = ::User.find(username: args[:username])
       user.db_manager.grant_user_in_database
-      user.set_user_privileges
+      user.db_manager.set_user_privileges_at_db
     end
 
     ##########################
@@ -992,7 +992,7 @@ namespace :cartodb do
         count = users.count
         users.each_with_index do |user, i|
           begin
-            user.set_raster_privileges
+            user.db_manager.set_raster_privileges
             message = "OK %-#{20}s (%-#{4}s/%-#{4}s)\n" % [user.username, i, count]
             print message
             log(message, :grant_general_raster_permissions.to_s)

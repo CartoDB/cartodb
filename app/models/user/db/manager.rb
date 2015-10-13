@@ -24,12 +24,44 @@ module CartoDB
 
         def configure_database
           grant_user_in_database
-          @user.set_user_privileges
-          @user.set_statement_timeouts
+          set_user_privileges_at_db
+          set_statement_timeouts
           @user.setup_schema if user_model.database_schema != SCHEMA_PUBLIC
-          @user.create_function_invalidate_varnish
+          create_function_invalidate_varnish
 
           @user.reload
+        end
+
+        def set_statement_timeouts
+          @user.in_database(as: :superuser) do |user_database|
+            user_database["ALTER ROLE \"?\" SET statement_timeout to ?", @user.database_username.lit,
+                          @user.user_timeout].all
+            user_database["ALTER DATABASE \"?\" SET statement_timeout to ?", database_name.lit,
+                          @user.database_timeout].all
+          end
+          @user.in_database.disconnect
+          @user.in_database.connect(db_configuration_for)
+          @user.in_database(as: :public_user).disconnect
+          @user.in_database(as: :public_user).connect(db_configuration_for(:public_user))
+        rescue Sequel::DatabaseConnectionError
+        end
+
+        def set_user_privileges_at_db # MU
+          # INFO: organization permission on public schema is handled through role assignment
+          unless organization_user?
+            set_user_privileges_in_cartodb_schema
+            set_user_privileges_in_public_schema
+          end
+
+          set_user_privileges_in_own_schema
+          set_privileges_to_publicuser_in_own_schema
+
+          unless organization_user?
+            set_user_privileges_in_importer_schema
+            set_user_privileges_in_geocoding_schema
+            set_geo_columns_privileges
+            set_raster_privileges
+          end
         end
 
         def grant_user_in_database
@@ -128,6 +160,69 @@ module CartoDB
           )
         end
 
+        def set_user_privileges_in_geocoding_schema(db_user = nil)
+          @queries.run_in_transaction(
+            @queries.grant_all_on_schema_queries('cdb', db_user),
+            true
+          )
+        end
+
+        def set_geo_columns_privileges(role_name = nil)
+          # Postgis lives at public schema, as do geometry_columns and geography_columns
+          catalogs_schema = SCHEMA_PUBLIC
+          target_user = role_name.nil? ? @user.database_public_username : role_name
+          queries = [
+            %{ GRANT SELECT ON "#{catalogs_schema}"."geometry_columns" TO "#{target_user}" },
+            %{ GRANT SELECT ON "#{catalogs_schema}"."geography_columns" TO "#{target_user}" }
+          ]
+          @queries.run_in_transaction(queries, true)
+        end
+
+        def set_raster_privileges(role_name = nil)
+          # Postgis lives at public schema, so raster catalogs too
+          catalogs_schema = SCHEMA_PUBLIC
+          queries = [
+            "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_overviews\" TO \"#{CartoDB::PUBLIC_DB_USER}\"",
+            "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_columns\" TO \"#{CartoDB::PUBLIC_DB_USER}\""
+          ]
+          target_user = role_name.nil? ? @user.database_public_username : role_name
+          unless @user.organization.nil?
+            queries << "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_overviews\" TO \"#{target_user}\""
+            queries << "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_columns\" TO \"#{target_user}\""
+          end
+          @queries.run_queries_in_transaction(queries, true)
+        end
+
+        # Create a "public.cdb_invalidate_varnish()" function to invalidate Varnish
+        #
+        # The function can only be used by the superuser, we expect
+        # security-definer triggers OR triggers on superuser-owned tables
+        # to call it with controlled set of parameters.
+        #
+        # The function is written in python because it needs to reach out
+        # to a Varnish server.
+        #
+        # Being unable to communicate with Varnish may or may not be critical
+        # depending on CartoDB configuration at time of function definition.
+        #
+        def create_function_invalidate_varnish
+          if Cartodb.config[:invalidation_service] && Cartodb.config[:invalidation_service].fetch('enabled', false)
+            create_function_invalidate_varnish_invalidation_service
+          elsif Cartodb.config[:varnish_management].fetch('http_port', false)
+            create_function_invalidate_varnish_http
+          else
+            create_function_invalidate_varnish_telnet
+          end
+        end
+
+        # Add plpythonu pl handler
+        def add_python
+          @user.in_database(
+            as: :superuser,
+            no_cartodb_in_schema: true
+          ).run("CREATE OR REPLACE PROCEDURAL LANGUAGE 'plpythonu' HANDLER plpython_call_handler;")
+        end
+
         # Needed because in some cases it might not exist and failure ends transaction
         def role_exists?(db, role)
           !db.fetch("SELECT 1 FROM pg_roles WHERE rolname='#{role}'").first.nil?
@@ -170,6 +265,180 @@ module CartoDB
               'host' => @user.database_host
             ) { |_, o, n| n.nil? ? o : n }
           end
+        end
+
+        private
+
+        # Telnet invalidation works only for Varnish 2.x.
+        def create_function_invalidate_varnish_telnet
+          add_python
+
+          varnish_host = Cartodb.config[:varnish_management].try(:[], 'host') || '127.0.0.1'
+          varnish_port = Cartodb.config[:varnish_management].try(:[], 'port') || 6082
+          varnish_timeout = Cartodb.config[:varnish_management].try(:[], 'timeout') || 5
+          varnish_critical = Cartodb.config[:varnish_management].try(:[], 'critical') == true ? 1 : 0
+          varnish_retry = Cartodb.config[:varnish_management].try(:[], 'retry') || 5
+          purge_command = Cartodb::config[:varnish_management]["purge_command"]
+          varnish_trigger_verbose = Cartodb.config[:varnish_management].fetch('trigger_verbose', true) == true ? 1 : 0
+
+          @user.in_database(as: :superuser).run(
+            <<-TRIGGER
+              BEGIN;
+              CREATE OR REPLACE FUNCTION public.cdb_invalidate_varnish(table_name text) RETURNS void AS
+              $$
+                  critical = #{varnish_critical}
+                  timeout = #{varnish_timeout}
+                  retry = #{varnish_retry}
+                  trigger_verbose = #{varnish_trigger_verbose}
+
+                  client = GD.get('varnish', None)
+
+                  while True:
+
+                    if not client:
+                        try:
+                          import varnish
+                          client = GD['varnish'] = varnish.VarnishHandler(('#{varnish_host}', #{varnish_port}, timeout))
+                        except Exception as err:
+                          # NOTE: we won't retry on connection error
+                          if critical:
+                            plpy.error('Varnish connection error: ' +  str(err))
+                          break
+
+                    try:
+                      # NOTE: every table change also changed CDB_TableMetadata, so
+                      #       we purge those entries too
+                      #
+                      # TODO: do not invalidate responses with surrogate key
+                      #       "not_this_one" when table "this" changes :/
+                      #       --strk-20131203;
+                      #
+                      client.fetch('#{purge_command} obj.http.X-Cache-Channel ~ "^#{@user.database_name}:(.*%s.*)|(cdb_tablemetadata)|(table)$"' % table_name.replace('"',''))
+                      break
+                    except Exception as err:
+                      if trigger_verbose:
+                        plpy.warning('Varnish fetch error: ' + str(err))
+                      client = GD['varnish'] = None # force reconnect
+                      if not retry:
+                        if critical:
+                          plpy.error('Varnish fetch error: ' +  str(err))
+                        break
+                      retry -= 1 # try reconnecting
+              $$
+              LANGUAGE 'plpythonu' VOLATILE;
+              REVOKE ALL ON FUNCTION public.cdb_invalidate_varnish(TEXT) FROM PUBLIC;
+              COMMIT;
+          TRIGGER
+                                               )
+        end
+
+        def create_function_invalidate_varnish_http
+          add_python
+
+          varnish_host = Cartodb.config[:varnish_management].try(:[], 'host') || '127.0.0.1'
+          varnish_port = Cartodb.config[:varnish_management].try(:[], 'http_port') || 6081
+          varnish_timeout = Cartodb.config[:varnish_management].try(:[], 'timeout') || 5
+          varnish_critical = Cartodb.config[:varnish_management].try(:[], 'critical') == true ? 1 : 0
+          varnish_retry = Cartodb.config[:varnish_management].try(:[], 'retry') || 5
+          varnish_trigger_verbose = Cartodb.config[:varnish_management].fetch('trigger_verbose', true) == true ? 1 : 0
+
+          @user.in_database(as: :superuser).run(
+            <<-TRIGGER
+              BEGIN;
+              CREATE OR REPLACE FUNCTION public.cdb_invalidate_varnish(table_name text) RETURNS void AS
+              $$
+                  critical = #{varnish_critical}
+                  timeout = #{varnish_timeout}
+                  retry = #{varnish_retry}
+                  trigger_verbose = #{varnish_trigger_verbose}
+
+                  import httplib
+
+                  while True:
+
+                    try:
+                      # NOTE: every table change also changed CDB_TableMetadata, so
+                      #       we purge those entries too
+                      #
+                      # TODO: do not invalidate responses with surrogate key
+                      #       "not_this_one" when table "this" changes :/
+                      #       --strk-20131203;
+                      #
+                      client = httplib.HTTPConnection('#{varnish_host}', #{varnish_port}, False, timeout)
+                      client.request('PURGE', '/batch', '', {"Invalidation-Match": ('^#{@user.database_name}:(.*%s.*)|(cdb_tablemetadata)|(table)$' % table_name.replace('"',''))  })
+                      response = client.getresponse()
+                      assert response.status == 204
+                      break
+                    except Exception as err:
+                      if trigger_verbose:
+                        plpy.warning('Varnish purge error: ' + str(err))
+                      if not retry:
+                        if critical:
+                          plpy.error('Varnish purge error: ' +  str(err))
+                        break
+                      retry -= 1 # try reconnecting
+              $$
+              LANGUAGE 'plpythonu' VOLATILE;
+              REVOKE ALL ON FUNCTION public.cdb_invalidate_varnish(TEXT) FROM PUBLIC;
+              COMMIT;
+            TRIGGER
+                                               )
+        end
+
+        # Invalidate through external service
+        def create_function_invalidate_varnish_invalidation_service
+          add_python
+
+          invalidation_host = Cartodb.config[:invalidation_service].try(:[], 'host') || '127.0.0.1'
+          invalidation_port = Cartodb.config[:invalidation_service].try(:[], 'port') || 3142
+          invalidation_timeout = Cartodb.config[:invalidation_service].try(:[], 'timeout') || 5
+          invalidation_critical = Cartodb.config[:invalidation_service].try(:[], 'critical') ? 1 : 0
+          invalidation_retry = Cartodb.config[:invalidation_service].try(:[], 'retry') || 5
+          invalidation_trigger_verbose =
+            Cartodb.config[:invalidation_service].fetch('trigger_verbose', true) == true ? 1 : 0
+
+          @user.in_database(as: :superuser).run(
+            <<-TRIGGER
+              BEGIN;
+              CREATE OR REPLACE FUNCTION public.cdb_invalidate_varnish(table_name text) RETURNS void AS
+              $$
+                  critical = #{invalidation_critical}
+                  timeout = #{invalidation_timeout}
+                  retry = #{invalidation_retry}
+                  trigger_verbose = #{invalidation_trigger_verbose}
+
+                  client = GD.get('invalidation', None)
+
+                  while True:
+
+                    if not client:
+                        try:
+                          import redis
+                          client = GD['invalidation'] = redis.Redis(host='#{invalidation_host}', port=#{invalidation_port}, socket_timeout=timeout)
+                        except Exception as err:
+                          # NOTE: we won't retry on connection error
+                          if critical:
+                            plpy.error('Invalidation Service connection error: ' +  str(err))
+                          break
+
+                    try:
+                      client.execute_command('TCH', '#{@user.database_name}', table_name)
+                      break
+                    except Exception as err:
+                      if trigger_verbose:
+                        plpy.warning('Invalidation Service warning: ' + str(err))
+                      client = GD['invalidation'] = None # force reconnect
+                      if not retry:
+                        if critical:
+                          plpy.error('Invalidation Service error: ' +  str(err))
+                        break
+                      retry -= 1 # try reconnecting
+              $$
+              LANGUAGE 'plpythonu' VOLATILE;
+              REVOKE ALL ON FUNCTION public.cdb_invalidate_varnish(TEXT) FROM PUBLIC;
+              COMMIT;
+            TRIGGER
+                                               )
         end
 
       end

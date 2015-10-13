@@ -32,9 +32,7 @@ describe Visualization::Member do
       :create_public_db_user => nil,
       :set_database_search_path => nil,
       :load_cartodb_functions => nil,
-      :set_user_privileges => nil,
       :monitor_user_notification => nil,
-      :set_statement_timeouts => nil,
       :set_user_as_organization_member => nil,
       :cartodb_extension_version_pre_mu? => false,
       :rebuild_quota_trigger => nil,
@@ -44,7 +42,9 @@ describe Visualization::Member do
 
     CartoDB::User::DB::Manager.any_instance.stubs(
       grant_user_in_database: nil,
-      grant_publicuser_in_database: nil
+      grant_publicuser_in_database: nil,
+      set_user_privileges_at_db: nil,
+      set_statement_timeouts: nil
     )
 
     Organization.all.each { |org|

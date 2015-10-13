@@ -192,7 +192,7 @@ class User < Sequel::Model
     self.load_avatar
     monitor_user_notification
     sleep 1
-    set_statement_timeouts
+    db_manager.set_statement_timeouts
   end
 
   def notify_new_organization_user
@@ -224,7 +224,7 @@ class User < Sequel::Model
     super
     save_metadata
     changes = (self.previous_changes.present? ? self.previous_changes.keys : [])
-    set_statement_timeouts   if changes.include?(:user_timeout) || changes.include?(:database_timeout)
+    db_manager.set_statement_timeouts if changes.include?(:user_timeout) || changes.include?(:database_timeout)
     rebuild_quota_trigger    if changes.include?(:quota_in_bytes)
     if changes.include?(:account_type) || changes.include?(:available_for_hire) || changes.include?(:disqus_shortname) || changes.include?(:email) || \
        changes.include?(:website) || changes.include?(:name) || changes.include?(:description) || \
@@ -1563,10 +1563,10 @@ class User < Sequel::Model
     set_database_search_path
     reset_database_permissions # Reset privileges
     db_manager.grant_publicuser_in_database
-    set_user_privileges # Set privileges
+    db_manager.set_user_privileges_at_db # Set privileges
     set_user_as_organization_member
     rebuild_quota_trigger
-    create_function_invalidate_varnish
+    db_manager.create_function_invalidate_varnish
     revoke_cdb_conf_access
   end
 
@@ -1611,7 +1611,7 @@ class User < Sequel::Model
   def setup_schema
     reset_user_schema_permissions
     reset_schema_owner
-    set_user_privileges
+    db_manager.set_user_privileges_at_db
     set_user_as_organization_member
     rebuild_quota_trigger
 
@@ -1643,11 +1643,11 @@ class User < Sequel::Model
     run_queries_in_transaction(
       grant_connect_on_database_queries(org_member_role), true
     )
-    set_geo_columns_privileges(org_member_role)
-    set_raster_privileges(org_member_role)
+    db_manager.set_geo_columns_privileges(org_member_role)
+    db_manager.set_raster_privileges(org_member_role)
     db_manager.set_user_privileges_in_cartodb_schema(org_member_role)
     db_manager.set_user_privileges_in_importer_schema(org_member_role)
-    set_user_privileges_in_geocoding_schema(org_member_role)
+    db_manager.set_user_privileges_in_geocoding_schema(org_member_role)
   end
 
   def move_tables_to_schema(old_schema, new_schema)
@@ -1670,57 +1670,6 @@ class User < Sequel::Model
   def reset_schema_owner
     in_database(as: :superuser) do |database|
       database.run(%Q{ALTER SCHEMA "#{self.database_schema}" OWNER TO "#{self.database_username}"})
-    end
-  end
-
-  def set_user_privileges_in_geocoding_schema(db_user = nil)
-    self.run_queries_in_transaction(
-        self.grant_all_on_schema_queries('cdb', db_user),
-        true
-    )
-  end
-
-  def set_raster_privileges(role_name = nil)
-    # Postgis lives at public schema, so raster catalogs too
-    catalogs_schema = "public"
-    queries = [
-      "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_overviews\" TO \"#{CartoDB::PUBLIC_DB_USER}\"",
-      "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_columns\" TO \"#{CartoDB::PUBLIC_DB_USER}\""
-    ]
-    target_user = role_name.nil? ? database_public_username : role_name
-    unless self.organization.nil?
-      queries << "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_overviews\" TO \"#{target_user}\""
-      queries << "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_columns\" TO \"#{target_user}\""
-    end
-    self.run_queries_in_transaction(queries,true)
-  end
-
-  def set_geo_columns_privileges(role_name = nil)
-    # Postgis lives at public schema, as do geometry_columns and geography_columns
-    catalogs_schema = 'public'
-    target_user = role_name.nil? ? database_public_username : role_name
-    queries = [
-        %Q{ GRANT SELECT ON "#{catalogs_schema}"."geometry_columns" TO "#{target_user}" },
-        %Q{ GRANT SELECT ON "#{catalogs_schema}"."geography_columns" TO "#{target_user}" }
-    ]
-    self.run_queries_in_transaction(queries, true)
-  end
-
-  def set_user_privileges # MU
-    # INFO: organization permission on public schema is handled through role assignment
-    unless organization_user?
-      db_manager.set_user_privileges_in_cartodb_schema
-      db_manager.set_user_privileges_in_public_schema
-    end
-
-    db_manager.set_user_privileges_in_own_schema
-    db_manager.set_privileges_to_publicuser_in_own_schema
-
-    unless organization_user?
-      db_manager.set_user_privileges_in_importer_schema
-      self.set_user_privileges_in_geocoding_schema
-      self.set_geo_columns_privileges
-      self.set_raster_privileges
     end
   end
 
@@ -1772,212 +1721,6 @@ class User < Sequel::Model
     raise unless e.message =~ /schema .* already exists/
   end #create_schema
 
-  # Add plpythonu pl handler
-  def add_python
-    in_database(
-      :as => :superuser,
-      no_cartodb_in_schema: true
-    ).run(<<-SQL
-      CREATE OR REPLACE PROCEDURAL LANGUAGE 'plpythonu' HANDLER plpython_call_handler;
-    SQL
-    )
-  end
-
-  # Create a "public.cdb_invalidate_varnish()" function to invalidate Varnish
-  #
-  # The function can only be used by the superuser, we expect
-  # security-definer triggers OR triggers on superuser-owned tables
-  # to call it with controlled set of parameters.
-  #
-  # The function is written in python because it needs to reach out
-  # to a Varnish server.
-  #
-  # Being unable to communicate with Varnish may or may not be critical
-  # depending on CartoDB configuration at time of function definition.
-  #
-
-  def create_function_invalidate_varnish
-    if Cartodb.config[:invalidation_service] && Cartodb.config[:invalidation_service].fetch('enabled', false)
-      create_function_invalidate_varnish_invalidation_service
-    elsif Cartodb.config[:varnish_management].fetch('http_port', false)
-      create_function_invalidate_varnish_http
-    else
-      create_function_invalidate_varnish_telnet
-    end
-  end
-
-  # Telnet invalidation works only for Varnish 2.x.
-  def create_function_invalidate_varnish_telnet
-
-    add_python
-
-    varnish_host = Cartodb.config[:varnish_management].try(:[],'host') || '127.0.0.1'
-    varnish_port = Cartodb.config[:varnish_management].try(:[],'port') || 6082
-    varnish_timeout = Cartodb.config[:varnish_management].try(:[],'timeout') || 5
-    varnish_critical = Cartodb.config[:varnish_management].try(:[],'critical') == true ? 1 : 0
-    varnish_retry = Cartodb.config[:varnish_management].try(:[],'retry') || 5
-    purge_command = Cartodb::config[:varnish_management]["purge_command"]
-    varnish_trigger_verbose = Cartodb.config[:varnish_management].fetch('trigger_verbose', true) == true ? 1 : 0
-
-    in_database(:as => :superuser).run(<<-TRIGGER
-    BEGIN;
-    CREATE OR REPLACE FUNCTION public.cdb_invalidate_varnish(table_name text) RETURNS void AS
-    $$
-        critical = #{varnish_critical}
-        timeout = #{varnish_timeout}
-        retry = #{varnish_retry}
-        trigger_verbose = #{varnish_trigger_verbose}
-
-        client = GD.get('varnish', None)
-
-        while True:
-
-          if not client:
-              try:
-                import varnish
-                client = GD['varnish'] = varnish.VarnishHandler(('#{varnish_host}', #{varnish_port}, timeout))
-              except Exception as err:
-                # NOTE: we won't retry on connection error
-                if critical:
-                  plpy.error('Varnish connection error: ' +  str(err))
-                break
-
-          try:
-            # NOTE: every table change also changed CDB_TableMetadata, so
-            #       we purge those entries too
-            #
-            # TODO: do not invalidate responses with surrogate key
-            #       "not_this_one" when table "this" changes :/
-            #       --strk-20131203;
-            #
-            client.fetch('#{purge_command} obj.http.X-Cache-Channel ~ "^#{self.database_name}:(.*%s.*)|(cdb_tablemetadata)|(table)$"' % table_name.replace('"',''))
-            break
-          except Exception as err:
-            if trigger_verbose:
-              plpy.warning('Varnish fetch error: ' + str(err))
-            client = GD['varnish'] = None # force reconnect
-            if not retry:
-              if critical:
-                plpy.error('Varnish fetch error: ' +  str(err))
-              break
-            retry -= 1 # try reconnecting
-    $$
-    LANGUAGE 'plpythonu' VOLATILE;
-    REVOKE ALL ON FUNCTION public.cdb_invalidate_varnish(TEXT) FROM PUBLIC;
-    COMMIT;
-TRIGGER
-    )
-  end
-
-  def create_function_invalidate_varnish_http
-
-    add_python
-
-    varnish_host = Cartodb.config[:varnish_management].try(:[],'host') || '127.0.0.1'
-    varnish_port = Cartodb.config[:varnish_management].try(:[],'http_port') || 6081
-    varnish_timeout = Cartodb.config[:varnish_management].try(:[],'timeout') || 5
-    varnish_critical = Cartodb.config[:varnish_management].try(:[],'critical') == true ? 1 : 0
-    varnish_retry = Cartodb.config[:varnish_management].try(:[],'retry') || 5
-    purge_command = Cartodb::config[:varnish_management]["purge_command"]
-    varnish_trigger_verbose = Cartodb.config[:varnish_management].fetch('trigger_verbose', true) == true ? 1 : 0
-
-    in_database(:as => :superuser).run(<<-TRIGGER
-    BEGIN;
-    CREATE OR REPLACE FUNCTION public.cdb_invalidate_varnish(table_name text) RETURNS void AS
-    $$
-        critical = #{varnish_critical}
-        timeout = #{varnish_timeout}
-        retry = #{varnish_retry}
-        trigger_verbose = #{varnish_trigger_verbose}
-
-        import httplib
-
-        while True:
-
-          try:
-            # NOTE: every table change also changed CDB_TableMetadata, so
-            #       we purge those entries too
-            #
-            # TODO: do not invalidate responses with surrogate key
-            #       "not_this_one" when table "this" changes :/
-            #       --strk-20131203;
-            #
-            client = httplib.HTTPConnection('#{varnish_host}', #{varnish_port}, False, timeout)
-            client.request('PURGE', '/batch', '', {"Invalidation-Match": ('^#{self.database_name}:(.*%s.*)|(cdb_tablemetadata)|(table)$' % table_name.replace('"',''))  })
-            response = client.getresponse()
-            assert response.status == 204
-            break
-          except Exception as err:
-            if trigger_verbose:
-              plpy.warning('Varnish purge error: ' + str(err))
-            if not retry:
-              if critical:
-                plpy.error('Varnish purge error: ' +  str(err))
-              break
-            retry -= 1 # try reconnecting
-    $$
-    LANGUAGE 'plpythonu' VOLATILE;
-    REVOKE ALL ON FUNCTION public.cdb_invalidate_varnish(TEXT) FROM PUBLIC;
-    COMMIT;
-TRIGGER
-    )
-  end
-
-  # Invalidate through external service
-  def create_function_invalidate_varnish_invalidation_service
-
-    add_python
-
-    invalidation_host = Cartodb.config[:invalidation_service].try(:[], 'host') || '127.0.0.1'
-    invalidation_port = Cartodb.config[:invalidation_service].try(:[],'port') || 3142
-    invalidation_timeout = Cartodb.config[:invalidation_service].try(:[],'timeout') || 5
-    invalidation_critical = Cartodb.config[:invalidation_service].try(:[], 'critical') ? 1 : 0
-    invalidation_retry = Cartodb.config[:invalidation_service].try(:[],'retry') || 5
-    invalidation_trigger_verbose = Cartodb.config[:invalidation_service].fetch('trigger_verbose', true) == true ? 1 : 0
-
-    in_database(:as => :superuser).run(<<-TRIGGER
-  BEGIN;
-  CREATE OR REPLACE FUNCTION public.cdb_invalidate_varnish(table_name text) RETURNS void AS
-  $$
-      critical = #{invalidation_critical}
-      timeout = #{invalidation_timeout}
-      retry = #{invalidation_retry}
-      trigger_verbose = #{invalidation_trigger_verbose}
-
-      client = GD.get('invalidation', None)
-
-      while True:
-
-        if not client:
-            try:
-              import redis
-              client = GD['invalidation'] = redis.Redis(host='#{invalidation_host}', port=#{invalidation_port}, socket_timeout=timeout)
-            except Exception as err:
-              # NOTE: we won't retry on connection error
-              if critical:
-                plpy.error('Invalidation Service connection error: ' +  str(err))
-              break
-
-        try:
-          client.execute_command('TCH', '#{self.database_name}', table_name)
-          break
-        except Exception as err:
-          if trigger_verbose:
-            plpy.warning('Invalidation Service warning: ' + str(err))
-          client = GD['invalidation'] = None # force reconnect
-          if not retry:
-            if critical:
-              plpy.error('Invalidation Service error: ' +  str(err))
-            break
-          retry -= 1 # try reconnecting
-  $$
-  LANGUAGE 'plpythonu' VOLATILE;
-  REVOKE ALL ON FUNCTION public.cdb_invalidate_varnish(TEXT) FROM PUBLIC;
-  COMMIT;
-TRIGGER
-    )
-  end
-
   # Returns a tree elements array with [major, minor, patch] as in http://semver.org/
   def cartodb_extension_semver(extension_version)
     extension_version.split('.').take(3).map(&:to_i)
@@ -1999,7 +1742,7 @@ TRIGGER
 
   # Cartodb functions
   def load_cartodb_functions(statement_timeout = nil, cdb_extension_target_version = nil)
-    add_python
+    db_manager.add_python
 
     # Install dependencies of cartodb extension
     in_database({
@@ -2094,18 +1837,6 @@ TRIGGER
         end
       end
     end
-  end
-
-  def set_statement_timeouts
-    in_database(as: :superuser) do |user_database|
-      user_database["ALTER ROLE \"?\" SET statement_timeout to ?", database_username.lit, user_timeout].all
-      user_database["ALTER DATABASE \"?\" SET statement_timeout to ?", database_name.lit, database_timeout].all
-    end
-    in_database.disconnect
-    in_database.connect(db_manager.db_configuration_for)
-    in_database(as: :public_user).disconnect
-    in_database(as: :public_user).connect(db_manager.db_configuration_for(:public_user))
-  rescue Sequel::DatabaseConnectionError => e
   end
 
   def run_queries_in_transaction(queries, superuser = false)
@@ -2298,7 +2029,7 @@ TRIGGER
     self.reset_database_permissions
     self.reset_user_schema_permissions
     db_manager.grant_publicuser_in_database
-    self.set_user_privileges
+    db_manager.set_user_privileges_at_db
     db_manager.fix_table_permissions
   end
 

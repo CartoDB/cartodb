@@ -31,10 +31,10 @@ module CartoDB
 
       def beautify_name
         if tables.length > 1
-          DEFAULT_MAP_NAME
-        else
           table = tables[0]
-          tables.beautify_name(table.name)
+          table.beautify_name(table.name)
+        else
+          DEFAULT_MAP_NAME
         end
       end
 

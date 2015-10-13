@@ -10,9 +10,7 @@ module Carto
     has_many :layers, through: :layers_maps
 
     has_many :layers_user
-    has_many :users, :through => :layers_user
-
-    has_many :children, class_name: Carto::Layer, foreign_key: :parent_id
+    has_many :users, through: :layers_user
 
     has_many :layers_user_table, foreign_key: :layer_id
     has_many :user_tables, through: :layers_user_table, class_name: Carto::UserTable
@@ -39,7 +37,7 @@ module Carto
       "#{viewer_user.sql_safe_database_schema}.#{options['table_name']}"
     end
 
-    def infowindow_template_path 
+    def infowindow_template_path
       if self.infowindow.present? && self.infowindow['template_name'].present?
         template_name = TEMPLATES_MAP.fetch(self.infowindow['template_name'], self.infowindow['template_name'])
         Rails.root.join("lib/assets/javascripts/cartodb/table/views/infowindow/templates/#{template_name}.jst.mustache")
@@ -48,13 +46,21 @@ module Carto
       end
     end
 
-    def tooltip_template_path 
+    def tooltip_template_path
       if self.tooltip.present? && self.tooltip['template_name'].present?
         template_name = TEMPLATES_MAP.fetch(self.tooltip['template_name'], self.tooltip['template_name'])
         Rails.root.join("lib/assets/javascripts/cartodb/table/views/tooltip/templates/#{template_name}.jst.mustache")
       else
         nil
       end
+    end
+
+    def basemap?
+      ["gmapsbase", "tiled"].include?(kind)
+    end
+
+    def supports_labels_layer?
+      basemap? && options["labels"] && options["labels"]["url"]
     end
 
     private

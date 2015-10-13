@@ -1,7 +1,7 @@
 class Superadmin::PlatformController < Superadmin::SuperadminController
   respond_to :json
 
-  ssl_required :databases_info if Rails.env.production? || Rails.env.staging?
+  ssl_required :databases_info
 
   layout 'application'
 
@@ -30,7 +30,7 @@ class Superadmin::PlatformController < Superadmin::SuperadminController
   def total_users
     respond_with({:count => CartoDB::Stats::Platform.new.users})
   end
-  
+
   def total_pay_users
     respond_with({:count => CartoDB::Stats::Platform.new.pay_users})
   end
@@ -42,7 +42,7 @@ class Superadmin::PlatformController < Superadmin::SuperadminController
   def total_seats_among_orgs
     respond_with(CartoDB::Stats::Platform.new.seats_among_orgs)
   end
-  
+
   def total_shared_objects_among_orgs
     respond_with(CartoDB::Stats::Platform.new.shared_objects_among_orgs)
   end

@@ -141,7 +141,7 @@ module CartoDB
         results.select(&:success?).length > 0
       end
 
-      attr_reader :results, :log, :loader, :stats
+      attr_reader :results, :log, :loader, :stats, :downloader
 
       private
 
@@ -314,6 +314,8 @@ module CartoDB
             end
           end
         }
+
+        @http_response_code = @downloader.http_response_code
       end
 
       def execute_import(source_file, downloader)

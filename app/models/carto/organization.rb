@@ -48,6 +48,10 @@ module Carto
       Carto::Group.create_group_with_extension(self, display_name)
     end
 
+    def name_to_display
+      display_name.nil? ? name : display_name
+    end
+
     private
 
     def destroy_groups_with_extension

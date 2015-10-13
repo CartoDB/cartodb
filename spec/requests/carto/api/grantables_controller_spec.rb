@@ -18,10 +18,6 @@ describe Carto::Api::GrantablesController do
       @headers = {'CONTENT_TYPE'  => 'application/json', :format => "json" }
     end
 
-    before(:each) do
-      @carto_organization = Carto::Organization.find(@organization.id)
-    end
-
     it "Throws 401 error without http auth" do
       get api_v1_grantables_index_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id), {}, @headers
       response.status.should == 401

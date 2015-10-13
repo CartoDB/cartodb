@@ -148,8 +148,8 @@
     background: $cStructure-softLine;
   }
 }
-.Filters-searchLink.Filters-searchLink--long {
-  margin-right: 35px;
+.Filters-searchLink.Filters-searchLink--short {
+  margin-right: 4px;
 }
 .Filters-searchLinkIcon {
   @include inline-block();
@@ -199,6 +199,9 @@
     border:1px solid $cNavButton-active;
     color: $cNavButton-active;
   }
+}
+.Filters-cleanSearch.Filters-cleanSearch--short {
+  right:6px;
 }
 a.Filters-cleanSearch { line-height:32px }
 // We can't group this style :(

@@ -80,11 +80,6 @@ function MapBase(options) {
   this.urls = null;
   this.silent = false;
   this.interactionEnabled = []; //TODO: refactor, include inside layer
-  this._timeout = -1;
-  this._createMapCallsStack = [];
-  this._createMapCallbacks = [];
-  this._waiting = false;
-  this.lastTimeUpdated = null;
   this._refreshTimer = -1;
 
   // build template url
@@ -107,221 +102,20 @@ MapBase.prototype = {
   },
 
   createMap: function(callback) {
-    var self = this;
-    function invokeStackedCallbacks(data, err) {
-      var fn;
-      while(fn = self._createMapCallbacks.pop()) {
-        fn(data, err);
-      }
-    }
-    clearTimeout(this._timeout);
-    this._createMapCallsStack.push(invokeStackedCallbacks);
-    this._createMapCallbacks.push(callback);
-    this._timeout = setTimeout(function() {
-      self._createMap(invokeStackedCallbacks);
-    }, 4);
-  },
-
-  _createMap: function(callback) {
-    var self = this;
-    callback = callback || function() {};
-
-    // if the previous request didn't finish, queue it
-    if(this._waiting) {
-      return this;
-    }
-
-    this._createMapCallsStack = [];
-
-    // when it's a named map the number of layers is not known
-    // so fetch the map
     if (!this.named_map && this.visibleLayers().length === 0) {
       callback(null);
       return;
     }
 
-    // mark as the request is being done
-    this._waiting = true;
-    var req = null;
-    if (this._usePOST()) {
-      req = this._requestPOST;
-    } else {
-      req = this._requestGET;
-    }
-    var params = this._getParamsFromOptions(this.options);
-    req.call(this, params, callback);
-    return this;
-  },
+    this.windshaftClient.instantiateMap(this, function(map) {
+      callback(map);
 
-  _getParamsFromOptions: function(options) {
-    var params = [];
-    var extra_params = options.extra_params || {};
-    var api_key = options.map_key || options.api_key || extra_params.map_key || extra_params.api_key;
-
-    if(api_key) {
-      params.push("map_key=" + api_key);
-    }
-
-    if(extra_params.auth_token) {
-      if (_.isArray(extra_params.auth_token)) {
-        for (var i = 0, len = extra_params.auth_token.length; i < len; i++) {
-          params.push("auth_token[]=" + extra_params.auth_token[i]);
-        }
-      } else {
-        params.push("auth_token=" + extra_params.auth_token);
-      }
-    }
-
-    if (this.stat_tag) {
-      params.push("stat_tag=" + this.stat_tag);
-    }
-    return params;
-  },
-
-  _usePOST: function() {
-    if (this.options.cors) {
-      if (this.options.force_cors) {
-        return true;
-      }
-      // check payload size
-      var payload = JSON.stringify(this.toJSON());
-      if (payload.length > this.options.MAX_GET_SIZE) {
-        return true;
-      }
-    }
-    return false;
-  },
-
-  _requestPOST: function(params, callback) {
-    var self = this;
-    var ajax = this.options.ajax;
-
-    var loadingTime = cartodb.core.Profiler.metric('cartodb-js.layergroup.post.time').start();
-
-    ajax({
-      crossOrigin: true,
-      type: 'POST',
-      method: 'POST',
-      dataType: 'json',
-      contentType: 'application/json',
-      url: this._tilerHost() + this.endPoint + (params.length ? "?" + params.join('&'): ''),
-      data: JSON.stringify(this.toJSON()),
-      success: function(data) {
-        loadingTime.end();
-        // discard previous calls when there is another call waiting
-        if(0 === self._createMapCallsStack.length) {
-          if (data.errors) {
-            cartodb.core.Profiler.metric('cartodb-js.layergroup.post.error').inc();
-            callback(null, data);
-          } else {
-            callback(data);
-          }
-        }
-
-        self._requestFinished();
-      },
-      error: function(xhr) {
-        loadingTime.end();
-        cartodb.core.Profiler.metric('cartodb-js.layergroup.post.error').inc();
-        var err = { errors: ['unknow error'] };
-        if (xhr.status === 0) {
-          err = { errors: ['connection error'] };
-        }
-        try {
-          err = JSON.parse(xhr.responseText);
-        } catch(e) {}
-        if(0 === self._createMapCallsStack.length) {
-          callback(null, err);
-        }
-        self._requestFinished();
-      }
-    });
-  },
-
-  _requestGET: function(params, callback) {
-    var self = this;
-    var ajax = this.options.ajax;
-    var json = JSON.stringify(this.toJSON());
-    var compressor = this._getCompressor(json);
-    var endPoint = self.JSONPendPoint || self.endPoint;
-    compressor(json, 3, function(encoded) {
-      params.push(encoded);
-      var loadingTime = cartodb.core.Profiler.metric('cartodb-js.layergroup.get.time').start();
-      var host = self.options.dynamic_cdn ? self._host(): self._tilerHost();
-      ajax({
-        dataType: 'jsonp',
-        url: host + endPoint + '?' + params.join('&'),
-        jsonpCallback: self.options.instanciateCallback,
-        cache: !!self.options.instanciateCallback,
-        success: function(data) {
-          loadingTime.end();
-          if(0 === self._createMapCallsStack.length) {
-            // check for errors
-            if (data.errors) {
-              cartodb.core.Profiler.metric('cartodb-js.layergroup.get.error').inc();
-              callback(null, data);
-            } else {
-              callback(data);
-            }
-          }
-          self._requestFinished();
-        },
-        error: function(data) {
-          loadingTime.end();
-          cartodb.core.Profiler.metric('cartodb-js.layergroup.get.error').inc();
-          var err = { errors: ['unknow error'] };
-          try {
-            err = JSON.parse(xhr.responseText);
-          } catch(e) {}
-          if(0 === self._createMapCallsStack.length) {
-            callback(null, err);
-          }
-          self._requestFinished();
-        }
-      });
-    });
-  },
-
-  // returns the compressor depending on the size
-  // of the layer
-  _getCompressor: function(payload) {
-    var self = this;
-    if (this.options.compressor) {
-      return this.options.compressor;
-    }
-
-    payload = payload || JSON.stringify(this.toJSON());
-    if (!this.options.force_compress && payload.length < this.options.MAX_GET_SIZE) {
-      return function(data, level, callback) {
-        callback("config=" + encodeURIComponent(data));
-      };
-    }
-
-    return function(data, level, callback) {
-      data = JSON.stringify({ config: data });
-      LZMA.compress(data, level, function(encoded) {
-        callback("lzma=" + encodeURIComponent(cdb.core.util.array2hex(encoded)));
-      });
-    };
-
-  },
-
-  _requestFinished: function() {
-    var self = this;
-    this._waiting = false;
-    this.lastTimeUpdated = new Date().getTime();
-
-    // refresh layer when invalidation time has passed
-    clearTimeout(this._refreshTimer);
-    this._refreshTimer = setTimeout(function() {
-      self.invalidate();
-    }, this.options.refreshTime || (60*120*1000)); // default layergroup ttl
-
-    // check request queue
-    if(this._createMapCallsStack.length) {
-      var request = this._createMapCallsStack.pop();
-      this._createMap(request);
-    }
+      // refresh layer when invalidation time has passed
+      clearTimeout(this._refreshTimer);
+      this._refreshTimer = setTimeout(function() {
+        this.invalidate();
+      }.bind(this), this.options.refreshTime || (60*120*1000)); // default layergroup ttl
+    }.bind(this));
   },
 
   fetchAttributes: function(layer_index, feature_id, columnNames, callback) {
@@ -713,6 +507,17 @@ function LayerDefinition(layerDefinition, options) {
   MapBase.call(this, options);
   this.endPoint = MapBase.BASE_URL;
   this.setLayerDefinition(layerDefinition, { silent: true });
+
+  // TODO: Inject this!
+  this.windshaftClient = new cdb.windshaft.Client({
+    ajax: options.ajax,
+    user_name: options.user_name,
+    maps_api_template: options.maps_api_template,
+    stat_tag: this.stat_tag,
+    force_compress: options.force_compress,
+    force_cors: options.force_cors,
+    endpoint: this.endPoint
+  });
 }
 
 /**
@@ -887,6 +692,17 @@ function NamedMap(named_map, options) {
   this.options.gridParams.push('auth_token')
   this.setLayerDefinition(named_map, options)
   this.stat_tag = named_map.stat_tag;
+
+  // TODO: Inject this!
+  this.windshaftClient = new cdb.windshaft.Client({
+    ajax: options.ajax,
+    user_name: options.user_name,
+    maps_api_template: options.maps_api_template,
+    stat_tag: this.stat_tag,
+    force_compress: options.force_compress,
+    force_cors: options.force_cors,
+    endpoint: this.endPoint
+  });
 }
 
 NamedMap.prototype = _.extend({}, MapBase.prototype, {

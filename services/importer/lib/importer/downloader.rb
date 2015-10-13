@@ -29,7 +29,7 @@ module CartoDB
       URL_FILENAME_REGEX = Regexp.new(
                               "[[:word:]]+(#{ SUPPORTED_EXTENSIONS.map{ |s| s.sub(/\./, "\\.")}.join("|") })+",
                               true)
-      
+
       DEFAULT_FILENAME        = 'importer'
       CONTENT_DISPOSITION_RE  = %r{;\s*filename=(.*;|.*)}
       URL_RE                  = %r{://}
@@ -94,11 +94,12 @@ module CartoDB
         }
       ]
 
-      def initialize(url, http_options={}, seed=nil, repository=nil)
-        @url          = url
+      def initialize(url, http_options = {}, options = {}, seed = nil, repository = nil)
+        @url = url
         raise UploadError if url.nil?
 
         @http_options = http_options
+        @importer_config = options[:importer_config]
         @seed         = seed
         @repository   = repository || DataRepository::Filesystem::Local.new(temporary_directory)
         @datasource = nil
@@ -128,7 +129,7 @@ module CartoDB
 
       def clean_up
         if defined?(@temporary_directory) &&
-           @temporary_directory =~ /^#{CartoDB::Importer2::Unp::IMPORTER_TMP_SUBFOLDER}/ &&
+           @temporary_directory =~ /^#{Unp.new(@importer_config).get_temporal_subfolder_path}/ &&
            !(@temporary_directory =~ /\.\./)
           FileUtils.rm_rf @temporary_directory
         end
@@ -402,7 +403,7 @@ module CartoDB
 
       def temporary_directory
         return @temporary_directory if @temporary_directory
-        @temporary_directory = Unp.new.generate_temporary_directory.temporary_directory
+        @temporary_directory = Unp.new(@importer_config).generate_temporary_directory.temporary_directory
       end
 
       def gdrive_deny_in?(headers)

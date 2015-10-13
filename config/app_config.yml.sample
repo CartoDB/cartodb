@@ -175,6 +175,8 @@ defaults: &defaults
       bucket_name:
       url_ttl:
       async_long_uploads: false
+    unp_temporal_folder: '/tmp/imports/'
+    uploads_path: 'public/uploads'
   error_track:
     url: 'https://viz2.cartodb.com/api/v1/sql'
     percent_users: 10

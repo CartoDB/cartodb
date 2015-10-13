@@ -53,6 +53,7 @@ module CartoDB
           !@user.nil? && @user.respond_to?(:remaining_quota) ? @user.remaining_quota : DEFAULT_AVAILABLE_QUOTA
         @unpacker            = options.fetch(:unpacker, nil) || Unp.new
         @post_import_handler = options.fetch(:post_import_handler, nil)
+        @importer_config = options.fetch(:importer_config, nil)
         @importer_stats = CartoDB::Stats::Importer.instance
         limit_instances = options.fetch(:limits, {})
         @import_file_limit = limit_instances.fetch(:import_file_size_instance, input_file_size_limit_instance(@user))
@@ -154,7 +155,7 @@ module CartoDB
         raise EmptyFileError if source_file.empty?
 
         loader.set_importer_stats(@importer_stats) if loader.respond_to?(:set_importer_stats)
-        loader.options = @loader_options.merge(tracker: tracker)
+        loader.options = @loader_options.merge(tracker: tracker, importer_config: @importer_config)
 
         tracker.call('importing')
         @job.log "Importing data from #{source_file.fullpath}"

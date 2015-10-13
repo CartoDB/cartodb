@@ -603,8 +603,9 @@ class DataImport < Sequel::Model
                                                 downloader: downloader,
                                                 log: log,
                                                 user: current_user,
-                                                unpacker: CartoDB::Importer2::Unp.new,
-                                                post_import_handler: post_import_handler
+                                                unpacker: CartoDB::Importer2::Unp.new(Cartodb.config[:importer]),
+                                                post_import_handler: post_import_handler,
+                                                importer_config: Cartodb.config[:importer]
                                               })
       runner.loader_options = ogr2ogr_options.merge content_guessing_options
       runner.set_importer_stats_host_info(Socket.gethostname)
@@ -715,13 +716,17 @@ class DataImport < Sequel::Model
     if datasource_provider.providers_download_url?
       downloader = CartoDB::Importer2::Downloader.new(
           (metadata[:url].present? && datasource_provider.providers_download_url?) ? metadata[:url] : data_source,
-          { http_timeout: ::DataImport.http_timeout_for(current_user) }
+          { http_timeout: ::DataImport.http_timeout_for(current_user) },
+          { importer_config: Cartodb.config[:importer] }
       )
       log.append "File will be downloaded from #{downloader.url}"
     else
       log.append 'Downloading file data from datasource'
       downloader = CartoDB::Importer2::DatasourceDownloader.new(
-        datasource_provider, metadata, { http_timeout: ::DataImport.http_timeout_for(current_user) }, log
+        datasource_provider, metadata, {
+                                         http_timeout: ::DataImport.http_timeout_for(current_user),
+                                         importer_config: Cartodb.config[:importer]
+                                       }, log
       )
     end
 

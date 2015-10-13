@@ -31,29 +31,7 @@ cdb.windshaft.Client.MAX_GET_SIZE = 2033;
 cdb.windshaft.Client.prototype.instantiateMap = function(mapDefinition, callback) {
   var payload = JSON.stringify(mapDefinition.toJSON());
   
-  if (this._usePOST(payload)) {
-    this._post(payload, callback);
-  } else {
-    this._get(payload, callback);
-  }
-}
-
-cdb.windshaft.Client.prototype._usePOST = function(payload) {
-  if (this.isCorsSupported && this.forceCors) {
-    return true;
-  }
-  return payload.length >= this.constructor.MAX_GET_SIZE;
-}
-
-cdb.windshaft.Client.prototype._post = function(payload, callback) {
-  this.ajax({
-    crossOrigin: true,
-    type: 'POST',
-    method: 'POST',
-    dataType: 'json',
-    contentType: 'application/json',
-    url: this._getURL(),
-    data: payload,
+  var options = {
     success: function(data) {
       if (data.errors) {
         callback(null, data);
@@ -75,10 +53,37 @@ cdb.windshaft.Client.prototype._post = function(payload, callback) {
         callback(null, err);
       // }
     }
+  }
+
+  if (this._usePOST(payload)) {
+    this._post(payload, options);
+  } else {
+    this._get(payload, options);
+  }
+}
+
+cdb.windshaft.Client.prototype._usePOST = function(payload) {
+  if (this.isCorsSupported && this.forceCors) {
+    return true;
+  }
+  return payload.length >= this.constructor.MAX_GET_SIZE;
+}
+
+cdb.windshaft.Client.prototype._post = function(payload, options) {
+  this.ajax({
+    crossOrigin: true,
+    type: 'POST',
+    method: 'POST',
+    dataType: 'json',
+    contentType: 'application/json',
+    url: this._getURL(),
+    data: payload,
+    success: options.success,
+    error: options.error
   });
 }
 
-cdb.windshaft.Client.prototype._get = function(payload, callback) {
+cdb.windshaft.Client.prototype._get = function(payload, options) {
   var compressFunction = this._getCompressor(payload);
   compressFunction(payload, this.COMPRESSION_LEVEL, function(dataParameter) {
     this.ajax({
@@ -88,27 +93,8 @@ cdb.windshaft.Client.prototype._get = function(payload, callback) {
         return this.instantiateCallback(payload);
       }.bind(this),
       cache: true,
-      success: function(data) {
-        if (data.errors) {
-          callback(null, data);
-        } else {
-          var baseURL =  this.baseURL.replace('{user}', this.userName);
-          var options = {
-            baseURL: baseURL,
-            ajax: this.ajax
-          }
-          callback(new cdb.windshaft.PublicMap(data, options));
-        }
-      }.bind(this),
-      error: function() {
-        var err = { errors: ['Unknown error'] };
-        try {
-          err = JSON.parse(xhr.responseText);
-        } catch(e) {}
-        // if(0 === self._createMapCallsStack.length) {
-          callback(null, err);
-        // }
-      }
+      success: options.success,
+      error: options.error
     });    
   }.bind(this));
 }

@@ -1,6 +1,5 @@
 # encoding: utf-8
 require 'open3'
-require_relative 'ogr2ogr_guessing_params'
 
 
 module CartoDB
@@ -8,7 +7,7 @@ module CartoDB
 
     # This class is responsible for analyzing a file through ogrinfo.
     class OgrInfo
-      DEFAULT_BINARY = `which ogrinfo2.1`.strip
+      DEFAULT_BINARY = `which ogrinfo`.strip
 
       def initialize(input_file_path)
         @input_file_path = input_file_path
@@ -56,8 +55,6 @@ module CartoDB
           '-ro',
           '-so',
           '-al',
-          '-oo AUTODETECT_TYPE=YES',
-          Ogr2ogrGuessingParams.geom_possible_names_option
         ]
       end
 

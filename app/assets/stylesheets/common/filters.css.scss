@@ -1,11 +1,9 @@
-// Dashboard filters
-// --------------------------------------------------
-
 @import "../variables/mixins";
 @import "../variables/colors";
 @import "../variables/sizes";
-@import "../variables/progress-bar";
 
+// Dashboard filters
+// ---
 .Filters {
   position: absolute;
   display:block;
@@ -15,39 +13,14 @@
   background: transparent;
   z-index: 10;
 }
-.Filters--share { border-bottom: 1px solid $cStructure-mainLine }
-.Filters.Filters-explore {
-  position: absolute;
-  width: 100%;
-  z-index: 100;
+.Filters--thin {
+  .Filters-row {
+    height: 60px;
+  }
+  .Filters-separator {
+    top: 60px;
+  }
 }
-.Filters.Filters-explore .Filters-type {
-  font-size: 14px;
-  color: $cTypography-linkSecondary;
-}
-.Filters.Filters-explore .Filters-dropdown {
-  text-align: left;
-}
-.Filters.Filters-explore .Filters-orderItem {
-  margin-right: 20px;
-}
-.Filters.Filters-explore .Filters-orderItem:last-child {
-  margin-right: 0;
-}
-.Filters.Filters-explore .Filters-orderLink {
-  font-size: 15px;
-}
-.Filters.Filters-explore.is-fixed {
-  background: white;
-  border-bottom: 1px solid $cStructure-mainLine;
-}
-.Filters-label {
-  color: $cTypography-linkSecondary;
-  font-size: 14px;
-  margin-right: 20px;
-}
-
-// Positionate relative to the content
 .Filters.is-relative {
   position: relative;
 }
@@ -69,8 +42,6 @@
   }
   .Filters-separator { display: none }
 }
-.Filters.above-form { position: relative; margin-bottom: 25px; }
-.Filters.above-form .Filters-separator { background-color: $cStructure-darkGrey; }
 .Filters > .u-inner {
   position:relative;
   display:block;
@@ -83,6 +54,9 @@
   padding: 0;
   @include transition(margin,150ms);
 }
+.Filters-inner.show-second-row {
+  margin-top: -81px;
+}
 .Filters-separator {
   position:absolute;
   left:0;
@@ -93,18 +67,23 @@
   z-index:0;
 }
 
-.Filters.is--fixed .Filters-separator { display: none }
 .Filters-row {
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
   height:80px;
 }
-.Filters-row.Filters-row--centered { @include justify-content(center) }
-.Filters-list {
+.Filters-row--centered { @include justify-content(center) }
+.Filters-group {
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
+  &:not(:first-child) {
+    margin-left: 10px;
+  }
+}
+.Filters-group.is-hidden {
+  display: none;
 }
 .Filters-typeItem {
   position:relative;
@@ -125,6 +104,17 @@
   &:first-child {
     margin-left: 0;
   }
+}
+.Filters-typeItem--searchEnabler {
+  min-width: 65px;
+}
+.Filters-typeItem--searchField {
+  @include flex-grow(1);
+  margin-right: 0;
+}
+.Filters-typeItem--moreMargins {
+  margin-right: 15px;
+  margin-left: 15px;
 }
 
 .Filters-searchLink {
@@ -159,21 +149,16 @@
 
 }
 .Filters-searchLink:hover { color: #333 }
-.Filters-searchItem {
-  display:none;
-  margin-right:0;
-  &:after { content:'' }
-}
 .Filters-searchForm {
   position:relative;
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
-  height:80px;
-  width:841px;
+  width: 100%;
+  height: 80px;
 }
 .Filters-searchInput {
-  width:790px;
+  width: 100%;
   padding-left:5px;
   outline:none;
   border:none;
@@ -268,19 +253,6 @@ a.Filters-cleanSearch { line-height:32px }
     text-decoration: none;
     color: rgba(black, 0.3);
   }
-}
-.Filters-order {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center, center);
-}
-.Filters-order.is-hidden {
-  display: none;
-}
-.Filters-orderList {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center, center);
 }
 .Filters-orderItem {
   @include inline-block();
@@ -403,12 +375,4 @@ a.Filters-cleanSearch { line-height:32px }
   left: auto;
   top: auto;
   margin-left: auto;
-}
-.Filters-darrow {
-  font-size: 7px;
-  margin-left: 6px;
-  position: relative;
-  top: -1px;
-  -webkit-font-smoothing: auto;
-  -moz-osx-font-smoothing: auto;
 }

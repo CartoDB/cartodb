@@ -15,7 +15,7 @@
 
           <ul class="Navmenu-list Navmenu-list--owner">
             <li class="Navmenu-item u-hideOnMobile">
-              <a href="<%= CartoDB.url(self, 'public_user_feed_home') %>" class="Navmenu-link Navmenu-link--owner <%= "#{@content_type != 'maps' and @content_type != 'datasets' ? 'is-selected' : '' }" %>">
+              <a href="<%= CartoDB.url(self, 'public_user_feed_home') %>" class="Navmenu-link Navmenu-link--owner <%= "#{@content_type != 'maps' and @content_type != 'datasets' ? 'is-selected' : '' }" %>" title="<%= @name %>">
                 <%= @name %>
               </a>
             </li>

@@ -13,6 +13,10 @@ module CartoDB
         longitudedecimal longitud long decimallongitude decimallong point_longitude }
       GEOMETRY_POSSIBLE_NAMES = %w{ geometry the_geom wkb_geometry geom geojson wkt }
 
+      def self.geom_possible_names_option
+        "-oo GEOM_POSSIBLE_NAMES=#{GEOMETRY_POSSIBLE_NAMES.join(',')}"
+      end
+
 
       attr_accessor :input_file_path, :quoted_fields_guessing
 
@@ -39,22 +43,14 @@ module CartoDB
         "-oo X_POSSIBLE_NAMES=#{LONGITUDE_POSSIBLE_NAMES.join(',')} -oo Y_POSSIBLE_NAMES=#{LATITUDE_POSSIBLE_NAMES.join(',')}"
       end
 
-      def self.geom_possible_names_option
-        "-oo GEOM_POSSIBLE_NAMES=#{GEOMETRY_POSSIBLE_NAMES.join(',')}"
-      end
-
       def keep_geom_columns_option
-        if keep_geom_column?
-          "-oo KEEP_GEOM_COLUMNS=YES"
-        else
-          # INFO: Avoid "ERROR:  column "the_geom" specified more than once"
-          "-oo KEEP_GEOM_COLUMNS=NO"
-        end
+        "-oo KEEP_GEOM_COLUMNS=#{keep_geom_column? ? 'YES' : 'NO'}"
       end
 
       def keep_geom_column?
+        # INFO: Avoid "ERROR:  column "the_geom" specified more than once"
         ogrinfo = OgrInfo.new(input_file_path)
-        ogrinfo.geometry_column == 'the_geom' && ogrinfo.geometry_type == 'Unknown (any)'
+        ogrinfo.geometry_column != 'the_geom' || ogrinfo.geometry_type == 'Unknown (any)'
       end
 
     end

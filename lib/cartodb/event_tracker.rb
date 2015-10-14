@@ -12,10 +12,6 @@ module Cartodb
       Resque.enqueue(Resque::EventDeliveryJobs::TrackEvent, user.id, event_name, properties)
     end
 
-    def test(name)
-      Resque.enqueue(Resque::EventDeliveryJobs::Test, name)
-    end
-
     private
     def generate_event_properties(user)
       {

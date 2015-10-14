@@ -664,12 +664,8 @@ MapBase.prototype = {
     var pos = this.getLayerNumberByIndex(layer);
 
     if (pos >= 0) {
-      var lyr = this.options.layer_definition.layers[pos];
       var infowindow = this.layers[pos].infowindow;
-      if (!infowindow && this.options.layer_definition && lyr) {
-        infowindow = lyr.infowindow;
-      }
-      if (infowindow && infowindow.fields && infowindow.fields.length > 0) {
+      if (infowindow && infowindow.fields && infowindow.fields.length) {
         return infowindow;
       }
     }
@@ -678,10 +674,10 @@ MapBase.prototype = {
   },
 
   containInfowindow: function() {
-    var layers =  this.options.layer_definition.layers;
+    var layers = this.layers || [];
     for(var i = 0; i < layers.length; ++i) {
       var infowindow = layers[i].infowindow;
-      if (infowindow && infowindow.fields && infowindow.fields.length > 0) {
+      if (infowindow && infowindow.fields && infowindow.fields.length) {
         return true;
       }
     }
@@ -689,7 +685,7 @@ MapBase.prototype = {
   },
 
   containTooltip: function() {
-    var layers =  this.options.layer_definition.layers;
+    var layers = this.layers || [];
     for(var i = 0; i < layers.length; ++i) {
       var tooltip = layers[i].tooltip;
       if (tooltip && tooltip.fields && tooltip.fields.length) {
@@ -973,28 +969,6 @@ NamedMap.prototype = _.extend({}, MapBase.prototype, {
       payload['layer' + i] = this._isLayerVisible(layer) ? 1 : 0;
     }
     return payload;
-  },
-
-  containInfowindow: function() {
-    var layers = this.layers || [];
-    for(var i = 0; i < layers.length; ++i) {
-      var infowindow = layers[i].infowindow;
-      if (infowindow && infowindow.fields && infowindow.fields.length > 0) {
-        return true;
-      }
-    }
-    return false;
-  },
-
-  containTooltip: function() {
-    var layers = this.layers || [];
-    for(var i = 0; i < layers.length; ++i) {
-      var tooltip = layers[i].tooltip;
-      if (tooltip) {
-        return true;
-      }
-    }
-    return false;
   },
 
   setSQL: function(sql) {

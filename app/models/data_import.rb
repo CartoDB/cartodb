@@ -288,19 +288,6 @@ class DataImport < Sequel::Model
     notify(results)
 
     track_new_datasets(results)
-    #results.each do |result|
-    #  if result.success?
-    #    if result.name != nil
-    #      map_id = UserTable.where(data_import_id: self.id, name: result.name).first.map_id
-    #    else
-    #      map_id = UserTable.where(data_import_id: self.id).first.map_id           
-    #    end
-    #    vis = Carto::Visualization.where(map_id: map_id).first
-    #
-    #    custom_properties = {'privacy' => vis.privacy, 'type' => vis.type,  'vis_id' => vis.id, 'origin' => 'import'}
-    #    Cartodb::EventTracker.new.send_event(current_user, 'Created dataset', custom_properties)
-    #  end
-    #end
 
     self
   end

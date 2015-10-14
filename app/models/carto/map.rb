@@ -51,11 +51,10 @@ class Carto::Map < ActiveRecord::Base
                           through: :layer_maps,
                           source: :layer
 
-  has_one :user_table
+  has_many :user_tables, class_name: Carto::UserTable, inverse_of: :map, foreign_key: :table_id
 
   belongs_to :user
   belongs_to :visualization
-  belongs_to :map
 
   DEFAULT_OPTIONS = {
     zoom:            3,
@@ -105,7 +104,7 @@ class Carto::Map < ActiveRecord::Base
   private
 
   def get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons
-    table       = tables.first
+    table       = user_tables.first
     from_table  = table.service.data_last_modified if table
 
     [from_table, data_layers.map(&:updated_at)].flatten.compact.max

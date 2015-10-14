@@ -13,7 +13,7 @@ module Carto
 
     belongs_to :user
 
-    belongs_to :map, inverse_of: :user_table
+    belongs_to :map
 
     belongs_to :data_import
 

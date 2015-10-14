@@ -16,7 +16,7 @@ class Carto::Permission < ActiveRecord::Base
   ENTITY_TYPE_VISUALIZATION = 'vis'
 
   belongs_to :owner, class_name: User, select: Carto::User::SELECT_WITH_DATABASE
-  belongs_to :entity, class_name: proc { self.entity_class }
+  belongs_to :entity, class_name: proc { entity_class }
 
   def entity_class
     case entity_type

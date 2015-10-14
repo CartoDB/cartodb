@@ -5,7 +5,7 @@ module CartoDB
     class DerivedCreator
       DEFAULT_MAP_NAME = 'Untitled Map'
 
-      def initialize(user, tables=[])
+      def initialize(user, tables = [])
         @rejected_layers = nil
 
         if tables.length > user.max_layers
@@ -22,8 +22,7 @@ module CartoDB
       def create
         blender = CartoDB::Visualization::TableBlender.new(user, tables)
         map = blender.blend
-        vis = CartoDB::Visualization::Member.new(
-          {
+        vis = CartoDB::Visualization::Member.new({
             name:     beautify_name,
             map_id:   map.id,
             type:     CartoDB::Visualization::Member::TYPE_DERIVED,
@@ -52,4 +51,3 @@ module CartoDB
     end
   end
 end
-

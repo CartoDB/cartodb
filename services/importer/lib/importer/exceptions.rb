@@ -36,12 +36,6 @@ module CartoDB
       end
     end
 
-    class TooManyTablesError < BaseImportError
-      def initialize(message="Some tables were not imported because the maximum number of layers allowed was surpassed.")
-        super(message, 6670)
-      end
-    end
-
     class DownloadTimeoutError < BaseImportError
       def initialize(message="Data download timed out. Check the source is not running slow and/or try again.")
         super(message, 1020)
@@ -134,7 +128,6 @@ module CartoDB
       TooManyTableRowsError                 => 6668,
       UserConcurrentImportsLimitError       => 6669,
       TooManyTablesError                    => 6670,
-      StorageQuotaExceededError             => 8001,
       TableQuotaExceededError               => 8002,
       UnknownError                          => 99999,
       CartoDB::Datasources::DatasourceBaseError                   => 1012,

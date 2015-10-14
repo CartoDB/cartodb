@@ -1299,7 +1299,7 @@ class Table
 
   def beautify_name(name)
     return name unless name
-    name.gsub('_', ' ').split.map(&:capitalize).join(' ')
+    name.tr('_', ' ').split.map(&:capitalize).join(' ')
   end
 
   private

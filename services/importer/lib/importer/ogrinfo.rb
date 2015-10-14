@@ -26,6 +26,12 @@ module CartoDB
         geom_column
       end
 
+      def fields
+        raw_output.split("\n")
+          .grep(/^[a-zA-Z_]+:/)[3..-1] # get 'key: val' pairs and skip the 3 first items
+          .map{|s| s.gsub(/:.*/, '') } # keep the key
+      end
+
 
       private
 

@@ -74,8 +74,7 @@ module CartoDB
       end
 
       def shall_geometry_collumn_be_the_geom?
-        # TODO: need to check rest of columns
-        ogrinfo.geometry_column != 'the_geom'
+        ogrinfo.geometry_column != 'the_geom' && !ogrinfo.fields.include?('the_geom')
       end
 
     end

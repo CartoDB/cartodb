@@ -204,8 +204,8 @@ module CartoDB
 
       def persist_metadata(result, name, data_import_id)
         table_registrar.register(name, data_import_id)
-        self.table = table_registrar.table
-        @imported_table_ids << self.table.table_visualization.id
+        @table = table_registrar.table
+        @imported_table_ids << @table.table_visualization.id
         BoundingBoxHelper.update_visualizations_bbox(table)
         self
       end

@@ -23,13 +23,12 @@ module CartoDB
         blender = CartoDB::Visualization::TableBlender.new(user, tables)
         map = blender.blend
 
-        vis = CartoDB::Visualization::Member.new({
+        vis = CartoDB::Visualization::Member.new(
           name: beautify_name,
           map_id: map.id,
           type: CartoDB::Visualization::Member::TYPE_DERIVED,
           privacy: blender.blended_privacy,
-          user_id: user.id
-          })
+          user_id: user.id )
 
         CartoDB::Visualization::Overlays.new(vis).create_default_overlays
         vis.store

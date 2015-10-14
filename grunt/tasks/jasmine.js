@@ -83,7 +83,8 @@ module.exports = {
           "src/vis/overlays.js",
           "src/api/layers.js",
           "src/api/sql.js",
-          "src/api/vis.js"
+          "src/api/vis.js",
+          "src/windshaft/client.js"
         ],
         options: {
           keepRunner: true,

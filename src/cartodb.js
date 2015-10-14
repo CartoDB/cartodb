@@ -25,6 +25,8 @@
     root.cdb.ui.common = {};
     root.cdb.vis = {};
     root.cdb.decorators = {};
+    root.cdb.windshaft = {};
+
     /**
      * global variables
      */
@@ -128,7 +130,9 @@
         // PUBLIC API
         'api/layers.js',
         'api/sql.js',
-        'api/vis.js'
+        'api/vis.js',
+
+        'windshaft/client.js'
     ];
 
     cdb.init = function(ready) {

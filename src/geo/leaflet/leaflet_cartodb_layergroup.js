@@ -164,7 +164,8 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
     this.fire('loading');
     var map = this.options.map;
 
-    this.getTiles(function(urls, err) {
+    var setTilesURLandReloadInteraction = function() {
+      var urls = self.model.windshaftMap.getTiles();
       if(urls) {
         self.tilejson = urls;
         self.setUrl(self.tilejson.tiles[0]);
@@ -176,7 +177,13 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
         self.error && self.error(err);
         done && done();
       }
-    });
+    }
+
+    if (this.model.windshaftMap.isNew()) {
+      this.model.windshaftMap.bind('change', setTilesURLandReloadInteraction);
+    } else {
+      setTilesURLandReloadInteraction();
+    }
   },
 
 

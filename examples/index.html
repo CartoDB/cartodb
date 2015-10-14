@@ -42,52 +42,47 @@
         cartodb.load('/src/', function() {
 
           var vizJSON = {
-            "id": "bc4e200e-5d4b-11e5-8273-0ec6f7c8b2b9",
+            "id": "ece6faac-7271-11e5-a85f-04013fc66a01",
             "version": "0.1.0",
-            "title": "First Chile earthquake - 2015-09-16 22:54:33 (UTC) - M8.3 - 46km W of Illapel, Chile",
+            "title": "districtes_barcelona 1",
             "likes": 0,
-            "description": "",
-            "scrollwheel": false,
+            "description": null,
+            "scrollwheel": true,
             "legends": true,
             "url": null,
             "map_provider": "leaflet",
             "bounds": [
               [
-                -34.20725938207231,
-                -79.046630859375
+                41.123331876446066,
+                1.6376495361328123
               ],
               [
-                -28.92163128242129,
-                -64.259033203125
+                41.588742636696765,
+                2.6332855224609375
               ]
             ],
-            "center": "[-31.60456808959367, -71.6543]",
-            "zoom": 7,
-            "updated_at": "2015-09-17T14:58:22+00:00",
+            "center": "[41.356453237583786, 2.135467529296875]",
+            "zoom": 11,
+            "updated_at": "2015-10-14T12:49:48+00:00",
             "layers": [
               {
                 "options": {
-                  "visible": true,
-                  "type": "Tiled",
                   "default": "true",
                   "url": "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
                   "subdomains": "abcd",
                   "minZoom": "0",
                   "maxZoom": "18",
                   "name": "Positron",
-                  "className": "httpsbasemapscartocdncomlight_nolabelszxypng",
-                  "attribution": "",
+                  "className": "positron_rainbow_labels",
+                  "attribution": "&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors &copy; <a href= \"http://cartodb.com/attributions\">CartoDB</a>",
                   "labels": {
                     "url": "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png"
                   },
-                  "urlTemplate": "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
-                  "id": "73a5b261-bc46-40fe-9553-f880cdd6449c",
-                  "order": 0,
-                  "parent_id": null
+                  "urlTemplate": "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png"
                 },
                 "infowindow": null,
                 "tooltip": null,
-                "id": "73a5b261-bc46-40fe-9553-f880cdd6449c",
+                "id": "fb84bd9b-d704-4b19-8f1c-1438de211597",
                 "order": 0,
                 "type": "tiled"
               },
@@ -96,143 +91,155 @@
                 "datasource": "datasource1",
                 "options": {
                   "layer_definition": {
-                    "stat_tag": "bc4e200e-5d4b-11e5-8273-0ec6f7c8b2b9",
+                    "stat_tag": "ece6faac-7271-11e5-a85f-04013fc66a01",
                     "version": "1.0.1",
                     "layers": [
                       {
-                        "id": "dd0f16b8-cdc5-4e28-bbdd-f3ed133fd146",
+                        "id": "76b7540c-6396-4e71-8f19-6d8f9db9ef15",
                         "type": "CartoDB",
                         "infowindow": {
-                          "fields": [],
+                          "fields": [
+                            {
+                              "name": "area",
+                              "title": true,
+                              "position": 0
+                            },
+                            {
+                              "name": "c_distri",
+                              "title": true,
+                              "position": 1
+                            },
+                            {
+                              "name": "coord_x",
+                              "title": true,
+                              "position": 2
+                            },
+                            {
+                              "name": "coord_y",
+                              "title": true,
+                              "position": 3
+                            },
+                            {
+                              "name": "dones",
+                              "title": true,
+                              "position": 4
+                            },
+                            {
+                              "name": "homes",
+                              "title": true,
+                              "position": 5
+                            },
+                            {
+                              "name": "n_distri",
+                              "title": true,
+                              "position": 6
+                            },
+                            {
+                              "name": "perim",
+                              "title": true,
+                              "position": 7
+                            },
+                            {
+                              "name": "web_1",
+                              "title": true,
+                              "position": 8
+                            },
+                            {
+                              "name": "web_2",
+                              "title": true,
+                              "position": 9
+                            },
+                            {
+                              "name": "web_3",
+                              "title": true,
+                              "position": 10
+                            }
+                          ],
                           "template_name": "table/views/infowindow_light",
-                          "template": "<div class='cartodb-popup v2'> <a href='#close' class='cartodb-popup-close-button close'>x</a> <div class='cartodb-popup-content-wrapper'> <div class='cartodb-popup-content'> {{#content.fields}} {{#title}}<h4>{{title}}</h4>{{/title}} {{#value}} <p {{#type}}class='{{ type }}'{{/type}}>{{{ value }}}</p> {{/value}} {{^value}} <p class='empty'>null</p> {{/value}} {{/content.fields}} </div> </div> <div class='cartodb-popup-tip-container'></div> </div> ",
+                          "template": "<div class=\"cartodb-popup v2\">\n  <a href=\"#close\" class=\"cartodb-popup-close-button close\">x</a>\n  <div class=\"cartodb-popup-content-wrapper\">\n    <div class=\"cartodb-popup-content\">\n      {{#content.fields}}\n        {{#title}}<h4>{{title}}</h4>{{/title}}\n        {{#value}}\n          <p {{#type}}class=\"{{ type }}\"{{/type}}>{{{ value }}}</p>\n        {{/value}}\n        {{^value}}\n          <p class=\"empty\">null</p>\n        {{/value}}\n      {{/content.fields}}\n    </div>\n  </div>\n  <div class=\"cartodb-popup-tip-container\"></div>\n</div>\n",
                           "alternative_names": {},
                           "width": 226,
                           "maxHeight": 180
                         },
                         "tooltip": {
-                          "fields": [],
+                          "fields": [
+                            {
+                              "name": "area",
+                              "title": true,
+                              "position": 0
+                            },
+                            {
+                              "name": "c_distri",
+                              "title": true,
+                              "position": 1
+                            },
+                            {
+                              "name": "coord_x",
+                              "title": true,
+                              "position": 2
+                            },
+                            {
+                              "name": "coord_y",
+                              "title": true,
+                              "position": 3
+                            },
+                            {
+                              "name": "dones",
+                              "title": true,
+                              "position": 4
+                            },
+                            {
+                              "name": "homes",
+                              "title": true,
+                              "position": 5
+                            },
+                            {
+                              "name": "n_distri",
+                              "title": true,
+                              "position": 6
+                            },
+                            {
+                              "name": "perim",
+                              "title": true,
+                              "position": 7
+                            },
+                            {
+                              "name": "web_1",
+                              "title": true,
+                              "position": 8
+                            },
+                            {
+                              "name": "web_2",
+                              "title": true,
+                              "position": 9
+                            },
+                            {
+                              "name": "web_3",
+                              "title": true,
+                              "position": 10
+                            }
+                          ],
                           "template_name": "tooltip_light",
-                          "template": "<div class='cartodb-tooltip-content-wrapper'> <div class='cartodb-tooltip-content'> {{#fields}} {{#title}} <h4>{{title}}</h4> {{/title}} <p>{{{ value }}}</p> {{/fields}} </div> </div>",
+                          "template": "<div class=\"cartodb-tooltip-content-wrapper\">\n  <div class=\"cartodb-tooltip-content\">\n  {{#fields}}\n    {{#title}}\n    <h4>{{title}}</h4>\n    {{/title}}\n    <p>{{{ value }}}</p>\n  {{/fields}}\n  </div>\n</div>",
                           "alternative_names": {},
                           "maxHeight": 180
                         },
                         "legend": {
-                          "type": "choropleth",
+                          "type": "none",
                           "show_title": false,
                           "title": "",
                           "template": "",
-                          "visible": true,
-                          "items": [
-                            {
-                              "name": "Left label",
-                              "visible": true,
-                              "value": "4.50",
-                              "type": "text"
-                            },
-                            {
-                              "name": "Right label",
-                              "visible": true,
-                              "value": "8.50",
-                              "type": "text"
-                            },
-                            {
-                              "name": "Color",
-                              "visible": true,
-                              "value": "#FFFFCC",
-                              "type": "color"
-                            },
-                            {
-                              "name": "Color",
-                              "visible": true,
-                              "value": "#C7E9B4",
-                              "type": "color"
-                            },
-                            {
-                              "name": "Color",
-                              "visible": true,
-                              "value": "#7FCDBB",
-                              "type": "color"
-                            },
-                            {
-                              "name": "Color",
-                              "visible": true,
-                              "value": "#41B6C4",
-                              "type": "color"
-                            },
-                            {
-                              "name": "Color",
-                              "visible": true,
-                              "value": "#1D91C0",
-                              "type": "color"
-                            },
-                            {
-                              "name": "Color",
-                              "visible": true,
-                              "value": "#225EA8",
-                              "type": "color"
-                            },
-                            {
-                              "name": "Color",
-                              "visible": true,
-                              "value": "#0C2C84",
-                              "type": "color"
-                            }
-                          ]
+                          "visible": true
                         },
                         "order": 1,
                         "visible": true,
                         "options": {
-                          "sql": "select * from cont_mi",
-                          "layer_name": "cont_mi",
-                          "cartocss": "/** choropleth visualization */ #cont_mi{ polygon-opacity: 0; line-color: #FFFFCC; line-width: 1; line-opacity: 1; } #cont_mi [ value <= 8.5] { line-color: #0C2C84; } #cont_mi [ value <= 8] { line-color: #225EA8; } #cont_mi [ value <= 7.5] { line-color: #1D91C0; } #cont_mi [ value <= 6.5] { line-color: #41B6C4; } #cont_mi [ value <= 6] { line-color: #7FCDBB; } #cont_mi [ value <= 5] { line-color: #C7E9B4; } #cont_mi [ value <= 4.5] { line-color: #FFFFCC; }",
+                          "sql": "select * from districtes_barcelona",
+                          "layer_name": "districtes_barcelona",
+                          "cartocss": "/** simple visualization */\n\n#districtes_barcelona{\n  polygon-fill: #FF6600;\n  polygon-opacity: 0.7;\n  line-color: #FFF;\n  line-width: 0.5;\n  line-opacity: 1;\n}",
                           "cartocss_version": "2.1.1",
-                          "interactivity": "cartodb_id",
-                          "table_name": "."
-                        }
-                      },
-                      {
-                        "id": "ee5a93b4-c8d2-443d-83aa-b40f20ec83e7",
-                        "type": "CartoDB",
-                        "infowindow": {
-                          "fields": [],
-                          "template_name": "table/views/infowindow_light",
-                          "template": "<div class='cartodb-popup v2'> <a href='#close' class='cartodb-popup-close-button close'>x</a> <div class='cartodb-popup-content-wrapper'> <div class='cartodb-popup-content'> {{#content.fields}} {{#title}}<h4>{{title}}</h4>{{/title}} {{#value}} <p {{#type}}class='{{ type }}'{{/type}}>{{{ value }}}</p> {{/value}} {{^value}} <p class='empty'>null</p> {{/value}} {{/content.fields}} </div> </div> <div class='cartodb-popup-tip-container'></div> </div> ",
-                          "alternative_names": {},
-                          "width": 226,
-                          "maxHeight": 180
-                        },
-                        "tooltip": {
-                          "fields": [],
-                          "template_name": "tooltip_light",
-                          "template": "<div class='cartodb-tooltip-content-wrapper'> <div class='cartodb-tooltip-content'> {{#fields}} {{#title}} <h4>{{title}}</h4> {{/title}} <p>{{{ value }}}</p> {{/fields}} </div> </div>",
-                          "alternative_names": {},
-                          "maxHeight": 180
-                        },
-                        "legend": {
-                          "type": "custom",
-                          "show_title": false,
-                          "title": "",
-                          "template": "",
-                          "visible": true,
-                          "items": [
-                            {
-                              "name": "Epicenter M8.3",
-                              "visible": true,
-                              "value": "#FF9900",
-                              "sync": true
-                            }
-                          ]
-                        },
-                        "order": 2,
-                        "visible": true,
-                        "options": {
-                          "sql": "select * from last_chile_earthquake_epicenter",
-                          "layer_name": "last_chile_earthquake_epicenter",
-                          "cartocss": "/** simple visualization */ #last_chile_earthquake_epicenter{ marker-fill-opacity: 0.9; marker-line-color: #FFF; marker-line-width: 1; marker-line-opacity: 1; marker-placement: point; marker-type: ellipse; marker-width: 10; marker-fill: #FF9900; marker-allow-overlap: true; }",
-                          "cartocss_version": "2.1.1",
-                          "interactivity": "cartodb_id",
-                          "table_name": "."
+                          "interactivity": "cartodb_id,area,c_distri,coord_x,coord_y,dones,homes,n_distri,perim,web_1,web_2,web_3",
+                          "table_name": "\"\"."
                         }
                       }
                     ]
@@ -242,39 +249,24 @@
               },
               {
                 "options": {
-                  "visible": true,
-                  "type": "Tiled",
                   "default": "true",
                   "url": "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png",
                   "subdomains": "abcd",
                   "minZoom": "0",
                   "maxZoom": "18",
-                  "attribution": "",
+                  "attribution": "&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors &copy; <a href= \"http://cartodb.com/attributions\">CartoDB</a>",
                   "urlTemplate": "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png",
-                  "name": "Positron Labels",
-                  "id": "8437c765-2abc-4ee9-b0a7-c470026f69c8",
-                  "className": "httpsbasemapscartocdncomlight_only_labelszxypng",
-                  "order": 3,
-                  "parent_id": null
+                  "type": "Tiled",
+                  "name": "Positron Labels"
                 },
                 "infowindow": null,
                 "tooltip": null,
-                "id": "8437c765-2abc-4ee9-b0a7-c470026f69c8",
-                "order": 3,
+                "id": "bc054932-1ae8-4d4a-96d6-d49ce4247a59",
+                "order": 2,
                 "type": "tiled"
               }
             ],
             "overlays": [
-              {
-                "type": "fullscreen",
-                "order": 7,
-                "options": {
-                  "x": 20,
-                  "y": 140,
-                  "display": true
-                },
-                "template": null
-              },
               {
                 "type": "share",
                 "order": 2,
@@ -303,7 +295,7 @@
                   "x": 20,
                   "y": 20
                 },
-                "template": "<a href='#zoom_in' class='zoom_in'>+</a> <a href='#zoom_out' class='zoom_out'>-</a>"
+                "template": "<a href=\"#zoom_in\" class=\"zoom_in\">+</a> <a href=\"#zoom_out\" class=\"zoom_out\">-</a>"
               },
               {
                 "type": "loader",
@@ -313,7 +305,7 @@
                   "x": 20,
                   "y": 150
                 },
-                "template": "<div class='loader' original-title=''></div>"
+                "template": "<div class=\"loader\" original-title=\"\"></div>"
               },
               {
                 "type": "logo",
@@ -324,6 +316,16 @@
                   "y": 40
                 },
                 "template": ""
+              },
+              {
+                "type": "layer_selector",
+                "order": 4,
+                "options": {
+                  "x": 220,
+                  "y": 20,
+                  "display": true
+                },
+                "template": null
               }
             ],
             "prev": null,
@@ -335,9 +337,9 @@
               {
                 "id": "datasource1",
                 "type": "publicmap",
-                "user_name": "xavijam",
-                "maps_api_template": "https://{user}.cartodb.com:443",
-                "stat_tag": "bc4e200e-5d4b-11e5-8273-0ec6f7c8b2b9"
+                "user_name": "pablo",
+                "maps_api_template": "https://{user}.cartodb-staging.com:443",
+                "stat_tag": "ece6faac-7271-11e5-a85f-04013fc66a01",
               }
             ],
             "widgets": [

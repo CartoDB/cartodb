@@ -29,7 +29,7 @@ module CartoDB
           type: CartoDB::Visualization::Member::TYPE_DERIVED,
           privacy: blender.blended_privacy,
           user_id: user.id
-          )
+        )
 
         CartoDB::Visualization::Overlays.new(vis).create_default_overlays
         vis.store

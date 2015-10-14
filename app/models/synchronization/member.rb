@@ -192,11 +192,11 @@ module CartoDB
                                                   downloader: downloader,
                                                   log: log,
                                                   user: user,
-                                                  unpacker: CartoDB::Importer2::Unp.new,
-                                                  post_import_handler: post_import_handler
+                                                  unpacker: CartoDB::Importer2::Unp.new(Cartodb.config[:importer]),
+                                                  post_import_handler: post_import_handler,
+                                                  importer_config: Cartodb.config[:importer]
                                                 })
         runner.loader_options = ogr2ogr_options.merge content_guessing_options
-
 
         runner.include_additional_errors_mapping(
           {
@@ -314,7 +314,8 @@ module CartoDB
                 last_modified:    modified_at,
                 checksum:         checksum,
                 verify_ssl_cert:  false
-              }
+              },
+              { importer_config: Cartodb.config[:importer] }
           )
           log.append "File will be downloaded from #{downloader.url}"
         else
@@ -323,7 +324,8 @@ module CartoDB
             datasource_provider, metadata,
             {
               http_timeout:     DataImport.http_timeout_for(user),
-              checksum: checksum
+              checksum: checksum,
+              importer_config: Cartodb.config[:importer]
             }, log
           )
         end

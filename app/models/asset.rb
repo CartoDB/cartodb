@@ -78,7 +78,9 @@ class Asset < Sequel::Model
   end
 
   def save_local(filename)
-    local_path = Rails.root.join 'public', 'uploads', target_asset_path
+    file_upload_helper = CartoDB::FileUpload.new(Cartodb.config[:importer].fetch("uploads_path", nil))
+
+    local_path = file_upload_helper.get_uploads_path.join(target_asset_path)
     FileUtils.mkdir_p local_path
     FileUtils.cp @file.path, local_path.join(filename)
     p = File.join('/', 'uploads', target_asset_path, filename)

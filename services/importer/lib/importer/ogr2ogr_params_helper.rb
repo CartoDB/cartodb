@@ -87,7 +87,7 @@ module CartoDB
       end
 
       def keep_geom_columns?
-        !use_geom_possible_names? && !use_x_y_possible_names_option?
+        !use_geom_possible_names?
       end
 
       def shall_geometry_collumn_be_the_geom?

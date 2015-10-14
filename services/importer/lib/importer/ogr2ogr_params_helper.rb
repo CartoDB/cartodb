@@ -12,12 +12,13 @@ module CartoDB
       GEOMETRY_POSSIBLE_NAMES = %w{ geometry the_geom wkb_geometry geom geojson wkt }
 
 
-      attr_accessor :input_file_path, :quoted_fields_guessing
+      attr_accessor :input_file_path, :quoted_fields_guessing, :layer
 
 
-      def initialize(input_file_path, quoted_fields_guessing)
+      def initialize(input_file_path, quoted_fields_guessing, layer)
         self.input_file_path = input_file_path
         self.quoted_fields_guessing = quoted_fields_guessing
+        self.layer = layer
       end
 
       # This method is responsible for providing correct params for csv guessing.
@@ -46,7 +47,7 @@ module CartoDB
       private
 
       def ogrinfo
-        @ogrinfo ||= OgrInfo.new(input_file_path)
+        @ogrinfo ||= OgrInfo.new(input_file_path, layer)
       end
 
       def quoted_fields_as_string_option

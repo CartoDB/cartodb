@@ -187,7 +187,7 @@ module CartoDB
       end
 
       def params_helper
-        @params_helper ||= Ogr2ogrParamsHelper.new(filepath, quoted_fields_guessing)
+        @params_helper ||= Ogr2ogrParamsHelper.new(filepath, quoted_fields_guessing, layer)
       end
 
     end

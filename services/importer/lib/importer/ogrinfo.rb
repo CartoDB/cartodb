@@ -9,8 +9,9 @@ module CartoDB
     class OgrInfo
       DEFAULT_BINARY = `which ogrinfo`.strip
 
-      def initialize(input_file_path)
+      def initialize(input_file_path, layer)
         @input_file_path = input_file_path
+        @layer = layer
         @executed = false
         @raw_output = nil
       end
@@ -47,14 +48,14 @@ module CartoDB
       end
 
       def command
-        "#{DEFAULT_BINARY} #{options.join(' ')} #{@input_file_path}"
+        "#{DEFAULT_BINARY} #{arguments.join(' ')} #{@input_file_path} #{@layer}"
       end
 
-      def options
+      def arguments
         [
           '-ro',
           '-so',
-          '-al',
+          '-al'
         ]
       end
 

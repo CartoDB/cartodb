@@ -7,11 +7,11 @@ all:
 	npm install
 
 PENDING_SPECS = \
-  spec/lib/varnish_spec.rb (#321) \ 
+  spec/lib/varnish_spec.rb (#321) \
   $(NULL)
 
 WORKING_SPECS_INTEGRATIONS = \
-  spec/integrations/common_data_integration.rb \ 
+  spec/integrations/common_data_integration.rb \
   $(NULL)
 
 WORKING_SPECS_1 = \
@@ -31,19 +31,7 @@ WORKING_SPECS_1 = \
 	spec/requests/carto/api/database_groups_controller_spec.rb \
   spec/models/map_spec.rb \
   spec/models/map/copier_spec.rb \
-	spec/models/visualization/collection_spec.rb \
-	spec/models/visualization/copier_spec.rb \
-	spec/models/visualization/locator_spec.rb \
-	spec/models/visualization/member_spec.rb \
-	spec/models/visualization/name_checker_spec.rb \
-	spec/models/visualization/name_generator_spec.rb \
-	spec/models/visualization/organization_visualization_spec.rb \
-	spec/models/visualization/overlays_spec.rb \
-	spec/models/visualization/presenter_spec.rb \
-	spec/models/visualization/relator_spec.rb \
-	spec/models/visualization/table_blender_spec.rb \ 
-	spec/models/visualization/tags_spec.rb \
-	spec/models/visualization/watcher_spec.rb \
+  spec/models/visualization/*.rb \
   spec/models/named_maps_spec.rb \
   spec/models/geocoding_spec.rb \
   spec/models/common_data_spec.rb \
@@ -52,7 +40,7 @@ WORKING_SPECS_1 = \
   spec/lib/string_spec.rb \
   spec/lib/image_metadata_spec.rb \
   spec/lib/central_spec.rb \
-  spec/lib/trending_maps_spec.rb \ 
+  spec/lib/trending_maps_spec.rb \
   spec/lib/explore_api_spec.rb \
   spec/lib/carto/http/client_spec.rb \
 	spec/helpers/uuidhelper_spec.rb \
@@ -60,7 +48,7 @@ WORKING_SPECS_1 = \
 	spec/models/carto/group_spec.rb \
 	spec/models/carto/ldap/configuration_spec.rb \
 	spec/requests/sessions_controller_spec.rb \
-	spec/services/carto/visualizations_export_service_spec.rb \ 
+	spec/services/carto/visualizations_export_service_spec.rb \
   $(NULL)
 
 WORKING_SPECS_2 = \
@@ -89,7 +77,7 @@ WORKING_SPECS_2 = \
   services/importer/spec/unit/sql_loader_spec.rb \
   services/importer/spec/unit/ogr2ogr_spec.rb \
   services/importer/spec/unit/post_import_handler_spec.rb \
-  services/importer/spec/unit/runner_spec.rb \ 
+  services/importer/spec/unit/runner_spec.rb \
   services/importer/spec/unit/unp_spec.rb \
   services/importer/spec/unit/url_translator/fusion_tables_spec.rb \
   services/importer/spec/unit/url_translator/github_spec.rb \
@@ -130,7 +118,7 @@ WORKING_SPECS_5 = \
   spec/requests/carto/api/assets_controller_spec.rb \
   spec/requests/api/user_layers_spec.rb \
   spec/requests/api/json/layers_controller_spec.rb \
-  spec/requests/carto/api/layers_controller_spec.rb \ 
+  spec/requests/carto/api/layers_controller_spec.rb \
   spec/requests/api/map_layers_spec.rb \
   spec/requests/api/json/records_controller_spec.rb \
   spec/requests/carto/api/records_controller_spec.rb \
@@ -187,8 +175,8 @@ WORKING_SPECS_9 = \
   spec/requests/api/json/overlays_controller_spec.rb \
   spec/requests/carto/api/overlays_controller_spec.rb \
 	spec/models/carto/user_creation_spec.rb \
-	spec/requests/carto/api/invitations_controller_spec.rb \ 
-	spec/models/carto/invitation_spec.rb \ 
+	spec/requests/carto/api/invitations_controller_spec.rb \
+	spec/models/carto/invitation_spec.rb \
 	spec/models/carto/user_service_spec.rb \
 	spec/models/carto/user_spec.rb \
 	spec/models/carto/user_table_spec.rb \
@@ -263,6 +251,5 @@ cartodbui:
 
 
 .PHONY: develop_cdb cartodbui
-
 
 

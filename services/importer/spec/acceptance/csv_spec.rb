@@ -101,6 +101,7 @@ describe 'csv regression tests' do
                                log: CartoDB::Importer2::Doubles::Log.new,
                                user: CartoDB::Importer2::Doubles::User.new
                              })
+    runner.loader_options = ogr2ogr2_options
     runner.run
 
     result = runner.results.first
@@ -117,6 +118,7 @@ describe 'csv regression tests' do
                                log: CartoDB::Importer2::Doubles::Log.new,
                                user: CartoDB::Importer2::Doubles::User.new
                              })
+    runner.loader_options = ogr2ogr2_options
     runner.run
 
     geometry_type_for(runner).should eq 'MULTIPOLYGON'
@@ -135,6 +137,7 @@ describe 'csv regression tests' do
                                log: CartoDB::Importer2::Doubles::Log.new,
                                user: CartoDB::Importer2::Doubles::User.new
                              })
+    runner.loader_options = ogr2ogr2_options
     runner.run
 
     geometry_type_for(runner).should eq 'MULTIPOINT'
@@ -244,7 +247,7 @@ describe 'csv regression tests' do
   def ogr2ogr2_options
     {
       ogr2ogr_binary:         'which ogr2ogr2',
-      ogr2ogr_csv_guessing:   'yes'
+      ogr2ogr_csv_guessing:   true
     }
   end
 

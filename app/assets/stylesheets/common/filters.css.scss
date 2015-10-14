@@ -309,28 +309,29 @@ a.Filters-cleanSearch { line-height:32px }
 
   .Filters-typeItem,
   .Filters-orderItem,
-  .Button--positive { display:none }
+  .Button--positive {
+    display: none;
+  }
 
   .Filters-searchLink {
     &:after {
       right: -16px;
     }
   }
-
   .Filters-searchEnabler {
-    display:inline;
+    display: inline;
     min-width: 65px;
   }
-
   .Filters-searchForm {
-    width:841px;
+    width: 841px;
   }
   .Filters-searchInput {
-    width:790px;
+    width: 790px;
   }
-
   .Filters-typeItem.Filters-typeItem--searchField,
-  .Filters-searchItem { display:inherit }
+  .Filters-searchItem {
+    display: inherit;
+  }
 }
 
 .Filters-link:hover {

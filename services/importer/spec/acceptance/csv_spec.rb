@@ -92,7 +92,7 @@ describe 'csv regression tests' do
 
   it 'imports files from Google Fusion Tables' do
     #TODO: this spec depends on network connection
-    skip 'TODO: need to recover code to geometrify kml columns'
+    pending 'TODO: need to recover code to geometrify kml columns'
     url = "https://www.google.com/fusiontables/exporttable" +
           "?query=select+*+from+1dimNIKKwROG1yTvJ6JlMm4-B4LxMs2YbncM4p9g"
     downloader  = Downloader.new(url)

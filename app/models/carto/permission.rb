@@ -13,7 +13,17 @@ class Carto::Permission < ActiveRecord::Base
   TYPE_ORGANIZATION = 'org'
   TYPE_GROUP = 'group'
 
+  ENTITY_TYPE_VISUALIZATION = 'vis'
+
   belongs_to :owner, class_name: User, select: Carto::User::SELECT_WITH_DATABASE
+  belongs_to :entity, class_name: proc { self.entity_class }
+
+  def entity_class
+    case self.entity_type
+      when ENTITY_TYPE_VISUALIZATION
+        Carto::Visualization
+    end
+  end
 
   def acl
     @acl ||= self.access_control_list.nil? ? DEFAULT_ACL_VALUE : JSON.parse(self.access_control_list, symbolize_names: true)

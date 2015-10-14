@@ -6,6 +6,15 @@ module CartoDB
       DEFAULT_MAP_NAME = 'Untitled Map'
 
       def initialize(user, tables=[])
+        @rejected_layers = nil
+
+        if tables.length > user.max_layers
+          @rejected_layers = []
+          tables.pop(tables.length - user.max_layers).each do |rejected_layers|
+            @rejected_layers << rejected_layers.name
+          end
+        end
+
         @user   = user
         @tables = tables
       end
@@ -24,7 +33,8 @@ module CartoDB
         )
         CartoDB::Visualization::Overlays.new(vis).create_default_overlays
         vis.store
-        vis
+
+        [vis, @rejected_layers]
       end
 
       private
@@ -38,7 +48,7 @@ module CartoDB
         end
       end
 
-      attr_reader :user, :tables
+      attr_reader :user, :tables, :rejected_layers
     end
   end
 end

@@ -64,7 +64,8 @@ class DataImport < Sequel::Model
     'user_defined_limits',
     'original_url',
     'privacy',
-    'http_response_code'
+    'http_response_code',
+    'rejected_layers'
   ]
 
   # This attributes will get removed from public_values upon calling api_call_public_values
@@ -635,6 +636,7 @@ class DataImport < Sequel::Model
     else
       self.results    = importer.results
       self.error_code = importer.error_code
+      self.rejected_layers = importer.rejected_layers.join(',') if !importer.rejected_layers.nil?
 
       # http_response_code is only relevant if a direct download is performed
       if !runner.nil? && datasource_provider.providers_download_url?

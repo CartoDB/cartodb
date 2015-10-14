@@ -219,6 +219,7 @@ body.is-inDialog {
   font-weight: $sFontWeight-normal;
   color: $cTypography-paragraphs;
 }
+.Dialog-headerTitle--warning { color: $cHighlight-alert2 }
 .Dialog-headerTitle--error { color: $cHighlight-negative }
 .Dialog-headerText {
   font-size: $sFontSize-large;

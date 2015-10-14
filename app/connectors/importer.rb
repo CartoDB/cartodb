@@ -11,7 +11,7 @@ module CartoDB
       DESTINATION_SCHEMA  = 'public'
       MAX_RENAME_RETRIES  = 20
 
-      attr_reader :data_import, :imported_table_ids
+      attr_reader :data_import, :imported_table_ids, :rejected_layers
       attr_accessor :table
 
       # @param runner CartoDB::Importer2::Runner
@@ -20,6 +20,7 @@ module CartoDB
       # @param database
       # @param data_import_id String UUID
       # @param imported_table_ids Array UUID
+      # @param rejected_layers Array String|nil
       # @param destination_schema String|nil
       # @param public_user_roles Array|nil
       def initialize(runner, table_registrar, quota_checker, database, data_import_id,
@@ -35,6 +36,7 @@ module CartoDB
                                                                             {public_user_roles: public_user_roles})
         @data_import            = nil
         @imported_table_ids = []
+        @rejected_layers = nil
       end
 
       def run(tracker)
@@ -88,7 +90,7 @@ module CartoDB
         tables = get_imported_tables
         if tables.length > 0
           user = ::User.where(id: self.data_import.user_id).first
-          vis = CartoDB::Visualization::DerivedCreator.new(user, tables).create
+          vis, @rejected_layers = CartoDB::Visualization::DerivedCreator.new(user, tables).create
           self.data_import.visualization_id = vis.id
           self.data_import.save
           self.data_import.reload

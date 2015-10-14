@@ -473,30 +473,28 @@ var Vis = cdb.core.View.extend({
 
     // Create an instance of a map (datasource)
     var windshaftMap;
-    if (data.layers[1] && data.layers[1].type == 'layergroup') {
-
-      var layerGroupLayer = data.layers[1];
-      var windshaftClient = new cdb.windshaft.Client({
-        ajax: $.ajax,
-        user_name: layerGroupLayer.options.user_name,
-        maps_api_template: layerGroupLayer.options.maps_api_template,
-        stat_tag: data.layers[1].options.layer_definition.stat_tag,
-        force_compress: false,
-        force_cors: false,
-        endpoint: MapBase.BASE_URL // This is different for named_maps
-      });
-
-      var layerDefinition = new LayerDefinition(layerGroupLayer.options.layer_definition, layerGroupLayer.options);
-      windshaftMap = windshaftClient.instantiateMap(layerDefinition);
-    }
-
     if (data.datasources && data.datasources.length) {
       // Only one datasource?
       var datasource = _.first(data.datasources);
       var datasourceLayer = _.find(data.layers, function(l) {
         return l.datasource === datasource.id
       });
-      this.datasource = new cdb.core.Datasource(datasource, { layerDef: datasourceLayer });
+
+      var layerGroupLayer = data.layers[1];
+      var windshaftClient = new cdb.windshaft.Client({
+        ajax: $.ajax,
+        user_name: datasource.user_name,
+        maps_api_template: datasource.maps_api_template,
+        stat_tag: datasource.stat_tag,
+        force_compress: false,
+        force_cors: false,
+        endpoint: MapBase.BASE_URL // This is different for named_maps
+      });
+
+      var layerDefinition = new LayerDefinition(datasourceLayer.options.layer_definition, {});
+      windshaftMap = windshaftClient.instantiateMap(layerDefinition);
+
+      this.datasource = new cdb.core.Datasource(datasource, { windshaftMap: windshaftMap });
 
       _.each(data.widgets, function(d) {
         var opts = d.options;
@@ -514,8 +512,6 @@ var Vis = cdb.core.View.extend({
 
         $('body').append(v.render().el);
       });
-
-      this.datasource.instantiate();
     }
 
     this.map.layers.reset(_.map(data.layers, function(layerData) {

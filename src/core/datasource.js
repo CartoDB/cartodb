@@ -6,8 +6,10 @@ cdb.core.Datasource = cdb.core.Model.extend({
 
   initialize: function(attrs, opts) {
     this._generateWidgetCollections();
-    this._layerDef = new LayerDefinition(opts.layerDef.options.layer_definition, opts.layerDef.options);
+    this._windshaftMap = opts.windshaftMap;
     this._initBinds();
+
+    this.trigger('loading');
   },
 
   _generateWidgetCollections: function() {
@@ -28,7 +30,14 @@ cdb.core.Datasource = cdb.core.Model.extend({
     }
   },
 
-  _initBinds: function() {},
+  _initBinds: function() {
+    var self = this;
+
+    this._windshaftMap.bind("change:layergroupid", function() {
+      self.set('id', self._windshaftMap.get('layergroupid'));
+      self.trigger('done');
+    })
+  },
 
   addWidgetModel: function(d) {
     if (!this._WIDGETS[d.type]) {
@@ -42,16 +51,6 @@ cdb.core.Datasource = cdb.core.Model.extend({
       mdl.set("id", id);
     }, this);
     return mdl;
-  },
-
-  instantiate: function(callback) {
-    var self = this;
-    this.trigger('loading');
-    this._layerDef.createMap(function(data) {
-      self.set('id', data.layergroupid);
-      self.trigger('done');
-      callback && callback(data);
-    });
   },
 
   filter: function(min, max) {

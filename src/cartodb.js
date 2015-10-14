@@ -132,7 +132,8 @@
         'api/sql.js',
         'api/vis.js',
 
-        'windshaft/client.js'
+        'windshaft/client.js',
+        'windshaft/public_map.js'
     ];
 
     cdb.init = function(ready) {

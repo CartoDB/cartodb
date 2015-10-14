@@ -164,8 +164,8 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
     this.fire('loading');
     var map = this.options.map;
 
-    var wadus = function(map) {
-      var urls = map.getTiles();
+    var setTilesURLandReloadInteraction = function() {
+      var urls = self.model.windshaftMap.getTiles();
       if(urls) {
         self.tilejson = urls;
         self.setUrl(self.tilejson.tiles[0]);
@@ -179,14 +179,10 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
       }
     }
 
-    if (this.windshaftMap) {
-      wadus(this.windshaftMap);
+    if (this.model.windshaftMap.isNew()) {
+      this.model.windshaftMap.bind('change', setTilesURLandReloadInteraction);
     } else {
-      // TODO: This could happen somewhere else
-      this.model.windshaftClient.instantiateMap(this, function(map) {
-        self.windshaftMap = map;
-        wadus(map);
-      })
+      setTilesURLandReloadInteraction();
     }
   },
 

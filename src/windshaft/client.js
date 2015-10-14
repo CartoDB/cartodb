@@ -28,20 +28,20 @@ cdb.windshaft.Client.MAX_GET_SIZE = 2033;
  * @param  {function} callback A callback that will get the public or private map
  * @return {cdb.windshaft.PublicMap|cdb.windshaft.PrivateMap} The instance of the map
  */
-cdb.windshaft.Client.prototype.instantiateMap = function(mapDefinition, callback) {
+cdb.windshaft.Client.prototype.instantiateMap = function(mapDefinition) {
   var payload = JSON.stringify(mapDefinition.toJSON());
-  
+
+  // TODO: We will need to instantiate a new cdb.windshaft.PublicMap() here
+  var windshaftMap = new cdb.windshaft.PublicMap();
+
   var options = {
     success: function(data) {
       if (data.errors) {
         callback(null, data);
       } else {
         var baseURL =  this.baseURL.replace('{user}', this.userName);
-        var options = {
-          baseURL: baseURL,
-          ajax: this.ajax
-        }
-        callback(new cdb.windshaft.PublicMap(data, options));
+        data.baseURL = baseURL;
+        windshaftMap.set(data);
       }
     }.bind(this),
     error: function() {
@@ -60,6 +60,8 @@ cdb.windshaft.Client.prototype.instantiateMap = function(mapDefinition, callback
   } else {
     this._get(payload, options);
   }
+
+  return windshaftMap;
 }
 
 cdb.windshaft.Client.prototype._usePOST = function(payload) {

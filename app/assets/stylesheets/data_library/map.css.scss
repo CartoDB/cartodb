@@ -15,10 +15,16 @@
 .DataLibraryMap .leaflet-zoom-animated {
   background: #2E3C43 !important;
 }
-// .DataLibrary-header {
-//   pointer-events: none;
+.DataLibrary-header {
+  height: 450px;
 
-//   &.is-active {
-//     pointer-events: auto;
-//   }
-// }
+  .DataLibraryMap {
+    pointer-events: none;
+  }
+
+  &.is-active {
+    .DataLibraryMap {
+      pointer-events: auto;
+    }
+  }
+}

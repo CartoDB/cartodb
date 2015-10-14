@@ -12,8 +12,13 @@
 
 .CountrySelector {
   margin-bottom: 30px;
+  margin-right: auto;
   margin-left: auto;
   text-align: right;
+
+  &.is-hidden {
+    display: none;
+  }
 }
 .CountrySelector-button {
   @include country-selector-button();

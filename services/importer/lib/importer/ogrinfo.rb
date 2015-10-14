@@ -35,7 +35,7 @@ module CartoDB
       def run
         if !@executed
           stdout, stderr, status = Open3.capture3(command)
-          @raw_output = stdout
+          @raw_output = stdout.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '?')
           @exit_code = status.to_i
           @executed = true
         end

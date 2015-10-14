@@ -34,7 +34,7 @@ module CartoDB
         @destination_schema     = destination_schema
         @support_tables_helper  = CartoDB::Visualization::SupportTables.new(database,
                                                                             {public_user_roles: public_user_roles})
-        @data_import            = nil
+        @data_import            = data_import
         @imported_table_ids = []
         @rejected_layers = nil
       end
@@ -53,6 +53,7 @@ module CartoDB
           results.select(&:success?).each { |result|
             register(result)
           }
+
           if @data_import.create_visualization
             create_visualization
           end

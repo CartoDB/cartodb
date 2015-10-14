@@ -12,7 +12,7 @@ module CartoDB
       end
 
       def initialize(filepath, job = nil, importer_config = nil)
-        super(SUPPORTED_EXTENSION, filepath, job, importer_config)
+        super(SUPPORTED_EXTENSION, filepath, job, nil, importer_config)
       end
 
     end

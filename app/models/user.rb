@@ -2002,7 +2002,19 @@ TRIGGER
         retry = #{varnish_retry}
         trigger_verbose = #{varnish_trigger_verbose}
 
-        import httplib
+        if 'httplib' not in GD:
+          import httplib
+          GD['httplib'] = httplib
+        else:  
+          httplib = GD['httplib']
+        
+        if 'time' not in GD:
+          import time
+          GD['time'] = time
+        else:  
+          time = GD['time']
+
+        start = time.time()
 
         while True:
 
@@ -2027,6 +2039,12 @@ TRIGGER
                 plpy.error('Varnish purge error: ' +  str(err))
               break
             retry -= 1 # try reconnecting
+
+        end = time.time()
+        log_error_verbosity = plpy.execute("SHOW log_error_verbosity")[0]["log_error_verbosity"]
+        plpy.execute("SET log_error_verbosity=TERSE")
+        plpy.log("Invalidation: %f" % (end - start))
+        plpy.execute("SET log_error_verbosity=%s" % log_error_verbosity)
     $$
     LANGUAGE 'plpythonu' VOLATILE;
     REVOKE ALL ON FUNCTION public.cdb_invalidate_varnish(TEXT) FROM PUBLIC;

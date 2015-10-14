@@ -52,7 +52,7 @@ WORKING_SPECS_1 = \
   spec/lib/string_spec.rb \
   spec/lib/image_metadata_spec.rb \
   spec/lib/central_spec.rb \
-  spec/lib/trending_maps_spec.rb \
+  spec/lib/trending_maps_spec.rb \ # Pending
   spec/lib/explore_api_spec.rb \
   spec/lib/carto/http/client_spec.rb \
 	spec/helpers/uuidhelper_spec.rb \
@@ -89,7 +89,7 @@ WORKING_SPECS_2 = \
   services/importer/spec/unit/sql_loader_spec.rb \
   services/importer/spec/unit/ogr2ogr_spec.rb \
   services/importer/spec/unit/post_import_handler_spec.rb \
-  services/importer/spec/unit/runner_spec.rb \
+  services/importer/spec/unit/runner_spec.rb \ # Pending
   services/importer/spec/unit/unp_spec.rb \
   services/importer/spec/unit/url_translator/fusion_tables_spec.rb \
   services/importer/spec/unit/url_translator/github_spec.rb \

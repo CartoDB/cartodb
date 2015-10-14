@@ -1,1 +1,0 @@
-make check-1

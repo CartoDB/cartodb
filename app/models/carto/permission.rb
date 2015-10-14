@@ -19,7 +19,7 @@ class Carto::Permission < ActiveRecord::Base
   belongs_to :entity, class_name: proc { self.entity_class }
 
   def entity_class
-    case self.entity_type
+    case entity_type
     when ENTITY_TYPE_VISUALIZATION
       Carto::Visualization
     end

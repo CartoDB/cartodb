@@ -116,7 +116,7 @@ WORKING_SPECS_4 = \
 	spec/requests/carto/api/organizations_controller_spec.rb \
   spec/requests/api/imports_spec.rb \
   spec/requests/api/json/imports_controller_spec.rb \
-	spec/requests/carto/api/imports_controller_spec.rb \
+	spec/requests/carto/api/imports_controller_spec.rb \ # Pending
   spec/connectors/importer_spec.rb \
   spec/requests/api/geocodings_spec.rb \
   services/importer/spec/unit/url_translator/osm_spec.rb \
@@ -126,7 +126,7 @@ WORKING_SPECS_4 = \
 
 WORKING_SPECS_5 = \
   spec/rspec_configuration.rb \
-  spec/requests/api/assets_spec.rb \
+  spec/requests/api/assets_spec.rb \ # Pending
   spec/requests/carto/api/assets_controller_spec.rb \
   spec/requests/api/user_layers_spec.rb \
   spec/requests/api/json/layers_controller_spec.rb \

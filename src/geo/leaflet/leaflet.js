@@ -175,6 +175,19 @@
 
     },
 
+    // LAYER VIEWS ARE CREATED HERE
+    _addLayer: function(layer, layers, opts) {
+      var self = this;
+      var lyr, layer_view;
+      layer_view = cdb.geo.LeafletMapView.createLayer(layer, this.map_leaflet);
+      if (!layer_view) {
+        return;
+      }
+      return this._addLayerToMap(layer_view, opts);
+    },
+
+
+
     clean: function() {
       //see https://github.com/CloudMade/Leaflet/issues/1101
       L.DomEvent.off(window, 'resize', this.map_leaflet._onResize, this.map_leaflet);
@@ -230,16 +243,6 @@
 
     createLayer: function(layer) {
       return cdb.geo.LeafletMapView.createLayer(layer, this.map_leaflet);
-    },
-
-    _addLayer: function(layer, layers, opts) {
-      var self = this;
-      var lyr, layer_view;
-      layer_view = cdb.geo.LeafletMapView.createLayer(layer, this.map_leaflet);
-      if (!layer_view) {
-        return;
-      }
-      return this._addLayerToMap(layer_view, opts);
     },
 
     _addLayerToMap: function(layer_view, opts) {

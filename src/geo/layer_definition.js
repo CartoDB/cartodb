@@ -38,27 +38,6 @@ MapBase.prototype = {
     opts.maps_api_template = [tilerProtocol, "://", username, tilerDomain, tilerPort].join('');
   },
 
-  createMap: function(callback) {
-    if (!this.named_map && this.visibleLayers().length === 0) {
-      callback(null);
-      return;
-    }
-
-    this.windshaftClient.instantiateMap(this, function(map) {
-      callback(map);
-
-      // refresh layer when invalidation time has passed
-      clearTimeout(this._refreshTimer);
-      this._refreshTimer = setTimeout(function() {
-        this.invalidate();
-      }.bind(this), this.options.refreshTime || (60*120*1000)); // default layergroup ttl
-    }.bind(this));
-  },
-
-  fetchAttributes: function(layer_index, feature_id, columnNames, callback) {
-    this.windshaftMap.fetchAttributes(layer_index, feature_id, columnNames, callback);
-  },
-
   _callbackName: function() {
     return cdb.core.util.uniqueCallbackName(JSON.stringify(this.toJSON()));
   },
@@ -66,40 +45,6 @@ MapBase.prototype = {
   invalidate: function() {
     this.windshaftMap = null;
     this.onLayerDefinitionUpdated();
-  },
-
-  getTiles: function(callback) {
-    var self = this;
-    if(this.windshaftMap) {
-      callback && callback(this.windshaftMap.getTiles());
-      return this;
-    }
-    this.createMap(function(map, err) {
-      if(map) {
-        self.windshaftMap = map;
-        // if cdn_url is present, use it
-        // if (map.cdn_url) {
-        //   self.options.cdn_url = self.options.cdn_url || {}
-        //   self.options.cdn_url = {
-        //     http: map.cdn_url.http || self.options.cdn_url.http,
-        //     https: map.cdn_url.https || self.options.cdn_url.https
-        //   }
-        // }
-        // self.urls = self._layerGroupTiles(self.windshaftMap, self.options.extra_params);
-        callback && callback(map.getTiles());
-      } else {
-        if ((self.named_map !== null) && (err) ){
-          callback && callback(null, err);
-        } else if (self.visibleLayers().length === 0) {
-          callback && callback({
-            tiles: [MapBase.EMPTY_GIF],
-            grids: []
-          });
-          return;
-        } 
-      }
-    });
-    return this;
   },
 
   onLayerDefinitionUpdated: function() {},
@@ -260,17 +205,6 @@ function LayerDefinition(layerDefinition, options) {
   MapBase.call(this, options);
   this.endPoint = MapBase.BASE_URL;
   this.setLayerDefinition(layerDefinition, { silent: true });
-
-  // TODO: Inject this!
-  this.windshaftClient = new cdb.windshaft.Client({
-    ajax: options.ajax,
-    user_name: options.user_name,
-    maps_api_template: options.maps_api_template,
-    stat_tag: this.stat_tag,
-    force_compress: options.force_compress,
-    force_cors: options.force_cors,
-    endpoint: this.endPoint
-  });
 }
 
 /**
@@ -445,17 +379,6 @@ function NamedMap(named_map, options) {
   this.options.gridParams.push('auth_token')
   this.setLayerDefinition(named_map, options)
   this.stat_tag = named_map.stat_tag;
-
-  // TODO: Inject this!
-  this.windshaftClient = new cdb.windshaft.Client({
-    ajax: options.ajax,
-    user_name: options.user_name,
-    maps_api_template: options.maps_api_template,
-    stat_tag: this.stat_tag,
-    force_compress: options.force_compress,
-    force_cors: options.force_cors,
-    endpoint: this.endPoint
-  });
 }
 
 NamedMap.prototype = _.extend({}, MapBase.prototype, {

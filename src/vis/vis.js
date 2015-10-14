@@ -470,8 +470,24 @@ var Vis = cdb.core.View.extend({
       this.mapView.bind('newLayerView', this.addTooltip, this);
     }
 
+    var layerGroupLayer = data.layers[1];
+
+    var windshaftClient = new cdb.windshaft.Client({
+      ajax: $.ajax,
+      user_name: layerGroupLayer.options.user_name,
+      maps_api_template: layerGroupLayer.options.maps_api_template,
+      stat_tag: data.layers[1].options.layer_definition.stat_tag,
+      force_compress: false,
+      force_cors: false,
+      endpoint: MapBase.BASE_URL // This is different for named_maps
+    });
+
+    // LAYER MODELS ARE CREATED HERE
     this.map.layers.reset(_.map(data.layers, function(layerData) {
-      return Layers.create(layerData.type || layerData.kind, self, layerData);
+      var model = Layers.create(layerData.type || layerData.kind, self, layerData);
+      model.windshaftClient = windshaftClient;
+
+      return model;
     }));
 
     this.overlayModels.reset(data.overlays);
@@ -499,6 +515,7 @@ var Vis = cdb.core.View.extend({
       }
 
     }
+
 
     _.defer(function() {
       self.trigger('done', self, self.getLayers());
@@ -1200,7 +1217,7 @@ var Vis = cdb.core.View.extend({
         var fields = _.pluck(infowindowFields.fields, 'name');
         var cartodb_id = data.cartodb_id;
 
-        layerView.fetchAttributes(layer, cartodb_id, fields, function(attributes) {
+        layerView.windshaftMap.fetchAttributes(layer, cartodb_id, fields, function(attributes) {
 
           // Old viz.json doesn't contain width and maxHeight properties
           // and we have to get the default values if there are not defined.

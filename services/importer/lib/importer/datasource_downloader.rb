@@ -9,13 +9,14 @@ module CartoDB
   module Importer2
     class DatasourceDownloader
 
-      def initialize(datasource, item_metadata, options={}, logger = nil, repository=nil)
+      def initialize(datasource, item_metadata, options = {}, logger = nil, repository = nil)
         @checksum = nil
 
         @source_file = nil
         @datasource = datasource
         @item_metadata = item_metadata
         @options = options
+        @importer_config = options[:importer_config]
         raise UploadError if datasource.nil?
 
         @logger = logger
@@ -46,7 +47,7 @@ module CartoDB
 
       def clean_up
         if defined?(@temporary_directory) \
-           && @temporary_directory =~ /^#{CartoDB::Importer2::Unp::IMPORTER_TMP_SUBFOLDER}/ \
+           && @temporary_directory =~ /^#{Unp.new(@importer_config).get_temporal_subfolder_path}/ \
            && !(@temporary_directory =~ /\.\./)
           FileUtils.rm_rf @temporary_directory
         end
@@ -70,7 +71,7 @@ module CartoDB
       attr_reader  :source_file, :item_metadata, :datasource, :options, :logger, :repository
 
       private
-      
+
       attr_writer :source_file
 
       # In the case of DirectStream datasources, this will store a sample to trigger DB creation.
@@ -138,7 +139,7 @@ module CartoDB
 
       def temporary_directory
         return @temporary_directory if @temporary_directory
-        @temporary_directory = Unp.new.generate_temporary_directory.temporary_directory
+        @temporary_directory = Unp.new(@importer_config).generate_temporary_directory.temporary_directory
       end
     end
   end

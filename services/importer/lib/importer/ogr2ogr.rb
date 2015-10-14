@@ -1,6 +1,6 @@
 # encoding: utf-8
 require 'open3'
-require_relative 'ogr2ogr_guessing_params'
+require_relative 'ogr2ogr_params_helper'
 
 module CartoDB
   module Importer2
@@ -140,7 +140,7 @@ module CartoDB
 
       def guessing_options
         if csv_guessing && is_csv?
-          Ogr2ogrGuessingParams.new(filepath, quoted_fields_guessing).params
+          params_helper.guessing_args
         else
           ''
         end
@@ -179,12 +179,17 @@ module CartoDB
 
       def layer_creation_options
         # Dimension option, precision option
-        "-lco DIM=2 -lco PRECISION=NO"
+        "-lco DIM=2 -lco PRECISION=NO #{params_helper.geometry_name_option}"
       end
 
       def projection_option
         is_csv? || filepath =~ /\.ods/ ? nil : '-t_srs EPSG:4326 '
       end
+
+      def params_helper
+        @params_helper ||= Ogr2ogrParamsHelper.new(filepath, quoted_fields_guessing)
+      end
+
     end
   end
 end

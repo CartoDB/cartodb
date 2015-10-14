@@ -289,7 +289,7 @@ namespace :cartodb do
     task :move_user_to_schema, [:username] => :environment do |t, args|
       user = ::User.find(username: args[:username])
       user.move_to_own_schema
-      user.db_service.setup_schema
+      user.db_service.setup_organization_user_schema
       user.save
     end
 
@@ -387,6 +387,7 @@ namespace :cartodb do
       puts "Resetting check quota trigger for ##{::User.count} users"
       ::User.all.each_with_index do |user, i|
         begin
+          puts "Setting user quota in db '#{user.database_name}' (#{user.username})"
           user.db_service.rebuild_quota_trigger
         rescue => exception
           puts "\nERRORED #{user.id} (#{user.username}): #{exception.message}\n"
@@ -414,6 +415,7 @@ namespace :cartodb do
       quota = args[:quota_in_mb].to_i * 1024 * 1024
       user.update(:quota_in_bytes => quota)
 
+      puts "Setting user quota in db '#{user.database_name}' (#{user.username})"
       user.db_service.rebuild_quota_trigger
 
       puts "User: #{user.username} quota updated to: #{args[:quota_in_mb]}MB. #{user.tables.count} tables updated."
@@ -581,6 +583,7 @@ namespace :cartodb do
     desc "Update test_quota trigger"
     task :update_test_quota_trigger => :environment do
       ::User.all.each do |user|
+        puts "Setting user quota in db '#{user.database_name}' (#{user.username})"
         user.db_service.rebuild_quota_trigger
       end
     end

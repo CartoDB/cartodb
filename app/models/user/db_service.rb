@@ -21,19 +21,38 @@ module CartoDB
         @queries
       end
 
+      # This method is used both upon user creation and by the UserMover
+      # All methods called inside should allow to be executed multiple times without errors
       def configure_database
-        grant_user_in_database
-        set_user_privileges_at_db
-        set_statement_timeouts
-        setup_schema if @user.database_schema != SCHEMA_PUBLIC
-        create_function_invalidate_varnish
+        set_database_search_path
 
-        @user.reload
+        # DB CONNECT properties to the user
+        grant_user_in_database
+        # schema privileges (public, cartodb, own, raster, import...)
+        set_statement_timeouts
+
+        # TODO: This smells to bug, this was called by User.setup_new_user from the non-org user flow
+        set_user_as_organization_member
+        # ------------------------------
+
+        if @user.database_schema == SCHEMA_PUBLIC
+          setup_single_user_schema
+        else
+          setup_organization_user_schema
+        end
+        create_function_invalidate_varnish
+        grant_publicuser_in_database
       end
 
-      # INFO: This method is used both when creating a new user and by the relocator
-      # when user is relocated to an org database.
-      def setup_schema
+      # All methods called inside should allow to be executed multiple times without errors
+      def setup_single_user_schema
+        set_user_privileges_at_db
+
+        rebuild_quota_trigger
+      end
+
+      # All methods called inside should allow to be executed multiple times without errors
+      def setup_organization_user_schema
         reset_user_schema_permissions
         reset_schema_owner
         set_user_privileges_at_db
@@ -47,7 +66,6 @@ module CartoDB
       end
 
       def rebuild_quota_trigger
-        puts "Setting user quota in db '#{@user.database_name}' (#{@user.username})"
         @user.in_database(as: :superuser) do |db|
           if !@user.cartodb_extension_version_pre_mu? && @user.has_organization?
             db.run("DROP FUNCTION IF EXISTS public._CDB_UserQuotaInBytes();")
@@ -67,6 +85,15 @@ module CartoDB
             end
             db.run("SET search_path TO #{search_path};")
           end
+        end
+      end
+
+      def set_database_search_path
+        @user.in_database(as: :superuser) do |database|
+          database.run(%{
+            ALTER USER "#{@user.database_username}"
+              SET search_path = "#{@user.database_schema}", #{SCHEMA_PUBLIC}, #{SCHEMA_CARTODB}
+          })
         end
       end
 
@@ -318,7 +345,6 @@ module CartoDB
         set_user_privileges_in_importer_schema(org_member_role)
         set_user_privileges_in_geocoding_schema(org_member_role)
       end
-
 
       def drop_users_privileges_in_schema(schema, accounts)
         @user.in_database(as: :superuser, statement_timeout: 600000) do |user_database|

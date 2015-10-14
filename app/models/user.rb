@@ -1529,13 +1529,11 @@ class User < Sequel::Model
     create_importer_schema
     create_geocoding_schema
     load_cartodb_functions
-    set_database_search_path
+
     db_service.reset_database_permissions # Reset privileges
-    db_service.grant_publicuser_in_database
-    db_service.set_user_privileges_at_db # Set privileges
-    db_service.set_user_as_organization_member
-    db_service.rebuild_quota_trigger
-    db_service.create_function_invalidate_varnish
+
+    db_service.configure_database
+
     revoke_cdb_conf_access
   end
 
@@ -1546,7 +1544,7 @@ class User < Sequel::Model
       create_db_user
     end.join
     create_own_schema
-    db_service.setup_schema
+    db_service.setup_organization_user_schema
     revoke_cdb_conf_access
   end
 
@@ -1555,15 +1553,12 @@ class User < Sequel::Model
     self.database_schema = self.username
     this.update database_schema: database_schema
     create_user_schema
-    set_database_search_path
+    db_service.set_database_search_path
     create_public_db_user
   end
 
   def move_to_own_schema
-    self.move_to_schema(self.username)
-  end
-
-  def move_to_schema(new_schema_name)
+    new_schema_name = self.username
     if self.database_schema != new_schema_name
       old_database_schema_name = self.database_schema
       self.database_schema = new_schema_name
@@ -1572,7 +1567,7 @@ class User < Sequel::Model
       db_service.rebuild_quota_trigger
       self.move_tables_to_schema(old_database_schema_name, self.database_schema)
       self.create_public_db_user
-      self.set_database_search_path
+      db_service.set_database_search_path
     end
   end
 
@@ -1607,12 +1602,6 @@ class User < Sequel::Model
       else
         self.setup_new_user
       end
-    end
-  end
-
-  def set_database_search_path
-    in_database(as: :superuser) do |database|
-      database.run(%Q{ ALTER USER "#{database_username}" SET search_path = "#{database_schema}", public, cartodb })
     end
   end
 

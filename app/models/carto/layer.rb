@@ -7,10 +7,11 @@ module Carto
     serialize :tooltip, JSON
 
     has_many :layers_maps
-    has_many :layers, through: :layers_maps
+    has_many :maps, through: :layers_maps
 
     has_many :layers_user
     has_many :users, through: :layers_user
+
 
     has_many :layers_user_table, foreign_key: :layer_id
     has_many :user_tables, through: :layers_user_table, class_name: Carto::UserTable

@@ -4,7 +4,7 @@ require_relative '../../helpers/bounding_box_helper'
 
 class Carto::Map < ActiveRecord::Base
 
-  has_many :layers_maps, inverse_of: :map
+  has_many :layers_maps
   has_many :layers, class_name: 'Carto::Layer', order: '"order"', through: :layers_maps
 
   has_many :base_layers, class_name: 'Carto::Layer', order: '"order"', through: :layers_maps
@@ -13,37 +13,43 @@ class Carto::Map < ActiveRecord::Base
                           class_name: 'Carto::Layer',
                           conditions: { kind: 'carto' },
                           order: '"order"',
-                          through: 'layers_maps'
+                          through: :layers_maps,
+                          source: :layer
 
   has_many :user_layers,
                           class_name: 'Carto::Layer',
                           conditions: { kind: ['tiled', 'background', 'gmapsbase', 'wms'] },
                           order: '"order"',
-                          through: 'layers_maps'
+                          through: :layers_maps,
+                          source: :layer
 
   has_many :carto_and_torque_layers,
                           class_name: 'Carto::Layer',
                           conditions: { kind: ['carto', 'torque'] },
                           order: '"order"',
-                          through: 'layers_maps'
+                          through: :layers_maps,
+                          source: :layer
 
   has_many :torque_layers,
                           class_name: 'Carto::Layer',
                           conditions: { kind: 'torque' },
                           order: '"order"',
-                          through: 'layers_maps'
+                          through: :layers_maps,
+                          source: :layer
 
   has_many :other_layers,
                           class_name: 'Carto::Layer',
                           conditions: "kind not in ('carto', 'tiled', 'background', 'gmapsbase', 'wms')",
                           order: '"order"',
-                          through: 'layers_maps'
+                          through: :layers_maps,
+                          source: :layer
 
   has_many :named_maps_layers,
                           class_name: 'Carto::Layer',
                           conditions: { kind: ['carto', 'tiled', 'background', 'gmapsbase', 'wms'] },
                           order: '"order"',
-                          through: 'layers_maps'
+                          through: :layer_maps,
+                          source: :layer
 
   has_one :user_table
 

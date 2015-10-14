@@ -1,7 +1,7 @@
 #!/bin/bash
 # Jesus Vazquez
 truncate -s 0 specfull.txt
-cat Makefile| grep -v '# S' | grep -v '# Pending' | grep 'rb' | sed -e 's/^\s*//' -e '/^$/d' | \
+cat Makefile.parallel| grep -v '# S' | grep -v '# Pending' | grep 'rb' | sed -e 's/^\s*//' -e '/^$/d' | \
   sed '/^#/ d' | sed 's/\\//' | sed 's/\s.*$//' > temp.txt
 
 i=6001;

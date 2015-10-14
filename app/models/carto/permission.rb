@@ -21,7 +21,7 @@ class Carto::Permission < ActiveRecord::Base
   def entity_class
     case self.entity_type
     when ENTITY_TYPE_VISUALIZATION
-       Carto::Visualization
+      Carto::Visualization
     end
   end
 

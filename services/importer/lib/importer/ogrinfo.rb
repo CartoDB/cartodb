@@ -27,9 +27,13 @@ module CartoDB
       end
 
       def fields
-        raw_output.split("\n")
-          .grep(/^[a-zA-Z_]+:/)[3..-1] # get 'key: val' pairs and skip the 3 first items
-          .map{|s| s.gsub(/:.*/, '') } # keep the key
+        key_val_pairs = raw_output.split("\n").grep(/^[a-zA-Z_]+:/)[3..-1]
+
+        if key_val_pairs
+          key_val_pairs.map{ |s| s.gsub(/:.*/, '') } # keep the key
+        else
+          []
+        end
       end
 
 

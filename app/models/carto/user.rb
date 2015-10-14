@@ -11,7 +11,7 @@ class Carto::User < ActiveRecord::Base
   MIN_PASSWORD_LENGTH = 6
   GEOCODING_BLOCK_SIZE = 1000
   # INFO: select filter is done for security and performance reasons. Add new columns if needed.
-  DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," + 
+  DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," +
                    "users.api_key, users.database_schema, users.database_name, users.name, users.location," +
                    "users.disqus_shortname, users.account_type, users.twitter_username, users.google_maps_key"
 

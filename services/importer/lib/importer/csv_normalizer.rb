@@ -25,12 +25,13 @@ module CartoDB
       REVERSE_LINE_FEED     = "\x8D"
 
 
-      def initialize(filepath, job=nil)
+      def initialize(filepath, job = nil, importer_config = nil)
         @filepath = filepath
         @job      = job || Job.new
         @delimiter = nil
         @force_normalize = false
         @encoding = nil
+        @importer_config = importer_config
       end
 
       def force_normalize
@@ -83,9 +84,9 @@ module CartoDB
         end
 
         occurrences = Hash[
-          COMMON_DELIMITERS.map { |delimiter| 
-            [delimiter, lines_for_detection.map { |line| 
-              line.count(delimiter) }] 
+          COMMON_DELIMITERS.map { |delimiter|
+            [delimiter, lines_for_detection.map { |line|
+              line.count(delimiter) }]
           }
         ]
 
@@ -93,9 +94,9 @@ module CartoDB
 
         variances = Hash.new
         @delimiter = DEFAULT_DELIMITER
-        
+
         use_variance = true
-        occurrences.each { |key, values| 
+        occurrences.each { |key, values|
           if values.length > 1
             variances[key] = sample_variance(values) unless values.first == 0
           elsif values.length == 1
@@ -235,7 +236,7 @@ module CartoDB
       private
 
       def generate_temporary_directory
-        self.temporary_directory = Unp.new.generate_temporary_directory.temporary_directory
+        self.temporary_directory = Unp.new(@importer_config).generate_temporary_directory.temporary_directory
         self
       end
 

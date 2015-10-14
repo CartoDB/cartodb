@@ -2,6 +2,7 @@
 
 require 'active_record'
 require_relative 'user_service'
+require_relative 'user_db_service'
 require_relative 'synchronization_oauth'
 
 # TODO: This probably has to be moved as the service of the proper User Model
@@ -29,7 +30,7 @@ class Carto::User < ActiveRecord::Base
   has_many :groups, :through => :users_group
 
   delegate [
-      :database_username, :database_password, :in_database, :load_cartodb_functions, :rebuild_quota_trigger,
+      :database_username, :database_password, :in_database, :load_cartodb_functions,
       :db_size_in_bytes, :get_api_calls, :table_count, :public_visualization_count, :visualization_count,
       :twitter_imports_count, :maps_count
     ] => :service
@@ -83,6 +84,10 @@ class Carto::User < ActiveRecord::Base
 
   def service
     @service ||= Carto::UserService.new(self)
+  end
+
+  def db_service
+    @db_service ||= Carto::UserDBService.new(self)
   end
 
   #                             +--------+---------+------+

@@ -57,7 +57,7 @@ module CartoDB
               #Fix permissions and metadata settings for owner
               owner_user = ::User.find(id: owner_id)
               owner_user.database_host = @target_dbhost
-              owner_user.setup_organization_owner
+              owner_user.db_service.setup_organization_owner
 
               @pack_config['users'].reject{|u| u['id'] == owner_id}.each do |user|
                 @logger.info("Importing org user #{user['id']}..")
@@ -180,7 +180,7 @@ module CartoDB
             end
 
             user_model = ::User.find(username: @target_username)
-            user_model.db_manager.configure_database
+            user_model.db_service.configure_database
 
           elsif @options[:mode] == :rollback
             rollback_metadata("user_#{@target_userid}_metadata_undo.sql")

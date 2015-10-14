@@ -26,15 +26,15 @@ module CartoDB
           :set_database_search_path => nil,
           :load_cartodb_functions => nil,
           :monitor_user_notification => nil,
-          :cartodb_extension_version_pre_mu? => false,
-          :rebuild_quota_trigger => nil
+          :cartodb_extension_version_pre_mu? => false
         )
 
-        CartoDB::User::DB::Manager.any_instance.stubs(
+        CartoDB::User::DBService.any_instance.stubs(
           grant_user_in_database: nil,
           set_user_privileges_at_db: nil,
           set_statement_timeouts: nil,
-          set_user_as_organization_member: nil
+          set_user_as_organization_member: nil,
+          rebuild_quota_trigger: nil
         )
       end
 
@@ -141,16 +141,15 @@ module CartoDB
       user.geocodings_dataset.destroy
       user.delete_external_data_imports
       user.delete_external_sources
-      CartoDB::Visualization::Collection.new.fetch(user_id: user.id).each { |v|
+      CartoDB::Visualization::Collection.new.fetch(user_id: user.id).each do |v|
         # INFO: no need for explicit children deletion, parent will delete it
         v.delete unless v.parent_id
-      }
+      end
     end
 
     def load_user_functions(user)
       user.load_cartodb_functions
-      user.rebuild_quota_trigger
+      user.db_service.rebuild_quota_trigger
     end
-
   end
 end

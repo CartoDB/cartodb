@@ -282,14 +282,14 @@ namespace :cartodb do
     desc 'Install/upgrade Varnish trigger for a single user'
     task :load_varnish_trigger_user, [:username] => :environment do |t, args|
       user = ::User.find(username: args[:username])
-      user.db_manager.create_function_invalidate_varnish
+      user.db_service.create_function_invalidate_varnish
     end
 
     desc 'Move user to its own schema'
     task :move_user_to_schema, [:username] => :environment do |t, args|
       user = ::User.find(username: args[:username])
       user.move_to_own_schema
-      user.setup_schema
+      user.db_service.setup_schema
       user.save
     end
 
@@ -307,7 +307,7 @@ namespace :cartodb do
       end
       execute_on_users_with_index(:load_varnish_trigger.to_s, Proc.new { |user, i|
           begin
-            user.db_manager.create_function_invalidate_varnish
+            user.db_service.create_function_invalidate_varnish
             log(sprintf("OK %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, user.database_name, i+1, count), :load_varnish_trigger.to_s, database_host)
             sleep(sleep)
           rescue => e
@@ -344,7 +344,7 @@ namespace :cartodb do
     task :set_user_as_organization_member => :environment do
       ::User.all.each do |user|
         next if !user.respond_to?('database_name') || user.database_name.blank?
-        user.db_manager.set_user_as_organization_member
+        user.db_service.set_user_as_organization_member
       end
     end
 
@@ -358,25 +358,25 @@ namespace :cartodb do
         # !!! WARNING
         # This will delete all database permissions, and try to recreate them from scratch.
         # Use only if you know what you're doing. (or, better, don't use it)
-        user.db_manager.reset_database_permissions
-        user.db_manager.reset_user_schema_permissions
-        user.db_manager.grant_publicuser_in_database
-        user.db_manager.set_user_privileges_at_db
-        user.db_manager.fix_table_permissions
+        user.db_service.reset_database_permissions
+        user.db_service.reset_user_schema_permissions
+        user.db_service.grant_publicuser_in_database
+        user.db_service.set_user_privileges_at_db
+        user.db_service.fix_table_permissions
       end
     end
 
     desc 'Set user privileges in CartoDB schema and CDB_TableMetadata'
     task :set_user_privileges_in_cartodb_schema, [:username] => :environment do |t, args|
       user = ::User.find(username: args[:username])
-      user.db_manager.set_user_privileges_in_cartodb_schema
+      user.db_service.set_user_privileges_in_cartodb_schema
     end
 
     desc 'Set all user privileges'
     task :set_all_user_privileges, [:username] => :environment do |t, args|
       user = ::User.find(username: args[:username])
-      user.db_manager.grant_user_in_database
-      user.db_manager.set_user_privileges_at_db
+      user.db_service.grant_user_in_database
+      user.db_service.set_user_privileges_at_db
     end
 
     ##########################
@@ -387,7 +387,7 @@ namespace :cartodb do
       puts "Resetting check quota trigger for ##{::User.count} users"
       ::User.all.each_with_index do |user, i|
         begin
-          user.rebuild_quota_trigger
+          user.db_service.rebuild_quota_trigger
         rescue => exception
           puts "\nERRORED #{user.id} (#{user.username}): #{exception.message}\n"
         end
@@ -402,7 +402,7 @@ namespace :cartodb do
       raise 'usage: rake cartodb:db:reset_trigger_check_quota_for_user[username]' if args[:username].blank?
       puts "Resetting trigger check quota for user '#{args[:username]}'"
       user  = ::User.filter(:username => args[:username]).first
-      user.rebuild_quota_trigger
+      user.db_service.rebuild_quota_trigger
     end
 
     desc "set users quota to amount in mb"
@@ -414,7 +414,7 @@ namespace :cartodb do
       quota = args[:quota_in_mb].to_i * 1024 * 1024
       user.update(:quota_in_bytes => quota)
 
-      user.rebuild_quota_trigger
+      user.db_service.rebuild_quota_trigger
 
       puts "User: #{user.username} quota updated to: #{args[:quota_in_mb]}MB. #{user.tables.count} tables updated."
     end
@@ -581,7 +581,7 @@ namespace :cartodb do
     desc "Update test_quota trigger"
     task :update_test_quota_trigger => :environment do
       ::User.all.each do |user|
-        user.rebuild_quota_trigger
+        user.db_service.rebuild_quota_trigger
       end
     end
 
@@ -999,7 +999,7 @@ namespace :cartodb do
         count = users.count
         users.each_with_index do |user, i|
           begin
-            user.db_manager.set_raster_privileges
+            user.db_service.set_raster_privileges
             message = "OK %-#{20}s (%-#{4}s/%-#{4}s)\n" % [user.username, i, count]
             print message
             log(message, :grant_general_raster_permissions.to_s)
@@ -1128,7 +1128,7 @@ namespace :cartodb do
         if owner
           puts "#{o.name}\t#{o.id}\tOwner: #{owner.username}\t#{owner.id}"
           begin
-            owner.db_manager.setup_organization_role_permissions
+            owner.db_service.setup_organization_role_permissions
           rescue => e
             puts "Error: #{e.message}"
             CartoDB.notify_exception(e)
@@ -1174,7 +1174,7 @@ namespace :cartodb do
       organizations = args[:organization_name].present? ? Organization.where(name: args[:organization_name]).all : Organization.all
       run_for_organizations_owner(organizations) do |owner|
         begin
-          owner.setup_owner_permissions
+          owner.db_service.setup_owner_permissions
         rescue => e
           puts "ERROR for #{owner.organization.name}: #{e.message}"
         end
@@ -1186,7 +1186,7 @@ namespace :cartodb do
       organizations = args[:organization_name].present? ? Organization.where(name: args[:organization_name]).all : Organization.all
       run_for_organizations_owner(organizations) do |owner|
         begin
-          owner.configure_extension_org_metadata_api_endpoint
+          owner.db_service.configure_extension_org_metadata_api_endpoint
         rescue => e
           puts "ERROR for #{owner.organization.name}: #{e.message}"
         end

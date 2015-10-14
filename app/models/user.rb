@@ -14,7 +14,7 @@ require_relative './feature_flag'
 require_relative '../../lib/cartodb/stats/api_calls'
 require_relative '../../lib/carto/http/client'
 require_dependency 'cartodb_config_utils'
-require_relative './user/db/manager'
+require_relative './user/db_service'
 
 
 class User < Sequel::Model
@@ -84,8 +84,8 @@ class User < Sequel::Model
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
 
-  def db_manager
-    @db_manager ||= CartoDB::User::DB::Manager.new(self)
+  def db_service
+    @db_service ||= CartoDB::User::DBService.new(self)
   end
 
   def self.new_with_organization(organization)
@@ -192,7 +192,7 @@ class User < Sequel::Model
     self.load_avatar
     monitor_user_notification
     sleep 1
-    db_manager.set_statement_timeouts
+    db_service.set_statement_timeouts
   end
 
   def notify_new_organization_user
@@ -224,8 +224,8 @@ class User < Sequel::Model
     super
     save_metadata
     changes = (self.previous_changes.present? ? self.previous_changes.keys : [])
-    db_manager.set_statement_timeouts if changes.include?(:user_timeout) || changes.include?(:database_timeout)
-    rebuild_quota_trigger    if changes.include?(:quota_in_bytes)
+    db_service.set_statement_timeouts if changes.include?(:user_timeout) || changes.include?(:database_timeout)
+    db_service.rebuild_quota_trigger if changes.include?(:quota_in_bytes)
     if changes.include?(:account_type) || changes.include?(:available_for_hire) || changes.include?(:disqus_shortname) || changes.include?(:email) || \
        changes.include?(:website) || changes.include?(:name) || changes.include?(:description) || \
        changes.include?(:twitter_username) || changes.include?(:location)
@@ -358,17 +358,19 @@ class User < Sequel::Model
       in_database(as: :superuser) do |database|
         if is_owner
           schemas = ['cdb', 'cdb_importer', 'cartodb', 'public', self.database_schema] +
-              ::User.select(:database_schema).where(:organization_id => org_id).all.collect(&:database_schema)
+                    ::User.select(:database_schema).where(:organization_id => org_id).all.collect(&:database_schema)
           schemas.uniq.each do |s|
-            drop_users_privileges_in_schema(s, [self.database_username, self.database_public_username, CartoDB::PUBLIC_DB_USER])
+            db_service.drop_users_privileges_in_schema(s,
+              [self.database_username, self.database_public_username, CartoDB::PUBLIC_DB_USER])
           end
         end
 
         # If user is in an organization should never have public schema, so to be safe check
         unless self.database_schema == 'public'
-          drop_users_privileges_in_schema(self.database_schema, [self.database_username, self.database_public_username, CartoDB::PUBLIC_DB_USER])
+          db_service.drop_users_privileges_in_schema(self.database_schema,
+            [self.database_username, self.database_public_username, CartoDB::PUBLIC_DB_USER])
           database.run(%Q{ DROP FUNCTION IF EXISTS "#{self.database_schema}"._CDB_UserQuotaInBytes()})
-          drop_all_functions_from_schema(self.database_schema)
+          db_service.drop_all_functions_from_schema(self.database_schema)
           database.run(%Q{ DROP SCHEMA IF EXISTS "#{self.database_schema}" })
         end
       end
@@ -412,8 +414,8 @@ class User < Sequel::Model
           raise e
         else
           database_with_conflicts = $1
-          db_manager.revoke_all_on_database_from(conn, database_with_conflicts, username)
-          revoke_all_memberships_on_database_to_role(conn, database_with_conflicts, username)
+          db_service.revoke_all_on_database_from(conn, database_with_conflicts, username)
+          db_service.revoke_all_memberships_on_database_to_role(conn, username)
           drop_owned_by_user(conn, username)
           conflict_database_conn = self.in_database({
             :as => :cluster_admin,
@@ -425,7 +427,7 @@ class User < Sequel::Model
           #}
           ['cdb', 'cdb_importer', 'cartodb', 'public', self.database_schema]
           .each { |s|
-            drop_users_privileges_in_schema(s, [username])
+            db_service.drop_users_privileges_in_schema(s, [username])
           }
           retry
         end
@@ -435,12 +437,6 @@ class User < Sequel::Model
     end
   end
 
-  def revoke_all_memberships_on_database_to_role(conn, database, role)
-    q = "select rolname from pg_user join pg_auth_members on (pg_user.usesysid=pg_auth_members.member) join pg_roles on (pg_roles.oid=pg_auth_members.roleid) where pg_user.usename='#{role}'"
-    conn.fetch(q).each { |rolname|
-      conn.run("REVOKE \"#{rolname[:rolname]}\" FROM \"#{role}\" CASCADE")
-    }
-  end
 
   def drop_owned_by_user(conn, role)
     conn.run("DROP OWNED BY \"#{role}\"")
@@ -639,7 +635,7 @@ class User < Sequel::Model
       in_database.run("SET statement_timeout TO #{options[:statement_timeout]}")
     end
 
-    configuration = db_manager.db_configuration_for(options[:as])
+    configuration = db_service.db_configuration_for(options[:as])
     configuration['database'] = options['database'] unless options['database'].nil?
 
     connection = $pool.fetch(configuration) do
@@ -662,7 +658,7 @@ class User < Sequel::Model
   end
 
   def connection(options = {})
-    configuration = db_manager.db_configuration_for(options[:as])
+    configuration = db_service.db_configuration_for(options[:as])
 
     $pool.fetch(configuration) do
       get_database(options, configuration)
@@ -1395,33 +1391,6 @@ class User < Sequel::Model
       .to_a.fetch(0, {}).fetch(:created_at, nil)
   end
 
-  def rebuild_quota_trigger
-    puts "Setting user quota in db '#{database_name}' (#{username})"
-    in_database(:as => :superuser) do |db|
-
-      if !cartodb_extension_version_pre_mu? && has_organization?
-        db.run("DROP FUNCTION IF EXISTS public._CDB_UserQuotaInBytes();")
-      end
-
-      db.transaction do
-        # NOTE: this has been written to work for both
-        #       databases that switched to "cartodb" extension
-        #       and those before the switch.
-        #       In the future we should guarantee that exntension
-        #       lives in cartodb schema so we don't need to set
-        #       a search_path before
-        search_path = db.fetch("SHOW search_path;").first[:search_path]
-        db.run("SET search_path TO cartodb, public;")
-        if cartodb_extension_version_pre_mu?
-          db.run("SELECT CDB_SetUserQuotaInBytes(#{self.quota_in_bytes});")
-        else
-          db.run("SELECT CDB_SetUserQuotaInBytes('#{self.database_schema}', #{self.quota_in_bytes});")
-        end
-        db.run("SET search_path TO #{search_path};")
-      end
-    end
-  end
-
   def importing_jobs
     imports = DataImport.where(state: ['complete', 'failure']).invert
       .where(user_id: self.id)
@@ -1555,18 +1524,18 @@ class User < Sequel::Model
     Thread.new do
       create_db_user
       create_user_db
-      db_manager.grant_owner_in_database
+      db_service.grant_owner_in_database
     end.join
     create_importer_schema
     create_geocoding_schema
     load_cartodb_functions
     set_database_search_path
-    db_manager.reset_database_permissions # Reset privileges
-    db_manager.grant_publicuser_in_database
-    db_manager.set_user_privileges_at_db # Set privileges
-    db_manager.set_user_as_organization_member
-    rebuild_quota_trigger
-    db_manager.create_function_invalidate_varnish
+    db_service.reset_database_permissions # Reset privileges
+    db_service.grant_publicuser_in_database
+    db_service.set_user_privileges_at_db # Set privileges
+    db_service.set_user_as_organization_member
+    db_service.rebuild_quota_trigger
+    db_service.create_function_invalidate_varnish
     revoke_cdb_conf_access
   end
 
@@ -1577,7 +1546,7 @@ class User < Sequel::Model
       create_db_user
     end.join
     create_own_schema
-    setup_schema
+    db_service.setup_schema
     revoke_cdb_conf_access
   end
 
@@ -1600,36 +1569,10 @@ class User < Sequel::Model
       self.database_schema = new_schema_name
       self.this.update database_schema: self.database_schema
       self.create_user_schema
-      self.rebuild_quota_trigger
+      db_service.rebuild_quota_trigger
       self.move_tables_to_schema(old_database_schema_name, self.database_schema)
       self.create_public_db_user
       self.set_database_search_path
-    end
-  end
-
-  # INFO: This method is used both when creating a new user and by the relocator when user is relocated to an org database.
-  def setup_schema
-    db_manager.reset_user_schema_permissions
-    db_manager.reset_schema_owner
-    db_manager.set_user_privileges_at_db
-    db_manager.set_user_as_organization_member
-    rebuild_quota_trigger
-
-    # INFO: organization privileges are set for org_member_role, which is assigned to each org user
-    if organization_owner?
-      setup_organization_owner
-    end
-  end
-
-  def setup_organization_owner
-    db_manager.setup_organization_role_permissions
-    setup_owner_permissions
-    configure_extension_org_metadata_api_endpoint
-  end
-
-  def setup_owner_permissions
-    in_database(as: :superuser) do |database|
-      database.run(%{ SELECT cartodb.CDB_Organization_AddAdmin('#{username}') })
     end
   end
 
@@ -1720,7 +1663,7 @@ class User < Sequel::Model
 
   # Cartodb functions
   def load_cartodb_functions(statement_timeout = nil, cdb_extension_target_version = nil)
-    db_manager.add_python
+    db_service.add_python
 
     # Install dependencies of cartodb extension
     in_database({
@@ -1755,7 +1698,7 @@ class User < Sequel::Model
     # We reset the connections to this database to be sure the change in default search_path is effective
     self.reset_pooled_connections
 
-    self.rebuild_quota_trigger
+    db_service.rebuild_quota_trigger
   end
 
   # Upgrade the cartodb postgresql extension
@@ -1814,120 +1757,6 @@ class User < Sequel::Model
           raise("Expected cartodb extension '#{cdb_extension_target_version}' obtained '#{obtained}'")
         end
       end
-    end
-  end
-
-  def run_queries_in_transaction(queries, superuser = false)
-    conn_params = {}
-    if superuser
-      conn_params[:as] = :superuser
-    end
-    in_database(conn_params) do |user_database|
-      user_database.transaction do
-        queries.each do |q|
-          begin
-            user_database.run(q)
-          rescue => e
-            CartoDB.notify_debug('Error running user query in transaction', { query: q, user: self, error: e.inspect })
-            raise e
-          end
-        end
-        yield(user_database) if block_given?
-      end
-    end
-  end
-
-  def drop_users_privileges_in_schema(schema, accounts)
-    in_database(:as => :superuser, statement_timeout: 600000) do |user_database|
-      return if user_database.fetch("SELECT 1 as schema_exist FROM information_schema.schemata WHERE schema_name = '#{schema}'").first.nil?
-      user_database.transaction do
-        accounts
-          .select { |s|
-            db_manager.role_exists?(user_database, s)
-          }
-          .each { |u|
-            db_manager.revoke_privileges(user_database, schema, "\"#{u}\"")
-          }
-      end
-    end
-  end
-
-  # Drops grants and functions in a given schema, avoiding by all means a CASCADE
-  # to not affect extensions or other users
-  def drop_all_functions_from_schema(schema_name)
-    recursivity_max_depth = 3
-
-    return if schema_name == 'public'
-
-    in_database(as: :superuser) do |database|
-      # Non-aggregate functions
-      drop_function_sqls = database.fetch(%Q{
-        SELECT 'DROP FUNCTION ' || ns.nspname || '.' || proname || '(' || oidvectortypes(proargtypes) || ');' AS sql
-        FROM pg_proc INNER JOIN pg_namespace ns ON (pg_proc.pronamespace = ns.oid AND pg_proc.proisagg = FALSE)
-        WHERE ns.nspname = '#{schema_name}'
-      })
-
-      # Simulate a controlled environment drop cascade contained to only functions
-      failed_sqls = []
-      recursivity_level = 0
-      begin
-        failed_sqls = []
-        drop_function_sqls.each { |sql_sentence|
-          begin
-            database.run(sql_sentence[:sql])
-          rescue Sequel::DatabaseError => e
-            if e.message =~ /depends on function /i
-              failed_sqls.push(sql_sentence)
-            else
-              raise
-            end
-          end
-        }
-        drop_function_sqls = failed_sqls
-        recursivity_level += 1
-      end while failed_sqls.count > 0 && recursivity_level < recursivity_max_depth
-
-      # If something remains, reattempt later after dropping aggregates
-      if drop_function_sqls.count > 0
-        aggregate_dependant_function_sqls = drop_function_sqls
-      else
-        aggregate_dependant_function_sqls = []
-      end
-
-      # And now aggregate functions
-      failed_sqls = []
-      drop_function_sqls = database.fetch(%Q{
-        SELECT 'DROP AGGREGATE ' || ns.nspname || '.' || proname || '(' || oidvectortypes(proargtypes) || ');' AS sql
-        FROM pg_proc INNER JOIN pg_namespace ns ON (pg_proc.pronamespace = ns.oid AND pg_proc.proisagg = TRUE)
-        WHERE ns.nspname = '#{schema_name}'
-      })
-      drop_function_sqls.each { |sql_sentence|
-        begin
-          database.run(sql_sentence[:sql])
-        rescue Sequel::DatabaseError => e
-          failed_sqls.push(sql_sentence)
-        end
-      }
-
-      if failed_sqls.count > 0
-        raise CartoDB::BaseCartoDBError.new('Cannot drop schema aggregate functions, dependencies remain')
-      end
-
-      # One final pass of normal functions, if left
-      if aggregate_dependant_function_sqls.count > 0
-        aggregate_dependant_function_sqls.each { |sql_sentence|
-          begin
-            database.run(sql_sentence[:sql])
-          rescue Sequel::DatabaseError => e
-            failed_sqls.push(sql_sentence)
-          end
-        }
-      end
-
-      if failed_sqls.count > 0
-        raise CartoDB::BaseCartoDBError.new('Cannot drop schema functions, dependencies remain')
-      end
-
     end
   end
 
@@ -2105,35 +1934,13 @@ class User < Sequel::Model
     @invitation_token = invitation_token
   end
 
-  def configure_extension_org_metadata_api_endpoint
-    config = Cartodb.config[:org_metadata_api]
-    host = config['host']
-    port = config['port']
-    username = config['username']
-    password = config['password']
-    timeout = config.fetch('timeout', 10)
-
-    if host.present? && port.present? && username.present? && password.present?
-      conf_sql = %{
-        SELECT cartodb.CDB_Conf_SetConf('groups_api',
-          '{ \"host\": \"#{host}\", \"port\": #{port}, \"timeout\": #{timeout}, \"username\": \"#{username}\", \"password\": \"#{password}\"}'::json
-        )
-      }
-      in_database(as: :superuser) do |database|
-        database.fetch(conf_sql).first
-      end
-    else
-      CartoDB.notify_debug("org_metadata_api configuration missing", user_id: id, config: config)
-    end
-  end
-
   def revoke_cdb_conf_access
     errors = []
 
     roles = [database_username]
     if organization_owner?
       begin
-        roles << db_manager.organization_member_group_role_member_name
+        roles << db_service.organization_member_group_role_member_name
       rescue => e
         errors << "WARN: Error fetching org member role (does #{organization.name} has that role?)"
       end
@@ -2142,7 +1949,7 @@ class User < Sequel::Model
 
     queries = []
     roles.map do |db_role|
-      queries.concat(db_manager.queries.revoke_permissions_on_cartodb_conf_queries(db_role))
+      queries.concat(db_service.queries.revoke_permissions_on_cartodb_conf_queries(db_role))
     end
 
     queries.map do |query|
@@ -2233,5 +2040,4 @@ class User < Sequel::Model
   def set_last_password_change_date
     self.last_password_change_date = Time.zone.now unless new?
   end
-
 end

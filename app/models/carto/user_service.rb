@@ -57,8 +57,8 @@ module Carto
       begin
         # Hack to support users without the new MU functiones loaded
         # TODO: Check this works as expected
-        user_data_size_function = cartodb_extension_version_pre_mu? ? 
-          "CDB_UserDataSize()" : 
+        user_data_size_function = cartodb_extension_version_pre_mu? ?
+          "CDB_UserDataSize()" :
           "CDB_UserDataSize('#{@user.database_schema}')"
         in_database(:as => :superuser).execute("SELECT cartodb.#{user_data_size_function}")
                                       .first['cdb_userdatasize'].to_i
@@ -157,13 +157,13 @@ module Carto
     ensure
       if options[:statement_timeout]
         in_database.execute(%Q{ SET statement_timeout TO DEFAULT })
-      end    
+      end
     end
 
     # NOTE: Must not live inside another model as AR internally uses model name as key for its internal connection cache
     # and establish_connection would override the model's connection
     def get_database(options, configuration)
-      resolver = ActiveRecord::Base::ConnectionSpecification::Resolver.new( 
+      resolver = ActiveRecord::Base::ConnectionSpecification::Resolver.new(
           configuration, get_connection_name(options[:as])
         )
       conn = ActiveRecord::Base.connection_handler.establish_connection(
@@ -231,10 +231,6 @@ module Carto
     end
 
     def load_cartodb_functions
-      #TODO: Implement
-    end
-
-    def rebuild_quota_trigger
       #TODO: Implement
     end
 

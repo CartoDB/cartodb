@@ -27,7 +27,7 @@ module CartoDB
       @organization.admin_email = @owner.email
       @organization.save
       @owner.organization = @organization
-      @owner.setup_schema
+      @owner.db_service.setup_schema
       @owner.save
       @owner.monitor_user_notification
       @active = true

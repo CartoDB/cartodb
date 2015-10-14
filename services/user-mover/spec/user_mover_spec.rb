@@ -77,7 +77,7 @@ describe CartoDB::DataMover::ExportJob do
 
     it "has granted the org role" do
       authed_roles = subject.in_database["select s.rolname from pg_roles r join pg_catalog.pg_auth_members m on r.oid=m.member join pg_catalog.pg_roles s on m.roleid=s.oid where r.rolname='#{subject.database_username}'"].to_a
-      authed_roles.should be_any{|m| m[:rolname] == subject.db_manager.organization_member_group_role_member_name }
+      authed_roles.should be_any{|m| m[:rolname] == subject.db_service.organization_member_group_role_member_name }
     end
 
   end
@@ -187,14 +187,13 @@ module Helpers
     org = create_organization(name: String.random(5).downcase, quota_in_bytes: 2500.megabytes)
 
     owner = create_user(username: String.random(5).downcase, quota_in_bytes: 500.megabytes, table_quota: 200,
-                        :private_tables_enabled => true)
+                        private_tables_enabled: true)
     uo = CartoDB::UserOrganization.new(org.id, owner.id)
     uo.promote_user_to_admin
-    owner.setup_organization_owner
+    owner.db_service.setup_organization_owner
     org.reload
-    return org
+    org
   end
-
 
   def give_permission(vis, user, access)
     per = vis.permission

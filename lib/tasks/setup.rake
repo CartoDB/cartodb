@@ -75,7 +75,7 @@ DESC
       quota = 1073741824
       user.update(:quota_in_bytes => quota)
 
-      user.rebuild_quota_trigger
+      user.db_service.rebuild_quota_trigger
       puts "User: #{user.username} quota updated to: 10 GB. #{user.tables.count} tables updated."
 
       user.update(:table_quota => nil)

@@ -429,7 +429,7 @@ describe User do
   end
 
   it "should rebuild the quota trigger after changing the quota" do
-    @user.expects(:rebuild_quota_trigger).once
+    @user.db_service.expects(:rebuild_quota_trigger).once
     @user.quota_in_bytes = @user.quota_in_bytes + 1.megabytes
     @user.save
   end

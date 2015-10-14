@@ -648,22 +648,32 @@ MapBase.prototype = {
   },
 
   getTooltipData: function(layer) {
-    var tooltip = this.layers[layer].tooltip;
-    if (tooltip && tooltip.fields && tooltip.fields.length) {
-      return tooltip;
+    var pos = this.getLayerNumberByIndex(layer);
+
+    if (pos >= 0) {
+      var tooltip = this.layers[pos].tooltip;
+      if (tooltip && tooltip.fields && tooltip.fields.length) {
+        return tooltip;
+      }
     }
+
     return null;
   },
 
   getInfowindowData: function(layer) {
-    var lyr;
-    var infowindow = this.layers[layer].infowindow;
-    if (!infowindow && this.options.layer_definition && (lyr = this.options.layer_definition.layers[layer])) {
-      infowindow = lyr.infowindow;
+    var pos = this.getLayerNumberByIndex(layer);
+
+    if (pos >= 0) {
+      var lyr = this.options.layer_definition.layers[pos];
+      var infowindow = this.layers[pos].infowindow;
+      if (!infowindow && this.options.layer_definition && lyr) {
+        infowindow = lyr.infowindow;
+      }
+      if (infowindow && infowindow.fields && infowindow.fields.length > 0) {
+        return infowindow;
+      }
     }
-    if (infowindow && infowindow.fields && infowindow.fields.length > 0) {
-      return infowindow;
-    }
+
     return null;
   },
 

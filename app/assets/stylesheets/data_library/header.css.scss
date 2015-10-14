@@ -5,6 +5,10 @@
 
 .Header {
   position: relative;
+
+  .Header-title {
+    height: auto;
+  }
 }
 .Header--dark {
   background: #2E3C43;

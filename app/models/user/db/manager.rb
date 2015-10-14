@@ -26,17 +26,44 @@ module CartoDB
           grant_user_in_database
           set_user_privileges_at_db
           set_statement_timeouts
-          @user.setup_schema if user_model.database_schema != SCHEMA_PUBLIC
+          @user.setup_schema if @user.database_schema != SCHEMA_PUBLIC
           create_function_invalidate_varnish
 
           @user.reload
+        end
+
+        def reset_user_schema_permissions
+          @user.in_database(as: :superuser) do |user_database|
+            user_database.transaction do
+              schemas = [@user.database_schema].uniq
+              schemas.each do |schema|
+                revoke_privileges(user_database, schema, 'PUBLIC')
+              end
+              yield(user_database) if block_given?
+            end
+          end
+        end
+
+        def reset_database_permissions
+          @user.in_database(as: :superuser) do |user_database|
+            user_database.transaction do
+              schemas = %w(public cdb_importer cdb cartodb)
+              ['PUBLIC', CartoDB::PUBLIC_DB_USER].each do |user|
+                revoke_all_on_database_from(user_database, @user.database_name, user)
+                schemas.each do |schema|
+                  revoke_privileges(user_database, schema, user)
+                end
+              end
+              yield(user_database) if block_given?
+            end
+          end
         end
 
         def set_statement_timeouts
           @user.in_database(as: :superuser) do |user_database|
             user_database["ALTER ROLE \"?\" SET statement_timeout to ?", @user.database_username.lit,
                           @user.user_timeout].all
-            user_database["ALTER DATABASE \"?\" SET statement_timeout to ?", database_name.lit,
+            user_database["ALTER DATABASE \"?\" SET statement_timeout to ?", @user.database_name.lit,
                           @user.database_timeout].all
           end
           @user.in_database.disconnect
@@ -48,7 +75,7 @@ module CartoDB
 
         def set_user_privileges_at_db # MU
           # INFO: organization permission on public schema is handled through role assignment
-          unless organization_user?
+          unless @user.organization_user?
             set_user_privileges_in_cartodb_schema
             set_user_privileges_in_public_schema
           end
@@ -56,11 +83,25 @@ module CartoDB
           set_user_privileges_in_own_schema
           set_privileges_to_publicuser_in_own_schema
 
-          unless organization_user?
+          unless @user.organization_user?
             set_user_privileges_in_importer_schema
             set_user_privileges_in_geocoding_schema
             set_geo_columns_privileges
             set_raster_privileges
+          end
+        end
+
+        def set_user_as_organization_member
+          @user.in_database(as: :superuser) do |user_database|
+            user_database.transaction do
+              user_database.run("SELECT cartodb.CDB_Organization_Create_Member('#{@user.database_username}');")
+            end
+          end
+        end
+
+        def reset_schema_owner
+          @user.in_database(as: :superuser) do |database|
+            database.run(%{ALTER SCHEMA "#{@user.database_schema}" OWNER TO "#{@user.database_username}"})
           end
         end
 
@@ -190,7 +231,20 @@ module CartoDB
             queries << "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_overviews\" TO \"#{target_user}\""
             queries << "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_columns\" TO \"#{target_user}\""
           end
-          @queries.run_queries_in_transaction(queries, true)
+          @queries.run_in_transaction(queries, true)
+        end
+
+        def setup_organization_role_permissions
+          org_member_role = organization_member_group_role_member_name
+          set_user_privileges_in_public_schema(org_member_role)
+          @queries.run_in_transaction(
+            @queries.grant_connect_on_database_queries(org_member_role), true
+          )
+          set_geo_columns_privileges(org_member_role)
+          set_raster_privileges(org_member_role)
+          set_user_privileges_in_cartodb_schema(org_member_role)
+          set_user_privileges_in_importer_schema(org_member_role)
+          set_user_privileges_in_geocoding_schema(org_member_role)
         end
 
         # Create a "public.cdb_invalidate_varnish()" function to invalidate Varnish
@@ -226,6 +280,19 @@ module CartoDB
         # Needed because in some cases it might not exist and failure ends transaction
         def role_exists?(db, role)
           !db.fetch("SELECT 1 FROM pg_roles WHERE rolname='#{role}'").first.nil?
+        end
+
+        def revoke_privileges(db, schema, user)
+          db.run("REVOKE ALL ON SCHEMA \"#{schema}\" FROM #{user} CASCADE")
+          db.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA \"#{schema}\" FROM #{user} CASCADE")
+          db.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" FROM #{user} CASCADE")
+          db.run("REVOKE ALL ON ALL TABLES IN SCHEMA \"#{schema}\" FROM #{user} CASCADE")
+        end
+
+        def organization_member_group_role_member_name
+          @user.in_database.fetch(
+            "SELECT cartodb.CDB_Organization_Member_Group_Role_Member_Name() as org_member_role;"
+          )[:org_member_role][:org_member_role]
         end
 
         def db_configuration_for(user_role = nil)
@@ -329,7 +396,7 @@ module CartoDB
               REVOKE ALL ON FUNCTION public.cdb_invalidate_varnish(TEXT) FROM PUBLIC;
               COMMIT;
           TRIGGER
-                                               )
+          )
         end
 
         def create_function_invalidate_varnish_http
@@ -382,7 +449,7 @@ module CartoDB
               REVOKE ALL ON FUNCTION public.cdb_invalidate_varnish(TEXT) FROM PUBLIC;
               COMMIT;
             TRIGGER
-                                               )
+          )
         end
 
         # Invalidate through external service
@@ -438,7 +505,7 @@ module CartoDB
               REVOKE ALL ON FUNCTION public.cdb_invalidate_varnish(TEXT) FROM PUBLIC;
               COMMIT;
             TRIGGER
-                                               )
+          )
         end
 
       end

@@ -1561,10 +1561,10 @@ class User < Sequel::Model
     create_geocoding_schema
     load_cartodb_functions
     set_database_search_path
-    reset_database_permissions # Reset privileges
+    db_manager.reset_database_permissions # Reset privileges
     db_manager.grant_publicuser_in_database
     db_manager.set_user_privileges_at_db # Set privileges
-    set_user_as_organization_member
+    db_manager.set_user_as_organization_member
     rebuild_quota_trigger
     db_manager.create_function_invalidate_varnish
     revoke_cdb_conf_access
@@ -1609,10 +1609,10 @@ class User < Sequel::Model
 
   # INFO: This method is used both when creating a new user and by the relocator when user is relocated to an org database.
   def setup_schema
-    reset_user_schema_permissions
-    reset_schema_owner
+    db_manager.reset_user_schema_permissions
+    db_manager.reset_schema_owner
     db_manager.set_user_privileges_at_db
-    set_user_as_organization_member
+    db_manager.set_user_as_organization_member
     rebuild_quota_trigger
 
     # INFO: organization privileges are set for org_member_role, which is assigned to each org user
@@ -1622,7 +1622,7 @@ class User < Sequel::Model
   end
 
   def setup_organization_owner
-    setup_organization_role_permissions
+    db_manager.setup_organization_role_permissions
     setup_owner_permissions
     configure_extension_org_metadata_api_endpoint
   end
@@ -1631,23 +1631,6 @@ class User < Sequel::Model
     in_database(as: :superuser) do |database|
       database.run(%{ SELECT cartodb.CDB_Organization_AddAdmin('#{username}') })
     end
-  end
-
-  def organization_member_group_role_member_name
-    in_database.fetch("SELECT cartodb.CDB_Organization_Member_Group_Role_Member_Name() as org_member_role;")[:org_member_role][:org_member_role]
-  end
-
-  def setup_organization_role_permissions
-    org_member_role = organization_member_group_role_member_name
-    db_manager.set_user_privileges_in_public_schema(org_member_role)
-    run_queries_in_transaction(
-      grant_connect_on_database_queries(org_member_role), true
-    )
-    db_manager.set_geo_columns_privileges(org_member_role)
-    db_manager.set_raster_privileges(org_member_role)
-    db_manager.set_user_privileges_in_cartodb_schema(org_member_role)
-    db_manager.set_user_privileges_in_importer_schema(org_member_role)
-    db_manager.set_user_privileges_in_geocoding_schema(org_member_role)
   end
 
   def move_tables_to_schema(old_schema, new_schema)
@@ -1667,11 +1650,6 @@ class User < Sequel::Model
     end
   end
 
-  def reset_schema_owner
-    in_database(as: :superuser) do |database|
-      database.run(%Q{ALTER SCHEMA "#{self.database_schema}" OWNER TO "#{self.database_username}"})
-    end
-  end
 
   ## User's databases setup methods
   def setup_user
@@ -1859,87 +1837,19 @@ class User < Sequel::Model
     end
   end
 
-  def set_user_as_organization_member
-    in_database(:as => :superuser) do |user_database|
-      user_database.transaction do
-        user_database.run("SELECT cartodb.CDB_Organization_Create_Member('#{database_username}');")
-      end
-    end
-  end
-
-  def grant_connect_on_database_queries(db_user = nil)
-    granted_user = db_user.nil? ? self.database_username : db_user
-    [
-      "GRANT CONNECT ON DATABASE \"#{self.database_name}\" TO \"#{granted_user}\""
-    ]
-  end
-
-  def grant_usage_on_user_schema_to_other(granted_user)
-    [
-      "GRANT USAGE ON SCHEMA \"#{self.database_schema}\" TO \"#{granted_user}\""
-    ]
-  end
-
-  def grant_all_on_schema_queries(schema, db_user = nil)
-    granted_user = db_user.nil? ? self.database_username : db_user
-    [
-      "GRANT ALL ON SCHEMA \"#{schema}\" TO \"#{granted_user}\""
-    ]
-  end
-
   def drop_users_privileges_in_schema(schema, accounts)
     in_database(:as => :superuser, statement_timeout: 600000) do |user_database|
       return if user_database.fetch("SELECT 1 as schema_exist FROM information_schema.schemata WHERE schema_name = '#{schema}'").first.nil?
       user_database.transaction do
         accounts
           .select { |s|
-            role_exists?(user_database, s)
+            db_manager.role_exists?(user_database, s)
           }
           .each { |u|
-            revoke_privileges(user_database, schema, "\"#{u}\"")
+            db_manager.revoke_privileges(user_database, schema, "\"#{u}\"")
           }
       end
     end
-  end
-
-  # Needed because in some cases it might not exist and failure ends transaction
-  def role_exists?(db, role)
-    !db.fetch("SELECT 1 FROM pg_roles WHERE rolname='#{role}'").first.nil?
-  end
-
-  def reset_user_schema_permissions
-    in_database(:as => :superuser) do |user_database|
-      user_database.transaction do
-        schemas = [self.database_schema].uniq
-        schemas.each do |schema|
-          revoke_privileges(user_database, schema, 'PUBLIC')
-        end
-        yield(user_database) if block_given?
-      end
-    end
-  end
-
-  def reset_database_permissions
-    in_database(:as => :superuser) do |user_database|
-      user_database.transaction do
-        schemas = %w(public cdb_importer cdb cartodb)
-
-        ['PUBLIC', CartoDB::PUBLIC_DB_USER].each do |u|
-          db_manager.revoke_all_on_database_from(user_database, database_name, u)
-          schemas.each do |schema|
-            revoke_privileges(user_database, schema, u)
-          end
-        end
-        yield(user_database) if block_given?
-      end
-    end
-  end
-
-  def revoke_privileges(db, schema, u)
-    db.run("REVOKE ALL ON SCHEMA \"#{schema}\" FROM #{u} CASCADE")
-    db.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA \"#{schema}\" FROM #{u} CASCADE")
-    db.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" FROM #{u} CASCADE")
-    db.run("REVOKE ALL ON ALL TABLES IN SCHEMA \"#{schema}\" FROM #{u} CASCADE")
   end
 
   # Drops grants and functions in a given schema, avoiding by all means a CASCADE
@@ -2019,18 +1929,6 @@ class User < Sequel::Model
       end
 
     end
-  end
-
-  # Utility methods
-  def fix_permissions
-    # /!\ WARNING
-    # This will delete all database permissions, and try to recreate them from scratch.
-    # Use only if you know what you're doing. (or, better, don't use it)
-    self.reset_database_permissions
-    self.reset_user_schema_permissions
-    db_manager.grant_publicuser_in_database
-    db_manager.set_user_privileges_at_db
-    db_manager.fix_table_permissions
   end
 
   def monitor_user_notification
@@ -2208,7 +2106,6 @@ class User < Sequel::Model
   end
 
   def configure_extension_org_metadata_api_endpoint
-
     config = Cartodb.config[:org_metadata_api]
     host = config['host']
     port = config['port']
@@ -2236,7 +2133,7 @@ class User < Sequel::Model
     roles = [database_username]
     if organization_owner?
       begin
-        roles << organization_member_group_role_member_name
+        roles << db_manager.organization_member_group_role_member_name
       rescue => e
         errors << "WARN: Error fetching org member role (does #{organization.name} has that role?)"
       end

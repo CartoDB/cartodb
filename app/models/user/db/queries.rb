@@ -26,8 +26,6 @@ module CartoDB
           end
         end
 
-        # TODO: Finish migrating all from User model
-
         def grant_connect_on_database_queries(db_user = nil)
           granted_user = db_user.nil? ? @user.database_username : db_user
           [

@@ -344,18 +344,25 @@ namespace :cartodb do
     task :set_user_as_organization_member => :environment do
       ::User.all.each do |user|
         next if !user.respond_to?('database_name') || user.database_name.blank?
-        user.set_user_as_organization_member
+        user.db_manager.set_user_as_organization_member
       end
     end
 
     ##############
     # SET DB PERMS
     ##############
-    desc "Set DB Permissions"
-    task :set_permissions => :environment do
+    desc "Set/Fix DB Permissions"
+    task set_permissions: :environment do
       ::User.all.each do |user|
         next if !user.respond_to?('database_name') || user.database_name.blank?
-        user.fix_permissions
+        # !!! WARNING
+        # This will delete all database permissions, and try to recreate them from scratch.
+        # Use only if you know what you're doing. (or, better, don't use it)
+        user.db_manager.reset_database_permissions
+        user.db_manager.reset_user_schema_permissions
+        user.db_manager.grant_publicuser_in_database
+        user.db_manager.set_user_privileges_at_db
+        user.db_manager.fix_table_permissions
       end
     end
 
@@ -1121,7 +1128,7 @@ namespace :cartodb do
         if owner
           puts "#{o.name}\t#{o.id}\tOwner: #{owner.username}\t#{owner.id}"
           begin
-            owner.setup_organization_role_permissions
+            owner.db_manager.setup_organization_role_permissions
           rescue => e
             puts "Error: #{e.message}"
             CartoDB.notify_exception(e)

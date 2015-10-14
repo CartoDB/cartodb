@@ -77,7 +77,7 @@ describe CartoDB::DataMover::ExportJob do
 
     it "has granted the org role" do
       authed_roles = subject.in_database["select s.rolname from pg_roles r join pg_catalog.pg_auth_members m on r.oid=m.member join pg_catalog.pg_roles s on m.roleid=s.oid where r.rolname='#{subject.database_username}'"].to_a
-      authed_roles.should be_any{|m| m[:rolname] == subject.organization_member_group_role_member_name }
+      authed_roles.should be_any{|m| m[:rolname] == subject.db_manager.organization_member_group_role_member_name }
     end
 
   end

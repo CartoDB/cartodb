@@ -359,7 +359,6 @@ describe Admin::VisualizationsController do
         :set_database_search_path => nil,
         :load_cartodb_functions => nil,
         :monitor_user_notification => nil,
-        :set_user_as_organization_member => nil,
         :cartodb_extension_version_pre_mu? => false,
         :rebuild_quota_trigger => nil
       )
@@ -368,7 +367,8 @@ describe Admin::VisualizationsController do
         grant_user_in_database: nil,
         grant_publicuser_in_database: nil,
         set_user_privileges_at_db: nil,
-        set_statement_timeouts: nil
+        set_statement_timeouts: nil,
+        set_user_as_organization_member: nil
       )
 
       CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)

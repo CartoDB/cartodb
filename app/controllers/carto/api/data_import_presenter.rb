@@ -174,7 +174,7 @@ module Carto
         warnings.merge!(rejected_layers: @data_import.rejected_layers.split(',')) if !@data_import.rejected_layers.nil?
         warnings.merge!(user_max_layers: @data_import.user.max_layers) if !@data_import.rejected_layers.nil?
 
-        warnings
+        warnings.empty? ? nil : warnings
       end
     end
   end

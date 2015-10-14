@@ -1,5 +1,6 @@
 # encoding: utf-8
 require 'json'
+require 'cartodb/event_tracker'
 require_relative '../../../models/visualization/member'
 require_relative '../../../models/visualization/collection'
 require_relative '../../../models/visualization/presenter'
@@ -17,7 +18,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
   ssl_allowed  :notify_watching, :list_watching, :add_like, :remove_like
   ssl_required :create, :update, :destroy, :set_next_id unless Rails.env.development? || Rails.env.test?
-  skip_before_filter :api_authorization_required, only: [:add_like, :remove_like]
+
   before_filter :optional_api_authorization, only: [:add_like, :remove_like]
   before_filter :table_and_schema_from_params, only: [:update, :destroy, :stats,
                                                       :notify_watching, :list_watching,
@@ -56,6 +57,9 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
         vis = set_visualization_prev_next(vis, prev_id, next_id)
 
+        custom_properties = {'privacy' => vis.privacy, 'type' => vis.type,  'vis_id' => vis.id}
+        Cartodb::EventTracker.new.send_event(current_user, 'Created map', custom_properties)
+
         render_jsonp(vis)
       rescue CartoDB::InvalidMember
         render_jsonp({ errors: vis.full_errors }, 400)
@@ -67,7 +71,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       rescue CartoDB::NamedMapsWrapper::NamedMapsDataError => exception
         render_jsonp({ errors: { named_maps: exception } }, 400)
       end
-
     end
   end
 
@@ -144,9 +147,14 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         return(head 404) unless vis
         return(head 403) unless vis.is_owner?(current_user)
 
+        custom_properties = {'privacy' => vis.privacy, 'type' => vis.type,  'vis_id' => vis.id}
+        event_type = vis.type == Visualization::Member::TYPE_DERIVED ? 'map' : 'dataset' 
+
         @stats_aggregator.timing('delete') do
           vis.delete
         end
+
+        Cartodb::EventTracker.new.send_event(current_user, "Deleted #{event_type}", custom_properties)
 
         return head 204
       rescue KeyError

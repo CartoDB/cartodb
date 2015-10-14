@@ -1,4 +1,6 @@
 # coding: UTF-8
+
+#require 'cartodb/event_tracker'
 require_relative '../../../models/visualization/presenter'
 require_relative '../../../helpers/bounding_box_helper'
 require_relative '../../../../services/named-maps-api-wrapper/lib/named-maps-wrapper/exceptions'
@@ -36,6 +38,9 @@ class Api::Json::TablesController < Api::ApplicationController
         save_status = @stats_aggregator.timing('save') do
           @table.valid? && @table.save
         end
+
+        custom_properties = {'privacy' => @table.table_visualization.privacy, 'type' => @table.table_visualization.type,  'vis_id' => @table.table_visualization.id, 'origin' => 'blank'}
+        Cartodb::EventTracker.new.send_event(current_user, 'Created dataset', custom_properties)
 
         if save_status
           render_jsonp(@table.public_values({request:request}), 200, { location: "/tables/#{@table.id}" })
@@ -122,9 +127,15 @@ class Api::Json::TablesController < Api::ApplicationController
         @stats_aggregator.timing('ownership-check') do
           return head(403) unless @table.table_visualization.is_owner?(current_user)
         end
+
+        custom_properties = {'privacy' => @table.table_visualization.privacy, 'type' => @table.table_visualization.type,  'vis_id' => @table.table_visualization.id}
+
         @stats_aggregator.timing('delete') do
           @table.destroy
         end
+
+        Cartodb::EventTracker.new.send_event(current_user, 'Deleted dataset', custom_properties)
+
         head :no_content
       rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
         CartoDB::Logger.info "Communication error with tiler API. HTTP Code: #{exception.message}", exception.template_data

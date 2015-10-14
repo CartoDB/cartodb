@@ -2,6 +2,7 @@
 require 'sequel'
 require 'fileutils'
 require 'uuidtools'
+require 'cartodb/event_tracker'
 require_relative './user'
 require_relative './table'
 require_relative './log'
@@ -271,6 +272,7 @@ class DataImport < Sequel::Model
     log.append "Import finished\n"
     log.store
     save
+
     begin
       CartoDB::PlatformLimits::Importer::UserConcurrentImportsAmount.new({
                                                                              user: current_user,
@@ -284,6 +286,22 @@ class DataImport < Sequel::Model
                            "#{exception.message} #{exception.backtrace.inspect}")
     end
     notify(results)
+
+    track_new_datasets(results)
+    #results.each do |result|
+    #  if result.success?
+    #    if result.name != nil
+    #      map_id = UserTable.where(data_import_id: self.id, name: result.name).first.map_id
+    #    else
+    #      map_id = UserTable.where(data_import_id: self.id).first.map_id           
+    #    end
+    #    vis = Carto::Visualization.where(map_id: map_id).first
+    #
+    #    custom_properties = {'privacy' => vis.privacy, 'type' => vis.type,  'vis_id' => vis.id, 'origin' => 'import'}
+    #    Cartodb::EventTracker.new.send_event(current_user, 'Created dataset', custom_properties)
+    #  end
+    #end
+
     self
   end
 
@@ -876,6 +894,24 @@ class DataImport < Sequel::Model
     if datasource.persists_state_via_data_import?
       datasource.data_import_item = self
       datasource.set_audit_to_failed
+    end
+  end
+
+  def track_new_datasets(results)
+    results.each do |result|
+      if result.success?
+        if result.name != nil
+          map_id = UserTable.where(data_import_id: self.id, name: result.name).first.map_id
+          origin = self.from_common_data? ? 'common-data' : 'import'
+        else
+          map_id = UserTable.where(data_import_id: self.id).first.map_id
+          origin = 'copy'
+        end
+        vis = Carto::Visualization.where(map_id: map_id).first
+
+        custom_properties = {'privacy' => vis.privacy, 'type' => vis.type,  'vis_id' => vis.id, 'origin' => origin}
+        Cartodb::EventTracker.new.send_event(current_user, 'Created dataset', custom_properties)
+      end
     end
   end
 

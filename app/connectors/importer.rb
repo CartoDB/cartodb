@@ -53,7 +53,7 @@ module CartoDB
           results.select(&:success?).each { |result|
             register(result)
           }
-          if self.data_import.create_visualization
+          if @data_import.create_visualization
             create_visualization
           end
         end
@@ -89,11 +89,11 @@ module CartoDB
       def create_visualization
         tables = get_imported_tables
         if tables.length > 0
-          user = ::User.where(id: self.data_import.user_id).first
+          user = ::User.where(id: @data_import.user_id).first
           vis, @rejected_layers = CartoDB::Visualization::DerivedCreator.new(user, tables).create
-          self.data_import.visualization_id = vis.id
-          self.data_import.save
-          self.data_import.reload
+          @data_import.visualization_id = vis.id
+          @data_import.save
+          @data_import.reload
         end
       end
 
@@ -205,7 +205,7 @@ module CartoDB
       def persist_metadata(result, name, data_import_id)
         table_registrar.register(name, data_import_id)
         self.table = table_registrar.table
-        self.imported_table_ids << self.table.table_visualization.id
+        @imported_table_ids << self.table.table_visualization.id
         BoundingBoxHelper.update_visualizations_bbox(table)
         self
       end

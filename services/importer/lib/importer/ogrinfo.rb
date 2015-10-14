@@ -27,13 +27,11 @@ module CartoDB
       end
 
       def fields
-        key_val_pairs = raw_output.split("\n").grep(/^[a-zA-Z_]+:/)[3..-1]
-
-        if key_val_pairs
-          key_val_pairs.map{ |s| s.gsub(/:.*/, '') } # keep the key
-        else
-          []
-        end
+        raw_output
+          .split("\n")
+          .grep(/^[a-zA-Z0-9_]+:/)
+          .reject { |x| x =~ /^(INFO:|Geometry:|Feature Count:|Layer)/ }
+          .map{ |s| s.gsub(/:.*/, '') }
       end
 
 

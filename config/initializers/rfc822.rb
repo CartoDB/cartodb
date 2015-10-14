@@ -21,3 +21,24 @@ module EmailAddressValidator
     ADDR_SPEC = /^(#{LOCAL_PART})@(#{DOMAIN})$/
   end
 end
+
+# Taken from Rails examples, replacing with ADDR_SPEC
+# the original regexp: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i
+class EmailValidator < ActiveModel::EachValidator
+  def validate_each(record, attribute, value)
+    return unless value
+    if value.is_a?(Array)
+      value.each { |v| validate_value(record, attribute, v) }
+    else
+      validate_value(record, attribute, value)
+    end
+  end
+
+  private
+
+  def validate_value(record, attribute, value)
+    unless value =~ EmailAddressValidator::Regexp::ADDR_SPEC
+      record.errors[attribute] << (options[:message] || "#{value} is not an email")
+    end
+  end
+end

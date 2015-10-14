@@ -15,17 +15,24 @@ module CartoDB
       COMPRESSED_EXTENSIONS = %w{ .zip .gz .tgz .tar.gz .bz2 .tar .kmz }
       SUPPORTED_FORMATS     = %w{
         .csv .shp .ods .xls .xlsx .tif .tiff .kml .kmz
-        .js .json .tar .gz .tgz .osm .bz2 .geojson 
+        .js .json .tar .gz .tgz .osm .bz2 .geojson
         .gpx .sql .tab .tsv .txt
       }
-      SPLITTERS             = [KmlSplitter, OsmSplitter]
+      SPLITTERS = [KmlSplitter, OsmSplitter]
 
-      IMPORTER_TMP_SUBFOLDER = '/tmp/imports/'
+      DEFAULT_IMPORTER_TMP_SUBFOLDER = '/tmp/imports/'
 
       attr_reader :source_files, :temporary_directory
 
-      def initialize
+      def initialize(importer_config = nil)
         @source_files = []
+        if !importer_config.nil? && !importer_config['unp_temporal_folder'].nil?
+          @temporal_subfolder_path = importer_config['unp_temporal_folder']
+        end
+      end
+
+      def get_temporal_subfolder_path
+        @temporal_subfolder_path ||= DEFAULT_IMPORTER_TMP_SUBFOLDER
       end
 
       def run(path)
@@ -173,8 +180,8 @@ module CartoDB
 
       # Return a new temporary file contained inside a tmp subfolder
       def temporary_file
-        FileUtils.mkdir_p(IMPORTER_TMP_SUBFOLDER) unless File.directory?(IMPORTER_TMP_SUBFOLDER)
-        Tempfile.new('', IMPORTER_TMP_SUBFOLDER)
+        FileUtils.mkdir_p(get_temporal_subfolder_path) unless File.directory?(get_temporal_subfolder_path)
+        Tempfile.new('', get_temporal_subfolder_path)
       end
 
       def temporary_directory
@@ -198,7 +205,7 @@ module CartoDB
         SPLITTERS.select { |splitter| splitter.support?(source_file) }
           .first
       end
-      
+
       private
 
       attr_reader :job

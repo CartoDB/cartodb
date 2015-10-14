@@ -15,6 +15,7 @@ unless ENV['PARALLEL']
   end
 end
 
+require 'uuidtools'
 require_relative './rspec_configuration'
 
 # This file is copied to spec/ when you run 'rails generate rspec:install'
@@ -29,6 +30,10 @@ Dir[Rails.root.join('spec/support/**/*.rb')].each {|f| require f}
 # TODO: deprecate and use bypass_named_maps (or viceversa)
 def stub_named_maps_calls 
   CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+end
+
+def random_uuid
+  UUIDTools::UUID.timestamp_create.to_s
 end
 
 def bypass_named_maps

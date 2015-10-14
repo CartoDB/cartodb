@@ -1,0 +1,39 @@
+// Invite users dialog styles
+// ---------------------------------------------
+
+@import '../variables/mixins';
+@import '../variables/colors';
+@import '../variables/sizes';
+
+$width: 800px;
+
+.InviteUsers-form {
+  width: $width;
+}
+.InviteUsers-formContent,
+.InviteUsers-formFooter {
+  width: $width;
+  margin: 0 auto;
+}
+.InviteUsers-formContent {
+  position: relative;
+  padding: 28px 0 120px;
+}
+.InviteUsers-formFooter {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+  width: $width;
+  background: #F9F9F9;
+}
+.InviteUsers-formFooterSticky {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 97px;
+  z-index: 10;
+}
+.InviteUsers .Form-rowInfoText--error {
+  width: 140px;
+}

@@ -54,7 +54,9 @@ class Organization < Sequel::Model
   def validate_new_user(user, errors)
     if !whitelisted_email_domains.nil? and !whitelisted_email_domains.empty?
       email_domain = user.email.split('@')[1]
-      errors.add(:email, "Email domain '#{email_domain}' not valid for #{name} organization") unless whitelisted_email_domains.include?(email_domain)
+      unless whitelisted_email_domains.include?(email_domain) || user.invitation_token.present?
+        errors.add(:email, "Email domain '#{email_domain}' not valid for #{name} organization")
+      end
     end
   end
 
@@ -253,6 +255,10 @@ class Organization < Sequel::Model
     return unless users
 
     users.map(&:revoke_cdb_conf_access)
+  end
+
+  def name_to_display
+    display_name.nil? ? name : display_name
   end
 
   private

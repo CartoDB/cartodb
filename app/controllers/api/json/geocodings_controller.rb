@@ -2,7 +2,7 @@
 require Rails.root.join('services', 'sql-api', 'sql_api')
 
 class Api::Json::GeocodingsController < Api::ApplicationController
-  ssl_required :create, :update unless Rails.env.development?
+  ssl_required :create, :update
 
   before_filter :load_table, only: [:create, :estimation_for]
 

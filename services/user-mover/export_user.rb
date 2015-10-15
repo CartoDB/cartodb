@@ -105,10 +105,11 @@ module CartoDB
         end
       end
 
-      def dump_user_data(tables, redis_keys)
-        data = dump_related_data(tables, 'users', @user_id)
-        data['users'] = [@user_data]
-        dump_sql_data(data, "user_#{@user_id}", tables)
+      def dump_user_data(redis_keys)
+        data = dump_related_data(Carto::User, @user_id)
+        data[Carto::User] = [@user_data]
+        data.reject!{ |key, value| [Carto::Organization, Carto::Group, Carto::FeatureFlag].include?(key) }
+        dump_sql_data(data, "user_#{@user_id}")
         dump_redis_keys(redis_keys)
       end
 
@@ -118,42 +119,36 @@ module CartoDB
         roles.collect{|q| q['rolname']}.reject{|r| r == role}
       end
 
-      def dump_org_data(tables)
-        data = dump_related_data(tables, 'organizations', @org_id)
-        data['organizations'] = [@org_metadata]
-        dump_sql_data(data, "org_#{@org_id}", tables)
+      def dump_org_data
+        data = dump_related_data(Carto::Organization, @org_id)
+        data[Carto::Organization] = [@org_metadata]
+        data.select!{ |key, value| [Carto::Organization, Carto::Group].include?(key) }
+        dump_sql_data(data, "org_#{@org_id}")
       end
 
-      def dump_sql_data(data, prefix, schema=nil)
+      def dump_sql_data(data, prefix)
 
         # We sort the order of the tables to be exported so rows are exported after their dependencies, but deleted before.
-        if schema != nil
-          tables = data.keys
-          tables_ordered = tables.clone
-          tables.each do |table_name|
-            if schema[table_name.to_sym][:depends_on] != nil
-              depends = schema[table_name.to_sym][:depends_on]
-              max_position = depends.collect{|s| tables_ordered.index(s.to_s)}.max
-              debugger if max_position == nil
-              tables_ordered.insert(max_position, tables_ordered.delete(table_name))
-            end
-          end
-        else
-          tables_ordered = data.keys
+        models = data.keys
+        models_ordered = models.clone
+        models.each do |model|
+          depends = model.reflections.values.select{ |r| r.belongs_to? }.collect{ |r| r.klass }
+          max_position = depends.collect{|s| models_ordered.index(s)}.reject{|s| s==nil}.max
+          models_ordered.insert(max_position, models_ordered.delete(model)) unless max_position == nil
         end
         File.open(@options[:path] + "#{prefix}_metadata.sql", "w") do |f|
-          tables_ordered.reverse.each do |table_name|
-            data[table_name].each do |rows|
+          models_ordered.reverse.each do |model|
+            data[model].each do |rows|
               keys = rows.keys.select { |k| !TABLE_NULL_EXCEPTIONS.include?(k.to_s) == (rows[k] != nil) }
-              f.write generate_pg_insert_query(table_name, keys, rows)
+              f.write generate_pg_insert_query(model.table_name, keys, rows)
             end
           end
         end
         File.open(@options[:path] + "#{prefix}_metadata_undo.sql", "w") do |f|
-          tables_ordered.each do |table_name|
-            data[table_name].each do |rows|
+          models_ordered.each do |model|
+            data[model].each do |rows|
               keys = rows.keys.select { |k| rows[k] != nil }
-              f.write generate_pg_delete_query(table_name, rows)
+              f.write generate_pg_delete_query(model.table_name, rows)
             end
           end
         end
@@ -167,40 +162,41 @@ module CartoDB
         "INSERT INTO #{table_name}(#{keys.collect { |i| "\"#{i}\"" }.join(",")}) VALUES(#{keys.collect { |i| rows[i] == nil ? 'NULL' : "'"+pg_conn.escape_string(rows[i])+"'" }.join(",")});\n"
       end
 
-      def dump_related_data(tables, model, id, parent='')
+      def dump_related_data(model, id, exclude=[])
         data = {}
         id = [id] if id.is_a? Integer or id.is_a? String
-        model_object = tables[model.to_sym]
+
         #first dump this model
-        query = "SELECT * FROM #{model.to_s} WHERE id IN (#{id.collect { |i| "'#{i}'" }.join(", ")});"
+        query = "SELECT * FROM #{model.table_name} WHERE id IN (#{id.collect { |i| "'#{i}'" }.join(", ")});"
         result = pg_conn.exec(query)
         data[model] = (0..result.cmd_tuples-1).collect do |tuple_number|
           result[tuple_number]
         end
-        model_object[:related].reject { |r| r.to_sym == parent.to_sym }.each do |related_key|
-          other_key = model_object.fetch(:relation_for, {}).fetch(related_key, false) || model_object[:singular]
-          query = "SELECT * FROM #{related_key} WHERE #{other_key}_id IN (#{id.collect { |i| "'#{i}'" }.join(", ")})"
-          result = pg_conn.exec(query)
 
-          data[related_key] = (0..result.cmd_tuples-1).collect do |tuple_number|
-            result[tuple_number]
-          end
 
-          ids = data[related_key].collect do |data_for_related_key|
-            data_for_related_key["id"]
-          end
-          data.merge!(dump_related_data(tables, related_key, ids, model)) { |_, x, y| merge_without_duplicated_ids(x, y) } if ids.length > 0
-          #end
-        end
+        model.reflections.each do |name, reflection|
+          unless exclude.include? reflection.klass or reflection.through_reflection != nil
 
-        if model_object[:many_to_many]
-          model_object[:many_to_many].each do |key, value|
-            ids = data[model].collect do |data_for_related_key|
-              data_for_related_key[value+"_id"]
+            if reflection.belongs_to?
+              ids = data[model].collect{|t| t[reflection.association_foreign_key.to_s]}.reject{|t| t == nil}
+              next if ids.empty?
+              query = "SELECT * FROM #{reflection.table_name} WHERE #{reflection.association_primary_key} IN (#{ids.collect { |i| "'#{i}'" }.join(", ")})"
+            else
+              query = "SELECT * FROM #{reflection.table_name} WHERE #{reflection.foreign_key} IN (#{id.collect { |i| "'#{i}'" }.join(", ")})"
             end
-            data.merge!(dump_related_data(tables, key, ids, key)) { |_, x, y| merge_without_duplicated_ids(x, y) } if ids.length > 0
+            result = pg_conn.exec(query)
+
+            data[reflection.klass] = (0..result.cmd_tuples-1).collect do |tuple_number|
+              result[tuple_number]
+            end
+
+            ids = data[reflection.klass].collect do |data_for_related_key|
+              data_for_related_key["id"]
+            end
+            data.merge!(dump_related_data(reflection.klass, ids, exclude+[model])) { |_, x, y| merge_without_duplicated_ids(x, y) } if ids.length > 0
           end
         end
+
         return data
       end
 
@@ -261,7 +257,6 @@ module CartoDB
 
       def redis_oauth_keys
         dump = ""
-        redis = redis_conn
         pg_conn.exec("SELECT token,user_id FROM oauth_tokens WHERE type='AccessToken' AND user_id = '#{@user_id}'") do |result|
           dump += gen_redis_proto("SELECT", 3)
           redis_conn.select(3)
@@ -307,14 +302,6 @@ module CartoDB
         redis_conn.hset(redis_key, @user_id, redis_value)
       end
 
-      def relation_column_name_for(tables, table, related)
-        if tables[table][:related].include?(related) && tables[table][:relation_for] && tables[table][:relation_for][related]
-          tables[table][:relation_for][related]
-        else
-          tables[table][:singular]
-        end
-      end
-
       def redis_conn
         @redis ||= Redis.new(:host => CartoDB::DataMover::Config[:redis_host], :port => CartoDB::DataMover::Config[:redis_port])
       end
@@ -351,133 +338,32 @@ module CartoDB
         {user: @user_data, roles: user_roles}
       end
 
+      def reflections_for_model(model, skip=[], parents=[])
+        result = {}
+        parents << model.table_name.to_sym
+        reflections = model.reflections
+        related = reflections.keys.select{|r| reflections[r].through_reflection == nil && !parents.include?(reflections[r].table_name.to_sym) }
+        relations = {}
+        related.each do |reflection_name|
+          reflection = reflections[reflection_name]
+          relations[reflection.klass.table_name] = reflection.foreign_key
+        end
+        result[model.table_name] = {:related => related.collect{|t| reflections[t].klass.table_name}, :relation_for => relations}
+        related.each do |rel|
+          unless skip.include?(reflections[rel].klass.table_name) || result.keys.include?(reflections[rel].klass.table_name)
+            result.merge!(reflections_for_model(reflections[rel.to_sym].klass, (skip+result.keys).uniq, parents))
+          end
+        end
+        result
+      end
+
+
+
       def initialize(options)
         @options = options
         @options[:path] ||= ''
 
         @logs = []
-        tables = {
-            :organizations => {
-                :related => ['groups'],
-                :singular => 'organization'
-            },
-            :groups => {
-                :related => [],
-                :singular => 'group',
-                :depends_on => ['organizations']
-            },
-            :assets => {
-                :related => [],
-                :singular => 'asset'
-            },
-            :automatic_geocodings => {
-                :related => ['geocodings'],
-                :singular => 'automatic_geocoding'
-            },
-            :client_applications => {
-                :related => ['oauth_tokens'],
-                :singular => 'client_application'
-            },
-            :data_imports => {
-                :related => ['user_tables', 'external_data_imports'],
-                :singular => 'data_import'
-            },
-            :external_data_imports => {
-                :related => [],
-                :singular => 'external_data_import',
-                :depends_on => ['external_sources', 'data_imports']
-            },
-            :external_sources => {
-                :related => [],
-                :singular => 'external_source',
-                :depends_on => ['visualizations']
-            },
-            :geocodings => {
-                :related => [],
-                :singular => 'geocoding',
-                :depends_on => ['data_imports']
-            },
-            :layers => {
-                :related => ['visualizations'],
-                :singular => 'layer',
-                :relation_for => {'visualizations' => 'active_layer'}
-            },
-            :layers_maps => {
-                :related => [],
-                :singular => 'layer_map',
-                :many_to_many => {'layers' => 'layer'}
-            },
-            :layers_user_tables => {
-                :related => [],
-                :singular => 'layer_user_table',
-                :many_to_many => {'layers' => 'layer'}
-            },
-            :layers_users => {
-                :related => [],
-                :singular => 'layer_user',
-                :many_to_many => {'layers' => 'layer'}
-            },
-            :maps => {
-                :related => ['user_tables', 'layers_maps', 'visualizations'],
-                :singular => 'map'
-            },
-            :oauth_nonces => {
-                :related => [],
-                :singular => 'oauth_nonce'
-            },
-            :oauth_tokens => {
-                :related => [],
-                :singular => 'oauth_token'
-            },
-            :overlays => {
-                :related => [],
-                :singular => 'overlay'
-            },
-            :tags => {
-                :related => [],
-                :singular => 'tag'
-            },
-            :user_tables => {
-                :related => ['data_imports', 'layers_user_tables', 'tags', 'automatic_geocodings', 'geocodings'],
-                :singular => 'table',
-                :relation_for => {'layers_user_tables' => 'user_table'}
-            },
-            :users => {
-                :related => ['user_tables', 'maps', 'layers_users', 'assets', 'client_applications', 'oauth_tokens', 'tags', 'data_imports', 'synchronizations', 'geocodings', 'feature_flags_users', 'permissions', 'users_groups'],
-                :singular => 'user',
-                :relation_for => {'permissions' => 'owner'}
-            },
-            :users_groups => {
-                :related => [],
-                :singular => 'users_group',
-                :depends_on => ['users']
-            },
-            :visualizations => {
-                :related => ['overlays', 'external_sources'],
-                :singular => 'visualization'
-            },
-            :synchronizations => {
-                :related => [],
-                :singular => 'synchronization'
-            },
-            :shared_entities => {
-                :related => [],
-                :singular => 'shared_entity'
-            },
-            :logs => {
-                :related => [],
-                :singular => 'log'
-            },
-            :feature_flags_users => {
-                :related => [],
-                :singular => 'feature_flag_user',
-                :depends_on => ['users']
-            },
-            :permissions => {
-                :related => ['visualizations'],
-                :singular => 'permission'
-            }
-        }
 
         redis_keys = {
             :mapviews => {
@@ -535,8 +421,7 @@ module CartoDB
         }
         if options[:id]
           get_user_metadata(options[:id])
-          p dump_role_grants(database_username(@user_id))
-          dump_user_data(tables, redis_keys) unless options[:database_only] == true
+          dump_user_data(redis_keys) unless options[:database_only] == true
           redis_conn.quit
           DumpJob.new(
               @user_data['database_host'] || '127.0.0.1',
@@ -554,7 +439,7 @@ module CartoDB
           @org_id = @org_metadata['id']
           @org_users = get_org_users(@org_metadata['id'])
           @org_groups = get_org_groups(@org_metadata['id'])
-          dump_org_data(tables)
+          dump_org_data
           data = {organization: @org_metadata, users: @org_users.to_a, groups: @org_groups}
           File.open("#{@options[:path]}org_#{@org_metadata['id']}.json", "w") do |f|
             f.write(data.to_json)

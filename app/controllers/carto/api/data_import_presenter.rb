@@ -171,8 +171,10 @@ module Carto
       def get_warnings
         warnings = {}
 
-        warnings.merge!(rejected_layers: @data_import.rejected_layers.split(',')) if !@data_import.rejected_layers.empty?
-        warnings.merge!(user_max_layers: @data_import.user.max_layers) if !@data_import.rejected_layers.empty?
+        if !@data_import.rejected_layers.empty?
+          warnings.merge!(rejected_layers: @data_import.rejected_layers.split(','))
+          warnings.merge!(user_max_layers: @data_import.user.max_layers)
+        end
 
         warnings.empty? ? nil : warnings
       end

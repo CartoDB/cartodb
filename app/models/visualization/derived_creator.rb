@@ -6,10 +6,9 @@ module CartoDB
       DEFAULT_MAP_NAME = 'Untitled Map'
 
       def initialize(user, tables = [])
-        @rejected_layers = nil
+        @rejected_layers = []
 
         if tables.length > user.max_layers
-          @rejected_layers = []
           tables.pop(tables.length - user.max_layers).each do |rejected_layers|
             @rejected_layers << rejected_layers.name
           end

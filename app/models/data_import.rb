@@ -98,6 +98,7 @@ class DataImport < Sequel::Model
     instantiate_log
     self.results  = []
     self.state    ||= STATE_PENDING
+    self.rejected_layers ||= []
   end
 
   # This before_create should be only necessary to track old dashboard data imports.
@@ -636,7 +637,7 @@ class DataImport < Sequel::Model
     else
       self.results    = importer.results
       self.error_code = importer.error_code
-      self.rejected_layers = importer.rejected_layers.join(',') if !importer.rejected_layers.nil?
+      self.rejected_layers = importer.rejected_layers.join(',')
 
       # http_response_code is only relevant if a direct download is performed
       if !runner.nil? && datasource_provider.providers_download_url?

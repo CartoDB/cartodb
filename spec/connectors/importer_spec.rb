@@ -226,7 +226,7 @@ describe CartoDB::Connector::Importer do
     data_import = DataImport.create(
       user_id: @user.id,
       data_source: filepath,
-      updated_at: Time.now,
+      updated_at: Time.now.utc,
       append: false,
       create_visualization: true
     )
@@ -248,7 +248,7 @@ describe CartoDB::Connector::Importer do
     data_import = DataImport.create(
       user_id: @user.id,
       data_source: filepath,
-      updated_at: Time.now,
+      updated_at: Time.now.utc,
       append: false,
       create_visualization: true
     )

@@ -45,7 +45,7 @@ module.exports = {
 
       var defaultOptions = {
         transform: [],
-        watch: false, // TODO: set to true to watchify, enable by grunt task?
+        watch: '<%= config.doWatchify %>',
         browserifyOptions: {
           debug: true // to generate source maps
         }

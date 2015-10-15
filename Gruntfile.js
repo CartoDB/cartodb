@@ -217,9 +217,20 @@ module.exports = function(grunt) {
     'dist'
   ]);
 
+  grunt.registerTask('preWatch', function() {
+    grunt.config('config.doWatchify', true);
+    try {
+      grunt.task.requires('gitinfo');
+    } catch(err) {
+      grunt.task.run('gitinfo');
+    }
+  });
+
   grunt.registerTask('dev', [
     'build',
     'connect:styleguide',
+    'preWatch',
+    'browserify',
     'watch'
   ]);
 }

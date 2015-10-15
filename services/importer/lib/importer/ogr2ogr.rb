@@ -1,6 +1,6 @@
 # encoding: utf-8
 require 'open3'
-require_relative 'ogr2ogr_guessing_params'
+require_relative 'ogr2ogr_params_helper'
 
 module CartoDB
   module Importer2
@@ -40,16 +40,16 @@ module CartoDB
 
       def command_for_import
         "#{OSM_INDEXING_OPTION} #{PG_COPY_OPTION} #{client_encoding_option} #{shape_encoding_option} " +
-        "#{executable_path} #{OUTPUT_FORMAT_OPTION} #{overwrite_option} #{guessing_options} " +
-        "#{postgres_options} #{projection_option} " +
-        "#{layer_creation_options} #{filepath} #{layer} #{layer_name_option} #{NEW_LAYER_TYPE_OPTION}" +
-        " #{shape_coordinate_option} "
+          "#{executable_path} #{OUTPUT_FORMAT_OPTION} #{overwrite_option} #{guessing_options} " +
+          "#{postgres_options} #{projection_option} " +
+          "#{layer_creation_options} #{filepath} #{layer} #{layer_name_option} #{NEW_LAYER_TYPE_OPTION}" +
+          " #{shape_coordinate_option} "
       end
 
       def command_for_append
         "#{OSM_INDEXING_OPTION} #{PG_COPY_OPTION} #{client_encoding_option} " +
-        "#{executable_path} #{APPEND_MODE_OPTION} #{OUTPUT_FORMAT_OPTION} #{postgres_options} " +
-        "#{projection_option} #{filepath} #{layer} #{layer_name_option} #{NEW_LAYER_TYPE_OPTION}"
+          "#{executable_path} #{APPEND_MODE_OPTION} #{OUTPUT_FORMAT_OPTION} #{postgres_options} " +
+          "#{projection_option} #{filepath} #{layer} #{layer_name_option} #{NEW_LAYER_TYPE_OPTION}"
       end
 
       def executable_path
@@ -140,7 +140,7 @@ module CartoDB
 
       def guessing_options
         if csv_guessing && is_csv?
-          Ogr2ogrGuessingParams.new(filepath, quoted_fields_guessing).params
+          params_helper.guessing_args
         else
           ''
         end
@@ -185,6 +185,11 @@ module CartoDB
       def projection_option
         is_csv? || filepath =~ /\.ods/ ? nil : '-t_srs EPSG:4326 '
       end
+
+      def params_helper
+        @params_helper ||= Ogr2ogrParamsHelper.new(filepath, quoted_fields_guessing, layer)
+      end
+
     end
   end
 end

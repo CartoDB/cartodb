@@ -9,8 +9,9 @@ module CartoDB
     class OgrInfo
       DEFAULT_BINARY = `which ogrinfo`.strip
 
-      def initialize(input_file_path)
+      def initialize(input_file_path, layer)
         @input_file_path = input_file_path
+        @layer = layer
         @executed = false
         @raw_output = nil
       end
@@ -25,6 +26,14 @@ module CartoDB
         geom_column
       end
 
+      def fields
+        raw_output
+          .split("\n")
+          .grep(/^[a-zA-Z0-9_]+:/)
+          .reject { |x| x =~ /^(INFO:|Geometry:|Feature Count:|Layer)/ }
+          .map{ |s| s.gsub(/:.*/, '') }
+      end
+
 
       private
 
@@ -35,7 +44,7 @@ module CartoDB
       def run
         if !@executed
           stdout, stderr, status = Open3.capture3(command)
-          @raw_output = stdout
+          @raw_output = stdout.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '?')
           @exit_code = status.to_i
           @executed = true
         end
@@ -47,14 +56,14 @@ module CartoDB
       end
 
       def command
-        "#{DEFAULT_BINARY} #{options.join(' ')} #{@input_file_path}"
+        "#{DEFAULT_BINARY} #{arguments.join(' ')} #{@input_file_path} #{@layer}"
       end
 
-      def options
+      def arguments
         [
           '-ro',
           '-so',
-          '-al',
+          '-al'
         ]
       end
 

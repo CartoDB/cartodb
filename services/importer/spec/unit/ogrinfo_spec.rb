@@ -1,9 +1,7 @@
 # encoding: utf-8
 require_relative '../../lib/importer/ogrinfo'
 
-include CartoDB::Importer2
-
-describe OgrInfo do
+describe CartoDB::Importer2::OgrInfo do
   describe '#geometry_type' do
     it 'parses the geometry type as returned by ogrinfo' do
       ogrinfo = ogrinfo_factory('TM_WORLD_BORDERS_SIMPL-0.3.shp', 'TM_WORLD_BORDERS_SIMPL-0.3')
@@ -13,7 +11,7 @@ describe OgrInfo do
       ogrinfo = ogrinfo_factory('ThisFileDoesNotExist')
       expect{
         ogrinfo.geometry_type
-      }.to raise_error(OgrInfoError)
+      }.to raise_error(CartoDB::Importer2::OgrInfoError)
     end
     it "returns 'None' with a CSV with the_geom (with current version)" do
       ogrinfo = ogrinfo_factory('all.csv')

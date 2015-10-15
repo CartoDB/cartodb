@@ -19,15 +19,18 @@ do
         if [ ! -d "/tmp/redis-$port" ]; then
                 mkdir /tmp/redis-$port
         fi
-        config="port $port \n
-                daemonize yes \n
-                pidfile /tmp/redis-test-$port.tmp\n
-                timeout 300\n
-                dbfilename redis_test.rdb\n
-                dir /tmp/redis-$port\n
-                loglevel debug\n
-                logfile /tmp/redis-$port/stdout"
-        echo $config | redis-server  - 2>&1
+        touch redis.conf.test
+        truncate -s 0 redis.conf.test
+        echo "port $port" >> redis.conf.test
+        echo "daemonize yes" >> redis.conf.test
+        echo "pidfile /tmp/redis-test-$port.tmp" >> redis.conf.test
+        echo "timeout 300" >> redis.conf.test
+        echo "dbfilename redis_test.rdb" >> redis.conf.test
+        echo "dir /tmp/redis-$port" >> redis.conf.test
+        echo "loglevel debug" >> redis.conf.test
+        echo "logfile /tmp/redis-$port/stdout" >> redis.conf.test
+        cat redis.conf.test | redis-server  - 2>&1
+        rm redis.conf.test
         touch config/redis_$port;
         echo $port >> config/redis_$port;
         sleep 0.5; # Let redis server start

@@ -51,7 +51,7 @@ class Carto::Map < ActiveRecord::Base
                           through: :layers_maps,
                           source: :layer
 
-  has_many :user_tables, class_name: Carto::UserTable, inverse_of: :map, foreign_key: :table_id
+  has_many :user_tables, class_name: Carto::UserTable, inverse_of: :map
 
   belongs_to :user
   belongs_to :visualization

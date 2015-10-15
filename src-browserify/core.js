@@ -2,10 +2,6 @@
   if (typeof module != 'undefined' && module.exports) module.exports = definition()
   else context[name] = definition()
 })('cartodb', this, function() {
-  var BackboneEventsIsch = require('./api/core-lib/backbone-events-isch');
-  var _Promise = require('./api/core-lib/promise');
-  var _ = require('./api/core-lib/underscore-isch');
-
   var cdb = {};
   cdb.VERSION = "3.15.8";
   cdb.DEBUG = false;
@@ -16,7 +12,9 @@
   cdb.CARTOCSS_DEFAULT_VERSION = '2.1.1';
 
   cdb.config = {};
-  cdb.core = {};
+  cdb.core = {
+    Profiler: require('./core/profiler')
+  };
   cdb.image = {};
   cdb.geo = {};
   cdb.geo.ui = {};
@@ -25,15 +23,14 @@
   cdb.ui.common = {};
   cdb.vis = {};
   cdb.decorators = {};
-  cdb._Promise = _Promise;
+  cdb._Promise = require('./api/core-lib/promise');
 
   if (typeof window !== 'undefined') {
-    if (typeof window._ === 'undefined') {
-      window._ = _;
-    }
+    window.cartodb = cdb;
     window.JST = window.JST || {};
+    window._ = window._ || require('./api/core-lib/underscore-isch');
     window.Backbone = {
-      Events: BackboneEventsIsch
+      Events: require('./api/core-lib/backbone-events-isch')
     }
   }
 

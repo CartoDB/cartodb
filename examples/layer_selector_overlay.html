@@ -16,7 +16,7 @@
 
     <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
   </head>
-    
+
   <body>
     <div id="map"></div>
 
@@ -26,11 +26,13 @@
     <script>
 
       function main() {
-        cartodb.createVis('map', 'http://development.localhost.lan:3000/api/v2/viz/1742e22e-cc67-11e2-8cdb-94942608096a/viz.json', {
-          shareable: true,
-          title: true,
+        cartodb.createVis('map', 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json', {
+          shareable: false,
+          title: false,
+          fullscreen: false,
           description: true,
-          search: true,
+          zoomControl: false,
+          search: false,
           tiles_loader: true,
           layer_selector: true,
           center_lat: 0,
@@ -41,14 +43,9 @@
         .error(function(err) {
           console.log(err);
         });
-
-
       }
 
-      //window.onload = main;
-      var fn = function() { cartodb.load('../src/', main); }
-      window.onload = fn;
-      // $(document).ready(main);
+      window.onload = main;
     </script>
   </body>
 </html>

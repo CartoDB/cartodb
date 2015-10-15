@@ -66,8 +66,8 @@
       "watchify": "3.4.0"
     },
     "scripts": {
-      "test": "tape test/tape/**/*.js",
-      "testling": "browserify test/tape/*.js | testling"
+      "test": "tape test/tape/*.js test/tape/**/*.js",
+      "testling": "browserify test/tape/*.js test/tape/**/*.js | testling"
     },
     "browserify": {
       "transform": [

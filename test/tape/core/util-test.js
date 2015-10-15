@@ -1,5 +1,5 @@
 var test = require('tape');
-var util = require('../../src-browserify/core/util');
+var util = require('../../../src-browserify/core/util');
 
 test('core/util: should identify user agents properly', function(t) {
   var browser, ua;

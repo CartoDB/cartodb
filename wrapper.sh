@@ -11,10 +11,6 @@ truncate -s 0 *.log
 port=6001
 for i in $(seq 1 $1);
 do
-        # Create database_i.ymla
-#        echo "# Creating database_$i.yml file" >> wrapper.log 2>&1
-#        sed -e s/carto_db_test/carto_db_test_$port/g config/database.yml.sample > config/database_$i.yml
-
         # Start redis server
         if [ ! -d "/tmp/redis-$port" ]; then
                 mkdir /tmp/redis-$port
@@ -41,15 +37,20 @@ done;
 if [ ! -d "/tmp/redis-6335" ]; then
         mkdir /tmp/redis-6335
 fi
-config="port 6335 \n
-        daemonize yes \n
-        pidfile /tmp/redis-test-6335.tmp\n
-        timeout 300\n
-        dbfilename redis_test.rdb\n
-        dir /tmp/redis-6335\n
-        loglevel debug\n
-        logfile /tmp/redis-6335/stdout"
-echo $config | redis-server  - 2>&1
+
+# Start default redis on port 6335
+touch redis.conf.test
+truncate -s 0 redis.conf.test
+echo "port 6335" >> redis.conf.test
+echo "daemonize yes" >> redis.conf.test
+echo "pidfile /tmp/redis-test-6335.tmp" >> redis.conf.test
+echo "timeout 300" >> redis.conf.test
+echo "dbfilename redis_test.rdb" >> redis.conf.test
+echo "dir /tmp/redis-6335" >> redis.conf.test
+echo "loglevel debug" >> redis.conf.test
+echo "logfile /tmp/redis-6335/stdout" >> redis.conf.test
+cat redis.conf.test | redis-server  - 2>&1
+rm redis.conf.test
 # ps -eaf | grep -v "grep" | grep redis-server >> wrapper.log 2>&1
 
 # Create databases

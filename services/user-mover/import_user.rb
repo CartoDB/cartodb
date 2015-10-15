@@ -361,7 +361,8 @@ module CartoDB
       end
 
       def set_user_search_path(user, search_path_prefix)
-        superuser_pg_conn.query("ALTER USER \"#{user}\" SET search_path= \"#{search_path_prefix}\", public, cartodb")
+        search_path = CartoDB::User::DBService.build_search_path(search_path_prefix)
+        superuser_pg_conn.query("ALTER USER \"#{user}\" SET search_path= #{search_path}")
       end
 
       def create_db(dbname, blank)

@@ -666,9 +666,11 @@ class User < Sequel::Model
   end
 
   def get_database(options, configuration)
-      ::Sequel.connect(configuration.merge(:after_connect=>(proc do |conn|
-        conn.execute(%Q{ SET search_path TO "#{self.database_schema}", cartodb, public }) unless options[:as] == :cluster_admin
-      end)))
+    ::Sequel.connect(configuration.merge(after_connect: (proc do |conn|
+      unless options[:as] == :cluster_admin
+        conn.execute(%{ SET search_path TO #{db_service.build_search_path} })
+      end
+    end)))
   end
 
   def run_pg_query(query)
@@ -1471,9 +1473,9 @@ class User < Sequel::Model
 
   def create_public_db_user
     in_database(as: :superuser) do |database|
-      database.run(%Q{ CREATE USER "#{database_public_username}" LOGIN INHERIT })
-      database.run(%Q{ GRANT publicuser TO "#{database_public_username}" })
-      database.run(%Q{ ALTER USER "#{database_public_username}" SET search_path = "#{database_schema}", public, cartodb })
+      database.run(%{ CREATE USER "#{database_public_username}" LOGIN INHERIT })
+      database.run(%{ GRANT publicuser TO "#{database_public_username}" })
+      database.run(%{ ALTER USER "#{database_public_username}" SET search_path = #{db_service.build_search_path} })
     end
   end
 

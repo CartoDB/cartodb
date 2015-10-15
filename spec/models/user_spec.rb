@@ -1632,7 +1632,6 @@ describe User do
   end
 
   describe '#needs_password_confirmation?' do
-
     it 'is true for a normal user' do
       user = FactoryGirl.build(:carto_user, :google_sign_in => nil)
       user.needs_password_confirmation?.should == true
@@ -1650,8 +1649,62 @@ describe User do
       user = FactoryGirl.build(:user, :google_sign_in => true, :last_password_change_date => Time.now)
       user.needs_password_confirmation?.should == true
     end
-
   end
+
+  describe 'User creation and DB critical calls' do
+    it 'Properly setups a new user' do
+      # INFO: avoiding enable_remote_db_user
+      Cartodb.config[:signups] = nil
+
+      ::User.any_instance.stubs(
+        enable_remote_db_user: nil,
+        monitor_user_notification: nil,
+        cartodb_extension_version_pre_mu?: nil
+      )
+
+      user = ::User.new
+      user.username = String.random(8).downcase
+      user.email = String.random(8).downcase + '@' + String.random(5).downcase + '.com'
+      user.password = user.email.split('@').first
+      user.password_confirmation = user.password
+      user.admin = false
+      user.private_tables_enabled = true
+      user.private_maps_enabled = true
+      user.enabled = true
+      user.table_quota = 500
+      user.quota_in_bytes = 1234567890
+      user.user_timeout = 666000
+      user.database_timeout = 123000
+      user.geocoding_quota = 1000
+      user.geocoding_block_price = 1500
+      user.sync_tables_enabled = false
+      user.organization = nil
+      user.twitter_datasource_enabled = false
+      user.avatar_url = user.default_avatar
+
+      user.valid?.should == true
+
+      user.save
+
+      user.nil?.should == false
+
+      # To avoid connection pool caching
+      ::User.terminate_database_connections(user.database_name, user.database_host)
+
+      user.reload
+
+      # Replicate functionality inside ::User::DBService.configure_database
+      user.in_database do |db|
+        search_path = db.fetch("SHOW search_path;").first[:search_path]
+        # PG removes double quotes except if name needs them
+        search_path.should == user.db_service.build_search_path(user.database_schema, false)
+      end
+
+      user.destroy
+    end
+  end
+
+  protected
 
   def create_org(org_name, org_quota, org_seats)
     organization = Organization.new

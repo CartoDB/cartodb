@@ -26,9 +26,8 @@ module CartoDB
       def configure_database
         set_database_search_path
 
-        # DB CONNECT properties to the user
         grant_user_in_database
-        # schema privileges (public, cartodb, own, raster, import...)
+
         set_statement_timeouts
 
         # TODO: This smells to bug, this was called by User.setup_new_user from the non-org user flow
@@ -40,6 +39,7 @@ module CartoDB
         else
           setup_organization_user_schema
         end
+
         create_function_invalidate_varnish
         grant_publicuser_in_database
       end
@@ -47,7 +47,6 @@ module CartoDB
       # All methods called inside should allow to be executed multiple times without errors
       def setup_single_user_schema
         set_user_privileges_at_db
-
         rebuild_quota_trigger
       end
 
@@ -77,7 +76,7 @@ module CartoDB
             #       In the future we should guarantee that exntension lives in cartodb schema so we don't need to set
             #       a search_path before
             search_path = db.fetch("SHOW search_path;").first[:search_path]
-            db.run("SET search_path TO cartodb, public;")
+            db.run("SET search_path TO #{SCHEMA_CARTODB}, #{SCHEMA_PUBLIC};")
             if @user.cartodb_extension_version_pre_mu?
               db.run("SELECT CDB_SetUserQuotaInBytes(#{@user.quota_in_bytes});")
             else
@@ -88,11 +87,22 @@ module CartoDB
         end
       end
 
+      def build_search_path(user_schema = nil, quote_user_schema = true)
+        user_schema ||= @user.database_schema
+        DBService.build_search_path(user_schema, quote_user_schema)
+      end
+
+      # Centralized method to provide the (ordered) search_path
+      def self.build_search_path(user_schema, quote_user_schema = true)
+        quote_char = quote_user_schema ? "\"" : ""
+        "#{quote_char}#{user_schema}#{quote_char}, #{SCHEMA_CARTODB}, #{SCHEMA_PUBLIC}"
+      end
+
       def set_database_search_path
         @user.in_database(as: :superuser) do |database|
           database.run(%{
             ALTER USER "#{@user.database_username}"
-              SET search_path = "#{@user.database_schema}", #{SCHEMA_PUBLIC}, #{SCHEMA_CARTODB}
+              SET search_path = #{build_search_path}
           })
         end
       end
@@ -114,7 +124,8 @@ module CartoDB
         if host.present? && port.present? && username.present? && password.present?
           conf_sql = %{
             SELECT cartodb.CDB_Conf_SetConf('groups_api',
-              '{ \"host\": \"#{host}\", \"port\": #{port}, \"timeout\": #{timeout}, \"username\": \"#{username}\", \"password\": \"#{password}\"}'::json
+              '{ \"host\": \"#{host}\", \"port\": #{port}, \"timeout\": #{timeout}, \"username\": \"#{username}\",
+                 \"password\": \"#{password}\"}'::json
             )
           }
           @user.in_database(as: :superuser) do |database|
@@ -200,7 +211,7 @@ module CartoDB
 
       def reset_schema_owner
         @user.in_database(as: :superuser) do |database|
-          database.run(%{ALTER SCHEMA "#{@user.database_schema}" OWNER TO "#{@user.database_username}"})
+          database.run(%{ ALTER SCHEMA "#{@user.database_schema}" OWNER TO "#{@user.database_username}" })
         end
       end
 
@@ -290,9 +301,11 @@ module CartoDB
         tables_queries = []
         @user.tables.each do |table|
           if table.public? || table.public_with_link_only?
-            tables_queries << "GRANT SELECT ON \"#{@user.database_schema}\".\"#{table.name}\" TO #{CartoDB::PUBLIC_DB_USER}"
+            tables_queries << %{
+              GRANT SELECT ON \"#{@user.database_schema}\".\"#{table.name}\" TO #{CartoDB::PUBLIC_DB_USER} }
           end
-          tables_queries << "ALTER TABLE \"#{@user.database_schema}\".\"#{table.name}\" OWNER TO \"#{@user.database_username}\""
+          tables_queries << %{
+            ALTER TABLE \"#{@user.database_schema}\".\"#{table.name}\" OWNER TO \"#{@user.database_username}\" }
         end
         @queries.run_in_transaction(
           tables_queries,

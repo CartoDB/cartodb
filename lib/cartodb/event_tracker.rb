@@ -24,7 +24,7 @@ module Cartodb
     end
 
     def is_tracking_active?
-      !Cartodb.config[:segment].nil? and !Cartodb.config[:segment]['api_key'].nil?
+      !Cartodb.config[:segment].blank? and !Cartodb.config[:segment]['api_key'].blank?
     end
 
   end

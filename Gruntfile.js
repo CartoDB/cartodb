@@ -25,7 +25,6 @@ module.exports = function(grunt) {
 
   var config = {
     dist: 'dist',
-    app:  'www',
     version: {
       major:      version[0],
       minor:      version[0] + '.' + version[1],
@@ -38,7 +37,6 @@ module.exports = function(grunt) {
     secrets: {},
     config: config,
     dist: 'dist',
-    app:  'www',
     version: {
       major:      version[0],
       minor:      version[0] + '.' + version[1],
@@ -55,52 +53,14 @@ module.exports = function(grunt) {
     watch: require('./grunt/tasks/watch').task(),
     connect: require('./grunt/tasks/connect').task(config),
     clean: require('./grunt/tasks/clean').task(),
-    compass: require('./grunt/tasks/compass').task(),
-    autoprefixer: require('./grunt/tasks/autoprefixer').task(),
-    useminPrepare: require('./grunt/tasks/useminPrepare').task(),
-    usemin: require('./grunt/tasks/usemin').task(),
-    htmlmin: require('./grunt/tasks/htmlmin').task(),
     concat: require('./grunt/tasks/concat').task(grunt, config),
     uglify: require('./grunt/tasks/uglify').task(),
     cssmin: require('./grunt/tasks/cssmin').task(),
     imagemin: require('./grunt/tasks/imagemin').task(),
-    svgmin: require('./grunt/tasks/svgmin').task(),
     copy: require('./grunt/tasks/copy').task(grunt, config),
-    filerev: require('./grunt/tasks/filerev').task(),
-    buildcontrol: require('./grunt/tasks/buildcontrol').task(),
     jshint: require('./grunt/tasks/jshint').task(),
-    concurrent: require('./grunt/tasks/concurrent').task(),
     jasmine: require('./grunt/tasks/jasmine').task()
   });
-
-
-  /* TASKS */
-
-  grunt.registerTask('serve', function (target) {
-    if (target === 'dist') {
-      return grunt.task.run(['build', 'connect:dist:keepalive']);
-    }
-
-    grunt.task.run([
-      'clean:server',
-      'concurrent:server',
-      'autoprefixer:server',
-      'copy:stageStatic',
-      'connect:livereload',
-      'watch'
-    ]);
-  });
-
-  grunt.registerTask('server', function (target) {
-    grunt.log.warn('The `server` task has been deprecated. Use `grunt serve` to start a server.');
-    grunt.task.run([target ? ('serve:' + target) : 'serve']);
-  });
-
-  grunt.registerTask('check', [
-    'clean:server',
-    'compass:server',
-    'jshint:all'
-  ]);
 
   grunt.registerTask('test', [ 'jasmine' ]);
 
@@ -176,19 +136,12 @@ module.exports = function(grunt) {
     ]);
   });
 
-  grunt.registerTask('pages', [ 'buildcontrol:pages' ]);
-
   grunt.registerTask('build', [
     'clean:dist',
     'css',
     'dist_js',
-    'useminPrepare',
     'cssmin',
     'imagemin',
-    'svgmin',
-    'filerev',
-    'usemin',
-    'htmlmin',
     'uglify'
   ]);
 
@@ -200,9 +153,7 @@ module.exports = function(grunt) {
   grunt.registerTask('js', [
     'replace',
     'gitinfo',
-    'concurrent:dist',
     'concat',
-    'autoprefixer:dist',
     'browserify'
   ]);
 

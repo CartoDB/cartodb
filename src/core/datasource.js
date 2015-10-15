@@ -44,11 +44,18 @@ cdb.core.Datasource = cdb.core.Model.extend({
       throw new Error("Widget model " + d.type + " not defined.");
     }
 
-    var mdl = new cdb.Widget[this._WIDGETS[d.type]](d);
+    var modelAttributes = _.extend(d, {
+      baseURL: this.get('maps_api_template').replace('{user}', this.get('user_name'))
+    })
+    var mdl = new cdb.Widget[this._WIDGETS[d.type]](modelAttributes);
     var collection = this._getWidgetCollection(d.type);
     collection && collection.add(mdl);
     this.bind('change:id', function(datasource, id) {
-      mdl.set("id", id);
+      mdl.set({
+        layerGroupId: id
+      });
+
+      mdl.fetch();
     }, this);
     return mdl;
   },

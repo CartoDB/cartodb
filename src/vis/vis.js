@@ -491,7 +491,7 @@ var Vis = cdb.core.View.extend({
         endpoint: MapBase.BASE_URL // This is different for named_maps
       });
 
-      var layerDefinition = new LayerDefinition(datasourceLayer.options.layer_definition, {});
+      var layerDefinition = new LayerDefinition(datasourceLayer.options.layer_definition, {}, data.widgets);
       windshaftMap = windshaftClient.instantiateMap(layerDefinition);
 
       this.datasource = new cdb.core.Datasource(datasource, { windshaftMap: windshaftMap });
@@ -510,7 +510,7 @@ var Vis = cdb.core.View.extend({
           )
         );
 
-        $('body').append(v.render().el);
+        $('body').append(v.el);
       });
     }
 

@@ -16,11 +16,13 @@
       }
       .Widget {
         position: absolute;
-        bottom: 120px;
+        bottom: 30px;
         right: 20px;
-        width: 100px;
-        height: 100px;
+        width: 200px;
+        height: 200px;
         background: white;
+        padding: 10px;
+        overflow-y: auto;
       }
     </style>
   </head>
@@ -28,13 +30,13 @@
     <div id="map"></div>
 
     <script type="text/template" id="list_template">
-      <div class="Widget-title"><%= title %>, state: <%= state %></div>
-      <div class="Widget-content js-content"></div>
+      <div class="Widget-title"><strong><%= title %></strong></div>
+      <div class="Widget-content js-content">
+      </div>
     </script>
 
     <script type="text/template" id="list_item_template">
-      <h3><%= name %></h3>
-      <p><%= description %></p>
+      <p><%= district %>: <%= trees %></p>
     </script>
 
     <script>
@@ -241,6 +243,42 @@
                           "interactivity": "cartodb_id,area,c_distri,coord_x,coord_y,dones,homes,n_distri,perim,web_1,web_2,web_3",
                           "table_name": "\"\"."
                         }
+                      },
+                      {
+                        "id": "18cae5ef-dc32-4e27-b587-9098b057e12e",
+                        "type": "CartoDB",
+                        "infowindow": {
+                          "fields": [],
+                          "template_name": "table/views/infowindow_light",
+                          "template": "<div class=\"cartodb-popup v2\">\n  <a href=\"#close\" class=\"cartodb-popup-close-button close\">x</a>\n  <div class=\"cartodb-popup-content-wrapper\">\n    <div class=\"cartodb-popup-content\">\n      {{#content.fields}}\n        {{#title}}<h4>{{title}}</h4>{{/title}}\n        {{#value}}\n          <p {{#type}}class=\"{{ type }}\"{{/type}}>{{{ value }}}</p>\n        {{/value}}\n        {{^value}}\n          <p class=\"empty\">null</p>\n        {{/value}}\n      {{/content.fields}}\n    </div>\n  </div>\n  <div class=\"cartodb-popup-tip-container\"></div>\n</div>\n",
+                          "alternative_names": {},
+                          "width": 226,
+                          "maxHeight": 180
+                        },
+                        "tooltip": {
+                          "fields": [],
+                          "template_name": "tooltip_light",
+                          "template": "<div class=\"cartodb-tooltip-content-wrapper\">\n  <div class=\"cartodb-tooltip-content\">\n  {{#fields}}\n    {{#title}}\n    <h4>{{title}}</h4>\n    {{/title}}\n    <p>{{{ value }}}</p>\n  {{/fields}}\n  </div>\n</div>",
+                          "alternative_names": {},
+                          "maxHeight": 180
+                        },
+                        "legend": {
+                          "type": "none",
+                          "show_title": false,
+                          "title": "",
+                          "template": "",
+                          "visible": true
+                        },
+                        "order": 2,
+                        "visible": true,
+                        "options": {
+                          "sql": "select * from arboles",
+                          "layer_name": "arboles",
+                          "cartocss": "/** simple visualization */\n\n#arboles{\n  marker-fill-opacity: 0.9;\n  marker-line-color: #FFF;\n  marker-line-width: 1;\n  marker-line-opacity: 1;\n  marker-placement: point;\n  marker-type: ellipse;\n  marker-width: 10;\n  marker-fill: #229A00;\n  marker-allow-overlap: true;\n}",
+                          "cartocss_version": "2.1.1",
+                          "interactivity": "cartodb_id",
+                          "table_name": "\"\"."
+                        }
                       }
                     ]
                   },
@@ -346,11 +384,17 @@
               {
                 "type": "list",
                 "options": {
+                  "id": 'widget_uuid',
+                  "sql": "SELECT COUNT(a.cartodb_id) as trees, b.n_distri as district FROM arboles as a INNER JOIN districtes_barcelona as b ON ST_Intersects(a.the_geom, b.the_geom) GROUP BY b.n_distri",
                   "datasource": "datasource1",
-                  "title": "Widget 1",
+                  "title": "Árboles por distrito",
                   "columns": [
-                    "cartodb_id"
-                  ]
+                    "trees", 
+                    "district"
+                  ],
+                  "listTemplate": $("#list_template").html(),
+                  "listItemTemplate": $("#list_item_template").html(),
+
                 }
               }
             ]
@@ -363,16 +407,16 @@
             var stadiums = layers[2];
             var counties = layers[1];
 
-            var widget = vis.addWidget('list', {
-              layer: stadiums,
-              title: 'List',
-              listTemplate: $("#list_template").html(),
-              listItemTemplate: $("#list_item_template").html(),
-              columns: ['cartodb_id', 'description'],
-              sync: true
-            });
+            // var widget = vis.addWidget('list', {
+            //   layer: stadiums,
+            //   title: 'List',
+            //   listTemplate: $("#list_template").html(),
+            //   listItemTemplate: $("#list_item_template").html(),
+            //   columns: ['cartodb_id', 'description'],
+            //   sync: true
+            // });
 
-            $('body').append(widget.render().el);
+            // $('body').append(widget.render().el);
           })
           .error(function(err) {
             console.log(err);

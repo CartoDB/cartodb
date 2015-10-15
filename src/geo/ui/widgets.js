@@ -22,6 +22,8 @@ cdb.Widget.View = cdb.core.View.extend({
     );
     this.datasource = this.options.datasource;
     this.dataModel = this.datasource.addWidgetModel({
+      id: this.options.id,
+      sql: this.options.sql,
       name: this.options.name,
       type: this.options.type,
       columns: this.options.columns
@@ -58,8 +60,8 @@ cdb.Widget.View = cdb.core.View.extend({
         self[ self.viewModel.get('sync') ? '_bindDatasource' : '_unbindDatasource' ]();
       };
 
-      this.dataModel.bind('reset', function() {
-        this._changeState('reset');
+      this.dataModel.bind('change:data', function() {
+        this._changeState('BOOM');
         onDone();
       }, this);
 

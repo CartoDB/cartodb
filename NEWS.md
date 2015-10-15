@@ -1,6 +1,6 @@
 3.15.X (dd/mm/yyyy)
 ------
-* Fixed broken infowindows/tooltips when some layers were hidden [#5917](https://github.com/CartoDB/cartodb/issues/5917)
+*
 
 3.15.8 (01/10/2015)
 ------

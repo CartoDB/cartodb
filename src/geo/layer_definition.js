@@ -648,36 +648,30 @@ MapBase.prototype = {
   },
 
   getTooltipData: function(layer) {
-    var pos = this.getLayerNumberByIndex(layer);
-
-    if (pos >= 0) {
-      var tooltip = this.layers[pos].tooltip;
-      if (tooltip && tooltip.fields && tooltip.fields.length) {
-        return tooltip;
-      }
+    var tooltip = this.layers[layer].tooltip;
+    if (tooltip && tooltip.fields && tooltip.fields.length) {
+      return tooltip;
     }
-
     return null;
   },
 
   getInfowindowData: function(layer) {
-    var pos = this.getLayerNumberByIndex(layer);
-
-    if (pos >= 0) {
-      var infowindow = this.layers[pos].infowindow;
-      if (infowindow && infowindow.fields && infowindow.fields.length) {
-        return infowindow;
-      }
+    var lyr;
+    var infowindow = this.layers[layer].infowindow;
+    if (!infowindow && this.options.layer_definition && (lyr = this.options.layer_definition.layers[layer])) {
+      infowindow = lyr.infowindow;
     }
-
+    if (infowindow && infowindow.fields && infowindow.fields.length > 0) {
+      return infowindow;
+    }
     return null;
   },
 
   containInfowindow: function() {
-    var layers = this.layers || [];
+    var layers =  this.options.layer_definition.layers;
     for(var i = 0; i < layers.length; ++i) {
       var infowindow = layers[i].infowindow;
-      if (infowindow && infowindow.fields && infowindow.fields.length) {
+      if (infowindow && infowindow.fields && infowindow.fields.length > 0) {
         return true;
       }
     }
@@ -685,7 +679,7 @@ MapBase.prototype = {
   },
 
   containTooltip: function() {
-    var layers = this.layers || [];
+    var layers =  this.options.layer_definition.layers;
     for(var i = 0; i < layers.length; ++i) {
       var tooltip = layers[i].tooltip;
       if (tooltip && tooltip.fields && tooltip.fields.length) {
@@ -969,6 +963,28 @@ NamedMap.prototype = _.extend({}, MapBase.prototype, {
       payload['layer' + i] = this._isLayerVisible(layer) ? 1 : 0;
     }
     return payload;
+  },
+
+  containInfowindow: function() {
+    var layers = this.layers || [];
+    for(var i = 0; i < layers.length; ++i) {
+      var infowindow = layers[i].infowindow;
+      if (infowindow && infowindow.fields && infowindow.fields.length > 0) {
+        return true;
+      }
+    }
+    return false;
+  },
+
+  containTooltip: function() {
+    var layers = this.layers || [];
+    for(var i = 0; i < layers.length; ++i) {
+      var tooltip = layers[i].tooltip;
+      if (tooltip) {
+        return true;
+      }
+    }
+    return false;
   },
 
   setSQL: function(sql) {

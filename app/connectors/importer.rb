@@ -34,7 +34,7 @@ module CartoDB
                                                                             {public_user_roles: public_user_roles})
 
         @imported_table_visualization_ids = []
-        @rejected_layers = nil
+        @rejected_layers = []
       end
 
       def run(tracker)

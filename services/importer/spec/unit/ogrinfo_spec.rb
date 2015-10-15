@@ -9,9 +9,11 @@ describe OgrInfo do
       ogrinfo = ogrinfo_factory('TM_WORLD_BORDERS_SIMPL-0.3.shp', 'TM_WORLD_BORDERS_SIMPL-0.3')
       ogrinfo.geometry_type.should == 'Polygon'
     end
-    it 'returns nil if the file could not be opened' do
+    it 'raises an exception if the file could not be opened' do
       ogrinfo = ogrinfo_factory('ThisFileDoesNotExist')
-      ogrinfo.geometry_type.should == nil
+      expect{
+        ogrinfo.geometry_type
+      }.to raise_error(OgrInfoError)
     end
     it "returns 'None' with a CSV with the_geom (with current version)" do
       ogrinfo = ogrinfo_factory('all.csv')

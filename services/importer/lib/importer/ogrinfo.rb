@@ -3,6 +3,8 @@ require 'open3'
 
 module CartoDB
   module Importer2
+    class OgrInfoError  < StandardError; end
+
     # This class is responsible for analyzing a file through ogrinfo.
     class OgrInfo
       DEFAULT_BINARY = `which ogrinfo`.strip
@@ -40,9 +42,10 @@ module CartoDB
 
       def run
         if !@executed
-          stdout, _stderr, status = Open3.capture3(command)
+          stdout, stderr, status = Open3.capture3(command)
           @raw_output = stdout.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '?')
           @exit_code = status.to_i
+          raise OgrInfoError.new(stderr) if @exit_code != 0
           @executed = true
         end
         @raw_output

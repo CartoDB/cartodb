@@ -1697,9 +1697,7 @@ describe User do
 
       test_table_name = "table_perm_test"
 
-      user.in_database.run(%{
-        CREATE TABLE #{test_table_name}(x int);
-      })
+
 
       # Replicate functionality inside ::User::DBService.configure_database
       # -------------------------------------------------------------------
@@ -1718,6 +1716,7 @@ describe User do
         SHOW statement_timeout;
       }).first[:statement_timeout].should eq "#{user_timeout_secs}s"
 
+      # Checks for "grant_read_on_schema_queries(SCHEMA_CARTODB, db_user)"
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_schema_privilege('#{user.database_username}',
                                            '#{CartoDB::User::DBService::SCHEMA_CARTODB}', 'USAGE');
@@ -1726,29 +1725,46 @@ describe User do
         SELECT * FROM has_function_privilege('#{user.database_username}',
                                              '_cdb_userquotainbytes()', 'EXECUTE');
       }).first[:has_function_privilege].should == true
-      user.in_database(as: :superuser).fetch(%{
-        SELECT * FROM has_table_privilege('#{user.database_username}',
-                                           '#{test_table_name}', 'SELECT');
-      }).first[:has_table_privilege].should == true
-
+      # SCHEMA_CARTODB has no tables to select from, except CDB_CONF on which has no permission
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_table_privilege('#{user.database_username}',
                                            'cartodb.CDB_CONF',
                                            'SELECT, INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER');
       }).first[:has_table_privilege].should == false
 
+      # Checks on SCHEMA_PUBLIC
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_schema_privilege('#{user.database_username}',
                                            '#{CartoDB::User::DBService::SCHEMA_PUBLIC}', 'USAGE');
       }).first[:has_schema_privilege].should == true
       user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_table_privilege('#{user.database_username}',
+                                           '#{CartoDB::User::DBService::SCHEMA_PUBLIC}.spatial_ref_sys', 'SELECT');
+      }).first[:has_table_privilege].should == true
+      user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_function_privilege('#{user.database_username}',
-                                             '_cdb_userquotainbytes()', 'EXECUTE');
+                                             '#{CartoDB::User::DBService::SCHEMA_PUBLIC}.length(geometry)', 'EXECUTE');
       }).first[:has_function_privilege].should == true
+
+      # Checks on own schema
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_schema_privilege('#{user.database_username}',
+                                           '#{user.database_schema}', 'CREATE, USAGE');
+      }).first[:has_schema_privilege].should == true
+      user.in_database.run(%{
+        CREATE TABLE #{test_table_name}(x int);
+      })
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_table_privilege('#{user.database_username}',
                                            '#{test_table_name}', 'SELECT');
       }).first[:has_table_privilege].should == true
+      # _cdb_userquotainbytes is always created on the user schema
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_function_privilege('#{user.database_username}',
+                                             '#{user.database_schema}._cdb_userquotainbytes()', 'EXECUTE');
+      }).first[:has_function_privilege].should == true
+
+      # TODO: Keep adding tests from db_service.configure_database
 
       user.destroy
     end
@@ -1764,5 +1780,4 @@ describe User do
     organization.save!
     organization
   end
-
 end

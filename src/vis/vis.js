@@ -471,13 +471,30 @@ var Vis = cdb.core.View.extend({
       this.mapView.bind('newLayerView', this.addTooltip, this);
     }
 
+    // Create an instance of a map (datasource)
+    var windshaftMap;
     if (data.datasources && data.datasources.length) {
       // Only one datasource?
       var datasource = _.first(data.datasources);
       var datasourceLayer = _.find(data.layers, function(l) {
         return l.datasource === datasource.id
       });
-      this.datasource = new cdb.core.Datasource(datasource, { layerDef: datasourceLayer });
+
+      var layerGroupLayer = data.layers[1];
+      var windshaftClient = new cdb.windshaft.Client({
+        ajax: $.ajax,
+        user_name: datasource.user_name,
+        maps_api_template: datasource.maps_api_template,
+        stat_tag: datasource.stat_tag,
+        force_compress: false,
+        force_cors: false,
+        endpoint: MapBase.BASE_URL // This is different for named_maps
+      });
+
+      var layerDefinition = new LayerDefinition(datasourceLayer.options.layer_definition, {});
+      windshaftMap = windshaftClient.instantiateMap(layerDefinition);
+
+      this.datasource = new cdb.core.Datasource(datasource, { windshaftMap: windshaftMap });
 
       _.each(data.widgets, function(d) {
         var opts = d.options;
@@ -495,12 +512,17 @@ var Vis = cdb.core.View.extend({
 
         $('body').append(v.render().el);
       });
-
-      this.datasource.instantiate();
     }
 
     this.map.layers.reset(_.map(data.layers, function(layerData) {
-      return Layers.create(layerData.type || layerData.kind, self, layerData);
+      var model = Layers.create(layerData.type || layerData.kind, self, layerData);
+
+      // Assign the map (datasource) to the model
+      if (windshaftMap) {
+        model.windshaftMap = windshaftMap;
+      }
+
+      return model;
     }));
 
     this.overlayModels.reset(data.overlays);
@@ -528,6 +550,7 @@ var Vis = cdb.core.View.extend({
       }
 
     }
+
 
     _.defer(function() {
       self.trigger('done', self, self.getLayers());
@@ -1254,7 +1277,7 @@ var Vis = cdb.core.View.extend({
         var fields = _.pluck(infowindowFields.fields, 'name');
         var cartodb_id = data.cartodb_id;
 
-        layerView.fetchAttributes(layer, cartodb_id, fields, function(attributes) {
+        layerView.model.windshaftMap.fetchAttributes(layer, cartodb_id, fields, function(attributes) {
 
           // Old viz.json doesn't contain width and maxHeight properties
           // and we have to get the default values if there are not defined.

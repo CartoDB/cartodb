@@ -1,7 +1,8 @@
 #!/bin/bash
 # Jesus Vazquez
 # secondTry
-# This is a hack for those specs that failed in the parallel execution. Here we can check if they failed because they can't run in parallel
+# This is a hack for those specs that failed in the parallel execution. 
+# Here we can check if they failed because they can't run in parallel
 # or because the PR code is wrong
 
 # Requisites

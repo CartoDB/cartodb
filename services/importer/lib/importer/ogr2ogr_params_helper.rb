@@ -48,19 +48,11 @@ module CartoDB
       end
 
       def x_y_possible_names_option
-        if use_x_y_possible_names_option?
-          "-oo X_POSSIBLE_NAMES=#{LONGITUDE_POSSIBLE_NAMES.join(',')} -oo Y_POSSIBLE_NAMES=#{LATITUDE_POSSIBLE_NAMES.join(',')}"
-        else
-          ''
-        end
+        "-oo X_POSSIBLE_NAMES=#{LONGITUDE_POSSIBLE_NAMES.join(',')} -oo Y_POSSIBLE_NAMES=#{LATITUDE_POSSIBLE_NAMES.join(',')}"
       end
 
       def geom_possible_names_option
-        if use_geom_possible_names?
-          "-oo GEOM_POSSIBLE_NAMES=#{GEOMETRY_POSSIBLE_NAMES.join(',')}"
-        else
-          ''
-        end
+        "-oo GEOM_POSSIBLE_NAMES=#{GEOMETRY_POSSIBLE_NAMES.join(',')}"
       end
 
       # INFO: this option is specific to CSV files
@@ -68,18 +60,8 @@ module CartoDB
         "-oo KEEP_GEOM_COLUMNS=#{keep_geom_columns? ? 'YES' : 'NO'}"
       end
 
-      def use_geom_possible_names?
-        (ogrinfo.fields & GEOMETRY_POSSIBLE_NAMES) != []
-      end
-
-      def use_x_y_possible_names_option?
-        !use_geom_possible_names? &&
-          ((ogrinfo.fields & LATITUDE_POSSIBLE_NAMES) != []) &&
-          ((ogrinfo.fields & LONGITUDE_POSSIBLE_NAMES) != [])
-      end
-
       def keep_geom_columns?
-        !use_geom_possible_names?
+        ogrinfo.geometry_column != 'the_geom' || ogrinfo.geometry_type == 'Unknown (any)'
       end
 
     end

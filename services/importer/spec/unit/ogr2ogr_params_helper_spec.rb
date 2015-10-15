@@ -24,12 +24,11 @@ describe CartoDB::Importer2::Ogr2ogrParamsHelper do
     end
   end
 
-  def helper_factory(filename, quoted_fields_guessing=false)
+  def helper_factory(filename, quoted_fields_guessing = false)
     CartoDB::Importer2::Ogr2ogrParamsHelper.new(path_to(filename), quoted_fields_guessing, _layer=nil)
   end
 
   def path_to(filename)
     File.join(File.dirname(__FILE__), '..', 'fixtures', filename)
   end
-
 end

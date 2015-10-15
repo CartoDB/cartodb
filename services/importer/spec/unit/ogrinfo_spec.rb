@@ -9,9 +9,7 @@ describe CartoDB::Importer2::OgrInfo do
     end
     it 'raises an exception if the file could not be opened' do
       ogrinfo = ogrinfo_factory('ThisFileDoesNotExist')
-      expect{
-        ogrinfo.geometry_type
-      }.to raise_error(CartoDB::Importer2::OgrInfoError)
+      expect {ogrinfo.geometry_type}.to raise_error(CartoDB::Importer2::OgrInfoError)
     end
     it "returns 'None' with a CSV with the_geom (with current version)" do
       ogrinfo = ogrinfo_factory('all.csv')
@@ -48,12 +46,11 @@ describe CartoDB::Importer2::OgrInfo do
     end
   end
 
-  def ogrinfo_factory(filename, layer=nil)
+  def ogrinfo_factory(filename, layer = nil)
     CartoDB::Importer2::OgrInfo.new(path_to(filename), layer)
   end
 
   def path_to(filename)
     File.join(File.dirname(__FILE__), '..', 'fixtures', filename)
   end
-
 end

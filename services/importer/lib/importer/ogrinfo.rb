@@ -3,7 +3,7 @@ require 'open3'
 
 module CartoDB
   module Importer2
-    class OgrInfoError  < StandardError; end
+    class OgrInfoError < StandardError; end
 
     # This class is responsible for analyzing a file through ogrinfo.
     class OgrInfo

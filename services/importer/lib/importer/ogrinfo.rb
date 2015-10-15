@@ -28,7 +28,7 @@ module CartoDB
         raw_output
           .split("\n")
           .grep(/^[a-zA-Z0-9_]+:/)
-          .reject { |x| x =~ /^(INFO:|Geometry:|Feature Count:|Layer)/ }
+          .reject { |x| x =~ /^(INFO:|Geometry:|Feature Count:|Layer|Extent:)/ }
           .map { |s| s.gsub(/:.*/, '') }
       end
 

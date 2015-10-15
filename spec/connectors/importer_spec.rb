@@ -87,6 +87,7 @@ describe CartoDB::Connector::Importer do
     @user.private_tables_enabled = false
     @user.save
 
+    pending "Need to get a bug in gdal fixed, see https://trac.osgeo.org/gdal/ticket/6152"
     filepath = "#{Rails.root}/spec/support/data/elecciones2008.csv"
 
     data_import = DataImport.create(
@@ -107,6 +108,7 @@ describe CartoDB::Connector::Importer do
     @user.private_tables_enabled = true
     @user.save
 
+    pending "Need to get a bug in gdal fixed, see https://trac.osgeo.org/gdal/ticket/6152"
     filepath = "#{Rails.root}/spec/support/data/elecciones2008.csv"
   
     data_import = DataImport.create(
@@ -127,6 +129,7 @@ describe CartoDB::Connector::Importer do
     @user.private_tables_enabled = true
     @user.save
 
+    pending "Need to get a bug in gdal fixed, see https://trac.osgeo.org/gdal/ticket/6152"
     filepath = "#{Rails.root}/spec/support/data/elecciones2008.csv"
   
     data_import = DataImport.create(
@@ -146,6 +149,7 @@ describe CartoDB::Connector::Importer do
     @user.private_tables_enabled = false
     @user.save
 
+    pending "Need to get a bug in gdal fixed, see https://trac.osgeo.org/gdal/ticket/6152"
     filepath = "#{Rails.root}/spec/support/data/elecciones2008.csv"
   
     data_import = DataImport.create(
@@ -165,6 +169,7 @@ describe CartoDB::Connector::Importer do
     @user.private_tables_enabled = true
     @user.save
 
+    pending "Need to get a bug in gdal fixed, see https://trac.osgeo.org/gdal/ticket/6152"
     filepath = "#{Rails.root}/spec/support/data/elecciones2008.csv"
   
     data_import = DataImport.create(

@@ -74,11 +74,10 @@
         "browserify-shim"
       ]
     },
-    "browsers": {
-      "reqwest": "vendor/reqwest.min.js"
+    "browser": {
+      "reqwest": "./vendor/reqwest.min.js"
     },
     "browserify-shim": {
-      "reqwest": "reqwest"
     },
     "files": ["dist"],
     "main": "cartodb.js"

@@ -13,7 +13,7 @@ bower_components
 .tmp
 Gemfile.lock
 .grunt
-test/SpecRunner.html
+test/SpecRunner*.html
 .rvmrc
 .idea/
 themes/css/cartodb.css

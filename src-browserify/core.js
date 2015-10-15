@@ -16,6 +16,8 @@
     Profiler: require('./core/profiler'),
     util: require('./core/util')
   };
+  cdb.SQL = require('./api/sql');
+
   cdb.image = {};
   cdb.geo = {};
   cdb.geo.ui = {};
@@ -33,6 +35,9 @@
     window.Backbone = {
       Events: require('./api/core-lib/backbone-events-isch')
     }
+
+    // required by api/sql at global namespace at runtime
+    window.reqwest = require('reqwest')
   }
 
   return cdb;

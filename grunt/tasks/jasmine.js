@@ -7,7 +7,29 @@
 module.exports = {
   task: function() {
     return {
-      dist: {
+      core: {
+        src: [
+          'dist/cartodb.core.uncompressed.js',
+
+          // These vendor files are required because tests utilizes them
+          "vendor/jquery.min.js",
+          "vendor/underscore.js",
+          "vendor/backbone.js",
+          "vendor/mustache.js",
+        ],
+        options: {
+          keepRunner: true,
+          outfile: 'test/SpecRunner-core.html',
+          specs: [
+            'test/spec/api/sql.spec.js'
+          ],
+          // vendor: [ "http://maps.googleapis.com/maps/api/js?sensor=false&v=3.12" ],
+          summary: true,
+          display: 'short'
+        }
+      },
+      // "old", will be deprecated one all src/ are migrated to src-browserify
+      src: {
         src: [
           "vendor/jquery.min.js",
           "vendor/underscore.js",

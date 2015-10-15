@@ -17,11 +17,7 @@ var bundles = {
       // 'grunt/templates/underscore_no_conflict.js',
       // 'vendor/mustache.js',
 
-    // browserify-shim
-      // 'vendor/reqwest.min.js',
-
     // migrate to require style
-      // 'src/api/sql.js',
       // 'src/geo/layer_definition.js',
       // 'src/geo/sublayer.js',
       // 'src/core/loader.js',

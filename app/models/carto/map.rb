@@ -48,7 +48,7 @@ class Carto::Map < ActiveRecord::Base
                           class_name: 'Carto::Layer',
                           conditions: { kind: ['carto', 'tiled', 'background', 'gmapsbase', 'wms'] },
                           order: '"order"',
-                          through: :layer_maps,
+                          through: :layers_maps,
                           source: :layer
 
   has_many :user_tables, class_name: Carto::UserTable, inverse_of: :map, foreign_key: :table_id

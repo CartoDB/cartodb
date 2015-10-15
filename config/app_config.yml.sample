@@ -455,8 +455,6 @@ development:
     retries: 5
     timeout: 5
   enforce_non_empty_layer_css: false
-  segment:
-    api_key:
 
 test:
   <<: *defaults
@@ -468,13 +466,9 @@ test:
   api_requests_es_service:
     url: "http://api-calls-service.localhost.lan/search"
     body: ""
-  segment:
-    api_key:
 
 staging:
   <<: *defaults
-  segment:
-    api_key:
 
 production:
   <<: *defaults

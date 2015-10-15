@@ -127,6 +127,7 @@ module CartoDB
       StatementTimeoutError                 => 6667,
       TooManyTableRowsError                 => 6668,
       UserConcurrentImportsLimitError       => 6669,
+      StorageQuotaExceededError             => 8001,
       TableQuotaExceededError               => 8002,
       UnknownError                          => 99999,
       CartoDB::Datasources::DatasourceBaseError                   => 1012,

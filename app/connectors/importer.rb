@@ -213,7 +213,7 @@ module CartoDB
 
       def results
         runner.results
-      end 
+      end
 
       def over_table_quota?
         @aborted || quota_checker.over_table_quota?

@@ -46,6 +46,7 @@ module.exports = function(grunt) {
     },
     pkg:  pkg,
     gitinfo: {},
+    browserify: require('./grunt/tasks/browserify').task(),
     s3: require('./grunt/tasks/s3').task(grunt, config),
     prompt: require('./grunt/tasks/prompt').task(grunt, config),
     replace: require('./grunt/tasks/replace').task(grunt, config),
@@ -201,7 +202,8 @@ module.exports = function(grunt) {
     'gitinfo',
     'concurrent:dist',
     'concat',
-    'autoprefixer:dist'
+    'autoprefixer:dist',
+    'browserify'
   ]);
 
   grunt.registerTask('css', [ 'sass' ]);

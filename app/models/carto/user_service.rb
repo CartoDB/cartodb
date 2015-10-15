@@ -171,7 +171,7 @@ module Carto
         ).connection
 
       unless options[:as] == :cluster_admin
-        conn.execute(%Q{ SET search_path TO "#{@user.database_schema}", cartodb, public })
+        conn.execute(%Q{ SET search_path TO #{@user.db_service.build_search_path} })
       end
       conn
     end

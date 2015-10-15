@@ -1,4 +1,4 @@
-<div class="Header Header--tall Header--dark" id="header">
+<div class="Header Header--tall Header--dark js-Header--datalibrary" id="header">
   <div class="Header-inner u-inner">
     <div class="Header-navigation">
       <ul class="Header-navigationList">
@@ -11,33 +11,33 @@
         </li>
 
         <% if cartodb_com_hosted? %>
-          <li class="Header-navigationItem u-hideOnMobile">
+          <li class="Header-navigationItem u-hideOnTablet">
             <a href="<%= CartoDB.url(self, 'root') %>" class="Header-navigationLink">CartoDB</a>
           </li>
         <% else %>
-          <li class="Header-navigationItem js-user-tour u-hideOnMobile">
-            <a href="http://cartodb.com" class="Header-navigationLink js-dropdown-target">Tour <i class="Header-darrow iconFont iconFont-ArrowMenu"></i></a>
+          <li class="Header-navigationItem js-user-tour u-hideOnTablet">
+            <a href="http://cartodb.com" class="Header-navigationLink js-dropdown-target">Product <i class="Header-darrow iconFont iconFont-ArrowMenu"></i></a>
           </li>
 
-          <li class="Header-navigationItem js-user-industries u-hideOnMobile">
+          <li class="Header-navigationItem js-user-industries u-hideOnTablet">
             <a href="#/industries" class="Header-navigationLink js-dropdown-target">Industries <i class="Header-darrow iconFont iconFont-ArrowMenu"></i></a>
           </li>
 
           <% if !@viewed_user.nil? && @viewed_user.has_feature_flag?('explore_site') %>
-            <li class="Header-navigationItem js-user-explore u-hideOnMobile">
+            <li class="Header-navigationItem js-user-explore u-hideOnTablet">
               <a href="//cartodb.com/explore" class="Header-navigationLink">Explore</a>
             </li>
           <% end %>
 
-          <li class="Header-navigationItem u-hideOnMobile">
+          <li class="Header-navigationItem u-hideOnTablet">
             <a href="http://cartodb.com/gallery/" class="Header-navigationLink">Gallery</a>
           </li>
 
-          <li class="Header-navigationItem u-hideOnMobile">
+          <li class="Header-navigationItem u-hideOnTablet">
             <a href="http://cartodb.com/pricing/" class="Header-navigationLink">Pricing</a>
           </li>
 
-          <li class="Header-navigationItem js-user-resources u-hideOnMobile">
+          <li class="Header-navigationItem js-user-resources u-hideOnTablet">
             <a href="#/resources" class="Header-navigationLink js-dropdown-target">Resources <i class="Header-darrow iconFont iconFont-ArrowMenu"></i></a>
           </li>
         <% end %>
@@ -58,20 +58,6 @@
           </li>
         <% end %>
       </ul>
-    </div>
-  </div>
-
-  <div class="Header-inner Header-title u-inner">
-    <div class="Header-innerTitle">
-      <h1 class="Title-small">Data library</h1>
-      <p class="Title Title--l Title--white u-vspace-l">Open resources to help you populate your maps</p>
-    </div>
-  </div>
-
-  <div class="Header-inner u-inner">
-    <div class="CountrySelector">
-      <p class="CountrySelector-text">Filter datasets by country selecting it in this map</p>
-      <button class="CountrySelector-button js-country"></button>
     </div>
   </div>
 </div>

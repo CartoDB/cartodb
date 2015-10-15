@@ -93,12 +93,25 @@
   &:first-child { margin-left: 0 }
   &:last-child { margin-right: 0 }
 }
+.Filters-typeItem.Filters-typeItem--moreMargins {
+  margin-right: 15px;
+  margin-left: 15px;
+}
+.Filters-typeItem.Filters-typeItem--longMargins {
+  margin-right: 20px;
+  margin-left: 20px;
+
+  &:first-child {
+    margin-left: 0;
+  }
+}
 .Filters-typeItem--searchEnabler {
   min-width: 65px;
 }
 .Filters-typeItem--searchField {
   @include flex-grow(1);
   margin-right: 0;
+  display: none;
 }
 .Filters-typeItem--moreMargins {
   margin-right: 15px;
@@ -170,6 +183,9 @@
     color: $cNavButton-active;
   }
 }
+.Filters-cleanSearch.Filters-cleanSearch--short {
+  right: 6px;
+}
 a.Filters-cleanSearch { line-height:32px }
 // We can't group this style :(
 .Filters-searchInput::-webkit-input-placeholder {
@@ -200,6 +216,13 @@ a.Filters-cleanSearch { line-height:32px }
   &:hover {
     color: $cTypography-linkHover;
     text-decoration: none;
+  }
+}
+.Filters-typeLink.Filters-typeLink--grey {
+  color: #979EA1;
+
+  &:hover {
+    color: #979EA1;
   }
 }
 .Filters-typeLink.is-selected {
@@ -275,7 +298,40 @@ a.Filters-cleanSearch { line-height:32px }
   padding-left: 25px;
 }
 .Filters-actionsLink.is--critical {
-  color:#FF6C6C;
+  color: #FF6C6C;
+}
+
+// Filters states
+.Filters-inner.items--selected {
+  margin-top: -81px;
+}
+.Filters-inner.search--enabled {
+
+  .Filters-typeItem,
+  .Filters-orderItem,
+  .Button--positive {
+    display: none;
+  }
+
+  .Filters-searchLink {
+    &:after {
+      right: -16px;
+    }
+  }
+  .Filters-searchEnabler {
+    display: inline;
+    min-width: 65px;
+  }
+  .Filters-searchForm {
+    width: 841px;
+  }
+  .Filters-searchInput {
+    width: 790px;
+  }
+  .Filters-typeItem.Filters-typeItem--searchField,
+  .Filters-searchItem {
+    display: inherit;
+  }
 }
 
 .Filters-link:hover {
@@ -332,4 +388,12 @@ a.Filters-cleanSearch { line-height:32px }
   left: auto;
   top: auto;
   margin-left: auto;
+}
+.Filters-darrow {
+  position: relative;
+  top: -1px;
+  margin-left: 6px;
+  font-size: 7px;
+  -webkit-font-smoothing: auto;
+  -moz-osx-font-smoothing: auto;
 }

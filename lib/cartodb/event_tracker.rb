@@ -19,16 +19,12 @@ module Cartodb
         'email' => user.email,
         'plan' => user.account_type,
         'organization' => user.organization_user? ? user.organization.name: nil,
-        'event_origin' => 'Cartodb'
+        'event_origin' => 'Editor'
       }
     end
 
     def is_tracking_active?
-      if !Cartodb.config[:segment].nil? and !Cartodb.config[:segment]['api_key'].nil?
-        true
-      else
-        false
-      end
+      !Cartodb.config[:segment].nil? and !Cartodb.config[:segment]['api_key'].nil?
     end
 
   end

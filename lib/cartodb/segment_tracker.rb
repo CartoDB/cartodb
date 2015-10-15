@@ -25,7 +25,7 @@ module Cartodb
           event: event,
           properties: properties
         )
-      rescue Exception => e
+      rescue => e
       Rollbar.report_message('Segment error tracking event', 'error', { user: user_id, event: event })
       end
     end
@@ -33,7 +33,7 @@ module Cartodb
     def flush
       begin
         @analytics.flush
-      rescue Exception => e
+      rescue => e
         Rollbar.report_message('Segment error flush', 'error')
       end
     end

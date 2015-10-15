@@ -1,6 +1,5 @@
 # encoding: utf-8
 require 'json'
-require 'cartodb/event_tracker'
 require_relative '../../../models/visualization/member'
 require_relative '../../../models/visualization/collection'
 require_relative '../../../models/visualization/presenter'
@@ -12,12 +11,14 @@ require_relative '../../../models/visualization/watcher'
 require_relative '../../../models/map/presenter'
 require_relative '../../../../services/named-maps-api-wrapper/lib/named-maps-wrapper/exceptions'
 require_relative '../../../../lib/static_maps_url_helper'
+require_relative '../../../../lib/cartodb/event_tracker'
 
 class Api::Json::VisualizationsController < Api::ApplicationController
   include CartoDB
 
   ssl_allowed  :notify_watching, :list_watching, :add_like, :remove_like
   ssl_required :create, :update, :destroy, :set_next_id unless Rails.env.development? || Rails.env.test?
+  skip_before_filter :api_authorization_required, only: [:add_like, :remove_like]
 
   before_filter :optional_api_authorization, only: [:add_like, :remove_like]
   before_filter :table_and_schema_from_params, only: [:update, :destroy, :stats,

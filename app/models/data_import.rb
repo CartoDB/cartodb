@@ -2,7 +2,6 @@
 require 'sequel'
 require 'fileutils'
 require 'uuidtools'
-require 'cartodb/event_tracker'
 require_relative './user'
 require_relative './table'
 require_relative './log'
@@ -24,6 +23,7 @@ require_relative '../../services/importer/lib/importer/post_import_handler'
 require_relative '../../services/importer/lib/importer/mail_notifier'
 require_relative '../../services/importer/lib/importer/cartodbfy_time'
 require_relative '../../services/platform-limits/platform_limits'
+require_relative '../../lib/cartodb/event_tracker'
 
 include CartoDB::Datasources
 
@@ -287,7 +287,11 @@ class DataImport < Sequel::Model
     end
     notify(results)
 
-    track_new_datasets(results)
+    begin
+      track_new_datasets(results)
+    rescue => exception
+      CartoDB::notify_exception(exception)
+    end
 
     self
   end
@@ -885,6 +889,8 @@ class DataImport < Sequel::Model
   end
 
   def track_new_datasets(results)
+    return unless current_user
+
     results.each do |result|
       if result.success?
         if result.name != nil

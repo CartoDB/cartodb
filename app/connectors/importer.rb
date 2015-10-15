@@ -34,7 +34,7 @@ module CartoDB
         @destination_schema     = destination_schema
         @support_tables_helper  = CartoDB::Visualization::SupportTables.new(database,
                                                                             {public_user_roles: public_user_roles})
-        @data_import            = data_import
+
         @imported_table_ids = []
         @rejected_layers = nil
       end
@@ -90,11 +90,11 @@ module CartoDB
       def create_visualization
         tables = get_imported_tables
         if tables.length > 0
-          user = ::User.where(id: @data_import.user_id).first
+          user = ::User.where(id: data_import.user_id).first
           vis, @rejected_layers = CartoDB::Visualization::DerivedCreator.new(user, tables).create
-          @data_import.visualization_id = vis.id
-          @data_import.save
-          @data_import.reload
+          data_import.visualization_id = vis.id
+          data_import.save
+          data_import.reload
         end
       end
 
@@ -143,8 +143,8 @@ module CartoDB
         end
         rename_attempts = rename_attempts + 1
 
-        if self.data_import
-          user_id = self.data_import.user_id
+        if data_import
+          user_id = data_import.user_id
           if exists_user_table_for_user_id(new_name, user_id)
             # Since get_valid_table_name should only return nonexisting table names (with a retry limit)
             # this is likely caused by a table deletion, so we run ghost tables to cleanup and retry

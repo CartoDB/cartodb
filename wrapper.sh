@@ -74,5 +74,7 @@ do
     sed -e s/carto_db_test/carto_db_test_$j/g config/database.yml.sample > config/database_$j.yml
 done
 
+touch specfailed.log
+touch specsuccess.log
 echo "# Wrapper finished"
 

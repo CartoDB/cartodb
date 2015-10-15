@@ -153,7 +153,7 @@ describe("LayerDefinition", function() {
     it('should add cartodb layers by default or the specified type', function() {
       layerDefinition.addLayer({ sql : 'b', cartocss: 'b'});
 
-      expect(layerDefinition.getLayer(2).type).toEqual('cartodb');
+      expect(layerDefinition.getLayer(2).type).toEqual('cartodb')
 
       layerDefinition.addLayer({ type: 'http', urlTemplate: 'urlTemplate' });
 
@@ -214,25 +214,6 @@ describe("LayerDefinition", function() {
       expect(tooltip).toEqual({ fields: ['wadus'] });
     });
 
-    it ('should handle hidden layers correctly', function() {
-      layerDefinition.layers = [
-        {
-          visible: false,
-          tooltip: {
-            fields: ['invisible']
-          }
-        },
-        {
-          tooltip: {
-            fields: ['visible']
-          }
-        }
-      ];
-
-      var tooltip = layerDefinition.getTooltipData(0);
-      expect(tooltip).toEqual({ fields: ['visible'] });
-    });
-
     it ('should return NULL if tooltip is not present or does NOT have fields', function() {
       layerDefinition.layers = [{
         tooltip: {}
@@ -249,57 +230,6 @@ describe("LayerDefinition", function() {
 
       var tooltip = layerDefinition.getTooltipData(0);
       expect(tooltip).toBeNull()
-    });
-  })
-
-  describe(".getInfowindowData", function() {
-
-    it ('should return infowindow data if infowindow is present and has fields', function() {
-      layerDefinition.layers = [{
-        infowindow: {
-          fields: ['wadus']
-        }
-      }];
-
-      var infowindow = layerDefinition.getInfowindowData(0);
-      expect(infowindow).toEqual({ fields: ['wadus'] });
-    });
-
-    it ('should handle hidden layers correctly', function() {
-      layerDefinition.layers = [
-        {
-          visible: false,
-          infowindow: {
-            fields: ['invisible']
-          }
-        },
-        {
-          infowindow: {
-            fields: ['visible']
-          }
-        }
-      ];
-
-      var infowindow = layerDefinition.getInfowindowData(0);
-      expect(infowindow).toEqual({ fields: ['visible'] });
-    });
-
-    it ('should return NULL if infowindow is not present or does NOT have fields', function() {
-      layerDefinition.layers = [{
-        infowindow: {}
-      }];
-
-      var infowindow = layerDefinition.getInfowindowData(0);
-      expect(infowindow).toBeNull()
-
-      layerDefinition.layers = [{
-        infowindow: {
-          fields: []
-        }
-      }];
-
-      var infowindow = layerDefinition.getInfowindowData(0);
-      expect(infowindow).toBeNull()
     });
   })
 

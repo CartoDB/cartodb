@@ -11,7 +11,7 @@ module CartoDB
       DESTINATION_SCHEMA  = 'public'
       MAX_RENAME_RETRIES  = 20
 
-      attr_reader :data_import, :imported_table_visualization_ids, :rejected_layers
+      attr_reader :imported_table_visualization_ids, :rejected_layers
       attr_accessor :table
 
       # @param runner CartoDB::Importer2::Runner

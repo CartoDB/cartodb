@@ -1,4 +1,5 @@
 .DS_store
+npm-debug.log
 *.swp
 node_modules
 themes/css/all.css

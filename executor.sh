@@ -8,7 +8,7 @@ lock() {
 }
 
 unlock() {
-  rm config/$1;
+  rm config/$1 >> executor.log 2>&1;
 }
 
 # Return first database.yml free

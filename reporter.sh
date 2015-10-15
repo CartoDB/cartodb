@@ -13,7 +13,7 @@ then
         echo "Tests were OK";
         # TODO
         # gsu "Backend tests were OK" "Backend" success
-        return 0; #OK
+        exit 0; #OK
 else
         while read line; 
         do 
@@ -28,6 +28,6 @@ else
         done < $filename
         # TODO
         # gsu "Backend tests failed" "Backend" failure 
-        return 1; # ERROR
+        exit 1; # ERROR
 fi
 

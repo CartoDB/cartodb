@@ -11,7 +11,7 @@
 CartoDB::Application.routes.draw do
 
   # Double use: for user public dashboard AND org dashboard
-  post '/(user/:user_domain)(u/:user_domain)/bloomberg_sso/acs' => 'saml#acs'
+  post '/(user/:user_domain)(u/:user_domain)/:saml_idp/acs' => 'saml#acs'
   get   '/(user/:user_domain)(u/:user_domain)'                 => 'admin/pages#public', as: :root
   root :to => 'admin/pages#index'
 

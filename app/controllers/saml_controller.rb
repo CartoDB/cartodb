@@ -22,7 +22,7 @@ class SamlController < ApplicationController
        return
     end
 
-    scope = user_info.username
+    scope = user_info.cartodb_username
 
     logger.info "uuid after calling Saml " + scope
 
@@ -47,10 +47,6 @@ class SamlController < ApplicationController
 
 end #end of the controller class
 
-class UserInfo < ActiveRecord::Base
-  self.table_name = "bb_user_info"
-  self.primary_key = "uuid"
-end
 
 class BBOrganization
   class BBOwner

@@ -394,7 +394,6 @@
                   ],
                   "listTemplate": $("#list_template").html(),
                   "listItemTemplate": $("#list_item_template").html(),
-
                 }
               }
             ]
@@ -404,8 +403,10 @@
             no_cdn: false
           })
           .done(function(vis, layers) {
-            var stadiums = layers[2];
-            var counties = layers[1];
+
+            window.layer = layers[1];
+            // var stadiums = layers[2];
+            // var counties = layers[1];
 
             // var widget = vis.addWidget('list', {
             //   layer: stadiums,

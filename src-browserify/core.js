@@ -13,7 +13,8 @@
 
   cdb.config = {};
   cdb.core = {
-    Profiler: require('./core/profiler')
+    Profiler: require('./core/profiler'),
+    util: require('./core/util')
   };
   cdb.image = {};
   cdb.geo = {};

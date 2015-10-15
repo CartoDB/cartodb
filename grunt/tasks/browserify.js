@@ -21,7 +21,6 @@ var bundles = {
       // 'vendor/reqwest.min.js',
 
     // migrate to require style
-      // 'src/core/util.js',
       // 'src/api/sql.js',
       // 'src/geo/layer_definition.js',
       // 'src/geo/sublayer.js',

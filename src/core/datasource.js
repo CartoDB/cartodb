@@ -34,9 +34,9 @@ cdb.core.Datasource = cdb.core.Model.extend({
     var self = this;
 
     this._windshaftMap.bind("change:layergroupid", function() {
-      self.set('id', self._windshaftMap.get('layergroupid'));
-      self.trigger('done');
-    })
+      this.set('id', self._windshaftMap.get('layergroupid'));
+      this.trigger('done');
+    }, this);
   },
 
   addWidgetModel: function(d) {
@@ -65,7 +65,7 @@ cdb.core.Datasource = cdb.core.Model.extend({
   },
 
   clean: function() {
-    this._layerDef.unbind && this._layerDef.unbind(null, null, this);
+    this._windshaftMap.unbind(null, null, this);
   }
 
 })

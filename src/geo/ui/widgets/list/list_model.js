@@ -6,15 +6,12 @@ cdb.Widget.ListModel = cdb.core.Model.extend({
   },
 
   defaults: {
-    data: [{ name: 'Paco', description: 'Jodo' }],
+    data: [],
     columns: []
   },
 
   url: function() {
-
-    // http://pablo.cartodb-staging.com/api/v1/map/89f6a9a825c6cdb67ec32d59804f7f2f:1439374810073.4702/list/places
     var url = this.get('baseURL') + '/api/v1/map/' + this.get('layerGroupId') + '/list/' + this.get('id');
-    console.log(url);
     return url;
   },
 

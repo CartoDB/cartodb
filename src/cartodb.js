@@ -84,7 +84,7 @@
         'geo/ui/infobox.js',
         'geo/ui/tooltip.js',
         'geo/ui/fullscreen.js',
-        'geo/ui/widgets.js',
+        'geo/ui/widget.js',
 
         // 'geo/ui/widgets/widget_model.js',
         // 'geo/ui/widgets/widget_view.js',

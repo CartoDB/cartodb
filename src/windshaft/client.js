@@ -29,6 +29,9 @@ cdb.windshaft.Client.MAX_GET_SIZE = 2033;
  * @return {cdb.windshaft.PublicMap|cdb.windshaft.PrivateMap} The instance of the map
  */
 cdb.windshaft.Client.prototype.instantiateMap = function(mapDefinition) {
+
+  console.log(mapDefinition.toJSON());
+
   var payload = JSON.stringify(mapDefinition.toJSON());
 
   // TODO: We will need to instantiate a new cdb.windshaft.PublicMap() here

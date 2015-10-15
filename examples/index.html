@@ -33,8 +33,7 @@
     </script>
 
     <script type="text/template" id="list_item_template">
-      <h3><%= name %></h3>
-      <p><%= description %></p>
+      <p><%= cartodb_id %>: <%= n_distri %></p>
     </script>
 
     <script>
@@ -346,11 +345,17 @@
               {
                 "type": "list",
                 "options": {
+                  "id": 'widget_uuid',
+                  "sql": "select * from districtes_barcelona",
                   "datasource": "datasource1",
                   "title": "Widget 1",
                   "columns": [
-                    "cartodb_id"
-                  ]
+                    "cartodb_id", 
+                    "n_distri"
+                  ],
+                  "listTemplate": $("#list_template").html(),
+                  "listItemTemplate": $("#list_item_template").html(),
+
                 }
               }
             ]
@@ -363,16 +368,16 @@
             var stadiums = layers[2];
             var counties = layers[1];
 
-            var widget = vis.addWidget('list', {
-              layer: stadiums,
-              title: 'List',
-              listTemplate: $("#list_template").html(),
-              listItemTemplate: $("#list_item_template").html(),
-              columns: ['cartodb_id', 'description'],
-              sync: true
-            });
+            // var widget = vis.addWidget('list', {
+            //   layer: stadiums,
+            //   title: 'List',
+            //   listTemplate: $("#list_template").html(),
+            //   listItemTemplate: $("#list_item_template").html(),
+            //   columns: ['cartodb_id', 'description'],
+            //   sync: true
+            // });
 
-            $('body').append(widget.render().el);
+            // $('body').append(widget.render().el);
           })
           .error(function(err) {
             console.log(err);

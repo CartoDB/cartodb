@@ -201,10 +201,11 @@ MapBase.prototype = {
 };
 
 // TODO: This is actually an AnonymousMap -> Rename?
-function LayerDefinition(layerDefinition, options) {
+function LayerDefinition(layerDefinition, options, widgets) {
   MapBase.call(this, options);
   this.endPoint = MapBase.BASE_URL;
   this.setLayerDefinition(layerDefinition, { silent: true });
+  this.widgets = widgets;
 }
 
 /**
@@ -259,6 +260,23 @@ LayerDefinition.prototype = _.extend({}, MapBase.prototype, {
       var sublayer = this.getSubLayer(this.getLayerNumberByIndex(i));
       obj.layers.push(sublayer.toJSON());
     }
+
+    // Widgets
+    if (this.widgets && this.widgets.length) {
+      obj.lists = {};
+
+      var lists = _.filter(this.widgets, function(widget){
+        return widget.type === 'list'
+      });
+
+      lists.forEach(function(list) {
+        obj.lists[list.options.id] = {
+          "sql": list.options.sql,
+          "columns": list.options.columns
+        }
+      })
+    }
+
     return obj;
   },
 
@@ -373,12 +391,13 @@ LayerDefinition.prototype = _.extend({}, MapBase.prototype, {
   }
 });
 
-function NamedMap(named_map, options) {
+function NamedMap(named_map, options, widgets) {
   MapBase.call(this, options);
-  this.options.pngParams.push('auth_token')
-  this.options.gridParams.push('auth_token')
-  this.setLayerDefinition(named_map, options)
+  this.options.pngParams.push('auth_token');
+  this.options.gridParams.push('auth_token');
+  this.setLayerDefinition(named_map, options);
   this.stat_tag = named_map.stat_tag;
+  this.widgets = widgets;
 }
 
 NamedMap.prototype = _.extend({}, MapBase.prototype, {

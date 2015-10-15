@@ -67,7 +67,7 @@
     },
     "scripts": {
       "test": "tape test/tape/**/*.js",
-      "testling": "browserify test/tape/**/*.js | testling"
+      "testling": "browserify test/tape/*.js | testling"
     },
     "browserify": {
       "transform": [

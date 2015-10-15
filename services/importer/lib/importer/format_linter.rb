@@ -10,7 +10,8 @@ module CartoDB
         extension == '.kml'
       end
 
-      def initialize(filepath, job=nil)
+      # INFO: importer_config not used but needed for compatibility with other normalizers
+      def initialize(filepath, job = nil, importer_config = nil)
         @filepath = filepath
         @job      = job || Job.new
       end
@@ -30,7 +31,7 @@ module CartoDB
 
       private
 
-      attr_reader :filepath, :job 
+      attr_reader :filepath, :job
     end # FormatLinter
   end # Importer2
 end # CartoDB

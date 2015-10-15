@@ -164,18 +164,20 @@ module CartoDB
               layer_type = layer[:type].downcase
 
               if layer_type == 'cartodb'
-                data = self.options_for_cartodb_layer(layer, layer_num, template_data)
+                data = options_for_cartodb_layer(layer, layer_num, template_data)
               else
-                data = self.options_for_basemap_layer(layer, layer_num, template_data)
+                data = options_for_basemap_layer(layer, layer_num, template_data)
               end
 
-              layer_num = data[:layer_num]
-              template_data = data[:template_data]
+              unless data.nil?
+                layer_num = data[:layer_num]
+                template_data = data[:template_data]
 
-              layers_data.push( {
-                type:     data[:layer_name],
-                options:  data[:layer_options]
-              } )
+                layers_data.push(
+                  type:     data[:layer_name],
+                  options:  data[:layer_options]
+                )
+              end
             }
           end
 
@@ -284,8 +286,12 @@ module CartoDB
             plain_color_basemap_layer(layer, layer_num, template_data)
           end
         else
-          http_basemap_layer(layer, layer_num, template_data)
+          valid_http_basemap_layer?(layer) ? http_basemap_layer(layer, layer_num, template_data) : nil
         end
+      end
+
+      def self.valid_http_basemap_layer?(layer)
+        layer[:options]['urlTemplate'] && layer[:options]['urlTemplate'].length > 0
       end
 
       def self.http_basemap_layer(layer, layer_num, template_data)

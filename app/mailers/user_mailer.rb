@@ -65,7 +65,8 @@ class UserMailer < ActionMailer::Base
     @preview_image = visualization_preview_image
     @subject = "Your map #{@map_name} got some love!"
     @greetings = ["congrats", "congratulations", "cool", "awesome", "hooray", "nice", "wow", "rad", "bravo", "yay", "boom"]
-    @link = "#{@user.public_url}#{CartoDB.path(self, 'public_visualizations_show_map', { id: visualization.id })}"
+    mail_tracker = get_mail_tracker('like_map')
+    @link = "#{@user.public_url}#{CartoDB.path(self, 'public_visualizations_show_map', id: visualization.id)}#{mail_tracker}"
     @viewer_maps_link = "#{viewer_user.public_url}#{CartoDB.path(self, 'public_maps_home')}"
     mail :to => @user.email,
          :subject => @subject
@@ -78,7 +79,8 @@ class UserMailer < ActionMailer::Base
     @preview_image = visualization_preview_image
     @subject = "Your dataset #{@dataset_name} got some love!"
     @greetings = ["congrats", "congratulations", "cool", "awesome", "hooray", "nice", "wow", "rad", "bravo", "yay", "boom"]
-    @link = "#{@user.public_url}#{CartoDB.path(self, 'public_visualizations_show', { id: canonical_visualization.id })}"
+    mail_tracker = get_mail_tracker('like_map')
+    @link = "#{@user.public_url}#{CartoDB.path(self, 'public_visualizations_show', id: canonical_visualization.id)}#{mail_tracker}"
     @viewer_datasets_link = "#{viewer_user.public_url}#{CartoDB.path(self, 'public_datasets_home')}"
     mail :to => @user.email,
          :subject => @subject
@@ -91,7 +93,8 @@ class UserMailer < ActionMailer::Base
     @preview_image = visualization_preview_image
     @subject = "Recent activity on one of your maps!"
     @greetings = ["congrats", "congratulations", "cool", "awesome", "hooray", "nice", "wow", "rad", "bravo", "yay", "boom"]
-    @link = "#{@user.public_url}#{CartoDB.path(self, 'public_visualizations_show_map', { id: visualization.id })}"
+    mail_tracker = get_mail_tracker('trending_map')
+    @link = "#{@user.public_url}#{CartoDB.path(self, 'public_visualizations_show_map', id: visualization.id)}#{mail_tracker}"
     mail :to => @user.email,
          :subject => @subject
   end
@@ -102,6 +105,11 @@ class UserMailer < ActionMailer::Base
   # If he has signed in through the page he doesn't.
   def user_needs_password(user)
     !user.google_sign_in && user.enable_account_token.nil? && !user.created_with_invitation?
+  end
+
+  def get_mail_tracker(tag)
+    hubspot = Cartodb.get_config(:metrics, 'hubspot')
+    hubspot["mailing_track"][tag] unless hubspot.nil? || !hubspot["mailing_track"].present?
   end
 
 end

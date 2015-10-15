@@ -2,18 +2,19 @@ require_relative 'ogrinfo'
 
 module CartoDB
   module Importer2
-
     class Ogr2ogrParamsHelper
 
-      LATITUDE_POSSIBLE_NAMES = %w{ latitude lat latitudedecimal
-        latitud lati decimallatitude decimallat point_latitude }
-      LONGITUDE_POSSIBLE_NAMES = %w{ longitude lon lng
-        longitudedecimal longitud long decimallongitude decimallong point_longitude }
-      GEOMETRY_POSSIBLE_NAMES = %w{ geometry the_geom wkb_geometry geom geojson wkt }
-
+      LATITUDE_POSSIBLE_NAMES = %w(
+        latitude lat latitudedecimal
+        latitud lati decimallatitude decimallat point_latitude
+      )
+      LONGITUDE_POSSIBLE_NAMES = %w(
+        longitude lon lng
+        longitudedecimal longitud long decimallongitude decimallong point_longitude
+      )
+      GEOMETRY_POSSIBLE_NAMES = %w(geometry the_geom wkb_geometry geom geojson wkt)
 
       attr_accessor :input_file_path, :quoted_fields_guessing, :layer
-
 
       def initialize(input_file_path, quoted_fields_guessing, layer)
         self.input_file_path = input_file_path
@@ -35,7 +36,6 @@ module CartoDB
         ].join(' ')
       end
 
-
       private
 
       def ogrinfo
@@ -44,11 +44,14 @@ module CartoDB
 
       def quoted_fields_as_string_option
         # Inverse of the selection: if I want guessing I must NOT leave quoted fields as string
-        "-oo QUOTED_FIELDS_AS_STRING=#{quoted_fields_guessing ? 'NO' : 'YES' }"
+        "-oo QUOTED_FIELDS_AS_STRING=#{quoted_fields_guessing ? 'NO' : 'YES'}"
       end
 
       def x_y_possible_names_option
-        "-oo X_POSSIBLE_NAMES=#{LONGITUDE_POSSIBLE_NAMES.join(',')} -oo Y_POSSIBLE_NAMES=#{LATITUDE_POSSIBLE_NAMES.join(',')}"
+        [
+          "-oo X_POSSIBLE_NAMES=#{LONGITUDE_POSSIBLE_NAMES.join(',')}",
+          "-oo Y_POSSIBLE_NAMES=#{LATITUDE_POSSIBLE_NAMES.join(',')}"
+        ].join(' ')
       end
 
       def geom_possible_names_option
@@ -65,6 +68,5 @@ module CartoDB
       end
 
     end
-
   end
 end

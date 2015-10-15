@@ -240,7 +240,7 @@ module CartoDB
       end
 
       def geometry_type
-        return nil unless is_geometry?
+        return nil unless geometry?
         sample = db[%Q{
           SELECT public.GeometryType(ST_Force_2D(#{column_name}))
           AS type
@@ -314,7 +314,7 @@ module CartoDB
         %Q("#{schema}"."#{table_name}")
       end
 
-      def is_geometry?
+      def geometry?
         type =~ /\Ageometry/
       end
     end

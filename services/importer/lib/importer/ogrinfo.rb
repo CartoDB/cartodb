@@ -1,10 +1,8 @@
 # encoding: utf-8
 require 'open3'
 
-
 module CartoDB
   module Importer2
-
     # This class is responsible for analyzing a file through ogrinfo.
     class OgrInfo
       DEFAULT_BINARY = `which ogrinfo`.strip
@@ -31,9 +29,8 @@ module CartoDB
           .split("\n")
           .grep(/^[a-zA-Z0-9_]+:/)
           .reject { |x| x =~ /^(INFO:|Geometry:|Feature Count:|Layer)/ }
-          .map{ |s| s.gsub(/:.*/, '') }
+          .map { |s| s.gsub(/:.*/, '') }
       end
-
 
       private
 
@@ -43,7 +40,7 @@ module CartoDB
 
       def run
         if !@executed
-          stdout, stderr, status = Open3.capture3(command)
+          stdout, _stderr, status = Open3.capture3(command)
           @raw_output = stdout.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '?')
           @exit_code = status.to_i
           @executed = true
@@ -68,6 +65,5 @@ module CartoDB
       end
 
     end
-
   end
 end

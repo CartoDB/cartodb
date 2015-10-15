@@ -15,6 +15,14 @@ module Carto
 
     belongs_to :map
 
+    belongs_to :data_import
+
+    has_many :automatic_geocodings, inverse_of: :table, class_name: Carto::AutomaticGeocoding, foreign_key: :table_id
+    has_many :tags, foreign_key: :table_id
+
+    has_many :layers_user_table
+    has_many :layers, through: :layers_user_table
+
     def geometry_types
       @geometry_types ||= table.geometry_types
     end

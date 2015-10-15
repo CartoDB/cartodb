@@ -18,6 +18,8 @@
 * New visualization backups feature. Upon viz deletion a special vizjson will be stored in a new DB table. Backups live for Carto::VisualizationsExportService::DAYS_TO_KEEP_BACKUP days and can be recovered with `cartodb:vizs:import_user_visualization` rake by visualization id. Needs new feature flag `visualizations_backup`. Check https://github.com/CartoDB/cartodb/issues/5710 for additional details
 * Fully removed Layer parent_id from backend and frontend as wasn't used.
 * Added new (optional) config parameters `unp_temporal_folder` & `uploads_path` under `importer` section to allow custom UNP and file upload paths.
+* Added new (optional) config parameters `unp_temporal_folder` & `uploads_path` under `importer` section to allow custom UNP and file upload paths.
+* Data-library page for common-data and accounts with data_library feature flag [#5712](https://github.com/CartoDB/cartodb/pull/5712)
 
 
 3.11.0 (2015-09-09)

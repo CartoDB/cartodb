@@ -309,7 +309,9 @@ $sNarrower-width: 620px;
   width: 520px;
 }
 .Dialog-narrowerContent { width: $sNarrower-width }
-
+.Dialog-countryBack {
+  float: right;
+}
 @include keyframes(fade-and-scale-in) {
   0% {
     @include opacity(0.0);

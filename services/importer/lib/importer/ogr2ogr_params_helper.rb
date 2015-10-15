@@ -35,14 +35,6 @@ module CartoDB
         ].join(' ')
       end
 
-      def geometry_name_option
-        if shall_geometry_collumn_be_the_geom?
-          '-lco GEOMETRY_NAME=the_geom'
-        else
-          ''
-        end
-      end
-
 
       private
 
@@ -88,11 +80,6 @@ module CartoDB
 
       def keep_geom_columns?
         !use_geom_possible_names?
-      end
-
-      def shall_geometry_collumn_be_the_geom?
-        # INFO: Avoid "ERROR:  column "the_geom" specified more than once"
-        ogrinfo.geometry_column != 'the_geom'
       end
 
     end

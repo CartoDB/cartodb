@@ -1239,10 +1239,12 @@ describe Table do
     end
 
     it "should be able to update data in rows with column names with multiple underscores" do
+      pending "Need to get a bug in gdal fixed, see https://trac.osgeo.org/gdal/ticket/6152"
       data_import = DataImport.create( :user_id       => $user_1.id,
                                        :table_name    => 'elecciones2008',
                                        :data_source   => '/../spec/support/data/elecciones2008.csv')
       data_import.run_import!
+      data_import.state.should == 'complete'
 
       table = Table.new(user_table: UserTable[data_import.table_id])
       table.should_not be_nil, "Import failure: #{data_import.log}"
@@ -1258,6 +1260,7 @@ describe Table do
     end
 
     it "should be able to insert data in rows with column names with multiple underscores" do
+      pending "Need to get a bug in gdal fixed, see https://trac.osgeo.org/gdal/ticket/6152"
       data_import = DataImport.create( :user_id       => $user_1.id,
                                        :data_source   => '/../spec/support/data/elecciones2008.csv')
       data_import.run_import!

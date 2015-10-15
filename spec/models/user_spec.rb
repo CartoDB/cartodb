@@ -1652,8 +1652,8 @@ describe User do
   end
 
   describe 'User creation and DB critical calls' do
-    it 'Properly setups a new user' do
-      # INFO: avoiding enable_remote_db_user
+    it 'Properly setups a new user (not belonging to an organization)' do
+      # INFO: avoiding enable_remote_db_user
       Cartodb.config[:signups] = nil
 
       ::User.any_instance.stubs(
@@ -1661,6 +1661,8 @@ describe User do
         monitor_user_notification: nil,
         cartodb_extension_version_pre_mu?: nil
       )
+
+      user_timeout_secs = 666
 
       user = ::User.new
       user.username = String.random(8).downcase
@@ -1673,7 +1675,7 @@ describe User do
       user.enabled = true
       user.table_quota = 500
       user.quota_in_bytes = 1234567890
-      user.user_timeout = 666000
+      user.user_timeout = user_timeout_secs * 1000
       user.database_timeout = 123000
       user.geocoding_quota = 1000
       user.geocoding_block_price = 1500
@@ -1693,12 +1695,60 @@ describe User do
 
       user.reload
 
+      test_table_name = "table_perm_test"
+
+      user.in_database.run(%{
+        CREATE TABLE #{test_table_name}(x int);
+      })
+
       # Replicate functionality inside ::User::DBService.configure_database
-      user.in_database do |db|
-        search_path = db.fetch("SHOW search_path;").first[:search_path]
-        # PG removes double quotes except if name needs them
-        search_path.should == user.db_service.build_search_path(user.database_schema, false)
-      end
+      # -------------------------------------------------------------------
+
+      user.in_database.fetch(%{
+        SHOW search_path;
+      }).first[:search_path].should == user.db_service.build_search_path(user.database_schema, false)
+
+      # @see http://www.postgresql.org/docs/current/static/functions-info.html#FUNCTIONS-INFO-ACCESS-TABLE
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_database_privilege('#{user.database_username}', '#{user.database_name}', 'CONNECT');
+      }).first[:has_database_privilege].should == true
+
+      # Careful as PG formatter timeout output changes to XXmin if too big
+      user.in_database.fetch(%{
+        SHOW statement_timeout;
+      }).first[:statement_timeout].should eq "#{user_timeout_secs}s"
+
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_schema_privilege('#{user.database_username}',
+                                           '#{CartoDB::User::DBService::SCHEMA_CARTODB}', 'USAGE');
+      }).first[:has_schema_privilege].should == true
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_function_privilege('#{user.database_username}',
+                                             '_cdb_userquotainbytes()', 'EXECUTE');
+      }).first[:has_function_privilege].should == true
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_table_privilege('#{user.database_username}',
+                                           '#{test_table_name}', 'SELECT');
+      }).first[:has_table_privilege].should == true
+
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_table_privilege('#{user.database_username}',
+                                           'cartodb.CDB_CONF',
+                                           'SELECT, INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER');
+      }).first[:has_table_privilege].should == false
+
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_schema_privilege('#{user.database_username}',
+                                           '#{CartoDB::User::DBService::SCHEMA_PUBLIC}', 'USAGE');
+      }).first[:has_schema_privilege].should == true
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_function_privilege('#{user.database_username}',
+                                             '_cdb_userquotainbytes()', 'EXECUTE');
+      }).first[:has_function_privilege].should == true
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_table_privilege('#{user.database_username}',
+                                           '#{test_table_name}', 'SELECT');
+      }).first[:has_table_privilege].should == true
 
       user.destroy
     end

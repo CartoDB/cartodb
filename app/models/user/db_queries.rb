@@ -55,10 +55,9 @@ module CartoDB
       end
 
       def revoke_permissions_on_cartodb_conf_queries(db_user)
-        # TODO: remove the check after extension install (#4924 merge)
-        return [] if Rails.env.test?
-
-        ["REVOKE ALL ON TABLE cartodb.CDB_CONF FROM \"#{db_user}\""]
+        [
+          "REVOKE ALL ON TABLE cartodb.CDB_CONF FROM \"#{db_user}\""
+        ]
       end
 
       def grant_all_on_database_queries

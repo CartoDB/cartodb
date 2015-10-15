@@ -7,6 +7,7 @@
     [window.jQuery, 'jquery.min.js'],
     [window._, 'underscore.js'],
     [window.Backbone, 'backbone.js'],
+    [window.d3, 'd3.js'],
     [window.Mustache, 'mustache.js'],
     [window.L, 'leaflet.js']
   ];

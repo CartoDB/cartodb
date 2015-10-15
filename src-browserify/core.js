@@ -24,7 +24,7 @@
   cdb.ui.common = {};
   cdb.vis = {};
   cdb.decorators = {};
-  cdb._Promise = require('./api/core-lib/promise');
+  cdb._Promise = require('./api/core-lib/_promise');
 
   if (typeof window !== 'undefined') {
     window.cartodb = cdb;

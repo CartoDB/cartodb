@@ -1784,6 +1784,34 @@ describe User do
                                            '#{CartoDB::User::DBService::SCHEMA_GEOCODING}', 'CREATE, USAGE');
       }).first[:has_schema_privilege].should == true
 
+      # Special raster and geo columns
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_table_privilege('#{user.database_username}',
+                                          '#{CartoDB::User::DBService::SCHEMA_PUBLIC}.geometry_columns', 'SELECT');
+      }).first[:has_table_privilege].should == true
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_table_privilege('#{user.database_username}',
+                                          '#{CartoDB::User::DBService::SCHEMA_PUBLIC}.geography_columns', 'SELECT');
+      }).first[:has_table_privilege].should == true
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_table_privilege('#{CartoDB::PUBLIC_DB_USER}',
+                                          '#{CartoDB::User::DBService::SCHEMA_PUBLIC}.raster_overviews', 'SELECT');
+      }).first[:has_table_privilege].should == true
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_table_privilege('#{CartoDB::PUBLIC_DB_USER}',
+                                          '#{CartoDB::User::DBService::SCHEMA_PUBLIC}.raster_columns', 'SELECT');
+      }).first[:has_table_privilege].should == true
+
+      # quota check
+      user.in_database(as: :superuser).fetch(%{
+        SELECT #{user.database_schema}._CDB_UserQuotaInBytes();
+      }).first[:_cdb_userquotainbytes].nil?.should == false
+
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_function_privilege('#{user.database_username}',
+                                             '#{user.database_schema}.cdb_invalidate_varnish(text)', 'EXECUTE');
+      }).first[:has_function_privilege].should == true
+
       # TODO: Keep adding tests from db_service.configure_database
 
       user.destroy

@@ -4,11 +4,17 @@
 @import '../variables/sizes';
 @import '../variables/mixins';
 
+.Widget-textBigger { // 16 size
+  @include text-overflow();
+  font-size: $sFontSize-huge;
+  font-weight: $sFontWeight-normal;
+  line-height: $sFontSize-huge * 1.6;
+}
 .Widget-textBig { // 16 size
   @include text-overflow();
-  margin: 0 0 7px;
   font-size: $sFontSize-larger;
   font-weight: $sFontWeight-normal;
+  line-height: $sFontSize-normal + 6;
 }
 .Widget-textNormal { // 14 size
   @include text-overflow();

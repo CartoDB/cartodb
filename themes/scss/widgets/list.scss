@@ -10,7 +10,7 @@
 }
 .Widget-listItem {
   display: block;
-  padding: $sMargin-element / 2 0;
+  padding: ($sMargin-element / 2) - 1 0;
 }
 .Widget-listItemButton {
   width: 100%;

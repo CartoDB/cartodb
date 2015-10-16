@@ -6,9 +6,18 @@
 
 .Widget {
   width: 352px;
-  padding: $sMargin-section;
+  // Due to line-heights, better to substract some pixels in the top
+  padding: ($sMargin-section - 2) $sMargin-section $sMargin-section;
   font-family: 'Open Sans';
   box-sizing: border-box;
+}
+.Widget-title {
+  @include display-flex();
+  @include justify-content(flex-start, start);
+  @include align-items(center);
+  width: 100%;
+  height: 22px;
+  margin: 0 0 4px;
 }
 .Widget-content {
   display: block;

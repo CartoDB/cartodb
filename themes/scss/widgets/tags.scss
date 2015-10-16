@@ -1,0 +1,22 @@
+// Text elements styles
+// ----------------------------------------------
+
+@import '../variables/sizes';
+@import '../variables/mixins';
+
+.Widget-tag {
+  @include display-flex();
+  @include align-items(center);
+  height: 22px;
+  margin: 0 0 0 12px;
+  padding: 0 6px;
+  border-radius: 4px;
+  vertical-align: middle;
+}
+// Widget tag types, should we move them to theme?
+.Widget-tag--green {
+  background: #EDF3DF;
+}
+.Widget-tag--blue {
+  background: #DFF2FC;
+}

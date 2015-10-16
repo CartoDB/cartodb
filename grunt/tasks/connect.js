@@ -5,12 +5,27 @@
 module.exports = {
   task: function(config) {
     return {
+
       options: {
         port: 9001,
         livereload: 35730,
         // change this to '0.0.0.0' to access the server from outside
         hostname: '0.0.0.0'
       },
+
+      jasmine: {
+        options: {
+          port: 8091,
+          livereload: true,
+          base: {
+            path: '.',
+            options: {
+              index: 'test/SpecRunner-core.html'
+            }
+          }
+        }
+      },
+
       styleguide: {
         options: {
           port: 9001,
@@ -22,6 +37,7 @@ module.exports = {
           ]
         }
       }
+
     }
   }
 }

@@ -1,33 +1,40 @@
-
 /**
- *  Jasmine grunt task for CartoDB.js tests
- *
+ * Jasmine grunt task for CartoDB.js tests
+ * https://github.com/gruntjs/grunt-contrib-jasmine#options
+ * Load order: vendor, helpers, source, specs,
  */
-
 module.exports = {
   task: function() {
     return {
+
       core: {
         src: [
           'dist/cartodb.core.uncompressed.js',
-
-          // These vendor files are required because tests utilizes them
-          "vendor/jquery.min.js",
-          "vendor/underscore.js",
-          "vendor/backbone.js",
-          "vendor/mustache.js",
         ],
         options: {
           keepRunner: true,
           outfile: 'test/SpecRunner-core.html',
+          vendor: [
+            // Load & install the source-map-support lib (get proper stack traces from inlined source-maps)
+            "node_modules/source-map-support/browser-source-map-support.js",
+            "test/install-source-map-support.js",
+
+            // These are only required because tests utilizes them
+            "vendor/jquery.min.js",
+            "vendor/underscore.js",
+            "vendor/backbone.js",
+            "vendor/mustache.js",
+          ],
+          helpers: [
+          ],
           specs: [
             'test/spec/api/sql.spec.js'
           ],
-          // vendor: [ "http://maps.googleapis.com/maps/api/js?sensor=false&v=3.12" ],
           summary: true,
           display: 'short'
         }
       },
+
       // "old", will be deprecated one all src/ are migrated to src-browserify
       src: {
         src: [
@@ -117,6 +124,7 @@ module.exports = {
           display: 'short'
         }
       }
+
     }
   }
 }

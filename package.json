@@ -53,6 +53,7 @@
       "grunt-gitinfo": "~0.1.7",
       "underscore": "1.8.3",
       "findup-sync": "0.1.3",
+      "source-map-support": "0.3.2",
       "tape": "^4.2.1",
       "testling": "^1.7.1",
       "watchify": "3.4.0"

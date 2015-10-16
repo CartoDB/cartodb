@@ -30,10 +30,19 @@
 
   if (typeof window !== 'undefined') {
     window.cartodb = cdb;
-    window.JST = window.JST || {};
-    window._ = window._ || require('./api/core-lib/underscore-isch');
-    window.Backbone = {
-      Events: require('./api/core-lib/backbone-events-isch')
+
+    if (!window.JST) {
+      window.JST = {};
+    }
+
+    if (!window._) {
+      window._ = require('./api/core-lib/underscore-isch');
+    }
+
+    if (!window.Backbone) {
+      window.Backbone = {
+        Events: require('./api/core-lib/backbone-events-isch')
+      }
     }
 
     // required by api/sql at global namespace at runtime

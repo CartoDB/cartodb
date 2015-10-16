@@ -180,8 +180,26 @@ module.exports = function(grunt) {
   grunt.registerTask('dev', [
     'build',
     'connect:styleguide',
+    'jasmine-server',
     'preWatch',
     'browserify',
     'watch'
   ]);
+
+  // Required for source-map-support install to work in a non-headless browserify
+  // Use this instead of opening test/SpecRunner-*.html files directly
+  grunt.registerTask('jasmine-server', 'start web server for jasmine tests in browser', function() {
+    grunt.task.run('jasmine:core:build');
+
+    var specRunnerURL = function(host, port, specrunner) {
+      return 'http://' + host + ':' + port + '/' + specrunner;
+    }
+    grunt.event.once('connect.jasmine.listening', function(host, port) {
+      var url = specRunnerURL.bind(this, host, port);
+      var primaryURL = url('test/SpecRunner-core.html');
+      grunt.log.writeln('Jasmine specs available at: ' + primaryURL);
+    });
+
+    grunt.task.run('connect:jasmine:keepalive');
+  });
 }

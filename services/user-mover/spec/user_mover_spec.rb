@@ -106,6 +106,7 @@ describe CartoDB::DataMover::ExportJob do
     port = find_available_port
     run_test_server(port)
     Cartodb.config[:org_metadata_api]['port'] = port
+    Cartodb.config[:org_metadata_api]['host'] = '127.0.0.1'
 
     org = create_organization_with_users
     user = create_user(

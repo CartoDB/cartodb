@@ -66,6 +66,8 @@ defaults: &defaults
     app_id: ''
     admins: ''
   hubspot: ''
+  segment:
+    api_key:
   metrics:
     hubspot:
       events_host: 'http://track.hubspot.com'
@@ -95,8 +97,6 @@ defaults: &defaults
       mailing_track:
         like_map: ''
         trending_map: ''
-  segment:
-    api_key:
   common_data:
     protocol: 'https'
     username: 'common-data'

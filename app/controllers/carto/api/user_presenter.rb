@@ -152,10 +152,6 @@ module Carto
         row_data.nil? ? nil : row_data[0]
       end
 
-      def maps_count
-        Carto::Map.where(user_id: @user.id).count
-      end
-
     end
   end
 end

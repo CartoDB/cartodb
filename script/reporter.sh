@@ -19,9 +19,9 @@ else
         do 
                 # For each error cat its log file
                 logfile=$(echo $line | grep -o '[0-9][0-9][0-9][0-9].log')
-                cat $logfile;
+                # cat $logfile;
                 # Give feedback to github
-                spec=$(echo $line | sed 's/\s.*$//')
+                # spec=$(echo $line | sed 's/\s.*$//')
                 # echo "GSU with spec $spec" TODO
                 # gsu "$spec failed" "$spec" failure TODO
                 

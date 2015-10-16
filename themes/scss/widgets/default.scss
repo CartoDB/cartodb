@@ -1,29 +1,56 @@
 // Default styles for widgets
 // --------------------------------------------------
 
-@import '../variables/reset';
-@import '../variables/colors';
 @import '../variables/sizes';
+@import '../variables/mixins';
 
 .Widget {
-  font-family: 'Open Sans';
   width: 352px;
   height: 168px;
-  background: #FFFFFF;
-  padding: 10px;
+  max-height: 168px;
+  padding: 24px;
+  font-family: 'Open Sans', 'Times New Roman';
   box-sizing: border-box;
 }
 .Widget-title {
-  color: #333333;
-  font-weight: bold;
+  @include text-overflow();
+  margin: 0 0 7px;
   font-size: $sFontSize-larger;
-  margin: 0 0 7px 0;
+  font-weight: $sFontWeight-normal;
 }
 .Widget-info {
+  @include display-flex();
+  @include align-items(center);
+  font-size: $sFontSize-smaller;
+  font-weight: $sFontWeight-normal;
+  text-transform: uppercase;
 }
 .Widget-infoItem {
-  display: inline;
-  font-size: $sFontSize-normal;
-  color: #636D72;
-  text-transform: uppercase;
+  margin-right: 12px;
+  &:last-child {
+    margin-right: 0;
+  }
+}
+.Widget-button {
+  font-size: $sFontWeight-semibold;
+  font-weight: $sFontWeight-normal;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// Widget sizes
+@media only screen and (min-width: 320px) and (max-width: 955px)  {
+
+}
+@media only screen and (min-width: 320px) and (max-width: 760px)  {
+  .Widget {
+    width: 280px;
+  }
+  .Widget-info {
+    @include justify-content(space-between, justify);
+  }
+  .Widget-infoItem {
+    margin-right: 0;
+  }
 }

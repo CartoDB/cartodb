@@ -10,6 +10,7 @@ module CartoDB
       SCHEMA_PUBLIC = 'public'
       SCHEMA_CARTODB = 'cartodb'
       SCHEMA_IMPORTER = 'cdb_importer'
+      SCHEMA_GEOCODING = 'cdb'
 
       def initialize(user)
         raise "User nil" unless user
@@ -61,6 +62,24 @@ module CartoDB
         # INFO: organization privileges are set for org_member_role, which is assigned to each org user
         if @user.organization_owner?
           setup_organization_owner
+        end
+      end
+
+      def set_user_privileges_at_db # MU
+        # INFO: organization permission on public schema is handled through role assignment
+        unless @user.organization_user?
+          set_user_privileges_in_cartodb_schema
+          set_user_privileges_in_public_schema
+        end
+
+        set_user_privileges_in_own_schema
+        set_privileges_to_publicuser_in_own_schema
+
+        unless @user.organization_user?
+          set_user_privileges_in_importer_schema
+          set_user_privileges_in_geocoding_schema
+          set_geo_columns_privileges
+          set_raster_privileges
         end
       end
 
@@ -183,24 +202,6 @@ module CartoDB
       rescue Sequel::DatabaseConnectionError
       end
 
-      def set_user_privileges_at_db # MU
-        # INFO: organization permission on public schema is handled through role assignment
-        unless @user.organization_user?
-          set_user_privileges_in_cartodb_schema
-          set_user_privileges_in_public_schema
-        end
-
-        set_user_privileges_in_own_schema
-        set_privileges_to_publicuser_in_own_schema
-
-        unless @user.organization_user?
-          set_user_privileges_in_importer_schema
-          set_user_privileges_in_geocoding_schema
-          set_geo_columns_privileges
-          set_raster_privileges
-        end
-      end
-
       def set_user_as_organization_member
         @user.in_database(as: :superuser) do |user_database|
           user_database.transaction do
@@ -315,7 +316,7 @@ module CartoDB
 
       def set_user_privileges_in_geocoding_schema(db_user = nil)
         @queries.run_in_transaction(
-          @queries.grant_all_on_schema_queries('cdb', db_user),
+          @queries.grant_all_on_schema_queries(SCHEMA_GEOCODING, db_user),
           true
         )
       end

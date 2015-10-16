@@ -1697,7 +1697,10 @@ describe User do
 
       test_table_name = "table_perm_test"
 
-
+      # Safety check
+      user.in_database.fetch(%{
+        SELECT * FROM pg_extension WHERE extname='postgis';
+      }).first.nil?.should == false
 
       # Replicate functionality inside ::User::DBService.configure_database
       # -------------------------------------------------------------------
@@ -1763,6 +1766,22 @@ describe User do
         SELECT * FROM has_function_privilege('#{user.database_username}',
                                              '#{user.database_schema}._cdb_userquotainbytes()', 'EXECUTE');
       }).first[:has_function_privilege].should == true
+
+      # Checks of publicuser on own schema
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_schema_privilege('#{CartoDB::PUBLIC_DB_USER}',
+                                           '#{user.database_schema}', 'USAGE');
+      }).first[:has_schema_privilege].should == true
+
+      # Checks on non-org "owned" schemas
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_schema_privilege('#{user.database_username}',
+                                           '#{CartoDB::User::DBService::SCHEMA_IMPORTER}', 'CREATE, USAGE');
+      }).first[:has_schema_privilege].should == true
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_schema_privilege('#{user.database_username}',
+                                           '#{CartoDB::User::DBService::SCHEMA_GEOCODING}', 'CREATE, USAGE');
+      }).first[:has_schema_privilege].should == true
 
       # TODO: Keep adding tests from db_service.configure_database
 

@@ -94,12 +94,7 @@ module CartoDB
       end
 
       def get_org_groups(organization_id)
-        q = pg_conn.exec("SELECT * FROM groups WHERE organization_id = '#{organization_id}'")
-        if q.count > 0
-          return q
-        else
-          throw "Can't find organization #{@organization_id}"
-        end
+        pg_conn.exec("SELECT * FROM groups WHERE organization_id = '#{organization_id}'")
       end
 
       def dump_user_data(redis_keys)
@@ -116,9 +111,9 @@ module CartoDB
       end
 
       def dump_org_data
-        data = dump_related_data(Carto::Organization, @org_id)
+        data = dump_related_data(::Carto::Organization, @org_id)
         data[Carto::Organization] = [@org_metadata]
-        data.select! { |key, _value| [Carto::Organization, Carto::Group].include?(key) }
+        data.select! { |key, _value| [::Carto::Organization, ::Carto::Group].include?(key) }
         dump_sql_data(data, "org_#{@org_id}")
       end
 

@@ -11,10 +11,14 @@
   };
   cdb.CARTOCSS_DEFAULT_VERSION = '2.1.1';
 
+  var Loader = require('./core/loader');
+  window.vizjson = require('./core/loader/vizjson');
+
   cdb.config = {};
   cdb.core = {
     Profiler: require('./core/profiler'),
-    util: require('./core/util')
+    util: require('./core/util'),
+    Loader: Loader
   };
   cdb.SQL = require('./api/sql');
 
@@ -24,7 +28,9 @@
   cdb.geo.geocoder = {};
   cdb.ui = {};
   cdb.ui.common = {};
-  cdb.vis = {};
+  cdb.vis = {
+    Loader: Loader
+  };
   cdb.decorators = {};
   cdb._Promise = require('_Promise');
 

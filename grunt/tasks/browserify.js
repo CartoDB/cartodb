@@ -16,7 +16,6 @@ var bundles = {
       'src-browserify/core.js'
 
     // migrate to require style
-      // 'src/core/loader.js',
       // 'src/vis/image.js',
       // 'src/api/tiles.js'
     ],

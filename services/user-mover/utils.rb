@@ -2,7 +2,7 @@ module CartoDB
   module DataMover
     module Utils
       def conn_string(user, host, port, name)
-        %Q{#{!user ? "" : "-U "+user } -h #{host} -p #{port} -d #{name} }
+        %{#{!user ? '' : '-U ' + user} -h #{host} -p #{port} -d #{name} }
       end
 
       def database_name_prefix
@@ -29,7 +29,6 @@ module CartoDB
       def database_username(user_id)
         "#{db_username_prefix}#{user_id}"
       end
-
 
       def metadata_pg_conn
         @metadata_conn ||= PG.connect(host: CartoDB::DataMover::Config.config[:dbhost],

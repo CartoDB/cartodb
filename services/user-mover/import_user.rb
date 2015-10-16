@@ -24,12 +24,12 @@ module CartoDB
         throw "File #{@options[:file]} does not exist!" unless File.exists?(@options[:file])
         @pack_config = JSON::parse File.read(@options[:file])
 
-        @path = File.expand_path(File.dirname(@options[:file]))+"/"
+        @path = File.expand_path(File.dirname(@options[:file])) + "/"
         @logger = @options[:logger] || ::Logger.new(STDOUT)
       end
 
       def run!
-        if @pack_config['organization'] != nil
+        if !@pack_config['organization'].nil?
           organization_id = @pack_config['organization']['id']
 
           if @options[:mode] == :import
@@ -49,23 +49,23 @@ module CartoDB
               owner_id = @pack_config['organization']['owner_id']
               @logger.info("Importing org owner #{owner_id}..")
               ImportJob.new(file: @path + "user_#{owner_id}.json",
-                  mode: @options[:mode],
-                  host: @target_dbhost,
-                  target_org: @pack_config['organization']['name'],
-                  logger: @logger, data_only: @options[:data_only]).run!
+                            mode: @options[:mode],
+                            host: @target_dbhost,
+                            target_org: @pack_config['organization']['name'],
+                            logger: @logger, data_only: @options[:data_only]).run!
 
-              #Fix permissions and metadata settings for owner
+              # Fix permissions and metadata settings for owner
               owner_user = ::User.find(id: owner_id)
               owner_user.database_host = @target_dbhost
               owner_user.db_service.setup_organization_owner
 
-              @pack_config['users'].reject{|u| u['id'] == owner_id}.each do |user|
+              @pack_config['users'].reject { |u| u['id'] == owner_id }.each do |user|
                 @logger.info("Importing org user #{user['id']}..")
                 ImportJob.new(file: @path + "user_#{user['id']}.json",
-                    mode: @options[:mode],
-                    host: @target_dbhost,
-                    target_org: @pack_config['organization']['name'],
-                    logger: @logger, data_only: @options[:data_only]).run!
+                              mode: @options[:mode],
+                              host: @target_dbhost,
+                              target_org: @pack_config['organization']['name'],
+                              logger: @logger, data_only: @options[:data_only]).run!
               end
             rescue => e
               rollback_metadata("org_#{organization_id}_metadata_undo.sql") unless @options[:data_only]
@@ -74,20 +74,20 @@ module CartoDB
             end
           elsif @options[:mode] == :rollback
             db = @pack_config['users'][0]['database_name']
-            @pack_config['users'].reject{|u| u['id'] == owner_id}.each do |user|
+            @pack_config['users'].reject { |u| u['id'] == owner_id }.each do |user|
               @logger.info("Importing org user #{user['id']}..")
               ImportJob.new(file: @path + "user_#{user['id']}.json",
-                  mode: :rollback,
-                  host: @target_dbhost,
-                  target_org: @pack_config['organization']['name'],
-                  logger: @logger).run!
+                            mode: :rollback,
+                            host: @target_dbhost,
+                            target_org: @pack_config['organization']['name'],
+                            logger: @logger).run!
             end
             rollback_metadata("org_#{organization_id}_metadata_undo.sql")
             drop_database(db) if @options[:drop_database]
             if @options[:drop_roles]
               drop_role(org_role_name(db))
-              @pack_config['users'].each{|u| drop_role(database_username(u['id'])) }
-              @pack_config['groups'].each{|g| drop_role(g['database_role']) }
+              @pack_config['users'].each { |u| drop_role(database_username(u['id'])) }
+              @pack_config['groups'].each { |g| drop_role(g['database_role']) }
             end
           end
         else
@@ -137,7 +137,7 @@ module CartoDB
             end
 
             create_user(@target_dbuser)
-            if @options[:target_org] != nil
+            if !@options[:target_org].nil?
               create_org_role(@target_dbname) # Create org role for the original org
               grant_user_org_role(@target_dbuser, @target_dbname)
             end
@@ -148,7 +148,7 @@ module CartoDB
             end
 
             @pack_config['roles'].each do |user, roles|
-              roles.each {|role| grant_user_role(user, role)}
+              roles.each { |role| grant_user_role(user, role) }
             end
 
             if File.exists? "#{@path}user_#{@target_userid}.dump"
@@ -194,6 +194,7 @@ module CartoDB
       def drop_role(role)
         superuser_pg_conn.query("DROP ROLE \"#{role}\"")
       end
+
       def get_org_info(orgname)
         result = metadata_pg_conn.query('SELECT * FROM organizations WHERE name = $1', [orgname])
         throw "Organization #{orgname} not found" if result.cmd_tuples == 0
@@ -216,23 +217,23 @@ module CartoDB
 
       def user_pg_conn
         @user_conn ||= PG.connect(host: @target_dbhost,
-            user: @target_dbuser,
-            dbname: @target_dbname,
-            port: @config[:dbport])
+                                  user: @target_dbuser,
+                                  dbname: @target_dbname,
+                                  port: @config[:dbport])
       end
 
       def superuser_user_pg_conn
         @superuser_user_conn ||= PG.connect(host: @target_dbhost,
-            user: @config[:dbuser],
-            dbname: @target_dbname,
-            port: @target_dbport)
+                                            user: @config[:dbuser],
+                                            dbname: @target_dbname,
+                                            port: @target_dbport)
       end
 
       def superuser_pg_conn
         @superuser_conn ||= PG.connect(host: @target_dbhost,
-            user: @config[:dbuser],
-            dbname: 'postgres',
-            port: @target_dbport)
+                                       user: @config[:dbuser],
+                                       dbname: 'postgres',
+                                       port: @target_dbport)
       end
 
       def drop_database(db_name)
@@ -259,9 +260,8 @@ module CartoDB
         throw "User already exists in Redis metadata" if result != {}
       end
 
-
       def conn_string(user, host, port, name)
-        %Q{#{!user ? "" : "-U "+user } -h #{host} -p #{port} -d #{name} }
+        %{#{!user ? '' : '-U ' + user} -h #{host} -p #{port} -d #{name} }
       end
 
       def run_redis_command(config)
@@ -278,18 +278,18 @@ module CartoDB
 
       def run_file_restore_postgres(file)
         run_command("pg_restore -e --verbose -j4 --disable-triggers -Fc #{@path}#{file} #{conn_string(
-                        @config[:dbuser],
-                        @target_dbhost,
-                        @config[:user_dbport],
-                        @target_dbname)}")
+          @config[:dbuser],
+          @target_dbhost,
+          @config[:user_dbport],
+          @target_dbname)}")
       end
 
       def run_file_restore_schema(file)
         run_command("cat #{@path}#{file} | psql -v ON_ERROR_STOP=1 #{conn_string(
-                        @config[:dbuser],
-                        @target_dbhost,
-                        @config[:user_dbport],
-                        @target_dbname)}")
+          @config[:dbuser],
+          @target_dbhost,
+          @config[:user_dbport],
+          @target_dbname)}")
       end
 
       def import_redis(file)
@@ -368,7 +368,7 @@ module CartoDB
       def create_db(dbname, blank)
         # Blank is when the database should be created empty (will receive a pg_dump).
         # blank = false: it should have postgis, cartodb/cdb_importer/cdb schemas
-        #connect as superuser (postgres)
+        # connect as superuser (postgres)
         @logger.info "Creating user DB #{dbname}..."
         begin
           if blank
@@ -388,22 +388,20 @@ module CartoDB
         setup_db(dbname) unless blank
       end
 
-      def setup_db(dbname)
-        begin
-          ['plpythonu', 'postgis', 'schema_triggers'].each do |extension|
-            superuser_user_pg_conn.query("CREATE EXTENSION IF NOT EXISTS #{extension}")
-          end
-          cartodb_schema = superuser_user_pg_conn.query("SELECT nspname FROM pg_catalog.pg_namespace where nspname = 'cartodb'")
-          superuser_user_pg_conn.query("CREATE SCHEMA cartodb") if cartodb_schema.count == 0
-          cdb_importer_schema = superuser_user_pg_conn.query("SELECT nspname FROM pg_catalog.pg_namespace where nspname = 'cdb_importer'")
-          superuser_user_pg_conn.query("CREATE SCHEMA cdb_importer") if cdb_importer_schema.count == 0
-          cdb_schema = superuser_user_pg_conn.query("SELECT nspname FROM pg_catalog.pg_namespace where nspname = 'cdb'")
-          superuser_user_pg_conn.query("CREATE SCHEMA cdb") if cdb_schema.count == 0
-          superuser_user_pg_conn.query("CREATE EXTENSION IF NOT EXISTS cartodb WITH SCHEMA cartodb")
-        rescue PG::Error => e
-          @logger.error "Error: Cannot setup DB"
-          throw e
+      def setup_db(_dbname)
+        ['plpythonu', 'postgis', 'schema_triggers'].each do |extension|
+          superuser_user_pg_conn.query("CREATE EXTENSION IF NOT EXISTS #{extension}")
         end
+        cartodb_schema = superuser_user_pg_conn.query("SELECT nspname FROM pg_catalog.pg_namespace where nspname = 'cartodb'")
+        superuser_user_pg_conn.query("CREATE SCHEMA cartodb") if cartodb_schema.count == 0
+        cdb_importer_schema = superuser_user_pg_conn.query("SELECT nspname FROM pg_catalog.pg_namespace where nspname = 'cdb_importer'")
+        superuser_user_pg_conn.query("CREATE SCHEMA cdb_importer") if cdb_importer_schema.count == 0
+        cdb_schema = superuser_user_pg_conn.query("SELECT nspname FROM pg_catalog.pg_namespace where nspname = 'cdb'")
+        superuser_user_pg_conn.query("CREATE SCHEMA cdb") if cdb_schema.count == 0
+        superuser_user_pg_conn.query("CREATE EXTENSION IF NOT EXISTS cartodb WITH SCHEMA cartodb")
+      rescue PG::Error => e
+        @logger.error "Error: Cannot setup DB"
+        throw e
       end
 
       def update_database(userid, username, db_host, db_name)
@@ -445,13 +443,13 @@ end
 if __FILE__ == $0
 
   path = ""
-  options = {:mode => :import}
+  options = { mode: :import }
   parser = OptionParser.new do |opts|
     opts.banner = "Usage: #{__FILE__}  -u FILE [-h|--database_host IP]"
     opts.on("-u", "--user FILE", "Path to user dump JSON file") do |f|
       options[:file] = f
     end
-    opts.on("-d", "--data-only", "Import only data (ignore metadata)") do |f|
+    opts.on("-d", "--data-only", "Import only data (ignore metadata)") do |_f|
       options[:data_only] = true
     end
     opts.on("-o", "--import-into-org ORGNAME", "Import into organization. (Will override database_host with the org one)") do |f|
@@ -469,7 +467,7 @@ if __FILE__ == $0
   PATH = path
   USER_ID = ARGV[0]
 
-  def usage()
+  def usage
     puts "Check #{__FILE__} --help"
     p parser.help
     exit 1
@@ -481,4 +479,3 @@ if __FILE__ == $0
   end
   CartoDB::DataMover::ImportJob.new(options).run!
 end
-

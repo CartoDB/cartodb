@@ -40,6 +40,8 @@ WORKING_SPECS_1 = \
   spec/lib/string_spec.rb \
   spec/lib/image_metadata_spec.rb \
   spec/lib/central_spec.rb \
+  spec/lib/trending_maps_spec.rb \
+  spec/lib/explore_api_spec.rb \
   spec/lib/carto/http/client_spec.rb \
 	spec/helpers/uuidhelper_spec.rb \
 	spec/models/carto/template_spec.rb \
@@ -74,6 +76,8 @@ WORKING_SPECS_2 = \
   services/importer/spec/unit/mail_notifier_spec.rb \
   services/importer/spec/unit/sql_loader_spec.rb \
   services/importer/spec/unit/ogr2ogr_spec.rb \
+  services/importer/spec/unit/ogrinfo_spec.rb \
+  services/importer/spec/unit/ogr2ogr_params_helper_spec.rb \
   services/importer/spec/unit/post_import_handler_spec.rb \
   services/importer/spec/unit/runner_spec.rb \
   services/importer/spec/unit/unp_spec.rb \
@@ -173,6 +177,8 @@ WORKING_SPECS_9 = \
   spec/requests/api/json/overlays_controller_spec.rb \
   spec/requests/carto/api/overlays_controller_spec.rb \
 	spec/models/carto/user_creation_spec.rb \
+	spec/requests/carto/api/invitations_controller_spec.rb \
+	spec/models/carto/invitation_spec.rb \
 	spec/models/carto/user_service_spec.rb \
 	spec/models/carto/user_spec.rb \
 	spec/models/carto/user_table_spec.rb \
@@ -201,7 +207,7 @@ endif
 	# TODO skip this if db already exists ?
 	# Clean DB connections before drop test DB
 	psql -U postgres -c "select pg_terminate_backend(pid) from pg_stat_activity where datname='carto_db_test'"
-	MOCHA_OPTIONS=skip_integration RAILS_ENV=test bundle exec rake cartodb:test:prepare
+	MOCHA_OPTIONS=skip_integration RAILS_ENV=test bundle exec rake cartodb:test:prepare --trace
 
 # TODO: Ongoing removal of groups, that's the reason of holes in numbering
 check-1:

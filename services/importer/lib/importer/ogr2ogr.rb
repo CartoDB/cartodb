@@ -1,6 +1,6 @@
 # encoding: utf-8
 require 'open3'
-require_relative './shp_helper'
+require_relative 'ogr2ogr_params_helper'
 
 module CartoDB
   module Importer2
@@ -15,12 +15,6 @@ module CartoDB
       APPEND_MODE_OPTION    = '-append'
 
       DEFAULT_BINARY = 'which ogr2ogr2'
-
-      LATITUDE_POSSIBLE_NAMES   = %w{ latitude lat latitudedecimal
-        latitud lati decimallatitude decimallat point_latitude }
-      LONGITUDE_POSSIBLE_NAMES  = %w{ longitude lon lng
-        longitudedecimal longitud long decimallongitude decimallong point_longitude }
-
 
       def initialize(table_name, filepath, pg_options, layer=nil, options={})
         self.filepath   = filepath
@@ -46,16 +40,16 @@ module CartoDB
 
       def command_for_import
         "#{OSM_INDEXING_OPTION} #{PG_COPY_OPTION} #{client_encoding_option} #{shape_encoding_option} " +
-        "#{executable_path} #{OUTPUT_FORMAT_OPTION} #{overwrite_option} #{guessing_option} " +
-        "#{postgres_options} #{projection_option} " +
-        "#{layer_creation_options} #{filepath} #{layer} #{layer_name_option} #{NEW_LAYER_TYPE_OPTION}" +
-        " #{shape_coordinate_option} "
+          "#{executable_path} #{OUTPUT_FORMAT_OPTION} #{overwrite_option} #{guessing_options} " +
+          "#{postgres_options} #{projection_option} " +
+          "#{layer_creation_options} #{filepath} #{layer} #{layer_name_option} #{NEW_LAYER_TYPE_OPTION}" +
+          " #{shape_coordinate_option} "
       end
 
       def command_for_append
         "#{OSM_INDEXING_OPTION} #{PG_COPY_OPTION} #{client_encoding_option} " +
-        "#{executable_path} #{APPEND_MODE_OPTION} #{OUTPUT_FORMAT_OPTION} #{postgres_options} " +
-        "#{projection_option} #{filepath} #{layer} #{layer_name_option} #{NEW_LAYER_TYPE_OPTION}"
+          "#{executable_path} #{APPEND_MODE_OPTION} #{OUTPUT_FORMAT_OPTION} #{postgres_options} " +
+          "#{projection_option} #{filepath} #{layer} #{layer_name_option} #{NEW_LAYER_TYPE_OPTION}"
       end
 
       def executable_path
@@ -144,19 +138,12 @@ module CartoDB
         !(filepath =~ /\.shp$/i).nil?
       end
 
-      def guessing_option
+      def guessing_options
         if csv_guessing && is_csv?
-          # Inverse of the selection: if I want guessing I must NOT leave quoted fields as string
-          "-oo AUTODETECT_TYPE=YES -oo QUOTED_FIELDS_AS_STRING=#{quoted_fields_guessing ? 'NO' : 'YES' } " +
-          "#{x_y_possible_names_option} -s_srs EPSG:4326 -t_srs EPSG:4326 " +
-          "-skipfailure"
+          params_helper.guessing_args
         else
           ''
         end
-      end
-
-      def x_y_possible_names_option
-        "-oo X_POSSIBLE_NAMES=#{LONGITUDE_POSSIBLE_NAMES.join(',')} -oo Y_POSSIBLE_NAMES=#{LATITUDE_POSSIBLE_NAMES.join(',')}"
       end
 
       def overwrite_option
@@ -198,6 +185,11 @@ module CartoDB
       def projection_option
         is_csv? || filepath =~ /\.ods/ ? nil : '-t_srs EPSG:4326 '
       end
+
+      def params_helper
+        @params_helper ||= Ogr2ogrParamsHelper.new(filepath, quoted_fields_guessing, layer)
+      end
+
     end
   end
 end

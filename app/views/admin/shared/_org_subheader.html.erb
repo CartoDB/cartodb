@@ -1,38 +1,36 @@
-<div class="Filters above-form js-org-subheader">
+<div class="Filters is-relative js-org-subheader">
   <div class="Filters-inner">
     <span class="Filters-separator"></span>
     <div class="Filters-row">
-      <div class="Filters-type">
-        <ul class="Filters-list">
+      <ul class="Filters-group">
+        <li class="Filters-typeItem">
+          <a href="<%= CartoDB.url(self, 'organization_settings') %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_settings" %>">
+            Organization profile
+          </a>
+        </li>
+        <li class="Filters-typeItem">
+          <a href="<%= CartoDB.url(self, 'organization_auth') %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_auth" %>">
+            Auth settings
+          </a>
+        </li>
+        <li class="Filters-typeItem">
+          <a href="<%= CartoDB.url(self, 'organization') %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_show" %>">
+            <%= current_user.organization.users.count %>/<%= current_user.organization.seats %> users
+          </a>
+        </li>
+        <% if current_user.has_feature_flag?('groups') %>
           <li class="Filters-typeItem">
-            <a href="<%= CartoDB.url(self, 'organization_settings') %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_settings" %>">
-              Organization profile
+            <a href="<%= CartoDB.url(self, 'organization_groups') %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_groups" %>">
+              Groups
             </a>
           </li>
+        <% end %>
+        <% if show_billing  %>
           <li class="Filters-typeItem">
-            <a href="<%= CartoDB.url(self, 'organization_auth') %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_auth" %>">
-              Auth settings
-            </a>
+            <a href="<%= current_user.plan_url(request.protocol) %>" class="Filters-typeLink">Billing</a>
           </li>
-          <li class="Filters-typeItem">
-            <a href="<%= CartoDB.url(self, 'organization') %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_show" %>">
-              <%= current_user.organization.users.count %>/<%= current_user.organization.seats %> users
-            </a>
-          </li>
-          <% if current_user.has_feature_flag?('groups') %>
-            <li class="Filters-typeItem">
-              <a href="<%= CartoDB.url(self, 'organization_groups') %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_groups" %>">
-                Groups
-              </a>
-            </li>
-          <% end %>
-          <% if show_billing  %>
-            <li class="Filters-typeItem">
-              <a href="<%= current_user.plan_url(request.protocol) %>" class="Filters-typeLink">Billing</a>
-            </li>
-          <% end %>
-        </ul>
-      </div>
+        <% end %>
+      </ul>
     </div>
   </div>
 </div>

@@ -9,7 +9,7 @@ module Carto
     class GroupsController < ::Api::ApplicationController
       include PagedSearcher
 
-      ssl_required :index, :show, :create, :update, :destroy, :add_users, :remove_users unless Rails.env.development? || Rails.env.test?
+      ssl_required :index, :show, :create, :update, :destroy, :add_users, :remove_users
 
       before_filter :load_fetching_options, :only => [:show, :index]
       before_filter :load_organization
@@ -137,6 +137,6 @@ module Carto
       end
 
     end
-    
+
   end
 end

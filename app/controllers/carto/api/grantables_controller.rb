@@ -10,7 +10,7 @@ module Carto
 
       respond_to :json
 
-      ssl_required :index unless Rails.env.development? || Rails.env.test?
+      ssl_required :index
 
       before_filter :load_organization
 

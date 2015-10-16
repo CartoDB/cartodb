@@ -2,6 +2,12 @@
 
 require_relative '../spec_helper'
 require_relative './database_configuration_contexts'
+require_relative '../support/factories/users'
+
+class TestUserFactory
+  include CartoDB::Factories
+
+end
 
 shared_context 'organization with users helper' do
   include CacheHelper
@@ -15,37 +21,28 @@ shared_context 'organization with users helper' do
     organization = Organization.new
     organization.name = org_name = "org#{rand(9999)}"
     organization.quota_in_bytes = 1234567890
-    organization.seats = 5
+    organization.seats = 15
     organization
   end
 
-  def create_test_user(username, organization = nil)
-    user = create_user(
-      username: username,
-      email: "#{username}@example.com",
-      password: username,
-      private_tables_enabled: true,
-      organization: organization
-    )
-    user.save.reload
-    organization.reload if organization
-    user
-  end
-
   before(:all) do
-    @organization = test_organization.save
-    @organization_2 = test_organization.save
+    @helper = TestUserFactory.new
+    @organization = test_organization
+    @organization.save
+    @organization_2 = test_organization
+    @organization_2.save
 
-    @org_user_owner = create_test_user("o#{random_username}")
-    user_org = CartoDB::UserOrganization.new(@organization.id, @org_user_owner.id)
-    user_org.promote_user_to_admin
+    @org_user_owner = @helper.create_owner(@organization)
+
+    @org_user_1 = @helper.create_test_user("a#{random_username}", @organization)
+    @org_user_2 = @helper.create_test_user("b#{random_username}", @organization)
+
     @organization.reload
-    @org_user_owner.reload
 
-    @org_user_1 = create_test_user("a#{random_username}", @organization)
-    @org_user_2 = create_test_user("b#{random_username}", @organization)
-
-    @organization.reload
+    @carto_organization = Carto::Organization.find(@organization.id)
+    @carto_org_user_owner = Carto::User.find(@org_user_owner.id)
+    @carto_org_user_1 = Carto::User.find(@org_user_1.id)
+    @carto_org_user_2 = Carto::User.find(@org_user_2.id)
   end
 
   before(:each) do
@@ -59,6 +56,8 @@ shared_context 'organization with users helper' do
     bypass_named_maps
     delete_user_data @org_user_owner if @org_user_owner
     @organization.destroy_cascade
+
+    @organization_2.destroy_cascade
   end
 
   def share_table(table, owner, user)

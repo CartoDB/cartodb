@@ -27,6 +27,7 @@ module Carto
         tags = nil if tags.empty?
         bbox_parameter = params.fetch(:bbox,nil)
         privacy = params.fetch(:privacy,nil)
+        only_with_display_name = params[:only_with_display_name] == 'true'
 
         vqb = VisualizationQueryBuilder.new
             .with_prefetch_user
@@ -36,8 +37,13 @@ module Carto
             .with_types(types)
             .with_tags(tags)
 
-        if !bbox_parameter.nil?
+        if !bbox_parameter.blank?
           vqb.with_bounding_box(BoundingBoxHelper.parse_bbox_parameters(bbox_parameter))
+        end
+
+        # FIXME Patch to exclude legacy visualization from data-library #5097
+        if only_with_display_name
+          vqb.with_display_name
         end
 
         if current_user
@@ -63,6 +69,7 @@ module Carto
 
           if types.include? Carto::Visualization::TYPE_REMOTE
             vqb.without_synced_external_sources
+            vqb.without_imported_remote_visualizations
           end
 
           if !privacy.nil?

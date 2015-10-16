@@ -16,8 +16,8 @@ require_relative '../../../../lib/cartodb/event_tracker'
 class Api::Json::VisualizationsController < Api::ApplicationController
   include CartoDB
 
-  ssl_allowed  :notify_watching, :list_watching, :add_like, :remove_like
-  ssl_required :create, :update, :destroy, :set_next_id unless Rails.env.development? || Rails.env.test?
+  ssl_allowed :notify_watching, :list_watching, :add_like, :remove_like
+  ssl_required :create, :update, :destroy, :set_next_id
   skip_before_filter :api_authorization_required, only: [:add_like, :remove_like]
 
   before_filter :optional_api_authorization, only: [:add_like, :remove_like]

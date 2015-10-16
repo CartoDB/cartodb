@@ -1,5 +1,5 @@
 // Depends on global cartodb.log and cartodb.DEBUG flag (see loadModule)
-module.exports = {
+var Loader = {
 
   queue: [],
   current: undefined,
@@ -56,3 +56,18 @@ module.exports = {
     Loader.loadScript(src);
   }
 };
+
+// Required for jsonp callback, see Loader.get()
+window.vizjson = function(data) {
+  Loader.current && Loader.current(data);
+  // remove script
+  Loader.head.removeChild(Loader._script);
+  Loader._script = null;
+  // next element
+  var a = Loader.queue.shift();
+  if (a) {
+    Loader.get(a[0], a[1]);
+  }
+}
+
+module.exports = Loader;

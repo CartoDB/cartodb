@@ -12,7 +12,6 @@
   cdb.CARTOCSS_DEFAULT_VERSION = '2.1.1';
 
   var Loader = require('./core/loader');
-  window.vizjson = require('./core/loader/vizjson');
 
   cdb.config = {};
   cdb.core = {

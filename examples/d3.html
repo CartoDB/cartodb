@@ -81,8 +81,8 @@
         // Generate a Bates distribution of 10 random variables.
         var values = d3.range(1000).map(d3.random.bates(1));
 
-        var width = 960;
-        var height = 500;
+        var width = 500;
+        var height = 100;
 
         var x = d3.scale.linear()
         .domain([0, 1])
@@ -119,10 +119,11 @@
           var extent = brush.extent();
           var lo = extent[0];
           var hi = extent[1];
-          svg.selectAll('.bar').classed("selected", function(d, i) { 
-            console.log(d)
+
+          svg.selectAll('.bar').classed("selected", function(d, i) {
             console.log(i, lo, d[i], hi);
-            return d[i] >= lo && d[i] <= hi; });
+            return d[i] >= lo && d[i] <= hi; 
+          });
         }
 
         var brush = d3.svg.brush()
@@ -135,9 +136,7 @@
         .selectAll("rect")
         .attr("y", -6)
         .attr("height", height + 7);
-
       }
-
 
       var fn = function() {
         cartodb.load('../src/', main);

@@ -25,10 +25,9 @@ module.exports = {
             "vendor/backbone.js",
             "vendor/mustache.js",
           ],
-          helpers: [
-          ],
           specs: [
-            'test/spec/api/sql.spec.js'
+            'test/spec/api/sql.spec.js',
+            '<%= config.tmp %>/core-specs.js'
           ],
           summary: true,
           display: 'short'
@@ -117,7 +116,10 @@ module.exports = {
         options: {
           keepRunner: true,
           outfile: 'test/SpecRunner.html',
-          specs: 'test/spec/**/*.js',
+          specs: [
+            'test/spec/**/*.js',
+            '!test/spec/src-browserify/**/*.js'
+          ],
           helpers: 'test/spec/SpecHelper.js',
           vendor: [ "http://maps.googleapis.com/maps/api/js?sensor=false&v=3.12" ],
           summary: true,

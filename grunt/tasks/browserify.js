@@ -16,13 +16,17 @@ var bundles = {
       'src-browserify/core.js'
 
     // migrate to require style
-      // 'src/geo/layer_definition.js',
-      // 'src/geo/sublayer.js',
       // 'src/core/loader.js',
       // 'src/vis/image.js',
       // 'src/api/tiles.js'
     ],
     dest: '<%= config.dist %>/cartodb.core.uncompressed.js'
+  },
+  'core-specs': {
+    src: [
+      'test/spec/src-browserify/**/*.spec.js'
+    ],
+    dest: '<%= config.tmp %>/core-specs.js'
   }
 };
 

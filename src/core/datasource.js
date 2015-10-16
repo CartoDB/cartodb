@@ -5,29 +5,11 @@ cdb.core.Datasource = cdb.core.Model.extend({
   },
 
   initialize: function(attrs, opts) {
-    this._generateWidgetCollections();
+    this.collection = new cdb.geo.ui.Widget.Collection();
     this._windshaftMap = opts.windshaftMap;
     this._initBinds();
 
     this.trigger('loading');
-  },
-
-  _generateWidgetCollections: function() {
-    var self = this;
-    _.each(this._WIDGETS, function(val, name) {
-      self['_' + name] = new Backbone.Collection({
-        model: cdb.Widget[val]
-      });
-    });
-  },
-
-  _getWidgetCollection: function(type) {
-    var collection = this['_' + type];
-    if (collection) {
-      return collection;
-    } else {
-      throw new Error("Widgets collection " + type + " not defined.");
-    }
   },
 
   _initBinds: function() {
@@ -41,15 +23,14 @@ cdb.core.Datasource = cdb.core.Model.extend({
 
   addWidgetModel: function(d) {
     if (!this._WIDGETS[d.type]) {
-      throw new Error("Widget model " + d.type + " not defined.");
+      throw new Error("Widget " + d.type + " not defined.");
     }
 
     var modelAttributes = _.extend(d, {
       baseURL: this.get('maps_api_template').replace('{user}', this.get('user_name'))
-    })
-    var mdl = new cdb.Widget[this._WIDGETS[d.type]](modelAttributes);
-    var collection = this._getWidgetCollection(d.type);
-    collection && collection.add(mdl);
+    });
+    var mdl = new cdb.geo.ui.Widget[this._WIDGETS[d.type]](modelAttributes);
+    this.collection.add(mdl);
     this.bind('change:id', function(datasource, id) {
       mdl.set({
         layerGroupId: id

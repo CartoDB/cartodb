@@ -928,7 +928,7 @@ var Vis = cdb.core.View.extend({
       datasource = this.datasource;
     }
 
-    return new cdb.Widget[_widgetTypes[type]](
+    return new cdb.geo.ui.Widget[_widgetTypes[type]](
       _.extend(
         opts,
         {

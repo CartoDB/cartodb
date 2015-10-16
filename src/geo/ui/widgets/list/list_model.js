@@ -1,4 +1,4 @@
-cdb.Widget.ListModel = cdb.core.Model.extend({
+cdb.geo.ui.Widget.ListModel = cdb.geo.ui.Widget.Model.extend({
 
   options: {
     page: 0,

@@ -1,4 +1,4 @@
-cdb.Widget.ListItemView = cdb.core.View.extend({
+cdb.geo.ui.Widget.ListItemView = cdb.core.View.extend({
 
   options: {
     template: ''

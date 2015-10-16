@@ -20,6 +20,7 @@
     root.cdb.image = {};
     root.cdb.geo = {};
     root.cdb.geo.ui = {};
+    root.cdb.geo.ui.Widget = {};
     root.cdb.geo.geocoder = {};
     root.cdb.ui = {};
     root.cdb.ui.common = {};
@@ -84,14 +85,15 @@
         'geo/ui/infobox.js',
         'geo/ui/tooltip.js',
         'geo/ui/fullscreen.js',
+
+        // Widgets
         'geo/ui/widget.js',
-
-        // 'geo/ui/widgets/widget_model.js',
-        // 'geo/ui/widgets/widget_view.js',
-
+        'geo/ui/widgets/widget_model.js',
+        'geo/ui/widgets/widget_collection.js',
         'geo/ui/widgets/list/list_item_view.js',
         'geo/ui/widgets/list/list_model.js',
         'geo/ui/widgets/list/list_view.js',
+        // End widgets
 
         'geo/sublayer.js',
         'geo/layer_definition.js',

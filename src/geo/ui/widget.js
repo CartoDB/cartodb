@@ -1,7 +1,22 @@
 
-cdb.Widget = {};
+/**
+ *  Default widget view:
+ *
+ *  It contains:
+ *  - view model (viewModel)
+ *  - datasource model (datasource)
+ *  - data model (dataModel)
+ *
+ *  It will offet to the user:
+ *  - get current data (getData)
+ *  - filter the current datasource (filter), each view will let
+ *  different possibilities.
+ *  - Sync or unsync widget (sync/unsync), making the proper view
+ *  listen or not changes from the current datasource.
+ *
+ */
 
-cdb.Widget.View = cdb.core.View.extend({
+cdb.geo.ui.Widget.View = cdb.core.View.extend({
 
   className: 'Widget',
 
@@ -11,6 +26,9 @@ cdb.Widget.View = cdb.core.View.extend({
   },
 
   initialize: function() {
+    if (!this.options.datasource) {
+      throw new Error('Datasource is not defined');
+    }
     this.viewModel = new cdb.core.Model(
       _.extend(
         this.options,
@@ -53,15 +71,15 @@ cdb.Widget.View = cdb.core.View.extend({
 
     this.dataModel.bind('loading', function(){
       this._changeState('loading');
-      this.dataModel.unbind('loading', null, this);
+      this.dataModel.unbind(null, null, this);
 
       var onDone = function() {
-        self.dataModel.unbind('error reset', null, self);
+        self.dataModel.unbind('error change:data', null, self);
         self[ self.viewModel.get('sync') ? '_bindDatasource' : '_unbindDatasource' ]();
       };
 
       this.dataModel.bind('change:data', function() {
-        this._changeState('BOOM');
+        this._changeState('done');
         onDone();
       }, this);
 
@@ -88,8 +106,8 @@ cdb.Widget.View = cdb.core.View.extend({
     this.dataModel.bind('loading', function() {
       this._changeState('loading');
     }, this);
-    this.dataModel.bind('reset', function() {
-      this._changeState('reset');
+    this.dataModel.bind('change:data', function() {
+      this._changeState('done');
     }, this);
     this.dataModel.bind('error', function() {
       this._changeState('error');
@@ -97,7 +115,7 @@ cdb.Widget.View = cdb.core.View.extend({
   },
 
   _unbindDatasource: function() {
-    this.dataModel.unbind('loading reset error', null, this);
+    this.dataModel.unbind(null, null, this);
   },
 
   sync: function() {
@@ -108,12 +126,18 @@ cdb.Widget.View = cdb.core.View.extend({
     this.viewModel.set('sync', false);
   },
 
-  getDataModel: function() {
-    return this.dataModel;
+  getData: function() {
+    return this.dataModel.get('data');
   },
 
   filter: function() {
-    this.datasource.filter(arguments);
+    throw new Error('Filter method not implemented for ' + this.dataModel.get('type') + ' Widget type');
+  },
+
+  clean: function() {
+    this._unbindDatasource();
+    this.viewModel.unbind(null, null, this);
+    cdb.geo.ui.Widget.View.prototype.clean.call(this);
   }
 
 });

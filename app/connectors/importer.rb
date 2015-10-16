@@ -52,7 +52,7 @@ module CartoDB
             register(result)
           }
 
-          if @data_import.create_visualization
+          if data_import.create_visualization
             create_visualization
           end
         end

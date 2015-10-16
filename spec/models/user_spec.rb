@@ -1746,7 +1746,8 @@ describe User do
       }).first[:has_table_privilege].should == true
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_function_privilege('#{user.database_username}',
-                                             '#{CartoDB::User::DBService::SCHEMA_PUBLIC}.length(geometry)', 'EXECUTE');
+                                             '#{CartoDB::User::DBService::SCHEMA_PUBLIC}._postgis_stats(regclass, text, text)',
+                                             'EXECUTE');
       }).first[:has_function_privilege].should == true
 
       # Checks on own schema

@@ -42,10 +42,10 @@ module CartoDB
 
       def run
         if !@executed
-          stdout, stderr, status = Open3.capture3(command)
+          stdout, _stderr, status = Open3.capture3(command)
           @raw_output = stdout.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '?')
           @exit_code = status.to_i
-          raise OgrInfoError.new(stderr) if @exit_code != 0
+          raise OgrInfoError.new(_stderr) if @exit_code != 0
           @executed = true
         end
         @raw_output
@@ -56,15 +56,15 @@ module CartoDB
       end
 
       def command
-        "#{DEFAULT_BINARY} #{arguments.join(' ')} #{@input_file_path} #{@layer}"
+        "#{DEFAULT_BINARY} #{options} #{@input_file_path} #{@layer}"
       end
 
-      def arguments
+      def options
         [
           '-ro',
           '-so',
           '-al'
-        ]
+        ].join(' ')
       end
 
     end

@@ -25,7 +25,7 @@ describe CartoDB::Importer2::Ogr2ogrParamsHelper do
   end
 
   def helper_factory(filename, quoted_fields_guessing = false)
-    CartoDB::Importer2::Ogr2ogrParamsHelper.new(path_to(filename), quoted_fields_guessing, _layer=nil)
+    CartoDB::Importer2::Ogr2ogrParamsHelper.new(path_to(filename), quoted_fields_guessing, _layer = nil)
   end
 
   def path_to(filename)

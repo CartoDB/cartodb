@@ -1387,6 +1387,14 @@ class User < Sequel::Model
     })
   end
 
+  # Get the count of all visualizations
+  def all_visualization_count
+    visualization_count({
+      exclude_shared: false,
+      exclude_raster: true
+    })
+  end
+
   # Get user owned visualizations
   def owned_visualizations_count
     visualization_count({

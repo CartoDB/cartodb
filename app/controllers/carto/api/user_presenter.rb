@@ -49,7 +49,6 @@ module Carto
           account_type: @user.account_type,
           table_quota: @user.table_quota,
           table_count: @user.table_count,
-          maps_count: maps_count,
           public_visualization_count: @user.public_visualization_count,
           visualization_count: @user.visualization_count,
           failed_import_count: failed_import_count,

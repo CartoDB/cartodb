@@ -90,7 +90,6 @@
               },
               {
                 "type": "layergroup",
-                "datasource": "datasource1",
                 "options": {
                   "layer_definition": {
                     "stat_tag": "ece6faac-7271-11e5-a85f-04013fc66a01",
@@ -371,22 +370,18 @@
             "transition_options": {
               "time": 0
             },
-            "datasources": [
-              {
-                "id": "datasource1",
-                "type": "publicmap",
-                "user_name": "pablo",
-                "maps_api_template": "https://{user}.cartodb-staging.com:443",
-                "stat_tag": "ece6faac-7271-11e5-a85f-04013fc66a01",
-              }
-            ],
+            "datasource": {
+              "type": "public_map",
+              "user_name": "pablo",
+              "maps_api_template": "https://{user}.cartodb-staging.com:443",
+              "stat_tag": "ece6faac-7271-11e5-a85f-04013fc66a01",
+            },
             "widgets": [
               {
                 "type": "list",
                 "options": {
                   "id": 'widget_uuid',
                   "sql": "SELECT COUNT(a.cartodb_id) as trees, b.n_distri as district FROM arboles as a INNER JOIN districtes_barcelona as b ON ST_Intersects(a.the_geom, b.the_geom) GROUP BY b.n_distri",
-                  "datasource": "datasource1",
                   "title": "Árboles por distrito",
                   "columns": [
                     "trees", 
@@ -404,7 +399,8 @@
           })
           .done(function(vis, layers) {
 
-            window.layer = layers[1];
+            window.layers = layers.models[1].layers;
+
             // var stadiums = layers[2];
             // var counties = layers[1];
 

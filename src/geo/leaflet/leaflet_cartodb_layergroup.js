@@ -40,16 +40,16 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
     // Set options
     L.Util.setOptions(this, options);
 
-    // Some checks
-    if (!options.layer_definition && !options.sublayers) {
-        throw new Error('cartodb-leaflet needs at least the layer_definition or sublayer list');
-    }
+    // // Some checks
+    // if (!options.layer_definition && !options.sublayers) {
+    //     throw new Error('cartodb-leaflet needs at least the layer_definition or sublayer list');
+    // }
 
-    if(!options.layer_definition) {
-      this.options.layer_definition = LayerDefinition.layerDefFromSubLayers(options.sublayers);
-    }
+    // if(!options.layer_definition) {
+    //   this.options.layer_definition = LayerDefinition.layerDefFromSubLayers(options.sublayers);
+    // }
 
-    LayerDefinition.call(this, this.options.layer_definition, this.options);
+    // LayerDefinition.call(this, this.options.layer_definition, this.options);
 
     this.fire = this.trigger;
 
@@ -165,9 +165,9 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
     var map = this.options.map;
 
     var setTilesURLandReloadInteraction = function() {
-      var urls = self.model.windshaftMap.getTiles();
-      if(urls) {
-        self.tilejson = urls;
+      var tilejson = self.model.get('urls');
+      if(tilejson) {
+        self.tilejson = tilejson;
         self.setUrl(self.tilejson.tiles[0]);
         // manage interaction
         self._reloadInteraction();
@@ -315,11 +315,11 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
 
 L.CartoDBGroupLayer = L.CartoDBGroupLayerBase.extend({
   includes: [
-    LayerDefinition.prototype,
+    // LayerDefinition.prototype,
   ],
 
   _modelUpdated: function() {
-    this.setLayerDefinition(this.model.get('layer_definition'));
+    // this.setLayerDefinition(this.model.get('layer_definition'));
   }
 });
 

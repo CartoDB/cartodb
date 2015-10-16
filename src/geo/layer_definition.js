@@ -2,21 +2,10 @@
 function MapBase(options) {
   var self = this;
 
-  this.options = _.defaults(options, {
-    ajax: window.$ ? window.$.ajax : reqwest.compat,
-    pngParams: ['map_key', 'api_key', 'cache_policy', 'updated_at'],
-    gridParams: ['map_key', 'api_key', 'cache_policy', 'updated_at'],
-    cors: cdb.core.util.isCORSSupported(),
-    MAX_GET_SIZE: 2033,
-    force_cors: false,
-    instanciateCallback: function() {
-      return '_cdbc_' + self._callbackName();
-    }
-  });
+  this.options = _.defaults(options, {});
 
   this.windshaftMap = null;
   this.silent = false;
-  this.interactionEnabled = []; //TODO: refactor, include inside layer
   this._refreshTimer = -1;
 
   // build template url

@@ -180,6 +180,30 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
     }
   },
 
+  getTooltipData: function() {
+    var tooltip = this.get('tooltip');
+    if (tooltip && tooltip.fields && tooltip.fields.length) {
+      return tooltip;
+    }
+    return null;
+  },
+
+  getInfowindowData: function() {
+    var infowindow = this.get('infowindow');
+    if (infowindow && infowindow.fields && infowindow.fields.length) {
+      return infowindow;
+    }
+    return null;
+  },
+
+  containInfowindow: function() {
+    return !!getTooltipData();
+  },
+
+  containTooltip: function() {
+    return !!getInfowindowData();
+  },
+
   /*isEqual: function() {
     return false;
   }*/
@@ -192,16 +216,22 @@ cdb.geo.CartoDBGroupLayer = cdb.geo.MapLayer.extend({
     type: 'layergroup'
   },
 
-  initialize: function() {
-    this.sublayers = new cdb.geo.Layers();
+  initialize: function(attributes, options) {
+    this.layers = options.layers;
+    this.windshaftMap = options.windshaftMap;
+
+    this.windshaftMap.bind('change:layergroupid', function() {
+      this.set('urls', this.windshaftMap.getTiles());
+    }.bind(this))
   },
 
   isEqual: function() {
     return false;
   },
 
-  contains: function(layer) {
-    return layer.get('type') === 'cartodb';
+  getTileJSONFromTiles: function(layerIndex) {
+    // TODO: This will only work if we have urls
+    return this.windshaftMap.getTileJSONFromTiles(layerIndex);
   }
 });
 

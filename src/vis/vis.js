@@ -452,10 +452,10 @@ var Vis = cdb.core.View.extend({
       map.layers.bind('reset', this.addLegends, this);
     }
 
-    this.overlayModels.bind('reset', function(overlays) {
-      this._addOverlays(overlays, data, options);
-      this._addMobile(data, options);
-    }, this);
+    // this.overlayModels.bind('reset', function(overlays) {
+    //   this._addOverlays(overlays, data, options);
+    //   this._addMobile(data, options);
+    // }, this);
 
     this.mapView.bind('newLayerView', this._addLoading, this);
 
@@ -471,57 +471,60 @@ var Vis = cdb.core.View.extend({
       this.mapView.bind('newLayerView', this.addTooltip, this);
     }
 
+    var layerGroup = _.find(data.layers, function(layer) { return layer.type === 'layergroup' });
+    var cartoDBLayers = _.map(layerGroup.options.layer_definition.layers, function(layer){ return Layers.create(layer.type, self, layer)});
+
     // Create an instance of a map (datasource)
     var windshaftMap;
-    if (data.datasources && data.datasources.length) {
-      // Only one datasource?
-      var datasource = _.first(data.datasources);
-      var datasourceLayer = _.find(data.layers, function(l) {
-        return l.datasource === datasource.id
-      });
 
-      var layerGroupLayer = data.layers[1];
-      var windshaftClient = new cdb.windshaft.Client({
-        ajax: $.ajax,
-        user_name: datasource.user_name,
-        maps_api_template: datasource.maps_api_template,
-        stat_tag: datasource.stat_tag,
-        force_compress: false,
-        force_cors: false,
-        endpoint: MapBase.BASE_URL // This is different for named_maps
-      });
+    // Only one datasource?
+    var datasource = data.datasource;
+    var layerGroupLayer = data.layers[1];
+    var datasourceLayer = layerGroupLayer;
 
-      var layerDefinition = new LayerDefinition(datasourceLayer.options.layer_definition, {}, data.widgets);
-      windshaftMap = windshaftClient.instantiateMap(layerDefinition);
+    var windshaftClient = new cdb.windshaft.Client({
+      ajax: $.ajax,
+      user_name: datasource.user_name,
+      maps_api_template: datasource.maps_api_template,
+      stat_tag: datasource.stat_tag,
+      force_compress: false,
+      force_cors: false,
+      endpoint: MapBase.BASE_URL // This is different for named_maps
+    });
 
-      this.datasource = new cdb.core.Datasource(datasource, { windshaftMap: windshaftMap });
+    var layerDefinition = new LayerDefinition(datasourceLayer.options.layer_definition, {}, data.widgets);
+    windshaftMap = windshaftClient.instantiateMap(layerDefinition);
 
-      _.each(data.widgets, function(d) {
-        var opts = d.options;
-        var type = d.type;
+    this.datasource = new cdb.core.Datasource(datasource, { windshaftMap: windshaftMap });
 
-        var v = self.addWidget(
-          d.type,
-          _.extend(
-            opts,
-            {
-              datasource: self.datasource
-            }
-          )
-        );
+    _.each(data.widgets, function(d) {
+      var opts = d.options;
+      var type = d.type;
 
-        $('body').append(v.el);
-      });
-    }
+      var v = self.addWidget(
+        d.type,
+        _.extend(
+          opts,
+          {
+            datasource: self.datasource
+          }
+        )
+      );
+
+      $('body').append(v.el);
+    });
 
     this.map.layers.reset(_.map(data.layers, function(layerData) {
-      var model = Layers.create(layerData.type || layerData.kind, self, layerData);
+      var model;
 
-      // Assign the map (datasource) to the model
-      if (windshaftMap) {
-        model.windshaftMap = windshaftMap;
+      if (layerData.type === 'layergroup') {
+        model = new cdb.geo.CartoDBGroupLayer({}, {
+          layers: cartoDBLayers,
+          windshaftMap: windshaftMap
+        });
+      } else {
+        model = Layers.create(layerData.type || layerData.kind, self, layerData);
       }
-
       return model;
     }));
 
@@ -553,7 +556,7 @@ var Vis = cdb.core.View.extend({
 
 
     _.defer(function() {
-      self.trigger('done', self, self.getLayers());
+      self.trigger('done', self, map.layers);
     })
 
     return this;
@@ -1189,11 +1192,12 @@ var Vis = cdb.core.View.extend({
   },
 
   addTooltip: function(layerView) {
-    if(!layerView || !layerView.containTooltip || !layerView.containTooltip()) {
-      return;
-    }
-    for(var i = 0; i < layerView.getLayerCount(); ++i) {
-      var t = layerView.getTooltipData(i);
+
+    var layers = layerView.model && layerView.model.layers || [];
+
+    for(var i = 0; i < layers.length; ++i) {
+      var layerModel = layers[i];
+      var t = layerModel.getTooltipData();
       if (t) {
         if (!layerView.tooltip) {
           var tooltip = new cdb.geo.ui.Tooltip({
@@ -1218,7 +1222,7 @@ var Vis = cdb.core.View.extend({
 
     if (layerView.tooltip) {
       layerView.bind("featureOver", function(e, latlng, pos, data, layer) {
-        var t = layerView.getTooltipData(layer);
+        var t = layers[layer].getTooltipData();
         if (t) {
           layerView.tooltip.setTemplate(t.template);
           layerView.tooltip.setFields(t.fields);
@@ -1233,20 +1237,16 @@ var Vis = cdb.core.View.extend({
 
   addInfowindow: function(layerView) {
 
-    if(!layerView.containInfowindow || !layerView.containInfowindow()) {
-      return;
-    }
-
     var mapView = this.mapView;
     var eventType = 'featureClick';
     var infowindow = null;
+    var layers = layerView.model && layerView.model.layers || [];
 
-    // activate interactivity for layers with infowindows
-    for(var i = 0; i < layerView.getLayerCount(); ++i) {
-
-      if (layerView.getInfowindowData(i)) {
+    for(var i = 0; i < layers.length; ++i) {
+      var layerModel = layers[i];
+      if (layerModel.getInfowindowData()) {
         if(!infowindow) {
-          infowindow = Overlay.create('infowindow', this, layerView.getInfowindowData(i), true);
+          infowindow = Overlay.create('infowindow', this, layerModel.getInfowindowData(), true);
           mapView.addInfowindow(infowindow);
         }
         layerView.setInteraction(i, true);
@@ -1260,7 +1260,7 @@ var Vis = cdb.core.View.extend({
     infowindow.bind('close', function() {
       // when infowindow is closed remove all the filters
       // for tooltips
-      for(var i = 0; i < layerView.getLayerCount(); ++i) {
+      for(var i = 0; i < layers; ++i) {
         var t = layerView.tooltip;
         if (t) {
           t.setFilter(null);
@@ -1272,7 +1272,7 @@ var Vis = cdb.core.View.extend({
     // data to the infowindow
     layerView.bind(eventType, function(e, latlng, pos, data, layer) {
 
-        var infowindowFields = layerView.getInfowindowData(layer);
+        var infowindowFields = layers[layer].getInfowindowData();
         if (!infowindowFields) return;
         var fields = _.pluck(infowindowFields.fields, 'name');
         var cartodb_id = data.cartodb_id;

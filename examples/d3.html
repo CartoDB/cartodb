@@ -7,7 +7,6 @@
     <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
     <link rel="stylesheet" href="../dist/themes/css/cartodb.css" />
     <script src="../src/cartodb.js"></script>
-    <script src="../vendor/crossfilter.js"></script>
 
     <style>
       html, body {
@@ -20,7 +19,6 @@
       .bar {
         fill: #9DE0AD;
       }
-
 
       .area {
         z-index: 30;
@@ -58,6 +56,27 @@
         fill: #DDD;
       }
 
+      .axis {
+        font: 12px sans-serif;
+        shape-rendering: crispEdges;
+      }
+      .axis path,
+      .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+      }
+      line.x {
+        stroke: #DDD;
+        stroke-width: 2;
+        shape-rendering: crispEdges;
+      }
+      line.y {
+        stroke: #DDD;
+        stroke-width: 2;
+        shape-rendering: crispEdges;
+      }
+
     </style>
 
   </head>
@@ -81,8 +100,8 @@
         // Generate a Bates distribution of 10 random variables.
         var values = d3.range(1000).map(d3.random.bates(1));
 
-        var width = 960;
-        var height = 500;
+        var width = 500;
+        var height = 100;
 
         var x = d3.scale.linear()
         .domain([0, 1])
@@ -104,6 +123,29 @@
         .attr("height", height )
         .append("g");
 
+        var yData = d3.range(0, height + height/2, height/2);
+        var xData = d3.range(0, width + width/4, width/4);
+        console.log(xData);
+
+        svg.selectAll("line.y")
+        .data(yData)
+        .enter().append("svg:line")
+        .attr('class', 'y')
+        .attr("x1", 0)
+        .attr("y1", function(d) { return d; })
+        .attr("x2", width)
+        .attr("y2", function(d) { return d; })
+
+        svg.selectAll("line.x")
+        .data(xData)
+        .enter().append("svg:line")
+        .attr('class', 'x')
+        .attr("y1", 0)
+        .attr("x1", function(d) { return d; })
+        .attr("y2", width)
+        .attr("x2", function(d) { return d; })
+
+
         var bar = svg.selectAll(".bar")
         .data(data)
         .enter().append("g")
@@ -119,10 +161,11 @@
           var extent = brush.extent();
           var lo = extent[0];
           var hi = extent[1];
-          svg.selectAll('.bar').classed("selected", function(d, i) { 
-            console.log(d)
+
+          svg.selectAll('.bar').classed("selected", function(d, i) {
             console.log(i, lo, d[i], hi);
-            return d[i] >= lo && d[i] <= hi; });
+            return d[i] >= lo && d[i] <= hi; 
+          });
         }
 
         var brush = d3.svg.brush()
@@ -135,9 +178,7 @@
         .selectAll("rect")
         .attr("y", -6)
         .attr("height", height + 7);
-
       }
-
 
       var fn = function() {
         cartodb.load('../src/', main);

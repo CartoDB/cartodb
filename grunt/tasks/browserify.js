@@ -16,14 +16,13 @@ var bundles = {
       'src-browserify/core.js'
 
     // migrate to require style
-      // 'src/vis/image.js',
       // 'src/api/tiles.js'
     ],
     dest: '<%= config.dist %>/cartodb.core.uncompressed.js'
   },
   'core-specs': {
     src: [
-      'test/spec/src-browserify/**/*.spec.js'
+      'test/spec/src-browserify/**/*.js'
     ],
     dest: '<%= config.tmp %>/core-specs.js'
   }

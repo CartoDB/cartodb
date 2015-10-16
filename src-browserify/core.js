@@ -19,6 +19,7 @@
     util: require('./core/util'),
     Loader: Loader
   };
+  cdb.Image = require('./vis/image.js');
   cdb.SQL = require('./api/sql');
 
   cdb.image = {};

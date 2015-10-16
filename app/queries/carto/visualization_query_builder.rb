@@ -21,7 +21,7 @@ class Carto::VisualizationQueryBuilder
   end
 
   def self.user_all_visualizations(user)
-    self.user_public(user).with_type(Carto::Visualization::TYPE_DERIVED)
+    self.user_public(user).with_type(Carto::Visualization)
   end
 
   def self.user_public(user)
@@ -29,7 +29,7 @@ class Carto::VisualizationQueryBuilder
   end
 
   def self.user_all(user)
-    new.with_user_id(user ? user.id : nil).with_privacy(Carto::Visualization::PRIVACY_PUBLIC)
+    new.with_user_id(user ? user.id : nil).with_privacy(Carto::Visualization)
   end
 
   PARTIAL_MATCH_QUERY = %Q{

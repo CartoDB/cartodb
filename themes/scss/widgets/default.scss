@@ -1,17 +1,29 @@
 // Default styles for widgets
 // --------------------------------------------------
 
-@import '../variables/mixins';
+@import '../variables/reset';
 @import '../variables/colors';
 @import '../variables/sizes';
 
 .Widget {
-  display: block;
+  font-family: 'Open Sans';
+  width: 352px;
+  height: 168px;
+  background: #FFFFFF;
+  padding: 10px;
+  box-sizing: border-box;
 }
 .Widget-title {
-  color: #FABADA;
-  font-size: $sFontSize-large;
+  color: #333333;
+  font-weight: bold;
+  font-size: $sFontSize-larger;
+  margin: 0 0 7px 0;
 }
-.Widget-description {
+.Widget-info {
+}
+.Widget-infoItem {
+  display: inline;
   font-size: $sFontSize-normal;
+  color: #636D72;
+  text-transform: uppercase;
 }

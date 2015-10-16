@@ -111,7 +111,7 @@ module CartoDB
       end
 
       def dump_role_grants(role)
-        roles = pg_conn.exec("SELECT oid, rolname FROM pg_roles WHERE pg_has_role( '#{role}', oid, 'member');")
+        roles = user_pg_conn.exec("SELECT oid, rolname FROM pg_roles WHERE pg_has_role( '#{role}', oid, 'member');")
         roles.map { |q| q['rolname'] }.reject { |r| r == role }
       end
 
@@ -305,6 +305,14 @@ module CartoDB
                                  user: CartoDB::DataMover::Config[:dbuser],
                                  dbname: CartoDB::DataMover::Config[:dbname],
                                  port: CartoDB::DataMover::Config[:dbport],
+                                 password: CartoDB::DataMover::Config[:dbpass])
+      end
+
+      def user_pg_conn
+        @user_conn ||= PGconn.connect(host: @user_data['database_host'],
+                                 user: CartoDB::DataMover::Config[:dbuser],
+                                 dbname: @user_data['database_name'],
+                                 port: CartoDB::DataMover::Config[:user_dbport],
                                  password: CartoDB::DataMover::Config[:dbpass])
       end
 

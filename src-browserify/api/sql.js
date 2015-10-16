@@ -1,7 +1,9 @@
-var _Promise = require('./core-lib/_promise');
+var _ = require('underscore');
+var _Promise = require('_Promise');
+var Mustache = require('mustache');
 
 // TODO: jQuery.ajax OR reqwest is expected to be located at global namespace when an SQL object is created
-var SQL = function SQL(options) {
+function SQL(options) {
   if(cartodb === this || window === this) {
     return new SQL(options);
   }

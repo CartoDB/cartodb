@@ -1,3 +1,5 @@
+var _ = require('underscore');
+
 /**
  * set of functions from other libraries used to pack the library
  * as much as posible
@@ -112,4 +114,6 @@ var Events = {
 Events.bind   = Events.on;
 Events.unbind = Events.off;
 
-module.exports = Events;
+module.exports = {
+  Events: Events
+};

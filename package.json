@@ -59,8 +59,7 @@
       "watchify": "3.4.0"
     },
     "scripts": {
-      "test": "tape test/tape/*.js test/tape/**/*.js",
-      "testling": "browserify test/tape/*.js test/tape/**/*.js | testling"
+      "test": "browserify test/tape/*.js test/tape/**/*.js | testling"
     },
     "browserify": {
       "transform": [
@@ -68,6 +67,10 @@
       ]
     },
     "browser": {
+      "_Promise": "./src-browserify/api/core-lib/_promise.js",
+      "backbone-isch": "./src-browserify/api/core-lib/backbone-isch.js",
+      "cdb.core.util": "./src-browserify/core/util.js",
+      "cdb.core.profiler": "./src-browserify/core/profiler.js",
       "reqwest": "./vendor/reqwest.min.js"
     },
     "browserify-shim": {

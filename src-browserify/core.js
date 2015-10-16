@@ -26,7 +26,7 @@
   cdb.ui.common = {};
   cdb.vis = {};
   cdb.decorators = {};
-  cdb._Promise = require('./api/core-lib/_promise');
+  cdb._Promise = require('_Promise');
 
   if (typeof window !== 'undefined') {
     window.cartodb = cdb;
@@ -36,13 +36,15 @@
     }
 
     if (!window._) {
-      window._ = require('./api/core-lib/underscore-isch');
+      window._ = require('underscore');
     }
 
     if (!window.Backbone) {
-      window.Backbone = {
-        Events: require('./api/core-lib/backbone-events-isch')
-      }
+      window.Backbone = require('backbone-isch')
+    }
+
+    if (!window.Mustache) {
+      window.Mustache = require('mustache')
     }
 
     // required by api/sql at global namespace at runtime

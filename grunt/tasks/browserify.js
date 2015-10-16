@@ -14,10 +14,6 @@ var bundles = {
     },
     src: [
       'src-browserify/core.js'
-    // require(…)
-      // 'vendor/underscore.js',
-      // 'grunt/templates/underscore_no_conflict.js',
-      // 'vendor/mustache.js',
 
     // migrate to require style
       // 'src/geo/layer_definition.js',

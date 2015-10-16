@@ -1,0 +1,45 @@
+// Text elements styles
+// ----------------------------------------------
+
+@import '../variables/sizes';
+@import '../variables/mixins';
+
+.Widget-textBig { // 16 size
+  @include text-overflow();
+  margin: 0 0 7px;
+  font-size: $sFontSize-larger;
+  font-weight: $sFontWeight-normal;
+}
+.Widget-textNormal { // 14 size
+  @include text-overflow();
+  font-size: $sFontSize-normal;
+  font-weight: $sFontWeight-normal;
+  line-height: $sFontWeight-normal + 1;
+}
+.Widget-textNormal--bold {
+  font-weight: $sFontWeight-semibold;
+}
+.Widget-textSmall { // 12 size
+  @include text-overflow();
+  font-size: $sFontSize-small;
+  font-weight: $sFontWeight-normal;
+  line-height: $sFontSize-small + 1;
+}
+.Widget-textSmall--bold {
+  font-weight: $sFontWeight-semibold;
+}
+.Widget-textSmall--upper {
+  text-transform: uppercase;
+}
+.Widget-textSmaller { // 10 size
+  @include text-overflow();
+  font-size: $sFontSize-smaller;
+  font-weight: $sFontWeight-normal;
+  line-height: $sFontSize-smaller + 3;
+}
+.Widget-textSmaller--bold {
+  font-weight: $sFontWeight-semibold;
+}
+.Widget-textSmaller--upper {
+  text-transform: uppercase;
+}

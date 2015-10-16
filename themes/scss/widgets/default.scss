@@ -6,51 +6,19 @@
 
 .Widget {
   width: 352px;
-  height: 168px;
-  max-height: 168px;
-  padding: 24px;
-  font-family: 'Open Sans', 'Times New Roman';
+  padding: $sMargin-section;
+  font-family: 'Open Sans';
   box-sizing: border-box;
 }
-.Widget-title {
-  @include text-overflow();
-  margin: 0 0 7px;
-  font-size: $sFontSize-larger;
-  font-weight: $sFontWeight-normal;
-}
-.Widget-info {
-  @include display-flex();
-  @include align-items(center);
-  font-size: $sFontSize-smaller;
-  font-weight: $sFontWeight-normal;
-  text-transform: uppercase;
-}
-.Widget-infoItem {
-  margin-right: 12px;
-  &:last-child {
-    margin-right: 0;
-  }
-}
-.Widget-button {
-  font-size: $sFontWeight-semibold;
-  font-weight: $sFontWeight-normal;
-  &:hover {
-    text-decoration: underline;
-  }
+.Widget-content {
+  display: block;
+  margin-top: $sMargin-element;
 }
 
-// Widget sizes
-@media only screen and (min-width: 320px) and (max-width: 955px)  {
 
-}
+// Widget media query
 @media only screen and (min-width: 320px) and (max-width: 760px)  {
   .Widget {
     width: 280px;
-  }
-  .Widget-info {
-    @include justify-content(space-between, justify);
-  }
-  .Widget-infoItem {
-    margin-right: 0;
   }
 }

@@ -1,0 +1,11 @@
+// Layout styles
+// ----------------------------------------------
+
+@import '../variables/sizes';
+@import '../variables/mixins';
+
+.Widget-contentSpaced {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center);
+}

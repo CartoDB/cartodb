@@ -1,0 +1,20 @@
+// Default styles for widgets
+// --------------------------------------------------
+
+@import '../variables/sizes';
+@import '../variables/mixins';
+
+.Widget-list {
+  display: block;
+  margin: 0;
+}
+.Widget-listItem {
+  display: block;
+  padding: $sMargin-element / 2 0;
+}
+.Widget-listItemButton {
+  width: 100%;
+  &:hover {
+    cursor: pointer;
+  }
+}

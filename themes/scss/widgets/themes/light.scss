@@ -2,19 +2,66 @@
 // --------------------------------------------------
 
 .Widget--light {
+  $primary: rgba(#2E3C43, 1);
+  $secondary: rgba(#636D72, 1);
+  $disabled: rgba(#CBCED0, 1);
+  $elementBkg: rgba(#EEE, 1);
+  $elementBkgHover: rgba(#AAA, 1);
+  $link: rgba(#3AA9E3, 1);
+  $linkHover: rgba(#227DBD, 1);
+  $highlighted: rgba(#9DE0AD, 1);
+  $positive: rgba(#8FB83F, 1);
+  $negative: rgba(#F15743, 1);
+
   background: rgba(#FFF, 1);
 
-  .Widget-title {
-    color: rgba(#2E3C43, 1);
+  .Widget-textBig,
+  .Widget-textNormal,
+  .Widget-textSmall {
+    color: $primary;
   }
-  .Widget-info,
-  .Widget-infoItem {
-    color: rgba(#636D72, 1);
+  .Widget-textSmaller {
+    color: $secondary;
   }
-  .Widget-button {
-    color: rgba(#3AA9E3, 1);
+  .Widget-link {
+    color: $link;
     &:hover {
-      color: rgba(#227DBD, 1);
+      color: $linkHover;
+    }
+  }
+  .Widget-progressBar {
+    background: $elementBkg;
+  }
+  .Widget-progressState {
+    background: $highlighted;
+  }
+  .Widget-progressState--positive {
+    background: $positive;
+  }
+  .Widget-progressState--negative {
+    background: $negative;
+  }
+
+  .Widget-navDotsItem {
+    background: $elementBkg;
+    &:hover {
+      background: $elementBkgHover;
+    }
+  }
+  .Widget-navDotsItem.is-selected {
+    background: $secondary;
+  }
+
+
+  // States
+  .is-disabled {
+    .Widget-textNormal,
+    .Widget-textSmall,
+    .Widget-textSmaller {
+      color: $disabled;
+    }
+    .Widget-progressState {
+      background: $disabled !important; // Preventing problems with inline colors
     }
   }
 }

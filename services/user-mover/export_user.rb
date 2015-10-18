@@ -11,6 +11,7 @@ require 'redis'
 require 'yaml'
 require 'optparse'
 require 'json'
+require 'tsort'
 
 require_relative 'config'
 require_relative 'utils'
@@ -58,6 +59,13 @@ end
 
 module CartoDB
   module DataMover
+    class TsortableHash < Hash
+      include TSort
+      alias tsort_each_node each_key
+      def tsort_each_child(node, &block)
+        fetch(node).each(&block)
+      end
+    end
     class ExportJob
       TABLE_NULL_EXCEPTIONS = ['table_quota'] # those won't be discarded if set to NULL
       include CartoDB::DataMover::Utils
@@ -118,16 +126,18 @@ module CartoDB
       end
 
       def dump_sql_data(data, prefix)
-        # We sort the order of the tables to be exported so rows are exported after their dependencies, but deleted before.
+        # We sort the order of the tables to be exported so rows are imported before their dependencies, and deleted after.
+        # For this, we generate a dependency tree and then use the built-in "tsort" topological sort library
         models = data.keys
-        models_ordered = models.clone
-        models.each do |model|
-          depends = model.reflections.values.select(&:belongs_to?).map(&:klass)
-          max_position = depends.map { |s| models_ordered.index(s) }.reject { |s| s == nil }.max
-          models_ordered.insert(max_position, models_ordered.delete(model)) unless max_position == nil
+        model_dependencies = models.map do |m|
+          [m,
+           m.reflections.values.select(&:belongs_to?)
+           .reject{ |r| r.inverse_of != nil && r.inverse_of.belongs_to? } # Remove mutual foreign_keys
+           .collect(&:klass).select{ |s| models.include?(s) }]
         end
+        models_ordered = TsortableHash[model_dependencies].tsort
         File.open(@options[:path] + "#{prefix}_metadata.sql", "w") do |f|
-          models_ordered.reverse_each do |model|
+          models_ordered.each do |model|
             data[model].each do |rows|
               keys = rows.keys.select { |k| !TABLE_NULL_EXCEPTIONS.include?(k.to_s) == (!rows[k].nil?) }
               f.write generate_pg_insert_query(model.table_name, keys, rows)
@@ -135,7 +145,7 @@ module CartoDB
           end
         end
         File.open(@options[:path] + "#{prefix}_metadata_undo.sql", "w") do |f|
-          models_ordered.each do |model|
+          models_ordered.reverse_each do |model|
             data[model].each do |rows|
               keys = rows.keys.select { |k| !rows[k].nil? }
               f.write generate_pg_delete_query(model.table_name, rows)

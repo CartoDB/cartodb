@@ -132,8 +132,8 @@ module CartoDB
         model_dependencies = models.map do |m|
           [m,
            m.reflections.values.select(&:belongs_to?)
-           .reject{ |r| r.inverse_of != nil && r.inverse_of.belongs_to? } # Remove mutual foreign_keys
-           .collect(&:klass).select{ |s| models.include?(s) }]
+           .reject { |r| !r.inverse_of.nil? && r.inverse_of.belongs_to? } # Remove mutual foreign_keys
+           .map(&:klass).select { |s| models.include?(s) }]
         end
         models_ordered = TsortableHash[model_dependencies].tsort
         File.open(@options[:path] + "#{prefix}_metadata.sql", "w") do |f|
@@ -315,10 +315,10 @@ module CartoDB
 
       def user_pg_conn
         @user_conn ||= PGconn.connect(host: @user_data['database_host'],
-                                 user: CartoDB::DataMover::Config[:dbuser],
-                                 dbname: @user_data['database_name'],
-                                 port: CartoDB::DataMover::Config[:user_dbport],
-                                 password: CartoDB::DataMover::Config[:dbpass])
+                                      user: CartoDB::DataMover::Config[:dbuser],
+                                      dbname: @user_data['database_name'],
+                                      port: CartoDB::DataMover::Config[:user_dbport],
+                                      password: CartoDB::DataMover::Config[:dbpass])
       end
 
       def run_command(cmd)

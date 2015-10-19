@@ -1,4 +1,4 @@
-util = {};
+var util = {};
 
 util.isCORSSupported = function() {
   return 'withCredentials' in new XMLHttpRequest();

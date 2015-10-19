@@ -44,6 +44,7 @@
       "grunt-contrib-watch": "git://github.com/gruntjs/grunt-contrib-watch.git#b884948805940c663b1cbb91a3c28ba8afdebf78",
       "grunt-contrib-jasmine": "~0.8.1",
       "grunt-prompt": "~1.3.0",
+      "grunt-testling": "~1.2.0",
       "mustache": "1.1.0",
       "semver": "~4.1.0",
       "jshint-stylish": "~0.1.3",
@@ -60,9 +61,6 @@
       "testling": "^1.7.1",
       "watchify": "3.4.0"
     },
-    "scripts": {
-      "test": "browserify test/tape/*.js test/tape/**/*.js | testling"
-    },
     "browserify": {
       "transform": [
         "browserify-shim"
@@ -78,6 +76,9 @@
     },
     "browserify-shim": {
       "lzma": "LZMA"
+    },
+    "testling": {
+      "files": "test/tape/**/*.js"
     },
     "files": ["dist"],
     "main": "cartodb.js"

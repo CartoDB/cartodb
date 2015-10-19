@@ -1,10 +1,22 @@
 # coding: utf-8
 
-module  FileUploadHelper
+module CartoDB
+  class FileUpload
 
-    UPLOADS_PATH  = 'public/uploads'
+    DEFAULT_UPLOADS_PATH = 'public/uploads'
     FILE_ENCODING = 'utf-8'
-    MAX_SYNC_UPLOAD_S3_FILE_SIZE = 52428800   # bytes
+    MAX_SYNC_UPLOAD_S3_FILE_SIZE = 52428800 # bytes
+
+    def initialize(uploads_path = nil)
+      @uploads_path = uploads_path || DEFAULT_UPLOADS_PATH
+      unless @uploads_path[0] == "/"
+        @uploads_path = Rails.root.join(@uploads_path)
+      end
+    end
+
+    def get_uploads_path
+      @uploads_path
+    end
 
     def upload_file_to_storage(params, request, s3_config = nil, timestamp = Time.now)
       results = {
@@ -15,19 +27,19 @@ module  FileUploadHelper
       # Used by cartodb chrome extension
       ajax_upload = false
       case
-        when params[:filename].present? && request.body.present?
-          filename = params[:filename].original_filename rescue params[:filename].to_s
-          begin
-            filepath = params[:filename].path
-          rescue
-            filepath = params[:filename].to_s
-            ajax_upload = true
-          end
-        when params[:file].present?
-          filename = params[:file].original_filename rescue params[:file].to_s
-          filepath = params[:file].path rescue ''
-        else
-          return results
+      when params[:filename].present? && request.body.present?
+        filename = params[:filename].original_filename rescue params[:filename].to_s
+        begin
+          filepath = params[:filename].path
+        rescue
+          filepath = params[:filename].to_s
+          ajax_upload = true
+        end
+      when params[:file].present?
+        filename = params[:file].original_filename rescue params[:file].to_s
+        filepath = params[:file].path rescue ''
+      else
+        return results
       end
 
       filename = filename.gsub(/ /, '_')
@@ -85,17 +97,19 @@ module  FileUploadHelper
       o.url_for(:get, expires: s3_config['url_ttl']).to_s
     end
 
+    private
+
     def save_body_to_file(params, request, random_token, filename)
       case
-        when params[:filename].present? && request.body.present?
-          filedata = params[:filename]
-        when params[:file].present?
-          filedata = params[:file]
-        else
-          return
+      when params[:filename].present? && request.body.present?
+        filedata = params[:filename]
+      when params[:file].present?
+        filedata = params[:file]
+      else
+        return
       end
 
-      FileUtils.mkdir_p(Rails.root.join(UPLOADS_PATH).join(random_token))
+      FileUtils.mkdir_p(get_uploads_path.join(random_token))
 
       if filedata.respond_to?(:tempfile)
         save_using_streaming(filedata, random_token, filename)
@@ -109,13 +123,8 @@ module  FileUploadHelper
       end
     end
 
-    # For rake access
-    module_function :upload_file_to_s3
-
-    private
-
     def save(filedata, random_token, filename)
-      file = File.new(Rails.root.join(UPLOADS_PATH).join(random_token).join(File.basename(filename)), "w:#{FILE_ENCODING}")
+      file = File.new(get_uploads_path.join(random_token).join(File.basename(filename)), "w:#{FILE_ENCODING}")
       file.write filedata
       file.close
       file
@@ -123,11 +132,11 @@ module  FileUploadHelper
 
     def save_using_streaming(filedata, random_token, filename)
       src = File.open(filedata.tempfile.path, "r:UTF-8")
-      file = File.new(Rails.root.join(UPLOADS_PATH).join(random_token).join(File.basename(filename)), 'w:UTF-8')
+      file = File.new(get_uploads_path.join(random_token).join(File.basename(filename)), 'w:UTF-8')
       IO.copy_stream(src, file)
       file.close
       src.close
       file
     end
-
+  end
 end

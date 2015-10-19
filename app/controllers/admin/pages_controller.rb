@@ -238,7 +238,6 @@ class Admin::PagesController < Admin::AdminController
     @page_description = description
 
     respond_to do |format|
-      # TODO: data_library
       format.html { render 'public_datasets', layout: 'public_dashboard' }
     end
   end

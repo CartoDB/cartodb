@@ -87,6 +87,8 @@ class ApplicationController < ActionController::Base
     if request.method == :options && check_cors_headers_for_whitelisted_referer
       common_cors_headers
       response.headers['Access-Control-Max-Age'] = '3600'
+    elsif !Rails.env.production? && !Rails.env.staging?
+      development_cors_headers
     end
   end
 
@@ -95,8 +97,7 @@ class ApplicationController < ActionController::Base
       common_cors_headers
       response.headers['Access-Control-Allow-Credentials'] = 'true'
     elsif !Rails.env.production? && !Rails.env.staging?
-      response.headers['Access-Control-Allow-Origin'] = '*'
-      response.headers['Access-Control-Allow-Methods'] = '*'
+      development_cors_headers
     end
   end
 
@@ -104,6 +105,12 @@ class ApplicationController < ActionController::Base
     response.headers['Access-Control-Allow-Origin'] = request.headers['origin']
     response.headers['Access-Control-Allow-Methods'] = 'GET, POST, DELETE'
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+  end
+
+  def development_cors_headers
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Methods'] = '*'
+    response.headers['Access-Control-Allow-Headers'] = '*'
   end
 
   def check_cors_headers_for_whitelisted_referer

@@ -27,22 +27,24 @@ cdb.geo.ui.Widget.ListView = cdb.geo.ui.Widget.View.extend({
     );
 
     // Generate list content
-    var $ul = $('<ul>').addClass(this.options.listClasses);
-    this.$('.js-content').append($ul);
-
     this._renderList();
     this._renderPagination();
     this._checkScroll();
+    this._renderLoader();
     return this;
   },
 
   _renderList: function() {
-    var $content = this.$('.js-list');
+    var $content = this.$('.js-content');
+    var itemsSize = this.dataModel.getData().size();
     if (!$content) {
       throw new Error('element for list content not available: .js-list ');
     }
-
-    this.dataModel.getData().each(this._addItem, this);
+    if (itemsSize > 0) {
+      var $ul = $('<ul>').addClass(this.options.listClasses);
+      this.$('.js-content').html($ul);
+      this.dataModel.getData().each(this._addItem, this);
+    }
   },
 
   _addItem: function(mdl) {

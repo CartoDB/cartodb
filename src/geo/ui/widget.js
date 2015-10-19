@@ -61,7 +61,9 @@ cdb.geo.ui.Widget.View = cdb.core.View.extend({
           }
         )
       )
-    )
+    );
+
+    this._renderLoader();
 
     return this;
   },
@@ -94,8 +96,26 @@ cdb.geo.ui.Widget.View = cdb.core.View.extend({
         this[ this.viewModel.get('sync') ? '_bindDatasource' : '_unbindDatasource' ]();
       }, this);
 
-      this.viewModel.bind('change:state', this.render, this);
+      this.viewModel.bind('change:state', this._onChangeState, this);
     }, this);
+  },
+
+  _onChangeState: function() {
+    var state = this.viewModel.get('state');
+    switch (state) {
+      case 'loading':
+        this._showLoader();
+        this._hideError();
+        break;
+      case 'error':
+        this._showError();
+        this._hideLoader();
+        break;
+      default:
+        this.render();
+        this._hideError();
+        this._hideLoader();
+    }
   },
 
   _changeState: function(state) {
@@ -112,6 +132,31 @@ cdb.geo.ui.Widget.View = cdb.core.View.extend({
     this.dataModel.bind('error', function() {
       this._changeState('error');
     }, this);
+  },
+
+  _renderLoader: function() {
+    this._loader = new cdb.geo.ui.Widget.Loader();
+    this.$el.append(this._loader.render().el);
+  },
+
+  _showLoader: function() {
+    this._loader.show();
+  },
+
+  _hideLoader: function() {
+    this._loader.hide();
+  },
+
+  _renderError: function() {
+
+  },
+
+  _showError: function() {
+
+  },
+
+  _hideError: function() {
+
   },
 
   _unbindDatasource: function() {

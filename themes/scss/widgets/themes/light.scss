@@ -15,6 +15,7 @@
   $highlighted: rgba(#9DE0AD, 1);
   $positive: rgba(#8FB83F, 1);
   $negative: rgba(#F15743, 1);
+  $loadingBkg: rgba(#F9F9F9, 1);
 
   background: rgba(#FFF, 1);
 
@@ -70,6 +71,15 @@
     &:last-child {
       border-bottom: none;
     }
+  }
+
+  .Widget-listItem--fake:after,
+  .Widget-listItem--fake:before {
+    background-color: $loadingBkg;
+  }
+
+  .Widget-loader {
+    background: $link;
   }
 
   .Widget-arrow:after,

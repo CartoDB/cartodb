@@ -510,7 +510,7 @@ var Vis = cdb.core.View.extend({
           )
         );
 
-        $('body').append(v.el);
+        $('body').append(v.render().el);
       });
     }
 

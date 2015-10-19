@@ -17,6 +17,25 @@
 .Widget-listItem--withBorders {
   padding: ($sMargin-element / 2) + 1 0;
 }
+.Widget-listItem--fake {
+  position: relative;
+  height: 35px;
+
+  &:before,
+  &:after {
+    display: inline-block;
+    position: relative;
+    content: '';
+  }
+  &:before {
+    width: 60px;
+    height: 8px;
+  }
+  &:after {
+    width: 100%;
+    height: 2px;
+  }
+}
 .Widget-listSubItem {
   display: inline-block;
 }

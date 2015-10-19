@@ -137,8 +137,8 @@ module CartoDB
             end
 
             create_user(@target_dbuser)
+            create_org_role(@target_dbname) # Create org role for the original org
             if !@options[:target_org].nil?
-              create_org_role(@target_dbname) # Create org role for the original org
               grant_user_org_role(@target_dbuser, @target_dbname)
             end
 

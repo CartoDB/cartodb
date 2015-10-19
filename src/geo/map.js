@@ -217,7 +217,7 @@ cdb.geo.CartoDBGroupLayer = cdb.geo.MapLayer.extend({
   },
 
   initialize: function(attributes, options) {
-    this.layers = options.layers;
+    this.layers = new Backbone.Collection(options.layers);
     this.windshaftMap = options.windshaftMap;
 
     this.windshaftMap.bind('change:layergroupid', function() {

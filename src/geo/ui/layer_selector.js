@@ -67,35 +67,34 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
     _.each(this.map.layers.models, function(layer) {
 
       if (layer.get("type") == 'layergroup' || layer.get('type') === 'namedmap') {
-        var layerGroupView = self.mapView.getLayerByCid(layer.cid);
-        for (var i = 0 ; i < layerGroupView.getLayerCount(); ++i) {
-          var l = layerGroupView.getLayer(i);
-          var m = new cdb.core.Model(l);
-          m.set('order', i);
-          m.set('type', 'layergroup');
 
-          if (m.get("visible") === undefined) m.set('visible', true);
+        layer.layers.each(function(layerModel, index){
+          var layerName = layerModel.get('layer_name');
+          if(self.options.layer_names) {
+            layerName = self.options.layer_names[index];
+          }
+
+          var m = new cdb.core.Model({
+            order: index,
+            visible: layerModel.get('visible') || true,
+            layer_name: layerName
+          });
 
           m.bind('change:visible', function(model) {
             this.trigger("change:visible", model.get('visible'), model.get('order'), model);
+            layerModel.set('visible', model.get('visible'));
           }, self);
 
-          if(self.options.layer_names) {
-            m.set('layer_name', self.options.layer_names[i]);
-          } else {
-            m.set('layer_name', l.options.layer_name);
-          }
-
-          var layerView = self._createLayer('LayerViewFromLayerGroup', {
-            model: m,
-            layerView: layerGroupView,
-            layerIndex: i
+          layerModel.bind('change:visible', function() {
+            m.set('visible', layerModel.get('visible'));
           });
+
+          var layerView = self._createLayerView(m);
           layerView.bind('switchChanged', self._setCount, self);
           self.layers.push(layerView);
-        }
+        })
       } else if (layer.get("type") === "CartoDB" || layer.get('type') === 'torque') {
-        var layerView = self._createLayer('LayerView', { model: layer });
+        var layerView = self._createLayerView(layer);
         layerView.bind('switchChanged', self._setCount, self);
         self.layers.push(layerView);
         layerView.model.bind('change:visible', function(model) {
@@ -106,8 +105,10 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
     });
   },
 
-  _createLayer: function(_class, opts) {
-    var layerView = new cdb.geo.ui[_class](opts);
+  _createLayerView: function(model) {
+    var layerView = new cdb.geo.ui.LayerView({
+      model: model
+    });
     this.$("ul").append(layerView.render().el);
     this.addView(layerView);
     return layerView;
@@ -134,10 +135,6 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
 });
 
 
-
-
-
-
 /**
  *  View for each CartoDB layer
  *  - It needs a model to make it work.
@@ -148,7 +145,6 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
  *  });
  *
  */
-
 cdb.geo.ui.LayerView = cdb.core.View.extend({
 
   tagName: "li",
@@ -208,31 +204,4 @@ cdb.geo.ui.LayerView = cdb.core.View.extend({
     this.model.set("visible", !this.model.get("visible"));
   }
 
-});
-
-/**
- *  View for each layer from a layer group
- *  - It needs a model and the layer_definition to make it work.
- *
- *  var layerView = new cdb.geo.ui.LayerViewFromLayerGroup({
- *    model: layer_model,
- *    layerView: layweView
- *  });
- *
- */
-
-cdb.geo.ui.LayerViewFromLayerGroup = cdb.geo.ui.LayerView.extend({
-
-  _onSwitchSelected: function() {
-
-    cdb.geo.ui.LayerView.prototype._onSwitchSelected.call(this);
-    var sublayer = this.options.layerView.getSubLayer(this.options.layerIndex)
-    var visible = this.model.get('visible');
-
-    if (visible) {
-      sublayer.show();
-    } else {
-      sublayer.hide();
-    }
-  }
 });

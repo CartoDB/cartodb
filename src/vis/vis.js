@@ -442,10 +442,10 @@ var Vis = cdb.core.View.extend({
       map.layers.bind('reset', this.addLegends, this);
     }
 
-    // this.overlayModels.bind('reset', function(overlays) {
-    //   this._addOverlays(overlays, data, options);
-    //   this._addMobile(data, options);
-    // }, this);
+    this.overlayModels.bind('reset', function(overlays) {
+      this._addOverlays(overlays, data, options);
+      this._addMobile(data, options);
+    }, this);
 
     this.mapView.bind('newLayerView', this._addLoading, this);
 
@@ -517,10 +517,12 @@ var Vis = cdb.core.View.extend({
         var collection = new Backbone.Collection(cartoDBLayers);
         collection.bind('change', function() {
 
+          var visibleCartoDBLayers = this.filter(function(layer){ return layer.get('visible') });
+
           var layerDefinition = {
             version: '1.4.0',
             stat_tag: 'wadus',
-            layers: _.map(cartoDBLayers, function(layerModel){
+            layers: _.map(visibleCartoDBLayers, function(layerModel) {
               return {
                 type: 'cartodb',
                 options: {

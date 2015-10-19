@@ -99,11 +99,10 @@ describe SignupController do
     end
 
     it 'returns 400 error if you attempt Google signup and it is not valid' do
-      GooglePlusConfig.any_instance.stubs(:present?).returns(true)
+      ::GooglePlusConfig.stubs(:instance).returns({})
       GooglePlusAPI.any_instance.expects(:get_user_data).never
       @organization.auth_google_enabled = false
       @organization.save
-
       host! "#{@organization.name}.localhost.lan"
       post signup_organization_user_url(user_domain: @organization.name, google_access_token: 'whatever')
       response.status.should == 400
@@ -114,7 +113,7 @@ describe SignupController do
 
     it 'triggers a NewUser job with form parameters and default quota and requiring validation email' do
       ::Resque.expects(:enqueue).with(::Resque::UserJobs::Signup::NewUser,
-        instance_of(String), instance_of(String), instance_of(FalseClass)).returns(true)
+                                      instance_of(String), instance_of(String), instance_of(FalseClass)).returns(true)
 
       username = 'testusername'
       email = "testemail@#{@organization.whitelisted_email_domains[0]}"

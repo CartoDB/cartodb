@@ -91,6 +91,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         vis_data.delete(:next_id) || vis_data.delete('next_id')
         # when a table gets renamed, first it's canonical visualization is renamed, so we must revert renaming if that failed
         # This is far from perfect, but works without messing with table-vis sync and their two backends
+
         if vis.table?
           old_vis_name = vis.name
 

@@ -35,8 +35,6 @@ cdb.core.Datasource = cdb.core.Model.extend({
       mdl.set({
         layerGroupId: id
       });
-
-      mdl.fetch();
     }, this);
     return mdl;
   },

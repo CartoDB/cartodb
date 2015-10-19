@@ -21,7 +21,7 @@ cdb.geo.ui.Widget.ListModel = cdb.geo.ui.Widget.Model.extend({
   },
 
   _initBinds: function() {
-    this.bind('change:id', function(){
+    this.bind('change:layerGroupId', function(){
       var self = this;
       this.fetch({
         error: function() {

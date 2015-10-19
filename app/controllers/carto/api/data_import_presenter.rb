@@ -107,8 +107,7 @@ module Carto
         values.merge!(data_type: @data_import.data_type)
         values.merge!(warnings: get_warnings)
 
-
-        if @data_import.is_http_download? && !@data_import.http_response_code.nil? && !@data_import.http_response_code.start_with?('2')
+        if !@data_import.http_response_code.nil? && !@data_import.http_response_code.start_with?('2')
           values.merge!(http_response_code: @data_import.http_response_code)
           values.merge!(http_response_code_message: get_http_response_code_message(@data_import.http_response_code))
         end
@@ -133,7 +132,13 @@ module Carto
           display_name || @data_import.id
         end
       rescue => e
-        CartoDB.notify_debug('Error extracting display name', { data_import_id: @data_import.id, service_item_id: @data_import.service_item_id, data_source: @data_import.data_source })
+        CartoDB.notify_debug(
+          'Error extracting display name',
+          data_import_id: @data_import.id,
+          service_item_id: @data_import.service_item_id,
+          data_source: @data_import.data_source,
+          exception: e.inspect
+        )
         @data_import.id
       end
 

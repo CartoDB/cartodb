@@ -122,7 +122,7 @@ module CartoDB
         false
       end
 
-      def is_http_download?
+      def http_download?
         true
       end
 

@@ -51,7 +51,7 @@ module CartoDB
       # If will provide the url http response code
       # @return string
       def get_http_response_code
-        raise  'To be implemented in child classes'
+        raise 'To be implemented in child classes'
       end
 
       # Perform the listing and return results

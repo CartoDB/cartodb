@@ -28,7 +28,7 @@ module CartoDB
         @datasource.kind_of? CartoDB::Datasources::BaseDirectStream
       end
 
-      def is_http_download?
+      def http_download?
         @datasource.providers_download_url?
       end
 

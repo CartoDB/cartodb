@@ -22,6 +22,10 @@ module Carto
         @public_visualization_count ||= Carto::VisualizationQueryBuilder.user_public_visualizations(@user).build.count
       end
 
+      def all_visualization_count
+        @all_visualization_count ||= Carto::VisualizationQueryBuilder.user_all_visualizations(@user).build.count
+      end
+
     end
   end
 end

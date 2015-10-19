@@ -35,6 +35,12 @@ module Carto
                                       .count
     end
 
+    def all_visualization_count
+      Carto::VisualizationQueryBuilder.user_all_visualizations(@user)
+                                      .build
+                                      .count
+    end
+
     def twitter_imports_count(options={})
       date_to = (options[:to] ? options[:to].to_date : Date.today)
       date_from = (options[:from] ? options[:from].to_date : @user.last_billing_cycle)

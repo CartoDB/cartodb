@@ -18,7 +18,7 @@
 
 cdb.geo.ui.Widget.View = cdb.core.View.extend({
 
-  className: 'Widget',
+  className: 'Widget Widget--light',
 
   options: {
     template: '<div></div>',

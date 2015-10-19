@@ -91,6 +91,7 @@
         'geo/ui/widget.js',
         'geo/ui/widgets/widget_model.js',
         'geo/ui/widgets/widget_collection.js',
+        'geo/ui/widgets/list/list_paginator_view.js',
         'geo/ui/widgets/list/list_item_view.js',
         'geo/ui/widgets/list/list_model.js',
         'geo/ui/widgets/list/list_view.js',

@@ -6,7 +6,7 @@ var Image = require('../../../../src-browserify/vis/image');
 var StaticImage = require('../../../../src-browserify/vis/image/static-image');
 var Queue = require('../../../../src-browserify/vis/image/queue');
 
-describe("Image", function() {
+describe("vis/image", function() {
 
   beforeEach(function() {
     // test case assumes Backbone to be set in global namespace, for expected side-effects

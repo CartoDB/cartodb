@@ -1,6 +1,6 @@
 var NamedMap = require('../../../../../src-browserify/geo/layer-definition/named-map');
 
-describe("NamedMap", function() {
+describe("geo/layer-definition/named-map", function() {
   var namedMap, named_map;
 
   beforeEach(function() {

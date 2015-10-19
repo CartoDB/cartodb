@@ -5,7 +5,7 @@ var MapBase = require('../../../../../src-browserify/geo/layer-definition/map-ba
 var LayerDefinition = require('../../../../../src-browserify/geo/layer-definition/layer-definition');
 var CartoDBSubLayer = require('../../../../../src-browserify/geo/sub-layer/cartodb-sub-layer');
 
-describe("LayerDefinition", function() {
+describe("geo/layer-definition/layer-definition", function() {
 
   var layerDefinition;
 

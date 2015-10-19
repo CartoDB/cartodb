@@ -1,6 +1,6 @@
 var MapProperties = require('../../../../../src-browserify/geo/layer-definition/map-properties');
 
-describe('MapProperties', function() {
+describe('geo/layer-definition/map-properties', function() {
 
   describe('.getMapId', function() {
 

@@ -5,7 +5,7 @@ var SubLayerFactory = require('../../../../src-browserify/geo/sub-layer/sub-laye
 var HttpSubLayer = require('../../../../src-browserify/geo/sub-layer/http-sub-layer');
 var CartoDBSubLayer = require('../../../../src-browserify/geo/sub-layer/cartodb-sub-layer');
 
-describe('Sublayers', function() {
+describe('geo/sublayer', function() {
   var layerDefinition, sublayer;
 
   beforeEach(function() {

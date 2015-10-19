@@ -3,7 +3,7 @@ var $ = require('jquery');
 var Backbone = require('backbone');
 var SQL = require('../../../../src-browserify/api/sql');
 
-describe('SQL api client', function() {
+describe('api/sql', function() {
   var USER = 'rambo';
   var TEST_DATA = { test: 'good' };
   var sql;

@@ -40,7 +40,8 @@ cdb.windshaft.Client.prototype.instantiateMap = function(mapDefinition) {
   var options = {
     success: function(data) {
       if (data.errors) {
-        callback(null, data);
+        // TODO: Error handling
+        throw data.errors;
       } else {
         var baseURL =  this.baseURL.replace('{user}', this.userName);
         data.baseURL = baseURL;
@@ -52,9 +53,8 @@ cdb.windshaft.Client.prototype.instantiateMap = function(mapDefinition) {
       try {
         err = JSON.parse(xhr.responseText);
       } catch(e) {}
-      // if(0 === self._createMapCallsStack.length) {
-        callback(null, err);
-      // }
+        // TODO: Error handling
+        throw data.errors;
     }
   }
 

@@ -6,7 +6,7 @@ cdb.core.Datasource = cdb.core.Model.extend({
 
   initialize: function(attrs, opts) {
     this.collection = new cdb.geo.ui.Widget.Collection();
-    this._windshaftMap = opts.windshaftMap;
+    this._dashboardInstance = opts.dashboardInstance;
     this._initBinds();
 
     this.trigger('loading');
@@ -15,8 +15,8 @@ cdb.core.Datasource = cdb.core.Model.extend({
   _initBinds: function() {
     var self = this;
 
-    this._windshaftMap.bind("change:layergroupid", function() {
-      this.set('id', self._windshaftMap.get('layergroupid'));
+    this._dashboardInstance.bind("change:layergroupid", function(dashboardInstance) {
+      this.set('id', dashboardInstance.get('layergroupid'));
       this.trigger('done');
     }, this);
   },
@@ -44,7 +44,7 @@ cdb.core.Datasource = cdb.core.Model.extend({
   },
 
   clean: function() {
-    this._windshaftMap.unbind(null, null, this);
+    this._dashboardInstance.unbind(null, null, this);
   }
 
 })

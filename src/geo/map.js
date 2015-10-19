@@ -180,12 +180,35 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
     }
   },
 
+  getTooltipFieldNames: function() {
+    var names = [];
+    var tooltip = this.getTooltipData();
+    if (tooltip && tooltip.fields) {
+      names = _.pluck(tooltip.fields, 'name');
+    }
+    return names;
+  },
+
   getTooltipData: function() {
     var tooltip = this.get('tooltip');
     if (tooltip && tooltip.fields && tooltip.fields.length) {
       return tooltip;
     }
     return null;
+  },
+
+  containInfowindow: function() {
+    return !!getTooltipData();
+  },
+
+
+  getInfowindowFieldNames: function() {
+    var names = [];
+    var infowindow = this.getInfowindowData();
+    if (infowindow  && infowindow.fields) {
+      names = _.pluck(infowindow.fields, 'name');
+    }
+    return names;
   },
 
   getInfowindowData: function() {
@@ -196,17 +219,17 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
     return null;
   },
 
-  containInfowindow: function() {
-    return !!getTooltipData();
-  },
-
   containTooltip: function() {
     return !!getInfowindowData();
   },
 
-  /*isEqual: function() {
-    return false;
-  }*/
+  getInteractiveColumnNames: function() {
+    return _.uniq(
+      ['cartodb_id']
+        .concat(this.getInfowindowFieldNames())
+         .concat(this.getTooltipFieldNames())
+    );
+  }
 });
 
 cdb.geo.CartoDBGroupLayer = cdb.geo.MapLayer.extend({
@@ -218,21 +241,77 @@ cdb.geo.CartoDBGroupLayer = cdb.geo.MapLayer.extend({
 
   initialize: function(attributes, options) {
     this.layers = new Backbone.Collection(options.layers);
-    this.windshaftMap = options.windshaftMap;
-
-    this.windshaftMap.bind('change:layergroupid', function() {
-      this.set('urls', this.windshaftMap.getTiles());
-    }.bind(this))
   },
 
   isEqual: function() {
     return false;
   },
 
+  getVisibleLayers: function() {
+    return this.layers.filter(function(layer){ return layer.get('visible') });
+  },
+
   getTileJSONFromTiles: function(layerIndex) {
+
+    if (!this.get('urls')) {
+      throw 'URLS not fetched yet';
+    }
+
+    var subdomains = ['0', '1', '2', '3'];
+
+    function replaceSubdomain(t) {
+      var tiles = [];
+      for (var i = 0; i < t.length; ++i) {
+        tiles.push(t[i].replace('{s}', subdomains[i % subdomains.length]));
+      }
+      return tiles;
+    }
+
+    var urls = this.get('urls');
+
+    return {
+      tilejson: '2.0.0',
+      scheme: 'xyz',
+      grids: replaceSubdomain(urls.grids[layerIndex]),
+      tiles: replaceSubdomain(urls.tiles),
+      formatter: function(options, data) { return data; }
+    };
+
     // TODO: This will only work if we have urls
-    return this.windshaftMap.getTileJSONFromTiles(layerIndex);
+    // return this.windshaftMap.getTileJSONFromTiles(layerIndex);
+  },
+
+  fetchAttributes: function(layer, featureID, callback) {
+
+    var url = [
+      this.get('dashboardBaseURL'),
+      this.getLayerIndexByType(layer, "mapnik"),
+      'attributes',
+      featureID].join('/');
+
+    $.ajax({
+      dataType: 'jsonp',
+      url: url,
+      jsonpCallback: '_cdbi_layer_attributes_' + cdb.core.util.uniqueCallbackName(this),
+      cache: true,
+      success: function(data) {
+        // loadingTime.end();
+        callback(data);
+      },
+      error: function(data) {
+        // loadingTime.end();
+        // cartodb.core.Profiler.metric('cartodb-js.named_map.attributes.error').inc();
+        callback(null);
+      }
+    });
+  },
+
+  getLayerIndexByType: function(index, type) {
+    // TODO: Implment this
+    return index;
   }
+
+
 });
 
 cdb.geo.CartoDBNamedMapLayer = cdb.geo.MapLayer.extend({

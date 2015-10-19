@@ -49,13 +49,13 @@ CartoDBLayerCommon.prototype = {
    */
   setInteraction: function(layer, b) {
     // shift arguments to maintain compatibility
-    if(b == undefined) {
+    if (b == undefined) {
       b = layer;
       layer = 0;
     }
     var layerInteraction;
     this.interactionEnabled[layer] = b;
-    if(!b) {
+    if (!b) {
       layerInteraction = this.interaction[layer];
       if(layerInteraction) {
         layerInteraction.remove();
@@ -65,7 +65,7 @@ CartoDBLayerCommon.prototype = {
       // if urls is null it means that setInteraction will be called
       // when the layergroup token was recieved, then the real interaction
       // layer will be created
-      if(this.model.get('urls')) {
+      if (this.model.get('urls')) {
         // generate the tilejson from the urls. wax needs it
         // var layer_index = this.getLayerIndexByNumber(+layer);
         var layer_index = +layer;

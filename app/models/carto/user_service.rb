@@ -37,8 +37,8 @@ module Carto
 
     def all_visualization_count
       Carto::VisualizationQueryBuilder.user_all_visualizations(@user)
-                                      .build
-                                      .count
+        .build
+        .count
     end
 
     def twitter_imports_count(options={})

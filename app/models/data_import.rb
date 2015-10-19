@@ -98,7 +98,6 @@ class DataImport < Sequel::Model
     instantiate_log
     self.results  = []
     self.state    ||= STATE_PENDING
-    self.rejected_layers ||= []
   end
 
   # This before_create should be only necessary to track old dashboard data imports.

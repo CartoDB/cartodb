@@ -12,6 +12,7 @@
 }
 .Widget-textBig { // 16 size
   @include text-overflow();
+  display: inline-block;
   font-size: $sFontSize-larger;
   font-weight: $sFontWeight-normal;
   line-height: $sFontSize-normal + 6;

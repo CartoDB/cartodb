@@ -1,7 +1,7 @@
 namespace :cartodb do
   namespace :db do
     desc "Add an IDP (Indentity service provider) to the cartodb system"
-    task :add_idp => :environment do
+    task :add_saml_idp => :environment do
       raise "Please provide the idp name" if ENV['IDP_NAME'].blank?
       raise "Please provide the idp cert" if ENV['IDP_CERT'].blank?
 

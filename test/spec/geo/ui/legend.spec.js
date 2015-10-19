@@ -310,13 +310,13 @@ describe("common.geo.ui.Legend", function() {
       legend.render();
       legend.model.set("show_title", false);
 
-      expect(legend.$el.find(".legend-title").html()).toEqual(null);
+      expect(legend.$el.find(".legend-title").html()).toEqual(undefined);
 
       legend.model.set("show_title", true);
       expect(legend.$el.find(".legend-title").html()).toEqual(title);
 
       legend.hideTitle();
-      expect(legend.$el.find(".legend-title").html()).toEqual(null);
+      expect(legend.$el.find(".legend-title").html()).toEqual(undefined);
 
       legend.showTitle();
       expect(legend.$el.find(".legend-title").html()).toEqual(title);
@@ -357,7 +357,7 @@ describe("common.geo.ui.Legend", function() {
 
       legend.render();
 
-      expect(legend.$el.find(".legend-title").html()).toEqual(null);
+      expect(legend.$el.find(".legend-title").html()).toEqual(undefined);
 
     });
 
@@ -536,7 +536,7 @@ describe("common.geo.ui.Legend", function() {
 
       it("should allow to hide the title", function() {
         legend.hideTitle();
-        expect(legend.$el.find(".legend-title").html()).toEqual(null);
+        expect(legend.$el.find(".legend-title").html()).toEqual(undefined);
       });
 
       it("should allow to change the color", function() {
@@ -601,7 +601,7 @@ describe("common.geo.ui.Legend", function() {
 
       it("should allow to hide the title", function() {
         legend.hideTitle();
-        expect(legend.$el.find(".legend-title").html()).toEqual(null);
+        expect(legend.$el.find(".legend-title").html()).toEqual(undefined);
       });
 
       it("should allow to show the title", function() {
@@ -675,7 +675,7 @@ describe("common.geo.ui.Legend", function() {
 
       it("should allow to hide the title", function() {
         legend.hideTitle();
-        expect(legend.$el.find(".legend-title").html()).toEqual(null);
+        expect(legend.$el.find(".legend-title").html()).toEqual(undefined);
       });
 
       it("should allow to show the title", function() {
@@ -752,7 +752,7 @@ describe("common.geo.ui.Legend", function() {
 
       it("should allow to hide the title", function() {
         legend.hideTitle();
-        expect(legend.$el.find(".legend-title").html()).toEqual(null);
+        expect(legend.$el.find(".legend-title").html()).toEqual(undefined);
       });
 
       it("should allow to change the color", function() {

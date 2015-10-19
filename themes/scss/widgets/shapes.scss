@@ -1,0 +1,82 @@
+// Shapes styles
+// ----------------------------------------------
+
+@import '../variables/mixins';
+
+.Widget-dot {
+  display: inline-block;
+  width: 8px;
+  min-width: 8px;
+  height: 8px;
+  border-radius: 8px;
+}
+.Widget-arrow {
+  display: inline-block;
+  position: relative;
+  width: 16px;
+  height: 10px;
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  &:after,
+  &:before {
+    position: absolute;
+    top: 5px;
+    width: 10px;
+    height: 1px;
+    content: '';
+  }
+}
+.Widget-arrow--up {
+  &:after {
+    @include css3-prefix(transform, rotate(45deg));
+    right: 0;
+  }
+  &:before {
+    @include css3-prefix(transform, rotate(-45deg));
+    left: 0;
+  }
+}
+.Widget-arrow--down {
+  &:after {
+    @include css3-prefix(transform, rotate(-45deg));
+    right: 0;
+  }
+  &:before {
+    @include css3-prefix(transform, rotate(45deg));
+    left: 0;
+  }
+}
+.Widget-lens {
+  display: inline-block;
+  position: relative;
+  width: 16px;
+  height: 16px;
+
+  &:after,
+  &:before {
+    position: absolute;
+    content: '';
+  }
+  &:after {
+    top: 0;
+    left: 0;
+    width: 8px;
+    height: 8px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+  }
+  &:before {
+    @include css3-prefix(transform, rotate(45deg));
+    right: 3px;
+    bottom: 5px;
+    width: 6px;
+    height: 1px;
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
+}

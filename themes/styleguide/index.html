@@ -1,0 +1,292 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>CartoDB.js styleguide</title>
+    <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet' type='text/css'>
+    <link href='styleguide.css' rel='stylesheet' type='text/css'>
+    <link href='/dist/themes/css/cartodb.css' rel='stylesheet' type='text/css'>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://cdn.rawgit.com/zenorocha/clipboard.js/master/dist/clipboard.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/0.0.1/prism.min.js"></script>
+    <script src="styleguide.js"></script>
+  </head>
+  <body>
+
+    <div class="container start">
+      <div class="HeaderFixed">
+        <div class="container u-txt-center clearfix u-valign">
+          <h1 class="u-left"><strong>CartoDB</strong>Style</h1>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <section>
+        <div class="clearfix">
+          <h2>Widgets</h2>
+          <div class="block clearfix u-tspace-xl">
+            <div class="Widget Widget--light">
+              <div class="Widget-header">
+                <h3 class="Widget-title Widget-textBig">Transactions by visitors NBA stadium arenas big ones</h3>
+                <dl class="Widget-info Widget-textSmaller Widget-textSmaller--upper">
+                  <dt class="Widget-infoItem">0 null rows</dt>
+                  <dt class="Widget-infoItem">17k min</dt>
+                  <dt class="Widget-infoItem">142k avg</dt>
+                  <dt class="Widget-infoItem">1.13m max</dt>
+                </dl>
+              </div>
+            </div>
+
+            <div class="Widget Widget--light u-tspace-xl">
+              <div class="Widget-header">
+                <h3 class="Widget-title Widget-textBig">Transactions by visitors NBA stadium arenas big ones</h3>
+                <dl class="Widget-info Widget-textSmaller Widget-textSmaller--upper">
+                  <dt class="Widget-infoItem">0 null rows</dt>
+                  <dt class="Widget-infoItem">17k min</dt>
+                  <dt class="Widget-infoItem">142k avg</dt>
+                  <dt class="Widget-infoItem">1.13m max</dt>
+                </dl>
+              </div>
+              <div class="Widget-content">
+                <ul class="Widget-list">
+                  <li class="Widget-listItem">
+                    <button type="button" class="Widget-listItemButton">
+                      <div class="Widget-contentSpaced">
+                        <p class="Widget-textSmall Widget-textSmall--bold Widget-textSmall--upper">Los Angeles Lakers</p>
+                        <p class="Widget-textSmaller">~179k</p>
+                      </div>
+                      <div class="Widget-progressBar">
+                        <div class="Widget-progressState" style="width:10%"></div>
+                      </div>
+                    </button>
+                  </li>
+                  <li class="Widget-listItem">
+                    <button type="button" class="Widget-listItemButton is-disabled">
+                      <div class="Widget-contentSpaced">
+                        <p class="Widget-textSmall Widget-textSmall--bold Widget-textSmall--upper">Chicago Bulls</p>
+                        <p class="Widget-textSmaller">~83k</p>
+                      </div>
+                      <div class="Widget-progressBar">
+                        <div class="Widget-progressState" style="width:5%"></div>
+                      </div>
+                    </button>
+                  </li>
+                  <li class="Widget-listItem">
+                    <button type="button" class="Widget-listItemButton">
+                      <div class="Widget-contentSpaced">
+                        <p class="Widget-textSmall Widget-textSmall--bold Widget-textSmall--upper">Minnesota Timberwolves</p>
+                        <p class="Widget-textSmaller">~201k</p>
+                      </div>
+                      <div class="Widget-progressBar">
+                        <div class="Widget-progressState" style="width:20%"></div>
+                      </div>
+                    </button>
+                  </li>
+                  <li class="Widget-listItem">
+                    <button type="button" class="Widget-listItemButton is-disabled">
+                      <div class="Widget-contentSpaced">
+                        <p class="Widget-textSmall Widget-textSmall--bold Widget-textSmall--upper">New York Knicks</p>
+                        <p class="Widget-textSmaller">~801k</p>
+                      </div>
+                      <div class="Widget-progressBar">
+                        <div class="Widget-progressState" style="width:80%"></div>
+                      </div>
+                    </button>
+                  </li>
+                </ul>
+                <div class="Widget-nav Widget-contentSpaced">
+                  <p class="Widget-textSmaller Widget-textSmaller--bold Widget-textSmall--upper">47 categories more</p>
+                  <div class="Widget-navDots">
+                    <button class="Widget-dot Widget-dot--navigation is-selected"></button>
+                    <button class="Widget-dot Widget-dot--navigation"></button>
+                    <button class="Widget-dot Widget-dot--navigation"></button>
+                    <button class="Widget-dot Widget-dot--navigation"></button>
+                    <button class="Widget-dot Widget-dot--navigation"></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="Widget Widget--light u-tspace-xl">
+              <div class="Widget-header">
+                <h3 class="Widget-title Widget-textBig">Banned Zip Codes</h3>
+                <dl class="Widget-info Widget-textSmaller Widget-textSmaller--upper">
+                  <dt class="Widget-infoItem">1% null rows</dt>
+                </dl>
+              </div>
+              <div class="Widget-content">
+                <ul class="Widget-list">
+                  <li class="Widget-listItem">
+                    <div class="Widget-contentSpaced Widget-textSmall Widget-textSmall--bold Widget-textSmall--upper">
+                      <p>True</p>
+                      <p>False</p>
+                    </div>
+                    <div class="Widget-progressBar">
+                      <div class="Widget-progressState Widget-progressState--positive" style="width:30%"></div>
+                      <div class="Widget-progressState Widget-progressState--negative" style="width:70%"></div>
+                    </div>
+                    <div class="Widget-contentSpaced Widget-textSmaller">
+                      <p>~30K</p>
+                      <p>~70K</p>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="Widget Widget--light u-tspace-xl">
+              <div class="Widget-header">
+                <h3 class="Widget-title Widget-textBig">Banned Zip Codes</h3>
+                <dl class="Widget-info">
+                  <dt class="Widget-infoItem Widget-textSmaller Widget-textSmaller--upper">1% null rows</dt>
+                </dl>
+              </div>
+              <div class="Widget-content">
+                <div class="Widget-filter Widget-contentSpaced">
+                  <p class="Widget-textSmaller Widget-textSmaller--bold Widget-textSmaller--dark Widget-textSmaller--upper">1 selected</p>
+                  <div class="Widget-filterButtons">
+                    <button class="Widget-link Widget-filterButton">select all</button>
+                    <button class="Widget-link Widget-filterButton">unselect all</button>
+                  </div>
+                </div>
+                <ul class="Widget-list">
+                  <li class="Widget-listItem">
+                    <button type="button" class="Widget-listItemButton is-disabled">
+                      <div class="Widget-contentSpaced">
+                        <p class="Widget-textSmall Widget-textSmall--bold Widget-textSmall--upper">True</p>
+                        <p class="Widget-textSmaller">30K</p>
+                      </div>
+                      <div class="Widget-progressBar">
+                        <div class="Widget-progressState" style="width:30%"></div>
+                      </div>
+                    </button>
+                  </li>
+                  <li class="Widget-listItem">
+                    <button type="button" class="Widget-listItemButton">
+                      <div class="Widget-contentSpaced">
+                        <p class="Widget-textSmall Widget-textSmall--bold Widget-textSmall--upper">False</p>
+                        <p class="Widget-textSmaller">70k</p>
+                      </div>
+                      <div class="Widget-progressBar">
+                        <div class="Widget-progressState" style="width:70%"></div>
+                      </div>
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="Widget Widget--light u-tspace-xl">
+              <div class="Widget-header">
+                <div class="Widget-title">
+                  <h3 class="Widget-textBig">Average transactions</h3>
+                  <div class="Widget-tag Widget-tag--green">
+                    <span class="Widget-textSmaller Widget-textSmaller--upper">SUM</span>
+                  </div>
+                </div>
+                <dl class="Widget-info">
+                  <dt class="Widget-infoItem Widget-textSmaller Widget-textSmaller--upper">232 NULL ROWS</dt>
+                </dl>
+              </div>
+              <div class="Widget-content">
+                <p class="Widget-textBigger">2,093,232,234,000M</p>
+                <p class="Widget-textSmaller">Day where most of the transactions where done</p>
+              </div>
+            </div>
+
+            <div class="Widget Widget--light u-tspace-xl">
+              <div class="Widget-header">
+                <div class="Widget-title Widget-contentSpaced">
+                  <h3 class="Widget-textBig">Affected Postal Codes</h3>
+                  <button class="Widget-lens"></button>
+                </div>
+                <dl class="Widget-info">
+                  <dt class="Widget-infoItem Widget-textSmaller Widget-textSmaller--upper">37,321 rows</dt>
+                </dl>
+              </div>
+              <div class="Widget-content">
+                <ul class="Widget-list Widget-list--withBorders">
+                  <li class="Widget-listItem Widget-listItem--withBorders">
+                    <button type="button" class="Widget-listItemButton">
+                      <div class="Widget-contentSpaced Widget-contentSpaced--topAligned Widget-contentSpaced--start">
+                        <em class="Widget-dot Widget-listDot"></em>
+                        <div class="Widget-contentFull">
+                          <p class="Widget-textSmall Widget-textSmall--upper">038990</p>
+                          <dl class="Widget-inlineList">
+                            <div class="Widget-inlineListItem Widget-textSmaller Widget-textSmaller--noEllip">
+                              <dd class="Widget-textSmaller--bold Widget-textSmaller--dark">1,934</dd>
+                              <dt>People affected</dt>
+                            </div>
+                            <div class="Widget-inlineListItem Widget-textSmaller Widget-textSmaller--noEllip">
+                              <dd class="Widget-textSmaller--bold Widget-textSmaller--dark">8,129</dd>
+                              <dt>Gross Per Capita</dt>
+                            </div>
+                            <div class="Widget-inlineListItem Widget-textSmaller Widget-textSmaller--noEllip">
+                              <dd class="Widget-textSmaller--bold Widget-textSmaller--dark">5,678</dd>
+                              <dt>Fans of new stadiums in NY</dt>
+                            </div>
+                            <div class="Widget-inlineListItem Widget-textSmaller Widget-textSmaller--noEllip">
+                              <dd class="Widget-textSmaller--bold Widget-textSmaller--dark">782</dd>
+                              <dt>Things</dt>
+                            </div>
+                            <div class="Widget-inlineListItem Widget-textSmaller Widget-textSmaller--noEllip">
+                              <dd class="Widget-textSmaller--bold Widget-textSmaller--dark">-</dd>
+                              <dt>People non affected</dt>
+                            </div>
+                          </dl>
+                        </div>
+                      </div>
+                    </button>
+                  </li>
+                  <li class="Widget-listItem Widget-listItem--withBorders">
+                    <button type="button" class="Widget-listItemButton is-disabled">
+                      <div class="Widget-contentSpaced Widget-contentSpaced--topAligned Widget-contentSpaced--start">
+                        <em class="Widget-dot Widget-listDot"></em>
+                        <div class="Widget-contentFull">
+                          <p class="Widget-textSmall Widget-textSmall--upper">038990</p>
+                          <dl class="Widget-textSmaller Widget-textSmaller--noEllip u-tSpace">
+                            <dd class="Widget-textSmaller--bold Widget-textSmaller--dark">1,934</dd>
+                            <dt>People affected</dt>
+                          </dl>
+                        </div>
+                      </div>
+                    </button>
+                  </li>
+                </ul>
+              </div>
+              <div class="Widget-footer Widget-nav Widget-contentSpaced">
+                <span></span>
+                <div class="Widget-navArrows Widget-contentSpaced">
+                  <button class="Widget-arrow Widget-arrow--up"></button>
+                  <button class="Widget-arrow Widget-arrow--down"></button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <div class="clearfix u-tspace-xl">
+          <h3>HTML</H3>
+          <pre class="prettyprint copy-box" data-clipboard-target="html-widgets">
+            <code class="language-markup" id="html-widgets">
+&lt;div class="Widget">
+  &lt;h2 class="Widget-title">Hello&lt;/h2>
+  &lt;p class="Widget-info">info&lt;/p>
+&lt;/div>
+            </code>
+          </pre>
+        </div>
+        <div class="clearfix u-tspace-xl">
+          <h3>CSS</H3>
+          <pre class="prettyprint">
+            <code class="language-css">
+.u-ilist > li { display: inline-block; }
+            </code>
+          </pre>
+        </div>
+        <hr/>
+      </section>
+    </div>
+  </body>
+</html>

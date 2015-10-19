@@ -36,9 +36,10 @@
 
     cdb.files = [
         "../vendor/jquery.min.js",
-        "../vendor/underscore-min.js",
+        "../vendor/underscore.js",
         "../vendor/json2.js",
         "../vendor/backbone.js",
+        "../vendor/d3.js",
         "../vendor/mustache.js",
 
         "../vendor/leaflet.js",

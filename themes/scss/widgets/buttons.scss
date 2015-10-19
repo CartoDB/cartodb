@@ -1,0 +1,24 @@
+// Buttons styles
+// ----------------------------------------------
+
+@import '../variables/sizes';
+@import '../variables/mixins';
+
+.Widget-button {
+  padding: 0;
+}
+.Widget-link {
+  font-size: $sFontSize-smaller;
+  font-weight: $sFontWeight-normal;
+  text-transform: uppercase;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.Widget-link,
+.Widget-button {
+  &:hover {
+    cursor: pointer;
+  }
+}

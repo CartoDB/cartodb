@@ -51,7 +51,7 @@
   text-transform: uppercase;
 }
 .Widget-textSmaller--noEllip {
+  text-overflow: inherit;
   white-space: inherit;
   overflow: inherit;
-  text-overflow: inherit;
 }

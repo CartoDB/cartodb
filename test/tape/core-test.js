@@ -2,7 +2,7 @@ var test = require('tape');
 var cartodb = require('../../src-browserify/core');
 
 test('core: cartodb object', function(t) {
-  t.plan(10);
+  t.plan(11);
 
   t.ok(cartodb, 'cartodb object should be defined');
   t.ok(cartodb._Promise, 'cartodb._Promise should be defined');
@@ -18,6 +18,7 @@ test('core: cartodb object', function(t) {
   t.ok(cartodb.Image, 'a Image object should be defined');
 
   t.ok(cartodb.SQL, 'a SQL object should be defined');
+  t.ok(cartodb.Tiles, 'a Tiles object should be defined');
 });
 
 test('core: cartodb object in a browser env', function(t) {

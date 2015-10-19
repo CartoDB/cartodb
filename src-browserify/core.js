@@ -21,6 +21,7 @@
   };
   cdb.Image = require('./vis/image.js');
   cdb.SQL = require('./api/sql');
+  cdb.Tiles = require('./api/tiles');
 
   cdb.image = {};
   cdb.geo = {};

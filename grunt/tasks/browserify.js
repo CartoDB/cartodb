@@ -12,12 +12,7 @@ var bundles = {
       //   );
       // }
     },
-    src: [
-      'src-browserify/core.js'
-
-    // migrate to require style
-      // 'src/api/tiles.js'
-    ],
+    src: 'src-browserify/core.js',
     dest: '<%= config.dist %>/cartodb.core.uncompressed.js'
   },
   'core-specs': {

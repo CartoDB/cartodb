@@ -63,7 +63,7 @@ module.exports = function(grunt) {
     jasmine: require('./grunt/tasks/jasmine').task()
   });
 
-  grunt.registerTask('test', [ 'testling', 'jasmine' ]);
+  grunt.registerTask('test', [ 'jasmine' ]);
 
   grunt.registerTask('release', [
     'prompt:bump',

@@ -11,7 +11,7 @@ These are the tasks(*) we provide:
   - ```grunt test -f```       => if you need to know where was the problem.
 - [x] ```grunt build```       => generate library in dist folder.
 - [x] ```grunt dist```        => same as build task.
-- [X] ```grunt js```          => create uncompressed javascript files in dist (useful for developing)
+- [X] ```grunt dist_js```     => create uncompressed javascript files in dist (useful for developing)
 - [x] ```grunt watch```       => special watch for cartodb.js library.
 - [x] ```grunt dev```         => perfect for developing a new feature for CartoDB.js.
 

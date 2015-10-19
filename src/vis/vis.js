@@ -263,7 +263,6 @@ var Vis = cdb.core.View.extend({
     this._data = data;
 
     if (typeof(data) === 'string') {
-
       var url = data;
 
       cdb.core.Loader.get(url, function(data) {
@@ -275,7 +274,6 @@ var Vis = cdb.core.View.extend({
       });
 
       return this;
-
     }
 
     // if the viz.json contains slides, discard the main viz.json and use the slides
@@ -294,23 +292,18 @@ var Vis = cdb.core.View.extend({
     }
 
     if (!this.checkModules(layers)) {
-
       if (this.moduleChecked) {
-
         self.throwError("modules couldn't be loaded");
         return this;
-
       }
 
       this.moduleChecked = true;
-
 
       this.loadModules(layers, function() {
         self.load(data, options);
       });
 
       return this;
-
     }
 
     // configure the vis in http or https
@@ -366,6 +359,7 @@ var Vis = cdb.core.View.extend({
       }
     }
 
+    // Create the instance of the cdb.geo.Map model
     var mapConfig = {
       title: data.title,
       description: data.description,
@@ -378,17 +372,13 @@ var Vis = cdb.core.View.extend({
 
     // if the boundaries are defined, we add them to the map
     if (data.bounding_box_sw && data.bounding_box_ne) {
-
       mapConfig.bounding_box_sw = data.bounding_box_sw;
       mapConfig.bounding_box_ne = data.bounding_box_ne;
-
     }
 
     if (data.bounds) {
-
       mapConfig.view_bounds_sw = data.bounds[0];
       mapConfig.view_bounds_ne = data.bounds[1];
-
     } else {
       var center = data.center;
 
@@ -522,6 +512,34 @@ var Vis = cdb.core.View.extend({
           layers: cartoDBLayers,
           windshaftMap: windshaftMap
         });
+
+        // TODO: This needs to be moved to cdb.geo.CartoDBGroupLayer
+        var collection = new Backbone.Collection(cartoDBLayers);
+        collection.bind('change', function() {
+
+          var layerDefinition = {
+            version: '1.4.0',
+            stat_tag: 'wadus',
+            layers: _.map(cartoDBLayers, function(layerModel){
+              return {
+                type: 'cartodb',
+                options: {
+                  sql: layerModel.get('sql'),
+                  cartocss: layerModel.get('cartocss'),
+                  cartocss_version: layerModel.get('cartocss_version') || '2.1.0'
+                }
+              }
+            })
+          }
+
+          var layerDefinition = new LayerDefinition(layerDefinition, {}, data.widgets);
+          var mapInstance = windshaftClient.instantiateMap(layerDefinition);
+          mapInstance.bind('change:layergroupid', function() {
+            windshaftMap.set(mapInstance.toJSON());
+          })
+
+        })
+
       } else {
         model = Layers.create(layerData.type || layerData.kind, self, layerData);
       }
@@ -1196,7 +1214,7 @@ var Vis = cdb.core.View.extend({
     var layers = layerView.model && layerView.model.layers || [];
 
     for(var i = 0; i < layers.length; ++i) {
-      var layerModel = layers[i];
+      var layerModel = layers.at(i);
       var t = layerModel.getTooltipData();
       if (t) {
         if (!layerView.tooltip) {
@@ -1222,7 +1240,7 @@ var Vis = cdb.core.View.extend({
 
     if (layerView.tooltip) {
       layerView.bind("featureOver", function(e, latlng, pos, data, layer) {
-        var t = layers[layer].getTooltipData();
+        var t = layers.at(layer).getTooltipData();
         if (t) {
           layerView.tooltip.setTemplate(t.template);
           layerView.tooltip.setFields(t.fields);
@@ -1238,12 +1256,11 @@ var Vis = cdb.core.View.extend({
   addInfowindow: function(layerView) {
 
     var mapView = this.mapView;
-    var eventType = 'featureClick';
     var infowindow = null;
     var layers = layerView.model && layerView.model.layers || [];
 
     for(var i = 0; i < layers.length; ++i) {
-      var layerModel = layers[i];
+      var layerModel = layers.at(i);
       if (layerModel.getInfowindowData()) {
         if(!infowindow) {
           infowindow = Overlay.create('infowindow', this, layerModel.getInfowindowData(), true);
@@ -1270,9 +1287,9 @@ var Vis = cdb.core.View.extend({
 
     // if the layer has no infowindow just pass the interaction
     // data to the infowindow
-    layerView.bind(eventType, function(e, latlng, pos, data, layer) {
+    layerView.bind('featureClick', function(e, latlng, pos, data, layer) {
 
-        var infowindowFields = layers[layer].getInfowindowData();
+        var infowindowFields = layers.at(layer).getInfowindowData();
         if (!infowindowFields) return;
         var fields = _.pluck(infowindowFields.fields, 'name');
         var cartodb_id = data.cartodb_id;

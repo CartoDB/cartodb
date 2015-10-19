@@ -128,17 +128,19 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
     if (this.options.cartodb_logo != false)
       cdb.geo.common.CartoDBLogo.addWadus({ left:8, bottom:8 }, 0, map._container);
 
-    this.__update(function() {
-      // if while the layer was processed in the server is removed
-      // it should not be added to the map
-      var id = L.stamp(self);
-      if (!map._layers[id]) { 
-        return; 
-      }
+    this.model.bind('change:urls', function() {
+      self.__update(function() {
+        // if while the layer was processed in the server is removed
+        // it should not be added to the map
+        var id = L.stamp(self);
+        if (!map._layers[id]) { 
+          return; 
+        }
 
-      L.TileLayer.prototype.onAdd.call(self, map);
-      self.fire('added');
-      self.options.added = true;
+        L.TileLayer.prototype.onAdd.call(self, map);
+        self.fire('added');
+        self.options.added = true;
+      });
     });
   },
 
@@ -164,25 +166,17 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
     this.fire('loading');
     var map = this.options.map;
 
-    var setTilesURLandReloadInteraction = function() {
-      var tilejson = self.model.get('urls');
-      if(tilejson) {
-        self.tilejson = tilejson;
-        self.setUrl(self.tilejson.tiles[0]);
-        // manage interaction
-        self._reloadInteraction();
-        self.ok && self.ok();
-        done && done();
-      } else {
-        self.error && self.error(err);
-        done && done();
-      }
-    }
-
-    if (this.model.windshaftMap.isNew()) {
-      this.model.windshaftMap.bind('change', setTilesURLandReloadInteraction);
+    var tilejson = self.model.get('urls');
+    if(tilejson) {
+      self.tilejson = tilejson;
+      self.setUrl(self.tilejson.tiles[0]);
+      // manage interaction
+      self._reloadInteraction();
+      self.ok && self.ok();
+      done && done();
     } else {
-      setTilesURLandReloadInteraction();
+      self.error && self.error(err);
+      done && done();
     }
   },
 
@@ -411,12 +405,7 @@ function layerView(base) {
 
     ok: function(e) {
       this.model.trigger('tileOk');
-    },
-
-    onLayerDefinitionUpdated: function() {
-      this.__update();
     }
-
   });
 
   return layerViewClass;

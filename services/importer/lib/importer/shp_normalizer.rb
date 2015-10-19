@@ -61,7 +61,8 @@ module CartoDB
         %w{ .shp .tab }.include?(extension)
       end
 
-      def initialize(filepath, job)
+      # INFO: importer_config not used but needed for compatibility with other normalizers
+      def initialize(filepath, job, importer_config = nil)
         @job      = job
         @filepath = filepath
         @helper = ShpHelper.new(filepath)

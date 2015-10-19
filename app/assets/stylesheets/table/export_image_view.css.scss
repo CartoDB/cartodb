@@ -13,26 +13,26 @@
 .ExportImageView-Header {
   @include transition(all, 200ms, ease-in-out);
   position: absolute;
-  width: 100%;
   top: -35px;
+  width: 100%;
   height: 40px;
   text-align: center;
   z-index: 105;
 }
 .ExportImageView-Header--inner {
-  position:absolute;
-  width: 400px;
+  position: absolute;
   left: 50%;
+  width: 400px;
   margin-left: -200px;
 }
 .ExportImageView--help {
-  position:relative;
+  position: relative;
+  color: rgba(#FFF, 0.4);
   font-size: 13px;
-  text-align:center;
-  color: rgba(#fff, .4);
+  text-align: center;
 }
 .ExportImageView-Header .Button {
-  position:absolute;
+  position: absolute;
   top: 0;
   right: 0;
   -moz-user-select: none;
@@ -41,8 +41,8 @@
   user-select: none;
 }
 .ExportImageView.is-small .ButtonClose {
-  right: -70px;
   top: 30px;
+  right: -70px;
 }
 .ExportImageView-Footer {
   position: absolute;
@@ -90,11 +90,9 @@
   .CanvasExport {
     border: none;
   }
-  .CanvasExport .ExportHelper.ExportHelper--header {
-    opacity: 0.6;
-  }
+  .CanvasExport .ExportHelper.ExportHelper--header,
   .CanvasExport .ExportHelper.ExportHelper--attribution {
-    opacity: 0.7;
+    opacity: 0.6;
   }
   .CanvasExport.ui-resizable > div.ui-resizable-handle,
   .ExportImageView-Header,
@@ -136,6 +134,16 @@
   box-sizing: border-box;
   background: rgba(#FFF, 0.75);
   font-size: 11px;
+}
+.ExportHelper.ExportHelper--legend {
+  display: inline-block;
+  position: absolute;
+  top: auto;
+  right: 0;
+  left: auto;
+  width: auto;
+  padding: 0 5px;
+  box-sizing: border-box;
 }
 
 .ExportHelperTitle {
@@ -212,7 +220,8 @@ $resizeHandlerSize: 8px;
   margin-top: -72px; //compensate for footer
 }
 .CanvasExport.draggable .ExportHelper.ExportHelper--header,
-.CanvasExport.draggable .ExportHelper.ExportHelper--attribution {
+.CanvasExport.draggable .ExportHelper.ExportHelper--attribution,
+.CanvasExport.draggable .ExportHelper.ExportHelper--legend {
   opacity: 0.2;
 }
 .CanvasExport {

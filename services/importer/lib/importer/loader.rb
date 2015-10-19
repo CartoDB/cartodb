@@ -32,7 +32,7 @@ module CartoDB
         !(%w{ .tif .tiff .sql }.include?(extension))
       end
 
-      def initialize(job, source_file, layer=nil, ogr2ogr=nil, georeferencer=nil)
+      def initialize(job, source_file, layer = nil, ogr2ogr = nil, georeferencer = nil)
         self.job            = job
         self.source_file    = source_file
         self.layer          = 'track_points' if source_file.extension =~ /\.gpx/
@@ -115,7 +115,7 @@ module CartoDB
           .inject(source_file.fullpath) { |filepath, normalizer_klass|
 
             @importer_stats.timing(normalizer_klass.to_s.split('::').last) do
-              normalizer = normalizer_klass.new(filepath, job)
+              normalizer = normalizer_klass.new(filepath, job, options[:importer_config])
 
               FORCE_NORMALIZER_REGEX.each { |regex|
                 normalizer.force_normalize if regex =~ source_file.path
@@ -165,7 +165,7 @@ module CartoDB
           normalizer.supported?(source_file.extension)
         }
         return DEFAULT_ENCODING unless normalizer
-        normalizer.new(source_file.fullpath, job).encoding
+        normalizer.new(source_file.fullpath, job, options[:importer_config]).encoding
       end
 
       def shapefile_without_prj?

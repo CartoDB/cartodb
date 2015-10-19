@@ -46,7 +46,7 @@ module CartoDB
       end
 
       def layers_in(source_file)
-        stdout, stderr, status = 
+        stdout, stderr, status =
           Open3.capture3("ogrinfo #{source_file.fullpath}")
         stdout.split("\n")
           .select { |line| line =~ /\A\d/ }
@@ -66,7 +66,6 @@ module CartoDB
 
       attr_reader :temporary_directory
       attr_writer :source_file
-    end # KmlSplitter
-  end # Importer2
-end # CartoDB
-  
+    end
+  end
+end

@@ -27,7 +27,7 @@ class Carto::Visualization < ActiveRecord::Base
 
   belongs_to :user_table, class_name: Carto::UserTable, primary_key: :map_id, foreign_key: :map_id, inverse_of: :visualization
 
-  belongs_to :permission
+  has_one :permission, inverse_of: :entity, conditions: { entity_type: 'vis' }, foreign_key: :entity_id
 
   has_many :likes, foreign_key: :subject
   has_many :shared_entities, foreign_key: :entity_id, inverse_of: :visualization
@@ -46,6 +46,7 @@ class Carto::Visualization < ActiveRecord::Base
   has_many :related_templates, class_name: Carto::Template, foreign_key: :source_visualization_id
 
   has_one :synchronization, class_name: Carto::Synchronization
+  has_many :external_sources, class_name: Carto::ExternalSource
 
   def ==(other_visualization)
     self.id == other_visualization.id

@@ -4,43 +4,57 @@ require_relative '../../helpers/bounding_box_helper'
 
 class Carto::Map < ActiveRecord::Base
 
-  has_and_belongs_to_many :layers, class_name: 'Carto::Layer', order: '"order"'
+  has_many :layers_maps
+  has_many :layers, class_name: 'Carto::Layer', order: '"order"', through: :layers_maps
 
-  has_and_belongs_to_many :base_layers, class_name: 'Carto::Layer', order: '"order"'
+  has_many :base_layers, class_name: 'Carto::Layer', order: '"order"', through: :layers_maps
 
-  has_and_belongs_to_many :data_layers,
+  has_many :data_layers,
                           class_name: 'Carto::Layer',
                           conditions: { kind: 'carto' },
-                          order: '"order"'
+                          order: '"order"',
+                          through: :layers_maps,
+                          source: :layer
 
-  has_and_belongs_to_many :user_layers,
+  has_many :user_layers,
                           class_name: 'Carto::Layer',
                           conditions: { kind: ['tiled', 'background', 'gmapsbase', 'wms'] },
-                          order: '"order"'
+                          order: '"order"',
+                          through: :layers_maps,
+                          source: :layer
 
-  has_and_belongs_to_many :carto_and_torque_layers,
+  has_many :carto_and_torque_layers,
                           class_name: 'Carto::Layer',
                           conditions: { kind: ['carto', 'torque'] },
-                          order: '"order"'
+                          order: '"order"',
+                          through: :layers_maps,
+                          source: :layer
 
-  has_and_belongs_to_many :torque_layers,
+  has_many :torque_layers,
                           class_name: 'Carto::Layer',
                           conditions: { kind: 'torque' },
-                          order: '"order"'
+                          order: '"order"',
+                          through: :layers_maps,
+                          source: :layer
 
-  has_and_belongs_to_many :other_layers,
+  has_many :other_layers,
                           class_name: 'Carto::Layer',
                           conditions: "kind not in ('carto', 'tiled', 'background', 'gmapsbase', 'wms')",
-                          order: '"order"'
+                          order: '"order"',
+                          through: :layers_maps,
+                          source: :layer
 
-  has_and_belongs_to_many :named_maps_layers,
+  has_many :named_maps_layers,
                           class_name: 'Carto::Layer',
                           conditions: { kind: ['carto', 'tiled', 'background', 'gmapsbase', 'wms'] },
-                          order: '"order"'
+                          order: '"order"',
+                          through: :layers_maps,
+                          source: :layer
+
+  has_many :user_tables, class_name: Carto::UserTable, inverse_of: :map
 
   belongs_to :user
-
-  has_many :tables, class_name: Carto::UserTable
+  belongs_to :visualization
 
   DEFAULT_OPTIONS = {
     zoom:            3,
@@ -90,7 +104,7 @@ class Carto::Map < ActiveRecord::Base
   private
 
   def get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons
-    table       = tables.first
+    table       = user_tables.first
     from_table  = table.service.data_last_modified if table
 
     [from_table, data_layers.map(&:updated_at)].flatten.compact.max

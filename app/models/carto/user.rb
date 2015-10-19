@@ -10,20 +10,35 @@ class Carto::User < ActiveRecord::Base
 
   MIN_PASSWORD_LENGTH = 6
   GEOCODING_BLOCK_SIZE = 1000
+  # INFO: select filter is done for security and performance reasons. Add new columns if needed.
+  DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," +
+                   "users.api_key, users.database_schema, users.database_name, users.name, users.location," +
+                   "users.disqus_shortname, users.account_type, users.twitter_username, users.google_maps_key"
 
-  has_many :tables, class_name: 'Carto::UserTable', inverse_of: :user
+  SELECT_WITH_DATABASE = DEFAULT_SELECT + ", users.quota_in_bytes, users.database_host"
+
+  has_many :tables, class_name: Carto::UserTable, inverse_of: :user
   has_many :visualizations, inverse_of: :user
   has_many :maps, inverse_of: :user
   has_many :layers_user
   has_many :layers, :through => :layers_user
+
   belongs_to :organization, inverse_of: :users
-  has_many :feature_flags_user, dependent: :destroy
+  has_one :owned_organization, class_name: Carto::Organization, inverse_of: :owner, foreign_key: :owner_id
+
+  has_many :feature_flags_user, dependent: :destroy, foreign_key: :user_id, inverse_of: :user
+  has_many :feature_flags, through: :feature_flags_user
   has_many :assets, inverse_of: :user
   has_many :data_imports, inverse_of: :user
   has_many :geocodings, inverse_of: :user
   has_many :synchronization_oauths, class_name: Carto::SynchronizationOauth, inverse_of: :user, dependent: :destroy
   has_many :search_tweets, inverse_of: :user
   has_many :synchronizations, inverse_of: :user
+  has_many :tags, inverse_of: :user
+  has_many :permissions, inverse_of: :owner, foreign_key: :owner_id
+
+  has_many :client_applications, class_name: Carto::ClientApplication
+  has_many :oauth_tokens, class_name: Carto::OauthToken
 
   has_many :users_group, dependent: :destroy, class_name: Carto::UsersGroup
   has_many :groups, :through => :users_group
@@ -34,12 +49,6 @@ class Carto::User < ActiveRecord::Base
       :twitter_imports_count, :maps_count
     ] => :service
 
-  # INFO: select filter is done for security and performance reasons. Add new columns if needed.
-  DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," + 
-                   "users.api_key, users.database_schema, users.database_name, users.name, users.location," +
-                   "users.disqus_shortname, users.account_type, users.twitter_username, users.google_maps_key"
-
-  SELECT_WITH_DATABASE = DEFAULT_SELECT + ", users.quota_in_bytes, users.database_host"
 
   attr_reader :password
 
@@ -326,9 +335,6 @@ class Carto::User < ActiveRecord::Base
   def private_maps_enabled?
     flag_enabled = self.private_maps_enabled
     return true if flag_enabled.present? && flag_enabled == true
-
-    #TODO: remove this after making sure we have flags inline with account types
-    return true if not self.account_type.match(/FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD/i)
 
     return true if self.private_tables_enabled # Note private_tables_enabled => private_maps_enabled
     return false

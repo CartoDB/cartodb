@@ -171,6 +171,11 @@ class Carto::VisualizationQueryBuilder
     self
   end
 
+  def with_display_name
+    @only_with_display_name = true
+    self
+  end
+
   def build
     query = Carto::Visualization.scoped
 
@@ -234,8 +239,13 @@ class Carto::VisualizationQueryBuilder
     end
 
     if @exclude_imported_remote_visualizations
-      # Filter legacy remotes that don't have display name
-      query = query.where('"visualizations"."display_name" IS NOT NULL')
+      # Right now only common-data public visualizations have display name setted so
+      # the data-library visualizations have it too. So if we want to filter legacy remote
+      # visualizations without display_name, we have to to this way.
+      # We take into account other types and exclude from the display_name because the search
+      # of datasets, for example, make a query with multiples types (table, remote) and we don't
+      # want to filter the table ones
+      query = query.where('("visualizations"."type" <> \'remote\' OR "visualizations"."type" = \'remote\' AND "visualizations"."display_name" IS NOT NULL)')
     end
 
     if @type
@@ -264,6 +274,10 @@ class Carto::VisualizationQueryBuilder
     if @bounding_box
       bbox_sql = BoundingBoxHelper.to_polygon(@bounding_box[:minx], @bounding_box[:miny], @bounding_box[:maxx], @bounding_box[:maxy])
       query = query.where("visualizations.bbox is not null AND visualizations.bbox && #{bbox_sql}")
+    end
+
+    if @only_with_display_name
+      query = query.where("display_name is not null")
     end
 
     @include_associations.each { |association|

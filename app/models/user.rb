@@ -916,9 +916,6 @@ class User < Sequel::Model
     flag_enabled = self.private_maps_enabled
     return true if flag_enabled.present? && flag_enabled == true
 
-    #TODO: remove this after making sure we have flags inline with account types
-    return true if not self.account_type.match(/FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD/i)
-
     return true if self.private_tables_enabled # Note private_tables_enabled => private_maps_enabled
     return false
   end
@@ -2155,7 +2152,7 @@ TRIGGER
   # Upgrade the cartodb postgresql extension
   def upgrade_cartodb_postgres_extension(statement_timeout=nil, cdb_extension_target_version=nil)
     if cdb_extension_target_version.nil?
-      cdb_extension_target_version = '0.11.0'
+      cdb_extension_target_version = '0.11.1'
     end
 
     in_database({

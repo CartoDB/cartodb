@@ -49,3 +49,8 @@
 .Widget-textSmaller--upper {
   text-transform: uppercase;
 }
+.Widget-textSmaller--noEllip {
+  white-space: inherit;
+  overflow: inherit;
+  text-overflow: inherit;
+}

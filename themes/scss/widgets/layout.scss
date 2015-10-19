@@ -9,3 +9,13 @@
   @include justify-content(space-between, justify);
   @include align-items(center);
 }
+.Widget-contentSpaced--topAligned {
+  @include align-items(flex-start);
+}
+.Widget-contentSpaced--start {
+  @include justify-content(flex-start, start);
+  text-align: left;
+}
+.Widget-contentFull {
+  width: 100%;
+}

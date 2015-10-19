@@ -6,15 +6,44 @@
 
 .Widget-list {
   display: block;
+  max-height: 232px;
   margin: 0;
 }
 .Widget-listItem {
   display: block;
   padding: ($sMargin-element / 2) - 1 0;
 }
+.Widget-listItem--withBorders {
+  padding: ($sMargin-element / 2) + 1 0;
+}
+.Widget-listSubItem {
+  display: inline-block;
+}
+.Widget-listDot {
+  margin-top: 3px;
+  margin-right: 5px;
+}
 .Widget-listItemButton {
   width: 100%;
   &:hover {
     cursor: pointer;
+  }
+}
+// List within another list :D
+.Widget-inlineList {
+  width: 100%;
+  padding: 0;
+}
+.Widget-inlineListItem {
+  display: inline-block;
+  width: 32%;
+  margin: 5px 0 0;
+  vertical-align: top;
+}
+
+// Widget media query
+@media only screen and (min-width: 320px) and (max-width: 760px)  {
+  .Widget-inlineList > * {
+    @include css3-prefix(flex-basis, 50%);
   }
 }

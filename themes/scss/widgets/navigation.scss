@@ -11,13 +11,8 @@
 .Widget-navDots {
   height: 8px;
 }
-.Widget-navDotsItem {
+.Widget-dot--navigation {
   display: inline-block;
-  width: 8px;
-  height: 8px;
-  padding: 0;
-  border: none;
-  border-radius: 8px;
   vertical-align: top;
   &:hover {
     cursor: pointer;
@@ -30,4 +25,8 @@
 }
 .Widget-navDotsItem.is-disabled {
   @include opacity(0.5);
+}
+.Widget-navArrows {
+  width: 45px;
+  height: 9px;
 }

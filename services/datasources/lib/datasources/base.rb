@@ -48,6 +48,12 @@ module CartoDB
         raise  'To be implemented in child classes'
       end
 
+      # If will provide the url http response code
+      # @return string
+      def get_http_response_code
+        raise  'To be implemented in child classes'
+      end
+
       # Perform the listing and return results
       # @param filter Array : (Optional) filter to specify which resources to retrieve. Leave empty for all supported.
       # @return [ { :id, :title, :url, :service, :filename, :checksum, :size } ]

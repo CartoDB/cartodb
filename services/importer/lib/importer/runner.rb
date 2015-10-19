@@ -316,7 +316,7 @@ module CartoDB
           end
         }
 
-        @http_response_code = @downloader.http_response_code
+        @http_response_code = @downloader.http_response_code if @downloader.is_http_download?
       end
 
       def execute_import(source_file, downloader)

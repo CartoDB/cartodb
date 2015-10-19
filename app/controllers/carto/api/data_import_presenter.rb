@@ -108,7 +108,7 @@ module Carto
         values.merge!(warnings: get_warnings)
 
 
-        if !@data_import.http_response_code.nil? && !@data_import.http_response_code.start_with?('2')
+        if @data_import.is_http_download? && !@data_import.http_response_code.nil? && !@data_import.http_response_code.start_with?('2')
           values.merge!(http_response_code: @data_import.http_response_code)
           values.merge!(http_response_code_message: get_http_response_code_message(@data_import.http_response_code))
         end

@@ -362,10 +362,10 @@ describe Organization do
       vis3.permission.save
 
       begin
-        user2.destroy
         user3.destroy
+        user2.destroy
         user1.destroy
-      rescue
+      rescue 
         # TODO: Finish deletion of organization users and remove this so users are properly deleted or test fails
       end
     end
@@ -387,11 +387,13 @@ describe Organization do
   describe '.overquota', focus: true do
     before(:all) do
       @organization = create_organization_with_users(name: 'overquota-org')
+      @owner = User.where(id: @organization.owner_id).first
     end
     after(:all) do
       @organization.destroy
     end
     it "should return organizations over their map view quota" do
+      Organization.any_instance.stubs(:owner).returns(@owner)
       Organization.overquota.should be_empty
       Organization.any_instance.stubs(:get_api_calls).returns(30)
       Organization.any_instance.stubs(:map_view_quota).returns(10)
@@ -400,6 +402,7 @@ describe Organization do
     end
 
     it "should return organizations over their geocoding quota" do
+      Organization.any_instance.stubs(:owner).returns(@owner)
       Organization.overquota.should be_empty
       Organization.any_instance.stubs(:get_api_calls).returns(0)
       Organization.any_instance.stubs(:map_view_quota).returns(10)
@@ -410,6 +413,7 @@ describe Organization do
     end
 
     it "should return organizations near their map view quota" do
+      Organization.any_instance.stubs(:owner).returns(@owner)
       Organization.any_instance.stubs(:get_api_calls).returns(81)
       Organization.any_instance.stubs(:map_view_quota).returns(100)
       Organization.overquota.should be_empty
@@ -419,6 +423,7 @@ describe Organization do
     end
 
     it "should return organizations near their geocoding quota" do
+      Organization.any_instance.stubs(:owner).returns(@owner)
       Organization.any_instance.stubs(:get_api_calls).returns(0)
       Organization.any_instance.stubs(:map_view_quota).returns(120)
       Organization.any_instance.stubs(:get_geocoding_calls).returns(81)

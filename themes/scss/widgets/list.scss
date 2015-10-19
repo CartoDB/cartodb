@@ -43,7 +43,7 @@
 
 // Widget media query
 @media only screen and (min-width: 320px) and (max-width: 760px)  {
-  .Widget-inlineList > * {
-    @include css3-prefix(flex-basis, 50%);
+  .Widget-inlineListItem {
+    width: 47%;
   }
 }

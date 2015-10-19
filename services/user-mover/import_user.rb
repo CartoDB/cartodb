@@ -138,6 +138,7 @@ module CartoDB
 
             create_user(@target_dbuser)
             create_org_role(@target_dbname) # Create org role for the original org
+            create_org_owner_role(@target_dbname)
             if !@options[:target_org].nil?
               grant_user_org_role(@target_dbuser, @target_dbname)
             end
@@ -213,6 +214,12 @@ module CartoDB
 
       def set_db_statement_timeout(db, timeout)
         superuser_pg_conn.query("ALTER DATABASE #{superuser_pg_conn.quote_ident(db)} SET statement_timeout = #{timeout}")
+      end
+
+      def terminate_connections
+        @user_conn = nil
+        @superuser_user_conn = nil
+        @superuser_conn = nil
       end
 
       def user_pg_conn
@@ -332,6 +339,10 @@ module CartoDB
         "cdb_org_member_#{Digest::MD5.hexdigest(database_name)}"
       end
 
+      def org_owner_role_name(database_name)
+        "#{database_name}_a"
+      end
+
       def grant_user_role(user, role)
         superuser_pg_conn.query("GRANT \"#{role}\" TO \"#{user}\"")
       end
@@ -340,10 +351,10 @@ module CartoDB
         grant_user_role(user, org_role_name(database_name))
       end
 
-      def create_role(role)
+      def create_role(role, createrole = false)
         @logger.info "Creating role #{role} on target db.."
         begin
-          superuser_pg_conn.query("CREATE ROLE \"#{role}\" NOLOGIN;")
+          superuser_pg_conn.query("CREATE ROLE \"#{role}\" #{createrole ? 'CREATEROLE' : ''} NOLOGIN;")
         rescue PG::Error => e
           @logger.info "Target org role already exists: #{e.inspect}"
         end
@@ -351,6 +362,10 @@ module CartoDB
 
       def create_org_role(database_name)
         create_role(org_role_name(database_name))
+      end
+
+      def create_org_owner_role(database_name)
+        create_role(org_owner_role_name(database_name), true)
       end
 
       def create_public_db_user(user_id, schema)

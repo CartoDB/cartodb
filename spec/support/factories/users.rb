@@ -21,9 +21,6 @@ module CartoDB
         user_class.any_instance.stubs(
           :enable_remote_db_user => nil,
           :after_create => nil,
-          :create_schema => nil,
-          :create_public_db_user => nil,
-          :load_cartodb_functions => nil,
           :monitor_user_notification => nil
         )
 
@@ -34,7 +31,10 @@ module CartoDB
           set_user_as_organization_member: nil,
           rebuild_quota_trigger: nil,
           set_database_search_path: nil,
-          cartodb_extension_version_pre_mu?: false
+          cartodb_extension_version_pre_mu?: false,
+          load_cartodb_functions: nil,
+          create_schema: nil,
+          create_public_db_user: nil
         )
       end
 
@@ -148,7 +148,7 @@ module CartoDB
     end
 
     def load_user_functions(user)
-      user.load_cartodb_functions
+      user.db_service.load_cartodb_functions
       user.db_service.rebuild_quota_trigger
     end
   end

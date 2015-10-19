@@ -83,6 +83,42 @@ module CartoDB
         end
       end
 
+      # Cartodb functions
+      def load_cartodb_functions(statement_timeout = nil, cdb_extension_target_version = nil)
+        add_python
+
+        # Install dependencies of cartodb extension
+        @user.in_database(as: :superuser, no_cartodb_in_schema: true) do |db|
+          db.transaction do
+            unless statement_timeout.nil?
+              old_timeout = db.fetch("SHOW statement_timeout;").first[:statement_timeout]
+              db.run("SET statement_timeout TO '#{statement_timeout}';")
+            end
+
+            db.run('CREATE EXTENSION plpythonu FROM unpackaged') unless db.fetch(%{
+                SELECT count(*) FROM pg_extension WHERE extname='plpythonu'
+              }).first[:count] > 0
+            db.run('CREATE EXTENSION schema_triggers') unless db.fetch(%{
+                SELECT count(*) FROM pg_extension WHERE extname='schema_triggers'
+              }).first[:count] > 0
+            db.run('CREATE EXTENSION postgis FROM unpackaged') unless db.fetch(%{
+                SELECT count(*) FROM pg_extension WHERE extname='postgis'
+              }).first[:count] > 0
+
+            unless statement_timeout.nil?
+              db.run("SET statement_timeout TO '#{old_timeout}';")
+            end
+          end
+        end
+
+        upgrade_cartodb_postgres_extension(statement_timeout, cdb_extension_target_version)
+
+        # We reset the connections to this database to be sure the change in default search_path is effective
+        reset_pooled_connections
+
+        rebuild_quota_trigger
+      end
+
       def rebuild_quota_trigger
         @user.in_database(as: :superuser) do |db|
           if !cartodb_extension_version_pre_mu? && @user.has_organization?
@@ -126,9 +162,97 @@ module CartoDB
         end
       end
 
+      def create_importer_schema
+        create_schema('cdb_importer')
+      end
+
+      def create_geocoding_schema
+        create_schema('cdb')
+      end
+
+      def create_user_schema
+        create_schema(@user.database_schema, @user.database_username)
+      end
+
+      # Attempts to create a new database schema
+      # Does not raise exception if the schema already exists
+      def create_schema(schema, role = nil)
+        @user.in_database(as: :superuser) do |database|
+          if role
+            database.run(%{CREATE SCHEMA "#{schema}" AUTHORIZATION "#{role}"})
+          else
+            database.run(%{CREATE SCHEMA "#{schema}"})
+          end
+        end
+      rescue Sequel::DatabaseError => e
+        raise unless e.message =~ /schema .* already exists/
+      end
+
       def setup_owner_permissions
         @user.in_database(as: :superuser) do |database|
           database.run(%{ SELECT cartodb.CDB_Organization_AddAdmin('#{@user.username}') })
+        end
+      end
+
+      def revoke_cdb_conf_access
+        errors = []
+
+        roles = [@user.database_username]
+        if @user.organization_owner?
+          begin
+            roles << organization_member_group_role_member_name
+          rescue => e
+            errors << "WARN: Error fetching org member role (does #{@user.organization.name} has that role?)"
+          end
+        end
+        roles << CartoDB::PUBLIC_DB_USER
+
+        queries = []
+        roles.map do |db_role|
+          queries.concat(@queries.revoke_permissions_on_cartodb_conf_queries(db_role))
+        end
+
+        queries.map do |query|
+          @user.in_database(as: :superuser) do |database|
+            begin
+              database.run(query)
+            rescue => e
+              # We can find organizations not yet upgraded for any reason or missing roles
+              errors << e.message
+            end
+          end
+        end
+
+        errors
+      rescue => e
+        # For broken organizations
+        ["FATAL ERROR for #{name}: #{e.message}"]
+      end
+
+      def create_public_db_user
+        @user.in_database(as: :superuser) do |database|
+          database.run(%{ CREATE USER "#{@user.database_public_username}" LOGIN INHERIT })
+          database.run(%{ GRANT publicuser TO "#{@user.database_public_username}" })
+          database.run(%{ ALTER USER "#{@user.database_public_username}" SET search_path = #{build_search_path} })
+        end
+      end
+
+      def move_tables_to_schema(old_schema, new_schema)
+        @user.in_database(as: :superuser) do |database|
+          database.transaction do
+            @user.real_tables(old_schema).each do |t|
+              old_name = "#{old_schema}.#{t[:relname]}"
+              new_name = "#{new_schema}.#{t[:relname]}"
+
+              was_cartodbfied = Carto::UserTable.find_by_user_id_and_name(id, t[:relname]).present?
+
+              database.run(%{ SELECT cartodb._CDB_drop_triggers('#{old_name}'::REGCLASS) }) if was_cartodbfied
+              database.run(%{ ALTER TABLE #{old_name} SET SCHEMA "#{new_schema}" })
+              if was_cartodbfied
+                database.run(%{ SELECT cartodb.CDB_CartodbfyTable('#{new_schema}'::TEXT, '#{new_name}'::REGCLASS) })
+              end
+            end
+          end
         end
       end
 

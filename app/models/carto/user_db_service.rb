@@ -26,5 +26,11 @@ module Carto
       quote_char = quote_user_schema ? "\"" : ""
       "#{quote_char}#{user_schema}#{quote_char}, #{SCHEMA_CARTODB}, #{SCHEMA_PUBLIC}"
     end
+
+
+    def load_cartodb_functions
+      #TODO: Implement
+    end
+
   end
 end

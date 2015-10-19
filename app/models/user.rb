@@ -1389,14 +1389,6 @@ class User < Sequel::Model
     end
   end
 
-  def create_public_db_user
-    in_database(as: :superuser) do |database|
-      database.run(%{ CREATE USER "#{database_public_username}" LOGIN INHERIT })
-      database.run(%{ GRANT publicuser TO "#{database_public_username}" })
-      database.run(%{ ALTER USER "#{database_public_username}" SET search_path = #{db_service.build_search_path} })
-    end
-  end
-
   def create_user_db
     conn = self.in_database(as: :cluster_admin)
     begin
@@ -1443,15 +1435,15 @@ class User < Sequel::Model
       create_user_db
       db_service.grant_owner_in_database
     end.join
-    create_importer_schema
-    create_geocoding_schema
-    load_cartodb_functions
+    db_service.create_importer_schema
+    db_service.create_geocoding_schema
+    db_service.load_cartodb_functions
 
     db_service.reset_database_permissions # Reset privileges
 
     db_service.configure_database
 
-    revoke_cdb_conf_access
+    db_service.revoke_cdb_conf_access
   end
 
   # INFO: main setup for org users
@@ -1462,16 +1454,16 @@ class User < Sequel::Model
     end.join
     create_own_schema
     db_service.setup_organization_user_schema
-    revoke_cdb_conf_access
+    db_service.revoke_cdb_conf_access
   end
 
   def create_own_schema
-    load_cartodb_functions
+    db_service.load_cartodb_functions
     self.database_schema = self.username
     this.update database_schema: database_schema
-    create_user_schema
+    db_service.create_user_schema
     db_service.set_database_search_path
-    create_public_db_user
+    db_service.create_public_db_user
   end
 
   def move_to_own_schema
@@ -1480,31 +1472,13 @@ class User < Sequel::Model
       old_database_schema_name = self.database_schema
       self.database_schema = new_schema_name
       self.this.update database_schema: self.database_schema
-      self.create_user_schema
+      db_service.create_user_schema
       db_service.rebuild_quota_trigger
-      self.move_tables_to_schema(old_database_schema_name, self.database_schema)
-      self.create_public_db_user
+      db_service.move_tables_to_schema(old_database_schema_name, self.database_schema)
+      db_service.create_public_db_user
       db_service.set_database_search_path
     end
   end
-
-  def move_tables_to_schema(old_schema, new_schema)
-    in_database(as: :superuser) do |database|
-      database.transaction do
-        real_tables(old_schema).each do |t|
-          old_name = "#{old_schema}.#{t[:relname]}"
-          new_name = "#{new_schema}.#{t[:relname]}"
-
-          was_cartodbfied = Carto::UserTable.find_by_user_id_and_name(id, t[:relname]).present?
-
-          database.run(%Q{ SELECT cartodb._CDB_drop_triggers('#{old_name}'::REGCLASS) }) if was_cartodbfied
-          database.run(%Q{ ALTER TABLE #{old_name} SET SCHEMA "#{new_schema}" })
-          database.run(%Q{ SELECT cartodb.CDB_CartodbfyTable('#{new_schema}'::TEXT, '#{new_name}'::REGCLASS) }) if was_cartodbfied
-        end
-      end
-    end
-  end
-
 
   ## User's databases setup methods
   def setup_user
@@ -1521,75 +1495,6 @@ class User < Sequel::Model
       end
     end
   end
-
-  def create_importer_schema
-    create_schema('cdb_importer')
-  end
-
-  def create_geocoding_schema
-    create_schema('cdb')
-  end
-
-  def create_user_schema
-    create_schema(self.database_schema, self.database_username)
-  end
-
-  # Attempts to create a new database schema
-  # Does not raise exception if the schema already exists
-  def create_schema(schema, role = nil)
-    in_database(as: :superuser) do |database|
-      if role
-        database.run(%Q{CREATE SCHEMA "#{schema}" AUTHORIZATION "#{role}"})
-      else
-        database.run(%Q{CREATE SCHEMA "#{schema}"})
-      end
-    end
-  rescue Sequel::DatabaseError => e
-    raise unless e.message =~ /schema .* already exists/
-  end #create_schema
-
-
-  # Cartodb functions
-  def load_cartodb_functions(statement_timeout = nil, cdb_extension_target_version = nil)
-    db_service.add_python
-
-    # Install dependencies of cartodb extension
-    in_database({
-                    as: :superuser,
-                    no_cartodb_in_schema: true
-                }) do |db|
-      db.transaction do
-
-        unless statement_timeout.nil?
-          old_timeout = db.fetch("SHOW statement_timeout;").first[:statement_timeout]
-          db.run("SET statement_timeout TO '#{statement_timeout}';")
-        end
-
-        db.run('CREATE EXTENSION plpythonu FROM unpackaged') unless db.fetch(%Q{
-            SELECT count(*) FROM pg_extension WHERE extname='plpythonu'
-          }).first[:count] > 0
-        db.run('CREATE EXTENSION schema_triggers') unless db.fetch(%Q{
-            SELECT count(*) FROM pg_extension WHERE extname='schema_triggers'
-          }).first[:count] > 0
-        db.run('CREATE EXTENSION postgis FROM unpackaged') unless db.fetch(%Q{
-            SELECT count(*) FROM pg_extension WHERE extname='postgis'
-          }).first[:count] > 0
-
-        unless statement_timeout.nil?
-          db.run("SET statement_timeout TO '#{old_timeout}';")
-        end
-      end
-    end
-
-    db_service.upgrade_cartodb_postgres_extension(statement_timeout, cdb_extension_target_version)
-
-    # We reset the connections to this database to be sure the change in default search_path is effective
-    db_service.reset_pooled_connections
-
-    db_service.rebuild_quota_trigger
-  end
-
-
 
   def monitor_user_notification
     FileUtils.touch(Rails.root.join('log', 'users_modifications'))
@@ -1763,41 +1668,6 @@ class User < Sequel::Model
 
   def invitation_token=(invitation_token)
     @invitation_token = invitation_token
-  end
-
-  def revoke_cdb_conf_access
-    errors = []
-
-    roles = [database_username]
-    if organization_owner?
-      begin
-        roles << db_service.organization_member_group_role_member_name
-      rescue => e
-        errors << "WARN: Error fetching org member role (does #{organization.name} has that role?)"
-      end
-    end
-    roles << CartoDB::PUBLIC_DB_USER
-
-    queries = []
-    roles.map do |db_role|
-      queries.concat(db_service.queries.revoke_permissions_on_cartodb_conf_queries(db_role))
-    end
-
-    queries.map do |query|
-      in_database(as: :superuser) do |database|
-        begin
-          database.run(query)
-        rescue => e
-          # We can find organizations not yet upgraded for any reason or missing roles
-          errors << e.message
-        end
-      end
-    end
-
-    errors
-  rescue => e
-    # For broken organizations
-    ["FATAL ERROR for #{name}: #{e.message}"]
   end
 
   def created_with_invitation?

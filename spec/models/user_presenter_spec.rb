@@ -125,6 +125,7 @@ describe Carto::Api::UserPresenter do
     new_data[:table_quota].should == old_data[:table_quota]
     new_data[:table_count].should == old_data[:table_count]
     new_data[:public_visualization_count].should == old_data[:public_visualization_count]
+    new_data[:all_visualization_count].should == old_data[:all_visualization_count]
     new_data[:visualization_count].should == old_data[:visualization_count]
     new_data[:failed_import_count].should == old_data[:failed_import_count]
     new_data[:success_import_count].should == old_data[:success_import_count]

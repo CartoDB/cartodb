@@ -431,6 +431,11 @@ class Table
           layer.save if decorator.layer_eligible?(layer)  # skip .save if nothing changed
         end
       end
+
+      if @data_import.create_visualization
+        @data_import.visualization_id = self.create_derived_visualization.id
+        @data_import.save
+      end
     end
     add_table_to_stats
 
@@ -534,6 +539,23 @@ class Table
     member.map.recalculate_zoom!
 
     CartoDB::Visualization::Overlays.new(member).create_default_overlays
+  end
+
+  def create_derived_visualization
+    blender = CartoDB::Visualization::TableBlender.new(self.owner, [ self ])
+    map = blender.blend
+    vis = CartoDB::Visualization::Member.new(
+      {
+        name:     beautify_name(self.name),
+        map_id:   map.id,
+        type:     CartoDB::Visualization::Member::TYPE_DERIVED,
+        privacy:  blender.blended_privacy,
+        user_id:  self.owner.id
+      }
+    )
+    CartoDB::Visualization::Overlays.new(vis).create_default_overlays
+    vis.store
+    vis
   end
 
   def before_destroy
@@ -1297,11 +1319,6 @@ class Table
     sequel.count
   end
 
-  def beautify_name(name)
-    return name unless name
-    name.tr('_', ' ').split.map(&:capitalize).join(' ')
-  end
-
   private
 
   def previous_privacy
@@ -1311,6 +1328,11 @@ class Table
 
   def importer_stats
     @importer_stats ||= CartoDB::Stats::Importer.instance
+  end
+
+  def beautify_name(name)
+    return name unless name
+    name.gsub('_', ' ').split.map(&:capitalize).join(' ')
   end
 
   def calculate_the_geom_type

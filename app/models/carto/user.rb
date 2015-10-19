@@ -45,8 +45,8 @@ class Carto::User < ActiveRecord::Base
 
   delegate [
       :database_username, :database_password, :in_database, :load_cartodb_functions, :rebuild_quota_trigger,
-      :db_size_in_bytes, :get_api_calls, :table_count, :public_visualization_count, :all_visualization_count, :visualization_count,
-      :twitter_imports_count
+      :db_size_in_bytes, :get_api_calls, :table_count, :public_visualization_count, :all_visualization_count,
+      :visualization_count, :twitter_imports_count
     ] => :service
 
 

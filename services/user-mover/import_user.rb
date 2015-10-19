@@ -181,6 +181,7 @@ module CartoDB
             end
 
             user_model = ::User.find(username: @target_username)
+            user_model.enable_remote_db_user
             user_model.db_service.configure_database
 
           elsif @options[:mode] == :rollback

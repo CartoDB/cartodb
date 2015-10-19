@@ -638,7 +638,7 @@ class DataImport < Sequel::Model
     else
       self.results    = importer.results
       self.error_code = importer.error_code
-      self.rejected_layers = importer.rejected_layers.join(',')
+      self.rejected_layers = importer.rejected_layers.join(',') if !importer.rejected_layers.empty?
 
       # http_response_code is only relevant if a direct download is performed
       if !runner.nil? && datasource_provider.providers_download_url?

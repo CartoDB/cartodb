@@ -32,7 +32,6 @@ describe Visualization::Member do
       :create_public_db_user => nil,
       :load_cartodb_functions => nil,
       :monitor_user_notification => nil,
-      :cartodb_extension_version_pre_mu? => false,
       :move_tables_to_schema => nil
     )
 
@@ -44,7 +43,8 @@ describe Visualization::Member do
       set_user_as_organization_member: nil,
       rebuild_quota_trigger: nil,
       setup_organization_user_schema: nil,
-      set_database_search_path: nil
+      set_database_search_path: nil,
+      cartodb_extension_version_pre_mu?: false
     )
 
     Organization.all.each { |org|

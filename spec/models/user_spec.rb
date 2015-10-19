@@ -1418,8 +1418,8 @@ describe User do
     end
 
     def stub_and_check_version_pre_mu(version, is_pre_mu)
-      @user.stubs(:cartodb_extension_version).returns(version)
-      @user.cartodb_extension_version_pre_mu?.should eq is_pre_mu
+      @user.db_service.stubs(:cartodb_extension_version).returns(version)
+      @user.db_service.cartodb_extension_version_pre_mu?.should eq is_pre_mu
     end
 
   end
@@ -1658,7 +1658,10 @@ describe User do
 
       ::User.any_instance.stubs(
         enable_remote_db_user: nil,
-        monitor_user_notification: nil,
+        monitor_user_notification: nil
+      )
+
+      CartoDB::User::DBService.any_instance.stubs(
         cartodb_extension_version_pre_mu?: nil
       )
 

@@ -267,7 +267,7 @@ namespace :cartodb do
           # We grant 2 x statement_timeout, by default 6 min
           Timeout::timeout(statement_timeout/1000 * 2) do
             log(sprintf("Trying on %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)...", user.username, user.database_name, i+1, count), task_name, database_host)
-            user.upgrade_cartodb_postgres_extension(statement_timeout, extension_version)
+            user.db_service.upgrade_cartodb_postgres_extension(statement_timeout, extension_version)
             log(sprintf("OK %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)", user.username, user.database_name, i+1, count), task_name, database_host)
           end
         rescue => e
@@ -594,7 +594,7 @@ namespace :cartodb do
 
       users = username.nil? ? ::User.where('organization_id IS NOT NULL') : ::User.where(username: username)
       users.each do |user|
-        if  user.cartodb_extension_version_pre_mu? || user.database_schema=='public'
+        if  user.db_service.cartodb_extension_version_pre_mu? || user.database_schema=='public'
           puts "SKIP: #{user.username} / #{user.id}"
         else
           schema_name = user.database_schema

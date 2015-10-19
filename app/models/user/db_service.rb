@@ -85,7 +85,7 @@ module CartoDB
 
       def rebuild_quota_trigger
         @user.in_database(as: :superuser) do |db|
-          if !@user.cartodb_extension_version_pre_mu? && @user.has_organization?
+          if !cartodb_extension_version_pre_mu? && @user.has_organization?
             db.run("DROP FUNCTION IF EXISTS public._CDB_UserQuotaInBytes();")
           end
 
@@ -96,7 +96,7 @@ module CartoDB
             #       a search_path before
             search_path = db.fetch("SHOW search_path;").first[:search_path]
             db.run("SET search_path TO #{SCHEMA_CARTODB}, #{SCHEMA_PUBLIC};")
-            if @user.cartodb_extension_version_pre_mu?
+            if cartodb_extension_version_pre_mu?
               db.run("SELECT CDB_SetUserQuotaInBytes(#{@user.quota_in_bytes});")
             else
               db.run("SELECT CDB_SetUserQuotaInBytes('#{@user.database_schema}', #{@user.quota_in_bytes});")
@@ -132,6 +132,84 @@ module CartoDB
         end
       end
 
+      def drop_owned_by_user(conn, role)
+        conn.run("DROP OWNED BY \"#{role}\"")
+      end
+
+      def drop_user(conn = nil, username = nil)
+        conn ||= @user.in_database(as: :cluster_admin)
+        username ||= @user.database_username
+        database_with_conflicts = nil
+        retried = false
+
+        begin
+          conn.run("DROP USER IF EXISTS \"#{username}\"")
+        rescue => e
+          if !retried && e.message =~ /cannot be dropped because some objects depend on it/
+            retried = true
+            e.message =~ /object[s]? in database (.*)$/
+            if database_with_conflicts == $1
+              raise e
+            else
+              database_with_conflicts = $1
+              revoke_all_on_database_from(conn, database_with_conflicts, username)
+              revoke_all_memberships_on_database_to_role(conn, username)
+              drop_owned_by_user(conn, username)
+              conflict_database_conn = @user.in_database(
+                as: :cluster_admin,
+                'database' => database_with_conflicts
+              )
+              drop_owned_by_user(conflict_database_conn, username)
+              ['cdb', 'cdb_importer', 'cartodb', 'public', @user.database_schema].each do |s|
+                drop_users_privileges_in_schema(s, [username])
+              end
+              retry
+            end
+          else
+            raise e
+          end
+        end
+      end
+
+      # Org users share the same db, so must only delete the schema unless he's the owner
+      def drop_organization_user(org_id, is_owner = false)
+        raise CartoDB::BaseCartoDBError.new('Tried to delete an organization user without org id') if org_id.nil?
+
+        Thread.new do
+          @user.in_database(as: :superuser) do |database|
+            if is_owner
+              schemas = ['cdb', 'cdb_importer', 'cartodb', 'public', @user.database_schema] +
+                        ::User.select(:database_schema).where(organization_id: org_id).all.collect(&:database_schema)
+              schemas.uniq.each do |s|
+                drop_users_privileges_in_schema(
+                  s,
+                  [@user.database_username, @user.database_public_username, CartoDB::PUBLIC_DB_USER])
+              end
+            end
+
+            # If user is in an organization should never have public schema, so to be safe check
+            unless @user.database_schema == SCHEMA_PUBLIC
+              drop_users_privileges_in_schema(
+                @user.database_schema,
+                [@user.database_username, @user.database_public_username, CartoDB::PUBLIC_DB_USER])
+              database.run(%{ DROP FUNCTION IF EXISTS "#{@user.database_schema}"._CDB_UserQuotaInBytes()})
+              drop_all_functions_from_schema(@user.database_schema)
+              database.run(%{ DROP SCHEMA IF EXISTS "#{@user.database_schema}" })
+            end
+          end
+
+          conn = @user.in_database(as: :cluster_admin)
+          ::User.terminate_database_connections(@user.database_name, @user.database_host)
+          drop_user(conn, @user.database_public_username)
+          if is_owner
+            conn.run("DROP DATABASE \"#{@user.database_name}\"")
+          end
+          drop_user(conn)
+        end.join
+
+        @user.monitor_user_notification
+      end
+
       def configure_extension_org_metadata_api_endpoint
         config = Cartodb.config[:org_metadata_api]
         host = config['host']
@@ -159,6 +237,86 @@ module CartoDB
         setup_organization_role_permissions
         setup_owner_permissions
         configure_extension_org_metadata_api_endpoint
+      end
+
+      def reset_pooled_connections
+        # Only close connections to this users' database
+        $pool.close_connections!(@user.database_name)
+      end
+
+      # Upgrade the cartodb postgresql extension
+      def upgrade_cartodb_postgres_extension(statement_timeout = nil, cdb_extension_target_version = nil)
+        if cdb_extension_target_version.nil?
+          cdb_extension_target_version = '0.11.1'
+        end
+
+        @user.in_database(as: :superuser, no_cartodb_in_schema: true) do |db|
+          db.transaction do
+            unless statement_timeout.nil?
+              old_timeout = db.fetch("SHOW statement_timeout;").first[:statement_timeout]
+              db.run("SET statement_timeout TO '#{statement_timeout}';")
+            end
+
+            db.run(%{
+              DO LANGUAGE 'plpgsql' $$
+              DECLARE
+                ver TEXT;
+              BEGIN
+                BEGIN
+                  SELECT cartodb.cdb_version() INTO ver;
+                EXCEPTION WHEN undefined_function OR invalid_schema_name THEN
+                  RAISE NOTICE 'Got % (%)', SQLERRM, SQLSTATE;
+                  BEGIN
+                    CREATE EXTENSION cartodb VERSION '#{cdb_extension_target_version}' FROM unpackaged;
+                  EXCEPTION WHEN undefined_table THEN
+                    RAISE NOTICE 'Got % (%)', SQLERRM, SQLSTATE;
+                    CREATE EXTENSION cartodb VERSION '#{cdb_extension_target_version}';
+                    RETURN;
+                  END;
+                  RETURN;
+                END;
+                ver := '#{cdb_extension_target_version}';
+                IF position('dev' in ver) > 0 THEN
+                  EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || 'next''';
+                  EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || '''';
+                ELSE
+                  EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || '''';
+                END IF;
+              END;
+              $$;
+            })
+
+            unless statement_timeout.nil?
+              db.run("SET statement_timeout TO '#{old_timeout}';")
+            end
+
+            obtained = db.fetch('SELECT cartodb.cdb_version() as v').first[:v]
+
+            unless cartodb_extension_semver(cdb_extension_target_version) == cartodb_extension_semver(obtained)
+              raise("Expected cartodb extension '#{cdb_extension_target_version}' obtained '#{obtained}'")
+            end
+          end
+        end
+      end
+
+      def cartodb_extension_version_pre_mu?
+        current_version = cartodb_extension_semver(cartodb_extension_version)
+        if current_version.size == 3
+          major, minor, = current_version
+          major == 0 && minor < 3
+        else
+          raise 'Current cartodb extension version does not match standard x.y.z format'
+        end
+      end
+
+      # Returns a tree elements array with [major, minor, patch] as in http://semver.org/
+      def cartodb_extension_semver(extension_version)
+        extension_version.split('.').take(3).map(&:to_i)
+      end
+
+      def cartodb_extension_version
+        @cartodb_extension_version ||= @user.in_database(as: :superuser)
+                                            .fetch('SELECT cartodb.cdb_version() AS v').first[:v]
       end
 
       def reset_user_schema_permissions

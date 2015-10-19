@@ -1,4 +1,4 @@
-// Depends on global cartodb.log and cartodb.DEBUG flag (see loadModule)
+// Depends on global cartodb.DEBUG flag (see loadModule)
 var Loader = {
 
   queue: [],
@@ -51,7 +51,7 @@ var Loader = {
     var file = "cartodb.mod." + modName + (cartodb.DEBUG ? ".uncompressed.js" : ".js");
     var src = this.getPath(file);
     if (!src) {
-      cartodb.log.error("can't find cartodb.js file");
+      throw new Error("can't find cartodb.js file");
     }
     Loader.loadScript(src);
   }

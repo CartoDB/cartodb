@@ -57,7 +57,7 @@ StaticImage.prototype = _.extend({}, MapBase.prototype, {
     this.queue = new Queue;
 
     if (!layerDefinition.user_name) {
-      cartodb.log.error("Please, specify the username");
+      throw new Error('layerDefintion.user_name is required');
       return;
     }
 
@@ -428,7 +428,7 @@ StaticImage.prototype = _.extend({}, MapBase.prototype, {
     var self = this;
 
     if (!(img instanceof HTMLImageElement)) {
-      cartodb.log.error("img should be an image");
+      throw new Error('img should be an image');
       return;
     }
 

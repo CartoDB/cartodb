@@ -1,4 +1,4 @@
-cdb.Widget.ListView = cdb.Widget.View.extend({
+cdb.geo.ui.Widget.ListView = cdb.geo.ui.Widget.View.extend({
 
   options: {
     listTemplate: '<div></div>',
@@ -25,7 +25,7 @@ cdb.Widget.ListView = cdb.Widget.View.extend({
 
   _addItem: function(mdl) {
     var $content = this.$('.js-content');
-    var v = new cdb.Widget.ListItemView({
+    var v = new cdb.geo.ui.Widget.ListItemView({
       model: mdl,
       template: this.options.listItemTemplate
     })

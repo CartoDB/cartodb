@@ -54,7 +54,6 @@ class Carto::Map < ActiveRecord::Base
   has_many :user_tables, class_name: Carto::UserTable, inverse_of: :map
 
   belongs_to :user
-  belongs_to :visualization
 
   DEFAULT_OPTIONS = {
     zoom:            3,

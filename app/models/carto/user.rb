@@ -2,6 +2,7 @@
 
 require 'active_record'
 require_relative 'user_service'
+require_relative 'user_db_service'
 require_relative 'synchronization_oauth'
 
 # TODO: This probably has to be moved as the service of the proper User Model
@@ -44,11 +45,10 @@ class Carto::User < ActiveRecord::Base
   has_many :groups, :through => :users_group
 
   delegate [
-      :database_username, :database_password, :in_database, :load_cartodb_functions, :rebuild_quota_trigger,
+      :database_username, :database_password, :in_database, :load_cartodb_functions,
       :db_size_in_bytes, :get_api_calls, :table_count, :public_visualization_count, :visualization_count,
       :twitter_imports_count, :maps_count
     ] => :service
-
 
   attr_reader :password
 
@@ -67,7 +67,7 @@ class Carto::User < ActiveRecord::Base
     return if !value.nil? && value.length < MIN_PASSWORD_LENGTH
 
     @password = value
-    self.salt = new_record? ? service.class.make_token : User.filter(:id => self.id).select(:salt).first.salt
+    self.salt = new_record? ? service.class.make_token : ::User.filter(:id => self.id).select(:salt).first.salt
     self.crypted_password = service.class.password_digest(value, salt)
   end
 
@@ -92,6 +92,10 @@ class Carto::User < ActiveRecord::Base
 
   def service
     @service ||= Carto::UserService.new(self)
+  end
+
+  def db_service
+    @db_service ||= Carto::UserDBService.new(self)
   end
 
   #                             +--------+---------+------+

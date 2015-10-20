@@ -30,7 +30,7 @@ module CartoDB
         #  'app_secret'
         #  'callback_url'
         # ]
-        # @param user User
+        # @param user ::User
         # @throws UninitializedError
         # @throws MissingConfigurationError
         def initialize(config, user)
@@ -54,7 +54,7 @@ module CartoDB
 
         # Factory method
         # @param config : {}
-        # @param user : User
+        # @param user : ::User
         # @return CartoDB::Datasources::Url::Dropbox
         def self.get_new(config, user)
           return new(config, user)

@@ -15,7 +15,7 @@ class Carto::Permission < ActiveRecord::Base
 
   ENTITY_TYPE_VISUALIZATION = 'vis'
 
-  belongs_to :owner, class_name: User, select: Carto::User::SELECT_WITH_DATABASE
+  belongs_to :owner, class_name: Carto::User, select: Carto::User::SELECT_WITH_DATABASE
   belongs_to :entity, class_name: Carto::Visualization
   # AR polymorphism does not allow for custom type mappings,
   # and it seems the only implemented type is 'viz' which translates to Visualization.

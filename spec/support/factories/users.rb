@@ -4,7 +4,7 @@ module CartoDB
     def default_user(attributes={})
       user = nil
       unless @default_test_username.nil?
-        user = User.find(:username => @default_test_username)
+        user = ::User.find(:username => @default_test_username)
       end
       if user.nil?
         user = new_user(attributes)
@@ -19,19 +19,22 @@ module CartoDB
 
       if attributes[:fake_user]
         user_class.any_instance.stubs(
-            :enable_remote_db_user => nil,
-            :after_create => nil,
-            :create_schema => nil,
-            :create_public_db_user => nil,
-            :set_database_search_path => nil,
-            :load_cartodb_functions => nil,
-            :set_user_privileges => nil,
-            :monitor_user_notification => nil,
-            :grant_user_in_database => nil,
-            :set_statement_timeouts => nil,
-            :set_user_as_organization_member => nil,
-            :cartodb_extension_version_pre_mu? => false,
-            :rebuild_quota_trigger => nil
+          :enable_remote_db_user => nil,
+          :after_create => nil,
+          :create_schema => nil,
+          :create_public_db_user => nil,
+          :load_cartodb_functions => nil,
+          :monitor_user_notification => nil,
+          :cartodb_extension_version_pre_mu? => false
+        )
+
+        CartoDB::User::DBService.any_instance.stubs(
+          grant_user_in_database: nil,
+          set_user_privileges_at_db: nil,
+          set_statement_timeouts: nil,
+          set_user_as_organization_member: nil,
+          rebuild_quota_trigger: nil,
+          set_database_search_path: nil
         )
       end
 
@@ -138,16 +141,15 @@ module CartoDB
       user.geocodings_dataset.destroy
       user.delete_external_data_imports
       user.delete_external_sources
-      CartoDB::Visualization::Collection.new.fetch(user_id: user.id).each { |v|
+      CartoDB::Visualization::Collection.new.fetch(user_id: user.id).each do |v|
         # INFO: no need for explicit children deletion, parent will delete it
         v.delete unless v.parent_id
-      }
+      end
     end
 
     def load_user_functions(user)
       user.load_cartodb_functions
-      user.rebuild_quota_trigger
+      user.db_service.rebuild_quota_trigger
     end
-
   end
 end

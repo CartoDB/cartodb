@@ -5,7 +5,7 @@ namespace :cartodb do
   task :random_table_with_lots_of_rows => :environment do
     include CartoDB::Factories
 
-    user = User[:username => 'admin']
+    user = ::User[:username => 'admin']
     puts '========================'
     puts 'Creating random table...'
     table = create_table :user_id => user.id
@@ -28,13 +28,13 @@ namespace :cartodb do
     require_relative '../../spec/support/helpers'
     include HelperMethods
 
-      Resque::ImporterJobs.enqueue(User.first.id, 
-        'wadus', 
-        '/uploads/0b4186c852395c0c16b2/ESP_adm.zip', 
-        nil, 
-        nil, 
-        nil, 
-        nil, 
+      Resque::ImporterJobs.enqueue(::User.first.id,
+        'wadus',
+        '/uploads/0b4186c852395c0c16b2/ESP_adm.zip',
+        nil,
+        nil,
+        nil,
+        nil,
         nil)
   end
 

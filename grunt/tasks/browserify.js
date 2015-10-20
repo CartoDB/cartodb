@@ -10,7 +10,12 @@ var bundles = {
   },
   'core-specs': {
     src: [
-      'test/spec/src-browserify/**/*.js'
+      'test/spec/src-browserify/core.spec.js',
+      'test/spec/src-browserify/api/sql.spec.js',
+      'test/spec/src-browserify/core/util.spec.js',
+      'test/spec/src-browserify/geo/layer-definition/*.js',
+      'test/spec/src-browserify/geo/sublayer.spec.js',
+      'test/spec/src-browserify/vis/image.spec.js',
     ],
     dest: '<%= config.tmp %>/core-specs.js'
   }

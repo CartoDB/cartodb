@@ -13,6 +13,8 @@ module.exports = {
         hostname: '0.0.0.0'
       },
 
+      // Required for source-map-support install to work in a non-headless browserify
+      // Use this instead of opening test/SpecRunner-*.html files directly
       jasmine: {
         options: {
           port: 8091,

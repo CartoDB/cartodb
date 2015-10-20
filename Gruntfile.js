@@ -138,6 +138,7 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('build', [
+    'set_current_version',
     'clean:dist',
     'css',
     'dist_js',
@@ -156,47 +157,29 @@ module.exports = function(grunt) {
 
   grunt.registerTask('css', [ 'sass' ]);
 
-  grunt.registerTask('dist', [
-    'set_current_version',
-    'build'
-  ]);
-
-  grunt.registerTask('default', [
-    'dist'
-  ]);
+  grunt.registerTask('default', [ 'build' ]);
 
   grunt.registerTask('preWatch', function() {
-    grunt.config('config.doWatchify', true);
-    try {
-      grunt.task.requires('gitinfo');
-    } catch(err) {
-      grunt.task.run('gitinfo');
-    }
+    grunt.config('config.doWatchify', true); // required for browserify to use watch files instead
   });
 
   grunt.registerTask('dev', [
     'build',
     'connect:styleguide',
-    'jasmine-server',
+    'connect:jasmine',
     'preWatch',
     'browserify',
     'watch'
   ]);
 
-  // Required for source-map-support install to work in a non-headless browserify
-  // Use this instead of opening test/SpecRunner-*.html files directly
-  grunt.registerTask('jasmine-server', 'start web server for jasmine tests in browser', function() {
-    grunt.task.run('jasmine:core:build');
+  grunt.event.once('connect.jasmine.listening', function(host, port) {
+    grunt.log.writeln('Jasmine specs available at (one per bundle):');
 
-    var specRunnerURL = function(host, port, specrunner) {
-      return 'http://' + host + ':' + port + '/' + specrunner;
+    var jasmineConfig = grunt.config('jasmine');
+    for (var name in jasmineConfig) {
+      var specRunnerFilepath = jasmineConfig[name].options.outfile;
+      grunt.task.run('jasmine:' + name + ':build')
+      grunt.log.writeln(' - http://' + host + ':' + port + '/' + specRunnerFilepath);
     }
-    grunt.event.once('connect.jasmine.listening', function(host, port) {
-      var url = specRunnerURL.bind(this, host, port);
-      var primaryURL = url('test/SpecRunner-core.html');
-      grunt.log.writeln('Jasmine specs available at: ' + primaryURL);
-    });
-
-    grunt.task.run('connect:jasmine:keepalive');
   });
 }

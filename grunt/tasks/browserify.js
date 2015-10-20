@@ -1,13 +1,26 @@
-var fs = require('fs');
+var bannerStr = function(dest) {
+  return [
+    "// cartodb.js version: <%= grunt.config.get('bump.version') %>",
+    "// uncompressed version: " + dest,
+    "// sha: <%= gitinfo.local.branch.current.SHA %>"
+  ].join("\n")
+};
 
 var bundles = {
   'core': {
     options: {
-      banner: fs.readFileSync('./grunt/templates/version_header.js', { encoding: 'utf8' })
+      banner: bannerStr('cartodb.core.uncompressed.js')
     },
     src: 'src-browserify/core.js',
     dest: '<%= config.dist %>/cartodb.core.uncompressed.js'
   },
+  // standard: {
+  //   options: {
+  //     banner: bannerStr('cartodb.uncompressed.js')
+  //   },
+  //   src: 'src-browserify/standard.js',
+  //   dest: '<%= config.dist %>/cartodb.uncompressed.js'
+  // },
   'core-specs': {
     src: [
       'test/spec/src-browserify/core.spec.js',
@@ -18,7 +31,13 @@ var bundles = {
       'test/spec/src-browserify/vis/image.spec.js',
     ],
     dest: '<%= config.tmp %>/core-specs.js'
-  }
+  },
+  'standard-specs': {
+    src: [
+      'test/spec/src-browserify/standard.spec.js',
+    ],
+    dest: '<%= config.tmp %>/standard-specs.js'
+  },
 };
 
 module.exports = {

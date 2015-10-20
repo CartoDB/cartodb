@@ -1,4 +1,6 @@
 # encoding: utf-8
+require_relative '../../../../spec/spec_helper'
+require_relative '../../../../spec/rspec_configuration'
 require_relative '../../lib/importer/runner'
 require_relative '../../lib/importer/job'
 require_relative '../../lib/importer/downloader'
@@ -12,8 +14,6 @@ require_relative '../doubles/loader'
 require_relative '../doubles/user'
 require_relative '../doubles/input_file_size_limit'
 require_relative '../doubles/table_row_count_limit'
-require_relative '../../../../spec/rspec_configuration'
-require_relative '../../../../spec/spec_helper'
 
 include CartoDB::Importer2
 

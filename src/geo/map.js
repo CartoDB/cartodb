@@ -276,9 +276,6 @@ cdb.geo.CartoDBGroupLayer = cdb.geo.MapLayer.extend({
       tiles: replaceSubdomain(urls.tiles),
       formatter: function(options, data) { return data; }
     };
-
-    // TODO: This will only work if we have urls
-    // return this.windshaftMap.getTileJSONFromTiles(layerIndex);
   },
 
   fetchAttributes: function(layer, featureID, callback) {

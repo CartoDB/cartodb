@@ -297,13 +297,7 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
 });
 
 L.CartoDBGroupLayer = L.CartoDBGroupLayerBase.extend({
-  includes: [
-    // LayerDefinition.prototype,
-  ],
-
-  _modelUpdated: function() {
-    // this.setLayerDefinition(this.model.get('layer_definition'));
-  }
+  _modelUpdated: function() {}
 });
 
 function layerView(base) {

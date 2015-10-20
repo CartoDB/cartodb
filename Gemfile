@@ -106,6 +106,9 @@ group :development, :test do
   gem 'thin',                           require: false
 end
 
+# segment metrics
+gem 'analytics-ruby', '~> 2.0.0', :require => 'segment/analytics'
+
 # Load optional engines
 # TODO activate when CartoDB plugins are finally included
 # Dir['engines' + '/*/*.gemspec'].each do |gemspec_file|

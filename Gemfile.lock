@@ -52,6 +52,7 @@ GEM
       multi_json (~> 1.0)
     addressable (2.3.2)
     aequitas (0.0.2)
+    analytics-ruby (2.0.13)
     arel (3.0.3)
     autoparse (0.3.3)
       addressable (>= 2.3.1)
@@ -337,6 +338,7 @@ DEPENDENCIES
   activerecord-postgresql-adapter
   addressable (= 2.3.2)
   aequitas (= 0.0.2)
+  analytics-ruby (~> 2.0.0)
   aws-sdk (= 1.8.5)
   bartt-ssl_requirement (~> 1.4.0)
   capybara (= 1.1.2)
@@ -397,3 +399,6 @@ DEPENDENCIES
   virtus (= 1.0.0.beta3)
   vizzuality-sequel-rails (= 0.3.7)!
   webrick (= 1.3.1)
+
+BUNDLED WITH
+   1.10.6

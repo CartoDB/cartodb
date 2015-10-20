@@ -9,8 +9,8 @@ require_relative '../../../../lib/cartodb/stats/importer'
 module CartoDB
   module Importer2
     class Georeferencer
+      DEFAULT_BATCH_SIZE = 50000
       GEOMETRY_POSSIBLE_NAMES   = %w{ geometry the_geom wkb_geometry geom geojson wkt }
-
       DEFAULT_SCHEMA            = 'cdb_importer'
       THE_GEOM_WEBMERCATOR      = 'the_geom_webmercator'
 
@@ -35,7 +35,6 @@ module CartoDB
         @from_geojson_with_transform = true
       end
 
-      # INFO: this happens before cartodbfy and after running ogr2ogr
       def run
         disable_autovacuum
 

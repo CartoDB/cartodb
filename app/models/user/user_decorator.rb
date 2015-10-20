@@ -18,6 +18,7 @@ module CartoDB
         table_quota: self.table_quota,
         table_count: self.table_count,
         public_visualization_count: self.public_visualization_count,
+        all_visualization_count: self.all_visualization_count,
         visualization_count: self.visualization_count,
         failed_import_count: self.failed_import_count,
         success_import_count: self.success_import_count,

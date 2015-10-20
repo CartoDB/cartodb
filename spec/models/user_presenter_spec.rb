@@ -24,8 +24,8 @@ describe Carto::Api::UserPresenter do
         twitter_datasource_block_price: 10,
         twitter_datasource_quota: 70000,
         soft_twitter_datasource_limit: true,
-        public_visualization_count: 20,
-        all_visualization_count: 24
+        public_visualization_count: 1,
+        all_visualization_count: 2
       })
 
     # Some sample data
@@ -76,8 +76,8 @@ describe Carto::Api::UserPresenter do
         twitter_datasource_block_price: 10,
         twitter_datasource_quota: 70000,
         soft_twitter_datasource_limit: true,
-        public_visualization_count: 20,
-        all_visualization_count: 24
+        public_visualization_count: 1,
+        all_visualization_count: 2
       })
 
     organization = ::Organization.new(quota_in_bytes: 200.megabytes, name: 'testorg', seats: 5).save

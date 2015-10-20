@@ -19,12 +19,17 @@ module CartoDB
         @importer_config = options[:importer_config]
         raise UploadError if datasource.nil?
 
+        @http_response_code = nil
         @logger = logger
         @repository   = repository || DataRepository::Filesystem::Local.new(temporary_directory)
       end
 
       def provides_stream?
         @datasource.kind_of? CartoDB::Datasources::BaseDirectStream
+      end
+
+      def http_download?
+        @datasource.providers_download_url?
       end
 
       def run(available_quota_in_bytes=nil)
@@ -101,6 +106,7 @@ module CartoDB
         if !stream_to_file && !direct_stream
           begin
             resource_data = @datasource.get_resource(@item_metadata[:id])
+            @http_response_code = @datasource.get_http_response_code if @datasource.providers_download_url?
           rescue => exception
             if exception.message =~ /quota/i
               raise StorageQuotaExceededError

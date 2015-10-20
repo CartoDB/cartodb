@@ -57,7 +57,7 @@ class Api::Json::LayersController < Api::ApplicationController
             @parent.save
           end
 
-          render_jsonp CartoDB::LayerModule::Presenter.new(@layer, {:viewer_user => current_user}).to_poro
+          render_jsonp CartoDB::LayerModule::Presenter.new(@layer, viewer_user: current_user).to_poro
         else
           CartoDB::Logger.info "Error on layers#create", @layer.errors.full_messages
           render_jsonp( { :description => @layer.errors.full_messages,
@@ -91,10 +91,10 @@ class Api::Json::LayersController < Api::ApplicationController
         end
 
         if layers.count > 1
-          layers_json = layers.map { |l| CartoDB::LayerModule::Presenter.new(l, {:viewer_user => current_user}).to_poro }
+          layers_json = layers.map { |l| CartoDB::LayerModule::Presenter.new(l, viewer_user: current_user).to_poro }
           render_jsonp({ layers: layers_json })
         else
-          render_jsonp CartoDB::LayerModule::Presenter.new(layers[0], {:viewer_user => current_user}).to_poro
+          render_jsonp CartoDB::LayerModule::Presenter.new(layers[0], viewer_user: current_user).to_poro
         end
       rescue Sequel::ValidationFailed, RuntimeError => e
         render_jsonp({ description: e.message }, 400)

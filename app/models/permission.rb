@@ -115,7 +115,7 @@ module CartoDB
         end
         temp_new_acl[i[:type]][i[:id]] = i
       end
-      
+
       # Iterate through the new acl and compare elements with the old one
       permissions_change = {}
       temp_new_acl.each do |pt, pv|
@@ -274,12 +274,12 @@ module CartoDB
       self.acl = new_acl
     end
 
-    # @return User|nil
+    # @return ::User|nil
     def owner
-      @owner ||= User[self.owner_id] # See http://sequel.jeremyevans.net/rdoc-plugins/classes/Sequel/Plugins/Caching.html
+      @owner ||= ::User[self.owner_id] # See http://sequel.jeremyevans.net/rdoc-plugins/classes/Sequel/Plugins/Caching.html
     end
 
-    # @param value User
+    # @param value ::User
     def owner=(value)
       @owner = value
       self.owner_id = value.id
@@ -345,7 +345,7 @@ module CartoDB
       destroy_shared_entities
     end
 
-    # @param subject User
+    # @param subject ::User
     # @return String Permission::ACCESS_xxx
     def permission_for_user(subject)
       permission = nil
@@ -398,7 +398,7 @@ module CartoDB
     end
 
     # Note: Does not check ownership
-    # @param subject User
+    # @param subject ::User
     # @param access String Permission::ACCESS_xxx
     def is_permitted?(subject, access)
       permission = permission_for_user(subject)
@@ -485,7 +485,7 @@ module CartoDB
           entry[:id]
       }
 
-      User.where(id: user_ids).all
+      ::User.where(id: user_ids).all
     end
 
     private
@@ -517,7 +517,7 @@ module CartoDB
         end
       end
 
-      dependent_visualizations.each do |visualization| 
+      dependent_visualizations.each do |visualization|
         # check permissions, if the owner does not have permissions
         # to see the table the visualization is removed
         perm = visualization.permission
@@ -538,7 +538,7 @@ module CartoDB
               entity.table.remove_organization_access
             end
             users.each { |user|
-              entity.table.remove_access(User.where(id: user[:id]).first)
+              entity.table.remove_access(::User.where(id: user[:id]).first)
             }
             # update_db_group_permission check is needed to avoid updating db requests
             if @update_db_group_permission != false
@@ -557,7 +557,7 @@ module CartoDB
       if shared_entity.recipient_type == CartoDB::SharedEntity::RECIPIENT_TYPE_ORGANIZATION
         permission_strategy = OrganizationPermission.new
       else
-        u = User.where(id: shared_entity[:recipient_id]).first
+        u = ::User.where(id: shared_entity[:recipient_id]).first
         permission_strategy = UserPermission.new(u)
       end
 
@@ -570,7 +570,7 @@ module CartoDB
           end
           table = entity.table
 
-          # check ownership 
+          # check ownership
           if not self.owner_id == entity.permission.owner_id
             raise PermissionError.new('Trying to change permissions to a table without ownership')
           end

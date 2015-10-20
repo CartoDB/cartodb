@@ -1,8 +1,6 @@
 require_relative '../spec_helper'
 
 require_relative '../../app/models/visualization/collection'
-require_relative '../../app/models/organization.rb'
-require_relative '../../services/relocator/worker'
 require_relative 'organization_shared_examples'
 
 include CartoDB
@@ -53,8 +51,9 @@ describe Organization do
     end
 
     it 'Destroys users and owner as well' do
-      User.any_instance.stubs(:create_in_central).returns(true)
-      User.any_instance.stubs(:update_in_central).returns(true)
+      pending "Adapt to User-Mover when ready"
+      ::User.any_instance.stubs(:create_in_central).returns(true)
+      ::User.any_instance.stubs(:update_in_central).returns(true)
 
       organization = Organization.new(quota_in_bytes: 1234567890, name: 'wadus', seats: 5).save
 
@@ -64,16 +63,15 @@ describe Organization do
       owner.reload
       organization.reload
 
-      user = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
-      CartoDB::Relocator::Worker.organize(user, organization)
+      user = create_user(quota_in_bytes: 524288000, table_quota: 500, organization_id: organization.id)
       user.save
       user.reload
       organization.reload
 
       organization.destroy_cascade
       Organization.where(id: organization.id).first.should be nil
-      User.where(id: user.id).first.should be nil
-      User.where(id: owner.id).first.should be nil
+      ::User.where(id: user.id).first.should be nil
+      ::User.where(id: owner.id).first.should be nil
     end
 
     it 'destroys its groups through the extension' do
@@ -108,7 +106,7 @@ describe Organization do
       @user.organization = organization
       @user.save
 
-      user = User.where(username: username).first
+      user = ::User.where(username: username).first
       user.should_not be nil
 
       user.organization_id.should_not eq nil
@@ -154,8 +152,9 @@ describe Organization do
   describe '#org_members_and_owner_removal' do
 
     it 'Tests removing a normal member from the organization' do
-      User.any_instance.stubs(:create_in_central).returns(true)
-      User.any_instance.stubs(:update_in_central).returns(true)
+      pending "Adapt to User-Mover when ready"
+      ::User.any_instance.stubs(:create_in_central).returns(true)
+      ::User.any_instance.stubs(:update_in_central).returns(true)
 
       org_name = "wadus#{rand(10000)}"
       organization = Organization.new(quota_in_bytes: 1234567890, name: org_name, seats: 5).save
@@ -169,12 +168,10 @@ describe Organization do
       owner.reload
 
       member1 = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
-      CartoDB::Relocator::Worker.organize(member1, organization)
       member1.reload
       organization.reload
 
       member2 = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
-      CartoDB::Relocator::Worker.organize(member2, organization)
       member2.reload
 
       organization.users.count.should eq 3
@@ -222,16 +219,16 @@ describe Organization do
 
   describe '#non_org_user_removal' do
     it 'Tests removing a normal user' do
-      initial_count = User.all.count
+      initial_count = ::User.all.count
 
       user = create_user(:quota_in_bytes => 524288000, :table_quota => 50)
 
-      User.all.count.should eq (initial_count + 1)
+      ::User.all.count.should eq (initial_count + 1)
 
       user.destroy
 
-      User.all.count.should eq initial_count
-      User.all.collect(&:id).should_not include(user.id)
+      ::User.all.count.should eq initial_count
+      ::User.all.collect(&:id).should_not include(user.id)
     end
   end
 
@@ -278,7 +275,7 @@ describe Organization do
   describe '#org_shared_vis' do
     it "checks fetching all shared visualizations of an organization's members " do
       CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
-      
+
       # Don't check/handle DB permissions
       Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
       Permission.any_instance.stubs(:grant_db_permission).returns(nil)
@@ -382,7 +379,7 @@ describe Organization do
       @organization.destroy
     end
     it "should return the sum of the api_calls for all organization users" do
-      User.any_instance.stubs(:get_api_calls).returns (0..30).to_a
+      ::User.any_instance.stubs(:get_api_calls).returns (0..30).to_a
       @organization.get_api_calls.should == (0..30).to_a.sum * @organization.users.size
     end
   end

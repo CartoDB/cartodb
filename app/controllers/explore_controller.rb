@@ -27,6 +27,6 @@ class ExploreController < ApplicationController
 
   def get_viewed_user
     username = CartoDB.extract_subdomain(request).strip.downcase
-    @viewed_user = User.where(username: username).first
+    @viewed_user = ::User.where(username: username).first
   end
 end

@@ -3,7 +3,7 @@ require_relative '../spec_helper'
 
 describe DataImport do
   before(:each) do
-    User.all.each(&:destroy)
+    ::User.all.each(&:destroy)
     @user = create_user(:username => 'test', :email => "client@example.com", :password => "clientex")
     @table = create_table :user_id => @user.id
   end
@@ -75,7 +75,7 @@ describe DataImport do
     previous_table_quota = @user.table_quota
     @user.table_quota = 0
     @user.save
-    
+
     data_import = DataImport.create(
       :user_id       => @user.id,
       :data_source   => '/../db/fake_data/clubbing.csv',
@@ -205,7 +205,7 @@ describe DataImport do
 
     Dir.exists?(file_path).should be_false
   end
-  
+
   it 'should add a common_data extra_option' do
     DataImport.any_instance.stubs(:from_common_data?).returns(true)
     data_import = DataImport.create(
@@ -215,7 +215,7 @@ describe DataImport do
     data_import.reload
     data_import.extra_options[:common_data].should eq true
   end
-  
+
   it 'should know that the import is from common data' do
     Cartodb.config[:common_data]['username'] = 'mycommondata'
     Cartodb.config[:common_data]['host'] = 'cartodb.wadus.com'
@@ -225,7 +225,7 @@ describe DataImport do
     )
     data_import.from_common_data?.should eq true
   end
-  
+
   it 'should not consider a import as common data if common_data config does not exist' do
     Cartodb.config.delete('common_data')
     data_import = DataImport.create(
@@ -234,7 +234,7 @@ describe DataImport do
     )
     data_import.from_common_data?.should eq false
   end
-  
+
   it 'should not consider a import as common data if common_data config does not match with url' do
     Cartodb.config[:common_data]['username'] = 'mycommondata'
     Cartodb.config[:common_data]['host'] = 'cartodb.wadus.com'
@@ -254,8 +254,8 @@ describe DataImport do
 
     it 'allows messages to be appended' do
       data_import   = DataImport.new(
-                        user_id:    1, 
-                        table_name: 'foo', 
+                        user_id:    1,
+                        table_name: 'foo',
                         from_query: 'bogus'
                       )
       data_import.log << 'sample message'
@@ -265,8 +265,8 @@ describe DataImport do
 
     it 'is fetched after retrieving the data_import object from DB' do
       data_import   = DataImport.new(
-                        user_id:    1, 
-                        table_name: 'foo', 
+                        user_id:    1,
+                        table_name: 'foo',
                         from_query: 'bogus'
                       )
       data_import.log << 'sample message'

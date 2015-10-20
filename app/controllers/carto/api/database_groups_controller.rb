@@ -14,6 +14,15 @@ module Carto
 
       ssl_required :create, :update, :destroy, :add_users, :remove_users, :update_permission, :destroy_permission
 
+      # Allow HTTPS on local/test as the calls from the groups API are done sending a https X-Forwarded-Proto,
+      #  like simulating they come from https:
+      # @see https://github.com/CartoDB/cartodb-postgresql/blob/bce61c1e4359653134134097d269edae581e5660/scripts-available/CDB_Groups_API.sql#L170
+      # Without it, SSL is forbidden and a 302 to url "without HTTP" was returned so the API didn't work on testing
+
+      def ssl_allowed?
+        Rails.env.development? || Rails.env.test?
+      end
+
       before_filter :authenticate_extension
       before_filter :load_parameters
       before_filter :load_mandatory_group, :only => [:destroy, :add_users, :remove_users, :update_permission, :destroy_permission]

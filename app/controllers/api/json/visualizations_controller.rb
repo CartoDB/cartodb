@@ -416,7 +416,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       end
 
     elsif params[:tables]
-      viewed_user = User.find(:username => CartoDB.extract_subdomain(request))
+      viewed_user = ::User.find(:username => CartoDB.extract_subdomain(request))
       tables = @stats_aggregator.timing('locate-table') do
           params[:tables].map { |table_name|
           if viewed_user

@@ -1,0 +1,25 @@
+// Default styles for widgets
+// --------------------------------------------------
+
+@import '../variables/sizes';
+@import '../variables/mixins';
+
+
+.Widget-loader {
+  @include css3-prefix(animation, loader-progress 1800ms linear infinite);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  z-index: 10;
+}
+
+@include keyframes(loader-progress) {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 100%;
+  }
+}

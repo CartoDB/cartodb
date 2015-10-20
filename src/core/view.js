@@ -7,6 +7,7 @@
   var View = cdb.core.View = Backbone.View.extend({
     classLabel: 'cdb.core.View',
     constructor: function(options) {
+      this.options = _.defaults(options, this.options);
       this._models = [];
       this._subviews = {};
       Backbone.View.call(this, options);

@@ -41,7 +41,7 @@ module.exports = {
           src: [ '**/*.{png,jpg,gif}' ],
           dest: '<%= config.dist %>/themes/img'
         }]
-      },
+      }
     }
   }
 }

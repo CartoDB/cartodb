@@ -23,15 +23,11 @@ describe("Image", function() {
   });
 
   it("should use the basemap defined in the vizjson", function(done) {
-
     var vizjson = "http://documentation.cartodb.com/api/v2/viz/318ab654-c989-11e4-97c6-0e9d821ea90d/viz.json"
-
     var image = cartodb.Image(vizjson).size(640, 480);
-
-    var basemap = { options: { visible: true, type: 'Tiled', urlTemplate: 'https://{s}.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day/{z}/{x}/{y}/256/png8?lg=eng&token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24', subdomains: '1234', name: 'Nokia Day', className: 'nokia_day', attribution: "©2012 Nokia <a href='http://here.net/services/terms' target='_blank'>Terms of use</a>" }, infowindow: null, tooltip: null, id: '2c4a8c5e-2ba5-4068-8807-d916a01b48d5', order: 0, parent_id: null, children: [  ], type: 'tiled' }
-
+    var basemapURLTemplate = 'https://{s}.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day/{z}/{x}/{y}/256/png8?lg=eng&token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24';
     image.getUrl(function() {
-      expect(image.imageOptions.basemap).toEqual(basemap);
+      expect(image.imageOptions.basemap.options.urlTemplate).toEqual(basemapURLTemplate);
       done();
     });
 
@@ -154,7 +150,7 @@ describe("Image", function() {
 
   });
 
-  it("shouldn't use hidden layers to generate the image", function(done) { 
+  it("shouldn't use hidden layers to generate the image", function(done) {
 
     var vizjson = "http://documentation.cartodb.com/api/v2/viz/42e98b9a-bcce-11e4-9d68-0e9d821ea90d/viz.json";
 
@@ -535,7 +531,7 @@ describe("Image", function() {
   it("should send the auth_tokens", function(done) {
 
     var vizjson = "http://documentation.cartodb.com/api/v2/viz/e11db0aa-d77e-11e4-9039-0e853d047bba/viz.json"
-    var json = {"id":"e11db0aa-d77e-11e4-9039-0e853d047bba","version":"0.1.0","title":"password_protected_map","likes":0,"description":null,"scrollwheel":false,"legends":true,"url":null,"map_provider":"leaflet","bounds":[[0.0,0.0],[0.0,0.0]],"center":"[30, 0]","zoom":3,"updated_at":"2015-03-31T08:21:18+00:00","layers":[{"options":{"visible":true,"type":"Tiled","urlTemplate":"http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png","subdomains":"1234","name":"Positron","className":"positron_rainbow","attribution":"\u00a9 <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors \u00a9 <a href=\"http://cartodb.com/attributions\">CartoDB</a>"},"infowindow":null,"tooltip":null,"id":"c850d654-ab61-441d-9860-b3c2e42424fb","order":0,"parent_id":null,"children":[],"type":"tiled"},{"type":"namedmap","order":1,"options":{"type":"namedmap","user_name":"documentation","tiler_protocol":"https","tiler_domain":"cartodb.com","tiler_port":"443","cdn_url":{"http":"api.cartocdn.com","https":"cartocdn.global.ssl.fastly.net"},"dynamic_cdn":false,"named_map":{"name":"tpl_e11db0aa_d77e_11e4_9039_0e853d047bba","stat_tag":"e11db0aa-d77e-11e4-9039-0e853d047bba","params":{"layer0":1},"layers":[{"layer_name":"untitled_table_5","interactivity":"cartodb_id","visible":true}]}}}],"overlays":[{"type":"logo","order":9,"options":{"display":true,"x":10,"y":40},"template":""},{"type":"loader","order":8,"options":{"display":true,"x":20,"y":150},"template":"<div class=\"loader\" original-title=\"\"></div>"},{"type":"zoom","order":6,"options":{"display":true,"x":20,"y":20},"template":"<a href=\"#zoom_in\" class=\"zoom_in\">+</a> <a href=\"#zoom_out\" class=\"zoom_out\">-</a>"},{"type":"search","order":3,"options":{"display":true,"x":60,"y":20},"template":""},{"type":"share","order":2,"options":{"display":true,"x":20,"y":20},"template":""}],"prev":null,"next":null,"transition_options":{"time":0},"auth_tokens":["e900fe76cc3c1eed4fc018d027d82c8b0e59b2c484d1941954f34b4818a5d660"]}
+    var json = {"id":"e11db0aa-d77e-11e4-9039-0e853d047bba","version":"0.1.0","title":"password_protected_map","likes":0,"description":null,"scrollwheel":false,"legends":true,"url":null,"map_provider":"leaflet","bounds":[[0.0,0.0],[0.0,0.0]],"center":"[30, 0]","zoom":3,"updated_at":"2015-03-31T08:21:18+00:00","layers":[{"options":{"visible":true,"type":"Tiled","urlTemplate":"http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png","subdomains":"1234","name":"Positron","className":"positron_rainbow","attribution":"\u00a9 <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors \u00a9 <a href=\"http://cartodb.com/attributions\">CartoDB</a>"},"infowindow":null,"tooltip":null,"id":"c850d654-ab61-441d-9860-b3c2e42424fb","order":0,"type":"tiled"},{"type":"namedmap","order":1,"options":{"type":"namedmap","user_name":"documentation","tiler_protocol":"https","tiler_domain":"cartodb.com","tiler_port":"443","cdn_url":{"http":"api.cartocdn.com","https":"cartocdn.global.ssl.fastly.net"},"dynamic_cdn":false,"named_map":{"name":"tpl_e11db0aa_d77e_11e4_9039_0e853d047bba","stat_tag":"e11db0aa-d77e-11e4-9039-0e853d047bba","params":{"layer0":1},"layers":[{"layer_name":"untitled_table_5","interactivity":"cartodb_id","visible":true}]}}}],"overlays":[{"type":"logo","order":9,"options":{"display":true,"x":10,"y":40},"template":""},{"type":"loader","order":8,"options":{"display":true,"x":20,"y":150},"template":"<div class=\"loader\" original-title=\"\"></div>"},{"type":"zoom","order":6,"options":{"display":true,"x":20,"y":20},"template":"<a href=\"#zoom_in\" class=\"zoom_in\">+</a> <a href=\"#zoom_out\" class=\"zoom_out\">-</a>"},{"type":"search","order":3,"options":{"display":true,"x":60,"y":20},"template":""},{"type":"share","order":2,"options":{"display":true,"x":20,"y":20},"template":""}],"prev":null,"next":null,"transition_options":{"time":0},"auth_tokens":["e900fe76cc3c1eed4fc018d027d82c8b0e59b2c484d1941954f34b4818a5d660"]}
 
     StaticImage.prototype.load = function(vizjson, options) {
 

@@ -10,8 +10,9 @@ module.exports = {
       dist: {
         src: [
           "vendor/jquery.min.js",
-          "vendor/underscore-min.js",
+          "vendor/underscore.js",
           "vendor/backbone.js",
+          "vendor/d3.js",
           "vendor/leaflet.js",
           "vendor/wax.cartodb.js",
           "vendor/mustache.js",

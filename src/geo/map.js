@@ -510,7 +510,7 @@ cdb.geo.Map = cdb.core.Model.extend({
   },
 
   getLayerByCid: function(cid) {
-    return this.layers.getByCid(cid);
+    return this.layers.get(cid);
   },
 
   _adjustZoomtoLayer: function(layer) {
@@ -547,7 +547,7 @@ cdb.geo.Map = cdb.core.Model.extend({
   },
 
   removeLayerByCid: function(cid) {
-    var layer = this.layers.getByCid(cid);
+    var layer = this.layers.get(cid);
 
     if (layer) this.removeLayer(layer);
     else cdb.log.error("There's no layer with cid = " + cid + ".");

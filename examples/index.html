@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <title>CartoDB.js load example</title>
     <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
-    <script src="/src/cartodb.js?4"></script>
+    <link rel="stylesheet" href="/dist/themes/css/cartodb.css" />
+    <script src="/src/cartodb.js"></script>
     <style type="text/css">
       html, body {
         position:relative;
@@ -18,11 +19,6 @@
         position: absolute;
         bottom: 30px;
         right: 20px;
-        width: 200px;
-        height: 200px;
-        background: white;
-        padding: 10px;
-        overflow-y: auto;
       }
     </style>
   </head>
@@ -30,13 +26,37 @@
     <div id="map"></div>
 
     <script type="text/template" id="list_template">
-      <div class="Widget-title"><strong><%= title %></strong></div>
+      <div class="Widget-header">
+        <div class="Widget-title Widget-contentSpaced">
+          <h3 class="Widget-textBig"><%= title %></h3>
+        </div>
+        <dl class="Widget-info">
+          <dt class="Widget-infoItem Widget-textSmaller Widget-textSmaller--upper"><%= itemsCount %> places</dt>
+        </dl>
+      </div>
       <div class="Widget-content js-content">
+        <ul class="Widget-list Widget-list--withBorders">
+          <li class="Widget-listItem Widget-listItem--withBorders Widget-listItem--fake"></li>
+          <li class="Widget-listItem Widget-listItem--withBorders Widget-listItem--fake"></li>
+          <li class="Widget-listItem Widget-listItem--withBorders Widget-listItem--fake"></li>
+          <li class="Widget-listItem Widget-listItem--withBorders Widget-listItem--fake"></li>
+        </ul>
       </div>
     </script>
 
     <script type="text/template" id="list_item_template">
-      <p><%= district %>: <%= trees %></p>
+      <button type="button" class="Widget-listItemButton">
+        <div class="Widget-contentSpaced Widget-contentSpaced--topAligned Widget-contentSpaced--start">
+          <em class="Widget-dot Widget-listDot"></em>
+          <div class="Widget-contentFull">
+            <p class="Widget-textSmall Widget-textSmall--upper"><%= district %></p>
+            <dl class="Widget-textSmaller Widget-textSmaller--noEllip u-tSpace">
+              <dd class="Widget-textSmaller--bold Widget-textSmaller--dark"><%= trees %></dd>
+              <dt>trees</dt>
+            </dl>
+          </div>
+        </div>
+      </button>
     </script>
 
     <script>
@@ -385,7 +405,7 @@
                   "sql": "SELECT COUNT(a.cartodb_id) as trees, b.n_distri as district FROM arboles as a INNER JOIN districtes_barcelona as b ON ST_Intersects(a.the_geom, b.the_geom) GROUP BY b.n_distri",
                   "title": "Árboles por distrito",
                   "columns": [
-                    "trees", 
+                    "trees",
                     "district"
                   ],
                   "listTemplate": $("#list_template").html(),

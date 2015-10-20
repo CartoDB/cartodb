@@ -1,0 +1,21 @@
+// Filter element styles
+// --------------------------------------------------
+
+@import '../variables/sizes';
+@import '../variables/mixins';
+
+.Widget-filter {
+  width: 100%;
+  margin: 5px 0;
+}
+.Widget-filterButtons {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center);
+}
+.Widget-filterButton {
+  margin-right: 8px;
+  &:last-child {
+    margin-right: 0;
+  }
+}

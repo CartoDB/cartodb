@@ -36,9 +36,10 @@
 
     cdb.files = [
         "../vendor/jquery.min.js",
-        "../vendor/underscore-min.js",
+        "../vendor/underscore.js",
         "../vendor/json2.js",
         "../vendor/backbone.js",
+        "../vendor/d3.js",
         "../vendor/mustache.js",
 
         "../vendor/leaflet.js",
@@ -90,6 +91,8 @@
         'geo/ui/widget.js',
         'geo/ui/widgets/widget_model.js',
         'geo/ui/widgets/widget_collection.js',
+        'geo/ui/widgets/loader.js',
+        'geo/ui/widgets/list/list_paginator_view.js',
         'geo/ui/widgets/list/list_item_view.js',
         'geo/ui/widgets/list/list_model.js',
         'geo/ui/widgets/list/list_view.js',

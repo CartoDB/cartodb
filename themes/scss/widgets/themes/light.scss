@@ -1,0 +1,125 @@
+// Template light
+// --------------------------------------------------
+
+@import '../../variables/mixins';
+
+.Widget--light {
+  $primary: rgba(#2E3C43, 1);
+  $secondary: rgba(#636D72, 1);
+  $disabled: rgba(#CBCED0, 1);
+  $elementBkg: rgba(#EEE, 1);
+  $elementBkgHover: rgba(#AAA, 1);
+  $elementBorder: rgba(#EEE, 1);
+  $link: rgba(#3AA9E3, 1);
+  $linkHover: rgba(#227DBD, 1);
+  $highlighted: rgba(#9DE0AD, 1);
+  $positive: rgba(#8FB83F, 1);
+  $negative: rgba(#F15743, 1);
+  $loadingBkg: rgba(#F9F9F9, 1);
+
+  background: rgba(#FFF, 1);
+
+  .Widget-textBig,
+  .Widget-textNormal,
+  .Widget-textSmall {
+    color: $primary;
+  }
+  .Widget-textSmaller {
+    color: $secondary;
+  }
+  .Widget-textSmaller--dark {
+    color: $primary;
+  }
+  .Widget-link {
+    color: $link;
+    &:hover {
+      color: $linkHover;
+    }
+  }
+  .Widget-progressBar {
+    background: $elementBkg;
+  }
+  .Widget-progressState {
+    background: $highlighted;
+  }
+  .Widget-progressState--positive {
+    background: $positive;
+  }
+  .Widget-progressState--negative {
+    background: $negative;
+  }
+
+  .Widget-dot {
+    background: $highlighted;
+  }
+  .Widget-dot--navigation {
+    background: $elementBkg;
+    &:hover {
+      background: $elementBkgHover;
+    }
+  }
+  .Widget-dot--navigation.is-selected {
+    background: $secondary;
+  }
+
+  .Widget-list--withBorders {
+    border-top: 1px solid $elementBorder;
+    border-bottom: 1px solid $elementBorder;
+  }
+  .Widget-listItem--withBorders {
+    border-bottom: 1px solid $elementBorder;
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .Widget-listItem--fake:after,
+  .Widget-listItem--fake:before {
+    background-color: $loadingBkg;
+  }
+
+  .Widget-loader {
+    background: $link;
+  }
+
+  .Widget-arrow:after,
+  .Widget-arrow:before {
+    background-color: $link;
+  }
+  .Widget-arrow:hover {
+    &:after,
+    &:before {
+      background-color: $linkHover;
+    }
+  }
+
+  .Widget-lens {
+    &:after {
+      border-color: $link;
+    }
+    &:before {
+      background: $link;
+    }
+  }
+  .Widget-lens:hover {
+    &:after {
+      border-color: $linkHover;
+    }
+    &:before {
+      background: $linkHover;
+    }
+  }
+
+  // States
+  .is-disabled {
+    .Widget-textNormal,
+    .Widget-textSmall,
+    .Widget-textSmaller,
+    .Widget-textSmaller--dark {
+      color: $disabled;
+    }
+    .Widget-progressState {
+      background: $disabled !important; // Preventing problems with inline colors
+    }
+  }
+}

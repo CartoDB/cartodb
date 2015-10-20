@@ -40,17 +40,6 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
     // Set options
     L.Util.setOptions(this, options);
 
-    // // Some checks
-    // if (!options.layer_definition && !options.sublayers) {
-    //     throw new Error('cartodb-leaflet needs at least the layer_definition or sublayer list');
-    // }
-
-    // if(!options.layer_definition) {
-    //   this.options.layer_definition = LayerDefinition.layerDefFromSubLayers(options.sublayers);
-    // }
-
-    // LayerDefinition.call(this, this.options.layer_definition, this.options);
-
     this.fire = this.trigger;
 
     CartoDBLayerCommon.call(this);

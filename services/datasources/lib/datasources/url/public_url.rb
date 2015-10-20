@@ -22,6 +22,7 @@ module CartoDB
           @http_connect_timeout = config.fetch(:http_connect_timeout, 60)
           @service_name = DATASOURCE_NAME
           @headers = nil
+          @response = nil
         end
 
         # Factory method
@@ -35,6 +36,10 @@ module CartoDB
         # @return bool
         def providers_download_url?
           true
+        end
+
+        def get_http_response_code
+          @response.code if !@response.nil? && !@response.code.nil?
         end
 
         # Perform the listing and return results
@@ -58,6 +63,10 @@ module CartoDB
           raise DataDownloadTimeoutError.new(DATASOURCE_NAME) if response.timed_out?
 
           raise DataDownloadError.new("get_resource() #{id}", DATASOURCE_NAME) unless response.code.to_s =~ /\A[23]\d+/
+
+          # To be used in when try to retrieve the http response code
+          @response = response
+
           response.response_body
         end
 

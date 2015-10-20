@@ -6,7 +6,7 @@ module CartoDB
   class PermissionUserPresenter
 
     def decorate(user_id)
-      decorate_user(User.where(id: user_id).first)
+      decorate_user(::User.where(id: user_id).first)
     end
 
     def decorate_user(user)

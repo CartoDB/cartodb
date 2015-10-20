@@ -9,8 +9,8 @@ namespace :cartodb do
     #################
     desc 'Load table oids'
     task :load_oids => :environment do
-      count = User.count
-      User.all.each_with_index do |user, i|
+      count = ::User.count
+      ::User.all.each_with_index do |user, i|
         begin
           user.link_outdated_tables
           printf "OK %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, i, count
@@ -23,8 +23,8 @@ namespace :cartodb do
 
     desc 'Copy user api_keys from redis to postgres'
     task :copy_api_keys_from_redis => :environment do
-      count = User.count
-      User.all.each_with_index do |user, i|
+      count = ::User.count
+      ::User.all.each_with_index do |user, i|
         begin
           user.this.update api_key: $users_metadata.HGET(user.key, 'map_key')
           raise 'No API key!!' if user.reload.api_key.blank?
@@ -60,9 +60,9 @@ namespace :cartodb do
       dryrun = args[:dryrun] == 'false' ? 'false' : 'true'
 
       if database_host.nil?
-        count = User.count
+        count = ::User.count
       else
-        count = User.where(database_host: database_host).count
+        count = ::User.where(database_host: database_host).count
       end
       execute_on_users_with_index(:remove_duplicate_indexes.to_s, Proc.new { |user, i|
         begin
@@ -139,9 +139,9 @@ namespace :cartodb do
       dryrun = args[:dryrun] == 'false' ? 'false' : 'true'
 
       if database_host.nil?
-        count = User.count
+        count = ::User.count
       else
-        count = User.where(database_host: database_host).count
+        count = ::User.where(database_host: database_host).count
       end
       execute_on_users_with_index(:unregister_extraneous_cartodb_members.to_s, Proc.new { |user, i|
         begin
@@ -227,9 +227,9 @@ namespace :cartodb do
       puts "statement_timeout: #{statement_timeout}"
 
       if database_host.nil?
-        count = User.count
+        count = ::User.count
       else
-        count = User.where(database_host: database_host).count
+        count = ::User.where(database_host: database_host).count
       end
       execute_on_users_with_index(task_name, Proc.new { |user, i|
         begin
@@ -260,9 +260,9 @@ namespace :cartodb do
       puts "sleep: #{sleep}"
       puts "statement_timeout: #{statement_timeout}"
 
-      count = User.where(database_host: database_host).count
+      count = ::User.where(database_host: database_host).count
 
-      User.where(database_host: database_host).order(Sequel.asc(:created_at)).each_with_index do |user, i|
+      ::User.where(database_host: database_host).order(Sequel.asc(:created_at)).each_with_index do |user, i|
         begin
           # We grant 2 x statement_timeout, by default 6 min
           Timeout::timeout(statement_timeout/1000 * 2) do
@@ -281,15 +281,15 @@ namespace :cartodb do
 
     desc 'Install/upgrade Varnish trigger for a single user'
     task :load_varnish_trigger_user, [:username] => :environment do |t, args|
-      user = User.find(username: args[:username])
-      user.create_function_invalidate_varnish
+      user = ::User.find(username: args[:username])
+      user.db_service.create_function_invalidate_varnish
     end
 
     desc 'Move user to its own schema'
     task :move_user_to_schema, [:username] => :environment do |t, args|
-      user = User.find(username: args[:username])
+      user = ::User.find(username: args[:username])
       user.move_to_own_schema
-      user.setup_schema
+      user.db_service.setup_organization_user_schema
       user.save
     end
 
@@ -301,13 +301,13 @@ namespace :cartodb do
       sleep = args[:sleep].blank? ? 5 : args[:sleep].to_i
 
       if database_host.nil?
-        count = User.count
+        count = ::User.count
       else
-        count = User.where(database_host: database_host).count
+        count = ::User.where(database_host: database_host).count
       end
       execute_on_users_with_index(:load_varnish_trigger.to_s, Proc.new { |user, i|
           begin
-            user.create_function_invalidate_varnish
+            user.db_service.create_function_invalidate_varnish
             log(sprintf("OK %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, user.database_name, i+1, count), :load_varnish_trigger.to_s, database_host)
             sleep(sleep)
           rescue => e
@@ -342,34 +342,41 @@ namespace :cartodb do
     ##########################################
     desc 'Set organization member group role'
     task :set_user_as_organization_member => :environment do
-      User.all.each do |user|
+      ::User.all.each do |user|
         next if !user.respond_to?('database_name') || user.database_name.blank?
-        user.set_user_as_organization_member
+        user.db_service.set_user_as_organization_member
       end
     end
 
     ##############
     # SET DB PERMS
     ##############
-    desc "Set DB Permissions"
-    task :set_permissions => :environment do
-      User.all.each do |user|
+    desc "Set/Fix DB Permissions"
+    task set_permissions: :environment do
+      ::User.all.each do |user|
         next if !user.respond_to?('database_name') || user.database_name.blank?
-        user.fix_permissions
+        # !!! WARNING
+        # This will delete all database permissions, and try to recreate them from scratch.
+        # Use only if you know what you're doing. (or, better, don't use it)
+        user.db_service.reset_database_permissions
+        user.db_service.reset_user_schema_permissions
+        user.db_service.grant_publicuser_in_database
+        user.db_service.set_user_privileges_at_db
+        user.db_service.fix_table_permissions
       end
     end
 
     desc 'Set user privileges in CartoDB schema and CDB_TableMetadata'
     task :set_user_privileges_in_cartodb_schema, [:username] => :environment do |t, args|
-      user = User.find(username: args[:username])
-      user.set_user_privileges_in_cartodb_schema
+      user = ::User.find(username: args[:username])
+      user.db_service.set_user_privileges_in_cartodb_schema
     end
 
     desc 'Set all user privileges'
     task :set_all_user_privileges, [:username] => :environment do |t, args|
-      user = User.find(username: args[:username])
-      user.grant_user_in_database
-      user.set_user_privileges
+      user = ::User.find(username: args[:username])
+      user.db_service.grant_user_in_database
+      user.db_service.set_user_privileges_at_db
     end
 
     ##########################
@@ -377,10 +384,11 @@ namespace :cartodb do
     ##########################
     desc 'reset check quota trigger on all user tables'
     task :reset_trigger_check_quota => :environment do |t, args|
-      puts "Resetting check quota trigger for ##{User.count} users"
-      User.all.each_with_index do |user, i|
+      puts "Resetting check quota trigger for ##{::User.count} users"
+      ::User.all.each_with_index do |user, i|
         begin
-          user.rebuild_quota_trigger
+          puts "Setting user quota in db '#{user.database_name}' (#{user.username})"
+          user.db_service.rebuild_quota_trigger
         rescue => exception
           puts "\nERRORED #{user.id} (#{user.username}): #{exception.message}\n"
         end
@@ -394,8 +402,8 @@ namespace :cartodb do
     task :reset_trigger_check_quota_for_user, [:username] => :environment do |t, args|
       raise 'usage: rake cartodb:db:reset_trigger_check_quota_for_user[username]' if args[:username].blank?
       puts "Resetting trigger check quota for user '#{args[:username]}'"
-      user  = User.filter(:username => args[:username]).first
-      user.rebuild_quota_trigger
+      user  = ::User.filter(:username => args[:username]).first
+      user.db_service.rebuild_quota_trigger
     end
 
     desc "set users quota to amount in mb"
@@ -403,11 +411,12 @@ namespace :cartodb do
       usage = 'usage: rake cartodb:db:set_user_quota[username,quota_in_mb]'
       raise usage if args[:username].blank? || args[:quota_in_mb].blank?
 
-      user  = User.filter(:username => args[:username]).first
+      user  = ::User.filter(:username => args[:username]).first
       quota = args[:quota_in_mb].to_i * 1024 * 1024
       user.update(:quota_in_bytes => quota)
 
-      user.rebuild_quota_trigger
+      puts "Setting user quota in db '#{user.database_name}' (#{user.username})"
+      user.db_service.rebuild_quota_trigger
 
       puts "User: #{user.username} quota updated to: #{args[:quota_in_mb]}MB. #{user.tables.count} tables updated."
     end
@@ -451,7 +460,7 @@ namespace :cartodb do
       usage = "usage: rake cartodb:db:set_user_table_quota[username,table_quota]"
       raise usage if args[:username].blank? || args[:table_quota].blank?
 
-      user  = User.filter(:username => args[:username]).first
+      user  = ::User.filter(:username => args[:username]).first
       user.update(:table_quota => args[:table_quota].to_i)
 
       puts "User: #{user.username} table quota updated to: #{args[:table_quota]}"
@@ -462,7 +471,7 @@ namespace :cartodb do
       usage = "usage: rake cartodb:db:set_unlimited_table_quota[username]"
       raise usage if args[:username].blank?
 
-      user  = User.filter(:username => args[:username]).first
+      user  = ::User.filter(:username => args[:username]).first
       user.update(:table_quota => nil)
 
       puts "User: #{user.username} table quota updated to: unlimited"
@@ -471,7 +480,7 @@ namespace :cartodb do
 
     desc "reset Users table quota to 5"
     task :set_all_users_to_free_table_quota => :environment do
-      User.all.each do |user|
+      ::User.all.each do |user|
         next if !user.respond_to?('database_name') || user.database_name.blank?
         user.update(:table_quota => 5) if user.table_quota.blank?
       end
@@ -486,7 +495,7 @@ namespace :cartodb do
       usage = "usage: rake cartodb:db:set_user_account_type[username,account_type]"
       raise usage if args[:username].blank? || args[:account_type].blank?
 
-      user  = User.filter(:username => args[:username]).first
+      user  = ::User.filter(:username => args[:username]).first
       user.update(:account_type => args[:account_type])
 
       puts "User: #{user.username} table account type updated to: #{args[:account_type]}"
@@ -494,7 +503,7 @@ namespace :cartodb do
 
     desc "reset all Users account type to FREE"
     task :set_all_users_account_type_to_free => :environment do
-      User.all.each do |user|
+      ::User.all.each do |user|
         next if !user.respond_to?('database_name') || user.database_name.blank?
         user.update(:account_type => 'FREE') if user.account_type.blank?
       end
@@ -509,7 +518,7 @@ namespace :cartodb do
       usage = "usage: rake cartodb:db:set_user_private_tables_enabled[username,private_tables_enabled]"
       raise usage if args[:username].blank? || args[:private_tables_enabled].blank?
 
-      user  = User.filter(:username => args[:username]).first
+      user  = ::User.filter(:username => args[:username]).first
       user.update(:private_tables_enabled => args[:private_tables_enabled])
 
       puts "User: #{user.username} private tables enabled: #{args[:private_tables_enabled]}"
@@ -517,7 +526,7 @@ namespace :cartodb do
 
     desc "reset all Users privacy tables permissions type to false"
     task :set_all_users_private_tables_enabled_to_false => :environment do
-      User.all.each do |user|
+      ::User.all.each do |user|
         next if !user.respond_to?('database_name') || user.database_name.blank?
         user.update(:private_tables_enabled => false) if user.private_tables_enabled.blank?
       end
@@ -529,7 +538,7 @@ namespace :cartodb do
     ##########################
     desc "Add the_geom_webmercator column to every table which needs it"
     task :add_the_geom_webmercator => :environment do
-      User.all.each do |user|
+      ::User.all.each do |user|
         tables = Table.filter(:user_id => user.id).all
         next if tables.empty?
         user.load_cartodb_functions
@@ -573,8 +582,9 @@ namespace :cartodb do
 
     desc "Update test_quota trigger"
     task :update_test_quota_trigger => :environment do
-      User.all.each do |user|
-        user.rebuild_quota_trigger
+      ::User.all.each do |user|
+        puts "Setting user quota in db '#{user.database_name}' (#{user.username})"
+        user.db_service.rebuild_quota_trigger
       end
     end
 
@@ -582,7 +592,7 @@ namespace :cartodb do
     task :recreate_table_triggers, [:username] => :environment do |t, args|
       username = args[:username]
 
-      users = username.nil? ? User.where('organization_id IS NOT NULL') : User.where(username: username)
+      users = username.nil? ? ::User.where('organization_id IS NOT NULL') : ::User.where(username: username)
       users.each do |user|
         if  user.cartodb_extension_version_pre_mu? || user.database_schema=='public'
           puts "SKIP: #{user.username} / #{user.id}"
@@ -611,7 +621,7 @@ namespace :cartodb do
 
     desc "Update update_the_geom_webmercator_trigger"
     task :update_the_geom_webmercator_trigger => :environment do
-      User.all.each do |user|
+      ::User.all.each do |user|
         user.load_cartodb_functions
 
         tables = Table.filter(:user_id => user.id).all
@@ -639,7 +649,7 @@ namespace :cartodb do
 
     desc "update created_at and updated_at to correct type and add the default value to now"
     task :update_timestamp_fields => :environment do
-      User.all.each do |user|
+      ::User.all.each do |user|
         next if !user.respond_to?('database_name') || user.database_name.blank?
         puts "user => " + user.username
         user.in_database do |user_database|
@@ -653,7 +663,7 @@ namespace :cartodb do
 
     desc 'update the old cache trigger which was using redis to the varnish one'
     task :update_cache_trigger => :environment do
-      User.all.each do |user|
+      ::User.all.each do |user|
         puts 'Update cache trigger => ' + user.username
         next if !user.respond_to?('database_name') || user.database_name.blank?
         user.in_database do |user_database|
@@ -689,14 +699,14 @@ namespace :cartodb do
 
     desc 'Save users metadata in redis'
     task :save_users_metadata => :environment do
-      User.all.each do |u|
+      ::User.all.each do |u|
         u.save_metadata
       end
     end
 
     desc 'Create public users for users beloging to an organization'
     task :create_organization_members_public_users => :environment do
-      User.exclude(organization_id: nil).each do |user|
+      ::User.exclude(organization_id: nil).each do |user|
         begin
           user.create_public_db_user
           user.save_metadata
@@ -790,9 +800,9 @@ namespace :cartodb do
     # execute_on_users_with_index(:populate_new_fields.to_s, Proc.new { |user, i| ... })
     def execute_on_users_with_index(task_name, block, num_threads=1, sleep_time=0.1, database_host=nil)
       if database_host.nil?
-        count = User.count
+        count = ::User.count
       else
-        count = User.where(database_host: database_host).count
+        count = ::User.where(database_host: database_host).count
       end
 
       start_message = ">Running #{task_name} for #{count} users"
@@ -807,7 +817,7 @@ namespace :cartodb do
       thread_pool = ThreadPool.new(num_threads, sleep_time)
 
       if database_host.nil?
-        User.order(Sequel.asc(:created_at)).each_with_index do |user, i|
+        ::User.order(Sequel.asc(:created_at)).each_with_index do |user, i|
           thread_pool.schedule do
             if i % 100 == 0
               puts "PROGRESS: #{i}/#{count} users queued"
@@ -816,7 +826,7 @@ namespace :cartodb do
           end
         end
       else
-        User.where(database_host: database_host).order(Sequel.asc(:created_at)).each_with_index do |user, i|
+        ::User.where(database_host: database_host).order(Sequel.asc(:created_at)).each_with_index do |user, i|
           thread_pool.schedule do
             if i % 100 == 0
               puts "PROGRESS: #{i}/#{count} users queued"
@@ -848,7 +858,7 @@ namespace :cartodb do
     desc 'Load api calls from ES to redis'
     task :load_api_calls_from_es => :environment do
       raise "You should provide a valid username" if ENV['USERNAME'].blank?
-      u = User.where(:username => ENV['USERNAME']).first
+      u = ::User.where(:username => ENV['USERNAME']).first
       puts "Old API Calls from ES: #{u.get_es_api_calls_from_redis}"
       u.set_api_calls_from_es({:force_update => true})
       puts "New API Calls from ES: #{u.get_es_api_calls_from_redis}"
@@ -861,7 +871,7 @@ namespace :cartodb do
       raise "You should provide a ORGANIZATION_SEATS" if ENV['ORGANIZATION_SEATS'].blank?
       raise "You should provide a ORGANIZATION_QUOTA (in Bytes)" if ENV['ORGANIZATION_QUOTA'].blank?
       raise "You should provide a USERNAME" if ENV['USERNAME'].blank?
-      user = User.where(:username => ENV['USERNAME']).first
+      user = ::User.where(:username => ENV['USERNAME']).first
       raise "User #{ENV['USERNAME']} does not exist" if user.nil?
       organization = Organization.where(:name => ENV['ORGANIZATION_NAME']).first
       if organization.nil?
@@ -895,7 +905,7 @@ namespace :cartodb do
     end
 
     def create_user(username, organization, quota_in_bytes)
-      u = User.new
+      u = ::User.new
       u.email = "#{username}@test-org.com"
       u.password = username
       u.password_confirmation = username
@@ -967,9 +977,9 @@ namespace :cartodb do
     desc "Reload users avatars"
     task :reload_users_avatars => :environment do
       if ENV['ONLY_GRAVATAR'].blank?
-        users = User.all
+        users = ::User.all
       else
-        users = User.where(Sequel.like(:avatar_url, '%gravatar.com%'))
+        users = ::User.where(Sequel.like(:avatar_url, '%gravatar.com%'))
       end
       count = users.count
       users.each_with_index do |user, i|
@@ -988,11 +998,11 @@ namespace :cartodb do
 
     desc "Grant general raster permissions"
       task :grant_general_raster_permissions => :environment do
-        users = User.all
+        users = ::User.all
         count = users.count
         users.each_with_index do |user, i|
           begin
-            user.set_raster_privileges
+            user.db_service.set_raster_privileges
             message = "OK %-#{20}s (%-#{4}s/%-#{4}s)\n" % [user.username, i, count]
             print message
             log(message, :grant_general_raster_permissions.to_s)
@@ -1006,7 +1016,7 @@ namespace :cartodb do
 
     desc "Drop other users privileges on user schema"
     task :drop_other_privileges_on_user_schema, [:username] => :environment do |t,args|
-      user = User.where(:username => args[:username].to_s).first
+      user = ::User.where(:username => args[:username].to_s).first
       user.in_database({as: :superuser}) do |db|
         db.transaction do
           oids = db.fetch("with oids as (select (aclexplode(n.nspacl)).grantee as grantee_oid from pg_catalog.pg_namespace n
@@ -1024,7 +1034,7 @@ namespace :cartodb do
 
     desc "Enable oracle_fdw extension in database"
     task :enable_oracle_fdw_extension, [:username, :oracle_url, :remote_user, :remote_password, :remote_schema, :table_definition_json_path] => :environment do |t, args|
-      u = User.where(:username => args[:username].to_s).first
+      u = ::User.where(:username => args[:username].to_s).first
       tables = JSON.parse(File.read(args['table_definition_json_path'].to_s))
       u.in_database({as: :superuser, no_cartodb_in_schema: true}) do |db|
         db.transaction do
@@ -1121,7 +1131,7 @@ namespace :cartodb do
         if owner
           puts "#{o.name}\t#{o.id}\tOwner: #{owner.username}\t#{owner.id}"
           begin
-            owner.setup_organization_role_permissions
+            owner.db_service.setup_organization_role_permissions
           rescue => e
             puts "Error: #{e.message}"
             CartoDB.notify_exception(e)
@@ -1167,7 +1177,7 @@ namespace :cartodb do
       organizations = args[:organization_name].present? ? Organization.where(name: args[:organization_name]).all : Organization.all
       run_for_organizations_owner(organizations) do |owner|
         begin
-          owner.setup_owner_permissions
+          owner.db_service.setup_owner_permissions
         rescue => e
           puts "ERROR for #{owner.organization.name}: #{e.message}"
         end
@@ -1179,7 +1189,7 @@ namespace :cartodb do
       organizations = args[:organization_name].present? ? Organization.where(name: args[:organization_name]).all : Organization.all
       run_for_organizations_owner(organizations) do |owner|
         begin
-          owner.configure_extension_org_metadata_api_endpoint
+          owner.db_service.configure_extension_org_metadata_api_endpoint
         rescue => e
           puts "ERROR for #{owner.organization.name}: #{e.message}"
         end

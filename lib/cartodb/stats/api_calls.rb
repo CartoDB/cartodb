@@ -30,19 +30,19 @@ module CartoDB
       # Wrapper to get a total of api calls of a user or visualization
       # It doesn't include old api calls
       def get_total_api_calls(username, visualization_id = nil)
-        get_total_api_calls_from_redis(username, visualization_id)  
+        get_total_api_calls_from_redis(username, visualization_id)
       end
 
       def get_api_calls(username, options = {})
         get_api_calls_from_redis(username, options)
       end
-  
+
       # DEPRECATED
       # This method returns a 30 days ordered array
       # This array is populated from other tasks. It's not possible
       # to pass a days parameter to this method
       def get_old_api_calls(username)
-        user_redis_key = User.where(:username => username).first.key
+        user_redis_key = ::User.where(:username => username).first.key
         calls = $users_metadata.HMGET(user_redis_key, 'api_calls').first
         if calls.nil? || calls['per_day'].nil?
           return []
@@ -50,12 +50,12 @@ module CartoDB
           JSON.parse(calls['per_day']).to_a.reverse
         end
       end
-      
+
       # Iterate through all api calls redis sources and returns total
       # api calls of a user or a visualization
       def get_total_api_calls_from_redis(username, visualization_id = nil)
         calls = 0
-        
+
         REDIS_SOURCES.each do |source|
           source_calls = get_total_api_calls_from_redis_source(username, source, visualization_id)
           if !source_calls.nil? and source_calls != 0
@@ -70,7 +70,7 @@ module CartoDB
       # api calls per day
       def get_api_calls_from_redis(username, options = {})
         calls = {}
-       
+
         REDIS_SOURCES.each do |source|
           source_calls = get_api_calls_from_redis_source(username, source, options)
           if calls.blank?
@@ -88,7 +88,7 @@ module CartoDB
 
         return calls
       end
-       
+
       # Get redis key based on username and visualization id
       def redis_api_call_key(username, api_call_type, visualization_id = nil)
         redis_base_key = "user:#{username}:#{api_call_type}"

@@ -1,5 +1,6 @@
-#encoding: UTF-8
+# encoding: UTF-8
 
+require_relative '../../../helpers/file_upload'
 require_relative '../../../../services/datasources/lib/datasources'
 require_relative '../../../models/visualization/external_source'
 require_relative '../../../../services/platform-limits/platform_limits'
@@ -8,7 +9,6 @@ require_dependency 'carto/uuidhelper'
 
 class Api::Json::ImportsController < Api::ApplicationController
   include Carto::UUIDHelper
-  include FileUploadHelper
 
   ssl_required :create
   ssl_allowed :invalidate_service_token
@@ -24,6 +24,8 @@ class Api::Json::ImportsController < Api::ApplicationController
     @stats_aggregator.timing('imports.create') do
 
       begin
+        file_upload_helper = CartoDB::FileUpload.new(Cartodb.config[:importer].fetch("uploads_path", nil))
+
         external_source = nil
         concurrent_import_limit =
           CartoDB::PlatformLimits::Importer::UserConcurrentImportsAmount.new({
@@ -43,7 +45,7 @@ class Api::Json::ImportsController < Api::ApplicationController
           options.merge!( { data_source: external_source.import_url.presence } )
         else
           options = @stats_aggregator.timing('upload-or-enqueue') do
-            results = upload_file_to_storage(params, request, Cartodb.config[:importer]['s3'])
+            results = file_upload_helper.upload_file_to_storage(params, request, Cartodb.config[:importer]['s3'])
             # Not queued import is set by skipping pending state and setting directly as already enqueued
             options.merge({
                               data_source: results[:file_uri].presence,

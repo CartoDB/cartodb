@@ -1,14 +1,14 @@
 # encoding: utf-8
 require 'fileutils'
 
-require_relative '../../app/helpers/file_upload_helper'
+require_relative '../../app/helpers/file_upload'
 
 namespace :cartodb do
   desc 'Import a file to CartoDB'
   task :import, [:username, :filepath] => [:environment] do |task, args|
-    user        = User.where(username: args[:username]).first
+    user        = ::User.where(username: args[:username]).first
     filepath    = File.expand_path(args[:filepath])
-    
+
     data_import = DataImport.create(
       :user_id       => user.id,
       :data_source   => filepath,
@@ -29,6 +29,8 @@ namespace :cartodb do
                                  .order(:created_at)
                                  .first
 
+    file_upload_helper = CartoDB::FileUpload.new(Cartodb.config[:importer].fetch("uploads_path", nil))
+
     unless data_import_item.nil?
       begin
         puts "Retrieved #{data_import_item.id}"
@@ -36,21 +38,21 @@ namespace :cartodb do
         data_import_item.state = DataImport::STATE_PENDING
         data_import_item.save
 
-
         filepath = data_import_item.data_source
-
         filename = data_import_item.data_source.slice(data_import_item.data_source.rindex('/')+1,
                                                       data_import_item.data_source.length)
 
-        token = data_import_item.data_source.slice(/#{FileUploadHelper::UPLOADS_PATH}\/(.)+\//)
-                                            .sub("#{FileUploadHelper::UPLOADS_PATH}/",'')
+        uploads_path = file_upload_helper.get_uploads_path
+
+        token = data_import_item.data_source.slice(/#{uploads_path}\/(.)+\//)
+                                            .sub("#{uploads_path}/",'')
                                             .sub('/','')
 
-        file_uri = FileUploadHelper.upload_file_to_s3(filepath, filename, token, Cartodb.config[:importer]['s3'])
+        file_uri = file_upload_helper.upload_file_to_s3(filepath, filename, token, Cartodb.config[:importer]['s3'])
         begin
           File.delete(filepath)
-          folder = filepath.slice(0, filepath.rindex('/')).gsub('..','')
-          FileUtils.rm_rf(folder) unless folder.length < FileUploadHelper::UPLOADS_PATH.length
+          folder = filepath.slice(0, filepath.rindex('/')).gsub('..' , '')
+          FileUtils.rm_rf(folder) unless folder.length < uploads_path.to_s.length
         rescue => exception
           puts "Errored #{data_import_item.id} : #{exception}"
           CartoDB::notify_exception(exception, {
@@ -78,7 +80,7 @@ namespace :cartodb do
 
         File.delete(filepath)
         folder = filepath.slice(0, filepath.rindex('/')).gsub('..','')
-        FileUtils.rm_rf(folder) unless folder.length < FileUploadHelper::UPLOADS_PATH.length
+        FileUtils.rm_rf(folder) unless folder.length < file_upload_helper.get_uploads_path.to_s.length
       end
     end
   end

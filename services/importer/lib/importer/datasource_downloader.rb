@@ -9,21 +9,27 @@ module CartoDB
   module Importer2
     class DatasourceDownloader
 
-      def initialize(datasource, item_metadata, options={}, logger = nil, repository=nil)
+      def initialize(datasource, item_metadata, options = {}, logger = nil, repository = nil)
         @checksum = nil
 
         @source_file = nil
         @datasource = datasource
         @item_metadata = item_metadata
         @options = options
+        @importer_config = options[:importer_config]
         raise UploadError if datasource.nil?
 
+        @http_response_code = nil
         @logger = logger
         @repository   = repository || DataRepository::Filesystem::Local.new(temporary_directory)
       end
 
       def provides_stream?
         @datasource.kind_of? CartoDB::Datasources::BaseDirectStream
+      end
+
+      def http_download?
+        @datasource.providers_download_url?
       end
 
       def run(available_quota_in_bytes=nil)
@@ -46,7 +52,7 @@ module CartoDB
 
       def clean_up
         if defined?(@temporary_directory) \
-           && @temporary_directory =~ /^#{CartoDB::Importer2::Unp::IMPORTER_TMP_SUBFOLDER}/ \
+           && @temporary_directory =~ /^#{Unp.new(@importer_config).get_temporal_subfolder_path}/ \
            && !(@temporary_directory =~ /\.\./)
           FileUtils.rm_rf @temporary_directory
         end
@@ -70,7 +76,7 @@ module CartoDB
       attr_reader  :source_file, :item_metadata, :datasource, :options, :logger, :repository
 
       private
-      
+
       attr_writer :source_file
 
       # In the case of DirectStream datasources, this will store a sample to trigger DB creation.
@@ -100,6 +106,7 @@ module CartoDB
         if !stream_to_file && !direct_stream
           begin
             resource_data = @datasource.get_resource(@item_metadata[:id])
+            @http_response_code = @datasource.get_http_response_code if @datasource.providers_download_url?
           rescue => exception
             if exception.message =~ /quota/i
               raise StorageQuotaExceededError
@@ -138,7 +145,7 @@ module CartoDB
 
       def temporary_directory
         return @temporary_directory if @temporary_directory
-        @temporary_directory = Unp.new.generate_temporary_directory.temporary_directory
+        @temporary_directory = Unp.new(@importer_config).generate_temporary_directory.temporary_directory
       end
     end
   end

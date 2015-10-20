@@ -219,6 +219,9 @@ body.is-inDialog {
   font-weight: $sFontWeight-normal;
   color: $cTypography-paragraphs;
 }
+.Dialog-headerTitle--warning {
+  color: $cHighlight-alert2;
+}
 .Dialog-headerTitle--error { color: $cHighlight-negative }
 .Dialog-headerText {
   font-size: $sFontSize-large;
@@ -309,7 +312,9 @@ $sNarrower-width: 620px;
   width: 520px;
 }
 .Dialog-narrowerContent { width: $sNarrower-width }
-
+.Dialog-countryBack {
+  float: right;
+}
 @include keyframes(fade-and-scale-in) {
   0% {
     @include opacity(0.0);

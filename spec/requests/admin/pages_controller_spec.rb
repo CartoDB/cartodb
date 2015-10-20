@@ -30,7 +30,7 @@ describe Admin::PagesController do
   end
 
   after(:each) do
-    User.all.each {|u| u.delete}
+    ::User.all.each {|u| u.delete}
   end
 
   describe '#index' do
@@ -177,10 +177,10 @@ describe Admin::PagesController do
 
   def mock_explore_feature_flag
     anyuser = prepare_user('anyuser')
-    User.any_instance.stubs(:has_feature_flag?)
+    ::User.any_instance.stubs(:has_feature_flag?)
                           .with('explore_site')
                           .returns(true)
-    User.stubs(:where).returns(anyuser)
+    ::User.stubs(:where).returns(anyuser)
     anyuser.stubs(:first).returns(anyuser)
   end
 
@@ -198,7 +198,7 @@ describe Admin::PagesController do
       org = mock
       Organization.stubs(:where).with(name: @org_name).returns([org])
       Organization.stubs(:where).with(name: @org_user_name).returns([org])
-      User.any_instance.stubs(:belongs_to_organization?).with(org).returns(belongs_to_org)
+      ::User.any_instance.stubs(:belongs_to_organization?).with(org).returns(belongs_to_org)
     end
 
     user

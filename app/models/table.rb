@@ -163,7 +163,7 @@ class Table
 
   # Getter by table uuid using canonical visualizations
   # @param table_id String
-  # @param viewer_user User
+  # @param viewer_user ::User
   def self.get_by_id(table_id, viewer_user)
     table = nil
     return table unless viewer_user
@@ -196,7 +196,7 @@ class Table
       user_id = viewer_user.id
       table_name, table_schema = Table.table_and_schema(t)
       unless table_schema.nil?
-        owner = User.where(username:table_schema).first
+        owner = ::User.where(username:table_schema).first
         unless owner.nil?
           user_id = owner.id
         end
@@ -211,7 +211,7 @@ class Table
       user_id = viewer_user.id
       table_name, table_schema = Table.table_and_schema(t)
       unless table_schema.nil?
-        owner = User.where(username:table_schema).first
+        owner = ::User.where(username:table_schema).first
         unless owner.nil?
           user_id = owner.id
         end
@@ -431,11 +431,6 @@ class Table
           layer.save if decorator.layer_eligible?(layer)  # skip .save if nothing changed
         end
       end
-
-      if @data_import.create_visualization
-        @data_import.visualization_id = self.create_derived_visualization.id
-        @data_import.save
-      end
     end
     add_table_to_stats
 
@@ -539,23 +534,6 @@ class Table
     member.map.recalculate_zoom!
 
     CartoDB::Visualization::Overlays.new(member).create_default_overlays
-  end
-
-  def create_derived_visualization
-    blender = CartoDB::Visualization::TableBlender.new(self.owner, [ self ])
-    map = blender.blend
-    vis = CartoDB::Visualization::Member.new(
-      {
-        name:     beautify_name(self.name),
-        map_id:   map.id,
-        type:     CartoDB::Visualization::Member::TYPE_DERIVED,
-        privacy:  blender.blended_privacy,
-        user_id:  self.owner.id
-      }
-    )
-    CartoDB::Visualization::Overlays.new(vis).create_default_overlays
-    vis.store
-    vis
   end
 
   def before_destroy
@@ -1169,7 +1147,7 @@ class Table
   end
 
   def owner
-    @owner ||= User[self.user_id]
+    @owner ||= ::User[self.user_id]
   end
 
   def table_style
@@ -1256,17 +1234,17 @@ class Table
 
   ############################### Sharing tables ##############################
 
-  # @param [User] organization_user Gives read permission to this user
+  # @param [::User] organization_user Gives read permission to this user
   def add_read_permission(organization_user)
     perform_table_permission_change('CDB_Organization_Add_Table_Read_Permission', organization_user)
   end
 
-  # @param [User] organization_user Gives read and write permission to this user
+  # @param [::User] organization_user Gives read and write permission to this user
   def add_read_write_permission(organization_user)
     perform_table_permission_change('CDB_Organization_Add_Table_Read_Write_Permission', organization_user)
   end
 
-  # @param [User] organization_user Removes all permissions to this user
+  # @param [::User] organization_user Removes all permissions to this user
   def remove_access(organization_user)
     perform_table_permission_change('CDB_Organization_Remove_Access_Permission', organization_user)
   end
@@ -1319,6 +1297,11 @@ class Table
     sequel.count
   end
 
+  def beautify_name(name)
+    return name unless name
+    name.tr('_', ' ').split.map(&:capitalize).join(' ')
+  end
+
   private
 
   def previous_privacy
@@ -1328,11 +1311,6 @@ class Table
 
   def importer_stats
     @importer_stats ||= CartoDB::Stats::Importer.instance
-  end
-
-  def beautify_name(name)
-    return name unless name
-    name.gsub('_', ' ').split.map(&:capitalize).join(' ')
   end
 
   def calculate_the_geom_type
@@ -1639,7 +1617,7 @@ class Table
   ############################### Sharing tables ##############################
 
   # @param [String] cartodb_pg_func
-  # @param [User] organization_user
+  # @param [::User] organization_user
   def perform_table_permission_change(cartodb_pg_func, organization_user)
     from_schema = self.owner.database_schema
     table_name = self.name

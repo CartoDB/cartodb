@@ -2,6 +2,8 @@
 
 class Carto::Log < ActiveRecord::Base
 
+  has_one :data_import, class_name: Carto::DataImport
+
   MAX_ENTRY_LENGTH = 256
 
   ENTRY_POSTFIX = "\n"

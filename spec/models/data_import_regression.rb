@@ -4,7 +4,7 @@ require 'ruby-debug'
 
 describe DataImport do
   before(:all) do
-    User.all.each(&:destroy)
+    ::User.all.each(&:destroy)
     @user = create_user(:username => 'test', :email => "client@example.com", :password => "clientex")
     @table = create_table :user_id => @user.id
   end

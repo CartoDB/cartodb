@@ -37,7 +37,7 @@ end
 
 describe Table do
   before(:each) do
-    User.any_instance.stubs(:enable_remote_db_user).returns(true)
+    ::User.any_instance.stubs(:enable_remote_db_user).returns(true)
   end
 
   before(:all) do

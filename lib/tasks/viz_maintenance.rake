@@ -8,7 +8,7 @@ namespace :cartodb do
     task :delete_inconsistent, [:username] => :environment do |t, args|
       username = args[:username]
       raise "You should pass a username param" unless username
-      user = User[username: username]
+      user = ::User[username: username]
       collection = CartoDB::Visualization::Collection.new.fetch(user_id: user.id)
 
       collection.each do |viz|

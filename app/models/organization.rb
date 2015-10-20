@@ -35,7 +35,7 @@ class Organization < Sequel::Model
 
   one_to_many :users
   one_to_many :groups
-  many_to_one :owner, class_name: 'User', key: 'owner_id'
+  many_to_one :owner, class_name: '::User', key: 'owner_id'
 
   plugin :validation_helpers
 
@@ -117,6 +117,7 @@ class Organization < Sequel::Model
   #        example: 0.20 will get all organizations at 80% of their map view limit
   #
   def self.overquota(delta = 0)
+    
     Organization.all.select do |o|
         limit = o.map_view_quota.to_i - (o.map_view_quota.to_i * delta)
         over_map_views = o.get_api_calls(from: o.owner.last_billing_cycle, to: Date.today) > limit
@@ -295,7 +296,7 @@ class Organization < Sequel::Model
   end
 
   def name_exists_in_users?
-    !User.where(username: self.name).first.nil?
+    !::User.where(username: self.name).first.nil?
   end
 
   def make_auth_token

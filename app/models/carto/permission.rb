@@ -13,7 +13,14 @@ class Carto::Permission < ActiveRecord::Base
   TYPE_ORGANIZATION = 'org'
   TYPE_GROUP = 'group'
 
-  belongs_to :owner, class_name: User, select: Carto::User::SELECT_WITH_DATABASE
+  ENTITY_TYPE_VISUALIZATION = 'vis'
+
+  belongs_to :owner, class_name: Carto::User, select: Carto::User::SELECT_WITH_DATABASE
+  belongs_to :entity, class_name: Carto::Visualization
+  # AR polymorphism does not allow for custom type mappings,
+  # and it seems the only implemented type is 'viz' which translates to Visualization.
+  # TODO: Add a migration to translate the type values to fully-qualified class types
+  # so we can use AR polymorphism (once we intend to use entities of different types)
 
   def acl
     @acl ||= self.access_control_list.nil? ? DEFAULT_ACL_VALUE : JSON.parse(self.access_control_list, symbolize_names: true)

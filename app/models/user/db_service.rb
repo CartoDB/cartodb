@@ -31,9 +31,9 @@ module CartoDB
 
         set_statement_timeouts
 
-        # TODO: This smells to bug, this was called by User.setup_new_user from the non-org user flow
+        # INFO: Added to everyone because eases migration of normal users to org owners
+        # and non-org users just don't use it
         set_user_as_organization_member
-        # ------------------------------
 
         if @user.database_schema == SCHEMA_PUBLIC
           setup_single_user_schema

@@ -1015,6 +1015,10 @@ module CartoDB
         @user.this.update database_name: @user.database_name
       end
 
+      def public_user_roles
+        @user.organization_user? ? [CartoDB::PUBLIC_DB_USER, @user.database_public_username] : [CartoDB::PUBLIC_DB_USER]
+      end
+
       def self.terminate_database_connections(database_name, database_host)
         connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
           'host' => database_host,

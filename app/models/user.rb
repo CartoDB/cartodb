@@ -131,10 +131,6 @@ class User < Sequel::Model
     end
   end
 
-  def public_user_roles
-    self.organization_user? ? [CartoDB::PUBLIC_DB_USER, database_public_username] : [CartoDB::PUBLIC_DB_USER]
-  end
-
   #                             +--------+---------+------+
   #       valid_privacy logic   | Public | Private | Link |
   #   +-------------------------+--------+---------+------+
@@ -925,8 +921,6 @@ class User < Sequel::Model
   def can_change_password?
     !Carto::Ldap::Manager.new.configuration_present?
   end
-
-  private :database_exists?
 
   # This method is innaccurate and understates point based tables (the /2 is to account for the_geom_webmercator)
   # TODO: Without a full table scan, ignoring the_geom_webmercator, we cannot accuratly asses table size

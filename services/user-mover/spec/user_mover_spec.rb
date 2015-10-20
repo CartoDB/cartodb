@@ -48,7 +48,7 @@ describe CartoDB::DataMover::ExportJob do
 
   describe "a standalone user which has moved to an organization" do
     before(:all) do
-      @org = create_organization_with_users
+      @org = create_user_mover_test_organization
     end
 
     subject do
@@ -88,7 +88,7 @@ describe CartoDB::DataMover::ExportJob do
   end
 
   it "should move a user from an organization to its own account" do
-    org = create_organization_with_users
+    org = create_user_mover_test_organization
     user = create_user(
       quota_in_bytes: 100.megabyte, table_quota: 400, organization: org
     )
@@ -112,7 +112,7 @@ describe CartoDB::DataMover::ExportJob do
     Cartodb.config[:org_metadata_api]['port'] = port
     Cartodb.config[:org_metadata_api]['host'] = '127.0.0.1'
 
-    org = create_organization_with_users
+    org = create_user_mover_test_organization
     user = create_user(
       quota_in_bytes: 100.megabyte, table_quota: 400, organization: org
     )
@@ -191,7 +191,7 @@ module Helpers
     Table.new(user_table: moved_user.tables.where(name: "with_link").first).privacy.should eq UserTable::PRIVACY_LINK
   end
 
-  def create_organization_with_users
+  def create_user_mover_test_organization
     org = create_organization(name: String.random(5).downcase, quota_in_bytes: 2500.megabytes)
 
     owner = create_user(username: String.random(5).downcase, quota_in_bytes: 500.megabytes, table_quota: 200,

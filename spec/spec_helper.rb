@@ -25,11 +25,11 @@ require 'rspec/rails'
 
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
-Dir[Rails.root.join('spec/support/**/*.rb')].each {|f| require f}
+Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 
 # TODO: deprecate and use bypass_named_maps (or viceversa)
 def stub_named_maps_calls
-  CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+  CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
 end
 
 def random_uuid
@@ -45,7 +45,6 @@ end
 Resque.inline = true
 
 RSpec.configure do |config|
-
   config.include CartoDB::Factories
   config.include HelperMethods
 
@@ -68,7 +67,6 @@ RSpec.configure do |config|
         end
       end
 
-
       # To avoid Travis and connection leaks
       $pool.close_connections!
       Rails::Sequel.connection[
@@ -82,8 +80,8 @@ RSpec.configure do |config|
       }
     end
 
-    $user_1 = create_user(:quota_in_bytes => 524288000, :table_quota => 500, :private_tables_enabled => true)
-    $user_2 = create_user(:quota_in_bytes => 524288000, :table_quota => 500, :private_tables_enabled => true)
+    $user_1 = create_user(quota_in_bytes: 524288000, table_quota: 500, private_tables_enabled: true)
+    $user_2 = create_user(quota_in_bytes: 524288000, table_quota: 500, private_tables_enabled: true)
   end
 
   config.after(:all) do
@@ -107,7 +105,7 @@ RSpec.configure do |config|
         }
         Rails::Sequel.connection[
           'SELECT u.usename FROM pg_catalog.pg_user u'
-        ].map{ |r| r.values.first }.each { |username| Rails::Sequel.connection.run("drop user \"#{username}\"") if username =~ /^test_cartodb_user_/ }
+        ].map { |r| r.values.first }.each { |username| Rails::Sequel.connection.run("drop user \"#{username}\"") if username =~ /^test_cartodb_user_/ }
       end
     else
       stub_named_maps_calls

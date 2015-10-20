@@ -3,47 +3,43 @@ require_relative '../spec_helper'
 require 'fake_net_ldap'
 
 describe SessionsController do
-
   describe 'login with LDAP' do
-
     DEFAULT_QUOTA_IN_BYTES = 1000
 
     before(:all) do
       bypass_named_maps
       @organization = ::Organization.new
       @organization.seats = 5
-      @organization.quota_in_bytes =  100.megabytes
+      @organization.quota_in_bytes = 100.megabytes
       @organization.name = "ldap-org"
       @organization.default_quota_in_bytes = DEFAULT_QUOTA_IN_BYTES
       @organization.save
 
-      @domain_bases = [ "dc=cartodb" ]
+      @domain_bases = ["dc=cartodb"]
 
       @ldap_admin_username = 'user'
       @ldap_admin_cn = "cn=#{@ldap_admin_username},#{@domain_bases[0]}"
-      @ldap_admin_password =  '666'
+      @ldap_admin_password = '666'
 
       @user_id_field = 'cn'
       @user_email_field = 'mail'
 
-      @ldap_config = Carto::Ldap::Configuration.create({
-        organization_id: @organization.id,
-        host: "0.0.0.0",
-        port: 389,
-        domain_bases_list: @domain_bases,
-        connection_user: @ldap_admin_cn,
-        connection_password: @ldap_admin_password,
-        email_field: @user_email_field,
-        user_object_class: '.',
-        group_object_class: '.',
-        user_id_field: @user_id_field,
-        username_field: @user_id_field
-      })
+      @ldap_config = Carto::Ldap::Configuration.create(organization_id: @organization.id,
+                                                       host: "0.0.0.0",
+                                                       port: 389,
+                                                       domain_bases_list: @domain_bases,
+                                                       connection_user: @ldap_admin_cn,
+                                                       connection_password: @ldap_admin_password,
+                                                       email_field: @user_email_field,
+                                                       user_object_class: '.',
+                                                       group_object_class: '.',
+                                                       user_id_field: @user_id_field,
+                                                       username_field: @user_id_field)
     end
 
     before(:each) do
       bypass_named_maps
-      FakeNetLdap.register_user(:username => @ldap_admin_cn, :password => @ldap_admin_password)
+      FakeNetLdap.register_user(username: @ldap_admin_cn, password: @ldap_admin_password)
     end
 
     after(:each) do
@@ -63,17 +59,17 @@ describe SessionsController do
       normal_user_email = "ldap-user@test.com"
       normal_user_cn = "cn=#{normal_user_username},#{@domain_bases.first}"
       ldap_entry_data = {
-          @user_id_field => [normal_user_username],
-          @user_email_field => [normal_user_email]
-        }
-      FakeNetLdap.register_user(:username => normal_user_cn, :password => normal_user_password)
+        @user_id_field => [normal_user_username],
+        @user_email_field => [normal_user_email]
+      }
+      FakeNetLdap.register_user(username: normal_user_cn, password: normal_user_password)
       FakeNetLdap.register_query(Net::LDAP::Filter.eq('cn', normal_user_username), ldap_entry_data)
 
       errors = {
-          :errors => {
-              :organization => ["owner is not set. In order to activate this organization the administrator must login first"]
-          }
+        errors: {
+          organization: ["owner is not set. In order to activate this organization the administrator must login first"]
         }
+      }
       ::CartoDB.expects(:notify_debug).with('User not valid at signup', errors).returns(nil)
 
       host! "#{@organization.name}.localhost.lan"
@@ -90,14 +86,14 @@ describe SessionsController do
       admin_user_email = "#{@organization.name}-admin@test.com"
       admin_user_cn = "cn=#{admin_user_username},#{@domain_bases.first}"
       ldap_entry_data = {
-          @user_id_field => [admin_user_username],
-          @user_email_field => [admin_user_email]
-        }
-      FakeNetLdap.register_user(:username => admin_user_cn, :password => admin_user_password)
+        @user_id_field => [admin_user_username],
+        @user_email_field => [admin_user_email]
+      }
+      FakeNetLdap.register_user(username: admin_user_cn, password: admin_user_password)
       FakeNetLdap.register_query(Net::LDAP::Filter.eq('cn', admin_user_username), ldap_entry_data)
 
       ::Resque.expects(:enqueue).with(::Resque::UserJobs::Signup::NewUser,
-        instance_of(String), instance_of(String), instance_of(TrueClass)).returns(true)
+                                      instance_of(String), instance_of(String), instance_of(TrueClass)).returns(true)
 
       host! "#{@organization.name}.localhost.lan"
       post create_session_url(user_domain: nil, email: admin_user_username, password: admin_user_password)
@@ -128,14 +124,14 @@ describe SessionsController do
       normal_user_email = "ldap-user@test.com"
       normal_user_cn = "cn=#{normal_user_username},#{@domain_bases.first}"
       ldap_entry_data = {
-          @user_id_field => [normal_user_username],
-          @user_email_field => [normal_user_email]
-        }
-      FakeNetLdap.register_user(:username => normal_user_cn, :password => normal_user_password)
+        @user_id_field => [normal_user_username],
+        @user_email_field => [normal_user_email]
+      }
+      FakeNetLdap.register_user(username: normal_user_cn, password: normal_user_password)
       FakeNetLdap.register_query(Net::LDAP::Filter.eq('cn', normal_user_username), ldap_entry_data)
 
       ::Resque.expects(:enqueue).with(::Resque::UserJobs::Signup::NewUser,
-        instance_of(String), instance_of(String), instance_of(FalseClass)).returns(true)
+                                      instance_of(String), instance_of(String), instance_of(FalseClass)).returns(true)
 
       host! "#{@organization.name}.localhost.lan"
       post create_session_url(user_domain: nil, email: normal_user_username, password: normal_user_password)
@@ -152,10 +148,10 @@ describe SessionsController do
       admin_user_email = "#{@organization.name}-admin@test.com"
       admin_user_cn = "cn=#{admin_user_username},#{@domain_bases.first}"
       ldap_entry_data = {
-          @user_id_field => [admin_user_username],
-          @user_email_field => [admin_user_email]
-        }
-      FakeNetLdap.register_user(:username => admin_user_cn, :password => admin_user_password)
+        @user_id_field => [admin_user_username],
+        @user_email_field => [admin_user_email]
+      }
+      FakeNetLdap.register_user(username: admin_user_cn, password: admin_user_password)
       FakeNetLdap.register_query(Net::LDAP::Filter.eq('cn', admin_user_username), ldap_entry_data)
 
       @admin_user = create_user(
@@ -170,10 +166,8 @@ describe SessionsController do
       ::Organization.any_instance.stubs(:owner).returns(@admin_user)
 
       # INFO: Again, hack to act as if user had organization
-      ::User.stubs(:where).with({
-              username: admin_user_username,
-              organization_id: @organization.id
-            }).returns([@admin_user])
+      ::User.stubs(:where).with(username: admin_user_username,
+                                organization_id: @organization.id).returns([@admin_user])
 
       host! "#{@organization.name}.localhost.lan"
       post create_session_url(user_domain: nil, email: admin_user_username, password: admin_user_password)
@@ -185,14 +179,12 @@ describe SessionsController do
 
       @admin_user.destroy
     end
-
   end
 
   private
 
   def bypass_named_maps
     CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true, delete: true)
   end
-
 end

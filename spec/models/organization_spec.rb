@@ -8,7 +8,6 @@ include CartoDB
 
 describe 'refactored behaviour' do
   it_behaves_like 'organization models' do
-
     before(:each) do
       @the_organization = ::Organization.where(id: @organization.id).first
     end
@@ -26,7 +25,6 @@ describe 'refactored behaviour' do
     def get_organization
       @the_organization
     end
-
   end
 end
 

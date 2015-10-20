@@ -14,13 +14,6 @@ var bundles = {
     src: 'src-browserify/core.js',
     dest: '<%= config.dist %>/cartodb.core.uncompressed.js'
   },
-  // standard: {
-  //   options: {
-  //     banner: bannerStr('cartodb.uncompressed.js')
-  //   },
-  //   src: 'src-browserify/standard.js',
-  //   dest: '<%= config.dist %>/cartodb.uncompressed.js'
-  // },
   'core-specs': {
     src: [
       'test/spec/src-browserify/core.spec.js',
@@ -31,6 +24,13 @@ var bundles = {
       'test/spec/src-browserify/vis/image.spec.js',
     ],
     dest: '<%= config.tmp %>/core-specs.js'
+  },
+  standard: {
+    options: {
+      banner: bannerStr('cartodb.uncompressed.js')
+    },
+    src: 'src-browserify/standard.js',
+    dest: '<%= config.dist %>/cartodb.uncompressed.js'
   },
   'standard-specs': {
     src: [

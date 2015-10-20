@@ -28,31 +28,6 @@ module.exports = {
 
     return {
 
-      standard: {
-        options: {
-          process: function(src, filepath) {
-            // DAMM!
-            // It is possible to use neither underscore nor
-            // grunt templating, an ILLEGAL token error appears
-            // - Solution, replacing text, directly, rude.
-
-            return src
-              .replace(/<%= version %>/g, grunt.config.get('bump.version'))
-              .replace(/<%= sha %>/g, grunt.config.get('gitinfo').local.branch.current.SHA)
-              .replace(/<%= load_jquery %>/g, true)
-          }
-        },
-        files: {
-          // Standard library
-          '<%= config.dist %>/cartodb.uncompressed.js':
-            ['grunt/templates/wrapper_header.js']
-            .concat(vendor_files)
-            .concat(['grunt/templates/wrapper_middle.js'])
-            .concat(cdb_files)
-            .concat(['grunt/templates/wrapper_footer.js'])
-        }
-      },
-
       nojquery: {
         options: {
           process: function(src, filepath) {

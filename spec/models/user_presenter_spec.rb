@@ -177,7 +177,6 @@ describe Carto::Api::UserPresenter do
       new_data[:organization][:quota_in_bytes].should == old_data[:organization][:quota_in_bytes]
       new_data[:organization][:geocoding_quota].should == old_data[:organization][:geocoding_quota]
       new_data[:organization][:map_view_quota].should == old_data[:organization][:map_view_quota]
-      new_data[:all_visualization_count].should == old_data[:all_visualization_count]
       new_data[:organization][:twitter_datasource_quota].should == old_data[:organization][:twitter_datasource_quota]
       new_data[:organization][:map_view_block_price].should == old_data[:organization][:map_view_block_price]
       new_data[:organization][:geocoding_block_price].should == old_data[:organization][:geocoding_block_price]

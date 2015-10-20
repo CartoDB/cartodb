@@ -1859,9 +1859,9 @@ describe Carto::Api::VisualizationsController do
         end
       end
 
-      xit 'returns 200 with valid shared user (current_viewer) user_domain, with current_user being the owner' do
-        ApplicationController.any_instance.stubs(:current_user).returns(@vis_owner)
-        ApplicationController.any_instance.stubs(:current_viewer).returns(@shared_user)
+      it 'returns 200 with valid shared user (current_user) user_domain, with current_viewer being the owner' do
+        ApplicationController.any_instance.stubs(:current_viewer).returns(@vis_owner)
+        ApplicationController.any_instance.stubs(:current_user).returns(@shared_user)
         get_json url(@shared_user.username, @shared_vis.id, @shared_user.api_key), {}, @headers do |response|
           response.status.should == 200
         end
@@ -1897,7 +1897,7 @@ describe Carto::Api::VisualizationsController do
         end
       end
 
-      xit 'returns 404 if user at url is empty, current_user is the owner and current_viewer has permission' do
+      it 'returns 404 if user at url is empty, current_user is the owner and current_viewer has permission' do
         ApplicationController.any_instance.stubs(:current_user).returns(@vis_owner)
         ApplicationController.any_instance.stubs(:current_viewer).returns(@shared_user)
         login_as(@shared_user, scope: @shared_user.organization.name)
@@ -1920,7 +1920,7 @@ describe Carto::Api::VisualizationsController do
         end
       end
 
-      xit 'returns 404 if user at url does not match visualization owner with current_user being the owner and current_viewer the shared to' do
+      it 'returns 404 if user at url does not match visualization owner with current_user being the owner and current_viewer the shared to' do
         app = ApplicationController.any_instance
         app.stubs(:current_user).returns(@vis_owner)
         app.stubs(:current_viewer).returns(@shared_user)

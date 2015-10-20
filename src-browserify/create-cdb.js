@@ -1,6 +1,8 @@
 var sanitize = require('./core/sanitize')
 var decorators = require('./core/decorators');
 var Config = require('./core/config');
+var Log = require('./core/log');
+var ErrorList = require('./core/log/error-list');
 
 // Create the cartodb object to be set in the global namespace.
 // Code extracted from the older src/cartodb.js file (entry file prior to browerify)
@@ -27,6 +29,10 @@ module.exports = function(opts) {
     cartodb_attributions: "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>",
     cartodb_logo_link: "http://www.cartodb.com"
   });
+
+  // contains all error for the application
+  cdb.errors = new ErrorList();
+  cdb.log = new Log({tag: 'cdb'});
 
   return cdb;
 };

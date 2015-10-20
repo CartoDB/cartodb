@@ -73,12 +73,11 @@ module CartoDB
       def get_user_metadata(user_id)
         q = pg_conn.exec("SELECT * FROM users WHERE username = '#{user_id}'")
         if q.count > 0
-          @user_data = q[0]
+          user_data = q[0]
         else
           throw "Can't find user #{@user_id}"
         end
-        @username = @user_data["username"]
-        @user_id = @user_data["id"]
+        user_data
       end
 
       def get_org_metadata(organization_id)
@@ -422,8 +421,11 @@ module CartoDB
             }
           }
         }
+        
         if options[:id]
-          get_user_metadata(options[:id])
+          @user_data = get_user_metadata(options[:id])
+          @username = @user_data["username"]
+          @user_id = @user_data["id"]
           dump_user_data(redis_keys) unless options[:database_only] == true
           redis_conn.quit
           DumpJob.new(

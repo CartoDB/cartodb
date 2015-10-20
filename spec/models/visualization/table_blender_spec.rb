@@ -1,6 +1,7 @@
 # encoding: utf-8
 require_relative '../../../app/models/visualization/table_blender'
 require_relative '../../rspec_configuration.rb'
+require_relative '../../spec_helper'
 
 include CartoDB::Visualization
 

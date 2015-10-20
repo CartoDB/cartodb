@@ -46,4 +46,8 @@ describe('create-cdb', function() {
       expect(this.cdb.config.get('cartodb_logo_link')).toEqual("http://www.cartodb.com");
     });
   });
+
+  it('should expose a Profiler class', function() {
+    expect(this.cdb.Profiler).toBeDefined();
+  });
 });

@@ -26,27 +26,14 @@ cdb.geo.ui.Widget.View = cdb.core.View.extend({
   },
 
   initialize: function() {
-    if (!this.options.datasource) {
-      throw new Error('Datasource is not defined');
-    }
     this.viewModel = new cdb.core.Model(
-      _.extend(
-        this.options,
-        {
-          type: this.options.type,
-          state: 'loading'
-        }
+      _.extend({
+        state: 'loading'
+      }, this.model.get('options')
       )
     );
-    this.datasource = this.options.datasource;
-    this.dataModel = this.datasource.addWidgetModel({
-      id: this.options.id,
-      sql: this.options.sql,
-      name: this.options.name,
-      type: this.options.type,
-      columns: this.options.columns
-    });
 
+    this.dataModel = this.model;
     this._initBinds();
   },
 
@@ -71,33 +58,29 @@ cdb.geo.ui.Widget.View = cdb.core.View.extend({
   _initBinds: function() {
     var self = this;
 
-    this.dataModel.bind('loading', function(){
-      this._changeState('loading');
-      this.dataModel.unbind(null, null, this);
+    this._changeState('loading');
 
-      var onDone = function() {
-        self.dataModel.unbind('error change:data', null, self);
-        self[ self.viewModel.get('sync') ? '_bindDatasource' : '_unbindDatasource' ]();
-      };
+    var onDone = function() {
+      self.dataModel.unbind('error change:data', null, self);
+    };
 
-      this.dataModel.bind('change:data', function() {
-        this._changeState('done');
-        onDone();
-      }, this);
-
-      this.dataModel.bind('error', function() {
-        this._changeState('error');
-        onDone();
-      }, this);
-
-      // When first request is done, add listener when sync or state
-      // attributes change
-      this.viewModel.bind('change:sync', function() {
-        this[ this.viewModel.get('sync') ? '_bindDatasource' : '_unbindDatasource' ]();
-      }, this);
-
-      this.viewModel.bind('change:state', this._onChangeState, this);
+    this.dataModel.bind('change:data', function() {
+      this._changeState('done');
+      onDone();
     }, this);
+
+    this.dataModel.bind('error', function() {
+      this._changeState('error');
+      onDone();
+    }, this);
+
+    // When first request is done, add listener when sync or state
+    // attributes change
+    this.viewModel.bind('change:sync', function() {
+      this[ this.viewModel.get('sync') ? '_bindDatasource' : '_unbindDatasource' ]();
+    }, this);
+
+    this.viewModel.bind('change:state', this._onChangeState, this);
   },
 
   _onChangeState: function() {
@@ -120,18 +103,6 @@ cdb.geo.ui.Widget.View = cdb.core.View.extend({
 
   _changeState: function(state) {
     this.viewModel.set('state', state);
-  },
-
-  _bindDatasource: function() {
-    this.dataModel.bind('loading', function() {
-      this._changeState('loading');
-    }, this);
-    this.dataModel.bind('change:data', function() {
-      this._changeState('done');
-    }, this);
-    this.dataModel.bind('error', function() {
-      this._changeState('error');
-    }, this);
   },
 
   _renderLoader: function() {
@@ -159,10 +130,6 @@ cdb.geo.ui.Widget.View = cdb.core.View.extend({
 
   },
 
-  _unbindDatasource: function() {
-    this.dataModel.unbind(null, null, this);
-  },
-
   sync: function() {
     this.viewModel.set('sync', true);
   },
@@ -180,7 +147,6 @@ cdb.geo.ui.Widget.View = cdb.core.View.extend({
   },
 
   clean: function() {
-    this._unbindDatasource();
     this.viewModel.unbind(null, null, this);
     cdb.geo.ui.Widget.View.prototype.clean.call(this);
   }

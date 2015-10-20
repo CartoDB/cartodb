@@ -475,31 +475,25 @@ var Vis = cdb.core.View.extend({
           layers: cartoDBLayers
         });
 
+        var widgetModels = [];
+        _.each(data.widgets, function(widgetData) {
+
+          var widgetModel = new cdb.geo.ui.Widget.ListModel(widgetData);
+          widgetModels.push(widgetModel);
+
+          var widgetView = new cdb.geo.ui.Widget.ListView(
+            { model: widgetModel }
+          );
+
+          $('body').append(widgetView.el);
+        });
+
         var dashboard = new cdb.windshaft.Dashboard({
           datasource: data.datasource,
           cartoDBLayerGroup: model,
-          widgets: data.widgets
+          widgets: widgetModels
         });
         var dashboardInstance = dashboard.createInstance();
-
-        // TODO: We could unify the concept of a dashboard and a datasource
-        var datasource = new cdb.core.Datasource(data.datasource, { dashboardInstance: dashboardInstance });
-        _.each(data.widgets, function(d) {
-          var opts = d.options;
-          var type = d.type;
-
-          var v = self.addWidget(
-            d.type,
-            _.extend(
-              opts,
-              {
-                datasource: datasource
-              }
-            )
-          );
-
-          $('body').append(v.el);
-        });
       } else {
         model = Layers.create(layerData.type || layerData.kind, self, layerData);
       }
@@ -893,31 +887,6 @@ var Vis = cdb.core.View.extend({
       legends.push(this._createLegendView(layer, layerView))
     }
     return _.compact(legends).reverse();
-  },
-
-  addWidget: function(type, opts) {
-    var _widgetTypes = {
-      'list': 'ListView'
-    };
-    var datasource = opts.datasource;
-
-    if (!_widgetTypes[type]) {
-      throw new Error('Widget ' + type + ' not defined');
-    }
-
-    if (!datasource && opts.layer) {
-      datasource = this.datasource;
-    }
-
-    return new cdb.geo.ui.Widget[_widgetTypes[type]](
-      _.extend(
-        opts,
-        {
-          datasource: datasource,
-          type: type
-        }
-      )
-    );
   },
 
   addOverlay: function(overlay) {

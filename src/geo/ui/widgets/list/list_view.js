@@ -51,7 +51,7 @@ cdb.geo.ui.Widget.ListView = cdb.geo.ui.Widget.View.extend({
     var $content = this.$('.js-list');
     var v = new cdb.geo.ui.Widget.ListItemView({
       model: mdl,
-      template: this.options.listItemTemplate
+      template: this.viewModel.get('listItemTemplate')
     })
     this.addView(v);
     $content.append(v.render().el);

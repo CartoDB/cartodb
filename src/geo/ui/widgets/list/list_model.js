@@ -11,8 +11,7 @@ cdb.geo.ui.Widget.ListModel = cdb.geo.ui.Widget.Model.extend({
   },
 
   url: function() {
-    var url = this.get('baseURL') + '/api/v1/map/' + this.get('layerGroupId') + '/list/' + this.get('id');
-    return url;
+    return this.get('dashboardBaseURL') + '/list/' + this.get('id');
   },
 
   initialize: function() {
@@ -21,7 +20,7 @@ cdb.geo.ui.Widget.ListModel = cdb.geo.ui.Widget.Model.extend({
   },
 
   _initBinds: function() {
-    this.bind('change:layerGroupId', function(){
+    this.bind('change:dashboardBaseURL', function(){
       var self = this;
       this.fetch({
         error: function() {

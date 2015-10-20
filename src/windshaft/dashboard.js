@@ -17,22 +17,32 @@ cdb.windshaft.Dashboard = function(options) {
   this.instance = new cdb.windshaft.PublicMap({});
 
   // Bindings
-  this.instance.bind('change:layergroupid', this._updateLayerGroupURL, this);
+  this.instance.bind('change:layergroupid', this._updateLayerGroup, this);
+  this.instance.bind('change:layergroupid', this._updateWidgets, this);
   this.cartoDBLayerGroup.layers.bind('change', this.createInstance, this);
 }
 
-cdb.windshaft.Dashboard.prototype._updateLayerGroupURL = function(dashboardInstance) {
-  var dashboardBaseURL = [
-    this.datasource.maps_api_template.replace('{user}', this.datasource.user_name),
-    'api/v1/map',
-    dashboardInstance.get('layergroupid')
-  ].join('/');
-
-  // Set the URLs on the cartoDBLayerGroup model
+cdb.windshaft.Dashboard.prototype._updateLayerGroup = function(dashboardInstance) {
   this.cartoDBLayerGroup.set({
-    dashboardBaseURL: dashboardBaseURL,
+    dashboardBaseURL: this.getURL(),
     urls: dashboardInstance.getTiles()
   })
+}
+
+cdb.windshaft.Dashboard.prototype._updateWidgets = function(dashboardInstance) {
+  _.each(this.widgets, function(widget) {
+    widget.set({
+      dashboardBaseURL: this.getURL(),
+    });
+  }.bind(this))
+}
+
+cdb.windshaft.Dashboard.prototype.getURL = function(dashboardInstance) {
+  return [
+    this.datasource.maps_api_template.replace('{user}', this.datasource.user_name),
+    'api/v1/map',
+    this.instance.get('layergroupid')
+  ].join('/');
 }
 
 cdb.windshaft.Dashboard.prototype.createInstance = function() {
@@ -50,6 +60,13 @@ cdb.windshaft.Dashboard.prototype._toDashboardConfig = function() {
   return {
     toJSON: function() {
 
+      var config = {
+        version: '1.4.0',
+        stat_tag: this.datasource.stat_tag
+      }
+
+
+      // LAYERS
       var layers = _.map(this.cartoDBLayerGroup.getVisibleLayers(), function(layerModel) {
         var layerConfig = {
           type: 'cartodb',
@@ -68,24 +85,20 @@ cdb.windshaft.Dashboard.prototype._toDashboardConfig = function() {
         }
         return layerConfig;
       })
+      config.layers = layers;
 
-      var config = {
-        version: '1.4.0',
-        stat_tag: this.datasource.stat_tag,
-        layers: layers
-      }
-
+      // WIDGETS
       if (this.widgets && this.widgets.length) {
         config.lists = {};
 
         var lists = _.filter(this.widgets, function(widget){
-          return widget.type === 'list'
+          return widget.get('type') === 'list'
         });
 
         lists.forEach(function(list) {
-          config.lists[list.options.id] = {
-            "sql": list.options.sql,
-            "columns": list.options.columns
+          config.lists[list.get('id')] = {
+            "sql": list.get('options').sql,
+            "columns": list.get('options').columns
           }
         })
       }

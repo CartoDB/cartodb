@@ -35,6 +35,7 @@ var bundles = {
   'standard-specs': {
     src: [
       'test/spec/src-browserify/standard.spec.js',
+      'test/spec/src-browserify/bundles/create-cdb.spec.js',
       'test/spec/src-browserify/core/decorators.spec.js',
       'test/spec/src-browserify/core/sanitize.spec.js',
     ],

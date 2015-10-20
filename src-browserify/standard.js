@@ -1,5 +1,4 @@
-var cdb = {};
-require('./bundles/add-vendor-libs')(cdb);
-require('./bundles/expose-src-libs')(cdb);
-window.cartodb = cdb;
-module.exports = cdb;
+var createCdb = require('./create-cdb');
+module.exports = window.cartodb = createCdb({
+  jQuery: require('jquery')
+});

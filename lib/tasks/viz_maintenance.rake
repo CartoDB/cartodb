@@ -67,8 +67,8 @@ namespace :cartodb do
       vis_export_service = Carto::VisualizationsExportService.new
 
       puts "Exporting visualization #{args[:vis_id]}..."
-      vis_export_service.export(args[:vis_id])
-
+      result = vis_export_service.export(args[:vis_id])
+      puts "Export result was: #{result ? 'OK' : 'NOK (export already present)'}"
       puts "Export complete"
     end
 

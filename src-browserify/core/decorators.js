@@ -1,13 +1,16 @@
+var Backbone = require('Backbone');
+
 /**
 * Decorators to extend funcionality of cdb related objects
 */
+var decorators = {};
 
 /**
 * Adds .elder method to call for the same method of the parent class
 * usage:
 *   insanceOfClass.elder('name_of_the_method');
 */
-cdb.decorators.elder = (function() {
+decorators.elder = (function() {
   // we need to backup one of the backbone extend models
   // (it doesn't matter which, they are all the same method)
   var backboneExtend = Backbone.Router.extend;
@@ -56,40 +59,10 @@ cdb.decorators.elder = (function() {
   return decorate;
 })()
 
-cdb.decorators.elder(Backbone.Model);
-cdb.decorators.elder(Backbone.View);
-cdb.decorators.elder(Backbone.Collection);
+// TODO: should move to setup-cartodb to keep global mutations in one place? modifies all the Backbone.* objects
+// but only the ones created from this point and forth
+decorators.elder(Backbone.Model);
+decorators.elder(Backbone.View);
+decorators.elder(Backbone.Collection);
 
-if(!window.JSON) {
-  // shims for ie7
-  window.JSON = {
-    stringify: function(param) {
-      if(typeof param == 'number' || typeof param == 'boolean') {
-        return param.toString();
-      } else if (typeof param =='string') {
-        return '"' + param.toString() + '"';
-      } else if(_.isArray(param)) {
-        var res = '[';
-        for(var n in param) {
-          if(n>0) res+=', ';
-          res += JSON.stringify(param[n]);
-        }
-        res += ']'
-        return res;
-      } else {
-        var res = '{';
-        for(var p in param) {
-          if(param.hasOwnProperty(p)) {
-            res += '"'+p+'": '+ JSON.stringify(param[p]);
-          }
-        }
-        res += '}'
-        return res;
-      }
-      // no, we're no gonna stringify regexp, fuckoff.
-    },
-    parse: function(param) {
-      return eval(param);
-    }
-  }
-}
+module.exports = decorators;

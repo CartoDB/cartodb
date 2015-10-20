@@ -1,6 +1,9 @@
-describe("decorators", function() {
+var Backbone = require('backbone');
+var decorators = require('../../../../src-browserify/core/decorators');
 
-  describe("cbd.decorators.elder", function() {
+describe("core/decorators", function() {
+
+  describe(".elder", function() {
       var getMocks = function() {
         this.plane = Backbone.Model.extend({
           speed: 0,
@@ -40,7 +43,7 @@ describe("decorators", function() {
       }
 
       beforeEach(function() {
-        cdb.decorators.elder(Backbone.Model);
+        decorators.elder(Backbone.Model);
         getMocks.apply(this);
       });
 
@@ -74,4 +77,3 @@ describe("decorators", function() {
   });
 
 });
-

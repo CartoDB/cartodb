@@ -50,7 +50,7 @@ describe Organization do
     end
 
     it 'Destroys users and owner as well' do
-      pending "Adapt to User-Mover when ready"
+
       ::User.any_instance.stubs(:create_in_central).returns(true)
       ::User.any_instance.stubs(:update_in_central).returns(true)
 
@@ -66,6 +66,8 @@ describe Organization do
       user.save
       user.reload
       organization.reload
+
+      organization.users.count.should eq 2
 
       organization.destroy_cascade
       Organization.where(id: organization.id).first.should be nil

@@ -7,7 +7,7 @@ class AccountTokensController < ApplicationController
 
   def enable
     token = params[:id]
-    user = User.where(enable_account_token: token).first
+    user = ::User.where(enable_account_token: token).first
     render(file: 'signup/account_already_enabled', status: 404) and return unless user
 
     authenticate!(:enable_account_token, scope: params[:user_domain].present? ?  params[:user_domain] : user.username)
@@ -23,7 +23,7 @@ class AccountTokensController < ApplicationController
   def resend
     user_id = params[:user_id]
     render_404 and return unless user_id
-    @user = User.where(id: user_id).first
+    @user = ::User.where(id: user_id).first
     render_404 and return unless @user
 
     @organization = @user.organization

@@ -33,7 +33,7 @@ class Carto::Visualization < ActiveRecord::Base
   has_many :shared_entities, foreign_key: :entity_id, inverse_of: :visualization
 
   # TODO: duplicated with user_table?
-  belongs_to :table, class_name: Carto::UserTable, primary_key: :map_id, foreign_key: :map_id
+  belongs_to :table, class_name: Carto::UserTable, primary_key: :map_id, foreign_key: :map_id, inverse_of: :visualization
   has_one :external_source
   has_many :unordered_children, class_name: Carto::Visualization, foreign_key: :parent_id
 

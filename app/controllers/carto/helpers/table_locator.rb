@@ -1,12 +1,12 @@
 # encoding: UTF-8
 
 module Carto
-  module Helpers  
+  module Helpers
     class TableLocator
 
       # Getter by table uuid or table name using canonical visualizations
       # @param id_or_name String If is a name, can become qualified as "schema.tablename"
-      # @param viewer_user User
+      # @param viewer_user ::User
       def get_by_id_or_name(id_or_name, viewer_user)
         return nil unless viewer_user
 
@@ -24,7 +24,7 @@ module Carto
           # INFO: if we don't have schema we don't want shared
           query_filters[:shared] = CartoDB::Visualization::Collection::FILTER_SHARED_NO
         else
-          owner = User.where(username:table_schema).first
+          owner = ::User.where(username:table_schema).first
           unless owner.nil?
             query_filters[:user_id] = owner.id
           end

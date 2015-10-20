@@ -1,10 +1,9 @@
 #!/usr/bin/env ruby
 
 # export-user.rb
-# This script can be used to generate an as-is backup of the metadata of an user.
+# This class can be used to generate an as-is backup of the metadata of an user.
 # It can be ran against a single user or a single user ID or a list of any of both.
-# It will generate a SQL dump and a redis dump that can be ran against redis-cli --pipe
-# and also the ones needed to remove that user.
+# See lib/tasks/user_mover.rake for usage examples.
 
 require 'pg'
 require 'redis'
@@ -421,7 +420,7 @@ module CartoDB
             }
           }
         }
-        
+
         if options[:id]
           @user_data = get_user_metadata(options[:id])
           @username = @user_data["username"]
@@ -464,45 +463,4 @@ module CartoDB
       end
     end
   end
-end
-
-if __FILE__ == $0
-
-  options = {}
-  parser = OptionParser.new do |opts|
-    opts.banner = "Usage: #{__FILE__}  -u ID [-p|--path PATH]"
-    opts.on("-u", "--user USERNAME", "Dump a single account (ID or username)") do |f|
-      options[:id] = f
-    end
-    opts.on("-o", "--organization ORGNAME", "Dump an organization") do |f|
-      options[:organization_name] = f
-    end
-    opts.on("-s", "--schemamode", "Dump schema instead of full database") do |_f|
-      options[:schema_mode] = true
-    end
-    opts.on("-d", "--database", "Dump database only (skip metadata)") do |_f|
-      options[:database_only] = true
-    end
-    opts.on("-m", "--metadata", "Dump metadata only (skip database)") do |_f|
-      options[:metadata_only] = true
-    end
-    opts.on("-p", "--path PATH", "export to path") do |f|
-      options[:path] = f + "/"
-    end
-  end
-  parser.parse!
-
-  USER_ID = ARGV[0]
-
-  def usage
-    puts "Check #{__FILE__} --help"
-    p parser.help
-    exit 1
-  end
-
-  if options.empty?
-    puts parser.help
-    exit 1
-  end
-  CartoDB::DataMover::ExportJob.new(options)
 end

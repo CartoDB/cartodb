@@ -69,13 +69,14 @@
       "backbone-isch": "./src-browserify/api/core-lib/backbone-isch.js",
       "cdb.core.util": "./src-browserify/core/util.js",
       "cdb.core.profiler": "./src-browserify/core/profiler.js",
+      "html-css-sanitizer": "./vendor/html-css-sanitizer-bundle.js",
       "json2": "./vendor/json2.js",
       "lzma": "./vendor/lzma.js",
       "reqwest": "./vendor/reqwest.min.js"
     },
     "browserify-shim": {
-      "lzma": "LZMA",
-      "L": "L"
+      "html-css-sanitizer": "html",
+      "lzma": "LZMA"
     },
     "files": ["dist"],
     "main": "cartodb.js"

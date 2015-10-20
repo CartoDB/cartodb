@@ -865,7 +865,7 @@ module CartoDB
       def create_own_schema
         load_cartodb_functions
         @user.database_schema = @user.username
-        @user.update(database_schema: @user.database_schema)
+        @user.this.update(database_schema: @user.database_schema)
         create_user_schema
         set_database_search_path
         create_public_db_user
@@ -876,7 +876,7 @@ module CartoDB
         if @user.database_schema != new_schema_name
           old_database_schema_name = @user.database_schema
           @user.database_schema = new_schema_name
-          @user.update database_schema: new_schema_name
+          @user.this.update database_schema: new_schema_name
           create_user_schema
           rebuild_quota_trigger
           move_tables_to_schema(old_database_schema_name, @user.database_schema)

@@ -68,6 +68,6 @@ window.vizjson = function(data) {
   if (a) {
     Loader.get(a[0], a[1]);
   }
-}
+};
 
 module.exports = Loader;

@@ -285,7 +285,6 @@ describe('api/sql', function() {
     expect(ajaxParams.cache).toEqual(false);
   });
 
-
   it("should get bounds for query", function() {
     var sql = 'SELECT ST_XMin(ST_Extent(the_geom)) as minx,' +
             '       ST_YMin(ST_Extent(the_geom)) as miny,'+

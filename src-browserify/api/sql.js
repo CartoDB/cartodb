@@ -177,47 +177,46 @@ SQL.prototype.execute = function(sql, vars, options, callback) {
 }
 
 SQL.prototype.getBounds = function(sql, vars, options, callback) {
-    var promise = new _Promise();
-    var args = arguments,
-    fn = args[args.length -1];
-    if(_.isFunction(fn)) {
-      callback = fn;
-    }
-    var s = 'SELECT ST_XMin(ST_Extent(the_geom)) as minx,' +
-            '       ST_YMin(ST_Extent(the_geom)) as miny,'+
-            '       ST_XMax(ST_Extent(the_geom)) as maxx,' +
-            '       ST_YMax(ST_Extent(the_geom)) as maxy' +
-            ' from ({{{ sql }}}) as subq';
-    sql = Mustache.render(sql, vars);
-    this.execute(s, { sql: sql }, options)
-      .done(function(result) {
-        if (result.rows && result.rows.length > 0 && result.rows[0].maxx != null) {
-          var c = result.rows[0];
-          var minlat = -85.0511;
-          var maxlat =  85.0511;
-          var minlon = -179;
-          var maxlon =  179;
+  var promise = new _Promise();
+  var args = arguments,
+  fn = args[args.length -1];
+  if(_.isFunction(fn)) {
+    callback = fn;
+  }
+  var s = 'SELECT ST_XMin(ST_Extent(the_geom)) as minx,' +
+          '       ST_YMin(ST_Extent(the_geom)) as miny,'+
+          '       ST_XMax(ST_Extent(the_geom)) as maxx,' +
+          '       ST_YMax(ST_Extent(the_geom)) as maxy' +
+          ' from ({{{ sql }}}) as subq';
+  sql = Mustache.render(sql, vars);
+  this.execute(s, { sql: sql }, options)
+    .done(function(result) {
+      if (result.rows && result.rows.length > 0 && result.rows[0].maxx != null) {
+        var c = result.rows[0];
+        var minlat = -85.0511;
+        var maxlat =  85.0511;
+        var minlon = -179;
+        var maxlon =  179;
 
-          var clamp = function(x, min, max) {
-            return x < min ? min : x > max ? max : x;
-          }
-
-          var lon0 = clamp(c.maxx, minlon, maxlon);
-          var lon1 = clamp(c.minx, minlon, maxlon);
-          var lat0 = clamp(c.maxy, minlat, maxlat);
-          var lat1 = clamp(c.miny, minlat, maxlat);
-
-          var bounds = [[lat0, lon0], [lat1, lon1]];
-          promise.trigger('done', bounds);
-          callback && callback(bounds);
+        var clamp = function(x, min, max) {
+          return x < min ? min : x > max ? max : x;
         }
-      })
-      .error(function(err) {
-        promise.trigger('error', err);
-      })
 
-    return promise;
+        var lon0 = clamp(c.maxx, minlon, maxlon);
+        var lon1 = clamp(c.minx, minlon, maxlon);
+        var lat0 = clamp(c.maxy, minlat, maxlat);
+        var lat1 = clamp(c.miny, minlat, maxlat);
 
+        var bounds = [[lat0, lon0], [lat1, lon1]];
+        promise.trigger('done', bounds);
+        callback && callback(bounds);
+      }
+    })
+    .error(function(err) {
+      promise.trigger('error', err);
+    })
+
+  return promise;
 }
 
 /**
@@ -343,89 +342,89 @@ function array_agg(s) {
 
 SQL.prototype.describeString = function(sql, column, callback) {
 
-    var s = [
-      'WITH t as (',
-      '        SELECT count(*) as total,',
-      '               count(DISTINCT {{column}}) as ndist',
-      '        FROM ({{sql}}) _wrap',
-      '      ), a as (',
-      '        SELECT ',
-      '          count(*) cnt, ',
-      '          {{column}}',
-      '        FROM ',
-      '          ({{sql}}) _wrap ',
-      '        GROUP BY ',
-      '          {{column}} ',
-      '        ORDER BY ',
-      '          cnt DESC',
-      '        ), b As (',
-      '         SELECT',
-      '          row_number() OVER (ORDER BY cnt DESC) rn,',
-      '          cnt',
-      '         FROM a',
-      '        ), c As (',
-      '        SELECT ',
-      '          sum(cnt) OVER (ORDER BY rn ASC) / t.total cumperc,',
-      '          rn,',
-      '          cnt ',
-      '         FROM b, t',
-      '         LIMIT 10',
-      '         ),',
-      'stats as (',
-         'select count(distinct({{column}})) as uniq, ',
-         '       count(*) as cnt, ',
-         '       sum(case when COALESCE(NULLIF({{column}},\'\')) is null then 1 else 0 end)::numeric as null_count, ',
-         '       sum(case when COALESCE(NULLIF({{column}},\'\')) is null then 1 else 0 end)::numeric / count(*)::numeric as null_ratio, ',
-         // '       CDB_DistinctMeasure(array_agg({{column}}::text)) as cat_weight ',
-         '       (SELECT max(cumperc) weight FROM c) As skew ',
-         'from ({{sql}}) __wrap',
-      '),',
-      'hist as (',
-         'select array_agg(row(d, c)) array_agg from (select distinct({{column}}) d, count(*) as c from ({{sql}}) __wrap, stats group by 1 limit 100) _a',
-      ')',
-      'select * from stats, hist'
-    ];
+  var s = [
+    'WITH t as (',
+    '        SELECT count(*) as total,',
+    '               count(DISTINCT {{column}}) as ndist',
+    '        FROM ({{sql}}) _wrap',
+    '      ), a as (',
+    '        SELECT ',
+    '          count(*) cnt, ',
+    '          {{column}}',
+    '        FROM ',
+    '          ({{sql}}) _wrap ',
+    '        GROUP BY ',
+    '          {{column}} ',
+    '        ORDER BY ',
+    '          cnt DESC',
+    '        ), b As (',
+    '         SELECT',
+    '          row_number() OVER (ORDER BY cnt DESC) rn,',
+    '          cnt',
+    '         FROM a',
+    '        ), c As (',
+    '        SELECT ',
+    '          sum(cnt) OVER (ORDER BY rn ASC) / t.total cumperc,',
+    '          rn,',
+    '          cnt ',
+    '         FROM b, t',
+    '         LIMIT 10',
+    '         ),',
+    'stats as (',
+        'select count(distinct({{column}})) as uniq, ',
+        '       count(*) as cnt, ',
+        '       sum(case when COALESCE(NULLIF({{column}},\'\')) is null then 1 else 0 end)::numeric as null_count, ',
+        '       sum(case when COALESCE(NULLIF({{column}},\'\')) is null then 1 else 0 end)::numeric / count(*)::numeric as null_ratio, ',
+        // '       CDB_DistinctMeasure(array_agg({{column}}::text)) as cat_weight ',
+        '       (SELECT max(cumperc) weight FROM c) As skew ',
+        'from ({{sql}}) __wrap',
+    '),',
+    'hist as (',
+        'select array_agg(row(d, c)) array_agg from (select distinct({{column}}) d, count(*) as c from ({{sql}}) __wrap, stats group by 1 limit 100) _a',
+    ')',
+    'select * from stats, hist'
+  ];
 
-    var query = Mustache.render(s.join('\n'), {
-      column: column,
-      sql: sql
-    });
+  var query = Mustache.render(s.join('\n'), {
+    column: column,
+    sql: sql
+  });
 
-    var normalizeName = function(str) {
-      var normalizedStr = str.replace(/^"(.+(?="$))?"$/, '$1'); // removes surrounding quotes
-      return normalizedStr.replace(/""/g, '"'); // removes duplicated quotes
+  var normalizeName = function(str) {
+    var normalizedStr = str.replace(/^"(.+(?="$))?"$/, '$1'); // removes surrounding quotes
+    return normalizedStr.replace(/""/g, '"'); // removes duplicated quotes
+  }
+
+  this.execute(query, function(data) {
+    var row = data.rows[0];
+    var weight = 0;
+    var histogram = [];
+
+    try {
+      var s = array_agg(row.array_agg);
+
+      var histogram = _(s).map(function(row) {
+          var r = row.match(/\((.*),(\d+)/);
+          var name = normalizeName(r[1]);
+          return [name, +r[2]];
+      });
+
+      weight = row.skew * (1 - row.null_ratio) * (1 - row.uniq / row.cnt) * ( row.uniq > 1 ? 1 : 0);
+    } catch(e) {
+
     }
 
-    this.execute(query, function(data) {
-      var row = data.rows[0];
-      var weight = 0;
-      var histogram = [];
-
-      try {
-        var s = array_agg(row.array_agg);
-
-        var histogram = _(s).map(function(row) {
-            var r = row.match(/\((.*),(\d+)/);
-            var name = normalizeName(r[1]);
-            return [name, +r[2]];
-        });
-
-        weight = row.skew * (1 - row.null_ratio) * (1 - row.uniq / row.cnt) * ( row.uniq > 1 ? 1 : 0);
-      } catch(e) {
-
-      }
-
-      callback({
-        type: 'string',
-        hist: histogram,
-        distinct: row.uniq,
-        count: row.cnt,
-        null_count: row.null_count,
-        null_ratio: row.null_ratio,
-        skew: row.skew,
-        weight: weight
-      });
+    callback({
+      type: 'string',
+      hist: histogram,
+      distinct: row.uniq,
+      count: row.cnt,
+      null_count: row.null_count,
+      null_ratio: row.null_ratio,
+      skew: row.skew,
+      weight: weight
     });
+  });
 }
 
 SQL.prototype.describeDate = function(sql, column, callback) {
@@ -494,55 +493,55 @@ SQL.prototype.describeBoolean = function(sql, column, callback){
 }
 
 SQL.prototype.describeGeom = function(sql, column, callback) {
-    var s = [
-      'with stats as (',
-         'select st_asgeojson(st_extent({{column}})) as bbox',
-         'from ({{sql}}) _wrap',
-      '),',
-      'geotype as (',
-        'select st_geometrytype({{column}}) as geometry_type from ({{sql}}) _w where {{column}} is not null limit 1',
-      '),',
-      'clusters as (',
-        'with clus as (',
-          'SELECT distinct(ST_snaptogrid(the_geom, 10)) as cluster, count(*) as clustercount FROM ({{sql}}) _wrap group by 1 order by 2 desc limit 3),',
-        'total as (',
-          'SELECT count(*) FROM ({{sql}}) _wrap)',
-        'SELECT sum(clus.clustercount)/sum(total.count) AS clusterrate FROM clus, total',
-      '),',
-      'density as (',
-        'SELECT count(*) / st_area(st_extent(the_geom)) as density FROM ({{sql}}) _wrap',
-      ')',
-      'select * from stats, geotype, clusters, density'
-    ];
+  var s = [
+    'with stats as (',
+        'select st_asgeojson(st_extent({{column}})) as bbox',
+        'from ({{sql}}) _wrap',
+    '),',
+    'geotype as (',
+      'select st_geometrytype({{column}}) as geometry_type from ({{sql}}) _w where {{column}} is not null limit 1',
+    '),',
+    'clusters as (',
+      'with clus as (',
+        'SELECT distinct(ST_snaptogrid(the_geom, 10)) as cluster, count(*) as clustercount FROM ({{sql}}) _wrap group by 1 order by 2 desc limit 3),',
+      'total as (',
+        'SELECT count(*) FROM ({{sql}}) _wrap)',
+      'SELECT sum(clus.clustercount)/sum(total.count) AS clusterrate FROM clus, total',
+    '),',
+    'density as (',
+      'SELECT count(*) / st_area(st_extent(the_geom)) as density FROM ({{sql}}) _wrap',
+    ')',
+    'select * from stats, geotype, clusters, density'
+  ];
 
-    var query = Mustache.render(s.join('\n'), {
-      column: column,
-      sql: sql
-    });
-    function simplifyType(g) {
-      return {
-      'st_multipolygon': 'polygon',
-      'st_polygon': 'polygon',
-      'st_multilinestring': 'line',
-      'st_linestring': 'line',
-      'st_multipoint': 'point',
-      'st_point': 'point'
-      }[g.toLowerCase()]
-    };
+  var query = Mustache.render(s.join('\n'), {
+    column: column,
+    sql: sql
+  });
+  function simplifyType(g) {
+    return {
+    'st_multipolygon': 'polygon',
+    'st_polygon': 'polygon',
+    'st_multilinestring': 'line',
+    'st_linestring': 'line',
+    'st_multipoint': 'point',
+    'st_point': 'point'
+    }[g.toLowerCase()]
+  };
 
-    this.execute(query, function(data) {
-      var row = data.rows[0];
-      var bbox = JSON.parse(row.bbox).coordinates[0]
-      callback({
-        type: 'geom',
-        //lon,lat -> lat, lon
-        bbox: [[bbox[0][0],bbox[0][1]], [bbox[2][0], bbox[2][1]]],
-        geometry_type: row.geometry_type,
-        simplified_geometry_type: simplifyType(row.geometry_type),
-        cluster_rate: row.clusterrate,
-        density: row.density
-      });
+  this.execute(query, function(data) {
+    var row = data.rows[0];
+    var bbox = JSON.parse(row.bbox).coordinates[0]
+    callback({
+      type: 'geom',
+      //lon,lat -> lat, lon
+      bbox: [[bbox[0][0],bbox[0][1]], [bbox[2][0], bbox[2][1]]],
+      geometry_type: row.geometry_type,
+      simplified_geometry_type: simplifyType(row.geometry_type),
+      cluster_rate: row.clusterrate,
+      density: row.density
     });
+  });
 }
 
 SQL.prototype.columns = function(sql, options, callback) {
@@ -565,123 +564,123 @@ SQL.prototype.columns = function(sql, options, callback) {
 };
 
 SQL.prototype.describeFloat = function(sql, column, callback) {
-    var s = [
-      'with stats as (',
-          'select min({{column}}) as min,',
-                 'max({{column}}) as max,',
-                 'avg({{column}}) as avg,',
-                 'count(DISTINCT {{column}}) as cnt,',
-                 'count(distinct({{column}})) as uniq,',
-                 'count(*) as cnt,',
-                 'sum(case when {{column}} is null then 1 else 0 end)::numeric / count(*)::numeric as null_ratio,',
-                 'stddev_pop({{column}}) / count({{column}}) as stddev,',
-                 'CASE WHEN abs(avg({{column}})) > 1e-7 THEN stddev({{column}}) / abs(avg({{column}})) ELSE 1e12 END as stddevmean,',
-                  'CDB_DistType(array_agg("{{column}}"::numeric)) as dist_type ',
-            'from ({{sql}}) _wrap ',
+  var s = [
+    'with stats as (',
+        'select min({{column}}) as min,',
+                'max({{column}}) as max,',
+                'avg({{column}}) as avg,',
+                'count(DISTINCT {{column}}) as cnt,',
+                'count(distinct({{column}})) as uniq,',
+                'count(*) as cnt,',
+                'sum(case when {{column}} is null then 1 else 0 end)::numeric / count(*)::numeric as null_ratio,',
+                'stddev_pop({{column}}) / count({{column}}) as stddev,',
+                'CASE WHEN abs(avg({{column}})) > 1e-7 THEN stddev({{column}}) / abs(avg({{column}})) ELSE 1e12 END as stddevmean,',
+                'CDB_DistType(array_agg("{{column}}"::numeric)) as dist_type ',
+          'from ({{sql}}) _wrap ',
+    '),',
+    'params as (select min(a) as min, (max(a) - min(a)) / 7 as diff from ( select {{column}} as a from ({{sql}}) _table_sql where {{column}} is not null ) as foo ),',
+    'histogram as (',
+        'select array_agg(row(bucket, range, freq)) as hist from (',
+        'select CASE WHEN uniq > 1 then width_bucket({{column}}, min-0.01*abs(min), max+0.01*abs(max), 100) ELSE 1 END as bucket,',
+              'numrange(min({{column}})::numeric, max({{column}})::numeric) as range,',
+              'count(*) as freq',
+          'from ({{sql}}) _w, stats',
+          'group by 1',
+          'order by 1',
+      ') __wrap',
       '),',
-      'params as (select min(a) as min, (max(a) - min(a)) / 7 as diff from ( select {{column}} as a from ({{sql}}) _table_sql where {{column}} is not null ) as foo ),',
-      'histogram as (',
-         'select array_agg(row(bucket, range, freq)) as hist from (',
-         'select CASE WHEN uniq > 1 then width_bucket({{column}}, min-0.01*abs(min), max+0.01*abs(max), 100) ELSE 1 END as bucket,',
-                'numrange(min({{column}})::numeric, max({{column}})::numeric) as range,',
-                'count(*) as freq',
-           'from ({{sql}}) _w, stats',
-           'group by 1',
-           'order by 1',
-        ') __wrap',
-       '),',
-      'hist as (',
-         'select array_agg(row(d, c)) cat_hist from (select distinct({{column}}) d, count(*) as c from ({{sql}}) __wrap, stats group by 1 limit 100) _a',
-      '),',
-       'buckets as (',
-          'select CDB_QuantileBins(array_agg(distinct({{column}}::numeric)), 7) as quantiles, ',
-          '       (select array_agg(x::numeric) FROM (SELECT (min + n * diff)::numeric as x FROM generate_series(1,7) n, params) p) as equalint,',
-          // '       CDB_EqualIntervalBins(array_agg({{column}}::numeric), 7) as equalint, ',
-          '       CDB_JenksBins(array_agg(distinct({{column}}::numeric)), 7) as jenks, ',
-          '       CDB_HeadsTailsBins(array_agg(distinct({{column}}::numeric)), 7) as headtails ',
-          'from ({{sql}}) _table_sql where {{column}} is not null',
-       ')',
-       'select * from histogram, stats, buckets, hist'
-    ];
+    'hist as (',
+        'select array_agg(row(d, c)) cat_hist from (select distinct({{column}}) d, count(*) as c from ({{sql}}) __wrap, stats group by 1 limit 100) _a',
+    '),',
+      'buckets as (',
+        'select CDB_QuantileBins(array_agg(distinct({{column}}::numeric)), 7) as quantiles, ',
+        '       (select array_agg(x::numeric) FROM (SELECT (min + n * diff)::numeric as x FROM generate_series(1,7) n, params) p) as equalint,',
+        // '       CDB_EqualIntervalBins(array_agg({{column}}::numeric), 7) as equalint, ',
+        '       CDB_JenksBins(array_agg(distinct({{column}}::numeric)), 7) as jenks, ',
+        '       CDB_HeadsTailsBins(array_agg(distinct({{column}}::numeric)), 7) as headtails ',
+        'from ({{sql}}) _table_sql where {{column}} is not null',
+      ')',
+      'select * from histogram, stats, buckets, hist'
+  ];
 
-    var query = Mustache.render(s.join('\n'), {
-      column: column,
-      sql: sql
-    });
+  var query = Mustache.render(s.join('\n'), {
+    column: column,
+    sql: sql
+  });
 
-    this.execute(query, function(data) {
-      var row = data.rows[0];
-      var s = array_agg(row.hist);
-      var h = array_agg(row.cat_hist);
-      callback({
-        type: 'number',
-        cat_hist:
-          _(h).map(function(row) {
-          var r = row.match(/\((.*),(\d+)/);
-          return [+r[1], +r[2]];
-        }),
-        hist: _(s).map(function(row) {
-          if(row.indexOf("empty") > -1) return;
-          var els = row.split('"');
-          return { index: els[0].replace(/\D/g,''),
-                   range: els[1].split(",").map(function(d){return d.replace(/\D/g,'')}),
-                   freq: els[2].replace(/\D/g,'') };
-        }),
-        stddev: row.stddev,
-        null_ratio: row.null_ratio,
-        count: row.cnt,
-        distinct: row.uniq,
-        //lstddev: row.lstddev,
-        avg: row.avg,
-        max: row.max,
-        min: row.min,
-        stddevmean: row.stddevmean,
-        weight: (row.uniq > 1 ? 1 : 0) * (1 - row.null_ratio) * (row.stddev < -1 ? 1 : (row.stddev < 1 ? 0.5 : (row.stddev < 3 ? 0.25 : 0.1))),
-        quantiles: row.quantiles,
-        equalint: row.equalint,
-        jenks: row.jenks,
-        headtails: row.headtails,
-        dist_type: row.dist_type
-      });
+  this.execute(query, function(data) {
+    var row = data.rows[0];
+    var s = array_agg(row.hist);
+    var h = array_agg(row.cat_hist);
+    callback({
+      type: 'number',
+      cat_hist:
+        _(h).map(function(row) {
+        var r = row.match(/\((.*),(\d+)/);
+        return [+r[1], +r[2]];
+      }),
+      hist: _(s).map(function(row) {
+        if(row.indexOf("empty") > -1) return;
+        var els = row.split('"');
+        return { index: els[0].replace(/\D/g,''),
+                  range: els[1].split(",").map(function(d){return d.replace(/\D/g,'')}),
+                  freq: els[2].replace(/\D/g,'') };
+      }),
+      stddev: row.stddev,
+      null_ratio: row.null_ratio,
+      count: row.cnt,
+      distinct: row.uniq,
+      //lstddev: row.lstddev,
+      avg: row.avg,
+      max: row.max,
+      min: row.min,
+      stddevmean: row.stddevmean,
+      weight: (row.uniq > 1 ? 1 : 0) * (1 - row.null_ratio) * (row.stddev < -1 ? 1 : (row.stddev < 1 ? 0.5 : (row.stddev < 3 ? 0.25 : 0.1))),
+      quantiles: row.quantiles,
+      equalint: row.equalint,
+      jenks: row.jenks,
+      headtails: row.headtails,
+      dist_type: row.dist_type
     });
+  });
 }
 
 // describe a column
 SQL.prototype.describe = function(sql, column, options) {
-    var self = this;
-    var args = arguments,
-        fn = args[args.length -1];
-    if(_.isFunction(fn)) {
-      var _callback = fn;
+  var self = this;
+  var args = arguments,
+      fn = args[args.length -1];
+  if(_.isFunction(fn)) {
+    var _callback = fn;
+  }
+  var callback = function(data) {
+    data.column = column;
+    _callback(data);
+  }
+  var s = "select * from (" + sql + ") __wrap limit 0";
+  this.execute(s, function(data) {
+
+    var type = (options && options.type) ? options.type : data.fields[column].type;
+
+    if (!type) {
+      callback(new Error("column does not exist"));
+      return;
     }
-    var callback = function(data) {
-      data.column = column;
-      _callback(data);
+
+    else if (type === 'string') {
+      self.describeString(sql, column, callback);
+    } else if (type === 'number') {
+      self.describeFloat(sql, column, callback);
+    } else if (type === 'geometry') {
+      self.describeGeom(sql, column, callback);
+    } else if (type === 'date') {
+      self.describeDate(sql, column, callback);
+    } else if (type === 'boolean') {
+      self.describeBoolean(sql, column, callback);
+    } else {
+      callback(new Error("column type is not supported"));
     }
-    var s = "select * from (" + sql + ") __wrap limit 0";
-    this.execute(s, function(data) {
-
-      var type = (options && options.type) ? options.type : data.fields[column].type;
-
-      if (!type) {
-        callback(new Error("column does not exist"));
-        return;
-      }
-
-      else if (type === 'string') {
-        self.describeString(sql, column, callback);
-      } else if (type === 'number') {
-        self.describeFloat(sql, column, callback);
-      } else if (type === 'geometry') {
-        self.describeGeom(sql, column, callback);
-      } else if (type === 'date') {
-        self.describeDate(sql, column, callback);
-      } else if (type === 'boolean') {
-        self.describeBoolean(sql, column, callback);
-      } else {
-        callback(new Error("column type is not supported"));
-      }
-    });
+  });
 }
 
 module.exports = SQL;

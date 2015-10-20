@@ -1,4 +1,4 @@
-StaticImage = require('./image/static-image.js');
+var StaticImage = require('./image/static-image.js');
 
 var Image = function(data, options) {
 

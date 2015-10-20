@@ -29,7 +29,7 @@ module CartoDB
       @owner.organization = @organization
       @owner.db_service.setup_organization_user_schema
       @owner.save
-      @owner.monitor_user_notification
+      @owner.db_service.monitor_user_notification
       @active = true
     end
 

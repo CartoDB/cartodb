@@ -335,7 +335,7 @@ module CartoDB
           drop_user(conn)
         end.join
 
-        @user.monitor_user_notification
+        monitor_user_notification
       end
 
       def configure_extension_org_metadata_api_endpoint
@@ -837,7 +837,36 @@ module CartoDB
         end
       end
 
+      def monitor_user_notification
+        FileUtils.touch(Rails.root.join('log', 'users_modifications'))
+        if !Cartodb.config[:signups].nil? && !Cartodb.config[:signups]["service"].nil? &&
+           !Cartodb.config[:signups]["service"]["port"].nil?
+          enable_remote_db_user
+        end
+      end
+
+      def enable_remote_db_user
+        request = http_client.request(
+          "#{@user.database_host}:#{Cartodb.config[:signups]['service']['port']}/scripts/activate_db_user",
+          method: :post,
+          headers: { "Content-Type" => "application/json" }
+        )
+        response = request.run
+        if response.code != 200
+          raise(response.body)
+        else
+          comm_response = JSON.parse(response.body)
+          if comm_response['retcode'].to_i != 0
+            raise(response['stderr'])
+          end
+        end
+      end
+
       private
+
+      def http_client
+        @http_client ||= Carto::Http::Client.get('old_user', log_requests: true)
+      end
 
       # Telnet invalidation works only for Varnish 2.x.
       def create_function_invalidate_varnish_telnet

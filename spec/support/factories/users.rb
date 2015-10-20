@@ -19,9 +19,7 @@ module CartoDB
 
       if attributes[:fake_user]
         user_class.any_instance.stubs(
-          :enable_remote_db_user => nil,
-          :after_create => nil,
-          :monitor_user_notification => nil
+          after_create: nil
         )
 
         CartoDB::User::DBService.any_instance.stubs(
@@ -34,12 +32,11 @@ module CartoDB
           cartodb_extension_version_pre_mu?: false,
           load_cartodb_functions: nil,
           create_schema: nil,
-          create_public_db_user: nil
+          create_public_db_user: nil,
+          enable_remote_db_user: nil,
+          monitor_user_notification: nil
         )
       end
-
-      # INFO: commented because rspec doesn't allow to stub in a before:each
-      # user_class.any_instance.stubs(:enable_remote_db_user).returns(true)
 
       attributes = attributes.dup
       user = user_class.new

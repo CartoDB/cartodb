@@ -190,7 +190,7 @@ class User < Sequel::Model
     setup_user
     save_metadata
     self.load_avatar
-    monitor_user_notification
+    db_service.monitor_user_notification
     sleep 1
     db_service.set_statement_timeouts
   end
@@ -322,7 +322,7 @@ class User < Sequel::Model
             drop_database_and_user(conn)
             db_service.drop_user(conn)
           end.join
-          monitor_user_notification
+          db_service.monitor_user_notification
         end
       end
     end
@@ -1492,30 +1492,6 @@ class User < Sequel::Model
         raise "It's not possible to create a user within a inactive organization"
       else
         self.setup_new_user
-      end
-    end
-  end
-
-  def monitor_user_notification
-    FileUtils.touch(Rails.root.join('log', 'users_modifications'))
-    if !Cartodb.config[:signups].nil? && !Cartodb.config[:signups]["service"].nil? && !Cartodb.config[:signups]["service"]["port"].nil?
-      enable_remote_db_user
-    end
-  end
-
-  def enable_remote_db_user
-    request = http_client.request(
-      "#{self.database_host}:#{Cartodb.config[:signups]["service"]["port"]}/scripts/activate_db_user",
-      method: :post,
-      headers: { "Content-Type" => "application/json" }
-    )
-    response = request.run
-    if response.code != 200
-      raise(response.body)
-    else
-      comm_response = JSON.parse(response.body)
-      if comm_response['retcode'].to_i != 0
-        raise(response['stderr'])
       end
     end
   end

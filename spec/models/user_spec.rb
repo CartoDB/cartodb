@@ -18,7 +18,7 @@ end
 
 describe User do
   before(:each) do
-    ::User.any_instance.stubs(:enable_remote_db_user).returns(true)
+    CartoDB::User::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
   end
 
   before(:all) do
@@ -38,7 +38,7 @@ describe User do
   before(:each) do
     stub_named_maps_calls
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-    ::User.any_instance.stubs(:enable_remote_db_user).returns(true)
+    CartoDB::User::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
   end
 
   after(:all) do
@@ -1656,13 +1656,10 @@ describe User do
       # INFO: avoiding enable_remote_db_user
       Cartodb.config[:signups] = nil
 
-      ::User.any_instance.stubs(
-        enable_remote_db_user: nil,
-        monitor_user_notification: nil
-      )
-
       CartoDB::User::DBService.any_instance.stubs(
-        cartodb_extension_version_pre_mu?: nil
+        cartodb_extension_version_pre_mu?: nil,
+        monitor_user_notification: nil,
+        enable_remote_db_user: nil
       )
 
       user_timeout_secs = 666

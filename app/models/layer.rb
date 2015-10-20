@@ -5,8 +5,7 @@ require_relative 'table/user_table'
 require_relative '../../lib/cartodb/stats/editor_apis'
 
 
-# :: avoids collision with Layer module, which is loaded instead of the class in some testing scenarios
-class ::Layer < Sequel::Model
+class Layer < Sequel::Model
   plugin :serialization, :json, :options, :infowindow, :tooltip
 
   ALLOWED_KINDS = %W{ carto tiled background gmapsbase torque wms }
@@ -170,7 +169,7 @@ class ::Layer < Sequel::Model
   end
 
   def get_presenter(options, configuration)
-    CartoDB::Layer::Presenter.new(self, options, configuration)
+    CartoDB::LayerModule::Presenter.new(self, options, configuration)
   end
 
   def set_option(key, value)

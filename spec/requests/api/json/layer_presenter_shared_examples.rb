@@ -327,7 +327,7 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
           kind: 'torque',
           options: {
             'table_name' => 'my_test_table',
-            # This is only for compatibility with old Layer::Presenter, new one checkes in the presenter options
+            # This is only for compatibility with old LayerModule::Presenter, new one checkes in the presenter options
             'user_name' => $user_1.database_schema
             },
         })

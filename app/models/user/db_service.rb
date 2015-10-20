@@ -65,6 +65,34 @@ module CartoDB
         end
       end
 
+      # INFO: main setup for non-org users
+      def new_non_organization_user_main_db_setup
+        Thread.new do
+          create_db_user
+          create_user_db
+          grant_owner_in_database
+        end.join
+        create_importer_schema
+        create_geocoding_schema
+        load_cartodb_functions
+
+        reset_database_permissions # Reset privileges
+
+        configure_database
+
+        revoke_cdb_conf_access
+      end
+
+      # INFO: main setup for org users
+      def new_organization_user_main_db_setup
+        Thread.new do
+          create_db_user
+        end.join
+        create_own_schema
+        setup_organization_user_schema
+        revoke_cdb_conf_access
+      end
+
       def set_user_privileges_at_db # MU
         # INFO: organization permission on public schema is handled through role assignment
         unless @user.organization_user?
@@ -322,7 +350,7 @@ module CartoDB
           end
 
           conn = @user.in_database(as: :cluster_admin)
-          ::User.terminate_database_connections(@user.database_name, @user.database_host)
+          CartoDB::User::DBService.terminate_database_connections(@user.database_name, @user.database_host)
 
           # If user is in an organization should never have public schema, but to be safe (& tests which stub stuff)
           unless @user.database_schema == SCHEMA_PUBLIC
@@ -883,6 +911,143 @@ module CartoDB
           create_public_db_user
           set_database_search_path
         end
+      end
+
+      def drop_database_and_user(conn = nil)
+        conn ||= @user.in_database(as: :cluster_admin)
+
+        if !@user.database_name.nil? && !@user.database_name.empty?
+          conn.run("UPDATE pg_database SET datallowconn = 'false' WHERE datname = '#{@user.database_name}'")
+          CartoDB::User::DBService.terminate_database_connections(@user.database_name, @user.database_host)
+          conn.run("DROP DATABASE \"#{@user.database_name}\"")
+        end
+
+        if !@user.database_username.nil? && !@user.database_username.empty?
+          conn.run("DROP USER \"#{@user.database_username}\"")
+        end
+      end
+
+      def run_pg_query(query)
+        time = nil
+        res  = nil
+        translation_proc = nil
+        @user.in_database do |user_database|
+          time = Benchmark.measure do
+            user_database.synchronize do |conn|
+              res = conn.exec query
+            end
+            translation_proc = user_database.conversion_procs
+          end
+        end
+        {
+          time: time.real,
+          total_rows: res.ntuples,
+          rows: pg_to_hash(res, translation_proc),
+          results: pg_results?(res),
+          modified: pg_modified?(res),
+          affected_rows: pg_size(res)
+        }
+      rescue => e
+        if e.is_a? PGError
+          if e.message.include?("does not exist")
+            if e.message.include?("column")
+              raise CartoDB::ColumnNotExists, e.message
+            else
+              raise CartoDB::TableNotExists, e.message
+            end
+          else
+            raise CartoDB::ErrorRunningQuery, e.message
+          end
+        else
+          raise e
+        end
+      end
+
+      def create_db_user
+        conn = @user.in_database(as: :cluster_admin)
+        begin
+          conn.transaction do
+            begin
+              conn.run("CREATE USER \"#{@user.database_username}\" PASSWORD '#{@user.database_password}'")
+              conn.run("GRANT publicuser to \"#{@user.database_username}\"")
+            rescue => e
+              puts "#{Time.now} USER SETUP ERROR (#{@user.database_username}): #{$!}"
+              raise e
+            end
+          end
+        end
+      end
+
+      def create_user_db
+        conn = @user.in_database(as: :cluster_admin)
+        begin
+          conn.run("CREATE DATABASE \"#{@user.database_name}\"
+          WITH TEMPLATE = template_postgis
+          OWNER = #{::Rails::Sequel.configuration.environment_for(Rails.env)['username']}
+          ENCODING = 'UTF8'
+          CONNECTION LIMIT=-1")
+        rescue => e
+          puts "#{Time.now} USER SETUP ERROR WHEN CREATING DATABASE #{@user.database_name}: #{$!}"
+          raise e
+        end
+      end
+
+      def set_database_name
+        @user.database_name = case Rails.env
+                              when 'development'
+                                "cartodb_dev_user_#{@user.partial_db_name}_db"
+                              when 'staging'
+                                "cartodb_staging_user_#{@user.partial_db_name}_db"
+                              when 'test'
+                                "cartodb_test_user_#{@user.partial_db_name}_db"
+                              else
+                                "cartodb_user_#{@user.partial_db_name}_db"
+                              end
+        if @user.has_organization_enabled?
+          if !@user.database_exists?
+            raise "Organization database #{@user.database_name} doesn't exist"
+          end
+        else
+          if @user.database_exists?
+            raise "Database #{@user.database_name} already exists"
+          end
+        end
+        @user.this.update database_name: @user.database_name
+      end
+
+      def self.terminate_database_connections(database_name, database_host)
+        connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+          'host' => database_host,
+          'database' => 'postgres'
+        ) { |_, o, n| n.nil? ? o : n }
+        conn = ::Sequel.connect(connection_params)
+        conn.run("
+          DO language plpgsql $$
+          DECLARE
+              ver INT[];
+              sql TEXT;
+          BEGIN
+              SELECT INTO ver regexp_split_to_array(
+                regexp_replace(version(), '^PostgreSQL ([^ ]*) .*', '\\1'),
+                '\\.'
+              );
+              sql := 'SELECT pg_terminate_backend(';
+              IF ver[1] > 9 OR ( ver[1] = 9 AND ver[2] > 1 ) THEN
+                sql := sql || 'pid';
+              ELSE
+                sql := sql || 'procpid';
+              END IF;
+
+              sql := sql || ') FROM pg_stat_activity WHERE datname = '
+                || quote_literal('#{database_name}');
+
+              RAISE NOTICE '%', sql;
+
+              EXECUTE sql;
+          END
+          $$
+        ")
+        conn.disconnect
       end
 
       private

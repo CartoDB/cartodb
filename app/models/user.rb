@@ -16,7 +16,6 @@ require_relative '../../lib/carto/http/client'
 require_dependency 'cartodb_config_utils'
 require_relative './user/db_service'
 
-
 class User < Sequel::Model
   include CartoDB::MiniSequel
   include CartoDB::UserDecorator
@@ -232,9 +231,9 @@ class User < Sequel::Model
       invalidate_varnish_cache(regex: '.*:vizjson')
     end
     if changes.include?(:database_host)
-      ::User.terminate_database_connections(database_name, previous_changes[:database_host][0])
+      CartoDB::User::DBService.terminate_database_connections(database_name, previous_changes[:database_host][0])
     elsif changes.include?(:database_schema)
-      ::User.terminate_database_connections(database_name, database_host)
+      CartoDB::User::DBService.terminate_database_connections(database_name, database_host)
     end
 
   end
@@ -319,7 +318,7 @@ class User < Sequel::Model
         if !error_happened
           Thread.new do
             conn = self.in_database(as: :cluster_admin)
-            drop_database_and_user(conn)
+            db_service.drop_database_and_user(conn)
             db_service.drop_user(conn)
           end.join
           db_service.monitor_user_notification
@@ -348,54 +347,6 @@ class User < Sequel::Model
       organization = Organization.where(id: @org_id_for_org_wipe).first
       organization.destroy
     end
-  end
-
-  def drop_database_and_user(conn = self.in_database(as: :cluster_admin))
-
-    if !database_name.nil? && !database_name.empty?
-      conn.run("UPDATE pg_database SET datallowconn = 'false' WHERE datname = '#{database_name}'")
-      ::User.terminate_database_connections(database_name, database_host)
-      conn.run("DROP DATABASE \"#{database_name}\"")
-    end
-
-    if !database_username.nil? && !database_username.empty?
-      conn.run("DROP USER \"#{database_username}\"")
-    end
-  end
-
-  def self.terminate_database_connections(database_name, database_host)
-    connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-      'host' => database_host,
-      'database' => 'postgres'
-    ) {|key, o, n| n.nil? ? o : n}
-    conn = ::Sequel.connect(connection_params)
-    conn.run("
-      DO language plpgsql $$
-      DECLARE
-          ver INT[];
-          sql TEXT;
-      BEGIN
-          SELECT INTO ver regexp_split_to_array(
-            regexp_replace(version(), '^PostgreSQL ([^ ]*) .*', '\\1'),
-            '\\.'
-          );
-          sql := 'SELECT pg_terminate_backend(';
-          IF ver[1] > 9 OR ( ver[1] = 9 AND ver[2] > 1 ) THEN
-            sql := sql || 'pid';
-          ELSE
-            sql := sql || 'procpid';
-          END IF;
-
-          sql := sql || ') FROM pg_stat_activity WHERE datname = '
-            || quote_literal('#{database_name}');
-
-          RAISE NOTICE '%', sql;
-
-          EXECUTE sql;
-      END
-      $$
-    ")
-    conn.disconnect
   end
 
   def invalidate_varnish_cache(options = {})
@@ -587,42 +538,6 @@ class User < Sequel::Model
         conn.execute(%{ SET search_path TO #{db_service.build_search_path} })
       end
     end)))
-  end
-
-  def run_pg_query(query)
-    time = nil
-    res  = nil
-    translation_proc = nil
-    in_database do |user_database|
-      time = Benchmark.measure {
-        user_database.synchronize do |conn|
-          res = conn.exec query
-        end
-        translation_proc = user_database.conversion_procs
-      }
-    end
-    {
-      :time          => time.real,
-      :total_rows    => res.ntuples,
-      :rows          => pg_to_hash(res, translation_proc),
-      :results       => pg_results?(res),
-      :modified      => pg_modified?(res),
-      :affected_rows => pg_size(res)
-    }
-    rescue => e
-    if e.is_a? PGError
-      if e.message.include?("does not exist")
-        if e.message.include?("column")
-          raise CartoDB::ColumnNotExists, e.message
-        else
-          raise CartoDB::TableNotExists, e.message
-        end
-      else
-        raise CartoDB::ErrorRunningQuery, e.message
-      end
-    else
-      raise e
-    end
   end
 
   # List all public visualization tags of the user
@@ -1043,12 +958,12 @@ class User < Sequel::Model
 
   def real_tables(in_schema=self.database_schema)
     self.in_database(:as => :superuser)
-    .select(:pg_class__oid, :pg_class__relname)
-    .from(:pg_class)
-    .join_table(:inner, :pg_namespace, :oid => :relnamespace)
-    .where(:relkind => 'r', :nspname => in_schema)
-    .exclude(:relname => ::Table::SYSTEM_TABLE_NAMES)
-    .all
+        .select(:pg_class__oid, :pg_class__relname)
+        .from(:pg_class)
+        .join_table(:inner, :pg_namespace, :oid => :relnamespace)
+        .where(:relkind => 'r', :nspname => in_schema)
+        .exclude(:relname => ::Table::SYSTEM_TABLE_NAMES)
+        .all
   end
 
   def ghost_tables_work(job)
@@ -1374,101 +1289,19 @@ class User < Sequel::Model
     ClientApplication.create(:user_id => self.id)
   end
 
-  def create_db_user
-    conn = self.in_database(as: :cluster_admin)
-    begin
-      conn.transaction do
-        begin
-          conn.run("CREATE USER \"#{database_username}\" PASSWORD '#{database_password}'")
-          conn.run("GRANT publicuser to \"#{database_username}\"")
-          rescue => e
-            puts "#{Time.now} USER SETUP ERROR (#{database_username}): #{$!}"
-            raise e
-          end
-      end
-    end
-  end
-
-  def create_user_db
-    conn = self.in_database(as: :cluster_admin)
-    begin
-      conn.run("CREATE DATABASE \"#{self.database_name}\"
-      WITH TEMPLATE = template_postgis
-      OWNER = #{::Rails::Sequel.configuration.environment_for(Rails.env)['username']}
-      ENCODING = 'UTF8'
-      CONNECTION LIMIT=-1")
-    rescue => e
-      puts "#{Time.now} USER SETUP ERROR WHEN CREATING DATABASE #{self.database_name}: #{$!}"
-      raise e
-    end
-  end
-
-  def set_database_name
-    # Assign database_name
-    self.database_name = case Rails.env
-      when 'development'
-        "cartodb_dev_user_#{self.partial_db_name}_db"
-      when 'staging'
-        "cartodb_staging_user_#{self.partial_db_name}_db"
-      when 'test'
-        "cartodb_test_user_#{self.partial_db_name}_db"
-      else
-        "cartodb_user_#{self.partial_db_name}_db"
-    end
-    if self.has_organization_enabled?
-      if !database_exists?
-        raise "Organization database #{database_name} doesn't exist"
-      end
-    else
-      if database_exists?
-        raise "Database #{database_name} already exists"
-      end
-    end
-    self.this.update database_name: self.database_name
-  end
-
-  # INFO: main setup for non-org users
-  def setup_new_user
-    create_client_application
-    Thread.new do
-      create_db_user
-      create_user_db
-      db_service.grant_owner_in_database
-    end.join
-    db_service.create_importer_schema
-    db_service.create_geocoding_schema
-    db_service.load_cartodb_functions
-
-    db_service.reset_database_permissions # Reset privileges
-
-    db_service.configure_database
-
-    db_service.revoke_cdb_conf_access
-  end
-
-  # INFO: main setup for org users
-  def setup_organization_user
-    create_client_application
-    Thread.new do
-      create_db_user
-    end.join
-    db_service.create_own_schema
-    db_service.setup_organization_user_schema
-    db_service.revoke_cdb_conf_access
-  end
-
   ## User's databases setup methods
   def setup_user
     return if disabled?
-    self.set_database_name
+    db_service.set_database_name
 
+    create_client_application
     if self.has_organization_enabled?
-      self.setup_organization_user
+      db_service.new_organization_user_main_db_setup
     else
       if self.has_organization?
         raise "It's not possible to create a user within a inactive organization"
       else
-        self.setup_new_user
+        db_service.new_non_organization_user_main_db_setup
       end
     end
   end

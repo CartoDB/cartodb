@@ -1691,7 +1691,7 @@ describe User do
       user.nil?.should == false
 
       # To avoid connection pool caching
-      ::User.terminate_database_connections(user.database_name, user.database_host)
+      CartoDB::User::DBService.terminate_database_connections(user.database_name, user.database_host)
 
       user.reload
 

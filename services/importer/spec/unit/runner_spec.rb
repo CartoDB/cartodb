@@ -13,6 +13,7 @@ require_relative '../doubles/user'
 require_relative '../doubles/input_file_size_limit'
 require_relative '../doubles/table_row_count_limit'
 require_relative '../../../../spec/rspec_configuration.rb'
+require_relative '../../../../spec/spec_helper'
 
 include CartoDB::Importer2
 

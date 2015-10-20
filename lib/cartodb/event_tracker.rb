@@ -3,7 +3,7 @@ module Cartodb
   class EventTracker
 
     def send_event(user, event_name, custom_properties = {})
-      return unless is_tracking_active?      
+      return unless is_tracking_active?
 
       # Some events register custom properties
       # Monitary values associated with the event should use 'revenue' reserved key	
@@ -19,7 +19,8 @@ module Cartodb
         'email' => user.email,
         'plan' => user.account_type,
         'organization' => user.organization_user? ? user.organization.name: nil,
-        'event_origin' => 'Editor'
+        'event_origin' => 'Editor',
+        'creation_time' => Time.now.utc
       }
     end
 

@@ -1,15 +1,12 @@
 require 'segment/analytics'
 
 module Cartodb
-
   # Development info: https://segment.com/docs/libraries/ruby/quickstart
   class SegmentTracker
 
     def initialize
       @api_key = Cartodb.config[:segment]['api_key']
-      @analytics = Segment::Analytics.new({
-        write_key: @api_key    
-      })
+      @analytics = Segment::Analytics.new(write_key: @api_key)
     end
 
     def enabled?

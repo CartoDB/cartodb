@@ -244,7 +244,7 @@ module CartoDB
               old_name = "#{old_schema}.#{t[:relname]}"
               new_name = "#{new_schema}.#{t[:relname]}"
 
-              was_cartodbfied = Carto::UserTable.find_by_user_id_and_name(id, t[:relname]).present?
+              was_cartodbfied = Carto::UserTable.find_by_user_id_and_name(@user.id, t[:relname]).present?
 
               database.run(%{ SELECT cartodb._CDB_drop_triggers('#{old_name}'::REGCLASS) }) if was_cartodbfied
               database.run(%{ ALTER TABLE #{old_name} SET SCHEMA "#{new_schema}" })
@@ -859,6 +859,29 @@ module CartoDB
           if comm_response['retcode'].to_i != 0
             raise(response['stderr'])
           end
+        end
+      end
+
+      def create_own_schema
+        load_cartodb_functions
+        @user.database_schema = @user.username
+        @user.update(database_schema: @user.database_schema)
+        create_user_schema
+        set_database_search_path
+        create_public_db_user
+      end
+
+      def move_to_own_schema
+        new_schema_name = @user.username
+        if @user.database_schema != new_schema_name
+          old_database_schema_name = @user.database_schema
+          @user.database_schema = new_schema_name
+          @user.update database_schema: new_schema_name
+          create_user_schema
+          rebuild_quota_trigger
+          move_tables_to_schema(old_database_schema_name, @user.database_schema)
+          create_public_db_user
+          set_database_search_path
         end
       end
 

@@ -1,10 +1,10 @@
 module CartoDB
   @default_test_user = nil
   module Factories
-    def default_user(attributes={})
+    def default_user(attributes = {})
       user = nil
       unless @default_test_username.nil?
-        user = ::User.find(:username => @default_test_username)
+        user = ::User.find(username: @default_test_username)
       end
       if user.nil?
         user = new_user(attributes)
@@ -60,7 +60,9 @@ module CartoDB
       user.geocoding_block_price = attributes[:geocoding_block_price] || 1500
       user.sync_tables_enabled   = attributes[:sync_tables_enabled] || false
       user.organization          = attributes[:organization] || nil
-      user.organization_id = attributes[:organization_id] || nil
+      if attributes[:organization_id]
+        user.organization_id = attributes[:organization_id]
+      end
       user.twitter_datasource_enabled = attributes[:twitter_datasource_enabled] || false
       user.avatar_url            = user.default_avatar
 

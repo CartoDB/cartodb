@@ -53,7 +53,7 @@ describe CartoDB::DataMover::ExportJob do
 
     subject do
       create_tables(first_user)
-      first_user.move_to_own_schema
+      first_user.db_service.move_to_own_schema
 
       CartoDB::DataMover::ExportJob.new(id: first_user.username, path: @tmp_path, schema_mode: true)
       ::User.terminate_database_connections(first_user.database_name, first_user.database_host)

@@ -1452,32 +1452,9 @@ class User < Sequel::Model
     Thread.new do
       create_db_user
     end.join
-    create_own_schema
+    db_service.create_own_schema
     db_service.setup_organization_user_schema
     db_service.revoke_cdb_conf_access
-  end
-
-  def create_own_schema
-    db_service.load_cartodb_functions
-    self.database_schema = self.username
-    this.update database_schema: database_schema
-    db_service.create_user_schema
-    db_service.set_database_search_path
-    db_service.create_public_db_user
-  end
-
-  def move_to_own_schema
-    new_schema_name = self.username
-    if self.database_schema != new_schema_name
-      old_database_schema_name = self.database_schema
-      self.database_schema = new_schema_name
-      self.this.update database_schema: self.database_schema
-      db_service.create_user_schema
-      db_service.rebuild_quota_trigger
-      db_service.move_tables_to_schema(old_database_schema_name, self.database_schema)
-      db_service.create_public_db_user
-      db_service.set_database_search_path
-    end
   end
 
   ## User's databases setup methods

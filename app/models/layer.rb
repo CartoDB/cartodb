@@ -5,7 +5,8 @@ require_relative 'table/user_table'
 require_relative '../../lib/cartodb/stats/editor_apis'
 
 
-class Layer < Sequel::Model
+# :: avoids collision with Layer module, which is loaded instead of the class in some testing scenarios
+class ::Layer < Sequel::Model
   plugin :serialization, :json, :options, :infowindow, :tooltip
 
   ALLOWED_KINDS = %W{ carto tiled background gmapsbase torque wms }

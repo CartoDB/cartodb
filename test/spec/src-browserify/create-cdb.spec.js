@@ -50,4 +50,10 @@ describe('create-cdb', function() {
   it('should expose a Profiler class', function() {
     expect(this.cdb.Profiler).toBeDefined();
   });
+
+  it('should add templates stuff', function() {
+    expect(this.cdb.core.Template).toBeDefined();
+    expect(this.cdb.core.TemplateList).toBeDefined();
+    expect(this.cdb.templates instanceof this.cdb.core.TemplateList).toBe(true);
+  });
 });

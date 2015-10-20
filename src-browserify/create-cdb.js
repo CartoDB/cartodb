@@ -9,6 +9,8 @@ var Config = require('./core/config');
 var Log = require('./core/log');
 var ErrorList = require('./core/log/error-list');
 var Profiler = require('./core/profiler');
+var Template = require('./core/template');
+var TemplateList = require('./core/template-list');
 
 // Create the cartodb object to be set in the global namespace.
 // Code extracted from the older src/cartodb.js file (entry file prior to browerify)
@@ -41,6 +43,10 @@ module.exports = function(opts) {
   cdb.log = new Log({tag: 'cdb'});
 
   cdb.Profiler = Profiler;
+
+  cdb.core.Template = Template;
+  cdb.core.TemplateList = TemplateList
+  cdb.templates = new TemplateList();
 
   return cdb;
 };

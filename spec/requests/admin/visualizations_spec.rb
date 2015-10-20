@@ -360,7 +360,7 @@ describe Admin::VisualizationsController do
         :cartodb_extension_version_pre_mu? => false
       )
 
-      CartoDB::User::DBService.any_instance.stubs(
+      CartoDB::UserModule::DBService.any_instance.stubs(
         grant_user_in_database: nil,
         grant_publicuser_in_database: nil,
         set_user_privileges_at_db: nil,

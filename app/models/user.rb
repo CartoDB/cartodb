@@ -85,7 +85,7 @@ class User < Sequel::Model
   self.raise_on_save_failure = false
 
   def db_service
-    @db_service ||= CartoDB::User::DBService.new(self)
+    @db_service ||= CartoDB::UserModule::DBService.new(self)
   end
 
   def self.new_with_organization(organization)

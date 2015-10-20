@@ -3,7 +3,8 @@ require_relative 'db_queries'
 
 # To avoid collisions with User model
 module CartoDB
-  module User
+  # To avoid collisions with User class
+  module UserModule
     class DBService
 
       # Also default schema for new users
@@ -15,7 +16,7 @@ module CartoDB
       def initialize(user)
         raise "User nil" unless user
         @user = user
-        @queries = CartoDB::User::DBQueries.new(@user)
+        @queries = CartoDB::UserModule::DBQueries.new(@user)
       end
 
       def queries

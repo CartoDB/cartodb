@@ -5,6 +5,7 @@ require_relative '../../lib/importer/job'
 require_relative '../../lib/importer/downloader'
 require_relative '../factories/pg_connection'
 require_relative '../doubles/log'
+require_relative '../doubles/user'
 require_relative 'cdb_importer_context'
 require_relative 'acceptance_helpers'
 require_relative 'no_stats_context'
@@ -17,7 +18,7 @@ describe 'GPX regression tests' do
   it 'imports GPX files' do
     filepath    = path_to('route2.gpx')
     downloader  = CartoDB::Importer2::Downloader.new(filepath)
-    runner      = Runner.new({
+    runner      = CartoDB::Importer2::Runner.new({
                                pg: @pg_options,
                                downloader: downloader,
                                log: CartoDB::Importer2::Doubles::Log.new,

@@ -44,6 +44,7 @@
       "grunt-contrib-watch": "git://github.com/gruntjs/grunt-contrib-watch.git#b884948805940c663b1cbb91a3c28ba8afdebf78",
       "grunt-contrib-jasmine": "~0.8.1",
       "grunt-prompt": "~1.3.0",
+      "leaflet": "0.7.3",
       "mustache": "1.1.0",
       "semver": "~4.1.0",
       "jshint-stylish": "~0.1.3",
@@ -68,11 +69,13 @@
       "backbone-isch": "./src-browserify/api/core-lib/backbone-isch.js",
       "cdb.core.util": "./src-browserify/core/util.js",
       "cdb.core.profiler": "./src-browserify/core/profiler.js",
-      "reqwest": "./vendor/reqwest.min.js",
-      "lzma": "./vendor/lzma.js"
+      "json2": "./vendor/json2.js",
+      "lzma": "./vendor/lzma.js",
+      "reqwest": "./vendor/reqwest.min.js"
     },
     "browserify-shim": {
-      "lzma": "LZMA"
+      "lzma": "LZMA",
+      "L": "L"
     },
     "files": ["dist"],
     "main": "cartodb.js"

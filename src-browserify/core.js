@@ -22,17 +22,9 @@
   cdb.Image = require('./vis/image.js');
   cdb.SQL = require('./api/sql');
   cdb.Tiles = require('./api/tiles');
-
-  cdb.image = {};
-  cdb.geo = {};
-  cdb.geo.ui = {};
-  cdb.geo.geocoder = {};
-  cdb.ui = {};
-  cdb.ui.common = {};
   cdb.vis = {
     Loader: Loader
   };
-  cdb.decorators = {};
   cdb._Promise = require('_Promise');
 
   if (typeof window !== 'undefined') {

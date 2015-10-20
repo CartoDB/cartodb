@@ -164,21 +164,25 @@ CartoDBLayerCommon.prototype = {
   tilesOk: function() {
   },
 
+  _reloadInteraction: function() {
+
+    // Clear existing interaction
+    this._clearInteraction();
+
+    // Enable interaction for the layers that have interaction
+    // (are visible AND have tooltips OR infowindows)
+    this.model.layers.each(function(layer, index) {
+      if (layer.hasInteraction()) {
+        this.setInteraction(index, true);
+      }
+    }.bind(this))
+  },
+
   _clearInteraction: function() {
     for(var i in this.interactionEnabled) {
       if (this.interactionEnabled.hasOwnProperty(i) &&
         this.interactionEnabled[i]) {
         this.setInteraction(i, false);
-      }
-    }
-  },
-
-  _reloadInteraction: function() {
-    for(var i in this.interactionEnabled) {
-      if (this.interactionEnabled.hasOwnProperty(i) &&
-        this.interactionEnabled[i]) {
-          this.setInteraction(i, false);
-          this.setInteraction(i, true);
       }
     }
   },

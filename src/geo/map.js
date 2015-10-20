@@ -180,6 +180,14 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
     }
   },
 
+  hasInteraction: function() {
+    return this.isVisible() && (this.containInfowindow() || this.containTooltip());
+  },
+
+  isVisible: function() {
+    return this.get('visible');
+  },
+
   getTooltipFieldNames: function() {
     var names = [];
     var tooltip = this.getTooltipData();
@@ -198,9 +206,8 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
   },
 
   containInfowindow: function() {
-    return !!getTooltipData();
+    return !!this.getTooltipData();
   },
-
 
   getInfowindowFieldNames: function() {
     var names = [];
@@ -220,7 +227,7 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
   },
 
   containTooltip: function() {
-    return !!getInfowindowData();
+    return !!this.getInfowindowData();
   },
 
   getInteractiveColumnNames: function() {
@@ -259,12 +266,13 @@ cdb.geo.CartoDBGroupLayer = cdb.geo.MapLayer.extend({
 
     var subdomains = ['0', '1', '2', '3'];
 
-    function replaceSubdomain(t) {
-      var tiles = [];
-      for (var i = 0; i < t.length; ++i) {
-        tiles.push(t[i].replace('{s}', subdomains[i % subdomains.length]));
+    function replaceSubdomain(urls) {
+      var urls = urls || [];
+      var formattedURLs = [];
+      for (var i = 0; i < urls.length; ++i) {
+        formattedURLs.push(urls[i].replace('{s}', subdomains[i % subdomains.length]));
       }
-      return tiles;
+      return formattedURLs;
     }
 
     var urls = this.get('urls');

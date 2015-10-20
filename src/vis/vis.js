@@ -1163,7 +1163,6 @@ var Vis = cdb.core.View.extend({
             this.tooltip.clean();
           });
         }
-        layerView.setInteraction(i, true);
       }
     }
 
@@ -1195,7 +1194,6 @@ var Vis = cdb.core.View.extend({
           infowindow = Overlay.create('infowindow', this, layerModel.getInfowindowData(), true);
           mapView.addInfowindow(infowindow);
         }
-        layerView.setInteraction(i, true);
       }
     }
 

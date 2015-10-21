@@ -295,7 +295,7 @@ cdb.geo.CartoDBGroupLayer = cdb.geo.MapLayer.extend({
     $.ajax({
       dataType: 'jsonp',
       url: url,
-      jsonpCallback: '_cdbi_layer_attributes_' + cdb.core.util.uniqueCallbackName(this),
+      jsonpCallback: '_cdbi_layer_attributes_' + cdb.core.util.uniqueCallbackName(this.toJSON()),
       cache: true,
       success: function(data) {
         // loadingTime.end();

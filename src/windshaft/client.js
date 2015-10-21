@@ -13,11 +13,6 @@ cdb.windshaft.Client = function(options) {
   this.isCorsSupported = cdb.core.util.isCORSSupported();
   this.forceCors = options.forceCors;
   this.endpoint = options.endpoint;
-
-  // WARNING: This option is called instanciateCallback (tanci instead of tanti)
-  this.instantiateCallback = function(payload) {
-    return '_cdbc_' + this._jsonpCallbackName(payload);
-  }.bind(this);
 }
 
 cdb.windshaft.Client.MAX_GET_SIZE = 2033;
@@ -29,7 +24,7 @@ cdb.windshaft.Client.MAX_GET_SIZE = 2033;
  * @return {cdb.windshaft.DashboardInstance} The instance of the dashboard
  */
 cdb.windshaft.Client.prototype.instantiateMap = function(mapDefinition) {
-  var payload = JSON.stringify(mapDefinition.toJSON());
+  var payload = JSON.stringify(mapDefinition);
 
   var dashboardInstance = new cdb.windshaft.DashboardInstance();
 
@@ -90,9 +85,7 @@ cdb.windshaft.Client.prototype._get = function(payload, options) {
     this.ajax({
       url: this._getURL(dataParameter),
       dataType: 'jsonp',
-      jsonpCallback: function() {
-        return this.instantiateCallback(payload);
-      }.bind(this),
+      jsonpCallback: this._jsonpCallbackName(payload),
       cache: true,
       success: options.success,
       error: options.error
@@ -126,5 +119,5 @@ cdb.windshaft.Client.prototype._getURL = function(dataParameter) {
 }
 
 cdb.windshaft.Client.prototype._jsonpCallbackName = function(payload) {
-  return cdb.core.util.uniqueCallbackName(payload);
+  return '_cdbc_' + cdb.core.util.uniqueCallbackName(payload);
 }

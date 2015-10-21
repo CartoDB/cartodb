@@ -14,7 +14,7 @@ describe Layer do
   end
 
   before(:each) do
-    ::User.any_instance.stubs(:enable_remote_db_user).returns(true)
+    CartoDB::User::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
     stub_named_maps_calls
 
     CartoDB::Overlay::Member.any_instance.stubs(:can_store).returns(true)

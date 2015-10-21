@@ -589,7 +589,7 @@ class Table
   end
 
   def varnish_key
-    if owner.cartodb_extension_version_pre_mu?
+    if owner.db_service.cartodb_extension_version_pre_mu?
       "^#{self.owner.database_name}:(.*#{self.name}.*)|(table)$"
     else
       "^#{self.owner.database_name}:(.*#{owner.database_schema}(\\\\\")?\\.#{self.name}.*)|(table)$"
@@ -1040,7 +1040,7 @@ class Table
   end
 
   def run_query(query)
-    owner.run_pg_query(query)
+    owner.db_service.run_pg_query(query)
   end
 
   def georeference_from!(options = {})

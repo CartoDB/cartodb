@@ -53,10 +53,10 @@ describe CartoDB::DataMover::ExportJob do
 
     subject do
       create_tables(first_user)
-      first_user.move_to_own_schema
+      first_user.db_service.move_to_own_schema
 
       CartoDB::DataMover::ExportJob.new(id: first_user.username, path: @tmp_path, schema_mode: true)
-      ::User.terminate_database_connections(first_user.database_name, first_user.database_host)
+      CartoDB::User::DBService.terminate_database_connections(first_user.database_name, first_user.database_host)
       CartoDB::DataMover::ImportJob.new(
         file: @tmp_path + "user_#{first_user.id}.json", mode: :rollback, drop_database: true, drop_roles: true).run!
       CartoDB::DataMover::ImportJob.new(
@@ -96,7 +96,7 @@ describe CartoDB::DataMover::ExportJob do
     create_tables(user)
 
     CartoDB::DataMover::ExportJob.new(id: user.username, path: @tmp_path, schema_mode: true)
-    ::User.terminate_database_connections(user.database_name, user.database_host)
+    CartoDB::User::DBService.terminate_database_connections(user.database_name, user.database_host)
     CartoDB::DataMover::ImportJob.new(file: @tmp_path + "user_#{user.id}.json", mode: :rollback).run!
     CartoDB::DataMover::ImportJob.new(file: @tmp_path + "user_#{user.id}.json", mode: :import).run!
 
@@ -137,7 +137,7 @@ describe CartoDB::DataMover::ExportJob do
     share_group_tables(user, group_2)
 
     CartoDB::DataMover::ExportJob.new(organization_name: org.name, path: @tmp_path)
-    ::User.terminate_database_connections(org.owner.database_name, org.owner.database_host)
+    CartoDB::User::DBService.terminate_database_connections(org.owner.database_name, org.owner.database_host)
     CartoDB::DataMover::ImportJob.new(file: @tmp_path + "org_#{org.id}.json", mode: :rollback, drop_database: true, drop_roles: true).run!
     CartoDB::DataMover::ImportJob.new(file: @tmp_path + "org_#{org.id}.json", mode: :import, host: '127.0.0.2').run!
 
@@ -155,7 +155,7 @@ end
 module Helpers
   def move_user(user)
     CartoDB::DataMover::ExportJob.new(id: user.username, path: @tmp_path)
-    ::User.terminate_database_connections(user.database_name, user.database_host)
+    CartoDB::User::DBService.terminate_database_connections(user.database_name, user.database_host)
     CartoDB::DataMover::ImportJob.new(
       file: @tmp_path + "user_#{user.id}.json", mode: :rollback, host: '127.0.0.2',
       drop_database: true, drop_roles: true).run!

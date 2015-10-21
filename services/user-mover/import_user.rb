@@ -181,7 +181,7 @@ module CartoDB
             end
 
             user_model = ::User.find(username: @target_username)
-            user_model.monitor_user_notification
+            user_model.db_service.monitor_user_notification
             sleep 5
             user_model.db_service.configure_database
 

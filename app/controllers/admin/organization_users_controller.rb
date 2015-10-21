@@ -33,7 +33,6 @@ class Admin::OrganizationUsersController < Admin::AdminController
   end
 
   def create
-<<<<<<< HEAD
     @user = ::User.new
     @user.set_fields(params[:user], [:username, :name, :email, :password, :quota_in_bytes, :password_confirmation, :twitter_datasource_enabled])
     @user.organization = current_user.organization

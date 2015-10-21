@@ -27,6 +27,7 @@ class SamlAuthenticator
      response.settings = get_saml_settings(params[:saml_idp])
    
      if response.is_valid?
+       puts "The response is valid"
    
        user_data = SamlUser.where(saml_name_id: response.nameid).first
        return user_data

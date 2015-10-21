@@ -39,13 +39,12 @@ cdb.windshaft.Client.prototype.instantiateMap = function(mapDefinition) {
         dashboardInstance.set(data);
       }
     }.bind(this),
-    error: function() {
+    error: function(xhr) {
       var err = { errors: ['Unknown error'] };
       try {
         err = JSON.parse(xhr.responseText);
       } catch(e) {}
-        // TODO: Error handling
-        throw data.errors;
+      throw err.errors;
     }
   }
 

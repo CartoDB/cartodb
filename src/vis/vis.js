@@ -493,7 +493,7 @@ var Vis = cdb.core.View.extend({
           cartoDBLayerGroup: model,
           widgets: widgetModels
         });
-        var dashboardInstance = dashboard.createInstance();
+        dashboard.createInstance();
       } else {
         model = Layers.create(layerData.type || layerData.kind, self, layerData);
       }

@@ -1,20 +1,40 @@
-
-
-// maps_api_template
-
-cdb.windshaft.PublicMap = cdb.core.Model.extend({
-
+cdb.windshaft.DashboardInstance = cdb.core.Model.extend({
+ 
   initialize: function() {
     this.ajax = $.ajax;
 
-    // TODO: Pass something to this method
-    this.jsonpCallbackName = cdb.core.util.uniqueCallbackName(this);
+    // TODO: What params are really used?
     this.pngParams = ['map_key', 'api_key', 'cache_policy', 'updated_at'];
     this.gridParams = ['map_key', 'api_key', 'cache_policy', 'updated_at'];
   },
 
   getMapId: function() {
     return this.get('layergroupid');
+  },
+
+  getBaseURL: function() {
+    return [
+      this.getHost(),
+      cdb.windshaft.config.MAPS_API_BASE_URL,
+      this.getMapId(),
+    ].join('/');
+  },
+
+  getHost: function(subhost) {
+    var userName = this.get('userName');
+    var protocol = this._useHTTPS() ? 'https' : 'http';
+    var subhost = subhost || '';
+    var host = this.get('windshaftURLTemplate').replace('{user}', userName);
+    var cdnHost = this.get('cdn_url') && this.get('cdn_url')[protocol];
+    if (cdnHost) {
+      host = [protocol, '://', subhost, cdnHost, '/', userName].join('');
+    }
+    
+    return host;
+  },
+
+  _useHTTPS: function() {
+    return this.get('windshaftURLTemplate').indexOf('https') === 0;
   },
 
   /**
@@ -30,7 +50,7 @@ cdb.windshaft.PublicMap = cdb.core.Model.extend({
       return index;
     }
 
-    var tilerLayerIndex = {}
+    var tilerLayerIndex = {};
     var j = 0;
     for (var i = 0; i < layers.length; i++) {
       if (layers[i].type == layerType) {
@@ -38,7 +58,7 @@ cdb.windshaft.PublicMap = cdb.core.Model.extend({
         j++;
       }
     }
-    if (tilerLayerIndex[index] == undefined) {
+    if (tilerLayerIndex[index] === undefined) {
       return -1;
     }
     return tilerLayerIndex[index];
@@ -60,7 +80,7 @@ cdb.windshaft.PublicMap = cdb.core.Model.extend({
       var layer = layers[i];
       var isValidType = layer.type !== 'torque';
       if (types && types.length > 0) {
-        isValidType = isValidType && types.indexOf(layer.type) != -1
+        isValidType = isValidType && types.indexOf(layer.type) != -1;
       }
       if (isValidType) {
         layerIndexes.push(i);
@@ -70,15 +90,6 @@ cdb.windshaft.PublicMap = cdb.core.Model.extend({
   },
 
   getTiles: function() {
-    // TODO: Use the CDN url
-    // if (attributtes.cdn_url) {
-    //   self.options.cdn_url = self.options.cdn_url || {}
-    //   self.options.cdn_url = {
-    //     http: map.cdn_url.http || self.options.cdn_url.http,
-    //     https: map.cdn_url.https || self.options.cdn_url.https
-    //   }
-    // }
-
     var grids = [];
     var tiles = [];
     var params = [];
@@ -86,12 +97,10 @@ cdb.windshaft.PublicMap = cdb.core.Model.extend({
     var gridParams = this._encodeParams(params, this.gridParams);
     var subdomains = ['0', '1', '2', '3'];
 
-    // TODO: 
-    // if(this.isHttps()) {
-    //   subdomains = [null]; // no subdomain
-    // }
+    if(this._useHTTPS()) {
+      subdomains = [''];
+    }
 
-    // TODO: Pass the filter that comes in the viz.json instead of harcoded "mapnik"
     var layerIndexes = this.getLayerIndexesByType("mapnik");
     if (layerIndexes.length) {
       var tileTemplate = '/' +  layerIndexes.join(',') +'/{z}/{x}/{y}';
@@ -99,7 +108,7 @@ cdb.windshaft.PublicMap = cdb.core.Model.extend({
 
       for(var i = 0; i < subdomains.length; ++i) {
         var s = subdomains[i];
-        var cartodb_url = this._host(s) + MapBase.BASE_URL + '/' + this.getMapId();
+        var cartodb_url = this.getHost(s) + MapBase.BASE_URL + '/' + this.getMapId();
         tiles.push(cartodb_url + tileTemplate + ".png" + (pngParams ? "?" + pngParams: '') );
 
         for(var layer = 0; layer < this.get('metadata').layers.length; ++layer) {
@@ -115,7 +124,7 @@ cdb.windshaft.PublicMap = cdb.core.Model.extend({
     this.urls = {
       tiles: tiles,
       grids: grids
-    }
+    };
     return this.urls;
   },
 
@@ -124,7 +133,7 @@ cdb.windshaft.PublicMap = cdb.core.Model.extend({
     var url_params = [];
     included = included || _.keys(params);
     for(var i in included) {
-      var k = included[i]
+      var k = included[i];
       var p = params[k];
       if(p) {
         if (_.isArray(p)) {
@@ -138,39 +147,6 @@ cdb.windshaft.PublicMap = cdb.core.Model.extend({
         }
       }
     }
-    return url_params.join('&')
-  },
-
-  _host: function(subhost) {
-    // TODO: Make this work with a CDN
-
-    // var cdn_host = opts.cdn_url;
-    // var has_empty_cdn = !cdn_host || (cdn_host && (!cdn_host.http && !cdn_host.https));
-
-    // if (opts.no_cdn || has_empty_cdn) {
-    //   return this._tilerHost();
-    // } else {
-    //   var protocol = this.isHttps() ? 'https': 'http';
-    //   var h = protocol + "://";
-    //   if (subhost) {
-    //     h += subhost + ".";
-    //   }
-
-    //   var cdn_url = cdn_host[protocol];
-    //   // build default template url if the cdn url is not templatized
-    //   // this is for backwards compatiblity, ideally we should use the url
-    //   // that tiler sends to us right away
-    //   if (!this._isUserTemplateUrl(cdn_url)) {
-    //     cdn_url = cdn_url  + "/{user}";
-    //   }
-    //   h += cdn_url.replace('{user}', opts.user_name)
-
-    //   return h;
-    // }
-    return this.get('baseURL');
-  },
-
-  isNew: function() {
-    return !this.get('layergroupid');
+    return url_params.join('&');
   }
 })

@@ -136,9 +136,10 @@
         'api/sql.js',
         'api/vis.js',
 
+        'windshaft/config.js',
         'windshaft/client.js',
-        'windshaft/public_map.js',
-        'windshaft/dashboard.js'
+        'windshaft/dashboard.js',
+        'windshaft/dashboard_instance.js'
     ];
 
     cdb.init = function(ready) {

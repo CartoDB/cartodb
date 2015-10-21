@@ -5,26 +5,24 @@ cdb.windshaft.Dashboard = function(options) {
 
   this.client = new cdb.windshaft.Client({
     ajax: $.ajax,
-    user_name: this.datasource.user_name,
-    maps_api_template: this.datasource.maps_api_template,
-    stat_tag: this.datasource.stat_tag,
-    force_compress: false,
-    force_cors: false,
-    endpoint: MapBase.BASE_URL // This is different for named_maps
+    endpoint: cdb.windshaft.config.MAPS_API_BASE_URL, // TODO: This is different for named_maps -> POST /api/v1/map/named/:template_name
+    windshaftURLTemplate: this.datasource.maps_api_template,
+    userName: this.datasource.user_name,
+    statTag: this.datasource.stat_tag,
+    forceCors: this.datasource.force_cors
   });
 
-  // Instance is a cdb.windshaft.PublicMap for now
-  this.instance = new cdb.windshaft.PublicMap({});
+  this.instance = new cdb.windshaft.DashboardInstance();
 
   // Bindings
+  this.cartoDBLayerGroup.layers.bind('change', this.createInstance, this);
   this.instance.bind('change:layergroupid', this._updateLayerGroup, this);
   this.instance.bind('change:layergroupid', this._updateWidgets, this);
-  this.cartoDBLayerGroup.layers.bind('change', this.createInstance, this);
 }
 
 cdb.windshaft.Dashboard.prototype._updateLayerGroup = function(dashboardInstance) {
   this.cartoDBLayerGroup.set({
-    dashboardBaseURL: this.getURL(),
+    dashboardBaseURL: dashboardInstance.getBaseURL(),
     urls: dashboardInstance.getTiles()
   })
 }
@@ -32,17 +30,9 @@ cdb.windshaft.Dashboard.prototype._updateLayerGroup = function(dashboardInstance
 cdb.windshaft.Dashboard.prototype._updateWidgets = function(dashboardInstance) {
   _.each(this.widgets, function(widget) {
     widget.set({
-      dashboardBaseURL: this.getURL(),
+      dashboardBaseURL: dashboardInstance.getBaseURL(),
     });
   }.bind(this))
-}
-
-cdb.windshaft.Dashboard.prototype.getURL = function(dashboardInstance) {
-  return [
-    this.datasource.maps_api_template.replace('{user}', this.datasource.user_name),
-    'api/v1/map',
-    this.instance.get('layergroupid')
-  ].join('/');
 }
 
 cdb.windshaft.Dashboard.prototype.createInstance = function() {
@@ -54,8 +44,7 @@ cdb.windshaft.Dashboard.prototype.createInstance = function() {
   return this.instance;
 }
 
-// TODO: We can extract a cdb.windshaft.DashboardConfig class that takes a cdb.windshaft.Dashboard
-// and knows how to generate the config
+// TODO: This is different for NamedMaps
 cdb.windshaft.Dashboard.prototype._toDashboardConfig = function() {
   return {
     toJSON: function() {
@@ -64,7 +53,6 @@ cdb.windshaft.Dashboard.prototype._toDashboardConfig = function() {
         version: '1.4.0',
         stat_tag: this.datasource.stat_tag
       }
-
 
       // LAYERS
       var layers = _.map(this.cartoDBLayerGroup.getVisibleLayers(), function(layerModel) {

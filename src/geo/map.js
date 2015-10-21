@@ -259,7 +259,6 @@ cdb.geo.CartoDBGroupLayer = cdb.geo.MapLayer.extend({
   },
 
   getTileJSONFromTiles: function(layerIndex) {
-
     if (!this.get('urls')) {
       throw 'URLS not fetched yet';
     }
@@ -287,7 +286,6 @@ cdb.geo.CartoDBGroupLayer = cdb.geo.MapLayer.extend({
   },
 
   fetchAttributes: function(layer, featureID, callback) {
-
     var url = [
       this.get('dashboardBaseURL'),
       this.getLayerIndexByType(layer, "mapnik"),

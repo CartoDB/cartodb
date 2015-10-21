@@ -512,11 +512,32 @@ var Vis = cdb.core.View.extend({
           layers: cartoDBLayers
         });
 
+        // TODO: Perhaps this "endpoing" could be part of the "datasource"?
+        var endpoint = cdb.windshaft.config.MAPS_API_BASE_URL;
+        var configGenerator = cdb.windshaft.PublicDashboardConfig;
+        var datasource = data.datasource;
+        // TODO: We can use something else to differentiate types of "datasource"s
+        if (datasource.template_name) {
+          endpoint = [cdb.windshaft.config.MAPS_API_BASE_URL, 'named', datasource.template_name].join('/');
+          configGenerator = cdb.windshaft.PrivateDashboardConfig;
+        }
+
+        var windshaftClient = new cdb.windshaft.Client({
+          endpoint: endpoint,
+          windshaftURLTemplate: datasource.maps_api_template,
+          userName: datasource.user_name,
+          statTag: datasource.stat_tag,
+          forceCors: datasource.force_cors
+        });
+
         var dashboard = new cdb.windshaft.Dashboard({
-          datasource: data.datasource,
+          client: windshaftClient,
+          configGenerator: configGenerator,
+          statTag: datasource.stat_tag,
           cartoDBLayerGroup: model,
           widgets: widgetModels
         });
+
         dashboard.createInstance();
       } else {
         model = Layers.create(layerData.type || layerData.kind, self, layerData);

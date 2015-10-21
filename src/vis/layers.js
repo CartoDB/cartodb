@@ -113,11 +113,13 @@ var cartoLayer = function(vis, data) {
 Layers.register('cartodb', cartoLayer);
 Layers.register('carto', cartoLayer);
 
+// TODO: This can be removed
 Layers.register('layergroup', function(vis, data) {
   normalizeOptions(vis, data);
   return new cdb.geo.CartoDBGroupLayer(data);
 });
 
+// TODO: This can be removed
 Layers.register('namedmap', function(vis, data) {
   normalizeOptions(vis, data);
   return new cdb.geo.CartoDBNamedMapLayer(data);

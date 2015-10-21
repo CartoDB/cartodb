@@ -29,7 +29,7 @@
       window.onload = function() {
         cartodb.load('/src/', function() {
 
-          var vizJSON = {
+          var vizJSON1 = {
             "id": "ece6faac-7271-11e5-a85f-04013fc66a01",
             "version": "0.1.0",
             "title": "districtes_barcelona 1",
@@ -79,8 +79,6 @@
                 "type": "layergroup",
                 "options": {
                   "layer_definition": {
-                    "stat_tag": "ece6faac-7271-11e5-a85f-04013fc66a01",
-                    "version": "1.0.1",
                     "layers": [
                       {
                         "id": "76b7540c-6396-4e71-8f19-6d8f9db9ef15",
@@ -350,6 +348,16 @@
                   "display": true
                 },
                 "template": null
+              },
+              {
+                "type": "fullscreen",
+                "order": 7,
+                "options": {
+                  "x": 20,
+                  "y": 140,
+                  "display": true
+                },
+                "template": null
               }
             ],
             "prev": null,
@@ -384,9 +392,236 @@
               }
             ]
           }
+          var vizJSON2 = {
+            "id": "d29f9a84-5546-11e5-815b-0e9d821ea90d",
+            "version": "0.1.0",
+            "title": "Untitled Map 3",
+            "likes": 0,
+            "description": "<p>asdf</p>\n",
+            "scrollwheel": false,
+            "legends": true,
+            "url": null,
+            "map_provider": "leaflet",
+            "bounds": [
+              [
+                -57.42129439209404,
+                17.9296875
+              ],
+              [
+                65.80277639340238,
+                272.8125
+              ]
+            ],
+            "center": "[8.841651120809145, 145.37109375]",
+            "zoom": 3,
+            "updated_at": "2015-10-14T14:24:24+00:00",
+            "layers": [
+              {
+                "options": {
+                  "type": "Plain",
+                  "base_type": "plain",
+                  "className": "plain",
+                  "color": "#FFFFFF",
+                  "image": "",
+                  "maxZoom": 32,
+                  "id": "87d31549-d36b-4b02-80c9-8cc03422a2e7",
+                  "order": 0
+                },
+                "infowindow": null,
+                "tooltip": null,
+                "id": "87d31549-d36b-4b02-80c9-8cc03422a2e7",
+                "order": 0,
+                "type": "background"
+              },
+              {
+                "type": "namedmap",
+                "order": 1,
+                "options": {
+                  "type": "namedmap",
+                  "user_name": "pabloalonso",
+                  "maps_api_template": "https://{user}.cartodb.com:443",
+                  "sql_api_template": "https://{user}.cartodb.com:443",
+                  "tiler_protocol": "http",
+                  "tiler_domain": "cartodb.com",
+                  "tiler_port": "80",
+                  "filter": "mapnik",
+                  "named_map": {
+                    "name": "tpl_d29f9a84_5546_11e5_815b_0e9d821ea90d",
+                    "stat_tag": "d29f9a84-5546-11e5-815b-0e9d821ea90d",
+                    "params": {
+                      "layer0": 1
+                    },
+                    "layers": [
+                      {
+                        "layer_name": "waduslayer",
+                        "interactivity": "cartodb_id,city,description,name,number",
+                        "visible": true,
+                        "infowindow": {
+                          "fields": [
+                            {
+                              "name": "city",
+                              "title": true,
+                              "position": 0
+                            },
+                            {
+                              "name": "description",
+                              "title": true,
+                              "position": 1
+                            },
+                            {
+                              "name": "name",
+                              "title": true,
+                              "position": 2
+                            },
+                            {
+                              "name": "number",
+                              "title": true,
+                              "position": 3
+                            }
+                          ],
+                          "template_name": "infowindow_light",
+                          "template": "<div class=\"cartodb-popup v2\">\n  <a href=\"#close\" class=\"cartodb-popup-close-button close\">x</a>\n  <div class=\"cartodb-popup-content-wrapper\">\n    <div class=\"cartodb-popup-content\">\n      {{#content.fields}}\n        {{#title}}<h4>{{title}}</h4>{{/title}}\n        {{#value}}\n          <p {{#type}}class=\"{{ type }}\"{{/type}}>{{{ value }}}</p>\n        {{/value}}\n        {{^value}}\n          <p class=\"empty\">null</p>\n        {{/value}}\n      {{/content.fields}}\n    </div>\n  </div>\n  <div class=\"cartodb-popup-tip-container\"></div>\n</div>\n",
+                          "alternative_names": {},
+                          "width": 226,
+                          "maxHeight": 180
+                        },
+                        "tooltip": {
+                          "fields": [
+                            {
+                              "name": "city",
+                              "title": true,
+                              "position": 0
+                            },
+                            {
+                              "name": "description",
+                              "title": true,
+                              "position": 1
+                            },
+                            {
+                              "name": "name",
+                              "title": true,
+                              "position": 2
+                            },
+                            {
+                              "name": "number",
+                              "title": true,
+                              "position": 3
+                            }
+                          ],
+                          "template_name": "tooltip_light",
+                          "template": "<div class=\"cartodb-tooltip-content-wrapper\">\n  <div class=\"cartodb-tooltip-content\">\n  {{#fields}}\n    {{#title}}\n    <h4>{{title}}</h4>\n    {{/title}}\n    <p>{{{ value }}}</p>\n  {{/fields}}\n  </div>\n</div>",
+                          "alternative_names": {},
+                          "maxHeight": 180
+                        }
+                      }
+                    ]
+                  },
+                  "attribution": "attribution11"
+                }
+              }
+            ],
+            "overlays": [
+              {
+                "type": "fullscreen",
+                "order": 7,
+                "options": {
+                  "x": 20,
+                  "y": 140,
+                  "display": true
+                },
+                "template": null
+              },
+              {
+                "type": "logo",
+                "order": 9,
+                "options": {
+                  "display": true,
+                  "x": 10,
+                  "y": 40
+                },
+                "template": ""
+              },
+              {
+                "type": "loader",
+                "order": 8,
+                "options": {
+                  "display": true,
+                  "x": 20,
+                  "y": 150
+                },
+                "template": "<div class=\"loader\" original-title=\"\"></div>"
+              },
+              {
+                "type": "zoom",
+                "order": 6,
+                "options": {
+                  "display": true,
+                  "x": 20,
+                  "y": 20
+                },
+                "template": "<a href=\"#zoom_in\" class=\"zoom_in\">+</a> <a href=\"#zoom_out\" class=\"zoom_out\">-</a>"
+              },
+              {
+                "type": "search",
+                "order": 3,
+                "options": {
+                  "display": true,
+                  "x": 60,
+                  "y": 20
+                },
+                "template": ""
+              },
+              {
+                "type": "share",
+                "order": 2,
+                "options": {
+                  "display": true,
+                  "x": 20,
+                  "y": 20
+                },
+                "template": ""
+              }
+            ],
+            "prev": null,
+            "next": null,
+            "transition_options": {
+              "time": 0
+            },
+            "datasource": {
+              "type": "namedmap",
+              "user_name": "pabloalonso",
+              "maps_api_template": "https://{user}.cartodb.com:443",
+              "template_name": "tpl_d29f9a84_5546_11e5_815b_0e9d821ea90d",
+              "stat_tag": "d29f9a84-5546-11e5-815b-0e9d821ea90d",
+              "force_cors": true,
+              "params": {
+                "color": "blue"
+              }
+            },
+            "widgets": [
+              // {
+              //   "type": "list",
+              //   "id": 'widget_uuid',
+              //   "options": {
+              //     "sql": "SELECT COUNT(a.cartodb_id) as trees, b.n_distri as district FROM arboles as a INNER JOIN districtes_barcelona as b ON ST_Intersects(a.the_geom, b.the_geom) GROUP BY b.n_distri",
+              //     "title": "Árboles por distrito",
+              //     "columns": [
+              //       "district",
+              //       "trees"
+              //     ],
+              //     "columns_title": [
+              //       "district",
+              //       "árboles"
+              //     ]
+              //   }
+              // }
+            ]
 
-          cartodb.createVis('map', vizJSON, {
-            no_cdn: false
+          }
+
+          cartodb.createVis('map', vizJSON1, {
+            no_cdn: false,
+            layer_selector: true,
           })
           .done(function(vis, layers) {
 

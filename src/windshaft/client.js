@@ -3,8 +3,7 @@
  * @param {object} options Options to set up the client
  */
 cdb.windshaft.Client = function(options) {
-  this.COMPRESSION_LEVEL = 3;
-  this.ajax = options.ajax;
+  this.ajax = window.$ ? window.$.ajax : reqwest.compat;
   this.windshaftURLTemplate = options.windshaftURLTemplate;
   this.userName = options.userName;
   this.url = this.windshaftURLTemplate.replace('{user}', this.userName);
@@ -14,6 +13,7 @@ cdb.windshaft.Client = function(options) {
   this.endpoint = options.endpoint;
 }
 
+cdb.windshaft.Client.DEFAULT_COMPRESSION_LEVEL = 3;
 cdb.windshaft.Client.MAX_GET_SIZE = 2033;
 
 /**
@@ -79,7 +79,7 @@ cdb.windshaft.Client.prototype._post = function(payload, options) {
 
 cdb.windshaft.Client.prototype._get = function(payload, options) {
   var compressFunction = this._getCompressor(payload);
-  compressFunction(payload, this.COMPRESSION_LEVEL, function(dataParameter) {
+  compressFunction(payload, this.constructor.DEFAULT_COMPRESSION_LEVEL, function(dataParameter) {
     this.ajax({
       url: this._getURL(dataParameter),
       dataType: 'jsonp',

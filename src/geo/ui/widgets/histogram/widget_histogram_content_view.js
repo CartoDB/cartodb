@@ -43,10 +43,6 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
 
   render: function() {
 
-    _.bindAll(this, '_selectBars', '_zoom', '_adjustBrushHandles', '_brushed', '_brushstart', '_reset', '_onMouseMove', '_onMouseEnter', '_onMouseOut');
-
-    this._setupModel();
-    this._getData();
     this.clearSubViews();
 
     this.options.width = 300;
@@ -68,6 +64,15 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
       this._initViews();
     }
 
+    return this;
+  },
+
+  _initViews: function() {
+
+    _.bindAll(this, '_selectBars', '_zoom', '_adjustBrushHandles', '_brushed', '_brushstart', '_reset', '_onMouseMove', '_onMouseEnter', '_onMouseOut');
+
+    this._setupModel();
+    this._getData();
     this._setupDimensions();
     this._generateChart();
     this._generateHorizontalLines();
@@ -77,14 +82,6 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
     this._generateHandles();
     this._setupBrush();
     this._addXAxis();
-
-    return this;
-
-    return this;
-  },
-
-  _initViews: function() {
-
   },
 
 
@@ -141,7 +138,6 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   _brushstart: function() {
     $(".js-filter").animate({ opacity: 1 }, 250);
     this.chart.attr('class', 'selectable');
-    console.log('start');
   },
 
   _selectBars: function(callback) {
@@ -166,8 +162,6 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
 
   _brushed: function() {
     var sum = 0;
-
-    console.log('move');
 
     this._selectBars(function(d, i) {
       sum += d;
@@ -224,9 +218,6 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
     var brush = this.brush = d3.svg.brush().x(this.xScale);
 
     function brushend() {
-
-      console.log('end');
-
       var data = self.viewModel.get('data');
       var a, b;
 

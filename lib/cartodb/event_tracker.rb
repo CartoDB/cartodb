@@ -5,6 +5,11 @@ module Cartodb
     def send_event(user, event_name, custom_properties = {})
       return unless is_tracking_active?
 
+      if user.nil?
+        Rollbar.report_message('Segment error tracking: User is null', 'Warning', { event: event_name,
+                                                                                    custom_properties: custom_properties })
+        return
+
       # Some events register custom properties
       # Monitary values associated with the event should use 'revenue' reserved key	
       properties = generate_event_properties(user).merge(custom_properties)

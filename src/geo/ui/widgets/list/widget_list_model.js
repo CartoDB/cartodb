@@ -34,7 +34,7 @@ cdb.geo.ui.Widget.ListModel = cdb.geo.ui.Widget.Model.extend({
   _createUrlOptions: function() {
     return _.compact(_(this.options).map(
       function(v, k) {
-        return k + "=" + encodeURIComponent(v)
+        return k + "=" + encodeURIComponent(v);
       }
     )).join('&');
   },
@@ -60,7 +60,6 @@ cdb.geo.ui.Widget.ListModel = cdb.geo.ui.Widget.Model.extend({
     this._data.reset(r);
     return {
       data: r.data
-    }
+    };
   }
-
 });

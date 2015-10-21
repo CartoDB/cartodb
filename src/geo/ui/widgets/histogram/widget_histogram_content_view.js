@@ -45,6 +45,8 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
 
     this.clearSubViews();
 
+    // TODO: move this
+    this.options.unit = 'unit';
     this.options.width = 300;
     this.options.height = 70;
 
@@ -93,12 +95,35 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
     transitionType: 'elastic'
   },
 
+  _onChangeMax: function() {
+    var format = d3.format("0,000");
+    var value = format(this.viewModel.get('max'));
+    $(".js-max").text(value + ' MAX');
+  },
+
+  _onChangeMin: function() {
+    var format = d3.format("0,000");
+    var value = format(this.viewModel.get('min'));
+    $(".js-min").text(value + ' MIN');
+  },
+
+  _onChangeAvg: function() {
+    var format = d3.format("0,000");
+   var value = format(this.viewModel.get('avg'));
+    $(".js-avg").text(value + ' AVG');
+  },
+
   _onChangeTotal: function() {
-    $(".js-val").text(this.viewModel.get('total'));
+    var format = d3.format("0,000");
+    var value = format(this.viewModel.get('total'));
+    $(".js-val").text(value);
   },
 
   _setupModel: function() {
     this.viewModel.bind('change:total', this._onChangeTotal, this);
+    this.viewModel.bind('change:max',   this._onChangeMax, this);
+    this.viewModel.bind('change:min',   this._onChangeMin, this);
+    this.viewModel.bind('change:avg',   this._onChangeAvg, this);
   },
 
   _setupDimensions: function() {
@@ -167,12 +192,22 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
       sum += d;
     });
 
-    this.viewModel.set('total', sum);
+    var data = this.viewModel.get('data');
+    var a = this.viewModel.get('a');
+    var b = this.viewModel.get('b');
+
+    var slice = data.slice(a, b);
+
+    var max = d3.max(slice);
+    var avg = Math.round(d3.mean(slice));
+    var min = d3.min(slice);
+
+    this.viewModel.set({ min: min, max: max, avg: avg, total: sum });
     this._adjustBrushHandles();
   },
 
   _onMouseEnter: function(d) {
-    $(".tooltip").stop().fadeIn(250);
+    this.$(".tooltip").stop().fadeIn(250);
   },
 
   _onMouseOut: function(d) {
@@ -186,14 +221,23 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
     var a = Math.ceil(x/this.barWidth);
     var data = this.viewModel.get('data');
 
+    var format = d3.format("0,000");
+
     var bar = d3.select('.bar:nth-child(' + a + ')');
 
     if (bar && bar.node() && !bar.classed('selected')) {
-      var left = (a - 1)*this.barWidth  + 34 + (this.barWidth/2) - ($(".tooltip").width()/2);
-      $(".tooltip").text(data[a - 1] + " unit");
-      $(".tooltip").css({ top: this.chartHeight + this.yScale(data[a-1] + 10), left: left });
+      var value = data[a - 1];
+      var left = (a - 1) * this.barWidth  + 34 + (this.barWidth/2) - (this.$(".tooltip").width()/2);
+      var top = this.chartHeight + this.yScale(value + 10);
+
+      if (value === 0) {
+        top = this.chartHeight + this.yScale(this.viewModel.get('max') + 10);
+      }
+
+      this.$(".tooltip").text(format(value) + ' ' + this.options.unit);
+      this.$(".tooltip").css({ top: top, left: left });
     } else {
-      $(".tooltip").stop().hide();
+      this.$(".tooltip").stop().hide();
     }
 
     d3.selectAll('.bar')
@@ -211,6 +255,21 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
     .call(this.brush.event);
   },
 
+  _getLoBarIndex: function() {
+    var extent = this.brush.extent();
+    return Math.round(this.xScale(extent[0]) / this.barWidth);
+  },
+
+  _getHiBarIndex: function() {
+    var extent = this.brush.extent();
+    return Math.round(this.xScale(extent[1]) / this.barWidth);
+  },
+
+  _getBarIndex: function() {
+    var x = d3.event.sourceEvent.offsetX - this.margin.left;
+    return Math.ceil(x / this.barWidth);
+  },
+
   _setupBrush: function() {
     var self = this;
 
@@ -226,29 +285,28 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
         self.chart.selectAll('.bar').classed('selected', false);
         d3.select(this).call(brush.extent([0, 0]));
       } else {
-        var extent = self.brush.extent();
-        var lo = extent[0];
-        var hi = extent[1];
 
-        a = Math.round(self.xScale(lo) / self.barWidth) * (100 / data.length);
-        b = Math.round(self.xScale(hi) / self.barWidth) * (100 / data.length);
+        var loBarIndex = self._getLoBarIndex();
+        var hiBarIndex = self._getHiBarIndex();
+
+        a = loBarIndex * (100 / data.length);
+        b = hiBarIndex * (100 / data.length);
 
         if (!d3.event.sourceEvent) {
           return;
         }
 
         self._selectRange(this, a, b);
-        self.viewModel.set({ a: Math.round(self.xScale(lo) / self.barWidth), b: Math.round(self.xScale(hi) / self.barWidth)});
+        self.viewModel.set({ a: loBarIndex, b: hiBarIndex });
         self._adjustBrushHandles();
         self._selectBars();
       }
 
       if (d3.event.sourceEvent && a === undefined && b === undefined) {
-        var x = d3.event.sourceEvent.offsetX - self.margin.left;
-        var p = Math.ceil(x/self.barWidth);
-        var a = (p - 1) * (100/data.length);
-        var b = (p) * (100/data.length);
-        self.viewModel.set({ a: a, b: b });
+        var barIndex = self._getBarIndex();
+        var a = (barIndex - 1) * (100 / data.length);
+        var b = (barIndex) * (100 / data.length);
+        self.viewModel.set({ a: barIndex, b: barIndex + 1 });
         self._selectRange(this, a, b);
       }
     }
@@ -330,6 +388,8 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   _addXAxis: function() {
     var data = this.viewModel.get('data');
 
+    var format = d3.format('0,000');
+
     var xAxis = d3.svg.axis()
     .scale(this.zScale)
     .orient('bottom')
@@ -344,9 +404,10 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
       var v = i % p;
 
       if (v === 0 || i === 0 || i === (data.length - 1)) {
-        return _.reduce(data.slice(0, i + 1), function(j, t) {
-          return t + j;
+        var sum = _.reduce(data.slice(0, i + 1), function(t, j) {
+          return j + t;
         });
+        return format(sum);
       } else {
         return '';
       }
@@ -396,7 +457,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   },
 
   _generateTooltip: function() {
-    this.tooltip = d3.select(this.$el.find('.Widget')[0]).append('div')	
+    this.tooltip = d3.select(this.$el[0]).append('div')	
     .attr('class', 'tooltip');
   },
 
@@ -461,8 +522,9 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
       return Math.round(d  * 100);
     });*/
 
-    var data = _.map(d3.range(Math.round(Math.random() * 10) + 3), function(d) {
-      return Math.round(Math.random()) ? 100 : 50;
+    var data = _.map(d3.range(Math.round(Math.random() * 20) + 3), function(d) {
+      return Math.round(Math.random() * 2000);
+      //return Math.round(Math.random()) ? 100 : Math.round(Math.random()) ? 0:  50;
     });
 
     this.viewModel.set('data', data);

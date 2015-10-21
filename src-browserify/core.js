@@ -8,6 +8,7 @@ var _Promise = require('_Promise');
 var Image = require('./vis/image.js');
 var SQL = require('./api/sql');
 var Tiles = require('./api/tiles');
+var reqwest = require('reqwest');
 
 var cdb = {};
 cdb.VERSION = "3.15.8";
@@ -44,7 +45,7 @@ if (typeof window !== 'undefined') {
   if (!window.Mustache) window.Mustache = Mustache;
 
   // required by api/sql at global namespace at runtime
-  window.reqwest = require('reqwest')
+  window.reqwest = reqwest
 }
 
 module.exports = cdb;

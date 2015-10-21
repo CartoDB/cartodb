@@ -1,4 +1,6 @@
-.tooltip {
+.Tooltip {
+  top: 0;
+  left: 0;
   display: none;
   position: absolute;
   color: #fff;
@@ -8,13 +10,12 @@
   text-align: center;
   border-radius: 3px;
   background: #000;
-  top: 0;
+  font-size: 10px;
   pointer-events: none;
-  left: 0;
 }
 
-.selectable .handle,
-.selectable .l {
+.is-selectable .Handle,
+.is-selectable .HandleLine {
   opacity: 1;
 }
 
@@ -26,34 +27,36 @@
   opacity: 0;
 }
 
-.Widget-chart {
-}
-
 .extent {
+  opacity: 0;
   fill-opacity: 0;
   stroke: #3AA9E3;
-  opacity: 0;
   shape-rendering: crispEdges;
 }
 
-.bar.is-highlighted {
-  fill: #5BA45E;
-  opacity: 1;
-}
-.bar.selected {
-  fill: #DDD;
-  opacity: .7;
-}
-.bar {
+.Bar {
   fill: #9DE0AD;
   transition: fill 200ms ease;
   shape-rendering: crispEdges;
 }
+.Bar.is-highlighted {
+  fill: #5BA45E;
+  opacity: 1;
+}
+.Bar.is-selected {
+  fill: #DDD;
+  opacity: .7;
+}
+
 .axis {
   font: 10px sans-serif;
   shape-rendering: crispEdges;
 }
-.axis path,
+
+.axis path {
+  display: none;
+  shape-rendering: crispEdges;
+}
 .axis line {
   fill: none;
   stroke-width: 1;
@@ -75,33 +78,20 @@
   shape-rendering: crispEdges;
 }
 
-.line {
+.Line {
   stroke-width: 2;
   stroke: #3AA9E3;
 }
 
-.handle {
+.Handle {
   opacity: 0;
   stroke-width: 2;
   stroke: #3AA9E3;
   fill: #FFF;
 }
 
-.l {
+.HandleLine {
   opacity: 0;
   stroke-width: 2;
   stroke: #3AA9E3;
-}
-
-.x.axis path {
-  display: none;
-  shape-rendering: crispEdges;
-}
-.median-label {
-  fill: #333;
-  font-size: .7em;
-}
-.median {
-  stroke: red;
-  shape-rendering: crispEdges;
 }

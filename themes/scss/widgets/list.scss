@@ -6,9 +6,11 @@
 
 .Widget-list {
   display: block;
+  position: relative;
   max-height: 232px;
   margin: 0;
-  overflow: scroll;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 .Widget-listItem {
   display: block;

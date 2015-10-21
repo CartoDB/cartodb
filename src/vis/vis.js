@@ -916,7 +916,7 @@ var Vis = cdb.core.View.extend({
 
   addWidget: function(type, opts) {
     var _widgetTypes = {
-      'list': 'ListView'
+      'list': cdb.geo.ui.Widget.List.View
     };
     var datasource = opts.datasource;
 
@@ -928,7 +928,7 @@ var Vis = cdb.core.View.extend({
       datasource = this.datasource;
     }
 
-    return new cdb.geo.ui.Widget[_widgetTypes[type]](
+    return new _widgetTypes[type](
       _.extend(
         opts,
         {

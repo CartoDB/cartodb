@@ -9,21 +9,41 @@
     <style type="text/css">
       html, body {
         position:relative;
-      }
-      html, body, #map {
         height: 100%;
         padding: 0;
         margin: 0;
       }
-      .Widget {
+      .Map-canvas {
         position: absolute;
-        bottom: 30px;
-        right: 20px;
+        left: 0;
+        right: 352px;
+        bottom: 0;
+        height: 100%;
+        background: #F2F6F9;
+        z-index: 1;
+      }
+      #map {
+        position: absolute;
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+        top: 10px;
+        z-index: 1;
+      }
+      @media only screen and (max-width: 760px) and (min-width: 320px) {
+        .Map-canvas {
+          position: relative;
+          width: 100%;
+          height: 70%;
+        }
       }
     </style>
   </head>
   <body>
-    <div id="map"></div>
+    <div class="Map-canvas">
+      <div id="map"></div>
+    </div>
+    <div class="Widget-canvas js-canvas"></div>
 
     <script>
       window.onload = function() {

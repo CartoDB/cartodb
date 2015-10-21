@@ -12,39 +12,35 @@ cdb.geo.ui.Widget.List.ItemView = cdb.core.View.extend({
       '<div class="Widget-contentSpaced Widget-contentSpaced--topAligned Widget-contentSpaced--start">'+
         '<em class="Widget-dot Widget-listDot"></em>'+
         '<div class="Widget-contentFull">'+
-          '<p class="Widget-textSmall Widget-textSmall--upper"><%- district %></p>'+
-
-          '<% if (size > 2) { %>'
-            <dl class="Widget-inlineList">
-              <div class="Widget-inlineListItem Widget-textSmaller Widget-textSmaller--noEllip">
-                <dd class="Widget-textSmaller--bold Widget-textSmaller--dark">1,934</dd>
-                <dt>People affected</dt>
-              </div>
-            </dl>
-          '<% } else if (size === 2) { %>'+
+          '<p class="Widget-textSmall Widget-textSmall--upper"><%- items[0][1] %></p>'+
+          '<% if (itemsCount > 2) { %>'+
+            '<dl class="Widget-inlineList">'+
+            '<% for (var i = 1, l = itemsCount; i < l; i++) { %>'+
+              '<div class="Widget-inlineListItem Widget-textSmaller Widget-textSmaller--noEllip">'+
+                '<dd class="Widget-textSmaller--bold Widget-textSmaller--dark"><%- items[i][1] %></dd>'+
+                '<dt><%- items[i][0] %></dt>'+
+              '</div>'+
+            '<% } %>'+
+            '</dl>'+
+          '<% } else if (itemsCount === 2) { %>'+
             '<dl class="Widget-textSmaller Widget-textSmaller--noEllip u-tSpace">'+
-              '<dd class="Widget-textSmaller--bold Widget-textSmaller--dark"><%- trees %> </dd>'+
-              '<dt>trees</dt>'+
+              '<dd class="Widget-textSmaller--bold Widget-textSmaller--dark"><%- items[1][1] %> </dd>'+
+              '<dt><%- items[1][0] %></dt>'+
             '</dl>'+
           '<% } %>'+
-
         '</div>'+
       '</div>'+
     '</button>',
 
   render: function() {
     var template = _.template(this._TEMPLATE);
-    var items = this.model.toJSON();
+    var items = _.pairs(this.model.toJSON());
     var size = _.size(items);
     this.$el.html(
-      template(
-        _.extend(
-          items,
-          {
-            itemsCount: size
-          }
-        )
-      )
+      template({
+        items: items,
+        itemsCount: size
+      })
     );
     return this;
   },

@@ -255,7 +255,9 @@ cdb.geo.CartoDBGroupLayer = cdb.geo.MapLayer.extend({
   },
 
   getVisibleLayers: function() {
-    return this.layers.filter(function(layer){ return layer.get('visible') });
+    return this.layers.filter(function(layer) {
+      return layer.get('visible')
+    });
   },
 
   getTileJSONFromTiles: function(layerIndex) {
@@ -263,24 +265,25 @@ cdb.geo.CartoDBGroupLayer = cdb.geo.MapLayer.extend({
       throw 'URLS not fetched yet';
     }
 
-    var subdomains = ['0', '1', '2', '3'];
+    // TODO: Is this important?
+    // var subdomains = ['0', '1', '2', '3'];
 
-    function replaceSubdomain(urls) {
-      var urls = urls || [];
-      var formattedURLs = [];
-      for (var i = 0; i < urls.length; ++i) {
-        formattedURLs.push(urls[i].replace('{s}', subdomains[i % subdomains.length]));
-      }
-      return formattedURLs;
-    }
+    // function replaceSubdomain(urls) {
+    //   var urls = urls || [];
+    //   var formattedURLs = [];
+    //   for (var i = 0; i < urls.length; ++i) {
+    //     formattedURLs.push(urls[i].replace('{s}', subdomains[i % subdomains.length]));
+    //   }
+    //   return formattedURLs;
+    // }
 
     var urls = this.get('urls');
 
     return {
       tilejson: '2.0.0',
       scheme: 'xyz',
-      grids: replaceSubdomain(urls.grids[layerIndex]),
-      tiles: replaceSubdomain(urls.tiles),
+      grids: urls.grids[layerIndex],
+      tiles: urls.tiles,
       formatter: function(options, data) { return data; }
     };
   },
@@ -317,6 +320,7 @@ cdb.geo.CartoDBGroupLayer = cdb.geo.MapLayer.extend({
 
 });
 
+// TODO: This can be removed
 cdb.geo.CartoDBNamedMapLayer = cdb.geo.MapLayer.extend({
   defaults: {
     visible: true,

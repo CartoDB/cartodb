@@ -27,8 +27,20 @@ describe('create-cdb', function() {
     expect(this.cdb._).toBeDefined();
   });
 
+  it("should create a cdb.Profiler", function() {
+    expect(this.cdb.config).toBeDefined();
+  });
+
+  it("should create a cdb.Profiler", function() {
+    expect(this.cdb.Profiler).toBeDefined();
+  });
+
+  it("should create a cdb.decorators", function() {
+    expect(this.cdb.decorators).toBeDefined();
+  });
+
   it("should create a log", function() {
-    expect(this.cdb.log).toBeTruthy();
+    expect(this.cdb.log).toBeDefined();
   });
 
   it("should generate error when error is called", function() {
@@ -39,7 +51,7 @@ describe('create-cdb', function() {
   });
 
   it("should create a global error list", function() {
-    expect(this.cdb.errors).toBeTruthy();
+    expect(this.cdb.errors).toBeDefined();
   });
 
   it('should not expose some vendor libs defined in the global namespace', function() {
@@ -68,5 +80,25 @@ describe('create-cdb', function() {
 
   it('should have a core.Model', function() {
     expect(this.cdb.core.Model).toBeDefined();
+  });
+
+  it('should have a core.View', function() {
+    expect(this.cdb.core.View).toBeDefined();
+  });
+
+  it('should have a core.vis', function() {
+    expect(this.cdb.vis).toBeDefined();
+  });
+
+  it('should have a core.vis.Loader', function() {
+    expect(this.cdb.vis.Loader).toBeDefined();
+  });
+
+  it('should have a core.core.Loader', function() {
+    expect(this.cdb.core.Loader).toBeDefined();
+  });
+
+  it('should have a core.util', function() {
+    expect(this.cdb.core.util).toBeDefined();
   });
 });

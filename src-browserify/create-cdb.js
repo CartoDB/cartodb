@@ -14,6 +14,8 @@ var setupTemplate = require('./core/template');
 var setupTemplateList = require('./core/template-list');
 var setupModel = require('./core/model');
 var setupView = require('./core/view');
+var setupLoader = require('./core/loader');
+var util = require('./core/util');
 
 // Create the cartodb object to be set in the global namespace, which includes to properly write up all dependencies.
 //
@@ -64,6 +66,12 @@ module.exports = function(opts) {
 
   cdb.core.Model = setupModel($);
   cdb.core.View = setupView(cdb.templates);
+
+  cdb.vis = {};
+  var Loader = setupLoader(cdb);
+  cdb.vis.Loader = Loader;
+  cdb.core.Loader = Loader;
+  cdb.core.util = util;
 
   return cdb;
 };

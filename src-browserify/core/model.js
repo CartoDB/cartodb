@@ -1,23 +1,15 @@
-(function() {
+var _ = require('underscore');
+var Backbone = require('backbone');
 
-  cdb._debugCallbacks= function(o) {
-    var callbacks = o._callbacks;
-    for(var i in callbacks) {
-      var node = callbacks[i];
-      console.log(" * ", i);
-      var end = node.tail;
-      while ((node = node.next) !== end) {
-        console.log("    - ", node.context, (node.context && node.context.el) || 'none');
-      }
-    }
-  }
-
+// NOTE this does not return a Model directly, but a wrapper, to inject the dependencies
+// e.g. var Model = require('./model')(jQuery || window.$);
+// @param {Object} $
+module.exports = function($) {
   /**
    * Base Model for all CartoDB model.
    * DO NOT USE Backbone.Model directly
-   * @class cdb.core.Model
    */
-  var Model = cdb.core.Model = Backbone.Model.extend({
+  var Model = Backbone.Model.extend({
 
     initialize: function(options) {
       _.bindAll(this, 'fetch',  'save', 'retrigger');
@@ -88,4 +80,6 @@
       return promise;
     }
   });
-})();
+
+  return Model;
+};

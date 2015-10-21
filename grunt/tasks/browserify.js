@@ -39,9 +39,11 @@ var bundles = {
       'test/spec/src-browserify/core/decorators.spec.js',
       'test/spec/src-browserify/core/log.spec.js',
       'test/spec/src-browserify/core/log/*.js',
-      'test/spec/src-browserify/core/template.spec.js',
-      'test/spec/src-browserify/core/template-list.spec.js',
+      'test/spec/src-browserify/core/model.spec.js',
       'test/spec/src-browserify/core/sanitize.spec.js',
+      'test/spec/src-browserify/core/template-list.spec.js',
+      'test/spec/src-browserify/core/template.spec.js',
+      'test/spec/src-browserify/core/util.spec.js',
     ],
     dest: '<%= config.tmp %>/standard-specs.js'
   },

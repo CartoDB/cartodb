@@ -12,6 +12,7 @@ var setupError = require('./core/log/error');
 var setupErrorList = require('./core/log/error-list');
 var setupTemplate = require('./core/template');
 var setupTemplateList = require('./core/template-list');
+var setupModel = require('./core/model');
 
 // Create the cartodb object to be set in the global namespace, which includes to properly write up all dependencies.
 //
@@ -60,5 +61,6 @@ module.exports = function(opts) {
   cdb.core.TemplateList = TemplateList
   cdb.templates = new TemplateList();
 
+  cdb.core.Model = setupModel($);
   return cdb;
 };

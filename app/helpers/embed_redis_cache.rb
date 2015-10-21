@@ -1,10 +1,11 @@
 # encoding: utf-8
 
+require 'zlib'
+
 class EmbedRedisCache
 
   # This needs to be changed whenever there're changes in the code that require invalidation of old keys
-  VERSION = '3'
-
+  VERSION = '4'
 
   def initialize(redis_cache = $tables_metadata)
     @redis = redis_cache
@@ -25,9 +26,9 @@ class EmbedRedisCache
 
   # Only public and public with link
   def set(visualization_id, https_request, response_headers, response_body)
-    serialized = JSON.generate({headers: response_headers,
-                                body: response_body
-                               })
+    serialized = JSON.generate(headers: response_headers,
+                               body: response_body
+                              )
     redis.setex(key(visualization_id, https_request), 24.hours.to_i, serialized)
   rescue Redis::BaseError => exception
     Rollbar.report_exception(exception)
@@ -35,25 +36,56 @@ class EmbedRedisCache
   end
 
   def invalidate(visualization_id)
-    redis.del [key(visualization_id, https_request=true), key(visualization_id, https_request=false)]
+    redis.del [key(visualization_id, true), key(visualization_id, false)]
   rescue Redis::BaseError => exception
     Rollbar.report_exception(exception)
     nil
   end
 
-  def key(visualization_id, https_request=false)
-    protocol = https_request ? 'https' : 'http' 
-    "visualization:#{visualization_id}:embed:#{protocol}:#{VERSION}"
+  def key(visualization_id, https_request = false)
+    protocol = https_request ? 'https' : 'http'
+    [
+      "vis",
+      visualization_id,
+      "embed",
+      protocol,
+      VERSION,
+      frontend_version,
+      embed_template_hash
+    ].join(":")
   end
 
   def purge(vizs)
     return unless vizs.count > 0
-    keys = vizs.map {|v| [key(v.id, false), key(v.id, true)]}.flatten
+    keys = vizs.map { |v| [key(v.id, false), key(v.id, true)] }.flatten
     redis.del keys
   end
 
-
   private
+
+  def frontend_version
+    @key_fragment_fe_version ||= read_frontend_version
+  end
+
+  def embed_template_hash
+    @key_fragment_embed_template_hash ||= calculate_embed_template_hash
+  end
+
+  def read_frontend_version
+    JSON::parse(File.read(Rails.root.join("package.json")))["version"]
+  rescue => exception
+    CartoDB.notify_exception(exception, user: current_user)
+    0
+  end
+
+  def calculate_embed_template_hash
+    # The alternative Adler-32 is not as reliable as CRC32
+    # and even less with inputs of "few hundred bytes" as is this case
+    Zlib::crc32(File.read(Rails.root.join("app/views/admin/visualizations/embed_map.html.erb")))
+  rescue => exception
+    CartoDB.notify_exception(exception, user: current_user)
+    0
+  end
 
   def redis
     @redis

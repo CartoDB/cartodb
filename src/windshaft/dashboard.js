@@ -42,7 +42,3 @@ cdb.windshaft.Dashboard.prototype.getVisibleLayers = function() {
 cdb.windshaft.Dashboard.prototype.getWidgets = function() {
   return this.widgets;
 };
-
-
-
-

@@ -1040,7 +1040,7 @@ class Table
   end
 
   def run_query(query)
-    owner.run_pg_query(query)
+    owner.db_service.run_pg_query(query)
   end
 
   def georeference_from!(options = {})

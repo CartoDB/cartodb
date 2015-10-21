@@ -1,19 +1,25 @@
+var $ = require('jquery');
+var _ = require('underscore');
+var Backbone = require('backbone');
+var setupView = require('../../../../src-browserify/core/view');
 
-describe("core.view", function() {
-
-  var TestView = cdb.core.View.extend({
-    initialize: function() {
-      this.init_called = true;
-    },
-    test_method: function() {}
-  });
-
+describe('core/view', function() {
+  var TestView;
+  var View;
   var view;
 
   beforeEach(function() {
-      cdb.core.View.viewCount = 0;
-      view = new TestView({ el: $('<div>')});
+    var templates = {};
+    View = setupView(templates);
+    TestView = View.extend({
+      initialize: function() {
+        this.init_called = true;
+      },
+      test_method: function() {}
+    });
 
+    View.viewCount = 0;
+    view = new TestView({ el: $('<div>')});
   });
 
   it("should call initialize", function() {
@@ -21,15 +27,15 @@ describe("core.view", function() {
   });
 
   it("should increment refCount", function() {
-      expect(cdb.core.View.viewCount).toEqual(1);
-      expect(cdb.core.View.views[view.cid]).toBeTruthy();
+      expect(View.viewCount).toEqual(1);
+      expect(View.views[view.cid]).toBeTruthy();
   });
 
 
   it("should decrement refCount", function() {
       view.clean();
-      expect(cdb.core.View.viewCount).toEqual(0);
-      expect(cdb.core.View.views[view.cid]).toBeFalsy();
+      expect(View.viewCount).toEqual(0);
+      expect(View.views[view.cid]).toBeFalsy();
   });
 
   it("clean should remove view from dom", function() {
@@ -50,7 +56,7 @@ describe("core.view", function() {
   it("should unlink the view model", function() {
       var called = false;
       var new_view = new TestView({ el: $('<div>'), model: new Backbone.Model() });
-      
+
       spyOn(new_view, 'test_method');
       new_view.model.bind('change', new_view.test_method, new_view);
       new_view.model.bind('change', function() { called= true;});
@@ -89,7 +95,7 @@ describe("core.view", function() {
   });
 
   it("should add and remove subview", function() {
-      var v1 = new cdb.core.View();
+      var v1 = new View();
       view.addView(v1);
       expect(view._subviews[v1.cid]).toEqual(v1);
       expect(v1._parent).toEqual(view);
@@ -98,7 +104,7 @@ describe("core.view", function() {
   });
 
   it("should remove and clean subviews", function() {
-      var v1 = new cdb.core.View();
+      var v1 = new View();
       spyOn(v1, 'clean');
       view.addView(v1);
       expect(view._subviews[v1.cid]).toEqual(v1);
@@ -108,7 +114,7 @@ describe("core.view", function() {
   });
 
   it("subview shuould be removed from its parent", function() {
-      var v1 = new cdb.core.View();
+      var v1 = new View();
       view.addView(v1);
       expect(view._subviews[v1.cid]).toEqual(v1);
       v1.clean();
@@ -116,8 +122,8 @@ describe("core.view", function() {
   });
 
   it("extendEvents should extend events", function() {
-      var V1 = cdb.core.View.extend({
-        events: cdb.core.View.extendEvents({
+      var V1 = View.extend({
+        events: View.extendEvents({
           'click': 'hide'
         })
       });
@@ -137,7 +143,7 @@ describe("core.view", function() {
     view.child.trigger('cachopo');
     setTimeout(function(){
       expect(launched).toBeTruthy();
-      done();  
+      done();
     }, 25);
   });
 

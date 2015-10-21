@@ -1,10 +1,17 @@
-(function() {
+var _ = require('underscore');
+var Backbone = require('backbone');
+var Profiler = require('cdb.core.profiler');
+
+// NOTE this does not return a TemplateList directly, but a wrapper, to inject the dependencies
+// e.g. var View = require('./view')(templates);
+// @param {Object} templates an instance of TemplateList
+module.exports = function(templates) {
 
   /**
    * Base View for all CartoDB views.
    * DO NOT USE Backbone.View directly
    */
-  var View = cdb.core.View = Backbone.View.extend({
+  var View = Backbone.View.extend({
     classLabel: 'cdb.core.View',
     constructor: function(options) {
       this.options = _.defaults(options, this.options);
@@ -14,7 +21,7 @@
       View.viewCount++;
       View.views[this.cid] = this;
       this._created_at = new Date();
-      cdb.core.Profiler.new_value('total_views', View.viewCount);
+      Profiler.new_value('total_views', View.viewCount);
     },
 
     add_related_model: function(m) {
@@ -55,7 +62,7 @@
       this.remove();
       this.unbind();
       // remove this model binding
-      if (this.model && this.model.unbind) this.model.unbind(null, null, this); 
+      if (this.model && this.model.unbind) this.model.unbind(null, null, this);
       // remove model binding
       _(this._models).each(function(m) {
         m.unbind(null, null, self);
@@ -74,7 +81,7 @@
       if(this.options.template) {
         return  _.template(this.options.template);
       }
-      return cdb.templates.getTemplate(tmpl);
+      return templates.getTemplate(tmpl);
     },
 
     show: function() {
@@ -125,9 +132,6 @@
       this.$('.tipsy').remove();
     }
 
-
-
-
   }, {
     viewCount: 0,
     views: {},
@@ -136,7 +140,7 @@
      * when a view with events is inherit and you want to add more events
      * this helper can be used:
      * var MyView = new core.View({
-     *  events: cdb.core.View.extendEvents({
+     *  events: View.extendEvents({
      *      'click': 'fn'
      *  })
      * });
@@ -151,11 +155,11 @@
      * search for views in a view and check if they are added as subviews
      */
     runChecker: function() {
-      _.each(cdb.core.View.views, function(view) {
+      _.each(View.views, function(view) {
         _.each(view, function(prop, k) {
           if( k !== '_parent' &&
               view.hasOwnProperty(k) &&
-              prop instanceof cdb.core.View &&
+              prop instanceof View &&
               view._subviews[prop.cid] === undefined) {
             console.log("=========");
             console.log("untracked view: ");
@@ -169,4 +173,5 @@
     }
   });
 
-})();
+  return View;
+};

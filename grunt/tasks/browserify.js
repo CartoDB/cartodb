@@ -44,6 +44,7 @@ var bundles = {
       'test/spec/src-browserify/core/template-list.spec.js',
       'test/spec/src-browserify/core/template.spec.js',
       'test/spec/src-browserify/core/util.spec.js',
+      'test/spec/src-browserify/core/view.spec.js',
     ],
     dest: '<%= config.tmp %>/standard-specs.js'
   },

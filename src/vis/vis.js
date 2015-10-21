@@ -475,13 +475,29 @@ var Vis = cdb.core.View.extend({
           layers: cartoDBLayers
         });
 
+        // TODO: We can probably move this logic somewhere in cdb.geo.ui.Widget
         var widgetModels = [];
-        _.each(data.widgets, function(widgetData) {
+        var widgetClasses = {
+          "list": {
+            model: 'ListModel',
+            view: 'List.View'
+          }
+        };
 
-          var widgetModel = new cdb.geo.ui.Widget.ListModel(widgetData);
+        _.each(data.widgets, function(widgetData) {
+          if (!widgetClasses[widgetData.type]) {
+            throw 'Widget type \'' + widgetData.type + '\' is not supported!';
+          }
+
+          // Instantiate the model
+          var modelClass = widgetClasses[widgetData.type].model;
+          var widgetModel = new cdb.geo.ui.Widget[modelClass](widgetData);
           widgetModels.push(widgetModel);
 
-          var widgetView = new cdb.geo.ui.Widget.List.View(
+          // Instantitate the view
+          var viewClass = widgetClasses[widgetData.type].view;
+          var viewClassParts = viewClass.split('.');
+          var widgetView = new cdb.geo.ui.Widget[viewClassParts[0]][viewClassParts[1]](
             { model: widgetModel }
           );
 

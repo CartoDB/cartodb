@@ -15,7 +15,7 @@ cdb.geo.ui.Widget.List.ItemView = cdb.core.View.extend({
         '<em class="Widget-dot Widget-listDot"></em>'+
         '<% if (itemsCount > 0) { %>'+
           '<div class="Widget-contentFull">'+
-            '<p class="Widget-textSmall Widget-textSmall--upper"><%- items[0][1] %></p>'+
+            '<p class="Widget-textSmall Widget-textSmall--upper Widget-textSmall--bold"><%- items[0][1] %></p>'+
             '<% if (itemsCount > 2) { %>'+
               '<dl class="Widget-inlineList">'+
               '<% for (var i = 1, l = itemsCount; i < l; i++) { %>'+
@@ -38,13 +38,15 @@ cdb.geo.ui.Widget.List.ItemView = cdb.core.View.extend({
       '</button>'+
     '<% } %>',
 
+  initialize: function() {
+    this.viewModel = this.options.viewModel;
+  },
 
   render: function() {
     var template = _.template(this._TEMPLATE);
     var data = this.model.toJSON();
     var hasCDBId = this._hasCDBId(data);
-    var renderData = this._sanitizeData(this.model.toJSON());
-    var items = _.pairs(renderData);
+    var items = this._sanitizeData(data);
 
     this.$el.html(
       template({
@@ -61,10 +63,24 @@ cdb.geo.ui.Widget.List.ItemView = cdb.core.View.extend({
   },
 
   // Remove cartodb_id, if exists
+  // Replace titles if there are alternatives
+  // Convert data object to array items
   _sanitizeData: function(data) {
-    return _.omit(data, function(value, key, object) {
+    var data = _.omit(data, function(value, key, object) {
       return key === 'cartodb_id';
     });
+
+    // Convert to pair items and check if there is a column title
+    var arr = [];
+    var columnTitles = this.viewModel.get('columns_title');
+
+    _.each(data, function(value, key) {
+      var pos = arr.length;
+      var title = columnTitles[pos] || key;
+      arr.push([ title, value ]);
+    });
+
+    return arr;
   },
 
   _hasCDBId: function(data) {

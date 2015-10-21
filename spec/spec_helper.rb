@@ -63,7 +63,11 @@ RSpec.configure do |config|
       protected_tables = [:schema_migrations, :spatial_ref_sys]
       Rails::Sequel.connection.tables.each do |t|
         if !protected_tables.include?(t)
-          Rails::Sequel.connection.run("TRUNCATE TABLE \"#{t}\" CASCADE")
+          begin
+            Rails::Sequel.connection.run("TRUNCATE TABLE \"#{t}\" CASCADE")
+          rescue Sequel::DatabaseError => e
+            raise e unless e.message =~ /PG::Error: ERROR:  relation ".*" does not exist/
+          end
         end
       end
 

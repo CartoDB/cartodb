@@ -230,9 +230,5 @@ module Carto
       end
     end
 
-    def load_cartodb_functions
-      #TODO: Implement
-    end
-
   end
 end

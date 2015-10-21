@@ -1,10 +1,10 @@
 module CartoDB
   @default_test_user = nil
   module Factories
-    def default_user(attributes={})
+    def default_user(attributes = {})
       user = nil
       unless @default_test_username.nil?
-        user = ::User.find(:username => @default_test_username)
+        user = ::User.find(username: @default_test_username)
       end
       if user.nil?
         user = new_user(attributes)
@@ -19,13 +19,7 @@ module CartoDB
 
       if attributes[:fake_user]
         user_class.any_instance.stubs(
-          :enable_remote_db_user => nil,
-          :after_create => nil,
-          :create_schema => nil,
-          :create_public_db_user => nil,
-          :load_cartodb_functions => nil,
-          :monitor_user_notification => nil,
-          :cartodb_extension_version_pre_mu? => false
+          after_create: nil
         )
 
         CartoDB::User::DBService.any_instance.stubs(
@@ -34,12 +28,15 @@ module CartoDB
           set_statement_timeouts: nil,
           set_user_as_organization_member: nil,
           rebuild_quota_trigger: nil,
-          set_database_search_path: nil
+          set_database_search_path: nil,
+          cartodb_extension_version_pre_mu?: false,
+          load_cartodb_functions: nil,
+          create_schema: nil,
+          create_public_db_user: nil,
+          enable_remote_db_user: nil,
+          monitor_user_notification: nil
         )
       end
-
-      # INFO: commented because rspec doesn't allow to stub in a before:each
-      # user_class.any_instance.stubs(:enable_remote_db_user).returns(true)
 
       attributes = attributes.dup
       user = user_class.new
@@ -63,6 +60,9 @@ module CartoDB
       user.geocoding_block_price = attributes[:geocoding_block_price] || 1500
       user.sync_tables_enabled   = attributes[:sync_tables_enabled] || false
       user.organization          = attributes[:organization] || nil
+      if attributes[:organization_id]
+        user.organization_id = attributes[:organization_id]
+      end
       user.twitter_datasource_enabled = attributes[:twitter_datasource_enabled] || false
       user.avatar_url            = user.default_avatar
 
@@ -148,7 +148,7 @@ module CartoDB
     end
 
     def load_user_functions(user)
-      user.load_cartodb_functions
+      user.db_service.load_cartodb_functions
       user.db_service.rebuild_quota_trigger
     end
   end

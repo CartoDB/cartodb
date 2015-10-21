@@ -234,7 +234,7 @@ namespace :cartodb do
       execute_on_users_with_index(task_name, Proc.new { |user, i|
         begin
           log(sprintf("Trying on %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)...", user.username, user.database_name, i+1, count), task_name, database_host)
-          user.load_cartodb_functions(statement_timeout, extension_version)
+          user.db_service.load_cartodb_functions(statement_timeout, extension_version)
           log(sprintf("OK %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)", user.username, user.database_name, i+1, count), task_name, database_host)
           sleep(sleep)
         rescue => e
@@ -267,7 +267,7 @@ namespace :cartodb do
           # We grant 2 x statement_timeout, by default 6 min
           Timeout::timeout(statement_timeout/1000 * 2) do
             log(sprintf("Trying on %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)...", user.username, user.database_name, i+1, count), task_name, database_host)
-            user.upgrade_cartodb_postgres_extension(statement_timeout, extension_version)
+            user.db_service.upgrade_cartodb_postgres_extension(statement_timeout, extension_version)
             log(sprintf("OK %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)", user.username, user.database_name, i+1, count), task_name, database_host)
           end
         rescue => e
@@ -288,7 +288,7 @@ namespace :cartodb do
     desc 'Move user to its own schema'
     task :move_user_to_schema, [:username] => :environment do |t, args|
       user = ::User.find(username: args[:username])
-      user.move_to_own_schema
+      user.db_service.move_to_own_schema
       user.db_service.setup_organization_user_schema
       user.save
     end
@@ -541,7 +541,7 @@ namespace :cartodb do
       ::User.all.each do |user|
         tables = Table.filter(:user_id => user.id).all
         next if tables.empty?
-        user.load_cartodb_functions
+        user.db_service.load_cartodb_functions
         puts "Updating tables in db '#{user.database_name}' (#{user.username})"
         tables.each do |table|
           has_the_geom = false
@@ -594,7 +594,7 @@ namespace :cartodb do
 
       users = username.nil? ? ::User.where('organization_id IS NOT NULL') : ::User.where(username: username)
       users.each do |user|
-        if  user.cartodb_extension_version_pre_mu? || user.database_schema=='public'
+        if  user.db_service.cartodb_extension_version_pre_mu? || user.database_schema=='public'
           puts "SKIP: #{user.username} / #{user.id}"
         else
           schema_name = user.database_schema
@@ -622,7 +622,7 @@ namespace :cartodb do
     desc "Update update_the_geom_webmercator_trigger"
     task :update_the_geom_webmercator_trigger => :environment do
       ::User.all.each do |user|
-        user.load_cartodb_functions
+        user.db_service.load_cartodb_functions
 
         tables = Table.filter(:user_id => user.id).all
         next if tables.empty?
@@ -708,7 +708,7 @@ namespace :cartodb do
     task :create_organization_members_public_users => :environment do
       ::User.exclude(organization_id: nil).each do |user|
         begin
-          user.create_public_db_user
+          user.db_service.create_public_db_user
           user.save_metadata
         rescue
           puts "user #{user.username} already has the public user"
@@ -1163,7 +1163,7 @@ namespace :cartodb do
     desc "Revokes access to cdb_conf"
     task :revoke_cdb_conf_access => :environment do |t, args|
       execute_on_users_with_index(:revoke_cdb_conf_access.to_s, Proc.new { |user, i|
-        errors = user.revoke_cdb_conf_access
+        errors = user.db_service.revoke_cdb_conf_access
         if errors.empty?
           puts "OK #{user.username}"
         else

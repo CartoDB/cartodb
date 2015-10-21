@@ -141,7 +141,7 @@ class Geocoding < Sequel::Model
     raise e
   ensure
     log.store # Make sure the log is stored in DB
-    user.reset_pooled_connections
+    user.db_service.reset_pooled_connections
   end
 
   def run_geocoding!(processable_rows, rows_geocoded_before = 0)

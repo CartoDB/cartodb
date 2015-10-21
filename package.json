@@ -65,7 +65,6 @@
       ]
     },
     "browser": {
-      "_Promise": "./src-browserify/api/core-lib/_promise.js",
       "backbone-isch": "./src-browserify/api/core-lib/backbone-isch.js",
       "cdb.core.util": "./src-browserify/core/util.js",
       "cdb.core.profiler": "./src-browserify/core/profiler.js",

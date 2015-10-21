@@ -1,19 +1,22 @@
+var $ = require('jquery');
 var LZMA = require('lzma');
 var Backbone = require('backbone');
 var util = require('cdb.core.util');
-var MapBase = require('../../../../../src-browserify/geo/layer-definition/map-base');
-var LayerDefinition = require('../../../../../src-browserify/geo/layer-definition/layer-definition');
-var CartoDBSubLayer = require('../../../../../src-browserify/geo/sub-layer/cartodb-sub-layer');
+var setupSubLayerBase = require('../../../../../src-browserify/geo/sub-layer/sub-layer-base');
+var setupCartoDBSubLayer = require('../../../../../src-browserify/geo/sub-layer/cartodb-sub-layer.js');
+var setupHttpSubLayer = require('../../../../../src-browserify/geo/sub-layer/http-sub-layer');
+var setupSubLayerFactory = require('../../../../../src-browserify/geo/sub-layer/sub-layer-factory');
+var setupMapBase = require('../../../../../src-browserify/geo/layer-definition/map-base');
+var setupLayerDefinition = require('../../../../../src-browserify/geo/layer-definition/layer-definition');
 
 describe("geo/layer-definition/layer-definition", function() {
 
   var layerDefinition;
+  var MapBase;
+  var CartoDBSubLayer;
+  var LayerDefinition;
 
   beforeEach(function(){
-    // test case assumes Backbone to be set in global namespace, for expected side-effects
-    this.BackbonePrev = window.Backbone;
-    window.Backbone = Backbone;
-
     var layer_definition = {
       version: '1.0.0',
       stat_tag: 'vis_id',
@@ -39,6 +42,13 @@ describe("geo/layer-definition/layer-definition", function() {
         }
       ]
     };
+
+    var SubLayerBase = setupSubLayerBase(Backbone.Events);
+    CartoDBSubLayer = setupCartoDBSubLayer(SubLayerBase, Backbone.Model);
+    var HttpSubLayer = setupHttpSubLayer(SubLayerBase);
+    var SubLayerFactory = setupSubLayerFactory(CartoDBSubLayer, HttpSubLayer);
+    MapBase = setupMapBase(SubLayerFactory, { jQueryAjax: $.ajax });
+    LayerDefinition = setupLayerDefinition(MapBase, '1.2.3');
     layerDefinition = new LayerDefinition(layer_definition, {
       tiler_domain: "cartodb.com",
       tiler_port: "8081",
@@ -47,10 +57,6 @@ describe("geo/layer-definition/layer-definition", function() {
       no_cdn: true,
       subdomains: [null]
     });
-  });
-
-  afterEach(function() {
-    window.Backbone = this.BackbonePrev;
   });
 
   describe('.removeLayer', function() {

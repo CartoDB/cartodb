@@ -1,6 +1,13 @@
-var NamedMap = require('../../../../../src-browserify/geo/layer-definition/named-map');
+var $ = require('jquery');
+var Backbone = require('backbone');
+var setupSubLayerBase = require('../../../../../src-browserify/geo/sub-layer/sub-layer-base');
+var setupCartoDBSubLayer = require('../../../../../src-browserify/geo/sub-layer/cartodb-sub-layer');
+var setupSubLayerFactory = require('../../../../../src-browserify/geo/sub-layer/sub-layer-factory');
+var setupMapBase = require('../../../../../src-browserify/geo/layer-definition/map-base');
+var setupNamedMap = require('../../../../../src-browserify/geo/layer-definition/named-map');
 
 describe("geo/layer-definition/named-map", function() {
+  var NamedMap;
   var namedMap, named_map;
 
   beforeEach(function() {
@@ -15,6 +22,12 @@ describe("geo/layer-definition/named-map", function() {
           }
       }]
     };
+
+    var SubLayerBase = setupSubLayerBase(Backbone.Events);
+    var CartoDBSubLayer = setupCartoDBSubLayer(SubLayerBase, Backbone.Model);
+    var SubLayerFactory = setupSubLayerFactory(CartoDBSubLayer, {}); // HttpSubLayer = {} since not used
+    var MapBase = setupMapBase(SubLayerFactory, { jQueryAjax: $.ajax });
+    NamedMap = setupNamedMap(MapBase, SubLayerFactory);
     namedMap = new NamedMap(named_map, {
       tiler_domain:   "cartodb.com",
       tiler_port:     "8081",

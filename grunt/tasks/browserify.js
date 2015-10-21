@@ -18,6 +18,7 @@ var bundles = {
     src: [
       'test/spec/src-browserify/core.spec.js',
       'test/spec/src-browserify/api/sql.spec.js',
+      'test/spec/src-browserify/api/tiles.spec.js',
       'test/spec/src-browserify/core/util.spec.js',
       'test/spec/src-browserify/geo/layer-definition/*.js',
       'test/spec/src-browserify/geo/sublayer.spec.js',

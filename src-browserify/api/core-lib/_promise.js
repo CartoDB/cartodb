@@ -1,13 +1,16 @@
-var Backbone = window.Backbone || require('backbone-isch');
+// NOTE this does not return a _Promise directly, but a wrapper, to inject the dependencies
+// e.g. var _Promise = require('./_promise')(Backbone.Events)
+// @param {Object} BackboneEvents
+module.exports = function(BackboneEvents) {
+  if (!BackboneEvents) throw new Error('BackboneEvents is required');
 
-// might be provided in src/api/layers
-var _Promise = function _Promise() { }
-_Promise.prototype = Backbone.Events;
-_Promise.prototype.done = function(fn) {
-    return this.on('done', fn);
-}
-_Promise.prototype.error = function(fn) {
-    return this.on('error', fn);
-}
-
-module.exports = _Promise;
+  var _Promise = function _Promise() { }
+  _Promise.prototype = BackboneEvents;
+  _Promise.prototype.done = function(fn) {
+      return this.on('done', fn);
+  }
+  _Promise.prototype.error = function(fn) {
+      return this.on('error', fn);
+  }
+  return _Promise;
+};

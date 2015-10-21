@@ -1,18 +1,21 @@
 var _ = require('underscore');
+var $ = require('jquery');
 var Backbone = require('backbone');
-var LayerDefinition = require('../../../../src-browserify/geo/layer-definition/layer-definition');
-var SubLayerFactory = require('../../../../src-browserify/geo/sub-layer/sub-layer-factory');
-var HttpSubLayer = require('../../../../src-browserify/geo/sub-layer/http-sub-layer');
-var CartoDBSubLayer = require('../../../../src-browserify/geo/sub-layer/cartodb-sub-layer');
+var setupSubLayerBase = require('../../../../src-browserify/geo/sub-layer/sub-layer-base');
+var setupCartoDBSubLayer = require('../../../../src-browserify/geo/sub-layer/cartodb-sub-layer');
+var setupHttpSubLayer = require('../../../../src-browserify/geo/sub-layer/http-sub-layer');
+var setupSubLayerFactory = require('../../../../src-browserify/geo/sub-layer/sub-layer-factory');
+var setupMapBase = require('../../../../src-browserify/geo/layer-definition/map-base');
+var setupLayerDefinition = require('../../../../src-browserify/geo/layer-definition/layer-definition');
 
 describe('geo/sublayer', function() {
+  var LayerDefinition;
+  var CartoDBSubLayer;
+  var HttpSubLayer;
+  var SubLayerFactory;
   var layerDefinition, sublayer;
 
   beforeEach(function() {
-    // test case assumes Backbone to be set in global namespace, for expected side-effects
-    this.BackbonePrev = window.Backbone;
-    window.Backbone = Backbone;
-
     var layer_definition = {
       version: '1.0.0',
       stat_tag: 'vis_id',
@@ -37,15 +40,18 @@ describe('geo/sublayer', function() {
       ]
     };
 
+    var SubLayerBase = setupSubLayerBase(Backbone.Events);
+    CartoDBSubLayer = setupCartoDBSubLayer(SubLayerBase, Backbone.Model);
+    HttpSubLayer = setupHttpSubLayer(SubLayerBase);
+    SubLayerFactory = setupSubLayerFactory(CartoDBSubLayer, HttpSubLayer);
+    var MapBase = setupMapBase(SubLayerFactory, { jQueryAjax: $.ajax });
+    LayerDefinition = setupLayerDefinition(MapBase, '1.2.3');
+
     _.extend(LayerDefinition.prototype, Backbone.Events);
 
     layerDefinition = new LayerDefinition(layer_definition, {});
 
     sublayer = layerDefinition.getSubLayer(0);
-  });
-
-  afterEach(function() {
-    window.Backbone = this.BackbonePrev;
   });
 
   describe('SubLayerFactory', function() {

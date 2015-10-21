@@ -1,21 +1,33 @@
 var $ = require('jquery');
 var _ = require('underscore');
 var Backbone = require('backbone');
-var Loader = require('../../../../src-browserify/core/loader');
-var Image = require('../../../../src-browserify/vis/image');
-var StaticImage = require('../../../../src-browserify/vis/image/static-image');
 var Queue = require('../../../../src-browserify/vis/image/queue');
+var setupSubLayerBase = require('../../../../src-browserify/geo/sub-layer/sub-layer-base');
+var setupCartoDBSubLayer = require('../../../../src-browserify/geo/sub-layer/cartodb-sub-layer');
+var setupSubLayerFactory = require('../../../../src-browserify/geo/sub-layer/sub-layer-factory');
+var setupMapBase = require('../../../../src-browserify/geo/layer-definition/map-base');
+var setupLayerDefinition = require('../../../../src-browserify/geo/layer-definition/layer-definition');
+var setupNamedMap = require('../../../../src-browserify/geo/layer-definition/named-map');
+var setupLoader = require('../../../../src-browserify/core/loader');
+var setupStaticImage = require('../../../../src-browserify/vis/image/static-image');
+var setupImage = require('../../../../src-browserify/vis/image');
 
 describe("vis/image", function() {
+  var Image;
+  var StaticImage;
+  var Loader;
 
   beforeEach(function() {
-    // test case assumes Backbone to be set in global namespace, for expected side-effects
-   this.BackbonePrev = window.Backbone;
-   this.jQueryPrev = window.jQuery;
-   this.$Prev = window.$;
-   window.Backbone = Backbone;
-   window.jQuery = $;
-   window.$ = $;
+    var SubLayerBase = setupSubLayerBase(Backbone.Events);
+    var CartoDBSubLayer = setupCartoDBSubLayer(SubLayerBase, Backbone.Model);
+    var SubLayerFactory = setupSubLayerFactory(CartoDBSubLayer, {}); // HttpSubLayer = {}, since not used
+    var MapBase = setupMapBase(SubLayerFactory, { jQueryAjax: $.ajax });
+    var LayerDefinition = setupLayerDefinition(MapBase, '1.2.3');
+    var cdb = {DEBUG: false};
+    Loader = setupLoader(cdb);
+    var NamedMap = setupNamedMap(MapBase, SubLayerFactory);
+    StaticImage = setupStaticImage(Loader, LayerDefinition, MapBase, NamedMap);
+    Image = setupImage(StaticImage);
 
     var img = $('<img id="image" />');
     $("body").append(img);
@@ -23,9 +35,6 @@ describe("vis/image", function() {
 
   afterEach(function() {
     $("#image").remove();
-    window.Backbone = this.BackbonePrev;
-    window.jQuery = this.jQueryPrev;
-    window.$ = this.$Prev;
   });
 
   it("should allow to set the size", function(done) {
@@ -71,8 +80,6 @@ describe("vis/image", function() {
   });
 
   it("should generate the right layer configuration for map with a layer of labels", function(done) {
-    var oldLoaderGet = Loader.get;
-
     var vizjson = {
       layers: [
         {
@@ -104,9 +111,9 @@ describe("vis/image", function() {
       center: "[52.5897007687178, 52.734375]",
       zoom: 2
     }
-    Loader.get = function(a, callback) {
+    spyOn(Loader, 'get').and.callFake(function(a, callback) {
       callback(vizjson);
-    }
+    });
 
     var image = Image("wadus.json");
 
@@ -119,8 +126,6 @@ describe("vis/image", function() {
       expect(image.options.layers.layers[2].options.urlTemplate).toEqual("urlTemplateLabels");
       done();
     });
-
-    Loader.get = oldLoaderGet;
   });
 
   it("should generate the right layer configuration for a torque layer and a named map", function(done) {

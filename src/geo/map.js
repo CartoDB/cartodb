@@ -151,7 +151,8 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
     sql_api_protocol: "http",
     extra_params: {},
     cdn_url: null,
-    maxZoom: 28
+    maxZoom: 28,
+    cartocss_version: '2.1.0'
   },
 
   activate: function() {

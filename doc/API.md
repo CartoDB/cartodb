@@ -389,6 +389,89 @@ Used for [Torque maps](https://github.com/CartoDB/torque). Note that it does not
   }
 }
 ```
+##### Interaction Methods for a Torque Layer
+
+Used to create an animated torque layer with customized settings.
+
+```javascript
+  // initialize a torque layer that uses the CartoDB account details and SQL API to pull in data
+  var torqueLayer = new L.TorqueLayer({
+    user       : 'viz2',
+    table      : 'ow',
+    cartocss:  CARTOCSS
+  });
+```
+
+`getValueForPos(x, y[, step])`
+Description | Allows to get the value for the coordinate (in map reference system) for a concrete step. If a step is not specified, the animation step is used. Use caution, as this method increases CPU usage. It returns the value from the raster data, not the rendered data.
+Returns |  An object, such as a { bbox:[], value: VALUE } if there is value for the pos, otherwise, it is null.
+
+`getValueForBBox(xstart, ystart, xend, yend)`
+Description | Returns an accumulated numerical value from all the torque areas, within the specified bounds.
+Returns |  A number.
+
+`getActivePointsBBox(step)`
+Description | Returns the list of bounding boxes active for `step`.
+Returns |  List of bbox:[].
+
+`getValues(step)`
+Description | Returns the list of values for the pixels active in `step`.
+Returns |  List of values.
+
+`invalidate()`
+Description | Forces a reload of the layer data.
+
+##### Example of Interaction Methods for a Torque Layer
+```javascript
+ <script>
+      // define the torque layer style using cartocss
+      // this creates a kind of density map
+      //color scale from http://colorbrewer2.org/
+      var CARTOCSS = [
+          'Map {',
+          '-torque-time-attribute: "date";',
+          '-torque-aggregation-function: "avg(temp::float)";',
+          '-torque-frame-count: 1;',
+          '-torque-animation-duration: 15;',
+          '-torque-resolution: 16',
+          '}',
+          '#layer {',
+          '  marker-width: 8;',
+          '  marker-fill-opacity: 1.0;',
+          '  marker-fill: #fff5eb; ',
+          '  marker-type: rectangle;',
+          '  [value > 1] { marker-fill: #fee6ce; }',
+          '  [value > 2] { marker-fill: #fdd0a2; }',
+          '  [value > 4] { marker-fill: #fdae6b; }',
+          '  [value > 10] { marker-fill: #fd8d3c; }',
+          '  [value > 15] { marker-fill: #f16913; }',
+          '  [value > 20] { marker-fill: #d94801; }',
+          '  [value > 25] { marker-fill: #8c2d04; }',
+          '}'
+      ].join('\n');
+        
+      var map = new L.Map('map', {
+        zoomControl: true,
+        center: [40, 0],
+        zoom: 3
+      });
+      L.tileLayer('http://{s}.api.cartocdn.com/base-dark/{z}/{x}/{y}.png', {
+        attribution: 'CartoDB'
+      }).addTo(map);
+      var torqueLayer = new L.TorqueLayer({
+        user       : 'viz2',
+        table      : 'ow',
+        cartocss: CARTOCSS
+      });
+      torqueLayer.addTo(map);
+      map.on('click', function(e) {
+        var p = e.containerPoint
+        var value = torqueLayer.getValueForPos(p.x, p.y);
+        if (value !== null) {
+          map.openPopup('average temperature: ' + value.value + "C", e.latlng);
+        }
+      });
+```
 
 #### Named Maps Layer Source Object (`type: 'namedmap'`)
 

@@ -21,6 +21,7 @@ cdb.geo.ui.Widget.View = cdb.core.View.extend({
   className: 'Widget Widget--light',
 
   options: {
+    columns_title: [],
     sync: true
   },
 
@@ -31,7 +32,8 @@ cdb.geo.ui.Widget.View = cdb.core.View.extend({
     this.viewModel = new cdb.core.Model({
       title: this.options.title,
       type: this.options.type,
-      sync: this.options.sync
+      sync: this.options.sync,
+      columns_title: this.options.columns_title
     });
     this.datasource = this.options.datasource;
     this.dataModel = this.datasource.addWidgetModel({

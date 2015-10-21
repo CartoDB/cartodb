@@ -15,7 +15,6 @@ cdb.geo.ui.Widget.List.ItemsView = cdb.geo.ui.Widget.View.extend({
   render: function() {
     this.clearSubViews();
     this._renderList();
-    this._checkScroll();
     return this;
   },
 
@@ -25,14 +24,11 @@ cdb.geo.ui.Widget.List.ItemsView = cdb.geo.ui.Widget.View.extend({
 
   _addItem: function(mdl) {
     var v = new cdb.geo.ui.Widget.List.ItemView({
-      model: mdl
+      model: mdl,
+      viewModel: this.viewModel
     })
     this.addView(v);
     this.$el.append(v.render().el);
-  },
-
-  _checkScroll: function() {
-    // Check if gradients are needed
   }
 
 });

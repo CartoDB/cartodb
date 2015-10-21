@@ -15,12 +15,14 @@
 }
 
 // Widget media query
-@media only screen and (min-width: 320px) and (max-width: 760px)  {
+@include media-query() {
   .Widget-canvas {
     @include display-flex();
     @include flex-wrap(nowrap);
     position: relative;
     width: 100%;
     height: auto;
+    overflow-x: auto;
+    overflow-y: visible;
   }
 }

@@ -5,8 +5,13 @@
 @import '../variables/mixins';
 
 .Widget-button {
-  padding: 0;
+  @include transition(background, 250ms);
+  display: inline-block;
+  padding: 0 26px;
+  border-radius: 4px;
+  line-height: 40px;
 }
+
 .Widget-link {
   font-size: $sFontSize-smaller;
   font-weight: $sFontWeight-normal;

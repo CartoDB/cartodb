@@ -42,6 +42,10 @@ cdb.geo.ui.Widget.ListModel = cdb.geo.ui.Widget.Model.extend({
     return this._data;
   },
 
+  getSize: function() {
+    return this._data.size();
+  },
+
   getDataSerialized: function() {
     return this.get('data');
   },
@@ -56,6 +60,6 @@ cdb.geo.ui.Widget.ListModel = cdb.geo.ui.Widget.Model.extend({
     return {
       data: r.data
     }
-  },
+  }
 
 });

@@ -16,6 +16,7 @@
   $positive: rgba(#8FB83F, 1);
   $negative: rgba(#F15743, 1);
   $loadingBkg: rgba(#F9F9F9, 1);
+  $errorBkg: rgba(#F2F6F9, 1);
 
   background: rgba(#FFF, 1);
 
@@ -80,6 +81,22 @@
 
   .Widget-loader {
     background: $link;
+  }
+  .Widget-error {
+    border-color: $negative;
+    background: rgba($errorBkg, 0.8);
+  }
+  .Widget-errorButton {
+    background: $secondary;
+
+    .Widget-textSmall,
+    .Widget-textSmaller {
+      color: #FFF;
+    }
+
+    &:hover {
+      background: $primary;
+    }
   }
 
   .Widget-arrow:after,

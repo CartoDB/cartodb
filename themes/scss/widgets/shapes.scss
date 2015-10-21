@@ -29,6 +29,12 @@
     content: '';
   }
 }
+.Widget-arrow.is-disabled {
+  @include opacity(0.5);
+  &:hover {
+    cursor: default;
+  }
+}
 .Widget-arrow--up {
   &:after {
     @include css3-prefix(transform, rotate(45deg));

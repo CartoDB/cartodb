@@ -90,11 +90,16 @@
         'geo/ui/widget.js',
         'geo/ui/widgets/widget_model.js',
         'geo/ui/widgets/widget_collection.js',
-        'geo/ui/widgets/loader.js',
-        'geo/ui/widgets/list/list_paginator_view.js',
-        'geo/ui/widgets/list/list_item_view.js',
-        'geo/ui/widgets/list/list_model.js',
-        'geo/ui/widgets/list/list_view.js',
+        'geo/ui/widgets/standard/widget_loader.js',
+        'geo/ui/widgets/standard/widget_error.js',
+        'geo/ui/widgets/standard/widget_content.js',
+        'geo/ui/widgets/list/widget_list_view.js',
+        'geo/ui/widgets/list/widget_list_content_view.js',
+        'geo/ui/widgets/list/widget_list_paginator_view.js',
+        'geo/ui/widgets/list/widget_list_item_view.js',
+        'geo/ui/widgets/list/widget_list_items_view.js',
+        'geo/ui/widgets/list/widget_list_model.js',
+
         // End widgets
 
         'geo/sublayer.js',

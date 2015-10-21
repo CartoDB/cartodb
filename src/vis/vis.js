@@ -481,11 +481,11 @@ var Vis = cdb.core.View.extend({
           var widgetModel = new cdb.geo.ui.Widget.ListModel(widgetData);
           widgetModels.push(widgetModel);
 
-          var widgetView = new cdb.geo.ui.Widget.ListView(
+          var widgetView = new cdb.geo.ui.Widget.List.View(
             { model: widgetModel }
           );
 
-          $('body').append(widgetView.el);
+          $('body').append(widgetView.render().el);
         });
 
         var dashboard = new cdb.windshaft.Dashboard({

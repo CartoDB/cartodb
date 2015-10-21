@@ -30,19 +30,6 @@ CartoDB.js will replace ``{user}``.
 
 Notice that you don't need to set the path to the endpoint, CartoDB.js will set it automatically.
 
-## Bounds wrapper
-
-We have added an easy method to get the bounding box for any dataset or filtered query using the CartoDB.js library. The **getBounds** function can be useful for guiding users to the right location on a map or for loading only the right data at the right time based on user actions.
-
-<div class="code-title">Bounds wrapper</div>
-{% highlight javascript %}
-var sql = new cartodb.SQL({ user: 'cartodb_user' });
-
-sql.getBounds('SELECT * FROM table_name').done(function(bounds) {
-  console.log(bounds);
-});
-{% endhighlight %}
-
 ## Event listener support
 
 CartoDB.js is highly asynchronous. Your application can get on with what it needs to do while the library efficiently does what you request in the background. This is useful for loading maps or getting query results. At the same time, we have made it very simple to add listeners and callbacks to the async portions of the library.

@@ -53,32 +53,6 @@ module.exports = {
         }
       },
 
-      core: {
-        options: {
-          banner: grunt.file.read('./grunt/templates/version_header.js') + "" + grunt.file.read('./grunt/templates/core_header.js') + "",
-          footer: grunt.file.read('./grunt/templates/core_footer.js')
-        },
-        files: {
-          // Core library
-          '<%= config.dist %>/cartodb.core.uncompressed.js': [
-            'vendor/underscore.js',
-            'grunt/templates/underscore_no_conflict.js',
-            'vendor/mustache.js',
-            'vendor/reqwest.min.js',
-            'src/cartodb.js',
-            'src/api/core_lib.js',
-            'src/core/profiler.js',
-            'src/core/util.js',
-            'src/api/sql.js',
-            'src/geo/layer_definition.js',
-            'src/geo/sublayer.js',
-            'src/core/loader.js',
-            'src/vis/image.js',
-            'src/api/tiles.js'
-          ]
-        }
-      },
-
       nojquery: {
         options: {
           process: function(src, filepath) {

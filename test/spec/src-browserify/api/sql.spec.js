@@ -1,5 +1,9 @@
+var _ = require('underscore');
+var $ = require('jquery');
+var Backbone = require('backbone');
+var SQL = require('../../../../src-browserify/api/sql');
 
-describe('SQL api client', function() {
+describe('api/sql', function() {
   var USER = 'rambo';
   var TEST_DATA = { test: 'good' };
   var sql;
@@ -20,7 +24,7 @@ describe('SQL api client', function() {
         });
       });
     }
-    sql = new cartodb.SQL({
+    sql = new SQL({
       user: USER,
       protocol: 'https',
       ajax: ajax
@@ -38,7 +42,7 @@ describe('SQL api client', function() {
   });
 
   it("should compile the url if completeDomain passed", function() {
-    var sqlBis = new cartodb.SQL({
+    var sqlBis = new SQL({
       user: USER,
       protocol: 'https',
       completeDomain: 'http://troloroloro.com'
@@ -66,8 +70,33 @@ describe('SQL api client', function() {
     )
   });
 
-  it("should execute a long query", function() {
+  it("should execute a long query w/ jquery as transport", function() {
     //Generating a giant query
+    var long_sql = []
+    var i = 2000;
+    while (--i) long_sql.push("10000");
+    var long_query = 'SELECT * ' + long_sql;
+
+    // required to have jquery as transport, is checked in the execute method
+    var jQueryPrev = window.jQuery;
+    window.jQuery = $;
+    sql.execute(long_query);
+
+    expect(ajaxParams.url).toEqual(
+      'https://' + USER + '.cartodb.com/api/v2/sql'
+    )
+
+    expect(ajaxParams.data.q).toEqual(long_query);
+    expect(ajaxParams.type).toEqual('post');
+    expect(ajaxParams.dataType).toEqual('json');
+    expect(ajaxParams.crossDomain).toEqual(true);
+
+    // restore
+    window.jQuery = jQueryPrev
+  });
+
+  it("should execute a long query w/ reqwest as transport", function() {
+    //generating a giant query
     var long_sql = []
     var i = 2000;
     while (--i) long_sql.push("10000");
@@ -80,13 +109,13 @@ describe('SQL api client', function() {
     )
 
     expect(ajaxParams.data.q).toEqual(long_query);
-    expect(ajaxParams.type).toEqual('post');
+    expect(ajaxParams.method).toEqual('post');
     expect(ajaxParams.dataType).toEqual('json');
     expect(ajaxParams.crossDomain).toEqual(true);
   });
 
   it("should execute a long query with params", function() {
-    s = new cartodb.SQL({
+    s = new SQL({
       user: 'rambo',
       format: 'geojson',
       protocol: 'http',
@@ -132,7 +161,7 @@ describe('SQL api client', function() {
     var full_resolution = earth_circumference/tile_size;
     var shift = earth_circumference / 2.0;
 
-    var pw = full_resolution; 
+    var pw = full_resolution;
     var ph = pw;
     var bbox = 'ST_MakeEnvelope(' + (-shift) + ',' + (-shift) + ','
                                   + shift + ',' + shift + ',' + srid + ')';
@@ -147,7 +176,7 @@ describe('SQL api client', function() {
   it("should call promise", function(done) {
     var data;
     var data_callback;
-    
+
     sql.execute('select * from bla', function(data) { data_callback = data }).done(function(d) {
       data = d;
     });
@@ -171,7 +200,7 @@ describe('SQL api client', function() {
   });
 
   it("should include url params", function() {
-    s = new cartodb.SQL({
+    s = new SQL({
       user: 'rambo',
       format: 'geojson',
       protocol: 'http',
@@ -192,7 +221,7 @@ describe('SQL api client', function() {
   });
 
   it("should include extra url params", function() {
-    s = new cartodb.SQL({
+    s = new SQL({
       user: 'rambo',
       format: 'geojson',
       protocol: 'http',
@@ -221,8 +250,12 @@ describe('SQL api client', function() {
 
 
   it("should use jsonp if browser does not support cors", function() {
+    // required to have jquery as transport, is checked in the execute method
+    var jQueryPrev = window.jQuery;
+    window.jQuery = $;
+    var corsPrev = $.support.cors;
     $.support.cors = false;
-    s = new cartodb.SQL({ user: 'jaja', ajax: ajax });
+    s = new SQL({ user: 'jaja', ajax: ajax });
     expect(s.options.jsonp).toEqual(true);
     s.execute('select * from rambo', null, {
       dp: 2,
@@ -234,7 +267,22 @@ describe('SQL api client', function() {
     expect(ajaxParams.jsonp).toEqual(undefined);
     expect(ajaxParams.jsonpCallback).toEqual('test_callback');
     expect(ajaxParams.cache).toEqual(false);
-    $.support.cors = true;
+    $.support.cors = corsPrev;
+    window.jQuery = jQueryPrev;
+  });
+
+  it("should not use jsonp when using reqwest as transport", function() {
+    s = new SQL({ user: 'jaja', ajax: ajax });
+    expect(s.options.jsonp).toEqual(false);
+    s.execute('select * from rambo', null, {
+      dp: 2,
+      jsonpCallback: 'test_callback',
+      cache: false
+    })
+    expect(ajaxParams.dataType).toEqual('json');
+    expect(ajaxParams.crossDomain).toEqual(true);
+    expect(ajaxParams.jsonp).toBeUndefined()
+    expect(ajaxParams.cache).toEqual(false);
   });
 
   it("should get bounds for query", function() {
@@ -243,13 +291,13 @@ describe('SQL api client', function() {
             '       ST_XMax(ST_Extent(the_geom)) as maxx,' +
             '       ST_YMax(ST_Extent(the_geom)) as maxy' +
             ' from (select * from rambo where id=2) as subq';
-    s = new cartodb.SQL({ user: 'jaja', ajax: ajax });
+    s = new SQL({ user: 'jaja', ajax: ajax });
     s.getBounds('select * from rambo where id={{id}}', {id: 2});
     expect(ajaxParams.url.indexOf(encodeURIComponent(sql))).not.toEqual(-1);
   });
 
   it("should get bounds for query with appostrophes", function() {
-    s = new cartodb.SQL({ user: 'jaja', ajax: ajax });
+    s = new SQL({ user: 'jaja', ajax: ajax });
     s.getBounds("select * from country where name={{ name }}", { name: "'Spain'"});
     expect(ajaxParams.url.indexOf("%26amp%3B%2339%3B")).toEqual(-1);
   });
@@ -261,7 +309,7 @@ describe('sql.table', function() {
   var sql;
   beforeEach(function() {
     ajaxParams = null;
-    sql = new cartodb.SQL({
+    sql = new SQL({
       user: USER,
       protocol: 'https'
     })
@@ -293,7 +341,7 @@ describe("column descriptions", function(){
     this.colGeom = new Backbone.Model(JSON.parse('{"name":"asdfd","type":"geometry","geometry_type":"point"}'));
     this.colBoolean = new Backbone.Model(JSON.parse('{"name":"asdfd","type":"boolean","geometry_type":"point"}'));
     this.query = "SELECT * FROM whatevs";
-    sql = new cartodb.SQL({
+    sql = new SQL({
       user: USER,
       protocol: 'https'
     });
@@ -337,7 +385,7 @@ describe("column descriptions", function(){
       }
       sql.describeString(sql, this.colString, callback); // THE COLS DON'T MATCH!!!
     });
-    
+
     it("should return correct properties", function(){
       expect(description.hist.constructor).toEqual(Array); // Right now it's an empty array because JSON.parse doesn't like our way of notating histograms
       expect(description.type).toEqual("string");
@@ -348,7 +396,7 @@ describe("column descriptions", function(){
       expect(typeof description.weight).toEqual("number");
     });
   });
-  
+
   describe("geometry describer", function(){
     var description;
     beforeAll(function(done){
@@ -397,7 +445,7 @@ describe("column descriptions", function(){
       }
     })
   });
-  
+
   describe("boolean describer", function(){
     var description;
     beforeAll(function(done){
@@ -425,5 +473,5 @@ describe("column descriptions", function(){
       expect(typeof description.null_ratio).toEqual("number");
     })
   });
-  
+
 });

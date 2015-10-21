@@ -1,4 +1,5 @@
-var Loader = cdb.vis.Loader = cdb.core.Loader = {
+// Depends on global cartodb.DEBUG flag (see loadModule)
+var Loader = {
 
   queue: [],
   current: undefined,
@@ -50,12 +51,13 @@ var Loader = cdb.vis.Loader = cdb.core.Loader = {
     var file = "cartodb.mod." + modName + (cartodb.DEBUG ? ".uncompressed.js" : ".js");
     var src = this.getPath(file);
     if (!src) {
-      cartodb.log.error("can't find cartodb.js file");
+      throw new Error("can't find cartodb.js file");
     }
     Loader.loadScript(src);
   }
 };
 
+// Required for jsonp callback, see Loader.get()
 window.vizjson = function(data) {
   Loader.current && Loader.current(data);
   // remove script
@@ -68,3 +70,4 @@ window.vizjson = function(data) {
   }
 };
 
+module.exports = Loader;

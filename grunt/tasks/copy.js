@@ -1,9 +1,7 @@
-
 /**
  *  Copy grunt task for CartoDB.js
  *
  */
-
 var __ = require('underscore');
 var findup = require('findup-sync');
 
@@ -39,52 +37,6 @@ module.exports = {
 
           return content;
         }
-      },
-
-      dist: {
-        files: [{
-          expand: true,
-          dot: true,
-          cwd: '<%= config.app %>',
-          src: [
-            '**/*.html',
-            'sitemap.xml',
-            'robots.txt',
-            'img/**/*',
-            'fonts/**/*',
-            '!**/_*{,/**}',
-            'favicon.ico'
-          ],
-          dest: '<%= config.dist %>/<%= config.app %>'
-        }]
-      },
-
-      stageCss: {
-        files: [{
-          expand: true,
-          dot: true,
-          cwd: '<%= config.app %>/css',
-          src: '**/*.css',
-          dest: '.tmp/css'
-        }]
-      },
-
-      stageStatic: {
-        files: [{
-          expand: true,
-          dot: true,
-          cwd: '<%= config.app %>',
-          src: [
-            '**/*.html',
-            'sitemap.xml',
-            'robots.txt',
-            'img/**/*',
-            'fonts/**/*',
-            '!**/_*{,/**}',
-            'favicon.ico'
-          ],
-          dest: '.tmp'
-        }]
       },
 
       distStatic: {

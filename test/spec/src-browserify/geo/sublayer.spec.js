@@ -1,7 +1,18 @@
-describe('Sublayers', function() {
+var _ = require('underscore');
+var Backbone = require('backbone');
+var LayerDefinition = require('../../../../src-browserify/geo/layer-definition/layer-definition');
+var SubLayerFactory = require('../../../../src-browserify/geo/sub-layer/sub-layer-factory');
+var HttpSubLayer = require('../../../../src-browserify/geo/sub-layer/http-sub-layer');
+var CartoDBSubLayer = require('../../../../src-browserify/geo/sub-layer/cartodb-sub-layer');
+
+describe('geo/sublayer', function() {
   var layerDefinition, sublayer;
 
   beforeEach(function() {
+    // test case assumes Backbone to be set in global namespace, for expected side-effects
+    this.BackbonePrev = window.Backbone;
+    window.Backbone = Backbone;
+
     var layer_definition = {
       version: '1.0.0',
       stat_tag: 'vis_id',
@@ -31,6 +42,10 @@ describe('Sublayers', function() {
     layerDefinition = new LayerDefinition(layer_definition, {});
 
     sublayer = layerDefinition.getSubLayer(0);
+  });
+
+  afterEach(function() {
+    window.Backbone = this.BackbonePrev;
   });
 
   describe('SubLayerFactory', function() {
@@ -97,7 +112,7 @@ describe('Sublayers', function() {
           expect(subl).toEqual(sublayer);
           done();
         };
-        
+
         sublayer.on('remove', callback);
 
         sublayer.remove();

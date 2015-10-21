@@ -22,6 +22,12 @@ class EmbedRedisCache
   rescue Redis::BaseError => exception
     Rollbar.report_exception(exception)
     nil
+  rescue => exception
+    # Captures:
+    # - Redis::BaseError if redis is down
+    # - IO errors due to deploys changing physical path (see read_frontend_version / calculate_embed_template_hash)
+    Rollbar.report_exception(exception)
+    nil
   end
 
   # Only public and public with link
@@ -30,14 +36,20 @@ class EmbedRedisCache
                                body: response_body
                               )
     redis.setex(key(visualization_id, https_request), 24.hours.to_i, serialized)
-  rescue Redis::BaseError => exception
+  rescue => exception
+    # Captures:
+    # - Redis::BaseError if redis is down
+    # - IO errors due to deploys changing physical path (see read_frontend_version / calculate_embed_template_hash)
     Rollbar.report_exception(exception)
     nil
   end
 
   def invalidate(visualization_id)
     redis.del [key(visualization_id, true), key(visualization_id, false)]
-  rescue Redis::BaseError => exception
+  rescue => exception
+    # Captures:
+    # - Redis::BaseError if redis is down
+    # - IO errors due to deploys changing physical path (see read_frontend_version / calculate_embed_template_hash)
     Rollbar.report_exception(exception)
     nil
   end
@@ -64,27 +76,23 @@ class EmbedRedisCache
   private
 
   def frontend_version
-    @key_fragment_fe_version ||= read_frontend_version
+    # INFO: New deploys restart the server, invalidating this value + we want to hit disk as less as possible
+    @@key_fragment_fe_version ||= read_frontend_version
   end
 
   def embed_template_hash
-    @key_fragment_embed_template_hash ||= calculate_embed_template_hash
+    # INFO: New deploys restart the server, invalidating this value + we want to hit disk as less as possible
+    @@key_fragment_embed_template_hash ||= calculate_embed_template_hash
   end
 
   def read_frontend_version
     JSON::parse(File.read(Rails.root.join("package.json")))["version"]
-  rescue => exception
-    CartoDB.notify_exception(exception, user: current_user)
-    0
   end
 
   def calculate_embed_template_hash
     # The alternative Adler-32 is not as reliable as CRC32
     # and even less with inputs of "few hundred bytes" as is this case
     Zlib::crc32(File.read(Rails.root.join("app/views/admin/visualizations/embed_map.html.erb")))
-  rescue => exception
-    CartoDB.notify_exception(exception, user: current_user)
-    0
   end
 
   def redis

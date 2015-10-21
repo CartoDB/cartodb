@@ -9,7 +9,6 @@ cdb.windshaft.Client = function(options) {
   this.userName = options.userName;
   this.url = this.windshaftURLTemplate.replace('{user}', this.userName);
   this.statTag = options.statTag;
-  this.forceCompress = options.forceCompress;
   this.isCorsSupported = cdb.core.util.isCORSSupported();
   this.forceCors = options.forceCors;
   this.endpoint = options.endpoint;
@@ -93,7 +92,7 @@ cdb.windshaft.Client.prototype._get = function(payload, options) {
 }
 
 cdb.windshaft.Client.prototype._getCompressor = function(payload) {
-  if (!this.forceCompress && payload.length < this.constructor.MAX_GET_SIZE) {
+  if (payload.length < this.constructor.MAX_GET_SIZE) {
     return function(data, level, callback) {
       callback("config=" + encodeURIComponent(data));
     };

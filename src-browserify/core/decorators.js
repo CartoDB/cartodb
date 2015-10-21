@@ -1,4 +1,4 @@
-var Backbone = require('Backbone');
+var Backbone = require('backbone');
 
 /**
 * Decorators to extend funcionality of cdb related objects

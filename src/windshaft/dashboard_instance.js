@@ -148,5 +148,30 @@ cdb.windshaft.DashboardInstance = cdb.core.Model.extend({
       }
     }
     return url_params.join('&');
+  },
+
+  fetchAttributes: function(layer, featureID, callback) {
+    var url = [
+      this.getBaseURL(),
+      this.getLayerIndexByType(layer, "mapnik"),
+      'attributes',
+      featureID
+    ].join('/');
+
+    $.ajax({
+      dataType: 'jsonp',
+      url: url,
+      jsonpCallback: '_cdbi_layer_attributes_' + cdb.core.util.uniqueCallbackName(this.toJSON()),
+      cache: true,
+      success: function(data) {
+        // loadingTime.end();
+        callback(data);
+      },
+      error: function(data) {
+        // loadingTime.end();
+        // cartodb.core.Profiler.metric('cartodb-js.named_map.attributes.error').inc();
+        callback(null);
+      }
+    });
   }
 })

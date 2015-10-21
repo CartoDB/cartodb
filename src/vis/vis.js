@@ -461,47 +461,55 @@ var Vis = cdb.core.View.extend({
       this.mapView.bind('newLayerView', this.addTooltip, this);
     }
 
+    // TODO: We can probably move this logic somewhere in cdb.geo.ui.Widget
+    var widgetModels = [];
+    var widgetClasses = {
+      "list": {
+        model: 'ListModel',
+        view: 'List.View'
+      }
+    };
+
+    _.each(data.widgets, function(widgetData) {
+      if (!widgetClasses[widgetData.type]) {
+        throw 'Widget type \'' + widgetData.type + '\' is not supported!';
+      }
+
+      // Instantiate the model
+      var modelClass = widgetClasses[widgetData.type].model;
+      var widgetModel = new cdb.geo.ui.Widget[modelClass](widgetData);
+      widgetModels.push(widgetModel);
+
+      // Instantitate the view
+      var viewClass = widgetClasses[widgetData.type].view;
+      var viewClassParts = viewClass.split('.');
+      var widgetView = new cdb.geo.ui.Widget[viewClassParts[0]][viewClassParts[1]](
+        { model: widgetModel }
+      );
+
+      $('body').append(widgetView.render().el);
+    });
+
     this.map.layers.reset(_.map(data.layers, function(layerData) {
       var model;
 
       // TODO: 'named_map' ????
-      if (layerData.type === 'layergroup') {
+      if (layerData.type === 'layergroup' || layerData.type === 'namedmap') {
 
-        var cartoDBLayers = _.map(layerData.options.layer_definition.layers, function(layer) {
+        var layersFromVizJSON = layerData.options.layer_definition && layerData.options.layer_definition.layers ||
+          layerData.options.named_map && layerData.options.named_map.layers;
+
+        var cartoDBLayers = _.map(layersFromVizJSON, function(layer) {
+          // TODO: This case should be handled by the factory or we
+          // should add a type to the layers inside of a named_map
+          if (!layer.type) {
+            return Layers.create('CartoDB', self, layer);
+          }
           return Layers.create(layer.type, self, layer);
         });
 
         model = new cdb.geo.CartoDBGroupLayer({}, {
           layers: cartoDBLayers
-        });
-
-        // TODO: We can probably move this logic somewhere in cdb.geo.ui.Widget
-        var widgetModels = [];
-        var widgetClasses = {
-          "list": {
-            model: 'ListModel',
-            view: 'List.View'
-          }
-        };
-
-        _.each(data.widgets, function(widgetData) {
-          if (!widgetClasses[widgetData.type]) {
-            throw 'Widget type \'' + widgetData.type + '\' is not supported!';
-          }
-
-          // Instantiate the model
-          var modelClass = widgetClasses[widgetData.type].model;
-          var widgetModel = new cdb.geo.ui.Widget[modelClass](widgetData);
-          widgetModels.push(widgetModel);
-
-          // Instantitate the view
-          var viewClass = widgetClasses[widgetData.type].view;
-          var viewClassParts = viewClass.split('.');
-          var widgetView = new cdb.geo.ui.Widget[viewClassParts[0]][viewClassParts[1]](
-            { model: widgetModel }
-          );
-
-          $('body').append(widgetView.render().el);
         });
 
         var dashboard = new cdb.windshaft.Dashboard({

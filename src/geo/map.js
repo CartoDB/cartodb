@@ -289,36 +289,22 @@ cdb.geo.CartoDBGroupLayer = cdb.geo.MapLayer.extend({
     };
   },
 
-  fetchAttributes: function(layer, featureID, callback) {
-    var url = [
-      this.get('dashboardBaseURL'),
-      this.getLayerIndexByType(layer, "mapnik"),
-      'attributes',
-      featureID].join('/');
-
-    $.ajax({
-      dataType: 'jsonp',
-      url: url,
-      jsonpCallback: '_cdbi_layer_attributes_' + cdb.core.util.uniqueCallbackName(this.toJSON()),
-      cache: true,
-      success: function(data) {
-        // loadingTime.end();
-        callback(data);
-      },
-      error: function(data) {
-        // loadingTime.end();
-        // cartodb.core.Profiler.metric('cartodb-js.named_map.attributes.error').inc();
-        callback(null);
-      }
-    });
+  bindDashboardInstance: function(dashboardInstance) {
+    this.dashboardInstance = dashboardInstance;
+    this.dashboardInstance.bind('change:layergroupid', function(dashboardInstance) {
+      this.set({
+        urls: dashboardInstance.getTiles()
+      });
+    }.bind(this));
   },
 
-  getLayerIndexByType: function(index, type) {
-    // TODO: Implment this
-    return index;
+  fetchAttributes: function(layer, featureID, callback) {
+    if (!this.dashboardInstance) {
+      throw 'A dashboard instance has not been attached to this model yet';
+    }
+
+    this.dashboardInstance.fetchAttributes(layer, featureID, callback);
   }
-
-
 });
 
 // TODO: This can be removed

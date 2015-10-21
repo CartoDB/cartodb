@@ -435,6 +435,7 @@ Returns |  List of values.
 --- | ---
 Description | Forces a reload of the layer data.
 
+
 ##### Example of Interaction Methods for a Torque Layer
 ```javascript
  <script>

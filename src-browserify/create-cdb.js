@@ -3,23 +3,29 @@ require('json2'); // polyfills window.JSON if necessary
 var Backbone = require('backbone');
 var Mustache = require('mustache');
 var Leaflet = require('leaflet');
+var Profiler = require('cdb.core.profiler');
 var sanitize = require('./core/sanitize')
 var decorators = require('./core/decorators');
 var Config = require('./core/config');
-var Log = require('./core/log');
-var ErrorList = require('./core/log/error-list');
-var Profiler = require('./core/profiler');
-var Template = require('./core/template');
-var TemplateList = require('./core/template-list');
+var setupLog = require('./core/log');
+var setupError = require('./core/log/error');
+var setupErrorList = require('./core/log/error-list');
+var setupTemplate = require('./core/template');
+var setupTemplateList = require('./core/template-list');
 
-// Create the cartodb object to be set in the global namespace.
+// Create the cartodb object to be set in the global namespace, which includes to properly write up all dependencies.
+//
 // Code extracted from the older src/cartodb.js file (entry file prior to browerify)
-// @param {Object} opts
+//
+// @param {Object} opts (Optional)
+//  jQuery: {Object}
 // @return {Object} the object to be set in the global namespace, typically window.cartodb.
 module.exports = function(opts) {
   opts = opts || {};
-  var cdb = {};
+  var $ = opts.jQuery || window.jQuery || window.$;
+  if (!$) throw new Error('jQuery is required for cdb.core.Model to work');
 
+  var cdb = {};
   cdb.$ = opts.jQuery;
   cdb._ = _;
   cdb.Backbone = Backbone;
@@ -31,6 +37,7 @@ module.exports = function(opts) {
   cdb.core.sanitize = sanitize;
 
   cdb.decorators = decorators;
+  cdb.Profiler = Profiler;
 
   cdb.config = new Config();
   cdb.config.set({
@@ -39,12 +46,17 @@ module.exports = function(opts) {
   });
 
   // contains all error for the application
+  var Error = setupError($, cdb.config);
+  var ErrorList = setupErrorList(Error);
   cdb.errors = new ErrorList();
+
+  var Log = setupLog(cdb);
   cdb.log = new Log({tag: 'cdb'});
 
-  cdb.Profiler = Profiler;
-
+  var Template = setupTemplate(cdb.log);
   cdb.core.Template = Template;
+
+  var TemplateList = setupTemplateList(Template, cdb.log);
   cdb.core.TemplateList = TemplateList
   cdb.templates = new TemplateList();
 

@@ -1,8 +1,12 @@
-var Template = require('../../../../src-browserify/core/template');
+var setupTemplate = require('../../../../src-browserify/core/template');
 
 describe("core/template", function() {
     var tmpl;
+    var Template;
+
     beforeEach(function() {
+        var log = {};
+        Template = setupTemplate(log);
         tmpl = new Template({
             template: "hi, my name is <%= name %>"
         });

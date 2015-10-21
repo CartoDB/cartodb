@@ -1,21 +1,23 @@
 var Backbone = require('backbone');
 
-var Error = Backbone.Model.extend({
+// NOTE this does not return a Error directly, but a wrapper, to inject the dependencies
+// e.g. var Error = require('./error')({ config: cdb.config, $: cdb.$ });
+// @param {Object} $ jQuery
+// @param {Object} config typically cdb.config
+module.exports = function($, config) {
+  if (!$) throw new Error('$ is required');
+  if (!config) throw new Error('config is required');
 
-  url: function() {
-    return cartodb.config.REPORT_ERROR_URL;
-  },
+  var Error = Backbone.Model.extend({
 
-  initialize: function() {
-    // TODO: could we change this to not rely/assume jQuery is loaded?
-    var browser;
-    try {
-      browser = cartodb.$.browser;
-    } catch (e) {
-      browser = 'cartodb.$.browser throws error; jQuery not loaded?';
+    url: function() {
+      return config.REPORT_ERROR_URL;
+    },
+
+    initialize: function() {
+      this.set({ browser: JSON.stringify($.browser) });
     }
-    this.set({ browser: JSON.stringify(browser) });
-  }
-});
+  });
 
-module.exports = Error;
+  return Error;
+};

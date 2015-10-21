@@ -1,9 +1,23 @@
+var $ = require('jquery');
 var createCdb = require('../../../src-browserify/create-cdb');
 
 describe('create-cdb', function() {
   beforeEach(function() {
-    this.cdb = createCdb();
+    this.cdb = createCdb({
+      jQuery: $
+    });
     window.cartodb = this.cdb; // simulate a real bundle, necessary for some specs to pass
+  });
+
+  describe('when jQuery is provided in global scope instead directly', function() {
+    beforeEach(function() {
+      window.$ = $;
+      this.cdb = createCdb();
+    });
+
+    it('should not provide jQuery through the returned object', function() {
+      expect(this.cdb.$).toBeUndefined();
+    });
   });
 
   it('should have the commonly used vendor libs defined', function() {
@@ -11,10 +25,6 @@ describe('create-cdb', function() {
     expect(this.cdb.Mustache).toBeDefined();
     expect(this.cdb.Backbone).toBeDefined();
     expect(this.cdb._).toBeDefined();
-  });
-
-  it('should not load jQuery by default', function() {
-    expect(this.cdb.$).toBeUndefined();
   });
 
   it("should create a log", function() {
@@ -33,7 +43,6 @@ describe('create-cdb', function() {
   });
 
   it('should not expose some vendor libs defined in the global namespace', function() {
-    expect(window.$).toBeUndefined();
     expect(window.Mustache).toBeUndefined();
     expect(window.Backbone).toBeUndefined();
     expect(window._).toBeUndefined();
@@ -55,5 +64,9 @@ describe('create-cdb', function() {
     expect(this.cdb.core.Template).toBeDefined();
     expect(this.cdb.core.TemplateList).toBeDefined();
     expect(this.cdb.templates instanceof this.cdb.core.TemplateList).toBe(true);
+  });
+
+  it('should have a core.Model', function() {
+    expect(this.cdb.core.Model).toBeDefined();
   });
 });

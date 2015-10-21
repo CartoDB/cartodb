@@ -1,9 +1,15 @@
 var $ = require('jquery');
-var Error = require('../../../../../src-browserify/core/log/error');
+var Config = require('../../../../../src-browserify/core/config');
+var setupError = require('../../../../../src-browserify/core/log/error');
 
 describe('core/log/error', function() {
+  var Error;
+
+  beforeEach(function() {
+    Error = setupError($, new Config());
+  });
+
   it('should set a browser info when created', function() {
-    cartodb.$ = $; // set in createCdb;
     var err = new Error({});
     expect(err.get('browser')).toEqual(JSON.stringify($.browser));
   });

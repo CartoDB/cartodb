@@ -402,23 +402,37 @@ Used to create an animated torque layer with customized settings.
   });
 ```
 
+
 `getValueForPos(x, y[, step])`
+
+--- | ---
 Description | Allows to get the value for the coordinate (in map reference system) for a concrete step. If a step is not specified, the animation step is used. Use caution, as this method increases CPU usage. It returns the value from the raster data, not the rendered data.
 Returns |  An object, such as a { bbox:[], value: VALUE } if there is value for the pos, otherwise, it is null.
 
+
 `getValueForBBox(xstart, ystart, xend, yend)`
+
+--- | ---
 Description | Returns an accumulated numerical value from all the torque areas, within the specified bounds.
 Returns |  A number.
 
+
 `getActivePointsBBox(step)`
+
+--- | ---
 Description | Returns the list of bounding boxes active for `step`.
 Returns |  List of bbox:[].
 
+
 `getValues(step)`
+
+--- | ---
 Description | Returns the list of values for the pixels active in `step`.
 Returns |  List of values.
 
 `invalidate()`
+
+--- | ---
 Description | Forces a reload of the layer data.
 
 ##### Example of Interaction Methods for a Torque Layer

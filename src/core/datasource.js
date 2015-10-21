@@ -1,7 +1,8 @@
 cdb.core.Datasource = cdb.core.Model.extend({
 
   _WIDGETS: {
-    'list': 'ListModel'
+    'list': 'ListModel',
+    'histogram': 'HistogramModel'
   },
 
   initialize: function(attrs, opts) {

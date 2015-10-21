@@ -1,0 +1,107 @@
+.tooltip {
+  display: none;
+  position: absolute;
+  color: #fff;
+  padding: 5px;
+  min-width: 50px;
+  box-sizing: border-box;
+  text-align: center;
+  border-radius: 3px;
+  background: #000;
+  top: 0;
+  pointer-events: none;
+  left: 0;
+}
+
+.selectable .handle,
+.selectable .l {
+  opacity: 1;
+}
+
+.Widget {
+  position: relative;
+}
+
+.Widget-filter {
+  opacity: 0;
+}
+
+.Widget-chart {
+}
+
+.extent {
+  fill-opacity: 0;
+  stroke: #3AA9E3;
+  opacity: 0;
+  shape-rendering: crispEdges;
+}
+
+.bar.is-highlighted {
+  fill: #5BA45E;
+  opacity: 1;
+}
+.bar.selected {
+  fill: #DDD;
+  opacity: .7;
+}
+.bar {
+  fill: #9DE0AD;
+  transition: fill 200ms ease;
+  shape-rendering: crispEdges;
+}
+.axis {
+  font: 10px sans-serif;
+  shape-rendering: crispEdges;
+}
+.axis path,
+.axis line {
+  fill: none;
+  stroke-width: 1;
+  opacity: 0.2;
+  stroke: #000000;
+  shape-rendering: crispEdges;
+}
+
+.y {
+  stroke: #EEEEEE;
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+
+.l_bottom {
+  stroke-width: 1;
+  opacity: 0.2;
+  stroke: #000000;
+  shape-rendering: crispEdges;
+}
+
+.line {
+  stroke-width: 2;
+  stroke: #3AA9E3;
+}
+
+.handle {
+  opacity: 0;
+  stroke-width: 2;
+  stroke: #3AA9E3;
+  fill: #FFF;
+}
+
+.l {
+  opacity: 0;
+  stroke-width: 2;
+  stroke: #3AA9E3;
+}
+
+.x.axis path {
+  display: none;
+  shape-rendering: crispEdges;
+}
+.median-label {
+  fill: #333;
+  font-size: .7em;
+}
+.median {
+  stroke: red;
+  shape-rendering: crispEdges;
+}

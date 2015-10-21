@@ -917,7 +917,7 @@ var Vis = cdb.core.View.extend({
   addWidget: function(type, opts) {
     var _widgetTypes = {
       'list': cdb.geo.ui.Widget.List.View,
-      'histogram': cdb.geo.ui.Widget.Hitogram.View
+      'histogram': cdb.geo.ui.Widget.Histogram.View
     };
     var datasource = opts.datasource;
 

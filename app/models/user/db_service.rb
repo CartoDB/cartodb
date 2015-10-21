@@ -6,6 +6,8 @@ module CartoDB
   module User
     class DBService
 
+      include CartoDB::MiniSequel
+
       # Also default schema for new users
       SCHEMA_PUBLIC = 'public'
       SCHEMA_CARTODB = 'cartodb'

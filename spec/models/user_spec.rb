@@ -18,7 +18,7 @@ end
 
 describe User do
   before(:each) do
-    CartoDB::User::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
   end
 
   before(:all) do
@@ -38,7 +38,7 @@ describe User do
   before(:each) do
     stub_named_maps_calls
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-    CartoDB::User::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
   end
 
   after(:all) do
@@ -1656,7 +1656,7 @@ describe User do
       # INFO: avoiding enable_remote_db_user
       Cartodb.config[:signups] = nil
 
-      CartoDB::User::DBService.any_instance.stubs(
+      CartoDB::UserModule::DBService.any_instance.stubs(
         cartodb_extension_version_pre_mu?: nil,
         monitor_user_notification: nil,
         enable_remote_db_user: nil
@@ -1691,7 +1691,7 @@ describe User do
       user.nil?.should == false
 
       # To avoid connection pool caching
-      CartoDB::User::DBService.terminate_database_connections(user.database_name, user.database_host)
+      CartoDB::UserModule::DBService.terminate_database_connections(user.database_name, user.database_host)
 
       user.reload
 

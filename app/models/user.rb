@@ -227,9 +227,9 @@ class User < Sequel::Model
       invalidate_varnish_cache(regex: '.*:vizjson')
     end
     if changes.include?(:database_host)
-      CartoDB::User::DBService.terminate_database_connections(database_name, previous_changes[:database_host][0])
+      CartoDB::UserModule::DBService.terminate_database_connections(database_name, previous_changes[:database_host][0])
     elsif changes.include?(:database_schema)
-      CartoDB::User::DBService.terminate_database_connections(database_name, database_host)
+      CartoDB::UserModule::DBService.terminate_database_connections(database_name, database_host)
     end
 
   end

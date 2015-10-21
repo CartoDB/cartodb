@@ -52,7 +52,7 @@ shared_context 'users helper' do
   include_context 'database configuration'
 
   before(:each) do
-    CartoDB::User::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
   end
 
   before(:all) do

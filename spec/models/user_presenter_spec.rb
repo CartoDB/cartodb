@@ -5,7 +5,7 @@ require_relative '../spec_helper'
 describe Carto::Api::UserPresenter do
 
   before(:each) do
-    CartoDB::User::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
   end
 
   it "Compares old and new ways of 'presenting' user data" do

@@ -5,7 +5,7 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
   describe '#show legacy tests' do
 
     before(:each) do
-      CartoDB::User::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
     end
 
     before(:all) do

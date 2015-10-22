@@ -5,6 +5,7 @@ var cdb = window.cdb = window.cartodb = require('cdb-proxy').set({
     vis: {}
   }).get();
 cdb._ = require('underscore');
+cdb.L = require('leaflet-proxy').get();
 cdb.Mustache = require('mustache');
 require('json2'); // TODO polyfills window.JSON, still necessary with modern browser?
 
@@ -15,6 +16,8 @@ cdb.geo = {}
 cdb.geo.geocoder = {};
 cdb.geo.geocoder.NOKIA = require('./geo/geocoder/nokia-geocoder');
 cdb.geo.geocoder.YAHOO = require('./geo/geocoder/yahoo-geocoder');
+cdb.geo.Geometry = require('./geo/geometry');
+cdb.geo.Geometries = cdb.Backbone.Collection.extend({});
 
 // These must be set after the proxied requires:
 cdb.Profiler = require('cdb.core.profiler');

@@ -1,5 +1,6 @@
 var $ = require('jquery');
 var jQueryProxy = require('jquery-proxy');
+require('../../../../src-browserify/core/decorators'); // to monkey-patch model to work as expected here…
 var Model = require('../../../../src-browserify/core/model');
 
 describe('core/model', function() {
@@ -22,8 +23,8 @@ describe('core/model', function() {
   });
 
   it("should call initialize", function() {
-    expect(Model.prototype.initialize).toHaveBeenCalled();
     expect(model.initCalled).toBe(true);
+    expect(Model.prototype.initialize).toHaveBeenCalled();
   });
 
   it("should attach save to the element context", function() {

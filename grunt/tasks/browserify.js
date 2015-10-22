@@ -12,7 +12,6 @@ var bundles = {
   'src-browserify-specs': {
     src: [
       'test/lib/reset-proxies-after-each.js',
-      'test/spec/src-browserify/create-cdb.spec.js',
       'test/spec/src-browserify/require-proxies/create-require-proxy.spec.js',
       'test/spec/src-browserify/api/sql.spec.js',
       'test/spec/src-browserify/core/decorators.spec.js',
@@ -25,6 +24,7 @@ var bundles = {
       'test/spec/src-browserify/core/util.spec.js',
       'test/spec/src-browserify/core/view.spec.js',
       'test/spec/src-browserify/geo/geocoder/*.js',
+      'test/spec/src-browserify/geo/geometry.spec.js',
       'test/spec/src-browserify/geo/layer-definition/*.js',
       'test/spec/src-browserify/geo/sublayer.spec.js',
       'test/spec/src-browserify/vis/image.spec.js',

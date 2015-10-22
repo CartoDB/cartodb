@@ -32,8 +32,7 @@ before_install:
     sudo service postgresql restart
   # Install cartodb-postgresql from the submodule dir
   - cd lib/sql
-  - make all && sudo make install 
-  - PGUSER=postgres make installcheck || cat regression.diffs
+  - make all && sudo make install
   - cd -
 
 before_script:

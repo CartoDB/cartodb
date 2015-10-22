@@ -42,7 +42,7 @@ class ExploreAPI
     data = {}
     tables_by_user = get_tables_by_user(visualizations)
     tables_by_user.each do |user_id, tables|
-      user = User.find(id: user_id)
+      user = ::User.find(id: user_id)
       data.merge!(table_data_by_user(user, tables)) unless user.nil?
     end
     data

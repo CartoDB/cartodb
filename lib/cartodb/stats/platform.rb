@@ -4,12 +4,12 @@ module CartoDB
 
       # Total users created
       def users
-        return User.count
+        return ::User.count
       end
 
       # Total users that aren't FREE
       def pay_users
-        return User.where("upper(account_type) != 'FREE'").count
+        return ::User.where("upper(account_type) != 'FREE'").count
       end
 
       # Total datasets
@@ -20,7 +20,7 @@ module CartoDB
       # Total seats among orgs
       # Returns a hash with reserved seats and used seats
       def seats_among_orgs
-        seats_used = User.where('organization_id IS NOT NULL').count
+        seats_used = ::User.where('organization_id IS NOT NULL').count
         seats_reserved = Organization.sum(:seats)
         return {'used' => seats_used, 'reserved' => seats_reserved}
       end

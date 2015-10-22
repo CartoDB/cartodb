@@ -6,9 +6,6 @@ require_relative '../../spec_helper'
 require_relative '../../support/factories/organizations'
 require_relative '../../../app/models/visualization/migrator'
 require_relative '../../../app/controllers/admin/visualizations_controller'
-require_relative '../../../services/relocator/relocator'
-require_relative '../../../services/relocator/worker'
-require_relative '../../../services/relocator/relocator/table_dumper'
 
 def app
   CartoDB::Application.new
@@ -352,23 +349,26 @@ describe Admin::VisualizationsController do
           :propagate_to_varnish => nil
       )
 
-      User.any_instance.stubs(
-          :enable_remote_db_user => nil,
-          :after_create => nil,
-          :create_schema => nil,
-          :move_tables_to_schema => nil,
-          :setup_schema => nil,
-          :create_public_db_user => nil,
-          :set_database_search_path => nil,
-          :load_cartodb_functions => nil,
-          :set_user_privileges => nil,
-          :monitor_user_notification => nil,
-          :grant_user_in_database => nil,
-          :set_statement_timeouts => nil,
-          :set_user_as_organization_member => nil,
-          :cartodb_extension_version_pre_mu? => false,
-          :rebuild_quota_trigger => nil,
-          :grant_publicuser_in_database => nil
+      ::User.any_instance.stubs(
+        after_create: nil
+      )
+
+      CartoDB::UserModule::DBService.any_instance.stubs(
+        grant_user_in_database: nil,
+        grant_publicuser_in_database: nil,
+        set_user_privileges_at_db: nil,
+        set_statement_timeouts: nil,
+        set_user_as_organization_member: nil,
+        rebuild_quota_trigger: nil,
+        setup_organization_user_schema: nil,
+        set_database_search_path: nil,
+        cartodb_extension_version_pre_mu?: false,
+        load_cartodb_functions: nil,
+        create_schema: nil,
+        move_tables_to_schema: nil,
+        create_public_db_user: nil,
+        monitor_user_notification: nil,
+        enable_remote_db_user: nil
       )
 
       CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
@@ -391,7 +391,7 @@ describe Admin::VisualizationsController do
       org.seats = 10
       org.save
 
-      User.any_instance.stubs(:remaining_quota).returns(1000)
+      ::User.any_instance.stubs(:remaining_quota).returns(1000)
       user_a = create_user({username: 'user-a', quota_in_bytes: 123456789, table_quota: 400})
       user_org = CartoDB::UserOrganization.new(org.id, user_a.id)
       user_org.promote_user_to_admin

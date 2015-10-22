@@ -49,7 +49,7 @@ module CartoDB
 
       def cartodb_layers
         @cartodb_layers ||= layers.map do |layer|
-          CartoDB::Layer::Presenter.new(layer, options, configuration).to_vizjson_v2
+          CartoDB::LayerModule::Presenter.new(layer, options, configuration).to_vizjson_v2
         end
       end
     end

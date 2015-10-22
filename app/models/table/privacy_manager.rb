@@ -88,7 +88,7 @@ module CartoDB
     end
 
     def owner
-      @owner ||= User.where(id: table.user_id).first
+      @owner ||= ::User.where(id: table.user_id).first
     end
 
     def set_database_permissions(query)

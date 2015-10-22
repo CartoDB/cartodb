@@ -151,6 +151,7 @@ GIS dependencies
   .. code-block:: bash
       
     sudo apt-get install gdal-bin libgdal1-dev libgdal-dev
+    sudo apt-get install ogr2ogr2-static-bin
 
 
 PostGIS

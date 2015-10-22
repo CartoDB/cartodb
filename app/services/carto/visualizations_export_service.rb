@@ -38,14 +38,23 @@ module Carto
         Carto::Api::VisualizationVizJSONAdapter.new(visualization, $tables_metadata), vizjson_options, Cartodb.config)
                                             .to_export_poro(export_version)
                                             .to_json
-      backup_entry = Carto::VisualizationBackup.new(
-        username: visualization.user.username,
-        visualization: visualization.id,
-        export_vizjson: data
-      )
-      backup_entry.save
 
-      true
+      backup_present = Carto::VisualizationBackup.where(
+        username: visualization.user.username,
+        visualization: visualization.id).first != nil
+
+      if backup_present
+        false
+      else
+        backup_entry = Carto::VisualizationBackup.new(
+          username: visualization.user.username,
+          visualization: visualization.id,
+          export_vizjson: data
+        )
+        backup_entry.save
+
+        true
+      end
     rescue VisualizationsExportServiceError => export_error
       raise export_error
     rescue => exception

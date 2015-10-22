@@ -6,7 +6,7 @@ class ClientApplication < Sequel::Model
   one_to_many :tokens, :class_name => :OauthToken
   one_to_many :access_tokens
   one_to_many :oauth_tokens
-  
+
   plugin :association_dependencies
   add_association_dependencies :oauth_tokens => :destroy
 
@@ -23,7 +23,7 @@ class ClientApplication < Sequel::Model
   end
 
   def user
-    User[user_id]
+    ::User[user_id]
   end
 
   def user=(value)
@@ -42,7 +42,7 @@ class ClientApplication < Sequel::Model
       false
     end
   end
-  
+
   def oauth_server
     @oauth_server ||= OAuth::Server.new("http://your.site")
   end

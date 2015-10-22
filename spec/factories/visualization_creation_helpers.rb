@@ -21,12 +21,14 @@ def login(user)
   host! "#{user.username}.localhost.lan"
 end
 
-def create_random_table(user, name = "viz#{rand(999)}")
-  create_table( { user_id: user.id, name: name } )
+def create_random_table(user, name = "viz#{rand(999)}", privacy = nil)
+  options = { user_id: user.id, name: name }
+  options.merge!(privacy: privacy) if privacy
+  create_table(options)
 end
 
 def create_table_with_options(user, headers = { 'CONTENT_TYPE'  => 'application/json' }, options = {})
-  privacy = options.fetch(:privacy, 1)
+  privacy = options.fetch(:privacy, UserTable::PRIVACY_PUBLIC)
 
   seed    = rand(9999)
   payload = {
@@ -50,7 +52,7 @@ shared_context 'users helper' do
   include_context 'database configuration'
 
   before(:each) do
-    User.any_instance.stubs(:enable_remote_db_user).returns(true)
+    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
   end
 
   before(:all) do

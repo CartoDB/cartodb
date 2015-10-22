@@ -153,7 +153,7 @@ describe Carto::Template do
     org2_user_owner.reload
 
     o_table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: 'table1', user_id: @org_user_owner.id)
-    o2_table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: 'table', user_id: org2_user_owner.id)
+    o2_table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: 'table2', user_id: org2_user_owner.id)
 
     template = Carto::Template.new({
         title: 'title',

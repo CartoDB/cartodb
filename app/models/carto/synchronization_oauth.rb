@@ -5,7 +5,7 @@ require 'active_record'
 module Carto
   class SynchronizationOauth < ActiveRecord::Base
 
-    belongs_to :user
+    belongs_to :user, class_name: 'Carto::User', inverse_of: :synchronization_oauths
 
     # TODO: Removal
     def self.columns

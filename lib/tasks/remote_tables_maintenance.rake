@@ -8,7 +8,7 @@ namespace :cartodb do
       username = args[:username]
       raise 'username required' unless username.present?
 
-      u = User.where(username: username).first
+      u = ::User.where(username: username).first
       require_relative '../../app/services/visualization/common_data_service'
       deleted = CartoDB::Visualization::CommonDataService.new.delete_common_data_for_user(u)
       puts "Deleted #{deleted} remote visualizations"
@@ -31,7 +31,7 @@ namespace :cartodb do
       username = args[:username]
       raise 'username required' unless username.present?
 
-      u = User.where(username: username).first
+      u = ::User.where(username: username).first
       require_relative '../../app/services/visualization/common_data_service'
       vis_api_url = get_visualizations_api_url
       CartoDB::Visualization::CommonDataService.new.load_common_data_for_user(u, vis_api_url)
@@ -58,7 +58,7 @@ namespace :cartodb do
       vis_api_url = get_visualizations_api_url
       puts DateTime.now
       # TODO: batch
-      users = User.order_by(:username)
+      users = ::User.order_by(:username)
       users = users.where("username > '#{args[:from_username]}'") unless args[:from_username].nil?
       users.all.each do |user|
         added, updated, not_modified, removed, failed = common_data_service.load_common_data_for_user(user, vis_api_url)
@@ -75,14 +75,14 @@ namespace :cartodb do
       invalidate_sql = %Q[
           UPDATE users
           SET last_common_data_update_date = null
-          WHERE last_common_data_update_date >= now() - '#{User::COMMON_DATA_ACTIVE_DAYS} day'::interval;
+          WHERE last_common_data_update_date >= now() - '#{::User::COMMON_DATA_ACTIVE_DAYS} day'::interval;
         ]
       updated_rows = Rails::Sequel.connection.fetch(invalidate_sql).update
       CommonDataRedisCache.new.invalidate
       puts "#{updated_rows} users invalidated"
 
       # Now we try to add the new common-data request to the cache using the common_data user
-      common_data_user = User.where(username: Cartodb.config[:common_data]["username"]).first
+      common_data_user = ::User.where(username: Cartodb.config[:common_data]["username"]).first
       if !common_data_user.nil?
         vis_api_url = get_visualizations_api_url
         CartoDB::Visualization::CommonDataService.new.load_common_data_for_user(common_data_user, vis_api_url)

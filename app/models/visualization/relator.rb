@@ -17,9 +17,9 @@ module CartoDB
                         named_map:        :named_maps_layers
                       }
 
-      INTERFACE     = %w{ overlays map user table related_templates related_tables related_canonical_visualizations 
-                          layers stats mapviews total_mapviews single_data_layer? synchronization is_synced? permission 
-                          parent children support_tables prev_list_item next_list_item likes likes_count reload_likes 
+      INTERFACE     = %w{ overlays map user table related_templates related_tables related_canonical_visualizations
+                          layers stats mapviews total_mapviews single_data_layer? synchronization is_synced? permission
+                          parent children support_tables prev_list_item next_list_item likes likes_count reload_likes
                           estimated_row_count actual_row_count }
 
       def initialize(attributes={})
@@ -67,8 +67,8 @@ module CartoDB
       end
 
       def support_tables
-        @support_tables ||= Visualization::SupportTables.new(user.in_database,
-                                     { parent_id: @id, parent_kind: @kind, public_user_roles: user.public_user_roles})
+        @support_tables ||= Visualization::SupportTables.new(
+          user.in_database, parent_id: @id, parent_kind: @kind, public_user_roles: user.db_service.public_user_roles)
       end
 
       def overlays
@@ -80,7 +80,7 @@ module CartoDB
       end
 
       def user
-        @user ||= User[@user_id] unless @user_id.nil?
+        @user ||= ::User[@user_id] unless @user_id.nil?
       end
 
       def table
@@ -131,7 +131,7 @@ module CartoDB
       def mapviews(user=nil)
         @mapviews ||= stats(user).collect { |o| o[1] }.reduce(:+)
       end
-      
+
       def total_mapviews(user=nil)
         @total_mapviews ||= Visualization::Stats.new(self, user).total_mapviews
       end

@@ -110,7 +110,7 @@ WORKING_SPECS_4 = \
   services/importer/spec/unit/url_translator/osm_spec.rb \
   services/importer/spec/unit/url_translator/osm2_spec.rb \
   services/importer/spec/unit/mail_notifier_spec.rb \
-  services/relocator/spec/relocator_spec.rb \
+  services/user-mover/spec/user_mover_spec.rb \
 
 WORKING_SPECS_5 = \
   spec/rspec_configuration.rb \
@@ -205,7 +205,7 @@ endif
 	# TODO skip this if db already exists ?
 	# Clean DB connections before drop test DB
 	psql -U postgres -c "select pg_terminate_backend(pid) from pg_stat_activity where datname='carto_db_test'"
-	MOCHA_OPTIONS=skip_integration RAILS_ENV=test bundle exec rake cartodb:test:prepare
+	MOCHA_OPTIONS=skip_integration RAILS_ENV=test bundle exec rake cartodb:test:prepare --trace
 
 # TODO: Ongoing removal of groups, that's the reason of holes in numbering
 check-1:
@@ -251,6 +251,3 @@ cartodbui:
 
 
 .PHONY: develop_cdb cartodbui
-
-
-

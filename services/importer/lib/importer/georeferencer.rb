@@ -254,7 +254,7 @@ module CartoDB
       end
 
       def user
-        @user ||= User.where(id: user_id).first
+        @user ||= ::User.where(id: user_id).first
       end
 
       def user_id
@@ -319,8 +319,8 @@ module CartoDB
         # TODO: capture_exceptions=true
         job.log 'Converting detected multipoint to point'
         QueryBatcher.new(
-            db, 
-            job, 
+            db,
+            job,
             create_seq_field = true
           ).execute_update(
               %Q{

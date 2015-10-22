@@ -4,11 +4,11 @@ When you add CartoDB.js to your websites you get some great new tools to make ma
 
 ## Documentation
 
-* [Getting started](/CartoDB/cartodb.js/blob/develop/doc/getting_started.md)
-* [API methods](/CartoDB/cartodb.js/blob/develop/doc/api_methods.md)
-* [Events](/CartoDB/cartodb.js/blob/develop/doc/events.md)
-* [Specific UI functions](/CartoDB/cartodb.js/blob/develop/doc/ui_functions.md)
-* [Getting data with SQL](/CartoDB/cartodb.js/blob/develop/doc/sql.md)
-* [Static Maps](/CartoDB/cartodb.js/blob/develop/doc/static_maps.md)
-* [Core API functionality](/CartoDB/cartodb.js/blob/develop/doc/core_api.md)
-* [Other important stuff](/CartoDB/cartodb.js/blob/develop/doc/other_stuff.md)
+* [Getting started](getting_started.md)
+* [API methods](api_methods.md)
+* [Events](events.md)
+* [Specific UI functions](ui_functions.md)
+* [Getting data with SQL](sql.md)
+* [Static Maps](static_maps.md)
+* [Core API functionality](core_api.md)
+* [Other important stuff](other_stuff.md)

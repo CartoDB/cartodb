@@ -55,7 +55,7 @@ describe Carto::UserCreation do
 
     it 'assigns an enable_account_token if user has not signed up with Google' do
       ::User.any_instance.stubs(:create_in_central).returns(true)
-      CartoDB::User::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
       user_data = FactoryGirl.build(:valid_user)
       user_data.organization = @organization
       user_data.google_sign_in = false
@@ -69,7 +69,7 @@ describe Carto::UserCreation do
 
     it 'does not assign an enable_account_token if user has signed up with Google' do
       ::User.any_instance.stubs(:create_in_central).returns(true)
-      CartoDB::User::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
       user_data = FactoryGirl.build(:valid_user)
       user_data.organization = @organization
       user_data.google_sign_in = true
@@ -86,7 +86,7 @@ describe Carto::UserCreation do
       ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::NewOrganizationUser).never
       ::Resque.expects(:enqueue).with(Resque::OrganizationJobs::Mail::Invitation, instance_of(String)).once
       ::User.any_instance.stubs(:create_in_central).returns(true)
-      CartoDB::User::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
       user_data = FactoryGirl.build(:valid_user)
       user_data.organization = @organization
       user_data.google_sign_in = false
@@ -220,7 +220,7 @@ describe Carto::UserCreation do
     # INFO : this mail contains validation link
     it 'triggers a ::Resque::UserJobs::Mail::NewOrganizationUser' do
       ::User.any_instance.stubs(:create_in_central).returns(true)
-      CartoDB::User::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
       ::Resque.expects(:enqueue).with(Resque::UserJobs::Mail::NewOrganizationUser, instance_of(String)).once
 
       user_data = FactoryGirl.build(:valid_user)
@@ -233,7 +233,7 @@ describe Carto::UserCreation do
 
     it 'should trigger load_common_data in the user if common_data_url is setted' do
       ::User.any_instance.stubs(:create_in_central).returns(true)
-      CartoDB::User::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
       ::User.any_instance.expects(:load_common_data).with('http://www.example.com').once
 
       user_data = FactoryGirl.build(:valid_user)
@@ -247,7 +247,7 @@ describe Carto::UserCreation do
 
     it 'should not trigger load_common_data in the user if common_data_url is not setted' do
       ::User.any_instance.stubs(:create_in_central).returns(true)
-      CartoDB::User::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
       ::User.any_instance.expects(:load_common_data).with('http://www.example.com').never
 
       user_data = FactoryGirl.build(:valid_user)
@@ -265,7 +265,7 @@ describe Carto::UserCreation do
 
     it 'triggers a DiskQuotaLimitReached mail if organization has run out of quota for new users' do
       ::User.any_instance.stubs(:create_in_central).returns(true)
-      CartoDB::User::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
       ::Resque.expects(:enqueue).with(Resque::UserJobs::Mail::NewOrganizationUser, instance_of(String)).once
       ::Resque.expects(:enqueue).with(Resque::OrganizationJobs::Mail::DiskQuotaLimitReached, instance_of(String)).once
 

@@ -1,6 +1,7 @@
 
 module CartoDB
-  module User
+  # To avoid collisions with User class
+  module UserModule
     class DBQueries
 
       def initialize(user)
@@ -40,7 +41,7 @@ module CartoDB
           "GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" TO \"#{granted_user}\"",
           "GRANT SELECT ON ALL TABLES IN SCHEMA \"#{schema}\" TO \"#{granted_user}\""
         ]
-        if schema == CartoDB::User::DBService::SCHEMA_CARTODB
+        if schema == CartoDB::UserModule::DBService::SCHEMA_CARTODB
           queries.concat(revoke_permissions_on_cartodb_conf_queries(granted_user))
         end
 

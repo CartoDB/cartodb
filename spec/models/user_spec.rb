@@ -18,7 +18,7 @@ end
 
 describe User do
   before(:each) do
-    CartoDB::User::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
   end
 
   before(:all) do
@@ -38,7 +38,7 @@ describe User do
   before(:each) do
     stub_named_maps_calls
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-    CartoDB::User::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
   end
 
   after(:all) do
@@ -1656,7 +1656,7 @@ describe User do
       # INFO: avoiding enable_remote_db_user
       Cartodb.config[:signups] = nil
 
-      CartoDB::User::DBService.any_instance.stubs(
+      CartoDB::UserModule::DBService.any_instance.stubs(
         cartodb_extension_version_pre_mu?: nil,
         monitor_user_notification: nil,
         enable_remote_db_user: nil
@@ -1691,7 +1691,7 @@ describe User do
       user.nil?.should == false
 
       # To avoid connection pool caching
-      CartoDB::User::DBService.terminate_database_connections(user.database_name, user.database_host)
+      CartoDB::UserModule::DBService.terminate_database_connections(user.database_name, user.database_host)
 
       user.reload
 
@@ -1702,7 +1702,7 @@ describe User do
         SELECT * FROM pg_extension WHERE extname='postgis';
       }).first.nil?.should == false
 
-      # Replicate functionality inside ::User::DBService.configure_database
+      # Replicate functionality inside ::UserModule::DBService.configure_database
       # -------------------------------------------------------------------
 
       user.in_database.fetch(%{
@@ -1722,7 +1722,7 @@ describe User do
       # Checks for "grant_read_on_schema_queries(SCHEMA_CARTODB, db_user)"
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_schema_privilege('#{user.database_username}',
-                                           '#{CartoDB::User::DBService::SCHEMA_CARTODB}', 'USAGE');
+                                           '#{CartoDB::UserModule::DBService::SCHEMA_CARTODB}', 'USAGE');
       }).first[:has_schema_privilege].should == true
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_function_privilege('#{user.database_username}',
@@ -1738,15 +1738,15 @@ describe User do
       # Checks on SCHEMA_PUBLIC
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_schema_privilege('#{user.database_username}',
-                                           '#{CartoDB::User::DBService::SCHEMA_PUBLIC}', 'USAGE');
+                                           '#{CartoDB::UserModule::DBService::SCHEMA_PUBLIC}', 'USAGE');
       }).first[:has_schema_privilege].should == true
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_table_privilege('#{user.database_username}',
-                                           '#{CartoDB::User::DBService::SCHEMA_PUBLIC}.spatial_ref_sys', 'SELECT');
+                                           '#{CartoDB::UserModule::DBService::SCHEMA_PUBLIC}.spatial_ref_sys', 'SELECT');
       }).first[:has_table_privilege].should == true
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_function_privilege('#{user.database_username}',
-                                             '#{CartoDB::User::DBService::SCHEMA_PUBLIC}._postgis_stats(regclass, text, text)',
+                                             '#{CartoDB::UserModule::DBService::SCHEMA_PUBLIC}._postgis_stats(regclass, text, text)',
                                              'EXECUTE');
       }).first[:has_function_privilege].should == true
 
@@ -1771,29 +1771,29 @@ describe User do
       # Checks on non-org "owned" schemas
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_schema_privilege('#{user.database_username}',
-                                           '#{CartoDB::User::DBService::SCHEMA_IMPORTER}', 'CREATE, USAGE');
+                                           '#{CartoDB::UserModule::DBService::SCHEMA_IMPORTER}', 'CREATE, USAGE');
       }).first[:has_schema_privilege].should == true
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_schema_privilege('#{user.database_username}',
-                                           '#{CartoDB::User::DBService::SCHEMA_GEOCODING}', 'CREATE, USAGE');
+                                           '#{CartoDB::UserModule::DBService::SCHEMA_GEOCODING}', 'CREATE, USAGE');
       }).first[:has_schema_privilege].should == true
 
       # Special raster and geo columns
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_table_privilege('#{user.database_username}',
-                                          '#{CartoDB::User::DBService::SCHEMA_PUBLIC}.geometry_columns', 'SELECT');
+                                          '#{CartoDB::UserModule::DBService::SCHEMA_PUBLIC}.geometry_columns', 'SELECT');
       }).first[:has_table_privilege].should == true
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_table_privilege('#{user.database_username}',
-                                          '#{CartoDB::User::DBService::SCHEMA_PUBLIC}.geography_columns', 'SELECT');
+                                          '#{CartoDB::UserModule::DBService::SCHEMA_PUBLIC}.geography_columns', 'SELECT');
       }).first[:has_table_privilege].should == true
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_table_privilege('#{CartoDB::PUBLIC_DB_USER}',
-                                          '#{CartoDB::User::DBService::SCHEMA_PUBLIC}.raster_overviews', 'SELECT');
+                                          '#{CartoDB::UserModule::DBService::SCHEMA_PUBLIC}.raster_overviews', 'SELECT');
       }).first[:has_table_privilege].should == true
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_table_privilege('#{CartoDB::PUBLIC_DB_USER}',
-                                          '#{CartoDB::User::DBService::SCHEMA_PUBLIC}.raster_columns', 'SELECT');
+                                          '#{CartoDB::UserModule::DBService::SCHEMA_PUBLIC}.raster_columns', 'SELECT');
       }).first[:has_table_privilege].should == true
 
       # quota check
@@ -1820,39 +1820,39 @@ describe User do
       }).first[:has_database_privilege].should == true
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_schema_privilege('#{CartoDB::PUBLIC_DB_USER}',
-                                           '#{CartoDB::User::DBService::SCHEMA_CARTODB}', 'USAGE');
+                                           '#{CartoDB::UserModule::DBService::SCHEMA_CARTODB}', 'USAGE');
       }).first[:has_schema_privilege].should == true
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_function_privilege(
           '#{CartoDB::PUBLIC_DB_USER}',
-          '#{CartoDB::User::DBService::SCHEMA_CARTODB}.CDB_LatLng (NUMERIC, NUMERIC)',
+          '#{CartoDB::UserModule::DBService::SCHEMA_CARTODB}.CDB_LatLng (NUMERIC, NUMERIC)',
           'EXECUTE');
       }).first[:has_function_privilege].should == true
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_table_privilege('#{CartoDB::PUBLIC_DB_USER}',
-                                           '#{CartoDB::User::DBService::SCHEMA_CARTODB}.CDB_CONF',
+                                           '#{CartoDB::UserModule::DBService::SCHEMA_CARTODB}.CDB_CONF',
                                            'SELECT, INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER');
       }).first[:has_table_privilege].should == false
 
       # Additional public user grants/revokes
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_table_privilege('#{CartoDB::PUBLIC_DB_USER}',
-                                           '#{CartoDB::User::DBService::SCHEMA_CARTODB}.cdb_tablemetadata',
+                                           '#{CartoDB::UserModule::DBService::SCHEMA_CARTODB}.cdb_tablemetadata',
                                            'SELECT');
       }).first[:has_table_privilege].should == false
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_schema_privilege('#{CartoDB::PUBLIC_DB_USER}',
-                                           '#{CartoDB::User::DBService::SCHEMA_PUBLIC}', 'USAGE');
+                                           '#{CartoDB::UserModule::DBService::SCHEMA_PUBLIC}', 'USAGE');
       }).first[:has_schema_privilege].should == true
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_function_privilege(
           '#{CartoDB::PUBLIC_DB_USER}',
-          '#{CartoDB::User::DBService::SCHEMA_PUBLIC}._postgis_stats(regclass, text, text)',
+          '#{CartoDB::UserModule::DBService::SCHEMA_PUBLIC}._postgis_stats(regclass, text, text)',
           'EXECUTE');
       }).first[:has_function_privilege].should == true
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_table_privilege('#{CartoDB::PUBLIC_DB_USER}',
-                                          '#{CartoDB::User::DBService::SCHEMA_PUBLIC}.spatial_ref_sys', 'SELECT');
+                                          '#{CartoDB::UserModule::DBService::SCHEMA_PUBLIC}.spatial_ref_sys', 'SELECT');
       }).first[:has_table_privilege].should == true
 
       user.destroy

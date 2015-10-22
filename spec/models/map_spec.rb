@@ -6,7 +6,7 @@ require_relative '../../app/helpers/bounding_box_helper'
 
 describe Map do
   before(:each) do
-    CartoDB::User::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
     CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
 
     @table = Table.new

@@ -21,7 +21,7 @@ class Carto::VisualizationQueryBuilder
   end
 
   def self.user_all_visualizations(user)
-    self.with_user_id(user ? user.id : nil).with_type(Carto::Visualization::TYPE_DERIVED)
+    new.with_user_id(user ? user.id : nil).with_type(Carto::Visualization::TYPE_DERIVED)
   end
 
   def self.user_public(user)

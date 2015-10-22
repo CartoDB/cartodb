@@ -18,7 +18,7 @@ end
 
 describe User do
   before(:each) do
-    ::User.any_instance.stubs(:enable_remote_db_user).returns(true)
+    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
   end
 
   before(:all) do
@@ -38,7 +38,7 @@ describe User do
   before(:each) do
     stub_named_maps_calls
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-    ::User.any_instance.stubs(:enable_remote_db_user).returns(true)
+    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
   end
 
   after(:all) do
@@ -780,7 +780,7 @@ describe User do
 
   it "should run valid queries against his database" do
     # initial select tests
-    query_result = @user.run_pg_query("select * from import_csv_1 where family='Polynoidae' limit 10")
+    query_result = @user.db_service.run_pg_query("select * from import_csv_1 where family='Polynoidae' limit 10")
     query_result[:time].should_not be_blank
     query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
     query_result[:total_rows].should == 2
@@ -789,22 +789,22 @@ describe User do
     query_result[:rows][1][:name_of_species].should == "Eulagisca gigantea"
 
     # update and reselect
-    query_result = @user.run_pg_query("update import_csv_1 set family='polynoidae' where family='Polynoidae'")
-    query_result = @user.run_pg_query("select * from import_csv_1 where family='Polynoidae' limit 10")
+    query_result = @user.db_service.run_pg_query("update import_csv_1 set family='polynoidae' where family='Polynoidae'")
+    query_result = @user.db_service.run_pg_query("select * from import_csv_1 where family='Polynoidae' limit 10")
     query_result[:total_rows].should == 0
 
     # check counts
-    query_result = @user.run_pg_query("select * from import_csv_1 where family='polynoidae' limit 10")
+    query_result = @user.db_service.run_pg_query("select * from import_csv_1 where family='polynoidae' limit 10")
     query_result[:total_rows].should == 2
 
     # test a product
-    query_result = @user.run_pg_query("select import_csv_1.family as fam, twitters.login as login from import_csv_1, twitters where family='polynoidae' limit 10")
+    query_result = @user.db_service.run_pg_query("select import_csv_1.family as fam, twitters.login as login from import_csv_1, twitters where family='polynoidae' limit 10")
     query_result[:total_rows].should == 10
     query_result[:rows].first.keys.should == [:fam, :login]
     query_result[:rows][0].should == { :fam=>"polynoidae", :login=>"vzlaturistica " }
 
     # test counts
-    query_result = @user.run_pg_query("select count(*) from import_csv_1 where family='polynoidae' ")
+    query_result = @user.db_service.run_pg_query("select count(*) from import_csv_1 where family='polynoidae' ")
     query_result[:time].should_not be_blank
     query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
     query_result[:total_rows].should == 1
@@ -814,7 +814,7 @@ describe User do
 
   it "should raise errors when running invalid queries against his database" do
     lambda {
-      @user.run_pg_query("selectttt * from import_csv_1 where family='Polynoidae' limit 10")
+      @user.db_service.run_pg_query("selectttt * from import_csv_1 where family='Polynoidae' limit 10")
     }.should raise_error(CartoDB::ErrorRunningQuery)
   end
 
@@ -823,7 +823,7 @@ describe User do
 
     # initial select tests
     # tests results and modified flags
-    query_result = @user.run_pg_query("select * from import_csv_1 where family='Polynoidae' limit 10")
+    query_result = @user.db_service.run_pg_query("select * from import_csv_1 where family='Polynoidae' limit 10")
     query_result[:time].should_not be_blank
     query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
     query_result[:total_rows].should == 2
@@ -834,28 +834,28 @@ describe User do
     query_result[:modified].should == false
 
     # update and reselect
-    query_result = @user.run_pg_query("update import_csv_1 set family='polynoidae' where family='Polynoidae'")
+    query_result = @user.db_service.run_pg_query("update import_csv_1 set family='polynoidae' where family='Polynoidae'")
     query_result[:modified].should   == true
     query_result[:results].should    == false
 
-    query_result = @user.run_pg_query("select * from import_csv_1 where family='Polynoidae' limit 10")
+    query_result = @user.db_service.run_pg_query("select * from import_csv_1 where family='Polynoidae' limit 10")
     query_result[:total_rows].should == 0
     query_result[:modified].should   == false
     query_result[:results].should    == true
 
     # # check counts
-    query_result = @user.run_pg_query("select * from import_csv_1 where family='polynoidae' limit 10")
+    query_result = @user.db_service.run_pg_query("select * from import_csv_1 where family='polynoidae' limit 10")
     query_result[:total_rows].should == 2
     query_result[:results].should    == true
 
     # test a product
-    query_result = @user.run_pg_query("select import_csv_1.family as fam, twitters.login as login from import_csv_1, twitters where family='polynoidae' limit 10")
+    query_result = @user.db_service.run_pg_query("select import_csv_1.family as fam, twitters.login as login from import_csv_1, twitters where family='polynoidae' limit 10")
     query_result[:total_rows].should == 10
     query_result[:rows].first.keys.should == [:fam, :login]
     query_result[:rows][0].should == { :fam=>"polynoidae", :login=>"vzlaturistica " }
 
     # test counts
-    query_result = @user.run_pg_query("select count(*) from import_csv_1 where family='polynoidae' ")
+    query_result = @user.db_service.run_pg_query("select count(*) from import_csv_1 where family='polynoidae' ")
     query_result[:time].should_not be_blank
     query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
     query_result[:total_rows].should == 1
@@ -865,19 +865,19 @@ describe User do
 
   it "should raise errors when running invalid queries against his database in pg mode" do
     lambda {
-      @user.run_pg_query("selectttt * from import_csv_1 where family='Polynoidae' limit 10")
+      @user.db_service.run_pg_query("selectttt * from import_csv_1 where family='Polynoidae' limit 10")
     }.should raise_error(CartoDB::ErrorRunningQuery)
   end
 
   it "should raise errors when invalid table name used in pg mode" do
     lambda {
-      @user.run_pg_query("select * from this_table_is_not_here where family='Polynoidae' limit 10")
+      @user.db_service.run_pg_query("select * from this_table_is_not_here where family='Polynoidae' limit 10")
     }.should raise_error(CartoDB::TableNotExists)
   end
 
   it "should raise errors when invalid column used in pg mode" do
     lambda {
-      @user.run_pg_query("select not_a_col from import_csv_1 where family='Polynoidae' limit 10")
+      @user.db_service.run_pg_query("select not_a_col from import_csv_1 where family='Polynoidae' limit 10")
     }.should raise_error(CartoDB::ColumnNotExists)
   end
 
@@ -897,7 +897,7 @@ describe User do
   it "should return the result from the last select query if multiple selects" do
     reload_user_data(@user) && @user.reload
 
-    query_result = @user.run_pg_query("select * from import_csv_1 where family='Polynoidae' limit 1; select * from import_csv_1 where family='Polynoidae' limit 10")
+    query_result = @user.db_service.run_pg_query("select * from import_csv_1 where family='Polynoidae' limit 1; select * from import_csv_1 where family='Polynoidae' limit 10")
     query_result[:time].should_not be_blank
     query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
     query_result[:total_rows].should == 2
@@ -906,7 +906,7 @@ describe User do
   end
 
   it "should allow multiple queries in the format: insert_query; select_query" do
-    query_result = @user.run_pg_query("insert into import_csv_1 (name_of_species,family) values ('cristata barrukia','Polynoidae'); select * from import_csv_1 where family='Polynoidae' ORDER BY name_of_species ASC limit 10")
+    query_result = @user.db_service.run_pg_query("insert into import_csv_1 (name_of_species,family) values ('cristata barrukia','Polynoidae'); select * from import_csv_1 where family='Polynoidae' ORDER BY name_of_species ASC limit 10")
     query_result[:total_rows].should == 3
     query_result[:rows].map { |i| i[:name_of_species] }.should =~ ["Barrukia cristata", "Eulagisca gigantea", "cristata barrukia"]
   end
@@ -914,7 +914,7 @@ describe User do
   it "should fail with error if table doesn't exist" do
     reload_user_data(@user) && @user.reload
     lambda {
-      @user.run_pg_query("select * from wadus")
+      @user.db_service.run_pg_query("select * from wadus")
     }.should raise_error(CartoDB::TableNotExists)
   end
 
@@ -1418,8 +1418,8 @@ describe User do
     end
 
     def stub_and_check_version_pre_mu(version, is_pre_mu)
-      @user.stubs(:cartodb_extension_version).returns(version)
-      @user.cartodb_extension_version_pre_mu?.should eq is_pre_mu
+      @user.db_service.stubs(:cartodb_extension_version).returns(version)
+      @user.db_service.cartodb_extension_version_pre_mu?.should eq is_pre_mu
     end
 
   end
@@ -1656,10 +1656,10 @@ describe User do
       # INFO: avoiding enable_remote_db_user
       Cartodb.config[:signups] = nil
 
-      ::User.any_instance.stubs(
-        enable_remote_db_user: nil,
+      CartoDB::UserModule::DBService.any_instance.stubs(
+        cartodb_extension_version_pre_mu?: nil,
         monitor_user_notification: nil,
-        cartodb_extension_version_pre_mu?: nil
+        enable_remote_db_user: nil
       )
 
       user_timeout_secs = 666
@@ -1691,7 +1691,7 @@ describe User do
       user.nil?.should == false
 
       # To avoid connection pool caching
-      ::User.terminate_database_connections(user.database_name, user.database_host)
+      CartoDB::UserModule::DBService.terminate_database_connections(user.database_name, user.database_host)
 
       user.reload
 
@@ -1702,7 +1702,7 @@ describe User do
         SELECT * FROM pg_extension WHERE extname='postgis';
       }).first.nil?.should == false
 
-      # Replicate functionality inside ::User::DBService.configure_database
+      # Replicate functionality inside ::UserModule::DBService.configure_database
       # -------------------------------------------------------------------
 
       user.in_database.fetch(%{
@@ -1722,7 +1722,7 @@ describe User do
       # Checks for "grant_read_on_schema_queries(SCHEMA_CARTODB, db_user)"
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_schema_privilege('#{user.database_username}',
-                                           '#{CartoDB::User::DBService::SCHEMA_CARTODB}', 'USAGE');
+                                           '#{CartoDB::UserModule::DBService::SCHEMA_CARTODB}', 'USAGE');
       }).first[:has_schema_privilege].should == true
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_function_privilege('#{user.database_username}',
@@ -1738,15 +1738,15 @@ describe User do
       # Checks on SCHEMA_PUBLIC
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_schema_privilege('#{user.database_username}',
-                                           '#{CartoDB::User::DBService::SCHEMA_PUBLIC}', 'USAGE');
+                                           '#{CartoDB::UserModule::DBService::SCHEMA_PUBLIC}', 'USAGE');
       }).first[:has_schema_privilege].should == true
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_table_privilege('#{user.database_username}',
-                                           '#{CartoDB::User::DBService::SCHEMA_PUBLIC}.spatial_ref_sys', 'SELECT');
+                                           '#{CartoDB::UserModule::DBService::SCHEMA_PUBLIC}.spatial_ref_sys', 'SELECT');
       }).first[:has_table_privilege].should == true
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_function_privilege('#{user.database_username}',
-                                             '#{CartoDB::User::DBService::SCHEMA_PUBLIC}._postgis_stats(regclass, text, text)',
+                                             '#{CartoDB::UserModule::DBService::SCHEMA_PUBLIC}._postgis_stats(regclass, text, text)',
                                              'EXECUTE');
       }).first[:has_function_privilege].should == true
 
@@ -1771,29 +1771,29 @@ describe User do
       # Checks on non-org "owned" schemas
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_schema_privilege('#{user.database_username}',
-                                           '#{CartoDB::User::DBService::SCHEMA_IMPORTER}', 'CREATE, USAGE');
+                                           '#{CartoDB::UserModule::DBService::SCHEMA_IMPORTER}', 'CREATE, USAGE');
       }).first[:has_schema_privilege].should == true
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_schema_privilege('#{user.database_username}',
-                                           '#{CartoDB::User::DBService::SCHEMA_GEOCODING}', 'CREATE, USAGE');
+                                           '#{CartoDB::UserModule::DBService::SCHEMA_GEOCODING}', 'CREATE, USAGE');
       }).first[:has_schema_privilege].should == true
 
       # Special raster and geo columns
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_table_privilege('#{user.database_username}',
-                                          '#{CartoDB::User::DBService::SCHEMA_PUBLIC}.geometry_columns', 'SELECT');
+                                          '#{CartoDB::UserModule::DBService::SCHEMA_PUBLIC}.geometry_columns', 'SELECT');
       }).first[:has_table_privilege].should == true
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_table_privilege('#{user.database_username}',
-                                          '#{CartoDB::User::DBService::SCHEMA_PUBLIC}.geography_columns', 'SELECT');
+                                          '#{CartoDB::UserModule::DBService::SCHEMA_PUBLIC}.geography_columns', 'SELECT');
       }).first[:has_table_privilege].should == true
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_table_privilege('#{CartoDB::PUBLIC_DB_USER}',
-                                          '#{CartoDB::User::DBService::SCHEMA_PUBLIC}.raster_overviews', 'SELECT');
+                                          '#{CartoDB::UserModule::DBService::SCHEMA_PUBLIC}.raster_overviews', 'SELECT');
       }).first[:has_table_privilege].should == true
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_table_privilege('#{CartoDB::PUBLIC_DB_USER}',
-                                          '#{CartoDB::User::DBService::SCHEMA_PUBLIC}.raster_columns', 'SELECT');
+                                          '#{CartoDB::UserModule::DBService::SCHEMA_PUBLIC}.raster_columns', 'SELECT');
       }).first[:has_table_privilege].should == true
 
       # quota check
@@ -1820,39 +1820,39 @@ describe User do
       }).first[:has_database_privilege].should == true
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_schema_privilege('#{CartoDB::PUBLIC_DB_USER}',
-                                           '#{CartoDB::User::DBService::SCHEMA_CARTODB}', 'USAGE');
+                                           '#{CartoDB::UserModule::DBService::SCHEMA_CARTODB}', 'USAGE');
       }).first[:has_schema_privilege].should == true
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_function_privilege(
           '#{CartoDB::PUBLIC_DB_USER}',
-          '#{CartoDB::User::DBService::SCHEMA_CARTODB}.CDB_LatLng (NUMERIC, NUMERIC)',
+          '#{CartoDB::UserModule::DBService::SCHEMA_CARTODB}.CDB_LatLng (NUMERIC, NUMERIC)',
           'EXECUTE');
       }).first[:has_function_privilege].should == true
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_table_privilege('#{CartoDB::PUBLIC_DB_USER}',
-                                           '#{CartoDB::User::DBService::SCHEMA_CARTODB}.CDB_CONF',
+                                           '#{CartoDB::UserModule::DBService::SCHEMA_CARTODB}.CDB_CONF',
                                            'SELECT, INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER');
       }).first[:has_table_privilege].should == false
 
       # Additional public user grants/revokes
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_table_privilege('#{CartoDB::PUBLIC_DB_USER}',
-                                           '#{CartoDB::User::DBService::SCHEMA_CARTODB}.cdb_tablemetadata',
+                                           '#{CartoDB::UserModule::DBService::SCHEMA_CARTODB}.cdb_tablemetadata',
                                            'SELECT');
       }).first[:has_table_privilege].should == false
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_schema_privilege('#{CartoDB::PUBLIC_DB_USER}',
-                                           '#{CartoDB::User::DBService::SCHEMA_PUBLIC}', 'USAGE');
+                                           '#{CartoDB::UserModule::DBService::SCHEMA_PUBLIC}', 'USAGE');
       }).first[:has_schema_privilege].should == true
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_function_privilege(
           '#{CartoDB::PUBLIC_DB_USER}',
-          '#{CartoDB::User::DBService::SCHEMA_PUBLIC}._postgis_stats(regclass, text, text)',
+          '#{CartoDB::UserModule::DBService::SCHEMA_PUBLIC}._postgis_stats(regclass, text, text)',
           'EXECUTE');
       }).first[:has_function_privilege].should == true
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_table_privilege('#{CartoDB::PUBLIC_DB_USER}',
-                                          '#{CartoDB::User::DBService::SCHEMA_PUBLIC}.spatial_ref_sys', 'SELECT');
+                                          '#{CartoDB::UserModule::DBService::SCHEMA_PUBLIC}.spatial_ref_sys', 'SELECT');
       }).first[:has_table_privilege].should == true
 
       user.destroy

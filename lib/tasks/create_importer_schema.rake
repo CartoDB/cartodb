@@ -7,7 +7,7 @@ namespace :cartodb do
       ::User.all.each_with_index do |user, index|
         begin
           puts "Creating importer schema for #{user.username}"
-          user.create_importer_schema
+          user.db_service.create_importer_schema
           user.db_service.set_user_privileges_in_importer_schema
           printf "OK %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, index, count
         rescue => exception

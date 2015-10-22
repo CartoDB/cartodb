@@ -27,7 +27,7 @@ module Carto
           'options' => options,
 
           # TODO: kind should be renamed to type
-          # rename once a new layer presenter is written. See CartoDB::Layer::Presenter#with_kind_as_type
+          # rename once a new layer presenter is written. See CartoDB::LayerModule::Presenter#with_kind_as_type
           # TODO: use symbols instead of strings
           'kind' => kind,
 

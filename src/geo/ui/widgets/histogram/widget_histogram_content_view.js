@@ -17,10 +17,10 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
         '<h3 class="Widget-textBig"><%= title %></h3>'+
       '</div>'+
      '<dl class="Widget-info Widget-textSmaller Widget-textSmaller--upper">'+
-       '<dt class="Widget-infoItem js-null">0</dt>'+
-       '<dt class="Widget-infoItem js-min">0</dt>'+
-       '<dt class="Widget-infoItem js-avg">0</dt>'+
-       '<dt class="Widget-infoItem js-max">0</dt>'+
+       '<dt class="Widget-infoItem js-null">0 NULL ROWS</dt>'+
+       '<dt class="Widget-infoItem js-min">0 MIN</dt>'+
+       '<dt class="Widget-infoItem js-avg">0 AVG</dt>'+
+       '<dt class="Widget-infoItem js-max">0 MAX</dt>'+
      '</dl>'+
    '</div>'+
    '<div class="Widget-content">'+
@@ -84,6 +84,8 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
     this._generateHandles();
     this._setupBrush();
     this._addXAxis();
+
+    this._updateStats();
   },
 
 
@@ -95,34 +97,42 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
     transitionType: 'elastic'
   },
 
-  _onChangeNullCount: function() {
-    var format = d3.format("0,000");
-    var value = format(this.viewModel.get('null'));
-    $(".js-null").text(value + ' NULL ROWS');
+  _onChangeTotal: function() {
+    this._animateValue('.js-val', 'total', '');
   },
 
   _onChangeMax: function() {
-    var format = d3.format("0,000");
-    var value = format(this.viewModel.get('max'));
-    $(".js-max").text(value + ' MAX');
+    this._animateValue('.js-max', 'max', 'MAX');
   },
 
   _onChangeMin: function() {
-    var format = d3.format("0,000");
-    var value = format(this.viewModel.get('min'));
-    $(".js-min").text(value + ' MIN');
+    this._animateValue('.js-min', 'min', 'MIN');
   },
 
   _onChangeAvg: function() {
-    var format = d3.format("0,000");
-   var value = format(this.viewModel.get('avg'));
-    $(".js-avg").text(value + ' AVG');
+    this._animateValue('.js-avg', 'avg', 'AVG');
   },
 
-  _onChangeTotal: function() {
+  _animateValue: function(className, what, unit) {
     var format = d3.format("0,000");
-    var value = format(this.viewModel.get('total'));
-    $(".js-val").text(value);
+    var value = this.viewModel.get(what);
+    var self = this;
+    $(className).prop('counter', self.viewModel.previous(what) || 0).stop().animate({ counter: value }, {
+      duration: 500,
+      easing: 'swing',
+      step: function (i) {
+        $(this).text(format(Math.floor(i)) + ' ' + unit);
+      }
+    });
+  },
+
+  _updateStats: function() {
+    var data = this.viewModel.get('data');
+    var max = d3.max(data);
+    var avg = Math.round(d3.mean(data));
+    var min = d3.min(data);
+
+    this.viewModel.set({ min: min, max: max, avg: avg });
   },
 
   _setupModel: function() {

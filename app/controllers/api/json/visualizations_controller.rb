@@ -149,10 +149,12 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         return(head 403) unless vis.is_owner?(current_user)
 
         track_event(vis, 'Deleted')
-        vis.table.dependent_visualizations.each { |dependent_vis|
-          # Remove dependent visualizations as well, if any
-          track_event(dependent_vis, 'Deleted')
-        } 
+        unless vis.table.nil?
+          vis.table.dependent_visualizations.each { |dependent_vis|
+            # Remove dependent visualizations as well, if any
+            track_event(dependent_vis, 'Deleted')
+          }
+        end 
 
         @stats_aggregator.timing('delete') do
           vis.delete

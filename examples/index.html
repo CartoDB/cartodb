@@ -402,7 +402,7 @@
             "widgets": [
               {
                 "type": "list",
-                "id": 'widget_uuid',
+                "id": 'list_widget_uuid',
                 "options": {
                   "sql": "SELECT COUNT(a.cartodb_id) as trees, b.n_distri as district FROM arboles as a INNER JOIN districtes_barcelona as b ON ST_Intersects(a.the_geom, b.the_geom) GROUP BY b.n_distri",
                   "title": "Árboles por distrito",
@@ -418,6 +418,7 @@
               },
               {
                 "type": "histogram",
+                "id": 'histogram_widget_uuid',
                 "options": {
                   "id": 'widget_histogram_uuid',
                   "sql": "SELECT COUNT(a.cartodb_id) as trees, b.n_distri as district FROM arboles as a INNER JOIN districtes_barcelona as b ON ST_Intersects(a.the_geom, b.the_geom) GROUP BY b.n_distri",

@@ -28,11 +28,11 @@ cdb.windshaft.PublicDashboardConfig.generate = function(dashboard) {
   if (widgets && widgets.length) {
     config.lists = {};
 
-    var lists = _.filter(widgets, function(widget){
-      return widget.get('type') === 'list'
-    });
-
-    lists.forEach(function(list) {
+    // TODO: Add histograms.
+    // var lists = _.filter(widgets, function(widget){
+    //   return widget.get('type') === 'list'
+    // });
+    widgets.forEach(function(list) {
       config.lists[list.get('id')] = {
         "sql": list.get('options').sql,
         "columns": list.get('options').columns

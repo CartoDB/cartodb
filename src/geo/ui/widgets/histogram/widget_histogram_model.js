@@ -11,8 +11,8 @@ cdb.geo.ui.Widget.HistogramModel = cdb.geo.ui.Widget.Model.extend({
   },
 
   url: function() {
-    var url = this.get('baseURL') + '/api/v1/map/' + this.get('layerGroupId') + '/list/' + 'widget_uuid'; // + this.get('id');
-    return url;
+    // TODO: Change this once the histogram endpoint is ready!
+    return this.get('dashboardBaseURL') + '/list/' + this.get('id');
   },
 
   initialize: function() {
@@ -21,7 +21,7 @@ cdb.geo.ui.Widget.HistogramModel = cdb.geo.ui.Widget.Model.extend({
   },
 
   _initBinds: function() {
-    this.bind('change:id', function(){
+    this.bind('change:dashboardBaseURL', function(){
       var self = this;
       this.fetch({
         error: function() {

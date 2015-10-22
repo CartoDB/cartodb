@@ -1,9 +1,5 @@
 var _ = require('underscore');
 
-// NOTE this does not return a NamedMap directly, but a wrapper, to inject the dependencies
-// e.g. var NamedMap = require('./named-map')(MapBase, SubLayerFactory);
-// @param {Object} MapBase
-// @param {Object} SubLayerFactory
 module.exports = function(MapBase, SubLayerFactory) {
   if (!MapBase) throw new Error('MapBase is required');
   if (!SubLayerFactory) throw new Error('SubLayerFactory is required');

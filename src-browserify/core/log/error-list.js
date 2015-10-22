@@ -1,12 +1,10 @@
 var Backbone = require('backbone');
-var Error = require('./error');
 
-// NOTE this does not return a ErrorList directly, but a wrapper, to inject dependencies
-// e.g. var ErrorList = require('./error-list')(Error);
-// @param {Object} Error
-module.exports = function(Error) {
+module.exports = function(ErrorModel) {
+  if (!ErrorModel) throw new Error('ErrorModel is required');
+
   var ErrorList = Backbone.Collection.extend({
-    model: Error,
+    model: ErrorModel,
 
     enableTrack: function() {
       var self = this;

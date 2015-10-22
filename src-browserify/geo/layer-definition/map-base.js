@@ -3,12 +3,6 @@ var util = require('cdb.core.util');
 var profiler = require('cdb.core.profiler');
 var MapProperties = require('./map-properties')
 
-// NOTE this does not return a MapBase directly, but a wrapper, to inject the dependencies
-// e.g. var MapBase = require('./map-base')({ jqueryAjax: $.ajax }});
-// @param {Object} SubLayerFactory
-// @param {Object} opts either of the options must be provided
-//   jQueryAjax: {Object} (optional) typically $.ajax
-//   reqwestCompat: {Object} (optional) typically reqwest.compat
 module.exports = function(SubLayerFactory, opts) {
   if (!SubLayerFactory) throw new Error('SubLayerFactory is required');
   if (!opts.jQueryAjax && !opts.reqwestCompat) throw new Error('opts.jQueryAjax or opts.reqwestCompat is required');

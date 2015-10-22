@@ -1,7 +1,6 @@
-// NOTE this does not return a Loader directly, but a wrapper, to inject the dependencies
-// e.g. var Loader = require('./loader')(cdb);
-// @param {Object} cartodb object
 module.exports = function(cdb) {
+  if (!cdb) throw new Error('cdb (for cdb.DEBUG) is required');
+
   var Loader = {
 
     queue: [],

@@ -1,15 +1,10 @@
 var _ = require('underscore');
 var Mustache = require('mustache');
 
-// NOTE this does not return a SQL directly, but a wrapper, to inject the dependencies
-// e.g. var SQL = require('./sql')({ jQuery: $ /* or reqwest: reqwest */ });
-// @param {Object} _Promise
-// @param {Object} opts hash with keys:
-//   jQuery: {Object} (Optional) has precedence over reqwest if both are present
-//   reqwest: {Object} (Optional)
 module.exports = function(_Promise, opts) {
   if (!_Promise) throw new Error('_Promise is required');
   if (!opts.jQuery && !opts.reqwest) throw new Error('opts.jQuery or opts.reqwest is required');
+
   var jQuery = opts.jQuery;
   var reqwest = opts.reqwest;
 

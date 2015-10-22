@@ -1,9 +1,5 @@
 var _ = require('underscore');
 
-// NOTE this does not return a Tiles directly, but a wrapper, to inject the dependencies
-// e.g. var Tiles = require('./tiles')(LayerDefinition, reqwestCompat);
-// @param {Object} LayerDefinition
-// @param {Object} reqwestCompat
 module.exports = function(LayerDefinition, reqwestCompat) {
   if (!LayerDefinition) throw new Error('LayerDefinition is required');
   if (!reqwestCompat) throw new Error('reqwestCompat is required');

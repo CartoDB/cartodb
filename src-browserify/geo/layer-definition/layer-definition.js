@@ -1,9 +1,5 @@
 var _ = require('underscore');
 
-// NOTE this does not return a LayerDefinition directly, but a wrapper, to inject the dependencies
-// e.g. var LayerDefintion = require('./layer-definition')(MapBase, '1.2.3');
-// @param {Object} MapBase
-// @param {String} CARTOCSS_DEFAULT_VERSION
 module.exports = function(MapBase, CARTOCSS_DEFAULT_VERSION) {
   if (!MapBase) throw new Error('MapBase is required');
   if (!CARTOCSS_DEFAULT_VERSION) throw new Error('CARTOCSS_DEFAULT_VERSION is required');

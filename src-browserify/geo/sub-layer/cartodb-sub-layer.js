@@ -1,9 +1,6 @@
 var _ = require('underscore');
 
-// NOTE this does not return a CartoDBSubLayer directly, but a wrapper, to inject the dependencies
-// e.g. var CartoDBSubLayer = require('./cartodb-sub-layer')(SubLayerBase, BackboneModel);
-// @param {Object} SubLayerBase
-// @param {Object} BackboneModel (Optional) Backbone.Model if not provided infowindows won't work on this layer
+// BackboneModel is optional
 module.exports = function(SubLayerBase, BackboneModel) {
   if (!SubLayerBase) throw new Error('SubLayerBase is required');
 

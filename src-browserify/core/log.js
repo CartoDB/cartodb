@@ -1,8 +1,5 @@
 var Backbone = require('backbone');
 
-// NOTE this does not return a Log directly, but a wrapper, to inject the dependencies
-// e.g. var Log = require('./log')(cdb);
-// @param {Object} cdb that contains config and error objects
 module.exports = function(cdb) {
   if (!cdb) throw new Error('cdb is required');
   if (!cdb.config) throw new Error('cdb.config is required');

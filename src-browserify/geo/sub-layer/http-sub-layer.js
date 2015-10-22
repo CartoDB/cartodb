@@ -1,8 +1,5 @@
 var _ = require('underscore');
 
-// NOTE this does not return a HttpSubLayer directly, but a wrapper, to inject the dependencies
-// e.g. var HttpSubLayer = require('./http-sub-layer')(SubLayerBase)
-// @param {Object} SubLayerBase
 module.exports = function(SubLayerBase) {
   if (!SubLayerBase) throw new Error('SubLayerBase is required');
 

@@ -1,13 +1,9 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 
-// NOTE this does not return a TemplateList directly, but a wrapper, to inject the dependencies
-// e.g. var TemplateList = require('./template-list')(cdb.core.Template, cdb.log);
-// @param {Object} Template class defintion of core/Template
-// @param {Object} log an instance of core/log
 module.exports = function(Template, log) {
   if (!Template) throw new Error('Template is required');
-  if (!log) throw new Error('log is required');
+  if (!log) throw new Error('log (cdb.log) is required');
 
   var TemplateList = Backbone.Collection.extend({
     model: Template,

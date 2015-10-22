@@ -1,7 +1,6 @@
-// NOTE this does not return a Image directly, but a wrapper, to inject the dependencies
-// e.g. var Image = require('./image')(StaticImage);
-// @param {Object} StaticImage
 module.exports = function(StaticImage) {
+  if (!StaticImage) throw new Error('StaticImage is required');
+
   var Image = function(data, options) {
 
     if (!options) options = {};

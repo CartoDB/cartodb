@@ -1,12 +1,6 @@
 var _ = require('underscore');
 var Queue = require('./queue');
 
-// NOTE this does not return a StaticImage directly, but a wrapper, to inject the dependencies
-// e.g. var StaticImage = require('./static-image')(Loader, LayerDefinition, MapBase, NamedMap);
-// @param {Object} Loader
-// @param {Object} LayerDefinition
-// @param {Object} MapBase
-// @param {Object} NamedMap
 module.exports = function(Loader, LayerDefinition, MapBase, NamedMap) {
   if (!Loader) throw new Error('Loader is required');
   if (!LayerDefinition) throw new Error('LayerDefinition is required');

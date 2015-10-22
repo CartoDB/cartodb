@@ -50,8 +50,8 @@ module.exports = function(opts) {
   });
 
   // contains all error for the application
-  var Error = setupError($, cdb.config);
-  var ErrorList = setupErrorList(Error);
+  var ErrorModel = setupError($, cdb.config);
+  var ErrorList = setupErrorList(ErrorModel);
   cdb.errors = new ErrorList();
 
   var Log = setupLog(cdb);

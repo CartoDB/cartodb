@@ -1,9 +1,7 @@
 var _ = require('underscore');
 
-// NOTE this does not return a SubLayerBase directly, but a wrapper, to inject the dependencies
-// e.g. var SubLayerBase = require('./sub-layer-base')(Backbone.Events);
-// @param {Object} BackboneEvents
 module.exports = function(BackboneEvents) {
+  if (!BackboneEvents) throw new Error('BackboneEvents is required');
 
   function SubLayerBase(_parent, position) {
     this._parent = _parent;

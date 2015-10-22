@@ -2,12 +2,8 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 var Mustache = require('mustache');
 
-
-// NOTE this does not return a Error directly, but a wrapper, to inject the dependencies
-// e.g. var Template = require('./template')(log);
-// @param {Object} log an instance of core/log
 module.exports = function(log) {
-  if (!log) throw new Error('log is required');
+  if (!log) throw new Error('log (cdb.log) is required');
 
   /**
    * template system

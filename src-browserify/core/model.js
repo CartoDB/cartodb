@@ -1,10 +1,9 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 
-// NOTE this does not return a Model directly, but a wrapper, to inject the dependencies
-// e.g. var Model = require('./model')(jQuery || window.$);
-// @param {Object} $
 module.exports = function($) {
+  if (!$) throw new Error('$ (jQuery) is required');
+
   /**
    * Base Model for all CartoDB model.
    * DO NOT USE Backbone.Model directly

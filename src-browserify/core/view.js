@@ -2,10 +2,8 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 var Profiler = require('cdb.core.profiler');
 
-// NOTE this does not return a TemplateList directly, but a wrapper, to inject the dependencies
-// e.g. var View = require('./view')(templates);
-// @param {Object} templates an instance of TemplateList
 module.exports = function(templates) {
+  if (!templates) throw new Error('templates (cdb.templates) is required');
 
   /**
    * Base View for all CartoDB views.

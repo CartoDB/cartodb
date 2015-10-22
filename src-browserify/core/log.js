@@ -1,5 +1,7 @@
 var Backbone = require('backbone');
-var cdbProxy = require('cdb-proxy'); // cdb.config, cdb.errors, cdb.DEBUG
+var cdbProxy = require('cdb-proxy'); // cdb.DEBUG
+var errorsProxy = require('errors-proxy');
+var configProxy = require('config-proxy');
 
 // TODO: Is this fake console/IE7 still necessary?
 var _console;
@@ -23,8 +25,8 @@ var Log = Backbone.Model.extend({
 
   error: function() {
     _console.error.apply(_console, arguments);
-    if(cdbProxy.get().config.ERROR_TRACK_ENABLED) {
-      cdbProxy.get().errors.create({
+    if(configProxy.get().ERROR_TRACK_ENABLED) {
+      errorsProxy.get().create({
         msg: Array.prototype.slice.call(arguments).join('')
       });
     }

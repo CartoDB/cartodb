@@ -26,7 +26,12 @@ var bundles = {
       'test/spec/src-browserify/geo/geocoder/*.js',
       'test/spec/src-browserify/geo/geometry.spec.js',
       'test/spec/src-browserify/geo/layer-definition/*.js',
+      'test/spec/src-browserify/geo/map/*.js',
+      'test/spec/src-browserify/geo/map-view.spec.js',
+      'test/spec/src-browserify/geo/map.spec.js',
       'test/spec/src-browserify/geo/sublayer.spec.js',
+      'test/spec/src-browserify/geo/ui/infowindow.spec.js',
+      'test/spec/src-browserify/geo/ui/infowindow-model.spec.js',
       'test/spec/src-browserify/vis/image.spec.js',
     ],
     dest: '<%= config.tmp %>/src-browserify-specs.js'

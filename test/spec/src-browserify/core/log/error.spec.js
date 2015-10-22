@@ -1,15 +1,13 @@
 var $ = require('jquery');
 var jQueryProxy = require('jquery-proxy');
 var Config = require('../../../../../src-browserify/core/config');
-var cdbProxy = require('cdb-proxy');
+var configProxy = require('config-proxy');
 var ErrorModel = require('../../../../../src-browserify/core/log/error');
 
 describe('core/log/error', function() {
   beforeEach(function() {
     jQueryProxy.set($);
-    cdbProxy.set({
-      config: new Config()
-    });
+    configProxy.set(new Config());
   });
 
   it('should set a browser info when created', function() {

@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 var Profiler = require('cdb.core.profiler');
-var cdbProxy = require('cdb-proxy'); // cdb.templates
+var templatesProxy = require('templates-proxy');
 
 /**
  * Base View for all CartoDB views.
@@ -77,7 +77,7 @@ var View = Backbone.View.extend({
     if(this.options.template) {
       return  _.template(this.options.template);
     }
-    return cdbProxy.get().templates.getTemplate(tmpl);
+    return templatesProxy.get().getTemplate(tmpl);
   },
 
   show: function() {

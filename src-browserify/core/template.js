@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 var Mustache = require('mustache');
-var cdbProxy = require('cdb-proxy'); // cdb.log
+var logProxy = require('log-proxy');
 
 /**
  * template system
@@ -50,7 +50,7 @@ var Template = Backbone.Model.extend({
     if(fn) {
       return fn(this.get('template'));
     } else {
-      cdbProxy.get().log.error("can't get rendered for " + tmpl_type);
+      logProxy.get().error("can't get rendered for " + tmpl_type);
     }
     return null;
   },

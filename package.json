@@ -71,16 +71,22 @@
       "cdb-proxy": "./src-browserify/require-proxies/cdb-proxy.js",
       "cdb.core.util": "./src-browserify/core/util.js",
       "cdb.core.profiler": "./src-browserify/core/profiler.js",
+      "config-proxy": "./src-browserify/require-proxies/config-proxy.js",
+      "errors-proxy": "./src-browserify/require-proxies/errors-proxy.js",
       "json2": "./vendor/json2.js",
       "jquery-proxy": "./src-browserify/require-proxies/jquery-proxy.js",
       "html-css-sanitizer": "./vendor/html-css-sanitizer-bundle.js",
       "leaflet-proxy": "./src-browserify/require-proxies/leaflet-proxy.js",
+      "log-proxy": "./src-browserify/require-proxies/log-proxy.js",
       "lzma": "./vendor/lzma.js",
-      "reqwest": "./vendor/reqwest.min.js"
+      "reqwest": "./vendor/reqwest.min.js",
+      "spin.js": "./vendor/spin.js",
+      "templates-proxy": "./src-browserify/require-proxies/templates-proxy.js"
     },
     "browserify-shim": {
       "html-css-sanitizer": "html",
-      "lzma": "LZMA"
+      "lzma": "LZMA",
+      "spin.js": "Spinner"
     },
     "files": ["dist"],
     "main": "cartodb.js"

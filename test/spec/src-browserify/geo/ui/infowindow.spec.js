@@ -1,325 +1,169 @@
+var $ = require('jquery');
 
-describe("cdb.geo.ui.infowindow", function() {
+var jQueryProxy = require('jquery-proxy');
+var TemplateList = require('../../../../../src-browserify/core/template-list');
+var templatesProxy = require('templates-proxy');
+var Log = require('../../../../../src-browserify/core/log');
+var logProxy = require('log-proxy');
+var Config = require('../../../../../src-browserify/core/config');
+var configProxy = require('config-proxy');
 
-  describe("model", function() {
-    var model;
-    beforeEach(function() {
-      model = new cdb.geo.ui.InfowindowModel();
+var Map = require('../../../../../src-browserify/geo/map');
+var MapView = require('../../../../../src-browserify/geo/map-view');
+var InfowindowModel = require('../../../../../src-browserify/geo/ui/infowindow-model');
+var Infowindow = require('../../../../../src-browserify/geo/ui/infowindow');
+
+describe('geo/ui/infowindow', function() {
+  var model, view;
+
+  beforeEach(function() {
+    jQueryProxy.set($);
+    configProxy.set(new Config());
+    logProxy.set(new Log());
+    templatesProxy.set(new TemplateList());
+
+    var container = $('<div>').css('height', '200px');
+
+    map = new Map();
+
+    mapView = new MapView({
+      el: container,
+      map: map
     });
 
-    it("should allow adding an alternative name", function() {
-
-      model.addField('the_name');
-      model.addField('the_description');
-
-      model.setAlternativeName('the_name', 'nombre');
-      model.setAlternativeName('the_description', 'descripción');
-
-      n = model.getAlternativeName('the_name');
-      d = model.getAlternativeName('the_description');
-
-      expect(n).toEqual("nombre");
-      expect(d).toEqual("descripción");
-
+    model = new InfowindowModel({
+      fields: [
+        { name: 'test1', position: 1, title: true},
+        { name: 'test2', position: 2, title: true}
+      ]
     });
 
-    it("should add a field", function() {
-      expect(model.containsField('test')).toEqual(false);
-      model.addField('test');
-      model.addField('test2');
-      expect(model.containsField('test')).toEqual(true);
-      model.removeField('test');
-      expect(model.containsField('test')).toEqual(false);
-      expect(model.containsField('test2')).toEqual(true);
-      model.clearFields();
-      expect(model.containsField('test2')).toEqual(false);
-    });
-
-    it("should add a field in order", function() {
-      model.addField('test', 1);
-      model.addField('test2', 0);
-      expect(model.get('fields')[0].name).toEqual('test2');
-      expect(model.get('fields')[1].name).toEqual('test');
-    });
-
-    it("should allow modify field properties", function() {
-      var spy = sinon.spy();
-      model.addField('test');
-      var t = model.getFieldProperty('test', 'title');
-      expect(t).toEqual(true);
-      model.bind('change:fields', spy);
-      expect(spy.called).toEqual(false);
-      model.setFieldProperty('test', 'title', false);
-      t = model.getFieldProperty('test', 'title');
-      expect(t).toEqual(false);
-      expect(spy.called).toEqual(true);
-    });
-
-    it("should save and restore fields", function() {
-      model.addField('test', 1);
-      model.addField('test2', 0);
-      model.addField('test3', 3);
-      model.saveFields();
-      expect(model.get('old_fields')).toEqual(model.get('fields'));
-      model.clearFields();
-      model.restoreFields();
-      expect(model.get('old_fields')).toEqual(undefined);
-      expect(model.get('fields')[0].name).toEqual('test2');
-      expect(model.get('fields')[1].name).toEqual('test');
-      expect(model.get('fields')[2].name).toEqual('test3');
+    view = new Infowindow({
+      model: model,
+      mapView: mapView
     });
   });
 
-  describe("view", function() {
-    var model, view;
+  it("should add render when template changes", function() {
+    spyOn(view, 'render');
+    model.set('template', 'jaja');
+    expect(view.render).toHaveBeenCalled()
+  });
 
-    beforeEach(function() {
-
-      var container = $('<div>').css('height', '200px');
-
-      map = new cdb.geo.Map();
-
-      mapView = new cdb.geo.MapView({
-        el: container,
-        map: map
-      });
-
-      model = new cdb.geo.ui.InfowindowModel({
-        fields: [
-          { name: 'test1', position: 1, title: true},
-          { name: 'test2', position: 2, title: true}
-        ]
-      });
-
-      view = new cdb.geo.ui.Infowindow({
-        model: model,
-        mapView: mapView
-      });
-
+  it("should change width of the popup when width attribute changes", function() {
+    spyOn(view, 'render');
+    view.model.set({
+      'template': '<div class="cartodb-popup"></div>',
+      'width': 100
     });
+    expect(view.$('.cartodb-popup').css('width')).toBe('100px');
+  });
 
-    it("should add render when template changes", function() {
-      spyOn(view, 'render');
-      model.set('template', 'jaja');
-      expect(view.render).toHaveBeenCalled()
+  it("shouldn't change width of the popup when width attribute is undefined", function() {
+    spyOn(view, 'render');
+    view.model.set({
+      'template': '<div class="cartodb-popup v2"></div>'
+    })
+    view.model.unset('width');
+    expect(view.$('.cartodb-popup').css('width')).toBe(undefined);
+  });
+
+  it("should change maxHeight of the popup when maxHeight attribute changes", function() {
+    spyOn(view, 'render');
+    view.model.set({
+      'template': '<div class="cartodb-popup"><div class="cartodb-popup-content"></div></div>',
+      'maxHeight': 100
     });
+    expect(view.$('.cartodb-popup-content').css('max-height')).toBe('100px');
+  });
 
-    it("should change width of the popup when width attribute changes", function() {
-      spyOn(view, 'render');
-      view.model.set({
-        'template': '<div class="cartodb-popup"></div>',
-        'width': 100
-      });
-      expect(view.$('.cartodb-popup').css('width')).toBe('100px');
-    });
-
-    it("shouldn't change width of the popup when width attribute is undefined", function() {
-      spyOn(view, 'render');
-      view.model.set({
-        'template': '<div class="cartodb-popup v2"></div>'
-      })
-      view.model.unset('width');
-      expect(view.$('.cartodb-popup').css('width')).toBe(undefined);
-    });
-
-    it("should change maxHeight of the popup when maxHeight attribute changes", function() {
-      spyOn(view, 'render');
-      view.model.set({
-        'template': '<div class="cartodb-popup"><div class="cartodb-popup-content"></div></div>',
-        'maxHeight': 100
-      });
-      expect(view.$('.cartodb-popup-content').css('max-height')).toBe('100px');
-    });
-
-    it("should render without alternative_name set", function() {
-      var template = '<div class="cartodb-popup">\
-        <a href="#close" class="cartodb-popup-close-button close">x</a>\
-         <div class="cartodb-popup-content-wrapper">\
-           <div class="cartodb-popup-content">\
-             <ul id="mylist"></ul>\
-           </div>\
+  it("should render without alternative_name set", function() {
+    var template = '<div class="cartodb-popup">\
+      <a href="#close" class="cartodb-popup-close-button close">x</a>\
+       <div class="cartodb-popup-content-wrapper">\
+         <div class="cartodb-popup-content">\
+           <ul id="mylist"></ul>\
          </div>\
-         <div class="cartodb-popup-tip-container"></div>\
-      </div>';
+       </div>\
+       <div class="cartodb-popup-tip-container"></div>\
+    </div>';
 
-      model.unset('alternative_names');
-      model.set({
-        content: {
-          fields: [ { title:'test', value:true, position:0, index:0 } ]
-        },
-        template_name:'infowindow_light',
-        template: template
-      });
-
-      expect(view.render().$el.html().length).not.toBe(0);
+    model.unset('alternative_names');
+    model.set({
+      content: {
+        fields: [ { title:'test', value:true, position:0, index:0 } ]
+      },
+      template_name:'infowindow_light',
+      template: template
     });
 
-    it("should convert value to string when it is a number", function() {
-      model.set({
-        content: {
-          fields: [{
-              title: 'jamon1', value: 0, index:0
-            }, {
-              title: 'jamon2', value: 1, index:1
-            }]
-        },
-        template_name: 'jaja'
-      }, {silent: true});
-
-      var render_fields = view._fieldsToString(model.attributes.content.fields, model.attributes.template_name);
-
-      expect(render_fields[0].value).toEqual("0");
-      expect(render_fields[1].value).toEqual("1");
-    });
-
-    it("should convert value to '' when it is undefined", function() {
-      model.set({
-        content: { fields: [{ title: 'jamon', value: undefined}] },
-        template_name: 'jaja'
-      }, {silent: true});
-
-      var render_fields = view._fieldsToString(model.attributes.content.fields, model.attributes.template_name);
-      expect(render_fields[0].value).toEqual('');
-    });
-
-    it("should convert value to '' when it is null", function() {
-      model.set('content', { fields: [{ title: 'jamon', value: null}] }, {silent: true});
-
-      var render_fields = view._fieldsToString(model.attributes.content.fields, model.attributes.template_name);
-      expect(render_fields[0].value).toEqual('');
-    });
-
-    it("shouldn't convert the value if it is empty", function() {
-      model.set('content', { fields: [{ title: 'jamon', value: ''}] }, {silent: true});
-
-      var render_fields = view._fieldsToString(model.attributes.content.fields, model.attributes.template_name);
-      expect(render_fields[0].value).toEqual('');
-    });
-
-    it("should leave a string as it is", function() {
-      model.set('content', { fields: [{ title: 'jamon', value: "jamon is testing"}] }, {silent: true});
-
-      var render_fields = view._fieldsToString(model.attributes.content.fields, model.attributes.template_name);
-      expect(render_fields[0].value).toEqual("jamon is testing");
-    });
-
-    it("should convert value to string when it is a boolean", function() {
-      model.set('content', { fields: [{ title: 'jamon1', value: false}, { title: 'jamon2', value: true}] }, {silent: true});
-
-      var render_fields = view._fieldsToString(model.attributes.content.fields, model.attributes.template_name);
-
-      expect(render_fields[0].value).toEqual("false");
-      expect(render_fields[1].value).toEqual("true");
-    });
-
-    it("should be null when there isn't any field", function() {
-      spyOn(view, 'render');
-      model.set('fields', []);
-      expect(view.render).not.toHaveBeenCalled();
-      expect(view.$el.html()).toEqual('');
-    });
+    expect(view.render().$el.html().length).not.toBe(0);
   });
 
-  describe("contentForFields", function() {
+  it("should convert value to string when it is a number", function() {
+    model.set({
+      content: {
+        fields: [{
+            title: 'jamon1', value: 0, index:0
+          }, {
+            title: 'jamon2', value: 1, index:1
+          }]
+      },
+      template_name: 'jaja'
+    }, {silent: true});
 
-    it('should return the title and value of each field', function() {
-      var attributes = { field1: 'value1' };
-      var fields = [{ name: 'field1', title: true }];
-      var content = cdb.geo.ui.InfowindowModel.contentForFields(attributes, fields, {})
+    var render_fields = view._fieldsToString(model.attributes.content.fields, model.attributes.template_name);
 
-      expect(content.fields.length).toEqual(1);
-      expect(content.fields[0].title).toEqual('field1');
-      expect(content.fields[0].value).toEqual('value1');
-    });
-
-    it('should not return the title if not specified', function() {
-      var attributes = { field1: 'value1' };
-      var fields = [{ name: 'field1' }]; // Field doesn't have a title attribute
-      var content = cdb.geo.ui.InfowindowModel.contentForFields(attributes, fields, {})
-
-      expect(content.fields.length).toEqual(1);
-      expect(content.fields[0].title).toEqual(null);
-    });
-
-    it('should return the index of each field', function() {
-      var attributes = { field1: 'value1', field2: 'value2' };
-      var fields = [{ name: 'field1' }, { name: 'field2' }];
-      var content = cdb.geo.ui.InfowindowModel.contentForFields(attributes, fields, {})
-
-      expect(content.fields.length).toEqual(2);
-      expect(content.fields[0].index).toEqual(0);
-      expect(content.fields[1].index).toEqual(1);
-    });
-
-    it('should return empty fields', function() {
-      var attributes = { field1: 'value1' };
-      var fields = [{ name: 'field1' }, { name: 'field2' }];
-      var options = { empty_fields: true };
-      var content = cdb.geo.ui.InfowindowModel.contentForFields(attributes, fields, options)
-
-      expect(content.fields.length).toEqual(2);
-      expect(content.fields[0]).toEqual({
-        title: null,
-        value: 'value1',
-        index: 0
-      });
-      expect(content.fields[1]).toEqual({
-        title: null,
-        value: undefined,
-        index: 1
-      });
-    });
-
-    it('should not return empty fields', function() {
-      var attributes = { field1: 'value1' };
-      var fields = [{ name: 'field1' }, { name: 'field2' }];
-      var options = { empty_fields: false };
-      var content = cdb.geo.ui.InfowindowModel.contentForFields(attributes, fields, options)
-
-      expect(content.fields.length).toEqual(1);
-      expect(content.fields[0]).toEqual({
-        title: null,
-        value: 'value1',
-        index: 0
-      });
-    });
-
-    it('should not return fields with a null value', function() {
-      var attributes = { field1: 'wadus', field2: null };
-      var fields = [{ name: 'field1' }, { name: 'field2' }];
-      var content = cdb.geo.ui.InfowindowModel.contentForFields(attributes, fields, {})
-
-      expect(content.fields.length).toEqual(1);
-      expect(content.fields[0]).toEqual({
-        title: null,
-        value: 'wadus',
-        index: 0
-      });
-    });
-
-    it('should return the attributes as data', function() {
-      var attributes = { field1: 'value1' };
-      var fields = [{ name: 'field1' }];
-      var content = cdb.geo.ui.InfowindowModel.contentForFields(attributes, fields, {})
-
-      expect(content.data).toEqual(attributes);
-    });
-
-    it('should return an empty field when no data is available', function() {
-      var attributes = {};
-      var fields = [{ name: 'field1' }, { name: 'field2' }];
-      var content = cdb.geo.ui.InfowindowModel.contentForFields(attributes, fields, {})
-
-      expect(content.fields.length).toEqual(1);
-      expect(content.fields[0]).toEqual({
-        title: null,
-        value: 'No data available',
-        index: 0,
-        type: 'empty'
-      });
-    });
+    expect(render_fields[0].value).toEqual("0");
+    expect(render_fields[1].value).toEqual("1");
   });
 
+  it("should convert value to '' when it is undefined", function() {
+    model.set({
+      content: { fields: [{ title: 'jamon', value: undefined}] },
+      template_name: 'jaja'
+    }, {silent: true});
+
+    var render_fields = view._fieldsToString(model.attributes.content.fields, model.attributes.template_name);
+    expect(render_fields[0].value).toEqual('');
+  });
+
+  it("should convert value to '' when it is null", function() {
+    model.set('content', { fields: [{ title: 'jamon', value: null}] }, {silent: true});
+
+    var render_fields = view._fieldsToString(model.attributes.content.fields, model.attributes.template_name);
+    expect(render_fields[0].value).toEqual('');
+  });
+
+  it("shouldn't convert the value if it is empty", function() {
+    model.set('content', { fields: [{ title: 'jamon', value: ''}] }, {silent: true});
+
+    var render_fields = view._fieldsToString(model.attributes.content.fields, model.attributes.template_name);
+    expect(render_fields[0].value).toEqual('');
+  });
+
+  it("should leave a string as it is", function() {
+    model.set('content', { fields: [{ title: 'jamon', value: "jamon is testing"}] }, {silent: true});
+
+    var render_fields = view._fieldsToString(model.attributes.content.fields, model.attributes.template_name);
+    expect(render_fields[0].value).toEqual("jamon is testing");
+  });
+
+  it("should convert value to string when it is a boolean", function() {
+    model.set('content', { fields: [{ title: 'jamon1', value: false}, { title: 'jamon2', value: true}] }, {silent: true});
+
+    var render_fields = view._fieldsToString(model.attributes.content.fields, model.attributes.template_name);
+
+    expect(render_fields[0].value).toEqual("false");
+    expect(render_fields[1].value).toEqual("true");
+  });
+
+  it("should be null when there isn't any field", function() {
+    spyOn(view, 'render');
+    model.set('fields', []);
+    expect(view.render).not.toHaveBeenCalled();
+    expect(view.$el.html()).toEqual('');
+  });
 
   describe("loading state", function() {
     var model, view;
@@ -328,20 +172,20 @@ describe("cdb.geo.ui.infowindow", function() {
 
       var container = $('<div>').css('height', '200px');
 
-      map = new cdb.geo.Map();
+      map = new Map();
 
-      mapView = new cdb.geo.MapView({
+      mapView = new MapView({
         el: container,
         map: map
       });
 
-      model = new cdb.geo.ui.InfowindowModel({
+      model = new InfowindowModel({
         fields: [
           { value: 'Loading content...', index: null, title: null, type: 'loading'}
         ]
       });
 
-      view = new cdb.geo.ui.Infowindow({
+      view = new Infowindow({
         model: model,
         mapView: mapView
       });
@@ -408,14 +252,14 @@ describe("cdb.geo.ui.infowindow", function() {
 
       var container = $('<div>').css('height', '200px');
 
-      map = new cdb.geo.Map();
+      map = new Map();
 
-      mapView = new cdb.geo.MapView({
+      mapView = new MapView({
         el: container,
         map: map
       });
 
-      model = new cdb.geo.ui.InfowindowModel({
+      model = new InfowindowModel({
         template: '<div>{{ test1 }}</div>',
         fields: [
           { title: 'test1', position: 1, value: "x" },
@@ -423,7 +267,7 @@ describe("cdb.geo.ui.infowindow", function() {
         ]
       });
 
-      view = new cdb.geo.ui.Infowindow({
+      view = new Infowindow({
         model: model,
         mapView: mapView
       });
@@ -447,7 +291,7 @@ describe("cdb.geo.ui.infowindow", function() {
         }
       });
 
-      var new_view = new cdb.geo.ui.Infowindow({
+      var new_view = new Infowindow({
         model: model,
         mapView: mapView
       });
@@ -510,20 +354,20 @@ describe("cdb.geo.ui.infowindow", function() {
         { title: 'test2', position: 2, value: "b"}
       ];
 
-      map = new cdb.geo.Map();
+      map = new Map();
 
-      mapView = new cdb.geo.MapView({
+      mapView = new MapView({
         el: container,
         map: map
       });
 
-      model = new cdb.geo.ui.InfowindowModel({
+      model = new InfowindowModel({
         content: {
         fields: fields
         }
       });
 
-      view = new cdb.geo.ui.Infowindow({
+      view = new Infowindow({
         model: model,
         mapView: mapView
       });
@@ -573,5 +417,4 @@ describe("cdb.geo.ui.infowindow", function() {
     });
 
   });
-
 });

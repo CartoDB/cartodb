@@ -86,6 +86,23 @@ module.exports = function() {
 
       expect(cdb.geo.Geometry).toEqual(jasmine.any(Function));
       expect(cdb.geo.Geometries).toEqual(jasmine.any(Function));
+
+      expect(cdb.geo.MapLayer).toEqual(jasmine.any(Function));
+      expect(cdb.geo.TileLayer).toEqual(jasmine.any(Function));
+      expect(cdb.geo.GMapsBaseLayer).toEqual(jasmine.any(Function));
+      expect(cdb.geo.WMSLayer).toEqual(jasmine.any(Function));
+      expect(cdb.geo.PlainLayer).toEqual(jasmine.any(Function));
+      expect(cdb.geo.TorqueLayer).toEqual(jasmine.any(Function));
+      expect(cdb.geo.CartoDBLayer).toEqual(jasmine.any(Function));
+      expect(cdb.geo.CartoDBNamedMapLayer).toEqual(jasmine.any(Function));
+      expect(cdb.geo.Layers).toEqual(jasmine.any(Function));
+      expect(cdb.geo.CartoDBGroupLayer).toEqual(jasmine.any(Function));
+
+      expect(cdb.geo.ui.InfowindowModel).toEqual(jasmine.any(Function));
+      expect(cdb.geo.ui.Infowindow).toEqual(jasmine.any(Function));
+
+      expect(cdb.geo.Map).toEqual(jasmine.any(Function));
+      expect(cdb.geo.MapView).toEqual(jasmine.any(Function));
     });
   });
 };

@@ -27,7 +27,7 @@ cdb.geo.ui.Widget.List.ItemView = cdb.core.View.extend({
               '</dl>'+
             '<% } else if (itemsCount === 2) { %>'+
               '<dl class="Widget-textSmaller Widget-textSmaller--noEllip u-tSpace">'+
-                '<dd class="Widget-textSmaller--bold Widget-textSmaller--dark u-rSpace"><%- items[1][1] %> </dd>'+
+                '<dd class="Widget-textSmaller--bold Widget-textSmaller--dark u-rSpace"><%- items[1][1] %></dd>'+
                 '<dt><%- items[1][0] %></dt>'+
               '</dl>'+
             '<% } %>'+
@@ -58,7 +58,7 @@ cdb.geo.ui.Widget.List.ItemView = cdb.core.View.extend({
 
     // If there is no cartodb_id defined, click event should
     // be disabled
-    this[ hasCDBId ? 'delegateEvents' : 'undelegateEvents' ]();
+    this[ hasInteractivity ? 'delegateEvents' : 'undelegateEvents' ]();
     return this;
   },
 

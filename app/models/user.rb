@@ -1184,7 +1184,7 @@ class User < Sequel::Model
       type: CartoDB::Visualization::Member::TYPE_DERIVED,
       exclude_shared: false,
       exclude_raster: false
-      })
+    })
   end
 
   # Get user owned visualizations

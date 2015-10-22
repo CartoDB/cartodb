@@ -11,6 +11,11 @@ require('json2'); // TODO polyfills window.JSON, still necessary with modern bro
 cdb.$ = require('jquery-proxy').get();
 cdb.Backbone = require('backbone-proxy').set(require('backbone')).get();
 
+cdb.geo = {}
+cdb.geo.geocoder = {};
+cdb.geo.geocoder.NOKIA = require('./geo/geocoder/nokia-geocoder');
+cdb.geo.geocoder.YAHOO = require('./geo/geocoder/yahoo-geocoder');
+
 // These must be set after the proxied requires:
 cdb.Profiler = require('cdb.core.profiler');
 cdb.core.sanitize = require('./core/sanitize')

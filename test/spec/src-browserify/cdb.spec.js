@@ -84,4 +84,11 @@ describe('cdb', function() {
   it('should have a core.util', function() {
     expect(cdb.core.util).toBeDefined();
   });
+
+  it('should have a cdb.geo object', function() {
+    expect(this.cdb.geo).toEqual(jasmine.any(Object));
+    expect(this.cdb.geo.geocoder).toEqual(jasmine.any(Object));
+    expect(this.cdb.geo.geocoder.YAHOO).toEqual(jasmine.any(Object));
+    expect(this.cdb.geo.geocoder.NOKIA).toEqual(jasmine.any(Object));
+  });
 });

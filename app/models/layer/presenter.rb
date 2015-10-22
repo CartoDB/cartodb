@@ -3,7 +3,8 @@ require 'json'
 require 'ejs'
 
 module CartoDB
-  module Layer
+  # Natural naming would be "Layer", but it collides with Layer class
+  module LayerModule
     class Presenter
       EMPTY_CSS = '#dummy{}'
 

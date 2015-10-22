@@ -7,6 +7,15 @@ require_dependency 'static_maps_url_helper'
 
 module Carto
   module Api
+    class VisualizationLoadError < StandardError
+      attr_reader :message, :status
+
+      def initialize(message, status)
+        @message = message
+        @status = status
+      end
+    end
+
     class VisualizationsController < ::Api::ApplicationController
       include VisualizationSearcher
       include PagedSearcher
@@ -23,6 +32,8 @@ module Carto
       before_filter :load_by_name_or_id, only: [:vizjson2]
       before_filter :load_visualization, only: [:likes_count, :likes_list, :is_liked, :show, :stats, :list_watching,
                                                 :static_map]
+
+      rescue_from Carto::Api::VisualizationLoadError, with: :visualization_load_error
 
       def show
         render_jsonp(to_json(@visualization))
@@ -145,11 +156,30 @@ module Carto
                                                             }
                                                          .first
 
-        return render(text: 'Visualization does not exist', status: 404) if @visualization.nil?
-        return render(text: 'Visualization not viewable', status: 403) if !@visualization.is_viewable_by_user?(current_viewer)
-        subdomain = CartoDB.extract_subdomain(request)
-        # INFO: subdomain checking is not part of previous permission checking (and should not be), so we add an additional check here: subdomain must match visualization username.
-        return render(text: 'Visualization of that user does not exist', status: 404) if subdomain && !subdomain.empty? && subdomain != @visualization.user.username && !@visualization.has_read_permission?(current_viewer)
+        if @visualization.nil?
+          raise Carto::Api::VisualizationLoadError.new('Visualization does not exist', 404)
+        end
+        if !@visualization.is_viewable_by_user?(current_viewer)
+          raise Carto::Api::VisualizationLoadError.new('Visualization not viewable', 403)
+        end
+        unless request_username_matches_visualization_owner
+          raise Carto::Api::VisualizationLoadError.new('Visualization of that user does not exist', 404)
+        end
+      end
+
+      # This avoids crossing usernames and visualizations.
+      # Remember that the url of a visualization shared with a user contains that user's username instead of owner's
+      def request_username_matches_visualization_owner
+        # Support both for username at `/u/username` and subdomain, prioritizing first
+        username = [CartoDB.username_from_request(request), CartoDB.subdomain_from_request(request)].compact.first
+        # URL must always contain username, either at subdomain or at path.
+        # Domainless url documentation: http://cartodb.readthedocs.org/en/latest/configuration.html#domainless-urls
+        return false unless username.present?
+
+        # Either user is owner or is current and has permission
+        # R permission check is based on current_viewer because current_user assumes you're viewing your subdomain
+        username == @visualization.user.username ||
+          (current_user && username == current_user.username && @visualization.has_read_permission?(current_viewer))
       end
 
       def id_and_schema_from_params
@@ -176,6 +206,13 @@ module Carto
       def to_hash(visualization)
         # TODO: previous controller uses public_fields_only option which I don't know if is still used
         VisualizationPresenter.new(visualization, current_viewer, self).to_poro
+      end
+
+      def visualization_load_error(e)
+        respond_to do |format|
+          format.html { render text: e.message, status: e.status }
+          format.json { render json: { errors: e.message }, status: e.status }
+        end
       end
 
     end

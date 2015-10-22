@@ -169,7 +169,7 @@ class Layer < Sequel::Model
   end
 
   def get_presenter(options, configuration)
-    CartoDB::Layer::Presenter.new(self, options, configuration)
+    CartoDB::LayerModule::Presenter.new(self, options, configuration)
   end
 
   def set_option(key, value)

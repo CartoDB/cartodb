@@ -1,13 +1,13 @@
 require_relative '../spec_helper'
 
 require_relative '../../app/models/visualization/collection'
+require_relative '../../app/models/organization.rb'
 require_relative 'organization_shared_examples'
 
 include CartoDB
 
 describe 'refactored behaviour' do
   it_behaves_like 'organization models' do
-
     before(:each) do
       @the_organization = ::Organization.where(id: @organization.id).first
     end
@@ -25,7 +25,6 @@ describe 'refactored behaviour' do
     def get_organization
       @the_organization
     end
-
   end
 end
 
@@ -51,7 +50,7 @@ describe Organization do
     end
 
     it 'Destroys users and owner as well' do
-      pending "Adapt to User-Mover when ready"
+
       ::User.any_instance.stubs(:create_in_central).returns(true)
       ::User.any_instance.stubs(:update_in_central).returns(true)
 
@@ -67,6 +66,8 @@ describe Organization do
       user.save
       user.reload
       organization.reload
+
+      organization.users.count.should eq 2
 
       organization.destroy_cascade
       Organization.where(id: organization.id).first.should be nil
@@ -152,7 +153,6 @@ describe Organization do
   describe '#org_members_and_owner_removal' do
 
     it 'Tests removing a normal member from the organization' do
-      pending "Adapt to User-Mover when ready"
       ::User.any_instance.stubs(:create_in_central).returns(true)
       ::User.any_instance.stubs(:update_in_central).returns(true)
 
@@ -167,11 +167,11 @@ describe Organization do
       organization.reload
       owner.reload
 
-      member1 = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
+      member1 = create_user(:quota_in_bytes => 524288000, :table_quota => 500, organization_id: organization.id)
       member1.reload
       organization.reload
 
-      member2 = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
+      member2 = create_user(:quota_in_bytes => 524288000, :table_quota => 500, organization_id: organization.id)
       member2.reload
 
       organization.users.count.should eq 3
@@ -365,7 +365,7 @@ describe Organization do
         user3.destroy
         user2.destroy
         user1.destroy
-      rescue 
+      rescue
         # TODO: Finish deletion of organization users and remove this so users are properly deleted or test fails
       end
     end

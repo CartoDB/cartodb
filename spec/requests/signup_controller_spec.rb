@@ -113,7 +113,7 @@ describe SignupController do
 
     it 'triggers a NewUser job with form parameters and default quota and requiring validation email' do
       ::Resque.expects(:enqueue).with(::Resque::UserJobs::Signup::NewUser,
-        instance_of(String), instance_of(String), instance_of(FalseClass)).returns(true)
+                                      instance_of(String), instance_of(String), instance_of(FalseClass)).returns(true)
 
       username = 'testusername'
       email = "testemail@#{@organization.whitelisted_email_domains[0]}"

@@ -181,7 +181,7 @@ module CartoDB
             end
 
             user_model = ::User.find(username: @target_username)
-            user_model.monitor_user_notification
+            user_model.db_service.monitor_user_notification
             sleep 5
             user_model.db_service.configure_database
 
@@ -378,7 +378,7 @@ module CartoDB
       end
 
       def set_user_search_path(user, search_path_prefix)
-        search_path = CartoDB::User::DBService.build_search_path(search_path_prefix)
+        search_path = CartoDB::UserModule::DBService.build_search_path(search_path_prefix)
         superuser_pg_conn.query("ALTER USER \"#{user}\" SET search_path= #{search_path}")
       end
 

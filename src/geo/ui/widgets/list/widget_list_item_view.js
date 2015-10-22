@@ -45,13 +45,13 @@ cdb.geo.ui.Widget.List.ItemView = cdb.core.View.extend({
   render: function() {
     var template = _.template(this._TEMPLATE);
     var data = this.model.toJSON();
-    var hasCDBId = this._hasCDBId(data);
+    var hasInteractivity = this._hasInteractivity(data);
     var items = this._sanitizeData(data);
 
     this.$el.html(
       template({
         items: items,
-        isClickable: hasCDBId,
+        isClickable: hasInteractivity,
         itemsCount: _.size(items)
       })
     );
@@ -72,18 +72,19 @@ cdb.geo.ui.Widget.List.ItemView = cdb.core.View.extend({
 
     // Convert to pair items and check if there is a column title
     var arr = [];
+    var i = 0;
     var columnTitles = this.viewModel.get('columns_title');
 
     _.each(data, function(value, key) {
-      var pos = arr.length;
-      var title = columnTitles[pos] || key;
+      var title = columnTitles[i] || key;
       arr.push([ title, value ]);
+      ++i;
     });
 
     return arr;
   },
 
-  _hasCDBId: function(data) {
+  _hasInteractivity: function(data) {
     return !_.isEmpty(
       _.filter(data, function(value, key){
         return key === 'cartodb_id'

@@ -1,3 +1,7 @@
+.Widget-content {
+  position: relative;
+}
+
 .Tooltip {
   top: 0;
   left: 0;
@@ -32,6 +36,20 @@
   fill-opacity: 0;
   stroke: #3AA9E3;
   shape-rendering: crispEdges;
+}
+
+.Minibar {
+  fill: red;
+  transition: fill 200ms ease;
+  shape-rendering: crispEdges;
+}
+.Bar.is-highlighted {
+  fill: #5BA45E;
+  opacity: 1;
+}
+.Bar.is-selected {
+  fill: #DDD;
+  opacity: .7;
 }
 
 .Bar {

@@ -4,12 +4,7 @@
  *
  */
 
-cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
-
-  events: {
-    'click .js-clear': '_reset',
-    'click .js-zoom': '_zoom'
-  },
+cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
 
   defaults: {
     chartHeight: 48,
@@ -20,69 +15,15 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
     transitionType: 'elastic'
   },
 
-  _TEMPLATE: ' ' +
-   '<div class="Widget-header">'+
-      '<div class="Widget-title Widget-contentSpaced">'+
-        '<h3 class="Widget-textBig"><%= title %></h3>'+
-      '</div>'+
-     '<dl class="Widget-info Widget-textSmaller Widget-textSmaller--upper">'+
-       '<dt class="Widget-infoItem js-null">0 NULL ROWS</dt>'+
-       '<dt class="Widget-infoItem js-min">0 MIN</dt>'+
-       '<dt class="Widget-infoItem js-avg">0 AVG</dt>'+
-       '<dt class="Widget-infoItem js-max">0 MAX</dt>'+
-     '</dl>'+
-   '</div>'+
-   '<div class="Widget-content js-content">'+
-   '  <div class="Widget-filter Widget-contentSpaced js-filter">'+
-   '    <p class="Widget-textSmaller Widget-textSmaller--bold Widget-textSmaller--upper js-val"></p>'+
-   '    <div class="Widget-filterButtons">'+
-   '      <button class="Widget-link Widget-filterButton js-zoom">zoom</button>'+
-   '      <button class="Widget-link Widget-filterButton js-clear">clear</button>'+
-   '    </div>'+
-   '  </div>'+
-   '  <svg class="Widget-chart js-chart"></svg>',
+  initialize: function() {
 
-  _PLACEHOLDER: ' ' +
-    '<ul class="Widget-list Widget-list--withBorders">' +
-      '<li class="Widget-listItem Widget-listItem--withBorders Widget-listItem--fake"></li>' +
-      '<li class="Widget-listItem Widget-listItem--withBorders Widget-listItem--fake"></li>' +
-      '<li class="Widget-listItem Widget-listItem--withBorders Widget-listItem--fake"></li>' +
-      '<li class="Widget-listItem Widget-listItem--withBorders Widget-listItem--fake"></li>' +
-    '</ul>',
-
-  render: function() {
-
-    this.clearSubViews();
-
-    // TODO: move this
-    this.options.unit = 'unit';
-
-    var template = _.template(this._TEMPLATE);
-    var data = this.dataModel.getData();
-    var isDataEmpty = _.isEmpty(data) || _.size(data) === 0;
-    this.$el.html(
-      template({
-        title: this.viewModel.get('title'),
-        itemsCount: !isDataEmpty ? data.length : '-'
-      })
-    );
-
-    if (isDataEmpty) {
-      this._addPlaceholder();
-    } else {
-      this._initViews();
-    }
-
-    return this;
-  },
-
-  _initViews: function() {
-
-    _.bindAll(this, '_selectBars', '_zoom', '_adjustBrushHandles', '_brushed', '_brushstart', '_reset', '_onMouseMove', '_onMouseEnter', '_onMouseOut');
+    _.bindAll(this, '_selectBars', '_adjustBrushHandles', '_onBrushMove', '_onBrushStart', '_onMouseMove', '_onMouseEnter', '_onMouseOut');
 
     this._setupModel();
-    this._getData();
     this._setupDimensions();
+  },
+
+  render: function() {
     this._generateChart();
 
     this._generateHorizontalLines();
@@ -95,69 +36,84 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
     this._setupBrush();
     this._generateXAxis();
 
-    this._updateStats();
+    return this;
   },
 
-  _onChangeTotal: function() {
-    this._animateValue('.js-val', 'total', '');
+  _removeBars: function() {
+    d3.selectAll('.Bar').remove();
   },
 
-  _onChangeMax: function() {
-    this._animateValue('.js-max', 'max', 'MAX');
+  _removeBrush: function() {
+    this.brush
+    .clear()
+    .event(d3.select('.Brush'));
+    this.chart.classed('is-selectable', false);
   },
 
-  _onChangeMin: function() {
-    this._animateValue('.js-min', 'min', 'MIN');
+  reset: function() {
+    this._removeBrush();
+    this.model.set({ a: 0, b: this.model.get('data').length });
   },
 
-  _onChangeAvg: function() {
-    this._animateValue('.js-avg', 'avg', 'AVG');
+  _generateVerticalLines: function() {
+    var range = d3.range(0, this.chartWidth + this.chartWidth / 4, this.chartWidth / 4);
+
+    var lines = this.chart.select('.Lines');
+
+    lines.append('g')
+    .attr('class', 'y')
+    .selectAll('.x')
+    .data(range.slice(1, range.length - 1))
+    .enter().append('svg:line')
+    .attr('y1', 0)
+    .attr('x1', function(d) { return d; })
+    .attr('y2', this.chartHeight)
+    .attr('x2', function(d) { return d; });
   },
 
-  _animateValue: function(className, what, unit) {
-    var self = this;
-    var format = d3.format("0,000");
+  _generateHorizontalLines: function() {
+    var range = d3.range(0, this.chartHeight + this.chartHeight / 2, this.chartHeight / 2);
 
-    var from = this.viewModel.previous(what) || 0;
-    var to = this.viewModel.get(what);
+    var lines = this.chart.append('g')
+    .attr('class', 'Lines');
 
-    $(className).prop('counter', from).stop().animate({ counter: to }, {
-      duration: 500,
-      easing: 'swing',
-      step: function (i) {
-        $(this).text(format(Math.floor(i)) + ' ' + unit);
-      }
-    });
+    lines.append('g')
+    .attr('class', 'y')
+    .selectAll('.y')
+    .data(range)
+    .enter().append('svg:line')
+    .attr('class', 'y')
+    .attr('x1', 0)
+    .attr('y1', function(d) { return d; })
+    .attr('x2', this.chartWidth)
+    .attr('y2', function(d) { return d; });
+
+    this.bottomLine = lines
+    .append('line')
+    .attr('class', 'l_bottom')
+    .attr('x1', 0)
+    .attr('y1', this.chartHeight)
+    .attr('x2', this.chartWidth - 1)
+    .attr('y2', this.chartHeight);
   },
 
-  _formatNumber: function(value, unit) {
-    var format = d3.format("0,000");
-    return format(value + unit ? ' ' + unit : '');
-  },
-
-  _updateStats: function() {
-    var data = this.viewModel.get('data');
-    var max = d3.max(data);
-    var avg = Math.round(d3.mean(data));
-    var min = d3.min(data);
-
-    this.viewModel.set({ min: min, max: max, avg: avg });
+  _generateTooltip: function() {
+    this.tooltip = d3.select(this.$(".js-content")[0]).append('div')	
+    .attr('class', 'Tooltip');
   },
 
   _setupModel: function() {
-    this.viewModel.bind('change:total', this._onChangeTotal, this);
-    this.viewModel.bind('change:max',   this._onChangeMax, this);
-    this.viewModel.bind('change:min',   this._onChangeMin, this);
-    this.viewModel.bind('change:avg',   this._onChangeAvg, this);
+    this.model = new cdb.core.Model({ data: this.options.data });
+    this.model.bind('change:a change:b', this._onChangeRange, this);
   },
 
   _setupDimensions: function() {
-    var data = this.viewModel.get('data');
+    var data = this.model.get('data');
 
     this.margin = { top: 0, right: 10, bottom: 20, left: 10 };
 
-    this.canvasWidth  = this.$('.js-chart').width();
-    this.canvasHeight = this.defaults.chartHeight + this.margin.top + this.margin.bottom;
+    this.canvasWidth  = this.options.width;
+    this.canvasHeight = this.options.height;
 
     this.chartWidth  = this.canvasWidth - this.margin.left - this.margin.right;
     this.chartHeight = this.defaults.chartHeight;
@@ -168,7 +124,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   },
 
   _setupScales: function() {
-    var data = this.viewModel.get('data');
+    var data = this.model.get('data');
     this.xScale = d3.scale.linear().domain([0, 100]).range([0, this.chartWidth]);
     this.yScale = d3.scale.linear().domain([0, d3.max(data, function(d) { return d; } )]).range([this.chartHeight, 0]);
 
@@ -177,28 +133,25 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   },
 
   _calcBarWidth: function() {
-    this.barWidth = this.chartWidth / this.viewModel.get('data').length;
+    this.barWidth = this.chartWidth / this.model.get('data').length;
   },
 
   _generateChart: function() {
-    this.chart = d3.select(this.$el.find('.js-chart')[0])
-    .attr('width',  this.canvasWidth)
-    .attr('height', this.canvasHeight)
-    .append('g')
-    .attr('class', 'canvas')
-    .attr('transform', 'translate(10, 0)');
+    this.chart = d3.select(this.options.el[0]).selectAll('.Canvas').append('g').attr('class', 'Chart');
   },
 
-  _brushstart: function() {
+  _onBrushStart: function() {
     $(".js-filter").animate({ opacity: 1 }, 250);
     this.chart.classed('is-selectable', true);
   },
 
-  _selectBars: function(callback) {
+  _selectBars: function() {
     var self = this;
     var extent = this.brush.extent();
     var lo = extent[0];
     var hi = extent[1];
+
+    this.model.set({ a: this._getLoBarIndex(), b: this._getHiBarIndex() });
 
     this.chart.selectAll('.Bar').classed('is-selected', function(d, i) {
       var a = Math.floor(i * self.barWidth);
@@ -206,35 +159,12 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
       var LO = Math.floor(self.xScale(lo));
       var HI = Math.floor(self.xScale(hi));
       var isIn = (a > LO && a < HI) || (b > LO && b < HI) || (a <= LO && b >= HI);
-
-      if (isIn) {
-        if (callback) {
-          callback(d, i);
-        }
-      }
-
-      return  !isIn;
+      return !isIn;
     });
   },
 
-  _brushed: function() {
-    var sum = 0;
-
-    this._selectBars(function(d, i) {
-      sum += d;
-    });
-
-    var data = this.viewModel.get('data');
-    var a = this.viewModel.get('a');
-    var b = this.viewModel.get('b');
-
-    var slice = data.slice(a, b);
-
-    var max = d3.max(slice);
-    var avg = Math.round(d3.mean(slice));
-    var min = d3.min(slice);
-
-    this.viewModel.set({ min: min, max: max, avg: avg, total: sum });
+  _onBrushMove: function() {
+    this._selectBars();
     this._adjustBrushHandles();
   },
 
@@ -251,7 +181,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   _onMouseMove: function(d) {
     var x = d3.event.offsetX - this.margin.left;
     var a =  Math.ceil(x / this.barWidth);
-    var data = this.viewModel.get('data');
+    var data = this.model.get('data');
 
     var $tooltip = this.$(".Tooltip");
     var format = d3.format("0,000");
@@ -304,8 +234,8 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
     var xScale = this.xScale;
     var brush = this.brush = d3.svg.brush().x(this.xScale);
 
-    function brushend() {
-      var data = self.viewModel.get('data');
+    function onBrushEnd() {
+      var data = self.model.get('data');
       var a, b;
 
       if (brush.empty()) {
@@ -325,7 +255,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
         }
 
         self._selectRange(this, a, b);
-        self.viewModel.set({ a: loBarIndex, b: hiBarIndex });
+        self.model.set({ a: loBarIndex, b: hiBarIndex });
         self._adjustBrushHandles();
         self._selectBars();
       }
@@ -334,17 +264,17 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
         var barIndex = self._getBarIndex();
         a = (barIndex - 1) * (100 / data.length);
         b = (barIndex) * (100 / data.length);
-        self.viewModel.set({ a: barIndex - 1, b: barIndex });
+        self.model.set({ a: barIndex - 1, b: barIndex });
         self._selectRange(this, a, b);
       }
     }
 
-    var data = this.viewModel.get('data');
+    var data = this.model.get('data');
 
     this.brush
-    .on('brushstart', this._brushstart)
-    .on('brush', this._brushed)
-    .on('brushend', brushend);
+    .on('brushstart', this._onBrushStart)
+    .on('brush', this._onBrushMove)
+    .on('brushend', onBrushEnd);
 
     this.chart.append('g')
     .attr('class', 'Brush')
@@ -404,7 +334,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   },
 
   _generateHandles: function() {
-    this.chart.append('g').attr('class', 'Handles')
+    this.chart.append('g').attr('class', 'Handles');
     this.leftHandleLine  = this._generateHandleLine();
     this.rightHandleLine = this._generateHandleLine();
 
@@ -417,7 +347,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   },
 
   _generateXAxis: function() {
-    var data = this.viewModel.get('data');
+    var data = this.model.get('data');
 
     var format = d3.format('0,000');
 
@@ -450,60 +380,14 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
     .call(xAxis);
   },
 
-  _generateVerticalLines: function() {
-    var range = d3.range(0, this.chartWidth + this.chartWidth / 4, this.chartWidth / 4);
-
-    var lines = this.chart.select('.Lines');
-
-    lines.append('g')
-    .attr('class', 'y')
-    .selectAll('.x')
-    .data(range.slice(1, range.length - 1))
-    .enter().append('svg:line')
-    .attr('y1', 0)
-    .attr('x1', function(d) { return d; })
-    .attr('y2', this.chartHeight)
-    .attr('x2', function(d) { return d; });
-  },
-
-  _generateHorizontalLines: function() {
-    var range = d3.range(0, this.chartHeight + this.chartHeight / 2, this.chartHeight / 2);
-
-    var lines = this.chart.append('g')
-    .attr('class', 'Lines');
-
-    lines.append('g')
-    .attr('class', 'y')
-    .selectAll('.y')
-    .data(range)
-    .enter().append('svg:line')
-    .attr('class', 'y')
-    .attr('x1', 0)
-    .attr('y1', function(d) { return d; })
-    .attr('x2', this.chartWidth)
-    .attr('y2', function(d) { return d; });
-
-    this.bottomLine = lines
-    .append('line')
-    .attr('class', 'l_bottom')
-    .attr('x1', 0)
-    .attr('y1', this.chartHeight)
-    .attr('x2', this.chartWidth - 1)
-    .attr('y2', this.chartHeight);
-  },
-
-  _generateTooltip: function() {
-    this.tooltip = d3.select(this.$(".js-content")[0]).append('div')	
-    .attr('class', 'Tooltip');
-  },
 
   _zoom: function() {
     this._removeBrush();
     this._removeBars();
     this._removeHandles();
 
-    var data = this.viewModel.get('data');
-    this.viewModel.set('data', data.slice(this.viewModel.get('a'), this.viewModel.get('b')));
+    var data = this.model.get('data');
+    this.model.set('data', data.slice(this.model.get('a'), this.model.get('b')));
 
     this._setupDimensions();
     this._generateBars();
@@ -517,7 +401,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
 
   _generateMiniBars: function() {
     var self = this;
-    var data = this.viewModel.get('data');
+    var data = this.model.get('data');
 
     var height = self.miniHeight;
 
@@ -526,7 +410,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
     var bars = this.chart.append('g')
     .attr('class', 'Minibars')
     .selectAll('.Minibar')
-    .data(data)
+    .data(data);
 
     bars
     .enter()
@@ -556,7 +440,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
 
   _generateBars: function() {
     var self = this;
-    var data = this.viewModel.get('data');
+    var data = this.model.get('data');
 
     this._calcBarWidth();
 
@@ -591,35 +475,194 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
     });
   },
 
-  _getData: function() {
-    /*var data = d3.range(0, 300, 10).map(d3.random.bates(5));
+  _onChangeRange: function() {
+    this.trigger('range_updated', this.model.get('a'), this.model.get('b'));
+  },
 
-    data = _.map(data, function(d) {
-      return Math.round(d  * 100);
-    });*/
+  _formatNumber: function(value, unit) {
+    var format = d3.format("0,000");
+    return format(value + unit ? ' ' + unit : '');
+  },
 
+});
+
+cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
+
+  defaults: {
+    chartHeight: 48
+  },
+
+  events: {
+    'click .js-clear': '_reset',
+    'click .js-zoom': '_zoom'
+  },
+
+  _TEMPLATE: ' ' +
+   '<div class="Widget-header">'+
+      '<div class="Widget-title Widget-contentSpaced">'+
+        '<h3 class="Widget-textBig"><%= title %></h3>'+
+      '</div>'+
+     '<dl class="Widget-info Widget-textSmaller Widget-textSmaller--upper">'+
+       '<dt class="Widget-infoItem js-null">0 NULL ROWS</dt>'+
+       '<dt class="Widget-infoItem js-min">0 MIN</dt>'+
+       '<dt class="Widget-infoItem js-avg">0 AVG</dt>'+
+       '<dt class="Widget-infoItem js-max">0 MAX</dt>'+
+     '</dl>'+
+   '</div>'+
+   '<div class="Widget-content js-content">'+
+   '  <div class="Widget-filter Widget-contentSpaced js-filter">'+
+   '    <p class="Widget-textSmaller Widget-textSmaller--bold Widget-textSmaller--upper js-val"></p>'+
+   '    <div class="Widget-filterButtons">'+
+   '      <button class="Widget-link Widget-filterButton js-zoom">zoom</button>'+
+   '      <button class="Widget-link Widget-filterButton js-clear">clear</button>'+
+   '    </div>'+
+   '  </div>'+
+   '  <svg class="Widget-chart js-chart"></svg>',
+
+  _PLACEHOLDER: ' ' +
+    '<ul class="Widget-list Widget-list--withBorders">' +
+      '<li class="Widget-listItem Widget-listItem--withBorders Widget-listItem--fake"></li>' +
+      '<li class="Widget-listItem Widget-listItem--withBorders Widget-listItem--fake"></li>' +
+      '<li class="Widget-listItem Widget-listItem--withBorders Widget-listItem--fake"></li>' +
+      '<li class="Widget-listItem Widget-listItem--withBorders Widget-listItem--fake"></li>' +
+    '</ul>',
+
+  render: function() {
+
+    this.clearSubViews();
+
+    // TODO: move this
+    this.options.unit = 'unit';
+
+    var template = _.template(this._TEMPLATE);
+    var data = this.dataModel.getData();
+    var isDataEmpty = _.isEmpty(data) || _.size(data) === 0;
+
+    this.$el.html(
+      template({
+        title: this.viewModel.get('title'),
+        itemsCount: !isDataEmpty ? data.length : '-'
+      })
+    );
+
+    if (isDataEmpty) {
+      this._addPlaceholder();
+    } else {
+      this._setupBindings();
+      this._initViews();
+    }
+
+    return this;
+  },
+
+  _generateData: function() {
     var data = _.map(d3.range(Math.round(Math.random() * 20) + 2), function(d) {
       return Math.round(Math.random() * 1000);
-      //return Math.round(Math.random()) ? 100 : Math.round(Math.random()) ? 0:  50;
     });
 
-    this.viewModel.set('data', data);
+    this.dataModel.set('data', data);
   },
 
-  _removeBars: function() {
-    d3.selectAll('.Bar').remove();
+  _setupBindings: function() {
+    this.viewModel.bind('change:total', this._onChangeTotal, this);
+    this.viewModel.bind('change:max',   this._onChangeMax, this);
+    this.viewModel.bind('change:min',   this._onChangeMin, this);
+    this.viewModel.bind('change:avg',   this._onChangeAvg, this);
   },
 
-  _removeBrush: function() {
-    this.brush
-    .clear()
-    .event(d3.select('.Brush'));
-    this.chart.classed('is-selectable', false);
+  _setupDimensions: function() {
+    this.margin = { top: 0, right: 10, bottom: 20, left: 10 };
+
+    this.canvasWidth  = this.$('.js-chart').width();
+    this.canvasHeight = this.defaults.chartHeight + this.margin.top + this.margin.bottom;
+  },
+
+  _initViews: function() {
+    this._generateData();
+    this._setupDimensions();
+    this._generateCanvas();
+
+    this.chart = new cdb.geo.ui.Widget.Histogram.Chart(({
+      el: this.$('.js-chart'),
+      width: this.canvasWidth,
+      height: this.canvasHeight,
+      data: this.dataModel.get('data')
+    }));
+
+    this.chart.bind('range_updated', this._onRangeUpdated, this);
+
+    this.chart.render();
+  },
+
+  _onRangeUpdated: function(a, b) {
+    this.viewModel.set({ a: a, b: b });
+    this._updateStats();
+  },
+
+  _onChangeTotal: function() {
+    this._animateValue('.js-val', 'total', '');
+  },
+
+  _onChangeMax: function() {
+    this._animateValue('.js-max', 'max', 'MAX');
+  },
+
+  _onChangeMin: function() {
+    this._animateValue('.js-min', 'min', 'MIN');
+  },
+
+  _onChangeAvg: function() {
+    this._animateValue('.js-avg', 'avg', 'AVG');
+  },
+
+  _animateValue: function(className, what, unit) {
+    var self = this;
+    var format = d3.format("0,000");
+
+    var from = this.viewModel.previous(what) || 0;
+    var to = this.viewModel.get(what);
+
+    $(className).prop('counter', from).stop().animate({ counter: to }, {
+      duration: 500,
+      easing: 'swing',
+      step: function (i) {
+        $(this).text(format(Math.floor(i)) + ' ' + unit);
+      }
+    });
+  },
+
+  _getData: function() {
+    var data = this.dataModel.get('data');
+    return data.slice(this.viewModel.get('a'), this.viewModel.get('b'));
+  },
+
+  _updateStats: function() {
+    var data = this._getData();
+    var sum = _.reduce(data, function(t, j) {
+      return j + t;
+    });
+
+    var max = d3.max(data);
+    var avg = Math.round(d3.mean(data));
+    var min = d3.min(data);
+
+    this.viewModel.set({ total: sum, min: min, max: max, avg: avg });
+  },
+
+  _zoom: function() {
+    //console.log('zoom');
   },
 
   _reset: function() {
-    this._removeBrush();
-    this._updateStats();
-  }
+    this.chart.reset();
+  },
 
+  _generateCanvas: function() {
+    this.canvas = d3.select(this.$el.find('.js-chart')[0])
+    .attr('width',  this.canvasWidth)
+    .attr('height', this.canvasHeight)
+    .append('g')
+    .attr('class', 'Canvas')
+    .attr('transform', 'translate(10, 0)');
+  }
 });

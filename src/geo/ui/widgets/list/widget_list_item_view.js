@@ -11,7 +11,7 @@ cdb.geo.ui.Widget.List.ItemView = cdb.core.View.extend({
     '<% if (isClickable) { %>'+
       '<button type="button" class="Widget-listItemInner Widget-listButton Widget-listButton--withBorder js-button">'+
     '<% } else { %>'+
-      '<div class="Widget-listItemInner">'+
+      '<div class="Widget-listItemInner Widget-listItemInner--withBorders">'+
     '<% } %>'+
       '<div class="Widget-contentSpaced Widget-contentSpaced--topAligned Widget-contentSpaced--start">'+
         '<em class="Widget-dot Widget-listDot"></em>'+

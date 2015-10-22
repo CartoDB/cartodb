@@ -72,11 +72,11 @@
     @include background-gradient($commonBkg, rgba($commonBkg, 0));
     background-color: transparent;
   }
-  .Widget-listItem--withBorders {
+  .Widget-listItemInner--withBorders {
     border-bottom: 1px solid $elementBorder;
-    &:last-child {
-      border-bottom: none;
-    }
+  }
+  .Widget-listItem--fake {
+    border-color: $loadingBkg;
   }
   .Widget-listItem--fake:after,
   .Widget-listItem--fake:before {

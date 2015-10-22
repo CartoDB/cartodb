@@ -57,6 +57,7 @@
   display: block;
 }
 .Widget-listItemInner {
+  margin: 0 $sMargin-section;
   padding: ($sMargin-element / 2) - 1 0;
 }
 .Widget-listItemInner--withBorders {
@@ -64,12 +65,16 @@
 }
 .Widget-listItem--fake {
   position: relative;
-  height: 35px;
+  height: 40px;
+  margin: 8px $sMargin-section;
+  border-bottom: 1px solid transparent;
 
   &:before,
   &:after {
     display: inline-block;
     position: relative;
+    margin: 0;
+    padding: 0;
     content: '';
   }
   &:before {
@@ -91,6 +96,7 @@
 .Widget-listButton {
   position: relative;
   width: 100%;
+  margin: 0;
   padding: 5px $sMargin-section;
   font-family: 'Open Sans';
   font-weight: $sFontWeight-normal;

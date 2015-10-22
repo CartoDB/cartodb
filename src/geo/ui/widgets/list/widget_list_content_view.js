@@ -22,10 +22,10 @@ cdb.geo.ui.Widget.List.Content = cdb.geo.ui.Widget.Content.extend({
 
   _PLACEHOLDER: ' ' +
     '<ul class="Widget-list Widget-list--withBorders">' +
-      '<li class="Widget-listItem Widget-listItem--withBorders Widget-listItem--fake"></li>' +
-      '<li class="Widget-listItem Widget-listItem--withBorders Widget-listItem--fake"></li>' +
-      '<li class="Widget-listItem Widget-listItem--withBorders Widget-listItem--fake"></li>' +
-      '<li class="Widget-listItem Widget-listItem--withBorders Widget-listItem--fake"></li>' +
+      '<li class="Widget-listItem Widget-listItem--fake"></li>' +
+      '<li class="Widget-listItem Widget-listItem--fake"></li>' +
+      '<li class="Widget-listItem Widget-listItem--fake"></li>' +
+      '<li class="Widget-listItem Widget-listItem--fake"></li>' +
     '</ul>',
 
   render: function() {

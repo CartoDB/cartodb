@@ -151,7 +151,8 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
     sql_api_protocol: "http",
     extra_params: {},
     cdn_url: null,
-    maxZoom: 28
+    maxZoom: 28,
+    cartocss_version: '2.1.0'
   },
 
   activate: function() {
@@ -180,9 +181,63 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
     }
   },
 
-  /*isEqual: function() {
-    return false;
-  }*/
+  hasInteraction: function() {
+    return this.isVisible() && (this.containInfowindow() || this.containTooltip());
+  },
+
+  isVisible: function() {
+    return this.get('visible');
+  },
+
+  getTooltipFieldNames: function() {
+    var names = [];
+    var tooltip = this.getTooltipData();
+    if (tooltip && tooltip.fields) {
+      names = _.pluck(tooltip.fields, 'name');
+    }
+    return names;
+  },
+
+  getTooltipData: function() {
+    var tooltip = this.get('tooltip');
+    if (tooltip && tooltip.fields && tooltip.fields.length) {
+      return tooltip;
+    }
+    return null;
+  },
+
+  containInfowindow: function() {
+    return !!this.getTooltipData();
+  },
+
+  getInfowindowFieldNames: function() {
+    var names = [];
+    var infowindow = this.getInfowindowData();
+    if (infowindow  && infowindow.fields) {
+      names = _.pluck(infowindow.fields, 'name');
+    }
+    return names;
+  },
+
+  getInfowindowData: function() {
+    var infowindow = this.get('infowindow');
+    if (infowindow && infowindow.fields && infowindow.fields.length) {
+      return infowindow;
+    }
+    return null;
+  },
+
+  containTooltip: function() {
+    return !!this.getInfowindowData();
+  },
+
+  getInteractiveColumnNames: function() {
+    return _.uniq(
+      ['cartodb_id']
+        .concat(this.getInfowindowFieldNames())
+         .concat(this.getTooltipFieldNames())
+    );
+  }
 });
 
 cdb.geo.CartoDBGroupLayer = cdb.geo.MapLayer.extend({
@@ -192,19 +247,67 @@ cdb.geo.CartoDBGroupLayer = cdb.geo.MapLayer.extend({
     type: 'layergroup'
   },
 
-  initialize: function() {
-    this.sublayers = new cdb.geo.Layers();
+  initialize: function(attributes, options) {
+    this.layers = new Backbone.Collection(options.layers);
   },
 
   isEqual: function() {
     return false;
   },
 
-  contains: function(layer) {
-    return layer.get('type') === 'cartodb';
+  getVisibleLayers: function() {
+    return this.layers.filter(function(layer) {
+      return layer.get('visible')
+    });
+  },
+
+  getTileJSONFromTiles: function(layerIndex) {
+    if (!this.get('urls')) {
+      throw 'URLS not fetched yet';
+    }
+
+    // TODO: Is this important?
+    // var subdomains = ['0', '1', '2', '3'];
+
+    // function replaceSubdomain(urls) {
+    //   var urls = urls || [];
+    //   var formattedURLs = [];
+    //   for (var i = 0; i < urls.length; ++i) {
+    //     formattedURLs.push(urls[i].replace('{s}', subdomains[i % subdomains.length]));
+    //   }
+    //   return formattedURLs;
+    // }
+
+    var urls = this.get('urls');
+
+    return {
+      tilejson: '2.0.0',
+      scheme: 'xyz',
+      grids: urls.grids[layerIndex],
+      tiles: urls.tiles,
+      formatter: function(options, data) { return data; }
+    };
+  },
+
+  bindDashboardInstance: function(dashboardInstance) {
+    this.dashboardInstance = dashboardInstance;
+    this.dashboardInstance.bind('change:layergroupid', function(dashboardInstance) {
+      this.set({
+        urls: dashboardInstance.getTiles()
+      });
+    }.bind(this));
+  },
+
+  fetchAttributes: function(layer, featureID, callback) {
+    if (!this.dashboardInstance) {
+      throw 'A dashboard instance has not been attached to this model yet';
+    }
+
+    this.dashboardInstance.fetchAttributes(layer, featureID, callback);
   }
 });
 
+// TODO: This can be removed
 cdb.geo.CartoDBNamedMapLayer = cdb.geo.MapLayer.extend({
   defaults: {
     visible: true,

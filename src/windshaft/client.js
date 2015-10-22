@@ -1,60 +1,49 @@
-
 /**
- * Windshaft client. It provides a method to create instances of maps.
+ * Windshaft client. It provides a method to create instances of dashboards.
  * @param {object} options Options to set up the client
  */
 cdb.windshaft.Client = function(options) {
-  this.COMPRESSION_LEVEL = 3;
-  this.ajax = options.ajax;
-  this.baseURL = options.maps_api_template;
-  this.userName = options.user_name;
-  this.statTag = options.stat_tag;
-  this.forceCompress = options.force_compress;
+  this.ajax = window.$ ? window.$.ajax : reqwest.compat;
+  this.windshaftURLTemplate = options.windshaftURLTemplate;
+  this.userName = options.userName;
+  this.url = this.windshaftURLTemplate.replace('{user}', this.userName);
+  this.statTag = options.statTag;
   this.isCorsSupported = cdb.core.util.isCORSSupported();
-  this.forceCors = options.force_cors;
-  this.endpoint = '/api/v1/map';
-
-  // WARNING: This option is called instanciateCallback (tanci instead of tanti)
-  this.instantiateCallback = function(payload) {
-    return '_cdbc_' + this._jsonpCallbackName(payload);
-  }.bind(this);
+  this.forceCors = options.forceCors;
+  this.endpoint = options.endpoint;
 }
 
+cdb.windshaft.Client.DEFAULT_COMPRESSION_LEVEL = 3;
 cdb.windshaft.Client.MAX_GET_SIZE = 2033;
 
 /**
  * Creates an instance of a map in Windshaft
  * @param {object} mapDefinition An object that responds to .toJSON with the definition of the map
  * @param  {function} callback A callback that will get the public or private map
- * @return {cdb.windshaft.PublicMap|cdb.windshaft.PrivateMap} The instance of the map
+ * @return {cdb.windshaft.DashboardInstance} The instance of the dashboard
  */
 cdb.windshaft.Client.prototype.instantiateMap = function(mapDefinition) {
+  var payload = JSON.stringify(mapDefinition);
 
-  console.log(mapDefinition.toJSON());
-
-  var payload = JSON.stringify(mapDefinition.toJSON());
-
-  // TODO: We will need to instantiate a new cdb.windshaft.PublicMap() here
-  var windshaftMap = new cdb.windshaft.PublicMap();
+  var dashboardInstance = new cdb.windshaft.DashboardInstance();
 
   var options = {
     success: function(data) {
       if (data.errors) {
-        callback(null, data);
+        // TODO: Error handling
+        throw data.errors;
       } else {
-        var baseURL =  this.baseURL.replace('{user}', this.userName);
-        data.baseURL = baseURL;
-        windshaftMap.set(data);
+        data.windshaftURLTemplate = this.windshaftURLTemplate;
+        data.userName = this.userName;
+        dashboardInstance.set(data);
       }
     }.bind(this),
-    error: function() {
+    error: function(xhr) {
       var err = { errors: ['Unknown error'] };
       try {
         err = JSON.parse(xhr.responseText);
       } catch(e) {}
-      // if(0 === self._createMapCallsStack.length) {
-        callback(null, err);
-      // }
+      throw err.errors;
     }
   }
 
@@ -64,7 +53,7 @@ cdb.windshaft.Client.prototype.instantiateMap = function(mapDefinition) {
     this._get(payload, options);
   }
 
-  return windshaftMap;
+  return dashboardInstance;
 }
 
 cdb.windshaft.Client.prototype._usePOST = function(payload) {
@@ -90,22 +79,20 @@ cdb.windshaft.Client.prototype._post = function(payload, options) {
 
 cdb.windshaft.Client.prototype._get = function(payload, options) {
   var compressFunction = this._getCompressor(payload);
-  compressFunction(payload, this.COMPRESSION_LEVEL, function(dataParameter) {
+  compressFunction(payload, this.constructor.DEFAULT_COMPRESSION_LEVEL, function(dataParameter) {
     this.ajax({
       url: this._getURL(dataParameter),
       dataType: 'jsonp',
-      jsonpCallback: function() {
-        return this.instantiateCallback(payload);
-      }.bind(this),
+      jsonpCallback: this._jsonpCallbackName(payload),
       cache: true,
       success: options.success,
       error: options.error
-    });    
+    });
   }.bind(this));
 }
 
 cdb.windshaft.Client.prototype._getCompressor = function(payload) {
-  if (!this.forceCompress && payload.length < this.constructor.MAX_GET_SIZE) {
+  if (payload.length < this.constructor.MAX_GET_SIZE) {
     return function(data, level, callback) {
       callback("config=" + encodeURIComponent(data));
     };
@@ -126,10 +113,9 @@ cdb.windshaft.Client.prototype._getURL = function(dataParameter) {
   if (dataParameter) {
     params.push(dataParameter);  
   }
-  var baseURL =  this.baseURL.replace('{user}', this.userName);
-  return baseURL + this.endpoint + '?' + params.join('&');
+  return [this.url, this.endpoint].join('/') + '?' + params.join('&');
 }
 
 cdb.windshaft.Client.prototype._jsonpCallbackName = function(payload) {
-  return cdb.core.util.uniqueCallbackName(payload);
+  return '_cdbc_' + cdb.core.util.uniqueCallbackName(payload);
 }

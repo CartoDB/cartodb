@@ -40,17 +40,6 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
     // Set options
     L.Util.setOptions(this, options);
 
-    // Some checks
-    if (!options.layer_definition && !options.sublayers) {
-        throw new Error('cartodb-leaflet needs at least the layer_definition or sublayer list');
-    }
-
-    if(!options.layer_definition) {
-      this.options.layer_definition = LayerDefinition.layerDefFromSubLayers(options.sublayers);
-    }
-
-    LayerDefinition.call(this, this.options.layer_definition, this.options);
-
     this.fire = this.trigger;
 
     CartoDBLayerCommon.call(this);
@@ -128,17 +117,19 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
     if (this.options.cartodb_logo != false)
       cdb.geo.common.CartoDBLogo.addWadus({ left:8, bottom:8 }, 0, map._container);
 
-    this.__update(function() {
-      // if while the layer was processed in the server is removed
-      // it should not be added to the map
-      var id = L.stamp(self);
-      if (!map._layers[id]) { 
-        return; 
-      }
+    this.model.bind('change:urls', function() {
+      self.__update(function() {
+        // if while the layer was processed in the server is removed
+        // it should not be added to the map
+        var id = L.stamp(self);
+        if (!map._layers[id]) { 
+          return; 
+        }
 
-      L.TileLayer.prototype.onAdd.call(self, map);
-      self.fire('added');
-      self.options.added = true;
+        L.TileLayer.prototype.onAdd.call(self, map);
+        self.fire('added');
+        self.options.added = true;
+      });
     });
   },
 
@@ -164,25 +155,17 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
     this.fire('loading');
     var map = this.options.map;
 
-    var setTilesURLandReloadInteraction = function() {
-      var urls = self.model.windshaftMap.getTiles();
-      if(urls) {
-        self.tilejson = urls;
-        self.setUrl(self.tilejson.tiles[0]);
-        // manage interaction
-        self._reloadInteraction();
-        self.ok && self.ok();
-        done && done();
-      } else {
-        self.error && self.error(err);
-        done && done();
-      }
-    }
-
-    if (this.model.windshaftMap.isNew()) {
-      this.model.windshaftMap.bind('change', setTilesURLandReloadInteraction);
+    var tilejson = self.model.get('urls');
+    if(tilejson) {
+      self.tilejson = tilejson;
+      self.setUrl(self.tilejson.tiles[0]);
+      // manage interaction
+      self._reloadInteraction();
+      self.ok && self.ok();
+      done && done();
     } else {
-      setTilesURLandReloadInteraction();
+      self.error && self.error(err);
+      done && done();
     }
   },
 
@@ -314,13 +297,7 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
 });
 
 L.CartoDBGroupLayer = L.CartoDBGroupLayerBase.extend({
-  includes: [
-    LayerDefinition.prototype,
-  ],
-
-  _modelUpdated: function() {
-    this.setLayerDefinition(this.model.get('layer_definition'));
-  }
+  _modelUpdated: function() {}
 });
 
 function layerView(base) {
@@ -411,12 +388,7 @@ function layerView(base) {
 
     ok: function(e) {
       this.model.trigger('tileOk');
-    },
-
-    onLayerDefinitionUpdated: function() {
-      this.__update();
     }
-
   });
 
   return layerViewClass;

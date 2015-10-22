@@ -263,7 +263,6 @@ var Vis = cdb.core.View.extend({
     this._data = data;
 
     if (typeof(data) === 'string') {
-
       var url = data;
 
       cdb.core.Loader.get(url, function(data) {
@@ -275,7 +274,6 @@ var Vis = cdb.core.View.extend({
       });
 
       return this;
-
     }
 
     // if the viz.json contains slides, discard the main viz.json and use the slides
@@ -294,23 +292,18 @@ var Vis = cdb.core.View.extend({
     }
 
     if (!this.checkModules(layers)) {
-
       if (this.moduleChecked) {
-
         self.throwError("modules couldn't be loaded");
         return this;
-
       }
 
       this.moduleChecked = true;
-
 
       this.loadModules(layers, function() {
         self.load(data, options);
       });
 
       return this;
-
     }
 
     // configure the vis in http or https
@@ -366,6 +359,7 @@ var Vis = cdb.core.View.extend({
       }
     }
 
+    // Create the instance of the cdb.geo.Map model
     var mapConfig = {
       title: data.title,
       description: data.description,
@@ -378,17 +372,13 @@ var Vis = cdb.core.View.extend({
 
     // if the boundaries are defined, we add them to the map
     if (data.bounding_box_sw && data.bounding_box_ne) {
-
       mapConfig.bounding_box_sw = data.bounding_box_sw;
       mapConfig.bounding_box_ne = data.bounding_box_ne;
-
     }
 
     if (data.bounds) {
-
       mapConfig.view_bounds_sw = data.bounds[0];
       mapConfig.view_bounds_ne = data.bounds[1];
-
     } else {
       var center = data.center;
 
@@ -471,57 +461,90 @@ var Vis = cdb.core.View.extend({
       this.mapView.bind('newLayerView', this.addTooltip, this);
     }
 
-    // Create an instance of a map (datasource)
-    var windshaftMap;
-    if (data.datasources && data.datasources.length) {
-      // Only one datasource?
-      var datasource = _.first(data.datasources);
-      var datasourceLayer = _.find(data.layers, function(l) {
-        return l.datasource === datasource.id
-      });
+    // TODO: We can probably move this logic somewhere in cdb.geo.ui.Widget
+    var widgetModels = [];
+    var widgetClasses = {
+      "list": {
+        model: 'ListModel',
+        view: 'List.View'
+      },
+      "histogram": {
+        model: 'HistogramModel',
+        view: 'Histogram.View'
+      }
+    };
 
-      var layerGroupLayer = data.layers[1];
-      var windshaftClient = new cdb.windshaft.Client({
-        ajax: $.ajax,
-        user_name: datasource.user_name,
-        maps_api_template: datasource.maps_api_template,
-        stat_tag: datasource.stat_tag,
-        force_compress: false,
-        force_cors: false,
-        endpoint: MapBase.BASE_URL // This is different for named_maps
-      });
-
-      var layerDefinition = new LayerDefinition(datasourceLayer.options.layer_definition, {}, data.widgets);
-      windshaftMap = windshaftClient.instantiateMap(layerDefinition);
-
-      this.datasource = new cdb.core.Datasource(datasource, { windshaftMap: windshaftMap });
-
-      _.each(data.widgets, function(d) {
-        var opts = d.options;
-        var type = d.type;
-
-        var v = self.addWidget(
-          d.type,
-          _.extend(
-            opts,
-            {
-              datasource: self.datasource
-            }
-          )
-        );
-
-        $('.js-canvas').append(v.render().el);
-      });
-    }
-
-    this.map.layers.reset(_.map(data.layers, function(layerData) {
-      var model = Layers.create(layerData.type || layerData.kind, self, layerData);
-
-      // Assign the map (datasource) to the model
-      if (windshaftMap) {
-        model.windshaftMap = windshaftMap;
+    _.each(data.widgets, function(widgetData) {
+      if (!widgetClasses[widgetData.type]) {
+        throw 'Widget type \'' + widgetData.type + '\' is not supported!';
       }
 
+      // Instantiate the model 
+      var modelClass = widgetClasses[widgetData.type].model;
+      var widgetModel = new cdb.geo.ui.Widget[modelClass](widgetData);
+      widgetModels.push(widgetModel);
+
+      // Instantitate the view
+      var viewClass = widgetClasses[widgetData.type].view;
+      var viewClassParts = viewClass.split('.');
+      var widgetView = new cdb.geo.ui.Widget[viewClassParts[0]][viewClassParts[1]](
+        { model: widgetModel }
+      );
+
+      $('.js-canvas').append(widgetView.render().el);
+    });
+
+    this.map.layers.reset(_.map(data.layers, function(layerData) {
+      var model;
+
+      if (layerData.type === 'layergroup' || layerData.type === 'namedmap') {
+
+        var layersFromVizJSON = layerData.options.layer_definition && layerData.options.layer_definition.layers ||
+          layerData.options.named_map && layerData.options.named_map.layers;
+
+        var cartoDBLayers = _.map(layersFromVizJSON, function(layer) {
+          // TODO: This case should be handled by the factory or we
+          // should add a type to the layers inside of a named_map
+          if (!layer.type) {
+            return Layers.create('CartoDB', self, layer);
+          }
+          return Layers.create(layer.type, self, layer);
+        });
+
+        model = new cdb.geo.CartoDBGroupLayer({}, {
+          layers: cartoDBLayers
+        });
+
+        // TODO: Perhaps this "endpoing" could be part of the "datasource"?
+        var endpoint = cdb.windshaft.config.MAPS_API_BASE_URL;
+        var configGenerator = cdb.windshaft.PublicDashboardConfig;
+        var datasource = data.datasource;
+        // TODO: We can use something else to differentiate types of "datasource"s
+        if (datasource.template_name) {
+          endpoint = [cdb.windshaft.config.MAPS_API_BASE_URL, 'named', datasource.template_name].join('/');
+          configGenerator = cdb.windshaft.PrivateDashboardConfig;
+        }
+
+        var windshaftClient = new cdb.windshaft.Client({
+          endpoint: endpoint,
+          windshaftURLTemplate: datasource.maps_api_template,
+          userName: datasource.user_name,
+          statTag: datasource.stat_tag,
+          forceCors: datasource.force_cors
+        });
+
+        var dashboard = new cdb.windshaft.Dashboard({
+          client: windshaftClient,
+          configGenerator: configGenerator,
+          statTag: datasource.stat_tag,
+          cartoDBLayerGroup: model,
+          widgets: widgetModels
+        });
+
+        dashboard.createInstance();
+      } else {
+        model = Layers.create(layerData.type || layerData.kind, self, layerData);
+      }
       return model;
     }));
 
@@ -553,7 +576,7 @@ var Vis = cdb.core.View.extend({
 
 
     _.defer(function() {
-      self.trigger('done', self, self.getLayers());
+      self.trigger('done', self, map.layers);
     })
 
     return this;
@@ -914,32 +937,6 @@ var Vis = cdb.core.View.extend({
     return _.compact(legends).reverse();
   },
 
-  addWidget: function(type, opts) {
-    var _widgetTypes = {
-      'list': cdb.geo.ui.Widget.List.View,
-      'histogram': cdb.geo.ui.Widget.Histogram.View
-    };
-    var datasource = opts.datasource;
-
-    if (!_widgetTypes[type]) {
-      throw new Error('Widget ' + type + ' not defined');
-    }
-
-    if (!datasource && opts.layer) {
-      datasource = this.datasource;
-    }
-
-    return new _widgetTypes[type](
-      _.extend(
-        opts,
-        {
-          datasource: datasource,
-          type: type
-        }
-      )
-    );
-  },
-
   addOverlay: function(overlay) {
 
     overlay.map = this.map;
@@ -1190,11 +1187,12 @@ var Vis = cdb.core.View.extend({
   },
 
   addTooltip: function(layerView) {
-    if(!layerView || !layerView.containTooltip || !layerView.containTooltip()) {
-      return;
-    }
-    for(var i = 0; i < layerView.getLayerCount(); ++i) {
-      var t = layerView.getTooltipData(i);
+
+    var layers = layerView.model && layerView.model.layers || [];
+
+    for(var i = 0; i < layers.length; ++i) {
+      var layerModel = layers.at(i);
+      var t = layerModel.getTooltipData();
       if (t) {
         if (!layerView.tooltip) {
           var tooltip = new cdb.geo.ui.Tooltip({
@@ -1213,13 +1211,12 @@ var Vis = cdb.core.View.extend({
             this.tooltip.clean();
           });
         }
-        layerView.setInteraction(i, true);
       }
     }
 
     if (layerView.tooltip) {
       layerView.bind("featureOver", function(e, latlng, pos, data, layer) {
-        var t = layerView.getTooltipData(layer);
+        var t = layers.at(layer).getTooltipData();
         if (t) {
           layerView.tooltip.setTemplate(t.template);
           layerView.tooltip.setFields(t.fields);
@@ -1234,23 +1231,17 @@ var Vis = cdb.core.View.extend({
 
   addInfowindow: function(layerView) {
 
-    if(!layerView.containInfowindow || !layerView.containInfowindow()) {
-      return;
-    }
-
     var mapView = this.mapView;
-    var eventType = 'featureClick';
     var infowindow = null;
+    var layers = layerView.model && layerView.model.layers || [];
 
-    // activate interactivity for layers with infowindows
-    for(var i = 0; i < layerView.getLayerCount(); ++i) {
-
-      if (layerView.getInfowindowData(i)) {
+    for(var i = 0; i < layers.length; ++i) {
+      var layerModel = layers.at(i);
+      if (layerModel.getInfowindowData()) {
         if(!infowindow) {
-          infowindow = Overlay.create('infowindow', this, layerView.getInfowindowData(i), true);
+          infowindow = Overlay.create('infowindow', this, layerModel.getInfowindowData(), true);
           mapView.addInfowindow(infowindow);
         }
-        layerView.setInteraction(i, true);
       }
     }
 
@@ -1261,7 +1252,7 @@ var Vis = cdb.core.View.extend({
     infowindow.bind('close', function() {
       // when infowindow is closed remove all the filters
       // for tooltips
-      for(var i = 0; i < layerView.getLayerCount(); ++i) {
+      for(var i = 0; i < layers; ++i) {
         var t = layerView.tooltip;
         if (t) {
           t.setFilter(null);
@@ -1271,14 +1262,13 @@ var Vis = cdb.core.View.extend({
 
     // if the layer has no infowindow just pass the interaction
     // data to the infowindow
-    layerView.bind(eventType, function(e, latlng, pos, data, layer) {
+    layerView.bind('featureClick', function(e, latlng, pos, data, layer) {
 
-        var infowindowFields = layerView.getInfowindowData(layer);
+        var infowindowFields = layers.at(layer).getInfowindowData();
         if (!infowindowFields) return;
-        var fields = _.pluck(infowindowFields.fields, 'name');
         var cartodb_id = data.cartodb_id;
 
-        layerView.model.windshaftMap.fetchAttributes(layer, cartodb_id, fields, function(attributes) {
+        layerView.model.fetchAttributes(layer, cartodb_id, function(attributes) {
 
           // Old viz.json doesn't contain width and maxHeight properties
           // and we have to get the default values if there are not defined.

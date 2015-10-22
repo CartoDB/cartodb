@@ -6,6 +6,7 @@
 
 function CartoDBLayerCommon() {
   this.visible = true;
+  this.interactionEnabled = [];
 }
 
 CartoDBLayerCommon.prototype = {
@@ -48,13 +49,13 @@ CartoDBLayerCommon.prototype = {
    */
   setInteraction: function(layer, b) {
     // shift arguments to maintain compatibility
-    if(b == undefined) {
+    if (b == undefined) {
       b = layer;
       layer = 0;
     }
     var layerInteraction;
     this.interactionEnabled[layer] = b;
-    if(!b) {
+    if (!b) {
       layerInteraction = this.interaction[layer];
       if(layerInteraction) {
         layerInteraction.remove();
@@ -64,11 +65,11 @@ CartoDBLayerCommon.prototype = {
       // if urls is null it means that setInteraction will be called
       // when the layergroup token was recieved, then the real interaction
       // layer will be created
-      if(!this.model.windshaftMap.isNew()) {
+      if (this.model.get('urls')) {
         // generate the tilejson from the urls. wax needs it
         // var layer_index = this.getLayerIndexByNumber(+layer);
         var layer_index = +layer;
-        var tilejson = this.model.windshaftMap.getTileJSONFromTiles(layer_index);
+        var tilejson = this.model.getTileJSONFromTiles(layer_index);
 
         // remove previous
         layerInteraction = this.interaction[layer];
@@ -163,21 +164,25 @@ CartoDBLayerCommon.prototype = {
   tilesOk: function() {
   },
 
+  _reloadInteraction: function() {
+
+    // Clear existing interaction
+    this._clearInteraction();
+
+    // Enable interaction for the layers that have interaction
+    // (are visible AND have tooltips OR infowindows)
+    this.model.layers.each(function(layer, index) {
+      if (layer.hasInteraction()) {
+        this.setInteraction(index, true);
+      }
+    }.bind(this))
+  },
+
   _clearInteraction: function() {
     for(var i in this.interactionEnabled) {
       if (this.interactionEnabled.hasOwnProperty(i) &&
         this.interactionEnabled[i]) {
         this.setInteraction(i, false);
-      }
-    }
-  },
-
-  _reloadInteraction: function() {
-    for(var i in this.interactionEnabled) {
-      if (this.interactionEnabled.hasOwnProperty(i) &&
-        this.interactionEnabled[i]) {
-          this.setInteraction(i, false);
-          this.setInteraction(i, true);
       }
     }
   },

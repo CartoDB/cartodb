@@ -220,7 +220,7 @@ CartoDBLayerGroupBase.prototype.refreshView = function() {
   );
 }
 CartoDBLayerGroupBase.prototype.onLayerDefinitionUpdated = function() {
-    this.update();
+  this.update();
 }
 
 CartoDBLayerGroupBase.prototype._checkLayer = function() {

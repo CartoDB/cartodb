@@ -4,7 +4,6 @@
  *
  *  It contains:
  *  - view model (viewModel)
- *  - datasource model (datasource)
  *  - data model (dataModel)
  *
  *  It will offet to the user:
@@ -26,22 +25,12 @@ cdb.geo.ui.Widget.View = cdb.core.View.extend({
   },
 
   initialize: function() {
-    if (!this.options.datasource) {
-      throw new Error('Datasource is not defined');
-    }
+    this.dataModel = this.model;
     this.viewModel = new cdb.core.Model({
-      title: this.options.title,
-      type: this.options.type,
-      sync: this.options.sync,
-      columns_title: this.options.columns_title
-    });
-    this.datasource = this.options.datasource;
-    this.dataModel = this.datasource.addWidgetModel({
-      id: this.options.id,
-      sql: this.options.sql,
-      name: this.options.name,
-      type: this.options.type,
-      columns: this.options.columns
+      title: this.model.get('options').title,
+      type: this.model.get('options').type,
+      sync: this.model.get('options').sync,
+      columns_title: this.model.get('options').columns_title
     });
   },
 
@@ -80,28 +69,5 @@ cdb.geo.ui.Widget.View = cdb.core.View.extend({
       viewModel: this.viewModel,
       dataModel: this.dataModel
     });
-  },
-
-  sync: function() {
-    this.viewModel.set('sync', true);
-  },
-
-  unsync: function() {
-    this.viewModel.set('sync', false);
-  },
-
-  getData: function() {
-    return this.dataModel.get('data');
-  },
-
-  filter: function() {
-    throw new Error('Filter method not implemented for ' + this.dataModel.get('type') + ' Widget type');
-  },
-
-  clean: function() {
-    this._unbindDatasource();
-    this.viewModel.unbind(null, null, this);
-    cdb.geo.ui.Widget.View.prototype.clean.call(this);
   }
-
 });

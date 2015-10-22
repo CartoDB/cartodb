@@ -63,7 +63,6 @@
         'core/view.js',
         'core/loader.js',
         'core/util.js',
-        'core/datasource.js',
 
         'geo/geocoder.js',
         'geo/geometry.js',
@@ -145,8 +144,12 @@
         'api/sql.js',
         'api/vis.js',
 
+        'windshaft/config.js',
         'windshaft/client.js',
-        'windshaft/public_map.js'
+        'windshaft/dashboard.js',
+        'windshaft/dashboard_instance.js',
+        'windshaft/public_dashboard_config.js',
+        'windshaft/private_dashboard_config.js'
     ];
 
     cdb.init = function(ready) {

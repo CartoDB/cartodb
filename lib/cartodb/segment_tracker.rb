@@ -24,9 +24,10 @@ module Cartodb
           properties: properties
         )
       rescue => e
-      Rollbar.report_message('Segment error tracking event', 'error', { user_id: user_id, 
-                                                                        event: event, 
-                                                                        error_message: e.inspect })
+        Rollbar.report_message('EventTracker: segment event tracking error', 'error', { user_id: user_id, 
+                                                                                        event: event,
+                                                                                        properties: properties, 
+                                                                                        error_message: e.inspect })
       end
     end
 
@@ -34,7 +35,7 @@ module Cartodb
       begin
         @analytics.flush
       rescue => e
-        Rollbar.report_message('Segment error flush', 'error', { error_message: e.inspect })
+        Rollbar.report_message('EventTracker: segment flushing error', 'error', { error_message: e.inspect })
       end
     end
   end

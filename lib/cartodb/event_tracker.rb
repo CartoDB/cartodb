@@ -4,11 +4,7 @@ module Cartodb
 
     def send_event(user, event_name, custom_properties = {})
       return unless is_tracking_active?
-
-      if user.nil?
-        Rollbar.report_message('Segment error tracking: User is null', 'Warning', { event: event_name,
-                                                                                    custom_properties: custom_properties })
-        return
+      return unless user_valid?(user, event_name, custom_properties)
 
       # Some events register custom properties
       # Monitary values associated with the event should use 'revenue' reserved key	
@@ -31,6 +27,17 @@ module Cartodb
 
     def is_tracking_active?
       !Cartodb.config[:segment].blank? and !Cartodb.config[:segment]['api_key'].blank?
+    end
+
+    def user_valid?(user, event_name, custom_properties)
+      if user.nil?
+        Rollbar.report_message('EventTracker: null user error', 'Error', { event: event_name,
+                                                                           custom_properties: custom_properties,
+                                                                           error_message: 'Provided user is null'})
+        false
+      else
+        true
+      end
     end
 
   end

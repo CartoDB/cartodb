@@ -114,16 +114,24 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   },
 
   _animateValue: function(className, what, unit) {
-    var format = d3.format("0,000");
-    var value = this.viewModel.get(what);
     var self = this;
-    $(className).prop('counter', self.viewModel.previous(what) || 0).stop().animate({ counter: value }, {
+    var format = d3.format("0,000");
+
+    var from = this.viewModel.previous(what) || 0;
+    var to = this.viewModel.get(what);
+
+    $(className).prop('counter', from).stop().animate({ counter: to }, {
       duration: 500,
       easing: 'swing',
       step: function (i) {
         $(this).text(format(Math.floor(i)) + ' ' + unit);
       }
     });
+  },
+
+  _formatNumber: function(value, unit) {
+    var format = d3.format("0,000");
+    return format(value + unit ? ' ' + unit : '');
   },
 
   _updateStats: function() {
@@ -327,9 +335,9 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
 
       if (d3.event.sourceEvent && a === undefined && b === undefined) {
         var barIndex = self._getBarIndex();
-        var a = (barIndex - 1) * (100 / data.length);
-        var b = (barIndex) * (100 / data.length);
-        self.viewModel.set({ a: barIndex, b: barIndex + 1 });
+        a = (barIndex - 1) * (100 / data.length);
+        b = (barIndex) * (100 / data.length);
+        self.viewModel.set({ a: barIndex - 1, b: barIndex });
         self._selectRange(this, a, b);
       }
     }
@@ -494,15 +502,16 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
 
   _zoom: function() {
     this._removeBrush();
+    this._removeBars();
+    this._removeHandles();
+
     var data = this.viewModel.get('data');
     this.viewModel.set('data', data.slice(this.viewModel.get('a'), this.viewModel.get('b')).reverse());
-    this._setupDimensions();
 
-    this.chart.selectAll(".Bar").remove();
-    this.chart.select(".Brush").remove();
-    this._removeHandles();
+    this._setupDimensions();
     this._generateBars();
     this._generateHandles();
+
     this._removeXAxis();
     this._addXAxis();
 
@@ -559,6 +568,10 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
     });
 
     this.viewModel.set('data', data);
+  },
+
+  _removeBars: function() {
+    d3.selectAll('.Bar').remove();
   },
 
   _removeBrush: function() {

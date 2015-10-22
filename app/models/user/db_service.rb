@@ -3,7 +3,8 @@ require_relative 'db_queries'
 
 # To avoid collisions with User model
 module CartoDB
-  module User
+  # To avoid collisions with User class
+  module UserModule
     class DBService
 
       include CartoDB::MiniSequel
@@ -17,7 +18,7 @@ module CartoDB
       def initialize(user)
         raise "User nil" unless user
         @user = user
-        @queries = CartoDB::User::DBQueries.new(@user)
+        @queries = CartoDB::UserModule::DBQueries.new(@user)
       end
 
       def queries
@@ -352,7 +353,7 @@ module CartoDB
           end
 
           conn = @user.in_database(as: :cluster_admin)
-          CartoDB::User::DBService.terminate_database_connections(@user.database_name, @user.database_host)
+          CartoDB::UserModule::DBService.terminate_database_connections(@user.database_name, @user.database_host)
 
           # If user is in an organization should never have public schema, but to be safe (& tests which stub stuff)
           unless @user.database_schema == SCHEMA_PUBLIC
@@ -920,7 +921,7 @@ module CartoDB
 
         if !@user.database_name.nil? && !@user.database_name.empty?
           conn.run("UPDATE pg_database SET datallowconn = 'false' WHERE datname = '#{@user.database_name}'")
-          CartoDB::User::DBService.terminate_database_connections(@user.database_name, @user.database_host)
+          CartoDB::UserModule::DBService.terminate_database_connections(@user.database_name, @user.database_host)
           conn.run("DROP DATABASE \"#{@user.database_name}\"")
         end
 

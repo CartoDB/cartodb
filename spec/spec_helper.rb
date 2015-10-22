@@ -63,7 +63,11 @@ RSpec.configure do |config|
       protected_tables = [:schema_migrations, :spatial_ref_sys]
       Rails::Sequel.connection.tables.each do |t|
         if !protected_tables.include?(t)
-          Rails::Sequel.connection.run("TRUNCATE TABLE \"#{t}\" CASCADE")
+          begin
+            Rails::Sequel.connection.run("TRUNCATE TABLE \"#{t}\" CASCADE")
+          rescue Sequel::DatabaseError => e
+            raise e unless e.message =~ /PG::Error: ERROR:  relation ".*" does not exist/
+          end
         end
       end
 
@@ -73,7 +77,7 @@ RSpec.configure do |config|
         "SELECT datname FROM pg_database WHERE datistemplate IS FALSE AND datallowconn IS TRUE AND datname like 'cartodb_test_user_%'"
       ].map(:datname).each { |user_database_name|
         puts "Dropping leaked test database #{user_database_name}"
-        CartoDB::User::DBService.terminate_database_connections(
+        CartoDB::UserModule::DBService.terminate_database_connections(
           user_database_name, ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
         )
         Rails::Sequel.connection.run("drop database \"#{user_database_name}\"")
@@ -98,7 +102,7 @@ RSpec.configure do |config|
           "SELECT datname FROM pg_database WHERE datistemplate IS FALSE AND datallowconn IS TRUE AND datname like 'cartodb_test_user_%'"
         ].map(:datname).each { |user_database_name|
           puts "Dropping leaked test database #{user_database_name}"
-          CartoDB::User::DBService.terminate_database_connections(
+          CartoDB::UserModule::DBService.terminate_database_connections(
             user_database_name, ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
           )
           Rails::Sequel.connection.run("drop database \"#{user_database_name}\"")

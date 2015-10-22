@@ -81,15 +81,35 @@ shared_context 'organization with users helper' do
     headers = {'CONTENT_TYPE'  => 'application/json'}
     perm_id = table.table_visualization.permission.id
 
-    put api_v1_permissions_update_url(user_domain: owner.username, api_key: owner.api_key, id: perm_id),
-        { acl: [{
-                 type: CartoDB::Permission::TYPE_ORGANIZATION,
-                 entity: {
-                   id:   organization.id,
-                 },
-                 access: CartoDB::Permission::ACCESS_READONLY
-               }]}.to_json, headers
+    params = { acl: [{ type: CartoDB::Permission::TYPE_ORGANIZATION,
+                       entity: { id: organization.id },
+                       access: CartoDB::Permission::ACCESS_READONLY
+                     }]
+             }
+    url = api_v1_permissions_update_url(user_domain: owner.username, api_key: owner.api_key, id: perm_id)
+    put url, params.to_json, headers
     last_response.status.should == 200
   end
 
+  def share_visualization(visualization, user, access = CartoDB::Permission::ACCESS_READONLY)
+    shared_entity = CartoDB::SharedEntity.new(
+      recipient_id: user.id,
+      recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
+      entity_id: visualization.id,
+      entity_type: CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+    )
+    shared_entity.save
+
+    owner = visualization.user
+    perm_id = visualization.permission.id
+    params = { acl: [{ type: CartoDB::Permission::TYPE_USER,
+                       entity: { id: user.id },
+                       access: access
+                     }]
+             }
+    url = api_v1_permissions_update_url(user_domain: owner.username, api_key: owner.api_key, id: perm_id)
+    put_json url, params do |response|
+      response.status.should == 200
+    end
+  end
 end

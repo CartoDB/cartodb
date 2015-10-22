@@ -84,7 +84,7 @@ class User < Sequel::Model
   self.raise_on_save_failure = false
 
   def db_service
-    @db_service ||= CartoDB::User::DBService.new(self)
+    @db_service ||= CartoDB::UserModule::DBService.new(self)
   end
 
   def self.new_with_organization(organization)
@@ -229,9 +229,9 @@ class User < Sequel::Model
       invalidate_varnish_cache(regex: '.*:vizjson')
     end
     if changes.include?(:database_host)
-      CartoDB::User::DBService.terminate_database_connections(database_name, previous_changes[:database_host][0])
+      CartoDB::UserModule::DBService.terminate_database_connections(database_name, previous_changes[:database_host][0])
     elsif changes.include?(:database_schema)
-      CartoDB::User::DBService.terminate_database_connections(database_name, database_host)
+      CartoDB::UserModule::DBService.terminate_database_connections(database_name, database_host)
     end
 
   end

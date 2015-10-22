@@ -6,7 +6,7 @@ Static views of CartoDB maps can be generated using the [Static Maps API](http:/
 
 The easiest way to generate an image is by using the following piece of code, which generates is replaced by an `img` tag once run in an HTML file:
 
-{% highlight javascript %}
+```javascript
 <script>
 var vizjson_url = 'https://documentation.cartodb.com/api/v2/viz/008b3ec6-02c3-11e4-b687-0edbca4b5057/viz.json';
 
@@ -16,12 +16,12 @@ cartodb.Image(vizjson_url)
   .zoom(4)
   .write({ class: "thumb", id: "AwesomeMap" });
 </script>
-{% endhighlight %}
+```
 
 ### Result
-{% highlight html %}
+```html
 <img id="AwesomeMap" src="https://cartocdn-ashbu.global.ssl.fastly.net/documentation/api/v1/map/static/center/04430594691ff84a3fdac56259e5180b:1419270587670/4/-3.4/44.2/600/400.png" class="thumb">
-{% endhighlight %}
+```
 
 ### cartodb.Image(_layerSource_[, options])
 
@@ -38,7 +38,7 @@ Options take the form of a JavaScript object.
     - **no_cdn**: Disable CDN usage. Type: Boolean. Default: `false` (use CDN)
     - **override_bbox**: Override default of using the bounding box of the visualization. This is needed to use `Image.center` and `Image.zoom`. Type: Boolean. Default: `false` (use bounding box)
 
-{% highlight javascript %}
+```javascript
 <script>
 var vizjson_url = 'https://documentation.cartodb.com/api/v2/viz/008b3ec6-02c3-11e4-b687-0edbca4b5057/viz.json';
 var basemap = {
@@ -54,7 +54,7 @@ cartodb.Image(vizjson_url, {basemap: basemap})
   .center([0,0])
   .write({ class: "thumb", id: "AwesomeMap" });
 </script>
-{% endhighlight %}
+```
 
 #### Returns
 An _Image_ object
@@ -122,16 +122,16 @@ Inserts the image into the HTML DOM element specified.
 An _Image_ object
 
 <div class="image-into">Image.into</div>
-{% highlight javascript %}
+```javascript
 cartodb.Image(vizjson_url).into(document.getElementById('map_preview'))
-{% endhighlight %}
+```
 
 ### Image.write(_attributes_)
 
 Adds an `img` tag in the same place script is executed. It's possible to specify a class name (`class`) and/or an id attribute (`id`) for the resulting image:
 
 <div class="image-write">Image.write</div>
-{% highlight javascript %}
+```javascript
 <script>
 cartodb.Image(vizjson_url)
   .size(600, 400)
@@ -139,7 +139,7 @@ cartodb.Image(vizjson_url)
   .zoom(10)
   .write({ class: "thumb", id: "ImageHeader", src: 'spinner.gif' });
 </script>
-{% endhighlight %}
+```
 
 #### Arguments
 
@@ -157,8 +157,8 @@ An _Image_ object
 
 Gets the URL for the image requested.
 
-<div class="image-getUrl">Image.getUrl</div>
-{% highlight javascript %}
+<div class="image-geturl">Image.getUrl</div>
+```javascript
 <script>
 cartodb.Image(vizjson_url)
   .size(600, 400)
@@ -166,7 +166,7 @@ cartodb.Image(vizjson_url)
       console.log('image url',url);
   })
 </script>
-{% endhighlight %}
+```
 
 #### Callback Arguments
 

@@ -11,4 +11,5 @@ When you add CartoDB.js to your websites you get some great new tools to make ma
 * [Getting data with SQL](sql.md)
 * [Static Maps](static_maps.md)
 * [Core API functionality](core_api.md)
+* [Versions](versions.md)
 * [Other important stuff](other_stuff.md)

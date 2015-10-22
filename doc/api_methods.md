@@ -9,13 +9,13 @@ The documentation below refers to CartoDB.js v3. For major changes in the librar
 Creates a visualization inside the map_id DOM object.
 
 <div class="code-title">cartodb.createVis</div>
-{% highlight javascript %}
+```javascript
 var url = 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json';
 
 cartodb.createVis('map', url)
   .done(function(vis, layers) {
   });
-{% endhighlight %}
+```
 
 #### Arguments
 
@@ -80,10 +80,10 @@ An overlay object, see [vis.Overlays](#visoverlays).
 Returns the first overlay with the specified **type**.
 
 <div class="code-title">vis.getOverlay</div>
-{% highlight javascript %}
+```javascript
 var zoom = vis.getOverlay('zoom');
 zoom.clean() // remove it from the screen
-{% endhighlight %}
+```
 
 ### vis.getOverlays()
 
@@ -126,14 +126,14 @@ With visualizations already created through the CartoDB console, you can simply 
 - **layerSource**: contains information about the layer. It can be specified in 2 ways:
 
 <div class="code-title">Passing the url where the layer data is located</div>
-{% highlight javascript %}
+```javascript
 cartodb.createLayer(map, 'http://myserver.com/layerdata.json')
-{% endhighlight %}
+```
 
 <div class="code-title">passing the data directly</div>
-{% highlight javascript %}
+```javascript
 cartodb.createLayer(map, { layermetadata })
-{% endhighlight %}
+```
 
 - **options**:
   - **https**: force https
@@ -163,7 +163,7 @@ You can call to `addTo(map[, position])` in the promise so when the layer is rea
 
 <div class="code-title">cartodb.createLayer using a url</div>
 
-{% highlight javascript %}
+```javascript
 var map;
 var mapOptions = {
   zoom: 5,
@@ -184,7 +184,7 @@ cartodb.createLayer(map, 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e
   }).on('error', function(err) {
     console.log("some error occurred: " + err);
   });
-{% endhighlight %}
+```
 
 Layer metadata must take one of the following forms:
 
@@ -192,7 +192,7 @@ Layer metadata must take one of the following forms:
 
 Used for most maps with tables that are set to public or public with link.
 
-{% highlight javascript %}
+```javascript
 {
   user_name: 'your_user_name', // Required
   type: 'cartodb', // Required
@@ -209,13 +209,13 @@ Used for most maps with tables that are set to public or public with link.
    ...
   ]
 }
-{% endhighlight %}
+```
 
 ### Torque Layer Source Object (`type: 'torque'`)
 
 Used for [Torque maps](https://github.com/CartoDB/torque). Note that it does not allow sublayers.
 
-{% highlight javascript %}
+```javascript
 {
   type: 'torque', // Required
   order: 1, // Optional
@@ -226,9 +226,9 @@ Used for [Torque maps](https://github.com/CartoDB/torque). Note that it does not
     cartocss: "CartoCSS styles" // Required
   }
 }
-{% endhighlight %}
+```
 
-##### Interaction Methods for a Torque Layer
+#### Interaction Methods for a Torque Layer
 
 Used to create an animated torque layer with customized settings.
 
@@ -260,7 +260,7 @@ Returns |  List of values.
 `invalidate()`
 Description | Forces a reload of the layer data.
 
-##### Example of Interaction Methods for a Torque Layer
+#### Example of Interaction Methods for a Torque Layer
 ```javascript
  <script>
       // define the torque layer style using cartocss
@@ -288,7 +288,7 @@ Description | Forces a reload of the layer data.
           '  [value > 25] { marker-fill: #8c2d04; }',
           '}'
       ].join('\n');
-        
+
       var map = new L.Map('map', {
         zoomControl: true,
         center: [40, 0],
@@ -317,7 +317,7 @@ Description | Forces a reload of the layer data.
 Used for making public maps with private data. See [Named Maps](http://docs.cartodb.com/cartodb-platform/maps-api.html#named-maps-1) for more information.
 
 
-{% highlight javascript %}
+```javascript
 {
   user_name: 'your_user_name', // Required
   type: 'namedmap', // Required
@@ -341,13 +341,13 @@ Used for making public maps with private data. See [Named Maps](http://docs.cart
     }
   }
 }
-{% endhighlight %}
+```
 
 #### Example
 
 <div class="code-title">cartodb.createLayer combining multiple types of layers and setting a filter</div>
 
-{% highlight javascript %}
+```javascript
 cartodb.createLayer(map, {
   user_name: 'examples',
   type: 'cartodb',
@@ -363,7 +363,7 @@ cartodb.createLayer(map, {
     },
   ],
 }, { filter: ['http', 'mapnik'] })
-{% endhighlight %}
+```
 
 ## cartodb.CartoDBLayer
 
@@ -408,13 +408,13 @@ A SubLayer object.
 #### Example
 
 <div class="code-title">layer.getSubLayer</div>
-{% highlight javascript %}
+```javascript
 layer.getSubLayer(1).hide();
 
 var sublayer = layer.getSubLayer(0);
 
 sublayer.setSQL('SELECT * FROM table_name limit 10');
-{% endhighlight %}
+```
 
 ### layer.getSubLayerCount()
 
@@ -427,13 +427,13 @@ The number of sublayers.
 #### Example
 
 <div class="code-title">Hide layers using layer.getSubLayerCount</div>
-{% highlight javascript %}
+```javascript
 var num_sublayers = layer.getSubLayerCount();
 
 for (var i = 0; i < num_sublayers; i++) {
   layer.getSubLayer(i).hide();
 }
-{% endhighlight %}
+```
 
 ### layer.createSubLayer(_layerDefinition_)
 
@@ -444,15 +444,15 @@ Adds a new data to the current layer. With this method, data from multiple table
 - **layerDefinition**: an object with the sql and cartocss that defines the data, should be like:
 
 <div class="code-title">layerDefinition</div>
-{% highlight javascript %}
+```javascript
 {
   sql: "SELECT * FROM table_name",
   cartocss: "#layer { marker-fill: red; }",
   interactivity: 'cartodb_id, area, column' // optional
 }
-{% endhighlight %}
+```
 
-`sql` and `cartocss` are mandatory. An exception is raised if either of them are not present. If the interactivity is not set, there is no interactivity enabled for that layer (better performance). SQL and CartoCSS syntax should be correct. Look at the documentation for  [PostgreSQL](http://www.postgresql.org/docs/9.3/interactive/sql-syntax.html) and [CartoCSS](http://docs.cartodb.com/cartodb-editor.html#customizing-maps-with-cartocss) for more information. There are some restrictions in the SQL queries:
+`sql` and `cartocss` are mandatory. An exception is raised if either of them are not present. If the interactivity is not set, there is no interactivity enabled for that layer (better performance). SQL and CartoCSS syntax should be correct. Look at the documentation for  [PostgreSQL](http://www.postgresql.org/docs/9.3/interactive/sql-syntax.html) and [CartoCSS](https://github.com/mapbox/carto/blob/master/docs/latest.md) for more information. There are some restrictions in the SQL queries:
 
 - Must not write. INSERT, DELETE, UPDATE, ALTER and so on are not allowed (the query will fail)
 - Must not contain trialing semicolon
@@ -464,7 +464,7 @@ A SubLayer object.
 #### Example
 
 <div class="code-title">layer.createSubLayer</div>
-{% highlight javascript %}
+```javascript
 cartodb.createLayer(map, 'http://examples.cartodb.com/api/v2/viz/european_countries_e/viz.json', function(layer) {
   // add populated places points over the countries layer
   layer.createSubLayer({
@@ -472,7 +472,7 @@ cartodb.createLayer(map, 'http://examples.cartodb.com/api/v2/viz/european_countr
     cartocss: '#layer { marker-fill: red; }'
   });
 }).addTo(map);
-{% endhighlight %}
+```
 
 ### layer.invalidate()
 
@@ -496,11 +496,11 @@ The layer itself.
 Sets the configuration of a layer when using [named maps](http://docs.cartodb.com/cartodb-platform/maps-api.html#named-maps-1). It can be invoked in different ways:
 
 <div class="code-title">layer.setParams</div>
-{% highlight javascript %}
+```javascript
 layer.setParams('test', 10); // sets test = 10
 layer.setParams('test', null); // unset test
 layer.setParams({'test': 1, 'color': '#F00'}); // set more than one parameter at once
-{% endhighlight %}
+```
 
 #### Arguments
 
@@ -522,13 +522,13 @@ Sets sublayer parameters. Useful when more than one parameter needs to be change
 - **layerDefinition**: an object with the sql and cartocss that defines the data, like:
 
 <div class="code-title">layerDefinition</div>
-{% highlight javascript %}
+```javascript
 {
   sql: "SELECT * FROM table_name",
   cartocss: "#layer { marker-fill: red; }",
   interactivity: 'cartodb_id, area, column' // optional
 }
-{% endhighlight %}
+```
 
 #### Returns
 
@@ -537,13 +537,13 @@ The layer itself.
 #### Example
 
 <div class="code-title">sublayer.set</div>
-{% highlight javascript %}
+```javascript
 sublayer.set({
   sql: "SELECT * FROM table_name WHERE cartodb_id < 100",
   cartocss: "#layer { marker-fill: red }",
   interactivity: "cartodb_id, the_geom, magnitude"
 });
-{% endhighlight %}
+```
 
 ### sublayer.get(_attr_)
 
@@ -618,7 +618,7 @@ to skip sanitization, or a function to provide your own sanitization (e.g. `func
 - **maxHeight**: Max height of the scrolled content (value must be a number).
 
 <div class="code-title">sublayer.infowindow.set</div>
-{% highlight html %}
+```html
 <div id="map"></div>
 
 <script>
@@ -638,13 +638,13 @@ to skip sanitization, or a function to provide your own sanitization (e.g. `func
        <div class="cartodb-popup-content">
          <img style="width: 100%" src="http://rambo.webcindario.com/images/18447755.jpg"></src>
          <!-- content.data contains the field info -->
-         <h4>{% raw %}{{content.data.name}}{% endraw %}</h4>
+         <h4>{{content.data.name}}</h4>
        </div>
      </div>
      <div class="cartodb-popup-tip-container"></div>
   </div>
 </script>
-{% endhighlight %}
+```
 
 [Grab the complete example source code](https://github.com/CartoDB/cartodb.js/blob/develop/examples/custom_infowindow.html)
 

@@ -461,8 +461,28 @@ var Vis = cdb.core.View.extend({
       this.mapView.bind('newLayerView', this.addTooltip, this);
     }
 
+    // Get the CartoDBLayers from the LayerGroup
+    var layerGroup = _.find(data.layers, function(layer) {
+      return layer.type === 'layergroup';
+    });
+    var cartoDBLayers = _.map(layerGroup.options.layer_definition.layers, function(layerData) {
+      return Layers.create(layerData.type, self, layerData);
+    });
+    var cartoDBLayerGroup = new cdb.geo.CartoDBGroupLayer({}, {
+      layers: cartoDBLayers
+    });
+
+    // TODO: Perhaps this "endpoint" could be part of the "datasource"?
+    var endpoint = cdb.windshaft.config.MAPS_API_BASE_URL;
+    var configGenerator = cdb.windshaft.PublicDashboardConfig;
+    var datasource = data.datasource;
+    // TODO: We can use something else to differentiate types of "datasource"s
+    if (datasource.template_name) {
+      endpoint = [cdb.windshaft.config.MAPS_API_BASE_URL, 'named', datasource.template_name].join('/');
+      configGenerator = cdb.windshaft.PrivateDashboardConfig;
+    }
+
     // TODO: We can probably move this logic somewhere in cdb.geo.ui.Widget
-    var widgetModels = [];
     var widgetClasses = {
       "list": {
         model: 'ListModel',
@@ -474,74 +494,59 @@ var Vis = cdb.core.View.extend({
       }
     };
 
-    _.each(data.widgets, function(widgetData) {
-      if (!widgetClasses[widgetData.type]) {
-        throw 'Widget type \'' + widgetData.type + '\' is not supported!';
+    _.each(cartoDBLayers, function(layer) {
+      var widgets = layer.get('options').widgets;
+      var widgetModels = [];
+      for (var widgetName in widgets) {
+        var widgetData = widgets[widgetName];
+        widgetData.id = widgetName;
+        if (!widgetClasses[widgetData.type]) {
+          throw 'Widget type \'' + widgetData.type + '\' is not supported!';
+        }
+
+        // Instantiate the model 
+        var modelClass = widgetClasses[widgetData.type].model;
+        var widgetModel = new cdb.geo.ui.Widget[modelClass](widgetData);
+        widgetModels.push(widgetModel);
+
+        // Instantitate the view
+        var viewClass = widgetClasses[widgetData.type].view;
+        var viewClassParts = viewClass.split('.');
+        var widgetView = new cdb.geo.ui.Widget[viewClassParts[0]][viewClassParts[1]](
+          { model: widgetModel }
+        );
+
+        $('.js-canvas').append(widgetView.render().el);
       }
 
-      // Instantiate the model 
-      var modelClass = widgetClasses[widgetData.type].model;
-      var widgetModel = new cdb.geo.ui.Widget[modelClass](widgetData);
-      widgetModels.push(widgetModel);
-
-      // Instantitate the view
-      var viewClass = widgetClasses[widgetData.type].view;
-      var viewClassParts = viewClass.split('.');
-      var widgetView = new cdb.geo.ui.Widget[viewClassParts[0]][viewClassParts[1]](
-        { model: widgetModel }
-      );
-
-      $('.js-canvas').append(widgetView.render().el);
+      layer.widgets = widgetModels;
     });
+
+
+    var windshaftClient = new cdb.windshaft.Client({
+      endpoint: endpoint,
+      windshaftURLTemplate: datasource.maps_api_template,
+      userName: datasource.user_name,
+      statTag: datasource.stat_tag,
+      forceCors: datasource.force_cors
+    });
+
+    var dashboard = new cdb.windshaft.Dashboard({
+      client: windshaftClient,
+      configGenerator: configGenerator,
+      statTag: datasource.stat_tag,
+      layerGroup: cartoDBLayerGroup,
+      layers: cartoDBLayers
+    });
+
+    dashboard.createInstance();
+
 
     this.map.layers.reset(_.map(data.layers, function(layerData) {
       var model;
 
       if (layerData.type === 'layergroup' || layerData.type === 'namedmap') {
-
-        var layersFromVizJSON = layerData.options.layer_definition && layerData.options.layer_definition.layers ||
-          layerData.options.named_map && layerData.options.named_map.layers;
-
-        var cartoDBLayers = _.map(layersFromVizJSON, function(layer) {
-          // TODO: This case should be handled by the factory or we
-          // should add a type to the layers inside of a named_map
-          if (!layer.type) {
-            return Layers.create('CartoDB', self, layer);
-          }
-          return Layers.create(layer.type, self, layer);
-        });
-
-        model = new cdb.geo.CartoDBGroupLayer({}, {
-          layers: cartoDBLayers
-        });
-
-        // TODO: Perhaps this "endpoing" could be part of the "datasource"?
-        var endpoint = cdb.windshaft.config.MAPS_API_BASE_URL;
-        var configGenerator = cdb.windshaft.PublicDashboardConfig;
-        var datasource = data.datasource;
-        // TODO: We can use something else to differentiate types of "datasource"s
-        if (datasource.template_name) {
-          endpoint = [cdb.windshaft.config.MAPS_API_BASE_URL, 'named', datasource.template_name].join('/');
-          configGenerator = cdb.windshaft.PrivateDashboardConfig;
-        }
-
-        var windshaftClient = new cdb.windshaft.Client({
-          endpoint: endpoint,
-          windshaftURLTemplate: datasource.maps_api_template,
-          userName: datasource.user_name,
-          statTag: datasource.stat_tag,
-          forceCors: datasource.force_cors
-        });
-
-        var dashboard = new cdb.windshaft.Dashboard({
-          client: windshaftClient,
-          configGenerator: configGenerator,
-          statTag: datasource.stat_tag,
-          cartoDBLayerGroup: model,
-          widgets: widgetModels
-        });
-
-        dashboard.createInstance();
+        model = cartoDBLayerGroup;
       } else {
         model = Layers.create(layerData.type || layerData.kind, self, layerData);
       }

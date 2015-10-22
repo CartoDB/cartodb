@@ -11,7 +11,7 @@ cdb.geo.ui.Widget.ListModel = cdb.geo.ui.Widget.Model.extend({
   },
 
   url: function() {
-    return this.get('dashboardBaseURL') + '/list/' + this.get('id');
+    return this.get('url');
   },
 
   initialize: function() {
@@ -20,7 +20,7 @@ cdb.geo.ui.Widget.ListModel = cdb.geo.ui.Widget.Model.extend({
   },
 
   _initBinds: function() {
-    this.bind('change:dashboardBaseURL', function(){
+    this.bind('change:url', function(){
       var self = this;
       this.fetch({
         error: function() {

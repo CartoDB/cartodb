@@ -4,7 +4,7 @@ cdb.windshaft.PublicDashboardConfig.generate = function(dashboard) {
   var config = {};
 
   // LAYERS
-  config.layers = _.map(dashboard.getVisibleLayers(), function(layerModel) {
+  config.layers = dashboard.getVisibleLayers().map(function(layerModel, layerIndex) {
     var layerConfig = {
       type: 'cartodb',
       options: {
@@ -13,32 +13,31 @@ cdb.windshaft.PublicDashboardConfig.generate = function(dashboard) {
         cartocss_version: layerModel.get('cartocss_version'),
         interactivity: layerModel.getInteractiveColumnNames()
       }
-    }
+    };
     if (layerModel.getInfowindowFieldNames().length) {
       layerConfig.options.attributes = {
         id: "cartodb_id",
         columns: layerModel.getInfowindowFieldNames()
-      }
+      };
     }
+
+    // WIDGETS
+    var widgets = layerModel.widgets;
+    if (widgets && widgets.length) {
+      layerConfig.options.widgets = {};
+
+      widgets.forEach(function(widget) {
+        layerConfig.options.widgets[widget.get('id')] = {
+          "type": widget.get('type'),
+          "options": {
+            "columns": widget.get('options').columns
+          }
+        };
+      });
+    }
+
     return layerConfig;
-  })
-
-  // WIDGETS
-  var widgets = dashboard.getWidgets();
-  if (widgets && widgets.length) {
-    config.lists = {};
-
-    // TODO: Add histograms.
-    // var lists = _.filter(widgets, function(widget){
-    //   return widget.get('type') === 'list'
-    // });
-    widgets.forEach(function(list) {
-      config.lists[list.get('id')] = {
-        "sql": list.get('options').sql,
-        "columns": list.get('options').columns
-      }
-    })
-  }
+  });
 
   return config;
 };

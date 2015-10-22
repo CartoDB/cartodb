@@ -21,7 +21,7 @@ module.exports = function(_Promise, opts) {
       loc = 'https';
     }
 
-    this.ajax = options.ajax || (typeof(jQuery) !== 'undefined' ? jQuery.ajax: reqwest);
+    this.ajax = options.ajax || (typeof(jQuery) !== 'undefined' ? jQuery.ajax: reqwest.compat);
     if(!this.ajax) {
       throw new Error("jQuery or reqwest should be loaded");
     }

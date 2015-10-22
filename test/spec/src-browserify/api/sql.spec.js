@@ -109,7 +109,7 @@ describe('api/sql', function() {
     while (--i) long_sql.push("10000");
     var long_query = 'SELECT * ' + long_sql;
 
-    SQL = setupSQL(setup_Promise(Backbone.Events), { reqwest: ajax });
+    SQL = setupSQL(setup_Promise(Backbone.Events), { reqwest:{ compat: ajax }});
     sql = new SQL({
       user: USER,
       protocol: 'https'

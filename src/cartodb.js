@@ -99,6 +99,7 @@
         'geo/ui/widgets/list/widget_list_view.js',
         'geo/ui/widgets/list/widget_list_content_view.js',
         'geo/ui/widgets/list/widget_list_paginator_view.js',
+        'geo/ui/widgets/list/edges_view.js',
         'geo/ui/widgets/list/widget_list_item_view.js',
         'geo/ui/widgets/list/widget_list_items_view.js',
         'geo/ui/widgets/list/widget_list_model.js',

@@ -1,6 +1,6 @@
 cdb.geo.ui.Widget.List.PaginatorView = cdb.core.View.extend({
 
-  className: 'Widget-footer Widget-nav Widget-contentSpaced',
+  className: 'Widget-nav Widget-contentSpaced',
 
   _TEMPLATE: ' ' +
     '<span></span>' +

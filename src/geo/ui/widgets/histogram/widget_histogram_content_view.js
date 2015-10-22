@@ -50,7 +50,8 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     this.chart.classed('is-selectable', false);
   },
 
-  reset: function() {
+  reset: function(data) {
+    this.loadData(data);
     this._removeBrush();
     this.model.set({ a: 0, b: this.model.get('data').length });
   },
@@ -105,6 +106,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
   _setupModel: function() {
     this.model = new cdb.core.Model({ data: this.options.data });
     this.model.bind('change:a change:b', this._onChangeRange, this);
+    this.model.bind('change:data', this._onChangeData, this);
   },
 
   _setupDimensions: function() {
@@ -141,7 +143,6 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
   },
 
   _onBrushStart: function() {
-    $(".js-filter").animate({ opacity: 1 }, 250);
     this.chart.classed('is-selectable', true);
   },
 
@@ -239,7 +240,6 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
       var a, b;
 
       if (brush.empty()) {
-        $(".js-filter").animate({ opacity: 0 }, 0);
         self.chart.selectAll('.Bar').classed('is-selected', false);
         d3.select(this).call(brush.extent([0, 0]));
       } else {
@@ -380,14 +380,16 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     .call(xAxis);
   },
 
+  loadData: function(data) {
+    this.model.set({ a: 0, b: 0 }, { silent: true })
+    this.model.set('data', data);
+    this._onChangeData();
+  },
 
-  _zoom: function() {
+  _onChangeData: function() {
     this._removeBrush();
     this._removeBars();
     this._removeHandles();
-
-    var data = this.model.get('data');
-    this.model.set('data', data.slice(this.model.get('a'), this.model.get('b')));
 
     this._setupDimensions();
     this._generateBars();
@@ -595,12 +597,14 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   },
 
   _onRangeUpdated: function(a, b) {
+
+    this.$(".js-filter").animate({ opacity: 1 }, 250);
     this.viewModel.set({ a: a, b: b });
     this._updateStats();
   },
 
   _onChangeTotal: function() {
-    this._animateValue('.js-val', 'total', '');
+    this._animateValue('.js-val', 'total', ' SELECTED');
   },
 
   _onChangeMax: function() {
@@ -631,8 +635,11 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
     });
   },
 
-  _getData: function() {
+  _getData: function(full) {
     var data = this.dataModel.get('data');
+    if (full) {
+      return data;
+    }
     return data.slice(this.viewModel.get('a'), this.viewModel.get('b'));
   },
 
@@ -650,11 +657,13 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   },
 
   _zoom: function() {
-    //console.log('zoom');
+    this.chart.loadData(this._getData());
   },
 
   _reset: function() {
-    this.chart.reset();
+    this.viewModel.set({ a: 0, b: 100 });
+    this.chart.reset(this._getData());
+    this.$(".js-filter").animate({ opacity: 0 }, 0);
   },
 
   _generateCanvas: function() {

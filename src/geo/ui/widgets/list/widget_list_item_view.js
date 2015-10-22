@@ -49,7 +49,7 @@ cdb.geo.ui.Widget.List.ItemView = cdb.core.View.extend({
   render: function() {
     var template = _.template(this._TEMPLATE);
     var data = this.model.toJSON();
-    var hasInteractivity = true; // this._hasInteractivity(data);
+    var hasInteractivity = this._hasInteractivity(data);
     var items = this._sanitizeData(data);
 
     this.$el.html(

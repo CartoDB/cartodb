@@ -16,8 +16,9 @@
   $positive: rgba(#8FB83F, 1);
   $negative: rgba(#F15743, 1);
   $loadingBkg: rgba(#F9F9F9, 1);
-  $errorBkg: rgba(#F2F6F9, 1);
+  $canvasBkg: rgba(#F2F6F9, 1);
 
+  border-color: $canvasBkg;
   background: rgba(#FFF, 1);
 
   .Widget-textBig,
@@ -84,7 +85,7 @@
   }
   .Widget-error {
     border-color: $negative;
-    background: rgba($errorBkg, 0.8);
+    background: rgba($canvasBkg, 0.8);
   }
   .Widget-errorButton {
     background: $secondary;

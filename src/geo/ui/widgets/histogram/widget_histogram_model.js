@@ -1,4 +1,4 @@
-cdb.geo.ui.Widget.ListModel = cdb.geo.ui.Widget.Model.extend({
+cdb.geo.ui.Widget.HistogramModel = cdb.geo.ui.Widget.Model.extend({
 
   options: {
     page: 0,
@@ -11,7 +11,8 @@ cdb.geo.ui.Widget.ListModel = cdb.geo.ui.Widget.Model.extend({
   },
 
   url: function() {
-    return this.get('dashboardBaseURL') + '/list/' + this.get('id');
+    var url = this.get('baseURL') + '/api/v1/map/' + this.get('layerGroupId') + '/list/' + 'widget_uuid'; // + this.get('id');
+    return url;
   },
 
   initialize: function() {
@@ -20,7 +21,7 @@ cdb.geo.ui.Widget.ListModel = cdb.geo.ui.Widget.Model.extend({
   },
 
   _initBinds: function() {
-    this.bind('change:dashboardBaseURL', function(){
+    this.bind('change:id', function(){
       var self = this;
       this.fetch({
         error: function() {
@@ -61,4 +62,5 @@ cdb.geo.ui.Widget.ListModel = cdb.geo.ui.Widget.Model.extend({
       data: r.data
     };
   }
+
 });

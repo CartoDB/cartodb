@@ -467,6 +467,10 @@ var Vis = cdb.core.View.extend({
       "list": {
         model: 'ListModel',
         view: 'List.View'
+      },
+      "histogram": {
+        model: 'HistogramModel',
+        view: 'Histogram.View'
       }
     };
 
@@ -475,7 +479,7 @@ var Vis = cdb.core.View.extend({
         throw 'Widget type \'' + widgetData.type + '\' is not supported!';
       }
 
-      // Instantiate the model
+      // Instantiate the model 
       var modelClass = widgetClasses[widgetData.type].model;
       var widgetModel = new cdb.geo.ui.Widget[modelClass](widgetData);
       widgetModels.push(widgetModel);
@@ -487,13 +491,12 @@ var Vis = cdb.core.View.extend({
         { model: widgetModel }
       );
 
-      $('body').append(widgetView.render().el);
+      $('.js-canvas').append(widgetView.render().el);
     });
 
     this.map.layers.reset(_.map(data.layers, function(layerData) {
       var model;
 
-      // TODO: 'named_map' ????
       if (layerData.type === 'layergroup' || layerData.type === 'namedmap') {
 
         var layersFromVizJSON = layerData.options.layer_definition && layerData.options.layer_definition.layers ||

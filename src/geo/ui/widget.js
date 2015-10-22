@@ -4,7 +4,6 @@
  *
  *  It contains:
  *  - view model (viewModel)
- *  - datasource model (datasource)
  *  - data model (dataModel)
  *
  *  It will offet to the user:
@@ -21,6 +20,7 @@ cdb.geo.ui.Widget.View = cdb.core.View.extend({
   className: 'Widget Widget--light',
 
   options: {
+    columns_title: [],
     sync: true
   },
 
@@ -29,7 +29,8 @@ cdb.geo.ui.Widget.View = cdb.core.View.extend({
     this.viewModel = new cdb.core.Model({
       title: this.model.get('options').title,
       type: this.model.get('options').type,
-      sync: this.model.get('options').sync
+      sync: this.model.get('options').sync,
+      columns_title: this.model.get('options').columns_title
     });
   },
 

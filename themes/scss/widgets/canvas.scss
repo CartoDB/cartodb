@@ -1,0 +1,28 @@
+// Canvas for widgets
+// --------------------------------------------------
+
+@import '../variables/sizes';
+@import '../variables/mixins';
+
+
+.Widget-canvas {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 352px;
+  height: 100%;
+}
+
+// Widget media query
+@include media-query() {
+  .Widget-canvas {
+    @include display-flex();
+    @include flex-wrap(nowrap);
+    position: relative;
+    width: 100%;
+    height: auto;
+    overflow-x: auto;
+    overflow-y: visible;
+  }
+}

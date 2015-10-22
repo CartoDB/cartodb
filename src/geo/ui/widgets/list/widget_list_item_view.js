@@ -8,45 +8,92 @@ cdb.geo.ui.Widget.List.ItemView = cdb.core.View.extend({
   },
 
   _TEMPLATE: ' ' +
-    '<button type="button" class="Widget-listItemButton js-button">'+
+    '<% if (isClickable) { %>'+
+      '<button type="button" class="Widget-listItemButton js-button">'+
+    '<% } %>'+
       '<div class="Widget-contentSpaced Widget-contentSpaced--topAligned Widget-contentSpaced--start">'+
         '<em class="Widget-dot Widget-listDot"></em>'+
-        '<div class="Widget-contentFull">'+
-          '<p class="Widget-textSmall Widget-textSmall--upper"><%- items[0][1] %></p>'+
-          '<% if (itemsCount > 2) { %>'+
-            '<dl class="Widget-inlineList">'+
-            '<% for (var i = 1, l = itemsCount; i < l; i++) { %>'+
-              '<div class="Widget-inlineListItem Widget-textSmaller Widget-textSmaller--noEllip">'+
-                '<dd class="Widget-textSmaller--bold Widget-textSmaller--dark"><%- items[i][1] %></dd>'+
-                '<dt><%- items[i][0] %></dt>'+
-              '</div>'+
+        '<% if (itemsCount > 0) { %>'+
+          '<div class="Widget-contentFull">'+
+            '<p class="Widget-textSmall Widget-textSmall--upper Widget-textSmall--bold"><%- items[0][1] %></p>'+
+            '<% if (itemsCount > 2) { %>'+
+              '<dl class="Widget-inlineList">'+
+              '<% for (var i = 1, l = itemsCount; i < l; i++) { %>'+
+                '<div class="Widget-inlineListItem Widget-textSmaller Widget-textSmaller--noEllip">'+
+                  '<dd class="Widget-textSmaller--bold Widget-textSmaller--dark"><%- items[i][1] %></dd>'+
+                  '<dt><%- items[i][0] %></dt>'+
+                '</div>'+
+              '<% } %>'+
+              '</dl>'+
+            '<% } else if (itemsCount === 2) { %>'+
+              '<dl class="Widget-textSmaller Widget-textSmaller--noEllip u-tSpace">'+
+                '<dd class="Widget-textSmaller--bold Widget-textSmaller--dark u-rSpace"><%- items[1][1] %> </dd>'+
+                '<dt><%- items[1][0] %></dt>'+
+              '</dl>'+
             '<% } %>'+
-            '</dl>'+
-          '<% } else if (itemsCount === 2) { %>'+
-            '<dl class="Widget-textSmaller Widget-textSmaller--noEllip u-tSpace">'+
-              '<dd class="Widget-textSmaller--bold Widget-textSmaller--dark"><%- items[1][1] %> </dd>'+
-              '<dt><%- items[1][0] %></dt>'+
-            '</dl>'+
-          '<% } %>'+
-        '</div>'+
+          '</div>'+
+        '<% } %>'+
       '</div>'+
-    '</button>',
+    '<% if (isClickable) { %>'+
+      '</button>'+
+    '<% } %>',
+
+  initialize: function() {
+    this.viewModel = this.options.viewModel;
+  },
 
   render: function() {
     var template = _.template(this._TEMPLATE);
-    var items = _.pairs(this.model.toJSON());
-    var size = _.size(items);
+    var data = this.model.toJSON();
+    var hasCDBId = this._hasCDBId(data);
+    var items = this._sanitizeData(data);
+
     this.$el.html(
       template({
         items: items,
-        itemsCount: size
+        isClickable: hasCDBId,
+        itemsCount: _.size(items)
       })
     );
+
+    // If there is no cartodb_id defined, click event should
+    // be disabled
+    this[ hasCDBId ? 'delegateEvents' : 'undelegateEvents' ]();
     return this;
+  },
+
+  // Remove cartodb_id, if exists
+  // Replace titles if there are alternatives
+  // Convert data object to array items
+  _sanitizeData: function(data) {
+    var data = _.omit(data, function(value, key, object) {
+      return key === 'cartodb_id';
+    });
+
+    // Convert to pair items and check if there is a column title
+    var arr = [];
+    var columnTitles = this.viewModel.get('columns_title');
+
+    _.each(data, function(value, key) {
+      var pos = arr.length;
+      var title = columnTitles[pos] || key;
+      arr.push([ title, value ]);
+    });
+
+    return arr;
+  },
+
+  _hasCDBId: function(data) {
+    return !_.isEmpty(
+      _.filter(data, function(value, key){
+        return key === 'cartodb_id'
+      })
+    )
   },
 
   _onItemClick: function() {
     console.log("on item click!");
+    this.trigger('itemClicked', this.model, this);
   }
 
 });

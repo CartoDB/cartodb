@@ -14,14 +14,7 @@ class EmbedRedisCache
   def get(visualization_id, https_request)
     key = key(visualization_id, https_request)
     value = redis.get(key)
-    if value.present?
-      return JSON.parse(value, symbolize_names: true)
-    else
-      return nil
-    end
-  rescue Redis::BaseError => exception
-    Rollbar.report_exception(exception)
-    nil
+    value.present? ? JSON.parse(value, symbolize_names: true) : nil
   rescue => exception
     # Captures:
     # - Redis::BaseError if redis is down

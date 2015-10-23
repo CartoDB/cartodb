@@ -5,7 +5,7 @@
 @import '../variables/mixins';
 
 .Widget {
-  width: 352px;
+  width: $desktopLayout;
   // Due to line-heights, better to substract some pixels in the top
   padding: ($sMargin-section - 2) 0 $sMargin-section;
   box-sizing: border-box;
@@ -37,7 +37,8 @@
 // Widget media query
 @include media-query() {
   .Widget {
-    width: 280px;
+    width: $mobileLayout;
+    min-width: $mobileLayout;
     border-right: 2px solid transparent;
     border-bottom: 0;
   }

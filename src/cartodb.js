@@ -103,7 +103,12 @@
         'geo/ui/widgets/list/item_view.js',
         'geo/ui/widgets/list/items_view.js',
         'geo/ui/widgets/list/model.js',
-
+        'geo/ui/widgets/category/view.js',
+        'geo/ui/widgets/category/content_view.js',
+        'geo/ui/widgets/category/item_view.js',
+        'geo/ui/widgets/category/items_view.js',
+        'geo/ui/widgets/category/paginator_view.js',
+        'geo/ui/widgets/category/model.js',
         // End widgets
 
         'geo/sublayer.js',

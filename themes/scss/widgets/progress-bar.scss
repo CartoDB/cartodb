@@ -1,6 +1,8 @@
 // Progress bar item styles
 // --------------------------------------------------
 
+@import '../variables/mixins';
+
 .Widget-progressBar {
   position: relative;
   width: 100%;
@@ -9,9 +11,11 @@
   border-radius: 4px;
 }
 .Widget-progressState {
+  @include css3-prefix(animation, state-progress 600ms ease-out);
   position: absolute;
   top: 0;
   left: 0;
+  width: 0;
   max-width: 100%;
   height: 4px;
   border-radius: 4px;
@@ -26,4 +30,10 @@
   left: auto;
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
+}
+
+@include keyframes(state-progress) {
+  0% {
+    width: 0;
+  }
 }

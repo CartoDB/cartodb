@@ -471,6 +471,10 @@ var Vis = cdb.core.View.extend({
       "histogram": {
         model: 'HistogramModel',
         view: 'Histogram.View'
+      },
+      "category": {
+        model: 'CategoryModel',
+        view: 'Category.View'
       }
     };
 
@@ -479,7 +483,7 @@ var Vis = cdb.core.View.extend({
         throw 'Widget type \'' + widgetData.type + '\' is not supported!';
       }
 
-      // Instantiate the model 
+      // Instantiate the model
       var modelClass = widgetClasses[widgetData.type].model;
       var widgetModel = new cdb.geo.ui.Widget[modelClass](widgetData);
       widgetModels.push(widgetModel);

@@ -8,6 +8,7 @@
 * Fix for #5477 bug moving users with non-cartodbfied tables
 * Added a rake task to notify trendy maps to the map owner when reach a certain mapviews amount (500, 1000, 2000 and so on). This task takes into account the day before so it should be exectuded daily
 * Fixed negative geocoding quota in georeference modal [#5622](https://github.com/CartoDB/cartodb/pull/5622)
+* Now create a map from a GPX multilayer file is going to create a multilayer map
 * Group support for organizations. Usage instructions:
   1. Update CartoDB PostgreSQL extension to the latest version ([instructions](https://github.com/CartoDB/cartodb/blob/master/UPGRADE#L43)).
   2. Configure metadata api credentials and timeout. You can copy `org_metadata_api` config from `config/app_config.yml.sample` into your `config/app_config.yml`.

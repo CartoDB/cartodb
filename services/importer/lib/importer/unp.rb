@@ -5,6 +5,7 @@ require 'open3'
 require_relative './exceptions'
 require_relative './source_file'
 require_relative './kml_splitter'
+require_relative './gpx_splitter'
 require_relative './osm_splitter'
 
 module CartoDB
@@ -18,7 +19,7 @@ module CartoDB
         .js .json .tar .gz .tgz .osm .bz2 .geojson
         .gpx .sql .tab .tsv .txt
       }
-      SPLITTERS = [KmlSplitter, OsmSplitter]
+      SPLITTERS = [KmlSplitter, OsmSplitter, GpxSplitter]
 
       DEFAULT_IMPORTER_TMP_SUBFOLDER = '/tmp/imports/'
 

@@ -4,11 +4,12 @@ module CartoDB
     class SourceFile
       ENCODING_RE = /_encoding_([\w|-]+)_encoding_.*\./
 
-      def initialize(filepath, filename=nil, http_opts={})
+      def initialize(filepath, filename=nil, layer=nil, http_opts={})
         @filepath       = filepath
         @filename       = filename
         @etag           = http_opts.fetch(:etag, nil)
         @last_modified  = http_opts.fetch(:last_modified, nil)
+        @layer          = layer
         @checksum       = nil
       end
 

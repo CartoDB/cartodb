@@ -35,7 +35,7 @@ module CartoDB
       def initialize(job, source_file, layer = nil, ogr2ogr = nil, georeferencer = nil)
         self.job            = job
         self.source_file    = source_file
-        self.layer          = 'track_points' if source_file.extension =~ /\.gpx/
+        self.layer          = layer
         self.ogr2ogr        = ogr2ogr
         self.georeferencer  = georeferencer
         self.options        = {}

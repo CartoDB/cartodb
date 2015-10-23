@@ -7,7 +7,7 @@
 .Widget {
   width: 352px;
   // Due to line-heights, better to substract some pixels in the top
-  padding: ($sMargin-section - 2) $sMargin-section $sMargin-section;
+  padding: ($sMargin-section - 2) 0 $sMargin-section;
   box-sizing: border-box;
   border-bottom: 2px solid transparent;
   font-family: 'Open Sans';
@@ -20,9 +20,18 @@
   height: 22px;
   margin: 0 0 2px;
 }
+.Widget-header,
+.Widget-footer,
+.Widget-content {
+  margin-right: $sMargin-section;
+  margin-left: $sMargin-section;
+}
 .Widget-content {
   display: block;
   margin-top: $sMargin-element;
+}
+.Widget-content--noSidesMargin {
+  margin: $sMargin-element 0 0;
 }
 
 // Widget media query

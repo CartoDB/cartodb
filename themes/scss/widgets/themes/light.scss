@@ -17,9 +17,10 @@
   $negative: rgba(#F15743, 1);
   $loadingBkg: rgba(#F9F9F9, 1);
   $canvasBkg: rgba(#F2F6F9, 1);
+  $commonBkg: rgba(#FFF, 1);
 
   border-color: $canvasBkg;
-  background: rgba(#FFF, 1);
+  background: $commonBkg;
 
   .Widget-textBig,
   .Widget-textNormal,
@@ -64,20 +65,39 @@
     background: $secondary;
   }
 
-  .Widget-list--withBorders {
-    border-top: 1px solid $elementBorder;
+  .Widget-listEdgeBorder {
+    background: $elementBorder;
+  }
+  .Widget-listEdgeShadow {
+    @include background-gradient($commonBkg, rgba($commonBkg, 0));
+    background-color: transparent;
+  }
+  .Widget-listItemInner--withBorders {
     border-bottom: 1px solid $elementBorder;
   }
-  .Widget-listItem--withBorders {
-    border-bottom: 1px solid $elementBorder;
-    &:last-child {
-      border-bottom: none;
-    }
+  .Widget-listItem--fake {
+    border-color: $loadingBkg;
   }
-
   .Widget-listItem--fake:after,
   .Widget-listItem--fake:before {
     background-color: $loadingBkg;
+  }
+  .Widget-listButton:hover {
+    background: $canvasBkg;
+  }
+  .Widget-listButton--withBorder {
+    &:before {
+      background: transparent;
+    }
+    &:after {
+      background: $elementBkg;
+    }
+  }
+  .Widget-listButton--withBorder:hover {
+    &:before,
+    &:after {
+      background: $elementBkg;
+    }
   }
 
   .Widget-loader {

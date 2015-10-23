@@ -1,6 +1,6 @@
 cdb.geo.ui.Widget.List.ItemsView = cdb.geo.ui.Widget.View.extend({
 
-  className: 'Widget-list Widget-list--withBorders js-list',
+  className: 'Widget-list js-list',
   tagName: 'ul',
 
   events: {

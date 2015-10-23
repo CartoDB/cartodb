@@ -18,8 +18,8 @@
   pointer-events: none;
 }
 
-.is-selectable .Handle,
-.is-selectable .HandleLine {
+.Chart.is-selectable .Handle,
+.Chart.is-selectable .HandleLine {
   opacity: 1;
 }
 

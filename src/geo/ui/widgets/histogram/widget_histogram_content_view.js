@@ -101,6 +101,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     this.model = new cdb.core.Model({ data: this.options.data });
     this.model.bind('change:a change:b', this._onChangeRange, this);
     this.model.bind('change:data', this._onChangeData, this);
+    this.model.bind('change:dragging', this._onChangeDragging, this);
   },
 
   _setupDimensions: function() {
@@ -185,14 +186,17 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     });
   },
 
+  _onChangeDragging: function() {
+    this.chart.classed('is-dragging', this.model.get('dragging'));
+  },
+
   _onBrushMove: function() {
-    this.chart.classed('is-dragging', true);
+    this.model.set({ dragging: true });
     this._selectBars();
     this._adjustBrushHandles();
   },
 
   _onMouseEnter: function(d) {
-    //this.$(".Tooltip").stop().fadeIn(250);
   },
 
   _onMouseOut: function(d) {
@@ -202,7 +206,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
   },
 
   _onMouseMove: function(d) {
-    var x = d3.event.offsetX - this.margin.left;
+    var x = d3.event.offsetX;
     var a =  Math.ceil(x / this.barWidth);
     var data = this.model.get('data');
 
@@ -210,9 +214,10 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     var bar = this.chart.select('.Bar:nth-child(' + a + ')');
 
     if (bar && bar.node() && !bar.classed('is-selected')) {
-      var value = data[a - 1];
-      var left = ((a - 1) * this.barWidth) + this.margin.left; //+ (this.barWidth / 2);
-      this.trigger('hover', { left: left, value: value });
+      var left = ((a - 1) * this.barWidth);
+      if (!this._isDragging()) {
+        this.trigger('hover', { left: left, value: data[a - 1] });
+      }
     } else {
       this.trigger('hover', { value: null });
     }
@@ -223,6 +228,10 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     if (bar && bar.node()) {
       bar.classed('is-highlighted', true);
     }
+  },
+
+  _isDragging: function() {
+    return this.model.get('dragging');
   },
 
   selectRange: function(a, b) {
@@ -268,7 +277,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
       var data = self.model.get('data');
       var a, b;
 
-      self.chart.classed('is-dragging', false);
+      self.model.set({ dragging: false });
 
       if (brush.empty()) {
         self.chart.selectAll('.Bar').classed('is-selected', false);
@@ -483,7 +492,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
 
   _onChangeRange: function() {
     if (this.model.get('a') === 0 && this.model.get('b') === 0) {
-      return
+      return;
     }
     this.trigger('range_updated', this.model.get('a'), this.model.get('b'));
   },
@@ -537,12 +546,17 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
       '<li class="Widget-listItem Widget-listItem--withBorders Widget-listItem--fake"></li>' +
     '</ul>',
 
+  _initViews: function() {
+    this._generateData();
+    this._setupDimensions();
+    this._generateCanvas();
+    this._renderMainChart();
+    this._renderMiniChart();
+  },
+
   render: function() {
 
     this.clearSubViews();
-
-    // TODO: move this
-    this.options.unit = 'unit';
 
     var template = _.template(this._TEMPLATE);
     var data = this.dataModel.getData();
@@ -565,12 +579,37 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
     return this;
   },
 
-  _generateData: function() {
-    var data = _.map(d3.range(Math.round(Math.random() * 80) + 2), function(d) {
-      return Math.round(Math.random() * 1000);
-    });
+  _renderMainChart: function() {
+    this.chart = new cdb.geo.ui.Widget.Histogram.Chart(({
+      el: this.$('.js-chart'),
+      y: 0,
+      handles: true,
+      width: this.canvasWidth,
+      height: this.defaults.chartHeight,
+      data: this.dataModel.get('data')
+    }));
 
-    this.dataModel.set('data', data);
+    this.chart.bind('range_updated', this._onRangeUpdated, this);
+    this.chart.bind('hover', this._onValueHover, this);
+    this.chart.render().show();
+
+    this._updateStats();
+  },
+
+  _renderMiniChart: function() {
+    this.miniChart = new cdb.geo.ui.Widget.Histogram.Chart(({
+      className: 'mini',
+      el: this.$('.js-chart'),
+      handles: false,
+      width: this.canvasWidth,
+      y: 90,
+      height: 20,
+      data: this.dataModel.get('data')
+    }));
+
+    this.miniChart.bind('on_brush_end', this._onMiniRangeUpdated, this);
+
+    this.miniChart.render();
   },
 
   _setupBindings: function() {
@@ -588,51 +627,19 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
     this.canvasHeight = this.defaults.chartHeight + this.margin.top + this.margin.bottom;
   },
 
-  _initViews: function() {
-    this._generateData();
-    this._setupDimensions();
-    this._generateCanvas();
-
-    this.chart = new cdb.geo.ui.Widget.Histogram.Chart(({
-      el: this.$('.js-chart'),
-      y: 0,
-      handles: true,
-      width: this.canvasWidth,
-      height: this.defaults.chartHeight,
-      data: this.dataModel.get('data')
-    }));
-
-    this.miniChart = new cdb.geo.ui.Widget.Histogram.Chart(({
-      className: 'mini',
-      el: this.$('.js-chart'),
-      handles: false,
-      width: this.canvasWidth,
-      y: 90,
-      height: 20,
-      data: this.dataModel.get('data')
-    }));
-
-
-    this.chart.bind('range_updated', this._onRangeUpdated, this);
-    this.chart.bind('hover', this._onValueHover, this);
-    this.miniChart.bind('on_brush_end', this._onMiniRangeUpdated, this);
-
-    this.chart.render().show();
-    this.miniChart.render();
-  },
-
   _onValueHover: function(info) {
+    var $tooltip = this.$(".js-tooltip");
     if (info.value) {
-      this.$(".js-tooltip").css({ top: 0, left: info.left });
-      this.$(".js-tooltip").text(info.value);
-      this.$(".js-tooltip").show();
+      $tooltip.css({ top: 0, left: info.left });
+      $tooltip.text(info.value);
+      $tooltip.show();
     } else {
-      this.$(".js-tooltip").hide();
+      $tooltip.hide();
     }
   },
 
   _onMiniRangeUpdated: function(a, b) {
-    this.viewModel.set({ a: a, b: b })
+    this.viewModel.set({ a: a, b: b });
     var data = this._getData();
     var self = this;
 
@@ -668,6 +675,14 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
 
   _onChangeAvg: function() {
     this._animateValue('.js-avg', 'avg', 'AVG');
+  },
+
+  _generateData: function() {
+    var data = _.map(d3.range(Math.round(Math.random() * 80) + 2), function(d) {
+      return Math.round(Math.random() * 1000);
+    });
+
+    this.dataModel.set('data', data);
   },
 
   _animateValue: function(className, what, unit) {

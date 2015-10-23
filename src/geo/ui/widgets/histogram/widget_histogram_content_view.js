@@ -136,7 +136,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     .attr('opacity', 0)
     .attr('transform', 'translate(0, ' + this.options.y + ')');
 
-    this.chart.classed(this.options.className, true);
+    this.chart.classed(this.options.className || '', true);
   },
 
   hide: function() {
@@ -186,6 +186,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
   },
 
   _onBrushMove: function() {
+    this.chart.classed('is-dragging', true);
     this._selectBars();
     this._adjustBrushHandles();
   },
@@ -266,6 +267,8 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     function onBrushEnd() {
       var data = self.model.get('data');
       var a, b;
+
+      self.chart.classed('is-dragging', false);
 
       if (brush.empty()) {
         self.chart.selectAll('.Bar').classed('is-selected', false);

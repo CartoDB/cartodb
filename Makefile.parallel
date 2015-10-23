@@ -41,7 +41,7 @@ WORKING_SPECS_1 = \
 	spec/models/visualization/overlays_spec.rb \
 	spec/models/visualization/presenter_spec.rb \
 	spec/models/visualization/relator_spec.rb \
-	spec/models/visualization/table_blender_spec.rb \ 
+	spec/models/visualization/table_blender_spec.rb \ # Pending
 	spec/models/visualization/tags_spec.rb \
 	spec/models/visualization/watcher_spec.rb \
   spec/models/named_maps_spec.rb \
@@ -100,6 +100,7 @@ WORKING_SPECS_2 = \
   services/importer/spec/unit/source_file_spec.rb \
   services/importer/spec/unit/content_guesser_spec.rb \
   services/importer/spec/unit/namedplaces_guesser_spec.rb \
+  services/user-mover/spec/user_mover_spec.rb \ # Pending
   $(NULL)
 
 WORKING_SPECS_4 = \
@@ -122,7 +123,6 @@ WORKING_SPECS_4 = \
   services/importer/spec/unit/url_translator/osm_spec.rb \
   services/importer/spec/unit/url_translator/osm2_spec.rb \
   services/importer/spec/unit/mail_notifier_spec.rb \
-  services/relocator/spec/relocator_spec.rb \
 
 WORKING_SPECS_5 = \
   spec/rspec_configuration.rb \
@@ -173,7 +173,7 @@ WORKING_SPECS_9 = \
   spec/lib/initializers/carto_db_spec.rb \
   spec/requests/carto/api/oembed_controller_spec.rb \
   spec/models/carto/ \
-  spec/models/asset_spec.rb \ 
+  spec/models/asset_spec.rb \ # Pending
   spec/rspec_configuration.rb \
   spec/requests/api/permissions_controller_spec.rb \
   spec/models/shared_entity_spec.rb \

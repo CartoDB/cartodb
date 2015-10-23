@@ -41,7 +41,7 @@ module Carto
       end
 
       def user_decoration(user_id)
-        user = User.where(id: user_id).first
+        user = ::User.where(id: user_id).first
         return {} if user.nil?
         {
             id:         user.id,

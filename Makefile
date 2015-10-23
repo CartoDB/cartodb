@@ -76,8 +76,6 @@ WORKING_SPECS_2 = \
   services/importer/spec/unit/mail_notifier_spec.rb \
   services/importer/spec/unit/sql_loader_spec.rb \
   services/importer/spec/unit/ogr2ogr_spec.rb \
-  services/importer/spec/unit/ogrinfo_spec.rb \
-  services/importer/spec/unit/ogr2ogr_params_helper_spec.rb \
   services/importer/spec/unit/post_import_handler_spec.rb \
   services/importer/spec/unit/runner_spec.rb \
   services/importer/spec/unit/unp_spec.rb \
@@ -112,7 +110,6 @@ WORKING_SPECS_4 = \
   services/importer/spec/unit/url_translator/osm_spec.rb \
   services/importer/spec/unit/url_translator/osm2_spec.rb \
   services/importer/spec/unit/mail_notifier_spec.rb \
-  services/relocator/spec/relocator_spec.rb \
 
 WORKING_SPECS_5 = \
   spec/rspec_configuration.rb \

@@ -403,7 +403,7 @@ module CartoDB
         user.id == user_id
       end
 
-      # @param user User
+      # @param user ::User
       # @param permission_type String PERMISSION_xxx
       def has_permission?(user, permission_type)
         return is_owner?(user) if permission_id.nil?
@@ -628,7 +628,7 @@ module CartoDB
         !(likes.select { |like| like.actor == user_id }.first.nil?)
       end
 
-      # @param viewer_user User
+      # @param viewer_user ::User
       def qualified_name(viewer_user=nil)
         if viewer_user.nil? || is_owner?(viewer_user)
           name

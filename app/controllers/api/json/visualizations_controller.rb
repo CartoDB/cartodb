@@ -11,6 +11,7 @@ require_relative '../../../models/visualization/watcher'
 require_relative '../../../models/map/presenter'
 require_relative '../../../../services/named-maps-api-wrapper/lib/named-maps-wrapper/exceptions'
 require_relative '../../../../lib/static_maps_url_helper'
+require_relative '../../../../lib/cartodb/event_tracker'
 
 class Api::Json::VisualizationsController < Api::ApplicationController
   include CartoDB
@@ -18,6 +19,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   ssl_allowed :notify_watching, :list_watching, :add_like, :remove_like
   ssl_required :create, :update, :destroy, :set_next_id
   skip_before_filter :api_authorization_required, only: [:add_like, :remove_like]
+
   before_filter :optional_api_authorization, only: [:add_like, :remove_like]
   before_filter :table_and_schema_from_params, only: [:update, :destroy, :stats,
                                                       :notify_watching, :list_watching,
@@ -56,6 +58,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
         vis = set_visualization_prev_next(vis, prev_id, next_id)
 
+        track_event(vis, 'Created')
+
         render_jsonp(vis)
       rescue CartoDB::InvalidMember
         render_jsonp({ errors: vis.full_errors }, 400)
@@ -67,7 +71,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       rescue CartoDB::NamedMapsWrapper::NamedMapsDataError => exception
         render_jsonp({ errors: { named_maps: exception } }, 400)
       end
-
     end
   end
 
@@ -144,6 +147,14 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         end
         return(head 404) unless vis
         return(head 403) unless vis.is_owner?(current_user)
+
+        track_event(vis, 'Deleted')
+        unless vis.table.nil?
+          vis.table.dependent_visualizations.each { |dependent_vis|
+            # Remove dependent visualizations as well, if any
+            track_event(dependent_vis, 'Deleted')
+          }
+        end 
 
         @stats_aggregator.timing('delete') do
           vis.delete
@@ -407,7 +418,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       end
 
     elsif params[:tables]
-      viewed_user = User.find(:username => CartoDB.extract_subdomain(request))
+      viewed_user = ::User.find(:username => CartoDB.extract_subdomain(request))
       tables = @stats_aggregator.timing('locate-table') do
           params[:tables].map { |table_name|
           if viewed_user
@@ -453,6 +464,13 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       next_vis.set_prev_list_item!(vis)
     end
     vis
+  end
+
+  def track_event(vis, action)
+    custom_properties = {'privacy' => vis.privacy, 'type' => vis.type,  'vis_id' => vis.id}
+    event_type = vis.type == Visualization::Member::TYPE_DERIVED ? 'map' : 'dataset'
+
+    Cartodb::EventTracker.new.send_event(current_user, "#{action} #{event_type}", custom_properties)
   end
 
 end

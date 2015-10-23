@@ -5,7 +5,7 @@ module Helpers
 
     # Getter by table uuid or table name using canonical visualizations
     # @param id_or_name String If is a name, can become qualified as "schema.tablename"
-    # @param viewer_user User
+    # @param viewer_user ::User
     def get_by_id_or_name(id_or_name, viewer_user)
       return nil unless viewer_user
 
@@ -20,7 +20,7 @@ module Helpers
       }
 
       unless table_schema.nil?
-        owner = User.where(username:table_schema).first
+        owner = ::User.where(username:table_schema).first
         unless owner.nil?
           query_filters[:user_id] = owner.id
         end

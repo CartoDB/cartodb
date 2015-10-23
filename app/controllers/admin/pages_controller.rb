@@ -392,7 +392,7 @@ class Admin::PagesController < Admin::AdminController
 
     user_or_org_domain = CartoDB.subdomain_from_request(request)
     user_domain = CartoDB.extract_subdomain(request)
-    user = User.where(username: user_domain).first
+    user = ::User.where(username: user_domain).first
 
     unless user.nil?
       if user.username != user_or_org_domain and not user.belongs_to_organization?(get_organization_if_exists(user_or_org_domain))
@@ -441,7 +441,7 @@ class Admin::PagesController < Admin::AdminController
 
   def get_viewed_user
     username = CartoDB.extract_subdomain(request)
-    @viewed_user = User.where(username: username).first
+    @viewed_user = ::User.where(username: username).first
   end
 
 

@@ -11,7 +11,7 @@ module CartoDB
       DESTINATION_SCHEMA  = 'public'
       MAX_RENAME_RETRIES  = 20
 
-      attr_reader :data_import
+      attr_reader :imported_table_visualization_ids, :rejected_layers
       attr_accessor :table
 
       # @param runner CartoDB::Importer2::Runner
@@ -32,7 +32,9 @@ module CartoDB
         @destination_schema     = destination_schema
         @support_tables_helper  = CartoDB::Visualization::SupportTables.new(database,
                                                                             {public_user_roles: public_user_roles})
-        @data_import            = nil
+
+        @imported_table_visualization_ids = []
+        @rejected_layers = []
       end
 
       def run(tracker)
@@ -49,6 +51,10 @@ module CartoDB
           results.select(&:success?).each { |result|
             register(result)
           }
+
+          if data_import.create_visualization
+            create_visualization
+          end
         end
 
         self
@@ -56,10 +62,10 @@ module CartoDB
 
       def register(result)
         @support_tables_helper.reset
-        
+
         # Sanitizing table name if it corresponds with a PostgreSQL reseved word
         result.name = "#{result.name}_t" if CartoDB::POSTGRESQL_RESERVED_WORDS.map(&:downcase).include?(result.name.downcase)
-        
+
         runner.log.append("Before renaming from #{result.table_name} to #{result.name}")
         name = rename(result, result.table_name, result.name)
         result.name = name
@@ -77,6 +83,26 @@ module CartoDB
         else
           raise exception
         end
+      end
+
+      def create_visualization
+        tables = get_imported_tables
+        if tables.length > 0
+          user = ::User.where(id: data_import.user_id).first
+          vis, @rejected_layers = CartoDB::Visualization::DerivedCreator.new(user, tables).create
+          data_import.visualization_id = vis.id
+          data_import.save
+          data_import.reload
+        end
+      end
+
+      def get_imported_tables
+        tables = []
+        @imported_table_visualization_ids.each do |table_id|
+          vis = CartoDB::Visualization::Member.new(id: table_id).fetch
+          tables << vis.table
+        end
+        tables
       end
 
       def success?
@@ -115,14 +141,14 @@ module CartoDB
         end
         rename_attempts = rename_attempts + 1
 
-        if self.data_import
-          user_id = self.data_import.user_id
+        if data_import
+          user_id = data_import.user_id
           if exists_user_table_for_user_id(new_name, user_id)
             # Since get_valid_table_name should only return nonexisting table names (with a retry limit)
             # this is likely caused by a table deletion, so we run ghost tables to cleanup and retry
             if rename_attempts == 1
               runner.log.append("Triggering ghost tables for #{user_id} because collision on #{new_name}")
-              User.where(id: user_id).first.link_ghost_tables
+              ::User.where(id: user_id).first.link_ghost_tables
 
               if exists_user_table_for_user_id(new_name, user_id)
                 runner.log.append("Ghost tables didn't fix the collision.")
@@ -177,14 +203,15 @@ module CartoDB
 
       def persist_metadata(result, name, data_import_id)
         table_registrar.register(name, data_import_id)
-        self.table = table_registrar.table
+        @table = table_registrar.table
+        @imported_table_visualization_ids << @table.table_visualization.id
         BoundingBoxHelper.update_visualizations_bbox(table)
         self
       end
 
       def results
         runner.results
-      end 
+      end
 
       def over_table_quota?
         @aborted || quota_checker.over_table_quota?
@@ -196,7 +223,7 @@ module CartoDB
       end
 
       def data_import
-        DataImport[@data_import_id]
+        @data_import ||= DataImport[@data_import_id]
       end
 
       private

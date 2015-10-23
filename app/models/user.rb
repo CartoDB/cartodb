@@ -14,6 +14,7 @@ require_relative './feature_flag'
 require_relative '../../lib/cartodb/stats/api_calls'
 require_relative '../../lib/carto/http/client'
 require_dependency 'cartodb_config_utils'
+require_relative './user/db_service'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -82,6 +83,10 @@ class User < Sequel::Model
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
 
+  def db_service
+    @db_service ||= CartoDB::UserModule::DBService.new(self)
+  end
+
   def self.new_with_organization(organization)
     user = ::User.new
     user.organization = organization
@@ -124,10 +129,6 @@ class User < Sequel::Model
       # so we have to ammend that in the calculation:
       errors.add(:quota_in_bytes, "not enough disk quota") if quota_in_bytes.to_i + organization.assigned_quota - initial_value(:quota_in_bytes) > organization.quota_in_bytes
     end
-  end
-
-  def public_user_roles
-    self.organization_user? ? [CartoDB::PUBLIC_DB_USER, database_public_username] : [CartoDB::PUBLIC_DB_USER]
   end
 
   #                             +--------+---------+------+
@@ -184,9 +185,9 @@ class User < Sequel::Model
     setup_user
     save_metadata
     self.load_avatar
-    monitor_user_notification
+    db_service.monitor_user_notification
     sleep 1
-    set_statement_timeouts
+    db_service.set_statement_timeouts
   end
 
   def notify_new_organization_user
@@ -218,17 +219,17 @@ class User < Sequel::Model
     super
     save_metadata
     changes = (self.previous_changes.present? ? self.previous_changes.keys : [])
-    set_statement_timeouts   if changes.include?(:user_timeout) || changes.include?(:database_timeout)
-    rebuild_quota_trigger    if changes.include?(:quota_in_bytes)
+    db_service.set_statement_timeouts if changes.include?(:user_timeout) || changes.include?(:database_timeout)
+    db_service.rebuild_quota_trigger if changes.include?(:quota_in_bytes)
     if changes.include?(:account_type) || changes.include?(:available_for_hire) || changes.include?(:disqus_shortname) || changes.include?(:email) || \
        changes.include?(:website) || changes.include?(:name) || changes.include?(:description) || \
        changes.include?(:twitter_username) || changes.include?(:location)
       invalidate_varnish_cache(regex: '.*:vizjson')
     end
     if changes.include?(:database_host)
-      User.terminate_database_connections(database_name, previous_changes[:database_host][0])
+      CartoDB::UserModule::DBService.terminate_database_connections(database_name, previous_changes[:database_host][0])
     elsif changes.include?(:database_schema)
-      User.terminate_database_connections(database_name, database_host)
+      CartoDB::UserModule::DBService.terminate_database_connections(database_name, database_host)
     end
 
   end
@@ -305,18 +306,18 @@ class User < Sequel::Model
 
     # Delete the DB or the schema
     if has_organization
-      drop_organization_user(org_id, is_owner = !@org_id_for_org_wipe.nil?) unless error_happened
+      db_service.drop_organization_user(org_id, is_owner = !@org_id_for_org_wipe.nil?) unless error_happened
     else
-      if User.where(:database_name => self.database_name).count > 1
+      if ::User.where(:database_name => self.database_name).count > 1
         raise CartoDB::BaseCartoDBError.new('The user is not supposed to be in a organization but another user has the same database_name. Not dropping it')
       else
         if !error_happened
           Thread.new do
             conn = self.in_database(as: :cluster_admin)
-            drop_database_and_user(conn)
-            drop_user(conn)
+            db_service.drop_database_and_user(conn)
+            db_service.drop_user(conn)
           end.join
-          monitor_user_notification
+          db_service.monitor_user_notification
         end
       end
     end
@@ -342,137 +343,6 @@ class User < Sequel::Model
       organization = Organization.where(id: @org_id_for_org_wipe).first
       organization.destroy
     end
-  end
-
-  # Org users share the same db, so must only delete the schema unless he's the owner
-  def drop_organization_user(org_id, is_owner=false)
-    raise CartoDB::BaseCartoDBError.new('Tried to delete an organization user without org id') if org_id.nil?
-
-    Thread.new do
-      in_database(as: :superuser) do |database|
-        if is_owner
-          schemas = ['cdb', 'cdb_importer', 'cartodb', 'public', self.database_schema] +
-              User.select(:database_schema).where(:organization_id => org_id).all.collect(&:database_schema)
-          schemas.uniq.each do |s|
-            drop_users_privileges_in_schema(s, [self.database_username, self.database_public_username, CartoDB::PUBLIC_DB_USER])
-          end
-        end
-
-        # If user is in an organization should never have public schema, so to be safe check
-        unless self.database_schema == 'public'
-          drop_users_privileges_in_schema(self.database_schema, [self.database_username, self.database_public_username, CartoDB::PUBLIC_DB_USER])
-          database.run(%Q{ DROP FUNCTION IF EXISTS "#{self.database_schema}"._CDB_UserQuotaInBytes()})
-          drop_all_functions_from_schema(self.database_schema)
-          database.run(%Q{ DROP SCHEMA IF EXISTS "#{self.database_schema}" })
-        end
-      end
-
-      conn = self.in_database(as: :cluster_admin)
-      User.terminate_database_connections(database_name, database_host)
-      drop_user(conn, database_public_username)
-      if is_owner
-        conn.run("DROP DATABASE \"#{database_name}\"")
-      end
-      drop_user(conn)
-
-    end.join
-
-    monitor_user_notification
-  end
-
-  def drop_database_and_user(conn = self.in_database(as: :cluster_admin))
-
-    if !database_name.nil? && !database_name.empty?
-      conn.run("UPDATE pg_database SET datallowconn = 'false' WHERE datname = '#{database_name}'")
-      User.terminate_database_connections(database_name, database_host)
-      conn.run("DROP DATABASE \"#{database_name}\"")
-    end
-
-    if !database_username.nil? && !database_username.empty?
-      conn.run("DROP USER \"#{database_username}\"")
-    end
-  end
-
-  def drop_user(conn = self.in_database(as: :cluster_admin), username = database_username)
-    database_with_conflicts = nil
-    retried = false
-    begin
-      conn.run("DROP USER IF EXISTS \"#{username}\"")
-    rescue => e
-      if !retried && e.message =~ /cannot be dropped because some objects depend on it/
-        retried = true
-        e.message =~ /object[s]? in database (.*)$/
-        if database_with_conflicts == $1
-          raise e
-        else
-          database_with_conflicts = $1
-          revoke_all_on_database_from(conn, database_with_conflicts, username)
-          revoke_all_memberships_on_database_to_role(conn, database_with_conflicts, username)
-          drop_owned_by_user(conn, username)
-          conflict_database_conn = self.in_database({
-            :as => :cluster_admin,
-            'database' => database_with_conflicts
-          })
-          drop_owned_by_user(conflict_database_conn, username)
-          #.select { |s|
-          #  !conn.fetch("SELECT 1 as schema_exist FROM information_schema.schemata WHERE schema_name = '#{s}'").first.nil?
-          #}
-          ['cdb', 'cdb_importer', 'cartodb', 'public', self.database_schema]
-          .each { |s|
-            drop_users_privileges_in_schema(s, [username])
-          }
-          retry
-        end
-      else
-        raise e
-      end
-    end
-  end
-
-  def revoke_all_memberships_on_database_to_role(conn, database, role)
-    q = "select rolname from pg_user join pg_auth_members on (pg_user.usesysid=pg_auth_members.member) join pg_roles on (pg_roles.oid=pg_auth_members.roleid) where pg_user.usename='#{role}'"
-    conn.fetch(q).each { |rolname|
-      conn.run("REVOKE \"#{rolname[:rolname]}\" FROM \"#{role}\" CASCADE")
-    }
-  end
-
-  def drop_owned_by_user(conn, role)
-    conn.run("DROP OWNED BY \"#{role}\"")
-  end
-
-  def self.terminate_database_connections(database_name, database_host)
-    connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-      'host' => database_host,
-      'database' => 'postgres'
-    ) {|key, o, n| n.nil? ? o : n}
-    conn = ::Sequel.connect(connection_params)
-    conn.run("
-      DO language plpgsql $$
-      DECLARE
-          ver INT[];
-          sql TEXT;
-      BEGIN
-          SELECT INTO ver regexp_split_to_array(
-            regexp_replace(version(), '^PostgreSQL ([^ ]*) .*', '\\1'),
-            '\\.'
-          );
-          sql := 'SELECT pg_terminate_backend(';
-          IF ver[1] > 9 OR ( ver[1] = 9 AND ver[2] > 1 ) THEN
-            sql := sql || 'pid';
-          ELSE
-            sql := sql || 'procpid';
-          END IF;
-
-          sql := sql || ') FROM pg_stat_activity WHERE datname = '
-            || quote_literal('#{database_name}');
-
-          RAISE NOTICE '%', sql;
-
-          EXECUTE sql;
-      END
-      $$
-    ")
-    conn.disconnect
   end
 
   def invalidate_varnish_cache(options = {})
@@ -549,7 +419,7 @@ class User < Sequel::Model
   #        example: 0.20 will get all users at 80% of their map view limit
   #
   def self.overquota(delta = 0)
-    User.where(enabled: true).all.reject{ |u| u.organization_id.present? }.select do |u|
+    ::User.where(enabled: true).all.reject{ |u| u.organization_id.present? }.select do |u|
         limit = u.map_view_quota.to_i - (u.map_view_quota.to_i * delta)
         over_map_views = u.get_api_calls(from: u.last_billing_cycle, to: Date.today).sum > limit
 
@@ -586,13 +456,13 @@ class User < Sequel::Model
     end
 
     @password = value
-    self.salt = new?? self.class.make_token : User.filter(:id => self.id).select(:salt).first.salt
+    self.salt = new?? self.class.make_token : ::User.filter(:id => self.id).select(:salt).first.salt
     self.crypted_password = self.class.password_digest(value, salt)
   end
 
   def self.authenticate(email, password)
     sanitized_input = email.strip.downcase
-    if candidate = User.filter("email = ? OR username = ?", sanitized_input, sanitized_input).first
+    if candidate = ::User.filter("email = ? OR username = ?", sanitized_input, sanitized_input).first
       candidate.crypted_password == password_digest(password, candidate.salt) ? candidate : nil
     else
       nil
@@ -623,17 +493,12 @@ class User < Sequel::Model
     self.database_host
   end
 
-  def reset_pooled_connections
-    # Only close connections to this users' database
-    $pool.close_connections!(self.database_name)
-  end
-
   def in_database(options = {}, &block)
     if options[:statement_timeout]
       in_database.run("SET statement_timeout TO #{options[:statement_timeout]}")
     end
 
-    configuration = get_db_configuration_for(options[:as])
+    configuration = db_service.db_configuration_for(options[:as])
     configuration['database'] = options['database'] unless options['database'].nil?
 
     connection = $pool.fetch(configuration) do
@@ -656,7 +521,7 @@ class User < Sequel::Model
   end
 
   def connection(options = {})
-    configuration = get_db_configuration_for(options[:as])
+    configuration = db_service.db_configuration_for(options[:as])
 
     $pool.fetch(configuration) do
       get_database(options, configuration)
@@ -664,85 +529,11 @@ class User < Sequel::Model
   end
 
   def get_database(options, configuration)
-      ::Sequel.connect(configuration.merge(:after_connect=>(proc do |conn|
-        conn.execute(%Q{ SET search_path TO "#{self.database_schema}", cartodb, public }) unless options[:as] == :cluster_admin
-      end)))
-  end
-
-  def get_db_configuration_for(user = nil)
-    logger = (Rails.env.development? || Rails.env.test? ? ::Rails.logger : nil)
-    if user == :superuser
-      ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        'database' => self.database_name,
-        :logger => logger,
-        'host' => self.database_host
-      ) {|key, o, n| n.nil? ? o : n}
-    elsif user == :cluster_admin
-      ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        'database' => 'postgres',
-        :logger => logger,
-        'host' => self.database_host
-      ) {|key, o, n| n.nil? ? o : n}
-    elsif user == :public_user
-      ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        'database' => self.database_name,
-        :logger => logger,
-        'username' => CartoDB::PUBLIC_DB_USER, 'password' => CartoDB::PUBLIC_DB_USER_PASSWORD,
-        'host' => self.database_host
-      ) {|key, o, n| n.nil? ? o : n}
-    elsif user == :public_db_user
-      ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        'database' => self.database_name,
-        :logger => logger,
-        'username' => database_public_username, 'password' => CartoDB::PUBLIC_DB_USER_PASSWORD,
-        'host' => self.database_host
-      ) {|key, o, n| n.nil? ? o : n}
-    else
-      ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        'database' => self.database_name,
-        :logger => logger,
-        'username' => database_username,
-        'password' => database_password,
-        'host' => self.database_host
-      ) {|key, o, n| n.nil? ? o : n}
-    end
-  end
-
-
-  def run_pg_query(query)
-    time = nil
-    res  = nil
-    translation_proc = nil
-    in_database do |user_database|
-      time = Benchmark.measure {
-        user_database.synchronize do |conn|
-          res = conn.exec query
-        end
-        translation_proc = user_database.conversion_procs
-      }
-    end
-    {
-      :time          => time.real,
-      :total_rows    => res.ntuples,
-      :rows          => pg_to_hash(res, translation_proc),
-      :results       => pg_results?(res),
-      :modified      => pg_modified?(res),
-      :affected_rows => pg_size(res)
-    }
-    rescue => e
-    if e.is_a? PGError
-      if e.message.include?("does not exist")
-        if e.message.include?("column")
-          raise CartoDB::ColumnNotExists, e.message
-        else
-          raise CartoDB::TableNotExists, e.message
-        end
-      else
-        raise CartoDB::ErrorRunningQuery, e.message
+    ::Sequel.connect(configuration.merge(after_connect: (proc do |conn|
+      unless options[:as] == :cluster_admin
+        conn.execute(%{ SET search_path TO #{db_service.build_search_path} })
       end
-    else
-      raise e
-    end
+    end)))
   end
 
   # List all public visualization tags of the user
@@ -1104,7 +895,7 @@ class User < Sequel::Model
   end
 
   def self.find_with_custom_fields(user_id)
-    User.filter(:id => user_id).select(:id,:email,:username,:crypted_password,:database_name,:admin).first
+    ::User.filter(:id => user_id).select(:id,:email,:username,:crypted_password,:database_name,:admin).first
   end
 
 
@@ -1131,8 +922,6 @@ class User < Sequel::Model
     !Carto::Ldap::Manager.new.configuration_present?
   end
 
-  private :database_exists?
-
   # This method is innaccurate and understates point based tables (the /2 is to account for the_geom_webmercator)
   # TODO: Without a full table scan, ignoring the_geom_webmercator, we cannot accuratly asses table size
   # Needs to go on a background job.
@@ -1142,7 +931,9 @@ class User < Sequel::Model
     attempts = 0
     begin
       # Hack to support users without the new MU functiones loaded
-      user_data_size_function = self.cartodb_extension_version_pre_mu? ? "CDB_UserDataSize()" : "CDB_UserDataSize('#{self.database_schema}')"
+      user_data_size_function =
+        self.db_service.cartodb_extension_version_pre_mu? ? "CDB_UserDataSize()"
+                                                          : "CDB_UserDataSize('#{self.database_schema}')"
       in_database(:as => :superuser).fetch("SELECT cartodb.#{user_data_size_function}").first[:cdb_userdatasize]
     rescue => e
       attempts += 1
@@ -1161,12 +952,12 @@ class User < Sequel::Model
 
   def real_tables(in_schema=self.database_schema)
     self.in_database(:as => :superuser)
-    .select(:pg_class__oid, :pg_class__relname)
-    .from(:pg_class)
-    .join_table(:inner, :pg_namespace, :oid => :relnamespace)
-    .where(:relkind => 'r', :nspname => in_schema)
-    .exclude(:relname => ::Table::SYSTEM_TABLE_NAMES)
-    .all
+        .select(:pg_class__oid, :pg_class__relname)
+        .from(:pg_class)
+        .join_table(:inner, :pg_namespace, :oid => :relnamespace)
+        .where(:relkind => 'r', :nspname => in_schema)
+        .exclude(:relname => ::Table::SYSTEM_TABLE_NAMES)
+        .all
   end
 
   def ghost_tables_work(job)
@@ -1426,33 +1217,6 @@ class User < Sequel::Model
       .to_a.fetch(0, {}).fetch(:created_at, nil)
   end
 
-  def rebuild_quota_trigger
-    puts "Setting user quota in db '#{database_name}' (#{username})"
-    in_database(:as => :superuser) do |db|
-
-      if !cartodb_extension_version_pre_mu? && has_organization?
-        db.run("DROP FUNCTION IF EXISTS public._CDB_UserQuotaInBytes();")
-      end
-
-      db.transaction do
-        # NOTE: this has been written to work for both
-        #       databases that switched to "cartodb" extension
-        #       and those before the switch.
-        #       In the future we should guarantee that exntension
-        #       lives in cartodb schema so we don't need to set
-        #       a search_path before
-        search_path = db.fetch("SHOW search_path;").first[:search_path]
-        db.run("SET search_path TO cartodb, public;")
-        if cartodb_extension_version_pre_mu?
-          db.run("SELECT CDB_SetUserQuotaInBytes(#{self.quota_in_bytes});")
-        else
-          db.run("SELECT CDB_SetUserQuotaInBytes('#{self.database_schema}', #{self.quota_in_bytes});")
-        end
-        db.run("SET search_path TO #{search_path};")
-      end
-    end
-  end
-
   def importing_jobs
     imports = DataImport.where(state: ['complete', 'failure']).invert
       .where(user_id: self.id)
@@ -1519,968 +1283,19 @@ class User < Sequel::Model
     ClientApplication.create(:user_id => self.id)
   end
 
-  def create_db_user
-    conn = self.in_database(as: :cluster_admin)
-    begin
-      conn.transaction do
-        begin
-          conn.run("CREATE USER \"#{database_username}\" PASSWORD '#{database_password}'")
-          conn.run("GRANT publicuser to \"#{database_username}\"")
-          rescue => e
-            puts "#{Time.now} USER SETUP ERROR (#{database_username}): #{$!}"
-            raise e
-          end
-      end
-    end
-  end
-
-  def create_public_db_user
-    in_database(as: :superuser) do |database|
-      database.run(%Q{ CREATE USER "#{database_public_username}" LOGIN INHERIT })
-      database.run(%Q{ GRANT publicuser TO "#{database_public_username}" })
-      database.run(%Q{ ALTER USER "#{database_public_username}" SET search_path = "#{database_schema}", public, cartodb })
-    end
-  end
-
-  def create_user_db
-    conn = self.in_database(as: :cluster_admin)
-    begin
-      conn.run("CREATE DATABASE \"#{self.database_name}\"
-      WITH TEMPLATE = template_postgis
-      OWNER = #{::Rails::Sequel.configuration.environment_for(Rails.env)['username']}
-      ENCODING = 'UTF8'
-      CONNECTION LIMIT=-1")
-    rescue => e
-      puts "#{Time.now} USER SETUP ERROR WHEN CREATING DATABASE #{self.database_name}: #{$!}"
-      raise e
-    end
-  end
-
-  def set_database_name
-    # Assign database_name
-    self.database_name = case Rails.env
-      when 'development'
-        "cartodb_dev_user_#{self.partial_db_name}_db"
-      when 'staging'
-        "cartodb_staging_user_#{self.partial_db_name}_db"
-      when 'test'
-        "cartodb_test_user_#{self.partial_db_name}_db"
-      else
-        "cartodb_user_#{self.partial_db_name}_db"
-    end
-    if self.has_organization_enabled?
-      if !database_exists?
-        raise "Organization database #{database_name} doesn't exist"
-      end
-    else
-      if database_exists?
-        raise "Database #{database_name} already exists"
-      end
-    end
-    self.this.update database_name: self.database_name
-  end
-
-  # INFO: main setup for non-org users
-  def setup_new_user
-    create_client_application
-    Thread.new do
-      create_db_user
-      create_user_db
-      grant_owner_in_database
-    end.join
-    create_importer_schema
-    create_geocoding_schema
-    load_cartodb_functions
-    set_database_search_path
-    reset_database_permissions # Reset privileges
-    grant_publicuser_in_database
-    set_user_privileges # Set privileges
-    set_user_as_organization_member
-    rebuild_quota_trigger
-    create_function_invalidate_varnish
-    revoke_cdb_conf_access
-  end
-
-  # INFO: main setup for org users
-  def setup_organization_user
-    create_client_application
-    Thread.new do
-      create_db_user
-    end.join
-    create_own_schema
-    setup_schema
-    revoke_cdb_conf_access
-  end
-
-  def create_own_schema
-    load_cartodb_functions
-    self.database_schema = self.username
-    this.update database_schema: database_schema
-    create_user_schema
-    set_database_search_path
-    create_public_db_user
-  end
-
-  def move_to_own_schema
-    self.move_to_schema(self.username)
-  end
-
-  def move_to_schema(new_schema_name)
-    if self.database_schema != new_schema_name
-      old_database_schema_name = self.database_schema
-      self.database_schema = new_schema_name
-      self.this.update database_schema: self.database_schema
-      self.create_user_schema
-      self.rebuild_quota_trigger
-      self.move_tables_to_schema(old_database_schema_name, self.database_schema)
-      self.create_public_db_user
-      self.set_database_search_path
-    end
-  end
-
-  # INFO: This method is used both when creating a new user and by the relocator when user is relocated to an org database.
-  def setup_schema
-    reset_user_schema_permissions
-    reset_schema_owner
-    set_user_privileges
-    set_user_as_organization_member
-    rebuild_quota_trigger
-
-    # INFO: organization privileges are set for org_member_role, which is assigned to each org user
-    if organization_owner?
-      setup_organization_owner
-    end
-  end
-
-  def setup_organization_owner
-    setup_organization_role_permissions
-    setup_owner_permissions
-    configure_extension_org_metadata_api_endpoint
-  end
-
-  def setup_owner_permissions
-    # TODO: remove the check after extension install
-    return if Rails.env.test?
-
-    in_database(as: :superuser) do |database|
-      database.run(%{ SELECT cartodb.CDB_Organization_AddAdmin('#{username}') })
-    end
-  end
-
-  def organization_member_group_role_member_name
-    in_database.fetch("SELECT cartodb.CDB_Organization_Member_Group_Role_Member_Name() as org_member_role;")[:org_member_role][:org_member_role]
-  end
-
-  def setup_organization_role_permissions
-    org_member_role = organization_member_group_role_member_name
-    set_user_privileges_in_public_schema(org_member_role)
-    run_queries_in_transaction(
-      grant_connect_on_database_queries(org_member_role), true
-    )
-    set_geo_columns_privileges(org_member_role)
-    set_raster_privileges(org_member_role)
-    set_user_privileges_in_cartodb_schema(org_member_role)
-    set_user_privileges_in_importer_schema(org_member_role)
-    set_user_privileges_in_geocoding_schema(org_member_role)
-  end
-
-  def move_tables_to_schema(old_schema, new_schema)
-    in_database(as: :superuser) do |database|
-      database.transaction do
-        real_tables(old_schema).each do |t|
-          old_name = "#{old_schema}.#{t[:relname]}"
-          new_name = "#{new_schema}.#{t[:relname]}"
-
-          was_cartodbfied = Carto::UserTable.find_by_user_id_and_name(id, t[:relname]).present?
-
-          database.run(%Q{ SELECT cartodb._CDB_drop_triggers('#{old_name}'::REGCLASS) }) if was_cartodbfied
-          database.run(%Q{ ALTER TABLE #{old_name} SET SCHEMA "#{new_schema}" })
-          database.run(%Q{ SELECT cartodb.CDB_CartodbfyTable('#{new_schema}'::TEXT, '#{new_name}'::REGCLASS) }) if was_cartodbfied
-        end
-      end
-    end
-  end
-
-  def reset_schema_owner
-    in_database(as: :superuser) do |database|
-      database.run(%Q{ALTER SCHEMA "#{self.database_schema}" OWNER TO "#{self.database_username}"})
-    end
-  end
-
-  def grant_owner_in_database
-    self.run_queries_in_transaction(
-      self.grant_all_on_database_queries,
-      true
-    )
-  end
-
-  def grant_user_in_database
-    self.run_queries_in_transaction(
-      self.grant_connect_on_database_queries,
-      true
-    )
-  end
-
-  def grant_publicuser_in_database
-    self.run_queries_in_transaction(
-      self.grant_connect_on_database_queries(CartoDB::PUBLIC_DB_USER),
-      true
-    )
-    self.run_queries_in_transaction(
-      grant_read_on_schema_queries('cartodb', CartoDB::PUBLIC_DB_USER),
-      true
-    )
-    self.run_queries_in_transaction(
-      [
-        "REVOKE SELECT ON cartodb.cdb_tablemetadata FROM #{CartoDB::PUBLIC_DB_USER} CASCADE"
-      ],
-      true
-    )
-    self.run_queries_in_transaction(
-      [
-        "GRANT USAGE ON SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}",
-        "GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}",
-        "GRANT SELECT ON spatial_ref_sys TO #{CartoDB::PUBLIC_DB_USER}"
-      ],
-      true
-    )
-  end
-
-  def set_user_privileges_in_cartodb_schema(db_user = nil)
-    self.run_queries_in_transaction(
-      (
-        grant_read_on_schema_queries('cartodb', db_user) +
-        self.grant_write_on_cdb_tablemetadata_queries(db_user)
-      ),
-      true
-    )
-  end
-
-  def set_user_privileges_in_public_schema(db_user = nil)
-    self.run_queries_in_transaction(
-      grant_read_on_schema_queries('public', db_user),
-      true
-    )
-  end
-
-  def set_user_privileges_in_own_schema # MU
-    self.run_queries_in_transaction(
-      self.grant_all_on_user_schema_queries,
-      true
-    )
-  end
-
-  def set_user_privileges_in_importer_schema(db_user = nil) # MU
-    self.run_queries_in_transaction(
-      self.grant_all_on_schema_queries('cdb_importer', db_user),
-      true
-    )
-  end
-
-  def set_user_privileges_in_geocoding_schema(db_user = nil)
-    self.run_queries_in_transaction(
-        self.grant_all_on_schema_queries('cdb', db_user),
-        true
-    )
-  end
-
-  def set_privileges_to_publicuser_in_own_schema # MU
-    # Privileges in user schema for publicuser
-    self.run_queries_in_transaction(
-      self.grant_usage_on_user_schema_to_other(CartoDB::PUBLIC_DB_USER),
-      true
-    )
-  end
-
-  def set_raster_privileges(role_name = nil)
-    # Postgis lives at public schema, so raster catalogs too
-    catalogs_schema = "public"
-    queries = [
-      "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_overviews\" TO \"#{CartoDB::PUBLIC_DB_USER}\"",
-      "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_columns\" TO \"#{CartoDB::PUBLIC_DB_USER}\""
-    ]
-    target_user = role_name.nil? ? database_public_username : role_name
-    unless self.organization.nil?
-      queries << "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_overviews\" TO \"#{target_user}\""
-      queries << "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_columns\" TO \"#{target_user}\""
-    end
-    self.run_queries_in_transaction(queries,true)
-  end
-
-  def set_geo_columns_privileges(role_name = nil)
-    # Postgis lives at public schema, as do geometry_columns and geography_columns
-    catalogs_schema = 'public'
-    target_user = role_name.nil? ? database_public_username : role_name
-    queries = [
-        %Q{ GRANT SELECT ON "#{catalogs_schema}"."geometry_columns" TO "#{target_user}" },
-        %Q{ GRANT SELECT ON "#{catalogs_schema}"."geography_columns" TO "#{target_user}" }
-    ]
-    self.run_queries_in_transaction(queries, true)
-  end
-
-  def set_user_privileges # MU
-    # INFO: organization permission on public schema is handled through role assignment
-    unless organization_user?
-      self.set_user_privileges_in_cartodb_schema
-      self.set_user_privileges_in_public_schema
-    end
-
-    self.set_user_privileges_in_own_schema
-    self.set_privileges_to_publicuser_in_own_schema
-
-    unless organization_user?
-      self.set_user_privileges_in_importer_schema
-      self.set_user_privileges_in_geocoding_schema
-      self.set_geo_columns_privileges
-      self.set_raster_privileges
-    end
-  end
-
   ## User's databases setup methods
   def setup_user
     return if disabled?
-    self.set_database_name
+    db_service.set_database_name
 
+    create_client_application
     if self.has_organization_enabled?
-      self.setup_organization_user
+      db_service.new_organization_user_main_db_setup
     else
       if self.has_organization?
         raise "It's not possible to create a user within a inactive organization"
       else
-        self.setup_new_user
-      end
-    end
-  end
-
-  def set_database_search_path
-    in_database(as: :superuser) do |database|
-      database.run(%Q{ ALTER USER "#{database_username}" SET search_path = "#{database_schema}", public, cartodb })
-    end
-  end
-
-  def create_importer_schema
-    create_schema('cdb_importer')
-  end
-
-  def create_geocoding_schema
-    create_schema('cdb')
-  end
-
-  def create_user_schema
-    create_schema(self.database_schema, self.database_username)
-  end
-
-  # Attempts to create a new database schema
-  # Does not raise exception if the schema already exists
-  def create_schema(schema, role = nil)
-    in_database(as: :superuser) do |database|
-      if role
-        database.run(%Q{CREATE SCHEMA "#{schema}" AUTHORIZATION "#{role}"})
-      else
-        database.run(%Q{CREATE SCHEMA "#{schema}"})
-      end
-    end
-  rescue Sequel::DatabaseError => e
-    raise unless e.message =~ /schema .* already exists/
-  end #create_schema
-
-  # Add plpythonu pl handler
-  def add_python
-    in_database(
-      :as => :superuser,
-      no_cartodb_in_schema: true
-    ).run(<<-SQL
-      CREATE OR REPLACE PROCEDURAL LANGUAGE 'plpythonu' HANDLER plpython_call_handler;
-    SQL
-    )
-  end
-
-  # Create a "public.cdb_invalidate_varnish()" function to invalidate Varnish
-  #
-  # The function can only be used by the superuser, we expect
-  # security-definer triggers OR triggers on superuser-owned tables
-  # to call it with controlled set of parameters.
-  #
-  # The function is written in python because it needs to reach out
-  # to a Varnish server.
-  #
-  # Being unable to communicate with Varnish may or may not be critical
-  # depending on CartoDB configuration at time of function definition.
-  #
-
-  def create_function_invalidate_varnish
-    if Cartodb.config[:invalidation_service] && Cartodb.config[:invalidation_service].fetch('enabled', false)
-      create_function_invalidate_varnish_invalidation_service
-    elsif Cartodb.config[:varnish_management].fetch('http_port', false)
-      create_function_invalidate_varnish_http
-    else
-      create_function_invalidate_varnish_telnet
-    end
-  end
-
-  # Telnet invalidation works only for Varnish 2.x.
-  def create_function_invalidate_varnish_telnet
-
-    add_python
-
-    varnish_host = Cartodb.config[:varnish_management].try(:[],'host') || '127.0.0.1'
-    varnish_port = Cartodb.config[:varnish_management].try(:[],'port') || 6082
-    varnish_timeout = Cartodb.config[:varnish_management].try(:[],'timeout') || 5
-    varnish_critical = Cartodb.config[:varnish_management].try(:[],'critical') == true ? 1 : 0
-    varnish_retry = Cartodb.config[:varnish_management].try(:[],'retry') || 5
-    purge_command = Cartodb::config[:varnish_management]["purge_command"]
-    varnish_trigger_verbose = Cartodb.config[:varnish_management].fetch('trigger_verbose', true) == true ? 1 : 0
-
-    in_database(:as => :superuser).run(<<-TRIGGER
-    BEGIN;
-    CREATE OR REPLACE FUNCTION public.cdb_invalidate_varnish(table_name text) RETURNS void AS
-    $$
-        critical = #{varnish_critical}
-        timeout = #{varnish_timeout}
-        retry = #{varnish_retry}
-        trigger_verbose = #{varnish_trigger_verbose}
-
-        client = GD.get('varnish', None)
-
-        while True:
-
-          if not client:
-              try:
-                import varnish
-                client = GD['varnish'] = varnish.VarnishHandler(('#{varnish_host}', #{varnish_port}, timeout))
-              except Exception as err:
-                # NOTE: we won't retry on connection error
-                if critical:
-                  plpy.error('Varnish connection error: ' +  str(err))
-                break
-
-          try:
-            # NOTE: every table change also changed CDB_TableMetadata, so
-            #       we purge those entries too
-            #
-            # TODO: do not invalidate responses with surrogate key
-            #       "not_this_one" when table "this" changes :/
-            #       --strk-20131203;
-            #
-            client.fetch('#{purge_command} obj.http.X-Cache-Channel ~ "^#{self.database_name}:(.*%s.*)|(cdb_tablemetadata)|(table)$"' % table_name.replace('"',''))
-            break
-          except Exception as err:
-            if trigger_verbose:
-              plpy.warning('Varnish fetch error: ' + str(err))
-            client = GD['varnish'] = None # force reconnect
-            if not retry:
-              if critical:
-                plpy.error('Varnish fetch error: ' +  str(err))
-              break
-            retry -= 1 # try reconnecting
-    $$
-    LANGUAGE 'plpythonu' VOLATILE;
-    REVOKE ALL ON FUNCTION public.cdb_invalidate_varnish(TEXT) FROM PUBLIC;
-    COMMIT;
-TRIGGER
-    )
-  end
-
-  def create_function_invalidate_varnish_http
-
-    add_python
-
-    varnish_host = Cartodb.config[:varnish_management].try(:[],'host') || '127.0.0.1'
-    varnish_port = Cartodb.config[:varnish_management].try(:[],'http_port') || 6081
-    varnish_timeout = Cartodb.config[:varnish_management].try(:[],'timeout') || 5
-    varnish_critical = Cartodb.config[:varnish_management].try(:[],'critical') == true ? 1 : 0
-    varnish_retry = Cartodb.config[:varnish_management].try(:[],'retry') || 5
-    purge_command = Cartodb::config[:varnish_management]["purge_command"]
-    varnish_trigger_verbose = Cartodb.config[:varnish_management].fetch('trigger_verbose', true) == true ? 1 : 0
-
-    in_database(:as => :superuser).run(<<-TRIGGER
-    BEGIN;
-    CREATE OR REPLACE FUNCTION public.cdb_invalidate_varnish(table_name text) RETURNS void AS
-    $$
-        critical = #{varnish_critical}
-        timeout = #{varnish_timeout}
-        retry = #{varnish_retry}
-        trigger_verbose = #{varnish_trigger_verbose}
-
-        import httplib
-
-        while True:
-
-          try:
-            # NOTE: every table change also changed CDB_TableMetadata, so
-            #       we purge those entries too
-            #
-            # TODO: do not invalidate responses with surrogate key
-            #       "not_this_one" when table "this" changes :/
-            #       --strk-20131203;
-            #
-            client = httplib.HTTPConnection('#{varnish_host}', #{varnish_port}, False, timeout)
-            client.request('PURGE', '/batch', '', {"Invalidation-Match": ('^#{self.database_name}:(.*%s.*)|(cdb_tablemetadata)|(table)$' % table_name.replace('"',''))  })
-            response = client.getresponse()
-            assert response.status == 204
-            break
-          except Exception as err:
-            if trigger_verbose:
-              plpy.warning('Varnish purge error: ' + str(err))
-            if not retry:
-              if critical:
-                plpy.error('Varnish purge error: ' +  str(err))
-              break
-            retry -= 1 # try reconnecting
-    $$
-    LANGUAGE 'plpythonu' VOLATILE;
-    REVOKE ALL ON FUNCTION public.cdb_invalidate_varnish(TEXT) FROM PUBLIC;
-    COMMIT;
-TRIGGER
-    )
-  end
-
-  # Invalidate through external service
-  def create_function_invalidate_varnish_invalidation_service
-
-    add_python
-
-    invalidation_host = Cartodb.config[:invalidation_service].try(:[], 'host') || '127.0.0.1'
-    invalidation_port = Cartodb.config[:invalidation_service].try(:[],'port') || 3142
-    invalidation_timeout = Cartodb.config[:invalidation_service].try(:[],'timeout') || 5
-    invalidation_critical = Cartodb.config[:invalidation_service].try(:[], 'critical') ? 1 : 0
-    invalidation_retry = Cartodb.config[:invalidation_service].try(:[],'retry') || 5
-    invalidation_trigger_verbose = Cartodb.config[:invalidation_service].fetch('trigger_verbose', true) == true ? 1 : 0
-
-    in_database(:as => :superuser).run(<<-TRIGGER
-  BEGIN;
-  CREATE OR REPLACE FUNCTION public.cdb_invalidate_varnish(table_name text) RETURNS void AS
-  $$
-      critical = #{invalidation_critical}
-      timeout = #{invalidation_timeout}
-      retry = #{invalidation_retry}
-      trigger_verbose = #{invalidation_trigger_verbose}
-
-      client = GD.get('invalidation', None)
-
-      while True:
-
-        if not client:
-            try:
-              import redis
-              client = GD['invalidation'] = redis.Redis(host='#{invalidation_host}', port=#{invalidation_port}, socket_timeout=timeout)
-            except Exception as err:
-              # NOTE: we won't retry on connection error
-              if critical:
-                plpy.error('Invalidation Service connection error: ' +  str(err))
-              break
-
-        try:
-          client.execute_command('TCH', '#{self.database_name}', table_name)
-          break
-        except Exception as err:
-          if trigger_verbose:
-            plpy.warning('Invalidation Service warning: ' + str(err))
-          client = GD['invalidation'] = None # force reconnect
-          if not retry:
-            if critical:
-              plpy.error('Invalidation Service error: ' +  str(err))
-            break
-          retry -= 1 # try reconnecting
-  $$
-  LANGUAGE 'plpythonu' VOLATILE;
-  REVOKE ALL ON FUNCTION public.cdb_invalidate_varnish(TEXT) FROM PUBLIC;
-  COMMIT;
-TRIGGER
-    )
-  end
-
-  # Returns a tree elements array with [major, minor, patch] as in http://semver.org/
-  def cartodb_extension_semver(extension_version)
-    extension_version.split('.').take(3).map(&:to_i)
-  end
-
-  def cartodb_extension_version
-    @cartodb_extension_version ||= self.in_database(:as => :superuser).fetch('select cartodb.cdb_version() as v').first[:v]
-  end
-
-  def cartodb_extension_version_pre_mu?
-    current_version = self.cartodb_extension_semver(self.cartodb_extension_version)
-    if current_version.size == 3
-      major, minor, _ = current_version
-      major == 0 and minor < 3
-    else
-      raise 'Current cartodb extension version does not match standard x.y.z format'
-    end
-  end
-
-  # Cartodb functions
-  def load_cartodb_functions(statement_timeout = nil, cdb_extension_target_version = nil)
-    add_python
-
-    # Install dependencies of cartodb extension
-    in_database({
-                    as: :superuser,
-                    no_cartodb_in_schema: true
-                }) do |db|
-      db.transaction do
-
-        unless statement_timeout.nil?
-          old_timeout = db.fetch("SHOW statement_timeout;").first[:statement_timeout]
-          db.run("SET statement_timeout TO '#{statement_timeout}';")
-        end
-
-        db.run('CREATE EXTENSION plpythonu FROM unpackaged') unless db.fetch(%Q{
-            SELECT count(*) FROM pg_extension WHERE extname='plpythonu'
-          }).first[:count] > 0
-        db.run('CREATE EXTENSION schema_triggers') unless db.fetch(%Q{
-            SELECT count(*) FROM pg_extension WHERE extname='schema_triggers'
-          }).first[:count] > 0
-        db.run('CREATE EXTENSION postgis FROM unpackaged') unless db.fetch(%Q{
-            SELECT count(*) FROM pg_extension WHERE extname='postgis'
-          }).first[:count] > 0
-
-        unless statement_timeout.nil?
-          db.run("SET statement_timeout TO '#{old_timeout}';")
-        end
-      end
-    end
-
-    upgrade_cartodb_postgres_extension(statement_timeout, cdb_extension_target_version)
-
-    # We reset the connections to this database to be sure the change in default search_path is effective
-    self.reset_pooled_connections
-
-    self.rebuild_quota_trigger
-  end
-
-  # Upgrade the cartodb postgresql extension
-  def upgrade_cartodb_postgres_extension(statement_timeout=nil, cdb_extension_target_version=nil)
-    if cdb_extension_target_version.nil?
-      cdb_extension_target_version = '0.11.1'
-    end
-
-    in_database({
-                  as: :superuser,
-                  no_cartodb_in_schema: true
-                }) do |db|
-      db.transaction do
-
-        unless statement_timeout.nil?
-          old_timeout = db.fetch("SHOW statement_timeout;").first[:statement_timeout]
-          db.run("SET statement_timeout TO '#{statement_timeout}';")
-        end
-
-        db.run(%Q{
-          DO LANGUAGE 'plpgsql' $$
-          DECLARE
-            ver TEXT;
-          BEGIN
-            BEGIN
-              SELECT cartodb.cdb_version() INTO ver;
-            EXCEPTION WHEN undefined_function OR invalid_schema_name THEN
-              RAISE NOTICE 'Got % (%)', SQLERRM, SQLSTATE;
-              BEGIN
-                CREATE EXTENSION cartodb VERSION '#{cdb_extension_target_version}' FROM unpackaged;
-              EXCEPTION WHEN undefined_table THEN
-                RAISE NOTICE 'Got % (%)', SQLERRM, SQLSTATE;
-                CREATE EXTENSION cartodb VERSION '#{cdb_extension_target_version}';
-                RETURN;
-              END;
-              RETURN;
-            END;
-            ver := '#{cdb_extension_target_version}';
-            IF position('dev' in ver) > 0 THEN
-              EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || 'next''';
-              EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || '''';
-            ELSE
-              EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || '''';
-            END IF;
-          END;
-          $$;
-        })
-
-        unless statement_timeout.nil?
-          db.run("SET statement_timeout TO '#{old_timeout}';")
-        end
-
-        obtained = db.fetch('SELECT cartodb.cdb_version() as v').first[:v]
-
-        unless cartodb_extension_semver(cdb_extension_target_version) == cartodb_extension_semver(obtained)
-          raise("Expected cartodb extension '#{cdb_extension_target_version}' obtained '#{obtained}'")
-        end
-      end
-    end
-  end
-
-  def set_statement_timeouts
-    in_database(as: :superuser) do |user_database|
-      user_database["ALTER ROLE \"?\" SET statement_timeout to ?", database_username.lit, user_timeout].all
-      user_database["ALTER DATABASE \"?\" SET statement_timeout to ?", database_name.lit, database_timeout].all
-    end
-    in_database.disconnect
-    in_database.connect(get_db_configuration_for)
-    in_database(as: :public_user).disconnect
-    in_database(as: :public_user).connect(get_db_configuration_for(:public_user))
-  rescue Sequel::DatabaseConnectionError => e
-  end
-
-  def run_queries_in_transaction(queries, superuser = false)
-    conn_params = {}
-    if superuser
-      conn_params[:as] = :superuser
-    end
-    in_database(conn_params) do |user_database|
-      user_database.transaction do
-        queries.each do |q|
-          begin
-            user_database.run(q)
-          rescue => e
-            CartoDB.notify_debug('Error running user query in transaction', { query: q, user: self, error: e.inspect })
-            raise e
-          end
-        end
-        yield(user_database) if block_given?
-      end
-    end
-  end
-
-  def set_user_as_organization_member
-    in_database(:as => :superuser) do |user_database|
-      user_database.transaction do
-        user_database.run("SELECT cartodb.CDB_Organization_Create_Member('#{database_username}');")
-      end
-    end
-  end
-
-  def grant_connect_on_database_queries(db_user = nil)
-    granted_user = db_user.nil? ? self.database_username : db_user
-    [
-      "GRANT CONNECT ON DATABASE \"#{self.database_name}\" TO \"#{granted_user}\""
-    ]
-  end
-
-  def grant_all_on_database_queries
-    [
-      "GRANT ALL ON DATABASE \"#{self.database_name}\" TO \"#{self.database_username}\""
-    ]
-  end
-
-  def revoke_permissions_on_cartodb_conf_queries(db_user)
-    # TODO: remove the check after extension install (#4924 merge)
-    return [] if Rails.env.test?
-
-    [ "REVOKE ALL ON TABLE cartodb.CDB_CONF FROM \"#{db_user}\"" ]
-  end
-
-  def grant_write_on_cdb_tablemetadata_queries(db_user = nil)
-    granted_user = db_user.nil? ? self.database_username : db_user
-    [
-      "GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE cartodb.cdb_tablemetadata TO \"#{granted_user}\""
-    ]
-  end
-
-  def grant_all_on_user_schema_queries
-    [
-      "GRANT ALL ON SCHEMA \"#{self.database_schema}\" TO \"#{database_username}\"",
-      "GRANT ALL ON ALL SEQUENCES IN SCHEMA  \"#{self.database_schema}\" TO \"#{database_username}\"",
-      "GRANT ALL ON ALL FUNCTIONS IN SCHEMA  \"#{self.database_schema}\" TO \"#{database_username}\"",
-      "GRANT ALL ON ALL TABLES IN SCHEMA  \"#{self.database_schema}\" TO \"#{database_username}\""
-    ]
-  end
-
-  def grant_usage_on_user_schema_to_other(granted_user)
-    [
-      "GRANT USAGE ON SCHEMA \"#{self.database_schema}\" TO \"#{granted_user}\""
-    ]
-  end
-
-  def grant_all_on_schema_queries(schema, db_user = nil)
-    granted_user = db_user.nil? ? self.database_username : db_user
-    [
-      "GRANT ALL ON SCHEMA \"#{schema}\" TO \"#{granted_user}\""
-    ]
-  end
-
-  def drop_users_privileges_in_schema(schema, accounts)
-    in_database(:as => :superuser, statement_timeout: 600000) do |user_database|
-      return if user_database.fetch("SELECT 1 as schema_exist FROM information_schema.schemata WHERE schema_name = '#{schema}'").first.nil?
-      user_database.transaction do
-        accounts
-          .select { |s|
-            role_exists?(user_database, s)
-          }
-          .each { |u|
-            revoke_privileges(user_database, schema, "\"#{u}\"")
-          }
-      end
-    end
-  end
-
-  # Needed because in some cases it might not exist and failure ends transaction
-  def role_exists?(db, role)
-    !db.fetch("SELECT 1 FROM pg_roles WHERE rolname='#{role}'").first.nil?
-  end
-
-  def reset_user_schema_permissions
-    in_database(:as => :superuser) do |user_database|
-      user_database.transaction do
-        schemas = [self.database_schema].uniq
-        schemas.each do |schema|
-          revoke_privileges(user_database, schema, 'PUBLIC')
-        end
-        yield(user_database) if block_given?
-      end
-    end
-  end
-
-  def reset_database_permissions
-    in_database(:as => :superuser) do |user_database|
-      user_database.transaction do
-        schemas = %w(public cdb_importer cdb cartodb)
-
-        ['PUBLIC', CartoDB::PUBLIC_DB_USER].each do |u|
-          revoke_all_on_database_from(user_database, database_name, u)
-          schemas.each do |schema|
-            revoke_privileges(user_database, schema, u)
-          end
-        end
-        yield(user_database) if block_given?
-      end
-    end
-  end
-
-  def revoke_all_on_database_from(conn, database, role)
-    conn.run("REVOKE ALL ON DATABASE \"#{database}\" FROM \"#{role}\" CASCADE") if role_exists?(conn, role)
-  end
-
-  def revoke_privileges(db, schema, u)
-    db.run("REVOKE ALL ON SCHEMA \"#{schema}\" FROM #{u} CASCADE")
-    db.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA \"#{schema}\" FROM #{u} CASCADE")
-    db.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" FROM #{u} CASCADE")
-    db.run("REVOKE ALL ON ALL TABLES IN SCHEMA \"#{schema}\" FROM #{u} CASCADE")
-  end
-
-  # Drops grants and functions in a given schema, avoiding by all means a CASCADE
-  # to not affect extensions or other users
-  def drop_all_functions_from_schema(schema_name)
-    recursivity_max_depth = 3
-
-    return if schema_name == 'public'
-
-    in_database(as: :superuser) do |database|
-      # Non-aggregate functions
-      drop_function_sqls = database.fetch(%Q{
-        SELECT 'DROP FUNCTION ' || ns.nspname || '.' || proname || '(' || oidvectortypes(proargtypes) || ');' AS sql
-        FROM pg_proc INNER JOIN pg_namespace ns ON (pg_proc.pronamespace = ns.oid AND pg_proc.proisagg = FALSE)
-        WHERE ns.nspname = '#{schema_name}'
-      })
-
-      # Simulate a controlled environment drop cascade contained to only functions
-      failed_sqls = []
-      recursivity_level = 0
-      begin
-        failed_sqls = []
-        drop_function_sqls.each { |sql_sentence|
-          begin
-            database.run(sql_sentence[:sql])
-          rescue Sequel::DatabaseError => e
-            if e.message =~ /depends on function /i
-              failed_sqls.push(sql_sentence)
-            else
-              raise
-            end
-          end
-        }
-        drop_function_sqls = failed_sqls
-        recursivity_level += 1
-      end while failed_sqls.count > 0 && recursivity_level < recursivity_max_depth
-
-      # If something remains, reattempt later after dropping aggregates
-      if drop_function_sqls.count > 0
-        aggregate_dependant_function_sqls = drop_function_sqls
-      else
-        aggregate_dependant_function_sqls = []
-      end
-
-      # And now aggregate functions
-      failed_sqls = []
-      drop_function_sqls = database.fetch(%Q{
-        SELECT 'DROP AGGREGATE ' || ns.nspname || '.' || proname || '(' || oidvectortypes(proargtypes) || ');' AS sql
-        FROM pg_proc INNER JOIN pg_namespace ns ON (pg_proc.pronamespace = ns.oid AND pg_proc.proisagg = TRUE)
-        WHERE ns.nspname = '#{schema_name}'
-      })
-      drop_function_sqls.each { |sql_sentence|
-        begin
-          database.run(sql_sentence[:sql])
-        rescue Sequel::DatabaseError => e
-          failed_sqls.push(sql_sentence)
-        end
-      }
-
-      if failed_sqls.count > 0
-        raise CartoDB::BaseCartoDBError.new('Cannot drop schema aggregate functions, dependencies remain')
-      end
-
-      # One final pass of normal functions, if left
-      if aggregate_dependant_function_sqls.count > 0
-        aggregate_dependant_function_sqls.each { |sql_sentence|
-          begin
-            database.run(sql_sentence[:sql])
-          rescue Sequel::DatabaseError => e
-            failed_sqls.push(sql_sentence)
-          end
-        }
-      end
-
-      if failed_sqls.count > 0
-        raise CartoDB::BaseCartoDBError.new('Cannot drop schema functions, dependencies remain')
-      end
-
-    end
-  end
-
-  def fix_table_permissions
-    tables_queries = []
-    tables.each do |table|
-      if table.public? || table.public_with_link_only?
-        tables_queries << "GRANT SELECT ON \"#{self.database_schema}\".\"#{table.name}\" TO #{CartoDB::PUBLIC_DB_USER}"
-      end
-      tables_queries << "ALTER TABLE \"#{self.database_schema}\".\"#{table.name}\" OWNER TO \"#{database_username}\""
-    end
-    self.run_queries_in_transaction(
-      tables_queries,
-      true
-    )
-  end
-
-  # Utility methods
-  def fix_permissions
-    # /!\ WARNING
-    # This will delete all database permissions, and try to recreate them from scratch.
-    # Use only if you know what you're doing. (or, better, don't use it)
-    self.reset_database_permissions
-    self.reset_user_schema_permissions
-    self.grant_publicuser_in_database
-    self.set_user_privileges
-    self.fix_table_permissions
-  end
-
-  def monitor_user_notification
-    FileUtils.touch(Rails.root.join('log', 'users_modifications'))
-    if !Cartodb.config[:signups].nil? && !Cartodb.config[:signups]["service"].nil? && !Cartodb.config[:signups]["service"]["port"].nil?
-      enable_remote_db_user
-    end
-  end
-
-  def enable_remote_db_user
-    request = http_client.request(
-      "#{self.database_host}:#{Cartodb.config[:signups]["service"]["port"]}/scripts/activate_db_user",
-      method: :post,
-      headers: { "Content-Type" => "application/json" }
-    )
-    response = request.run
-    if response.code != 200
-      raise(response.body)
-    else
-      comm_response = JSON.parse(response.body)
-      if comm_response['retcode'].to_i != 0
-        raise(response['stderr'])
+        db_service.new_non_organization_user_main_db_setup
       end
     end
   end
@@ -2617,12 +1432,12 @@ TRIGGER
       :twitter_datasource_enabled, :soft_twitter_datasource_limit, :twitter_datasource_quota,
       :twitter_datasource_block_price, :twitter_datasource_block_size
     ])
-    to.invite_token = User.make_token
+    to.invite_token = ::User.make_token
   end
 
   def regenerate_api_key
     invalidate_varnish_cache
-    update api_key: User.make_token
+    update api_key: ::User.make_token
   end
 
   # This is set temporary on user creation with invitation,
@@ -2633,66 +1448,6 @@ TRIGGER
 
   def invitation_token=(invitation_token)
     @invitation_token = invitation_token
-  end
-
-  def configure_extension_org_metadata_api_endpoint
-    # TODO: remove the check after extension install (#4924 merge)
-    return if Rails.env.test?
-
-    config = Cartodb.config[:org_metadata_api]
-    host = config['host']
-    port = config['port']
-    username = config['username']
-    password = config['password']
-    timeout = config.fetch('timeout', 10)
-
-    if host.present? && port.present? && username.present? && password.present?
-      conf_sql = %{
-        SELECT cartodb.CDB_Conf_SetConf('groups_api',
-          '{ \"host\": \"#{host}\", \"port\": #{port}, \"timeout\": #{timeout}, \"username\": \"#{username}\", \"password\": \"#{password}\"}'::json
-        )
-      }
-      in_database(as: :superuser) do |database|
-        database.fetch(conf_sql).first
-      end
-    else
-      CartoDB.notify_debug("org_metadata_api configuration missing", user_id: id, config: config)
-    end
-  end
-
-  def revoke_cdb_conf_access
-    errors = []
-
-    roles = [database_username]
-    if organization_owner?
-      begin
-        roles << organization_member_group_role_member_name
-      rescue => e
-        errors << "WARN: Error fetching org member role (does #{organization.name} has that role?)"
-      end
-    end
-    roles << CartoDB::PUBLIC_DB_USER
-
-    queries = []
-    roles.map do |db_role|
-      queries.concat(revoke_permissions_on_cartodb_conf_queries(db_role))
-    end
-
-    queries.map do |query|
-      in_database(as: :superuser) do |database|
-        begin
-          database.run(query)
-        rescue => e
-          # We can find organizations not yet upgraded for any reason or missing roles
-          errors << e.message
-        end
-      end
-    end
-
-    errors
-  rescue => e
-    # For broken organizations
-    ["FATAL ERROR for #{name}: #{e.message}"]
   end
 
   def created_with_invitation?
@@ -2711,19 +1466,6 @@ TRIGGER
 
   def get_user_creation
     Carto::UserCreation.find_by_user_id(id)
-  end
-
-  def grant_read_on_schema_queries(schema, db_user = nil)
-    granted_user = db_user.nil? ? self.database_username : db_user
-
-    queries = [
-      "GRANT USAGE ON SCHEMA \"#{schema}\" TO \"#{granted_user}\"",
-      "GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" TO \"#{granted_user}\"",
-      "GRANT SELECT ON ALL TABLES IN SCHEMA \"#{schema}\" TO \"#{granted_user}\""
-    ]
-    queries.concat(revoke_permissions_on_cartodb_conf_queries(granted_user)) if schema == 'cartodb'
-
-    queries
   end
 
   def quota_dates(options)
@@ -2779,5 +1521,4 @@ TRIGGER
   def set_last_password_change_date
     self.last_password_change_date = Time.zone.now unless new?
   end
-
 end

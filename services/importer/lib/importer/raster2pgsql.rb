@@ -41,10 +41,6 @@ module CartoDB
 
         run_raster2pgsql(overviews_list)
 
-        run_psql psql_inline_command(%Q{
-          create index on #{SCHEMA}.#{table_name} (min(st_summarystats(#{RASTER_COLUMN_NAME},1)));
-          create index on #{SCHEMA}.#{table_name} (max(st_summarystats(#{RASTER_COLUMN_NAME},1)));}
-        )
         self
       end
 

@@ -197,7 +197,6 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
   },
 
   _onMouseEnter: function(d) {
-    //this.$(".Tooltip").stop().fadeIn(250);
   },
 
   _onMouseOut: function(d) {
@@ -207,7 +206,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
   },
 
   _onMouseMove: function(d) {
-    var x = d3.event.offsetX - this.margin.left;
+    var x = d3.event.offsetX;
     var a =  Math.ceil(x / this.barWidth);
     var data = this.model.get('data');
 
@@ -215,10 +214,9 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     var bar = this.chart.select('.Bar:nth-child(' + a + ')');
 
     if (bar && bar.node() && !bar.classed('is-selected')) {
-      var value = data[a - 1];
-      var left = ((a - 1) * this.barWidth) + this.margin.left; //+ (this.barWidth / 2);
+      var left = ((a - 1) * this.barWidth);
       if (!this._isDragging()) {
-        this.trigger('hover', { left: left, value: value });
+        this.trigger('hover', { left: left, value: data[a - 1] });
       }
     } else {
       this.trigger('hover', { value: null });
@@ -630,12 +628,13 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   },
 
   _onValueHover: function(info) {
+    var $tooltip = this.$(".js-tooltip");
     if (info.value) {
-      this.$(".js-tooltip").css({ top: 0, left: info.left });
-      this.$(".js-tooltip").text(info.value);
-      this.$(".js-tooltip").show();
+      $tooltip.css({ top: 0, left: info.left });
+      $tooltip.text(info.value);
+      $tooltip.show();
     } else {
-      this.$(".js-tooltip").hide();
+      $tooltip.hide();
     }
   },
 

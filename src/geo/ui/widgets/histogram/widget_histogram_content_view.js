@@ -133,9 +133,34 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     .selectAll('.Canvas')
     .append('g')
     .attr('class', 'Chart')
-    .attr('transform', 'translate(0, ' + this.options.y + ')')
+    .attr('opacity', 0)
+    .attr('transform', 'translate(0, ' + this.options.y + ')');
 
     this.chart.classed(this.options.className, true);
+  },
+
+  hide: function() {
+    this.chart
+    .transition()
+    .duration(150)
+    .attr('opacity', 0)
+    .attr('transform', 'translate(0, ' + (this.options.y - 10) + ')');
+  },
+
+  show: function() {
+    this.chart
+    .attr('transform', 'translate(0, ' + (this.options.y + 10) + ')')
+    .transition()
+    .duration(150)
+    .attr('opacity', 1)
+    .attr('transform', 'translate(0, ' + (this.options.y) + ')');
+  },
+
+  move: function() {
+    this.chart
+    .transition()
+    .duration(2500)
+    .attr('transform', 'translate(0, ' + (this.options.y + 90) + ')');
   },
 
   _onBrushStart: function() {
@@ -557,7 +582,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
     this.margin = { top: 0, right: 10, bottom: 20, left: 10 };
 
     this.canvasWidth  = this.$('.js-chart').width();
-    this.canvasHeight = this.defaults.chartHeight + this.margin.top + this.margin.bottom + 100;
+    this.canvasHeight = this.defaults.chartHeight + this.margin.top + this.margin.bottom;
   },
 
   _initViews: function() {
@@ -589,7 +614,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
     this.chart.bind('hover', this._onValueHover, this);
     this.miniChart.bind('on_brush_end', this._onMiniRangeUpdated, this);
 
-    this.chart.render();
+    this.chart.render().show();
     this.miniChart.render();
   },
 
@@ -682,23 +707,41 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   },
 
   _zoom: function() {
+    this._expand();
     this.viewModel.set({ zoom_enabled: false });
     this.chart.loadData(this._getData());
     this.miniChart.selectRange(this.viewModel.get('a'), this.viewModel.get('b'));
+    this.miniChart.show();
   },
 
   _reset: function() {
+    this._contract();
     this.viewModel.set({ zoom_enabled: true, a: 0, b: 100 });
     this.chart.reset(this._getData());
     this.$(".js-filter").animate({ opacity: 0 }, 0);
+    this.miniChart.hide();
+  },
+
+  _contract: function() {
+    this.canvas
+    .attr('height', this.canvasHeight);
+  },
+
+  _expand: function() {
+    this.canvas
+    .attr('height', this.canvasHeight + 60);
   },
 
   _generateCanvas: function() {
     this.canvas = d3.select(this.$el.find('.js-chart')[0])
     .attr('width',  this.canvasWidth)
     .attr('height', this.canvasHeight)
+
+    this.canvas
     .append('g')
-    .attr('class', 'Canvas')
+    .attr('class', 'Canvas');
+
+    this.canvas
     .attr('transform', 'translate(10, 0)');
   }
 });

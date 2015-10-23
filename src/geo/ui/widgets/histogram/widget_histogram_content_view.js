@@ -389,8 +389,8 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     .call(xAxis);
   },
 
-  loadData2: function(data, a, b) {
-    if (data && data.length > 1) {
+  refreshData: function(data, a, b) {
+    if (data && data.length > 0) {
       this.model.set({ data: data, a: a, b: data.length - 1 });
     }
   },
@@ -608,12 +608,12 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
     var data = this._getData();
     var self = this;
 
-    var lazyLayout = _.debounce(function() {
-      self.chart.loadData2(data, a, b);
+    var refreshData = _.debounce(function() {
+      self.chart.refreshData(data, a, b);
+      self._updateStats();
     }, 100);
 
-    lazyLayout();
-    this._updateStats();
+    refreshData();
   },
 
   _onRangeUpdated: function(a, b) {

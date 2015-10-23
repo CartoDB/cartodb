@@ -60,6 +60,9 @@ def to_epsg(srs):
             except:
                 return None
 
+
+srid = None
+
 #Try detecting the SRID
 if os.path.isfile(prj_file):
   prj_string = open(prj_file,'r').read()

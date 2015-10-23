@@ -38,20 +38,6 @@
   shape-rendering: crispEdges;
 }
 
-.Minibar {
-  fill: red;
-  transition: fill 200ms ease;
-  shape-rendering: crispEdges;
-}
-.Bar.is-highlighted {
-  fill: #5BA45E;
-  opacity: 1;
-}
-.Bar.is-selected {
-  fill: #DDD;
-  opacity: .7;
-}
-
 .Bar {
   fill: #9DE0AD;
   transition: fill 200ms ease;
@@ -64,6 +50,19 @@
 .Bar.is-selected {
   fill: #DDD;
   opacity: .7;
+}
+
+.mini {
+
+  .Bar {
+    fill: #333;
+  }
+  .Bar.is-highlighted {
+    fill: #5BA45E;
+  }
+  .Bar.is-selected {
+    fill: #DDD;
+  }
 }
 
 .axis {
@@ -112,4 +111,8 @@
   opacity: 0;
   stroke-width: 2;
   stroke: #3AA9E3;
+}
+
+.Widget-filterButton.is-hidden {
+  display: none;
 }

@@ -94,7 +94,7 @@ describe 'ExploreAPI' do
 
   it 'should return the table data properly setted for two vis of the same user' do
     user = FactoryGirl.build(:user, database_name: 'cartodb_user_1', database_host: '127.0.0.1')
-    User.stubs(:find).with(id: user.id).returns(user)
+    ::User.stubs(:find).with(id: user.id).returns(user)
     visualization = FactoryGirl.build(:table_visualization, user_id: user.id)
     visualization_2 = FactoryGirl.build(:table_visualization, user_id: user.id)
     result = [
@@ -127,8 +127,8 @@ describe 'ExploreAPI' do
   it 'should return the table data properly setted for two vis of the different users' do
     user = FactoryGirl.build(:user, database_name: 'cartodb_user_1', database_host: '127.0.0.1')
     user_2 = FactoryGirl.build(:user, database_name: 'cartodb_user_2', database_host: '127.0.0.1')
-    User.stubs(:find).with(id: user.id).returns(user)
-    User.stubs(:find).with(id: user_2.id).returns(user_2)
+    ::User.stubs(:find).with(id: user.id).returns(user)
+    ::User.stubs(:find).with(id: user_2.id).returns(user_2)
     visualization = FactoryGirl.build(:table_visualization, user_id: user.id)
     visualization_2 = FactoryGirl.build(:table_visualization, user_id: user_2.id)
     result_1 = [{ "row_count" => 10, "size" => 100, "table_name" => visualization.name }]

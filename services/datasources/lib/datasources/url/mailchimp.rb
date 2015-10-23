@@ -28,7 +28,7 @@ module CartoDB
         #  'api_key'
         #  'timeout_minutes'
         # ]
-        # @param user User
+        # @param user ::User
         # @throws UninitializedError
         # @throws MissingConfigurationError
         def initialize(config, user)
@@ -61,7 +61,7 @@ module CartoDB
 
         # Factory method
         # @param config : {}
-        # @param user : User
+        # @param user : ::User
         # @return CartoDB::Datasources::Url::MailChimpLists
         def self.get_new(config, user)
           return new(config, user)

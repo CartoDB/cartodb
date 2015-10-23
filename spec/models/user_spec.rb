@@ -10,7 +10,7 @@ describe 'refactored behaviour' do
     end
 
     def get_user_by_id(user_id)
-      User.where(id: user_id).first
+      ::User.where(id: user_id).first
     end
   end
 
@@ -18,7 +18,7 @@ end
 
 describe User do
   before(:each) do
-    User.any_instance.stubs(:enable_remote_db_user).returns(true)
+    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
   end
 
   before(:all) do
@@ -38,7 +38,7 @@ describe User do
   before(:each) do
     stub_named_maps_calls
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-    User.any_instance.stubs(:enable_remote_db_user).returns(true)
+    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
   end
 
   after(:all) do
@@ -104,28 +104,28 @@ describe User do
   end
 
   it "should authenticate if given email and password are correct" do
-    response_user = User.authenticate('admin@example.com', 'admin123')
+    response_user = ::User.authenticate('admin@example.com', 'admin123')
     response_user.id.should eq @user.id
     response_user.email.should eq @user.email
 
-    User.authenticate('admin@example.com', 'admin321').should be_nil
-    User.authenticate('', '').should be_nil
+    ::User.authenticate('admin@example.com', 'admin321').should be_nil
+    ::User.authenticate('', '').should be_nil
   end
 
   it "should authenticate with case-insensitive email and username" do
-    response_user = User.authenticate('admin@example.com', 'admin123')
+    response_user = ::User.authenticate('admin@example.com', 'admin123')
     response_user.id.should eq @user.id
     response_user.email.should eq @user.email
 
-    response_user_2 = User.authenticate('aDMin@eXaMpLe.Com', 'admin123')
+    response_user_2 = ::User.authenticate('aDMin@eXaMpLe.Com', 'admin123')
     response_user_2.id.should eq @user.id
     response_user_2.email.should eq @user.email
 
-    response_user_3 = User.authenticate('admin', 'admin123')
+    response_user_3 = ::User.authenticate('admin', 'admin123')
     response_user_3.id.should eq @user.id
     response_user_3.email.should eq @user.email
 
-    response_user_4 = User.authenticate('ADMIN', 'admin123')
+    response_user_4 = ::User.authenticate('ADMIN', 'admin123')
     response_user_4.id.should eq @user.id
     response_user_4.email.should eq @user.email
   end
@@ -181,7 +181,7 @@ describe User do
 
     it 'should be valid if his organization has enough seats' do
       organization = create_org('testorg', 10.megabytes, 1)
-      user = User.new
+      user = ::User.new
       user.organization = organization
       user.valid?
       user.errors.keys.should_not include(:organization)
@@ -191,7 +191,7 @@ describe User do
     it "should not be valid if his organization doesn't have enough disk space" do
       organization = create_org('testorg', 10.megabytes, 1)
       organization.stubs(:assigned_quota).returns(10.megabytes)
-      user = User.new
+      user = ::User.new
       user.organization = organization
       user.quota_in_bytes = 1.megabyte
       user.valid?.should be_false
@@ -202,7 +202,7 @@ describe User do
     it 'should be valid if his organization has enough disk space' do
       organization = create_org('testorg', 10.megabytes, 1)
       organization.stubs(:assigned_quota).returns(9.megabytes)
-      user = User.new
+      user = ::User.new
       user.organization = organization
       user.quota_in_bytes = 1.megabyte
       user.valid?
@@ -318,7 +318,7 @@ describe User do
 
   describe 'central synchronization' do
     it 'should create remote user in central if needed' do
-      pending "Central API credentials not provided" unless User.new.sync_data_with_cartodb_central?
+      pending "Central API credentials not provided" unless ::User.new.sync_data_with_cartodb_central?
       organization = create_org('testorg', 500.megabytes, 1)
       user = create_user email: 'user1@testorg.com', username: 'user1', password: 'user11'
       user.organization = organization
@@ -352,18 +352,18 @@ describe User do
   end
 
   it "should have a default dashboard_viewed? false" do
-    user = User.new
+    user = ::User.new
     user.dashboard_viewed?.should be_false
   end
 
   it "should reset dashboard_viewed when dashboard gets viewed" do
-    user = User.new
+    user = ::User.new
     user.view_dashboard
     user.dashboard_viewed?.should be_true
   end
 
   it "should validate that password is present if record is new and crypted_password or salt are blank" do
-    user = User.new
+    user = ::User.new
     user.username = "adminipop"
     user.email = "adminipop@example.com"
 
@@ -377,7 +377,7 @@ describe User do
     user.save
 
     # Let's ensure that crypted_password and salt does not change
-    user_check = User[user.id]
+    user_check = ::User[user.id]
     user_check.crypted_password.should == another_user.crypted_password
     user_check.salt.should == another_user.salt
 
@@ -429,7 +429,7 @@ describe User do
   end
 
   it "should rebuild the quota trigger after changing the quota" do
-    @user.expects(:rebuild_quota_trigger).once
+    @user.db_service.expects(:rebuild_quota_trigger).once
     @user.quota_in_bytes = @user.quota_in_bytes + 1.megabytes
     @user.save
   end
@@ -509,50 +509,50 @@ describe User do
 
   describe '#overquota' do
     it "should return users over their map view quota, excluding organization users" do
-      User.overquota.should be_empty
-      User.any_instance.stubs(:get_api_calls).returns (0..30).to_a
-      User.any_instance.stubs(:map_view_quota).returns 10
-      User.overquota.map(&:id).should include(@user.id)
-      User.overquota.size.should == User.reject{|u| u.organization_id.present? }.count
+      ::User.overquota.should be_empty
+      ::User.any_instance.stubs(:get_api_calls).returns (0..30).to_a
+      ::User.any_instance.stubs(:map_view_quota).returns 10
+      ::User.overquota.map(&:id).should include(@user.id)
+      ::User.overquota.size.should == ::User.reject{|u| u.organization_id.present? }.count
     end
 
     it "should return users near their map view quota" do
-      User.any_instance.stubs(:get_api_calls).returns([81])
-      User.any_instance.stubs(:map_view_quota).returns(100)
-      User.overquota.should be_empty
-      User.overquota(0.20).map(&:id).should include(@user.id)
-      User.overquota(0.20).size.should == User.reject{|u| u.organization_id.present? }.count
-      User.overquota(0.10).should be_empty
+      ::User.any_instance.stubs(:get_api_calls).returns([81])
+      ::User.any_instance.stubs(:map_view_quota).returns(100)
+      ::User.overquota.should be_empty
+      ::User.overquota(0.20).map(&:id).should include(@user.id)
+      ::User.overquota(0.20).size.should == ::User.reject{|u| u.organization_id.present? }.count
+      ::User.overquota(0.10).should be_empty
     end
 
     it "should return users near their geocoding quota" do
-      User.any_instance.stubs(:get_api_calls).returns([0])
-      User.any_instance.stubs(:map_view_quota).returns(120)
-      User.any_instance.stubs(:get_geocoding_calls).returns(81)
-      User.any_instance.stubs(:geocoding_quota).returns(100)
-      User.overquota.should be_empty
-      User.overquota(0.20).map(&:id).should include(@user.id)
-      User.overquota(0.20).size.should == User.reject{|u| u.organization_id.present? }.count
-      User.overquota(0.10).should be_empty
+      ::User.any_instance.stubs(:get_api_calls).returns([0])
+      ::User.any_instance.stubs(:map_view_quota).returns(120)
+      ::User.any_instance.stubs(:get_geocoding_calls).returns(81)
+      ::User.any_instance.stubs(:geocoding_quota).returns(100)
+      ::User.overquota.should be_empty
+      ::User.overquota(0.20).map(&:id).should include(@user.id)
+      ::User.overquota(0.20).size.should == ::User.reject{|u| u.organization_id.present? }.count
+      ::User.overquota(0.10).should be_empty
     end
 
     it "should return users near their twitter quota" do
-      User.any_instance.stubs(:get_api_calls).returns([0])
-      User.any_instance.stubs(:map_view_quota).returns(120)
-      User.any_instance.stubs(:get_geocoding_calls).returns(0)
-      User.any_instance.stubs(:geocoding_quota).returns(100)
-      User.any_instance.stubs(:get_twitter_imports_count).returns(81)
-      User.any_instance.stubs(:twitter_datasource_quota).returns(100)
-      User.overquota.should be_empty
-      User.overquota(0.20).map(&:id).should include(@user.id)
-      User.overquota(0.20).size.should == User.reject{|u| u.organization_id.present? }.count
-      User.overquota(0.10).should be_empty
+      ::User.any_instance.stubs(:get_api_calls).returns([0])
+      ::User.any_instance.stubs(:map_view_quota).returns(120)
+      ::User.any_instance.stubs(:get_geocoding_calls).returns(0)
+      ::User.any_instance.stubs(:geocoding_quota).returns(100)
+      ::User.any_instance.stubs(:get_twitter_imports_count).returns(81)
+      ::User.any_instance.stubs(:twitter_datasource_quota).returns(100)
+      ::User.overquota.should be_empty
+      ::User.overquota(0.20).map(&:id).should include(@user.id)
+      ::User.overquota(0.20).size.should == ::User.reject{|u| u.organization_id.present? }.count
+      ::User.overquota(0.10).should be_empty
     end
 
     it "should not return organization users" do
-      User.any_instance.stubs(:organization_id).returns("organization-id")
-      User.any_instance.stubs(:organization).returns(Organization.new)
-      User.overquota.should be_empty
+      ::User.any_instance.stubs(:organization_id).returns("organization-id")
+      ::User.any_instance.stubs(:organization).returns(Organization.new)
+      ::User.overquota.should be_empty
     end
   end
 
@@ -780,7 +780,7 @@ describe User do
 
   it "should run valid queries against his database" do
     # initial select tests
-    query_result = @user.run_pg_query("select * from import_csv_1 where family='Polynoidae' limit 10")
+    query_result = @user.db_service.run_pg_query("select * from import_csv_1 where family='Polynoidae' limit 10")
     query_result[:time].should_not be_blank
     query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
     query_result[:total_rows].should == 2
@@ -789,22 +789,22 @@ describe User do
     query_result[:rows][1][:name_of_species].should == "Eulagisca gigantea"
 
     # update and reselect
-    query_result = @user.run_pg_query("update import_csv_1 set family='polynoidae' where family='Polynoidae'")
-    query_result = @user.run_pg_query("select * from import_csv_1 where family='Polynoidae' limit 10")
+    query_result = @user.db_service.run_pg_query("update import_csv_1 set family='polynoidae' where family='Polynoidae'")
+    query_result = @user.db_service.run_pg_query("select * from import_csv_1 where family='Polynoidae' limit 10")
     query_result[:total_rows].should == 0
 
     # check counts
-    query_result = @user.run_pg_query("select * from import_csv_1 where family='polynoidae' limit 10")
+    query_result = @user.db_service.run_pg_query("select * from import_csv_1 where family='polynoidae' limit 10")
     query_result[:total_rows].should == 2
 
     # test a product
-    query_result = @user.run_pg_query("select import_csv_1.family as fam, twitters.login as login from import_csv_1, twitters where family='polynoidae' limit 10")
+    query_result = @user.db_service.run_pg_query("select import_csv_1.family as fam, twitters.login as login from import_csv_1, twitters where family='polynoidae' limit 10")
     query_result[:total_rows].should == 10
     query_result[:rows].first.keys.should == [:fam, :login]
     query_result[:rows][0].should == { :fam=>"polynoidae", :login=>"vzlaturistica " }
 
     # test counts
-    query_result = @user.run_pg_query("select count(*) from import_csv_1 where family='polynoidae' ")
+    query_result = @user.db_service.run_pg_query("select count(*) from import_csv_1 where family='polynoidae' ")
     query_result[:time].should_not be_blank
     query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
     query_result[:total_rows].should == 1
@@ -814,7 +814,7 @@ describe User do
 
   it "should raise errors when running invalid queries against his database" do
     lambda {
-      @user.run_pg_query("selectttt * from import_csv_1 where family='Polynoidae' limit 10")
+      @user.db_service.run_pg_query("selectttt * from import_csv_1 where family='Polynoidae' limit 10")
     }.should raise_error(CartoDB::ErrorRunningQuery)
   end
 
@@ -823,7 +823,7 @@ describe User do
 
     # initial select tests
     # tests results and modified flags
-    query_result = @user.run_pg_query("select * from import_csv_1 where family='Polynoidae' limit 10")
+    query_result = @user.db_service.run_pg_query("select * from import_csv_1 where family='Polynoidae' limit 10")
     query_result[:time].should_not be_blank
     query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
     query_result[:total_rows].should == 2
@@ -834,28 +834,28 @@ describe User do
     query_result[:modified].should == false
 
     # update and reselect
-    query_result = @user.run_pg_query("update import_csv_1 set family='polynoidae' where family='Polynoidae'")
+    query_result = @user.db_service.run_pg_query("update import_csv_1 set family='polynoidae' where family='Polynoidae'")
     query_result[:modified].should   == true
     query_result[:results].should    == false
 
-    query_result = @user.run_pg_query("select * from import_csv_1 where family='Polynoidae' limit 10")
+    query_result = @user.db_service.run_pg_query("select * from import_csv_1 where family='Polynoidae' limit 10")
     query_result[:total_rows].should == 0
     query_result[:modified].should   == false
     query_result[:results].should    == true
 
     # # check counts
-    query_result = @user.run_pg_query("select * from import_csv_1 where family='polynoidae' limit 10")
+    query_result = @user.db_service.run_pg_query("select * from import_csv_1 where family='polynoidae' limit 10")
     query_result[:total_rows].should == 2
     query_result[:results].should    == true
 
     # test a product
-    query_result = @user.run_pg_query("select import_csv_1.family as fam, twitters.login as login from import_csv_1, twitters where family='polynoidae' limit 10")
+    query_result = @user.db_service.run_pg_query("select import_csv_1.family as fam, twitters.login as login from import_csv_1, twitters where family='polynoidae' limit 10")
     query_result[:total_rows].should == 10
     query_result[:rows].first.keys.should == [:fam, :login]
     query_result[:rows][0].should == { :fam=>"polynoidae", :login=>"vzlaturistica " }
 
     # test counts
-    query_result = @user.run_pg_query("select count(*) from import_csv_1 where family='polynoidae' ")
+    query_result = @user.db_service.run_pg_query("select count(*) from import_csv_1 where family='polynoidae' ")
     query_result[:time].should_not be_blank
     query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
     query_result[:total_rows].should == 1
@@ -865,19 +865,19 @@ describe User do
 
   it "should raise errors when running invalid queries against his database in pg mode" do
     lambda {
-      @user.run_pg_query("selectttt * from import_csv_1 where family='Polynoidae' limit 10")
+      @user.db_service.run_pg_query("selectttt * from import_csv_1 where family='Polynoidae' limit 10")
     }.should raise_error(CartoDB::ErrorRunningQuery)
   end
 
   it "should raise errors when invalid table name used in pg mode" do
     lambda {
-      @user.run_pg_query("select * from this_table_is_not_here where family='Polynoidae' limit 10")
+      @user.db_service.run_pg_query("select * from this_table_is_not_here where family='Polynoidae' limit 10")
     }.should raise_error(CartoDB::TableNotExists)
   end
 
   it "should raise errors when invalid column used in pg mode" do
     lambda {
-      @user.run_pg_query("select not_a_col from import_csv_1 where family='Polynoidae' limit 10")
+      @user.db_service.run_pg_query("select not_a_col from import_csv_1 where family='Polynoidae' limit 10")
     }.should raise_error(CartoDB::ColumnNotExists)
   end
 
@@ -897,7 +897,7 @@ describe User do
   it "should return the result from the last select query if multiple selects" do
     reload_user_data(@user) && @user.reload
 
-    query_result = @user.run_pg_query("select * from import_csv_1 where family='Polynoidae' limit 1; select * from import_csv_1 where family='Polynoidae' limit 10")
+    query_result = @user.db_service.run_pg_query("select * from import_csv_1 where family='Polynoidae' limit 1; select * from import_csv_1 where family='Polynoidae' limit 10")
     query_result[:time].should_not be_blank
     query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
     query_result[:total_rows].should == 2
@@ -906,7 +906,7 @@ describe User do
   end
 
   it "should allow multiple queries in the format: insert_query; select_query" do
-    query_result = @user.run_pg_query("insert into import_csv_1 (name_of_species,family) values ('cristata barrukia','Polynoidae'); select * from import_csv_1 where family='Polynoidae' ORDER BY name_of_species ASC limit 10")
+    query_result = @user.db_service.run_pg_query("insert into import_csv_1 (name_of_species,family) values ('cristata barrukia','Polynoidae'); select * from import_csv_1 where family='Polynoidae' ORDER BY name_of_species ASC limit 10")
     query_result[:total_rows].should == 3
     query_result[:rows].map { |i| i[:name_of_species] }.should =~ ["Barrukia cristata", "Eulagisca gigantea", "cristata barrukia"]
   end
@@ -914,7 +914,7 @@ describe User do
   it "should fail with error if table doesn't exist" do
     reload_user_data(@user) && @user.reload
     lambda {
-      @user.run_pg_query("select * from wadus")
+      @user.db_service.run_pg_query("select * from wadus")
     }.should raise_error(CartoDB::TableNotExists)
   end
 
@@ -1036,7 +1036,7 @@ describe User do
     @user.trial_ends_at.should_not be_nil
     @user.stubs(:upgraded_at).returns(nil)
     @user.trial_ends_at.should be_nil
-    @user.stubs(:upgraded_at).returns(Time.now - (User::TRIAL_DURATION_DAYS - 1).days)
+    @user.stubs(:upgraded_at).returns(Time.now - (::User::TRIAL_DURATION_DAYS - 1).days)
     @user.trial_ends_at.should_not be_nil
   end
 
@@ -1418,8 +1418,8 @@ describe User do
     end
 
     def stub_and_check_version_pre_mu(version, is_pre_mu)
-      @user.stubs(:cartodb_extension_version).returns(version)
-      @user.cartodb_extension_version_pre_mu?.should eq is_pre_mu
+      @user.db_service.stubs(:cartodb_extension_version).returns(version)
+      @user.db_service.cartodb_extension_version_pre_mu?.should eq is_pre_mu
     end
 
   end
@@ -1626,13 +1626,12 @@ describe User do
 
       user.destroy
 
-      User.find(id:user_id).should eq nil
+      ::User.find(id:user_id).should eq nil
 
     end
   end
 
   describe '#needs_password_confirmation?' do
-
     it 'is true for a normal user' do
       user = FactoryGirl.build(:carto_user, :google_sign_in => nil)
       user.needs_password_confirmation?.should == true
@@ -1650,8 +1649,217 @@ describe User do
       user = FactoryGirl.build(:user, :google_sign_in => true, :last_password_change_date => Time.now)
       user.needs_password_confirmation?.should == true
     end
-
   end
+
+  describe 'User creation and DB critical calls' do
+    it 'Properly setups a new user (not belonging to an organization)' do
+      # INFO: avoiding enable_remote_db_user
+      Cartodb.config[:signups] = nil
+
+      CartoDB::UserModule::DBService.any_instance.stubs(
+        cartodb_extension_version_pre_mu?: nil,
+        monitor_user_notification: nil,
+        enable_remote_db_user: nil
+      )
+
+      user_timeout_secs = 666
+
+      user = ::User.new
+      user.username = String.random(8).downcase
+      user.email = String.random(8).downcase + '@' + String.random(5).downcase + '.com'
+      user.password = user.email.split('@').first
+      user.password_confirmation = user.password
+      user.admin = false
+      user.private_tables_enabled = true
+      user.private_maps_enabled = true
+      user.enabled = true
+      user.table_quota = 500
+      user.quota_in_bytes = 1234567890
+      user.user_timeout = user_timeout_secs * 1000
+      user.database_timeout = 123000
+      user.geocoding_quota = 1000
+      user.geocoding_block_price = 1500
+      user.sync_tables_enabled = false
+      user.organization = nil
+      user.twitter_datasource_enabled = false
+      user.avatar_url = user.default_avatar
+
+      user.valid?.should == true
+
+      user.save
+
+      user.nil?.should == false
+
+      # To avoid connection pool caching
+      CartoDB::UserModule::DBService.terminate_database_connections(user.database_name, user.database_host)
+
+      user.reload
+
+      test_table_name = "table_perm_test"
+
+      # Safety check
+      user.in_database.fetch(%{
+        SELECT * FROM pg_extension WHERE extname='postgis';
+      }).first.nil?.should == false
+
+      # Replicate functionality inside ::UserModule::DBService.configure_database
+      # -------------------------------------------------------------------
+
+      user.in_database.fetch(%{
+        SHOW search_path;
+      }).first[:search_path].should == user.db_service.build_search_path(user.database_schema, false)
+
+      # @see http://www.postgresql.org/docs/current/static/functions-info.html#FUNCTIONS-INFO-ACCESS-TABLE
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_database_privilege('#{user.database_username}', '#{user.database_name}', 'CONNECT');
+      }).first[:has_database_privilege].should == true
+
+      # Careful as PG formatter timeout output changes to XXmin if too big
+      user.in_database.fetch(%{
+        SHOW statement_timeout;
+      }).first[:statement_timeout].should eq "#{user_timeout_secs}s"
+
+      # Checks for "grant_read_on_schema_queries(SCHEMA_CARTODB, db_user)"
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_schema_privilege('#{user.database_username}',
+                                           '#{CartoDB::UserModule::DBService::SCHEMA_CARTODB}', 'USAGE');
+      }).first[:has_schema_privilege].should == true
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_function_privilege('#{user.database_username}',
+                                             '_cdb_userquotainbytes()', 'EXECUTE');
+      }).first[:has_function_privilege].should == true
+      # SCHEMA_CARTODB has no tables to select from, except CDB_CONF on which has no permission
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_table_privilege('#{user.database_username}',
+                                           'cartodb.CDB_CONF',
+                                           'SELECT, INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER');
+      }).first[:has_table_privilege].should == false
+
+      # Checks on SCHEMA_PUBLIC
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_schema_privilege('#{user.database_username}',
+                                           '#{CartoDB::UserModule::DBService::SCHEMA_PUBLIC}', 'USAGE');
+      }).first[:has_schema_privilege].should == true
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_table_privilege('#{user.database_username}',
+                                           '#{CartoDB::UserModule::DBService::SCHEMA_PUBLIC}.spatial_ref_sys', 'SELECT');
+      }).first[:has_table_privilege].should == true
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_function_privilege('#{user.database_username}',
+                                             '#{CartoDB::UserModule::DBService::SCHEMA_PUBLIC}._postgis_stats(regclass, text, text)',
+                                             'EXECUTE');
+      }).first[:has_function_privilege].should == true
+
+      # Checks on own schema
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_schema_privilege('#{user.database_username}',
+                                           '#{user.database_schema}', 'CREATE, USAGE');
+      }).first[:has_schema_privilege].should == true
+      user.in_database.run(%{
+        CREATE TABLE #{test_table_name}(x int);
+      })
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_table_privilege('#{user.database_username}',
+                                           '#{test_table_name}', 'SELECT');
+      }).first[:has_table_privilege].should == true
+      # _cdb_userquotainbytes is always created on the user schema
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_function_privilege('#{user.database_username}',
+                                             '#{user.database_schema}._cdb_userquotainbytes()', 'EXECUTE');
+      }).first[:has_function_privilege].should == true
+
+      # Checks on non-org "owned" schemas
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_schema_privilege('#{user.database_username}',
+                                           '#{CartoDB::UserModule::DBService::SCHEMA_IMPORTER}', 'CREATE, USAGE');
+      }).first[:has_schema_privilege].should == true
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_schema_privilege('#{user.database_username}',
+                                           '#{CartoDB::UserModule::DBService::SCHEMA_GEOCODING}', 'CREATE, USAGE');
+      }).first[:has_schema_privilege].should == true
+
+      # Special raster and geo columns
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_table_privilege('#{user.database_username}',
+                                          '#{CartoDB::UserModule::DBService::SCHEMA_PUBLIC}.geometry_columns', 'SELECT');
+      }).first[:has_table_privilege].should == true
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_table_privilege('#{user.database_username}',
+                                          '#{CartoDB::UserModule::DBService::SCHEMA_PUBLIC}.geography_columns', 'SELECT');
+      }).first[:has_table_privilege].should == true
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_table_privilege('#{CartoDB::PUBLIC_DB_USER}',
+                                          '#{CartoDB::UserModule::DBService::SCHEMA_PUBLIC}.raster_overviews', 'SELECT');
+      }).first[:has_table_privilege].should == true
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_table_privilege('#{CartoDB::PUBLIC_DB_USER}',
+                                          '#{CartoDB::UserModule::DBService::SCHEMA_PUBLIC}.raster_columns', 'SELECT');
+      }).first[:has_table_privilege].should == true
+
+      # quota check
+      user.in_database(as: :superuser).fetch(%{
+        SELECT #{user.database_schema}._CDB_UserQuotaInBytes();
+      }).first[:_cdb_userquotainbytes].nil?.should == false
+      # Varnish invalidation function
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_function_privilege('#{user.database_username}',
+                                             '#{user.database_schema}.cdb_invalidate_varnish(text)', 'EXECUTE');
+      }).first[:has_function_privilege].should == true
+
+      # INFO: Not implemented "db_service.set_user_as_organization_member" checks as I first want to be sure
+      # if intended to be there or not
+
+      # Checks of publicuser
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_schema_privilege('#{CartoDB::PUBLIC_DB_USER}',
+                                           '#{user.database_schema}', 'USAGE');
+      }).first[:has_schema_privilege].should == true
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_database_privilege('#{CartoDB::PUBLIC_DB_USER}',
+                                           '#{user.database_name}', 'CONNECT');
+      }).first[:has_database_privilege].should == true
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_schema_privilege('#{CartoDB::PUBLIC_DB_USER}',
+                                           '#{CartoDB::UserModule::DBService::SCHEMA_CARTODB}', 'USAGE');
+      }).first[:has_schema_privilege].should == true
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_function_privilege(
+          '#{CartoDB::PUBLIC_DB_USER}',
+          '#{CartoDB::UserModule::DBService::SCHEMA_CARTODB}.CDB_LatLng (NUMERIC, NUMERIC)',
+          'EXECUTE');
+      }).first[:has_function_privilege].should == true
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_table_privilege('#{CartoDB::PUBLIC_DB_USER}',
+                                           '#{CartoDB::UserModule::DBService::SCHEMA_CARTODB}.CDB_CONF',
+                                           'SELECT, INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER');
+      }).first[:has_table_privilege].should == false
+
+      # Additional public user grants/revokes
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_table_privilege('#{CartoDB::PUBLIC_DB_USER}',
+                                           '#{CartoDB::UserModule::DBService::SCHEMA_CARTODB}.cdb_tablemetadata',
+                                           'SELECT');
+      }).first[:has_table_privilege].should == false
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_schema_privilege('#{CartoDB::PUBLIC_DB_USER}',
+                                           '#{CartoDB::UserModule::DBService::SCHEMA_PUBLIC}', 'USAGE');
+      }).first[:has_schema_privilege].should == true
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_function_privilege(
+          '#{CartoDB::PUBLIC_DB_USER}',
+          '#{CartoDB::UserModule::DBService::SCHEMA_PUBLIC}._postgis_stats(regclass, text, text)',
+          'EXECUTE');
+      }).first[:has_function_privilege].should == true
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_table_privilege('#{CartoDB::PUBLIC_DB_USER}',
+                                          '#{CartoDB::UserModule::DBService::SCHEMA_PUBLIC}.spatial_ref_sys', 'SELECT');
+      }).first[:has_table_privilege].should == true
+
+      user.destroy
+    end
+  end
+
+  protected
 
   def create_org(org_name, org_quota, org_seats)
     organization = Organization.new
@@ -1661,5 +1869,4 @@ describe User do
     organization.save!
     organization
   end
-
 end

@@ -30,7 +30,7 @@ describe Admin::PagesController do
   end
 
   after(:each) do
-    User.all.each {|u| u.delete}
+    ::User.all.each {|u| u.delete}
   end
 
   describe '#index' do
@@ -135,6 +135,28 @@ describe Admin::PagesController do
       uri.path.should == '/user/anyuser/dashboard'
     end
 
+    it 'extracts username from redirection for dashboard with subdomainless' do
+      username = 'endedwithu'
+      anyuser = prepare_user(username)
+      host! 'localhost.lan'
+      login_as(anyuser, scope: anyuser.username)
+      CartoDB.stubs(:session_domain).returns('localhost.lan')
+      CartoDB.stubs(:subdomainless_urls?).returns(true)
+
+      get '', {}, JSON_HEADER
+
+      last_response.status.should == 302
+      uri = URI.parse(last_response.location)
+      uri.host.should == 'localhost.lan'
+      uri.path.should == "/user/#{username}/dashboard"
+
+      login_as(anyuser, scope: anyuser.username)
+      location = last_response.location
+      User.any_instance.stubs(:db_size_in_bytes).returns(0)
+      get location
+      last_response.status.should == 200
+    end
+
   end
 
   describe '#explore' do
@@ -177,10 +199,10 @@ describe Admin::PagesController do
 
   def mock_explore_feature_flag
     anyuser = prepare_user('anyuser')
-    User.any_instance.stubs(:has_feature_flag?)
+    ::User.any_instance.stubs(:has_feature_flag?)
                           .with('explore_site')
                           .returns(true)
-    User.stubs(:where).returns(anyuser)
+    ::User.stubs(:where).returns(anyuser)
     anyuser.stubs(:first).returns(anyuser)
   end
 
@@ -189,7 +211,8 @@ describe Admin::PagesController do
       username: user_name,
       email:    "#{user_name}@example.com",
       password: 'longer_than_MIN_PASSWORD_LENGTH',
-      fake_user: true
+      fake_user: true,
+      quota_in_bytes: 10000000
     )
 
     user.stubs(:username => user_name, :organization_user? => org_user)
@@ -198,7 +221,7 @@ describe Admin::PagesController do
       org = mock
       Organization.stubs(:where).with(name: @org_name).returns([org])
       Organization.stubs(:where).with(name: @org_user_name).returns([org])
-      User.any_instance.stubs(:belongs_to_organization?).with(org).returns(belongs_to_org)
+      ::User.any_instance.stubs(:belongs_to_organization?).with(org).returns(belongs_to_org)
     end
 
     user

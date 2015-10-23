@@ -66,6 +66,8 @@ defaults: &defaults
     app_id: ''
     admins: ''
   hubspot: ''
+  segment:
+    api_key:
   metrics:
     hubspot:
       events_host: 'http://track.hubspot.com'

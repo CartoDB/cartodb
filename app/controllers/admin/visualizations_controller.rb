@@ -82,7 +82,7 @@ class Admin::VisualizationsController < Admin::AdminController
 
     if @visualization.derived?
       if current_user.nil? || current_user.username != request.params[:user_domain]
-        destination_user = User.where(username: request.params[:user_domain]).first
+        destination_user = ::User.where(username: request.params[:user_domain]).first
       else
         destination_user = nil
       end
@@ -241,7 +241,7 @@ class Admin::VisualizationsController < Admin::AdminController
     @related_tables_owners = Hash.new
     @related_tables.each { |table|
       unless @related_tables_owners.include?(table.user_id)
-        table_owner = User.where(id: table.user_id).first
+        table_owner = ::User.where(id: table.user_id).first
         if table_owner.nil?
           # strange scenario, as user has been deleted but his table still exists
           @related_tables_owners[table.user_id] = nil
@@ -509,7 +509,7 @@ class Admin::VisualizationsController < Admin::AdminController
           k.start_with?("warden.user") && !k.end_with?(".session")
         }                                    .values
         authenticated_users.each { |username|
-          user = User.where(username:username).first
+          user = ::User.where(username:username).first
           if url.nil? && !user.nil? && !user.organization.nil?
             if user.organization.id == organization.id
               if for_table
@@ -667,7 +667,7 @@ class Admin::VisualizationsController < Admin::AdminController
 
   def get_viewed_user
     username = CartoDB.extract_subdomain(request).strip.downcase
-    @viewed_user = User.where(username: username).first
+    @viewed_user = ::User.where(username: username).first
   end
 
 end

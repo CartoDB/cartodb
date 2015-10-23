@@ -14,8 +14,8 @@ namespace :cartodb do
         visualization_type text,
         visualization_synced boolean,
         visualization_table_names text[],
-        visualization_table_rows integer,
-        visualization_table_size integer,
+        visualization_table_rows bigint,
+        visualization_table_size bigint,
         visualization_map_datasets integer,
         visualization_geometry_types text[],
         visualization_tags text[],
@@ -458,7 +458,7 @@ namespace :cartodb do
 
     def common_data_user
       username = Cartodb.config[:explore_api]['username']
-      @user ||= User.where(username: username).first
+      @user ||= ::User.where(username: username).first
     end
 
     def db_conn(*args)

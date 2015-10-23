@@ -3,7 +3,7 @@ module Concerns
 
     # This validation can't be added to the model because if a user creation begins at Central we can't know if user is the same or existing
     def validate_credentials_not_taken_in_central
-      return true unless self.is_a?(User)
+      return true unless self.is_a?(::User)
       return true unless Cartodb::Central.sync_data_with_cartodb_central?
 
       central_client = Cartodb::Central.new
@@ -15,7 +15,7 @@ module Concerns
 
     def create_in_central
       return true unless sync_data_with_cartodb_central?
-      if self.is_a?(User) && organization.present?
+      if self.is_a?(::User) && organization.present?
         cartodb_central_client.create_organization_user(organization.name, allowed_attributes_to_central(:create))
       elsif self.is_a?(Organization)
         raise "Can't create organizations in editor"
@@ -25,7 +25,7 @@ module Concerns
 
     def update_in_central
       return true unless sync_data_with_cartodb_central?
-      if self.is_a?(User)
+      if self.is_a?(::User)
         if organization.present?
           cartodb_central_client.update_organization_user(organization.name, username, allowed_attributes_to_central(:update))
         else
@@ -39,7 +39,7 @@ module Concerns
 
     def delete_in_central
       return true unless sync_data_with_cartodb_central?
-      if self.is_a?(User)
+      if self.is_a?(::User)
         if organization.nil?
           cartodb_central_client.delete_user(self.username)
         else
@@ -71,7 +71,7 @@ module Concerns
           :twitter_datasource_block_price, :twitter_datasource_quota,
           :google_maps_key, :google_maps_private_key, :auth_username_password_enabled, :auth_google_enabled]
         end
-      elsif self.is_a?(User)
+      elsif self.is_a?(::User)
         [:account_type, :admin, :crypted_password, :database_host,
         :database_timeout, :description, :disqus_shortname, :available_for_hire, :email,
         :geocoding_block_price, :geocoding_quota, :map_view_block_price,
@@ -99,7 +99,7 @@ module Concerns
           self.values.slice(:seats, :display_name, :description, :website,
           :discus_shortname, :twitter_username, :auth_username_password_enabled, :auth_google_enabled)
         end
-      elsif self.is_a?(User)
+      elsif self.is_a?(::User)
         attrs = self.values.slice(:account_type, :admin, :crypted_password,
           :database_host, :database_timeout, :description, :disqus_shortname, :available_for_hire,
           :email, :geocoding_block_price, :geocoding_quota, :map_view_block_price,
@@ -125,7 +125,7 @@ module Concerns
       return self unless params.present? && action.present?
       self.set(params.slice(*allowed_attributes_from_central(action)))
 
-      if self.is_a?(User) && params.has_key?(:password)
+      if self.is_a?(::User) && params.has_key?(:password)
         self.password = self.password_confirmation = params[:password]
       end
       self
@@ -152,11 +152,11 @@ module Concerns
       to_remove = current_feature_flag_ids - feature_flag_ids
 
       removed_feature_flags_user = self.feature_flags_user.select { | ffu | to_remove.include?(ffu.feature_flag_id) }
-      removed_feature_flags_user.map do | rffu | 
+      removed_feature_flags_user.map do | rffu |
         rffu.destroy
       end
 
-      to_add.map { | ff_id | 
+      to_add.map { | ff_id |
         ffu = FeatureFlagsUser.new
         ffu.user_id = self.id
         ffu.feature_flag_id = ff_id

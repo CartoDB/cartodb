@@ -33,7 +33,7 @@ module CartoDB
         #  'client_id'
         #  'client_secret'
         # ]
-        # @param user User
+        # @param user ::User
         # @throws UninitializedError
         # @throws MissingConfigurationError
         def initialize(config, user)
@@ -64,7 +64,7 @@ module CartoDB
 
         # Factory method
         # @param config {}
-        # @param user User
+        # @param user ::User
         # @return CartoDB::Datasources::Url::GDrive
         def self.get_new(config, user)
           new(config, user)

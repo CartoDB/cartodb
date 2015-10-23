@@ -122,6 +122,10 @@ module CartoDB
         false
       end
 
+      def http_download?
+        true
+      end
+
       def run(available_quota_in_bytes=nil)
         set_local_source_file || set_downloaded_source_file(available_quota_in_bytes)
         self

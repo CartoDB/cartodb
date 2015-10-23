@@ -47,7 +47,7 @@ module CartoDB
         attr_reader :metadata
 
         # Constructor
-        # @param user User
+        # @param user ::User
         def initialize(user)
           super
           @service_name = DATASOURCE_NAME
@@ -79,7 +79,7 @@ module CartoDB
         end
 
         # Factory method
-        # @param user User
+        # @param user ::User
         # @return CartoDB::Datasources::Url::ArcGIS
         def self.get_new(user)
           return new(user)

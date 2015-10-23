@@ -10,16 +10,16 @@ module CartoDB
     SIGNATURE           = 'visualizations'
     PARTIAL_MATCH_QUERY = %Q{
       to_tsvector(
-        'english', coalesce(name, '') || ' ' 
+        'english', coalesce(name, '') || ' '
         || coalesce(description, '')
-      ) @@ plainto_tsquery('english', ?) 
+      ) @@ plainto_tsquery('english', ?)
       OR CONCAT(name, ' ', description) ILIKE ?
     }
 
     class << self
       attr_accessor :repository
     end
-    
+
     class Collection
       # 'unauthenticated' overrides other filters
       # 'user_id' filtered by default if present upon fetch()
@@ -239,7 +239,7 @@ module CartoDB
 
       def organization_shared_entities_count(type)
         type ||= @type
-        user = User.where(id: @user_id).first
+        user = ::User.where(id: @user_id).first
         if user.nil? || user.organization.nil?
           0
         else
@@ -447,7 +447,7 @@ module CartoDB
         return dataset if tags.nil? || tags.empty?
         placeholders = tags.length.times.map { '?' }.join(', ')
         filter       = "tags && ARRAY[#{placeholders}]"
-       
+
         dataset.where([filter].concat(tags))
       end
 
@@ -498,7 +498,7 @@ module CartoDB
 
       def user_shared_vis(user_id)
         recipient_ids = user_id.is_a?(Array) ? user_id : [user_id]
-        User.where(id: user_id).each { |user|
+        ::User.where(id: user_id).each { |user|
           if user.has_organization?
             recipient_ids << user.organization.id
           end

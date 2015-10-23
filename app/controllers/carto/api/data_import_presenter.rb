@@ -105,6 +105,7 @@ module Carto
         values.merge!(success: @data_import.success) if @data_import.final_state?
         values.merge!(original_url: @data_import.original_url)
         values.merge!(data_type: @data_import.data_type)
+        values.merge!(warnings: get_warnings)
 
         if !@data_import.http_response_code.nil? && !@data_import.http_response_code.start_with?('2')
           values.merge!(http_response_code: @data_import.http_response_code)
@@ -131,7 +132,13 @@ module Carto
           display_name || @data_import.id
         end
       rescue => e
-        CartoDB.notify_debug('Error extracting display name', { data_import_id: @data_import.id, service_item_id: @data_import.service_item_id, data_source: @data_import.data_source })
+        CartoDB.notify_debug(
+          'Error extracting display name',
+          data_import_id: @data_import.id,
+          service_item_id: @data_import.service_item_id,
+          data_source: @data_import.data_source,
+          exception: e.inspect
+        )
         @data_import.id
       end
 
@@ -163,6 +170,18 @@ module Carto
         end
 
         message
+      end
+
+      # All warnings should be parsed into a single Hash here
+      def get_warnings
+        warnings = {}
+
+        if !@data_import.rejected_layers.nil?
+          warnings.merge!(rejected_layers: @data_import.rejected_layers.split(','))
+          warnings.merge!(user_max_layers: @data_import.user.max_layers)
+        end
+
+        warnings.empty? ? nil : warnings
       end
     end
   end

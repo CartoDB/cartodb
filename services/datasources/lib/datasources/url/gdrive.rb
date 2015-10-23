@@ -336,14 +336,6 @@ module CartoDB
           data
         end
 
-        # Calculates a checksum of given input
-        # @param origin string
-        # @return string
-        def checksum_of(origin)
-          #noinspection RubyArgCount
-          Zlib::crc32(origin).to_s
-        end
-
         def clean_filename(name)
           clean_name = ''
           name.gsub(' ','_').scan(/([a-zA-Z0-9_]+)/).flatten.map { |match|

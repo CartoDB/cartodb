@@ -63,6 +63,16 @@ module CartoDB
 
       private_class_method :new
 
+      protected
+
+      # Calculates a checksum of given input
+      # @param origin string
+      # @return string
+      def checksum_of(origin)
+        #noinspection RubyArgCount
+        Zlib::crc32(origin).to_s
+      end
+
       private
 
       def check_config(config, param)

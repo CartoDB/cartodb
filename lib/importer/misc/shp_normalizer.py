@@ -69,23 +69,7 @@ if os.path.isfile(prj_file):
   if code:
     srid = code
   else:
-    #Ok, no luck, lets try with the OpenGeo service
-    try:
-      query = urlencode({
-          'exact' : True,
-          'error' : True,
-          'mode' : 'wkt',
-          'terms' : prj_string})
-      #'http://prj2epsg.cloudfoundry.com/search.json'
-      url     = 'http://prj2epsg.org/search.json'
-      webres  = urlopen(url, query)
-      jres    = json.loads(webres.read())
-      if 'errors' in jres and 0<length(jres['errors']):
-        srid = None
-      if jres['codes']:
-        srid = int(jres['codes'][0]['code'])
-    except:
-      srid=None # ensure set back to 4326 whatever happens
+    srid = None # ensure set back to 4326 whatever happens
 
 try:
 # Try to detect the encoding

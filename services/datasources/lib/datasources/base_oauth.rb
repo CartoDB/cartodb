@@ -9,6 +9,11 @@ module CartoDB
       # And appended anywhere in the querystring used as callback url with param "state=xxxxxx"
       CALLBACK_STATE_DATA_PLACEHOLDER = '__user__service__'
 
+      def initialize(config, user, mandatory_config_parameters)
+        super
+        mandatory_config_parameters.each { |param| check_config(config, param) }
+      end
+
       # TODO: Helper method to aid with migration of endpoints, can be removed after full AR migration
       def service_name_for_user(service_name, user)
         service_name
@@ -57,6 +62,12 @@ module CartoDB
       end #revoke_token
 
       private_class_method :new
+
+      private
+
+      def check_config(config, param)
+        raise MissingConfigurationError.new("missing #{param}", DATASOURCE_NAME) unless config.include?(param)
+      end
 
     end
   end

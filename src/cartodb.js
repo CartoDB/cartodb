@@ -96,13 +96,13 @@
         'geo/ui/widgets/histogram/widget_histogram_view.js',
         'geo/ui/widgets/histogram/widget_histogram_content_view.js',
         'geo/ui/widgets/histogram/widget_histogram_model.js',
-        'geo/ui/widgets/list/widget_list_view.js',
-        'geo/ui/widgets/list/widget_list_content_view.js',
-        'geo/ui/widgets/list/widget_list_paginator_view.js',
+        'geo/ui/widgets/list/view.js',
+        'geo/ui/widgets/list/content_view.js',
+        'geo/ui/widgets/list/paginator_view.js',
         'geo/ui/widgets/list/edges_view.js',
-        'geo/ui/widgets/list/widget_list_item_view.js',
-        'geo/ui/widgets/list/widget_list_items_view.js',
-        'geo/ui/widgets/list/widget_list_model.js',
+        'geo/ui/widgets/list/item_view.js',
+        'geo/ui/widgets/list/items_view.js',
+        'geo/ui/widgets/list/model.js',
 
         // End widgets
 

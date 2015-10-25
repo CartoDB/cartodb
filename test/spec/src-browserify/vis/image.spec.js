@@ -1,34 +1,25 @@
-var $ = require('jquery');
 var _ = require('underscore');
-var Backbone = require('backbone');
-var Queue = require('../../../../src-browserify/vis/image/queue');
-var setupSubLayerBase = require('../../../../src-browserify/geo/sub-layer/sub-layer-base');
-var setupCartoDBSubLayer = require('../../../../src-browserify/geo/sub-layer/cartodb-sub-layer');
-var setupSubLayerFactory = require('../../../../src-browserify/geo/sub-layer/sub-layer-factory');
-var setupMapBase = require('../../../../src-browserify/geo/layer-definition/map-base');
-var setupLayerDefinition = require('../../../../src-browserify/geo/layer-definition/layer-definition');
-var setupNamedMap = require('../../../../src-browserify/geo/layer-definition/named-map');
-var setupLoader = require('../../../../src-browserify/core/loader');
-var setupStaticImage = require('../../../../src-browserify/vis/image/static-image');
-var setupImage = require('../../../../src-browserify/vis/image');
 
-describe("vis/image", function() {
-  var Image;
-  var StaticImage;
-  var Loader;
+var cdbProxy = require('cdb-proxy');
+var Backbone = require('backbone');
+var $ = require('jquery');
+var jQueryProxy = require('jquery-proxy');
+var BackboneProxy = require('backbone-proxy');
+var ajaxProxy = require('ajax-proxy');
+// var cartocssProxy = require('cartocss-default-version-proxy').set('1.2.3').get();
+
+var Queue = require('../../../../src-browserify/vis/image/queue');
+var StaticImage = require('../../../../src-browserify/vis/image/static-image');
+var Loader = require('../../../../src-browserify/core/loader');
+var Image = require('../../../../src-browserify/vis/image');
+
+describe('vis/image', function() {
 
   beforeEach(function() {
-    var SubLayerBase = setupSubLayerBase(Backbone.Events);
-    var CartoDBSubLayer = setupCartoDBSubLayer(SubLayerBase, Backbone.Model);
-    var SubLayerFactory = setupSubLayerFactory(CartoDBSubLayer, {}); // HttpSubLayer = {}, since not used
-    var MapBase = setupMapBase(SubLayerFactory, { jQueryAjax: $.ajax });
-    var LayerDefinition = setupLayerDefinition(MapBase, '1.2.3');
-    var cdb = {DEBUG: false};
-    Loader = setupLoader(cdb);
-    var NamedMap = setupNamedMap(MapBase, SubLayerFactory);
-    StaticImage = setupStaticImage(Loader, LayerDefinition, MapBase, NamedMap);
-    Image = setupImage(StaticImage);
-
+    cdbProxy.set({});
+    BackboneProxy.set(Backbone);
+    jQueryProxy.set($);
+    ajaxProxy.set($.ajax);
     var img = $('<img id="image" />');
     $("body").append(img);
   });

@@ -1,82 +1,60 @@
 var _ = require('underscore');
-var BackboneIsch = require('backbone-isch');
 var Mustache = require('mustache');
 var reqwest = require('reqwest');
+
+// TODO: jQuery itself is not required for the core, but if available it's preferred (for some reason) for the
+// AJAX requests in the api/sql object - could we skip the need for jquery altogether to make things simpler?
+var $ = window.$ || window.jQuery;
+if ($) {
+  require('jquery-proxy').set($);
+  require('ajax-proxy').set($.ajax);
+} else {
+  require('ajax-proxy').set(reqwest.compat);
+}
+
+var Backbone = require('backbone-proxy').set(window.Backbone
+    ? window.Backbone
+    : require('./api/core-lib/backbone-isch')
+  ).get();
+var CARTOCSS_DEFAULT_VERSION = require('cartocss-default-version-proxy').set('2.1.1').get();
+var cdb = require('cdb-proxy').set({}).get();
+
+// These must be set after the proxied requires:
 var util = require('./core/util');
 var Profiler = require('./core/profiler');
-var setupTiles = require('./api/tiles');
-var setupLoader = require('./core/loader');
-var setup_Promise = require('./api/core-lib/_promise');
-var setupSubLayerBase = require('./geo/sub-layer/sub-layer-base');
-var setupHttpSubLayer = require('./geo/sub-layer/http-sub-layer');
-var setupCartoDBSubLayer = require('./geo/sub-layer/cartodb-sub-layer');
-var setupSubLayerFactory = require('./geo/sub-layer/sub-layer-factory');
-var setupMapBase = require('./geo/layer-definition/map-base');
-var setupLayerDefinition = require('./geo/layer-definition/layer-definition');
-var setupNamedMap = require('./geo/layer-definition/named-map');
-var setupStaticImage = require('./vis/image/static-image');
-var setupImage = require('./vis/image');
-var setupSQL = require('./api/sql');
+var Tiles = require('./api/tiles');
+var Loader = require('./core/loader');
+var _Promise = require('./api/core-lib/_promise');
+var Image = require('./vis/image');
+var SQL = require('./api/sql');
 
-var cdb = {};
 cdb.VERSION = "3.15.8";
 cdb.DEBUG = false;
 cdb.CARTOCSS_VERSIONS = {
   '2.0.0': '',
   '2.1.0': ''
 };
-cdb.CARTOCSS_DEFAULT_VERSION = '2.1.1';
+cdb.CARTOCSS_DEFAULT_VERSION = CARTOCSS_DEFAULT_VERSION;
 cdb.config = {};
 
-var Loader = setupLoader(cdb);
-
-var BackboneEvents = window.Backbone ? window.Backbone.Events : BackboneIsch.Events
-var _Promise = setup_Promise(BackboneEvents);
-
+cdb.vis = {};
 cdb.core = {};
 cdb.core.Profiler = Profiler;
 cdb.core.util = util;
-cdb.core.Loader = Loader;
+cdb.core.Loader = cdb.vis.Loader = Loader;
 
-var globalJQuery = window.$ || window.jQuery;
-
-var SubLayerBase = setupSubLayerBase(BackboneEvents);
-var HttpSubLayer = setupHttpSubLayer(SubLayerBase);
-var BackboneModel = window.Backbone ? window.Backbone.Model : null;
-var CartoDBSubLayer = setupCartoDBSubLayer(SubLayerBase, BackboneModel);
-var SubLayerFactory = setupSubLayerFactory(CartoDBSubLayer, HttpSubLayer);
-var MapBase = setupMapBase(SubLayerFactory, {
-  jQueryAjax: globalJQuery ? globalJQuery.ajax : undefined,
-  reqwestCompat: reqwest.compat
-});
-var LayerDefinition = setupLayerDefinition(MapBase, cdb.CARTOCSS_DEFAULT_VERSION);
-var NamedMap = setupNamedMap(MapBase, SubLayerFactory);
-var StaticImage = setupStaticImage(Loader, LayerDefinition, MapBase, NamedMap);
-cdb.Image = setupImage(StaticImage);
-
-cdb.Tiles = setupTiles(LayerDefinition, reqwest.compat);
-
-var SQL = setupSQL(_Promise, {
-  jQuery: globalJQuery,
-  reqwest: reqwest // used as fallback in case jQuery is not loaded
-});
+cdb.Image = Image
+cdb.Tiles = Tiles;
 cdb.SQL = SQL;
-
-cdb.vis = {};
-cdb.vis.Loader = Loader;
-
 cdb._Promise = _Promise;
 
-if (typeof window !== 'undefined') {
-  window.cartodb = cdb;
+window.cartodb = cdb;
+if (!window.JST) window.JST = {};
+if (!window._) window._ = _;
+if (!window.Backbone) window.Backbone = Backbone;
+if (!window.Mustache) window.Mustache = Mustache;
 
-  if (!window.JST) window.JST = {};
-  if (!window._) window._ = _;
-  if (!window.Backbone) window.Backbone = BackboneIsch;
-  if (!window.Mustache) window.Mustache = Mustache;
-
-  // required by api/sql at global namespace at runtime
-  window.reqwest = reqwest
-}
+// TODO is it necessary to set reqwest on window? might not even be used if jQuery is available (see above)
+window.reqwest = reqwest
 
 module.exports = cdb;

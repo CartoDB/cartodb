@@ -65,11 +65,16 @@
       ]
     },
     "browser": {
-      "backbone-isch": "./src-browserify/api/core-lib/backbone-isch.js",
+      "ajax-proxy": "./src-browserify/require-proxies/ajax-proxy.js",
+      "backbone-proxy": "./src-browserify/require-proxies/backbone-proxy.js",
+      "cartocss-default-version-proxy": "./src-browserify/require-proxies/cartocss-default-version-proxy.js",
+      "cdb-proxy": "./src-browserify/require-proxies/cdb-proxy.js",
       "cdb.core.util": "./src-browserify/core/util.js",
       "cdb.core.profiler": "./src-browserify/core/profiler.js",
-      "html-css-sanitizer": "./vendor/html-css-sanitizer-bundle.js",
       "json2": "./vendor/json2.js",
+      "jquery-proxy": "./src-browserify/require-proxies/jquery-proxy.js",
+      "html-css-sanitizer": "./vendor/html-css-sanitizer-bundle.js",
+      "leaflet-proxy": "./src-browserify/require-proxies/leaflet-proxy.js",
       "lzma": "./vendor/lzma.js",
       "reqwest": "./vendor/reqwest.min.js"
     },

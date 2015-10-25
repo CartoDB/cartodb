@@ -78,7 +78,7 @@
     };
 
     if(options.cache !== undefined) {
-      params.cache = options.cache; 
+      params.cache = options.cache;
     }
 
     if(options.jsonp) {
@@ -138,7 +138,7 @@
       if ((typeof(jQuery) !== 'undefined')) {
         params.type = 'post';
       } else {
-        params.method = 'post'; 
+        params.method = 'post';
       }
     }
 
@@ -162,8 +162,8 @@
         resp = JSON.parse(resp.response);
       }
       //Timeout explanation. CartoDB.js ticket #336
-      //From St.Ov.: "what setTimeout does is add a new event to the browser event queue 
-      //and the rendering engine is already in that queue (not entirely true, but close enough) 
+      //From St.Ov.: "what setTimeout does is add a new event to the browser event queue
+      //and the rendering engine is already in that queue (not entirely true, but close enough)
       //so it gets executed before the setTimeout event."
       setTimeout(function() {
         promise.trigger('done', resp, status, xhr);
@@ -373,7 +373,7 @@
         '         FROM b, t',
         '         LIMIT 10',
         '         ),',
-        'stats as (', 
+        'stats as (',
            'select count(distinct({{column}})) as uniq, ',
            '       count(*) as cnt, ',
            '       sum(case when COALESCE(NULLIF({{column}},\'\')) is null then 1 else 0 end)::numeric as null_count, ',
@@ -382,14 +382,14 @@
            '       (SELECT max(cumperc) weight FROM c) As skew ',
            'from ({{sql}}) __wrap',
         '),',
-        'hist as (', 
+        'hist as (',
            'select array_agg(row(d, c)) array_agg from (select distinct({{column}}) d, count(*) as c from ({{sql}}) __wrap, stats group by 1 limit 100) _a',
         ')',
         'select * from stats, hist'
       ];
 
       var query = Mustache.render(s.join('\n'), {
-        column: column, 
+        column: column,
         sql: sql
       });
 
@@ -452,7 +452,7 @@
       var moments = row.moments;
 
       var steps = Math.min(row.moments, 1024);
-      
+
       callback({
         type: 'date',
         start_time: s,
@@ -484,7 +484,7 @@
 
     this.execute(query, function(data) {
       var row = data.rows[0];
-      
+
       callback({
         type: 'boolean',
         null_ratio: row.null_ratio,
@@ -497,16 +497,16 @@
 
   SQL.prototype.describeGeom = function(sql, column, callback) {
       var s = [
-        'with stats as (', 
+        'with stats as (',
            'select st_asgeojson(st_extent({{column}})) as bbox',
            'from ({{sql}}) _wrap',
         '),',
-        'geotype as (', 
+        'geotype as (',
           'select st_geometrytype({{column}}) as geometry_type from ({{sql}}) _w where {{column}} is not null limit 1',
         '),',
-        'clusters as (', 
+        'clusters as (',
           'with clus as (',
-            'SELECT distinct(ST_snaptogrid(the_geom, 10)) as cluster, count(*) as clustercount FROM ({{sql}}) _wrap group by 1 order by 2 desc limit 3),', 
+            'SELECT distinct(ST_snaptogrid(the_geom, 10)) as cluster, count(*) as clustercount FROM ({{sql}}) _wrap group by 1 order by 2 desc limit 3),',
           'total as (',
             'SELECT count(*) FROM ({{sql}}) _wrap)',
           'SELECT sum(clus.clustercount)/sum(total.count) AS clusterrate FROM clus, total',
@@ -518,11 +518,11 @@
       ];
 
       var query = Mustache.render(s.join('\n'), {
-        column: column, 
+        column: column,
         sql: sql
       });
       function simplifyType(g) {
-        return { 
+        return {
         'st_multipolygon': 'polygon',
         'st_polygon': 'polygon',
         'st_multilinestring': 'line',
@@ -592,7 +592,7 @@
              'order by 1',
           ') __wrap',
          '),',
-        'hist as (', 
+        'hist as (',
            'select array_agg(row(d, c)) cat_hist from (select distinct({{column}}) d, count(*) as c from ({{sql}}) __wrap, stats group by 1 limit 100) _a',
         '),',
          'buckets as (',
@@ -607,7 +607,7 @@
       ];
 
       var query = Mustache.render(s.join('\n'), {
-        column: column, 
+        column: column,
         sql: sql
       });
 
@@ -617,7 +617,7 @@
         var h = array_agg(row.cat_hist);
         callback({
           type: 'number',
-          cat_hist: 
+          cat_hist:
             _(h).map(function(row) {
             var r = row.match(/\((.*),(\d+)/);
             return [+r[1], +r[2]];
@@ -625,8 +625,8 @@
           hist: _(s).map(function(row) {
             if(row.indexOf("empty") > -1) return;
             var els = row.split('"');
-            return { index: els[0].replace(/\D/g,''), 
-                     range: els[1].split(",").map(function(d){return d.replace(/\D/g,'')}), 
+            return { index: els[0].replace(/\D/g,''),
+                     range: els[1].split(",").map(function(d){return d.replace(/\D/g,'')}),
                      freq: els[2].replace(/\D/g,'') };
           }),
           stddev: row.stddev,

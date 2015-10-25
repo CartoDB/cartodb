@@ -1,15 +1,14 @@
-var setupTemplate = require('../../../../src-browserify/core/template');
+var cdb = require('cdb-proxy').set({}).get();
+var Template = require('../../../../src-browserify/core/template');
 
 describe("core/template", function() {
     var tmpl;
-    var Template;
 
     beforeEach(function() {
-        var log = {};
-        Template = setupTemplate(log);
-        tmpl = new Template({
-            template: "hi, my name is <%= name %>"
-        });
+      cdb.log = {};
+      tmpl = new Template({
+        template: "hi, my name is <%= name %>"
+      });
     });
 
     it("should render", function() {
@@ -24,11 +23,11 @@ describe("core/template", function() {
     });
 
     it("should render using mustache", function() {
-        tmpl = new Template({
-          template: "hi, my name is {{ name }}",
-          type: 'mustache'
-        });
+      tmpl = new Template({
+        template: "hi, my name is {{ name }}",
+        type: 'mustache'
+      });
 
-        expect(tmpl.render({name: 'rambo'})).toEqual("hi, my name is rambo");
+      expect(tmpl.render({name: 'rambo'})).toEqual("hi, my name is rambo");
     });
 });

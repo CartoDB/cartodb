@@ -1,21 +1,17 @@
-module.exports = function(StaticImage) {
-  if (!StaticImage) throw new Error('StaticImage is required');
+var StaticImage = require('./image/static-image');
 
-  var Image = function(data, options) {
+var Image = function(data, options) {
+  if (!options) options = {};
 
-    if (!options) options = {};
+  var image = new StaticImage();
 
-    var image = new StaticImage();
+  if (typeof data === 'string') {
+    image.load(data, options);
+  } else {
+    image.loadLayerDefinition(data, options);
+  }
 
-    if (typeof data === 'string') {
-      image.load(data, options);
-    } else {
-      image.loadLayerDefinition(data, options);
-    }
-
-    return image;
-
-  };
-
-  return Image;
+  return image;
 };
+
+module.exports = Image;

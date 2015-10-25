@@ -1,13 +1,13 @@
 var $ = require('jquery');
-var setupModel = require('../../../../src-browserify/core/model');
+var jQueryProxy = require('jquery-proxy');
+var Model = require('../../../../src-browserify/core/model');
 
 describe('core/model', function() {
   var TestModel;
-  var Model;
   var model;
 
   beforeEach(function() {
-    Model = setupModel($);
+    jQueryProxy.set($);
     TestModel = Model.extend({
       initialize: function() {
         this.initCalled = true;

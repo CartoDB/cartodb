@@ -7,6 +7,30 @@ var bannerStr = function(dest) {
 };
 
 var bundles = {
+
+  // Specs that are shared for all bundles
+  'src-browserify-specs': {
+    src: [
+      'test/lib/reset-proxies-after-each.js',
+      'test/spec/src-browserify/create-cdb.spec.js',
+      'test/spec/src-browserify/require-proxies/create-require-proxy.spec.js',
+      'test/spec/src-browserify/api/sql.spec.js',
+      'test/spec/src-browserify/core/decorators.spec.js',
+      'test/spec/src-browserify/core/log.spec.js',
+      'test/spec/src-browserify/core/log/*.js',
+      'test/spec/src-browserify/core/model.spec.js',
+      'test/spec/src-browserify/core/sanitize.spec.js',
+      'test/spec/src-browserify/core/template-list.spec.js',
+      'test/spec/src-browserify/core/template.spec.js',
+      'test/spec/src-browserify/core/util.spec.js',
+      'test/spec/src-browserify/core/view.spec.js',
+      'test/spec/src-browserify/geo/layer-definition/*.js',
+      'test/spec/src-browserify/geo/sublayer.spec.js',
+      'test/spec/src-browserify/vis/image.spec.js',
+    ],
+    dest: '<%= config.tmp %>/src-browserify-specs.js'
+  },
+
   'core': {
     options: {
       banner: bannerStr('cartodb.core.uncompressed.js')
@@ -17,15 +41,11 @@ var bundles = {
   'core-specs': {
     src: [
       'test/spec/src-browserify/core.spec.js',
-      'test/spec/src-browserify/api/sql.spec.js',
       'test/spec/src-browserify/api/tiles.spec.js',
-      'test/spec/src-browserify/core/util.spec.js',
-      'test/spec/src-browserify/geo/layer-definition/*.js',
-      'test/spec/src-browserify/geo/sublayer.spec.js',
-      'test/spec/src-browserify/vis/image.spec.js',
     ],
     dest: '<%= config.tmp %>/core-specs.js'
   },
+
   standard: {
     options: {
       banner: bannerStr('cartodb.uncompressed.js')
@@ -36,16 +56,6 @@ var bundles = {
   'standard-specs': {
     src: [
       'test/spec/src-browserify/standard.spec.js',
-      'test/spec/src-browserify/create-cdb.spec.js',
-      'test/spec/src-browserify/core/decorators.spec.js',
-      'test/spec/src-browserify/core/log.spec.js',
-      'test/spec/src-browserify/core/log/*.js',
-      'test/spec/src-browserify/core/model.spec.js',
-      'test/spec/src-browserify/core/sanitize.spec.js',
-      'test/spec/src-browserify/core/template-list.spec.js',
-      'test/spec/src-browserify/core/template.spec.js',
-      'test/spec/src-browserify/core/util.spec.js',
-      'test/spec/src-browserify/core/view.spec.js',
     ],
     dest: '<%= config.tmp %>/standard-specs.js'
   },

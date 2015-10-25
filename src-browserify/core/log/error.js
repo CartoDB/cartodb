@@ -1,19 +1,15 @@
 var Backbone = require('backbone');
+var jQueryProxy = require('jquery-proxy');
+var cdbProxy = require('cdb-proxy'); // cdb.config
 
-module.exports = function($, config) {
-  if (!$) throw new Error('$ (jQuery) is required');
-  if (!config) throw new Error('config (cdb.config) is required');
+var ErrorModel = Backbone.Model.extend({
+  url: function() {
+    return cdbProxy.get().config.REPORT_ERROR_URL;
+  },
 
-  var ErrorModel = Backbone.Model.extend({
+  initialize: function() {
+    this.set({ browser: JSON.stringify(jQueryProxy.get().browser) });
+  }
+});
 
-    url: function() {
-      return config.REPORT_ERROR_URL;
-    },
-
-    initialize: function() {
-      this.set({ browser: JSON.stringify($.browser) });
-    }
-  });
-
-  return ErrorModel;
-};
+module.exports = ErrorModel;

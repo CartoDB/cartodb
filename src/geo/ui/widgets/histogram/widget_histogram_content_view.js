@@ -210,18 +210,26 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
 
   _onMouseMove: function() {
     var x = d3.event.offsetX;
+    var y = d3.event.offsetY;
+
     var barIndex= Math.floor(x / this.barWidth);
     var data = this.model.get('data');
 
     var format = d3.format('0,000');
     var bar = this.chart.select('.Bar:nth-child(' + (barIndex + 1) + ')');
 
+    var hovered = y > Math.floor(this.yScale(data[barIndex].freq));
+
     if (bar && bar.node() && !bar.classed('is-selected')) {
-      var left = (barIndex * this.barWidth);
+      var left = (barIndex * this.barWidth) + (this.barWidth/2) - 25;
       var top = this.yScale(data[barIndex].freq) - 10 + this.model.get('pos').y;
-      if (!this._isDragging()) {
-        this.trigger('hover', { top: top, left: left + (this.barWidth/2) - 25, value: data[barIndex].freq });
+
+      if (!this._isDragging() && hovered) {
+        this.trigger('hover', { top: top, left: left, value: data[barIndex].freq });
+      } else {
+        this.trigger('hover', { value: null });
       }
+
     } else {
       this.trigger('hover', { value: null });
     }
@@ -229,7 +237,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     this.chart.selectAll('.Bar')
     .classed('is-highlighted', false);
 
-    if (bar && bar.node()) {
+    if (hovered && bar && bar.node()) {
       bar.classed('is-highlighted', true);
     }
   },
@@ -695,7 +703,6 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   },
 
   _generateData: function() {
-    //{ bucket: 1, min: 1, max: 1, freq: 179 }
     var data = _.map(d3.range(Math.round(Math.random() * 100) + 2), function(d, i) {
       return { bucket: i, freq: Math.round(Math.random() * 1000) };
     });

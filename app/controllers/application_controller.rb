@@ -116,8 +116,10 @@ class ApplicationController < ActionController::Base
   def check_cors_headers_for_whitelisted_referer
     referer = request.env["HTTP_REFERER"]
     origin = request.headers['origin']
-    whitelist_referer = %w{http https}.map {|proto| "#{proto}://#{Cartodb.config[:account_host]}/explore" }
-    whitelist_origin = %w{http https}.map {|proto| "#{proto}://#{Cartodb.config[:account_host]}" }
+    whitelist_referer = []
+    whitelist_referer << %w{http https}.map { |proto| "#{proto}://#{Cartodb.config[:account_host]}/explore" }
+    whitelist_referer << %w{http https}.map { |proto| "#{proto}://#{Cartodb.config[:account_host]}/data-library" }
+    whitelist_origin = %w{http https}.map { |proto| "#{proto}://#{Cartodb.config[:account_host]}" }
     # It seems that Firefox and IExplore don't send the Referer header in the preflight request
     right_referer = request.method == "OPTIONS" ? true : whitelist_referer.include?(referer)
     right_origin = whitelist_origin.include?(origin)

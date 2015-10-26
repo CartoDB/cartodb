@@ -98,10 +98,17 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     this.model.bind('change:dragging', this._onChangeDragging, this);
   },
 
+  _move: function(pos) {
+    this.chart
+    .transition()
+    .duration(150)
+    .attr('transform', 'translate(' + (pos.x) + ', ' + (pos.y) + ')');
+  },
+
   _setupDimensions: function() {
     var data = this.model.get('data');
 
-    this.margin = { top: 0, right: 10, bottom: 20, left: 10 };
+    this.margin = { top: 0, right: 0, bottom: 20, left: 0 };
 
     this.canvasWidth  = this.options.width;
     this.canvasHeight = this.options.height;
@@ -139,6 +146,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     .transition()
     .duration(150)
     .attr('opacity', 0)
+    .style('display', 'none')
     .attr('transform', 'translate(0, ' + (this.options.y - 10) + ')');
   },
 
@@ -148,14 +156,8 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     .transition()
     .duration(150)
     .attr('opacity', 1)
+    .style('display', 'block')
     .attr('transform', 'translate(0, ' + (this.options.y) + ')');
-  },
-
-  move: function() {
-    this.chart
-    .transition()
-    .duration(2500)
-    .attr('transform', 'translate(0, ' + (this.options.y + 90) + ')');
   },
 
   _onBrushStart: function() {
@@ -594,6 +596,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
     this.chart.bind('hover', this._onValueHover, this);
     this.chart.render().show();
 
+    window.chart = this.chart;
     this._updateStats();
   },
 
@@ -603,13 +606,14 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
       el: this.$('.js-chart'),
       handles: false,
       width: this.canvasWidth,
-      y: 90,
+      y: 0,
       height: 20,
       data: this.dataModel.get('data')
     }));
 
     this.miniChart.bind('on_brush_end', this._onMiniRangeUpdated, this);
-    this.miniChart.render();
+    this.miniChart.render().hide();
+    window.miniChart = this.miniChart;
   },
 
   _setupBindings: function() {
@@ -746,11 +750,14 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   _contract: function() {
     this.canvas
     .attr('height', this.canvasHeight);
+    this.chart._move({ x: 0, y: 0 });
   },
 
   _expand: function() {
     this.canvas
     .attr('height', this.canvasHeight + 60);
+    this.miniChart.show();
+    this.chart._move({ x: 0, y: 50 });
   },
 
   _generateCanvas: function() {

@@ -51,7 +51,6 @@ describe('widgets/content_view', function() {
   });
 
   describe('render', function() {
-
     it('should render placeholder when data is empty', function(){
       spyOn(this.view, '_addPlaceholder');
       this.dataModel.set('data', '');

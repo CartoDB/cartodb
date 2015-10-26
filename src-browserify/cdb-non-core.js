@@ -31,7 +31,6 @@ cdb.core.View = require('./core/view');
 var TemplateList = cdb.core.TemplateList = require('./core/template-list');
 cdb.templates = require('templates-proxy').set(new TemplateList()).get();
 
-cdb.geo.geocoder = {};
 cdb.geo.geocoder.NOKIA = require('./geo/geocoder/nokia-geocoder');
 cdb.geo.geocoder.YAHOO = require('./geo/geocoder/yahoo-geocoder');
 cdb.geo.Geometry = require('./geo/geometry');

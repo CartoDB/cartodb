@@ -6,6 +6,18 @@ module.exports = function(cdb) {
     expect(window.cartodb).toBe(cartodb);
   });
 
+  it('should have common object placeholders', function() {
+    expect(cdb.core).toEqual(jasmine.any(Object));
+    expect(cdb.vis).toEqual(jasmine.any(Object));
+
+    expect(cdb.geo).toEqual(jasmine.any(Object));
+    expect(cdb.geo.ui).toEqual(jasmine.any(Object));
+    expect(cdb.geo.geocoder).toEqual(jasmine.any(Object));
+
+    expect(cdb.ui).toEqual(jasmine.any(Object));
+    expect(cdb.ui.common).toEqual(jasmine.any(Object));
+  });
+
   it('should have expected objects on cdb object', function() {
     expect(cdb.core).toEqual(jasmine.any(Object));
     expect(cdb.vis).toEqual(jasmine.any(Object));

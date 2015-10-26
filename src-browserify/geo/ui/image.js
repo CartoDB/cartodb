@@ -1,4 +1,9 @@
-cdb.geo.ui.Image = cdb.geo.ui.Text.extend({
+var _ = require('underscore');
+var jQueryProxy = require('jquery-proxy');
+var sanitize = require('../../core/sanitize');
+var Text = require('./text');
+
+module.exports = Text.extend({
 
   className: "cartodb-overlay image-overlay",
 
@@ -21,6 +26,7 @@ cdb.geo.ui.Image = cdb.geo.ui.Text.extend({
     this.template = this.options.template;
 
     var self = this;
+    var $ = jQueryProxy.get();
 
     $(window).on("map_resized", function() {
       self._place();
@@ -61,7 +67,7 @@ cdb.geo.ui.Image = cdb.geo.ui.Text.extend({
     if (this.model.get("extra").has_default_image) {
       content = _.template('<img src="<%- url %>" />')({ url: this.model.get("extra").public_default_image_url });
     } else {
-      content = cdb.core.sanitize.html(this.model.get("extra").rendered_text, this.model.get('sanitizeContent'));
+      content = sanitize.html(this.model.get("extra").rendered_text, this.model.get('sanitizeContent'));
     }
 
     var data = _.chain(this.model.attributes).clone().extend({ content: content }).value();

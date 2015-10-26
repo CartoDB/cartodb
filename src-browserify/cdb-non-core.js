@@ -49,6 +49,7 @@ cdb.geo.CartoDBGroupLayer = require('./geo/map/cartodb-group-layer');
 
 cdb.geo.ui.Text = require('./geo/ui/text');
 cdb.geo.ui.Annotation = require('./geo/ui/annotation');
+cdb.geo.ui.Image = require('./geo/ui/image');
 cdb.geo.ui.InfowindowModel = require('./geo/ui/infowindow-model');
 cdb.geo.ui.Infowindow = require('./geo/ui/infowindow');
 

@@ -1,5 +1,5 @@
 module.exports = function(cdb) {
-  describe('cdb object', function() {
+  describe('shared for cdb object in all bundles except for core', function() {
     it('should have the commonly used vendor libs defined', function() {
       expect(cdb.$).toEqual(jasmine.any(Function));
       expect(cdb.L).toEqual(jasmine.any(Object));
@@ -78,6 +78,7 @@ module.exports = function(cdb) {
     it('should have a cdb.geo.ui object', function() {
       expect(cdb.geo.ui.Text).toEqual(jasmine.any(Function));
       expect(cdb.geo.ui.Annotation).toEqual(jasmine.any(Function));
+      expect(cdb.geo.ui.Image).toEqual(jasmine.any(Function));
       expect(cdb.geo.ui.InfowindowModel).toEqual(jasmine.any(Function));
       expect(cdb.geo.ui.Infowindow).toEqual(jasmine.any(Function));
     });

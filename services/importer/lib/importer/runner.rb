@@ -249,10 +249,10 @@ module CartoDB
 
           @importer_stats.timing('import') do
             if unpacker.source_files.length > MAX_TABLES_PER_IMPORT
-              add_warning(max_tables_per_import: MAX_TABLES_PER_IMPORT.to_s)
+              add_warning(max_tables_per_import: MAX_TABLES_PER_IMPORT)
             end
 
-            unpacker.source_files.each_with_index { |source_file, index|
+            unpacker.source_files.each_with_index do |source_file, index|
               next if (index >= MAX_TABLES_PER_IMPORT)
               @job.new_table_name if (index > 0)
 
@@ -260,8 +260,7 @@ module CartoDB
               log.append "Filename: #{source_file.fullpath} Size (bytes): #{source_file.size}"
               import_stats = execute_import(source_file, @downloader)
               @stats << import_stats
-
-            }
+            end
           end
 
           @importer_stats.timing('cleanup') do

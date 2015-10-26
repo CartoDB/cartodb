@@ -104,7 +104,7 @@ Returns the native map object being used (e.g. a `L.Map` object for Leaflet).
 
 An overlay is a control shown on top of the map.
 
-Overlay objects are always created using the `addOverlay` method of a `cartodb.Vis object.
+Overlay objects are always created using the `addOverlay` method of a `cartodb.Vis` object.
 
 An overlay is internally a [Backbone.View](http://backbonejs.org/#View) so if you know how Backbone works you can use it. If you want to use plain DOM objects you can access `overlay.el` (`overlay.$el` for jQuery object).
 

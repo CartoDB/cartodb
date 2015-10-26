@@ -1,8 +1,6 @@
 describe('widget', function() {
 
   beforeEach(function() {
-    // this.datasource = jasmine.createSpyObj('Datasource', ['addWidgetModel']);
-    // this.datasource.addWidgetModel.and.returnValue(new cdb.core.Model());
     this.model = new cdb.geo.ui.Widget.Model({
       id: 'widget_1',
       options: {

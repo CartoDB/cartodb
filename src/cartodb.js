@@ -21,6 +21,9 @@
     root.cdb.geo = {};
     root.cdb.geo.ui = {};
     root.cdb.geo.ui.Widget = {};
+    root.cdb.geo.ui.Widget.List = {};
+    root.cdb.geo.ui.Widget.Category = {};
+    root.cdb.geo.ui.Widget.Histogram = {};
     root.cdb.geo.geocoder = {};
     root.cdb.ui = {};
     root.cdb.ui.common = {};
@@ -90,9 +93,9 @@
         'geo/ui/widget.js',
         'geo/ui/widgets/widget_model.js',
         'geo/ui/widgets/widget_collection.js',
-        'geo/ui/widgets/standard/widget_loader.js',
-        'geo/ui/widgets/standard/widget_error.js',
-        'geo/ui/widgets/standard/widget_content.js',
+        'geo/ui/widgets/standard/widget_loader_view.js',
+        'geo/ui/widgets/standard/widget_error_view.js',
+        'geo/ui/widgets/standard/widget_content_view.js',
         'geo/ui/widgets/histogram/widget_histogram_view.js',
         'geo/ui/widgets/histogram/widget_histogram_content_view.js',
         'geo/ui/widgets/histogram/widget_histogram_model.js',

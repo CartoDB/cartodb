@@ -53,6 +53,8 @@ module.exports = {
           "src/geo/ui/time_slider.js",
           "src/geo/ui/fullscreen.js",
           "src/geo/ui/widget.js",
+          "src/geo/ui/widgets/*.js",
+          "src/geo/ui/widgets/standard/*.js",
           "src/geo/ui/widgets/**/*.js",
           "src/geo/sublayer.js",
           "src/geo/layer_definition.js",

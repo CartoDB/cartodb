@@ -116,7 +116,7 @@ module CartoDB
                  ancestor_folder_ids: nil,
                  content_types: nil,
                  type: nil,
-                 limit: 30,
+                 limit: 200,
                  offset: 0)
           result.map{ |i| format_item_data(i) }.sort {|x,y| y[:updated_at] <=> x[:updated_at] }
         end

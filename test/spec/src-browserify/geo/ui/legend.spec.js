@@ -1,4 +1,23 @@
-describe("common.geo.ui.Legend", function() {
+var $ = require('jquery');
+var jQueryProxy = require('jquery-proxy');
+
+var cdb = {};
+cdb.geo = {};
+cdb.geo.ui = {};
+var cdbProxy = require('cdb-proxy').set(cdb);
+var cdbUI = require('../../../../../src-browserify/cdb.geo.ui.legend');
+
+var Backbone = require('backbone');
+var Model = require('../../../../../src-browserify/core/model');
+var Map = require('../../../../../src-browserify/geo/map');
+
+describe('geo/ui/legend', function() {
+  beforeEach(function() {
+    jQueryProxy.set($);
+    cdbProxy.set(cdb);
+    cdb.geo = {};
+    cdb.geo.ui = cdbUI;
+  });
 
   describe("Legend", function() {
 
@@ -10,7 +29,7 @@ describe("common.geo.ui.Legend", function() {
 
     beforeEach(function() {
 
-      map = new cdb.geo.Map();
+      map = new Map();
 
       data = [
         { name: "Category 1", value: "#f1f1f1" },
@@ -254,7 +273,7 @@ describe("common.geo.ui.Legend", function() {
         { name: null, value: "red"  },
       ];
 
-      var model = new cdb.core.Model({
+      var model = new Model({
         type: "color",
         title: "title",
         show_title: false,

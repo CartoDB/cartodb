@@ -629,12 +629,13 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
 
   _onValueHover: function(info) {
     var $tooltip = this.$(".js-tooltip");
+
     if (info.value) {
       $tooltip.css({ top: info.top, left: info.left });
       $tooltip.text(info.value);
-      $tooltip.show();
+      $tooltip.fadeIn(70);
     } else {
-      $tooltip.hide();
+      $tooltip.stop().fadeOut(50);
     }
   },
 

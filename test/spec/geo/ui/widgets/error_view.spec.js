@@ -36,6 +36,18 @@ describe('widgets/error_view', function() {
     expect(this.dataModel.unbind.calls.count()).toEqual(0);
   });
 
+  it('should fetch again the data when refresh button is clicked', function(done) {
+    spyOn(this.dataModel, 'fetch');
+    this.view.render();
+    this.view.show();
+    var self = this;
+    setTimeout(function() {
+      self.view.$('.js-refresh').click();
+      expect(self.dataModel.fetch).toHaveBeenCalled();
+      done();
+    }, 400);
+  });
+
   describe('sync', function(){
     beforeEach(function() {
       this.view.render();

@@ -2,13 +2,14 @@
 
 The documentation below refers to CartoDB.js v3. For major changes in the library we will update the documentation here. This documentation is meant to help developers find specific methods from the CartoDB.js library.
 
-## Visualization
+## cartodb.createVis
 
 ### cartodb.createVis(_map_id, vizjson_url[, options] [, callback]_)
 
 Creates a visualization inside the map_id DOM object.
 
-<div class="code-title">cartodb.createVis</div>
+#### Call
+
 ```javascript
 var url = 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json';
 
@@ -19,39 +20,43 @@ cartodb.createVis('map', url)
 
 #### Arguments
 
-- **map_id**: a DOM object, for example `$('#map')` or a DOM id.
-- **vizjson_url**: url of the vizjson object.
-- **options**:
-  - **shareable**: add facebook and twitter share buttons.
-  - **title**: adds a header with the title of the visualization.
-  - **description**: adds description to the header (as you set in the UI).
-  - **search**: adds a search control (default: true).
-  - **zoomControl**: adds zoom control (default: true).
-  - **loaderControl**: adds loading control (default: true).
-  - **center_lat**: latitude where the map is initializated.
-  - **center_lon**: longitude where the map is initializated.
-  - **zoom**: initial zoom.
-  - **cartodb_logo**: default to true, set to false if you want to remove the cartodb logo.
-  - **infowindow**: set to false if you want to disable the infowindow (enabled by default).
-  - **time_slider**: show time slider with torque layers (enabled by default)
-  - **layer_selector**: show layer selector (default: false)
-  - **legends**: if it's true legends are shown in the map.
-  - **https**: if true, it makes sure that basemaps are converted to https when possible. If explicitly false, converts https maps to http when possible. If undefined, the basemap template is left as declared at `urlTemplate` in the viz.json.
-  - **scrollwheel**: enable/disable the ability of zooming using scrollwheel (default enabled)
-  - **fullscreen**: if true adds a button to toggle the map fullscreen
-  - **mobile_layout**: if true enables a custom layout for mobile devices (default: false)
-  - **force_mobile**: forces enabling/disabling the mobile layout (it has priority over mobile_layout argument)
-  - **gmaps_base_type**: Use Google Maps as map provider whatever is the one specified in the viz.json". Available types: 'roadmap', 'gray_roadmap', 'dark_roadmap', 'hybrid', 'satellite', 'terrain'.
-  - **gmaps_style**: Google Maps styled maps. See [documentation](https://developers.google.com/maps/documentation/javascript/styling).
-  - **no_cdn**: true to disable CDN when fetching tiles
-- **callback(vis,layers)**: if a function is specified, it is called once the visualization is created, passing vis and layers as arguments
+Arguments | Description
+--- | ---
+map_id | a DOM object, for example `$('#map')` or a DOM id.
+vizjson_url | url of the vizjson object.
+options |
+<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> shareable | add facebook and twitter share buttons.
+<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> title | adds a header with the title of the visualization.
+<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> description | adds description to the header (as you set in the UI).
+<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> search | adds a search control (default: true).
+<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> zoomControl | adds zoom control (default: true).
+<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> loaderControl | adds loading control (default: true).
+<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> center_lat | latitude where the map is initializated.
+<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> center_lon | longitude where the map is initializated.
+<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> zoom | initial zoom.
+<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> cartodb_logo | default to true, set to false if you want to remove the cartodb logo.
+<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> infowindow | set to false if you want to disable the infowindow (enabled by default).
+<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> time_slider | show time slider with torque layers (enabled by default).
+<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> layer_selector | show layer selector (default: false).
+<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> legends | if it's true legends are shown in the map.
+<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> https | if true, it makes sure that basemaps are converted to https when possible. If explicitly false, converts https maps to http when possible. If undefined, the basemap template is left as declared at `urlTemplate` in the viz.json.
+<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> scrollwheel | enable/disable the ability of zooming using scrollwheel (default enabled)
+<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> fullscreen | if true adds a button to toggle the map fullscreen
+<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> mobile_layout | if true enables a custom layout for mobile devices (default: false)
+<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> force_mobile | forces enabling/disabling the mobile layout (it has priority over mobile_layout argument)
+<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> gmaps_base_type | Use Google Maps as map provider whatever is the one specified in the viz.json". Available types: 'roadmap', 'gray_roadmap', 'dark_roadmap', 'hybrid', 'satellite', 'terrain'.
+<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> gmaps_style | Google Maps styled maps. See [documentation](https://developers.google.com/maps/documentation/javascript/styling).
+<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> no_cdn | true to disable CDN when fetching tiles
+callback(vis,layers) | if a function is specified, it is called once the visualization is created, passing vis and layers as arguments
 
 #### Returns
 
 A promise object. You can listen for the following events:
 
-+ **done**: triggered when the visualization is created, `vis` is passed as the first argument and `layers` is passed as the second argument. Each layer type has different options, see layers section.
-+ **error**: triggered when the layer couldn't be created. The error string is the first argument.
+Event | Description
+--- | ---
+done | triggered when the visualization is created, `vis` is passed as the first argument and `layers` is passed as the second argument. Each layer type has different options, see layers section.
+error | triggered when the layer couldn't be created. The error string is the first argument.
 
 ## cartodb.Vis
 
@@ -65,9 +70,10 @@ Adds an overlay to the map that can be either a zoom control, a tooltip or an in
 
 #### Arguments
 
-- **options**  
-  - **layer** layer from the visualization where the overlay should be applied (optional)
-  - **type** zoom / tooltip / infobox
+Option | Description
+--- | ---
+layer | layer from the visualization where the overlay should be applied (optional)
+type | zoom / tooltip / infobox
 
 If no layer is provided, the overlay will be added to the first layer of the visualization. Extra options are available based on the specific UI component.
 
@@ -79,7 +85,8 @@ An overlay object, see [vis.Overlays](#visoverlays).
 
 Returns the first overlay with the specified **type**.
 
-<div class="code-title">vis.getOverlay</div>
+#### Call
+
 ```javascript
 var zoom = vis.getOverlay('zoom');
 zoom.clean() // remove it from the screen
@@ -91,7 +98,7 @@ Returns a list of the overlays that are currently on the screen (see overlays de
 
 ### vis.getNativeMap()
 
-Returns the native map object being used (e.g. a L.Map object for Leaflet).
+Returns the native map object being used (e.g. a `L.Map` object for Leaflet).
 
 ### vis.Overlays
 
@@ -107,9 +114,11 @@ Adds an infowindow to the map controlled by layer events. It enables interaction
 
 #### Arguments
 
-  - **map**: native map object or leaflet
-  - **layer**: cartodb layer (or sublayer)
-  - **fields**: array of column names
+Option | Description
+--- | ---
+map | native map object or leaflet
+layer | cartodb layer (or sublayer)
+fields | array of column names
 
 #### Returns
 
@@ -121,34 +130,30 @@ With visualizations already created through the CartoDB console, you can simply 
 
 #### Arguments
 
-- **map**: Leaflet L.Map object. The map should be initialized before calling this function.
+Arguments | Description
+--- | ---
+map | Leaflet `L.Map` object. The map should be initialized before calling this function.
+layerSource | contains information about the layer. It can be specified in 2 ways
+options |
+<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> https | force https
+<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> refreshTime | if is set, the layer is refreshed each refreshTime milliseconds.
+<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> infowindow | set to false if you want to disable the infowindow (enabled by default).
+<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> tooltip | set to false if you want to disable the tooltip (enabled by default).
+<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> legends | if it's true legends are shown in the map.
+<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> time_slider | show time slider with torque layers (enabled by default)
+<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> layerIndex | when the visualization contains more than one layer this index allows you to select what layer is created. Take into account that `layerIndex == 0` is the base layer and that all the tiled layers (non animated ones) are merged into a single one. The default value for this option is 1 (usually tiled layers).
+<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> filter | a string or array of strings to specify the type(s) of sublayers that will be rendered (eg: `['http', 'mapnik']`). All non-torque layers (http and mapnik) will be rendered if this option is not present.
+callback(_layer_) | if a function is specified, it will be invoked after the layer has been created. The layer will be passed as an argument.
 
-- **layerSource**: contains information about the layer. It can be specified in 2 ways:
-
-<div class="code-title">Passing the url where the layer data is located</div>
+#### Passing the url where the layer data is located
 ```javascript
 cartodb.createLayer(map, 'http://myserver.com/layerdata.json')
 ```
 
-<div class="code-title">passing the data directly</div>
+#### Passing the data directly
 ```javascript
 cartodb.createLayer(map, { layermetadata })
 ```
-
-- **options**:
-  - **https**: force https
-  - **refreshTime**: if is set, the layer is refreshed each refreshTime milliseconds.
-  - **infowindow**: set to false if you want to disable the infowindow (enabled by default).
-  - **tooltip**: set to false if you want to disable the tooltip (enabled by default).
-  - **legends**: if it's true legends are shown in the map.
-  - **time_slider**: show time slider with torque layers (enabled by default)
-  - **layerIndex**: when the visualization contains more than one layer this index allows you to select
-    what layer is created. Take into account that `layerIndex == 0` is the base layer and that
-    all the tiled layers (non animated ones) are merged into a single one. The default value for
-    this option is 1 (usually tiled layers).
-  - **filter**: a string or array of strings to specify the type(s) of sublayers that will be rendered (eg: `['http', 'mapnik']`). All non-torque layers (http and mapnik) will be rendered if this option is not present.
-
-- **callback(_layer_)**: if a function is specified, it will be invoked after the layer has been created. The layer will be passed as an argument.
 
 #### Returns
 

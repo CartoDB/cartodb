@@ -52,6 +52,11 @@ module.exports = function(cdb) {
       expect(cdb.templates instanceof cdb.core.TemplateList).toBe(true);
     });
 
+    it('should have a cdb.ui.common object', function() {
+      expect(cdb.ui.common.Dialog).toEqual(jasmine.any(Function));
+      expect(cdb.ui.common.ShareDialog).toEqual(jasmine.any(Function));
+    });
+
     it('should have a cdb.geo object', function() {
       expect(cdb.geo).toEqual(jasmine.any(Object));
       expect(cdb.geo.geocoder).toEqual(jasmine.any(Object));
@@ -79,6 +84,7 @@ module.exports = function(cdb) {
       expect(cdb.geo.ui.Text).toEqual(jasmine.any(Function));
       expect(cdb.geo.ui.Annotation).toEqual(jasmine.any(Function));
       expect(cdb.geo.ui.Image).toEqual(jasmine.any(Function));
+      expect(cdb.geo.ui.Share).toEqual(jasmine.any(Function));
       expect(cdb.geo.ui.InfowindowModel).toEqual(jasmine.any(Function));
       expect(cdb.geo.ui.Infowindow).toEqual(jasmine.any(Function));
     });

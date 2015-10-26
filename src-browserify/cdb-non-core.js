@@ -31,6 +31,9 @@ cdb.core.View = require('./core/view');
 var TemplateList = cdb.core.TemplateList = require('./core/template-list');
 cdb.templates = require('templates-proxy').set(new TemplateList()).get();
 
+cdb.ui.common.Dialog = require('./ui/common/dialog');
+cdb.ui.common.ShareDialog = require('./ui/common/share');
+
 cdb.geo.geocoder.NOKIA = require('./geo/geocoder/nokia-geocoder');
 cdb.geo.geocoder.YAHOO = require('./geo/geocoder/yahoo-geocoder');
 cdb.geo.Geometry = require('./geo/geometry');
@@ -50,6 +53,7 @@ cdb.geo.CartoDBGroupLayer = require('./geo/map/cartodb-group-layer');
 cdb.geo.ui.Text = require('./geo/ui/text');
 cdb.geo.ui.Annotation = require('./geo/ui/annotation');
 cdb.geo.ui.Image = require('./geo/ui/image');
+cdb.geo.ui.Share = require('./geo/ui/share');
 cdb.geo.ui.InfowindowModel = require('./geo/ui/infowindow-model');
 cdb.geo.ui.Infowindow = require('./geo/ui/infowindow');
 

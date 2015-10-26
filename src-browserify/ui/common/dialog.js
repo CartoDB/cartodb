@@ -1,14 +1,19 @@
+var _ = require('underscore');
+var jQueryProxy = require('jquery-proxy');
+var View = require('../../core/view');
+var templatesProxy = require('templates-proxy');
+
 /**
  * generic dialog
  *
  * this opens a dialog in the middle of the screen rendering
- * a dialog using cdb.templates 'common/dialog' or template_base option.
+ * a dialog using templates 'common/dialog' or template_base option.
  *
  * inherit class should implement render_content (it could return another widget)
  *
  * usage example:
  *
- *    var MyDialog = cdb.ui.common.Dialog.extend({
+ *    var MyDialog = Dialog.extend({
  *      render_content: function() {
  *        return "my content";
  *      },
@@ -27,8 +32,7 @@
  * TODO: modal
  * TODO: document modal_type
  */
-
-cdb.ui.common.Dialog = cdb.core.View.extend({
+module.exports = View.extend({
 
   tagName: 'div',
   className: 'dialog',
@@ -63,12 +67,12 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
     _.bindAll(this, 'render', '_keydown');
 
     // Keydown bindings for the dialog
-    $(document).bind('keydown', this._keydown);
+    jQueryProxy.get()(document).bind('keydown', this._keydown);
 
     // After removing the dialog, cleaning other bindings
     this.bind("clean", this._reClean);
 
-    this.template_base = this.options.template_base ? _.template(this.options.template_base) : cdb.templates.getTemplate(this.options.template_name);
+    this.template_base = this.options.template_base ? _.template(this.options.template_base) : templatesProxy.get().getTemplate(this.options.template_name);
   },
 
   render: function() {
@@ -110,7 +114,7 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
    * helper method that renders the dialog and appends it to body
    */
   appendToBody: function() {
-    $('body').append(this.render().el);
+    jQueryProxy.get()('body').append(this.render().el);
     return this;
   },
 
@@ -159,7 +163,7 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
 
   _reClean: function() {
 
-    $(document).unbind('keydown', this._keydown);
+    jQueryProxy.get()(document).unbind('keydown', this._keydown);
 
   }
 

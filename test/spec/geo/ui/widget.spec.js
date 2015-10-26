@@ -24,8 +24,4 @@ describe('widget', function() {
     expect(this.view._createContentView).toBeDefined();
   });
 
-  it('should not have bindings when view is cleaned', function() {
-    this.view.clean();
-  });
-
 });

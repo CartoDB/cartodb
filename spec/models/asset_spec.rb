@@ -21,9 +21,21 @@ describe Asset do
     end
 
     it 'validates file existence' do
+      asset = Asset.new user_id: @user.id, asset_file: (Rails.root + 'db/fake_data/i_dont_exist.png').to_s
+      asset.valid?.should be_false
+      asset.errors.full_messages.should include("file is invalid")
+    end
+
+    it 'validates file correct extension' do
       asset = Asset.new user_id: @user.id, asset_file: (Rails.root + 'db/fake_data/i_dont_exist.json').to_s
       asset.valid?.should be_false
       asset.errors.full_messages.should include("file has invalid format")
+    end
+
+    it 'validates file correct metadata' do
+      asset = Asset.new user_id: @user.id, asset_file: (Rails.root + 'spec/support/data/fake_png.png').to_s
+      asset.valid?.should be_false
+      asset.errors.full_messages.should include("file doesn't appears to be an image")
     end
 
     it 'validates file size' do

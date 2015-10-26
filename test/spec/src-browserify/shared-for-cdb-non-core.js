@@ -77,6 +77,7 @@ module.exports = function(cdb) {
 
     it('should have a cdb.geo.ui object', function() {
       expect(cdb.geo.ui.Text).toEqual(jasmine.any(Function));
+      expect(cdb.geo.ui.Annotation).toEqual(jasmine.any(Function));
       expect(cdb.geo.ui.InfowindowModel).toEqual(jasmine.any(Function));
       expect(cdb.geo.ui.Infowindow).toEqual(jasmine.any(Function));
     });

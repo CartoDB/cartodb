@@ -1,4 +1,13 @@
-cdb.geo.ui.Annotation = cdb.core.View.extend({
+var _ = require('underscore');
+
+var jQueryProxy = require('jquery-proxy');
+
+var Model = require('../../core/model');
+var Template = require('../../core/template');
+var View = require('../../core/view');
+var sanitize = require('../../core/sanitize');
+
+var Annotation = View.extend({
 
   className: "cartodb-overlay overlay-annotation",
 
@@ -19,7 +28,7 @@ cdb.geo.ui.Annotation = cdb.core.View.extend({
     }
   },
 
-  template: cdb.core.Template.compile(
+  template: Template.compile(
     '<div class="content">\
     <div class="text widget_text">{{{ text }}}</div>\
     <div class="stick"><div class="ball"></div></div>\
@@ -54,7 +63,7 @@ cdb.geo.ui.Annotation = cdb.core.View.extend({
 
   _setupModels: function() {
 
-    this.model = new cdb.core.Model({ 
+    this.model = new Model({
       display: true,
       hidden: false,
       text:    this.options.text,
@@ -70,7 +79,7 @@ cdb.geo.ui.Annotation = cdb.core.View.extend({
     this.model.on('change:minZoom',  this._applyZoomLevelStyle, this);
     this.model.on('change:maxZoom',  this._applyZoomLevelStyle, this);
 
-    this.style = new cdb.core.Model(this.options.style);
+    this.style = new Model(this.options.style);
 
     this.style.on("change", this._applyStyle, this);
 
@@ -108,7 +117,7 @@ cdb.geo.ui.Annotation = cdb.core.View.extend({
   },
 
   _sanitizedText: function() {
-    return cdb.core.sanitize.html(this.model.get("text"), this.model.get('sanitizeText'));
+    return sanitize.html(this.model.get("text"), this.model.get('sanitizeText'));
   },
 
   _getStandardPropertyName: function(name) {
@@ -121,7 +130,7 @@ cdb.geo.ui.Annotation = cdb.core.View.extend({
     if (parts.length === 1) {
       return name;
     } else {
-      return parts[0] + _.map(parts.slice(1), function(l) { 
+      return parts[0] + _.map(parts.slice(1), function(l) {
         return l.slice(0,1).toUpperCase() + l.slice(1);
       }).join("");
     }
@@ -140,7 +149,7 @@ cdb.geo.ui.Annotation = cdb.core.View.extend({
   },
 
   _belongsToCanvas: function() {
-  
+
     var mobile = (this.options.device === "mobile") ? true : false;
     return mobile === this.mobileEnabled;
   },
@@ -319,13 +328,13 @@ cdb.geo.ui.Annotation = cdb.core.View.extend({
 
   clean: function() {
     this._unbindMap();
-    cdb.core.View.prototype.clean.call(this);
+    View.prototype.clean.call(this);
   },
 
   _fixLinks: function() {
 
     this.$el.find("a").each(function(i, link) {
-      $(this).attr("target", "_top");
+      jQueryProxy.get()(this).attr("target", "_top");
     });
 
   },
@@ -349,3 +358,5 @@ cdb.geo.ui.Annotation = cdb.core.View.extend({
   }
 
 });
+
+module.exports = Annotation;

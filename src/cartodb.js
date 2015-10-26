@@ -24,6 +24,7 @@
     root.cdb.geo.ui.Widget.List = {};
     root.cdb.geo.ui.Widget.Category = {};
     root.cdb.geo.ui.Widget.Histogram = {};
+    root.cdb.geo.ui.Widget.Formula = {};
     root.cdb.geo.geocoder = {};
     root.cdb.ui = {};
     root.cdb.ui.common = {};
@@ -112,6 +113,9 @@
         'geo/ui/widgets/category/items_view.js',
         'geo/ui/widgets/category/paginator_view.js',
         'geo/ui/widgets/category/model.js',
+        'geo/ui/widgets/formula/view.js',
+        'geo/ui/widgets/formula/content_view.js',
+        'geo/ui/widgets/formula/model.js',
         // End widgets
 
         'geo/sublayer.js',

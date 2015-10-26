@@ -434,6 +434,20 @@
                 }
               },
               {
+                "type": "formula",
+                "id": 'list_widget_uuid',
+                "options": {
+                  "sql": "SELECT COUNT(cartodb_id) as trees FROM arboles",
+                  "title": "Total de árboles",
+                  "columns": [
+                    "trees"
+                  ],
+                  "columns_title": [
+                    "Estos son los árboles totales de los distritos"
+                  ]
+                }
+              },
+              {
                 "type": "category",
                 "id": 'list_widget_uuid',
                 "options": {

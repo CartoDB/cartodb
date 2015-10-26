@@ -1,55 +1,9 @@
-cdb.geo.ui.SwitcherItemModel = Backbone.Model.extend({ });
+var _ = require('underscore');
+var templatesProxy = require('templates-proxy');
+var View = require('../../core/view');
+var SwitcherItem = require('./switcher-item');
 
-cdb.geo.ui.SwitcherItems = Backbone.Collection.extend({
-  model: cdb.geo.ui.SwitcherItemModel
-});
-
-cdb.geo.ui.SwitcherItem = cdb.core.View.extend({
-
-  tagName: "li",
-
-  events: {
-
-    "click a" : "select"
-
-  },
-
-  initialize: function() {
-
-    _.bindAll(this, "render");
-    this.template = cdb.templates.getTemplate('templates/map/switcher/item');
-    this.parent = this.options.parent;
-    this.model.on("change:selected", this.render);
-
-  },
-
-  select: function(e) {
-    e.preventDefault();
-    this.parent.toggle(this);
-    var callback = this.model.get("callback");
-
-    if (callback) {
-      callback();
-    }
-
-  },
-
-  render: function() {
-
-    if (this.model.get("selected") == true) {
-      this.$el.addClass("selected");
-    } else {
-      this.$el.removeClass("selected");
-    }
-
-    this.$el.html(this.template(this.model.toJSON()));
-    return this.$el;
-
-  }
-
-});
-
-cdb.geo.ui.Switcher = cdb.core.View.extend({
+var Switcher = View.extend({
 
   id: "switcher",
 
@@ -71,7 +25,7 @@ cdb.geo.ui.Switcher = cdb.core.View.extend({
       this.model.collection = this.collection;
     }
 
-    this.template = this.options.template ? this.options.template : cdb.templates.getTemplate('geo/switcher');
+    this.template = this.options.template ? this.options.template : templatesProxy.get().getTemplate('geo/switcher');
   },
 
   show: function() {
@@ -103,7 +57,7 @@ cdb.geo.ui.Switcher = cdb.core.View.extend({
 
       this.collection.each(function(item) {
 
-        var view = new cdb.geo.ui.SwitcherItem({ parent: self, className: item.get("className"), model: item });
+        var view = new SwitcherItem({ parent: self, className: item.get("className"), model: item });
         self.$el.find("ul").append(view.render());
 
       });
@@ -113,3 +67,5 @@ cdb.geo.ui.Switcher = cdb.core.View.extend({
   }
 
 });
+
+module.exports = Switcher;

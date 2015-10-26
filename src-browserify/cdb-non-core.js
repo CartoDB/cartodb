@@ -61,6 +61,11 @@ require('./cdb.geo.ui.legend'); // require all the cdb.geo.ui legend models
 cdb.geo.ui.InfowindowModel = require('./geo/ui/infowindow-model');
 cdb.geo.ui.Infowindow = require('./geo/ui/infowindow');
 
+cdb.geo.ui.SwitcherItemModel = require('./geo/ui/switcher-item-model');
+cdb.geo.ui.SwitcherItems = require('./geo/ui/switcher-items');
+cdb.geo.ui.SwitcherItem = require('./geo/ui/switcher-item');
+cdb.geo.ui.Switcher = require('./geo/ui/switcher');
+
 cdb.geo.Map = require('./geo/map');
 cdb.geo.MapView = require('./geo/map-view');
 

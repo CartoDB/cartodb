@@ -201,16 +201,17 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
 
   _onMouseMove: function(d) {
     var x = d3.event.offsetX;
-    var a =  Math.ceil(x / this.barWidth);
+    var barIndex= Math.floor(x / this.barWidth);
     var data = this.model.get('data');
 
-    var format = d3.format("0,000");
-    var bar = this.chart.select('.Bar:nth-child(' + a + ')');
+    var format = d3.format('0,000');
+    var bar = this.chart.select('.Bar:nth-child(' + (barIndex + 1) + ')');
 
     if (bar && bar.node() && !bar.classed('is-selected')) {
-      var left = ((a - 1) * this.barWidth);
+      var left = (barIndex * this.barWidth);
+      var top = this.yScale(data[barIndex]) - 10;
       if (!this._isDragging()) {
-        this.trigger('hover', { left: left, value: data[a - 1] });
+        this.trigger('hover', { top: top, left: left + (this.barWidth/2) - 25, value: data[barIndex] });
       }
     } else {
       this.trigger('hover', { value: null });
@@ -629,7 +630,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   _onValueHover: function(info) {
     var $tooltip = this.$(".js-tooltip");
     if (info.value) {
-      $tooltip.css({ top: 0, left: info.left });
+      $tooltip.css({ top: info.top, left: info.left });
       $tooltip.text(info.value);
       $tooltip.show();
     } else {
@@ -678,7 +679,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   },
 
   _generateData: function() {
-    var data = _.map(d3.range(Math.round(Math.random() * 10) + 2), function(d) {
+    var data = _.map(d3.range(Math.round(Math.random() * 100) + 2), function(d) {
       return Math.round(Math.random() * 1000);
     });
 

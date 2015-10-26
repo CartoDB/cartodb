@@ -86,6 +86,7 @@ module.exports = function(cdb) {
       expect(cdb.geo.ui.Image).toEqual(jasmine.any(Function));
       expect(cdb.geo.ui.Share).toEqual(jasmine.any(Function));
       expect(cdb.geo.ui.Zoom).toEqual(jasmine.any(Function));
+      expect(cdb.geo.ui.ZoomInfo).toEqual(jasmine.any(Function));
       expect(cdb.geo.ui.InfowindowModel).toEqual(jasmine.any(Function));
       expect(cdb.geo.ui.Infowindow).toEqual(jasmine.any(Function));
     });

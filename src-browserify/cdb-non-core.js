@@ -55,6 +55,7 @@ cdb.geo.ui.Annotation = require('./geo/ui/annotation');
 cdb.geo.ui.Image = require('./geo/ui/image');
 cdb.geo.ui.Share = require('./geo/ui/share');
 cdb.geo.ui.Zoom = require('./geo/ui/zoom');
+cdb.geo.ui.ZoomInfo = require('./geo/ui/zoom-info');
 cdb.geo.ui.InfowindowModel = require('./geo/ui/infowindow-model');
 cdb.geo.ui.Infowindow = require('./geo/ui/infowindow');
 

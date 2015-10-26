@@ -1,15 +1,15 @@
+var View = require('../../core/view');
+
 /**
  * View to know which is the map zoom.
  *
  * Usage:
  *
- * var zoomInfo = new cdb.geo.ui.ZoomInfo({ model: map });
+ * var zoomInfo = new ZoomInfo({ model: map });
  * mapWrapper.$el.append(zoomInfo.render().$el);
  *
  */
-
-
-cdb.geo.ui.ZoomInfo = cdb.core.View.extend({
+module.exports = View.extend({
 
   className: "cartodb-zoom-info",
 

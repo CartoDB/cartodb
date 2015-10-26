@@ -164,6 +164,8 @@ class User < Sequel::Model
     if self.organization_user?
       if new? || column_changed?(:organization_id)
         self.twitter_datasource_enabled = self.organization.twitter_datasource_enabled
+        self.google_maps_key = self.organization.google_maps_key
+        self.google_maps_private_key = self.organization.google_maps_private_key
       end
       self.max_layers ||= 6
       self.private_tables_enabled ||= true

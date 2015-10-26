@@ -292,6 +292,26 @@ describe User do
       organization.destroy
     end
 
+    describe 'google_maps_key and google_maps_private_key' do
+      before(:all) do
+        @organization = create_organization_with_users(google_maps_key: 'gmk', google_maps_private_key: 'gmpk')
+        @organization.google_maps_key.should_not be_nil
+        @organization.google_maps_private_key.should_not be_nil
+      end
+
+      after(:all) do
+        @organization.destroy
+      end
+
+      it 'should be inherited from organization for new users' do
+        @organization.users.should_not be_empty
+        @organization.users.reject(&:organization_owner?).each do |u|
+          u.google_maps_key.should == @organization.google_maps_key
+          u.google_maps_private_key.should == @organization.google_maps_private_key
+        end
+      end
+    end
+
     it 'should inherit twitter_datasource_enabled from organization on creation' do
       organization = create_organization_with_users(twitter_datasource_enabled: true)
       organization.save

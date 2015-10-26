@@ -16,6 +16,8 @@ module CartoDB
       organization.location = attributes[:location] || 'Madrid'
       organization.twitter_username = attributes[:twitter_username] || 'cartodb'
       organization.twitter_datasource_enabled = attributes[:twitter_datasource_enabled] || false
+      organization.google_maps_key = attributes[:google_maps_key] || nil
+      organization.google_maps_private_key = attributes[:google_maps_private_key] || nil
 
       organization
     end

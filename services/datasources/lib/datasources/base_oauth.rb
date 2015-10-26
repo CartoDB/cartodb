@@ -9,9 +9,15 @@ module CartoDB
       # And appended anywhere in the querystring used as callback url with param "state=xxxxxx"
       CALLBACK_STATE_DATA_PLACEHOLDER = '__user__service__'
 
+      SUPPORTED_EXTENSIONS = CartoDB::Importer2::Unp::SUPPORTED_FORMATS
+
+      attr_reader :config
+
       def initialize(config, user, mandatory_config_parameters)
         super
         mandatory_config_parameters.each { |param| check_config(config, param) }
+        @config = config
+        @user = user
       end
 
       # TODO: Helper method to aid with migration of endpoints, can be removed after full AR migration

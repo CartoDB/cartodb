@@ -265,9 +265,16 @@ defaults: &defaults
       cookie_policy: 'single_host_origin'
       #cookie_policy: 'https://cartodb-staging.com'
     dropbox:
-      app_key:              ''
-      app_secret:           ''
-      callback_url:         ''
+      application_name:     ''
+      client_id:            ''
+      client_secret:        ''
+      callback_url:         'http://cartodb.com'
+    box:
+      application_name:     ''
+      client_id:            ''
+      client_secret:        ''
+      callback_url:         'http://cartodb.com'
+      box_host:             "app.box.com"
     instagram:
       app_key:              ''
       app_secret:           ''

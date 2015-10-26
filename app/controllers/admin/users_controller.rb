@@ -9,6 +9,7 @@ class Admin::UsersController < Admin::AdminController
   SERVICE_TITLES = {
     'gdrive' => 'Google Drive',
     'dropbox' => 'Dropbox',
+    'box' => 'Box',
     'mailchimp' => 'MailChimp',
     'instagram' => 'Instagram'
   }
@@ -150,8 +151,8 @@ class Admin::UsersController < Admin::AdminController
       title = SERVICE_TITLES.fetch(serv, serv)
       revoke_url = SERVICE_REVOKE_URLS.fetch(serv, nil)
       enabled = case serv
-        when 'gdrive'
-          Cartodb.config[:oauth]['gdrive']['client_id'].present?
+        when 'gdrive', 'box'
+          Cartodb.config[:oauth][serv]['client_id'].present?
         when 'dropbox'
           Cartodb.config[:oauth]['dropbox']['app_key'].present?
         when 'mailchimp'

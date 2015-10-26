@@ -104,9 +104,9 @@ Returns the native map object being used (e.g. a `L.Map` object for Leaflet).
 
 An overlay is a control shown on top of the map.
 
-Overlay objects are always created using the **addOverlay** method of a cartodb.Vis object.
+Overlay objects are always created using the `addOverlay` method of a `cartodb.Vis object.
 
-An overlay is internally a [**Backbone.View**](http://backbonejs.org/#View) so if you know how Backbone works you can use it. If you want to use plain DOM objects you can access **overlay.el** (**overlay.$el** for jQuery object).
+An overlay is internally a [Backbone.View](http://backbonejs.org/#View) so if you know how Backbone works you can use it. If you want to use plain DOM objects you can access `overlay.el` (`overlay.$el` for jQuery object).
 
 ### vis.addInfowindow(_map, layer, fields [, options]_)
 
@@ -126,7 +126,7 @@ An infowindow object, see [sublayer.infowindow](#sublayerinfowindow)
 
 ### cartodb.createLayer(_map, layerSource [, options] [, callback]_)
 
-With visualizations already created through the CartoDB console, you can simply use the **createLayer** function to add them into your web pages. Unlike **createVis**, this method requires an already activated **map** object and it does not load a basemap for you.
+With visualizations already created through the CartoDB console, you can simply use the `createLayer` function to add them into your web pages. Unlike `createVis`, this method requires an already activated `map` object and it does not load a basemap for you.
 
 #### Arguments
 

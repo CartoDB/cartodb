@@ -1715,6 +1715,10 @@ describe User do
 
       user.reload
 
+      # Just to be sure all following checks will not falsely report ok using wrong schema
+      user.database_schema.should eq CartoDB::UserModule::DBService::SCHEMA_PUBLIC
+      user.database_schema.should_not eq user.username
+
       test_table_name = "table_perm_test"
 
       # Safety check
@@ -1931,6 +1935,10 @@ describe User do
       CartoDB::UserModule::DBService.terminate_database_connections(user.database_name, user.database_host)
 
       user.reload
+
+      # Just to be sure all following checks will not falsely report ok using wrong schema
+      user.database_schema.should_not eq CartoDB::UserModule::DBService::SCHEMA_PUBLIC
+      user.database_schema.should eq user.username
 
       test_table_name = "table_perm_test"
 

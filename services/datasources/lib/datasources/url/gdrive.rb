@@ -294,9 +294,9 @@ module CartoDB
             timeout: 600
             )
           response = http_client.get("https://accounts.google.com/o/oauth2/revoke?token=#{token}")
-            if response.code == 200
-              true
-            end
+          if response.code == 200
+            true
+          end
         rescue => ex
           raise AuthError.new("revoke_token: #{ex.message}", DATASOURCE_NAME)
         end

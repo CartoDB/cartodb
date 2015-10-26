@@ -60,10 +60,11 @@ module CartoDB
         layers
       end
 
-      def path_for(layer_name)
+      def path_for(source_file, layer_name)
+        file_layer_name = "#{source_file.name}_#{layer_name}"
         File.join(
           temporary_directory,
-          Unp.new.underscore(layer_name) + '.gpx'
+          Unp.new.underscore(file_layer_name) + '.gpx'
         )
       end
 

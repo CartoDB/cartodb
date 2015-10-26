@@ -1,9 +1,3 @@
-/**
- *  Default widget content view:
- *
- *
- */
-
 cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
 
   defaults: {
@@ -263,8 +257,8 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
   },
 
   _getBarIndex: function() {
-    var x = d3.event.sourceEvent.offsetX - this.margin.left;
-    return Math.ceil(x / this.barWidth);
+    var x = d3.event.sourceEvent.offsetX;
+    return Math.floor(x / this.barWidth);
   },
 
   _setupBrush: function() {
@@ -304,9 +298,9 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
 
       if (d3.event.sourceEvent && a === undefined && b === undefined) {
         var barIndex = self._getBarIndex();
-        a = (barIndex - 1) * (100 / data.length);
-        b = (barIndex) * (100 / data.length);
-        self.model.set({ a: barIndex - 1, b: barIndex });
+        a = (barIndex) * (100 / data.length);
+        b = (barIndex + 1) * (100 / data.length);
+        self.model.set({ a: barIndex, b: barIndex + 1 });
         self._selectRange(a, b);
       }
     }
@@ -504,6 +498,12 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
 
 });
 
+/**
+ *  Default widget content view:
+ *
+ *
+ */
+
 cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
 
   defaults: {
@@ -608,7 +608,6 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
     }));
 
     this.miniChart.bind('on_brush_end', this._onMiniRangeUpdated, this);
-
     this.miniChart.render();
   },
 
@@ -641,6 +640,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   _onMiniRangeUpdated: function(a, b) {
     this.viewModel.set({ a: a, b: b });
     var data = this._getData();
+
     var self = this;
 
     var refreshData = _.debounce(function() {
@@ -678,7 +678,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   },
 
   _generateData: function() {
-    var data = _.map(d3.range(Math.round(Math.random() * 80) + 2), function(d) {
+    var data = _.map(d3.range(Math.round(Math.random() * 10) + 2), function(d) {
       return Math.round(Math.random() * 1000);
     });
 
@@ -753,7 +753,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   _generateCanvas: function() {
     this.canvas = d3.select(this.$el.find('.js-chart')[0])
     .attr('width',  this.canvasWidth)
-    .attr('height', this.canvasHeight)
+    .attr('height', this.canvasHeight);
 
     this.canvas
     .append('g')

@@ -1,4 +1,4 @@
-describe('widget', function() {
+describe('widgets/view', function() {
 
   beforeEach(function() {
     this.model = new cdb.geo.ui.Widget.Model({

@@ -1,5 +1,9 @@
+var _ = require('underscore');
+var sanitize = require('../../../src-browserify/core/sanitize');
+var View = require('../../../src-browserify/core/view');
+var SlidesController = require('../../../src-browserify/geo/ui/slides-controller');
 
-cdb.geo.ui.Header = cdb.core.View.extend({
+var Header = View.extend({
 
   className: 'cartodb-header',
 
@@ -35,12 +39,12 @@ cdb.geo.ui.Header = cdb.core.View.extend({
 
   render: function() {
     var data = _.clone(this.model.attributes);
-    data.title = cdb.core.sanitize.html(data.title);
-    data.description = this._setLinksTarget(cdb.core.sanitize.html(data.description));
+    data.title = sanitize.html(data.title);
+    data.description = this._setLinksTarget(sanitize.html(data.description));
     this.$el.html(this.options.template(data));
 
     if (this.options.slides) {
-      this.slides_controller = new cdb.geo.ui.SlidesController({
+      this.slides_controller = new SlidesController({
         transitions: this.options.transitions,
         slides: this.options.slides
       });
@@ -59,3 +63,5 @@ cdb.geo.ui.Header = cdb.core.View.extend({
   }
 
 });
+
+module.exports = Header;

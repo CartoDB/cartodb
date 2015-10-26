@@ -66,6 +66,10 @@ cdb.geo.ui.SwitcherItems = require('./geo/ui/switcher-items');
 cdb.geo.ui.SwitcherItem = require('./geo/ui/switcher-item');
 cdb.geo.ui.Switcher = require('./geo/ui/switcher');
 
+cdb.geo.ui.SlidesControllerItem = require('./geo/ui/slides-controller-item');
+cdb.geo.ui.SlidesController = require('./geo/ui/slides-controller');
+cdb.geo.ui.Header = require('./geo/ui/header');
+
 cdb.geo.Map = require('./geo/map');
 cdb.geo.MapView = require('./geo/map-view');
 

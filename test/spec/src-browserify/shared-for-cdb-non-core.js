@@ -71,12 +71,14 @@ module.exports = function(cdb) {
       expect(cdb.geo.CartoDBNamedMapLayer).toEqual(jasmine.any(Function));
       expect(cdb.geo.Layers).toEqual(jasmine.any(Function));
       expect(cdb.geo.CartoDBGroupLayer).toEqual(jasmine.any(Function));
-
-      expect(cdb.geo.ui.InfowindowModel).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.Infowindow).toEqual(jasmine.any(Function));
-
       expect(cdb.geo.Map).toEqual(jasmine.any(Function));
       expect(cdb.geo.MapView).toEqual(jasmine.any(Function));
+    });
+
+    it('should have a cdb.geo.ui object', function() {
+      expect(cdb.geo.ui.Text).toEqual(jasmine.any(Function));
+      expect(cdb.geo.ui.InfowindowModel).toEqual(jasmine.any(Function));
+      expect(cdb.geo.ui.Infowindow).toEqual(jasmine.any(Function));
     });
 
     it('should have a core.vis', function() {

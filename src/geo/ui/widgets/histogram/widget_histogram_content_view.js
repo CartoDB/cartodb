@@ -106,7 +106,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
   _setupDimensions: function() {
     var data = this.model.get('data');
 
-    this.margin = { top: 0, right: 0, bottom: 20, left: 10 };
+    this.margin = { top: 0, right: 0, bottom: 20, left: 0 };
 
     this.canvasWidth  = this.options.width;
     this.canvasHeight = this.options.height;
@@ -222,8 +222,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     var format = d3.format('0,000');
     var bar = this.chart.select('.Bar:nth-child(' + (barIndex + 1) + ')');
 
-    var hovered = barIndex && data[barIndex] && (y > Math.floor(this.yScale(freq)));
-    //console.log(y, Math.floor(this.yScale(freq)))
+    var hovered = (barIndex !== undefined) && data[barIndex] && (y > Math.floor(this.yScale(freq)));
 
     if (bar && bar.node() && !bar.classed('is-selected')) {
       var left = (barIndex * this.barWidth) + (this.barWidth/2) - 25;

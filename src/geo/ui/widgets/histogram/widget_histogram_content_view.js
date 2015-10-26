@@ -60,9 +60,9 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     .data(range.slice(1, range.length - 1))
     .enter().append('svg:line')
     .attr('y1', 0)
-    .attr('x1', function(d) { return d.freq; })
+    .attr('x1', function(d) { return d && d.freq; })
     .attr('y2', this.chartHeight)
-    .attr('x2', function(d) { return d.freq; });
+    .attr('x2', function(d) { return d && d.freq; });
   },
 
   _generateHorizontalLines: function() {
@@ -78,9 +78,9 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     .enter().append('svg:line')
     .attr('class', 'y')
     .attr('x1', 0)
-    .attr('y1', function(d) { return d.freq; })
+    .attr('y1', function(d) { return d && d.freq; })
     .attr('x2', this.chartWidth)
-    .attr('y2', function(d) { return d.freq; });
+    .attr('y2', function(d) { return d && d.freq; });
 
     this.bottomLine = lines
     .append('line')
@@ -106,7 +106,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
   _setupDimensions: function() {
     var data = this.model.get('data');
 
-    this.margin = { top: 0, right: 0, bottom: 20, left: 0 };
+    this.margin = { top: 0, right: 0, bottom: 20, left: 10 };
 
     this.canvasWidth  = this.options.width;
     this.canvasHeight = this.options.height;
@@ -120,7 +120,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
   _setupScales: function() {
     var data = this.model.get('data');
     this.xScale = d3.scale.linear().domain([0, 100]).range([0, this.chartWidth]);
-    this.yScale = d3.scale.linear().domain([0, d3.max(data, function(d) { return d.freq; } )]).range([this.chartHeight, 0]);
+    this.yScale = d3.scale.linear().domain([0, d3.max(data, function(d) { return d && d.freq; } )]).range([this.chartHeight, 0]);
     this.zScale = d3.scale.ordinal().domain(d3.range(data.length)).rangeRoundBands([0, this.chartWidth]);
   },
 
@@ -212,20 +212,25 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     var x = d3.event.offsetX;
     var y = d3.event.offsetY;
 
-    var barIndex= Math.floor(x / this.barWidth);
+    var barIndex = Math.floor(x / this.barWidth);
     var data = this.model.get('data');
+
+    if (data[barIndex] === undefined ) return;
+
+    var freq = data[barIndex].freq;
 
     var format = d3.format('0,000');
     var bar = this.chart.select('.Bar:nth-child(' + (barIndex + 1) + ')');
 
-    var hovered = y > Math.floor(this.yScale(data[barIndex].freq));
+    var hovered = barIndex && data[barIndex] && (y > Math.floor(this.yScale(freq)));
+    //console.log(y, Math.floor(this.yScale(freq)))
 
     if (bar && bar.node() && !bar.classed('is-selected')) {
       var left = (barIndex * this.barWidth) + (this.barWidth/2) - 25;
-      var top = this.yScale(data[barIndex].freq) - 10 + this.model.get('pos').y;
+      var top = this.yScale(freq) - 10 + this.model.get('pos').y;
 
       if (!this._isDragging() && hovered) {
-        this.trigger('hover', { top: top, left: left, value: data[barIndex].freq });
+        this.trigger('hover', { top: top, left: left, value: freq });
       } else {
         this.trigger('hover', { value: null });
       }
@@ -428,7 +433,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
 
       if (v === 0 || i === 0 || i === (data.length - 1)) {
         var sum = _.reduce(data.slice(0, i + 1), function(memo, d) {
-          return d.freq + memo;
+          return d ? d.freq + memo : 0;
         }, 0);
         return format(sum);
       } else {
@@ -476,15 +481,18 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     this._calcBarWidth();
 
     var bars = this.chart.append('g')
+
+    .attr('transform', 'translate(0, 0 )')
     .attr('class', 'Bars')
     .selectAll('.Bar')
     .data(data);
+
 
     bars
     .enter()
     .append('rect')
     .attr('class', 'Bar')
-    .attr('data', function(d) { return d.freq; })
+    .attr('data', function(d) { return d && d.freq; })
     .attr('transform', function(d, i) {
       return 'translate(' + (i * self.barWidth) + ', 0 )';
     })
@@ -703,8 +711,12 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   },
 
   _generateData: function() {
-    var data = _.map(d3.range(Math.round(Math.random() * 100) + 2), function(d, i) {
-      return { bucket: i, freq: Math.round(Math.random() * 1000) };
+    var data = _.map(d3.range(Math.round(Math.random() * 50) + 2), function(d, i) {
+      if (Math.round(Math.random() * 100) >= 90) {
+        return undefined;
+      } else {
+        return { bucket: i, freq: Math.round(Math.random() * 1000) };
+      }
     });
 
     this.dataModel.set('data', data);
@@ -717,13 +729,15 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
     var from = this.viewModel.previous(what) || 0;
     var to = this.viewModel.get(what);
 
-    if (!to) return;
-
     $(className).prop('counter', from).stop().animate({ counter: to }, {
       duration: 500,
       easing: 'swing',
       step: function (i) {
-        $(this).text(format(Math.floor(i)) + ' ' + unit);
+        if (i === isNaN) {
+          i = 0;
+        }
+        var v = Math.floor(i);
+        $(this).text(format(v) + ' ' + unit);
       }
     });
   },
@@ -739,12 +753,12 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   _updateStats: function() {
     var data = this._getData();
     var sum = _.reduce(data, function(memo, d) {
-      return d.freq + memo;
+      return d ? d.freq + memo : 0;
     }, 0);
 
-    var max = d3.max(data, function(d) { return d.freq });
-    var avg = Math.round(d3.mean(data, function(d) { return d.freq }));
-    var min = d3.min(data, function(d) { return d.freq });
+    var max = d3.max(data, function(d) { return d && d.freq; });
+    var avg = Math.round(d3.mean(data, function(d) { return d && d.freq; }));
+    var min = d3.min(data, function(d) { return d && d.freq; });
 
     this.viewModel.set({ total: sum, min: min, max: max, avg: avg });
   },
@@ -786,8 +800,5 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
     this.canvas
     .append('g')
     .attr('class', 'Canvas');
-
-    this.canvas
-    .attr('transform', 'translate(10, 0)');
   }
 });

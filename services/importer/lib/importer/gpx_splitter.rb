@@ -10,13 +10,17 @@ module CartoDB
       MAX_LAYERS = 50
       GPX_LAYERS = ['waypoints','routes','tracks','route_points','track_points']
       ITEM_COUNT_REGEX = 'Feature Count:\s'
+      OGRINFO_BINARY = 'ogrinfo'
+      DEFAULT_OGR2OGR_BINARY = 'ogr2ogr2'
+
       def self.support?(source_file)
         source_file.extension == '.gpx'
       end
 
-      def initialize(source_file, temporary_directory)
-        @source_file          = source_file
-        @temporary_directory  = temporary_directory
+      def initialize(source_file, temporary_directory, ogr2ogr_config = nil)
+        @source_file = source_file
+        @temporary_directory = temporary_directory
+        @ogr2ogr_binary = @ogr2ogr_config.nil? ? DEFAULT_OGR2OGR_BINARY : ogr2ogr_config['binary']
       end
 
       def run
@@ -34,13 +38,14 @@ module CartoDB
 
       def source_files_for(source_file, layer_names=[])
         layer_names.map { |layer_name|
-          extract(path_for(layer_name), source_file, layer_name)
-          SourceFile.new(path_for(layer_name), nil, layer_name)
+          layer_file_name = path_for(source_file, layer_name)
+          extract(layer_file_name, source_file, layer_name)
+          SourceFile.new(layer_file_name, nil, layer_name)
         }
       end
 
       def extract(extracted_file_path, source_file, layer_name)
-        `ogr2ogr2 -f 'GPX' -dsco GPX_USE_EXTENSIONS=YES #{extracted_file_path} #{source_file.fullpath} #{layer_name}`
+        `#{@ogr2ogr_binary} -f 'GPX' -dsco GPX_USE_EXTENSIONS=YES #{extracted_file_path} #{source_file.fullpath} #{layer_name}`
       end
 
       def multiple_layers?(source_file)
@@ -50,7 +55,7 @@ module CartoDB
       def layers_in(source_file)
         layers = []
         GPX_LAYERS.each do |layer|
-          stdout, stderr, status = Open3.capture3("ogrinfo -so #{source_file.fullpath} #{layer}")
+          stdout, stderr, status = Open3.capture3("#{OGRINFO_BINARY} -so #{source_file.fullpath} #{layer}")
           number_rows = stdout.split("\n")
             .select { |line| line =~ /^#{ITEM_COUNT_REGEX}/}
             .map{ |line| line.gsub(/#{ITEM_COUNT_REGEX}/, '') }.first

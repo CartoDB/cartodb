@@ -25,8 +25,9 @@ module CartoDB
 
       attr_reader :source_files, :temporary_directory
 
-      def initialize(importer_config = nil)
+      def initialize(importer_config = nil, ogr2ogr_config = nil)
         @source_files = []
+        @ogr2ogr_config = ogr2ogr_config
         if !importer_config.nil? && !importer_config['unp_temporal_folder'].nil?
           @temporal_subfolder_path = importer_config['unp_temporal_folder']
         end
@@ -194,7 +195,7 @@ module CartoDB
         source_files.flat_map { |source_file|
           splitter = splitter_for(source_file)
           if splitter
-            splitter.new(source_file, temporary_directory)
+            splitter.new(source_file, temporary_directory, @ogr2ogr_config)
               .run.source_files
           else
             source_file

@@ -10,7 +10,7 @@ module CartoDB
         source_file.extension == '.osm'
       end
 
-      def initialize(source_file, temporary_directory=nil)
+      def initialize(source_file, temporary_directory=nil, ogr2ogr_config = nil)
         @source_file = source_file
       end
 

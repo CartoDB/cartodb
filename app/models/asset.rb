@@ -6,7 +6,9 @@ class Asset < Sequel::Model
 
   KIND_ORG_AVATAR = 'orgavatar'
 
-  PUBLIC_ATTRIBUTES = %W{ id public_url user_id kind }
+  PUBLIC_ATTRIBUTES = %w{ id public_url user_id kind }
+
+  VALID_EXTENSIONS = %w{ jpg jpeg gif png svg }
 
   attr_accessor :asset_file, :url
 
@@ -40,11 +42,25 @@ class Asset < Sequel::Model
   end
 
   def validate_file
+    unless VALID_EXTENSIONS.include?(asset_file.original_filename.split(".").last.downcase)
+      errors.add(:file, "has invalid format")
+      return
+    end
+
+    max_size = Cartodb::config[:assets]["max_file_size"]
+    max_size_in_mb = (max_size.to_f / (1024*1024).to_f).round(2)
+
     @file = open_file(asset_file)
-    errors.add(:file, "is invalid") unless @file && File.readable?(@file.path)
-    errors.add(:file, "is too big, 5Mb max") if @file && @file.size > Cartodb::config[:assets]["max_file_size"]
+    unless @file && File.readable?(@file.path)
+      errors.add(:file, "is invalid")
+      return
+    end
+
+    errors.add(:file, "is too big, #{max_size_in_mb}MB max") if @file.size > max_size
     metadata = CartoDB::ImageMetadata.new(@file.path)
+
     errors.add(:file, "is too big, 1024x1024 max") if metadata.width > 1024 || metadata.height > 1024
+    errors.add(:file, "doesn't appears to be an image") if metadata.width == 0 || metadata.height == 0
   rescue => e
     errors.add(:file, "error while uploading: #{e.message}")
   end

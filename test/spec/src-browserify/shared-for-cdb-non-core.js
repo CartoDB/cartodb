@@ -1,6 +1,4 @@
-var cdb = require('cdb-proxy').get();
-
-module.exports = function() {
+module.exports = function(cdb) {
   describe('cdb object', function() {
     it('should have the commonly used vendor libs defined', function() {
       expect(cdb.$).toEqual(jasmine.any(Function));
@@ -12,18 +10,6 @@ module.exports = function() {
 
     it("should create a cdb.Profiler", function() {
       expect(cdb.config).toBeDefined();
-    });
-
-    it("should create a cdb.Profiler", function() {
-      expect(cdb.Profiler).toBeDefined();
-    });
-
-    it("should create a cdb.decorators", function() {
-      expect(cdb.decorators).toBeDefined();
-    });
-
-    it("should create a log", function() {
-      expect(cdb.log).toBeDefined();
     });
 
     it("should generate error when error is called", function() {
@@ -44,38 +30,26 @@ module.exports = function() {
       });
     });
 
-    it('should expose a Profiler class', function() {
-      expect(cdb.Profiler).toBeDefined();
-    });
-
-    it('should add templates stuff', function() {
+    it("should create a cdb.core with expected model", function() {
+      expect(cdb.core.Loader).toBeDefined();
+      expect(cdb.core.util).toBeDefined();
+      expect(cdb.core.Profiler).toBeDefined();
       expect(cdb.core.Template).toBeDefined();
       expect(cdb.core.TemplateList).toBeDefined();
-      expect(cdb.templates instanceof cdb.core.TemplateList).toBe(true);
-    });
-
-    it('should have a core.Model', function() {
       expect(cdb.core.Model).toBeDefined();
-    });
-
-    it('should have a core.View', function() {
       expect(cdb.core.View).toBeDefined();
     });
 
-    it('should have a core.vis', function() {
-      expect(cdb.vis).toBeDefined();
+    it("should create a cdb.decorators", function() {
+      expect(cdb.decorators).toBeDefined();
     });
 
-    it('should have a core.vis.Loader', function() {
-      expect(cdb.vis.Loader).toBeDefined();
+    it("should create a log", function() {
+      expect(cdb.log).toBeDefined();
     });
 
-    it('should have a core.core.Loader', function() {
-      expect(cdb.core.Loader).toBeDefined();
-    });
-
-    it('should have a core.util', function() {
-      expect(cdb.core.util).toBeDefined();
+    it('should add templates stuff', function() {
+      expect(cdb.templates instanceof cdb.core.TemplateList).toBe(true);
     });
 
     it('should have a cdb.geo object', function() {
@@ -103,6 +77,11 @@ module.exports = function() {
 
       expect(cdb.geo.Map).toEqual(jasmine.any(Function));
       expect(cdb.geo.MapView).toEqual(jasmine.any(Function));
+    });
+
+    it('should have a core.vis', function() {
+      expect(cdb.vis).toBeDefined();
+      expect(cdb.vis.Loader).toBeDefined();
     });
   });
 };

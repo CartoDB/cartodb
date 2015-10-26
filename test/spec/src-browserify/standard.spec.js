@@ -1,13 +1,13 @@
 var cdb = require('../../../src-browserify/standard');
-var sharedForCdb = require('./shared-for-cdb');
+var sharedForCdbCommon = require('./shared-for-cdb-common');
+var sharedForCdbNonCore = require('./shared-for-cdb-non-core');
 
 describe('standard bundle', function() {
-  sharedForCdb();
+  sharedForCdbCommon(cdb);
+  sharedForCdbNonCore(cdb);
 
   it('should set cartodb object in global namespace', function() {
     expect(cdb).toEqual(jasmine.any(Object));
-    expect(cdb).toBe(window.cdb);
-    expect(cdb).toBe(window.cartodb);
   });
 
   it('should have jQuery in addition to the defaults', function() {

@@ -1,9 +1,5 @@
-// Create the cartodb object to be set in the global namespace, which includes to properly write up all dependencies.
-// Code extracted from the older src/cartodb.js file (entry file prior to browerify)
-var cdb = window.cdb = window.cartodb = require('cdb-proxy').set({
-    core: {},
-    vis: {}
-  }).get();
+// Defintions shared for all non-core bundles
+var cdb = require('./cdb-common');
 cdb._ = require('underscore');
 cdb.L = require('leaflet-proxy').get();
 cdb.Mustache = require('mustache');
@@ -26,19 +22,15 @@ var ErrorList = require('./core/log/error-list');
 cdb.errors = require('errors-proxy').set(new ErrorList()).get();
 
 // These must be set after the proxied requires:
-cdb.Profiler = require('cdb.core.profiler');
-cdb.core.sanitize = require('./core/sanitize')
 cdb.decorators = require('./core/decorators');
+cdb.core.sanitize = require('./core/sanitize')
 cdb.core.Template = require('./core/template');
 cdb.core.Model = require('./core/model');
 cdb.core.View = require('./core/view');
-cdb.vis.Loader = cdb.core.Loader = require('./core/loader');
-cdb.core.util = require('./core/util');
 
 var TemplateList = cdb.core.TemplateList = require('./core/template-list');
 cdb.templates = require('templates-proxy').set(new TemplateList()).get();
 
-cdb.geo = {}
 cdb.geo.geocoder = {};
 cdb.geo.geocoder.NOKIA = require('./geo/geocoder/nokia-geocoder');
 cdb.geo.geocoder.YAHOO = require('./geo/geocoder/yahoo-geocoder');
@@ -56,7 +48,6 @@ cdb.geo.CartoDBNamedMapLayer = require('./geo/map/cartodb-named-map-layer');
 cdb.geo.Layers = require('./geo/map/layers');
 cdb.geo.CartoDBGroupLayer = require('./geo/map/cartodb-group-layer');
 
-cdb.geo.ui = {};
 cdb.geo.ui.InfowindowModel = require('./geo/ui/infowindow-model');
 cdb.geo.ui.Infowindow = require('./geo/ui/infowindow');
 

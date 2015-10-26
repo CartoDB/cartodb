@@ -119,6 +119,7 @@ class ApplicationController < ActionController::Base
     whitelist_referer = []
     whitelist_referer << %w{http https}.map { |proto| "#{proto}://#{Cartodb.config[:account_host]}/explore" }
     whitelist_referer << %w{http https}.map { |proto| "#{proto}://#{Cartodb.config[:account_host]}/data-library" }
+    whitelist_referer.flatten!
     whitelist_origin = %w{http https}.map { |proto| "#{proto}://#{Cartodb.config[:account_host]}" }
     # It seems that Firefox and IExplore don't send the Referer header in the preflight request
     right_referer = request.method == "OPTIONS" ? true : whitelist_referer.include?(referer)

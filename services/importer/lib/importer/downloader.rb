@@ -100,6 +100,7 @@ module CartoDB
 
         @http_options = http_options
         @importer_config = options[:importer_config]
+        @ogr2ogr_config = options[:ogr2ogr]
         @seed         = seed
         @repository   = repository || DataRepository::Filesystem::Local.new(temporary_directory)
         @datasource = nil
@@ -133,7 +134,7 @@ module CartoDB
 
       def clean_up
         if defined?(@temporary_directory) &&
-           @temporary_directory =~ /^#{Unp.new(@importer_config).get_temporal_subfolder_path}/ &&
+           @temporary_directory =~ /^#{Unp.new(@importer_config, @ogr2ogr_config).get_temporal_subfolder_path}/ &&
            !(@temporary_directory =~ /\.\./)
           FileUtils.rm_rf @temporary_directory
         end

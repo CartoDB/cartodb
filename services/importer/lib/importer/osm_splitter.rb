@@ -10,7 +10,7 @@ module CartoDB
         source_file.extension == '.osm'
       end
 
-      def initialize(source_file, temporary_directory=nil)
+      def initialize(source_file, temporary_directory = nil, ogr2ogr_config = nil)
         @source_file = source_file
       end
 
@@ -19,14 +19,14 @@ module CartoDB
       end
 
       def source_files
-        LAYER_NAMES.map { |layer_name|
+        LAYER_NAMES.map do |layer_name|
           file = SourceFile.new(
             source_file.send(:filepath),
             "#{source_file.name}_#{layer_name}"
           )
           file.layer = layer_name
           file
-        }
+        end
       end
 
       attr_reader :source_file

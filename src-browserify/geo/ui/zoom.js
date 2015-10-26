@@ -1,15 +1,17 @@
+var _ = require('underscore');
+var templatesProxy = require('templates-proxy');
+var View = require('../../core/view');
+
 /**
  * View to control the zoom of the map.
  *
  * Usage:
  *
- * var zoomControl = new cdb.geo.ui.Zoom({ model: map });
+ * var zoomControl = new Zoom({ model: map });
  * mapWrapper.$el.append(zoomControl.render().$el);
  *
  */
-
-
-cdb.geo.ui.Zoom = cdb.core.View.extend({
+module.exports = View.extend({
 
   className: "cartodb-zoom",
 
@@ -28,7 +30,7 @@ cdb.geo.ui.Zoom = cdb.core.View.extend({
 
     _.defaults(this.options, this.default_options);
 
-    this.template = this.options.template ? this.options.template : cdb.templates.getTemplate('geo/zoom');
+    this.template = this.options.template ? this.options.template : templatesProxy.get().getTemplate('geo/zoom');
     this.map.bind('change:zoom change:minZoom change:maxZoom', this._checkZoom, this);
   },
 

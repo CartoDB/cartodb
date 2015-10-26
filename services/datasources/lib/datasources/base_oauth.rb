@@ -13,9 +13,9 @@ module CartoDB
 
       attr_reader :config
 
-      def initialize(config, user, mandatory_config_parameters)
+      def initialize(config, user, mandatory_config_parameters, datasource_name)
         super
-        mandatory_config_parameters.each { |param| check_config(config, param) }
+        mandatory_config_parameters.each { |param| check_config(config, param, datasource_name) }
         @config = config
         @user = user
       end
@@ -81,8 +81,8 @@ module CartoDB
 
       private
 
-      def check_config(config, param)
-        raise MissingConfigurationError.new("missing #{param}", DATASOURCE_NAME) unless config.include?(param)
+      def check_config(config, param, datasource_name)
+        raise MissingConfigurationError.new("missing #{param}", datasource_name) unless config.include?(param)
       end
 
     end

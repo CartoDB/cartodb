@@ -37,7 +37,7 @@ module CartoDB
         # @throws UninitializedError
         # @throws MissingConfigurationError
         def initialize(config, user)
-          super(config, user, %w{ application_name client_id client_secret callback_url })
+          super(config, user, %w{ application_name client_id client_secret callback_url }, DATASOURCE_NAME)
 
           raise UninitializedError.new('missing user instance', DATASOURCE_NAME)            if user.nil?
 

@@ -272,7 +272,6 @@ defaults: &defaults
       application_name:     ''
       client_id:            ''
       client_secret:        ''
-      callback_url:         'http://cartodb.com'
       box_host:             "app.box.com"
     instagram:
       app_key:              ''

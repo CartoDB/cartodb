@@ -23,7 +23,7 @@ module CartoDB
         # @throws UninitializedError
         # @throws MissingConfigurationError
         def initialize(config, user)
-          super(config, user, %w{ app_key app_secret callback_url })
+          super(config, user, %w{ app_key app_secret callback_url }, DATASOURCE_NAME)
 
           @user         = user
           @app_key      = config.fetch('app_key')

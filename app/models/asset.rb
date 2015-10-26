@@ -57,7 +57,7 @@ class Asset < Sequel::Model
       return
     end
 
-    max_size_in_mb = (max_size.to_f / (1024*1024).to_f).round(2)
+    max_size_in_mb = (max_size.to_f / (1024 * 1024).to_f).round(2)
     if @file.size > max_size
       errors.add(:file, "is too big, #{max_size_in_mb}MB max")
       return

@@ -475,6 +475,10 @@ var Vis = cdb.core.View.extend({
       "category": {
         model: 'CategoryModel',
         view: 'Category.View'
+      },
+      "formula": {
+        model: 'FormulaModel',
+        view: 'Formula.View'
       }
     };
 

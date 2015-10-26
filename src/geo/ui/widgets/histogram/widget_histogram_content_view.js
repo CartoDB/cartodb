@@ -60,9 +60,9 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     .data(range.slice(1, range.length - 1))
     .enter().append('svg:line')
     .attr('y1', 0)
-    .attr('x1', function(d) { return d; })
+    .attr('x1', function(d) { return d.freq; })
     .attr('y2', this.chartHeight)
-    .attr('x2', function(d) { return d; });
+    .attr('x2', function(d) { return d.freq; });
   },
 
   _generateHorizontalLines: function() {
@@ -78,9 +78,9 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     .enter().append('svg:line')
     .attr('class', 'y')
     .attr('x1', 0)
-    .attr('y1', function(d) { return d; })
+    .attr('y1', function(d) { return d.freq; })
     .attr('x2', this.chartWidth)
-    .attr('y2', function(d) { return d; });
+    .attr('y2', function(d) { return d.freq; });
 
     this.bottomLine = lines
     .append('line')
@@ -115,7 +115,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
   _setupScales: function() {
     var data = this.model.get('data');
     this.xScale = d3.scale.linear().domain([0, 100]).range([0, this.chartWidth]);
-    this.yScale = d3.scale.linear().domain([0, d3.max(data, function(d) { return d; } )]).range([this.chartHeight, 0]);
+    this.yScale = d3.scale.linear().domain([0, d3.max(data, function(d) { return d.freq; } )]).range([this.chartHeight, 0]);
     this.zScale = d3.scale.ordinal().domain(d3.range(data.length)).rangeRoundBands([0, this.chartWidth]);
   },
 
@@ -190,16 +190,16 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     this._adjustBrushHandles();
   },
 
-  _onMouseEnter: function(d) {
+  _onMouseEnter: function() {
   },
 
-  _onMouseOut: function(d) {
+  _onMouseOut: function() {
     var bars = this.chart.selectAll('.Bar');
     bars.classed('is-highlighted', false);
     this.trigger('hover', { value: null });
   },
 
-  _onMouseMove: function(d) {
+  _onMouseMove: function() {
     var x = d3.event.offsetX;
     var barIndex= Math.floor(x / this.barWidth);
     var data = this.model.get('data');
@@ -209,9 +209,9 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
 
     if (bar && bar.node() && !bar.classed('is-selected')) {
       var left = (barIndex * this.barWidth);
-      var top = this.yScale(data[barIndex]) - 10;
+      var top = this.yScale(data[barIndex].freq) - 10;
       if (!this._isDragging()) {
-        this.trigger('hover', { top: top, left: left + (this.barWidth/2) - 25, value: data[barIndex] });
+        this.trigger('hover', { top: top, left: left + (this.barWidth/2) - 25, value: data[barIndex].freq });
       }
     } else {
       this.trigger('hover', { value: null });
@@ -406,9 +406,9 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
       var v = i % p;
 
       if (v === 0 || i === 0 || i === (data.length - 1)) {
-        var sum = _.reduce(data.slice(0, i + 1), function(t, j) {
-          return j + t;
-        });
+        var sum = _.reduce(data.slice(0, i + 1), function(memo, d) {
+          return d.freq + memo;
+        }, 0);
         return format(sum);
       } else {
         return '';
@@ -463,7 +463,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     .enter()
     .append('rect')
     .attr('class', 'Bar')
-    .attr('data', function(d) { return d; })
+    .attr('data', function(d) { return d.freq; })
     .attr('transform', function(d, i) {
       return 'translate(' + (i * self.barWidth) + ', 0 )';
     })
@@ -478,10 +478,10 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
       return Math.random() * (100 + i * 10);
     })
     .attr('height', function(d) {
-      return d ? self.chartHeight - self.yScale(d) : 0;
+      return d ? self.chartHeight - self.yScale(d.freq) : 0;
     })
     .attr('y', function(d) {
-      return d ? self.yScale(d) : self.chartHeight;
+      return d ? self.yScale(d.freq) : self.chartHeight;
     });
   },
 
@@ -680,8 +680,9 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   },
 
   _generateData: function() {
-    var data = _.map(d3.range(Math.round(Math.random() * 100) + 2), function(d) {
-      return Math.round(Math.random() * 1000);
+    //{ bucket: 1, min: 1, max: 1, freq: 179 }
+    var data = _.map(d3.range(Math.round(Math.random() * 100) + 2), function(d, i) {
+      return { bucket: i, freq: Math.round(Math.random() * 1000) };
     });
 
     this.dataModel.set('data', data);
@@ -715,13 +716,13 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
 
   _updateStats: function() {
     var data = this._getData();
-    var sum = _.reduce(data, function(t, j) {
-      return j + t;
-    });
+    var sum = _.reduce(data, function(memo, d) {
+      return d.freq + memo;
+    }, 0);
 
-    var max = d3.max(data);
-    var avg = Math.round(d3.mean(data));
-    var min = d3.min(data);
+    var max = d3.max(data, function(d) { return d.freq });
+    var avg = Math.round(d3.mean(data, function(d) { return d.freq }));
+    var min = d3.min(data, function(d) { return d.freq });
 
     this.viewModel.set({ total: sum, min: min, max: max, avg: avg });
   },

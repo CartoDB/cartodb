@@ -1,3 +1,4 @@
+var _ = require('underscore');
 
 /**
  *  Grunfile runner file for CartoDB.js
@@ -62,8 +63,6 @@ module.exports = function(grunt) {
     jshint: require('./grunt/tasks/jshint').task(),
     jasmine: require('./grunt/tasks/jasmine').task()
   });
-
-  grunt.registerTask('test', [ 'dist_js', 'jasmine' ]);
 
   grunt.registerTask('release', [
     'prompt:bump',
@@ -137,40 +136,9 @@ module.exports = function(grunt) {
     ]);
   });
 
-  grunt.registerTask('build', [
-    'set_current_version',
-    'clean:dist',
-    'css',
-    'dist_js',
-    'cssmin',
-    'imagemin',
-    'uglify'
-  ]);
-
-  grunt.registerTask('dist_js', [
-    'set_current_version',
-    'replace',
-    'gitinfo',
-    'concat',
-    'browserify'
-  ]);
-
-  grunt.registerTask('css', [ 'sass' ]);
-
-  grunt.registerTask('default', [ 'build' ]);
-
   grunt.registerTask('preWatch', function() {
     grunt.config('config.doWatchify', true); // required for browserify to use watch files instead
   });
-
-  grunt.registerTask('dev', [
-    'build',
-    'connect:styleguide',
-    'connect:jasmine',
-    'preWatch',
-    'browserify',
-    'watch'
-  ]);
 
   grunt.event.once('connect.jasmine.listening', function(host, port) {
     grunt.log.writeln('Jasmine specs available at (one per bundle):');
@@ -182,4 +150,42 @@ module.exports = function(grunt) {
       grunt.log.writeln(' - http://' + host + ':' + port + '/' + specRunnerFilepath);
     }
   });
+
+  // Define tasks order for each step as if run in isolation,
+  // when registering the actual tasks _.uniq is used to discard duplicate tasks from begin run
+  var allDeps = [
+    'set_current_version',
+    'clean:dist',
+    'replace',
+    'gitinfo',
+  ];
+  var css = allDeps
+    .concat([
+      'sass',
+      'cssmin',
+      'imagemin',
+    ]);
+  var devCSS = css
+    .concat('connect:styleguide');
+  var js = allDeps
+    .concat([
+      'concat',
+      'browserify',
+    ]);
+  var buildJS = allDeps
+    .concat(js)
+    .concat('uglify');
+  var devJS = allDeps
+    .concat('preWatch')
+    .concat(js)
+    .concat('connect:jasmine');
+
+  grunt.registerTask('default', [ 'build' ]);
+  grunt.registerTask('build', _.uniq(buildJS.concat(css)));
+  grunt.registerTask('build:js', _.uniq(buildJS));
+  grunt.registerTask('build:css', _.uniq(css));
+  grunt.registerTask('test', _.uniq(js.concat('jasmine')));
+  grunt.registerTask('dev', _.uniq(devCSS.concat(devJS).concat('watch')));
+  grunt.registerTask('dev:css', _.uniq(devCSS.concat('watch')));
+  grunt.registerTask('dev:js', _.uniq(devJS.concat('watch')));
 }

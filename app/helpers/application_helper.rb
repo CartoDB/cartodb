@@ -145,6 +145,10 @@ module ApplicationHelper
       config[:explore_user] = Cartodb.config[:explore_api]['username']
     end
 
+    if Cartodb.config[:common_data].present?
+      config[:common_data_user] = Cartodb.config[:common_data]['username']
+    end
+
     config.to_json
   end
 

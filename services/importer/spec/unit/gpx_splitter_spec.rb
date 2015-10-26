@@ -11,7 +11,7 @@ describe CartoDB::Importer2::GpxSplitter do
     @one_layer_filepath       = path_to('one_layer.gpx')
     @multiple_layer_filepath  = path_to('multiple_layer.gpx')
     @temporary_directory      = '/var/tmp'
-    @ogr2ogr_config = {'binary' => 'which ogr2ogr2'}
+    @ogr2ogr_config = { 'binary' => 'which ogr2ogr2' }
   end
 
   describe '#run' do
@@ -26,7 +26,7 @@ describe CartoDB::Importer2::GpxSplitter do
       source_file = CartoDB::Importer2::SourceFile.new(@one_layer_filepath)
       splitter    = CartoDB::Importer2::GpxSplitter.new(source_file, @temporary_directory, @ogr2ogr_config)
       splitter.run
-      #route and track with the points layer too (track and track_points)
+      # route and track with the points layer too (track and track_points)
       splitter.source_files.length.should eq 2
     end
   end
@@ -49,4 +49,3 @@ describe CartoDB::Importer2::GpxSplitter do
     )
   end
 end
-

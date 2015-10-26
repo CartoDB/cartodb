@@ -8,7 +8,7 @@ module CartoDB
   module Importer2
     class GpxSplitter
       MAX_LAYERS = 50
-      GPX_LAYERS = ['waypoints','routes','tracks','route_points','track_points']
+      GPX_LAYERS = ['waypoints', 'routes', 'tracks', 'route_points', 'track_points']
       ITEM_COUNT_REGEX = 'Feature Count:\s'
       OGRINFO_BINARY = 'ogrinfo'
       DEFAULT_OGR2OGR_BINARY = 'ogr2ogr2'
@@ -26,7 +26,9 @@ module CartoDB
       def run
         n_layers = layers_in(source_file).length
         return self if n_layers <= 1
-        raise CartoDB::Importer2::TooManyLayersError.new("File has too many layers (#{n_layers}). Maximum number of layers: #{MAX_LAYERS}") if n_layers > MAX_LAYERS
+        raise CartoDB::Importer2::TooManyLayersError.new(
+          "File has too many layers (#{n_layers}). Maximum number of layers: #{MAX_LAYERS}"
+        ) if n_layers > MAX_LAYERS
         @source_files = source_files_for(source_file, layers_in(source_file))
         self
       end
@@ -36,12 +38,12 @@ module CartoDB
         @source_files
       end
 
-      def source_files_for(source_file, layer_names=[])
-        layer_names.map { |layer_name|
+      def source_files_for(source_file, layer_names = [])
+        layer_names.map do |layer_name|
           layer_file_name = path_for(source_file, layer_name)
           extract(layer_file_name, source_file, layer_name)
           SourceFile.new(layer_file_name, nil, layer_name)
-        }
+        end
       end
 
       def extract(extracted_file_path, source_file, layer_name)
@@ -57,8 +59,8 @@ module CartoDB
         GPX_LAYERS.each do |layer|
           stdout, stderr, status = Open3.capture3("#{OGRINFO_BINARY} -so #{source_file.fullpath} #{layer}")
           number_rows = stdout.split("\n")
-            .select { |line| line =~ /^#{ITEM_COUNT_REGEX}/}
-            .map{ |line| line.gsub(/#{ITEM_COUNT_REGEX}/, '') }.first
+                        .select { |line| line =~ /^#{ITEM_COUNT_REGEX}/ }
+                        .map { |line| line.gsub(/#{ITEM_COUNT_REGEX}/, '') }.first
           number_rows = Integer(number_rows) rescue nil
           layers << layer if !number_rows.nil? && number_rows > 0
         end

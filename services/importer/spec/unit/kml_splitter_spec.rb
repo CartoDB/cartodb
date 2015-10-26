@@ -11,7 +11,7 @@ describe CartoDB::Importer2::KmlSplitter do
     @one_layer_filepath       = path_to('one_layer.kml')
     @multiple_layer_filepath  = path_to('multiple_layer.kml')
     @temporary_directory      = '/var/tmp'
-    @ogr2ogr_config = {'binary' => 'which ogr2ogr2'}
+    @ogr2ogr_config = { 'binary' => 'which ogr2ogr2' }
   end
 
   describe '#run' do
@@ -36,9 +36,6 @@ describe CartoDB::Importer2::KmlSplitter do
   end
 
   def path_to(filepath)
-    File.expand_path(
-      File.join(File.dirname(__FILE__), "../fixtures/#{filepath}")
-    )
+    File.expand_path(File.join(File.dirname(__FILE__), "../fixtures/#{filepath}"))
   end
 end
-

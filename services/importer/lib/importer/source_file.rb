@@ -4,7 +4,7 @@ module CartoDB
     class SourceFile
       ENCODING_RE = /_encoding_([\w|-]+)_encoding_.*\./
 
-      def initialize(filepath, filename=nil, layer=nil, http_opts={})
+      def initialize(filepath, filename = nil, layer = nil, http_opts = {})
         @filepath       = filepath
         @filename       = filename
         @etag           = http_opts.fetch(:etag, nil)
@@ -24,7 +24,7 @@ module CartoDB
       def fullpath
         File.join(
           File.dirname(filepath),
-          File.basename(filepath, extension) +  extension
+          File.basename(filepath, extension) + extension
         )
       end
 
@@ -51,11 +51,10 @@ module CartoDB
 
       attr_accessor :layer
       attr_reader :filename, :etag, :last_modified, :checksum
-      
+
       private
 
       attr_reader :filepath
     end
   end
 end
-

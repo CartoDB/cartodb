@@ -92,17 +92,15 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
   },
 
   _setupModel: function() {
-    this.model = new cdb.core.Model({ data: this.options.data });
+    this.model = new cdb.core.Model({ 
+      data: this.options.data,
+      pos: { x: 0, y: 0 }
+    });
+
+    this.model.bind('change:pos', this._onChangePos, this);
     this.model.bind('change:a change:b', this._onChangeRange, this);
     this.model.bind('change:data', this._onChangeData, this);
     this.model.bind('change:dragging', this._onChangeDragging, this);
-  },
-
-  _move: function(pos) {
-    this.chart
-    .transition()
-    .duration(150)
-    .attr('transform', 'translate(' + (pos.x) + ', ' + (pos.y) + ')');
   },
 
   _setupDimensions: function() {
@@ -160,6 +158,15 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     .attr('transform', 'translate(0, ' + (this.options.y) + ')');
   },
 
+  _onChangePos: function() {
+    var pos = this.model.get('pos');
+
+    this.chart
+    .transition()
+    .duration(150)
+    .attr('transform', 'translate(' + (pos.x) + ', ' + (pos.y) + ')');
+  },
+
   _onBrushStart: function() {
     this.chart.classed('is-selectable', true);
   },
@@ -211,7 +218,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
 
     if (bar && bar.node() && !bar.classed('is-selected')) {
       var left = (barIndex * this.barWidth);
-      var top = this.yScale(data[barIndex].freq) - 10;
+      var top = this.yScale(data[barIndex].freq) - 10 + this.model.get('pos').y;
       if (!this._isDragging()) {
         this.trigger('hover', { top: top, left: left + (this.barWidth/2) - 25, value: data[barIndex].freq });
       }
@@ -229,6 +236,10 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
 
   _isDragging: function() {
     return this.model.get('dragging');
+  },
+
+  move: function(pos) {
+    this.model.set({ pos: pos });
   },
 
   selectRange: function(a, b) {
@@ -750,14 +761,14 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   _contract: function() {
     this.canvas
     .attr('height', this.canvasHeight);
-    this.chart._move({ x: 0, y: 0 });
+    this.chart.move({ x: 0, y: 0 });
   },
 
   _expand: function() {
     this.canvas
     .attr('height', this.canvasHeight + 60);
     this.miniChart.show();
-    this.chart._move({ x: 0, y: 50 });
+    this.chart.move({ x: 0, y: 50 });
   },
 
   _generateCanvas: function() {

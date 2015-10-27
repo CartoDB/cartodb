@@ -79,10 +79,10 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     var lines = this.chart.select('.Lines');
 
     lines.append('g')
-    .selectAll('.y')
+    .selectAll('.Line')
     .data(range.slice(1, range.length - 1))
     .enter().append('svg:line')
-    .attr('class', 'y')
+    .attr('class', 'Line')
     .attr('y1', 0)
     .attr('x1', function(d) { return d; })
     .attr('y2', this.chartHeight)
@@ -97,10 +97,10 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
 
     lines.append('g')
     .attr('class', 'y')
-    .selectAll('.y')
+    .selectAll('.Line')
     .data(range)
     .enter().append('svg:line')
-    .attr('class', 'y')
+    .attr('class', 'Line')
     .attr('x1', 0)
     .attr('y1', function(d) { return d; })
     .attr('x2', this.chartWidth)
@@ -108,7 +108,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
 
     this.bottomLine = lines
     .append('line')
-    .attr('class', 'l_bottom')
+    .attr('class', 'Line Line--bottom')
     .attr('x1', 0)
     .attr('y1', this.chartHeight)
     .attr('x2', this.chartWidth - 1)
@@ -285,7 +285,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
 
   selectRange: function(a, b) {
 
-    if (a === undefined && b === undefined) {
+    if (!a && !b) {
       return;
     }
 
@@ -443,7 +443,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
   },
 
   _removeXAxis: function() {
-    this.chart.select('.axis').remove();
+    this.chart.select('.Axis').remove();
   },
 
   _generateXAxis: function() {
@@ -475,7 +475,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     });
 
     this.chart.append('g')
-    .attr('class', 'axis')
+    .attr('class', 'Axis')
     .attr('transform', 'translate(0,' + (this.chartHeight + 5) + ')')
     .call(xAxis);
   },
@@ -591,8 +591,8 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
        '<dt class="Widget-infoItem js-max">0 MAX</dt>'+
      '</dl>'+
    '</div>'+
-   '<div class="Widget-content js-content">'+
-   '<div class="Tooltip js-tooltip"></div>'+
+    '<div class="Widget-content js-content">'+
+   '<div class="Widget-chartTooltip js-tooltip"></div>'+
    '  <div class="Widget-filter Widget-contentSpaced js-filter">'+
    '    <p class="Widget-textSmaller Widget-textSmaller--bold Widget-textSmaller--upper js-val"></p>'+
    '    <div class="Widget-filterButtons">'+
@@ -603,11 +603,17 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
    '  <svg class="Widget-chart js-chart"></svg>',
 
   _PLACEHOLDER: ' ' +
-    '<ul class="Widget-list Widget-list--withBorders">' +
-      '<li class="Widget-listItem Widget-listItem--withBorders Widget-listItem--fake"></li>' +
-      '<li class="Widget-listItem Widget-listItem--withBorders Widget-listItem--fake"></li>' +
-      '<li class="Widget-listItem Widget-listItem--withBorders Widget-listItem--fake"></li>' +
-      '<li class="Widget-listItem Widget-listItem--withBorders Widget-listItem--fake"></li>' +
+    '<ul class="Widget-chart Widget-chart--fake">' +
+      '<li class="Widget-chartItem Widget-chartItem--small Widget-chartItem--fake"></li>' +
+      '<li class="Widget-chartItem Widget-chartItem--fake"></li>' +
+      '<li class="Widget-chartItem Widget-chartItem--fake"></li>' +
+      '<li class="Widget-chartItem Widget-chartItem--small Widget-chartItem--fake"></li>' +
+      '<li class="Widget-chartItem Widget-chartItem--fake"></li>' +
+      '<li class="Widget-chartItem Widget-chartItem--small Widget-chartItem--fake"></li>' +
+      '<li class="Widget-chartItem Widget-chartItem--fake"></li>' +
+      '<li class="Widget-chartItem Widget-chartItem--big Widget-chartItem--fake"></li>' +
+      '<li class="Widget-chartItem Widget-chartItem--fake"></li>' +
+      '<li class="Widget-chartItem Widget-chartItem--small Widget-chartItem--fake"></li>' +
     '</ul>',
 
   _initViews: function() {

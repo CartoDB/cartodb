@@ -2,7 +2,27 @@
   position: relative;
 }
 
-.Tooltip {
+.Widget-chart {
+  display: none;
+}
+
+.Widget-chart.Widget-chart--fake {
+  display: block;
+}
+.Widget-chartItem.Widget-chartItem--fake {
+	display: inline-block;
+  width: 9%;
+  height: 40px;
+  margin: 0 1px 0 0;
+}
+.Widget-chartItem--fake.Widget-chartItem--small {
+  height: 20px;
+}
+.Widget-chartItem--fake.Widget-chartItem--big {
+  height: 60px;
+}
+
+.Widget-chartTooltip {
   top: 0;
   left: 0;
   display: none;
@@ -17,7 +37,7 @@
   font-size: 10px;
   pointer-events: none;
 }
-.Tooltip:after {
+.Widget-chartTooltip:after {
 	position: absolute;
 	display: inline-block;
   border-top: 5px solid #000;
@@ -26,10 +46,6 @@
 	left: 20px;
 	bottom: -3px;
 	content: '';
-}
-
-.Widget-chart {
-  display: none;
 }
 
 .Chart.is-selectable .Handle,
@@ -79,16 +95,16 @@
   }
 }
 
-.axis {
+.Axis {
   font: 10px sans-serif;
   shape-rendering: crispEdges;
 }
 
-.axis path {
+.Axis path {
   display: none;
   shape-rendering: crispEdges;
 }
-.axis line {
+.Axis line {
   fill: none;
   stroke-width: 1;
   opacity: 0.2;
@@ -96,22 +112,17 @@
   shape-rendering: crispEdges;
 }
 
-.y {
+.Line {
   stroke: #EEEEEE;
   stroke-width: 1;
   shape-rendering: crispEdges;
 }
 
-.l_bottom {
+.Line.Line--bottom {
   stroke-width: 1;
   opacity: 0.2;
   stroke: #000000;
   shape-rendering: crispEdges;
-}
-
-.Line {
-  stroke-width: 2;
-  stroke: #3AA9E3;
 }
 
 .Handle {

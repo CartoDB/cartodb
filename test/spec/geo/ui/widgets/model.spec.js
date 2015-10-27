@@ -9,7 +9,7 @@ describe('widgets/model', function() {
     this.model._initBinds();  // _initBinds is called when object is created, so
                               // it is necessary to called again to have the spy
                               // correctly set.
-    expect(this.model.bind.calls.argsFor(0)[0]).toEqual('change:dashboardBaseURL');
+    expect(this.model.bind.calls.argsFor(0)[0]).toEqual('change:url');
   });
 
   it('should trigger loading event when fetch is launched', function() {

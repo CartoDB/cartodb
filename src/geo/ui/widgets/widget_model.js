@@ -6,7 +6,7 @@
 cdb.geo.ui.Widget.Model = cdb.core.Model.extend({
 
   defaults: {
-    dashboardBaseURL: '',
+    url: '',
     data: [],
     columns: []
   },

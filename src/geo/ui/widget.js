@@ -32,6 +32,7 @@ cdb.geo.ui.Widget.View = cdb.core.View.extend({
       sync: this.model.get('options').sync,
       columns_title: this.model.get('options').columns_title
     });
+    this.filter = this.options.filter;
   },
 
   render: function() {
@@ -67,7 +68,8 @@ cdb.geo.ui.Widget.View = cdb.core.View.extend({
   _createContentView: function() {
     return new cdb.geo.ui.Widget.Content({
       viewModel: this.viewModel,
-      dataModel: this.dataModel
+      dataModel: this.dataModel,
+      filter: this.filter
     });
   }
 });

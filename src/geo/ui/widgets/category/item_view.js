@@ -9,7 +9,7 @@ cdb.geo.ui.Widget.Category.ItemView = cdb.core.View.extend({
 
   _TEMPLATE: ' ' +
     '<li class="Widget-listItem">'+
-      '<button type="button" class="Widget-listItemInner Widget-listButton">'+
+      '<button type="button" class="Widget-listItemInner Widget-listButton js-button <%- isDisabled ? \'is-disabled\' : \'\' %>">'+
         '<div class="Widget-contentSpaced">'+
           '<p class="Widget-textSmall Widget-textSmall--bold Widget-textSmall--upper"><%- name %></p>'+
           '<p class="Widget-textSmaller">~<%- value %></p>'+
@@ -20,15 +20,21 @@ cdb.geo.ui.Widget.Category.ItemView = cdb.core.View.extend({
       '</button>'+
     '</li>',
 
+  initialize: function(options) {
+    this.filter = options.filter;
+    this.model.bind('change', this.render, this);
+  },
+
   render: function() {
     var template = _.template(this._TEMPLATE);
-    var value = Math.random().toFixed(2);
+    var value = this.model.get('count');
 
     this.$el.html(
       template({
-        name: value,
-        value: Math.ceil(value * 100),
-        percentage: value * 100
+        name: this.model.get('name'),
+        value: Math.ceil(value),
+        percentage: (value / this.model.get('maxCount')) * 100,
+        isDisabled: !this.model.get('selected') ? 'is-disabled' : ''
       })
     );
 
@@ -36,7 +42,11 @@ cdb.geo.ui.Widget.Category.ItemView = cdb.core.View.extend({
   },
 
   _onItemClick: function() {
-    console.log("category clicked!");
+    this.model.set('selected', !this.model.get('selected'));
+    if (this.model.get('selected')) {
+      this.filter.accept(this.model.get('name'));
+    } else {
+      this.filter.reject(this.model.get('name'));
+    }
   }
-
 });

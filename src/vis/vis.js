@@ -494,10 +494,12 @@ var Vis = cdb.core.View.extend({
       },
       "aggregation": {
         model: 'CategoryModel',
-        view: 'Category.View'
+        view: 'Category.View',
+        filter: 'CategoryFilter'
       }
     };
 
+    var filterModels = [];
     _.each(cartoDBLayers, function(layer) {
       var widgets = layer.get('options').widgets;
       var widgetModels = [];
@@ -513,19 +515,32 @@ var Vis = cdb.core.View.extend({
         var widgetModel = new cdb.geo.ui.Widget[modelClass](widgetData);
         widgetModels.push(widgetModel);
 
+        var filterClass = widgetClasses[widgetData.type].filter;
+        var filterModel;
+        if (filterClass) {
+          filterModel = new cdb.windshaft.filters[filterClass]({
+            widgetId: widgetModel.get('id')
+          });
+          filterModels.push(filterModel);
+        }
+
         // Instantitate the view
         var viewClass = widgetClasses[widgetData.type].view;
         var viewClassParts = viewClass.split('.');
-        var widgetView = new cdb.geo.ui.Widget[viewClassParts[0]][viewClassParts[1]](
-          { model: widgetModel }
-        );
+        var viewOptions = { model: widgetModel };
+        if (filterModel) {
+          viewOptions.filter = filterModel;
+        }
+        var widgetView = new cdb.geo.ui.Widget[viewClassParts[0]][viewClassParts[1]](viewOptions);
 
         $('.js-canvas').append(widgetView.render().el);
       }
 
       layer.widgets = widgetModels;
-    });
 
+      // TODO: Remove this
+      window.widgets = widgetModels;
+    });
 
     var windshaftClient = new cdb.windshaft.Client({
       endpoint: endpoint,
@@ -540,7 +555,8 @@ var Vis = cdb.core.View.extend({
       configGenerator: configGenerator,
       statTag: datasource.stat_tag,
       layerGroup: cartoDBLayerGroup,
-      layers: cartoDBLayers
+      layers: cartoDBLayers,
+      filters: filterModels
     });
 
     dashboard.createInstance();

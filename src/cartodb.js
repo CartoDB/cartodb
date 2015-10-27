@@ -31,6 +31,7 @@
     root.cdb.vis = {};
     root.cdb.decorators = {};
     root.cdb.windshaft = {};
+    root.cdb.windshaft.filters = {};
 
     /**
      * global variables
@@ -162,7 +163,9 @@
         'windshaft/dashboard.js',
         'windshaft/dashboard_instance.js',
         'windshaft/public_dashboard_config.js',
-        'windshaft/private_dashboard_config.js'
+        'windshaft/private_dashboard_config.js',
+        'windshaft/filters/collection.js',
+        'windshaft/filters/category.js'
     ];
 
     cdb.init = function(ready) {

@@ -63,6 +63,7 @@ cdb.geo.ui.Widget.Category.Content = cdb.geo.ui.Widget.Content.extend({
     var list = new cdb.geo.ui.Widget.Category.ItemsView({
       viewModel: this.viewModel,
       dataModel: this.dataModel,
+      filter: this.filter,
       itemsPerPage: this._ITEMS_PER_PAGE
     });
     this.$('.js-content').html(list.render().el);

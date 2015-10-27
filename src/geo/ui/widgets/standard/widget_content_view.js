@@ -26,6 +26,7 @@ cdb.geo.ui.Widget.Content = cdb.core.View.extend({
   initialize: function() {
     this.dataModel = this.options.dataModel;
     this.viewModel = this.options.viewModel;
+    this.filter = this.options.filter;
     this._initBinds();
   },
 

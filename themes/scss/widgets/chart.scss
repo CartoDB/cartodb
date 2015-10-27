@@ -28,6 +28,10 @@
 	content: '';
 }
 
+.Widget-chart {
+  display: none;
+}
+
 .Chart.is-selectable .Handle,
 .Chart.is-selectable .HandleLine {
   opacity: 1;

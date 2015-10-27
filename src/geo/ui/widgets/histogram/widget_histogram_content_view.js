@@ -577,7 +577,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
     '</ul>',
 
   _initViews: function() {
-    //this._generateData();
+    this.$('.js-chart').show();
     this._setupDimensions();
     this._generateCanvas();
     this._renderMainChart();

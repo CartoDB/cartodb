@@ -11,7 +11,6 @@ PENDING_SPECS = \
   $(NULL)
 
 WORKING_SPECS_INTEGRATIONS = \
-  spec/integrations/common_data_integration.rb \
   $(NULL)
 
 WORKING_SPECS_1 = \

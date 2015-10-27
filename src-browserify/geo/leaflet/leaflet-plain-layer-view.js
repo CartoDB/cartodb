@@ -1,18 +1,16 @@
-
-(function() {
-
-if(typeof(L) == "undefined")
-  return;
+var _ = require('underscore');
+var L = require('leaflet-proxy').get();
+var LeafletLayerView = require('./leaflet-layer-view');
 
 /**
  * this is a dummy layer class that modifies the leaflet DOM element background
  * instead of creating a layer with div
  */
-var LeafLetPlainLayerView = L.Class.extend({
+var LeafletPlainLayerView = L.Class.extend({
   includes: L.Mixin.Events,
 
   initialize: function(layerModel, leafletMap) {
-    cdb.geo.LeafLetLayerView.call(this, layerModel, this, leafletMap);
+    LeafletLayerView.call(this, layerModel, this, leafletMap);
   },
 
   onAdd: function() {
@@ -44,8 +42,6 @@ var LeafLetPlainLayerView = L.Class.extend({
 
 });
 
-_.extend(LeafLetPlainLayerView.prototype, cdb.geo.LeafLetLayerView.prototype);
+_.extend(LeafletPlainLayerView.prototype, LeafletLayerView.prototype);
 
-cdb.geo.LeafLetPlainLayerView = LeafLetPlainLayerView;
-
-})();
+module.exports = LeafletPlainLayerView;

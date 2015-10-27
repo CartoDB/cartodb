@@ -1,7 +1,10 @@
 // Defintions shared for all non-core bundles
 var cdb = require('./cdb-common');
 cdb._ = require('underscore');
-cdb.L = require('leaflet-proxy').get();
+try {
+  cdb.L = require('leaflet-proxy').get();
+} catch (err) {
+}
 cdb.Mustache = require('mustache');
 require('json2'); // TODO polyfills window.JSON, still necessary with modern browser?
 
@@ -45,6 +48,14 @@ cdb.geo.CartoDBNamedMapLayer = require('./geo/map/cartodb-named-map-layer');
 cdb.geo.Layers = require('./geo/map/layers');
 cdb.geo.CartoDBGroupLayer = require('./geo/map/cartodb-group-layer');
 
+cdb.geo.Map = require('./geo/map');
+cdb.geo.MapView = require('./geo/map-view');
+
+require('./cdb.geo.leaflet');
+
+cdb.geo.common = {};
+cdb.geo.common.CartoDBLogo = require('./geo/cartodb-logo');
+
 cdb.geo.ui.Text = require('./geo/ui/text');
 cdb.geo.ui.Annotation = require('./geo/ui/annotation');
 cdb.geo.ui.Image = require('./geo/ui/image');
@@ -65,7 +76,6 @@ cdb.geo.ui.SlidesControllerItem = require('./geo/ui/slides-controller-item');
 cdb.geo.ui.SlidesController = require('./geo/ui/slides-controller');
 cdb.geo.ui.Header = require('./geo/ui/header');
 
-cdb.geo.Map = require('./geo/map');
-cdb.geo.MapView = require('./geo/map-view');
+cdb.geo.ui.Search = require('./geo/ui/search');
 
 module.exports = cdb;

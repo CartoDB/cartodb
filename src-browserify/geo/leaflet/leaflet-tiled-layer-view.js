@@ -1,10 +1,8 @@
+var _ = require('underscore');
+var L = require('leaflet-proxy').get();
+var LeafletLayerView = require('./leaflet-layer-view');
 
-(function() {
-
-if(typeof(L) == "undefined") 
-  return;
-
-var LeafLetTiledLayerView = L.TileLayer.extend({
+var LeafletTiledLayerView = L.TileLayer.extend({
   initialize: function(layerModel, leafletMap) {
     L.TileLayer.prototype.initialize.call(this, layerModel.get('urlTemplate'), {
       tms:          layerModel.get('tms'),
@@ -15,12 +13,12 @@ var LeafLetTiledLayerView = L.TileLayer.extend({
       errorTileUrl: layerModel.get('errorTileUrl'),
       opacity:      layerModel.get('opacity')
     });
-    cdb.geo.LeafLetLayerView.call(this, layerModel, this, leafletMap);
+    LeafletLayerView.call(this, layerModel, this, leafletMap);
   }
 
 });
 
-_.extend(LeafLetTiledLayerView.prototype, cdb.geo.LeafLetLayerView.prototype, {
+_.extend(LeafletTiledLayerView.prototype, LeafletLayerView.prototype, {
 
   _modelUpdated: function() {
     _.defaults(this.leafletLayer.options, _.clone(this.model.attributes));
@@ -34,6 +32,4 @@ _.extend(LeafLetTiledLayerView.prototype, cdb.geo.LeafLetLayerView.prototype, {
 
 });
 
-cdb.geo.LeafLetTiledLayerView = LeafLetTiledLayerView;
-
-})();
+module.exports = LeafletTiledLayerView;

@@ -1,4 +1,6 @@
-describe('common', function() {
+var CartoDBLayerCommon = require('../../../../src-browserify/geo/cartodb-layer-common');
+
+describe('geo/cartodb-layer-common', function() {
 
   var common;
 
@@ -29,7 +31,7 @@ describe('common', function() {
     expect(t.sql).toEqual('select * from (select jaja)');
     expect(t.cartocss).toEqual('#layer0 { polygon-fill: red; }');
     expect(t.interactivity).toEqual('jaja');
-    
+
     common.options = {
       table_name: 'test',
       tiler_domain:   "cartodb.com",

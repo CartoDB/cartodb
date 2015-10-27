@@ -100,6 +100,13 @@ module.exports = function(cdb) {
       expect(cdb.geo.ui.SlidesControllerItem).toEqual(jasmine.any(Function));
       expect(cdb.geo.ui.SlidesController).toEqual(jasmine.any(Function));
       expect(cdb.geo.ui.Header).toEqual(jasmine.any(Function));
+
+      expect(cdb.geo.ui.Search).toEqual(jasmine.any(Function));
+    });
+
+    it('should have a cdb.common object', function() {
+      expect(cdb.geo.common).toEqual(jasmine.any(Object));
+      expect(cdb.geo.common.CartoDBLogo).toEqual(jasmine.any(Object));
     });
 
     it('should have a core.vis', function() {

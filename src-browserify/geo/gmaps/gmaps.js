@@ -19,7 +19,7 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
       "torque": function(layer, map) {
         return new cdb.geo.GMapsTorqueLayerView(layer, map);
       },
-      "wms": cdb.geo.LeafLetWMSLayerView
+      "wms": cdb.geo.LeafletWMSLayerView
     },
 
     initialize: function() {

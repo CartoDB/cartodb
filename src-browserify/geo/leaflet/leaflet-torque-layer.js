@@ -1,13 +1,17 @@
-
-(function() {
-
-if(typeof(L) === "undefined") 
-  return;
+// NOTE this is ONLY used for torque bundle AND the leaflet.spec.js, that assumed torque lib to be loaded)
+// Thus, the Leaflet var "L" is assumed to be present in the global scope.
+//
+// see "torque" in ./leaflet-map-view.js
+var cdb = require('cdb-proxy').get();
+var _ = require('underscore');
+var util = require('cdb.core.util');
+var LeafletLayerView = require('./leaflet-layer-view');
+var CartoDBLogo = require('../cartodb-logo');
 
 /**
  * leaflet torque layer
  */
-var LeafLetTorqueLayer = L.TorqueLayer.extend({
+var LeafletTorqueLayer = L.TorqueLayer.extend({
 
   initialize: function(layerModel, leafletMap) {
     var extra = layerModel.get('extra_params');
@@ -49,11 +53,11 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
       instanciateCallback: function() {
         var cartocss = layerModel.get('cartocss') || layerModel.get('tile_style');
 
-        return '_cdbct_' + cdb.core.util.uniqueCallbackName(cartocss + query);
+        return '_cdbct_' + util.uniqueCallbackName(cartocss + query);
       }
     });
 
-    cdb.geo.LeafLetLayerView.call(this, layerModel, this, leafletMap);
+    LeafletLayerView.call(this, layerModel, this, leafletMap);
 
     // match leaflet events with backbone events
     this.fire = this.trigger;
@@ -77,7 +81,7 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
     L.TorqueLayer.prototype.onAdd.apply(this, [map]);
     // Add CartoDB logo
     if (this.options.cartodb_logo != false)
-      cdb.geo.common.CartoDBLogo.addWadus({ left:8, bottom:8 }, 0, map._container)
+      CartoDBLogo.addWadus({ left:8, bottom:8 }, 0, map._container)
   },
 
   _getQuery: function(layerModel) {
@@ -97,14 +101,13 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
       this.setSQL(this._getQuery(this.model));
     }
 
-    if ('visible' in changed) 
+    if ('visible' in changed)
       this.model.get('visible') ? this.show(): this.hide();
 
   }
 });
 
-_.extend(LeafLetTorqueLayer.prototype, cdb.geo.LeafLetLayerView.prototype);
+_.extend(LeafletTorqueLayer.prototype, LeafletLayerView.prototype);
 
-cdb.geo.LeafLetTorqueLayer = LeafLetTorqueLayer;
-
-})();
+// TODO : extract?
+cdb.geo.LeafletTorqueLayer = LeafletTorqueLayer;

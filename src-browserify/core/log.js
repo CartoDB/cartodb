@@ -13,7 +13,7 @@ _fake_console.prototype.log= function(){};
 if (typeof console !== "undefined") {
   _console = console;
   try {
-    _console.log.apply(_console, ['cartodb.js ' + cartodb.VERSION])
+    _console.log.apply(_console, ['cartodb.js ' + cdbProxy.get().VERSION])
   } catch(e) {
     _console = new _fake_console();
   }

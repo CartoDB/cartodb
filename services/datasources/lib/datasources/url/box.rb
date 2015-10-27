@@ -10,6 +10,8 @@ module CartoDB
       # This should be migrated when we upgrade to Ruby 2.
       module BoxAPI
 
+        class ExpiredTokenError < StandardError; end
+
         def self.oauth_url(state, options = {})
           host = options.fetch(:host, "app.box.com")
           response_type = options.fetch(:response_type, "code")
@@ -63,8 +65,21 @@ module CartoDB
           if(res.response_code == 200)
             json_body ? JSON.parse(res.response_body) : res.response_body
           else
+            handle_error_response(res)
+          end
+        end
+
+        def self.handle_error_response(res)
+          body_json = JSON.parse(res.response_body)
+
+          if body_json['error'] == 'invalid_grant'
+            raise ExpiredTokenError.new(body_json.fetch('error_description', 'Expired token'))
+          else
             raise "Box Error status: #{res.response_code}, body: #{res.response_body}, headers: #{res.response_headers}"
           end
+        rescue => e
+          CartoDB.notify_exception(e, self: self.inspect, response: res.inspect)
+          raise e
         end
 
         def self.post(uri, options = {})
@@ -344,6 +359,9 @@ module CartoDB
         # @throws AuthError
         def token=(token)
           set_tokens(get_fresh_tokens(token))
+        rescue CartoDB::Datasources::Url::BoxAPI::ExpiredTokenError => e
+          CartoDB.notify_exception(e, self: self.inspect, token: token)
+          set_tokens({ 'access_token' => nil, 'refresh_token' => nil})
         end
 
         # Retrieve token
@@ -433,6 +451,8 @@ module CartoDB
         # @return bool
         # @throws AuthError
         def token_valid?
+          raise 'invalid_token' unless token
+
           # Any call would do, we just want to see if communicates or refuses the token
           result = client.search('test search')
           !result.nil?

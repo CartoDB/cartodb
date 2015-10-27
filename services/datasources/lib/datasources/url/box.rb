@@ -26,6 +26,7 @@ module CartoDB
 
           raise UninitializedError.new('missing user instance', DATASOURCE_NAME)            if user.nil?
 
+          @access_token = nil
           @refresh_token = nil
         end
 
@@ -62,13 +63,12 @@ module CartoDB
 
         # Validate authorization code and store token
         # @param auth_code : string
-        # @return string : Access token
+        # @return string : Refresh token
         # Older implementations had a use_callback_flow parameter that became deprecated. Not implemented.
         # @throws AuthError
         def validate_auth_code(auth_code)
-          tokens = get_tokens(auth_code)
-          @refresh_token = tokens.refresh_token
-          @access_token = tokens.access_token
+          set_tokens(get_tokens(auth_code))
+          @refresh_token
         end
 
         # Validates the authorization callback
@@ -90,13 +90,13 @@ module CartoDB
         # @param token string
         # @throws AuthError
         def token=(token)
-          @access_token = token
+          set_tokens(get_fresh_tokens(token))
         end
 
         # Retrieve token
         # @return string | nil
         def token
-          @access_token
+          @refresh_token
         end
 
         # Perform the listing and return results
@@ -213,6 +213,11 @@ module CartoDB
 
         private
 
+        def set_tokens(tokens)
+          @access_token = tokens.access_token
+          @refresh_token = tokens.refresh_token
+        end
+
         def client
           @client ||= get_client(@user)
         end
@@ -222,11 +227,7 @@ module CartoDB
             some_method_that_saves_them(access, refresh)
           end
 
-          carto_user = Carto::User.find(user.id)
-          oauth = carto_user.oauth_for_service('box')
-          access_token = oauth.token
-
-          Boxr::Client.new(access_token,
+          Boxr::Client.new(@access_token,
                            refresh_token: nil,
                            client_id: config['client_id'],
                            client_secret: config['client_secret'],
@@ -234,15 +235,29 @@ module CartoDB
         end
 
         def get_tokens(code)
-          tokens = Boxr::get_tokens(code = code,
+          Boxr::get_tokens(code,
                            grant_type: "authorization_code",
                            assertion: nil,
                            scope: nil,
                            username: nil,
                            client_id: config['client_id'],
                            client_secret: config['client_secret'])
+        end
 
+        def get_fresh_tokens(refresh_token)
+          tokens = Boxr::refresh_tokens(refresh_token,
+                               client_id: config['client_id'],
+                               client_secret: config['client_secret'])
+          # Box refresh tokens can only be used once
+          update_user_oauth(tokens.refresh_token)
           tokens
+        end
+
+        def update_user_oauth(refresh_token)
+          carto_user = Carto::User.find(@user.id)
+          oauth = carto_user.oauth_for_service('box')
+          oauth.token = refresh_token
+          oauth.save
         end
 
         def get_code(user)

@@ -43,6 +43,7 @@ module CartoDB
           likes: visualization.likes_count,
           prev_id: visualization.prev_id,
           next_id: visualization.next_id,
+          country_codes: visualization.country_codes,
           transition_options: visualization.transition_options,
           active_child: visualization.active_child
         }

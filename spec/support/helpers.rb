@@ -123,6 +123,7 @@ module HelperMethods
       kind:               attributes.fetch(:kind, Visualization::Member::KIND_GEOM),
       prev_id:            attributes.fetch(:prev_id, nil),
       next_id:            attributes.fetch(:next_id, nil),
+      country_codes:      attributes.fetch(:country_codes, nil),
       transition_options: attributes.fetch(:transition_options, {}),
       active_child:       attributes.fetch(:active_child, nil),
       locked:             attributes.fetch(:locked, false)

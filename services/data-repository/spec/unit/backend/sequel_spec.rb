@@ -29,6 +29,8 @@ describe DataRepository::Backend::Sequel do
       String    :kind
       String    :prev_id
       String    :next_id
+      String    :bbox
+      String    :country_codes
       String    :slide_transition_options
       String    :active_child
     end

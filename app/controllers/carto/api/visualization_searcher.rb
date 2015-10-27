@@ -25,8 +25,9 @@ module Carto
         shared = compose_shared(params[:shared], only_shared, exclude_shared)
         tags = params.fetch(:tags, '').split(',')
         tags = nil if tags.empty?
-        bbox_parameter = params.fetch(:bbox,nil)
-        privacy = params.fetch(:privacy,nil)
+        bbox_parameter = params.fetch(:bbox, nil)
+        country_code = params.fetch(:country_code, nil)
+        privacy = params.fetch(:privacy, nil)
         only_with_display_name = params[:only_with_display_name] == 'true'
 
         vqb = VisualizationQueryBuilder.new
@@ -39,6 +40,10 @@ module Carto
 
         if !bbox_parameter.blank?
           vqb.with_bounding_box(BoundingBoxHelper.parse_bbox_parameters(bbox_parameter))
+        end
+
+        if !country_code.blank?
+          vqb.with_country_code(country_code)
         end
 
         # FIXME Patch to exclude legacy visualization from data-library #5097

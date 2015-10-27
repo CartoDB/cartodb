@@ -92,6 +92,7 @@ describe Visualization::Member do
       vis_mock.stubs(:related_tables).returns([])
       vis_mock.stubs(:prev_id).returns(nil)
       vis_mock.stubs(:next_id).returns(nil)
+      vis_mock.stubs(:country_codes).returns(nil)
       vis_mock.stubs(:transition_options).returns({})
       vis_mock.stubs(:active_child).returns(nil)
       vis_mock.stubs(:likes).returns([])

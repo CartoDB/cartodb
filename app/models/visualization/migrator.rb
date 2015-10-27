@@ -43,6 +43,7 @@ module CartoDB
         @db.run(%Q{
           ALTER TABLE "#{relation}"
           ADD COLUMN tags text[],
+          ADD COLUMN country_codes text[],
           ADD COLUMN bbox geometry
         })
       end

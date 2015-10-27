@@ -290,10 +290,6 @@ cdb.geo.CartoDBGroupLayer = cdb.geo.MapLayer.extend({
   },
 
   fetchAttributes: function(layer, featureID, callback) {
-    if (!this.dashboardInstance) {
-      throw 'A dashboard instance has not been attached to this model yet';
-    }
-
     this.dashboardInstance.fetchAttributes(layer, featureID, callback);
   }
 });

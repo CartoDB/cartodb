@@ -233,18 +233,17 @@
                           "interactivity": "cartodb_id",
                           "table_name": "\"\".",
                           "widgets": {
-                            // 'category_widget_uuid': {
-                            //   "type": "category",
-                            //   "options": {
-                            //     "title": "Categorías de árboles",
-                            //     "columns": [
-                            //       "name"
-                            //     ],
-                            //     "columns_title": [
-                            //       "Familia"
-                            //     ]
-                            //   }
-                            // }
+                            'category_widget_uuid': {
+                              "type": "aggregation",
+                              "options": {
+                                "title": "Categorías de árboles",
+                                "column": "name",
+                                "columns_title": [
+                                  "Familia"
+                                ],
+                                "aggregation": "count"
+                              }
+                            }
                           }
                         }
                       }

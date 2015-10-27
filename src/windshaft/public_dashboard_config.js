@@ -29,13 +29,7 @@ cdb.windshaft.PublicDashboardConfig.generate = function(dashboard) {
       widgets.forEach(function(widget) {
 
         // TODO: Each widget has different options
-        layerConfig.options.widgets[widget.get('id')] = {
-          "type": widget.get('type'),
-          "options": {
-            "columns": widget.get('options').columns,
-            "column": widget.get('options').column
-          }
-        };
+        layerConfig.options.widgets[widget.get('id')] = widget.toJSON();
       });
     }
 

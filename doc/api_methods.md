@@ -24,7 +24,8 @@ Arguments | Description
 --- | ---
 map_id | a DOM object, for example `$('#map')` or a DOM id.
 vizjson_url | url of the vizjson object.
-options |
+
+options | 
 &#124;_ shareable | add facebook and twitter share buttons.
 &#124;_ title | adds a header with the title of the visualization.
 &#124;_ description | adds description to the header (as you set in the UI).
@@ -134,7 +135,8 @@ Arguments | Description
 --- | ---
 map | Leaflet `L.Map` object. The map should be initialized before calling this function.
 layerSource | contains information about the layer. It can be specified in 2 ways
-options |
+
+options | 
 &#124;_ https | force https
 &#124;_ refreshTime | if is set, the layer is refreshed each refreshTime milliseconds.
 &#124;_ infowindow | set to false if you want to disable the infowindow (enabled by default).

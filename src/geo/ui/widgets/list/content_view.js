@@ -6,6 +6,10 @@
 
 cdb.geo.ui.Widget.List.Content = cdb.geo.ui.Widget.Content.extend({
 
+  options: {
+    showScroll: false
+  },
+
   _TEMPLATE: ' ' +
     '<div class="Widget-header">'+
       '<div class="Widget-title Widget-contentSpaced">'+
@@ -54,31 +58,29 @@ cdb.geo.ui.Widget.List.Content = cdb.geo.ui.Widget.Content.extend({
     var count = this.dataModel.getSize();
 
     // List view -> items view
-    var list = new cdb.geo.ui.Widget.List.ItemsView({
+    this._list = new cdb.geo.ui.Widget.List.ItemsView({
       viewModel: this.viewModel,
       dataModel: this.dataModel
     });
-    this.$('.js-content').html(list.render().el);
-    this.addView(list);
+    this.$('.js-content').html(this._list.render().el);
+    this.addView(this._list);
 
-    var isScrollList = (list.$el.get(0).scrollHeight - list.$el.outerHeight()) > 0;
+    var isScrollList = (this._list.$el.get(0).scrollHeight - this._list.$el.outerHeight()) > 0;
 
-    if (count > 4) {
+    if (isScrollList || this.options.showScroll) {
       // Paginator
-      var pagination = new cdb.geo.ui.Widget.List.PaginatorView({
-        $target: list.$el
+      this._pagination = new cdb.geo.ui.Widget.List.PaginatorView({
+        $target: this._list.$el
       });
-      this.$('.js-footer').append(pagination.render().el);
-      this.addView(pagination);
-    }
+      this.$('.js-footer').append(this._pagination.render().el);
+      this.addView(this._pagination);
 
-    // Edges
-    if (isScrollList) {
-      var edges = new cdb.geo.ui.Widget.List.EdgesView({
-        $target: list.$el
+      // Edges
+      this._edges = new cdb.geo.ui.Widget.List.EdgesView({
+        $target: this._list.$el
       });
-      this.$('.js-content').append(edges.render().el);
-      this.addView(edges);
+      this.$('.js-content').append(this._edges.render().el);
+      this.addView(this._edges);
     }
   }
 

@@ -26,7 +26,10 @@ cdb.geo.ui.Widget.List.ItemsView = cdb.geo.ui.Widget.View.extend({
     var v = new cdb.geo.ui.Widget.List.ItemView({
       model: mdl,
       viewModel: this.viewModel
-    })
+    });
+    v.bind('itemClicked', function(){
+      this.trigger('itemClicked', mdl, this);
+    }, this);
     this.addView(v);
     this.$el.append(v.render().el);
   }

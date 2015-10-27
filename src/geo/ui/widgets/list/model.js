@@ -25,7 +25,7 @@ cdb.geo.ui.Widget.ListModel = cdb.geo.ui.Widget.Model.extend({
   parse: function(r) {
     this._data.reset(r);
     return {
-      data: r.data
+      data: r
     };
   }
 });

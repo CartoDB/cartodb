@@ -80,7 +80,7 @@ cdb.geo.ui.Widget.List.ItemView = cdb.core.View.extend({
     var columnTitles = this.viewModel.get('columns_title');
 
     _.each(data, function(value, key) {
-      var title = columnTitles[i] || key;
+      var title = columnTitles && columnTitles[i] || key;
       arr.push([ title, value ]);
       ++i;
     });
@@ -97,7 +97,6 @@ cdb.geo.ui.Widget.List.ItemView = cdb.core.View.extend({
   },
 
   _onItemClick: function() {
-    console.log("on item click!");
     this.trigger('itemClicked', this.model, this);
   }
 

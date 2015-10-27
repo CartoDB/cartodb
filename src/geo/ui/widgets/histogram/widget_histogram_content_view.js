@@ -92,7 +92,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
   },
 
   _setupModel: function() {
-    this.model = new cdb.core.Model({ 
+    this.model = new cdb.core.Model({
       data: this.options.data,
       pos: { x: 0, y: 0 }
     });
@@ -104,8 +104,6 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
   },
 
   _setupDimensions: function() {
-    var data = this.model.get('data');
-
     this.margin = this.options.margin;
 
     this.canvasWidth  = this.options.width;
@@ -120,7 +118,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
   _setupScales: function() {
     var data = this.model.get('data');
     this.xScale = d3.scale.linear().domain([0, 100]).range([0, this.chartWidth]);
-    this.yScale = d3.scale.linear().domain([0, d3.max(data, function(d) { return d && d.freq; } )]).range([this.chartHeight, 0]);
+    this.yScale = d3.scale.linear().domain([0, d3.max(data, function(d) { return d.isEmpty() ? 0 : d.get('freq'); } )]).range([this.chartHeight, 0]);
     this.zScale = d3.scale.ordinal().domain(d3.range(data.length)).rangeRoundBands([0, this.chartWidth]);
   },
 
@@ -217,9 +215,11 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     var barIndex = Math.floor(x / this.barWidth);
     var data = this.model.get('data');
 
-    if (data[barIndex] === undefined ) return;
+    if (data[barIndex] === undefined || data[barIndex] === null) {
+      return;
+    }
 
-    var freq = data[barIndex].freq;
+    var freq = data[barIndex].get('freq');
 
     var format = d3.format('0,000');
     var bar = this.chart.select('.Bar:nth-child(' + (barIndex + 1) + ')');
@@ -434,7 +434,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
 
       if (v === 0 || i === 0 || i === (data.length - 1)) {
         var sum = _.reduce(data.slice(0, i + 1), function(memo, d) {
-          return d ? d.freq + memo : 0;
+          return d.isEmpty() ? memo : d.get('freq') + memo;
         }, 0);
         return format(sum);
       } else {
@@ -488,12 +488,11 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     .selectAll('.Bar')
     .data(data);
 
-
     bars
     .enter()
     .append('rect')
     .attr('class', 'Bar')
-    .attr('data', function(d) { return d && d.freq; })
+    .attr('data', function(d) { return d.isEmpty() ? 0 :  d.get('freq'); })
     .attr('transform', function(d, i) {
       return 'translate(' + (i * self.barWidth) + ', 0 )';
     })
@@ -508,10 +507,10 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
       return Math.random() * (100 + i * 10);
     })
     .attr('height', function(d) {
-      return d ? self.chartHeight - self.yScale(d.freq) : 0;
+      return d.isEmpty() ? 0 : self.chartHeight - self.yScale(d.get('freq'));
     })
     .attr('y', function(d) {
-      return d ? self.yScale(d.freq) : self.chartHeight;
+      return d.isEmpty() ? self.chartHeight : self.yScale(d.get('freq'));
     });
   },
 
@@ -578,7 +577,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
     '</ul>',
 
   _initViews: function() {
-    this._generateData();
+    //this._generateData();
     this._setupDimensions();
     this._generateCanvas();
     this._renderMainChart();
@@ -618,7 +617,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
       handles: true,
       width: this.canvasWidth,
       height: this.defaults.chartHeight,
-      data: this.dataModel.get('data')
+      data: this.dataModel.getData().models
     }));
 
     this.chart.bind('range_updated', this._onRangeUpdated, this);
@@ -638,7 +637,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
       margin: { top: 0, right: 0, bottom: 0, left: 4 },
       y: 0,
       height: 20,
-      data: this.dataModel.get('data')
+      data: this.dataModel.getData().models
     }));
 
     this.miniChart.bind('on_brush_end', this._onMiniRangeUpdated, this);
@@ -746,7 +745,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   },
 
   _getData: function(full) {
-    var data = this.dataModel.get('data');
+    var data = this.dataModel.getData().models;
     if (full) {
       return data;
     }
@@ -756,12 +755,12 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   _updateStats: function() {
     var data = this._getData();
     var sum = _.reduce(data, function(memo, d) {
-      return d ? d.freq + memo : 0;
+      return d.isEmpty() ? memo : d.get('freq') + memo;
     }, 0);
 
-    var max = d3.max(data, function(d) { return d && d.freq; });
-    var avg = Math.round(d3.mean(data, function(d) { return d && d.freq; }));
-    var min = d3.min(data, function(d) { return d && d.freq; });
+    var max = d3.max(data, function(d) { return d.isEmpty() ? 0 : d.get('freq'); });
+    var avg = Math.round(d3.mean(data, function(d) { return d.isEmpty() ? 0 : d.get('freq'); }));
+    var min = d3.min(data, function(d) { return d.isEmpty() ? 0 : d.get('freq'); });
 
     this.viewModel.set({ total: sum, min: min, max: max, avg: avg });
   },

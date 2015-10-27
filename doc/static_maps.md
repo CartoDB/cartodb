@@ -24,7 +24,7 @@ cartodb.Image(vizjson_url)
 <img id="AwesomeMap" src="https://cartocdn-ashbu.global.ssl.fastly.net/documentation/api/v1/map/static/center/04430594691ff84a3fdac56259e5180b:1419270587670/4/-3.4/44.2/600/400.png" class="thumb">
 ```
 
-### cartodb.Image(_layerSource_[, options])
+### cartodb.Image(_layerSource[, options]_)
 
 #### Arguments
 
@@ -32,9 +32,11 @@ Arguments | Description
 --- | ---
 layerSource | can be either a `viz.json` object or a [layer source object](/cartodb-platform/cartodb-js/#standard-layer-source-object-type-cartodb)
 options | 
-<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i>basemap | change the basemap specified in the layer definition. Type: Object defining base map properties (see example below).
-<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i>no_cdn | Disable CDN usage. Type: Boolean. Default: `false` (use CDN)
-<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i>override_bbox | Override default of using the bounding box of the visualization. This is needed to use `Image.center` and `Image.zoom`. Type: Boolean. Default: `false` (use bounding box)
+<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> basemap | change the basemap specified in the layer definition. Type: Object defining base map properties (see example below).
+<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> no_cdn | Disable CDN usage. Type: Boolean. Default: `false` (use CDN)
+<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> override_bbox | Override default of using the bounding box of the visualization. This is needed to use `Image.center` and `Image.zoom`. Type: Boolean. Default: `false` (use bounding box)
+
+#### Example
 
 ```javascript
 <script>

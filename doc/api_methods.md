@@ -684,15 +684,15 @@ maxHeight | Max height of the scrolled content (value must be a number).
 
 ## cartodb.CartoDBLayer.HttpSubLayer
 
-### sublayer.setURLTemplate(urlTemplate)
+### sublayer.setURLTemplate(_urlTemplate_)
 
 Shortcut for `set({'urlTemplate': 'http://{s}.example.com/{z}/{x}/{y}.png' })`
 
-### sublayer.setSubdomains(subdomains)
+### sublayer.setSubdomains(_subdomains_)
 
 Shortcut for `set({'subdomains': ['a', 'b', '...'] })`
 
-### sublayer.setTms(tms)
+### sublayer.setTms(_tms_)
 
 Shortcut for `set({'tms': true|false })`
 

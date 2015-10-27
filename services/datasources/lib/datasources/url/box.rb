@@ -185,7 +185,7 @@ module CartoDB
                               :expiring_embed_link, :can_non_owners_invite]
           FOLDER_AND_FILE_FIELDS_QUERY = FOLDER_AND_FILE_FIELDS.join(',')
 
-          def file_from_id(file_id, fields: [])
+          def file_from_id(file_id, fields = [])
             file_id = ensure_id(file_id)
             uri = "#{FILES_URI}/#{file_id}"
             query = build_fields_query(fields, FOLDER_AND_FILE_FIELDS_QUERY)

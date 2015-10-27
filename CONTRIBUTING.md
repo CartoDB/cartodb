@@ -129,6 +129,18 @@ That enables CSS and JS watchers for rebuilding bundles automatically upon chang
 
 _Don't forget to restart Rails after you have modified `config/app_config.yml`._
 
+# Backend
+
+Backend is a Rails 3 application, there's no specific workflow you must follow to run it.
+
+Every PR should be covered by tests. If you create a new file please add it to `Makefile`. Useful commands:
+- `make check`: prepare the test database and run the full suite (takes a while).
+- `make prepare-test-db`: prepare the test database.
+- `bundle exec rspec <spec file>`: run a spec.
+- `bundle exec rspec <spec file>:<line number>`: run an specific test.
+
+Once a new Pull Request is started,
+[Hound](https://houndci.com/) application will check code style and you should fix them as much as possible (with common sense, no need to honor _every_ rule but now most of them are actually useful to make code more readable).
 
 ## Submitting contributions
 

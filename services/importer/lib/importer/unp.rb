@@ -5,6 +5,7 @@ require 'open3'
 require_relative './exceptions'
 require_relative './source_file'
 require_relative './kml_splitter'
+require_relative './gpx_splitter'
 require_relative './osm_splitter'
 
 module CartoDB
@@ -18,14 +19,15 @@ module CartoDB
         .js .json .tar .gz .tgz .osm .bz2 .geojson
         .gpx .sql .tab .tsv .txt
       }
-      SPLITTERS = [KmlSplitter, OsmSplitter]
+      SPLITTERS = [KmlSplitter, OsmSplitter, GpxSplitter]
 
       DEFAULT_IMPORTER_TMP_SUBFOLDER = '/tmp/imports/'
 
       attr_reader :source_files, :temporary_directory
 
-      def initialize(importer_config = nil)
+      def initialize(importer_config = nil, ogr2ogr_config = nil)
         @source_files = []
+        @ogr2ogr_config = ogr2ogr_config
         if !importer_config.nil? && !importer_config['unp_temporal_folder'].nil?
           @temporal_subfolder_path = importer_config['unp_temporal_folder']
         end
@@ -193,7 +195,7 @@ module CartoDB
         source_files.flat_map { |source_file|
           splitter = splitter_for(source_file)
           if splitter
-            splitter.new(source_file, temporary_directory)
+            splitter.new(source_file, temporary_directory, @ogr2ogr_config)
               .run.source_files
           else
             source_file

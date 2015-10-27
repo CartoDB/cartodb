@@ -4,12 +4,14 @@ module Carto
 
     def url_for_static_map(request, visualization, map_width, map_height)
       username = CartoDB.extract_subdomain(request)
-      request_protocol = request.protocol.sub('://','')
-      static_maps_base_url(username, request_protocol) + static_maps_image_url_fragment(visualization.id, map_width, map_height)
+      request_protocol = request.protocol.sub('://', '')
+      static_maps_base_url(username, request_protocol) +
+        static_maps_image_url_fragment(visualization.id, map_width, map_height)
     end
 
     def url_for_static_map_without_request(username, request_protocol, visualization, map_width, map_height)
-      static_maps_base_url(username, request_protocol) + static_maps_image_url_fragment(visualization.id, map_width, map_height)
+      static_maps_base_url(username, request_protocol) +
+        static_maps_image_url_fragment(visualization.id, map_width, map_height)
     end
 
     private
@@ -24,7 +26,7 @@ module Carto
         # {protocol}://zone.cartocdn.com/{user}
         base_url = config
       else
-        # Typical format (but all parameters except {user} come already replaced): 
+        # Typical format (but all parameters except {user} come already replaced):
         # {protocol}://{user}.{maps_domain}:{port}/
         base_url = ApplicationHelper.maps_api_template('public')
       end
@@ -45,5 +47,4 @@ module Carto
     end
 
   end
-
 end

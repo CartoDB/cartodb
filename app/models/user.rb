@@ -164,6 +164,8 @@ class User < Sequel::Model
     if self.organization_user?
       if new? || column_changed?(:organization_id)
         self.twitter_datasource_enabled = self.organization.twitter_datasource_enabled
+        self.google_maps_key = self.organization.google_maps_key
+        self.google_maps_private_key = self.organization.google_maps_private_key
       end
       self.max_layers ||= 6
       self.private_tables_enabled ||= true
@@ -1168,10 +1170,6 @@ class User < Sequel::Model
     DataImport.where(user_id: self.id).count
   end
 
-  def maps_count
-    Map.where(user_id: self.id).count
-  end
-
   # Get the count of public visualizations
   def public_visualization_count
     visualization_count({
@@ -1179,6 +1177,15 @@ class User < Sequel::Model
       privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC,
       exclude_shared: true,
       exclude_raster: true
+    })
+  end
+
+  # Get the count of all visualizations
+  def all_visualization_count
+    visualization_count({
+      type: CartoDB::Visualization::Member::TYPE_DERIVED,
+      exclude_shared: false,
+      exclude_raster: false
     })
   end
 

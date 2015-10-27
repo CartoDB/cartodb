@@ -85,6 +85,9 @@
 .Filters-group.is-hidden {
   display: none;
 }
+.Filters-group.is-searching {
+  width: 100%;
+}
 .Filters-typeItem {
   position:relative;
   height:80px;
@@ -96,14 +99,6 @@
 .Filters-typeItem.Filters-typeItem--moreMargins {
   margin-right: 15px;
   margin-left: 15px;
-}
-.Filters-typeItem.Filters-typeItem--longMargins {
-  margin-right: 20px;
-  margin-left: 20px;
-
-  &:first-child {
-    margin-left: 0;
-  }
 }
 .Filters-typeItem--searchEnabler {
   min-width: 65px;
@@ -184,7 +179,7 @@
   }
 }
 .Filters-cleanSearch.Filters-cleanSearch--short {
-  right: 6px;
+  right: -10px;
 }
 a.Filters-cleanSearch { line-height:32px }
 // We can't group this style :(
@@ -305,35 +300,17 @@ a.Filters-cleanSearch { line-height:32px }
 .Filters-inner.items--selected {
   margin-top: -81px;
 }
-.Filters-inner.search--enabled {
-
-  .Filters-typeItem,
-  .Filters-orderItem,
-  .Button--positive {
-    display: none;
-  }
-
-  .Filters-searchLink {
-    &:after {
-      right: -16px;
-    }
-  }
-  .Filters-searchEnabler {
-    display: inline;
-    min-width: 65px;
-  }
-  .Filters-searchForm {
-    width: 841px;
-  }
-  .Filters-searchInput {
-    width: 790px;
-  }
-  .Filters-typeItem.Filters-typeItem--searchField,
-  .Filters-searchItem {
-    display: inherit;
-  }
+.Filters-searchEnabler {
+  display: inline;
+  min-width: 65px;
 }
-
+.Filters-typeItem.Filters-typeItem--searchField,
+.Filters-searchItem {
+  display: inherit;
+}
+.Filters-typeItem.is-searching {
+  display: none;
+}
 .Filters-link:hover {
   text-decoration: none;
   .Filters-progressSize { color: $cTypography-paragraphs }
@@ -396,4 +373,23 @@ a.Filters-cleanSearch { line-height:32px }
   font-size: 7px;
   -webkit-font-smoothing: auto;
   -moz-osx-font-smoothing: auto;
+}
+@media only screen and (max-width: 500px) {
+  .Filters-searchEnabler {
+    min-width: 0;
+  }
+
+  .Filters-searchLink {
+    span {
+      display: none;
+    }
+  }
+
+  .categoriesDropdown-label {
+    max-width: 80px;
+    float: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
 }

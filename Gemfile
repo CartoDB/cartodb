@@ -37,6 +37,7 @@ gem 'net-ldap',                '0.11'
 
 group :production, :staging do
   gem 'unicorn',               '4.8.2'
+  gem 'unicorn-worker-killer'
   gem 'raindrops',             '0.12.0'
 end
 

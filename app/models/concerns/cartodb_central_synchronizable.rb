@@ -108,7 +108,8 @@ module Concerns
           :sync_tables_enabled, :table_quota, :twitter_username, :upgraded_at,
           :user_timeout, :username, :website, :soft_geocoding_limit,
           :twitter_datasource_enabled, :soft_twitter_datasource_limit,
-          :arcgis_datasource_enabled, :google_sign_in, :last_password_change_date
+          :arcgis_datasource_enabled, :google_sign_in, :last_password_change_date,
+          :google_maps_key, :google_maps_private_key
         )
         case action
         when :create

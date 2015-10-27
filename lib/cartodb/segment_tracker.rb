@@ -10,11 +10,12 @@ module Cartodb
     end
 
     def enabled?
-      !@api_key.nil?
+      !@api_key.blank?
     end
 
     def track_event(user_id, event, properties)
       return unless enabled?
+      return if user_id.blank?
 
       begin
         @analytics.track(
@@ -23,7 +24,10 @@ module Cartodb
           properties: properties
         )
       rescue => e
-      Rollbar.report_message('Segment error tracking event', 'error', { user: user_id, event: event })
+        Rollbar.report_message('EventTracker: segment event tracking error', 'error', { user_id: user_id, 
+                                                                                        event: event,
+                                                                                        properties: properties, 
+                                                                                        error_message: e.inspect })
       end
     end
 
@@ -31,7 +35,7 @@ module Cartodb
       begin
         @analytics.flush
       rescue => e
-        Rollbar.report_message('Segment error flush', 'error')
+        Rollbar.report_message('EventTracker: segment flushing error', 'error', { error_message: e.inspect })
       end
     end
   end

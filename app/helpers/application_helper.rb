@@ -110,6 +110,10 @@ module ApplicationHelper
       config[:static_image_upload_endpoint] = Cartodb.config[:static_image_upload_endpoint]
     end
 
+    if Cartodb.config[:cdn_url].present?
+      config[:cdn_url] = Cartodb.config[:cdn_url]
+    end
+
     config.to_json
   end
 
@@ -144,6 +148,10 @@ module ApplicationHelper
 
     if Cartodb.config[:explore_api].present?
       config[:explore_user] = Cartodb.config[:explore_api]['username']
+    end
+
+    if Cartodb.config[:common_data].present?
+      config[:common_data_user] = Cartodb.config[:common_data]['username']
     end
 
     config.to_json

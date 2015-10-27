@@ -19,6 +19,8 @@ var Log = require('../../../../../src-browserify/core/log');
 var log = new Log();
 var logProxy = require('log-proxy').set(log);
 var cartoCssDefaultVersionProxy = require('cartocss-default-version-proxy').set('2.1.1');
+var Backbone = require('backbone');
+var BackboneProxy = require('backbone-proxy').set(Backbone);
 
 var LeafletTorqueLayer = require('../../../../../src-browserify/geo/leaflet/leaflet-torque-layer');
 var Map = require('../../../../../src-browserify/geo/map');
@@ -44,6 +46,7 @@ describe('geo/leaflet/leaflet-map-view', function() {
     cartoCssDefaultVersionProxy.set('2.1.1');
     ajaxProxy.set($.ajax);
     configProxy.set(config);
+    BackboneProxy.set(Backbone);
     leafletProxy.set(L);
     logProxy.set(log);
 

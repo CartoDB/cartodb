@@ -285,7 +285,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
 
   selectRange: function(a, b) {
 
-    if (a === undefined && b === undefined) {
+    if (!a && !b) {
       return;
     }
 

@@ -321,6 +321,9 @@ GEM
       kgio (~> 2.6)
       rack
       raindrops (~> 0.7)
+    unicorn-worker-killer (0.4.3)
+      get_process_mem (~> 0)
+      unicorn (~> 4)
     uuid (2.3.8)
       macaddr (~> 1.0)
     uuidtools (2.1.5)

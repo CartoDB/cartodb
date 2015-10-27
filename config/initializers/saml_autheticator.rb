@@ -40,10 +40,12 @@ class SamlAuthenticator
 
 
   def self.check_user(user_data)
-    existing_user = ::User.where(username: user_data.cartodb_username).first
+    if (user_data != nil)
+       existing_user = ::User.where(username: user_data.cartodb_username).first
+    end
 
     if (existing_user != nil)
-        return existing_user
+       return existing_user
     end
   end
 

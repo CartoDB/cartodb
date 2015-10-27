@@ -10,40 +10,46 @@ class SamlController < ApplicationController
  end
 
  def acs
-    logger.info "inside smal acs"
+    logger.info "inside saml acs"
     
-    load_organization(params[:saml_idp])
-    
-    user_info = SamlAuthenticator.get_user_info(params)
+    begin 
+      load_organization(params[:saml_idp])
 
-    if user_info == nil
-       render 'shared/signup_issue'
-       return
+      user_info = SamlAuthenticator.get_user_info(params)
+      raise "No user information available." unless user_info != nil
+
+      scope = user_info.cartodb_username
+
+      user = authenticate!(:saml_header, {}, :scope => scope) unless authenticated?(scope)
+      raise "Athentication failed with SAML" unless user != nil
+    
+      redirect_to CartoDB.url(self, 'dashboard', {trailing_slash: true}, user)
+      
+    rescue Exception => e
+        logger.error e.message
+        @signup_source = 'Saml'
+        @signup_errors[:saml_error] = [e.message]
+      
+        render 'shared/signup_issue'
     end
-
-    scope = user_info.cartodb_username
-
-    user = authenticate!(:saml_header, {}, :scope => scope) unless authenticated?(scope)
- 
-    if user == nil
-
-      @signup_errors[:saml_error] = ["single-sign-on athentication failed."]
-
-      logger.error @signup_errors[:saml_error].first
-
-      render 'shared/signup_issue'
-      return
-
-    end
-    
-    redirect_to CartoDB.url(self, 'dashboard', {trailing_slash: true}, user)
  end
 
  def load_organization(saml_idp)
 
     @organization = Carto::Organization.where(saml_idp_name: saml_idp).first 
 
-    @org_admin = Carto::User.where(id:@organization.owner_id).first unless @organization.nil? 
+    # At this point, we are support SAML authentication only for the users 
+    # belonging to an organization
+    
+    if (@organization == nil)
+      raise "SAML authentication needs to have an associated organization"
+    end
+
+    @org_admin = Carto::User.where(id:@organization.owner_id).first 
+    
+    if (@org_admin == nil)
+      raise "SAML authentication needs to have an organization admin user"
+    end
 
  end
 

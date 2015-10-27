@@ -30,7 +30,7 @@ cartodb.Image(vizjson_url)
 
 Arguments | Description
 --- | ---
-layerSource | can be either a `viz.json` object or a [layer source object](/cartodb-platform/cartodb-js/#standard-layer-source-object-type-cartodb)
+layerSource | can be either a `viz.json` object or a [layer source object](/cartodb-platform/cartodb-js/api-methods/#standard-layer-source-object-type-cartodb)
 options | 
 &#124;_ basemap | change the basemap specified in the layer definition. Type: Object defining base map properties (see example below).
 &#124;_ no_cdn | Disable CDN usage. Type: Boolean. Default: `false` (use CDN)

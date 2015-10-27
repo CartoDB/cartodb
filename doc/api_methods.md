@@ -27,26 +27,26 @@ vizjson_url | url of the vizjson object.
 options |
 &#124;_ shareable | add facebook and twitter share buttons.
 &#124;_ title | adds a header with the title of the visualization.
-<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> description | adds description to the header (as you set in the UI).
-<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> search | adds a search control (default: true).
-<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> zoomControl | adds zoom control (default: true).
-<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> loaderControl | adds loading control (default: true).
-<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> center_lat | latitude where the map is initializated.
-<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> center_lon | longitude where the map is initializated.
-<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> zoom | initial zoom.
-<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> cartodb_logo | default to true, set to false if you want to remove the cartodb logo.
-<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> infowindow | set to false if you want to disable the infowindow (enabled by default).
-<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> time_slider | show time slider with torque layers (enabled by default).
-<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> layer_selector | show layer selector (default: false).
-<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> legends | if it's true legends are shown in the map.
-<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> https | if true, it makes sure that basemaps are converted to https when possible. If explicitly false, converts https maps to http when possible. If undefined, the basemap template is left as declared at `urlTemplate` in the viz.json.
-<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> scrollwheel | enable/disable the ability of zooming using scrollwheel (default enabled)
-<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> fullscreen | if true adds a button to toggle the map fullscreen
-<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> mobile_layout | if true enables a custom layout for mobile devices (default: false)
-<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> force_mobile | forces enabling/disabling the mobile layout (it has priority over mobile_layout argument)
-<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> gmaps_base_type | Use Google Maps as map provider whatever is the one specified in the viz.json". Available types: 'roadmap', 'gray_roadmap', 'dark_roadmap', 'hybrid', 'satellite', 'terrain'.
-<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> gmaps_style | Google Maps styled maps. See [documentation](https://developers.google.com/maps/documentation/javascript/styling).
-<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> no_cdn | true to disable CDN when fetching tiles
+&#124;_ description | adds description to the header (as you set in the UI).
+&#124;_ search | adds a search control (default: true).
+&#124;_ zoomControl | adds zoom control (default: true).
+&#124;_ loaderControl | adds loading control (default: true).
+&#124;_ center_lat | latitude where the map is initializated.
+&#124;_ center_lon | longitude where the map is initializated.
+&#124;_ zoom | initial zoom.
+&#124;_ cartodb_logo | default to true, set to false if you want to remove the cartodb logo.
+&#124;_ infowindow | set to false if you want to disable the infowindow (enabled by default).
+&#124;_ time_slider | show time slider with torque layers (enabled by default).
+&#124;_ layer_selector | show layer selector (default: false).
+&#124;_ legends | if it's true legends are shown in the map.
+&#124;_ https | if true, it makes sure that basemaps are converted to https when possible. If explicitly false, converts https maps to http when possible. If undefined, the basemap template is left as declared at `urlTemplate` in the viz.json.
+&#124;_ scrollwheel | enable/disable the ability of zooming using scrollwheel (default enabled)
+&#124;_ fullscreen | if true adds a button to toggle the map fullscreen
+&#124;_ mobile_layout | if true enables a custom layout for mobile devices (default: false)
+&#124;_ force_mobile | forces enabling/disabling the mobile layout (it has priority over mobile_layout argument)
+&#124;_ gmaps_base_type | Use Google Maps as map provider whatever is the one specified in the viz.json". Available types: 'roadmap', 'gray_roadmap', 'dark_roadmap', 'hybrid', 'satellite', 'terrain'.
+&#124;_ gmaps_style | Google Maps styled maps. See [documentation](https://developers.google.com/maps/documentation/javascript/styling).
+&#124;_ no_cdn | true to disable CDN when fetching tiles
 callback(vis,layers) | if a function is specified, it is called once the visualization is created, passing vis and layers as arguments
 
 #### Returns
@@ -135,14 +135,14 @@ Arguments | Description
 map | Leaflet `L.Map` object. The map should be initialized before calling this function.
 layerSource | contains information about the layer. It can be specified in 2 ways
 options |
-<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> https | force https
-<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> refreshTime | if is set, the layer is refreshed each refreshTime milliseconds.
-<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> infowindow | set to false if you want to disable the infowindow (enabled by default).
-<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> tooltip | set to false if you want to disable the tooltip (enabled by default).
-<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> legends | if it's true legends are shown in the map.
-<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> time_slider | show time slider with torque layers (enabled by default)
-<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> layerIndex | when the visualization contains more than one layer this index allows you to select what layer is created. Take into account that `layerIndex == 0` is the base layer and that all the tiled layers (non animated ones) are merged into a single one. The default value for this option is 1 (usually tiled layers).
-<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> filter | a string or array of strings to specify the type(s) of sublayers that will be rendered (eg: `['http', 'mapnik']`). All non-torque layers (http and mapnik) will be rendered if this option is not present.
+&#124;_ https | force https
+&#124;_ refreshTime | if is set, the layer is refreshed each refreshTime milliseconds.
+&#124;_ infowindow | set to false if you want to disable the infowindow (enabled by default).
+&#124;_ tooltip | set to false if you want to disable the tooltip (enabled by default).
+&#124;_ legends | if it's true legends are shown in the map.
+&#124;_ time_slider | show time slider with torque layers (enabled by default)
+&#124;_ layerIndex | when the visualization contains more than one layer this index allows you to select what layer is created. Take into account that `layerIndex == 0` is the base layer and that all the tiled layers (non animated ones) are merged into a single one. The default value for this option is 1 (usually tiled layers).
+&#124;_ filter | a string or array of strings to specify the type(s) of sublayers that will be rendered (eg: `['http', 'mapnik']`). All non-torque layers (http and mapnik) will be rendered if this option is not present.
 callback(_layer_) | if a function is specified, it will be invoked after the layer has been created. The layer will be passed as an argument.
 
 #### Passing the url where the layer data is located
